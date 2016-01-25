@@ -1,0 +1,241 @@
+button:active,
+button:focus,
+button:active:focus {
+  box-shadow: none;
+  outline: none;
+}
+body {
+  font-family: calibri;
+}
+#OnyxBlack {
+  background: linear-gradient(#444,#000000);
+}
+#DeepBlue {
+  background: linear-gradient(#2853a2,#000b5a);
+}
+#AllBoxes {
+  border: 1px solid silver;
+}
+#AllButtons {
+  height: 40px;
+  margin: 1px;
+  color: white;
+  background-color: #555;
+  border: 1px solid rgba(0,0,0,0.5);
+  border-radius: 4px;
+  float: left;
+}
+#AllButtons:last-child {
+  float: none;
+}
+#NoSelect {
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+}
+.map-box {
+  border: 1px solid silver;
+  position: fixed;
+  top: 0px;
+  left: -1px;
+  bottom: 200px;
+  width: calc(100vw -  360px  + 2px);
+  height: calc(100vh -  120px  + 1px);
+}
+.gm-style-iw * {
+  display: block;
+  width: 100%;
+}
+.gm-style-iw h4,
+.gm-style-iw p {
+  margin: 0;
+  padding: 0;
+}
+.gm-style-iw a {
+  color: #4272db;
+}
+.control-box {
+  border: 1px solid silver;
+  background: #bbb;
+  position: fixed;
+  top: 0px;
+  bottom: 0px;
+  width: 360px;
+  right: -1px;
+  padding: 8px;
+  border-left: 1px solid rgba(0,0,0,0.5);
+}
+.control-box .group-buttons {
+  padding-top: 0px;
+}
+.control-box .group-buttons button {
+  height: 40px;
+  margin: 1px;
+  color: white;
+  background-color: #555;
+  border: 1px solid rgba(0,0,0,0.5);
+  border-radius: 4px;
+  float: left;
+  width: calc(100% /  3  -  2px);
+  font-size: 17px;
+  background: linear-gradient(#444,#000000);
+}
+.control-box .group-buttons button:last-child {
+  float: none;
+}
+.control-box .direct-buttons {
+  padding-top: 16px;
+}
+.control-box .direct-buttons button {
+  height: 40px;
+  margin: 1px;
+  color: white;
+  background-color: #555;
+  border: 1px solid rgba(0,0,0,0.5);
+  border-radius: 4px;
+  float: left;
+  width: calc(100% /  5  -  2px);
+  background-color: #2853a2;
+  font-size: 25px;
+  height: 50px;
+  background: linear-gradient(#2853a2,#000b5a);
+}
+.control-box .direct-buttons button:last-child {
+  float: none;
+}
+.control-box .feature-switches {
+  padding-top: 16px;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+.control-box .feature-switches .onoff {
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  width: calc(100% /  3  -  2px);
+  margin: 1px;
+  padding: 1px 0px;
+  display: inline-block;
+  text-align: center;
+  font-weight: bold;
+}
+.control-box .feature-switches .onoff label {
+  font-size: 19px;
+  padding-bottom: 7px;
+  margin: 0px;
+}
+.control-box .feature-switches .onoff button {
+  font-size: 14px;
+}
+.control-box .feature-switches .onoff #SwitchHolder {
+  max-width: 80px;
+  border: 1px solid rgba(0,0,0,0.25);
+  border-radius: 6px;
+  background-color: #f4f4f4;
+  margin: 0px auto;
+}
+.control-box .feature-switches .onoff #SwitchHolder button {
+  border-radius: inherit;
+  border-color: rgba(0,0,0,0.25);
+  margin: -1px;
+  width: 45px;
+  height: 32px;
+}
+.control-box .feature-switches .onoff .switch-off {
+  text-align: left;
+  max-width: 80px;
+  border: 1px solid rgba(0,0,0,0.25);
+  border-radius: 6px;
+  background-color: #f4f4f4;
+  margin: 0px auto;
+}
+.control-box .feature-switches .onoff .switch-off button {
+  border-radius: inherit;
+  border-color: rgba(0,0,0,0.25);
+  margin: -1px;
+  width: 45px;
+  height: 32px;
+}
+.control-box .feature-switches .onoff .switch-off button {
+  background-color: #ddd;
+  color: rgba(0,0,0,0.5);
+}
+.control-box .feature-switches .onoff .switch-off button span::before {
+  content: "OFF";
+}
+.control-box .feature-switches .onoff .switch-on {
+  text-align: right;
+  max-width: 80px;
+  border: 1px solid rgba(0,0,0,0.25);
+  border-radius: 6px;
+  background-color: #f4f4f4;
+  margin: 0px auto;
+}
+.control-box .feature-switches .onoff .switch-on button {
+  border-radius: inherit;
+  border-color: rgba(0,0,0,0.25);
+  margin: -1px;
+  width: 45px;
+  height: 32px;
+}
+.control-box .feature-switches .onoff .switch-on button {
+  background-color: #509400;
+  color: white;
+}
+.control-box .feature-switches .onoff .switch-on button span::before {
+  content: "ON";
+}
+.control-box .power-sliders label {
+  display: block;
+  margin-top: 25px;
+  margin-bottom: 1px;
+  font-size: 18px;
+  text-align: center;
+}
+.control-box .power-sliders div {
+  width: 100%;
+  height: 20px;
+  background-color: white;
+  margin-top: 4px;
+  cursor: pointer;
+}
+.control-box .power-sliders button {
+  height: 26px;
+  margin-top: -3px;
+  margin-left: -2px;
+}
+.control-box .command-buttons {
+  padding-top: 25px;
+}
+.control-box .command-buttons button {
+  height: 40px;
+  margin: 1px;
+  color: white;
+  background-color: #555;
+  border: 1px solid rgba(0,0,0,0.5);
+  border-radius: 4px;
+  float: left;
+  background: linear-gradient(#444,#000000);
+  width: calc(100% /  3  -  4px);
+  font-size: 24px;
+  height: 90px;
+  padding: 0px 0px 5px 0px;
+  line-height: 1.15;
+  border-radius: 8px;
+  margin: 2px;
+}
+.control-box .command-buttons button:last-child {
+  float: none;
+}
+.control-box button {
+  height: 40px;
+  margin: 1px;
+  color: white;
+  background-color: #555;
+  border: 1px solid rgba(0,0,0,0.5);
+  border-radius: 4px;
+  float: left;
+}
+.control-box button:last-child {
+  float: none;
+}

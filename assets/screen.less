@@ -1,0 +1,215 @@
+
+@Black25 : rgba(0,0,0, 0.25);	@White25 : rgba(255,255,255, 0.25);
+@Black50 : rgba(0,0,0, 0.50);	@White50 : rgba(255,255,255, 0.50);
+@Black75 : rgba(0,0,0, 0.75);	@White75 : rgba(255,255,255, 0.75);
+
+@Blue:		#2853a2;
+@Red:		#c30;
+@Green:		#6a1;
+@Lemon:		#fe1;
+@Yellow:	#fc1;
+@Orange:	#fa1;
+@Purple:	#b04;
+@Grey:		#777;
+@Dark:		#444;
+
+@buttonSpacing   : 2px;
+@controlBoxWidth : 360px;
+@buttonsHeight   : 40px;
+@underBarHeight  : 120px;
+
+
+button:active,
+button:focus,
+button:active:focus {box-shadow:none;outline:none;}
+
+body {font-family:calibri}
+
+///#OnyxBlack	{background:linear-gradient(#666,#222,#222,#222,#222,#222,#222,#050505);}
+///#DeepBlue	{background:linear-gradient(#18f,#017,#017,#017,#017,#017,#017,#005);}
+                 
+#OnyxBlack	{background:linear-gradient(@Dark, @Dark - 72);}
+#DeepBlue	{background:linear-gradient(@Blue, @Blue - 72);}
+                 
+#AllBoxes {
+	border:1px solid silver;
+}
+
+#AllButtons {
+	height:@buttonsHeight;
+	margin:@buttonSpacing / 2;
+	color:white;
+	background-color:#555;border:1px solid @Black50;border-radius:4px;
+	float:left; &:last-child {float:none}
+}
+
+#NoSelect {
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+}
+
+.map-box {
+	#AllBoxes;
+	position:fixed;top:0px;left:-1px;bottom:200px;
+	/// background:url(../assets/map.sample.png) center center;background-size:cover;
+    width  : ~'calc(100vw - '@controlBoxWidth~' + 2px)';
+    height : ~'calc(100vh - '@underBarHeight ~' + 1px)';
+
+}
+.gm-style-iw * {
+    display: block;
+    width: 100%;
+}
+.gm-style-iw h4, .gm-style-iw p {
+    margin: 0;
+    padding: 0;
+}
+.gm-style-iw a {
+    color: #4272db;
+}
+
+.control-box {
+	#AllBoxes;
+	background:#bbb;
+	position:fixed;top:0px;bottom:0px;width:@controlBoxWidth;right:-1px;
+	padding:8px;
+	border-left:1px solid @Black50;
+	
+	.group-buttons {
+
+		@Columns   : 3;
+		@GapBefore : 0px;
+		@FontSize  : 17px;
+	
+		padding-top:@GapBefore;
+		button {
+			#AllButtons;
+			width:calc(~'100% / '@Columns~' - '@buttonSpacing);
+			font-size:@FontSize;
+			#OnyxBlack;
+		}
+	}
+	.direct-buttons {
+
+		@Columns   : 5;
+		@GapBefore : 16px;
+		@FontSize  : 25px;
+		
+		padding-top:@GapBefore;
+		button {
+			#AllButtons;
+			width:calc(~'100% / '@Columns~' - '@buttonSpacing);
+			background-color:@Blue;
+			font-size:@FontSize;
+			height:50px;
+			#DeepBlue;
+		}
+	}
+	.feature-switches {
+
+		@Columns          : 3;
+		@GapBefore        : 16px;
+		@GapUnderCaptions : 7px;
+		@FontSize         : 19px;
+
+		padding-top:@GapBefore;
+		padding-left:20px;
+		padding-right:20px;
+		.onoff {
+		
+			#NoSelect;
+		
+			width:calc(~'100% / '@Columns~' - '@buttonSpacing);
+			margin:@buttonSpacing / 2;
+			padding:1px 0px;
+			display:inline-block;
+			text-align:center;
+			font-weight:bold;
+			label {font-size:@FontSize;padding-bottom:@GapUnderCaptions;margin:0px;}
+			button {font-size:@FontSize - 5}
+			
+			#SwitchHolder {
+				max-width:80px;
+				border:1px solid @Black25;
+				border-radius:6px;
+				background-color:#f4f4f4;
+				margin:0px auto;
+				button {border-radius:inherit;border-color:@Black25;margin:-1px;width:45px;height:32px;}
+			}
+			
+			.switch-off {
+				text-align:left;
+				#SwitchHolder;
+				button {
+					background-color:#ddd; color:@Black50;
+					span::before{content:"OFF"}
+				}
+			}
+			
+			.switch-on {
+				text-align:right;
+				#SwitchHolder;
+				button {
+					background-color:@Green - 22; color:white;
+					span::before{content:"ON"}
+				}
+			}
+			
+		}
+	}     
+	.power-sliders {
+	
+		@FontSize      : 18px;
+		@GapBefore     : 25px;
+
+		label {
+			display:block;
+			margin-top:@GapBefore;
+			margin-bottom:1px;
+			font-size:@FontSize;
+			text-align:center;
+		}
+		div {
+			width:100%;
+			height:20px;
+			background-color:white;
+			margin-top:4px;
+			cursor:pointer;
+		}
+		button {
+			height:26px;
+			margin-top:-3px;
+			margin-left:-2px;
+		}
+		
+	}
+	.command-buttons {
+
+		@Columns       : 3;
+		@GapBefore     : 25px;
+		@FontSize      : 24px;
+		@Height        : 90px;
+		@ButtonSpacing : 4px;   /// override global
+	
+		padding-top:@GapBefore;
+		button {
+			#AllButtons;
+			#OnyxBlack;
+			width:calc(~'100% / '@Columns~' - '@ButtonSpacing);
+			font-size:@FontSize;
+			height:@Height;padding:0px 0px 5px 0px;
+			line-height:1.15;
+			border-radius:8px;
+			margin:@ButtonSpacing / 2;
+		}
+
+	}
+	
+	button {
+		#AllButtons;
+	}
+	
+}
+
+

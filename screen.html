@@ -1,0 +1,123 @@
+<!doctype html><!-- // útf8 -->
+<html>
+<head>
+	<title> FlockWave 0.01.0000 </title>
+	<link rel="icon" href="assets/drone.128x128.png" type="image/x-icon" />
+	<link rel="stylesheet" type="text/css" href="assets/bootstrap/bootstrap.css">
+	<link rel="stylesheet" type="text/css" href="assets/screen.less.css">
+	<link rel="stylesheet" type="text/css" href="assets/jquery-ui.core.css">
+	<link rel="stylesheet" type="text/css" href="assets/jquery-ui.theme.css">
+	<script src="assets/jquery.js"></script>
+	<script src="assets/jquery-ui.js"></script>
+	<script src="assets/general.js"></script>
+	<script src='https://maps.googleapis.com/maps/api/js?key=AIzaSyBm7xuMYXPGHw1kAHRBoxaAdbfpLPMJiGM&sensor=false&extension=.js'></script> 
+	<script src="assets/map.js"></script>
+</head>
+<script>
+
+	options = {
+	
+		groupButtons    : 6,
+		directButtons   : 15,
+	    featureSwitches : {"sw1":"Engine","sw2":"Light","sw3":"Piro"},
+	    commandButtons	: {
+	    	"takeoff"		: "Takeoff",
+	    	"nextchoreo"	: "Next<br>Choreo",
+	    	"gohome"		: "Return<br>home",
+	    	"land"			: "Land",
+	    	"reseterror"	: "Reset<br>Error",
+	    	"halt"			: "Halt",
+		},
+		powerSliders	:  {"p1":"Rotor speed limiter","p2":"Direction override"}
+		
+	}
+	
+</script>
+<body>
+    
+    <div class="templates">
+		<script type="text/template" id="group-button">
+
+			<button onclick="performAction(this,'click')" data-nr="[[n]]"> Group [[n]] </button>
+		
+		</script>
+		<script type="text/template" id="direct-button">
+
+			<button onclick="performAction(this,'click')" data-nr="[[nn]]"> [[nn]] </button>
+		
+		</script>
+		<script type="text/template" id="feature-switch">
+            
+            <div class="onoff">
+            	<label> [[capt]] </label>
+            	<div class="switch-off" onmousedown="performAction(this,'click')"><button data-code="[[code]]"><span></span></button></div>
+			</div>
+		
+		</script>
+		<script type="text/template" id="power-slider">
+            
+            <label>[[capt]]</label>
+			<div id="slider-[[code]]"><button>  </button></div>
+		
+		</script>
+		<script type="text/template" id="command-button">
+
+			<button onclick="performAction(this,'click')" data-code="[[code]]"> [[capt]] </button>
+		
+		</script>
+	</div>
+
+	<div class="map-box" id="venue-map">
+	</div>
+	
+
+	<div class="control-box">
+		<div class="control-area group-buttons"    ><script> dw(iterateHTML("#group-button"   ,options.groupButtons    )); </script></div>
+		<div class="control-area direct-buttons"   ><script> dw(iterateHTML("#direct-button"  ,options.directButtons   )); </script></div>
+		<div class="control-area feature-switches" ><script> dw(iterateHTML("#feature-switch" ,options.featureSwitches )); </script></div>
+		<div class="control-area power-sliders"    ><script> dw(iterateHTML("#power-slider"   ,options.powerSliders    )); </script></div>
+		<div class="control-area command-buttons"  ><script> dw(iterateHTML("#command-button" ,options.commandButtons  )); </script></div>
+	</div>
+
+	
+	
+	
+	
+	<script>
+	
+		
+		//url:"https://developers.google.com/maps/documentation/javascript/examples/overlay-symbol-animate"
+		
+	
+		setTimeout(function() {
+		
+			// 47.4984, 19.0407 - Clark Körforgalom belsõ pontja
+			
+			var x = new google.maps.Polygon({
+				strokeColor:"#ff0000",
+				strokeOpacity:1.0,
+				strokeWeight:2,
+				fillColor:"#ff0000",
+				fillOpacity:0.5,
+				geodesic: true,
+				map: map,
+				path:[
+					{lat:47.49835,lng:19.04043},
+					{lat:47.49845,lng:19.04043},
+					{lat:47.49845,lng:19.04053},
+					{lat:47.49835,lng:19.04053},
+					{lat:47.49835,lng:19.04043},
+				],
+			});
+			
+			window.uav = x;
+			
+		},1000);
+		
+	</script>	
+
+	
+
+
+</body>
+</html>
