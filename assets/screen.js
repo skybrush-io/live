@@ -24,6 +24,70 @@ App.config = {
 
 };
 App.currentFlock = 0; // will be an object later
+App.stats = {
+
+    time: {
+    
+    	connected: 0,
+    	lastpacket: 0,
+    	
+    	swZero  : 0,
+    	get     : function() {return new Date().getTime();},
+    	zero    : function() {App.stats.time.swZero = App.stats.time.get();},
+    	elapsed : function() {return App.stats.time.get()-App.stats.time.swZero;},
+    	
+    },
+    packets: {
+    
+    	sent : 0,
+    	recv : 0,
+    	
+    	zero: function() {
+    		App.stats.packets.sent=0;
+    		App.stats.packets.recv=0;
+    	},
+    	
+    },
+    
+    fps: function() {
+    	
+    	var f = App.stats.packets.recv;
+    	var s = App.stats.time.elapsed() / 1000;
+    	var fps = f/s; // ;) textbook mdfkz
+    	fps = Math.round(fps);
+    	return fps;
+    
+    },
+    reset: function() {
+    	App.stats.time.zero();
+    	App.stats.packets.zero();
+    },
+
+	displayFreq: 100, // ms between updates
+	display: function() {
+	
+    	var me = App.stats;
+    	var fps = me.fps();
+    	var fpsBar = String("lllllllllllllllllllllllllllllllllll").substr(0,fps);
+		document.getElementById("packet-sent").innerHTML = me.packets.sent;
+		document.getElementById("packet-recv").innerHTML = me.packets.recv;
+		document.getElementById("framepersec").innerHTML = fps;
+		document.getElementById("fps-bar"    ).innerHTML = fpsBar;
+	
+	},
+    live: function(sw) {
+    	
+    	var me = App.stats;
+    	
+    	if(sw=="on" ) sw=1;
+    	if(sw=="off") sw=0;
+    	
+    	if(sw==1) if(!me.displayHandle) {me.displayHandle = setInterval(me.display,me.displayFreq);}
+    	if(sw==0) if( me.displayHandle) {clearInterval(App.stats.displayHandle);me.displayHandle=0;}
+    	
+    },
+	
+};
 App.serverConnection = {
 
 	socket : 0,
@@ -31,6 +95,8 @@ App.serverConnection = {
 	    var c = App.config;
 		this.socket = io(c.socketHost);
 		this.socket.on(c.socketStream,function(data) {
+		
+			App.stats.packets.recv++;
 
 			var drones = data.body.status;
 
@@ -44,13 +110,15 @@ App.serverConnection = {
 				var pLon = drones[i].position.lon;
 				App.currentFlock.put(name,pLat,pLon);
 				
-				App.terminal.write(drones[i].timestamp + " :: "+name+" is at ["+pLat+":"+pLon+"]\n");
+				// App.terminal.write(drones[i].timestamp + " :: "+name+" is at ["+pLat+":"+pLon+"]\n");
 				
 			}
-			App.terminal.write("\n");
+			// App.terminal.write("\n");
+			
 
 		});
 
+		App.stats.packets.sent++;
 		this.socket.emit(c.socketStream,{
 		    "$fw.version": "1.0",
 		    "id": guid(),
@@ -130,13 +198,19 @@ App.init = function() {
 
 	App.terminal.write("Initializing ...\n");
 	App.terminal.prefix(" - ");
-	
+
+	App.stats.reset();	
 	App.currentFlock = new Flock();
 	App.googleMap.init(App.config.mapStart);
 	App.serverConnection.start();
 	
 	App.terminal.prefix("");
 	App.terminal.write("Done\n\n");
+    
+    setTimeout(function() {
+		App.stats.reset();	
+		App.stats.live("on");
+	},200);
 
 };
 

@@ -86,6 +86,19 @@
 	</div>
 	
 	<pre class="underbar"></pre>
+	<div class="stats">
+	    
+	    <header>
+	    	LIVE STATS
+	    	<button onclick="App.stats.reset()"> RESET </button>
+	    </header>
+	    <div class="meters">
+			<div> Packets sent: <span id="packet-sent">&nbsp;</span></div>
+			<div> Packets recv: <span id="packet-recv">&nbsp;</span></div>
+			<div> Frames / sec: <span id="framepersec">&nbsp;</span><p id="fps-bar"></p></div>
+		</div>
+	
+	</div>
 	
 	<script>
 

@@ -16,7 +16,8 @@
 @buttonSpacing   : 2px;
 @controlBoxWidth : 360px;
 @buttonsHeight   : 40px;
-@underBarHeight  : 120px;
+@underBarHeight  : 180px;
+@statsWidth      : 300px;
 
 
 button:active,
@@ -60,17 +61,83 @@ body {font-family:calibri}
 }
 .underbar {
 	#AllBoxes;
-	display:block;margin:0px;
-	position:fixed;bottom:0px;left:-1px;
+	display:block;margin:0px;padding:8px 15px;
+	position:fixed;bottom:0px;left:@statsWidth - 2;
+	border-radius:0px;
 	/// background:url(../assets/map.sample.png) center center;background-size:cover;
-    width  : ~'calc(100vw - '@controlBoxWidth~' + 2px)';
+    width  : ~'calc(100vw - '@controlBoxWidth~' - '@statsWidth~' + 4px)';
     height : @underBarHeight;
     background-color:black;
     color:mix(lime,green);
     font:13px consolas,monospace;
-    padding:8px 15px;
     overflow-x:hidden;
     overflow-y:scroll;
+}
+.stats {
+	#AllBoxes;
+	display:block;margin:0px;padding:0px;
+	position:fixed;bottom:0px;left:-1px;
+	border-radius:0px;
+	background-color:#333;
+    color:#ccc;
+    font:13px consolas,monospace;
+	width  : @statsWidth;
+    height : @underBarHeight;
+    border-right-color:#666;
+    overflow:hidden;
+    line-height:1.8;
+    
+    header {
+    	margin-bottom:8px; /// keep some distance
+    	background:linear-gradient(#444,#555);color:white;
+    	border-bottom:1px solid black;
+    	font:15px candara;
+    	padding:5px 20px;
+    	position:relative;
+    	
+    	button {
+    		background:#111;padding:0px 11px 2px 11px;height:22px;
+    		font:11px tahoma;box-shadow:none;
+    		position:absolute;right:4px;top:3px;
+    		color:silver;
+    	}
+    	
+    }
+    
+    span {
+    	display:inline-block;margin:-2px;padding:2px;border:1px solid black;
+    	width:70px;text-align:right;
+    	color:yellow;
+    	background:#111;
+    	line-height:1.1;
+    }
+    
+    p {
+    	margin-left:10px;
+    	position:relative;top:1px;
+    	display:inline-block;
+    	font:12px tahoma;
+    	letter-spacing:-1px;
+    	color:mix(lime,orange);
+    }
+    
+    .meters {
+    	padding:7px 25px;
+    	height:90px;
+    }
+
+	.button-bar {    
+	    text-align:center;
+	}
+    button {
+    	#AllButtons;
+    	#OnyxBlack;
+    	font:15px corbel;
+    	padding:5px 20px;
+    	box-shadow:0px 2px 11px -1px black;
+    	border-color:black;
+    }
+    
 }
 .gm-style-iw * {
     display: block;

@@ -43,23 +43,106 @@ body {
   left: -1px;
   bottom: 200px;
   width: calc(100vw -  360px  + 2px);
-  height: calc(100vh -  120px  + 1px);
+  height: calc(100vh -  180px  + 1px);
 }
 .underbar {
   border: 1px solid silver;
   display: block;
   margin: 0px;
+  padding: 8px 15px;
   position: fixed;
   bottom: 0px;
-  left: -1px;
-  width: calc(100vw -  360px  + 2px);
-  height: 120px;
+  left: 298px;
+  border-radius: 0px;
+  width: calc(100vw -  360px  -  300px  + 4px);
+  height: 180px;
   background-color: black;
   color: #00c000;
   font: 13px consolas, monospace;
-  padding: 8px 15px;
   overflow-x: hidden;
   overflow-y: scroll;
+}
+.stats {
+  border: 1px solid silver;
+  display: block;
+  margin: 0px;
+  padding: 0px;
+  position: fixed;
+  bottom: 0px;
+  left: -1px;
+  border-radius: 0px;
+  background-color: #333;
+  color: #ccc;
+  font: 13px consolas, monospace;
+  width: 300px;
+  height: 180px;
+  border-right-color: #666;
+  overflow: hidden;
+  line-height: 1.8;
+}
+.stats header {
+  margin-bottom: 8px;
+  background: linear-gradient(#444,#555);
+  color: white;
+  border-bottom: 1px solid black;
+  font: 15px candara;
+  padding: 5px 20px;
+  position: relative;
+}
+.stats header button {
+  background: #111;
+  padding: 0px 11px 2px 11px;
+  height: 22px;
+  font: 11px tahoma;
+  box-shadow: none;
+  position: absolute;
+  right: 4px;
+  top: 3px;
+  color: silver;
+}
+.stats span {
+  display: inline-block;
+  margin: -2px;
+  padding: 2px;
+  border: 1px solid black;
+  width: 70px;
+  text-align: right;
+  color: yellow;
+  background: #111;
+  line-height: 1.1;
+}
+.stats p {
+  margin-left: 10px;
+  position: relative;
+  top: 1px;
+  display: inline-block;
+  font: 12px tahoma;
+  letter-spacing: -1px;
+  color: #80d200;
+}
+.stats .meters {
+  padding: 7px 25px;
+  height: 90px;
+}
+.stats .button-bar {
+  text-align: center;
+}
+.stats button {
+  height: 40px;
+  margin: 1px;
+  color: white;
+  background-color: #555;
+  border: 1px solid rgba(0,0,0,0.5);
+  border-radius: 4px;
+  float: left;
+  background: linear-gradient(#444,#000000);
+  font: 15px corbel;
+  padding: 5px 20px;
+  box-shadow: 0px 2px 11px -1px black;
+  border-color: black;
+}
+.stats button:last-child {
+  float: none;
 }
 .gm-style-iw * {
   display: block;
