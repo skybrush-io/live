@@ -30,6 +30,7 @@ body {font-family:calibri}
                  
 #OnyxBlack	{background:linear-gradient(@Dark, @Dark - 72);}
 #DeepBlue	{background:linear-gradient(@Blue, @Blue - 72);}
+#Graphite	{background:linear-gradient(#aaa , #aaa  - 72);}
                  
 #AllBoxes {
 	border:1px solid silver;
@@ -56,6 +57,20 @@ body {font-family:calibri}
     width  : ~'calc(100vw - '@controlBoxWidth~' + 2px)';
     height : ~'calc(100vh - '@underBarHeight ~' + 1px)';
 
+}
+.underbar {
+	#AllBoxes;
+	display:block;margin:0px;
+	position:fixed;bottom:0px;left:-1px;
+	/// background:url(../assets/map.sample.png) center center;background-size:cover;
+    width  : ~'calc(100vw - '@controlBoxWidth~' + 2px)';
+    height : @underBarHeight;
+    background-color:black;
+    color:mix(lime,green);
+    font:13px consolas,monospace;
+    padding:8px 15px;
+    overflow-x:hidden;
+    overflow-y:scroll;
 }
 .gm-style-iw * {
     display: block;
@@ -105,6 +120,13 @@ body {font-family:calibri}
 			height:50px;
 			#DeepBlue;
 		}
+		
+		button.disabled {
+			background:gray;
+			opacity:0.6;
+			cursor:default;
+		}
+		
 	}
 	.feature-switches {
 
@@ -163,6 +185,7 @@ body {font-family:calibri}
 		@FontSize      : 18px;
 		@GapBefore     : 25px;
 
+
 		label {
 			display:block;
 			margin-top:@GapBefore;
@@ -170,17 +193,29 @@ body {font-family:calibri}
 			font-size:@FontSize;
 			text-align:center;
 		}
-		div {
-			width:100%;
-			height:20px;
-			background-color:white;
+		.encaps {
+			background-color:black;
+			padding:3px;
+			height:37px;
+			border-radius:7px;
+		
+		}
+		.slider {
+			background:black;border:none;
+			margin-left:16px;
+			margin-right:16px;
 			margin-top:4px;
 			cursor:pointer;
 		}
-		button {
-			height:26px;
-			margin-top:-3px;
-			margin-left:-2px;
+		a {
+			width:32px;
+			height:32.3px;
+			margin-left:-16px;
+			outline:none;
+			box-shadow:0px 6px 4px -3px white inset;
+			border:1px solid @Black50;
+			
+			#Graphite;
 		}
 		
 	}
@@ -212,4 +247,4 @@ body {font-family:calibri}
 	
 }
 
-
+.ui-slider-handle {width:20px;}

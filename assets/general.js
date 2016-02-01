@@ -9,8 +9,6 @@ function iterateHTML(tplSelector,replacementRule) {
 	var tpl = $(tplSelector).html().trim();
 	var h = "";
 	
-	console.log("Working from template "+tpl);
-
 	if(typeof(replacementRule)=="object") {
 		var a = replacementRule;
 		for(var i in a) {

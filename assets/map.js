@@ -29,6 +29,7 @@ function init() {
     }
     var mapElement = document.getElementById('venue-map');
 	var map = new google.maps.Map(mapElement, mapOptions);
+	console.log("This is MAP speaking");
     var locations = [
 
     ];
