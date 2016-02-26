@@ -105,9 +105,12 @@ App.serverConnection = {
 			for(var i in drones) {
 				
 				var d = drones[i];
-				var name = drones[i].id;
-				var pLat = drones[i].position.lat;
-				var pLon = drones[i].position.lon;
+				if (typeof d === undefined)
+					continue;
+
+				var name = d.id;
+				var pLat = d.position.lat;
+				var pLon = d.position.lon;
 				App.currentFlock.put(name,pLat,pLon);
 				
 				// App.terminal.write(drones[i].timestamp + " :: "+name+" is at ["+pLat+":"+pLon+"]\n");
