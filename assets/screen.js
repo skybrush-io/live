@@ -98,6 +98,9 @@ App.serverConnection = {
 		
 			App.stats.packets.recv++;
 
+			if (data.body.type != "UAV-INF")
+				return;
+
 			var drones = data.body.status;
 
 			if(!App.currentFlock) return;
@@ -105,9 +108,6 @@ App.serverConnection = {
 			for(var i in drones) {
 				
 				var d = drones[i];
-				if (typeof d === undefined)
-					continue;
-
 				var name = d.id;
 				var pLat = d.position.lat;
 				var pLon = d.position.lon;
@@ -125,16 +125,14 @@ App.serverConnection = {
 		this.socket.emit(c.socketStream,{
 		    "$fw.version": "1.0",
 		    "id": guid(),
-		    "body":JSON.stringify(
-				{
-				    "type": "UAV-INF",
-				    "ids": [
-				        "FAKE-00",
-				        "FAKE-01",
-				        "FAKE-02"
-				    ]
-				}
-		    ),
+		    "body": {
+				"type": "UAV-INF",
+				"ids": [
+					"FAKE-00",
+					"FAKE-01",
+					"FAKE-02"
+				]
+			}
 		});
 
 		App.terminal.write("server communication started\n");
