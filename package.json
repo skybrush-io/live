@@ -1,0 +1,30 @@
+{
+  "name": "flockwave-web",
+  "version": "0.0.0",
+  "description": "Web frontend for a Flockwave server",
+  "main": "index.html",
+  "scripts": {
+    "prepublish": "typings install",
+	"start": "webpack-dev-server --progress --colors",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "watch": "webpack --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@biolfiz1.elte.hu:flockwave-web.git"
+  },
+  "keywords": [],
+  "author": "CollMot Robotics Ltd",
+  "license": "UNLICENSED",
+  "private": true,
+  "devDependencies": {
+    "react": "^15.0.1",
+    "react-dom": "^15.0.1",
+    "socket.io": "^1.4.5",
+    "ts-loader": "^0.8.2",
+    "typescript": "^1.9.0-dev.20160426",
+    "typings": "^0.8.1",
+    "webpack": "^1.13.0",
+    "webpack-dev-server": "^1.14.1"
+  }
+}
