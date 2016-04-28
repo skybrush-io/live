@@ -1,9 +1,11 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 
-import HelloComponent from "./hello-component";
+import MapView from "./map";
+
+require('../assets/css/screen.less');
 
 ReactDOM.render(
-    <HelloComponent compiler="TypeScript" framework="React" />,
+    <MapView />,
     document.getElementById("root")
 );

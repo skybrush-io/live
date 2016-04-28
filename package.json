@@ -5,7 +5,7 @@
   "main": "index.html",
   "scripts": {
     "prepublish": "typings install",
-	"start": "webpack-dev-server --progress --colors",
+    "start": "webpack-dev-server --progress --colors",
     "test": "echo \"Error: no test specified\" && exit 1",
     "watch": "webpack --watch"
   },
@@ -18,9 +18,14 @@
   "license": "UNLICENSED",
   "private": true,
   "devDependencies": {
+    "css-loader": "^0.23.1",
+    "less": "^2.6.1",
+    "less-loader": "^2.2.3",
+    "openlayers": "^3.15.1",
     "react": "^15.0.1",
     "react-dom": "^15.0.1",
     "socket.io": "^1.4.5",
+    "style-loader": "^0.13.1",
     "ts-loader": "^0.8.2",
     "typescript": "^1.9.0-dev.20160426",
     "typings": "^0.8.1",
