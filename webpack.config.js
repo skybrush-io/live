@@ -1,17 +1,24 @@
 module.exports = {
-  entry: './src/app.tsx',
+  entry: './src/index.jsx',
   output: {
     filename: './dist/bundle.js'
   },
   resolve: {
-    extensions: ['', '.webpack.js', '.web.js', '.ts', '.tsx', '.js']
+    extensions: ['', '.webpack.js', '.web.js', '.js', '.jsx']
   },
   module: {
     loaders: [
       { test: /\.css$/, loader: 'style-loader!css-loader' },
+      {
+        test: /\.jsx?$/,
+        loader: 'babel-loader',
+        exclude: /node_modules/,
+        query: {
+          presets: ['es2015', 'react']
+        }
+      },
       { test: /\.less$/, loader: 'style-loader!css-loader!less-loader' },
-	  { test: /\.(png|jpg)$/, loader: 'url-loader?limit=8192' },
-      { test: /\.tsx?$/, loader: 'ts-loader' }
+      { test: /\.(png|jpg)$/, loader: 'url-loader?limit=8192' }
     ]
   }
 }
