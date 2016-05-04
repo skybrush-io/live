@@ -10,7 +10,7 @@ import { handleActions } from 'redux-actions'
  * server settings dialog is visible or not.
  */
 const defaultState = {
-  'server': 'localhost',
+  'hostName': 'localhost',
   'port': 5000,
   'dialogVisible': false
 }
@@ -20,9 +20,15 @@ const defaultState = {
  * settings.
  */
 const serverSettings = handleActions({
-  SHOW_SERVER_SETTINGS_DIALOG: (state, action) => (
-    Object.assign({}, state, { 'dialogVisible': true })
-  )
+
+  SHOW_SERVER_SETTINGS_DIALOG (state, action) {
+    return Object.assign({}, state, { 'dialogVisible': true })
+  },
+
+  CLOSE_SERVER_SETTINGS_DIALOG (state, action) {
+    return Object.assign({}, state, { 'dialogVisible': false })
+  }
+
 }, defaultState)
 
 export default serverSettings

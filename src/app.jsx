@@ -8,6 +8,8 @@ import { List, ListItem } from 'material-ui/List'
 import Paper from 'material-ui/Paper'
 import Subheader from 'material-ui/Subheader'
 
+import injectTapEventPlugin from 'react-tap-event-plugin'
+
 import ActionDone from 'material-ui/svg-icons/action/done'
 import ActionSettings from 'material-ui/svg-icons/action/settings'
 import ActionSettingsEthernet from 'material-ui/svg-icons/action/settings-ethernet'
@@ -24,6 +26,9 @@ import { showServerSettingsDialog } from './actions'
 import store from './store'
 
 require('../assets/css/screen.less')
+
+// Enable tap events on the UI
+injectTapEventPlugin()
 
 /**
  * The Material UI theme that the application will use.

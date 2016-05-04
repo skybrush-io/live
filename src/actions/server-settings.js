@@ -3,6 +3,7 @@
  */
 
 import { createAction } from 'redux-actions'
-import { SHOW_SERVER_SETTINGS_DIALOG } from './types'
+import { SHOW_SERVER_SETTINGS_DIALOG, CLOSE_SERVER_SETTINGS_DIALOG } from './types'
 
+export const closeServerSettingsDialog = createAction(CLOSE_SERVER_SETTINGS_DIALOG)
 export const showServerSettingsDialog = createAction(SHOW_SERVER_SETTINGS_DIALOG)

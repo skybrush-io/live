@@ -16,6 +16,7 @@ module.exports = {
       },
       { test: /\.less$/, loader: 'style-loader!css-loader!less-loader' },
       { test: /\.(png|jpg)$/, loader: 'url-loader?limit=8192' }
-    ]
+    ],
+    noParse: /dist\/ol.js/
   }
 }
