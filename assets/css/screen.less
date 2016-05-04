@@ -1,4 +1,66 @@
+@button-offset: 20px;
+@short-transition-duration: 0.2s;
+@medium-transition-duration: 0.5s;
+@long-transition-duration: 1s;
+
 body {
     padding: 0px;
 	margin: 0px;
+}
+
+/* Root container for React */
+#root {
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+/* Main canvas area of the root container */
+#canvas {
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+/* Footer in which the lower buttons are placed */
+#footer {
+    width: 100%;
+    position: absolute;
+    bottom: 0;
+    padding: @button-offset;
+}
+
+/* Map in the background of the main screen */
+#map {
+    width: 100%;
+    height: 100%;
+}
+
+/* Widgets placed over the map */
+.widget {
+    position: absolute !important;
+    width: 300px;
+
+    /* Title of widget */
+    .title {
+        font-size: 10pt;
+        font-weight: bold;
+        text-transform: uppercase;
+        line-height: 24px;
+        height: 24px;
+    }
+    /* Action bar of the widget (overlaid on top of it) */
+    .widget-action-bar {
+        position: absolute;
+        right: 0px;
+        top: 0px;
+        transition: opacity @short-transition-duration;
+        opacity: 0;
+    }
+    &:hover .widget-action-bar {
+        opacity: 1;
+    }
+}
+
+#connectButton {
 }
