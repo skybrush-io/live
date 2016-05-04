@@ -22,8 +22,8 @@ class ServerSettingsFormPresentation extends React.Component {
     const { fields: { hostName, port } } = this.props
     return (
       <div>
-        <TextField {...hostName} floatingLabelText="Hostname" />
-        <TextField {...port} floatingLabelText="Port" />
+        <TextField {...hostName} floatingLabelText="Hostname" spellCheck="false" /><br/>
+        <TextField {...port} floatingLabelText="Port" spellCheck="false" />
       </div>
     )
   }
@@ -40,21 +40,38 @@ ServerSettingsFormPresentation.propTypes = {
 const ServerSettingsForm = reduxForm({
   form: 'serverSettings',
   fields: ['hostName', 'port']
-})(ServerSettingsFormPresentation)
+},
+state => ({               // mapStateToProps
+  initialValues: state.serverSettings
+}))(ServerSettingsFormPresentation)
 
 /**
  * Presentation component for the dialog that shows the form that the user
  * can use to edit the server settings.
  */
 class ServerSettingsDialogPresentation extends React.Component {
+  constructor (props) {
+    super(props)
+    this.handleSubmit = this.handleSubmit.bind(this)
+  }
+
+  handleSubmit () {
+    this.refs.form.submit()
+  }
+
   render () {
+    const { onClose, onSubmit, open } = this.props
     const actions = [
-      <FlatButton label="Close" primary={true} onTouchTap={this.props.onClose} />
+      <FlatButton label="Connect" primary={true} onTouchTap={this.handleSubmit} />,
+      <FlatButton label="Close" onTouchTap={onClose} />
     ]
+    const contentStyle = {
+      width: '320px'
+    }
     return (
-      <Dialog title="Server Settings" modal={true} open={this.props.open}
-              actions={actions}>
-        <ServerSettingsForm />
+      <Dialog title="Server Settings" modal={true} open={open}
+              actions={actions} contentStyle={contentStyle}>
+        <ServerSettingsForm ref="form" onSubmit={onSubmit} />
       </Dialog>
     )
   }
@@ -62,6 +79,7 @@ class ServerSettingsDialogPresentation extends React.Component {
 
 ServerSettingsDialogPresentation.propTypes = {
   onClose: PropTypes.func,
+  onSubmit: PropTypes.func,
   open: PropTypes.bool.isRequired
 }
 
@@ -80,6 +98,9 @@ const ServerSettingsDialog = connect(
   dispatch => ({
     onClose () {
       dispatch(closeServerSettingsDialog())
+    },
+    onSubmit (data) {
+      dispatch(closeServerSettingsDialog(data))
     }
   })
 )(ServerSettingsDialogPresentation)

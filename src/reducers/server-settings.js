@@ -26,7 +26,7 @@ const serverSettings = handleActions({
   },
 
   CLOSE_SERVER_SETTINGS_DIALOG (state, action) {
-    return Object.assign({}, state, { 'dialogVisible': false })
+    return Object.assign({}, state, action.payload, { 'dialogVisible': false })
   }
 
 }, defaultState)
