@@ -12,6 +12,7 @@ import FlatButton from 'material-ui/FlatButton'
 import TextField from 'material-ui/TextField'
 
 import { closeServerSettingsDialog } from '../actions/server-settings'
+import { createValidator, between, integer, required } from '../utils/validation'
 
 /**
  * Presentation of the form that shows the fields that the user can use to
@@ -22,8 +23,8 @@ class ServerSettingsFormPresentation extends React.Component {
     const { fields: { hostName, port } } = this.props
     return (
       <div>
-        <TextField {...hostName} floatingLabelText="Hostname" spellCheck="false" /><br/>
-        <TextField {...port} floatingLabelText="Port" spellCheck="false" />
+        <TextField {...hostName} floatingLabelText="Hostname" spellCheck="false" errorText={hostName.error} /><br/>
+      <TextField {...port} floatingLabelText="Port" spellCheck="false" errorText={port.error} />
       </div>
     )
   }
@@ -39,7 +40,11 @@ ServerSettingsFormPresentation.propTypes = {
  */
 const ServerSettingsForm = reduxForm({
   form: 'serverSettings',
-  fields: ['hostName', 'port']
+  fields: ['hostName', 'port'],
+  validate: createValidator({
+    hostName: required,
+    port: [ required, integer, between(1, 65535) ]
+  })
 },
 state => ({               // mapStateToProps
   initialValues: state.serverSettings
