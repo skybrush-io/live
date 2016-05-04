@@ -2,7 +2,7 @@
  * @file React components used in the application.
  */
 
-import MapView from './map';
-import ServerSettingsDialog from './server-settings';
+import MapView from './map'
+import ServerSettingsDialog from './server-settings'
 
-export { MapView, ServerSettingsDialog };
+export { MapView, ServerSettingsDialog }

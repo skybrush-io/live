@@ -1,3 +1,2 @@
-import { showServerSettingsDialog } from './server-settings';
-
-export { showServerSettingsDialog };
+import { showServerSettingsDialog } from './server-settings'
+export { showServerSettingsDialog }
