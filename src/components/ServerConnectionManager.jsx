@@ -15,7 +15,6 @@ import { showSnackbarMessage } from '../actions/snackbar'
  */
 class ServerConnectionManagerPresentation extends React.Component {
   render () {
-    console.log('ServerConnectionManager render triggered')
     const { hostName, port, onConnected, onDisconnected } = this.props
     const url = `http://${hostName}:${port}`
 
