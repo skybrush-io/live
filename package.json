@@ -22,11 +22,12 @@
     "react": "^15.0.1",
     "react-dom": "^15.0.1",
     "react-redux": "^4.4.5",
+    "react-socket": "^0.1.4",
     "react-tap-event-plugin": "^1.0.0",
     "redux": "^3.5.2",
     "redux-actions": "^0.9.1",
     "redux-form": "^5.2.3",
-    "socket.io": "^1.4.5"
+    "socket.io": "^1.4.6"
   },
   "devDependencies": {
     "babel-core": "^6.7.7",

@@ -24,7 +24,7 @@ class ServerSettingsFormPresentation extends React.Component {
     return (
       <div>
         <TextField {...hostName} floatingLabelText="Hostname" spellCheck="false" errorText={hostName.error} /><br/>
-      <TextField {...port} floatingLabelText="Port" spellCheck="false" errorText={port.error} />
+        <TextField {...port} floatingLabelText="Port" spellCheck="false" errorText={port.error} />
       </div>
     )
   }
@@ -105,6 +105,9 @@ const ServerSettingsDialog = connect(
       dispatch(closeServerSettingsDialog())
     },
     onSubmit (data) {
+      // Cast the port into a number first, then dispatch the
+      // action
+      data.port = Number(data.port)
       dispatch(closeServerSettingsDialog(data))
     }
   })

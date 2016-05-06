@@ -19,6 +19,7 @@ import RaisedButton from 'material-ui/RaisedButton'
 import getMuiTheme from 'material-ui/styles/getMuiTheme'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 
+import ServerConnectionManager from './components/server-connection-manager'
 import ServerSettingsDialog from './components/server-settings'
 import MapView from './components/map'
 
@@ -70,6 +71,7 @@ export default class Application extends React.Component {
             </div>
 
             <ServerSettingsDialog/>
+            <ServerConnectionManager/>
           </div>
         </MuiThemeProvider>
       </StoreProvider>

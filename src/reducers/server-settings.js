@@ -10,8 +10,8 @@ import { handleActions } from 'redux-actions'
  * server settings dialog is visible or not.
  */
 const defaultState = {
-  'hostName': 'localhost',
-  'port': 5000,
+  'hostName': 'flockwave.collmot.com',
+  'port': 80,
   'dialogVisible': false
 }
 
