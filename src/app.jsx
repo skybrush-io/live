@@ -19,11 +19,12 @@ import RaisedButton from 'material-ui/RaisedButton'
 import getMuiTheme from 'material-ui/styles/getMuiTheme'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 
-import ServerConnectionManager from './components/server-connection-manager'
-import ServerSettingsDialog from './components/server-settings'
-import MapView from './components/map'
+import GlobalSnackbar from './components/GlobalSnackbar'
+import MapView from './components/MapView'
+import ServerConnectionManager from './components/ServerConnectionManager'
+import ServerSettingsDialog from './components/ServerSettingsDialog'
 
-import { showServerSettingsDialog } from './actions'
+import { showServerSettingsDialog } from './actions/server-settings'
 import store from './store'
 
 require('../assets/css/screen.less')
@@ -72,6 +73,7 @@ export default class Application extends React.Component {
 
             <ServerSettingsDialog/>
             <ServerConnectionManager/>
+            <GlobalSnackbar/>
           </div>
         </MuiThemeProvider>
       </StoreProvider>

@@ -23,8 +23,8 @@ class ServerSettingsFormPresentation extends React.Component {
     const { fields: { hostName, port } } = this.props
     return (
       <div>
-        <TextField {...hostName} floatingLabelText="Hostname" spellCheck="false" errorText={hostName.error} /><br/>
-        <TextField {...port} floatingLabelText="Port" spellCheck="false" errorText={port.error} />
+        <TextField {...hostName} floatingLabelText="Hostname" spellCheck="false" errorText={hostName.touched && hostName.error} /><br/>
+        <TextField {...port} floatingLabelText="Port" spellCheck="false" errorText={port.touched && port.error} />
       </div>
     )
   }
@@ -97,9 +97,11 @@ ServerSettingsDialogPresentation.defaultProps = {
  * edit the server settings.
  */
 const ServerSettingsDialog = connect(
-  state => ({            // mapStateToProps
+  // mapStateToProps
+  state => ({
     open: state.serverSettings.dialogVisible
   }),
+  // mapDispatchToProps
   dispatch => ({
     onClose () {
       dispatch(closeServerSettingsDialog())

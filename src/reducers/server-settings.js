@@ -19,7 +19,7 @@ const defaultState = {
  * The reducer function that handles actions related to the server
  * settings.
  */
-const serverSettings = handleActions({
+const reducer = handleActions({
 
   SHOW_SERVER_SETTINGS_DIALOG (state, action) {
     return Object.assign({}, state, { 'dialogVisible': true })
@@ -31,4 +31,4 @@ const serverSettings = handleActions({
 
 }, defaultState)
 
-export default serverSettings
+export default reducer

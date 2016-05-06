@@ -1,7 +1,3 @@
-const OFF = 0;
-const WARNING = 1;
-const ERROR = 2;
-
 module.exports = {
   'parser': 'babel-eslint',
 
@@ -12,13 +8,14 @@ module.exports = {
   },
 
   'extends': ['standard', 'plugin:react/recommended'],
-  
+
   'plugins': [
     'standard',
     'react'
   ],
 
   'rules': {
-    'jsx-quotes': [ERROR, 'prefer-double']
+    'jsx-quotes': ['error', 'prefer-double'],
+    'react/jsx-no-bind': 'error'
   }
 };

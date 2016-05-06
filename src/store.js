@@ -3,13 +3,13 @@
  */
 
 import { createStore } from 'redux'
-import masterReducer from './reducers'
+import reducer from './reducers'
 
 /**
  * The store for the application state.
  */
 const store = createStore(
-    masterReducer, undefined,
+    reducer, undefined,
     window.devToolsExtension ? window.devToolsExtension() : undefined
 )
 export default store
