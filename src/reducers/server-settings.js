@@ -5,13 +5,15 @@
 
 import { handleActions } from 'redux-actions'
 
+import config from '../config'
+
 /**
  * The default settings for the server to connect to, and whether the
  * server settings dialog is visible or not.
  */
 const defaultState = {
-  'hostName': 'flockwave.collmot.com',
-  'port': 80,
+  'hostName': config.server.hostName,
+  'port': config.server.port,
   'dialogVisible': false
 }
 

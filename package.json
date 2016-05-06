@@ -24,6 +24,7 @@
     "react-redux": "^4.4.5",
     "react-socket": "^0.1.4",
     "react-tap-event-plugin": "^1.0.0",
+    "react-timeago": "^3.0.0",
     "redux": "^3.5.2",
     "redux-actions": "^0.9.1",
     "redux-form": "^5.2.3",

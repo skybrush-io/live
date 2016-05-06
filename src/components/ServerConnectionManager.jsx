@@ -7,7 +7,9 @@ import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import ReactSocket from 'react-socket'
 
+import { setConnectionState } from '../actions/connections'
 import { showSnackbarMessage } from '../actions/snackbar'
+import { ConnectionState, MASTER_CONNECTION_ID } from '../connections'
 
 /**
  * Presentation component that contains a Socket.io socket and handles
@@ -15,7 +17,7 @@ import { showSnackbarMessage } from '../actions/snackbar'
  */
 class ServerConnectionManagerPresentation extends React.Component {
   render () {
-    const { hostName, port, onConnected, onDisconnected } = this.props
+    const { hostName, port, onConnected, onDisconnected, onMessage } = this.props
     const url = `http://${hostName}:${port}`
 
     // The 'key' property of ReactSocket.Socket is set to the URL as well;
@@ -28,6 +30,7 @@ class ServerConnectionManagerPresentation extends React.Component {
         <ReactSocket.Socket key={url} url={url} />
         <ReactSocket.Event name="connect" callback={onConnected} />
         <ReactSocket.Event name="disconnect" callback={onDisconnected} />
+        <ReactSocket.Event name="fw" callback={onMessage} />
       </div>
     )
   }
@@ -37,7 +40,8 @@ ServerConnectionManagerPresentation.propTypes = {
   hostName: PropTypes.string,
   port: PropTypes.number,
   onConnected: PropTypes.func,
-  onDisconnected: PropTypes.func
+  onDisconnected: PropTypes.func,
+  onMessage: PropTypes.func
 }
 
 const ServerConnectionManager = connect(
@@ -50,9 +54,13 @@ const ServerConnectionManager = connect(
   dispatch => ({
     onConnected () {
       dispatch(showSnackbarMessage('Connected to Flockwave server'))
+      dispatch(setConnectionState(MASTER_CONNECTION_ID, ConnectionState.CONNECTED))
     },
     onDisconnected () {
+      dispatch(setConnectionState(MASTER_CONNECTION_ID, ConnectionState.DISCONNECTED))
       dispatch(showSnackbarMessage('Disconnected from Flockwave server'))
+    },
+    onMessage (data) {
     }
   })
 )(ServerConnectionManagerPresentation)
