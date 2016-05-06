@@ -15,11 +15,18 @@ import { showSnackbarMessage } from '../actions/snackbar'
  */
 class ServerConnectionManagerPresentation extends React.Component {
   render () {
+    console.log('ServerConnectionManager render triggered')
     const { hostName, port, onConnected, onDisconnected } = this.props
     const url = `http://${hostName}:${port}`
+
+    // The 'key' property of ReactSocket.Socket is set to the URL as well;
+    // this is to force the socket component to unmount itself and then
+    // remount when the URL changes -- otherwise the underlying Socket.io
+    // connection would not be reconstructed to point to the new URL.
+
     return (
       <div>
-        <ReactSocket.Socket url={url} />
+        <ReactSocket.Socket key={url} url={url} />
         <ReactSocket.Event name="connect" callback={onConnected} />
         <ReactSocket.Event name="disconnect" callback={onDisconnected} />
       </div>
