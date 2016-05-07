@@ -20,14 +20,18 @@ class ServerConnectionManagerPresentation extends React.Component {
     const { hostName, port, onConnected, onDisconnected, onMessage } = this.props
     const url = `http://${hostName}:${port}`
 
-    // The 'key' property of ReactSocket.Socket is set to the URL as well;
-    // this is to force the socket component to unmount itself and then
-    // remount when the URL changes -- otherwise the underlying Socket.io
-    // connection would not be reconstructed to point to the new URL.
+    // The 'key' property of the wrapping <div> is set to the URL as well;
+    // this is to force the socket component and the event objects to unmount
+    // themselves and then remount when the URL changes -- otherwise the
+    // underlying Socket.io connection would not be reconstructed to point
+    // to the new URL.
+    //
+    // Putting the key on the <ReactSocket.Socket> tag is not enough because
+    // we also need the events to remount themselves.
 
     return (
-      <div>
-        <ReactSocket.Socket key={url} url={url} />
+      <div key={url}>
+        <ReactSocket.Socket url={url} />
         <ReactSocket.Event name="connect" callback={onConnected} />
         <ReactSocket.Event name="disconnect" callback={onDisconnected} />
         <ReactSocket.Event name="fw" callback={onMessage} />
