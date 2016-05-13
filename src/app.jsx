@@ -11,6 +11,7 @@ import ContentClear from 'material-ui/svg-icons/content/clear'
 import getMuiTheme from 'material-ui/styles/getMuiTheme'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 
+import ClockDisplayList from './components/ClockDisplayList'
 import ConnectionList from './components/ConnectionList'
 import GlobalSnackbar from './components/GlobalSnackbar'
 import MapView from './components/MapView'
@@ -40,6 +41,14 @@ export default class Application extends React.Component {
           <div>
             <div id="canvas">
               <MapView />
+
+              <Paper className="widget" style={{ 'right': 20, 'bottom': 20, 'width': 300 }}>
+                <div className="widget-action-bar">
+                  <IconButton><ContentClear/></IconButton>
+                </div>
+                <ClockDisplayList />
+              </Paper>
+
               <Paper className="widget"
                      style={{ 'right': 20, 'top': 20, 'width': 300 }}>
                 <div className="widget-action-bar">

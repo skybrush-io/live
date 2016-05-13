@@ -7,6 +7,7 @@ import * as storage from 'redux-storage'
 import filter from 'redux-storage-decorator-filter'
 import createEngine from 'redux-storage-engine-localstorage'
 
+import { SET_CONNECTION_STATE, SHOW_SNACKBAR_MESSAGE } from './actions/types'
 import reducer from './reducers'
 
 /**
@@ -24,7 +25,19 @@ const engine = filter(
  * Redux middleware that saves the state of the application into the
  * browser's local storage after every action.
  */
-const storageMiddleware = storage.createMiddleware(engine)
+const storageMiddleware = storage.createMiddleware(
+  engine,
+  /* blacklisted actions */
+  [
+    SET_CONNECTION_STATE,
+    SHOW_SNACKBAR_MESSAGE,
+    'redux-form/BLUR',
+    'redux-form/CHANGE',
+    'redux-form/FOCUS',
+    'redux-form/INITIALIZE',
+    'redux-form/DESTROY'
+  ]
+)
 
 /**
  * Function to create a new Redux store with the required middlewares.

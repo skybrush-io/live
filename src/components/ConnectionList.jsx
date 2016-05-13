@@ -116,10 +116,13 @@ ConnectionListEntry.propTypes = {
  * Presentation component for the entire connection list.
  */
 const ConnectionListPresentation = ({ connections, onShowSettings }) => {
-  const entries = [<Subheader key="__subheader__" text="Connections" />]
+  const entries = []
   for (let connection of connections) {
     let action = (connection.id === MASTER_CONNECTION_ID) ? onShowSettings : null
     entries.push(<ConnectionListEntry key={connection.id} action={action} {...connection} />)
+  }
+  if (!entries.length) {
+    entries.push(<Subheader key="__subheader__">No connections</Subheader>)
   }
   return <List>{entries}</List>
 }

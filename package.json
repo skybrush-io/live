@@ -17,8 +17,12 @@
   "license": "UNLICENSED",
   "private": true,
   "dependencies": {
+    "lodash": "^4.12.0",
     "material-ui": "^0.15.0-beta.2",
+    "mersenne-twister": "^1.0.1",
+    "moment": "^2.13.0",
     "openlayers": "^3.15.1",
+    "radix-64": "^1.0.4",
     "react": "^15.0.1",
     "react-dom": "^15.0.1",
     "react-redux": "^4.4.5",

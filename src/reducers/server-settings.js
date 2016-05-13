@@ -5,15 +5,19 @@
 
 import { handleActions } from 'redux-actions'
 
-import config from '../config'
-
 /**
- * The default settings for the server to connect to, and whether the
- * server settings dialog is visible or not.
+ * The default settings for the part of the state object being defined here.
+ *
+ * Note that we don't forward the default hostname and port from the
+ * configuration object to here because it means that we would be connecting
+ * to the default server for a split second when the state is being loaded
+ * back from the Redux local storage. Instead of that, we will wait until
+ * the Redux store has loaded its state back from the local storage and then
+ * check whether we need to fill in the default hostname and port.
  */
 const defaultState = {
-  'hostName': config.server.hostName,
-  'port': config.server.port,
+  'hostName': null,
+  'port': 5000,
   'dialogVisible': false
 }
 
@@ -23,13 +27,17 @@ const defaultState = {
  */
 const reducer = handleActions({
 
-  SHOW_SERVER_SETTINGS_DIALOG (state, action) {
-    return Object.assign({}, state, { 'dialogVisible': true })
-  },
+  SHOW_SERVER_SETTINGS_DIALOG: (state, action) => (
+    Object.assign({}, state, { 'dialogVisible': true })
+  ),
 
-  CLOSE_SERVER_SETTINGS_DIALOG (state, action) {
-    return Object.assign({}, state, action.payload, { 'dialogVisible': false })
-  }
+  CLOSE_SERVER_SETTINGS_DIALOG: (state, action) => (
+    Object.assign({}, state, action.payload, { 'dialogVisible': false })
+  ),
+
+  UPDATE_SERVER_SETTINGS: (state, action) => (
+    Object.assign({}, state, action.payload)
+  )
 
 }, defaultState)
 
