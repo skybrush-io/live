@@ -47,6 +47,16 @@ function createMessage (body = {}) {
 }
 
 /**
+ * Error class thrown by promises when the emitter object of the message
+ * hub changes while waiting for a response from the server.
+ */
+class EmitterChangedError extends Error {
+  constructor (message) {
+    super(message || 'Message hub emitter changed while waiting for a response')
+  }
+}
+
+/**
  * Error class thrown when the user attempts to send a message without an
  * emitter being associated to the hub.
  */
@@ -97,10 +107,19 @@ class PendingResponse {
    * @param  {object} result the response to the message
    */
   resolve (result) {
-    if (this.timeoutId) {
-      clearTimeout(this.timeoutId)
-    }
+    this._clearTimeoutIfNeeded()
     this._promiseResolver(result)
+  }
+
+  /**
+   * Function to call when we are explicitly rejecting the promise for the
+   * response, even if the response has not timed out yet.
+   *
+   * @param {Error} error  the error to reject the promise with
+   */
+  reject (error) {
+    this._clearTimeoutIfNeeded()
+    this._promiseRejector(error)
   }
 
   /**
@@ -108,6 +127,16 @@ class PendingResponse {
    */
   timeout (result) {
     this._promiseRejector(new Timeout(this.messageId))
+  }
+
+  /**
+   * Clears the timeout associated to the pending response if needed.
+   */
+  _clearTimeoutIfNeeded () {
+    if (this.timeoutId) {
+      clearTimeout(this.timeoutId)
+      this.timeoutId = undefined
+    }
   }
 }
 
@@ -152,9 +181,23 @@ export default class MessageHub {
       return
     }
 
+    this.cancelAllPendingResponses()
     this._emitter = value
+  }
 
-    // TODO: ignore all pending responses from the previous emitter
+  /**
+   * Cancels all pending responses by rejecting the corresponding promises
+   * with an error.
+   */
+  cancelAllPendingResponses () {
+    const pendingResponses = this._pendingResponses
+    for (let messageId of Object.keys(pendingResponses)) {
+      const pendingResponse = pendingResponses[messageId]
+      if (pendingResponse) {
+        pendingResponse.reject(new EmitterChangedError())
+      }
+    }
+    this._pendingResponses = {}
   }
 
   /**

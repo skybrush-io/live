@@ -65,7 +65,6 @@ const ServerConnectionManager = connect(
     onConnected () {
       dispatch(showSnackbarMessage('Connected to Flockwave server'))
       dispatch(setConnectionState(MASTER_CONNECTION_ID, ConnectionState.CONNECTED))
-      messageHub.sendMessage('SYS-VER').then(message => console.log(message))
     },
     onDisconnected () {
       dispatch(setConnectionState(MASTER_CONNECTION_ID, ConnectionState.DISCONNECTED))
