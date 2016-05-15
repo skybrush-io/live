@@ -10,9 +10,9 @@ import { SET_CONNECTION_STATE } from './types'
  * connection and also update the timestamp that stores when the connection
  * changed its state the last time.
  *
- * @param  id  {string}    the identifier of the connection whose state has
- *                         changed
- * @param  state {string}  the new state of the connection
+ * @param  {string}  id     the identifier of the connection whose state has
+ *                          changed
+ * @param  {string}  state  the new state of the connection
  */
 export const setConnectionState = createAction(
   SET_CONNECTION_STATE,

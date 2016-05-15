@@ -9,6 +9,8 @@ import { connect } from 'react-redux'
 /**
  * Presentation component for the global snackbar at the bottom of the main
  * window.
+ *
+ * @returns  {Object}  the rendered snackbar component
  */
 const GlobalSnackbarPresentation = ({ open, message }) => (
   <Snackbar open={open} message={message} autoHideDuration={3000} />

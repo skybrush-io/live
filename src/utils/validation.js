@@ -16,8 +16,8 @@ const join = (rules) => (value, data) => rules.map(rule => rule(value, data)).fi
  * undefined, null or an empty string.
  *
  * @param {Object} value  the value to validate
- * @return undefined if the value passes the validator, an error message
- * otherwise
+ * @return {?string} undefined if the value passes the validator, an error
+ *     message otherwise
  */
 export function required (value) {
   if (isEmpty(value)) {
@@ -30,7 +30,7 @@ export function required (value) {
  * integer).
  *
  * @param {Object} value  the value to validate
- * @return undefined if the value passes the validator, an error message
+ * @return {?string} undefined if the value passes the validator, an error message
  * otherwise
  */
 export function integer (value) {
@@ -47,7 +47,7 @@ export function integer (value) {
  * infinity is considered valid.
  *
  * @param {Object} value  the value to validate
- * @return undefined if the value passes the validator, an error message
+ * @return {?string} undefined if the value passes the validator, an error message
  * otherwise
  */
 export function number (value) {
@@ -61,7 +61,7 @@ export function number (value) {
  * finite number).
  *
  * @param {Object} value  the value to validate
- * @return undefined if the value passes the validator, an error message
+ * @return {?string} undefined if the value passes the validator, an error message
  * otherwise
  */
 export function finite (value) {
@@ -139,8 +139,8 @@ export function between (min, max) {
  * Creates a validator function for a form from a set of rules for some
  * (or all) of the form fields.
  *
- * @param {Object.<string,(function|function[])>}  an object mapping field
- *        identifiers to validator functions or arrays of validator
+ * @param {Object.<string,(function|function[])>} rules  an object mapping
+ *        field identifiers to validator functions or arrays of validator
  *        functions
  * @return {function} an appropriate validator function for the form
  */

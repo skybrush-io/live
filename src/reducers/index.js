@@ -20,9 +20,9 @@ import snackbarReducer from './snackbar'
  * process to avoid connecting to the default server for a split second
  * before the locally stored state is restored.
  *
- * @param oldState {object}  the default state from Redux
- * @param newState {object}  the state restored by <code>redux-storage</code>
- * @return {object} the merged state
+ * @param {Object} oldState  the default state from Redux
+ * @param {Object} newState  the state restored by <code>redux-storage</code>
+ * @return {Object} the merged state
  */
 const merger = (oldState, newState) => {
   const merged = defaultMerger(oldState, newState)

@@ -34,6 +34,7 @@ const createMessageId = () => (
  * @param {Object} body  the body of the message to send, or the type of
  *        the message to send (in which case an appropriate body with
  *        only the given type is created)
+ * @return {Object}  the Flockwave message with the given body
  */
 function createMessage (body = {}) {
   if (!isObject(body)) {
@@ -104,7 +105,7 @@ class PendingResponse {
   /**
    * Function to call when the response to the message has arrived.
    *
-   * @param  {object} result the response to the message
+   * @param  {Object} result the response to the message
    */
   resolve (result) {
     this._clearTimeoutIfNeeded()
@@ -125,7 +126,7 @@ class PendingResponse {
   /**
    * Function to call when the response to the message has timed out.
    */
-  timeout (result) {
+  timeout () {
     this._promiseRejector(new Timeout(this.messageId))
   }
 
@@ -148,7 +149,7 @@ export default class MessageHub {
   /**
    * Constructor.
    *
-   * @param function} emitter  a function to call when the hub wants to
+   * @param {function} emitter  a function to call when the hub wants to
    *        emit a new message
    * @param {number}  timeout  number of seconds to wait for a response for
    *        a message from the server before we consider it as a timeout
@@ -174,7 +175,7 @@ export default class MessageHub {
    * called with the name of the event to send (typically @code{fw}) and
    * the message itself
    *
-   * @param value {function} the new emitter function
+   * @param {function} value  the new emitter function
    */
   set emitter (value) {
     if (this._emitter === value) {
@@ -203,7 +204,7 @@ export default class MessageHub {
   /**
    * Feeds the message hub with an incoming message to process.
    *
-   * @param message {object} the message to process
+   * @param {Object} message  the message to process
    */
   processIncomingMessage (message) {
     const { correlationId } = message
@@ -256,7 +257,6 @@ export default class MessageHub {
    * be returned.
    *
    * @param {Object} body  the body of the message to send
-   * @return {Promise} a promise that resolves to the response of the server
    */
   sendNotification (body = {}) {
     if (!this._emitter) {
