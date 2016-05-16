@@ -7,9 +7,11 @@ import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import ReactSocket from 'react-socket'
 
-import { setConnectionState } from '../actions/connections'
+import { clearConnectionList, setConnectionState } from '../actions/connections'
 import { showSnackbarMessage } from '../actions/snackbar'
-import { ConnectionState, MASTER_CONNECTION_ID } from '../connections'
+import { ConnectionState, MASTER_CONNECTION_ID,
+         handleConnectionInformationMessage } from '../connections'
+import handleError from '../error-handling'
 import messageHub from '../message-hub'
 
 /**
@@ -63,12 +65,28 @@ const ServerConnectionManager = connect(
   // mapDispatchToProps
   dispatch => ({
     onConnected () {
+      // Let the user know that we are connected
       dispatch(showSnackbarMessage('Connected to Flockwave server'))
       dispatch(setConnectionState(MASTER_CONNECTION_ID, ConnectionState.CONNECTED))
+
+      // Send a CONN-LIST message to the server to get an up-to-date
+      // list of connections
+      messageHub.sendMessage('CONN-LIST').then(result => {
+        const { body } = result
+        // For each connection ID that we have received, get its status
+        // via a CONN-INF message
+        return messageHub.sendMessage({
+          type: 'CONN-INF',
+          ids: body.ids || []
+        })
+      }).then(({ body }) => {
+        handleConnectionInformationMessage(body, dispatch)
+      }).catch(handleError)
     },
     onDisconnected () {
       dispatch(setConnectionState(MASTER_CONNECTION_ID, ConnectionState.DISCONNECTED))
       dispatch(showSnackbarMessage('Disconnected from Flockwave server'))
+      dispatch(clearConnectionList())
     },
     onMessage (data) {
       messageHub.processIncomingMessage(data)

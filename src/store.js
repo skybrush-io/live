@@ -7,7 +7,7 @@ import * as storage from 'redux-storage'
 import filter from 'redux-storage-decorator-filter'
 import createEngine from 'redux-storage-engine-localstorage'
 
-import { SET_CONNECTION_STATE, SHOW_SNACKBAR_MESSAGE } from './actions/types'
+import * as actions from './actions/types'
 import reducer from './reducers'
 
 /**
@@ -29,8 +29,12 @@ const storageMiddleware = storage.createMiddleware(
   engine,
   /* blacklisted actions */
   [
-    SET_CONNECTION_STATE,
-    SHOW_SNACKBAR_MESSAGE,
+    actions.CLEAR_CONNECTION_LIST,
+    actions.CLOSE_ERROR_DIALOG,
+    actions.SET_CONNECTION_STATE,
+    actions.SET_CONNECTION_STATE_MANY,
+    actions.SHOW_ERROR_MESSAGE,
+    actions.SHOW_SNACKBAR_MESSAGE,
     'redux-form/BLUR',
     'redux-form/CHANGE',
     'redux-form/FOCUS',

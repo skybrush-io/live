@@ -5,6 +5,7 @@ import defaultMerger from 'redux-storage-merger-simple'
 
 import config from '../config'
 import connectionsReducer from './connections'
+import errorHandlingReducer from './error-handling'
 import serverSettingsReducer from './server-settings'
 import snackbarReducer from './snackbar'
 
@@ -42,6 +43,7 @@ const merger = (oldState, newState) => {
 const reducer = storage.reducer(
   combineReducers({
     connections: connectionsReducer,
+    errorDialog: errorHandlingReducer,
     serverSettings: serverSettingsReducer,
     snackbar: snackbarReducer,
     form: formReducer

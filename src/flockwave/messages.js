@@ -151,13 +151,14 @@ export default class MessageHub {
    *
    * @param {function} emitter  a function to call when the hub wants to
    *        emit a new message
-   * @param {number}  timeout  number of seconds to wait for a response for
+   * @param {Number}   timeout  number of seconds to wait for a response for
    *        a message from the server before we consider it as a timeout
    */
   constructor (emitter, timeout = 5) {
     this.emitter = emitter
     this.timeout = timeout
 
+    this._notificationHandlers = {}
     this._pendingResponses = {}
     this._onMessageTimedOut = this._onMessageTimedOut.bind(this)
   }
@@ -217,6 +218,49 @@ export default class MessageHub {
         delete this._pendingResponses[correlationId]
         pendingResponse.resolve(message)
       }
+    } else {
+      // This message is simply a notification, so let's check whether there
+      // is an associated notification handler and call that
+      const type = message.body ? message.body.type : undefined
+      const handlers = this._notificationHandlers[type]
+      if (handlers) {
+        for (let handler of handlers) {
+          handler(message)
+        }
+      }
+    }
+  }
+
+  /**
+   * Registers the given function as a handler for notifications of the
+   * given type.
+   *
+   * The function will be called for every notification received from the
+   * server with the given type. It will <em>not</em> be called for
+   * responses or requests.
+   *
+   * @param {string} type  the type to register the handler for
+   * @param {function} handler  the handler that will be called whenever a
+   *        notification of the given type is received
+   */
+  registerNotificationHandler (type, handler) {
+    if (!this._notificationHandlers.hasOwnProperty(type)) {
+      this._notificationHandlers[type] = []
+    }
+    this._notificationHandlers[type].push(handler)
+  }
+
+  /**
+   * Registers multiple notification handlers for messages of given types.
+   *
+   * See {@link registerNotificationHandler} for more details.
+   *
+   * @param {Object} typesAndHandlers  object mapping Flockwave message
+   *        types to the corresponding handlers to register
+   */
+  registerNotificationHandlers (typesAndHandlers) {
+    for (let type of Object.keys(typesAndHandlers)) {
+      this.registerNotificationHandler(type, typesAndHandlers[type])
     }
   }
 

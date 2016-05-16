@@ -13,6 +13,7 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 
 import ClockDisplayList from './components/ClockDisplayList'
 import ConnectionList from './components/ConnectionList'
+import GlobalErrorDialog from './components/GlobalErrorDialog'
 import GlobalSnackbar from './components/GlobalSnackbar'
 import MapView from './components/MapView'
 import ServerConnectionManager from './components/ServerConnectionManager'
@@ -60,6 +61,8 @@ export default class Application extends React.Component {
 
             <ServerSettingsDialog/>
             <ServerConnectionManager/>
+
+            <GlobalErrorDialog/>
             <GlobalSnackbar/>
           </div>
         </MuiThemeProvider>
