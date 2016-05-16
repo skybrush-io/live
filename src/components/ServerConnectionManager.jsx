@@ -7,10 +7,12 @@ import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import ReactSocket from 'react-socket'
 
+import { clearClockList } from '../actions/clocks'
 import { clearConnectionList, setConnectionState } from '../actions/connections'
 import { showSnackbarMessage } from '../actions/snackbar'
 import { ConnectionState, MASTER_CONNECTION_ID,
          handleConnectionInformationMessage } from '../connections'
+import { handleClockInformationMessage } from '../clocks'
 import handleError from '../error-handling'
 import messageHub from '../message-hub'
 
@@ -73,6 +75,7 @@ const ServerConnectionManager = connect(
       // list of connections
       messageHub.sendMessage('CONN-LIST').then(result => {
         const { body } = result
+
         // For each connection ID that we have received, get its status
         // via a CONN-INF message
         return messageHub.sendMessage({
@@ -82,10 +85,26 @@ const ServerConnectionManager = connect(
       }).then(({ body }) => {
         handleConnectionInformationMessage(body, dispatch)
       }).catch(handleError)
+
+      // Send a CLK-LIST message to the server to get an up-to-date
+      // list of clocks
+      messageHub.sendMessage('CLK-LIST').then(result => {
+        const { body } = result
+
+        // For each clock ID that we have received, get its status
+        // via a CLK-INF message
+        return messageHub.sendMessage({
+          type: 'CLK-INF',
+          ids: body.ids || []
+        })
+      }).then(({ body }) => {
+        handleClockInformationMessage(body, dispatch)
+      }).catch(handleError)
     },
     onDisconnected () {
       dispatch(setConnectionState(MASTER_CONNECTION_ID, ConnectionState.DISCONNECTED))
       dispatch(showSnackbarMessage('Disconnected from Flockwave server'))
+      dispatch(clearClockList())
       dispatch(clearConnectionList())
     },
     onMessage (data) {

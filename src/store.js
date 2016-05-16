@@ -29,10 +29,13 @@ const storageMiddleware = storage.createMiddleware(
   engine,
   /* blacklisted actions */
   [
+    actions.CLEAR_CLOCK_LIST,
     actions.CLEAR_CONNECTION_LIST,
     actions.CLOSE_ERROR_DIALOG,
+    actions.SET_CLOCK_STATE,
+    actions.SET_CLOCK_STATE_MULTIPLE,
     actions.SET_CONNECTION_STATE,
-    actions.SET_CONNECTION_STATE_MANY,
+    actions.SET_CONNECTION_STATE_MULTIPLE,
     actions.SHOW_ERROR_MESSAGE,
     actions.SHOW_SNACKBAR_MESSAGE,
     'redux-form/BLUR',

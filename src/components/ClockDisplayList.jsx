@@ -117,7 +117,7 @@ class ClockDisplayListEntry extends React.Component {
     const { referenceTime, ticks, ticksPerSecond } = this.props
     const style = avatarStyles[running ? 1 : 0]
     const formattedId = this.formatClockId(id)
-    const elapsed = running ? (moment().unix() - referenceTime) : 0
+    const elapsed = running ? (moment().valueOf() / 1000 - referenceTime) : 0
     const extrapolatedTicks = ticks + elapsed * ticksPerSecond
     const formattedTime = this.formatTicks(extrapolatedTicks)
     return (
@@ -192,9 +192,11 @@ ClockDisplayListEntry.defaultProps = {
 /**
  * Presentation component for showing the state of a set of Flockwave
  * clocks.
+ *
+ * @return  {Object}  the rendered clock display list component
  */
 const ClockDisplayListPresentation = ({ clocks }) => {
-  const entries = clocks.map(clock => (<ClockDisplayListEntry {...clock}/>))
+  const entries = clocks.map(clock => (<ClockDisplayListEntry key={clock.id} {...clock}/>))
   if (!entries.length) {
     entries.push(<Subheader key="__subheader__">No clocks</Subheader>)
   }
@@ -212,7 +214,17 @@ ClockDisplayListPresentation.propTypes = {
 const ClockDisplayList = connect(
   // mapStateToProps
   state => ({
-    'clocks': []
+    'clocks': state.clocks.order.map(
+      entryName => {
+        const result = Object.assign({}, state.clocks.items[entryName])
+        if (result.ticksPerSecond > 1) {
+          result.updateFrequency = Math.max(1000 / result.ticksPerSecond, 100)
+        } else {
+          result.updateFrequency = 1000
+        }
+        return result
+      }
+    )
   }),
   // mapDispatchToProps
   undefined

@@ -6,6 +6,7 @@
 
 import MessageHub from './flockwave/messages'
 
+import { handleClockInformationMessage } from './clocks'
 import { handleConnectionInformationMessage } from './connections'
 import store from './store'
 
@@ -22,6 +23,8 @@ const dispatch = store.dispatch
  */
 const messageHub = new MessageHub()
 messageHub.registerNotificationHandlers({
+  'CLK-INF': message =>
+    handleClockInformationMessage(message.body, dispatch),
   'CONN-INF': message =>
     handleConnectionInformationMessage(message.body, dispatch)
 })
