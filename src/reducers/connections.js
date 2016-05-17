@@ -7,7 +7,7 @@
 
 import _ from 'lodash'
 import { handleActions } from 'redux-actions'
-import { ConnectionState, MASTER_CONNECTION_ID } from '../connections'
+import { ConnectionState, MASTER_CONNECTION_ID } from '../model/connections'
 
 /**
  * Default content of the connection registry in the state object.

@@ -6,8 +6,8 @@
 
 import MessageHub from './flockwave/messages'
 
-import { handleClockInformationMessage } from './clocks'
-import { handleConnectionInformationMessage } from './connections'
+import { handleClockInformationMessage } from './model/clocks'
+import { handleConnectionInformationMessage } from './model/connections'
 import store from './store'
 
 const dispatch = store.dispatch

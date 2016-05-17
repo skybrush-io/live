@@ -10,11 +10,11 @@ import ReactSocket from 'react-socket'
 import { clearClockList } from '../actions/clocks'
 import { clearConnectionList, setConnectionState } from '../actions/connections'
 import { showSnackbarMessage } from '../actions/snackbar'
-import { ConnectionState, MASTER_CONNECTION_ID,
-         handleConnectionInformationMessage } from '../connections'
-import { handleClockInformationMessage } from '../clocks'
 import handleError from '../error-handling'
 import messageHub from '../message-hub'
+import { ConnectionState, MASTER_CONNECTION_ID,
+         handleConnectionInformationMessage } from '../model/connections'
+import { handleClockInformationMessage } from '../model/clocks'
 
 /**
  * Presentation component that contains a Socket.io socket and handles

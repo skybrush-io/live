@@ -21,7 +21,7 @@ import { connect } from 'react-redux'
 import TimeAgo from 'react-timeago'
 
 import { showServerSettingsDialog } from '../actions/server-settings'
-import { ConnectionState, MASTER_CONNECTION_ID } from '../connections'
+import { ConnectionState, MASTER_CONNECTION_ID } from '../model/connections'
 
 /**
  * Avatar styling constants for the different connection states in the
@@ -72,14 +72,21 @@ const stateNames = {
 
 /**
  * Custom formatter of secondary text for a ConnectionListEntry
+ *
+ * @param  {Number} value  the value to format
+ * @param  {string} unit   the unit of the value (e.g., second)
+ * @return {string} the formattted secondary text
  */
-function timeIntervalFormatter (value, unit, suffix, date) {
+function timeIntervalFormatter (value, unit) {
   const plural = (value > 1) ? 's' : ''
   return `for ${value} ${unit}${plural}`
 }
 
 /**
  * Presentation component for a single entry in the connection list.
+ *
+ * @param  {Object} props  the properties of the component
+ * @return {Object} the React presentation component
  */
 const ConnectionListEntry = (props) => {
   const { action, name, state, stateChangedAt } = props
@@ -114,6 +121,8 @@ ConnectionListEntry.propTypes = {
 
 /**
  * Presentation component for the entire connection list.
+ *
+ * @return {Object} the React presentation component
  */
 const ConnectionListPresentation = ({ connections, onShowSettings }) => {
   const entries = []

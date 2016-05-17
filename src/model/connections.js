@@ -4,8 +4,8 @@
 
 import _ from 'lodash'
 
-import { setConnectionStateMultiple } from './actions/connections'
-import { parseISODate } from './utils/parsing'
+import { setConnectionStateMultiple } from '../actions/connections'
+import { parseISODate } from '../utils/parsing'
 
 /**
  * Connectin identifier for the master connection leading to the Flockwave
