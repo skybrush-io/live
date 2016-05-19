@@ -103,6 +103,13 @@ class PendingResponse {
   }
 
   /**
+   * The ID of the message associated to this pending response.
+   */
+  get messageId () {
+    return this._messageId
+  }
+
+  /**
    * Function to call when the response to the message has arrived.
    *
    * @param  {Object} result the response to the message
@@ -286,7 +293,7 @@ export default class MessageHub {
 
     const message = createMessage(body)
     return new Promise((resolve, reject) => {
-      const pendingResponse = new PendingResponse(message.id, resolve)
+      const pendingResponse = new PendingResponse(message.id, resolve, reject)
       this._pendingResponses[message.id] = pendingResponse
 
       pendingResponse.timeoutId = setTimeout(this._onMessageTimedOut,

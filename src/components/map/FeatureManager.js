@@ -8,8 +8,13 @@ import _ from 'lodash'
 import ol from 'openlayers'
 
 /**
- * Object responsible for constructing features for UAVs based on UAV IDs
- * and returning them on-demand by IDs.
+ * Object responsible for constructing features on an OpenLayers
+ * vector layer based on string identifiers (one feature for each string
+ * identifier) and returning them on-demand by IDs.
+ *
+ * @property {?function} projection  a projection function from OpenLayers
+ *           that is used to map coordinates specified by the user to the
+ *           coordinate system of the source layer
  */
 export default class FeatureManager {
   /**
@@ -18,30 +23,58 @@ export default class FeatureManager {
    * @param  {?ol.source.Vector} vectorSource  the OpenLayers vector layer
    *         source to which the features of this feature manager will be
    *         added automatically
+   * @param  {?function} projection  a projection function from OpenLayers
+   *           that is used to map coordinates specified by the user to the
+   *           coordinate system of the source layer
    */
-  constructor (vectorSource) {
+  constructor (vectorSource, projection) {
     this._featuresById = {}
     this._vectorSource = vectorSource
+    this.projection = projection
+  }
+
+  /**
+   * Creates or updates a feature with the given ID at the given coordinate.
+   *
+   * If the given ID already had a feature, it will be overwritten with the
+   * new feature.
+   *
+   * @param {string} id  the identifier for which the feature has to be
+   *        created or updated
+   * @param {ol.Coordinate} coordinate  the coordinates of the feature
+   * @returns {ol.Feature}  the OpenLayers feature that represents the
+   *          object with the given ID on the map
+   */
+  createOrUpdateFeatureById (id, coordinate) {
+    coordinate = this.projection ? this.projection(coordinate) : coordinate
+
+    const feature = this.getFeatureById(id) || this._createFeatureById(id, coordinate)
+    feature.getGeometry().setCoordinates(coordinate)
+
+    return feature
   }
 
   /**
    * Creates a new feature for the given ID.
    *
-   * If the given UAV already had a feature, it will be overwritten with the
+   * If the given ID already had a feature, it will be overwritten with the
    * new feature.
    *
    * @param {string} id  the identifier for which the feature has to be
    *        created
    * @param {ol.Coordinate} coordinate  the initial coordinates of the
-   *        feature
+   *        feature, already transformed to the coordinate system of the
+   *        layer using the projection specified in this class
+   *
    * @returns {ol.Feature}  the OpenLayers feature that will represent the
-   *          UAV on the map
+   *          object with the given ID on the map
    */
-  createFeatureById (id, coordinate) {
+  _createFeatureById (id, coordinate) {
     const feature = new ol.Feature(new ol.geom.Point(coordinate))
+    feature.setId(id)
+    feature.setStyle(this._createStyleById(id))
 
     this._featuresById[id] = feature
-    feature.setStyle(this._createStyleById(id))
 
     if (this._vectorSource) {
       this._vectorSource.addFeature(feature)
@@ -164,6 +197,9 @@ export default class FeatureManager {
     }
 
     this._vectorSource = value
-    _.forOwn(this._featuresById, feature => value.addFeature(feature))
+
+    if (value) {
+      _.forOwn(this._featuresById, feature => value.addFeature(feature))
+    }
   }
 }

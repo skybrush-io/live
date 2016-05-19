@@ -14,6 +14,7 @@ import ServerConnectionManager from './components/ServerConnectionManager'
 import ServerSettingsDialog from './components/ServerSettingsDialog'
 import Widget from './components/Widget'
 
+import flock from './flock'
 import store from './store'
 
 require('../assets/css/screen.less')
@@ -36,7 +37,7 @@ export default class Application extends React.Component {
         <MuiThemeProvider muiTheme={muiTheme}>
           <div>
             <div id="canvas">
-              <MapView />
+              <MapView flock={flock} />
 
               <Widget style={{ 'right': '0.5em', 'bottom': '0.5em', 'width': 300 }}>
                 <ClockDisplayList />

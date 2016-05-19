@@ -1,8 +1,9 @@
-import React from 'react'
+import React, { PropTypes } from 'react'
 import { Map, View, layer, source } from 'ol-react'
 import ol from 'openlayers'
 
 import ActiveUAVsLayerSource from './ActiveUAVsLayerSource'
+import Flock from '../../model/flock'
 
 require('openlayers/css/ol.css')
 
@@ -12,15 +13,14 @@ require('openlayers/css/ol.css')
  *
  * Longitudes and latitudes are assumed to be given in WGS-84.
  *
- * @param {Number} lat  the latitude
- * @param {Number} lon  the longitude
+ * @param {Number[]}  coords  the longitude and latitude, in this order
  * @return {Object} the OpenLayers coordinate corresponding to the given
  *         latitude and longitude
  */
-const coordinateFromLatLon = (lat, lon) => (
+const coordinateFromLonLat = coords => (
   // EPSG:3857 is Spherical Mercator projection, as used by most tile-based
   // mapping services
-  ol.proj.fromLonLat([lon, lat], 'EPSG:3857')
+  ol.proj.fromLonLat(coords, 'EPSG:3857')
 )
 
 /**
@@ -28,15 +28,27 @@ const coordinateFromLatLon = (lat, lon) => (
  */
 export default class MapView extends React.Component {
   render () {
-    const center = coordinateFromLatLon(47.473340, 19.061951)
+    const { flock, projection } = this.props
+    const center = projection([19.061951, 47.473340])
     const view = <View center={center} zoom={17} />
     return (
       <Map view={view} loadTilesWhileInteracting={true}>
         <layer.Tile>
           <source.OSM />
         </layer.Tile>
-        <layer.Vector><ActiveUAVsLayerSource /></layer.Vector>
+        <layer.Vector>
+          <ActiveUAVsLayerSource flock={flock} projection={projection} />
+        </layer.Vector>
       </Map>
     )
   }
+}
+
+MapView.propTypes = {
+  flock: PropTypes.instanceOf(Flock),
+  projection: PropTypes.func.isRequired
+}
+
+MapView.defaultProps = {
+  projection: coordinateFromLonLat
 }

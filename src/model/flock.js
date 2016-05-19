@@ -4,6 +4,7 @@
  */
 
 import _ from 'lodash'
+import Signal from 'mini-signals'
 
 import UAV from './uav'
 
@@ -20,6 +21,7 @@ export default class Flock {
   constructor () {
     this._uavs = []
     this._uavsById = {}
+    this.uavsUpdated = new Signal()
   }
 
   /**
@@ -66,21 +68,34 @@ export default class Flock {
    *
    * @param  {Object} body  the body of the UAV-INF message
    * @param  {function} dispatch  the dispatch function of the Redux store
+   * @fires  Flock#uavsUpdated
    */
   handleUAVInformationMessage (body, dispatch) {
     // For each UAV ID and status object pair, get the UAV with the given
     // ID, update its own local status, and if the status was updated,
     // remember the UAV ID so we can ask the feature manager to refresh
     // the features of these UAVs
-    _(body.status).transform((updatedUAVs, status, uavId) => {
-      const uav = this.getOrCreateUAVById(uavId)
-      const updated = uav.handleUAVStatusInfo(status)
-      if (updated) {
-        updatedUAVs.push(uavId)
-      }
-    }, []).each(uavId => {
-      // TODO: ask the feature manager to update the feature of the UAV
-      console.log('TODO: ask feature manager to update ' + uavId)
-    })
+    const updatedUAVs = _(body.status).transform(
+      (updatedUAVs, status, uavId) => {
+        const uav = this.getOrCreateUAVById(uavId)
+        const updated = uav.handleUAVStatusInfo(status)
+        if (updated) {
+          updatedUAVs.push(uav)
+        }
+      }, []).value()
+
+    if (!_.isEmpty(updatedUAVs)) {
+      this.uavsUpdated.dispatch(updatedUAVs)
+    }
   }
 }
+
+/**
+ * Event that is dispatched by a {@link Flock} object when some of the
+ * UAVs have been updated.
+ *
+ * The event contains an array of the UAVs that were updated.
+ *
+ * @event  Flock#uavsUpdated
+ * @type {UAV[]}
+ */
