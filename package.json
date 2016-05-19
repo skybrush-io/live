@@ -4,6 +4,7 @@
   "description": "Web frontend for a Flockwave server",
   "main": "index.html",
   "scripts": {
+    "install": "npm-git-install",
     "start": "webpack-dev-server --progress --colors",
     "test": "echo \"Error: no test specified\" && exit 1",
     "watch": "webpack --watch"
@@ -17,16 +18,17 @@
   "license": "UNLICENSED",
   "private": true,
   "dependencies": {
+    "bean": "^1.0.15",
     "lodash": "^4.12.0",
     "material-ui": "^0.15.0-beta.2",
     "mersenne-twister": "^1.0.1",
     "moment": "^2.13.0",
-    "openlayers": "^3.15.1",
+    "ol-react": "https://github.com/collmot/ol-react.git",
     "radix-64": "^1.0.4",
     "react": "^15.0.1",
     "react-dom": "^15.0.1",
     "react-redux": "^4.4.5",
-    "react-socket": "^0.1.4",
+    "react-socket": "https://github.com/collmot/react-socket.git",
     "react-tap-event-plugin": "^1.0.0",
     "react-timeago": "^3.0.0",
     "redux": "^3.5.2",

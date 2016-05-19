@@ -6,7 +6,7 @@
 /**
  * Representation of a single UAV.
  */
-export class UAV {
+export default class UAV {
 
   /**
    * Constructor.
@@ -16,9 +16,38 @@ export class UAV {
    * @param {string} id  the ID of the UAV
    */
   constructor (id) {
-    this.id = id
-    this.latitude = undefined
-    this.longitude = undefined
+    this._id = id
+    this.lat = undefined
+    this.lon = undefined
   }
 
+  /**
+   * Returns the ID of the UAV.
+   *
+   * @return {string}  the ID of the UAV
+   */
+  get id () {
+    return this._id
+  }
+
+  /**
+   * Handles the status information related to a single UAV from an UAV-INF
+   * message.
+   *
+   * @param {Object} status  the status information of this UAV from an
+   *        UAV-INF message
+   * @return {boolean}  whether the status information has been updated
+   */
+  handleUAVStatusInfo (status) {
+    const { position } = status
+    let updated = false
+
+    if (position) {
+      this.lat = position.lat
+      this.lon = position.lon
+      updated = true
+    }
+
+    return updated
+  }
 }

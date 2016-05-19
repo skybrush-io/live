@@ -1,5 +1,6 @@
 import _ from 'lodash'
 import React from 'react'
+import { Map, View, layer, source } from 'ol-react'
 import ol from 'openlayers'
 
 /**
@@ -186,42 +187,30 @@ export default class MapView extends React.Component {
   constructor () {
     super()
 
-    this.map = undefined
-    this.uavLayer = undefined
-    this.uavLayerSource = undefined
+    this.featureManager = undefined
   }
 
   componentDidMount () {
     const uavLayerSource = new ol.source.Vector()
-
     this.featureManager = new FeatureManager(uavLayerSource)
-    this.uavLayer = new ol.layer.Vector({
-      source: uavLayerSource
-    })
-
-    this.map = new ol.Map({
-      target: 'map',
-      layers: [
-        new ol.layer.Tile({
-          source: new ol.source.OSM()
-        }),
-        this.uavLayer
-      ],
-      view: new ol.View({
-        center: coordinateFromLatLon(47.473340, 19.061951),
-        zoom: 17
-      }),
-      loadTilesWhileInteracting: true
-    })
   }
 
   componentWillUnmount () {
-    this.map = undefined
-    this.uavLayer = undefined
-    this.uavLayerSource = undefined
+    this.featureManager = undefined
   }
 
   render () {
-    return <div id="map" className="map"></div>
+    const center = coordinateFromLatLon(47.473340, 19.061951)
+    const view = <View center={center} zoom={17} />
+    return (
+      <Map view={view} loadTilesWhileInteracting={true}>
+        <layer.Tile>
+          <source.OSM />
+        </layer.Tile>
+        <layer.Vector>
+          <source.Vector></source.Vector>
+        </layer.Vector>
+      </Map>
+    )
   }
 }

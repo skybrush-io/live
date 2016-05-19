@@ -3,7 +3,7 @@
  * manages.
  */
 
-import { Flock } from './model/flock'
+import Flock from './model/flock'
 
 /**
  * The singleton flock instance that the application manages.

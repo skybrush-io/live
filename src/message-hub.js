@@ -8,6 +8,7 @@ import MessageHub from './flockwave/messages'
 
 import { handleClockInformationMessage } from './model/clocks'
 import { handleConnectionInformationMessage } from './model/connections'
+import flock from './flock'
 import store from './store'
 
 const dispatch = store.dispatch
@@ -26,7 +27,9 @@ messageHub.registerNotificationHandlers({
   'CLK-INF': message =>
     handleClockInformationMessage(message.body, dispatch),
   'CONN-INF': message =>
-    handleConnectionInformationMessage(message.body, dispatch)
+    handleConnectionInformationMessage(message.body, dispatch),
+  'UAV-INF': message =>
+    flock.handleUAVInformationMessage(message.body, dispatch)
 })
 
 export default messageHub
