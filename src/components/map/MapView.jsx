@@ -3,6 +3,8 @@ import React from 'react'
 import { Map, View, layer, source } from 'ol-react'
 import ol from 'openlayers'
 
+require('openlayers/css/ol.css')
+
 /**
  * Helper function to convert a latitude-longitude pair to the coordinate
  * system used by the map view.

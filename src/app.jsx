@@ -38,11 +38,11 @@ export default class Application extends React.Component {
             <div id="canvas">
               <MapView />
 
-              <Widget style={{ 'right': 20, 'bottom': 20, 'width': 300 }}>
+              <Widget style={{ 'right': '0.5em', 'bottom': '0.5em', 'width': 300 }}>
                 <ClockDisplayList />
               </Widget>
 
-              <Widget style={{ 'right': 20, 'top': 20, 'width': 300 }}>
+              <Widget style={{ 'right': '0.5em', 'top': '0.5em', 'width': 300 }}>
                 <ConnectionList />
               </Widget>
             </div>

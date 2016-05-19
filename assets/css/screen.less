@@ -63,5 +63,27 @@ body {
     }
 }
 
-#connectButton {
+/* Styling for OpenLayers controls */
+.ol-control {
+    background-color: #f0f0f0;
+    padding: 0 !important;
+    border-radius: 2px !important;
+    box-shadow: rgba(0, 0, 0, 0.117647) 0px 1px 6px, rgba(0, 0, 0, 0.117647) 0px 1px 4px;
+
+    button {
+        background-color: white;
+        color: black;
+
+        &:hover, &:focus {
+            background-color: white;
+            color: black;
+        }
+    }
+}
+
+/* OpenLayers attribution widget should be in the lower left corner
+ * by default */
+.ol-attribution {
+    left: 0.5em;
+    right: auto;
 }
