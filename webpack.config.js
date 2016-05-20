@@ -1,3 +1,6 @@
+// Import the promise polyfill for ye olde Node installations
+require('es6-promise').polyfill()
+
 module.exports = {
   entry: './src/index.jsx',
   output: {
