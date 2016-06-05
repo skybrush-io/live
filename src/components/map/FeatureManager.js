@@ -29,6 +29,7 @@ export default class FeatureManager {
    */
   constructor (vectorSource, projection) {
     this._featuresById = {}
+    this._styleFactory = undefined     // TODO
     this._vectorSource = vectorSource
     this.projection = projection
   }
@@ -71,8 +72,10 @@ export default class FeatureManager {
    */
   _createFeatureById (id, coordinate) {
     const feature = new ol.Feature(new ol.geom.Point(coordinate))
+    const style = this._styleFactory ? this._styleFactory(id) : undefined
+
     feature.setId(id)
-    feature.setStyle(this._createStyleById(id))
+    feature.setStyle(style)
 
     this._featuresById[id] = feature
 
@@ -81,35 +84,6 @@ export default class FeatureManager {
     }
 
     return feature
-  }
-
-  /**
-   * Creates a new style for the feature with the given ID.
-   *
-   * @param {string} id  the identifier for which the feature has to be
-   *        created
-   * @return {Array<ol.style.Style>} the style for the feature with the
-   *         given ID
-   */
-  _createStyleById (id) {
-    return [
-      new ol.style.Style({
-        image: new ol.style.Icon(({
-          rotateWithView: true,
-          rotation: 45 * Math.PI / 180,
-          snapToPixel: false,
-          src: ['/assets/drone.32x32.png']
-        }))
-      }),
-      new ol.style.Style({
-        text: new ol.style.Text({
-          font: '12px sans-serif',
-          offsetY: 24,
-          text: id || 'undefined',
-          textAlign: 'center'
-        })
-      })
-    ]
   }
 
   /**
@@ -154,6 +128,34 @@ export default class FeatureManager {
     }
 
     return feature
+  }
+
+  /**
+   * Returns the style factory function that creates a new style for a
+   * feature with a given ID.
+   *
+   * The function should expect a feature ID as its only argument and must
+   * return an appropriately constructed {@link ol.style.Style} object.
+   *
+   * @return {function(string): ol.style.Style}  the style factory function
+   */
+  get styleFactory () {
+    return this._styleFactory
+  }
+
+  /**
+   * Sets the style factory function that creates a new style for a feature
+   * with a given ID.
+   *
+   * The function should expect a feature ID as its only argument and must
+   * return an appropriately constructed array of {@link ol.style.Style}
+   * objects.
+   *
+   * @param {function(string): Array<ol.style.Style>} value the new style factory function
+   * @return {undefined}
+   */
+  set styleFactory (value) {
+    this._styleFactory = value
   }
 
   /**

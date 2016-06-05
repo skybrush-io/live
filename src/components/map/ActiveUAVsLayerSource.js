@@ -4,6 +4,7 @@
  */
 
 import _ from 'lodash'
+import ol from 'openlayers'
 import { PropTypes } from 'react'
 import { source } from 'ol-react'
 
@@ -21,7 +22,10 @@ export default class ActiveUAVsLayerSource extends source.Vector {
   constructor (props) {
     super(props)
 
+    this._createStyleForUAV = this._createStyleForUAV.bind(this)
+
     this.featureManager = new FeatureManager(this.source)
+    this.featureManager.styleFactory = this._createStyleForUAV
     this.eventBindings = {}
 
     this._onUAVsUpdated = this._onUAVsUpdated.bind(this)
@@ -43,6 +47,35 @@ export default class ActiveUAVsLayerSource extends source.Vector {
     this._onFlockMaybeChanged(this.props.flock, undefined)
     this.featureManager.projection = undefined
     super.componentWillUnmount()
+  }
+
+  /**
+   * Creates a new style for the UAV with the given ID.
+   *
+   * @param {string} id  the UAV for which the feature has to be
+   *        created
+   * @return {Array<ol.style.Style>} the style for the UAV with the
+   *         given ID
+   */
+  _createStyleForUAV (id) {
+    return [
+      new ol.style.Style({
+        image: new ol.style.Icon(({
+          rotateWithView: true,
+          rotation: 45 * Math.PI / 180,
+          snapToPixel: false,
+          src: ['/assets/drone.32x32.red.png']
+        }))
+      }),
+      new ol.style.Style({
+        text: new ol.style.Text({
+          font: '12px sans-serif',
+          offsetY: 24,
+          text: id || 'undefined',
+          textAlign: 'center'
+        })
+      })
+    ]
   }
 
   /**
