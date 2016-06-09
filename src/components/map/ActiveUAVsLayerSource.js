@@ -4,12 +4,12 @@
  */
 
 import _ from 'lodash'
-import ol from 'openlayers'
 import { PropTypes } from 'react'
 import { source } from 'ol-react'
 
 import FeatureManager from './FeatureManager'
 import Flock from '../../model/flock'
+import UAVFeature from './features/UAVFeature'
 
 /**
  * OpenLayers vector layer source that contains all the active UAVs
@@ -22,60 +22,29 @@ export default class ActiveUAVsLayerSource extends source.Vector {
   constructor (props) {
     super(props)
 
-    this._createStyleForUAV = this._createStyleForUAV.bind(this)
-
     this.featureManager = new FeatureManager(this.source)
-    this.featureManager.styleFactory = this._createStyleForUAV
+    this.featureManager.featureFactory = (id, geom) => (new UAVFeature(id, geom))
     this.eventBindings = {}
 
-    this._onUAVsUpdated = this._onUAVsUpdated.bind(this)
+    this.onUAVsUpdated_ = this.onUAVsUpdated_.bind(this)
   }
 
   componentWillReceiveProps (newProps) {
     super.componentWillReceiveProps()
-    this._onFlockMaybeChanged(this.props.flock, newProps.flock)
+    this.onFlockMaybeChanged_(this.props.flock, newProps.flock)
     this.featureManager.projection = newProps.projection
   }
 
   componentDidMount () {
     super.componentDidMount()
-    this._onFlockMaybeChanged(undefined, this.props.flock)
+    this.onFlockMaybeChanged_(undefined, this.props.flock)
     this.featureManager.projection = this.props.projection
   }
 
   componentWillUnmount () {
-    this._onFlockMaybeChanged(this.props.flock, undefined)
+    this.onFlockMaybeChanged_(this.props.flock, undefined)
     this.featureManager.projection = undefined
     super.componentWillUnmount()
-  }
-
-  /**
-   * Creates a new style for the UAV with the given ID.
-   *
-   * @param {string} id  the UAV for which the feature has to be
-   *        created
-   * @return {Array<ol.style.Style>} the style for the UAV with the
-   *         given ID
-   */
-  _createStyleForUAV (id) {
-    return [
-      new ol.style.Style({
-        image: new ol.style.Icon(({
-          rotateWithView: true,
-          rotation: 45 * Math.PI / 180,
-          snapToPixel: false,
-          src: ['/assets/drone.32x32.red.png']
-        }))
-      }),
-      new ol.style.Style({
-        text: new ol.style.Text({
-          font: '12px sans-serif',
-          offsetY: 24,
-          text: id || 'undefined',
-          textAlign: 'center'
-        })
-      })
-    ]
   }
 
   /**
@@ -89,7 +58,7 @@ export default class ActiveUAVsLayerSource extends source.Vector {
    * @param {Flock} oldFlock  the old flock associated to the layer
    * @param {Flock} newFlock  the new flock associated to the layer
    */
-  _onFlockMaybeChanged (oldFlock, newFlock) {
+  onFlockMaybeChanged_ (oldFlock, newFlock) {
     if (oldFlock === newFlock) {
       return
     }
@@ -100,7 +69,7 @@ export default class ActiveUAVsLayerSource extends source.Vector {
     }
 
     if (newFlock) {
-      this.eventBindings.uavsUpdated = newFlock.uavsUpdated.add(this._onUAVsUpdated)
+      this.eventBindings.uavsUpdated = newFlock.uavsUpdated.add(this.onUAVsUpdated_)
     }
   }
 
@@ -111,9 +80,17 @@ export default class ActiveUAVsLayerSource extends source.Vector {
    * @listens Flock#uavsUpdated
    * @param {UAV[]} uavs  the UAVs that should be refreshed
    */
-  _onUAVsUpdated (uavs) {
+  onUAVsUpdated_ (uavs) {
     _.each(uavs, uav => {
-      this.featureManager.createOrUpdateFeatureById(uav.id, [uav.lon, uav.lat])
+      const feature = this.featureManager.createOrUpdateFeatureById(
+        uav.id, [uav.lon, uav.lat]
+      )
+
+      // Here we assume that the feature was created by _createStyleForUAV
+      // so its first style object is the icon
+      if (typeof uav.heading !== 'undefined') {
+        feature.heading = uav.heading
+      }
     })
   }
 }

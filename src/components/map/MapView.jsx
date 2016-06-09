@@ -1,5 +1,5 @@
 import React, { PropTypes } from 'react'
-import { Map, View, layer, source } from 'ol-react'
+import { Map, View, interaction, layer, source } from 'ol-react'
 import ol from 'openlayers'
 
 import ActiveUAVsLayerSource from './ActiveUAVsLayerSource'
@@ -27,6 +27,12 @@ const coordinateFromLonLat = coords => (
  * React component for the full-bleed map of the main window.
  */
 export default class MapView extends React.Component {
+  constructor (props) {
+    super(props)
+    this.assignActiveUAVsLayerRef_ = this.assignActiveUAVsLayerRef_.bind(this)
+    this.onBoxDragEnded = this.onBoxDragEnded.bind(this)
+  }
+
   render () {
     const { flock, projection } = this.props
     const center = projection([19.061951, 47.473340])
@@ -37,10 +43,40 @@ export default class MapView extends React.Component {
           <source.OSM />
         </layer.Tile>
         <layer.Vector>
-          <ActiveUAVsLayerSource flock={flock} projection={projection} />
+          <ActiveUAVsLayerSource ref={this.assignActiveUAVsLayerRef_}
+                                 flock={flock} projection={projection} />
         </layer.Vector>
+        <interaction.Select select={this.onSelect} />
       </Map>
     )
+  }
+
+  assignActiveUAVsLayerRef_ (ref) {
+    this.activeUAVsLayer = ref
+  }
+
+  onBoxDragEnded (event) {
+    const layer = this.activeUAVsLayer
+    if (!layer) {
+      return
+    }
+
+    const box = event.target
+    const extent = box.getGeometry().getExtent()
+    layer.source.forEachFeatureIntersectingExtent(extent,
+      feature => {
+        feature.selected = true
+      }
+    )
+  }
+
+  onSelect (event) {
+    for (let feature of event.selected) {
+      feature.selected = true
+    }
+    for (let feature of event.deselected) {
+      feature.selected = false
+    }
   }
 }
 

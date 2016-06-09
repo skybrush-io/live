@@ -28,9 +28,9 @@ export default class FeatureManager {
    *           coordinate system of the source layer
    */
   constructor (vectorSource, projection) {
-    this._featuresById = {}
-    this._styleFactory = undefined     // TODO
-    this._vectorSource = vectorSource
+    this.featuresById_ = {}
+    this.featureFactory_ = undefined
+    this.vectorSource_ = vectorSource
     this.projection = projection
   }
 
@@ -49,7 +49,7 @@ export default class FeatureManager {
   createOrUpdateFeatureById (id, coordinate) {
     coordinate = this.projection ? this.projection(coordinate) : coordinate
 
-    const feature = this.getFeatureById(id) || this._createFeatureById(id, coordinate)
+    const feature = this.getFeatureById(id) || this.createFeatureById_(id, coordinate)
     feature.getGeometry().setCoordinates(coordinate)
 
     return feature
@@ -70,17 +70,15 @@ export default class FeatureManager {
    * @returns {ol.Feature}  the OpenLayers feature that will represent the
    *          object with the given ID on the map
    */
-  _createFeatureById (id, coordinate) {
-    const feature = new ol.Feature(new ol.geom.Point(coordinate))
-    const style = this._styleFactory ? this._styleFactory(id) : undefined
+  createFeatureById_ (id, coordinate) {
+    const point = new ol.geom.Point(coordinate)
+    const feature = this.featureFactory_ ? this.featureFactory_(id, point) : new ol.Feature(point)
 
     feature.setId(id)
-    feature.setStyle(style)
+    this.featuresById_[id] = feature
 
-    this._featuresById[id] = feature
-
-    if (this._vectorSource) {
-      this._vectorSource.addFeature(feature)
+    if (this.vectorSource_) {
+      this.vectorSource_.addFeature(feature)
     }
 
     return feature
@@ -96,7 +94,7 @@ export default class FeatureManager {
    *         object has no feature yet
    */
   getFeatureById (id) {
-    return this._featuresById[id]
+    return this.featuresById_[id]
   }
 
   /**
@@ -109,7 +107,7 @@ export default class FeatureManager {
    *         managed by this manager
    */
   getFeatureArray () {
-    return _.values(this._featuresById)
+    return _.values(this.featuresById_)
   }
 
   /**
@@ -123,39 +121,40 @@ export default class FeatureManager {
   removeFeatureById (id) {
     const feature = this.getFeatureById(id)
 
-    if (feature && this._vectorSource) {
-      this._vectorSource.removeFeatureById(feature)
+    if (feature && this.vectorSource_) {
+      this.vectorSource_.removeFeatureById(feature)
     }
 
     return feature
   }
 
   /**
-   * Returns the style factory function that creates a new style for a
-   * feature with a given ID.
+   * Returns the feature factory function that creates a new feature for a
+   * a given ID.
    *
-   * The function should expect a feature ID as its only argument and must
-   * return an appropriately constructed {@link ol.style.Style} object.
+   * The function should expect a feature ID and an OpenLayers geometry
+   * object (typically a point) as its only argument and must
+   * return an appropriately constructed {@link ol.Feature} object.
    *
-   * @return {function(string): ol.style.Style}  the style factory function
+   * @return {function(string, ol.geom.Geometry): ol.Feature}  the feature factory function
    */
-  get styleFactory () {
-    return this._styleFactory
+  get featureFactory () {
+    return this.featureFactory_
   }
 
   /**
-   * Sets the style factory function that creates a new style for a feature
-   * with a given ID.
+   * Sets the feature factory function that creates a new feature for a
+   * a given ID.
    *
-   * The function should expect a feature ID as its only argument and must
-   * return an appropriately constructed array of {@link ol.style.Style}
-   * objects.
+   * The function should expect a feature ID and an OpenLayers geometry
+   * object (typically a point) as its only argument and must
+   * return an appropriately constructed {@link ol.Feature} object.
    *
-   * @param {function(string): Array<ol.style.Style>} value the new style factory function
+   * @param {function(string, ol.geom.Geometry): Array<ol.style.Style>} value  the new style factory function
    * @return {undefined}
    */
-  set styleFactory (value) {
-    this._styleFactory = value
+  set featureFactory (value) {
+    this.featureFactory_ = value
   }
 
   /**
@@ -171,7 +170,7 @@ export default class FeatureManager {
    *         attached to this feature manager
    */
   get vectorSource () {
-    return this._vectorSource
+    return this.vectorSource_
   }
 
   /**
@@ -189,19 +188,19 @@ export default class FeatureManager {
    * @return {undefined}
    */
   set vectorSource (value) {
-    if (this._vectorSource === value) {
+    if (this.vectorSource_ === value) {
       return
     }
 
-    if (this._vectorSource) {
+    if (this.vectorSource_) {
       throw new Error('A feature manager cannot be re-associated to a ' +
         'new vector source once it has been bound to another one')
     }
 
-    this._vectorSource = value
+    this.vectorSource_ = value
 
     if (value) {
-      _.forOwn(this._featuresById, feature => value.addFeature(feature))
+      _.forOwn(this.featuresById_, feature => value.addFeature(feature))
     }
   }
 }
