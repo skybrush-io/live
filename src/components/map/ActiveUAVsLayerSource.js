@@ -30,7 +30,6 @@ export default class ActiveUAVsLayerSource extends source.Vector {
   }
 
   componentWillReceiveProps (newProps) {
-    super.componentWillReceiveProps()
     this.onFlockMaybeChanged_(this.props.flock, newProps.flock)
     this.featureManager.projection = newProps.projection
   }
