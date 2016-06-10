@@ -4,7 +4,7 @@
   "description": "Web frontend for a Flockwave server",
   "main": "index.html",
   "scripts": {
-	"bundle": "webpack -p --progress",
+    "bundle": "webpack -p --progress",
     "start": "webpack-dev-server --progress --colors",
     "start:public": "webpack-dev-server --progress --colors --host 0.0.0.0",
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -19,6 +19,7 @@
   "license": "UNLICENSED",
   "private": true,
   "dependencies": {
+    "es6-promise": "^3.2.1",
     "lodash": "^4.12.0",
     "material-ui": "^0.15.0-beta.2",
     "mersenne-twister": "^1.0.1",
