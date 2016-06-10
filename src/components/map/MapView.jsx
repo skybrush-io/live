@@ -1,9 +1,12 @@
 import React, { PropTypes } from 'react'
-import { Map, View, layer, source } from 'ol-react'
+import { Map, View, interaction, layer, source } from 'ol-react'
+import { connect } from 'react-redux'
+
 import ol from 'openlayers'
 
 import ActiveUAVsLayerSource from './ActiveUAVsLayerSource'
 import Flock from '../../model/flock'
+import { Tool } from './tools'
 
 require('openlayers/css/ol.css')
 
@@ -26,9 +29,15 @@ const coordinateFromLonLat = coords => (
 /**
  * React component for the full-bleed map of the main window.
  */
-export default class MapView extends React.Component {
+class MapViewPresentation extends React.Component {
+  constructor (props) {
+    super(props)
+    this.assignActiveUAVsLayerRef_ = this.assignActiveUAVsLayerRef_.bind(this)
+    this.onBoxDragEnded = this.onBoxDragEnded.bind(this)
+  }
+
   render () {
-    const { flock, projection } = this.props
+    const { flock, projection, selectedTool } = this.props
     const center = projection([19.061951, 47.473340])
     const view = <View center={center} zoom={17} />
     return (
@@ -37,12 +46,59 @@ export default class MapView extends React.Component {
           <source.OSM />
         </layer.Tile>
         <layer.Vector>
-          <ActiveUAVsLayerSource flock={flock} projection={projection} />
+          <ActiveUAVsLayerSource ref={this.assignActiveUAVsLayerRef_}
+                                 flock={flock} projection={projection} />
         </layer.Vector>
+        <interaction.Select select={this.onSelect} />
+        <interaction.DragBox active={selectedTool === Tool.SELECT} />
       </Map>
     )
   }
+
+  assignActiveUAVsLayerRef_ (ref) {
+    this.activeUAVsLayer = ref
+  }
+
+  onBoxDragEnded (event) {
+    const layer = this.activeUAVsLayer
+    if (!layer) {
+      return
+    }
+
+    const box = event.target
+    const extent = box.getGeometry().getExtent()
+    layer.source.forEachFeatureIntersectingExtent(extent,
+      feature => {
+        feature.selected = true
+      }
+    )
+  }
+
+  onSelect (event) {
+    for (let feature of event.selected) {
+      feature.selected = true
+    }
+    for (let feature of event.deselected) {
+      feature.selected = false
+    }
+  }
 }
+
+MapViewPresentation.propTypes = {
+  flock: PropTypes.instanceOf(Flock),
+  projection: PropTypes.func.isRequired,
+  selectedTool: PropTypes.string
+}
+
+/**
+ * Connects the map view to the Redux store.
+ */
+const MapView = connect(
+  // mapStateToProps
+  state => ({
+    selectedTool: state.map.tools.selectedTool
+  })
+)(MapViewPresentation)
 
 MapView.propTypes = {
   flock: PropTypes.instanceOf(Flock),
@@ -52,3 +108,5 @@ MapView.propTypes = {
 MapView.defaultProps = {
   projection: coordinateFromLonLat
 }
+
+export default MapView

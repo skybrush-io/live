@@ -2,6 +2,7 @@
 require('es6-promise').polyfill()
 
 module.exports = {
+  devtool: 'eval',
   entry: './src/index.jsx',
   output: {
     filename: './dist/bundle.js'

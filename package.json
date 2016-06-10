@@ -4,7 +4,9 @@
   "description": "Web frontend for a Flockwave server",
   "main": "index.html",
   "scripts": {
+	"bundle": "webpack -p --progress",
     "start": "webpack-dev-server --progress --colors",
+    "start:public": "webpack-dev-server --progress --colors --host 0.0.0.0",
     "test": "echo \"Error: no test specified\" && exit 1",
     "watch": "webpack --watch"
   },

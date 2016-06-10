@@ -40,7 +40,6 @@ body {
 /* Widgets placed over the map */
 .widget {
     position: absolute !important;
-    width: 300px;
 
     /* Title of widget */
     .title {
@@ -73,12 +72,19 @@ body {
     button {
         background-color: white;
         color: black;
+        margin: 0px;            /* to fit the Material design better */
+        width: 24px;            /* 24px because Material buttons are 48px */
+        height: 24px;
 
         &:hover, &:focus {
             background-color: white;
             color: black;
         }
     }
+}
+.ol-dragbox {
+    background-color: rgba(0, 136, 255, 0.25);
+    border: 1px solid #08f;
 }
 
 /* OpenLayers attribution widget should be in the lower left corner

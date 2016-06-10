@@ -61,8 +61,8 @@ ServerConnectionManagerPresentation.propTypes = {
 const ServerConnectionManager = connect(
   // mapStateToProps
   state => ({
-    hostName: state.serverSettings.hostName,
-    port: state.serverSettings.port
+    hostName: state.dialogs.serverSettings.hostName,
+    port: state.dialogs.serverSettings.port
   }),
   // mapDispatchToProps
   dispatch => ({

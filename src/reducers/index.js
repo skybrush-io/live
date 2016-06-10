@@ -7,6 +7,7 @@ import config from '../config'
 import clocksReducer from './clocks'
 import connectionsReducer from './connections'
 import errorHandlingReducer from './error-handling'
+import mapReducer from './map'
 import serverSettingsReducer from './server-settings'
 import snackbarReducer from './snackbar'
 
@@ -15,7 +16,7 @@ import snackbarReducer from './snackbar'
  * state that was loaded back from the local storage of the browser, and
  * returns the actual state to use.
  *
- * This function falls back to the default merger of <code>redux-stoage</code>
+ * This function falls back to the default merger of <code>redux-storage</code>
  * first to merge the initial state with the locally stored state, and then
  * adds the default hostname and port from the configuration object if no
  * hostname is specified for the server. This has to be done late in the
@@ -29,8 +30,8 @@ import snackbarReducer from './snackbar'
 const merger = (oldState, newState) => {
   const merged = defaultMerger(oldState, newState)
 
-  if (merged.serverSettings.hostName === null) {
-    Object.assign(merged.serverSettings, config.server)
+  if (merged.dialogs.serverSettings.hostName === null) {
+    Object.assign(merged.dialogs.serverSettings, config.server)
   }
 
   return merged
@@ -45,8 +46,11 @@ const reducer = storage.reducer(
   combineReducers({
     clocks: clocksReducer,
     connections: connectionsReducer,
-    errorDialog: errorHandlingReducer,
-    serverSettings: serverSettingsReducer,
+    dialogs: combineReducers({
+      error: errorHandlingReducer,
+      serverSettings: serverSettingsReducer
+    }),
+    map: mapReducer,
     snackbar: snackbarReducer,
     form: formReducer
   }),
