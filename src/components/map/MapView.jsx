@@ -33,7 +33,12 @@ class MapViewPresentation extends React.Component {
   constructor (props) {
     super(props)
     this.assignActiveUAVsLayerRef_ = this.assignActiveUAVsLayerRef_.bind(this)
+    this.dummy_ = this.dummy_.bind(this)
     this.onBoxDragEnded = this.onBoxDragEnded.bind(this)
+  }
+
+  dummy_ (ref) {
+    this.map_ = ref
   }
 
   render () {
@@ -41,7 +46,7 @@ class MapViewPresentation extends React.Component {
     const center = projection([19.061951, 47.473340])
     const view = <View center={center} zoom={17} />
     return (
-      <Map view={view} loadTilesWhileInteracting={true}>
+      <Map view={view} loadTilesWhileInteracting={true} ref={this.dummy_}>
         <layer.Tile>
           <source.OSM />
         </layer.Tile>
@@ -50,7 +55,12 @@ class MapViewPresentation extends React.Component {
                                  flock={flock} projection={projection} />
         </layer.Vector>
         <interaction.Select select={this.onSelect} />
-        <interaction.DragBox active={selectedTool === Tool.SELECT} />
+        <interaction.DragBox active={selectedTool === Tool.SELECT} boxend={this.onBoxDragEnded} />
+
+        <interaction.DragZoom active={selectedTool === Tool.ZOOM}
+          condition={ol.events.condition.always} />
+        <interaction.DragZoom active={selectedTool === Tool.ZOOM}
+          condition={ol.events.condition.shiftKeyOnly} out={true} />
       </Map>
     )
   }
@@ -67,7 +77,7 @@ class MapViewPresentation extends React.Component {
 
     const box = event.target
     const extent = box.getGeometry().getExtent()
-    layer.source.forEachFeatureIntersectingExtent(extent,
+    layer.source.forEachFeatureInExtent(extent,
       feature => {
         feature.selected = true
       }
