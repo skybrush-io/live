@@ -47,7 +47,7 @@ const ServerSettingsForm = reduxForm({
   })
 },
 state => ({               // mapStateToProps
-  initialValues: state.serverSettings
+  initialValues: state.dialogs.serverSettings
 }))(ServerSettingsFormPresentation)
 
 /**
@@ -99,7 +99,7 @@ ServerSettingsDialogPresentation.defaultProps = {
 const ServerSettingsDialog = connect(
   // mapStateToProps
   state => ({
-    open: state.serverSettings.dialogVisible
+    open: state.dialogs.serverSettings.dialogVisible
   }),
   // mapDispatchToProps
   dispatch => ({

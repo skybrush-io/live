@@ -12,25 +12,32 @@ import IconButton from 'material-ui/IconButton'
 import Paper from 'material-ui/Paper'
 import ContentClear from 'material-ui/svg-icons/content/clear'
 
-const Widget = ({ children, style }) => (
-  <Paper className="widget" style={style}>
+const Widget = ({ children, showControls, style }) => {
+  const controls = showControls ? (
     <div className="widget-action-bar">
       <IconButton><ContentClear/></IconButton>
     </div>
-    { children }
-  </Paper>
-)
+  ) : undefined
+  return (
+    <Paper className="widget" style={style}>
+      { controls }
+      { children }
+    </Paper>
+  )
+}
 
 Widget.propTypes = {
   children: PropTypes.oneOfType([
     React.PropTypes.arrayOf(React.PropTypes.node),
     React.PropTypes.node
   ]),
+  showControls: PropTypes.bool.isRequired,
   style: PropTypes.object
 }
 
 Widget.defaultProps = {
   children: null,
+  showControls: true,
   style: {}
 }
 

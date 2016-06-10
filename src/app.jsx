@@ -9,6 +9,7 @@ import ClockDisplayList from './components/ClockDisplayList'
 import ConnectionList from './components/ConnectionList'
 import GlobalErrorDialog from './components/GlobalErrorDialog'
 import GlobalSnackbar from './components/GlobalSnackbar'
+import MapToolbar from './components/map/MapToolbar'
 import MapView from './components/map/MapView'
 import ServerConnectionManager from './components/ServerConnectionManager'
 import ServerSettingsDialog from './components/ServerSettingsDialog'
@@ -39,12 +40,16 @@ export default class Application extends React.Component {
             <div id="canvas">
               <MapView flock={flock} />
 
-              <Widget style={{ 'right': '0.5em', 'bottom': '0.5em', 'width': 300 }}>
+              <Widget style={{ 'right': 8, 'bottom': 8, 'width': 300 }}>
                 <ClockDisplayList />
               </Widget>
 
-              <Widget style={{ 'right': '0.5em', 'top': '0.5em', 'width': 300 }}>
+              <Widget style={{ 'right': 8, 'top': 8, 'width': 300 }}>
                 <ConnectionList />
+              </Widget>
+
+              <Widget style={{ 'top': 8, 'left': 41 }} showControls={false}>
+                <MapToolbar />
               </Widget>
             </div>
 
