@@ -9,6 +9,7 @@ import partial from 'lodash/partial'
 import { connect } from 'react-redux'
 
 import { selectMapTool } from '../../actions/map'
+import { Tool } from './tools'
 
 /**
  * Presentation component for the map toolbar.
@@ -22,14 +23,14 @@ const MapToolbarPresentation = ({ selectedTool, onToolSelected }, { muiTheme }) 
   )
   return (
     <div>
-      <IconButton onClick={partial(onToolSelected, 'select')}>
-        <ContentSelectAll color={colorForTool('select')} />
+      <IconButton onClick={partial(onToolSelected, Tool.SELECT)}>
+        <ContentSelectAll color={colorForTool(Tool.SELECT)} />
       </IconButton>
-      <IconButton onClick={partial(onToolSelected, 'zoom')}>
-        <ActionZoomIn color={colorForTool('zoom')} />
+      <IconButton onClick={partial(onToolSelected, Tool.ZOOM)}>
+        <ActionZoomIn color={colorForTool(Tool.ZOOM)} />
       </IconButton>
-      <IconButton onClick={partial(onToolSelected, 'pan')}>
-        <ActionPanTool color={colorForTool('pan')} />
+      <IconButton onClick={partial(onToolSelected, Tool.PAN)}>
+        <ActionPanTool color={colorForTool(Tool.PAN)} />
       </IconButton>
     </div>
   )
@@ -53,7 +54,6 @@ const MapToolbar = connect(
   // mapDispatchToProps
   dispatch => ({
     onToolSelected (tool) {
-      console.log(tool)
       dispatch(selectMapTool(tool))
     }
   })
