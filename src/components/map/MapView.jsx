@@ -5,6 +5,8 @@ import { connect } from 'react-redux'
 import ol from 'openlayers'
 
 import ActiveUAVsLayerSource from './ActiveUAVsLayerSource'
+import { setSelectedFeatures, addSelectedFeatures, removeSelectedFeatures }
+       from '../../actions/map'
 import Flock from '../../model/flock'
 import { Tool } from './tools'
 
@@ -33,7 +35,7 @@ class MapViewPresentation extends React.Component {
   constructor (props) {
     super(props)
     this.assignActiveUAVsLayerRef_ = this.assignActiveUAVsLayerRef_.bind(this)
-    this.onBoxDragEnded = this.onBoxDragEnded.bind(this)
+    this.onBoxDragEnded_ = this.onBoxDragEnded_.bind(this)
   }
 
   render () {
@@ -46,13 +48,12 @@ class MapViewPresentation extends React.Component {
           <source.OSM />
         </layer.Tile>
 
-        <layer.Vector>
+        <layer.Vector updateWhileAnimating={true} updateWhileInteracting={true}>
           <ActiveUAVsLayerSource ref={this.assignActiveUAVsLayerRef_}
                                  flock={flock} projection={projection} />
         </layer.Vector>
 
-        <interaction.Select select={this.onSelect} />
-        <interaction.DragBox active={selectedTool === Tool.SELECT} boxend={this.onBoxDragEnded} />
+        <interaction.DragBox active={selectedTool === Tool.SELECT} boxend={this.onBoxDragEnded_} />
 
         <interaction.DragZoom active={selectedTool === Tool.ZOOM}
           condition={ol.events.condition.always} />
@@ -62,39 +63,57 @@ class MapViewPresentation extends React.Component {
     )
   }
 
+  /**
+   * Handler called when the layer source containing the list of UAVs
+   * is mounted. We use it to store a reference to the component within
+   * this component.
+   *
+   * @param  {ActiveUAVsLayerSource} ref  the layer source for the active UAVs
+   */
   assignActiveUAVsLayerRef_ (ref) {
     this.activeUAVsLayer = ref
   }
 
-  onBoxDragEnded (event) {
+  /**
+   * Event handler that is called when the user finishes the drag-box
+   * interaction on the map in "select" mode.
+   *
+   * @param  {ol.DragBoxEvent} event  the event dispatched by the drag-box
+   *         interaction
+   */
+  onBoxDragEnded_ (event) {
     const layer = this.activeUAVsLayer
     if (!layer) {
       return
     }
 
-    const box = event.target
-    const extent = box.getGeometry().getExtent()
-    layer.source.forEachFeatureIntersectingExtent(extent,
-      feature => {
-        feature.selected = true
-      }
-    )
-  }
+    const mapBrowserEvent = event.mapBrowserEvent
+    let action
 
-  onSelect (event) {
-    for (let feature of event.selected) {
-      feature.selected = true
+    if (ol.events.condition.altKeyOnly(mapBrowserEvent)) {
+      action = removeSelectedFeatures
+    } else if (ol.events.condition.shiftKeyOnly(mapBrowserEvent)) {
+      action = addSelectedFeatures
+    } else {
+      action = setSelectedFeatures
     }
-    for (let feature of event.deselected) {
-      feature.selected = false
-    }
+
+    const ids = []
+    const source = layer.source
+    const extent = event.target.getGeometry().getExtent()
+    source.forEachFeatureIntersectingExtent(extent, feature => {
+      ids.push(feature.getId())
+    })
+
+    this.props.dispatch(action(ids))
   }
 }
 
 MapViewPresentation.propTypes = {
   flock: PropTypes.instanceOf(Flock),
   projection: PropTypes.func.isRequired,
-  selectedTool: PropTypes.string
+  selectedTool: PropTypes.string,
+  dispatch: PropTypes.func.isRequired
 }
 
 /**
