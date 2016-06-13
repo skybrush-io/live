@@ -22,28 +22,47 @@ export default class ActiveUAVsLayerSource extends source.Vector {
   constructor (props) {
     super(props)
 
+    this.onFeatureAdded_ = this.onFeatureAdded_.bind(this)
+    this.onSelectionMaybeChanged_ = this.onSelectionMaybeChanged_.bind(this)
+    this.onUAVsUpdated_ = this.onUAVsUpdated_.bind(this)
+
     this.featureManager = new FeatureManager(this.source)
     this.featureManager.featureFactory = (id, geom) => (new UAVFeature(id, geom))
-    this.eventBindings = {}
+    this.featureManager.featureAdded.add(this.onFeatureAdded_)
 
-    this.onUAVsUpdated_ = this.onUAVsUpdated_.bind(this)
+    this.eventBindings = {}
   }
 
   componentWillReceiveProps (newProps) {
     this.onFlockMaybeChanged_(this.props.flock, newProps.flock)
+    this.onSelectionMaybeChanged_(this.props.selection, newProps.selection)
     this.featureManager.projection = newProps.projection
   }
 
   componentDidMount () {
     super.componentDidMount()
     this.onFlockMaybeChanged_(undefined, this.props.flock)
+    this.onSelectionMaybeChanged_(undefined, this.props.selection)
     this.featureManager.projection = this.props.projection
   }
 
   componentWillUnmount () {
     this.onFlockMaybeChanged_(this.props.flock, undefined)
+    this.onSelectionMaybeChanged_(this.props.selection, undefined)
     this.featureManager.projection = undefined
     super.componentWillUnmount()
+  }
+
+  /**
+   * Event handler that is called when a new feature was added by the feature
+   * manager. This happens when we see a new UAV for the first time.
+   *
+   * @param {UAVFeature}  feature  the feature that was added
+   */
+  onFeatureAdded_ (feature) {
+    // Ensure that the feature is selected automatically if it is part
+    // of the current selection
+    feature.selected = _.includes(this.props.selection, feature.getId())
   }
 
   /**
@@ -73,6 +92,23 @@ export default class ActiveUAVsLayerSource extends source.Vector {
   }
 
   /**
+   * Function that is called when we suspect that the set of selected UAVs
+   * may have changed.
+   *
+   * @param {Array<string>}  oldSelection  the old selection of UAVs
+   * @param {Array<string>}  newSelection  the new selection of UAVs
+   */
+  onSelectionMaybeChanged_ (oldSelection, newSelection) {
+    const getFeatures = this.featureManager.getFeatureById.bind(this.featureManager)
+    _(newSelection).difference(oldSelection).map(getFeatures).filter().each(
+      feature => { feature.selected = true }
+    )
+    _(oldSelection).difference(newSelection).map(getFeatures).filter().each(
+      feature => { feature.selected = false }
+    )
+  }
+
+  /**
    * Event handler that is called when the status of some of the UAVs has
    * changed in the flock and the layer should be re-drawn.
    *
@@ -85,8 +121,7 @@ export default class ActiveUAVsLayerSource extends source.Vector {
         uav.id, [uav.lon, uav.lat]
       )
 
-      // Here we assume that the feature was created by _createStyleForUAV
-      // so its first style object is the icon
+      // Set or update the heading of the feature
       if (typeof uav.heading !== 'undefined') {
         feature.heading = uav.heading
       }
@@ -96,5 +131,6 @@ export default class ActiveUAVsLayerSource extends source.Vector {
 
 ActiveUAVsLayerSource.propTypes = {
   flock: PropTypes.instanceOf(Flock),
-  projection: PropTypes.func
+  projection: PropTypes.func,
+  selection: PropTypes.arrayOf(PropTypes.string).isRequired
 }

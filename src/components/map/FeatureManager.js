@@ -5,6 +5,7 @@
  */
 
 import _ from 'lodash'
+import Signal from 'mini-signals'
 import ol from 'openlayers'
 
 /**
@@ -32,13 +33,13 @@ export default class FeatureManager {
     this.featureFactory_ = undefined
     this.vectorSource_ = vectorSource
     this.projection = projection
+
+    this.featureAdded = new Signal()
+    this.featureRemoved = new Signal()
   }
 
   /**
    * Creates or updates a feature with the given ID at the given coordinate.
-   *
-   * If the given ID already had a feature, it will be overwritten with the
-   * new feature.
    *
    * @param {string} id  the identifier for which the feature has to be
    *        created or updated
@@ -80,6 +81,8 @@ export default class FeatureManager {
     if (this.vectorSource_) {
       this.vectorSource_.addFeature(feature)
     }
+
+    this.featureAdded.dispatch(feature)
 
     return feature
   }
@@ -206,3 +209,23 @@ export default class FeatureManager {
     }
   }
 }
+
+/**
+ * Event that is dispatched by a {@link FeatureManager} object when a new
+ * feature was added.
+ *
+ * The event contains the newly added feature.
+ *
+ * @event  FeatureManager#featureAdded
+ * @type {ol.Feature}
+ */
+
+/**
+ * Event that is dispatched by a {@link FeatureManager} object when an
+ * existing feature was removed.
+ *
+ * The event contains the feature that was removed.
+ *
+ * @event  FeatureManager#featureRemoved
+ * @type {ol.Feature}
+ */

@@ -39,7 +39,7 @@ class MapViewPresentation extends React.Component {
   }
 
   render () {
-    const { flock, projection, selectedTool } = this.props
+    const { flock, projection, selectedTool, selection } = this.props
     const center = projection([19.061951, 47.473340])
     const view = <View center={center} zoom={17} />
     return (
@@ -50,6 +50,7 @@ class MapViewPresentation extends React.Component {
 
         <layer.Vector updateWhileAnimating={true} updateWhileInteracting={true}>
           <ActiveUAVsLayerSource ref={this.assignActiveUAVsLayerRef_}
+                                 selection={selection}
                                  flock={flock} projection={projection} />
         </layer.Vector>
 
@@ -112,6 +113,7 @@ class MapViewPresentation extends React.Component {
 MapViewPresentation.propTypes = {
   flock: PropTypes.instanceOf(Flock),
   projection: PropTypes.func.isRequired,
+  selection: PropTypes.arrayOf(PropTypes.string).isRequired,
   selectedTool: PropTypes.string,
   dispatch: PropTypes.func.isRequired
 }
@@ -122,7 +124,8 @@ MapViewPresentation.propTypes = {
 const MapView = connect(
   // mapStateToProps
   state => ({
-    selectedTool: state.map.tools.selectedTool
+    selectedTool: state.map.tools.selectedTool,
+    selection: state.map.selection
   })
 )(MapViewPresentation)
 

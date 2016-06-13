@@ -8,7 +8,7 @@ import { handleActions } from 'redux-actions'
  * The default state of the map.
  */
 const defaultState = {
-  selection: {},
+  selection: [],
   tools: {
     selectedTool: 'pan'
   }
@@ -21,21 +21,29 @@ const defaultState = {
  *
  * Additions take precedence over removals.
  *
- * @param  {Object} current The current selection; each item in the selection
- *         is a key in the object and it should map to true. It will be
- *         mutated in place.
- * @param  {Array.<string>} add     The list of items to add
- * @param  {Array.<string>} remove  The list of items to remove
- * @return {Object} The same selection object
+ * @param  {string[]} current The current selection
+ * @param  {string[]} add     The list of items to add
+ * @param  {string[]} remove  The list of items to remove
+ * @return {string[]} The updated selection. It will always be an
+ *         object that is different (identity-wise) from the current
+ *         selection and it will always be sorted.
  */
 function updateSelection (current, add, remove) {
-  for (let item of remove) {
-    delete current[item]
+  const selectionAsSet = {}
+  for (let item of current) {
+    selectionAsSet[item] = true
   }
-  for (let item of add) {
-    current[item] = true
+  if (remove) {
+    for (let item of remove) {
+      delete selectionAsSet[item]
+    }
   }
-  return current
+  if (add) {
+    for (let item of add) {
+      selectionAsSet[item] = true
+    }
+  }
+  return Object.keys(selectionAsSet).sort()
 }
 
 /**
@@ -44,22 +52,20 @@ function updateSelection (current, add, remove) {
 const reducer = handleActions({
 
   ADD_SELECTED_FEATURES (state, action) {
-    const newSelection = Object.assign({}, state.selection)
     return Object.assign({}, state, {
-      selection: updateSelection(newSelection, action.payload)
+      selection: updateSelection(state.selection, action.payload)
     })
   },
 
   REMOVE_SELECTED_FEATURES (state, action) {
-    const newSelection = Object.assign({}, state.selection)
     return Object.assign({}, state, {
-      selection: updateSelection(newSelection, [], action.payload)
+      selection: updateSelection(state.selection, [], action.payload)
     })
   },
 
   SET_SELECTED_FEATURES (state, action) {
     return Object.assign({}, state, {
-      selection: updateSelection({}, action.payload)
+      selection: updateSelection([], action.payload)
     })
   },
 
