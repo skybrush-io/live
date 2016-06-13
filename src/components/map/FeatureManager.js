@@ -136,7 +136,8 @@ export default class FeatureManager {
    * object (typically a point) as its only argument and must
    * return an appropriately constructed {@link ol.Feature} object.
    *
-   * @return {function(string, ol.geom.Geometry): ol.Feature}  the feature factory function
+   * @return {function(id: string, geom: ol.geom.Geometry): ol.Feature}
+   *         the feature factory function
    */
   get featureFactory () {
     return this.featureFactory_
@@ -150,7 +151,8 @@ export default class FeatureManager {
    * object (typically a point) as its only argument and must
    * return an appropriately constructed {@link ol.Feature} object.
    *
-   * @param {function(string, ol.geom.Geometry): Array<ol.style.Style>} value  the new style factory function
+   * @param {function(id: string, geom: ol.geom.Geometry): Array<ol.style.Style>} value
+   *        the new style factory function
    * @return {undefined}
    */
   set featureFactory (value) {

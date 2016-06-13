@@ -26,6 +26,9 @@ coverage
 # Compiled binary addons (http://nodejs.org/api/addons.html)
 build/Release
 
+# Generated API documentation
+doc/api/
+
 # Stuff packed by webpack
 dist/
 

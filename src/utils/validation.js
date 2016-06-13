@@ -139,9 +139,8 @@ export function between (min, max) {
  * Creates a validator function for a form from a set of rules for some
  * (or all) of the form fields.
  *
- * @param {Object.<string,(function|function[])>} rules  an object mapping
- *        field identifiers to validator functions or arrays of validator
- *        functions
+ * @param {Object>} rules  an object mapping field identifiers to validator
+ *        functions or arrays of validator functions
  * @return {function} an appropriate validator function for the form
  */
 export function createValidator (rules) {

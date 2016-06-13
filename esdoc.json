@@ -1,0 +1,8 @@
+{
+  "source": "./src",
+  "destination": "./doc/api",
+
+  "includes": ["\\.(js|jsx)$"],
+  "autoPrivate": true,
+  "unexportIdentifier": true
+}
