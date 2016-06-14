@@ -4,7 +4,13 @@
 
 import { createAction } from 'redux-actions'
 import { SELECT_MAP_TOOL, ADD_SELECTED_FEATURES, SET_SELECTED_FEATURES,
-         REMOVE_SELECTED_FEATURES } from './types'
+         REMOVE_SELECTED_FEATURES, SELECT_MAP_SOURCE } from './types'
+
+/**
+ * Action factory that creates an action that selects a given source in the
+ * map toolbar.
+ */
+export const selectMapSource = createAction(SELECT_MAP_SOURCE)
 
 /**
  * Action factory that creates an action that selects a given tool in the

@@ -9,6 +9,9 @@ import { setSelectedFeatures, addSelectedFeatures, removeSelectedFeatures }
        from '../../actions/map'
 import Flock from '../../model/flock'
 import { Tool } from './tools'
+import { Source } from './sources'
+
+import BingAPI from '../../BingMapsAPIKey'
 
 require('openlayers/css/ol.css')
 
@@ -39,13 +42,16 @@ class MapViewPresentation extends React.Component {
   }
 
   render () {
-    const { flock, projection, selectedTool, selection } = this.props
+    const { visibleSource, flock, projection, selectedTool, selection } = this.props
     const center = projection([19.061951, 47.473340])
     const view = <View center={center} zoom={17} />
     return (
       <Map view={view} loadTilesWhileInteracting={true}>
-        <layer.Tile>
+        <layer.Tile visible={visibleSource === Source.OSM}>
           <source.OSM />
+        </layer.Tile>
+        <layer.Tile visible={visibleSource === Source.BINGMAPS}>
+          <source.BingMaps APIkey={BingAPI.key} imagerySet="AerialWithLabels" />
         </layer.Tile>
 
         <layer.Vector updateWhileAnimating={true} updateWhileInteracting={true}>
@@ -55,6 +61,9 @@ class MapViewPresentation extends React.Component {
         </layer.Vector>
 
         <interaction.DragBox active={selectedTool === Tool.SELECT} boxend={this.onBoxDragEnded_} />
+
+        {/* Ctrl/Cmd + Drag --> Box select features */}
+        <interaction.DragBox condition={ol.events.condition.platformModifierKeyOnly} boxend={this.onBoxDragEnded_} />
 
         <interaction.DragZoom active={selectedTool === Tool.ZOOM}
           condition={ol.events.condition.always} />
@@ -111,6 +120,7 @@ class MapViewPresentation extends React.Component {
 }
 
 MapViewPresentation.propTypes = {
+  visibleSource: PropTypes.string,
   flock: PropTypes.instanceOf(Flock),
   projection: PropTypes.func.isRequired,
   selection: PropTypes.arrayOf(PropTypes.string).isRequired,
@@ -124,6 +134,7 @@ MapViewPresentation.propTypes = {
 const MapView = connect(
   // mapStateToProps
   state => ({
+    visibleSource: state.map.sources.visibleSource,
     selectedTool: state.map.tools.selectedTool,
     selection: state.map.selection
   })
