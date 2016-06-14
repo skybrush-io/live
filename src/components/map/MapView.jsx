@@ -5,10 +5,12 @@ import { connect } from 'react-redux'
 import ol from 'openlayers'
 
 import ActiveUAVsLayerSource from './ActiveUAVsLayerSource'
+import SelectNearestFeature from './interactions/SelectNearestFeature'
+import { Tool } from './tools'
+
 import { setSelectedFeatures, addSelectedFeatures, removeSelectedFeatures }
        from '../../actions/map'
 import Flock from '../../model/flock'
-import { Tool } from './tools'
 
 require('openlayers/css/ol.css')
 
@@ -35,26 +37,40 @@ class MapViewPresentation extends React.Component {
   constructor (props) {
     super(props)
     this.assignActiveUAVsLayerRef_ = this.assignActiveUAVsLayerRef_.bind(this)
+    this.assignActiveUAVsLayerSourceRef_ = this.assignActiveUAVsLayerSourceRef_.bind(this)
+    this.isLayerShowingActiveUAVs_ = this.isLayerShowingActiveUAVs_.bind(this)
     this.onBoxDragEnded_ = this.onBoxDragEnded_.bind(this)
+    this.onSelect_ = this.onSelect_.bind(this)
   }
 
   render () {
     const { flock, projection, selectedTool, selection } = this.props
     const center = projection([19.061951, 47.473340])
     const view = <View center={center} zoom={17} />
+
     return (
       <Map view={view} loadTilesWhileInteracting={true}>
         <layer.Tile>
           <source.OSM />
         </layer.Tile>
 
-        <layer.Vector updateWhileAnimating={true} updateWhileInteracting={true}>
-          <ActiveUAVsLayerSource ref={this.assignActiveUAVsLayerRef_}
+        <layer.Vector ref={this.assignActiveUAVsLayerRef_}
+                      updateWhileAnimating={true} updateWhileInteracting={true}>
+          <ActiveUAVsLayerSource ref={this.assignActiveUAVsLayerSourceRef_}
                                  selection={selection}
                                  flock={flock} projection={projection} />
         </layer.Vector>
 
-        <interaction.DragBox active={selectedTool === Tool.SELECT} boxend={this.onBoxDragEnded_} />
+        <SelectNearestFeature active={selectedTool === Tool.SELECT}
+                              addCondition={ol.events.condition.shiftKeyOnly}
+                              layers={this.isLayerShowingActiveUAVs_}
+                              removeCondition={ol.events.condition.altKeyOnly}
+                              toggleCondition={ol.events.condition.platformModifierKeyOnly}
+                              select={this.onSelect_}
+                              threshold={32} />
+
+        <interaction.DragBox active={selectedTool === Tool.SELECT}
+                             boxend={this.onBoxDragEnded_} />
 
         <interaction.DragZoom active={selectedTool === Tool.ZOOM}
           condition={ol.events.condition.always} />
@@ -65,14 +81,36 @@ class MapViewPresentation extends React.Component {
   }
 
   /**
+   * Handler called when the layer showing the active UAVs is monted.
+   * is mounted. We use it to store a reference to the component within
+   * this component.
+   *
+   * @param  {layer.Vector} ref  the layer for the active UAVs
+   */
+  assignActiveUAVsLayerRef_ (ref) {
+    this.activeUAVsLayer = ref
+  }
+
+  /**
    * Handler called when the layer source containing the list of UAVs
    * is mounted. We use it to store a reference to the component within
    * this component.
    *
    * @param  {ActiveUAVsLayerSource} ref  the layer source for the active UAVs
    */
-  assignActiveUAVsLayerRef_ (ref) {
-    this.activeUAVsLayer = ref
+  assignActiveUAVsLayerSourceRef_ (ref) {
+    this.activeUAVsLayerSource = ref
+  }
+
+  /**
+   * Returns true if the given layer is the layer that shows the active UAVs,
+   * false otherwise.
+   *
+   * @param {ol.Layer} layer  the layer to test
+   * @return  whether the given layer is the one that shows the active UAVs
+   */
+  isLayerShowingActiveUAVs_ (layer) {
+    return this.activeUAVsLayer && this.activeUAVsLayer.layer === layer
   }
 
   /**
@@ -83,7 +121,7 @@ class MapViewPresentation extends React.Component {
    *         interaction
    */
   onBoxDragEnded_ (event) {
-    const layer = this.activeUAVsLayer
+    const layer = this.activeUAVsLayerSource
     if (!layer) {
       return
     }
@@ -107,6 +145,29 @@ class MapViewPresentation extends React.Component {
     })
 
     this.props.dispatch(action(ids))
+  }
+
+  /**
+   * Event handler that is called when the user selects a UAV on the map
+   * by clicking.
+   *
+   * @param  {string}  mode  the selection mode; one of 'add', 'remove',
+   *         'toggle' or 'set'
+   * @param  {ol.Feature}  feature  the selected feature
+   * @param  {Number}  distance  the distance of the feature from the point
+   *         where the user clicked, in pixels
+   */
+  onSelect_ (mode, feature, distance) {
+    const actionMapping = {
+      'add': addSelectedFeatures,
+      'remove': removeSelectedFeatures,
+      'toggle': feature.selected ? removeSelectedFeatures : addSelectedFeatures
+    }
+    const action = actionMapping[mode] || setSelectedFeatures
+    const id = feature ? feature.getId() : undefined
+    if (id) {
+      this.props.dispatch(action([id]))
+    }
   }
 }
 
