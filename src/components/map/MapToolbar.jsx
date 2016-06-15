@@ -53,6 +53,7 @@ const MapToolbarPresentation = ({ visibleSource, onSourceSelected, selectedTool,
           onChange={handleSourceChange}
           value={visibleSource}
           selectedMenuItemStyle={{ color: selectedColor }}
+          style={{ 'border-left': '1px solid rgba(0, 0, 0,  0.172549)' }}
           targetOrigin={{ vertical: 'bottom', horizontal: 'left' }}
           useLayerForClickAway={true}
         >
