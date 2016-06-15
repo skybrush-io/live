@@ -158,7 +158,7 @@ export default class MessageHub {
    *
    * @param {function} emitter  a function to call when the hub wants to
    *        emit a new message
-   * @param {Number}   timeout  number of seconds to wait for a response for
+   * @param {number}   timeout  number of seconds to wait for a response for
    *        a message from the server before we consider it as a timeout
    */
   constructor (emitter, timeout = 5) {

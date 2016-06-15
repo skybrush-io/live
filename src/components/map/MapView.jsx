@@ -6,13 +6,13 @@ import ol from 'openlayers'
 
 import ActiveUAVsLayerSource from './ActiveUAVsLayerSource'
 import SelectNearestFeature from './interactions/SelectNearestFeature'
+
 import { Tool } from './tools'
+import { Source } from './sources'
 
 import { setSelectedFeatures, addSelectedFeatures, removeSelectedFeatures }
        from '../../actions/map'
 import Flock from '../../model/flock'
-import { Tool } from './tools'
-import { Source } from './sources'
 
 import { BingAPI } from 'config'
 
@@ -24,7 +24,7 @@ require('openlayers/css/ol.css')
  *
  * Longitudes and latitudes are assumed to be given in WGS-84.
  *
- * @param {Number[]}  coords  the longitude and latitude, in this order
+ * @param {number[]}  coords  the longitude and latitude, in this order
  * @return {Object} the OpenLayers coordinate corresponding to the given
  *         latitude and longitude
  */
@@ -91,8 +91,8 @@ class MapViewPresentation extends React.Component {
   }
 
   /**
-   * Handler called when the layer showing the active UAVs is monted.
-   * is mounted. We use it to store a reference to the component within
+   * Handler called when the layer showing the active UAVs is mounted.
+   * We use it to store a reference to the component within
    * this component.
    *
    * @param  {layer.Vector} ref  the layer for the active UAVs
@@ -117,7 +117,7 @@ class MapViewPresentation extends React.Component {
    * false otherwise.
    *
    * @param {ol.Layer} layer  the layer to test
-   * @return  whether the given layer is the one that shows the active UAVs
+   * @return {boolean} whether the given layer is the one that shows the active UAVs
    */
   isLayerShowingActiveUAVs_ (layer) {
     return this.activeUAVsLayer && this.activeUAVsLayer.layer === layer
@@ -164,7 +164,7 @@ class MapViewPresentation extends React.Component {
    * @param  {string}  mode  the selection mode; one of 'add', 'remove',
    *         'toggle' or 'set'
    * @param  {ol.Feature}  feature  the selected feature
-   * @param  {Number}  distance  the distance of the feature from the point
+   * @param  {number}  distance  the distance of the feature from the point
    *         where the user clicked, in pixels
    */
   onSelect_ (mode, feature, distance) {

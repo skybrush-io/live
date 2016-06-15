@@ -78,7 +78,7 @@ export function finite (value) {
  * {@link finite} to ensure that the returned validator function is given a
  * value that can actually be parsed as a number.
  *
- * @param {Number} min  the minimum value that the generated validator
+ * @param {number} min  the minimum value that the generated validator
  *        will accept
  * @return {function} a validator function
  */
@@ -98,7 +98,7 @@ export function atLeast (min) {
  * {@link finite} to ensure that the returned validator function is given a
  * value that can actually be parsed as a number.
  *
- * @param {Number} max  the maximum value that the generated validator
+ * @param {number} max  the maximum value that the generated validator
  *        will accept
  * @return {function} a validator function
  */
@@ -118,9 +118,9 @@ export function atMost (max) {
  * {@link finite} to ensure that the returned validator function is given a
  * value that can actually be parsed as a number.
  *
- * @param {Number} min  the minimum value that the generated validator
+ * @param {number} min  the minimum value that the generated validator
  *        will accept
- * @param {Number} max  the maximum value that the generated validator
+ * @param {number} max  the maximum value that the generated validator
  *        will accept
  * @return {function} a validator function
  */
@@ -139,7 +139,7 @@ export function between (min, max) {
  * Creates a validator function for a form from a set of rules for some
  * (or all) of the form fields.
  *
- * @param {Object>} rules  an object mapping field identifiers to validator
+ * @param {Object} rules an object mapping field identifiers to validator
  *        functions or arrays of validator functions
  * @return {function} an appropriate validator function for the form
  */

@@ -15,7 +15,7 @@ import ContentClear from 'material-ui/svg-icons/content/clear'
 const Widget = ({ children, showControls, style }) => {
   const controls = showControls ? (
     <div className="widget-action-bar">
-      <IconButton><ContentClear/></IconButton>
+      <IconButton><ContentClear /></IconButton>
     </div>
   ) : undefined
   return (

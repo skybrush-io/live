@@ -31,22 +31,22 @@ const entryStylesByState = {
   [ConnectionState.CONNECTED]: {
     backgroundColor: colors.white,
     color: colors.green500,
-    icon: <ActionDone/>
+    icon: <ActionDone />
   },
   [ConnectionState.CONNECTING]: {
     backgroundColor: colors.yellow500,
     color: colors.black,
-    icon: <ActionSettingsEthernet/>
+    icon: <ActionSettingsEthernet />
   },
   [ConnectionState.DISCONNECTED]: {
     backgroundColor: colors.redA700,
     color: colors.white,
-    icon: <ContentClear/>
+    icon: <ContentClear />
   },
   [ConnectionState.DISCONNECTING]: {
     backgroundColor: colors.yellow500,
     color: colors.black,
-    icon: <ActionSettingsEthernet/>
+    icon: <ActionSettingsEthernet />
   }
 }
 
@@ -57,7 +57,7 @@ const entryStylesByState = {
 const entryStyleForUnknownState = {
   backgroundColor: colors.grey500,
   color: colors.white,
-  icon: <ActionHelpOutline/>
+  icon: <ActionHelpOutline />
 }
 
 /**
@@ -73,7 +73,7 @@ const stateNames = {
 /**
  * Custom formatter of secondary text for a ConnectionListEntry
  *
- * @param  {Number} value  the value to format
+ * @param  {number} value  the value to format
  * @param  {string} unit   the unit of the value (e.g., second)
  * @return {string} the formattted secondary text
  */
@@ -95,7 +95,7 @@ const ConnectionListEntry = (props) => {
     ? <TimeAgo date={stateChangedAt} formatter={timeIntervalFormatter} />
     : null
   const actionButton = action
-    ? <IconButton onTouchTap={action}><ActionSettings/></IconButton>
+    ? <IconButton onTouchTap={action}><ActionSettings /></IconButton>
     : null
   let secondaryText = stateNames[state] || 'Unknown state'
 
@@ -104,7 +104,7 @@ const ConnectionListEntry = (props) => {
   }
 
   return (
-    <ListItem leftAvatar={<Avatar {...style}/>}
+    <ListItem leftAvatar={<Avatar {...style} />}
               primaryText={name}
               secondaryText={secondaryText}
               rightIconButton={actionButton}

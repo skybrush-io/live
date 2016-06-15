@@ -19,7 +19,10 @@ module.exports = {
     'valid-jsdoc': ['error', {
       'preferType': {
         'String': 'string',
-        'number': 'Number',
+        'Number': 'number',
+        'Boolean': 'boolean',
+        'bool': 'boolean',
+        'Bool': 'boolean',
         'object': 'Object'
       },
       'requireReturn': false

@@ -53,11 +53,11 @@ export default class Application extends React.Component {
               </Widget>
             </div>
 
-            <ServerSettingsDialog/>
-            <ServerConnectionManager/>
+            <ServerSettingsDialog />
+            <ServerConnectionManager />
 
-            <GlobalErrorDialog/>
-            <GlobalSnackbar/>
+            <GlobalErrorDialog />
+            <GlobalSnackbar />
           </div>
         </MuiThemeProvider>
       </StoreProvider>

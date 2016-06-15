@@ -8,9 +8,9 @@ import ol from 'openlayers'
  * Calculates the Euclidean distance between two OpenLayers coordinates.
  * Also works for higher dimensions.
  *
- * @param {Array<Number>|ol.Coordinate} first   the first coordinate
- * @param {Array<Number>|ol.Coordinate} second  the second coordinate
- * @return {Number} the Euclidean distance between the two coordinates
+ * @param {number[]|ol.Coordinate} first   the first coordinate
+ * @param {number[]|ol.Coordinate} second  the second coordinate
+ * @return {number} the Euclidean distance between the two coordinates
  */
 export const euclideanDistance = (first, second) => {
   const n = Math.min(first.length, second.length)

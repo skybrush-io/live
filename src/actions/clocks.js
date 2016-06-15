@@ -18,7 +18,7 @@ export const clearClockList = createAction(CLEAR_CLOCK_LIST)
  *
  * @param  {string}  id     the identifier of the clock whose state has
  *                          changed
- * @param  {object}  state  an object mapping the Redux properties of a
+ * @param  {Object}  state  an object mapping the Redux properties of a
  *                          clock to their new values
  */
 export const setClockState = createAction(SET_CLOCK_STATE)

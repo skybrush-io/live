@@ -43,7 +43,7 @@ class SelectNearestFeatureInteraction extends ol.interaction.Interaction {
    *        options.layers  the layers on which the interaction will operate, or
    *        a function that returns true for the layers that the interaction
    *        should operate on. Layers that are hidden will always be ignored.
-   * @param {Number|undefined} options.threshold  the distance threshold;
+   * @param {number|undefined} options.threshold  the distance threshold;
    *        the selection callback will be called only when the distance
    *        between the pixel of the map browser event and the closest feature
    *        is not larger than this value. The default is infinity.
@@ -152,7 +152,7 @@ class SelectNearestFeatureInteraction extends ol.interaction.Interaction {
    *
    * @param {ol.MapBrowserEvent}  event    the event
    * @param {ol.Feature}          feature  the feature
-   * @return {Number} the distance of the feature from the event, in pixels
+   * @return {number} the distance of the feature from the event, in pixels
    */
   distanceOfEventFromFeature_ (event, feature) {
     const closestPoint = feature.getGeometry().getClosestPoint(event.coordinate)

@@ -20,11 +20,11 @@ import { connect } from 'react-redux'
 const avatarStyles = [
   {
     'backgroundColor': colors.redA700,
-    'icon': <Stop/>
+    'icon': <Stop />
   },
   {
     'backgroundColor': colors.green500,
-    'icon': <PlayArrow/>
+    'icon': <PlayArrow />
   }
 ]
 
@@ -196,7 +196,7 @@ ClockDisplayListEntry.defaultProps = {
  * @return  {Object}  the rendered clock display list component
  */
 const ClockDisplayListPresentation = ({ clocks }) => {
-  const entries = clocks.map(clock => (<ClockDisplayListEntry key={clock.id} {...clock}/>))
+  const entries = clocks.map(clock => (<ClockDisplayListEntry key={clock.id} {...clock} />))
   if (!entries.length) {
     entries.push(<Subheader key="__subheader__">No clocks</Subheader>)
   }

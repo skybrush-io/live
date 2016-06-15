@@ -35,7 +35,7 @@ export default class UAVFeature extends ol.Feature {
   /**
    * Sets the current heading of the UAV.
    *
-   * @param {Number} value  the new heading of the UAV, in degrees
+   * @param {number} value  the new heading of the UAV, in degrees
    */
   set heading (value) {
     if (this.heading_ === value) {

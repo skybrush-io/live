@@ -29,13 +29,6 @@ const MapToolbarPresentation = ({ visibleSource, onSourceSelected, selectedTool,
   const handleSourceChange = (event, value) => {
     onSourceSelected(value)
   }
-  // <IconMenu
-  //     iconButtonElement={<IconButton><MapsLayers /></IconButton>}
-  //     onChange={this.handleChangeSingle}
-  //     value={this.state.valueSingle}
-  //   >
-
-  // onChange={function (event, value) { partial(onSourceSelected, Source.OSM); console.log(value) }}
 
   return (
     <div>

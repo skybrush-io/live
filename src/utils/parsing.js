@@ -17,7 +17,7 @@ const knownEpochs = {
  * handling nulls and undefined values gracefully.
  *
  * @param  {?Date}    value  the date object to convert
- * @return {?Number}  the number of seconds since the UNIX epoch at the
+ * @return {?number}  the number of seconds since the UNIX epoch at the
  *         given date, or null if the date was null, or undefined if the
  *         date was undefined
  */

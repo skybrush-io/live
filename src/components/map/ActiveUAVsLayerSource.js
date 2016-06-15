@@ -95,8 +95,8 @@ export default class ActiveUAVsLayerSource extends source.Vector {
    * Function that is called when we suspect that the set of selected UAVs
    * may have changed.
    *
-   * @param {Array<string>}  oldSelection  the old selection of UAVs
-   * @param {Array<string>}  newSelection  the new selection of UAVs
+   * @param {string[]}  oldSelection  the old selection of UAVs
+   * @param {string[]}  newSelection  the new selection of UAVs
    */
   onSelectionMaybeChanged_ (oldSelection, newSelection) {
     const getFeatures = this.featureManager.getFeatureById.bind(this.featureManager)
