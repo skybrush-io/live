@@ -8,6 +8,9 @@ import { handleActions } from 'redux-actions'
  * The default state of the map.
  */
 const defaultState = {
+  sources: {
+    visibleSource: 'osm'
+  },
   selection: [],
   tools: {
     selectedTool: 'pan'
@@ -75,6 +78,15 @@ const reducer = handleActions({
     })
     return Object.assign({}, state, {
       tools: newToolState
+    })
+  },
+
+  SELECT_MAP_SOURCE (state, action) {
+    const newSourceState = Object.assign({}, state.sources, {
+      visibleSource: action.payload
+    })
+    return Object.assign({}, state, {
+      sources: newSourceState
     })
   }
 

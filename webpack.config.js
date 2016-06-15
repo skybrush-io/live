@@ -1,5 +1,6 @@
 // Import the promise polyfill for ye olde Node installations
 require('es6-promise').polyfill()
+let path = require('path')
 
 module.exports = {
   devtool: 'eval',
@@ -8,6 +9,9 @@ module.exports = {
     filename: './dist/bundle.js'
   },
   resolve: {
+    alias: {
+      config: path.join(__dirname, 'config', process.env.NODE_ENV || 'production')
+    },
     extensions: ['', '.webpack.js', '.web.js', '.js', '.jsx']
   },
   module: {
