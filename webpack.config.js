@@ -1,3 +1,6 @@
+// Use strict mode so we can have block-scoped declarations
+'use strict'
+
 // Import the promise polyfill for ye olde Node installations
 require('es6-promise').polyfill()
 let path = require('path')
