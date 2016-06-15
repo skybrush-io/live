@@ -50,7 +50,7 @@ const MapToolbarPresentation = ({ visibleSource, onSourceSelected, selectedTool,
           targetOrigin={{ vertical: 'bottom', horizontal: 'left' }}
           useLayerForClickAway={true}
         >
-        <MenuItem value={Source.OSM} primaryText="OSM" />
+        <MenuItem value={Source.OSM} primaryText="OpenStreetMap" />
         <MenuItem value={Source.BING_MAPS.AERIAL_WITH_LABELS} primaryText="Bing Maps (aerial with labels)" />
         <MenuItem value={Source.BING_MAPS.ROAD} primaryText="Bing Maps (road)" />
       </IconMenu>
