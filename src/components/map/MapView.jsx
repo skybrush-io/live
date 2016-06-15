@@ -50,8 +50,8 @@ class MapViewPresentation extends React.Component {
         <layer.Tile visible={visibleSource === Source.OSM}>
           <source.OSM />
         </layer.Tile>
-        <layer.Tile visible={visibleSource === Source.BINGMAPS}>
-          <source.BingMaps APIkey={BingAPI.key} imagerySet="AerialWithLabels" />
+        <layer.Tile visible={visibleSource === Source.BING_MAPS}>
+          <source.BingMaps apiKey={BingAPI.key} imagerySet="AerialWithLabels" />
         </layer.Tile>
 
         <layer.Vector updateWhileAnimating={true} updateWhileInteracting={true}>

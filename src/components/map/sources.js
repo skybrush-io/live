@@ -8,5 +8,5 @@
  */
 export const Source = {
   OSM: 'osm',
-  BINGMAPS: 'bingmaps'
+  BING_MAPS: 'bingMaps'
 }

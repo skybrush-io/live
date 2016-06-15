@@ -26,9 +26,6 @@ const MapToolbarPresentation = ({ visibleSource, onSourceSelected, selectedTool,
   const colorForTool = (tool) => (
     selectedTool === tool ? selectedColor : undefined
   )
-  const colorForSource = (source) => (
-    visibleSource === source ? selectedColor : undefined
-  )
   const handleSourceChange = (event, value) => {
     onSourceSelected(value)
   }
@@ -55,10 +52,13 @@ const MapToolbarPresentation = ({ visibleSource, onSourceSelected, selectedTool,
           iconButtonElement={<IconButton><MapsLayers /></IconButton>}
           onChange={handleSourceChange}
           value={visibleSource}
+          selectedMenuItemStyle={{ color: selectedColor }}
+          targetOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+          useLayerForClickAway={true}
         >
-          <MenuItem color={colorForSource(Source.OSM)} value={Source.OSM} primaryText="OSM" />
-          <MenuItem color={colorForSource(Source.BINGMAPS)} value={Source.BINGMAPS} primaryText="BingMaps (aerial with labels)" />
-        </IconMenu>
+        <MenuItem value={Source.OSM} primaryText="OSM" />
+        <MenuItem value={Source.BING_MAPS} primaryText="Bing Maps (aerial with labels)" />
+      </IconMenu>
     </div>
   )
 }
