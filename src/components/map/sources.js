@@ -8,5 +8,8 @@
  */
 export const Source = {
   OSM: 'osm',
-  BING_MAPS: 'bingMaps'
+  BING_MAPS: {
+    AERIAL_WITH_LABELS: 'bingMaps.aerialWithLabels',
+    ROAD: 'bingMaps.road'
+  }
 }

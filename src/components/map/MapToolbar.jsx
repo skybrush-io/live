@@ -46,12 +46,13 @@ const MapToolbarPresentation = ({ visibleSource, onSourceSelected, selectedTool,
           onChange={handleSourceChange}
           value={visibleSource}
           selectedMenuItemStyle={{ color: selectedColor }}
-          style={{ 'border-left': '1px solid rgba(0, 0, 0,  0.172549)' }}
+          style={{ 'borderLeft': '1px solid rgba(0, 0, 0,  0.172549)' }}
           targetOrigin={{ vertical: 'bottom', horizontal: 'left' }}
           useLayerForClickAway={true}
         >
         <MenuItem value={Source.OSM} primaryText="OSM" />
-        <MenuItem value={Source.BING_MAPS} primaryText="Bing Maps (aerial with labels)" />
+        <MenuItem value={Source.BING_MAPS.AERIAL_WITH_LABELS} primaryText="Bing Maps (aerial with labels)" />
+        <MenuItem value={Source.BING_MAPS.ROAD} primaryText="Bing Maps (road)" />
       </IconMenu>
     </div>
   )
@@ -73,11 +74,8 @@ MapToolbarPresentation.contextTypes = {
  */
 const MapToolbar = connect(
   // mapStateToProps
-  state => {
-    let mappedProps = Object.assign({}, state.map.tools)
-    mappedProps.visibleSource = state.map.sources.visibleSource
-    return mappedProps
-  },
+  state => Object.assign({}, state.map.tools,
+    {visibleSource: state.map.sources.visibleSource}),
   // mapDispatchToProps
   dispatch => ({
     onSourceSelected (source) {

@@ -57,8 +57,11 @@ class MapViewPresentation extends React.Component {
         <layer.Tile visible={visibleSource === Source.OSM}>
           <source.OSM />
         </layer.Tile>
-        <layer.Tile visible={visibleSource === Source.BING_MAPS}>
+        <layer.Tile visible={visibleSource === Source.BING_MAPS.AERIAL_WITH_LABELS}>
           <source.BingMaps apiKey={BingAPI.key} imagerySet="AerialWithLabels" />
+        </layer.Tile>
+        <layer.Tile visible={visibleSource === Source.BING_MAPS.ROAD}>
+          <source.BingMaps apiKey={BingAPI.key} imagerySet="Road" />
         </layer.Tile>
 
         <layer.Vector ref={this.assignActiveUAVsLayerRef_}
