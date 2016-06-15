@@ -20,6 +20,11 @@ Steps to install
 3. Install all the dependencies of ``flockwave-web`` by running ``npm install``
    from a fresh checkout of the repository.
 
-4. Start a development web server with ``npm start``.
+4. Place a ``production.js`` file (or if you'd like,
+   you can specify other names via the environmental variable ``NODE_ENV``)
+   into the ``config`` folder based on the ``production.js.sample`` format,
+   and include your Bing Maps API key inside it.
 
-5. Navigate to http://localhost:8080 from your browser.
+5. Start a development web server with ``npm start``.
+
+6. Navigate to http://localhost:8080 from your browser.

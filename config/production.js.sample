@@ -1,0 +1,10 @@
+/**
+ * @file Production configuration file sample
+ */
+
+/**
+ * Object containing API key for accessing Bing Maps
+ */
+export const BingAPI = {
+  key: 'your_API_key_here'
+}

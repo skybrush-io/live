@@ -11,7 +11,7 @@ import Flock from '../../model/flock'
 import { Tool } from './tools'
 import { Source } from './sources'
 
-import BingAPI from '../../BingMapsAPIKey'
+import { BingAPI } from 'config'
 
 require('openlayers/css/ol.css')
 
