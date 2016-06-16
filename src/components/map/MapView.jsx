@@ -53,7 +53,7 @@ class MapViewPresentation extends React.Component {
     const view = <View center={center} zoom={17} />
 
     return (
-      <Map view={view} loadTilesWhileInteracting={true}>
+      <Map view={view} loadTilesWhileInteracting={true} focusOnMount={true}>
         <layer.Tile visible={visibleSource === Source.OSM}>
           <source.OSM />
         </layer.Tile>
