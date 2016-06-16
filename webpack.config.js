@@ -3,7 +3,10 @@
 
 // Import the promise polyfill for ye olde Node installations
 require('es6-promise').polyfill()
-let path = require('path')
+
+// Don't use let in the line below because older Node.js versions on Linux
+// will not like it
+var path = require('path')
 
 module.exports = {
   devtool: 'eval',
