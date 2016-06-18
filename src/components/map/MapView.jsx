@@ -1,5 +1,5 @@
 import React, { PropTypes } from 'react'
-import { Map, View, interaction, layer, source } from 'ol-react'
+import { Map, View, control, interaction, layer, source } from 'ol-react'
 import { connect } from 'react-redux'
 
 import ol from 'openlayers'
@@ -70,6 +70,8 @@ class MapViewPresentation extends React.Component {
                                  selection={selection}
                                  flock={flock} projection={projection} />
         </layer.Vector>
+
+        <control.ScaleLine units={control.ScaleLineUnit.METRIC} minWidth={100}/>
 
         <SelectNearestFeature active={selectedTool === Tool.SELECT}
                               addCondition={ol.events.condition.shiftKeyOnly}
