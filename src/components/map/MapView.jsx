@@ -53,7 +53,7 @@ class MapViewPresentation extends React.Component {
     const view = <View center={center} zoom={17} />
 
     return (
-      <Map view={view} loadTilesWhileInteracting={true} focusOnMount={true}>
+      <Map view={view} useDefaultControls={false} loadTilesWhileInteracting={true} focusOnMount={true}>
         <layer.Tile visible={visibleSource === Source.OSM}>
           <source.OSM />
         </layer.Tile>
@@ -71,7 +71,15 @@ class MapViewPresentation extends React.Component {
                                  flock={flock} projection={projection} />
         </layer.Vector>
 
-        <control.ScaleLine units={control.ScaleLineUnit.METRIC} minWidth={100}/>
+        <control.Attribution collapseLabel="«" />
+        <control.FullScreen source={document.body} />
+        <control.MousePosition />
+        <control.OverviewMap />
+        <control.Rotate autoHide={false} />
+        <control.ScaleLine minWidth={128} />
+        <control.Zoom />
+        <control.ZoomSlider />
+        <control.ZoomToExtent extent={[2121667.072843763, 6019491.668030561, 2122175.8568132864, 6019875.943246978]} />
 
         <SelectNearestFeature active={selectedTool === Tool.SELECT}
                               addCondition={ol.events.condition.shiftKeyOnly}
