@@ -52,8 +52,15 @@ class MapViewPresentation extends React.Component {
     const center = projection([19.061951, 47.473340])
     const view = <View center={center} zoom={17} />
 
+    const cursorStyles = {}
+    cursorStyles[Tool.SELECT] = 'crosshair'
+    cursorStyles[Tool.ZOOM] = 'zoom-in'
+    cursorStyles[Tool.PAN] = 'all-scroll'
+
     return (
-      <Map view={view} useDefaultControls={false} loadTilesWhileInteracting={true} focusOnMount={true}>
+      <Map view={view} useDefaultControls={false} loadTilesWhileInteracting={true} focusOnMount={true}
+        style={{cursor: cursorStyles[selectedTool]}}
+        >
         <layer.Tile visible={visibleSource === Source.OSM}>
           <source.OSM />
         </layer.Tile>
@@ -90,6 +97,7 @@ class MapViewPresentation extends React.Component {
                               threshold={32} />
 
         <interaction.DragBox active={selectedTool === Tool.SELECT}
+                             condition={ol.events.condition.platformModifierKeyOnly}
                              boxend={this.onBoxDragEnded_} />
 
         {/* Ctrl/Cmd + Drag --> Box select features */}
