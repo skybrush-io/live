@@ -101,12 +101,12 @@ body {
   }
   
   &.ol-zoom-extent {
-    top: 17em;
+    top: 4em;
   }
 }
 
 .ol-scale-line {
-  bottom: 2.4em;
+  bottom: 0.5em;
 }
 
 .ol-dragbox, .ol-dragzoom {
@@ -117,16 +117,22 @@ body {
 /* OpenLayers attribution widget should be in the lower left corner
 * by default */
 .ol-attribution {
-  left: 0.5em;
   right: auto;
+  bottom: 2.4em;
+  left: 0.5em;
 }
 
 .ol-mouse-position {
-  right: auto;
-  left: 15em;
+  top: auto;
+  right: 20em;
+  bottom: 0.5em;
   
   background: white;
   
   border-radius: 2px;
   box-shadow: rgba(0, 0, 0, 0.117647) 0px 1px 6px, rgba(0, 0, 0, 0.117647) 0px 1px 4px;
+  
+  .mouse-coordinates {
+    margin: 10px;
+  }
 }

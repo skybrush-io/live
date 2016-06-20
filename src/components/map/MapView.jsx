@@ -4,13 +4,28 @@ import { connect } from 'react-redux'
 
 import ol from 'openlayers'
 
+/**
+ * Helper condition that accepts either only platformModifier
+ * or only Shift being held during an openlayers interaction.
+ *
+ * @todo Ask Tamás for better solution.
+ *
+ * @param {event}  mapBrowserEvent  the actual event
+ * @return {boolean}  whether the condition was met
+ */
+ol.events.condition.platformModifierKeyOrShiftKeyOnly = mapBrowserEvent => (
+  ol.events.condition.platformModifierKeyOnly(mapBrowserEvent) ||
+  ol.events.condition.shiftKeyOnly(mapBrowserEvent)
+)
+
 import ActiveUAVsLayerSource from './ActiveUAVsLayerSource'
 import SelectNearestFeature from './interactions/SelectNearestFeature'
 
 import { Tool } from './tools'
 import { Source } from './sources'
 
-import { setSelectedFeatures, addSelectedFeatures, removeSelectedFeatures }
+import { setSelectedFeatures, addSelectedFeatures,
+         clearSelectedFeatures, removeSelectedFeatures }
        from '../../actions/map'
 import Flock from '../../model/flock'
 
@@ -80,13 +95,15 @@ class MapViewPresentation extends React.Component {
 
         <control.Attribution collapseLabel="«" />
         <control.FullScreen source={document.body} />
-        <control.MousePosition />
-        <control.OverviewMap />
+        <control.MousePosition projection="EPSG:4326"
+          coordinateFormat={function (c) {
+            return `<div class="mouse-coordinates">${ol.coordinate.format(c, '{y}, {x}', 4)}</div>`
+          }}/>
         <control.Rotate autoHide={false} />
         <control.ScaleLine minWidth={128} />
         <control.Zoom />
-        <control.ZoomSlider />
-        <control.ZoomToExtent extent={[2121667.072843763, 6019491.668030561, 2122175.8568132864, 6019875.943246978]} />
+        <control.ZoomToExtent
+          extent={[2121667.072843763, 6019491.668030561, 2122175.8568132864, 6019875.943246978]} />
 
         {/* PAN mode | Ctrl/Cmd + Drag --> Box select features */}
         <interaction.DragBox active={selectedTool === Tool.PAN}
@@ -98,12 +115,12 @@ class MapViewPresentation extends React.Component {
              Shift + Click --> Add nearest feature to selection
              Alt + Click --> Remove nearest feature from selection */}
         <SelectNearestFeature active={selectedTool === Tool.SELECT}
-                              addCondition={ol.events.condition.shiftKeyOnly}
+                              addCondition={ol.events.condition.never}
                               layers={this.isLayerShowingActiveUAVs_}
                               removeCondition={ol.events.condition.altKeyOnly}
-                              toggleCondition={ol.events.condition.platformModifierKeyOnly}
+                              toggleCondition={ol.events.condition.platformModifierKeyOrShiftKeyOnly}
                               select={this.onSelect_}
-                              threshold={32} />
+                              threshold={40} />
 
         {/* SELECT mode | Ctrl/Cmd + Drag --> Box select features */}
         <interaction.DragBox active={selectedTool === Tool.SELECT}
@@ -211,6 +228,7 @@ class MapViewPresentation extends React.Component {
   onSelect_ (mode, feature, distance) {
     const actionMapping = {
       'add': addSelectedFeatures,
+      'clear': clearSelectedFeatures,
       'remove': removeSelectedFeatures,
       'toggle': feature.selected ? removeSelectedFeatures : addSelectedFeatures
     }

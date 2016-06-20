@@ -60,6 +60,12 @@ const reducer = handleActions({
     })
   },
 
+  CLEAR_SELECTED_FEATURES (state, action) {
+    return Object.assign({}, state, {
+      selection: updateSelection([])
+    })
+  },
+
   REMOVE_SELECTED_FEATURES (state, action) {
     return Object.assign({}, state, {
       selection: updateSelection(state.selection, [], action.payload)
