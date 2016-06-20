@@ -88,6 +88,15 @@ class MapViewPresentation extends React.Component {
         <control.ZoomSlider />
         <control.ZoomToExtent extent={[2121667.072843763, 6019491.668030561, 2122175.8568132864, 6019875.943246978]} />
 
+        {/* PAN mode | Ctrl/Cmd + Drag --> Box select features */}
+        <interaction.DragBox active={selectedTool === Tool.PAN}
+                             condition={ol.events.condition.platformModifierKeyOnly}
+                             boxend={this.onBoxDragEnded_} />
+
+        {/* SELECT mode |
+             Ctrl/Cmd + Click --> Select nearest feature
+             Shift + Click --> Add nearest feature to selection
+             Alt + Click --> Remove nearest feature from selection */}
         <SelectNearestFeature active={selectedTool === Tool.SELECT}
                               addCondition={ol.events.condition.shiftKeyOnly}
                               layers={this.isLayerShowingActiveUAVs_}
@@ -96,15 +105,26 @@ class MapViewPresentation extends React.Component {
                               select={this.onSelect_}
                               threshold={32} />
 
+        {/* SELECT mode | Ctrl/Cmd + Drag --> Box select features */}
         <interaction.DragBox active={selectedTool === Tool.SELECT}
                              condition={ol.events.condition.platformModifierKeyOnly}
                              boxend={this.onBoxDragEnded_} />
 
-        {/* Ctrl/Cmd + Drag --> Box select features */}
-        <interaction.DragBox condition={ol.events.condition.platformModifierKeyOnly} boxend={this.onBoxDragEnded_} />
+        {/* SELECT mode | Shift + Drag --> Box add features to selection */}
+        <interaction.DragBox active={selectedTool === Tool.SELECT}
+                             condition={ol.events.condition.shiftKeyOnly}
+                             boxend={this.onBoxDragEnded_} />
 
+        {/* SELECT mode | Alt + Drag --> Box remove features from selection */}
+        <interaction.DragBox active={selectedTool === Tool.SELECT}
+                             condition={ol.events.condition.altKeyOnly}
+                             boxend={this.onBoxDragEnded_} />
+
+        {/* ZOOM mode | Drag --> Box zoom in */}
         <interaction.DragZoom active={selectedTool === Tool.ZOOM}
           condition={ol.events.condition.always} />
+
+        {/* ZOOM mode | Shift + Drag --> Box zoom out */}
         <interaction.DragZoom active={selectedTool === Tool.ZOOM}
           condition={ol.events.condition.shiftKeyOnly} out={true} />
       </Map>
