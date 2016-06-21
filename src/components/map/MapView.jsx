@@ -6,9 +6,9 @@ import ol from 'openlayers'
 
 /**
  * Helper condition that accepts either only platformModifier
- * or only Shift being held during an openlayers interaction.
+ * or only Shift being held down during an openlayers interaction.
  *
- * @todo Ask Tamás for better solution.
+ * @todo Ask Tamás which solution is better (fully custom or partially buit in).
  *
  * @param {event}  mapBrowserEvent  the actual event
  * @return {boolean}  whether the condition was met
@@ -16,6 +16,21 @@ import ol from 'openlayers'
 ol.events.condition.platformModifierKeyOrShiftKeyOnly = mapBrowserEvent => (
   ol.events.condition.platformModifierKeyOnly(mapBrowserEvent) ||
   ol.events.condition.shiftKeyOnly(mapBrowserEvent)
+)
+
+/**
+ * Helper condition that accepts Alt and Shift being held down
+ * during an openlayers interaction with the middle mouse button.
+ *
+ * @todo Make separate file for custom conditions.
+ *
+ * @param {event}  mapBrowserEvent  the actual event
+ * @return {boolean}  whether the condition was met
+ */
+ol.events.condition.AltShiftKeyAndMiddleMouseButton = mapBrowserEvent => (
+  mapBrowserEvent.originalEvent.button === 1 &&
+  mapBrowserEvent.originalEvent.shiftKey &&
+  mapBrowserEvent.originalEvent.altKey
 )
 
 import ActiveUAVsLayerSource from './ActiveUAVsLayerSource'
@@ -99,7 +114,7 @@ class MapViewPresentation extends React.Component {
           coordinateFormat={function (c) {
             return `<div class="mouse-coordinates">${ol.coordinate.format(c, '{y}, {x}', 4)}</div>`
           }}/>
-        <control.Rotate autoHide={false} />
+        <control.Rotate autoHide={true} />
         <control.ScaleLine minWidth={128} />
         <control.Zoom />
         <control.ZoomToExtent
@@ -109,6 +124,12 @@ class MapViewPresentation extends React.Component {
         <interaction.DragBox active={selectedTool === Tool.PAN}
                              condition={ol.events.condition.platformModifierKeyOnly}
                              boxend={this.onBoxDragEnded_} />
+
+        <interaction.DragRotate
+          condition={ol.events.condition.altShiftKeysOnly} />
+
+        <interaction.DragRotateAndZoom
+          condition={ol.events.condition.AltShiftKeyAndMiddleMouseButton} />
 
         {/* SELECT mode |
              Ctrl/Cmd + Click --> Select nearest feature
