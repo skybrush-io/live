@@ -33,6 +33,7 @@ ol.events.condition.AltShiftKeyAndMiddleMouseButton = mapBrowserEvent => (
   mapBrowserEvent.originalEvent.altKey
 )
 
+import MapReferenceRequestHandler from './MapReferenceRequestHandler'
 import ActiveUAVsLayerSource from './ActiveUAVsLayerSource'
 import SelectNearestFeature from './interactions/SelectNearestFeature'
 
@@ -78,7 +79,7 @@ class MapViewPresentation extends React.Component {
   }
 
   render () {
-    const { visibleSource, flock, projection, selectedTool, selection } = this.props
+    const { visibleSource, flock, mapReferenceSignals, projection, selectedTool, selection } = this.props
     const center = projection([19.061951, 47.473340])
     const view = <View center={center} zoom={17} />
 
@@ -88,9 +89,11 @@ class MapViewPresentation extends React.Component {
     cursorStyles[Tool.PAN] = 'all-scroll'
 
     return (
-      <Map view={view} useDefaultControls={false} loadTilesWhileInteracting={true} focusOnMount={true}
-        style={{cursor: cursorStyles[selectedTool]}}
-        >
+      <Map view={view} useDefaultControls={false} loadTilesWhileInteracting={true}
+        focusOnMount={true}
+        style={{cursor: cursorStyles[selectedTool]}} >
+        <MapReferenceRequestHandler mapReferenceSignals={mapReferenceSignals}/>
+
         <layer.Tile visible={visibleSource === Source.OSM}>
           <source.OSM />
         </layer.Tile>
@@ -264,6 +267,7 @@ class MapViewPresentation extends React.Component {
 MapViewPresentation.propTypes = {
   visibleSource: PropTypes.string,
   flock: PropTypes.instanceOf(Flock),
+  mapReferenceSignals: PropTypes.object,
   projection: PropTypes.func.isRequired,
   selection: PropTypes.arrayOf(PropTypes.string).isRequired,
   selectedTool: PropTypes.string,
@@ -284,6 +288,7 @@ const MapView = connect(
 
 MapView.propTypes = {
   flock: PropTypes.instanceOf(Flock),
+  mapReferenceSignals: PropTypes.object,
   projection: PropTypes.func.isRequired
 }
 
