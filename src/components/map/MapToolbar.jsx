@@ -9,6 +9,7 @@ import IconMenu from 'material-ui/IconMenu'
 import MenuItem from 'material-ui/MenuItem'
 import MapsLayers from 'material-ui/svg-icons/maps/layers'
 import MapRotationTextBox from './MapRotationTextBox'
+import FitAllFeaturesButton from './FitAllFeaturesButton'
 
 import partial from 'lodash/partial'
 import { connect } from 'react-redux'
@@ -18,6 +19,22 @@ import Signal from 'mini-signals'
 import { selectMapTool, selectMapSource } from '../../actions/map'
 import { Tool } from './tools'
 import { Source } from './sources'
+
+/**
+ * Separator component for the toolbar
+ *
+ * @returns {Object} the rendered component
+ */
+const MapToolbarSeparator = () => {
+  return (
+    <div style={{
+      display: 'inline-block',
+      height: '48px',
+      borderLeft: '1px solid rgba(0, 0, 0,  0.172549)',
+      verticalAlign: 'top'
+    }}></div>
+  )
+}
 
 /**
  * Presentation component for the map toolbar.
@@ -38,35 +55,47 @@ const MapToolbarPresentation = (
 
   return (
     <div>
-      <IconButton onClick={partial(onToolSelected, Tool.SELECT)}>
+      <IconButton onClick={partial(onToolSelected, Tool.SELECT)} tooltip="Select">
         <ContentSelectAll color={colorForTool(Tool.SELECT)} />
       </IconButton>
-      <IconButton onClick={partial(onToolSelected, Tool.ZOOM)}>
+      <IconButton onClick={partial(onToolSelected, Tool.ZOOM)} tooltip="Zoom">
         <ActionZoomIn color={colorForTool(Tool.ZOOM)} />
       </IconButton>
-      <IconButton onClick={partial(onToolSelected, Tool.PAN)}>
+      <IconButton onClick={partial(onToolSelected, Tool.PAN)} tooltip="Pan">
         <ActionPanTool color={colorForTool(Tool.PAN)} />
       </IconButton>
+
+      <MapToolbarSeparator />
+
       <IconMenu
-          iconButtonElement={<IconButton><MapsLayers /></IconButton>}
+          iconButtonElement={
+            <IconButton tooltip="Select layer"><MapsLayers /></IconButton>
+          }
           onChange={handleSourceChange}
           value={visibleSource}
           selectedMenuItemStyle={{ color: selectedColor }}
-          style={{ borderLeft: '1px solid rgba(0, 0, 0,  0.172549)' }}
           targetOrigin={{ vertical: 'bottom', horizontal: 'left' }}
           useLayerForClickAway={true}
         >
         <MenuItem value={Source.OSM} primaryText="OpenStreetMap" />
-        <MenuItem value={Source.BING_MAPS.AERIAL_WITH_LABELS} primaryText="Bing Maps (aerial with labels)" />
+        <MenuItem value={Source.BING_MAPS.AERIAL_WITH_LABELS}
+          primaryText="Bing Maps (aerial with labels)" />
         <MenuItem value={Source.BING_MAPS.ROAD} primaryText="Bing Maps (road)" />
       </IconMenu>
-      <MapRotationTextBox fieldWidth={'75px'}
+
+      <MapToolbarSeparator />
+
+      <MapRotationTextBox resetDuration={500} fieldWidth={'75px'}
         style={{
           display: 'inline-block',
           marginRight: '12px',
-          borderLeft: '1px solid rgba(0, 0, 0,  0.172549)',
           verticalAlign: 'top'
         }}
+        mapReferenceRequestSignal={mapReferenceRequestSignal} />
+
+      <MapToolbarSeparator />
+
+      <FitAllFeaturesButton duration={500} margin={64}
         mapReferenceRequestSignal={mapReferenceRequestSignal} />
     </div>
   )

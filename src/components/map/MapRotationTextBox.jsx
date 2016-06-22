@@ -3,9 +3,11 @@
  */
 
 import React from 'react'
+import ol from 'openlayers'
 
 import Signal from 'mini-signals'
 
+import IconButton from 'material-ui/IconButton'
 import ImageRotateRight from 'material-ui/svg-icons/image/rotate-right'
 import TextField from 'material-ui/TextField'
 
@@ -13,6 +15,7 @@ import TextField from 'material-ui/TextField'
  * React Component to display and adjust the rotation of the map view.
  *
  * @param {Object} props properties of the react component
+ * @property {number} resetDuration the amount of time the reset transition should take (in ms)
  * @property {string} fieldWidth the width of the actual input field
  * @property {string} style styling of the outermost element (a div)
  * @property {Signal} mapReferenceRequestSignal Mini-signal for requesting the map reference.
@@ -25,6 +28,7 @@ export default class MapRotationTextBox extends React.Component {
    * adds signal event handler and requests map reference.
    *
    * @param {Object} props properties of the react component
+   * @property {number} resetDuration the amount of time the reset transition should take (in ms)
    * @property {string} fieldWidth the width of the actual input field
    * @property {string} style styling of the outermost element (a div)
    * @property {Signal} mapReferenceRequestSignal Mini-signal for requesting the map reference.
@@ -43,6 +47,7 @@ export default class MapRotationTextBox extends React.Component {
     this.onFocus_ = this.onFocus_.bind(this)
     this.onBlur_ = this.onBlur_.bind(this)
     this.handleChange_ = this.handleChange_.bind(this)
+    this.handleClick_ = this.handleClick_.bind(this)
 
     props.mapReferenceRequestSignal.dispatch(this.onMapReferenceReceived_)
   }
@@ -50,7 +55,9 @@ export default class MapRotationTextBox extends React.Component {
   render () {
     return (
       <div style={this.props.style}>
-        <ImageRotateRight style={{ margin: '12px' }} />
+        <IconButton onClick={this.handleClick_} tooltip="Reset rotation">
+          <ImageRotateRight />
+        </IconButton>
         <TextField
           style={{ width: this.props.fieldWidth, verticalAlign: 'inherit' }}
           hintText="Rotation"
@@ -131,9 +138,27 @@ export default class MapRotationTextBox extends React.Component {
       rotation: e.target.value
     })
   }
+
+  /**
+  * Event handler that resets the heading of the map to north
+  *
+  * @param {Event} e the event fired from the IconButton component
+  */
+  handleClick_ (e) {
+    const view = this.map.getView()
+
+    this.map.beforeRender(ol.animation.rotate({
+      rotation: view.getRotation(),
+      duration: this.props.resetDuration,
+      easing: ol.easing.easeOut
+    }))
+
+    view.setRotation(0)
+  }
 }
 
 MapRotationTextBox.propTypes = {
+  resetDuration: React.PropTypes.number,
   fieldWidth: React.PropTypes.string,
   style: React.PropTypes.object,
   mapReferenceRequestSignal: React.PropTypes.instanceOf(Signal)

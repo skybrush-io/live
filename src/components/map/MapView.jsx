@@ -91,11 +91,8 @@ class MapViewPresentation extends React.Component {
           coordinateFormat={function (c) {
             return `<div class="mouse-coordinates">${ol.coordinate.format(c, '{y}, {x}', 4)}</div>`
           }}/>
-        <control.Rotate autoHide={true} />
         <control.ScaleLine minWidth={128} />
         <control.Zoom />
-        <control.ZoomToExtent
-          extent={[2121667.072843763, 6019491.668030561, 2122175.8568132864, 6019875.943246978]} />
 
         {/* PAN mode | Ctrl/Cmd + Drag --> Box select features */}
         <interaction.DragBox active={selectedTool === Tool.PAN}
