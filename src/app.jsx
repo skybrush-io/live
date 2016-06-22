@@ -30,11 +30,11 @@ injectTapEventPlugin()
 const muiTheme = getMuiTheme({})
 
 /**
- * Signals for passing around the map reference.
+ * Signal for requesting the map reference.
  *
  * @todo Ask Tamás where this should be declared.
  */
-const mapReferenceSignals = MapReferenceRequestHandler.generateSignals()
+const mapReferenceRequestSignal = MapReferenceRequestHandler.generateRequestSignal()
 
 /**
  * The main application component.
@@ -46,7 +46,7 @@ export default class Application extends React.Component {
         <MuiThemeProvider muiTheme={muiTheme}>
           <div>
             <div id="canvas">
-              <MapView flock={flock} mapReferenceSignals={mapReferenceSignals} />
+              <MapView flock={flock} mapReferenceRequestSignal={mapReferenceRequestSignal} />
 
               <Widget style={{ right: 8, bottom: 8, width: 300 }}>
                 <ClockDisplayList />
@@ -57,7 +57,7 @@ export default class Application extends React.Component {
               </Widget>
 
               <Widget style={{ top: 8, left: 41 }} showControls={false}>
-                <MapToolbar mapReferenceSignals={mapReferenceSignals} />
+                <MapToolbar mapReferenceRequestSignal={mapReferenceRequestSignal} />
               </Widget>
             </div>
 

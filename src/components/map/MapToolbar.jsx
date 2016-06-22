@@ -13,6 +13,8 @@ import MapRotationTextBox from './MapRotationTextBox'
 import partial from 'lodash/partial'
 import { connect } from 'react-redux'
 
+import Signal from 'mini-signals'
+
 import { selectMapTool, selectMapSource } from '../../actions/map'
 import { Tool } from './tools'
 import { Source } from './sources'
@@ -22,7 +24,10 @@ import { Source } from './sources'
  *
  * @returns {Object} the rendered component
  */
-const MapToolbarPresentation = ({ visibleSource, onSourceSelected, selectedTool, onToolSelected, mapReferenceSignals }, { muiTheme }) => {
+const MapToolbarPresentation = (
+  { visibleSource, onSourceSelected, selectedTool, onToolSelected, mapReferenceRequestSignal },
+  { muiTheme }
+) => {
   const selectedColor = muiTheme.palette.primary1Color
   const colorForTool = (tool) => (
     selectedTool === tool ? selectedColor : undefined
@@ -62,7 +67,7 @@ const MapToolbarPresentation = ({ visibleSource, onSourceSelected, selectedTool,
           borderLeft: '1px solid rgba(0, 0, 0,  0.172549)',
           verticalAlign: 'top'
         }}
-        mapReferenceSignals={mapReferenceSignals} />
+        mapReferenceRequestSignal={mapReferenceRequestSignal} />
     </div>
   )
 }
@@ -72,7 +77,7 @@ MapToolbarPresentation.propTypes = {
   selectedTool: PropTypes.string,
   onSourceSelected: PropTypes.func,
   onToolSelected: PropTypes.func,
-  mapReferenceSignals: PropTypes.object
+  mapReferenceRequestSignal: PropTypes.instanceOf(Signal)
 }
 
 MapToolbarPresentation.contextTypes = {

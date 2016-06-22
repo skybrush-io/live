@@ -4,29 +4,32 @@
 
 import React from 'react'
 
-import Rotate from 'material-ui/svg-icons/image/rotate-right'
+import Signal from 'mini-signals'
+
+import ImageRotateRight from 'material-ui/svg-icons/image/rotate-right'
 import TextField from 'material-ui/TextField'
 
 /**
  * React Component to display and adjust the rotation of the map view.
  *
+ * @param {Object} props properties of the react component
  * @property {string} fieldWidth the width of the actual input field
  * @property {string} style styling of the outermost element (a div)
- * @property {Object} Object containing signals for requesting
- * and sending map references.
+ * @property {Signal} mapReferenceRequestSignal Mini-signal for requesting the map reference.
+ *
+ * @emits {mapReferenceRequestSignal} requests map reference.
  */
 export default class MapRotationTextBox extends React.Component {
   /**
    * Constructor that sets initial state, binds context to functions,
    * adds signal event handler and requests map reference.
    *
-   * @param {Object} props properties of the react tomponent
+   * @param {Object} props properties of the react component
    * @property {string} fieldWidth the width of the actual input field
    * @property {string} style styling of the outermost element (a div)
-   * @property {Object} mapReferenceSignals Object containing signals for requesting
-   * and sending map references.
+   * @property {Signal} mapReferenceRequestSignal Mini-signal for requesting the map reference.
    *
-   * @emits {mapReferenceRequest} requests map reference.
+   * @emits {mapReferenceRequestSignal} requests map reference.
    */
   constructor (props) {
     super(props)
@@ -41,15 +44,13 @@ export default class MapRotationTextBox extends React.Component {
     this.onBlur_ = this.onBlur_.bind(this)
     this.handleChange_ = this.handleChange_.bind(this)
 
-    const {mapReferenceSignals} = props
-    mapReferenceSignals.mapReferenceResponse.add(this.onMapReferenceReceived_)
-    mapReferenceSignals.mapReferenceRequest.dispatch()
+    props.mapReferenceRequestSignal.dispatch(this.onMapReferenceReceived_)
   }
 
   render () {
     return (
       <div style={this.props.style}>
-        <Rotate style={{ margin: '12px' }} />
+        <ImageRotateRight style={{ margin: '12px' }} />
         <TextField
           style={{ width: this.props.fieldWidth, verticalAlign: 'inherit' }}
           hintText="Rotation"
@@ -67,10 +68,8 @@ export default class MapRotationTextBox extends React.Component {
   }
 
   /**
-   * Event handler for receiving the map reference.
+   * Callback for receiving the map reference.
    * Attaches event handlers to the map and it's view.
-   *
-   * @listens {mapReferenceResponse} listens for map references being sent.
    *
    * @param {ol.Map} map the map to attach the event handlers to
    */
@@ -136,5 +135,6 @@ export default class MapRotationTextBox extends React.Component {
 
 MapRotationTextBox.propTypes = {
   fieldWidth: React.PropTypes.string,
-  style: React.PropTypes.object
+  style: React.PropTypes.object,
+  mapReferenceRequestSignal: React.PropTypes.instanceOf(Signal)
 }

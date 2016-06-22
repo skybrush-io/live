@@ -1,40 +1,38 @@
 /**
  * @file React Component for sending reference of the map object to
- * other components that request it througn mini-signals.
+ * other components that request it through mini-signals.
  */
 
 import ol from 'openlayers'
 import React from 'react'
 import Signal from 'mini-signals'
 
+/**
+ * React Component for sending reference of the map object to
+ * other components that request it through mini-signals.
+ *
+ * @param {Object} props properties of the react component
+ * @property {Signal} mapReferenceRequestSignal Mini-signal for requesting the map reference.
+ */
 export default class MapReferenceRequestHandler extends React.Component {
   /**
-   * Constructor.
+   * Request signal generator function.
    *
-   * @return {Object} Object containing signals for requesting
-   * and sending map references.
-   * @property {Signal} mapReferenceRequest mini-signal for requesting a map reference
-   * @property {Signal} mapReferenceResponse mini-signal for sending a map reference
+   * @return {Signal} Mini-signal for requesting the map reference.
    */
-  static generateSignals () {
-    return {
-      mapReferenceRequest: new Signal(),
-      mapReferenceResponse: new Signal()
-    }
+  static generateRequestSignal () {
+    return new Signal()
   }
 
   /**
    * Constructor that adds signal handler.
    *
-   * @param {Object} props properties of the react tomponent
-   * @property {Object} mapReferenceSignals Object containing signals for requesting
-   * and sending map references.
+   * @param {Object} props properties of the react component
+   * @property {Signal} mapReferenceRequestSignal Mini-signal for requesting the map reference.
    */
   constructor (props) {
     super(props)
-    const {mapReferenceSignals} = props
-    mapReferenceSignals.mapReferenceRequest.add(this.onMapReferenceRequested_.bind(this))
-    this.responseSignal = mapReferenceSignals.mapReferenceResponse
+    props.mapReferenceRequestSignal.add(this.onMapReferenceRequested_.bind(this))
   }
 
   render () {
@@ -42,15 +40,20 @@ export default class MapReferenceRequestHandler extends React.Component {
   }
 
   /**
-   * Event handler for receiving the map reference.
-   * Attaches event handlers to the map and it's view.
+   * Event handler processing the map reference requests.
+   * Calls the supplied callback with the map reference.
    *
-   * @listens {mapReferenceRequest} listens for map references being sent.
-   * @emits {mapReferenceResponse} sends the requested map reference.
+   * @listens {mapReferenceRequestSignal} listens for map references being requested.
+   *
+   * @param {function} callback the callback sent by the component requesting the reference.
    */
-  onMapReferenceRequested_ () {
-    this.responseSignal.dispatch(this.context.map)
+  onMapReferenceRequested_ (callback) {
+    callback(this.context.map)
   }
+}
+
+MapReferenceRequestHandler.propTypes = {
+  mapReferenceRequestSignal: React.PropTypes.instanceOf(Signal)
 }
 
 MapReferenceRequestHandler.contextTypes = {

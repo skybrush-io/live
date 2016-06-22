@@ -3,35 +3,9 @@ import { Map, View, control, interaction, layer, source } from 'ol-react'
 import { connect } from 'react-redux'
 
 import ol from 'openlayers'
+import Condition from './conditions.js'
 
-/**
- * Helper condition that accepts either only platformModifier
- * or only Shift being held down during an openlayers interaction.
- *
- * @todo Ask Tamás which solution is better (fully custom or partially buit in).
- *
- * @param {event}  mapBrowserEvent  the actual event
- * @return {boolean}  whether the condition was met
- */
-ol.events.condition.platformModifierKeyOrShiftKeyOnly = mapBrowserEvent => (
-  ol.events.condition.platformModifierKeyOnly(mapBrowserEvent) ||
-  ol.events.condition.shiftKeyOnly(mapBrowserEvent)
-)
-
-/**
- * Helper condition that accepts Alt and Shift being held down
- * during an openlayers interaction with the middle mouse button.
- *
- * @todo Make separate file for custom conditions.
- *
- * @param {event}  mapBrowserEvent  the actual event
- * @return {boolean}  whether the condition was met
- */
-ol.events.condition.AltShiftKeyAndMiddleMouseButton = mapBrowserEvent => (
-  mapBrowserEvent.originalEvent.button === 1 &&
-  mapBrowserEvent.originalEvent.shiftKey &&
-  mapBrowserEvent.originalEvent.altKey
-)
+import Signal from 'mini-signals'
 
 import MapReferenceRequestHandler from './MapReferenceRequestHandler'
 import ActiveUAVsLayerSource from './ActiveUAVsLayerSource'
@@ -79,7 +53,7 @@ class MapViewPresentation extends React.Component {
   }
 
   render () {
-    const { visibleSource, flock, mapReferenceSignals, projection, selectedTool, selection } = this.props
+    const { visibleSource, flock, mapReferenceRequestSignal, projection, selectedTool, selection } = this.props
     const center = projection([19.061951, 47.473340])
     const view = <View center={center} zoom={17} />
 
@@ -92,7 +66,7 @@ class MapViewPresentation extends React.Component {
       <Map view={view} useDefaultControls={false} loadTilesWhileInteracting={true}
         focusOnMount={true}
         style={{cursor: cursorStyles[selectedTool]}} >
-        <MapReferenceRequestHandler mapReferenceSignals={mapReferenceSignals}/>
+        <MapReferenceRequestHandler mapReferenceRequestSignal={mapReferenceRequestSignal}/>
 
         <layer.Tile visible={visibleSource === Source.OSM}>
           <source.OSM />
@@ -132,7 +106,7 @@ class MapViewPresentation extends React.Component {
           condition={ol.events.condition.altShiftKeysOnly} />
 
         <interaction.DragRotateAndZoom
-          condition={ol.events.condition.AltShiftKeyAndMiddleMouseButton} />
+          condition={Condition.AltShiftKeyAndMiddleMouseButton} />
 
         {/* SELECT mode |
              Ctrl/Cmd + Click --> Select nearest feature
@@ -142,7 +116,7 @@ class MapViewPresentation extends React.Component {
                               addCondition={ol.events.condition.never}
                               layers={this.isLayerShowingActiveUAVs_}
                               removeCondition={ol.events.condition.altKeyOnly}
-                              toggleCondition={ol.events.condition.platformModifierKeyOrShiftKeyOnly}
+                              toggleCondition={Condition.platformModifierKeyOrShiftKeyOnly}
                               select={this.onSelect_}
                               threshold={40} />
 
@@ -267,7 +241,7 @@ class MapViewPresentation extends React.Component {
 MapViewPresentation.propTypes = {
   visibleSource: PropTypes.string,
   flock: PropTypes.instanceOf(Flock),
-  mapReferenceSignals: PropTypes.object,
+  mapReferenceRequestSignal: PropTypes.instanceOf(Signal),
   projection: PropTypes.func.isRequired,
   selection: PropTypes.arrayOf(PropTypes.string).isRequired,
   selectedTool: PropTypes.string,
@@ -288,7 +262,7 @@ const MapView = connect(
 
 MapView.propTypes = {
   flock: PropTypes.instanceOf(Flock),
-  mapReferenceSignals: PropTypes.object,
+  mapReferenceRequestSignal: PropTypes.instanceOf(Signal),
   projection: PropTypes.func.isRequired
 }
 
