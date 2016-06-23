@@ -3,6 +3,9 @@
 */
 
 import React from 'react'
+import { connect } from 'react-redux'
+import { showSnackbarMessage } from '../../actions/snackbar'
+
 import ol from 'openlayers'
 
 import Signal from 'mini-signals'
@@ -41,6 +44,7 @@ export default class FitAllFeaturesButton extends React.Component {
 
     this.onMapReferenceReceived_ = this.onMapReferenceReceived_.bind(this)
     this.handleClick_ = this.handleClick_.bind(this)
+    this.geolocationReceived_ = this.geolocationReceived_.bind(this)
 
     props.mapReferenceRequestSignal.dispatch(this.onMapReferenceReceived_)
   }
@@ -63,7 +67,7 @@ export default class FitAllFeaturesButton extends React.Component {
   }
 
   /**
-  * Event handler that calculates the target extent and fits it into the view
+  * Event handler that calculates the target extent and fits it into the view.
   *
   * @param {Event} e the event fired from the IconButton component
   */
@@ -74,8 +78,20 @@ export default class FitAllFeaturesButton extends React.Component {
     let featureArrays = feasibleLayers.map(l => l.getSource().getFeatures())
     let features = [].concat.apply([], featureArrays)
     let featurePositions = features.map(f => f.getGeometry().getCoordinates())
+    let filteredPositions = featurePositions.filter(p => (p[0] && p[1]))
 
-    let extent = ol.extent.boundingExtent(featurePositions)
+    if (filteredPositions.length === 0) {
+      this.props.dispatch(showSnackbarMessage(
+        'No valid drones avaiable, trying to get geolocation instead'
+      ))
+
+      if ('geolocation' in navigator) {
+        navigator.geolocation.getCurrentPosition(this.geolocationReceived_)
+      }
+      return
+    }
+
+    let extent = ol.extent.boundingExtent(filteredPositions)
 
     extent = ol.extent.buffer(extent, this.props.margin)
 
@@ -112,10 +128,35 @@ export default class FitAllFeaturesButton extends React.Component {
   isLayerFeasible_ (layer) {
     return layer && layer.getVisible() && layer instanceof ol.layer.Vector
   }
+
+  /**
+  * Event handler that centers the map to the received position.
+  *
+  * @param {Object} position the position object provided by the geolocation service
+  */
+  geolocationReceived_ (position) {
+    const view = this.map.getView()
+
+    this.map.beforeRender(ol.animation.pan({
+      source: view.getCenter(),
+      duration: this.props.duration,
+      easing: ol.easing.easeOut
+    }))
+
+    let center = ol.proj.fromLonLat(
+      [position.coords.longitude, position.coords.latitude],
+      'EPSG:3857'
+    )
+
+    view.setCenter(center)
+  }
 }
 
 FitAllFeaturesButton.propTypes = {
   duration: React.PropTypes.number,
   margin: React.PropTypes.number,
-  mapReferenceRequestSignal: React.PropTypes.instanceOf(Signal)
+  mapReferenceRequestSignal: React.PropTypes.instanceOf(Signal),
+  dispatch: React.PropTypes.func
 }
+
+export default connect()(FitAllFeaturesButton)
