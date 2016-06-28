@@ -85,7 +85,6 @@ class MapViewPresentation extends React.Component {
                                  flock={flock} projection={projection} />
         </layer.Vector>
 
-        <control.Attribution collapseLabel="«" />
         <control.FullScreen source={document.body} />
         <control.MousePosition projection="EPSG:4326"
           coordinateFormat={function (c) {
