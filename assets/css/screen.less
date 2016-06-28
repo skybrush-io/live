@@ -1,3 +1,4 @@
+@box-background-color: #ffffff;
 @button-offset: 20px;
 @short-transition-duration: 0.2s;
 @medium-transition-duration: 0.5s;
@@ -11,7 +12,7 @@ body {
 
 /* Mixin for styling boxes with drop shadows */
 .drop-shadow-box() {
-  background-color: #f0f0f0;
+  background-color: @box-background-color;
   padding: 0 !important;
   border-radius: 2px !important;
   box-shadow: rgba(0, 0, 0, 0.117647) 0px 1px 6px, rgba(0, 0, 0, 0.117647) 0px 1px 4px;
@@ -110,8 +111,15 @@ body {
   }
 }
 
+/* OpenLayers scale line should have a half-transparent "box styling" */
 .ol-scale-line {
+  .drop-shadow-box();
+  background-color: fade(@box-background-color, 75%);
   bottom: 0.5em;
+}
+.ol-scale-line-inner {
+  color: black;
+  border-color: black;
 }
 
 .ol-dragbox, .ol-dragzoom {
@@ -129,7 +137,7 @@ body {
 
 .ol-mouse-position {
   .drop-shadow-box();
-    
+
   top: auto;
   right: 20em;
   bottom: 0.5em;
