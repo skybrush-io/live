@@ -23,7 +23,7 @@ Condition.platformModifierKeyOrShiftKeyOnly = mapBrowserEvent => (
  * @param {event}  mapBrowserEvent  the actual event
  * @return {boolean}  whether the condition was met
  */
-Condition.AltShiftKeyAndMiddleMouseButton = mapBrowserEvent => (
+Condition.altShiftKeyAndMiddleMouseButton = mapBrowserEvent => (
   mapBrowserEvent.originalEvent.button === 1 &&
   mapBrowserEvent.originalEvent.shiftKey &&
   mapBrowserEvent.originalEvent.altKey

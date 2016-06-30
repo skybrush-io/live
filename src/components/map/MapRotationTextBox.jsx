@@ -100,7 +100,7 @@ export default class MapRotationTextBox extends React.Component {
   updateFromMap_ (e) {
     if (e.key === 'rotation') {
       this.setState({
-        rotation: e.target.get('rotation') / (Math.PI / 180)
+        rotation: -e.target.get('rotation') / (Math.PI / 180)
       })
     }
   }
@@ -132,7 +132,7 @@ export default class MapRotationTextBox extends React.Component {
    */
   handleChange_ (e) {
     // Maybe this should be done in componentWill/DidUpdate, but it causes feedback loop
-    this.map.getView().setRotation(e.target.value * (Math.PI / 180))
+    this.map.getView().setRotation(-e.target.value * (Math.PI / 180))
 
     this.setState({
       rotation: e.target.value

@@ -88,7 +88,7 @@ class MapViewPresentation extends React.Component {
         <control.FullScreen source={document.body} />
         <control.MousePosition projection="EPSG:4326"
           coordinateFormat={function (c) {
-            return `<div class="mouse-coordinates">${ol.coordinate.format(c, '{y}, {x}', 4)}</div>`
+            return `<div class="mouse-coordinates">${ol.coordinate.format(c, '{y}, {x}', 6)}</div>`
           }}/>
         <control.ScaleLine minWidth={128} />
         <control.Zoom />
@@ -102,7 +102,7 @@ class MapViewPresentation extends React.Component {
           condition={ol.events.condition.altShiftKeysOnly} />
 
         <interaction.DragRotateAndZoom
-          condition={Condition.AltShiftKeyAndMiddleMouseButton} />
+          condition={Condition.altShiftKeyAndMiddleMouseButton} />
 
         {/* SELECT mode |
              Ctrl/Cmd + Click --> Select nearest feature
