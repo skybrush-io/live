@@ -88,7 +88,7 @@ class MapViewPresentation extends React.Component {
         <control.FullScreen source={document.body} />
         <control.MousePosition projection="EPSG:4326"
           coordinateFormat={function (c) {
-            return `<div class="mouse-coordinates">${ol.coordinate.format(c, '{y}, {x}', 6)}</div>`
+            return ol.coordinate.format(c, '{y}, {x}', 6)
           }}/>
         <control.ScaleLine minWidth={128} />
         <control.Zoom />
