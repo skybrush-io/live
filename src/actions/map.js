@@ -3,9 +3,9 @@
  */
 
 import { createAction } from 'redux-actions'
-import { SELECT_MAP_TOOL, ADD_SELECTED_FEATURES, CLEAR_SELECTED_FEATURES,
-         SET_SELECTED_FEATURES, REMOVE_SELECTED_FEATURES,
-         SELECT_MAP_SOURCE } from './types'
+import { SELECT_MAP_TOOL, ADD_SELECTED_FEATURES, SELECT_ALL_FEATURES,
+  CLEAR_SELECTED_FEATURES, SET_SELECTED_FEATURES, REMOVE_SELECTED_FEATURES,
+  SELECT_MAP_SOURCE } from './types'
 
 /**
  * Action factory that creates an action that selects a given source in the
@@ -27,6 +27,12 @@ export const selectMapTool = createAction(SELECT_MAP_TOOL)
  *        add to the existing selection.
  */
 export const addSelectedFeatures = createAction(ADD_SELECTED_FEATURES)
+
+/**
+ * Action factory that creates an action that selects all the selectable
+ * features on the map.
+ */
+export const selectAllFeatures = createAction(SELECT_ALL_FEATURES)
 
 /**
  * Action factory that creates an action that clears the set of selected

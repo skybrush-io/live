@@ -48,7 +48,7 @@ export default class Application extends React.Component {
       <StoreProvider store={store}>
         <MuiThemeProvider muiTheme={muiTheme}>
           <div>
-            <HotkeyHandler hotkeys={hotkeys}>
+            <HotkeyHandler hotkeys={hotkeys(store)}>
               <div id="canvas">
                 <MapView flock={flock} mapReferenceRequestSignal={mapReferenceRequestSignal} />
 

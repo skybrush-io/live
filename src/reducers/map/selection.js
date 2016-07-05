@@ -11,6 +11,17 @@ import { handleActions } from 'redux-actions'
 const defaultState = []
 
 /**
+ * Finds all the selectable features on the map.
+ *
+ * @todo Write actual function that queries the map.
+ *
+ * @returns {string[]} array containing the feature identifiers.
+ */
+function findAllFeatures () {
+  return ['FAKE-00', 'FAKE-01', 'FAKE-02']
+}
+
+/**
  * Given an array containing a current selection, adds some items to
  * the selection and removes some items from it, then returns the same
  * selection object.
@@ -48,6 +59,10 @@ function updateSelection (current, add, remove) {
 const reducer = handleActions({
   ADD_SELECTED_FEATURES (state, action) {
     return updateSelection(state, action.payload)
+  },
+
+  SELECT_ALL_FEATURES (state, action) {
+    return updateSelection(state, findAllFeatures())
   },
 
   CLEAR_SELECTED_FEATURES (state, action) {
