@@ -16,6 +16,9 @@ import ServerConnectionManager from './components/ServerConnectionManager'
 import ServerSettingsDialog from './components/ServerSettingsDialog'
 import Widget from './components/Widget'
 
+import HotkeyHandler from './components/HotkeyHandler'
+import hotkeys from './hotkeys'
+
 import flock from './flock'
 import store from './store'
 
@@ -45,21 +48,23 @@ export default class Application extends React.Component {
       <StoreProvider store={store}>
         <MuiThemeProvider muiTheme={muiTheme}>
           <div>
-            <div id="canvas">
-              <MapView flock={flock} mapReferenceRequestSignal={mapReferenceRequestSignal} />
+            <HotkeyHandler hotkeys={hotkeys}>
+              <div id="canvas">
+                <MapView flock={flock} mapReferenceRequestSignal={mapReferenceRequestSignal} />
 
-              <Widget style={{ right: 8, bottom: 8, width: 300 }}>
-                <ClockDisplayList />
-              </Widget>
+                <Widget style={{ right: 8, bottom: 8, width: 300 }}>
+                  <ClockDisplayList />
+                </Widget>
 
-              <Widget style={{ right: 8, top: 8, width: 300 }}>
-                <ConnectionList />
-              </Widget>
+                <Widget style={{ right: 8, top: 8, width: 300 }}>
+                  <ConnectionList />
+                </Widget>
 
-              <Widget style={{ top: 8, left: (8 + 24 + 8) }} showControls={false}>
-                <MapToolbar mapReferenceRequestSignal={mapReferenceRequestSignal} />
-              </Widget>
-            </div>
+                <Widget style={{ top: 8, left: (8 + 24 + 8) }} showControls={false}>
+                  <MapToolbar mapReferenceRequestSignal={mapReferenceRequestSignal} />
+                </Widget>
+              </div>
+            </HotkeyHandler>
 
             <ServerSettingsDialog />
             <ServerConnectionManager />
