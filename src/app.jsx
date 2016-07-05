@@ -56,7 +56,7 @@ export default class Application extends React.Component {
                 <ConnectionList />
               </Widget>
 
-              <Widget style={{ top: 8, left: 41 }} showControls={false}>
+              <Widget style={{ top: 8, left: (8 + 24 + 8) }} showControls={false}>
                 <MapToolbar mapReferenceRequestSignal={mapReferenceRequestSignal} />
               </Widget>
             </div>

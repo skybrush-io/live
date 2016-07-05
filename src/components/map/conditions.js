@@ -3,10 +3,21 @@ import ol from 'openlayers'
 let Condition = {}
 
 /**
+ * Helper condition that checks if platform modifier
+ * (Meta on OSX, Control on other platforms) was pressed during the event.
+ *
+ * @param {event}  mapBrowserEvent  the actual event
+ * @return {boolean}  whether the condition was met
+ */
+Condition.platformModifierKey = mapBrowserEvent => (
+  navigator.platform.indexOf('Mac') !== -1
+  ? mapBrowserEvent.originalEvent.metaKey
+  : mapBrowserEvent.originalEvent.ctrlKey
+)
+
+/**
  * Helper condition that accepts either only platformModifier
  * or only Shift being held down during an openlayers interaction.
- *
- * @todo Ask Tamás which solution is better (fully custom or partially buit in).
  *
  * @param {event}  mapBrowserEvent  the actual event
  * @return {boolean}  whether the condition was met

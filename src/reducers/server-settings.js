@@ -26,7 +26,6 @@ const defaultState = {
  * settings.
  */
 const reducer = handleActions({
-
   SHOW_SERVER_SETTINGS_DIALOG: (state, action) => (
     Object.assign({}, state, { 'dialogVisible': true })
   ),
@@ -38,7 +37,6 @@ const reducer = handleActions({
   UPDATE_SERVER_SETTINGS: (state, action) => (
     Object.assign({}, state, action.payload)
   )
-
 }, defaultState)
 
 export default reducer

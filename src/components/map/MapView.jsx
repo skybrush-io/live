@@ -79,24 +79,30 @@ class MapViewPresentation extends React.Component {
         </layer.Tile>
 
         <layer.Vector ref={this.assignActiveUAVsLayerRef_}
-                      updateWhileAnimating={true} updateWhileInteracting={true}>
+          updateWhileAnimating={true}
+          updateWhileInteracting={true}>
+
           <ActiveUAVsLayerSource ref={this.assignActiveUAVsLayerSourceRef_}
-                                 selection={selection}
-                                 flock={flock} projection={projection} />
+            selection={selection}
+            flock={flock}
+            projection={projection} />
+
         </layer.Vector>
 
         <control.FullScreen source={document.body} />
+
         <control.MousePosition projection="EPSG:4326"
           coordinateFormat={function (c) {
             return ol.coordinate.format(c, '{y}, {x}', 6)
           }}/>
+
         <control.ScaleLine minWidth={128} />
         <control.Zoom />
 
         {/* PAN mode | Ctrl/Cmd + Drag --> Box select features */}
         <interaction.DragBox active={selectedTool === Tool.PAN}
-                             condition={ol.events.condition.platformModifierKeyOnly}
-                             boxend={this.onBoxDragEnded_} />
+          condition={ol.events.condition.platformModifierKeyOnly}
+          boxend={this.onBoxDragEnded_} />
 
         <interaction.DragRotate
           condition={ol.events.condition.altShiftKeysOnly} />
@@ -109,27 +115,27 @@ class MapViewPresentation extends React.Component {
              Shift + Click --> Add nearest feature to selection
              Alt + Click --> Remove nearest feature from selection */}
         <SelectNearestFeature active={selectedTool === Tool.SELECT}
-                              addCondition={ol.events.condition.never}
-                              layers={this.isLayerShowingActiveUAVs_}
-                              removeCondition={ol.events.condition.altKeyOnly}
-                              toggleCondition={Condition.platformModifierKeyOrShiftKeyOnly}
-                              select={this.onSelect_}
-                              threshold={40} />
+          addCondition={ol.events.condition.never}
+          layers={this.isLayerShowingActiveUAVs_}
+          removeCondition={ol.events.condition.altKeyOnly}
+          toggleCondition={Condition.platformModifierKeyOrShiftKeyOnly}
+          select={this.onSelect_}
+          threshold={40} />
 
         {/* SELECT mode | Ctrl/Cmd + Drag --> Box select features */}
         <interaction.DragBox active={selectedTool === Tool.SELECT}
-                             condition={ol.events.condition.platformModifierKeyOnly}
-                             boxend={this.onBoxDragEnded_} />
+          condition={ol.events.condition.platformModifierKeyOnly}
+          boxend={this.onBoxDragEnded_} />
 
         {/* SELECT mode | Shift + Drag --> Box add features to selection */}
         <interaction.DragBox active={selectedTool === Tool.SELECT}
-                             condition={ol.events.condition.shiftKeyOnly}
-                             boxend={this.onBoxDragEnded_} />
+          condition={ol.events.condition.shiftKeyOnly}
+          boxend={this.onBoxDragEnded_} />
 
         {/* SELECT mode | Alt + Drag --> Box remove features from selection */}
         <interaction.DragBox active={selectedTool === Tool.SELECT}
-                             condition={ol.events.condition.altKeyOnly}
-                             boxend={this.onBoxDragEnded_} />
+          condition={ol.events.condition.altKeyOnly}
+          boxend={this.onBoxDragEnded_} />
 
         {/* ZOOM mode | Drag --> Box zoom in */}
         <interaction.DragZoom active={selectedTool === Tool.ZOOM}

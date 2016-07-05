@@ -28,8 +28,8 @@ const Widget = ({ children, showControls, style }) => {
 
 Widget.propTypes = {
   children: PropTypes.oneOfType([
-    React.PropTypes.arrayOf(React.PropTypes.node),
-    React.PropTypes.node
+    PropTypes.arrayOf(PropTypes.node),
+    PropTypes.node
   ]),
   showControls: PropTypes.bool.isRequired,
   style: PropTypes.object

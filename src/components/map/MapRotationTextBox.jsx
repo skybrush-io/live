@@ -2,7 +2,7 @@
  * @file React Component to display and adjust the rotation of the map view.
  */
 
-import React from 'react'
+import React, { PropTypes } from 'react'
 import ol from 'openlayers'
 
 import Signal from 'mini-signals'
@@ -18,9 +18,7 @@ import TextField from 'material-ui/TextField'
  * @property {number} resetDuration the amount of time the reset transition should take (in ms)
  * @property {string} fieldWidth the width of the actual input field
  * @property {string} style styling of the outermost element (a div)
- * @property {Signal} mapReferenceRequestSignal Mini-signal for requesting the map reference.
- *
- * @emits {mapReferenceRequestSignal} requests map reference.
+ * @property {Signal} mapReferenceRequestSignal Mini-signal for requesting the map reference
  */
 export default class MapRotationTextBox extends React.Component {
   /**
@@ -31,9 +29,9 @@ export default class MapRotationTextBox extends React.Component {
    * @property {number} resetDuration the amount of time the reset transition should take (in ms)
    * @property {string} fieldWidth the width of the actual input field
    * @property {string} style styling of the outermost element (a div)
-   * @property {Signal} mapReferenceRequestSignal Mini-signal for requesting the map reference.
+   * @property {Signal} mapReferenceRequestSignal Mini-signal for requesting the map reference
    *
-   * @emits {mapReferenceRequestSignal} requests map reference.
+   * @emits {mapReferenceRequestSignal} requests map reference
    */
   constructor (props) {
     super(props)
@@ -158,8 +156,8 @@ export default class MapRotationTextBox extends React.Component {
 }
 
 MapRotationTextBox.propTypes = {
-  resetDuration: React.PropTypes.number,
-  fieldWidth: React.PropTypes.string,
-  style: React.PropTypes.object,
-  mapReferenceRequestSignal: React.PropTypes.instanceOf(Signal)
+  resetDuration: PropTypes.number,
+  fieldWidth: PropTypes.string,
+  style: PropTypes.object,
+  mapReferenceRequestSignal: PropTypes.instanceOf(Signal)
 }

@@ -18,7 +18,6 @@ const defaultState = {
  * the global error dialog.
  */
 const reducer = handleActions({
-
   CLOSE_ERROR_DIALOG: (state, action) => {
     return Object.assign({}, state, {
       open: false
@@ -31,7 +30,6 @@ const reducer = handleActions({
       open: true
     })
   }
-
 }, defaultState)
 
 export default reducer

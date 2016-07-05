@@ -2,7 +2,7 @@
 * @file React Component to display and adjust the rotation of the map view.
 */
 
-import React from 'react'
+import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { showSnackbarMessage } from '../../actions/snackbar'
 
@@ -153,10 +153,10 @@ export default class FitAllFeaturesButton extends React.Component {
 }
 
 FitAllFeaturesButton.propTypes = {
-  duration: React.PropTypes.number,
-  margin: React.PropTypes.number,
-  mapReferenceRequestSignal: React.PropTypes.instanceOf(Signal),
-  dispatch: React.PropTypes.func
+  duration: PropTypes.number,
+  margin: PropTypes.number,
+  mapReferenceRequestSignal: PropTypes.instanceOf(Signal),
+  dispatch: PropTypes.func
 }
 
 export default connect()(FitAllFeaturesButton)

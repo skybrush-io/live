@@ -55,11 +55,9 @@ function updateStateOfClock (state, id, properties) {
 }
 
 /**
- * The reducer function that handles actions related to the handling of
- * connection states.
+ * The reducer function that handles actions related to the clock.
  */
 const reducer = handleActions({
-
   CLEAR_CLOCK_LIST: (state, action) => ({
     items: {},
     order: []
@@ -79,7 +77,6 @@ const reducer = handleActions({
     }
     return newState
   }
-
 }, defaultState)
 
 export default reducer

@@ -50,10 +50,9 @@ function updateSelection (current, add, remove) {
 }
 
 /**
- * The reducer function that handles actions related to the snackbar.
+ * The reducer function that handles actions related to the map.
  */
 const reducer = handleActions({
-
   ADD_SELECTED_FEATURES (state, action) {
     return Object.assign({}, state, {
       selection: updateSelection(state.selection, action.payload)
@@ -95,7 +94,6 @@ const reducer = handleActions({
       sources: newSourceState
     })
   }
-
 }, defaultState)
 
 export default reducer

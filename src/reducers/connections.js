@@ -53,7 +53,6 @@ function updateStateOfConnection (state, id, properties) {
  * connection states.
  */
 const reducer = handleActions({
-
   CLEAR_CONNECTION_LIST: (state, action) => ({
     items: _.pick(state.items, MASTER_CONNECTION_ID),
     order: [MASTER_CONNECTION_ID]
@@ -73,7 +72,6 @@ const reducer = handleActions({
     }
     return newState
   }
-
 }, defaultState)
 
 export default reducer
