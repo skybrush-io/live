@@ -13,12 +13,12 @@ const defaultState = []
 /**
  * Finds all the selectable features on the map.
  *
- * @todo Write actual function that queries the map.
+ * @param {Flock} flock the object that contains the drones
  *
- * @returns {string[]} array containing the feature identifiers.
+ * @returns {string[]} array containing the feature identifiers
  */
-function findAllFeatures () {
-  return ['FAKE-00', 'FAKE-01', 'FAKE-02']
+function findAllFeatures (flock) {
+  return Object.keys(flock._uavsById)
 }
 
 /**
@@ -62,7 +62,7 @@ const reducer = handleActions({
   },
 
   SELECT_ALL_FEATURES (state, action) {
-    return updateSelection(state, findAllFeatures())
+    return updateSelection(state, findAllFeatures(action.payload))
   },
 
   CLEAR_SELECTED_FEATURES (state, action) {

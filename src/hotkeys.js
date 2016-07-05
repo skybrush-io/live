@@ -10,7 +10,7 @@ import { selectAllFeatures, clearSelectedFeatures,
 import { Tool } from './components/map/tools'
 import { Source } from './components/map/sources'
 
-export default (store) => [
+export default (store, flock) => [
   // Complex hotkey example
   {
     keys: 'Ctrl + Shift + Alt + KeyA',
@@ -22,7 +22,7 @@ export default (store) => [
   // Drone selection hotkeys
   {
     keys: 'PlatMod + KeyA',
-    action: () => { store.dispatch(selectAllFeatures()) }
+    action: () => { store.dispatch(selectAllFeatures(flock)) }
   },
   {
     keys: 'PlatMod + Shift + KeyA',

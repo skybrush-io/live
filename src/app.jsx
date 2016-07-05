@@ -40,6 +40,11 @@ const muiTheme = getMuiTheme({})
 const mapReferenceRequestSignal = MapReferenceRequestHandler.generateRequestSignal()
 
 /**
+ * Array containing the hotkey objects that are now connected to the Redux store.
+ */
+const appliedHotkeys = hotkeys(store, flock)
+
+/**
  * The main application component.
  */
 export default class Application extends React.Component {
@@ -48,7 +53,7 @@ export default class Application extends React.Component {
       <StoreProvider store={store}>
         <MuiThemeProvider muiTheme={muiTheme}>
           <div>
-            <HotkeyHandler hotkeys={hotkeys(store)}>
+            <HotkeyHandler hotkeys={appliedHotkeys}>
               <div id="canvas">
                 <MapView flock={flock} mapReferenceRequestSignal={mapReferenceRequestSignal} />
 
