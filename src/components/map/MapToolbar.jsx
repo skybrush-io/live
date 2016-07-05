@@ -120,7 +120,7 @@ const MapToolbar = connect(
   // mapStateToProps
   state => Object.assign({}, state.map.tools,
     {
-      visibleSource: state.map.layers.visibleSource
+      visibleSource: state.map.layers.byId.base.parameters.source
     }
   ),
   // mapDispatchToProps
