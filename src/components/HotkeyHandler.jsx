@@ -1,4 +1,5 @@
 import React, {PropTypes} from 'react'
+import _ from 'lodash'
 
 export default class HotkeyHandler extends React.Component {
   constructor (props) {
@@ -26,7 +27,7 @@ export default class HotkeyHandler extends React.Component {
   }
 
   addListener (hotkey, callback) {
-    const hash = Hotkey.fromString(hotkey).toString()
+    const hash = this.hotkeyToHash_(hotkey)
 
     if (!(hash in this.listeners)) {
       this.listeners[hash] = []
@@ -36,10 +37,10 @@ export default class HotkeyHandler extends React.Component {
   }
 
   removeListener (hotkey, callback) {
-    const hash = Hotkey.fromString(hotkey).toString()
+    const hash = this.hotkeyToHash_(hotkey)
 
-    if (hash in this.listeners && callback in this.listeners[hash]) {
-      this.listeners[hash].splice(this.listeners[hash].indexOf(callback), 1)
+    if (hash in this.listeners) {
+      _.pull(this.listeners[hash], callback)
     }
   }
 
@@ -69,6 +70,10 @@ export default class HotkeyHandler extends React.Component {
       }
     }
   }
+
+  hotkeyToHash_ (hotkey) {
+    return Hotkey.fromString(hotkey).toString()
+  }
 }
 
 HotkeyHandler.condition = {
@@ -96,12 +101,9 @@ HotkeyHandler.defaultProps = {
 
 class Hotkey {
   static fromString (string) {
-    let data = string.split('+')
-      .map(s => s.trim())
-      .map(s => s[0].toUpperCase() + s.slice(1))
-
-    let result = new Hotkey()
-    result.key = data.splice(-1, 1)[0]
+    const data = _(string).split('+').map(_.trim).map(_.upperFirst).value()
+    const result = new Hotkey()
+    result.key = data.pop()
     result.modifiers = data.sort()
 
     for (const modifier of result.modifiers) {
