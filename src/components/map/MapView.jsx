@@ -256,7 +256,7 @@ MapViewPresentation.propTypes = {
 const MapView = connect(
   // mapStateToProps
   state => ({
-    visibleSource: state.map.sources.visibleSource,
+    visibleSource: state.map.layers.visibleSource,
     selectedTool: state.map.tools.selectedTool,
     selection: state.map.selection
   })

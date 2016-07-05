@@ -119,7 +119,10 @@ MapToolbarPresentation.contextTypes = {
 const MapToolbar = connect(
   // mapStateToProps
   state => Object.assign({}, state.map.tools,
-    {visibleSource: state.map.sources.visibleSource}),
+    {
+      visibleSource: state.map.layers.visibleSource
+    }
+  ),
   // mapDispatchToProps
   dispatch => ({
     onSourceSelected (source) {

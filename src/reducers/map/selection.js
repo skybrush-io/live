@@ -1,24 +1,17 @@
 /**
- * @file Reducer for the main map component in the app window.
+ * @file Reducer function for handling the set of selected features on the
+ * map.
  */
 
 import { handleActions } from 'redux-actions'
 
 /**
- * The default state of the map.
+ * The default state of the selection.
  */
-const defaultState = {
-  sources: {
-    visibleSource: 'osm'
-  },
-  selection: [],
-  tools: {
-    selectedTool: 'pan'
-  }
-}
+const defaultState = []
 
 /**
- * Given a dictionary containing a current selection, adds some items to
+ * Given an array containing a current selection, adds some items to
  * the selection and removes some items from it, then returns the same
  * selection object.
  *
@@ -50,49 +43,23 @@ function updateSelection (current, add, remove) {
 }
 
 /**
- * The reducer function that handles actions related to the map.
+ * The reducer function that handles actions related to the snackbar.
  */
 const reducer = handleActions({
   ADD_SELECTED_FEATURES (state, action) {
-    return Object.assign({}, state, {
-      selection: updateSelection(state.selection, action.payload)
-    })
+    return updateSelection(state, action.payload)
   },
 
   CLEAR_SELECTED_FEATURES (state, action) {
-    return Object.assign({}, state, {
-      selection: updateSelection([])
-    })
+    return updateSelection([])
   },
 
   REMOVE_SELECTED_FEATURES (state, action) {
-    return Object.assign({}, state, {
-      selection: updateSelection(state.selection, [], action.payload)
-    })
+    return updateSelection(state, [], action.payload)
   },
 
   SET_SELECTED_FEATURES (state, action) {
-    return Object.assign({}, state, {
-      selection: updateSelection([], action.payload)
-    })
-  },
-
-  SELECT_MAP_TOOL (state, action) {
-    const newToolState = Object.assign({}, state.tools, {
-      selectedTool: action.payload
-    })
-    return Object.assign({}, state, {
-      tools: newToolState
-    })
-  },
-
-  SELECT_MAP_SOURCE (state, action) {
-    const newSourceState = Object.assign({}, state.sources, {
-      visibleSource: action.payload
-    })
-    return Object.assign({}, state, {
-      sources: newSourceState
-    })
+    return updateSelection([], action.payload)
   }
 }, defaultState)
 
