@@ -5,6 +5,10 @@
 import React, {PropTypes} from 'react'
 import _ from 'lodash'
 
+import Dialog from 'material-ui/Dialog'
+import {Table, TableBody, TableHeader, TableHeaderColumn, TableRow,
+  TableRowColumn} from 'material-ui/Table'
+
 /**
  * React Component for handling hotkeys.
  *
@@ -13,7 +17,7 @@ import _ from 'lodash'
  */
 export default class HotkeyHandler extends React.Component {
   /**
-   * Constructor that binds the actions to the key combinations.
+   * Constructor that binds the supplied actions to the key combinations.
    *
    * @param {Object} props properties of the react component
    * @property {Signal} hotkeys Array containing the desired hotkeys and actions
@@ -21,32 +25,108 @@ export default class HotkeyHandler extends React.Component {
   constructor (props) {
     super(props)
 
-    this.currentlyDown = {}
+    this.state = {
+      dialogVisible: false
+    }
 
     this.listeners = { down: {}, up: {} }
 
     this.handleKey_ = this.handleKey_.bind(this)
+    this.handleKeyDown_ = this.handleKeyDown_.bind(this)
+    this.handleKeyUp_ = this.handleKeyUp_.bind(this)
 
     for (const hotkey of props.hotkeys) {
       this.addListener(hotkey.on, hotkey.keys, hotkey.action)
     }
+
+    this.showDialog_ = this.showDialog_.bind(this)
+    this.hideDialog_ = this.hideDialog_.bind(this)
+
+    this.addHelpListeners()
+  }
+
+  /**
+   * Function for showing the help dialog.
+   */
+  showDialog_ () { this.setState({dialogVisible: true}) }
+
+  /**
+   * Function for hiding the help dialog.
+   */
+  hideDialog_ () { this.setState({dialogVisible: false}) }
+
+  /**
+   * Function for attaching the help dialog control listeners.
+   */
+  addHelpListeners () {
+    // For US keyboard layout
+    this.addListener('down', 'Shift + Slash', this.showDialog_)
+    this.addListener('up', 'Shift + Slash', this.hideDialog_)
+
+    // For HU keyboard layout
+    this.addListener('down', 'Shift + Comma', this.showDialog_)
+    this.addListener('up', 'Shift + Comma', this.hideDialog_)
   }
 
   /**
    * Adding the actual event listeners and the approptiate handlers.
    */
   componentDidMount () {
-    this.refs.capture.addEventListener(
-      'keydown', (e) => { this.handleKey_('down', e) }, true
-    )
-    this.refs.capture.addEventListener(
-      'keyup', (e) => { this.handleKey_('up', e) }, true
-    )
+    this.refs.capture.addEventListener('keydown', this.handleKeyDown_, true)
+    this.refs.capture.addEventListener('keyup', this.handleKeyUp_, true)
+  }
+
+  /**
+   * Removing the event listeners.
+   */
+  componentWillUnmount () {
+    this.refs.capture.removeEventListener('keydown', this.handleKeyDown_, true)
+    this.refs.capture.removeEventListener('keyup', this.handleKeyUp_, true)
   }
 
   render () {
+    const eventColumnStyle = {width: '35px'}
+    const keysColumnStyle = {width: '150px'}
+    const actionColumnStyle = {}
+
     return (
       <div ref="capture">
+        <Dialog
+          title="Hotkeys"
+          open={this.state.dialogVisible}>
+          <Table>
+            <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
+              <TableRow>
+                <TableHeaderColumn style={eventColumnStyle}>
+                  Event
+                </TableHeaderColumn>
+                <TableHeaderColumn style={keysColumnStyle}>
+                  Keys
+                </TableHeaderColumn>
+                <TableHeaderColumn style={actionColumnStyle}>
+                  Action
+                </TableHeaderColumn>
+              </TableRow>
+            </TableHeader>
+            <TableBody displayRowCheckbox={false}>
+              {
+                this.props.hotkeys.map((hotkey, index) => (
+                  <TableRow key={`hotkey_${index}`}>
+                    <TableRowColumn style={eventColumnStyle}>
+                      {hotkey.on}
+                    </TableRowColumn>
+                    <TableRowColumn style={keysColumnStyle}>
+                      {hotkey.keys}
+                    </TableRowColumn>
+                    <TableRowColumn style={actionColumnStyle}>
+                      {hotkey.description}
+                    </TableRowColumn>
+                  </TableRow>
+                ))
+              }
+            </TableBody>
+          </Table>
+        </Dialog>
         {this.props.children}
       </div>
     )
@@ -85,6 +165,20 @@ export default class HotkeyHandler extends React.Component {
   }
 
   /**
+   * Proxy for keydown event.
+   *
+   * @param {KeyboardEvent} e the actual keyboard event
+   */
+  handleKeyDown_ (e) { this.handleKey_('down', e) }
+
+  /**
+   * Proxy for keyup event.
+   *
+   * @param {KeyboardEvent} e the actual keyboard event
+   */
+  handleKeyUp_ (e) { this.handleKey_('up', e) }
+
+  /**
    * Event handler function that looks for attached actions and executes them.
    *
    * @param {string} on 'down' or 'up', on which event the action should be fired
@@ -109,16 +203,8 @@ export default class HotkeyHandler extends React.Component {
 
     for (const hash of hashes) {
       if (hash in this.listeners[on]) {
-        // Avoiding key repetition
-        if (on === 'down' && !(hash in this.currentlyDown)) {
-          this.currentlyDown[hash] = true
-        } else if (on === 'up') {
-          delete this.currentlyDown[hash]
-        } else {
-          return
-        }
-
         e.preventDefault()
+        if (e.repeat) { return }
 
         for (const callback of this.listeners[on][hash]) {
           callback()

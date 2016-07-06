@@ -13,6 +13,7 @@ import { Source } from './components/map/sources'
 export default (store, flock) => [
   // Complex hotkey example
   {
+    description: 'Show pressed snackbar message',
     on: 'down',
     keys: 'Ctrl + Shift + Alt + KeyA',
     action: () => {
@@ -20,6 +21,7 @@ export default (store, flock) => [
     }
   },
   {
+    description: 'Show released snackbar message',
     on: 'up',
     keys: 'Ctrl + Shift + Alt + KeyA',
     action: () => {
@@ -29,11 +31,13 @@ export default (store, flock) => [
 
   // Drone selection hotkeys
   {
+    description: 'Select all drones',
     on: 'down',
     keys: 'PlatMod + KeyA',
     action: () => { store.dispatch(selectAllFeatures(flock)) }
   },
   {
+    description: 'Deselect all drones',
     on: 'down',
     keys: 'PlatMod + Shift + KeyA',
     action: () => { store.dispatch(clearSelectedFeatures()) }
@@ -41,22 +45,25 @@ export default (store, flock) => [
 
   // Tool hotkeys
   {
+    description: 'Switch to Select tool',
     on: 'down',
-    keys: 'PlatMod + KeyS', // Switch to Select tool
+    keys: 'PlatMod + KeyS',
     action: () => {
       store.dispatch(selectMapTool(Tool.SELECT))
     }
   },
   {
+    description: 'Switch to Zoom tool',
     on: 'down',
-    keys: 'PlatMod + KeyZ', // Switch to Zoom tool
+    keys: 'PlatMod + KeyZ',
     action: () => {
       store.dispatch(selectMapTool(Tool.ZOOM))
     }
   },
   {
+    description: 'Switch to Pan tool',
     on: 'down',
-    keys: 'PlatMod + KeyP', // Switch to Pan tool
+    keys: 'PlatMod + KeyP',
     action: () => {
       store.dispatch(selectMapTool(Tool.PAN))
     }
@@ -64,22 +71,25 @@ export default (store, flock) => [
 
   // Layer source hotkeys
   {
+    description: 'Switch to OpenStreetMaps source',
     on: 'down',
-    keys: 'PlatMod + KeyO', // Switch to OpenStreetMaps source
+    keys: 'PlatMod + KeyO',
     action: () => {
       store.dispatch(selectMapSource(Source.OSM))
     }
   },
   {
+    description: 'Switch to Bing Maps Aerial with Labels source',
     on: 'down',
-    keys: 'PlatMod + KeyB', // Switch to Bing Maps Aerial with Labels source
+    keys: 'PlatMod + KeyB',
     action: () => {
       store.dispatch(selectMapSource(Source.BING_MAPS.AERIAL_WITH_LABELS))
     }
   },
   {
+    description: 'Switch to Bing Maps Road source',
     on: 'down',
-    keys: 'PlatMod + Alt + KeyB', // Switch to Bing Maps Road source
+    keys: 'PlatMod + Alt + KeyB',
     action: () => {
       store.dispatch(selectMapSource(Source.BING_MAPS.ROAD))
     }
