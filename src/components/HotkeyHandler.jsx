@@ -1,21 +1,47 @@
+/**
+ * @file React Component for handling hotkeys.
+ */
+
 import React, {PropTypes} from 'react'
 import _ from 'lodash'
 
+/**
+ * React Component for handling hotkeys.
+ *
+ * @param {Object} props properties of the react component
+ * @property {Signal} hotkeys Array containing the desired hotkeys and actions
+ */
 export default class HotkeyHandler extends React.Component {
+  /**
+   * Constructor that binds the actions to the key combinations.
+   *
+   * @param {Object} props properties of the react component
+   * @property {Signal} hotkeys Array containing the desired hotkeys and actions
+   */
   constructor (props) {
     super(props)
 
-    this.listeners = {}
+    this.currentlyDown = {}
+
+    this.listeners = { down: {}, up: {} }
 
     this.handleKey_ = this.handleKey_.bind(this)
 
     for (const hotkey of props.hotkeys) {
-      this.addListener(hotkey.keys, hotkey.action)
+      this.addListener(hotkey.on, hotkey.keys, hotkey.action)
     }
   }
 
+  /**
+   * Adding the actual event listeners and the approptiate handlers.
+   */
   componentDidMount () {
-    this.refs.capture.addEventListener('keydown', this.handleKey_, true)
+    this.refs.capture.addEventListener(
+      'keydown', (e) => { this.handleKey_('down', e) }, true
+    )
+    this.refs.capture.addEventListener(
+      'keyup', (e) => { this.handleKey_('up', e) }, true
+    )
   }
 
   render () {
@@ -26,25 +52,45 @@ export default class HotkeyHandler extends React.Component {
     )
   }
 
-  addListener (hotkey, callback) {
-    const hash = this.hotkeyToHash_(hotkey)
+  /**
+   * Function for adding a new action to a key combination.
+   *
+   * @param {string} on 'down' or 'up', on which event the action should be fired
+   * @param {string} keys the key combination to activate the action
+   * @param {function} action the action to be performed
+   */
+  addListener (on, keys, action) {
+    const hash = this.hotkeyToHash_(keys)
 
-    if (!(hash in this.listeners)) {
-      this.listeners[hash] = []
+    if (!(hash in this.listeners[on])) {
+      this.listeners[on][hash] = []
     }
 
-    this.listeners[hash].push(callback)
+    this.listeners[on][hash].push(action)
   }
 
-  removeListener (hotkey, callback) {
-    const hash = this.hotkeyToHash_(hotkey)
+  /**
+   * Function for removing an existing action from a key combination.
+   *
+   * @param {string} on 'down' or 'up', on which event the action should be fired
+   * @param {string} keys the key combination to activate the action
+   * @param {function} action the action to be performed
+   */
+  removeListener (on, keys, action) {
+    const hash = this.hotkeyToHash_(keys)
 
-    if (hash in this.listeners) {
-      _.pull(this.listeners[hash], callback)
+    if (hash in this.listeners[on]) {
+      _.pull(this.listeners[on][hash], action)
     }
   }
 
-  handleKey_ (e) {
+  /**
+   * Event handler function that looks for attached actions and executes them.
+   *
+   * @param {string} on 'down' or 'up', on which event the action should be fired
+   * @param {KeyboardEvent} e the actual keyboard event
+   */
+  handleKey_ (on, e) {
     const hashes = [
       (e.altKey ? 'Alt + ' : '') +
       (e.ctrlKey ? 'Ctrl + ' : '') +
@@ -62,15 +108,32 @@ export default class HotkeyHandler extends React.Component {
     }
 
     for (const hash of hashes) {
-      if (hash in this.listeners) {
+      if (hash in this.listeners[on]) {
+        // Avoiding key repetition
+        if (on === 'down' && !(hash in this.currentlyDown)) {
+          this.currentlyDown[hash] = true
+        } else if (on === 'up') {
+          delete this.currentlyDown[hash]
+        } else {
+          return
+        }
+
         e.preventDefault()
-        for (const callback of this.listeners[hash]) {
+
+        for (const callback of this.listeners[on][hash]) {
           callback()
         }
       }
     }
   }
 
+  /**
+   * Function for converting hotkey into uniform hash.
+   *
+   * @param {string} hotkey the key combination to activate the action
+   *
+   * @return {string} the unified hotkey identifier
+   */
   hotkeyToHash_ (hotkey) {
     return Hotkey.fromString(hotkey).toString()
   }
@@ -100,6 +163,13 @@ HotkeyHandler.defaultProps = {
 }
 
 class Hotkey {
+  /**
+   * Function for creating a Hotkey object from a string.
+   *
+   * @param {string} string the key combination
+   *
+   * @return {Hotkey} the processed Hotkey object
+   */
   static fromString (string) {
     const data = _(string).split('+').map(_.trim).map(_.upperFirst).value()
     const result = new Hotkey()
@@ -115,8 +185,12 @@ class Hotkey {
     return result
   }
 
+  /**
+   * Function for converting a Hotkey object into a string.
+   *
+   * @return {string} the string representation of the Hotkey object
+   */
   toString () {
-    // return this.modifiers.concat([this.key]).join(' + ')
     return [...this.modifiers, this.key].join(' + ')
   }
 }

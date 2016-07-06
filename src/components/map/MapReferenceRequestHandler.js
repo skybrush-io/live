@@ -12,7 +12,7 @@ import Signal from 'mini-signals'
  * other components that request it through mini-signals.
  *
  * @param {Object} props properties of the react component
- * @property {Signal} mapReferenceRequestSignal Mini-signal for requesting the map reference.
+ * @property {Signal} mapReferenceRequestSignal Mini-signal for requesting the map reference
  */
 export default class MapReferenceRequestHandler extends React.Component {
   /**
@@ -28,7 +28,7 @@ export default class MapReferenceRequestHandler extends React.Component {
    * Constructor that adds signal handler.
    *
    * @param {Object} props properties of the react component
-   * @property {Signal} mapReferenceRequestSignal Mini-signal for requesting the map reference.
+   * @property {Signal} mapReferenceRequestSignal Mini-signal for requesting the map reference
    */
   constructor (props) {
     super(props)
@@ -45,7 +45,7 @@ export default class MapReferenceRequestHandler extends React.Component {
    *
    * @listens {mapReferenceRequestSignal} listens for map references being requested.
    *
-   * @param {function} callback the callback sent by the component requesting the reference.
+   * @param {function} callback the callback sent by the component requesting the reference
    */
   onMapReferenceRequested_ (callback) {
     callback(this.context.map)
