@@ -15,11 +15,14 @@ import { List, ListItem } from 'material-ui/List'
 import ActionAspectRatio from 'material-ui/svg-icons/action/aspect-ratio'
 import DeviceAirplanemodeActive from 'material-ui/svg-icons/device/airplanemode-active'
 import FileAttachment from 'material-ui/svg-icons/file/attachment'
+import ActionTrackChanges from 'material-ui/svg-icons/action/track-changes'
 
 import Paper from 'material-ui/Paper'
 import { RadioButton, RadioButtonGroup } from 'material-ui/RadioButton'
 import { Source } from './sources'
 import { selectMapSource } from '../../actions/map'
+
+import GeoJSONImporter from './GeoJSONImporter'
 
 export default class LayersDialog extends React.Component {
   constructor (props) {
@@ -38,6 +41,13 @@ export default class LayersDialog extends React.Component {
 
   render () {
     const selectedColor = this.context.muiTheme.palette.primary1Color
+    const getListItemStyle = (layer) => (
+      this.state.selectedLayer === layer ? {
+        color: selectedColor,
+        boxShadow: `5px 0px ${selectedColor} inset`
+      } : {}
+    )
+
     const actions = [
       <FlatButton label="Done" primary={true} onTouchTap={this.hideDialog_} />
     ]
@@ -57,19 +67,27 @@ export default class LayersDialog extends React.Component {
               <ListItem
                 primaryText="Base"
                 leftIcon={<ActionAspectRatio />}
-                style={this.state.selectedLayer === 'base' ? {color: selectedColor} : {}}/>
+                style={getListItemStyle('base')}
+                onTouchTap={this.selectLayer_('base')} />
               <ListItem
                 primaryText="UAVs"
                 leftIcon={<DeviceAirplanemodeActive />}
-                style={this.state.selectedLayer === 'uav' ? {color: selectedColor} : {}}/>
+                style={getListItemStyle('uav')}
+                onTouchTap={this.selectLayer_('uav')} />
               <ListItem
                 primaryText="GeoJSON"
                 leftIcon={<FileAttachment />}
-                style={this.state.selectedLayer === 'geojson' ? {color: selectedColor} : {}}/>
+                style={getListItemStyle('geojson')}
+                onTouchTap={this.selectLayer_('geojson')} />
+              <ListItem
+                primaryText="Heatmap"
+                leftIcon={<ActionTrackChanges />}
+                style={getListItemStyle('heatmap')}
+                onTouchTap={this.selectLayer_('heatmap')} />
             </List>
           </Paper>
-          <Paper style={{flex: '8', marginLeft: '5px', padding: '10px'}}>
-            <div>
+          <Paper style={{flex: '8', marginLeft: '5px', padding: '15px'}}>
+            <div style={{display: this.state.selectedLayer === 'base' ? 'block' : 'none'}}>
               <RadioButtonGroup name="source.base"
                 valueSelected={this.props.visibleSource}
                 onChange={this.handleSourceChange_}>
@@ -83,6 +101,10 @@ export default class LayersDialog extends React.Component {
                   value={Source.BING_MAPS.ROAD}
                   label="Bing Maps (road)" />
               </RadioButtonGroup>
+            </div>
+            <div style={{display: this.state.selectedLayer === 'geojson' ? 'block' : 'none'}}>
+              GeoJSON Import <br />
+              <GeoJSONImporter />
             </div>
           </Paper>
         </Dialog>
@@ -99,6 +121,15 @@ export default class LayersDialog extends React.Component {
    * Function for hiding the dialog.
    */
   hideDialog_ () { this.setState({dialogVisible: false}) }
+
+  /**
+   * Function for setting the currently selected layer.
+   *
+   * @param {string} layer the layer to select
+   *
+   * @return {function} function for setting the layer
+   */
+  selectLayer_ (layer) { return () => { this.setState({selectedLayer: layer}) } }
 
   /**
   * Handler for changing the base map source.
