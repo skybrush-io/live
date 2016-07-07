@@ -18,6 +18,8 @@ import TextField from 'material-ui/TextField'
  * @property {number} resetDuration the amount of time the reset transition should take (in ms)
  * @property {string} fieldWidth the width of the actual input field
  * @property {string} style styling of the outermost element (a div)
+ *
+ * @param {Object} context react context of the component
  * @property {Signal} mapReferenceRequestSignal Mini-signal for requesting the map reference
  */
 export default class MapRotationTextBox extends React.Component {
@@ -29,11 +31,13 @@ export default class MapRotationTextBox extends React.Component {
    * @property {number} resetDuration the amount of time the reset transition should take (in ms)
    * @property {string} fieldWidth the width of the actual input field
    * @property {string} style styling of the outermost element (a div)
+   *
+   * @param {Object} context react context of the component
    * @property {Signal} mapReferenceRequestSignal Mini-signal for requesting the map reference
    *
    * @emits {mapReferenceRequestSignal} requests map reference
    */
-  constructor (props) {
+  constructor (props, context) {
     super(props)
     this.state = {
       isFocused: false,
@@ -47,7 +51,7 @@ export default class MapRotationTextBox extends React.Component {
     this.handleChange_ = this.handleChange_.bind(this)
     this.handleClick_ = this.handleClick_.bind(this)
 
-    props.mapReferenceRequestSignal.dispatch(this.onMapReferenceReceived_)
+    context.mapReferenceRequestSignal.dispatch(this.onMapReferenceReceived_)
   }
 
   render () {
@@ -158,6 +162,9 @@ export default class MapRotationTextBox extends React.Component {
 MapRotationTextBox.propTypes = {
   resetDuration: PropTypes.number,
   fieldWidth: PropTypes.string,
-  style: PropTypes.object,
+  style: PropTypes.object
+}
+
+MapRotationTextBox.contextTypes = {
   mapReferenceRequestSignal: PropTypes.instanceOf(Signal)
 }

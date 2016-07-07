@@ -38,47 +38,51 @@ const MapToolbarSeparator = () => {
  *
  * @returns {Object} the rendered component
  */
-const MapToolbarPresentation = (
-  { visibleSource, onSourceSelected, selectedTool, onToolSelected, mapReferenceRequestSignal },
-  { muiTheme }
-) => {
-  const selectedColor = muiTheme.palette.primary1Color
-  const colorForTool = (tool) => (
-    selectedTool === tool ? selectedColor : undefined
-  )
+class MapToolbarPresentation extends React.Component {
+  getChildContext () {
+    return {mapReferenceRequestSignal: this.props.mapReferenceRequestSignal}
+  }
 
-  return (
-    <div>
-      <IconButton onClick={partial(onToolSelected, Tool.SELECT)} tooltip="Select">
-        <ContentSelectAll color={colorForTool(Tool.SELECT)} />
-      </IconButton>
-      <IconButton onClick={partial(onToolSelected, Tool.ZOOM)} tooltip="Zoom">
-        <ActionZoomIn color={colorForTool(Tool.ZOOM)} />
-      </IconButton>
-      <IconButton onClick={partial(onToolSelected, Tool.PAN)} tooltip="Pan">
-        <ActionPanTool color={colorForTool(Tool.PAN)} />
-      </IconButton>
+  render () {
+    const { selectedTool, onToolSelected } = this.props
+    const { muiTheme } = this.context
 
-      <MapToolbarSeparator />
+    const selectedColor = muiTheme.palette.primary1Color
+    const colorForTool = (tool) => (
+      selectedTool === tool ? selectedColor : undefined
+    )
 
-      <LayersDialog />
+    return (
+      <div>
+        <IconButton onClick={partial(onToolSelected, Tool.SELECT)} tooltip="Select">
+          <ContentSelectAll color={colorForTool(Tool.SELECT)} />
+        </IconButton>
+        <IconButton onClick={partial(onToolSelected, Tool.ZOOM)} tooltip="Zoom">
+          <ActionZoomIn color={colorForTool(Tool.ZOOM)} />
+        </IconButton>
+        <IconButton onClick={partial(onToolSelected, Tool.PAN)} tooltip="Pan">
+          <ActionPanTool color={colorForTool(Tool.PAN)} />
+        </IconButton>
 
-      <MapToolbarSeparator />
+        <MapToolbarSeparator />
 
-      <MapRotationTextBox resetDuration={500} fieldWidth={'75px'}
-        style={{
-          display: 'inline-block',
-          marginRight: '12px',
-          verticalAlign: 'top'
-        }}
-        mapReferenceRequestSignal={mapReferenceRequestSignal} />
+        <LayersDialog />
 
-      <MapToolbarSeparator />
+        <MapToolbarSeparator />
 
-      <FitAllFeaturesButton duration={500} margin={64}
-        mapReferenceRequestSignal={mapReferenceRequestSignal} />
-    </div>
-  )
+        <MapRotationTextBox resetDuration={500} fieldWidth={'75px'}
+          style={{
+            display: 'inline-block',
+            marginRight: '12px',
+            verticalAlign: 'top'
+          }} />
+
+        <MapToolbarSeparator />
+
+        <FitAllFeaturesButton duration={500} margin={64} />
+      </div>
+    )
+  }
 }
 
 MapToolbarPresentation.propTypes = {
@@ -91,6 +95,10 @@ MapToolbarPresentation.propTypes = {
 
 MapToolbarPresentation.contextTypes = {
   muiTheme: PropTypes.object
+}
+
+MapToolbarPresentation.childContextTypes = {
+  mapReferenceRequestSignal: PropTypes.instanceOf(Signal)
 }
 
 /**

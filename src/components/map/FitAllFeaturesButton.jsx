@@ -17,11 +17,12 @@ import DeviceGpsFixed from 'material-ui/svg-icons/device/gps-fixed'
  * React Component to adjust the view so that it fits all of the current features.
  *
  * @param {Object} props properties of the react component
- * @property {Signal} mapReferenceRequestSignal Mini-signal for requesting
- * the map reference.
  * @property {number} margin amount of margin to leave between the features
  * and the border of the view
  * @property {number} duration the amount of time the transition should take (in ms)
+ *
+ * @param {Object} context react context of the component
+ * @property {Signal} mapReferenceRequestSignal Mini-signal for requesting the map reference
  *
  * @emits {mapReferenceRequestSignal} requests map reference.
  */
@@ -31,22 +32,23 @@ export default class FitAllFeaturesButton extends React.Component {
    * and requests map reference with callback.
    *
    * @param {Object} props properties of the react component
-   * @property {Signal} mapReferenceRequestSignal Mini-signal for requesting
-   * the map reference.
    * @property {number} margin amount of margin to leave between the features
    * and the border of the view
    * @property {number} duration the amount of time the transition should take (in ms)
    *
+   * @param {Object} context react context of the component
+   * @property {Signal} mapReferenceRequestSignal Mini-signal for requesting the map reference
+   *
    * @emits {mapReferenceRequestSignal} requests map reference.
    */
-  constructor (props) {
+  constructor (props, context) {
     super(props)
 
     this.onMapReferenceReceived_ = this.onMapReferenceReceived_.bind(this)
     this.handleClick_ = this.handleClick_.bind(this)
     this.geolocationReceived_ = this.geolocationReceived_.bind(this)
 
-    props.mapReferenceRequestSignal.dispatch(this.onMapReferenceReceived_)
+    context.mapReferenceRequestSignal.dispatch(this.onMapReferenceReceived_)
   }
 
   render () {
@@ -155,8 +157,11 @@ export default class FitAllFeaturesButton extends React.Component {
 FitAllFeaturesButton.propTypes = {
   duration: PropTypes.number,
   margin: PropTypes.number,
-  mapReferenceRequestSignal: PropTypes.instanceOf(Signal),
   dispatch: PropTypes.func
+}
+
+FitAllFeaturesButton.contextTypes = {
+  mapReferenceRequestSignal: PropTypes.instanceOf(Signal)
 }
 
 export default connect()(FitAllFeaturesButton)
