@@ -2,25 +2,25 @@
  * @file React Component for handling hotkeys.
  */
 
-import React, {PropTypes} from 'react'
+import React, { PropTypes } from 'react'
 import _ from 'lodash'
 
 import Dialog from 'material-ui/Dialog'
-import {Table, TableBody, TableHeader, TableHeaderColumn, TableRow,
-  TableRowColumn} from 'material-ui/Table'
+import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow,
+  TableRowColumn } from 'material-ui/Table'
 
 /**
  * React Component for handling hotkeys.
  *
  * @param {Object} props properties of the react component
- * @property {Signal} hotkeys Array containing the desired hotkeys and actions
+ * @property {Array<Object>} hotkeys Array containing the desired hotkeys and actions
  */
 export default class HotkeyHandler extends React.Component {
   /**
    * Constructor that binds the supplied actions to the key combinations.
    *
    * @param {Object} props properties of the react component
-   * @property {Signal} hotkeys Array containing the desired hotkeys and actions
+   * @property {Array<Object>} hotkeys Array containing the desired hotkeys and actions
    */
   constructor (props) {
     super(props)

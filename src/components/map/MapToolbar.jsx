@@ -5,9 +5,7 @@ import ActionPanTool from 'material-ui/svg-icons/action/pan-tool'
 import ActionZoomIn from 'material-ui/svg-icons/action/zoom-in'
 import ContentSelectAll from 'material-ui/svg-icons/content/select-all'
 
-import IconMenu from 'material-ui/IconMenu'
-import MenuItem from 'material-ui/MenuItem'
-import MapsLayers from 'material-ui/svg-icons/maps/layers'
+import LayersDialog from './LayersDialog'
 import MapRotationTextBox from './MapRotationTextBox'
 import FitAllFeaturesButton from './FitAllFeaturesButton'
 
@@ -16,9 +14,8 @@ import { connect } from 'react-redux'
 
 import Signal from 'mini-signals'
 
-import { selectMapTool, selectMapSource } from '../../actions/map'
+import { selectMapTool } from '../../actions/map'
 import { Tool } from './tools'
-import { Source } from './sources'
 
 /**
  * Separator component for the toolbar
@@ -49,9 +46,6 @@ const MapToolbarPresentation = (
   const colorForTool = (tool) => (
     selectedTool === tool ? selectedColor : undefined
   )
-  const handleSourceChange = (event, value) => {
-    onSourceSelected(value)
-  }
 
   return (
     <div>
@@ -67,21 +61,7 @@ const MapToolbarPresentation = (
 
       <MapToolbarSeparator />
 
-      <IconMenu
-          iconButtonElement={
-            <IconButton tooltip="Select layer"><MapsLayers /></IconButton>
-          }
-          onChange={handleSourceChange}
-          value={visibleSource}
-          selectedMenuItemStyle={{ color: selectedColor }}
-          targetOrigin={{ vertical: 'bottom', horizontal: 'left' }}
-          useLayerForClickAway={true}
-        >
-        <MenuItem value={Source.OSM} primaryText="OpenStreetMap" />
-        <MenuItem value={Source.BING_MAPS.AERIAL_WITH_LABELS}
-          primaryText="Bing Maps (aerial with labels)" />
-        <MenuItem value={Source.BING_MAPS.ROAD} primaryText="Bing Maps (road)" />
-      </IconMenu>
+      <LayersDialog />
 
       <MapToolbarSeparator />
 
@@ -118,16 +98,9 @@ MapToolbarPresentation.contextTypes = {
  */
 const MapToolbar = connect(
   // mapStateToProps
-  state => Object.assign({}, state.map.tools,
-    {
-      visibleSource: state.map.layers.byId.base.parameters.source
-    }
-  ),
+  state => Object.assign({}, state.map.tools),
   // mapDispatchToProps
   dispatch => ({
-    onSourceSelected (source) {
-      dispatch(selectMapSource(source))
-    },
     onToolSelected (tool) {
       dispatch(selectMapTool(tool))
     }
