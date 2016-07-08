@@ -24,6 +24,24 @@ import { selectMapSource } from '../../actions/map'
 
 import GeoJSONImporter from './GeoJSONImporter'
 
+import Toggle from 'material-ui/Toggle'
+
+const LayerSettingsContainer = ({visible, title, children}) => (
+  <div style={{display: visible ? 'block' : 'none'}}>
+    <p style={{margin: '0px', fontSize: '20px'}}>{title}</p>
+    {children}
+  </div>
+)
+
+LayerSettingsContainer.propTypes = {
+  visible: PropTypes.bool,
+  title: PropTypes.string,
+  children: PropTypes.oneOfType([
+    PropTypes.arrayOf(PropTypes.node),
+    PropTypes.node
+  ])
+}
+
 export default class LayersDialog extends React.Component {
   constructor (props) {
     super(props)
@@ -47,6 +65,9 @@ export default class LayersDialog extends React.Component {
         boxShadow: `5px 0px ${selectedColor} inset`
       } : {}
     )
+    const getVisibility = (layer) => (
+      this.state.selectedLayer === layer
+    )
 
     const actions = [
       <FlatButton label="Done" primary={true} onTouchTap={this.hideDialog_} />
@@ -61,6 +82,7 @@ export default class LayersDialog extends React.Component {
           open={this.state.dialogVisible}
           actions={actions}
           bodyStyle={{display: 'flex', overflow: 'visible'}}
+          onRequestClose={this.hideDialog_}
           >
           <Paper>
             <List style={{flex: '2'}}>
@@ -87,7 +109,9 @@ export default class LayersDialog extends React.Component {
             </List>
           </Paper>
           <Paper style={{flex: '8', marginLeft: '5px', padding: '15px'}}>
-            <div style={{display: this.state.selectedLayer === 'base' ? 'block' : 'none'}}>
+            <LayerSettingsContainer
+              visible={getVisibility('base')}
+              title="Base map layer selection">
               <RadioButtonGroup name="source.base"
                 valueSelected={this.props.visibleSource}
                 onChange={this.handleSourceChange_}>
@@ -101,11 +125,21 @@ export default class LayersDialog extends React.Component {
                   value={Source.BING_MAPS.ROAD}
                   label="Bing Maps (road)" />
               </RadioButtonGroup>
-            </div>
-            <div style={{display: this.state.selectedLayer === 'geojson' ? 'block' : 'none'}}>
-              GeoJSON Import <br />
+            </LayerSettingsContainer>
+            <LayerSettingsContainer
+              visible={getVisibility('uav')}
+              title="UAV Display Settings">
+            </LayerSettingsContainer>
+            <LayerSettingsContainer
+              visible={getVisibility('geojson')}
+              title="GeoJSON Import">
               <GeoJSONImporter />
-            </div>
+            </LayerSettingsContainer>
+            <LayerSettingsContainer
+              visible={getVisibility('heatmap')}
+              title="Heatmap">
+              <Toggle label="Active" disabled={true} />
+            </LayerSettingsContainer>
           </Paper>
         </Dialog>
       </div>
