@@ -74,8 +74,10 @@ class ServerSettingsDialogPresentation extends React.Component {
       width: '320px'
     }
     return (
-      <Dialog title="Server Settings" modal={true} open={open}
-              actions={actions} contentStyle={contentStyle}>
+      <Dialog title="Server Settings" open={open}
+              actions={actions} contentStyle={contentStyle}
+              onRequestClose={onClose}
+      >
         <ServerSettingsForm ref="form" onSubmit={onSubmit} />
       </Dialog>
     )
