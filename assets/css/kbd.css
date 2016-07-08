@@ -1,0 +1,98 @@
+/**
+ * CSS styling for <kbd> tags.
+ *
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2015 Auth0, Inc. <support@auth0.com> (http://auth0.com)
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+kbd {
+  font-family: Roboto, Arial, sans-serif;
+  display: inline-block;
+  border-radius: 3px;
+  padding: 0px 4px;
+  box-shadow: 1px 1px 1px #777;
+  margin: 2px;
+  background: #eee;
+  font-weight: normal;
+  color: #555;
+  cursor: pointer;
+
+  /* Prevent selection */
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+kbd:hover, kbd:hover * {
+  color: black;
+  /* box-shadow: 1px 1px 1px #333; */
+}
+kbd:active, kbd:active * {
+  color: black;
+  box-shadow: 1px 1px 0px #ddd inset;
+}
+
+kbd kbd {
+  padding: 0px;
+  margin: 0 1px;
+  box-shadow: 0px 0px 0px black;
+  vertical-align: baseline;
+  background: none;
+}
+
+kbd kbd:hover {
+  box-shadow: 0px 0px 0px black;
+}
+
+kbd:active kbd {
+  box-shadow: 0px 0px 0px black;
+  background: none;
+}
+
+/* Deep blue */
+kbd.deep-blue, .deep-blue kbd {
+  background: steelblue;
+  color: #eee;
+}
+
+kbd.deep-blue:hover, kbd.deep-blue:hover *, .deep-blue kbd:hover {
+  color: white;
+}
+
+/* Dark apple */
+kbd.dark-apple, .dark-apple kbd {
+  background: black;
+  color: #ddd;
+}
+
+kbd.dark-apple:hover, kbd.dark-apple:hover *, .dark-apple kbd:hover {
+  color: white;
+}
+
+/* Type writer */
+kbd.type-writer, .type-writer kbd {
+  border-radius: 10px;
+  background: #333;
+  color: white;
+}
