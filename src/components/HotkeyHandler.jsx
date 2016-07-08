@@ -5,9 +5,37 @@
 import React, { PropTypes } from 'react'
 import _ from 'lodash'
 
+import FlatButton from 'material-ui/FlatButton'
 import Dialog from 'material-ui/Dialog'
 import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow,
   TableRowColumn } from 'material-ui/Table'
+
+import { isRunningOnMac, platformModifierKey } from '../utils/platform'
+
+/**
+ * Formats the given hotkey definition string to make it suitable for
+ * the user.
+ *
+ * This function replaces all occurrences of "Cmd" with the standard
+ * "command" symbol on a Mac (i.e. Unicode code point U+2318). It also
+ * replaces "PlatMod" with "Ctrl" on Windows and the "command" symbol
+ * on a Mac, gets rid of the "Key" prefix and wraps each key in a
+ * <code>&lt;kbd&gt;</code> tag.
+ *
+ * @param {string} definition  the hotkey definition string to format
+ * @return {array} the formatted hotkey definition as an array of JSX tags
+ */
+function formatHotkeyDefinition (definition) {
+  return _(definition).split(/\s+/).map((key, index) => {
+    if (key === '+') {
+      return ' + '
+    } else {
+      const formattedKey = key.replace(/^PlatMod$/, platformModifierKey)
+         .replace(/^Cmd$/, '\u2318').replace(/^Key/, '')
+      return <kbd key={`key${index}`}>{formattedKey}</kbd>
+    }
+  }).value()
+}
 
 /**
  * React Component for handling hotkeys.
@@ -41,6 +69,7 @@ export default class HotkeyHandler extends React.Component {
 
     this.showDialog_ = this.showDialog_.bind(this)
     this.hideDialog_ = this.hideDialog_.bind(this)
+    this.toggleDialog_ = this.toggleDialog_.bind(this)
 
     this.addHelpListeners()
   }
@@ -48,24 +77,37 @@ export default class HotkeyHandler extends React.Component {
   /**
    * Function for showing the help dialog.
    */
-  showDialog_ () { this.setState({dialogVisible: true}) }
+  showDialog_ () {
+    this.setState({ dialogVisible: true })
+  }
 
   /**
    * Function for hiding the help dialog.
    */
-  hideDialog_ () { this.setState({dialogVisible: false}) }
+  hideDialog_ () {
+    this.setState({ dialogVisible: false })
+  }
+
+  /**
+   * Function for toggling the visibility of the help dialog.
+   */
+  toggleDialog_ () {
+    this.setState({ dialogVisible: !this.state.dialogVisible })
+  }
 
   /**
    * Function for attaching the help dialog control listeners.
    */
   addHelpListeners () {
+    // TODO: this is not so nice -- there should be a way to add a listener
+    // for an event that is defined by the character that would have been
+    // typed in response to the keyboard event
+
     // For US keyboard layout
-    this.addListener('down', 'Shift + Slash', this.showDialog_)
-    this.addListener('up', 'Shift + Slash', this.hideDialog_)
+    this.addListener('down', 'Shift + Slash', this.toggleDialog_)
 
     // For HU keyboard layout
-    this.addListener('down', 'Shift + Comma', this.showDialog_)
-    this.addListener('up', 'Shift + Comma', this.hideDialog_)
+    this.addListener('down', 'Shift + Comma', this.toggleDialog_)
   }
 
   /**
@@ -88,13 +130,21 @@ export default class HotkeyHandler extends React.Component {
     const eventColumnStyle = {width: '35px'}
     const keysColumnStyle = {width: '150px'}
     const actionColumnStyle = {}
+    const actions = [
+      <FlatButton label="Close" primary={true}
+        onTouchTap={this.hideDialog_} />
+    ]
 
     return (
       <div ref="capture">
         <Dialog
           title="Hotkeys"
-          open={this.state.dialogVisible}>
-          <Table>
+          actions={actions}
+          open={this.state.dialogVisible}
+          onRequestClose={this.hideDialog_}
+          autoScrollBodyContent={true}
+        >
+          <Table selectable={false}>
             <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
               <TableRow>
                 <TableHeaderColumn style={eventColumnStyle}>
@@ -116,7 +166,7 @@ export default class HotkeyHandler extends React.Component {
                       {hotkey.on}
                     </TableRowColumn>
                     <TableRowColumn style={keysColumnStyle}>
-                      {hotkey.keys}
+                      {formatHotkeyDefinition(hotkey.keys)}
                     </TableRowColumn>
                     <TableRowColumn style={actionColumnStyle}>
                       {hotkey.description}
@@ -181,10 +231,10 @@ export default class HotkeyHandler extends React.Component {
   /**
    * Event handler function that looks for attached actions and executes them.
    *
-   * @param {string} on 'down' or 'up', on which event the action should be fired
+   * @param {string} direction 'down' or 'up', on which event the action should be fired
    * @param {KeyboardEvent} e the actual keyboard event
    */
-  handleKey_ (on, e) {
+  handleKey_ (direction, e) {
     const hashes = [
       (e.altKey ? 'Alt + ' : '') +
       (e.ctrlKey ? 'Ctrl + ' : '') +
@@ -202,11 +252,12 @@ export default class HotkeyHandler extends React.Component {
     }
 
     for (const hash of hashes) {
-      if (hash in this.listeners[on]) {
+      const listeners = this.listeners[direction]
+      if (hash in listeners) {
         e.preventDefault()
         if (e.repeat) { return }
 
-        for (const callback of this.listeners[on][hash]) {
+        for (const callback of listeners[hash]) {
           callback()
         }
       }
@@ -229,7 +280,7 @@ HotkeyHandler.condition = {
   Alt: e => e.altKey,
   Ctrl: e => e.ctrlKey,
   Meta: e => e.metaKey,
-  PlatMod: e => navigator.platform.indexOf('Mac') !== -1 ? e.metaKey : e.ctrlKey,
+  PlatMod: e => isRunningOnMac ? e.metaKey : e.ctrlKey,
   Shift: e => e.shiftKey
 }
 

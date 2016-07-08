@@ -1,4 +1,5 @@
 import ol from 'openlayers'
+import { isRunningOnMac } from '../../utils/platform'
 
 let Condition = {}
 
@@ -10,7 +11,7 @@ let Condition = {}
  * @return {boolean}  whether the condition was met
  */
 Condition.platformModifierKey = mapBrowserEvent => (
-  navigator.platform.indexOf('Mac') !== -1
+  isRunningOnMac
   ? mapBrowserEvent.originalEvent.metaKey
   : mapBrowserEvent.originalEvent.ctrlKey
 )

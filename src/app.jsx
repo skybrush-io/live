@@ -23,6 +23,7 @@ import flock from './flock'
 import store from './store'
 
 require('../assets/css/screen.less')
+require('../assets/css/kbd.css')
 
 // Enable tap events on the UI
 injectTapEventPlugin()

@@ -2,8 +2,6 @@
  * @file File for storing hotkey configuration.
  */
 
-import { showSnackbarMessage } from './actions/snackbar'
-
 import { selectAllFeatures, clearSelectedFeatures,
   selectMapTool, selectMapSource } from './actions/map'
 
@@ -11,24 +9,6 @@ import { Tool } from './components/map/tools'
 import { Source } from './components/map/sources'
 
 export default (store, flock) => [
-  // Complex hotkey example
-  {
-    description: 'Show pressed snackbar message',
-    on: 'down',
-    keys: 'Ctrl + Shift + Alt + KeyA',
-    action: () => {
-      store.dispatch(showSnackbarMessage('Ctrl + Shift + Alt + A pressed.'))
-    }
-  },
-  {
-    description: 'Show released snackbar message',
-    on: 'up',
-    keys: 'Ctrl + Shift + Alt + KeyA',
-    action: () => {
-      store.dispatch(showSnackbarMessage('Ctrl + Shift + Alt + A released.'))
-    }
-  },
-
   // Drone selection hotkeys
   {
     description: 'Select all drones',
