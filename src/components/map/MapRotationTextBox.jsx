@@ -11,6 +11,8 @@ import IconButton from 'material-ui/IconButton'
 import ImageRotateRight from 'material-ui/svg-icons/image/rotate-right'
 import TextField from 'material-ui/TextField'
 
+const normalizeAngle = (angle) => (((angle % 360) + 360) % 360).toFixed(2)
+
 /**
  * React Component to display and adjust the rotation of the map view.
  *
@@ -48,8 +50,9 @@ export default class MapRotationTextBox extends React.Component {
     this.updateFromMap_ = this.updateFromMap_.bind(this)
     this.onFocus_ = this.onFocus_.bind(this)
     this.onBlur_ = this.onBlur_.bind(this)
-    this.handleChange_ = this.handleChange_.bind(this)
-    this.handleClick_ = this.handleClick_.bind(this)
+    this.onChange_ = this.onChange_.bind(this)
+    this.onKeyDown_ = this.onKeyDown_.bind(this)
+    this.onButtonClick_ = this.onButtonClick_.bind(this)
 
     context.mapReferenceRequestSignal.dispatch(this.onMapReferenceReceived_)
   }
@@ -57,7 +60,7 @@ export default class MapRotationTextBox extends React.Component {
   render () {
     return (
       <div style={this.props.style}>
-        <IconButton onClick={this.handleClick_} tooltip="Reset rotation">
+        <IconButton onClick={this.onButtonClick_} tooltip="Reset rotation">
           <ImageRotateRight />
         </IconButton>
         <TextField
@@ -67,11 +70,12 @@ export default class MapRotationTextBox extends React.Component {
           value={
             this.state.isFocused
             ? this.state.rotation
-            : (this.state.rotation % 360).toFixed(2)
+            : normalizeAngle(this.state.rotation)
           }
           onFocus={this.onFocus_}
           onBlur={this.onBlur_}
-          onChange={this.handleChange_} />
+          onChange={this.onChange_}
+          onKeyDown={this.onKeyDown_} />
       </div>
     )
   }
@@ -114,7 +118,7 @@ export default class MapRotationTextBox extends React.Component {
   onFocus_ () {
     this.setState({
       isFocused: true,
-      rotation: (this.state.rotation % 360).toFixed(2)
+      rotation: normalizeAngle(this.state.rotation)
     })
   }
 
@@ -132,7 +136,7 @@ export default class MapRotationTextBox extends React.Component {
    *
    * @param {Event} e the event fired from the TextField React component
    */
-  handleChange_ (e) {
+  onChange_ (e) {
     // Maybe this should be done in componentWill/DidUpdate, but it causes feedback loop
     this.map.getView().setRotation(-e.target.value * (Math.PI / 180))
 
@@ -142,11 +146,22 @@ export default class MapRotationTextBox extends React.Component {
   }
 
   /**
+   * Function to normalize the field's value when Enter is pressed.
+   *
+   * @param {Event} e the event fired from the TextField React component
+   */
+  onKeyDown_ (e) {
+    if (e.key === 'Enter') {
+      e.target.blur()
+    }
+  }
+
+  /**
   * Event handler that resets the heading of the map to north
   *
   * @param {Event} e the event fired from the IconButton component
   */
-  handleClick_ (e) {
+  onButtonClick_ (e) {
     const view = this.map.getView()
 
     this.map.beforeRender(ol.animation.rotate({
