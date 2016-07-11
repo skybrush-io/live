@@ -8,7 +8,7 @@ import { setConnectionStateMultiple } from '../actions/connections'
 import { parseISODate } from '../utils/parsing'
 
 /**
- * Connectin identifier for the master connection leading to the Flockwave
+ * Connection identifier for the master connection leading to the Flockwave
  * server.
  */
 export const MASTER_CONNECTION_ID = '__master__'

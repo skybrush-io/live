@@ -5,6 +5,8 @@
 import { handleActions } from 'redux-actions'
 import u from 'updeep'
 
+import { LayerType } from '../../model/layers'
+
 /**
  * The default layer configuration of the map.
  */
@@ -13,9 +15,11 @@ const defaultState = {
   byId: {
     base: {
       // Each layer has a type, a label, a visibility flag and some
-      // (type-dependent) parameters.
-      // 'base' is the base layer that contains the map itself.
-      type: 'base',
+      // (type-dependent) parameters. The values of the type parameter
+      // should come from the LayerType enum.
+      //
+      // LayerType.BASE is the base layer that contains the map itself.
+      type: LayerType.BASE,
       label: 'Base map',
       visible: true,
       parameters: {
@@ -25,7 +29,7 @@ const defaultState = {
     },
     uavs: {
       // This layer shows all the UAVs in the flock
-      type: 'uavs',
+      type: LayerType.UAVS,
       label: 'UAVs',
       visible: true,
       parameters: {}

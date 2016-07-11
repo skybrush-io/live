@@ -12,14 +12,10 @@ import { List, ListItem } from 'material-ui/List'
 import { RadioButton, RadioButtonGroup } from 'material-ui/RadioButton'
 import Toggle from 'material-ui/Toggle'
 
-import ActionAspectRatio from 'material-ui/svg-icons/action/aspect-ratio'
-import ActionTrackChanges from 'material-ui/svg-icons/action/track-changes'
-import DeviceAirplanemodeActive from 'material-ui/svg-icons/device/airplanemode-active'
-import FileAttachment from 'material-ui/svg-icons/file/attachment'
-
 import { Source } from './sources'
 import { closeLayersDialog, setSelectedLayerInLayersDialog } from '../../actions/layers'
 import { selectMapSource } from '../../actions/map'
+import { LayerType, labelForLayerType, iconForLayerType } from '../../model/layers'
 
 const LayerSettingsContainer = ({visible, title, children}) => (
   <div style={{display: visible ? 'block' : 'none'}}>
@@ -34,35 +30,6 @@ LayerSettingsContainer.propTypes = {
     PropTypes.arrayOf(PropTypes.node),
     PropTypes.node
   ])
-}
-
-function iconForLayerType (layerType) {
-  switch (layerType) {
-    case 'base':
-      return <ActionAspectRatio />
-
-    case 'geojson':
-      return <FileAttachment />
-
-    case 'heatmap':
-      return <ActionTrackChanges />
-
-    case 'uavs':
-      return <DeviceAirplanemodeActive />
-
-    default:
-      return null
-  }
-}
-
-function labelForLayerType (layerType) {
-  return {
-    base: 'Base layer',
-    geojson: 'GeoJSON',
-    heatmap: 'Heatmap',
-    location: 'Own location',
-    uavs: 'UAVs'
-  }[layerType]
 }
 
 /**
@@ -117,7 +84,7 @@ class LayersDialogPresentation extends React.Component {
         </div>
         <div style={{flex: '7', marginLeft: '5px', padding: '15px'}}>
           <LayerSettingsContainer
-            visible={getVisibility('base')}
+            visible={getVisibility(LayerType.BASE)}
             title="Base map layer selection">
             <RadioButtonGroup name="source.base"
               valueSelected={this.props.visibleSource}
@@ -134,15 +101,15 @@ class LayersDialogPresentation extends React.Component {
             </RadioButtonGroup>
           </LayerSettingsContainer>
           <LayerSettingsContainer
-            visible={getVisibility('uav')}
+            visible={getVisibility(LayerType.UAVS)}
             title="UAV Display Settings">
           </LayerSettingsContainer>
           <LayerSettingsContainer
-            visible={getVisibility('geojson')}
+            visible={getVisibility(LayerType.GEOJSON)}
             title="GeoJSON Import">
           </LayerSettingsContainer>
           <LayerSettingsContainer
-            visible={getVisibility('heatmap')}
+            visible={getVisibility(LayerType.HEATMAP)}
             title="Heatmap">
             <Toggle label="Active" disabled={true} />
           </LayerSettingsContainer>
