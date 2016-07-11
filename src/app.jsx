@@ -9,6 +9,7 @@ import ClockDisplayList from './components/ClockDisplayList'
 import ConnectionList from './components/ConnectionList'
 import GlobalErrorDialog from './components/GlobalErrorDialog'
 import GlobalSnackbar from './components/GlobalSnackbar'
+import LayersDialog from './components/map/LayersDialog'
 import MapReferenceRequestHandler from './components/map/MapReferenceRequestHandler'
 import MapToolbar from './components/map/MapToolbar'
 import MapView from './components/map/MapView'
@@ -74,6 +75,8 @@ export default class Application extends React.Component {
 
             <ServerSettingsDialog />
             <ServerConnectionManager />
+
+            <LayersDialog />
 
             <GlobalErrorDialog />
             <GlobalSnackbar />
