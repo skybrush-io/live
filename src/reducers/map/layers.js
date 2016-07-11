@@ -12,9 +12,12 @@ const defaultState = {
   // .byId contains all the layers in the map, in no particular order
   byId: {
     base: {
-      // Each layer has a type and some (type-dependent) parameters.
+      // Each layer has a type, a label, a visibility flag and some
+      // (type-dependent) parameters.
       // 'base' is the base layer that contains the map itself.
       type: 'base',
+      label: 'Base map',
+      visible: true,
       parameters: {
         // We use the OSM data source for the base layer by default
         source: 'osm'
@@ -23,6 +26,8 @@ const defaultState = {
     uavs: {
       // This layer shows all the UAVs in the flock
       type: 'uavs',
+      label: 'UAVs',
+      visible: true,
       parameters: {}
     }
   },

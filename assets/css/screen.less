@@ -1,4 +1,5 @@
 @box-background-color: #ffffff;
+@primary-color: #00bcd4;    // equal to primary1Color in the Material UI theme
 @button-offset: 20px;
 @short-transition-duration: 0.2s;
 @medium-transition-duration: 0.5s;
@@ -44,6 +45,23 @@ body {
 #map {
   width: 100%;
   height: 100%;
+}
+
+/* Special styling for Material-UI lists that are placed within a
+ * Dialog and whose left edge lines up with the left edge of the dialog. */
+div.dialog-sidebar {
+  margin-left: -24px;
+
+  /* Yes, I know it's fugly */
+  &>div>span>div {
+    padding-left: 8px;
+  }
+}
+
+/* Styling for selected list items in Material-UI */
+.selected-list-item {
+  color: @primary-color;
+  box-shadow: 5px 0px @primary-color inset;
 }
 
 /* Widgets placed over the map */

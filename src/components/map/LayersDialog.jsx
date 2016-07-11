@@ -2,33 +2,32 @@
 * @file React Component for the layer settings dialog.
 */
 
+import partial from 'lodash/partial'
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 
-import IconButton from 'material-ui/IconButton'
-import MapsLayers from 'material-ui/svg-icons/maps/layers'
-
 import Dialog from 'material-ui/Dialog'
 import FlatButton from 'material-ui/FlatButton'
-
+import IconButton from 'material-ui/IconButton'
 import { List, ListItem } from 'material-ui/List'
+import { RadioButton, RadioButtonGroup } from 'material-ui/RadioButton'
+import Toggle from 'material-ui/Toggle'
+
 import ActionAspectRatio from 'material-ui/svg-icons/action/aspect-ratio'
+import ActionTrackChanges from 'material-ui/svg-icons/action/track-changes'
 import DeviceAirplanemodeActive from 'material-ui/svg-icons/device/airplanemode-active'
 import FileAttachment from 'material-ui/svg-icons/file/attachment'
-import ActionTrackChanges from 'material-ui/svg-icons/action/track-changes'
+import MapsLayers from 'material-ui/svg-icons/maps/layers'
 
-import Paper from 'material-ui/Paper'
-import { RadioButton, RadioButtonGroup } from 'material-ui/RadioButton'
 import { Source } from './sources'
+import { closeLayersDialog, showLayersDialog,
+  setSelectedLayerInLayersDialog } from '../../actions/layers'
 import { selectMapSource } from '../../actions/map'
 
 import GeoJSONImporter from './GeoJSONImporter'
 
-import Toggle from 'material-ui/Toggle'
-
 const LayerSettingsContainer = ({visible, title, children}) => (
   <div style={{display: visible ? 'block' : 'none'}}>
-    <p style={{margin: '0px', fontSize: '20px'}}>{title}</p>
     {children}
   </div>
 )
@@ -42,73 +41,71 @@ LayerSettingsContainer.propTypes = {
   ])
 }
 
-export default class LayersDialog extends React.Component {
+/**
+ * Presentation component for the dialog that shows the configuration of
+ * layers in the map.
+ */
+class LayersDialogPresentation extends React.Component {
   constructor (props) {
     super(props)
-
-    this.state = {
-      dialogVisible: false,
-      selectedLayer: 'base'
-    }
-
-    this.showDialog_ = this.showDialog_.bind(this)
-    this.hideDialog_ = this.hideDialog_.bind(this)
-
     this.handleSourceChange_ = this.handleSourceChange_.bind(this)
   }
 
   render () {
-    const selectedColor = this.context.muiTheme.palette.primary1Color
-    const getListItemStyle = (layer) => (
-      this.state.selectedLayer === layer ? {
-        color: selectedColor,
-        boxShadow: `5px 0px ${selectedColor} inset`
-      } : {}
+    const { dialogVisible, selectedLayer } = this.props
+    const { onLayerSelected, onShow, onClose } = this.props
+    const getListItemStyle = layer => (
+      selectedLayer === layer ? 'selected-list-item' : undefined
     )
-    const getVisibility = (layer) => (
-      this.state.selectedLayer === layer
+    const getVisibility = layer => (
+      selectedLayer === layer
     )
 
     const actions = [
-      <FlatButton label="Done" primary={true} onTouchTap={this.hideDialog_} />
+      <FlatButton label="Done" primary={true} onTouchTap={onClose} />
     ]
+
     return (
       <div style={{display: 'inline-block'}}>
-        <IconButton onClick={this.showDialog_} tooltip="Layers">
+        <IconButton onClick={onShow} tooltip="Layers">
           <MapsLayers />
         </IconButton>
         <Dialog
           title="Layers"
-          open={this.state.dialogVisible}
+          open={dialogVisible}
           actions={actions}
           bodyStyle={{display: 'flex', overflow: 'visible'}}
-          onRequestClose={this.hideDialog_}
+          onRequestClose={onClose}
           >
-          <Paper>
-            <List style={{flex: '2'}}>
+          <div style={{ flex: '2' }}>
+            <List className="dialog-sidebar">
               <ListItem
-                primaryText="Base"
+                primaryText="Base map"
+                secondaryText="Base layer"
                 leftIcon={<ActionAspectRatio />}
-                style={getListItemStyle('base')}
-                onTouchTap={this.selectLayer_('base')} />
+                className={getListItemStyle('base')}
+                onTouchTap={partial(onLayerSelected, 'base')} />
               <ListItem
                 primaryText="UAVs"
+                secondaryText="Active UAVs"
                 leftIcon={<DeviceAirplanemodeActive />}
-                style={getListItemStyle('uav')}
-                onTouchTap={this.selectLayer_('uav')} />
+                className={getListItemStyle('uav')}
+                onTouchTap={partial(onLayerSelected, 'uav')} />
               <ListItem
-                primaryText="GeoJSON"
+                primaryText="Geofence"
+                secondaryText="GeoJSON layer"
                 leftIcon={<FileAttachment />}
-                style={getListItemStyle('geojson')}
-                onTouchTap={this.selectLayer_('geojson')} />
+                className={getListItemStyle('geojson')}
+                onTouchTap={partial(onLayerSelected, 'geojson')} />
               <ListItem
-                primaryText="Heatmap"
+                primaryText="Radiation"
+                secondaryText="Heatmap"
                 leftIcon={<ActionTrackChanges />}
-                style={getListItemStyle('heatmap')}
-                onTouchTap={this.selectLayer_('heatmap')} />
+                className={getListItemStyle('heatmap')}
+                onTouchTap={partial(onLayerSelected, 'heatmap')} />
             </List>
-          </Paper>
-          <Paper style={{flex: '8', marginLeft: '5px', padding: '15px'}}>
+          </div>
+          <div style={{flex: '8', marginLeft: '5px', padding: '15px'}}>
             <LayerSettingsContainer
               visible={getVisibility('base')}
               title="Base map layer selection">
@@ -140,30 +137,11 @@ export default class LayersDialog extends React.Component {
               title="Heatmap">
               <Toggle label="Active" disabled={true} />
             </LayerSettingsContainer>
-          </Paper>
+          </div>
         </Dialog>
       </div>
     )
   }
-
-  /**
-   * Function for showing the dialog.
-   */
-  showDialog_ () { this.setState({dialogVisible: true}) }
-
-  /**
-   * Function for hiding the dialog.
-   */
-  hideDialog_ () { this.setState({dialogVisible: false}) }
-
-  /**
-   * Function for setting the currently selected layer.
-   *
-   * @param {string} layer the layer to select
-   *
-   * @return {function} function for setting the layer
-   */
-  selectLayer_ (layer) { return () => { this.setState({selectedLayer: layer}) } }
 
   /**
   * Handler for changing the base map source.
@@ -176,26 +154,47 @@ export default class LayersDialog extends React.Component {
   }
 }
 
-LayersDialog.propTypes = {
+LayersDialogPresentation.propTypes = {
+  dialogVisible: PropTypes.bool.isRequired,
+  selectedLayer: PropTypes.string,
   visibleSource: PropTypes.string,
+
+  onClose: PropTypes.func,
+  onLayerSelected: PropTypes.func,
+  onShow: PropTypes.func,
   onSourceSelected: PropTypes.func
 }
 
-LayersDialog.contextTypes = {
-  muiTheme: PropTypes.object
+LayersDialogPresentation.defaultProps = {
+  dialogVisible: false
 }
 
-export default connect(
+/**
+ * Container of the dialog that allows the user to configure the layers of
+ * the map.
+ */
+const LayersDialog = connect(
   // mapStateToProps
-  state => Object.assign({},
-    {
-      visibleSource: state.map.layers.byId.base.parameters.source
-    }
-  ),
+  state => ({
+    dialogVisible: state.dialogs.layerSettings.dialogVisible,
+    selectedLayer: state.dialogs.layerSettings.selectedLayer,
+    visibleSource: state.map.layers.byId.base.parameters.source
+  }),
   // mapDispatchToProps
   dispatch => ({
+    onClose () {
+      dispatch(closeLayersDialog())
+    },
+    onShow () {
+      dispatch(showLayersDialog())
+    },
+    onLayerSelected (layerId) {
+      dispatch(setSelectedLayerInLayersDialog(layerId))
+    },
     onSourceSelected (source) {
       dispatch(selectMapSource(source))
     }
   })
-)(LayersDialog)
+)(LayersDialogPresentation)
+
+export default LayersDialog

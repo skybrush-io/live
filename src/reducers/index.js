@@ -6,9 +6,8 @@ import defaultMerger from 'redux-storage-merger-simple'
 import config from '../config'
 import clocksReducer from './clocks'
 import connectionsReducer from './connections'
-import errorHandlingReducer from './error-handling'
+import dialogsReducer from './dialogs'
 import mapReducer from './map'
-import serverSettingsReducer from './server-settings'
 import snackbarReducer from './snackbar'
 
 /**
@@ -46,10 +45,7 @@ const reducer = storage.reducer(
   combineReducers({
     clocks: clocksReducer,
     connections: connectionsReducer,
-    dialogs: combineReducers({
-      error: errorHandlingReducer,
-      serverSettings: serverSettingsReducer
-    }),
+    dialogs: dialogsReducer,
     map: mapReducer,
     snackbar: snackbarReducer,
     form: formReducer
