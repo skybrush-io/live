@@ -12,12 +12,12 @@ import ActiveUAVsLayerSource from './ActiveUAVsLayerSource'
 import SelectNearestFeature from './interactions/SelectNearestFeature'
 
 import { Tool } from './tools'
-import { Source } from './sources'
 
 import { setSelectedFeatures, addSelectedFeatures,
          clearSelectedFeatures, removeSelectedFeatures }
        from '../../actions/map'
 import Flock from '../../model/flock'
+import { Source } from '../../model/sources'
 
 import { BingAPI } from 'config'
 

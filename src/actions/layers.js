@@ -5,12 +5,24 @@
 
 import { createAction } from 'redux-actions'
 import { SET_SELECTED_LAYER_IN_LAYERS_DIALOG, SHOW_LAYERS_DIALOG,
-  CLOSE_LAYERS_DIALOG } from './types'
+  CLOSE_LAYERS_DIALOG, TOGGLE_LAYER_VISIBILITY, RENAME_LAYER } from './types'
 
 /**
  * Action factory that creates an action that will close the layers dialog.
  */
 export const closeLayersDialog = createAction(CLOSE_LAYERS_DIALOG)
+
+/**
+ * Action factory that creates an action that renames a layer.
+ *
+ * @param {string} layerId  the ID of the layer to rename
+ * @param {string} name     the new name of the layer
+ */
+export const renameLayer = createAction(RENAME_LAYER,
+  (layerId, name) => ({
+    id: layerId, name: name
+  })
+)
 
 /**
  * Action factory that creates an action that will set the selected layer
@@ -25,3 +37,12 @@ export const setSelectedLayerInLayersDialog = createAction(
  * Action factory that creates an action that will show the layers dialog.
  */
 export const showLayersDialog = createAction(SHOW_LAYERS_DIALOG)
+
+/**
+ * Action factory that creates an action that toggles the visibility of a
+ * layer with the given ID.
+ *
+ * @param {string} layerId  the ID of the layer whose visibility is to be
+ *        modified
+ */
+export const toggleLayerVisibility = createAction(TOGGLE_LAYER_VISIBILITY)
