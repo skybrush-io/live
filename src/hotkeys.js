@@ -6,7 +6,7 @@ import { selectAllFeatures, clearSelectedFeatures,
   selectMapTool, selectMapSource } from './actions/map'
 
 import { Tool } from './components/map/tools'
-import { Source } from './components/map/sources'
+import { Source } from './model/sources'
 
 export default (store, flock) => [
   // Drone selection hotkeys

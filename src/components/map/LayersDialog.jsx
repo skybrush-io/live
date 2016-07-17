@@ -2,200 +2,257 @@
 * @file React Component for the layer settings dialog.
 */
 
+import _ from 'lodash'
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
-
-import IconButton from 'material-ui/IconButton'
-import MapsLayers from 'material-ui/svg-icons/maps/layers'
+import { reduxForm } from 'redux-form'
 
 import Dialog from 'material-ui/Dialog'
 import FlatButton from 'material-ui/FlatButton'
-
 import { List, ListItem } from 'material-ui/List'
-import ActionAspectRatio from 'material-ui/svg-icons/action/aspect-ratio'
-import DeviceAirplanemodeActive from 'material-ui/svg-icons/device/airplanemode-active'
-import FileAttachment from 'material-ui/svg-icons/file/attachment'
-import ActionTrackChanges from 'material-ui/svg-icons/action/track-changes'
-
-import Paper from 'material-ui/Paper'
 import { RadioButton, RadioButtonGroup } from 'material-ui/RadioButton'
-import { Source } from './sources'
-import { selectMapSource } from '../../actions/map'
-
-import GeoJSONImporter from './GeoJSONImporter'
-
+import TextField from 'material-ui/TextField'
 import Toggle from 'material-ui/Toggle'
+import VisibilityOff from 'material-ui/svg-icons/action/visibility-off'
 
-const LayerSettingsContainer = ({visible, title, children}) => (
-  <div style={{display: visible ? 'block' : 'none'}}>
-    <p style={{margin: '0px', fontSize: '20px'}}>{title}</p>
-    {children}
-  </div>
-)
+import { closeLayersDialog, renameLayer, setSelectedLayerInLayersDialog,
+         toggleLayerVisibility } from '../../actions/layers'
+import { selectMapSource } from '../../actions/map'
+import { LayerType, labelForLayerType, iconForLayerType } from '../../model/layers'
+import { Sources, labelForSource } from '../../model/sources'
+import { createValidator, required } from '../../utils/validation'
 
-LayerSettingsContainer.propTypes = {
-  visible: PropTypes.bool,
-  title: PropTypes.string,
-  children: PropTypes.oneOfType([
-    PropTypes.arrayOf(PropTypes.node),
-    PropTypes.node
-  ])
-}
-
-export default class LayersDialog extends React.Component {
-  constructor (props) {
-    super(props)
-
-    this.state = {
-      dialogVisible: false,
-      selectedLayer: 'base'
-    }
-
-    this.showDialog_ = this.showDialog_.bind(this)
-    this.hideDialog_ = this.hideDialog_.bind(this)
-
-    this.handleSourceChange_ = this.handleSourceChange_.bind(this)
-  }
-
+/**
+ * Form for the basic settings of a layer that is applicable to all layers
+ * regardless of its type.
+ */
+class BasicLayerSettingsFormPresentation extends React.Component {
   render () {
-    const selectedColor = this.context.muiTheme.palette.primary1Color
-    const getListItemStyle = (layer) => (
-      this.state.selectedLayer === layer ? {
-        color: selectedColor,
-        boxShadow: `5px 0px ${selectedColor} inset`
-      } : {}
-    )
-    const getVisibility = (layer) => (
-      this.state.selectedLayer === layer
-    )
+    const { fields: { label }, layer } = this.props
+    const { onToggleLayerVisibility } = this.props
 
-    const actions = [
-      <FlatButton label="Done" primary={true} onTouchTap={this.hideDialog_} />
-    ]
     return (
-      <div style={{display: 'inline-block'}}>
-        <IconButton onClick={this.showDialog_} tooltip="Layers">
-          <MapsLayers />
-        </IconButton>
-        <Dialog
-          title="Layers"
-          open={this.state.dialogVisible}
-          actions={actions}
-          bodyStyle={{display: 'flex', overflow: 'visible'}}
-          onRequestClose={this.hideDialog_}
-          >
-          <Paper>
-            <List style={{flex: '2'}}>
-              <ListItem
-                primaryText="Base"
-                leftIcon={<ActionAspectRatio />}
-                style={getListItemStyle('base')}
-                onTouchTap={this.selectLayer_('base')} />
-              <ListItem
-                primaryText="UAVs"
-                leftIcon={<DeviceAirplanemodeActive />}
-                style={getListItemStyle('uav')}
-                onTouchTap={this.selectLayer_('uav')} />
-              <ListItem
-                primaryText="GeoJSON"
-                leftIcon={<FileAttachment />}
-                style={getListItemStyle('geojson')}
-                onTouchTap={this.selectLayer_('geojson')} />
-              <ListItem
-                primaryText="Heatmap"
-                leftIcon={<ActionTrackChanges />}
-                style={getListItemStyle('heatmap')}
-                onTouchTap={this.selectLayer_('heatmap')} />
-            </List>
-          </Paper>
-          <Paper style={{flex: '8', marginLeft: '5px', padding: '15px'}}>
-            <LayerSettingsContainer
-              visible={getVisibility('base')}
-              title="Base map layer selection">
-              <RadioButtonGroup name="source.base"
-                valueSelected={this.props.visibleSource}
-                onChange={this.handleSourceChange_}>
-                <RadioButton
-                  value={Source.OSM}
-                  label="OpenStreetMap" />
-                <RadioButton
-                  value={Source.BING_MAPS.AERIAL_WITH_LABELS}
-                  label="Bing Maps (aerial with labels)" />
-                <RadioButton
-                  value={Source.BING_MAPS.ROAD}
-                  label="Bing Maps (road)" />
-              </RadioButtonGroup>
-            </LayerSettingsContainer>
-            <LayerSettingsContainer
-              visible={getVisibility('uav')}
-              title="UAV Display Settings">
-            </LayerSettingsContainer>
-            <LayerSettingsContainer
-              visible={getVisibility('geojson')}
-              title="GeoJSON Import">
-              <GeoJSONImporter />
-            </LayerSettingsContainer>
-            <LayerSettingsContainer
-              visible={getVisibility('heatmap')}
-              title="Heatmap">
-              <Toggle label="Active" disabled={true} />
-            </LayerSettingsContainer>
-          </Paper>
-        </Dialog>
+      <div style={{ paddingBottom: '1em' }}>
+        <TextField {...label} floatingLabelText="Layer name"
+          style={{ width: '100%' }}
+          spellCheck="false" errorText={label.touched && label.error}
+        />
+        <div>&nbsp;</div>
+        <Toggle label="Visible" labelPosition="right"
+          toggled={layer.visible}
+          onToggle={onToggleLayerVisibility}
+        />
       </div>
     )
   }
+}
 
-  /**
-   * Function for showing the dialog.
-   */
-  showDialog_ () { this.setState({dialogVisible: true}) }
+BasicLayerSettingsFormPresentation.propTypes = {
+  fields: PropTypes.object.isRequired,
+  layer: PropTypes.object,
+  layerId: PropTypes.string,
 
-  /**
-   * Function for hiding the dialog.
-   */
-  hideDialog_ () { this.setState({dialogVisible: false}) }
+  onToggleLayerVisibility: PropTypes.func
+}
 
+/**
+ * Container of the form that shows the fields that the user can use to
+ * edit the basic settings of a layer.
+ */
+const BasicLayerSettingsForm = reduxForm(
+  // config
+  {
+    form: 'basicLayerSettings',
+    fields: ['label'],
+    validate: createValidator({
+      label: required
+    })
+  },
+  // mapStateToProps
+  (state, ownProps) => ({
+    initialValues: {
+      label: ownProps.layer.label
+    }
+  }),
+  // mapDispatchToProps
+  (dispatch, ownProps) => ({
+    asyncValidate: values => {
+      // This is a horrible abuse of the async validation feature in
+      // redux-form; basically the only thing we want is to fire a callback
+      // routine if the synchronous validation of the label field passed
+      // so we can fire an action that updates the name of the layer.
+      dispatch(renameLayer(ownProps.layerId, values.label))
+
+      // This function needs to return a Promise so we create one
+      return Promise.resolve()
+    },
+    asyncBlurFields: ['label'],
+
+    onToggleLayerVisibility () {
+      dispatch(toggleLayerVisibility(ownProps.layerId))
+    }
+  })
+)(BasicLayerSettingsFormPresentation)
+
+/**
+ * Presentation component for the settings of a layer.
+ */
+class LayerSettingsContainerPresentation extends React.Component {
   /**
-   * Function for setting the currently selected layer.
+   * Creates the child components that allows the user to update the
+   * layer-specific settings of the selected layer.
    *
-   * @param {string} layer the layer to select
-   *
-   * @return {function} function for setting the layer
+   * @param {Object} layer  the layer being edited
+   * @return {Object[]}  the list of child components to add
    */
-  selectLayer_ (layer) { return () => { this.setState({selectedLayer: layer}) } }
+  createChildrenForLayer (layer) {
+    // TODO: this is not nice here; it should be refactored into separate
+    // React components, possibly in additional files
+    if (layer.type === LayerType.BASE) {
+      const sourceRadioButtons = _.map(Sources, source => (
+        <RadioButton value={source} key={source}
+          label={labelForSource(source)}
+          style={{ marginTop: 5 }}/>
+      ))
+      return [
+        <p key="header">Layer data source</p>,
+        <RadioButtonGroup name="source.base" key="baseProperties"
+          valueSelected={layer.parameters.source}
+          onChange={this.props.onLayerSourceChanged}>
+          {sourceRadioButtons}
+        </RadioButtonGroup>
+      ]
+    } else {
+      return []
+    }
+  }
 
-  /**
-  * Handler for changing the base map source.
-  *
-  * @param {Event} event the event fired from the RadioButtonGroup component
-  * @param {string} value string representation of the selected source
-  */
-  handleSourceChange_ (event, value) {
-    this.props.onSourceSelected(value)
+  render () {
+    const { layer, layerId } = this.props
+
+    if (typeof layerId === 'undefined') {
+      return false
+    }
+
+    return (
+      <div>
+        <BasicLayerSettingsForm layer={layer} layerId={layerId} />
+        {this.createChildrenForLayer(layer)}
+      </div>
+    )
   }
 }
 
-LayersDialog.propTypes = {
-  visibleSource: PropTypes.string,
-  onSourceSelected: PropTypes.func
+LayerSettingsContainerPresentation.propTypes = {
+  layer: PropTypes.object,
+  layerId: PropTypes.string,
+
+  onLayerSourceChanged: PropTypes.func
 }
 
-LayersDialog.contextTypes = {
-  muiTheme: PropTypes.object
-}
-
-export default connect(
+/**
+ * Container of the panel that contains the settings of a layer.
+ */
+const LayerSettingsContainer = connect(
   // mapStateToProps
-  state => Object.assign({},
-    {
-      visibleSource: state.map.layers.byId.base.parameters.source
-    }
-  ),
+  (state, ownProps) => ({
+    layer: state.map.layers.byId[ownProps.layerId]
+  }),
   // mapDispatchToProps
-  dispatch => ({
-    onSourceSelected (source) {
-      dispatch(selectMapSource(source))
+  (dispatch, ownProps) => ({
+    onLayerSourceChanged (event, value) {
+      dispatch(selectMapSource(value))
     }
   })
-)(LayersDialog)
+)(LayerSettingsContainerPresentation)
+
+/**
+ * Presentation component for the dialog that shows the configuration of
+ * layers in the map.
+ */
+class LayersDialogPresentation extends React.Component {
+  render () {
+    const { dialogVisible, layers, selectedLayer } = this.props
+    const { onLayerSelected, onClose } = this.props
+    const hiddenIcon = <VisibilityOff />
+    const getListItemStyle = layer => (
+      selectedLayer === layer ? 'selected-list-item' : undefined
+    )
+    const actions = [
+      <FlatButton label="Done" primary={true} onTouchTap={onClose} />
+    ]
+
+    const listItems = []
+    for (let layerId in layers) {
+      const layer = layers[layerId]
+      listItems.push(
+        <ListItem
+          key={layerId}
+          primaryText={layer.label}
+          secondaryText={labelForLayerType(layer.type)}
+          leftIcon={iconForLayerType(layer.type)}
+          rightIcon={layer.visible ? undefined : hiddenIcon}
+          className={getListItemStyle(layerId)}
+          onTouchTap={_.partial(onLayerSelected, layerId)} />
+      )
+    }
+
+    return (
+      <Dialog
+        open={dialogVisible}
+        actions={actions}
+        bodyStyle={{display: 'flex', overflow: 'visible'}}
+        onRequestClose={onClose}
+        >
+        <div style={{ flex: 3 }}>
+          <List className="dialog-sidebar">
+            {listItems}
+          </List>
+        </div>
+        <div style={{ flex: 7, marginLeft: 15 }}>
+          <LayerSettingsContainer layerId={selectedLayer} />
+        </div>
+      </Dialog>
+    )
+  }
+}
+
+LayersDialogPresentation.propTypes = {
+  dialogVisible: PropTypes.bool.isRequired,
+  layers: PropTypes.object.isRequired,
+  selectedLayer: PropTypes.string,
+  visibleSource: PropTypes.string,
+
+  onClose: PropTypes.func,
+  onLayerSelected: PropTypes.func
+}
+
+LayersDialogPresentation.defaultProps = {
+  dialogVisible: false,
+  layers: {}
+}
+
+/**
+ * Container of the dialog that allows the user to configure the layers of
+ * the map.
+ */
+const LayersDialog = connect(
+  // mapStateToProps
+  state => ({
+    dialogVisible: state.dialogs.layerSettings.dialogVisible,
+    layers: state.map.layers.byId,
+    selectedLayer: state.dialogs.layerSettings.selectedLayer,
+    visibleSource: state.map.layers.byId.base.parameters.source
+  }),
+  // mapDispatchToProps
+  dispatch => ({
+    onClose () {
+      dispatch(closeLayersDialog())
+    },
+    onLayerSelected (layerId) {
+      dispatch(setSelectedLayerInLayersDialog(layerId))
+    }
+  })
+)(LayersDialogPresentation)
+
+export default LayersDialog

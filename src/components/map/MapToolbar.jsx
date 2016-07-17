@@ -4,8 +4,8 @@ import IconButton from 'material-ui/IconButton'
 import ActionPanTool from 'material-ui/svg-icons/action/pan-tool'
 import ActionZoomIn from 'material-ui/svg-icons/action/zoom-in'
 import ContentSelectAll from 'material-ui/svg-icons/content/select-all'
+import MapsLayers from 'material-ui/svg-icons/maps/layers'
 
-import LayersDialog from './LayersDialog'
 import MapRotationTextBox from './MapRotationTextBox'
 import FitAllFeaturesButton from './FitAllFeaturesButton'
 
@@ -15,6 +15,7 @@ import { connect } from 'react-redux'
 import Signal from 'mini-signals'
 
 import { selectMapTool } from '../../actions/map'
+import { showLayersDialog } from '../../actions/layers'
 import { Tool } from './tools'
 
 /**
@@ -44,7 +45,7 @@ class MapToolbarPresentation extends React.Component {
   }
 
   render () {
-    const { selectedTool, onToolSelected } = this.props
+    const { selectedTool, onShowLayersDialog, onToolSelected } = this.props
     const { muiTheme } = this.context
 
     const selectedColor = muiTheme.palette.primary1Color
@@ -66,7 +67,9 @@ class MapToolbarPresentation extends React.Component {
 
         <MapToolbarSeparator />
 
-        <LayersDialog />
+        <IconButton onClick={onShowLayersDialog} tooltip="Layers">
+          <MapsLayers />
+        </IconButton>
 
         <MapToolbarSeparator />
 
@@ -88,7 +91,7 @@ class MapToolbarPresentation extends React.Component {
 MapToolbarPresentation.propTypes = {
   visibleSource: PropTypes.string,
   selectedTool: PropTypes.string,
-  onSourceSelected: PropTypes.func,
+  onShowLayersDialog: PropTypes.func,
   onToolSelected: PropTypes.func,
   mapReferenceRequestSignal: PropTypes.instanceOf(Signal)
 }
@@ -109,6 +112,9 @@ const MapToolbar = connect(
   state => Object.assign({}, state.map.tools),
   // mapDispatchToProps
   dispatch => ({
+    onShowLayersDialog () {
+      dispatch(showLayersDialog())
+    },
     onToolSelected (tool) {
       dispatch(selectMapTool(tool))
     }

@@ -17,6 +17,7 @@ import reducer from './reducers'
 const engine = filter(
   createEngine('flockwave-client'), [
     'whitelisted-key',
+    ['dialogs', 'layerSettings'],
     ['dialogs', 'serverSettings'],
     ['map']
   ]

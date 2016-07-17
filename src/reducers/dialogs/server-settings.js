@@ -16,9 +16,9 @@ import { handleActions } from 'redux-actions'
  * check whether we need to fill in the default hostname and port.
  */
 const defaultState = {
-  'hostName': null,
-  'port': 5000,
-  'dialogVisible': false
+  hostName: null,
+  port: 5000,
+  dialogVisible: false
 }
 
 /**
