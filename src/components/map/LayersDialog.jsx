@@ -130,7 +130,7 @@ class LayerSettingsContainerPresentation extends React.Component {
   render () {
     const { layer, layerId } = this.props
 
-    if (typeof layerId === 'undefined') {
+    if (typeof layer === 'undefined') {
       return false
     }
 
