@@ -16,7 +16,7 @@ import Toggle from 'material-ui/Toggle'
 import VisibilityOff from 'material-ui/svg-icons/action/visibility-off'
 
 import { closeLayersDialog, renameLayer, setSelectedLayerInLayersDialog,
-         toggleLayerVisibility } from '../../actions/layers'
+         toggleLayerVisibility, removeLayer } from '../../actions/layers'
 import { selectMapSource } from '../../actions/map'
 import { LayerType, labelForLayerType, iconForLayerType } from '../../model/layers'
 import { Sources, labelForSource } from '../../model/sources'
@@ -94,6 +94,8 @@ const BasicLayerSettingsForm = reduxForm(
   })
 )(BasicLayerSettingsFormPresentation)
 
+/* ********************************************************************* */
+
 /**
  * Presentation component for the settings of a layer.
  */
@@ -131,6 +133,18 @@ class LayerSettingsContainerPresentation extends React.Component {
     const { layer, layerId } = this.props
 
     if (typeof layerId === 'undefined') {
+      // No layer is selected; let's show a hint that the user should
+      // select a layer
+      return (
+        <div style={{ textAlign: 'center', marginTop: '2em' }}>
+          Please select a layer from the layer list.
+        </div>
+      )
+    }
+
+    if (typeof layer === 'undefined') {
+      // A layer is selected by the user but the layer does not exist
+      // any more. We just bail out silently.
       return false
     }
 
@@ -166,25 +180,29 @@ const LayerSettingsContainer = connect(
   })
 )(LayerSettingsContainerPresentation)
 
+/* ********************************************************************* */
+
 /**
- * Presentation component for the dialog that shows the configuration of
- * layers in the map.
+ * Presentation component for a list that shows the currently added layers.
  */
-class LayersDialogPresentation extends React.Component {
+class LayerListPresentation extends React.Component {
   render () {
-    const { dialogVisible, layers, selectedLayer } = this.props
-    const { onLayerSelected, onClose } = this.props
+    const { layers, order, selectedLayer, onLayerSelected } = this.props
     const hiddenIcon = <VisibilityOff />
     const getListItemStyle = layer => (
       selectedLayer === layer ? 'selected-list-item' : undefined
     )
-    const actions = [
-      <FlatButton label="Done" primary={true} onTouchTap={onClose} />
-    ]
-
     const listItems = []
-    for (let layerId in layers) {
+
+    for (let layerId of order) {
       const layer = layers[layerId]
+
+      if (!layer) {
+        console.warn('Non-existent layer found in layer ordering; this ' +
+                     'is probably a bug!')
+        continue
+      }
+
       listItems.push(
         <ListItem
           key={layerId}
@@ -198,6 +216,66 @@ class LayersDialogPresentation extends React.Component {
     }
 
     return (
+      <List className="dialog-sidebar">
+        {listItems}
+      </List>
+    )
+  }
+}
+
+LayerListPresentation.propTypes = {
+  layers: PropTypes.object.isRequired,
+  order: PropTypes.arrayOf(PropTypes.string).isRequired,
+  selectedLayer: PropTypes.string,
+
+  onLayerSelected: PropTypes.func
+}
+
+LayerListPresentation.defaultProps = {
+  layers: {},
+  order: []
+}
+
+/**
+ * Container for the layer list that binds it to the Redux store.
+ */
+const LayerList = connect(
+  // mapStateToProps
+  state => ({
+    layers: state.map.layers.byId,
+    order: state.map.layers.order,
+    selectedLayer: state.dialogs.layerSettings.selectedLayer
+  }),
+  // mapDispatchToProps
+  dispatch => ({
+    onLayerSelected (layerId) {
+      dispatch(setSelectedLayerInLayersDialog(layerId))
+    }
+  })
+)(LayerListPresentation)
+
+/* ********************************************************************* */
+
+/**
+ * Presentation component for the dialog that shows the configuration of
+ * layers in the map.
+ */
+class LayersDialogPresentation extends React.Component {
+  constructor (props) {
+    super(props)
+    this.removeSelectedLayer_ = this.removeSelectedLayer_.bind(this)
+  }
+
+  render () {
+    const { dialogVisible, selectedLayer } = this.props
+    const { onClose } = this.props
+    const actions = [
+      <FlatButton label="Remove layer" disabled={ !selectedLayer }
+        onTouchTap={this.removeSelectedLayer_} />,
+      <FlatButton label="Done" primary={true} onTouchTap={onClose} />
+    ]
+
+    return (
       <Dialog
         open={dialogVisible}
         actions={actions}
@@ -205,9 +283,7 @@ class LayersDialogPresentation extends React.Component {
         onRequestClose={onClose}
         >
         <div style={{ flex: 3 }}>
-          <List className="dialog-sidebar">
-            {listItems}
-          </List>
+          <LayerList />
         </div>
         <div style={{ flex: 7, marginLeft: 15 }}>
           <LayerSettingsContainer layerId={selectedLayer} />
@@ -215,21 +291,24 @@ class LayersDialogPresentation extends React.Component {
       </Dialog>
     )
   }
+
+  removeSelectedLayer_ () {
+    const { selectedLayer, onRemoveLayer } = this.props
+    onRemoveLayer(selectedLayer)
+  }
 }
 
 LayersDialogPresentation.propTypes = {
   dialogVisible: PropTypes.bool.isRequired,
-  layers: PropTypes.object.isRequired,
   selectedLayer: PropTypes.string,
   visibleSource: PropTypes.string,
 
   onClose: PropTypes.func,
-  onLayerSelected: PropTypes.func
+  onRemoveLayer: PropTypes.func
 }
 
 LayersDialogPresentation.defaultProps = {
-  dialogVisible: false,
-  layers: {}
+  dialogVisible: false
 }
 
 /**
@@ -240,7 +319,6 @@ const LayersDialog = connect(
   // mapStateToProps
   state => ({
     dialogVisible: state.dialogs.layerSettings.dialogVisible,
-    layers: state.map.layers.byId,
     selectedLayer: state.dialogs.layerSettings.selectedLayer,
     visibleSource: state.map.layers.byId.base.parameters.source
   }),
@@ -249,8 +327,9 @@ const LayersDialog = connect(
     onClose () {
       dispatch(closeLayersDialog())
     },
-    onLayerSelected (layerId) {
-      dispatch(setSelectedLayerInLayersDialog(layerId))
+
+    onRemoveLayer (layerId) {
+      dispatch(removeLayer(layerId))
     }
   })
 )(LayersDialogPresentation)

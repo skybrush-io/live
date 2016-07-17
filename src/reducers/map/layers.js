@@ -62,6 +62,14 @@ const getLayerKey = (layerId, subKey) => {
  * The reducer function that handles actions related to the tool selection.
  */
 const reducer = handleActions({
+  REMOVE_LAYER (state, action) {
+    const selectedLayer = action.payload
+    return u({
+      byId: u.omit(selectedLayer),
+      order: u.reject(layer => layer === selectedLayer)
+    }, state)
+  },
+
   RENAME_LAYER (state, action) {
     const { id, name } = action.payload
     return u.updateIn(getLayerKey(id, 'label'), name, state)

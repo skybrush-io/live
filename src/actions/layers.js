@@ -5,12 +5,18 @@
 
 import { createAction } from 'redux-actions'
 import { SET_SELECTED_LAYER_IN_LAYERS_DIALOG, SHOW_LAYERS_DIALOG,
-  CLOSE_LAYERS_DIALOG, TOGGLE_LAYER_VISIBILITY, RENAME_LAYER } from './types'
+  CLOSE_LAYERS_DIALOG, TOGGLE_LAYER_VISIBILITY, RENAME_LAYER,
+  REMOVE_LAYER } from './types'
 
 /**
  * Action factory that creates an action that will close the layers dialog.
  */
 export const closeLayersDialog = createAction(CLOSE_LAYERS_DIALOG)
+
+/**
+ * Action factory that creates an action that removes a layer.
+ */
+export const removeLayer = createAction(REMOVE_LAYER)
 
 /**
  * Action factory that creates an action that renames a layer.

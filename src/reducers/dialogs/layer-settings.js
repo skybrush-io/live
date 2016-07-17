@@ -17,6 +17,14 @@ const defaultState = {
  * The reducer function that handles actions related to the layers dialog.
  */
 const reducer = handleActions({
+  REMOVE_LAYER (state, action) {
+    if (state.selectedLayer === action.payload) {
+      return Object.assign({}, state, { selectedLayer: undefined })
+    } else {
+      return state
+    }
+  },
+
   SHOW_LAYERS_DIALOG: (state, action) => (
     Object.assign({}, state, { dialogVisible: true })
   ),
