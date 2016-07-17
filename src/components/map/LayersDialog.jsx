@@ -42,6 +42,7 @@ class BasicLayerSettingsFormPresentation extends React.Component {
         <div>&nbsp;</div>
         <Toggle label="Visible" labelPosition="right"
           toggled={layer.visible}
+          disabled={layer.type === LayerType.UNTYPED}
           onToggle={onToggleLayerVisibility}
         />
       </div>

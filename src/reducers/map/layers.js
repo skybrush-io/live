@@ -80,11 +80,17 @@ const reducer = handleActions({
     // for it
     const layerUpdate = {}
     const { id, type } = action.payload
-    layerUpdate[id] = {
-      type,
-      parameters: () => defaultParametersForLayerType(type)
+    if (state.byId[id].type === LayerType.UNTYPED) {
+      layerUpdate[id] = {
+        type,
+        parameters: () => defaultParametersForLayerType(type),
+        visible: true
+      }
+      return u({ byId: layerUpdate }, state)
+    } else {
+      console.warn(`Cannot change type of layer ${id} because it is not untyped`)
+      return state
     }
-    return u({ byId: layerUpdate }, state)
   },
 
   REMOVE_LAYER (state, action) {

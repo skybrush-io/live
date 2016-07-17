@@ -83,7 +83,7 @@ export function createNewLayer (layerType, name, parameters) {
   return {
     type: effectiveLayerType,
     label: name,
-    visible: true,
+    visible: effectiveLayerType !== LayerType.UNTYPED,
     parameters: parameters || defaultParametersForLayerType(effectiveLayerType)
   }
 }
