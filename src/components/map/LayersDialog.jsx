@@ -16,9 +16,11 @@ import Toggle from 'material-ui/Toggle'
 import VisibilityOff from 'material-ui/svg-icons/action/visibility-off'
 
 import { closeLayersDialog, renameLayer, setSelectedLayerInLayersDialog,
-         toggleLayerVisibility, removeLayer } from '../../actions/layers'
+         toggleLayerVisibility, addLayer, removeLayer, changeLayerType }
+       from '../../actions/layers'
 import { selectMapSource } from '../../actions/map'
-import { LayerType, labelForLayerType, iconForLayerType } from '../../model/layers'
+import { LayerType, LayerTypes, labelForLayerType,
+         iconForLayerType } from '../../model/layers'
 import { Sources, labelForSource } from '../../model/sources'
 import { createValidator, required } from '../../utils/validation'
 
@@ -124,6 +126,20 @@ class LayerSettingsContainerPresentation extends React.Component {
           {sourceRadioButtons}
         </RadioButtonGroup>
       ]
+    } else if (layer.type === LayerType.UNTYPED) {
+      const layerTypeRadioButtons = _.map(LayerTypes, layerType => (
+        <RadioButton value={layerType} key={layerType}
+          label={labelForLayerType(layerType)}
+          style={{ marginTop: 5 }}/>
+      ))
+      return [
+        <p key="header">This layer has no type yet. Please select a layer
+        type from the following options:</p>,
+        <RadioButtonGroup name="types.untyped" key="baseProperties"
+          onChange={this.props.onLayerTypeChanged}>
+          {layerTypeRadioButtons}
+        </RadioButtonGroup>
+      ]
     } else {
       return []
     }
@@ -132,7 +148,7 @@ class LayerSettingsContainerPresentation extends React.Component {
   render () {
     const { layer, layerId } = this.props
 
-    if (typeof layerId === 'undefined') {
+    if (!layerId) {
       // No layer is selected; let's show a hint that the user should
       // select a layer
       return (
@@ -161,7 +177,8 @@ LayerSettingsContainerPresentation.propTypes = {
   layer: PropTypes.object,
   layerId: PropTypes.string,
 
-  onLayerSourceChanged: PropTypes.func
+  onLayerSourceChanged: PropTypes.func,
+  onLayerTypeChanged: PropTypes.func
 }
 
 /**
@@ -176,6 +193,10 @@ const LayerSettingsContainer = connect(
   (dispatch, ownProps) => ({
     onLayerSourceChanged (event, value) {
       dispatch(selectMapSource(value))
+    },
+
+    onLayerTypeChanged (event, value) {
+      dispatch(changeLayerType(ownProps.layerId, value))
     }
   })
 )(LayerSettingsContainerPresentation)
@@ -268,8 +289,9 @@ class LayersDialogPresentation extends React.Component {
 
   render () {
     const { dialogVisible, selectedLayer } = this.props
-    const { onClose } = this.props
+    const { onAddLayer, onClose } = this.props
     const actions = [
+      <FlatButton label="Add layer" onTouchTap={onAddLayer} />,
       <FlatButton label="Remove layer" disabled={ !selectedLayer }
         onTouchTap={this.removeSelectedLayer_} />,
       <FlatButton label="Done" primary={true} onTouchTap={onClose} />
@@ -304,6 +326,7 @@ LayersDialogPresentation.propTypes = {
   visibleSource: PropTypes.string,
 
   onClose: PropTypes.func,
+  onAddLayer: PropTypes.func,
   onRemoveLayer: PropTypes.func
 }
 
@@ -324,6 +347,14 @@ const LayersDialog = connect(
   }),
   // mapDispatchToProps
   dispatch => ({
+    onAddLayer () {
+      const action = addLayer()
+      dispatch(action)
+      if (action.layerId) {
+        dispatch(setSelectedLayerInLayersDialog(action.layerId))
+      }
+    },
+
     onClose () {
       dispatch(closeLayersDialog())
     },

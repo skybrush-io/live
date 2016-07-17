@@ -3,8 +3,10 @@
  * that we use on the map.
  */
 
+import _ from 'lodash'
 import React from 'react'
 
+import ActionHelpOutline from 'material-ui/svg-icons/action/help-outline'
 import ActionTrackChanges from 'material-ui/svg-icons/action/track-changes'
 import Flight from 'material-ui/svg-icons/maps/flight'
 import Map from 'material-ui/svg-icons/maps/map'
@@ -19,35 +21,84 @@ export const LayerType = {
   GEOJSON: 'geojson',
   HEATMAP: 'heatmap',
   OWN_LOCATION: 'ownLocation',
-  UAVS: 'uavs'
+  UAVS: 'uavs',
+  UNTYPED: 'untyped'
 }
 
 /**
- * Object mapping layer type constants to their visual properties (labels,
- * icons etc) on the user interface.
+ * Constant containing all the layer types in the order preferred on the UI.
+ */
+export const LayerTypes = [
+  LayerType.BASE, LayerType.UAVS, LayerType.OWN_LOCATION,
+  LayerType.GEOJSON, LayerType.HEATMAP
+]
+
+/**
+ * Object mapping layer type constants to their properties (labels,
+ * icons, default parameters etc).
  *
  * @type {Object}
  */
-const visualRepresentationsForLayerTypes_ = {}
-visualRepresentationsForLayerTypes_[LayerType.BASE] = {
+const propertiesForLayerTypes_ = {}
+propertiesForLayerTypes_[LayerType.BASE] = {
   label: 'Base layer',
-  icon: <Map />
+  icon: <Map />,
+  parameters: {
+    source: 'osm'
+  }
 }
-visualRepresentationsForLayerTypes_[LayerType.GEOJSON] = {
+propertiesForLayerTypes_[LayerType.GEOJSON] = {
   label: 'GeoJSON layer',
   icon: <FileAttachment />
 }
-visualRepresentationsForLayerTypes_[LayerType.HEATMAP] = {
+propertiesForLayerTypes_[LayerType.HEATMAP] = {
   label: 'Heatmap',
   icon: <ActionTrackChanges />
 }
-visualRepresentationsForLayerTypes_[LayerType.OWN_LOCATION] = {
+propertiesForLayerTypes_[LayerType.OWN_LOCATION] = {
   label: 'Own location',
   icon: <MyLocation />
 }
-visualRepresentationsForLayerTypes_[LayerType.UAVS] = {
+propertiesForLayerTypes_[LayerType.UAVS] = {
   label: 'UAVs',
   icon: <Flight />
+}
+propertiesForLayerTypes_[LayerType.UNTYPED] = {
+  label: 'Untyped layer',
+  icon: <ActionHelpOutline />
+}
+
+/**
+ * Creates a new layer with the given name and type.
+ *
+ * @param  {string} layerType  the type of the layer; must be one of the
+ *         constants from the {@link LayerType} enum or a falsey value;
+ *         the latter is replaced with <code>LayerType.UNTYPED</code>.
+ * @param  {string} name  the name of the layer
+ * @param  {Object?} parameters  the parameters of the layer
+ * @return {Object} a new layer object
+ */
+export function createNewLayer (layerType, name, parameters) {
+  const effectiveLayerType = layerType || LayerType.UNTYPED
+  return {
+    type: effectiveLayerType,
+    label: name,
+    visible: true,
+    parameters: parameters || defaultParametersForLayerType(effectiveLayerType)
+  }
+}
+
+/**
+ * Returns the default parameter settings for the given layer type.
+ *
+ * @param  {string} layerType the type of the layer; must be one of the
+ *         constants from the {@link LayerType} enum
+ * @return {Object} the default parameter settings of the layer
+ */
+export function defaultParametersForLayerType (layerType) {
+  const props = propertiesForLayerTypes_[layerType]
+  const template = props.hasOwnProperty('parameters') ? props.parameters : {}
+  return _.cloneDeep(template)
 }
 
 /**
@@ -59,7 +110,7 @@ visualRepresentationsForLayerTypes_[LayerType.UAVS] = {
  * @return {Object} the Material UI icon that represents the layer
  */
 export function iconForLayerType (layerType) {
-  return visualRepresentationsForLayerTypes_[layerType]['icon']
+  return propertiesForLayerTypes_[layerType].icon
 }
 
 /**
@@ -71,5 +122,5 @@ export function iconForLayerType (layerType) {
  * @return {string} a human-readable description of the layer type
  */
 export function labelForLayerType (layerType) {
-  return visualRepresentationsForLayerTypes_[layerType]['label']
+  return propertiesForLayerTypes_[layerType].label
 }

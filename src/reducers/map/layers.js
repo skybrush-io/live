@@ -2,10 +2,13 @@
  * @file Reducer function for handling the layer configuration of the map.
  */
 
+import _ from 'lodash'
 import { handleActions } from 'redux-actions'
 import u from 'updeep'
 
-import { LayerType } from '../../model/layers'
+import { LayerType, createNewLayer, defaultParametersForLayerType }
+       from '../../model/layers'
+import { chooseUniqueId, chooseUniqueName } from '../../utils/naming'
 
 /**
  * The default layer configuration of the map.
@@ -13,27 +16,8 @@ import { LayerType } from '../../model/layers'
 const defaultState = {
   // .byId contains all the layers in the map, in no particular order
   byId: {
-    base: {
-      // Each layer has a type, a label, a visibility flag and some
-      // (type-dependent) parameters. The values of the type parameter
-      // should come from the LayerType enum.
-      //
-      // LayerType.BASE is the base layer that contains the map itself.
-      type: LayerType.BASE,
-      label: 'Base map',
-      visible: true,
-      parameters: {
-        // We use the OSM data source for the base layer by default
-        source: 'osm'
-      }
-    },
-    uavs: {
-      // This layer shows all the UAVs in the flock
-      type: LayerType.UAVS,
-      label: 'UAVs',
-      visible: true,
-      parameters: {}
-    }
+    base: createNewLayer(LayerType.BASE, 'Base map'),
+    uavs: createNewLayer(LayerType.UAVS, 'UAVs')
   },
   // .order contains the order of the layers, from bottom to top
   order: ['base', 'uavs']
@@ -62,6 +46,47 @@ const getLayerKey = (layerId, subKey) => {
  * The reducer function that handles actions related to the tool selection.
  */
 const reducer = handleActions({
+  ADD_LAYER (state, action) {
+    let { name, type } = action.payload
+
+    if (!name) {
+      // Generate a sensible name if no name was given
+      const existingNames = _.map(state.byId, layer => layer.label)
+      name = chooseUniqueName('New layer', existingNames)
+    }
+
+    // Create an ID from the camel-cased variant of the name and ensure
+    // that it is unique
+    const existingIds = _.keys(state.byId)
+    const id = chooseUniqueId(_.camelCase(name), existingIds)
+
+    // Generate the new layer object
+    const newLayer = {}
+    newLayer[id] = createNewLayer(type, name)
+
+    // Store the ID of the layer that is about to be inserted on the
+    // action so the caller of this action can decide what to do with it
+    action.layerId = id
+
+    // Update the state
+    return u({
+      byId: oldLayers => Object.assign({}, oldLayers, newLayer),
+      order: oldOrder => [].concat(oldOrder, [id])
+    }, state)
+  },
+
+  CHANGE_LAYER_TYPE (state, action) {
+    // Update the type of the layer and generate a new parameters object
+    // for it
+    const layerUpdate = {}
+    const { id, type } = action.payload
+    layerUpdate[id] = {
+      type,
+      parameters: () => defaultParametersForLayerType(type)
+    }
+    return u({ byId: layerUpdate }, state)
+  },
+
   REMOVE_LAYER (state, action) {
     const selectedLayer = action.payload
     return u({
