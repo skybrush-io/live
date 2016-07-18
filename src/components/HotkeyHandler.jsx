@@ -116,6 +116,8 @@ export default class HotkeyHandler extends React.Component {
   componentDidMount () {
     this.refs.capture.addEventListener('keydown', this.handleKeyDown_, true)
     this.refs.capture.addEventListener('keyup', this.handleKeyUp_, true)
+
+    document.body.addEventListener('focus', this.handleFocusChange_, true)
   }
 
   /**
@@ -124,6 +126,8 @@ export default class HotkeyHandler extends React.Component {
   componentWillUnmount () {
     this.refs.capture.removeEventListener('keydown', this.handleKeyDown_, true)
     this.refs.capture.removeEventListener('keyup', this.handleKeyUp_, true)
+
+    document.body.removeEventListener('focus', this.handleFocusChange_, true)
   }
 
   render () {
@@ -261,6 +265,14 @@ export default class HotkeyHandler extends React.Component {
           callback()
         }
       }
+    }
+  }
+
+  handleFocusChange_ (e) {
+    let whitelist = ['INPUT', 'TEXTAREA']
+
+    if (!_.includes(whitelist, e.target.tagName)) {
+      document.querySelector('.ol-viewport').focus()
     }
   }
 

@@ -55,23 +55,23 @@ export default class Application extends React.Component {
       <StoreProvider store={store}>
         <MuiThemeProvider muiTheme={muiTheme}>
           <div>
-            <HotkeyHandler hotkeys={appliedHotkeys}>
-              <div id="canvas">
+            <div id="canvas">
+              <HotkeyHandler hotkeys={appliedHotkeys}>
                 <MapView flock={flock} mapReferenceRequestSignal={mapReferenceRequestSignal} />
+              </HotkeyHandler>
 
-                <Widget style={{ right: 8, bottom: 8, width: 300 }}>
-                  <ClockDisplayList />
-                </Widget>
+              <Widget style={{ right: 8, bottom: 8, width: 300 }}>
+                <ClockDisplayList />
+              </Widget>
 
-                <Widget style={{ right: 8, top: 8, width: 300 }}>
-                  <ConnectionList />
-                </Widget>
+              <Widget style={{ right: 8, top: 8, width: 300 }}>
+                <ConnectionList />
+              </Widget>
 
-                <Widget style={{ top: 8, left: (8 + 24 + 8) }} showControls={false}>
-                  <MapToolbar mapReferenceRequestSignal={mapReferenceRequestSignal} />
-                </Widget>
-              </div>
-            </HotkeyHandler>
+              <Widget style={{ top: 8, left: (8 + 24 + 8) }} showControls={false}>
+                <MapToolbar mapReferenceRequestSignal={mapReferenceRequestSignal} />
+              </Widget>
+            </div>
 
             <ServerSettingsDialog />
             <ServerConnectionManager />
