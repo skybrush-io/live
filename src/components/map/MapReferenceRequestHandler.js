@@ -16,15 +16,6 @@ import Signal from 'mini-signals'
  */
 export default class MapReferenceRequestHandler extends React.Component {
   /**
-   * Request signal generator function.
-   *
-   * @return {Signal} Mini-signal for requesting the map reference.
-   */
-  static generateRequestSignal () {
-    return new Signal()
-  }
-
-  /**
    * Constructor that adds signal handler.
    *
    * @param {Object} props properties of the react component

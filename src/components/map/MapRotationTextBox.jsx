@@ -20,6 +20,7 @@ const normalizeAngle = (angle) => (((angle % 360) + 360) % 360).toFixed(2)
  * @property {number} resetDuration the amount of time the reset transition should take (in ms)
  * @property {string} fieldWidth the width of the actual input field
  * @property {string} style styling of the outermost element (a div)
+ * @property {Signal} mapRotationResetSignal signal for access from hotkey
  *
  * @param {Object} context react context of the component
  * @property {Signal} mapReferenceRequestSignal Mini-signal for requesting the map reference
@@ -33,6 +34,7 @@ export default class MapRotationTextBox extends React.Component {
    * @property {number} resetDuration the amount of time the reset transition should take (in ms)
    * @property {string} fieldWidth the width of the actual input field
    * @property {string} style styling of the outermost element (a div)
+   * @property {Signal} mapRotationResetSignal signal for access from hotkey
    *
    * @param {Object} context react context of the component
    * @property {Signal} mapReferenceRequestSignal Mini-signal for requesting the map reference
@@ -53,6 +55,8 @@ export default class MapRotationTextBox extends React.Component {
     this.onChange_ = this.onChange_.bind(this)
     this.onKeyDown_ = this.onKeyDown_.bind(this)
     this.onButtonClick_ = this.onButtonClick_.bind(this)
+
+    props.mapRotationResetSignal.add(this.onButtonClick_)
 
     context.mapReferenceRequestSignal.dispatch(this.onMapReferenceReceived_)
   }
@@ -177,7 +181,8 @@ export default class MapRotationTextBox extends React.Component {
 MapRotationTextBox.propTypes = {
   resetDuration: PropTypes.number,
   fieldWidth: PropTypes.string,
-  style: PropTypes.object
+  style: PropTypes.object,
+  mapRotationResetSignal: PropTypes.instanceOf(Signal)
 }
 
 MapRotationTextBox.contextTypes = {

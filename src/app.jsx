@@ -1,6 +1,9 @@
 import React from 'react'
+
 import { Provider as StoreProvider } from 'react-redux'
 import injectTapEventPlugin from 'react-tap-event-plugin'
+
+import Signal from 'mini-signals'
 
 import getMuiTheme from 'material-ui/styles/getMuiTheme'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
@@ -10,7 +13,6 @@ import ConnectionList from './components/ConnectionList'
 import GlobalErrorDialog from './components/GlobalErrorDialog'
 import GlobalSnackbar from './components/GlobalSnackbar'
 import LayersDialog from './components/map/LayersDialog'
-import MapReferenceRequestHandler from './components/map/MapReferenceRequestHandler'
 import MapToolbar from './components/map/MapToolbar'
 import MapView from './components/map/MapView'
 import ServerConnectionManager from './components/ServerConnectionManager'
@@ -35,16 +37,20 @@ injectTapEventPlugin()
 const muiTheme = getMuiTheme({})
 
 /**
- * Signal for requesting the map reference.
+ * Object containing the signals used in the application.
  *
  * @todo Ask Tamás where this should be declared.
  */
-const mapReferenceRequestSignal = MapReferenceRequestHandler.generateRequestSignal()
+const signals = {
+  mapReferenceRequestSignal: new Signal(),
+  mapRotationResetSignal: new Signal(),
+  fitAllFeaturesSignal: new Signal()
+}
 
 /**
  * Array containing the hotkey objects that are now connected to the Redux store.
  */
-const appliedHotkeys = hotkeys(store, flock)
+const appliedHotkeys = hotkeys(store, flock, signals)
 
 /**
  * The main application component.
@@ -57,7 +63,7 @@ export default class Application extends React.Component {
           <div>
             <div id="canvas">
               <HotkeyHandler hotkeys={appliedHotkeys}>
-                <MapView flock={flock} mapReferenceRequestSignal={mapReferenceRequestSignal} />
+                <MapView flock={flock} mapReferenceRequestSignal={signals.mapReferenceRequestSignal} />
               </HotkeyHandler>
 
               <Widget style={{ right: 8, bottom: 8, width: 300 }}>
@@ -69,7 +75,7 @@ export default class Application extends React.Component {
               </Widget>
 
               <Widget style={{ top: 8, left: (8 + 24 + 8) }} showControls={false}>
-                <MapToolbar mapReferenceRequestSignal={mapReferenceRequestSignal} />
+                <MapToolbar signals={signals} />
               </Widget>
             </div>
 

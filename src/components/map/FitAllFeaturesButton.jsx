@@ -20,6 +20,7 @@ import DeviceGpsFixed from 'material-ui/svg-icons/device/gps-fixed'
  * @property {number} margin amount of margin to leave between the features
  * and the border of the view
  * @property {number} duration the amount of time the transition should take (in ms)
+ * @property {Signal} fitAllFeaturesSignal signal for access from hotkey
  *
  * @param {Object} context react context of the component
  * @property {Signal} mapReferenceRequestSignal Mini-signal for requesting the map reference
@@ -35,6 +36,7 @@ export default class FitAllFeaturesButton extends React.Component {
    * @property {number} margin amount of margin to leave between the features
    * and the border of the view
    * @property {number} duration the amount of time the transition should take (in ms)
+   * @property {Signal} fitAllFeaturesSignal signal for access from hotkey
    *
    * @param {Object} context react context of the component
    * @property {Signal} mapReferenceRequestSignal Mini-signal for requesting the map reference
@@ -47,6 +49,8 @@ export default class FitAllFeaturesButton extends React.Component {
     this.onMapReferenceReceived_ = this.onMapReferenceReceived_.bind(this)
     this.handleClick_ = this.handleClick_.bind(this)
     this.geolocationReceived_ = this.geolocationReceived_.bind(this)
+
+    props.fitAllFeaturesSignal.add(this.handleClick_)
 
     context.mapReferenceRequestSignal.dispatch(this.onMapReferenceReceived_)
   }
@@ -157,7 +161,8 @@ export default class FitAllFeaturesButton extends React.Component {
 FitAllFeaturesButton.propTypes = {
   duration: PropTypes.number,
   margin: PropTypes.number,
-  dispatch: PropTypes.func
+  dispatch: PropTypes.func,
+  fitAllFeaturesSignal: PropTypes.instanceOf(Signal)
 }
 
 FitAllFeaturesButton.contextTypes = {

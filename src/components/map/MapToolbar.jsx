@@ -41,7 +41,7 @@ const MapToolbarSeparator = () => {
  */
 class MapToolbarPresentation extends React.Component {
   getChildContext () {
-    return {mapReferenceRequestSignal: this.props.mapReferenceRequestSignal}
+    return {mapReferenceRequestSignal: this.props.signals.mapReferenceRequestSignal}
   }
 
   render () {
@@ -78,11 +78,13 @@ class MapToolbarPresentation extends React.Component {
             display: 'inline-block',
             marginRight: '12px',
             verticalAlign: 'top'
-          }} />
+          }}
+          mapRotationResetSignal={this.props.signals.mapRotationResetSignal} />
 
         <MapToolbarSeparator />
 
-        <FitAllFeaturesButton duration={500} margin={64} />
+        <FitAllFeaturesButton duration={500} margin={64}
+        fitAllFeaturesSignal={this.props.signals.fitAllFeaturesSignal} />
       </div>
     )
   }
@@ -93,7 +95,7 @@ MapToolbarPresentation.propTypes = {
   selectedTool: PropTypes.string,
   onShowLayersDialog: PropTypes.func,
   onToolSelected: PropTypes.func,
-  mapReferenceRequestSignal: PropTypes.instanceOf(Signal)
+  signals: PropTypes.objectOf(PropTypes.instanceOf(Signal))
 }
 
 MapToolbarPresentation.contextTypes = {
