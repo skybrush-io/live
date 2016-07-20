@@ -50,7 +50,7 @@ export default class ActiveUAVsLayerSource extends source.Vector {
     this.onFlockMaybeChanged_(this.props.flock, undefined)
     this.onSelectionMaybeChanged_(this.props.selection, undefined)
     this.featureManager.projection = undefined
-    super.componentWillUnmount()
+    // no componentWillUnmount() in superclass so we don't call it
   }
 
   /**

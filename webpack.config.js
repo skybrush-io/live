@@ -7,13 +7,20 @@ require('es6-promise').polyfill()
 // Don't use let in the line below because older Node.js versions on Linux
 // will not like it
 var path = require('path')
+var webpack = require('webpack')
 
 module.exports = {
   devtool: 'eval',
-  entry: './src/index.jsx',
+  entry: './src/index',
   output: {
-    filename: './dist/bundle.js'
+    devtoolModuleFilenameTemplate: '/[absolute-resource-path]',
+    filename: 'bundle.js',
+    path: path.join(__dirname, 'build'),
+    publicPath: '/static/'
   },
+  plugins: [
+    new webpack.NoErrorsPlugin()
+  ],
   resolve: {
     alias: {
       config: path.join(__dirname, 'config', process.env.NODE_ENV || 'production')
@@ -22,14 +29,28 @@ module.exports = {
   },
   module: {
     loaders: [
-      { test: /\.css$/, loader: 'style-loader!css-loader' },
+      {
+        test: /\.css$/,
+        loader: 'style-loader!css-loader'
+      },
       {
         test: /\.jsx?$/,
         loader: 'babel-loader',
-        exclude: /node_modules/
+        include: [
+          path.join(__dirname, 'config'),
+          path.join(__dirname, 'src')
+        ]
       },
-      { test: /\.less$/, loader: 'style-loader!css-loader!less-loader' },
-      { test: /\.(png|jpg)$/, loader: 'url-loader?limit=8192' }
+      {
+        test: /\.less$/,
+        loader: 'style-loader!css-loader!less-loader',
+        include: path.join(__dirname, 'assets', 'css')
+      },
+      {
+        test: /\.(png|jpg)$/,
+        loader: 'url-loader?limit=8192',
+        include: path.join(__dirname, 'assets')
+      }
     ],
     noParse: /dist\/ol.js/
   }
