@@ -9,6 +9,7 @@ require('../assets/css/kbd.css')
 injectTapEventPlugin()
 
 function loadStories () {
+  require('../src/stories/ChatArea')
   require('../src/stories/ChatBubble')
   require('../src/stories/ConnectionList')
 }
