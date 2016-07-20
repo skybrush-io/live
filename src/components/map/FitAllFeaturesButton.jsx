@@ -91,8 +91,8 @@ export default class FitAllFeaturesButton extends React.Component {
         'No valid drones avaiable, trying to get geolocation instead'
       ))
 
-      if ('geolocation' in navigator) {
-        navigator.geolocation.getCurrentPosition(this.geolocationReceived_)
+      if ('geolocation' in window.navigator) {
+        window.navigator.geolocation.getCurrentPosition(this.geolocationReceived_)
       }
       return
     }
