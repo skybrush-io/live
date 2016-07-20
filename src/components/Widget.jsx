@@ -17,7 +17,7 @@ const Widget = ({ children, showControls, style }) => {
     <div className="widget-action-bar">
       <IconButton><ContentClear /></IconButton>
     </div>
-  ) : undefined
+  ) : false
   return (
     <Paper className="widget" style={style}>
       { controls }
@@ -36,7 +36,7 @@ Widget.propTypes = {
 }
 
 Widget.defaultProps = {
-  children: null,
+  children: [],
   showControls: true,
   style: {}
 }

@@ -6,7 +6,6 @@
 import Avatar from 'material-ui/Avatar'
 import IconButton from 'material-ui/IconButton'
 import { List, ListItem } from 'material-ui/List'
-import Subheader from 'material-ui/Subheader'
 
 import { colors } from 'material-ui/styles'
 
@@ -124,16 +123,19 @@ ConnectionListEntry.propTypes = {
  *
  * @return {Object} the React presentation component
  */
-const ConnectionListPresentation = ({ connections, onShowSettings }) => {
+export const ConnectionListPresentation = ({ connections, onShowSettings }) => {
   const entries = []
-  for (let connection of connections) {
-    let action = (connection.id === MASTER_CONNECTION_ID) ? onShowSettings : null
-    entries.push(<ConnectionListEntry key={connection.id} action={action} {...connection} />)
+  if (connections) {
+    for (let connection of connections) {
+      let action = (connection.id === MASTER_CONNECTION_ID) ? onShowSettings : null
+      entries.push(<ConnectionListEntry key={connection.id} action={action} {...connection} />)
+    }
   }
-  if (!entries.length) {
-    entries.push(<Subheader key="__subheader__">No connections</Subheader>)
+  if (entries.length) {
+    return <List>{entries}</List>
+  } else {
+    return <p style={{ padding: '0 16px' }}>No connections</p>
   }
-  return <List>{entries}</List>
 }
 
 ConnectionListPresentation.propTypes = {

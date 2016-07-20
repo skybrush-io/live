@@ -2,13 +2,13 @@ import React from 'react'
 import { Provider as StoreProvider } from 'react-redux'
 import injectTapEventPlugin from 'react-tap-event-plugin'
 
-import getMuiTheme from 'material-ui/styles/getMuiTheme'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 
 import ClockDisplayList from './components/ClockDisplayList'
 import ConnectionList from './components/ConnectionList'
 import GlobalErrorDialog from './components/GlobalErrorDialog'
 import GlobalSnackbar from './components/GlobalSnackbar'
+import HotkeyHandler from './components/HotkeyHandler'
 import LayersDialog from './components/map/LayersDialog'
 import MapReferenceRequestHandler from './components/map/MapReferenceRequestHandler'
 import MapToolbar from './components/map/MapToolbar'
@@ -17,22 +17,16 @@ import ServerConnectionManager from './components/ServerConnectionManager'
 import ServerSettingsDialog from './components/ServerSettingsDialog'
 import Widget from './components/Widget'
 
-import HotkeyHandler from './components/HotkeyHandler'
 import hotkeys from './hotkeys'
-
 import flock from './flock'
 import store from './store'
+import theme from './theme'
 
 require('../assets/css/screen.less')
 require('../assets/css/kbd.css')
 
 // Enable tap events on the UI
 injectTapEventPlugin()
-
-/**
- * The Material UI theme that the application will use.
- */
-const muiTheme = getMuiTheme({})
 
 /**
  * Signal for requesting the map reference.
@@ -53,7 +47,7 @@ export default class Application extends React.Component {
   render () {
     return (
       <StoreProvider store={store}>
-        <MuiThemeProvider muiTheme={muiTheme}>
+        <MuiThemeProvider muiTheme={theme}>
           <div>
             <div id="canvas">
               <HotkeyHandler hotkeys={appliedHotkeys}>
