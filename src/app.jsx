@@ -24,6 +24,7 @@ import store from './store'
 import theme from './theme'
 
 require('../assets/css/screen.less')
+require('../assets/css/chat.less')
 require('../assets/css/kbd.css')
 
 // Enable tap events on the UI

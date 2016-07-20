@@ -1,0 +1,137 @@
+.chat-area {
+  padding: 1em;
+}
+
+.chat-entry {
+  margin: 0.5em 0;
+}
+
+.chat-marker {
+  font-size: smaller;
+  margin: 0.5em 0;
+
+  .date {
+    color: #888;
+  }
+}
+
+hr.chat-separator {
+  background-color: #ccc;
+  border: none;
+  height: 2px;
+}
+
+div.chat-separator {
+  display: block;
+  text-align: center;
+  overflow: hidden;
+  white-space: nowrap;
+  color: #888;
+
+  & > span {
+    position: relative;
+    display: inline-block;
+    text-transform: uppercase;
+    font-size: smaller;
+  }
+
+  & > span:before,
+  & > span:after {
+    content: '';
+    position: absolute;
+    top: 40%;
+    width: 9999px;
+    height: 2px;
+    background: #ccc;
+  }
+
+  & > span:before {
+    right: 100%;
+    margin-right: 0.5em;
+  }
+
+  & > span:after {
+    left: 100%;
+    margin-left: 0.5em;
+  }
+}
+
+.chat-meta {
+  font-size: smaller;
+  text-align: left;
+
+  .author {
+    font-weight: bold;
+    color: #444;
+  }
+
+  .date {
+    color: #888;
+  }
+}
+
+.bubble {
+  position: relative;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+  padding: 5px 10px;
+  margin: 0.5em 0;
+  min-height: 10px;
+}
+
+.chat-entry-own {
+  .bubble {
+    background: #E3F2FD;
+
+    &:after {
+      content: '';
+      position: absolute;
+      border-style: solid;
+      border-width: 5px 5px 5px 0;
+      border-color: transparent #E3F2FD;
+      display: block;
+      width: 0;
+      z-index: 1;
+      left: -5px;
+      top: 7px;
+    }
+  }
+}
+
+.chat-entry-other {
+  .bubble {
+    background: #BBDEFB;
+
+    &:after {
+      content: '';
+      position: absolute;
+      border-style: solid;
+      border-width: 5px 0px 5px 5px;
+      border-color: transparent #BBDEFB;
+      display: block;
+      width: 0;
+      z-index: 1;
+      right: -5px;
+      top: 7px;
+    }
+  }
+
+  .chat-meta {
+    text-align: right;
+  }
+}
+
+.chat-marker-error {
+  .message {
+    font-weight: bold;
+    color: #b71c1c;
+  }
+}
+
+.chat-marker-warning {
+  .message {
+    font-weight: bold;
+    color: #ffb71c;
+  }
+}
