@@ -3,13 +3,13 @@ import React from 'react'
 import { Provider as StoreProvider } from 'react-redux'
 import injectTapEventPlugin from 'react-tap-event-plugin'
 
-import getMuiTheme from 'material-ui/styles/getMuiTheme'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 
 import ClockDisplayList from './components/ClockDisplayList'
 import ConnectionList from './components/ConnectionList'
 import GlobalErrorDialog from './components/GlobalErrorDialog'
 import GlobalSnackbar from './components/GlobalSnackbar'
+import HotkeyHandler from './components/HotkeyHandler'
 import LayersDialog from './components/map/LayersDialog'
 import MapToolbar from './components/map/MapToolbar'
 import MapView from './components/map/MapView'
@@ -18,11 +18,10 @@ import ServerSettingsDialog from './components/ServerSettingsDialog'
 import UAVToolbar from './components/map/UAVToolbar'
 import Widget from './components/Widget'
 
-import HotkeyHandler from './components/HotkeyHandler'
 import hotkeys from './hotkeys'
-
 import flock from './flock'
 import store from './store'
+import theme from './theme'
 
 require('../assets/css/screen.less')
 require('../assets/css/kbd.css')
@@ -31,9 +30,16 @@ require('../assets/css/kbd.css')
 injectTapEventPlugin()
 
 /**
- * The Material UI theme that the application will use.
+ * Signal for requesting the map reference.
+ *
+ * @todo Ask Tamás where this should be declared.
  */
-const muiTheme = getMuiTheme({})
+const mapReferenceRequestSignal = MapReferenceRequestHandler.generateRequestSignal()
+
+/**
+ * Array containing the hotkey objects that are now connected to the Redux store.
+ */
+const appliedHotkeys = hotkeys(store, flock)
 
 /**
  * The main application component.
@@ -42,7 +48,7 @@ export default class Application extends React.Component {
   render () {
     return (
       <StoreProvider store={store}>
-        <MuiThemeProvider muiTheme={muiTheme}>
+        <MuiThemeProvider muiTheme={theme}>
           <div>
             <div id="canvas">
               <HotkeyHandler hotkeys={hotkeys}>

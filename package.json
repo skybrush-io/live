@@ -9,6 +9,7 @@
     "start": "webpack-dev-server --progress --colors",
     "start:public": "webpack-dev-server --progress --colors --host 0.0.0.0",
     "start:public:secure": "webpack-dev-server --progress --colors --https --host 0.0.0.0",
+    "storybook": "start-storybook -p 9001",
     "test": "echo \"Error: no test specified\" && exit 1",
     "watch": "webpack --watch"
   },
@@ -46,6 +47,7 @@
     "updeep": "^0.16.0"
   },
   "devDependencies": {
+    "@kadira/storybook": "^1.39.0",
     "babel-core": "^6.7.7",
     "babel-eslint": "^6.0.4",
     "babel-loader": "^6.2.4",
