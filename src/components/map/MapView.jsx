@@ -1,3 +1,4 @@
+import _ from 'lodash'
 import React, { PropTypes } from 'react'
 import { Map, View, control, interaction, layer, source } from 'ol-react'
 import { connect } from 'react-redux'
@@ -54,7 +55,8 @@ class MapViewPresentation extends React.Component {
   }
 
   render () {
-    const { visibleSource, flock, mapReferenceRequestSignal, projection, selectedTool, selection } = this.props
+    const { visibleSource, flock, mapReferenceRequestSignal, projection,
+      selectedTool, selection, ownLocationVisible } = this.props
     const center = projection([19.061951, 47.473340])
     const view = <View center={center} zoom={17} />
 
@@ -90,7 +92,7 @@ class MapViewPresentation extends React.Component {
 
         </layer.Vector>
 
-        <layer.Vector
+        <layer.Vector visible={ownLocationVisible}
           updateWhileAnimating={true}
           updateWhileInteracting={true}>
           <OwnLocation />
@@ -252,9 +254,15 @@ MapViewPresentation.propTypes = {
   flock: PropTypes.instanceOf(Flock),
   mapReferenceRequestSignal: PropTypes.instanceOf(Signal),
   projection: PropTypes.func.isRequired,
-  selection: PropTypes.arrayOf(PropTypes.string).isRequired,
   selectedTool: PropTypes.string,
+  selection: PropTypes.arrayOf(PropTypes.string).isRequired,
+  ownLocationVisible: PropTypes.bool,
   dispatch: PropTypes.func.isRequired
+}
+
+const isOwnLocationVisible = state => {
+  const ownLocationLayer = _.find(state.map.layers.byId, {type: 'ownLocation'})
+  return typeof ownLocationLayer !== 'undefined' && ownLocationLayer.visible
 }
 
 /**
@@ -265,7 +273,8 @@ const MapView = connect(
   state => ({
     visibleSource: state.map.layers.byId.base.parameters.source,
     selectedTool: state.map.tools.selectedTool,
-    selection: state.map.selection
+    selection: state.map.selection,
+    ownLocationVisible: isOwnLocationVisible(state)
   })
 )(MapViewPresentation)
 
