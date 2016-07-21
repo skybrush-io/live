@@ -9,6 +9,7 @@ import Signal from 'mini-signals'
 
 import MapReferenceRequestHandler from './MapReferenceRequestHandler'
 import ActiveUAVsLayerSource from './ActiveUAVsLayerSource'
+import OwnLocation from './OwnLocation'
 import SelectNearestFeature from './interactions/SelectNearestFeature'
 
 import { Tool } from './tools'
@@ -87,6 +88,12 @@ class MapViewPresentation extends React.Component {
             flock={flock}
             projection={projection} />
 
+        </layer.Vector>
+
+        <layer.Vector
+          updateWhileAnimating={true}
+          updateWhileInteracting={true}>
+          <OwnLocation />
         </layer.Vector>
 
         <control.FullScreen source={document.body} />
