@@ -38,6 +38,7 @@ class BasicLayerSettingsFormPresentation extends React.Component {
         <TextField {...label} floatingLabelText="Layer name"
           style={{ width: '100%' }}
           spellCheck="false" errorText={label.touched && label.error}
+          onKeyDown={this.onKeyDown_}
         />
         <div>&nbsp;</div>
         <Toggle label="Visible" labelPosition="right"
@@ -47,6 +48,17 @@ class BasicLayerSettingsFormPresentation extends React.Component {
         />
       </div>
     )
+  }
+
+  /**
+   * Function to accept the field's value when Enter is pressed.
+   *
+   * @param {Event} e the event fired from the TextField React component
+   */
+  onKeyDown_ (e) {
+    if (e.key === 'Enter') {
+      e.target.blur()
+    }
   }
 }
 
