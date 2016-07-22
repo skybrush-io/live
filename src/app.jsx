@@ -82,7 +82,7 @@ export default class Application extends React.Component {
             <ServerSettingsDialog />
             <ServerConnectionManager />
 
-            <LayersDialog />
+            <LayersDialog mapReferenceRequestSignal={signals.mapReferenceRequestSignal} />
 
             <GlobalErrorDialog />
             <GlobalSnackbar />
