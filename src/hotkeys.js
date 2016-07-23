@@ -9,6 +9,8 @@ import { showLayersDialog } from './actions/layers'
 import { Tool } from './components/map/tools'
 import { Source } from './model/sources'
 
+import messageHub from './message-hub'
+
 export default (store, flock, signals) => [
   // Drone selection hotkeys
   {
@@ -100,6 +102,41 @@ export default (store, flock, signals) => [
     keys: 'PlatMod + KeyL',
     action: () => {
       store.dispatch(showLayersDialog())
+    }
+  },
+
+  // UAV Control hotkeys
+  {
+    description: 'Issue TAKEOFF command to selected UAVs',
+    on: 'down',
+    keys: 'PlatMod + Alt + KeyT',
+    action: () => {
+      messageHub.sendMessage({
+        type: 'UAV-TAKEOFF',
+        ids: store.getState().map.selection
+      }).then(result => console.log(result))
+    }
+  },
+  {
+    description: 'Issue LAND command to selected UAVs',
+    on: 'down',
+    keys: 'PlatMod + Alt + KeyL',
+    action: () => {
+      messageHub.sendMessage({
+        type: 'UAV-LAND',
+        ids: store.getState().map.selection
+      }).then(result => console.log(result))
+    }
+  },
+  {
+    description: 'Issue RTH (Return To Home) command to selected UAVs',
+    on: 'down',
+    keys: 'PlatMod + Alt + KeyR',
+    action: () => {
+      messageHub.sendMessage({
+        type: 'UAV-RTH',
+        ids: store.getState().map.selection
+      }).then(result => console.log(result))
     }
   }
 ]
