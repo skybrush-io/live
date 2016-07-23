@@ -17,6 +17,7 @@ import MapToolbar from './components/map/MapToolbar'
 import MapView from './components/map/MapView'
 import ServerConnectionManager from './components/ServerConnectionManager'
 import ServerSettingsDialog from './components/ServerSettingsDialog'
+import UAVToolbar from './components/map/UAVToolbar'
 import Widget from './components/Widget'
 
 import HotkeyHandler from './components/HotkeyHandler'
@@ -76,6 +77,10 @@ export default class Application extends React.Component {
 
               <Widget style={{ top: 8, left: (8 + 24 + 8) }} showControls={false}>
                 <MapToolbar signals={signals} />
+              </Widget>
+
+              <Widget style={{ top: 8 + 48 + 8 + 24 + 8, left: 8 }} showControls={false}>
+                <UAVToolbar />
               </Widget>
             </div>
 
