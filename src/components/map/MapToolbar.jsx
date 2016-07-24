@@ -12,8 +12,6 @@ import FitAllFeaturesButton from './FitAllFeaturesButton'
 import partial from 'lodash/partial'
 import { connect } from 'react-redux'
 
-import Signal from 'mini-signals'
-
 import { selectMapTool } from '../../actions/map'
 import { showLayersDialog } from '../../actions/layers'
 import { Tool } from './tools'
@@ -40,10 +38,6 @@ const MapToolbarSeparator = () => {
  * @returns {Object} the rendered component
  */
 class MapToolbarPresentation extends React.Component {
-  getChildContext () {
-    return {mapReferenceRequestSignal: this.props.signals.mapReferenceRequestSignal}
-  }
-
   render () {
     const { selectedTool, onShowLayersDialog, onToolSelected } = this.props
     const { muiTheme } = this.context
@@ -78,13 +72,11 @@ class MapToolbarPresentation extends React.Component {
             display: 'inline-block',
             marginRight: '12px',
             verticalAlign: 'top'
-          }}
-          mapRotationResetSignal={this.props.signals.mapRotationResetSignal} />
+          }} />
 
         <MapToolbarSeparator />
 
-        <FitAllFeaturesButton duration={500} margin={64}
-        fitAllFeaturesSignal={this.props.signals.fitAllFeaturesSignal} />
+        <FitAllFeaturesButton duration={500} margin={64} />
       </div>
     )
   }
@@ -94,16 +86,11 @@ MapToolbarPresentation.propTypes = {
   visibleSource: PropTypes.string,
   selectedTool: PropTypes.string,
   onShowLayersDialog: PropTypes.func,
-  onToolSelected: PropTypes.func,
-  signals: PropTypes.objectOf(PropTypes.instanceOf(Signal))
+  onToolSelected: PropTypes.func
 }
 
 MapToolbarPresentation.contextTypes = {
   muiTheme: PropTypes.object
-}
-
-MapToolbarPresentation.childContextTypes = {
-  mapReferenceRequestSignal: PropTypes.instanceOf(Signal)
 }
 
 /**

@@ -8,7 +8,7 @@ import { showSnackbarMessage } from '../../actions/snackbar'
 
 import ol from 'openlayers'
 
-import Signal from 'mini-signals'
+import { mapReferenceRequestSignal, fitAllFeaturesSignal } from '../../signals'
 
 import IconButton from 'material-ui/IconButton'
 import DeviceGpsFixed from 'material-ui/svg-icons/device/gps-fixed'
@@ -20,10 +20,6 @@ import DeviceGpsFixed from 'material-ui/svg-icons/device/gps-fixed'
  * @property {number} margin amount of margin to leave between the features
  * and the border of the view
  * @property {number} duration the amount of time the transition should take (in ms)
- * @property {Signal} fitAllFeaturesSignal signal for access from hotkey
- *
- * @param {Object} context react context of the component
- * @property {Signal} mapReferenceRequestSignal Mini-signal for requesting the map reference
  *
  * @emits {mapReferenceRequestSignal} requests map reference.
  */
@@ -36,23 +32,19 @@ export default class FitAllFeaturesButton extends React.Component {
    * @property {number} margin amount of margin to leave between the features
    * and the border of the view
    * @property {number} duration the amount of time the transition should take (in ms)
-   * @property {Signal} fitAllFeaturesSignal signal for access from hotkey
-   *
-   * @param {Object} context react context of the component
-   * @property {Signal} mapReferenceRequestSignal Mini-signal for requesting the map reference
    *
    * @emits {mapReferenceRequestSignal} requests map reference.
    */
-  constructor (props, context) {
+  constructor (props) {
     super(props)
 
     this.onMapReferenceReceived_ = this.onMapReferenceReceived_.bind(this)
     this.handleClick_ = this.handleClick_.bind(this)
     this.geolocationReceived_ = this.geolocationReceived_.bind(this)
 
-    props.fitAllFeaturesSignal.add(this.handleClick_)
+    fitAllFeaturesSignal.add(this.handleClick_)
 
-    context.mapReferenceRequestSignal.dispatch(this.onMapReferenceReceived_)
+    mapReferenceRequestSignal.dispatch(this.onMapReferenceReceived_)
   }
 
   render () {
@@ -161,12 +153,7 @@ export default class FitAllFeaturesButton extends React.Component {
 FitAllFeaturesButton.propTypes = {
   duration: PropTypes.number,
   margin: PropTypes.number,
-  dispatch: PropTypes.func,
-  fitAllFeaturesSignal: PropTypes.instanceOf(Signal)
-}
-
-FitAllFeaturesButton.contextTypes = {
-  mapReferenceRequestSignal: PropTypes.instanceOf(Signal)
+  dispatch: PropTypes.func
 }
 
 export default connect()(FitAllFeaturesButton)

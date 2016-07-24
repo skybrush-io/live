@@ -5,7 +5,7 @@
 import React, { PropTypes } from 'react'
 import ol from 'openlayers'
 
-import Signal from 'mini-signals'
+import { mapReferenceRequestSignal, mapRotationResetSignal } from '../../signals'
 
 import IconButton from 'material-ui/IconButton'
 import ImageRotateRight from 'material-ui/svg-icons/image/rotate-right'
@@ -20,10 +20,8 @@ const normalizeAngle = (angle) => (((angle % 360) + 360) % 360).toFixed(2)
  * @property {number} resetDuration the amount of time the reset transition should take (in ms)
  * @property {string} fieldWidth the width of the actual input field
  * @property {string} style styling of the outermost element (a div)
- * @property {Signal} mapRotationResetSignal signal for access from hotkey
  *
- * @param {Object} context react context of the component
- * @property {Signal} mapReferenceRequestSignal Mini-signal for requesting the map reference
+ * @emits {mapReferenceRequestSignal} requests map reference
  */
 export default class MapRotationTextBox extends React.Component {
   /**
@@ -34,14 +32,10 @@ export default class MapRotationTextBox extends React.Component {
    * @property {number} resetDuration the amount of time the reset transition should take (in ms)
    * @property {string} fieldWidth the width of the actual input field
    * @property {string} style styling of the outermost element (a div)
-   * @property {Signal} mapRotationResetSignal signal for access from hotkey
-   *
-   * @param {Object} context react context of the component
-   * @property {Signal} mapReferenceRequestSignal Mini-signal for requesting the map reference
    *
    * @emits {mapReferenceRequestSignal} requests map reference
    */
-  constructor (props, context) {
+  constructor (props) {
     super(props)
     this.state = {
       isFocused: false,
@@ -56,9 +50,9 @@ export default class MapRotationTextBox extends React.Component {
     this.onKeyDown_ = this.onKeyDown_.bind(this)
     this.onButtonClick_ = this.onButtonClick_.bind(this)
 
-    props.mapRotationResetSignal.add(this.onButtonClick_)
+    mapRotationResetSignal.add(this.onButtonClick_)
 
-    context.mapReferenceRequestSignal.dispatch(this.onMapReferenceReceived_)
+    mapReferenceRequestSignal.dispatch(this.onMapReferenceReceived_)
   }
 
   render () {
@@ -181,10 +175,5 @@ export default class MapRotationTextBox extends React.Component {
 MapRotationTextBox.propTypes = {
   resetDuration: PropTypes.number,
   fieldWidth: PropTypes.string,
-  style: PropTypes.object,
-  mapRotationResetSignal: PropTypes.instanceOf(Signal)
-}
-
-MapRotationTextBox.contextTypes = {
-  mapReferenceRequestSignal: PropTypes.instanceOf(Signal)
+  style: PropTypes.object
 }

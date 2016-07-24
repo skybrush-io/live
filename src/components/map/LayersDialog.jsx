@@ -15,7 +15,6 @@ import TextField from 'material-ui/TextField'
 import Toggle from 'material-ui/Toggle'
 import VisibilityOff from 'material-ui/svg-icons/action/visibility-off'
 
-import Signal from 'mini-signals'
 import GeoJSONImporter from './GeoJSONImporter'
 
 import { closeLayersDialog, renameLayer, setSelectedLayerInLayersDialog,
@@ -145,7 +144,8 @@ class LayerSettingsContainerPresentation extends React.Component {
     } else if (layer.type === LayerType.GEOJSON) {
       return [
         <p key="header">Import GeoJSON data:</p>,
-        <GeoJSONImporter />
+        <GeoJSONImporter key="GeoJSONImporterKey" />
+        // not sure what to put as key, but React requests it
       ]
     } else if (layer.type === LayerType.UNTYPED) {
       const layerTypeRadioButtons = _.map(LayerTypes, layerType => (
@@ -308,10 +308,6 @@ class LayersDialogPresentation extends React.Component {
     this.removeSelectedLayer_ = this.removeSelectedLayer_.bind(this)
   }
 
-  getChildContext () {
-    return {mapReferenceRequestSignal: this.props.mapReferenceRequestSignal}
-  }
-
   render () {
     const { dialogVisible, selectedLayer } = this.props
     const { onAddLayer, onClose } = this.props
@@ -346,8 +342,6 @@ class LayersDialogPresentation extends React.Component {
 }
 
 LayersDialogPresentation.propTypes = {
-  mapReferenceRequestSignal: PropTypes.instanceOf(Signal),
-
   dialogVisible: PropTypes.bool.isRequired,
   selectedLayer: PropTypes.string,
   visibleSource: PropTypes.string,
@@ -359,10 +353,6 @@ LayersDialogPresentation.propTypes = {
 
 LayersDialogPresentation.defaultProps = {
   dialogVisible: false
-}
-
-LayersDialogPresentation.childContextTypes = {
-  mapReferenceRequestSignal: PropTypes.instanceOf(Signal)
 }
 
 /**

@@ -9,9 +9,12 @@ import { showLayersDialog } from './actions/layers'
 import { Tool } from './components/map/tools'
 import { Source } from './model/sources'
 
+import store from './store'
+import flock from './flock'
+import signals from './signals'
 import messageHub from './message-hub'
 
-export default (store, flock, signals) => [
+export default [
   // Drone selection hotkeys
   {
     description: 'Select all drones',

@@ -6,8 +6,6 @@ import { connect } from 'react-redux'
 import ol from 'openlayers'
 import Condition from './conditions.js'
 
-import Signal from 'mini-signals'
-
 import MapReferenceRequestHandler from './MapReferenceRequestHandler'
 import ActiveUAVsLayerSource from './ActiveUAVsLayerSource'
 import OwnLocation from './OwnLocation'
@@ -55,7 +53,7 @@ class MapViewPresentation extends React.Component {
   }
 
   render () {
-    const { visibleSource, flock, mapReferenceRequestSignal, projection,
+    const { visibleSource, flock, projection,
       selectedTool, selection, ownLocationVisible } = this.props
     const center = projection([19.061951, 47.473340])
     const view = <View center={center} zoom={17} />
@@ -69,7 +67,7 @@ class MapViewPresentation extends React.Component {
       <Map view={view} useDefaultControls={false} loadTilesWhileInteracting={true}
         focusOnMount={true}
         style={{cursor: cursorStyles[selectedTool]}} >
-        <MapReferenceRequestHandler mapReferenceRequestSignal={mapReferenceRequestSignal}/>
+        <MapReferenceRequestHandler />
 
         <layer.Tile visible={visibleSource === Source.OSM}>
           <source.OSM />
@@ -252,7 +250,6 @@ class MapViewPresentation extends React.Component {
 MapViewPresentation.propTypes = {
   visibleSource: PropTypes.string,
   flock: PropTypes.instanceOf(Flock),
-  mapReferenceRequestSignal: PropTypes.instanceOf(Signal),
   projection: PropTypes.func.isRequired,
   selectedTool: PropTypes.string,
   selection: PropTypes.arrayOf(PropTypes.string).isRequired,
@@ -280,7 +277,6 @@ const MapView = connect(
 
 MapView.propTypes = {
   flock: PropTypes.instanceOf(Flock),
-  mapReferenceRequestSignal: PropTypes.instanceOf(Signal),
   projection: PropTypes.func.isRequired
 }
 

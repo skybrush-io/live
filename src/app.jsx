@@ -3,8 +3,6 @@ import React from 'react'
 import { Provider as StoreProvider } from 'react-redux'
 import injectTapEventPlugin from 'react-tap-event-plugin'
 
-import Signal from 'mini-signals'
-
 import getMuiTheme from 'material-ui/styles/getMuiTheme'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 
@@ -38,22 +36,6 @@ injectTapEventPlugin()
 const muiTheme = getMuiTheme({})
 
 /**
- * Object containing the signals used in the application.
- *
- * @todo Ask Tamás where this should be declared.
- */
-const signals = {
-  mapReferenceRequestSignal: new Signal(),
-  mapRotationResetSignal: new Signal(),
-  fitAllFeaturesSignal: new Signal()
-}
-
-/**
- * Array containing the hotkey objects that are now connected to the Redux store.
- */
-const appliedHotkeys = hotkeys(store, flock, signals)
-
-/**
  * The main application component.
  */
 export default class Application extends React.Component {
@@ -63,8 +45,8 @@ export default class Application extends React.Component {
         <MuiThemeProvider muiTheme={muiTheme}>
           <div>
             <div id="canvas">
-              <HotkeyHandler hotkeys={appliedHotkeys}>
-                <MapView flock={flock} mapReferenceRequestSignal={signals.mapReferenceRequestSignal} />
+              <HotkeyHandler hotkeys={hotkeys}>
+                <MapView flock={flock} />
               </HotkeyHandler>
 
               <Widget style={{ right: 8, bottom: 8, width: 300 }}>
@@ -76,7 +58,7 @@ export default class Application extends React.Component {
               </Widget>
 
               <Widget style={{ top: 8, left: (8 + 24 + 8) }} showControls={false}>
-                <MapToolbar signals={signals} />
+                <MapToolbar />
               </Widget>
 
               <Widget style={{ top: 8 + 48 + 8 + 24 + 8, left: 8 }} showControls={false}>
@@ -87,7 +69,7 @@ export default class Application extends React.Component {
             <ServerSettingsDialog />
             <ServerConnectionManager />
 
-            <LayersDialog mapReferenceRequestSignal={signals.mapReferenceRequestSignal} />
+            <LayersDialog />
 
             <GlobalErrorDialog />
             <GlobalSnackbar />
