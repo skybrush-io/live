@@ -102,7 +102,7 @@ export default [
   {
     description: 'Open Layers dialog',
     on: 'down',
-    keys: 'PlatMod + KeyL',
+    keys: 'PlatMod + Shift + KeyL',
     action: () => {
       store.dispatch(showLayersDialog())
     }

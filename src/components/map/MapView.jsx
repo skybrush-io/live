@@ -73,7 +73,10 @@ class MapViewPresentation extends React.Component {
           <source.OSM />
         </layer.Tile>
         <layer.Tile visible={visibleSource === Source.BING_MAPS.AERIAL_WITH_LABELS}>
-          <source.BingMaps apiKey={BingAPI.key} imagerySet="AerialWithLabels" />
+          <source.BingMaps
+            apiKey={BingAPI.key}
+            imagerySet="AerialWithLabels"
+            maxZoom={19} />
         </layer.Tile>
         <layer.Tile visible={visibleSource === Source.BING_MAPS.ROAD}>
           <source.BingMaps apiKey={BingAPI.key} imagerySet="Road" />
