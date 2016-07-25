@@ -1,8 +1,10 @@
-import React from 'react'
+import React, { PropTypes } from 'react'
+import { connect } from 'react-redux'
 
 import IconButton from 'material-ui/IconButton'
 import ActionFlightTakeoff from 'material-ui/svg-icons/action/flight-takeoff'
 import ActionFlightLand from 'material-ui/svg-icons/action/flight-land'
+import ActionHome from 'material-ui/svg-icons/action/home'
 import ActionPowerSettingsNew from 'material-ui/svg-icons/action/power-settings-new'
 
 import messageHub from '../../message-hub'
@@ -26,21 +28,35 @@ const UAVToolbarSeparator = () => {
 /**
  * Main toolbar for controlling the UAVs.
  */
-export default class UAVToolbar extends React.Component {
+class UAVToolbar extends React.Component {
+  constructor (props) {
+    super(props)
+
+    this.takeoffSelectedUAVs_ = this.takeoffSelectedUAVs_.bind(this)
+    this.landSelectedUAVs_ = this.landSelectedUAVs_.bind(this)
+    this.returnSelectedUAVs_ = this.returnSelectedUAVs_.bind(this)
+  }
+
   render () {
+    const { isSelectionEmpty } = this.props
     return (
       <div>
-        <IconButton onClick={this.takeoffSelectedUAVs_}
+        <IconButton disabled={isSelectionEmpty} onClick={this.takeoffSelectedUAVs_}
           tooltipPosition="bottom-right" tooltip="Takeoff">
           <ActionFlightTakeoff />
         </IconButton>
         <br />
-        <IconButton onClick={this.landSelectedUAVs_}
+        <IconButton disabled={isSelectionEmpty} onClick={this.landSelectedUAVs_}
           tooltipPosition="bottom-right" tooltip="Land">
           <ActionFlightLand />
         </IconButton>
         <UAVToolbarSeparator />
-        <IconButton
+        <IconButton disabled={isSelectionEmpty} onClick={this.returnSelectedUAVs_}
+          tooltipPosition="bottom-right" tooltip="Return">
+          <ActionHome />
+        </IconButton>
+        <UAVToolbarSeparator />
+        <IconButton disabled={isSelectionEmpty}
           tooltipPosition="bottom-right" tooltip="Halt">
           <ActionPowerSettingsNew color="red" />
         </IconButton>
@@ -51,14 +67,33 @@ export default class UAVToolbar extends React.Component {
   takeoffSelectedUAVs_ () {
     messageHub.sendMessage({
       type: 'UAV-TAKEOFF',
-      ids: store.getState().map.selection
+      ids: this.props.selection
     }).then(result => console.log(result))
   }
 
   landSelectedUAVs_ () {
     messageHub.sendMessage({
       type: 'UAV-LAND',
-      ids: store.getState().map.selection
+      ids: this.props.selection
+    }).then(result => console.log(result))
+  }
+
+  returnSelectedUAVs_ () {
+    messageHub.sendMessage({
+      type: 'UAV-RTH',
+      ids: this.props.selection
     }).then(result => console.log(result))
   }
 }
+
+UAVToolbar.propTypes = {
+  isSelectionEmpty: PropTypes.bool,
+  selection: PropTypes.arrayOf(PropTypes.string)
+}
+
+export default connect(
+  state => ({
+    isSelectionEmpty: store.getState().map.selection.length === 0,
+    selection: store.getState().map.selection
+  })
+)(UAVToolbar)
