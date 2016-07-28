@@ -7,12 +7,18 @@ import { mapReferenceRequestSignal } from '../../signals'
 import RaisedButton from 'material-ui/RaisedButton'
 import TextField from 'material-ui/TextField'
 
+const makeFillStyle = color => new ol.style.Style({
+  fill: new ol.style.Fill({ color: color })
+})
+
 export default class HexGridDrawer extends React.Component {
   constructor (props) {
     super(props)
 
     this.onMapReferenceReceived_ = this.onMapReferenceReceived_.bind(this)
     this.handleClick_ = this.handleClick_.bind(this)
+
+    this.features = {}
 
     mapReferenceRequestSignal.dispatch(this.onMapReferenceReceived_)
   }
@@ -28,7 +34,7 @@ export default class HexGridDrawer extends React.Component {
         <TextField ref="size"
           floatingLabelText="Size of the grid"
           hintText="Size"
-          defaultValue="1"
+          defaultValue="2"
           onChange={this.handleChange_} />
         <TextField ref="radius"
           floatingLabelText="Radius of one cell"
@@ -50,21 +56,20 @@ export default class HexGridDrawer extends React.Component {
   getCorners_ (center, radius) {
     const angles = [30, 90, 150, 210, 270, 330].map(a => a * Math.PI / 180)
 
-    return angles.map(angle => [
+    return angles.map(angle => ol.proj.fromLonLat([
       center[0] + radius * Math.sin(angle),
       center[1] + radius * Math.cos(angle)
-    ])
+    ], 'EPSG:3857'))
   }
 
   getHexagon_ (center, radius) {
-    return {
-      type: 'Feature',
-      properties: {},
-      geometry: {
-        type: 'Polygon',
-        coordinates: [this.getCorners_(center, radius)]
+    return new ol.Feature(
+      {
+        geometry: new ol.geom.Polygon([
+          this.getCorners_(center, radius)
+        ])
       }
-    }
+    )
   }
 
   handleClick_ (e) {
@@ -72,30 +77,34 @@ export default class HexGridDrawer extends React.Component {
     const size = _.toNumber(this.refs.size.getValue())
     const radius = _.toNumber(this.refs.radius.getValue())
 
-    let data = {
-      type: 'FeatureCollection',
-      features: []
-    }
+    this.features = {}
 
     for (let x = -size; x <= size; x++) {
       for (let z = Math.max(-size, -size - x); z <= Math.min(size, size - x); z++) {
-        data.features.push(this.getHexagon_([
+        const hash = `${x},${z}`
+        this.features[hash] = this.getHexagon_([
           center[0] + (radius * 1.5 * x),
           center[1] - (radius * Math.sqrt(3)) * (0.5 * x + z)
-        ], radius))
+        ], radius)
+        this.features[hash].setId(hash)
       }
     }
 
-    let geojsonFormat = new ol.format.GeoJSON()
-    let features = geojsonFormat.readFeatures(data, {featureProjection: 'EPSG:3857'})
-
     let source = new ol.source.Vector()
-    source.addFeatures(features)
+    source.addFeatures(_.values(this.features))
 
-    let layer = new ol.layer.Vector()
-    layer.setSource(source)
+    let layer = new ol.layer.Vector({
+      source: source
+      // style: ()
+    })
 
     this.map.addLayer(layer)
+
+    for (const hash in this.features) {
+      const coordinates = hash.split(',').map(_.toNumber)
+      const intensity = (_.sum(coordinates) + 4) / 10 + 0.1
+      this.features[hash].setStyle(makeFillStyle(`rgba(255, 0, 0, ${intensity})`))
+    }
   }
 }
 
