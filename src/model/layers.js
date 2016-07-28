@@ -12,6 +12,7 @@ import Flight from 'material-ui/svg-icons/maps/flight'
 import Map from 'material-ui/svg-icons/maps/map'
 import MyLocation from 'material-ui/svg-icons/maps/my-location'
 import FileAttachment from 'material-ui/svg-icons/file/attachment'
+import ImageGridOn from 'material-ui/svg-icons/image/grid-on'
 
 /**
  * Enum containing constants for the various layer types that we support.
@@ -20,6 +21,7 @@ export const LayerType = {
   BASE: 'base',
   GEOJSON: 'geojson',
   HEATMAP: 'heatmap',
+  HEXGRID: 'hexgrid',
   OWN_LOCATION: 'ownLocation',
   UAVS: 'uavs',
   UNTYPED: 'untyped'
@@ -30,7 +32,7 @@ export const LayerType = {
  */
 export const LayerTypes = [
   LayerType.BASE, LayerType.UAVS, LayerType.OWN_LOCATION,
-  LayerType.GEOJSON, LayerType.HEATMAP
+  LayerType.GEOJSON, LayerType.HEXGRID, LayerType.HEATMAP
 ]
 
 /**
@@ -50,6 +52,10 @@ propertiesForLayerTypes_[LayerType.BASE] = {
 propertiesForLayerTypes_[LayerType.GEOJSON] = {
   label: 'GeoJSON layer',
   icon: <FileAttachment />
+}
+propertiesForLayerTypes_[LayerType.HEXGRID] = {
+  label: 'HEX Grid layer',
+  icon: <ImageGridOn />
 }
 propertiesForLayerTypes_[LayerType.HEATMAP] = {
   label: 'Heatmap',

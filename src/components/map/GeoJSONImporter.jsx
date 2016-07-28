@@ -4,7 +4,7 @@ import ol from 'openlayers'
 import { mapReferenceRequestSignal } from '../../signals'
 
 import RaisedButton from 'material-ui/RaisedButton'
-import SystemUpdateAlt from 'material-ui/svg-icons/action/system-update-alt'
+import ActionSystemUpdateAlt from 'material-ui/svg-icons/action/system-update-alt'
 import TextField from 'material-ui/TextField'
 
 export default class GeoJSONImporter extends React.Component {
@@ -23,7 +23,6 @@ export default class GeoJSONImporter extends React.Component {
     return (
       <div style={this.props.style}>
         <TextField
-          style={{}}
           floatingLabelText="Paste GeoJSON data here:"
           hintText="GeoJSON"
           multiLine={true}
@@ -33,7 +32,7 @@ export default class GeoJSONImporter extends React.Component {
           onChange={this.handleChange_} />
         <RaisedButton
           label="Import GeoJSON"
-          icon={<SystemUpdateAlt />}
+          icon={<ActionSystemUpdateAlt />}
           onClick={this.handleClick_} />
       </div>
     )

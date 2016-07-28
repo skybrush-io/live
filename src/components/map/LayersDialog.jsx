@@ -16,6 +16,7 @@ import Toggle from 'material-ui/Toggle'
 import VisibilityOff from 'material-ui/svg-icons/action/visibility-off'
 
 import GeoJSONImporter from './GeoJSONImporter'
+import HexGridDrawer from './HexGridDrawer'
 
 import { closeLayersDialog, renameLayer, setSelectedLayerInLayersDialog,
          toggleLayerVisibility, addLayer, removeLayer, changeLayerType }
@@ -145,6 +146,12 @@ class LayerSettingsContainerPresentation extends React.Component {
       return [
         <p key="header">Import GeoJSON data:</p>,
         <GeoJSONImporter key="GeoJSONImporterKey" />
+        // not sure what to put as key, but React requests it
+      ]
+    } else if (layer.type === LayerType.HEXGRID) {
+      return [
+        <p key="header">Draw Hex Grid:</p>,
+        <HexGridDrawer key="HexGridDrawerKey" />
         // not sure what to put as key, but React requests it
       ]
     } else if (layer.type === LayerType.UNTYPED) {
