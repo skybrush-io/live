@@ -10,8 +10,9 @@ import _ from 'lodash'
  * to a certain color.
  */
 const colorPredicates = {
-  purple: (id) => ['FAKE-01', 'FAKE-03'].includes(id),
-  green: (id) => ['FAKE-02', 'FAKE-04'].includes(id)
+  pink: (id) => ['13', '15', '16', '12', '14'].includes(id),
+  orange: (id) => ['11'].includes(id),
+  blue: (id) => ['10', '01', '02', '03'].includes(id)
 }
 
 /**
@@ -98,7 +99,7 @@ export default class UAVFeature extends ol.Feature {
       rotateWithView: true,
       rotation: ((this.heading_ + 45) % 360) * Math.PI / 180,
       snapToPixel: false,
-      src: `/assets/drone.${getColorById(this.uavId)}.32x32.red.png`
+      src: `/assets/drone.${getColorById(this.uavId)}.32x32.png`
     })
     this.iconStyle = new ol.style.Style({ image: this.iconImage })
     styles.push(this.iconStyle)
