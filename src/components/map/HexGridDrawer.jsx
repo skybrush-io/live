@@ -45,7 +45,6 @@ export default class HexGridDrawer extends React.Component {
 
   onMapReferenceReceived_ (map) {
     this.map = map
-    window.map = map
   }
 
   getCorners_ (center, radius) {
