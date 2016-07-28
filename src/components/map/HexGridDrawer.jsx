@@ -102,8 +102,8 @@ export default class HexGridDrawer extends React.Component {
 
     for (const hash in this.features) {
       const coordinates = hash.split(',').map(_.toNumber)
-      const intensity = (_.sum(coordinates) + 4) / 10 + 0.1
-      this.features[hash].setStyle(makeFillStyle(`rgba(255, 0, 0, ${intensity})`))
+      const hue = (_.sum(coordinates) + 2) * 30
+      this.features[hash].setStyle(makeFillStyle(`hsla(${hue}, 50%, 50%, 0.5)`))
     }
   }
 }
