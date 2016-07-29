@@ -109,6 +109,12 @@ class MapViewPresentation extends React.Component {
         <control.ScaleLine minWidth={128} />
         <control.Zoom />
 
+        <div id="heatmapScale" style={{display: 'none'}}>
+          <span>100%</span>
+          <span>50%</span>
+          <span>0%</span>
+        </div>
+
         {/* PAN mode | Ctrl/Cmd + Drag --> Box select features */}
         <interaction.DragBox active={selectedTool === Tool.PAN}
           condition={ol.events.condition.platformModifierKeyOnly}

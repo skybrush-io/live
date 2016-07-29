@@ -168,3 +168,45 @@ div.dialog-sidebar {
 .ol-mouse-position:empty {
   display: none;
 }
+
+#heatmapScale {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  position: absolute;
+  left: 8px;
+  bottom: 8px + 14px + 8px;
+
+  width: 28px;
+  height: 200px;
+
+  background: linear-gradient(hsla(0, 70%, 50%, 0.75), hsla(100, 70%, 50%, 0.75));
+
+  span {
+    background-color: rgba(200, 200, 200, 0.75);
+
+    position: relative;
+    left: 40px;
+
+    margin-right: auto;
+    padding: 2px;
+
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
+  }
+
+  span:after {
+    display: block;
+
+    content: '';
+
+    position: absolute;
+    left: -12px;
+    top: 0px;
+
+    border-style: solid;
+    border-width: 12px 12px 12px 0;
+    border-color: transparent rgba(200, 200, 200, 0.75);
+  }
+}

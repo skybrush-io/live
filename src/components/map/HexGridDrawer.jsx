@@ -19,6 +19,7 @@ export default class HexGridDrawer extends React.Component {
     this.handleClick_ = this.handleClick_.bind(this)
 
     this.features = {}
+    this.layer = new ol.layer.Vector()
 
     mapReferenceRequestSignal.dispatch(this.onMapReferenceReceived_)
   }
@@ -34,12 +35,12 @@ export default class HexGridDrawer extends React.Component {
         <TextField ref="size"
           floatingLabelText="Size of the grid"
           hintText="Size"
-          defaultValue="2"
+          defaultValue="8"
           onChange={this.handleChange_} />
         <TextField ref="radius"
           floatingLabelText="Radius of one cell"
           hintText="Radius"
-          defaultValue="0.001"
+          defaultValue="0.0005"
           onChange={this.handleChange_} />
         <br />
         <RaisedButton
@@ -51,6 +52,7 @@ export default class HexGridDrawer extends React.Component {
 
   onMapReferenceReceived_ (map) {
     this.map = map
+    this.map.addLayer(this.layer)
   }
 
   getCorners_ (center, radius) {
@@ -93,18 +95,15 @@ export default class HexGridDrawer extends React.Component {
     let source = new ol.source.Vector()
     source.addFeatures(_.values(this.features))
 
-    let layer = new ol.layer.Vector({
-      source: source
-      // style: ()
-    })
-
-    this.map.addLayer(layer)
+    this.layer.setSource(source)
 
     for (const hash in this.features) {
       const coordinates = hash.split(',').map(_.toNumber)
-      const hue = (_.sum(coordinates) + 2) * 30
-      this.features[hash].setStyle(makeFillStyle(`hsla(${hue}, 50%, 50%, 0.5)`))
+      const hue = (_.sum(coordinates.map(Math.abs)) / (size * 2 + 1)) * 115
+      this.features[hash].setStyle(makeFillStyle(`hsla(${hue}, 70%, 50%, 0.5)`))
     }
+
+    document.getElementById('heatmapScale').style.display = 'flex'
   }
 }
 
