@@ -124,13 +124,14 @@ class LayerSettingsContainerPresentation extends React.Component {
    * layer-specific settings of the selected layer.
    *
    * @param {Object} layer  the layer being edited
+   * @param {string} layerId  the identifier of the layer being edited
    * @return {Object[]}  the list of child components to add
    */
-  createChildrenForLayer (layer) {
+  createChildrenForLayer (layer, layerId) {
     // TODO: this is not nice here; it should be refactored into separate
     // React components, possibly in additional files
     if (layer.type in LayerSettings) {
-      return stateObjectToLayerSettings(layer)
+      return stateObjectToLayerSettings(layer, layerId)
     } else if (layer.type === LayerType.GEOJSON) {
       return [
         <p key="header">Import GeoJSON data:</p>,
@@ -184,7 +185,7 @@ class LayerSettingsContainerPresentation extends React.Component {
     return (
       <div>
         <BasicLayerSettingsForm layer={layer} layerId={layerId} />
-        {this.createChildrenForLayer(layer)}
+        {this.createChildrenForLayer(layer, layerId)}
       </div>
     )
   }

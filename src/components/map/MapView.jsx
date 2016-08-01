@@ -68,9 +68,9 @@ class MapViewPresentation extends React.Component {
     cursorStyles[Tool.PAN] = 'all-scroll'
 
     const layers = []
-    for (const id in this.props.layersById) {
+    for (const id of this.props.layerOrder) {
       if (id in Layers) {
-        layers.push(stateObjectToLayer(this.props.layersById[id]))
+        layers.push(stateObjectToLayer(this.props.layersById[id], id))
       }
     }
 
@@ -248,6 +248,7 @@ class MapViewPresentation extends React.Component {
 }
 
 MapViewPresentation.propTypes = {
+  layerOrder: PropTypes.arrayOf(PropTypes.string),
   layersById: PropTypes.object,
   projection: PropTypes.func.isRequired,
   selectedTool: PropTypes.string,
@@ -271,6 +272,7 @@ const isOwnLocationVisible = state => {
 const MapView = connect(
   // mapStateToProps
   state => ({
+    layerOrder: state.map.layers.order,
     layersById: state.map.layers.byId,
     selectedTool: state.map.tools.selectedTool,
     ownLocationVisible: isOwnLocationVisible(state)
