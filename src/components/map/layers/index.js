@@ -13,7 +13,7 @@ export const stateObjectToLayerSettings = (layer) => {
   }
 
   const CurrentLayerSettings = LayerSettings[layer.type]
-  return (<CurrentLayerSettings layer={layer} />)
+  return (<CurrentLayerSettings key={`${layer.label}_settings`} layer={layer} />)
 }
 
 export const Layers = {}
@@ -26,5 +26,5 @@ export const stateObjectToLayer = (layer) => {
   }
 
   const CurrentLayer = Layers[layer.type]
-  return (<CurrentLayer layer={layer} />)
+  return (<CurrentLayer key={`${layer.label}`} layer={layer} />)
 }

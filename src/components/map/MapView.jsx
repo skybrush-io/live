@@ -6,7 +6,7 @@ import { connect } from 'react-redux'
 import ol from 'openlayers'
 import Condition from './conditions.js'
 
-import { stateObjectToLayer } from './layers/index.js'
+import { Layers, stateObjectToLayer } from './layers/index.js'
 
 import MapReferenceRequestHandler from './MapReferenceRequestHandler'
 
@@ -67,8 +67,12 @@ class MapViewPresentation extends React.Component {
     cursorStyles[Tool.ZOOM] = 'zoom-in'
     cursorStyles[Tool.PAN] = 'all-scroll'
 
-    const baseLayer = stateObjectToLayer(this.props.layersById.base)
-    const uavsLayer = stateObjectToLayer(this.props.layersById.uavs)
+    const layers = []
+    for (const id in this.props.layersById) {
+      if (id in Layers) {
+        layers.push(stateObjectToLayer(this.props.layersById[id]))
+      }
+    }
 
     return (
       <Map view={view} useDefaultControls={false} loadTilesWhileInteracting={true}
@@ -76,8 +80,9 @@ class MapViewPresentation extends React.Component {
         style={{cursor: cursorStyles[selectedTool]}} >
         <MapReferenceRequestHandler />
 
-        {baseLayer}
-        {uavsLayer}
+        <div>
+          {layers}
+        </div>
 
         <layer.Vector visible={ownLocationVisible}
           updateWhileAnimating={true}

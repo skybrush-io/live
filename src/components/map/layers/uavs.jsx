@@ -6,7 +6,7 @@ import ActiveUAVsLayerSource from '../ActiveUAVsLayerSource'
 import flock from '../../../flock'
 import ol from 'openlayers'
 
-// Settings for this particular layer type
+// === Settings for this particular layer type ===
 
 class UAVsLayerSettingsPresentation extends React.Component {
   render () {
@@ -30,7 +30,7 @@ UAVsLayerSettingsPresentation.propTypes = {
   layer: PropTypes.object
 }
 
-// The actual layer to be rendered
+// === The actual layer to be rendered ===
 
 const coordinateFromLonLat = coords => (
   // EPSG:3857 is Spherical Mercator projection, as used by most tile-based

@@ -9,6 +9,8 @@ import { selectMapSource } from '../../../actions/map'
 import { layer, source } from 'ol-react'
 import { BingAPI } from 'config'
 
+// === Settings for this particular layer type ===
+
 class BaseLayerSettingsPresentation extends React.Component {
   render () {
     const sourceRadioButtons = _.map(Sources, source => (
@@ -30,10 +32,11 @@ class BaseLayerSettingsPresentation extends React.Component {
 }
 
 export const BaseLayerSettings = connect(
+  // mapStateToProps
   (state, ownProps) => ({}),
   // mapDispatchToProps
   (dispatch, ownProps) => ({
-    onLayerSourceChanged (event, value) {
+    onLayerSourceChanged: (event, value) => {
       dispatch(selectMapSource(value))
     }
   })
@@ -44,7 +47,9 @@ BaseLayerSettingsPresentation.propTypes = {
   onLayerSourceChanged: PropTypes.func
 }
 
-export class BaseLayer extends React.Component {
+// === The actual layer to be rendered ===
+
+class BaseLayerPresentation extends React.Component {
   render () {
     const visibleSource = this.props.layer.parameters.source
 
@@ -67,6 +72,13 @@ export class BaseLayer extends React.Component {
   }
 }
 
-BaseLayer.propTypes = {
+BaseLayerPresentation.propTypes = {
   layer: PropTypes.object
 }
+
+export const BaseLayer = connect(
+  // mapStateToProps
+  (state, ownProps) => ({}),
+  // mapDispatchToProps
+  (dispatch, ownProps) => ({})
+)(BaseLayerPresentation)
