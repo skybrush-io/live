@@ -22,7 +22,7 @@ export const LayerType = {
   GEOJSON: 'geojson',
   HEATMAP: 'heatmap',
   HEXGRID: 'hexgrid',
-  OWN_LOCATION: 'ownLocation',
+  OWN_LOCATION: 'ownlocation',
   UAVS: 'uavs',
   UNTYPED: 'untyped'
 }

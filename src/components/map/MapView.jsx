@@ -1,12 +1,15 @@
 import _ from 'lodash'
 import React, { PropTypes } from 'react'
-import { Map, View, control, interaction, layer, source } from 'ol-react'
+import { Map, View, control, interaction, layer } from 'ol-react'
 import { connect } from 'react-redux'
 
 import ol from 'openlayers'
 import Condition from './conditions.js'
 
+import { stateObjectToLayer } from './layers/index.js'
+
 import MapReferenceRequestHandler from './MapReferenceRequestHandler'
+
 import ActiveUAVsLayerSource from './ActiveUAVsLayerSource'
 import OwnLocation from './OwnLocation'
 import SelectNearestFeature from './interactions/SelectNearestFeature'
@@ -17,9 +20,6 @@ import { setSelectedFeatures, addSelectedFeatures,
          clearSelectedFeatures, removeSelectedFeatures }
        from '../../actions/map'
 import Flock from '../../model/flock'
-import { Source } from '../../model/sources'
-
-import { BingAPI } from 'config'
 
 require('openlayers/css/ol.css')
 
@@ -53,7 +53,7 @@ class MapViewPresentation extends React.Component {
   }
 
   render () {
-    const { visibleSource, flock, projection,
+    const { flock, projection,
       selectedTool, selection, ownLocationVisible } = this.props
     const center = projection([19.061951, 47.473340])
     const view = <View center={center} zoom={17} />
@@ -63,24 +63,15 @@ class MapViewPresentation extends React.Component {
     cursorStyles[Tool.ZOOM] = 'zoom-in'
     cursorStyles[Tool.PAN] = 'all-scroll'
 
+    const baseLayer = stateObjectToLayer(this.props.layersById.base)
+
     return (
       <Map view={view} useDefaultControls={false} loadTilesWhileInteracting={true}
         focusOnMount={true}
         style={{cursor: cursorStyles[selectedTool]}} >
         <MapReferenceRequestHandler />
 
-        <layer.Tile visible={visibleSource === Source.OSM}>
-          <source.OSM />
-        </layer.Tile>
-        <layer.Tile visible={visibleSource === Source.BING_MAPS.AERIAL_WITH_LABELS}>
-          <source.BingMaps
-            apiKey={BingAPI.key}
-            imagerySet="AerialWithLabels"
-            maxZoom={19} />
-        </layer.Tile>
-        <layer.Tile visible={visibleSource === Source.BING_MAPS.ROAD}>
-          <source.BingMaps apiKey={BingAPI.key} imagerySet="Road" />
-        </layer.Tile>
+        {baseLayer}
 
         <layer.Vector ref={this.assignActiveUAVsLayerRef_}
           updateWhileAnimating={true}
@@ -257,7 +248,7 @@ class MapViewPresentation extends React.Component {
 }
 
 MapViewPresentation.propTypes = {
-  visibleSource: PropTypes.string,
+  layersById: PropTypes.object,
   flock: PropTypes.instanceOf(Flock),
   projection: PropTypes.func.isRequired,
   selectedTool: PropTypes.string,
@@ -267,7 +258,7 @@ MapViewPresentation.propTypes = {
 }
 
 const isOwnLocationVisible = state => {
-  const ownLocationLayer = _.find(state.map.layers.byId, {type: 'ownLocation'})
+  const ownLocationLayer = _.find(state.map.layers.byId, {type: 'ownlocation'})
   return typeof ownLocationLayer !== 'undefined' && ownLocationLayer.visible
 }
 
@@ -277,7 +268,7 @@ const isOwnLocationVisible = state => {
 const MapView = connect(
   // mapStateToProps
   state => ({
-    visibleSource: state.map.layers.byId.base.parameters.source,
+    layersById: state.map.layers.byId,
     selectedTool: state.map.tools.selectedTool,
     selection: state.map.selection,
     ownLocationVisible: isOwnLocationVisible(state)

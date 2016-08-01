@@ -24,7 +24,6 @@ import { closeLayersDialog, renameLayer, setSelectedLayerInLayersDialog,
 import { selectMapSource } from '../../actions/map'
 import { LayerType, LayerTypes, labelForLayerType,
          iconForLayerType } from '../../model/layers'
-import { Sources, labelForSource } from '../../model/sources'
 import { createValidator, required } from '../../utils/validation'
 
 /**
@@ -114,6 +113,8 @@ const BasicLayerSettingsForm = reduxForm(
 
 /* ********************************************************************* */
 
+import { stateObjectToLayerSettings } from './layers/index.js'
+
 /**
  * Presentation component for the settings of a layer.
  */
@@ -129,19 +130,7 @@ class LayerSettingsContainerPresentation extends React.Component {
     // TODO: this is not nice here; it should be refactored into separate
     // React components, possibly in additional files
     if (layer.type === LayerType.BASE) {
-      const sourceRadioButtons = _.map(Sources, source => (
-        <RadioButton value={source} key={source}
-          label={labelForSource(source)}
-          style={{ marginTop: 5 }}/>
-      ))
-      return [
-        <p key="header">Layer data source</p>,
-        <RadioButtonGroup name="source.base" key="baseProperties"
-          valueSelected={layer.parameters.source}
-          onChange={this.props.onLayerSourceChanged}>
-          {sourceRadioButtons}
-        </RadioButtonGroup>
-      ]
+      return stateObjectToLayerSettings(layer)
     } else if (layer.type === LayerType.GEOJSON) {
       return [
         <p key="header">Import GeoJSON data:</p>,
@@ -331,7 +320,7 @@ class LayersDialogPresentation extends React.Component {
         actions={actions}
         bodyStyle={{display: 'flex', overflow: 'visible'}}
         onRequestClose={onClose}
-        >
+      >
         <div style={{ flex: 3 }}>
           <LayerList />
         </div>
