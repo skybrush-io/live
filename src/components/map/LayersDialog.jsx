@@ -113,7 +113,7 @@ const BasicLayerSettingsForm = reduxForm(
 
 /* ********************************************************************* */
 
-import { stateObjectToLayerSettings } from './layers/index.js'
+import { LayerSettings, stateObjectToLayerSettings } from './layers/index.js'
 
 /**
  * Presentation component for the settings of a layer.
@@ -129,7 +129,7 @@ class LayerSettingsContainerPresentation extends React.Component {
   createChildrenForLayer (layer) {
     // TODO: this is not nice here; it should be refactored into separate
     // React components, possibly in additional files
-    if (layer.type === LayerType.BASE) {
+    if (layer.type in LayerSettings) {
       return stateObjectToLayerSettings(layer)
     } else if (layer.type === LayerType.GEOJSON) {
       return [

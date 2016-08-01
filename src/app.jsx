@@ -21,7 +21,6 @@ import Widget from './components/Widget'
 import HotkeyHandler from './components/HotkeyHandler'
 import hotkeys from './hotkeys'
 
-import flock from './flock'
 import store from './store'
 
 require('../assets/css/screen.less')
@@ -46,7 +45,7 @@ export default class Application extends React.Component {
           <div>
             <div id="canvas">
               <HotkeyHandler hotkeys={hotkeys}>
-                <MapView flock={flock} />
+                <MapView />
               </HotkeyHandler>
 
               <Widget style={{ right: 8, bottom: 8, width: 300 }}>

@@ -10,7 +10,6 @@ import { stateObjectToLayer } from './layers/index.js'
 
 import MapReferenceRequestHandler from './MapReferenceRequestHandler'
 
-import ActiveUAVsLayerSource from './ActiveUAVsLayerSource'
 import OwnLocation from './OwnLocation'
 import SelectNearestFeature from './interactions/SelectNearestFeature'
 
@@ -19,7 +18,6 @@ import { Tool } from './tools'
 import { setSelectedFeatures, addSelectedFeatures,
          clearSelectedFeatures, removeSelectedFeatures }
        from '../../actions/map'
-import Flock from '../../model/flock'
 
 require('openlayers/css/ol.css')
 
@@ -52,9 +50,15 @@ class MapViewPresentation extends React.Component {
     this.onSelect_ = this.onSelect_.bind(this)
   }
 
+  getChildContext () {
+    return {
+      assignActiveUAVsLayerRef_: this.assignActiveUAVsLayerRef_,
+      assignActiveUAVsLayerSourceRef_: this.assignActiveUAVsLayerSourceRef_
+    }
+  }
+
   render () {
-    const { flock, projection,
-      selectedTool, selection, ownLocationVisible } = this.props
+    const { projection, selectedTool, ownLocationVisible } = this.props
     const center = projection([19.061951, 47.473340])
     const view = <View center={center} zoom={17} />
 
@@ -64,6 +68,7 @@ class MapViewPresentation extends React.Component {
     cursorStyles[Tool.PAN] = 'all-scroll'
 
     const baseLayer = stateObjectToLayer(this.props.layersById.base)
+    const uavsLayer = stateObjectToLayer(this.props.layersById.uavs)
 
     return (
       <Map view={view} useDefaultControls={false} loadTilesWhileInteracting={true}
@@ -72,17 +77,7 @@ class MapViewPresentation extends React.Component {
         <MapReferenceRequestHandler />
 
         {baseLayer}
-
-        <layer.Vector ref={this.assignActiveUAVsLayerRef_}
-          updateWhileAnimating={true}
-          updateWhileInteracting={true}>
-
-          <ActiveUAVsLayerSource ref={this.assignActiveUAVsLayerSourceRef_}
-            selection={selection}
-            flock={flock}
-            projection={projection} />
-
-        </layer.Vector>
+        {uavsLayer}
 
         <layer.Vector visible={ownLocationVisible}
           updateWhileAnimating={true}
@@ -249,12 +244,15 @@ class MapViewPresentation extends React.Component {
 
 MapViewPresentation.propTypes = {
   layersById: PropTypes.object,
-  flock: PropTypes.instanceOf(Flock),
   projection: PropTypes.func.isRequired,
   selectedTool: PropTypes.string,
-  selection: PropTypes.arrayOf(PropTypes.string).isRequired,
   ownLocationVisible: PropTypes.bool,
   dispatch: PropTypes.func.isRequired
+}
+
+MapViewPresentation.childContextTypes = {
+  assignActiveUAVsLayerRef_: PropTypes.func,
+  assignActiveUAVsLayerSourceRef_: PropTypes.func
 }
 
 const isOwnLocationVisible = state => {
@@ -270,13 +268,11 @@ const MapView = connect(
   state => ({
     layersById: state.map.layers.byId,
     selectedTool: state.map.tools.selectedTool,
-    selection: state.map.selection,
     ownLocationVisible: isOwnLocationVisible(state)
   })
 )(MapViewPresentation)
 
 MapView.propTypes = {
-  flock: PropTypes.instanceOf(Flock),
   projection: PropTypes.func.isRequired
 }
 
