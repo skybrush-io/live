@@ -3,9 +3,10 @@ import { BaseLayerSettings, BaseLayer } from './base'
 import { UAVsLayerSettings, UAVsLayer } from './uavs'
 import { LayerType } from '../../../model/layers'
 
-export const LayerSettings = {}
-LayerSettings[LayerType.BASE] = BaseLayerSettings
-LayerSettings[LayerType.UAVS] = UAVsLayerSettings
+export const LayerSettings = {
+  [LayerType.BASE]: BaseLayerSettings,
+  [LayerType.UAVS]: UAVsLayerSettings
+}
 
 export const stateObjectToLayerSettings = (layer, layerId) => {
   if (!(layer.type in LayerSettings)) {
@@ -16,9 +17,10 @@ export const stateObjectToLayerSettings = (layer, layerId) => {
   return (<CurrentLayerSettings key={`${layerId}_settings`} layer={layer} />)
 }
 
-export const Layers = {}
-Layers[LayerType.BASE] = BaseLayer
-Layers[LayerType.UAVS] = UAVsLayer
+export const Layers = {
+  [LayerType.BASE]: BaseLayer,
+  [LayerType.UAVS]: UAVsLayer
+}
 
 export const stateObjectToLayer = (layer, layerId) => {
   if (!(layer.type in Layers)) {

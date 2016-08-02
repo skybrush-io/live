@@ -41,37 +41,38 @@ export const LayerTypes = [
  *
  * @type {Object}
  */
-const propertiesForLayerTypes_ = {}
-propertiesForLayerTypes_[LayerType.BASE] = {
-  label: 'Base layer',
-  icon: <Map />,
-  parameters: {
-    source: 'osm'
+const propertiesForLayerTypes_ = {
+  [LayerType.BASE]: {
+    label: 'Base layer',
+    icon: <Map />,
+    parameters: {
+      source: 'osm'
+    }
+  },
+  [LayerType.GEOJSON]: {
+    label: 'GeoJSON layer',
+    icon: <FileAttachment />
+  },
+  [LayerType.HEXGRID]: {
+    label: 'HEX Grid layer',
+    icon: <ImageGridOn />
+  },
+  [LayerType.HEATMAP]: {
+    label: 'Heatmap',
+    icon: <ActionTrackChanges />
+  },
+  [LayerType.OWN_LOCATION]: {
+    label: 'Own location',
+    icon: <MyLocation />
+  },
+  [LayerType.UAVS]: {
+    label: 'UAVs',
+    icon: <Flight />
+  },
+  [LayerType.UNTYPED]: {
+    label: 'Untyped layer',
+    icon: <ActionHelpOutline />
   }
-}
-propertiesForLayerTypes_[LayerType.GEOJSON] = {
-  label: 'GeoJSON layer',
-  icon: <FileAttachment />
-}
-propertiesForLayerTypes_[LayerType.HEXGRID] = {
-  label: 'HEX Grid layer',
-  icon: <ImageGridOn />
-}
-propertiesForLayerTypes_[LayerType.HEATMAP] = {
-  label: 'Heatmap',
-  icon: <ActionTrackChanges />
-}
-propertiesForLayerTypes_[LayerType.OWN_LOCATION] = {
-  label: 'Own location',
-  icon: <MyLocation />
-}
-propertiesForLayerTypes_[LayerType.UAVS] = {
-  label: 'UAVs',
-  icon: <Flight />
-}
-propertiesForLayerTypes_[LayerType.UNTYPED] = {
-  label: 'Untyped layer',
-  icon: <ActionHelpOutline />
 }
 
 /**
