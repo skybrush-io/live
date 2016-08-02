@@ -107,8 +107,8 @@ const reducer = handleActions({
   },
 
   SELECT_MAP_SOURCE (state, action) {
-    return u.updateIn(getLayerKey('base', 'parameters.source'),
-                      action.payload, state)
+    const { layerId, source } = action.payload
+    return u.updateIn(getLayerKey(layerId, 'parameters.source'), source, state)
   },
 
   TOGGLE_LAYER_VISIBILITY (state, action) {

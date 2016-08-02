@@ -21,7 +21,6 @@ import HexGridDrawer from './HexGridDrawer'
 import { closeLayersDialog, renameLayer, setSelectedLayerInLayersDialog,
          toggleLayerVisibility, addLayer, removeLayer, changeLayerType }
        from '../../actions/layers'
-import { selectMapSource } from '../../actions/map'
 import { LayerType, LayerTypes, labelForLayerType,
          iconForLayerType } from '../../model/layers'
 import { createValidator, required } from '../../utils/validation'
@@ -209,10 +208,6 @@ const LayerSettingsContainer = connect(
   }),
   // mapDispatchToProps
   (dispatch, ownProps) => ({
-    onLayerSourceChanged (event, value) {
-      dispatch(selectMapSource(value))
-    },
-
     onLayerTypeChanged (event, value) {
       dispatch(changeLayerType(ownProps.layerId, value))
     }
@@ -341,7 +336,6 @@ class LayersDialogPresentation extends React.Component {
 LayersDialogPresentation.propTypes = {
   dialogVisible: PropTypes.bool.isRequired,
   selectedLayer: PropTypes.string,
-  visibleSource: PropTypes.string,
 
   onClose: PropTypes.func,
   onAddLayer: PropTypes.func,
@@ -360,8 +354,7 @@ const LayersDialog = connect(
   // mapStateToProps
   state => ({
     dialogVisible: state.dialogs.layerSettings.dialogVisible,
-    selectedLayer: state.dialogs.layerSettings.selectedLayer,
-    visibleSource: state.map.layers.byId.base.parameters.source
+    selectedLayer: state.dialogs.layerSettings.selectedLayer
   }),
   // mapDispatchToProps
   dispatch => ({

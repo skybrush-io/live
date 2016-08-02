@@ -37,7 +37,7 @@ export const BaseLayerSettings = connect(
   // mapDispatchToProps
   (dispatch, ownProps) => ({
     onLayerSourceChanged: (event, value) => {
-      dispatch(selectMapSource(value))
+      dispatch(selectMapSource({layerId: ownProps.layerId, source: value}))
     }
   })
 )(BaseLayerSettingsPresentation)
@@ -51,6 +51,10 @@ BaseLayerSettingsPresentation.propTypes = {
 
 class BaseLayerPresentation extends React.Component {
   render () {
+    if (!this.props.layer.visible) {
+      return false
+    }
+
     const visibleSource = this.props.layer.parameters.source
 
     return (

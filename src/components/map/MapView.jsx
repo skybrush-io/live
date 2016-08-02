@@ -69,7 +69,7 @@ class MapViewPresentation extends React.Component {
 
     const layers = []
     for (const id of this.props.layerOrder) {
-      if (id in Layers) {
+      if (this.props.layersById[id].type in Layers) {
         layers.push(stateObjectToLayer(this.props.layersById[id], id))
       }
     }
