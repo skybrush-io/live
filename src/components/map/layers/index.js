@@ -22,11 +22,12 @@ export const Layers = {
   [LayerType.UAVS]: UAVsLayer
 }
 
-export const stateObjectToLayer = (layer, layerId) => {
+export const stateObjectToLayer = (layer, layerId, zIndex) => {
   if (!(layer.type in Layers)) {
     throw new Error(`Nonexistent layer type (${layer.type}) cannot be rendered.`)
   }
 
   const CurrentLayer = Layers[layer.type]
-  return (<CurrentLayer key={`${layerId}_rendered`} layer={layer} layerId={layerId} />)
+  return (<CurrentLayer key={`${layerId}_rendered`} layer={layer}
+    layerId={layerId} zIndex={zIndex} />)
 }

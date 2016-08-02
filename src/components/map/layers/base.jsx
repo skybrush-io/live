@@ -59,16 +59,19 @@ class BaseLayerPresentation extends React.Component {
 
     return (
       <div>
-        <layer.Tile visible={visibleSource === Source.OSM}>
+        <layer.Tile visible={visibleSource === Source.OSM}
+          zIndex={this.props.zIndex}>
           <source.OSM />
         </layer.Tile>
-        <layer.Tile visible={visibleSource === Source.BING_MAPS.AERIAL_WITH_LABELS}>
+        <layer.Tile visible={visibleSource === Source.BING_MAPS.AERIAL_WITH_LABELS}
+          zIndex={this.props.zIndex}>
           <source.BingMaps
             apiKey={BingAPI.key}
             imagerySet="AerialWithLabels"
             maxZoom={19} />
         </layer.Tile>
-        <layer.Tile visible={visibleSource === Source.BING_MAPS.ROAD}>
+        <layer.Tile visible={visibleSource === Source.BING_MAPS.ROAD}
+          zIndex={this.props.zIndex}>
           <source.BingMaps apiKey={BingAPI.key} imagerySet="Road" />
         </layer.Tile>
       </div>
@@ -77,7 +80,9 @@ class BaseLayerPresentation extends React.Component {
 }
 
 BaseLayerPresentation.propTypes = {
-  layer: PropTypes.object
+  layer: PropTypes.object,
+  layerId: PropTypes.string,
+  zIndex: PropTypes.number
 }
 
 export const BaseLayer = connect(

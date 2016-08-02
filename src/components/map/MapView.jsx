@@ -68,9 +68,11 @@ class MapViewPresentation extends React.Component {
     cursorStyles[Tool.PAN] = 'all-scroll'
 
     const layers = []
+    let zIndex = 0
+
     for (const id of this.props.layerOrder) {
       if (this.props.layersById[id].type in Layers) {
-        layers.push(stateObjectToLayer(this.props.layersById[id], id))
+        layers.push(stateObjectToLayer(this.props.layersById[id], id, zIndex++))
       }
     }
 

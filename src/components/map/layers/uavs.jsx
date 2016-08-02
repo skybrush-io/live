@@ -44,7 +44,8 @@ class UAVsLayerPresentation extends React.Component {
       <div>
         <layer.Vector ref={this.context.assignActiveUAVsLayerRef_}
           updateWhileAnimating={true}
-          updateWhileInteracting={true}>
+          updateWhileInteracting={true}
+          zIndex={this.props.zIndex}>
 
           <ActiveUAVsLayerSource ref={this.context.assignActiveUAVsLayerSourceRef_}
             selection={this.props.selection}
@@ -59,6 +60,9 @@ class UAVsLayerPresentation extends React.Component {
 
 UAVsLayerPresentation.propTypes = {
   layer: PropTypes.object,
+  layerId: PropTypes.string,
+  zIndex: PropTypes.number,
+
   selection: PropTypes.arrayOf(PropTypes.string).isRequired,
   projection: PropTypes.func.isRequired
 }
