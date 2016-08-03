@@ -10,7 +10,6 @@ import { reduxForm } from 'redux-form'
 import Dialog from 'material-ui/Dialog'
 import FlatButton from 'material-ui/FlatButton'
 import { List, ListItem } from 'material-ui/List'
-import { RadioButton, RadioButtonGroup } from 'material-ui/RadioButton'
 import TextField from 'material-ui/TextField'
 import Toggle from 'material-ui/Toggle'
 import VisibilityOff from 'material-ui/svg-icons/action/visibility-off'
@@ -18,10 +17,8 @@ import VisibilityOff from 'material-ui/svg-icons/action/visibility-off'
 import HexGridDrawer from './HexGridDrawer'
 
 import { closeLayersDialog, renameLayer, setSelectedLayerInLayersDialog,
-         toggleLayerVisibility, addLayer, removeLayer, changeLayerType }
-       from '../../actions/layers'
-import { LayerType, LayerTypes, labelForLayerType,
-         iconForLayerType } from '../../model/layers'
+         toggleLayerVisibility, addLayer, removeLayer } from '../../actions/layers'
+import { LayerType, labelForLayerType, iconForLayerType } from '../../model/layers'
 import { createValidator, required } from '../../utils/validation'
 
 /**
@@ -136,20 +133,6 @@ class LayerSettingsContainerPresentation extends React.Component {
         <HexGridDrawer key="HexGridDrawerKey" />
         // not sure what to put as key, but React requests it
       ]
-    } else if (layer.type === LayerType.UNTYPED) {
-      const layerTypeRadioButtons = _.map(LayerTypes, layerType => (
-        <RadioButton value={layerType} key={layerType}
-          label={labelForLayerType(layerType)}
-          style={{ marginTop: 5 }}/>
-      ))
-      return [
-        <p key="header">This layer has no type yet. Please select a layer
-        type from the following options:</p>,
-        <RadioButtonGroup name="types.untyped" key="baseProperties"
-          onChange={this.props.onLayerTypeChanged}>
-          {layerTypeRadioButtons}
-        </RadioButtonGroup>
-      ]
     } else {
       return []
     }
@@ -187,8 +170,7 @@ LayerSettingsContainerPresentation.propTypes = {
   layer: PropTypes.object,
   layerId: PropTypes.string,
 
-  onLayerSourceChanged: PropTypes.func,
-  onLayerTypeChanged: PropTypes.func
+  onLayerSourceChanged: PropTypes.func
 }
 
 /**
@@ -200,11 +182,7 @@ const LayerSettingsContainer = connect(
     layer: state.map.layers.byId[ownProps.layerId]
   }),
   // mapDispatchToProps
-  (dispatch, ownProps) => ({
-    onLayerTypeChanged (event, value) {
-      dispatch(changeLayerType(ownProps.layerId, value))
-    }
-  })
+  (dispatch, ownProps) => ({})
 )(LayerSettingsContainerPresentation)
 
 /* ********************************************************************* */
