@@ -64,12 +64,33 @@ div.dialog-sidebar {
   box-shadow: 5px 0px @primary-color inset;
 }
 
+/* Background hints */
+.background-hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  text-align: center;
+
+  width: 100%;
+  height: 100%;
+
+  .header {
+    font-size: 150%;
+    padding-bottom: 0.5ex;
+    color: rgba(0, 0, 0, 0.35);
+  }
+  .text {
+    color: rgba(0, 0, 0, 0.35);
+  }
+}
+
 /* Widgets placed over the map */
 .widget {
   position: absolute !important;
   min-width: 48px;
   min-height: 48px;
-  
+
   /* Title of widget */
   .title {
     font-size: 10pt;

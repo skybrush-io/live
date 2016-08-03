@@ -8,6 +8,7 @@ import clocksReducer from './clocks'
 import connectionsReducer from './connections'
 import dialogsReducer from './dialogs'
 import mapReducer from './map'
+import messagesReducer from './messages'
 import snackbarReducer from './snackbar'
 
 /**
@@ -47,6 +48,7 @@ const reducer = storage.reducer(
     connections: connectionsReducer,
     dialogs: dialogsReducer,
     map: mapReducer,
+    messages: messagesReducer,
     snackbar: snackbarReducer,
     form: formReducer
   }),

@@ -21,7 +21,9 @@ export default class Flock {
   constructor () {
     this._uavs = []
     this._uavsById = {}
+    this.uavsAdded = new Signal()
     this.uavsUpdated = new Signal()
+    this.uavsRemoved = new Signal()
   }
 
   /**
@@ -34,6 +36,16 @@ export default class Flock {
    */
   _createUAVById (id) {
     return new UAV(id)
+  }
+
+  /**
+   * Returns the IDs of all the UAVs in the flock.
+   *
+   * @return {string[]}  the IDs of all the UAVs in the flock, in alphabetic
+   *         order
+   */
+  getAllUAVIds () {
+    return _.keys(this._uavsById).sort()
   }
 
   /**
@@ -75,20 +87,53 @@ export default class Flock {
     // ID, update its own local status, and if the status was updated,
     // remember the UAV ID so we can ask the feature manager to refresh
     // the features of these UAVs
-    const updatedUAVs = _(body.status).transform(
-      (updatedUAVs, status, uavId) => {
-        const uav = this.getOrCreateUAVById(uavId)
+    const { addedUAVs, updatedUAVs } = _(body.status).transform(
+      (accumulator, status, uavId) => {
+        // Code duplicated from getOrCreateUAVById(); this is unfortunate
+        // but we need to know whether we have added a UAV or not
+        let uav = this.getUAVById(uavId)
+        if (!uav) {
+          this._uavsById[uavId] = uav = this._createUAVById(uavId)
+          accumulator.addedUAVs.push(uav)
+        }
+
         const updated = uav.handleUAVStatusInfo(status)
         if (updated) {
-          updatedUAVs.push(uav)
+          accumulator.updatedUAVs.push(uav)
         }
-      }, []).value()
+      }, {
+        addedUAVs: [],
+        updatedUAVs: []
+      }).value()
 
+    if (!_.isEmpty(addedUAVs)) {
+      this.uavsAdded.dispatch(addedUAVs)
+    }
     if (!_.isEmpty(updatedUAVs)) {
       this.uavsUpdated.dispatch(updatedUAVs)
     }
   }
 }
+
+/**
+ * Event that is dispatched by a {@link Flock} object when new UAVs have
+ * been added to the flock.
+ *
+ * The event contains an array of the UAVs that were added.
+ *
+ * @event  Flock#uavsAdded
+ * @type {UAV[]}
+ */
+
+/**
+ * Event that is dispatched by a {@link Flock} object when some UAVs have
+ * been removed from the flock.
+ *
+ * The event contains an array of the UAVs that were removed.
+ *
+ * @event  Flock#uavsRemoved
+ * @type {UAV[]}
+ */
 
 /**
  * Event that is dispatched by a {@link Flock} object when some of the

@@ -6,6 +6,7 @@
 import { combineReducers } from 'redux'
 
 import errorHandlingReducer from './error-handling'
+import messagesReducer from './messages'
 import layerSettingsReducer from './layer-settings'
 import serverSettingsReducer from './server-settings'
 
@@ -16,6 +17,7 @@ import serverSettingsReducer from './server-settings'
 const reducer = combineReducers({
   error: errorHandlingReducer,
   layerSettings: layerSettingsReducer,
+  messages: messagesReducer,
   serverSettings: serverSettingsReducer
 })
 

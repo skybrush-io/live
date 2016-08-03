@@ -18,8 +18,10 @@ const engine = filter(
   createEngine('flockwave-client'), [
     'whitelisted-key',
     ['dialogs', 'layerSettings'],
+    ['dialogs', 'messages'],
     ['dialogs', 'serverSettings'],
-    ['map']
+    ['map'],
+    ['messages', 'selectedUAVId']
   ]
 )
 
@@ -51,14 +53,15 @@ const storageMiddleware = storage.createMiddleware(
 /**
  * Function to create a new Redux store with the required middlewares.
  */
-const createStoreWithMiddleware = applyMiddleware(storageMiddleware)(createStore)
+const createStoreWithMiddleware =
+  applyMiddleware(storageMiddleware)(createStore)
 
 /**
  * The store for the application state.
  */
 const store = createStoreWithMiddleware(
-    reducer, undefined,
-    window.devToolsExtension ? window.devToolsExtension() : undefined
+  reducer, undefined,
+  window.devToolsExtension ? window.devToolsExtension() : undefined
 )
 
 // Restore any previous state of the store

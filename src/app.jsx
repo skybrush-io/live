@@ -13,6 +13,7 @@ import HotkeyHandler from './components/HotkeyHandler'
 import LayersDialog from './components/map/LayersDialog'
 import MapToolbar from './components/map/MapToolbar'
 import MapView from './components/map/MapView'
+import MessagesDialog from './components/MessagesDialog'
 import ServerConnectionManager from './components/ServerConnectionManager'
 import ServerSettingsDialog from './components/ServerSettingsDialog'
 import UAVToolbar from './components/map/UAVToolbar'
@@ -29,18 +30,6 @@ require('../assets/css/kbd.css')
 
 // Enable tap events on the UI
 injectTapEventPlugin()
-
-/**
- * Signal for requesting the map reference.
- *
- * @todo Ask Tamás where this should be declared.
- */
-const mapReferenceRequestSignal = MapReferenceRequestHandler.generateRequestSignal()
-
-/**
- * Array containing the hotkey objects that are now connected to the Redux store.
- */
-const appliedHotkeys = hotkeys(store, flock)
 
 /**
  * The main application component.
@@ -77,6 +66,7 @@ export default class Application extends React.Component {
             <ServerConnectionManager />
 
             <LayersDialog />
+            <MessagesDialog flock={flock} />
 
             <GlobalErrorDialog />
             <GlobalSnackbar />
