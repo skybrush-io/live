@@ -15,7 +15,6 @@ import TextField from 'material-ui/TextField'
 import Toggle from 'material-ui/Toggle'
 import VisibilityOff from 'material-ui/svg-icons/action/visibility-off'
 
-import GeoJSONImporter from './GeoJSONImporter'
 import HexGridDrawer from './HexGridDrawer'
 
 import { closeLayersDialog, renameLayer, setSelectedLayerInLayersDialog,
@@ -131,12 +130,6 @@ class LayerSettingsContainerPresentation extends React.Component {
     // React components, possibly in additional files
     if (layer.type in LayerSettings) {
       return stateObjectToLayerSettings(layer, layerId)
-    } else if (layer.type === LayerType.GEOJSON) {
-      return [
-        <p key="header">Import GeoJSON data:</p>,
-        <GeoJSONImporter key="GeoJSONImporterKey" />
-        // not sure what to put as key, but React requests it
-      ]
     } else if (layer.type === LayerType.HEXGRID) {
       return [
         <p key="header">Draw Hex Grid:</p>,

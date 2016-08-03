@@ -19,16 +19,17 @@ class UAVsLayerSettingsPresentation extends React.Component {
   }
 }
 
+UAVsLayerSettingsPresentation.propTypes = {
+  layer: PropTypes.object,
+  layerId: PropTypes.string
+}
+
 export const UAVsLayerSettings = connect(
   // mapStateToProps
   (state, ownProps) => ({}),
   // mapDispatchToProps
   (dispatch, ownProps) => ({})
 )(UAVsLayerSettingsPresentation)
-
-UAVsLayerSettingsPresentation.propTypes = {
-  layer: PropTypes.object
-}
 
 // === The actual layer to be rendered ===
 
@@ -40,6 +41,10 @@ const coordinateFromLonLat = coords => (
 
 class UAVsLayerPresentation extends React.Component {
   render () {
+    if (!this.props.layer.visible) {
+      return false
+    }
+
     return (
       <div>
         <layer.Vector ref={this.context.assignActiveUAVsLayerRef_}

@@ -51,7 +51,10 @@ const propertiesForLayerTypes_ = {
   },
   [LayerType.GEOJSON]: {
     label: 'GeoJSON layer',
-    icon: <FileAttachment />
+    icon: <FileAttachment />,
+    parameters: {
+      data: '{}'
+    }
   },
   [LayerType.HEXGRID]: {
     label: 'HEX Grid layer',

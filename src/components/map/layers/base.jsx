@@ -31,6 +31,12 @@ class BaseLayerSettingsPresentation extends React.Component {
   }
 }
 
+BaseLayerSettingsPresentation.propTypes = {
+  layer: PropTypes.object,
+  layerId: PropTypes.string,
+  onLayerSourceChanged: PropTypes.func
+}
+
 export const BaseLayerSettings = connect(
   // mapStateToProps
   (state, ownProps) => ({}),
@@ -41,11 +47,6 @@ export const BaseLayerSettings = connect(
     }
   })
 )(BaseLayerSettingsPresentation)
-
-BaseLayerSettingsPresentation.propTypes = {
-  layer: PropTypes.object,
-  onLayerSourceChanged: PropTypes.func
-}
 
 // === The actual layer to be rendered ===
 

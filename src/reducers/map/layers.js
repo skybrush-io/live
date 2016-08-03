@@ -28,16 +28,18 @@ const defaultState = {
  * to update some properties of a layer.
  *
  * @param  {string}  layerId  the ID of the layer
- * @param  {string?} subKey   optional sub-key that will be appended to the
+ * @param  {...string?} subKeys optional sub-keys that will be appended to the
  *         returned key if you want to update some deeply nested property
  *         of the selected layer
  * @return {string}  an updeep key that corresponds to the layer with the
  *         given ID
  */
-const getLayerKey = (layerId, subKey) => {
+const getLayerKey = (layerId, ...subKeys) => {
   if (layerId.indexOf('.') !== -1) {
     throw new Error('Layer ID cannot contain dots')
   }
+
+  const subKey = subKeys.join('.')
 
   return subKey ? `byId.${layerId}.${subKey}` : `byId.${layerId}`
 }
@@ -91,6 +93,14 @@ const reducer = handleActions({
       console.warn(`Cannot change type of layer ${id} because it is not untyped`)
       return state
     }
+  },
+
+  SET_LAYER_PARAMETER_BY_ID (state, action) {
+    return u.updateIn(
+      getLayerKey(action.payload.layerId, 'parameters', action.payload.parameter),
+      action.payload.value,
+      state
+    )
   },
 
   REMOVE_LAYER (state, action) {

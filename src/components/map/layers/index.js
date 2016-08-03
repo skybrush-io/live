@@ -1,11 +1,13 @@
 import React from 'react'
 import { BaseLayerSettings, BaseLayer } from './base'
 import { UAVsLayerSettings, UAVsLayer } from './uavs'
+import { GeoJSONLayerSettings, GeoJSONLayer } from './geojson'
 import { LayerType } from '../../../model/layers'
 
 export const LayerSettings = {
   [LayerType.BASE]: BaseLayerSettings,
-  [LayerType.UAVS]: UAVsLayerSettings
+  [LayerType.UAVS]: UAVsLayerSettings,
+  [LayerType.GEOJSON]: GeoJSONLayerSettings
 }
 
 export const stateObjectToLayerSettings = (layer, layerId) => {
@@ -19,7 +21,8 @@ export const stateObjectToLayerSettings = (layer, layerId) => {
 
 export const Layers = {
   [LayerType.BASE]: BaseLayer,
-  [LayerType.UAVS]: UAVsLayer
+  [LayerType.UAVS]: UAVsLayer,
+  [LayerType.GEOJSON]: GeoJSONLayer
 }
 
 export const stateObjectToLayer = (layer, layerId, zIndex) => {
