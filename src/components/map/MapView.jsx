@@ -1,13 +1,15 @@
 import _ from 'lodash'
 import React, { PropTypes } from 'react'
-import { Map, View, control, interaction, layer, source } from 'ol-react'
+import { Map, View, control, interaction, layer } from 'ol-react'
 import { connect } from 'react-redux'
 
 import ol from 'openlayers'
 import Condition from './conditions.js'
 
+import { Layers, stateObjectToLayer } from './layers/index.js'
+
 import MapReferenceRequestHandler from './MapReferenceRequestHandler'
-import ActiveUAVsLayerSource from './ActiveUAVsLayerSource'
+
 import OwnLocation from './OwnLocation'
 import SelectNearestFeature from './interactions/SelectNearestFeature'
 
@@ -16,10 +18,6 @@ import { Tool } from './tools'
 import { setSelectedFeatures, addSelectedFeatures,
          clearSelectedFeatures, removeSelectedFeatures }
        from '../../actions/map'
-import Flock from '../../model/flock'
-import { Source } from '../../model/sources'
-
-import { BingAPI } from 'config'
 
 require('openlayers/css/ol.css')
 
@@ -52,9 +50,15 @@ class MapViewPresentation extends React.Component {
     this.onSelect_ = this.onSelect_.bind(this)
   }
 
+  getChildContext () {
+    return {
+      assignActiveUAVsLayerRef_: this.assignActiveUAVsLayerRef_,
+      assignActiveUAVsLayerSourceRef_: this.assignActiveUAVsLayerSourceRef_
+    }
+  }
+
   render () {
-    const { visibleSource, flock, projection,
-      selectedTool, selection, ownLocationVisible } = this.props
+    const { projection, selectedTool, ownLocationVisible } = this.props
     const center = projection([19.061951, 47.473340])
     const view = <View center={center} zoom={17} />
 
@@ -63,35 +67,24 @@ class MapViewPresentation extends React.Component {
     cursorStyles[Tool.ZOOM] = 'zoom-in'
     cursorStyles[Tool.PAN] = 'all-scroll'
 
+    const layers = []
+    let zIndex = 0
+
+    for (const id of this.props.layerOrder) {
+      if (this.props.layersById[id].type in Layers) {
+        layers.push(stateObjectToLayer(this.props.layersById[id], id, zIndex++))
+      }
+    }
+
     return (
       <Map view={view} useDefaultControls={false} loadTilesWhileInteracting={true}
         focusOnMount={true}
         style={{cursor: cursorStyles[selectedTool]}} >
         <MapReferenceRequestHandler />
 
-        <layer.Tile visible={visibleSource === Source.OSM}>
-          <source.OSM />
-        </layer.Tile>
-        <layer.Tile visible={visibleSource === Source.BING_MAPS.AERIAL_WITH_LABELS}>
-          <source.BingMaps
-            apiKey={BingAPI.key}
-            imagerySet="AerialWithLabels"
-            maxZoom={19} />
-        </layer.Tile>
-        <layer.Tile visible={visibleSource === Source.BING_MAPS.ROAD}>
-          <source.BingMaps apiKey={BingAPI.key} imagerySet="Road" />
-        </layer.Tile>
-
-        <layer.Vector ref={this.assignActiveUAVsLayerRef_}
-          updateWhileAnimating={true}
-          updateWhileInteracting={true}>
-
-          <ActiveUAVsLayerSource ref={this.assignActiveUAVsLayerSourceRef_}
-            selection={selection}
-            flock={flock}
-            projection={projection} />
-
-        </layer.Vector>
+        <div>
+          {layers}
+        </div>
 
         <layer.Vector visible={ownLocationVisible}
           updateWhileAnimating={true}
@@ -108,12 +101,6 @@ class MapViewPresentation extends React.Component {
 
         <control.ScaleLine minWidth={128} />
         <control.Zoom />
-
-        <div id="heatmapScale" style={{display: 'none'}}>
-          <span>100%</span>
-          <span>50%</span>
-          <span>0%</span>
-        </div>
 
         {/* PAN mode | Ctrl/Cmd + Drag --> Box select features */}
         <interaction.DragBox active={selectedTool === Tool.PAN}
@@ -257,17 +244,21 @@ class MapViewPresentation extends React.Component {
 }
 
 MapViewPresentation.propTypes = {
-  visibleSource: PropTypes.string,
-  flock: PropTypes.instanceOf(Flock),
+  layerOrder: PropTypes.arrayOf(PropTypes.string),
+  layersById: PropTypes.object,
   projection: PropTypes.func.isRequired,
   selectedTool: PropTypes.string,
-  selection: PropTypes.arrayOf(PropTypes.string).isRequired,
   ownLocationVisible: PropTypes.bool,
   dispatch: PropTypes.func.isRequired
 }
 
+MapViewPresentation.childContextTypes = {
+  assignActiveUAVsLayerRef_: PropTypes.func,
+  assignActiveUAVsLayerSourceRef_: PropTypes.func
+}
+
 const isOwnLocationVisible = state => {
-  const ownLocationLayer = _.find(state.map.layers.byId, {type: 'ownLocation'})
+  const ownLocationLayer = _.find(state.map.layers.byId, {type: 'ownlocation'})
   return typeof ownLocationLayer !== 'undefined' && ownLocationLayer.visible
 }
 
@@ -277,15 +268,14 @@ const isOwnLocationVisible = state => {
 const MapView = connect(
   // mapStateToProps
   state => ({
-    visibleSource: state.map.layers.byId.base.parameters.source,
+    layerOrder: state.map.layers.order,
+    layersById: state.map.layers.byId,
     selectedTool: state.map.tools.selectedTool,
-    selection: state.map.selection,
     ownLocationVisible: isOwnLocationVisible(state)
   })
 )(MapViewPresentation)
 
 MapView.propTypes = {
-  flock: PropTypes.instanceOf(Flock),
   projection: PropTypes.func.isRequired
 }
 

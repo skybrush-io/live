@@ -10,21 +10,13 @@ import { reduxForm } from 'redux-form'
 import Dialog from 'material-ui/Dialog'
 import FlatButton from 'material-ui/FlatButton'
 import { List, ListItem } from 'material-ui/List'
-import { RadioButton, RadioButtonGroup } from 'material-ui/RadioButton'
 import TextField from 'material-ui/TextField'
 import Toggle from 'material-ui/Toggle'
 import VisibilityOff from 'material-ui/svg-icons/action/visibility-off'
 
-import GeoJSONImporter from './GeoJSONImporter'
-import HexGridDrawer from './HexGridDrawer'
-
 import { closeLayersDialog, renameLayer, setSelectedLayerInLayersDialog,
-         toggleLayerVisibility, addLayer, removeLayer, changeLayerType }
-       from '../../actions/layers'
-import { selectMapSource } from '../../actions/map'
-import { LayerType, LayerTypes, labelForLayerType,
-         iconForLayerType } from '../../model/layers'
-import { Sources, labelForSource } from '../../model/sources'
+         toggleLayerVisibility, addLayer, removeLayer } from '../../actions/layers'
+import { LayerType, labelForLayerType, iconForLayerType } from '../../model/layers'
 import { createValidator, required } from '../../utils/validation'
 
 /**
@@ -114,6 +106,8 @@ const BasicLayerSettingsForm = reduxForm(
 
 /* ********************************************************************* */
 
+import { LayerSettings, stateObjectToLayerSettings } from './layers/index.js'
+
 /**
  * Presentation component for the settings of a layer.
  */
@@ -123,51 +117,12 @@ class LayerSettingsContainerPresentation extends React.Component {
    * layer-specific settings of the selected layer.
    *
    * @param {Object} layer  the layer being edited
+   * @param {string} layerId  the identifier of the layer being edited
    * @return {Object[]}  the list of child components to add
    */
-  createChildrenForLayer (layer) {
-    // TODO: this is not nice here; it should be refactored into separate
-    // React components, possibly in additional files
-    if (layer.type === LayerType.BASE) {
-      const sourceRadioButtons = _.map(Sources, source => (
-        <RadioButton value={source} key={source}
-          label={labelForSource(source)}
-          style={{ marginTop: 5 }}/>
-      ))
-      return [
-        <p key="header">Layer data source</p>,
-        <RadioButtonGroup name="source.base" key="baseProperties"
-          valueSelected={layer.parameters.source}
-          onChange={this.props.onLayerSourceChanged}>
-          {sourceRadioButtons}
-        </RadioButtonGroup>
-      ]
-    } else if (layer.type === LayerType.GEOJSON) {
-      return [
-        <p key="header">Import GeoJSON data:</p>,
-        <GeoJSONImporter key="GeoJSONImporterKey" />
-        // not sure what to put as key, but React requests it
-      ]
-    } else if (layer.type === LayerType.HEXGRID) {
-      return [
-        <p key="header">Draw Hex Grid:</p>,
-        <HexGridDrawer key="HexGridDrawerKey" />
-        // not sure what to put as key, but React requests it
-      ]
-    } else if (layer.type === LayerType.UNTYPED) {
-      const layerTypeRadioButtons = _.map(LayerTypes, layerType => (
-        <RadioButton value={layerType} key={layerType}
-          label={labelForLayerType(layerType)}
-          style={{ marginTop: 5 }}/>
-      ))
-      return [
-        <p key="header">This layer has no type yet. Please select a layer
-        type from the following options:</p>,
-        <RadioButtonGroup name="types.untyped" key="baseProperties"
-          onChange={this.props.onLayerTypeChanged}>
-          {layerTypeRadioButtons}
-        </RadioButtonGroup>
-      ]
+  createChildrenForLayer (layer, layerId) {
+    if (layer.type in LayerSettings) {
+      return stateObjectToLayerSettings(layer, layerId)
     } else {
       return []
     }
@@ -195,7 +150,7 @@ class LayerSettingsContainerPresentation extends React.Component {
     return (
       <div>
         <BasicLayerSettingsForm layer={layer} layerId={layerId} />
-        {this.createChildrenForLayer(layer)}
+        {this.createChildrenForLayer(layer, layerId)}
       </div>
     )
   }
@@ -205,8 +160,7 @@ LayerSettingsContainerPresentation.propTypes = {
   layer: PropTypes.object,
   layerId: PropTypes.string,
 
-  onLayerSourceChanged: PropTypes.func,
-  onLayerTypeChanged: PropTypes.func
+  onLayerSourceChanged: PropTypes.func
 }
 
 /**
@@ -218,15 +172,7 @@ const LayerSettingsContainer = connect(
     layer: state.map.layers.byId[ownProps.layerId]
   }),
   // mapDispatchToProps
-  (dispatch, ownProps) => ({
-    onLayerSourceChanged (event, value) {
-      dispatch(selectMapSource(value))
-    },
-
-    onLayerTypeChanged (event, value) {
-      dispatch(changeLayerType(ownProps.layerId, value))
-    }
-  })
+  (dispatch, ownProps) => ({})
 )(LayerSettingsContainerPresentation)
 
 /* ********************************************************************* */
@@ -331,7 +277,7 @@ class LayersDialogPresentation extends React.Component {
         actions={actions}
         bodyStyle={{display: 'flex', overflow: 'visible'}}
         onRequestClose={onClose}
-        >
+      >
         <div style={{ flex: 3 }}>
           <LayerList />
         </div>
@@ -351,7 +297,6 @@ class LayersDialogPresentation extends React.Component {
 LayersDialogPresentation.propTypes = {
   dialogVisible: PropTypes.bool.isRequired,
   selectedLayer: PropTypes.string,
-  visibleSource: PropTypes.string,
 
   onClose: PropTypes.func,
   onAddLayer: PropTypes.func,
@@ -370,8 +315,7 @@ const LayersDialog = connect(
   // mapStateToProps
   state => ({
     dialogVisible: state.dialogs.layerSettings.dialogVisible,
-    selectedLayer: state.dialogs.layerSettings.selectedLayer,
-    visibleSource: state.map.layers.byId.base.parameters.source
+    selectedLayer: state.dialogs.layerSettings.selectedLayer
   }),
   // mapDispatchToProps
   dispatch => ({

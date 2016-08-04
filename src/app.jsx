@@ -42,7 +42,7 @@ export default class Application extends React.Component {
           <div>
             <div id="canvas">
               <HotkeyHandler hotkeys={hotkeys}>
-                <MapView flock={flock} />
+                <MapView />
               </HotkeyHandler>
 
               <Widget style={{ right: 8, bottom: 8, width: 300 }}>

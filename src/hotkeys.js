@@ -79,7 +79,7 @@ export default [
     on: 'down',
     keys: 'PlatMod + KeyO',
     action: () => {
-      store.dispatch(selectMapSource(Source.OSM))
+      store.dispatch(selectMapSource({layerId: 'base', source: Source.OSM}))
     }
   },
   {
@@ -87,7 +87,7 @@ export default [
     on: 'down',
     keys: 'PlatMod + KeyB',
     action: () => {
-      store.dispatch(selectMapSource(Source.BING_MAPS.AERIAL_WITH_LABELS))
+      store.dispatch(selectMapSource({layerId: 'base', source: Source.BING_MAPS.AERIAL_WITH_LABELS}))
     }
   },
   {
@@ -95,7 +95,7 @@ export default [
     on: 'down',
     keys: 'PlatMod + Alt + KeyB',
     action: () => {
-      store.dispatch(selectMapSource(Source.BING_MAPS.ROAD))
+      store.dispatch(selectMapSource({layerId: 'base', source: Source.BING_MAPS.ROAD}))
     }
   },
 
