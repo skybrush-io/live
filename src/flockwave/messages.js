@@ -53,7 +53,7 @@ function createMessage (body = {}) {
  * Error class thrown by promises when the emitter object of the message
  * hub changes while waiting for a response from the server.
  */
-class EmitterChangedError extends Error {
+export class EmitterChangedError extends Error {
   constructor (message) {
     super(message || 'Message hub emitter changed while waiting for a response')
   }
@@ -63,7 +63,7 @@ class EmitterChangedError extends Error {
  * Error class thrown when the user attempts to send a message without an
  * emitter being associated to the hub.
  */
-class NoEmitterError extends Error {
+export class NoEmitterError extends Error {
   constructor (message) {
     super(message || 'No emitter was associated to the message hub')
   }
@@ -74,7 +74,7 @@ class NoEmitterError extends Error {
  * message in time. This class is exported in MessageHub as
  * <code>MessageHub.Timeout</code>.
  */
-export class Timeout extends Error {
+export class MessageTimeout extends Error {
   constructor (messageId) {
     super(`Response to message ${messageId} timed out`)
     this.messageId = messageId
@@ -84,14 +84,38 @@ export class Timeout extends Error {
 /**
  * Error class thrown when the Flockwave server failed to respond to a
  * command execution request in time, or when it responded with a
- * CMD-TIMEOUT message. This class is exported in MessageHub as
- * <code>MessageHub.CommandExecutionTimeout</code>.
+ * CMD-TIMEOUT message.
  */
 export class CommandExecutionTimeout extends Error {
   constructor (receipt) {
-    super(`Response to command ${receipt} timed out`)
+    super()
     this.receipt = receipt
+    this.message = `Response to command ${receipt} timed out`
     this.userMessage = 'Response timed out'
+  }
+}
+
+/**
+ * Error class thrown when the Flockwave server responded to a request with
+ * a CMD-TIMEOUT message.
+ */
+export class ServerSideCommandExecutionTimeout extends CommandExecutionTimeout {
+  constructor (receipt) {
+    super(receipt)
+    this.message += ' (no response from UAV)'
+    this.userMessage += ' (no response from UAV)'
+  }
+}
+
+/**
+ * Error class thrown when the Flockwave server failed to respond to a
+ * command execution request in time.
+ */
+export class ClientSideCommandExecutionTimeout extends CommandExecutionTimeout {
+  constructor (receipt) {
+    super(receipt)
+    this.message += ' (no response from server)'
+    this.userMessage += ' (no response from server)'
   }
 }
 
@@ -150,7 +174,7 @@ class PendingResponse {
    * Function to call when the response to the message has timed out.
    */
   timeout () {
-    this._promiseRejector(new Timeout(this.messageId))
+    this._promiseRejector(new MessageTimeout(this.messageId))
   }
 
   /**
@@ -201,7 +225,7 @@ class PendingCommandExecution {
    * response from the server any more.
    */
   clientSideTimeout () {
-    this._promiseRejector(new CommandExecutionTimeout(this.receipt))
+    this._promiseRejector(new ClientSideCommandExecutionTimeout(this.receipt))
   }
 
   /**
@@ -232,7 +256,7 @@ class PendingCommandExecution {
    * the execution of the command on the UAV any more.
    */
   serverSideTimeout () {
-    this.reject(new CommandExecutionTimeout(this.receipt))
+    this.reject(new ServerSideCommandExecutionTimeout(this.receipt))
   }
 
   /**
@@ -258,12 +282,20 @@ class CommandExecutionManager {
    * message hub to inspect the incoming CMD-RESP and CMD-TIMEOUT messages.
    *
    * @param {MessageHub} hub  the message hub that the manager will attach to
+   * @param {number} timeout  number of seconds to wait for a CMD-RESP or a
+   *        CMD-TIMEOUT message in response to a CMD-REQ request before we
+   *        consider the command request as timed out. The reference
+   *        Flockwave server implementation waits for 30 seconds before
+   *        sending a CMD-TIMEOUT so this should probably be larger.
    */
-  constructor (hub) {
+  constructor (hub, timeout = 60) {
+    this.timeout = timeout
+
     this._hub = undefined
     this._pendingCommandExecutions = {}
 
     this._onResponseReceived = this._onResponseReceived.bind(this)
+    this._onResponseTimedOut = this._onResponseTimedOut.bind(this)
     this._onTimeoutReceived = this._onTimeoutReceived.bind(this)
 
     this._attachToHub(hub)
@@ -360,10 +392,11 @@ class CommandExecutionManager {
           const receipt = extractReceiptFromCommandRequest(response, uavId)
           const pendingCommandExecution = new PendingCommandExecution(
             receipt, resolve, reject)
-          this._pendingCommandExecutions[receipt] = pendingCommandExecution
 
-          // TODO: add client-side timeout; see sendMessage() below for an
-          // example
+          pendingCommandExecution.timeoutId = setTimeout(
+            this._onResponseTimedOut, this.timeout * 1000, [receipt])
+
+          this._pendingCommandExecutions[receipt] = pendingCommandExecution
         }
       ).catch(reject)
     })
@@ -383,6 +416,22 @@ class CommandExecutionManager {
       pendingCommandExecution.resolve(message)
     } else {
       console.warn(`Stale command response received for receipt=${id}`)
+    }
+  }
+
+  /**
+   * Handler called when the server failed to respond with either a CMD-RESP
+   * or a CMD-TIMEOUT notification in time.
+   *
+   * @param {string} receipt  the receipt ID for which the server failed
+   *        to respond
+   */
+  _onResponseTimedOut (receipt) {
+    console.warn(`Response to command with receipt=${receipt} timed out`)
+    const pendingCommandExecution = this._pendingCommandExecutions[receipt]
+    if (pendingCommandExecution) {
+      delete this._pendingCommandExecutions[receipt]
+      pendingCommandExecution.clientSideTimeout()
     }
   }
 
@@ -634,6 +683,3 @@ export default class MessageHub {
     }
   }
 }
-
-MessageHub.CommandExecutionTimeout = CommandExecutionTimeout
-MessageHub.Timeout = Timeout

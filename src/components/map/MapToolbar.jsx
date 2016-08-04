@@ -3,7 +3,6 @@ import React, { PropTypes } from 'react'
 import IconButton from 'material-ui/IconButton'
 import ActionPanTool from 'material-ui/svg-icons/action/pan-tool'
 import ActionZoomIn from 'material-ui/svg-icons/action/zoom-in'
-import Message from 'material-ui/svg-icons/communication/message'
 import ContentSelectAll from 'material-ui/svg-icons/content/select-all'
 import MapsLayers from 'material-ui/svg-icons/maps/layers'
 
@@ -15,7 +14,6 @@ import { connect } from 'react-redux'
 
 import { selectMapTool } from '../../actions/map'
 import { showLayersDialog } from '../../actions/layers'
-import { showMessagesDialog } from '../../actions/messages'
 import { Tool } from './tools'
 
 /**
@@ -42,7 +40,7 @@ const MapToolbarSeparator = () => {
 class MapToolbarPresentation extends React.Component {
   render () {
     const { selectedTool } = this.props
-    const { onShowLayersDialog, onShowMessagesDialog, onToolSelected } = this.props
+    const { onShowLayersDialog, onToolSelected } = this.props
     const { muiTheme } = this.context
 
     const selectedColor = muiTheme.palette.primary1Color
@@ -68,10 +66,6 @@ class MapToolbarPresentation extends React.Component {
           <MapsLayers />
         </IconButton>
 
-        <IconButton onClick={onShowMessagesDialog} tooltip="Messages">
-          <Message />
-        </IconButton>
-
         <MapToolbarSeparator />
 
         <MapRotationTextBox resetDuration={500} fieldWidth={'75px'}
@@ -93,7 +87,6 @@ MapToolbarPresentation.propTypes = {
   visibleSource: PropTypes.string,
   selectedTool: PropTypes.string,
   onShowLayersDialog: PropTypes.func,
-  onShowMessagesDialog: PropTypes.func,
   onToolSelected: PropTypes.func
 }
 
@@ -111,9 +104,6 @@ const MapToolbar = connect(
   dispatch => ({
     onShowLayersDialog () {
       dispatch(showLayersDialog())
-    },
-    onShowMessagesDialog () {
-      dispatch(showMessagesDialog())
     },
     onToolSelected (tool) {
       dispatch(selectMapTool(tool))

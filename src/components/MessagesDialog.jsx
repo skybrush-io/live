@@ -4,9 +4,9 @@
  */
 
 import _ from 'lodash'
+import CircularProgress from 'material-ui/CircularProgress'
 import Dialog from 'material-ui/Dialog'
 import FlatButton from 'material-ui/FlatButton'
-import CircularProgress from 'material-ui/CircularProgress'
 import TextField from 'material-ui/TextField'
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
@@ -108,7 +108,7 @@ class MessagesDialogPresentation extends React.Component {
     return (
       <Dialog open={open} modal={true}
               contentStyle={contentStyle} actions={actions}>
-        <ChatArea style={{ height: '25ex' }}>
+        <ChatArea style={{ height: '35ex' }}>
           {chatComponents}
         </ChatArea>
         <div style={{ display: 'flex' }}>

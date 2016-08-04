@@ -6,7 +6,9 @@ import ActionFlightTakeoff from 'material-ui/svg-icons/action/flight-takeoff'
 import ActionFlightLand from 'material-ui/svg-icons/action/flight-land'
 import ActionHome from 'material-ui/svg-icons/action/home'
 import ActionPowerSettingsNew from 'material-ui/svg-icons/action/power-settings-new'
+import Message from 'material-ui/svg-icons/communication/message'
 
+import { showMessagesDialog } from '../../actions/messages'
 import messageHub from '../../message-hub'
 import store from '../../store'
 
@@ -39,6 +41,7 @@ class UAVToolbar extends React.Component {
 
   render () {
     const { isSelectionEmpty } = this.props
+    const { onShowMessagesDialog } = this.props
     return (
       <div>
         <IconButton disabled={isSelectionEmpty} onClick={this.takeoffSelectedUAVs_}
@@ -54,6 +57,11 @@ class UAVToolbar extends React.Component {
         <IconButton disabled={isSelectionEmpty} onClick={this.returnSelectedUAVs_}
           tooltipPosition="bottom-right" tooltip="Return">
           <ActionHome />
+        </IconButton>
+        <UAVToolbarSeparator />
+        <IconButton onClick={onShowMessagesDialog}
+          tooltipPosition="bottom-right" tooltip="Messages">
+          <Message />
         </IconButton>
         <UAVToolbarSeparator />
         <IconButton disabled={isSelectionEmpty}
@@ -88,12 +96,20 @@ class UAVToolbar extends React.Component {
 
 UAVToolbar.propTypes = {
   isSelectionEmpty: PropTypes.bool,
+  onShowMessagesDialog: PropTypes.func,
   selection: PropTypes.arrayOf(PropTypes.string)
 }
 
 export default connect(
+  // mapStateToProps
   state => ({
     isSelectionEmpty: store.getState().map.selection.length === 0,
     selection: store.getState().map.selection
+  }),
+  // mapDispatchToProps
+  dispatch => ({
+    onShowMessagesDialog () {
+      dispatch(showMessagesDialog())
+    }
   })
 )(UAVToolbar)
