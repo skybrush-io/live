@@ -6,6 +6,8 @@ import isObject from 'lodash/isObject'
 import MersenneTwister from 'mersenne-twister'
 import radix64 from 'radix-64'
 
+import { createCommandRequest, createMessageWithType } from './builders'
+import { extractReceiptFromCommandRequest } from './parsing'
 import version from './version'
 
 /**
@@ -38,7 +40,7 @@ const createMessageId = () => (
  */
 function createMessage (body = {}) {
   if (!isObject(body)) {
-    body = { 'type': body }
+    body = createMessageWithType(body)
   }
   return {
     '$fw.version': version,
@@ -51,7 +53,7 @@ function createMessage (body = {}) {
  * Error class thrown by promises when the emitter object of the message
  * hub changes while waiting for a response from the server.
  */
-class EmitterChangedError extends Error {
+export class EmitterChangedError extends Error {
   constructor (message) {
     super(message || 'Message hub emitter changed while waiting for a response')
   }
@@ -61,7 +63,7 @@ class EmitterChangedError extends Error {
  * Error class thrown when the user attempts to send a message without an
  * emitter being associated to the hub.
  */
-class NoEmitterError extends Error {
+export class NoEmitterError extends Error {
   constructor (message) {
     super(message || 'No emitter was associated to the message hub')
   }
@@ -72,10 +74,48 @@ class NoEmitterError extends Error {
  * message in time. This class is exported in MessageHub as
  * <code>MessageHub.Timeout</code>.
  */
-class Timeout extends Error {
+export class MessageTimeout extends Error {
   constructor (messageId) {
     super(`Response to message ${messageId} timed out`)
     this.messageId = messageId
+  }
+}
+
+/**
+ * Error class thrown when the Flockwave server failed to respond to a
+ * command execution request in time, or when it responded with a
+ * CMD-TIMEOUT message.
+ */
+export class CommandExecutionTimeout extends Error {
+  constructor (receipt) {
+    super()
+    this.receipt = receipt
+    this.message = `Response to command ${receipt} timed out`
+    this.userMessage = 'Response timed out'
+  }
+}
+
+/**
+ * Error class thrown when the Flockwave server responded to a request with
+ * a CMD-TIMEOUT message.
+ */
+export class ServerSideCommandExecutionTimeout extends CommandExecutionTimeout {
+  constructor (receipt) {
+    super(receipt)
+    this.message += ' (no response from UAV)'
+    this.userMessage += ' (no response from UAV)'
+  }
+}
+
+/**
+ * Error class thrown when the Flockwave server failed to respond to a
+ * command execution request in time.
+ */
+export class ClientSideCommandExecutionTimeout extends CommandExecutionTimeout {
+  constructor (receipt) {
+    super(receipt)
+    this.message += ' (no response from server)'
+    this.userMessage += ' (no response from server)'
   }
 }
 
@@ -134,7 +174,7 @@ class PendingResponse {
    * Function to call when the response to the message has timed out.
    */
   timeout () {
-    this._promiseRejector(new Timeout(this.messageId))
+    this._promiseRejector(new MessageTimeout(this.messageId))
   }
 
   /**
@@ -144,6 +184,273 @@ class PendingResponse {
     if (this.timeoutId) {
       clearTimeout(this.timeoutId)
       this.timeoutId = undefined
+    }
+  }
+}
+
+/**
+ * Lightweight class that stores the information necessary to resolve or
+ * fail the promise that we return when the user sends a command request
+ * (CMD-REQ) via the message hub and we are waiting for the corresponding
+ * CMD-RESP or CMD-TIMEOUT message.
+ */
+class PendingCommandExecution {
+  /**
+   * Constructor.
+   *
+   * @param {string} receipt  the receipt of the command execution that we
+   *        are waiting for
+   * @param {function} resolve  the resolver function of a promise to
+   *        call when the response has arrived
+   * @param {function} reject   the rejector function of a promise to
+   *        call when the response has not arrived in time or we failed
+   *        to resolve the promise for any other reason
+   */
+  constructor (receipt, resolve, reject) {
+    this._receipt = receipt
+    this._promiseResolver = resolve
+    this._promiseRejector = reject
+  }
+
+  /**
+   * The receipt associated to this pending command execution.
+   */
+  get receipt () {
+    return this._receipt
+  }
+
+  /**
+   * Function to call when the response to the request has timed out on the
+   * client side, i.e. the client decided that it does not wait for the
+   * response from the server any more.
+   */
+  clientSideTimeout () {
+    this._promiseRejector(new ClientSideCommandExecutionTimeout(this.receipt))
+  }
+
+  /**
+   * Function to call when the response to the command execution request has
+   * arrived.
+   *
+   * @param  {Object} result the response to the command execution request
+   */
+  resolve (result) {
+    this._clearTimeoutIfNeeded()
+    this._promiseResolver(result)
+  }
+
+  /**
+   * Function to call when we are explicitly rejecting the promise for the
+   * response, even if the response has not timed out yet.
+   *
+   * @param {Error} error  the error to reject the promise with
+   */
+  reject (error) {
+    this._clearTimeoutIfNeeded()
+    this._promiseRejector(error)
+  }
+
+  /**
+   * Function to call when the response to the request has timed out on the
+   * server side, i.e. the server has signalled that it is not waiting for
+   * the execution of the command on the UAV any more.
+   */
+  serverSideTimeout () {
+    this.reject(new ServerSideCommandExecutionTimeout(this.receipt))
+  }
+
+  /**
+   * Clears the timeout associated to the pending response if needed.
+   */
+  _clearTimeoutIfNeeded () {
+    if (this.timeoutId) {
+      clearTimeout(this.timeoutId)
+      this.timeoutId = undefined
+    }
+  }
+}
+
+/**
+ * Manager class that keeps track of command execution requests that were
+ * sent to the server and watches the incoming CMD-RESP and CMD-TIMEOUT
+ * messages so it gets notified whenever a pending command execution has
+ * finished or timed out.
+ */
+class CommandExecutionManager {
+  /**
+   * Constructor. Creates a new manager that will attach to the given
+   * message hub to inspect the incoming CMD-RESP and CMD-TIMEOUT messages.
+   *
+   * @param {MessageHub} hub  the message hub that the manager will attach to
+   * @param {number} timeout  number of seconds to wait for a CMD-RESP or a
+   *        CMD-TIMEOUT message in response to a CMD-REQ request before we
+   *        consider the command request as timed out. The reference
+   *        Flockwave server implementation waits for 30 seconds before
+   *        sending a CMD-TIMEOUT so this should probably be larger.
+   */
+  constructor (hub, timeout = 60) {
+    this.timeout = timeout
+
+    this._hub = undefined
+    this._pendingCommandExecutions = {}
+
+    this._onResponseReceived = this._onResponseReceived.bind(this)
+    this._onResponseTimedOut = this._onResponseTimedOut.bind(this)
+    this._onTimeoutReceived = this._onTimeoutReceived.bind(this)
+
+    this._attachToHub(hub)
+  }
+
+  /**
+   * Returns the message hub that the execution manager is attached to.
+   */
+  get hub () {
+    return this._hub
+  }
+
+  /**
+   * Sets the message hub that the execution manager is attached to.
+   *
+   * This function may be called only once during the lifetime of the
+   * manager. Once the manager is attached to a hub, there is currently no
+   * way to detach it.
+   *
+   * @param {MessageHub} value  the new message hub to attach to
+   */
+  _attachToHub (value) {
+    if (value === this._hub) {
+      return
+    }
+
+    if (this._hub) {
+      throw new Error('You may not detach a PendingCommandExecutionManager' +
+        'from its message hub')
+    }
+
+    this._hub = value
+
+    if (this._hub) {
+      // Register our own notification handlers
+      this._hub.registerNotificationHandlers({
+        'CMD-RESP': this._onResponseReceived,
+        'CMD-TIMEOUT': this._onTimeoutReceived
+      })
+    }
+  }
+
+  /**
+   * Cancels all pending command executions by rejecting the corresponding
+   * promises with the given error.
+   *
+   * @param {Error} error  the error to reject the promises with
+   */
+  cancelAll (error) {
+    const pendingCommandExecutions = this._pendingCommandExecutions
+    for (let receipt of Object.keys(pendingCommandExecutions)) {
+      const pendingExecution = pendingCommandExecutions[receipt]
+      if (pendingExecution) {
+        pendingExecution.reject(error)
+      }
+    }
+    this._pendingCommandExecutions = {}
+  }
+
+  /**
+   * Sends a Flockwave command request (CMD-REQ) with the given body and
+   * positional and keyword arguments and returns a promise that resolves
+   * when one of the following events happen:
+   *
+   * <ul>
+   * <li>The server signals an execution failure in a direct CMD-REQ
+   * response to the original request. In this case, the promise errors
+   * out with an appropriate human-readable message.</li>
+   * <li>The server returns the response to the request in a CMD-RESP
+   * message. In this case, the promise resolves normally with the
+   * CMD-RESP message itself.</li>
+   * <li>The server signals a timeout for the request in a CMD-TIMEOUT
+   * message. In this case, the promise errors out with an appropriate
+   * human-readable message.</li>
+   * </ul>
+   *
+   * @param  {string}    uavId   ID of the UAV to send the request to
+   * @param  {string}    command the command to send to a UAV
+   * @param  {Object[]}  args    array of positional arguments to pass along
+   *         with the command. May be undefined.
+   * @param  {Object}    kwds    mapping of keyword argument names to their
+   *         values; these are also passed with the command. May be
+   *         undefined.
+   * @return {Promise} a promise that resolves to the response of the UAV
+   *         to the command or errors out in case of execution errors and
+   *         timeouts.
+   */
+  sendCommandRequest (uavId, command, args, kwds) {
+    const request = createCommandRequest([uavId], command, args, kwds)
+    const hub = this.hub
+    return new Promise((resolve, reject) => {
+      hub.sendMessage(request).then(
+        response => {
+          const receipt = extractReceiptFromCommandRequest(response, uavId)
+          const pendingCommandExecution = new PendingCommandExecution(
+            receipt, resolve, reject)
+
+          pendingCommandExecution.timeoutId = setTimeout(
+            this._onResponseTimedOut, this.timeout * 1000, [receipt])
+
+          this._pendingCommandExecutions[receipt] = pendingCommandExecution
+        }
+      ).catch(reject)
+    })
+  }
+
+  /**
+   * Handler called when the server returns a response for a command
+   * execution request in the form of a CMD-RESP notification.
+   *
+   * @param {string} message  the message sent by the server
+   */
+  _onResponseReceived (message) {
+    const { id } = message.body
+    const pendingCommandExecution = this._pendingCommandExecutions[id]
+    if (pendingCommandExecution) {
+      delete this._pendingCommandExecutions[id]
+      pendingCommandExecution.resolve(message)
+    } else {
+      console.warn(`Stale command response received for receipt=${id}`)
+    }
+  }
+
+  /**
+   * Handler called when the server failed to respond with either a CMD-RESP
+   * or a CMD-TIMEOUT notification in time.
+   *
+   * @param {string} receipt  the receipt ID for which the server failed
+   *        to respond
+   */
+  _onResponseTimedOut (receipt) {
+    console.warn(`Response to command with receipt=${receipt} timed out`)
+    const pendingCommandExecution = this._pendingCommandExecutions[receipt]
+    if (pendingCommandExecution) {
+      delete this._pendingCommandExecutions[receipt]
+      pendingCommandExecution.clientSideTimeout()
+    }
+  }
+
+  /**
+   * Handler called when the server signals a timeout for a command
+   * execution request in the form of a CMD-TIMEOUT notification.
+   *
+   * @param {string} message  the message sent by the server
+   */
+  _onTimeoutReceived (message) {
+    const { ids } = message.body
+    for (let id of ids) {
+      const pendingCommandExecution = this._pendingCommandExecutions[id]
+      if (pendingCommandExecution) {
+        delete this._pendingCommandExecutions[id]
+        pendingCommandExecution.serverSideTimeout()
+      } else {
+        console.warn(`Stale command timeout received for receipt=${id}`)
+      }
     }
   }
 }
@@ -167,7 +474,10 @@ export default class MessageHub {
 
     this._notificationHandlers = {}
     this._pendingResponses = {}
+
     this._onMessageTimedOut = this._onMessageTimedOut.bind(this)
+
+    this._commandExecutionManager = new CommandExecutionManager(this)
   }
 
   /**
@@ -190,7 +500,10 @@ export default class MessageHub {
       return
     }
 
+    const error = new EmitterChangedError()
+    this._commandExecutionManager.cancelAll(error)
     this.cancelAllPendingResponses()
+
     this._emitter = value
   }
 
@@ -272,6 +585,42 @@ export default class MessageHub {
   }
 
   /**
+   * Sends a Flockwave command request (CMD-REQ) with the given body and
+   * positional and keyword arguments and returns a promise that resolves
+   * when one of the following events happen:
+   *
+   * <ul>
+   * <li>The server signals an execution failure in a direct CMD-REQ
+   * response to the original request. In this case, the promise errors
+   * out with an appropriate human-readable message.</li>
+   * <li>The server returns the response to the request in a CMD-RESP
+   * message. In this case, the promise resolves normally with the
+   * CMD-RESP message itself.</li>
+   * <li>The server signals a timeout for the request in a CMD-TIMEOUT
+   * message. In this case, the promise errors out with an appropriate
+   * human-readable message.</li>
+   * </ul>
+   *
+   * The method is a proxy to the similarly named method in the encapsulated
+   * CommandExecutionManager.
+   *
+   * @param  {string}    uavId   ID of the UAV to send the request to
+   * @param  {string}    command the command to send to a UAV
+   * @param  {Object[]}  args    array of positional arguments to pass along
+   *         with the command. May be undefined.
+   * @param  {Object}    kwds    mapping of keyword argument names to their
+   *         values; these are also passed with the command. May be
+   *         undefined.
+   * @return {Promise} a promise that resolves to the response of the UAV
+   *         to the command or errors out in case of execution errors and
+   *         timeouts.
+   */
+  sendCommandRequest (uavId, command, args, kwds) {
+    return this._commandExecutionManager.sendCommandRequest(
+      uavId, command, args, kwds)
+  }
+
+  /**
    * Sends a Flockwave message with the given body and then return a promise
    * that resolves when the server responds to the message.
    *
@@ -334,5 +683,3 @@ export default class MessageHub {
     }
   }
 }
-
-MessageHub.Timeout = Timeout

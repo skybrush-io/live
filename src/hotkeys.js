@@ -4,11 +4,17 @@
 
 import { selectAllFeatures, clearSelectedFeatures,
   selectMapTool, selectMapSource } from './actions/map'
+import { showLayersDialog } from './actions/layers'
 
 import { Tool } from './components/map/tools'
 import { Source } from './model/sources'
 
-export default (store, flock) => [
+import store from './store'
+import flock from './flock'
+import signals from './signals'
+import messageHub from './message-hub'
+
+export default [
   // Drone selection hotkeys
   {
     description: 'Select all drones',
@@ -49,6 +55,24 @@ export default (store, flock) => [
     }
   },
 
+  // Map view adjustment hotkeys
+  {
+    description: 'Reset map rotation',
+    on: 'down',
+    keys: 'PlatMod + KeyR',
+    action: () => {
+      signals.mapRotationResetSignal.dispatch()
+    }
+  },
+  {
+    description: 'Fit all features into view',
+    on: 'down',
+    keys: 'PlatMod + KeyF',
+    action: () => {
+      signals.fitAllFeaturesSignal.dispatch()
+    }
+  },
+
   // Layer source hotkeys
   {
     description: 'Switch to OpenStreetMaps source',
@@ -72,6 +96,50 @@ export default (store, flock) => [
     keys: 'PlatMod + Alt + KeyB',
     action: () => {
       store.dispatch(selectMapSource(Source.BING_MAPS.ROAD))
+    }
+  },
+
+  {
+    description: 'Open Layers dialog',
+    on: 'down',
+    keys: 'PlatMod + Shift + KeyL',
+    action: () => {
+      store.dispatch(showLayersDialog())
+    }
+  },
+
+  // UAV Control hotkeys
+  {
+    description: 'Issue TAKEOFF command to selected UAVs',
+    on: 'down',
+    keys: 'PlatMod + Alt + KeyT',
+    action: () => {
+      messageHub.sendMessage({
+        type: 'UAV-TAKEOFF',
+        ids: store.getState().map.selection
+      }).then(result => console.log(result))
+    }
+  },
+  {
+    description: 'Issue LAND command to selected UAVs',
+    on: 'down',
+    keys: 'PlatMod + Alt + KeyL',
+    action: () => {
+      messageHub.sendMessage({
+        type: 'UAV-LAND',
+        ids: store.getState().map.selection
+      }).then(result => console.log(result))
+    }
+  },
+  {
+    description: 'Issue RTH (Return To Home) command to selected UAVs',
+    on: 'down',
+    keys: 'PlatMod + Alt + KeyR',
+    action: () => {
+      messageHub.sendMessage({
+        type: 'UAV-RTH',
+        ids: store.getState().map.selection
+      }).then(result => console.log(result))
     }
   }
 ]

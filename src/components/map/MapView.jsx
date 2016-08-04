@@ -1,3 +1,4 @@
+import _ from 'lodash'
 import React, { PropTypes } from 'react'
 import { Map, View, control, interaction, layer, source } from 'ol-react'
 import { connect } from 'react-redux'
@@ -5,10 +6,9 @@ import { connect } from 'react-redux'
 import ol from 'openlayers'
 import Condition from './conditions.js'
 
-import Signal from 'mini-signals'
-
 import MapReferenceRequestHandler from './MapReferenceRequestHandler'
 import ActiveUAVsLayerSource from './ActiveUAVsLayerSource'
+import OwnLocation from './OwnLocation'
 import SelectNearestFeature from './interactions/SelectNearestFeature'
 
 import { Tool } from './tools'
@@ -53,7 +53,8 @@ class MapViewPresentation extends React.Component {
   }
 
   render () {
-    const { visibleSource, flock, mapReferenceRequestSignal, projection, selectedTool, selection } = this.props
+    const { visibleSource, flock, projection,
+      selectedTool, selection, ownLocationVisible } = this.props
     const center = projection([19.061951, 47.473340])
     const view = <View center={center} zoom={17} />
 
@@ -66,13 +67,16 @@ class MapViewPresentation extends React.Component {
       <Map view={view} useDefaultControls={false} loadTilesWhileInteracting={true}
         focusOnMount={true}
         style={{cursor: cursorStyles[selectedTool]}} >
-        <MapReferenceRequestHandler mapReferenceRequestSignal={mapReferenceRequestSignal}/>
+        <MapReferenceRequestHandler />
 
         <layer.Tile visible={visibleSource === Source.OSM}>
           <source.OSM />
         </layer.Tile>
         <layer.Tile visible={visibleSource === Source.BING_MAPS.AERIAL_WITH_LABELS}>
-          <source.BingMaps apiKey={BingAPI.key} imagerySet="AerialWithLabels" />
+          <source.BingMaps
+            apiKey={BingAPI.key}
+            imagerySet="AerialWithLabels"
+            maxZoom={19} />
         </layer.Tile>
         <layer.Tile visible={visibleSource === Source.BING_MAPS.ROAD}>
           <source.BingMaps apiKey={BingAPI.key} imagerySet="Road" />
@@ -89,6 +93,12 @@ class MapViewPresentation extends React.Component {
 
         </layer.Vector>
 
+        <layer.Vector visible={ownLocationVisible}
+          updateWhileAnimating={true}
+          updateWhileInteracting={true}>
+          <OwnLocation />
+        </layer.Vector>
+
         <control.FullScreen source={document.body} />
 
         <control.MousePosition projection="EPSG:4326"
@@ -98,6 +108,12 @@ class MapViewPresentation extends React.Component {
 
         <control.ScaleLine minWidth={128} />
         <control.Zoom />
+
+        <div id="heatmapScale" style={{display: 'none'}}>
+          <span>100%</span>
+          <span>50%</span>
+          <span>0%</span>
+        </div>
 
         {/* PAN mode | Ctrl/Cmd + Drag --> Box select features */}
         <interaction.DragBox active={selectedTool === Tool.PAN}
@@ -243,11 +259,16 @@ class MapViewPresentation extends React.Component {
 MapViewPresentation.propTypes = {
   visibleSource: PropTypes.string,
   flock: PropTypes.instanceOf(Flock),
-  mapReferenceRequestSignal: PropTypes.instanceOf(Signal),
   projection: PropTypes.func.isRequired,
-  selection: PropTypes.arrayOf(PropTypes.string).isRequired,
   selectedTool: PropTypes.string,
+  selection: PropTypes.arrayOf(PropTypes.string).isRequired,
+  ownLocationVisible: PropTypes.bool,
   dispatch: PropTypes.func.isRequired
+}
+
+const isOwnLocationVisible = state => {
+  const ownLocationLayer = _.find(state.map.layers.byId, {type: 'ownLocation'})
+  return typeof ownLocationLayer !== 'undefined' && ownLocationLayer.visible
 }
 
 /**
@@ -258,13 +279,13 @@ const MapView = connect(
   state => ({
     visibleSource: state.map.layers.byId.base.parameters.source,
     selectedTool: state.map.tools.selectedTool,
-    selection: state.map.selection
+    selection: state.map.selection,
+    ownLocationVisible: isOwnLocationVisible(state)
   })
 )(MapViewPresentation)
 
 MapView.propTypes = {
   flock: PropTypes.instanceOf(Flock),
-  mapReferenceRequestSignal: PropTypes.instanceOf(Signal),
   projection: PropTypes.func.isRequired
 }
 

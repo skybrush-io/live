@@ -64,12 +64,32 @@ div.dialog-sidebar {
   box-shadow: 5px 0px @primary-color inset;
 }
 
+/* Background hints */
+.background-hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  text-align: center;
+
+  width: 100%;
+  height: 100%;
+
+  .header {
+    font-size: 150%;
+    padding-bottom: 0.5ex;
+    color: rgba(0, 0, 0, 0.35);
+  }
+  .text {
+    color: rgba(0, 0, 0, 0.35);
+  }
+}
+
 /* Widgets placed over the map */
 .widget {
   position: absolute !important;
   min-width: 48px;
   min-height: 48px;
-  
   /* Title of widget */
   .title {
     font-size: 10pt;
@@ -109,7 +129,9 @@ div.dialog-sidebar {
   }
 
   &.ol-full-screen {
-    right: 8px + 300px + 8px;
+    right: auto;
+    top: 8px + 48px + 8px;
+    left: 8px;
   }
 
   &.ol-overviewmap {
@@ -167,4 +189,46 @@ div.dialog-sidebar {
 
 .ol-mouse-position:empty {
   display: none;
+}
+
+#heatmapScale {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  position: absolute;
+  left: 8px;
+  bottom: 8px + 14px + 8px;
+
+  width: 28px;
+  height: 200px;
+
+  background: linear-gradient(hsla(0, 70%, 50%, 0.75), hsla(100, 70%, 50%, 0.75));
+
+  span {
+    background-color: rgba(200, 200, 200, 0.75);
+
+    position: relative;
+    left: 40px;
+
+    margin-right: auto;
+    padding: 2px;
+
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
+  }
+
+  span:after {
+    display: block;
+
+    content: '';
+
+    position: absolute;
+    left: -12px;
+    top: 0px;
+
+    border-style: solid;
+    border-width: 12px 12px 12px 0;
+    border-color: transparent rgba(200, 200, 200, 0.75);
+  }
 }

@@ -1,4 +1,5 @@
 import React from 'react'
+
 import { Provider as StoreProvider } from 'react-redux'
 import injectTapEventPlugin from 'react-tap-event-plugin'
 
@@ -10,11 +11,12 @@ import GlobalErrorDialog from './components/GlobalErrorDialog'
 import GlobalSnackbar from './components/GlobalSnackbar'
 import HotkeyHandler from './components/HotkeyHandler'
 import LayersDialog from './components/map/LayersDialog'
-import MapReferenceRequestHandler from './components/map/MapReferenceRequestHandler'
 import MapToolbar from './components/map/MapToolbar'
 import MapView from './components/map/MapView'
+import MessagesDialog from './components/MessagesDialog'
 import ServerConnectionManager from './components/ServerConnectionManager'
 import ServerSettingsDialog from './components/ServerSettingsDialog'
+import UAVToolbar from './components/map/UAVToolbar'
 import Widget from './components/Widget'
 
 import hotkeys from './hotkeys'
@@ -23,22 +25,11 @@ import store from './store'
 import theme from './theme'
 
 require('../assets/css/screen.less')
+require('../assets/css/chat.less')
 require('../assets/css/kbd.css')
 
 // Enable tap events on the UI
 injectTapEventPlugin()
-
-/**
- * Signal for requesting the map reference.
- *
- * @todo Ask Tamás where this should be declared.
- */
-const mapReferenceRequestSignal = MapReferenceRequestHandler.generateRequestSignal()
-
-/**
- * Array containing the hotkey objects that are now connected to the Redux store.
- */
-const appliedHotkeys = hotkeys(store, flock)
 
 /**
  * The main application component.
@@ -50,8 +41,8 @@ export default class Application extends React.Component {
         <MuiThemeProvider muiTheme={theme}>
           <div>
             <div id="canvas">
-              <HotkeyHandler hotkeys={appliedHotkeys}>
-                <MapView flock={flock} mapReferenceRequestSignal={mapReferenceRequestSignal} />
+              <HotkeyHandler hotkeys={hotkeys}>
+                <MapView flock={flock} />
               </HotkeyHandler>
 
               <Widget style={{ right: 8, bottom: 8, width: 300 }}>
@@ -63,7 +54,11 @@ export default class Application extends React.Component {
               </Widget>
 
               <Widget style={{ top: 8, left: (8 + 24 + 8) }} showControls={false}>
-                <MapToolbar mapReferenceRequestSignal={mapReferenceRequestSignal} />
+                <MapToolbar />
+              </Widget>
+
+              <Widget style={{ top: 8 + 48 + 8 + 24 + 8, left: 8 }} showControls={false}>
+                <UAVToolbar />
               </Widget>
             </div>
 
@@ -71,6 +66,7 @@ export default class Application extends React.Component {
             <ServerConnectionManager />
 
             <LayersDialog />
+            <MessagesDialog flock={flock} />
 
             <GlobalErrorDialog />
             <GlobalSnackbar />

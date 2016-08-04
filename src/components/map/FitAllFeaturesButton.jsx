@@ -8,7 +8,7 @@ import { showSnackbarMessage } from '../../actions/snackbar'
 
 import ol from 'openlayers'
 
-import Signal from 'mini-signals'
+import { mapReferenceRequestSignal, fitAllFeaturesSignal } from '../../signals'
 
 import IconButton from 'material-ui/IconButton'
 import DeviceGpsFixed from 'material-ui/svg-icons/device/gps-fixed'
@@ -20,9 +20,6 @@ import DeviceGpsFixed from 'material-ui/svg-icons/device/gps-fixed'
  * @property {number} margin amount of margin to leave between the features
  * and the border of the view
  * @property {number} duration the amount of time the transition should take (in ms)
- *
- * @param {Object} context react context of the component
- * @property {Signal} mapReferenceRequestSignal Mini-signal for requesting the map reference
  *
  * @emits {mapReferenceRequestSignal} requests map reference.
  */
@@ -36,19 +33,18 @@ export default class FitAllFeaturesButton extends React.Component {
    * and the border of the view
    * @property {number} duration the amount of time the transition should take (in ms)
    *
-   * @param {Object} context react context of the component
-   * @property {Signal} mapReferenceRequestSignal Mini-signal for requesting the map reference
-   *
    * @emits {mapReferenceRequestSignal} requests map reference.
    */
-  constructor (props, context) {
+  constructor (props) {
     super(props)
 
     this.onMapReferenceReceived_ = this.onMapReferenceReceived_.bind(this)
     this.handleClick_ = this.handleClick_.bind(this)
     this.geolocationReceived_ = this.geolocationReceived_.bind(this)
 
-    context.mapReferenceRequestSignal.dispatch(this.onMapReferenceReceived_)
+    fitAllFeaturesSignal.add(this.handleClick_)
+
+    mapReferenceRequestSignal.dispatch(this.onMapReferenceReceived_)
   }
 
   render () {
@@ -87,8 +83,8 @@ export default class FitAllFeaturesButton extends React.Component {
         'No valid drones avaiable, trying to get geolocation instead'
       ))
 
-      if ('geolocation' in navigator) {
-        navigator.geolocation.getCurrentPosition(this.geolocationReceived_)
+      if ('geolocation' in window.navigator) {
+        window.navigator.geolocation.getCurrentPosition(this.geolocationReceived_)
       }
       return
     }
@@ -158,10 +154,6 @@ FitAllFeaturesButton.propTypes = {
   duration: PropTypes.number,
   margin: PropTypes.number,
   dispatch: PropTypes.func
-}
-
-FitAllFeaturesButton.contextTypes = {
-  mapReferenceRequestSignal: PropTypes.instanceOf(Signal)
 }
 
 export default connect()(FitAllFeaturesButton)

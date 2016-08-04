@@ -3,6 +3,24 @@
  */
 
 import ol from 'openlayers'
+import _ from 'lodash'
+
+/**
+ * Object containing the conditions under which a drone should be colored
+ * to a certain color.
+ */
+const colorPredicates = {
+  pink: (id) => ['13', '15', '16', '12', '14'].includes(id),
+  orange: (id) => ['11'].includes(id),
+  blue: (id) => ['10', '01', '02', '03'].includes(id)
+}
+
+/**
+ * @param {string} id the identifier of the drone
+ *
+ * @return {string} the assigned color ('black' if no predicates match)
+ */
+const getColorById = id => _.findKey(colorPredicates, (p) => p(id)) || 'black'
 
 /**
 * Feature that represents an UAV on an OpenLayers map.
@@ -46,6 +64,7 @@ export default class UAVFeature extends ol.Feature {
 
     if (this.iconImage) {
       this.iconImage.setRotation(((this.heading_ + 45) % 360) * Math.PI / 180)
+      this.selectionImage.setRotation(((this.heading_ + 45) % 360) * Math.PI / 180)
     }
   }
 
@@ -74,14 +93,29 @@ export default class UAVFeature extends ol.Feature {
    * Sets up or updates the style of the feature.
    */
   setupStyle_ () {
+    let styles = []
+
     this.iconImage = new ol.style.Icon({
       rotateWithView: true,
       rotation: ((this.heading_ + 45) % 360) * Math.PI / 180,
       snapToPixel: false,
-      src: [this.selected_ ? '/assets/drone.32x32.red.selected.png' : '/assets/drone.32x32.red.png']
+      src: `/assets/drone.${getColorById(this.uavId)}.32x32.png`
     })
-
     this.iconStyle = new ol.style.Style({ image: this.iconImage })
+    styles.push(this.iconStyle)
+
+    this.selectionImage = new ol.style.Icon({
+      rotateWithView: true,
+      rotation: ((this.heading_ + 45) % 360) * Math.PI / 180,
+      snapToPixel: false,
+      src: '/assets/selection_glow.png'
+    })
+    this.selectionStyle = new ol.style.Style({ image: this.selectionImage })
+
+    if (this.selected_) {
+      styles.push(this.selectionStyle)
+    }
+
     this.labelStyle = new ol.style.Style({
       text: new ol.style.Text({
         font: '12px sans-serif',
@@ -90,7 +124,8 @@ export default class UAVFeature extends ol.Feature {
         textAlign: 'center'
       })
     })
+    styles.push(this.labelStyle)
 
-    this.setStyle([this.iconStyle, this.labelStyle])
+    this.setStyle(styles)
   }
 }
