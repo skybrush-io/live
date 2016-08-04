@@ -8,6 +8,8 @@ import _ from 'lodash'
 import Signal from 'mini-signals'
 import ol from 'openlayers'
 
+import { updateUAVFeatureColorsSignal } from '../../signals'
+
 /**
  * Object responsible for constructing features on an OpenLayers
  * vector layer based on string identifiers (one feature for each string
@@ -36,6 +38,13 @@ export default class FeatureManager {
 
     this.featureAdded = new Signal()
     this.featureRemoved = new Signal()
+
+    updateUAVFeatureColorsSignal.add(() => {
+      const features = this.getFeatureArray()
+      for (const feature of features) {
+        feature.setupStyle_()
+      }
+    })
   }
 
   /**

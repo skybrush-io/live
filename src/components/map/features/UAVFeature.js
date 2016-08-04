@@ -9,11 +9,7 @@ import _ from 'lodash'
  * Object containing the conditions under which a drone should be colored
  * to a certain color.
  */
-const colorPredicates = {
-  pink: (id) => ['13', '15', '16', '12', '14'].includes(id),
-  orange: (id) => ['11'].includes(id),
-  blue: (id) => ['10', '01', '02', '03'].includes(id)
-}
+export const colorPredicates = {}
 
 /**
  * @param {string} id the identifier of the drone

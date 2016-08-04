@@ -7,6 +7,7 @@ import Signal from 'mini-signals'
 export const mapReferenceRequestSignal = new Signal()
 export const mapRotationResetSignal = new Signal()
 export const fitAllFeaturesSignal = new Signal()
+export const updateUAVFeatureColorsSignal = new Signal()
 
 /**
  * The singleton object instance containing the signals used in the application.
@@ -14,5 +15,6 @@ export const fitAllFeaturesSignal = new Signal()
 export default {
   mapReferenceRequestSignal: mapReferenceRequestSignal,
   mapRotationResetSignal: mapRotationResetSignal,
-  fitAllFeaturesSignal: fitAllFeaturesSignal
+  fitAllFeaturesSignal: fitAllFeaturesSignal,
+  updateUAVFeatureColorsSignal: updateUAVFeatureColorsSignal
 }

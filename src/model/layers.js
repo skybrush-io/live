@@ -70,7 +70,10 @@ const propertiesForLayerTypes_ = {
   },
   [LayerType.UAVS]: {
     label: 'UAVs',
-    icon: <Flight />
+    icon: <Flight />,
+    parameters: {
+      colorPredicates: {}
+    }
   },
   [LayerType.UNTYPED]: {
     label: 'Untyped layer',
