@@ -163,7 +163,6 @@ function addOutboundMessageToUAV (state, recipient, body) {
     author: 'Operator',
     date: new Date(),
     responseId: null,
-    timedOutAt: null,
     recipient,
     body
   }

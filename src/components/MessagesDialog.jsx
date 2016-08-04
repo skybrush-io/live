@@ -30,20 +30,14 @@ import messageHub from '../message-hub'
  */
 function convertMessageToComponent (message) {
   const keyBase = `message${message.id}`
-  const inProgress = !message.responseId && !message.timedOutAt
+  const inProgress = !message.responseId
   switch (message.type) {
     case MessageType.OUTBOUND:
       return [
         <ChatBubble key={keyBase} author={message.author} own={true}
           date={message.date} body={message.body}
           rightComponent={inProgress ? <CircularProgress size={0.5} /> : false}
-          />,
-        message.responseId
-          ? false
-          : (message.timedOutAt
-              ? <Marker key={keyBase + 'Marker'} level="error"
-                  message="Response timed out" date={message.timedOutAt} />
-              : false)
+          />
       ]
 
     case MessageType.INBOUND:
@@ -200,7 +194,8 @@ const MessagesDialog = connect(
         },
         // error handler
         error => {
-          dispatch(addErrorMessageInMessagesDialog(error.message, uavId, messageId))
+          const message = error.userMessage || error.message
+          dispatch(addErrorMessageInMessagesDialog(message, uavId, messageId))
         }
       )
     }
