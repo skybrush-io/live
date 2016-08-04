@@ -22,7 +22,7 @@ class ServerSettingsFormPresentation extends React.Component {
   render () {
     const { fields: { hostName, port } } = this.props
     return (
-      <div>
+      <div onKeyPress={this.props.onKeyPress}>
         <TextField {...hostName} floatingLabelText="Hostname" spellCheck="false" errorText={hostName.touched && hostName.error} /><br />
         <TextField {...port} floatingLabelText="Port" spellCheck="false" errorText={port.touched && port.error} />
       </div>
@@ -31,7 +31,8 @@ class ServerSettingsFormPresentation extends React.Component {
 }
 
 ServerSettingsFormPresentation.propTypes = {
-  fields: PropTypes.object.isRequired
+  fields: PropTypes.object.isRequired,
+  onKeyPress: PropTypes.func
 }
 
 /**
@@ -58,10 +59,17 @@ class ServerSettingsDialogPresentation extends React.Component {
   constructor (props) {
     super(props)
     this.handleSubmit = this.handleSubmit.bind(this)
+    this.handleKeyPress_ = this.handleKeyPress_.bind(this)
   }
 
   handleSubmit () {
     this.refs.form.submit()
+  }
+
+  handleKeyPress_ (e) {
+    if (e.nativeEvent.code === 'Enter') {
+      this.handleSubmit()
+    }
   }
 
   render () {
@@ -75,10 +83,12 @@ class ServerSettingsDialogPresentation extends React.Component {
     }
     return (
       <Dialog title="Server Settings" open={open}
-              actions={actions} contentStyle={contentStyle}
-              onRequestClose={onClose}
+        actions={actions} contentStyle={contentStyle}
+        onRequestClose={onClose}
       >
-        <ServerSettingsForm ref="form" onSubmit={onSubmit} />
+        <ServerSettingsForm ref="form"
+          onSubmit={onSubmit}
+          onKeyPress={this.handleKeyPress_} />
       </Dialog>
     )
   }
