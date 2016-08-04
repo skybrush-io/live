@@ -17,7 +17,7 @@ class GeoJSONLayerSettingsPresentation extends React.Component {
     super(props)
 
     this.state = {
-      data: props.layer.parameters.data
+      data: JSON.stringify(props.layer.parameters.data, null, 2)
     }
 
     this.handleChange_ = this.handleChange_.bind(this)
@@ -53,8 +53,8 @@ class GeoJSONLayerSettingsPresentation extends React.Component {
 
   handleClick_ () {
     try {
-      JSON.parse(this.state.data)
-      this.props.setLayerParameter('data', this.state.data)
+      const parsedData = JSON.parse(this.state.data)
+      this.props.setLayerParameter('data', parsedData)
       this.props.showMessage('GeoJSON imported successfully.')
     } catch (e) {
       this.props.showMessage('Invalid GeoJSON data.')
