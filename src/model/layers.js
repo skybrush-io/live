@@ -58,7 +58,12 @@ const propertiesForLayerTypes_ = {
   },
   [LayerType.HEXGRID]: {
     label: 'HEX Grid layer',
-    icon: <ImageGridOn />
+    icon: <ImageGridOn />,
+    parameters: {
+      center: [19.061951, 47.473340],
+      size: 8,
+      radius: 0.0005
+    }
   },
   [LayerType.HEATMAP]: {
     label: 'Heatmap',
