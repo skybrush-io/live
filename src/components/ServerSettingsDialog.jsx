@@ -20,6 +20,7 @@ import { createValidator, between, integer, required } from '../utils/validation
  */
 class ServerSettingsFormPresentation extends React.Component {
   render () {
+    this.props.getFormFields(this.props.fields)
     const { fields: { hostName, port } } = this.props
     return (
       <div onKeyPress={this.props.onKeyPress}>
@@ -32,7 +33,8 @@ class ServerSettingsFormPresentation extends React.Component {
 
 ServerSettingsFormPresentation.propTypes = {
   fields: PropTypes.object.isRequired,
-  onKeyPress: PropTypes.func
+  onKeyPress: PropTypes.func,
+  getFormFields: PropTypes.func
 }
 
 /**
@@ -60,6 +62,8 @@ class ServerSettingsDialogPresentation extends React.Component {
     super(props)
     this.handleSubmit = this.handleSubmit.bind(this)
     this.handleKeyPress_ = this.handleKeyPress_.bind(this)
+    this.getFormFields = this.getFormFields.bind(this)
+    this.autoSet_ = this.autoSet_.bind(this)
   }
 
   handleSubmit () {
@@ -72,10 +76,20 @@ class ServerSettingsDialogPresentation extends React.Component {
     }
   }
 
+  getFormFields (fields) {
+    this.formFields = fields
+  }
+
+  autoSet_ () {
+    this.formFields.hostName.onChange(window.location.hostname)
+    this.formFields.port.onChange('5000')
+  }
+
   render () {
     const { onClose, onSubmit, open } = this.props
     const actions = [
       <FlatButton label="Connect" primary={true} onTouchTap={this.handleSubmit} />,
+      <FlatButton label="Auto" onTouchTap={this.autoSet_} />,
       <FlatButton label="Close" onTouchTap={onClose} />
     ]
     const contentStyle = {
@@ -88,6 +102,7 @@ class ServerSettingsDialogPresentation extends React.Component {
       >
         <ServerSettingsForm ref="form"
           onSubmit={onSubmit}
+          getFormFields={this.getFormFields}
           onKeyPress={this.handleKeyPress_} />
       </Dialog>
     )
