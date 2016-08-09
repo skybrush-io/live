@@ -1,6 +1,5 @@
-import _ from 'lodash'
 import React, { PropTypes } from 'react'
-import { Map, View, control, interaction, layer } from 'ol-react'
+import { Map, View, control, interaction } from 'ol-react'
 import { connect } from 'react-redux'
 
 import ol from 'openlayers'
@@ -10,7 +9,6 @@ import { Layers, stateObjectToLayer } from './layers/index.js'
 
 import MapReferenceRequestHandler from './MapReferenceRequestHandler'
 
-import OwnLocation from './OwnLocation'
 import SelectNearestFeature from './interactions/SelectNearestFeature'
 
 import { Tool } from './tools'
@@ -58,7 +56,7 @@ class MapViewPresentation extends React.Component {
   }
 
   render () {
-    const { projection, selectedTool, ownLocationVisible } = this.props
+    const { projection, selectedTool } = this.props
     const center = projection([19.061951, 47.473340])
     const view = <View center={center} zoom={17} />
 
@@ -85,12 +83,6 @@ class MapViewPresentation extends React.Component {
         <div>
           {layers}
         </div>
-
-        <layer.Vector visible={ownLocationVisible}
-          updateWhileAnimating={true}
-          updateWhileInteracting={true}>
-          <OwnLocation />
-        </layer.Vector>
 
         <control.FullScreen source={document.body} />
 
@@ -248,18 +240,12 @@ MapViewPresentation.propTypes = {
   layersById: PropTypes.object,
   projection: PropTypes.func.isRequired,
   selectedTool: PropTypes.string,
-  ownLocationVisible: PropTypes.bool,
   dispatch: PropTypes.func.isRequired
 }
 
 MapViewPresentation.childContextTypes = {
   assignActiveUAVsLayerRef_: PropTypes.func,
   assignActiveUAVsLayerSourceRef_: PropTypes.func
-}
-
-const isOwnLocationVisible = state => {
-  const ownLocationLayer = _.find(state.map.layers.byId, {type: 'ownlocation'})
-  return typeof ownLocationLayer !== 'undefined' && ownLocationLayer.visible
 }
 
 /**
@@ -270,8 +256,7 @@ const MapView = connect(
   state => ({
     layerOrder: state.map.layers.order,
     layersById: state.map.layers.byId,
-    selectedTool: state.map.tools.selectedTool,
-    ownLocationVisible: isOwnLocationVisible(state)
+    selectedTool: state.map.tools.selectedTool
   })
 )(MapViewPresentation)
 

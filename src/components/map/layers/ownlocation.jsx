@@ -1,7 +1,36 @@
-import ol from 'openlayers'
-import { source } from 'ol-react'
+import React, { PropTypes } from 'react'
+import { connect } from 'react-redux'
 
-export default class OwnLocation extends source.Vector {
+import ol from 'openlayers'
+import { layer, source } from 'ol-react'
+
+// === Settings for this particular layer type ===
+
+class OwnLocationLayerSettingsPresentation extends React.Component {
+  render () {
+    return (
+      <div>
+        <p key="header">Settings for location marker:</p>
+      </div>
+    )
+  }
+}
+
+OwnLocationLayerSettingsPresentation.propTypes = {
+  layer: PropTypes.object,
+  layerId: PropTypes.string
+}
+
+export const OwnLocationLayerSettings = connect(
+  // mapStateToProps
+  (state, ownProps) => ({}),
+  // mapDispatchToProps
+  (dispatch, ownProps) => ({})
+)(OwnLocationLayerSettingsPresentation)
+
+// === The actual layer to be rendered ===
+
+class OwnLocationVectorSource extends source.Vector {
   constructor (props, context) {
     super(props)
 
@@ -51,3 +80,34 @@ export default class OwnLocation extends source.Vector {
     this.source.refresh()
   }
 }
+
+class OwnLocationLayerPresentation extends React.Component {
+  render () {
+    if (!this.props.layer.visible) {
+      return false
+    }
+
+    return (
+      <div>
+        <layer.Vector zIndex={this.props.zIndex}
+          updateWhileAnimating={true}
+          updateWhileInteracting={true}>
+          <OwnLocationVectorSource />
+        </layer.Vector>
+      </div>
+    )
+  }
+}
+
+OwnLocationLayerPresentation.propTypes = {
+  layer: PropTypes.object,
+  layerId: PropTypes.string,
+  zIndex: PropTypes.number
+}
+
+export const OwnLocationLayer = connect(
+  // mapStateToProps
+  (state, ownProps) => ({}),
+  // mapDispatchToProps
+  (dispatch, ownProps) => ({})
+)(OwnLocationLayerPresentation)
