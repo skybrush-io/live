@@ -86,7 +86,8 @@ const propertiesForLayerTypes_ = {
     label: 'UAV Trace',
     icon: <ActionTimeline />,
     parameters: {
-      trailLength: 30
+      trailLength: 10,
+      trailColor: '#000000'
     }
   },
   [LayerType.UNTYPED]: {

@@ -11,6 +11,16 @@ import { layer, source } from 'ol-react'
 import flock from '../../../flock'
 import { coordinateFromLonLat } from '../MapView'
 
+/**
+ * Helper function that creates an OpenLayers stroke style object from a color.
+ *
+ * @param {color} color the color of the stroke line
+ * @return {Object} the OpenLayers style object
+ */
+const makeStrokeStyle = color => new ol.style.Style({
+  stroke: new ol.style.Stroke({ color: color })
+})
+
 // === Settings for this particular layer type ===
 
 class UAVTraceLayerSettingsPresentation extends React.Component {
@@ -21,7 +31,6 @@ class UAVTraceLayerSettingsPresentation extends React.Component {
       trailLength: this.props.layer.parameters.trailLength
     }
 
-    this.handleChange_ = this.handleChange_.bind(this)
     this.handleClick_ = this.handleClick_.bind(this)
   }
 
@@ -32,8 +41,14 @@ class UAVTraceLayerSettingsPresentation extends React.Component {
         <TextField ref="trailLength"
           floatingLabelText="Length of the trail"
           hintText="Length"
-          defaultValue={this.props.layer.parameters.trailLength}
-          onChange={this.handleChange_} />
+          type="number"
+          defaultValue={this.props.layer.parameters.trailLength} />
+        <p>
+          Trail color:
+          <input ref="trailColor"
+            type="color"
+            defaultValue={this.props.layer.parameters.trailColor} />
+        </p>
         <br />
         <RaisedButton
           label="Set parameters"
@@ -42,14 +57,9 @@ class UAVTraceLayerSettingsPresentation extends React.Component {
     )
   }
 
-  handleChange_ (e) {
-    this.setState({
-      trailLength: e.target.value
-    })
-  }
-
   handleClick_ () {
-    this.props.setLayerParameter('trailLength', this.state.trailLength)
+    this.props.setLayerParameter('trailLength', this.refs.trailLength.getValue())
+    this.props.setLayerParameter('trailColor', this.refs.trailColor.value)
   }
 }
 
@@ -76,64 +86,44 @@ export const UAVTraceLayerSettings = connect(
 class UAVTraceVectorSource extends source.Vector {
   constructor (props) {
     super(props)
+    this.lineStringsById = {}
 
-    // this.uavLocationHistory = {}
-
-    this.featuresById = {}
-
-    this.handleAdd_ = this.handleAdd_.bind(this)
     this.handleUpdate_ = this.handleUpdate_.bind(this)
 
-    flock.uavsAdded.add(this.handleAdd_)
     flock.uavsUpdated.add(this.handleUpdate_)
-  }
 
-  handleAdd_ (uavs) {
-    // for (const uav of uavs) {
-    //   this.uavLocationHistory[uav._id] = [{
-    //     lat: uav.lat,
-    //     lon: uav.lon,
-    //     heading: uav.heading
-    //   }]
-    // }
-
-    for (const uav of uavs) {
-      this.featuresById[uav._id] = []
-    }
+    window.sor = this.source
   }
 
   handleUpdate_ (uavs) {
-    // for (const uav of uavs) {
-    //   this.uavLocationHistory[uav._id].push({
-    //     lat: uav.lat,
-    //     lon: uav.lon,
-    //     heading: uav.heading
-    //   })
-    // }
-
     for (const uav of uavs) {
-      const currentFeature = new ol.Feature(new ol.geom.Point(
-        coordinateFromLonLat([uav.lon, uav.lat])
-      ))
-
-      if (!(uav._id in this.featuresById)) {
-        this.featuresById[uav._id] = []
+      if (uav._id in this.lineStringsById) {
+        this.lineStringsById[uav._id].appendCoordinate(
+          coordinateFromLonLat([uav.lon, uav.lat])
+        )
+      } else {
+        this.lineStringsById[uav._id] = new ol.geom.LineString(
+          [coordinateFromLonLat([uav.lon, uav.lat])]
+        )
+        let feature = new ol.Feature(this.lineStringsById[uav._id])
+        feature.setStyle(makeStrokeStyle(this.props.trailColor))
+        this.source.addFeature(feature)
       }
 
-      this.featuresById[uav._id].push(currentFeature)
-
-      this.source.addFeature(currentFeature)
-    }
-
-    for (const id in this.featuresById) {
-      while (this.featuresById[id].length > this.props.trailLength) {
-        this.source.removeFeature(this.featuresById[id].shift())
+      while (this.lineStringsById[uav._id].getCoordinates().length > this.props.trailLength) {
+        this.lineStringsById[uav._id].setCoordinates(
+          this.lineStringsById[uav._id].getCoordinates().slice(1)
+        )
       }
     }
   }
 
   componentWillReceiveProps (newProps) {
+    const features = this.source.getFeatures()
 
+    for (const feature of features) {
+      feature.setStyle(makeStrokeStyle(newProps.trailColor))
+    }
   }
 }
 
@@ -145,8 +135,12 @@ class UAVTraceLayerPresentation extends React.Component {
 
     return (
       <div>
-        <layer.Vector zIndex={this.props.zIndex}>
-          <UAVTraceVectorSource trailLength={this.props.layer.parameters.trailLength}/>
+        <layer.Vector zIndex={this.props.zIndex}
+          updateWhileAnimating={true}
+          updateWhileInteracting={true}>
+          <UAVTraceVectorSource
+            trailLength={this.props.layer.parameters.trailLength}
+            trailColor={this.props.layer.parameters.trailColor} />
         </layer.Vector>
       </div>
     )

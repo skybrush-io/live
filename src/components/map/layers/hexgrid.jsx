@@ -9,6 +9,12 @@ import TextField from 'material-ui/TextField'
 
 import { setLayerParameterById } from '../../../actions/layers'
 
+/**
+ * Helper function that creates an OpenLayers fill style object from a color.
+ *
+ * @param {color} color the color of the filling
+ * @return {Object} the OpenLayers style object
+ */
 const makeFillStyle = color => new ol.style.Style({
   fill: new ol.style.Fill({ color: color })
 })
