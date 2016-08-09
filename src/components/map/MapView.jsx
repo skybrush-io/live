@@ -31,7 +31,7 @@ require('openlayers/css/ol.css')
  * @return {Object} the OpenLayers coordinate corresponding to the given
  *         latitude and longitude
  */
-const coordinateFromLonLat = coords => (
+export const coordinateFromLonLat = coords => (
   // EPSG:3857 is Spherical Mercator projection, as used by most tile-based
   // mapping services
   ol.proj.fromLonLat(coords, 'EPSG:3857')

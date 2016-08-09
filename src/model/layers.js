@@ -7,12 +7,13 @@ import _ from 'lodash'
 import React from 'react'
 
 import ActionHelpOutline from 'material-ui/svg-icons/action/help-outline'
+import ActionTimeline from 'material-ui/svg-icons/action/timeline'
 import ActionTrackChanges from 'material-ui/svg-icons/action/track-changes'
+import FileAttachment from 'material-ui/svg-icons/file/attachment'
 import Flight from 'material-ui/svg-icons/maps/flight'
+import ImageGridOn from 'material-ui/svg-icons/image/grid-on'
 import Map from 'material-ui/svg-icons/maps/map'
 import MyLocation from 'material-ui/svg-icons/maps/my-location'
-import FileAttachment from 'material-ui/svg-icons/file/attachment'
-import ImageGridOn from 'material-ui/svg-icons/image/grid-on'
 
 /**
  * Enum containing constants for the various layer types that we support.
@@ -24,6 +25,7 @@ export const LayerType = {
   HEXGRID: 'hexgrid',
   OWN_LOCATION: 'ownlocation',
   UAVS: 'uavs',
+  UAVTrace: 'uavtrace',
   UNTYPED: 'untyped'
 }
 
@@ -31,7 +33,7 @@ export const LayerType = {
  * Constant containing all the layer types in the order preferred on the UI.
  */
 export const LayerTypes = [
-  LayerType.BASE, LayerType.UAVS, LayerType.OWN_LOCATION,
+  LayerType.BASE, LayerType.UAVS, LayerType.UAVTRACE, LayerType.OWN_LOCATION,
   LayerType.GEOJSON, LayerType.HEXGRID, LayerType.HEATMAP
 ]
 
@@ -78,6 +80,13 @@ const propertiesForLayerTypes_ = {
     icon: <Flight />,
     parameters: {
       colorPredicates: {}
+    }
+  },
+  [LayerType.UAVTRACE]: {
+    label: 'UAV Trace',
+    icon: <ActionTimeline />,
+    parameters: {
+      trailLength: 30
     }
   },
   [LayerType.UNTYPED]: {

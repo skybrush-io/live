@@ -1,6 +1,7 @@
 import React from 'react'
 import { BaseLayerSettings, BaseLayer } from './base'
 import { UAVsLayerSettings, UAVsLayer } from './uavs'
+import { UAVTraceLayerSettings, UAVTraceLayer } from './uavtrace'
 import { GeoJSONLayerSettings, GeoJSONLayer } from './geojson'
 import { UntypedLayerSettings, UntypedLayer } from './untyped'
 import { HexGridLayerSettings, HexGridLayer } from './hexgrid'
@@ -9,6 +10,7 @@ import { LayerType } from '../../../model/layers'
 export const LayerSettings = {
   [LayerType.BASE]: BaseLayerSettings,
   [LayerType.UAVS]: UAVsLayerSettings,
+  [LayerType.UAVTRACE]: UAVTraceLayerSettings,
   [LayerType.GEOJSON]: GeoJSONLayerSettings,
   [LayerType.UNTYPED]: UntypedLayerSettings,
   [LayerType.HEXGRID]: HexGridLayerSettings
@@ -26,6 +28,7 @@ export const stateObjectToLayerSettings = (layer, layerId) => {
 export const Layers = {
   [LayerType.BASE]: BaseLayer,
   [LayerType.UAVS]: UAVsLayer,
+  [LayerType.UAVTRACE]: UAVTraceLayer,
   [LayerType.GEOJSON]: GeoJSONLayer,
   [LayerType.UNTYPED]: UntypedLayer,
   [LayerType.HEXGRID]: HexGridLayer

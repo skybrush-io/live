@@ -5,7 +5,6 @@ import { connect } from 'react-redux'
 import { layer } from 'ol-react'
 import ActiveUAVsLayerSource from '../ActiveUAVsLayerSource'
 import flock from '../../../flock'
-import ol from 'openlayers'
 
 import { colorPredicates } from '../features/UAVFeature'
 const colors = ['pink', 'orange', 'yellow', 'green', 'blue', 'purple']
@@ -18,6 +17,8 @@ import { setLayerParameterById } from '../../../actions/layers'
 import { showSnackbarMessage } from '../../../actions/snackbar'
 
 import { updateUAVFeatureColorsSignal } from '../../../signals'
+
+import { coordinateFromLonLat } from '../MapView'
 
 const updatePredicates = (predicates, errorHandler) => {
   for (const color in predicates) {
@@ -112,12 +113,6 @@ export const UAVsLayerSettings = connect(
 )(UAVsLayerSettingsPresentation)
 
 // === The actual layer to be rendered ===
-
-const coordinateFromLonLat = coords => (
-  // EPSG:3857 is Spherical Mercator projection, as used by most tile-based
-  // mapping services
-  ol.proj.fromLonLat(coords, 'EPSG:3857')
-)
 
 class UAVsLayerPresentation extends React.Component {
   render () {
