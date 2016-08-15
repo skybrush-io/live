@@ -9,6 +9,8 @@ import TextField from 'material-ui/TextField'
 
 import { setLayerParameterById } from '../../../actions/layers'
 
+import { coordinateFromLonLat } from '../MapView'
+
 /**
  * Helper function that creates an OpenLayers fill style object from a color.
  *
@@ -101,10 +103,10 @@ class HexGridVectorSource extends source.Vector {
   getCorners_ (center, radius) {
     const angles = [30, 90, 150, 210, 270, 330].map(a => a * Math.PI / 180)
 
-    return angles.map(angle => ol.proj.fromLonLat([
+    return angles.map(angle => coordinateFromLonLat([
       center[0] + radius * Math.sin(angle),
       center[1] + radius * Math.cos(angle)
-    ], 'EPSG:3857'))
+    ]))
   }
 
   getHexagon_ (center, radius) {
@@ -141,6 +143,10 @@ class HexGridVectorSource extends source.Vector {
       features[hash].setStyle(makeFillStyle(`hsla(${hue}, 70%, 50%, 0.5)`))
     }
   }
+}
+
+HexGridVectorSource.propTypes = {
+  parameters: PropTypes.object
 }
 
 class HexGridLayerPresentation extends React.Component {

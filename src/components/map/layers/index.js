@@ -6,6 +6,7 @@ import { UAVTraceLayerSettings, UAVTraceLayer } from './uavtrace'
 import { GeoJSONLayerSettings, GeoJSONLayer } from './geojson'
 import { UntypedLayerSettings, UntypedLayer } from './untyped'
 import { HexGridLayerSettings, HexGridLayer } from './hexgrid'
+import { HeatmapLayerSettings, HeatmapLayer } from './heatmap'
 import { LayerType } from '../../../model/layers'
 
 export const LayerSettings = {
@@ -15,7 +16,8 @@ export const LayerSettings = {
   [LayerType.UAVTRACE]: UAVTraceLayerSettings,
   [LayerType.GEOJSON]: GeoJSONLayerSettings,
   [LayerType.UNTYPED]: UntypedLayerSettings,
-  [LayerType.HEXGRID]: HexGridLayerSettings
+  [LayerType.HEXGRID]: HexGridLayerSettings,
+  [LayerType.HEATMAP]: HeatmapLayerSettings
 }
 
 export const stateObjectToLayerSettings = (layer, layerId) => {
@@ -34,7 +36,8 @@ export const Layers = {
   [LayerType.UAVTRACE]: UAVTraceLayer,
   [LayerType.GEOJSON]: GeoJSONLayer,
   [LayerType.UNTYPED]: UntypedLayer,
-  [LayerType.HEXGRID]: HexGridLayer
+  [LayerType.HEXGRID]: HexGridLayer,
+  [LayerType.HEATMAP]: HeatmapLayer
 }
 
 export const stateObjectToLayer = (layer, layerId, zIndex) => {
