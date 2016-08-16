@@ -14,6 +14,10 @@ import MenuItem from 'material-ui/MenuItem'
 
 import RaisedButton from 'material-ui/RaisedButton'
 
+import { List, ListItem } from 'material-ui/List'
+import IconButton from 'material-ui/IconButton'
+import ContentRemoveCircleOutline from 'material-ui/svg-icons/content/remove-circle-outline'
+
 import TextField from 'material-ui/TextField'
 
 import { setLayerParameterById } from '../../../actions/layers'
@@ -28,6 +32,8 @@ class SubscriptionDialog extends React.Component {
     super(props)
 
     this.state = {
+      visible: false,
+
       subscriptions: props.subscriptions,
 
       available: {},
@@ -39,9 +45,14 @@ class SubscriptionDialog extends React.Component {
 
     this.updateDeviceList_ = this.updateDeviceList_.bind(this)
     this.deviceListReceived_ = this.deviceListReceived_.bind(this)
+
     this.handleChange_ = this.handleChange_.bind(this)
     this.handleClick_ = this.handleClick_.bind(this)
-    this.onClose_ = this.onClose_.bind(this)
+
+    this.removeSubscription_ = this.removeSubscription_.bind(this)
+
+    this.showDialog = this.showDialog.bind(this)
+    this.hideDialog_ = this.hideDialog_.bind(this)
   }
 
   render () {
@@ -61,30 +72,46 @@ class SubscriptionDialog extends React.Component {
       <MenuItem key={channel} value={channel} primaryText={channel} />
     ) : []
 
+    const subscriptionItems = this.state.subscriptions.map(subscription =>
+      <ListItem key={subscription} primaryText={subscription} rightIconButton={
+        <IconButton tooltip="Unsubscribe"
+          onClick={_.partial(this.removeSubscription_, subscription)}>
+          <ContentRemoveCircleOutline />
+        </IconButton>
+      } />
+    )
+
     const actions = [
-      <FlatButton label="Done" primary={true} onTouchTap={this.onClose_} />
+      <FlatButton label="Done" primary={true} onTouchTap={this.hideDialog_} />
     ]
 
     return (
       <Dialog
-        open={this.props.visible}
+        open={this.state.visible}
         actions={actions}>
         UAV:
-        <DropDownMenu value={this.state.selectedUAV} onChange={this.handleChange_('selectedUAV')}>
+        <DropDownMenu value={this.state.selectedUAV}
+          onChange={_.partial(this.handleChange_, 'selectedUAV')}>
           {UAVMenuItems}
         </DropDownMenu>
         Device:
-        <DropDownMenu value={this.state.selectedDevice} onChange={this.handleChange_('selectedDevice')}>
+        <DropDownMenu value={this.state.selectedDevice}
+          onChange={_.partial(this.handleChange_, 'selectedDevice')}>
           {DeviceMenuItems}
         </DropDownMenu>
         Channel:
-        <DropDownMenu value={this.state.selectedChannel} onChange={this.handleChange_('selectedChannel')}>
+        <DropDownMenu value={this.state.selectedChannel}
+          onChange={_.partial(this.handleChange_, 'selectedChannel')}>
           {ChannelMenuItems}
         </DropDownMenu>
-
         <RaisedButton
+          disabled={this.state.subscriptions.includes(this.currentPath)}
           label="Subscribe"
           onClick={this.handleClick_} />
+
+        <List>
+          {subscriptionItems}
+        </List>
       </Dialog>
     )
   }
@@ -117,31 +144,62 @@ class SubscriptionDialog extends React.Component {
     })
   }
 
-  handleChange_ (parameter) {
-    return (event, index, value) => {
-      this.setState({
-        [parameter]: value
-      })
-    }
-  }
-
-  handleClick_ () {
-    messageHub.sendMessage({
-      'type': 'DEV-SUB',
-      'paths': [
-        `/${this.state.selectedUAV}/${this.state.selectedDevice}/${this.state.selectedChannel}`
-      ]
+  handleChange_ (parameter, event, index, value) {
+    this.setState({
+      [parameter]: value
     })
   }
 
-  onClose_ () {
-    // TODO: move visibility to state from props and set it to false here
+  get currentPath () {
+    return `/${this.state.selectedUAV}/${this.state.selectedDevice}/${this.state.selectedChannel}`
+  }
+
+  handleClick_ () {
+    const path = this.currentPath
+
+    messageHub.sendMessage({
+      'type': 'DEV-SUB',
+      'paths': [
+        path
+      ]
+    })
+
+    this.setState({
+      subscriptions: this.state.subscriptions.concat(path)
+    })
+  }
+
+  removeSubscription_ (subscription) {
+    messageHub.sendMessage({
+      'type': 'DEV-UNSUB',
+      'paths': [
+        subscription
+      ]
+    })
+
+    this.setState({
+      subscriptions: _.without(this.state.subscriptions, subscription)
+    })
+  }
+
+  showDialog () {
+    this.setState({
+      visible: true
+    })
+  }
+
+  hideDialog_ () {
+    this.props.setSubscriptions(this.state.subscriptions)
+
+    this.setState({
+      visible: false
+    })
   }
 }
 
 SubscriptionDialog.propTypes = {
   subscriptions: PropTypes.arrayOf(PropTypes.string),
-  visible: PropTypes.bool
+  setSubscriptions: PropTypes.func
 }
 
 class HeatmapLayerSettingsPresentation extends React.Component {
@@ -150,9 +208,7 @@ class HeatmapLayerSettingsPresentation extends React.Component {
 
     this.state = {
       minHue: props.layer.parameters.minHue,
-      maxHue: props.layer.parameters.maxHue,
-
-      subscriptionDialogVisible: false
+      maxHue: props.layer.parameters.maxHue
     }
 
     this.showSubscriptionDialog_ = this.showSubscriptionDialog_.bind(this)
@@ -172,20 +228,22 @@ class HeatmapLayerSettingsPresentation extends React.Component {
     return (
       <div>
         <SubscriptionDialog ref="subscriptionDialog"
-          visible={this.state.subscriptionDialogVisible}
-          subscriptions={this.props.layer.parameters.subscriptions} />
+          subscriptions={this.props.layer.parameters.subscriptions}
+          setSubscriptions={_.partial(this.props.setLayerParameter, 'subscriptions')} />
 
         <p key="header">Heatmap options:</p>
         <RaisedButton
           label="Edit subscriptions"
           onClick={this.showSubscriptionDialog_} />
 
-        <TextField ref="subscriptions"
+        <br />
+
+        {/* <TextField ref="subscriptions"
           floatingLabelText="Devices"
           hintText="subscriptions"
           multiLine={true}
           fullWidth={true}
-          defaultValue={this.props.layer.parameters.subscriptions.join(',\n')} />
+        defaultValue={this.props.layer.parameters.subscriptions.join(',\n')} /> */}
 
         <TextField ref="minValue"
           floatingLabelText="The minimum value"
@@ -220,9 +278,7 @@ class HeatmapLayerSettingsPresentation extends React.Component {
 
   showSubscriptionDialog_ () {
     this.refs.subscriptionDialog.updateDeviceList_()
-    this.setState({
-      subscriptionDialogVisible: true
-    })
+    this.refs.subscriptionDialog.showDialog()
   }
 
   handleChange_ (e) {
@@ -233,7 +289,7 @@ class HeatmapLayerSettingsPresentation extends React.Component {
 
   handleClick_ (e) {
     const layerParameters = {
-      subscriptions: this.refs.subscriptions.getValue().split(',\n'),
+      // subscriptions: this.refs.subscriptions.getValue().split(',\n'),
       minValue: _.toNumber(this.refs.minValue.getValue()),
       maxValue: _.toNumber(this.refs.maxValue.getValue()),
       minHue: this.state.minHue,
