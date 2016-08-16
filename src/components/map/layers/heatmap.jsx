@@ -217,14 +217,6 @@ class HeatmapLayerSettingsPresentation extends React.Component {
   }
 
   render () {
-    const makeRangeStyle = hue => ({
-      display: 'inline-block',
-      width: '50px',
-      height: '25px',
-      margin: '10px 0px',
-      backgroundColor: `hsla(${hue}, 70%, 50%, 0.5)`
-    })
-
     return (
       <div>
         <SubscriptionDialog ref="subscriptionDialog"
@@ -237,13 +229,6 @@ class HeatmapLayerSettingsPresentation extends React.Component {
           onClick={this.showSubscriptionDialog_} />
 
         <br />
-
-        {/* <TextField ref="subscriptions"
-          floatingLabelText="Devices"
-          hintText="subscriptions"
-          multiLine={true}
-          fullWidth={true}
-        defaultValue={this.props.layer.parameters.subscriptions.join(',\n')} /> */}
 
         <TextField ref="minValue"
           floatingLabelText="The minimum value"
@@ -258,18 +243,27 @@ class HeatmapLayerSettingsPresentation extends React.Component {
 
         <br />
 
+        <div style={{
+          width: '200px',
+          height: '25px',
+          marginLeft: '25px',
+          background: `linear-gradient(-90deg,
+          hsla(${this.state.maxHue}, 70%, 50%, 0.75),
+          hsla(${this.state.minHue}, 70%, 50%, 0.75)
+          )`
+        }} />
         <input id="minHue" ref="minHue" type="range" min="0" max="360"
+          style={{width: '50px'}}
           value={this.state.minHue}
           onChange={this.handleChange_}/>
-        <div style={makeRangeStyle(this.state.minHue)} />
-        <div style={makeRangeStyle(this.state.maxHue)} />
         <input id="maxHue" ref="maxHue" type="range" min="0" max="360"
+          style={{width: '50px', marginLeft: '150px'}}
           value={this.state.maxHue}
           onChange={this.handleChange_}/>
 
         <br />
 
-        <RaisedButton
+        <RaisedButton style={{marginTop: '10px'}}
           label="Update parameters"
           onClick={this.handleClick_} />
       </div>
@@ -289,7 +283,6 @@ class HeatmapLayerSettingsPresentation extends React.Component {
 
   handleClick_ (e) {
     const layerParameters = {
-      // subscriptions: this.refs.subscriptions.getValue().split(',\n'),
       minValue: _.toNumber(this.refs.minValue.getValue()),
       maxValue: _.toNumber(this.refs.maxValue.getValue()),
       minHue: this.state.minHue,
