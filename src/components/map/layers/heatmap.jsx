@@ -4,7 +4,16 @@ import ol from 'openlayers'
 import { layer, source } from 'ol-react'
 import { connect } from 'react-redux'
 
+import flock from '../../../flock'
+
+import Dialog from 'material-ui/Dialog'
+import FlatButton from 'material-ui/FlatButton'
+
+import DropDownMenu from 'material-ui/DropDownMenu'
+import MenuItem from 'material-ui/MenuItem'
+
 import RaisedButton from 'material-ui/RaisedButton'
+
 import TextField from 'material-ui/TextField'
 
 import { setLayerParameterById } from '../../../actions/layers'
@@ -12,17 +21,128 @@ import { setLayerParameterById } from '../../../actions/layers'
 import messageHub from '../../../message-hub'
 import { coordinateFromLonLat } from '../MapView'
 
-/**
- * Helper function that creates an OpenLayers fill style object from a color.
- *
- * @param {color} color the color of the filling
- * @return {Object} the OpenLayers style object
- */
-const makeFillStyle = color => new ol.style.Style({
-  fill: new ol.style.Fill({ color: color })
-})
-
 // === Settings for this particular layer type ===
+
+class SubscriptionDialog extends React.Component {
+  constructor (props) {
+    super(props)
+
+    this.state = {
+      subscriptions: props.subscriptions,
+
+      available: {},
+
+      selectedUAV: null,
+      selectedDevice: null,
+      selectedChannel: null
+    }
+
+    this.updateDeviceList_ = this.updateDeviceList_.bind(this)
+    this.deviceListReceived_ = this.deviceListReceived_.bind(this)
+    this.handleChange_ = this.handleChange_.bind(this)
+    this.handleClick_ = this.handleClick_.bind(this)
+    this.onClose_ = this.onClose_.bind(this)
+  }
+
+  render () {
+    const UAVMenuItems = Object.keys(this.state.available).map(uav =>
+      <MenuItem key={uav} value={uav} primaryText={uav} />
+    )
+
+    const DeviceMenuItems = this.state.selectedUAV
+    ? Object.keys(this.state.available[this.state.selectedUAV]).map(device =>
+      <MenuItem key={device} value={device} primaryText={device} />
+    ) : []
+
+    const ChannelMenuItems = this.state.selectedDevice
+    ? Object.keys(
+      this.state.available[this.state.selectedUAV][this.state.selectedDevice]
+    ).map(channel =>
+      <MenuItem key={channel} value={channel} primaryText={channel} />
+    ) : []
+
+    const actions = [
+      <FlatButton label="Done" primary={true} onTouchTap={this.onClose_} />
+    ]
+
+    return (
+      <Dialog
+        open={this.props.visible}
+        actions={actions}>
+        UAV:
+        <DropDownMenu value={this.state.selectedUAV} onChange={this.handleChange_('selectedUAV')}>
+          {UAVMenuItems}
+        </DropDownMenu>
+        Device:
+        <DropDownMenu value={this.state.selectedDevice} onChange={this.handleChange_('selectedDevice')}>
+          {DeviceMenuItems}
+        </DropDownMenu>
+        Channel:
+        <DropDownMenu value={this.state.selectedChannel} onChange={this.handleChange_('selectedChannel')}>
+          {ChannelMenuItems}
+        </DropDownMenu>
+
+        <RaisedButton
+          label="Subscribe"
+          onClick={this.handleClick_} />
+      </Dialog>
+    )
+  }
+
+  updateDeviceList_ () {
+    messageHub.sendMessage({
+      'type': 'DEV-LIST',
+      'ids': Object.keys(flock._uavsById)
+    }).then(this.deviceListReceived_)
+  }
+
+  deviceListReceived_ (message) {
+    const data = message.body.devices
+    const available = {}
+
+    for (const uav in data) {
+      available[uav] = {}
+      for (const device in data[uav].children) {
+        available[uav][device] = {}
+        for (const channel in data[uav].children[device].children) {
+          if (data[uav].children[device].children[channel].operations.includes('read')) {
+            available[uav][device][channel] = {}
+          }
+        }
+      }
+    }
+
+    this.setState({
+      available: available
+    })
+  }
+
+  handleChange_ (parameter) {
+    return (event, index, value) => {
+      this.setState({
+        [parameter]: value
+      })
+    }
+  }
+
+  handleClick_ () {
+    messageHub.sendMessage({
+      'type': 'DEV-SUB',
+      'paths': [
+        `/${this.state.selectedUAV}/${this.state.selectedDevice}/${this.state.selectedChannel}`
+      ]
+    })
+  }
+
+  onClose_ () {
+    // TODO: move visibility to state from props and set it to false here
+  }
+}
+
+SubscriptionDialog.propTypes = {
+  subscriptions: PropTypes.arrayOf(PropTypes.string),
+  visible: PropTypes.bool
+}
 
 class HeatmapLayerSettingsPresentation extends React.Component {
   constructor (props) {
@@ -30,9 +150,12 @@ class HeatmapLayerSettingsPresentation extends React.Component {
 
     this.state = {
       minHue: props.layer.parameters.minHue,
-      maxHue: props.layer.parameters.maxHue
+      maxHue: props.layer.parameters.maxHue,
+
+      subscriptionDialogVisible: false
     }
 
+    this.showSubscriptionDialog_ = this.showSubscriptionDialog_.bind(this)
     this.handleChange_ = this.handleChange_.bind(this)
     this.handleClick_ = this.handleClick_.bind(this)
   }
@@ -48,13 +171,22 @@ class HeatmapLayerSettingsPresentation extends React.Component {
 
     return (
       <div>
+        <SubscriptionDialog ref="subscriptionDialog"
+          visible={this.state.subscriptionDialogVisible}
+          subscriptions={this.props.layer.parameters.subscriptions} />
+
         <p key="header">Heatmap options:</p>
-        <TextField ref="devices"
+        <RaisedButton
+          label="Edit subscriptions"
+          onClick={this.showSubscriptionDialog_} />
+
+        <TextField ref="subscriptions"
           floatingLabelText="Devices"
-          hintText="devices"
+          hintText="subscriptions"
           multiLine={true}
           fullWidth={true}
-          defaultValue={this.props.layer.parameters.devices.join(',\n')} />
+          defaultValue={this.props.layer.parameters.subscriptions.join(',\n')} />
+
         <TextField ref="minValue"
           floatingLabelText="The minimum value"
           hintText="minValue"
@@ -65,7 +197,9 @@ class HeatmapLayerSettingsPresentation extends React.Component {
           hintText="maxValue"
           type="number"
           defaultValue={this.props.layer.parameters.maxValue} />
+
         <br />
+
         <input id="minHue" ref="minHue" type="range" min="0" max="360"
           value={this.state.minHue}
           onChange={this.handleChange_}/>
@@ -74,12 +208,21 @@ class HeatmapLayerSettingsPresentation extends React.Component {
         <input id="maxHue" ref="maxHue" type="range" min="0" max="360"
           value={this.state.maxHue}
           onChange={this.handleChange_}/>
+
         <br />
+
         <RaisedButton
           label="Update parameters"
           onClick={this.handleClick_} />
       </div>
     )
+  }
+
+  showSubscriptionDialog_ () {
+    this.refs.subscriptionDialog.updateDeviceList_()
+    this.setState({
+      subscriptionDialogVisible: true
+    })
   }
 
   handleChange_ (e) {
@@ -90,7 +233,7 @@ class HeatmapLayerSettingsPresentation extends React.Component {
 
   handleClick_ (e) {
     const layerParameters = {
-      devices: this.refs.devices.getValue().split(',\n'),
+      subscriptions: this.refs.subscriptions.getValue().split(',\n'),
       minValue: _.toNumber(this.refs.minValue.getValue()),
       maxValue: _.toNumber(this.refs.maxValue.getValue()),
       minHue: this.state.minHue,
@@ -123,6 +266,16 @@ export const HeatmapLayerSettings = connect(
 
 // === The actual layer to be rendered ===
 
+/**
+ * Helper function that creates an OpenLayers fill style object from a color.
+ *
+ * @param {color} color the color of the filling
+ * @return {Object} the OpenLayers style object
+ */
+const makeFillStyle = color => new ol.style.Style({
+  fill: new ol.style.Fill({ color: color })
+})
+
 class HeatmapVectorSource extends source.Vector {
   constructor (props) {
     super(props)
@@ -134,22 +287,22 @@ class HeatmapVectorSource extends source.Vector {
 
     messageHub.registerNotificationHandler('DEV-INF', this.processNotification_)
 
-    this.trySubscribe_(props.parameters.devices)
+    this.trySubscribe_(props.parameters.subscriptions)
   }
 
   componentWillReceiveProps (newProps) {
     this.source.clear()
 
-    this.trySubscribe_(newProps.parameters.devices)
+    this.trySubscribe_(newProps.parameters.subscriptions)
   }
 
-  trySubscribe_ (devices) {
+  trySubscribe_ (subscriptions) {
     if (!messageHub._emitter) {
-      setTimeout(() => { this.trySubscribe_(devices) }, 500)
+      setTimeout(() => { this.trySubscribe_(subscriptions) }, 500)
     } else {
       messageHub.sendMessage({
         'type': 'DEV-SUB',
-        'paths': devices
+        'paths': subscriptions
       })
     }
   }

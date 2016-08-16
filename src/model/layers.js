@@ -71,7 +71,7 @@ const propertiesForLayerTypes_ = {
     label: 'Heatmap',
     icon: <ActionTrackChanges />,
     parameters: {
-      devices: [
+      subscriptions: [
         '/FAKE-00/thermometer/temperature'
       ],
       minHue: 100,
