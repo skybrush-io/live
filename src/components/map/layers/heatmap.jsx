@@ -20,6 +20,8 @@ import ContentRemoveCircleOutline from 'material-ui/svg-icons/content/remove-cir
 
 import TextField from 'material-ui/TextField'
 
+import ContentClear from 'material-ui/svg-icons/content/clear'
+
 import { setLayerParameterById } from '../../../actions/layers'
 
 import messageHub from '../../../message-hub'
@@ -214,9 +216,15 @@ class HeatmapLayerSettingsPresentation extends React.Component {
     this.showSubscriptionDialog_ = this.showSubscriptionDialog_.bind(this)
     this.handleChange_ = this.handleChange_.bind(this)
     this.handleClick_ = this.handleClick_.bind(this)
+    this.clearData_ = this.clearData_.bind(this)
   }
 
   render () {
+    const textFieldStyle = {
+      width: '150px',
+      margin: '10px'
+    }
+
     return (
       <div>
         <SubscriptionDialog ref="subscriptionDialog"
@@ -231,11 +239,13 @@ class HeatmapLayerSettingsPresentation extends React.Component {
         <br />
 
         <TextField ref="minValue"
+          style={textFieldStyle}
           floatingLabelText="The minimum value"
           hintText="minValue"
           type="number"
           defaultValue={this.props.layer.parameters.minValue} />
         <TextField ref="maxValue"
+          style={textFieldStyle}
           floatingLabelText="The maximum value"
           hintText="maxValue"
           type="number"
@@ -266,6 +276,12 @@ class HeatmapLayerSettingsPresentation extends React.Component {
         <RaisedButton style={{marginTop: '10px'}}
           label="Update parameters"
           onClick={this.handleClick_} />
+
+        <RaisedButton style={{marginLeft: '10px'}}
+          backgroundColor="#ff7777"
+          label="Clear data"
+          icon={<ContentClear />}
+          onClick={this.clearData_} />
       </div>
     )
   }
@@ -293,6 +309,10 @@ class HeatmapLayerSettingsPresentation extends React.Component {
       this.props.setLayerParameter(layerParameter, layerParameters[layerParameter])
     }
   }
+
+  clearData_ () {
+    window.localStorage.removeItem(`${this.props.layerId}_data`)
+  }
 }
 
 HeatmapLayerSettingsPresentation.propTypes = {
@@ -316,6 +336,17 @@ export const HeatmapLayerSettings = connect(
 // === The actual layer to be rendered ===
 
 /**
+ * Helper function that calculates the distance of two data packets.
+ *
+ * @param {devicedata} a the first packet to compare
+ * @param {devicedata} b the second packet to compare
+ * @return {number} the distance between the packets
+ */
+const getDistance = (a, b) => Math.sqrt(
+  Math.pow(a.lon - b.lon, 2) + Math.pow(a.lat - b.lat, 2)
+)
+
+/**
  * Helper function that creates an OpenLayers fill style object from a color.
  *
  * @param {color} color the color of the filling
@@ -329,20 +360,50 @@ class HeatmapVectorSource extends source.Vector {
   constructor (props) {
     super(props)
 
+    this.getStoredData_ = this.getStoredData_.bind(this)
+    this.setStoredData_ = this.setStoredData_.bind(this)
+    this.drawFromStoredData_ = this.drawFromStoredData_.bind(this)
+
     this.trySubscribe_ = this.trySubscribe_.bind(this)
+    this.mergeWithNearby_ = this.mergeWithNearby_.bind(this)
     this.processNotification_ = this.processNotification_.bind(this)
+
     this.makeCircle_ = this.makeCircle_.bind(this)
+    this.colorForValue_ = this.colorForValue_.bind(this)
     this.drawCircleFromData_ = this.drawCircleFromData_.bind(this)
+
+    this.features = []
+    this.drawFromStoredData_()
 
     messageHub.registerNotificationHandler('DEV-INF', this.processNotification_)
 
     this.trySubscribe_(props.parameters.subscriptions)
   }
 
-  componentWillReceiveProps (newProps) {
-    this.source.clear()
+  componentDidUpdate () {
+    this.drawFromStoredData_()
+  }
 
-    this.trySubscribe_(newProps.parameters.subscriptions)
+  getStoredData_ () {
+    if (!window.localStorage.getItem(this.props.storageKey)) {
+      window.localStorage.setItem(this.props.storageKey, '[]')
+    }
+
+    return JSON.parse(window.localStorage.getItem(this.props.storageKey))
+  }
+
+  setStoredData_ (values) {
+    window.localStorage.setItem(this.props.storageKey, JSON.stringify(values))
+  }
+
+  drawFromStoredData_ () {
+    this.source.clear()
+    this.features = []
+
+    const values = this.getStoredData_()
+    for (const data of values) {
+      this.features.push(this.drawCircleFromData_(data))
+    }
   }
 
   trySubscribe_ (subscriptions) {
@@ -356,9 +417,41 @@ class HeatmapVectorSource extends source.Vector {
     }
   }
 
+  mergeWithNearby_ (values, data) {
+    for (let i = 0; i < values.length; i++) {
+      if (getDistance(values[i], data) < 0.00005) {
+        values[i].lon = (values[i].lon + data.lon) / 2
+        values[i].lat = (values[i].lat + data.lat) / 2
+        values[i].value = (values[i].value + data.value) / 2
+
+        this.source.removeFeature(this.features[i])
+        this.features[i] = this.drawCircleFromData_(values[i])
+
+        return true
+      }
+    }
+
+    return false
+  }
+
   processNotification_ (message) {
+    const values = this.getStoredData_()
+
     for (const value in message.body.values) {
-      this.drawCircleFromData_(message.body.values[value])
+      if (this.props.parameters.subscriptions.includes(value)) {
+        const data = message.body.values[value]
+
+        if (!this.mergeWithNearby_(values, data)) {
+          values.push(data)
+          this.features.push(this.drawCircleFromData_(data))
+        }
+      }
+    }
+
+    this.setStoredData_(values)
+
+    if (this.features.length !== values.length) {
+      this.drawFromStoredData_()
     }
   }
 
@@ -368,20 +461,25 @@ class HeatmapVectorSource extends source.Vector {
     })
   }
 
+  colorForValue_ (value) {
+    const { minHue, maxHue, minValue, maxValue } = this.props.parameters
+    const hue = (value - minValue) / (maxValue - minValue) * (maxHue - minHue) + minHue
+
+    return `hsla(${hue}, 70%, 50%, 0.5)`
+  }
+
   drawCircleFromData_ (data) {
     const circle = this.makeCircle_([data.lon, data.lat], 3)
 
-    const { minHue, maxHue, minValue, maxValue } = this.props.parameters
-
-    const hue = (data.value - minValue) / (maxValue - minValue) * (maxHue - minHue) + minHue
-
-    circle.setStyle(makeFillStyle(`hsla(${hue}, 70%, 50%, 0.5)`))
-
+    circle.setStyle(makeFillStyle(this.colorForValue_(data.value)))
     this.source.addFeature(circle)
+
+    return circle
   }
 }
 
 HeatmapVectorSource.propTypes = {
+  storageKey: PropTypes.string,
   parameters: PropTypes.object
 }
 
@@ -394,7 +492,8 @@ class HeatmapLayerPresentation extends React.Component {
     return (
       <div>
         <layer.Vector zIndex={this.props.zIndex}>
-          <HeatmapVectorSource parameters={this.props.layer.parameters} />
+          <HeatmapVectorSource storageKey={`${this.props.layerId}_data`}
+            parameters={this.props.layer.parameters} />
         </layer.Vector>
 
         <div id="heatmapScale"
