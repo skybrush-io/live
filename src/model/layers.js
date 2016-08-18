@@ -77,7 +77,8 @@ const propertiesForLayerTypes_ = {
       minHue: 100,
       maxHue: 0,
       minValue: 23,
-      maxValue: 25
+      maxValue: 25,
+      autoScale: false
     }
   },
   [LayerType.OWN_LOCATION]: {

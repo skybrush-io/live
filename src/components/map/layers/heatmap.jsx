@@ -19,6 +19,7 @@ import IconButton from 'material-ui/IconButton'
 import ContentRemoveCircleOutline from 'material-ui/svg-icons/content/remove-circle-outline'
 
 import TextField from 'material-ui/TextField'
+import Checkbox from 'material-ui/Checkbox'
 
 import ContentClear from 'material-ui/svg-icons/content/clear'
 
@@ -251,23 +252,28 @@ class HeatmapLayerSettingsPresentation extends React.Component {
           type="number"
           defaultValue={this.props.layer.parameters.maxValue} />
 
+        <Checkbox ref="autoScale"
+          defaultChecked={this.props.layer.parameters.autoScale}
+          style={{display: 'inline-table', width: '150px'}}
+          label="Auto scale" />
+
         <br />
 
         <div style={{
-          width: '200px',
+          width: '300px',
           height: '25px',
-          marginLeft: '25px',
+          marginLeft: '50px',
           background: `linear-gradient(-90deg,
           hsla(${this.state.maxHue}, 70%, 50%, 0.75),
           hsla(${this.state.minHue}, 70%, 50%, 0.75)
           )`
         }} />
         <input id="minHue" ref="minHue" type="range" min="0" max="360"
-          style={{width: '50px'}}
+          style={{width: '100px'}}
           value={this.state.minHue}
           onChange={this.handleChange_}/>
         <input id="maxHue" ref="maxHue" type="range" min="0" max="360"
-          style={{width: '50px', marginLeft: '150px'}}
+          style={{width: '100px', marginLeft: '200px'}}
           value={this.state.maxHue}
           onChange={this.handleChange_}/>
 
@@ -302,7 +308,8 @@ class HeatmapLayerSettingsPresentation extends React.Component {
       minValue: _.toNumber(this.refs.minValue.getValue()),
       maxValue: _.toNumber(this.refs.maxValue.getValue()),
       minHue: this.state.minHue,
-      maxHue: this.state.maxHue
+      maxHue: this.state.maxHue,
+      autoScale: this.refs.autoScale.isChecked()
     }
 
     for (const layerParameter in layerParameters) {
@@ -445,6 +452,18 @@ class HeatmapVectorSource extends source.Vector {
           values.push(data)
           this.features.push(this.drawCircleFromData_(data))
         }
+
+        if (this.props.parameters.autoScale) {
+          if (data.value < this.props.parameters.minValue || (
+            this.props.parameters.minValue === 0 && this.props.parameters.maxValue === 0
+          )) {
+            this.props.setLayerParameter('minValue', data.value)
+          }
+
+          if (data.value > this.props.parameters.maxValue) {
+            this.props.setLayerParameter('maxValue', data.value)
+          }
+        }
       }
     }
 
@@ -480,7 +499,9 @@ class HeatmapVectorSource extends source.Vector {
 
 HeatmapVectorSource.propTypes = {
   storageKey: PropTypes.string,
-  parameters: PropTypes.object
+  parameters: PropTypes.object,
+
+  setLayerParameter: PropTypes.func
 }
 
 class HeatmapLayerPresentation extends React.Component {
@@ -493,7 +514,8 @@ class HeatmapLayerPresentation extends React.Component {
       <div>
         <layer.Vector zIndex={this.props.zIndex}>
           <HeatmapVectorSource storageKey={`${this.props.layerId}_data`}
-            parameters={this.props.layer.parameters} />
+            parameters={this.props.layer.parameters}
+            setLayerParameter={this.props.setLayerParameter} />
         </layer.Vector>
 
         <div id="heatmapScale"
@@ -516,12 +538,18 @@ class HeatmapLayerPresentation extends React.Component {
 HeatmapLayerPresentation.propTypes = {
   layer: PropTypes.object,
   layerId: PropTypes.string,
-  zIndex: PropTypes.number
+  zIndex: PropTypes.number,
+
+  setLayerParameter: PropTypes.func
 }
 
 export const HeatmapLayer = connect(
   // mapStateToProps
   (state, ownProps) => ({}),
   // mapDispatchToProps
-  (dispatch, ownProps) => ({})
+  (dispatch, ownProps) => ({
+    setLayerParameter: (parameter, value) => {
+      dispatch(setLayerParameterById(ownProps.layerId, parameter, value))
+    }
+  })
 )(HeatmapLayerPresentation)
