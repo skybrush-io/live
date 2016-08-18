@@ -8,7 +8,7 @@ import ActionHome from 'material-ui/svg-icons/action/home'
 import ActionPowerSettingsNew from 'material-ui/svg-icons/action/power-settings-new'
 import Message from 'material-ui/svg-icons/communication/message'
 
-import { showMessagesDialog } from '../../actions/messages'
+import { selectUAVInMessagesDialog, showMessagesDialog } from '../../actions/messages'
 import messageHub from '../../message-hub'
 import store from '../../store'
 
@@ -37,11 +37,12 @@ class UAVToolbar extends React.Component {
     this.takeoffSelectedUAVs_ = this.takeoffSelectedUAVs_.bind(this)
     this.landSelectedUAVs_ = this.landSelectedUAVs_.bind(this)
     this.returnSelectedUAVs_ = this.returnSelectedUAVs_.bind(this)
+
+    this.showMessagesDialog_ = this.showMessagesDialog_.bind(this)
   }
 
   render () {
     const { isSelectionEmpty } = this.props
-    const { onShowMessagesDialog } = this.props
     return (
       <div>
         <IconButton disabled={isSelectionEmpty} onClick={this.takeoffSelectedUAVs_}
@@ -59,7 +60,7 @@ class UAVToolbar extends React.Component {
           <ActionHome />
         </IconButton>
         <UAVToolbarSeparator />
-        <IconButton onClick={onShowMessagesDialog}
+        <IconButton onClick={this.showMessagesDialog_}
           tooltipPosition="bottom-right" tooltip="Messages">
           <Message />
         </IconButton>
@@ -92,11 +93,20 @@ class UAVToolbar extends React.Component {
       ids: this.props.selection
     }).then(result => console.log(result))
   }
+
+  showMessagesDialog_ () {
+    if (this.props.selection.length === 1) {
+      this.props.selectUAVInMessagesDialog(this.props.selection[0])
+    }
+
+    this.props.showMessagesDialog()
+  }
 }
 
 UAVToolbar.propTypes = {
   isSelectionEmpty: PropTypes.bool,
-  onShowMessagesDialog: PropTypes.func,
+  selectUAVInMessagesDialog: PropTypes.func,
+  showMessagesDialog: PropTypes.func,
   selection: PropTypes.arrayOf(PropTypes.string)
 }
 
@@ -108,7 +118,10 @@ export default connect(
   }),
   // mapDispatchToProps
   dispatch => ({
-    onShowMessagesDialog () {
+    selectUAVInMessagesDialog: (id) => {
+      dispatch(selectUAVInMessagesDialog(id))
+    },
+    showMessagesDialog: () => {
       dispatch(showMessagesDialog())
     }
   })

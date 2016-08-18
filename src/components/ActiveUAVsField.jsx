@@ -271,7 +271,7 @@ ActiveUAVsFieldPresentation.defaultProps = {
 const ActiveUAVsField = connect(
   // stateToProps
   state => ({
-    value: state.dialogs.messages.selectedUAVId || ''
+    value: state.messages.selectedUAVId || ''
   }),
   // dispatchToProps
   dispatch => ({
