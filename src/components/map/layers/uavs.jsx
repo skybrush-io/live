@@ -57,8 +57,7 @@ class UAVsLayerSettingsPresentation extends React.Component {
     ))
     return (
       <div>
-        <p key="header">UAV Settings:</p>
-        <p>Coloring:</p>
+        <p key="header">Colors</p>
         {colorInputs}
         <br />
         <RaisedButton

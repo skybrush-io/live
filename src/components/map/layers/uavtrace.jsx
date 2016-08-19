@@ -37,10 +37,9 @@ class UAVTraceLayerSettingsPresentation extends React.Component {
   render () {
     return (
       <div>
-        <p key="header">Settings of the UAV trace lines:</p>
         <TextField ref="trailLength"
           floatingLabelText="Length of the trail"
-          hintText="Length"
+          hintText="Length (in samples)"
           type="number"
           defaultValue={this.props.layer.parameters.trailLength} />
         <p>
