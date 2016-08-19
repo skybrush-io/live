@@ -279,6 +279,14 @@ class HeatmapLayerSettingsPresentation extends React.Component {
 
         <br />
 
+        <TextField ref="maxPoints"
+          floatingLabelText="Maximum number of points"
+          hintText="maxPoints"
+          type="number"
+          defaultValue={this.props.layer.parameters.maxPoints} />
+
+        <br />
+
         <RaisedButton style={{marginTop: '10px'}}
           label="Update parameters"
           onClick={this.handleClick_} />
@@ -309,7 +317,8 @@ class HeatmapLayerSettingsPresentation extends React.Component {
       maxValue: _.toNumber(this.refs.maxValue.getValue()),
       minHue: this.state.minHue,
       maxHue: this.state.maxHue,
-      autoScale: this.refs.autoScale.isChecked()
+      autoScale: this.refs.autoScale.isChecked(),
+      maxPoints: _.toNumber(this.refs.maxPoints.getValue())
     }
 
     for (const layerParameter in layerParameters) {
@@ -425,6 +434,8 @@ class HeatmapVectorSource extends source.Vector {
   }
 
   mergeWithNearby_ (values, data) {
+    return false // Don't even try to merge, because it's not working properly
+
     for (let i = 0; i < values.length; i++) {
       if (getDistance(values[i], data) < 0.00005) {
         values[i].lon = (values[i].lon + data.lon) / 2
@@ -463,6 +474,11 @@ class HeatmapVectorSource extends source.Vector {
           if (data.value > this.props.parameters.maxValue) {
             this.props.setLayerParameter('maxValue', data.value)
           }
+        }
+
+        while (values.length > this.props.parameters.maxPoints) {
+          values.shift()
+          this.source.removeFeature(this.features.shift())
         }
       }
     }
