@@ -1,3 +1,4 @@
+import _ from 'lodash'
 import React, { PropTypes } from 'react'
 import ol from 'openlayers'
 import { layer, source } from 'ol-react'
@@ -28,6 +29,29 @@ class GeoJSONLayerSettingsPresentation extends React.Component {
     return (
       <div>
         <p key="header">Import GeoJSON data:</p>
+
+        <span>Stroke color: </span>
+        <input ref="strokeColor" type="color"
+          defaultValue={this.props.layer.parameters.strokeColor} />
+        <span style={{marginLeft: '5px'}}>Fill color: </span>
+        <input ref="fillColor" type="color"
+          defaultValue={this.props.layer.parameters.fillColor} />
+
+        <br />
+
+        <TextField ref="strokeWidth"
+          floatingLabelText="Stroke width:"
+          hintText="stroke width"
+          type="number"
+          style={{width: '130px', marginTop: '-20px'}}
+          defaultValue={this.props.layer.parameters.strokeWidth} />
+        <TextField ref="fillOpacity"
+          floatingLabelText="Fill opacity:"
+          hintText="fill opacity"
+          type="number"
+          style={{width: '130px', marginTop: '-20px', marginLeft: '10px'}}
+          defaultValue={this.props.layer.parameters.fillOpacity} />
+
         <TextField ref="dataTextField"
           floatingLabelText="Paste GeoJSON data here:"
           hintText="GeoJSON"
@@ -52,6 +76,11 @@ class GeoJSONLayerSettingsPresentation extends React.Component {
   }
 
   handleClick_ () {
+    this.props.setLayerParameter('strokeColor', this.refs.strokeColor.value)
+    this.props.setLayerParameter('fillColor', this.refs.fillColor.value)
+    this.props.setLayerParameter('strokeWidth', _.toNumber(this.refs.strokeWidth.getValue()))
+    this.props.setLayerParameter('fillOpacity', _.toNumber(this.refs.fillOpacity.getValue()))
+
     try {
       const parsedData = JSON.parse(this.state.data)
       this.props.setLayerParameter('data', parsedData)
@@ -86,6 +115,32 @@ export const GeoJSONLayerSettings = connect(
 
 // === The actual layer to be rendered ===
 
+/**
+ * Helper function that creates an OpenLayers style object from
+ * stroke and fill colors.
+ *
+ * @param {color} stroke the color of the stroke line
+ * @param {number} strokeWidth the widht of the stroke
+ * @param {color} fill the color of the filling
+ * @return {Object} the OpenLayers style object
+ */
+const makeStrokeFillStyle = (stroke, strokeWidth, fill) => new ol.style.Style({
+  stroke: new ol.style.Stroke({ color: stroke, width: strokeWidth }),
+  fill: new ol.style.Fill({ color: fill })
+})
+
+/**
+ * Helper function that makes a HEX color translucent.
+ *
+ * @param {color} color the color to be made translucent
+ * @param {number} opacity how opaque the color should be [0-1]
+ * @return {Object} the translucent version of the color
+ */
+const makeTranslucent = (color, opacity) => {
+  const hex = parseInt(color.substring(1), 16)
+  return `rgba(${hex >> 16}, ${hex >> 8 & 0xFF}, ${hex & 0xFF}, ${opacity})`
+}
+
 class GeoJSONVectorSource extends source.Vector {
   constructor (props) {
     super(props)
@@ -107,6 +162,12 @@ class GeoJSONVectorSource extends source.Vector {
 }
 
 class GeoJSONLayerPresentation extends React.Component {
+  constructor (props) {
+    super(props)
+
+    this.style = GeoJSONLayerPresentation.makeStyle(props.layer.parameters)
+  }
+
   render () {
     if (!this.props.layer.visible) {
       return false
@@ -114,10 +175,22 @@ class GeoJSONLayerPresentation extends React.Component {
 
     return (
       <div>
-        <layer.Vector zIndex={this.props.zIndex}>
+        <layer.Vector zIndex={this.props.zIndex} style={this.style}>
           <GeoJSONVectorSource data={this.props.layer.parameters.data} />
         </layer.Vector>
       </div>
+    )
+  }
+
+  componentWillReceiveProps (newProps) {
+    this.style = GeoJSONLayerPresentation.makeStyle(newProps.layer.parameters)
+  }
+
+  static makeStyle (parameters) {
+    return makeStrokeFillStyle(
+      parameters.strokeColor,
+      parameters.strokeWidth,
+      makeTranslucent(parameters.fillColor, parameters.fillOpacity)
     )
   }
 }

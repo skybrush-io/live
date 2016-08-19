@@ -55,7 +55,11 @@ const propertiesForLayerTypes_ = {
     label: 'GeoJSON layer',
     icon: <FileAttachment />,
     parameters: {
-      data: {}
+      data: {},
+      strokeColor: '#5555ff',
+      fillColor: '#aaaaff',
+      strokeWidth: 2,
+      fillOpacity: 0.5
     }
   },
   [LayerType.HEXGRID]: {
