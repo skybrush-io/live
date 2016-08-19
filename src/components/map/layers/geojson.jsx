@@ -122,11 +122,17 @@ export const GeoJSONLayerSettings = connect(
  * @param {color} stroke the color of the stroke line
  * @param {number} strokeWidth the widht of the stroke
  * @param {color} fill the color of the filling
+ * @param {string} text the text displayed on the features
  * @return {Object} the OpenLayers style object
  */
-const makeStrokeFillStyle = (stroke, strokeWidth, fill) => new ol.style.Style({
-  stroke: new ol.style.Stroke({ color: stroke, width: strokeWidth }),
-  fill: new ol.style.Fill({ color: fill })
+const makeStrokeFillStyle = (stroke, strokeWidth, fill, text) => new ol.style.Style({
+  stroke: new ol.style.Stroke({color: stroke, width: strokeWidth}),
+  fill: new ol.style.Fill({color: fill}),
+  text: new ol.style.Text({
+    text: text,
+    font: '12.5px Century Gothic',
+    stroke: new ol.style.Stroke({color: stroke})
+  })
 })
 
 /**
@@ -165,7 +171,7 @@ class GeoJSONLayerPresentation extends React.Component {
   constructor (props) {
     super(props)
 
-    this.style = GeoJSONLayerPresentation.makeStyle(props.layer.parameters)
+    this.style = GeoJSONLayerPresentation.makeStyle(props.layer)
   }
 
   render () {
@@ -183,14 +189,15 @@ class GeoJSONLayerPresentation extends React.Component {
   }
 
   componentWillReceiveProps (newProps) {
-    this.style = GeoJSONLayerPresentation.makeStyle(newProps.layer.parameters)
+    this.style = GeoJSONLayerPresentation.makeStyle(newProps.layer)
   }
 
-  static makeStyle (parameters) {
+  static makeStyle (layer) {
     return makeStrokeFillStyle(
-      parameters.strokeColor,
-      parameters.strokeWidth,
-      makeTranslucent(parameters.fillColor, parameters.fillOpacity)
+      layer.parameters.strokeColor,
+      layer.parameters.strokeWidth,
+      makeTranslucent(layer.parameters.fillColor, layer.parameters.fillOpacity),
+      layer.label
     )
   }
 }
