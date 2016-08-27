@@ -6,6 +6,7 @@
   "scripts": {
     "bundle": "webpack -p --progress",
     "doc": "esdoc -c esdoc.json",
+    "lint": "eslint src/**",
     "start": "webpack-dev-server --progress --colors",
     "start:public": "webpack-dev-server --progress --colors --host 0.0.0.0",
     "start:public:secure": "webpack-dev-server --progress --colors --https --host 0.0.0.0",
@@ -31,6 +32,7 @@
     "ol-react": "https://github.com/collmot/ol-react.git#develop",
     "radix-64": "^1.0.4",
     "react": "^15.0.1",
+    "react-color": "^2.2.6",
     "react-dom": "^15.0.1",
     "react-redux": "^4.4.5",
     "react-socket": "https://github.com/collmot/react-socket.git",

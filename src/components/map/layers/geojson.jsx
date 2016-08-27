@@ -4,9 +4,12 @@ import ol from 'openlayers'
 import { layer, source } from 'ol-react'
 import { connect } from 'react-redux'
 
+import TextField from 'material-ui/TextField'
+
+import PopupColorPicker from '../../PopupColorPicker'
+
 import RaisedButton from 'material-ui/RaisedButton'
 import ActionSystemUpdateAlt from 'material-ui/svg-icons/action/system-update-alt'
-import TextField from 'material-ui/TextField'
 
 import { setLayerParameterById } from '../../../actions/layers'
 import { showSnackbarMessage } from '../../../actions/snackbar'
@@ -26,31 +29,35 @@ class GeoJSONLayerSettingsPresentation extends React.Component {
   }
 
   render () {
+    const pickerStyle = {
+      width: '30px',
+      height: '15px',
+
+      borderStyle: 'solid',
+      borderColor: 'black',
+      borderWidth: '3px',
+      borderRadius: '10px'
+    }
+
     return (
       <div>
         <p key="header">Import GeoJSON data:</p>
 
         <span>Stroke color: </span>
-        <input ref="strokeColor" type="color"
+        <PopupColorPicker ref="strokeColor" style={pickerStyle}
           defaultValue={this.props.layer.parameters.strokeColor} />
         <span style={{marginLeft: '5px'}}>Fill color: </span>
-        <input ref="fillColor" type="color"
+        <PopupColorPicker ref="fillColor" style={pickerStyle}
           defaultValue={this.props.layer.parameters.fillColor} />
 
-        <br />
+        {/* <br /> */}
 
         <TextField ref="strokeWidth"
           floatingLabelText="Stroke width:"
           hintText="stroke width"
           type="number"
-          style={{width: '130px', marginTop: '-20px'}}
+          style={{width: '130px', marginTop: '-35px', marginLeft: '10px'}}
           defaultValue={this.props.layer.parameters.strokeWidth} />
-        <TextField ref="fillOpacity"
-          floatingLabelText="Fill opacity:"
-          hintText="fill opacity"
-          type="number"
-          style={{width: '130px', marginTop: '-20px', marginLeft: '10px'}}
-          defaultValue={this.props.layer.parameters.fillOpacity} />
 
         <TextField ref="dataTextField"
           floatingLabelText="Paste GeoJSON data here:"
@@ -76,10 +83,9 @@ class GeoJSONLayerSettingsPresentation extends React.Component {
   }
 
   handleClick_ () {
-    this.props.setLayerParameter('strokeColor', this.refs.strokeColor.value)
-    this.props.setLayerParameter('fillColor', this.refs.fillColor.value)
+    this.props.setLayerParameter('strokeColor', this.refs.strokeColor.getValue())
+    this.props.setLayerParameter('fillColor', this.refs.fillColor.getValue())
     this.props.setLayerParameter('strokeWidth', _.toNumber(this.refs.strokeWidth.getValue()))
-    this.props.setLayerParameter('fillOpacity', _.toNumber(this.refs.fillOpacity.getValue()))
 
     try {
       const parsedData = JSON.parse(this.state.data)
@@ -117,7 +123,7 @@ export const GeoJSONLayerSettings = connect(
 
 /**
  * Helper function that creates an OpenLayers style object from
- * stroke and fill colors.
+ * stroke and fill colors. (+ stroke width)
  *
  * @param {color} stroke the color of the stroke line
  * @param {number} strokeWidth the widht of the stroke
@@ -136,15 +142,13 @@ const makeStrokeFillStyle = (stroke, strokeWidth, fill, text) => new ol.style.St
 })
 
 /**
- * Helper function that makes a HEX color translucent.
+ * Helper function that makes a css string from a color object.
  *
- * @param {color} color the color to be made translucent
- * @param {number} opacity how opaque the color should be [0-1]
- * @return {Object} the translucent version of the color
+ * @param {Object} color the color to be converted
+ * @return {string} the string representation of the color
  */
-const makeTranslucent = (color, opacity) => {
-  const hex = parseInt(color.substring(1), 16)
-  return `rgba(${hex >> 16}, ${hex >> 8 & 0xFF}, ${hex & 0xFF}, ${opacity})`
+const colorToString = color => {
+  return `rgba(${color.r}, ${color.g}, ${color.b}, ${color.a})`
 }
 
 class GeoJSONVectorSource extends source.Vector {
@@ -194,9 +198,9 @@ class GeoJSONLayerPresentation extends React.Component {
 
   static makeStyle (layer) {
     return makeStrokeFillStyle(
-      layer.parameters.strokeColor,
+      colorToString(layer.parameters.strokeColor),
       layer.parameters.strokeWidth,
-      makeTranslucent(layer.parameters.fillColor, layer.parameters.fillOpacity),
+      colorToString(layer.parameters.fillColor),
       layer.label
     )
   }

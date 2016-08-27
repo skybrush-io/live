@@ -436,6 +436,7 @@ class HeatmapVectorSource extends source.Vector {
   mergeWithNearby_ (values, data) {
     return false // Don't even try to merge, because it's not working properly
 
+    /* eslint-disable */
     for (let i = 0; i < values.length; i++) {
       if (getDistance(values[i], data) < 0.00005) {
         values[i].lon = (values[i].lon + data.lon) / 2
@@ -450,6 +451,7 @@ class HeatmapVectorSource extends source.Vector {
     }
 
     return false
+    /* eslint-enable */
   }
 
   processNotification_ (message) {
