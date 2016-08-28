@@ -388,7 +388,7 @@ class HeatmapVectorSource extends source.Vector {
     this.colorForValue_ = this.colorForValue_.bind(this)
     this.drawCircleFromData_ = this.drawCircleFromData_.bind(this)
 
-    this.features = []
+    this.features = {}
     this.drawFromStoredData_()
 
     messageHub.registerNotificationHandler('DEV-INF', this.processNotification_)
@@ -402,7 +402,7 @@ class HeatmapVectorSource extends source.Vector {
 
   getStoredData_ () {
     if (!window.localStorage.getItem(this.props.storageKey)) {
-      window.localStorage.setItem(this.props.storageKey, '[]')
+      window.localStorage.setItem(this.props.storageKey, '{}')
     }
 
     return JSON.parse(window.localStorage.getItem(this.props.storageKey))
@@ -414,11 +414,15 @@ class HeatmapVectorSource extends source.Vector {
 
   drawFromStoredData_ () {
     this.source.clear()
-    this.features = []
+    this.features = {}
 
     const values = this.getStoredData_()
-    for (const data of values) {
-      this.features.push(this.drawCircleFromData_(data))
+
+    for (const value in values) {
+      this.features[value] = []
+      for (const data of values[value]) {
+        this.features[value].push(this.drawCircleFromData_(data))
+      }
     }
   }
 
@@ -434,24 +438,28 @@ class HeatmapVectorSource extends source.Vector {
   }
 
   mergeWithNearby_ (values, data) {
-    return false // Don't even try to merge, because it's not working properly
+    const minDistance = 0.00005
 
-    /* eslint-disable */
-    for (let i = 0; i < values.length; i++) {
-      if (getDistance(values[i], data) < 0.00005) {
-        values[i].lon = (values[i].lon + data.lon) / 2
-        values[i].lat = (values[i].lat + data.lat) / 2
-        values[i].value = (values[i].value + data.value) / 2
-
-        this.source.removeFeature(this.features[i])
-        this.features[i] = this.drawCircleFromData_(values[i])
-
+    for (const value in values) {
+      if (values[value].length > 0 && getDistance(_.last(values[value]), data) < minDistance) {
         return true
+      }
+
+      for (let i = 0; i < values[value].length; i++) {
+        if (getDistance(values[value][i], data) < minDistance) {
+          // values[value][i].lon = (values[value][i].lon + data.lon) / 2
+          // values[value][i].lat = (values[value][i].lat + data.lat) / 2
+          values[value][i].value = (values[value][i].value + data.value) / 2
+
+          this.source.removeFeature(this.features[value][i])
+          this.features[value][i] = this.drawCircleFromData_(values[value][i])
+
+          return true
+        }
       }
     }
 
     return false
-    /* eslint-enable */
   }
 
   processNotification_ (message) {
@@ -459,11 +467,14 @@ class HeatmapVectorSource extends source.Vector {
 
     for (const value in message.body.values) {
       if (this.props.parameters.subscriptions.includes(value)) {
+        if (!(value in values)) { values[value] = [] }
+        if (!(value in this.features)) { this.features[value] = [] }
+
         const data = message.body.values[value]
 
         if (!this.mergeWithNearby_(values, data)) {
-          values.push(data)
-          this.features.push(this.drawCircleFromData_(data))
+          values[value].push(data)
+          this.features[value].push(this.drawCircleFromData_(data))
         }
 
         if (this.props.parameters.autoScale) {
@@ -478,16 +489,16 @@ class HeatmapVectorSource extends source.Vector {
           }
         }
 
-        while (values.length > this.props.parameters.maxPoints) {
-          values.shift()
-          this.source.removeFeature(this.features.shift())
+        while (values[value].length > this.props.parameters.maxPoints) {
+          values[value].shift()
+          this.source.removeFeature(this.features[value].shift())
         }
       }
     }
 
     this.setStoredData_(values)
 
-    if (this.features.length !== values.length) {
+    if (_.flatten(_.values(this.features)).length !== _.flatten(_.values(values)).length) {
       this.drawFromStoredData_()
     }
   }
@@ -543,10 +554,10 @@ class HeatmapLayerPresentation extends React.Component {
             hsla(${this.props.layer.parameters.minHue}, 70%, 50%, 0.75)
             )`
           }}>
-          <span>{this.props.layer.parameters.maxValue}</span>
-          <span>{(this.props.layer.parameters.maxValue +
-          this.props.layer.parameters.minValue) / 2}</span>
-          <span>{this.props.layer.parameters.minValue}</span>
+          <span>{(this.props.layer.parameters.maxValue).toFixed(3)}</span>
+          <span>{((this.props.layer.parameters.maxValue +
+          this.props.layer.parameters.minValue) / 2).toFixed(3)}</span>
+          <span>{(this.props.layer.parameters.minValue).toFixed(3)}</span>
         </div>
       </div>
     )
