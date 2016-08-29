@@ -6,8 +6,8 @@ import _ from 'lodash'
 import { handleActions } from 'redux-actions'
 import u from 'updeep'
 
-import { LayerType, createNewLayer, defaultParametersForLayerType }
-       from '../../model/layers'
+import { LayerType, createNewLayer, labelForLayerType,
+  defaultParametersForLayerType } from '../../model/layers'
 import { chooseUniqueId, chooseUniqueName } from '../../utils/naming'
 
 /**
@@ -83,8 +83,17 @@ const reducer = handleActions({
     const layerUpdate = {}
     const { id, type } = action.payload
     if (state.byId[id].type === LayerType.UNTYPED) {
+      const existingNames = _.map(state.byId, layer => layer.label)
+      const suggestedName = chooseUniqueName(labelForLayerType(type), existingNames)
+      const currentName = state.byId[id].label
+
+      // This check _might_ break if someone deliberately names a layer
+      // "New layer" and thus the system picks "New layer 1" for the next default
+      const label = currentName === 'New layer' ? suggestedName : currentName
+
       layerUpdate[id] = {
         type,
+        label,
         parameters: () => defaultParametersForLayerType(type),
         visible: true
       }
