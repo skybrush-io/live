@@ -30,7 +30,7 @@ class BasicLayerSettingsFormPresentation extends React.Component {
 
     return (
       <div style={{ paddingBottom: '1em' }}>
-        <TextField {...label} floatingLabelText="Layer name"
+        <TextField {...label} floatingLabelText="Layer name" hintText="New layer"
           style={{ width: '100%' }}
           spellCheck="false" errorText={label.touched && label.error}
           onKeyDown={this.onKeyDown_}

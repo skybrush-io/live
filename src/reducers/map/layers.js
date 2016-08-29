@@ -64,7 +64,8 @@ const reducer = handleActions({
 
     // Generate the new layer object
     const newLayer = {}
-    newLayer[id] = createNewLayer(type, name)
+    // Leaving name empty for auto-labeling
+    newLayer[id] = createNewLayer(type, '')
 
     // Store the ID of the layer that is about to be inserted on the
     // action so the caller of this action can decide what to do with it
@@ -87,9 +88,7 @@ const reducer = handleActions({
       const suggestedName = chooseUniqueName(labelForLayerType(type), existingNames)
       const currentName = state.byId[id].label
 
-      // This check _might_ break if someone deliberately names a layer
-      // "New layer" and thus the system picks "New layer 1" for the next default
-      const label = currentName === 'New layer' ? suggestedName : currentName
+      const label = currentName === '' ? suggestedName : currentName
 
       layerUpdate[id] = {
         type,
