@@ -232,7 +232,6 @@ class HeatmapLayerSettingsPresentation extends React.Component {
           subscriptions={this.props.layer.parameters.subscriptions}
           setSubscriptions={_.partial(this.props.setLayerParameter, 'subscriptions')} />
 
-        <p key="header">Heatmap options:</p>
         <RaisedButton
           label="Edit subscriptions"
           onClick={this.showSubscriptionDialog_} />
@@ -241,13 +240,12 @@ class HeatmapLayerSettingsPresentation extends React.Component {
 
         <TextField ref="minValue"
           style={textFieldStyle}
-          floatingLabelText="The minimum value"
-          hintText="minValue"
+          floatingLabelText="Minimum value"
           type="number"
           defaultValue={this.props.layer.parameters.minValue} />
         <TextField ref="maxValue"
           style={textFieldStyle}
-          floatingLabelText="The maximum value"
+          floatingLabelText="Maximum value"
           hintText="maxValue"
           type="number"
           defaultValue={this.props.layer.parameters.maxValue} />
@@ -276,14 +274,6 @@ class HeatmapLayerSettingsPresentation extends React.Component {
           style={{width: '100px', marginLeft: '200px'}}
           value={this.state.maxHue}
           onChange={this.handleChange_}/>
-
-        <br />
-
-        <TextField ref="maxPoints"
-          floatingLabelText="Maximum number of points"
-          hintText="maxPoints"
-          type="number"
-          defaultValue={this.props.layer.parameters.maxPoints} />
 
         <br />
 
@@ -317,8 +307,7 @@ class HeatmapLayerSettingsPresentation extends React.Component {
       maxValue: _.toNumber(this.refs.maxValue.getValue()),
       minHue: this.state.minHue,
       maxHue: this.state.maxHue,
-      autoScale: this.refs.autoScale.isChecked(),
-      maxPoints: _.toNumber(this.refs.maxPoints.getValue())
+      autoScale: this.refs.autoScale.isChecked()
     }
 
     for (const layerParameter in layerParameters) {
@@ -388,7 +377,7 @@ class HeatmapVectorSource extends source.Vector {
     this.colorForValue_ = this.colorForValue_.bind(this)
     this.drawCircleFromData_ = this.drawCircleFromData_.bind(this)
 
-    this.features = {}
+    this.features = []
     this.drawFromStoredData_()
 
     messageHub.registerNotificationHandler('DEV-INF', this.processNotification_)
@@ -402,7 +391,7 @@ class HeatmapVectorSource extends source.Vector {
 
   getStoredData_ () {
     if (!window.localStorage.getItem(this.props.storageKey)) {
-      window.localStorage.setItem(this.props.storageKey, '{}')
+      window.localStorage.setItem(this.props.storageKey, '[]')
     }
 
     return JSON.parse(window.localStorage.getItem(this.props.storageKey))
@@ -414,15 +403,11 @@ class HeatmapVectorSource extends source.Vector {
 
   drawFromStoredData_ () {
     this.source.clear()
-    this.features = {}
+    this.features = []
 
     const values = this.getStoredData_()
-
-    for (const value in values) {
-      this.features[value] = []
-      for (const data of values[value]) {
-        this.features[value].push(this.drawCircleFromData_(data))
-      }
+    for (const data of values) {
+      this.features.push(this.drawCircleFromData_(data))
     }
   }
 
@@ -438,24 +423,16 @@ class HeatmapVectorSource extends source.Vector {
   }
 
   mergeWithNearby_ (values, data) {
-    const minDistance = 0.00005
+    for (let i = 0; i < values.length; i++) {
+      if (getDistance(values[i], data) < 0.00005) {
+        values[i].lon = (values[i].lon + data.lon) / 2
+        values[i].lat = (values[i].lat + data.lat) / 2
+        values[i].value = (values[i].value + data.value) / 2
 
-    for (const value in values) {
-      if (values[value].length > 0 && getDistance(_.last(values[value]), data) < minDistance) {
+        this.source.removeFeature(this.features[i])
+        this.features[i] = this.drawCircleFromData_(values[i])
+
         return true
-      }
-
-      for (let i = 0; i < values[value].length; i++) {
-        if (getDistance(values[value][i], data) < minDistance) {
-          // values[value][i].lon = (values[value][i].lon + data.lon) / 2
-          // values[value][i].lat = (values[value][i].lat + data.lat) / 2
-          values[value][i].value = (values[value][i].value + data.value) / 2
-
-          this.source.removeFeature(this.features[value][i])
-          this.features[value][i] = this.drawCircleFromData_(values[value][i])
-
-          return true
-        }
       }
     }
 
@@ -467,14 +444,11 @@ class HeatmapVectorSource extends source.Vector {
 
     for (const value in message.body.values) {
       if (this.props.parameters.subscriptions.includes(value)) {
-        if (!(value in values)) { values[value] = [] }
-        if (!(value in this.features)) { this.features[value] = [] }
-
         const data = message.body.values[value]
 
         if (!this.mergeWithNearby_(values, data)) {
-          values[value].push(data)
-          this.features[value].push(this.drawCircleFromData_(data))
+          values.push(data)
+          this.features.push(this.drawCircleFromData_(data))
         }
 
         if (this.props.parameters.autoScale) {
@@ -488,17 +462,12 @@ class HeatmapVectorSource extends source.Vector {
             this.props.setLayerParameter('maxValue', data.value)
           }
         }
-
-        while (values[value].length > this.props.parameters.maxPoints) {
-          values[value].shift()
-          this.source.removeFeature(this.features[value].shift())
-        }
       }
     }
 
     this.setStoredData_(values)
 
-    if (_.flatten(_.values(this.features)).length !== _.flatten(_.values(values)).length) {
+    if (this.features.length !== values.length) {
       this.drawFromStoredData_()
     }
   }
@@ -554,10 +523,10 @@ class HeatmapLayerPresentation extends React.Component {
             hsla(${this.props.layer.parameters.minHue}, 70%, 50%, 0.75)
             )`
           }}>
-          <span>{(this.props.layer.parameters.maxValue).toFixed(3)}</span>
-          <span>{((this.props.layer.parameters.maxValue +
-          this.props.layer.parameters.minValue) / 2).toFixed(3)}</span>
-          <span>{(this.props.layer.parameters.minValue).toFixed(3)}</span>
+          <span>{this.props.layer.parameters.maxValue}</span>
+          <span>{(this.props.layer.parameters.maxValue +
+          this.props.layer.parameters.minValue) / 2}</span>
+          <span>{this.props.layer.parameters.minValue}</span>
         </div>
       </div>
     )

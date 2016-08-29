@@ -1,5 +1,5 @@
 import React, { PropTypes } from 'react'
-import { SketchPicker } from 'react-color'
+import { CompactPicker } from 'react-color'
 
 export default class PopupColorPicker extends React.Component {
   constructor (props) {
@@ -19,30 +19,30 @@ export default class PopupColorPicker extends React.Component {
       position: 'absolute',
       overflow: 'hidden',
       zIndex: '2',
-      transition: 'all 1s'
+      transition: 'height 0.3s'
     }, this.state.open
     ? {
-      width: '220px',
-      height: '298px'
+      height: 87
     }
     : {
-      width: '0px',
-      height: '0px'
+      height: 0
     })
 
     const color = this.state.color
 
     return (
-      <div style={{display: 'inline-block', verticalAlign: 'middle'}}>
-        <div style={Object.assign({},
+      <div className="popup-color-picker">
+        <div className="popup-color-picker-button" style={Object.assign({},
           this.props.style,
-          {backgroundColor: `rgba(${color.r}, ${color.g}, ${color.b}, ${color.a})`}
+          {
+            backgroundColor: `rgba(${color.r}, ${color.g}, ${color.b}, ${color.a})`
+          }
         )}
           onClick={this.togglePicker_}
         ></div>
 
-        <div style={pickerStyle}>
-          <SketchPicker
+        <div className="popup-color-picker-dropdown" style={pickerStyle}>
+          <CompactPicker
             color={this.state.color}
             onChange={this.handleChange_} />
         </div>
@@ -51,11 +51,11 @@ export default class PopupColorPicker extends React.Component {
   }
 
   togglePicker_ () {
-    this.setState({open: !this.state.open})
+    this.setState({ open: !this.state.open })
   }
 
   handleChange_ (color) {
-    this.setState({color: color.rgb})
+    this.setState({ color: color.rgb, open: false })
   }
 
   getValue () {

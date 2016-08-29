@@ -191,6 +191,7 @@ div.dialog-sidebar {
   display: none;
 }
 
+/* Styling for the heatmap scale */
 #heatmapScale {
   display: flex;
   flex-direction: column;
@@ -228,5 +229,21 @@ div.dialog-sidebar {
     border-style: solid;
     border-width: 12px 12px 12px 0;
     border-color: transparent rgba(200, 200, 200, 0.75);
+  }
+}
+
+/* Styling for popup color pickers */
+.popup-color-picker {
+  display: inline-block;
+  vertical-align: middle;
+
+  .popup-color-picker-button {
+    width: 2em;
+    height: 2ex;
+    border: 1px solid rgba(0, 0, 0, 0.35);
+  }
+
+  .popup-color-picker-dropdown {
+    .drop-shadow-box();
   }
 }
