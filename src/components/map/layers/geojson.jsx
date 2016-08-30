@@ -31,34 +31,19 @@ class GeoJSONLayerSettingsPresentation extends React.Component {
   }
 
   render () {
-    const pickerStyle = {
-      width: '30px',
-      height: '15px',
-
-      borderStyle: 'solid',
-      borderColor: 'black',
-      borderWidth: '3px',
-      borderRadius: '10px'
-    }
-
     return (
       <div>
-        <p key="header">Import GeoJSON data:</p>
-
         <span>Stroke color: </span>
-        <PopupColorPicker ref="strokeColor" style={pickerStyle}
+        <PopupColorPicker ref="strokeColor"
           defaultValue={this.props.layer.parameters.strokeColor} />
-        <span style={{marginLeft: '5px'}}>Fill color: </span>
-        <PopupColorPicker ref="fillColor" style={pickerStyle}
+        <span style={{ marginLeft: '25px' }}>Fill color: </span>
+        <PopupColorPicker ref="fillColor"
           defaultValue={this.props.layer.parameters.fillColor} />
-
-        {/* <br /> */}
 
         <TextField ref="strokeWidth"
           floatingLabelText="Stroke width:"
           hintText="stroke width"
           type="number"
-          style={{width: '130px', marginTop: '-35px', marginLeft: '10px'}}
           defaultValue={this.props.layer.parameters.strokeWidth} />
 
         <TextField ref="dataTextField"

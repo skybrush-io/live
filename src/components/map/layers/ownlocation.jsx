@@ -8,11 +8,7 @@ import { layer, source } from 'ol-react'
 
 class OwnLocationLayerSettingsPresentation extends React.Component {
   render () {
-    return (
-      <div>
-        <p key="header">Settings for location marker:</p>
-      </div>
-    )
+    return false
   }
 }
 

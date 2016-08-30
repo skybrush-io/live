@@ -28,16 +28,6 @@ class UAVTraceLayerSettingsPresentation extends React.Component {
   }
 
   render () {
-    const pickerStyle = {
-      width: '30px',
-      height: '15px',
-
-      borderStyle: 'solid',
-      borderColor: 'black',
-      borderWidth: '3px',
-      borderRadius: '10px'
-    }
-
     return (
       <div>
         <TextField ref="trailLength"
@@ -51,8 +41,8 @@ class UAVTraceLayerSettingsPresentation extends React.Component {
           type="number"
           defaultValue={this.props.layer.parameters.trailWidth} />
         <div style={{marginTop: '15px'}}>
-          Trail color:
-          <PopupColorPicker ref="trailColor" style={pickerStyle}
+          Trail color:&nbsp;
+          <PopupColorPicker ref="trailColor"
             defaultValue={this.props.layer.parameters.trailColor} />
         </div>
         <br />

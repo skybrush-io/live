@@ -241,14 +241,12 @@ class HeatmapLayerSettingsPresentation extends React.Component {
 
         <TextField ref="minValue"
           style={textFieldStyle}
-          floatingLabelText="The minimum value"
-          hintText="minValue"
+          floatingLabelText="Minimum value"
           type="number"
           defaultValue={this.props.layer.parameters.minValue} />
         <TextField ref="maxValue"
           style={textFieldStyle}
-          floatingLabelText="The maximum value"
-          hintText="maxValue"
+          floatingLabelText="Maximum value"
           type="number"
           defaultValue={this.props.layer.parameters.maxValue} />
 
@@ -279,13 +277,15 @@ class HeatmapLayerSettingsPresentation extends React.Component {
 
         <br />
 
-        <TextField ref="maxPoints"
+        {/*
+          <TextField ref="maxPoints"
           floatingLabelText="Maximum number of points"
           hintText="maxPoints"
           type="number"
           defaultValue={this.props.layer.parameters.maxPoints} />
 
-        <br />
+          <br />
+        */}
 
         <RaisedButton style={{marginTop: '10px'}}
           label="Update parameters"
@@ -317,8 +317,8 @@ class HeatmapLayerSettingsPresentation extends React.Component {
       maxValue: _.toNumber(this.refs.maxValue.getValue()),
       minHue: this.state.minHue,
       maxHue: this.state.maxHue,
-      autoScale: this.refs.autoScale.isChecked(),
-      maxPoints: _.toNumber(this.refs.maxPoints.getValue())
+      autoScale: this.refs.autoScale.isChecked()
+      // maxPoints: _.toNumber(this.refs.maxPoints.getValue())
     }
 
     for (const layerParameter in layerParameters) {
@@ -489,10 +489,10 @@ class HeatmapVectorSource extends source.Vector {
           }
         }
 
-        while (values[value].length > this.props.parameters.maxPoints) {
-          values[value].shift()
-          this.source.removeFeature(this.features[value].shift())
-        }
+        // while (values[value].length > this.props.parameters.maxPoints) {
+        //   values[value].shift()
+        //   this.source.removeFeature(this.features[value].shift())
+        // }
       }
     }
 

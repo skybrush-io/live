@@ -20,31 +20,30 @@ export default class PopupColorPicker extends React.Component {
       position: 'absolute',
       overflow: 'hidden',
       zIndex: '2',
-      transition: 'all 1s'
+      transition: 'height 0.3s'
     }, this.state.open
     ? {
-      width: '220px',
-      height: '298px'
+      height: 298
     }
     : {
-      width: '0px',
-      height: '0px'
+      height: 0
     })
 
     const color = this.state.color
 
     return (
-      <div ref="pickerContainer"
-        style={{display: 'inline-block', verticalAlign: 'middle'}}>
-        <div
+      <div className="popup-color-picker" ref="pickerContainer">
+        <div className="popup-color-picker-button"
           style={Object.assign({},
             this.props.style,
-            {backgroundColor: `rgba(${color.r}, ${color.g}, ${color.b}, ${color.a})`}
+            {
+              backgroundColor: `rgba(${color.r}, ${color.g}, ${color.b}, ${color.a})`
+            }
           )}
           onClick={this.togglePicker_}
         ></div>
 
-        <div style={pickerStyle}>
+        <div className="popup-color-picker-dropdown" style={pickerStyle}>
           <SketchPicker
             color={this.state.color}
             onChange={this.handleChange_} />
@@ -60,11 +59,11 @@ export default class PopupColorPicker extends React.Component {
       document.removeEventListener('click', this.handleClickAway_, true)
     }
 
-    this.setState({open: !this.state.open})
+    this.setState({ open: !this.state.open })
   }
 
   handleChange_ (color) {
-    this.setState({color: color.rgb})
+    this.setState({ color: color.rgb })
   }
 
   handleClickAway_ (e) {
