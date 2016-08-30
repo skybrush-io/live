@@ -99,15 +99,7 @@ export default class HotkeyHandler extends React.Component {
    * Function for attaching the help dialog control listeners.
    */
   addHelpListeners () {
-    // TODO: this is not so nice -- there should be a way to add a listener
-    // for an event that is defined by the character that would have been
-    // typed in response to the keyboard event
-
-    // For US keyboard layout
-    this.addListener('down', 'Shift + Slash', this.toggleDialog_)
-
-    // For HU keyboard layout
-    this.addListener('down', 'Shift + Comma', this.toggleDialog_)
+    this.addListener('down', '?', this.toggleDialog_)
   }
 
   /**
@@ -243,7 +235,8 @@ export default class HotkeyHandler extends React.Component {
       (e.altKey ? 'Alt + ' : '') +
       (e.ctrlKey ? 'Ctrl + ' : '') +
       (e.shiftKey ? 'Shift + ' : '') +
-      e.code
+      e.code,
+      e.key
     ]
 
     if (e.ctrlKey || e.metaKey) {
@@ -251,7 +244,8 @@ export default class HotkeyHandler extends React.Component {
         (e.altKey ? 'Alt + ' : '') +
         'PlatMod + ' +
         (e.shiftKey ? 'Shift + ' : '') +
-        e.code
+        e.code,
+        e.key
       )
     }
 
