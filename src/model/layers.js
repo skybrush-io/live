@@ -74,15 +74,14 @@ const propertiesForLayerTypes_ = {
     label: 'Heatmap',
     icon: <ActionTrackChanges />,
     parameters: {
-      subscriptions: [
-        '/FAKE-00/thermometer/temperature'
-      ],
+      subscriptions: [],
       minHue: 100,
       maxHue: 0,
-      minValue: 23,
-      maxValue: 25,
-      autoScale: false,
-      maxPoints: 1000
+      minValue: 0,
+      maxValue: 0,
+      autoScale: true,
+      maxPoints: 1000,
+      unit: ''
     }
   },
   [LayerType.OWN_LOCATION]: {

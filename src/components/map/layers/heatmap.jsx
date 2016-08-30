@@ -38,6 +38,7 @@ class SubscriptionDialog extends React.Component {
       visible: false,
 
       subscriptions: props.subscriptions,
+      unit: props.unit,
 
       available: {},
 
@@ -136,7 +137,9 @@ class SubscriptionDialog extends React.Component {
         available[uav][device] = {}
         for (const channel in data[uav].children[device].children) {
           if (data[uav].children[device].children[channel].operations.includes('read')) {
-            available[uav][device][channel] = {}
+            available[uav][device][channel] = {
+              unit: data[uav].children[device].children[channel].unit
+            }
           }
         }
       }
@@ -168,7 +171,8 @@ class SubscriptionDialog extends React.Component {
     })
 
     this.setState({
-      subscriptions: this.state.subscriptions.concat(path)
+      subscriptions: this.state.subscriptions.concat(path),
+      unit: this.state.available[this.state.selectedUAV][this.state.selectedDevice][this.state.selectedChannel].unit
     })
   }
 
@@ -193,6 +197,7 @@ class SubscriptionDialog extends React.Component {
 
   hideDialog_ () {
     this.props.setSubscriptions(this.state.subscriptions)
+    this.props.setUnit(this.state.unit)
 
     this.setState({
       visible: false
@@ -202,7 +207,9 @@ class SubscriptionDialog extends React.Component {
 
 SubscriptionDialog.propTypes = {
   subscriptions: PropTypes.arrayOf(PropTypes.string),
-  setSubscriptions: PropTypes.func
+  unit: PropTypes.string,
+  setSubscriptions: PropTypes.func,
+  setUnit: PropTypes.func
 }
 
 class HeatmapLayerSettingsPresentation extends React.Component {
@@ -230,7 +237,9 @@ class HeatmapLayerSettingsPresentation extends React.Component {
       <div>
         <SubscriptionDialog ref="subscriptionDialog"
           subscriptions={this.props.layer.parameters.subscriptions}
-          setSubscriptions={_.partial(this.props.setLayerParameter, 'subscriptions')} />
+          setSubscriptions={_.partial(this.props.setLayerParameter, 'subscriptions')}
+          unit={this.props.layer.parameters.unit}
+          setUnit={_.partial(this.props.setLayerParameter, 'unit')} />
 
         <p key="header">Heatmap options:</p>
         <RaisedButton
@@ -539,6 +548,8 @@ class HeatmapLayerPresentation extends React.Component {
       return false
     }
 
+    const { minValue, maxValue, unit } = this.props.layer.parameters
+
     return (
       <div>
         <layer.Vector zIndex={this.props.zIndex}>
@@ -554,10 +565,9 @@ class HeatmapLayerPresentation extends React.Component {
             hsla(${this.props.layer.parameters.minHue}, 70%, 50%, 0.75)
             )`
           }}>
-          <span>{(this.props.layer.parameters.maxValue).toFixed(3)}</span>
-          <span>{((this.props.layer.parameters.maxValue +
-          this.props.layer.parameters.minValue) / 2).toFixed(3)}</span>
-          <span>{(this.props.layer.parameters.minValue).toFixed(3)}</span>
+          <span>{`${(maxValue).toFixed(3)} ${unit}`}</span>
+          <span>{`${((maxValue + minValue) / 2).toFixed(3)} ${unit}`}</span>
+          <span>{`${(minValue).toFixed(3)} ${unit}`}</span>
         </div>
       </div>
     )
