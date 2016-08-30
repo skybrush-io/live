@@ -1,7 +1,9 @@
+import _ from 'lodash'
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 
 import TextField from 'material-ui/TextField'
+import PopupColorPicker from '../../PopupColorPicker'
 import RaisedButton from 'material-ui/RaisedButton'
 
 import { setLayerParameterById } from '../../../actions/layers'
@@ -10,16 +12,7 @@ import ol from 'openlayers'
 import { layer, source } from 'ol-react'
 import flock from '../../../flock'
 import { coordinateFromLonLat } from '../MapView'
-
-/**
- * Helper function that creates an OpenLayers stroke style object from a color.
- *
- * @param {color} color the color of the stroke line
- * @return {Object} the OpenLayers style object
- */
-const makeStrokeStyle = color => new ol.style.Style({
-  stroke: new ol.style.Stroke({ color: color })
-})
+import { colorToString } from '../../../utils/coloring.js'
 
 // === Settings for this particular layer type ===
 
@@ -35,6 +28,16 @@ class UAVTraceLayerSettingsPresentation extends React.Component {
   }
 
   render () {
+    const pickerStyle = {
+      width: '30px',
+      height: '15px',
+
+      borderStyle: 'solid',
+      borderColor: 'black',
+      borderWidth: '3px',
+      borderRadius: '10px'
+    }
+
     return (
       <div>
         <TextField ref="trailLength"
@@ -42,12 +45,16 @@ class UAVTraceLayerSettingsPresentation extends React.Component {
           hintText="Length (in samples)"
           type="number"
           defaultValue={this.props.layer.parameters.trailLength} />
-        <p>
+        <TextField ref="trailWidth"
+          floatingLabelText="Width of the trail"
+          hintText="Width (in pixels)"
+          type="number"
+          defaultValue={this.props.layer.parameters.trailWidth} />
+        <div style={{marginTop: '15px'}}>
           Trail color:
-          <input ref="trailColor"
-            type="color"
+          <PopupColorPicker ref="trailColor" style={pickerStyle}
             defaultValue={this.props.layer.parameters.trailColor} />
-        </p>
+        </div>
         <br />
         <RaisedButton
           label="Set parameters"
@@ -57,8 +64,9 @@ class UAVTraceLayerSettingsPresentation extends React.Component {
   }
 
   handleClick_ () {
-    this.props.setLayerParameter('trailLength', this.refs.trailLength.getValue())
-    this.props.setLayerParameter('trailColor', this.refs.trailColor.value)
+    this.props.setLayerParameter('trailLength', _.toNumber(this.refs.trailLength.getValue()))
+    this.props.setLayerParameter('trailWidth', _.toNumber(this.refs.trailWidth.getValue()))
+    this.props.setLayerParameter('trailColor', this.refs.trailColor.getValue())
   }
 }
 
@@ -81,6 +89,18 @@ export const UAVTraceLayerSettings = connect(
 )(UAVTraceLayerSettingsPresentation)
 
 // === The actual layer to be rendered ===
+
+/**
+ * Helper function that creates an OpenLayers stroke style object from a color
+ * and a given width.
+ *
+ * @param {Object} color the color of the stroke line
+ * @param {number} width the width of the stroke line
+ * @return {Object} the OpenLayers style object
+ */
+const makeStrokeStyle = (color, width) => new ol.style.Style({
+  stroke: new ol.style.Stroke({ color, width })
+})
 
 class UAVTraceVectorSource extends source.Vector {
   constructor (props) {
@@ -105,7 +125,7 @@ class UAVTraceVectorSource extends source.Vector {
           [coordinateFromLonLat([uav.lon, uav.lat])]
         )
         let feature = new ol.Feature(this.lineStringsById[uav._id])
-        feature.setStyle(makeStrokeStyle(this.props.trailColor))
+        feature.setStyle(makeStrokeStyle(this.props.trailColor, this.props.trailWidth))
         this.source.addFeature(feature)
       }
 
@@ -121,9 +141,15 @@ class UAVTraceVectorSource extends source.Vector {
     const features = this.source.getFeatures()
 
     for (const feature of features) {
-      feature.setStyle(makeStrokeStyle(newProps.trailColor))
+      feature.setStyle(makeStrokeStyle(newProps.trailColor, this.props.trailWidth))
     }
   }
+}
+
+UAVTraceVectorSource.propTypes = {
+  trailLength: PropTypes.number,
+  trailColor: PropTypes.string,
+  trailWidth: PropTypes.number
 }
 
 class UAVTraceLayerPresentation extends React.Component {
@@ -139,7 +165,8 @@ class UAVTraceLayerPresentation extends React.Component {
           updateWhileInteracting={true}>
           <UAVTraceVectorSource
             trailLength={this.props.layer.parameters.trailLength}
-            trailColor={this.props.layer.parameters.trailColor} />
+            trailColor={colorToString(this.props.layer.parameters.trailColor)}
+            trailWidth={this.props.layer.parameters.trailWidth} />
         </layer.Vector>
       </div>
     )

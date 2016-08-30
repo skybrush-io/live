@@ -101,7 +101,8 @@ const propertiesForLayerTypes_ = {
     icon: <ActionTimeline />,
     parameters: {
       trailLength: 10,
-      trailColor: '#000000'
+      trailWidth: 2,
+      trailColor: {r: 0, g: 0, b: 0, a: 1}
     }
   },
   [LayerType.UNTYPED]: {

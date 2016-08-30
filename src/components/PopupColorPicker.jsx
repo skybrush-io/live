@@ -12,6 +12,7 @@ export default class PopupColorPicker extends React.Component {
 
     this.togglePicker_ = this.togglePicker_.bind(this)
     this.handleChange_ = this.handleChange_.bind(this)
+    this.handleClickAway_ = this.handleClickAway_.bind(this)
   }
 
   render () {
@@ -33,11 +34,13 @@ export default class PopupColorPicker extends React.Component {
     const color = this.state.color
 
     return (
-      <div style={{display: 'inline-block', verticalAlign: 'middle'}}>
-        <div style={Object.assign({},
-          this.props.style,
-          {backgroundColor: `rgba(${color.r}, ${color.g}, ${color.b}, ${color.a})`}
-        )}
+      <div ref="pickerContainer"
+        style={{display: 'inline-block', verticalAlign: 'middle'}}>
+        <div
+          style={Object.assign({},
+            this.props.style,
+            {backgroundColor: `rgba(${color.r}, ${color.g}, ${color.b}, ${color.a})`}
+          )}
           onClick={this.togglePicker_}
         ></div>
 
@@ -51,11 +54,23 @@ export default class PopupColorPicker extends React.Component {
   }
 
   togglePicker_ () {
+    if (!this.state.open) {
+      document.addEventListener('click', this.handleClickAway_, true)
+    } else {
+      document.removeEventListener('click', this.handleClickAway_, true)
+    }
+
     this.setState({open: !this.state.open})
   }
 
   handleChange_ (color) {
     this.setState({color: color.rgb})
+  }
+
+  handleClickAway_ (e) {
+    if (!this.refs.pickerContainer.contains(e.target)) {
+      this.togglePicker_()
+    }
   }
 
   getValue () {

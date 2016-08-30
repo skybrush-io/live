@@ -14,6 +14,8 @@ import ActionSystemUpdateAlt from 'material-ui/svg-icons/action/system-update-al
 import { setLayerParameterById } from '../../../actions/layers'
 import { showSnackbarMessage } from '../../../actions/snackbar'
 
+import { colorToString } from '../../../utils/coloring.js'
+
 // === Settings for this particular layer type ===
 
 class GeoJSONLayerSettingsPresentation extends React.Component {
@@ -140,16 +142,6 @@ const makeStrokeFillStyle = (stroke, strokeWidth, fill, text) => new ol.style.St
     stroke: new ol.style.Stroke({color: stroke})
   })
 })
-
-/**
- * Helper function that makes a css string from a color object.
- *
- * @param {Object} color the color to be converted
- * @return {string} the string representation of the color
- */
-const colorToString = color => {
-  return `rgba(${color.r}, ${color.g}, ${color.b}, ${color.a})`
-}
 
 class GeoJSONVectorSource extends source.Vector {
   constructor (props) {
