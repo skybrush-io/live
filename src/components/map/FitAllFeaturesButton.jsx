@@ -1,7 +1,8 @@
 /**
-* @file React Component to display and adjust the rotation of the map view.
-*/
+ * @file React Component to display and adjust the rotation of the map view.
+ */
 
+import _ from 'lodash'
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { showSnackbarMessage } from '../../actions/snackbar'
@@ -75,8 +76,11 @@ export default class FitAllFeaturesButton extends React.Component {
     let feasibleLayers = this.map.getLayers().getArray().filter(this.isLayerFeasible_)
     let featureArrays = feasibleLayers.map(l => l.getSource().getFeatures())
     let features = [].concat.apply([], featureArrays)
-    let featurePositions = features.map(f => f.getGeometry().getCoordinates())
-    let filteredPositions = featurePositions.filter(p => (p[0] && p[1]))
+    let featurePositions = features.map(f => {
+      const geometry = f.getGeometry()
+      return geometry && _.isFunction(geometry.getCoordinates) ? geometry.getCoordinates() : null
+    })
+    let filteredPositions = featurePositions.filter(p => (p && p[0] && p[1]))
 
     if (filteredPositions.length === 0) {
       this.props.dispatch(showSnackbarMessage(
