@@ -23,9 +23,9 @@ export const LayerType = {
   GEOJSON: 'geojson',
   HEATMAP: 'heatmap',
   HEXGRID: 'hexgrid',
-  OWN_LOCATION: 'ownlocation',
+  OWN_LOCATION: 'ownLocation',
   UAVS: 'uavs',
-  UAVTrace: 'uavtrace',
+  UAV_TRACE: 'uavTrace',
   UNTYPED: 'untyped'
 }
 
@@ -33,8 +33,9 @@ export const LayerType = {
  * Constant containing all the layer types in the order preferred on the UI.
  */
 export const LayerTypes = [
-  LayerType.BASE, LayerType.UAVS, LayerType.UAVTRACE, LayerType.OWN_LOCATION,
-  LayerType.GEOJSON, LayerType.HEXGRID, LayerType.HEATMAP
+  LayerType.BASE, LayerType.UAVS, LayerType.UAV_TRACE,
+  LayerType.OWN_LOCATION, LayerType.GEOJSON, LayerType.HEXGRID,
+  LayerType.HEATMAP
 ]
 
 /**
@@ -95,7 +96,7 @@ const propertiesForLayerTypes_ = {
       colorPredicates: {}
     }
   },
-  [LayerType.UAVTRACE]: {
+  [LayerType.UAV_TRACE]: {
     label: 'UAV Trace',
     icon: <ActionTimeline />,
     parameters: {
