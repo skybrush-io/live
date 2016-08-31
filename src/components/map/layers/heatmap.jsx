@@ -4,19 +4,8 @@ import ol from 'openlayers'
 import { layer, source } from 'ol-react'
 import { connect } from 'react-redux'
 
-import flock from '../../../flock'
-
-import Dialog from 'material-ui/Dialog'
-import FlatButton from 'material-ui/FlatButton'
-
-import DropDownMenu from 'material-ui/DropDownMenu'
-import MenuItem from 'material-ui/MenuItem'
-
+import SubscriptionDialog from '../../SubscriptionDialog'
 import RaisedButton from 'material-ui/RaisedButton'
-
-import { List, ListItem } from 'material-ui/List'
-import IconButton from 'material-ui/IconButton'
-import ContentRemoveCircleOutline from 'material-ui/svg-icons/content/remove-circle-outline'
 
 import TextField from 'material-ui/TextField'
 import Checkbox from 'material-ui/Checkbox'
@@ -29,188 +18,6 @@ import messageHub from '../../../message-hub'
 import { coordinateFromLonLat } from '../MapView'
 
 // === Settings for this particular layer type ===
-
-class SubscriptionDialog extends React.Component {
-  constructor (props) {
-    super(props)
-
-    this.state = {
-      visible: false,
-
-      subscriptions: props.subscriptions,
-      unit: props.unit,
-
-      available: {},
-
-      selectedUAV: null,
-      selectedDevice: null,
-      selectedChannel: null
-    }
-
-    this.updateDeviceList_ = this.updateDeviceList_.bind(this)
-    this.deviceListReceived_ = this.deviceListReceived_.bind(this)
-
-    this.handleChange_ = this.handleChange_.bind(this)
-    this.handleClick_ = this.handleClick_.bind(this)
-
-    this.removeSubscription_ = this.removeSubscription_.bind(this)
-
-    this.showDialog = this.showDialog.bind(this)
-    this.hideDialog_ = this.hideDialog_.bind(this)
-  }
-
-  render () {
-    const UAVMenuItems = Object.keys(this.state.available).map(uav =>
-      <MenuItem key={uav} value={uav} primaryText={uav} />
-    )
-
-    const DeviceMenuItems = this.state.selectedUAV
-    ? Object.keys(this.state.available[this.state.selectedUAV]).map(device =>
-      <MenuItem key={device} value={device} primaryText={device} />
-    ) : []
-
-    const ChannelMenuItems = this.state.selectedDevice
-    ? Object.keys(
-      this.state.available[this.state.selectedUAV][this.state.selectedDevice]
-    ).map(channel =>
-      <MenuItem key={channel} value={channel} primaryText={channel} />
-    ) : []
-
-    const subscriptionItems = this.state.subscriptions.map(subscription =>
-      <ListItem key={subscription} primaryText={subscription} rightIconButton={
-        <IconButton tooltip="Unsubscribe"
-          onClick={_.partial(this.removeSubscription_, subscription)}>
-          <ContentRemoveCircleOutline />
-        </IconButton>
-      } />
-    )
-
-    const actions = [
-      <FlatButton label="Done" primary={true} onTouchTap={this.hideDialog_} />
-    ]
-
-    return (
-      <Dialog
-        open={this.state.visible}
-        actions={actions}>
-        UAV:
-        <DropDownMenu value={this.state.selectedUAV}
-          onChange={_.partial(this.handleChange_, 'selectedUAV')}>
-          {UAVMenuItems}
-        </DropDownMenu>
-        Device:
-        <DropDownMenu value={this.state.selectedDevice}
-          onChange={_.partial(this.handleChange_, 'selectedDevice')}>
-          {DeviceMenuItems}
-        </DropDownMenu>
-        Channel:
-        <DropDownMenu value={this.state.selectedChannel}
-          onChange={_.partial(this.handleChange_, 'selectedChannel')}>
-          {ChannelMenuItems}
-        </DropDownMenu>
-        <RaisedButton
-          disabled={this.state.subscriptions.includes(this.currentPath)}
-          label="Subscribe"
-          onClick={this.handleClick_} />
-
-        <List>
-          {subscriptionItems}
-        </List>
-      </Dialog>
-    )
-  }
-
-  updateDeviceList_ () {
-    messageHub.sendMessage({
-      'type': 'DEV-LIST',
-      'ids': Object.keys(flock._uavsById)
-    }).then(this.deviceListReceived_)
-  }
-
-  deviceListReceived_ (message) {
-    const data = message.body.devices
-    const available = {}
-
-    for (const uav in data) {
-      available[uav] = {}
-      for (const device in data[uav].children) {
-        available[uav][device] = {}
-        for (const channel in data[uav].children[device].children) {
-          if (data[uav].children[device].children[channel].operations.includes('read')) {
-            available[uav][device][channel] = {
-              unit: data[uav].children[device].children[channel].unit
-            }
-          }
-        }
-      }
-    }
-
-    this.setState({
-      available: available
-    })
-  }
-
-  handleChange_ (parameter, event, index, value) {
-    this.setState({
-      [parameter]: value
-    })
-  }
-
-  get currentPath () {
-    return `/${this.state.selectedUAV}/${this.state.selectedDevice}/${this.state.selectedChannel}`
-  }
-
-  handleClick_ () {
-    const path = this.currentPath
-
-    messageHub.sendMessage({
-      'type': 'DEV-SUB',
-      'paths': [
-        path
-      ]
-    })
-
-    this.setState({
-      subscriptions: this.state.subscriptions.concat(path),
-      unit: this.state.available[this.state.selectedUAV][this.state.selectedDevice][this.state.selectedChannel].unit
-    })
-  }
-
-  removeSubscription_ (subscription) {
-    messageHub.sendMessage({
-      'type': 'DEV-UNSUB',
-      'paths': [
-        subscription
-      ]
-    })
-
-    this.setState({
-      subscriptions: _.without(this.state.subscriptions, subscription)
-    })
-  }
-
-  showDialog () {
-    this.setState({
-      visible: true
-    })
-  }
-
-  hideDialog_ () {
-    this.props.setSubscriptions(this.state.subscriptions)
-    this.props.setUnit(this.state.unit)
-
-    this.setState({
-      visible: false
-    })
-  }
-}
-
-SubscriptionDialog.propTypes = {
-  subscriptions: PropTypes.arrayOf(PropTypes.string),
-  unit: PropTypes.string,
-  setSubscriptions: PropTypes.func,
-  setUnit: PropTypes.func
-}
 
 class HeatmapLayerSettingsPresentation extends React.Component {
   constructor (props) {
@@ -337,6 +144,8 @@ class HeatmapLayerSettingsPresentation extends React.Component {
 
   clearData_ () {
     window.localStorage.removeItem(`${this.props.layerId}_data`)
+    this.props.setLayerParameter('minValue', 0)
+    this.props.setLayerParameter('maxValue', 0)
   }
 }
 
