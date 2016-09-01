@@ -37,7 +37,8 @@ class HeatmapLayerSettingsPresentation extends React.Component {
   render () {
     const textFieldStyle = {
       width: '150px',
-      margin: '10px'
+      margin: '10px',
+      marginTop: '-15px'
     }
 
     return (
@@ -52,6 +53,14 @@ class HeatmapLayerSettingsPresentation extends React.Component {
         <RaisedButton
           label="Edit subscriptions"
           onClick={this.showSubscriptionDialog_} />
+
+        <br />
+
+        <TextField ref="threshold"
+          style={textFieldStyle}
+          floatingLabelText="Threshold"
+          type="number"
+          defaultValue={this.props.layer.parameters.threshold} />
 
         <br />
 
@@ -129,6 +138,7 @@ class HeatmapLayerSettingsPresentation extends React.Component {
 
   handleClick_ (e) {
     const layerParameters = {
+      threshold: _.toNumber(this.refs.threshold.getValue()),
       minValue: _.toNumber(this.refs.minValue.getValue()),
       maxValue: _.toNumber(this.refs.maxValue.getValue()),
       minHue: this.state.minHue,
@@ -284,33 +294,39 @@ class HeatmapVectorSource extends source.Vector {
     const values = this.getStoredData_()
 
     for (const value in message.body.values) {
+      // Check if we are subscribed to this channel
       if (this.props.parameters.subscriptions.includes(value)) {
-        if (!(value in values)) { values[value] = [] }
-        if (!(value in this.features)) { this.features[value] = [] }
+        // Check if the message actually has a valid value
+        if (message.body.values[value].value !== null) {
+          if (!(value in values)) { values[value] = [] }
+          if (!(value in this.features)) { this.features[value] = [] }
 
-        const data = message.body.values[value]
+          const data = message.body.values[value]
 
-        if (!this.mergeWithNearby_(values, data)) {
-          values[value].push(data)
-          this.features[value].push(this.drawCircleFromData_(data))
-        }
-
-        if (this.props.parameters.autoScale) {
-          if (data.value < this.props.parameters.minValue || (
-            this.props.parameters.minValue === 0 && this.props.parameters.maxValue === 0
-          )) {
-            this.props.setLayerParameter('minValue', data.value)
+          if (!this.mergeWithNearby_(values, data)) {
+            values[value].push(data)
+            this.features[value].push(this.drawCircleFromData_(data))
           }
 
-          if (data.value > this.props.parameters.maxValue) {
-            this.props.setLayerParameter('maxValue', data.value)
-          }
-        }
+          if (this.props.parameters.autoScale) {
+            if (data.value > this.props.parameters.threshold && (
+              data.value < this.props.parameters.minValue || (
+              this.props.parameters.minValue === 0 &&
+              this.props.parameters.maxValue === 0
+            ))) {
+              this.props.setLayerParameter('minValue', data.value)
+            }
 
-        // while (values[value].length > this.props.parameters.maxPoints) {
-        //   values[value].shift()
-        //   this.source.removeFeature(this.features[value].shift())
-        // }
+            if (data.value > this.props.parameters.maxValue) {
+              this.props.setLayerParameter('maxValue', data.value)
+            }
+          }
+
+          // while (values[value].length > this.props.parameters.maxPoints) {
+          //   values[value].shift()
+          //   this.source.removeFeature(this.features[value].shift())
+          // }
+        }
       }
     }
 
@@ -328,7 +344,12 @@ class HeatmapVectorSource extends source.Vector {
   }
 
   colorForValue_ (value) {
-    const { minHue, maxHue, minValue, maxValue } = this.props.parameters
+    const { minHue, maxHue, threshold, minValue, maxValue } = this.props.parameters
+
+    if (value < threshold) {
+      return 'hsla(0, 100%, 100%, 0.5)'
+    }
+
     const hue = (value - minValue) / (maxValue - minValue) * (maxHue - minHue) + minHue
 
     return `hsla(${hue}, 70%, 50%, 0.5)`

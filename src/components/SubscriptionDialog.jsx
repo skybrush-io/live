@@ -208,9 +208,7 @@ export default class SubscriptionDialog extends React.Component {
 
       messageHub.sendMessage({
         'type': 'DEV-UNSUB',
-        'paths': [
-          this.state.subscriptions
-        ]
+        'paths': this.state.subscriptions
       })
 
       messageHub.sendMessage({

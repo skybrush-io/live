@@ -78,6 +78,7 @@ const propertiesForLayerTypes_ = {
       subscriptions: [],
       minHue: 100,
       maxHue: 0,
+      threshold: 0,
       minValue: 0,
       maxValue: 0,
       autoScale: true,
