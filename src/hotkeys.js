@@ -141,5 +141,18 @@ export default [
         ids: store.getState().map.selection
       }).then(result => console.log(result))
     }
+  },
+
+  // Clear localStorage and reload
+  {
+    description: 'Clear localStorage and reload',
+    on: 'down',
+    keys: 'PlatMod + Alt + KeyC',
+    action: () => {
+      if (window.confirm('Are you sure? All settings will be lost.')) {
+        window.localStorage.clear()
+        window.location.reload()
+      }
+    }
   }
 ]
