@@ -194,10 +194,13 @@ const getDistance = (a, b) => Math.sqrt(
  * Helper function that creates an OpenLayers fill style object from a color.
  *
  * @param {color} color the color of the filling
+ * @param {number} radius the radius to fill
  * @return {Object} the OpenLayers style object
  */
-const makeFillStyle = color => new ol.style.Style({
-  fill: new ol.style.Fill({ color: color })
+const makePointStyle = (color, radius) => new ol.style.Style({
+  image: new ol.style.Circle({
+    fill: new ol.style.Fill({ color }), radius
+  })
 })
 
 class HeatmapVectorSource extends source.Vector {
@@ -212,7 +215,7 @@ class HeatmapVectorSource extends source.Vector {
     this.mergeWithNearby_ = this.mergeWithNearby_.bind(this)
     this.processNotification_ = this.processNotification_.bind(this)
 
-    this.makeCircle_ = this.makeCircle_.bind(this)
+    this.makePoint_ = this.makePoint_.bind(this)
     this.colorForValue_ = this.colorForValue_.bind(this)
     this.drawCircleFromData_ = this.drawCircleFromData_.bind(this)
 
@@ -337,9 +340,9 @@ class HeatmapVectorSource extends source.Vector {
     }
   }
 
-  makeCircle_ (center, radius) {
+  makePoint_ (center) {
     return new ol.Feature({
-      geometry: new ol.geom.Circle(coordinateFromLonLat(center), radius)
+      geometry: new ol.geom.Point(coordinateFromLonLat(center))
     })
   }
 
@@ -356,12 +359,12 @@ class HeatmapVectorSource extends source.Vector {
   }
 
   drawCircleFromData_ (data) {
-    const circle = this.makeCircle_([data.lon, data.lat], 3)
+    const point = this.makePoint_([data.lon, data.lat])
 
-    circle.setStyle(makeFillStyle(this.colorForValue_(data.value)))
-    this.source.addFeature(circle)
+    point.setStyle(makePointStyle(this.colorForValue_(data.value), 5))
+    this.source.addFeature(point)
 
-    return circle
+    return point
   }
 }
 
