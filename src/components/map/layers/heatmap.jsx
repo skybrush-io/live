@@ -230,16 +230,32 @@ class HeatmapVectorSource extends source.Vector {
     this.drawFromStoredData_()
   }
 
+  componentWillUnmount () {
+    messageHub.unregisterNotificationHandler('DEV-INF', this.processNotification_)
+  }
+
   getStoredData_ () {
     if (!window.localStorage.getItem(this.props.storageKey)) {
       window.localStorage.setItem(this.props.storageKey, '[]')
     }
 
-    return new Map(JSON.parse(window.localStorage.getItem(this.props.storageKey)))
+    const values = new Map(JSON.parse(window.localStorage.getItem(this.props.storageKey)))
+
+    return {
+      map_: values,
+      set: (key, value) => values.set(JSON.stringify(key), value),
+      get: key => values.get(JSON.stringify(key)),
+      size: () => values.size,
+      has: (key) => values.has(JSON.stringify(key)),
+      keys: function* () { for (const key of values.keys()) { yield JSON.parse(key) } },
+      [Symbol.iterator]: function* () {
+        for (const [key, value] of values) { yield [JSON.parse(key), value] }
+      }
+    }
   }
 
   setStoredData_ (values) {
-    window.localStorage.setItem(this.props.storageKey, JSON.stringify([...values]))
+    window.localStorage.setItem(this.props.storageKey, JSON.stringify([...values.map_]))
   }
 
   drawFromStoredData_ () {

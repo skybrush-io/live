@@ -585,6 +585,43 @@ export default class MessageHub {
   }
 
   /**
+   * Unregisters the given function from notifications of the given type.
+   *
+   * The function won't be called for further notification received.
+   *
+   * @param {string} type  the type to unregister the handler from
+   * @param {function} handler  the handler to unregister
+   */
+  unregisterNotificationHandler (type, handler) {
+    if (
+      !this._notificationHandlers.hasOwnProperty(type) ||
+      !this._notificationHandlers[type].includes(handler)
+    ) {
+      throw new Error(
+        `Unable to unregister handler from ${type}. Handler doesn't exist.`
+      )
+    }
+
+    this._notificationHandlers[type].splice(
+      this._notificationHandlers[type].indexOf(handler)
+    )
+  }
+
+  /**
+   * Unregisters multiple notification handlers from messages of given types.
+   *
+   * See {@link unregisterNotificationHandler} for more details.
+   *
+   * @param {Object} typesAndHandlers  object mapping Flockwave message
+   *        types to the corresponding handlers to unregister
+   */
+  unregisterNotificationHandlers (typesAndHandlers) {
+    for (let type of Object.keys(typesAndHandlers)) {
+      this.unregisterNotificationHandler(type, typesAndHandlers[type])
+    }
+  }
+
+  /**
    * Sends a Flockwave command request (CMD-REQ) with the given body and
    * positional and keyword arguments and returns a promise that resolves
    * when one of the following events happen:
