@@ -1,4 +1,6 @@
 import _ from 'lodash'
+import HashedMap from '../../../utils/hashedmap'
+
 import React, { PropTypes } from 'react'
 import ol from 'openlayers'
 import { layer, source } from 'ol-react'
@@ -218,7 +220,7 @@ class HeatmapVectorSource extends source.Vector {
     this.colorForValue_ = this.colorForValue_.bind(this)
     this.drawPointFromData_ = this.drawPointFromData_.bind(this)
 
-    this.features = new Map()
+    this.features = new HashedMap()
     this.drawFromStoredData_()
 
     messageHub.registerNotificationHandler('DEV-INF', this.processNotification_)
@@ -239,19 +241,7 @@ class HeatmapVectorSource extends source.Vector {
       window.localStorage.setItem(this.props.storageKey, '[]')
     }
 
-    const values = new Map(JSON.parse(window.localStorage.getItem(this.props.storageKey)))
-
-    return {
-      map_: values,
-      set: (key, value) => values.set(JSON.stringify(key), value),
-      get: key => values.get(JSON.stringify(key)),
-      size: () => values.size,
-      has: (key) => values.has(JSON.stringify(key)),
-      keys: function* () { for (const key of values.keys()) { yield JSON.parse(key) } },
-      [Symbol.iterator]: function* () {
-        for (const [key, value] of values) { yield [JSON.parse(key), value] }
-      }
-    }
+    return new HashedMap(JSON.parse(window.localStorage.getItem(this.props.storageKey)))
   }
 
   setStoredData_ (values) {
@@ -260,7 +250,7 @@ class HeatmapVectorSource extends source.Vector {
 
   drawFromStoredData_ () {
     this.source.clear()
-    this.features = new Map()
+    this.features = new HashedMap()
 
     const values = this.getStoredData_()
 
