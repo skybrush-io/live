@@ -102,16 +102,6 @@ class HeatmapLayerSettingsPresentation extends React.Component {
 
         <br />
 
-        {/*
-          <TextField ref="maxPoints"
-          floatingLabelText="Maximum number of points"
-          hintText="maxPoints"
-          type="number"
-          defaultValue={this.props.layer.parameters.maxPoints} />
-
-          <br />
-        */}
-
         <TextField ref="minDistance"
           floatingLabelText="Minimum distance between points"
           type="number"
@@ -155,7 +145,6 @@ class HeatmapLayerSettingsPresentation extends React.Component {
       autoScale: this.refs.autoScale.isChecked(),
       minDistance: _.toNumber(this.refs.minDistance.getValue()),
       snapToGrid: this.refs.snapToGrid.isChecked()
-      // maxPoints: _.toNumber(this.refs.maxPoints.getValue())
     }
 
     for (const layerParameter in layerParameters) {
@@ -223,14 +212,13 @@ class HeatmapVectorSource extends source.Vector {
     this.drawFromStoredData_ = this.drawFromStoredData_.bind(this)
 
     this.trySubscribe_ = this.trySubscribe_.bind(this)
-    this.mergeWithNearby_ = this.mergeWithNearby_.bind(this)
     this.processNotification_ = this.processNotification_.bind(this)
 
     this.makePoint_ = this.makePoint_.bind(this)
     this.colorForValue_ = this.colorForValue_.bind(this)
     this.drawPointFromData_ = this.drawPointFromData_.bind(this)
 
-    this.features = {}
+    this.features = new Map()
     this.drawFromStoredData_()
 
     messageHub.registerNotificationHandler('DEV-INF', this.processNotification_)
@@ -244,27 +232,24 @@ class HeatmapVectorSource extends source.Vector {
 
   getStoredData_ () {
     if (!window.localStorage.getItem(this.props.storageKey)) {
-      window.localStorage.setItem(this.props.storageKey, '{}')
+      window.localStorage.setItem(this.props.storageKey, '[]')
     }
 
-    return JSON.parse(window.localStorage.getItem(this.props.storageKey))
+    return new Map(JSON.parse(window.localStorage.getItem(this.props.storageKey)))
   }
 
   setStoredData_ (values) {
-    window.localStorage.setItem(this.props.storageKey, JSON.stringify(values))
+    window.localStorage.setItem(this.props.storageKey, JSON.stringify([...values]))
   }
 
   drawFromStoredData_ () {
     this.source.clear()
-    this.features = {}
+    this.features = new Map()
 
     const values = this.getStoredData_()
 
-    for (const value in values) {
-      this.features[value] = []
-      for (const data of values[value]) {
-        this.features[value].push(this.drawPointFromData_(data))
-      }
+    for (const [key, value] of values) {
+      this.features.set(key, this.drawPointFromData_(Object.assign({value}, key)))
     }
   }
 
@@ -279,59 +264,54 @@ class HeatmapVectorSource extends source.Vector {
     }
   }
 
-  mergeWithNearby_ (values, data, minDistance) {
-    for (const value in values) {
-      if (values[value].length > 0 && getDistance(_.last(values[value]), data) < minDistance) {
-        return true
-      }
-
-      for (let i = 0; i < values[value].length; i++) {
-        if (getDistance(values[value][i], data) < minDistance) {
-          // values[value][i].lon = (values[value][i].lon + data.lon) / 2
-          // values[value][i].lat = (values[value][i].lat + data.lat) / 2
-          values[value][i].value = (values[value][i].value + data.value) / 2
-
-          this.source.removeFeature(this.features[value][i])
-          this.features[value][i] = this.drawPointFromData_(values[value][i])
-
-          return true
-        }
-      }
-    }
-
-    return false
-  }
-
-  processData_ (values, value, data) {
+  processData_ (values, data) {
     const minDistance = this.props.parameters.minDistance
 
     if (this.props.parameters.snapToGrid) {
       data.lon = Math.round(data.lon / minDistance) * minDistance
       data.lat = Math.round(data.lat / minDistance) * minDistance
-      values[value].push(data)
-      this.features[value].push(this.drawPointFromData_(data))
+
+      const snappedKey = {lon: data.lon, lat: data.lat}
+
+      if (values.has(snappedKey)) {
+        data.value = (values.get(snappedKey) + data.value) / 2
+        values.set(snappedKey, data.value)
+        this.features.get(snappedKey).setStyle(
+          makePointStyle(this.colorForValue_(data.value), 5)
+        )
+
+        return
+      }
     } else {
-      if (!this.mergeWithNearby_(values, data, minDistance)) {
-        values[value].push(data)
-        this.features[value].push(this.drawPointFromData_(data))
+      for (const key of values.keys()) {
+        if (getDistance(key, data) < minDistance) {
+          data.value = (values.get(key) + data.value) / 2
+          values.set(key, data.value)
+          this.features.get(key).setStyle(
+            makePointStyle(this.colorForValue_(data.value), 5)
+          )
+
+          return
+        }
       }
     }
+
+    const key = {lon: data.lon, lat: data.lat}
+    values.set(key, data.value)
+    this.features.set(key, this.drawPointFromData_(data))
   }
 
   processNotification_ (message) {
     const values = this.getStoredData_()
 
-    for (const value in message.body.values) {
+    for (const path in message.body.values) {
       // Check if we are subscribed to this channel
-      if (this.props.parameters.subscriptions.includes(value)) {
+      if (this.props.parameters.subscriptions.includes(path)) {
         // Check if the message actually has a valid value
-        if (message.body.values[value].value !== null) {
-          if (!(value in values)) { values[value] = [] }
-          if (!(value in this.features)) { this.features[value] = [] }
+        if (message.body.values[path].value !== null) {
+          const data = message.body.values[path]
 
-          const data = message.body.values[value]
-
-          this.processData_(values, value, data)
+          this.processData_(values, data)
 
           if (this.props.parameters.autoScale) {
             if (data.value > this.props.parameters.threshold && (
@@ -346,18 +326,13 @@ class HeatmapVectorSource extends source.Vector {
               this.props.setLayerParameter('maxValue', data.value)
             }
           }
-
-          // while (values[value].length > this.props.parameters.maxPoints) {
-          //   values[value].shift()
-          //   this.source.removeFeature(this.features[value].shift())
-          // }
         }
       }
     }
 
     this.setStoredData_(values)
 
-    if (_.flatten(_.values(this.features)).length !== _.flatten(_.values(values)).length) {
+    if (this.features.size !== values.size) {
       this.drawFromStoredData_()
     }
   }
