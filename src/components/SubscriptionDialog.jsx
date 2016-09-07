@@ -90,17 +90,17 @@ export default class SubscriptionDialog extends React.Component {
         open={this.state.visible}
         actions={actions}>
         UAV:
-        <DropDownMenu value={this.state.selectedUAV}
+        <DropDownMenu ref="uavDropDown" value={this.state.selectedUAV}
           onChange={_.partial(this.handleChange_, 'selectedUAV')}>
           {UAVMenuItems}
         </DropDownMenu>
         Device:
-        <DropDownMenu value={this.state.selectedDevice}
+        <DropDownMenu ref="deviceDropDown" value={this.state.selectedDevice}
           onChange={_.partial(this.handleChange_, 'selectedDevice')}>
           {DeviceMenuItems}
         </DropDownMenu>
         Channel:
-        <DropDownMenu value={this.state.selectedChannel}
+        <DropDownMenu ref="channelDropDown" value={this.state.selectedChannel}
           onChange={_.partial(this.handleChange_, 'selectedChannel')}>
           {ChannelMenuItems}
         </DropDownMenu>
@@ -176,6 +176,24 @@ export default class SubscriptionDialog extends React.Component {
     this.setState({
       [parameter]: value
     })
+
+    const nextField = {
+      selectedUAV: this.refs.deviceDropDown,
+      selectedDevice: this.refs.channelDropDown
+    }
+
+    if (parameter in nextField) {
+      setTimeout(() => { this.openDropDown(nextField[parameter]) }, 100)
+    }
+  }
+
+  /**
+   * Function to open a DropDownMenu element.
+   *
+   * @param {DropDownMenu} dropDown the element to be opened
+   */
+  openDropDown (dropDown) {
+    dropDown.setState({ open: true, anchorEl: dropDown.getInputNode() })
   }
 
   /**
