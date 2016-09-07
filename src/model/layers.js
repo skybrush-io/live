@@ -83,7 +83,9 @@ const propertiesForLayerTypes_ = {
       maxValue: 0,
       autoScale: true,
       maxPoints: 1000,
-      unit: ''
+      unit: '',
+      minDistance: 0.00005,
+      snapToGrid: false
     }
   },
   [LayerType.OWN_LOCATION]: {

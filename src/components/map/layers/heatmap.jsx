@@ -112,6 +112,15 @@ class HeatmapLayerSettingsPresentation extends React.Component {
           <br />
         */}
 
+        <TextField ref="minDistance"
+          floatingLabelText="Minimum distance between points"
+          type="number"
+          defaultValue={this.props.layer.parameters.minDistance} />
+        <Checkbox ref="snapToGrid"
+          defaultChecked={this.props.layer.parameters.snapToGrid}
+          style={{display: 'inline-table', width: '150px', marginLeft: '8px'}}
+          label="Snap to grid" />
+
         <RaisedButton style={{marginTop: '10px'}}
           label="Update parameters"
           onClick={this.handleClick_} />
@@ -143,7 +152,9 @@ class HeatmapLayerSettingsPresentation extends React.Component {
       maxValue: _.toNumber(this.refs.maxValue.getValue()),
       minHue: this.state.minHue,
       maxHue: this.state.maxHue,
-      autoScale: this.refs.autoScale.isChecked()
+      autoScale: this.refs.autoScale.isChecked(),
+      minDistance: _.toNumber(this.refs.minDistance.getValue()),
+      snapToGrid: this.refs.snapToGrid.isChecked()
       // maxPoints: _.toNumber(this.refs.maxPoints.getValue())
     }
 
@@ -217,7 +228,7 @@ class HeatmapVectorSource extends source.Vector {
 
     this.makePoint_ = this.makePoint_.bind(this)
     this.colorForValue_ = this.colorForValue_.bind(this)
-    this.drawCircleFromData_ = this.drawCircleFromData_.bind(this)
+    this.drawPointFromData_ = this.drawPointFromData_.bind(this)
 
     this.features = {}
     this.drawFromStoredData_()
@@ -252,7 +263,7 @@ class HeatmapVectorSource extends source.Vector {
     for (const value in values) {
       this.features[value] = []
       for (const data of values[value]) {
-        this.features[value].push(this.drawCircleFromData_(data))
+        this.features[value].push(this.drawPointFromData_(data))
       }
     }
   }
@@ -268,9 +279,7 @@ class HeatmapVectorSource extends source.Vector {
     }
   }
 
-  mergeWithNearby_ (values, data) {
-    const minDistance = 0.00005
-
+  mergeWithNearby_ (values, data, minDistance) {
     for (const value in values) {
       if (values[value].length > 0 && getDistance(_.last(values[value]), data) < minDistance) {
         return true
@@ -283,7 +292,7 @@ class HeatmapVectorSource extends source.Vector {
           values[value][i].value = (values[value][i].value + data.value) / 2
 
           this.source.removeFeature(this.features[value][i])
-          this.features[value][i] = this.drawCircleFromData_(values[value][i])
+          this.features[value][i] = this.drawPointFromData_(values[value][i])
 
           return true
         }
@@ -291,6 +300,22 @@ class HeatmapVectorSource extends source.Vector {
     }
 
     return false
+  }
+
+  processData_ (values, value, data) {
+    const minDistance = this.props.parameters.minDistance
+
+    if (this.props.parameters.snapToGrid) {
+      data.lon = Math.round(data.lon / minDistance) * minDistance
+      data.lat = Math.round(data.lat / minDistance) * minDistance
+      values[value].push(data)
+      this.features[value].push(this.drawPointFromData_(data))
+    } else {
+      if (!this.mergeWithNearby_(values, data, minDistance)) {
+        values[value].push(data)
+        this.features[value].push(this.drawPointFromData_(data))
+      }
+    }
   }
 
   processNotification_ (message) {
@@ -306,10 +331,7 @@ class HeatmapVectorSource extends source.Vector {
 
           const data = message.body.values[value]
 
-          if (!this.mergeWithNearby_(values, data)) {
-            values[value].push(data)
-            this.features[value].push(this.drawCircleFromData_(data))
-          }
+          this.processData_(values, value, data)
 
           if (this.props.parameters.autoScale) {
             if (data.value > this.props.parameters.threshold && (
@@ -358,7 +380,7 @@ class HeatmapVectorSource extends source.Vector {
     return `hsla(${hue}, 70%, 50%, 0.5)`
   }
 
-  drawCircleFromData_ (data) {
+  drawPointFromData_ (data) {
     const point = this.makePoint_([data.lon, data.lat])
 
     point.setStyle(makePointStyle(this.colorForValue_(data.value), 5))
