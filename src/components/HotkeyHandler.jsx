@@ -17,10 +17,12 @@ import { isRunningOnMac, platformModifierKey } from '../utils/platform'
  * the user.
  *
  * This function replaces all occurrences of "Cmd" with the standard
- * "command" symbol on a Mac (i.e. Unicode code point U+2318). It also
- * replaces "PlatMod" with "Ctrl" on Windows and the "command" symbol
- * on a Mac, gets rid of the "Key" prefix and wraps each key in a
- * <code>&lt;kbd&gt;</code> tag.
+ * "command" symbol and all occurrences of "Alt" with the standard
+ * "option" symbol on a Mac (i.e. Unicode code points U+2318 and U+2325).
+ * It also replaces "Shift" with the standard "shift" symbol (Unicode code
+ * point U+21E7) on all platforms, "PlatMod" with "Ctrl" on Windows and the
+ * "command" symbol on a Mac, gets rid of the "Key" prefix and wraps each
+ * key in a <code>&lt;kbd&gt;</code> tag.
  *
  * @param {string} definition  the hotkey definition string to format
  * @return {array} the formatted hotkey definition as an array of JSX tags
@@ -31,7 +33,10 @@ function formatHotkeyDefinition (definition) {
       return ' + '
     } else {
       const formattedKey = key.replace(/^PlatMod$/, platformModifierKey)
-         .replace(/^Cmd$/, '\u2318').replace(/^Key/, '')
+         .replace(/^Cmd$/, '\u2318')
+         .replace(/^Alt$/, isRunningOnMac ? '\u2325' : 'Alt')
+         .replace(/^Shift/, '\u21e7')
+         .replace(/^Key/, '')
       return <kbd key={`key${index}`}>{formattedKey}</kbd>
     }
   }).value()
@@ -123,7 +128,6 @@ export default class HotkeyHandler extends React.Component {
   }
 
   render () {
-    const eventColumnStyle = {width: '35px'}
     const keysColumnStyle = {width: '150px'}
     const actionColumnStyle = {}
     const actions = [
@@ -143,9 +147,6 @@ export default class HotkeyHandler extends React.Component {
           <Table selectable={false}>
             <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
               <TableRow>
-                <TableHeaderColumn style={eventColumnStyle}>
-                  Event
-                </TableHeaderColumn>
                 <TableHeaderColumn style={keysColumnStyle}>
                   Keys
                 </TableHeaderColumn>
@@ -158,9 +159,6 @@ export default class HotkeyHandler extends React.Component {
               {
                 this.props.hotkeys.map((hotkey, index) => (
                   <TableRow key={`hotkey_${index}`}>
-                    <TableRowColumn style={eventColumnStyle}>
-                      {hotkey.on}
-                    </TableRowColumn>
                     <TableRowColumn style={keysColumnStyle}>
                       {formatHotkeyDefinition(hotkey.keys)}
                     </TableRowColumn>

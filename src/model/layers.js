@@ -115,8 +115,9 @@ const propertiesForLayerTypes_ = {
 }
 
 /**
- * Creates a new layer with the given name and type.
+ * Creates a new layer with the given unique identifier, name and type.
  *
+ * @param  {string} id  the unique identifier of the layer
  * @param  {string} layerType  the type of the layer; must be one of the
  *         constants from the {@link LayerType} enum or a falsey value;
  *         the latter is replaced with <code>LayerType.UNTYPED</code>.
@@ -124,9 +125,10 @@ const propertiesForLayerTypes_ = {
  * @param  {Object?} parameters  the parameters of the layer
  * @return {Object} a new layer object
  */
-export function createNewLayer (layerType, name, parameters) {
+export function createNewLayer (id, layerType, name, parameters) {
   const effectiveLayerType = layerType || LayerType.UNTYPED
   return {
+    id: id,
     type: effectiveLayerType,
     label: name,
     visible: effectiveLayerType !== LayerType.UNTYPED,

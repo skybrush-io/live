@@ -22,6 +22,32 @@ export const euclideanDistance = (first, second) => {
 }
 
 /**
+ * Creates a function that formats an OpenLayers coordinate into the
+ * usual latitude-longitude representation with the given number of
+ * fractional digits.
+ *
+ * The constructed function accepts either a single OpenLayers coordinate
+ * or a longitude-latitude pair as an array of two numbers.
+ *
+ * @param {number} digits  the number of fractional digits to show
+ * @return {function} the constructed function
+ */
+export const makeCoordinateFormatter = (digits = 6) => {
+  return coordinate => (
+    ol.coordinate.format(coordinate, '{y}, {x}', digits)
+  )
+}
+
+/**
+ * Formats the given OpenLayers coordinate into the usual latitude-longitude
+ * representation in a format suitable for the UI.
+ *
+ * The constructed function accepts either a single OpenLayers coordinate
+ * or a longitude-latitude pair as an array of two numbers.
+ */
+export const formatCoordinate = makeCoordinateFormatter()
+
+/**
  * An OpenLayers sphere whose radius is equal to the semi-major axis of the
  * WGS84 ellipsoid, in metres. Useful for calculating distances on the Earth
  * (also in metres).

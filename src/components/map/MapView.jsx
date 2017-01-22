@@ -1,21 +1,20 @@
-import React, { PropTypes } from 'react'
+import ol from 'openlayers'
 import { Map, View, control, interaction } from 'ol-react'
+import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 
-import ol from 'openlayers'
-import Condition from './conditions.js'
-
-import { Layers, stateObjectToLayer } from './layers/index.js'
-
-import MapReferenceRequestHandler from './MapReferenceRequestHandler'
-
+import Widget from '../Widget'
+import Condition from './conditions'
 import SelectNearestFeature from './interactions/SelectNearestFeature'
-
+import { Layers, stateObjectToLayer } from './layers/index'
+import MapReferenceRequestHandler from './MapReferenceRequestHandler'
+import MapToolbar from './MapToolbar'
 import { Tool } from './tools'
 
 import { setSelectedFeatures, addSelectedFeatures,
          clearSelectedFeatures, removeSelectedFeatures }
        from '../../actions/map'
+import { formatCoordinate } from '../../utils/geography'
 
 require('openlayers/css/ol.css')
 
@@ -43,9 +42,49 @@ class MapViewPresentation extends React.Component {
     super(props)
     this.assignActiveUAVsLayerRef_ = this.assignActiveUAVsLayerRef_.bind(this)
     this.assignActiveUAVsLayerSourceRef_ = this.assignActiveUAVsLayerSourceRef_.bind(this)
+    this.assignMapRef_ = this.assignMapRef_.bind(this)
     this.isLayerShowingActiveUAVs_ = this.isLayerShowingActiveUAVs_.bind(this)
     this.onBoxDragEnded_ = this.onBoxDragEnded_.bind(this)
     this.onSelect_ = this.onSelect_.bind(this)
+  }
+
+  componentDidMount () {
+    const { glContainer } = this.props
+    this.layoutManager = glContainer ? glContainer.layoutManager : undefined
+  }
+
+  componentDidUpdate () {
+    const { glContainer } = this.props
+    this.layoutManager = glContainer ? glContainer.layoutManager : undefined
+  }
+
+  /**
+   * Returns the layout manager that the map view currently participates in.
+   * @return {GoldenLayout} the layout manager
+   */
+  get layoutManager () {
+    return this.layoutManager_
+  }
+
+  /**
+   * Sets the layout manager that the map view currently participates in.
+   *
+   * @param {GoldenLayout} value  the new layout manager
+   */
+  set layoutManager (value) {
+    if (this.layoutManager_ === value) {
+      return
+    }
+
+    if (this.layoutManager_) {
+      this.layoutManager_.off('stateChanged', this.updateSize, this)
+    }
+
+    this.layoutManager_ = value
+
+    if (this.layoutManager_) {
+      this.layoutManager_.on('stateChanged', this.updateSize, this)
+    }
   }
 
   getChildContext () {
@@ -75,10 +114,16 @@ class MapViewPresentation extends React.Component {
     }
 
     return (
-      <Map view={view} useDefaultControls={false} loadTilesWhileInteracting={true}
+      <Map view={view} ref={this.assignMapRef_}
+        useDefaultControls={false} loadTilesWhileInteracting={true}
         focusOnMount={true}
         style={{cursor: cursorStyles[selectedTool]}} >
+
         <MapReferenceRequestHandler />
+
+        <Widget style={{ top: 8, left: (8 + 24 + 8) }} showControls={false}>
+          <MapToolbar />
+        </Widget>
 
         <div>
           {layers}
@@ -87,9 +132,7 @@ class MapViewPresentation extends React.Component {
         <control.FullScreen source={document.body} />
 
         <control.MousePosition projection="EPSG:4326"
-          coordinateFormat={function (c) {
-            return ol.coordinate.format(c, '{y}, {x}', 6)
-          }}/>
+          coordinateFormat={formatCoordinate} />
 
         <control.ScaleLine minWidth={128} />
         <control.Zoom />
@@ -166,6 +209,16 @@ class MapViewPresentation extends React.Component {
   }
 
   /**
+   * Handler called when the main map component is mounted. We use it to store
+   * a reference to the component within this component.
+   *
+   * @param  {Map} ref  the map being shown in this component
+   */
+  assignMapRef_ (ref) {
+    this.map = ref
+  }
+
+  /**
    * Returns true if the given layer is the layer that shows the active UAVs,
    * false otherwise.
    *
@@ -233,6 +286,16 @@ class MapViewPresentation extends React.Component {
       this.props.dispatch(action([id]))
     }
   }
+
+  /**
+   * Method that must be called whenever the size of the container holding
+   * the map view has changed.
+   */
+  updateSize () {
+    if (this.map) {
+      this.map.updateSize()
+    }
+  }
 }
 
 MapViewPresentation.propTypes = {
@@ -240,7 +303,8 @@ MapViewPresentation.propTypes = {
   layersById: PropTypes.object,
   projection: PropTypes.func.isRequired,
   selectedTool: PropTypes.string,
-  dispatch: PropTypes.func.isRequired
+  dispatch: PropTypes.func.isRequired,
+  glContainer: PropTypes.object
 }
 
 MapViewPresentation.childContextTypes = {

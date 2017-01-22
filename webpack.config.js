@@ -19,7 +19,12 @@ module.exports = {
     publicPath: '/static/'
   },
   plugins: [
-    new webpack.NoErrorsPlugin()
+    new webpack.NoErrorsPlugin(),
+    // The next module is needed for golden-layout to work nicely
+    new webpack.ProvidePlugin({
+      ReactDOM: 'react-dom',
+      React: 'react'
+    })
   ],
   resolve: {
     alias: {

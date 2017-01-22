@@ -16,8 +16,8 @@ import { chooseUniqueId, chooseUniqueName } from '../../utils/naming'
 const defaultState = {
   // .byId contains all the layers in the map, in no particular order
   byId: {
-    base: createNewLayer(LayerType.BASE, 'Base map'),
-    uavs: createNewLayer(LayerType.UAVS, 'UAVs')
+    base: createNewLayer('base', LayerType.BASE, 'Base map'),
+    uavs: createNewLayer('uavs', LayerType.UAVS, 'UAVs')
   },
   // .order contains the order of the layers, from bottom to top
   order: ['base', 'uavs']
@@ -65,7 +65,7 @@ const reducer = handleActions({
     // Generate the new layer object
     const newLayer = {}
     // Leaving name empty for auto-labeling
-    newLayer[id] = createNewLayer(type, '')
+    newLayer[id] = createNewLayer(id, type, '')
 
     // Store the ID of the layer that is about to be inserted on the
     // action so the caller of this action can decide what to do with it

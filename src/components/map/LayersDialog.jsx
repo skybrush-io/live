@@ -182,16 +182,13 @@ const LayerSettingsContainer = connect(
  */
 class LayerListPresentation extends React.Component {
   render () {
-    const { layers, order, selectedLayer, onLayerSelected } = this.props
-    const hiddenIcon = <VisibilityOff />
-    const getListItemStyle = layer => (
-      selectedLayer === layer ? 'selected-list-item' : undefined
+    const { layers, selectedLayerId, onChange } = this.props
+    const getListItemStyle = layerId => (
+      selectedLayerId === layerId ? 'selected-list-item' : undefined
     )
     const listItems = []
 
-    for (let layerId of order) {
-      const layer = layers[layerId]
-
+    for (let layer of layers) {
       if (!layer) {
         console.warn('Non-existent layer found in layer ordering; this ' +
                      'is probably a bug!')
@@ -200,13 +197,13 @@ class LayerListPresentation extends React.Component {
 
       listItems.push(
         <ListItem
-          key={layerId}
+          key={layer.id}
           primaryText={layer.label}
           secondaryText={labelForLayerType(layer.type)}
           leftIcon={iconForLayerType(layer.type)}
-          rightIcon={layer.visible ? undefined : hiddenIcon}
-          className={getListItemStyle(layerId)}
-          onTouchTap={_.partial(onLayerSelected, layerId)} />
+          rightIcon={layer.visible ? undefined : <VisibilityOff />}
+          className={getListItemStyle(layer.id)}
+          onTouchTap={_.partial(onChange, layer)} />
       )
     }
 
@@ -219,16 +216,13 @@ class LayerListPresentation extends React.Component {
 }
 
 LayerListPresentation.propTypes = {
-  layers: PropTypes.object.isRequired,
-  order: PropTypes.arrayOf(PropTypes.string).isRequired,
-  selectedLayer: PropTypes.string,
-
-  onLayerSelected: PropTypes.func
+  layers: PropTypes.arrayOf(PropTypes.object).isRequired,
+  selectedLayerId: PropTypes.string,
+  onChange: PropTypes.func
 }
 
 LayerListPresentation.defaultProps = {
-  layers: {},
-  order: []
+  layers: []
 }
 
 /**
@@ -236,15 +230,19 @@ LayerListPresentation.defaultProps = {
  */
 const LayerList = connect(
   // mapStateToProps
-  state => ({
-    layers: state.map.layers.byId,
-    order: state.map.layers.order,
-    selectedLayer: state.dialogs.layerSettings.selectedLayer
-  }),
+  state => {
+    const { byId, order } = state.map.layers
+    return {
+      layers: order.map(layerId => byId[layerId]),
+      selectedLayerId: state.dialogs.layerSettings.selectedLayer
+    }
+  },
   // mapDispatchToProps
   dispatch => ({
-    onLayerSelected (layerId) {
-      dispatch(setSelectedLayerInLayersDialog(layerId))
+    onChange (layer) {
+      if (layer && layer.id) {
+        dispatch(setSelectedLayerInLayersDialog(layer.id))
+      }
     }
   })
 )(LayerListPresentation)
@@ -262,11 +260,11 @@ class LayersDialogPresentation extends React.Component {
   }
 
   render () {
-    const { dialogVisible, selectedLayer } = this.props
+    const { dialogVisible, selectedLayerId } = this.props
     const { onAddLayer, onClose } = this.props
     const actions = [
       <FlatButton label="Add layer" onTouchTap={onAddLayer} />,
-      <FlatButton label="Remove layer" disabled={ !selectedLayer }
+      <FlatButton label="Remove layer" disabled={ !selectedLayerId }
         onTouchTap={this.removeSelectedLayer_} />,
       <FlatButton label="Done" primary={true} onTouchTap={onClose} />
     ]
@@ -282,21 +280,21 @@ class LayersDialogPresentation extends React.Component {
           <LayerList />
         </div>
         <div style={{ flex: 7, marginLeft: 15 }}>
-          <LayerSettingsContainer layerId={selectedLayer} />
+          <LayerSettingsContainer layerId={selectedLayerId} />
         </div>
       </Dialog>
     )
   }
 
   removeSelectedLayer_ () {
-    const { selectedLayer, onRemoveLayer } = this.props
-    onRemoveLayer(selectedLayer)
+    const { selectedLayerId, onRemoveLayer } = this.props
+    onRemoveLayer(selectedLayerId)
   }
 }
 
 LayersDialogPresentation.propTypes = {
   dialogVisible: PropTypes.bool.isRequired,
-  selectedLayer: PropTypes.string,
+  selectedLayerId: PropTypes.string,
 
   onClose: PropTypes.func,
   onAddLayer: PropTypes.func,
@@ -315,7 +313,7 @@ const LayersDialog = connect(
   // mapStateToProps
   state => ({
     dialogVisible: state.dialogs.layerSettings.dialogVisible,
-    selectedLayer: state.dialogs.layerSettings.selectedLayer
+    selectedLayerId: state.dialogs.layerSettings.selectedLayer
   }),
   // mapDispatchToProps
   dispatch => ({

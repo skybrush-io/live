@@ -36,7 +36,7 @@ function convertMessageToComponent (message) {
       return [
         <ChatBubble key={keyBase} author={message.author} own={true}
           date={message.date} body={message.body}
-          rightComponent={inProgress ? <CircularProgress size={0.5} /> : false}
+          rightComponent={inProgress ? <CircularProgress size={30} thickness={1.75} style={{ margin: 10 }} /> : false}
           />
       ]
 

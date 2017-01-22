@@ -6,13 +6,14 @@ import { colors } from 'material-ui/styles'
 import PlayArrow from 'material-ui/svg-icons/av/play-arrow'
 import Stop from 'material-ui/svg-icons/av/stop'
 import Avatar from 'material-ui/Avatar'
-import { List, ListItem } from 'material-ui/List'
-import Subheader from 'material-ui/Subheader'
+import { ListItem } from 'material-ui/List'
 
 import isFunction from 'lodash/isFunction'
 import moment from 'moment'
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
+
+import { listOf } from './helpers/lists'
 
 /**
  * Avatar style for stopped and running clocks.
@@ -195,17 +196,11 @@ ClockDisplayListEntry.defaultProps = {
  *
  * @return  {Object}  the rendered clock display list component
  */
-const ClockDisplayListPresentation = ({ clocks }) => {
-  const entries = clocks.map(clock => (<ClockDisplayListEntry key={clock.id} {...clock} />))
-  if (!entries.length) {
-    entries.push(<Subheader key="__subheader__">No clocks</Subheader>)
-  }
-  return <List>{entries}</List>
-}
-
-ClockDisplayListPresentation.propTypes = {
-  clocks: PropTypes.arrayOf(PropTypes.shape(ClockDisplayListEntry.propTypes))
-}
+const ClockDisplayListPresentation = listOf(ClockDisplayListEntry, {
+  dataProvider: 'clocks',
+  backgroundHint: 'No clocks'
+})
+ClockDisplayListPresentation.displayName = 'ClockDisplayListPresentation'
 
 /**
  * Smart component for showing the state of the known Flockwave clocks from

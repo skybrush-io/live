@@ -11,6 +11,39 @@ body {
   margin: 0px;
 }
 
+/* Vertical centering */
+.vertical-center-func(@position: relative) {
+  position: @position;
+  top: 50%;
+  -webkit-transform: perspective(1px) translateY(-50%);
+  -ms-transform: perspective(1px) translateY(-50%);
+  transform: perspective(1px) translateY(-50%);
+}
+.vertical-center {
+  .vertical-center-func();
+}
+
+/* Horizontal centering */
+.horizontal-center {
+  text-align: center;
+}
+
+/* Full (vertical + horizontal) centering */
+.full-center {
+  .vertical-center-func();
+  text-align: center;
+}
+
+/* Hints in backgrounds of lists when the list is empty */
+.background-hint {
+  .vertical-center-func();
+  text-align: center;
+  font-size: 14px;
+  height: 16px;
+  line-height: 16px;
+  color: rgba(0, 0, 0, 0.541176);
+}
+
 /* Mixin for styling boxes with drop shadows */
 .drop-shadow-box() {
   background-color: @box-background-color;
@@ -26,8 +59,8 @@ body {
   position: relative;
 }
 
-/* Main canvas area of the root container */
-#canvas {
+/* Main workbench area of the root container */
+#workbench {
   width: 100%;
   height: 100%;
   position: relative;
@@ -181,7 +214,7 @@ div.dialog-sidebar {
   .drop-shadow-box();
 
   top: auto;
-  right: 8px + 300px + 8px;
+  right: 8px;
   bottom: 0.5em;
 
   padding: 10px !important;

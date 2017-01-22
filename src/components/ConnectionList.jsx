@@ -5,7 +5,7 @@
 
 import Avatar from 'material-ui/Avatar'
 import IconButton from 'material-ui/IconButton'
-import { List, ListItem } from 'material-ui/List'
+import { ListItem } from 'material-ui/List'
 
 import { colors } from 'material-ui/styles'
 
@@ -21,6 +21,7 @@ import TimeAgo from 'react-timeago'
 
 import { showServerSettingsDialog } from '../actions/server-settings'
 import { ConnectionState, MASTER_CONNECTION_ID } from '../model/connections'
+import { listOf } from './helpers/lists'
 
 /**
  * Avatar styling constants for the different connection states in the
@@ -120,33 +121,15 @@ ConnectionListEntry.propTypes = {
 
 /**
  * Presentation component for the entire connection list.
- *
- * @return {Object} the React presentation component
  */
-export const ConnectionListPresentation = ({ connections, onShowSettings }) => {
-  const entries = []
-  if (connections) {
-    for (let connection of connections) {
-      let action = (connection.id === MASTER_CONNECTION_ID) ? onShowSettings : null
-      entries.push(<ConnectionListEntry key={connection.id} action={action} {...connection} />)
-    }
-  }
-  if (entries.length) {
-    return <List>{entries}</List>
-  } else {
-    return <p style={{ padding: '0 16px' }}>No connections</p>
-  }
-}
-
-ConnectionListPresentation.propTypes = {
-  connections: PropTypes.arrayOf(PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    name: PropTypes.string.isRequired,
-    state: PropTypes.string.isRequired,
-    stateChangedAt: PropTypes.instanceOf(Date)
-  })),
-  onShowSettings: PropTypes.func
-}
+const ConnectionListPresentation = listOf((connection, { onShowSettings }) => {
+  const action = (connection.id === MASTER_CONNECTION_ID) ? onShowSettings : null
+  return <ConnectionListEntry key={connection.id} action={action} {...connection} />
+}, {
+  dataProvider: 'connections',
+  backgroundHint: 'No connections'
+})
+ConnectionListPresentation.displayName = 'ConnectionListPresentation'
 
 const ConnectionList = connect(
   // mapStateToProps

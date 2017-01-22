@@ -1,3 +1,4 @@
+import { isEmpty } from 'lodash'
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 
@@ -8,24 +9,8 @@ import ActionHome from 'material-ui/svg-icons/action/home'
 import ActionPowerSettingsNew from 'material-ui/svg-icons/action/power-settings-new'
 import Message from 'material-ui/svg-icons/communication/message'
 
-import { selectUAVInMessagesDialog, showMessagesDialog } from '../../actions/messages'
-import messageHub from '../../message-hub'
-import store from '../../store'
-
-/**
- * Separator component for the toolbar
- *
- * @returns {Object} the rendered component
- */
-const UAVToolbarSeparator = () => {
-  return (
-    <div style={{
-      // display: 'inline-block',
-      width: '48px',
-      borderTop: '1px solid rgba(0, 0, 0,  0.172549)'
-    }}></div>
-  )
-}
+import { selectUAVInMessagesDialog, showMessagesDialog } from '../actions/messages'
+import messageHub from '../message-hub'
 
 /**
  * Main toolbar for controlling the UAVs.
@@ -42,31 +27,30 @@ class UAVToolbar extends React.Component {
   }
 
   render () {
-    const { isSelectionEmpty } = this.props
+    const isSelectionEmpty = isEmpty(this.props.selection)
+
+    // Don't use material-ui native tooltips here because they won't work
+    // nicely for disabled buttons; see https://github.com/callemall/material-ui/issues/3665
     return (
       <div>
         <IconButton disabled={isSelectionEmpty} onClick={this.takeoffSelectedUAVs_}
-          tooltipPosition="bottom-right" tooltip="Takeoff">
+          tooltipPosition="bottom-right" title="Takeoff">
           <ActionFlightTakeoff />
         </IconButton>
-        <br />
         <IconButton disabled={isSelectionEmpty} onClick={this.landSelectedUAVs_}
-          tooltipPosition="bottom-right" tooltip="Land">
+          tooltipPosition="bottom-right" title="Land">
           <ActionFlightLand />
         </IconButton>
-        <UAVToolbarSeparator />
         <IconButton disabled={isSelectionEmpty} onClick={this.returnSelectedUAVs_}
-          tooltipPosition="bottom-right" tooltip="Return">
+          tooltipPosition="bottom-right" title="Return to home">
           <ActionHome />
         </IconButton>
-        <UAVToolbarSeparator />
         <IconButton onClick={this.showMessagesDialog_}
-          tooltipPosition="bottom-right" tooltip="Messages">
+          tooltipPosition="bottom-right" title="Messages">
           <Message />
         </IconButton>
-        <UAVToolbarSeparator />
         <IconButton disabled={isSelectionEmpty}
-          tooltipPosition="bottom-right" tooltip="Halt">
+          tooltipPosition="bottom-right" title="Halt">
           <ActionPowerSettingsNew color="red" />
         </IconButton>
       </div>
@@ -113,8 +97,7 @@ UAVToolbar.propTypes = {
 export default connect(
   // mapStateToProps
   state => ({
-    isSelectionEmpty: store.getState().map.selection.length === 0,
-    selection: store.getState().map.selection
+    selection: state.map.selection
   }),
   // mapDispatchToProps
   dispatch => ({

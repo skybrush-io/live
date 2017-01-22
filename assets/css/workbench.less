@@ -1,0 +1,20 @@
+/* Styling for the global workbench component, currently implemented
+ * using golden-layout */
+
+@import "~golden-layout/src/css/goldenlayout-base.css";
+@import "~golden-layout/src/css/goldenlayout-light-theme.css";
+
+/* Make the panels scrollable */
+body .lm_content {
+  overflow-y: scroll;
+  background-color: white;
+}
+
+body .lm_header {
+  .lm_tab {
+    background-color: #ddd;
+    &.lm_active {
+      background-color: white;
+    }
+  }
+}
