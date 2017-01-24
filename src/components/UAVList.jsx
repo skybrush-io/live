@@ -6,9 +6,10 @@
 import Immutable from 'immutable'
 import { ListItem } from 'material-ui/List'
 import React, { PropTypes } from 'react'
+import { connect } from 'react-redux'
 import u from 'updeep'
 
-import { listOf } from './helpers/lists'
+import { multiSelectableListOf } from './helpers/lists'
 import UAVToolbar from './UAVToolbar'
 
 import Flock from '../model/flock'
@@ -27,7 +28,7 @@ function formatSecondaryTextForUAV (uav) {
 /**
  * Presentation component for the entire UAV list.
  */
-const UAVListPresentation = listOf((uav, props, selected) => {
+const UAVListPresentation = multiSelectableListOf((uav, props, selected) => {
   return <ListItem key={uav.id}
                    primaryText={uav.id}
                    secondaryText={formatSecondaryTextForUAV(uav)}
@@ -42,7 +43,7 @@ UAVListPresentation.displayName = 'UAVListPresentation'
  * React component that shows the state of the known UAVs in a Flockwave
  * flock.
  */
-export default class UAVList extends React.Component {
+class UAVList extends React.Component {
   constructor (props) {
     super(props)
 
@@ -136,16 +137,13 @@ export default class UAVList extends React.Component {
     }
   }
 
-  onClick_ () {
-    console.log('yay!')
-  }
-
   render () {
+    const { selectedUAVIds } = this.props
     const { uavs } = this.state
     return (
       <div style={{ height: '100%' }}>
         <UAVToolbar />
-        <UAVListPresentation uavs={uavs} />
+        <UAVListPresentation uavs={uavs} value={selectedUAVIds || []} />
       </div>
     )
   }
@@ -153,5 +151,19 @@ export default class UAVList extends React.Component {
 }
 
 UAVList.propTypes = {
-  flock: PropTypes.instanceOf(Flock)
+  flock: PropTypes.instanceOf(Flock),
+  selectedUAVIds: PropTypes.arrayOf(PropTypes.string).isRequired
 }
+
+UAVList.defaultProps = {
+  selectedUAVIds: []
+}
+
+const SmartUAVList = connect(
+  // mapStateToProps
+  state => ({
+    selectedUAVIds: state.map.selection
+  })
+)(UAVList)
+
+export default SmartUAVList

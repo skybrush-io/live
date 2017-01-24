@@ -104,23 +104,21 @@ class SelectNearestFeatureInteraction extends ol.interaction.Interaction {
       }
     })
 
+    const defaultOptions = {
+      condition: ol.events.condition.click,
+      addCondition: ol.events.condition.never,
+      removeCondition: ol.events.condition.never,
+      toggleCondition: ol.events.condition.never,
+      threshold: Number.POSITIVE_INFINITY
+    }
+    options = Object.assign(defaultOptions, options)
+
     this.condition_ = options.condition
-      ? options.condition : ol.events.condition.singleClick
-
     this.addCondition_ = options.addCondition
-      ? options.addCondition : ol.events.condition.never
-
-    this.removeCondition_ = options.addCondition
-      ? options.removeCondition : ol.events.condition.never
-
-    this.toggleCondition_ = options.addCondition
-      ? options.toggleCondition : ol.events.condition.never
-
+    this.removeCondition_ = options.removeCondition
+    this.toggleCondition_ = options.toggleCondition
     this.select_ = options.select
-
     this.threshold_ = options.threshold
-      ? options.threshold : Number.POSITIVE_INFINITY
-
     this.setLayers(options.layers)
   }
 

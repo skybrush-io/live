@@ -3,8 +3,8 @@
  */
 
 import { get, partial } from 'lodash/fp'
-import { isFunction } from 'lodash'
-import { List } from 'material-ui/List'
+import { includes, isFunction } from 'lodash'
+import { List, ListItem } from 'material-ui/List'
 import React, { PropTypes } from 'react'
 
 /**
@@ -127,6 +127,95 @@ export function selectableListOf (itemRenderer, options = {}) {
 }
 
 /**
+ * Creates a React component that renders items received in an array using
+ * the given item renderer function, optionally shows a small textual
+ * hint instead if there are no items, and allows the user to select
+ * multiple items by tapping or clicking on an item.
+ *
+ * The component returned from this function will have a property named
+ * <code>value</code> that contains the <em>IDs</em> of the selected items
+ * (i.e. their <code>id</code> properties), and a property named
+ * <code>onChange</code> where it expects a callback function that
+ * will be called whenever the selected items change via tapping or clicking
+ * on an item. <code>onChange</code> will be called with the event that
+ * caused the change and the new selection.
+ *
+ * In order to make this happen, there is one final ingredient: we need
+ * to "tell" our item renderer when to consider an item to be "selected" by
+ * the user. The props passed to the component that the item renderer
+ * returns contains a property named <code>onItemSelected</code>. This is
+ * a function that expects an event and that calls the <code>onChange</code>
+ * prop of the generated list component with the event itself and the new
+ * selection. You need to wire this prop to the appropriate event
+ * handler of your item renderer in order to make the list item respond to
+ * the user's action.
+ *
+ * The new selection is calculated from the old one with the following
+ * ruleset:
+ *
+ * - Clicking on an item will change the selection to include that item only.
+ *
+ * - Clicking on an item while holding the Cmd (Ctrl on Windows) key will
+ *   include the item in the selection if it was not in the selection yet,
+ *   or exclude it from the selection if it was in the selection.
+ *
+ * @param  {function|React.Component} itemRenderer  function that is called
+ *         with a single item to be rendered, the props of the generated
+ *         component, and a boolean denoting whether the item is currently
+ *         selected, and must return a React component that shows the item
+ * @param  {Object}  options  additional options to tweak the behaviour of
+ *         the generated list
+ * @param  {string?}  options.backgroundHint  optional background hint to show in
+ *         place of the list when there are no items
+ * @param  {function|string} options.dataProvider  function that gets the React props
+ *         of the generated component and returns the items to show, or a
+ *         string that contains the name of the React prop that holds the
+ *         items to show in the generated component
+ * @param  {function|React.Component} options.listFactory  React component
+ *         that will be used as the root component of the generated list,
+ *         or a function that will be called with the props of the generated
+ *         component and returns the root React component of the list
+ * @return {React.Component}  the constructed React component
+ */
+export function multiSelectableListOf (itemRenderer, options = {}) {
+  const { backgroundHint, dataProvider, listFactory } = validateOptions(options)
+  itemRenderer = validateItemRenderer(itemRenderer)
+
+  // A separate variable is needed here to make ESLint happy
+  const MultiSelectableListView = props => {
+    const items = dataProvider(props)
+    if (hasSomeItems(items)) {
+      const children = items.map(item =>
+        itemRenderer(
+          item,
+          Object.assign({}, props, {
+            onChange: undefined,
+            onItemSelected: props.onChange ? event => {
+              return props.onChange(event, item)
+            } : undefined
+          }),
+          includes(props.value, item.id)
+        )
+      )
+      return listFactory(props, children)
+    } else if (backgroundHint) {
+      return <div className="background-hint">{backgroundHint}</div>
+    } else {
+      return null
+    }
+  }
+  MultiSelectableListView.propTypes = {
+    children: PropTypes.node,
+    onChange: PropTypes.func,
+    value: PropTypes.arrayOf(PropTypes.any).isRequired
+  }
+  MultiSelectableListView.defaultProps = {
+    value: []
+  }
+  return MultiSelectableListView
+}
+
+/**
  * Helper function that makes some transformations on the options object
  * passed to list generation helper functions to ensure the type-correctness
  * of some of the arguments.
@@ -182,13 +271,18 @@ function validateDataProvider (dataProvider) {
  */
 function validateItemRenderer (itemRenderer) {
   if (React.Component.isPrototypeOf(itemRenderer)) {
-    /* eslint-disable react/display-name */
+    /* eslint-disable react/display-name, react/prop-types */
+    const clickHandler = (itemRenderer === ListItem) ? 'onTouchTap' : 'onClick'
     return (item, props, selected) => {
       return React.createElement(itemRenderer,
-        Object.assign({}, item, { key: item.id, selected: selected })
+        Object.assign({}, item, {
+          key: item.id,
+          [clickHandler]: props.onItemSelected,
+          selected: selected
+        })
       )
     }
-    /* eslint-enable react/display-name */
+    /* eslint-enable react/display-name, react/prop-types */
   } else {
     return itemRenderer
   }
