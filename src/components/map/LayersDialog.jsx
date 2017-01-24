@@ -16,6 +16,7 @@ import VisibilityOff from 'material-ui/svg-icons/action/visibility-off'
 
 import { closeLayersDialog, renameLayer, setSelectedLayerInLayersDialog,
          toggleLayerVisibility, addLayer, removeLayer } from '../../actions/layers'
+import { selectableListOf } from '../helpers/lists'
 import { LayerType, labelForLayerType, iconForLayerType } from '../../model/layers'
 import { createValidator, required } from '../../utils/validation'
 
@@ -180,49 +181,32 @@ const LayerSettingsContainer = connect(
 /**
  * Presentation component for a list that shows the currently added layers.
  */
-class LayerListPresentation extends React.Component {
-  render () {
-    const { layers, selectedLayerId, onChange } = this.props
-    const getListItemStyle = layerId => (
-      selectedLayerId === layerId ? 'selected-list-item' : undefined
-    )
-    const listItems = []
-
-    for (let layer of layers) {
-      if (!layer) {
-        console.warn('Non-existent layer found in layer ordering; this ' +
-                     'is probably a bug!')
-        continue
-      }
-
-      listItems.push(
-        <ListItem
-          key={layer.id}
-          primaryText={layer.label}
-          secondaryText={labelForLayerType(layer.type)}
-          leftIcon={iconForLayerType(layer.type)}
-          rightIcon={layer.visible ? undefined : <VisibilityOff />}
-          className={getListItemStyle(layer.id)}
-          onTouchTap={_.partial(onChange, layer)} />
-      )
-    }
-
-    return (
+const LayerListPresentation = selectableListOf(
+  (layer, props, selected) => (
+    <ListItem key={layer.id} primaryText={layer.label}
+              secondaryText={labelForLayerType(layer.type)}
+              leftIcon={iconForLayerType(layer.type)}
+              rightIcon={layer.visible ? undefined : <VisibilityOff />}
+              className={selected ? 'selected-list-item' : undefined}
+            />
+  ),
+  {
+    backgroundHint: 'No layers',
+    dataProvider: 'layers',
+    /* eslint-disable react/display-name */
+    listFactory: (props, children) => (
       <List className="dialog-sidebar">
-        {listItems}
+        {children}
       </List>
     )
+    /* eslint-enable react/display-name */
   }
-}
+)
 
 LayerListPresentation.propTypes = {
   layers: PropTypes.arrayOf(PropTypes.object).isRequired,
-  selectedLayerId: PropTypes.string,
+  value: PropTypes.string,
   onChange: PropTypes.func
-}
-
-LayerListPresentation.defaultProps = {
-  layers: []
 }
 
 /**
@@ -234,7 +218,7 @@ const LayerList = connect(
     const { byId, order } = state.map.layers
     return {
       layers: order.map(layerId => byId[layerId]),
-      selectedLayerId: state.dialogs.layerSettings.selectedLayer
+      value: state.dialogs.layerSettings.selectedLayer
     }
   },
   // mapDispatchToProps

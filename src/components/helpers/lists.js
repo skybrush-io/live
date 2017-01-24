@@ -2,10 +2,10 @@
  * @file List-related component helper functions and higher order components.
  */
 
-import { get } from 'lodash/fp'
+import { get, partial } from 'lodash/fp'
 import { isFunction } from 'lodash'
 import { List } from 'material-ui/List'
-import React from 'react'
+import React, { PropTypes } from 'react'
 
 /**
  * Creates a React component that renders items received in an array using
@@ -26,23 +26,21 @@ import React from 'react'
  * @param  {function|React.Component} options.listFactory  React component
  *         that will be used as the root component of the generated list,
  *         or a function that will be called with the props of the generated
- *         component and returns the root React component of the list
+ *         component and the children that are to be put into the root
+ *         React component, and returns the root React component of the list
+ *         populated with the children
  * @return {React.Component}  the constructed React component
  */
 export function listOf (itemRenderer, options = {}) {
-  const { backgroundHint } = options
-  const dataProvider = validateDataProvider(options.dataProvider)
-  const listFactory = validateListFactory(options.listFactory)
-
+  const { backgroundHint, dataProvider, listFactory } = validateOptions(options)
   itemRenderer = validateItemRenderer(itemRenderer)
 
+  // A separate variable is needed here to make ESLint happy
   const ListView = props => {
     const items = dataProvider(props)
-    const listComponent = listFactory ? listFactory(props) : List
     if (hasSomeItems(items)) {
-      return React.createElement(listComponent, {}, items.map(
-        item => itemRenderer(item, props)
-      ))
+      const children = items.map(item => itemRenderer(item, props))
+      return listFactory(props, children)
     } else if (backgroundHint) {
       return <div className="background-hint">{backgroundHint}</div>
     } else {
@@ -51,6 +49,77 @@ export function listOf (itemRenderer, options = {}) {
   }
 
   return ListView
+}
+
+/**
+ * Creates a React component that renders items received in an array using
+ * the given item renderer function, optionally shows a small textual
+ * hint instead if there are no items, and allows the user to select a
+ * single item by tapping or clicking on an item.
+ *
+ * The component returned from this function will have a property named
+ * <code>value</code> that contains the <em>ID</em> of the selected item
+ * (i.e. its <code>id</code> property), and a property named
+ * <code>onChange</code> where it expects a callback function that
+ * will be called whenever the selected item changes via tapping or clicking
+ * on an item. <code>onChange</code> will be called with the event that
+ * caused the change and the item that was selected.
+ *
+ * @param  {function|React.Component} itemRenderer  function that is called
+ *         with a single item to be rendered, the props of the generated
+ *         component, and a boolean denoting whether the item is currently
+ *         selected, and must return a React component that shows the item
+ * @param  {Object}  options  additional options to tweak the behaviour of
+ *         the generated list
+ * @param  {string?}  options.backgroundHint  optional background hint to show in
+ *         place of the list when there are no items
+ * @param  {function|string} options.dataProvider  function that gets the React props
+ *         of the generated component and returns the items to show, or a
+ *         string that contains the name of the React prop that holds the
+ *         items to show in the generated component
+ * @param  {function|React.Component} options.listFactory  React component
+ *         that will be used as the root component of the generated list,
+ *         or a function that will be called with the props of the generated
+ *         component and returns the root React component of the list
+ * @return {React.Component}  the constructed React component
+ */
+export function selectableListOf (itemRenderer, options = {}) {
+  const { backgroundHint, dataProvider, listFactory } = validateOptions(options)
+  itemRenderer = validateItemRenderer(itemRenderer)
+
+  // A separate variable is needed here to make ESLint happy
+  const SelectableListView = props => {
+    const items = dataProvider(props)
+    if (hasSomeItems(items)) {
+      const children = items.map(item => itemRenderer(item, props, item.id === props.value))
+      return listFactory(props, children)
+    } else if (backgroundHint) {
+      return <div className="background-hint">{backgroundHint}</div>
+    } else {
+      return null
+    }
+  }
+  SelectableListView.propTypes = {
+    children: PropTypes.node,
+    onChange: PropTypes.func,
+    value: PropTypes.any
+  }
+  return SelectableListView
+}
+
+/**
+ * Helper function that makes some transformations on the options object
+ * passed to list generation helper functions to ensure the type-correctness
+ * of some of the arguments.
+ *
+ * @param  {Object} options  the options passed to the list generation helper
+ * @return {Object} the transformed options
+ */
+function validateOptions (options) {
+  return Object.assign({}, options, {
+    dataProvider: validateDataProvider(options.dataProvider),
+    listFactory: validateListFactory(options.listFactory)
+  })
 }
 
 /**
@@ -95,9 +164,9 @@ function validateDataProvider (dataProvider) {
 function validateItemRenderer (itemRenderer) {
   if (React.Component.isPrototypeOf(itemRenderer)) {
     /* eslint-disable react/display-name */
-    return item => {
+    return (item, props, selected) => {
       return React.createElement(itemRenderer,
-        Object.assign({}, item, { key: item.id })
+        Object.assign({}, item, { key: item.id, selected: selected })
       )
     }
     /* eslint-enable react/display-name */
@@ -119,8 +188,14 @@ function validateItemRenderer (itemRenderer) {
  *         if the incoming argument was undefined
  */
 function validateListFactory (listFactory) {
-  if (React.Component.isPrototypeOf(listFactory)) {
-    return () => listFactory
+  if (listFactory === undefined) {
+    /* eslint-disable react/display-name */
+    return (props, children) => {
+      return React.createElement(List, {}, children)
+    }
+    /* eslint-enable react/display-name */
+  } else if (React.Component.isPrototypeOf(listFactory)) {
+    return partial(React.createElement, listFactory)
   } else {
     return listFactory
   }
