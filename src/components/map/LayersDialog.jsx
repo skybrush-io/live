@@ -2,7 +2,6 @@
 * @file React Component for the layer settings dialog.
 */
 
-import _ from 'lodash'
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { reduxForm } from 'redux-form'
@@ -188,6 +187,7 @@ const LayerListPresentation = selectableListOf(
               leftIcon={iconForLayerType(layer.type)}
               rightIcon={layer.visible ? undefined : <VisibilityOff />}
               className={selected ? 'selected-list-item' : undefined}
+              onTouchTap={props.onItemSelected}
             />
   ),
   {
@@ -223,7 +223,7 @@ const LayerList = connect(
   },
   // mapDispatchToProps
   dispatch => ({
-    onChange (layer) {
+    onChange (event, layer) {
       if (layer && layer.id) {
         dispatch(setSelectedLayerInLayersDialog(layer.id))
       }

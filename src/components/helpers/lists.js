@@ -65,6 +65,16 @@ export function listOf (itemRenderer, options = {}) {
  * on an item. <code>onChange</code> will be called with the event that
  * caused the change and the item that was selected.
  *
+ * In order to make this happen, there is one final ingredient: we need
+ * to "tell" our item renderer when to consider an item to be "selected" by
+ * the user. The props passed to the component that the item renderer
+ * returns contains a property named <code>onItemSelected</code>. This is
+ * a function that expects an event and that calls the <code>onChange</code>
+ * prop of the generated list component with the event itself and the item
+ * that was selected. You need to wire this prop to the appropriate event
+ * handler of your item renderer in order to make the list item respond to
+ * the user's action.
+ *
  * @param  {function|React.Component} itemRenderer  function that is called
  *         with a single item to be rendered, the props of the generated
  *         component, and a boolean denoting whether the item is currently
@@ -91,7 +101,16 @@ export function selectableListOf (itemRenderer, options = {}) {
   const SelectableListView = props => {
     const items = dataProvider(props)
     if (hasSomeItems(items)) {
-      const children = items.map(item => itemRenderer(item, props, item.id === props.value))
+      const children = items.map(item =>
+        itemRenderer(
+          item,
+          Object.assign({}, props, {
+            onChange: undefined,
+            onItemSelected: props.onChange ? event => props.onChange(event, item) : undefined
+          }),
+          item.id === props.value
+        )
+      )
       return listFactory(props, children)
     } else if (backgroundHint) {
       return <div className="background-hint">{backgroundHint}</div>
