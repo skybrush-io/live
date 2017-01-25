@@ -223,10 +223,8 @@ const LayerList = connect(
   },
   // mapDispatchToProps
   dispatch => ({
-    onChange (event, layer) {
-      if (layer && layer.id) {
-        dispatch(setSelectedLayerInLayersDialog(layer.id))
-      }
+    onChange (event, layerId) {
+      dispatch(setSelectedLayerInLayersDialog(layerId))
     }
   })
 )(LayerListPresentation)

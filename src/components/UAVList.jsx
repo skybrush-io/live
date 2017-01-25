@@ -12,6 +12,7 @@ import u from 'updeep'
 import { multiSelectableListOf } from './helpers/lists'
 import UAVToolbar from './UAVToolbar'
 
+import { setSelectedFeatures } from '../actions/map'
 import Flock from '../model/flock'
 import { formatCoordinate } from '../utils/geography'
 
@@ -32,7 +33,8 @@ const UAVListPresentation = multiSelectableListOf((uav, props, selected) => {
   return <ListItem key={uav.id}
                    primaryText={uav.id}
                    secondaryText={formatSecondaryTextForUAV(uav)}
-                   className={selected ? 'selected-list-item' : undefined} />
+                   className={selected ? 'selected-list-item' : undefined}
+                   onTouchTap={props.onItemSelected} />
 }, {
   backgroundHint: 'No UAVs',
   dataProvider: 'uavs'
@@ -138,12 +140,13 @@ class UAVList extends React.Component {
   }
 
   render () {
-    const { selectedUAVIds } = this.props
+    const { selectedUAVIds, onSelectionChanged } = this.props
     const { uavs } = this.state
     return (
       <div style={{ height: '100%' }}>
         <UAVToolbar />
-        <UAVListPresentation uavs={uavs} value={selectedUAVIds || []} />
+        <UAVListPresentation uavs={uavs} value={selectedUAVIds || []}
+                             onChange={onSelectionChanged} />
       </div>
     )
   }
@@ -152,7 +155,8 @@ class UAVList extends React.Component {
 
 UAVList.propTypes = {
   flock: PropTypes.instanceOf(Flock),
-  selectedUAVIds: PropTypes.arrayOf(PropTypes.string).isRequired
+  selectedUAVIds: PropTypes.arrayOf(PropTypes.string).isRequired,
+  onSelectionChanged: PropTypes.func
 }
 
 UAVList.defaultProps = {
@@ -163,6 +167,12 @@ const SmartUAVList = connect(
   // mapStateToProps
   state => ({
     selectedUAVIds: state.map.selection
+  }),
+  // mapDispatchToProps
+  dispatch => ({
+    onSelectionChanged: (event, uavIds) => {
+      dispatch(setSelectedFeatures(uavIds))
+    }
   })
 )(UAVList)
 

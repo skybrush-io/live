@@ -3,9 +3,11 @@
  */
 
 import { get, partial } from 'lodash/fp'
-import { includes, isFunction } from 'lodash'
+import { includes, isFunction, xor } from 'lodash'
 import { List, ListItem } from 'material-ui/List'
 import React, { PropTypes } from 'react'
+
+import { eventHasPlatformModifierKey } from '../../utils/platform'
 
 /**
  * Creates a React component that renders items received in an array using
@@ -63,7 +65,7 @@ export function listOf (itemRenderer, options = {}) {
  * <code>onChange</code> where it expects a callback function that
  * will be called whenever the selected item changes via tapping or clicking
  * on an item. <code>onChange</code> will be called with the event that
- * caused the change and the item that was selected.
+ * caused the change and the ID of the item that was selected.
  *
  * In order to make this happen, there is one final ingredient: we need
  * to "tell" our item renderer when to consider an item to be "selected" by
@@ -106,7 +108,7 @@ export function selectableListOf (itemRenderer, options = {}) {
           item,
           Object.assign({}, props, {
             onChange: undefined,
-            onItemSelected: props.onChange ? event => props.onChange(event, item) : undefined
+            onItemSelected: props.onChange ? event => props.onChange(event, item.id) : undefined
           }),
           item.id === props.value
         )
@@ -138,7 +140,7 @@ export function selectableListOf (itemRenderer, options = {}) {
  * <code>onChange</code> where it expects a callback function that
  * will be called whenever the selected items change via tapping or clicking
  * on an item. <code>onChange</code> will be called with the event that
- * caused the change and the new selection.
+ * caused the change and the new selection (with item IDs).
  *
  * In order to make this happen, there is one final ingredient: we need
  * to "tell" our item renderer when to consider an item to be "selected" by
@@ -191,7 +193,11 @@ export function multiSelectableListOf (itemRenderer, options = {}) {
           Object.assign({}, props, {
             onChange: undefined,
             onItemSelected: props.onChange ? event => {
-              return props.onChange(event, item)
+              const newSelection =
+                eventHasPlatformModifierKey(event.nativeEvent)
+                ? xor(props.value, [item.id])
+                : [item.id]
+              return props.onChange(event, newSelection)
             } : undefined
           }),
           includes(props.value, item.id)

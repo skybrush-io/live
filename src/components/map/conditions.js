@@ -1,5 +1,5 @@
 import ol from 'openlayers'
-import { isRunningOnMac } from '../../utils/platform'
+import { eventHasPlatformModifierKey } from '../../utils/platform'
 
 let Condition = {}
 
@@ -10,11 +10,8 @@ let Condition = {}
  * @param {event}  mapBrowserEvent  the actual event
  * @return {boolean}  whether the condition was met
  */
-Condition.platformModifierKey = mapBrowserEvent => (
-  isRunningOnMac
-  ? mapBrowserEvent.originalEvent.metaKey
-  : mapBrowserEvent.originalEvent.ctrlKey
-)
+Condition.platformModifierKey = mapBrowserEvent =>
+  eventHasPlatformModifierKey(mapBrowserEvent.originalEvent)
 
 /**
  * Helper condition that accepts either only platformModifier
