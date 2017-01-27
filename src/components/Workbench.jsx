@@ -10,6 +10,7 @@
 import GoldenLayout from 'golden-layout'
 import React, { PropTypes } from 'react'
 import { findDOMNode } from 'react-dom'
+import { WindowResizeListener } from 'react-window-resize-listener'
 import { getContext, renderNothing, withContext } from 'recompose'
 
 import ClockDisplayList from './ClockDisplayList'
@@ -99,6 +100,11 @@ function getReactComponentFromContentItem (contentItem) {
  * The top-level workbench class.
  */
 export default class Workbench extends React.Component {
+  constructor (props) {
+    super(props)
+    this.onResize = this.onResize.bind(this)
+  }
+
   componentDidMount () {
     const config = this.getDefaultConfig()
 
@@ -112,6 +118,7 @@ export default class Workbench extends React.Component {
 
   componentWillUnmount () {
     this.layout.destroy()
+    delete this.layout
   }
 
   getDefaultConfig () {
@@ -145,9 +152,9 @@ export default class Workbench extends React.Component {
                 ]
               },
               {
-                // type: 'react-component',
-                type: 'component',
-                componentName: 'lm-react-component',
+                type: 'react-component',
+                // type: 'component',
+                // componentName: 'lm-react-component',
                 component: 'uav-list',
                 title: 'UAVs'
               }
@@ -161,8 +168,18 @@ export default class Workbench extends React.Component {
     }
   }
 
+  onResize () {
+    if (this.layout && this.layout.container && this.layout.container.width) {
+      this.layout.updateSize()
+    }
+  }
+
   render () {
-    return <div id="workbench"></div>
+    return (
+      <div id="workbench">
+        <WindowResizeListener onResize={this.onResize} />
+      </div>
+    )
   }
 }
 
