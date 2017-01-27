@@ -16,17 +16,11 @@ import { connect } from 'react-redux'
 import { listOf } from './helpers/lists'
 
 /**
- * Avatar style for stopped and running clocks.
+ * Avatars for stopped and running clocks.
  */
-const avatarStyles = [
-  {
-    'backgroundColor': colors.redA700,
-    'icon': <Stop />
-  },
-  {
-    'backgroundColor': colors.green500,
-    'icon': <PlayArrow />
-  }
+const avatars = [
+  <Avatar backgroundColor={colors.redA700} icon={<Stop />} />,
+  <Avatar backgroundColor={colors.green500} icon={<PlayArrow />} />
 ]
 
 /**
@@ -116,13 +110,13 @@ class ClockDisplayListEntry extends React.Component {
   render () {
     const { id, running } = this.props
     const { referenceTime, ticks, ticksPerSecond } = this.props
-    const style = avatarStyles[running ? 1 : 0]
+    const avatar = avatars[running ? 1 : 0]
     const formattedId = this.formatClockId(id)
     const elapsed = running ? (moment().valueOf() / 1000 - referenceTime) : 0
     const extrapolatedTicks = ticks + elapsed * ticksPerSecond
     const formattedTime = this.formatTicks(extrapolatedTicks)
     return (
-      <ListItem leftAvatar={<Avatar {...style} />}
+      <ListItem leftAvatar={avatar}
                 primaryText={formattedTime}
                 secondaryText={formattedId} />
     )

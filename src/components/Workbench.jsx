@@ -64,12 +64,47 @@ function registerComponentsInLayout (layout, { flock, muiTheme, store }) {
   }
 }
 
+/**
+ * Extends the behaviour of the golden-layout stacks such that they unmount
+ * any React components from the DOM that are not on a visible tab.
+ *
+ * @param {GoldenLayout} layout   the layout object
+ */
+function makeStacksUnmountInvisibleComponents (layout) {
+  layout.on('stackCreated', stack => {
+    let previousComponent
+
+    stack.on('activeContentItemChanged', item => {
+      previousComponent = item
+    })
+  })
+}
+
+/*
+ * Extracts the React component instance from the given golden-layout
+ * content item.
+ *
+ * @param  {Object} contentItem  the content item to extract the component from
+ * @return {React.Component} the React component instance that is currently
+ *         shown in the content item
+ */
+/*
+function getReactComponentFromContentItem (contentItem) {
+  const instance = contentItem.instance
+  return instance ? instance._reactComponent : undefined
+}
+*/
+
+/**
+ * The top-level workbench class.
+ */
 export default class Workbench extends React.Component {
   componentDidMount () {
     const config = this.getDefaultConfig()
 
     this.layout = new GoldenLayout(config)
     registerComponentsInLayout(this.layout, this.context)
+    makeStacksUnmountInvisibleComponents(this.layout)
 
     this.layout.container = findDOMNode(this)
     this.layout.init()
@@ -110,7 +145,9 @@ export default class Workbench extends React.Component {
                 ]
               },
               {
-                type: 'react-component',
+                // type: 'react-component',
+                type: 'component',
+                componentName: 'lm-react-component',
                 component: 'uav-list',
                 title: 'UAVs'
               }
