@@ -9,7 +9,7 @@
 
 import GoldenLayout from 'golden-layout'
 import React, { PropTypes } from 'react'
-import { findDOMNode } from 'react-dom'
+import { findDOMNode, render, unmountComponentAtNode } from 'react-dom'
 import { WindowResizeListener } from 'react-window-resize-listener'
 import { getContext, renderNothing, withContext } from 'recompose'
 
@@ -65,22 +65,6 @@ function registerComponentsInLayout (layout, { flock, muiTheme, store }) {
   }
 }
 
-/**
- * Extends the behaviour of the golden-layout stacks such that they unmount
- * any React components from the DOM that are not on a visible tab.
- *
- * @param {GoldenLayout} layout   the layout object
- */
-function makeStacksUnmountInvisibleComponents (layout) {
-  layout.on('stackCreated', stack => {
-    let previousComponent
-
-    stack.on('activeContentItemChanged', item => {
-      previousComponent = item
-    })
-  })
-}
-
 /*
  * Extracts the React component instance from the given golden-layout
  * content item.
@@ -112,7 +96,6 @@ export default class Workbench extends React.Component {
     this.layout.registerComponent('lm-lazy-react-component', LazyReactComponentHandler)
 
     registerComponentsInLayout(this.layout, this.context)
-    makeStacksUnmountInvisibleComponents(this.layout)
 
     this.layout.container = findDOMNode(this)
     this.layout.init()
@@ -208,34 +191,34 @@ class LazyReactComponentHandler {
   /**
    * Constructor.
    *
-   * @param {lm.container.ItemContainer}  the container that will contain
-   *        the React component
+   * @param {lm.container.ItemContainer}  container  the container that
+   *        will contain the React component
    * @param {Object} state  the state of the React component; optional
    */
   constructor (container, state) {
     this._reactComponent = undefined
-  	this._originalComponentWillUpdate = undefined
+    this._originalComponentWillUpdate = undefined
     this._isVisible = false
     this._isOpen = false
-  	this._container = container
-  	this._initialState = state
-  	this._reactClass = this._getReactClass()
-  	this._container.on('open', this._open, this)
-  	this._container.on('destroy', this._destroy, this)
-  	this._container.on('show', this._show, this)
-  	this._container.on('hide', this._hide, this)
+    this._container = container
+    this._initialState = state
+    this._reactClass = this._getReactClass()
+    this._container.on('open', this._open, this)
+    this._container.on('destroy', this._destroy, this)
+    this._container.on('show', this._show, this)
+    this._container.on('hide', this._hide, this)
     this._onUpdate = this._onUpdate.bind(this)
   }
 
   _show () {
     this._isVisible = true
     this._mountIfNeeded()
-	}
+  }
 
   _hide () {
     this._isVisible = false
     this._unmountIfNeeded()
-	}
+  }
 
   _open () {
     this._isOpen = true
@@ -248,16 +231,16 @@ class LazyReactComponentHandler {
 	 *
 	 * @private
 	 */
-	_destroy () {
+  _destroy () {
     this._isOpen = false
     this._isVisible = false
     this._unmountIfNeeded()
 
-		this._container.off('open', this._open, this)
-		this._container.off('destroy', this._destroy, this)
-		this._container.off('show', this._show, this)
-		this._container.off('hide', this._hide, this)
-	}
+    this._container.off('open', this._open, this)
+    this._container.off('destroy', this._destroy, this)
+    this._container.off('show', this._show, this)
+    this._container.off('hide', this._hide, this)
+  }
 
   /**
    * Mounts the component to the DOM tree if it should be mounted and it is
@@ -268,18 +251,18 @@ class LazyReactComponentHandler {
       return
     }
 
-    this._reactComponent = ReactDOM.render(
+    this._reactComponent = render(
       this._createReactComponent(), this._container.getElement()[0]
     )
 
-		this._originalComponentWillUpdate = this._reactComponent.componentWillUpdate
+    this._originalComponentWillUpdate = this._reactComponent.componentWillUpdate
         || function () {}
-		this._reactComponent.componentWillUpdate = this._onUpdate
+    this._reactComponent.componentWillUpdate = this._onUpdate
 
     const state = this._container.getState()
-		if (state) {
-			this._reactComponent.setState(state)
-		}
+    if (state) {
+      this._reactComponent.setState(state)
+    }
   }
 
   /**
@@ -291,27 +274,27 @@ class LazyReactComponentHandler {
   _unmountIfNeeded () {
     if (this._reactComponent && (!this._isVisible || !this._isOpen)) {
       const firstElement = this._container.getElement()[0]
-  		ReactDOM.unmountComponentAtNode(firstElement)
+      unmountComponentAtNode(firstElement)
 
       this._reactComponent = undefined
       this._originalComponentWillUpdate = undefined
     }
   }
 
-	/**
+  /**
 	 * Hooks into React's state management and applies the component state
 	 * to GoldenLayout
 	 *
 	 * @private
 	 */
-	_onUpdate (nextProps, nextState) {
-		this._container.setState(nextState)
-		this._originalComponentWillUpdate.call(
+  _onUpdate (nextProps, nextState) {
+    this._container.setState(nextState)
+    this._originalComponentWillUpdate.call(
       this._reactComponent, nextProps, nextState
     )
-	}
+  }
 
-	/**
+  /**
 	 * Retrieves the React class from GoldenLayout's registry
 	 *
 	 * @private
