@@ -62,18 +62,20 @@ function convertMessageToComponent (message) {
  * component that can render them nicely.
  *
  * @param {Object[]} messages  the messages to convert
+ * @param {boolean}  textFieldsBelow  whether the text fields are below
+ *        the chat area (true) or above it
  * @return {React.Component[]}  the React components that render the message
  */
-function convertMessagesToComponents (messages) {
+function convertMessagesToComponents (messages, textFieldsBelow) {
   if (_.isNil(messages)) {
     return [
       <BackgroundHint key="backgroundHint" header="No UAV selected"
         text="Enter the ID of a UAV to talk to in the lower left corner" />
     ]
   } else if (messages.length === 0) {
+    const hint = `Send a message to the selected UAV using the text box ${textFieldsBelow ? 'below' : 'above'}`
     return [
-      <BackgroundHint key="backgroundHint" header="No messages"
-        text="Send a message to the selected UAV using the text box below" />
+      <BackgroundHint key="backgroundHint" header="No messages" text={hint} />
     ]
   } else {
     return _.flatMap(messages, convertMessageToComponent)
@@ -91,22 +93,24 @@ class MessagesPanelPresentation extends React.Component {
   }
 
   render () {
-    const { chatEntries, flock, selectedUAVId } = this.props
-    const chatComponents = convertMessagesToComponents(chatEntries)
-    return (
-      <div>
-        <ChatArea style={{ height: '35ex' }}>
-          {chatComponents}
-        </ChatArea>
-        <div style={{ display: 'flex' }}>
-          <ActiveUAVsField style={{ width: '8em', paddingRight: '1em' }}
-            flock={flock} />
-          <TextField fullWidth={true} hintText="Message"
-            onKeyDown={this.textFieldKeyDownHandler_}
-            disabled={_.isNil(selectedUAVId)} />
-        </div>
+    const { chatEntries, flock, selectedUAVId, style, textFieldsAtBottom } = this.props
+    const chatComponents = convertMessagesToComponents(chatEntries, textFieldsAtBottom)
+    const contentStyle = Object.assign({
+      display: 'flex',
+      flexDirection: 'column',
+      height: '100%'
+    }, style)
+    const chatArea = <ChatArea>{chatComponents}</ChatArea>
+    const textFields =
+      <div style={{ display: 'flex' }}>
+        <ActiveUAVsField style={{ width: '8em', paddingRight: '1em' }}
+          flock={flock} />
+        <TextField fullWidth={true} hintText="Message"
+          onKeyDown={this.textFieldKeyDownHandler_}
+          disabled={_.isNil(selectedUAVId)} />
       </div>
-    )
+    const children = textFieldsAtBottom ? [chatArea, textFields] : [textFields, chatArea]
+    return <div style={contentStyle}>{children}</div>
   }
 
   /**
@@ -128,7 +132,13 @@ MessagesPanelPresentation.propTypes = {
   chatEntries: PropTypes.arrayOf(PropTypes.object),
   flock: PropTypes.instanceOf(Flock),
   onSend: PropTypes.func,
-  selectedUAVId: PropTypes.string
+  selectedUAVId: PropTypes.string,
+  style: PropTypes.object,
+  textFieldsAtBottom: PropTypes.bool.isRequired
+}
+
+MessagesPanelPresentation.defaultProps = {
+  textFieldsAtBottom: false
 }
 
 /**

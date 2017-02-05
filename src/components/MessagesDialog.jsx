@@ -28,7 +28,7 @@ class MessagesDialogPresentation extends React.Component {
     return (
       <Dialog open={open} modal={true}
               contentStyle={contentStyle} actions={actions}>
-        <MessagesPanel />
+        <MessagesPanel style={{ height: '35ex' }} textFieldsAtBottom={true} />
       </Dialog>
     )
   }

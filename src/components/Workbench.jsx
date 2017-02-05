@@ -11,14 +11,23 @@ import GoldenLayout from 'golden-layout'
 import React, { PropTypes } from 'react'
 import { findDOMNode, render, unmountComponentAtNode } from 'react-dom'
 import { WindowResizeListener } from 'react-window-resize-listener'
-import { getContext, renderNothing, withContext } from 'recompose'
+import { compose, getContext, renderNothing, withContext, withProps } from 'recompose'
 
 import ClockDisplayList from './ClockDisplayList'
 import ConnectionList from './ConnectionList'
+import MessagesPanel from './chat/MessagesPanel'
 import UAVList from './UAVList'
 import MapView from './map/MapView'
 
 require('../../assets/css/workbench.less')
+
+/**
+ * Higher order component that propagates the flock passed in the context
+ * as props into the wrapped component.
+ */
+const getFlockFromContext = getContext({
+  flock: PropTypes.object.isRequired
+})
 
 /**
  * Registry that maps component types to be used in the top-level
@@ -32,10 +41,13 @@ const componentRegistry = {
   'connection-list': ConnectionList,
   'clock-list': ClockDisplayList,
   'map': MapView,
+  'messages': compose(withProps({
+    style: {
+      padding: '0 10px'
+    }
+  }), getFlockFromContext)(MessagesPanel),
   'placeholder': renderNothing(),
-  'uav-list': getContext({
-    flock: PropTypes.object.isRequired
-  })(UAVList)
+  'uav-list': getFlockFromContext(UAVList)
 }
 
 /**
@@ -143,11 +155,23 @@ export default class Workbench extends React.Component {
                 ]
               },
               {
-                // type: 'react-component',
-                type: 'component',
-                componentName: 'lm-lazy-react-component',
-                component: 'uav-list',
-                title: 'UAVs'
+                type: 'stack',
+                content: [
+                  {
+                    // type: 'react-component',
+                    type: 'component',
+                    componentName: 'lm-lazy-react-component',
+                    component: 'uav-list',
+                    title: 'UAVs'
+                  },
+                  {
+                    // type: 'react-component',
+                    type: 'component',
+                    componentName: 'lm-lazy-react-component',
+                    component: 'messages',
+                    title: 'Messages'
+                  }
+                ]
               }
             ]
           }
@@ -255,8 +279,8 @@ class LazyReactComponentHandler {
       this._createReactComponent(), this._container.getElement()[0]
     )
 
-    this._originalComponentWillUpdate = this._reactComponent.componentWillUpdate
-        || function () {}
+    this._originalComponentWillUpdate = this._reactComponent.componentWillUpdate ||
+        function () {}
     this._reactComponent.componentWillUpdate = this._onUpdate
 
     const state = this._container.getState()
@@ -300,35 +324,35 @@ class LazyReactComponentHandler {
 	 * @private
 	 * @returns {React.Class}
 	 */
-	_getReactClass () {
-		const componentName = this._container._config.component
-		if (!componentName) {
-			throw new Error('No react component name. type: lazy-react-component ' +
+  _getReactClass () {
+    const componentName = this._container._config.component
+    if (!componentName) {
+      throw new Error('No react component name. type: lazy-react-component ' +
                       'needs a field `component`')
-		}
+    }
 
-		const reactClass = this._container.layoutManager.getComponent(componentName)
-		if (!reactClass) {
-			throw new Error('React component "' + componentName + '" not found. ' +
+    const reactClass = this._container.layoutManager.getComponent(componentName)
+    if (!reactClass) {
+      throw new Error('React component "' + componentName + '" not found. ' +
 				'Please register all components with GoldenLayout using `registerComponent(name, component)`')
-		}
+    }
 
-		return reactClass
-	}
+    return reactClass
+  }
 
-	/**
+  /**
 	 * Copies and extends the properties array and returns the React element
 	 *
 	 * @private
 	 * @returns {React.Element}
 	 */
-	_createReactComponent () {
-		const defaultProps = {
-			glEventHub: this._container.layoutManager.eventHub,
-			glContainer: this._container,
-		}
-		const props = Object.assign(defaultProps, this._container._config.props)
-		return React.createElement(this._reactClass, props)
-	}
+  _createReactComponent () {
+    const defaultProps = {
+      glEventHub: this._container.layoutManager.eventHub,
+      glContainer: this._container
+    }
+    const props = Object.assign(defaultProps, this._container._config.props)
+    return React.createElement(this._reactClass, props)
+  }
 
 };
