@@ -23,7 +23,7 @@ import { coordinateFromLonLat } from '../MapView'
 const updatePredicates = (predicates, errorHandler) => {
   for (const color in predicates) {
     try {
-      /*eslint no-new-func: "off"*/
+      /*eslint no-new-func: "off" */
       colorPredicates[color] = new Function('id', `return ${predicates[color]}`)
     } catch (e) {
       errorHandler(`Invalid color predicate for ${color} --> ${e}`)
@@ -57,11 +57,11 @@ class UAVsLayerSettingsPresentation extends React.Component {
     ))
     return (
       <div>
-        <p key="header">Colors</p>
+        <p key={'header'}>Colors</p>
         {colorInputs}
         <br />
         <RaisedButton
-          label="Apply"
+          label={'Apply'}
           icon={<ActionSystemUpdateAlt />}
           onClick={this.handleClick_} />
       </div>
@@ -122,8 +122,8 @@ class UAVsLayerPresentation extends React.Component {
     return (
       <div>
         <layer.Vector ref={this.context.assignActiveUAVsLayerRef_}
-          updateWhileAnimating={true}
-          updateWhileInteracting={true}
+          updateWhileAnimating
+          updateWhileInteracting
           zIndex={this.props.zIndex}>
 
           <ActiveUAVsLayerSource ref={this.context.assignActiveUAVsLayerSourceRef_}

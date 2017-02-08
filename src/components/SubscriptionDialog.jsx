@@ -74,7 +74,7 @@ export default class SubscriptionDialog extends React.Component {
 
     const subscriptionItems = this.state.subscriptions.map(subscription =>
       <ListItem key={subscription} primaryText={subscription} rightIconButton={
-        <IconButton tooltip="Unsubscribe"
+        <IconButton tooltip={'Unsubscribe'}
           onClick={_.partial(this.removeSubscription_, subscription)}>
           <ContentRemoveCircleOutline />
         </IconButton>
@@ -82,7 +82,7 @@ export default class SubscriptionDialog extends React.Component {
     )
 
     const actions = [
-      <FlatButton label="Done" primary={true} onTouchTap={this.hideDialog_} />
+      <FlatButton label={'Done'} primary onTouchTap={this.hideDialog_} />
     ]
 
     return (
@@ -90,23 +90,23 @@ export default class SubscriptionDialog extends React.Component {
         open={this.state.visible}
         actions={actions}>
         UAV:
-        <DropDownMenu ref="uavDropDown" value={this.state.selectedUAV}
+        <DropDownMenu ref={'uavDropDown'} value={this.state.selectedUAV}
           onChange={_.partial(this.handleChange_, 'selectedUAV')}>
           {UAVMenuItems}
         </DropDownMenu>
         Device:
-        <DropDownMenu ref="deviceDropDown" value={this.state.selectedDevice}
+        <DropDownMenu ref={'deviceDropDown'} value={this.state.selectedDevice}
           onChange={_.partial(this.handleChange_, 'selectedDevice')}>
           {DeviceMenuItems}
         </DropDownMenu>
         Channel:
-        <DropDownMenu ref="channelDropDown" value={this.state.selectedChannel}
+        <DropDownMenu ref={'channelDropDown'} value={this.state.selectedChannel}
           onChange={_.partial(this.handleChange_, 'selectedChannel')}>
           {ChannelMenuItems}
         </DropDownMenu>
         <RaisedButton
           disabled={this.state.subscriptions.includes(this.currentPath)}
-          label="Subscribe"
+          label={'Subscribe'}
           onClick={this.handleClick_} />
 
         <List>

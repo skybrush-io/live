@@ -50,7 +50,7 @@ class FitAllFeaturesButton extends React.Component {
 
   render () {
     return (
-      <IconButton onClick={this.handleClick_} tooltip="Fit all features">
+      <IconButton onClick={this.handleClick_} tooltip={'Fit all features'}>
         <DeviceGpsFixed />
       </IconButton>
     )

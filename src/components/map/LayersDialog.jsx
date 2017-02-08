@@ -30,13 +30,13 @@ class BasicLayerSettingsFormPresentation extends React.Component {
 
     return (
       <div style={{ paddingBottom: '1em' }}>
-        <TextField {...label} floatingLabelText="Layer name" hintText="New layer"
+        <TextField {...label} floatingLabelText={'Layer name'} hintText={'New layer'}
           style={{ width: '100%' }}
-          spellCheck="false" errorText={label.touched && label.error}
+          spellCheck={'false'} errorText={label.touched && label.error}
           onKeyDown={this.onKeyDown_}
         />
         <div>&nbsp;</div>
-        <Toggle label="Visible" labelPosition="right"
+        <Toggle label={'Visible'} labelPosition={'right'}
           toggled={layer.visible}
           disabled={layer.type === LayerType.UNTYPED}
           onToggle={onToggleLayerVisibility}
@@ -183,11 +183,11 @@ const LayerSettingsContainer = connect(
 const LayerListPresentation = selectableListOf(
   (layer, props, selected) => (
     <ListItem key={layer.id} primaryText={layer.label}
-              secondaryText={labelForLayerType(layer.type)}
-              leftIcon={iconForLayerType(layer.type)}
-              rightIcon={layer.visible ? undefined : <VisibilityOff />}
-              className={selected ? 'selected-list-item' : undefined}
-              onTouchTap={props.onItemSelected}
+      secondaryText={labelForLayerType(layer.type)}
+      leftIcon={iconForLayerType(layer.type)}
+      rightIcon={layer.visible ? undefined : <VisibilityOff />}
+      className={selected ? 'selected-list-item' : undefined}
+      onTouchTap={props.onItemSelected}
             />
   ),
   {
@@ -195,7 +195,7 @@ const LayerListPresentation = selectableListOf(
     dataProvider: 'layers',
     /* eslint-disable react/display-name */
     listFactory: (props, children) => (
-      <List className="dialog-sidebar">
+      <List className={'dialog-sidebar'}>
         {children}
       </List>
     )
@@ -245,10 +245,10 @@ class LayersDialogPresentation extends React.Component {
     const { dialogVisible, selectedLayerId } = this.props
     const { onAddLayer, onClose } = this.props
     const actions = [
-      <FlatButton label="Add layer" onTouchTap={onAddLayer} />,
-      <FlatButton label="Remove layer" disabled={ !selectedLayerId }
+      <FlatButton label={'Add layer'} onTouchTap={onAddLayer} />,
+      <FlatButton label={'Remove layer'} disabled={!selectedLayerId}
         onTouchTap={this.removeSelectedLayer_} />,
-      <FlatButton label="Done" primary={true} onTouchTap={onClose} />
+      <FlatButton label={'Done'} primary onTouchTap={onClose} />
     ]
 
     return (

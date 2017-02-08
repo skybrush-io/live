@@ -45,42 +45,42 @@ class HeatmapLayerSettingsPresentation extends React.Component {
 
     return (
       <div>
-        <SubscriptionDialog ref="subscriptionDialog"
+        <SubscriptionDialog ref={'subscriptionDialog'}
           subscriptions={this.props.layer.parameters.subscriptions}
           setSubscriptions={_.partial(this.props.setLayerParameter, 'subscriptions')}
           unit={this.props.layer.parameters.unit}
           setUnit={_.partial(this.props.setLayerParameter, 'unit')} />
 
-        <p key="header">Heatmap options:</p>
+        <p key={'header'}>Heatmap options:</p>
         <RaisedButton
-          label="Edit subscriptions"
+          label={'Edit subscriptions'}
           onClick={this.showSubscriptionDialog_} />
 
         <br />
 
-        <TextField ref="threshold"
+        <TextField ref={'threshold'}
           style={textFieldStyle}
-          floatingLabelText="Threshold"
-          type="number"
+          floatingLabelText={'Threshold'}
+          type={'number'}
           defaultValue={this.props.layer.parameters.threshold} />
 
         <br />
 
-        <TextField ref="minValue"
+        <TextField ref={'minValue'}
           style={textFieldStyle}
-          floatingLabelText="Minimum value"
-          type="number"
+          floatingLabelText={'Minimum value'}
+          type={'number'}
           defaultValue={this.props.layer.parameters.minValue} />
-        <TextField ref="maxValue"
+        <TextField ref={'maxValue'}
           style={textFieldStyle}
-          floatingLabelText="Maximum value"
-          type="number"
+          floatingLabelText={'Maximum value'}
+          type={'number'}
           defaultValue={this.props.layer.parameters.maxValue} />
 
-        <Checkbox ref="autoScale"
+        <Checkbox ref={'autoScale'}
           defaultChecked={this.props.layer.parameters.autoScale}
           style={{display: 'inline-table', width: '150px'}}
-          label="Auto scale" />
+          label={'Auto scale'} />
 
         <br />
 
@@ -93,33 +93,33 @@ class HeatmapLayerSettingsPresentation extends React.Component {
           hsla(${this.state.minHue}, 70%, 50%, 0.75)
           )`
         }} />
-        <input id="minHue" ref="minHue" type="range" min="0" max="360"
+        <input id={'minHue'} ref={'minHue'} type={'range'} min={'0'} max={'360'}
           style={{width: '100px'}}
           value={this.state.minHue}
-          onChange={this.handleChange_}/>
-        <input id="maxHue" ref="maxHue" type="range" min="0" max="360"
+          onChange={this.handleChange_} />
+        <input id={'maxHue'} ref={'maxHue'} type={'range'} min={'0'} max={'360'}
           style={{width: '100px', marginLeft: '200px'}}
           value={this.state.maxHue}
-          onChange={this.handleChange_}/>
+          onChange={this.handleChange_} />
 
         <br />
 
-        <TextField ref="minDistance"
-          floatingLabelText="Minimum distance between points"
-          type="number"
+        <TextField ref={'minDistance'}
+          floatingLabelText={'Minimum distance between points'}
+          type={'number'}
           defaultValue={this.props.layer.parameters.minDistance} />
-        <Checkbox ref="snapToGrid"
+        <Checkbox ref={'snapToGrid'}
           defaultChecked={this.props.layer.parameters.snapToGrid}
           style={{display: 'inline-table', width: '150px', marginLeft: '8px'}}
-          label="Snap to grid" />
+          label={'Snap to grid'} />
 
         <RaisedButton style={{marginTop: '10px'}}
-          label="Update parameters"
+          label={'Update parameters'}
           onClick={this.handleClick_} />
 
         <RaisedButton style={{marginLeft: '10px'}}
-          backgroundColor="#ff7777"
-          label="Clear data"
+          backgroundColor={'#ff7777'}
+          label={'Clear data'}
           icon={<ContentClear />}
           onClick={this.clearData_} />
       </div>
@@ -394,7 +394,7 @@ class HeatmapLayerPresentation extends React.Component {
             setLayerParameter={this.props.setLayerParameter} />
         </layer.Vector>
 
-        <div id="heatmapScale"
+        <div id={'heatmapScale'}
           style={{
             background: `linear-gradient(
             hsla(${this.props.layer.parameters.maxHue}, 70%, 50%, 0.75),

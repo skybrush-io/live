@@ -16,12 +16,12 @@ class BaseLayerSettingsPresentation extends React.Component {
     const sourceRadioButtons = _.map(Sources, source => (
       <RadioButton value={source} key={source}
         label={labelForSource(source)}
-        style={{ marginTop: 5 }}/>
+        style={{ marginTop: 5 }} />
     ))
     return (
       <div>
-        <p key="header">Layer data source</p>
-        <RadioButtonGroup name="source.base" key="baseProperties"
+        <p key={'header'}>Layer data source</p>
+        <RadioButtonGroup name={'source.base'} key={'baseProperties'}
           valueSelected={this.props.layer.parameters.source}
           onChange={this.props.onLayerSourceChanged}>
           {sourceRadioButtons}
@@ -68,12 +68,12 @@ class BaseLayerPresentation extends React.Component {
           zIndex={this.props.zIndex}>
           <source.BingMaps
             apiKey={BingAPI.key}
-            imagerySet="AerialWithLabels"
+            imagerySet={'AerialWithLabels'}
             maxZoom={19} />
         </layer.Tile>
         <layer.Tile visible={visibleSource === Source.BING_MAPS.ROAD}
           zIndex={this.props.zIndex}>
-          <source.BingMaps apiKey={BingAPI.key} imagerySet="Road" />
+          <source.BingMaps apiKey={BingAPI.key} imagerySet={'Road'} />
         </layer.Tile>
       </div>
     )

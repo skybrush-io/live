@@ -8,8 +8,8 @@ export default class Separator extends React.Component {
   render () {
     const { message } = this.props
     return message
-      ? <div className="chat-separator"><span>{message}</span></div>
-      : <hr className="chat-separator"/>
+      ? <div className={'chat-separator'}><span>{message}</span></div>
+      : <hr className={'chat-separator'} />
   }
 }
 

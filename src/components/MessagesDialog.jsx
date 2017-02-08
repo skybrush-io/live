@@ -18,17 +18,17 @@ class MessagesDialogPresentation extends React.Component {
   render () {
     const { open, onClear, onClose, selectedUAVId } = this.props
     const actions = [
-      <FlatButton label="Clear" onTouchTap={onClear}
+      <FlatButton label={'Clear'} onTouchTap={onClear}
         disabled={!selectedUAVId} />,
-      <FlatButton label="Close" onTouchTap={onClose} />
+      <FlatButton label={'Close'} onTouchTap={onClose} />
     ]
     const contentStyle = {
       width: '640px'
     }
     return (
-      <Dialog open={open} modal={true}
-              contentStyle={contentStyle} actions={actions}>
-        <MessagesPanel style={{ height: '35ex' }} textFieldsAtBottom={true} />
+      <Dialog open={open} modal
+        contentStyle={contentStyle} actions={actions}>
+        <MessagesPanel style={{ height: '35ex' }} textFieldsAtBottom />
       </Dialog>
     )
   }

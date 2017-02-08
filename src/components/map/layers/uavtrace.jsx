@@ -30,24 +30,24 @@ class UAVTraceLayerSettingsPresentation extends React.Component {
   render () {
     return (
       <div>
-        <TextField ref="trailLength"
-          floatingLabelText="Length of the trail"
-          hintText="Length (in samples)"
-          type="number"
+        <TextField ref={'trailLength'}
+          floatingLabelText={'Length of the trail'}
+          hintText={'Length (in samples)'}
+          type={'number'}
           defaultValue={this.props.layer.parameters.trailLength} />
-        <TextField ref="trailWidth"
-          floatingLabelText="Width of the trail"
-          hintText="Width (in pixels)"
-          type="number"
+        <TextField ref={'trailWidth'}
+          floatingLabelText={'Width of the trail'}
+          hintText={'Width (in pixels)'}
+          type={'number'}
           defaultValue={this.props.layer.parameters.trailWidth} />
         <div style={{marginTop: '15px'}}>
           Trail color:&nbsp;
-          <PopupColorPicker ref="trailColor"
+          <PopupColorPicker ref={'trailColor'}
             defaultValue={this.props.layer.parameters.trailColor} />
         </div>
         <br />
         <RaisedButton
-          label="Set parameters"
+          label={'Set parameters'}
           onClick={this.handleClick_} />
       </div>
     )
@@ -151,8 +151,8 @@ class UAVTraceLayerPresentation extends React.Component {
     return (
       <div>
         <layer.Vector zIndex={this.props.zIndex}
-          updateWhileAnimating={true}
-          updateWhileInteracting={true}>
+          updateWhileAnimating
+          updateWhileInteracting>
           <UAVTraceVectorSource
             trailLength={this.props.layer.parameters.trailLength}
             trailColor={colorToString(this.props.layer.parameters.trailColor)}

@@ -34,24 +34,24 @@ class UAVToolbar extends React.Component {
     return (
       <div>
         <IconButton disabled={isSelectionEmpty} onClick={this.takeoffSelectedUAVs_}
-          tooltipPosition="bottom-right" title="Takeoff">
+          tooltipPosition={'bottom-right'} title={'Takeoff'}>
           <ActionFlightTakeoff />
         </IconButton>
         <IconButton disabled={isSelectionEmpty} onClick={this.landSelectedUAVs_}
-          tooltipPosition="bottom-right" title="Land">
+          tooltipPosition={'bottom-right'} title={'Land'}>
           <ActionFlightLand />
         </IconButton>
         <IconButton disabled={isSelectionEmpty} onClick={this.returnSelectedUAVs_}
-          tooltipPosition="bottom-right" title="Return to home">
+          tooltipPosition={'bottom-right'} title={'Return to home'}>
           <ActionHome />
         </IconButton>
         <IconButton onClick={this.showMessagesDialog_}
-          tooltipPosition="bottom-right" title="Messages">
+          tooltipPosition={'bottom-right'} title={'Messages'}>
           <Message />
         </IconButton>
         <IconButton disabled={isSelectionEmpty}
-          tooltipPosition="bottom-right" title="Halt">
-          <ActionPowerSettingsNew color="red" />
+          tooltipPosition={'bottom-right'} title={'Halt'}>
+          <ActionPowerSettingsNew color={'red'} />
         </IconButton>
       </div>
     )

@@ -42,11 +42,11 @@ class ServerConnectionManagerPresentation extends React.Component {
     return url ? (
       <div key={url}>
         <ReactSocket.Socket url={url} ref={this._bindSocketToHub} />
-        <ReactSocket.Event name="connect" callback={onConnected} />
-        <ReactSocket.Event name="disconnect" callback={onDisconnected} />
-        <ReactSocket.Event name="fw" callback={onMessage} />
+        <ReactSocket.Event name={'connect'} callback={onConnected} />
+        <ReactSocket.Event name={'disconnect'} callback={onDisconnected} />
+        <ReactSocket.Event name={'fw'} callback={onMessage} />
       </div>
-    ) : <div></div>
+    ) : <div />
   }
 }
 

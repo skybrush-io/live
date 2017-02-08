@@ -131,18 +131,18 @@ export default class HotkeyHandler extends React.Component {
     const keysColumnStyle = {width: '150px'}
     const actionColumnStyle = {}
     const actions = [
-      <FlatButton label="Close" primary={true}
+      <FlatButton label={'Close'} primary
         onTouchTap={this.hideDialog_} />
     ]
 
     return (
-      <div ref="capture">
+      <div ref={'capture'}>
         <Dialog
-          title="Hotkeys"
+          title={'Hotkeys'}
           actions={actions}
           open={this.state.dialogVisible}
           onRequestClose={this.hideDialog_}
-          autoScrollBodyContent={true}
+          autoScrollBodyContent
         >
           <Table selectable={false}>
             <TableHeader displaySelectAll={false} adjustForCheckbox={false}>

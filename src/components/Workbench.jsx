@@ -191,7 +191,7 @@ export default class Workbench extends React.Component {
 
   render () {
     return (
-      <div id="workbench">
+      <div id={'workbench'}>
         <WindowResizeListener onResize={this.onResize} />
       </div>
     )

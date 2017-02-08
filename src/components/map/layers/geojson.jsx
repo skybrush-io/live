@@ -34,29 +34,29 @@ class GeoJSONLayerSettingsPresentation extends React.Component {
     return (
       <div>
         <span>Stroke color: </span>
-        <PopupColorPicker ref="strokeColor"
+        <PopupColorPicker ref={'strokeColor'}
           defaultValue={this.props.layer.parameters.strokeColor} />
         <span style={{ marginLeft: '25px' }}>Fill color: </span>
-        <PopupColorPicker ref="fillColor"
+        <PopupColorPicker ref={'fillColor'}
           defaultValue={this.props.layer.parameters.fillColor} />
 
-        <TextField ref="strokeWidth"
-          floatingLabelText="Stroke width:"
-          hintText="stroke width"
-          type="number"
+        <TextField ref={'strokeWidth'}
+          floatingLabelText={'Stroke width:'}
+          hintText={'stroke width'}
+          type={'number'}
           defaultValue={this.props.layer.parameters.strokeWidth} />
 
-        <TextField ref="dataTextField"
-          floatingLabelText="Paste GeoJSON data here:"
-          hintText="GeoJSON"
-          multiLine={true}
+        <TextField ref={'dataTextField'}
+          floatingLabelText={'Paste GeoJSON data here:'}
+          hintText={'GeoJSON'}
+          multiLine
           rowsMax={10}
           textareaStyle={{height: '85%'}}
-          fullWidth={true}
+          fullWidth
           value={this.state.data}
           onChange={this.handleChange_} />
         <RaisedButton
-          label="Import GeoJSON"
+          label={'Import GeoJSON'}
           icon={<ActionSystemUpdateAlt />}
           onClick={this.handleClick_} />
       </div>

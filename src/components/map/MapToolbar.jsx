@@ -28,7 +28,7 @@ const MapToolbarSeparator = () => {
       height: '48px',
       borderLeft: '1px solid rgba(0, 0, 0,  0.172549)',
       verticalAlign: 'top'
-    }}></div>
+    }} />
   )
 }
 
@@ -50,19 +50,19 @@ class MapToolbarPresentation extends React.Component {
 
     return (
       <div>
-        <IconButton onClick={partial(onToolSelected, Tool.SELECT)} tooltip="Select">
+        <IconButton onClick={partial(onToolSelected, Tool.SELECT)} tooltip={'Select'}>
           <ContentSelectAll color={colorForTool(Tool.SELECT)} />
         </IconButton>
-        <IconButton onClick={partial(onToolSelected, Tool.ZOOM)} tooltip="Zoom">
+        <IconButton onClick={partial(onToolSelected, Tool.ZOOM)} tooltip={'Zoom'}>
           <ActionZoomIn color={colorForTool(Tool.ZOOM)} />
         </IconButton>
-        <IconButton onClick={partial(onToolSelected, Tool.PAN)} tooltip="Pan">
+        <IconButton onClick={partial(onToolSelected, Tool.PAN)} tooltip={'Pan'}>
           <ActionPanTool color={colorForTool(Tool.PAN)} />
         </IconButton>
 
         <MapToolbarSeparator />
 
-        <IconButton onClick={onShowLayersDialog} tooltip="Layers">
+        <IconButton onClick={onShowLayersDialog} tooltip={'Layers'}>
           <MapsLayers />
         </IconButton>
 

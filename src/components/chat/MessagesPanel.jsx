@@ -31,7 +31,7 @@ function convertMessageToComponent (message) {
   switch (message.type) {
     case MessageType.OUTBOUND:
       return [
-        <ChatBubble key={keyBase} author={message.author} own={true}
+        <ChatBubble key={keyBase} author={message.author} own
           date={message.date} body={message.body}
           rightComponent={inProgress ? <CircularProgress size={30} thickness={1.75} style={{ margin: 10 }} /> : false}
           />
@@ -45,13 +45,13 @@ function convertMessageToComponent (message) {
 
     case MessageType.ERROR:
       return [
-        <Marker key={keyBase + 'Marker'} level="error"
+        <Marker key={keyBase + 'Marker'} level={'error'}
           message={message.body} />
       ]
 
     default:
       return [
-        <Marker key={keyBase + 'Marker'} level="error"
+        <Marker key={keyBase + 'Marker'} level={'error'}
           message={`Invalid message type: ${message.type}`} />
       ]
   }
@@ -69,13 +69,13 @@ function convertMessageToComponent (message) {
 function convertMessagesToComponents (messages, textFieldsBelow) {
   if (_.isNil(messages)) {
     return [
-      <BackgroundHint key="backgroundHint" header="No UAV selected"
-        text="Enter the ID of a UAV to talk to in the lower left corner" />
+      <BackgroundHint key={'backgroundHint'} header={'No UAV selected'}
+        text={'Enter the ID of a UAV to talk to in the lower left corner'} />
     ]
   } else if (messages.length === 0) {
     const hint = `Send a message to the selected UAV using the text box ${textFieldsBelow ? 'below' : 'above'}`
     return [
-      <BackgroundHint key="backgroundHint" header="No messages" text={hint} />
+      <BackgroundHint key={'backgroundHint'} header={'No messages'} text={hint} />
     ]
   } else {
     return _.flatMap(messages, convertMessageToComponent)
@@ -105,7 +105,7 @@ class MessagesPanelPresentation extends React.Component {
       <div style={{ display: 'flex' }}>
         <ActiveUAVsField style={{ width: '8em', paddingRight: '1em' }}
           flock={flock} />
-        <TextField fullWidth={true} hintText="Message"
+        <TextField fullWidth hintText={'Message'}
           onKeyDown={this.textFieldKeyDownHandler_}
           disabled={_.isNil(selectedUAVId)} />
       </div>

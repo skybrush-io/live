@@ -115,8 +115,8 @@ class MapViewPresentation extends React.Component {
 
     return (
       <Map view={view} ref={this.assignMapRef_}
-        useDefaultControls={false} loadTilesWhileInteracting={true}
-        focusOnMount={true}
+        useDefaultControls={false} loadTilesWhileInteracting
+        focusOnMount
         style={{cursor: cursorStyles[selectedTool]}} >
 
         <MapReferenceRequestHandler />
@@ -131,7 +131,7 @@ class MapViewPresentation extends React.Component {
 
         <control.FullScreen source={document.body} />
 
-        <control.MousePosition projection="EPSG:4326"
+        <control.MousePosition projection={'EPSG:4326'}
           coordinateFormat={formatCoordinate} />
 
         <control.ScaleLine minWidth={128} />
@@ -181,7 +181,7 @@ class MapViewPresentation extends React.Component {
 
         {/* ZOOM mode | Shift + Drag --> Box zoom out */}
         <interaction.DragZoom active={selectedTool === Tool.ZOOM}
-          condition={ol.events.condition.shiftKeyOnly} out={true} />
+          condition={ol.events.condition.shiftKeyOnly} out />
       </Map>
     )
   }

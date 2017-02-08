@@ -25,7 +25,7 @@ export default class ChatArea extends React.Component {
 
   render () {
     const { children, style } = this.props
-    return <div className="chat-area" style={style}>{children }</div>
+    return <div className={'chat-area'} style={style}>{children }</div>
   }
 
   /**

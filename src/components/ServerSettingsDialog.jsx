@@ -24,8 +24,8 @@ class ServerSettingsFormPresentation extends React.Component {
     const { fields: { hostName, port } } = this.props
     return (
       <div onKeyPress={this.props.onKeyPress}>
-        <TextField {...hostName} floatingLabelText="Hostname" spellCheck="false" errorText={hostName.touched && hostName.error} /><br />
-        <TextField {...port} floatingLabelText="Port" spellCheck="false" errorText={port.touched && port.error} />
+        <TextField {...hostName} floatingLabelText={'Hostname'} spellCheck={'false'} errorText={hostName.touched && hostName.error} /><br />
+        <TextField {...port} floatingLabelText={'Port'} spellCheck={'false'} errorText={port.touched && port.error} />
       </div>
     )
   }
@@ -88,19 +88,19 @@ class ServerSettingsDialogPresentation extends React.Component {
   render () {
     const { onClose, onSubmit, open } = this.props
     const actions = [
-      <FlatButton label="Connect" primary={true} onTouchTap={this.handleSubmit} />,
-      <FlatButton label="Auto" onTouchTap={this.autoSet_} />,
-      <FlatButton label="Close" onTouchTap={onClose} />
+      <FlatButton label={'Connect'} primary onTouchTap={this.handleSubmit} />,
+      <FlatButton label={'Auto'} onTouchTap={this.autoSet_} />,
+      <FlatButton label={'Close'} onTouchTap={onClose} />
     ]
     const contentStyle = {
       width: '320px'
     }
     return (
-      <Dialog title="Server Settings" open={open}
+      <Dialog title={'Server Settings'} open={open}
         actions={actions} contentStyle={contentStyle}
         onRequestClose={onClose}
       >
-        <ServerSettingsForm ref="form"
+        <ServerSettingsForm ref={'form'}
           onSubmit={onSubmit}
           getFormFields={this.getFormFields}
           onKeyPress={this.handleKeyPress_} />

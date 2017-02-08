@@ -32,8 +32,8 @@ export default class PopupColorPicker extends React.Component {
     const color = this.state.color
 
     return (
-      <div className="popup-color-picker" ref="pickerContainer">
-        <div className="popup-color-picker-button"
+      <div className={'popup-color-picker'} ref={'pickerContainer'}>
+        <div className={'popup-color-picker-button'}
           style={Object.assign({},
             this.props.style,
             {
@@ -41,9 +41,9 @@ export default class PopupColorPicker extends React.Component {
             }
           )}
           onClick={this.togglePicker_}
-        ></div>
+         />
 
-        <div className="popup-color-picker-dropdown" style={pickerStyle}>
+        <div className={'popup-color-picker-dropdown'} style={pickerStyle}>
           <SketchPicker
             color={this.state.color}
             onChange={this.handleChange_} />
