@@ -49,5 +49,3 @@ ChatArea.propTypes = {
 ChatArea.defaultProps = {
   children: null
 }
-
-export default ChatArea

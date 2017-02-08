@@ -59,5 +59,3 @@ ChatBubble.defaultProps = {
   body: '',
   own: true
 }
-
-export default ChatBubble

@@ -24,7 +24,7 @@ import DeviceGpsFixed from 'material-ui/svg-icons/device/gps-fixed'
  *
  * @emits {mapReferenceRequestSignal} requests map reference.
  */
-export default class FitAllFeaturesButton extends React.Component {
+class FitAllFeaturesButton extends React.Component {
   /**
    * Constructor that binds context to functions,
    * and requests map reference with callback.

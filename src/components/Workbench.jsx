@@ -249,12 +249,12 @@ class LazyReactComponentHandler {
     this._mountIfNeeded()
   }
 
-	/**
-	 * Removes the component from the DOM and thus invokes React's unmount
-	 * lifecycle.
-	 *
-	 * @private
-	 */
+  /**
+   * Removes the component from the DOM and thus invokes React's unmount
+   * lifecycle.
+   *
+   * @private
+   */
   _destroy () {
     this._isOpen = false
     this._isVisible = false
@@ -306,11 +306,11 @@ class LazyReactComponentHandler {
   }
 
   /**
-	 * Hooks into React's state management and applies the component state
+   * Hooks into React's state management and applies the component state
 	 * to GoldenLayout
-	 *
-	 * @private
-	 */
+   *
+   * @private
+   */
   _onUpdate (nextProps, nextState) {
     this._container.setState(nextState)
     this._originalComponentWillUpdate.call(
@@ -319,11 +319,11 @@ class LazyReactComponentHandler {
   }
 
   /**
-	 * Retrieves the React class from GoldenLayout's registry
-	 *
-	 * @private
-	 * @returns {React.Class}
-	 */
+   * Retrieves the React class from GoldenLayout's registry
+   *
+   * @private
+   * @returns {React.Class}
+   */
   _getReactClass () {
     const componentName = this._container._config.component
     if (!componentName) {
@@ -334,18 +334,18 @@ class LazyReactComponentHandler {
     const reactClass = this._container.layoutManager.getComponent(componentName)
     if (!reactClass) {
       throw new Error('React component "' + componentName + '" not found. ' +
-				'Please register all components with GoldenLayout using `registerComponent(name, component)`')
+        'Please register all components with GoldenLayout using `registerComponent(name, component)`')
     }
 
     return reactClass
   }
 
   /**
-	 * Copies and extends the properties array and returns the React element
-	 *
-	 * @private
-	 * @returns {React.Element}
-	 */
+   * Copies and extends the properties array and returns the React element
+   *
+   * @private
+   * @returns {React.Element}
+   */
   _createReactComponent () {
     const defaultProps = {
       glEventHub: this._container.layoutManager.eventHub,
