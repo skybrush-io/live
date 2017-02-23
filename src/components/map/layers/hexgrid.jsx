@@ -91,13 +91,13 @@ class HexGridVectorSource extends source.Vector {
   constructor (props) {
     super(props)
 
-    this.drawHexagensFromProps_(props)
+    this.drawHexagonsFromProps_(props)
   }
 
   componentWillReceiveProps (newProps) {
     this.source.clear()
 
-    this.drawHexagensFromProps_(newProps)
+    this.drawHexagonsFromProps_(newProps)
   }
 
   getCorners_ (center, radius) {
@@ -119,7 +119,7 @@ class HexGridVectorSource extends source.Vector {
     )
   }
 
-  drawHexagensFromProps_ (props) {
+  drawHexagonsFromProps_ (props) {
     const { center, size, radius } = props.parameters
 
     const features = {}

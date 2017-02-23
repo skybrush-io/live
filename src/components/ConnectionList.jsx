@@ -105,9 +105,9 @@ const ConnectionListEntry = (props) => {
 
   return (
     <ListItem leftAvatar={<Avatar {...style} />}
-              primaryText={name}
-              secondaryText={secondaryText}
-              rightIconButton={actionButton}
+      primaryText={name}
+      secondaryText={secondaryText}
+      rightIconButton={actionButton}
               />
   )
 }
@@ -122,7 +122,7 @@ ConnectionListEntry.propTypes = {
 /**
  * Presentation component for the entire connection list.
  */
-const ConnectionListPresentation = listOf((connection, { onShowSettings }) => {
+export const ConnectionListPresentation = listOf((connection, { onShowSettings }) => {
   const action = (connection.id === MASTER_CONNECTION_ID) ? onShowSettings : null
   return <ConnectionListEntry key={connection.id} action={action} {...connection} />
 }, {
