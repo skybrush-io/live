@@ -28,3 +28,5 @@ Steps to install
 5. Start a development web server with `npm start`.
 
 6. Navigate to http://localhost:8080 from your browser.
+
+ps.: OpenLayers versions above and including 3.19.0 have issues with closing polygons, so until that is fixed we stick to 3.18.2.
