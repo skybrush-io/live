@@ -308,9 +308,11 @@ class LazyReactComponentHandler {
   /**
    * Hooks into React's state management and applies the component state
 	 * to GoldenLayout
-   *
-   * @private
-   */
+	 *
+	 * @param  nextProps {Object}  the next set of properties for the React
+	 *         component
+	 * @param  nextState {Object}  the next state for the React component
+	 */
   _onUpdate (nextProps, nextState) {
     this._container.setState(nextState)
     this._originalComponentWillUpdate.call(
@@ -319,11 +321,12 @@ class LazyReactComponentHandler {
   }
 
   /**
-   * Retrieves the React class from GoldenLayout's registry
-   *
-   * @private
-   * @returns {React.Class}
-   */
+	 * Retrieves the React class from GoldenLayout's registry
+	 *
+	 * @private
+	 * @returns {React.Class}  the React class whose instance will be shown
+	 *          in the layout
+	 */
   _getReactClass () {
     const componentName = this._container._config.component
     if (!componentName) {
@@ -341,11 +344,12 @@ class LazyReactComponentHandler {
   }
 
   /**
-   * Copies and extends the properties array and returns the React element
-   *
-   * @private
-   * @returns {React.Element}
-   */
+	 * Copies and extends the properties array and returns the React element
+	 *
+	 * @private
+	 * @returns {React.Element}  the React component instance that will be
+	 *          shown in the layout
+	 */
   _createReactComponent () {
     const defaultProps = {
       glEventHub: this._container.layoutManager.eventHub,
