@@ -9,8 +9,10 @@ require('es6-promise').polyfill()
 var path = require('path')
 var webpack = require('webpack')
 
+var enableSourceMap = false
+
 module.exports = {
-  devtool: 'eval',
+  devtool: enableSourceMap ? 'inline-source-map' : 'eval',
   entry: './src/index',
   output: {
     devtoolModuleFilenameTemplate: '/[absolute-resource-path]',

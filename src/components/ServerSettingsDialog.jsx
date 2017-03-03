@@ -5,14 +5,14 @@
 
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
-import { reduxForm } from 'redux-form'
+import { change, reduxForm, Field } from 'redux-form'
 
 import Dialog from 'material-ui/Dialog'
 import FlatButton from 'material-ui/FlatButton'
-import TextField from 'material-ui/TextField'
 
 import { closeServerSettingsDialog } from '../actions/server-settings'
 import { createValidator, between, integer, required } from '../utils/validation'
+import { renderTextField } from './helpers/reduxFormRenderers'
 
 /**
  * Presentation of the form that shows the fields that the user can use to
@@ -20,19 +20,25 @@ import { createValidator, between, integer, required } from '../utils/validation
  */
 class ServerSettingsFormPresentation extends React.Component {
   render () {
-    this.props.getFormFields(this.props.fields)
-    const { fields: { hostName, port } } = this.props
     return (
       <div onKeyPress={this.props.onKeyPress}>
-        <TextField {...hostName} floatingLabelText={'Hostname'} spellCheck={'false'} errorText={hostName.touched && hostName.error} /><br />
-        <TextField {...port} floatingLabelText={'Port'} spellCheck={'false'} errorText={port.touched && port.error} />
+        <Field
+          name={'hostName'}
+          component={renderTextField}
+          floatingLabelText={'Hostname'}
+        />
+        <br />
+        <Field
+          name={'port'}
+          component={renderTextField}
+          floatingLabelText={'Port'}
+        />
       </div>
     )
   }
 }
 
 ServerSettingsFormPresentation.propTypes = {
-  fields: PropTypes.object.isRequired,
   onKeyPress: PropTypes.func,
   getFormFields: PropTypes.func
 }
@@ -41,17 +47,17 @@ ServerSettingsFormPresentation.propTypes = {
  * Container of the form that shows the fields that the user can use to
  * edit the server settings.
  */
-const ServerSettingsForm = reduxForm({
+const ServerSettingsForm = connect(
+  state => ({               // mapStateToProps
+    initialValues: state.dialogs.serverSettings
+  }), null, null, { withRef: true }
+)(reduxForm({
   form: 'serverSettings',
-  fields: ['hostName', 'port'],
   validate: createValidator({
     hostName: required,
-    port: [ required, integer, between(1, 65535) ]
+    port: [required, integer, between(1, 65535)]
   })
-},
-state => ({               // mapStateToProps
-  initialValues: state.dialogs.serverSettings
-}))(ServerSettingsFormPresentation)
+})(ServerSettingsFormPresentation))
 
 /**
  * Presentation component for the dialog that shows the form that the user
@@ -62,12 +68,10 @@ class ServerSettingsDialogPresentation extends React.Component {
     super(props)
     this.handleSubmit = this.handleSubmit.bind(this)
     this.handleKeyPress_ = this.handleKeyPress_.bind(this)
-    this.getFormFields = this.getFormFields.bind(this)
-    this.autoSet_ = this.autoSet_.bind(this)
   }
 
   handleSubmit () {
-    this.refs.form.submit()
+    this.refs.form.getWrappedInstance().submit()
   }
 
   handleKeyPress_ (e) {
@@ -76,20 +80,11 @@ class ServerSettingsDialogPresentation extends React.Component {
     }
   }
 
-  getFormFields (fields) {
-    this.formFields = fields
-  }
-
-  autoSet_ () {
-    this.formFields.hostName.onChange(window.location.hostname)
-    this.formFields.port.onChange('5000')
-  }
-
   render () {
-    const { onClose, onSubmit, open } = this.props
+    const { autoSetServer, onClose, onSubmit, open } = this.props
     const actions = [
       <FlatButton label={'Connect'} primary onTouchTap={this.handleSubmit} />,
-      <FlatButton label={'Auto'} onTouchTap={this.autoSet_} />,
+      <FlatButton label={'Auto'} onTouchTap={autoSetServer} />,
       <FlatButton label={'Close'} onTouchTap={onClose} />
     ]
     const contentStyle = {
@@ -102,7 +97,6 @@ class ServerSettingsDialogPresentation extends React.Component {
       >
         <ServerSettingsForm ref={'form'}
           onSubmit={onSubmit}
-          getFormFields={this.getFormFields}
           onKeyPress={this.handleKeyPress_} />
       </Dialog>
     )
@@ -137,6 +131,10 @@ const ServerSettingsDialog = connect(
       // Cast the port into a number first, then dispatch the action
       data.port = Number(data.port)
       dispatch(closeServerSettingsDialog(data))
+    },
+    autoSetServer () {
+      dispatch(change('serverSettings', 'hostName', window.location.hostname))
+      dispatch(change('serverSettings', 'port', '5000'))
     }
   })
 )(ServerSettingsDialogPresentation)

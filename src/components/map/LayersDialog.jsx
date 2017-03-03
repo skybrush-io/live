@@ -4,12 +4,11 @@
 
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
-import { reduxForm } from 'redux-form'
+import { reduxForm, Field } from 'redux-form'
 
 import Dialog from 'material-ui/Dialog'
 import FlatButton from 'material-ui/FlatButton'
 import { List, ListItem } from 'material-ui/List'
-import TextField from 'material-ui/TextField'
 import Toggle from 'material-ui/Toggle'
 import VisibilityOff from 'material-ui/svg-icons/action/visibility-off'
 
@@ -18,6 +17,7 @@ import { closeLayersDialog, renameLayer, setSelectedLayerInLayersDialog,
 import { selectableListOf } from '../helpers/lists'
 import { LayerType, labelForLayerType, iconForLayerType } from '../../model/layers'
 import { createValidator, required } from '../../utils/validation'
+import { renderTextField } from '../helpers/reduxFormRenderers'
 
 /**
  * Form for the basic settings of a layer that is applicable to all layers
@@ -25,14 +25,17 @@ import { createValidator, required } from '../../utils/validation'
  */
 class BasicLayerSettingsFormPresentation extends React.Component {
   render () {
-    const { fields: { label }, layer } = this.props
+    const { layer } = this.props
     const { onToggleLayerVisibility } = this.props
 
     return (
       <div style={{ paddingBottom: '1em' }}>
-        <TextField {...label} floatingLabelText={'Layer name'} hintText={'New layer'}
+        <Field
+          name={'label'}
+          component={renderTextField}
+          floatingLabelText={'Layer name'}
+          hintText={'New layer'}
           style={{ width: '100%' }}
-          spellCheck={'false'} errorText={label.touched && label.error}
           onKeyDown={this.onKeyDown_}
         />
         <div>&nbsp;</div>
@@ -58,7 +61,6 @@ class BasicLayerSettingsFormPresentation extends React.Component {
 }
 
 BasicLayerSettingsFormPresentation.propTypes = {
-  fields: PropTypes.object.isRequired,
   layer: PropTypes.object,
   layerId: PropTypes.string,
 
@@ -69,15 +71,7 @@ BasicLayerSettingsFormPresentation.propTypes = {
  * Container of the form that shows the fields that the user can use to
  * edit the basic settings of a layer.
  */
-const BasicLayerSettingsForm = reduxForm(
-  // config
-  {
-    form: 'basicLayerSettings',
-    fields: ['label'],
-    validate: createValidator({
-      label: required
-    })
-  },
+const BasicLayerSettingsForm = connect(
   // mapStateToProps
   (state, ownProps) => ({
     initialValues: {
@@ -102,7 +96,15 @@ const BasicLayerSettingsForm = reduxForm(
       dispatch(toggleLayerVisibility(ownProps.layerId))
     }
   })
-)(BasicLayerSettingsFormPresentation)
+)(reduxForm(
+  // config
+  {
+    form: 'basicLayerSettings',
+    validate: createValidator({
+      label: required
+    })
+  }
+)(BasicLayerSettingsFormPresentation))
 
 /* ********************************************************************* */
 
