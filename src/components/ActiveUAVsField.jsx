@@ -55,7 +55,7 @@ export class UAVSelectorField extends React.Component {
       <AutoComplete hintText={prompt} maxSearchResults={5}
         dataSource={uavIds} searchText={value} errorText={error}
         filter={AutoComplete.caseInsensitiveFilter}
-        fullWidth={true} style={style}
+        fullWidth style={style}
         onBlur={this.onBlur_}
         onNewRequest={this.onNewRequest_}
       />

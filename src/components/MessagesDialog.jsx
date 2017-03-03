@@ -10,13 +10,14 @@ import { connect } from 'react-redux'
 
 import { closeMessagesDialog, clearMessagesOfSelectedUAV } from '../actions/messages'
 import { MessagesPanel } from '../components/chat'
+import Flock from '../model/flock'
 
 /**
  * Presentation component for the "Messages" dialog.
  */
 class MessagesDialogPresentation extends React.Component {
   render () {
-    const { open, onClear, onClose, selectedUAVId } = this.props
+    const { flock, open, onClear, onClose, selectedUAVId } = this.props
     const actions = [
       <FlatButton label={'Clear'} onTouchTap={onClear}
         disabled={!selectedUAVId} />,
@@ -28,13 +29,16 @@ class MessagesDialogPresentation extends React.Component {
     return (
       <Dialog open={open} modal
         contentStyle={contentStyle} actions={actions}>
-        <MessagesPanel style={{ height: '35ex' }} textFieldsAtBottom />
+        <MessagesPanel style={{ height: '35ex' }} textFieldsAtBottom
+          flock={flock}
+        />
       </Dialog>
     )
   }
 }
 
 MessagesDialogPresentation.propTypes = {
+  flock: PropTypes.instanceOf(Flock),
   open: PropTypes.bool.isRequired,
   onClear: PropTypes.func,
   onClose: PropTypes.func,

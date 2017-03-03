@@ -100,9 +100,9 @@ class MessagesPanelPresentation extends React.Component {
       flexDirection: 'column',
       height: '100%'
     }, style)
-    const chatArea = <ChatArea>{chatComponents}</ChatArea>
+    const chatArea = <ChatArea key={'chatArea'}>{chatComponents}</ChatArea>
     const textFields =
-      <div style={{ display: 'flex' }}>
+      <div key={'textFieldContainer'} style={{ display: 'flex' }}>
         <ActiveUAVsField style={{ width: '8em', paddingRight: '1em' }}
           flock={flock} />
         <TextField fullWidth hintText={'Message'}

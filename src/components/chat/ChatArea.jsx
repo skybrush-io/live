@@ -20,12 +20,13 @@ export default class ChatArea extends React.Component {
   componentWillUpdate () {
     const node = ReactDOM.findDOMNode(this)
     this.shouldScrollToBottom =
-      (node.scrollTop + node.offsetHeight === node.scrollHeight)
+      (node.scrollTop + node.clientHeight === node.scrollHeight)
   }
 
   render () {
+    window.ReactDOM = ReactDOM
     const { children, style } = this.props
-    return <div className={'chat-area'} style={style}>{children }</div>
+    return <div className={'chat-area'} style={style}>{children}</div>
   }
 
   /**

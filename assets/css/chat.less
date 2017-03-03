@@ -1,7 +1,11 @@
 .chat-area {
   padding: 0 5px;
-  overflow: scroll;
+  overflow: auto;
   flex: 1 1 100%;
+
+  & > .background-hint {
+    height: auto;
+  }
 }
 
 .chat-entry {
