@@ -21,7 +21,8 @@ module.exports = {
     publicPath: '/static/'
   },
   plugins: [
-    new webpack.NoErrorsPlugin(),
+    new webpack.NoEmitOnErrorsPlugin(),
+
     // The next module is needed for golden-layout to work nicely
     new webpack.ProvidePlugin({
       ReactDOM: 'react-dom',
@@ -32,17 +33,22 @@ module.exports = {
     alias: {
       config: path.join(__dirname, 'config', process.env.NODE_ENV || 'production')
     },
-    extensions: ['', '.webpack.js', '.web.js', '.js', '.jsx']
+    extensions: ['.webpack.js', '.web.js', '.js', '.jsx']
   },
   module: {
-    loaders: [
+    rules: [
       {
         test: /\.css$/,
-        loader: 'style-loader!css-loader'
+        use: [
+          { loader: 'style-loader' },
+          { loader: 'css-loader' }
+        ]
       },
       {
         test: /\.jsx?$/,
-        loader: 'babel-loader',
+        use: [
+          { loader: 'babel-loader' }
+        ],
         include: [
           path.join(__dirname, 'config'),
           path.join(__dirname, 'src')
@@ -50,12 +56,18 @@ module.exports = {
       },
       {
         test: /\.less$/,
-        loader: 'style-loader!css-loader!less-loader',
+        use: [
+          { loader: 'style-loader' },
+          { loader: 'css-loader' },
+          { loader: 'less-loader' }
+        ],
         include: path.join(__dirname, 'assets', 'css')
       },
       {
         test: /\.(png|jpg)$/,
-        loader: 'url-loader?limit=8192',
+        use: [
+          { loader: 'url-loader?limit=8192' }
+        ],
         include: path.join(__dirname, 'assets')
       }
     ],
