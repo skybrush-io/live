@@ -6,7 +6,8 @@
 import { createAction } from 'redux-actions'
 import { SET_SELECTED_LAYER_IN_LAYERS_DIALOG, SHOW_LAYERS_DIALOG,
   CLOSE_LAYERS_DIALOG, TOGGLE_LAYER_VISIBILITY, RENAME_LAYER, REMOVE_LAYER,
-  ADD_LAYER, CHANGE_LAYER_TYPE, SET_LAYER_PARAMETER_BY_ID } from './types'
+  ADD_LAYER, CHANGE_LAYER_TYPE, SET_LAYER_PARAMETER_BY_ID,
+  SET_LAYER_PARAMETERS_BY_ID } from './types'
 
 /**
  * Action factory that creates an action that adds a new (typed or untyped)
@@ -44,6 +45,16 @@ export const changeLayerType = createAction(CHANGE_LAYER_TYPE,
  */
 export const setLayerParameterById = createAction(SET_LAYER_PARAMETER_BY_ID,
   (layerId, parameter, value) => ({ layerId, parameter, value })
+)
+
+/**
+ * Action factory that sets multiple parameters of the layer specified by the id.
+ *
+ * @param {string} id the ID of the layer whose parameter is to be changed
+ * @param {object} parameters the parameter to change
+ */
+export const setLayerParametersById = createAction(SET_LAYER_PARAMETERS_BY_ID,
+  (layerId, parameters) => ({ layerId, parameters })
 )
 
 /**

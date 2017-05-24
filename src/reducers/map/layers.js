@@ -111,6 +111,14 @@ const reducer = handleActions({
     )
   },
 
+  SET_LAYER_PARAMETERS_BY_ID (state, action) {
+    return u.updateIn(
+      getLayerKey(action.payload.layerId, 'parameters'),
+      action.payload.parameters,
+      state
+    )
+  },
+
   REMOVE_LAYER (state, action) {
     const selectedLayer = action.payload
     return u({

@@ -10,6 +10,7 @@ import ActionHelpOutline from 'material-ui/svg-icons/action/help-outline'
 import ActionTimeline from 'material-ui/svg-icons/action/timeline'
 import ActionTrackChanges from 'material-ui/svg-icons/action/track-changes'
 import FileAttachment from 'material-ui/svg-icons/file/attachment'
+import FileCloud from 'material-ui/svg-icons/file/cloud'
 import Flight from 'material-ui/svg-icons/maps/flight'
 import ImageGridOn from 'material-ui/svg-icons/image/grid-on'
 import Map from 'material-ui/svg-icons/maps/map'
@@ -26,14 +27,15 @@ export const LayerType = {
   OWN_LOCATION: 'ownLocation',
   UAVS: 'uavs',
   UAV_TRACE: 'uavTrace',
-  UNTYPED: 'untyped'
+  UNTYPED: 'untyped',
+  WMS: 'wms'
 }
 
 /**
  * Constant containing all the layer types in the order preferred on the UI.
  */
 export const LayerTypes = [
-  LayerType.BASE, LayerType.UAVS, LayerType.UAV_TRACE,
+  LayerType.BASE, LayerType.WMS, LayerType.UAVS, LayerType.UAV_TRACE,
   LayerType.OWN_LOCATION, LayerType.GEOJSON, LayerType.HEXGRID,
   LayerType.HEATMAP
 ]
@@ -52,6 +54,14 @@ const propertiesForLayerTypes_ = {
       source: 'osm'
     }
   },
+  [LayerType.WMS]: {
+    label: 'WMS map server',
+    icon: <FileCloud />,
+    parameters: {
+      url: 'http://ows.mundialis.de/services/service',
+      layers: 'TOPO-OSM-WMS'
+    }
+  },
   [LayerType.GEOJSON]: {
     label: 'GeoJSON layer',
     icon: <FileAttachment />,
@@ -63,7 +73,7 @@ const propertiesForLayerTypes_ = {
     }
   },
   [LayerType.HEXGRID]: {
-    label: 'HEX Grid layer',
+    label: 'Hex grid layer',
     icon: <ImageGridOn />,
     parameters: {
       center: [19.061951, 47.473340],
@@ -100,7 +110,7 @@ const propertiesForLayerTypes_ = {
     }
   },
   [LayerType.UAV_TRACE]: {
-    label: 'UAV Trace',
+    label: 'UAV trace',
     icon: <ActionTimeline />,
     parameters: {
       trailLength: 10,

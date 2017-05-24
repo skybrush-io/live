@@ -7,10 +7,12 @@ import { GeoJSONLayerSettings, GeoJSONLayer } from './geojson'
 import { UntypedLayerSettings, UntypedLayer } from './untyped'
 import { HexGridLayerSettings, HexGridLayer } from './hexgrid'
 import { HeatmapLayerSettings, HeatmapLayer } from './heatmap'
+import { WMSLayerSettings, WMSLayer } from './wms'
 import { LayerType } from '../../../model/layers'
 
 export const LayerSettings = {
   [LayerType.BASE]: BaseLayerSettings,
+  [LayerType.WMS]: WMSLayerSettings,
   [LayerType.UAVS]: UAVsLayerSettings,
   [LayerType.OWN_LOCATION]: OwnLocationLayerSettings,
   [LayerType.UAV_TRACE]: UAVTraceLayerSettings,
@@ -31,6 +33,7 @@ export const stateObjectToLayerSettings = (layer, layerId) => {
 
 export const Layers = {
   [LayerType.BASE]: BaseLayer,
+  [LayerType.WMS]: WMSLayer,
   [LayerType.UAVS]: UAVsLayer,
   [LayerType.OWN_LOCATION]: OwnLocationLayer,
   [LayerType.UAV_TRACE]: UAVTraceLayer,

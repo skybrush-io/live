@@ -8,7 +8,7 @@ import TextField from 'material-ui/TextField'
 
 import PopupColorPicker from '../../PopupColorPicker'
 
-import RaisedButton from 'material-ui/RaisedButton'
+import FlatButton from 'material-ui/FlatButton'
 import ActionSystemUpdateAlt from 'material-ui/svg-icons/action/system-update-alt'
 
 import { setLayerParameterById } from '../../../actions/layers'
@@ -55,10 +55,13 @@ class GeoJSONLayerSettingsPresentation extends React.Component {
           fullWidth
           value={this.state.data}
           onChange={this.handleChange_} />
-        <RaisedButton
-          label={'Import GeoJSON'}
-          icon={<ActionSystemUpdateAlt />}
-          onClick={this.handleClick_} />
+
+        <div style={{ textAlign: 'center', paddingTop: '1em' }}>
+          <FlatButton
+            label={'Import GeoJSON'}
+            icon={<ActionSystemUpdateAlt />}
+            onClick={this.handleClick_} />
+        </div>
       </div>
     )
   }
@@ -134,17 +137,25 @@ class GeoJSONVectorSource extends source.Vector {
 
     this.geojsonFormat = new ol.format.GeoJSON()
 
-    this.source.addFeatures(this.geojsonFormat.readFeatures(
+    this.source.addFeatures(this._parseFeatures(
       props.data, {featureProjection: 'EPSG:3857'}
     ))
   }
 
   componentWillReceiveProps (newProps) {
     this.source.clear()
+    this.source.addFeatures(this._parseFeatures(newProps.data))
+  }
 
-    this.source.addFeatures(this.geojsonFormat.readFeatures(
-      newProps.data, {featureProjection: 'EPSG:3857'}
-    ))
+  _parseFeatures (data) {
+    try {
+      return this.geojsonFormat.readFeatures(data, {
+        featureProjection: 'EPSG:3857'
+      })
+    } catch (e) {
+      console.error('Failed to parse GeoJSON data in layer')
+      return []
+    }
   }
 }
 
