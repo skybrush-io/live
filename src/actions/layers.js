@@ -7,7 +7,7 @@ import { createAction } from 'redux-actions'
 import { SET_SELECTED_LAYER_IN_LAYERS_DIALOG, SHOW_LAYERS_DIALOG,
   CLOSE_LAYERS_DIALOG, TOGGLE_LAYER_VISIBILITY, RENAME_LAYER, REMOVE_LAYER,
   ADD_LAYER, CHANGE_LAYER_TYPE, SET_LAYER_PARAMETER_BY_ID,
-  SET_LAYER_PARAMETERS_BY_ID } from './types'
+  SET_LAYER_PARAMETERS_BY_ID, ADJUST_LAYER_Z_INDEX } from './types'
 
 /**
  * Action factory that creates an action that adds a new (typed or untyped)
@@ -24,6 +24,15 @@ export const addLayer = createAction(ADD_LAYER,
 )
 
 /**
+ * Action factory that creates an action that will adjust the z-index of
+ * the layer with the given amount. Positive values will bring the layer
+ * to the front; negative values will bring the layer to the back.
+ */
+export const adjustLayerZIndex = createAction(ADJUST_LAYER_Z_INDEX,
+  (id, delta) => ({ id, delta })
+)
+
+/**
  * Action factory that changes the type of a currently untyped layer.
  *
  * Changing the type of a layer whose type is not <code>LayerType.UNTYPED</code>
@@ -34,6 +43,26 @@ export const addLayer = createAction(ADD_LAYER,
  */
 export const changeLayerType = createAction(CHANGE_LAYER_TYPE,
   (id, type) => ({ id, type })
+)
+
+/**
+ * Action factory that creates an action that will close the layers dialog.
+ */
+export const closeLayersDialog = createAction(CLOSE_LAYERS_DIALOG)
+
+/**
+ * Action factory that creates an action that removes a layer.
+ */
+export const removeLayer = createAction(REMOVE_LAYER)
+
+/**
+ * Action factory that creates an action that renames a layer.
+ *
+ * @param {string} id    the ID of the layer to rename
+ * @param {string} name  the new name of the layer
+ */
+export const renameLayer = createAction(RENAME_LAYER,
+  (id, name) => ({ id, name })
 )
 
 /**
@@ -55,26 +84,6 @@ export const setLayerParameterById = createAction(SET_LAYER_PARAMETER_BY_ID,
  */
 export const setLayerParametersById = createAction(SET_LAYER_PARAMETERS_BY_ID,
   (layerId, parameters) => ({ layerId, parameters })
-)
-
-/**
- * Action factory that creates an action that will close the layers dialog.
- */
-export const closeLayersDialog = createAction(CLOSE_LAYERS_DIALOG)
-
-/**
- * Action factory that creates an action that removes a layer.
- */
-export const removeLayer = createAction(REMOVE_LAYER)
-
-/**
- * Action factory that creates an action that renames a layer.
- *
- * @param {string} id    the ID of the layer to rename
- * @param {string} name  the new name of the layer
- */
-export const renameLayer = createAction(RENAME_LAYER,
-  (id, name) => ({ id, name })
 )
 
 /**

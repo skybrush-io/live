@@ -25,19 +25,36 @@ export const LayerType = {
   HEATMAP: 'heatmap',
   HEXGRID: 'hexgrid',
   OWN_LOCATION: 'ownLocation',
+  TILE_SERVER: 'tileServer',
   UAVS: 'uavs',
   UAV_TRACE: 'uavTrace',
-  UNTYPED: 'untyped',
-  WMS: 'wms'
+  UNTYPED: 'untyped'
 }
 
 /**
  * Constant containing all the layer types in the order preferred on the UI.
  */
 export const LayerTypes = [
-  LayerType.BASE, LayerType.WMS, LayerType.UAVS, LayerType.UAV_TRACE,
+  LayerType.BASE, LayerType.TILE_SERVER, LayerType.UAVS, LayerType.UAV_TRACE,
   LayerType.OWN_LOCATION, LayerType.GEOJSON, LayerType.HEXGRID,
   LayerType.HEATMAP
+]
+
+/**
+ * Enum containing constants for the various tile server types that we support.
+ */
+export const TileServerType = {
+  WMS: 'wms',
+  XYZ: 'xyz',
+  TILE_CACHE: 'tileCache'
+}
+
+/**
+ * Constant containing all the supported tile server types in the order
+ * preferred on the UI.
+ */
+export const TileServerTypes = [
+  TileServerType.WMS, TileServerType.XYZ, TileServerType.TILE_CACHE
 ]
 
 /**
@@ -54,10 +71,11 @@ const propertiesForLayerTypes_ = {
       source: 'osm'
     }
   },
-  [LayerType.WMS]: {
-    label: 'WMS map server',
+  [LayerType.TILE_SERVER]: {
+    label: 'Tile server',
     icon: <FileCloud />,
     parameters: {
+      type: TileServerType.WMS,
       url: 'http://ows.mundialis.de/services/service',
       layers: 'TOPO-OSM-WMS'
     }

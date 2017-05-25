@@ -247,10 +247,10 @@ class LayersDialogPresentation extends React.Component {
     const { dialogVisible, selectedLayerId } = this.props
     const { onAddLayer, onClose } = this.props
     const actions = [
-      <FlatButton label={'Add layer'} onTouchTap={onAddLayer} />,
-      <FlatButton label={'Remove layer'} disabled={!selectedLayerId}
+      <FlatButton label="Add layer" onTouchTap={onAddLayer} />,
+      <FlatButton label="Remove layer" disabled={!selectedLayerId}
         onTouchTap={this.removeSelectedLayer_} />,
-      <FlatButton label={'Done'} primary onTouchTap={onClose} />
+      <FlatButton label="Done" primary onTouchTap={onClose} />
     ]
 
     return (
