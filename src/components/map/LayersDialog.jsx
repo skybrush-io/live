@@ -340,7 +340,7 @@ const LayersDialog = connect(
     const layerIndex = selectedLayer && order ? order.indexOf(selectedLayer) : -1
     return {
       canMoveUp: layerIndex > 0,
-      canMoveDown: layerIndex >= 0 && layerIndex < order.length-1,
+      canMoveDown: layerIndex >= 0 && layerIndex < order.length - 1,
       dialogVisible: dialogVisible,
       selectedLayerId: selectedLayer
     }
