@@ -78,6 +78,21 @@ const reducer = handleActions({
     }, state)
   },
 
+  ADJUST_LAYER_Z_INDEX (state, action) {
+    const { id, delta } = action.payload
+    const { order } = state
+    const index = order.indexOf(id)
+    const newIndex = (index < 0) ? -1 : Math.max(0, Math.min(index + delta, order.length - 1))
+    if (index >= 0 && newIndex >= 0) {
+      const newOrder = [].concat(order)
+      newOrder.splice(index, 1)
+      newOrder.splice(newIndex, 0, id)
+      return u({ order: newOrder }, state)
+    } else {
+      return state
+    }
+  },
+
   CHANGE_LAYER_TYPE (state, action) {
     // Update the type of the layer and generate a new parameters object
     // for it

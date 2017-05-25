@@ -8,12 +8,18 @@ import { reduxForm, Field } from 'redux-form'
 
 import Dialog from 'material-ui/Dialog'
 import FlatButton from 'material-ui/FlatButton'
+import IconButton from 'material-ui/IconButton'
 import { List, ListItem } from 'material-ui/List'
 import Toggle from 'material-ui/Toggle'
 import VisibilityOff from 'material-ui/svg-icons/action/visibility-off'
+import ContentAdd from 'material-ui/svg-icons/content/add'
+import ContentRemove from 'material-ui/svg-icons/content/remove'
+import ArrowDown from 'material-ui/svg-icons/navigation/arrow-drop-down'
+import ArrowUp from 'material-ui/svg-icons/navigation/arrow-drop-up'
 
-import { closeLayersDialog, renameLayer, setSelectedLayerInLayersDialog,
-         toggleLayerVisibility, addLayer, removeLayer } from '../../actions/layers'
+import { adjustLayerZIndex, closeLayersDialog, renameLayer,
+         setSelectedLayerInLayersDialog, toggleLayerVisibility,
+         addLayer, removeLayer } from '../../actions/layers'
 import { selectableListOf } from '../helpers/lists'
 import { LayerType, labelForLayerType, iconForLayerType } from '../../model/layers'
 import { createValidator, required } from '../../utils/validation'
@@ -240,16 +246,31 @@ const LayerList = connect(
 class LayersDialogPresentation extends React.Component {
   constructor (props) {
     super(props)
+    this.moveSelectedLayerDown_ = this.moveSelectedLayerDown_.bind(this)
+    this.moveSelectedLayerUp_ = this.moveSelectedLayerUp_.bind(this)
     this.removeSelectedLayer_ = this.removeSelectedLayer_.bind(this)
   }
 
   render () {
-    const { dialogVisible, selectedLayerId } = this.props
+    const { canMoveUp, canMoveDown, dialogVisible, selectedLayerId } = this.props
     const { onAddLayer, onClose } = this.props
     const actions = [
-      <FlatButton label="Add layer" onTouchTap={onAddLayer} />,
-      <FlatButton label="Remove layer" disabled={!selectedLayerId}
-        onTouchTap={this.removeSelectedLayer_} />,
+      <IconButton onTouchTap={onAddLayer}>
+        <ContentAdd />
+      </IconButton>,
+      <IconButton disabled={!selectedLayerId}
+                  onTouchTap={this.removeSelectedLayer_}>
+        <ContentRemove />
+      </IconButton>,
+      <IconButton disabled={!canMoveUp}
+                  onTouchTap={this.moveSelectedLayerUp_}>
+        <ArrowUp />
+      </IconButton>,
+      <IconButton disabled={!canMoveDown}
+                  onTouchTap={this.moveSelectedLayerDown_}>
+        <ArrowDown />
+      </IconButton>,
+      <div style={{ flex: 1 }} />,
       <FlatButton label="Done" primary onTouchTap={onClose} />
     ]
 
@@ -258,6 +279,7 @@ class LayersDialogPresentation extends React.Component {
         open={dialogVisible}
         actions={actions}
         bodyStyle={{display: 'flex', overflow: 'visible'}}
+        actionsContainerStyle={{ display: 'flex', alignItems: 'center' }}
         onRequestClose={onClose}
       >
         <div style={{ flex: 3 }}>
@@ -270,6 +292,19 @@ class LayersDialogPresentation extends React.Component {
     )
   }
 
+  moveSelectedLayer_ (delta) {
+    const { selectedLayerId, onMoveLayer } = this.props
+    onMoveLayer(selectedLayerId, delta)
+  }
+
+  moveSelectedLayerDown_ () {
+    this.moveSelectedLayer_(1)
+  }
+
+  moveSelectedLayerUp_ () {
+    this.moveSelectedLayer_(-1)
+  }
+
   removeSelectedLayer_ () {
     const { selectedLayerId, onRemoveLayer } = this.props
     onRemoveLayer(selectedLayerId)
@@ -277,11 +312,14 @@ class LayersDialogPresentation extends React.Component {
 }
 
 LayersDialogPresentation.propTypes = {
+  canMoveDown: PropTypes.bool.isRequired,
+  canMoveUp: PropTypes.bool.isRequired,
   dialogVisible: PropTypes.bool.isRequired,
   selectedLayerId: PropTypes.string,
 
   onClose: PropTypes.func,
   onAddLayer: PropTypes.func,
+  onMoveLayer: PropTypes.func,
   onRemoveLayer: PropTypes.func
 }
 
@@ -295,10 +333,18 @@ LayersDialogPresentation.defaultProps = {
  */
 const LayersDialog = connect(
   // mapStateToProps
-  state => ({
-    dialogVisible: state.dialogs.layerSettings.dialogVisible,
-    selectedLayerId: state.dialogs.layerSettings.selectedLayer
-  }),
+  state => {
+    const { layerSettings } = state.dialogs
+    const { order } = state.map.layers
+    const { dialogVisible, selectedLayer } = layerSettings
+    const layerIndex = selectedLayer && order ? order.indexOf(selectedLayer) : -1
+    return {
+      canMoveUp: layerIndex > 0,
+      canMoveDown: layerIndex >= 0 && layerIndex < order.length-1,
+      dialogVisible: dialogVisible,
+      selectedLayerId: selectedLayer
+    }
+  },
   // mapDispatchToProps
   dispatch => ({
     onAddLayer () {
@@ -311,6 +357,10 @@ const LayersDialog = connect(
 
     onClose () {
       dispatch(closeLayersDialog())
+    },
+
+    onMoveLayer (layerId, delta) {
+      dispatch(adjustLayerZIndex(layerId, delta))
     },
 
     onRemoveLayer (layerId) {
