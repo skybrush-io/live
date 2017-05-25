@@ -56,8 +56,7 @@ spherical_mercator=true
 
 The above configuration points to the WMS server at ``http://www.osm-wms.de/``. Alternative WMS servers are also
 supported, but if you plan to use another one, make sure that the map projection used when constructing the tiles
-is the same as the map projection used by Flockwave (i.e. web Mercator). WMS sources that use spherical Mercator
-instead of web Mercator should use the ``spherical_mercator=true`` option as shown above.
+is the same as the map projection used by Flockwave (i.e. web Mercator).
 
 Finally, we need to start the TileCache server on port 8888 (the default port is not okay because Flockwave runs there):
 
@@ -88,15 +87,29 @@ example, the Farkashegy airfield is to be found in the following box:
 (47.492189, 18.908750) -- (47.479878, 18.924135)
 ```
 
-``tilecache_seed.py`` needs the bounding box and the zoom levels of interest.
+Since ``tilecache_seed.py`` needs the coordinates in the projected coordinate
+system (i.e. web Mercator in our case, *not* WGS84), we need to convert the
+coordinates above from WGS84 to web Mercator. The easiest is probably with
+[this online tool](https://mygeodata.cloud/cs2cs/), which gives us:
+
+```
+(2104912.42154, 6022785.16782) -- (2106625.0719, 6020757.17834)
+```
+
+(Don't forget to tick the *Switch X/Y* checkbox because in WGS84 the
+longitude comes first).
+
+``tilecache_seed.py`` also needs the bounding box and the zoom levels of interest.
 For the Farkashegy airfield, a zoom level of 16 covers pretty much the
 whole airfield on a standard laptop screen and a zoom level of 19 is the
 most that you can get out of most tile servers anyway. Therefore, for
 practical purposes, it is usually enough to fetch tiles between zoom levels
-15 and 19, inclusive:
+15 and 19, inclusive. Note that ``tilecache_seed.py`` considers the larger
+zoom level as *exclusive* and not inclusive, so if you need everything between
+zoom levels 15 and 19, you need to specify 15 and 20:
 
 ```sh
-$ tilecache_seed.py basic 15 19 -b "47.479878,18.908750,47.492189,18.924135" -p 1
+$ tilecache_seed.py basic 15 20 -b "2104912.42154,6020757.17834,2106625.0719,6022785.16782" -p 1
 ```
 
 where the last ``-p 1`` argument denotes that the seeder should fetch one extra
