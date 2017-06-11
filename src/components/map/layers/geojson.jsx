@@ -1,3 +1,4 @@
+import Color from 'color'
 import _ from 'lodash'
 import React, { PropTypes } from 'react'
 import ol from 'openlayers'
@@ -14,7 +15,8 @@ import ActionSystemUpdateAlt from 'material-ui/svg-icons/action/system-update-al
 import { setLayerParameterById } from '../../../actions/layers'
 import { showSnackbarMessage } from '../../../actions/snackbar'
 
-import { colorToString } from '../../../utils/coloring.js'
+import { parseColor } from '../../../utils/coloring'
+import { convertSimpleStyleToOLStyle } from '../../../utils/simplestyle'
 
 // === Settings for this particular layer type ===
 
@@ -111,40 +113,16 @@ export const GeoJSONLayerSettings = connect(
 
 // === The actual layer to be rendered ===
 
-/**
- * Helper function that creates an OpenLayers style object from
- * stroke and fill colors. (+ stroke width)
- *
- * @param {color} stroke the color of the stroke line
- * @param {number} strokeWidth the widht of the stroke
- * @param {color} fill the color of the filling
- * @param {string} text the text displayed on the features
- * @return {Object} the OpenLayers style object
- */
-const makeStrokeFillStyle = (stroke, strokeWidth, fill, text) => new ol.style.Style({
-  stroke: new ol.style.Stroke({color: stroke, width: strokeWidth}),
-  fill: new ol.style.Fill({color: fill}),
-  text: new ol.style.Text({
-    text: text,
-    font: '12.5px Century Gothic',
-    stroke: new ol.style.Stroke({color: stroke})
-  })
-})
-
 class GeoJSONVectorSource extends source.Vector {
   constructor (props) {
     super(props)
 
     this.geojsonFormat = new ol.format.GeoJSON()
-
-    this.source.addFeatures(this._parseFeatures(
-      props.data, {featureProjection: 'EPSG:3857'}
-    ))
+    this._updateFeaturesFromProps(props)
   }
 
   componentWillReceiveProps (newProps) {
-    this.source.clear()
-    this.source.addFeatures(this._parseFeatures(newProps.data))
+    this._updateFeaturesFromProps(newProps)
   }
 
   _parseFeatures (data) {
@@ -157,13 +135,21 @@ class GeoJSONVectorSource extends source.Vector {
       return []
     }
   }
+
+  _updateFeaturesFromProps (props) {
+    const features = this._parseFeatures(props.data)
+    this.source.clear()
+    this.source.addFeatures(features)
+  }
 }
 
 class GeoJSONLayerPresentation extends React.Component {
   constructor (props) {
     super(props)
 
-    this.style = GeoJSONLayerPresentation.makeStyle(props.layer)
+    this._styleDefaults = {}
+    this._styleFunction = this._styleFunction.bind(this)
+    this._updateStyleFromProps(props)
   }
 
   render () {
@@ -173,7 +159,7 @@ class GeoJSONLayerPresentation extends React.Component {
 
     return (
       <div>
-        <layer.Vector zIndex={this.props.zIndex} style={this.style}>
+        <layer.Vector zIndex={this.props.zIndex} style={this._styleFunction}>
           <GeoJSONVectorSource data={this.props.layer.parameters.data} />
         </layer.Vector>
       </div>
@@ -181,16 +167,39 @@ class GeoJSONLayerPresentation extends React.Component {
   }
 
   componentWillReceiveProps (newProps) {
-    this.style = GeoJSONLayerPresentation.makeStyle(newProps.layer)
+    this._updateStyleFromProps(newProps)
   }
 
-  static makeStyle (layer) {
-    return makeStrokeFillStyle(
-      colorToString(layer.parameters.strokeColor),
-      layer.parameters.strokeWidth,
-      colorToString(layer.parameters.fillColor),
-      layer.label
-    )
+  _styleFunction (feature) {
+    // Okay, this is a bit of a hack but I think it won't hurt. We make use of
+    // the fact that the style function of the layer is called only for features
+    // that do not have a style on their own. Therefore, we calculate the style
+    // for the feature (which will not change) and then set it explicitly so the
+    // style function won't be called again.
+    const props = feature.getProperties()
+
+    // Force point geometries to always have a marker
+    if (!props['marker-symbol'] && feature.getGeometry() instanceof ol.geom.Point) {
+      props['marker-symbol'] = 'marker'
+    }
+
+    const olStyle = convertSimpleStyleToOLStyle(props, this._styleDefaults)
+    feature.setStyle(olStyle)
+    return olStyle
+  }
+
+  _updateStyleFromProps (props) {
+    const { parameters } = props.layer
+    const { strokeWidth } = parameters
+    const strokeColor = parseColor(parameters.strokeColor, '#0088ff')
+    const fillColor = parseColor(parameters.fillColor, Color('#0088ff').alpha(0.5))
+    this._styleDefaults = {
+      'stroke': strokeColor.rgb().hex(),
+      'stroke-opacity': strokeColor.alpha(),
+      'stroke-width': strokeWidth,
+      'fill': fillColor.rgb().hex(),
+      'fill-opacity': fillColor.alpha()
+    }
   }
 }
 

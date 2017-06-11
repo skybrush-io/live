@@ -85,9 +85,9 @@ const propertiesForLayerTypes_ = {
     icon: <FileAttachment />,
     parameters: {
       data: {},
-      strokeColor: {r: 85, g: 85, b: 225, a: 1},
+      strokeColor: {r: 85, g: 85, b: 225, alpha: 1},
       strokeWidth: 2,
-      fillColor: {r: 170, g: 170, b: 225, a: 0.5}
+      fillColor: {r: 170, g: 170, b: 225, alpha: 0.5}
     }
   },
   [LayerType.HEXGRID]: {
