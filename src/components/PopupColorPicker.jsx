@@ -1,3 +1,4 @@
+import Color from 'color'
 import React, { PropTypes } from 'react'
 import { SketchPicker } from 'react-color'
 
@@ -5,17 +6,47 @@ export default class PopupColorPicker extends React.Component {
   constructor (props) {
     super(props)
 
-    this.state = {
-      open: false,
-      color: this.props.defaultValue
+    const { defaultValue } = this.props
+    const initialColor = defaultValue ? {
+      r: defaultValue.r,
+      g: defaultValue.g,
+      b: defaultValue.b,
+      alpha: defaultValue.alpha !== undefined ? defaultValue.alpha : defaultValue.a
+    } : {
+      r: 255,
+      g: 255,
+      b: 255,
+      alpha: 1.0
     }
 
+    this.state = {
+      open: false,
+      color: initialColor
+    }
+
+    this.clickawayHandlerRegistered_ = false
+    this.isMounted_ = false
+
     this.togglePicker_ = this.togglePicker_.bind(this)
+    this.registerClickawayHandlerIfNeeded_ =
+      this.registerClickawayHandlerIfNeeded_.bind(this)
     this.handleChange_ = this.handleChange_.bind(this)
     this.handleClickAway_ = this.handleClickAway_.bind(this)
   }
 
+  componentDidMount () {
+    this.isMounted_ = true
+    this.registerClickawayHandlerIfNeeded_()
+  }
+
+  componentWillUnmount () {
+    this.isMounted_ = false
+    this.registerClickawayHandlerIfNeeded_()
+  }
+
   render () {
+    this.registerClickawayHandlerIfNeeded_()
+
     const pickerStyle = Object.assign({
       position: 'absolute',
       overflow: 'hidden',
@@ -29,7 +60,13 @@ export default class PopupColorPicker extends React.Component {
       height: 0
     })
 
-    const color = this.state.color
+    const { color } = this.state
+    const colorForPicker = {
+      r: color.r,
+      g: color.g,
+      b: color.b,
+      a: color.alpha
+    }
 
     return (
       <div className={'popup-color-picker'} ref={'pickerContainer'}>
@@ -37,7 +74,7 @@ export default class PopupColorPicker extends React.Component {
           style={Object.assign({},
             this.props.style,
             {
-              backgroundColor: `rgba(${color.r}, ${color.g}, ${color.b}, ${color.a})`
+              backgroundColor: Color(color).rgb().string()
             }
           )}
           onClick={this.togglePicker_}
@@ -45,30 +82,45 @@ export default class PopupColorPicker extends React.Component {
 
         <div className={'popup-color-picker-dropdown'} style={pickerStyle}>
           <SketchPicker
-            color={this.state.color}
+            color={colorForPicker}
             onChange={this.handleChange_} />
         </div>
       </div>
     )
   }
 
-  togglePicker_ () {
-    if (!this.state.open) {
-      document.addEventListener('click', this.handleClickAway_, true)
-    } else {
-      document.removeEventListener('click', this.handleClickAway_, true)
-    }
+  registerClickawayHandlerIfNeeded_ () {
+    const needsHandler = this.isMounted_ && this.state.open
 
+    if (needsHandler && !this.clickawayHandlerRegistered_) {
+      document.addEventListener('click', this.handleClickAway_, true)
+      this.clickawayHandlerRegistered_ = true
+    } else if (!needsHandler && this.clickawayHandlerRegistered_) {
+      document.removeEventListener('click', this.handleClickAway_, true)
+      this.clickawayHandlerRegistered_ = false
+    }
+  }
+
+  togglePicker_ () {
     this.setState({ open: !this.state.open })
   }
 
   handleChange_ (color) {
-    this.setState({ color: color.rgb })
+    const colorInState = {
+      r: color.rgb.r,
+      g: color.rgb.b,
+      b: color.rgb.b,
+      alpha: color.rgb.a
+    }
+    this.setState({ color: colorInState })
   }
 
   handleClickAway_ (e) {
-    if (!this.refs.pickerContainer.contains(e.target)) {
+    const { pickerContainer } = this.refs
+    if (pickerContainer && !pickerContainer.contains(e.target)) {
       this.togglePicker_()
+      e.preventDefault()
+      e.stopPropagation()
     }
   }
 
