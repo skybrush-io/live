@@ -65,8 +65,8 @@ export function convertSimpleStyleToOLStyle (style, defaults) {
   if (hasMarker) {
     const markerColor = Color(realStyle['marker-color'] || '#7e7e7e')
     const markerSize = realStyle['marker-size'] || 'medium'
-    markerSizeInPixels = _markerSizeToRadius[markerSize] !== undefined ?
-      _markerSizeToRadius[markerSize] : _markerSizeToRadius['medium']
+    markerSizeInPixels = _markerSizeToRadius[markerSize] !== undefined
+      ? _markerSizeToRadius[markerSize] : _markerSizeToRadius['medium']
     styleProps['image'] = new ol.style.Circle({
       fill: new ol.style.Fill({
         color: markerColor.array()
