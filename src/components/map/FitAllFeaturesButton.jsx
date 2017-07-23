@@ -2,7 +2,6 @@
  * @file React Component to display and adjust the rotation of the map view.
  */
 
-import _ from 'lodash'
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { showSnackbarMessage } from '../../actions/snackbar'
@@ -76,32 +75,37 @@ class FitAllFeaturesButton extends React.Component {
     let feasibleLayers = this.map.getLayers().getArray().filter(this.isLayerFeasible_)
     let featureArrays = feasibleLayers.map(l => l.getSource().getFeatures())
     let features = [].concat.apply([], featureArrays)
-    let featurePositions = features.map(f => {
+    let featureExtents = features.map(f => {
       const geometry = f.getGeometry()
-      return geometry && _.isFunction(geometry.getCoordinates) ? geometry.getCoordinates() : null
-    })
-    let filteredPositions = featurePositions.filter(p => (p && p[0] && p[1]))
+      return geometry ? geometry.getExtent() : undefined
+    }).filter(e => e !== undefined)
 
-    if (filteredPositions.length === 0) {
+    if (featureExtents.length === 0) {
       this.props.dispatch(showSnackbarMessage(
-        'No valid drones avaiable, trying to get geolocation instead'
+        'No valid feature extents avaiable, trying to get geolocation instead'
       ))
 
+      // This only works on secure origins
       if ('geolocation' in window.navigator) {
         window.navigator.geolocation.getCurrentPosition(this.geolocationReceived_)
       }
+
       return
     }
 
-    let extent = ol.extent.boundingExtent(filteredPositions)
+    const mergedExtent = featureExtents.reduce(
+      (bigExtent, currentExtent) => ol.extent.extend(bigExtent, currentExtent),
+      ol.extent.createEmpty()
+    )
 
-    extent = ol.extent.buffer(extent, this.props.margin)
+    const bufferedExtent = ol.extent.buffer(mergedExtent, this.props.margin)
 
     this.map.beforeRender(ol.animation.zoom({
       resolution: view.getResolution(),
       duration: this.props.duration,
       easing: ol.easing.easeOut
     }))
+
     this.map.beforeRender(ol.animation.pan({
       source: view.getCenter(),
       duration: this.props.duration,
@@ -116,7 +120,7 @@ class FitAllFeaturesButton extends React.Component {
     //
     // view.setRotation(0)
 
-    view.fit(extent, this.map.getSize())
+    view.fit(bufferedExtent, this.map.getSize())
   }
 
   /**
