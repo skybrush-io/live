@@ -8,6 +8,7 @@ import GlobalSnackbar from './components/GlobalSnackbar'
 import HotkeyHandler from './components/HotkeyHandler'
 import LayersDialog from './components/map/LayersDialog'
 import MessagesDialog from './components/MessagesDialog'
+import SavedLocationEditorDialog from './components/SavedLocationEditorDialog'
 import ServerConnectionManager from './components/ServerConnectionManager'
 import ServerSettingsDialog from './components/ServerSettingsDialog'
 import Workbench from './components/Workbench'
@@ -35,6 +36,8 @@ class Application extends React.Component {
         <HotkeyHandler hotkeys={hotkeys}>
           <Workbench />
         </HotkeyHandler>
+
+        <SavedLocationEditorDialog />
 
         <ServerSettingsDialog />
         <ServerConnectionManager />
