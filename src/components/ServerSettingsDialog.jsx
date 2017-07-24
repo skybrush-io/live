@@ -39,8 +39,7 @@ class ServerSettingsFormPresentation extends React.Component {
 }
 
 ServerSettingsFormPresentation.propTypes = {
-  onKeyPress: PropTypes.func,
-  getFormFields: PropTypes.func
+  onKeyPress: PropTypes.func
 }
 
 /**
@@ -48,7 +47,8 @@ ServerSettingsFormPresentation.propTypes = {
  * edit the server settings.
  */
 const ServerSettingsForm = connect(
-  state => ({               // mapStateToProps
+  // mapStateToProps
+  state => ({
     initialValues: state.dialogs.serverSettings
   }), null, null, { withRef: true }
 )(reduxForm({

@@ -5,7 +5,7 @@
  * if the value is valid, or a preferred error message if the value is
  * invalid.
  *
- * Adapted from {@link https://github.com/erikras/react-redux-universal-hot-example/blob/master/src/utils/validation.js|this file}.
+ * Adapted from {@link https://github.com/erikras/react-redux-universal-hot-example/blob/master/src/utils/validation.js | this file}.
  */
 
 const isEmpty = value => value === undefined || value === null || value === ''
@@ -51,7 +51,7 @@ export function integer (value) {
  * otherwise
  */
 export function number (value) {
-  if (Number(value)) {
+  if (!Number(value)) {
     return 'Value must be a number or infinity'
   }
 }
@@ -65,7 +65,7 @@ export function number (value) {
  * otherwise
  */
 export function finite (value) {
-  if (Number.isFinite(Number(value))) {
+  if (!Number.isFinite(Number(value))) {
     return 'Value must be a number'
   }
 }
@@ -147,6 +147,7 @@ export function createValidator (rules) {
   return (data = {}) => {
     const errors = {}
     Object.keys(rules).forEach((key) => {
+      // concat enables both functions and arrays of functions
       const rule = join([].concat(rules[key]))
       const error = rule(data[key], data)
       if (error) {

@@ -259,19 +259,19 @@ class LayersDialogPresentation extends React.Component {
         <ContentAdd />
       </IconButton>,
       <IconButton disabled={!selectedLayerId}
-                  onTouchTap={this.removeSelectedLayer_}>
+        onTouchTap={this.removeSelectedLayer_}>
         <ContentRemove />
       </IconButton>,
       <IconButton disabled={!canMoveUp}
-                  onTouchTap={this.moveSelectedLayerUp_}>
+        onTouchTap={this.moveSelectedLayerUp_}>
         <ArrowUp />
       </IconButton>,
       <IconButton disabled={!canMoveDown}
-                  onTouchTap={this.moveSelectedLayerDown_}>
+        onTouchTap={this.moveSelectedLayerDown_}>
         <ArrowDown />
       </IconButton>,
       <div style={{ flex: 1 }} />,
-      <FlatButton label="Done" primary onTouchTap={onClose} />
+      <FlatButton label='Done' primary onTouchTap={onClose} />
     ]
 
     return (
