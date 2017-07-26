@@ -10,7 +10,7 @@ import { handleActions } from 'redux-actions'
  */
 const defaultState = {
   dialogVisible: false,
-  selectedLayer: null
+  selectedLayer: undefined
 }
 
 /**

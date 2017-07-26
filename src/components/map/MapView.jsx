@@ -16,6 +16,8 @@ import { setSelectedFeatures, addSelectedFeatures,
        from '../../actions/map'
 import { formatCoordinate } from '../../utils/geography'
 
+import mapViewManager from '../../mapViewManager'
+
 require('openlayers/css/ol.css')
 
 /**
@@ -51,6 +53,8 @@ class MapViewPresentation extends React.Component {
   componentDidMount () {
     const { glContainer } = this.props
     this.layoutManager = glContainer ? glContainer.layoutManager : undefined
+
+    mapViewManager.initialize()
   }
 
   componentDidUpdate () {

@@ -16,6 +16,8 @@ import { cancelLocationEditing } from '../actions/saved-location-editor'
 import { createValidator, between, integer, finite, required } from '../utils/validation'
 import { renderTextField } from './helpers/reduxFormRenderers'
 
+import { addListenerToMapViewSignal } from '../signals'
+
 /**
  * Presentation of the form that shows the fields that the user can use to
  * edit the server settings.
@@ -100,6 +102,20 @@ class SavedLocationEditorDialogPresentation extends React.Component {
     this.handleKeyPress_ = this.handleKeyPress_.bind(this)
   }
 
+  componentDidMount () {
+    addListenerToMapViewSignal.dispatch('center', center => {
+      this.props.updateCurrentLocation({center})
+    })
+
+    addListenerToMapViewSignal.dispatch('rotation', rotation => {
+      this.props.updateCurrentLocation({rotation})
+    })
+
+    addListenerToMapViewSignal.dispatch('zoom', zoom => {
+      this.props.updateCurrentLocation({zoom})
+    })
+  }
+
   handleSubmit () {
     this.refs.form.getWrappedInstance().submit()
   }
@@ -179,6 +195,9 @@ const SavedLocationEditorDialog = connect(
 
       dispatch(updateSavedLocation(data))
       dispatch(cancelLocationEditing())
+    },
+    updateCurrentLocation (properties) {
+      dispatch(updateSavedLocation(Object.assign({}, {id: -1}, properties)))
     }
   })
 )(SavedLocationEditorDialogPresentation)

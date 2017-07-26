@@ -6,6 +6,7 @@ import Avatar from 'material-ui/Avatar'
 import IconButton from 'material-ui/IconButton'
 import { ListItem } from 'material-ui/List'
 
+import MapsAddLocation from 'material-ui/svg-icons/maps/add-location'
 import MapsPlace from 'material-ui/svg-icons/maps/place'
 import ContentAdd from 'material-ui/svg-icons/content/add-circle-outline'
 import ActionSettings from 'material-ui/svg-icons/action/settings'
@@ -16,6 +17,8 @@ import { connect } from 'react-redux'
 import { editSavedLocation } from '../actions/saved-location-editor'
 import { listOf } from './helpers/lists'
 
+import { mapViewToLocationSignal } from '../signals'
+
 /**
  * Presentation component for a single entry in the location list.
  *
@@ -23,30 +26,35 @@ import { listOf } from './helpers/lists'
  * @return {Object} the React presentation component
  */
 const LocationListEntry = (props) => {
-  const { action, center: {lon, lat}, id, name, rotation, zoom } = props
+  const { action, jumpToLocation, location } = props
+  const { center: {lon, lat}, id, name, rotation, zoom } = location
 
-  const actionButton = id === 0
-          ? <IconButton onTouchTap={action}><ContentAdd /></IconButton>
-          : <IconButton onTouchTap={action}><ActionSettings /></IconButton>
+  const avatar = id === 0
+    ? <Avatar icon={<MapsAddLocation />} />
+    : <Avatar icon={<MapsPlace />} />
 
   const secondaryText = `lon: ${lon}, lat: ${lat}, rot: ${rotation}°, zoom: ${zoom}`
 
+  const actionButton = id === 0
+    ? <IconButton onTouchTap={action}><ContentAdd /></IconButton>
+    : <IconButton onTouchTap={action}><ActionSettings /></IconButton>
+
+  const touchTapAction = id === 0 ? action : jumpToLocation
+
   return (
-    <ListItem leftAvatar={<Avatar icon={<MapsPlace />} />}
+    <ListItem leftAvatar={avatar}
       primaryText={name}
       secondaryText={secondaryText}
       rightIconButton={actionButton}
-              />
+      onTouchTap={touchTapAction}
+    />
   )
 }
 
 LocationListEntry.propTypes = {
   action: PropTypes.func.isRequired,
-  center: PropTypes.object.isRequired,
-  id: PropTypes.number.isRequired,
-  name: PropTypes.string.isRequired,
-  rotation: PropTypes.number.isRequired,
-  zoom: PropTypes.number.isRequired
+  jumpToLocation: PropTypes.func.isRequired,
+  location: PropTypes.object.isRequired
 }
 
 /**
@@ -54,8 +62,10 @@ LocationListEntry.propTypes = {
  */
 export const LocationListPresentation = listOf((location, { onEditLocation }) => {
   return <LocationListEntry key={location.id}
-    action={() => onEditLocation(location.id)} // TODO: avoid arrow function
-    {...location} />
+    // TODO: avoid arrow functions
+    action={() => onEditLocation(location.id)}
+    jumpToLocation={() => mapViewToLocationSignal.dispatch(location)}
+    location={location} />
 }, {
   dataProvider: 'savedLocations',
   backgroundHint: 'No saved locations'

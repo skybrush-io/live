@@ -16,11 +16,11 @@ const defaultState = {
       id: 0,
       name: 'Add a new location',
       center: {
-        lon: 0,
-        lat: 0
+        lon: 19.061951,
+        lat: 47.473340
       },
       rotation: 0,
-      zoom: 1
+      zoom: 17
     },
     {
       id: 1,
@@ -41,6 +41,16 @@ const defaultState = {
       },
       rotation: 338,
       zoom: 19
+    },
+    {
+      id: 3,
+      name: 'Farkashegyi Repülőtér',
+      center: {
+        lon: 18.915125,
+        lat: 47.486305
+      },
+      rotation: 59,
+      zoom: 17
     }
   ]
 }
@@ -53,9 +63,25 @@ const reducer = handleActions({
   UPDATE_SAVED_LOCATION: (state, action) => {
     const currentLocation = Object.assign({}, action.payload.savedLocation)
 
-    let updatedItems = []
+    let updatedItems = Object.assign([], state.items)
 
-    if (currentLocation.id === 0) {
+    if (currentLocation.id === -1) {
+      const updatedLocation = Object.assign({}, state.items[0])
+
+      if (currentLocation.center !== undefined) {
+        updatedLocation.center = currentLocation.center
+      }
+
+      if (currentLocation.rotation !== undefined) {
+        updatedLocation.rotation = currentLocation.rotation
+      }
+
+      if (currentLocation.zoom !== undefined) {
+        updatedLocation.zoom = currentLocation.zoom
+      }
+
+      updatedItems[0] = updatedLocation
+    } else if (currentLocation.id === 0) {
       currentLocation.id = state.items[state.items.length - 1].id + 1
       updatedItems = state.items.concat(currentLocation)
     } else {
