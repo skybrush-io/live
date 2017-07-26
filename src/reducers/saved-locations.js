@@ -6,14 +6,15 @@
  */
 
 import { handleActions } from 'redux-actions'
+import u from 'updeep'
 
 /**
  * Default content of the saved location registry in the state object.
  */
 const defaultState = {
-  items: [
-    {
-      id: 0,
+  byId: {
+    addNew: {
+      id: 'addNew',
       name: 'Add a new location',
       center: {
         lon: 19.061951,
@@ -22,8 +23,8 @@ const defaultState = {
       rotation: 0,
       zoom: 17
     },
-    {
-      id: 1,
+    elte: {
+      id: 'elte',
       name: 'ELTE Kert',
       center: {
         lon: 19.061951,
@@ -32,18 +33,8 @@ const defaultState = {
       rotation: 0,
       zoom: 17
     },
-    {
-      id: 2,
-      name: 'FINA Launch',
-      center: {
-        lon: 19.048888,
-        lat: 47.494545
-      },
-      rotation: 338,
-      zoom: 19
-    },
-    {
-      id: 3,
+    fahegy: {
+      id: 'fahegy',
       name: 'Farkashegyi Repülőtér',
       center: {
         lon: 18.915125,
@@ -51,8 +42,25 @@ const defaultState = {
       },
       rotation: 59,
       zoom: 17
+    },
+    fina: {
+      id: 'fina',
+      name: 'FINA Launch',
+      center: {
+        lon: 19.048888,
+        lat: 47.494545
+      },
+      rotation: 338,
+      zoom: 19
     }
-  ]
+  },
+
+  order: ['addNew', 'elte', 'fahegy', 'fina']
+}
+
+const idFromName = (byId, name, level = 0) => {
+  const fixedName = name.replace(/[^a-z]/g, '') + '_'.repeat(level)
+  return (fixedName in byId) ? idFromName(byId, name, level + 1) : fixedName
 }
 
 /**
@@ -63,51 +71,41 @@ const reducer = handleActions({
   UPDATE_SAVED_LOCATION: (state, action) => {
     const currentLocation = Object.assign({}, action.payload.savedLocation)
 
-    let updatedItems = Object.assign([], state.items)
+    let updates = {}
 
-    if (currentLocation.id === -1) {
-      const updatedLocation = Object.assign({}, state.items[0])
-
-      if (currentLocation.center !== undefined) {
-        updatedLocation.center = currentLocation.center
+    if (currentLocation.id === 'current') {
+      currentLocation.id = 'addNew'
+      updates = { byId: { addNew: currentLocation } }
+    } else if (currentLocation.id === 'addNew') {
+      currentLocation.id = idFromName(state.byId, currentLocation.name)
+      updates = {
+        byId: { [currentLocation.id]: currentLocation },
+        order: [].concat(state.order, currentLocation.id)
       }
-
-      if (currentLocation.rotation !== undefined) {
-        updatedLocation.rotation = currentLocation.rotation
-      }
-
-      if (currentLocation.zoom !== undefined) {
-        updatedLocation.zoom = currentLocation.zoom
-      }
-
-      updatedItems[0] = updatedLocation
-    } else if (currentLocation.id === 0) {
-      currentLocation.id = state.items[state.items.length - 1].id + 1
-      updatedItems = state.items.concat(currentLocation)
     } else {
-      updatedItems = state.items.map(
-        l => l.id === currentLocation.id ? currentLocation : l
-      )
+      updates = { byId: { [currentLocation.id]: currentLocation } }
     }
 
-    return Object.assign({}, state, {items: updatedItems})
+    return u(updates, state)
   },
 
   DELETE_SAVED_LOCATION: (state, action) => {
     const currentLocationId = action.payload.savedLocationId
 
-    let updatedItems = []
+    let updates = {}
 
-    if (currentLocationId === 0) {
-      updatedItems = state.items
+    if (currentLocationId === 'addNew') {
+      updates = {}
     } else {
-      updatedItems = state.items.filter(
-        l => l.id !== currentLocationId
-      )
+      updates = {
+        byId: u.omit(currentLocationId),
+        order: state.order.filter(id => id !== currentLocationId)
+      }
     }
 
-    return Object.assign({}, state, {items: updatedItems})
+    return u(updates, state)
   }
 }, defaultState)
 
 export default reducer
+

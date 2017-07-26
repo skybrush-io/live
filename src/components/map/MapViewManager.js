@@ -78,12 +78,6 @@ export default class MapViewManager {
    * @param {ol.ObjectEvent} e the propertychange event emitted by openlayers.
    */
   viewListener (e) {
-    // const key = e.key === 'resolution' ? 'zoom' : e.key
-
-    // if (['center', 'rotation', 'zoom'].includes(key)) {
-    //   this.callbacks[e.key].forEach(c => c())
-    // }
-
     if (e.key === 'center') {
       const center = ol.proj.toLonLat(this.view.getCenter()).map(
         c => Math.round(c * 10 ** 6) / 10 ** 6

@@ -72,9 +72,7 @@ const SavedLocationEditorForm = connect(
   // mapStateToProps
   state => {
     const id = state.dialogs.savedLocationEditor.editedLocationId
-    const currentLocation = state.savedLocations.items.filter(
-      l => l.id === id
-    )[0]
+    const currentLocation = state.savedLocations.byId[id]
 
     return { initialValues: currentLocation }
   }, null, null, { withRef: true }
@@ -132,8 +130,10 @@ class SavedLocationEditorDialogPresentation extends React.Component {
     const actions = [
       <FlatButton label={'Save'} primary onTouchTap={this.handleSubmit}
         icon={<ContentSave />} />,
-      <FlatButton label={'Delete'} secondary
-        onTouchTap={onDelete(editedLocationId)} icon={<ActionDeleteForever />} />,
+      <FlatButton
+        label={'Delete'} secondary disabled={editedLocationId === 'addNew'}
+        onTouchTap={onDelete(editedLocationId)} icon={<ActionDeleteForever />}
+        />,
       <FlatButton label={'Cancel'} onTouchTap={onClose} />
     ]
 
@@ -155,7 +155,7 @@ class SavedLocationEditorDialogPresentation extends React.Component {
 }
 
 SavedLocationEditorDialogPresentation.propTypes = {
-  editedLocationId: PropTypes.number,
+  editedLocationId: PropTypes.string,
   onClose: PropTypes.func.isRequired,
   onDelete: PropTypes.func.isRequired,
   onSubmit: PropTypes.func.isRequired,
@@ -188,16 +188,20 @@ const SavedLocationEditorDialog = connect(
       }
     },
     onSubmit (data) {
-      data.center.lon = Number(data.center.lon)
-      data.center.lat = Number(data.center.lat)
-      data.rotation = Number(data.rotation)
-      data.zoom = Number(data.zoom)
+      const currentLocation = JSON.parse(JSON.stringify(data))
 
-      dispatch(updateSavedLocation(data))
+      currentLocation.center.lon = Number(currentLocation.center.lon)
+      currentLocation.center.lat = Number(currentLocation.center.lat)
+      currentLocation.rotation = Number(currentLocation.rotation)
+      currentLocation.zoom = Number(currentLocation.zoom)
+
+      dispatch(updateSavedLocation(currentLocation))
       dispatch(cancelLocationEditing())
     },
     updateCurrentLocation (properties) {
-      dispatch(updateSavedLocation(Object.assign({}, {id: -1}, properties)))
+      dispatch(updateSavedLocation(
+        Object.assign({}, {id: 'current'}, properties)
+      ))
     }
   })
 )(SavedLocationEditorDialogPresentation)

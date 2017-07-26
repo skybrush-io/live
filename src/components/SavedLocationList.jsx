@@ -29,17 +29,17 @@ const LocationListEntry = (props) => {
   const { action, jumpToLocation, location } = props
   const { center: {lon, lat}, id, name, rotation, zoom } = location
 
-  const avatar = id === 0
+  const avatar = id === 'addNew'
     ? <Avatar icon={<MapsAddLocation />} />
     : <Avatar icon={<MapsPlace />} />
 
   const secondaryText = `lon: ${lon}, lat: ${lat}, rot: ${rotation}°, zoom: ${zoom}`
 
-  const actionButton = id === 0
+  const actionButton = id === 'addNew'
     ? <IconButton onTouchTap={action}><ContentAdd /></IconButton>
     : <IconButton onTouchTap={action}><ActionSettings /></IconButton>
 
-  const touchTapAction = id === 0 ? action : jumpToLocation
+  const touchTapAction = id === 'addNew' ? action : jumpToLocation
 
   return (
     <ListItem leftAvatar={avatar}
@@ -75,7 +75,9 @@ LocationListPresentation.displayName = 'LocationListPresentation'
 const LocationList = connect(
   // mapStateToProps
   state => ({
-    savedLocations: state.savedLocations.items
+    savedLocations: state.savedLocations.order.map(
+      id => state.savedLocations.byId[id]
+    )
   }),
   // mapDispatchToProps
   dispatch => ({
