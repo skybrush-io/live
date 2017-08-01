@@ -17,7 +17,11 @@ import ContentClear from 'material-ui/svg-icons/content/clear'
 import { setLayerParameterById } from '../../../actions/layers'
 
 import messageHub from '../../../message-hub'
-import { coordinateFromLonLat } from '../../../utils/geography'
+import {
+  coordinateFromLonLat,
+  lonLatFromCoordinate,
+  wgs84Sphere
+} from '../../../utils/geography'
 
 // === Settings for this particular layer type ===
 
@@ -105,7 +109,7 @@ class HeatmapLayerSettingsPresentation extends React.Component {
         <br />
 
         <TextField ref={'minDistance'}
-          floatingLabelText={'Minimum distance between points'}
+          floatingLabelText={'Minimum distance between points (m)'}
           type={'number'}
           defaultValue={this.props.layer.parameters.minDistance} />
         <Checkbox ref={'snapToGrid'}
@@ -188,8 +192,8 @@ export const HeatmapLayerSettings = connect(
  * @param {devicedata} b the second packet to compare
  * @return {number} the distance between the packets
  */
-const getDistance = (a, b) => Math.sqrt(
-  Math.pow(a.lon - b.lon, 2) + Math.pow(a.lat - b.lat, 2)
+const getDistance = (a, b) => wgs84Sphere.haversineDistance(
+  [a.lon, a.lat], [b.lon, b.lat]
 )
 
 /**
@@ -273,8 +277,14 @@ class HeatmapVectorSource extends source.Vector {
     const minDistance = this.props.parameters.minDistance
 
     if (this.props.parameters.snapToGrid) {
-      data.lon = Math.round(data.lon / minDistance) * minDistance
-      data.lat = Math.round(data.lat / minDistance) * minDistance
+      const mercator = coordinateFromLonLat([data.lon, data.lat])
+      const snappedMercator = [
+        Math.round(mercator[0] / minDistance) * minDistance,
+        Math.round(mercator[1] / minDistance) * minDistance
+      ]
+      const snappedLonLat = lonLatFromCoordinate(snappedMercator)
+      data.lon = snappedLonLat[0]
+      data.lat = snappedLonLat[1]
 
       const snappedKey = {lon: data.lon, lat: data.lat}
 

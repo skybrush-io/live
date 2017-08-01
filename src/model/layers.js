@@ -112,7 +112,7 @@ const propertiesForLayerTypes_ = {
       autoScale: true,
       maxPoints: 1000,
       unit: '',
-      minDistance: 0.00005,
+      minDistance: 5,
       snapToGrid: false
     }
   },
