@@ -99,7 +99,7 @@ const reducer = handleActions({
     } else {
       updates = {
         byId: u.omit(currentLocationId),
-        order: state.order.filter(id => id !== currentLocationId)
+        order: u.reject(id => id === currentLocationId)
       }
     }
 

@@ -3,6 +3,8 @@
  * (position, rotation, zoom)
  */
 
+import _ from 'lodash'
+
 import ol from 'openlayers'
 import {
   coordinateFromLonLat,
@@ -84,7 +86,7 @@ export default class MapViewManager {
   viewListener (e) {
     if (e.key === 'center') {
       const center = lonLatFromCoordinate(this.view.getCenter()).map(
-        c => Math.round(c * 10 ** 6) / 10 ** 6
+        c => _.round(c, 6)
       )
       this.callbacks.center.forEach(c => c({lon: center[0], lat: center[1]}))
     } else if (e.key === 'rotation') {

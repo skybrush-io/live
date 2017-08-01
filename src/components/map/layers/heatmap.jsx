@@ -56,8 +56,10 @@ class HeatmapLayerSettingsPresentation extends React.Component {
           setUnit={_.partial(this.props.setLayerParameter, 'unit')} />
 
         <p key={'header'}>Heatmap options:</p>
+
         <RaisedButton
           label={'Edit subscriptions'}
+          style={{marginBottom: '10px'}}
           onClick={this.showSubscriptionDialog_} />
 
         <br />
@@ -110,7 +112,7 @@ class HeatmapLayerSettingsPresentation extends React.Component {
 
         <TextField ref={'minDistance'}
           floatingLabelText={'Minimum distance between points (m)'}
-          type={'number'}
+          type={'number'} style={{width: '280px'}}
           defaultValue={this.props.layer.parameters.minDistance} />
         <Checkbox ref={'snapToGrid'}
           defaultChecked={this.props.layer.parameters.snapToGrid}
