@@ -18,7 +18,7 @@ import { showSnackbarMessage } from '../../../actions/snackbar'
 
 import { updateUAVFeatureColorsSignal } from '../../../signals'
 
-import { coordinateFromLonLat } from '../MapView'
+import { coordinateFromLonLat } from '../../../utils/geography'
 
 const updatePredicates = (predicates, errorHandler) => {
   for (const color in predicates) {

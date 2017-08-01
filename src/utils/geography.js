@@ -53,3 +53,41 @@ export const formatCoordinate = makeCoordinateFormatter()
  * (also in metres).
  */
 export const wgs84Sphere = new ol.Sphere(6378137)
+
+/**
+ * The defaul value for projection is "EPSG:3857", a Spherical Mercator
+ * projection used by most tile-based mapping services.
+ *
+ * The values of "WGS 84" ("EPSG:4326") range from [-180, -90] to [180, 90]
+ * as seen here. @see https://epsg.io/4326
+ *
+ * The values of "EPSG:3857" range from [-20026376.39 -20048966.10]
+ * to [20026376.39 20048966.10] and cover "WGS 84" from [-180.0 -85.06]
+ * to [180.0 85.06] as seen here. @see https://epsg.io/3857
+ */
+
+/**
+ * Helper function to convert a longitude-latitude pair to the coordinate
+ * system used by the map view.
+ *
+ * Longitudes and latitudes are assumed to be given in WGS 84.
+ *
+ * @param {number[]} coords the longitude and latitude, in this order
+ * @param {ol.ProjectionLike} projection the projection to use for the conversion
+ * @return {Object} the OpenLayers coordinates corresponding to the given
+ * longitude-latitude pair
+ */
+export const coordinateFromLonLat = ol.proj.fromLonLat
+
+/**
+ * Helper function to convert a coordinate from the map view into a
+ * longitude-latitude pair.
+ *
+ * Coordinates are assumed to be given in EPSG:3857.
+ *
+ * @param {number[]} coords the OpenLayers coordinates
+ * @param {ol.ProjectionLike} projection the projection to use for the conversion
+ * @return {Object} the longtitude-latitude pair corresponding to the given
+ * OpenLayers coordinates
+ */
+export const lonLatFromCoordinate = ol.proj.toLonLat

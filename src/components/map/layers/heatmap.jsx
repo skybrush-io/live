@@ -17,7 +17,7 @@ import ContentClear from 'material-ui/svg-icons/content/clear'
 import { setLayerParameterById } from '../../../actions/layers'
 
 import messageHub from '../../../message-hub'
-import { coordinateFromLonLat } from '../MapView'
+import { coordinateFromLonLat } from '../../../utils/geography'
 
 // === Settings for this particular layer type ===
 

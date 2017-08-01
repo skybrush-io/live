@@ -11,7 +11,7 @@ import { setLayerParameterById } from '../../../actions/layers'
 import ol from 'openlayers'
 import { layer, source } from 'ol-react'
 import flock from '../../../flock'
-import { coordinateFromLonLat } from '../MapView'
+import { coordinateFromLonLat } from '../../../utils/geography'
 import { colorToString } from '../../../utils/coloring.js'
 
 // === Settings for this particular layer type ===

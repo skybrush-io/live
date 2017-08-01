@@ -5,13 +5,17 @@
 
 import ol from 'openlayers'
 import {
+  coordinateFromLonLat,
+  lonLatFromCoordinate
+} from '../../utils/geography'
+
+import {
   mapReferenceRequestSignal,
   mapViewToLocationSignal,
   addListenerToMapViewSignal,
   removeListenerFromMapViewSignal
 } from '../../signals'
 
-import { coordinateFromLonLat } from './MapView.jsx'
 import { normalizeAngle } from './MapRotationTextBox.jsx'
 
 /**
@@ -79,7 +83,7 @@ export default class MapViewManager {
    */
   viewListener (e) {
     if (e.key === 'center') {
-      const center = ol.proj.toLonLat(this.view.getCenter()).map(
+      const center = lonLatFromCoordinate(this.view.getCenter()).map(
         c => Math.round(c * 10 ** 6) / 10 ** 6
       )
       this.callbacks.center.forEach(c => c({lon: center[0], lat: center[1]}))

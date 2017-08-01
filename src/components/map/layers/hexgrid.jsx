@@ -9,7 +9,7 @@ import TextField from 'material-ui/TextField'
 
 import { setLayerParameterById } from '../../../actions/layers'
 
-import { coordinateFromLonLat } from '../MapView'
+import { coordinateFromLonLat } from '../../../utils/geography'
 
 /**
  * Helper function that creates an OpenLayers fill style object from a color.
