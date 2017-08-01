@@ -217,7 +217,6 @@ class HeatmapVectorSource extends source.Vector {
     this.processNotification_ = this.processNotification_.bind(this)
 
     this.makePoint_ = this.makePoint_.bind(this)
-    this.colorForValue_ = this.colorForValue_.bind(this)
     this.drawPointFromData_ = this.drawPointFromData_.bind(this)
 
     this.features = new HashedMap()
@@ -282,9 +281,7 @@ class HeatmapVectorSource extends source.Vector {
       if (values.has(snappedKey)) {
         data.value = (values.get(snappedKey) + data.value) / 2
         values.set(snappedKey, data.value)
-        this.features.get(snappedKey).setStyle(
-          makePointStyle(this.colorForValue_(data.value), 5)
-        )
+        this.features.get(snappedKey).measuredValue = data.value
 
         return
       }
@@ -293,9 +290,7 @@ class HeatmapVectorSource extends source.Vector {
         if (getDistance(key, data) < minDistance) {
           data.value = (values.get(key) + data.value) / 2
           values.set(key, data.value)
-          this.features.get(key).setStyle(
-            makePointStyle(this.colorForValue_(data.value), 5)
-          )
+          this.features.get(key).measuredValue = data.value
 
           return
         }
@@ -349,22 +344,10 @@ class HeatmapVectorSource extends source.Vector {
     })
   }
 
-  colorForValue_ (value) {
-    const { minHue, maxHue, threshold, minValue, maxValue } = this.props.parameters
-
-    if (value < threshold) {
-      return 'hsla(0, 100%, 100%, 0.5)'
-    }
-
-    const hue = (value - minValue) / (maxValue - minValue) * (maxHue - minHue) + minHue
-
-    return `hsla(${hue}, 70%, 50%, 0.5)`
-  }
-
   drawPointFromData_ (data) {
     const point = this.makePoint_([data.lon, data.lat])
+    point.measuredValue = data.value
 
-    point.setStyle(makePointStyle(this.colorForValue_(data.value), 5))
     this.source.addFeature(point)
 
     return point
@@ -379,6 +362,33 @@ HeatmapVectorSource.propTypes = {
 }
 
 class HeatmapLayerPresentation extends React.Component {
+  constructor (props) {
+    super(props)
+
+    this._colorForValue = this._colorForValue.bind(this)
+    this.styleFunction = this.styleFunction.bind(this)
+  }
+
+  _colorForValue (value) {
+    const { minHue, maxHue, threshold, minValue, maxValue } = this.props.layer.parameters
+
+    if (value < threshold) {
+      return 'hsla(0, 100%, 100%, 0.5)'
+    }
+
+    const hue = (value - minValue) / (maxValue - minValue) * (maxHue - minHue) + minHue
+
+    return `hsla(${hue}, 70%, 50%, 0.5)`
+  }
+
+  styleFunction (feature, resolution) {
+    // const zoom = Math.round(17 - Math.log2(resolution))
+
+    const radius = 0.9 / resolution + 1.5
+
+    return makePointStyle(this._colorForValue(feature.measuredValue), radius)
+  }
+
   render () {
     if (!this.props.layer.visible) {
       return false
@@ -388,7 +398,7 @@ class HeatmapLayerPresentation extends React.Component {
 
     return (
       <div>
-        <layer.Vector zIndex={this.props.zIndex}>
+        <layer.Vector zIndex={this.props.zIndex} style={this.styleFunction}>
           <HeatmapVectorSource storageKey={`${this.props.layerId}_data`}
             parameters={this.props.layer.parameters}
             setLayerParameter={this.props.setLayerParameter} />
