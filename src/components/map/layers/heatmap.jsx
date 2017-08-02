@@ -12,7 +12,9 @@ import RaisedButton from 'material-ui/RaisedButton'
 import TextField from 'material-ui/TextField'
 import Checkbox from 'material-ui/Checkbox'
 
+import ActionToc from 'material-ui/svg-icons/action/toc'
 import ContentClear from 'material-ui/svg-icons/content/clear'
+import NavigationCheck from 'material-ui/svg-icons/navigation/check'
 
 import { setLayerParameterById } from '../../../actions/layers'
 
@@ -59,6 +61,7 @@ class HeatmapLayerSettingsPresentation extends React.Component {
 
         <RaisedButton
           label={'Edit subscriptions'}
+          icon={<ActionToc />}
           style={{marginBottom: '10px'}}
           onClick={this.showSubscriptionDialog_} />
 
@@ -68,7 +71,7 @@ class HeatmapLayerSettingsPresentation extends React.Component {
           style={textFieldStyle}
           floatingLabelText={'Threshold'}
           type={'number'}
-          defaultValue={this.props.layer.parameters.threshold} />
+          defaultValue={_.round(this.props.layer.parameters.threshold, 3)} />
 
         <br />
 
@@ -76,12 +79,12 @@ class HeatmapLayerSettingsPresentation extends React.Component {
           style={textFieldStyle}
           floatingLabelText={'Minimum value'}
           type={'number'}
-          defaultValue={this.props.layer.parameters.minValue} />
+          defaultValue={_.round(this.props.layer.parameters.minValue, 3)} />
         <TextField ref={'maxValue'}
           style={textFieldStyle}
           floatingLabelText={'Maximum value'}
           type={'number'}
-          defaultValue={this.props.layer.parameters.maxValue} />
+          defaultValue={_.round(this.props.layer.parameters.maxValue, 3)} />
 
         <Checkbox ref={'autoScale'}
           defaultChecked={this.props.layer.parameters.autoScale}
@@ -95,8 +98,8 @@ class HeatmapLayerSettingsPresentation extends React.Component {
           height: '25px',
           marginLeft: '50px',
           background: `linear-gradient(-90deg,
-          hsla(${this.state.maxHue}, 70%, 50%, 0.75),
-          hsla(${this.state.minHue}, 70%, 50%, 0.75)
+            hsla(${this.state.maxHue}, 70%, 50%, 0.75),
+            hsla(${this.state.minHue}, 70%, 50%, 0.75)
           )`
         }} />
         <input id={'minHue'} ref={'minHue'} type={'range'} min={'0'} max={'360'}
@@ -121,6 +124,7 @@ class HeatmapLayerSettingsPresentation extends React.Component {
 
         <RaisedButton style={{marginTop: '10px'}}
           label={'Update parameters'}
+          icon={<NavigationCheck />}
           onClick={this.handleClick_} />
 
         <RaisedButton style={{marginLeft: '10px'}}
@@ -278,13 +282,15 @@ class HeatmapVectorSource extends source.Vector {
   processData_ (values, data) {
     const minDistance = this.props.parameters.minDistance
 
+    /* Converting to the EPSG:3857 projection, snapping it to the grid
+    and then converting it back. */
     if (this.props.parameters.snapToGrid) {
-      const mercator = coordinateFromLonLat([data.lon, data.lat])
-      const snappedMercator = [
-        Math.round(mercator[0] / minDistance) * minDistance,
-        Math.round(mercator[1] / minDistance) * minDistance
-      ]
-      const snappedLonLat = lonLatFromCoordinate(snappedMercator)
+      const snappedLonLat = lonLatFromCoordinate(
+        coordinateFromLonLat([data.lon, data.lat]).map(
+          c => Math.round(c / minDistance) * minDistance
+        )
+      )
+
       data.lon = snappedLonLat[0]
       data.lat = snappedLonLat[1]
 
@@ -419,8 +425,8 @@ class HeatmapLayerPresentation extends React.Component {
         <div id={'heatmapScale'}
           style={{
             background: `linear-gradient(
-            hsla(${this.props.layer.parameters.maxHue}, 70%, 50%, 0.75),
-            hsla(${this.props.layer.parameters.minHue}, 70%, 50%, 0.75)
+              hsla(${this.props.layer.parameters.maxHue}, 70%, 50%, 0.75),
+              hsla(${this.props.layer.parameters.minHue}, 70%, 50%, 0.75)
             )`
           }}>
           <span>{`${(maxValue).toFixed(3)} ${unit}`}</span>
