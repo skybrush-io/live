@@ -17,7 +17,11 @@ import ContentClear from 'material-ui/svg-icons/content/clear'
 import { setLayerParameterById } from '../../../actions/layers'
 
 import messageHub from '../../../message-hub'
-import { coordinateFromLonLat } from '../MapView'
+import {
+  coordinateFromLonLat,
+  lonLatFromCoordinate,
+  wgs84Sphere
+} from '../../../utils/geography'
 
 // === Settings for this particular layer type ===
 
@@ -52,8 +56,10 @@ class HeatmapLayerSettingsPresentation extends React.Component {
           setUnit={_.partial(this.props.setLayerParameter, 'unit')} />
 
         <p key={'header'}>Heatmap options:</p>
+
         <RaisedButton
           label={'Edit subscriptions'}
+          style={{marginBottom: '10px'}}
           onClick={this.showSubscriptionDialog_} />
 
         <br />
@@ -105,8 +111,8 @@ class HeatmapLayerSettingsPresentation extends React.Component {
         <br />
 
         <TextField ref={'minDistance'}
-          floatingLabelText={'Minimum distance between points'}
-          type={'number'}
+          floatingLabelText={'Minimum distance between points (m)'}
+          type={'number'} style={{width: '280px'}}
           defaultValue={this.props.layer.parameters.minDistance} />
         <Checkbox ref={'snapToGrid'}
           defaultChecked={this.props.layer.parameters.snapToGrid}
@@ -188,8 +194,8 @@ export const HeatmapLayerSettings = connect(
  * @param {devicedata} b the second packet to compare
  * @return {number} the distance between the packets
  */
-const getDistance = (a, b) => Math.sqrt(
-  Math.pow(a.lon - b.lon, 2) + Math.pow(a.lat - b.lat, 2)
+const getDistance = (a, b) => wgs84Sphere.haversineDistance(
+  [a.lon, a.lat], [b.lon, b.lat]
 )
 
 /**
@@ -217,7 +223,6 @@ class HeatmapVectorSource extends source.Vector {
     this.processNotification_ = this.processNotification_.bind(this)
 
     this.makePoint_ = this.makePoint_.bind(this)
-    this.colorForValue_ = this.colorForValue_.bind(this)
     this.drawPointFromData_ = this.drawPointFromData_.bind(this)
 
     this.features = new HashedMap()
@@ -274,17 +279,21 @@ class HeatmapVectorSource extends source.Vector {
     const minDistance = this.props.parameters.minDistance
 
     if (this.props.parameters.snapToGrid) {
-      data.lon = Math.round(data.lon / minDistance) * minDistance
-      data.lat = Math.round(data.lat / minDistance) * minDistance
+      const mercator = coordinateFromLonLat([data.lon, data.lat])
+      const snappedMercator = [
+        Math.round(mercator[0] / minDistance) * minDistance,
+        Math.round(mercator[1] / minDistance) * minDistance
+      ]
+      const snappedLonLat = lonLatFromCoordinate(snappedMercator)
+      data.lon = snappedLonLat[0]
+      data.lat = snappedLonLat[1]
 
       const snappedKey = {lon: data.lon, lat: data.lat}
 
       if (values.has(snappedKey)) {
         data.value = (values.get(snappedKey) + data.value) / 2
         values.set(snappedKey, data.value)
-        this.features.get(snappedKey).setStyle(
-          makePointStyle(this.colorForValue_(data.value), 5)
-        )
+        this.features.get(snappedKey).measuredValue = data.value
 
         return
       }
@@ -293,9 +302,7 @@ class HeatmapVectorSource extends source.Vector {
         if (getDistance(key, data) < minDistance) {
           data.value = (values.get(key) + data.value) / 2
           values.set(key, data.value)
-          this.features.get(key).setStyle(
-            makePointStyle(this.colorForValue_(data.value), 5)
-          )
+          this.features.get(key).measuredValue = data.value
 
           return
         }
@@ -349,22 +356,10 @@ class HeatmapVectorSource extends source.Vector {
     })
   }
 
-  colorForValue_ (value) {
-    const { minHue, maxHue, threshold, minValue, maxValue } = this.props.parameters
-
-    if (value < threshold) {
-      return 'hsla(0, 100%, 100%, 0.5)'
-    }
-
-    const hue = (value - minValue) / (maxValue - minValue) * (maxHue - minHue) + minHue
-
-    return `hsla(${hue}, 70%, 50%, 0.5)`
-  }
-
   drawPointFromData_ (data) {
     const point = this.makePoint_([data.lon, data.lat])
+    point.measuredValue = data.value
 
-    point.setStyle(makePointStyle(this.colorForValue_(data.value), 5))
     this.source.addFeature(point)
 
     return point
@@ -379,6 +374,33 @@ HeatmapVectorSource.propTypes = {
 }
 
 class HeatmapLayerPresentation extends React.Component {
+  constructor (props) {
+    super(props)
+
+    this._colorForValue = this._colorForValue.bind(this)
+    this.styleFunction = this.styleFunction.bind(this)
+  }
+
+  _colorForValue (value) {
+    const { minHue, maxHue, threshold, minValue, maxValue } = this.props.layer.parameters
+
+    if (value < threshold) {
+      return 'hsla(0, 100%, 100%, 0.5)'
+    }
+
+    const hue = (value - minValue) / (maxValue - minValue) * (maxHue - minHue) + minHue
+
+    return `hsla(${hue}, 70%, 50%, 0.5)`
+  }
+
+  styleFunction (feature, resolution) {
+    // const zoom = Math.round(17 - Math.log2(resolution))
+
+    const radius = 0.9 / resolution + 1.5
+
+    return makePointStyle(this._colorForValue(feature.measuredValue), radius)
+  }
+
   render () {
     if (!this.props.layer.visible) {
       return false
@@ -388,7 +410,7 @@ class HeatmapLayerPresentation extends React.Component {
 
     return (
       <div>
-        <layer.Vector zIndex={this.props.zIndex}>
+        <layer.Vector zIndex={this.props.zIndex} style={this.styleFunction}>
           <HeatmapVectorSource storageKey={`${this.props.layerId}_data`}
             parameters={this.props.layer.parameters}
             setLayerParameter={this.props.setLayerParameter} />

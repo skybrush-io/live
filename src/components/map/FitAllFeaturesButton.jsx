@@ -7,6 +7,7 @@ import { connect } from 'react-redux'
 import { showSnackbarMessage } from '../../actions/snackbar'
 
 import ol from 'openlayers'
+import { coordinateFromLonLat } from '../../utils/geography'
 
 import { mapReferenceRequestSignal, fitAllFeaturesSignal } from '../../signals'
 
@@ -149,9 +150,8 @@ class FitAllFeaturesButton extends React.Component {
       easing: ol.easing.easeOut
     }))
 
-    let center = ol.proj.fromLonLat(
-      [position.coords.longitude, position.coords.latitude],
-      'EPSG:3857'
+    let center = coordinateFromLonLat(
+      [position.coords.longitude, position.coords.latitude]
     )
 
     view.setCenter(center)

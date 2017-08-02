@@ -85,22 +85,25 @@ export default class SubscriptionDialog extends React.Component {
       <FlatButton label={'Done'} primary onTouchTap={this.hideDialog_} />
     ]
 
+    const dropDownMenuStyle = {verticalAlign: 'text-bottom'}
+
     return (
-      <Dialog
-        open={this.state.visible}
-        actions={actions}>
+      <Dialog open={this.state.visible} actions={actions}>
         UAV:
         <DropDownMenu ref={'uavDropDown'} value={this.state.selectedUAV}
+          style={dropDownMenuStyle}
           onChange={_.partial(this.handleChange_, 'selectedUAV')}>
           {UAVMenuItems}
         </DropDownMenu>
         Device:
         <DropDownMenu ref={'deviceDropDown'} value={this.state.selectedDevice}
+          style={dropDownMenuStyle}
           onChange={_.partial(this.handleChange_, 'selectedDevice')}>
           {DeviceMenuItems}
         </DropDownMenu>
         Channel:
         <DropDownMenu ref={'channelDropDown'} value={this.state.selectedChannel}
+          style={dropDownMenuStyle}
           onChange={_.partial(this.handleChange_, 'selectedChannel')}>
           {ChannelMenuItems}
         </DropDownMenu>

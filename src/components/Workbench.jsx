@@ -15,6 +15,7 @@ import { compose, getContext, renderNothing, withContext, withProps } from 'reco
 
 import ClockDisplayList from './ClockDisplayList'
 import ConnectionList from './ConnectionList'
+import SavedLocationList from './SavedLocationList'
 import MessagesPanel from './chat/MessagesPanel'
 import UAVList from './UAVList'
 import MapView from './map/MapView'
@@ -40,6 +41,7 @@ const getFlockFromContext = getContext({
 const componentRegistry = {
   'connection-list': ConnectionList,
   'clock-list': ClockDisplayList,
+  'saved-location-list': SavedLocationList,
   'map': MapView,
   'messages': compose(withProps({
     style: {
@@ -151,6 +153,13 @@ export default class Workbench extends React.Component {
                     componentName: 'lm-lazy-react-component',
                     component: 'clock-list',
                     title: 'Clocks'
+                  },
+                  {
+                    // type: 'react-component',
+                    type: 'component',
+                    componentName: 'lm-lazy-react-component',
+                    component: 'saved-location-list',
+                    title: 'Locations'
                   }
                 ]
               },

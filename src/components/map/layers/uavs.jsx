@@ -18,12 +18,12 @@ import { showSnackbarMessage } from '../../../actions/snackbar'
 
 import { updateUAVFeatureColorsSignal } from '../../../signals'
 
-import { coordinateFromLonLat } from '../MapView'
+import { coordinateFromLonLat } from '../../../utils/geography'
 
 const updatePredicates = (predicates, errorHandler) => {
   for (const color in predicates) {
     try {
-      /*eslint no-new-func: "off" */
+      /* eslint no-new-func: "off" */
       colorPredicates[color] = new Function('id', `return ${predicates[color]}`)
     } catch (e) {
       errorHandler(`Invalid color predicate for ${color} --> ${e}`)
