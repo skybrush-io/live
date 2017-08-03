@@ -32,14 +32,13 @@ function formatSecondaryTextForUAV (uav) {
   return `at ${formatCoordinate([uav.lon, uav.lat])}, heading ${uav.heading.toFixed(1)}°`
 }
 
-// TODO: avoid arrow function
-const makeJumpToUAV = uav => () => {
+const jumpToUAV = function () {
+  const uav = this['data-uav']
   mapViewToLocationSignal.dispatch({
     center: {
       lon: uav.lon,
       lat: uav.lat
-    },
-    zoom: 20
+    }
   }, 500)
 }
 
@@ -48,7 +47,8 @@ const makeJumpToUAV = uav => () => {
  */
 const UAVListPresentation = multiSelectableListOf((uav, props, selected) => {
   const rightIconButton = (
-    <IconButton onClick={makeJumpToUAV(uav)} tooltip={'Jump to'}>
+    <IconButton data-uav={uav} onClick={jumpToUAV}
+      tooltip={`Jump to ${uav.id}`} tooltipPosition={'bottom-left'}>
       <ImageAdjust />
     </IconButton>
   )

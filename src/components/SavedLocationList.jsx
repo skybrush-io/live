@@ -19,6 +19,14 @@ import { listOf } from './helpers/lists'
 
 import { mapViewToLocationSignal } from '../signals'
 
+const mapViewToLocation = function () {
+  mapViewToLocationSignal.dispatch(this['data-location'])
+}
+
+const editLocation = function () {
+  this['data-onEditLocation'](this['data-location'].id)
+}
+
 /**
  * Presentation component for a single entry in the location list.
  *
@@ -26,7 +34,7 @@ import { mapViewToLocationSignal } from '../signals'
  * @return {Object} the React presentation component
  */
 const LocationListEntry = (props) => {
-  const { action, jumpToLocation, location } = props
+  const { location, onEditLocation } = props
   const { center: {lon, lat}, id, name, rotation, zoom } = location
 
   const avatar = id === 'addNew'
@@ -35,25 +43,30 @@ const LocationListEntry = (props) => {
 
   const secondaryText = `lon: ${lon}, lat: ${lat}, rot: ${rotation}°, zoom: ${zoom}`
 
-  const actionButton = id === 'addNew'
-    ? <IconButton onTouchTap={action}><ContentAdd /></IconButton>
-    : <IconButton onTouchTap={action}><ActionSettings /></IconButton>
+  const actionButton = (
+    <IconButton
+      data-location={location}
+      data-onEditLocation={onEditLocation}
+      onTouchTap={editLocation}>
+      {id === 'addNew' ? <ContentAdd /> : <ActionSettings />}
+    </IconButton>
+  )
 
-  const touchTapAction = id === 'addNew' ? action : jumpToLocation
+  const touchTapAction = id === 'addNew' ? editLocation : mapViewToLocation
 
   return (
     <ListItem leftAvatar={avatar}
       primaryText={name}
       secondaryText={secondaryText}
       rightIconButton={actionButton}
+      data-location={location}
       onTouchTap={touchTapAction}
     />
   )
 }
 
 LocationListEntry.propTypes = {
-  action: PropTypes.func.isRequired,
-  jumpToLocation: PropTypes.func.isRequired,
+  onEditLocation: PropTypes.func.isRequired,
   location: PropTypes.object.isRequired
 }
 
@@ -62,9 +75,7 @@ LocationListEntry.propTypes = {
  */
 export const LocationListPresentation = listOf((location, { onEditLocation }) => {
   return <LocationListEntry key={location.id}
-    // TODO: avoid arrow functions
-    action={() => onEditLocation(location.id)}
-    jumpToLocation={() => mapViewToLocationSignal.dispatch(location)}
+    onEditLocation={onEditLocation}
     location={location} />
 }, {
   dataProvider: 'savedLocations',
