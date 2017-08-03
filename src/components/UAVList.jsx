@@ -4,7 +4,11 @@
  */
 
 import Immutable from 'immutable'
+
 import { ListItem } from 'material-ui/List'
+import IconButton from 'material-ui/IconButton'
+import ImageAdjust from 'material-ui/svg-icons/image/adjust'
+
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import u from 'updeep'
@@ -16,6 +20,8 @@ import { setSelectedFeatures } from '../actions/map'
 import Flock from '../model/flock'
 import { formatCoordinate } from '../utils/geography'
 
+import { mapViewToLocationSignal } from '../signals'
+
 /**
  * Formats the secondary text to be shown for a single UAV in the UAV list.
  *
@@ -26,15 +32,33 @@ function formatSecondaryTextForUAV (uav) {
   return `at ${formatCoordinate([uav.lon, uav.lat])}, heading ${uav.heading.toFixed(1)}°`
 }
 
+// TODO: avoid arrow function
+const makeJumpToUAV = uav => () => {
+  mapViewToLocationSignal.dispatch({
+    center: {
+      lon: uav.lon,
+      lat: uav.lat
+    },
+    zoom: 20
+  }, 500)
+}
+
 /**
  * Presentation component for the entire UAV list.
  */
 const UAVListPresentation = multiSelectableListOf((uav, props, selected) => {
+  const rightIconButton = (
+    <IconButton onClick={makeJumpToUAV(uav)} tooltip={'Jump to'}>
+      <ImageAdjust />
+    </IconButton>
+  )
+
   return <ListItem key={uav.id}
-                   primaryText={uav.id}
-                   secondaryText={formatSecondaryTextForUAV(uav)}
-                   className={selected ? 'selected-list-item' : undefined}
-                   onTouchTap={props.onItemSelected} />
+    primaryText={uav.id}
+    secondaryText={formatSecondaryTextForUAV(uav)}
+    rightIconButton={rightIconButton}
+    className={selected ? 'selected-list-item' : undefined}
+    onTouchTap={props.onItemSelected} />
 }, {
   backgroundHint: 'No UAVs',
   dataProvider: 'uavs'
@@ -144,9 +168,9 @@ class UAVList extends React.Component {
     const { uavs } = this.state
     return (
       <div style={{ height: '100%' }}>
-        <UAVToolbar />
+        <UAVToolbar selectedUAVIds={selectedUAVIds} uavs={uavs} />
         <UAVListPresentation uavs={uavs} value={selectedUAVIds || []}
-                             onChange={onSelectionChanged} />
+          onChange={onSelectionChanged} />
       </div>
     )
   }

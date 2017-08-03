@@ -13,6 +13,7 @@ import { mapReferenceRequestSignal, fitAllFeaturesSignal } from '../../signals'
 
 import IconButton from 'material-ui/IconButton'
 import DeviceGpsFixed from 'material-ui/svg-icons/device/gps-fixed'
+import ActionAllOut from 'material-ui/svg-icons/action/all-out'
 
 /**
  * React Component to adjust the view so that it fits all of the current features.
@@ -43,6 +44,8 @@ class FitAllFeaturesButton extends React.Component {
     this.handleClick_ = this.handleClick_.bind(this)
     this.geolocationReceived_ = this.geolocationReceived_.bind(this)
 
+    this._CurrentIcon = ActionAllOut
+
     fitAllFeaturesSignal.add(this.handleClick_)
 
     mapReferenceRequestSignal.dispatch(this.onMapReferenceReceived_)
@@ -51,7 +54,7 @@ class FitAllFeaturesButton extends React.Component {
   render () {
     return (
       <IconButton onClick={this.handleClick_} tooltip={'Fit all features'}>
-        <DeviceGpsFixed />
+        <this._CurrentIcon />
       </IconButton>
     )
   }
@@ -86,6 +89,8 @@ class FitAllFeaturesButton extends React.Component {
         'No valid feature extents avaiable, trying to get geolocation instead'
       ))
 
+      this._CurrentIcon = DeviceGpsFixed
+
       // This only works on secure origins
       if ('geolocation' in window.navigator) {
         window.navigator.geolocation.getCurrentPosition(this.geolocationReceived_)
@@ -93,6 +98,8 @@ class FitAllFeaturesButton extends React.Component {
 
       return
     }
+
+    this._CurrentIcon = ActionAllOut
 
     const mergedExtent = featureExtents.reduce(
       (bigExtent, currentExtent) => ol.extent.extend(bigExtent, currentExtent),

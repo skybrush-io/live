@@ -14,6 +14,7 @@ import {
 import {
   mapReferenceRequestSignal,
   mapViewToLocationSignal,
+  mapViewToExtentSignal,
   addListenerToMapViewSignal,
   removeListenerFromMapViewSignal
 } from '../../signals'
@@ -31,6 +32,7 @@ export default class MapViewManager {
   constructor () {
     this.initialize = this.initialize.bind(this)
     this.mapViewToLocation = this.mapViewToLocation.bind(this)
+    this.mapViewToExtent = this.mapViewToExtent.bind(this)
     this.onMapReferenceReceived = this.onMapReferenceReceived.bind(this)
     this.viewListener = this.viewListener.bind(this)
     this.addListener = this.addListener.bind(this)
@@ -43,6 +45,7 @@ export default class MapViewManager {
     }
 
     mapViewToLocationSignal.add(this.mapViewToLocation)
+    mapViewToExtentSignal.add(this.mapViewToExtent)
     addListenerToMapViewSignal.add(this.addListener)
     removeListenerFromMapViewSignal.add(this.removeListener)
   }
@@ -178,5 +181,27 @@ export default class MapViewManager {
 
       this.view.setZoom(zoom)
     }
+  }
+
+  /**
+   * Make the map's view fit a given extent.
+   *
+   * @param {object} extent The extent to fit.
+   * @param {number} duration The desired duration of the transition.
+   */
+  mapViewToExtent (extent, duration = 1000) {
+    this.map.beforeRender(ol.animation.zoom({
+      resolution: this.view.getResolution(),
+      duration,
+      easing: ol.easing.easeOut
+    }))
+
+    this.map.beforeRender(ol.animation.pan({
+      source: this.view.getCenter(),
+      duration,
+      easing: ol.easing.easeOut
+    }))
+
+    this.view.fit(extent, this.map.getSize())
   }
 }

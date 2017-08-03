@@ -10,6 +10,7 @@ export const fitAllFeaturesSignal = new Signal()
 export const updateUAVFeatureColorsSignal = new Signal()
 
 export const mapViewToLocationSignal = new Signal()
+export const mapViewToExtentSignal = new Signal()
 export const addListenerToMapViewSignal = new Signal()
 export const removeListenerFromMapViewSignal = new Signal()
 
@@ -23,6 +24,7 @@ export default {
   updateUAVFeatureColorsSignal: updateUAVFeatureColorsSignal,
 
   mapViewToLocationSignal: mapViewToLocationSignal,
+  mapViewToExtentSignal: mapViewToExtentSignal,
   addListenerToMapViewSignal: addListenerToMapViewSignal,
   removeListenerFromMapViewSignal: removeListenerFromMapViewSignal
 }
