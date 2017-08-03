@@ -9,7 +9,11 @@ import { showSnackbarMessage } from '../../actions/snackbar'
 import ol from 'openlayers'
 import { coordinateFromLonLat } from '../../utils/geography'
 
-import { mapReferenceRequestSignal, fitAllFeaturesSignal } from '../../signals'
+import {
+  mapReferenceRequestSignal,
+  fitAllFeaturesSignal,
+  mapViewToExtentSignal
+} from '../../signals'
 
 import IconButton from 'material-ui/IconButton'
 import DeviceGpsFixed from 'material-ui/svg-icons/device/gps-fixed'
@@ -74,8 +78,6 @@ class FitAllFeaturesButton extends React.Component {
   * @param {Event} e the event fired from the IconButton component
   */
   handleClick_ (e) {
-    const view = this.map.getView()
-
     let feasibleLayers = this.map.getLayers().getArray().filter(this.isLayerFeasible_)
     let featureArrays = feasibleLayers.map(l => l.getSource().getFeatures())
     let features = [].concat.apply([], featureArrays)
@@ -108,27 +110,7 @@ class FitAllFeaturesButton extends React.Component {
 
     const bufferedExtent = ol.extent.buffer(mergedExtent, this.props.margin)
 
-    this.map.beforeRender(ol.animation.zoom({
-      resolution: view.getResolution(),
-      duration: this.props.duration,
-      easing: ol.easing.easeOut
-    }))
-
-    this.map.beforeRender(ol.animation.pan({
-      source: view.getCenter(),
-      duration: this.props.duration,
-      easing: ol.easing.easeOut
-    }))
-
-    // this.map.beforeRender(ol.animation.rotate({
-    //   rotation: view.getRotation(),
-    //   duration: this.props.duration,
-    //   easing: ol.easing.easeOut
-    // }))
-    //
-    // view.setRotation(0)
-
-    view.fit(bufferedExtent, this.map.getSize())
+    mapViewToExtentSignal.dispatch(bufferedExtent)
   }
 
   /**
