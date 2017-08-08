@@ -64,19 +64,19 @@ class FitAllFeaturesButton extends React.Component {
   }
 
   /**
-  * Callback for receiving the map reference and saving it.
-  *
-  * @param {ol.Map} map the map to attach the event handlers to
-  */
+   * Callback for receiving the map reference and saving it.
+   *
+   * @param {ol.Map} map the map to attach the event handlers to
+   */
   _onMapReferenceReceived (map) {
     this.map = map
   }
 
   /**
-  * Event handler that calculates the target extent and fits it into the view.
-  *
-  * @param {Event} e the event fired from the IconButton component
-  */
+   * Event handler that calculates the target extent and fits it into the view.
+   *
+   * @param {Event} e the event fired from the IconButton component
+   */
   _handleClick (e) {
     let feasibleLayers = this.map.getLayers().getArray().filter(this._isLayerFeasible)
     let featureArrays = feasibleLayers.map(l => l.getSource().getFeatures())
@@ -126,10 +126,10 @@ class FitAllFeaturesButton extends React.Component {
   }
 
   /**
-  * Event handler that centers the map to the received position.
-  *
-  * @param {Object} position the position object provided by the geolocation service
-  */
+   * Event handler that centers the map to the received position.
+   *
+   * @param {Object} position the position object provided by the geolocation service
+   */
   _geolocationReceived (position) {
     const view = this.map.getView()
 

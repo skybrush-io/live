@@ -12,7 +12,6 @@ import { setLayerParametersById } from '../../../actions/layers'
 import { showSnackbarMessage } from '../../../actions/snackbar'
 import { TileServerType, TileServerTypes } from '../../../model/layers'
 
-
 // === Settings for this particular layer type ===
 
 class TileServerLayerSettingsPresentation extends React.Component {
@@ -29,37 +28,37 @@ class TileServerLayerSettingsPresentation extends React.Component {
     const { parameters } = this.props.layer
     return (
       <div>
-        <SelectField ref="type"
-          floatingLabelText="Tile server type"
+        <SelectField ref='type'
+          floatingLabelText='Tile server type'
           value={parameters.type}
           onChange={this.props.changeTileServerType}>
           {serverTypeMenuItems}
         </SelectField>
-        <TextField ref="url"
-          floatingLabelText="Tile server URL"
+        <TextField ref='url'
+          floatingLabelText='Tile server URL'
           defaultValue={parameters.url}
-          fullWidth={true} />
+          fullWidth />
         {
           (parameters.type !== TileServerType.XYZ)
           ? (
-            <TextField ref="layers"
-              floatingLabelText="Layers"
-              hintText="Layers to show (comma-separated)"
+            <TextField ref='layers'
+              floatingLabelText='Layers'
+              hintText='Layers to show (comma-separated)'
               defaultValue={parameters.layers}
-              fullWidth={true} />
+              fullWidth />
           ) : (
             <div>
-              <small>Use <code>{"{x}"}</code>, <code>{"{y}"}</code>,
-              <code>{"{-y}"}</code> and <code>{"{z}"}</code> in the server URL template
+              <small>Use <code>{'{x}'}</code>, <code>{'{y}'}</code>,
+              <code>{'{-y}'}</code> and <code>{'{z}'}</code> in the server URL template
               for the x and y coordinates and the zoom level. Use tokens like
-              <code>{"{a-c}"}</code> to denote multiple servers handling the same
+              <code>{'{a-c}'}</code> to denote multiple servers handling the same
               tileset.</small>
             </div>
           )
         }
         <div style={{ textAlign: 'center', paddingTop: '1em' }}>
           <FlatButton
-            label="Save settings"
+            label='Save settings'
             icon={<NavigationCheck />}
             onClick={this._handleClick} />
         </div>
@@ -141,7 +140,7 @@ class TileServerLayerPresentation extends React.Component {
 
       case TileServerType.TILE_CACHE:
         const urlRoot = (url && url.length > 0 && url.charAt(url.length - 1) === '/') ? url : (url + '/')
-        const tmsUrl = urlRoot + "1.0.0/" + layers + "/{z}/{x}/{-y}.png"
+        const tmsUrl = urlRoot + '1.0.0/' + layers + '/{z}/{x}/{-y}.png'
         return (
           <source.XYZ url={tmsUrl} />
         )

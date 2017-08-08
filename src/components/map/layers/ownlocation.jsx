@@ -86,8 +86,8 @@ class OwnLocationLayerPresentation extends React.Component {
     return (
       <div>
         <layer.Vector zIndex={this.props.zIndex}
-          updateWhileAnimating={true}
-          updateWhileInteracting={true}>
+          updateWhileAnimating
+          updateWhileInteracting>
           <OwnLocationVectorSource />
         </layer.Vector>
       </div>

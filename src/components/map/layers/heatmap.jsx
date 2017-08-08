@@ -254,7 +254,7 @@ class HeatmapVectorSource extends source.Vector {
   }
 
   _setStoredData (values) {
-    window.localStorage.setItem(this.props.storageKey, JSON.stringify([...values._map]))
+    window.localStorage.setItem(this.props.storageKey, JSON.stringify([...values.data]))
   }
 
   _drawFromStoredData () {
