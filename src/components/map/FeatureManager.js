@@ -31,9 +31,9 @@ export default class FeatureManager {
    *           coordinate system of the source layer
    */
   constructor (vectorSource, projection) {
-    this.featuresById_ = {}
-    this.featureFactory_ = undefined
-    this.vectorSource_ = vectorSource
+    this._featuresById = {}
+    this._featureFactory = undefined
+    this._vectorSource = vectorSource
     this.projection = projection
 
     this.featureAdded = new Signal()
@@ -42,7 +42,7 @@ export default class FeatureManager {
     updateUAVFeatureColorsSignal.add(() => {
       const features = this.getFeatureArray()
       for (const feature of features) {
-        feature.setupStyle_()
+        feature._setupStyle()
       }
     })
   }
@@ -59,7 +59,7 @@ export default class FeatureManager {
   createOrUpdateFeatureById (id, coordinate) {
     coordinate = this.projection ? this.projection(coordinate) : coordinate
 
-    const feature = this.getFeatureById(id) || this.createFeatureById_(id, coordinate)
+    const feature = this.getFeatureById(id) || this._createFeatureById(id, coordinate)
     feature.getGeometry().setCoordinates(coordinate)
 
     return feature
@@ -80,15 +80,15 @@ export default class FeatureManager {
    * @returns {ol.Feature}  the OpenLayers feature that will represent the
    *          object with the given ID on the map
    */
-  createFeatureById_ (id, coordinate) {
+  _createFeatureById (id, coordinate) {
     const point = new ol.geom.Point(coordinate)
-    const feature = this.featureFactory_ ? this.featureFactory_(id, point) : new ol.Feature(point)
+    const feature = this._featureFactory ? this._featureFactory(id, point) : new ol.Feature(point)
 
     feature.setId(id)
-    this.featuresById_[id] = feature
+    this._featuresById[id] = feature
 
-    if (this.vectorSource_) {
-      this.vectorSource_.addFeature(feature)
+    if (this._vectorSource) {
+      this._vectorSource.addFeature(feature)
     }
 
     this.featureAdded.dispatch(feature)
@@ -106,7 +106,7 @@ export default class FeatureManager {
    *         object has no feature yet
    */
   getFeatureById (id) {
-    return this.featuresById_[id]
+    return this._featuresById[id]
   }
 
   /**
@@ -119,7 +119,7 @@ export default class FeatureManager {
    *         managed by this manager
    */
   getFeatureArray () {
-    return _.values(this.featuresById_)
+    return _.values(this._featuresById)
   }
 
   /**
@@ -133,8 +133,8 @@ export default class FeatureManager {
   removeFeatureById (id) {
     const feature = this.getFeatureById(id)
 
-    if (feature && this.vectorSource_) {
-      this.vectorSource_.removeFeatureById(feature)
+    if (feature && this._vectorSource) {
+      this._vectorSource.removeFeatureById(feature)
     }
 
     return feature
@@ -152,7 +152,7 @@ export default class FeatureManager {
    *         the feature factory function
    */
   get featureFactory () {
-    return this.featureFactory_
+    return this._featureFactory
   }
 
   /**
@@ -168,7 +168,7 @@ export default class FeatureManager {
    * @return {undefined}
    */
   set featureFactory (value) {
-    this.featureFactory_ = value
+    this._featureFactory = value
   }
 
   /**
@@ -184,7 +184,7 @@ export default class FeatureManager {
    *         attached to this feature manager
    */
   get vectorSource () {
-    return this.vectorSource_
+    return this._vectorSource
   }
 
   /**
@@ -202,19 +202,19 @@ export default class FeatureManager {
    * @return {undefined}
    */
   set vectorSource (value) {
-    if (this.vectorSource_ === value) {
+    if (this._vectorSource === value) {
       return
     }
 
-    if (this.vectorSource_) {
+    if (this._vectorSource) {
       throw new Error('A feature manager cannot be re-associated to a ' +
         'new vector source once it has been bound to another one')
     }
 
-    this.vectorSource_ = value
+    this._vectorSource = value
 
     if (value) {
-      _.forOwn(this.featuresById_, feature => value.addFeature(feature))
+      _.forOwn(this._featuresById, feature => value.addFeature(feature))
     }
   }
 }

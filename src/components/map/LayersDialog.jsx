@@ -42,7 +42,7 @@ class BasicLayerSettingsFormPresentation extends React.Component {
           floatingLabelText={'Layer name'}
           hintText={'New layer'}
           style={{ width: '100%' }}
-          onKeyDown={this.onKeyDown_}
+          onKeyDown={this._onKeyDown}
         />
         <div>&nbsp;</div>
         <Toggle label={'Visible'} labelPosition={'right'}
@@ -59,7 +59,7 @@ class BasicLayerSettingsFormPresentation extends React.Component {
    *
    * @param {Event} e the event fired from the TextField React component
    */
-  onKeyDown_ (e) {
+  _onKeyDown (e) {
     if (e.key === 'Enter') {
       e.target.blur()
     }
@@ -246,9 +246,9 @@ const LayerList = connect(
 class LayersDialogPresentation extends React.Component {
   constructor (props) {
     super(props)
-    this.moveSelectedLayerDown_ = this.moveSelectedLayerDown_.bind(this)
-    this.moveSelectedLayerUp_ = this.moveSelectedLayerUp_.bind(this)
-    this.removeSelectedLayer_ = this.removeSelectedLayer_.bind(this)
+    this._moveSelectedLayerDown = this._moveSelectedLayerDown.bind(this)
+    this._moveSelectedLayerUp = this._moveSelectedLayerUp.bind(this)
+    this._removeSelectedLayer = this._removeSelectedLayer.bind(this)
   }
 
   render () {
@@ -259,15 +259,15 @@ class LayersDialogPresentation extends React.Component {
         <ContentAdd />
       </IconButton>,
       <IconButton disabled={!selectedLayerId}
-        onTouchTap={this.removeSelectedLayer_}>
+        onTouchTap={this._removeSelectedLayer}>
         <ContentRemove />
       </IconButton>,
       <IconButton disabled={!canMoveUp}
-        onTouchTap={this.moveSelectedLayerUp_}>
+        onTouchTap={this._moveSelectedLayerUp}>
         <ArrowUp />
       </IconButton>,
       <IconButton disabled={!canMoveDown}
-        onTouchTap={this.moveSelectedLayerDown_}>
+        onTouchTap={this._moveSelectedLayerDown}>
         <ArrowDown />
       </IconButton>,
       <div style={{ flex: 1 }} />,
@@ -292,20 +292,20 @@ class LayersDialogPresentation extends React.Component {
     )
   }
 
-  moveSelectedLayer_ (delta) {
+  _moveSelectedLayer (delta) {
     const { selectedLayerId, onMoveLayer } = this.props
     onMoveLayer(selectedLayerId, delta)
   }
 
-  moveSelectedLayerDown_ () {
-    this.moveSelectedLayer_(1)
+  _moveSelectedLayerDown () {
+    this._moveSelectedLayer(1)
   }
 
-  moveSelectedLayerUp_ () {
-    this.moveSelectedLayer_(-1)
+  _moveSelectedLayerUp () {
+    this._moveSelectedLayer(-1)
   }
 
-  removeSelectedLayer_ () {
+  _removeSelectedLayer () {
     const { selectedLayerId, onRemoveLayer } = this.props
     onRemoveLayer(selectedLayerId)
   }

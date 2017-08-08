@@ -13,22 +13,22 @@
 export default class HashedMap {
   constructor (map) {
     if (map instanceof Map) {
-      this.map_ = map
+      this._map = map
     } else if (Array.isArray(map)) {
-      this.map_ = new Map(map)
+      this._map = new Map(map)
     } else {
-      this.map_ = new Map()
+      this._map = new Map()
     }
   }
 
-  set (key, value) { return this.map_.set(JSON.stringify(key), value) }
-  has (key) { return this.map_.has(JSON.stringify(key)) }
-  get (key) { return this.map_.get(JSON.stringify(key)) }
-  get size () { return this.map_.size }
+  set (key, value) { return this._map.set(JSON.stringify(key), value) }
+  has (key) { return this._map.has(JSON.stringify(key)) }
+  get (key) { return this._map.get(JSON.stringify(key)) }
+  get size () { return this._map.size }
 
-  * keys () { for (const key of this.map_.keys()) { yield JSON.parse(key) } }
+  * keys () { for (const key of this._map.keys()) { yield JSON.parse(key) } }
 
   * [Symbol.iterator] () {
-    for (const [key, value] of this.map_) { yield [JSON.parse(key), value] }
+    for (const [key, value] of this._map) { yield [JSON.parse(key), value] }
   }
 }

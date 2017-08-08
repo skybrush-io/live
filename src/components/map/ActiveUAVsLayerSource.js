@@ -22,33 +22,33 @@ export default class ActiveUAVsLayerSource extends source.Vector {
   constructor (props) {
     super(props)
 
-    this.onFeatureAdded_ = this.onFeatureAdded_.bind(this)
-    this.onSelectionMaybeChanged_ = this.onSelectionMaybeChanged_.bind(this)
-    this.onUAVsUpdated_ = this.onUAVsUpdated_.bind(this)
+    this._onFeatureAdded = this._onFeatureAdded.bind(this)
+    this._onSelectionMaybeChanged = this._onSelectionMaybeChanged.bind(this)
+    this._onUAVsUpdated = this._onUAVsUpdated.bind(this)
 
     this.featureManager = new FeatureManager(this.source)
     this.featureManager.featureFactory = (id, geom) => (new UAVFeature(id, geom))
-    this.featureManager.featureAdded.add(this.onFeatureAdded_)
+    this.featureManager.featureAdded.add(this._onFeatureAdded)
 
     this.eventBindings = {}
   }
 
   componentWillReceiveProps (newProps) {
-    this.onFlockMaybeChanged_(this.props.flock, newProps.flock)
-    this.onSelectionMaybeChanged_(this.props.selection, newProps.selection)
+    this._onFlockMaybeChanged(this.props.flock, newProps.flock)
+    this._onSelectionMaybeChanged(this.props.selection, newProps.selection)
     this.featureManager.projection = newProps.projection
   }
 
   componentDidMount () {
     super.componentDidMount()
-    this.onFlockMaybeChanged_(undefined, this.props.flock)
-    this.onSelectionMaybeChanged_(undefined, this.props.selection)
+    this._onFlockMaybeChanged(undefined, this.props.flock)
+    this._onSelectionMaybeChanged(undefined, this.props.selection)
     this.featureManager.projection = this.props.projection
   }
 
   componentWillUnmount () {
-    this.onFlockMaybeChanged_(this.props.flock, undefined)
-    this.onSelectionMaybeChanged_(this.props.selection, undefined)
+    this._onFlockMaybeChanged(this.props.flock, undefined)
+    this._onSelectionMaybeChanged(this.props.selection, undefined)
     this.featureManager.projection = undefined
     // no componentWillUnmount() in superclass so we don't call it
   }
@@ -59,7 +59,7 @@ export default class ActiveUAVsLayerSource extends source.Vector {
    *
    * @param {UAVFeature}  feature  the feature that was added
    */
-  onFeatureAdded_ (feature) {
+  _onFeatureAdded (feature) {
     // Ensure that the feature is selected automatically if it is part
     // of the current selection
     feature.selected = _.includes(this.props.selection, feature.getId())
@@ -76,7 +76,7 @@ export default class ActiveUAVsLayerSource extends source.Vector {
    * @param {Flock} oldFlock  the old flock associated to the layer
    * @param {Flock} newFlock  the new flock associated to the layer
    */
-  onFlockMaybeChanged_ (oldFlock, newFlock) {
+  _onFlockMaybeChanged (oldFlock, newFlock) {
     if (oldFlock === newFlock) {
       return
     }
@@ -87,7 +87,7 @@ export default class ActiveUAVsLayerSource extends source.Vector {
     }
 
     if (newFlock) {
-      this.eventBindings.uavsUpdated = newFlock.uavsUpdated.add(this.onUAVsUpdated_)
+      this.eventBindings.uavsUpdated = newFlock.uavsUpdated.add(this._onUAVsUpdated)
     }
   }
 
@@ -98,7 +98,7 @@ export default class ActiveUAVsLayerSource extends source.Vector {
    * @param {string[]}  oldSelection  the old selection of UAVs
    * @param {string[]}  newSelection  the new selection of UAVs
    */
-  onSelectionMaybeChanged_ (oldSelection, newSelection) {
+  _onSelectionMaybeChanged (oldSelection, newSelection) {
     const getFeatures = this.featureManager.getFeatureById.bind(this.featureManager)
     _(newSelection).difference(oldSelection).map(getFeatures).filter().each(
       feature => { feature.selected = true }
@@ -115,7 +115,7 @@ export default class ActiveUAVsLayerSource extends source.Vector {
    * @listens Flock#uavsUpdated
    * @param {UAV[]} uavs  the UAVs that should be refreshed
    */
-  onUAVsUpdated_ (uavs) {
+  _onUAVsUpdated (uavs) {
     _.each(uavs, uav => {
       const feature = this.featureManager.createOrUpdateFeatureById(
         uav.id, [uav.lon, uav.lat]

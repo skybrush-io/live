@@ -44,20 +44,20 @@ class FitAllFeaturesButton extends React.Component {
   constructor (props) {
     super(props)
 
-    this.onMapReferenceReceived_ = this.onMapReferenceReceived_.bind(this)
-    this.handleClick_ = this.handleClick_.bind(this)
-    this.geolocationReceived_ = this.geolocationReceived_.bind(this)
+    this._onMapReferenceReceived = this._onMapReferenceReceived.bind(this)
+    this._handleClick = this._handleClick.bind(this)
+    this._geolocationReceived = this._geolocationReceived.bind(this)
 
     this._CurrentIcon = ActionAllOut
 
-    fitAllFeaturesSignal.add(this.handleClick_)
+    fitAllFeaturesSignal.add(this._handleClick)
 
-    mapReferenceRequestSignal.dispatch(this.onMapReferenceReceived_)
+    mapReferenceRequestSignal.dispatch(this._onMapReferenceReceived)
   }
 
   render () {
     return (
-      <IconButton onClick={this.handleClick_} tooltip={'Fit all features'}>
+      <IconButton onClick={this._handleClick} tooltip={'Fit all features'}>
         <this._CurrentIcon />
       </IconButton>
     )
@@ -68,7 +68,7 @@ class FitAllFeaturesButton extends React.Component {
   *
   * @param {ol.Map} map the map to attach the event handlers to
   */
-  onMapReferenceReceived_ (map) {
+  _onMapReferenceReceived (map) {
     this.map = map
   }
 
@@ -77,8 +77,8 @@ class FitAllFeaturesButton extends React.Component {
   *
   * @param {Event} e the event fired from the IconButton component
   */
-  handleClick_ (e) {
-    let feasibleLayers = this.map.getLayers().getArray().filter(this.isLayerFeasible_)
+  _handleClick (e) {
+    let feasibleLayers = this.map.getLayers().getArray().filter(this._isLayerFeasible)
     let featureArrays = feasibleLayers.map(l => l.getSource().getFeatures())
     let features = [].concat.apply([], featureArrays)
     let featureExtents = features.map(f => {
@@ -95,7 +95,7 @@ class FitAllFeaturesButton extends React.Component {
 
       // This only works on secure origins
       if ('geolocation' in window.navigator) {
-        window.navigator.geolocation.getCurrentPosition(this.geolocationReceived_)
+        window.navigator.geolocation.getCurrentPosition(this._geolocationReceived)
       }
 
       return
@@ -121,7 +121,7 @@ class FitAllFeaturesButton extends React.Component {
    * @return {boolean} whether the layer is visible and has an associated
    *         vector source
    */
-  isLayerFeasible_ (layer) {
+  _isLayerFeasible (layer) {
     return layer && layer.getVisible() && layer instanceof ol.layer.Vector
   }
 
@@ -130,7 +130,7 @@ class FitAllFeaturesButton extends React.Component {
   *
   * @param {Object} position the position object provided by the geolocation service
   */
-  geolocationReceived_ (position) {
+  _geolocationReceived (position) {
     const view = this.map.getView()
 
     this.map.beforeRender(ol.animation.pan({

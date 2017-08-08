@@ -26,12 +26,12 @@ require('openlayers/css/ol.css')
 class MapViewPresentation extends React.Component {
   constructor (props) {
     super(props)
-    this.assignActiveUAVsLayerRef_ = this.assignActiveUAVsLayerRef_.bind(this)
-    this.assignActiveUAVsLayerSourceRef_ = this.assignActiveUAVsLayerSourceRef_.bind(this)
-    this.assignMapRef_ = this.assignMapRef_.bind(this)
-    this.isLayerShowingActiveUAVs_ = this.isLayerShowingActiveUAVs_.bind(this)
-    this.onBoxDragEnded_ = this.onBoxDragEnded_.bind(this)
-    this.onSelect_ = this.onSelect_.bind(this)
+    this._assignActiveUAVsLayerRef = this._assignActiveUAVsLayerRef.bind(this)
+    this._assignActiveUAVsLayerSourceRef = this._assignActiveUAVsLayerSourceRef.bind(this)
+    this._assignMapRef = this._assignMapRef.bind(this)
+    this._isLayerShowingActiveUAVs = this._isLayerShowingActiveUAVs.bind(this)
+    this._onBoxDragEnded = this._onBoxDragEnded.bind(this)
+    this._onSelect = this._onSelect.bind(this)
   }
 
   componentDidMount () {
@@ -51,7 +51,7 @@ class MapViewPresentation extends React.Component {
    * @return {GoldenLayout} the layout manager
    */
   get layoutManager () {
-    return this.layoutManager_
+    return this._layoutManager
   }
 
   /**
@@ -60,25 +60,25 @@ class MapViewPresentation extends React.Component {
    * @param {GoldenLayout} value  the new layout manager
    */
   set layoutManager (value) {
-    if (this.layoutManager_ === value) {
+    if (this._layoutManager === value) {
       return
     }
 
-    if (this.layoutManager_) {
-      this.layoutManager_.off('stateChanged', this.updateSize, this)
+    if (this._layoutManager) {
+      this._layoutManager.off('stateChanged', this.updateSize, this)
     }
 
-    this.layoutManager_ = value
+    this._layoutManager = value
 
-    if (this.layoutManager_) {
-      this.layoutManager_.on('stateChanged', this.updateSize, this)
+    if (this._layoutManager) {
+      this._layoutManager.on('stateChanged', this.updateSize, this)
     }
   }
 
   getChildContext () {
     return {
-      assignActiveUAVsLayerRef_: this.assignActiveUAVsLayerRef_,
-      assignActiveUAVsLayerSourceRef_: this.assignActiveUAVsLayerSourceRef_
+      _assignActiveUAVsLayerRef: this._assignActiveUAVsLayerRef,
+      _assignActiveUAVsLayerSourceRef: this._assignActiveUAVsLayerSourceRef
     }
   }
 
@@ -102,7 +102,7 @@ class MapViewPresentation extends React.Component {
     }
 
     return (
-      <Map view={view} ref={this.assignMapRef_}
+      <Map view={view} ref={this._assignMapRef}
         useDefaultControls={false} loadTilesWhileInteracting
         focusOnMount
         style={{cursor: cursorStyles[selectedTool]}} >
@@ -128,7 +128,7 @@ class MapViewPresentation extends React.Component {
         {/* PAN mode | Ctrl/Cmd + Drag --> Box select features */}
         <interaction.DragBox active={selectedTool === Tool.PAN}
           condition={ol.events.condition.platformModifierKeyOnly}
-          boxend={this.onBoxDragEnded_} />
+          boxend={this._onBoxDragEnded} />
 
         <interaction.DragRotate
           condition={ol.events.condition.altShiftKeysOnly} />
@@ -142,26 +142,26 @@ class MapViewPresentation extends React.Component {
              Alt + Click --> Remove nearest feature from selection */}
         <SelectNearestFeature active={selectedTool === Tool.SELECT}
           addCondition={ol.events.condition.never}
-          layers={this.isLayerShowingActiveUAVs_}
+          layers={this._isLayerShowingActiveUAVs}
           removeCondition={ol.events.condition.altKeyOnly}
           toggleCondition={Condition.platformModifierKeyOrShiftKeyOnly}
-          select={this.onSelect_}
+          select={this._onSelect}
           threshold={40} />
 
         {/* SELECT mode | Ctrl/Cmd + Drag --> Box select features */}
         <interaction.DragBox active={selectedTool === Tool.SELECT}
           condition={ol.events.condition.platformModifierKeyOnly}
-          boxend={this.onBoxDragEnded_} />
+          boxend={this._onBoxDragEnded} />
 
         {/* SELECT mode | Shift + Drag --> Box add features to selection */}
         <interaction.DragBox active={selectedTool === Tool.SELECT}
           condition={ol.events.condition.shiftKeyOnly}
-          boxend={this.onBoxDragEnded_} />
+          boxend={this._onBoxDragEnded} />
 
         {/* SELECT mode | Alt + Drag --> Box remove features from selection */}
         <interaction.DragBox active={selectedTool === Tool.SELECT}
           condition={ol.events.condition.altKeyOnly}
-          boxend={this.onBoxDragEnded_} />
+          boxend={this._onBoxDragEnded} />
 
         {/* ZOOM mode | Drag --> Box zoom in */}
         <interaction.DragZoom active={selectedTool === Tool.ZOOM}
@@ -181,7 +181,7 @@ class MapViewPresentation extends React.Component {
    *
    * @param  {layer.Vector} ref  the layer for the active UAVs
    */
-  assignActiveUAVsLayerRef_ (ref) {
+  _assignActiveUAVsLayerRef (ref) {
     this.activeUAVsLayer = ref
   }
 
@@ -192,7 +192,7 @@ class MapViewPresentation extends React.Component {
    *
    * @param  {ActiveUAVsLayerSource} ref  the layer source for the active UAVs
    */
-  assignActiveUAVsLayerSourceRef_ (ref) {
+  _assignActiveUAVsLayerSourceRef (ref) {
     this.activeUAVsLayerSource = ref
   }
 
@@ -202,7 +202,7 @@ class MapViewPresentation extends React.Component {
    *
    * @param  {Map} ref  the map being shown in this component
    */
-  assignMapRef_ (ref) {
+  _assignMapRef (ref) {
     this.map = ref
   }
 
@@ -213,7 +213,7 @@ class MapViewPresentation extends React.Component {
    * @param {ol.Layer} layer  the layer to test
    * @return {boolean} whether the given layer is the one that shows the active UAVs
    */
-  isLayerShowingActiveUAVs_ (layer) {
+  _isLayerShowingActiveUAVs (layer) {
     return this.activeUAVsLayer && this.activeUAVsLayer.layer === layer
   }
 
@@ -224,7 +224,7 @@ class MapViewPresentation extends React.Component {
    * @param  {ol.DragBoxEvent} event  the event dispatched by the drag-box
    *         interaction
    */
-  onBoxDragEnded_ (event) {
+  _onBoxDragEnded (event) {
     const layer = this.activeUAVsLayerSource
     if (!layer) {
       return
@@ -261,7 +261,7 @@ class MapViewPresentation extends React.Component {
    * @param  {number}  distance  the distance of the feature from the point
    *         where the user clicked, in pixels
    */
-  onSelect_ (mode, feature, distance) {
+  _onSelect (mode, feature, distance) {
     const actionMapping = {
       'add': addSelectedFeatures,
       'clear': clearSelectedFeatures,
@@ -296,8 +296,8 @@ MapViewPresentation.propTypes = {
 }
 
 MapViewPresentation.childContextTypes = {
-  assignActiveUAVsLayerRef_: PropTypes.func,
-  assignActiveUAVsLayerSourceRef_: PropTypes.func
+  _assignActiveUAVsLayerRef: PropTypes.func,
+  _assignActiveUAVsLayerSourceRef: PropTypes.func
 }
 
 /**

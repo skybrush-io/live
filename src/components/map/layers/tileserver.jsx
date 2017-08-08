@@ -19,7 +19,7 @@ class TileServerLayerSettingsPresentation extends React.Component {
   constructor (props) {
     super(props)
 
-    this.handleClick_ = this.handleClick_.bind(this)
+    this._handleClick = this._handleClick.bind(this)
   }
 
   render () {
@@ -61,13 +61,13 @@ class TileServerLayerSettingsPresentation extends React.Component {
           <FlatButton
             label="Save settings"
             icon={<NavigationCheck />}
-            onClick={this.handleClick_} />
+            onClick={this._handleClick} />
         </div>
       </div>
     )
   }
 
-  handleClick_ () {
+  _handleClick () {
     const newParams = {}
     if (this.refs.url) {
       newParams['url'] = this.refs.url.getValue()

@@ -33,17 +33,17 @@ export default class UAVFeature extends ol.Feature {
   constructor (uavId, geometryOrProperties) {
     super(geometryOrProperties)
 
-    this.selected_ = false
-    this.heading_ = 0
+    this._selected = false
+    this._heading = 0
     this.uavId = uavId
-    this.setupStyle_()
+    this._setupStyle()
   }
 
   /**
    * Returns the current heading of the UAV according to the feature.
    */
   get heading () {
-    return this.heading_
+    return this._heading
   }
 
   /**
@@ -52,15 +52,15 @@ export default class UAVFeature extends ol.Feature {
    * @param {number} value  the new heading of the UAV, in degrees
    */
   set heading (value) {
-    if (this.heading_ === value) {
+    if (this._heading === value) {
       return
     }
 
-    this.heading_ = value
+    this._heading = value
 
     if (this.iconImage) {
-      this.iconImage.setRotation(((this.heading_ + 45) % 360) * Math.PI / 180)
-      this.selectionImage.setRotation(((this.heading_ + 45) % 360) * Math.PI / 180)
+      this.iconImage.setRotation(((this._heading + 45) % 360) * Math.PI / 180)
+      this.selectionImage.setRotation(((this._heading + 45) % 360) * Math.PI / 180)
     }
   }
 
@@ -68,7 +68,7 @@ export default class UAVFeature extends ol.Feature {
    * Returns whether the UAV feature is selected or not.
    */
   get selected () {
-    return this.selected_
+    return this._selected
   }
 
   /**
@@ -77,23 +77,23 @@ export default class UAVFeature extends ol.Feature {
    * @param {boolean} value  whether the feature is selected
    */
   set selected (value) {
-    if (this.selected_ === value) {
+    if (this._selected === value) {
       return
     }
 
-    this.selected_ = value
-    this.setupStyle_()
+    this._selected = value
+    this._setupStyle()
   }
 
   /**
    * Sets up or updates the style of the feature.
    */
-  setupStyle_ () {
+  _setupStyle () {
     let styles = []
 
     this.iconImage = new ol.style.Icon({
       rotateWithView: true,
-      rotation: ((this.heading_ + 45) % 360) * Math.PI / 180,
+      rotation: ((this._heading + 45) % 360) * Math.PI / 180,
       snapToPixel: false,
       src: `/assets/drone.${getColorById(this.uavId)}.32x32.png`
     })
@@ -102,13 +102,13 @@ export default class UAVFeature extends ol.Feature {
 
     this.selectionImage = new ol.style.Icon({
       rotateWithView: true,
-      rotation: ((this.heading_ + 45) % 360) * Math.PI / 180,
+      rotation: ((this._heading + 45) % 360) * Math.PI / 180,
       snapToPixel: false,
       src: '/assets/selection_glow.png'
     })
     this.selectionStyle = new ol.style.Style({ image: this.selectionImage })
 
-    if (this.selected_) {
+    if (this._selected) {
       styles.push(this.selectionStyle)
     }
 

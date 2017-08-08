@@ -73,9 +73,9 @@ class UAVList extends React.Component {
   constructor (props) {
     super(props)
 
-    this.eventBindings_ = {}
+    this._eventBindings = {}
 
-    this.onUAVsUpdated_ = this.onUAVsUpdated_.bind(this)
+    this._onUAVsUpdated = this._onUAVsUpdated.bind(this)
 
     this.state = {
       uavs: Immutable.List(),
@@ -84,15 +84,15 @@ class UAVList extends React.Component {
   }
 
   componentWillReceiveProps (newProps) {
-    this.onFlockMaybeChanged_(this.props.flock, newProps.flock)
+    this._onFlockMaybeChanged(this.props.flock, newProps.flock)
   }
 
   componentDidMount () {
-    this.onFlockMaybeChanged_(undefined, this.props.flock)
+    this._onFlockMaybeChanged(undefined, this.props.flock)
   }
 
   componentWillUnmount () {
-    this.onFlockMaybeChanged_(this.props.flock, undefined)
+    this._onFlockMaybeChanged(this.props.flock, undefined)
   }
 
   /**
@@ -106,18 +106,18 @@ class UAVList extends React.Component {
    * @param {Flock} oldFlock  the old flock associated to the component
    * @param {Flock} newFlock  the new flock associated to the component
    */
-  onFlockMaybeChanged_ (oldFlock, newFlock) {
+  _onFlockMaybeChanged (oldFlock, newFlock) {
     if (oldFlock === newFlock) {
       return
     }
 
     if (oldFlock) {
-      oldFlock.uavsUpdated.detach(this.eventBindings_.uavsUpdated)
-      delete this.eventBindings_.uavsUpdated
+      oldFlock.uavsUpdated.detach(this._eventBindings.uavsUpdated)
+      delete this._eventBindings.uavsUpdated
     }
 
     if (newFlock) {
-      this.eventBindings_.uavsUpdated = newFlock.uavsUpdated.add(this.onUAVsUpdated_)
+      this._eventBindings.uavsUpdated = newFlock.uavsUpdated.add(this._onUAVsUpdated)
     }
   }
 
@@ -128,12 +128,12 @@ class UAVList extends React.Component {
    * @listens Flock#uavsUpdated
    * @param {UAV[]} updatedUavs  the UAVs that should be refreshed
    */
-  onUAVsUpdated_ (updatedUavs) {
+  _onUAVsUpdated (updatedUavs) {
     let { uavs, uavIdToIndex } = this.state
 
     for (let uav of updatedUavs) {
       const index = uavIdToIndex.get(uav.id)
-      const uavRepr = this.pickRelevantUAVProps_(uav)
+      const uavRepr = this._pickRelevantUAVProps(uav)
 
       if (index === undefined) {
         uavIdToIndex = uavIdToIndex.set(uav.id, uavs.size)
@@ -154,7 +154,7 @@ class UAVList extends React.Component {
    * @param {UAV} uav  the UAV to pick the properties from
    * @return {Object}  the object containing the picked props
    */
-  pickRelevantUAVProps_ (uav) {
+  _pickRelevantUAVProps (uav) {
     return {
       id: uav.id,
       lat: uav.lat,

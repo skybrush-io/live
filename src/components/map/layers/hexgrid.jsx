@@ -27,7 +27,7 @@ class HexGridLayerSettingsPresentation extends React.Component {
   constructor (props) {
     super(props)
 
-    this.handleClick_ = this.handleClick_.bind(this)
+    this._handleClick = this._handleClick.bind(this)
   }
 
   render () {
@@ -49,12 +49,12 @@ class HexGridLayerSettingsPresentation extends React.Component {
         <br />
         <RaisedButton
           label={'Draw hex grid'}
-          onClick={this.handleClick_} />
+          onClick={this._handleClick} />
       </div>
     )
   }
 
-  handleClick_ (e) {
+  _handleClick (e) {
     const layerParameters = {
       center: this.refs.center.getValue().split(',').map(_.toNumber),
       size: _.toNumber(this.refs.size.getValue()),
@@ -91,16 +91,16 @@ class HexGridVectorSource extends source.Vector {
   constructor (props) {
     super(props)
 
-    this.drawHexagonsFromProps_(props)
+    this._drawHexagonsFromProps(props)
   }
 
   componentWillReceiveProps (newProps) {
     this.source.clear()
 
-    this.drawHexagonsFromProps_(newProps)
+    this._drawHexagonsFromProps(newProps)
   }
 
-  getCorners_ (center, radius) {
+  _getCorners (center, radius) {
     const angles = [30, 90, 150, 210, 270, 330].map(a => a * Math.PI / 180)
 
     return angles.map(angle => coordinateFromLonLat([
@@ -109,17 +109,17 @@ class HexGridVectorSource extends source.Vector {
     ]))
   }
 
-  getHexagon_ (center, radius) {
+  _getHexagon (center, radius) {
     return new ol.Feature(
       {
         geometry: new ol.geom.Polygon([
-          this.getCorners_(center, radius)
+          this._getCorners(center, radius)
         ])
       }
     )
   }
 
-  drawHexagonsFromProps_ (props) {
+  _drawHexagonsFromProps (props) {
     const { center, size, radius } = props.parameters
 
     const features = {}
@@ -127,7 +127,7 @@ class HexGridVectorSource extends source.Vector {
     for (let x = -size; x <= size; x++) {
       for (let z = Math.max(-size, -size - x); z <= Math.min(size, size - x); z++) {
         const hash = `${x},${z}`
-        features[hash] = this.getHexagon_([
+        features[hash] = this._getHexagon([
           center[0] + (radius * 1.5 * x),
           center[1] - (radius * Math.sqrt(3)) * (0.5 * x + z)
         ], radius)

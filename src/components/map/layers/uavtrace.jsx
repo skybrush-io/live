@@ -24,7 +24,7 @@ class UAVTraceLayerSettingsPresentation extends React.Component {
       trailLength: this.props.layer.parameters.trailLength
     }
 
-    this.handleClick_ = this.handleClick_.bind(this)
+    this._handleClick = this._handleClick.bind(this)
   }
 
   render () {
@@ -48,12 +48,12 @@ class UAVTraceLayerSettingsPresentation extends React.Component {
         <br />
         <RaisedButton
           label={'Set parameters'}
-          onClick={this.handleClick_} />
+          onClick={this._handleClick} />
       </div>
     )
   }
 
-  handleClick_ () {
+  _handleClick () {
     this.props.setLayerParameter('trailLength', _.toNumber(this.refs.trailLength.getValue()))
     this.props.setLayerParameter('trailWidth', _.toNumber(this.refs.trailWidth.getValue()))
     this.props.setLayerParameter('trailColor', this.refs.trailColor.getValue())
@@ -97,14 +97,14 @@ class UAVTraceVectorSource extends source.Vector {
     super(props)
     this.lineStringsById = {}
 
-    this.handleUpdate_ = this.handleUpdate_.bind(this)
+    this._handleUpdate = this._handleUpdate.bind(this)
 
-    flock.uavsUpdated.add(this.handleUpdate_)
+    flock.uavsUpdated.add(this._handleUpdate)
 
     window.sor = this.source
   }
 
-  handleUpdate_ (uavs) {
+  _handleUpdate (uavs) {
     for (const uav of uavs) {
       if (uav._id in this.lineStringsById) {
         this.lineStringsById[uav._id].appendCoordinate(

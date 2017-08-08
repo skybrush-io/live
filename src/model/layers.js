@@ -63,7 +63,7 @@ export const TileServerTypes = [
  *
  * @type {Object}
  */
-const propertiesForLayerTypes_ = {
+const _propertiesForLayerTypes = {
   [LayerType.BASE]: {
     label: 'Base layer',
     icon: <Map />,
@@ -172,7 +172,7 @@ export function createNewLayer (id, layerType, name, parameters) {
  * @return {Object} the default parameter settings of the layer
  */
 export function defaultParametersForLayerType (layerType) {
-  const props = propertiesForLayerTypes_[layerType]
+  const props = _propertiesForLayerTypes[layerType]
   const template = props.hasOwnProperty('parameters') ? props.parameters : {}
   return _.cloneDeep(template)
 }
@@ -186,7 +186,7 @@ export function defaultParametersForLayerType (layerType) {
  * @return {Object} the Material UI icon that represents the layer
  */
 export function iconForLayerType (layerType) {
-  return propertiesForLayerTypes_[layerType].icon
+  return _propertiesForLayerTypes[layerType].icon
 }
 
 /**
@@ -198,5 +198,5 @@ export function iconForLayerType (layerType) {
  * @return {string} a human-readable description of the layer type
  */
 export function labelForLayerType (layerType) {
-  return propertiesForLayerTypes_[layerType].label
+  return _propertiesForLayerTypes[layerType].label
 }

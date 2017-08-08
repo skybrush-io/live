@@ -97,7 +97,7 @@ class SavedLocationEditorDialogPresentation extends React.Component {
   constructor (props) {
     super(props)
     this.handleSubmit = this.handleSubmit.bind(this)
-    this.handleKeyPress_ = this.handleKeyPress_.bind(this)
+    this._handleKeyPress = this._handleKeyPress.bind(this)
   }
 
   componentDidMount () {
@@ -118,7 +118,7 @@ class SavedLocationEditorDialogPresentation extends React.Component {
     this.refs.form.getWrappedInstance().submit()
   }
 
-  handleKeyPress_ (e) {
+  _handleKeyPress (e) {
     if (e.nativeEvent.code === 'Enter') {
       this.handleSubmit()
     }
@@ -148,7 +148,7 @@ class SavedLocationEditorDialogPresentation extends React.Component {
       >
         <SavedLocationEditorForm ref={'form'}
           onSubmit={onSubmit}
-          onKeyPress={this.handleKeyPress_} />
+          onKeyPress={this._handleKeyPress} />
       </Dialog>
     )
   }

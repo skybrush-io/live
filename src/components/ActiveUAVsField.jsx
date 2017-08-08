@@ -27,8 +27,8 @@ export class UAVSelectorField extends React.Component {
       error: null
     }
 
-    this.onBlur_ = this.onBlur_.bind(this)
-    this.onNewRequest_ = this.onNewRequest_.bind(this)
+    this._onBlur = this._onBlur.bind(this)
+    this._onNewRequest = this._onNewRequest.bind(this)
   }
 
   /**
@@ -38,7 +38,7 @@ export class UAVSelectorField extends React.Component {
    * @param {string} value  the value of the autocomplete field
    * @return {undefined}
    */
-  commitValueIfValid_ (value) {
+  _commitValueIfValid (value) {
     const { onValueChanged } = this.props
     if (this.validate(value) && onValueChanged) {
       if (value === '') {
@@ -56,8 +56,8 @@ export class UAVSelectorField extends React.Component {
         dataSource={uavIds} searchText={value} errorText={error}
         filter={AutoComplete.caseInsensitiveFilter}
         fullWidth style={style}
-        onBlur={this.onBlur_}
-        onNewRequest={this.onNewRequest_}
+        onBlur={this._onBlur}
+        onNewRequest={this._onNewRequest}
       />
     )
   }
@@ -77,7 +77,7 @@ export class UAVSelectorField extends React.Component {
       if (!this.props.allowEmpty) {
         error = 'UAV ID must be specified'
       }
-    } else if (!this.valueIsAmongUAVIds_(value)) {
+    } else if (!this._valueIsAmongUAVIds(value)) {
       // Value entered by the user is not in the list of UAV IDs
       error = 'No such UAV'
     } else {
@@ -93,11 +93,11 @@ export class UAVSelectorField extends React.Component {
    * @param {FocusEvent} event  the focus event
    * @return {undefined}
    */
-  onBlur_ (event) {
+  _onBlur (event) {
     // TODO: don't try to commit the value if the related target is the
     // dropdown menu of the autocomplete dialog
     const chosenRequest = event.target.value
-    this.commitValueIfValid_(chosenRequest)
+    this._commitValueIfValid(chosenRequest)
   }
 
   /**
@@ -111,8 +111,8 @@ export class UAVSelectorField extends React.Component {
    *        happens to be the same as some item in the dropdown menu.
    * @return {undefined}
    */
-  onNewRequest_ (chosenRequest, index) {
-    if (index === -1 && !this.valueIsAmongUAVIds_(chosenRequest)) {
+  _onNewRequest (chosenRequest, index) {
+    if (index === -1 && !this._valueIsAmongUAVIds(chosenRequest)) {
       // The user did not choose from the dropdown and the value that the
       // user typed does not match any of the items from the data source.
       // We can pretend that the user chose the first item from the menu.
@@ -123,7 +123,7 @@ export class UAVSelectorField extends React.Component {
         chosenRequest = firstMatch
       }
     }
-    this.commitValueIfValid_(chosenRequest)
+    this._commitValueIfValid(chosenRequest)
   }
 
   /**
@@ -133,7 +133,7 @@ export class UAVSelectorField extends React.Component {
    * @param {string} value  the value to test
    * @return {boolean} whether the given value is among the valid UAV IDs
    */
-  valueIsAmongUAVIds_ (value) {
+  _valueIsAmongUAVIds (value) {
     const { uavIds } = this.props
     return uavIds && uavIds.indexOf(value) >= 0
   }
@@ -170,20 +170,20 @@ export class ActiveUAVsFieldPresentation extends React.Component {
       uavIds: []
     }
 
-    this.onUAVsAdded_ = this.onUAVsAdded_.bind(this)
+    this._onUAVsAdded = this._onUAVsAdded.bind(this)
     this.eventBindings = {}
   }
 
   componentWillReceiveProps (newProps) {
-    this.onFlockMaybeChanged_(this.props.flock, newProps.flock)
+    this._onFlockMaybeChanged(this.props.flock, newProps.flock)
   }
 
   componentDidMount () {
-    this.onFlockMaybeChanged_(undefined, this.props.flock)
+    this._onFlockMaybeChanged(undefined, this.props.flock)
   }
 
   componentWillUnmount () {
-    this.onFlockMaybeChanged_(this.props.flock, undefined)
+    this._onFlockMaybeChanged(this.props.flock, undefined)
   }
 
   /**
@@ -197,7 +197,7 @@ export class ActiveUAVsFieldPresentation extends React.Component {
    * @param {Flock} oldFlock  the old flock associated to the layer
    * @param {Flock} newFlock  the new flock associated to the layer
    */
-  onFlockMaybeChanged_ (oldFlock, newFlock) {
+  _onFlockMaybeChanged (oldFlock, newFlock) {
     if (oldFlock === newFlock) {
       return
     }
@@ -208,10 +208,10 @@ export class ActiveUAVsFieldPresentation extends React.Component {
     }
 
     if (newFlock) {
-      this.eventBindings.uavsAdded = newFlock.uavsAdded.add(this.onUAVsAdded_)
+      this.eventBindings.uavsAdded = newFlock.uavsAdded.add(this._onUAVsAdded)
     }
 
-    this.updateUAVIdsFromFlock_(newFlock)
+    this._updateUAVIdsFromFlock(newFlock)
   }
 
   /**
@@ -221,8 +221,8 @@ export class ActiveUAVsFieldPresentation extends React.Component {
    * @listens Flock#uavsAdded
    * @param {UAV[]} uavs  the UAVs that should be refreshed
    */
-  onUAVsAdded_ (uavs) {
-    this.updateUAVIdsFromFlock_(this.props.flock)
+  _onUAVsAdded (uavs) {
+    this._updateUAVIdsFromFlock(this.props.flock)
   }
 
   render () {
@@ -240,7 +240,7 @@ export class ActiveUAVsFieldPresentation extends React.Component {
    *
    * @param {Flock?} flock  the flock that the field was associated to
    */
-  updateUAVIdsFromFlock_ (flock) {
+  _updateUAVIdsFromFlock (flock) {
     this.setState({
       uavIds: flock ? flock.getAllUAVIds() : []
     })

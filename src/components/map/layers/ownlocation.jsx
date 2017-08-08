@@ -30,9 +30,9 @@ class OwnLocationVectorSource extends source.Vector {
   constructor (props, context) {
     super(props)
 
-    this.onPositionChange_ = this.onPositionChange_.bind(this)
-    this.onAccuracyGeometryChange_ = this.onAccuracyGeometryChange_.bind(this)
-    this.onHeadingChange_ = this.onHeadingChange_.bind(this)
+    this._onPositionChange = this._onPositionChange.bind(this)
+    this._onAccuracyGeometryChange = this._onAccuracyGeometryChange.bind(this)
+    this._onHeadingChange = this._onHeadingChange.bind(this)
 
     this.locationIcon = new ol.style.Icon({
       rotateWithView: true,
@@ -53,25 +53,25 @@ class OwnLocationVectorSource extends source.Vector {
     this.olGeolocation = new ol.Geolocation({
       projection: context.map.getView().getProjection()
     })
-    this.olGeolocation.on('change:position', this.onPositionChange_)
-    this.olGeolocation.on('change:accuracyGeometry', this.onAccuracyGeometryChange_)
+    this.olGeolocation.on('change:position', this._onPositionChange)
+    this.olGeolocation.on('change:accuracyGeometry', this._onAccuracyGeometryChange)
     this.olGeolocation.setTracking(true)
 
     let deviceOrientation = new ol.DeviceOrientation()
-    deviceOrientation.on('change:alpha', this.onHeadingChange_)
+    deviceOrientation.on('change:alpha', this._onHeadingChange)
     deviceOrientation.setTracking(true)
   }
 
-  onPositionChange_ () {
+  _onPositionChange () {
     let coordinates = this.olGeolocation.getPosition()
     this.locationFeature.setGeometry(coordinates ? new ol.geom.Point(coordinates) : null)
   }
 
-  onAccuracyGeometryChange_ () {
+  _onAccuracyGeometryChange () {
     this.accuracyFeature.setGeometry(this.olGeolocation.getAccuracyGeometry())
   }
 
-  onHeadingChange_ (e) {
+  _onHeadingChange (e) {
     this.locationIcon.setRotation(-e.target.getAlpha())
     this.source.refresh()
   }

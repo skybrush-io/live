@@ -36,10 +36,10 @@ class HeatmapLayerSettingsPresentation extends React.Component {
       maxHue: props.layer.parameters.maxHue
     }
 
-    this.showSubscriptionDialog_ = this.showSubscriptionDialog_.bind(this)
-    this.handleChange_ = this.handleChange_.bind(this)
-    this.handleClick_ = this.handleClick_.bind(this)
-    this.clearData_ = this.clearData_.bind(this)
+    this._showSubscriptionDialog = this._showSubscriptionDialog.bind(this)
+    this._handleChange = this._handleChange.bind(this)
+    this._handleClick = this._handleClick.bind(this)
+    this._clearData = this._clearData.bind(this)
   }
 
   render () {
@@ -63,7 +63,7 @@ class HeatmapLayerSettingsPresentation extends React.Component {
           label={'Edit subscriptions'}
           icon={<ActionToc />}
           style={{marginBottom: '10px'}}
-          onClick={this.showSubscriptionDialog_} />
+          onClick={this._showSubscriptionDialog} />
 
         <br />
 
@@ -105,11 +105,11 @@ class HeatmapLayerSettingsPresentation extends React.Component {
         <input id={'minHue'} ref={'minHue'} type={'range'} min={'0'} max={'360'}
           style={{width: '100px'}}
           value={this.state.minHue}
-          onChange={this.handleChange_} />
+          onChange={this._handleChange} />
         <input id={'maxHue'} ref={'maxHue'} type={'range'} min={'0'} max={'360'}
           style={{width: '100px', marginLeft: '200px'}}
           value={this.state.maxHue}
-          onChange={this.handleChange_} />
+          onChange={this._handleChange} />
 
         <br />
 
@@ -125,29 +125,29 @@ class HeatmapLayerSettingsPresentation extends React.Component {
         <RaisedButton style={{marginTop: '10px'}}
           label={'Update parameters'}
           icon={<NavigationCheck />}
-          onClick={this.handleClick_} />
+          onClick={this._handleClick} />
 
         <RaisedButton style={{marginLeft: '10px'}}
           backgroundColor={'#ff7777'}
           label={'Clear data'}
           icon={<ContentClear />}
-          onClick={this.clearData_} />
+          onClick={this._clearData} />
       </div>
     )
   }
 
-  showSubscriptionDialog_ () {
-    this.refs.subscriptionDialog.updateDeviceList_()
+  _showSubscriptionDialog () {
+    this.refs.subscriptionDialog._updateDeviceList()
     this.refs.subscriptionDialog.showDialog()
   }
 
-  handleChange_ (e) {
+  _handleChange (e) {
     this.setState({
       [e.target.id]: _.toNumber(e.target.value)
     })
   }
 
-  handleClick_ (e) {
+  _handleClick (e) {
     const layerParameters = {
       threshold: _.toNumber(this.refs.threshold.getValue()),
       minValue: _.toNumber(this.refs.minValue.getValue()),
@@ -164,7 +164,7 @@ class HeatmapLayerSettingsPresentation extends React.Component {
     }
   }
 
-  clearData_ () {
+  _clearData () {
     window.localStorage.removeItem(`${this.props.layerId}_data`)
     this.props.setLayerParameter('minValue', 0)
     this.props.setLayerParameter('maxValue', 0)
@@ -219,33 +219,33 @@ class HeatmapVectorSource extends source.Vector {
   constructor (props) {
     super(props)
 
-    this.getStoredData_ = this.getStoredData_.bind(this)
-    this.setStoredData_ = this.setStoredData_.bind(this)
-    this.drawFromStoredData_ = this.drawFromStoredData_.bind(this)
+    this._getStoredData = this._getStoredData.bind(this)
+    this._setStoredData = this._setStoredData.bind(this)
+    this._drawFromStoredData = this._drawFromStoredData.bind(this)
 
-    this.trySubscribe_ = this.trySubscribe_.bind(this)
-    this.processNotification_ = this.processNotification_.bind(this)
+    this._trySubscribe = this._trySubscribe.bind(this)
+    this._processNotification = this._processNotification.bind(this)
 
-    this.makePoint_ = this.makePoint_.bind(this)
-    this.drawPointFromData_ = this.drawPointFromData_.bind(this)
+    this._makePoint = this._makePoint.bind(this)
+    this._drawPointFromData = this._drawPointFromData.bind(this)
 
     this.features = new HashedMap()
-    this.drawFromStoredData_()
+    this._drawFromStoredData()
 
-    messageHub.registerNotificationHandler('DEV-INF', this.processNotification_)
+    messageHub.registerNotificationHandler('DEV-INF', this._processNotification)
 
-    this.trySubscribe_(props.parameters.subscriptions)
+    this._trySubscribe(props.parameters.subscriptions)
   }
 
   componentDidUpdate () {
-    this.drawFromStoredData_()
+    this._drawFromStoredData()
   }
 
   componentWillUnmount () {
-    messageHub.unregisterNotificationHandler('DEV-INF', this.processNotification_)
+    messageHub.unregisterNotificationHandler('DEV-INF', this._processNotification)
   }
 
-  getStoredData_ () {
+  _getStoredData () {
     if (!window.localStorage.getItem(this.props.storageKey)) {
       window.localStorage.setItem(this.props.storageKey, '[]')
     }
@@ -253,24 +253,24 @@ class HeatmapVectorSource extends source.Vector {
     return new HashedMap(JSON.parse(window.localStorage.getItem(this.props.storageKey)))
   }
 
-  setStoredData_ (values) {
-    window.localStorage.setItem(this.props.storageKey, JSON.stringify([...values.map_]))
+  _setStoredData (values) {
+    window.localStorage.setItem(this.props.storageKey, JSON.stringify([...values._map]))
   }
 
-  drawFromStoredData_ () {
+  _drawFromStoredData () {
     this.source.clear()
     this.features = new HashedMap()
 
-    const values = this.getStoredData_()
+    const values = this._getStoredData()
 
     for (const [key, value] of values) {
-      this.features.set(key, this.drawPointFromData_(Object.assign({value}, key)))
+      this.features.set(key, this._drawPointFromData(Object.assign({value}, key)))
     }
   }
 
-  trySubscribe_ (subscriptions) {
+  _trySubscribe (subscriptions) {
     if (!messageHub._emitter) {
-      setTimeout(() => { this.trySubscribe_(subscriptions) }, 500)
+      setTimeout(() => { this._trySubscribe(subscriptions) }, 500)
     } else {
       messageHub.sendMessage({
         'type': 'DEV-SUB',
@@ -279,7 +279,7 @@ class HeatmapVectorSource extends source.Vector {
     }
   }
 
-  processData_ (values, data) {
+  _processData (values, data) {
     const minDistance = this.props.parameters.minDistance
 
     /* Converting to the EPSG:3857 projection, snapping it to the grid
@@ -317,11 +317,11 @@ class HeatmapVectorSource extends source.Vector {
 
     const key = {lon: data.lon, lat: data.lat}
     values.set(key, data.value)
-    this.features.set(key, this.drawPointFromData_(data))
+    this.features.set(key, this._drawPointFromData(data))
   }
 
-  processNotification_ (message) {
-    const values = this.getStoredData_()
+  _processNotification (message) {
+    const values = this._getStoredData()
 
     for (const path in message.body.values) {
       // Check if we are subscribed to this channel
@@ -330,7 +330,7 @@ class HeatmapVectorSource extends source.Vector {
         if (message.body.values[path].value !== null) {
           const data = message.body.values[path]
 
-          this.processData_(values, data)
+          this._processData(values, data)
 
           if (this.props.parameters.autoScale) {
             if (data.value > this.props.parameters.threshold && (
@@ -349,21 +349,21 @@ class HeatmapVectorSource extends source.Vector {
       }
     }
 
-    this.setStoredData_(values)
+    this._setStoredData(values)
 
     if (this.features.size !== values.size) {
-      this.drawFromStoredData_()
+      this._drawFromStoredData()
     }
   }
 
-  makePoint_ (center) {
+  _makePoint (center) {
     return new ol.Feature({
       geometry: new ol.geom.Point(coordinateFromLonLat(center))
     })
   }
 
-  drawPointFromData_ (data) {
-    const point = this.makePoint_([data.lon, data.lat])
+  _drawPointFromData (data) {
+    const point = this._makePoint([data.lon, data.lat])
     point.measuredValue = data.value
 
     this.source.addFeature(point)

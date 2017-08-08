@@ -89,7 +89,7 @@ function convertMessagesToComponents (messages, textFieldsBelow) {
 class MessagesPanelPresentation extends React.Component {
   constructor (props) {
     super(props)
-    this.textFieldKeyDownHandler_ = this.textFieldKeyDownHandler_.bind(this)
+    this._textFieldKeyDownHandler = this._textFieldKeyDownHandler.bind(this)
   }
 
   render () {
@@ -106,7 +106,7 @@ class MessagesPanelPresentation extends React.Component {
         <ActiveUAVsField style={{ width: '8em', paddingRight: '1em' }}
           flock={flock} />
         <TextField fullWidth hintText={'Message'}
-          onKeyDown={this.textFieldKeyDownHandler_}
+          onKeyDown={this._textFieldKeyDownHandler}
           disabled={_.isNil(selectedUAVId)} />
       </div>
     const children = textFieldsAtBottom ? [chatArea, textFields] : [textFields, chatArea]
@@ -120,7 +120,7 @@ class MessagesPanelPresentation extends React.Component {
    * @param  {KeyboardEvent} event  the DOM event for the keypress
    * @return {undefined}
    */
-  textFieldKeyDownHandler_ (event) {
+  _textFieldKeyDownHandler (event) {
     if (event.keyCode === 13) {
       this.props.onSend(event.target.value)
       event.target.value = ''

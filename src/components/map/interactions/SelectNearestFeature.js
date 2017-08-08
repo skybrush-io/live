@@ -52,34 +52,34 @@ class SelectNearestFeatureInteraction extends ol.interaction.Interaction {
     super({
       handleEvent: mapBrowserEvent => {
         // Check whether the event matches the condition
-        if (!this.condition_(mapBrowserEvent)) {
+        if (!this._condition(mapBrowserEvent)) {
           return true
         }
 
         // Short-circuit if the user has not specified a callback
-        if (!this.select_) {
+        if (!this._select) {
           return ol.events.condition.pointerMove(mapBrowserEvent)
         }
 
         // Create the layer selector function if needed
-        if (!this.layerSelectorFunction_) {
-          this.layerSelectorFunction_ = this.createLayerSelectorFunction_(this.layers_)
+        if (!this._layerSelectorFunction) {
+          this._layerSelectorFunction = this._createLayerSelectorFunction(this._layers)
         }
 
         // Find the feature that is closest to the selection, in each
         // matching layer
         const { coordinate, map } = mapBrowserEvent
-        const distanceFunction = _.partial(this.distanceOfEventFromFeature_, mapBrowserEvent)
+        const distanceFunction = _.partial(this._distanceOfEventFromFeature, mapBrowserEvent)
         const closestFeature = _(map.getLayers().getArray())
-          .filter(this.isLayerFeasible_)
-          .filter(this.layerSelectorFunction_)
+          .filter(this._isLayerFeasible)
+          .filter(this._layerSelectorFunction)
           .map(layer => {
             const source = layer.getSource()
             return source
               ? source.getClosestFeatureToCoordinate(coordinate)
               : undefined
           })
-          .filter(this.isFeatureFeasible_)
+          .filter(this._isFeatureFeasible)
           .minBy(distanceFunction)
 
         // Get the actual distance of the feature
@@ -87,17 +87,17 @@ class SelectNearestFeatureInteraction extends ol.interaction.Interaction {
 
         // Decide whether we are setting, adding, removing or toggling the
         // selection
-        const add = this.addCondition_(mapBrowserEvent)
-        const remove = this.removeCondition_(mapBrowserEvent)
-        const toggle = this.toggleCondition_(mapBrowserEvent)
+        const add = this._addCondition(mapBrowserEvent)
+        const remove = this._removeCondition(mapBrowserEvent)
+        const toggle = this._toggleCondition(mapBrowserEvent)
         const mode = add ? 'add' : (remove ? 'remove' : (toggle ? 'toggle' : 'set'))
 
         // If the feature is close enough...
-        if (distance <= this.threshold_) {
+        if (distance <= this._threshold) {
           // Now call the callback
-          this.select_(mode, closestFeature, distance)
+          this._select(mode, closestFeature, distance)
         } else if (mode === 'set') {
-          this.select_('clear', closestFeature, distance)
+          this._select('clear', closestFeature, distance)
         }
 
         return ol.events.condition.pointerMove(mapBrowserEvent)
@@ -113,12 +113,12 @@ class SelectNearestFeatureInteraction extends ol.interaction.Interaction {
     }
     options = Object.assign(defaultOptions, options)
 
-    this.condition_ = options.condition
-    this.addCondition_ = options.addCondition
-    this.removeCondition_ = options.removeCondition
-    this.toggleCondition_ = options.toggleCondition
-    this.select_ = options.select
-    this.threshold_ = options.threshold
+    this._condition = options.condition
+    this._addCondition = options.addCondition
+    this._removeCondition = options.removeCondition
+    this._toggleCondition = options.toggleCondition
+    this._select = options.select
+    this._threshold = options.threshold
     this.setLayers(options.layers)
   }
 
@@ -132,7 +132,7 @@ class SelectNearestFeatureInteraction extends ol.interaction.Interaction {
    * @return {function(layer: ol.layer.Layer):boolean} an appropriate layer
    *         selector function
    */
-  createLayerSelectorFunction_ (layers) {
+  _createLayerSelectorFunction (layers) {
     if (layers) {
       if (_.isFunction(layers)) {
         return layers
@@ -154,7 +154,7 @@ class SelectNearestFeatureInteraction extends ol.interaction.Interaction {
    * @param {ol.Feature}          feature  the feature
    * @return {number} the distance of the feature from the event, in pixels
    */
-  distanceOfEventFromFeature_ (event, feature) {
+  _distanceOfEventFromFeature (event, feature) {
     const closestPoint = feature.getGeometry().getClosestPoint(event.coordinate)
     const closestPixel = event.map.getPixelFromCoordinate(closestPoint)
     return euclideanDistance(event.pixel, closestPixel)
@@ -167,7 +167,7 @@ class SelectNearestFeatureInteraction extends ol.interaction.Interaction {
    *         the layer selector
    */
   getLayers () {
-    return this.layers_
+    return this._layers
   }
 
   /**
@@ -178,7 +178,7 @@ class SelectNearestFeatureInteraction extends ol.interaction.Interaction {
    * @return {boolean} whether the layer is visible and has an associated
    *         vector source
    */
-  isLayerFeasible_ (layer) {
+  _isLayerFeasible (layer) {
     return layer && layer.getVisible() && layer instanceof ol.layer.Vector
   }
 
@@ -196,8 +196,8 @@ class SelectNearestFeatureInteraction extends ol.interaction.Interaction {
    *        the new layer selector
    */
   setLayers (value) {
-    this.layers_ = value
-    this.layerSelectorFunction_ = undefined
+    this._layers = value
+    this._layerSelectorFunction = undefined
   }
 }
 

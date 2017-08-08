@@ -64,17 +64,17 @@ export default class HotkeyHandler extends React.Component {
 
     this.listeners = { down: {}, up: {} }
 
-    this.handleKey_ = this.handleKey_.bind(this)
-    this.handleKeyDown_ = this.handleKeyDown_.bind(this)
-    this.handleKeyUp_ = this.handleKeyUp_.bind(this)
+    this._handleKey = this._handleKey.bind(this)
+    this._handleKeyDown = this._handleKeyDown.bind(this)
+    this._handleKeyUp = this._handleKeyUp.bind(this)
 
     for (const hotkey of props.hotkeys) {
       this.addListener(hotkey.on, hotkey.keys, hotkey.action)
     }
 
-    this.showDialog_ = this.showDialog_.bind(this)
-    this.hideDialog_ = this.hideDialog_.bind(this)
-    this.toggleDialog_ = this.toggleDialog_.bind(this)
+    this._showDialog = this._showDialog.bind(this)
+    this._hideDialog = this._hideDialog.bind(this)
+    this._toggleDialog = this._toggleDialog.bind(this)
 
     this.addHelpListeners()
   }
@@ -82,21 +82,21 @@ export default class HotkeyHandler extends React.Component {
   /**
    * Function for showing the help dialog.
    */
-  showDialog_ () {
+  _showDialog () {
     this.setState({ dialogVisible: true })
   }
 
   /**
    * Function for hiding the help dialog.
    */
-  hideDialog_ () {
+  _hideDialog () {
     this.setState({ dialogVisible: false })
   }
 
   /**
    * Function for toggling the visibility of the help dialog.
    */
-  toggleDialog_ () {
+  _toggleDialog () {
     this.setState({ dialogVisible: !this.state.dialogVisible })
   }
 
@@ -104,27 +104,27 @@ export default class HotkeyHandler extends React.Component {
    * Function for attaching the help dialog control listeners.
    */
   addHelpListeners () {
-    this.addListener('down', '?', this.toggleDialog_)
+    this.addListener('down', '?', this._toggleDialog)
   }
 
   /**
    * Adding the actual event listeners and the approptiate handlers.
    */
   componentDidMount () {
-    this.refs.capture.addEventListener('keydown', this.handleKeyDown_, true)
-    this.refs.capture.addEventListener('keyup', this.handleKeyUp_, true)
+    this.refs.capture.addEventListener('keydown', this._handleKeyDown, true)
+    this.refs.capture.addEventListener('keyup', this._handleKeyUp, true)
 
-    document.body.addEventListener('focus', this.handleFocusChange_, true)
+    document.body.addEventListener('focus', this._handleFocusChange, true)
   }
 
   /**
    * Removing the event listeners.
    */
   componentWillUnmount () {
-    this.refs.capture.removeEventListener('keydown', this.handleKeyDown_, true)
-    this.refs.capture.removeEventListener('keyup', this.handleKeyUp_, true)
+    this.refs.capture.removeEventListener('keydown', this._handleKeyDown, true)
+    this.refs.capture.removeEventListener('keyup', this._handleKeyUp, true)
 
-    document.body.removeEventListener('focus', this.handleFocusChange_, true)
+    document.body.removeEventListener('focus', this._handleFocusChange, true)
   }
 
   render () {
@@ -132,7 +132,7 @@ export default class HotkeyHandler extends React.Component {
     const actionColumnStyle = {}
     const actions = [
       <FlatButton label={'Close'} primary
-        onTouchTap={this.hideDialog_} />
+        onTouchTap={this._hideDialog} />
     ]
 
     return (
@@ -141,7 +141,7 @@ export default class HotkeyHandler extends React.Component {
           title={'Hotkeys'}
           actions={actions}
           open={this.state.dialogVisible}
-          onRequestClose={this.hideDialog_}
+          onRequestClose={this._hideDialog}
           autoScrollBodyContent
         >
           <Table selectable={false}>
@@ -184,7 +184,7 @@ export default class HotkeyHandler extends React.Component {
    * @param {function} action the action to be performed
    */
   addListener (on, keys, action) {
-    const hash = this.hotkeyToHash_(keys)
+    const hash = this._hotkeyToHash(keys)
 
     if (!(hash in this.listeners[on])) {
       this.listeners[on][hash] = []
@@ -201,7 +201,7 @@ export default class HotkeyHandler extends React.Component {
    * @param {function} action the action to be performed
    */
   removeListener (on, keys, action) {
-    const hash = this.hotkeyToHash_(keys)
+    const hash = this._hotkeyToHash(keys)
 
     if (hash in this.listeners[on]) {
       _.pull(this.listeners[on][hash], action)
@@ -213,14 +213,14 @@ export default class HotkeyHandler extends React.Component {
    *
    * @param {KeyboardEvent} e the actual keyboard event
    */
-  handleKeyDown_ (e) { this.handleKey_('down', e) }
+  _handleKeyDown (e) { this._handleKey('down', e) }
 
   /**
    * Proxy for keyup event.
    *
    * @param {KeyboardEvent} e the actual keyboard event
    */
-  handleKeyUp_ (e) { this.handleKey_('up', e) }
+  _handleKeyUp (e) { this._handleKey('up', e) }
 
   /**
    * Event handler function that looks for attached actions and executes them.
@@ -228,7 +228,7 @@ export default class HotkeyHandler extends React.Component {
    * @param {string} direction 'down' or 'up', on which event the action should be fired
    * @param {KeyboardEvent} e the actual keyboard event
    */
-  handleKey_ (direction, e) {
+  _handleKey (direction, e) {
     const hashes = [
       (e.altKey ? 'Alt + ' : '') +
       (e.ctrlKey ? 'Ctrl + ' : '') +
@@ -260,7 +260,7 @@ export default class HotkeyHandler extends React.Component {
     }
   }
 
-  handleFocusChange_ (e) {
+  _handleFocusChange (e) {
     let whitelist = ['INPUT', 'TEXTAREA']
 
     if (!_.includes(whitelist, e.target.tagName)) {
@@ -275,7 +275,7 @@ export default class HotkeyHandler extends React.Component {
    *
    * @return {string} the unified hotkey identifier
    */
-  hotkeyToHash_ (hotkey) {
+  _hotkeyToHash (hotkey) {
     return Hotkey.fromString(hotkey).toString()
   }
 }

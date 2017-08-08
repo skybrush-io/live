@@ -41,8 +41,8 @@ class UAVsLayerSettingsPresentation extends React.Component {
       colorPredicates: props.layer.parameters.colorPredicates
     }
 
-    this.makeChangeHandler_ = this.makeChangeHandler_.bind(this)
-    this.handleClick_ = this.handleClick_.bind(this)
+    this._makeChangeHandler = this._makeChangeHandler.bind(this)
+    this._handleClick = this._handleClick.bind(this)
   }
 
   render () {
@@ -53,7 +53,7 @@ class UAVsLayerSettingsPresentation extends React.Component {
         name={`${color}_predicate_textfield`}
         floatingLabelText={color}
         value={this.state.colorPredicates[color]}
-        onChange={this.makeChangeHandler_(color)} />
+        onChange={this._makeChangeHandler(color)} />
     ))
     return (
       <div>
@@ -63,7 +63,7 @@ class UAVsLayerSettingsPresentation extends React.Component {
         <RaisedButton
           label={'Apply'}
           icon={<ActionSystemUpdateAlt />}
-          onClick={this.handleClick_} />
+          onClick={this._handleClick} />
       </div>
     )
   }
@@ -76,7 +76,7 @@ class UAVsLayerSettingsPresentation extends React.Component {
     updateUAVFeatureColorsSignal.dispatch()
   }
 
-  makeChangeHandler_ (color) {
+  _makeChangeHandler (color) {
     return (event) => {
       this.setState(
         u.updateIn(`colorPredicates.${color}`, event.target.value, this.state)
@@ -84,7 +84,7 @@ class UAVsLayerSettingsPresentation extends React.Component {
     }
   }
 
-  handleClick_ () {
+  _handleClick () {
     this.props.setLayerParameter('colorPredicates', this.state.colorPredicates)
   }
 }
@@ -121,12 +121,12 @@ class UAVsLayerPresentation extends React.Component {
 
     return (
       <div>
-        <layer.Vector ref={this.context.assignActiveUAVsLayerRef_}
+        <layer.Vector ref={this.context._assignActiveUAVsLayerRef}
           updateWhileAnimating
           updateWhileInteracting
           zIndex={this.props.zIndex}>
 
-          <ActiveUAVsLayerSource ref={this.context.assignActiveUAVsLayerSourceRef_}
+          <ActiveUAVsLayerSource ref={this.context._assignActiveUAVsLayerSourceRef}
             selection={this.props.selection}
             flock={flock}
             projection={this.props.projection} />
@@ -158,8 +158,8 @@ UAVsLayerPresentation.defaultProps = {
 }
 
 UAVsLayerPresentation.contextTypes = {
-  assignActiveUAVsLayerRef_: PropTypes.func,
-  assignActiveUAVsLayerSourceRef_: PropTypes.func
+  _assignActiveUAVsLayerRef: PropTypes.func,
+  _assignActiveUAVsLayerSourceRef: PropTypes.func
 }
 
 export const UAVsLayer = connect(

@@ -19,7 +19,7 @@ export default class MapReferenceRequestHandler extends React.Component {
    */
   constructor (props) {
     super(props)
-    mapReferenceRequestSignal.add(this.onMapReferenceRequested_.bind(this))
+    mapReferenceRequestSignal.add(this._onMapReferenceRequested.bind(this))
   }
 
   render () {
@@ -34,7 +34,7 @@ export default class MapReferenceRequestHandler extends React.Component {
    *
    * @param {function} callback the callback sent by the component requesting the reference
    */
-  onMapReferenceRequested_ (callback) {
+  _onMapReferenceRequested (callback) {
     callback(this.context.map)
   }
 }

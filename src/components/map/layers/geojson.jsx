@@ -28,8 +28,8 @@ class GeoJSONLayerSettingsPresentation extends React.Component {
       data: JSON.stringify(props.layer.parameters.data, null, 2)
     }
 
-    this.handleChange_ = this.handleChange_.bind(this)
-    this.handleClick_ = this.handleClick_.bind(this)
+    this._handleChange = this._handleChange.bind(this)
+    this._handleClick = this._handleClick.bind(this)
   }
 
   render () {
@@ -56,25 +56,25 @@ class GeoJSONLayerSettingsPresentation extends React.Component {
           textareaStyle={{height: '85%'}}
           fullWidth
           value={this.state.data}
-          onChange={this.handleChange_} />
+          onChange={this._handleChange} />
 
         <div style={{ textAlign: 'center', paddingTop: '1em' }}>
           <FlatButton
             label={'Import GeoJSON'}
             icon={<ActionSystemUpdateAlt />}
-            onClick={this.handleClick_} />
+            onClick={this._handleClick} />
         </div>
       </div>
     )
   }
 
-  handleChange_ (e) {
+  _handleChange (e) {
     this.setState({
       data: e.target.value
     })
   }
 
-  handleClick_ () {
+  _handleClick () {
     this.props.setLayerParameter('strokeColor', this.refs.strokeColor.getValue())
     this.props.setLayerParameter('fillColor', this.refs.fillColor.getValue())
     this.props.setLayerParameter('strokeWidth', _.toNumber(this.refs.strokeWidth.getValue()))
