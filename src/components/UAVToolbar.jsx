@@ -2,6 +2,7 @@ import { isEmpty } from 'lodash'
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 
+import Badge from 'material-ui/Badge'
 import IconButton from 'material-ui/IconButton'
 import ActionFlightTakeoff from 'material-ui/svg-icons/action/flight-takeoff'
 import ActionFlightLand from 'material-ui/svg-icons/action/flight-land'
@@ -34,7 +35,8 @@ class UAVToolbar extends React.Component {
   }
 
   render () {
-    const isSelectionEmpty = isEmpty(this.props.selectedUAVIds)
+    const { selectedUAVIds, uavs } = this.props
+    const isSelectionEmpty = isEmpty(selectedUAVIds)
 
     // Don't use material-ui native tooltips here because they won't work
     // nicely for disabled buttons; see https://github.com/callemall/material-ui/issues/3665
@@ -65,13 +67,30 @@ class UAVToolbar extends React.Component {
           <ActionPowerSettingsNew color={'red'} />
         </IconButton>
 
-        <IconButton
-          onClick={this._fitSelectedUAVs}
-          style={{float: 'right', marginRight: '4px'}}
-          tooltipPosition={'bottom-left'}
-          title={isSelectionEmpty ? 'Fit all UAVs' : 'Fit selected UAVs'}>
-          {isSelectionEmpty ? <ImageBlurOn /> : <ImageBlurCircular />}
-        </IconButton>
+        <Badge
+          primary
+          badgeContent={
+            isSelectionEmpty ? `${uavs.size}` : `${selectedUAVIds.length}/${uavs.size}`
+          }
+          badgeStyle={{
+            width: isSelectionEmpty ? '24px' : '45px',
+            top: '12px',
+            left: isSelectionEmpty ? '-21px' : '-40px',
+            transition: 'width 0.25s, left 0.25s'
+          }}
+          style={{
+            float: 'right',
+            padding: '0px',
+            marginRight: '4px'
+          }}
+        >
+          <IconButton
+            onClick={this._fitSelectedUAVs}
+            tooltipPosition={'bottom-left'}
+            title={isSelectionEmpty ? 'Fit all UAVs' : 'Fit selected UAVs'}>
+            {isSelectionEmpty ? <ImageBlurOn /> : <ImageBlurCircular />}
+          </IconButton>
+        </Badge>
       </div>
     )
   }
@@ -108,11 +127,11 @@ class UAVToolbar extends React.Component {
   _fitSelectedUAVs () {
     const selectedUAVCoordinates = this.props.uavs.toArray().filter(
       uav => this.props.selectedUAVIds.length === 0
-      ? true
-      : this.props.selectedUAVIds.includes(uav.id)
+        ? true
+        : this.props.selectedUAVIds.includes(uav.id)
     ).map(
       uav => coordinateFromLonLat([uav.lon, uav.lat])
-    )
+      )
 
     const boundingExtent = ol.extent.boundingExtent(selectedUAVCoordinates)
     const bufferedExtent = ol.extent.buffer(boundingExtent, 16)

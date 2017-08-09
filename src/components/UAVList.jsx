@@ -165,7 +165,10 @@ class UAVList extends React.Component {
 
   render () {
     const { selectedUAVIds, onSelectionChanged } = this.props
-    const { uavs } = this.state
+    const uavs = this.state.uavs.sort((a, b) =>
+      a.id < b.id ? -1 : a.id > b.id ? 1 : 0
+    )
+
     return (
       <div style={{ height: '100%' }}>
         <UAVToolbar selectedUAVIds={selectedUAVIds} uavs={uavs} />
