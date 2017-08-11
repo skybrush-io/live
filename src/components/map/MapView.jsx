@@ -87,10 +87,11 @@ class MapViewPresentation extends React.Component {
     const center = projection([19.061951, 47.473340])
     const view = <View center={center} zoom={17} />
 
-    const cursorStyles = {}
-    cursorStyles[Tool.SELECT] = 'crosshair'
-    cursorStyles[Tool.ZOOM] = 'zoom-in'
-    cursorStyles[Tool.PAN] = 'all-scroll'
+    const toolClasses = {
+      [Tool.SELECT]: 'tool-select',
+      [Tool.ZOOM]: 'tool-zoom',
+      [Tool.PAN]: 'tool-pan'
+    }
 
     const layers = []
     let zIndex = 0
@@ -103,9 +104,9 @@ class MapViewPresentation extends React.Component {
 
     return (
       <Map view={view} ref={this._assignMapRef}
-        useDefaultControls={false} loadTilesWhileInteracting
-        focusOnMount
-        style={{cursor: cursorStyles[selectedTool]}} >
+        useDefaultControls={false} loadTilesWhileInteracting focusOnMount
+        className={toolClasses[selectedTool]}
+      >
 
         <MapReferenceRequestHandler />
 
@@ -130,6 +131,7 @@ class MapViewPresentation extends React.Component {
           condition={ol.events.condition.platformModifierKeyOnly}
           boxend={this._onBoxDragEnded} />
 
+        {/* PAN mode | Alt + Shift + Drag --> Rotate view */}
         <interaction.DragRotate
           condition={ol.events.condition.altShiftKeysOnly} />
 

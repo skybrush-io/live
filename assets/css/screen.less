@@ -199,6 +199,53 @@ div.dialog-sidebar {
   border-color: black;
 }
 
+.ol-viewport {
+ .tool-select & {
+    cursor: url('/assets/cursors/select.png') 11 8, auto;
+
+    .key-control & {
+      cursor: url('/assets/cursors/select-area.png') 4 4, auto;
+    }
+
+    .key-shift & {
+      cursor: url('/assets/cursors/add-area.png') 4 4, auto;
+    }
+
+    .key-alt & {
+      cursor: url('/assets/cursors/remove-area.png') 4 4, auto;
+    }
+  }
+
+  .tool-zoom & {
+    cursor: url('/assets/cursors/zoom-in.png') 9 9, auto;
+
+    .key-shift & {
+      cursor: url('/assets/cursors/zoom-out.png') 9 9, auto;
+    }
+  }
+
+  .tool-pan & {
+    cursor: url('/assets/cursors/pan.png') 12 12, auto;
+
+    // &:active {
+    //   cursor: url('/assets/cursors/open-with.png'), auto;
+    // }
+
+    .key-control & {
+      cursor: url('/assets/cursors/select-area.png') 4 4, auto;
+    }
+
+    .key-shift & {
+      cursor: url('/assets/cursors/zoom-in.png') 9 9, auto;
+    }
+
+    .key-shift.key-alt & {
+      cursor: url('/assets/cursors/rotate.png') 12 12, auto;
+    }
+  }
+}
+
+
 .ol-dragbox, .ol-dragzoom {
   background-color: rgba(0, 136, 255, 0.25);
   border: 1px solid #08f;

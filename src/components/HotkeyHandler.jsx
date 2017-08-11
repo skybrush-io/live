@@ -4,6 +4,7 @@
 
 import React, { PropTypes } from 'react'
 import _ from 'lodash'
+import u from 'updeep'
 
 import FlatButton from 'material-ui/FlatButton'
 import Dialog from 'material-ui/Dialog'
@@ -59,7 +60,13 @@ export default class HotkeyHandler extends React.Component {
     super(props)
 
     this.state = {
-      dialogVisible: false
+      dialogVisible: false,
+      keyboardModifiers: {
+        Alt: false,
+        Control: false,
+        Meta: false,
+        Shift: false
+      }
     }
 
     this.listeners = { down: {}, up: {} }
@@ -135,8 +142,15 @@ export default class HotkeyHandler extends React.Component {
         onTouchTap={this._hideDialog} />
     ]
 
+    const classString = [].concat(
+      (this.state.keyboardModifiers.Alt ? ['key-alt'] : []),
+      (this.state.keyboardModifiers.Control ? ['key-control'] : []),
+      (this.state.keyboardModifiers.Meta ? ['key-meta'] : []),
+      (this.state.keyboardModifiers.Shift ? ['key-shift'] : [])
+    ).join(' ')
+
     return (
-      <div ref={'capture'}>
+      <div ref={'capture'} className={classString}>
         <Dialog
           title={'Hotkeys'}
           actions={actions}
@@ -171,6 +185,7 @@ export default class HotkeyHandler extends React.Component {
             </TableBody>
           </Table>
         </Dialog>
+
         {this.props.children}
       </div>
     )
@@ -213,14 +228,28 @@ export default class HotkeyHandler extends React.Component {
    *
    * @param {KeyboardEvent} e the actual keyboard event
    */
-  _handleKeyDown (e) { this._handleKey('down', e) }
+  _handleKeyDown (e) {
+    if (e.repeat) { return }
+
+    if (e.key in this.state.keyboardModifiers) {
+      this.setState(u({ keyboardModifiers: { [e.key]: true } }, this.state))
+    } else {
+      this._handleKey('down', e)
+    }
+  }
 
   /**
    * Proxy for keyup event.
    *
    * @param {KeyboardEvent} e the actual keyboard event
    */
-  _handleKeyUp (e) { this._handleKey('up', e) }
+  _handleKeyUp (e) {
+    if (e.key in this.state.keyboardModifiers) {
+      this.setState(u({ keyboardModifiers: { [e.key]: false } }, this.state))
+    } else {
+      this._handleKey('up', e)
+    }
+  }
 
   /**
    * Event handler function that looks for attached actions and executes them.
@@ -251,7 +280,6 @@ export default class HotkeyHandler extends React.Component {
       const listeners = this.listeners[direction]
       if (hash in listeners) {
         e.preventDefault()
-        if (e.repeat) { return }
 
         for (const callback of listeners[hash]) {
           callback()
