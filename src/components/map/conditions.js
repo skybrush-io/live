@@ -38,4 +38,15 @@ Condition.altShiftKeyAndMiddleMouseButton = mapBrowserEvent => (
   mapBrowserEvent.originalEvent.altKey
 )
 
+/**
+ * Helper condition that checks for a pointerdown event fired by a right click.
+ *
+ * @param {event}  mapBrowserEvent  the actual event
+ * @return {boolean}  whether the condition was met
+ */
+Condition.rightClick = mapBrowserEvent => (
+  mapBrowserEvent.originalEvent.type === 'pointerdown' &&
+  mapBrowserEvent.originalEvent.button === 2
+)
+
 export default Condition

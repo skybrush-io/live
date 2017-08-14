@@ -6,6 +6,8 @@ import { connect } from 'react-redux'
 import Widget from '../Widget'
 import Condition from './conditions'
 import SelectNearestFeature from './interactions/SelectNearestFeature'
+import ContextMenu from './interactions/ContextMenu'
+import ContextMenuPopup from './ContextMenuPopup'
 import { Layers, stateObjectToLayer } from './layers/index'
 import MapReferenceRequestHandler from './MapReferenceRequestHandler'
 import MapToolbar from './MapToolbar'
@@ -32,6 +34,9 @@ class MapViewPresentation extends React.Component {
     this._isLayerShowingActiveUAVs = this._isLayerShowingActiveUAVs.bind(this)
     this._onBoxDragEnded = this._onBoxDragEnded.bind(this)
     this._onSelect = this._onSelect.bind(this)
+
+    this._disableDefaultContextMenu = this._disableDefaultContextMenu.bind(this)
+    this._onContextMenu = this._onContextMenu.bind(this)
   }
 
   componentDidMount () {
@@ -39,6 +44,7 @@ class MapViewPresentation extends React.Component {
     this.layoutManager = glContainer ? glContainer.layoutManager : undefined
 
     mapViewManager.initialize()
+    this._disableDefaultContextMenu()
   }
 
   componentDidUpdate () {
@@ -172,6 +178,14 @@ class MapViewPresentation extends React.Component {
         {/* ZOOM mode | Shift + Drag --> Box zoom out */}
         <interaction.DragZoom active={selectedTool === Tool.ZOOM}
           condition={ol.events.condition.shiftKeyOnly} out />
+
+        <ContextMenu
+          layers={this._isLayerShowingActiveUAVs}
+          select={this._onSelect}
+          contextMenu={this._onContextMenu}
+          threshold={40} />
+
+        <ContextMenuPopup ref={'contextMenuPopup'} />
       </Map>
     )
   }
@@ -275,6 +289,30 @@ class MapViewPresentation extends React.Component {
     if (id) {
       this.props.dispatch(action([id]))
     }
+  }
+
+  /**
+   * Method to disable the browsers default context menu.
+   */
+  _disableDefaultContextMenu () {
+    this.map.map.getViewport().addEventListener(
+      'contextmenu',
+      e => e.preventDefault()
+    )
+  }
+
+  /**
+   * Custom handler for right mouse click events that pops up UAV options.
+   *
+   * @param {ol.MapBrowserEvent} mapBrowserEvent
+   */
+  _onContextMenu (mapBrowserEvent) {
+    const position = {
+      x: mapBrowserEvent.originalEvent.offsetX,
+      y: mapBrowserEvent.originalEvent.offsetY
+    }
+
+    this.refs.contextMenuPopup.getWrappedInstance().open(position)
   }
 
   /**
