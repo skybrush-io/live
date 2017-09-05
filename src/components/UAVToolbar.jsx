@@ -2,7 +2,6 @@ import { isEmpty } from 'lodash'
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 
-import Badge from 'material-ui/Badge'
 import IconButton from 'material-ui/IconButton'
 import ActionFlightTakeoff from 'material-ui/svg-icons/action/flight-takeoff'
 import ActionFlightLand from 'material-ui/svg-icons/action/flight-land'
@@ -29,13 +28,14 @@ class UAVToolbar extends React.Component {
     this._takeoffSelectedUAVs = this._takeoffSelectedUAVs.bind(this)
     this._landSelectedUAVs = this._landSelectedUAVs.bind(this)
     this._returnSelectedUAVs = this._returnSelectedUAVs.bind(this)
-    this._fitSelectedUAVs = this._fitSelectedUAVs.bind(this)
 
     this._showMessagesDialog = this._showMessagesDialog.bind(this)
+
+    this._fitSelectedUAVs = this._fitSelectedUAVs.bind(this)
   }
 
   render () {
-    const { selectedUAVIds, uavs } = this.props
+    const { selectedUAVIds } = this.props
     const isSelectionEmpty = isEmpty(selectedUAVIds)
 
     // Don't use material-ui native tooltips here because they won't work
@@ -67,30 +67,17 @@ class UAVToolbar extends React.Component {
           <ActionPowerSettingsNew color={'red'} />
         </IconButton>
 
-        <Badge
-          primary
-          badgeContent={
-            isSelectionEmpty ? `${uavs.size}` : `${selectedUAVIds.length}/${uavs.size}`
-          }
-          badgeStyle={{
-            width: isSelectionEmpty ? '24px' : '45px',
-            top: '12px',
-            left: isSelectionEmpty ? '-21px' : '-40px',
-            transition: 'width 0.25s, left 0.25s'
-          }}
+        <IconButton
+          onClick={this._fitSelectedUAVs}
+          tooltipPosition={'bottom-left'}
           style={{
             float: 'right',
             padding: '0px',
             marginRight: '4px'
           }}
-        >
-          <IconButton
-            onClick={this._fitSelectedUAVs}
-            tooltipPosition={'bottom-left'}
-            title={isSelectionEmpty ? 'Fit all UAVs' : 'Fit selected UAVs'}>
-            {isSelectionEmpty ? <ImageBlurOn /> : <ImageBlurCircular />}
-          </IconButton>
-        </Badge>
+          title={isSelectionEmpty ? 'Fit all UAVs' : 'Fit selected UAVs'}>
+          {isSelectionEmpty ? <ImageBlurOn /> : <ImageBlurCircular />}
+        </IconButton>
       </div>
     )
   }

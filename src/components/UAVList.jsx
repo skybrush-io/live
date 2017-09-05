@@ -15,6 +15,7 @@ import u from 'updeep'
 
 import { multiSelectableListOf } from './helpers/lists'
 import UAVToolbar from './UAVToolbar'
+import CountMonitor from './CountMonitor'
 
 import { setSelectedFeatures } from '../actions/map'
 import Flock from '../model/flock'
@@ -157,6 +158,7 @@ class UAVList extends React.Component {
   _pickRelevantUAVProps (uav) {
     return {
       id: uav.id,
+      lastUpdated: uav.lastUpdated,
       lat: uav.lat,
       lon: uav.lon,
       heading: uav.heading
@@ -165,15 +167,21 @@ class UAVList extends React.Component {
 
   render () {
     const { selectedUAVIds, onSelectionChanged } = this.props
+
     const uavs = this.state.uavs.sort((a, b) =>
       a.id < b.id ? -1 : a.id > b.id ? 1 : 0
     )
 
     return (
-      <div style={{ height: '100%' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
         <UAVToolbar selectedUAVIds={selectedUAVIds} uavs={uavs} />
-        <UAVListPresentation uavs={uavs} value={selectedUAVIds || []}
-          onChange={onSelectionChanged} />
+
+        <div style={{ overflow: 'auto' }}>
+          <UAVListPresentation uavs={uavs} value={selectedUAVIds || []}
+            onChange={onSelectionChanged} />
+        </div>
+
+        <CountMonitor selectedUAVIds={selectedUAVIds} uavs={uavs} />
       </div>
     )
   }

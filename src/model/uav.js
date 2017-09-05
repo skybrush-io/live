@@ -17,6 +17,7 @@ export default class UAV {
    */
   constructor (id) {
     this._id = id
+    this.lastUpdated = undefined
     this.lat = undefined
     this.lon = undefined
     this.heading = undefined
@@ -40,8 +41,13 @@ export default class UAV {
    * @return {boolean}  whether the status information has been updated
    */
   handleUAVStatusInfo (status) {
-    const { position, heading } = status
+    const { timestamp, position, heading } = status
     let updated = false
+
+    if (timestamp) {
+      this.lastUpdated = new Date(timestamp)
+      updated = true
+    }
 
     if (position) {
       this.lat = position.lat
