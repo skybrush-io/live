@@ -8,7 +8,8 @@ const stateColors = {
   normal: 'hsl(115, 100%, 42%)',
   away: 'hsl(50, 100%, 42%)',
   error: 'hsl(0, 100%, 42%)',
-  lost: 'hsl(0, 0%, 42%)'
+  lost: 'hsl(0, 0%, 42%)',
+  all: 'hsl(250, 100%, 42%)'
 }
 
 /**
@@ -52,7 +53,8 @@ class CountMonitor extends React.Component {
 
     const errorCount = 1 // Temporary constant to force display the indicator.
 
-    const normalCount = uavs.size - awayCount - errorCount - lostCount
+    const allCount = uavs.size
+    const normalCount = allCount - awayCount - errorCount - lostCount
 
     return (
       <div style={{ padding: '10px' }}>
@@ -71,7 +73,8 @@ class CountMonitor extends React.Component {
           {
             awayCount > 0 &&
             <span>
-              + <ColoredContainer
+              +
+              <ColoredContainer
                 color={stateColors.away}
                 title={'Away'}
                 text={`${awayCount}`} />
@@ -81,7 +84,8 @@ class CountMonitor extends React.Component {
           {
             errorCount > 0 &&
             <span>
-              + <ColoredContainer
+              +
+              <ColoredContainer
                 color={stateColors.error}
                 title={'Errored'}
                 text={`${errorCount}`} />
@@ -91,12 +95,21 @@ class CountMonitor extends React.Component {
           {
             lostCount > 0 &&
             <span>
-              + <ColoredContainer
+              +
+              <ColoredContainer
                 color={stateColors.lost}
                 title={'Lost'}
                 text={`${lostCount}`} />
             </span>
           }
+
+          <span>
+            =
+            <ColoredContainer
+              color={stateColors.all}
+              title={'All'}
+              text={`${allCount}`} />
+          </span>
         </span>
       </div>
     )
