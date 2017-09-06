@@ -5,6 +5,7 @@
 import { selectAllFeatures, clearSelectedFeatures,
   selectMapTool, selectMapSource } from './actions/map'
 import { showLayersDialog } from './actions/layers'
+import { showMessagesDialog } from './actions/messages'
 
 import { Tool } from './components/map/tools'
 import { Source } from './model/sources'
@@ -73,7 +74,7 @@ export default [
     }
   },
 
-  // Layer source hotkeys
+  // Layer related hotkeys
   {
     description: 'Switch to OpenStreetMaps source',
     on: 'down',
@@ -100,7 +101,7 @@ export default [
   },
 
   {
-    description: 'Open Layers dialog',
+    description: 'Open the Layers dialog',
     on: 'down',
     keys: 'PlatMod + Shift + KeyL',
     action: () => {
@@ -140,6 +141,17 @@ export default [
         type: 'UAV-RTH',
         ids: store.getState().map.selection
       }).then(result => console.log(result))
+    }
+  },
+
+  // Messages dialog related hotkeys
+  {
+    description: 'Open the Messages dialog and focus the UAV selector field',
+    on: 'down',
+    keys: '@',
+    action: () => {
+      store.dispatch(showMessagesDialog())
+      signals.focusMessagesDialogUAVSelectorField.dispatch()
     }
   },
 

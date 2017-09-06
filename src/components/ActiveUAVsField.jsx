@@ -11,6 +11,8 @@ import { connect } from 'react-redux'
 import { selectUAVInMessagesDialog } from '../actions/messages'
 import Flock from '../model/flock'
 
+import { focusMessagesDialogUAVSelectorField } from '../signals'
+
 /**
  * Autocompletion field that allows the user to select a UAV by
  * typing its name or selecting it from the autocompletion dropdown.
@@ -29,6 +31,21 @@ export class UAVSelectorField extends React.Component {
 
     this._onBlur = this._onBlur.bind(this)
     this._onNewRequest = this._onNewRequest.bind(this)
+
+    this._selectAutoCompleteField = this._selectAutoCompleteField.bind(this)
+
+    this._signalBinding = undefined
+    this._autoCompleteField = undefined
+  }
+
+  componentDidMount () {
+    this._signalBinding = focusMessagesDialogUAVSelectorField.add(
+      this._selectAutoCompleteField
+    )
+  }
+
+  componentWillUnmount () {
+    focusMessagesDialogUAVSelectorField.detach(this._signalBinding)
   }
 
   /**
@@ -52,7 +69,8 @@ export class UAVSelectorField extends React.Component {
     const { prompt, style, uavIds, value } = this.props
     const { error } = this.state
     return (
-      <AutoComplete hintText={prompt} maxSearchResults={5}
+      <AutoComplete ref={element => { this._autoCompleteField = element }}
+        hintText={prompt} maxSearchResults={5}
         dataSource={uavIds} searchText={value} errorText={error}
         filter={AutoComplete.caseInsensitiveFilter}
         fullWidth style={style}
@@ -136,6 +154,15 @@ export class UAVSelectorField extends React.Component {
   _valueIsAmongUAVIds (value) {
     const { uavIds } = this.props
     return uavIds && uavIds.indexOf(value) >= 0
+  }
+
+  _selectAutoCompleteField () {
+    if (!this._autoCompleteField) {
+      console.warn('The autocomplete field has not registered yet.')
+      return
+    }
+
+    this._autoCompleteField.refs.searchTextField.input.select()
   }
 }
 

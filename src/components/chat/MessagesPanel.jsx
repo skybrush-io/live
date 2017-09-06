@@ -105,7 +105,7 @@ class MessagesPanelPresentation extends React.Component {
       <div key={'textFieldContainer'} style={{ display: 'flex' }}>
         <ActiveUAVsField style={{ width: '8em', paddingRight: '1em' }}
           flock={flock} />
-        <TextField fullWidth hintText={'Message'}
+        <TextField ref={'messageTextField'} fullWidth hintText={'Message'}
           onKeyDown={this._textFieldKeyDownHandler}
           disabled={_.isNil(selectedUAVId)} />
       </div>
@@ -183,7 +183,9 @@ const MessagesPanel = connect(
         }
       )
     }
-  })
+  }),
+  null,
+  { withRef: true }
 )(MessagesPanelPresentation)
 
 export default MessagesPanel
