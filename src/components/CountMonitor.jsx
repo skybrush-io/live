@@ -51,8 +51,6 @@ class CountMonitor extends React.Component {
       u => (now - u.lastUpdated) > awayTimeout
     ).size - lostCount
 
-    const errorCount = 1 // Temporary constant to force display the indicator.
-
     const allCount = uavs.size
     const normalCount = allCount - awayCount - errorCount - lostCount
 
