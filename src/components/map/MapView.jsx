@@ -23,7 +23,39 @@ import mapViewManager from '../../mapViewManager'
 require('openlayers/css/ol.css')
 
 /**
- * React component for the full-bleed map of the main window.
+ * React component that renders the layers of the map in the main window.
+ */
+const MapViewLayersPresentation = ({ layersById, layerOrder }) => {
+  const layers = []
+  let zIndex = 0
+
+  for (const id of layerOrder) {
+    if (layersById[id].type in Layers) {
+      layers.push(stateObjectToLayer(layersById[id], id, zIndex++))
+    }
+  }
+
+  return <div>{layers}</div>
+}
+
+MapViewLayersPresentation.propTypes = {
+  layerOrder: PropTypes.arrayOf(PropTypes.string),
+  layersById: PropTypes.object
+}
+
+/**
+ * Connects the map view layers to the Redux store.
+ */
+const MapViewLayers = connect(
+  // mapStateToProps
+  state => ({
+    layerOrder: state.map.layers.order,
+    layersById: state.map.layers.byId
+  })
+)(MapViewLayersPresentation)
+
+/**
+ * React component for the map of the main window.
  */
 class MapViewPresentation extends React.Component {
   constructor (props) {
@@ -99,15 +131,6 @@ class MapViewPresentation extends React.Component {
       [Tool.PAN]: 'tool-pan'
     }
 
-    const layers = []
-    let zIndex = 0
-
-    for (const id of this.props.layerOrder) {
-      if (this.props.layersById[id].type in Layers) {
-        layers.push(stateObjectToLayer(this.props.layersById[id], id, zIndex++))
-      }
-    }
-
     return (
       <Map view={view} ref={this._assignMapRef}
         useDefaultControls={false} loadTilesWhileInteracting focusOnMount
@@ -120,9 +143,7 @@ class MapViewPresentation extends React.Component {
           <MapToolbar />
         </Widget>
 
-        <div>
-          {layers}
-        </div>
+        <MapViewLayers />
 
         <control.FullScreen source={document.body} />
 
