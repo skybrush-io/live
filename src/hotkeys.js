@@ -144,6 +144,27 @@ export default [
     }
   },
 
+  // Temporary: Send selected UAVs into a random error state
+  {
+    description: 'Send selected UAVs into a random error state',
+    on: 'down',
+    keys: 'PlatMod + Alt + KeyE',
+    action: (() => {
+      let isInError = false
+
+      return () => {
+        isInError = !isInError
+
+        messageHub.sendMessage({
+          type: 'CMD-REQ',
+          ids: store.getState().map.selection,
+          command: 'error',
+          args: isInError ? [Math.floor(Math.random() * 256)] : []
+        }).then(result => console.log(result))
+      }
+    })()
+  },
+
   // Messages dialog related hotkeys
   {
     description: 'Open the Messages dialog and focus the UAV selector field',

@@ -161,7 +161,8 @@ class UAVList extends React.Component {
       lastUpdated: uav.lastUpdated,
       lat: uav.lat,
       lon: uav.lon,
-      heading: uav.heading
+      heading: uav.heading,
+      error: uav.error
     }
   }
 
@@ -176,7 +177,7 @@ class UAVList extends React.Component {
       <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
         <UAVToolbar selectedUAVIds={selectedUAVIds} uavs={uavs} />
 
-        <div style={{ overflow: 'auto' }}>
+        <div style={{ height: '100%', overflow: 'auto' }}>
           <UAVListPresentation uavs={uavs} value={selectedUAVIds || []}
             onChange={onSelectionChanged} />
         </div>

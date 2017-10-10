@@ -3,6 +3,8 @@
  * an UAV.
  */
 
+import _ from 'lodash'
+
 /**
  * Representation of a single UAV.
  */
@@ -21,6 +23,7 @@ export default class UAV {
     this.lat = undefined
     this.lon = undefined
     this.heading = undefined
+    this.error = undefined
   }
 
   /**
@@ -41,7 +44,7 @@ export default class UAV {
    * @return {boolean}  whether the status information has been updated
    */
   handleUAVStatusInfo (status) {
-    const { timestamp, position, heading } = status
+    const { timestamp, position, heading, error } = status
     let updated = false
 
     if (timestamp) {
@@ -57,6 +60,11 @@ export default class UAV {
 
     if (typeof heading !== 'undefined') {
       this.heading = heading
+      updated = true
+    }
+
+    if (!_.isEqual(this.error, error)) {
+      this.error = error
       updated = true
     }
 
