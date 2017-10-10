@@ -31,7 +31,8 @@ module.exports = {
   ],
   resolve: {
     alias: {
-      config: path.join(__dirname, 'config', process.env.NODE_ENV || 'production')
+      config: path.join(__dirname, 'config', process.env.NODE_ENV || 'production'),
+      'openlayers$': process.env.NODE_ENV !== 'production' ? 'openlayers/dist/ol-debug.js' : 'openlayers/dist/ol.js'
     },
     extensions: ['.webpack.js', '.web.js', '.js', '.jsx']
   },
@@ -71,6 +72,6 @@ module.exports = {
         include: path.join(__dirname, 'assets')
       }
     ],
-    noParse: /dist\/ol.js/
+    noParse: /dist\/ol.*\.js/
   }
 }
