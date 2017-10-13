@@ -11,8 +11,27 @@
 
   border-bottom: double rgba(50, 50, 50, 1) 4px;
 
-  .fst-cell:first-child {
-    margin-left: 1px; // Correction for separator alingment
+
+  .fst-cell {
+    &:first-child {
+      margin-left: 1px; // Correction for separator alingment
+    }
+
+    .fst-column-controls {
+      float: right;
+
+      opacity: 0;
+
+      transition: opacity 0.3s;
+
+      svg {
+        cursor: pointer;
+      }
+    }
+
+    &:hover .fst-column-controls {
+      opacity: 1;
+    }
   }
 }
 

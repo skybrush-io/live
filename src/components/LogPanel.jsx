@@ -26,31 +26,36 @@ class LogPresentation extends React.Component {
   render () {
     const tableColumns = [
       {
-        name: <ActionReceipt style={{ marginTop: '-2px' }} />,
-        width: 35,
+        name: <ActionReceipt style={{ marginTop: '-2px' }} />, // Level
+        width: 100,
         dataExtractor: row => {
           const { Icon, color } = logLevelIcons[row.level]
           return <Icon color={color} style={{ marginTop: '-2px' }} />
-        }
+        },
+        sorter: (a, b) => a.level - b.level
       },
       {
         name: 'Timestamp',
-        width: 100,
+        width: 150,
         dataExtractor: row =>
           _.padStart(row.timestamp.getHours(), 2, '0') + ':' +
-          _.padStart(row.timestamp.getMinutes(), 2, '0')
+          _.padStart(row.timestamp.getMinutes(), 2, '0'),
+        sorter: (a, b) => a.timestamp - b.timestamp
       },
       {
         name: 'Content',
-        width: 500,
-        dataExtractor: row => row.content
+        width: 600,
+        dataExtractor: row => row.content,
+        sorter: (a, b) => (a.content > b.content) - (a.content < b.content)
       }
     ]
 
     return (
       <FlexibleSortableTable
         dataSource={this.props.logItems}
-        defaultColumns={tableColumns}
+        availableColumns={tableColumns}
+        defaultSort={1}
+        defaultReverse
       />
     )
   }
