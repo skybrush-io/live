@@ -19,6 +19,7 @@ import SavedLocationList from './SavedLocationList'
 import MessagesPanel from './chat/MessagesPanel'
 import UAVList from './UAVList'
 import MapView from './map/MapView'
+import LogPanel from './LogPanel'
 
 require('../../assets/css/workbench.less')
 
@@ -42,6 +43,7 @@ const componentRegistry = {
   'connection-list': ConnectionList,
   'clock-list': ClockDisplayList,
   'saved-location-list': SavedLocationList,
+  'log-panel': LogPanel,
   'map': MapView,
   'messages': compose(withProps({
     style: {
@@ -126,11 +128,25 @@ export default class Workbench extends React.Component {
         type: 'row',
         content: [
           {
-            // type: 'react-component',
-            type: 'component',
-            componentName: 'lm-lazy-react-component',
-            component: 'map',
-            title: 'Map'
+            type: 'column',
+            content: [
+              {
+                // type: 'react-component',
+                type: 'component',
+                componentName: 'lm-lazy-react-component',
+                component: 'map',
+                title: 'Map'
+              },
+              {
+                // type: 'react-component',
+                height: 15,
+
+                type: 'component',
+                componentName: 'lm-lazy-react-component',
+                component: 'log-panel',
+                title: 'Log'
+              }
+            ]
           },
           {
             type: 'column',
