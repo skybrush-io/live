@@ -9,12 +9,12 @@ import ActionInfo from 'material-ui/svg-icons/action/info'
 import AlertWarning from 'material-ui/svg-icons/alert/warning'
 import ContentReport from 'material-ui/svg-icons/content/report'
 
-import React, { PropTypes } from 'react'
+import React from 'react'
 import { connect } from 'react-redux'
 
 import { deleteLogItem, clearLogItems } from '../actions/log'
 
-import FlexibleSortableTable from './FilterableSortableTable'
+import FlexibleSortableTable, {FilterTypes} from './FilterableSortableTable'
 
 const logLevelIcons = {
   0: { Icon: ActionInfo, color: '#528FF3' }, // Info
@@ -26,27 +26,36 @@ class LogPresentation extends React.Component {
   render () {
     const tableColumns = [
       {
-        name: <ActionReceipt style={{ marginTop: '-2px' }} />, // Level
+        name: 'Level',
+        displayName: <ActionReceipt />,
         width: 100,
-        dataExtractor: row => {
-          const { Icon, color } = logLevelIcons[row.level]
-          return <Icon color={color} style={{ marginTop: '-2px' }} />
+        dataExtractor: row => row.level,
+        displayRenderer: data => {
+          const { Icon, color } = logLevelIcons[data]
+          return <Icon color={color} />
         },
+        filterType: FilterTypes.list,
+        filterList: Object.keys(logLevelIcons).map((k, i) => {
+          const levelIcon = logLevelIcons[i]
+          return { value: i, display: <levelIcon.Icon color={levelIcon.color} /> }
+        }),
         sorter: (a, b) => a.level - b.level
       },
       {
         name: 'Timestamp',
         width: 150,
-        dataExtractor: row =>
-          _.padStart(row.timestamp.getHours(), 2, '0') + ':' +
-          _.padStart(row.timestamp.getMinutes(), 2, '0'),
+        dataExtractor: row => row.timestamp,
+        displayRenderer: data =>
+          _.padStart(data.getHours(), 2, '0') + ':' +
+          _.padStart(data.getMinutes(), 2, '0'),
+        filterType: FilterTypes.range,
         sorter: (a, b) => a.timestamp - b.timestamp
       },
       {
         name: 'Content',
         width: 600,
         dataExtractor: row => row.content,
-        sorter: (a, b) => (a.content > b.content) - (a.content < b.content)
+        filterType: FilterTypes.text
       }
     ]
 
@@ -54,7 +63,7 @@ class LogPresentation extends React.Component {
       <FlexibleSortableTable
         dataSource={this.props.logItems}
         availableColumns={tableColumns}
-        defaultSort={1}
+        defaultSortBy={1}
         defaultReverse
       />
     )
