@@ -5,11 +5,14 @@
 
 import React, { PropTypes } from 'react'
 
+import ActionSettingsBackupRestore from 'material-ui/svg-icons/action/settings-backup-restore'
 import EditorHighlight from 'material-ui/svg-icons/editor/highlight'
 import ContentSort from 'material-ui/svg-icons/content/sort'
 
 import Checkbox from 'material-ui/Checkbox'
 import Popover from 'material-ui/Popover'
+import FlatButton from 'material-ui/FlatButton'
+import TextField from 'material-ui/TextField'
 
 require('../../assets/css/FilterableSortableTable.less')
 
@@ -19,53 +22,24 @@ export const FilterTypes = {
   text: Symbol('text')
 }
 
+const filterPropertiesInitializers = {
+  [FilterTypes.list]: (col) => ({
+    list: col.filterList.map(x => ({ visible: true, item: x })),
+    map: new Map(col.filterList.map(x => [x.value, true]))
+  }),
+  [FilterTypes.range]: (col) => ({}),
+  [FilterTypes.text]: (col) => ({ text: '' })
+}
+
+const filterTesters = {
+  [FilterTypes.list]: (filterProperties, data) => filterProperties.map.get(data),
+  [FilterTypes.range]: (filterProperties, data) => true,
+  [FilterTypes.text]: (filterProperties, data) => data.match(filterProperties.text)
+}
+
 class FlexibleSortableTable extends React.Component {
   constructor (props) {
     super(props)
-
-    this.filterPropertiesInitializers = {
-      [FilterTypes.list]: (col) => ({
-        list: col.filterList.map(x => ({ visible: true, item: x })),
-        map: new Map(col.filterList.map(x => [x.value, true]))
-      }),
-      [FilterTypes.range]: (col) => ({}),
-      [FilterTypes.text]: (col) => ({})
-    }
-
-    this.filterTesters = {
-      [FilterTypes.list]: (filterProperties, data) => filterProperties.map.get(data),
-      [FilterTypes.range]: (filterProperties, data) => true,
-      [FilterTypes.text]: (filterProperties, data) => true
-    }
-
-    this.filterPopoverRenderers = {
-      [FilterTypes.list]: (filterProperties) => (
-        <div>
-          {filterProperties.list.map(item =>
-            <Checkbox
-              label={item.item.display}
-              checked={item.visible}
-              onCheck={() => {
-                item.visible = !item.visible
-                filterProperties.map.set(item.item.value, item.visible)
-
-                this.forceUpdate()
-              }}
-            />
-          )}
-        </div>
-      ),
-      [FilterTypes.range]: (filterProperties) => (
-        <div>
-          Range
-        </div>
-      ),
-      [FilterTypes.text]: (filterProperties) => (
-        <div>
-          Text
-        </div>
-      )
-    }
 
     const {
       defaultColumns = [...Array(props.availableColumns.length)].map((x, i) => i)
@@ -75,7 +49,7 @@ class FlexibleSortableTable extends React.Component {
       Object.assign({
         displayName: col.name,
         displayRenderer: x => x,
-        filterProperties: this.filterPropertiesInitializers[col.filterType](col),
+        filterProperties: filterPropertiesInitializers[col.filterType](col),
         sorter: (a, b) => (
           (col.dataExtractor(a) > col.dataExtractor(b)) -
           (col.dataExtractor(a) < col.dataExtractor(b))
@@ -95,6 +69,7 @@ class FlexibleSortableTable extends React.Component {
 
     this._makeFilterClickHandler = this._makeFilterClickHandler.bind(this)
     this._closeFilterPopover = this._closeFilterPopover.bind(this)
+    this._makeFilterPopoverContent = this._makeFilterPopoverContent.bind(this)
     this._makeSortClickHandler = this._makeSortClickHandler.bind(this)
     this._makeColumnControls = this._makeColumnControls.bind(this)
     this._makeSeparatorHandler = this._makeSeparatorHandler.bind(this)
@@ -105,11 +80,15 @@ class FlexibleSortableTable extends React.Component {
     return this.state.currentColumns.map(i => this.state.availableColumns[i])
   }
 
+  /**
+   * Retrieves those rows that match the currently active filtering conditions
+   * and orders them by the actual sorting column.
+   */
   get _data () {
     const filteringColumns = this._columns.filter(col => 'filterType' in col)
 
     const filteredData = this.state.dataSource.filter(row =>
-      filteringColumns.map(col => this.filterTesters[col.filterType](
+      filteringColumns.map(col => filterTesters[col.filterType](
         col.filterProperties,
         col.dataExtractor(row)
       )).every(x => x)
@@ -138,6 +117,50 @@ class FlexibleSortableTable extends React.Component {
     })
   }
 
+  /**
+   * Generates the settings for the filter type of the column specified by
+   * the id given in the parameter.
+   *
+   * @param {number} targetColumnId Identifier of the column being filtered.
+   */
+  _makeFilterPopoverContent (targetColumnId) {
+    const targetColumn = this._columns[targetColumnId]
+
+    return ({
+      [FilterTypes.list]: (filterProperties) => (
+        <div>
+          {filterProperties.list.map(item =>
+            <Checkbox
+              label={item.item.display}
+              checked={item.visible}
+              onCheck={() => {
+                item.visible = !item.visible
+                filterProperties.map.set(item.item.value, item.visible)
+
+                this.forceUpdate()
+              }}
+            />
+          )}
+        </div>
+      ),
+      [FilterTypes.range]: (filterProperties) => (
+        <div>
+          Range
+        </div>
+      ),
+      [FilterTypes.text]: (filterProperties) => (
+        <div>
+          <TextField id='filter-text' value={filterProperties.text}
+            onChange={e => {
+              filterProperties.text = e.target.value
+
+              this.forceUpdate()
+            }} />
+        </div>
+      )
+    })[targetColumn.filterType](targetColumn.filterProperties, targetColumnId)
+  }
+
   _makeSortClickHandler (i) {
     return () => {
       if (this.state.sortBy === i) {
@@ -148,6 +171,13 @@ class FlexibleSortableTable extends React.Component {
     }
   }
 
+  /**
+   * Function that constructs extra controls to be put into the header
+   * of the given column.
+   *
+   * @param {Object} col The desctiptor object of the current column.
+   * @param {number} i The position of the column in the visible column list.
+   */
   _makeColumnControls (col, i) {
     const sortStyle = Object.assign({},
       this.state.sortBy === i ? { fill: 'rgb(0, 188, 212)' } : {},
@@ -170,6 +200,13 @@ class FlexibleSortableTable extends React.Component {
     )
   }
 
+  /**
+   * Generates a handler callback that fires when a column separator is clicked.
+   * The handler registers an event listeners for dragging and removes it when
+   * the user lets go of the mouse button.
+   *
+   * @param {Object} col The desctiptor object of the current column.
+   */
   _makeSeparatorHandler (col) {
     return (e) => {
       const startX = e.clientX
@@ -222,12 +259,22 @@ class FlexibleSortableTable extends React.Component {
         anchorOrigin={{ horizontal: 'left', vertical: 'bottom' }}
         targetOrigin={{ horizontal: 'left', vertical: 'top' }}
         onRequestClose={this._closeFilterPopover}
+        style={{ padding: '5px', textAlign: 'center', overflow: 'visible' }}
       >
         {this.state.filterPopoverTargetColumnId !== undefined
-        ? this.filterPopoverRenderers[
-          this._columns[this.state.filterPopoverTargetColumnId].filterType
-        ](this._columns[this.state.filterPopoverTargetColumnId].filterProperties)
+        ? this._makeFilterPopoverContent(this.state.filterPopoverTargetColumnId)
         : false}
+
+        <FlatButton
+          label='Reset'
+          icon={<ActionSettingsBackupRestore />}
+          onClick={() => {
+            const col = this._columns[this.state.filterPopoverTargetColumnId]
+            col.filterProperties = filterPropertiesInitializers[col.filterType](col)
+
+            this.forceUpdate()
+          }}
+        />
       </Popover>
     )
 
