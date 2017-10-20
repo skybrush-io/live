@@ -14,7 +14,7 @@ import { connect } from 'react-redux'
 
 import { deleteLogItem, clearLogItems } from '../actions/log'
 
-import FlexibleSortableTable, {FilterTypes} from './FilterableSortableTable'
+import FilterableSortableTable, {FilterTypes} from './FilterableSortableTable'
 
 const logLevelIcons = {
   0: { Icon: ActionInfo, color: '#528FF3' }, // Info
@@ -45,9 +45,11 @@ class LogPresentation extends React.Component {
         name: 'Timestamp',
         width: 150,
         dataExtractor: row => row.timestamp,
-        displayRenderer: data =>
-          _.padStart(data.getHours(), 2, '0') + ':' +
-          _.padStart(data.getMinutes(), 2, '0'),
+        displayRenderer: data => {
+          const currentDate = new Date(data)
+          return _.padStart(currentDate.getHours(), 2, '0') + ':' +
+          _.padStart(currentDate.getMinutes(), 2, '0')
+        },
         filterType: FilterTypes.range,
         sorter: (a, b) => a.timestamp - b.timestamp
       },
@@ -60,7 +62,7 @@ class LogPresentation extends React.Component {
     ]
 
     return (
-      <FlexibleSortableTable
+      <FilterableSortableTable
         dataSource={this.props.logItems}
         availableColumns={tableColumns}
         defaultSortBy={1}
@@ -73,7 +75,7 @@ class LogPresentation extends React.Component {
 const Log = connect(
   // mapStateToProps
   state => ({
-    logItems: state.log
+    logItems: state.log.items
   }),
   // mapDispatchToProps
   dispatch => ({

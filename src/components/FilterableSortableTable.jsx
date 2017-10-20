@@ -37,7 +37,7 @@ const filterTesters = {
   [FilterTypes.text]: (filterProperties, data) => data.match(filterProperties.text)
 }
 
-class FlexibleSortableTable extends React.Component {
+class FilterableSortableTable extends React.Component {
   constructor (props) {
     super(props)
 
@@ -59,6 +59,7 @@ class FlexibleSortableTable extends React.Component {
 
     this.state = {
       dataSource: props.dataSource,
+      rowIdGenerator: props.rowIdGenerator,
       availableColumns: initializedAvailableColumns,
       currentColumns: defaultColumns,
       sortBy: props.defaultSortBy,
@@ -130,7 +131,7 @@ class FlexibleSortableTable extends React.Component {
       [FilterTypes.list]: (filterProperties) => (
         <div>
           {filterProperties.list.map(item =>
-            <Checkbox
+            <Checkbox key={`${item.item.value}_checkbox`}
               label={item.item.display}
               checked={item.visible}
               onCheck={() => {
@@ -233,7 +234,7 @@ class FlexibleSortableTable extends React.Component {
 
   _makeSeparator (col) {
     return (
-      <div className={'fst-separator'}
+      <div key={`${col.name}_separator`} className={'fst-separator'}
         onMouseDown={this._makeSeparatorHandler(col)}
       />
     )
@@ -243,7 +244,9 @@ class FlexibleSortableTable extends React.Component {
     const headerRow = (
       <div className={'fst-header-row'}>
         {[].concat(...this._columns.map((col, i) => [
-          <div className={'fst-cell'} style={{ width: `${col.width - 3}px` }}>
+          <div key={`${col.name}_column`} className={'fst-cell'}
+            style={{ width: `${col.width - 3}px` }}
+          >
             {col.name}
             {this._makeColumnControls(col, i)}
           </div>,
@@ -279,9 +282,11 @@ class FlexibleSortableTable extends React.Component {
     )
 
     const dataRows = this._data.map(row => (
-      <div className={'fst-row'}>
+      <div key={`${this.state.rowIdGenerator(row)}_row`} className={'fst-row'}>
         {this._columns.map(col =>
-          <div className={'fst-cell'} style={{ width: `${col.width}px` }}>
+          <div key={`${this.state.rowIdGenerator(row)}_${col.name}_cell`}
+            className={'fst-cell'} style={{ width: `${col.width}px` }}
+          >
             {col.displayRenderer(col.dataExtractor(row))}
           </div>
         )}
@@ -300,17 +305,27 @@ class FlexibleSortableTable extends React.Component {
   }
 }
 
-FlexibleSortableTable.propTypes = {
+FilterableSortableTable.propTypes = {
   dataSource: PropTypes.array.isRequired,
+  rowIdGenerator: PropTypes.func.isRequired,
   availableColumns: PropTypes.array.isRequired,
   defaultColumns: PropTypes.array,
   defaultSortBy: PropTypes.number,
   defaultReverse: PropTypes.bool
 }
 
-FlexibleSortableTable.defaultProps = {
+FilterableSortableTable.defaultProps = {
+  rowIdGenerator: row => {
+    if (!('id' in row)) {
+      throw new Error(
+        'FilterableSortableTable: Please include a field named "id"' +
+        'in the row objects or provide your own rowIdGenerator implementation!'
+      )
+    }
+    return row.id
+  },
   defaultSortBy: 0,
   defaultReverse: false
 }
 
-export default FlexibleSortableTable
+export default FilterableSortableTable

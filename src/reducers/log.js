@@ -8,33 +8,41 @@ import { handleActions } from 'redux-actions'
 /**
  * Default content of the event log registry in the state object.
  */
-const defaultState = [
-  {
-    level: 1,
-    timestamp: new Date(),
-    content: 'This is just a test message.'
-  },
-  {
-    level: 2,
-    timestamp: new Date(Date.now() - 1000 * 60 * 5),
-    content: 'Something went wrong somewhere.'
-  },
-  {
-    level: 0,
-    timestamp: new Date(Date.now() - 1000 * 60 * 7),
-    content: 'UAV takeoff message issued and response received.'
-  },
-  {
-    level: 0,
-    timestamp: new Date(Date.now() - 1000 * 60 * 7),
-    content: 'UAV takeoff message issued and response received.'
-  },
-  {
-    level: 0,
-    timestamp: new Date(Date.now() - 1000 * 60 * 7),
-    content: 'UAV takeoff message issued and response received.'
-  }
-]
+const defaultState = {
+  items: [
+    {
+      id: 0,
+      level: 0,
+      timestamp: Date.now() - 1000 * 60 * 7 - 3,
+      content: 'UAV takeoff message issued and response received.'
+    },
+    {
+      id: 1,
+      level: 0,
+      timestamp: Date.now() - 1000 * 60 * 7 - 2,
+      content: 'UAV takeoff message issued and response received.'
+    },
+    {
+      id: 2,
+      level: 0,
+      timestamp: Date.now() - 1000 * 60 * 7 - 1,
+      content: 'UAV takeoff message issued and response received.'
+    },
+    {
+      id: 3,
+      level: 2,
+      timestamp: Date.now() - 1000 * 60 * 5,
+      content: 'Something went wrong somewhere.'
+    },
+    {
+      id: 4,
+      level: 1,
+      timestamp: Date.now(),
+      content: 'This is just a test message.'
+    }
+  ],
+  nextId: 5
+}
 
 /**
  * The reducer function that handles actions related to the handling of
@@ -42,17 +50,23 @@ const defaultState = [
  */
 const reducer = handleActions({
   ADD_LOG_ITEM: (state, action) => {
-    return state.concat(action.payload)
+    const newItem = Object.assign({}, action.payload, { id: state.nextId })
+    return Object.assign({}, state, {
+      items: [...state.items, newItem],
+      nextId: state.nextId + 1
+    })
   },
 
   DELETE_LOG_ITEM: (state, action) => {
-    const itemId = action.payload
+    const deletedItemId = action.payload
 
-    return [].concat(state.slice(0, itemId), state.slice(itemId + 1))
+    return Object.assign({}, state, {
+      items: state.items.filter(i => i.id !== deletedItemId)
+    })
   },
 
   CLEAR_LOG_ITEMS: (state, action) => {
-    return []
+    return Object.assign({}, state, { items: [] })
   }
 }, defaultState)
 
