@@ -14,19 +14,19 @@ const defaultState = {
       id: 0,
       level: 0,
       timestamp: Date.now() - 1000 * 60 * 7 - 3,
-      content: 'UAV takeoff message issued and response received.'
+      content: 'Information log entry #1.'
     },
     {
       id: 1,
       level: 0,
       timestamp: Date.now() - 1000 * 60 * 7 - 2,
-      content: 'UAV takeoff message issued and response received.'
+      content: 'Information log entry #2.'
     },
     {
       id: 2,
       level: 0,
       timestamp: Date.now() - 1000 * 60 * 7 - 1,
-      content: 'UAV takeoff message issued and response received.'
+      content: 'Information log entry #3.'
     },
     {
       id: 3,
@@ -50,7 +50,10 @@ const defaultState = {
  */
 const reducer = handleActions({
   ADD_LOG_ITEM: (state, action) => {
-    const newItem = Object.assign({}, action.payload, { id: state.nextId })
+    const newItem = Object.assign({}, action.payload, {
+      id: state.nextId,
+      timestamp: Date.now()
+    })
     return Object.assign({}, state, {
       items: [...state.items, newItem],
       nextId: state.nextId + 1

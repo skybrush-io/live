@@ -2,9 +2,9 @@
  * @file File for storing hotkey configuration.
  */
 
+import { showLayersDialog } from './actions/layers'
 import { selectAllFeatures, clearSelectedFeatures,
   selectMapTool, selectMapSource } from './actions/map'
-import { showLayersDialog } from './actions/layers'
 import { showMessagesDialog } from './actions/messages'
 
 import { Tool } from './components/map/tools'
@@ -13,7 +13,9 @@ import { Source } from './model/sources'
 import store from './store'
 import flock from './flock'
 import signals from './signals'
-import messageHub from './message-hub'
+import {
+  takeoffUAVs, landUAVs, returnToHomeUAVs, toggleErrorUAVs
+} from './utils/messaging.js'
 
 export default [
   // Drone selection hotkeys
@@ -114,34 +116,19 @@ export default [
     description: 'Issue TAKEOFF command to selected UAVs',
     on: 'down',
     keys: 'PlatMod + Alt + KeyT',
-    action: () => {
-      messageHub.sendMessage({
-        type: 'UAV-TAKEOFF',
-        ids: store.getState().map.selection
-      }).then(result => console.log(result))
-    }
+    action: () => takeoffUAVs(store.getState().map.selection)
   },
   {
     description: 'Issue LAND command to selected UAVs',
     on: 'down',
     keys: 'PlatMod + Alt + KeyL',
-    action: () => {
-      messageHub.sendMessage({
-        type: 'UAV-LAND',
-        ids: store.getState().map.selection
-      }).then(result => console.log(result))
-    }
+    action: () => landUAVs(store.getState().map.selection)
   },
   {
     description: 'Issue RTH (Return To Home) command to selected UAVs',
     on: 'down',
     keys: 'PlatMod + Alt + KeyR',
-    action: () => {
-      messageHub.sendMessage({
-        type: 'UAV-RTH',
-        ids: store.getState().map.selection
-      }).then(result => console.log(result))
-    }
+    action: () => returnToHomeUAVs(store.getState().map.selection)
   },
 
   // Temporary: Send selected UAVs into a random error state
@@ -149,20 +136,7 @@ export default [
     description: 'Send selected UAVs into a random error state',
     on: 'down',
     keys: 'PlatMod + Alt + KeyE',
-    action: (() => {
-      let isInError = false
-
-      return () => {
-        isInError = !isInError
-
-        messageHub.sendMessage({
-          type: 'CMD-REQ',
-          ids: store.getState().map.selection,
-          command: 'error',
-          args: isInError ? [Math.floor(Math.random() * 256)] : []
-        }).then(result => console.log(result))
-      }
-    })()
+    action: () => toggleErrorUAVs(store.getState().map.selection)
   },
 
   // Messages dialog related hotkeys

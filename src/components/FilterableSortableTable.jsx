@@ -58,8 +58,6 @@ class FilterableSortableTable extends React.Component {
     ))
 
     this.state = {
-      dataSource: props.dataSource,
-      rowIdGenerator: props.rowIdGenerator,
       availableColumns: initializedAvailableColumns,
       currentColumns: defaultColumns,
       sortBy: props.defaultSortBy,
@@ -88,7 +86,7 @@ class FilterableSortableTable extends React.Component {
   get _data () {
     const filteringColumns = this._columns.filter(col => 'filterType' in col)
 
-    const filteredData = this.state.dataSource.filter(row =>
+    const filteredData = this.props.dataSource.filter(row =>
       filteringColumns.map(col => filterTesters[col.filterType](
         col.filterProperties,
         col.dataExtractor(row)
@@ -282,9 +280,9 @@ class FilterableSortableTable extends React.Component {
     )
 
     const dataRows = this._data.map(row => (
-      <div key={`${this.state.rowIdGenerator(row)}_row`} className={'fst-row'}>
+      <div key={`${this.props.rowIdGenerator(row)}_row`} className={'fst-row'}>
         {this._columns.map(col =>
-          <div key={`${this.state.rowIdGenerator(row)}_${col.name}_cell`}
+          <div key={`${this.props.rowIdGenerator(row)}_${col.name}_cell`}
             className={'fst-cell'} style={{ width: `${col.width}px` }}
           >
             {col.displayRenderer(col.dataExtractor(row))}

@@ -17,7 +17,7 @@ import ActionPowerSettingsNew from 'material-ui/svg-icons/action/power-settings-
 import Message from 'material-ui/svg-icons/communication/message'
 
 import { selectUAVInMessagesDialog, showMessagesDialog } from '../../actions/messages'
-import messageHub from '../../message-hub'
+import * as messaging from '../../utils/messaging'
 
 /**
  * Context menu using a Popover element that displays connands to send to the
@@ -145,29 +145,17 @@ class ContextMenuPopup extends React.Component {
   }
 
   _takeoffSelectedUAVs () {
-    messageHub.sendMessage({
-      type: 'UAV-TAKEOFF',
-      ids: this.props.selectedUAVIds
-    }).then(result => console.log(result))
-
+    messaging.takeoffUAVs(this.props.selectedUAVIds)
     this._handleRequestClose()
   }
 
   _landSelectedUAVs () {
-    messageHub.sendMessage({
-      type: 'UAV-LAND',
-      ids: this.props.selectedUAVIds
-    }).then(result => console.log(result))
-
+    messaging.landUAVs(this.props.selectedUAVIds)
     this._handleRequestClose()
   }
 
   _returnSelectedUAVs () {
-    messageHub.sendMessage({
-      type: 'UAV-RTH',
-      ids: this.props.selectedUAVIds
-    }).then(result => console.log(result))
-
+    messaging.returnToHomeUAVs(this.props.selectedUAVIds)
     this._handleRequestClose()
   }
 

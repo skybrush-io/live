@@ -48,7 +48,8 @@ class LogPresentation extends React.Component {
         displayRenderer: data => {
           const currentDate = new Date(data)
           return _.padStart(currentDate.getHours(), 2, '0') + ':' +
-          _.padStart(currentDate.getMinutes(), 2, '0')
+          _.padStart(currentDate.getMinutes(), 2, '0') + ':' +
+          _.padStart(currentDate.getSeconds(), 2, '0')
         },
         filterType: FilterTypes.range,
         sorter: (a, b) => a.timestamp - b.timestamp

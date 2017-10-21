@@ -14,6 +14,7 @@ import ActionSystemUpdateAlt from 'material-ui/svg-icons/action/system-update-al
 import TextField from 'material-ui/TextField'
 
 import { setLayerParameterById } from '../../../actions/layers'
+import { addLogItem } from '../../../actions/log'
 import { showSnackbarMessage } from '../../../actions/snackbar'
 
 import { updateUAVFeatureColorsSignal } from '../../../signals'
@@ -139,7 +140,7 @@ class UAVsLayerPresentation extends React.Component {
   componentWillReceiveProps (newProps) {
     updatePredicates(
       newProps.layer.parameters.colorPredicates,
-      console.log
+      text => this.props.addLogItem({ level: 2, content: text })
     )
   }
 }
@@ -168,5 +169,7 @@ export const UAVsLayer = connect(
     selection: state.map.selection
   }),
   // mapDispatchToProps
-  (dispatch, ownProps) => ({})
+  (dispatch, ownProps) => ({
+    addLogItem: (item) => dispatch(addLogItem(item))
+  })
 )(UAVsLayerPresentation)
