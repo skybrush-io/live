@@ -3,18 +3,14 @@
  */
 
 import messageHub from '../message-hub'
-import store from '../store'
-import { addLogItem } from '../actions/log'
+import * as logging from './logging'
 
 export const takeoffUAVs = (uavs) => {
   messageHub.sendMessage({
     type: 'UAV-TAKEOFF',
     ids: uavs
   }).then(result => {
-    store.dispatch(addLogItem({
-      level: 0,
-      content: 'Takeoff command issued and response received.'
-    }))
+    logging.addInfoItem('Takeoff command issued and response received.')
     console.log(result)
   })
 }
@@ -24,10 +20,7 @@ export const landUAVs = (uavs) => {
     type: 'UAV-LAND',
     ids: uavs
   }).then(result => {
-    store.dispatch(addLogItem({
-      level: 0,
-      content: 'Land command issued and response received.'
-    }))
+    logging.addInfoItem('Land command issued and response received.')
     console.log(result)
   })
 }
@@ -37,10 +30,7 @@ export const returnToHomeUAVs = (uavs) => {
     type: 'UAV-RTH',
     ids: uavs
   }).then(result => {
-    store.dispatch(addLogItem({
-      level: 0,
-      content: 'Return to home command issued and response received.'
-    }))
+    logging.addInfoItem('Return to home command issued and response received.')
     console.log(result)
   })
 }
@@ -60,12 +50,11 @@ export const toggleErrorUAVs = (() => {
       command: 'error',
       args: currentError
     }).then(result => {
-      store.dispatch(addLogItem({
-        level: 0,
-        content: currentError.length === 0
+      logging.addInfoItem(
+        currentError.length === 0
         ? `The error state of UAVs ${uavs} were cleared.`
         : `UAVs ${uavs} were sent to error state ${currentError}.`
-      }))
+      )
       console.log(result)
     })
   }
