@@ -57,7 +57,6 @@
     "updeep": "^1.0.0"
   },
   "devDependencies": {
-    "@kadira/storybook": "^2.35.3",
     "babel-core": "^6.26.0",
     "babel-eslint": "^6.0.4",
     "babel-loader": "^7.1.2",
