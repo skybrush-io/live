@@ -2,7 +2,8 @@
 * @file React Component for the layer settings dialog.
 */
 
-import React, { PropTypes } from 'react'
+import PropTypes from 'prop-types'
+import React from 'react'
 import { connect } from 'react-redux'
 import { reduxForm, Field } from 'redux-form'
 

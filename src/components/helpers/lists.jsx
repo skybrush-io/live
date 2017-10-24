@@ -5,7 +5,8 @@
 import { get, partial } from 'lodash/fp'
 import { includes, isFunction, xor } from 'lodash'
 import { List, ListItem } from 'material-ui/List'
-import React, { PropTypes } from 'react'
+import PropTypes from 'prop-types'
+import React from 'react'
 
 import { eventHasPlatformModifierKey } from '../../utils/platform'
 

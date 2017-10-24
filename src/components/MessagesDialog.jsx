@@ -5,7 +5,8 @@
 
 import Dialog from 'material-ui/Dialog'
 import FlatButton from 'material-ui/FlatButton'
-import React, { PropTypes } from 'react'
+import PropTypes from 'prop-types'
+import React from 'react'
 import { connect } from 'react-redux'
 
 import { closeMessagesDialog, clearMessagesOfSelectedUAV } from '../actions/messages'

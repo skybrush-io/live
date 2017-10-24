@@ -2,7 +2,8 @@
  * @file React component showing a separator line in a chat session.
  */
 
-import React, { PropTypes } from 'react'
+import PropTypes from 'prop-types'
+import React from 'react'
 
 export default class Separator extends React.Component {
   render () {

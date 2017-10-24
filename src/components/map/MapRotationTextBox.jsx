@@ -2,8 +2,9 @@
  * @file React Component to display and adjust the rotation of the map view.
  */
 
-import React, { PropTypes } from 'react'
 import ol from 'openlayers'
+import PropTypes from 'prop-types'
+import React from 'react'
 
 import { mapReferenceRequestSignal, mapRotationResetSignal } from '../../signals'
 

@@ -5,10 +5,11 @@
  */
 
 import _ from 'lodash'
-import ol from 'openlayers'
-import Condition from '../conditions'
 import { interaction } from 'ol-react'
-import { PropTypes } from 'react'
+import ol from 'openlayers'
+import PropTypes from 'prop-types'
+
+import Condition from '../conditions'
 import { euclideanDistance } from '../../../utils/geography'
 
 /**

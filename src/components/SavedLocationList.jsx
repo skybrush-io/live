@@ -11,7 +11,8 @@ import MapsPlace from 'material-ui/svg-icons/maps/place'
 import ContentAdd from 'material-ui/svg-icons/content/add-circle-outline'
 import ActionSettings from 'material-ui/svg-icons/action/settings'
 
-import React, { PropTypes } from 'react'
+import PropTypes from 'prop-types'
+import React from 'react'
 import { connect } from 'react-redux'
 
 import { editSavedLocation } from '../actions/saved-location-editor'

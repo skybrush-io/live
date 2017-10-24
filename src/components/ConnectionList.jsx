@@ -15,7 +15,8 @@ import ActionSettings from 'material-ui/svg-icons/action/settings'
 import ActionSettingsEthernet from 'material-ui/svg-icons/action/settings-ethernet'
 import ContentClear from 'material-ui/svg-icons/content/clear'
 
-import React, { PropTypes } from 'react'
+import PropTypes from 'prop-types'
+import React from 'react'
 import { connect } from 'react-redux'
 import TimeAgo from 'react-timeago'
 

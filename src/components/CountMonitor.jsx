@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react'
+import PropTypes from 'prop-types'
+import React from 'react'
 
 const awayTimeout = 5 * 1000
 const lostTimeout = 60 * 1000

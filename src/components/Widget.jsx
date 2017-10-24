@@ -6,7 +6,8 @@
  * widgets around or close them.
  */
 
-import React, { PropTypes } from 'react'
+import PropTypes from 'prop-types'
+import React from 'react'
 
 import IconButton from 'material-ui/IconButton'
 import Paper from 'material-ui/Paper'

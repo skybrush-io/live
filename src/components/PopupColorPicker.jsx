@@ -1,5 +1,6 @@
 import Color from 'color'
-import React, { PropTypes } from 'react'
+import PropTypes from 'prop-types'
+import React from 'react'
 import { SketchPicker } from 'react-color'
 
 export default class PopupColorPicker extends React.Component {

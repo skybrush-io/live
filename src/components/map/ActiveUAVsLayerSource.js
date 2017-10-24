@@ -4,7 +4,7 @@
  */
 
 import _ from 'lodash'
-import { PropTypes } from 'react'
+import PropTypes from 'prop-types'
 import { source } from 'ol-react'
 
 import FeatureManager from './FeatureManager'

@@ -8,7 +8,8 @@
  */
 
 import GoldenLayout from 'golden-layout'
-import React, { PropTypes } from 'react'
+import PropTypes from 'prop-types'
+import React from 'react'
 import { findDOMNode, render, unmountComponentAtNode } from 'react-dom'
 import { WindowResizeListener } from 'react-window-resize-listener'
 import { compose, getContext, renderNothing, withContext, withProps } from 'recompose'

@@ -1,8 +1,9 @@
 import Color from 'color'
 import _ from 'lodash'
-import React, { PropTypes } from 'react'
 import ol from 'openlayers'
 import { layer, source } from 'ol-react'
+import PropTypes from 'prop-types'
+import React from 'react'
 import { connect } from 'react-redux'
 
 import TextField from 'material-ui/TextField'

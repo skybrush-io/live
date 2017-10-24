@@ -5,7 +5,8 @@
 
 import _ from 'lodash'
 import AutoComplete from 'material-ui/AutoComplete'
-import React, { PropTypes } from 'react'
+import PropTypes from 'prop-types'
+import React from 'react'
 import { connect } from 'react-redux'
 
 import { selectUAVInMessagesDialog } from '../actions/messages'

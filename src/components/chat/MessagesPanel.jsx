@@ -6,7 +6,8 @@
 import _ from 'lodash'
 import CircularProgress from 'material-ui/CircularProgress'
 import TextField from 'material-ui/TextField'
-import React, { PropTypes } from 'react'
+import PropTypes from 'prop-types'
+import React from 'react'
 import { connect } from 'react-redux'
 
 import { addInboundMessage, addOutboundMessageToSelectedUAV,

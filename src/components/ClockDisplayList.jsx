@@ -10,7 +10,8 @@ import { ListItem } from 'material-ui/List'
 
 import isFunction from 'lodash/isFunction'
 import moment from 'moment'
-import React, { PropTypes } from 'react'
+import PropTypes from 'prop-types'
+import React from 'react'
 import { connect } from 'react-redux'
 
 import { listOf } from './helpers/lists'

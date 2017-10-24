@@ -4,8 +4,9 @@ import SelectField from 'material-ui/SelectField'
 import TextField from 'material-ui/TextField'
 import NavigationCheck from 'material-ui/svg-icons/navigation/check'
 
-import React, { PropTypes } from 'react'
 import { layer, source } from 'ol-react'
+import PropTypes from 'prop-types'
+import React from 'react'
 import { connect } from 'react-redux'
 
 import { setLayerParametersById } from '../../../actions/layers'

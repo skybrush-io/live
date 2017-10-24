@@ -1,5 +1,5 @@
-import React, { PropTypes } from 'react'
-
+import PropTypes from 'prop-types'
+import React from 'react'
 import injectTapEventPlugin from 'react-tap-event-plugin'
 import { withContext } from 'recompose'
 

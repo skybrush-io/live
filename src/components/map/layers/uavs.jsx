@@ -1,8 +1,9 @@
-import u from 'updeep'
-import React, { PropTypes } from 'react'
-import { connect } from 'react-redux'
-
 import { layer } from 'ol-react'
+import PropTypes from 'prop-types'
+import React from 'react'
+import { connect } from 'react-redux'
+import u from 'updeep'
+
 import ActiveUAVsLayerSource from '../ActiveUAVsLayerSource'
 import flock from '../../../flock'
 

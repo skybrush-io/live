@@ -2,7 +2,8 @@
  * @file React component showing a marker line in a chat session.
  */
 
-import React, { PropTypes } from 'react'
+import PropTypes from 'prop-types'
+import React from 'react'
 import TimeAgo from 'react-timeago'
 
 /**

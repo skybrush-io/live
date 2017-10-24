@@ -9,7 +9,8 @@ import { ListItem } from 'material-ui/List'
 import IconButton from 'material-ui/IconButton'
 import ImageAdjust from 'material-ui/svg-icons/image/adjust'
 
-import React, { PropTypes } from 'react'
+import PropTypes from 'prop-types'
+import React from 'react'
 import { connect } from 'react-redux'
 import u from 'updeep'
 
