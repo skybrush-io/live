@@ -84,9 +84,9 @@ class ServerSettingsDialogPresentation extends React.Component {
   render () {
     const { autoSetServer, onClose, onSubmit, open } = this.props
     const actions = [
-      <FlatButton label={'Connect'} primary onTouchTap={this.handleSubmit} />,
-      <FlatButton label={'Auto'} onTouchTap={autoSetServer} />,
-      <FlatButton label={'Close'} onTouchTap={onClose} />
+      <FlatButton label={'Connect'} primary onClick={this.handleSubmit} />,
+      <FlatButton label={'Auto'} onClick={autoSetServer} />,
+      <FlatButton label={'Close'} onClick={onClose} />
     ]
     const contentStyle = {
       width: '320px'

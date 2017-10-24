@@ -78,9 +78,9 @@ class MessagesDialogPresentation extends React.Component {
     this._wasOpen = open
 
     const actions = [
-      <FlatButton label={'Clear'} onTouchTap={onClear}
+      <FlatButton label={'Clear'} onClick={onClear}
         disabled={!selectedUAVId} />,
-      <FlatButton label={'Close'} onTouchTap={onClose} />
+      <FlatButton label={'Close'} onClick={onClose} />
     ]
     const contentStyle = {
       width: '640px'

@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import injectTapEventPlugin from 'react-tap-event-plugin'
 import { withContext } from 'recompose'
 
 import GlobalErrorDialog from './components/GlobalErrorDialog'
@@ -21,9 +20,6 @@ import muiTheme from './theme'
 require('../assets/css/screen.less')
 require('../assets/css/chat.less')
 require('../assets/css/kbd.css')
-
-// Enable tap events on the UI
-injectTapEventPlugin()
 
 /**
  * The main application component, without the execution context (flock,

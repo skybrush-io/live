@@ -196,7 +196,7 @@ const LayerListPresentation = selectableListOf(
       leftIcon={iconForLayerType(layer.type)}
       rightIcon={layer.visible ? undefined : <VisibilityOff />}
       className={selected ? 'selected-list-item' : undefined}
-      onTouchTap={props.onItemSelected}
+      onClick={props.onItemSelected}
             />
   ),
   {
@@ -256,23 +256,23 @@ class LayersDialogPresentation extends React.Component {
     const { canMoveUp, canMoveDown, dialogVisible, selectedLayerId } = this.props
     const { onAddLayer, onClose } = this.props
     const actions = [
-      <IconButton onTouchTap={onAddLayer}>
+      <IconButton onClick={onAddLayer}>
         <ContentAdd />
       </IconButton>,
       <IconButton disabled={!selectedLayerId}
-        onTouchTap={this._removeSelectedLayer}>
+        onClick={this._removeSelectedLayer}>
         <ContentRemove />
       </IconButton>,
       <IconButton disabled={!canMoveUp}
-        onTouchTap={this._moveSelectedLayerUp}>
+        onClick={this._moveSelectedLayerUp}>
         <ArrowUp />
       </IconButton>,
       <IconButton disabled={!canMoveDown}
-        onTouchTap={this._moveSelectedLayerDown}>
+        onClick={this._moveSelectedLayerDown}>
         <ArrowDown />
       </IconButton>,
       <div style={{ flex: 1 }} />,
-      <FlatButton label='Done' primary onTouchTap={onClose} />
+      <FlatButton label='Done' primary onClick={onClose} />
     ]
 
     return (

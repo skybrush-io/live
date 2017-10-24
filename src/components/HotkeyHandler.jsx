@@ -140,7 +140,7 @@ export default class HotkeyHandler extends React.Component {
     const actionColumnStyle = {}
     const actions = [
       <FlatButton label={'Close'} primary
-        onTouchTap={this._hideDialog} />
+        onClick={this._hideDialog} />
     ]
 
     const classString = [].concat(

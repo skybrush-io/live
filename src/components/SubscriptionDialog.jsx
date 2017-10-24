@@ -83,7 +83,7 @@ export default class SubscriptionDialog extends React.Component {
     )
 
     const actions = [
-      <FlatButton label={'Done'} primary onTouchTap={this._hideDialog} />
+      <FlatButton label={'Done'} primary onClick={this._hideDialog} />
     ]
 
     const dropDownMenuStyle = {verticalAlign: 'text-bottom'}

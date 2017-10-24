@@ -60,7 +60,7 @@ const UAVListPresentation = multiSelectableListOf((uav, props, selected) => {
     secondaryText={formatSecondaryTextForUAV(uav)}
     rightIconButton={rightIconButton}
     className={selected ? 'selected-list-item' : undefined}
-    onTouchTap={props.onItemSelected} />
+    onClick={props.onItemSelected} />
 }, {
   backgroundHint: 'No UAVs',
   dataProvider: 'uavs'

@@ -96,7 +96,7 @@ const ConnectionListEntry = (props) => {
     ? <TimeAgo date={stateChangedAt} formatter={timeIntervalFormatter} />
     : null
   const actionButton = action
-    ? <IconButton onTouchTap={action}><ActionSettings /></IconButton>
+    ? <IconButton onClick={action}><ActionSettings /></IconButton>
     : null
   let secondaryText = stateNames[state] || 'Unknown state'
 

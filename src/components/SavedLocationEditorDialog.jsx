@@ -129,13 +129,13 @@ class SavedLocationEditorDialogPresentation extends React.Component {
     const { editedLocationId, onClose, onDelete, onSubmit, open } = this.props
 
     const actions = [
-      <FlatButton label={'Save'} primary onTouchTap={this.handleSubmit}
+      <FlatButton label={'Save'} primary onClick={this.handleSubmit}
         icon={<ContentSave />} />,
       <FlatButton
         label={'Delete'} secondary disabled={editedLocationId === 'addNew'}
-        onTouchTap={onDelete(editedLocationId)} icon={<ActionDeleteForever />}
+        onClick={onDelete(editedLocationId)} icon={<ActionDeleteForever />}
         />,
-      <FlatButton label={'Cancel'} onTouchTap={onClose} />
+      <FlatButton label={'Cancel'} onClick={onClose} />
     ]
 
     const contentStyle = {

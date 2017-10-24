@@ -48,7 +48,7 @@ const LocationListEntry = (props) => {
     <IconButton
       data-location={location}
       data-onEditLocation={onEditLocation}
-      onTouchTap={editLocation}>
+      onClick={editLocation}>
       {id === 'addNew' ? <ContentAdd /> : <ActionSettings />}
     </IconButton>
   )
@@ -61,7 +61,7 @@ const LocationListEntry = (props) => {
       secondaryText={secondaryText}
       rightIconButton={actionButton}
       data-location={location}
-      onTouchTap={touchTapAction}
+      onClick={touchTapAction}
     />
   )
 }
