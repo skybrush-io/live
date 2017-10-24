@@ -72,8 +72,10 @@ export default class Workbench extends React.Component {
     /* eslint-disable indent */
     return builder
       .makeColumns()
-        .add(MapView).setTitle('Map')
-        .add(LogPanel).setTitle('Event log')
+        .makeStack()
+          .add(MapView).setTitle('Map')
+          .add(LogPanel).setTitle('Event log')
+        .finish()
         .makeRows()
           .makeStack()
             .add(ConnectionList).setTitle('Connections')
