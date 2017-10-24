@@ -9,9 +9,8 @@
 
 import PropTypes from 'prop-types'
 import React from 'react'
-import { findDOMNode, render, unmountComponentAtNode } from 'react-dom'
-import { WorkbenchBuilder } from 'react-flexible-workbench'
-import { compose, getContext, renderNothing, withContext, withProps } from 'recompose'
+import { WorkbenchBuilder, WorkbenchView } from 'react-flexible-workbench'
+import { compose, getContext, renderNothing, withProps } from 'recompose'
 
 import ClockDisplayList from './ClockDisplayList'
 import ConnectionList from './ConnectionList'
@@ -59,16 +58,8 @@ export default class Workbench extends React.Component {
   constructor (props) {
     super(props)
 
-    this.layout = this.constructLayout()
-    this.layout.contextProvider = this.getContextForComponent.bind(this)
-  }
-
-  componentDidMount () {
-    this.layout.render(findDOMNode(this))
-  }
-
-  componentWillUnmount () {
-    this.layout.detach()
+    this.workbench = this.constructLayout()
+    this.workbench.contextProvider = this.getContextForComponent.bind(this)
   }
 
   constructLayout () {
@@ -76,24 +67,26 @@ export default class Workbench extends React.Component {
     for (const key in componentRegistry) {
       builder.registerComponent(key, componentRegistry[key])
     }
+    /* eslint-disable indent */
     return builder
       .makeColumns()
-        .add(MapView).setTitle("Map")
+        .add(MapView).setTitle('Map')
         .makeRows()
           .makeStack()
-            .add(ConnectionList).setTitle("Connections")
-            .add(ClockDisplayList).setTitle("Clocks")
-            .add(SavedLocationList).setTitle("Locations")
+            .add(ConnectionList).setTitle('Connections')
+            .add(ClockDisplayList).setTitle('Clocks')
+            .add(SavedLocationList).setTitle('Locations')
           .finish()
           .setRelativeHeight(25)
           .makeStack()
-            .add("uav-list").setTitle("UAVs")
-            .add("messages").setTitle("Messages")
+            .add('uav-list').setTitle('UAVs')
+            .add('messages').setTitle('Messages')
           .finish()
         .finish()
         .setRelativeWidth(25)
       .finish()
       .build()
+    /* eslint-enable indent */
   }
 
   getContextForComponent (component) {
@@ -112,7 +105,7 @@ export default class Workbench extends React.Component {
 
   render () {
     return (
-      <div id="workbench"></div>
+      <WorkbenchView workbench={this.workbench} />
     )
   }
 }
