@@ -15,7 +15,7 @@ import flock from './flock'
 import signals from './signals'
 import {
   takeoffUAVs, landUAVs, returnToHomeUAVs, toggleErrorUAVs
-} from './utils/messaging.js'
+} from './utils/messaging'
 
 export default [
   // Drone selection hotkeys
