@@ -4,7 +4,7 @@
 
 import { createAction } from 'redux-actions'
 import { CLEAR_CLOCK_LIST, SET_CLOCK_STATE,
-         SET_CLOCK_STATE_MULTIPLE } from './types'
+  SET_CLOCK_STATE_MULTIPLE } from './types'
 
 /**
  * Action factory that creates an action that will clear the list of

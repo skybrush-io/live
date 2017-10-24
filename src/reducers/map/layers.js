@@ -153,8 +153,11 @@ const reducer = handleActions({
   },
 
   TOGGLE_LAYER_VISIBILITY (state, action) {
-    return u.updateIn(getLayerKey(action.payload, 'visible'),
-                      value => !value, state)
+    return u.updateIn(
+      getLayerKey(action.payload, 'visible'),
+      value => !value,
+      state
+    )
   }
 }, defaultState)
 

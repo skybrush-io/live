@@ -6,7 +6,7 @@ import _ from 'lodash'
 
 import { setClockStateMultiple } from '../actions/clocks'
 import { dateToTimestamp, parseEpochIdentifierOrISODate,
-         parseISODate } from '../utils/parsing'
+  parseISODate } from '../utils/parsing'
 
 /**
  * Handles a CLK-INF message from a Flockwave server and updates the

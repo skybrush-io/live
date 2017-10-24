@@ -146,7 +146,7 @@ export default class MapViewManager {
   /**
    * Jump to a specific location on the map's view.
    *
-   * @param {object} location The location descriptor to jump to.
+   * @param {Object} location The location descriptor to jump to.
    * @param {number} duration The desired duration of the transition.
    */
   mapViewToLocation (location, duration = 1000) {
@@ -186,7 +186,7 @@ export default class MapViewManager {
   /**
    * Make the map's view fit a given extent.
    *
-   * @param {object} extent The extent to fit.
+   * @param {Object} extent The extent to fit.
    * @param {number} duration The desired duration of the transition.
    */
   mapViewToExtent (extent, duration = 1000) {

@@ -46,13 +46,6 @@ class Application extends React.Component {
       </div>
     )
   }
-
-/*
-  <Widget style={{ top: 8, left: (8 + 24 + 8) }} showControls={false}>
-    <MapToolbar />
-  </Widget>
-*/
-
 }
 
 /**

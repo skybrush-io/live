@@ -4,7 +4,7 @@
 
 import { createAction } from 'redux-actions'
 import { SHOW_SERVER_SETTINGS_DIALOG, CLOSE_SERVER_SETTINGS_DIALOG,
-         UPDATE_SERVER_SETTINGS } from './types'
+  UPDATE_SERVER_SETTINGS } from './types'
 
 /**
  * Action factory that creates an action that will close the server settings

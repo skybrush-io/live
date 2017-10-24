@@ -9,7 +9,6 @@ import _ from 'lodash'
  * Representation of a single UAV.
  */
 export default class UAV {
-
   /**
    * Constructor.
    *

@@ -12,7 +12,6 @@ import UAV from './uav'
  * Representation of a UAV flock.
  */
 export default class Flock {
-
   /**
    * Constructor.
    *

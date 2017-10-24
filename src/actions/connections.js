@@ -4,7 +4,7 @@
 
 import { createAction } from 'redux-actions'
 import { CLEAR_CONNECTION_LIST, SET_CONNECTION_STATE,
-         SET_CONNECTION_STATE_MULTIPLE } from './types'
+  SET_CONNECTION_STATE_MULTIPLE } from './types'
 
 /**
  * Action factory that creates an action that will clear the list of

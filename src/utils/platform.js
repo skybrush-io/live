@@ -18,8 +18,8 @@ export const isRunningOnMac = (navigator.platform.indexOf('Mac') !== -1)
  *         during the event, false otherwise
  */
 export const eventHasPlatformModifierKey = isRunningOnMac
-    ? event => !!event.metaKey
-    : event => !!event.ctrlKey
+  ? event => !!event.metaKey
+  : event => !!event.ctrlKey
 
 /**
  * Constant that evaluates to the name of the platform-specific hotkey

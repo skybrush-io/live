@@ -196,8 +196,9 @@ const reducer = handleActions({
   ADD_OUTBOUND_MESSAGE_TO_SELECTED_UAV (state, action) {
     action.messageId = state.nextMessageId
     action.uavId = state.selectedUAVId
-    return addOutboundMessageToUAV(state, state.selectedUAVId,
-                                   action.payload)
+    return addOutboundMessageToUAV(
+      state, state.selectedUAVId, action.payload
+    )
   },
 
   CLEAR_MESSAGES_OF_SELECTED_UAV (state, action) {
