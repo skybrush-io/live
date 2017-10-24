@@ -13,7 +13,7 @@ import ImageBlurOn from 'material-ui/svg-icons/image/blur-on'
 import Message from 'material-ui/svg-icons/communication/message'
 
 import { selectUAVInMessagesDialog, showMessagesDialog } from '../actions/messages'
-import messageHub from '../message-hub'
+import * as messaging from '../utils/messaging'
 
 import { coordinateFromLonLat } from '../utils/geography'
 import ol from 'openlayers'
@@ -25,10 +25,6 @@ import { mapViewToExtentSignal } from '../signals'
 class UAVToolbar extends React.Component {
   constructor (props) {
     super(props)
-
-    this._takeoffSelectedUAVs = this._takeoffSelectedUAVs.bind(this)
-    this._landSelectedUAVs = this._landSelectedUAVs.bind(this)
-    this._returnSelectedUAVs = this._returnSelectedUAVs.bind(this)
 
     this._showMessagesDialog = this._showMessagesDialog.bind(this)
 
@@ -44,17 +40,17 @@ class UAVToolbar extends React.Component {
     return (
       <div>
         <IconButton disabled={isSelectionEmpty}
-          onClick={this._takeoffSelectedUAVs}
+          onClick={() => messaging.takeoffUAVs(this.props.selectedUAVIds)}
           tooltipPosition={'bottom-right'} title={'Takeoff'}>
           <ActionFlightTakeoff />
         </IconButton>
         <IconButton disabled={isSelectionEmpty}
-          onClick={this._landSelectedUAVs}
+          onClick={() => messaging.landUAVs(this.props.selectedUAVIds)}
           tooltipPosition={'bottom-right'} title={'Land'}>
           <ActionFlightLand />
         </IconButton>
         <IconButton disabled={isSelectionEmpty}
-          onClick={this._returnSelectedUAVs}
+          onClick={() => messaging.returnToHomeUAVs(this.props.selectedUAVIds)}
           tooltipPosition={'bottom-right'} title={'Return to home'}>
           <ActionHome />
         </IconButton>
@@ -81,27 +77,6 @@ class UAVToolbar extends React.Component {
         </IconButton>
       </div>
     )
-  }
-
-  _takeoffSelectedUAVs () {
-    messageHub.sendMessage({
-      type: 'UAV-TAKEOFF',
-      ids: this.props.selectedUAVIds
-    }).then(result => console.log(result))
-  }
-
-  _landSelectedUAVs () {
-    messageHub.sendMessage({
-      type: 'UAV-LAND',
-      ids: this.props.selectedUAVIds
-    }).then(result => console.log(result))
-  }
-
-  _returnSelectedUAVs () {
-    messageHub.sendMessage({
-      type: 'UAV-RTH',
-      ids: this.props.selectedUAVIds
-    }).then(result => console.log(result))
   }
 
   _showMessagesDialog () {

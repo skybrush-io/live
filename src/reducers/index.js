@@ -6,10 +6,11 @@ import defaultMerger from 'redux-storage-merger-simple'
 import config from '../config'
 import clocksReducer from './clocks'
 import connectionsReducer from './connections'
-import savedLocationsReducer from './saved-locations'
 import dialogsReducer from './dialogs'
+import logReducer from './log'
 import mapReducer from './map'
 import messagesReducer from './messages'
+import savedLocationsReducer from './saved-locations'
 import snackbarReducer from './snackbar'
 
 /**
@@ -48,11 +49,12 @@ const reducer = storage.reducer(
     clocks: clocksReducer,
     connections: connectionsReducer,
     dialogs: dialogsReducer,
-    savedLocations: savedLocationsReducer,
+    form: formReducer,
+    log: logReducer,
     map: mapReducer,
     messages: messagesReducer,
-    snackbar: snackbarReducer,
-    form: formReducer
+    savedLocations: savedLocationsReducer,
+    snackbar: snackbarReducer
   }),
   merger
 )

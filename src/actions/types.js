@@ -58,6 +58,11 @@ export const CLOSE_MESSAGES_DIALOG = 'CLOSE_MESSAGES_DIALOG'
 export const SELECT_UAV_IN_MESSAGES_DIALOG = 'SELECT_UAV_IN_MESSAGES_DIALOG'
 export const SHOW_MESSAGES_DIALOG = 'SHOW_MESSAGES_DIALOG'
 
+// Event log related actions
+export const ADD_LOG_ITEM = 'ADD_LOG_ITEM'
+export const DELETE_LOG_ITEM = 'DELETE_LOG_ITEM'
+export const CLEAR_LOG_ITEMS = 'CLEAR_LOG_ITEMS'
+
 // Error handling related actions
 export const CLOSE_ERROR_DIALOG = 'CLOSE_ERROR_DIALOG'
 export const SHOW_ERROR_MESSAGE = 'SHOW_ERROR_MESSAGE'

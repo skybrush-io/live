@@ -5,6 +5,7 @@
 
 import { showErrorMessage } from './actions/error-handling'
 import store from './store'
+import * as logging from './utils/logging'
 
 import isFunction from 'lodash/isFunction'
 
@@ -29,5 +30,6 @@ function errorToString (err) {
  * @param  {Error}  err  the error to handle
  */
 export default function handleError (err) {
-  store.dispatch(showErrorMessage(errorToString(err)))
+  // store.dispatch(showErrorMessage(errorToString(err)))
+  logging.addErrorItem(errorToString(err))
 }

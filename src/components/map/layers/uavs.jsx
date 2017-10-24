@@ -15,6 +15,7 @@ import ActionSystemUpdateAlt from 'material-ui/svg-icons/action/system-update-al
 import TextField from 'material-ui/TextField'
 
 import { setLayerParameterById } from '../../../actions/layers'
+import * as logging from '../../../utils/logging'
 import { showSnackbarMessage } from '../../../actions/snackbar'
 
 import { updateUAVFeatureColorsSignal } from '../../../signals'
@@ -49,7 +50,7 @@ class UAVsLayerSettingsPresentation extends React.Component {
   render () {
     const colorInputs = colors.map(color => (
       <TextField
-        style={{marginTop: '-20px'}}
+        style={{ marginTop: '-20px', fontFamily: 'monospace' }}
         key={`${color}_predicate_textfield`}
         name={`${color}_predicate_textfield`}
         floatingLabelText={color}
@@ -58,7 +59,9 @@ class UAVsLayerSettingsPresentation extends React.Component {
     ))
     return (
       <div>
-        <p key={'header'}>Colors</p>
+        <p key={'header'}>
+          Color predicates (e.g. <code>id.includes('1')</code>)
+        </p>
         {colorInputs}
         <br />
         <RaisedButton
@@ -140,7 +143,7 @@ class UAVsLayerPresentation extends React.Component {
   componentWillReceiveProps (newProps) {
     updatePredicates(
       newProps.layer.parameters.colorPredicates,
-      console.log
+      logging.addErrorItem
     )
   }
 }
