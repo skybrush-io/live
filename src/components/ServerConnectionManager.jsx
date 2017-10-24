@@ -23,7 +23,7 @@ import { handleClockInformationMessage } from '../model/clocks'
  */
 class ServerConnectionManagerPresentation extends React.Component {
   _bindSocketToHub (socket) {
-    const wrappedSocket = socket ? ReactSocket.Socket.socket(socket.props.name) : null
+    const wrappedSocket = socket ? socket.socket: null
     messageHub.emitter = wrappedSocket ? wrappedSocket.emit.bind(wrappedSocket) : undefined
   }
 
@@ -42,10 +42,10 @@ class ServerConnectionManagerPresentation extends React.Component {
 
     return url ? (
       <div key={url}>
-        <ReactSocket.Socket url={url} ref={this._bindSocketToHub} />
-        <ReactSocket.Event name={'connect'} callback={onConnected} />
-        <ReactSocket.Event name={'disconnect'} callback={onDisconnected} />
-        <ReactSocket.Event name={'fw'} callback={onMessage} />
+        <ReactSocket.Socket name="serverSocket" url={url} />
+        <ReactSocket.Listener socket="serverSocket" event="connect" callback={onConnected} ref={this._bindSocketToHub} />
+        <ReactSocket.Listener socket="serverSocket" event="disconnect" callback={onDisconnected} />
+        <ReactSocket.Listener socket="serverSocket" event="fw" callback={onMessage} />
       </div>
     ) : <div />
   }
