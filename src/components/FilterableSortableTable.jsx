@@ -3,7 +3,8 @@
  * in a filterable and sortable manner.
  */
 
-import React, { PropTypes } from 'react'
+import PropTypes from 'prop-types'
+import React from 'react'
 
 import ActionSettingsBackupRestore from 'material-ui/svg-icons/action/settings-backup-restore'
 import EditorHighlight from 'material-ui/svg-icons/editor/highlight'
