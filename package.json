@@ -42,6 +42,7 @@
     "react-dom": "^15.6.2",
     "react-flexible-workbench": "^0.8.1",
     "react-redux": "^5.0.6",
+    "react-shapeshifter": "^1.0.1",
     "react-socket": "git+https://github.com/collmot/react-socket.git",
     "react-timeago": "^3.4.3",
     "recompose": "^0.21.2",
