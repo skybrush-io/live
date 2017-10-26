@@ -11,6 +11,7 @@ import logReducer from './log'
 import mapReducer from './map'
 import messagesReducer from './messages'
 import savedLocationsReducer from './saved-locations'
+import sidebarReducer from './sidebar'
 import snackbarReducer from './snackbar'
 
 /**
@@ -54,6 +55,7 @@ const reducer = storage.reducer(
     map: mapReducer,
     messages: messagesReducer,
     savedLocations: savedLocationsReducer,
+    sidebar: sidebarReducer,
     snackbar: snackbarReducer
   }),
   merger

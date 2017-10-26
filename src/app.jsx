@@ -10,6 +10,7 @@ import MessagesDialog from './components/MessagesDialog'
 import SavedLocationEditorDialog from './components/SavedLocationEditorDialog'
 import ServerConnectionManager from './components/ServerConnectionManager'
 import ServerSettingsDialog from './components/ServerSettingsDialog'
+import Sidebar from './components/Sidebar'
 import Workbench from './components/Workbench'
 
 import flock from './flock'
@@ -21,6 +22,12 @@ require('../assets/css/screen.less')
 require('../assets/css/chat.less')
 require('../assets/css/kbd.css')
 
+const rootStyle = {
+  display: 'flex',
+  width: '100%',
+  height: '100%'
+}
+
 /**
  * The main application component, without the execution context (flock,
  * store and Material UI theme).
@@ -30,7 +37,10 @@ class Application extends React.Component {
     return (
       <div>
         <HotkeyHandler hotkeys={hotkeys}>
-          <Workbench />
+          <div style={rootStyle}>
+            <Sidebar />
+            <Workbench />
+          </div>
         </HotkeyHandler>
 
         <SavedLocationEditorDialog />

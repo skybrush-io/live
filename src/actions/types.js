@@ -67,5 +67,8 @@ export const CLEAR_LOG_ITEMS = 'CLEAR_LOG_ITEMS'
 export const CLOSE_ERROR_DIALOG = 'CLOSE_ERROR_DIALOG'
 export const SHOW_ERROR_MESSAGE = 'SHOW_ERROR_MESSAGE'
 
+// Sidebar-related actions
+export const TOGGLE_SIDEBAR = 'TOGGLE_SIDEBAR'
+
 // Snackbar-related actions
 export const SHOW_SNACKBAR_MESSAGE = 'SHOW_SNACKBAR_MESSAGE'
