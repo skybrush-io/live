@@ -41,8 +41,8 @@ export const toggleErrorUAVs = (() => {
   return (uavs) => {
     currentError =
       currentError.length === 0
-      ? [Math.floor(Math.random() * 256)]
-      : []
+        ? [Math.floor(Math.random() * 256)]
+        : []
 
     messageHub.sendMessage({
       type: 'CMD-REQ',
@@ -52,8 +52,8 @@ export const toggleErrorUAVs = (() => {
     }).then(result => {
       logging.addInfoItem(
         currentError.length === 0
-        ? `The error state of UAVs ${uavs} were cleared.`
-        : `UAVs ${uavs} were sent to error state ${currentError}.`
+          ? `The error state of UAVs ${uavs} were cleared.`
+          : `UAVs ${uavs} were sent to error state ${currentError}.`
       )
       console.log(result)
     })
