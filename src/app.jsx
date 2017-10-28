@@ -39,7 +39,7 @@ class Application extends React.Component {
       <div>
         <HotkeyHandler hotkeys={hotkeys}>
           <div style={rootStyle}>
-            <Sidebar />
+            <Sidebar workbench={workbench} />
             <WorkbenchView workbench={workbench} />
           </div>
         </HotkeyHandler>
