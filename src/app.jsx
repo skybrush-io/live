@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types'
 import React from 'react'
+import { WorkbenchView } from 'react-flexible-workbench'
 import { withContext } from 'recompose'
 
 import GlobalErrorDialog from './components/GlobalErrorDialog'
@@ -11,12 +12,12 @@ import SavedLocationEditorDialog from './components/SavedLocationEditorDialog'
 import ServerConnectionManager from './components/ServerConnectionManager'
 import ServerSettingsDialog from './components/ServerSettingsDialog'
 import Sidebar from './components/Sidebar'
-import Workbench from './components/Workbench'
 
 import flock from './flock'
 import hotkeys from './hotkeys'
 import store from './store'
 import muiTheme from './theme'
+import workbench from './workbench'
 
 require('../assets/css/screen.less')
 require('../assets/css/chat.less')
@@ -39,7 +40,7 @@ class Application extends React.Component {
         <HotkeyHandler hotkeys={hotkeys}>
           <div style={rootStyle}>
             <Sidebar />
-            <Workbench />
+            <WorkbenchView workbench={workbench} />
           </div>
         </HotkeyHandler>
 
@@ -69,5 +70,19 @@ const contextProvider = withContext(
   },
   props => ({ flock, muiTheme, store })
 )
+
+// We also need to set up the context provider for the workbench
+workbench.contextProvider = (component) => {
+  return {
+    childContextTypes: {
+      flock: PropTypes.object.isRequired,
+      muiTheme: PropTypes.object.isRequired,
+      store: PropTypes.object.isRequired
+    },
+    getChildContext: () => ({
+      flock, muiTheme, store
+    })
+  }
+}
 
 export default contextProvider(Application)
