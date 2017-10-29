@@ -27,17 +27,22 @@ const style = {
  * @returns  {Object}  the rendered sidebar component
  */
 const SidebarPresentation = ({ open, onToggleSidebar, workbench }) => (
-  <div style={{ ...style, overflow: 'hidden', width: open ? 240 : 48 }}>
+  <div id="sidebar" style={{ ...style, overflow: 'hidden', width: open ? 240 : 48 }}>
     <div style={{ width: 240 }}>
       <Shapeshifter color="#999" shape={ open ? 'close' : 'menu' } onClick={onToggleSidebar} />
+      <hr />
       <ModuleTray allowMultipleSelection vertical workbench={workbench}>
         <Module id="map" icon={<Map color="white" />} label="Map" component="map" />
+        <hr />
         <Module id="uavs" icon={<Flight color="white" />} label="UAVs" component="uav-list" />
         <Module id="messages" icon={<Message color="white" />} label="Messages" component="messages" />
+        <hr />
         <Module id="connections" icon={<ActionSettingsEthernet color="white" />} label="Connections" component="connection-list" />
         <Module id="clocks" icon={<ActionAlarm color="white" />} label="Clocks" component="clock-list" />
         <Module id="locations" icon={<MyLocation color="white" />} label="Locations" component="saved-location-list" />
+        <hr />
         <Module id="log" icon={<ActionList color="white" />} label="Event log" component="log-panel" />
+        <hr />
       </ModuleTray>
     </div>
   </div>
