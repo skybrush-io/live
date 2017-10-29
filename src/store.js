@@ -22,7 +22,8 @@ const engine = filter(
     ['dialogs', 'serverSettings'],
     ['savedLocations'],
     ['map'],
-    ['messages', 'selectedUAVId']
+    ['messages', 'selectedUAVId'],
+    ['sidebar']
   ]
 )
 

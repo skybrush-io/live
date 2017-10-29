@@ -33,7 +33,7 @@ const SidebarPresentation = ({ open, onToggleSidebar, workbench }) => (
       <ModuleTray allowMultipleSelection vertical workbench={workbench}>
         <Module id="map" icon={<Map color="white" />} label="Map" component="map" />
         <Module id="uavs" icon={<Flight color="white" />} label="UAVs" component="uav-list" />
-        <Module id="messages" icon={<Message color="white" />} label="UAVs" component="messages" />
+        <Module id="messages" icon={<Message color="white" />} label="Messages" component="messages" />
         <Module id="connections" icon={<ActionSettingsEthernet color="white" />} label="Connections" component="connection-list" />
         <Module id="clocks" icon={<ActionAlarm color="white" />} label="Clocks" component="clock-list" />
         <Module id="locations" icon={<MyLocation color="white" />} label="Locations" component="saved-location-list" />
