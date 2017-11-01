@@ -292,12 +292,18 @@ class FilterableSortableTable extends React.Component {
       </div>
     ))
 
+    const fullWidth = this._columns.reduce(
+      (width, col) => width + col.width + 6, 1
+    )
+
     return (
       <div className={'fst-root'}>
-        {headerRow}
-        {filterPopover}
-        <div className={'fst-data-container'}>
-          {dataRows}
+        <div className={'fst-container'} style={{ minWidth: `${fullWidth}px` }}>
+          {headerRow}
+          {filterPopover}
+          <div className={'fst-data-container'}>
+            {dataRows}
+          </div>
         </div>
       </div>
     )
