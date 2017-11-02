@@ -72,3 +72,6 @@ export const TOGGLE_SIDEBAR = 'TOGGLE_SIDEBAR'
 
 // Snackbar-related actions
 export const SHOW_SNACKBAR_MESSAGE = 'SHOW_SNACKBAR_MESSAGE'
+
+// Workbench-related actions
+export const SAVE_WORKBENCH_STATE = 'SAVE_WORKBENCH_STATE'

@@ -19,6 +19,9 @@ import UAVList from './components/UAVList'
 import MessagesPanel from './components/chat/MessagesPanel'
 import MapView from './components/map/MapView'
 
+import { saveWorkbenchState } from './actions/workbench'
+import store from './store'
+
 require('../assets/css/workbench.less')
 
 /**
@@ -83,5 +86,8 @@ function constructDefaultWorkbench () {
 }
 
 const workbench = constructDefaultWorkbench()
+workbench.on('stateChanged', () => {
+  store.dispatch(saveWorkbenchState(workbench))
+})
 
 export default workbench

@@ -23,7 +23,8 @@ const engine = filter(
     ['savedLocations'],
     ['map'],
     ['messages', 'selectedUAVId'],
-    ['sidebar']
+    ['sidebar'],
+    ['workbench']
   ]
 )
 

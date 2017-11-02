@@ -13,6 +13,7 @@ import messagesReducer from './messages'
 import savedLocationsReducer from './saved-locations'
 import sidebarReducer from './sidebar'
 import snackbarReducer from './snackbar'
+import workbenchReducer from './workbench'
 
 /**
  * State merger that takes the default state of the Redux store and the
@@ -56,7 +57,8 @@ const reducer = storage.reducer(
     messages: messagesReducer,
     savedLocations: savedLocationsReducer,
     sidebar: sidebarReducer,
-    snackbar: snackbarReducer
+    snackbar: snackbarReducer,
+    workbench: workbenchReducer
   }),
   merger
 )
