@@ -3,6 +3,7 @@
 
 @import "~golden-layout/src/css/goldenlayout-base.css";
 @import "~golden-layout/src/css/goldenlayout-light-theme.css";
+@import "~react-flexible-workbench/themes/dark.css";
 
 /* Make the panels scrollable */
 body .lm_content {
@@ -37,62 +38,7 @@ body .lm_header {
 .wb-module {
   padding: 0 15px 0 0 !important;
 }
-/* Workbench module drawer and perspective bar -- common styling*/
-.wb-module-drawer button,
-.wb-perspective-bar button {
-  padding: 5px;
-  border: none;
-  border-radius: 4px;
-  outline: none;
-  transition: background 0.3s, color 0.3s, transform 0.3s;
-  text-shadow: 0px 1px 2px rgba(0, 0, 0, 0.65);
-}
-/* Workbench perspective bar -- blue theme */
-.wb-perspective-bar button {
-  background: #49d;
-  box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.65);
-  color: #fff;
-  font-size: 16px;
 
-  &:hover {
-    background: #8cf;
-  }
-}
-/* Workbench module drawer -- dark theme */
-.wb-module-drawer button {
-  background: none;
-  border-radius: 0;
-  color: #ccc;
-  text-transform: uppercase;
-
-  &:hover {
-    background: rgba(128, 128, 128, 0.5);
-  }
-}
-.wb-module-drawer button:active,
-.wb-perspective-bar button:active {
-  transform: translateY(2px);
-}
-.wb-module-drawer button:active {
-  color: #fff;
-}
-.wb-module-drawer.wb-module-drawer-open button {
-  background: rgba(128, 128, 128, 0.5);
-  color: #fff;
-}
-.wb-module-drawer-contents {
-  background: rgba(0, 0, 0, 0.8);
-}
-.wb-module {
-  color: white;
-  text-shadow: 0px 1px 2px rgba(0, 0, 0, 0.65);
-}
-.wb-module:hover {
-  background: linear-gradient(to bottom, #06c 0%, #25a 100%);
-}
-.wb-module.wb-module-disabled:hover {
-  background: none;
-}
 /* Horizontal separators in sidebar */
 #sidebar hr {
   width: 100%;
