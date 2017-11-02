@@ -55,15 +55,16 @@ const componentRegistry = {
   'uav-list': getFlockFromContext(UAVList)
 }
 
-function constructDefaultWorkbench () {
+function constructDefaultWorkbench (store) {
   const builder = new WorkbenchBuilder()
 
+  // Register all our supported components in the builder
   for (const key in componentRegistry) {
     builder.registerComponent(key, componentRegistry[key])
   }
 
   /* eslint-disable indent */
-  return builder
+  const workbench = builder
     .makeColumns()
       .makeStack()
         .add(MapView).setTitle('Map').setId('map')
@@ -83,11 +84,16 @@ function constructDefaultWorkbench () {
     .finish()
     .build()
   /* eslint-enable indent */
+
+  // Wire the workbench to the store so the store is updated when
+  // the workbench state changes
+  workbench.on('stateChanged', () => {
+    store.dispatch(saveWorkbenchState(workbench))
+  })
+
+  return workbench
 }
 
-const workbench = constructDefaultWorkbench()
-workbench.on('stateChanged', () => {
-  store.dispatch(saveWorkbenchState(workbench))
-})
+const workbench = constructDefaultWorkbench(store)
 
 export default workbench

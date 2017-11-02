@@ -67,7 +67,15 @@ const store = createStoreWithMiddleware(
   window.devToolsExtension ? window.devToolsExtension() : undefined
 )
 
-// Restore any previous state of the store
-storage.createLoader(engine)(store)
+/**
+ * Function that will load the contents of the store from the storage
+ * backend. This must be called manually during application startup
+ * when it is safe to do so.
+ *
+ * @return  {Promise}  a promise that resolves when the state of the
+ *          store is restored
+ */
+export const loadStoreFromStorageBackend =
+  () => storage.createLoader(engine)(store)
 
 export default store

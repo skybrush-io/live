@@ -35,20 +35,17 @@ function formatHotkeyDefinition (definition) {
       return ' + '
     } else {
       const formattedKey = key.replace(/^PlatMod$/, platformModifierKey)
-         .replace(/^Cmd$/, '\u2318')
-         .replace(/^Alt$/, isRunningOnMac ? '\u2325' : 'Alt')
-         .replace(/^Shift/, '\u21e7')
-         .replace(/^Key/, '')
+        .replace(/^Cmd$/, '\u2318')
+        .replace(/^Alt$/, isRunningOnMac ? '\u2325' : 'Alt')
+        .replace(/^Shift/, '\u21e7')
+        .replace(/^Key/, '')
       return <kbd key={`key${index}`}>{formattedKey}</kbd>
     }
   }).value()
 }
 
 /**
- * React Component for handling hotkeys.
- *
- * @param {Object} props properties of the react component
- * @property {Array<Object>} hotkeys Array containing the desired hotkeys and actions
+ * React component for handling hotkeys.
  */
 export default class HotkeyHandler extends React.Component {
   /**
@@ -59,6 +56,8 @@ export default class HotkeyHandler extends React.Component {
    */
   constructor (props) {
     super(props)
+
+    this._root = undefined
 
     this.state = {
       dialogVisible: false,
@@ -75,6 +74,7 @@ export default class HotkeyHandler extends React.Component {
     this._handleKey = this._handleKey.bind(this)
     this._handleKeyDown = this._handleKeyDown.bind(this)
     this._handleKeyUp = this._handleKeyUp.bind(this)
+    this._setRoot = this._setRoot.bind(this)
 
     for (const hotkey of props.hotkeys) {
       this.addListener(hotkey.on, hotkey.keys, hotkey.action)
@@ -119,9 +119,6 @@ export default class HotkeyHandler extends React.Component {
    * Adding the actual event listeners and the approptiate handlers.
    */
   componentDidMount () {
-    this.refs.capture.addEventListener('keydown', this._handleKeyDown, true)
-    this.refs.capture.addEventListener('keyup', this._handleKeyUp, true)
-
     document.body.addEventListener('focus', this._handleFocusChange, true)
   }
 
@@ -129,9 +126,6 @@ export default class HotkeyHandler extends React.Component {
    * Removing the event listeners.
    */
   componentWillUnmount () {
-    this.refs.capture.removeEventListener('keydown', this._handleKeyDown, true)
-    this.refs.capture.removeEventListener('keyup', this._handleKeyUp, true)
-
     document.body.removeEventListener('focus', this._handleFocusChange, true)
   }
 
@@ -139,8 +133,7 @@ export default class HotkeyHandler extends React.Component {
     const keysColumnStyle = {width: '150px'}
     const actionColumnStyle = {}
     const actions = [
-      <FlatButton label={'Close'} primary
-        onClick={this._hideDialog} />
+      <FlatButton key="_close" label={'Close'} primary onClick={this._hideDialog} />
     ]
 
     const classString = [].concat(
@@ -151,9 +144,9 @@ export default class HotkeyHandler extends React.Component {
     ).join(' ')
 
     return (
-      <div ref={'capture'} className={classString}>
+      <div ref={this._setRoot} className={classString}>
         <Dialog
-          title={'Hotkeys'}
+          title="Hotkeys"
           actions={actions}
           open={this.state.dialogVisible}
           onRequestClose={this._hideDialog}
@@ -306,6 +299,24 @@ export default class HotkeyHandler extends React.Component {
    */
   _hotkeyToHash (hotkey) {
     return Hotkey.fromString(hotkey).toString()
+  }
+
+  _setRoot (root) {
+    if (this._root === root) {
+      return
+    }
+
+    if (this._root) {
+      this._root.removeEventListener('keydown', this._handleKeyDown, true)
+      this._root.removeEventListener('keyup', this._handleKeyUp, true)
+    }
+
+    this._root = root
+
+    if (this._root) {
+      this._root.addEventListener('keydown', this._handleKeyDown, true)
+      this._root.addEventListener('keyup', this._handleKeyUp, true)
+    }
   }
 }
 
