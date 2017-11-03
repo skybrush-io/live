@@ -3,7 +3,7 @@
  * to the UAVs.
  */
 
-import _ from 'lodash'
+import _, { flatMap, isNil } from 'lodash'
 import CircularProgress from 'material-ui/CircularProgress'
 import TextField from 'material-ui/TextField'
 import PropTypes from 'prop-types'
@@ -11,7 +11,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 
 import { addInboundMessage, addOutboundMessageToSelectedUAV,
-         addErrorMessageInMessagesDialog } from '../../actions/messages'
+  addErrorMessageInMessagesDialog } from '../../actions/messages'
 import ActiveUAVsField from '../ActiveUAVsField'
 import BackgroundHint from '../BackgroundHint'
 import { ChatArea, ChatBubble, Marker } from '../chat'
@@ -35,7 +35,7 @@ function convertMessageToComponent (message) {
         <ChatBubble key={keyBase} author={message.author} own
           date={message.date} body={message.body}
           rightComponent={inProgress ? <CircularProgress size={30} thickness={1.75} style={{ margin: 10 }} /> : false}
-          />
+        />
       ]
 
     case MessageType.INBOUND:
@@ -68,18 +68,18 @@ function convertMessageToComponent (message) {
  * @return {React.Component[]}  the React components that render the message
  */
 function convertMessagesToComponents (messages, textFieldsBelow) {
-  if (_.isNil(messages)) {
+  if (isNil(messages)) {
     return [
-      <BackgroundHint key={'backgroundHint'} header={'No UAV selected'}
-        text={'Enter the ID of a UAV to talk to in the lower left corner'} />
+      <BackgroundHint key="backgroundHint" header="No UAV selected"
+        text="Enter the ID of a UAV to talk to in the lower left corner" />
     ]
   } else if (messages.length === 0) {
     const hint = `Send a message to the selected UAV using the text box ${textFieldsBelow ? 'below' : 'above'}`
     return [
-      <BackgroundHint key={'backgroundHint'} header={'No messages'} text={hint} />
+      <BackgroundHint key="backgroundHint" header="No messages" text={hint} />
     ]
   } else {
-    return _.flatMap(messages, convertMessageToComponent)
+    return flatMap(messages, convertMessageToComponent)
   }
 }
 
@@ -103,12 +103,12 @@ class MessagesPanelPresentation extends React.Component {
     }, style)
     const chatArea = <ChatArea key={'chatArea'}>{chatComponents}</ChatArea>
     const textFields =
-      <div key={'textFieldContainer'} style={{ display: 'flex' }}>
+      <div key="textFieldContainer" style={{ display: 'flex' }}>
         <ActiveUAVsField style={{ width: '8em', paddingRight: '1em' }}
           flock={flock} />
-        <TextField ref={'messageTextField'} fullWidth hintText={'Message'}
+        <TextField fullWidth hintText="Message"
           onKeyDown={this._textFieldKeyDownHandler}
-          disabled={_.isNil(selectedUAVId)} />
+          disabled={isNil(selectedUAVId)} />
       </div>
     const children = textFieldsAtBottom ? [chatArea, textFields] : [textFields, chatArea]
     return <div style={contentStyle}>{children}</div>
@@ -153,7 +153,7 @@ const MessagesPanel = connect(
     const messageIds = selectedUAVId
       ? messages.uavIdsToMessageIds[selectedUAVId] : []
     const chatEntries = selectedUAVId
-      ? _(messageIds).map(id => messages.byId[id]).reject(_.isNil).value()
+      ? _(messageIds).map(id => messages.byId[id]).reject(isNil).value()
       : null
     return {
       chatEntries,

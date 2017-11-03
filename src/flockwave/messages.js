@@ -225,7 +225,7 @@ class PendingCommandExecution {
    * response from the server any more.
    */
   clientSideTimeout () {
-    this._promiseRejector(new ClientSideCommandExecutionTimeout(this.receipt))
+    this.reject(new ClientSideCommandExecutionTimeout(this.receipt))
   }
 
   /**
