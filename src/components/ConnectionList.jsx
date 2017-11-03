@@ -109,7 +109,7 @@ const ConnectionListEntry = (props) => {
       primaryText={name}
       secondaryText={secondaryText}
       rightIconButton={actionButton}
-      />
+    />
   )
 }
 
