@@ -12,6 +12,16 @@ import ReactDOM from 'react-dom'
  * more chat bubbles.
  */
 export default class ChatArea extends React.Component {
+  constructor (props) {
+    super(props)
+
+    this._domNode = null
+
+    this._setDOMNode = node => {
+      this._domNode = node
+    }
+  }
+
   componentDidUpdate () {
     if (this.shouldScrollToBottom) {
       this.scrollToBottom()
@@ -19,15 +29,18 @@ export default class ChatArea extends React.Component {
   }
 
   componentWillUpdate () {
-    const node = ReactDOM.findDOMNode(this)
-    this.shouldScrollToBottom =
-      (node.scrollTop + node.clientHeight === node.scrollHeight)
+    const node = this._domNode
+    this.shouldScrollToBottom = node &&
+      (node.scrollTop + node.clientHeight >= node.scrollHeight - 5)
   }
 
   render () {
     window.ReactDOM = ReactDOM
     const { children, style } = this.props
-    return <div className={'chat-area'} style={style}>{children}</div>
+    return (
+      <div className="chat-area" ref={this._setDOMNode}
+        style={style}>{children}</div>
+    )
   }
 
   /**
@@ -35,8 +48,9 @@ export default class ChatArea extends React.Component {
    * insertion of a new chat bubble at the bottom.
    */
   scrollToBottom () {
-    const node = ReactDOM.findDOMNode(this)
-    node.scrollTop = node.scrollHeight
+    if (this._domNode) {
+      this._domNode.scrollTop = this._domNode.scrollHeight
+    }
   }
 }
 

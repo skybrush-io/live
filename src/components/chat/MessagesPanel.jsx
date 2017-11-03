@@ -91,9 +91,11 @@ class MessagesPanelPresentation extends React.Component {
   constructor (props) {
     super(props)
 
+    this._chatArea = null
     this._textField = null
 
     this.focusOnTextField = this.focusOnTextField.bind(this)
+    this._setChatArea = this._setChatArea.bind(this)
     this._setTextField = this._setTextField.bind(this)
     this._textFieldKeyDownHandler = this._textFieldKeyDownHandler.bind(this)
   }
@@ -112,7 +114,7 @@ class MessagesPanelPresentation extends React.Component {
       flexDirection: 'column',
       height: '100%'
     }, style)
-    const chatArea = <ChatArea key={'chatArea'}>{chatComponents}</ChatArea>
+    const chatArea = <ChatArea key="chatArea" ref={this._setChatArea}>{chatComponents}</ChatArea>
     const textFields =
       <div key="textFieldContainer" style={{ display: 'flex' }}>
         <ActiveUAVsField style={{ width: '8em', paddingRight: '1em' }}
@@ -125,10 +127,20 @@ class MessagesPanelPresentation extends React.Component {
     return <div style={contentStyle}>{children}</div>
   }
 
+  scrollToBottom () {
+    if (this._chatArea) {
+      this._chatArea.scrollToBottom()
+    }
+  }
+
+  _setChatArea (value) {
+    this._chatArea = value
+  }
+
   _setTextField (value) {
     this._textField = value
   }
-  
+
   /**
    * Handler called when the user presses a key in the message text field.
    * Sends the message if the user presses Enter.
@@ -140,6 +152,7 @@ class MessagesPanelPresentation extends React.Component {
     if (event.keyCode === 13) {
       this.props.onSend(event.target.value)
       event.target.value = ''
+      this.scrollToBottom()
     }
   }
 }
@@ -200,7 +213,11 @@ const MessagesPanel = connect(
       )
     }
   }),
+
+  // mergeProps
   null,
+
+  // options
   { withRef: true }
 )(MessagesPanelPresentation)
 

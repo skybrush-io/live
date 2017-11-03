@@ -72,6 +72,11 @@ class MessagesDialogPresentation extends React.Component {
 
   _setMessagesPanel (panel) {
     this._messagesPanel = panel
+
+    if (this._messagesPanel) {
+      // Message panel just got mounted so scroll to the bottom
+      this._messagesPanel.getWrappedInstance().scrollToBottom()
+    }
   }
 
   render () {
