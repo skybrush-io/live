@@ -72,17 +72,6 @@ const contextProvider = withContext(
 )
 
 // We also need to set up the context provider for the workbench
-workbench.contextProvider = (component) => {
-  return {
-    childContextTypes: {
-      flock: PropTypes.object.isRequired,
-      muiTheme: PropTypes.object.isRequired,
-      store: PropTypes.object.isRequired
-    },
-    getChildContext: () => ({
-      flock, muiTheme, store
-    })
-  }
-}
+workbench.hoc = contextProvider
 
 export default contextProvider(Application)

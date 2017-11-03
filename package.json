@@ -40,7 +40,7 @@
     "react-addons-test-utils": "^15.6.2",
     "react-color": "^2.13.8",
     "react-dom": "^15.6.2",
-    "react-flexible-workbench": "^0.9.4",
+    "react-flexible-workbench": "^0.10.0",
     "react-redux": "^5.0.6",
     "react-shapeshifter": "^1.0.1",
     "react-socket": "git+https://github.com/collmot/react-socket.git",
