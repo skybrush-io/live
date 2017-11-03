@@ -22,8 +22,11 @@ class MessagesDialogPresentation extends React.Component {
   constructor (props) {
     super(props)
 
+    this._messagesPanel = null
+
     this._onOpen = this._onOpen.bind(this)
     this._onClose = this._onClose.bind(this)
+    this._setMessagesPanel = this._setMessagesPanel.bind(this)
     this._wasOpen = false
 
     this._handleKeyWhileOpen = this._handleKeyWhileOpen.bind(this)
@@ -44,7 +47,7 @@ class MessagesDialogPresentation extends React.Component {
    * Event handler for keypresses while the dialog is open to capture
    * specific hotkeys.
    *
-   * @param {KeyboardEvent} e
+   * @param {KeyboardEvent} e  the keypress event
    */
   _handleKeyWhileOpen (e) {
     // To prevent panning of the map with the arrow keys and other default
@@ -59,11 +62,16 @@ class MessagesDialogPresentation extends React.Component {
       // The active element is not an input
       !['INPUT'].includes(document.activeElement.tagName) &&
       // and the key pressed was not anything special, just a single character
-      e.key.length === 1
+      e.key.length === 1 &&
+      // and the messages panel is mounted
+      this._messagesPanel
     ) {
-      this.refs.messagesPanel.getWrappedInstance()
-          .refs.messageTextField.input.select()
+      this._messagesPanel.getWrappedInstance().focusOnTextField()
     }
+  }
+
+  _setMessagesPanel (panel) {
+    this._messagesPanel = panel
   }
 
   render () {
@@ -78,9 +86,9 @@ class MessagesDialogPresentation extends React.Component {
     this._wasOpen = open
 
     const actions = [
-      <FlatButton label={'Clear'} onClick={onClear}
+      <FlatButton key="clear" label="Clear" onClick={onClear}
         disabled={!selectedUAVId} />,
-      <FlatButton label={'Close'} onClick={onClose} />
+      <FlatButton key="close" label="Close" onClick={onClose} />
     ]
     const contentStyle = {
       width: '640px'
@@ -91,7 +99,7 @@ class MessagesDialogPresentation extends React.Component {
         actions={actions} onRequestClose={onClose}
       >
         <MessagesPanel
-          ref={'messagesPanel'} style={{ height: '35ex' }}
+          ref={this._setMessagesPanel} style={{ height: '35ex' }}
           textFieldsAtBottom flock={flock}
         />
       </Dialog>

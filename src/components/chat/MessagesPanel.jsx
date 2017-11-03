@@ -90,7 +90,18 @@ function convertMessagesToComponents (messages, textFieldsBelow) {
 class MessagesPanelPresentation extends React.Component {
   constructor (props) {
     super(props)
+
+    this._textField = null
+
+    this.focusOnTextField = this.focusOnTextField.bind(this)
+    this._setTextField = this._setTextField.bind(this)
     this._textFieldKeyDownHandler = this._textFieldKeyDownHandler.bind(this)
+  }
+
+  focusOnTextField () {
+    if (this._textField) {
+      this._textField.input.select()
+    }
   }
 
   render () {
@@ -106,7 +117,7 @@ class MessagesPanelPresentation extends React.Component {
       <div key="textFieldContainer" style={{ display: 'flex' }}>
         <ActiveUAVsField style={{ width: '8em', paddingRight: '1em' }}
           flock={flock} />
-        <TextField fullWidth hintText="Message"
+        <TextField ref={this._setTextField} fullWidth hintText="Message"
           onKeyDown={this._textFieldKeyDownHandler}
           disabled={isNil(selectedUAVId)} />
       </div>
@@ -114,6 +125,10 @@ class MessagesPanelPresentation extends React.Component {
     return <div style={contentStyle}>{children}</div>
   }
 
+  _setTextField (value) {
+    this._textField = value
+  }
+  
   /**
    * Handler called when the user presses a key in the message text field.
    * Sends the message if the user presses Enter.
