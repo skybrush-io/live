@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import { WorkbenchView } from 'react-flexible-workbench'
-import { withContext } from 'recompose'
+import { compose, withContext } from 'recompose'
 
 import GlobalErrorDialog from './components/GlobalErrorDialog'
 import GlobalSnackbar from './components/GlobalSnackbar'
@@ -13,6 +13,7 @@ import ServerConnectionManager from './components/ServerConnectionManager'
 import ServerSettingsDialog from './components/ServerSettingsDialog'
 import Sidebar from './components/Sidebar'
 
+import { withErrorBoundary } from './error-handling'
 import flock from './flock'
 import hotkeys from './hotkeys'
 import store from './store'
@@ -60,18 +61,20 @@ class Application extends React.Component {
 }
 
 /**
- * The context provider for the main application component.
+ * The context provider for the main application component and the
+ * individual application panels.
  */
-const contextProvider = withContext(
-  {
-    flock: PropTypes.object.isRequired,
-    muiTheme: PropTypes.object.isRequired,
-    store: PropTypes.object.isRequired
-  },
-  props => ({ flock, muiTheme, store })
+const enhancer = compose(
+  withContext(
+    {
+      flock: PropTypes.object.isRequired,
+      muiTheme: PropTypes.object.isRequired,
+      store: PropTypes.object.isRequired
+    },
+    props => ({ flock, muiTheme, store })
+  ),
+  withErrorBoundary
 )
 
-// We also need to set up the context provider for the workbench
-workbench.hoc = contextProvider
-
-export default contextProvider(Application)
+workbench.hoc = enhancer
+export default enhancer(Application)
