@@ -11,6 +11,8 @@ import FeatureManager from './FeatureManager'
 import Flock from '../../model/flock'
 import UAVFeature from './features/UAVFeature'
 
+import { updateUAVFeatureColorsSignal } from '../../signals'
+
 /**
  * OpenLayers vector layer source that contains all the active UAVs
  * currently known to the server.
@@ -29,6 +31,14 @@ export default class ActiveUAVsLayerSource extends source.Vector {
     this.featureManager = new FeatureManager(this.source)
     this.featureManager.featureFactory = (id, geom) => (new UAVFeature(id, geom))
     this.featureManager.featureAdded.add(this._onFeatureAdded)
+
+    updateUAVFeatureColorsSignal.add(() => {
+      const features = this.featureManager.getFeatureArray()
+      for (const feature of features) {
+        // TODO: we are using a private API here. This is not nice.
+        feature._setupStyle()
+      }
+    })
 
     this.eventBindings = {}
   }
