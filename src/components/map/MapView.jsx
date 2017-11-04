@@ -14,9 +14,8 @@ import MapReferenceRequestHandler from './MapReferenceRequestHandler'
 import MapToolbar from './MapToolbar'
 import { Tool } from './tools'
 
-import { setSelectedFeatures, addSelectedFeatures,
-         clearSelectedFeatures, removeSelectedFeatures }
-       from '../../actions/map'
+import { setSelectedFeatures, addSelectedFeatures, clearSelectedFeatures,
+  removeSelectedFeatures } from '../../actions/map'
 import { coordinateFromLonLat, formatCoordinate } from '../../utils/geography'
 
 import mapViewManager from '../../mapViewManager'
@@ -25,6 +24,8 @@ require('openlayers/css/ol.css')
 
 /**
  * React component that renders the layers of the map in the main window.
+ *
+ * @returns {JSX.Node}  the layers of the map
  */
 const MapViewLayersPresentation = ({ layersById, layerOrder }) => {
   const layers = []
@@ -239,7 +240,7 @@ class MapViewPresentation extends React.Component {
    *
    * @param  {ContextMenuPopup} ref  the context menu being used in this component
    */
- _assignContextMenuPopupRef (ref) {
+  _assignContextMenuPopupRef (ref) {
     this.contextMenuPopup = ref
   }
 

@@ -187,7 +187,6 @@ class UAVList extends React.Component {
       </div>
     )
   }
-
 }
 
 UAVList.propTypes = {
