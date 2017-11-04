@@ -19,6 +19,7 @@ import ActionPowerSettingsNew from 'material-ui/svg-icons/action/power-settings-
 import Message from 'material-ui/svg-icons/communication/message'
 
 import { selectUAVInMessagesDialog, showMessagesDialog } from '../../actions/messages'
+import { getSelectedUAVIds } from '../selectors'
 import * as messaging from '../../utils/messaging'
 
 /**
@@ -178,7 +179,7 @@ ContextMenuPopup.propTypes = {
 export default connect(
   // mapStateToProps
   state => ({
-    selectedUAVIds: state.map.selection
+    selectedUAVIds: getSelectedUAVIds
   }),
   // mapDispatchToProps
   dispatch => ({

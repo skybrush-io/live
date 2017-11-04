@@ -5,7 +5,7 @@
  */
 
 import { autobind } from 'core-decorators'
-import _ from 'lodash'
+import { forOwn, identity, values } from 'lodash'
 import Signal from 'mini-signals'
 import ol from 'openlayers'
 
@@ -14,6 +14,13 @@ import ol from 'openlayers'
  * vector layer based on string identifiers (one feature for each string
  * identifier) and returning them on-demand by IDs.
  *
+ * Note that the IDs that you pass to the feature manager are the IDs of the
+ * <em>objects</em> that the features represent. The OpenLayers feature ID
+ * may or may not be equal to the object ID.
+ *
+ * @property {?string} namespace  when specified, it will be prepended to
+ *           every object ID passed to the feature manager function to
+ *           obtain the OpenLayers feature ID
  * @property {?function} projection  a projection function from OpenLayers
  *           that is used to map coordinates specified by the user to the
  *           coordinate system of the source layer
@@ -31,8 +38,10 @@ export default class FeatureManager {
    *           coordinate system of the source layer
    */
   constructor (vectorSource, projection) {
-    this._featuresById = {}
+    this._featuresByObjectId = {}
     this._featureFactory = undefined
+    this._featureIdFunction = identity
+
     this._vectorSource = vectorSource
     this.projection = projection
 
@@ -43,8 +52,8 @@ export default class FeatureManager {
   /**
    * Creates or updates a feature with the given ID at the given coordinate.
    *
-   * @param {string} id  the identifier for which the feature has to be
-   *        created or updated
+   * @param {string} id  the identifier of the object for which the feature
+   *        has to be created or updated
    * @param {ol.Coordinate} coordinate  the coordinates of the feature
    * @returns {ol.Feature}  the OpenLayers feature that represents the
    *          object with the given ID on the map
@@ -59,7 +68,7 @@ export default class FeatureManager {
   }
 
   /**
-   * Creates a new feature for the given ID.
+   * Creates a new feature for the given object ID.
    *
    * If the given ID already had a feature, it will be overwritten with the
    * new feature.
@@ -76,9 +85,10 @@ export default class FeatureManager {
   _createFeatureById (id, coordinate) {
     const point = new ol.geom.Point(coordinate)
     const feature = this._featureFactory ? this._featureFactory(id, point) : new ol.Feature(point)
+    const featureId = this._featureIdFunction(id)
 
-    feature.setId(id)
-    this._featuresById[id] = feature
+    feature.setId(featureId)
+    this._featuresByObjectId[id] = feature
 
     if (this._vectorSource) {
       this._vectorSource.addFeature(feature)
@@ -90,7 +100,7 @@ export default class FeatureManager {
   }
 
   /**
-   * Returns the feature corresponding to the given ID.
+   * Returns the feature corresponding to the object with the given ID.
    *
    * @param {string} id  the identifier for which the feature has to be
    *        returned
@@ -99,7 +109,7 @@ export default class FeatureManager {
    *         object has no feature yet
    */
   getFeatureById (id) {
-    return this._featuresById[id]
+    return this._featuresByObjectId[id]
   }
 
   /**
@@ -112,11 +122,11 @@ export default class FeatureManager {
    *         managed by this manager
    */
   getFeatureArray () {
-    return _.values(this._featuresById)
+    return values(this._featuresByObjectId)
   }
 
   /**
-   * Removes the feature corresponding to the given ID.
+   * Removes the feature corresponding to the object with the given ID.
    *
    * @param {string} id  the identifier for which the feature has to be
    *        removed
@@ -157,11 +167,36 @@ export default class FeatureManager {
    * return an appropriately constructed {@link ol.Feature} object.
    *
    * @param {function(id: string, geom: ol.geom.Geometry): Array<ol.style.Style>} value
-   *        the new style factory function
+   *        the new feature factory function
    * @return {undefined}
    */
   set featureFactory (value) {
     this._featureFactory = value
+  }
+
+  /**
+   * Returns the function that maps object IDs to feature IDs.
+   *
+   * The function should expect an object ID and return the corresponding
+   * feature ID to be used in OpenLayers.
+   *
+   * @return {function(id: string): string}  the feature ID mapping function
+   */
+  get featureIdFunction () {
+    return this._featureIdFunction
+  }
+
+  /**
+   * Sets the feature ID mapping function that maps object IDs to feature IDs.
+   *
+   * The function should expect an object ID and return the corresponding
+   * feature ID to be used in OpenLayers.
+   *
+   * @param {function(id: string): string} value  the new feature ID mapping function
+   * @return {undefined}
+   */
+  set featureIdFunction (value) {
+    this._featureIdFunction = value
   }
 
   /**
@@ -207,7 +242,7 @@ export default class FeatureManager {
     this._vectorSource = value
 
     if (value) {
-      _.forOwn(this._featuresById, feature => value.addFeature(feature))
+      forOwn(this._featuresByObjectId, feature => value.addFeature(feature))
     }
   }
 }

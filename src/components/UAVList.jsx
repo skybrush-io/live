@@ -18,11 +18,11 @@ import { multiSelectableListOf } from './helpers/lists'
 import UAVToolbar from './UAVToolbar'
 import CountMonitor from './CountMonitor'
 
-import { setSelectedFeatures } from '../actions/map'
+import { setSelectedUAVIds } from '../actions/map'
 import Flock from '../model/flock'
-import { formatCoordinate } from '../utils/geography'
-
+import { getSelectedUAVIds } from '../selectors'
 import { mapViewToLocationSignal } from '../signals'
+import { formatCoordinate } from '../utils/geography'
 
 /**
  * Formats the secondary text to be shown for a single UAV in the UAV list.
@@ -202,12 +202,12 @@ UAVList.defaultProps = {
 const SmartUAVList = connect(
   // mapStateToProps
   state => ({
-    selectedUAVIds: state.map.selection
+    selectedUAVIds: getSelectedUAVIds(state)
   }),
   // mapDispatchToProps
   dispatch => ({
     onSelectionChanged: (event, uavIds) => {
-      dispatch(setSelectedFeatures(uavIds))
+      dispatch(setSelectedUAVIds(uavIds))
     }
   })
 )(UAVList)

@@ -8,9 +8,10 @@ import PropTypes from 'prop-types'
 import { source } from 'ol-react'
 
 import FeatureManager from './FeatureManager'
-import Flock from '../../model/flock'
 import UAVFeature from './features/UAVFeature'
 
+import Flock from '../../model/flock'
+import { uavIdToFeatureId } from '../../model/identifiers'
 import { updateUAVFeatureColorsSignal } from '../../signals'
 
 /**
@@ -30,6 +31,7 @@ export default class ActiveUAVsLayerSource extends source.Vector {
 
     this.featureManager = new FeatureManager(this.source)
     this.featureManager.featureFactory = (id, geom) => (new UAVFeature(id, geom))
+    this.featureManager.featureIdFunction = uavIdToFeatureId
     this.featureManager.featureAdded.add(this._onFeatureAdded)
 
     updateUAVFeatureColorsSignal.add(() => {
@@ -109,11 +111,11 @@ export default class ActiveUAVsLayerSource extends source.Vector {
    * @param {string[]}  newSelection  the new selection of UAVs
    */
   _onSelectionMaybeChanged (oldSelection, newSelection) {
-    const getFeatures = this.featureManager.getFeatureById
-    _(newSelection).difference(oldSelection).map(getFeatures).filter().each(
+    const getFeatureById = this.source.getFeatureById.bind(this.source)
+    _(newSelection).difference(oldSelection).map(getFeatureById).filter().each(
       feature => { feature.selected = true }
     )
-    _(oldSelection).difference(newSelection).map(getFeatures).filter().each(
+    _(oldSelection).difference(newSelection).map(getFeatureById).filter().each(
       feature => { feature.selected = false }
     )
   }

@@ -1,6 +1,8 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 
+import UAV from '../model/uav'
+
 const awayTimeout = 5 * 1000
 const lostTimeout = 60 * 1000
 
@@ -29,6 +31,11 @@ const ColoredContainer = ({ color, title, text }) => (
     {text}
   </span>
 )
+ColoredContainer.propTypes = {
+  color: PropTypes.string,
+  title: PropTypes.string,
+  text: PropTypes.string
+}
 
 /**
  * Element for monitoring the count of UAVs in different states.
@@ -117,7 +124,8 @@ class CountMonitor extends React.Component {
 }
 
 CountMonitor.propTypes = {
-  selectedUAVIds: PropTypes.arrayOf(PropTypes.string)
+  selectedUAVIds: PropTypes.arrayOf(PropTypes.string),
+  uavs: PropTypes.arrayOf(PropTypes.instanceOf(UAV))
 }
 
 export default CountMonitor

@@ -8,7 +8,6 @@ import ActiveUAVsLayerSource from '../ActiveUAVsLayerSource'
 import flock from '../../../flock'
 
 import { colorPredicates } from '../features/UAVFeature'
-const colors = ['pink', 'orange', 'yellow', 'green', 'blue', 'purple']
 
 import RaisedButton from 'material-ui/RaisedButton'
 import ActionSystemUpdateAlt from 'material-ui/svg-icons/action/system-update-alt'
@@ -21,6 +20,8 @@ import { showSnackbarMessage } from '../../../actions/snackbar'
 import { updateUAVFeatureColorsSignal } from '../../../signals'
 
 import { coordinateFromLonLat } from '../../../utils/geography'
+
+const colors = ['pink', 'orange', 'yellow', 'green', 'blue', 'purple']
 
 const updatePredicates = (predicates, errorHandler) => {
   for (const color in predicates) {
@@ -59,7 +60,7 @@ class UAVsLayerSettingsPresentation extends React.Component {
     ))
     return (
       <div>
-        <p key={'header'}>
+        <p key="header">
           Color predicates (e.g. <code>id.includes('1')</code>)
         </p>
         {colorInputs}
