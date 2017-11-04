@@ -14,10 +14,19 @@ import Shapeshifter from 'react-shapeshifter'
 
 import { toggleSidebar } from '../actions/sidebar'
 
+import FullScreenButton from './FullScreenButton'
+
 const style = {
   backgroundColor: '#333',
   boxShadow: 'inset -3px 0 6px rgba(0, 0, 0, 0.5)',
   height: '100%'
+}
+
+const innerStyle = {
+  display: 'flex',
+  flexFlow: 'column nowrap',
+  height: '100%',
+  width: 240
 }
 
 /**
@@ -28,7 +37,7 @@ const style = {
  */
 const SidebarPresentation = ({ open, onToggleSidebar, workbench }) => (
   <div id="sidebar" style={{ ...style, overflow: 'hidden', width: open ? 240 : 48 }}>
-    <div style={{ width: 240 }}>
+    <div style={innerStyle}>
       <Shapeshifter color="#999" shape={ open ? 'close' : 'menu' } onClick={onToggleSidebar} />
       <hr />
       <ModuleTray allowMultipleSelection vertical workbench={workbench}>
@@ -42,8 +51,11 @@ const SidebarPresentation = ({ open, onToggleSidebar, workbench }) => (
         <Module id="locations" icon={<MyLocation color="white" />} label="Locations" component="saved-location-list" />
         <hr />
         <Module id="log" icon={<ActionList color="white" />} label="Event log" component="log-panel" />
-        <hr />
       </ModuleTray>
+      <hr />
+      <div style={{ flexGrow: 1, flexShrink: 1 }}>{ /* spacer */ }</div>
+      <hr />
+      <FullScreenButton />
     </div>
   </div>
 )

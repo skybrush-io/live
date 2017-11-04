@@ -146,8 +146,6 @@ class MapViewPresentation extends React.Component {
 
         <MapViewLayers />
 
-        <control.FullScreen source={document.body} />
-
         <control.MousePosition projection={'EPSG:4326'}
           coordinateFormat={formatCoordinate} />
 
@@ -207,7 +205,7 @@ class MapViewPresentation extends React.Component {
           contextMenu={this._onContextMenu}
           threshold={40} />
 
-        <ContextMenuPopup ref={'contextMenuPopup'} />
+        <ContextMenuPopup ref="contextMenuPopup" />
       </Map>
     )
   }
