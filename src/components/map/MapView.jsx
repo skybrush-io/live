@@ -61,14 +61,15 @@ const MapViewLayers = connect(
 class MapViewPresentation extends React.Component {
   constructor (props) {
     super(props)
+
     this._assignActiveUAVsLayerRef = this._assignActiveUAVsLayerRef.bind(this)
     this._assignActiveUAVsLayerSourceRef = this._assignActiveUAVsLayerSourceRef.bind(this)
+    this._assignContextMenuPopupRef = this._assignContextMenuPopupRef.bind(this)
     this._assignMapRef = this._assignMapRef.bind(this)
     this._isLayerShowingActiveUAVs = this._isLayerShowingActiveUAVs.bind(this)
     this._onBoxDragEnded = this._onBoxDragEnded.bind(this)
     this._onSelect = this._onSelect.bind(this)
 
-    this._disableDefaultContextMenu = this._disableDefaultContextMenu.bind(this)
     this._onContextMenu = this._onContextMenu.bind(this)
   }
 
@@ -205,7 +206,7 @@ class MapViewPresentation extends React.Component {
           contextMenu={this._onContextMenu}
           threshold={40} />
 
-        <ContextMenuPopup ref="contextMenuPopup" />
+        <ContextMenuPopup ref={this._assignContextMenuPopupRef} />
       </Map>
     )
   }
@@ -230,6 +231,16 @@ class MapViewPresentation extends React.Component {
    */
   _assignActiveUAVsLayerSourceRef (ref) {
     this.activeUAVsLayerSource = ref
+  }
+
+  /**
+   * Handler called when the context menu popup component is mounted. We use
+   * it to store a reference to the component within this component.
+   *
+   * @param  {ContextMenuPopup} ref  the context menu being used in this component
+   */
+ _assignContextMenuPopupRef (ref) {
+    this.contextMenuPopup = ref
   }
 
   /**
@@ -317,14 +328,18 @@ class MapViewPresentation extends React.Component {
   _disableDefaultContextMenu () {
     this.map.map.getViewport().addEventListener(
       'contextmenu',
-      e => e.preventDefault()
+      e => {
+        e.preventDefault()
+        return false
+      }
     )
   }
 
   /**
    * Custom handler for right mouse click events that pops up UAV options.
    *
-   * @param {ol.MapBrowserEvent} mapBrowserEvent
+   * @param {ol.MapBrowserEvent} mapBrowserEvent  the event that triggered
+   *        the context menu
    */
   _onContextMenu (mapBrowserEvent) {
     const position = {
@@ -332,7 +347,7 @@ class MapViewPresentation extends React.Component {
       y: mapBrowserEvent.originalEvent.offsetY
     }
 
-    this.refs.contextMenuPopup.getWrappedInstance().open(position)
+    this.contextMenuPopup.getWrappedInstance().open(position)
   }
 
   /**

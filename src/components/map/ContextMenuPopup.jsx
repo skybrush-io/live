@@ -3,6 +3,7 @@
  * currently selected UAVs.
  */
 
+import { autobind } from 'core-decorators'
 import PropTypes from 'prop-types'
 import React from 'react'
 import { connect } from 'react-redux'
@@ -28,22 +29,11 @@ class ContextMenuPopup extends React.Component {
   constructor (props) {
     super(props)
 
-    this._handleRequestClose = this._handleRequestClose.bind(this)
-    this._preventDefault = this._preventDefault.bind(this)
-
-    this._takeoffSelectedUAVs = this._takeoffSelectedUAVs.bind(this)
-    this._landSelectedUAVs = this._landSelectedUAVs.bind(this)
-    this._returnSelectedUAVs = this._returnSelectedUAVs.bind(this)
-
-    this._showMessagesDialog = this._showMessagesDialog.bind(this)
+    this._assignAnchorRef = (value) => { this.anchor = value }
 
     this.state = {
       open: false,
-      opening: false,
-      position: {
-        x: 100,
-        y: 200
-      }
+      opening: false
     }
   }
 
@@ -56,26 +46,33 @@ class ContextMenuPopup extends React.Component {
    * @property {number} y The value to forward as `top` into the style object.
    */
   open (position) {
-    this.setState({ opening: true, open: true, position })
+    // Move the anchor to the right position
+    if (this.anchor) {
+      this.anchor.style.top = position.y + 'px'
+      this.anchor.style.left = position.x + 'px'
+    }
 
-    this.refs.popover.refs.layer.layer.addEventListener(
-      'contextmenu',
-      this._preventDefault
+    // Prevent the document body from firing a contextmenu event
+    document.body.addEventListener(
+      'contextmenu', this._preventDefault
     )
+
+    // Start opening the context menu
+    this.setState({ opening: true, open: false })
   }
 
   /**
    * Private method to request the closing of the context menu when the user
    * selects a menu item or clicks away.
    */
+  @autobind
   _handleRequestClose () {
-    this.refs.popover.refs.layer.layer.removeEventListener(
-      'contextmenu',
-      this._preventDefault
+    document.body.removeEventListener(
+      'contextmenu', this._preventDefault
     )
 
     this.setState({
-      open: false
+      open: false, opening: false
     })
   }
 
@@ -86,9 +83,10 @@ class ContextMenuPopup extends React.Component {
    *
    * @param {MouseEvent} e The event being fired.
    */
+  @autobind
   _preventDefault (e) {
     if (this.state.opening) {
-      this.setState({ opening: false })
+      this.setState({ opening: false, open: true })
     } else {
       this._handleRequestClose()
     }
@@ -101,15 +99,11 @@ class ContextMenuPopup extends React.Component {
 
     return (
       <div>
-        <div style={{
-          position: 'absolute',
-          top: `${this.state.position.y}px`,
-          left: `${this.state.position.x}px`
-        }} ref={'anchor'} />
+        <div style={{ position: 'absolute' }} ref={this._assignAnchorRef} />
 
-        <Popover ref={'popover'}
-          open={this.state.open}
-          anchorEl={this.refs.anchor}
+        <Popover
+          open={this.state.open || this.state.opening}
+          anchorEl={this.anchor}
           anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
           targetOrigin={{horizontal: 'left', vertical: 'top'}}
           onRequestClose={this._handleRequestClose}
@@ -145,21 +139,25 @@ class ContextMenuPopup extends React.Component {
     )
   }
 
+  @autobind
   _takeoffSelectedUAVs () {
     messaging.takeoffUAVs(this.props.selectedUAVIds)
     this._handleRequestClose()
   }
 
+  @autobind
   _landSelectedUAVs () {
     messaging.landUAVs(this.props.selectedUAVIds)
     this._handleRequestClose()
   }
 
+  @autobind
   _returnSelectedUAVs () {
     messaging.returnToHomeUAVs(this.props.selectedUAVIds)
     this._handleRequestClose()
   }
 
+  @autobind
   _showMessagesDialog () {
     if (this.props.selectedUAVIds.length === 1) {
       this.props.selectUAVInMessagesDialog(this.props.selectedUAVIds[0])
@@ -169,6 +167,12 @@ class ContextMenuPopup extends React.Component {
 
     this.props.showMessagesDialog()
   }
+}
+
+ContextMenuPopup.propTypes = {
+  selectedUAVIds: PropTypes.arrayOf(PropTypes.string).isRequired,
+  selectUAVInMessagesDialog: PropTypes.func.isRequired,
+  showMessagesDialog: PropTypes.func.isRequired
 }
 
 export default connect(

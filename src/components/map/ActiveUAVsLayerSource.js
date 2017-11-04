@@ -99,7 +99,7 @@ export default class ActiveUAVsLayerSource extends source.Vector {
    * @param {string[]}  newSelection  the new selection of UAVs
    */
   _onSelectionMaybeChanged (oldSelection, newSelection) {
-    const getFeatures = this.featureManager.getFeatureById.bind(this.featureManager)
+    const getFeatures = this.featureManager.getFeatureById
     _(newSelection).difference(oldSelection).map(getFeatures).filter().each(
       feature => { feature.selected = true }
     )

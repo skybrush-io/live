@@ -4,10 +4,10 @@
  * identifier) and returning them on-demand by IDs.
  */
 
+import { autobind } from 'core-decorators'
 import _ from 'lodash'
 import Signal from 'mini-signals'
 import ol from 'openlayers'
-
 import { updateUAVFeatureColorsSignal } from '../../signals'
 
 /**
@@ -19,6 +19,7 @@ import { updateUAVFeatureColorsSignal } from '../../signals'
  *           that is used to map coordinates specified by the user to the
  *           coordinate system of the source layer
  */
+@autobind
 export default class FeatureManager {
   /**
    * Constructor.

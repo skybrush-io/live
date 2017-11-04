@@ -18,9 +18,6 @@ import { euclideanDistance } from '../../../utils/geography'
  * is close enough to the point where the user clicked and triggers a context-menu.
  */
 class ContextMenuInteraction extends ol.interaction.Interaction {
-  /**
-   * Constructor.
-   */
   constructor (options = {}) {
     super({
       handleEvent: mapBrowserEvent => {

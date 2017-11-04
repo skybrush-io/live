@@ -39,6 +39,16 @@ Condition.altShiftKeyAndMiddleMouseButton = mapBrowserEvent => (
 )
 
 /**
+ * Helper condition that checks for a context menu event.
+ *
+ * @param {event}  mapBrowserEvent  the actual event
+ * @return {boolean}  whether the condition was met
+ */
+Condition.contextMenu = mapBrowserEvent => (
+  mapBrowserEvent.originalEvent.type === 'contextmenu'
+)
+
+/**
  * Helper condition that checks for a pointerdown event fired by a right click.
  *
  * @param {event}  mapBrowserEvent  the actual event
