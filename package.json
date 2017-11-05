@@ -6,7 +6,7 @@
   "scripts": {
     "bundle": "webpack -p --progress",
     "doc": "esdoc -c esdoc.json",
-    "lint": "eslint src/**",
+    "lint": "eslint 'src/**'",
     "start": "webpack-dev-server --progress --colors",
     "start:public": "webpack-dev-server --progress --colors --host 0.0.0.0",
     "start:public:secure": "webpack-dev-server --progress --colors --https --host 0.0.0.0",
