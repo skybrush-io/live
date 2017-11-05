@@ -1,8 +1,6 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 
-import UAV from '../model/uav'
-
 const awayTimeout = 5 * 1000
 const lostTimeout = 60 * 1000
 
@@ -125,7 +123,7 @@ class CountMonitor extends React.Component {
 
 CountMonitor.propTypes = {
   selectedUAVIds: PropTypes.arrayOf(PropTypes.string),
-  uavs: PropTypes.arrayOf(PropTypes.instanceOf(UAV))
+  uavs: PropTypes.object
 }
 
 export default CountMonitor

@@ -174,6 +174,8 @@ class UAVList extends React.Component {
       a.id < b.id ? -1 : a.id > b.id ? 1 : 0
     )
 
+    console.log(uavs)
+
     return (
       <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
         <UAVToolbar selectedUAVIds={selectedUAVIds} uavs={uavs} />

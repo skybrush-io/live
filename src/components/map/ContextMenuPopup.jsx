@@ -30,11 +30,15 @@ class ContextMenuPopup extends React.Component {
   constructor (props) {
     super(props)
 
-    this._assignAnchorRef = (value) => { this.anchor = value }
+    this._assignAnchorRef = (value) => { this.setState({ anchor: value }) }
 
     this.state = {
       open: false,
-      opening: false
+      opening: false,
+      position: {
+        x: 0,
+        y: 0
+      }
     }
   }
 
@@ -47,19 +51,17 @@ class ContextMenuPopup extends React.Component {
    * @property {number} y The value to forward as `top` into the style object.
    */
   open (position) {
-    // Move the anchor to the right position
-    if (this.anchor) {
-      this.anchor.style.top = position.y + 'px'
-      this.anchor.style.left = position.x + 'px'
-    }
-
     // Prevent the document body from firing a contextmenu event
     document.body.addEventListener(
       'contextmenu', this._preventDefault
     )
 
     // Start opening the context menu
-    this.setState({ opening: true, open: false })
+    this.setState({
+      opening: true,
+      open: false,
+      position
+    })
   }
 
   /**
@@ -97,14 +99,19 @@ class ContextMenuPopup extends React.Component {
 
   render () {
     const { selectedUAVIds } = this.props
+    const { position } = this.state
+
+    const anchor = (
+      <div style={{ position: 'absolute', left: position.x, top: position.y }}
+        ref={this._assignAnchorRef} />
+    )
 
     return (
       <div>
-        <div style={{ position: 'absolute' }} ref={this._assignAnchorRef} />
-
+        { anchor }
         <Popover
           open={this.state.open || this.state.opening}
-          anchorEl={this.anchor}
+          anchorEl={this.state.anchor}
           anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
           targetOrigin={{horizontal: 'left', vertical: 'top'}}
           onRequestClose={this._handleRequestClose}
