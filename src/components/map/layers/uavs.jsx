@@ -61,7 +61,7 @@ class UAVsLayerSettingsPresentation extends React.Component {
     return (
       <div>
         <p key="header">
-          Color predicates (e.g. <code>id.includes('1')</code>)
+          Color predicates (e.g. <code>id.includes(&apos;1&apos;)</code>)
         </p>
         {colorInputs}
         <br />
