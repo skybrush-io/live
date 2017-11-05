@@ -179,7 +179,7 @@ ContextMenuPopup.propTypes = {
 export default connect(
   // mapStateToProps
   state => ({
-    selectedUAVIds: getSelectedUAVIds
+    selectedUAVIds: getSelectedUAVIds(state)
   }),
   // mapDispatchToProps
   dispatch => ({
