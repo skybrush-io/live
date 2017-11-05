@@ -17,8 +17,8 @@ import { setLayerParameterById } from '../../../actions/layers'
 import * as logging from '../../../utils/logging'
 import { showSnackbarMessage } from '../../../actions/snackbar'
 
+import { getSelectedFeatureIds } from '../../../selectors'
 import { updateUAVFeatureColorsSignal } from '../../../signals'
-
 import { coordinateFromLonLat } from '../../../utils/geography'
 
 const colors = ['pink', 'orange', 'yellow', 'green', 'blue', 'purple']
@@ -170,7 +170,7 @@ UAVsLayerPresentation.contextTypes = {
 export const UAVsLayer = connect(
   // mapStateToProps
   (state, ownProps) => ({
-    selection: state.map.selection
+    selection: getSelectedFeatureIds(state)
   }),
   // mapDispatchToProps
   (dispatch, ownProps) => ({})

@@ -10,7 +10,7 @@ import { featureIdToUavId } from './model/identifiers'
  * @param  {Object}  state  the state of the application
  * @return {string[]}  the list of selected feature IDs
  */
-const getSelectedFeatureIds = state => state.map.selection
+export const getSelectedFeatureIds = state => state.map.selection
 
 /**
  * Selector that calculates and caches the list of selected UAV IDs from
