@@ -7,6 +7,7 @@ import config from '../config'
 import clocksReducer from './clocks'
 import connectionsReducer from './connections'
 import dialogsReducer from './dialogs'
+import featuresReducer from './features'
 import logReducer from './log'
 import mapReducer from './map'
 import messagesReducer from './messages'
@@ -51,6 +52,7 @@ const reducer = storage.reducer(
     clocks: clocksReducer,
     connections: connectionsReducer,
     dialogs: dialogsReducer,
+    features: featuresReducer,
     form: formReducer,
     log: logReducer,
     map: mapReducer,

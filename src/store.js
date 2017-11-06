@@ -20,6 +20,7 @@ const engine = filter(
     ['dialogs', 'layerSettings'],
     ['dialogs', 'messages'],
     ['dialogs', 'serverSettings'],
+    ['features'],
     ['savedLocations'],
     ['map'],
     ['messages', 'selectedUAVId'],
