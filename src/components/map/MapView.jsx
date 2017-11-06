@@ -16,9 +16,9 @@ import { Tool } from './tools'
 
 import { setSelectedFeatures, addSelectedFeatures, clearSelectedFeatures,
   removeSelectedFeatures } from '../../actions/map'
-import { coordinateFromLonLat, formatCoordinate } from '../../utils/geography'
-
 import mapViewManager from '../../mapViewManager'
+import { getVisibleLayersInOrder } from '../../selectors'
+import { coordinateFromLonLat, formatCoordinate } from '../../utils/geography'
 
 require('openlayers/css/ol.css')
 
@@ -27,24 +27,21 @@ require('openlayers/css/ol.css')
  *
  * @returns {JSX.Node}  the layers of the map
  */
-const MapViewLayersPresentation = ({ layersById, layerOrder }) => {
-  const layers = []
+const MapViewLayersPresentation = ({ layers }) => {
   let zIndex = 0
+  const renderedLayers = []
 
-  for (const id of layerOrder) {
-    const layer = layersById[id]
-    const visible = layer.hasOwnProperty('visible') ? !!layer.visible : true
-    if (visible && layer.type in Layers) {
-      layers.push(stateObjectToLayer(layer, id, zIndex++))
+  for (const layer of layers) {
+    if (layer.type in Layers) {
+      renderedLayers.push(stateObjectToLayer(layer, zIndex++))
     }
   }
 
-  return <div>{layers}</div>
+  return <div>{renderedLayers}</div>
 }
 
 MapViewLayersPresentation.propTypes = {
-  layerOrder: PropTypes.arrayOf(PropTypes.string),
-  layersById: PropTypes.object
+  layers: PropTypes.arrayOf(PropTypes.object)
 }
 
 /**
@@ -53,8 +50,7 @@ MapViewLayersPresentation.propTypes = {
 const MapViewLayers = connect(
   // mapStateToProps
   state => ({
-    layerOrder: state.map.layers.order,
-    layersById: state.map.layers.byId
+    layers: getVisibleLayersInOrder(state)
   })
 )(MapViewLayersPresentation)
 

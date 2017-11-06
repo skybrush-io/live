@@ -199,6 +199,17 @@ export function iconForLayerType (layerType) {
 }
 
 /**
+ * Given a layer object from the state store, returns whether the layer is
+ * visible.
+ *
+ * @param  {Object}  layer  the layer object from the state store
+ * @return {boolean} whether the layer is visible
+ */
+export function isLayerVisible (layer) {
+  return layer && (!layer.hasOwnProperty('visible') || !!layer.visible)
+}
+
+/**
  * Returns a human-readable label describing the given layer type on the
  * user interface.
  *
