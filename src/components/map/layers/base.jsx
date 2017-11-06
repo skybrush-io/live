@@ -53,10 +53,6 @@ export const BaseLayerSettings = connect(
 
 class BaseLayerPresentation extends React.Component {
   render () {
-    if (!this.props.layer.visible) {
-      return false
-    }
-
     const visibleSource = this.props.layer.parameters.source
 
     return (

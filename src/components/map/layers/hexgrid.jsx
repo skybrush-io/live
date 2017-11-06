@@ -152,10 +152,6 @@ HexGridVectorSource.propTypes = {
 
 class HexGridLayerPresentation extends React.Component {
   render () {
-    if (!this.props.layer.visible) {
-      return false
-    }
-
     return (
       <div>
         <layer.Vector zIndex={this.props.zIndex}>

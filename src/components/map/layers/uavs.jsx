@@ -120,10 +120,6 @@ export const UAVsLayerSettings = connect(
 
 class UAVsLayerPresentation extends React.Component {
   render () {
-    if (!this.props.layer.visible) {
-      return false
-    }
-
     return (
       <div>
         <layer.Vector ref={this.context._assignActiveUAVsLayerRef}

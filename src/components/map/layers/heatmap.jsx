@@ -409,10 +409,6 @@ class HeatmapLayerPresentation extends React.Component {
   }
 
   render () {
-    if (!this.props.layer.visible) {
-      return false
-    }
-
     const { minValue, maxValue, unit } = this.props.layer.parameters
 
     return (

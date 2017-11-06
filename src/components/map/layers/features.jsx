@@ -23,10 +23,6 @@ export const FeaturesLayerSettings = connect(
 
 class FeaturesLayerPresentation extends React.Component {
   render () {
-    if (!this.props.layer.visible) {
-      return false
-    }
-
     return (
       <div>
       </div>

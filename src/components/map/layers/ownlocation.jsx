@@ -80,10 +80,6 @@ class OwnLocationVectorSource extends source.Vector {
 
 class OwnLocationLayerPresentation extends React.Component {
   render () {
-    if (!this.props.layer.visible) {
-      return false
-    }
-
     return (
       <div>
         <layer.Vector zIndex={this.props.zIndex}

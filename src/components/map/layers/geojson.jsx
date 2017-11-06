@@ -154,10 +154,6 @@ class GeoJSONLayerPresentation extends React.Component {
   }
 
   render () {
-    if (!this.props.layer.visible) {
-      return false
-    }
-
     return (
       <div>
         <layer.Vector zIndex={this.props.zIndex} style={this._styleFunction}>

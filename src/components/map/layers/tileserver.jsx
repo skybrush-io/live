@@ -112,10 +112,6 @@ export const TileServerLayerSettings = connect(
 
 class TileServerLayerPresentation extends React.Component {
   render () {
-    if (!this.props.layer.visible) {
-      return false
-    }
-
     const mapSource = this._sourceFromParameters(this.props.layer.parameters)
     return (
       <div>
