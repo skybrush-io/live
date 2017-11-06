@@ -8,6 +8,8 @@
 import { handleActions } from 'redux-actions'
 import u from 'updeep'
 
+import { chooseUniqueIdFromName } from '../utils/naming'
+
 /**
  * Default content of the saved location registry in the state object.
  */
@@ -58,11 +60,6 @@ const defaultState = {
   order: ['addNew', 'elte', 'fahegy', 'fina']
 }
 
-const idFromName = (byId, name, level = 0) => {
-  const fixedName = name.replace(/[^a-z]/g, '') + '_'.repeat(level)
-  return (fixedName in byId) ? idFromName(byId, name, level + 1) : fixedName
-}
-
 /**
  * The reducer function that handles actions related to the handling of
  * saved location states.
@@ -77,7 +74,9 @@ const reducer = handleActions({
       currentLocation.id = 'addNew'
       updates = { byId: { addNew: currentLocation } }
     } else if (currentLocation.id === 'addNew') {
-      currentLocation.id = idFromName(state.byId, currentLocation.name)
+      currentLocation.id = chooseUniqueIdFromName(
+        currentLocation.name, state.byId
+      )
       updates = {
         byId: { [currentLocation.id]: currentLocation },
         order: [].concat(state.order, currentLocation.id)
