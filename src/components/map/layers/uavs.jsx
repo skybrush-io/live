@@ -121,19 +121,17 @@ export const UAVsLayerSettings = connect(
 class UAVsLayerPresentation extends React.Component {
   render () {
     return (
-      <div>
-        <layer.Vector ref={this.context._assignActiveUAVsLayerRef}
-          updateWhileAnimating
-          updateWhileInteracting
-          zIndex={this.props.zIndex}>
+      <layer.Vector ref={this.context._assignActiveUAVsLayerRef}
+        updateWhileAnimating
+        updateWhileInteracting
+        zIndex={this.props.zIndex}>
 
-          <ActiveUAVsLayerSource ref={this.context._assignActiveUAVsLayerSourceRef}
-            selection={this.props.selection}
-            flock={flock}
-            projection={this.props.projection} />
+        <ActiveUAVsLayerSource ref={this.context._assignActiveUAVsLayerSourceRef}
+          selection={this.props.selection}
+          flock={flock}
+          projection={this.props.projection} />
 
-        </layer.Vector>
-      </div>
+      </layer.Vector>
     )
   }
 
