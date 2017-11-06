@@ -2,7 +2,7 @@
  * @file Naming things is hard. These functions may help.
  */
 
-import _ from 'lodash'
+import { camelCase, includes, isArray, trimEnd } from 'lodash'
 
 /**
  * Given an ID proposal and an array of existing IDs, returns a new
@@ -21,14 +21,23 @@ import _ from 'lodash'
  * with another number.
  *
  * @param  {string} idProposal  the original ID proposal
- * @param  {string[]} existingIds the array of existing IDs that should
- *         not be returned
+ * @param  {string[]|Object} existingIds the array of existing IDs that should
+ *         not be returned, or an object whose keys contain the existing IDs
+ *         that should not be returned
  * @return {string} an ID that is based on the ID proposal and that is
  *         not in the list of existing IDs
  */
 export function chooseUniqueId (idProposal, existingIds) {
-  if (!_.includes(existingIds, idProposal)) {
-    return idProposal
+  const hasIdArray = isArray(existingIds)
+
+  if (hasIdArray) {
+    if (!includes(existingIds, idProposal)) {
+      return idProposal
+    }
+  } else {
+    if (!(idProposal in existingIds)) {
+      return idProposal
+    }
   }
 
   let index = 0
@@ -37,8 +46,15 @@ export function chooseUniqueId (idProposal, existingIds) {
   while (true) {
     index++
     candidate = `${idProposal}_${index}`
-    if (!_.includes(existingIds, candidate)) {
-      return candidate
+
+    if (hasIdArray) {
+      if (!includes(existingIds, candidate)) {
+        return candidate
+      }
+    } else {
+      if (!(candidate in existingIds)) {
+        return candidate
+      }
     }
   }
 }
@@ -70,20 +86,35 @@ export function chooseUniqueId (idProposal, existingIds) {
  *         not in the list of existing names
  */
 export function chooseUniqueName (nameProposal, existingNames) {
-  if (!_.includes(existingNames, nameProposal)) {
+  if (!includes(existingNames, nameProposal)) {
     return nameProposal
   }
 
   const match = nameProposal.match(/^(.*)\s+([0-9]+)$/)
-  const nameBase = match ? match[0] : _.trimEnd(nameProposal)
+  const nameBase = match ? match[0] : trimEnd(nameProposal)
   let index = match ? parseInt(match[1]) : 0
   let candidate
 
   while (true) {
     index++
     candidate = `${nameBase} ${index}`
-    if (!_.includes(existingNames, candidate)) {
+    if (!includes(existingNames, candidate)) {
       return candidate
     }
   }
+}
+
+/**
+ * Given an existing name and a list or object of IDs that are already
+ * taken, proposes an ID for the object that has the given name.
+ *
+ * @param  {string} name  the name of the object for which we need to invent
+ *         an identifier
+ * @param  {string[]|Object} existingIds the array of existing IDs that should
+ *         not be returned, or an object whose keys contain the existing IDs
+ *         that should not be returned
+ * @return {string} the proposed ID of the object
+ */
+export function chooseUniqueIdFromName (name, existingIds) {
+  return chooseUniqueId(camelCase(name), existingIds)
 }
