@@ -5,6 +5,7 @@
 import { createStore, applyMiddleware } from 'redux'
 import { actionTypes as reduxFormActionTypes } from 'redux-form'
 import * as storage from 'redux-storage'
+import debounce from 'redux-storage-decorator-debounce'
 import filter from 'redux-storage-decorator-filter'
 import createEngine from 'redux-storage-engine-localstorage'
 
@@ -15,19 +16,23 @@ import reducer from './reducers'
  * Storage engine for storing the application state in the browser's
  * local storage.
  */
-const engine = filter(
-  createEngine('flockwave-client'), [
-    'whitelisted-key',
-    ['dialogs', 'layerSettings'],
-    ['dialogs', 'messages'],
-    ['dialogs', 'serverSettings'],
-    ['features'],
-    ['savedLocations'],
-    ['map'],
-    ['messages', 'selectedUAVId'],
-    ['sidebar'],
-    ['workbench']
-  ]
+const engine = debounce(
+  filter(
+    createEngine('flockwave-client'),
+    [
+      'whitelisted-key',
+      ['dialogs', 'layerSettings'],
+      ['dialogs', 'messages'],
+      ['dialogs', 'serverSettings'],
+      ['features'],
+      ['savedLocations'],
+      ['map'],
+      ['messages', 'selectedUAVId'],
+      ['sidebar'],
+      ['workbench']
+    ]
+  ),
+  1000 /* msec */
 )
 
 /**
@@ -42,9 +47,10 @@ const actionBlacklist = [
   actions.SET_CONNECTION_STATE,
   actions.SET_CONNECTION_STATE_MULTIPLE,
   actions.SHOW_ERROR_MESSAGE,
-  actions.SHOW_SNACKBAR_MESSAGE
+  actions.SHOW_SNACKBAR_MESSAGE,
 ]
-actionBlacklist.push.apply(actionBlacklist, Object.keys(reduxFormActionTypes))
+actionBlacklist.push.apply(actionBlacklist, Object.values(reduxFormActionTypes))
+console.log(actionBlacklist)
 
 /**
  * Redux middleware that saves the state of the application into the
