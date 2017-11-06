@@ -32,8 +32,10 @@ const MapViewLayersPresentation = ({ layersById, layerOrder }) => {
   let zIndex = 0
 
   for (const id of layerOrder) {
-    if (layersById[id].type in Layers) {
-      layers.push(stateObjectToLayer(layersById[id], id, zIndex++))
+    const layer = layersById[id]
+    const visible = layer.hasOwnProperty('visible') ? !!layer.visible : true
+    if (visible && layer.type in Layers) {
+      layers.push(stateObjectToLayer(layer, id, zIndex++))
     }
   }
 
