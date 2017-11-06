@@ -48,9 +48,8 @@ const actionBlacklist = [
   actions.SET_CONNECTION_STATE_MULTIPLE,
   actions.SHOW_ERROR_MESSAGE,
   actions.SHOW_SNACKBAR_MESSAGE,
+  ...Object.values(reduxFormActionTypes)
 ]
-actionBlacklist.push.apply(actionBlacklist, Object.values(reduxFormActionTypes))
-console.log(actionBlacklist)
 
 /**
  * Redux middleware that saves the state of the application into the
