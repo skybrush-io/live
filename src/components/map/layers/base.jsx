@@ -7,7 +7,7 @@ import { RadioButton, RadioButtonGroup } from 'material-ui/RadioButton'
 import { Source, Sources, labelForSource } from '../../../model/sources'
 import { selectMapSource } from '../../../actions/map'
 
-import { layer, source } from 'ol-react'
+import { layer as olLayer, source } from 'ol-react'
 import { BingAPI } from 'config'
 
 // === Settings for this particular layer type ===
@@ -51,41 +51,27 @@ export const BaseLayerSettings = connect(
 
 // === The actual layer to be rendered ===
 
-class BaseLayerPresentation extends React.Component {
-  render () {
-    const visibleSource = this.props.layer.parameters.source
+function createSourceFromSourceType (sourceType) {
+  switch (sourceType) {
+    case Source.OSM:
+      return <source.OSM />
 
-    return (
-      <div>
-        <layer.Tile visible={visibleSource === Source.OSM}
-          zIndex={this.props.zIndex}>
-          <source.OSM />
-        </layer.Tile>
-        <layer.Tile visible={visibleSource === Source.BING_MAPS.AERIAL_WITH_LABELS}
-          zIndex={this.props.zIndex}>
-          <source.BingMaps
-            apiKey={BingAPI.key}
-            imagerySet={'AerialWithLabels'}
-            maxZoom={19} />
-        </layer.Tile>
-        <layer.Tile visible={visibleSource === Source.BING_MAPS.ROAD}
-          zIndex={this.props.zIndex}>
-          <source.BingMaps apiKey={BingAPI.key} imagerySet={'Road'} />
-        </layer.Tile>
-      </div>
-    )
+    case Source.BING_MAPS.AERIAL_WITH_LABELS:
+      return <source.BingMaps apiKey={BingAPI.key} imagerySet="AerialWithLabels" maxZoom={19} />
+
+    case Source.BING_MAPS.ROAD:
+      return <source.BingMaps apiKey={BingAPI.key} imagerySet="Road" />
   }
 }
 
-BaseLayerPresentation.propTypes = {
+export const BaseLayer = ({ layer, zIndex }) => {
+  const visibleSource = layer.parameters.source
+  const source = createSourceFromSourceType(visibleSource)
+  return (
+    <olLayer.Tile zIndex={zIndex}>{source}</olLayer.Tile>
+  )
+}
+BaseLayer.propTypes = {
   layer: PropTypes.object,
-  layerId: PropTypes.string,
   zIndex: PropTypes.number
 }
-
-export const BaseLayer = connect(
-  // mapStateToProps
-  (state, ownProps) => ({}),
-  // mapDispatchToProps
-  (dispatch, ownProps) => ({})
-)(BaseLayerPresentation)
