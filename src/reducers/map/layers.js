@@ -17,10 +17,11 @@ const defaultState = {
   // .byId contains all the layers in the map, in no particular order
   byId: {
     base: createNewLayer('base', LayerType.BASE, 'Base map'),
+    features: createNewLayer('features', LayerType.FEATURES, 'Features'),
     uavs: createNewLayer('uavs', LayerType.UAVS, 'UAVs')
   },
   // .order contains the order of the layers, from bottom to top
-  order: ['base', 'uavs']
+  order: ['base', 'features', 'uavs']
 }
 
 /**

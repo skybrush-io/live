@@ -1,25 +1,29 @@
 import React from 'react'
+
 import { BaseLayerSettings, BaseLayer } from './base'
-import { UAVsLayerSettings, UAVsLayer } from './uavs'
-import { OwnLocationLayerSettings, OwnLocationLayer } from './ownlocation'
-import { UAVTraceLayerSettings, UAVTraceLayer } from './uavtrace'
+import { FeaturesLayerSettings, FeaturesLayer } from './features'
 import { GeoJSONLayerSettings, GeoJSONLayer } from './geojson'
-import { UntypedLayerSettings, UntypedLayer } from './untyped'
-import { HexGridLayerSettings, HexGridLayer } from './hexgrid'
 import { HeatmapLayerSettings, HeatmapLayer } from './heatmap'
+import { HexGridLayerSettings, HexGridLayer } from './hexgrid'
+import { OwnLocationLayerSettings, OwnLocationLayer } from './ownlocation'
 import { TileServerLayerSettings, TileServerLayer } from './tileserver'
+import { UAVsLayerSettings, UAVsLayer } from './uavs'
+import { UAVTraceLayerSettings, UAVTraceLayer } from './uavtrace'
+import { UntypedLayerSettings, UntypedLayer } from './untyped'
+
 import { LayerType } from '../../../model/layers'
 
 export const LayerSettings = {
   [LayerType.BASE]: BaseLayerSettings,
+  [LayerType.FEATURES]: FeaturesLayerSettings,
+  [LayerType.GEOJSON]: GeoJSONLayerSettings,
+  [LayerType.HEATMAP]: HeatmapLayerSettings,
+  [LayerType.HEXGRID]: HexGridLayerSettings,
+  [LayerType.OWN_LOCATION]: OwnLocationLayerSettings,
   [LayerType.TILE_SERVER]: TileServerLayerSettings,
   [LayerType.UAVS]: UAVsLayerSettings,
-  [LayerType.OWN_LOCATION]: OwnLocationLayerSettings,
   [LayerType.UAV_TRACE]: UAVTraceLayerSettings,
-  [LayerType.GEOJSON]: GeoJSONLayerSettings,
-  [LayerType.UNTYPED]: UntypedLayerSettings,
-  [LayerType.HEXGRID]: HexGridLayerSettings,
-  [LayerType.HEATMAP]: HeatmapLayerSettings
+  [LayerType.UNTYPED]: UntypedLayerSettings
 }
 
 export const stateObjectToLayerSettings = (layer, layerId) => {
@@ -33,14 +37,15 @@ export const stateObjectToLayerSettings = (layer, layerId) => {
 
 export const Layers = {
   [LayerType.BASE]: BaseLayer,
+  [LayerType.FEATURES]: FeaturesLayer,
+  [LayerType.GEOJSON]: GeoJSONLayer,
+  [LayerType.HEATMAP]: HeatmapLayer,
+  [LayerType.HEXGRID]: HexGridLayer,
+  [LayerType.OWN_LOCATION]: OwnLocationLayer,
   [LayerType.TILE_SERVER]: TileServerLayer,
   [LayerType.UAVS]: UAVsLayer,
-  [LayerType.OWN_LOCATION]: OwnLocationLayer,
   [LayerType.UAV_TRACE]: UAVTraceLayer,
-  [LayerType.GEOJSON]: GeoJSONLayer,
-  [LayerType.UNTYPED]: UntypedLayer,
-  [LayerType.HEXGRID]: HexGridLayer,
-  [LayerType.HEATMAP]: HeatmapLayer
+  [LayerType.UNTYPED]: UntypedLayer
 }
 
 export const stateObjectToLayer = (layer, layerId, zIndex) => {

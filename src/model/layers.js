@@ -12,6 +12,7 @@ import ActionTrackChanges from 'material-ui/svg-icons/action/track-changes'
 import FileAttachment from 'material-ui/svg-icons/file/attachment'
 import FileCloud from 'material-ui/svg-icons/file/cloud'
 import Flight from 'material-ui/svg-icons/maps/flight'
+import Streetview from 'material-ui/svg-icons/maps/streetview'
 import ImageGridOn from 'material-ui/svg-icons/image/grid-on'
 import Map from 'material-ui/svg-icons/maps/map'
 import MyLocation from 'material-ui/svg-icons/maps/my-location'
@@ -21,6 +22,7 @@ import MyLocation from 'material-ui/svg-icons/maps/my-location'
  */
 export const LayerType = {
   BASE: 'base',
+  FEATURES: 'features',
   GEOJSON: 'geojson',
   HEATMAP: 'heatmap',
   HEXGRID: 'hexgrid',
@@ -35,7 +37,8 @@ export const LayerType = {
  * Constant containing all the layer types in the order preferred on the UI.
  */
 export const LayerTypes = [
-  LayerType.BASE, LayerType.TILE_SERVER, LayerType.UAVS, LayerType.UAV_TRACE,
+  LayerType.BASE, LayerType.TILE_SERVER, LayerType.FEATURES,
+  LayerType.UAVS, LayerType.UAV_TRACE,
   LayerType.OWN_LOCATION, LayerType.GEOJSON, LayerType.HEXGRID,
   LayerType.HEATMAP
 ]
@@ -71,13 +74,10 @@ const _propertiesForLayerTypes = {
       source: 'osm'
     }
   },
-  [LayerType.TILE_SERVER]: {
-    label: 'Tile server',
-    icon: <FileCloud />,
+  [LayerType.FEATURES]: {
+    label: 'Features',
+    icon: <Streetview />,
     parameters: {
-      type: TileServerType.WMS,
-      url: 'http://ows.mundialis.de/services/service',
-      layers: 'TOPO-OSM-WMS'
     }
   },
   [LayerType.GEOJSON]: {
@@ -88,15 +88,6 @@ const _propertiesForLayerTypes = {
       strokeColor: {r: 85, g: 85, b: 225, alpha: 1},
       strokeWidth: 2,
       fillColor: {r: 170, g: 170, b: 225, alpha: 0.5}
-    }
-  },
-  [LayerType.HEXGRID]: {
-    label: 'Hex grid layer',
-    icon: <ImageGridOn />,
-    parameters: {
-      center: [19.061951, 47.473340],
-      size: 8,
-      radius: 0.0005
     }
   },
   [LayerType.HEATMAP]: {
@@ -116,9 +107,27 @@ const _propertiesForLayerTypes = {
       snapToGrid: false
     }
   },
+  [LayerType.HEXGRID]: {
+    label: 'Hex grid layer',
+    icon: <ImageGridOn />,
+    parameters: {
+      center: [19.061951, 47.473340],
+      size: 8,
+      radius: 0.0005
+    }
+  },
   [LayerType.OWN_LOCATION]: {
     label: 'Own location',
     icon: <MyLocation />
+  },
+  [LayerType.TILE_SERVER]: {
+    label: 'Tile server',
+    icon: <FileCloud />,
+    parameters: {
+      type: TileServerType.WMS,
+      url: 'http://ows.mundialis.de/services/service',
+      layers: 'TOPO-OSM-WMS'
+    }
   },
   [LayerType.UAVS]: {
     label: 'UAVs',
