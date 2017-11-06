@@ -20,14 +20,6 @@ import { listOf } from './helpers/lists'
 
 import { mapViewToLocationSignal } from '../signals'
 
-const mapViewToLocation = function () {
-  mapViewToLocationSignal.dispatch(this['data-location'])
-}
-
-const editLocation = function () {
-  this['data-onEditLocation'](this['data-location'].id)
-}
-
 /**
  * Presentation component for a single entry in the location list.
  *
@@ -44,24 +36,24 @@ const LocationListEntry = (props) => {
 
   const secondaryText = `lon: ${lon}, lat: ${lat}, rot: ${rotation}°, zoom: ${zoom}`
 
+  const editLocation = () => onEditLocation(location.id)
+  const mapViewToLocation = () => mapViewToLocationSignal.dispatch(location)
+
   const actionButton = (
     <IconButton
-      data-location={location}
-      data-onEditLocation={onEditLocation}
       onClick={editLocation}>
       {id === 'addNew' ? <ContentAdd /> : <ActionSettings />}
     </IconButton>
   )
 
-  const touchTapAction = id === 'addNew' ? editLocation : mapViewToLocation
+  const onClick = id === 'addNew' ? editLocation : mapViewToLocation
 
   return (
     <ListItem leftAvatar={avatar}
       primaryText={name}
       secondaryText={secondaryText}
       rightIconButton={actionButton}
-      data-location={location}
-      onClick={touchTapAction}
+      onClick={onClick}
     />
   )
 }
