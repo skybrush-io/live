@@ -20,6 +20,9 @@ class TileServerLayerSettingsPresentation extends React.Component {
     super(props)
 
     this._handleClick = this._handleClick.bind(this)
+
+    this._setURLFieldRef = (value) => { this.urlField = value }
+    this._setLayersFieldRef = (value) => { this.layersField = value }
   }
 
   render () {
@@ -29,37 +32,39 @@ class TileServerLayerSettingsPresentation extends React.Component {
     const { parameters } = this.props.layer
     return (
       <div>
-        <SelectField ref='type'
-          floatingLabelText='Tile server type'
+        <SelectField
+          floatingLabelText="Tile server type"
           value={parameters.type}
           onChange={this.props.changeTileServerType}>
           {serverTypeMenuItems}
         </SelectField>
-        <TextField ref='url'
-          floatingLabelText='Tile server URL'
+        <TextField ref={this._setURLFieldRef}
+          floatingLabelText="Tile server URL"
           defaultValue={parameters.url}
           fullWidth />
         {
           (parameters.type !== TileServerType.XYZ)
-          ? (
-            <TextField ref='layers'
-              floatingLabelText='Layers'
-              hintText='Layers to show (comma-separated)'
-              defaultValue={parameters.layers}
-              fullWidth />
-          ) : (
-            <div>
-              <small>Use <code>{'{x}'}</code>, <code>{'{y}'}</code>,
-              <code>{'{-y}'}</code> and <code>{'{z}'}</code> in the server URL template
-              for the x and y coordinates and the zoom level. Use tokens like
-              <code>{'{a-c}'}</code> to denote multiple servers handling the same
-              tileset.</small>
-            </div>
-          )
+            ? (
+              <TextField ref={this._setLayersFieldRef}
+                floatingLabelText="Layers"
+                hintText="Layers to show (comma-separated)"
+                defaultValue={parameters.layers}
+                fullWidth />
+            ) : (
+              <div>
+                <small>
+                  Use <code>{'{x}'}</code>, <code>{'{y}'}</code>,
+                  <code>{'{-y}'}</code> and <code>{'{z}'}</code> in the server URL template
+                  for the x and y coordinates and the zoom level. Use tokens like
+                  <code>{'{a-c}'}</code> to denote multiple servers handling the same
+                  tileset.
+                </small>
+              </div>
+            )
         }
         <div style={{ textAlign: 'center', paddingTop: '1em' }}>
           <FlatButton
-            label='Save settings'
+            label="Save settings"
             icon={<NavigationCheck />}
             onClick={this._handleClick} />
         </div>
@@ -69,11 +74,11 @@ class TileServerLayerSettingsPresentation extends React.Component {
 
   _handleClick () {
     const newParams = {}
-    if (this.refs.url) {
-      newParams['url'] = this.refs.url.getValue()
+    if (this.urlField) {
+      newParams['url'] = this.urlField.getValue()
     }
-    if (this.refs.layers) {
-      newParams['layers'] = this.refs.layers.getValue()
+    if (this.layersField) {
+      newParams['layers'] = this.layersField.getValue()
     }
     this.props.setLayerParameters(newParams)
     this.props.showMessage('Layer settings saved successfully.')
