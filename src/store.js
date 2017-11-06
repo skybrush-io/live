@@ -3,6 +3,7 @@
  */
 
 import { createStore, applyMiddleware } from 'redux'
+import { actionTypes as reduxFormActionTypes } from 'redux-form'
 import * as storage from 'redux-storage'
 import filter from 'redux-storage-decorator-filter'
 import createEngine from 'redux-storage-engine-localstorage'
@@ -30,28 +31,27 @@ const engine = filter(
 )
 
 /**
+ * Blacklisted actions that should not trigger a state save.
+ */
+const actionBlacklist = [
+  actions.CLEAR_CLOCK_LIST,
+  actions.CLEAR_CONNECTION_LIST,
+  actions.CLOSE_ERROR_DIALOG,
+  actions.SET_CLOCK_STATE,
+  actions.SET_CLOCK_STATE_MULTIPLE,
+  actions.SET_CONNECTION_STATE,
+  actions.SET_CONNECTION_STATE_MULTIPLE,
+  actions.SHOW_ERROR_MESSAGE,
+  actions.SHOW_SNACKBAR_MESSAGE
+]
+actionBlacklist.push.apply(actionBlacklist, Object.keys(reduxFormActionTypes))
+
+/**
  * Redux middleware that saves the state of the application into the
  * browser's local storage after every action.
  */
 const storageMiddleware = storage.createMiddleware(
-  engine,
-  /* blacklisted actions */
-  [
-    actions.CLEAR_CLOCK_LIST,
-    actions.CLEAR_CONNECTION_LIST,
-    actions.CLOSE_ERROR_DIALOG,
-    actions.SET_CLOCK_STATE,
-    actions.SET_CLOCK_STATE_MULTIPLE,
-    actions.SET_CONNECTION_STATE,
-    actions.SET_CONNECTION_STATE_MULTIPLE,
-    actions.SHOW_ERROR_MESSAGE,
-    actions.SHOW_SNACKBAR_MESSAGE,
-    'redux-form/BLUR',
-    'redux-form/CHANGE',
-    'redux-form/FOCUS',
-    'redux-form/INITIALIZE',
-    'redux-form/DESTROY'
-  ]
+  engine, actionBlacklist
 )
 
 /**
