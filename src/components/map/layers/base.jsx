@@ -51,26 +51,37 @@ export const BaseLayerSettings = connect(
 
 // === The actual layer to be rendered ===
 
-function createSourceFromSourceType (sourceType) {
-  switch (sourceType) {
-    case Source.OSM:
-      return <source.OSM />
+// This component needs to be pure to avoid flickering when the BaseLayer
+// component is re-rendered; otherwise it would re-render the source, which
+// would in turn re-create the layer source object.
+//
+// Most likely it could be solved in ol-react as well, but it's easier to
+// do it here.
 
-    case Source.BING_MAPS.AERIAL_WITH_LABELS:
-      return <source.BingMaps apiKey={BingAPI.key} imagerySet="AerialWithLabels" maxZoom={19} />
+class LayerSource extends React.PureComponent {
+  render () {
+    const { type } = this.props
+    switch (type) {
+      case Source.OSM:
+        return <source.OSM />
 
-    case Source.BING_MAPS.ROAD:
-      return <source.BingMaps apiKey={BingAPI.key} imagerySet="Road" />
+      case Source.BING_MAPS.AERIAL_WITH_LABELS:
+        return <source.BingMaps apiKey={BingAPI.key} imagerySet="AerialWithLabels" maxZoom={19} />
+
+      case Source.BING_MAPS.ROAD:
+        return <source.BingMaps apiKey={BingAPI.key} imagerySet="Road" />
+    }
   }
 }
-
-export const BaseLayer = ({ layer, zIndex }) => {
-  const visibleSource = layer.parameters.source
-  const source = createSourceFromSourceType(visibleSource)
-  return (
-    <olLayer.Tile zIndex={zIndex}>{source}</olLayer.Tile>
-  )
+LayerSource.propTypes = {
+  type: PropTypes.string
 }
+
+export const BaseLayer = ({ layer, zIndex }) => (
+  <olLayer.Tile zIndex={zIndex}>
+    <LayerSource type={layer.parameters.source} />
+  </olLayer.Tile>
+)
 BaseLayer.propTypes = {
   layer: PropTypes.object,
   zIndex: PropTypes.number
