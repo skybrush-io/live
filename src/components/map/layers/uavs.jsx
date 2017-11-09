@@ -4,22 +4,20 @@ import React from 'react'
 import { connect } from 'react-redux'
 import u from 'updeep'
 
-import ActiveUAVsLayerSource from '../ActiveUAVsLayerSource'
-import flock from '../../../flock'
-
-import { colorPredicates } from '../features/UAVFeature'
-
 import RaisedButton from 'material-ui/RaisedButton'
 import ActionSystemUpdateAlt from 'material-ui/svg-icons/action/system-update-alt'
 import TextField from 'material-ui/TextField'
 
-import { setLayerParameterById } from '../../../actions/layers'
-import * as logging from '../../../utils/logging'
-import { showSnackbarMessage } from '../../../actions/snackbar'
+import { colorPredicates } from '../features/UAVFeature'
+import ActiveUAVsLayerSource from '../sources/ActiveUAVsLayerSource'
 
+import { setLayerParameterById } from '../../../actions/layers'
+import { showSnackbarMessage } from '../../../actions/snackbar'
+import flock from '../../../flock'
 import { getSelectedFeatureIds } from '../../../selectors'
 import { updateUAVFeatureColorsSignal } from '../../../signals'
 import { coordinateFromLonLat } from '../../../utils/geography'
+import * as logging from '../../../utils/logging'
 
 const colors = ['pink', 'orange', 'yellow', 'green', 'blue', 'purple']
 

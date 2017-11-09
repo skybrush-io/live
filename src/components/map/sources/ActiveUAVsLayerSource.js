@@ -7,12 +7,12 @@ import _ from 'lodash'
 import PropTypes from 'prop-types'
 import { source } from 'ol-react'
 
-import FeatureManager from './FeatureManager'
-import UAVFeature from './features/UAVFeature'
+import FeatureManager from '../FeatureManager'
+import UAVFeature from '../features/UAVFeature'
 
-import Flock from '../../model/flock'
-import { uavIdToFeatureId } from '../../model/identifiers'
-import { updateUAVFeatureColorsSignal } from '../../signals'
+import Flock from '../../../model/flock'
+import { uavIdToFeatureId } from '../../../model/identifiers'
+import { updateUAVFeatureColorsSignal } from '../../../signals'
 
 /**
  * OpenLayers vector layer source that contains all the active UAVs

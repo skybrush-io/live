@@ -10,12 +10,25 @@ import { handleActions } from 'redux-actions'
  */
 const defaultState = {
   byId: {
+    examplePolygon: {
+      id: 'examplePolygon',
+      type: 'polygon',
+      points: [
+        { lat: 47.474040, lon: 19.061313 },
+        { lat: 47.473699, lon: 19.063373 },
+        { lat: 47.471821, lon: 19.063619 },
+        { lat: 47.471835, lon: 19.061001 }
+      ],
+      color: '#ffcc00'
+    }
     /*
     examplePoint: {
+      id: 'examplePoint',
       type: 'point',
       coordinates: { lat: ..., lon: ... }
     },
     examplePointSet: {
+      id: 'examplePointSet',
       type: 'pointSet',
       points: [
         { lat: ..., lon: ... },
@@ -25,6 +38,7 @@ const defaultState = {
       ]
     },
     examplePath: {
+      id: 'examplePath',
       type: 'path',
       points: [
         { lat: ..., lon: ... },
@@ -34,18 +48,20 @@ const defaultState = {
       ]
     },
     examplePolygon: {
+      id: 'examplePolygon',
       type: 'polygon',
       points: [
         { lat: ..., lon: ... },
         { lat: ..., lon: ... },
         { lat: ..., lon: ... },
         ...
-      ]
+      ],
+      color: '#ffcc00'
     }
     */
   },
 
-  order: []
+  order: ['examplePolygon']
 }
 
 /**

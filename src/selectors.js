@@ -45,7 +45,20 @@ export const getSelectedUAVIds = createSelector(
  *     and sorted according to the `order` array
  */
 export const selectOrdered =
-  ({ byId, order }) => reject(order.map(id => byId[id]), isNil)
+  ({ byId, order }) => (
+    (order !== undefined)
+      ? reject(order.map(id => byId[id]), isNil)
+      : Object.values(byId)
+  )
+
+/**
+ * Selector that calculates and caches the list of all the features in the
+ * state object, in exactly the same order as they should appear on the UI.
+ */
+export const getFeaturesInOrder = createSelector(
+  state => state.features,
+  selectOrdered
+)
 
 /**
  * Selector that calculates and caches the list of all the layers in the

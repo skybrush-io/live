@@ -1,6 +1,9 @@
+import { Feature, geom, layer, source } from 'ol-react'
 import PropTypes from 'prop-types'
 import React from 'react'
 import { connect } from 'react-redux'
+
+import { getFeaturesInOrder } from '../../../selectors'
 
 // === Settings for this particular layer type ===
 
@@ -21,23 +24,33 @@ export const FeaturesLayerSettings = connect(
 
 // === The actual layer to be rendered ===
 
-class FeaturesLayerPresentation extends React.Component {
-  render () {
-    return (
-      <div>
-      </div>
-    )
-  }
-}
+const FeaturesLayerPresentation = ({ features, zIndex }) => (
+  <layer.Vector updateWhileAnimating updateWhileInteracting zIndex={zIndex}>
+    <source.Vector>
+      {features && features.map(({ id }) => (
+        <Feature id={id} key={id}>
+          <geom.LineString>
+            {[]}
+          </geom.LineString>
+        </Feature>
+      ))}
+    </source.Vector>
+  </layer.Vector>
+)
 
 FeaturesLayerPresentation.propTypes = {
   layer: PropTypes.object,
-  layerId: PropTypes.string
+  layerId: PropTypes.string,
+  zIndex: PropTypes.number,
+
+  features: PropTypes.arrayOf(PropTypes.object)
 }
 
 export const FeaturesLayer = connect(
   // mapStateToProps
-  (state, ownProps) => ({}),
+  (state, ownProps) => ({
+    features: getFeaturesInOrder(state)
+  }),
   // mapDispatchToProps
   (dispatch, ownProps) => ({})
 )(FeaturesLayerPresentation)
