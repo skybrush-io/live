@@ -16,7 +16,6 @@ module.exports = {
 
   'rules': {
     'generator-star-spacing': ["error", {"before": false, "after": true}],
-    'jsx-quotes': ['error', 'prefer-double'],
     'valid-jsdoc': ['error', {
       'preferType': {
         'String': 'string',
