@@ -5,7 +5,7 @@
 import messageHub from '../message-hub'
 import * as logging from './logging'
 
-export const takeoffUAVs = (uavs) => {
+export const takeoffUAVs = (uavs) => (
   messageHub.sendMessage({
     type: 'UAV-TAKEOFF',
     ids: uavs
@@ -13,9 +13,9 @@ export const takeoffUAVs = (uavs) => {
     logging.addInfoItem('Takeoff command issued and response received.')
     console.log(result)
   })
-}
+)
 
-export const landUAVs = (uavs) => {
+export const landUAVs = (uavs) => (
   messageHub.sendMessage({
     type: 'UAV-LAND',
     ids: uavs
@@ -23,9 +23,9 @@ export const landUAVs = (uavs) => {
     logging.addInfoItem('Land command issued and response received.')
     console.log(result)
   })
-}
+)
 
-export const returnToHomeUAVs = (uavs) => {
+export const returnToHomeUAVs = (uavs) => (
   messageHub.sendMessage({
     type: 'UAV-RTH',
     ids: uavs
@@ -33,7 +33,17 @@ export const returnToHomeUAVs = (uavs) => {
     logging.addInfoItem('Return to home command issued and response received.')
     console.log(result)
   })
-}
+)
+
+export const shutdownUAVs = (uavs) => (
+  messageHub.sendMessage({
+    type: 'UAV-HALT',
+    ids: uavs
+  }).then(result => {
+    logging.addInfoItem('Land command issued and response received.')
+    console.log(result)
+  })
+)
 
 export const toggleErrorUAVs = (() => {
   let currentError = []

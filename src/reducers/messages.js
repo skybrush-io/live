@@ -118,6 +118,7 @@ function addInboundMessage (state, correlationId, body) {
     type: MessageType.INBOUND,
     author: recipient,
     date: new Date(),
+    raw: true,
     recipient: 'Operator',
     body
   }

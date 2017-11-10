@@ -15,6 +15,8 @@ import { addInboundMessage, addOutboundMessageToSelectedUAV,
 import ActiveUAVsField from '../ActiveUAVsField'
 import BackgroundHint from '../BackgroundHint'
 import { ChatArea, ChatBubble, Marker } from '../chat'
+
+import { formatCommandResponseAsHTML } from '../../flockwave/formatting'
 import Flock from '../../model/flock'
 import { MessageType } from '../../model/messages'
 import messageHub from '../../message-hub'
@@ -32,7 +34,7 @@ function convertMessageToComponent (message) {
   switch (message.type) {
     case MessageType.OUTBOUND:
       return [
-        <ChatBubble key={keyBase} author={message.author} own
+        <ChatBubble key={keyBase} author={message.author} own raw={message.raw}
           date={message.date} body={message.body}
           rightComponent={inProgress ? <CircularProgress size={30} thickness={1.75} style={{ margin: 10 }} /> : false}
         />
@@ -40,7 +42,7 @@ function convertMessageToComponent (message) {
 
     case MessageType.INBOUND:
       return [
-        <ChatBubble key={keyBase} author={message.author} own={false}
+        <ChatBubble key={keyBase} author={message.author} own={false} raw={message.raw}
           date={message.date} body={message.body} />
       ]
 
@@ -203,8 +205,10 @@ const MessagesPanel = connect(
         // success handler
         message => {
           const { response } = message.body
-          dispatch(addInboundMessage(response, messageId))
-        },
+          const formattedMessage = formatCommandResponseAsHTML(response)
+          dispatch(addInboundMessage(formattedMessage, messageId))
+        }
+      ).catch(
         // error handler
         error => {
           const message = error.userMessage || error.message

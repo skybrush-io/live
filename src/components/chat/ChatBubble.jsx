@@ -12,7 +12,7 @@ import TimeAgo from 'react-timeago'
  */
 export default class ChatBubble extends React.Component {
   render () {
-    const { author, body, date, own } = this.props
+    const { author, body, date, own, raw } = this.props
     const { leftComponent, rightComponent } = this.props
     const dateComponent = date
       ? <span className={'date'}><TimeAgo date={date} /></span>
@@ -23,6 +23,9 @@ export default class ChatBubble extends React.Component {
     const rightComponentWrapper = rightComponent
       ? <div style={{ flex: 0 }}>{rightComponent}</div>
       : false
+    const bubble = raw
+      ? <div className={'bubble'} dangerouslySetInnerHTML={{ __html: body }} />
+      : <div className={'bubble'}>{body}</div>
     return (
       <div className={'chat-entry chat-entry-' + (own ? 'own' : 'other')}>
         {leftComponentWrapper}
@@ -30,9 +33,7 @@ export default class ChatBubble extends React.Component {
           <div className={'chat-meta'}>
             <span className={'author'}>{author}</span> {dateComponent}
           </div>
-          <div className={'bubble'}>
-            {body}
-          </div>
+          {bubble}
         </div>
         {rightComponentWrapper}
       </div>
@@ -45,6 +46,7 @@ ChatBubble.propTypes = {
   body: PropTypes.string.isRequired,
   date: PropTypes.instanceOf(Date),
   own: PropTypes.bool.isRequired,
+  raw: PropTypes.bool,
   leftComponent: PropTypes.oneOfType([
     PropTypes.node,
     PropTypes.arrayOf(PropTypes.node)
@@ -58,5 +60,6 @@ ChatBubble.propTypes = {
 ChatBubble.defaultProps = {
   author: 'Anonymous',
   body: '',
-  own: true
+  own: true,
+  raw: false
 }
