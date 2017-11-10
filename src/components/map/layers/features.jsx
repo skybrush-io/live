@@ -40,7 +40,6 @@ const geometryForFeature = feature => {
 
 const styleForFeature = feature => {
   const parsedColor = Color(feature.color || '#0088ff')
-  console.log(parsedColor.rgb().array())
   return ({
     stroke: {
       color: parsedColor.rgb().array(),
