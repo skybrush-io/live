@@ -29,7 +29,7 @@ export default class ChatBubble extends React.Component {
     return (
       <div className={'chat-entry chat-entry-' + (own ? 'own' : 'other')}>
         {leftComponentWrapper}
-        <div style={{ flex: 1 }}>
+        <div style={{ flex: 1, maxWidth: '100%' }}>
           <div className={'chat-meta'}>
             <span className={'author'}>{author}</span> {dateComponent}
           </div>
