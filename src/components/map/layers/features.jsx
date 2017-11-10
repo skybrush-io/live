@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import { connect } from 'react-redux'
 
-import { getFeaturesInOrder } from '../../../selectors'
+import { getFeaturesInOrder, getSelectedFeatureIds } from '../../../selectors'
 import { coordinateFromLonLat } from '../../../utils/geography'
 
 // === Settings for this particular layer type ===
@@ -38,23 +38,24 @@ const geometryForFeature = feature => {
   }
 }
 
-const styleForFeature = feature => {
+// TODO: cache the style somewhere?
+const styleForFeature = (feature, selected = false) => {
   const parsedColor = Color(feature.color || '#0088ff')
   return ({
     stroke: {
       color: parsedColor.rgb().array(),
-      width: 2
+      width: selected ? 3 : 1
     },
     fill: {
-      color: parsedColor.fade(0.5).rgb().array()
+      color: parsedColor.fade(selected ? 0.5 : 0.75).rgb().array()
     }
   })
 }
 
-const renderFeature = feature => {
+const renderFeature = (feature, selected) => {
   const { id } = feature
   return (
-    <Feature id={id} key={id} style={styleForFeature(feature)}>
+    <Feature id={'feature$' + id} key={id} style={styleForFeature(feature, selected)}>
       {geometryForFeature(feature)}
     </Feature>
   )
@@ -65,7 +66,7 @@ const renderFeature = feature => {
 const FeaturesLayerPresentation = ({ features, projection, zIndex }) => (
   <layer.Vector updateWhileAnimating updateWhileInteracting zIndex={zIndex}>
     <source.Vector>
-      {features && features.map(renderFeature)}
+      {features.map(feature => renderFeature(feature))}
     </source.Vector>
   </layer.Vector>
 )
@@ -76,7 +77,8 @@ FeaturesLayerPresentation.propTypes = {
   projection: PropTypes.func.isRequired,
   zIndex: PropTypes.number,
 
-  features: PropTypes.arrayOf(PropTypes.object)
+  features: PropTypes.arrayOf(PropTypes.object).isRequired,
+  selectedFeatureIds: PropTypes.arrayOf(PropTypes.string).isRequired
 }
 
 FeaturesLayerPresentation.defaultProps = {
@@ -86,7 +88,8 @@ FeaturesLayerPresentation.defaultProps = {
 export const FeaturesLayer = connect(
   // mapStateToProps
   (state, ownProps) => ({
-    features: getFeaturesInOrder(state)
+    features: getFeaturesInOrder(state),
+    selectedFeatureIds: getSelectedFeatureIds(state)
   }),
   // mapDispatchToProps
   (dispatch, ownProps) => ({})
