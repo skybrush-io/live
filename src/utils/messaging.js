@@ -11,7 +11,6 @@ export const takeoffUAVs = (uavs) => (
     ids: uavs
   }).then(result => {
     logging.addInfoItem('Takeoff command issued and response received.')
-    console.log(result)
   })
 )
 
@@ -21,7 +20,6 @@ export const landUAVs = (uavs) => (
     ids: uavs
   }).then(result => {
     logging.addInfoItem('Land command issued and response received.')
-    console.log(result)
   })
 )
 
@@ -31,7 +29,6 @@ export const returnToHomeUAVs = (uavs) => (
     ids: uavs
   }).then(result => {
     logging.addInfoItem('Return to home command issued and response received.')
-    console.log(result)
   })
 )
 
@@ -41,7 +38,6 @@ export const shutdownUAVs = (uavs) => (
     ids: uavs
   }).then(result => {
     logging.addInfoItem('Land command issued and response received.')
-    console.log(result)
   })
 )
 
