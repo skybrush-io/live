@@ -138,6 +138,7 @@ class ContextMenuPopup extends React.Component {
               leftIcon={<Message />}
             />
             <MenuItem disabled={selectedUAVIds.length === 0}
+              onClick={this._shutdownSelectedUAVs}
               primaryText={'Halt'}
               leftIcon={<ActionPowerSettingsNew color={'red'} />}
             />
@@ -162,6 +163,13 @@ class ContextMenuPopup extends React.Component {
   @autobind
   _returnSelectedUAVs () {
     messaging.returnToHomeUAVs(this.props.selectedUAVIds)
+    this._handleRequestClose()
+  }
+
+  @autobind
+  _shutdownSelectedUAVs () {
+    console.log('eee')
+    messaging.shutdownUAVs(this.props.selectedUAVIds)
     this._handleRequestClose()
   }
 
