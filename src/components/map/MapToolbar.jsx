@@ -51,25 +51,25 @@ class MapToolbarPresentation extends React.Component {
 
     return (
       <div>
-        <IconButton onClick={partial(onToolSelected, Tool.SELECT)} tooltip={'Select'}>
+        <IconButton onClick={partial(onToolSelected, Tool.SELECT)} tooltip='Select'>
           <ContentSelectAll color={colorForTool(Tool.SELECT)} />
         </IconButton>
-        <IconButton onClick={partial(onToolSelected, Tool.ZOOM)} tooltip={'Zoom'}>
+        <IconButton onClick={partial(onToolSelected, Tool.ZOOM)} tooltip='Zoom'>
           <ActionZoomIn color={colorForTool(Tool.ZOOM)} />
         </IconButton>
-        <IconButton onClick={partial(onToolSelected, Tool.PAN)} tooltip={'Pan'}>
+        <IconButton onClick={partial(onToolSelected, Tool.PAN)} tooltip='Pan'>
           <ActionPanTool color={colorForTool(Tool.PAN)} />
         </IconButton>
 
         <MapToolbarSeparator />
 
-        <IconButton onClick={onShowLayersDialog} tooltip={'Layers'}>
+        <IconButton onClick={onShowLayersDialog} tooltip='Layers'>
           <MapsLayers />
         </IconButton>
 
         <MapToolbarSeparator />
 
-        <MapRotationTextBox resetDuration={500} fieldWidth={'75px'}
+        <MapRotationTextBox resetDuration={500} fieldWidth='75px'
           style={{
             display: 'inline-block',
             marginRight: '12px',

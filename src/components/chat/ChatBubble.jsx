@@ -15,7 +15,7 @@ export default class ChatBubble extends React.Component {
     const { author, body, date, own, raw } = this.props
     const { leftComponent, rightComponent } = this.props
     const dateComponent = date
-      ? <span className={'date'}><TimeAgo date={date} /></span>
+      ? <span className='date'><TimeAgo date={date} /></span>
       : false
     const leftComponentWrapper = leftComponent
       ? <div style={{ flex: 0 }}>{leftComponent}</div>
@@ -24,14 +24,14 @@ export default class ChatBubble extends React.Component {
       ? <div style={{ flex: 0 }}>{rightComponent}</div>
       : false
     const bubble = raw
-      ? <div className={'bubble'} dangerouslySetInnerHTML={{ __html: body }} />
-      : <div className={'bubble'}>{body}</div>
+      ? <div className='bubble' dangerouslySetInnerHTML={{ __html: body }} />
+      : <div className='bubble'>{body}</div>
     return (
       <div className={'chat-entry chat-entry-' + (own ? 'own' : 'other')}>
         {leftComponentWrapper}
         <div style={{ flex: 1, maxWidth: '100%' }}>
-          <div className={'chat-meta'}>
-            <span className={'author'}>{author}</span> {dateComponent}
+          <div className='chat-meta'>
+            <span className='author'>{author}</span> {dateComponent}
           </div>
           {bubble}
         </div>

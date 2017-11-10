@@ -28,33 +28,33 @@ class SavedLocationEditorFormPresentation extends React.Component {
     return (
       <div onKeyPress={this.props.onKeyPress}>
         <Field
-          name={'name'}
+          name='name'
           component={renderTextField}
-          floatingLabelText={'Name'}
+          floatingLabelText='Name'
         />
         <br />
         <Field
-          name={'center.lon'}
+          name='center.lon'
           component={renderTextField}
-          floatingLabelText={'Longtitude'}
+          floatingLabelText='Longtitude'
         />
         <br />
         <Field
-          name={'center.lat'}
+          name='center.lat'
           component={renderTextField}
-          floatingLabelText={'Latitude'}
+          floatingLabelText='Latitude'
         />
         <br />
         <Field
-          name={'rotation'}
+          name='rotation'
           component={renderTextField}
-          floatingLabelText={'Rotation'}
+          floatingLabelText='Rotation'
         />
         <br />
         <Field
-          name={'zoom'}
+          name='zoom'
           component={renderTextField}
-          floatingLabelText={'Zoom level'}
+          floatingLabelText='Zoom level'
         />
       </div>
     )
@@ -129,13 +129,13 @@ class SavedLocationEditorDialogPresentation extends React.Component {
     const { editedLocationId, onClose, onDelete, onSubmit, open } = this.props
 
     const actions = [
-      <FlatButton label={'Save'} primary onClick={this.handleSubmit}
+      <FlatButton label='Save' primary onClick={this.handleSubmit}
         icon={<ContentSave />} />,
       <FlatButton
-        label={'Delete'} secondary disabled={editedLocationId === 'addNew'}
+        label='Delete' secondary disabled={editedLocationId === 'addNew'}
         onClick={onDelete(editedLocationId)} icon={<ActionDeleteForever />}
         />,
-      <FlatButton label={'Cancel'} onClick={onClose} />
+      <FlatButton label='Cancel' onClick={onClose} />
     ]
 
     const contentStyle = {
@@ -143,11 +143,11 @@ class SavedLocationEditorDialogPresentation extends React.Component {
     }
 
     return (
-      <Dialog title={'Edit saved location'} open={open}
+      <Dialog title='Edit saved location' open={open}
         actions={actions} contentStyle={contentStyle}
         onRequestClose={onClose}
       >
-        <SavedLocationEditorForm ref={'form'}
+        <SavedLocationEditorForm ref='form'
           onSubmit={onSubmit}
           onKeyPress={this._handleKeyPress} />
       </Dialog>

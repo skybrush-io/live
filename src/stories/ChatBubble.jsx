@@ -13,23 +13,23 @@ import { themed } from './helpers'
 storiesOf('ChatBubble', module)
   .add('Simple bubble (own)', () => (
     <ChatArea>
-      <ChatBubble body={'This is a test message.'} date={moment().toDate()} />
+      <ChatBubble body='This is a test message.' date={moment().toDate()} />
     </ChatArea>
   ))
   .add('Simple bubble (other, no date)', () => (
     <ChatArea>
-      <ChatBubble body={'This is a test response from someone.'} own={false} />
+      <ChatBubble body='This is a test response from someone.' own={false} />
     </ChatArea>
   ))
   .add('Bubble with left component', themed(() => (
     <ChatArea>
-      <ChatBubble body={'This is a test message.'} date={moment().toDate()}
+      <ChatBubble body='This is a test message.' date={moment().toDate()}
         leftComponent={<CircularProgress size={0.5} />} />
     </ChatArea>
   )))
   .add('Bubble with right component', themed(() => (
     <ChatArea>
-      <ChatBubble body={'This is a test message.'} date={moment().toDate()}
+      <ChatBubble body='This is a test message.' date={moment().toDate()}
         rightComponent={<CircularProgress size={0.5} />} />
     </ChatArea>
   )))

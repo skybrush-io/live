@@ -48,13 +48,13 @@ function convertMessageToComponent (message) {
 
     case MessageType.ERROR:
       return [
-        <Marker key={keyBase + 'Marker'} level={'error'}
+        <Marker key={keyBase + 'Marker'} level='error'
           message={message.body} />
       ]
 
     default:
       return [
-        <Marker key={keyBase + 'Marker'} level={'error'}
+        <Marker key={keyBase + 'Marker'} level='error'
           message={`Invalid message type: ${message.type}`} />
       ]
   }

@@ -64,7 +64,7 @@ class UAVsLayerSettingsPresentation extends React.Component {
         {colorInputs}
         <br />
         <RaisedButton
-          label={'Apply'}
+          label='Apply'
           icon={<ActionSystemUpdateAlt />}
           onClick={this._handleClick} />
       </div>

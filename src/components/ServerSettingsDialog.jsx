@@ -24,15 +24,15 @@ class ServerSettingsFormPresentation extends React.Component {
     return (
       <div onKeyPress={this.props.onKeyPress}>
         <Field
-          name={'hostName'}
+          name='hostName'
           component={renderTextField}
-          floatingLabelText={'Hostname'}
+          floatingLabelText='Hostname'
         />
         <br />
         <Field
-          name={'port'}
+          name='port'
           component={renderTextField}
-          floatingLabelText={'Port'}
+          floatingLabelText='Port'
         />
       </div>
     )
@@ -84,19 +84,19 @@ class ServerSettingsDialogPresentation extends React.Component {
   render () {
     const { autoSetServer, onClose, onSubmit, open } = this.props
     const actions = [
-      <FlatButton label={'Connect'} primary onClick={this.handleSubmit} />,
-      <FlatButton label={'Auto'} onClick={autoSetServer} />,
-      <FlatButton label={'Close'} onClick={onClose} />
+      <FlatButton label='Connect' primary onClick={this.handleSubmit} />,
+      <FlatButton label='Auto' onClick={autoSetServer} />,
+      <FlatButton label='Close' onClick={onClose} />
     ]
     const contentStyle = {
       width: '320px'
     }
     return (
-      <Dialog title={'Server Settings'} open={open}
+      <Dialog title='Server Settings' open={open}
         actions={actions} contentStyle={contentStyle}
         onRequestClose={onClose}
       >
-        <ServerSettingsForm ref={'form'}
+        <ServerSettingsForm ref='form'
           onSubmit={onSubmit}
           onKeyPress={this._handleKeyPress} />
       </Dialog>

@@ -34,22 +34,22 @@ class HexGridLayerSettingsPresentation extends React.Component {
   render () {
     return (
       <div>
-        <p key={'header'}>Draw Hex Grid:</p>
-        <TextField ref={'center'}
-          floatingLabelText={'Center of the grid'}
-          hintText={'Center (comma separated)'}
+        <p key='header'>Draw Hex Grid:</p>
+        <TextField ref='center'
+          floatingLabelText='Center of the grid'
+          hintText='Center (comma separated)'
           defaultValue={this.props.layer.parameters.center} />
-        <TextField ref={'size'}
-          floatingLabelText={'Size of the grid'}
-          hintText={'Size'}
+        <TextField ref='size'
+          floatingLabelText='Size of the grid'
+          hintText='Size'
           defaultValue={this.props.layer.parameters.size} />
-        <TextField ref={'radius'}
-          floatingLabelText={'Radius of one cell'}
-          hintText={'Radius'}
+        <TextField ref='radius'
+          floatingLabelText='Radius of one cell'
+          hintText='Radius'
           defaultValue={this.props.layer.parameters.radius} />
         <br />
         <RaisedButton
-          label={'Draw hex grid'}
+          label='Draw hex grid'
           onClick={this._handleClick} />
       </div>
     )
@@ -158,7 +158,7 @@ class HexGridLayerPresentation extends React.Component {
           <HexGridVectorSource parameters={this.props.layer.parameters} />
         </layer.Vector>
 
-        <div id={'heatmapScale'}>
+        <div id='heatmapScale'>
           <span>100%</span>
           <span>50%</span>
           <span>0%</span>

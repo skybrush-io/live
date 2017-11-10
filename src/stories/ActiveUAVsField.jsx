@@ -21,10 +21,10 @@ storiesOf('UAVSelectorField', module)
   .add('Three fake UAVs, initial value', themed(() => (
     <UAVSelectorField onValueChanged={valueChanged}
       uavIds={['FAKE-01', 'FAKE-02', 'FAKE-03']}
-      value={'FAKE-02'} />
+      value='FAKE-02' />
   )))
   .add('Five UAVs, custom prompt', themed(() => (
     <UAVSelectorField onValueChanged={valueChanged}
       uavIds={['FAKE-01', 'FAKE-02', 'FAKE-03', '17', '42']}
-      prompt={'Look ma, custom prompt!'} />
+      prompt='Look ma, custom prompt!' />
   )))

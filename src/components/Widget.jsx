@@ -15,12 +15,12 @@ import ContentClear from 'material-ui/svg-icons/content/clear'
 
 const Widget = ({ children, showControls, style }) => {
   const controls = showControls ? (
-    <div className={'widget-action-bar'}>
+    <div className='widget-action-bar'>
       <IconButton><ContentClear /></IconButton>
     </div>
   ) : false
   return (
-    <Paper className={'widget'} style={style}>
+    <Paper className='widget' style={style}>
       { controls }
       { children }
     </Paper>

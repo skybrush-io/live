@@ -38,15 +38,15 @@ class BasicLayerSettingsFormPresentation extends React.Component {
     return (
       <div style={{ paddingBottom: '1em' }}>
         <Field
-          name={'label'}
+          name='label'
           component={renderTextField}
-          floatingLabelText={'Layer name'}
-          hintText={'New layer'}
+          floatingLabelText='Layer name'
+          hintText='New layer'
           style={{ width: '100%' }}
           onKeyDown={this._onKeyDown}
         />
         <div>&nbsp;</div>
-        <Toggle label={'Visible'} labelPosition={'right'}
+        <Toggle label='Visible' labelPosition='right'
           toggled={layer.visible}
           disabled={layer.type === LayerType.UNTYPED}
           onToggle={onToggleLayerVisibility}
@@ -204,7 +204,7 @@ const LayerListPresentation = selectableListOf(
     dataProvider: 'layers',
     /* eslint-disable react/display-name */
     listFactory: (props, children) => (
-      <List className={'dialog-sidebar'}>
+      <List className='dialog-sidebar'>
         {children}
       </List>
     )

@@ -193,7 +193,7 @@ class FilterableSortableTable extends React.Component {
     ) : false
 
     return (
-      <div className={'fst-column-controls'}>
+      <div className='fst-column-controls'>
         {filterButton}
         {sortButton}
       </div>
@@ -233,7 +233,7 @@ class FilterableSortableTable extends React.Component {
 
   _makeSeparator (col) {
     return (
-      <div key={`${col.name}_separator`} className={'fst-separator'}
+      <div key={`${col.name}_separator`} className='fst-separator'
         onMouseDown={this._makeSeparatorHandler(col)}
       />
     )
@@ -241,9 +241,9 @@ class FilterableSortableTable extends React.Component {
 
   render () {
     const headerRow = (
-      <div className={'fst-header-row'}>
+      <div className='fst-header-row'>
         {[].concat(...this._columns.map((col, i) => [
-          <div key={`${col.name}_column`} className={'fst-cell'}
+          <div key={`${col.name}_column`} className='fst-cell'
             style={{ width: `${col.width - 3}px` }}
           >
             {col.name}
@@ -281,10 +281,10 @@ class FilterableSortableTable extends React.Component {
     )
 
     const dataRows = this._data.map(row => (
-      <div key={`${this.props.rowIdGenerator(row)}_row`} className={'fst-row'}>
+      <div key={`${this.props.rowIdGenerator(row)}_row`} className='fst-row'>
         {this._columns.map(col =>
           <div key={`${this.props.rowIdGenerator(row)}_${col.name}_cell`}
-            className={'fst-cell'} style={{ width: `${col.width}px` }}
+            className='fst-cell' style={{ width: `${col.width}px` }}
           >
             {col.displayRenderer(col.dataExtractor(row))}
           </div>
@@ -297,11 +297,11 @@ class FilterableSortableTable extends React.Component {
     )
 
     return (
-      <div className={'fst-root'}>
-        <div className={'fst-container'} style={{ minWidth: `${fullWidth}px` }}>
+      <div className='fst-root'>
+        <div className='fst-container' style={{ minWidth: `${fullWidth}px` }}>
           {headerRow}
           {filterPopover}
-          <div className={'fst-data-container'}>
+          <div className='fst-data-container'>
             {dataRows}
           </div>
         </div>

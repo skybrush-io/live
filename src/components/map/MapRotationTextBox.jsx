@@ -59,13 +59,13 @@ export default class MapRotationTextBox extends React.Component {
   render () {
     return (
       <div style={this.props.style}>
-        <IconButton onClick={this._onButtonClick} tooltip={'Reset rotation'}>
+        <IconButton onClick={this._onButtonClick} tooltip='Reset rotation'>
           <ImageRotateRight />
         </IconButton>
         <TextField
           style={{ width: this.props.fieldWidth, verticalAlign: 'inherit' }}
-          hintText={'Rotation'}
-          type={'number'}
+          hintText='Rotation'
+          type='number'
           value={
             this.state.isFocused
             ? this.state.rotation

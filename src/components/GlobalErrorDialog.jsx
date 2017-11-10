@@ -19,14 +19,14 @@ import { closeErrorDialog } from '../actions/error-handling'
  */
 const GlobalErrorDialogPresentation = ({ open, message, onClose }) => {
   const actions = [
-    <FlatButton label={'Close'} onClick={onClose} />
+    <FlatButton label='Close' onClick={onClose} />
   ]
   const contentStyle = {
     width: '640px'
   }
 
   return (
-    <Dialog open={open} title={'An error happened'} modal
+    <Dialog open={open} title='An error happened' modal
       contentStyle={contentStyle} actions={actions}>
       {message}
     </Dialog>

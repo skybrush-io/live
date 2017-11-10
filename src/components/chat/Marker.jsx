@@ -25,11 +25,11 @@ export default class Marker extends React.Component {
     const className = levelsToClassNames.hasOwnProperty(level)
       ? levelsToClassNames[level] : levelsToClassNames['info']
     const dateComponent = date
-      ? <span className={'date'}><TimeAgo date={date} /></span>
+      ? <span className='date'><TimeAgo date={date} /></span>
       : false
     return (
       <div className={className}>
-        <span className={'message'}>{message}</span> {dateComponent}
+        <span className='message'>{message}</span> {dateComponent}
       </div>
     )
   }

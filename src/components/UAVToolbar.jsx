@@ -41,32 +41,32 @@ class UAVToolbar extends React.Component {
       <div>
         <IconButton disabled={isSelectionEmpty}
           onClick={() => messaging.takeoffUAVs(this.props.selectedUAVIds)}
-          tooltipPosition={'bottom-right'} title={'Takeoff'}>
+          tooltipPosition='bottom-right' title='Takeoff'>
           <ActionFlightTakeoff />
         </IconButton>
         <IconButton disabled={isSelectionEmpty}
           onClick={() => messaging.landUAVs(this.props.selectedUAVIds)}
-          tooltipPosition={'bottom-right'} title={'Land'}>
+          tooltipPosition='bottom-right' title='Land'>
           <ActionFlightLand />
         </IconButton>
         <IconButton disabled={isSelectionEmpty}
           onClick={() => messaging.returnToHomeUAVs(this.props.selectedUAVIds)}
-          tooltipPosition={'bottom-right'} title={'Return to home'}>
+          tooltipPosition='bottom-right' title='Return to home'>
           <ActionHome />
         </IconButton>
         <IconButton
           onClick={this._showMessagesDialog}
-          tooltipPosition={'bottom-right'} title={'Messages'}>
+          tooltipPosition='bottom-right' title='Messages'>
           <Message />
         </IconButton>
         <IconButton disabled={isSelectionEmpty}
-          tooltipPosition={'bottom-right'} title={'Halt'}>
-          <ActionPowerSettingsNew color={'red'} />
+          tooltipPosition='bottom-right' title='Halt'>
+          <ActionPowerSettingsNew color='red' />
         </IconButton>
 
         <IconButton
           onClick={this._fitSelectedUAVs}
-          tooltipPosition={'bottom-left'}
+          tooltipPosition='bottom-left'
           style={{
             float: 'right',
             padding: '0px',

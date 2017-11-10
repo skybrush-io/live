@@ -119,28 +119,28 @@ class ContextMenuPopup extends React.Component {
           <Menu>
             <MenuItem disabled={selectedUAVIds.length === 0}
               onClick={this._takeoffSelectedUAVs}
-              primaryText={'Takeoff'}
+              primaryText='Takeoff'
               leftIcon={<ActionFlightTakeoff />}
             />
             <MenuItem disabled={selectedUAVIds.length === 0}
               onClick={this._landSelectedUAVs}
-              primaryText={'Land'}
+              primaryText='Land'
               leftIcon={<ActionFlightLand />}
             />
             <MenuItem disabled={selectedUAVIds.length === 0}
               onClick={this._returnSelectedUAVs}
-              primaryText={'Return to home'}
+              primaryText='Return to home'
               leftIcon={<ActionHome />}
             />
             <MenuItem disabled={selectedUAVIds.length !== 1}
               onClick={this._showMessagesDialog}
-              primaryText={'Messages'}
+              primaryText='Messages'
               leftIcon={<Message />}
             />
             <MenuItem disabled={selectedUAVIds.length === 0}
               onClick={this._shutdownSelectedUAVs}
-              primaryText={'Halt'}
-              leftIcon={<ActionPowerSettingsNew color={'red'} />}
+              primaryText='Halt'
+              leftIcon={<ActionPowerSettingsNew color='red' />}
             />
           </Menu>
         </Popover>

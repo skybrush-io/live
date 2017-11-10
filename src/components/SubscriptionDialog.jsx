@@ -75,7 +75,7 @@ export default class SubscriptionDialog extends React.Component {
 
     const subscriptionItems = this.state.subscriptions.map(subscription =>
       <ListItem key={subscription} primaryText={subscription} rightIconButton={
-        <IconButton tooltip={'Unsubscribe'}
+        <IconButton tooltip='Unsubscribe'
           onClick={_.partial(this._removeSubscription, subscription)}>
           <ContentRemoveCircleOutline />
         </IconButton>
@@ -83,7 +83,7 @@ export default class SubscriptionDialog extends React.Component {
     )
 
     const actions = [
-      <FlatButton label={'Done'} primary onClick={this._hideDialog} />
+      <FlatButton label='Done' primary onClick={this._hideDialog} />
     ]
 
     const dropDownMenuStyle = {verticalAlign: 'text-bottom'}
@@ -91,26 +91,26 @@ export default class SubscriptionDialog extends React.Component {
     return (
       <Dialog open={this.state.visible} actions={actions}>
         UAV:
-        <DropDownMenu ref={'uavDropDown'} value={this.state.selectedUAV}
+        <DropDownMenu ref='uavDropDown' value={this.state.selectedUAV}
           style={dropDownMenuStyle}
           onChange={_.partial(this._handleChange, 'selectedUAV')}>
           {UAVMenuItems}
         </DropDownMenu>
         Device:
-        <DropDownMenu ref={'deviceDropDown'} value={this.state.selectedDevice}
+        <DropDownMenu ref='deviceDropDown' value={this.state.selectedDevice}
           style={dropDownMenuStyle}
           onChange={_.partial(this._handleChange, 'selectedDevice')}>
           {DeviceMenuItems}
         </DropDownMenu>
         Channel:
-        <DropDownMenu ref={'channelDropDown'} value={this.state.selectedChannel}
+        <DropDownMenu ref='channelDropDown' value={this.state.selectedChannel}
           style={dropDownMenuStyle}
           onChange={_.partial(this._handleChange, 'selectedChannel')}>
           {ChannelMenuItems}
         </DropDownMenu>
         <RaisedButton
           disabled={this.state.subscriptions.includes(this.currentPath)}
-          label={'Subscribe'}
+          label='Subscribe'
           onClick={this._handleClick} />
 
         <List>

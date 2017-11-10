@@ -17,7 +17,7 @@ const stateColors = {
  * Element for displaying a number on a colored background.
  */
 const ColoredContainer = ({ color, title, text }) => (
-  <span className={'coloredContainer'} style={{
+  <span className='coloredContainer' style={{
     padding: '5px',
     borderRadius: '10px',
     color: 'white',
@@ -67,12 +67,12 @@ class CountMonitor extends React.Component {
           Count Monitor:
           <ColoredContainer
             color={stateColors.selected}
-            title={'Selected'}
+            title='Selected'
             text={`${selectedCount}`} />
           /
           <ColoredContainer
             color={stateColors.normal}
-            title={'Normal'}
+            title='Normal'
             text={`${normalCount}`} />
 
           {
@@ -81,7 +81,7 @@ class CountMonitor extends React.Component {
               +
               <ColoredContainer
                 color={stateColors.away}
-                title={'Away'}
+                title='Away'
                 text={`${awayCount}`} />
             </span>
           }
@@ -92,7 +92,7 @@ class CountMonitor extends React.Component {
               +
               <ColoredContainer
                 color={stateColors.error}
-                title={'Errored'}
+                title='Errored'
                 text={`${errorCount}`} />
             </span>
           }
@@ -103,7 +103,7 @@ class CountMonitor extends React.Component {
               +
               <ColoredContainer
                 color={stateColors.lost}
-                title={'Lost'}
+                title='Lost'
                 text={`${lostCount}`} />
             </span>
           }
@@ -112,7 +112,7 @@ class CountMonitor extends React.Component {
             =
             <ColoredContainer
               color={stateColors.all}
-              title={'All'}
+              title='All'
               text={`${allCount}`} />
           </span>
         </span>

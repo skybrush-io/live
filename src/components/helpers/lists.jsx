@@ -45,7 +45,7 @@ export function listOf (itemRenderer, options = {}) {
       const children = items.map(item => itemRenderer(item, props))
       return listFactory(props, children)
     } else if (backgroundHint) {
-      return <div className={'background-hint'}>{backgroundHint}</div>
+      return <div className='background-hint'>{backgroundHint}</div>
     } else {
       return null
     }
@@ -116,7 +116,7 @@ export function selectableListOf (itemRenderer, options = {}) {
       )
       return listFactory(props, children)
     } else if (backgroundHint) {
-      return <div className={'background-hint'}>{backgroundHint}</div>
+      return <div className='background-hint'>{backgroundHint}</div>
     } else {
       return null
     }
@@ -206,7 +206,7 @@ export function multiSelectableListOf (itemRenderer, options = {}) {
       )
       return listFactory(props, children)
     } else if (backgroundHint) {
-      return <div className={'background-hint'}>{backgroundHint}</div>
+      return <div className='background-hint'>{backgroundHint}</div>
     } else {
       return null
     }

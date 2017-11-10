@@ -8,7 +8,7 @@ export const renderTextField = textField => (
     style={textField.style}
     hintText={textField.hintText}
     floatingLabelText={textField.floatingLabelText}
-    spellCheck={'false'}
+    spellCheck='false'
     errorText={textField.meta.dirty && textField.meta.error}
     onKeyDown={textField.onKeyDown} />
     // touched becomes true only after blur, but dirty is instantanious

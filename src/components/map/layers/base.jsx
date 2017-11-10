@@ -21,8 +21,8 @@ class BaseLayerSettingsPresentation extends React.Component {
     ))
     return (
       <div>
-        <p key={'header'}>Layer data source</p>
-        <RadioButtonGroup name={'source.base'} key={'baseProperties'}
+        <p key='header'>Layer data source</p>
+        <RadioButtonGroup name='source.base' key='baseProperties'
           valueSelected={this.props.layer.parameters.source}
           onChange={this.props.onLayerSourceChanged}>
           {sourceRadioButtons}

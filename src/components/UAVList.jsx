@@ -50,7 +50,7 @@ const jumpToUAV = function () {
 const UAVListPresentation = multiSelectableListOf((uav, props, selected) => {
   const rightIconButton = (
     <IconButton data-uav={uav} onClick={jumpToUAV}
-      tooltip={`Jump to ${uav.id}`} tooltipPosition={'bottom-left'}>
+      tooltip={`Jump to ${uav.id}`} tooltipPosition='bottom-left'>
       <ImageAdjust />
     </IconButton>
   )

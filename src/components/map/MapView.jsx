@@ -146,7 +146,7 @@ class MapViewPresentation extends React.Component {
 
         <MapViewLayers />
 
-        <control.MousePosition projection={'EPSG:4326'}
+        <control.MousePosition projection='EPSG:4326'
           coordinateFormat={formatCoordinate} />
 
         <control.ScaleLine minWidth={128} />
