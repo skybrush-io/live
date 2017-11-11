@@ -1,6 +1,7 @@
 import Color from 'color'
 import { Feature, geom, layer, source } from 'ol-react'
 import PropTypes from 'prop-types'
+import ol from 'openlayers'
 import React from 'react'
 import { connect } from 'react-redux'
 
@@ -32,7 +33,13 @@ const geometryForFeature = feature => {
 
   switch (type) {
     // TODO: points and point sets
-    case 'path': return <geom.LineString>{coordinates}</geom.LineString>
+    case 'points': return (
+      coordinates.length > 1
+        ? <geom.MultiPoint>{coordinates}</geom.MultiPoint>
+        : <geom.Point>{coordinates[0]}</geom.Point>
+    )
+
+    case 'lineString': return <geom.LineString>{coordinates}</geom.LineString>
     case 'polygon': return <geom.Polygon>{coordinates}</geom.Polygon>
     default: return null
   }
@@ -40,16 +47,41 @@ const geometryForFeature = feature => {
 
 // TODO: cache the style somewhere?
 const styleForFeature = (feature, selected = false) => {
-  const parsedColor = Color(feature.color || '#0088ff')
-  return ({
-    stroke: {
-      color: parsedColor.rgb().array(),
-      width: selected ? 3 : 1
-    },
-    fill: {
-      color: parsedColor.fade(selected ? 0.5 : 0.75).rgb().array()
-    }
-  })
+  const { type, color } = feature
+  const parsedColor = Color(color || '#0088ff')
+
+  switch (type) {
+    case 'points':
+      return new ol.style.Style({
+        image: new ol.style.Circle({
+          stroke: new ol.style.Stroke({
+            color: parsedColor.mix(Color('black'), 0.5).rgb().array(),
+            width: 2 + (selected ? 2 : 0)
+          }),
+          fill: new ol.style.Fill({
+            color: parsedColor.rgb().array()
+          }),
+          radius: 6 + (selected ? 4 : 0)
+        })
+      })
+
+    case 'lineString':
+      // fallthrough
+
+    case 'polygon':
+      // fallthrough
+
+    default:
+      return {
+        stroke: {
+          color: parsedColor.rgb().array(),
+          width: 1 + (selected ? 2 : 0)
+        },
+        fill: {
+          color: parsedColor.fade(selected ? 0.5 : 0.75).rgb().array()
+        }
+      }
+  }
 }
 
 const renderFeature = (feature, selected) => {

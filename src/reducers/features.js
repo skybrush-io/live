@@ -24,12 +24,14 @@ const defaultState = {
     /*
     examplePoint: {
       id: 'examplePoint',
-      type: 'point',
-      coordinates: { lat: ..., lon: ... }
+      type: 'points',
+      points: [
+        { lat: ..., lon: ... }
+      ]
     },
     examplePointSet: {
       id: 'examplePointSet',
-      type: 'pointSet',
+      type: 'points',
       points: [
         { lat: ..., lon: ... },
         { lat: ..., lon: ... },
@@ -39,7 +41,7 @@ const defaultState = {
     },
     examplePath: {
       id: 'examplePath',
-      type: 'path',
+      type: 'lineString',
       points: [
         { lat: ..., lon: ... },
         { lat: ..., lon: ... },
