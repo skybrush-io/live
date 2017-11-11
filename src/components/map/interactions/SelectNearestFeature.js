@@ -83,22 +83,24 @@ class SelectNearestFeatureInteraction extends ol.interaction.Interaction {
           .filter(this._isFeatureFeasible)
           .minBy(distanceFunction)
 
-        // Get the actual distance of the feature
-        const distance = distanceFunction(closestFeature)
+        if (closestFeature !== undefined) {
+          // Get the actual distance of the feature (if we have one)
+          const distance = distanceFunction(closestFeature)
 
-        // Decide whether we are setting, adding, removing or toggling the
-        // selection
-        const add = this._addCondition(mapBrowserEvent)
-        const remove = this._removeCondition(mapBrowserEvent)
-        const toggle = this._toggleCondition(mapBrowserEvent)
-        const mode = add ? 'add' : (remove ? 'remove' : (toggle ? 'toggle' : 'set'))
+          // Decide whether we are setting, adding, removing or toggling the
+          // selection
+          const add = this._addCondition(mapBrowserEvent)
+          const remove = this._removeCondition(mapBrowserEvent)
+          const toggle = this._toggleCondition(mapBrowserEvent)
+          const mode = add ? 'add' : (remove ? 'remove' : (toggle ? 'toggle' : 'set'))
 
-        // If the feature is close enough...
-        if (distance <= this._threshold) {
-          // Now call the callback
-          this._select(mode, closestFeature, distance)
-        } else if (mode === 'set') {
-          this._select('clear', closestFeature, distance)
+          // If the feature is close enough...
+          if (distance <= this._threshold) {
+            // Now call the callback
+            this._select(mode, closestFeature, distance)
+          } else if (mode === 'set') {
+            this._select('clear', closestFeature, distance)
+          }
         }
 
         return ol.events.condition.pointerMove(mapBrowserEvent)
