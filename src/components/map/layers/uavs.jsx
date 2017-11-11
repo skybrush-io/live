@@ -119,9 +119,7 @@ export const UAVsLayerSettings = connect(
 class UAVsLayerPresentation extends React.Component {
   render () {
     return (
-      <layer.Vector ref={this.context._assignActiveUAVsLayerRef}
-        updateWhileAnimating
-        updateWhileInteracting
+      <layer.Vector updateWhileAnimating updateWhileInteracting
         zIndex={this.props.zIndex}>
 
         <ActiveUAVsLayerSource ref={this.context._assignActiveUAVsLayerSourceRef}
@@ -155,7 +153,6 @@ UAVsLayerPresentation.defaultProps = {
 }
 
 UAVsLayerPresentation.contextTypes = {
-  _assignActiveUAVsLayerRef: PropTypes.func,
   _assignActiveUAVsLayerSourceRef: PropTypes.func
 }
 

@@ -61,7 +61,6 @@ class MapViewPresentation extends React.Component {
   constructor (props) {
     super(props)
 
-    this._assignActiveUAVsLayerRef = this._assignActiveUAVsLayerRef.bind(this)
     this._assignActiveUAVsLayerSourceRef = this._assignActiveUAVsLayerSourceRef.bind(this)
     this._assignContextMenuPopupRef = this._assignContextMenuPopupRef.bind(this)
     this._assignMapRef = this._assignMapRef.bind(this)
@@ -116,7 +115,6 @@ class MapViewPresentation extends React.Component {
 
   getChildContext () {
     return {
-      _assignActiveUAVsLayerRef: this._assignActiveUAVsLayerRef,
       _assignActiveUAVsLayerSourceRef: this._assignActiveUAVsLayerSourceRef
     }
   }
@@ -211,17 +209,6 @@ class MapViewPresentation extends React.Component {
   }
 
   /**
-   * Handler called when the layer showing the active UAVs is mounted.
-   * We use it to store a reference to the component within
-   * this component.
-   *
-   * @param  {layer.Vector} ref  the layer for the active UAVs
-   */
-  _assignActiveUAVsLayerRef (ref) {
-    this.activeUAVsLayer = ref
-  }
-
-  /**
    * Handler called when the layer source containing the list of UAVs
    * is mounted. We use it to store a reference to the component within
    * this component.
@@ -260,7 +247,8 @@ class MapViewPresentation extends React.Component {
    * @return {boolean} whether the given layer is the one that shows the active UAVs
    */
   _isLayerShowingActiveUAVs (layer) {
-    return this.activeUAVsLayer && this.activeUAVsLayer.layer === layer
+    const source = layer ? layer.getSource() : undefined
+    return source !== undefined && source === this.activeUAVsLayerSource.source
   }
 
   /**
@@ -370,7 +358,6 @@ MapViewPresentation.propTypes = {
 }
 
 MapViewPresentation.childContextTypes = {
-  _assignActiveUAVsLayerRef: PropTypes.func,
   _assignActiveUAVsLayerSourceRef: PropTypes.func
 }
 
