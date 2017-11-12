@@ -2,6 +2,7 @@
  * @file Geography-related utility functions and variables.
  */
 
+import { minBy } from 'lodash'
 import ol from 'openlayers'
 
 /**
@@ -19,6 +20,51 @@ export const euclideanDistance = (first, second) => {
     sum += Math.pow(first[i] - second[i], 2)
   }
   return Math.sqrt(sum)
+}
+
+/**
+ * Returns the closest point of a geometry from the given OpenLayers
+ * coordinates.
+ *
+ * Note that this function is different from `ol.geom.Geometry.getClosestPoint()`:
+ * when the coordinate is contained in the given geometry, it will return the
+ * coordinate itself instead of finding the closest point on the boundary.
+ *
+ * @param {ol.geom.Geometry}       geometry    the geometry
+ * @param {number[]|ol.Coordinate} coordinate  the point to consider
+ * @return {number[]} the coordinates of the closest point of the given
+ *      geometry
+ */
+export const getExactClosestPointOf = (geometry, coordinate) => {
+  // Special case: if the coordinate is in the geometry, the closest point
+  // to it is itself
+  if (geometry.intersectsCoordinate(coordinate)) {
+    return coordinate
+  }
+
+  // For geometry collections, recurse into the sub-geometries and return
+  // the closest point of the closest geometry.
+  // For multi-linestrings, recurse into the sub-linestrings and return
+  // the closest point of the closest linestring
+  // For multi-polygons, recurse into the sub-polygons and return
+  // the closest point of the closest polygon.
+  let subGeometries
+  if (geometry instanceof ol.geom.GeometryCollection) {
+    subGeometries = geometry.getGeometries()
+  } else if (geometry instanceof ol.geom.MultiPolygon) {
+    subGeometries = geometry.getPolygons()
+  } else if (geometry instanceof ol.geom.MultiLineString) {
+    subGeometries = geometry.getLineStrings()
+  }
+  if (subGeometries !== undefined) {
+    const closestPoints = subGeometries.map(
+      subGeometry => getExactClosestPointOf(subGeometry, coordinate)
+    )
+    return minBy(closestPoints, euclideanDistance.bind(null, coordinate))
+  }
+
+  // For anything else, just fall back to getClosestPoint()
+  return geometry.getClosestPoint(coordinate)
 }
 
 /**

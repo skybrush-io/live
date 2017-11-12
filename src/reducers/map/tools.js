@@ -8,7 +8,7 @@ import { handleActions } from 'redux-actions'
  * The default selected tool.
  */
 const defaultState = {
-  selectedTool: 'pan'
+  selectedTool: 'select'
 }
 
 /**

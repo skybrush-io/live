@@ -9,7 +9,7 @@ import { interaction } from 'ol-react'
 import ol from 'openlayers'
 import PropTypes from 'prop-types'
 
-import { euclideanDistance } from '../../../utils/geography'
+import { euclideanDistance, getExactClosestPointOf } from '../../../utils/geography'
 
 /**
  * OpenLayers interaction that selects the point feature of a layer that is
@@ -158,7 +158,7 @@ class SelectNearestFeatureInteraction extends ol.interaction.Interaction {
    * @return {number} the distance of the feature from the event, in pixels
    */
   _distanceOfEventFromFeature (event, feature) {
-    const closestPoint = feature.getGeometry().getClosestPoint(event.coordinate)
+    const closestPoint = getExactClosestPointOf(feature.getGeometry(), event.coordinate)
     const closestPixel = event.map.getPixelFromCoordinate(closestPoint)
     return euclideanDistance(event.pixel, closestPixel)
   }

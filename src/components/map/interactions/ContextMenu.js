@@ -53,9 +53,9 @@ class ContextMenuInteraction extends ol.interaction.Interaction {
         const distance = distanceFunction(closestFeature)
 
         // If the feature is close enough...
-        if (distance <= this._threshold && !closestFeature.selected) {
+        if (distance <= this._threshold) {
           // Now call the callback
-          this._select('set', closestFeature, distance)
+          this._select('add', closestFeature, distance)
         }
 
         // Trigger the actual context menu element

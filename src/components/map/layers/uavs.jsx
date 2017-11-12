@@ -122,7 +122,7 @@ class UAVsLayerPresentation extends React.Component {
       <layer.Vector updateWhileAnimating updateWhileInteracting
         zIndex={this.props.zIndex}>
 
-        <ActiveUAVsLayerSource ref={this.context._assignActiveUAVsLayerSourceRef}
+        <ActiveUAVsLayerSource
           selection={this.props.selection}
           flock={flock}
           projection={this.props.projection} />
@@ -150,10 +150,6 @@ UAVsLayerPresentation.propTypes = {
 
 UAVsLayerPresentation.defaultProps = {
   projection: coordinateFromLonLat
-}
-
-UAVsLayerPresentation.contextTypes = {
-  _assignActiveUAVsLayerSourceRef: PropTypes.func
 }
 
 export const UAVsLayer = connect(

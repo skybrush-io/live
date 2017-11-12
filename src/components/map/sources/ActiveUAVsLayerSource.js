@@ -53,8 +53,12 @@ export default class ActiveUAVsLayerSource extends source.Vector {
 
   componentDidMount () {
     super.componentDidMount()
+
+    this.context.layer.set('selectable', true)
+
     this._onFlockMaybeChanged(undefined, this.props.flock)
     this._onSelectionMaybeChanged(undefined, this.props.selection)
+
     this.featureManager.projection = this.props.projection
   }
 

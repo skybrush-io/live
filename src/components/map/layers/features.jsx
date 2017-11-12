@@ -32,7 +32,6 @@ const geometryForFeature = feature => {
   const coordinates = points.map(point => coordinateFromLonLat([point.lon, point.lat]))
 
   switch (type) {
-    // TODO: points and point sets
     case 'points': return (
       coordinates.length > 1
         ? <geom.MultiPoint>{coordinates}</geom.MultiPoint>
@@ -95,10 +94,15 @@ const renderFeature = (feature, selected) => {
 
 // === The actual layer to be rendered ===
 
-const FeaturesLayerPresentation = ({ features, projection, zIndex }) => (
-  <layer.Vector updateWhileAnimating updateWhileInteracting zIndex={zIndex}>
+function markAsSelectable (layer) {
+  layer.layer.set('selectable', true)
+}
+
+const FeaturesLayerPresentation = ({ features, projection, selectedFeatureIds, zIndex }) => (
+  <layer.Vector updateWhileAnimating updateWhileInteracting zIndex={zIndex}
+    ref={markAsSelectable}>
     <source.Vector>
-      {features.map(feature => renderFeature(feature))}
+      {features.map(feature => renderFeature(feature, selectedFeatureIds.includes('feature$' + feature.id)))}
     </source.Vector>
   </layer.Vector>
 )

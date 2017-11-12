@@ -17,7 +17,7 @@ import { Tool } from './tools'
 import { setSelectedFeatures, addSelectedFeatures, clearSelectedFeatures,
   removeSelectedFeatures } from '../../actions/map'
 import mapViewManager from '../../mapViewManager'
-import { getVisibleLayersInOrder } from '../../selectors'
+import { getSelectedFeatureIds, getVisibleLayersInOrder } from '../../selectors'
 import { coordinateFromLonLat, formatCoordinate } from '../../utils/geography'
 
 require('openlayers/css/ol.css')
@@ -61,10 +61,9 @@ class MapViewPresentation extends React.Component {
   constructor (props) {
     super(props)
 
-    this._assignActiveUAVsLayerSourceRef = this._assignActiveUAVsLayerSourceRef.bind(this)
     this._assignContextMenuPopupRef = this._assignContextMenuPopupRef.bind(this)
     this._assignMapRef = this._assignMapRef.bind(this)
-    this._isLayerShowingActiveUAVs = this._isLayerShowingActiveUAVs.bind(this)
+    this._isLayerSelectable = this._isLayerSelectable.bind(this)
     this._onBoxDragEnded = this._onBoxDragEnded.bind(this)
     this._onSelect = this._onSelect.bind(this)
 
@@ -110,12 +109,6 @@ class MapViewPresentation extends React.Component {
 
     if (this._layoutManager) {
       this._layoutManager.on('stateChanged', this.updateSize, this)
-    }
-  }
-
-  getChildContext () {
-    return {
-      _assignActiveUAVsLayerSourceRef: this._assignActiveUAVsLayerSourceRef
     }
   }
 
@@ -168,7 +161,7 @@ class MapViewPresentation extends React.Component {
              Alt + Click --> Remove nearest feature from selection */}
         <SelectNearestFeature active={selectedTool === Tool.SELECT}
           addCondition={ol.events.condition.never}
-          layers={this._isLayerShowingActiveUAVs}
+          layers={this._isLayerSelectable}
           removeCondition={ol.events.condition.altKeyOnly}
           toggleCondition={Condition.platformModifierKeyOrShiftKeyOnly}
           select={this._onSelect}
@@ -198,7 +191,7 @@ class MapViewPresentation extends React.Component {
           condition={ol.events.condition.shiftKeyOnly} out />
 
         <ContextMenu
-          layers={this._isLayerShowingActiveUAVs}
+          layers={this._isLayerSelectable}
           select={this._onSelect}
           contextMenu={this._onContextMenu}
           threshold={40} />
@@ -206,17 +199,6 @@ class MapViewPresentation extends React.Component {
         <ContextMenuPopup ref={this._assignContextMenuPopupRef} />
       </Map>
     )
-  }
-
-  /**
-   * Handler called when the layer source containing the list of UAVs
-   * is mounted. We use it to store a reference to the component within
-   * this component.
-   *
-   * @param  {ActiveUAVsLayerSource} ref  the layer source for the active UAVs
-   */
-  _assignActiveUAVsLayerSourceRef (ref) {
-    this.activeUAVsLayerSource = ref
   }
 
   /**
@@ -240,15 +222,15 @@ class MapViewPresentation extends React.Component {
   }
 
   /**
-   * Returns true if the given layer is the layer that shows the active UAVs,
-   * false otherwise.
+   * Returns true if the given layer contains features that may be selected
+   * by the user.
    *
    * @param {ol.Layer} layer  the layer to test
-   * @return {boolean} whether the given layer is the one that shows the active UAVs
+   * @return {boolean} whether the given layer contains features that may be
+   *     selected by the user
    */
-  _isLayerShowingActiveUAVs (layer) {
-    const source = layer ? layer.getSource() : undefined
-    return source !== undefined && source === this.activeUAVsLayerSource.source
+  _isLayerSelectable (layer) {
+    return layer && layer.getVisible() && layer.get('selectable')
   }
 
   /**
@@ -259,12 +241,9 @@ class MapViewPresentation extends React.Component {
    *         interaction
    */
   _onBoxDragEnded (event) {
-    const layer = this.activeUAVsLayerSource
-    if (!layer) {
-      return
-    }
-
+    const layers = this.map.map.getLayers()
     const mapBrowserEvent = event.mapBrowserEvent
+
     let action
 
     if (ol.events.condition.altKeyOnly(mapBrowserEvent)) {
@@ -275,11 +254,14 @@ class MapViewPresentation extends React.Component {
       action = setSelectedFeatures
     }
 
-    const ids = []
-    const source = layer.source
     const extent = event.target.getGeometry().getExtent()
-    source.forEachFeatureIntersectingExtent(extent, feature => {
-      ids.push(feature.getId())
+    const ids = []
+
+    layers.getArray().filter(this._isLayerSelectable).forEach(layer => {
+      const source = layer.getSource()
+      source.forEachFeatureIntersectingExtent(extent, feature => {
+        ids.push(feature.getId())
+      })
     })
 
     this.props.dispatch(action(ids))
@@ -296,14 +278,17 @@ class MapViewPresentation extends React.Component {
    *         where the user clicked, in pixels
    */
   _onSelect (mode, feature, distance) {
+    const { selectedFeatureIds } = this.props
+    const id = feature ? feature.getId() : undefined
     const actionMapping = {
       'add': addSelectedFeatures,
       'clear': clearSelectedFeatures,
       'remove': removeSelectedFeatures,
-      'toggle': feature.selected ? removeSelectedFeatures : addSelectedFeatures
+      'toggle': selectedFeatureIds.includes(id)
+        ? removeSelectedFeatures
+        : addSelectedFeatures
     }
     const action = actionMapping[mode] || setSelectedFeatures
-    const id = feature ? feature.getId() : undefined
     if (id) {
       this.props.dispatch(action([id]))
     }
@@ -349,16 +334,11 @@ class MapViewPresentation extends React.Component {
 }
 
 MapViewPresentation.propTypes = {
-  layerOrder: PropTypes.arrayOf(PropTypes.string),
-  layersById: PropTypes.object,
   projection: PropTypes.func.isRequired,
+  selectedFeatureIds: PropTypes.arrayOf(PropTypes.string).isRequired,
   selectedTool: PropTypes.string,
   dispatch: PropTypes.func.isRequired,
   glContainer: PropTypes.object
-}
-
-MapViewPresentation.childContextTypes = {
-  _assignActiveUAVsLayerSourceRef: PropTypes.func
 }
 
 /**
@@ -367,8 +347,7 @@ MapViewPresentation.childContextTypes = {
 const MapView = connect(
   // mapStateToProps
   state => ({
-    layerOrder: state.map.layers.order,
-    layersById: state.map.layers.byId,
+    selectedFeatureIds: getSelectedFeatureIds(state),
     selectedTool: state.map.tools.selectedTool
   })
 )(MapViewPresentation)
