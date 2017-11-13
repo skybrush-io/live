@@ -36,15 +36,12 @@ export function isDrawingTool (tool) {
 export function toolToDrawInteractionType (tool) {
   switch (tool) {
     case Tool.DRAW_CIRCLE:
-      console.log('Circle')
       return 'Circle'
 
     case Tool.DRAW_PATH:
-      console.log('LineString')
       return 'LineString'
 
     case Tool.DRAW_POLYGON:
-      console.log('Polygon')
       return 'Polygon'
 
     default:
