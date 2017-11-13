@@ -12,7 +12,7 @@ import ContextMenuPopup from './ContextMenuPopup'
 import { Layers, stateObjectToLayer } from './layers/index'
 import MapReferenceRequestHandler from './MapReferenceRequestHandler'
 import MapToolbar from './MapToolbar'
-import { Tool } from './tools'
+import { isDrawingTool, Tool, toolToDrawInteractionType } from './tools'
 
 import { setSelectedFeatures, addSelectedFeatures, clearSelectedFeatures,
   removeSelectedFeatures } from '../../actions/map'
@@ -120,7 +120,10 @@ class MapViewPresentation extends React.Component {
     const toolClasses = {
       [Tool.SELECT]: 'tool-select',
       [Tool.ZOOM]: 'tool-zoom',
-      [Tool.PAN]: 'tool-pan'
+      [Tool.PAN]: 'tool-pan',
+      [Tool.DRAW_CIRCLE]: 'tool-draw tool-draw-circle',
+      [Tool.DRAW_PATH]: 'tool-draw tool-draw-path',
+      [Tool.DRAW_POLYGON]: 'tool-draw tool-draw-polygon'
     }
 
     return (
@@ -189,6 +192,10 @@ class MapViewPresentation extends React.Component {
         {/* ZOOM mode | Shift + Drag --> Box zoom out */}
         <interaction.DragZoom active={selectedTool === Tool.ZOOM}
           condition={ol.events.condition.shiftKeyOnly} out />
+
+        {/* DRAW mode | Click --> Draw a new feature */}
+        <interaction.Draw active={isDrawingTool(selectedTool)}
+          type={toolToDrawInteractionType(selectedTool)} />
 
         <ContextMenu
           layers={this._isLayerSelectable}

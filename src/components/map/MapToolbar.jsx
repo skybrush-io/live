@@ -5,7 +5,10 @@ import IconButton from 'material-ui/IconButton'
 import ActionPanTool from 'material-ui/svg-icons/action/pan-tool'
 import ActionZoomIn from 'material-ui/svg-icons/action/zoom-in'
 import ContentSelectAll from 'material-ui/svg-icons/content/select-all'
+import EditorShowChart from 'material-ui/svg-icons/editor/show-chart'
+import ImagePanoramaFishEye from 'material-ui/svg-icons/image/panorama-fish-eye'
 import MapsLayers from 'material-ui/svg-icons/maps/layers'
+import ToggleStarBorder from 'material-ui/svg-icons/toggle/star-border'
 
 import MapRotationTextBox from './MapRotationTextBox'
 import FitAllFeaturesButton from './FitAllFeaturesButton'
@@ -59,6 +62,18 @@ class MapToolbarPresentation extends React.Component {
         </IconButton>
         <IconButton onClick={partial(onToolSelected, Tool.PAN)} tooltip='Pan'>
           <ActionPanTool color={colorForTool(Tool.PAN)} />
+        </IconButton>
+
+        <MapToolbarSeparator />
+
+        <IconButton onClick={partial(onToolSelected, Tool.DRAW_CIRCLE)} tooltip='Draw circle'>
+          <ImagePanoramaFishEye color={colorForTool(Tool.DRAW_CIRCLE)} />
+        </IconButton>
+        <IconButton onClick={partial(onToolSelected, Tool.DRAW_PATH)} tooltip='Draw path'>
+          <EditorShowChart color={colorForTool(Tool.DRAW_PATH)} />
+        </IconButton>
+        <IconButton onClick={partial(onToolSelected, Tool.DRAW_POLYGON)} tooltip='Draw polygon'>
+          <ToggleStarBorder color={colorForTool(Tool.DRAW_POLYGON)} />
         </IconButton>
 
         <MapToolbarSeparator />
