@@ -4,19 +4,22 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import { connect } from 'react-redux'
 
-import Widget from '../Widget'
 import Condition from './conditions'
 import SelectNearestFeature from './interactions/SelectNearestFeature'
 import ContextMenu from './interactions/ContextMenu'
 import ContextMenuPopup from './ContextMenuPopup'
-import { Layers, stateObjectToLayer } from './layers/index'
+import { Layers, stateObjectToLayer } from './layers'
 import MapReferenceRequestHandler from './MapReferenceRequestHandler'
 import MapToolbar from './MapToolbar'
 import { isDrawingTool, Tool, toolToDrawInteractionType } from './tools'
 
-import { setSelectedFeatures, addSelectedFeatures, clearSelectedFeatures,
-  removeSelectedFeatures } from '../../actions/map'
+import Widget from '../Widget'
+
+import { addFeature } from '../../actions/features'
+import { addFeaturesToSelection, clearSelection, setSelectedFeatures,
+  removeFeaturesFromSelection } from '../../actions/map'
 import mapViewManager from '../../mapViewManager'
+import { createFeatureFromOpenLayers } from '../../model/features'
 import { getSelectedFeatureIds, getVisibleLayersInOrder } from '../../selectors'
 import { coordinateFromLonLat, formatCoordinate } from '../../utils/geography'
 
@@ -65,6 +68,7 @@ class MapViewPresentation extends React.Component {
     this._assignMapRef = this._assignMapRef.bind(this)
     this._isLayerSelectable = this._isLayerSelectable.bind(this)
     this._onBoxDragEnded = this._onBoxDragEnded.bind(this)
+    this._onDrawEnded = this._onDrawEnded.bind(this)
     this._onSelect = this._onSelect.bind(this)
 
     this._onContextMenu = this._onContextMenu.bind(this)
@@ -195,7 +199,8 @@ class MapViewPresentation extends React.Component {
 
         {/* DRAW mode | Click --> Draw a new feature */}
         <interaction.Draw active={isDrawingTool(selectedTool)}
-          type={toolToDrawInteractionType(selectedTool) || 'Point'} />
+          type={toolToDrawInteractionType(selectedTool) || 'Point'}
+          drawend={this._onDrawEnded}/>
 
         <ContextMenu
           layers={this._isLayerSelectable}
@@ -244,8 +249,8 @@ class MapViewPresentation extends React.Component {
    * Event handler that is called when the user finishes the drag-box
    * interaction on the map in "select" mode.
    *
-   * @param  {ol.DragBoxEvent} event  the event dispatched by the drag-box
-   *         interaction
+   * @param  {ol.interaction.DragBox.Event} event  the event dispatched by
+   *         the drag-box interaction
    */
   _onBoxDragEnded (event) {
     const layers = this.map.map.getLayers()
@@ -254,9 +259,9 @@ class MapViewPresentation extends React.Component {
     let action
 
     if (ol.events.condition.altKeyOnly(mapBrowserEvent)) {
-      action = removeSelectedFeatures
+      action = removeFeaturesFromSelection
     } else if (ol.events.condition.shiftKeyOnly(mapBrowserEvent)) {
-      action = addSelectedFeatures
+      action = addFeaturesToSelection
     } else {
       action = setSelectedFeatures
     }
@@ -275,6 +280,24 @@ class MapViewPresentation extends React.Component {
   }
 
   /**
+   * Event handler that is called when the user finishes drawing a new
+   * feature on the map in "draw" mode.
+   *
+   * At this stage, we only have an OpenLayers feature that is not attached
+   * to a specific layer yet. This function will dispatch the appropriate
+   * action to create a new feature in the Redux store, which will in turn
+   * create *another* equivalent feature on the OpenLayers map. The
+   * temporary feature in the event will be discarded.
+   *
+   * @param  {ol.interaction.Draw.Event} event  the event dispatched by the
+   *         draw interaction
+   */
+  _onDrawEnded (event) {
+    const feature = createFeatureFromOpenLayers(event.feature)
+    this.props.dispatch(addFeature(feature))
+  }
+
+  /**
    * Event handler that is called when the user selects a UAV on the map
    * by clicking.
    *
@@ -288,12 +311,12 @@ class MapViewPresentation extends React.Component {
     const { selectedFeatureIds } = this.props
     const id = feature ? feature.getId() : undefined
     const actionMapping = {
-      'add': addSelectedFeatures,
-      'clear': clearSelectedFeatures,
-      'remove': removeSelectedFeatures,
+      'add': addFeaturesToSelection,
+      'clear': clearSelection,
+      'remove': removeFeaturesFromSelection,
       'toggle': selectedFeatureIds.includes(id)
-        ? removeSelectedFeatures
-        : addSelectedFeatures
+        ? removeFeaturesFromSelection
+        : addFeaturesToSelection
     }
     const action = actionMapping[mode] || setSelectedFeatures
     if (id) {

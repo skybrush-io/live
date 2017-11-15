@@ -3,8 +3,8 @@
  */
 
 import { createAction } from 'redux-actions'
-import { SELECT_MAP_TOOL, ADD_SELECTED_FEATURES, SELECT_ALL_FEATURES,
-  CLEAR_SELECTED_FEATURES, SET_SELECTED_FEATURES, REMOVE_SELECTED_FEATURES,
+import { SELECT_MAP_TOOL, ADD_FEATURES_TO_SELECTION, SELECT_ALL_FEATURES,
+  CLEAR_SELECTION, SET_SELECTED_FEATURES, REMOVE_FEATURES_FROM_SELECTION,
   SELECT_MAP_SOURCE } from './types'
 
 import { uavIdToFeatureId } from '../model/identifiers'
@@ -28,7 +28,7 @@ export const selectMapTool = createAction(SELECT_MAP_TOOL)
  * @param {Array.<string>} ids  the IDs of the newly selected features to
  *        add to the existing selection.
  */
-export const addSelectedFeatures = createAction(ADD_SELECTED_FEATURES)
+export const addFeaturesToSelection = createAction(ADD_FEATURES_TO_SELECTION)
 
 /**
  * Action factory that creates an action that selects all the selectable
@@ -40,7 +40,7 @@ export const selectAllFeatures = createAction(SELECT_ALL_FEATURES)
  * Action factory that creates an action that clears the set of selected
  * features in the map.
  */
-export const clearSelectedFeatures = createAction(CLEAR_SELECTED_FEATURES)
+export const clearSelection = createAction(CLEAR_SELECTION)
 
 /**
  * Action factory that creates an action that removes a set of selected
@@ -49,7 +49,7 @@ export const clearSelectedFeatures = createAction(CLEAR_SELECTED_FEATURES)
  * @param {Array.<string>} ids  the IDs of the features to remove from the
  *        existing selection.
  */
-export const removeSelectedFeatures = createAction(REMOVE_SELECTED_FEATURES)
+export const removeFeaturesFromSelection = createAction(REMOVE_FEATURES_FROM_SELECTION)
 
 /**
  * Action factory that creates an action that sets the set of selected

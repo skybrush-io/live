@@ -2,7 +2,7 @@
  * @file Reducer function for handling the layer configuration of the map.
  */
 
-import _ from 'lodash'
+import { camelCase, keys, map } from 'lodash'
 import { handleActions } from 'redux-actions'
 import u from 'updeep'
 
@@ -54,14 +54,14 @@ const reducer = handleActions({
 
     if (!name) {
       // Generate a sensible name if no name was given
-      const existingNames = _.map(state.byId, layer => layer.label)
+      const existingNames = map(state.byId, layer => layer.label)
       name = chooseUniqueName('New layer', existingNames)
     }
 
     // Create an ID from the camel-cased variant of the name and ensure
     // that it is unique
-    const existingIds = _.keys(state.byId)
-    const id = chooseUniqueId(_.camelCase(name), existingIds)
+    const existingIds = keys(state.byId)
+    const id = chooseUniqueId(camelCase(name), existingIds)
 
     // Generate the new layer object
     const newLayer = {}
@@ -100,7 +100,7 @@ const reducer = handleActions({
     const layerUpdate = {}
     const { id, type } = action.payload
     if (state.byId[id].type === LayerType.UNTYPED) {
-      const existingNames = _.map(state.byId, layer => layer.label)
+      const existingNames = map(state.byId, layer => layer.label)
       const suggestedName = chooseUniqueName(labelForLayerType(type), existingNames)
       const currentName = state.byId[id].label
 

@@ -57,20 +57,20 @@ function updateSelection (current, add, remove) {
  * The reducer function that handles actions related to the snackbar.
  */
 const reducer = handleActions({
-  ADD_SELECTED_FEATURES (state, action) {
+  ADD_FEATURES_TO_SELECTION (state, action) {
     return updateSelection(state, action.payload)
+  },
+
+  CLEAR_SELECTION (state, action) {
+    return updateSelection([])
+  },
+
+  REMOVE_FEATURES_FROM_SELECTION (state, action) {
+    return updateSelection(state, [], action.payload)
   },
 
   SELECT_ALL_FEATURES (state, action) {
     return updateSelection(state, findAllFeatures(action.payload))
-  },
-
-  CLEAR_SELECTED_FEATURES (state, action) {
-    return updateSelection([])
-  },
-
-  REMOVE_SELECTED_FEATURES (state, action) {
-    return updateSelection(state, [], action.payload)
   },
 
   SET_SELECTED_FEATURES (state, action) {
