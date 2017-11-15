@@ -4,6 +4,7 @@ import React from 'react'
 import IconButton from 'material-ui/IconButton'
 import ActionPanTool from 'material-ui/svg-icons/action/pan-tool'
 import ActionZoomIn from 'material-ui/svg-icons/action/zoom-in'
+import CommunicationLocationOn from 'material-ui/svg-icons/communication/location-on'
 import ContentSelectAll from 'material-ui/svg-icons/content/select-all'
 import EditorShowChart from 'material-ui/svg-icons/editor/show-chart'
 import ImagePanoramaFishEye from 'material-ui/svg-icons/image/panorama-fish-eye'
@@ -66,6 +67,9 @@ class MapToolbarPresentation extends React.Component {
 
         <MapToolbarSeparator />
 
+        <IconButton onClick={partial(onToolSelected, Tool.DRAW_POINT)} tooltip='Add marker'>
+          <CommunicationLocationOn color={colorForTool(Tool.DRAW_POINT)} />
+        </IconButton>
         <IconButton onClick={partial(onToolSelected, Tool.DRAW_CIRCLE)} tooltip='Draw circle'>
           <ImagePanoramaFishEye color={colorForTool(Tool.DRAW_CIRCLE)} />
         </IconButton>

@@ -11,6 +11,7 @@ export const Tool = {
   ZOOM: 'zoom',
   PAN: 'pan',
 
+  DRAW_POINT: 'drawPoint',
   DRAW_CIRCLE: 'drawCircle',
   DRAW_PATH: 'drawPath',
   DRAW_POLYGON: 'drawPolygon'
@@ -35,6 +36,9 @@ export function isDrawingTool (tool) {
  */
 export function toolToDrawInteractionType (tool) {
   switch (tool) {
+    case Tool.DRAW_POINT:
+      return 'Point'
+
     case Tool.DRAW_CIRCLE:
       return 'Circle'
 
