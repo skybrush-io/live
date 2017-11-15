@@ -195,7 +195,7 @@ class MapViewPresentation extends React.Component {
 
         {/* DRAW mode | Click --> Draw a new feature */}
         <interaction.Draw active={isDrawingTool(selectedTool)}
-          type={toolToDrawInteractionType(selectedTool)} />
+          type={toolToDrawInteractionType(selectedTool) || 'Point'} />
 
         <ContextMenu
           layers={this._isLayerSelectable}
