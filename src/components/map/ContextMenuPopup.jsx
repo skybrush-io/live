@@ -168,7 +168,6 @@ class ContextMenuPopup extends React.Component {
 
   @autobind
   _shutdownSelectedUAVs () {
-    console.log('eee')
     messaging.shutdownUAVs(this.props.selectedUAVIds)
     this._handleRequestClose()
   }
