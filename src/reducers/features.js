@@ -7,7 +7,7 @@ import { camelCase, capitalize, keys, map } from 'lodash'
 import { handleActions } from 'redux-actions'
 import u from 'updeep'
 
-import { getNameOfFeatureType } from '../model/features'
+import { FeatureType, getNameOfFeatureType } from '../model/features'
 import { chooseUniqueId, chooseUniqueName } from '../utils/naming'
 
 /**
@@ -17,50 +17,62 @@ const defaultState = {
   byId: {
     examplePolygon: {
       id: 'examplePolygon',
-      type: 'polygon',
+      type: FeatureType.POLYGON,
       points: [
-        { lat: 47.474040, lon: 19.061313 },
-        { lat: 47.473699, lon: 19.063373 },
-        { lat: 47.471821, lon: 19.063619 },
-        { lat: 47.471835, lon: 19.061001 }
+        [ 19.061313, 47.474040 ],
+        [ 19.063373, 47.473699 ],
+        [ 19.063619, 47.471821 ],
+        [ 19.061001, 47.471835 ]
       ],
       color: '#ffcc00'
     }
     /*
     examplePoint: {
       id: 'examplePoint',
-      type: 'points',
+      type: FeatureType.POINTS,
       points: [
-        { lat: ..., lon: ... }
+        [ lon, lat ]
       ]
     },
     examplePointSet: {
       id: 'examplePointSet',
-      type: 'points',
+      type: FeatureType.POINTS,
       points: [
-        { lat: ..., lon: ... },
-        { lat: ..., lon: ... },
-        { lat: ..., lon: ... },
+        [ lon, lat ],
+        [ lon, lat ],
+        [ lon, lat ],
         ...
       ]
     },
     examplePath: {
       id: 'examplePath',
-      type: 'lineString',
+      type: FeatureType.LINE_STRING,
       points: [
-        { lat: ..., lon: ... },
-        { lat: ..., lon: ... },
-        { lat: ..., lon: ... },
+        [ lon, lat ],
+        [ lon, lat ],
+        [ lon, lat ],
         ...
       ]
     },
+    exampleCircle: {
+      id: 'exampleCircle',
+      type: FeatureType.CIRCLE,
+      // two points will define the circle exactly; the first one is the
+      // center, the second one is an arbitrary point on the circumference
+      // of the circle
+      points: [
+        [ lon, lat ],
+        [ lon, lat ]
+      ],
+      color: '#ffcc00'
+    },
     examplePolygon: {
       id: 'examplePolygon',
-      type: 'polygon',
+      type: FeatureType.POLYGON,
       points: [
-        { lat: ..., lon: ... },
-        { lat: ..., lon: ... },
-        { lat: ..., lon: ... },
+        [ lon, lat ],
+        [ lon, lat ],
+        [ lon, lat ],
         ...
       ],
       color: '#ffcc00'

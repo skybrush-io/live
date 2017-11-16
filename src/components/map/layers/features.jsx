@@ -1,12 +1,14 @@
 import Color from 'color'
+import { unary } from 'lodash'
 import { Feature, geom, layer, source } from 'ol-react'
 import PropTypes from 'prop-types'
 import ol from 'openlayers'
 import React from 'react'
 import { connect } from 'react-redux'
 
+import { FeatureType } from '../../../model/features'
 import { getFeaturesInOrder, getSelectedFeatureIds } from '../../../selectors'
-import { coordinateFromLonLat } from '../../../utils/geography'
+import { coordinateFromLonLat, euclideanDistance } from '../../../utils/geography'
 
 // === Settings for this particular layer type ===
 
@@ -29,58 +31,90 @@ export const FeaturesLayerSettings = connect(
 
 const geometryForFeature = feature => {
   const { points, type } = feature
-  const coordinates = points.map(point => coordinateFromLonLat([point.lon, point.lat]))
+  const coordinates = points.map(unary(coordinateFromLonLat))
 
   switch (type) {
-    case 'points': return (
-      coordinates.length > 1
-        ? <geom.MultiPoint>{coordinates}</geom.MultiPoint>
-        : <geom.Point>{coordinates[0]}</geom.Point>
-    )
+    case FeatureType.CIRCLE:
+      if (coordinates.length >= 2) {
+        const center = coordinates[0]
+        const radius = euclideanDistance(coordinates[0], coordinates[1])
+        return <geom.Circle radius={radius}>{center}</geom.Circle>
+      } else {
+        return null
+      }
 
-    case 'lineString': return <geom.LineString>{coordinates}</geom.LineString>
-    case 'polygon': return <geom.Polygon>{coordinates}</geom.Polygon>
-    default: return null
+    case FeatureType.POINTS:
+      return (
+        coordinates.length > 1
+          ? <geom.MultiPoint>{coordinates}</geom.MultiPoint>
+          : <geom.Point>{coordinates[0]}</geom.Point>
+      )
+
+    case FeatureType.LINE_STRING:
+      return <geom.LineString>{coordinates}</geom.LineString>
+
+    case FeatureType.POLYGON:
+      return <geom.Polygon>{coordinates}</geom.Polygon>
+
+    default:
+      return null
   }
 }
+
+const fill = (color) => new ol.style.Fill({ color })
+const thinOutline = (color) => new ol.style.Stroke({ color, width: 2 })
+const thickOutline = (color) => new ol.style.Stroke({ color, width: 5 })
+const whiteThinOutline = thinOutline('white')
+const whiteThickOutline = thickOutline('white')
+const whiteThickOutlineStyle = new ol.style.Style({ stroke: whiteThickOutline })
 
 // TODO: cache the style somewhere?
 const styleForFeature = (feature, selected = false) => {
   const { type, color } = feature
   const parsedColor = Color(color || '#0088ff')
+  const styles = []
 
   switch (type) {
     case 'points':
-      return new ol.style.Style({
+      styles.push(new ol.style.Style({
         image: new ol.style.Circle({
-          stroke: new ol.style.Stroke({
-            color: parsedColor.mix(Color('black'), 0.5).rgb().array(),
-            width: 2 + (selected ? 2 : 0)
-          }),
+          stroke: selected ? whiteThinOutline : undefined,
           fill: new ol.style.Fill({
             color: parsedColor.rgb().array()
           }),
-          radius: 6 + (selected ? 4 : 0)
+          radius: 6
         })
-      })
+      }))
+      break
 
     case 'lineString':
-      // fallthrough
+      if (selected) {
+        styles.push(whiteThickOutlineStyle)
+      }
+      styles.push(new ol.style.Style({
+        stroke: thinOutline(parsedColor.rgb().array())
+      }))
+      break
 
     case 'polygon':
       // fallthrough
 
     default:
-      return {
-        stroke: {
-          color: parsedColor.rgb().array(),
-          width: 1 + (selected ? 2 : 0)
-        },
-        fill: {
-          color: parsedColor.fade(selected ? 0.5 : 0.75).rgb().array()
-        }
+      styles.push(new ol.style.Style({
+        fill: fill(parsedColor.fade(selected ? 0.5 : 0.75).rgb().array())
+      }))
+      if (selected) {
+        styles.push(whiteThickOutlineStyle)
       }
+      styles.push(new ol.style.Style({
+        stroke: new ol.style.Stroke({
+          color: parsedColor.rgb().array(),
+          width: 2
+        })
+      }))
   }
+
+  return styles
 }
 
 const renderFeature = (feature, selected) => {

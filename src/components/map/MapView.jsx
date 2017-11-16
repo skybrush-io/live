@@ -18,6 +18,7 @@ import Widget from '../Widget'
 import { addFeature } from '../../actions/features'
 import { addFeaturesToSelection, clearSelection, setSelectedFeatures,
   removeFeaturesFromSelection } from '../../actions/map'
+import { handleError } from '../../error-handling'
 import mapViewManager from '../../mapViewManager'
 import { createFeatureFromOpenLayers } from '../../model/features'
 import { getSelectedFeatureIds, getVisibleLayersInOrder } from '../../selectors'
@@ -293,8 +294,12 @@ class MapViewPresentation extends React.Component {
    *         draw interaction
    */
   _onDrawEnded (event) {
-    const feature = createFeatureFromOpenLayers(event.feature)
-    this.props.dispatch(addFeature(feature))
+    try {
+      const feature = createFeatureFromOpenLayers(event.feature)
+      this.props.dispatch(addFeature(feature))
+    } catch (err) {
+      handleError(err)
+    }
   }
 
   /**
