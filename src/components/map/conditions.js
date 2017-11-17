@@ -55,6 +55,7 @@ Condition.contextMenu = mapBrowserEvent => (
  * @return {boolean}  whether the condition was met
  */
 Condition.rightClick = mapBrowserEvent => (
+  mapBrowserEvent.pointerEvent &&
   mapBrowserEvent.pointerEvent.type === 'pointerdown' &&
   mapBrowserEvent.pointerEvent.button === 2
 )
