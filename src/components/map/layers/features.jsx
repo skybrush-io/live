@@ -7,6 +7,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 
 import { FeatureType } from '../../../model/features'
+import { featureIdToGlobalId } from '../../../model/identifiers'
 import { getFeaturesInOrder, getSelectedFeatureIds } from '../../../selectors'
 import { coordinateFromLonLat, euclideanDistance } from '../../../utils/geography'
 
@@ -120,7 +121,7 @@ const styleForFeature = (feature, selected = false) => {
 const renderFeature = (feature, selected) => {
   const { id } = feature
   return (
-    <Feature id={'feature$' + id} key={id} style={styleForFeature(feature, selected)}>
+    <Feature id={featureIdToGlobalId(id)} key={id} style={styleForFeature(feature, selected)}>
       {geometryForFeature(feature)}
     </Feature>
   )
@@ -136,7 +137,10 @@ const FeaturesLayerPresentation = ({ features, projection, selectedFeatureIds, z
   <layer.Vector updateWhileAnimating updateWhileInteracting zIndex={zIndex}
     ref={markAsSelectable}>
     <source.Vector>
-      {features.map(feature => renderFeature(feature, selectedFeatureIds.includes('feature$' + feature.id)))}
+      {features.map(feature =>
+        renderFeature(feature, selectedFeatureIds.includes(
+          featureIdToGlobalId(feature.id)
+        )))}
     </source.Vector>
   </layer.Vector>
 )

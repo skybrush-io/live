@@ -1,7 +1,7 @@
 import { isNil, reject } from 'lodash'
 import { createSelector } from 'reselect'
 
-import { featureIdToUavId } from './model/identifiers'
+import { globalIdToUavId } from './model/identifiers'
 import { isLayerVisible } from './model/layers'
 
 /**
@@ -20,7 +20,7 @@ export const getSelectedFeatureIds = state => state.map.selection
 export const getSelectedUAVIds = createSelector(
   getSelectedFeatureIds,
   selectedFeatureIds => (
-    reject(selectedFeatureIds.map(featureIdToUavId), isNil)
+    reject(selectedFeatureIds.map(globalIdToUavId), isNil)
   )
 )
 

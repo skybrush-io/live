@@ -7,7 +7,7 @@ import { SELECT_MAP_TOOL, ADD_FEATURES_TO_SELECTION, SELECT_ALL_FEATURES,
   CLEAR_SELECTION, SET_SELECTED_FEATURES, REMOVE_FEATURES_FROM_SELECTION,
   SELECT_MAP_SOURCE } from './types'
 
-import { uavIdToFeatureId } from '../model/identifiers'
+import { uavIdToGlobalId } from '../model/identifiers'
 
 /**
  * Action factory that creates an action that selects a given source in the
@@ -70,4 +70,4 @@ export const setSelectedFeatures = createAction(SET_SELECTED_FEATURES)
  * @return {Object} an appropriately constructed action
  */
 export const setSelectedUAVIds =
-  ids => setSelectedFeatures(ids.map(uavIdToFeatureId))
+  ids => setSelectedFeatures(ids.map(uavIdToGlobalId))

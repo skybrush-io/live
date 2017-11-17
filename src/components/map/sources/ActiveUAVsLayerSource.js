@@ -11,7 +11,7 @@ import FeatureManager from '../FeatureManager'
 import UAVFeature from '../features/UAVFeature'
 
 import Flock from '../../../model/flock'
-import { uavIdToFeatureId } from '../../../model/identifiers'
+import { uavIdToGlobalId } from '../../../model/identifiers'
 import { updateUAVFeatureColorsSignal } from '../../../signals'
 
 /**
@@ -31,7 +31,7 @@ export default class ActiveUAVsLayerSource extends source.Vector {
 
     this.featureManager = new FeatureManager(this.source)
     this.featureManager.featureFactory = (id, geom) => (new UAVFeature(id, geom))
-    this.featureManager.featureIdFunction = uavIdToFeatureId
+    this.featureManager.featureIdFunction = uavIdToGlobalId
     this.featureManager.featureAdded.add(this._onFeatureAdded)
 
     updateUAVFeatureColorsSignal.add(() => {
