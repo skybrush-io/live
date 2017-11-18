@@ -8,8 +8,8 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import { connect } from 'react-redux'
 
-import MenuItem from 'material-ui/MenuItem'
-
+import { Divider, MenuItem } from 'material-ui'
+import ActionDelete from 'material-ui/svg-icons/action/delete'
 import ActionFlightTakeoff from 'material-ui/svg-icons/action/flight-takeoff'
 import ActionFlightLand from 'material-ui/svg-icons/action/flight-land'
 import ActionHome from 'material-ui/svg-icons/action/home'
@@ -18,7 +18,7 @@ import Message from 'material-ui/svg-icons/communication/message'
 
 import ContextMenu from '../ContextMenu'
 import { selectUAVInMessagesDialog, showMessagesDialog } from '../../actions/messages'
-import { getSelectedUAVIds } from '../../selectors'
+import { getSelectedFeatureIds, getSelectedUAVIds } from '../../selectors'
 import * as messaging from '../../utils/messaging'
 
 /**
@@ -48,7 +48,7 @@ class MapContextMenu extends React.Component {
   }
 
   render () {
-    const { selectedUAVIds } = this.props
+    const { selection, selectedUAVIds } = this.props
     return (
       <ContextMenu ref={this._assignContextMenuRef}>
         <MenuItem disabled={selectedUAVIds.length === 0}
@@ -75,6 +75,11 @@ class MapContextMenu extends React.Component {
           onClick={this._shutdownSelectedUAVs}
           primaryText='Halt'
           leftIcon={<ActionPowerSettingsNew color='red' />}
+        />
+        <Divider />
+        <MenuItem disabled={selection.length === 0}
+          primaryText='Remove'
+          leftIcon={<ActionDelete />}
         />
       </ContextMenu>
     )
@@ -112,6 +117,7 @@ class MapContextMenu extends React.Component {
 
 MapContextMenu.propTypes = {
   selectedUAVIds: PropTypes.arrayOf(PropTypes.string).isRequired,
+  selection: PropTypes.arrayOf(PropTypes.string).isRequired,
   selectUAVInMessagesDialog: PropTypes.func.isRequired,
   showMessagesDialog: PropTypes.func.isRequired
 }
@@ -119,7 +125,8 @@ MapContextMenu.propTypes = {
 const MapContextMenuContainer = connect(
   // mapStateToProps
   state => ({
-    selectedUAVIds: getSelectedUAVIds(state)
+    selectedUAVIds: getSelectedUAVIds(state),
+    selection: getSelectedFeatureIds(state)
   }),
   // mapDispatchToProps
   dispatch => ({

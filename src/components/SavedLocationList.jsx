@@ -18,6 +18,7 @@ import { connect } from 'react-redux'
 import { editSavedLocation } from '../actions/saved-location-editor'
 import { listOf } from './helpers/lists'
 
+import { getSavedLocationsInOrder } from '../selectors'
 import { mapViewToLocationSignal } from '../signals'
 
 /**
@@ -79,9 +80,7 @@ LocationListPresentation.displayName = 'LocationListPresentation'
 const LocationList = connect(
   // mapStateToProps
   state => ({
-    savedLocations: state.savedLocations.order.map(
-      id => state.savedLocations.byId[id]
-    )
+    savedLocations: getSavedLocationsInOrder(state)
   }),
   // mapDispatchToProps
   dispatch => ({

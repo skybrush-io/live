@@ -3,7 +3,7 @@
  * to the UAVs.
  */
 
-import _, { flatMap, isNil } from 'lodash'
+import { flatMap, isNil } from 'lodash'
 import CircularProgress from 'material-ui/CircularProgress'
 import TextField from 'material-ui/TextField'
 import PropTypes from 'prop-types'
@@ -20,6 +20,7 @@ import { formatCommandResponseAsHTML } from '../../flockwave/formatting'
 import Flock from '../../model/flock'
 import { MessageType } from '../../model/messages'
 import messageHub from '../../message-hub'
+import { reorder, selectOrdered } from '../../utils/collections'
 
 /**
  * Converts a message object from the Redux store into React components
@@ -181,9 +182,10 @@ const MessagesPanel = connect(
     const { messages } = state
     const { selectedUAVId } = messages
     const messageIds = selectedUAVId
-      ? messages.uavIdsToMessageIds[selectedUAVId] : []
+      ? (messages.uavIdsToMessageIds[selectedUAVId] || [])
+      : []
     const chatEntries = selectedUAVId
-      ? _(messageIds).map(id => messages.byId[id]).reject(isNil).value()
+      ? selectOrdered(reorder(messageIds, messages))
       : null
     return {
       chatEntries,

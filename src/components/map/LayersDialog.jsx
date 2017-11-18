@@ -19,12 +19,15 @@ import ArrowDown from 'material-ui/svg-icons/navigation/arrow-drop-down'
 import ArrowUp from 'material-ui/svg-icons/navigation/arrow-drop-up'
 
 import { adjustLayerZIndex, closeLayersDialog, renameLayer,
-         setSelectedLayerInLayersDialog, toggleLayerVisibility,
-         addLayer, removeLayer } from '../../actions/layers'
+  setSelectedLayerInLayersDialog, toggleLayerVisibility,
+  addLayer, removeLayer } from '../../actions/layers'
 import { selectableListOf } from '../helpers/lists'
 import { LayerType, labelForLayerType, iconForLayerType } from '../../model/layers'
+import { getLayersInOrder } from '../../selectors'
 import { createValidator, required } from '../../utils/validation'
 import { renderTextField } from '../helpers/reduxFormRenderers'
+
+import { LayerSettings, stateObjectToLayerSettings } from './layers/index'
 
 /**
  * Form for the basic settings of a layer that is applicable to all layers
@@ -115,8 +118,6 @@ const BasicLayerSettingsForm = connect(
 
 /* ********************************************************************* */
 
-import { LayerSettings, stateObjectToLayerSettings } from './layers/index.js'
-
 /**
  * Presentation component for the settings of a layer.
  */
@@ -197,7 +198,7 @@ const LayerListPresentation = selectableListOf(
       rightIcon={layer.visible ? undefined : <VisibilityOff />}
       className={selected ? 'selected-list-item' : undefined}
       onClick={props.onItemSelected}
-            />
+    />
   ),
   {
     backgroundHint: 'No layers',
@@ -224,9 +225,8 @@ LayerListPresentation.propTypes = {
 const LayerList = connect(
   // mapStateToProps
   state => {
-    const { byId, order } = state.map.layers
     return {
-      layers: order.map(layerId => byId[layerId]),
+      layers: getLayersInOrder(state),
       value: state.dialogs.layerSettings.selectedLayer
     }
   },
@@ -256,23 +256,23 @@ class LayersDialogPresentation extends React.Component {
     const { canMoveUp, canMoveDown, dialogVisible, selectedLayerId } = this.props
     const { onAddLayer, onClose } = this.props
     const actions = [
-      <IconButton onClick={onAddLayer}>
+      <IconButton key='add' onClick={onAddLayer}>
         <ContentAdd />
       </IconButton>,
-      <IconButton disabled={!selectedLayerId}
+      <IconButton key='remove' disabled={!selectedLayerId}
         onClick={this._removeSelectedLayer}>
         <ContentRemove />
       </IconButton>,
-      <IconButton disabled={!canMoveUp}
+      <IconButton key='moveUp' disabled={!canMoveUp}
         onClick={this._moveSelectedLayerUp}>
         <ArrowUp />
       </IconButton>,
-      <IconButton disabled={!canMoveDown}
+      <IconButton key='moveDown' disabled={!canMoveDown}
         onClick={this._moveSelectedLayerDown}>
         <ArrowDown />
       </IconButton>,
-      <div style={{ flex: 1 }} />,
-      <FlatButton label='Done' primary onClick={onClose} />
+      <div key='separator' style={{ flex: 1 }} />,
+      <FlatButton key='close' label='Done' primary onClick={onClose} />
     ]
 
     return (

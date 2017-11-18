@@ -8,6 +8,7 @@ import u from 'updeep'
 
 import { LayerType, createNewLayer, labelForLayerType,
   defaultParametersForLayerType } from '../../model/layers'
+import { deleteById } from '../../utils/collections'
 import { chooseUniqueId, chooseUniqueName } from '../../utils/naming'
 
 /**
@@ -137,10 +138,7 @@ const reducer = handleActions({
 
   REMOVE_LAYER (state, action) {
     const selectedLayer = action.payload
-    return u({
-      byId: u.omit(selectedLayer),
-      order: u.reject(layer => layer === selectedLayer)
-    }, state)
+    return deleteById(selectedLayer, state)
   },
 
   RENAME_LAYER (state, action) {

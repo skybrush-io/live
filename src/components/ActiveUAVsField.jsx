@@ -3,6 +3,7 @@
  * by typing its name or selecting it from the autocompletion dropdown.
  */
 
+import { autobind } from 'core-decorators'
 import _ from 'lodash'
 import AutoComplete from 'material-ui/AutoComplete'
 import PropTypes from 'prop-types'
@@ -30,10 +31,7 @@ export class UAVSelectorField extends React.Component {
       error: null
     }
 
-    this._onBlur = this._onBlur.bind(this)
-    this._onNewRequest = this._onNewRequest.bind(this)
-
-    this._selectAutoCompleteField = this._selectAutoCompleteField.bind(this)
+    this._assignAutoCompleteFieldRef = value => { this._autoCompleteField = value }
 
     this._signalBinding = undefined
     this._autoCompleteField = undefined
@@ -70,7 +68,7 @@ export class UAVSelectorField extends React.Component {
     const { prompt, style, uavIds, value } = this.props
     const { error } = this.state
     return (
-      <AutoComplete ref={element => { this._autoCompleteField = element }}
+      <AutoComplete ref={this._assignAutoCompleteFieldRef}
         hintText={prompt} maxSearchResults={5}
         dataSource={uavIds} searchText={value} errorText={error}
         filter={AutoComplete.caseInsensitiveFilter}
@@ -112,6 +110,7 @@ export class UAVSelectorField extends React.Component {
    * @param {FocusEvent} event  the focus event
    * @return {undefined}
    */
+  @autobind
   _onBlur (event) {
     // TODO: don't try to commit the value if the related target is the
     // dropdown menu of the autocomplete dialog
@@ -130,6 +129,7 @@ export class UAVSelectorField extends React.Component {
    *        happens to be the same as some item in the dropdown menu.
    * @return {undefined}
    */
+  @autobind
   _onNewRequest (chosenRequest, index) {
     if (index === -1 && !this._valueIsAmongUAVIds(chosenRequest)) {
       // The user did not choose from the dropdown and the value that the
@@ -157,6 +157,7 @@ export class UAVSelectorField extends React.Component {
     return uavIds && uavIds.indexOf(value) >= 0
   }
 
+  @autobind
   _selectAutoCompleteField () {
     if (!this._autoCompleteField) {
       console.warn('The autocomplete field has not registered yet.')

@@ -8,6 +8,7 @@
 import { handleActions } from 'redux-actions'
 import u from 'updeep'
 
+import { deleteById } from '../utils/collections'
 import { chooseUniqueIdFromName } from '../utils/naming'
 
 /**
@@ -90,19 +91,11 @@ const reducer = handleActions({
 
   DELETE_SAVED_LOCATION: (state, action) => {
     const currentLocationId = action.payload.savedLocationId
-
-    let updates = {}
-
     if (currentLocationId === 'addNew') {
-      updates = {}
+      return state
     } else {
-      updates = {
-        byId: u.omit(currentLocationId),
-        order: u.reject(id => id === currentLocationId)
-      }
+      return deleteById(currentLocationId, state)
     }
-
-    return u(updates, state)
   }
 }, defaultState)
 

@@ -89,8 +89,8 @@ export default class ContextMenu extends React.Component {
   }
 
   render () {
-    const { children } = this.props
-    const { position } = this.state
+    const { animated, children } = this.props
+    const { open, opening, position } = this.state
     const anchor = (
       <div style={{ position: 'absolute', left: position.x, top: position.y }}
         ref={this._assignAnchorRef} />
@@ -99,10 +99,12 @@ export default class ContextMenu extends React.Component {
     const menuItems = React.Children.map(children,
       child => React.cloneElement(child,
         {
-          onClick: event => {
-            child.onClick(event)
-            this._handleRequestClose()
-          }
+          onClick: child.props.onClick
+            ? event => {
+              child.props.onClick(event)
+              this._handleRequestClose()
+            }
+            : undefined
         }
       )
     )
@@ -111,13 +113,14 @@ export default class ContextMenu extends React.Component {
       <div>
         { anchor }
         <Popover
-          open={this.state.open || this.state.opening}
+          animated={!!animated}
+          open={open || opening}
           anchorEl={this.state.anchor}
           anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
           targetOrigin={{horizontal: 'left', vertical: 'top'}}
           onRequestClose={this._handleRequestClose}
         >
-          <Menu>
+          <Menu desktop>
             {menuItems}
           </Menu>
         </Popover>
@@ -127,5 +130,6 @@ export default class ContextMenu extends React.Component {
 }
 
 ContextMenu.propTypes = {
+  animated: PropTypes.bool,
   children: PropTypes.node
 }
