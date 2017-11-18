@@ -8,6 +8,8 @@ import Condition from './conditions'
 import SelectNearestFeature from './interactions/SelectNearestFeature'
 import ShowContextMenu from './interactions/ShowContextMenu'
 import { Layers, stateObjectToLayer } from './layers'
+
+import DrawingToolbar from './DrawingToolbar'
 import MapContextMenu from './MapContextMenu'
 import MapReferenceRequestHandler from './MapReferenceRequestHandler'
 import MapToolbar from './MapToolbar'
@@ -139,6 +141,10 @@ class MapViewPresentation extends React.Component {
 
         <Widget style={{ top: 8, left: (8 + 24 + 8) }} showControls={false}>
           <MapToolbar />
+        </Widget>
+
+        <Widget style={{ top: (8 + 48 + 8), left: 8 }} showControls={false}>
+          <DrawingToolbar />
         </Widget>
 
         <MapViewLayers />

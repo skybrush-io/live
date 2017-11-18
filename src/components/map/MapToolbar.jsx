@@ -2,14 +2,11 @@ import PropTypes from 'prop-types'
 import React from 'react'
 
 import IconButton from 'material-ui/IconButton'
+import muiThemeable from 'material-ui/styles/muiThemeable'
 import ActionPanTool from 'material-ui/svg-icons/action/pan-tool'
 import ActionZoomIn from 'material-ui/svg-icons/action/zoom-in'
-import CommunicationLocationOn from 'material-ui/svg-icons/communication/location-on'
 import ContentSelectAll from 'material-ui/svg-icons/content/select-all'
-import EditorShowChart from 'material-ui/svg-icons/editor/show-chart'
-import ImagePanoramaFishEye from 'material-ui/svg-icons/image/panorama-fish-eye'
 import MapsLayers from 'material-ui/svg-icons/maps/layers'
-import ToggleStarBorder from 'material-ui/svg-icons/toggle/star-border'
 
 import MapRotationTextBox from './MapRotationTextBox'
 import FitAllFeaturesButton from './FitAllFeaturesButton'
@@ -40,78 +37,53 @@ const MapToolbarSeparator = () => {
 /**
  * Presentation component for the map toolbar.
  *
- * @returns {Object} the rendered component
+ * @returns {React.Element} the rendered component
  */
-class MapToolbarPresentation extends React.Component {
-  render () {
-    const { selectedTool } = this.props
-    const { onShowLayersDialog, onToolSelected } = this.props
-    const { muiTheme } = this.context
+const MapToolbarPresentation = ({ muiTheme, onShowLayersDialog, onToolSelected, selectedTool }) => {
+  const selectedColor = muiTheme.palette.primary1Color
+  const colorForTool = (tool) => (
+    selectedTool === tool ? selectedColor : undefined
+  )
 
-    const selectedColor = muiTheme.palette.primary1Color
-    const colorForTool = (tool) => (
-      selectedTool === tool ? selectedColor : undefined
-    )
+  return (
+    <div>
+      <IconButton onClick={partial(onToolSelected, Tool.SELECT)} tooltip='Select'>
+        <ContentSelectAll color={colorForTool(Tool.SELECT)} />
+      </IconButton>
+      <IconButton onClick={partial(onToolSelected, Tool.ZOOM)} tooltip='Zoom'>
+        <ActionZoomIn color={colorForTool(Tool.ZOOM)} />
+      </IconButton>
+      <IconButton onClick={partial(onToolSelected, Tool.PAN)} tooltip='Pan'>
+        <ActionPanTool color={colorForTool(Tool.PAN)} />
+      </IconButton>
 
-    return (
-      <div>
-        <IconButton onClick={partial(onToolSelected, Tool.SELECT)} tooltip='Select'>
-          <ContentSelectAll color={colorForTool(Tool.SELECT)} />
-        </IconButton>
-        <IconButton onClick={partial(onToolSelected, Tool.ZOOM)} tooltip='Zoom'>
-          <ActionZoomIn color={colorForTool(Tool.ZOOM)} />
-        </IconButton>
-        <IconButton onClick={partial(onToolSelected, Tool.PAN)} tooltip='Pan'>
-          <ActionPanTool color={colorForTool(Tool.PAN)} />
-        </IconButton>
+      <MapToolbarSeparator />
 
-        <MapToolbarSeparator />
+      <IconButton onClick={onShowLayersDialog} tooltip='Layers'>
+        <MapsLayers />
+      </IconButton>
 
-        <IconButton onClick={partial(onToolSelected, Tool.DRAW_POINT)} tooltip='Add marker'>
-          <CommunicationLocationOn color={colorForTool(Tool.DRAW_POINT)} />
-        </IconButton>
-        <IconButton onClick={partial(onToolSelected, Tool.DRAW_CIRCLE)} tooltip='Draw circle'>
-          <ImagePanoramaFishEye color={colorForTool(Tool.DRAW_CIRCLE)} />
-        </IconButton>
-        <IconButton onClick={partial(onToolSelected, Tool.DRAW_PATH)} tooltip='Draw path'>
-          <EditorShowChart color={colorForTool(Tool.DRAW_PATH)} />
-        </IconButton>
-        <IconButton onClick={partial(onToolSelected, Tool.DRAW_POLYGON)} tooltip='Draw polygon'>
-          <ToggleStarBorder color={colorForTool(Tool.DRAW_POLYGON)} />
-        </IconButton>
+      <MapToolbarSeparator />
 
-        <MapToolbarSeparator />
+      <MapRotationTextBox resetDuration={500} fieldWidth='75px'
+        style={{
+          display: 'inline-block',
+          marginRight: '12px',
+          verticalAlign: 'top'
+        }} />
 
-        <IconButton onClick={onShowLayersDialog} tooltip='Layers'>
-          <MapsLayers />
-        </IconButton>
+      <MapToolbarSeparator />
 
-        <MapToolbarSeparator />
-
-        <MapRotationTextBox resetDuration={500} fieldWidth='75px'
-          style={{
-            display: 'inline-block',
-            marginRight: '12px',
-            verticalAlign: 'top'
-          }} />
-
-        <MapToolbarSeparator />
-
-        <FitAllFeaturesButton duration={500} margin={64} />
-      </div>
-    )
-  }
+      <FitAllFeaturesButton duration={500} margin={64} />
+    </div>
+  )
 }
 
 MapToolbarPresentation.propTypes = {
-  visibleSource: PropTypes.string,
-  selectedTool: PropTypes.string,
+  muiTheme: PropTypes.object,
   onShowLayersDialog: PropTypes.func,
-  onToolSelected: PropTypes.func
-}
-
-MapToolbarPresentation.contextTypes = {
-  muiTheme: PropTypes.object
+  onToolSelected: PropTypes.func,
+  selectedTool: PropTypes.string
 }
 
 /**
@@ -129,6 +101,6 @@ const MapToolbar = connect(
       dispatch(selectMapTool(tool))
     }
   })
-)(MapToolbarPresentation)
+)(muiThemeable()(MapToolbarPresentation))
 
 export default MapToolbar
