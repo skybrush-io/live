@@ -4,10 +4,12 @@
  * is close enough to the point where the user clicked and triggers a context-menu.
  */
 
+import { autobind } from 'core-decorators'
 import _ from 'lodash'
 import { interaction } from 'ol-react'
 import ol from 'openlayers'
 import PropTypes from 'prop-types'
+import React from 'react'
 
 import Condition from '../conditions'
 import { euclideanDistance } from '../../../utils/geography'
@@ -53,13 +55,16 @@ class ContextMenuInteraction extends ol.interaction.Interaction {
         const distance = distanceFunction(closestFeature)
 
         // If the feature is close enough...
-        if (distance <= this._threshold) {
+        if (distance <= this._threshold && this._selectAction) {
           // Now call the callback
-          this._select('add', closestFeature, distance)
+          this._selectAction('add', closestFeature, distance)
         }
 
-        // Trigger the actual context menu element
-        this._contextMenu(mapBrowserEvent)
+        // Trigger the context menu hook function if the user specified
+        // one
+        if (this._onContextMenu) {
+          this._onContextMenu(mapBrowserEvent)
+        }
 
         return ol.events.condition.pointerMove(mapBrowserEvent)
       }
@@ -72,8 +77,8 @@ class ContextMenuInteraction extends ol.interaction.Interaction {
     options = Object.assign(defaultOptions, options)
 
     this._condition = options.condition
-    this._select = options.select
-    this._contextMenu = options.contextMenu
+    this._selectAction = options.selectAction
+    this._onContextMenu = options.onContextMenu
     this._threshold = options.threshold
     this.setLayers(options.layers)
   }
@@ -161,17 +166,51 @@ class ContextMenuInteraction extends ol.interaction.Interaction {
  * React wrapper around an instance of {@link ContextMenuInteraction}
  * that allows us to use it in JSX.
  */
-export default class ContextMenu extends interaction.OLInteraction {
+export default class ShowContextMenu extends interaction.OLInteraction {
+  constructor (props) {
+    super(props)
+    this._assignContextMenuRef = (value) => { this._contextMenu = value }
+  }
+
   createInteraction (props) {
-    return new ContextMenuInteraction(props)
+    const effectiveProps = { ...props }
+    if (!props.onContextMenu) {
+      effectiveProps.onContextMenu = this._openContextMenuFromChild
+    }
+    return new ContextMenuInteraction(effectiveProps)
+  }
+
+  render () {
+    return this.props.children ? (
+      React.cloneElement(this.props.children, {
+        ref: this._assignContextMenuRef
+      })
+    ) : null
+  }
+
+  @autobind
+  _openContextMenuFromChild (event) {
+    const menu = this._contextMenu
+    const open =
+      menu.open || (
+        menu.getWrappedInstance ? menu.getWrappedInstance().open : undefined
+      )
+    if (open) {
+      const position = {
+        x: event.originalEvent.offsetX,
+        y: event.originalEvent.offsetY
+      }
+      open(position)
+    }
   }
 }
 
-ContextMenu.propTypes = Object.assign({}, interaction.OLInteraction.propTypes, {
+ShowContextMenu.propTypes = Object.assign({}, interaction.OLInteraction.propTypes, {
   layers: PropTypes.oneOfType([
     PropTypes.func, PropTypes.arrayOf(ol.layer.Layer)
   ]),
   select: PropTypes.func,
   contextMenu: PropTypes.func,
-  threshold: PropTypes.number
+  threshold: PropTypes.number,
+  children: PropTypes.element
 })

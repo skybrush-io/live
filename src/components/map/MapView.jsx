@@ -6,9 +6,9 @@ import { connect } from 'react-redux'
 
 import Condition from './conditions'
 import SelectNearestFeature from './interactions/SelectNearestFeature'
-import ContextMenu from './interactions/ContextMenu'
-import ContextMenuPopup from './ContextMenuPopup'
+import ShowContextMenu from './interactions/ShowContextMenu'
 import { Layers, stateObjectToLayer } from './layers'
+import MapContextMenu from './MapContextMenu'
 import MapReferenceRequestHandler from './MapReferenceRequestHandler'
 import MapToolbar from './MapToolbar'
 import { isDrawingTool, Tool, toolToDrawInteractionType } from './tools'
@@ -65,14 +65,12 @@ class MapViewPresentation extends React.Component {
   constructor (props) {
     super(props)
 
-    this._assignContextMenuPopupRef = this._assignContextMenuPopupRef.bind(this)
     this._assignMapRef = this._assignMapRef.bind(this)
+
     this._isLayerSelectable = this._isLayerSelectable.bind(this)
     this._onBoxDragEnded = this._onBoxDragEnded.bind(this)
     this._onDrawEnded = this._onDrawEnded.bind(this)
     this._onSelect = this._onSelect.bind(this)
-
-    this._onContextMenu = this._onContextMenu.bind(this)
   }
 
   componentDidMount () {
@@ -203,25 +201,17 @@ class MapViewPresentation extends React.Component {
           type={toolToDrawInteractionType(selectedTool) || 'Point'}
           drawend={this._onDrawEnded}/>
 
-        <ContextMenu
+        {/* OpenLayers interaction that triggers a context menu */}
+        <ShowContextMenu
           layers={this._isLayerSelectable}
-          select={this._onSelect}
-          contextMenu={this._onContextMenu}
-          threshold={40} />
+          selectAction={this._onSelect}
+          threshold={40}>
+          {/* The context menu that appears on the map when the user right-clicks */}
+          <MapContextMenu />
+        </ShowContextMenu>
 
-        <ContextMenuPopup ref={this._assignContextMenuPopupRef} />
       </Map>
     )
-  }
-
-  /**
-   * Handler called when the context menu popup component is mounted. We use
-   * it to store a reference to the component within this component.
-   *
-   * @param  {ContextMenuPopup} ref  the context menu being used in this component
-   */
-  _assignContextMenuPopupRef (ref) {
-    this.contextMenuPopup = ref
   }
 
   /**
@@ -340,21 +330,6 @@ class MapViewPresentation extends React.Component {
         return false
       }
     )
-  }
-
-  /**
-   * Custom handler for right mouse click events that pops up UAV options.
-   *
-   * @param {ol.MapBrowserEvent} mapBrowserEvent  the event that triggered
-   *        the context menu
-   */
-  _onContextMenu (mapBrowserEvent) {
-    const position = {
-      x: mapBrowserEvent.originalEvent.offsetX,
-      y: mapBrowserEvent.originalEvent.offsetY
-    }
-
-    this.contextMenuPopup.getWrappedInstance().open(position)
   }
 
   /**
