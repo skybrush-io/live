@@ -31,7 +31,7 @@ require('openlayers/css/ol.css')
 /**
  * React component that renders the layers of the map in the main window.
  *
- * @returns {JSX.Node}  the layers of the map
+ * @returns {JSX.Node[]}  the layers of the map
  */
 const MapViewLayersPresentation = ({ layers }) => {
   let zIndex = 0
@@ -43,7 +43,7 @@ const MapViewLayersPresentation = ({ layers }) => {
     }
   }
 
-  return <div>{renderedLayers}</div>
+  return renderedLayers
 }
 
 MapViewLayersPresentation.propTypes = {
@@ -59,6 +59,33 @@ const MapViewLayers = connect(
     layers: getVisibleLayersInOrder(state)
   })
 )(MapViewLayersPresentation)
+
+/**
+ * React component that renders the standard OpenLayers controls that we use
+ * on the map in the main window
+ *
+ * @returns {JSX.Node[]}  the controls on the map
+ */
+const MapViewControls = () => ([
+  <control.MousePosition key='control.MousePosition' projection='EPSG:4326'
+    coordinateFormat={formatCoordinate} />,
+  <control.ScaleLine key='control.ScaleLine' minWidth={128} />,
+  <control.Zoom key='control.Zoom' />
+])
+
+/**
+ * React component that renders the toolbar of the map in the main window.
+ *
+ * @returns {JSX.Node[]}  the toolbars on the map
+ */
+const MapViewToolbars = () => ([
+  <Widget style={{ top: 8, left: (8 + 24 + 8) }} showControls={false} key='Widget.MapToolbar'>
+    <MapToolbar />
+  </Widget>,
+  <Widget style={{ top: (8 + 48 + 8), left: 8 }} showControls={false} key='Widget.DrawingToolbar'>
+    <DrawingToolbar />
+  </Widget>
+])
 
 /**
  * React component for the map of the main window.
@@ -139,21 +166,9 @@ class MapViewPresentation extends React.Component {
 
         <MapReferenceRequestHandler />
 
-        <Widget style={{ top: 8, left: (8 + 24 + 8) }} showControls={false}>
-          <MapToolbar />
-        </Widget>
-
-        <Widget style={{ top: (8 + 48 + 8), left: 8 }} showControls={false}>
-          <DrawingToolbar />
-        </Widget>
-
+        <MapViewToolbars />
         <MapViewLayers />
-
-        <control.MousePosition projection='EPSG:4326'
-          coordinateFormat={formatCoordinate} />
-
-        <control.ScaleLine minWidth={128} />
-        <control.Zoom />
+        <MapViewControls />
 
         {/* PAN mode | Ctrl/Cmd + Drag --> Box select features */}
         <interaction.DragBox active={selectedTool === Tool.PAN}
