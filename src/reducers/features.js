@@ -25,6 +25,7 @@ const defaultState = {
         [ 19.063619, 47.471821 ],
         [ 19.061001, 47.471835 ]
       ],
+      label: 'Test polygon',
       color: '#ffcc00'
     }
     /*

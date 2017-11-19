@@ -115,6 +115,16 @@ const styleForFeature = (feature, selected = false) => {
       }))
   }
 
+  if (feature.label && feature.label.length > 0) {
+    styles.push(new ol.style.Style({
+      text: new ol.style.Text({
+        font: '12px sans-serif',
+        text: feature.label,
+        textAlign: 'center'
+      })
+    }))
+  }
+
   return styles
 }
 
