@@ -8,6 +8,7 @@ import { handleActions } from 'redux-actions'
 import u from 'updeep'
 
 import { FeatureType, getNameOfFeatureType } from '../model/features'
+import { deleteByIds } from '../utils/collections'
 import { chooseUniqueId, chooseUniqueName } from '../utils/naming'
 
 /**
@@ -122,6 +123,11 @@ const reducer = handleActions({
       byId: oldFeatures => Object.assign({}, oldFeatures, newFeature),
       order: oldOrder => [].concat(oldOrder, [id])
     }, state)
+  },
+
+  REMOVE_FEATURES (state, action) {
+    const { ids } = action.payload
+    return deleteByIds(ids, state)
   }
 }, defaultState)
 

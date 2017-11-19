@@ -1,10 +1,19 @@
 import { isNil, reject } from 'lodash'
 import { createSelector } from 'reselect'
 
-import { globalIdToUavId } from './model/identifiers'
+import { globalIdToFeatureId, globalIdToUavId } from './model/identifiers'
 import { isLayerVisible } from './model/layers'
 
 import { selectOrdered } from './utils/collections'
+
+/**
+ * Selector that retrieves the list of item IDs in the current selection
+ * from the state object.
+ *
+ * @param  {Object}  state  the state of the application
+ * @return {string[]}  the list of selected item IDs
+ */
+export const getSelection = state => state.map.selection
 
 /**
  * Selector that retrieves the list of selected feature IDs from the
@@ -13,16 +22,21 @@ import { selectOrdered } from './utils/collections'
  * @param  {Object}  state  the state of the application
  * @return {string[]}  the list of selected feature IDs
  */
-export const getSelectedFeatureIds = state => state.map.selection
+export const getSelectedFeatureIds = createSelector(
+  getSelection,
+  selection => (
+    reject(selection.map(globalIdToFeatureId), isNil)
+  )
+)
 
 /**
  * Selector that calculates and caches the list of selected UAV IDs from
  * the state object.
  */
 export const getSelectedUAVIds = createSelector(
-  getSelectedFeatureIds,
-  selectedFeatureIds => (
-    reject(selectedFeatureIds.map(globalIdToUavId), isNil)
+  getSelection,
+  selection => (
+    reject(selection.map(globalIdToUavId), isNil)
   )
 )
 

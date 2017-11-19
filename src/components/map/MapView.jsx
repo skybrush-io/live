@@ -23,7 +23,7 @@ import { addFeaturesToSelection, clearSelection, setSelectedFeatures,
 import { handleError } from '../../error-handling'
 import mapViewManager from '../../mapViewManager'
 import { createFeatureFromOpenLayers } from '../../model/features'
-import { getSelectedFeatureIds, getVisibleLayersInOrder } from '../../selectors'
+import { getSelection, getVisibleLayersInOrder } from '../../selectors'
 import { coordinateFromLonLat, formatCoordinate } from '../../utils/geography'
 
 require('openlayers/css/ol.css')
@@ -309,13 +309,13 @@ class MapViewPresentation extends React.Component {
    *         where the user clicked, in pixels
    */
   _onSelect (mode, feature, distance) {
-    const { selectedFeatureIds } = this.props
+    const { selection } = this.props
     const id = feature ? feature.getId() : undefined
     const actionMapping = {
       'add': addFeaturesToSelection,
       'clear': clearSelection,
       'remove': removeFeaturesFromSelection,
-      'toggle': selectedFeatureIds.includes(id)
+      'toggle': selection.includes(id)
         ? removeFeaturesFromSelection
         : addFeaturesToSelection
     }
@@ -351,7 +351,7 @@ class MapViewPresentation extends React.Component {
 
 MapViewPresentation.propTypes = {
   projection: PropTypes.func.isRequired,
-  selectedFeatureIds: PropTypes.arrayOf(PropTypes.string).isRequired,
+  selection: PropTypes.arrayOf(PropTypes.string).isRequired,
   selectedTool: PropTypes.string,
   dispatch: PropTypes.func.isRequired,
   glContainer: PropTypes.object
@@ -363,7 +363,7 @@ MapViewPresentation.propTypes = {
 const MapView = connect(
   // mapStateToProps
   state => ({
-    selectedFeatureIds: getSelectedFeatureIds(state),
+    selection: getSelection(state),
     selectedTool: state.map.tools.selectedTool
   })
 )(MapViewPresentation)

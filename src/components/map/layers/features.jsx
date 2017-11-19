@@ -138,9 +138,8 @@ const FeaturesLayerPresentation = ({ features, projection, selectedFeatureIds, z
     ref={markAsSelectable}>
     <source.Vector>
       {features.map(feature =>
-        renderFeature(feature, selectedFeatureIds.includes(
-          featureIdToGlobalId(feature.id)
-        )))}
+        renderFeature(feature, selectedFeatureIds.includes(feature.id))
+      )}
     </source.Vector>
   </layer.Vector>
 )

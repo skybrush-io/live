@@ -14,7 +14,7 @@ import ActiveUAVsLayerSource from '../sources/ActiveUAVsLayerSource'
 import { setLayerParameterById } from '../../../actions/layers'
 import { showSnackbarMessage } from '../../../actions/snackbar'
 import flock from '../../../flock'
-import { getSelectedFeatureIds } from '../../../selectors'
+import { getSelection } from '../../../selectors'
 import { updateUAVFeatureColorsSignal } from '../../../signals'
 import { coordinateFromLonLat } from '../../../utils/geography'
 import * as logging from '../../../utils/logging'
@@ -155,7 +155,7 @@ UAVsLayerPresentation.defaultProps = {
 export const UAVsLayer = connect(
   // mapStateToProps
   (state, ownProps) => ({
-    selection: getSelectedFeatureIds(state)
+    selection: getSelection(state)
   }),
   // mapDispatchToProps
   (dispatch, ownProps) => ({})

@@ -17,6 +17,8 @@ import ActionPowerSettingsNew from 'material-ui/svg-icons/action/power-settings-
 import Message from 'material-ui/svg-icons/communication/message'
 
 import ContextMenu from '../ContextMenu'
+
+import { removeFeatures } from '../../actions/features'
 import { selectUAVInMessagesDialog, showMessagesDialog } from '../../actions/messages'
 import { getSelectedFeatureIds, getSelectedUAVIds } from '../../selectors'
 import * as messaging from '../../utils/messaging'
@@ -48,7 +50,7 @@ class MapContextMenu extends React.Component {
   }
 
   render () {
-    const { selection, selectedUAVIds } = this.props
+    const { selectedFeatureIds, selectedUAVIds } = this.props
     return (
       <ContextMenu ref={this._assignContextMenuRef}>
         <MenuItem disabled={selectedUAVIds.length === 0}
@@ -77,7 +79,8 @@ class MapContextMenu extends React.Component {
           leftIcon={<ActionPowerSettingsNew color='red' />}
         />
         <Divider />
-        <MenuItem disabled={selection.length === 0}
+        <MenuItem disabled={selectedFeatureIds.length === 0}
+          onClick={this._removeSelectedFeatures}
           primaryText='Remove'
           leftIcon={<ActionDelete />}
         />
@@ -93,6 +96,11 @@ class MapContextMenu extends React.Component {
   @autobind
   _landSelectedUAVs () {
     messaging.landUAVs(this.props.selectedUAVIds)
+  }
+
+  @autobind
+  _removeSelectedFeatures () {
+    this.props.removeFeaturesByIds(this.props.selectedFeatureIds)
   }
 
   @autobind
@@ -116,8 +124,9 @@ class MapContextMenu extends React.Component {
 }
 
 MapContextMenu.propTypes = {
+  removeFeaturesByIds: PropTypes.func.isRequired,
+  selectedFeatureIds: PropTypes.arrayOf(PropTypes.string).isRequired,
   selectedUAVIds: PropTypes.arrayOf(PropTypes.string).isRequired,
-  selection: PropTypes.arrayOf(PropTypes.string).isRequired,
   selectUAVInMessagesDialog: PropTypes.func.isRequired,
   showMessagesDialog: PropTypes.func.isRequired
 }
@@ -125,11 +134,14 @@ MapContextMenu.propTypes = {
 const MapContextMenuContainer = connect(
   // mapStateToProps
   state => ({
-    selectedUAVIds: getSelectedUAVIds(state),
-    selection: getSelectedFeatureIds(state)
+    selectedFeatureIds: getSelectedFeatureIds(state),
+    selectedUAVIds: getSelectedUAVIds(state)
   }),
   // mapDispatchToProps
   dispatch => ({
+    removeFeaturesByIds: (ids) => {
+      dispatch(removeFeatures(ids))
+    },
     selectUAVInMessagesDialog: (id) => {
       dispatch(selectUAVInMessagesDialog(id))
     },
