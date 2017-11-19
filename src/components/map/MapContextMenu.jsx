@@ -14,11 +14,12 @@ import ActionFlightTakeoff from 'material-ui/svg-icons/action/flight-takeoff'
 import ActionFlightLand from 'material-ui/svg-icons/action/flight-land'
 import ActionHome from 'material-ui/svg-icons/action/home'
 import ActionPowerSettingsNew from 'material-ui/svg-icons/action/power-settings-new'
+import ImageEdit from 'material-ui/svg-icons/image/edit'
 import Message from 'material-ui/svg-icons/communication/message'
 
 import ContextMenu from '../ContextMenu'
 
-import { removeFeatures } from '../../actions/features'
+import { renameFeature, removeFeatures } from '../../actions/features'
 import { selectUAVInMessagesDialog, showMessagesDialog } from '../../actions/messages'
 import { getSelectedFeatureIds, getSelectedUAVIds } from '../../selectors'
 import * as messaging from '../../utils/messaging'
@@ -79,6 +80,11 @@ class MapContextMenu extends React.Component {
           leftIcon={<ActionPowerSettingsNew color='red' />}
         />
         <Divider />
+        <MenuItem disabled={selectedFeatureIds.length !== 1}
+          onClick={this._renameSelectedFeatures}
+          primaryText='Rename...'
+          leftIcon={<ImageEdit />}
+        />
         <MenuItem disabled={selectedFeatureIds.length === 0}
           onClick={this._removeSelectedFeatures}
           primaryText='Remove'
@@ -96,6 +102,23 @@ class MapContextMenu extends React.Component {
   @autobind
   _landSelectedUAVs () {
     messaging.landUAVs(this.props.selectedUAVIds)
+  }
+
+  @autobind
+  _renameSelectedFeatures () {
+    const { selectedFeatureIds } = this.props
+    if (selectedFeatureIds.length !== 1) {
+      return
+    }
+
+    const id = selectedFeatureIds[0]
+    // TODO: do this with a proper Material-UI dialog, not a browser prompt
+    const label = window.prompt(
+      'Enter the new label of the feature'
+    )
+    if (label !== null) {
+      this.props.renameFeature(id, label)
+    }
   }
 
   @autobind
@@ -124,6 +147,7 @@ class MapContextMenu extends React.Component {
 }
 
 MapContextMenu.propTypes = {
+  renameFeature: PropTypes.func.isRequired,
   removeFeaturesByIds: PropTypes.func.isRequired,
   selectedFeatureIds: PropTypes.arrayOf(PropTypes.string).isRequired,
   selectedUAVIds: PropTypes.arrayOf(PropTypes.string).isRequired,
@@ -141,6 +165,9 @@ const MapContextMenuContainer = connect(
   dispatch => ({
     removeFeaturesByIds: (ids) => {
       dispatch(removeFeatures(ids))
+    },
+    renameFeature: (id, label) => {
+      dispatch(renameFeature(id, label))
     },
     selectUAVInMessagesDialog: (id) => {
       dispatch(selectUAVInMessagesDialog(id))

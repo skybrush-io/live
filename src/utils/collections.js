@@ -40,13 +40,33 @@ export const deleteByIds = curry((idsToRemove, collection) => {
   if (idsToRemove.length === 1) {
     return deleteById(idsToRemove[0], collection)
   }
-  
+
   const updates = {
     byId: u.omit(idsToRemove),
     order: u.reject(id => idsToRemove.includes(id))
   }
   return u(updates, collection)
 })
+
+/**
+ * Creates a key string that can be used in a call to <code>u.updateIn</code>
+ * to update some properties of an item in an ordered collection.
+ *
+ * @param  {string}  itemId  the ID of the item
+ * @param  {...string?} subKeys optional sub-keys that will be appended to the
+ *         returned key if you want to update some deeply nested property
+ *         of the selected item
+ * @return {string}  an updeep key that corresponds to the item with the
+ *         given ID
+ */
+export const getKey = (itemId, ...subKeys) => {
+  if (itemId.indexOf('.') !== -1) {
+    throw new Error('Layer ID cannot contain dots')
+  }
+
+  const subKey = subKeys.join('.')
+  return subKey ? `byId.${itemId}.${subKey}` : `byId.${itemId}`
+}
 
 /**
  * Helper function that takes an ordered collection and converts it into an

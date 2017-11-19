@@ -38,6 +38,7 @@ export const TOGGLE_LAYER_VISIBILITY = 'TOGGLE_LAYER_VISIBILITY'
 // Feature-related actions
 export const ADD_FEATURE = 'ADD_FEATURE'
 export const REMOVE_FEATURES = 'REMOVE_FEATURES'
+export const RENAME_FEATURE = 'RENAME_FEATURE'
 
 // Saved location related actions
 export const EDIT_SAVED_LOCATION = 'EDIT_SAVED_LOCATION'

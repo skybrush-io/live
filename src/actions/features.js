@@ -3,7 +3,7 @@
  */
 
 import { createAction } from 'redux-actions'
-import { ADD_FEATURE, REMOVE_FEATURES } from './types'
+import { ADD_FEATURE, REMOVE_FEATURES, RENAME_FEATURE } from './types'
 
 /**
  * Action factory that creates an action that adds a new feature to the map.
@@ -21,6 +21,16 @@ export const addFeature = createAction(ADD_FEATURE,
  */
 export const removeFeature = createAction(REMOVE_FEATURES,
   id => ({ ids: [id] })
+)
+
+/**
+ * Action factory that creates an action that renames a feature on the map.
+ *
+ * @param {string}  id  the ID of the feature to name
+ * @param {string}  name  the new name of the feature
+ */
+export const renameFeature = createAction(RENAME_FEATURE,
+  (id, name) => ({ id, name })
 )
 
 /**

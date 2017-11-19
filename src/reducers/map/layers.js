@@ -8,7 +8,7 @@ import u from 'updeep'
 
 import { LayerType, createNewLayer, labelForLayerType,
   defaultParametersForLayerType } from '../../model/layers'
-import { deleteById } from '../../utils/collections'
+import { deleteById, getKey } from '../../utils/collections'
 import { chooseUniqueId, chooseUniqueName } from '../../utils/naming'
 
 /**
@@ -23,27 +23,6 @@ const defaultState = {
   },
   // .order contains the order of the layers, from bottom to top
   order: ['base', 'features', 'uavs']
-}
-
-/**
- * Creates a string key that can be used in a call to <code>u.updateIn</code>
- * to update some properties of a layer.
- *
- * @param  {string}  layerId  the ID of the layer
- * @param  {...string?} subKeys optional sub-keys that will be appended to the
- *         returned key if you want to update some deeply nested property
- *         of the selected layer
- * @return {string}  an updeep key that corresponds to the layer with the
- *         given ID
- */
-const getLayerKey = (layerId, ...subKeys) => {
-  if (layerId.indexOf('.') !== -1) {
-    throw new Error('Layer ID cannot contain dots')
-  }
-
-  const subKey = subKeys.join('.')
-
-  return subKey ? `byId.${layerId}.${subKey}` : `byId.${layerId}`
 }
 
 /**
@@ -122,7 +101,7 @@ const reducer = handleActions({
 
   SET_LAYER_PARAMETER_BY_ID (state, action) {
     return u.updateIn(
-      getLayerKey(action.payload.layerId, 'parameters', action.payload.parameter),
+      getKey(action.payload.layerId, 'parameters', action.payload.parameter),
       action.payload.value,
       state
     )
@@ -130,7 +109,7 @@ const reducer = handleActions({
 
   SET_LAYER_PARAMETERS_BY_ID (state, action) {
     return u.updateIn(
-      getLayerKey(action.payload.layerId, 'parameters'),
+      getKey(action.payload.layerId, 'parameters'),
       action.payload.parameters,
       state
     )
@@ -143,17 +122,17 @@ const reducer = handleActions({
 
   RENAME_LAYER (state, action) {
     const { id, name } = action.payload
-    return u.updateIn(getLayerKey(id, 'label'), name, state)
+    return u.updateIn(getKey(id, 'label'), name, state)
   },
 
   SELECT_MAP_SOURCE (state, action) {
     const { layerId, source } = action.payload
-    return u.updateIn(getLayerKey(layerId, 'parameters.source'), source, state)
+    return u.updateIn(getKey(layerId, 'parameters.source'), source, state)
   },
 
   TOGGLE_LAYER_VISIBILITY (state, action) {
     return u.updateIn(
-      getLayerKey(action.payload, 'visible'),
+      getKey(action.payload, 'visible'),
       value => !value,
       state
     )

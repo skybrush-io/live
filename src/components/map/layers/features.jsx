@@ -71,7 +71,7 @@ const whiteThickOutlineStyle = new ol.style.Style({ stroke: whiteThickOutline })
 
 // TODO: cache the style somewhere?
 const styleForFeature = (feature, selected = false) => {
-  const { type, color } = feature
+  const { color, label, type } = feature
   const parsedColor = Color(color || '#0088ff')
   const styles = []
 
@@ -115,10 +115,11 @@ const styleForFeature = (feature, selected = false) => {
       }))
   }
 
-  if (feature.label && feature.label.length > 0) {
+  if (label && label.length > 0) {
     styles.push(new ol.style.Style({
       text: new ol.style.Text({
         font: '12px sans-serif',
+        placement: (type === 'lineString' || type === 'polygon') ? 'line' : 'point',
         text: feature.label,
         textAlign: 'center'
       })
