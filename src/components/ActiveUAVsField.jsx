@@ -28,7 +28,8 @@ export class UAVSelectorField extends React.Component {
     super(props)
 
     this.state = {
-      error: null
+      error: null,
+      searchText: props.initialText
     }
 
     this._assignAutoCompleteFieldRef = value => { this._autoCompleteField = value }
@@ -65,16 +66,17 @@ export class UAVSelectorField extends React.Component {
   }
 
   render () {
-    const { prompt, style, uavIds, value } = this.props
-    const { error } = this.state
+    const { prompt, style, uavIds } = this.props
+    const { error, searchText } = this.state
     return (
       <AutoComplete ref={this._assignAutoCompleteFieldRef}
         hintText={prompt} maxSearchResults={5}
-        dataSource={uavIds} searchText={value} errorText={error}
+        dataSource={uavIds} searchText={searchText} errorText={error}
         filter={AutoComplete.caseInsensitiveFilter}
         fullWidth style={style}
         onBlur={this._onBlur}
         onNewRequest={this._onNewRequest}
+        onUpdateInput={this._onUpdateInput}
       />
     )
   }
@@ -146,6 +148,16 @@ export class UAVSelectorField extends React.Component {
   }
 
   /**
+   * Event handler that is called when the user types into the field.
+   *
+   * @param {string}  searchText  the new text that the user typed
+   */
+  @autobind
+  _onUpdateInput (searchText) {
+    this.setState({ searchText })
+  }
+
+  /**
    * Returns whether the given value is among the valid UAV IDs accepted
    * by this component.
    *
@@ -170,20 +182,20 @@ export class UAVSelectorField extends React.Component {
 
 UAVSelectorField.propTypes = {
   allowEmpty: PropTypes.bool.isRequired,
+  initialText: PropTypes.string,
   prompt: PropTypes.string.isRequired,
   style: PropTypes.object.isRequired,
   uavIds: PropTypes.arrayOf(PropTypes.string).isRequired,
-  value: PropTypes.string.isRequired,
 
   onValueChanged: PropTypes.func
 }
 
 UAVSelectorField.defaultProps = {
   allowEmpty: true,
+  initialValue: '',
   prompt: 'UAV ID',
   style: {},
-  uavIds: [],
-  value: ''
+  uavIds: []
 }
 
 /**
@@ -259,7 +271,7 @@ export class ActiveUAVsFieldPresentation extends React.Component {
     const { uavIds } = this.state
     return (
       <UAVSelectorField allowEmpty={allowEmpty} prompt={prompt}
-        style={style} value={value} onValueChanged={onValueChanged}
+        style={style} initialText={value} onValueChanged={onValueChanged}
         uavIds={uavIds} />
     )
   }
