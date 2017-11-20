@@ -3,7 +3,7 @@
  */
 
 import { createAction } from 'redux-actions'
-import { SELECT_MAP_TOOL, ADD_FEATURES_TO_SELECTION, SELECT_ALL_FEATURES,
+import { SELECT_MAP_TOOL, ADD_FEATURES_TO_SELECTION, SELECT_ALL_UAV_FEATURES,
   CLEAR_SELECTION, SET_SELECTED_FEATURES, REMOVE_FEATURES_FROM_SELECTION,
   SELECT_MAP_SOURCE } from './types'
 
@@ -31,10 +31,10 @@ export const selectMapTool = createAction(SELECT_MAP_TOOL)
 export const addFeaturesToSelection = createAction(ADD_FEATURES_TO_SELECTION)
 
 /**
- * Action factory that creates an action that selects all the selectable
+ * Action factory that creates an action that selects all the UAV-related
  * features on the map.
  */
-export const selectAllFeatures = createAction(SELECT_ALL_FEATURES)
+export const selectAllUAVFeatures = createAction(SELECT_ALL_UAV_FEATURES)
 
 /**
  * Action factory that creates an action that clears the set of selected

@@ -3,7 +3,7 @@
  */
 
 import { showLayersDialog } from './actions/layers'
-import { selectAllFeatures, clearSelectedFeatures,
+import { selectAllUAVFeatures, clearSelectedFeatures,
   selectMapTool, selectMapSource } from './actions/map'
 import { showMessagesDialog } from './actions/messages'
 
@@ -23,10 +23,10 @@ export default [
     description: 'Select all drones',
     on: 'down',
     keys: 'PlatMod + KeyA',
-    action: () => { store.dispatch(selectAllFeatures(flock)) }
+    action: () => { store.dispatch(selectAllUAVFeatures(flock)) }
   },
   {
-    description: 'Deselect all drones',
+    description: 'Clear selection',
     on: 'down',
     keys: 'PlatMod + Shift + KeyA',
     action: () => { store.dispatch(clearSelectedFeatures()) }

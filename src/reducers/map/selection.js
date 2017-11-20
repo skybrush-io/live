@@ -5,20 +5,22 @@
 
 import { handleActions } from 'redux-actions'
 
+import { uavIdToGlobalId } from '../../model/identifiers'
+
 /**
  * The default state of the selection.
  */
 const defaultState = []
 
 /**
- * Finds all the selectable features on the map.
+ * Finds all the UAV features on the map.
  *
  * @param {Flock} flock the object that contains the drones
  *
  * @returns {string[]} array containing the feature identifiers
  */
-function findAllFeatures (flock) {
-  return Object.keys(flock._uavsById)
+function findAllUAVFeatures (flock) {
+  return Object.keys(flock._uavsById).map(uavIdToGlobalId)
 }
 
 /**
@@ -69,8 +71,8 @@ const reducer = handleActions({
     return updateSelection(state, [], action.payload)
   },
 
-  SELECT_ALL_FEATURES (state, action) {
-    return updateSelection(state, findAllFeatures(action.payload))
+  SELECT_ALL_UAV_FEATURES (state, action) {
+    return updateSelection([], findAllUAVFeatures(action.payload))
   },
 
   SET_SELECTED_FEATURES (state, action) {
