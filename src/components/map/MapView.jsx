@@ -28,6 +28,8 @@ import { coordinateFromLonLat, formatCoordinate } from '../../utils/geography'
 
 require('openlayers/css/ol.css')
 
+/* ********************************************************************** */
+
 /**
  * React component that renders the layers of the map in the main window.
  *
@@ -60,6 +62,8 @@ const MapViewLayers = connect(
   })
 )(MapViewLayersPresentation)
 
+/* ********************************************************************** */
+
 /**
  * React component that renders the standard OpenLayers controls that we use
  * on the map in the main window
@@ -72,6 +76,8 @@ const MapViewControls = () => ([
   <control.ScaleLine key='control.ScaleLine' minWidth={128} />,
   <control.Zoom key='control.Zoom' />
 ])
+
+/* ********************************************************************** */
 
 /**
  * React component that renders the toolbar of the map in the main window.
@@ -87,6 +93,115 @@ const MapViewToolbars = () => ([
   </Widget>
 ])
 
+/* ********************************************************************** */
+
+/**
+ * React component that renders the active interactions of the map.
+ *
+ * @param  {Object}  props  the props of the component
+ * @returns {JSX.Node[]}  the interactions on the map
+ */
+const MapViewInteractions = (props) => {
+  const { onBoxDragEnded, onDrawEnded, onFeaturesSelected, selectedTool } = props
+  const interactions = []
+
+  // Common interactions that can be used regardless of the selected tool
+  /* PAN mode | Alt + Shift + Drag --> Rotate view */
+  interactions.push(
+    <interaction.DragRotate key='*.DragRotate'
+      condition={ol.events.condition.altShiftKeysOnly} />,
+    <interaction.DragRotateAndZoom key='*.DragRotateAndZoom'
+      condition={Condition.altShiftKeyAndMiddleMouseButton} />
+  )
+
+  if (selectedTool === Tool.PAN) {
+    interactions.push(
+      /* PAN mode | Ctrl/Cmd + Drag --> Box select features */
+      <interaction.DragBox key='pan.DragBox'
+        condition={ol.events.condition.platformModifierKeyOnly}
+        boxend={onBoxDragEnded} />
+    )
+  }
+
+  if (selectedTool === Tool.SELECT) {
+    interactions.push(
+      /* SELECT mode |
+          Ctrl/Cmd + Click --> Select nearest feature
+          Shift + Click --> Add nearest feature to selection
+          Alt + Click --> Remove nearest feature from selection */
+      <SelectNearestFeature key='select.SelectNearestFeature'
+        addCondition={ol.events.condition.never}
+        layers={isLayerSelectable}
+        removeCondition={ol.events.condition.altKeyOnly}
+        toggleCondition={Condition.platformModifierKeyOrShiftKeyOnly}
+        select={onFeaturesSelected}
+        threshold={40} />,
+
+      /* SELECT mode | Ctrl/Cmd + Drag --> Box select features */
+      <interaction.DragBox key='select.DragBox.Ctrl'
+        condition={ol.events.condition.platformModifierKeyOnly}
+        boxend={onBoxDragEnded} />,
+
+      /* SELECT mode | Shift + Drag --> Box add features to selection */
+      <interaction.DragBox key='select.DragBox.Shift'
+        condition={ol.events.condition.shiftKeyOnly}
+        boxend={onBoxDragEnded} />,
+
+      /* SELECT mode | Alt + Drag --> Box remove features from selection */
+      <interaction.DragBox key='select.DragBox.Alt'
+        condition={ol.events.condition.altKeyOnly}
+        boxend={onBoxDragEnded} />
+    )
+  }
+
+  if (selectedTool === Tool.ZOOM) {
+    interactions.push(
+      /* ZOOM mode | Drag --> Box zoom in */
+      <interaction.DragZoom key='zoom.DragZoom'
+        condition={ol.events.condition.always} />,
+
+      /* ZOOM mode | Shift + Drag --> Box zoom out */
+      <interaction.DragZoom key='zoom.DragZoom.out'
+        condition={ol.events.condition.shiftKeyOnly} out />
+    )
+  }
+
+  if (isDrawingTool(selectedTool)) {
+    interactions.push(
+      /* DRAW mode | Click --> Draw a new feature */
+      <interaction.Draw key='draw.Draw'
+        type={toolToDrawInteractionType(selectedTool) || 'Point'}
+        drawend={onDrawEnded}/>
+    )
+  }
+
+  return interactions
+}
+
+MapViewInteractions.propTypes = {
+  selectedTool: PropTypes.string.isRequired,
+
+  onBoxDragEnded: PropTypes.func,
+  onDrawEnded: PropTypes.func,
+  onFeaturesSelected: PropTypes.func
+}
+
+/* ********************************************************************** */
+
+/**
+ * Returns true if the given layer contains features that may be selected
+ * by the user.
+ *
+ * @param {ol.Layer} layer  the layer to test
+ * @return {boolean} whether the given layer contains features that may be
+ *     selected by the user
+ */
+function isLayerSelectable (layer) {
+  return layer && layer.getVisible() && layer.get('selectable')
+}
+
+/* ********************************************************************** */
+
 /**
  * React component for the map of the main window.
  */
@@ -96,7 +211,6 @@ class MapViewPresentation extends React.Component {
 
     this._assignMapRef = this._assignMapRef.bind(this)
 
-    this._isLayerSelectable = this._isLayerSelectable.bind(this)
     this._onBoxDragEnded = this._onBoxDragEnded.bind(this)
     this._onDrawEnded = this._onDrawEnded.bind(this)
     this._onSelect = this._onSelect.bind(this)
@@ -169,62 +283,15 @@ class MapViewPresentation extends React.Component {
         <MapViewToolbars />
         <MapViewLayers />
         <MapViewControls />
-
-        {/* PAN mode | Ctrl/Cmd + Drag --> Box select features */}
-        <interaction.DragBox active={selectedTool === Tool.PAN}
-          condition={ol.events.condition.platformModifierKeyOnly}
-          boxend={this._onBoxDragEnded} />
-
-        {/* PAN mode | Alt + Shift + Drag --> Rotate view */}
-        <interaction.DragRotate
-          condition={ol.events.condition.altShiftKeysOnly} />
-
-        <interaction.DragRotateAndZoom
-          condition={Condition.altShiftKeyAndMiddleMouseButton} />
-
-        {/* SELECT mode |
-             Ctrl/Cmd + Click --> Select nearest feature
-             Shift + Click --> Add nearest feature to selection
-             Alt + Click --> Remove nearest feature from selection */}
-        <SelectNearestFeature active={selectedTool === Tool.SELECT}
-          addCondition={ol.events.condition.never}
-          layers={this._isLayerSelectable}
-          removeCondition={ol.events.condition.altKeyOnly}
-          toggleCondition={Condition.platformModifierKeyOrShiftKeyOnly}
-          select={this._onSelect}
-          threshold={40} />
-
-        {/* SELECT mode | Ctrl/Cmd + Drag --> Box select features */}
-        <interaction.DragBox active={selectedTool === Tool.SELECT}
-          condition={ol.events.condition.platformModifierKeyOnly}
-          boxend={this._onBoxDragEnded} />
-
-        {/* SELECT mode | Shift + Drag --> Box add features to selection */}
-        <interaction.DragBox active={selectedTool === Tool.SELECT}
-          condition={ol.events.condition.shiftKeyOnly}
-          boxend={this._onBoxDragEnded} />
-
-        {/* SELECT mode | Alt + Drag --> Box remove features from selection */}
-        <interaction.DragBox active={selectedTool === Tool.SELECT}
-          condition={ol.events.condition.altKeyOnly}
-          boxend={this._onBoxDragEnded} />
-
-        {/* ZOOM mode | Drag --> Box zoom in */}
-        <interaction.DragZoom active={selectedTool === Tool.ZOOM}
-          condition={ol.events.condition.always} />
-
-        {/* ZOOM mode | Shift + Drag --> Box zoom out */}
-        <interaction.DragZoom active={selectedTool === Tool.ZOOM}
-          condition={ol.events.condition.shiftKeyOnly} out />
-
-        {/* DRAW mode | Click --> Draw a new feature */}
-        <interaction.Draw active={isDrawingTool(selectedTool)}
-          type={toolToDrawInteractionType(selectedTool) || 'Point'}
-          drawend={this._onDrawEnded}/>
+        <MapViewInteractions selectedTool={selectedTool}
+          onBoxDragEnded={this._onBoxDragEnded}
+          onDrawEnded={this._onDrawEnded}
+          onFeaturesSelected={this._onSelect}
+        />
 
         {/* OpenLayers interaction that triggers a context menu */}
         <ShowContextMenu
-          layers={this._isLayerSelectable}
+          layers={isLayerSelectable}
           selectAction={this._onSelect}
           threshold={40}>
           {/* The context menu that appears on the map when the user right-clicks */}
@@ -243,18 +310,6 @@ class MapViewPresentation extends React.Component {
    */
   _assignMapRef (ref) {
     this.map = ref
-  }
-
-  /**
-   * Returns true if the given layer contains features that may be selected
-   * by the user.
-   *
-   * @param {ol.Layer} layer  the layer to test
-   * @return {boolean} whether the given layer contains features that may be
-   *     selected by the user
-   */
-  _isLayerSelectable (layer) {
-    return layer && layer.getVisible() && layer.get('selectable')
   }
 
   /**
@@ -281,7 +336,7 @@ class MapViewPresentation extends React.Component {
     const extent = event.target.getGeometry().getExtent()
     const ids = []
 
-    layers.getArray().filter(this._isLayerSelectable).forEach(layer => {
+    layers.getArray().filter(isLayerSelectable).forEach(layer => {
       const source = layer.getSource()
       source.forEachFeatureIntersectingExtent(extent, feature => {
         ids.push(feature.getId())
