@@ -25,7 +25,7 @@ import mapViewManager from '../../mapViewManager'
 import { createFeatureFromOpenLayers } from '../../model/features'
 import { featureIdToGlobalId } from '../../model/identifiers'
 import { getSelectedFeatureIds, getSelection, getVisibleLayersInOrder } from '../../selectors'
-import { coordinateFromLonLat, formatCoordinate } from '../../utils/geography'
+import { coordinateFromLonLat, findFeaturesById, formatCoordinate } from '../../utils/geography'
 
 require('openlayers/css/ol.css')
 
@@ -317,27 +317,7 @@ class MapViewPresentation extends React.Component {
   @autobind
   _getSelectedFeatures (map) {
     const ids = this.props.selectedFeatures.map(featureIdToGlobalId)
-    const features = []
-    features.length = ids.length
-
-    // TODO: this might get slow if we have many features in the selection.
-    // Check and test.
-    map.getLayers().forEach(layer => {
-      const source = layer.getSource ? layer.getSource() : undefined
-      if (source && source.getFeatureById) {
-        const n = features.length
-        for (let i = 0; i < n; i++) {
-          if (features[i] === undefined) {
-            const feature = source.getFeatureById(ids[i])
-            if (feature !== undefined) {
-              features[i] = feature
-            }
-          }
-        }
-      }
-    })
-
-    return features
+    return findFeaturesById(map, ids)
   }
 
   /**

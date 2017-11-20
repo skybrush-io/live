@@ -2,7 +2,7 @@
  * @file Geography-related utility functions and variables.
  */
 
-import { minBy } from 'lodash'
+import { curry, minBy } from 'lodash'
 import ol from 'openlayers'
 
 /**
@@ -21,6 +21,55 @@ export const euclideanDistance = (first, second) => {
   }
   return Math.sqrt(sum)
 }
+
+/**
+ * Finds a single feature with a given global ID on all layers of an
+ * OpenLayers map.
+ *
+ * @param {ol.Map}  map  the OpenLayers map
+ * @param {string}  featureId  the ID of the feature to look for
+ * @return {ol.Feature}  the OpenLayers feature or undefined if there is
+ *         no such feature on any of the visible layers
+ */
+export const findFeatureById = curry((map, featureId) => {
+  return findFeaturesById(map, [featureId])[0]
+})
+
+/**
+ * Finds the features corresponding to an array of feature IDs on the given
+ * OpenLayers map.
+ *
+ * @param {ol.Map}    map  the OpenLayers map
+ * @param {string[]}  featureIds  the global IDs of the features
+ * @return {ol.Feature[]}  an array of OpenLayers features corresponding to
+ *         the given feature IDs; the array might contain undefined entries
+ *         for features that are not found on the map
+ */
+export const findFeaturesById = curry((map, featureIds) => {
+  const features = []
+  features.length = featureIds.length
+
+  map.getLayers().forEach(layer => {
+    if (!layer.getVisible()) {
+      return
+    }
+
+    const source = layer.getSource ? layer.getSource() : undefined
+    if (source && source.getFeatureById) {
+      const n = features.length
+      for (let i = 0; i < n; i++) {
+        if (features[i] === undefined) {
+          const feature = source.getFeatureById(featureIds[i])
+          if (feature !== undefined) {
+            features[i] = feature
+          }
+        }
+      }
+    }
+  })
+
+  return features
+})
 
 /**
  * Returns the closest point of a geometry from the given OpenLayers
