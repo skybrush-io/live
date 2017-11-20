@@ -133,6 +133,16 @@ export const makeCoordinateFormatter = (digits = 6) => {
   )
 }
 
+export const translateBy = curry((displacement, coordinates) => {
+  const dx = displacement[0]
+  const dy = displacement[1]
+  if (dx === 0 && dy === 0) {
+    return coordinates
+  } else {
+    return coordinates.map(coordinate => [coordinate[0] + dx, coordinate[1] + dy])
+  }
+})
+
 /**
  * Formats the given OpenLayers coordinate into the usual latitude-longitude
  * representation in a format suitable for the UI.

@@ -3,12 +3,13 @@
  * stores the features (waypoints, tracks and areas) shown on the map.
  */
 
-import { camelCase, capitalize, keys, map } from 'lodash'
+import { camelCase, capitalize, keys, map, mapValues } from 'lodash'
 import { handleActions } from 'redux-actions'
 import u from 'updeep'
 
 import { FeatureType, getNameOfFeatureType } from '../model/features'
 import { deleteByIds, getKey } from '../utils/collections'
+import { translateBy } from '../utils/geography'
 import { chooseUniqueId, chooseUniqueName } from '../utils/naming'
 
 /**
@@ -134,6 +135,16 @@ const reducer = handleActions({
   RENAME_FEATURE (state, action) {
     const { id, name } = action.payload
     return u.updateIn(getKey(id, 'label'), name, state)
+  },
+
+  TRANSLATE_FEATURES (state, action) {
+    const { displacements } = action.payload
+    const updates = mapValues(displacements,
+      (displacement, featureId) => ({
+        points: translateBy(displacements[featureId])
+      })
+    )
+    return u({ byId: u(updates) }, state)
   }
 }, defaultState)
 

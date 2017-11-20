@@ -17,13 +17,13 @@ import { isDrawingTool, Tool, toolToDrawInteractionType } from './tools'
 
 import Widget from '../Widget'
 
-import { addFeature } from '../../actions/features'
+import { addFeature, translateFeatures } from '../../actions/features'
 import { addFeaturesToSelection, clearSelection, setSelectedFeatures,
   removeFeaturesFromSelection } from '../../actions/map'
 import { handleError } from '../../error-handling'
 import mapViewManager from '../../mapViewManager'
 import { createFeatureFromOpenLayers } from '../../model/features'
-import { featureIdToGlobalId } from '../../model/identifiers'
+import { featureIdToGlobalId, globalIdToFeatureId } from '../../model/identifiers'
 import { getSelectedFeatureIds, getSelection, getVisibleLayersInOrder } from '../../selectors'
 import { coordinateFromLonLat, findFeaturesById, formatCoordinate } from '../../utils/geography'
 
@@ -388,7 +388,12 @@ class MapViewPresentation extends React.Component {
    */
   @autobind
   _onFeaturesMoved (event) {
-    // TODO
+    const displacements = {}
+    event.features.forEach(feature => {
+      const featureId = globalIdToFeatureId(feature.getId())
+      displacements[featureId] = [0, 0]   // TODO: calculate displacement properly
+    })
+    this.props.dispatch(translateFeatures(displacements))
   }
 
   /**

@@ -30,12 +30,13 @@ export class MoveFeaturesInteraction extends ol.interaction.Pointer {
 
         this.lastFeature_ = this.featureAtPixel_(event.pixel, event.map, features)
         if (!this.lastCoordinate_ && this.lastFeature_) {
+          this.firstCoordinate_ = event.coordinate
           this.lastCoordinate_ = event.coordinate
           this.features_ = features
           this.dispatchEvent(
             new MoveFeaturesInteractionEvent(
               ol.interaction.TranslateEventType.TRANSLATESTART,
-              features, event.coordinate
+              features, event.coordinate, [0, 0]
             )
           )
           return true
@@ -48,6 +49,10 @@ export class MoveFeaturesInteraction extends ol.interaction.Pointer {
           const newCoordinate = event.coordinate
           const deltaX = newCoordinate[0] - this.lastCoordinate_[0]
           const deltaY = newCoordinate[1] - this.lastCoordinate_[1]
+          const totalDelta = [
+            this.lastCoordinate_[0] - this.firstCoordinate_[0],
+            this.lastCoordinate_[1] - this.firstCoordinate_[1]
+          ]
           const features = this.features_
 
           features.forEach(feature => {
@@ -61,7 +66,7 @@ export class MoveFeaturesInteraction extends ol.interaction.Pointer {
           this.dispatchEvent(
             new MoveFeaturesInteractionEvent(
               ol.interaction.TranslateEventType.TRANSLATING,
-              features, newCoordinate
+              features, newCoordinate, totalDelta
             )
           )
         }
@@ -70,14 +75,19 @@ export class MoveFeaturesInteraction extends ol.interaction.Pointer {
       handleUpEvent: event => {
         if (this.lastCoordinate_) {
           const features = this.features_
+          const totalDelta = [
+            this.lastCoordinate_[0] - this.firstCoordinate_[0],
+            this.lastCoordinate_[1] - this.firstCoordinate_[1]
+          ]
 
+          this.firstCoordinate_ = null
           this.lastCoordinate_ = null
           this.features_ = null
 
           this.dispatchEvent(
             new MoveFeaturesInteractionEvent(
               ol.interaction.TranslateEventType.TRANSLATEEND,
-              features, event.coordinate
+              features, event.coordinate, totalDelta
             )
           )
 
@@ -89,6 +99,7 @@ export class MoveFeaturesInteraction extends ol.interaction.Pointer {
 
     const effectiveOptions = options || {}
 
+    this.firstCoordinate_ = null
     this.lastCoordinate_ = null
     this.features_ = null
     this.featureProvider_ = effectiveOptions.featureProvider
@@ -148,10 +159,11 @@ export class MoveFeaturesInteraction extends ol.interaction.Pointer {
 }
 
 class MoveFeaturesInteractionEvent extends ol.events.Event {
-  constructor (type, features, coordinate) {
+  constructor (type, features, coordinate, delta) {
     super(type)
     this.features = features
     this.coordinate = coordinate
+    this.delta = delta
   }
 }
 
