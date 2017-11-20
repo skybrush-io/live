@@ -1,4 +1,5 @@
 import { isNil, reject } from 'lodash'
+import ol from 'openlayers'
 import { createSelector } from 'reselect'
 
 import { globalIdToFeatureId, globalIdToUavId } from './model/identifiers'
@@ -27,6 +28,28 @@ export const getSelectedFeatureIds = createSelector(
   selection => (
     reject(selection.map(globalIdToFeatureId), isNil)
   )
+)
+
+const _selectedFeatureIdsCollection = new ol.Collection([], { unique: true })
+
+/**
+ * Selector that retrieves an OpenLayers collection containing the list of
+ * selected feature IDs from the state object.
+ *
+ * The selector will always return the *same* OpenLayers collection instance,
+ * but it will update the contents of the collection when the selection
+ * changes. It is the responsibility of components using this collection
+ * to listen for the appropriate events dispatched by the collection.
+ * @param  {Object}  state  the state of the application
+ * @return {string[]}  the list of selected feature IDs
+ */
+export const getSelectedFeatureIdsAsOpenLayersCollection = createSelector(
+  getSelection,
+  selection => {
+    _selectedFeatureIdsCollection.clear()
+    _selectedFeatureIdsCollection.extend(selection)
+    return _selectedFeatureIdsCollection
+  }
 )
 
 /**

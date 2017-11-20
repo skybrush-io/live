@@ -1,3 +1,4 @@
+import { autobind } from 'core-decorators'
 import ol from 'openlayers'
 import { Map, View, control, interaction } from 'ol-react'
 import PropTypes from 'prop-types'
@@ -5,8 +6,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 
 import Condition from './conditions'
-import SelectNearestFeature from './interactions/SelectNearestFeature'
-import ShowContextMenu from './interactions/ShowContextMenu'
+import { MoveFeatures, SelectNearestFeature, ShowContextMenu } from './interactions'
 import { Layers, stateObjectToLayer } from './layers'
 
 import DrawingToolbar from './DrawingToolbar'
@@ -23,7 +23,8 @@ import { addFeaturesToSelection, clearSelection, setSelectedFeatures,
 import { handleError } from '../../error-handling'
 import mapViewManager from '../../mapViewManager'
 import { createFeatureFromOpenLayers } from '../../model/features'
-import { getSelection, getVisibleLayersInOrder } from '../../selectors'
+import { featureIdToGlobalId } from '../../model/identifiers'
+import { getSelectedFeatureIds, getSelection, getVisibleLayersInOrder } from '../../selectors'
 import { coordinateFromLonLat, formatCoordinate } from '../../utils/geography'
 
 require('openlayers/css/ol.css')
@@ -102,7 +103,8 @@ const MapViewToolbars = () => ([
  * @returns {JSX.Node[]}  the interactions on the map
  */
 const MapViewInteractions = (props) => {
-  const { onBoxDragEnded, onDrawEnded, onFeaturesSelected, selectedTool } = props
+  const { onBoxDragEnded, onDrawEnded, onFeaturesMoved,
+    onFeaturesSelected, selectedFeaturesProvider, selectedTool } = props
   const interactions = []
 
   // Common interactions that can be used regardless of the selected tool
@@ -125,6 +127,11 @@ const MapViewInteractions = (props) => {
 
   if (selectedTool === Tool.SELECT) {
     interactions.push(
+      /* SELECT mode | Drag a feature --> Move a feature to a new location */
+      <MoveFeatures key='select.MoveFeatures'
+        featureProvider={selectedFeaturesProvider}
+        translateend={onFeaturesMoved} />,
+
       /* SELECT mode |
           Ctrl/Cmd + Click --> Select nearest feature
           Shift + Click --> Add nearest feature to selection
@@ -179,10 +186,12 @@ const MapViewInteractions = (props) => {
 }
 
 MapViewInteractions.propTypes = {
+  selectedFeaturesProvider: PropTypes.func,
   selectedTool: PropTypes.string.isRequired,
 
   onBoxDragEnded: PropTypes.func,
   onDrawEnded: PropTypes.func,
+  onFeaturesMoved: PropTypes.func,
   onFeaturesSelected: PropTypes.func
 }
 
@@ -206,16 +215,6 @@ function isLayerSelectable (layer) {
  * React component for the map of the main window.
  */
 class MapViewPresentation extends React.Component {
-  constructor (props) {
-    super(props)
-
-    this._assignMapRef = this._assignMapRef.bind(this)
-
-    this._onBoxDragEnded = this._onBoxDragEnded.bind(this)
-    this._onDrawEnded = this._onDrawEnded.bind(this)
-    this._onSelect = this._onSelect.bind(this)
-  }
-
   componentDidMount () {
     const { glContainer } = this.props
     this.layoutManager = glContainer ? glContainer.layoutManager : undefined
@@ -286,13 +285,15 @@ class MapViewPresentation extends React.Component {
         <MapViewInteractions selectedTool={selectedTool}
           onBoxDragEnded={this._onBoxDragEnded}
           onDrawEnded={this._onDrawEnded}
-          onFeaturesSelected={this._onSelect}
+          onFeaturesMoved={this._onFeaturesMoved}
+          onFeaturesSelected={this._onFeaturesSelected}
+          selectedFeaturesProvider={this._getSelectedFeatures}
         />
 
         {/* OpenLayers interaction that triggers a context menu */}
         <ShowContextMenu
           layers={isLayerSelectable}
-          selectAction={this._onSelect}
+          selectAction={this._onFeaturesSelected}
           threshold={40}>
           {/* The context menu that appears on the map when the user right-clicks */}
           <MapContextMenu />
@@ -308,8 +309,35 @@ class MapViewPresentation extends React.Component {
    *
    * @param  {Map} ref  the map being shown in this component
    */
+  @autobind
   _assignMapRef (ref) {
     this.map = ref
+  }
+
+  @autobind
+  _getSelectedFeatures (map) {
+    const ids = this.props.selectedFeatures.map(featureIdToGlobalId)
+    const features = []
+    features.length = ids.length
+
+    // TODO: this might get slow if we have many features in the selection.
+    // Check and test.
+    map.getLayers().forEach(layer => {
+      const source = layer.getSource ? layer.getSource() : undefined
+      if (source && source.getFeatureById) {
+        const n = features.length
+        for (let i = 0; i < n; i++) {
+          if (features[i] === undefined) {
+            const feature = source.getFeatureById(ids[i])
+            if (feature !== undefined) {
+              features[i] = feature
+            }
+          }
+        }
+      }
+    })
+
+    return features
   }
 
   /**
@@ -319,6 +347,7 @@ class MapViewPresentation extends React.Component {
    * @param  {ol.interaction.DragBox.Event} event  the event dispatched by
    *         the drag-box interaction
    */
+  @autobind
   _onBoxDragEnded (event) {
     const layers = this.map.map.getLayers()
     const mapBrowserEvent = event.mapBrowserEvent
@@ -359,6 +388,7 @@ class MapViewPresentation extends React.Component {
    * @param  {ol.interaction.Draw.Event} event  the event dispatched by the
    *         draw interaction
    */
+  @autobind
   _onDrawEnded (event) {
     try {
       const feature = createFeatureFromOpenLayers(event.feature)
@@ -369,8 +399,21 @@ class MapViewPresentation extends React.Component {
   }
 
   /**
-   * Event handler that is called when the user selects a UAV on the map
-   * by clicking.
+   * Event handler that is called when some features were moved on the
+   * map by dragging.
+   *
+   * @param  {MoveFeaturesInteractionEvent}  event  the event that was
+   *         triggered at the end of the interaction
+   * @param  {ol.Feature[]}  event.features  the features that were moved
+   */
+  @autobind
+  _onFeaturesMoved (event) {
+    // TODO
+  }
+
+  /**
+   * Event handler that is called when the user selects a UAV or feature on
+   * the map by clicking or dragging.
    *
    * @param  {string}  mode  the selection mode; one of 'add', 'remove',
    *         'toggle' or 'set'
@@ -378,7 +421,8 @@ class MapViewPresentation extends React.Component {
    * @param  {number}  distance  the distance of the feature from the point
    *         where the user clicked, in pixels
    */
-  _onSelect (mode, feature, distance) {
+  @autobind
+  _onFeaturesSelected (mode, feature, distance) {
     const { selection } = this.props
     const id = feature ? feature.getId() : undefined
     const actionMapping = {
@@ -398,6 +442,7 @@ class MapViewPresentation extends React.Component {
   /**
    * Method to disable the browsers default context menu.
    */
+  @autobind
   _disableDefaultContextMenu () {
     this.map.map.getViewport().addEventListener(
       'contextmenu',
@@ -422,6 +467,7 @@ class MapViewPresentation extends React.Component {
 MapViewPresentation.propTypes = {
   projection: PropTypes.func.isRequired,
   selection: PropTypes.arrayOf(PropTypes.string).isRequired,
+  selectedFeatures: PropTypes.arrayOf(PropTypes.string).isRequired,
   selectedTool: PropTypes.string,
   dispatch: PropTypes.func.isRequired,
   glContainer: PropTypes.object
@@ -433,8 +479,9 @@ MapViewPresentation.propTypes = {
 const MapView = connect(
   // mapStateToProps
   state => ({
-    selection: getSelection(state),
-    selectedTool: state.map.tools.selectedTool
+    selectedFeatures: getSelectedFeatureIds(state),
+    selectedTool: state.map.tools.selectedTool,
+    selection: getSelection(state)
   })
 )(MapViewPresentation)
 
