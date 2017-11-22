@@ -4,7 +4,7 @@
  */
 
 import Button from 'material-ui/Button'
-import Dialog from 'material-ui/Dialog'
+import Dialog, { DialogActions, DialogContent } from 'material-ui/Dialog'
 import PropTypes from 'prop-types'
 import React from 'react'
 import { connect } from 'react-redux'
@@ -96,18 +96,16 @@ class MessagesDialogPresentation extends React.Component {
       </Button>,
       <Button key='close' onClick={onClose}>Close</Button>
     ]
-    const contentStyle = {
-      width: '640px'
-    }
+    
     return (
-      <Dialog
-        open={open} contentStyle={contentStyle}
-        actions={actions} onRequestClose={onClose}
-      >
-        <MessagesPanel
-          ref={this._setMessagesPanel} style={{ height: '35ex' }}
-          textFieldsAtBottom flock={flock}
-        />
+      <Dialog open={open} onRequestClose={onClose}>
+        <DialogContent>
+          <MessagesPanel
+            ref={this._setMessagesPanel} style={{ height: '35ex' }}
+            textFieldsAtBottom flock={flock}
+          />
+        </DialogContent>
+        <DialogActions>{actions}</DialogActions>
       </Dialog>
     )
   }

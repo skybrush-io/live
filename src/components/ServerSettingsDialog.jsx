@@ -9,7 +9,7 @@ import { connect } from 'react-redux'
 import { change, reduxForm, Field } from 'redux-form'
 
 import Button from 'material-ui/Button'
-import Dialog from 'material-ui/Dialog'
+import Dialog, { DialogActions, DialogContent, DialogTitle } from 'material-ui/Dialog'
 
 import { closeServerSettingsDialog } from '../actions/server-settings'
 import { createValidator, between, integer, required } from '../utils/validation'
@@ -92,13 +92,14 @@ class ServerSettingsDialogPresentation extends React.Component {
       width: '320px'
     }
     return (
-      <Dialog title='Server Settings' open={open}
-        actions={actions} contentStyle={contentStyle}
-        onRequestClose={onClose}
-      >
-        <ServerSettingsForm ref='form'
-          onSubmit={onSubmit}
-          onKeyPress={this._handleKeyPress} />
+      <Dialog open={open} onRequestClose={onClose}>
+        <DialogTitle>Server settings</DialogTitle>
+        <DialogContent>
+          <ServerSettingsForm ref='form'
+            onSubmit={onSubmit}
+            onKeyPress={this._handleKeyPress} />
+        </DialogContent>
+        <DialogActions>{actions}</DialogActions>
       </Dialog>
     )
   }

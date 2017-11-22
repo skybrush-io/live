@@ -3,8 +3,8 @@
  * there is an unexpected error.
  */
 
- import Button from 'material-ui/Button'
-import Dialog from 'material-ui/Dialog'
+import Button from 'material-ui/Button'
+import Dialog, { DialogActions, DialogContent, DialogContentText, DialogTitle } from 'material-ui/Dialog'
 
 import PropTypes from 'prop-types'
 import React from 'react'
@@ -26,9 +26,12 @@ const GlobalErrorDialogPresentation = ({ open, message, onClose }) => {
   }
 
   return (
-    <Dialog open={open} title='An error happened' modal
-      contentStyle={contentStyle} actions={actions}>
-      {message}
+    <Dialog open={open} modal actions={actions}>
+      <DialogTitle>An error happened</DialogTitle>
+      <DialogContent>
+        <DialogContentText>{message}</DialogContentText>
+      </DialogContent>
+      <DialogActions>{actions}</DialogActions>
     </Dialog>
   )
 }
