@@ -74,6 +74,7 @@ const styleForFeature = (feature, selected = false) => {
   const { color, label, type } = feature
   const parsedColor = Color(color || '#0088ff')
   const styles = []
+  const radius = 6
 
   switch (type) {
     case 'points':
@@ -83,7 +84,7 @@ const styleForFeature = (feature, selected = false) => {
           fill: new ol.style.Fill({
             color: parsedColor.rgb().array()
           }),
-          radius: 6
+          radius
         })
       }))
       break
@@ -119,6 +120,7 @@ const styleForFeature = (feature, selected = false) => {
     styles.push(new ol.style.Style({
       text: new ol.style.Text({
         font: '12px sans-serif',
+        offsetY: type === 'points' ? radius + 10 : 0,
         placement: (type === 'lineString' || type === 'polygon') ? 'line' : 'point',
         text: feature.label,
         textAlign: 'center'

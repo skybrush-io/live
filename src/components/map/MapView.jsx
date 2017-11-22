@@ -17,7 +17,7 @@ import { isDrawingTool, Tool, toolToDrawInteractionType } from './tools'
 
 import Widget from '../Widget'
 
-import { addFeature, translateFeatures } from '../../actions/features'
+import { addFeature, updateFeatureCoordinates } from '../../actions/features'
 import { addFeaturesToSelection, clearSelection, setSelectedFeatures,
   removeFeaturesFromSelection } from '../../actions/map'
 import { handleError } from '../../error-handling'
@@ -388,12 +388,12 @@ class MapViewPresentation extends React.Component {
    */
   @autobind
   _onFeaturesMoved (event) {
-    const displacements = {}
+    const coordinates = {}
     event.features.forEach(feature => {
       const featureId = globalIdToFeatureId(feature.getId())
-      displacements[featureId] = [0, 0]   // TODO: calculate displacement properly
+      coordinates[featureId] = createFeatureFromOpenLayers(feature).points
     })
-    this.props.dispatch(translateFeatures(displacements))
+    this.props.dispatch(updateFeatureCoordinates(coordinates))
   }
 
   /**

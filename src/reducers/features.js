@@ -137,12 +137,10 @@ const reducer = handleActions({
     return u.updateIn(getKey(id, 'label'), name, state)
   },
 
-  TRANSLATE_FEATURES (state, action) {
-    const { displacements } = action.payload
-    const updates = mapValues(displacements,
-      (displacement, featureId) => ({
-        points: translateBy(displacements[featureId])
-      })
+  UPDATE_FEATURE_COORDINATES (state, action) {
+    const { coordinates } = action.payload
+    const updates = mapValues(coordinates,
+      coordinate => ({ points: coordinate })
     )
     return u({ byId: u(updates) }, state)
   }

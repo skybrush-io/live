@@ -4,7 +4,7 @@
 
 import { createAction } from 'redux-actions'
 import { ADD_FEATURE, REMOVE_FEATURES, RENAME_FEATURE,
-  TRANSLATE_FEATURES } from './types'
+  UPDATE_FEATURE_COORDINATES } from './types'
 
 /**
  * Action factory that creates an action that adds a new feature to the map.
@@ -45,11 +45,12 @@ export const removeFeatures = createAction(REMOVE_FEATURES,
 )
 
 /**
- * Action factory that creates an action that moves some features on the map.
+ * Action factory that creates an action that updates the coordinates of
+ * some features on the map.
  *
- * @param {Object}  displacements  an object mapping feature IDs to their
- *        desired displacements on the map as OpenLayers coordinates
+ * @param {Object}  coordinates  an object mapping feature IDs to their
+ *        new coordinates on the map
  */
-export const translateFeatures = createAction(TRANSLATE_FEATURES,
-  displacements => ({ displacements })
+export const updateFeatureCoordinates = createAction(UPDATE_FEATURE_COORDINATES,
+  coordinates => ({ coordinates })
 )

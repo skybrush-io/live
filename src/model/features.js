@@ -3,7 +3,7 @@
  * that we use on the map.
  */
 
-import { dropRight, unary } from 'lodash'
+import { unary } from 'lodash'
 import { lonLatFromCoordinate } from '../utils/geography'
 
 /**
@@ -61,7 +61,7 @@ export function createFeatureFromOpenLayers (olFeature) {
       }
       Object.assign(result, {
         type: FeatureType.POLYGON,
-        points: dropRight(coordinates[0].map(unary(lonLatFromCoordinate)))
+        points: coordinates[0].map(unary(lonLatFromCoordinate))
       })
       break
 
