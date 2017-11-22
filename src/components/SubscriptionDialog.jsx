@@ -10,7 +10,7 @@ import Input, { InputLabel } from 'material-ui/Input'
 import { MenuItem } from 'material-ui/Menu'
 import Select from 'material-ui/Select'
 
-import { List, ListItem } from 'material-ui/List'
+import List, { ListItem } from 'material-ui/List'
 import IconButton from 'material-ui/IconButton'
 import ContentRemoveCircleOutline from 'material-ui-icons/RemoveCircleOutline'
 

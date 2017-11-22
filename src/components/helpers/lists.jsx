@@ -4,7 +4,7 @@
 
 import { get, partial } from 'lodash/fp'
 import { includes, isFunction, xor } from 'lodash'
-import { List, ListItem } from 'material-ui/List'
+import List, { ListItem } from 'material-ui/List'
 import PropTypes from 'prop-types'
 import React from 'react'
 

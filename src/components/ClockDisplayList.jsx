@@ -6,7 +6,7 @@ import { red, green } from 'material-ui/colors'
 import PlayArrow from 'material-ui-icons/PlayArrow'
 import Stop from 'material-ui-icons/stop'
 import Avatar from 'material-ui/Avatar'
-import { ListItem } from 'material-ui/List'
+import { ListItem, ListItemText } from 'material-ui/List'
 
 import isFunction from 'lodash/isFunction'
 import moment from 'moment'
@@ -119,8 +119,10 @@ class ClockDisplayListEntry extends React.Component {
     const extrapolatedTicks = ticks + elapsed * ticksPerSecond
     const formattedTime = this.formatTicks(extrapolatedTicks)
     return (
-      <ListItem leftAvatar={avatar} primaryText={formattedTime}
-        secondaryText={formattedId} />
+      <ListItem>
+        {avatar}
+        <ListItemText primary={formattedTime} secondary={formattedId} />
+      </ListItem>
     )
   }
 

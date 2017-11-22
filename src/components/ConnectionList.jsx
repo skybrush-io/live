@@ -5,7 +5,7 @@
 
 import Avatar from 'material-ui/Avatar'
 import IconButton from 'material-ui/IconButton'
-import { ListItem } from 'material-ui/List'
+import { ListItem, ListItemSecondaryAction, ListItemText } from 'material-ui/List'
 
 import { common, green, grey, red, yellow } from 'material-ui/colors'
 
@@ -105,12 +105,12 @@ const ConnectionListEntry = (props) => {
   }
 
   return (
-    <ListItem leftAvatar={<Avatar {...style} />}
-      primaryText={name}
-      secondaryText={secondaryText}
-      rightIconButton={actionButton}
-    />
-  )
+    <ListItem>
+      <Avatar {...style} />
+      <ListItemText primary={name} secondary={secondaryText} />
+      <ListItemSecondaryAction>{actionButton}</ListItemSecondaryAction>
+    </ListItem>
+  );
 }
 
 ConnectionListEntry.propTypes = {

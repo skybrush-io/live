@@ -4,7 +4,7 @@
 
 import Avatar from 'material-ui/Avatar'
 import IconButton from 'material-ui/IconButton'
-import { ListItem } from 'material-ui/List'
+import { ListItem, ListItemSecondaryAction, ListItemText } from 'material-ui/List'
 
 import MapsAddLocation from 'material-ui-icons/AddLocation'
 import MapsPlace from 'material-ui-icons/Place'
@@ -50,12 +50,11 @@ const LocationListEntry = (props) => {
   const onClick = id === 'addNew' ? editLocation : mapViewToLocation
 
   return (
-    <ListItem leftAvatar={avatar}
-      primaryText={name}
-      secondaryText={secondaryText}
-      rightIconButton={actionButton}
-      onClick={onClick}
-    />
+    <ListItem onClick={onClick}>
+      {avatar}
+      <ListItemText primary={name} secondary={secondaryText} />
+      <ListItemSecondaryAction>{actionButton}</ListItemSecondaryAction>
+    </ListItem>
   )
 }
 
