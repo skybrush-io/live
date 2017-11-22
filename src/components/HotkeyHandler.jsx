@@ -2,9 +2,9 @@
  * @file React Component for handling hotkeys.
  */
 
+import _ from 'lodash'
 import PropTypes from 'prop-types'
 import React from 'react'
-import _ from 'lodash'
 import u from 'updeep'
 
 import Button from 'material-ui/Button'
@@ -56,6 +56,7 @@ export default class HotkeyHandler extends React.Component {
   constructor (props) {
     super(props)
 
+    this._handlingFocusChange = false
     this._root = undefined
 
     this.state = {
@@ -70,6 +71,7 @@ export default class HotkeyHandler extends React.Component {
 
     this.listeners = { down: {}, up: {} }
 
+    this._handleFocusChange = this._handleFocusChange.bind(this)
     this._handleKey = this._handleKey.bind(this)
     this._handleKeyDown = this._handleKeyDown.bind(this)
     this._handleKeyUp = this._handleKeyUp.bind(this)
@@ -282,10 +284,20 @@ export default class HotkeyHandler extends React.Component {
   }
 
   _handleFocusChange (e) {
-    let whitelist = ['INPUT', 'TEXTAREA']
+    const whitelist = ['INPUT', 'TEXTAREA']
 
-    if (!_.includes(whitelist, e.target.tagName)) {
-      document.querySelector('.ol-viewport').focus()
+    if (this._handlingFocusChange) {
+      // Prevent infinite recursion
+      return
+    }
+
+    this._handlingFocusChange = true
+    try {
+      if (!_.includes(whitelist, e.target.tagName)) {
+        document.querySelector('.ol-viewport').focus()
+      }
+    } finally {
+      this._handlingFocusChange = false
     }
   }
 
