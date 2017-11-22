@@ -4,16 +4,15 @@ import React from 'react'
 
 import flock from '../flock'
 
+import Button from 'material-ui/Button'
 import Dialog from 'material-ui/Dialog'
-import FlatButton from 'material-ui/FlatButton'
-
-import DropDownMenu from 'material-ui/DropDownMenu'
-import MenuItem from 'material-ui/MenuItem'
-import RaisedButton from 'material-ui/RaisedButton'
+import Input, { InputLabel } from 'material-ui/Input'
+import { MenuItem } from 'material-ui/Menu'
+import Select from 'material-ui/Select'
 
 import { List, ListItem } from 'material-ui/List'
 import IconButton from 'material-ui/IconButton'
-import ContentRemoveCircleOutline from 'material-ui/svg-icons/content/remove-circle-outline'
+import ContentRemoveCircleOutline from 'material-ui-icons/RemoveCircleOutline'
 
 import messageHub from '../message-hub'
 
@@ -62,16 +61,18 @@ export default class SubscriptionDialog extends React.Component {
     )
 
     const DeviceMenuItems = this.state.selectedUAV
-    ? Object.keys(this.state.available[this.state.selectedUAV]).map(device =>
-      <MenuItem key={device} value={device} primaryText={device} />
-    ) : []
+      ? Object.keys(this.state.available[this.state.selectedUAV]).map(device =>
+        <MenuItem key={device} value={device} primaryText={device} />
+      )
+      : []
 
     const ChannelMenuItems = this.state.selectedDevice
-    ? Object.keys(
-      this.state.available[this.state.selectedUAV][this.state.selectedDevice]
-    ).map(channel =>
-      <MenuItem key={channel} value={channel} primaryText={channel} />
-    ) : []
+      ? Object.keys(
+        this.state.available[this.state.selectedUAV][this.state.selectedDevice]
+      ).map(channel =>
+        <MenuItem key={channel} value={channel} primaryText={channel} />
+      )
+      : []
 
     const subscriptionItems = this.state.subscriptions.map(subscription =>
       <ListItem key={subscription} primaryText={subscription} rightIconButton={
@@ -83,36 +84,39 @@ export default class SubscriptionDialog extends React.Component {
     )
 
     const actions = [
-      <FlatButton label='Done' primary onClick={this._hideDialog} />
+      <Button key='done' color='primary' onClick={this._hideDialog}>Done</Button>
     ]
 
     const dropDownMenuStyle = {verticalAlign: 'text-bottom'}
 
     return (
       <Dialog open={this.state.visible} actions={actions}>
-        UAV:
-        <DropDownMenu ref='uavDropDown' value={this.state.selectedUAV}
-          style={dropDownMenuStyle}
-          onChange={_.partial(this._handleChange, 'selectedUAV')}>
-          {UAVMenuItems}
-        </DropDownMenu>
-        Device:
-        <DropDownMenu ref='deviceDropDown' value={this.state.selectedDevice}
-          style={dropDownMenuStyle}
-          onChange={_.partial(this._handleChange, 'selectedDevice')}>
-          {DeviceMenuItems}
-        </DropDownMenu>
-        Channel:
-        <DropDownMenu ref='channelDropDown' value={this.state.selectedChannel}
-          style={dropDownMenuStyle}
-          onChange={_.partial(this._handleChange, 'selectedChannel')}>
-          {ChannelMenuItems}
-        </DropDownMenu>
-        <RaisedButton
-          disabled={this.state.subscriptions.includes(this.currentPath)}
-          label='Subscribe'
-          onClick={this._handleClick} />
-
+        Not working yet; stay tuned/
+        {/*
+          UAV:
+          <DropDownMenu ref='uavDropDown' value={this.state.selectedUAV}
+            style={dropDownMenuStyle}
+            onChange={_.partial(this._handleChange, 'selectedUAV')}>
+            {UAVMenuItems}
+          </DropDownMenu>
+          Device:
+          <DropDownMenu ref='deviceDropDown' value={this.state.selectedDevice}
+            style={dropDownMenuStyle}
+            onChange={_.partial(this._handleChange, 'selectedDevice')}>
+            {DeviceMenuItems}
+          </DropDownMenu>
+          Channel:
+          <DropDownMenu ref='channelDropDown' value={this.state.selectedChannel}
+            style={dropDownMenuStyle}
+            onChange={_.partial(this._handleChange, 'selectedChannel')}>
+            {ChannelMenuItems}
+          </DropDownMenu>
+          <Button raised
+            disabled={this.state.subscriptions.includes(this.currentPath)}
+            onClick={this._handleClick}>
+            Subscribe
+          </Button>
+        */}
         <List>
           {subscriptionItems}
         </List>

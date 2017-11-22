@@ -1,4 +1,5 @@
-import { NavigationFullscreen, NavigationFullscreenExit } from 'material-ui/svg-icons'
+import NavigationFullscreen from 'material-ui-icons/Fullscreen'
+import NavigationFullscreenExit from 'material-ui-icons/FullscreenExit'
 
 import PropTypes from 'prop-types'
 import React from 'react'

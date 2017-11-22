@@ -2,9 +2,8 @@
  * @file Theme setup for Material-UI.
  */
 
-import getMuiTheme from 'material-ui/styles/getMuiTheme'
-// import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
+import createMuiTheme from 'material-ui/styles/createMuiTheme'
 
-export default getMuiTheme({
+export default createMuiTheme({
   // Add theme properties here
 })

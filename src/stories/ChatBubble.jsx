@@ -6,7 +6,7 @@ import moment from 'moment'
 import React from 'react'
 import { storiesOf } from '@kadira/storybook'
 
-import CircularProgress from 'material-ui/CircularProgress'
+import { CircularProgress } from 'material-ui/Progress'
 import { ChatArea, ChatBubble } from '../components/chat'
 import { themed } from './helpers'
 

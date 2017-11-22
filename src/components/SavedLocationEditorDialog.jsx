@@ -7,10 +7,8 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { reduxForm, Field } from 'redux-form'
 
+import Button from 'material-ui/Button'
 import Dialog from 'material-ui/Dialog'
-import FlatButton from 'material-ui/FlatButton'
-import ActionDeleteForever from 'material-ui/svg-icons/action/delete-forever'
-import ContentSave from 'material-ui/svg-icons/content/save'
 
 import { updateSavedLocation, deleteSavedLocation } from '../actions/saved-locations'
 import { cancelLocationEditing } from '../actions/saved-location-editor'
@@ -129,13 +127,13 @@ class SavedLocationEditorDialogPresentation extends React.Component {
     const { editedLocationId, onClose, onDelete, onSubmit, open } = this.props
 
     const actions = [
-      <FlatButton label='Save' primary onClick={this.handleSubmit}
-        icon={<ContentSave />} />,
-      <FlatButton
-        label='Delete' secondary disabled={editedLocationId === 'addNew'}
-        onClick={onDelete(editedLocationId)} icon={<ActionDeleteForever />}
-        />,
-      <FlatButton label='Cancel' onClick={onClose} />
+      <Button key='save' color='primary' onClick={this.handleSubmit}>Save</Button>,
+      <Button key='delete' color='secondary'
+        disabled={editedLocationId === 'addNew'}
+        onClick={onDelete(editedLocationId)}>
+        Delete
+      </Button>,
+      <Button key='cancel' onClick={onClose}>Cancel</Button>
     ]
 
     const contentStyle = {

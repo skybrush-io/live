@@ -7,10 +7,9 @@ import React from 'react'
 import _ from 'lodash'
 import u from 'updeep'
 
-import FlatButton from 'material-ui/FlatButton'
+import Button from 'material-ui/Button'
 import Dialog from 'material-ui/Dialog'
-import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow,
-  TableRowColumn } from 'material-ui/Table'
+import Table, { TableBody, TableCell, TableHead, TableRow } from 'material-ui/Table'
 
 import { isRunningOnMac, platformModifierKey } from '../utils/platform'
 
@@ -133,7 +132,7 @@ export default class HotkeyHandler extends React.Component {
     const keysColumnStyle = {width: '150px'}
     const actionColumnStyle = {}
     const actions = [
-      <FlatButton key="_close" label='Close' primary onClick={this._hideDialog} />
+      <Button key='_close' color='primary' onClick={this._hideDialog}>Close</Button>
     ]
 
     const classString = [].concat(
@@ -153,26 +152,26 @@ export default class HotkeyHandler extends React.Component {
           autoScrollBodyContent
         >
           <Table selectable={false}>
-            <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
+            <TableHead displaySelectAll={false} adjustForCheckbox={false}>
               <TableRow>
-                <TableHeaderColumn style={keysColumnStyle}>
+                <TableCell style={keysColumnStyle}>
                   Keys
-                </TableHeaderColumn>
-                <TableHeaderColumn style={actionColumnStyle}>
+                </TableCell>
+                <TableCell style={actionColumnStyle}>
                   Action
-                </TableHeaderColumn>
+                </TableCell>
               </TableRow>
-            </TableHeader>
+            </TableHead>
             <TableBody displayRowCheckbox={false}>
               {
                 this.props.hotkeys.map((hotkey, index) => (
                   <TableRow key={`hotkey_${index}`}>
-                    <TableRowColumn style={keysColumnStyle}>
+                    <TableCell style={keysColumnStyle}>
                       {formatHotkeyDefinition(hotkey.keys)}
-                    </TableRowColumn>
-                    <TableRowColumn style={actionColumnStyle}>
+                    </TableCell>
+                    <TableCell style={actionColumnStyle}>
                       {hotkey.description}
-                    </TableRowColumn>
+                    </TableCell>
                   </TableRow>
                 ))
               }

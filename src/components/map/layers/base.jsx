@@ -1,13 +1,15 @@
 import _ from 'lodash'
+import { layer as olLayer, source } from 'ol-react'
 import PropTypes from 'prop-types'
 import React from 'react'
 import { connect } from 'react-redux'
 
-import { RadioButton, RadioButtonGroup } from 'material-ui/RadioButton'
+import { FormControlLabel } from 'material-ui/Form'
+import Radio, { RadioGroup } from 'material-ui/Radio'
+
 import { Source, Sources, labelForSource } from '../../../model/sources'
 import { selectMapSource } from '../../../actions/map'
 
-import { layer as olLayer, source } from 'ol-react'
 import { BingAPI } from 'config'
 
 // === Settings for this particular layer type ===
@@ -15,18 +17,18 @@ import { BingAPI } from 'config'
 class BaseLayerSettingsPresentation extends React.Component {
   render () {
     const sourceRadioButtons = _.map(Sources, source => (
-      <RadioButton value={source} key={source}
+      <FormControlLabel value={source} key={source}
         label={labelForSource(source)}
-        style={{ marginTop: 5 }} />
+        style={{ marginTop: 5 }} control={<Radio />} />
     ))
     return (
       <div>
         <p key='header'>Layer data source</p>
-        <RadioButtonGroup name='source.base' key='baseProperties'
-          valueSelected={this.props.layer.parameters.source}
+        <RadioGroup name='source.base' key='baseProperties'
+          value={this.props.layer.parameters.source}
           onChange={this.props.onLayerSourceChanged}>
           {sourceRadioButtons}
-        </RadioButtonGroup>
+        </RadioGroup>
       </div>
     )
   }

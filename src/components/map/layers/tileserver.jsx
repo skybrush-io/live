@@ -1,8 +1,9 @@
-import FlatButton from 'material-ui/FlatButton'
-import MenuItem from 'material-ui/MenuItem'
-import SelectField from 'material-ui/SelectField'
+import Button from 'material-ui/Button'
+import { FormControl } from 'material-ui/Form'
+import Input, { InputLabel } from 'material-ui/Input'
+import { MenuItem } from 'material-ui/Menu'
+import Select from 'material-ui/Select'
 import TextField from 'material-ui/TextField'
-import NavigationCheck from 'material-ui/svg-icons/navigation/check'
 
 import { layer, source } from 'ol-react'
 import PropTypes from 'prop-types'
@@ -32,14 +33,18 @@ class TileServerLayerSettingsPresentation extends React.Component {
     const { parameters } = this.props.layer
     return (
       <div>
-        <SelectField
-          floatingLabelText="Tile server type"
-          value={parameters.type}
-          onChange={this.props.changeTileServerType}>
-          {serverTypeMenuItems}
-        </SelectField>
+        <FormControl>
+          <InputLabel htmlFor='tile-server-type'>Tile server type</InputLabel>
+          <Select
+            value={parameters.type}
+            onChange={this.props.changeTileServerType}
+            input={<Input id='tile-server-type' />}>
+            {serverTypeMenuItems}
+          </Select>
+        </FormControl>
+
         <TextField ref={this._setURLFieldRef}
-          floatingLabelText="Tile server URL"
+          floatingLabelText='Tile server URL'
           defaultValue={parameters.url}
           fullWidth />
         {
@@ -63,10 +68,7 @@ class TileServerLayerSettingsPresentation extends React.Component {
             )
         }
         <div style={{ textAlign: 'center', paddingTop: '1em' }}>
-          <FlatButton
-            label="Save settings"
-            icon={<NavigationCheck />}
-            onClick={this._handleClick} />
+          <Button onClick={this._handleClick}>Save settings</Button>
         </div>
       </div>
     )

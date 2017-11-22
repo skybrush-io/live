@@ -2,9 +2,9 @@
  * @file Component that displays the status of a Flockwave clock.
  */
 
-import { colors } from 'material-ui/styles'
-import PlayArrow from 'material-ui/svg-icons/av/play-arrow'
-import Stop from 'material-ui/svg-icons/av/stop'
+import { red, green } from 'material-ui/colors'
+import PlayArrow from 'material-ui-icons/PlayArrow'
+import Stop from 'material-ui-icons/stop'
 import Avatar from 'material-ui/Avatar'
 import { ListItem } from 'material-ui/List'
 
@@ -20,8 +20,8 @@ import { listOf } from './helpers/lists'
  * Avatars for stopped and running clocks.
  */
 const avatars = [
-  <Avatar backgroundColor={colors.redA700} icon={<Stop />} />,
-  <Avatar backgroundColor={colors.green500} icon={<PlayArrow />} />
+  <Avatar key='stop' backgroundColor={red['A700']} icon={<Stop />} />,
+  <Avatar key='play' backgroundColor={green[500]} icon={<PlayArrow />} />
 ]
 
 /**
@@ -91,15 +91,17 @@ class ClockDisplayListEntry extends React.Component {
     if (epoch === undefined) {
       if (ticksPerSecond <= 1) {
         // No epoch, so we just simply show a HH:MM:SS timestamp
-        return moment.utc(0).add(Math.floor(ticks / ticksPerSecond), 'second')
-                            .format('HH:mm:ss')
+        return moment.utc(0)
+          .add(Math.floor(ticks / ticksPerSecond), 'second')
+          .format('HH:mm:ss')
       } else {
         // No epoch, so we just simply show a HH:MM:SS:FF SMPTE-style
         // timestamp. We (ab)use the millisecond part of the timestamp
         // to represent the number of frames
-        return moment.utc(0).add(Math.floor(ticks / ticksPerSecond), 'second')
-                            .add(ticks % ticksPerSecond * 10, 'millisecond')
-                            .format('HH:mm:ss:SS')
+        return moment.utc(0)
+          .add(Math.floor(ticks / ticksPerSecond), 'second')
+          .add(ticks % ticksPerSecond * 10, 'millisecond')
+          .format('HH:mm:ss:SS')
       }
     } else {
       // We have an epoch, so create a date and use the formatter
@@ -117,9 +119,8 @@ class ClockDisplayListEntry extends React.Component {
     const extrapolatedTicks = ticks + elapsed * ticksPerSecond
     const formattedTime = this.formatTicks(extrapolatedTicks)
     return (
-      <ListItem leftAvatar={avatar}
-                primaryText={formattedTime}
-                secondaryText={formattedId} />
+      <ListItem leftAvatar={avatar} primaryText={formattedTime}
+        secondaryText={formattedId} />
     )
   }
 

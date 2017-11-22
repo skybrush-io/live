@@ -2,11 +2,11 @@ import PropTypes from 'prop-types'
 import React from 'react'
 
 import IconButton from 'material-ui/IconButton'
-import muiThemeable from 'material-ui/styles/muiThemeable'
-import ActionPanTool from 'material-ui/svg-icons/action/pan-tool'
-import ActionZoomIn from 'material-ui/svg-icons/action/zoom-in'
-import ContentSelectAll from 'material-ui/svg-icons/content/select-all'
-import MapsLayers from 'material-ui/svg-icons/maps/layers'
+import withTheme from 'material-ui/styles/withTheme'
+import ActionPanTool from 'material-ui-icons/PanTool'
+import ActionZoomIn from 'material-ui-icons/ZoomIn'
+import ContentSelectAll from 'material-ui-icons/SelectAll'
+import MapsLayers from 'material-ui-icons/Layers'
 
 import MapRotationTextBox from './MapRotationTextBox'
 import FitAllFeaturesButton from './FitAllFeaturesButton'
@@ -101,6 +101,6 @@ const MapToolbar = connect(
       dispatch(selectMapTool(tool))
     }
   })
-)(muiThemeable()(MapToolbarPresentation))
+)(withTheme(MapToolbarPresentation))
 
 export default MapToolbar

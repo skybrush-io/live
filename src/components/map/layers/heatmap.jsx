@@ -8,14 +8,10 @@ import React from 'react'
 import { connect } from 'react-redux'
 
 import SubscriptionDialog from '../../SubscriptionDialog'
-import RaisedButton from 'material-ui/RaisedButton'
 
-import TextField from 'material-ui/TextField'
+import Button from 'material-ui/Button'
 import Checkbox from 'material-ui/Checkbox'
-
-import ActionToc from 'material-ui/svg-icons/action/toc'
-import ContentClear from 'material-ui/svg-icons/content/clear'
-import NavigationCheck from 'material-ui/svg-icons/navigation/check'
+import TextField from 'material-ui/TextField'
 
 import { setLayerParameterById } from '../../../actions/layers'
 
@@ -60,11 +56,10 @@ class HeatmapLayerSettingsPresentation extends React.Component {
 
         <p key='header'>Heatmap options:</p>
 
-        <RaisedButton
-          label='Edit subscriptions'
-          icon={<ActionToc />}
-          style={{marginBottom: '10px'}}
-          onClick={this._showSubscriptionDialog} />
+        <Button raised style={{marginBottom: '10px'}}
+          onClick={this._showSubscriptionDialog}>
+          Edit subscriptions
+        </Button>
 
         <br />
 
@@ -123,16 +118,16 @@ class HeatmapLayerSettingsPresentation extends React.Component {
           style={{display: 'inline-table', width: '150px', marginLeft: '8px'}}
           label='Snap to grid' />
 
-        <RaisedButton style={{marginTop: '10px'}}
-          label='Update parameters'
-          icon={<NavigationCheck />}
-          onClick={this._handleClick} />
+        <Button raised style={{marginTop: '10px'}}
+          onClick={this._handleClick}>
+          Update parameters
+        </Button>
 
-        <RaisedButton style={{marginLeft: '10px'}}
+        <Button raised style={{marginLeft: '10px'}}
           backgroundColor='#ff7777'
-          label='Clear data'
-          icon={<ContentClear />}
-          onClick={this._clearData} />
+          onClick={this._clearData}>
+          Clear data
+        </Button>
       </div>
     )
   }

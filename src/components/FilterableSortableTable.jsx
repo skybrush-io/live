@@ -6,13 +6,13 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 
-import ActionSettingsBackupRestore from 'material-ui/svg-icons/action/settings-backup-restore'
-import EditorHighlight from 'material-ui/svg-icons/editor/highlight'
-import ContentSort from 'material-ui/svg-icons/content/sort'
+import ActionSettingsBackupRestore from 'material-ui-icons/SettingsBackupRestore'
+import EditorHighlight from 'material-ui-icons/Highlight'
+import ContentSort from 'material-ui-icons/Sort'
 
+import Button from 'material-ui/Button'
 import Checkbox from 'material-ui/Checkbox'
 import Popover from 'material-ui/Popover'
-import FlatButton from 'material-ui/FlatButton'
 import TextField from 'material-ui/TextField'
 
 require('../../assets/css/FilterableSortableTable.less')
@@ -264,19 +264,19 @@ class FilterableSortableTable extends React.Component {
         style={{ padding: '5px', textAlign: 'center', overflow: 'visible' }}
       >
         {this.state.filterPopoverTargetColumnId !== undefined
-        ? this._makeFilterPopoverContent(this.state.filterPopoverTargetColumnId)
-        : false}
+          ? this._makeFilterPopoverContent(this.state.filterPopoverTargetColumnId)
+          : false}
 
-        <FlatButton
-          label='Reset'
-          icon={<ActionSettingsBackupRestore />}
+        <Button
           onClick={() => {
             const col = this._columns[this.state.filterPopoverTargetColumnId]
             col.filterProperties = filterPropertiesInitializers[col.filterType](col)
 
             this.forceUpdate()
-          }}
-        />
+          }}>
+          Reset
+          <ActionSettingsBackupRestore />
+        </Button>
       </Popover>
     )
 

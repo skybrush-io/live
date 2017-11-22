@@ -3,8 +3,8 @@
  * there is an unexpected error.
  */
 
+ import Button from 'material-ui/Button'
 import Dialog from 'material-ui/Dialog'
-import FlatButton from 'material-ui/FlatButton'
 
 import PropTypes from 'prop-types'
 import React from 'react'
@@ -19,7 +19,7 @@ import { closeErrorDialog } from '../actions/error-handling'
  */
 const GlobalErrorDialogPresentation = ({ open, message, onClose }) => {
   const actions = [
-    <FlatButton label='Close' onClick={onClose} />
+    <Button onClick={onClose} key="close">Close</Button>
   ]
   const contentStyle = {
     width: '640px'

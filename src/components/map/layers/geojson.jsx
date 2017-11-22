@@ -10,8 +10,7 @@ import TextField from 'material-ui/TextField'
 
 import PopupColorPicker from '../../PopupColorPicker'
 
-import FlatButton from 'material-ui/FlatButton'
-import ActionSystemUpdateAlt from 'material-ui/svg-icons/action/system-update-alt'
+import Button from 'material-ui/Button'
 
 import { setLayerParameterById } from '../../../actions/layers'
 import { showSnackbarMessage } from '../../../actions/snackbar'
@@ -60,10 +59,7 @@ class GeoJSONLayerSettingsPresentation extends React.Component {
           onChange={this._handleChange} />
 
         <div style={{ textAlign: 'center', paddingTop: '1em' }}>
-          <FlatButton
-            label='Import GeoJSON'
-            icon={<ActionSystemUpdateAlt />}
-            onClick={this._handleClick} />
+          <Button onClick={this._handleClick}>Import GeoJSON</Button>
         </div>
       </div>
     )

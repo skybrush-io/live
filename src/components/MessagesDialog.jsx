@@ -3,8 +3,8 @@
  * to the UAVs.
  */
 
+import Button from 'material-ui/Button'
 import Dialog from 'material-ui/Dialog'
-import FlatButton from 'material-ui/FlatButton'
 import PropTypes from 'prop-types'
 import React from 'react'
 import { connect } from 'react-redux'
@@ -91,9 +91,10 @@ class MessagesDialogPresentation extends React.Component {
     this._wasOpen = open
 
     const actions = [
-      <FlatButton key="clear" label="Clear" onClick={onClear}
-        disabled={!selectedUAVId} />,
-      <FlatButton key="close" label="Close" onClick={onClose} />
+      <Button key='clear' onClick={onClear} disabled={!selectedUAVId}>
+        Clear
+      </Button>,
+      <Button key='close' onClick={onClose}>Close</Button>
     ]
     const contentStyle = {
       width: '640px'

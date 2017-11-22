@@ -8,8 +8,8 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { change, reduxForm, Field } from 'redux-form'
 
+import Button from 'material-ui/Button'
 import Dialog from 'material-ui/Dialog'
-import FlatButton from 'material-ui/FlatButton'
 
 import { closeServerSettingsDialog } from '../actions/server-settings'
 import { createValidator, between, integer, required } from '../utils/validation'
@@ -84,9 +84,9 @@ class ServerSettingsDialogPresentation extends React.Component {
   render () {
     const { autoSetServer, onClose, onSubmit, open } = this.props
     const actions = [
-      <FlatButton label='Connect' primary onClick={this.handleSubmit} />,
-      <FlatButton label='Auto' onClick={autoSetServer} />,
-      <FlatButton label='Close' onClick={onClose} />
+      <Button key='connect' color='primary' onClick={this.handleSubmit}>Connect</Button>,
+      <Button key='auto' onClick={autoSetServer}>Auto</Button>,
+      <Button key='close' onClick={onClose}>Close</Button>
     ]
     const contentStyle = {
       width: '320px'
@@ -105,6 +105,7 @@ class ServerSettingsDialogPresentation extends React.Component {
 }
 
 ServerSettingsDialogPresentation.propTypes = {
+  autoSetServer: PropTypes.func,
   onClose: PropTypes.func,
   onSubmit: PropTypes.func,
   open: PropTypes.bool.isRequired

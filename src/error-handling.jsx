@@ -3,7 +3,7 @@
  * components that tie nicely into the main application.
  */
 
-import { AlertWarning } from 'material-ui/svg-icons'
+import AlertWarning from 'material-ui-icons/Warning'
 import PropTypes from 'prop-types'
 import React from 'react'
 import { withErrorBoundary as withErrorBoundary_ } from 'react-error-boundary'

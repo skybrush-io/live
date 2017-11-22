@@ -3,9 +3,9 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import { connect } from 'react-redux'
 
+import Button from 'material-ui/Button'
 import TextField from 'material-ui/TextField'
 import PopupColorPicker from '../../PopupColorPicker'
-import RaisedButton from 'material-ui/RaisedButton'
 
 import { setLayerParameterById } from '../../../actions/layers'
 
@@ -47,9 +47,7 @@ class UAVTraceLayerSettingsPresentation extends React.Component {
             defaultValue={this.props.layer.parameters.trailColor} />
         </div>
         <br />
-        <RaisedButton
-          label='Set parameters'
-          onClick={this._handleClick} />
+        <Button onClick={this._handleClick}>Set parameters</Button>
       </div>
     )
   }

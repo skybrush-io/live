@@ -7,7 +7,7 @@ import Immutable from 'immutable'
 
 import { ListItem } from 'material-ui/List'
 import IconButton from 'material-ui/IconButton'
-import ImageAdjust from 'material-ui/svg-icons/image/adjust'
+import ImageAdjust from 'material-ui-icons/adjust'
 
 import PropTypes from 'prop-types'
 import React from 'react'

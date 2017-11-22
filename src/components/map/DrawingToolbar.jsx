@@ -2,11 +2,11 @@ import PropTypes from 'prop-types'
 import React from 'react'
 
 import IconButton from 'material-ui/IconButton'
-import muiThemeable from 'material-ui/styles/muiThemeable'
-import CommunicationLocationOn from 'material-ui/svg-icons/communication/location-on'
-import EditorShowChart from 'material-ui/svg-icons/editor/show-chart'
-import ImagePanoramaFishEye from 'material-ui/svg-icons/image/panorama-fish-eye'
-import ToggleStarBorder from 'material-ui/svg-icons/toggle/star-border'
+import withTheme from 'material-ui/styles/withTheme'
+import CommunicationLocationOn from 'material-ui-icons/LocationOn'
+import EditorShowChart from 'material-ui-icons/ShowChart'
+import ImagePanoramaFishEye from 'material-ui-icons/PanoramaFishEye'
+import ToggleStarBorder from 'material-ui-icons/StarBorder'
 
 import partial from 'lodash/partial'
 import { connect } from 'react-redux'
@@ -62,7 +62,7 @@ const DrawingToolbar = connect(
     }
   })
 )(
-  muiThemeable()(DrawingToolbarPresentation)
+  withTheme(DrawingToolbarPresentation)
 )
 
 export default DrawingToolbar

@@ -7,16 +7,17 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { reduxForm, Field } from 'redux-form'
 
+import Button from 'material-ui/Button'
 import Dialog from 'material-ui/Dialog'
-import FlatButton from 'material-ui/FlatButton'
+import { FormControlLabel } from 'material-ui/Form'
 import IconButton from 'material-ui/IconButton'
 import { List, ListItem } from 'material-ui/List'
-import Toggle from 'material-ui/Toggle'
-import VisibilityOff from 'material-ui/svg-icons/action/visibility-off'
-import ContentAdd from 'material-ui/svg-icons/content/add'
-import ContentRemove from 'material-ui/svg-icons/content/remove'
-import ArrowDown from 'material-ui/svg-icons/navigation/arrow-drop-down'
-import ArrowUp from 'material-ui/svg-icons/navigation/arrow-drop-up'
+import Switch from 'material-ui/Switch'
+import VisibilityOff from 'material-ui-icons/VisibilityOff'
+import ContentAdd from 'material-ui-icons/Add'
+import ContentRemove from 'material-ui-icons/Remove'
+import ArrowDown from 'material-ui-icons/ArrowDropDown'
+import ArrowUp from 'material-ui-icons/ArrowDropUp'
 
 import { adjustLayerZIndex, closeLayersDialog, renameLayer,
   setSelectedLayerInLayersDialog, toggleLayerVisibility,
@@ -49,10 +50,11 @@ class BasicLayerSettingsFormPresentation extends React.Component {
           onKeyDown={this._onKeyDown}
         />
         <div>&nbsp;</div>
-        <Toggle label='Visible' labelPosition='right'
-          toggled={layer.visible}
+        <FormControlLabel label='Visible' labelPosition='right'
+          value={layer.visible}
           disabled={layer.type === LayerType.UNTYPED}
-          onToggle={onToggleLayerVisibility}
+          onChange={onToggleLayerVisibility}
+          control={<Switch />}
         />
       </div>
     )
@@ -272,7 +274,9 @@ class LayersDialogPresentation extends React.Component {
         <ArrowDown />
       </IconButton>,
       <div key='separator' style={{ flex: 1 }} />,
-      <FlatButton key='close' label='Done' primary onClick={onClose} />
+      <Button key='close' color='primary' onClick={onClose}>
+        Done
+      </Button>
     ]
 
     return (

@@ -6,16 +6,16 @@
 import _ from 'lodash'
 import React from 'react'
 
-import ActionHelpOutline from 'material-ui/svg-icons/action/help-outline'
-import ActionTimeline from 'material-ui/svg-icons/action/timeline'
-import ActionTrackChanges from 'material-ui/svg-icons/action/track-changes'
-import FileAttachment from 'material-ui/svg-icons/file/attachment'
-import FileCloud from 'material-ui/svg-icons/file/cloud'
-import Flight from 'material-ui/svg-icons/maps/flight'
-import Streetview from 'material-ui/svg-icons/maps/streetview'
-import ImageGridOn from 'material-ui/svg-icons/image/grid-on'
-import Map from 'material-ui/svg-icons/maps/map'
-import MyLocation from 'material-ui/svg-icons/maps/my-location'
+import ActionHelpOutline from 'material-ui-icons/HelpOutline'
+import ActionTimeline from 'material-ui-icons/Timeline'
+import ActionTrackChanges from 'material-ui-icons/TrackChanges'
+import FileAttachment from 'material-ui-icons/Attachment'
+import FileCloud from 'material-ui-icons/Cloud'
+import Flight from 'material-ui-icons/Flight'
+import Streetview from 'material-ui-icons/Streetview'
+import ImageGridOn from 'material-ui-icons/GridOn'
+import Map from 'material-ui-icons/Map'
+import MyLocation from 'material-ui-icons/MyLocation'
 
 /**
  * Enum containing constants for the various layer types that we support.

@@ -4,8 +4,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import u from 'updeep'
 
-import RaisedButton from 'material-ui/RaisedButton'
-import ActionSystemUpdateAlt from 'material-ui/svg-icons/action/system-update-alt'
+import Button from 'material-ui/Button'
 import TextField from 'material-ui/TextField'
 
 import { colorPredicates } from '../features/UAVFeature'
@@ -63,10 +62,7 @@ class UAVsLayerSettingsPresentation extends React.Component {
         </p>
         {colorInputs}
         <br />
-        <RaisedButton
-          label='Apply'
-          icon={<ActionSystemUpdateAlt />}
-          onClick={this._handleClick} />
+        <Button raised onClick={this._handleClick}>Apply</Button>
       </div>
     )
   }

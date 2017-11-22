@@ -5,7 +5,7 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import { connect } from 'react-redux'
 
-import RaisedButton from 'material-ui/RaisedButton'
+import Button from 'material-ui/Button'
 import TextField from 'material-ui/TextField'
 
 import { setLayerParameterById } from '../../../actions/layers'
@@ -48,9 +48,9 @@ class HexGridLayerSettingsPresentation extends React.Component {
           hintText='Radius'
           defaultValue={this.props.layer.parameters.radius} />
         <br />
-        <RaisedButton
-          label='Draw hex grid'
-          onClick={this._handleClick} />
+        <Button raised onClick={this._handleClick}>
+          Draw hex grid
+        </Button>
       </div>
     )
   }

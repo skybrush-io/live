@@ -7,13 +7,13 @@ import Avatar from 'material-ui/Avatar'
 import IconButton from 'material-ui/IconButton'
 import { ListItem } from 'material-ui/List'
 
-import { colors } from 'material-ui/styles'
+import { common, green, grey, red, yellow } from 'material-ui/colors'
 
-import ActionDone from 'material-ui/svg-icons/action/done'
-import ActionHelpOutline from 'material-ui/svg-icons/action/help-outline'
-import ActionSettings from 'material-ui/svg-icons/action/settings'
-import ActionSettingsEthernet from 'material-ui/svg-icons/action/settings-ethernet'
-import ContentClear from 'material-ui/svg-icons/content/clear'
+import ActionDone from 'material-ui-icons/Done'
+import ActionHelpOutline from 'material-ui-icons/HelpOutline'
+import ActionSettings from 'material-ui-icons/Settings'
+import ActionSettingsEthernet from 'material-ui-icons/SettingsEthernet'
+import ContentClear from 'material-ui-icons/Clear'
 
 import PropTypes from 'prop-types'
 import React from 'react'
@@ -30,23 +30,23 @@ import { listOf } from './helpers/lists'
  */
 const entryStylesByState = {
   [ConnectionState.CONNECTED]: {
-    backgroundColor: colors.white,
-    color: colors.green500,
+    backgroundColor: common.white,
+    color: green[500],
     icon: <ActionDone />
   },
   [ConnectionState.CONNECTING]: {
-    backgroundColor: colors.yellow500,
-    color: colors.black,
+    backgroundColor: yellow[500],
+    color: common.black,
     icon: <ActionSettingsEthernet />
   },
   [ConnectionState.DISCONNECTED]: {
-    backgroundColor: colors.redA700,
-    color: colors.white,
+    backgroundColor: red['A700'],
+    color: common.white,
     icon: <ContentClear />
   },
   [ConnectionState.DISCONNECTING]: {
-    backgroundColor: colors.yellow500,
-    color: colors.black,
+    backgroundColor: yellow[500],
+    color: common.black,
     icon: <ActionSettingsEthernet />
   }
 }
@@ -56,8 +56,8 @@ const entryStylesByState = {
  * connection list.
  */
 const entryStyleForUnknownState = {
-  backgroundColor: colors.grey500,
-  color: colors.white,
+  backgroundColor: grey[500],
+  color: common.white,
   icon: <ActionHelpOutline />
 }
 

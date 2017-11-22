@@ -4,7 +4,7 @@
  */
 
 import { flatMap, isNil } from 'lodash'
-import CircularProgress from 'material-ui/CircularProgress'
+import { CircularProgress } from 'material-ui/Progress'
 import TextField from 'material-ui/TextField'
 import PropTypes from 'prop-types'
 import React from 'react'

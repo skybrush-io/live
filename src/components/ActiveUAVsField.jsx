@@ -5,7 +5,6 @@
 
 import { autobind } from 'core-decorators'
 import _ from 'lodash'
-import AutoComplete from 'material-ui/AutoComplete'
 import PropTypes from 'prop-types'
 import React from 'react'
 import { connect } from 'react-redux'
@@ -66,8 +65,12 @@ export class UAVSelectorField extends React.Component {
   }
 
   render () {
+    /*
     const { prompt, style, uavIds } = this.props
     const { error, searchText } = this.state
+    */
+    return <div>Not working yet</div>
+    /*
     return (
       <AutoComplete ref={this._assignAutoCompleteFieldRef}
         hintText={prompt} maxSearchResults={5}
@@ -79,6 +82,7 @@ export class UAVSelectorField extends React.Component {
         onUpdateInput={this._onUpdateInput}
       />
     )
+    */
   }
 
   /**
@@ -137,12 +141,14 @@ export class UAVSelectorField extends React.Component {
       // The user did not choose from the dropdown and the value that the
       // user typed does not match any of the items from the data source.
       // We can pretend that the user chose the first item from the menu.
+      /*
       const { uavIds } = this.props
       const firstMatch = _.find(uavIds,
         uavId => AutoComplete.caseInsensitiveFilter(chosenRequest, uavId))
       if (firstMatch) {
         chosenRequest = firstMatch
       }
+      */
     }
     this._commitValueIfValid(chosenRequest)
   }

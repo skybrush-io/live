@@ -17,8 +17,8 @@ import {
 } from '../../signals'
 
 import IconButton from 'material-ui/IconButton'
-import DeviceGpsFixed from 'material-ui/svg-icons/device/gps-fixed'
-import ActionAllOut from 'material-ui/svg-icons/action/all-out'
+import DeviceGpsFixed from 'material-ui-icons/GpsFixed'
+import ActionAllOut from 'material-ui-icons/AllOut'
 
 /**
  * React Component to adjust the view so that it fits all of the current features.

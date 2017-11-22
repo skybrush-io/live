@@ -4,10 +4,10 @@
 
 import _ from 'lodash'
 
-import ActionReceipt from 'material-ui/svg-icons/action/receipt'
-import ActionInfo from 'material-ui/svg-icons/action/info'
-import AlertWarning from 'material-ui/svg-icons/alert/warning'
-import ContentReport from 'material-ui/svg-icons/content/report'
+import ActionReceipt from 'material-ui-icons/Receipt'
+import ActionInfo from 'material-ui-icons/Info'
+import AlertWarning from 'material-ui-icons/Warning'
+import ContentReport from 'material-ui-icons/Report'
 
 import React from 'react'
 import { connect } from 'react-redux'

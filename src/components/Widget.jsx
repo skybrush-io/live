@@ -11,7 +11,7 @@ import React from 'react'
 
 import IconButton from 'material-ui/IconButton'
 import Paper from 'material-ui/Paper'
-import ContentClear from 'material-ui/svg-icons/content/clear'
+import ContentClear from 'material-ui-icons/Clear'
 
 const Widget = ({ children, showControls, style }) => {
   const controls = showControls ? (
