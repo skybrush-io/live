@@ -5,8 +5,9 @@
 
 import Immutable from 'immutable'
 
-import { ListItem } from 'material-ui/List'
 import IconButton from 'material-ui/IconButton'
+import { ListItem, ListItemSecondaryAction, ListItemText } from 'material-ui/List'
+import Tooltip from 'material-ui/Tooltip'
 import ImageAdjust from 'material-ui-icons/adjust'
 
 import PropTypes from 'prop-types'
@@ -49,18 +50,20 @@ const jumpToUAV = function () {
  */
 const UAVListPresentation = multiSelectableListOf((uav, props, selected) => {
   const rightIconButton = (
-    <IconButton data-uav={uav} onClick={jumpToUAV}
-      tooltip={`Jump to ${uav.id}`} tooltipPosition='bottom-left'>
-      <ImageAdjust />
-    </IconButton>
+    <Tooltip placement='bottom' title={`Jump to ${uav.id}`}>
+      <IconButton data-uav={uav} onClick={jumpToUAV}>
+        <ImageAdjust />
+      </IconButton>
+    </Tooltip>
   )
 
-  return <ListItem key={uav.id}
-    primaryText={uav.id}
-    secondaryText={formatSecondaryTextForUAV(uav)}
-    rightIconButton={rightIconButton}
-    className={selected ? 'selected-list-item' : undefined}
-    onClick={props.onItemSelected} />
+  return (
+    <ListItem button key={uav.id} onClick={props.onItemSelected}
+      className={selected ? 'selected-list-item' : undefined}>
+      <ListItemText primary={uav.id} secondary={formatSecondaryTextForUAV(uav)} />
+      <ListItemSecondaryAction>{rightIconButton}</ListItemSecondaryAction>
+    </ListItem>
+  )
 }, {
   backgroundHint: 'No UAVs',
   dataProvider: 'uavs'

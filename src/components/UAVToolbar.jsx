@@ -4,6 +4,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 
 import IconButton from 'material-ui/IconButton'
+import Tooltip from 'material-ui/Tooltip'
 import ActionFlightTakeoff from 'material-ui-icons/FlightTakeoff'
 import ActionFlightLand from 'material-ui-icons/FlightLand'
 import ActionHome from 'material-ui-icons/Home'
@@ -35,46 +36,50 @@ class UAVToolbar extends React.Component {
     const { selectedUAVIds } = this.props
     const isSelectionEmpty = isEmpty(selectedUAVIds)
 
-    // Don't use material-ui native tooltips here because they won't work
-    // nicely for disabled buttons; see https://github.com/callemall/material-ui/issues/3665
     return (
       <div>
-        <IconButton disabled={isSelectionEmpty}
-          onClick={() => messaging.takeoffUAVs(this.props.selectedUAVIds)}
-          tooltipPosition='bottom-right' title='Takeoff'>
-          <ActionFlightTakeoff />
-        </IconButton>
-        <IconButton disabled={isSelectionEmpty}
-          onClick={() => messaging.landUAVs(this.props.selectedUAVIds)}
-          tooltipPosition='bottom-right' title='Land'>
-          <ActionFlightLand />
-        </IconButton>
-        <IconButton disabled={isSelectionEmpty}
-          onClick={() => messaging.returnToHomeUAVs(this.props.selectedUAVIds)}
-          tooltipPosition='bottom-right' title='Return to home'>
-          <ActionHome />
-        </IconButton>
-        <IconButton
-          onClick={this._showMessagesDialog}
-          tooltipPosition='bottom-right' title='Messages'>
-          <Message />
-        </IconButton>
-        <IconButton disabled={isSelectionEmpty}
-          tooltipPosition='bottom-right' title='Halt'>
-          <ActionPowerSettingsNew color='red' />
-        </IconButton>
+        <Tooltip placement='bottom' title='Takeoff'>
+          <IconButton disabled={isSelectionEmpty}
+            onClick={() => messaging.takeoffUAVs(this.props.selectedUAVIds)}>
+            <ActionFlightTakeoff />
+          </IconButton>
+        </Tooltip>
+        <Tooltip placement='bottom' title='Land'>
+          <IconButton disabled={isSelectionEmpty}
+            onClick={() => messaging.landUAVs(this.props.selectedUAVIds)}>
+            <ActionFlightLand />
+          </IconButton>
+        </Tooltip>
+        <Tooltip placement='bottom' title='Return to home'>
+          <IconButton disabled={isSelectionEmpty}
+            onClick={() => messaging.returnToHomeUAVs(this.props.selectedUAVIds)}>
+            <ActionHome />
+          </IconButton>
+        </Tooltip>
+        <Tooltip placement='bottom' title='Messages'>
+          <IconButton onClick={this._showMessagesDialog}>
+            <Message />
+          </IconButton>
+        </Tooltip>
+        <Tooltip placement='bottom' title='Halt'>
+          <IconButton disabled={isSelectionEmpty}
+            onClick={() => messaging.shutdownUAVs(this.props.selectedUAVIds)}>
+            <ActionPowerSettingsNew color={isSelectionEmpty ? undefined : 'red'} />
+          </IconButton>
+        </Tooltip>
 
-        <IconButton
-          onClick={this._fitSelectedUAVs}
-          tooltipPosition='bottom-left'
-          style={{
-            float: 'right',
-            padding: '0px',
-            marginRight: '4px'
-          }}
+        <Tooltip placement='bottom'
           title={isSelectionEmpty ? 'Fit all UAVs' : 'Fit selected UAVs'}>
-          {isSelectionEmpty ? <ImageBlurOn /> : <ImageBlurCircular />}
-        </IconButton>
+          <IconButton
+            onClick={this._fitSelectedUAVs}
+            style={{
+              float: 'right',
+              padding: '0px',
+              marginRight: '4px'
+            }}>
+            {isSelectionEmpty ? <ImageBlurOn /> : <ImageBlurCircular />}
+          </IconButton>
+        </Tooltip>
       </div>
     )
   }
@@ -94,7 +99,7 @@ class UAVToolbar extends React.Component {
         : this.props.selectedUAVIds.includes(uav.id)
     ).map(
       uav => coordinateFromLonLat([uav.lon, uav.lat])
-      )
+    )
 
     const boundingExtent = ol.extent.boundingExtent(selectedUAVCoordinates)
     const bufferedExtent = ol.extent.buffer(boundingExtent, 16)

@@ -25,41 +25,55 @@ import { ConnectionState, MASTER_CONNECTION_ID } from '../model/connections'
 import { listOf } from './helpers/lists'
 
 /**
- * Avatar styling constants for the different connection states in the
- * connection list.
+ * Avatars for the different connection states in the connection list.
  */
-const entryStylesByState = {
-  [ConnectionState.CONNECTED]: {
-    backgroundColor: common.white,
-    color: green[500],
-    icon: <ActionDone />
-  },
-  [ConnectionState.CONNECTING]: {
-    backgroundColor: yellow[500],
-    color: common.black,
-    icon: <ActionSettingsEthernet />
-  },
-  [ConnectionState.DISCONNECTED]: {
-    backgroundColor: red['A700'],
-    color: common.white,
-    icon: <ContentClear />
-  },
-  [ConnectionState.DISCONNECTING]: {
-    backgroundColor: yellow[500],
-    color: common.black,
-    icon: <ActionSettingsEthernet />
-  }
+const avatarsByState = {
+  [ConnectionState.CONNECTED]: (
+    <Avatar style={{
+      backgroundColor: common.white,
+      color: green[500]
+    }}>
+      <ActionDone />
+    </Avatar>
+  ),
+  [ConnectionState.CONNECTING]: (
+    <Avatar style={{
+      backgroundColor: yellow[500],
+      color: common.black
+    }}>
+      <ActionSettingsEthernet />
+    </Avatar>
+  ),
+  [ConnectionState.DISCONNECTED]: (
+    <Avatar style={{
+      backgroundColor: red['A700'],
+      color: common.white
+    }}>
+      <ContentClear />
+    </Avatar>
+  ),
+  [ConnectionState.DISCONNECTING]: (
+    <Avatar style={{
+      backgroundColor: yellow[500],
+      color: common.black
+    }}>
+      <ActionSettingsEthernet />
+    </Avatar>
+  )
 }
 
 /**
  * Avatar styling for unknown or unsupported connection states in the
  * connection list.
  */
-const entryStyleForUnknownState = {
-  backgroundColor: grey[500],
-  color: common.white,
-  icon: <ActionHelpOutline />
-}
+const avatarForUnknownState = (
+  <Avatar style={{
+    backgroundColor: grey[500],
+    color: common.white
+  }}>
+    <ActionHelpOutline />
+  </Avatar>
+)
 
 /**
  * Textual description of each supported connection state.
@@ -91,7 +105,7 @@ function timeIntervalFormatter (value, unit) {
  */
 const ConnectionListEntry = (props) => {
   const { action, name, state, stateChangedAt } = props
-  const style = entryStylesByState[state] || entryStyleForUnknownState
+  const avatar = avatarsByState[state] || avatarForUnknownState
   const timeAgoComponent = stateChangedAt
     ? <TimeAgo date={stateChangedAt} formatter={timeIntervalFormatter} />
     : null
@@ -106,11 +120,11 @@ const ConnectionListEntry = (props) => {
 
   return (
     <ListItem>
-      <Avatar {...style} />
+      {avatar}
       <ListItemText primary={name} secondary={secondaryText} />
       <ListItemSecondaryAction>{actionButton}</ListItemSecondaryAction>
     </ListItem>
-  );
+  )
 }
 
 ConnectionListEntry.propTypes = {
