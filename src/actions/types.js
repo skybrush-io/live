@@ -77,6 +77,7 @@ export const SHOW_ERROR_MESSAGE = 'SHOW_ERROR_MESSAGE'
 export const TOGGLE_SIDEBAR = 'TOGGLE_SIDEBAR'
 
 // Snackbar-related actions
+export const DISMISS_SNACKBAR = 'DISMISS_SNACKBAR'
 export const SHOW_SNACKBAR_MESSAGE = 'SHOW_SNACKBAR_MESSAGE'
 
 // Workbench-related actions

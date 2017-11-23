@@ -3,7 +3,12 @@
  */
 
 import { createAction } from 'redux-actions'
-import { SHOW_SNACKBAR_MESSAGE } from './types'
+import { DISMISS_SNACKBAR, SHOW_SNACKBAR_MESSAGE } from './types'
+
+/**
+ * Action factory that dismisses the current snackbar.
+ */
+export const dismissSnackbar = createAction(DISMISS_SNACKBAR)
 
 /**
  * Action factory that creates an action that makes the UI show a new

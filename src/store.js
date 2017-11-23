@@ -42,6 +42,7 @@ const actionBlacklist = [
   actions.CLEAR_CLOCK_LIST,
   actions.CLEAR_CONNECTION_LIST,
   actions.CLOSE_ERROR_DIALOG,
+  actions.DISMISS_SNACKBAR,
   actions.SET_CLOCK_STATE,
   actions.SET_CLOCK_STATE_MULTIPLE,
   actions.SET_CONNECTION_STATE,
