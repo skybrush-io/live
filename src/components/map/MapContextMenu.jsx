@@ -55,42 +55,35 @@ class MapContextMenu extends React.Component {
     const { selectedFeatureIds, selectedUAVIds } = this.props
     return (
       <ContextMenu ref={this._assignContextMenuRef}>
-        <MenuItem disabled={selectedUAVIds.length === 0}
-          onClick={this._takeoffSelectedUAVs}
-          primaryText='Takeoff'
-          leftIcon={<ActionFlightTakeoff />}
-        />
-        <MenuItem disabled={selectedUAVIds.length === 0}
-          onClick={this._landSelectedUAVs}
-          primaryText='Land'
-          leftIcon={<ActionFlightLand />}
-        />
-        <MenuItem disabled={selectedUAVIds.length === 0}
-          onClick={this._returnSelectedUAVs}
-          primaryText='Return to home'
-          leftIcon={<ActionHome />}
-        />
-        <MenuItem disabled={selectedUAVIds.length !== 1}
-          onClick={this._showMessagesDialog}
-          primaryText='Messages'
-          leftIcon={<Message />}
-        />
-        <MenuItem disabled={selectedUAVIds.length === 0}
-          onClick={this._shutdownSelectedUAVs}
-          primaryText='Halt'
-          leftIcon={<ActionPowerSettingsNew color='red' />}
-        />
+        <MenuItem dense disabled={selectedUAVIds.length === 0}
+          onClick={this._takeoffSelectedUAVs}>
+          <ActionFlightTakeoff /> Takeoff
+        </MenuItem>
+        <MenuItem dense disabled={selectedUAVIds.length === 0}
+          onClick={this._landSelectedUAVs}>
+          <ActionFlightLand /> Land
+        </MenuItem>
+        <MenuItem dense disabled={selectedUAVIds.length === 0}
+          onClick={this._returnSelectedUAVs}>
+          <ActionHome /> Return to home
+        </MenuItem>
+        <MenuItem dense disabled={selectedUAVIds.length !== 1}
+          onClick={this._showMessagesDialog}>
+          <Message /> Messages
+        </MenuItem>
+        <MenuItem dense disabled={selectedUAVIds.length === 0}
+          onClick={this._shutdownSelectedUAVs}>
+          <ActionPowerSettingsNew color='red' /> Halt
+        </MenuItem>
         <Divider />
-        <MenuItem disabled={selectedFeatureIds.length !== 1}
-          onClick={this._renameSelectedFeatures}
-          primaryText='Rename...'
-          leftIcon={<ImageEdit />}
-        />
-        <MenuItem disabled={selectedFeatureIds.length === 0}
-          onClick={this._removeSelectedFeatures}
-          primaryText='Remove'
-          leftIcon={<ActionDelete />}
-        />
+        <MenuItem dense disabled={selectedFeatureIds.length !== 1}
+          onClick={this._renameSelectedFeatures}>
+          <ImageEdit /> Rename...
+        </MenuItem>
+        <MenuItem dense disabled={selectedFeatureIds.length === 0}
+          onClick={this._removeSelectedFeatures}>
+          <ActionDelete /> Remove
+        </MenuItem>
       </ContextMenu>
     )
   }

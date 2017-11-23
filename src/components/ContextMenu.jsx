@@ -8,7 +8,7 @@ import PropTypes from 'prop-types'
 import React from 'react'
 
 import Popover from 'material-ui/Popover'
-import Menu from 'material-ui/Menu'
+import { MenuList } from 'material-ui/Menu'
 
 /**
  * Generic context menu using a Material-UI popover element.
@@ -21,14 +21,12 @@ export default class ContextMenu extends React.Component {
   constructor (props) {
     super(props)
 
-    this._assignAnchorRef = (value) => { this.setState({ anchor: value }) }
-
     this.state = {
       open: false,
       opening: false,
       position: {
-        x: 0,
-        y: 0
+        top: 0,
+        left: 0
       }
     }
   }
@@ -38,8 +36,8 @@ export default class ContextMenu extends React.Component {
    *
    * @param {Object} position Coordinates where the absolutely positioned popup
    * should appear.
-   * @property {number} x The value to forward as `left` into the style object.
-   * @property {number} y The value to forward as `top` into the style object.
+   * @property {number} left The offset of the context menu from the left edge of the page.
+   * @property {number} top The offset of the context menu from the top edge of the page.
    */
   open (position) {
     // Prevent the document body from firing a contextmenu event
@@ -89,12 +87,8 @@ export default class ContextMenu extends React.Component {
   }
 
   render () {
-    const { animated, children } = this.props
+    const { children } = this.props
     const { open, opening, position } = this.state
-    const anchor = (
-      <div style={{ position: 'absolute', left: position.x, top: position.y }}
-        ref={this._assignAnchorRef} />
-    )
 
     const menuItems = React.Children.map(children,
       child => React.cloneElement(child,
@@ -110,26 +104,21 @@ export default class ContextMenu extends React.Component {
     )
 
     return (
-      <div>
-        { anchor }
-        <Popover
-          animated={!!animated}
-          open={open || opening}
-          anchorEl={this.state.anchor}
-          anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
-          targetOrigin={{horizontal: 'left', vertical: 'top'}}
-          onRequestClose={this._handleRequestClose}
-        >
-          <Menu desktop>
-            {menuItems}
-          </Menu>
-        </Popover>
-      </div>
+      <Popover
+        open={open || opening}
+        anchorReference='anchorPosition'
+        anchorPosition={position}
+        anchorOrigin={{ horizontal: 'left', vertical: 'bottom' }}
+        onRequestClose={this._handleRequestClose}
+      >
+        <MenuList>
+          {menuItems}
+        </MenuList>
+      </Popover>
     )
   }
 }
 
 ContextMenu.propTypes = {
-  animated: PropTypes.bool,
   children: PropTypes.node
 }

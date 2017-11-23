@@ -50,7 +50,7 @@ const LocationListEntry = (props) => {
   const onClick = id === 'addNew' ? editLocation : mapViewToLocation
 
   return (
-    <ListItem onClick={onClick}>
+    <ListItem button onClick={onClick}>
       {avatar}
       <ListItemText primary={name} secondary={secondaryText} />
       <ListItemSecondaryAction>{actionButton}</ListItemSecondaryAction>

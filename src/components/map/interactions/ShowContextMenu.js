@@ -197,8 +197,8 @@ export default class ShowContextMenu extends interaction.OLInteraction {
       )
     if (open) {
       const position = {
-        x: event.originalEvent.offsetX,
-        y: event.originalEvent.offsetY
+        left: event.originalEvent.pageX,
+        top: event.originalEvent.pageY
       }
       open(position)
     }

@@ -20,8 +20,12 @@ import { listOf } from './helpers/lists'
  * Avatars for stopped and running clocks.
  */
 const avatars = [
-  <Avatar key='stop' backgroundColor={red['A700']} icon={<Stop />} />,
-  <Avatar key='play' backgroundColor={green[500]} icon={<PlayArrow />} />
+  <Avatar key='stop' style={{ backgroundColor: red['A700'] }}>
+    <Stop />
+  </Avatar>,
+  <Avatar key='play' style={{ backgroundColor: green[500] }}>
+    <PlayArrow />
+  </Avatar>
 ]
 
 /**
