@@ -39,8 +39,8 @@ const MapToolbarSeparator = () => {
  *
  * @returns {React.Element} the rendered component
  */
-const MapToolbarPresentation = ({ muiTheme, onShowLayersDialog, onToolSelected, selectedTool }) => {
-  const selectedColor = muiTheme.palette.primary1Color
+const MapToolbarPresentation = ({ onShowLayersDialog, onToolSelected, selectedTool, theme }) => {
+  const selectedColor = theme.palette.primary[500]
   const colorForTool = (tool) => (
     selectedTool === tool ? selectedColor : undefined
   )
@@ -80,10 +80,10 @@ const MapToolbarPresentation = ({ muiTheme, onShowLayersDialog, onToolSelected, 
 }
 
 MapToolbarPresentation.propTypes = {
-  muiTheme: PropTypes.object,
   onShowLayersDialog: PropTypes.func,
   onToolSelected: PropTypes.func,
-  selectedTool: PropTypes.string
+  selectedTool: PropTypes.string,
+  theme: PropTypes.object.isRequired
 }
 
 /**
@@ -101,6 +101,6 @@ const MapToolbar = connect(
       dispatch(selectMapTool(tool))
     }
   })
-)(withTheme(MapToolbarPresentation))
+)(withTheme()(MapToolbarPresentation))
 
 export default MapToolbar

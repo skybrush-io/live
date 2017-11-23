@@ -19,8 +19,9 @@ import { Tool } from './tools'
  *
  * @return {React.Element} the rendered component
  */
-const DrawingToolbarPresentation = ({ muiTheme, onToolSelected, selectedTool }) => {
-  const selectedColor = muiTheme.palette.primary1Color
+const DrawingToolbarPresentation = ({ onToolSelected, selectedTool, theme }) => {
+  const selectedColor = theme.palette.primary[500]
+  console.log(theme.palette)
   const colorForTool = (tool) => (
     selectedTool === tool ? selectedColor : undefined
   )
@@ -44,9 +45,9 @@ const DrawingToolbarPresentation = ({ muiTheme, onToolSelected, selectedTool }) 
 }
 
 DrawingToolbarPresentation.propTypes = {
-  muiTheme: PropTypes.object,
   onToolSelected: PropTypes.func,
-  selectedTool: PropTypes.string
+  selectedTool: PropTypes.string,
+  theme: PropTypes.object.isRequired
 }
 
 /**
@@ -62,7 +63,7 @@ const DrawingToolbar = connect(
     }
   })
 )(
-  withTheme(DrawingToolbarPresentation)
+  withTheme()(DrawingToolbarPresentation)
 )
 
 export default DrawingToolbar

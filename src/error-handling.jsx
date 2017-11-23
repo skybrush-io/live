@@ -6,7 +6,6 @@
 import AlertWarning from 'material-ui-icons/Warning'
 import PropTypes from 'prop-types'
 import React from 'react'
-import { withErrorBoundary as withErrorBoundary_ } from 'react-error-boundary'
 import RedBox from 'redbox-react'
 import { addErrorItem } from './utils/logging'
 
@@ -34,7 +33,7 @@ StackTraceErrorHandler.propTypes = {
 }
 /* eslint-enable handle-callback-err */
 
-const ErrorHandler = __PROD__ ? ProductionErrorHandler : StackTraceErrorHandler
+export const ErrorHandler = __PROD__ ? ProductionErrorHandler : StackTraceErrorHandler
 
 /**
  * Converts an arbitrary error object into a string if it is not a string
@@ -58,17 +57,4 @@ function errorToString (err) {
  */
 export function handleError (err) {
   addErrorItem(errorToString(err))
-}
-
-/**
- * A React higher order component that can be used to provide other
- * React components with an error boundary that protects their
- * `render()` method from leaking errors and crashing the application.
- *
- * @param  {React.Component}  component  the component to wrap
- * @return {React.Component}  the original component extended with an
- *         appropriate error handling mechanism
- */
-export const withErrorBoundary = (component) => {
-  return withErrorBoundary_(component, ErrorHandler)
 }

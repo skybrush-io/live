@@ -2,8 +2,11 @@
  * @file Theme setup for Material-UI.
  */
 
+import blue from 'material-ui/colors/blue'
 import createMuiTheme from 'material-ui/styles/createMuiTheme'
 
 export default createMuiTheme({
-  // Add theme properties here
+  palette: {
+    primary: blue
+  }
 })
