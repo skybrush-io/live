@@ -9,6 +9,7 @@ import React from 'react'
 import { mapReferenceRequestSignal, mapRotationResetSignal } from '../../signals'
 
 import IconButton from 'material-ui/IconButton'
+import { InputAdornment } from 'material-ui/Input'
 import ImageRotateRight from 'material-ui-icons/RotateRight'
 import TextField from 'material-ui/TextField'
 
@@ -63,13 +64,12 @@ export default class MapRotationTextBox extends React.Component {
           <ImageRotateRight />
         </IconButton>
         <TextField
-          style={{ width: this.props.fieldWidth, verticalAlign: 'inherit' }}
-          hintText='Rotation'
+          style={{ width: this.props.fieldWidth, verticalAlign: 'text-bottom' }}
           type='number'
           value={
             this.state.isFocused
-            ? this.state.rotation
-            : normalizeAngle(this.state.rotation)
+              ? this.state.rotation
+              : normalizeAngle(this.state.rotation)
           }
           onFocus={this._onFocus}
           onBlur={this._onBlur}

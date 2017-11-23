@@ -21,7 +21,6 @@ import { Tool } from './tools'
  */
 const DrawingToolbarPresentation = ({ onToolSelected, selectedTool, theme }) => {
   const selectedColor = theme.palette.primary[500]
-  console.log(theme.palette)
   const colorForTool = (tool) => (
     selectedTool === tool ? selectedColor : undefined
   )

@@ -8,10 +8,10 @@ import { connect } from 'react-redux'
 import { reduxForm, Field } from 'redux-form'
 
 import Button from 'material-ui/Button'
-import Dialog from 'material-ui/Dialog'
+import Dialog, { DialogActions, DialogContent } from 'material-ui/Dialog'
 import { FormControlLabel } from 'material-ui/Form'
 import IconButton from 'material-ui/IconButton'
-import List, { ListItem } from 'material-ui/List'
+import List, { ListItem, ListItemText, ListItemSecondaryAction } from 'material-ui/List'
 import Switch from 'material-ui/Switch'
 import VisibilityOff from 'material-ui-icons/VisibilityOff'
 import ContentAdd from 'material-ui-icons/Add'
@@ -44,8 +44,8 @@ class BasicLayerSettingsFormPresentation extends React.Component {
         <Field
           name='label'
           component={renderTextField}
-          floatingLabelText='Layer name'
-          hintText='New layer'
+          label='Layer name'
+          placeholder='New layer'
           style={{ width: '100%' }}
           onKeyDown={this._onKeyDown}
         />
@@ -194,13 +194,14 @@ const LayerSettingsContainer = connect(
  */
 const LayerListPresentation = selectableListOf(
   (layer, props, selected) => (
-    <ListItem key={layer.id} primaryText={layer.label}
-      secondaryText={labelForLayerType(layer.type)}
-      leftIcon={iconForLayerType(layer.type)}
-      rightIcon={layer.visible ? undefined : <VisibilityOff />}
+    <ListItem button key={layer.id}
       className={selected ? 'selected-list-item' : undefined}
       onClick={props.onItemSelected}
-    />
+    >
+      {iconForLayerType(layer.type)}
+      <ListItemText primary={layer.label} secondary={labelForLayerType(layer.type)} />
+      {layer.visible ? undefined : <VisibilityOff />}
+    </ListItem>
   ),
   {
     backgroundHint: 'No layers',
@@ -280,19 +281,18 @@ class LayersDialogPresentation extends React.Component {
     ]
 
     return (
-      <Dialog
-        open={dialogVisible}
-        actions={actions}
-        bodyStyle={{display: 'flex', overflow: 'visible'}}
-        actionsContainerStyle={{ display: 'flex', alignItems: 'center' }}
-        onRequestClose={onClose}
-      >
-        <div style={{ flex: 3 }}>
-          <LayerList />
-        </div>
-        <div style={{ flex: 7, marginLeft: 15 }}>
-          <LayerSettingsContainer layerId={selectedLayerId} />
-        </div>
+      <Dialog open={dialogVisible} onRequestClose={onClose}>
+        <DialogContent style={{ display: 'flex', overflow: 'visible', paddingLeft: 0 }}>
+          <div style={{ flex: 3 }}>
+            <LayerList />
+          </div>
+          <div style={{ flex: 7, marginLeft: 15 }}>
+            <LayerSettingsContainer layerId={selectedLayerId} />
+          </div>
+        </DialogContent>
+        <DialogActions>
+          {actions}
+        </DialogActions>
       </Dialog>
     )
   }

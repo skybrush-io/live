@@ -105,7 +105,7 @@ class MessagesPanelPresentation extends React.Component {
 
   focusOnTextField () {
     if (this._textField) {
-      this._textField.input.select()
+      this._textField.focus()
     }
   }
 
@@ -122,7 +122,7 @@ class MessagesPanelPresentation extends React.Component {
       <div key="textFieldContainer" style={{ display: 'flex' }}>
         <ActiveUAVsField style={{ width: '8em', paddingRight: '1em' }}
           flock={flock} />
-        <TextField ref={this._setTextField} fullWidth hintText="Message"
+        <TextField inputRef={this._setTextField} fullWidth label="Message"
           onKeyDown={this._textFieldKeyDownHandler}
           disabled={isNil(selectedUAVId)} />
       </div>

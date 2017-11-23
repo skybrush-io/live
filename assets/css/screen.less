@@ -1,5 +1,5 @@
 @box-background-color: #ffffff;
-@primary-color: #00bcd4;    // equal to primary1Color in the Material UI theme
+@primary-color: #2196f3;    // equal to primary[500] in the Material UI theme
 @button-offset: 20px;
 @short-transition-duration: 0.2s;
 @medium-transition-duration: 0.5s;
@@ -84,13 +84,9 @@ body {
 
 /* Special styling for Material-UI lists that are placed within a
  * Dialog and whose left edge lines up with the left edge of the dialog. */
-div.dialog-sidebar {
-  margin-left: -24px;
-
-  /* Yes, I know it's fugly */
-  &>div>span>div {
-    padding-left: 8px;
-  }
+.dialog-sidebar {
+  padding: 0 !important;
+  min-width: 240px;
 }
 
 /* Styling for selected list items in Material-UI */
@@ -174,7 +170,7 @@ div.dialog-sidebar {
 
   button {
     background-color: white;
-    color: black;
+    color: rgba(0, 0, 0, 0.54);
     margin: 0px;            /* to fit the Material design better */
     width: 24px;            /* 24px because Material buttons are 48px */
     height: 24px;

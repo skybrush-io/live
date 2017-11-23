@@ -115,7 +115,7 @@ const ConnectionListEntry = (props) => {
   let secondaryText = stateNames[state] || 'Unknown state'
 
   if (timeAgoComponent) {
-    secondaryText = <div>{secondaryText} {timeAgoComponent}</div>
+    secondaryText = <span>{secondaryText} {timeAgoComponent}</span>
   }
 
   return (
