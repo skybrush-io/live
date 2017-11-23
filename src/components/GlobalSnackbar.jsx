@@ -17,7 +17,7 @@ import { dismissSnackbar } from '../actions/snackbar'
  */
 const GlobalSnackbarPresentation = ({ onRequestClose, open, message }) => (
   <Snackbar open={open} message={message} autoHideDuration={3000}
-            onRequestClose={onRequestClose} />
+    onRequestClose={onRequestClose} />
 )
 
 GlobalSnackbarPresentation.propTypes = {

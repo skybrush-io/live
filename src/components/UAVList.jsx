@@ -35,8 +35,7 @@ function formatSecondaryTextForUAV (uav) {
   return `at ${formatCoordinate([uav.lon, uav.lat])}, heading ${uav.heading.toFixed(1)}°`
 }
 
-const jumpToUAV = function () {
-  const uav = this['data-uav']
+const jumpToUAV = function (uav) {
   mapViewToLocationSignal.dispatch({
     center: {
       lon: uav.lon,
@@ -45,13 +44,14 @@ const jumpToUAV = function () {
   }, 500)
 }
 
+/* eslint-disable react/jsx-no-bind */
 /**
  * Presentation component for the entire UAV list.
  */
 const UAVListPresentation = multiSelectableListOf((uav, props, selected) => {
   const rightIconButton = (
     <Tooltip placement='bottom' title={`Jump to ${uav.id}`}>
-      <IconButton data-uav={uav} onClick={jumpToUAV}>
+      <IconButton onClick={() => jumpToUAV(uav)}>
         <ImageAdjust />
       </IconButton>
     </Tooltip>
@@ -69,6 +69,7 @@ const UAVListPresentation = multiSelectableListOf((uav, props, selected) => {
   dataProvider: 'uavs'
 })
 UAVListPresentation.displayName = 'UAVListPresentation'
+/* eslint-enable react/jsx-no-bind */
 
 /**
  * React component that shows the state of the known UAVs in a Flockwave
