@@ -32,8 +32,8 @@ const LocationListEntry = (props) => {
   const { center: {lon, lat}, id, name, rotation, zoom } = location
 
   const avatar = id === 'addNew'
-    ? <Avatar icon={<MapsAddLocation />} />
-    : <Avatar icon={<MapsPlace />} />
+    ? <Avatar><MapsAddLocation /></Avatar>
+    : <Avatar><MapsPlace /></Avatar>
 
   const secondaryText = `lon: ${lon}, lat: ${lat}, rot: ${rotation}°, zoom: ${zoom}`
 
@@ -41,8 +41,7 @@ const LocationListEntry = (props) => {
   const mapViewToLocation = () => mapViewToLocationSignal.dispatch(location)
 
   const actionButton = (
-    <IconButton
-      onClick={editLocation}>
+    <IconButton onClick={editLocation}>
       {id === 'addNew' ? <ContentAdd /> : <ActionSettings />}
     </IconButton>
   )

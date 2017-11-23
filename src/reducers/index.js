@@ -11,10 +11,21 @@ import featuresReducer from './features'
 import logReducer from './log'
 import mapReducer from './map'
 import messagesReducer from './messages'
+import metaReducer from './meta'
 import savedLocationsReducer from './saved-locations'
 import sidebarReducer from './sidebar'
 import snackbarReducer from './snackbar'
 import workbenchReducer from './workbench'
+
+/**
+ * Returns the schema version of the state object.
+ *
+ * @param  {Object} state  the entire state store
+ * @return {number} the schema version of the state object
+ */
+const getSchemaVersion = state => (
+  (state && state.meta ? state.meta.schemaVersion : 0) || 0
+)
 
 /**
  * State merger that takes the default state of the Redux store and the
@@ -33,7 +44,32 @@ import workbenchReducer from './workbench'
  * @return {Object} the merged state
  */
 const merger = (oldState, newState) => {
+  const newSchemaVersion = getSchemaVersion(newState)
+  const oldSchemaVersion = getSchemaVersion(oldState)
+  const willUpgrade = newSchemaVersion < oldSchemaVersion
+
+  if (!willUpgrade) {
+    // If we are not upgrading the schema, make sure that we don't restore
+    // any ordered collections from the old state (otherwise this would cause
+    // removed locations to re-appear in the store if we have stored some
+    // locations in the default state)
+    for (const key in newState) {
+      // TODO: create a dedicated function for merging two ordered collections,
+      // and then use that
+      if (oldState.hasOwnProperty(key) && oldState[key] && oldState[key].byId) {
+        delete oldState[key].byId
+        delete oldState[key].order
+      }
+    }
+
+    console.log(oldState)
+  }
+
   const merged = defaultMerger(oldState, newState)
+
+  if (willUpgrade) {
+    merged.meta.schemaVersion = oldSchemaVersion
+  }
 
   if (merged.dialogs.serverSettings.hostName === null) {
     Object.assign(merged.dialogs.serverSettings, config.server)
@@ -56,6 +92,7 @@ const reducer = storage.reducer(
     form: formReducer,
     log: logReducer,
     map: mapReducer,
+    meta: metaReducer,
     messages: messagesReducer,
     savedLocations: savedLocationsReducer,
     sidebar: sidebarReducer,

@@ -3,6 +3,7 @@
  */
 
 import { createStore, applyMiddleware } from 'redux'
+import createDebounce from 'redux-debounce'
 import { actionTypes as reduxFormActionTypes } from 'redux-form'
 import * as storage from 'redux-storage'
 import debounce from 'redux-storage-decorator-debounce'
@@ -25,9 +26,9 @@ const engine = debounce(
       ['dialogs', 'messages'],
       ['dialogs', 'serverSettings'],
       ['features'],
-      ['savedLocations'],
       ['map'],
-      ['messages', 'selectedUAVId'],
+      ['meta'],
+      ['savedLocations'],
       ['sidebar'],
       ['workbench']
     ]
@@ -53,6 +54,13 @@ const actionBlacklist = [
 ]
 
 /**
+ * Redux middleware that debounces actions with the right metadata.
+ */
+const debouncer = createDebounce({
+  simple: 300 /* msec */
+})
+
+/**
  * Redux middleware that saves the state of the application into the
  * browser's local storage after every action.
  */
@@ -64,7 +72,7 @@ const storageMiddleware = storage.createMiddleware(
  * Function to create a new Redux store with the required middlewares.
  */
 const createStoreWithMiddleware =
-  applyMiddleware(storageMiddleware)(createStore)
+  applyMiddleware(debouncer, storageMiddleware)(createStore)
 
 /**
  * The store for the application state.

@@ -3,7 +3,21 @@
  */
 
 import { createAction } from 'redux-actions'
+
+import { debounced } from './meta'
 import { UPDATE_SAVED_LOCATION, DELETE_SAVED_LOCATION } from './types'
+
+/**
+ * Action factory that creates an action that will update the properties
+ * of a given saved location or add a new one, in a debounced manner.
+ *
+ * @param {object} savedLocation the descriptor of the edited saved location.
+ */
+export const debouncedUpdateSavedLocation = createAction(
+  UPDATE_SAVED_LOCATION,
+  (savedLocation) => ({savedLocation}),
+  debounced()
+)
 
 /**
  * Action factory that creates an action that will update the properties

@@ -2,18 +2,20 @@
  * @file Dialog that shows the editor for a saved location.
  */
 
+import { autobind } from 'core-decorators'
 import PropTypes from 'prop-types'
 import React from 'react'
 import { connect } from 'react-redux'
 import { reduxForm, Field } from 'redux-form'
+import { TextField } from 'redux-form-material-ui'
 
 import Button from 'material-ui/Button'
-import Dialog from 'material-ui/Dialog'
+import Dialog, { DialogActions, DialogContent, DialogTitle } from 'material-ui/Dialog'
 
-import { updateSavedLocation, deleteSavedLocation } from '../actions/saved-locations'
+import { debouncedUpdateSavedLocation, deleteSavedLocation,
+  updateSavedLocation } from '../actions/saved-locations'
 import { cancelLocationEditing } from '../actions/saved-location-editor'
 import { createValidator, between, integer, finite, required } from '../utils/validation'
-import { renderTextField } from './helpers/reduxFormRenderers'
 
 import { addListenerToMapViewSignal } from '../signals'
 
@@ -25,34 +27,30 @@ class SavedLocationEditorFormPresentation extends React.Component {
   render () {
     return (
       <div onKeyPress={this.props.onKeyPress}>
-        <Field
+        <Field margin='normal' fullWidth
           name='name'
-          component={renderTextField}
-          floatingLabelText='Name'
+          component={TextField}
+          label='Name'
         />
-        <br />
-        <Field
+        <Field margin='normal' fullWidth
           name='center.lon'
-          component={renderTextField}
-          floatingLabelText='Longtitude'
+          component={TextField}
+          label='Longitude'
         />
-        <br />
-        <Field
+        <Field margin='normal' fullWidth
           name='center.lat'
-          component={renderTextField}
-          floatingLabelText='Latitude'
+          component={TextField}
+          label='Latitude'
         />
-        <br />
-        <Field
+        <Field margin='normal' fullWidth
           name='rotation'
-          component={renderTextField}
-          floatingLabelText='Rotation'
+          component={TextField}
+          label='Rotation'
         />
-        <br />
-        <Field
+        <Field margin='normal' fullWidth
           name='zoom'
-          component={renderTextField}
-          floatingLabelText='Zoom level'
+          component={TextField}
+          label='Zoom level'
         />
       </div>
     )
@@ -95,28 +93,32 @@ const SavedLocationEditorForm = connect(
 class SavedLocationEditorDialogPresentation extends React.Component {
   constructor (props) {
     super(props)
-    this.handleSubmit = this.handleSubmit.bind(this)
-    this._handleKeyPress = this._handleKeyPress.bind(this)
+
+    this._assignFormRef = value => { this._form = value }
   }
 
   componentDidMount () {
     addListenerToMapViewSignal.dispatch('center', center => {
-      this.props.updateCurrentLocation({center})
+      this.props.requestCurrentLocationUpdate({ center })
     })
 
     addListenerToMapViewSignal.dispatch('rotation', rotation => {
-      this.props.updateCurrentLocation({rotation})
+      this.props.requestCurrentLocationUpdate({ rotation })
     })
 
     addListenerToMapViewSignal.dispatch('zoom', zoom => {
-      this.props.updateCurrentLocation({zoom})
+      this.props.requestCurrentLocationUpdate({ zoom })
     })
   }
 
+  @autobind
   handleSubmit () {
-    this.refs.form.getWrappedInstance().submit()
+    if (this._form) {
+      this._form.getWrappedInstance().submit()
+    }
   }
 
+  @autobind
   _handleKeyPress (e) {
     if (e.nativeEvent.code === 'Enter') {
       this.handleSubmit()
@@ -128,7 +130,7 @@ class SavedLocationEditorDialogPresentation extends React.Component {
 
     const actions = [
       <Button key='save' color='primary' onClick={this.handleSubmit}>Save</Button>,
-      <Button key='delete' color='secondary'
+      <Button key='delete' color='accent'
         disabled={editedLocationId === 'addNew'}
         onClick={onDelete(editedLocationId)}>
         Delete
@@ -136,18 +138,15 @@ class SavedLocationEditorDialogPresentation extends React.Component {
       <Button key='cancel' onClick={onClose}>Cancel</Button>
     ]
 
-    const contentStyle = {
-      width: '320px'
-    }
-
     return (
-      <Dialog title='Edit saved location' open={open}
-        actions={actions} contentStyle={contentStyle}
-        onRequestClose={onClose}
-      >
-        <SavedLocationEditorForm ref='form'
-          onSubmit={onSubmit}
-          onKeyPress={this._handleKeyPress} />
+      <Dialog open={open} fullWidth maxWidth='sm' onRequestClose={onClose}>
+        <DialogTitle>Edit saved location</DialogTitle>
+        <DialogContent>
+          <SavedLocationEditorForm ref={this._assignFormRef}
+            onSubmit={onSubmit}
+            onKeyPress={this._handleKeyPress} />
+        </DialogContent>
+        <DialogActions>{actions}</DialogActions>
       </Dialog>
     )
   }
@@ -158,7 +157,8 @@ SavedLocationEditorDialogPresentation.propTypes = {
   onClose: PropTypes.func.isRequired,
   onDelete: PropTypes.func.isRequired,
   onSubmit: PropTypes.func.isRequired,
-  open: PropTypes.bool.isRequired
+  open: PropTypes.bool.isRequired,
+  requestCurrentLocationUpdate: PropTypes.func.isRequired
 }
 
 SavedLocationEditorDialogPresentation.defaultProps = {
@@ -197,8 +197,8 @@ const SavedLocationEditorDialog = connect(
       dispatch(updateSavedLocation(currentLocation))
       dispatch(cancelLocationEditing())
     },
-    updateCurrentLocation (properties) {
-      dispatch(updateSavedLocation(
+    requestCurrentLocationUpdate (properties) {
+      dispatch(debouncedUpdateSavedLocation(
         Object.assign({}, {id: 'current'}, properties)
       ))
     }
