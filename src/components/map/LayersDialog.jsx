@@ -6,6 +6,7 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import { connect } from 'react-redux'
 import { reduxForm, Field } from 'redux-form'
+import { TextField } from 'redux-form-material-ui'
 
 import Button from 'material-ui/Button'
 import Dialog, { DialogActions, DialogContent } from 'material-ui/Dialog'
@@ -26,7 +27,6 @@ import { selectableListOf } from '../helpers/lists'
 import { LayerType, labelForLayerType, iconForLayerType } from '../../model/layers'
 import { getLayersInOrder } from '../../selectors'
 import { createValidator, required } from '../../utils/validation'
-import { renderTextField } from '../helpers/reduxFormRenderers'
 
 import { LayerSettings, stateObjectToLayerSettings } from './layers/index'
 
@@ -43,18 +43,16 @@ class BasicLayerSettingsFormPresentation extends React.Component {
       <div style={{ paddingBottom: '1em' }}>
         <Field
           name='label'
-          component={renderTextField}
+          component={TextField}
           label='Layer name'
           placeholder='New layer'
           style={{ width: '100%' }}
           onKeyDown={this._onKeyDown}
         />
         <div>&nbsp;</div>
-        <FormControlLabel label='Visible' labelPosition='right'
-          value={layer.visible}
+        <FormControlLabel label='Visible'
           disabled={layer.type === LayerType.UNTYPED}
-          onChange={onToggleLayerVisibility}
-          control={<Switch />}
+          control={<Switch checked={layer.visible} onChange={onToggleLayerVisibility} />}
         />
       </div>
     )

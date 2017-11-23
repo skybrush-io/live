@@ -143,7 +143,9 @@ const renderFeature = (feature, selected) => {
 // === The actual layer to be rendered ===
 
 function markAsSelectable (layer) {
-  layer.layer.set('selectable', true)
+  if (layer) {
+    layer.layer.set('selectable', true)
+  }
 }
 
 const FeaturesLayerPresentation = ({ features, projection, selectedFeatureIds, zIndex }) => (
