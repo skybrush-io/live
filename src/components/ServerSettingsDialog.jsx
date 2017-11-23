@@ -10,10 +10,10 @@ import { change, reduxForm, Field } from 'redux-form'
 
 import Button from 'material-ui/Button'
 import Dialog, { DialogActions, DialogContent, DialogTitle } from 'material-ui/Dialog'
+import { TextField } from 'redux-form-material-ui'
 
 import { closeServerSettingsDialog } from '../actions/server-settings'
 import { createValidator, between, integer, required } from '../utils/validation'
-import { renderTextField } from './helpers/reduxFormRenderers'
 
 /**
  * Presentation of the form that shows the fields that the user can use to
@@ -25,14 +25,18 @@ class ServerSettingsFormPresentation extends React.Component {
       <div onKeyPress={this.props.onKeyPress}>
         <Field
           name='hostName'
-          component={renderTextField}
-          floatingLabelText='Hostname'
+          component={TextField}
+          label='Hostname'
+          margin='normal'
+          fullWidth
         />
         <br />
         <Field
           name='port'
-          component={renderTextField}
-          floatingLabelText='Port'
+          component={TextField}
+          label='Port'
+          margin='normal'
+          fullWidth
         />
       </div>
     )
