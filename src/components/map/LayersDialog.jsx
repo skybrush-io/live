@@ -102,6 +102,9 @@ const BasicLayerSettingsForm = connect(
     },
     asyncBlurFields: ['label'],
 
+    // ensure that the base layer name is updated when the user changes the selected layer
+    enableReinitialize: true,
+
     onToggleLayerVisibility () {
       dispatch(toggleLayerVisibility(ownProps.layerId))
     }
@@ -279,7 +282,7 @@ class LayersDialogPresentation extends React.Component {
     ]
 
     return (
-      <Dialog open={dialogVisible} onRequestClose={onClose}>
+      <Dialog fullWidth maxWidth='sm' open={dialogVisible} onRequestClose={onClose}>
         <DialogContent style={{ display: 'flex', overflow: 'visible', paddingLeft: 0 }}>
           <div style={{ flex: 3 }}>
             <LayerList />
