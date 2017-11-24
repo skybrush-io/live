@@ -2,7 +2,6 @@ import { layer } from 'ol-react'
 import PropTypes from 'prop-types'
 import React from 'react'
 import { connect } from 'react-redux'
-import u from 'updeep'
 
 import Button from 'material-ui/Button'
 import TextField from 'material-ui/TextField'
@@ -48,10 +47,10 @@ class UAVsLayerSettingsPresentation extends React.Component {
   render () {
     const colorInputs = colors.map(color => (
       <TextField
-        style={{ marginTop: '-20px', fontFamily: 'monospace' }}
+        fullWidth
         key={`${color}_predicate_textfield`}
         name={`${color}_predicate_textfield`}
-        floatingLabelText={color}
+        label={color}
         value={this.state.colorPredicates[color]}
         onChange={this._makeChangeHandler(color)} />
     ))
@@ -61,8 +60,9 @@ class UAVsLayerSettingsPresentation extends React.Component {
           Color predicates (e.g. <code>id.includes(&apos;1&apos;)</code>)
         </p>
         {colorInputs}
-        <br />
-        <Button raised onClick={this._handleClick}>Apply</Button>
+        <p style={{ textAlign: 'center' }}>
+          <Button onClick={this._handleClick}>Apply changes</Button>
+        </p>
       </div>
     )
   }
@@ -77,9 +77,11 @@ class UAVsLayerSettingsPresentation extends React.Component {
 
   _makeChangeHandler (color) {
     return (event) => {
-      this.setState(
-        u.updateIn(`colorPredicates.${color}`, event.target.value, this.state)
-      )
+      const colorPredicates = {
+        ...this.state.colorPredicates,
+        [color]: event.target.value
+      }
+      this.setState({ colorPredicates })
     }
   }
 
@@ -114,15 +116,12 @@ export const UAVsLayerSettings = connect(
 
 class UAVsLayerPresentation extends React.Component {
   render () {
+    const { projection, selection, zIndex } = this.props
     return (
       <layer.Vector updateWhileAnimating updateWhileInteracting
-        zIndex={this.props.zIndex}>
-
-        <ActiveUAVsLayerSource
-          selection={this.props.selection}
-          flock={flock}
-          projection={this.props.projection} />
-
+        zIndex={zIndex}>
+        <ActiveUAVsLayerSource selection={selection}
+          flock={flock} projection={projection} />
       </layer.Vector>
     )
   }
