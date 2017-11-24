@@ -1,16 +1,16 @@
-import _ from 'lodash'
+import { autobind } from 'core-decorators'
+import { toNumber } from 'lodash'
+import { layer, source } from 'ol-react'
+import ol from 'openlayers'
 import PropTypes from 'prop-types'
 import React from 'react'
+import { CirclePicker } from 'react-color'
 import { connect } from 'react-redux'
 
-import Button from 'material-ui/Button'
 import TextField from 'material-ui/TextField'
-import PopupColorPicker from '../../PopupColorPicker'
 
-import { setLayerParameterById } from '../../../actions/layers'
+import { setLayerParametersById } from '../../../actions/layers'
 
-import ol from 'openlayers'
-import { layer, source } from 'ol-react'
 import flock from '../../../flock'
 import { coordinateFromLonLat } from '../../../utils/geography'
 import { colorToString } from '../../../utils/coloring.js'
@@ -18,44 +18,60 @@ import { colorToString } from '../../../utils/coloring.js'
 // === Settings for this particular layer type ===
 
 class UAVTraceLayerSettingsPresentation extends React.Component {
-  constructor (props) {
-    super(props)
-
-    this.state = {
-      trailLength: this.props.layer.parameters.trailLength
-    }
-
-    this._handleClick = this._handleClick.bind(this)
-  }
-
   render () {
+    const { layer } = this.props
+    const parameters = {
+      trailColor: '#0088ff',
+      trailLength: 10,
+      trailWidth: 2,
+      ...layer.parameters
+    }
+    const { trailColor, trailLength, trailWidth } = parameters
+
     return (
       <div>
-        <TextField ref='trailLength'
-          floatingLabelText='Length of the trail'
-          hintText='Length (in samples)'
+        <TextField style={{ paddingRight: '1em', width: 150 }}
+          label='Trail length' placeholder='Samples'
           type='number'
-          defaultValue={this.props.layer.parameters.trailLength} />
-        <TextField ref='trailWidth'
-          floatingLabelText='Width of the trail'
-          hintText='Width (in pixels)'
+          value={trailLength} onChange={this._onTrailLengthChanged} />
+        <TextField style={{ paddingRight: '1em', width: 150 }}
+          label='Trail width' placeholder='Pixels'
           type='number'
-          defaultValue={this.props.layer.parameters.trailWidth} />
-        <div style={{marginTop: '15px'}}>
-          Trail color:&nbsp;
-          <PopupColorPicker ref='trailColor'
-            defaultValue={this.props.layer.parameters.trailColor} />
+          value={trailWidth} onChange={this._onTrailWidthChanged} />
+        <div style={{ paddingTop: '0.5em' }}>
+          <CirclePicker color={trailColor || '#0088ff'}
+            circleSpacing={7} width={343}
+            onChangeComplete={this._onColorChanged} />
         </div>
-        <br />
-        <Button onClick={this._handleClick}>Set parameters</Button>
       </div>
     )
   }
 
-  _handleClick () {
-    this.props.setLayerParameter('trailLength', _.toNumber(this.refs.trailLength.getValue()))
-    this.props.setLayerParameter('trailWidth', _.toNumber(this.refs.trailWidth.getValue()))
-    this.props.setLayerParameter('trailColor', this.refs.trailColor.getValue())
+  @autobind
+  _onColorChanged (color) {
+    this.props.setLayerParameters({
+      trailColor: color.hex
+    })
+  }
+
+  @autobind
+  _onTrailLengthChanged (event) {
+    const value = toNumber(event.target.value)
+    if (value > 0 && isFinite(value)) {
+      this.props.setLayerParameters({
+        trailLength: value
+      })
+    }
+  }
+
+  @autobind
+  _onTrailWidthChanged (event) {
+    const value = toNumber(event.target.value)
+    if (value > 0 && value < 20) {
+      this.props.setLayerParameters({
+        trailWidth: value
+      })
+    }
   }
 }
 
@@ -63,7 +79,7 @@ UAVTraceLayerSettingsPresentation.propTypes = {
   layer: PropTypes.object,
   layerId: PropTypes.string,
 
-  setLayerParameter: PropTypes.func
+  setLayerParameters: PropTypes.func
 }
 
 export const UAVTraceLayerSettings = connect(
@@ -71,8 +87,8 @@ export const UAVTraceLayerSettings = connect(
   (state, ownProps) => ({}),
   // mapDispatchToProps
   (dispatch, ownProps) => ({
-    setLayerParameter: (parameter, value) => {
-      dispatch(setLayerParameterById(ownProps.layerId, parameter, value))
+    setLayerParameters: parameters => {
+      dispatch(setLayerParametersById(ownProps.layerId, parameters))
     }
   })
 )(UAVTraceLayerSettingsPresentation)
