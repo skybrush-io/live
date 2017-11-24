@@ -1,14 +1,15 @@
+import { autobind } from 'core-decorators'
+import { layer, source } from 'ol-react'
+import PropTypes from 'prop-types'
+import React from 'react'
+import { connect } from 'react-redux'
+
 import Button from 'material-ui/Button'
 import { FormControl } from 'material-ui/Form'
 import Input, { InputLabel } from 'material-ui/Input'
 import { MenuItem } from 'material-ui/Menu'
 import Select from 'material-ui/Select'
 import TextField from 'material-ui/TextField'
-
-import { layer, source } from 'ol-react'
-import PropTypes from 'prop-types'
-import React from 'react'
-import { connect } from 'react-redux'
 
 import { setLayerParametersById } from '../../../actions/layers'
 import { showSnackbarMessage } from '../../../actions/snackbar'
@@ -20,41 +21,42 @@ class TileServerLayerSettingsPresentation extends React.Component {
   constructor (props) {
     super(props)
 
-    this._handleClick = this._handleClick.bind(this)
-
-    this._setURLFieldRef = (value) => { this.urlField = value }
-    this._setLayersFieldRef = (value) => { this.layersField = value }
+    const { layers, url } = props.layer.parameters
+    this.state = {
+      layers: layers || '',
+      url: url || ''
+    }
   }
 
   render () {
     const serverTypeMenuItems = TileServerTypes.map(type =>
-      <MenuItem key={type} value={type} primaryText={type.toUpperCase()} />
+      <MenuItem key={type} value={type}>{type.toUpperCase()}</MenuItem>
     )
-    const { parameters } = this.props.layer
+    const { changeTileServerType, layer } = this.props
+    const { url, layers } = this.state
+    const { parameters } = layer
+
     return (
       <div>
-        <FormControl>
+        <FormControl fullWidth>
           <InputLabel htmlFor='tile-server-type'>Tile server type</InputLabel>
           <Select
             value={parameters.type}
-            onChange={this.props.changeTileServerType}
+            onChange={changeTileServerType}
             input={<Input id='tile-server-type' />}>
             {serverTypeMenuItems}
           </Select>
         </FormControl>
 
-        <TextField ref={this._setURLFieldRef}
-          floatingLabelText='Tile server URL'
-          defaultValue={parameters.url}
-          fullWidth />
+        <TextField fullWidth label='Tile server URL' margin='normal'
+          value={url} onChange={this._onUrlChanged} />
+
         {
           (parameters.type !== TileServerType.XYZ)
             ? (
-              <TextField ref={this._setLayersFieldRef}
-                floatingLabelText="Layers"
-                hintText="Layers to show (comma-separated)"
-                defaultValue={parameters.layers}
-                fullWidth />
+              <TextField fullWidth label='Layers' margin='normal'
+                placeholder='Layers to show (comma-separated)'
+                value={layers} onChange={this._onLayersChanged} />
             ) : (
               <div>
                 <small>
@@ -67,6 +69,7 @@ class TileServerLayerSettingsPresentation extends React.Component {
               </div>
             )
         }
+
         <div style={{ textAlign: 'center', paddingTop: '1em' }}>
           <Button onClick={this._handleClick}>Save settings</Button>
         </div>
@@ -74,22 +77,27 @@ class TileServerLayerSettingsPresentation extends React.Component {
     )
   }
 
+  @autobind
+  _onLayersChanged (event) {
+    this.setState({ layers: event.target.value })
+  }
+
+  @autobind
+  _onUrlChanged (event) {
+    this.setState({ url: event.target.value })
+  }
+
+  @autobind
   _handleClick () {
-    const newParams = {}
-    if (this.urlField) {
-      newParams['url'] = this.urlField.getValue()
-    }
-    if (this.layersField) {
-      newParams['layers'] = this.layersField.getValue()
-    }
-    this.props.setLayerParameters(newParams)
+    const { layers, url } = this.state
+    this.props.setLayerParameters({ layers, url })
     this.props.showMessage('Layer settings saved successfully.')
   }
 }
 
 TileServerLayerSettingsPresentation.propTypes = {
-  layer: PropTypes.object,
-  layerId: PropTypes.string,
+  layer: PropTypes.object.isRequired,
+  layerId: PropTypes.string.isRequired,
 
   changeTileServerType: PropTypes.func,
   setLayerParameters: PropTypes.func,
@@ -101,9 +109,9 @@ export const TileServerLayerSettings = connect(
   (state, ownProps) => ({}),
   // mapDispatchToProps
   (dispatch, ownProps) => ({
-    changeTileServerType: (event, index, value) => {
+    changeTileServerType: event => {
       dispatch(setLayerParametersById(ownProps.layerId, {
-        type: value
+        type: event.target.value
       }))
     },
     setLayerParameters: parameters => {

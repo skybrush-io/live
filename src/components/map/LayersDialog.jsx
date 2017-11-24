@@ -160,8 +160,13 @@ class LayerSettingsContainerPresentation extends React.Component {
       return false
     }
 
+    // The returned div must have a key to ensure that the forms in
+    // the div are unmounted and then re-mounted when the selected
+    // layer changes. Otherwise some of the forms could be updated
+    // in-place by React, which could cause dirty values to stay in
+    // the form fields even if the layer selection changes
     return (
-      <div>
+      <div key={'settings_' + layerId}>
         <BasicLayerSettingsForm layer={layer} layerId={layerId} />
         {this.createChildrenForLayer(layer, layerId)}
       </div>
