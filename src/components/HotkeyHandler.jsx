@@ -8,8 +8,8 @@ import React from 'react'
 import u from 'updeep'
 
 import Button from 'material-ui/Button'
-import Dialog from 'material-ui/Dialog'
-import Table, { TableBody, TableCell, TableHead, TableRow } from 'material-ui/Table'
+import Dialog, { DialogActions, DialogContent, DialogTitle } from 'material-ui/Dialog'
+import Table, { TableBody, TableCell, TableRow } from 'material-ui/Table'
 
 import { isRunningOnMac, platformModifierKey } from '../utils/platform'
 
@@ -131,54 +131,50 @@ export default class HotkeyHandler extends React.Component {
   }
 
   render () {
-    const keysColumnStyle = {width: '150px'}
+    const { hotkeys } = this.props
+    const { dialogVisible, keyboardModifiers } = this.state
+
+    const keysColumnStyle = { width: 120 }
     const actionColumnStyle = {}
     const actions = [
       <Button key='_close' color='primary' onClick={this._hideDialog}>Close</Button>
     ]
 
     const classString = [].concat(
-      (this.state.keyboardModifiers.Alt ? ['key-alt'] : []),
-      (this.state.keyboardModifiers.Control ? ['key-control'] : []),
-      (this.state.keyboardModifiers.Meta ? ['key-meta'] : []),
-      (this.state.keyboardModifiers.Shift ? ['key-shift'] : [])
+      (keyboardModifiers.Alt ? ['key-alt'] : []),
+      (keyboardModifiers.Control ? ['key-control'] : []),
+      (keyboardModifiers.Meta ? ['key-meta'] : []),
+      (keyboardModifiers.Shift ? ['key-shift'] : [])
     ).join(' ')
 
     return (
       <div ref={this._setRoot} className={classString}>
         <Dialog
-          title="Hotkeys"
-          actions={actions}
-          open={this.state.dialogVisible}
+          open={dialogVisible}
           onRequestClose={this._hideDialog}
-          autoScrollBodyContent
         >
-          <Table selectable={false}>
-            <TableHead displaySelectAll={false} adjustForCheckbox={false}>
-              <TableRow>
-                <TableCell style={keysColumnStyle}>
-                  Keys
-                </TableCell>
-                <TableCell style={actionColumnStyle}>
-                  Action
-                </TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody displayRowCheckbox={false}>
-              {
-                this.props.hotkeys.map((hotkey, index) => (
-                  <TableRow key={`hotkey_${index}`}>
-                    <TableCell style={keysColumnStyle}>
-                      {formatHotkeyDefinition(hotkey.keys)}
-                    </TableCell>
-                    <TableCell style={actionColumnStyle}>
-                      {hotkey.description}
-                    </TableCell>
-                  </TableRow>
-                ))
-              }
-            </TableBody>
-          </Table>
+          <DialogTitle>Hotkeys</DialogTitle>
+
+          <DialogContent>
+            <Table>
+              <TableBody>
+                {
+                  hotkeys.map((hotkey, index) => (
+                    <TableRow key={`hotkey_${index}`}>
+                      <TableCell padding='dense' style={keysColumnStyle}>
+                        {formatHotkeyDefinition(hotkey.keys)}
+                      </TableCell>
+                      <TableCell padding='dense' style={actionColumnStyle}>
+                        {hotkey.description}
+                      </TableCell>
+                    </TableRow>
+                  ))
+                }
+              </TableBody>
+            </Table>
+          </DialogContent>
+
+          <DialogActions>{actions}</DialogActions>
         </Dialog>
 
         {this.props.children}

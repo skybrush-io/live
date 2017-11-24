@@ -61,8 +61,6 @@ const merger = (oldState, newState) => {
         delete oldState[key].order
       }
     }
-
-    console.log(oldState)
   }
 
   const merged = defaultMerger(oldState, newState)
