@@ -4,14 +4,14 @@
  */
 
 import { autobind } from 'core-decorators'
-import _ from 'lodash'
+import { find } from 'lodash'
 import PropTypes from 'prop-types'
 import React from 'react'
 import { connect } from 'react-redux'
 
+import { AutoComplete } from './AutoComplete'
 import { selectUAVInMessagesDialog } from '../actions/messages'
 import Flock from '../model/flock'
-
 import { focusMessagesDialogUAVSelectorField } from '../signals'
 
 /**
@@ -31,10 +31,8 @@ export class UAVSelectorField extends React.Component {
       searchText: props.initialText
     }
 
-    this._assignAutoCompleteFieldRef = value => { this._autoCompleteField = value }
-
     this._signalBinding = undefined
-    this._autoCompleteField = undefined
+    this._autoCompleteFieldInput = undefined
   }
 
   componentDidMount () {
@@ -45,6 +43,11 @@ export class UAVSelectorField extends React.Component {
 
   componentWillUnmount () {
     focusMessagesDialogUAVSelectorField.detach(this._signalBinding)
+  }
+
+  @autobind
+  _assignAutoCompleteFieldInputRef (value) {
+    this._autoCompleteFieldInput = value
   }
 
   /**
@@ -65,21 +68,29 @@ export class UAVSelectorField extends React.Component {
   }
 
   render () {
+    const { placeholder } = this.props
+
     /*
-    const { prompt, style, uavIds } = this.props
+    const { style, uavIds } = this.props
     const { error, searchText } = this.state
     */
-    return <div>Not working yet</div>
+    /* TODO: fullWidth, maxSearchResults, filter, dataSource, style,
+     * onBlur, validation */
+    return (
+      <AutoComplete
+        inputRef={this._assignAutoCompleteFieldInputRef}
+        placeholder={placeholder}
+      />
+    )
     /*
     return (
-      <AutoComplete ref={this._assignAutoCompleteFieldRef}
+      <AutoComplete ref={this._assignAutoCompleteFieldInputRef}
         hintText={prompt} maxSearchResults={5}
         dataSource={uavIds} searchText={searchText} errorText={error}
         filter={AutoComplete.caseInsensitiveFilter}
         fullWidth style={style}
         onBlur={this._onBlur}
         onNewRequest={this._onNewRequest}
-        onUpdateInput={this._onUpdateInput}
       />
     )
     */
@@ -125,45 +136,6 @@ export class UAVSelectorField extends React.Component {
   }
 
   /**
-   * Event handler that is called when the user selects an item from the
-   * dropdown menu or commits the selection with Enter.
-   *
-   * @param {string}  chosenRequest  the value chosen by the user
-   * @param {number}  index  the index of the value in the dropdown menu,
-   *        if (and only if) the user selected the item in the dropdown
-   *        menu. Note that it will be -1 if the user typed a value that
-   *        happens to be the same as some item in the dropdown menu.
-   * @return {undefined}
-   */
-  @autobind
-  _onNewRequest (chosenRequest, index) {
-    if (index === -1 && !this._valueIsAmongUAVIds(chosenRequest)) {
-      // The user did not choose from the dropdown and the value that the
-      // user typed does not match any of the items from the data source.
-      // We can pretend that the user chose the first item from the menu.
-      /*
-      const { uavIds } = this.props
-      const firstMatch = _.find(uavIds,
-        uavId => AutoComplete.caseInsensitiveFilter(chosenRequest, uavId))
-      if (firstMatch) {
-        chosenRequest = firstMatch
-      }
-      */
-    }
-    this._commitValueIfValid(chosenRequest)
-  }
-
-  /**
-   * Event handler that is called when the user types into the field.
-   *
-   * @param {string}  searchText  the new text that the user typed
-   */
-  @autobind
-  _onUpdateInput (searchText) {
-    this.setState({ searchText })
-  }
-
-  /**
    * Returns whether the given value is among the valid UAV IDs accepted
    * by this component.
    *
@@ -177,20 +149,20 @@ export class UAVSelectorField extends React.Component {
 
   @autobind
   _selectAutoCompleteField () {
-    if (!this._autoCompleteField) {
-      console.warn('The autocomplete field has not registered yet.')
+    if (!this._autoCompleteFieldInput) {
+      console.warn('The autocomplete field is not registered yet.')
       return
     }
 
-    this._autoCompleteField.refs.searchTextField.input.select()
+    this._autoCompleteFieldInput.select()
   }
 }
 
 UAVSelectorField.propTypes = {
   allowEmpty: PropTypes.bool.isRequired,
   initialText: PropTypes.string,
-  prompt: PropTypes.string.isRequired,
-  style: PropTypes.object.isRequired,
+  placeholder: PropTypes.string.isRequired,
+  style: PropTypes.object,
   uavIds: PropTypes.arrayOf(PropTypes.string).isRequired,
 
   onValueChanged: PropTypes.func
@@ -199,8 +171,7 @@ UAVSelectorField.propTypes = {
 UAVSelectorField.defaultProps = {
   allowEmpty: true,
   initialValue: '',
-  prompt: 'UAV ID',
-  style: {},
+  placeholder: 'UAV ID',
   uavIds: []
 }
 
@@ -273,10 +244,10 @@ export class ActiveUAVsFieldPresentation extends React.Component {
   }
 
   render () {
-    const { allowEmpty, prompt, style, value, onValueChanged } = this.props
+    const { allowEmpty, placeholder, style, value, onValueChanged } = this.props
     const { uavIds } = this.state
     return (
-      <UAVSelectorField allowEmpty={allowEmpty} prompt={prompt}
+      <UAVSelectorField allowEmpty={allowEmpty} placeholder={placeholder}
         style={style} initialText={value} onValueChanged={onValueChanged}
         uavIds={uavIds} />
     )
@@ -297,8 +268,8 @@ export class ActiveUAVsFieldPresentation extends React.Component {
 ActiveUAVsFieldPresentation.propTypes = {
   allowEmpty: PropTypes.bool.isRequired,
   flock: PropTypes.instanceOf(Flock),
-  prompt: PropTypes.string.isRequired,
-  style: PropTypes.object.isRequired,
+  placeholder: PropTypes.string,
+  style: PropTypes.object,
   value: PropTypes.string.isRequired,
 
   onValueChanged: PropTypes.func
@@ -307,7 +278,6 @@ ActiveUAVsFieldPresentation.propTypes = {
 ActiveUAVsFieldPresentation.defaultProps = {
   allowEmpty: true,
   prompt: 'UAV ID',
-  style: {},
   value: ''
 }
 
