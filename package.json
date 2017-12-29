@@ -29,7 +29,7 @@
     "golden-layout": "^1.5.9",
     "immutable": "^3.8.2",
     "lodash": "^4.17.4",
-    "material-ui": "^1.0.0-beta.21",
+    "material-ui": "^1.0.0-beta.25",
     "material-ui-icons": "^1.0.0-beta.17",
     "mersenne-twister": "^1.1.0",
     "mini-signals": "^1.2.0",

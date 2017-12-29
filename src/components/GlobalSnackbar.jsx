@@ -15,14 +15,14 @@ import { dismissSnackbar } from '../actions/snackbar'
  *
  * @returns  {Object}  the rendered snackbar component
  */
-const GlobalSnackbarPresentation = ({ onRequestClose, open, message }) => (
+const GlobalSnackbarPresentation = ({ onClose, open, message }) => (
   <Snackbar open={open} message={message} autoHideDuration={3000}
-    onRequestClose={onRequestClose} />
+    onClose={onClose} />
 )
 
 GlobalSnackbarPresentation.propTypes = {
   message: PropTypes.string.isRequired,
-  onRequestClose: PropTypes.func,
+  onClose: PropTypes.func,
   open: PropTypes.bool.isRequired
 }
 
@@ -34,7 +34,7 @@ const GlobalSnackbar = connect(
   state => state.snackbar,
   // mapDispatchToProps
   dispatch => ({
-    onRequestClose () {
+    onClose () {
       dispatch(dismissSnackbar())
     }
   })

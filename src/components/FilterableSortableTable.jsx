@@ -260,7 +260,7 @@ class FilterableSortableTable extends React.Component {
         anchorEl={this.state.filterPopoverTargetElement}
         anchorOrigin={{ horizontal: 'left', vertical: 'bottom' }}
         targetOrigin={{ horizontal: 'left', vertical: 'top' }}
-        onRequestClose={this._closeFilterPopover}
+        onClose={this._closeFilterPopover}
         style={{ padding: '5px', textAlign: 'center', overflow: 'visible' }}
       >
         {this.state.filterPopoverTargetColumnId !== undefined

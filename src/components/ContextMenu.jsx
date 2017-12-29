@@ -58,7 +58,7 @@ export default class ContextMenu extends React.Component {
    * selects a menu item or clicks away.
    */
   @autobind
-  _handleRequestClose () {
+  _handleClose () {
     document.body.removeEventListener(
       'contextmenu', this._preventDefault
     )
@@ -80,7 +80,7 @@ export default class ContextMenu extends React.Component {
     if (this.state.opening) {
       this.setState({ opening: false, open: true })
     } else {
-      this._handleRequestClose()
+      this._handleClose()
     }
 
     e.preventDefault()
@@ -96,7 +96,7 @@ export default class ContextMenu extends React.Component {
           onClick: child.props.onClick
             ? event => {
               child.props.onClick(event)
-              this._handleRequestClose()
+              this._handleClose()
             }
             : undefined
         }
@@ -109,7 +109,7 @@ export default class ContextMenu extends React.Component {
         anchorReference='anchorPosition'
         anchorPosition={position}
         anchorOrigin={{ horizontal: 'left', vertical: 'bottom' }}
-        onRequestClose={this._handleRequestClose}
+        onClose={this._handleClose}
       >
         <MenuList>
           {menuItems}

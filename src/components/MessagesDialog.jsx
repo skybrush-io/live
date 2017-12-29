@@ -96,9 +96,9 @@ class MessagesDialogPresentation extends React.Component {
       </Button>,
       <Button key='close' onClick={onClose}>Close</Button>
     ]
-    
+
     return (
-      <Dialog open={open} onRequestClose={onClose}>
+      <Dialog open={open} onClose={onClose}>
         <DialogContent>
           <MessagesPanel
             ref={this._setMessagesPanel} style={{ height: '35ex' }}

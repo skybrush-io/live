@@ -287,7 +287,7 @@ class LayersDialogPresentation extends React.Component {
     ]
 
     return (
-      <Dialog fullWidth maxWidth='sm' open={dialogVisible} onRequestClose={onClose}>
+      <Dialog fullWidth maxWidth='sm' open={dialogVisible} onClose={onClose}>
         <DialogContent style={{ display: 'flex', overflow: 'visible', paddingLeft: 0 }}>
           <div style={{ flex: 3 }}>
             <LayerList />

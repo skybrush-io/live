@@ -139,7 +139,7 @@ class SavedLocationEditorDialogPresentation extends React.Component {
     ]
 
     return (
-      <Dialog open={open} fullWidth maxWidth='sm' onRequestClose={onClose}>
+      <Dialog open={open} fullWidth maxWidth='sm' onClose={onClose}>
         <DialogTitle>Edit saved location</DialogTitle>
         <DialogContent>
           <SavedLocationEditorForm ref={this._assignFormRef}

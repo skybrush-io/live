@@ -151,7 +151,7 @@ export default class HotkeyHandler extends React.Component {
       <div ref={this._setRoot} className={classString}>
         <Dialog
           open={dialogVisible}
-          onRequestClose={this._hideDialog}
+          onClose={this._hideDialog}
         >
           <DialogTitle>Hotkeys</DialogTitle>
 

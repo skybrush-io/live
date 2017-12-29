@@ -10,6 +10,8 @@ import { ListItem, ListItemSecondaryAction, ListItemText } from 'material-ui/Lis
 import Tooltip from 'material-ui/Tooltip'
 import ImageAdjust from 'material-ui-icons/adjust'
 
+import { autobind } from 'core-decorators'
+import ol from 'openlayers'
 import PropTypes from 'prop-types'
 import React from 'react'
 import { connect } from 'react-redux'
@@ -22,8 +24,8 @@ import CountMonitor from './CountMonitor'
 import { setSelectedUAVIds } from '../actions/map'
 import Flock from '../model/flock'
 import { getSelectedUAVIds } from '../selectors'
-import { mapViewToLocationSignal } from '../signals'
-import { formatCoordinate } from '../utils/geography'
+import { mapViewToExtentSignal, mapViewToLocationSignal } from '../signals'
+import { coordinateFromLonLat, formatCoordinate } from '../utils/geography'
 
 /**
  * Formats the secondary text to be shown for a single UAV in the UAV list.
@@ -81,8 +83,6 @@ class UAVList extends React.Component {
 
     this._eventBindings = {}
 
-    this._onUAVsUpdated = this._onUAVsUpdated.bind(this)
-
     this.state = {
       uavs: Immutable.List(),
       uavIdToIndex: Immutable.Map()
@@ -99,6 +99,24 @@ class UAVList extends React.Component {
 
   componentWillUnmount () {
     this._onFlockMaybeChanged(this.props.flock, undefined)
+  }
+
+  @autobind
+  _fitSelectedUAVs () {
+    const { selectedUAVIds } = this.props
+    const { uavs } = this.state
+
+    const selectedUAVCoordinates = uavs.filter(
+      uav => selectedUAVIds.length === 0
+        ? true
+        : selectedUAVIds.includes(uav.id)
+    ).map(
+      uav => coordinateFromLonLat([uav.lon, uav.lat])
+    ).toArray()
+
+    const boundingExtent = ol.extent.boundingExtent(selectedUAVCoordinates)
+    const bufferedExtent = ol.extent.buffer(boundingExtent, 16)
+    mapViewToExtentSignal.dispatch(bufferedExtent, 500)
   }
 
   /**
@@ -134,6 +152,7 @@ class UAVList extends React.Component {
    * @listens Flock#uavsUpdated
    * @param {UAV[]} updatedUavs  the UAVs that should be refreshed
    */
+  @autobind
   _onUAVsUpdated (updatedUavs) {
     let { uavs, uavIdToIndex } = this.state
 
@@ -173,14 +192,12 @@ class UAVList extends React.Component {
 
   render () {
     const { selectedUAVIds, onSelectionChanged } = this.props
-
-    const uavs = this.state.uavs.sort((a, b) =>
-      a.id < b.id ? -1 : a.id > b.id ? 1 : 0
-    )
+    const { uavs } = this.state
 
     return (
       <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-        <UAVToolbar selectedUAVIds={selectedUAVIds} uavs={uavs} />
+        <UAVToolbar selectedUAVIds={selectedUAVIds}
+          fitSelectedUAVs={this._fitSelectedUAVs} />
 
         <div style={{ height: '100%', overflow: 'auto' }}>
           <UAVListPresentation uavs={uavs} value={selectedUAVIds || []}

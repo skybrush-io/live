@@ -4,7 +4,6 @@
  */
 
 import { autobind } from 'core-decorators'
-import { find } from 'lodash'
 import PropTypes from 'prop-types'
 import React from 'react'
 import { connect } from 'react-redux'
@@ -68,17 +67,24 @@ export class UAVSelectorField extends React.Component {
   }
 
   render () {
-    const { placeholder } = this.props
+    const { maxSearchResults, placeholder } = this.props
+    const fetchOpts = {
+      caseSensitive: false,
+      maxItems: maxSearchResults
+    }
 
     /*
     const { style, uavIds } = this.props
     const { error, searchText } = this.state
     */
-    /* TODO: fullWidth, maxSearchResults, filter, dataSource, style,
+    /* TODO: fullWidth, filter, dataSource, style,
      * onBlur, validation */
+    let uavIds = ['FAKE-00', 'FAKE-01', 'FAKE-02']
+
     return (
       <AutoComplete
         inputRef={this._assignAutoCompleteFieldInputRef}
+        fetchSuggestions={AutoComplete.makePrefixBasedFetcher(uavIds, fetchOpts)}
         placeholder={placeholder}
       />
     )
@@ -161,6 +167,7 @@ export class UAVSelectorField extends React.Component {
 UAVSelectorField.propTypes = {
   allowEmpty: PropTypes.bool.isRequired,
   initialText: PropTypes.string,
+  maxSearchResults: PropTypes.number.isRequired,
   placeholder: PropTypes.string.isRequired,
   style: PropTypes.object,
   uavIds: PropTypes.arrayOf(PropTypes.string).isRequired,
@@ -171,6 +178,7 @@ UAVSelectorField.propTypes = {
 UAVSelectorField.defaultProps = {
   allowEmpty: true,
   initialValue: '',
+  maxSearchResults: 5,
   placeholder: 'UAV ID',
   uavIds: []
 }

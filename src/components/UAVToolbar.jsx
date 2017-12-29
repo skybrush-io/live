@@ -1,3 +1,4 @@
+import { autobind } from 'core-decorators'
 import { isEmpty } from 'lodash'
 import PropTypes from 'prop-types'
 import React from 'react'
@@ -16,43 +17,31 @@ import Message from 'material-ui-icons/Message'
 import { selectUAVInMessagesDialog, showMessagesDialog } from '../actions/messages'
 import * as messaging from '../utils/messaging'
 
-import { coordinateFromLonLat } from '../utils/geography'
-import ol from 'openlayers'
-import { mapViewToExtentSignal } from '../signals'
-
 /**
  * Main toolbar for controlling the UAVs.
  */
 class UAVToolbar extends React.Component {
-  constructor (props) {
-    super(props)
-
-    this._showMessagesDialog = this._showMessagesDialog.bind(this)
-
-    this._fitSelectedUAVs = this._fitSelectedUAVs.bind(this)
-  }
-
   render () {
-    const { selectedUAVIds } = this.props
+    const { fitSelectedUAVs, selectedUAVIds } = this.props
     const isSelectionEmpty = isEmpty(selectedUAVIds)
 
     return (
       <div>
         <Tooltip placement='bottom' title='Takeoff'>
           <IconButton disabled={isSelectionEmpty}
-            onClick={() => messaging.takeoffUAVs(this.props.selectedUAVIds)}>
+            onClick={() => messaging.takeoffUAVs(selectedUAVIds)}>
             <ActionFlightTakeoff />
           </IconButton>
         </Tooltip>
         <Tooltip placement='bottom' title='Land'>
           <IconButton disabled={isSelectionEmpty}
-            onClick={() => messaging.landUAVs(this.props.selectedUAVIds)}>
+            onClick={() => messaging.landUAVs(selectedUAVIds)}>
             <ActionFlightLand />
           </IconButton>
         </Tooltip>
         <Tooltip placement='bottom' title='Return to home'>
           <IconButton disabled={isSelectionEmpty}
-            onClick={() => messaging.returnToHomeUAVs(this.props.selectedUAVIds)}>
+            onClick={() => messaging.returnToHomeUAVs(selectedUAVIds)}>
             <ActionHome />
           </IconButton>
         </Tooltip>
@@ -63,15 +52,15 @@ class UAVToolbar extends React.Component {
         </Tooltip>
         <Tooltip placement='bottom' title='Halt'>
           <IconButton disabled={isSelectionEmpty}
-            onClick={() => messaging.shutdownUAVs(this.props.selectedUAVIds)}>
-            <ActionPowerSettingsNew color={isSelectionEmpty ? undefined : 'red'} />
+            onClick={() => messaging.shutdownUAVs(selectedUAVIds)}>
+            <ActionPowerSettingsNew color={isSelectionEmpty ? undefined : 'accent'} />
           </IconButton>
         </Tooltip>
 
         <Tooltip placement='bottom'
           title={isSelectionEmpty ? 'Fit all UAVs' : 'Fit selected UAVs'}>
           <IconButton
-            onClick={this._fitSelectedUAVs}
+            onClick={fitSelectedUAVs}
             style={{
               float: 'right',
               padding: '0px',
@@ -84,6 +73,7 @@ class UAVToolbar extends React.Component {
     )
   }
 
+  @autobind
   _showMessagesDialog () {
     if (this.props.selectedUAVIds.length === 1) {
       this.props.selectUAVInMessagesDialog(this.props.selectedUAVIds[0])
@@ -91,23 +81,10 @@ class UAVToolbar extends React.Component {
 
     this.props.showMessagesDialog()
   }
-
-  _fitSelectedUAVs () {
-    const selectedUAVCoordinates = this.props.uavs.toArray().filter(
-      uav => this.props.selectedUAVIds.length === 0
-        ? true
-        : this.props.selectedUAVIds.includes(uav.id)
-    ).map(
-      uav => coordinateFromLonLat([uav.lon, uav.lat])
-    )
-
-    const boundingExtent = ol.extent.boundingExtent(selectedUAVCoordinates)
-    const bufferedExtent = ol.extent.buffer(boundingExtent, 16)
-    mapViewToExtentSignal.dispatch(bufferedExtent, 500)
-  }
 }
 
 UAVToolbar.propTypes = {
+  fitSelectedUAVs: PropTypes.func,
   isSelectionEmpty: PropTypes.bool,
   selectUAVInMessagesDialog: PropTypes.func,
   showMessagesDialog: PropTypes.func,
@@ -116,7 +93,9 @@ UAVToolbar.propTypes = {
 
 export default connect(
   // mapStateToProps
-  state => ({}),
+  (state, { fitSelectedUAVs }) => ({
+    fitSelectedUAVs
+  }),
   // mapDispatchToProps
   dispatch => ({
     selectUAVInMessagesDialog: (id) => {

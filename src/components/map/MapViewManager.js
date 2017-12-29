@@ -3,13 +3,9 @@
  * (position, rotation, zoom)
  */
 
-import _ from 'lodash'
+import { round } from 'lodash'
 
-import ol from 'openlayers'
-import {
-  coordinateFromLonLat,
-  lonLatFromCoordinate
-} from '../../utils/geography'
+import { coordinateFromLonLat, lonLatFromCoordinate } from '../../utils/geography'
 
 import {
   mapReferenceRequestSignal,
@@ -89,7 +85,7 @@ export default class MapViewManager {
   viewListener (e) {
     if (e.key === 'center') {
       const center = lonLatFromCoordinate(this.view.getCenter()).map(
-        c => _.round(c, 6)
+        c => round(c, 6)
       )
       this.callbacks.center.forEach(c => c({lon: center[0], lat: center[1]}))
     } else if (e.key === 'rotation') {
@@ -151,36 +147,21 @@ export default class MapViewManager {
    */
   mapViewToLocation (location, duration = 1000) {
     const { center, rotation, zoom } = location
+    const animationParams = { duration }
 
     if (center !== undefined) {
-      this.map.beforeRender(ol.animation.pan({
-        source: this.view.getCenter(),
-        duration,
-        easing: ol.easing.easeOut
-      }))
-
-      this.view.setCenter(coordinateFromLonLat([center.lon, center.lat]))
+      animationParams.center = coordinateFromLonLat([center.lon, center.lat])
     }
 
     if (rotation !== undefined) {
-      this.map.beforeRender(ol.animation.rotate({
-        rotation: this.view.getRotation(),
-        duration,
-        easing: ol.easing.easeOut
-      }))
-
-      this.view.setRotation(rotation / (180 / -Math.PI))
+      animationParams.rotation = rotation / (180 / -Math.PI)
     }
 
     if (zoom !== undefined) {
-      this.map.beforeRender(ol.animation.zoom({
-        resolution: this.view.getResolution(),
-        duration,
-        easing: ol.easing.easeOut
-      }))
-
-      this.view.setZoom(zoom)
+      animationParams.zoom = zoom
     }
+
+    this.view.animate(animationParams)
   }
 
   /**
@@ -190,18 +171,8 @@ export default class MapViewManager {
    * @param {number} duration The desired duration of the transition.
    */
   mapViewToExtent (extent, duration = 1000) {
-    this.map.beforeRender(ol.animation.zoom({
-      resolution: this.view.getResolution(),
-      duration,
-      easing: ol.easing.easeOut
-    }))
-
-    this.map.beforeRender(ol.animation.pan({
-      source: this.view.getCenter(),
-      duration,
-      easing: ol.easing.easeOut
-    }))
-
-    this.view.fit(extent, this.map.getSize())
+    this.view.fit(extent, this.map.getSize(), {
+      duration
+    })
   }
 }

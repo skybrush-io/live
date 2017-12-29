@@ -6,8 +6,8 @@
 import match from 'autosuggest-highlight/match'
 import parse from 'autosuggest-highlight/parse'
 import { autobind } from 'core-decorators'
-import { identity } from 'lodash'
-import { MenuItem } from 'material-ui/Menu'
+import { identity, lowerCase } from 'lodash'
+import { MenuItem, MenuList } from 'material-ui/Menu'
 import Paper from 'material-ui/Paper'
 import TextField from 'material-ui/TextField'
 import PropTypes from 'prop-types'
@@ -60,7 +60,7 @@ export class AutoComplete extends React.Component {
   _onSuggestionsFetchRequested ({ value }) {
     const { fetchSuggestions } = this.props
     this.setState({
-      suggestions: fetchSuggestions(value)
+      suggestions: fetchSuggestions ? fetchSuggestions(value) : []
     })
   }
 
@@ -78,11 +78,11 @@ export class AutoComplete extends React.Component {
 
   @autobind
   _renderSuggestion (suggestion, { query, isHighlighted }) {
-    const { getSuggestionLabel, highlight } = this.props
+    const { getSuggestionLabel, highlightMatches } = this.props
     const label = getSuggestionLabel(suggestion)
-    const fragments = highlight
+    const fragments = highlightMatches
       ? parse(label, match(label, query)).map((part, index) => (
-        <span key={index} style={{ fontWeight: part.highlight ? 'bold' : 'normal' }}>
+        <span key={index} style={{ backgroundColor: part.highlight ? 'yellow' : 'inherit' }}>
           { part.text }
         </span>
       ))
@@ -96,16 +96,24 @@ export class AutoComplete extends React.Component {
   }
 
   _renderSuggestionsContainer ({ containerProps, children }) {
-    return <Paper {...containerProps} square>{children}</Paper>
+    return (
+      <Paper {...containerProps} square>
+        <MenuList>
+          {children}
+        </MenuList>
+      </Paper>
+    )
   }
 
   render () {
-    const { autoFocus, getSuggestionValue, inputRef, placeholder } = this.props
+    const { autoFocus, highlightFirstSuggestion, getSuggestionValue,
+      inputRef, placeholder } = this.props
     const { suggestions, value } = this.state
 
     return (
       <Autosuggest
         getSuggestionValue={getSuggestionValue}
+        highlightFirstSuggestion={highlightFirstSuggestion}
         inputProps={{
           autoFocus,
           inputRef,
@@ -122,6 +130,55 @@ export class AutoComplete extends React.Component {
       />
     )
   }
+
+  /**
+   * Creates a fetcher function that expects a value type into the
+   * autocomplete field and returns those items from ``values`` where the
+   * typed value is a prefix of the actual value.
+   *
+   * @param  {string[]}  values  the array of possible items that the
+   *         fetcher will match
+   * @param  {Object}  options  options that influence how the fetcher
+   *         behaves
+   * @param  {number}  options.maxItems  the maximum number of suggestions
+   *         to return for a single input
+   * @param  {boolean} options.caseSensitive  whether matching should be
+   *         case sensitive
+   * @return {function} a function that will map values typed into the
+   *         autocomplete field to the corresponding suggestions
+   */
+  static makePrefixBasedFetcher (values, options = {}) {
+    const effectiveOptions = {
+      caseSensitive: true,
+      maxItems: 5,
+      ...options
+    }
+    const valuesToMatch = effectiveOptions.caseSensitive
+      ? values
+      : values.map(lowerCase)
+
+    return (value) => {
+      const result = []
+      const { maxItems } = effectiveOptions
+
+      if (maxItems > 0) {
+        if (!effectiveOptions.caseSensitive) {
+          value = lowerCase(value)
+        }
+
+        valuesToMatch.forEach((item, index) => {
+          if (item.startsWith(value)) {
+            result.push(values[index])
+            if (result.length >= maxItems) {
+              return false
+            }
+          }
+        })
+      }
+
+      return result
+    }
+  }
 }
 
 AutoComplete.propTypes = {
@@ -129,13 +186,15 @@ AutoComplete.propTypes = {
   fetchSuggestions: PropTypes.func,
   getSuggestionLabel: PropTypes.func.isRequired,
   getSuggestionValue: PropTypes.func.isRequired,
+  highlightFirstSuggestion: PropTypes.bool,
   inputRef: PropTypes.func,
-  highlight: PropTypes.bool,
+  highlightMatches: PropTypes.bool,
   placeholder: PropTypes.string
 }
 
 AutoComplete.defaultProps = {
   getSuggestionLabel: identity,
   getSuggestionValue: identity,
-  highlight: true
+  highlightFirstSuggestion: true,
+  highlightMatches: true
 }

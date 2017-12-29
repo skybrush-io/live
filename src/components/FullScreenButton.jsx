@@ -13,7 +13,7 @@ const FullScreenButtonPresentation = ({ enabled, isFullscreen, onClick }) => {
   return (
     <div className={classes.join(' ')} onClick={onClick}>
       <span className="wb-icon wb-module-icon">
-        {isFullscreen ? <NavigationFullscreenExit color="white" /> : <NavigationFullscreen color="white" />}
+        {isFullscreen ? <NavigationFullscreenExit color="contrast" /> : <NavigationFullscreen color="contrast" />}
       </span>
       {isFullscreen ? 'Exit full screen' : 'Enter full screen'}
     </div>
