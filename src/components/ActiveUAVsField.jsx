@@ -21,67 +21,23 @@ import Flock from '../model/flock'
  * set of UAV IDs.
  */
 export class UAVSelectorField extends React.Component {
-  constructor (props) {
-    super(props)
-
-    this.state = {
-      error: null,
-      searchText: props.initialText
-    }
-
-    this._signalBinding = undefined
-  }
-
-  /**
-   * Validates the given value in the autocomplete field and calls
-   * the {@link onValueChanged} handler if the new value is valid.
-   *
-   * @param {string} value  the value of the autocomplete field
-   * @return {undefined}
-   */
-  _commitValueIfValid (value) {
-    const { onValueChanged } = this.props
-    if (this.validate(value) && onValueChanged) {
-      if (value === '') {
-        value = null
-      }
-      onValueChanged(value)
-    }
-  }
-
   render () {
-    const { label, maxSearchResults, placeholder, style } = this.props
+    const { allowEmpty, label, maxSearchResults, onValueChanged,
+      placeholder, style, uavIds } = this.props
     const fetchOpts = {
       caseSensitive: false,
       maxItems: maxSearchResults
     }
 
-    /*
-    const { style, uavIds } = this.props
-    const { error, searchText } = this.state
-    */
-    /* TODO: fullWidth, filter, dataSource,
-     * onBlur, validation */
-    let uavIds = ['FAKE-00', 'FAKE-01', 'FAKE-02']
-
     return (
       <AutoComplete
+        allowEmpty={allowEmpty}
         fetchSuggestions={AutoComplete.makePrefixBasedFetcher(uavIds, fetchOpts)}
         label={label} placeholder={placeholder} style={style}
+        validateValue={this.validate}
+        onValueCommitted={onValueChanged}
       />
     )
-    /*
-    return (
-      <AutoComplete ref={this._assignAutoCompleteFieldInputRef}
-        hintText={prompt} maxSearchResults={5}
-        dataSource={uavIds} searchText={searchText} errorText={error}
-        filter={AutoComplete.caseInsensitiveFilter}
-        fullWidth style={style}
-        onBlur={this._onBlur}
-        onNewRequest={this._onNewRequest}
-      />
-    )
-    */
   }
 
   /**
@@ -92,35 +48,20 @@ export class UAVSelectorField extends React.Component {
    * @return {boolean} whether the value entered by the user passed the
    *         validation
    */
+  @autobind
   validate (value) {
-    let error = null
     if (!value) {
       // Value is empty
       if (!this.props.allowEmpty) {
-        error = 'UAV ID must be specified'
+        return 'UAV ID must be specified'
       }
     } else if (!this._valueIsAmongUAVIds(value)) {
       // Value entered by the user is not in the list of UAV IDs
-      error = 'No such UAV'
+      return 'No such UAV'
     } else {
       // Value is correct, nothing to do
+      return true
     }
-    this.setState({ error })
-    return error == null
-  }
-
-  /**
-   * Event handler that is called when the focus leaves the field.
-   *
-   * @param {FocusEvent} event  the focus event
-   * @return {undefined}
-   */
-  @autobind
-  _onBlur (event) {
-    // TODO: don't try to commit the value if the related target is the
-    // dropdown menu of the autocomplete dialog
-    const chosenRequest = event.target.value
-    this._commitValueIfValid(chosenRequest)
   }
 
   /**

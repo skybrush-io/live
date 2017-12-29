@@ -3,6 +3,7 @@
  * Flockwave server.
  */
 
+import { autobind } from 'core-decorators'
 import PropTypes from 'prop-types'
 import React from 'react'
 import { connect } from 'react-redux'
@@ -14,7 +15,7 @@ import { showSnackbarMessage } from '../actions/snackbar'
 import handleError from '../error-handling'
 import messageHub from '../message-hub'
 import { ConnectionState, MASTER_CONNECTION_ID,
-         handleConnectionInformationMessage } from '../model/connections'
+  handleConnectionInformationMessage } from '../model/connections'
 import { handleClockInformationMessage } from '../model/clocks'
 
 /**
@@ -22,13 +23,18 @@ import { handleClockInformationMessage } from '../model/clocks'
  * its events.
  */
 class ServerConnectionManagerPresentation extends React.Component {
+  @autobind
   _bindSocketToHub (socket) {
-    const wrappedSocket = socket ? socket.socket: null
+    const wrappedSocket = socket ? socket.socket : null
     messageHub.emitter = wrappedSocket ? wrappedSocket.emit.bind(wrappedSocket) : undefined
+
+    if (this.props.onConnecting) {
+      this.props.onConnecting()
+    }
   }
 
   render () {
-    const { hostName, port, onConnected, onDisconnected, onMessage } = this.props
+    const { hostName, port, onConnected, onConnecting, onDisconnected, onMessage } = this.props
     const url = hostName ? `${window.location.protocol}//${hostName}:${port}` : undefined
 
     // The 'key' property of the wrapping <div> is set to the URL as well;
@@ -42,10 +48,13 @@ class ServerConnectionManagerPresentation extends React.Component {
 
     return url ? (
       <div key={url}>
-        <ReactSocket.Socket name="serverSocket" url={url} />
-        <ReactSocket.Listener socket="serverSocket" event="connect" callback={onConnected} ref={this._bindSocketToHub} />
+        <ReactSocket.Socket name="serverSocket" url={url} ref={this._bindSocketToHub} />
+        <ReactSocket.Listener socket="serverSocket" event="connect" callback={onConnected} />
+        <ReactSocket.Listener socket="serverSocket" event="connect_error" callback={onDisconnected} />
+        <ReactSocket.Listener socket="serverSocket" event="connect_timeout" callback={onDisconnected} />
         <ReactSocket.Listener socket="serverSocket" event="disconnect" callback={onDisconnected} />
         <ReactSocket.Listener socket="serverSocket" event="fw" callback={onMessage} />
+        <ReactSocket.Listener socket="serverSocket" event="reconnect_attempt" callback={onConnecting} />
       </div>
     ) : <div />
   }
@@ -55,6 +64,7 @@ ServerConnectionManagerPresentation.propTypes = {
   hostName: PropTypes.string,
   port: PropTypes.number,
   onConnected: PropTypes.func,
+  onConnecting: PropTypes.func,
   onDisconnected: PropTypes.func,
   onMessage: PropTypes.func
 }
@@ -67,6 +77,10 @@ const ServerConnectionManager = connect(
   }),
   // mapDispatchToProps
   dispatch => ({
+    onConnecting () {
+      dispatch(setConnectionState(MASTER_CONNECTION_ID, ConnectionState.CONNECTING))
+    },
+
     onConnected () {
       // Let the user know that we are connected
       dispatch(showSnackbarMessage('Connected to Flockwave server'))
@@ -102,12 +116,14 @@ const ServerConnectionManager = connect(
         handleClockInformationMessage(body, dispatch)
       }).catch(handleError)
     },
+
     onDisconnected () {
       dispatch(setConnectionState(MASTER_CONNECTION_ID, ConnectionState.DISCONNECTED))
       dispatch(showSnackbarMessage('Disconnected from Flockwave server'))
       dispatch(clearClockList())
       dispatch(clearConnectionList())
     },
+
     onMessage (data) {
       messageHub.processIncomingMessage(data)
     }

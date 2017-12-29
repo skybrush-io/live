@@ -15,25 +15,6 @@ import React from 'react'
 import Autosuggest from 'react-autosuggest'
 
 // TODO: "Enter selects first item" feature
-/* Helper code:
- *
- *   _onNewRequest (chosenRequest, index) {
- *     if (index === -1 && !this._valueIsAmongUAVIds(chosenRequest)) {
- *       // The user did not choose from the dropdown and the value that the
- *       // user typed does not match any of the items from the data source.
- *       // We can pretend that the user chose the first item from the menu.
- *       const { uavIds } = this.props
- *       const firstMatch = find(uavIds,
- *         uavId => AutoComplete.caseInsensitiveFilter(chosenRequest, uavId))
- *       if (firstMatch) {
- *         chosenRequest = firstMatch
- *       }
- *     }
- *     this._commitValueIfValid(chosenRequest)
- *   }
- */
-
-// TODO: validation feature, error text when invalid
 
 /**
  * Generic autocomplete text field component that shows the suggestions
@@ -46,6 +27,7 @@ export class AutoComplete extends React.Component {
     this._inputRef = undefined
 
     this.state = {
+      error: null,
       input: null,
       suggestions: [],
       value: ''
@@ -61,6 +43,33 @@ export class AutoComplete extends React.Component {
       this.props.inputRef(value)
     }
     this.setState({ input: value })
+  }
+
+  /**
+   * Commits the given value into the autocomplete field and calls the
+   * appropriate handler function.
+   *
+   * This function must be called only if the given value is valid. The
+   * function does not check the validity on its own.
+   *
+   * @param  {string}  value  the value to commit
+   */
+  _commitValue (value) {
+    const { onValueCommitted } = this.props
+
+    this.setState({ value })
+
+    if (onValueCommitted) {
+      onValueCommitted(value)
+    }
+  }
+
+  @autobind
+  _onBlur (event, { highlightedSuggestion }) {
+    const { value } = this.state
+    if (this.validate(value)) {
+      this._commitValue(value)
+    }
   }
 
   @autobind
@@ -79,10 +88,18 @@ export class AutoComplete extends React.Component {
   }
 
   @autobind
-  _onValueChanged (event, { newValue }) {
+  _onValueChanged (event, { method, newValue }) {
     this.setState({
       value: newValue
     })
+
+    if (method === 'enter' || method === 'click' || method === 'down' || method === 'up') {
+      const shouldCommit = (method === 'enter' || method === 'click') &&
+        this.validate(newValue)
+      if (shouldCommit) {
+        this._commitValue(newValue)
+      }
+    }
   }
 
   @autobind
@@ -129,7 +146,7 @@ export class AutoComplete extends React.Component {
   render () {
     const { autoFocus, getSuggestionValue, highlightFirstSuggestion,
       label, placeholder, style } = this.props
-    const { suggestions, value } = this.state
+    const { error, suggestions, value } = this.state
 
     return (
       <Autosuggest
@@ -137,10 +154,12 @@ export class AutoComplete extends React.Component {
         highlightFirstSuggestion={highlightFirstSuggestion}
         inputProps={{
           autoFocus,
-          label,
           placeholder,
           style,
           value,
+          error: !!error,
+          label: error || label,
+          onBlur: this._onBlur,
           onChange: this._onValueChanged
         }}
         onSuggestionsFetchRequested={this._onSuggestionsFetchRequested}
@@ -151,6 +170,38 @@ export class AutoComplete extends React.Component {
         suggestions={suggestions}
       />
     )
+  }
+
+  /**
+   * Validates the current value of the field and sets the error state
+   * appropriately.
+   *
+   * @param  {string}  value  the value to validate
+   * @return {boolean} whether the current value is valid
+   */
+  validate (value) {
+    const { allowEmpty, validateValue } = this.props
+    let message = null
+    let isValid = true
+
+    if (value === '' && allowEmpty) {
+      // Value is empty and it's okay to be so
+    } else if (validateValue) {
+      const result = validateValue(value)
+      if (result === undefined || result === undefined || result === true) {
+        // Value is valid, nothing to do
+      } else if (result === false) {
+        message = 'Invalid value'
+        isValid = false
+      } else {
+        message = String(result)
+        isValid = false
+      }
+    }
+
+    this.setState({ error: message })
+
+    return isValid
   }
 
   /**
@@ -204,6 +255,7 @@ export class AutoComplete extends React.Component {
 }
 
 AutoComplete.propTypes = {
+  allowEmpty: PropTypes.bool.isRequired,
   autoFocus: PropTypes.bool,
   fetchSuggestions: PropTypes.func,
   getSuggestionLabel: PropTypes.func.isRequired,
@@ -212,11 +264,14 @@ AutoComplete.propTypes = {
   highlightMatches: PropTypes.bool,
   label: PropTypes.node,
   inputRef: PropTypes.func,
+  onValueCommitted: PropTypes.func,
   placeholder: PropTypes.string,
-  style: PropTypes.object
+  style: PropTypes.object,
+  validateValue: PropTypes.func
 }
 
 AutoComplete.defaultProps = {
+  allowEmpty: true,
   getSuggestionLabel: identity,
   getSuggestionValue: identity,
   highlightFirstSuggestion: true,
