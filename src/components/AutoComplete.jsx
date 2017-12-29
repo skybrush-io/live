@@ -6,9 +6,9 @@
 import match from 'autosuggest-highlight/match'
 import parse from 'autosuggest-highlight/parse'
 import { autobind } from 'core-decorators'
-import { identity, lowerCase } from 'lodash'
+import { identity, toLower } from 'lodash'
 import { MenuItem, MenuList } from 'material-ui/Menu'
-import Paper from 'material-ui/Paper'
+import Popover from 'material-ui/Popover'
 import TextField from 'material-ui/TextField'
 import PropTypes from 'prop-types'
 import React from 'react'
@@ -43,10 +43,24 @@ export class AutoComplete extends React.Component {
   constructor (props) {
     super(props)
 
+    this._inputRef = undefined
+
     this.state = {
-      value: '',
-      suggestions: []
+      input: null,
+      suggestions: [],
+      value: ''
     }
+  }
+
+  @autobind
+  _assignInputRef (value) {
+    if (this._inputRef !== undefined) {
+      this._inputRef(value)
+    }
+    if (this.props.inputRef !== undefined) {
+      this.props.inputRef(value)
+    }
+    this.setState({ input: value })
   }
 
   @autobind
@@ -73,7 +87,9 @@ export class AutoComplete extends React.Component {
 
   @autobind
   _renderInput (inputProps) {
-    return <TextField {...inputProps} />
+    const { ref, ...restInputProps } = inputProps
+    this._inputRef = ref
+    return <TextField inputRef={this._assignInputRef} {...restInputProps} />
   }
 
   @autobind
@@ -90,24 +106,29 @@ export class AutoComplete extends React.Component {
 
     return (
       <MenuItem selected={isHighlighted} component='div'>
-        <div>{fragments}</div>
+        {fragments}
       </MenuItem>
     )
   }
 
+  @autobind
   _renderSuggestionsContainer ({ containerProps, children }) {
+    const numChildren = React.Children.count(children)
     return (
-      <Paper {...containerProps} square>
+      <Popover anchorEl={this.state.input} open={numChildren > 0}
+        anchorOrigin={{ horizontal: 'left', vertical: 'bottom' }}
+        disableAutoFocus
+        {...containerProps}>
         <MenuList>
           {children}
         </MenuList>
-      </Paper>
+      </Popover>
     )
   }
 
   render () {
-    const { autoFocus, highlightFirstSuggestion, getSuggestionValue,
-      inputRef, placeholder } = this.props
+    const { autoFocus, getSuggestionValue, highlightFirstSuggestion,
+      label, placeholder, style } = this.props
     const { suggestions, value } = this.state
 
     return (
@@ -116,8 +137,9 @@ export class AutoComplete extends React.Component {
         highlightFirstSuggestion={highlightFirstSuggestion}
         inputProps={{
           autoFocus,
-          inputRef,
+          label,
           placeholder,
+          style,
           value,
           onChange: this._onValueChanged
         }}
@@ -155,15 +177,15 @@ export class AutoComplete extends React.Component {
     }
     const valuesToMatch = effectiveOptions.caseSensitive
       ? values
-      : values.map(lowerCase)
+      : values.map(toLower)
 
     return (value) => {
       const result = []
       const { maxItems } = effectiveOptions
 
-      if (maxItems > 0) {
+      if (value && value.length > 0 && maxItems > 0) {
         if (!effectiveOptions.caseSensitive) {
-          value = lowerCase(value)
+          value = toLower(value)
         }
 
         valuesToMatch.forEach((item, index) => {
@@ -187,9 +209,11 @@ AutoComplete.propTypes = {
   getSuggestionLabel: PropTypes.func.isRequired,
   getSuggestionValue: PropTypes.func.isRequired,
   highlightFirstSuggestion: PropTypes.bool,
-  inputRef: PropTypes.func,
   highlightMatches: PropTypes.bool,
-  placeholder: PropTypes.string
+  label: PropTypes.node,
+  inputRef: PropTypes.func,
+  placeholder: PropTypes.string,
+  style: PropTypes.object
 }
 
 AutoComplete.defaultProps = {

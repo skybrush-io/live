@@ -11,7 +11,6 @@ import { connect } from 'react-redux'
 import { AutoComplete } from './AutoComplete'
 import { selectUAVInMessagesDialog } from '../actions/messages'
 import Flock from '../model/flock'
-import { focusMessagesDialogUAVSelectorField } from '../signals'
 
 /**
  * Autocompletion field that allows the user to select a UAV by
@@ -31,22 +30,6 @@ export class UAVSelectorField extends React.Component {
     }
 
     this._signalBinding = undefined
-    this._autoCompleteFieldInput = undefined
-  }
-
-  componentDidMount () {
-    this._signalBinding = focusMessagesDialogUAVSelectorField.add(
-      this._selectAutoCompleteField
-    )
-  }
-
-  componentWillUnmount () {
-    focusMessagesDialogUAVSelectorField.detach(this._signalBinding)
-  }
-
-  @autobind
-  _assignAutoCompleteFieldInputRef (value) {
-    this._autoCompleteFieldInput = value
   }
 
   /**
@@ -67,7 +50,7 @@ export class UAVSelectorField extends React.Component {
   }
 
   render () {
-    const { maxSearchResults, placeholder } = this.props
+    const { label, maxSearchResults, placeholder, style } = this.props
     const fetchOpts = {
       caseSensitive: false,
       maxItems: maxSearchResults
@@ -77,15 +60,14 @@ export class UAVSelectorField extends React.Component {
     const { style, uavIds } = this.props
     const { error, searchText } = this.state
     */
-    /* TODO: fullWidth, filter, dataSource, style,
+    /* TODO: fullWidth, filter, dataSource,
      * onBlur, validation */
     let uavIds = ['FAKE-00', 'FAKE-01', 'FAKE-02']
 
     return (
       <AutoComplete
-        inputRef={this._assignAutoCompleteFieldInputRef}
         fetchSuggestions={AutoComplete.makePrefixBasedFetcher(uavIds, fetchOpts)}
-        placeholder={placeholder}
+        label={label} placeholder={placeholder} style={style}
       />
     )
     /*
@@ -152,23 +134,14 @@ export class UAVSelectorField extends React.Component {
     const { uavIds } = this.props
     return uavIds && uavIds.indexOf(value) >= 0
   }
-
-  @autobind
-  _selectAutoCompleteField () {
-    if (!this._autoCompleteFieldInput) {
-      console.warn('The autocomplete field is not registered yet.')
-      return
-    }
-
-    this._autoCompleteFieldInput.select()
-  }
 }
 
 UAVSelectorField.propTypes = {
   allowEmpty: PropTypes.bool.isRequired,
   initialText: PropTypes.string,
+  label: PropTypes.node,
   maxSearchResults: PropTypes.number.isRequired,
-  placeholder: PropTypes.string.isRequired,
+  placeholder: PropTypes.string,
   style: PropTypes.object,
   uavIds: PropTypes.arrayOf(PropTypes.string).isRequired,
 
@@ -178,8 +151,8 @@ UAVSelectorField.propTypes = {
 UAVSelectorField.defaultProps = {
   allowEmpty: true,
   initialValue: '',
+  label: 'UAV ID',
   maxSearchResults: 5,
-  placeholder: 'UAV ID',
   uavIds: []
 }
 
@@ -252,12 +225,12 @@ export class ActiveUAVsFieldPresentation extends React.Component {
   }
 
   render () {
-    const { allowEmpty, placeholder, style, value, onValueChanged } = this.props
+    const { allowEmpty, label, placeholder, style, value, onValueChanged } = this.props
     const { uavIds } = this.state
     return (
-      <UAVSelectorField allowEmpty={allowEmpty} placeholder={placeholder}
-        style={style} initialText={value} onValueChanged={onValueChanged}
-        uavIds={uavIds} />
+      <UAVSelectorField allowEmpty={allowEmpty} label={label}
+        placeholder={placeholder} style={style} initialText={value}
+        onValueChanged={onValueChanged} uavIds={uavIds} />
     )
   }
 
@@ -276,6 +249,7 @@ export class ActiveUAVsFieldPresentation extends React.Component {
 ActiveUAVsFieldPresentation.propTypes = {
   allowEmpty: PropTypes.bool.isRequired,
   flock: PropTypes.instanceOf(Flock),
+  label: PropTypes.node,
   placeholder: PropTypes.string,
   style: PropTypes.object,
   value: PropTypes.string.isRequired,
@@ -285,7 +259,7 @@ ActiveUAVsFieldPresentation.propTypes = {
 
 ActiveUAVsFieldPresentation.defaultProps = {
   allowEmpty: true,
-  prompt: 'UAV ID',
+  label: 'UAV ID',
   value: ''
 }
 
