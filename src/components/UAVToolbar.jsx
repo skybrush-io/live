@@ -25,25 +25,35 @@ class UAVToolbar extends React.Component {
     const { fitSelectedUAVs, selectedUAVIds } = this.props
     const isSelectionEmpty = isEmpty(selectedUAVIds)
 
+    /* Buttons that can potentially become disabled must be wrapped in a
+     * <span> to ensure that the tooltip still works. Otherwise the Tooltip
+     * component gives us a warning anyway. */
+
     return (
       <div>
         <Tooltip placement='bottom' title='Takeoff'>
-          <IconButton disabled={isSelectionEmpty}
-            onClick={() => messaging.takeoffUAVs(selectedUAVIds)}>
-            <ActionFlightTakeoff />
-          </IconButton>
+          <span>
+            <IconButton disabled={isSelectionEmpty}
+              onClick={() => messaging.takeoffUAVs(selectedUAVIds)}>
+              <ActionFlightTakeoff />
+            </IconButton>
+          </span>
         </Tooltip>
         <Tooltip placement='bottom' title='Land'>
-          <IconButton disabled={isSelectionEmpty}
-            onClick={() => messaging.landUAVs(selectedUAVIds)}>
-            <ActionFlightLand />
-          </IconButton>
+          <span>
+            <IconButton disabled={isSelectionEmpty}
+              onClick={() => messaging.landUAVs(selectedUAVIds)}>
+              <ActionFlightLand />
+            </IconButton>
+          </span>
         </Tooltip>
         <Tooltip placement='bottom' title='Return to home'>
-          <IconButton disabled={isSelectionEmpty}
-            onClick={() => messaging.returnToHomeUAVs(selectedUAVIds)}>
-            <ActionHome />
-          </IconButton>
+          <span>
+            <IconButton disabled={isSelectionEmpty}
+              onClick={() => messaging.returnToHomeUAVs(selectedUAVIds)}>
+              <ActionHome />
+            </IconButton>
+          </span>
         </Tooltip>
         <Tooltip placement='bottom' title='Messages'>
           <IconButton onClick={this._showMessagesDialog}>
@@ -51,10 +61,12 @@ class UAVToolbar extends React.Component {
           </IconButton>
         </Tooltip>
         <Tooltip placement='bottom' title='Halt'>
-          <IconButton disabled={isSelectionEmpty}
-            onClick={() => messaging.shutdownUAVs(selectedUAVIds)}>
-            <ActionPowerSettingsNew color={isSelectionEmpty ? undefined : 'accent'} />
-          </IconButton>
+          <span>
+            <IconButton disabled={isSelectionEmpty}
+              onClick={() => messaging.shutdownUAVs(selectedUAVIds)}>
+              <ActionPowerSettingsNew color={isSelectionEmpty ? undefined : 'accent'} />
+            </IconButton>
+          </span>
         </Tooltip>
 
         <Tooltip placement='bottom'
