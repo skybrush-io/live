@@ -35,7 +35,7 @@
     "mini-signals": "^1.2.0",
     "moment": "^2.20.1",
     "ol-react": "git+https://github.com/collmot/ol-react.git#develop",
-    "openlayers": "4.6.4",
+    "openlayers": "^3.20.1",
     "prop-types": "^15.6.0",
     "radix-64": "^1.0.4",
     "react": "^16.2.0",
@@ -62,7 +62,7 @@
     "redux-storage-merger-simple": "^1.0.5",
     "reselect": "^3.0.1",
     "screenfull": "^3.3.2",
-    "socket.io": "^2.0.4",
+    "socket.io": "^1.4.6",
     "updeep": "^1.0.0"
   },
   "devDependencies": {
