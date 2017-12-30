@@ -39,7 +39,7 @@ class UAVTraceLayerSettingsPresentation extends React.Component {
           type='number'
           value={trailWidth} onChange={this._onTrailWidthChanged} />
         <div style={{ paddingTop: '0.5em' }}>
-          <CirclePicker color={trailColor || '#0088ff'}
+          <CirclePicker color={trailColor || '#2196f3'}
             circleSpacing={7} width={343}
             onChangeComplete={this._onColorChanged} />
         </div>

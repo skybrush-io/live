@@ -55,6 +55,11 @@ const geometryForFeature = feature => {
       return <geom.LineString>{coordinates}</geom.LineString>
 
     case FeatureType.POLYGON:
+      // OpenLayers requires the last coordinate to be the same as the first
+      // one when a polygon is drawn
+      if (coordinates.length > 0) {
+        coordinates.push(coordinates[0])
+      }
       return <geom.Polygon>{coordinates}</geom.Polygon>
 
     default:

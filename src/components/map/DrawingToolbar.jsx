@@ -20,9 +20,8 @@ import { Tool } from './tools'
  * @return {React.Element} the rendered component
  */
 const DrawingToolbarPresentation = ({ onToolSelected, selectedTool, theme }) => {
-  const selectedColor = theme.palette.primary[500]
   const colorForTool = (tool) => (
-    selectedTool === tool ? selectedColor : undefined
+    selectedTool === tool ? 'primary' : undefined
   )
 
   return (

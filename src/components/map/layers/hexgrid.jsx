@@ -1,4 +1,5 @@
-import _ from 'lodash'
+import { autobind } from 'core-decorators'
+import { sum, toNumber, values } from 'lodash'
 import ol from 'openlayers'
 import { layer, source } from 'ol-react'
 import PropTypes from 'prop-types'
@@ -27,39 +28,56 @@ const makeFillStyle = color => new ol.style.Style({
 class HexGridLayerSettingsPresentation extends React.Component {
   constructor (props) {
     super(props)
-
-    this._handleClick = this._handleClick.bind(this)
+    this._inputFields = {}
   }
 
   render () {
+    const { center, size, radius } = this.props.layer.parameters
+    const centerAsString = center ? center.join(', ') : ''
+
     return (
       <div>
-        <p key='header'>Draw Hex Grid:</p>
-        <TextField ref='center'
-          floatingLabelText='Center of the grid'
-          hintText='Center (comma separated)'
-          defaultValue={this.props.layer.parameters.center} />
-        <TextField ref='size'
-          floatingLabelText='Size of the grid'
-          hintText='Size'
-          defaultValue={this.props.layer.parameters.size} />
-        <TextField ref='radius'
-          floatingLabelText='Radius of one cell'
-          hintText='Radius'
-          defaultValue={this.props.layer.parameters.radius} />
-        <br />
-        <Button raised onClick={this._handleClick}>
-          Draw hex grid
+        <TextField inputRef={this._assignCenterField}
+          label='Center of the grid'
+          placeholder='Center (comma separated)'
+          defaultValue={centerAsString} />
+        <TextField inputRef={this._assignSizeField}
+          label='Size of the grid'
+          placeholder='Size'
+          defaultValue={String(size)} />
+        <TextField inputRef={this._assignRadiusField}
+          label='Radius of one cell'
+          placeholder='Radius'
+          defaultValue={String(radius)} />
+        <br />&nbsp;<br />
+        <Button onClick={this._handleClick}>
+          Update hex grid
         </Button>
       </div>
     )
   }
 
-  _handleClick (e) {
+  @autobind
+  _assignCenterField (value) {
+    this._inputFields['center'] = value
+  }
+
+  @autobind
+  _assignRadiusField (value) {
+    this._inputFields['radius'] = value
+  }
+
+  @autobind
+  _assignSizeField (value) {
+    this._inputFields['size'] = value
+  }
+
+  @autobind
+  _handleClick () {
     const layerParameters = {
-      center: this.refs.center.getValue().split(',').map(_.toNumber),
-      size: _.toNumber(this.refs.size.getValue()),
-      radius: _.toNumber(this.refs.radius.getValue())
+      center: this._inputFields['center'].value.split(',').map(toNumber),
+      size: toNumber(this._inputFields['size'].value),
+      radius: toNumber(this._inputFields['radius'].value)
     }
 
     for (const layerParameter in layerParameters) {
@@ -102,8 +120,7 @@ class HexGridVectorSource extends source.Vector {
   }
 
   _getCorners (center, radius) {
-    const angles = [30, 90, 150, 210, 270, 330].map(a => a * Math.PI / 180)
-
+    const angles = [30, 90, 150, 210, 270, 330, 30].map(ol.math.toRadians)
     return angles.map(angle => coordinateFromLonLat([
       center[0] + radius * Math.sin(angle),
       center[1] + radius * Math.cos(angle)
@@ -136,11 +153,11 @@ class HexGridVectorSource extends source.Vector {
       }
     }
 
-    this.source.addFeatures(_.values(features))
+    this.source.addFeatures(values(features))
 
     for (const hash in features) {
-      const coordinates = hash.split(',').map(_.toNumber)
-      const hue = (_.sum(coordinates.map(Math.abs)) / (size * 2 + 1)) * 115
+      const coordinates = hash.split(',').map(toNumber)
+      const hue = sum(coordinates.map(Math.abs)) / (size * 2 + 1) * 115
       features[hash].setStyle(makeFillStyle(`hsla(${hue}, 70%, 50%, 0.5)`))
     }
   }
