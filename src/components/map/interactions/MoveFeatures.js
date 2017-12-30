@@ -35,7 +35,7 @@ export class MoveFeaturesInteraction extends ol.interaction.Pointer {
           this.features_ = features
           this.dispatchEvent(
             new MoveFeaturesInteractionEvent(
-              ol.interaction.TranslateEventType.TRANSLATESTART,
+              ol.interaction.Translate.EventType.TRANSLATESTART,
               features, event.coordinate, [0, 0]
             )
           )
@@ -65,7 +65,7 @@ export class MoveFeaturesInteraction extends ol.interaction.Pointer {
 
           this.dispatchEvent(
             new MoveFeaturesInteractionEvent(
-              ol.interaction.TranslateEventType.TRANSLATING,
+              ol.interaction.Translate.EventType.TRANSLATING,
               features, newCoordinate, totalDelta
             )
           )
@@ -86,7 +86,7 @@ export class MoveFeaturesInteraction extends ol.interaction.Pointer {
 
           this.dispatchEvent(
             new MoveFeaturesInteractionEvent(
-              ol.interaction.TranslateEventType.TRANSLATEEND,
+              ol.interaction.Translate.EventType.TRANSLATEEND,
               features, event.coordinate, totalDelta
             )
           )
