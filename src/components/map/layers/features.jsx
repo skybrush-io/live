@@ -126,7 +126,7 @@ const styleForFeature = (feature, selected = false) => {
       text: new ol.style.Text({
         font: '12px sans-serif',
         offsetY: type === 'points' ? radius + 10 : 0,
-        placement: (type === 'lineString' || type === 'polygon') ? 'line' : 'point',
+        placement: (type === 'lineString') ? 'line' : 'point',
         text: feature.label,
         textAlign: 'center'
       })
