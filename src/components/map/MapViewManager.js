@@ -171,8 +171,6 @@ export default class MapViewManager {
    * @param {number} duration The desired duration of the transition.
    */
   mapViewToExtent (extent, duration = 1000) {
-    this.view.fit(extent, this.map.getSize(), {
-      duration
-    })
+    this.view.fit(extent, { duration })
   }
 }
