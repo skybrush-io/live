@@ -66,6 +66,8 @@ ServerConnectionManagerPresentation.propTypes = {
   port: PropTypes.number,
   onConnected: PropTypes.func,
   onConnecting: PropTypes.func,
+  onConnectionError: PropTypes.func,
+  onConnectionTimeout: PropTypes.func,
   onDisconnected: PropTypes.func,
   onMessage: PropTypes.func
 }
