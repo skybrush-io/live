@@ -10,7 +10,9 @@ import { connect } from 'react-redux'
 import SubscriptionDialog from '../../SubscriptionDialog'
 
 import Button from 'material-ui/Button'
-import Checkbox from 'material-ui/Checkbox'
+import { FormControlLabel, FormGroup } from 'material-ui/Form'
+import { InputAdornment } from 'material-ui/Input'
+import Switch from 'material-ui/Switch'
 import TextField from 'material-ui/TextField'
 
 import { setLayerParameterById } from '../../../actions/layers'
@@ -40,21 +42,22 @@ class HeatmapLayerSettingsPresentation extends React.Component {
   }
 
   render () {
+    const { setLayerParameter } = this.props
+    const { parameters } = this.props.layer
+    const { minHue, maxHue } = this.state
+
     const textFieldStyle = {
-      width: '150px',
-      margin: '10px',
-      marginTop: '-15px'
+      marginRight: 10,
+      width: 150
     }
 
     return (
       <div>
         <SubscriptionDialog ref='subscriptionDialog'
-          subscriptions={this.props.layer.parameters.subscriptions}
-          setSubscriptions={_.partial(this.props.setLayerParameter, 'subscriptions')}
-          unit={this.props.layer.parameters.unit}
-          setUnit={_.partial(this.props.setLayerParameter, 'unit')} />
-
-        <p key='header'>Heatmap options:</p>
+          subscriptions={parameters.subscriptions}
+          setSubscriptions={_.partial(setLayerParameter, 'subscriptions')}
+          unit={parameters.unit}
+          setUnit={_.partial(setLayerParameter, 'unit')} />
 
         <Button raised style={{marginBottom: '10px'}}
           onClick={this._showSubscriptionDialog}>
@@ -63,71 +66,76 @@ class HeatmapLayerSettingsPresentation extends React.Component {
 
         <br />
 
-        <TextField ref='threshold'
-          style={textFieldStyle}
-          floatingLabelText='Threshold'
-          type='number'
-          defaultValue={_.round(this.props.layer.parameters.threshold, 3)} />
+        <FormGroup row>
+          <TextField ref='threshold'
+            style={textFieldStyle}
+            label='Threshold'
+            type='number'
+            defaultValue={_.round(parameters.threshold, 3)} />
+        </FormGroup>
 
-        <br />
+        <FormGroup row>
+          <TextField ref='minValue'
+            style={textFieldStyle}
+            label='Minimum value'
+            type='number'
+            defaultValue={_.round(parameters.minValue, 3)} />
+          <TextField ref='maxValue'
+            style={textFieldStyle}
+            label='Maximum value'
+            type='number'
+            defaultValue={_.round(parameters.maxValue, 3)} />
+          <FormControlLabel label='Autoscale' control={
+            <Switch checked={parameters.autoScale}
+              onChange={(event, checked) => setLayerParameter('autoScale', checked)} />
+          } />
+        </FormGroup>
 
-        <TextField ref='minValue'
-          style={textFieldStyle}
-          floatingLabelText='Minimum value'
-          type='number'
-          defaultValue={_.round(this.props.layer.parameters.minValue, 3)} />
-        <TextField ref='maxValue'
-          style={textFieldStyle}
-          floatingLabelText='Maximum value'
-          type='number'
-          defaultValue={_.round(this.props.layer.parameters.maxValue, 3)} />
+        <div style={{ padding: '24px 0' }}>
+          <div style={{
+            width: '300px',
+            height: '25px',
+            marginLeft: '50px',
+            background: `linear-gradient(-90deg,
+              hsla(${maxHue}, 70%, 50%, 0.75),
+              hsla(${minHue}, 70%, 50%, 0.75)
+            )`
+          }} />
+          <input id='minHue' ref='minHue' type='range' min='0' max='360'
+            style={{width: '100px'}}
+            value={minHue}
+            onChange={this._handleChange} />
+          <input id='maxHue' ref='maxHue' type='range' min='0' max='360'
+            style={{width: '100px', marginLeft: '200px'}}
+            value={maxHue}
+            onChange={this._handleChange} />
+        </div>
 
-        <Checkbox ref='autoScale'
-          defaultChecked={this.props.layer.parameters.autoScale}
-          style={{display: 'inline-table', width: '150px'}}
-          label='Auto scale' />
+        <FormGroup row>
+          <TextField ref='minDistance'
+            label='Min distance'
+            style={textFieldStyle}
+            InputProps={{
+              endAdornment: <InputAdornment position="end">m</InputAdornment>
+            }}
+            type='number'
+            defaultValue={parameters.minDistance} />
+          <FormControlLabel label='Snap to grid' control={
+            <Switch checked={parameters.snapToGrid}
+              onChange={(event, checked) => setLayerParameter('snapToGrid', checked)} />
+          } />
+        </FormGroup>
 
-        <br />
+        <FormGroup row style={{ paddingTop: 10 }}>
+          <Button onClick={this._handleClick}>
+            Update parameters
+          </Button>
 
-        <div style={{
-          width: '300px',
-          height: '25px',
-          marginLeft: '50px',
-          background: `linear-gradient(-90deg,
-            hsla(${this.state.maxHue}, 70%, 50%, 0.75),
-            hsla(${this.state.minHue}, 70%, 50%, 0.75)
-          )`
-        }} />
-        <input id='minHue' ref='minHue' type='range' min='0' max='360'
-          style={{width: '100px'}}
-          value={this.state.minHue}
-          onChange={this._handleChange} />
-        <input id='maxHue' ref='maxHue' type='range' min='0' max='360'
-          style={{width: '100px', marginLeft: '200px'}}
-          value={this.state.maxHue}
-          onChange={this._handleChange} />
+          <Button color='accent' onClick={this._clearData}>
+            Clear data
+          </Button>
+        </FormGroup>
 
-        <br />
-
-        <TextField ref='minDistance'
-          floatingLabelText='Minimum distance between points (m)'
-          type='number' style={{width: '280px'}}
-          defaultValue={this.props.layer.parameters.minDistance} />
-        <Checkbox ref='snapToGrid'
-          defaultChecked={this.props.layer.parameters.snapToGrid}
-          style={{display: 'inline-table', width: '150px', marginLeft: '8px'}}
-          label='Snap to grid' />
-
-        <Button raised style={{marginTop: '10px'}}
-          onClick={this._handleClick}>
-          Update parameters
-        </Button>
-
-        <Button raised style={{marginLeft: '10px'}}
-          backgroundColor='#ff7777'
-          onClick={this._clearData}>
-          Clear data
-        </Button>
       </div>
     )
   }
@@ -150,9 +158,7 @@ class HeatmapLayerSettingsPresentation extends React.Component {
       maxValue: _.toNumber(this.refs.maxValue.getValue()),
       minHue: this.state.minHue,
       maxHue: this.state.maxHue,
-      autoScale: this.refs.autoScale.isChecked(),
       minDistance: _.toNumber(this.refs.minDistance.getValue()),
-      snapToGrid: this.refs.snapToGrid.isChecked()
     }
 
     for (const layerParameter in layerParameters) {
@@ -331,9 +337,10 @@ class HeatmapVectorSource extends source.Vector {
           if (this.props.parameters.autoScale) {
             if (data.value > this.props.parameters.threshold && (
               data.value < this.props.parameters.minValue || (
-              this.props.parameters.minValue === 0 &&
-              this.props.parameters.maxValue === 0
-            ))) {
+                this.props.parameters.minValue === 0 &&
+                this.props.parameters.maxValue === 0
+              )
+            )) {
               this.props.setLayerParameter('minValue', data.value)
             }
 
