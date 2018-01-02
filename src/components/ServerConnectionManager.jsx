@@ -34,7 +34,8 @@ class ServerConnectionManagerPresentation extends React.Component {
   }
 
   render () {
-    const { hostName, port, onConnected, onConnecting, onDisconnected, onMessage } = this.props
+    const { hostName, port, onConnected, onConnecting, onConnectionError,
+      onConnectionTimeout, onDisconnected, onMessage } = this.props
     const url = hostName ? `${window.location.protocol}//${hostName}:${port}` : undefined
 
     // The 'key' property of the wrapping <div> is set to the URL as well;
@@ -50,8 +51,8 @@ class ServerConnectionManagerPresentation extends React.Component {
       <div key={url}>
         <ReactSocket.Socket name="serverSocket" url={url} ref={this._bindSocketToHub} />
         <ReactSocket.Listener socket="serverSocket" event="connect" callback={onConnected} />
-        <ReactSocket.Listener socket="serverSocket" event="connect_error" callback={onDisconnected} />
-        <ReactSocket.Listener socket="serverSocket" event="connect_timeout" callback={onDisconnected} />
+        <ReactSocket.Listener socket="serverSocket" event="connect_error" callback={onConnectionError} />
+        <ReactSocket.Listener socket="serverSocket" event="connect_timeout" callback={onConnectionTimeout} />
         <ReactSocket.Listener socket="serverSocket" event="disconnect" callback={onDisconnected} />
         <ReactSocket.Listener socket="serverSocket" event="fw" callback={onMessage} />
         <ReactSocket.Listener socket="serverSocket" event="reconnect_attempt" callback={onConnecting} />
@@ -115,6 +116,15 @@ const ServerConnectionManager = connect(
       }).then(({ body }) => {
         handleClockInformationMessage(body, dispatch)
       }).catch(handleError)
+    },
+
+    onConnectionError () {
+      dispatch(setConnectionState(MASTER_CONNECTION_ID, ConnectionState.DISCONNECTED))
+    },
+
+    onConnectionTimeout () {
+      dispatch(setConnectionState(MASTER_CONNECTION_ID, ConnectionState.DISCONNECTED))
+      dispatch(showSnackbarMessage('Timeout while connecting to Flockwave server'))
     },
 
     onDisconnected () {

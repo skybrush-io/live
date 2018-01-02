@@ -158,7 +158,7 @@ class HeatmapLayerSettingsPresentation extends React.Component {
       maxValue: _.toNumber(this.refs.maxValue.getValue()),
       minHue: this.state.minHue,
       maxHue: this.state.maxHue,
-      minDistance: _.toNumber(this.refs.minDistance.getValue()),
+      minDistance: _.toNumber(this.refs.minDistance.getValue())
     }
 
     for (const layerParameter in layerParameters) {
