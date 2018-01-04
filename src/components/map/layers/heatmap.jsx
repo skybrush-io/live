@@ -1,13 +1,10 @@
-import _ from 'lodash'
-import HashedMap from '../../../utils/hashedmap'
-
+import { partial, toNumber } from 'lodash'
+import numbro from 'numbro'
 import ol from 'openlayers'
 import { layer, source } from 'ol-react'
 import PropTypes from 'prop-types'
 import React from 'react'
 import { connect } from 'react-redux'
-
-import SubscriptionDialog from '../../SubscriptionDialog'
 
 import Button from 'material-ui/Button'
 import { FormControlLabel, FormGroup } from 'material-ui/Form'
@@ -15,14 +12,18 @@ import { InputAdornment } from 'material-ui/Input'
 import Switch from 'material-ui/Switch'
 import TextField from 'material-ui/TextField'
 
-import { setLayerParameterById } from '../../../actions/layers'
+import SubscriptionDialog from '../../SubscriptionDialog'
 
+import { setLayerParameterById } from '../../../actions/layers'
 import messageHub from '../../../message-hub'
+import HashedMap from '../../../utils/hashedmap'
 import {
   coordinateFromLonLat,
   lonLatFromCoordinate,
   wgs84Sphere
 } from '../../../utils/geography'
+
+const formatNumber = x => numbro(x).format('0.000')
 
 // === Settings for this particular layer type ===
 
@@ -55,9 +56,9 @@ class HeatmapLayerSettingsPresentation extends React.Component {
       <div>
         <SubscriptionDialog ref='subscriptionDialog'
           subscriptions={parameters.subscriptions}
-          setSubscriptions={_.partial(setLayerParameter, 'subscriptions')}
+          setSubscriptions={partial(setLayerParameter, 'subscriptions')}
           unit={parameters.unit}
-          setUnit={_.partial(setLayerParameter, 'unit')} />
+          setUnit={partial(setLayerParameter, 'unit')} />
 
         <Button raised style={{marginBottom: '10px'}}
           onClick={this._showSubscriptionDialog}>
@@ -71,7 +72,7 @@ class HeatmapLayerSettingsPresentation extends React.Component {
             style={textFieldStyle}
             label='Threshold'
             type='number'
-            defaultValue={_.round(parameters.threshold, 3)} />
+            defaultValue={formatNumber(parameters.threshold)} />
         </FormGroup>
 
         <FormGroup row>
@@ -79,12 +80,12 @@ class HeatmapLayerSettingsPresentation extends React.Component {
             style={textFieldStyle}
             label='Minimum value'
             type='number'
-            defaultValue={_.round(parameters.minValue, 3)} />
+            defaultValue={formatNumber(parameters.minValue)} />
           <TextField ref='maxValue'
             style={textFieldStyle}
             label='Maximum value'
             type='number'
-            defaultValue={_.round(parameters.maxValue, 3)} />
+            defaultValue={formatNumber(parameters.maxValue)} />
           <FormControlLabel label='Autoscale' control={
             <Switch checked={parameters.autoScale}
               onChange={(event, checked) => setLayerParameter('autoScale', checked)} />
@@ -119,7 +120,7 @@ class HeatmapLayerSettingsPresentation extends React.Component {
               endAdornment: <InputAdornment position="end">m</InputAdornment>
             }}
             type='number'
-            defaultValue={parameters.minDistance} />
+            defaultValue={formatNumber(parameters.minDistance)} />
           <FormControlLabel label='Snap to grid' control={
             <Switch checked={parameters.snapToGrid}
               onChange={(event, checked) => setLayerParameter('snapToGrid', checked)} />
@@ -147,18 +148,18 @@ class HeatmapLayerSettingsPresentation extends React.Component {
 
   _handleChange (e) {
     this.setState({
-      [e.target.id]: _.toNumber(e.target.value)
+      [e.target.id]: toNumber(e.target.value)
     })
   }
 
   _handleClick (e) {
     const layerParameters = {
-      threshold: _.toNumber(this.refs.threshold.getValue()),
-      minValue: _.toNumber(this.refs.minValue.getValue()),
-      maxValue: _.toNumber(this.refs.maxValue.getValue()),
+      threshold: toNumber(this.refs.threshold.getValue()),
+      minValue: toNumber(this.refs.minValue.getValue()),
+      maxValue: toNumber(this.refs.maxValue.getValue()),
       minHue: this.state.minHue,
       maxHue: this.state.maxHue,
-      minDistance: _.toNumber(this.refs.minDistance.getValue())
+      minDistance: toNumber(this.refs.minDistance.getValue())
     }
 
     for (const layerParameter in layerParameters) {

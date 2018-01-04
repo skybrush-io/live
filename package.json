@@ -35,6 +35,7 @@
     "mersenne-twister": "^1.1.0",
     "mini-signals": "^1.2.0",
     "moment": "^2.20.1",
+    "numbro": "^1.11.1",
     "ol-react": "git+https://github.com/collmot/ol-react.git#develop",
     "openlayers": "^4.6.4",
     "prop-types": "^15.6.0",
