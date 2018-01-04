@@ -24,6 +24,7 @@
   "dependencies": {
     "autosuggest-highlight": "^3.1.1",
     "color": "^2.0.1",
+    "coordinate-parser": "^1.0.2",
     "core-decorators": "^0.20.0",
     "es6-promise": "^4.2.2",
     "golden-layout": "^1.5.9",
