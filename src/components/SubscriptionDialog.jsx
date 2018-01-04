@@ -1,3 +1,4 @@
+import { autobind } from 'core-decorators'
 import _ from 'lodash'
 import PropTypes from 'prop-types'
 import React from 'react'
@@ -5,12 +6,13 @@ import React from 'react'
 import flock from '../flock'
 
 import Button from 'material-ui/Button'
-import Dialog from 'material-ui/Dialog'
+import Dialog, { DialogActions, DialogContent } from 'material-ui/Dialog'
+import { FormGroup, FormControl } from 'material-ui/Form'
 import Input, { InputLabel } from 'material-ui/Input'
 import { MenuItem } from 'material-ui/Menu'
 import Select from 'material-ui/Select'
 
-import List, { ListItem } from 'material-ui/List'
+import List, { ListItem, ListItemSecondaryAction, ListItemText } from 'material-ui/List'
 import IconButton from 'material-ui/IconButton'
 import ContentRemoveCircleOutline from 'material-ui-icons/RemoveCircleOutline'
 
@@ -43,83 +45,112 @@ export default class SubscriptionDialog extends React.Component {
       selectedChannel: null
     }
 
-    this._updateDeviceList = this._updateDeviceList.bind(this)
-    this._deviceListReceived = this._deviceListReceived.bind(this)
+    this._refs = {
+      deviceDropDown: null,
+      channelDropDown: null
+    }
 
-    this._handleChange = this._handleChange.bind(this)
-    this._handleClick = this._handleClick.bind(this)
+    this._assignDeviceDropDownRef = value => { this._refs.deviceDropDown = value }
+    this._assignChannelDropDownRef = value => { this._refs.channelDropDown = value }
 
     this._removeSubscription = this._removeSubscription.bind(this)
-
-    this.showDialog = this.showDialog.bind(this)
-    this._hideDialog = this._hideDialog.bind(this)
   }
 
   render () {
-    const UAVMenuItems = Object.keys(this.state.available).map(uav =>
-      <MenuItem key={uav} value={uav} primaryText={uav} />
+    const { available, selectedChannel, selectedDevice, selectedUAV,
+      subscriptions, visible } = this.state
+
+    const uavMenuItems = Object.keys(available).map(uav =>
+      <MenuItem key={uav} value={uav}>{uav}</MenuItem>
     )
 
-    const DeviceMenuItems = this.state.selectedUAV
-      ? Object.keys(this.state.available[this.state.selectedUAV]).map(device =>
-        <MenuItem key={device} value={device} primaryText={device} />
+    if (uavMenuItems.length === 0) {
+      uavMenuItems.push(
+        <MenuItem key='__empty__' value=''><em>No UAV</em></MenuItem>
+      )
+    }
+
+    const deviceMenuItems = selectedUAV
+      ? Object.keys(available[selectedUAV]).map(device =>
+        <MenuItem key={device} value={device}>{device}</MenuItem>
       )
       : []
 
-    const ChannelMenuItems = this.state.selectedDevice
-      ? Object.keys(
-        this.state.available[this.state.selectedUAV][this.state.selectedDevice]
-      ).map(channel =>
-        <MenuItem key={channel} value={channel} primaryText={channel} />
+    const channelMenuItems = selectedDevice
+      ? Object.keys(available[selectedUAV][selectedDevice]).map(channel =>
+        <MenuItem key={channel} value={channel}>{channel}</MenuItem>
       )
       : []
 
-    const subscriptionItems = this.state.subscriptions.map(subscription =>
-      <ListItem key={subscription} primaryText={subscription} rightIconButton={
-        <IconButton tooltip='Unsubscribe'
-          onClick={_.partial(this._removeSubscription, subscription)}>
-          <ContentRemoveCircleOutline />
-        </IconButton>
-      } />
+    const subscriptionItems = subscriptions.map(subscription =>
+      <ListItem key={subscription}>
+        <ListItemText primary={subscription} />
+        <ListItemSecondaryAction>
+          <IconButton aria-label='Unsubscribe'
+            onClick={_.partial(this._removeSubscription, subscription)}>
+            <ContentRemoveCircleOutline />
+          </IconButton>
+        </ListItemSecondaryAction>
+      </ListItem>
     )
 
     const actions = [
       <Button key='done' color='primary' onClick={this._hideDialog}>Done</Button>
     ]
 
-    const dropDownMenuStyle = {verticalAlign: 'text-bottom'}
+    const formControlStyle = {
+      minWidth: 120,
+      margin: 8,
+      verticalAlign: 'text-bottom'
+    }
 
     return (
-      <Dialog open={this.state.visible} actions={actions}>
-        Not working yet; stay tuned/
-        {/*
-          UAV:
-          <DropDownMenu ref='uavDropDown' value={this.state.selectedUAV}
-            style={dropDownMenuStyle}
-            onChange={_.partial(this._handleChange, 'selectedUAV')}>
-            {UAVMenuItems}
-          </DropDownMenu>
-          Device:
-          <DropDownMenu ref='deviceDropDown' value={this.state.selectedDevice}
-            style={dropDownMenuStyle}
-            onChange={_.partial(this._handleChange, 'selectedDevice')}>
-            {DeviceMenuItems}
-          </DropDownMenu>
-          Channel:
-          <DropDownMenu ref='channelDropDown' value={this.state.selectedChannel}
-            style={dropDownMenuStyle}
-            onChange={_.partial(this._handleChange, 'selectedChannel')}>
-            {ChannelMenuItems}
-          </DropDownMenu>
-          <Button raised
-            disabled={this.state.subscriptions.includes(this.currentPath)}
-            onClick={this._handleClick}>
-            Subscribe
-          </Button>
-        */}
-        <List>
-          {subscriptionItems}
-        </List>
+      <Dialog open={visible} fullWidth maxWidth='sm'>
+        <DialogContent>
+          <div style={{ display: 'flex', alignItems: 'flex-end' }}>
+            <FormGroup row>
+              <FormControl style={formControlStyle}>
+                <InputLabel htmlFor='selectedUAV'>UAV</InputLabel>
+                <Select value={selectedUAV || ''} onChange={this._handleChange}
+                  input={<Input name='selectedUAV' id='selectedUAV' />}>
+                  {uavMenuItems}
+                </Select>
+              </FormControl>
+
+              <FormControl style={formControlStyle}>
+                <InputLabel htmlFor='selectedDevice'>Device</InputLabel>
+                <Select inputRef={this._assignDeviceDropDownRef}
+                  value={selectedDevice || ''} onChange={this._handleChange}
+                  input={<Input name='selectedDevice' id='selectedDevice' />}>
+                  {deviceMenuItems}
+                </Select>
+              </FormControl>
+
+              <FormControl style={formControlStyle}>
+                <InputLabel htmlFor='selectedChannel'>Channel</InputLabel>
+                <Select autoWidth inputRef={this._assignChannelDropDownRef}
+                  value={selectedChannel || ''} onChange={this._handleChange}
+                  input={<Input name='selectedChannel' id='selectedChannel' />}>
+                  {channelMenuItems}
+                </Select>
+              </FormControl>
+            </FormGroup>
+
+            <Button
+              style={{ marginBottom: 6 }}
+              disabled={subscriptions.includes(this.currentPath)}
+              onClick={this._handleClick}>
+              Subscribe
+            </Button>
+          </div>
+
+          <List>
+            {subscriptionItems}
+          </List>
+        </DialogContent>
+        <DialogActions>
+          {actions}
+        </DialogActions>
       </Dialog>
     )
   }
@@ -127,6 +158,7 @@ export default class SubscriptionDialog extends React.Component {
   /**
    * Function for requesting the available UAVs, devices and channels.
    */
+  @autobind
   _updateDeviceList () {
     messageHub.sendMessage({
       'type': 'DEV-LIST',
@@ -141,6 +173,7 @@ export default class SubscriptionDialog extends React.Component {
    * @param {Object} message the response from the server
    * containing the requested data
    */
+  @autobind
   _deviceListReceived (message) {
     const data = message.body.devices
     const available = { 'All': {} }
@@ -173,35 +206,22 @@ export default class SubscriptionDialog extends React.Component {
   }
 
   /**
-   * Function to handle the DropDownMenu value changes.
+   * Function to handle the drop-down menu value changes.
    *
-   * @param {string} parameter the state parameter to be updated
    * @param {string} event the actual change event
-   * @param {string} index the index of the selected item
-   * @param {string} value the value of the selected item
    */
-  _handleChange (parameter, event, index, value) {
+  @autobind
+  _handleChange (event, index, value) {
+    const parameter = event.target.name
+
     this.setState({
-      [parameter]: value
+      [parameter]: event.target.value
     })
 
-    const nextField = {
-      selectedUAV: this.refs.deviceDropDown,
-      selectedDevice: this.refs.channelDropDown
-    }
-
-    if (parameter in nextField) {
-      setTimeout(() => { this.openDropDown(nextField[parameter]) }, 100)
-    }
-  }
-
-  /**
-   * Function to open a DropDownMenu element.
-   *
-   * @param {DropDownMenu} dropDown the element to be opened
-   */
-  openDropDown (dropDown) {
-    dropDown.setState({ open: true, anchorEl: dropDown.getInputNode() })
+    // TODO: opening the Select field programmatically is not possible
+    // with the new Material UI implementation. Let's not waste too much
+    // time on this as we will refactor the entire component sooner or
+    // later anyway.
   }
 
   /**
@@ -219,16 +239,19 @@ export default class SubscriptionDialog extends React.Component {
    * (If the selected UAV value is 'All', then subscribes to all the UAVs
    * that have the selected channel available.)
    */
+  @autobind
   _handleClick () {
+    const { available, selectedChannel, selectedDevice, selectedUAV } = this.state
+
     if (this.state.selectedUAV === 'All') {
       const paths = []
 
-      for (const uav in _.omit(this.state.available, 'All')) {
+      for (const uav in _.omit(available, 'All')) {
         if (
-          this.state.selectedDevice in this.state.available[uav] &&
-          this.state.selectedChannel in this.state.available[uav][this.state.selectedDevice]
+          selectedDevice in available[uav] &&
+          selectedChannel in available[uav][selectedDevice]
         ) {
-          paths.push(`/${uav}/${this.state.selectedDevice}/${this.state.selectedChannel}`)
+          paths.push(`/${uav}/${selectedDevice}/${selectedChannel}`)
         }
       }
 
@@ -244,7 +267,7 @@ export default class SubscriptionDialog extends React.Component {
 
       this.setState({
         subscriptions: paths,
-        unit: this.state.available[this.state.selectedUAV][this.state.selectedDevice][this.state.selectedChannel].unit
+        unit: available[selectedUAV][selectedDevice][selectedChannel].unit
       })
     } else {
       const path = this.currentPath
@@ -258,7 +281,7 @@ export default class SubscriptionDialog extends React.Component {
 
       this.setState({
         subscriptions: this.state.subscriptions.concat(path),
-        unit: this.state.available[this.state.selectedUAV][this.state.selectedDevice][this.state.selectedChannel].unit
+        unit: available[selectedUAV][selectedDevice][selectedChannel].unit
       })
     }
   }
@@ -268,6 +291,7 @@ export default class SubscriptionDialog extends React.Component {
    *
    * @param {string} subscription the path of the subscription to cancel
    */
+  @autobind
   _removeSubscription (subscription) {
     messageHub.sendMessage({
       'type': 'DEV-UNSUB',
@@ -281,12 +305,14 @@ export default class SubscriptionDialog extends React.Component {
     })
   }
 
+  @autobind
   showDialog () {
     this.setState({
       visible: true
     })
   }
 
+  @autobind
   _hideDialog () {
     this.props.setSubscriptions(this.state.subscriptions)
     this.props.setUnit(this.state.unit)
