@@ -290,7 +290,10 @@ export default class HotkeyHandler extends React.Component {
     this._handlingFocusChange = true
     try {
       if (!_.includes(whitelist, e.target.tagName)) {
-        document.querySelector('.ol-viewport').focus()
+        const viewport = document.querySelector('.ol-viewport')
+        if (viewport) {
+          viewport.focus()
+        }
       }
     } finally {
       this._handlingFocusChange = false

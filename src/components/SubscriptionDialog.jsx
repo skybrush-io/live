@@ -211,7 +211,7 @@ export default class SubscriptionDialog extends React.Component {
    * @param {string} event the actual change event
    */
   @autobind
-  _handleChange (event, index, value) {
+  _handleChange (event) {
     const parameter = event.target.name
 
     this.setState({

@@ -40,6 +40,22 @@ class HeatmapLayerSettingsPresentation extends React.Component {
     this._handleChange = this._handleChange.bind(this)
     this._handleClick = this._handleClick.bind(this)
     this._clearData = this._clearData.bind(this)
+
+    this._refs = {}
+    this._assignRefs = {}
+
+    this._setAutoscale = (event, checked) => {
+      this.props.setLayerParameter('autoScale', checked)
+    }
+    this._setSnapToGrid = (event, checked) => {
+      this.props.setLayerParameter('snapToGrid', checked)
+    }
+
+    const assignRef = (key, value) => { this._refs[key] = value }
+    ['threshold', 'minValue', 'maxValue', 'minDistance', 'subscriptionDialog'].forEach(key => {
+      this._refs[key] = null
+      this._assignRefs[key] = partial(assignRef, key)
+    })
   }
 
   render () {
@@ -54,7 +70,7 @@ class HeatmapLayerSettingsPresentation extends React.Component {
 
     return (
       <div>
-        <SubscriptionDialog ref='subscriptionDialog'
+        <SubscriptionDialog ref={this._assignRefs.subscriptionDialog}
           subscriptions={parameters.subscriptions}
           setSubscriptions={partial(setLayerParameter, 'subscriptions')}
           unit={parameters.unit}
@@ -68,7 +84,7 @@ class HeatmapLayerSettingsPresentation extends React.Component {
         <br />
 
         <FormGroup row>
-          <TextField ref='threshold'
+          <TextField inputRef={this._assignRefs.threshold}
             style={textFieldStyle}
             label='Threshold'
             type='number'
@@ -76,19 +92,18 @@ class HeatmapLayerSettingsPresentation extends React.Component {
         </FormGroup>
 
         <FormGroup row>
-          <TextField ref='minValue'
+          <TextField inputRef={this._assignRefs.minValue}
             style={textFieldStyle}
             label='Minimum value'
             type='number'
             defaultValue={formatNumber(parameters.minValue)} />
-          <TextField ref='maxValue'
+          <TextField inputRef={this._assignRefs.maxValue}
             style={textFieldStyle}
             label='Maximum value'
             type='number'
             defaultValue={formatNumber(parameters.maxValue)} />
           <FormControlLabel label='Autoscale' control={
-            <Switch checked={parameters.autoScale}
-              onChange={(event, checked) => setLayerParameter('autoScale', checked)} />
+            <Switch checked={parameters.autoScale} onChange={this._setAutoScale} />
           } />
         </FormGroup>
 
@@ -102,18 +117,18 @@ class HeatmapLayerSettingsPresentation extends React.Component {
               hsla(${minHue}, 70%, 50%, 0.75)
             )`
           }} />
-          <input id='minHue' ref='minHue' type='range' min='0' max='360'
+          <input id='minHue' ref={this._assignRefs.minHue} type='range' min='0' max='360'
             style={{width: '100px'}}
             value={minHue}
             onChange={this._handleChange} />
-          <input id='maxHue' ref='maxHue' type='range' min='0' max='360'
+          <input id='maxHue' ref={this._assignRefs.maxHue} type='range' min='0' max='360'
             style={{width: '100px', marginLeft: '200px'}}
             value={maxHue}
             onChange={this._handleChange} />
         </div>
 
         <FormGroup row>
-          <TextField ref='minDistance'
+          <TextField inputRef={this._assignRefs.minDistance}
             label='Min distance'
             style={textFieldStyle}
             InputProps={{
@@ -122,8 +137,7 @@ class HeatmapLayerSettingsPresentation extends React.Component {
             type='number'
             defaultValue={formatNumber(parameters.minDistance)} />
           <FormControlLabel label='Snap to grid' control={
-            <Switch checked={parameters.snapToGrid}
-              onChange={(event, checked) => setLayerParameter('snapToGrid', checked)} />
+            <Switch checked={parameters.snapToGrid} onChange={this._setSnapToGrid} />
           } />
         </FormGroup>
 
@@ -142,8 +156,8 @@ class HeatmapLayerSettingsPresentation extends React.Component {
   }
 
   _showSubscriptionDialog () {
-    this.refs.subscriptionDialog._updateDeviceList()
-    this.refs.subscriptionDialog.showDialog()
+    this._refs.subscriptionDialog._updateDeviceList()
+    this._refs.subscriptionDialog.showDialog()
   }
 
   _handleChange (e) {
@@ -154,12 +168,12 @@ class HeatmapLayerSettingsPresentation extends React.Component {
 
   _handleClick (e) {
     const layerParameters = {
-      threshold: toNumber(this.refs.threshold.getValue()),
-      minValue: toNumber(this.refs.minValue.getValue()),
-      maxValue: toNumber(this.refs.maxValue.getValue()),
+      threshold: toNumber(this._refs.threshold.value),
+      minValue: toNumber(this._refs.minValue.value),
+      maxValue: toNumber(this._refs.maxValue.value),
       minHue: this.state.minHue,
       maxHue: this.state.maxHue,
-      minDistance: toNumber(this.refs.minDistance.getValue())
+      minDistance: toNumber(this._refs.minDistance.value)
     }
 
     for (const layerParameter in layerParameters) {
