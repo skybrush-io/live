@@ -18,7 +18,7 @@ module.exports = {
     devtoolModuleFilenameTemplate: '/[absolute-resource-path]',
     filename: 'bundle.js',
     path: path.join(__dirname, 'build'),
-    publicPath: '/static/'
+    publicPath: '/build/'
   },
   plugins: [
     new webpack.NoEmitOnErrorsPlugin(),

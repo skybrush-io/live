@@ -33,6 +33,7 @@ build/Release
 doc/api/
 
 # Stuff packed by webpack
+build/
 dist/
 
 # Typescript type definitions
