@@ -8,6 +8,7 @@
     "doc": "esdoc -c esdoc.json",
     "lint": "eslint 'src/**'",
     "start": "webpack-dev-server --progress --colors",
+    "start:electron": "electron launcher.js",
     "start:public": "webpack-dev-server --progress --colors --host 0.0.0.0",
     "start:public:secure": "webpack-dev-server --progress --colors --https --host 0.0.0.0",
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -65,7 +66,8 @@
     "reselect": "^3.0.1",
     "screenfull": "^3.3.2",
     "socket.io": "^1.4.6",
-    "updeep": "^1.0.0"
+    "updeep": "^1.0.0",
+    "yargs": "^11.0.0"
   },
   "devDependencies": {
     "babel-core": "^6.26.0",
