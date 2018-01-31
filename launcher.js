@@ -23,8 +23,9 @@ function createMainWindow (opts) {
     mainWindow = undefined
   })
 
-  mainWindow.webContents.on('did-finish-load', () => {
+  mainWindow.on('ready-to-show', () => {
     mainWindow.show()
+    mainWindow.focus()
 
     if (opts.debug) {
       mainWindow.webContents.openDevTools({
