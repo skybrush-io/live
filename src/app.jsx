@@ -1,3 +1,4 @@
+import Reboot from 'material-ui/Reboot'
 import { MuiThemeProvider } from 'material-ui/styles'
 import PropTypes from 'prop-types'
 import React from 'react'
@@ -39,6 +40,8 @@ class Application extends React.Component {
   render () {
     return (
       <div>
+		<Reboot />
+
         <HotkeyHandler hotkeys={hotkeys}>
           <div style={rootStyle}>
             <Sidebar workbench={workbench} />

@@ -130,7 +130,7 @@ class SavedLocationEditorDialogPresentation extends React.Component {
 
     const actions = [
       <Button key='save' color='primary' onClick={this.handleSubmit}>Save</Button>,
-      <Button key='delete' color='accent'
+      <Button key='delete' color='secondary'
         disabled={editedLocationId === 'addNew'}
         onClick={onDelete(editedLocationId)}>
         Delete

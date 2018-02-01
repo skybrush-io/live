@@ -64,7 +64,7 @@ class UAVToolbar extends React.Component {
           <span>
             <IconButton disabled={isSelectionEmpty}
               onClick={() => messaging.shutdownUAVs(selectedUAVIds)}>
-              <ActionPowerSettingsNew color={isSelectionEmpty ? undefined : 'accent'} />
+              <ActionPowerSettingsNew color={isSelectionEmpty ? undefined : 'secondary'} />
             </IconButton>
           </span>
         </Tooltip>

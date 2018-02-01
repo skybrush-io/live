@@ -73,7 +73,7 @@ class MapContextMenu extends React.Component {
         </MenuItem>
         <MenuItem dense disabled={selectedUAVIds.length === 0}
           onClick={this._shutdownSelectedUAVs}>
-          <ActionPowerSettingsNew color='accent' /> Halt
+          <ActionPowerSettingsNew color='secondary' /> Halt
         </MenuItem>
         <Divider />
         <MenuItem dense disabled={selectedFeatureIds.length !== 1}

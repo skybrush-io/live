@@ -146,7 +146,7 @@ class HeatmapLayerSettingsPresentation extends React.Component {
             Update parameters
           </Button>
 
-          <Button color='accent' onClick={this._clearData}>
+          <Button color='secondary' onClick={this._clearData}>
             Clear data
           </Button>
         </FormGroup>
@@ -443,9 +443,9 @@ class HeatmapLayerPresentation extends React.Component {
               hsla(${this.props.layer.parameters.minHue}, 70%, 50%, 0.75)
             )`
           }}>
-          <span>{`${(maxValue).toFixed(3)} ${unit}`}</span>
-          <span>{`${((maxValue + minValue) / 2).toFixed(3)} ${unit}`}</span>
-          <span>{`${(minValue).toFixed(3)} ${unit}`}</span>
+          <span>{`${formatNumber(maxValue)} ${unit}`}</span>
+          <span>{`${formatNumber((maxValue + minValue) / 2)} ${unit}`}</span>
+          <span>{`${formatNumber(minValue)} ${unit}`}</span>
         </div>
       </div>
     )
