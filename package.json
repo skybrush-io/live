@@ -1,14 +1,15 @@
 {
   "name": "flockwave-web",
+  "productName": "Flockwave",
   "version": "0.0.0",
   "description": "Web frontend for a Flockwave server",
-  "main": "index.html",
+  "main": "launcher.js",
   "scripts": {
     "bundle": "webpack -p --progress",
     "doc": "esdoc -c esdoc.json",
     "lint": "eslint 'src/**'",
     "start": "webpack-dev-server --progress --colors",
-    "start:electron": "npm run bundle && electron launcher.js",
+    "start:electron": "npm run bundle && electron .",
     "start:public": "webpack-dev-server --progress --colors --host 0.0.0.0",
     "start:public:secure": "webpack-dev-server --progress --colors --https --host 0.0.0.0",
     "test": "echo \"Error: no test specified\" && exit 1",
