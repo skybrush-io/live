@@ -1,10 +1,15 @@
 const { app, BrowserWindow } = require('electron')
+const windowStateKeeper = require('electron-window-state')
 const path = require('path')
 const url = require('url')
 
 // Keep a global reference to the main window to prevent the garbage
 // collector from destroying it
 let mainWindow
+
+// Keep another reference to an object that stores the position and size
+// of the main window
+let mainWindowState
 
 /**
  * Creates the main window of the application.
@@ -13,13 +18,27 @@ let mainWindow
  * @param  {boolean}  opts.debug  whether to start with the developer tools open
  */
 function createMainWindow (opts) {
+  if (!mainWindowState) {
+    mainWindowState = windowStateKeeper({
+      defaultWidth: 1280,
+      defaultHeight: 800
+    })
+  }
+
+  const { x, y, width, height } = mainWindowState
+
   mainWindow = new BrowserWindow({
-    width: 1440,
-    height: 830,
-    show: false
+    title: app.getName(),
+    show: false,
+    x,
+    y,
+    width,
+    height
   })
+  mainWindowState.manage(mainWindow)
 
   mainWindow.on('closed', () => {
+    mainWindowState.unmanage(mainWindow)
     mainWindow = undefined
   })
 
