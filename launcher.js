@@ -21,7 +21,8 @@ function createMainWindow (opts) {
   if (!mainWindowState) {
     mainWindowState = windowStateKeeper({
       defaultWidth: 1280,
-      defaultHeight: 800
+      defaultHeight: 800,
+      fullScreen: false
     })
   }
 
