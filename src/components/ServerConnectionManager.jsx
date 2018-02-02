@@ -19,6 +19,17 @@ import { ConnectionState, MASTER_CONNECTION_ID,
 import { handleClockInformationMessage } from '../model/clocks'
 
 /**
+ * Proposes a protocol to use (http or https) depending on the protocol of
+ * the location of the current page.
+ *
+ * @return {string}  the proposed protocol to access the remote server
+ */
+function proposeProtocol () {
+  const { protocol } = window.location
+  return protocol === 'file:' ? 'http:' : protocol
+}
+
+/**
  * Presentation component that contains a Socket.io socket and handles
  * its events.
  */
@@ -36,7 +47,8 @@ class ServerConnectionManagerPresentation extends React.Component {
   render () {
     const { hostName, port, onConnected, onConnecting, onConnectionError,
       onConnectionTimeout, onDisconnected, onMessage } = this.props
-    const url = hostName ? `${window.location.protocol}//${hostName}:${port}` : undefined
+    const url = hostName ? `${proposeProtocol()}//${hostName}:${port}` : undefined
+    console.log(url)
 
     // The 'key' property of the wrapping <div> is set to the URL as well;
     // this is to force the socket component and the event objects to unmount
