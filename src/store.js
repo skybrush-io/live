@@ -2,13 +2,14 @@
  * @file The master store for the application state.
  */
 
+import isElectron from 'is-electron'
 import { createStore, applyMiddleware } from 'redux'
 import createDebounce from 'redux-debounce'
 import { actionTypes as reduxFormActionTypes } from 'redux-form'
 import * as storage from 'redux-storage'
 import debounce from 'redux-storage-decorator-debounce'
 import filter from 'redux-storage-decorator-filter'
-import createEngine from 'redux-storage-engine-localstorage'
+import createEngine from '@redux-storage-engine'
 
 import * as actions from './actions/types'
 import reducer from './reducers'
@@ -19,7 +20,7 @@ import reducer from './reducers'
  */
 const engine = debounce(
   filter(
-    createEngine('flockwave-client'),
+    isElectron ? createEngine() : createEngine('flockwave-client'),
     [
       'whitelisted-key',
       ['dialogs', 'layerSettings'],

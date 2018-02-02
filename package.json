@@ -5,13 +5,13 @@
   "description": "Web frontend for a Flockwave server",
   "main": "launcher.js",
   "scripts": {
-    "bundle": "webpack -p --progress",
+    "bundle": "webpack -p --progress --config webpack/browser.config.js",
     "doc": "esdoc -c esdoc.json",
     "lint": "eslint 'src/**'",
-    "start": "webpack-dev-server --progress --colors",
-    "start:electron": "npm run bundle && electron .",
-    "start:public": "webpack-dev-server --progress --colors --host 0.0.0.0",
-    "start:public:secure": "webpack-dev-server --progress --colors --https --host 0.0.0.0",
+    "start": "webpack-dev-server --config webpack/browser.config.js --progress --colors",
+    "start:electron": "webpack -p --progress --config webpack/electron.config.js && electron .",
+    "start:public": "webpack-dev-server --config webpack/browser.config.js --progress --colors --host 0.0.0.0",
+    "start:public:secure": "webpack-dev-server --config webpack/browser.config.js --progress --colors --https --host 0.0.0.0",
     "test": "echo \"Error: no test specified\" && exit 1",
     "watch": "webpack --watch"
   },
@@ -32,6 +32,7 @@
     "es6-promise": "^4.2.2",
     "golden-layout": "^1.5.9",
     "immutable": "^3.8.2",
+    "is-electron": "^2.1.0",
     "lodash": "^4.17.4",
     "material-ui": "^1.0.0-beta.31",
     "material-ui-icons": "^1.0.0-beta.17",
@@ -93,6 +94,7 @@
     "less-loader": "^4.0.5",
     "style-loader": "^0.20.1",
     "webpack": "^3.10.0",
-    "webpack-dev-server": "^2.9.7"
+    "webpack-dev-server": "^2.9.7",
+    "webpack-merge": "^4.1.1"
   }
 }

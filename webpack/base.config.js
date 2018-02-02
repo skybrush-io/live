@@ -9,15 +9,14 @@ require('es6-promise').polyfill()
 var path = require('path')
 var webpack = require('webpack')
 
-var enableSourceMap = false
+// Get the project root from the webpack config file
+var projectRoot = path.resolve(__dirname, '..')
 
 module.exports = {
-  devtool: enableSourceMap ? 'inline-source-map' : 'eval',
   entry: './src/index',
   output: {
     devtoolModuleFilenameTemplate: '/[absolute-resource-path]',
-    filename: 'bundle.js',
-    path: path.join(__dirname, 'build'),
+    path: path.join(projectRoot, 'build'),
     publicPath: '/build/'
   },
   plugins: [
@@ -31,13 +30,13 @@ module.exports = {
   ],
   resolve: {
     alias: {
-      config: path.join(__dirname, 'config', process.env.NODE_ENV || 'production'),
+      config: path.join(projectRoot, 'config', process.env.NODE_ENV || 'production'),
       'openlayers$': process.env.NODE_ENV !== 'production' ? 'openlayers/dist/ol-debug.js' : 'openlayers/dist/ol.js'
     },
     extensions: ['.webpack.js', '.web.js', '.js', '.jsx']
   },
   module: {
-    rules: [
+    loaders: [
       {
         test: /\.css$/,
         use: [
@@ -51,8 +50,8 @@ module.exports = {
           { loader: 'babel-loader' }
         ],
         include: [
-          path.join(__dirname, 'config'),
-          path.join(__dirname, 'src')
+          path.join(projectRoot, 'config'),
+          path.join(projectRoot, 'src')
         ]
       },
       {
@@ -62,14 +61,14 @@ module.exports = {
           { loader: 'css-loader' },
           { loader: 'less-loader' }
         ],
-        include: path.join(__dirname, 'assets', 'css')
+        include: path.join(projectRoot, 'assets', 'css')
       },
       {
         test: /\.(png|jpg)$/,
         use: [
           { loader: 'url-loader?limit=8192' }
         ],
-        include: path.join(__dirname, 'assets')
+        include: path.join(projectRoot, 'assets')
       }
     ],
     noParse: /dist\/ol.*\.js/
