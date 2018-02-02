@@ -20,7 +20,13 @@ import reducer from './reducers'
  */
 const engine = debounce(
   filter(
-    isElectron ? createEngine() : createEngine('flockwave-client'),
+    isElectron
+      ? createEngine({
+        store: {
+          name: 'state'
+        }
+      })
+      : createEngine('flockwave-client'),
     [
       'whitelisted-key',
       ['dialogs', 'layerSettings'],

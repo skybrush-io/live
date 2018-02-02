@@ -71,6 +71,6 @@ module.exports = {
         include: path.join(projectRoot, 'assets')
       }
     ],
-    noParse: /dist\/ol.*\.js/
+    noParse: [/dist\/ol.*\.js/]
   }
 }
