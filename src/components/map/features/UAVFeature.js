@@ -95,7 +95,8 @@ export default class UAVFeature extends ol.Feature {
       rotateWithView: true,
       rotation: ((this._heading + 45) % 360) * Math.PI / 180,
       snapToPixel: false,
-      src: `/assets/drone.${getColorById(this.uavId)}.32x32.png`
+      /* Path should not have a leading slash otherwise it won't work in Electron */
+      src: `assets/drone.${getColorById(this.uavId)}.32x32.png`
     })
     this.iconStyle = new ol.style.Style({ image: this.iconImage })
     styles.push(this.iconStyle)
@@ -104,7 +105,8 @@ export default class UAVFeature extends ol.Feature {
       rotateWithView: true,
       rotation: ((this._heading + 45) % 360) * Math.PI / 180,
       snapToPixel: false,
-      src: '/assets/selection_glow.png'
+      /* Path should not have a leading slash otherwise it won't work in Electron */
+      src: 'assets/selection_glow.png'
     })
     this.selectionStyle = new ol.style.Style({ image: this.selectionImage })
 
