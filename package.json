@@ -9,7 +9,7 @@
     "doc": "esdoc -c esdoc.json",
     "lint": "eslint 'src/**'",
     "start": "webpack-dev-server --config webpack/browser.config.js --progress --colors",
-    "start:electron": "webpack -p --progress --config webpack/electron.config.js && electron .",
+    "start:electron": "webpack-dev-server --config webpack/electron.config.js --progress --colors",
     "start:public": "webpack-dev-server --config webpack/browser.config.js --progress --colors --host 0.0.0.0",
     "start:public:secure": "webpack-dev-server --config webpack/browser.config.js --progress --colors --https --host 0.0.0.0",
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -98,6 +98,7 @@
     "url-loader": "^0.6.2",
     "webpack": "^3.10.0",
     "webpack-dev-server": "^2.9.7",
-    "webpack-merge": "^4.1.1"
+    "webpack-merge": "^4.1.1",
+    "webpack-shell-plugin": "^0.5.0"
   }
 }

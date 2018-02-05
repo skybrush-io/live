@@ -30,8 +30,7 @@ module.exports = {
   ],
   resolve: {
     alias: {
-      config: path.join(projectRoot, 'config', process.env.NODE_ENV || 'production'),
-      'openlayers$': process.env.NODE_ENV !== 'production' ? 'openlayers/dist/ol-debug.js' : 'openlayers/dist/ol.js'
+      config: path.join(projectRoot, 'config', process.env.NODE_ENV || 'production')
     },
     extensions: ['.webpack.js', '.web.js', '.js', '.jsx']
   },

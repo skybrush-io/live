@@ -54,11 +54,20 @@ function createMainWindow (opts) {
     }
   })
 
-  mainWindow.loadURL(url.format({
-    pathname: path.join(__dirname, 'index.html'),
-    protocol: 'file:',
-    slashes: true
-  }))
+  mainWindow.loadURL(getURLToLoad())
+}
+
+function getURLToLoad () {
+  if (process.env.NODE_ENV === 'production') {
+    return url.format({
+      pathname: path.join(__dirname, 'index.html'),
+      protocol: 'file:',
+      slashes: true
+    })
+  } else {
+    /* Load from webpack-dev-server */
+    return 'http://localhost:8080/index.html'
+  }
 }
 
 /**

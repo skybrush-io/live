@@ -79,7 +79,7 @@ const avatarForUnknownState = (
  * Textual description of each supported connection state.
  */
 const stateNames = {
-  [ConnectionState.CONNECTED]: 'Connected',
+  [ConnectionState.CONNECTED]: 'Connectedxxx',
   [ConnectionState.CONNECTING]: 'Connecting',
   [ConnectionState.DISCONNECTED]: 'Disconnected',
   [ConnectionState.DISCONNECTING]: 'Disconnecting'
