@@ -1,5 +1,4 @@
 import { autobind } from 'core-decorators'
-import ol from 'openlayers'
 import { Map, View, control, interaction } from 'ol-react'
 import PropTypes from 'prop-types'
 import React from 'react'
@@ -27,7 +26,7 @@ import { featureIdToGlobalId, globalIdToFeatureId } from '../../model/identifier
 import { getSelectedFeatureIds, getSelection, getVisibleLayersInOrder } from '../../selectors'
 import { coordinateFromLonLat, findFeaturesById, formatCoordinate } from '../../utils/geography'
 
-require('openlayers/css/ol.css')
+require('ol/ol.css')
 
 /* ********************************************************************** */
 
@@ -111,7 +110,7 @@ const MapViewInteractions = (props) => {
   /* PAN mode | Alt + Shift + Drag --> Rotate view */
   interactions.push(
     <interaction.DragRotate key='*.DragRotate'
-      condition={ol.events.condition.altShiftKeysOnly} />,
+      condition={Condition.altShiftKeysOnly} />,
     <interaction.DragRotateAndZoom key='*.DragRotateAndZoom'
       condition={Condition.altShiftKeyAndMiddleMouseButton} />
   )
@@ -120,7 +119,7 @@ const MapViewInteractions = (props) => {
     interactions.push(
       /* PAN mode | Ctrl/Cmd + Drag --> Box select features */
       <interaction.DragBox key='pan.DragBox'
-        condition={ol.events.condition.platformModifierKeyOnly}
+        condition={Condition.platformModifierKeyOnly}
         boxend={onBoxDragEnded} />
     )
   }
@@ -137,26 +136,26 @@ const MapViewInteractions = (props) => {
           Shift + Click --> Add nearest feature to selection
           Alt + Click --> Remove nearest feature from selection */
       <SelectNearestFeature key='select.SelectNearestFeature'
-        addCondition={ol.events.condition.never}
+        addCondition={Condition.never}
         layers={isLayerSelectable}
-        removeCondition={ol.events.condition.altKeyOnly}
+        removeCondition={Condition.altKeyOnly}
         toggleCondition={Condition.platformModifierKeyOrShiftKeyOnly}
         select={onFeaturesSelected}
         threshold={40} />,
 
       /* SELECT mode | Ctrl/Cmd + Drag --> Box select features */
       <interaction.DragBox key='select.DragBox.Ctrl'
-        condition={ol.events.condition.platformModifierKeyOnly}
+        condition={Condition.platformModifierKeyOnly}
         boxend={onBoxDragEnded} />,
 
       /* SELECT mode | Shift + Drag --> Box add features to selection */
       <interaction.DragBox key='select.DragBox.Shift'
-        condition={ol.events.condition.shiftKeyOnly}
+        condition={Condition.shiftKeyOnly}
         boxend={onBoxDragEnded} />,
 
       /* SELECT mode | Alt + Drag --> Box remove features from selection */
       <interaction.DragBox key='select.DragBox.Alt'
-        condition={ol.events.condition.altKeyOnly}
+        condition={Condition.altKeyOnly}
         boxend={onBoxDragEnded} />
     )
   }
@@ -165,11 +164,11 @@ const MapViewInteractions = (props) => {
     interactions.push(
       /* ZOOM mode | Drag --> Box zoom in */
       <interaction.DragZoom key='zoom.DragZoom'
-        condition={ol.events.condition.always} />,
+        condition={Condition.always} />,
 
       /* ZOOM mode | Shift + Drag --> Box zoom out */
       <interaction.DragZoom key='zoom.DragZoom.out'
-        condition={ol.events.condition.shiftKeyOnly} out />
+        condition={Condition.shiftKeyOnly} out />
     )
   }
 
@@ -334,9 +333,9 @@ class MapViewPresentation extends React.Component {
 
     let action
 
-    if (ol.events.condition.altKeyOnly(mapBrowserEvent)) {
+    if (Condition.altKeyOnly(mapBrowserEvent)) {
       action = removeFeaturesFromSelection
-    } else if (ol.events.condition.shiftKeyOnly(mapBrowserEvent)) {
+    } else if (Condition.shiftKeyOnly(mapBrowserEvent)) {
       action = addFeaturesToSelection
     } else {
       action = setSelectedFeatures

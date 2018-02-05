@@ -2,12 +2,14 @@
  * @file React Component to display and adjust the rotation of the map view.
  */
 
+import Easing from 'ol/easing'
+import Extent from 'ol/extent'
+import VectorLayer from 'ol/layer/vector'
 import PropTypes from 'prop-types'
 import React from 'react'
 import { connect } from 'react-redux'
 import { showSnackbarMessage } from '../../actions/snackbar'
 
-import ol from 'openlayers'
 import { coordinateFromLonLat } from '../../utils/geography'
 
 import {
@@ -105,11 +107,11 @@ class FitAllFeaturesButton extends React.Component {
     this._CurrentIcon = ActionAllOut
 
     const mergedExtent = featureExtents.reduce(
-      (bigExtent, currentExtent) => ol.extent.extend(bigExtent, currentExtent),
-      ol.extent.createEmpty()
+      (bigExtent, currentExtent) => Extent.extend(bigExtent, currentExtent),
+      Extent.createEmpty()
     )
 
-    const bufferedExtent = ol.extent.buffer(mergedExtent, this.props.margin)
+    const bufferedExtent = Extent.buffer(mergedExtent, this.props.margin)
 
     mapViewToExtentSignal.dispatch(bufferedExtent)
   }
@@ -123,7 +125,7 @@ class FitAllFeaturesButton extends React.Component {
    *         vector source
    */
   _isLayerFeasible (layer) {
-    return layer && layer.getVisible() && layer instanceof ol.layer.Vector
+    return layer && layer.getVisible() && layer instanceof VectorLayer
   }
 
   /**
@@ -133,18 +135,14 @@ class FitAllFeaturesButton extends React.Component {
    */
   _geolocationReceived (position) {
     const view = this.map.getView()
-
-    this.map.beforeRender(ol.animation.pan({
-      source: view.getCenter(),
-      duration: this.props.duration,
-      easing: ol.easing.easeOut
-    }))
-
-    let center = coordinateFromLonLat(
+    const center = coordinateFromLonLat(
       [position.coords.longitude, position.coords.latitude]
     )
-
-    view.setCenter(center)
+    view.animate({
+      pan: center,
+      duration: this.props.duration,
+      easing: Easing.easeOut
+    })
   }
 }
 

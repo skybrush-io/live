@@ -1,6 +1,10 @@
 import { partial, toNumber } from 'lodash'
 import numbro from 'numbro'
-import ol from 'openlayers'
+import Feature from 'ol/feature'
+import Point from 'ol/geom/point'
+import Circle from 'ol/style/circle'
+import Fill from 'ol/style/fill'
+import Style from 'ol/style/style'
 import { layer, source } from 'ol-react'
 import PropTypes from 'prop-types'
 import React from 'react'
@@ -226,9 +230,9 @@ const getDistance = (a, b) => wgs84Sphere.haversineDistance(
  * @param {number} radius the radius to fill
  * @return {Object} the OpenLayers style object
  */
-const makePointStyle = (color, radius) => new ol.style.Style({
-  image: new ol.style.Circle({
-    fill: new ol.style.Fill({ color }), radius
+const makePointStyle = (color, radius) => new Style({
+  image: new Circle({
+    fill: new Fill({ color }), radius
   })
 })
 
@@ -375,8 +379,8 @@ class HeatmapVectorSource extends source.Vector {
   }
 
   _makePoint (center) {
-    return new ol.Feature({
-      geometry: new ol.geom.Point(coordinateFromLonLat(center))
+    return new Feature({
+      geometry: new Point(coordinateFromLonLat(center))
     })
   }
 

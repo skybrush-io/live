@@ -6,8 +6,10 @@
 
 import { autobind } from 'core-decorators'
 import _ from 'lodash'
+import Interaction from 'ol/interaction/interaction'
+import Layer from 'ol/layer/layer'
+import VectorLayer from 'ol/layer/vector'
 import { interaction } from 'ol-react'
-import ol from 'openlayers'
 import PropTypes from 'prop-types'
 import React from 'react'
 
@@ -19,7 +21,7 @@ import { euclideanDistance } from '../../../utils/geography'
  * active selection if there is a not yet selected point feature of a layer that
  * is close enough to the point where the user clicked and triggers a context-menu.
  */
-class ContextMenuInteraction extends ol.interaction.Interaction {
+class ContextMenuInteraction extends Interaction {
   constructor (options = {}) {
     super({
       handleEvent: mapBrowserEvent => {
@@ -66,7 +68,7 @@ class ContextMenuInteraction extends ol.interaction.Interaction {
           this._onContextMenu(mapBrowserEvent)
         }
 
-        return ol.events.condition.pointerMove(mapBrowserEvent)
+        return Condition.pointerMove(mapBrowserEvent)
       }
     })
 
@@ -140,7 +142,7 @@ class ContextMenuInteraction extends ol.interaction.Interaction {
    *         vector source
    */
   _isLayerFeasible (layer) {
-    return layer && layer.getVisible() && layer instanceof ol.layer.Vector
+    return layer && layer.getVisible() && layer instanceof VectorLayer
   }
 
   /**
@@ -207,7 +209,7 @@ export default class ShowContextMenu extends interaction.OLInteraction {
 
 ShowContextMenu.propTypes = Object.assign({}, interaction.OLInteraction.propTypes, {
   layers: PropTypes.oneOfType([
-    PropTypes.func, PropTypes.arrayOf(ol.layer.Layer)
+    PropTypes.func, PropTypes.arrayOf(Layer)
   ]),
   select: PropTypes.func,
   contextMenu: PropTypes.func,

@@ -2,8 +2,11 @@
  * @file OpenLayers feature that represents an UAV on the map.
  */
 
-import ol from 'openlayers'
-import _ from 'lodash'
+import { findKey } from 'lodash'
+import Feature from 'ol/feature'
+import Icon from 'ol/style/icon'
+import Style from 'ol/style/style'
+import Text from 'ol/style/text'
 
 /**
  * Object containing the conditions under which a drone should be colored
@@ -16,12 +19,12 @@ export const colorPredicates = {}
  *
  * @return {string} the assigned color ('black' if no predicates match)
  */
-const getColorById = id => _.findKey(colorPredicates, (p) => p(id)) || 'black'
+const getColorById = id => findKey(colorPredicates, (p) => p(id)) || 'black'
 
 /**
 * Feature that represents an UAV on an OpenLayers map.
 */
-export default class UAVFeature extends ol.Feature {
+export default class UAVFeature extends Feature {
   /**
    * Constructor.
    *
@@ -91,31 +94,31 @@ export default class UAVFeature extends ol.Feature {
   _setupStyle () {
     let styles = []
 
-    this.iconImage = new ol.style.Icon({
+    this.iconImage = new Icon({
       rotateWithView: true,
       rotation: ((this._heading + 45) % 360) * Math.PI / 180,
       snapToPixel: false,
       /* Path should not have a leading slash otherwise it won't work in Electron */
       src: `assets/drone.${getColorById(this.uavId)}.32x32.png`
     })
-    this.iconStyle = new ol.style.Style({ image: this.iconImage })
+    this.iconStyle = new Style({ image: this.iconImage })
     styles.push(this.iconStyle)
 
-    this.selectionImage = new ol.style.Icon({
+    this.selectionImage = new Icon({
       rotateWithView: true,
       rotation: ((this._heading + 45) % 360) * Math.PI / 180,
       snapToPixel: false,
       /* Path should not have a leading slash otherwise it won't work in Electron */
       src: 'assets/selection_glow.png'
     })
-    this.selectionStyle = new ol.style.Style({ image: this.selectionImage })
+    this.selectionStyle = new Style({ image: this.selectionImage })
 
     if (this._selected) {
       styles.push(this.selectionStyle)
     }
 
-    this.labelStyle = new ol.style.Style({
-      text: new ol.style.Text({
+    this.labelStyle = new Style({
+      text: new Text({
         font: '12px sans-serif',
         offsetY: 24,
         text: this.uavId || 'undefined',

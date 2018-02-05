@@ -1,7 +1,8 @@
-import ol from 'openlayers'
+import OLCondition from 'ol/events/condition'
+
 import { eventHasPlatformModifierKey } from '../../utils/platform'
 
-let Condition = {}
+const Condition = Object.assign({}, OLCondition)
 
 /**
  * Helper condition that checks if platform modifier
@@ -21,8 +22,8 @@ Condition.platformModifierKey = mapBrowserEvent =>
  * @return {boolean}  whether the condition was met
  */
 Condition.platformModifierKeyOrShiftKeyOnly = mapBrowserEvent => (
-  ol.events.condition.platformModifierKeyOnly(mapBrowserEvent) ||
-  ol.events.condition.shiftKeyOnly(mapBrowserEvent)
+  OLCondition.platformModifierKeyOnly(mapBrowserEvent) ||
+  OLCondition.shiftKeyOnly(mapBrowserEvent)
 )
 
 /**

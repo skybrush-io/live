@@ -2,7 +2,11 @@ import Color from 'color'
 import { unary } from 'lodash'
 import { Feature, geom, layer, source } from 'ol-react'
 import PropTypes from 'prop-types'
-import ol from 'openlayers'
+import Circle from 'ol/style/circle'
+import Fill from 'ol/style/fill'
+import Stroke from 'ol/style/stroke'
+import Style from 'ol/style/style'
+import Text from 'ol/style/text'
 import React from 'react'
 import { connect } from 'react-redux'
 
@@ -67,12 +71,12 @@ const geometryForFeature = feature => {
   }
 }
 
-const fill = (color) => new ol.style.Fill({ color })
-const thinOutline = (color) => new ol.style.Stroke({ color, width: 2 })
-const thickOutline = (color) => new ol.style.Stroke({ color, width: 5 })
+const fill = (color) => new Fill({ color })
+const thinOutline = (color) => new Stroke({ color, width: 2 })
+const thickOutline = (color) => new Stroke({ color, width: 5 })
 const whiteThinOutline = thinOutline('white')
 const whiteThickOutline = thickOutline('white')
-const whiteThickOutlineStyle = new ol.style.Style({ stroke: whiteThickOutline })
+const whiteThickOutlineStyle = new Style({ stroke: whiteThickOutline })
 
 // TODO: cache the style somewhere?
 const styleForFeature = (feature, selected = false) => {
@@ -83,10 +87,10 @@ const styleForFeature = (feature, selected = false) => {
 
   switch (type) {
     case 'points':
-      styles.push(new ol.style.Style({
-        image: new ol.style.Circle({
+      styles.push(new Style({
+        image: new Circle({
           stroke: selected ? whiteThinOutline : undefined,
-          fill: new ol.style.Fill({
+          fill: new Fill({
             color: parsedColor.rgb().array()
           }),
           radius
@@ -98,7 +102,7 @@ const styleForFeature = (feature, selected = false) => {
       if (selected) {
         styles.push(whiteThickOutlineStyle)
       }
-      styles.push(new ol.style.Style({
+      styles.push(new Style({
         stroke: thinOutline(parsedColor.rgb().array())
       }))
       break
@@ -107,14 +111,14 @@ const styleForFeature = (feature, selected = false) => {
       // fallthrough
 
     default:
-      styles.push(new ol.style.Style({
+      styles.push(new Style({
         fill: fill(parsedColor.fade(selected ? 0.5 : 0.75).rgb().array())
       }))
       if (selected) {
         styles.push(whiteThickOutlineStyle)
       }
-      styles.push(new ol.style.Style({
-        stroke: new ol.style.Stroke({
+      styles.push(new Style({
+        stroke: new Stroke({
           color: parsedColor.rgb().array(),
           width: 2
         })
@@ -122,8 +126,8 @@ const styleForFeature = (feature, selected = false) => {
   }
 
   if (label && label.length > 0) {
-    styles.push(new ol.style.Style({
-      text: new ol.style.Text({
+    styles.push(new Style({
+      text: new Text({
         font: '12px sans-serif',
         offsetY: type === 'points' ? radius + 10 : 0,
         placement: (type === 'lineString') ? 'line' : 'point',

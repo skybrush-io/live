@@ -2,14 +2,13 @@
  * @file React Component to display and adjust the rotation of the map view.
  */
 
-import ol from 'openlayers'
+import Easing from 'ol/easing'
 import PropTypes from 'prop-types'
 import React from 'react'
 
 import { mapReferenceRequestSignal, mapRotationResetSignal } from '../../signals'
 
 import IconButton from 'material-ui/IconButton'
-import { InputAdornment } from 'material-ui/Input'
 import ImageRotateRight from 'material-ui-icons/RotateRight'
 import TextField from 'material-ui/TextField'
 
@@ -161,15 +160,11 @@ export default class MapRotationTextBox extends React.Component {
   * @param {Event} e the event fired from the IconButton component
   */
   _onButtonClick (e) {
-    const view = this.map.getView()
-
-    this.map.beforeRender(ol.animation.rotate({
-      rotation: view.getRotation(),
+    this.map.getView().animate({
+      rotation: 0,
       duration: this.props.resetDuration,
-      easing: ol.easing.easeOut
-    }))
-
-    view.setRotation(0)
+      easing: Easing.easeOut
+    })
   }
 }
 

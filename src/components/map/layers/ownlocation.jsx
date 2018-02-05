@@ -2,7 +2,13 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import { connect } from 'react-redux'
 
-import ol from 'openlayers'
+import DeviceOrientation from 'ol/deviceorientation'
+import Feature from 'ol/feature'
+import Geolocation from 'ol/geolocation'
+import Point from 'ol/geom/point'
+import Icon from 'ol/style/icon'
+import Style from 'ol/style/style'
+
 import { layer, source } from 'ol-react'
 
 // === Settings for this particular layer type ===
@@ -35,7 +41,7 @@ class OwnLocationVectorSource extends source.Vector {
     this._onAccuracyGeometryChange = this._onAccuracyGeometryChange.bind(this)
     this._onHeadingChange = this._onHeadingChange.bind(this)
 
-    this.locationIcon = new ol.style.Icon({
+    this.locationIcon = new Icon({
       rotateWithView: true,
       rotation: 0,
       snapToPixel: false,
@@ -43,30 +49,30 @@ class OwnLocationVectorSource extends source.Vector {
       src: 'assets/location.32x32.png'
     })
 
-    this.locationFeature = new ol.Feature()
+    this.locationFeature = new Feature()
     this.locationFeature.setStyle(
-      new ol.style.Style({ image: this.locationIcon })
+      new Style({ image: this.locationIcon })
     )
     this.source.addFeature(this.locationFeature)
 
-    this.accuracyFeature = new ol.Feature()
+    this.accuracyFeature = new Feature()
     this.source.addFeature(this.accuracyFeature)
 
-    this.olGeolocation = new ol.Geolocation({
+    this.olGeolocation = new Geolocation({
       projection: context.map.getView().getProjection()
     })
     this.olGeolocation.on('change:position', this._onPositionChange)
     this.olGeolocation.on('change:accuracyGeometry', this._onAccuracyGeometryChange)
     this.olGeolocation.setTracking(true)
 
-    let deviceOrientation = new ol.DeviceOrientation()
+    let deviceOrientation = new DeviceOrientation()
     deviceOrientation.on('change:alpha', this._onHeadingChange)
     deviceOrientation.setTracking(true)
   }
 
   _onPositionChange () {
     let coordinates = this.olGeolocation.getPosition()
-    this.locationFeature.setGeometry(coordinates ? new ol.geom.Point(coordinates) : null)
+    this.locationFeature.setGeometry(coordinates ? new Point(coordinates) : null)
   }
 
   _onAccuracyGeometryChange () {

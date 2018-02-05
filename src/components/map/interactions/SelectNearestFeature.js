@@ -4,9 +4,12 @@
  * along with a convenient React component wrapper.
  */
 
-import _ from 'lodash'
+import _, { includes, isArray, isFunction, partial, stubFalse, stubTrue } from 'lodash'
+import Condition from 'ol/events/condition'
+import Interaction from 'ol/interaction/interaction'
+import Layer from 'ol/layer/layer'
+import VectorLayer from 'ol/layer/vector'
 import { interaction } from 'ol-react'
-import ol from 'openlayers'
 import PropTypes from 'prop-types'
 
 import { euclideanDistance, getExactClosestPointOf } from '../../../utils/geography'
@@ -15,7 +18,7 @@ import { euclideanDistance, getExactClosestPointOf } from '../../../utils/geogra
  * OpenLayers interaction that selects the point feature of a layer that is
  * closest to the point where the user clicked (or moved the mouse).
  */
-class SelectNearestFeatureInteraction extends ol.interaction.Interaction {
+class SelectNearestFeatureInteraction extends Interaction {
   /**
    * Constructor.
    *
@@ -59,7 +62,7 @@ class SelectNearestFeatureInteraction extends ol.interaction.Interaction {
 
         // Short-circuit if the user has not specified a callback
         if (!this._select) {
-          return ol.events.condition.pointerMove(mapBrowserEvent)
+          return Condition.pointerMove(mapBrowserEvent)
         }
 
         // Create the layer selector function if needed
@@ -70,7 +73,7 @@ class SelectNearestFeatureInteraction extends ol.interaction.Interaction {
         // Find the feature that is closest to the selection, in each
         // matching layer
         const { coordinate, map } = mapBrowserEvent
-        const distanceFunction = _.partial(this._distanceOfEventFromFeature, mapBrowserEvent)
+        const distanceFunction = partial(this._distanceOfEventFromFeature, mapBrowserEvent)
         const closestFeature = _(map.getLayers().getArray())
           .filter(this._isLayerFeasible)
           .filter(this._layerSelectorFunction)
@@ -103,15 +106,15 @@ class SelectNearestFeatureInteraction extends ol.interaction.Interaction {
           }
         }
 
-        return ol.events.condition.pointerMove(mapBrowserEvent)
+        return Condition.pointerMove(mapBrowserEvent)
       }
     })
 
     const defaultOptions = {
-      condition: ol.events.condition.click,
-      addCondition: ol.events.condition.never,
-      removeCondition: ol.events.condition.never,
-      toggleCondition: ol.events.condition.never,
+      condition: Condition.click,
+      addCondition: Condition.never,
+      removeCondition: Condition.never,
+      toggleCondition: Condition.never,
       threshold: Number.POSITIVE_INFINITY
     }
     options = Object.assign(defaultOptions, options)
@@ -137,15 +140,15 @@ class SelectNearestFeatureInteraction extends ol.interaction.Interaction {
    */
   _createLayerSelectorFunction (layers) {
     if (layers) {
-      if (_.isFunction(layers)) {
+      if (isFunction(layers)) {
         return layers
-      } else if (_.isArray(layers)) {
-        return layer => _.includes(layers, layer)
+      } else if (isArray(layers)) {
+        return layer => includes(layers, layer)
       } else {
-        return _.stubFalse
+        return stubFalse
       }
     } else {
-      return _.stubTrue
+      return stubTrue
     }
   }
 
@@ -182,7 +185,7 @@ class SelectNearestFeatureInteraction extends ol.interaction.Interaction {
    *         vector source
    */
   _isLayerFeasible (layer) {
-    return layer && layer.getVisible() && layer instanceof ol.layer.Vector
+    return layer && layer.getVisible() && layer instanceof VectorLayer
   }
 
   /**
@@ -217,7 +220,7 @@ export default class SelectNearestFeature extends interaction.OLInteraction {
 SelectNearestFeature.propTypes = Object.assign({}, interaction.OLInteraction.propTypes, {
   addCondition: PropTypes.func,
   layers: PropTypes.oneOfType([
-    PropTypes.func, PropTypes.arrayOf(ol.layer.Layer)
+    PropTypes.func, PropTypes.arrayOf(Layer)
   ]),
   removeCondition: PropTypes.func,
   select: PropTypes.func,

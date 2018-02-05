@@ -3,7 +3,7 @@
  * other components that request it through mini-signals.
  */
 
-import ol from 'openlayers'
+import Map from 'ol/map'
 import PropTypes from 'prop-types'
 import React from 'react'
 import { mapReferenceRequestSignal } from '../../signals'
@@ -41,5 +41,5 @@ export default class MapReferenceRequestHandler extends React.Component {
 }
 
 MapReferenceRequestHandler.contextTypes = {
-  map: PropTypes.instanceOf(ol.Map)
+  map: PropTypes.instanceOf(Map)
 }

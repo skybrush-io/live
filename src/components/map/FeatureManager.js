@@ -7,7 +7,8 @@
 import { autobind } from 'core-decorators'
 import { forOwn, identity, values } from 'lodash'
 import Signal from 'mini-signals'
-import ol from 'openlayers'
+import Feature from 'ol/feature'
+import Point from 'ol/geom/point'
 
 /**
  * Object responsible for constructing features on an OpenLayers
@@ -83,8 +84,8 @@ export default class FeatureManager {
    *          object with the given ID on the map
    */
   _createFeatureById (id, coordinate) {
-    const point = new ol.geom.Point(coordinate)
-    const feature = this._featureFactory ? this._featureFactory(id, point) : new ol.Feature(point)
+    const point = new Point(coordinate)
+    const feature = this._featureFactory ? this._featureFactory(id, point) : new Feature(point)
     const featureId = this._featureIdFunction(id)
 
     feature.setId(featureId)

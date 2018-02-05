@@ -5,8 +5,12 @@
 
 import { autobind } from 'core-decorators'
 import { stubTrue } from 'lodash'
+import OLArray from 'ol/array'
+import OLEvent from 'ol/events/event'
+import PointerInteraction from 'ol/interaction/pointer'
+import TranslateEventType from 'ol/interaction/translateeventtype'
+import Layer from 'ol/layer/layer'
 import { interaction } from 'ol-react'
-import ol from 'openlayers'
 import PropTypes from 'prop-types'
 
 /**
@@ -20,7 +24,7 @@ import PropTypes from 'prop-types'
  * then return the features that *may* be moved by the interaction; typically,
  * you should return the current selection here.
  */
-export class MoveFeaturesInteraction extends ol.interaction.Pointer {
+export class MoveFeaturesInteraction extends PointerInteraction {
   constructor (options) {
     super({
       handleDownEvent: event => {
@@ -35,7 +39,7 @@ export class MoveFeaturesInteraction extends ol.interaction.Pointer {
           this.features_ = features
           this.dispatchEvent(
             new MoveFeaturesInteractionEvent(
-              ol.interaction.TranslateEventType.TRANSLATESTART,
+              TranslateEventType.TRANSLATESTART,
               features, event.coordinate, [0, 0]
             )
           )
@@ -65,7 +69,7 @@ export class MoveFeaturesInteraction extends ol.interaction.Pointer {
 
           this.dispatchEvent(
             new MoveFeaturesInteractionEvent(
-              ol.interaction.TranslateEventType.TRANSLATING,
+              TranslateEventType.TRANSLATING,
               features, newCoordinate, totalDelta
             )
           )
@@ -86,7 +90,7 @@ export class MoveFeaturesInteraction extends ol.interaction.Pointer {
 
           this.dispatchEvent(
             new MoveFeaturesInteractionEvent(
-              ol.interaction.TranslateEventType.TRANSLATEEND,
+              TranslateEventType.TRANSLATEEND,
               features, event.coordinate, totalDelta
             )
           )
@@ -122,7 +126,7 @@ export class MoveFeaturesInteraction extends ol.interaction.Pointer {
         return options.layers
       } else {
         const layers = options.layers
-        return layer => ol.array.includes(layers, layer)
+        return layer => OLArray.includes(layers, layer)
       }
     } else {
       return stubTrue
@@ -158,7 +162,7 @@ export class MoveFeaturesInteraction extends ol.interaction.Pointer {
   }
 }
 
-class MoveFeaturesInteractionEvent extends ol.events.Event {
+class MoveFeaturesInteractionEvent extends OLEvent {
   constructor (type, features, coordinate, delta) {
     super(type)
     this.features = features
@@ -181,7 +185,7 @@ MoveFeatures.propTypes = Object.assign({}, interaction.OLInteraction.propTypes, 
   featureProvider: PropTypes.func.isRequired,
   hitTolerance: PropTypes.number,
   layers: PropTypes.oneOfType([
-    PropTypes.func, PropTypes.arrayOf(ol.layer.Layer)
+    PropTypes.func, PropTypes.arrayOf(Layer)
   ]),
 
   translateend: PropTypes.func,
