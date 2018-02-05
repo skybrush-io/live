@@ -11,7 +11,7 @@ import Tooltip from 'material-ui/Tooltip'
 import ImageAdjust from 'material-ui-icons/adjust'
 
 import { autobind } from 'core-decorators'
-import ol from 'openlayers'
+import Extent from 'ol/extent'
 import PropTypes from 'prop-types'
 import React from 'react'
 import { connect } from 'react-redux'
@@ -114,8 +114,8 @@ class UAVList extends React.Component {
       uav => coordinateFromLonLat([uav.lon, uav.lat])
     ).toArray()
 
-    const boundingExtent = ol.extent.boundingExtent(selectedUAVCoordinates)
-    const bufferedExtent = ol.extent.buffer(boundingExtent, 16)
+    const boundingExtent = Extent.boundingExtent(selectedUAVCoordinates)
+    const bufferedExtent = Extent.buffer(boundingExtent, 16)
     mapViewToExtentSignal.dispatch(bufferedExtent, 500)
   }
 

@@ -3,7 +3,11 @@
  */
 
 import Color from 'color'
-import ol from 'openlayers'
+import Circle from 'ol/style/circle'
+import Fill from 'ol/style/fill'
+import Stroke from 'ol/style/stroke'
+import Style from 'ol/style/style'
+import Text from 'ol/style/text'
 
 /**
  * @private
@@ -50,14 +54,14 @@ export function convertSimpleStyleToOLStyle (style, defaults) {
   let markerSizeInPixels = 0
 
   if (strokeColor) {
-    styleProps['stroke'] = new ol.style.Stroke({
+    styleProps['stroke'] = new Stroke({
       color: strokeColor.array(),
       width: Number(realStyle['stroke-width'])
     })
   }
 
   if (fillColor) {
-    styleProps['fill'] = new ol.style.Fill({
+    styleProps['fill'] = new Fill({
       color: fillColor.array()
     })
   }
@@ -67,11 +71,11 @@ export function convertSimpleStyleToOLStyle (style, defaults) {
     const markerSize = realStyle['marker-size'] || 'medium'
     markerSizeInPixels = _markerSizeToRadius[markerSize] !== undefined
       ? _markerSizeToRadius[markerSize] : _markerSizeToRadius['medium']
-    styleProps['image'] = new ol.style.Circle({
-      fill: new ol.style.Fill({
+    styleProps['image'] = new Circle({
+      fill: new Fill({
         color: markerColor.array()
       }),
-      stroke: new ol.style.Stroke({
+      stroke: new Stroke({
         color: markerColor.blacken(0.5)
       }),
       radius: markerSizeInPixels / 2
@@ -79,13 +83,13 @@ export function convertSimpleStyleToOLStyle (style, defaults) {
   }
 
   if (hasText) {
-    styleProps['text'] = new ol.style.Text({
+    styleProps['text'] = new Text({
       text: title,
       font: 'normal 14px Arial',
-      fill: new ol.style.Fill({
+      fill: new Fill({
         color: '#ffffff'
       }),
-      stroke: new ol.style.Stroke({
+      stroke: new Stroke({
         color: '#000000',
         width: 2
       })
@@ -98,5 +102,5 @@ export function convertSimpleStyleToOLStyle (style, defaults) {
   }
 
   console.log(styleProps)
-  return new ol.style.Style(styleProps)
+  return new Style(styleProps)
 }

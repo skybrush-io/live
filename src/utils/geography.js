@@ -3,7 +3,12 @@
  */
 
 import { curry, minBy } from 'lodash'
-import ol from 'openlayers'
+import Coordinate from 'ol/coordinate'
+import GeometryCollection from 'ol/geom/geometrycollection'
+import MultiLineString from 'ol/geom/multilinestring'
+import MultiPolygon from 'ol/geom/multipolygon'
+import Projection from 'ol/proj'
+import Sphere from 'ol/sphere'
 
 /**
  * Calculates the Euclidean distance between two OpenLayers coordinates.
@@ -98,11 +103,11 @@ export const getExactClosestPointOf = (geometry, coordinate) => {
   // For multi-polygons, recurse into the sub-polygons and return
   // the closest point of the closest polygon.
   let subGeometries
-  if (geometry instanceof ol.geom.GeometryCollection) {
+  if (geometry instanceof GeometryCollection) {
     subGeometries = geometry.getGeometries()
-  } else if (geometry instanceof ol.geom.MultiPolygon) {
+  } else if (geometry instanceof MultiPolygon) {
     subGeometries = geometry.getPolygons()
-  } else if (geometry instanceof ol.geom.MultiLineString) {
+  } else if (geometry instanceof MultiLineString) {
     subGeometries = geometry.getLineStrings()
   }
   if (subGeometries !== undefined) {
@@ -129,7 +134,7 @@ export const getExactClosestPointOf = (geometry, coordinate) => {
  */
 export const makeCoordinateFormatter = (digits = 6) => {
   return coordinate => (
-    ol.coordinate.format(coordinate, '{y}, {x}', digits)
+    Coordinate.format(coordinate, '{y}, {x}', digits)
   )
 }
 
@@ -157,7 +162,7 @@ export const formatCoordinate = makeCoordinateFormatter()
  * WGS84 ellipsoid, in metres. Useful for calculating distances on the Earth
  * (also in metres).
  */
-export const wgs84Sphere = new ol.Sphere(6378137)
+export const wgs84Sphere = new Sphere(6378137)
 
 /**
  * The defaul value for projection is "EPSG:3857", a Spherical Mercator
@@ -182,7 +187,7 @@ export const wgs84Sphere = new ol.Sphere(6378137)
  * @return {Object} the OpenLayers coordinates corresponding to the given
  * longitude-latitude pair
  */
-export const coordinateFromLonLat = ol.proj.fromLonLat
+export const coordinateFromLonLat = Projection.fromLonLat
 
 /**
  * Helper function to convert a coordinate from the map view into a
@@ -195,4 +200,4 @@ export const coordinateFromLonLat = ol.proj.fromLonLat
  * @return {Object} the longtitude-latitude pair corresponding to the given
  * OpenLayers coordinates
  */
-export const lonLatFromCoordinate = ol.proj.toLonLat
+export const lonLatFromCoordinate = Projection.toLonLat

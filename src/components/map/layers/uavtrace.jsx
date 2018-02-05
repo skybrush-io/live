@@ -1,7 +1,10 @@
 import { autobind } from 'core-decorators'
 import { toNumber } from 'lodash'
+import Feature from 'ol/feature'
+import LineString from 'ol/geom/linestring'
+import Stroke from 'ol/style/stroke'
+import Style from 'ol/style/style'
 import { layer, source } from 'ol-react'
-import ol from 'openlayers'
 import PropTypes from 'prop-types'
 import React from 'react'
 import { CirclePicker } from 'react-color'
@@ -103,8 +106,8 @@ export const UAVTraceLayerSettings = connect(
  * @param {number} width the width of the stroke line
  * @return {Object} the OpenLayers style object
  */
-const makeStrokeStyle = (color, width) => new ol.style.Style({
-  stroke: new ol.style.Stroke({ color, width })
+const makeStrokeStyle = (color, width) => new Style({
+  stroke: new Stroke({ color, width })
 })
 
 class UAVTraceVectorSource extends source.Vector {
@@ -126,10 +129,10 @@ class UAVTraceVectorSource extends source.Vector {
           coordinateFromLonLat([uav.lon, uav.lat])
         )
       } else {
-        this.lineStringsById[uav._id] = new ol.geom.LineString(
+        this.lineStringsById[uav._id] = new LineString(
           [coordinateFromLonLat([uav.lon, uav.lat])]
         )
-        let feature = new ol.Feature(this.lineStringsById[uav._id])
+        let feature = new Feature(this.lineStringsById[uav._id])
         feature.setStyle(makeStrokeStyle(this.props.trailColor, this.props.trailWidth))
         this.source.addFeature(feature)
       }

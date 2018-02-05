@@ -1,5 +1,5 @@
 import { isNil, reject } from 'lodash'
-import ol from 'openlayers'
+import Collection from 'ol/collection'
 import { createSelector } from 'reselect'
 
 import { globalIdToFeatureId, globalIdToUavId } from './model/identifiers'
@@ -30,7 +30,7 @@ export const getSelectedFeatureIds = createSelector(
   )
 )
 
-const _selectedFeatureIdsCollection = new ol.Collection([], { unique: true })
+const _selectedFeatureIdsCollection = new Collection([], { unique: true })
 
 /**
  * Selector that retrieves an OpenLayers collection containing the list of

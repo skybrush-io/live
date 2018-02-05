@@ -1,6 +1,7 @@
 import Color from 'color'
 import _ from 'lodash'
-import ol from 'openlayers'
+import GeoJSON from 'ol/format/geojson'
+import Point from 'ol/geom/point'
 import { layer, source } from 'ol-react'
 import PropTypes from 'prop-types'
 import React from 'react'
@@ -114,7 +115,7 @@ class GeoJSONVectorSource extends source.Vector {
   constructor (props) {
     super(props)
 
-    this.geojsonFormat = new ol.format.GeoJSON()
+    this.geojsonFormat = new GeoJSON()
     this._updateFeaturesFromProps(props)
   }
 
@@ -172,7 +173,7 @@ class GeoJSONLayerPresentation extends React.Component {
     const props = feature.getProperties()
 
     // Force point geometries to always have a marker
-    if (!props['marker-symbol'] && feature.getGeometry() instanceof ol.geom.Point) {
+    if (!props['marker-symbol'] && feature.getGeometry() instanceof Point) {
       props['marker-symbol'] = 'marker'
     }
 

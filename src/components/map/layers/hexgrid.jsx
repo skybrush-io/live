@@ -1,6 +1,10 @@
 import { autobind } from 'core-decorators'
 import { sum, toNumber, values } from 'lodash'
-import ol from 'openlayers'
+import Feature from 'ol/feature'
+import Polygon from 'ol/geom/polygon'
+import OLMath from 'ol/math'
+import Fill from 'ol/style/fill'
+import Style from 'ol/style/style'
 import { layer, source } from 'ol-react'
 import PropTypes from 'prop-types'
 import React from 'react'
@@ -19,8 +23,8 @@ import { coordinateFromLonLat } from '../../../utils/geography'
  * @param {color} color the color of the filling
  * @return {Object} the OpenLayers style object
  */
-const makeFillStyle = color => new ol.style.Style({
-  fill: new ol.style.Fill({ color: color })
+const makeFillStyle = color => new Style({
+  fill: new Fill({ color: color })
 })
 
 // === Settings for this particular layer type ===
@@ -120,7 +124,7 @@ class HexGridVectorSource extends source.Vector {
   }
 
   _getCorners (center, radius) {
-    const angles = [30, 90, 150, 210, 270, 330, 30].map(ol.math.toRadians)
+    const angles = [30, 90, 150, 210, 270, 330, 30].map(OLMath.toRadians)
     return angles.map(angle => coordinateFromLonLat([
       center[0] + radius * Math.sin(angle),
       center[1] + radius * Math.cos(angle)
@@ -128,9 +132,9 @@ class HexGridVectorSource extends source.Vector {
   }
 
   _getHexagon (center, radius) {
-    return new ol.Feature(
+    return new Feature(
       {
-        geometry: new ol.geom.Polygon([
+        geometry: new Polygon([
           this._getCorners(center, radius)
         ])
       }
