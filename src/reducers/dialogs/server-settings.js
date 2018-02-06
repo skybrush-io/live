@@ -4,6 +4,7 @@
  */
 
 import { handleActions } from 'redux-actions'
+import u from 'updeep'
 
 /**
  * The default settings for the part of the state object being defined here.
@@ -18,7 +19,8 @@ import { handleActions } from 'redux-actions'
 const defaultState = {
   hostName: null,
   port: 5000,
-  dialogVisible: false
+  dialogVisible: false,
+  selectedTab: 'auto'
 }
 
 /**
@@ -27,15 +29,19 @@ const defaultState = {
  */
 const reducer = handleActions({
   SHOW_SERVER_SETTINGS_DIALOG: (state, action) => (
-    Object.assign({}, state, { 'dialogVisible': true })
+    u({ dialogVisible: true }, state)
   ),
 
   CLOSE_SERVER_SETTINGS_DIALOG: (state, action) => (
-    Object.assign({}, state, action.payload, { 'dialogVisible': false })
+    u({ ...action.payload, dialogVisible: false }, state)
   ),
 
-  UPDATE_SERVER_SETTINGS: (state, action) => (
-    Object.assign({}, state, action.payload)
+  SET_SERVER_SETTINGS_DIALOG_TAB: (state, action) => (
+    u({ selectedTab: action.payload }, state)
+  ),
+
+  UPDATE_SERVER_SETTINGS: (state, action) => u(
+    u(action.payload, state)
   )
 }, defaultState)
 
