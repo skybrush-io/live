@@ -2,6 +2,7 @@ import { autobind } from 'core-decorators'
 import PropTypes from 'prop-types'
 import React from 'react'
 import { connect } from 'react-redux'
+import SSDPClient from '@ssdp'
 
 import {
   addDetectedServer,
@@ -19,6 +20,8 @@ import {
 class ServerDetectionManagerPresentation extends React.Component {
   constructor (props) {
     super(props)
+
+    this._ssdpClient = undefined
     this._timer = undefined
   }
 
@@ -32,6 +35,17 @@ class ServerDetectionManagerPresentation extends React.Component {
       onServerInferred(window.location.hostname, 5000)
     }
 
+    this._ssdpClient = new SSDPClient()
+    this._ssdpClient.on('response', (headers, statusCode, rinfo) => {
+      if (this._ssdpClient === undefined) {
+        // Component was already unmounted.
+        return
+      }
+
+      console.log(headers)
+      console.log(rinfo)
+    })
+
     this._timer = setInterval(this._onTimerFired, 5000)
     this._onTimerFired()
   }
@@ -41,11 +55,15 @@ class ServerDetectionManagerPresentation extends React.Component {
       clearInterval(this._timer)
       this._timer = undefined
     }
+
+    if (this._ssdpClient !== undefined) {
+      this._ssdpClient = undefined
+    }
   }
 
   @autobind
   _onTimerFired () {
-    // TODO
+    this._ssdpClient.search('urn:collmot-com:service:flockwave-sio:1')
   }
 
   render () {

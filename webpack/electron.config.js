@@ -25,7 +25,8 @@ module.exports = merge.smart(baseConfig, {
 
   resolve: {
     alias: {
-      '@redux-storage-engine$': 'redux-storage-engine-electron-store'
+      '@redux-storage-engine$': 'redux-storage-engine-electron-store',
+      '@ssdp': 'domotz-node-ssdp'
     }
   },
 

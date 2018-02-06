@@ -28,6 +28,7 @@
     "color": "^2.0.1",
     "coordinate-parser": "^1.0.2",
     "core-decorators": "^0.20.0",
+    "domotz-node-ssdp": "^2.9.1",
     "electron-window-state": "^4.1.1",
     "es6-promise": "^4.2.2",
     "golden-layout": "^1.5.9",

@@ -9,8 +9,7 @@ require('es6-promise').polyfill()
 var path = require('path')
 var webpack = require('webpack')
 
-// Get the project root from the webpack config file
-var projectRoot = path.resolve(__dirname, '..')
+var projectRoot = require('./helpers').projectRoot
 
 module.exports = {
   entry: './src/index',
