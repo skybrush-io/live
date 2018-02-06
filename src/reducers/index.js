@@ -13,6 +13,7 @@ import mapReducer from './map'
 import messagesReducer from './messages'
 import metaReducer from './meta'
 import savedLocationsReducer from './saved-locations'
+import serversReducer from './servers'
 import sidebarReducer from './sidebar'
 import snackbarReducer from './snackbar'
 import workbenchReducer from './workbench'
@@ -93,6 +94,7 @@ const reducer = storage.reducer(
     meta: metaReducer,
     messages: messagesReducer,
     savedLocations: savedLocationsReducer,
+    servers: serversReducer,
     sidebar: sidebarReducer,
     snackbar: snackbarReducer,
     workbench: workbenchReducer

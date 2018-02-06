@@ -64,6 +64,16 @@ export const getSelectedUAVIds = createSelector(
 )
 
 /**
+ * Selector that calculates and caches the list of all the servers detected
+ * on the local network, in exactly the same order as they should appear on
+ * the UI.
+ */
+export const getDetectedServersInOrder = createSelector(
+  state => state.servers,
+  selectOrdered
+)
+
+/**
  * Selector that calculates and caches the list of all the features in the
  * state object, in exactly the same order as they should appear on the UI.
  */

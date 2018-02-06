@@ -41,7 +41,7 @@
     "moment": "^2.20.1",
     "numbro": "^2.0.5",
     "ol": "^4.6.4",
-    "ol-react": "git+https://github.com/collmot/ol-react.git#2887328300aba433226b6a92818d212ea220ca98",
+    "ol-react": "git+https://github.com/collmot/ol-react.git#9cbf5bed01fdb3ef511abce7784fbaf77ca48abc",
     "prop-types": "^15.6.0",
     "radix-64": "^1.0.4",
     "react": "^16.2.0",

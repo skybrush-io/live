@@ -19,41 +19,70 @@ import Tabs, { Tab } from 'material-ui/Tabs'
 
 import EditIcon from 'material-ui-icons/Edit'
 import LightbulbIcon from 'material-ui-icons/LightbulbOutline'
-// import WifiIcon from 'material-ui-icons/Wifi'
+import WifiIcon from 'material-ui-icons/Wifi'
+
+import { ServerDetectionManager } from './ServerDetectionManager'
 
 import {
   closeServerSettingsDialog,
   setServerSettingsDialogTab
 } from '../actions/server-settings'
+import { getDetectedServersInOrder } from '../selectors'
 import { createValidator, between, integer, required } from '../utils/validation'
 
-/**
- * Presentation of the form that shows the fields that the user can use to
- * edit the server settings.
- */
-class ServerSettingsFormPresentation extends React.Component {
-  render () {
-    return (
-      <div onKeyPress={this.props.onKeyPress}>
-        <Field
-          name='hostName'
-          component={TextField}
-          label='Hostname'
-          margin='normal'
-          fullWidth
-        />
-        <br />
-        <Field
-          name='port'
-          component={TextField}
-          label='Port'
-          margin='normal'
-          fullWidth
-        />
-      </div>
-    )
-  }
+// eslint-disable-next-line react/prop-types
+const iconForServerItem = ({ type }) => (
+  type === 'inferred' ? <LightbulbIcon /> : <WifiIcon />
+)
+
+const primaryTextForServerItem = ({ hostName, port }) => (
+  `${hostName}:${port}`
+)
+
+const secondaryTextForServerItem = ({ type }) => (
+  type === 'inferred' ? 'Inferred from URL' : 'Autodetected on LAN'
+)
+
+const DetectedServersListPresentation = ({ items, onItemSelected }) => (
+  <List style={{ height: 160, overflow: 'scroll' }}>
+    {items.map(item => (
+      <ListItem key={item.id} button onClick={partial(onItemSelected, item)}>
+        <ListItemIcon>{iconForServerItem(item)}</ListItemIcon>
+        <ListItemText primary={primaryTextForServerItem(item)}
+          secondary={secondaryTextForServerItem(item)} />
+      </ListItem>
+    ))}
+    <ListItem key='__manual' button onClick={partial(onItemSelected, null)}>
+      <ListItemIcon><EditIcon /></ListItemIcon>
+      <ListItemText primary='Enter manually' />
+    </ListItem>
+  </List>
+)
+
+DetectedServersListPresentation.propTypes = {
+  items: PropTypes.array,
+  onItemSelected: PropTypes.func
 }
+
+/**
+ * Container of the list that shows the running servers that we have
+ * detected on the network.
+ */
+const DetectedServersList = connect(
+  // mapStateToProps
+  state => ({
+    items: getDetectedServersInOrder(state)
+  })
+)(DetectedServersListPresentation)
+
+const ServerSettingsFormPresentation = ({ onKeyPress }) => (
+  <div onKeyPress={onKeyPress}>
+    <Field name='hostName' label='Hostname' margin='normal'
+      component={TextField} fullWidth />
+    <Field name='port' label='Port' margin='normal'
+      component={TextField} fullWidth />
+  </div>
+)
 
 ServerSettingsFormPresentation.propTypes = {
   onKeyPress: PropTypes.func
@@ -88,6 +117,15 @@ class ServerSettingsDialogPresentation extends React.Component {
     }
   }
 
+  @autobind
+  _handleServerSelection (item) {
+    if (item === null || item === undefined) {
+      this.props.onTabSelected(null, 'manual')
+    } else {
+      this.props.onSubmit(item)
+    }
+  }
+
   render () {
     const { forceFormSubmission, onClose,
       onSubmit, onTabSelected, open, selectedTab } = this.props
@@ -97,24 +135,11 @@ class ServerSettingsDialogPresentation extends React.Component {
     switch (selectedTab) {
       case 'auto':
         content.push(
-          <List key='autodetectionResultList' style={{ height: 160, overflow: 'scroll' }}>
-            {/*
-            <ListItem button>
-              <ListItemIcon><WifiIcon /></ListItemIcon>
-              <ListItemText primary='localhost:5000' secondary='Autodetected' />
-            </ListItem>
-            */}
-            <ListItem button onClick={partial(onSubmit, { hostName: window.location.hostname, port: 5000 })}>
-              <ListItemIcon><LightbulbIcon /></ListItemIcon>
-              <ListItemText primary='localhost:5000' secondary='Inferred from URL' />
-            </ListItem>
-            <ListItem button onClick={partial(onTabSelected, null, 'manual')}>
-              <ListItemIcon><EditIcon /></ListItemIcon>
-              <ListItemText primary='Enter manually' />
-            </ListItem>
-          </List>,
+          <ServerDetectionManager key='serverDetector' />,
+          <DetectedServersList key='serverList'
+            onItemSelected={this._handleServerSelection} />,
           <DialogContent key='contents'>
-            <p>Auto-discovery is not available in this version.</p>
+            Auto-discovery is not available in this version.
           </DialogContent>
         )
         break
@@ -122,7 +147,8 @@ class ServerSettingsDialogPresentation extends React.Component {
       case 'manual':
         content.push(
           <DialogContent key='contents'>
-            <ServerSettingsForm onSubmit={onSubmit} onKeyPress={this._handleKeyPress} />
+            <ServerSettingsForm onSubmit={onSubmit}
+              onKeyPress={this._handleKeyPress} />
           </DialogContent>
         )
         actions.push(
@@ -182,7 +208,6 @@ const ServerSettingsDialog = connect(
     },
     onSubmit (data) {
       // Cast the port into a number first, then dispatch the action
-      data.port = Number(data.port)
       dispatch(closeServerSettingsDialog({
         hostName: data.hostName,
         port: Number(data.port)

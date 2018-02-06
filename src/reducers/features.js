@@ -9,7 +9,6 @@ import u from 'updeep'
 
 import { FeatureType, getNameOfFeatureType } from '../model/features'
 import { deleteByIds, getKey } from '../utils/collections'
-import { translateBy } from '../utils/geography'
 import { chooseUniqueId, chooseUniqueName } from '../utils/naming'
 
 /**

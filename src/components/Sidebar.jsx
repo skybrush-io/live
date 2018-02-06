@@ -41,16 +41,16 @@ const SidebarPresentation = ({ open, onToggleSidebar, workbench }) => (
       <Shapeshifter color="#999" shape={ open ? 'close' : 'menu' } onClick={onToggleSidebar} />
       <hr />
       <ModuleTray allowMultipleSelection vertical workbench={workbench}>
-        <Module id="map" icon={<Map color="contrast" />} label="Map" component="map" />
+        <Module id="map" icon={<Map color='action' />} label="Map" component="map" />
         <hr />
-        <Module id="uavs" icon={<Flight color="contrast" />} label="UAVs" component="uav-list" />
-        <Module id="messages" icon={<Message color="contrast" />} label="Messages" component="messages" />
+        <Module id="uavs" icon={<Flight color='action' />} label="UAVs" component="uav-list" />
+        <Module id="messages" icon={<Message color='action' />} label="Messages" component="messages" />
         <hr />
-        <Module id="connections" icon={<ActionSettingsEthernet color="contrast" />} label="Connections" component="connection-list" />
-        <Module id="clocks" icon={<ActionAlarm color="contrast" />} label="Clocks" component="clock-list" />
-        <Module id="locations" icon={<MyLocation color="contrast" />} label="Locations" component="saved-location-list" />
+        <Module id="connections" icon={<ActionSettingsEthernet color='action' />} label="Connections" component="connection-list" />
+        <Module id="clocks" icon={<ActionAlarm color='action' />} label="Clocks" component="clock-list" />
+        <Module id="locations" icon={<MyLocation color='action' />} label="Locations" component="saved-location-list" />
         <hr />
-        <Module id="log" icon={<ActionList color="contrast" />} label="Event log" component="log-panel" />
+        <Module id="log" icon={<ActionList color='action' />} label="Event log" component="log-panel" />
       </ModuleTray>
       <hr />
       <div style={{ flexGrow: 1, flexShrink: 1 }}>{ /* spacer */ }</div>
