@@ -1,3 +1,6 @@
+import TimeAgo from 'javascript-time-ago'
+import en from 'javascript-time-ago/locale/en'
+
 import React from 'react'
 import { render } from 'react-dom'
 
@@ -9,6 +12,8 @@ import workbench from './workbench'
 // const __DEV__ = !__PROD__
 
 function initialize () {
+  TimeAgo.locale(en)
+
   return loadStoreFromStorageBackend().then(state => {
     if (state && state.workbench && state.workbench.state) {
       workbench.restoreState(state.workbench.state)

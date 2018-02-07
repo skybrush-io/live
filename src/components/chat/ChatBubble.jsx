@@ -4,7 +4,7 @@
 
 import PropTypes from 'prop-types'
 import React from 'react'
-import TimeAgo from 'react-timeago'
+import { TimeAgo } from 'react-time-ago'
 
 /**
  * Stateless React component showing a single chat bubble in a chat
@@ -15,7 +15,7 @@ export default class ChatBubble extends React.Component {
     const { author, body, date, own, raw } = this.props
     const { leftComponent, rightComponent } = this.props
     const dateComponent = date
-      ? <span className='date'><TimeAgo date={date} /></span>
+      ? <span className='date'><TimeAgo>{date}</TimeAgo></span>
       : false
     const leftComponentWrapper = leftComponent
       ? <div style={{ flex: 0 }}>{leftComponent}</div>

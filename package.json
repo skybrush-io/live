@@ -56,7 +56,7 @@
     "react-redux": "^5.0.6",
     "react-shapeshifter": "^1.0.1",
     "react-socket": "git+https://github.com/collmot/react-socket.git#06518af5d20b2c1d2cc46be930736ea6c1342759",
-    "react-timeago": "^3.4.3",
+    "react-time-ago": "^1.0.11",
     "recompose": "^0.26.0",
     "redbox-react": "^1.5.0",
     "redux": "^3.7.2",
