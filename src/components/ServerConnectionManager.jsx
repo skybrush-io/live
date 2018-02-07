@@ -48,7 +48,6 @@ class ServerConnectionManagerPresentation extends React.Component {
     const { hostName, port, onConnected, onConnecting, onConnectionError,
       onConnectionTimeout, onDisconnected, onMessage } = this.props
     const url = hostName ? `${proposeProtocol()}//${hostName}:${port}` : undefined
-    console.log(url)
 
     // The 'key' property of the wrapping <div> is set to the URL as well;
     // this is to force the socket component and the event objects to unmount

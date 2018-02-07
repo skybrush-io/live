@@ -14,6 +14,7 @@ import u from 'updeep'
  */
 const defaultState = {
   byId: {},
+  isScanning: false,
   order: []
 }
 
@@ -25,14 +26,19 @@ const reducer = handleActions({
   ADD_DETECTED_SERVER: (state, action) => {
     const { hostName, port, type } = action.payload
     const key = `${hostName}:${port}:${type}`
-    const item = {}
-    item[key] = { id: key, hostName, port, type }
+    const item = {
+      [key]: { id: key, hostName, port, type }
+    }
+
+    action.key = key
+    action.wasAdded = false
 
     if (state.byId[key] !== undefined) {
-      // Server already seen; just update it
+      // Server already seen; just replace it
       return u({ byId: item }, state)
     } else {
       // Server not seen yet; add it to the end
+      action.wasAdded = true
       return u({
         byId: item,
         order: [...state.order, key]
@@ -43,7 +49,23 @@ const reducer = handleActions({
   REMOVE_ALL_DETECTED_SERVERS: (state, action) => ({
     byId: {},
     order: []
-  })
+  }),
+
+  START_SCANNING: (state, action) => u({ isScanning: true }, state),
+
+  STOP_SCANNING: (state, action) => u({ isScanning: true }, state),
+
+  UPDATE_DETECTED_SERVER_LABEL: (state, action) => {
+    const { key, label } = action.payload
+    const item = { [key]: { label } }
+    if (state.byId[key] !== undefined) {
+      // Server is still there, update the name
+      return u({ byId: item }, state)
+    } else {
+      // Server was removed, don't do anything
+      return state
+    }
+  }
 }, defaultState)
 
 export default reducer

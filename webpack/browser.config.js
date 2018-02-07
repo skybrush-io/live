@@ -1,10 +1,9 @@
-var path = require('path')
 var merge = require('webpack-merge')
 var baseConfig = require('./base.config.js')
 
 var enableSourceMap = false
 
-var projectRoot = require('./helpers').projectRoot
+var mock = require('./helpers').mock
 
 module.exports = merge.smart(baseConfig, {
   devtool: enableSourceMap ? 'inline-source-map' : 'eval',
@@ -13,8 +12,9 @@ module.exports = merge.smart(baseConfig, {
   },
   resolve: {
     alias: {
+      '@dns': mock('dns'),
       '@redux-storage-engine$': 'redux-storage-engine-localstorage',
-      '@ssdp': path.resolve(projectRoot, 'src', 'mocks', 'ssdp')
+      '@ssdp': mock('ssdp')
     }
   }
 })

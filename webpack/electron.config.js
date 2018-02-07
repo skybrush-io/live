@@ -1,6 +1,7 @@
 var merge = require('webpack-merge')
 var WebpackShellPlugin = require('webpack-shell-plugin')
 var baseConfig = require('./base.config.js')
+var nodeNative = require('./helpers').nodeNative
 
 var enableSourceMap = false
 
@@ -25,8 +26,9 @@ module.exports = merge.smart(baseConfig, {
 
   resolve: {
     alias: {
+      '@dns': nodeNative('dns'),
       '@redux-storage-engine$': 'redux-storage-engine-electron-store',
-      '@ssdp': 'domotz-node-ssdp'
+      '@ssdp': 'node-ssdp-lite'
     }
   },
 

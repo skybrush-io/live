@@ -1,5 +1,5 @@
 /**
- * @file Mock of <code>domotz-node-ssdp</code> for the browser where no
+ * @file Mock of <code>node-ssdp-lite</code> for the browser where no
  * SSDP autodetection is possible.
  */
 
@@ -12,3 +12,5 @@ export default class Client {
     // Nop.
   }
 }
+
+Client.isMock = true

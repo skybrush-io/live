@@ -1,14 +1,25 @@
 import { autobind } from 'core-decorators'
+import parseHeaders from 'http-headers'
+import { isLoopback, isV4Format, isV6Format } from 'ip'
+import { partial } from 'lodash'
 import PropTypes from 'prop-types'
 import React from 'react'
 import { connect } from 'react-redux'
+import url from 'url'
+
+import dns from '@dns'
 import SSDPClient from '@ssdp'
 
 import {
   addDetectedServer,
   addInferredServer,
-  removeAllDetectedServers
+  removeAllDetectedServers,
+  startScanning,
+  stopScanning,
+  updateDetectedServerLabel
 } from '../actions/servers'
+
+export const isServerDetectionSupported = !SSDPClient.isMock
 
 /**
  * Presentation component that regularly fires SSDP discovery requests and
@@ -27,23 +38,67 @@ class ServerDetectionManagerPresentation extends React.Component {
 
   componentDidMount () {
     const { onScanningStarted, onServerInferred } = this.props
+
+    if (!isServerDetectionSupported) {
+      if (onServerInferred) {
+        onServerInferred(window.location.hostname, 5000)
+      }
+      return
+    }
+
     if (onScanningStarted) {
       onScanningStarted()
     }
 
-    if (onServerInferred) {
-      onServerInferred(window.location.hostname, 5000)
-    }
-
     this._ssdpClient = new SSDPClient()
-    this._ssdpClient.on('response', (headers, statusCode, rinfo) => {
+    this._ssdpClient.on('response', (headers, rinfo) => {
       if (this._ssdpClient === undefined) {
         // Component was already unmounted.
         return
       }
 
-      console.log(headers)
-      console.log(rinfo)
+      const parsedHeaders = parseHeaders(headers)
+      if (parsedHeaders.statusCode !== 200) {
+        // Not a successful response
+        return
+      }
+
+      const location = parsedHeaders.headers['location']
+      if (location === undefined) {
+        // No location given
+        return
+      }
+
+      const { hostname, port, protocol } = url.parse(location)
+      if (protocol !== 'sio:' && protocol !== 'sios:') {
+        // We only support Socket.IO and secure Socket.IO
+        return
+      }
+
+      const numericPort = Number(port)
+      if (!hostname || isNaN(numericPort) || numericPort <= 0 || numericPort > 65535) {
+        // Invalid hostname or port
+        return
+      }
+
+      if (this.props.onServerDetected) {
+        const { key, wasAdded } = this.props.onServerDetected(hostname, numericPort)
+
+        // Perform a DNS lookup on the hostname if was newly added, it is not
+        // already a hostname and we have access to the DNS module
+        if (key && wasAdded && (isV4Format(hostname) || isV6Format(hostname))) {
+          const resolveTo = partial(this.props.onServerHostnameResolved, key)
+          if (isLoopback(hostname)) {
+            resolveTo('This computer')
+          } else {
+            dns.reverse(hostname, (err, names) => {
+              if (!err && names && names.length > 0) {
+                resolveTo(names[0])
+              }
+            })
+          }
+        }
+      }
     })
 
     this._timer = setInterval(this._onTimerFired, 5000)
@@ -51,6 +106,15 @@ class ServerDetectionManagerPresentation extends React.Component {
   }
 
   componentWillUnmount () {
+    if (!isServerDetectionSupported) {
+      return
+    }
+
+    const { onScanningStopped } = this.props
+    if (onScanningStopped) {
+      onScanningStopped()
+    }
+
     if (this._timer !== undefined) {
       clearInterval(this._timer)
       this._timer = undefined
@@ -74,7 +138,9 @@ class ServerDetectionManagerPresentation extends React.Component {
 
 ServerDetectionManagerPresentation.propTypes = {
   onScanningStarted: PropTypes.func,
+  onScanningStopped: PropTypes.func,
   onServerDetected: PropTypes.func,
+  onServerHostnameResolved: PropTypes.func,
   onServerInferred: PropTypes.func
 }
 
@@ -86,14 +152,27 @@ export const ServerDetectionManager = connect(
   dispatch => ({
     onScanningStarted () {
       dispatch(removeAllDetectedServers())
+      dispatch(startScanning())
+    },
+
+    onScanningStopped () {
+      dispatch(stopScanning())
     },
 
     onServerDetected (host, port) {
-      dispatch(addDetectedServer(host, port))
+      const action = addDetectedServer(host, port)
+      dispatch(action)
+      return { key: action.key, wasAdded: !!action.wasAdded }
+    },
+
+    onServerHostnameResolved (key, name) {
+      dispatch(updateDetectedServerLabel(key, name))
     },
 
     onServerInferred (host, port) {
-      dispatch(addInferredServer(host, port))
+      const action = addInferredServer(host, port)
+      dispatch(action)
+      return action.key
     }
   })
 )(ServerDetectionManagerPresentation)
