@@ -21,7 +21,9 @@ import { connect } from 'react-redux'
 import { TimeAgo } from 'react-time-ago'
 
 import { showServerSettingsDialog } from '../actions/server-settings'
-import { ConnectionState, MASTER_CONNECTION_ID } from '../model/connections'
+import { ConnectionState } from '../model/connections'
+import { getConnectionsInOrder } from '../selectors'
+
 import { listOf } from './helpers/lists'
 
 /**
@@ -86,18 +88,6 @@ const stateNames = {
 }
 
 /**
- * Custom formatter of secondary text for a ConnectionListEntry
- *
- * @param  {number} value  the value to format
- * @param  {string} unit   the unit of the value (e.g., second)
- * @return {string} the formattted secondary text
- */
-function timeIntervalFormatter (value, unit) {
-  const plural = (value > 1) ? 's' : ''
-  return `for ${value} ${unit}${plural}`
-}
-
-/**
  * Presentation component for a single entry in the connection list.
  *
  * @param  {Object} props  the properties of the component
@@ -137,9 +127,8 @@ ConnectionListEntry.propTypes = {
 /**
  * Presentation component for the entire connection list.
  */
-export const ConnectionListPresentation = listOf((connection, { onShowSettings }) => {
-  const action = (connection.id === MASTER_CONNECTION_ID) ? onShowSettings : null
-  return <ConnectionListEntry key={connection.id} action={action} {...connection} />
+export const ConnectionListPresentation = listOf(connection => {
+  return <ConnectionListEntry key={connection.id} {...connection} />
 }, {
   dataProvider: 'connections',
   backgroundHint: 'No connections'
@@ -149,9 +138,7 @@ ConnectionListPresentation.displayName = 'ConnectionListPresentation'
 const ConnectionList = connect(
   // mapStateToProps
   state => ({
-    connections: state.connections.order.map(
-      entryName => state.connections.items[entryName]
-    )
+    connections: getConnectionsInOrder(state)
   }),
   // mapDispatchToProps
   dispatch => ({

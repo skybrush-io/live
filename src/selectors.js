@@ -74,6 +74,16 @@ export const getDetectedServersInOrder = createSelector(
 )
 
 /**
+ * Selector that calculates and caches the list of all the connections that
+ * the upstream server maintains to its auxiliary devices, in exactly the
+ * same order as they should appear on the UI.
+ */
+export const getConnectionsInOrder = createSelector(
+  state => state.connections,
+  selectOrdered
+)
+
+/**
  * Selector that calculates and caches the list of all the features in the
  * state object, in exactly the same order as they should appear on the UI.
  */

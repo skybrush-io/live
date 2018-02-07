@@ -5,7 +5,7 @@
  * that the Flockwave server reports via CONN-LIST and CONN-INF messages.
  */
 
-import _ from 'lodash'
+import { pick } from 'lodash'
 import { handleActions } from 'redux-actions'
 import { ConnectionState, MASTER_CONNECTION_ID } from '../model/connections'
 
@@ -13,16 +13,17 @@ import { ConnectionState, MASTER_CONNECTION_ID } from '../model/connections'
  * Default content of the connection registry in the state object.
  */
 const defaultState = {
-  // items is a map from connection ID to the state of the connection
-  items: {
+  // byId is a map from connection ID to the state of the connection
+  byId: {
     [MASTER_CONNECTION_ID]: {
       id: MASTER_CONNECTION_ID,
       name: 'Flockwave server',
       state: ConnectionState.DISCONNECTED
     }
   },
-  // order defines the preferred ordering of connections on the UI
-  order: [MASTER_CONNECTION_ID]
+  // order defines the preferred ordering of connections on the UI. Note that
+  // we never show the master connection
+  order: []
 }
 
 /**
@@ -36,16 +37,16 @@ const defaultState = {
  * @param  {Object} properties  the new properties of the connection
  */
 function updateStateOfConnection (state, id, properties) {
-  const { items } = state
+  const { byId } = state
 
-  if (!items.hasOwnProperty(id)) {
-    items[id] = {
+  if (!byId.hasOwnProperty(id)) {
+    byId[id] = {
       id, name: id, state: ConnectionState.DISCONNECTED
     }
     state.order.push(id)
   }
 
-  Object.assign(items[id], properties)
+  Object.assign(byId[id], properties)
 }
 
 /**
@@ -54,8 +55,8 @@ function updateStateOfConnection (state, id, properties) {
  */
 const reducer = handleActions({
   CLEAR_CONNECTION_LIST: (state, action) => ({
-    items: _.pick(state.items, MASTER_CONNECTION_ID),
-    order: [MASTER_CONNECTION_ID]
+    byId: pick(state.byId, MASTER_CONNECTION_ID),
+    order: []
   }),
 
   SET_CONNECTION_STATE: (state, action) => {

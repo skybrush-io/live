@@ -14,6 +14,7 @@ import Shapeshifter from 'react-shapeshifter'
 
 import { toggleSidebar } from '../actions/sidebar'
 
+import ConnectionSettingsButton from './ConnectionSettingsButton'
 import FullScreenButton from './FullScreenButton'
 
 const style = {
@@ -55,6 +56,7 @@ const SidebarPresentation = ({ open, onToggleSidebar, workbench }) => (
       <hr />
       <div style={{ flexGrow: 1, flexShrink: 1 }}>{ /* spacer */ }</div>
       <hr />
+      <ConnectionSettingsButton />
       <FullScreenButton />
     </div>
   </div>
