@@ -9,10 +9,11 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import { connect } from 'react-redux'
 import { reduxForm, submit, Field } from 'redux-form'
-import { TextField } from 'redux-form-material-ui'
+import { Switch, TextField } from 'redux-form-material-ui'
 
 import AppBar from 'material-ui/AppBar'
 import Button from 'material-ui/Button'
+import { FormControlLabel } from 'material-ui/Form'
 import { CircularProgress } from 'material-ui/Progress'
 import Dialog, { DialogActions, DialogContent } from 'material-ui/Dialog'
 import List, { ListItem, ListItemIcon, ListItemText } from 'material-ui/List'
@@ -43,8 +44,9 @@ const primaryTextForServerItem = ({ hostName, label, port }) => (
   label || `${hostName}:${port}`
 )
 
-const secondaryTextForServerItem = ({ type }) => (
-  type === 'inferred' ? 'Inferred from URL' : 'Autodetected on LAN'
+const secondaryTextForServerItem = ({ protocol, type }) => (
+  (protocol === 'sio+tls:' ? 'Secure connection' : 'Unencrypted connection') +
+  (type === 'inferred' ? ', inferred from URL' : '')
 )
 
 const DetectedServersListPresentation = ({ isScanning, items, onItemSelected }) => (
@@ -94,6 +96,8 @@ const ServerSettingsFormPresentation = ({ onKeyPress }) => (
       component={TextField} fullWidth />
     <Field name='port' label='Port' margin='normal'
       component={TextField} fullWidth />
+    <FormControlLabel control={<Field name='isSecure' component={Switch} />}
+      label="Use secure connection" />
   </div>
 )
 
@@ -135,13 +139,16 @@ class ServerSettingsDialogPresentation extends React.Component {
     if (item === null || item === undefined) {
       this.props.onTabSelected(null, 'manual')
     } else {
-      this.props.onSubmit(item)
+      this.props.onSubmit({
+        ...item,
+        isSecure: item.protocol === 'sio+tls:'
+      })
     }
   }
 
   render () {
-    const { forceFormSubmission, onClose,
-      onSubmit, onTabSelected, open, selectedTab } = this.props
+    const { forceFormSubmission, onClose, onSubmit,
+      onTabSelected, open, selectedTab } = this.props
     const actions = []
     const content = []
 
@@ -227,6 +234,7 @@ const ServerSettingsDialog = connect(
       // Cast the port into a number first, then dispatch the action
       dispatch(closeServerSettingsDialog({
         hostName: data.hostName,
+        isSecure: data.isSecure,
         port: Number(data.port)
       }))
     },

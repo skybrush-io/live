@@ -41,7 +41,7 @@ class ServerDetectionManagerPresentation extends React.Component {
 
     if (!isServerDetectionSupported) {
       if (onServerInferred) {
-        onServerInferred(window.location.hostname, 5000)
+        onServerInferred(window.location.hostname, 5000, 'sio:')
       }
       return
     }
@@ -70,7 +70,7 @@ class ServerDetectionManagerPresentation extends React.Component {
       }
 
       const { hostname, port, protocol } = url.parse(location)
-      if (protocol !== 'sio:' && protocol !== 'sios:') {
+      if (protocol !== 'sio:' && protocol !== 'sio+tls:') {
         // We only support Socket.IO and secure Socket.IO
         return
       }
@@ -82,7 +82,8 @@ class ServerDetectionManagerPresentation extends React.Component {
       }
 
       if (this.props.onServerDetected) {
-        const { key, wasAdded } = this.props.onServerDetected(hostname, numericPort)
+        const { key, wasAdded } =
+          this.props.onServerDetected(hostname, numericPort, protocol)
 
         // Perform a DNS lookup on the hostname if was newly added, it is not
         // already a hostname and we have access to the DNS module
@@ -159,8 +160,8 @@ export const ServerDetectionManager = connect(
       dispatch(stopScanning())
     },
 
-    onServerDetected (host, port) {
-      const action = addDetectedServer(host, port)
+    onServerDetected (host, port, protocol) {
+      const action = addDetectedServer(host, port, protocol)
       dispatch(action)
       return { key: action.key, wasAdded: !!action.wasAdded }
     },
@@ -169,8 +170,8 @@ export const ServerDetectionManager = connect(
       dispatch(updateDetectedServerLabel(key, name))
     },
 
-    onServerInferred (host, port) {
-      const action = addInferredServer(host, port)
+    onServerInferred (host, port, protocol) {
+      const action = addInferredServer(host, port, protocol)
       dispatch(action)
       return action.key
     }

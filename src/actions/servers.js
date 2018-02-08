@@ -20,7 +20,7 @@ import {
  * in other actions to refer to the entry that was just created.
  */
 export const addDetectedServer = createAction(ADD_DETECTED_SERVER,
-  (hostName, port) => ({ hostName, port, type: 'detected' })
+  (hostName, port, protocol) => ({ hostName, port, protocol, type: 'detected' })
 )
 
 /**
@@ -33,7 +33,7 @@ export const addDetectedServer = createAction(ADD_DETECTED_SERVER,
  * in other actions to refer to the entry that was just created.
  */
 export const addInferredServer = createAction(ADD_DETECTED_SERVER,
-  (hostName, port) => ({ hostName, port, type: 'inferred' })
+  (hostName, port, protocol) => ({ hostName, port, protocol, type: 'inferred' })
 )
 
 /**

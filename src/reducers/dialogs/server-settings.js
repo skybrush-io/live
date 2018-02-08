@@ -19,6 +19,7 @@ import u from 'updeep'
 const defaultState = {
   hostName: null,
   port: 5000,
+  isSecure: false,
   dialogVisible: false,
   selectedTab: 'auto'
 }

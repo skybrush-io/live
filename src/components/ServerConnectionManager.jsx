@@ -45,9 +45,9 @@ class ServerConnectionManagerPresentation extends React.Component {
   }
 
   render () {
-    const { hostName, port, onConnected, onConnecting, onConnectionError,
+    const { hostName, port, protocol, onConnected, onConnecting, onConnectionError,
       onConnectionTimeout, onDisconnected, onMessage } = this.props
-    const url = hostName ? `${proposeProtocol()}//${hostName}:${port}` : undefined
+    const url = hostName ? `${protocol || proposeProtocol()}//${hostName}:${port}` : undefined
 
     // The 'key' property of the wrapping <div> is set to the URL as well;
     // this is to force the socket component and the event objects to unmount
@@ -75,6 +75,7 @@ class ServerConnectionManagerPresentation extends React.Component {
 ServerConnectionManagerPresentation.propTypes = {
   hostName: PropTypes.string,
   port: PropTypes.number,
+  protocol: PropTypes.string,
   onConnected: PropTypes.func,
   onConnecting: PropTypes.func,
   onConnectionError: PropTypes.func,
@@ -87,7 +88,8 @@ const ServerConnectionManager = connect(
   // mapStateToProps
   state => ({
     hostName: state.dialogs.serverSettings.hostName,
-    port: state.dialogs.serverSettings.port
+    port: state.dialogs.serverSettings.port,
+    protocol: state.dialogs.serverSettings.isSecure ? 'https:' : 'http:'
   }),
   // mapDispatchToProps
   dispatch => ({

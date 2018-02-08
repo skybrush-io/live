@@ -24,10 +24,10 @@ const defaultState = {
  */
 const reducer = handleActions({
   ADD_DETECTED_SERVER: (state, action) => {
-    const { hostName, port, type } = action.payload
-    const key = `${hostName}:${port}:${type}`
+    const { hostName, port, protocol, type } = action.payload
+    const key = `${hostName}:${port}:${type}:${protocol}`
     const item = {
-      [key]: { id: key, hostName, port, type }
+      [key]: { id: key, hostName, port, protocol, type }
     }
 
     action.key = key
