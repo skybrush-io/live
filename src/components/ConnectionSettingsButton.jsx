@@ -8,13 +8,21 @@ import { connect } from 'react-redux'
 import { Badge } from './Badge'
 
 import { showServerSettingsDialog } from '../actions/server-settings'
+import { ConnectionState, MASTER_CONNECTION_ID } from '../model/connections'
 
-const ConnectionSettingsButtonPresentation = ({ isConnected, onClick }) => {
+const badgeColorForState = {
+  [ConnectionState.CONNECTED]: '#0c0',
+  [ConnectionState.CONNECTING]: '#fc0',
+  [ConnectionState.DISCONNECTING]: '#fc0'
+}
+
+const ConnectionSettingsButtonPresentation = ({ onClick, state }) => {
   const classes = ['wb-module']
   return (
     <div className={classes.join(' ')} onClick={onClick}>
-      <span className='wb-icon wb-module-icon'>
-        <Badge visible />
+      <span className='wb-icon wb-module-icon' style={{ position: 'relative' }}>
+        <Badge visible={state !== ConnectionState.DISCONNECTED}
+          color={badgeColorForState[state]} offset={[8, 8]} />
         <ConnectionIcon onClick={onClick} />
       </span>
       Connection
@@ -23,14 +31,14 @@ const ConnectionSettingsButtonPresentation = ({ isConnected, onClick }) => {
 }
 
 ConnectionSettingsButtonPresentation.propTypes = {
-  isConnected: PropTypes.bool,
-  onClick: PropTypes.func
+  onClick: PropTypes.func,
+  state: PropTypes.string
 }
 
 export default connect(
   // mapStateToProps
   state => ({
-    isConnected: true
+    state: state.connections.byId[MASTER_CONNECTION_ID].state
   }),
   // mapDispatchToProps
   dispatch => ({
