@@ -6,6 +6,7 @@ import Map from 'material-ui-icons/Map'
 import Message from 'material-ui-icons/Message'
 import MyLocation from 'material-ui-icons/MyLocation'
 
+import isElectron from 'is-electron'
 import PropTypes from 'prop-types'
 import React from 'react'
 import { Module, ModuleTray, Workbench } from 'react-flexible-workbench'
@@ -57,7 +58,7 @@ const SidebarPresentation = ({ open, onToggleSidebar, workbench }) => (
       <div style={{ flexGrow: 1, flexShrink: 1 }}>{ /* spacer */ }</div>
       <hr />
       <ConnectionSettingsButton />
-      <FullScreenButton />
+      {!isElectron() ? <FullScreenButton /> : null}
     </div>
   </div>
 )

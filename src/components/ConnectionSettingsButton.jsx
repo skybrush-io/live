@@ -25,7 +25,7 @@ const ConnectionSettingsButtonPresentation = ({ onClick, state }) => {
           color={badgeColorForState[state]} offset={[8, 8]} />
         <ConnectionIcon onClick={onClick} />
       </span>
-      Connection
+      Server Settings
     </div>
   )
 }
