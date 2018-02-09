@@ -45,8 +45,7 @@ const primaryTextForServerItem = ({ hostName, label, port }) => (
 )
 
 const secondaryTextForServerItem = ({ protocol, type }) => (
-  (protocol === 'sio+tls:' ? 'Secure connection' : 'Unencrypted connection') +
-  (type === 'inferred' ? ', inferred from URL' : '')
+  protocol === 'sio+tls:' ? 'Secure connection' : 'Unencrypted connection'
 )
 
 const DetectedServersListPresentation = ({ isScanning, items, onItemSelected }) => (

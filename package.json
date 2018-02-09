@@ -52,7 +52,7 @@
     "react-color": "^2.13.8",
     "react-dom": "^16.2.0",
     "react-error-boundary": "^1.2.0",
-    "react-flexible-workbench": "^0.10.0",
+    "react-flexible-workbench": "^0.10.2",
     "react-redux": "^5.0.6",
     "react-shapeshifter": "^1.0.1",
     "react-socket": "git+https://github.com/collmot/react-socket.git#06518af5d20b2c1d2cc46be930736ea6c1342759",

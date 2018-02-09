@@ -40,7 +40,7 @@ class Application extends React.Component {
   render () {
     return (
       <div>
-		<Reboot />
+        <Reboot />
 
         <HotkeyHandler hotkeys={hotkeys}>
           <div style={rootStyle}>

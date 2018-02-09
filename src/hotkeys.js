@@ -10,7 +10,7 @@ import { showMessagesDialog } from './actions/messages'
 import { Tool } from './components/map/tools'
 import { Source } from './model/sources'
 
-import store from './store'
+import store, { clearStore } from './store'
 import flock from './flock'
 import signals from './signals'
 import {
@@ -150,14 +150,14 @@ export default [
     }
   },
 
-  // Clear localStorage and reload
+  // Clear stored settings and reload
   {
-    description: 'Clear localStorage and reload',
+    description: 'Clear stored settings and reload',
     on: 'down',
     keys: 'PlatMod + Alt + KeyC',
     action: () => {
       if (window.confirm('Are you sure? All settings will be lost.')) {
-        window.localStorage.clear()
+        clearStore()
         window.location.reload()
       }
     }

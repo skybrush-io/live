@@ -15,8 +15,9 @@ import * as actions from './actions/types'
 import reducer from './reducers'
 
 /**
- * Storage engine for storing the application state in the browser's
- * local storage.
+ * Storage engine for storing the application state. In the browser, we store
+ * the state in the browser's local storage. In the Electron version, we store
+ * the state in a separate JSON file.
  */
 const engine = debounce(
   filter(
@@ -99,5 +100,13 @@ const store = createStoreWithMiddleware(
  */
 export const loadStoreFromStorageBackend =
   () => storage.createLoader(engine)(store)
+
+/**
+ * Function that clears the contents of the store completely. It is strongly
+ * advised to reload the app after this function was executed.
+ */
+export function clearStore() {
+  engine.save({})
+}
 
 export default store
