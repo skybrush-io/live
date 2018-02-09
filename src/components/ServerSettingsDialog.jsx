@@ -155,7 +155,6 @@ class ServerSettingsDialogPresentation extends React.Component {
     switch (selectedTab) {
       case 'auto':
         content.push(
-          <ServerDetectionManager key='serverDetector' />,
           <DetectedServersList key='serverList'
             onItemSelected={this._handleServerSelection} />
         )
@@ -191,6 +190,7 @@ class ServerSettingsDialogPresentation extends React.Component {
             <Tab value='manual' label="Manual" />
           </Tabs>
         </AppBar>
+        <ServerDetectionManager />
         {content}
         <DialogActions>{actions}</DialogActions>
       </Dialog>
