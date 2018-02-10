@@ -16,7 +16,11 @@ import { CoordinateFormat } from '../model/settings'
 const defaultState = {
   display: {
     // Display format of coordinates
-    coordinateFormat: CoordinateFormat.DEGREES
+    coordinateFormat: CoordinateFormat.DEGREES,
+    // Whether to show the mouse coordinates on the map
+    showMouseCoordinates: true,
+    // Whether to show the scale on the map
+    showScaleLine: true
   },
   uavs: {
     // Number of seconds after which a UAV with no status updates is

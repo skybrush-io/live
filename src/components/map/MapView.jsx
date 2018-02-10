@@ -65,26 +65,35 @@ const MapViewLayers = connect(
 
 /* ********************************************************************** */
 
+const MapViewControlsPresentation = props => {
+  const result = [
+    <control.Zoom key='control.Zoom' />
+  ]
+
+  if (props.showMouseCoordinates) {
+    result.push(
+      <control.MousePosition key='control.MousePosition'
+        projection='EPSG:4326'
+        coordinateFormat={formatCoordinate} />
+    )
+  }
+
+  if (props.showScaleLine) {
+    result.push(
+      <control.ScaleLine key='control.ScaleLine' minWidth={128} />
+    )
+  }
+
+  return result
+}
+
 /**
  * React component that renders the standard OpenLayers controls that we
  * use on the map in the main window
- *
- * @returns {JSX.Node[]}  the controls on the map
- */
-const MapViewControlsPresentation = () => ([
-  <control.MousePosition key='control.MousePosition' projection='EPSG:4326'
-    coordinateFormat={formatCoordinate} />,
-  <control.ScaleLine key='control.ScaleLine' minWidth={128} />,
-  <control.Zoom key='control.Zoom' />
-])
-
-/**
- * Connects the map view controls to the Redux store.
  */
 const MapViewControls = connect(
   // mapStateToProps
-  state => ({
-  })
+  state => state.settings.display
 )(MapViewControlsPresentation)
 
 /* ********************************************************************** */
