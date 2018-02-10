@@ -12,6 +12,7 @@ import partial from 'lodash/partial'
 import { connect } from 'react-redux'
 
 import { selectMapTool } from '../../actions/map'
+import EditFeature from '../../icons/EditFeature'
 import { Tool } from './tools'
 
 /**
@@ -37,6 +38,9 @@ const DrawingToolbarPresentation = ({ onToolSelected, selectedTool, theme }) => 
       </IconButton>
       <IconButton onClick={partial(onToolSelected, Tool.DRAW_POLYGON)} tooltip='Draw polygon'>
         <ToggleStarBorder color={colorForTool(Tool.DRAW_POLYGON)} />
+      </IconButton>
+      <IconButton onClick={partial(onToolSelected, Tool.EDIT_FEATURE)} tooltip='Edit feature'>
+        <EditFeature color={colorForTool(Tool.EDIT_FEATURE)} />
       </IconButton>
     </div>
   )

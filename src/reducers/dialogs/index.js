@@ -5,6 +5,7 @@
 
 import { combineReducers } from 'redux'
 
+import appSettingsReducer from './app-settings'
 import errorHandlingReducer from './error-handling'
 import messagesReducer from './messages'
 import layerSettingsReducer from './layer-settings'
@@ -16,6 +17,7 @@ import serverSettingsReducer from './server-settings'
  * parts in the global state object.
  */
 const reducer = combineReducers({
+  appSettings: appSettingsReducer,
   error: errorHandlingReducer,
   layerSettings: layerSettingsReducer,
   messages: messagesReducer,

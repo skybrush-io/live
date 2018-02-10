@@ -13,8 +13,9 @@ import { Module, ModuleTray, Workbench } from 'react-flexible-workbench'
 import { connect } from 'react-redux'
 import Shapeshifter from 'react-shapeshifter'
 
-import { toggleSidebar } from '../actions/sidebar'
+import { toggleSidebar } from '../../actions/sidebar'
 
+import AppSettingsButton from './AppSettingsButton'
 import ConnectionSettingsButton from './ConnectionSettingsButton'
 import FullScreenButton from './FullScreenButton'
 
@@ -57,6 +58,7 @@ const SidebarPresentation = ({ open, onToggleSidebar, workbench }) => (
       <hr />
       <div style={{ flexGrow: 1, flexShrink: 1 }}>{ /* spacer */ }</div>
       <hr />
+      <AppSettingsButton />
       <ConnectionSettingsButton />
       {!isElectron() ? <FullScreenButton /> : null}
     </div>

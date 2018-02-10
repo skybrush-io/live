@@ -102,7 +102,7 @@ const MapViewToolbars = () => ([
  * @returns {JSX.Node[]}  the interactions on the map
  */
 const MapViewInteractions = (props) => {
-  const { onBoxDragEnded, onDrawEnded, onFeaturesMoved,
+  const { onBoxDragEnded, onDrawEnded, onFeaturesModified, onFeaturesMoved,
     onFeaturesSelected, selectedFeaturesProvider, selectedTool } = props
   const interactions = []
 
@@ -181,6 +181,18 @@ const MapViewInteractions = (props) => {
     )
   }
 
+  if (selectedTool === Tool.EDIT_FEATURE) {
+    interactions.push(
+      /* EDIT mode | Click --> Edit an existing feature */
+      // TODO: we need to figure out how to get the source layer here
+      /*
+      <interaction.Modify key='edit.EditFeature'
+        features={new Collection([])}
+        modifyend={onFeaturesModified} />
+      */
+    )
+  }
+
   return interactions
 }
 
@@ -190,6 +202,7 @@ MapViewInteractions.propTypes = {
 
   onBoxDragEnded: PropTypes.func,
   onDrawEnded: PropTypes.func,
+  onFeaturesModified: PropTypes.func,
   onFeaturesMoved: PropTypes.func,
   onFeaturesSelected: PropTypes.func
 }
@@ -265,9 +278,11 @@ class MapViewPresentation extends React.Component {
       [Tool.SELECT]: 'tool-select',
       [Tool.ZOOM]: 'tool-zoom',
       [Tool.PAN]: 'tool-pan',
+      [Tool.DRAW_POINT]: 'tool-draw tool-draw-point',
       [Tool.DRAW_CIRCLE]: 'tool-draw tool-draw-circle',
       [Tool.DRAW_PATH]: 'tool-draw tool-draw-path',
-      [Tool.DRAW_POLYGON]: 'tool-draw tool-draw-polygon'
+      [Tool.DRAW_POLYGON]: 'tool-draw tool-draw-polygon',
+      [Tool.EDIT_FEATURE]: 'tool-edit tool-edit-feature'
     }
 
     return (

@@ -1,14 +1,13 @@
-import { green500 } from 'material-ui/colors'
 import ConnectionIcon from 'material-ui-icons/Power'
 
 import PropTypes from 'prop-types'
 import React from 'react'
 import { connect } from 'react-redux'
 
-import { Badge } from './Badge'
+import { Badge } from '../Badge'
 
-import { showServerSettingsDialog } from '../actions/server-settings'
-import { ConnectionState, MASTER_CONNECTION_ID } from '../model/connections'
+import { showServerSettingsDialog } from '../../actions/server-settings'
+import { ConnectionState, MASTER_CONNECTION_ID } from '../../model/connections'
 
 const badgeColorForState = {
   [ConnectionState.CONNECTED]: '#0c0',
@@ -23,7 +22,7 @@ const ConnectionSettingsButtonPresentation = ({ onClick, state }) => {
       <span className='wb-icon wb-module-icon' style={{ position: 'relative' }}>
         <Badge visible={state !== ConnectionState.DISCONNECTED}
           color={badgeColorForState[state]} offset={[8, 8]} />
-        <ConnectionIcon onClick={onClick} />
+        <ConnectionIcon />
       </span>
       Server Settings
     </div>

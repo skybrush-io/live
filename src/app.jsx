@@ -5,6 +5,7 @@ import React from 'react'
 import { WorkbenchView } from 'react-flexible-workbench'
 import { compose, withContext, withProps } from 'recompose'
 
+import AppSettingsDialog from './components/AppSettingsDialog'
 import GlobalErrorDialog from './components/GlobalErrorDialog'
 import GlobalSnackbar from './components/GlobalSnackbar'
 import HotkeyHandler from './components/HotkeyHandler'
@@ -13,7 +14,7 @@ import MessagesDialog from './components/MessagesDialog'
 import SavedLocationEditorDialog from './components/SavedLocationEditorDialog'
 import ServerConnectionManager from './components/ServerConnectionManager'
 import ServerSettingsDialog from './components/ServerSettingsDialog'
-import Sidebar from './components/Sidebar'
+import Sidebar from './components/sidebar/Sidebar'
 
 import flock from './flock'
 import { withErrorBoundary, wrapWith } from './hoc'
@@ -56,6 +57,7 @@ class Application extends React.Component {
 
         <LayersDialog />
         <MessagesDialog flock={flock} />
+        <AppSettingsDialog />
 
         <GlobalErrorDialog />
         <GlobalSnackbar />

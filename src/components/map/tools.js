@@ -14,7 +14,9 @@ export const Tool = {
   DRAW_POINT: 'drawPoint',
   DRAW_CIRCLE: 'drawCircle',
   DRAW_PATH: 'drawPath',
-  DRAW_POLYGON: 'drawPolygon'
+  DRAW_POLYGON: 'drawPolygon',
+
+  EDIT_FEATURE: 'editFeature'
 }
 
 /**
