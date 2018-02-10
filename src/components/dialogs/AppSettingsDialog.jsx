@@ -9,7 +9,7 @@ import Tabs, { Tab } from 'material-ui/Tabs'
 import {
   closeAppSettingsDialog,
   setAppSettingsDialogTab
-} from '../actions/app-settings'
+} from '../../actions/app-settings'
 
 /**
  * Presentation component for the dialog that shows the form that the user

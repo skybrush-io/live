@@ -10,7 +10,7 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import { connect } from 'react-redux'
 
-import { closeErrorDialog } from '../actions/error-handling'
+import { closeErrorDialog } from '../../actions/error-handling'
 
 /**
  * Presentation component for the global error dialog.
@@ -21,9 +21,6 @@ const GlobalErrorDialogPresentation = ({ open, message, onClose }) => {
   const actions = [
     <Button onClick={onClose} key="close">Close</Button>
   ]
-  const contentStyle = {
-    width: '640px'
-  }
 
   return (
     <Dialog open={open} modal actions={actions}>

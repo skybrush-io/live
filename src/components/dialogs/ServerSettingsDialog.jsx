@@ -26,14 +26,14 @@ import WifiIcon from 'material-ui-icons/Wifi'
 import {
   ServerDetectionManager,
   isServerDetectionSupported
-} from './ServerDetectionManager'
+} from '../ServerDetectionManager'
 
 import {
   closeServerSettingsDialog,
   setServerSettingsDialogTab
-} from '../actions/server-settings'
-import { getDetectedServersInOrder } from '../selectors'
-import { createValidator, between, integer, required } from '../utils/validation'
+} from '../../actions/server-settings'
+import { getDetectedServersInOrder } from '../../selectors'
+import { createValidator, between, integer, required } from '../../utils/validation'
 
 // eslint-disable-next-line react/prop-types
 const iconForServerItem = ({ type }) => (

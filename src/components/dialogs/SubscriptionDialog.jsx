@@ -3,8 +3,6 @@ import _ from 'lodash'
 import PropTypes from 'prop-types'
 import React from 'react'
 
-import flock from '../flock'
-
 import Button from 'material-ui/Button'
 import Dialog, { DialogActions, DialogContent } from 'material-ui/Dialog'
 import { FormGroup, FormControl } from 'material-ui/Form'
@@ -16,7 +14,8 @@ import List, { ListItem, ListItemSecondaryAction, ListItemText } from 'material-
 import IconButton from 'material-ui/IconButton'
 import ContentRemoveCircleOutline from 'material-ui-icons/RemoveCircleOutline'
 
-import messageHub from '../message-hub'
+import flock from '../../flock'
+import messageHub from '../../message-hub'
 
 /**
  * React Component to chose the subscribed UAV device channels.

@@ -4,7 +4,6 @@
 
 import Signal from 'mini-signals'
 
-export const featuresLayerReferenceRequestSignal = new Signal()
 export const mapReferenceRequestSignal = new Signal()
 
 export const mapRotationResetSignal = new Signal()
@@ -23,7 +22,6 @@ export const focusMessagesDialogUAVSelectorField = new Signal()
  */
 export default {
   mapReferenceRequestSignal,
-  featuresLayerReferenceRequestSignal,
 
   mapRotationResetSignal,
   fitAllFeaturesSignal,

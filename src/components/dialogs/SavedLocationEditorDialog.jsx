@@ -13,11 +13,11 @@ import Button from 'material-ui/Button'
 import Dialog, { DialogActions, DialogContent, DialogTitle } from 'material-ui/Dialog'
 
 import { debouncedUpdateSavedLocation, deleteSavedLocation,
-  updateSavedLocation } from '../actions/saved-locations'
-import { cancelLocationEditing } from '../actions/saved-location-editor'
-import { createValidator, between, integer, finite, required } from '../utils/validation'
+  updateSavedLocation } from '../../actions/saved-locations'
+import { cancelLocationEditing } from '../../actions/saved-location-editor'
+import { createValidator, between, integer, finite, required } from '../../utils/validation'
 
-import { addListenerToMapViewSignal } from '../signals'
+import { addListenerToMapViewSignal } from '../../signals'
 
 /**
  * Presentation of the form that shows the fields that the user can use to

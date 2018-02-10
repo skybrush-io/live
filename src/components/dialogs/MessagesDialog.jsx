@@ -9,11 +9,11 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import { connect } from 'react-redux'
 
-import { closeMessagesDialog, clearMessagesOfSelectedUAV } from '../actions/messages'
-import { MessagesPanel } from '../components/chat'
-import Flock from '../model/flock'
+import { closeMessagesDialog, clearMessagesOfSelectedUAV } from '../../actions/messages'
+import { MessagesPanel } from '../../components/chat'
+import Flock from '../../model/flock'
 
-import { focusMessagesDialogUAVSelectorField } from '../signals'
+import { focusMessagesDialogUAVSelectorField } from '../../signals'
 
 /**
  * Presentation component for the "Messages" dialog.
