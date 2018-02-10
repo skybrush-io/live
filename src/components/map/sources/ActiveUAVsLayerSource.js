@@ -11,6 +11,7 @@ import FeatureManager from '../FeatureManager'
 import UAVFeature from '../features/UAVFeature'
 
 import Flock from '../../../model/flock'
+import { setLayerSelectable } from '../../../model/layers'
 import { uavIdToGlobalId } from '../../../model/identifiers'
 import { updateUAVFeatureColorsSignal } from '../../../signals'
 
@@ -54,7 +55,7 @@ export default class ActiveUAVsLayerSource extends source.Vector {
   componentDidMount () {
     super.componentDidMount()
 
-    this.context.layer.set('selectable', true)
+    setLayerSelectable(this.context.layer)
 
     this._onFlockMaybeChanged(undefined, this.props.flock)
     this._onSelectionMaybeChanged(undefined, this.props.selection)

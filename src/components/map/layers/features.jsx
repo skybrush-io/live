@@ -12,6 +12,7 @@ import { connect } from 'react-redux'
 
 import { FeatureType } from '../../../model/features'
 import { featureIdToGlobalId } from '../../../model/identifiers'
+import { setLayerEditable, setLayerSelectable } from '../../../model/layers'
 import { getFeaturesInOrder, getSelectedFeatureIds } from '../../../selectors'
 import { coordinateFromLonLat, euclideanDistance } from '../../../utils/geography'
 
@@ -151,15 +152,16 @@ const renderFeature = (feature, selected) => {
 
 // === The actual layer to be rendered ===
 
-function markAsSelectable (layer) {
+function markAsSelectableAndEditable (layer) {
   if (layer) {
-    layer.layer.set('selectable', true)
+    setLayerEditable(layer.layer)
+    setLayerSelectable(layer.layer)
   }
 }
 
 const FeaturesLayerPresentation = ({ features, projection, selectedFeatureIds, zIndex }) => (
   <layer.Vector updateWhileAnimating updateWhileInteracting zIndex={zIndex}
-    ref={markAsSelectable}>
+    ref={markAsSelectableAndEditable}>
     <source.Vector>
       {features.map(feature =>
         renderFeature(feature, selectedFeatureIds.includes(feature.id))

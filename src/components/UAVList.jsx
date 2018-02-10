@@ -94,13 +94,11 @@ class UAVList extends React.Component {
   }
 
   componentDidMount () {
-    console.log('mounted')
     this._onFlockMaybeChanged(undefined, this.props.flock)
   }
 
   componentWillUnmount () {
     this._onFlockMaybeChanged(this.props.flock, undefined)
-    console.log('unmounted')
   }
 
   @autobind

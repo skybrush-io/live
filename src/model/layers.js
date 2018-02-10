@@ -187,6 +187,32 @@ export function defaultParametersForLayerType (layerType) {
 }
 
 /**
+ * Returns all the visible editable layers from the given OpenLayers
+ * map object.
+ *
+ * @param  {ol.Map} map the OpenLayers map
+ * @return {Array} an array containing all the editable visible layers
+ */
+export function getVisibleEditableLayers (map) {
+  return map.getLayers().getArray()
+    .filter(isLayerEditable)
+    .filter(isLayerVisible)
+}
+
+/**
+ * Returns all the visible selectable layers from the given OpenLayers
+ * map object.
+ *
+ * @param  {ol.Map} map the OpenLayers map
+ * @return {Array} an array containing all the selectable visible layers
+ */
+export function getVisibleSelectableLayers (map) {
+  return map.getLayers().getArray()
+    .filter(isLayerSelectable)
+    .filter(isLayerVisible)
+}
+
+/**
  * Returns a Material UI icon that can be used to represent the layer of
  * the given type on the user interface.
  *
@@ -196,6 +222,30 @@ export function defaultParametersForLayerType (layerType) {
  */
 export function iconForLayerType (layerType) {
   return _propertiesForLayerTypes[layerType].icon
+}
+
+/**
+ * Returns true if the given layer contains features that may be edited
+ * by the user.
+ *
+ * @param {ol.Layer} layer  the layer to test
+ * @return {boolean} whether the given layer contains features that may be
+ *     edited by the user
+ */
+export function isLayerEditable (layer) {
+  return layer && layer.getVisible() && layer.get('editable')
+}
+
+/**
+ * Returns true if the given layer contains features that may be selected
+ * by the user.
+ *
+ * @param {ol.Layer} layer  the layer to test
+ * @return {boolean} whether the given layer contains features that may be
+ *     selected by the user
+ */
+export function isLayerSelectable (layer) {
+  return layer && layer.getVisible() && layer.get('selectable')
 }
 
 /**
@@ -219,4 +269,24 @@ export function isLayerVisible (layer) {
  */
 export function labelForLayerType (layerType) {
   return _propertiesForLayerTypes[layerType].label
+}
+
+/**
+ * Sets whether the given layer is editable or not.
+ *
+ * @param  {ol.Layer}  layer  the layer to update
+ * @param  {boolean}   editable  whether the layer should be editable
+ */
+export function setLayerEditable (layer, editable = true) {
+  layer.set('editable', editable)
+}
+
+/**
+ * Sets whether the given layer is selectable or not.
+ *
+ * @param  {ol.Layer}  layer  the layer to update
+ * @param  {boolean}   selectable  whether the layer should be selectable
+ */
+export function setLayerSelectable (layer, selectable = true) {
+  layer.set('selectable', selectable)
 }

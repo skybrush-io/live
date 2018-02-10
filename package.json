@@ -44,7 +44,7 @@
     "node-ssdp-lite": "^0.2.0",
     "numbro": "^2.0.5",
     "ol": "^4.6.4",
-    "ol-react": "git+https://github.com/collmot/ol-react.git#39b350d03a838dc3b24dacbf2a4033d6e9f0f337",
+    "ol-react": "file:../ol-react/ol-react-0.1.5.tgz",
     "prop-types": "^15.6.0",
     "radix-64": "^1.0.4",
     "react": "^16.2.0",

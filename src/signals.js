@@ -4,7 +4,9 @@
 
 import Signal from 'mini-signals'
 
+export const featuresLayerReferenceRequestSignal = new Signal()
 export const mapReferenceRequestSignal = new Signal()
+
 export const mapRotationResetSignal = new Signal()
 export const fitAllFeaturesSignal = new Signal()
 export const updateUAVFeatureColorsSignal = new Signal()
@@ -20,15 +22,17 @@ export const focusMessagesDialogUAVSelectorField = new Signal()
  * The singleton object instance containing the signals used in the application.
  */
 export default {
-  mapReferenceRequestSignal: mapReferenceRequestSignal,
-  mapRotationResetSignal: mapRotationResetSignal,
-  fitAllFeaturesSignal: fitAllFeaturesSignal,
-  updateUAVFeatureColorsSignal: updateUAVFeatureColorsSignal,
+  mapReferenceRequestSignal,
+  featuresLayerReferenceRequestSignal,
 
-  mapViewToLocationSignal: mapViewToLocationSignal,
-  mapViewToExtentSignal: mapViewToExtentSignal,
-  addListenerToMapViewSignal: addListenerToMapViewSignal,
-  removeListenerFromMapViewSignal: removeListenerFromMapViewSignal,
+  mapRotationResetSignal,
+  fitAllFeaturesSignal,
+  updateUAVFeatureColorsSignal,
 
-  focusMessagesDialogUAVSelectorField: focusMessagesDialogUAVSelectorField
+  mapViewToLocationSignal,
+  mapViewToExtentSignal,
+  addListenerToMapViewSignal,
+  removeListenerFromMapViewSignal,
+
+  focusMessagesDialogUAVSelectorField
 }

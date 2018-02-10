@@ -22,6 +22,7 @@ import { addFeaturesToSelection, clearSelection, setSelectedFeatures,
 import { handleError } from '../../error-handling'
 import mapViewManager from '../../mapViewManager'
 import { createFeatureFromOpenLayers } from '../../model/features'
+import { getVisibleSelectableLayers, isLayerSelectable } from '../../model/layers'
 import { featureIdToGlobalId, globalIdToFeatureId } from '../../model/identifiers'
 import { getSelectedFeatureIds, getSelection, getVisibleLayersInOrder } from '../../selectors'
 import { coordinateFromLonLat, findFeaturesById, formatCoordinate } from '../../utils/geography'
@@ -102,8 +103,10 @@ const MapViewToolbars = () => ([
  * @returns {JSX.Node[]}  the interactions on the map
  */
 const MapViewInteractions = (props) => {
-  const { onBoxDragEnded, onDrawEnded, onFeaturesModified, onFeaturesMoved,
-    onFeaturesSelected, selectedFeaturesProvider, selectedTool } = props
+  const {
+    onBoxDragEnded, onDrawEnded, onFeaturesModified, onFeaturesMoved,
+    onFeaturesSelected, selectedFeaturesProvider, selectedTool
+  } = props
   const interactions = []
 
   // Common interactions that can be used regardless of the selected tool
@@ -185,11 +188,8 @@ const MapViewInteractions = (props) => {
     interactions.push(
       /* EDIT mode | Click --> Edit an existing feature */
       // TODO: we need to figure out how to get the source layer here
-      /*
       <interaction.Modify key='edit.EditFeature'
-        features={new Collection([])}
         modifyend={onFeaturesModified} />
-      */
     )
   }
 
@@ -205,20 +205,6 @@ MapViewInteractions.propTypes = {
   onFeaturesModified: PropTypes.func,
   onFeaturesMoved: PropTypes.func,
   onFeaturesSelected: PropTypes.func
-}
-
-/* ********************************************************************** */
-
-/**
- * Returns true if the given layer contains features that may be selected
- * by the user.
- *
- * @param {ol.Layer} layer  the layer to test
- * @return {boolean} whether the given layer contains features that may be
- *     selected by the user
- */
-function isLayerSelectable (layer) {
-  return layer && layer.getVisible() && layer.get('selectable')
 }
 
 /* ********************************************************************** */
@@ -296,12 +282,14 @@ class MapViewPresentation extends React.Component {
         <MapViewToolbars />
         <MapViewLayers />
         <MapViewControls />
-        <MapViewInteractions selectedTool={selectedTool}
+        <MapViewInteractions
+          selectedTool={selectedTool}
+          selectedFeaturesProvider={this._getSelectedFeatures}
+
           onBoxDragEnded={this._onBoxDragEnded}
           onDrawEnded={this._onDrawEnded}
           onFeaturesMoved={this._onFeaturesMoved}
           onFeaturesSelected={this._onFeaturesSelected}
-          selectedFeaturesProvider={this._getSelectedFeatures}
         />
 
         {/* OpenLayers interaction that triggers a context menu */}
@@ -343,7 +331,6 @@ class MapViewPresentation extends React.Component {
    */
   @autobind
   _onBoxDragEnded (event) {
-    const layers = this.map.map.getLayers()
     const mapBrowserEvent = event.mapBrowserEvent
 
     let action
@@ -359,7 +346,7 @@ class MapViewPresentation extends React.Component {
     const extent = event.target.getGeometry().getExtent()
     const ids = []
 
-    layers.getArray().filter(isLayerSelectable).forEach(layer => {
+    getVisibleSelectableLayers(this.map.map).forEach(layer => {
       const source = layer.getSource()
       source.forEachFeatureIntersectingExtent(extent, feature => {
         ids.push(feature.getId())
