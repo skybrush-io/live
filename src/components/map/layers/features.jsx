@@ -1,6 +1,6 @@
 import Color from 'color'
 import { unary } from 'lodash'
-import { Feature, geom, layer, source } from 'ol-react'
+import { Feature, geom, interaction, layer, source } from 'ol-react'
 import PropTypes from 'prop-types'
 import Circle from 'ol/style/circle'
 import Fill from 'ol/style/fill'

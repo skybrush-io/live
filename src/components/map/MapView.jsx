@@ -202,14 +202,7 @@ const MapViewInteractions = (props) => {
     )
   }
 
-  if (selectedTool === Tool.EDIT_FEATURE) {
-    interactions.push(
-      /* EDIT mode | Click --> Edit an existing feature */
-      // TODO: we need to figure out how to get the source layer here
-      <interaction.Modify key='edit.EditFeature'
-        modifyend={onFeaturesModified} />
-    )
-  }
+  /* Tool.EDIT_FEATURE will be handled in the FeaturesLayer component */
 
   return interactions
 }
