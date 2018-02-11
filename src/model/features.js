@@ -57,11 +57,11 @@ export function createFeatureFromOpenLayers (olFeature) {
 
     case 'Polygon':
       if (coordinates.length !== 1) {
-        throw new Error('Expected polygon geometry not to have any holes')
+        throw new Error('Polygon geometry should not have any holes')
       }
       Object.assign(result, {
         type: FeatureType.POLYGON,
-        points: coordinates[0].map(unary(lonLatFromCoordinate))
+        points: coordinates[0].map(unary(lonLatFromCoordinate)).slice(0, -1)
       })
       break
 
