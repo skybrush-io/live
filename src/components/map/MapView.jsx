@@ -36,13 +36,18 @@ require('ol/ol.css')
  *
  * @returns {JSX.Node[]}  the layers of the map
  */
-const MapViewLayersPresentation = ({ layers }) => {
+const MapViewLayersPresentation = ({ layers, onFeaturesModified, selectedTool }) => {
   let zIndex = 0
   const renderedLayers = []
 
   for (const layer of layers) {
     if (layer.type in Layers) {
-      renderedLayers.push(stateObjectToLayer(layer, zIndex++))
+      renderedLayers.push(stateObjectToLayer(layer, {
+        onFeaturesModified,
+        selectedTool,
+        zIndex
+      }))
+      zIndex++
     }
   }
 
@@ -50,7 +55,9 @@ const MapViewLayersPresentation = ({ layers }) => {
 }
 
 MapViewLayersPresentation.propTypes = {
-  layers: PropTypes.arrayOf(PropTypes.object)
+  layers: PropTypes.arrayOf(PropTypes.object),
+  onFeaturesModified: PropTypes.func,
+  selectedTool: PropTypes.string.isRequired
 }
 
 /**
@@ -59,7 +66,8 @@ MapViewLayersPresentation.propTypes = {
 const MapViewLayers = connect(
   // mapStateToProps
   state => ({
-    layers: getVisibleLayersInOrder(state)
+    layers: getVisibleLayersInOrder(state),
+    selectedTool: state.map.tools.selectedTool
   })
 )(MapViewLayersPresentation)
 
@@ -122,7 +130,7 @@ const MapViewToolbars = () => ([
  */
 const MapViewInteractions = (props) => {
   const {
-    onBoxDragEnded, onDrawEnded, onFeaturesModified, onFeaturesMoved,
+    onBoxDragEnded, onDrawEnded, onFeaturesMoved,
     onFeaturesSelected, selectedFeaturesProvider, selectedTool
   } = props
   const interactions = []
@@ -213,7 +221,6 @@ MapViewInteractions.propTypes = {
 
   onBoxDragEnded: PropTypes.func,
   onDrawEnded: PropTypes.func,
-  onFeaturesModified: PropTypes.func,
   onFeaturesMoved: PropTypes.func,
   onFeaturesSelected: PropTypes.func
 }
@@ -291,7 +298,7 @@ class MapViewPresentation extends React.Component {
         <MapReferenceRequestHandler />
 
         <MapViewToolbars />
-        <MapViewLayers />
+        <MapViewLayers onFeaturesModified={this._onFeaturesModified} />
         <MapViewControls />
         <MapViewInteractions
           selectedTool={selectedTool}
@@ -391,6 +398,19 @@ class MapViewPresentation extends React.Component {
   }
 
   /**
+   * Event handler that is called when some features were modified on the
+   * map after adding / moving / removing its constituent vertices.
+   *
+   * @param  {ol.interaction.Modify.Event}  event  the event that was
+   *         triggered at the end of the interaction
+   * @param  {ol.Feature[]}  event.features  the features that were modified
+   */
+  @autobind
+  _onFeaturesModified (event) {
+    this._updateFeatures(event.features)
+  }
+
+  /**
    * Event handler that is called when some features were moved on the
    * map by dragging.
    *
@@ -400,12 +420,7 @@ class MapViewPresentation extends React.Component {
    */
   @autobind
   _onFeaturesMoved (event) {
-    const coordinates = {}
-    event.features.forEach(feature => {
-      const featureId = globalIdToFeatureId(feature.getId())
-      coordinates[featureId] = createFeatureFromOpenLayers(feature).points
-    })
-    this.props.dispatch(updateFeatureCoordinates(coordinates))
+    this._updateFeatures(event.features)
   }
 
   /**
@@ -434,6 +449,20 @@ class MapViewPresentation extends React.Component {
     if (id) {
       this.props.dispatch(action([id]))
     }
+  }
+
+  /**
+   * Common implementation for `_onFeaturesMoved` and `_onFeaturesModified`.
+   *
+   * @param  {ol.Feature[]}  features  the features that are to be updated
+   */
+  _updateFeatures (features) {
+    const coordinates = {}
+    features.forEach(feature => {
+      const featureId = globalIdToFeatureId(feature.getId())
+      coordinates[featureId] = createFeatureFromOpenLayers(feature).points
+    })
+    this.props.dispatch(updateFeatureCoordinates(coordinates))
   }
 
   /**

@@ -48,12 +48,12 @@ export const Layers = {
   [LayerType.UNTYPED]: UntypedLayer
 }
 
-export const stateObjectToLayer = (layer, zIndex) => {
+export const stateObjectToLayer = (layer, props) => {
   if (!(layer.type in Layers)) {
     throw new Error(`Nonexistent layer type (${layer.type}) cannot be rendered.`)
   }
 
   const CurrentLayer = Layers[layer.type]
-  return (<CurrentLayer key={`${layer.id}_rendered`} layer={layer}
-    layerId={layer.id} zIndex={zIndex} />)
+  return (<CurrentLayer {...props} key={`${layer.id}_rendered`}
+    layer={layer} layerId={layer.id} />)
 }

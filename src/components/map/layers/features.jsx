@@ -10,6 +10,8 @@ import Text from 'ol/style/text'
 import React from 'react'
 import { connect } from 'react-redux'
 
+import { Tool } from '../tools'
+
 import { FeatureType } from '../../../model/features'
 import { featureIdToGlobalId } from '../../../model/identifiers'
 import { setLayerEditable, setLayerSelectable } from '../../../model/layers'
@@ -159,13 +161,19 @@ function markAsSelectableAndEditable (layer) {
   }
 }
 
-const FeaturesLayerPresentation = ({ features, projection, selectedFeatureIds, zIndex }) => (
+const FeaturesLayerPresentation = ({
+  features, onFeaturesModified, projection, selectedFeatureIds,
+  selectedTool, zIndex
+}) => (
   <layer.Vector updateWhileAnimating updateWhileInteracting zIndex={zIndex}
     ref={markAsSelectableAndEditable}>
     <source.Vector>
       {features.map(feature =>
         renderFeature(feature, selectedFeatureIds.includes(feature.id))
       )}
+      {selectedTool === Tool.EDIT_FEATURE
+        ? <interaction.Modify modifyend={onFeaturesModified} />
+        : null}
     </source.Vector>
   </layer.Vector>
 )
@@ -174,10 +182,13 @@ FeaturesLayerPresentation.propTypes = {
   layer: PropTypes.object,
   layerId: PropTypes.string,
   projection: PropTypes.func.isRequired,
+  selectedTool: PropTypes.string,
   zIndex: PropTypes.number,
 
   features: PropTypes.arrayOf(PropTypes.object).isRequired,
-  selectedFeatureIds: PropTypes.arrayOf(PropTypes.string).isRequired
+  selectedFeatureIds: PropTypes.arrayOf(PropTypes.string).isRequired,
+
+  onFeaturesModified: PropTypes.func
 }
 
 FeaturesLayerPresentation.defaultProps = {
