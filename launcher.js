@@ -1,7 +1,9 @@
 const { app, BrowserWindow } = require('electron')
 const windowStateKeeper = require('electron-window-state')
+const fs = require('fs')
 const path = require('path')
 const url = require('url')
+const yargs = require('yargs/yargs')
 
 // Keep a global reference to the main window to prevent the garbage
 // collector from destroying it
@@ -59,8 +61,13 @@ function createMainWindow (opts) {
 
 function getURLToLoad () {
   if (process.env.NODE_ENV === 'production') {
+    let index = path.join(__dirname, "index.html")
+    if (!fs.existsSync(index)) {
+      index = path.join(__dirname, "..", "index.html")
+    }
+
     return url.format({
-      pathname: path.join(__dirname, 'index.html'),
+      pathname: index,
       protocol: 'file:',
       slashes: true
     })
@@ -101,8 +108,9 @@ function run (argv) {
   })
 }
 
-const parser = (
-  require('yargs')
+// Don't use require('yargs') below because Webpack; see:
+// https://github.com/yargs/yargs/issues/781
+const parser = yargs()
     .usage('$0 [options]', 'Launches Flockwave in a desktop window')
 
     .boolean('d')
@@ -110,6 +118,5 @@ const parser = (
     .describe('d', 'Start in debug mode with the developer tools open')
 
     .help()
-)
 
-run(parser.argv)
+run(parser.parse(process.argv))

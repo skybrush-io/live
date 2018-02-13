@@ -11,7 +11,7 @@ var plugins = []
 if (process.env.NODE_ENV !== 'production') {
   plugins.push(
     new WebpackShellPlugin({
-      onBuildEnd: ['electron .'],
+      onBuildEnd: ['electron launcher.js'],
       dev: true
     })
   )

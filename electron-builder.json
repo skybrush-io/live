@@ -1,0 +1,13 @@
+{
+  "appId": "com.collmot.flockwave",
+  "productName": "Flockwave",
+
+  "files": [
+    "index.html",
+    "assets/**/*",
+    "build/bundle.js",
+    "build/launcher.bundle.js",
+	"!node_modules/**/*"
+  ]
+}
+
