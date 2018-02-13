@@ -1,7 +1,7 @@
 {
   "name": "flockwave-web",
   "productName": "Flockwave",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Web frontend for a Flockwave server",
   "main": "build/launcher.bundle.js",
   "scripts": {
