@@ -8,6 +8,7 @@ import { combineReducers } from 'redux'
 import appSettingsReducer from './app-settings'
 import errorHandlingReducer from './error-handling'
 import messagesReducer from './messages'
+import promptReducer from './prompt'
 import layerSettingsReducer from './layer-settings'
 import savedLocationEditorReducer from './saved-location-editor'
 import serverSettingsReducer from './server-settings'
@@ -21,6 +22,7 @@ const reducer = combineReducers({
   error: errorHandlingReducer,
   layerSettings: layerSettingsReducer,
   messages: messagesReducer,
+  prompt: promptReducer,
   savedLocationEditor: savedLocationEditorReducer,
   serverSettings: serverSettingsReducer
 })

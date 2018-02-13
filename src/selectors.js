@@ -53,6 +53,21 @@ export const getSelectedFeatureIdsAsOpenLayersCollection = createSelector(
 )
 
 /**
+ * Selector that retrieves the list of the labels of the selected features
+ * from the state object.
+ *
+ * @param  {Object}  state  the state of the application
+ * @return {string[]}  the list of selected feature labels
+ */
+export const getSelectedFeatureLabels = createSelector(
+  getSelectedFeatureIds,
+  state => state.features.byId,
+  (featureIds, features) => (
+    featureIds.map(featureId => features[featureId].label)
+  )
+)
+
+/**
  * Selector that calculates and caches the list of selected UAV IDs from
  * the state object.
  */

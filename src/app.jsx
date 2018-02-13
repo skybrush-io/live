@@ -14,6 +14,7 @@ import Sidebar from './components/sidebar/Sidebar'
 import AppSettingsDialog from './components/dialogs/AppSettingsDialog'
 import GlobalErrorDialog from './components/dialogs/GlobalErrorDialog'
 import MessagesDialog from './components/dialogs/MessagesDialog'
+import PromptDialog from './components/dialogs/PromptDialog'
 import SavedLocationEditorDialog from './components/dialogs/SavedLocationEditorDialog'
 import ServerSettingsDialog from './components/dialogs/ServerSettingsDialog'
 
@@ -44,21 +45,21 @@ class Application extends React.Component {
       <div>
         <Reboot />
 
-        <HotkeyHandler hotkeys={hotkeys}>
-          <div style={rootStyle}>
-            <Sidebar workbench={workbench} />
-            <WorkbenchView workbench={workbench} />
-          </div>
-        </HotkeyHandler>
+        <HotkeyHandler hotkeys={hotkeys} />
 
-        <SavedLocationEditorDialog />
+        <div style={rootStyle}>
+          <Sidebar workbench={workbench} />
+          <WorkbenchView workbench={workbench} />
+        </div>
 
-        <ServerSettingsDialog />
         <ServerConnectionManager />
 
+        <AppSettingsDialog />
         <LayersDialog />
         <MessagesDialog flock={flock} />
-        <AppSettingsDialog />
+        <PromptDialog />
+        <SavedLocationEditorDialog />
+        <ServerSettingsDialog />
 
         <GlobalErrorDialog />
         <GlobalSnackbar />

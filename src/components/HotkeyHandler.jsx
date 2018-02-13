@@ -2,6 +2,7 @@
  * @file React Component for handling hotkeys.
  */
 
+import { autobind } from 'core-decorators'
 import _ from 'lodash'
 import PropTypes from 'prop-types'
 import React from 'react'
@@ -56,7 +57,6 @@ export default class HotkeyHandler extends React.Component {
   constructor (props) {
     super(props)
 
-    this._handlingFocusChange = false
     this._root = undefined
 
     this.state = {
@@ -71,19 +71,9 @@ export default class HotkeyHandler extends React.Component {
 
     this.listeners = { down: {}, up: {} }
 
-    this._handleFocusChange = this._handleFocusChange.bind(this)
-    this._handleKey = this._handleKey.bind(this)
-    this._handleKeyDown = this._handleKeyDown.bind(this)
-    this._handleKeyUp = this._handleKeyUp.bind(this)
-    this._setRoot = this._setRoot.bind(this)
-
     for (const hotkey of props.hotkeys) {
       this.addListener(hotkey.on, hotkey.keys, hotkey.action)
     }
-
-    this._showDialog = this._showDialog.bind(this)
-    this._hideDialog = this._hideDialog.bind(this)
-    this._toggleDialog = this._toggleDialog.bind(this)
 
     this.addHelpListeners()
   }
@@ -91,6 +81,7 @@ export default class HotkeyHandler extends React.Component {
   /**
    * Function for showing the help dialog.
    */
+  @autobind
   _showDialog () {
     this.setState({ dialogVisible: true })
   }
@@ -98,6 +89,7 @@ export default class HotkeyHandler extends React.Component {
   /**
    * Function for hiding the help dialog.
    */
+  @autobind
   _hideDialog () {
     this.setState({ dialogVisible: false })
   }
@@ -105,6 +97,7 @@ export default class HotkeyHandler extends React.Component {
   /**
    * Function for toggling the visibility of the help dialog.
    */
+  @autobind
   _toggleDialog () {
     this.setState({ dialogVisible: !this.state.dialogVisible })
   }
@@ -120,14 +113,14 @@ export default class HotkeyHandler extends React.Component {
    * Adding the actual event listeners and the approptiate handlers.
    */
   componentDidMount () {
-    document.body.addEventListener('focus', this._handleFocusChange, true)
+    this._setRoot(document.body)
   }
 
   /**
    * Removing the event listeners.
    */
   componentWillUnmount () {
-    document.body.removeEventListener('focus', this._handleFocusChange, true)
+    this._setRoot(undefined)
   }
 
   render () {
@@ -148,7 +141,7 @@ export default class HotkeyHandler extends React.Component {
     ).join(' ')
 
     return (
-      <div ref={this._setRoot} className={classString}>
+      <div className={classString}>
         <Dialog
           open={dialogVisible}
           onClose={this._hideDialog}
@@ -176,8 +169,6 @@ export default class HotkeyHandler extends React.Component {
 
           <DialogActions>{actions}</DialogActions>
         </Dialog>
-
-        {this.props.children}
       </div>
     )
   }
@@ -219,6 +210,7 @@ export default class HotkeyHandler extends React.Component {
    *
    * @param {KeyboardEvent} e the actual keyboard event
    */
+  @autobind
   _handleKeyDown (e) {
     if (e.repeat) { return }
 
@@ -234,6 +226,7 @@ export default class HotkeyHandler extends React.Component {
    *
    * @param {KeyboardEvent} e the actual keyboard event
    */
+  @autobind
   _handleKeyUp (e) {
     if (e.key in this.state.keyboardModifiers) {
       this.setState(u({ keyboardModifiers: { [e.key]: false } }, this.state))
@@ -248,7 +241,15 @@ export default class HotkeyHandler extends React.Component {
    * @param {string} direction 'down' or 'up', on which event the action should be fired
    * @param {KeyboardEvent} e the actual keyboard event
    */
+  @autobind
   _handleKey (direction, e) {
+    const activeTag = document.activeElement.tagName
+    if (activeTag === 'INPUT' || activeTag === 'TEXTAREA') {
+      // Never activate hotkeys if the user is in an input field or
+      // text area
+      return
+    }
+
     const hashes = [
       (e.altKey ? 'Alt + ' : '') +
       (e.ctrlKey ? 'Ctrl + ' : '') +
@@ -279,27 +280,6 @@ export default class HotkeyHandler extends React.Component {
     }
   }
 
-  _handleFocusChange (e) {
-    const whitelist = ['INPUT', 'TEXTAREA']
-
-    if (this._handlingFocusChange) {
-      // Prevent infinite recursion
-      return
-    }
-
-    this._handlingFocusChange = true
-    try {
-      if (!_.includes(whitelist, e.target.tagName)) {
-        const viewport = document.querySelector('.ol-viewport')
-        if (viewport) {
-          viewport.focus()
-        }
-      }
-    } finally {
-      this._handlingFocusChange = false
-    }
-  }
-
   /**
    * Function for converting hotkey into uniform hash.
    *
@@ -311,21 +291,22 @@ export default class HotkeyHandler extends React.Component {
     return Hotkey.fromString(hotkey).toString()
   }
 
+  @autobind
   _setRoot (root) {
     if (this._root === root) {
       return
     }
 
     if (this._root) {
-      this._root.removeEventListener('keydown', this._handleKeyDown, true)
-      this._root.removeEventListener('keyup', this._handleKeyUp, true)
+      this._root.removeEventListener('keydown', this._handleKeyDown)
+      this._root.removeEventListener('keyup', this._handleKeyUp)
     }
 
     this._root = root
 
     if (this._root) {
-      this._root.addEventListener('keydown', this._handleKeyDown, true)
-      this._root.addEventListener('keyup', this._handleKeyUp, true)
+      this._root.addEventListener('keydown', this._handleKeyDown)
+      this._root.addEventListener('keyup', this._handleKeyUp)
     }
   }
 }

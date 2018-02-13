@@ -7,6 +7,7 @@ import { createStore, applyMiddleware } from 'redux'
 import createDebounce from 'redux-debounce'
 import { actionTypes as reduxFormActionTypes } from 'redux-form'
 import * as storage from 'redux-storage'
+import thunk from 'redux-thunk'
 import debounce from 'redux-storage-decorator-debounce'
 import filter from 'redux-storage-decorator-filter'
 import createEngine from '@redux-storage-engine'
@@ -80,7 +81,7 @@ const storageMiddleware = storage.createMiddleware(
  * Function to create a new Redux store with the required middlewares.
  */
 const createStoreWithMiddleware =
-  applyMiddleware(debouncer, storageMiddleware)(createStore)
+  applyMiddleware(debouncer, thunk, storageMiddleware)(createStore)
 
 /**
  * The store for the application state.
@@ -105,7 +106,7 @@ export const loadStoreFromStorageBackend =
  * Function that clears the contents of the store completely. It is strongly
  * advised to reload the app after this function was executed.
  */
-export function clearStore() {
+export function clearStore () {
   engine.save({})
 }
 

@@ -71,6 +71,7 @@
     "redux-storage-engine-electron-store": "^1.0.1",
     "redux-storage-engine-localstorage": "^1.1.4",
     "redux-storage-merger-simple": "^1.0.5",
+    "redux-thunk": "^2.2.0",
     "reselect": "^3.0.1",
     "screenfull": "^3.3.2",
     "socket.io": "^1.4.6",

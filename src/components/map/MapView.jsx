@@ -291,7 +291,7 @@ class MapViewPresentation extends React.Component {
 
     return (
       <Map view={view} ref={this._assignMapRef}
-        useDefaultControls={false} loadTilesWhileInteracting focusOnMount
+        useDefaultControls={false} loadTilesWhileInteracting
         className={toolClasses[selectedTool]}
       >
 

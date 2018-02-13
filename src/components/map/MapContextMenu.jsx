@@ -22,7 +22,8 @@ import ContextMenu from '../ContextMenu'
 
 import { renameFeature, removeFeatures } from '../../actions/features'
 import { selectUAVInMessagesDialog, showMessagesDialog } from '../../actions/messages'
-import { getSelectedFeatureIds, getSelectedUAVIds } from '../../selectors'
+import { showPromptDialog } from '../../actions/prompt'
+import { getSelectedFeatureIds, getSelectedFeatureLabels, getSelectedUAVIds } from '../../selectors'
 import * as messaging from '../../utils/messaging'
 
 /**
@@ -100,19 +101,13 @@ class MapContextMenu extends React.Component {
 
   @autobind
   _renameSelectedFeatures () {
-    const { selectedFeatureIds } = this.props
+    const { renameFeature, selectedFeatureIds,
+      selectedFeatureLabels } = this.props
     if (selectedFeatureIds.length !== 1) {
       return
     }
 
-    const id = selectedFeatureIds[0]
-    // TODO: do this with a proper Material-UI dialog, not a browser prompt
-    const label = window.prompt(
-      'Enter the new label of the feature'
-    )
-    if (label !== null) {
-      this.props.renameFeature(id, label)
-    }
+    renameFeature(selectedFeatureIds[0], selectedFeatureLabels[0])
   }
 
   @autobind
@@ -144,6 +139,7 @@ MapContextMenu.propTypes = {
   renameFeature: PropTypes.func.isRequired,
   removeFeaturesByIds: PropTypes.func.isRequired,
   selectedFeatureIds: PropTypes.arrayOf(PropTypes.string).isRequired,
+  selectedFeatureLabels: PropTypes.arrayOf(PropTypes.string).isRequired,
   selectedUAVIds: PropTypes.arrayOf(PropTypes.string).isRequired,
   selectUAVInMessagesDialog: PropTypes.func.isRequired,
   showMessagesDialog: PropTypes.func.isRequired
@@ -153,6 +149,7 @@ const MapContextMenuContainer = connect(
   // mapStateToProps
   state => ({
     selectedFeatureIds: getSelectedFeatureIds(state),
+    selectedFeatureLabels: getSelectedFeatureLabels(state),
     selectedUAVIds: getSelectedUAVIds(state)
   }),
   // mapDispatchToProps
@@ -161,7 +158,13 @@ const MapContextMenuContainer = connect(
       dispatch(removeFeatures(ids))
     },
     renameFeature: (id, label) => {
-      dispatch(renameFeature(id, label))
+      dispatch(
+        showPromptDialog('Enter the new name of the feature', label)
+      ).then(newLabel => {
+        if (newLabel) {
+          dispatch(renameFeature(id, newLabel))
+        }
+      })
     },
     selectUAVInMessagesDialog: (id) => {
       dispatch(selectUAVInMessagesDialog(id))

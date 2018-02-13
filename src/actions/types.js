@@ -80,6 +80,11 @@ export const CLOSE_MESSAGES_DIALOG = 'CLOSE_MESSAGES_DIALOG'
 export const SELECT_UAV_IN_MESSAGES_DIALOG = 'SELECT_UAV_IN_MESSAGES_DIALOG'
 export const SHOW_MESSAGES_DIALOG = 'SHOW_MESSAGES_DIALOG'
 
+// Actions related to the global prompt dialog
+export const CANCEL_PROMPT_DIALOG = 'CANCEL_PROMPT_DIALOG'
+export const SHOW_PROMPT_DIALOG = 'SHOW_PROMPT_DIALOG'
+export const SUBMIT_PROMPT_DIALOG = 'SUBMIT_PROMPT_DIALOG'
+
 // Event log related actions
 export const ADD_LOG_ITEM = 'ADD_LOG_ITEM'
 export const DELETE_LOG_ITEM = 'DELETE_LOG_ITEM'
