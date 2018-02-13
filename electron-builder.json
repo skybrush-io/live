@@ -7,7 +7,20 @@
     "assets/**/*",
     "build/bundle.js",
     "build/launcher.bundle.js",
-	"!node_modules/**/*"
-  ]
+    "!node_modules/**/*"
+  ],
+
+  "linux": {
+    "category": "Utility"
+  },
+
+  "mac": {
+    "category": "public.app-category.utilities",
+    "target": "dmg"
+  },
+
+  "win": {
+    "target": "portable"
+  }
 }
 

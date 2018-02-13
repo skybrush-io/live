@@ -7,7 +7,7 @@
   "scripts": {
     "bundle": "webpack -p --progress --config webpack/browser.config.js",
     "bundle:electron": "NODE_ENV=production webpack -p --progress --config webpack/electron.config.js && NODE_ENV=production webpack -p --progress --config webpack/launcher.config.js",
-    "dist": "npm run bundle:electron && electron-builder",
+    "dist": "npm run bundle:electron && electron-builder -mwl",
     "doc": "esdoc -c esdoc.json",
     "lint": "eslint 'src/**'",
     "pack": "npm run bundle:electron && electron-builder --dir",
