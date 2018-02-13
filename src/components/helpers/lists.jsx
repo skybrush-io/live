@@ -196,8 +196,8 @@ export function multiSelectableListOf (itemRenderer, options = {}) {
             onItemSelected: props.onChange ? event => {
               const newSelection =
                 eventHasPlatformModifierKey(event.nativeEvent)
-                ? xor(props.value, [item.id])
-                : [item.id]
+                  ? xor(props.value, [item.id])
+                  : [item.id]
               return props.onChange(event, newSelection)
             } : undefined
           }),
@@ -309,11 +309,11 @@ function validateItemRenderer (itemRenderer) {
  */
 function validateListFactory (listFactory) {
   if (listFactory === undefined) {
-    /* eslint-disable react/display-name */
+    /* eslint-disable react/display-name, react/prop-types */
     return (props, children) => {
-      return React.createElement(List, {}, children)
+      return React.createElement(List, { dense: props.dense }, children)
     }
-    /* eslint-enable react/display-name */
+    /* eslint-enable react/display-name, react/prop-types */
   } else if (React.Component.isPrototypeOf(listFactory)) {
     return partial(React.createElement, listFactory)
   } else {

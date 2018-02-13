@@ -5,7 +5,7 @@
 
 import Avatar from 'material-ui/Avatar'
 import IconButton from 'material-ui/IconButton'
-import { ListItem, ListItemSecondaryAction, ListItemText } from 'material-ui/List'
+import { ListItem, ListItemIcon, ListItemSecondaryAction, ListItemText } from 'material-ui/List'
 
 import { common, green, grey, red, yellow } from 'material-ui/colors'
 
@@ -27,54 +27,39 @@ import { getConnectionsInOrder } from '../selectors'
 import { listOf } from './helpers/lists'
 
 /**
- * Avatars for the different connection states in the connection list.
+ * Icons for the different connection states in the connection list.
  */
-const avatarsByState = {
+const iconsByState = {
   [ConnectionState.CONNECTED]: (
-    <Avatar style={{
-      backgroundColor: common.white,
-      color: green[500]
-    }}>
+    <ListItemIcon style={{ color: green[500] }}>
       <ActionDone />
-    </Avatar>
+    </ListItemIcon>
   ),
   [ConnectionState.CONNECTING]: (
-    <Avatar style={{
-      backgroundColor: yellow[500],
-      color: common.black
-    }}>
+    <ListItemIcon style={{ color: yellow[700] }}>
       <ActionSettingsEthernet />
-    </Avatar>
+    </ListItemIcon>
   ),
   [ConnectionState.DISCONNECTED]: (
-    <Avatar style={{
-      backgroundColor: red['A700'],
-      color: common.white
-    }}>
+    <ListItemIcon style={{ color: red['A700'] }}>
       <ContentClear />
-    </Avatar>
+    </ListItemIcon>
   ),
   [ConnectionState.DISCONNECTING]: (
-    <Avatar style={{
-      backgroundColor: yellow[500],
-      color: common.black
-    }}>
+    <ListItemIcon style={{ color: yellow[700] }}>
       <ActionSettingsEthernet />
-    </Avatar>
+    </ListItemIcon>
   )
 }
 
 /**
- * Avatar styling for unknown or unsupported connection states in the
+ * Icon styling for unknown or unsupported connection states in the
  * connection list.
  */
 const avatarForUnknownState = (
-  <Avatar style={{
-    backgroundColor: grey[500],
-    color: common.white
-  }}>
+  <ListItemIcon style={{ color: grey[500] }}>
     <ActionHelpOutline />
-  </Avatar>
+  </ListItemIcon>
 )
 
 /**
@@ -95,7 +80,7 @@ const stateNames = {
  */
 const ConnectionListEntry = (props) => {
   const { action, name, state, stateChangedAt } = props
-  const avatar = avatarsByState[state] || avatarForUnknownState
+  const avatar = iconsByState[state] || avatarForUnknownState
   const timeAgoComponent = stateChangedAt
     ? <TimeAgo>{stateChangedAt}</TimeAgo>
     : null
@@ -138,7 +123,8 @@ ConnectionListPresentation.displayName = 'ConnectionListPresentation'
 const ConnectionList = connect(
   // mapStateToProps
   state => ({
-    connections: getConnectionsInOrder(state)
+    connections: getConnectionsInOrder(state),
+    dense: true
   }),
   // mapDispatchToProps
   dispatch => ({

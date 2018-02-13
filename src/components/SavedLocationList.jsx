@@ -78,6 +78,7 @@ LocationListPresentation.displayName = 'LocationListPresentation'
 const LocationList = connect(
   // mapStateToProps
   state => ({
+    dense: true,
     savedLocations: getSavedLocationsInOrder(state)
   }),
   // mapDispatchToProps

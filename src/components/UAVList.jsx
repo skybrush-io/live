@@ -200,7 +200,7 @@ class UAVList extends React.Component {
           fitSelectedUAVs={this._fitSelectedUAVs} />
 
         <div style={{ height: '100%', overflow: 'auto' }}>
-          <UAVListPresentation uavs={uavs} value={selectedUAVIds || []}
+          <UAVListPresentation dense uavs={uavs} value={selectedUAVIds || []}
             onChange={onSelectionChanged} />
         </div>
 
