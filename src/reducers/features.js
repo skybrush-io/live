@@ -7,7 +7,7 @@ import { camelCase, capitalize, keys, map, mapValues } from 'lodash'
 import { handleActions } from 'redux-actions'
 import u from 'updeep'
 
-import { FeatureType, getNameOfFeatureType } from '../model/features'
+import { FeatureType, getNameOfFeatureType, LabelStyle } from '../model/features'
 import { deleteByIds, getKey } from '../utils/collections'
 import { chooseUniqueId, chooseUniqueName } from '../utils/naming'
 
@@ -26,7 +26,8 @@ const defaultState = {
         [ 19.061001, 47.471835 ]
       ],
       label: 'Test polygon',
-      color: '#ffcc00'
+      color: '#ffcc00',
+      labelStyle: LabelStyle.THIN_OUTLINE
     }
     /*
     examplePoint: {

@@ -30,8 +30,7 @@ import {
 
 import {
   closeServerSettingsDialog,
-  setServerSettingsDialogTab,
-  updateServerSettings
+  setServerSettingsDialogTab
 } from '../../actions/server-settings'
 import { getDetectedServersInOrder } from '../../selectors'
 import { createValidator, between, integer, required } from '../../utils/validation'

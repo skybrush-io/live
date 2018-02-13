@@ -12,7 +12,7 @@ import { connect } from 'react-redux'
 
 import { Tool } from '../tools'
 
-import { FeatureType } from '../../../model/features'
+import { FeatureType, LabelStyle } from '../../../model/features'
 import { featureIdToGlobalId } from '../../../model/identifiers'
 import { setLayerEditable, setLayerSelectable } from '../../../model/layers'
 import { getFeaturesInOrder, getSelectedFeatureIds } from '../../../selectors'
@@ -80,16 +80,20 @@ const thickOutline = (color) => new Stroke({ color, width: 5 })
 const whiteThinOutline = thinOutline('white')
 const whiteThickOutline = thickOutline('white')
 const whiteThickOutlineStyle = new Style({ stroke: whiteThickOutline })
+const labelStrokes = {
+  [LabelStyle.THIN_OUTLINE]: whiteThinOutline,
+  [LabelStyle.THICK_OUTLINE]: whiteThickOutline
+}
 
 // TODO: cache the style somewhere?
 const styleForFeature = (feature, selected = false) => {
-  const { color, label, type } = feature
+  const { color, label, labelStyle, type } = feature
   const parsedColor = Color(color || '#0088ff')
   const styles = []
   const radius = 6
 
   switch (type) {
-    case 'points':
+    case FeatureType.POINTS:
       styles.push(new Style({
         image: new Circle({
           stroke: selected ? whiteThinOutline : undefined,
@@ -101,7 +105,7 @@ const styleForFeature = (feature, selected = false) => {
       }))
       break
 
-    case 'lineString':
+    case FeatureType.LINE_STRING:
       if (selected) {
         styles.push(whiteThickOutlineStyle)
       }
@@ -110,7 +114,7 @@ const styleForFeature = (feature, selected = false) => {
       }))
       break
 
-    case 'polygon':
+    case FeatureType.POLYGON:
       // fallthrough
 
     default:
@@ -128,13 +132,14 @@ const styleForFeature = (feature, selected = false) => {
       }))
   }
 
-  if (label && label.length > 0) {
+  if (label && label.length > 0 && labelStyle !== LabelStyle.HIDDEN) {
     styles.push(new Style({
       text: new Text({
         font: '12px sans-serif',
         offsetY: type === 'points' ? radius + 10 : 0,
         placement: (type === 'lineString') ? 'line' : 'point',
-        text: feature.label,
+        stroke: labelStrokes[labelStyle],
+        text: label,
         textAlign: 'center'
       })
     }))

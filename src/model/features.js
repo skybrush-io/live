@@ -17,6 +17,16 @@ export const FeatureType = {
 }
 
 /**
+ * Enum constants for the various label types that we support.
+ */
+export const LabelStyle = {
+  HIDDEN: 'hidden',
+  NORMAL: 'normal',
+  THICK_OUTLINE: 'thickOutline',
+  THIN_OUTLINE: 'thinOutline'
+}
+
+/**
  * Converts an OpenLayers feature object into a corresponding feature object
  * that can be stored in the global state store.
  *
