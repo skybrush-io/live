@@ -20,6 +20,7 @@ import { listOf } from './helpers/lists'
 
 import { getSavedLocationsInOrder } from '../selectors'
 import { mapViewToLocationSignal } from '../signals'
+import { formatCoordinate } from '../utils/geography'
 
 /**
  * Presentation component for a single entry in the location list.
@@ -29,13 +30,8 @@ import { mapViewToLocationSignal } from '../signals'
  */
 const LocationListEntry = (props) => {
   const { location, onEditLocation } = props
-  const { center: {lon, lat}, id, name, rotation, zoom } = location
-
-  const avatar = id === 'addNew'
-    ? <Avatar><MapsAddLocation /></Avatar>
-    : <Avatar><MapsPlace /></Avatar>
-
-  const secondaryText = `lon: ${lon}, lat: ${lat}, rot: ${rotation}°, zoom: ${zoom}`
+  const { center: { lat, lon }, id, name, rotation } = location
+  const secondaryText = `${formatCoordinate([lon, lat])}, ${rotation}°`
 
   const editLocation = () => onEditLocation(location.id)
   const mapViewToLocation = () => mapViewToLocationSignal.dispatch(location)
@@ -50,7 +46,6 @@ const LocationListEntry = (props) => {
 
   return (
     <ListItem button onClick={onClick}>
-      {avatar}
       <ListItemText primary={name} secondary={secondaryText} />
       <ListItemSecondaryAction>{actionButton}</ListItemSecondaryAction>
     </ListItem>

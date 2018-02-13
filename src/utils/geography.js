@@ -2,6 +2,7 @@
  * @file Geography-related utility functions and variables.
  */
 
+import formatCoords from 'formatcoords'
 import { curry, minBy } from 'lodash'
 import Coordinate from 'ol/coordinate'
 import GeometryCollection from 'ol/geom/geometrycollection'
@@ -123,8 +124,8 @@ export const getExactClosestPointOf = (geometry, coordinate) => {
 
 /**
  * Creates a function that formats an OpenLayers coordinate into the
- * usual latitude-longitude representation with the given number of
- * fractional digits.
+ * usual decimal latitude-longitude representation with the given number
+ * of fractional digits.
  *
  * The constructed function accepts either a single OpenLayers coordinate
  * or a longitude-latitude pair as an array of two numbers.
@@ -132,11 +133,18 @@ export const getExactClosestPointOf = (geometry, coordinate) => {
  * @param {number} digits  the number of fractional digits to show
  * @return {function} the constructed function
  */
-export const makeCoordinateFormatter = (digits = 6) => {
-  return coordinate => (
-    Coordinate.format(coordinate, '{y}, {x}', digits)
-  )
-}
+export const makeDecimalCoordinateFormatter = (digits = 6) =>
+  coordinate => Coordinate.format(coordinate, '{y}, {x}', digits)
+
+/**
+ * Creates a function that formats an OpenLayers coordinate into the
+ * sexagesimal latitude-longitude representation.
+ *
+ * @param {number} decimalPlaces  the number of decimal places to show
+ * @return {function} the constructed function
+ */
+export const makeSexagesimalCoordinateFormatter = (decimalPlaces = 3) =>
+  coordinate => formatCoords(coordinate, true).format('FFf', { decimalPlaces })
 
 export const translateBy = curry((displacement, coordinates) => {
   const dx = displacement[0]
@@ -155,7 +163,7 @@ export const translateBy = curry((displacement, coordinates) => {
  * The constructed function accepts either a single OpenLayers coordinate
  * or a longitude-latitude pair as an array of two numbers.
  */
-export const formatCoordinate = makeCoordinateFormatter()
+export const formatCoordinate = makeDecimalCoordinateFormatter()
 
 /**
  * An OpenLayers sphere whose radius is equal to the semi-major axis of the
