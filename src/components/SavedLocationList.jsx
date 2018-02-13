@@ -2,12 +2,9 @@
  * @file Component that shows the list of locations saved by the user.
  */
 
-import Avatar from 'material-ui/Avatar'
 import IconButton from 'material-ui/IconButton'
 import { ListItem, ListItemSecondaryAction, ListItemText } from 'material-ui/List'
 
-import MapsAddLocation from 'material-ui-icons/AddLocation'
-import MapsPlace from 'material-ui-icons/Place'
 import ContentAdd from 'material-ui-icons/AddCircleOutline'
 import ActionSettings from 'material-ui-icons/Settings'
 
