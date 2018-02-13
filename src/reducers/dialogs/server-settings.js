@@ -17,6 +17,7 @@ import u from 'updeep'
  * check whether we need to fill in the default hostname and port.
  */
 const defaultState = {
+  active: false,
   hostName: null,
   port: 5000,
   isSecure: false,

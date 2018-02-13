@@ -30,7 +30,8 @@ import {
 
 import {
   closeServerSettingsDialog,
-  setServerSettingsDialogTab
+  setServerSettingsDialogTab,
+  updateServerSettings
 } from '../../actions/server-settings'
 import { getDetectedServersInOrder } from '../../selectors'
 import { createValidator, between, integer, required } from '../../utils/validation'
@@ -146,7 +147,7 @@ class ServerSettingsDialogPresentation extends React.Component {
   }
 
   render () {
-    const { forceFormSubmission, onClose, onSubmit,
+    const { active, forceFormSubmission, onClose, onDisconnect, onSubmit,
       onTabSelected, open, selectedTab } = this.props
     const actions = []
     const content = []
@@ -179,6 +180,10 @@ class ServerSettingsDialogPresentation extends React.Component {
         break
     }
 
+    actions.push(
+      <Button key='disconnect' disabled={!active}
+        onClick={active ? onDisconnect : undefined}>Disconnect</Button>
+    )
     actions.push(<Button key='close' onClick={onClose}>Close</Button>)
 
     return (
@@ -198,8 +203,10 @@ class ServerSettingsDialogPresentation extends React.Component {
 }
 
 ServerSettingsDialogPresentation.propTypes = {
+  active: PropTypes.bool,
   forceFormSubmission: PropTypes.func,
   onClose: PropTypes.func,
+  onDisconnect: PropTypes.func,
   onSubmit: PropTypes.func,
   onTabSelected: PropTypes.func,
   open: PropTypes.bool.isRequired,
@@ -218,6 +225,7 @@ ServerSettingsDialogPresentation.defaultProps = {
 const ServerSettingsDialog = connect(
   // mapStateToProps
   state => ({
+    active: state.dialogs.serverSettings.active,
     open: state.dialogs.serverSettings.dialogVisible,
     selectedTab: state.dialogs.serverSettings.selectedTab
   }),
@@ -229,9 +237,15 @@ const ServerSettingsDialog = connect(
     onClose () {
       dispatch(closeServerSettingsDialog())
     },
+    onDisconnect () {
+      dispatch(closeServerSettingsDialog({
+        active: false
+      }))
+    },
     onSubmit (data) {
       // Cast the port into a number first, then dispatch the action
       dispatch(closeServerSettingsDialog({
+        active: true,
         hostName: data.hostName,
         isSecure: data.isSecure,
         port: Number(data.port)

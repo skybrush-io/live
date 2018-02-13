@@ -45,8 +45,8 @@ class ServerConnectionManagerPresentation extends React.Component {
   }
 
   render () {
-    const { hostName, port, protocol, onConnected, onConnecting, onConnectionError,
-      onConnectionTimeout, onDisconnected, onMessage } = this.props
+    const { active, hostName, port, protocol, onConnected, onConnecting,
+      onConnectionError, onConnectionTimeout, onDisconnected, onMessage } = this.props
     const url = hostName ? `${protocol || proposeProtocol()}//${hostName}:${port}` : undefined
 
     // The 'key' property of the wrapping <div> is set to the URL as well;
@@ -58,7 +58,7 @@ class ServerConnectionManagerPresentation extends React.Component {
     // Putting the key on the <ReactSocket.Socket> tag is not enough because
     // we also need the events to remount themselves.
 
-    return url ? (
+    return url && active ? (
       <div key={url}>
         <ReactSocket.Socket name="serverSocket" url={url} ref={this._bindSocketToHub} />
         <ReactSocket.Listener socket="serverSocket" event="connect" callback={onConnected} />
@@ -73,6 +73,7 @@ class ServerConnectionManagerPresentation extends React.Component {
 }
 
 ServerConnectionManagerPresentation.propTypes = {
+  active: PropTypes.bool,
   hostName: PropTypes.string,
   port: PropTypes.number,
   protocol: PropTypes.string,
@@ -87,6 +88,7 @@ ServerConnectionManagerPresentation.propTypes = {
 const ServerConnectionManager = connect(
   // mapStateToProps
   state => ({
+    active: state.dialogs.serverSettings.active,
     hostName: state.dialogs.serverSettings.hostName,
     port: state.dialogs.serverSettings.port,
     protocol: state.dialogs.serverSettings.isSecure ? 'https:' : 'http:'
