@@ -63,7 +63,9 @@ export const getSelectedFeatureLabels = createSelector(
   getSelectedFeatureIds,
   state => state.features.byId,
   (featureIds, features) => (
-    featureIds.map(featureId => features[featureId].label)
+    reject(
+      featureIds.map(featureId => features[featureId]), isNil
+    ).map(feature => feature.label)
   )
 )
 
