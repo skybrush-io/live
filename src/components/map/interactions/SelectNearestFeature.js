@@ -26,7 +26,7 @@ class SelectNearestFeatureInteraction extends Interaction {
    * define how the interaction is customized.
    *
    * @param {Object} [options={}]  the options of the interaction
-   * @param {ol.Condition} [options.condition=ol.events.condition.singleClick]
+   * @param {ol.Condition} [options.condition=ol.events.condition.primaryAction]
    *        the condition that decides whether the interaction should deal
    *        with the event.
    * @param {ol.Condition} [options.addCondition=ol.events.condition.never]
@@ -111,7 +111,7 @@ class SelectNearestFeatureInteraction extends Interaction {
     })
 
     const defaultOptions = {
-      condition: Condition.click,
+      condition: Condition.primaryAction,
       addCondition: Condition.never,
       removeCondition: Condition.never,
       toggleCondition: Condition.never,
