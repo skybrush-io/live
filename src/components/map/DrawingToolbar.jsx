@@ -30,11 +30,11 @@ const DrawingToolbarPresentation = ({ onToolSelected, selectedTool, theme }) => 
       <IconButton onClick={partial(onToolSelected, Tool.DRAW_POINT)} tooltip='Add marker'>
         <CommunicationLocationOn color={colorForTool(Tool.DRAW_POINT)} />
       </IconButton>
-      <IconButton onClick={partial(onToolSelected, Tool.DRAW_CIRCLE)} tooltip='Draw circle'>
-        <ImagePanoramaFishEye color={colorForTool(Tool.DRAW_CIRCLE)} />
-      </IconButton>
       <IconButton onClick={partial(onToolSelected, Tool.DRAW_PATH)} tooltip='Draw path'>
         <EditorShowChart color={colorForTool(Tool.DRAW_PATH)} />
+      </IconButton>
+      <IconButton onClick={partial(onToolSelected, Tool.DRAW_CIRCLE)} tooltip='Draw circle'>
+        <ImagePanoramaFishEye color={colorForTool(Tool.DRAW_CIRCLE)} />
       </IconButton>
       <IconButton onClick={partial(onToolSelected, Tool.DRAW_POLYGON)} tooltip='Draw polygon'>
         <LabelOutline color={colorForTool(Tool.DRAW_POLYGON)} />
