@@ -3,6 +3,7 @@ import ActionList from 'material-ui-icons/List'
 import ActionSettingsEthernet from 'material-ui-icons/SettingsEthernet'
 import Flight from 'material-ui-icons/Flight'
 import Map from 'material-ui-icons/Map'
+import MapsLayers from 'material-ui-icons/Layers'
 import Message from 'material-ui-icons/Message'
 import MyLocation from 'material-ui-icons/MyLocation'
 
@@ -18,6 +19,7 @@ import { toggleSidebar } from '../../actions/sidebar'
 import AppSettingsButton from './AppSettingsButton'
 import ConnectionSettingsButton from './ConnectionSettingsButton'
 import FullScreenButton from './FullScreenButton'
+import SidebarBadge from './SidebarBadge'
 
 const style = {
   backgroundColor: '#333',
@@ -45,11 +47,15 @@ const SidebarPresentation = ({ open, onToggleSidebar, workbench }) => (
       <hr />
       <ModuleTray allowMultipleSelection vertical workbench={workbench}>
         <Module id="map" icon={<Map color='action' />} label="Map" component="map" />
+        <Module id="layers" icon={<MapsLayers color='action' />} label="Layers" component="layer-list" />
         <hr />
         <Module id="uavs" icon={<Flight color='action' />} label="UAVs" component="uav-list" />
         <Module id="messages" icon={<Message color='action' />} label="Messages" component="messages" />
         <hr />
-        <Module id="connections" icon={<ActionSettingsEthernet color='action' />} label="Connections" component="connection-list" />
+        <Module id="connections" icon={<React.Fragment>
+          <SidebarBadge>2</SidebarBadge>
+          <ActionSettingsEthernet color='action' />
+        </React.Fragment>} label="Connections" component="connection-list" />
         <Module id="clocks" icon={<ActionAlarm color='action' />} label="Clocks" component="clock-list" />
         <Module id="locations" icon={<MyLocation color='action' />} label="Locations" component="saved-location-list" />
         <hr />

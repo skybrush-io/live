@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import { connect } from 'react-redux'
 
-import { Badge } from '../Badge'
+import SidebarBadge from './SidebarBadge'
 
 import { showServerSettingsDialog } from '../../actions/server-settings'
 import { ConnectionState, MASTER_CONNECTION_ID } from '../../model/connections'
@@ -19,9 +19,9 @@ const ConnectionSettingsButtonPresentation = ({ onClick, state }) => {
   const classes = ['wb-module']
   return (
     <div className={classes.join(' ')} onClick={onClick}>
-      <span className='wb-icon wb-module-icon' style={{ position: 'relative' }}>
-        <Badge visible={state !== ConnectionState.DISCONNECTED}
-          color={badgeColorForState[state]} offset={[8, 8]} />
+      <span className='wb-icon wb-module-icon'>
+        <SidebarBadge visible={state !== ConnectionState.DISCONNECTED}
+          color={badgeColorForState[state]} />
         <ConnectionIcon />
       </span>
       Server Settings

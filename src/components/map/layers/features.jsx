@@ -20,13 +20,7 @@ import { coordinateFromLonLat, euclideanDistance } from '../../../utils/geograph
 
 // === Settings for this particular layer type ===
 
-const FeaturesLayerSettingsPresentation = () => {
-  return (
-    <div>
-      <p key="header">Waypoints, tracks and areas</p>
-    </div>
-  )
-}
+const FeaturesLayerSettingsPresentation = () => <noscript />
 
 export const FeaturesLayerSettings = connect(
   // mapStateToProps

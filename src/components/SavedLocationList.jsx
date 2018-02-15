@@ -5,7 +5,7 @@
 import IconButton from 'material-ui/IconButton'
 import { ListItem, ListItemSecondaryAction, ListItemText } from 'material-ui/List'
 
-import ContentAdd from 'material-ui-icons/AddCircleOutline'
+import AddCircleOutline from 'material-ui-icons/AddCircleOutline'
 import ActionSettings from 'material-ui-icons/Settings'
 
 import PropTypes from 'prop-types'
@@ -35,7 +35,7 @@ const LocationListEntry = (props) => {
 
   const actionButton = (
     <IconButton onClick={editLocation}>
-      {id === 'addNew' ? <ContentAdd /> : <ActionSettings />}
+      {id === 'addNew' ? <AddCircleOutline /> : <ActionSettings />}
     </IconButton>
   )
 

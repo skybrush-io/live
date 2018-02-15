@@ -2,6 +2,7 @@
 * @file React Component for the layer settings dialog.
 */
 
+import { autobind } from 'core-decorators'
 import PropTypes from 'prop-types'
 import React from 'react'
 import { connect } from 'react-redux'
@@ -10,25 +11,17 @@ import { TextField } from 'redux-form-material-ui'
 
 import Button from 'material-ui/Button'
 import Dialog, { DialogActions, DialogContent } from 'material-ui/Dialog'
-import { FormControlLabel } from 'material-ui/Form'
 import IconButton from 'material-ui/IconButton'
-import List, { ListItem, ListItemText } from 'material-ui/List'
 import Switch from 'material-ui/Switch'
-import VisibilityOff from 'material-ui-icons/VisibilityOff'
-import ContentAdd from 'material-ui-icons/Add'
-import ContentRemove from 'material-ui-icons/Remove'
 import ArrowDown from 'material-ui-icons/ArrowDropDown'
 import ArrowUp from 'material-ui-icons/ArrowDropUp'
 
-import { adjustLayerZIndex, closeLayersDialog, renameLayer,
-  setSelectedLayerInLayersDialog, toggleLayerVisibility,
-  addLayer, removeLayer } from '../../actions/layers'
-import { selectableListOf } from '../helpers/lists'
-import { LayerType, labelForLayerType, iconForLayerType } from '../../model/layers'
-import { getLayersInOrder } from '../../selectors'
-import { createValidator, required } from '../../utils/validation'
+import { LayerSettings, stateObjectToLayerSettings } from '../map/layers'
 
-import { LayerSettings, stateObjectToLayerSettings } from './layers/index'
+import { adjustLayerZIndex, closeLayersDialog, renameLayer,
+  toggleLayerVisibility, removeLayer } from '../../actions/layers'
+import { LayerType } from '../../model/layers'
+import { createValidator, required } from '../../utils/validation'
 
 /**
  * Form for the basic settings of a layer that is applicable to all layers
@@ -40,19 +33,20 @@ class BasicLayerSettingsFormPresentation extends React.Component {
     const { onToggleLayerVisibility } = this.props
 
     return (
-      <div style={{ paddingBottom: '1em' }}>
+      <div style={{ display: 'flex', paddingBottom: '1em' }}>
         <Field
           name='label'
           component={TextField}
           label='Layer name'
           placeholder='New layer'
-          style={{ width: '100%' }}
+          style={{ flex: 'auto' }}
           onKeyDown={this._onKeyDown}
         />
         <div>&nbsp;</div>
-        <FormControlLabel label='Visible'
+        <Switch checked={layer.visible}
           disabled={layer.type === LayerType.UNTYPED}
-          control={<Switch checked={layer.visible} onChange={onToggleLayerVisibility} />}
+          onChange={onToggleLayerVisibility}
+          style={{ flex: 'none' }}
         />
       </div>
     )
@@ -196,105 +190,35 @@ const LayerSettingsContainer = connect(
 /* ********************************************************************* */
 
 /**
- * Presentation component for a list that shows the currently added layers.
+ * Presentation component for the dialog that shows the settings of
+ * a selected layer.
  */
-const LayerListPresentation = selectableListOf(
-  (layer, props, selected) => (
-    <ListItem button key={layer.id}
-      className={selected ? 'selected-list-item' : undefined}
-      onClick={props.onItemSelected}
-    >
-      {iconForLayerType(layer.type)}
-      <ListItemText primary={layer.label} secondary={labelForLayerType(layer.type)} />
-      {layer.visible ? undefined : <VisibilityOff />}
-    </ListItem>
-  ),
-  {
-    backgroundHint: 'No layers',
-    dataProvider: 'layers',
-    /* eslint-disable react/display-name */
-    listFactory: (props, children) => (
-      <List className='dialog-sidebar'>
-        {children}
-      </List>
-    )
-    /* eslint-enable react/display-name */
-  }
-)
-
-LayerListPresentation.propTypes = {
-  layers: PropTypes.arrayOf(PropTypes.object).isRequired,
-  value: PropTypes.string,
-  onChange: PropTypes.func
-}
-
-/**
- * Container for the layer list that binds it to the Redux store.
- */
-const LayerList = connect(
-  // mapStateToProps
-  state => {
-    return {
-      layers: getLayersInOrder(state),
-      value: state.dialogs.layerSettings.selectedLayer
-    }
-  },
-  // mapDispatchToProps
-  dispatch => ({
-    onChange (event, layerId) {
-      dispatch(setSelectedLayerInLayersDialog(layerId))
-    }
-  })
-)(LayerListPresentation)
-
-/* ********************************************************************* */
-
-/**
- * Presentation component for the dialog that shows the configuration of
- * layers in the map.
- */
-class LayersDialogPresentation extends React.Component {
-  constructor (props) {
-    super(props)
-    this._moveSelectedLayerDown = this._moveSelectedLayerDown.bind(this)
-    this._moveSelectedLayerUp = this._moveSelectedLayerUp.bind(this)
-    this._removeSelectedLayer = this._removeSelectedLayer.bind(this)
-  }
-
+class LayerSettingsDialogPresentation extends React.Component {
   render () {
     const { canMoveUp, canMoveDown, dialogVisible, selectedLayerId } = this.props
-    const { onAddLayer, onClose } = this.props
-    const actions = [
-      <IconButton key='add' onClick={onAddLayer}>
-        <ContentAdd />
-      </IconButton>,
-      <IconButton key='remove' disabled={!selectedLayerId}
-        onClick={this._removeSelectedLayer}>
-        <ContentRemove />
-      </IconButton>,
-      <IconButton key='moveUp' disabled={!canMoveUp}
-        onClick={this._moveSelectedLayerUp}>
-        <ArrowUp />
-      </IconButton>,
-      <IconButton key='moveDown' disabled={!canMoveDown}
-        onClick={this._moveSelectedLayerDown}>
-        <ArrowDown />
-      </IconButton>,
-      <div key='separator' style={{ flex: 1 }} />,
-      <Button key='close' color='primary' onClick={onClose}>
-        Done
-      </Button>
-    ]
+    const { onClose } = this.props
+    const actions = []
+
+    if (selectedLayerId) {
+      actions.push(
+        <IconButton key='moveUp' disabled={!canMoveUp} onClick={this._moveSelectedLayerUp}>
+          <ArrowUp />
+        </IconButton>,
+        <IconButton key='moveDown' disabled={!canMoveDown} onClick={this._moveSelectedLayerDown}>
+          <ArrowDown />
+        </IconButton>,
+        <Button key='remove' color='secondary' onClick={this._removeSelectedLayer}>Remove</Button>
+      )
+    }
+
+    actions.push(
+      <Button key='close' color='primary' onClick={onClose}>Close</Button>
+    )
 
     return (
       <Dialog fullWidth maxWidth='md' open={dialogVisible} onClose={onClose}>
-        <DialogContent style={{ display: 'flex', overflow: 'visible', paddingLeft: 0 }}>
-          <div style={{ flex: 3 }}>
-            <LayerList />
-          </div>
-          <div style={{ flex: 7, marginLeft: 15 }}>
-            <LayerSettingsContainer layerId={selectedLayerId} />
-          </div>
+        <DialogContent style={{ overflow: 'auto' }}>
+          <LayerSettingsContainer layerId={selectedLayerId} />
         </DialogContent>
         <DialogActions>
           {actions}
@@ -303,38 +227,41 @@ class LayersDialogPresentation extends React.Component {
     )
   }
 
+  @autobind
   _moveSelectedLayer (delta) {
     const { selectedLayerId, onMoveLayer } = this.props
     onMoveLayer(selectedLayerId, delta)
   }
 
+  @autobind
   _moveSelectedLayerDown () {
-    this._moveSelectedLayer(1)
-  }
-
-  _moveSelectedLayerUp () {
     this._moveSelectedLayer(-1)
   }
 
+  @autobind
+  _moveSelectedLayerUp () {
+    this._moveSelectedLayer(1)
+  }
+
+  @autobind
   _removeSelectedLayer () {
     const { selectedLayerId, onRemoveLayer } = this.props
     onRemoveLayer(selectedLayerId)
   }
 }
 
-LayersDialogPresentation.propTypes = {
+LayerSettingsDialogPresentation.propTypes = {
   canMoveDown: PropTypes.bool.isRequired,
   canMoveUp: PropTypes.bool.isRequired,
   dialogVisible: PropTypes.bool.isRequired,
   selectedLayerId: PropTypes.string,
 
   onClose: PropTypes.func,
-  onAddLayer: PropTypes.func,
   onMoveLayer: PropTypes.func,
   onRemoveLayer: PropTypes.func
 }
 
-LayersDialogPresentation.defaultProps = {
+LayerSettingsDialogPresentation.defaultProps = {
   dialogVisible: false
 }
 
@@ -342,7 +269,7 @@ LayersDialogPresentation.defaultProps = {
  * Container of the dialog that allows the user to configure the layers of
  * the map.
  */
-const LayersDialog = connect(
+const LayerSettingsDialog = connect(
   // mapStateToProps
   state => {
     const { layerSettings } = state.dialogs
@@ -350,14 +277,15 @@ const LayersDialog = connect(
     const { dialogVisible, selectedLayer } = layerSettings
     const layerIndex = selectedLayer && order ? order.indexOf(selectedLayer) : -1
     return {
-      canMoveUp: layerIndex > 0,
-      canMoveDown: layerIndex < order.length - 1,
+      canMoveDown: layerIndex > 0,
+      canMoveUp: layerIndex >= 0 && layerIndex < order.length - 1,
       dialogVisible: dialogVisible,
       selectedLayerId: selectedLayer
     }
   },
   // mapDispatchToProps
   dispatch => ({
+    /*
     onAddLayer () {
       const action = addLayer()
       dispatch(action)
@@ -365,6 +293,7 @@ const LayersDialog = connect(
         dispatch(setSelectedLayerInLayersDialog(action.layerId))
       }
     },
+    */
 
     onClose () {
       dispatch(closeLayersDialog())
@@ -378,6 +307,6 @@ const LayersDialog = connect(
       dispatch(removeLayer(layerId))
     }
   })
-)(LayersDialogPresentation)
+)(LayerSettingsDialogPresentation)
 
-export default LayersDialog
+export default LayerSettingsDialog

@@ -6,7 +6,6 @@ import withTheme from 'material-ui/styles/withTheme'
 import ActionPanTool from 'material-ui-icons/PanTool'
 import ActionZoomIn from 'material-ui-icons/ZoomIn'
 import ContentSelectAll from 'material-ui-icons/SelectAll'
-import MapsLayers from 'material-ui-icons/Layers'
 
 import MapRotationTextBox from './MapRotationTextBox'
 import FitAllFeaturesButton from './FitAllFeaturesButton'
@@ -15,7 +14,6 @@ import partial from 'lodash/partial'
 import { connect } from 'react-redux'
 
 import { selectMapTool } from '../../actions/map'
-import { showLayersDialog } from '../../actions/layers'
 import { Tool } from './tools'
 
 /**
@@ -39,7 +37,7 @@ const MapToolbarSeparator = () => {
  *
  * @returns {React.Element} the rendered component
  */
-const MapToolbarPresentation = ({ onShowLayersDialog, onToolSelected, selectedTool, theme }) => {
+const MapToolbarPresentation = ({ onToolSelected, selectedTool, theme }) => {
   const colorForTool = (tool) => (
     selectedTool === tool ? 'primary' : undefined
   )
@@ -54,12 +52,6 @@ const MapToolbarPresentation = ({ onShowLayersDialog, onToolSelected, selectedTo
       </IconButton>
       <IconButton onClick={partial(onToolSelected, Tool.PAN)} tooltip='Pan'>
         <ActionPanTool color={colorForTool(Tool.PAN)} />
-      </IconButton>
-
-      <MapToolbarSeparator />
-
-      <IconButton onClick={onShowLayersDialog} tooltip='Layers'>
-        <MapsLayers />
       </IconButton>
 
       <MapToolbarSeparator />
@@ -79,7 +71,6 @@ const MapToolbarPresentation = ({ onShowLayersDialog, onToolSelected, selectedTo
 }
 
 MapToolbarPresentation.propTypes = {
-  onShowLayersDialog: PropTypes.func,
   onToolSelected: PropTypes.func,
   selectedTool: PropTypes.string,
   theme: PropTypes.object.isRequired
@@ -93,9 +84,6 @@ const MapToolbar = connect(
   state => Object.assign({}, state.map.tools),
   // mapDispatchToProps
   dispatch => ({
-    onShowLayersDialog () {
-      dispatch(showLayersDialog())
-    },
     onToolSelected (tool) {
       dispatch(selectMapTool(tool))
     }

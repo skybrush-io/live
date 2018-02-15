@@ -4,6 +4,7 @@
  */
 
 import { handleActions } from 'redux-actions'
+import u from 'updeep'
 
 /**
  * The default settings for the part of the state object being defined here.
@@ -19,23 +20,24 @@ const defaultState = {
 const reducer = handleActions({
   REMOVE_LAYER (state, action) {
     if (state.selectedLayer === action.payload) {
-      return Object.assign({}, state, { selectedLayer: undefined })
+      return u({
+        dialogVisible: false,
+        selectedLayer: undefined
+      }, state)
     } else {
       return state
     }
   },
 
-  SHOW_LAYERS_DIALOG: (state, action) => (
-    Object.assign({}, state, { dialogVisible: true })
-  ),
+  SHOW_LAYERS_DIALOG: (state, action) => u({
+    dialogVisible: true,
+    selectedLayer: action.payload.layerId
+  }, state),
 
-  CLOSE_LAYERS_DIALOG: (state, action) => (
-    Object.assign({}, state, { dialogVisible: false })
-  ),
-
-  SET_SELECTED_LAYER_IN_LAYERS_DIALOG: (state, action) => (
-    Object.assign({}, state, { selectedLayer: action.payload })
-  )
+  CLOSE_LAYERS_DIALOG: (state, action) => u({
+    dialogVisible: false,
+    selectedLayer: undefined
+  }, state)
 }, defaultState)
 
 export default reducer

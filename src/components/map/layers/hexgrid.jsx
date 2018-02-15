@@ -41,15 +41,18 @@ class HexGridLayerSettingsPresentation extends React.Component {
 
     return (
       <div>
-        <TextField inputRef={this._assignCenterField}
+        <TextField style={{ paddingRight: '1em' }}
+          inputRef={this._assignCenterField}
           label='Center of the grid'
           placeholder='Center (comma separated)'
           defaultValue={centerAsString} />
-        <TextField inputRef={this._assignSizeField}
+        <TextField style={{ paddingRight: '1em' }}
+          inputRef={this._assignSizeField}
           label='Size of the grid'
           placeholder='Size'
           defaultValue={String(size)} />
-        <TextField inputRef={this._assignRadiusField}
+        <TextField style={{ paddingRight: '1em' }}
+          inputRef={this._assignRadiusField}
           label='Radius of one cell'
           placeholder='Radius'
           defaultValue={String(radius)} />

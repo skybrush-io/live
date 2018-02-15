@@ -13,6 +13,7 @@ import { compose, getContext, renderNothing, withProps } from 'recompose'
 
 import ClockDisplayList from './components/ClockDisplayList'
 import ConnectionList from './components/ConnectionList'
+import LayerList from './components/LayerList'
 import LogPanel from './components/LogPanel'
 import SavedLocationList from './components/SavedLocationList'
 import UAVList from './components/UAVList'
@@ -43,6 +44,7 @@ const getFlockFromContext = getContext({
 const componentRegistry = {
   'connection-list': ConnectionList,
   'clock-list': ClockDisplayList,
+  'layer-list': LayerList,
   'saved-location-list': SavedLocationList,
   'log-panel': LogPanel,
   'map': MapView,

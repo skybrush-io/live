@@ -3,7 +3,7 @@ import * as React from 'react'
 
 import Transition from 'react-transition-group/Transition'
 
-export const Badge = ({ color, offset, visible }) => {
+export const Badge = ({ children, color, offset, visible }) => {
   const baseStyles = {}
 
   if (color) {
@@ -23,7 +23,9 @@ export const Badge = ({ color, offset, visible }) => {
             ...baseStyles,
             transform: (state === 'entering' || state === 'entered') ? 'scale(1)' : 'scale(0)',
             transition: 'transform 300ms ease-in-out, background-color 300ms linear'
-          }} />
+          }}>
+            {children}
+          </div>
         )
       }
     </Transition>
@@ -34,4 +36,8 @@ Badge.propTypes = {
   color: PropTypes.string,
   offset: PropTypes.arrayOf(PropTypes.number),
   visible: PropTypes.bool
+}
+
+Badge.defaultProps = {
+  visible: true
 }

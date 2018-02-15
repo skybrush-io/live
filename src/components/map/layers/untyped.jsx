@@ -20,7 +20,7 @@ class UntypedLayerSettingsPresentation extends React.Component {
     ))
     return (
       <div>
-        <p key='header'>This layer has no type yet. Please select a layer
+        <p key='header'>Please select a layer
         type from the following options:</p>
         <RadioGroup name='types.untyped' key='baseProperties'
           onChange={this.props.onLayerTypeChanged}>

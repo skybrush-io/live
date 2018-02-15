@@ -1,13 +1,12 @@
 /**
- * @file Component that shows the list of connections managed by the current
- * server as well as the master connection to the server itself.
+ * @file Component that shows the list of connections managed by the
+ * current server.
  */
 
-import Avatar from 'material-ui/Avatar'
 import IconButton from 'material-ui/IconButton'
 import { ListItem, ListItemIcon, ListItemSecondaryAction, ListItemText } from 'material-ui/List'
 
-import { common, green, grey, red, yellow } from 'material-ui/colors'
+import { green, grey, red, yellow } from 'material-ui/colors'
 
 import ActionDone from 'material-ui-icons/Done'
 import ActionHelpOutline from 'material-ui-icons/HelpOutline'

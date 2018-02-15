@@ -18,7 +18,7 @@ const defaultState = {
   byId: {
     addNew: {
       id: 'addNew',
-      name: 'Add a new location',
+      name: 'Add new location',
       center: {
         lon: 19.061951,
         lat: 47.473340

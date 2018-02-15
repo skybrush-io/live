@@ -29,6 +29,7 @@ body .lm_header {
 /* Icon styling in workbench-related components */
 .wb-icon {
   display: inline-block;
+  position: relative;
   vertical-align: middle;
   width: 48px;
   height: 48px;
@@ -43,7 +44,20 @@ body .lm_header {
 #sidebar hr {
   width: 100%;
   height: 1px;
+  margin: 0.25em 0;
   border: none;
   background: #444;
   box-shadow: 0 -1px 4px rgba(0, 0, 0, 0.65);
+}
+
+.wb-modification-indicator {
+  font-size: 10px;
+  text-align: center;
+
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }

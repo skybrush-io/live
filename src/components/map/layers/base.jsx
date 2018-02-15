@@ -22,14 +22,11 @@ class BaseLayerSettingsPresentation extends React.Component {
         style={{ marginTop: 5 }} control={<Radio />} />
     ))
     return (
-      <div>
-        <p key='header'>Layer data source</p>
-        <RadioGroup name='source.base' key='baseProperties'
-          value={this.props.layer.parameters.source}
-          onChange={this.props.onLayerSourceChanged}>
-          {sourceRadioButtons}
-        </RadioGroup>
-      </div>
+      <RadioGroup name='source.base' key='baseProperties'
+        value={this.props.layer.parameters.source}
+        onChange={this.props.onLayerSourceChanged}>
+        {sourceRadioButtons}
+      </RadioGroup>
     )
   }
 }

@@ -7,12 +7,12 @@ import { compose, withContext, withProps } from 'recompose'
 
 import GlobalSnackbar from './components/GlobalSnackbar'
 import HotkeyHandler from './components/HotkeyHandler'
-import LayersDialog from './components/map/LayersDialog'
 import ServerConnectionManager from './components/ServerConnectionManager'
 import Sidebar from './components/sidebar/Sidebar'
 
 import AppSettingsDialog from './components/dialogs/AppSettingsDialog'
 import GlobalErrorDialog from './components/dialogs/GlobalErrorDialog'
+import LayerSettingsDialog from './components/dialogs/LayerSettingsDialog'
 import MessagesDialog from './components/dialogs/MessagesDialog'
 import PromptDialog from './components/dialogs/PromptDialog'
 import SavedLocationEditorDialog from './components/dialogs/SavedLocationEditorDialog'
@@ -55,7 +55,7 @@ class Application extends React.Component {
         <ServerConnectionManager />
 
         <AppSettingsDialog />
-        <LayersDialog />
+        <LayerSettingsDialog />
         <MessagesDialog flock={flock} />
         <PromptDialog />
         <SavedLocationEditorDialog />
