@@ -1,6 +1,5 @@
+import { Badge } from 'react-flexible-workbench'
 import { withProps } from 'recompose'
-
-import { Badge } from '../Badge'
 
 /**
  * Special variant of badges shown on the sidebar.

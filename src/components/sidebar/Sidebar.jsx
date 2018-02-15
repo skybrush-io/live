@@ -18,8 +18,8 @@ import { toggleSidebar } from '../../actions/sidebar'
 
 import AppSettingsButton from './AppSettingsButton'
 import ConnectionSettingsButton from './ConnectionSettingsButton'
+import ConnectionStatusBadge from './ConnectionStatusBadge'
 import FullScreenButton from './FullScreenButton'
-import SidebarBadge from './SidebarBadge'
 
 const style = {
   backgroundColor: '#333',
@@ -52,10 +52,7 @@ const SidebarPresentation = ({ open, onToggleSidebar, workbench }) => (
         <Module id="uavs" icon={<Flight color='action' />} label="UAVs" component="uav-list" />
         <Module id="messages" icon={<Message color='action' />} label="Messages" component="messages" />
         <hr />
-        <Module id="connections" icon={<React.Fragment>
-          <SidebarBadge>2</SidebarBadge>
-          <ActionSettingsEthernet color='action' />
-        </React.Fragment>} label="Connections" component="connection-list" />
+        <Module id="connections" badge={<ConnectionStatusBadge />} icon={<ActionSettingsEthernet color='action' />} label="Connections" component="connection-list" />
         <Module id="clocks" icon={<ActionAlarm color='action' />} label="Clocks" component="clock-list" />
         <Module id="locations" icon={<MyLocation color='action' />} label="Locations" component="saved-location-list" />
         <hr />
