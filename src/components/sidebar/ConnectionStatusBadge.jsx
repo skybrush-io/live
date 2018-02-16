@@ -4,9 +4,10 @@
  */
 
 import { countBy } from 'lodash'
-import { Badge } from 'react-flexible-workbench'
 import { connect } from 'react-redux'
 import { createSelector } from 'reselect'
+
+import SidebarBadge from './SidebarBadge'
 
 import { ConnectionState } from '../../model/connections'
 import { getConnectionsInOrder } from '../../selectors'
@@ -83,4 +84,4 @@ export default connect(
       visible: level !== 'ok'
     }
   }
-)(Badge)
+)(SidebarBadge)
