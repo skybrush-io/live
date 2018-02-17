@@ -11,14 +11,8 @@ import PropTypes from 'prop-types'
 import { WorkbenchBuilder } from 'react-flexible-workbench'
 import { compose, getContext, renderNothing, withProps } from 'recompose'
 
-import ClockDisplayList from './components/ClockDisplayList'
-import ConnectionList from './components/ConnectionList'
-import LayerList from './components/LayerList'
-import LogPanel from './components/LogPanel'
-import SavedLocationList from './components/SavedLocationList'
-import UAVList from './components/UAVList'
 import MessagesPanel from './components/chat/MessagesPanel'
-import MapView from './components/map/MapView'
+import views from './views'
 
 import { saveWorkbenchState } from './actions/workbench'
 import store from './store'
@@ -42,19 +36,19 @@ const getFlockFromContext = getContext({
  * <code>withProps()</code> helper functions from <code>recompose</code>.
  */
 const componentRegistry = {
-  'connection-list': ConnectionList,
-  'clock-list': ClockDisplayList,
-  'layer-list': LayerList,
-  'saved-location-list': SavedLocationList,
-  'log-panel': LogPanel,
-  'map': MapView,
+  'connection-list': views.ConnectionList,
+  'clock-list': views.ClockDisplayList,
+  'layer-list': views.LayerList,
+  'saved-location-list': views.SavedLocationList,
+  'log-panel': views.LogPanel,
+  'map': views.MapView,
   'messages': compose(withProps({
     style: {
       padding: '0 10px'
     }
   }), getFlockFromContext)(MessagesPanel),
   'placeholder': renderNothing(),
-  'uav-list': getFlockFromContext(UAVList)
+  'uav-list': getFlockFromContext(views.UAVList)
 }
 
 function constructDefaultWorkbench (store) {
@@ -69,12 +63,12 @@ function constructDefaultWorkbench (store) {
   const workbench = builder
     .makeColumns()
       .makeStack()
-        .add(MapView).setTitle('Map').setId('map')
+        .add('map').setTitle('Map').setId('map')
       .finish()
       .makeRows()
         .makeStack()
-          .add(SavedLocationList).setTitle('Locations').setId('locations')
-          .add(LayerList).setTitle('layers').setId('Layers')
+          .add('saved-location-list').setTitle('Locations').setId('locations')
+          .add('layer-list').setTitle('layers').setId('Layers')
         .finish()
         .setRelativeHeight(25)
         .makeStack()

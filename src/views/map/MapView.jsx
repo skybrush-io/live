@@ -14,11 +14,10 @@ import MapReferenceRequestHandler from './MapReferenceRequestHandler'
 import MapToolbar from './MapToolbar'
 import { isDrawingTool, Tool, toolToDrawInteractionType } from './tools'
 
-import Widget from '../Widget'
-
 import { addFeature, updateFeatureCoordinates } from '../../actions/features'
 import { addFeaturesToSelection, clearSelection, setSelectedFeatures,
   removeFeaturesFromSelection } from '../../actions/map'
+import Widget from '../../components/Widget'
 import { handleError } from '../../error-handling'
 import mapViewManager from '../../mapViewManager'
 import { createFeatureFromOpenLayers } from '../../model/features'

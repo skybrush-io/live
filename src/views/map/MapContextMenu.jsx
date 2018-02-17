@@ -18,7 +18,7 @@ import ActionPowerSettingsNew from 'material-ui-icons/PowerSettingsNew'
 import ImageEdit from 'material-ui-icons/Edit'
 import Message from 'material-ui-icons/Message'
 
-import ContextMenu from '../ContextMenu'
+import ContextMenu from '../../components/ContextMenu'
 
 import { renameFeature, removeFeatures } from '../../actions/features'
 import { selectUAVInMessagesDialog, showMessagesDialog } from '../../actions/messages'

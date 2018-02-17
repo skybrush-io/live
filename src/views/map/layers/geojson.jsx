@@ -9,7 +9,7 @@ import { connect } from 'react-redux'
 
 import TextField from 'material-ui/TextField'
 
-import PopupColorPicker from '../../PopupColorPicker'
+import PopupColorPicker from '../../../components/PopupColorPicker'
 
 import Button from 'material-ui/Button'
 

@@ -10,11 +10,10 @@ import { createSelector } from 'reselect'
 import List, { ListItem, ListItemText } from 'material-ui/List'
 import AddCircleOutline from 'material-ui-icons/AddCircleOutline'
 
-import { selectableListOf } from './helpers/lists'
-
-import { addLayer, showLayersDialog } from '../actions/layers'
-import { labelForLayerType, iconForLayerType } from '../model/layers'
-import { getLayersInOrder } from '../selectors'
+import { addLayer, showLayersDialog } from '../../actions/layers'
+import { selectableListOf } from '../../components/helpers/lists'
+import { labelForLayerType, iconForLayerType } from '../../model/layers'
+import { getLayersInOrder } from '../../selectors'
 
 /**
  * Creates a single list item for the layer list.

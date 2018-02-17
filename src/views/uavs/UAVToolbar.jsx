@@ -14,8 +14,8 @@ import ImageBlurCircular from 'material-ui-icons/BlurCircular'
 import ImageBlurOn from 'material-ui-icons/BlurOn'
 import Message from 'material-ui-icons/Message'
 
-import { selectUAVInMessagesDialog, showMessagesDialog } from '../actions/messages'
-import * as messaging from '../utils/messaging'
+import { selectUAVInMessagesDialog, showMessagesDialog } from '../../actions/messages'
+import * as messaging from '../../utils/messaging'
 
 /**
  * Main toolbar for controlling the UAVs.

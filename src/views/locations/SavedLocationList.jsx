@@ -12,12 +12,11 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import { connect } from 'react-redux'
 
-import { editSavedLocation } from '../actions/saved-location-editor'
-import { listOf } from './helpers/lists'
-
-import { getSavedLocationsInOrder } from '../selectors'
-import { mapViewToLocationSignal } from '../signals'
-import { formatCoordinate } from '../utils/geography'
+import { editSavedLocation } from '../../actions/saved-location-editor'
+import { listOf } from '../../components/helpers/lists'
+import { getSavedLocationsInOrder } from '../../selectors'
+import { mapViewToLocationSignal } from '../../signals'
+import { formatCoordinate } from '../../utils/geography'
 
 /**
  * Presentation component for a single entry in the location list.

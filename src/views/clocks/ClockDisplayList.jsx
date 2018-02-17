@@ -14,7 +14,7 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import { connect } from 'react-redux'
 
-import { listOf } from './helpers/lists'
+import { listOf } from '../../components/helpers/lists'
 
 /**
  * Avatars for stopped and running clocks.

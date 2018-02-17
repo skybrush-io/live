@@ -12,9 +12,8 @@ import ContentReport from 'material-ui-icons/Report'
 import React from 'react'
 import { connect } from 'react-redux'
 
-import { deleteLogItem, clearLogItems } from '../actions/log'
-
-import FilterableSortableTable, {FilterTypes} from './FilterableSortableTable'
+import { deleteLogItem, clearLogItems } from '../../actions/log'
+import FilterableSortableTable, { FilterTypes } from '../../components/FilterableSortableTable'
 
 const logLevelIcons = {
   0: { Icon: ActionInfo, color: '#528FF3' }, // Info

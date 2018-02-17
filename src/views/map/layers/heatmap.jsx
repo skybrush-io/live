@@ -16,9 +16,8 @@ import { InputAdornment } from 'material-ui/Input'
 import Switch from 'material-ui/Switch'
 import TextField from 'material-ui/TextField'
 
-import SubscriptionDialog from '../../dialogs/SubscriptionDialog'
-
 import { setLayerParameterById } from '../../../actions/layers'
+import SubscriptionDialog from '../../../components/dialogs/SubscriptionDialog'
 import messageHub from '../../../message-hub'
 import HashedMap from '../../../utils/hashedmap'
 import {

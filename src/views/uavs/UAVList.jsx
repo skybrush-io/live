@@ -17,15 +17,15 @@ import React from 'react'
 import { connect } from 'react-redux'
 import u from 'updeep'
 
-import { multiSelectableListOf } from './helpers/lists'
-import UAVToolbar from './UAVToolbar'
 import CountMonitor from './CountMonitor'
+import UAVToolbar from './UAVToolbar'
 
-import { setSelectedUAVIds } from '../actions/map'
-import Flock from '../model/flock'
-import { getSelectedUAVIds } from '../selectors'
-import { mapViewToExtentSignal, mapViewToLocationSignal } from '../signals'
-import { coordinateFromLonLat, formatCoordinate } from '../utils/geography'
+import { setSelectedUAVIds } from '../../actions/map'
+import { multiSelectableListOf } from '../../components/helpers/lists'
+import Flock from '../../model/flock'
+import { getSelectedUAVIds } from '../../selectors'
+import { mapViewToExtentSignal, mapViewToLocationSignal } from '../../signals'
+import { coordinateFromLonLat, formatCoordinate } from '../../utils/geography'
 
 /**
  * Formats the secondary text to be shown for a single UAV in the UAV list.

@@ -16,12 +16,11 @@ import Switch from 'material-ui/Switch'
 import ArrowDown from 'material-ui-icons/ArrowDropDown'
 import ArrowUp from 'material-ui-icons/ArrowDropUp'
 
-import { LayerSettings, stateObjectToLayerSettings } from '../map/layers'
-
 import { adjustLayerZIndex, closeLayersDialog, renameLayer,
   toggleLayerVisibility, removeLayer } from '../../actions/layers'
 import { LayerType } from '../../model/layers'
 import { createValidator, required } from '../../utils/validation'
+import { LayerSettings, stateObjectToLayerSettings } from '../../views/map/layers'
 
 /**
  * Form for the basic settings of a layer that is applicable to all layers

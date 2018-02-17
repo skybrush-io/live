@@ -7,15 +7,14 @@ import { selectAllUAVFeatures, clearSelectedFeatures,
   selectMapTool, selectMapSource } from './actions/map'
 import { showMessagesDialog } from './actions/messages'
 
-import { Tool } from './components/map/tools'
-import { Source } from './model/sources'
-
-import store, { clearStore } from './store'
 import flock from './flock'
+import { Source } from './model/sources'
 import signals from './signals'
+import store, { clearStore } from './store'
 import {
   takeoffUAVs, landUAVs, returnToHomeUAVs, toggleErrorUAVs
 } from './utils/messaging'
+import { Tool } from './views/map/tools'
 
 export default [
   // Drone selection hotkeys

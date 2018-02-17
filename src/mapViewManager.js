@@ -3,7 +3,7 @@
  * main map's view.
  */
 
-import MapViewManager from './components/map/MapViewManager'
+import MapViewManager from './views/map/MapViewManager'
 
 /**
  * The singleton MapViewManager instance for the main map view.
