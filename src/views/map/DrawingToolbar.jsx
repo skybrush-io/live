@@ -3,9 +3,10 @@ import React from 'react'
 
 import IconButton from 'material-ui/IconButton'
 import withTheme from 'material-ui/styles/withTheme'
-import CommunicationLocationOn from 'material-ui-icons/LocationOn'
-import EditorShowChart from 'material-ui-icons/ShowChart'
-import ImagePanoramaFishEye from 'material-ui-icons/PanoramaFishEye'
+import LocationOn from 'material-ui-icons/LocationOn'
+import ShowChart from 'material-ui-icons/ShowChart'
+import CropSquare from 'material-ui-icons/CropSquare'
+import PanoramaFishEye from 'material-ui-icons/PanoramaFishEye'
 import LabelOutline from 'material-ui-icons/LabelOutline'
 
 import partial from 'lodash/partial'
@@ -28,13 +29,16 @@ const DrawingToolbarPresentation = ({ onToolSelected, selectedTool, theme }) => 
   return (
     <div style={{ display: 'flex', flexFlow: 'column nowrap' }}>
       <IconButton onClick={partial(onToolSelected, Tool.DRAW_POINT)} tooltip='Add marker'>
-        <CommunicationLocationOn color={colorForTool(Tool.DRAW_POINT)} />
+        <LocationOn color={colorForTool(Tool.DRAW_POINT)} />
       </IconButton>
       <IconButton onClick={partial(onToolSelected, Tool.DRAW_PATH)} tooltip='Draw path'>
-        <EditorShowChart color={colorForTool(Tool.DRAW_PATH)} />
+        <ShowChart color={colorForTool(Tool.DRAW_PATH)} />
       </IconButton>
       <IconButton onClick={partial(onToolSelected, Tool.DRAW_CIRCLE)} tooltip='Draw circle'>
-        <ImagePanoramaFishEye color={colorForTool(Tool.DRAW_CIRCLE)} />
+        <PanoramaFishEye color={colorForTool(Tool.DRAW_CIRCLE)} />
+      </IconButton>
+      <IconButton onClick={partial(onToolSelected, Tool.DRAW_RECTANGLE)} tooltip='Draw rectangle'>
+        <CropSquare color={colorForTool(Tool.DRAW_RECTANGLE)} />
       </IconButton>
       <IconButton onClick={partial(onToolSelected, Tool.DRAW_POLYGON)} tooltip='Draw polygon'>
         <LabelOutline color={colorForTool(Tool.DRAW_POLYGON)} />

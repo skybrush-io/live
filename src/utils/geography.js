@@ -5,11 +5,60 @@
 import formatCoords from 'formatcoords'
 import { curry, minBy } from 'lodash'
 import Coordinate from 'ol/coordinate'
+import Extent from 'ol/extent'
 import GeometryCollection from 'ol/geom/geometrycollection'
 import MultiLineString from 'ol/geom/multilinestring'
+import Polygon from 'ol/geom/polygon'
 import MultiPolygon from 'ol/geom/multipolygon'
 import Projection from 'ol/proj'
 import Sphere from 'ol/sphere'
+
+/**
+ * Creates an OpenLayers geometry function used by the "draw" interaction
+ * to draw a box whose sides are parallel to axes obtained by rotating the
+ * principal axes with the given angle.
+ *
+ * @param  {number|function(): number}  angle  the rotation angle of the axes or
+ *         a function that returns the angle when invoked
+ * @return {ol.DrawGeometryFunctionType}  the geometry function
+ */
+export const createRotatedBoxGeometryFunction = (angle) =>
+  (coordinates, optGeometry) => {
+    if (coordinates.length !== 2) {
+      throw new Error('must be called with two points only')
+    }
+
+    // Get the effective angle
+    const effectiveAngle = typeof angle === 'number' ? angle : angle()
+
+    // Translate the rectangle spanned by the two coordinates
+    // such that its center is at the origin, then undo the rotation
+    // of the map
+    const [a, b] = coordinates
+    const mid = [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2]
+    const newA = Coordinate.rotate([a[0] - mid[0], a[1] - mid[1]], effectiveAngle)
+    const newB = Coordinate.rotate([b[0] - mid[0], b[1] - mid[1]], effectiveAngle)
+
+    // Get the extents of the rectangle, get the four
+    // corners and then rotate and translate them back
+    const extent = Extent.boundingExtent([newA, newB])
+    const newCoordinates = [
+      Extent.getBottomLeft(extent),
+      Extent.getBottomRight(extent),
+      Extent.getTopRight(extent),
+      Extent.getTopLeft(extent),
+      Extent.getBottomLeft(extent)
+    ].map(coordinate =>
+      Coordinate.add(
+        Coordinate.rotate(coordinate, -effectiveAngle), mid
+      )
+    )
+
+    // Return the geometry
+    const geometry = optGeometry || new Polygon(null)
+    geometry.setCoordinates([newCoordinates])
+    return geometry
+  }
 
 /**
  * Calculates the Euclidean distance between two OpenLayers coordinates.

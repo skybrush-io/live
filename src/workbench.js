@@ -68,7 +68,7 @@ function constructDefaultWorkbench (store) {
       .makeRows()
         .makeStack()
           .add('saved-location-list').setTitle('Locations').setId('locations')
-          .add('layer-list').setTitle('layers').setId('Layers')
+          .add('layer-list').setTitle('Layers').setId('layers')
         .finish()
         .setRelativeHeight(25)
         .makeStack()

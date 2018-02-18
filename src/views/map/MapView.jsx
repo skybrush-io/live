@@ -1,4 +1,5 @@
 import { autobind } from 'core-decorators'
+import OLMap from 'ol/map'
 import { Map, View, control, interaction } from 'ol-react'
 import PropTypes from 'prop-types'
 import React from 'react'
@@ -12,7 +13,7 @@ import DrawingToolbar from './DrawingToolbar'
 import MapContextMenu from './MapContextMenu'
 import MapReferenceRequestHandler from './MapReferenceRequestHandler'
 import MapToolbar from './MapToolbar'
-import { isDrawingTool, Tool, toolToDrawInteractionType } from './tools'
+import { isDrawingTool, Tool, toolToDrawInteractionProps } from './tools'
 
 import { addFeature, updateFeatureCoordinates } from '../../actions/features'
 import { addFeaturesToSelection, clearSelection, setSelectedFeatures,
@@ -124,10 +125,11 @@ const MapViewToolbars = () => ([
 /**
  * React component that renders the active interactions of the map.
  *
- * @param  {Object}  props  the props of the component
+ * @param  {Object}  props    the props of the component
+ * @param  {Object}  context  the context of the component
  * @returns {JSX.Node[]}  the interactions on the map
  */
-const MapViewInteractions = (props) => {
+const MapViewInteractions = (props, context) => {
   const {
     onBoxDragEnded, onDrawEnded, onFeaturesMoved,
     onFeaturesSelected, selectedFeaturesProvider, selectedTool
@@ -204,7 +206,7 @@ const MapViewInteractions = (props) => {
     interactions.push(
       /* DRAW mode | Click --> Draw a new feature */
       <interaction.Draw key='draw.Draw'
-        type={toolToDrawInteractionType(selectedTool) || 'Point'}
+        {...toolToDrawInteractionProps(selectedTool, context.map)}
         drawend={onDrawEnded}/>
     )
   }
@@ -222,6 +224,10 @@ MapViewInteractions.propTypes = {
   onDrawEnded: PropTypes.func,
   onFeaturesMoved: PropTypes.func,
   onFeaturesSelected: PropTypes.func
+}
+
+MapViewInteractions.contextTypes = {
+  map: PropTypes.instanceOf(OLMap)
 }
 
 /* ********************************************************************** */
@@ -283,6 +289,7 @@ class MapViewPresentation extends React.Component {
       [Tool.PAN]: 'tool-pan',
       [Tool.DRAW_POINT]: 'tool-draw tool-draw-point',
       [Tool.DRAW_CIRCLE]: 'tool-draw tool-draw-circle',
+      [Tool.DRAW_RECTANGLE]: 'tool-draw tool-draw-rectangle',
       [Tool.DRAW_PATH]: 'tool-draw tool-draw-path',
       [Tool.DRAW_POLYGON]: 'tool-draw tool-draw-polygon',
       [Tool.EDIT_FEATURE]: 'tool-edit tool-edit-feature'

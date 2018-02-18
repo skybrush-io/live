@@ -3,6 +3,8 @@
  * can use on the map.
  */
 
+import { createRotatedBoxGeometryFunction } from '../../utils/geography'
+
 /**
  * Enum containing constants for the tools that the user can use on the map.
  */
@@ -13,6 +15,7 @@ export const Tool = {
 
   DRAW_POINT: 'drawPoint',
   DRAW_CIRCLE: 'drawCircle',
+  DRAW_RECTANGLE: 'drawRectangle',
   DRAW_PATH: 'drawPath',
   DRAW_POLYGON: 'drawPolygon',
 
@@ -30,27 +33,46 @@ export function isDrawingTool (tool) {
 }
 
 /**
- * Returns the OpenLayers draw interaction type corresponding to the given
+ * Returns the OpenLayers draw interaction props corresponding to the given
  * drawing tool.
  *
  * @param  {string}  tool the tool identifier
- * @return {string}  the OpenLayers interaction type corresponding to the tool
+ * @param  {ol.Map}  map  the map on which the tool will be drawing
+ * @return {string}  the OpenLayers interaction props corresponding to the tool
  */
-export function toolToDrawInteractionType (tool) {
+export function toolToDrawInteractionProps (tool, map) {
   switch (tool) {
     case Tool.DRAW_POINT:
-      return 'Point'
+      return {
+        type: 'Point'
+      }
 
     case Tool.DRAW_CIRCLE:
-      return 'Circle'
+      return {
+        type: 'Circle'
+      }
+
+    case Tool.DRAW_RECTANGLE:
+      return {
+        geometryFunction: createRotatedBoxGeometryFunction(
+          () => map ? -map.getView().getRotation() : 0
+        ),
+        type: 'Circle'
+      }
 
     case Tool.DRAW_PATH:
-      return 'LineString'
+      return {
+        type: 'LineString'
+      }
 
     case Tool.DRAW_POLYGON:
-      return 'Polygon'
+      return {
+        type: 'Polygon'
+      }
 
     default:
-      return undefined
+      return {
+        type: 'Point'
+      }
   }
 }
