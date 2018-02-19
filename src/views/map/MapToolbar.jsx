@@ -47,11 +47,11 @@ const MapToolbarPresentation = ({ onToolSelected, selectedTool, theme }) => {
       <IconButton onClick={partial(onToolSelected, Tool.SELECT)} tooltip='Select'>
         <ContentSelectAll color={colorForTool(Tool.SELECT)} />
       </IconButton>
-      <IconButton onClick={partial(onToolSelected, Tool.ZOOM)} tooltip='Zoom'>
-        <ActionZoomIn color={colorForTool(Tool.ZOOM)} />
-      </IconButton>
       <IconButton onClick={partial(onToolSelected, Tool.PAN)} tooltip='Pan'>
         <ActionPanTool color={colorForTool(Tool.PAN)} />
+      </IconButton>
+      <IconButton onClick={partial(onToolSelected, Tool.ZOOM)} tooltip='Zoom'>
+        <ActionZoomIn color={colorForTool(Tool.ZOOM)} />
       </IconButton>
 
       <MapToolbarSeparator />

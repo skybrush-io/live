@@ -1,4 +1,5 @@
 import { autobind } from 'core-decorators'
+import { partial } from 'lodash'
 import OLMap from 'ol/map'
 import { Map, View, control, interaction } from 'ol-react'
 import PropTypes from 'prop-types'
@@ -16,7 +17,7 @@ import MapToolbar from './MapToolbar'
 import { isDrawingTool, Tool, toolToDrawInteractionProps } from './tools'
 
 import { addFeature, updateFeatureCoordinates } from '../../actions/features'
-import { addFeaturesToSelection, clearSelection, setSelectedFeatures,
+import { addFeaturesToSelection, setSelectedFeatures,
   removeFeaturesFromSelection } from '../../actions/map'
 import Widget from '../../components/Widget'
 import { handleError } from '../../error-handling'
@@ -131,73 +132,74 @@ const MapViewToolbars = () => ([
  */
 const MapViewInteractions = (props, context) => {
   const {
-    onBoxDragEnded, onDrawEnded, onFeaturesMoved,
-    onFeaturesSelected, selectedFeaturesProvider, selectedTool
+    onDrawEnded, onAddFeaturesToSelection,
+    onFeaturesMoved, onRemoveFeaturesFromSelection,
+    onSetSelectedFeatures, onSingleFeatureSelected,
+    selectedFeaturesProvider, selectedTool
   } = props
   const interactions = []
 
   // Common interactions that can be used regardless of the selected tool
-  /* PAN mode | Alt + Shift + Drag --> Rotate view */
+  /* Alt + Shift + drag --> Rotate view */
+  /* Alt + Shift + middle button drag --> Rotate and zoom view */
   interactions.push(
-    <interaction.DragRotate key='*.DragRotate'
+    <interaction.DragRotate key='DragRotate'
       condition={Condition.altShiftKeysOnly} />,
-    <interaction.DragRotateAndZoom key='*.DragRotateAndZoom'
+    <interaction.DragRotateAndZoom key='DragRotateAndZoom'
       condition={Condition.altShiftKeyAndMiddleMouseButton} />
   )
 
   if (selectedTool === Tool.PAN) {
     interactions.push(
       /* PAN mode | Ctrl/Cmd + Drag --> Box select features */
-      <interaction.DragBox key='pan.DragBox'
+      <interaction.DragBox key='DragBox.setSelection'
         condition={Condition.platformModifierKeyOnly}
-        boxend={onBoxDragEnded} />
+        boxend={onSetSelectedFeatures} />
     )
   }
 
   if (selectedTool === Tool.SELECT) {
     interactions.push(
       /* SELECT mode | Drag a feature --> Move a feature to a new location */
-      <MoveFeatures key='select.MoveFeatures'
+      <MoveFeatures key='MoveFeatures'
         featureProvider={selectedFeaturesProvider}
         translateend={onFeaturesMoved} />,
 
       /* SELECT mode |
-          Ctrl/Cmd + Click --> Select nearest feature
-          Shift + Click --> Add nearest feature to selection
+          click --> Select nearest feature
+          Shift + Click or PlatMod + Click --> Toggle nearest feature in selection
           Alt + Click --> Remove nearest feature from selection */
-      <SelectNearestFeature key='select.SelectNearestFeature'
+      <SelectNearestFeature key='SelectNearestFeature'
         addCondition={Condition.never}
         layers={isLayerSelectable}
         removeCondition={Condition.altKeyOnly}
         toggleCondition={Condition.platformModifierKeyOrShiftKeyOnly}
-        select={onFeaturesSelected}
+        select={onSingleFeatureSelected}
         threshold={40} />,
 
-      /* SELECT mode | Ctrl/Cmd + Drag --> Box select features */
-      <interaction.DragBox key='select.DragBox.Ctrl'
-        condition={Condition.platformModifierKeyOnly}
-        boxend={onBoxDragEnded} />,
+      /* We cannot add "Drag --> Set selected features" here because it
+       * interferes with the MoveFeatures interaction */
 
       /* SELECT mode | Shift + Drag --> Box add features to selection */
-      <interaction.DragBox key='select.DragBox.Shift'
+      <interaction.DragBox key='DragBox.addToSelection'
         condition={Condition.shiftKeyOnly}
-        boxend={onBoxDragEnded} />,
+        boxend={onAddFeaturesToSelection} />,
 
       /* SELECT mode | Alt + Drag --> Box remove features from selection */
-      <interaction.DragBox key='select.DragBox.Alt'
+      <interaction.DragBox key='DragBox.removeFromSelection'
         condition={Condition.altKeyOnly}
-        boxend={onBoxDragEnded} />
+        boxend={onRemoveFeaturesFromSelection} />
     )
   }
 
   if (selectedTool === Tool.ZOOM) {
     interactions.push(
       /* ZOOM mode | Drag --> Box zoom in */
-      <interaction.DragZoom key='zoom.DragZoom'
+      <interaction.DragZoom key='DragZoom.in'
         condition={Condition.always} />,
 
       /* ZOOM mode | Shift + Drag --> Box zoom out */
-      <interaction.DragZoom key='zoom.DragZoom.out'
+      <interaction.DragZoom key='DragZoom.out'
         condition={Condition.shiftKeyOnly} out />
     )
   }
@@ -205,7 +207,7 @@ const MapViewInteractions = (props, context) => {
   if (isDrawingTool(selectedTool)) {
     interactions.push(
       /* DRAW mode | Click --> Draw a new feature */
-      <interaction.Draw key='draw.Draw'
+      <interaction.Draw key='Draw'
         {...toolToDrawInteractionProps(selectedTool, context.map)}
         drawend={onDrawEnded}/>
     )
@@ -220,10 +222,12 @@ MapViewInteractions.propTypes = {
   selectedFeaturesProvider: PropTypes.func,
   selectedTool: PropTypes.string.isRequired,
 
-  onBoxDragEnded: PropTypes.func,
+  onAddFeaturesToSelection: PropTypes.func,
   onDrawEnded: PropTypes.func,
   onFeaturesMoved: PropTypes.func,
-  onFeaturesSelected: PropTypes.func
+  onRemoveFeaturesFromSelection: PropTypes.func,
+  onSetSelectedFeatures: PropTypes.func,
+  onSingleFeatureSelected: PropTypes.func
 }
 
 MapViewInteractions.contextTypes = {
@@ -236,6 +240,14 @@ MapViewInteractions.contextTypes = {
  * React component for the map of the main window.
  */
 class MapViewPresentation extends React.Component {
+  constructor (props) {
+    super(props)
+
+    this._onAddFeaturesToSelection = partial(this._onBoxDragEnded, 'add')
+    this._onRemoveFeaturesFromSelection = partial(this._onBoxDragEnded, 'remove')
+    this._onSetSelectedFeatures = partial(this._onBoxDragEnded, 'set')
+  }
+
   componentDidMount () {
     const { glContainer } = this.props
     this.layoutManager = glContainer ? glContainer.layoutManager : undefined
@@ -310,16 +322,18 @@ class MapViewPresentation extends React.Component {
           selectedTool={selectedTool}
           selectedFeaturesProvider={this._getSelectedFeatures}
 
-          onBoxDragEnded={this._onBoxDragEnded}
+          onAddFeaturesToSelection={this._onAddFeaturesToSelection}
           onDrawEnded={this._onDrawEnded}
           onFeaturesMoved={this._onFeaturesMoved}
-          onFeaturesSelected={this._onFeaturesSelected}
+          onRemoveFeaturesFromSelection={this._onRemoveFeaturesFromSelection}
+          onSetSelectedFeatures={this._onSetSelectedFeatures}
+          onSingleFeatureSelected={this._onFeatureSelected}
         />
 
         {/* OpenLayers interaction that triggers a context menu */}
         <ShowContextMenu
           layers={isLayerSelectable}
-          selectAction={this._onFeaturesSelected}
+          selectAction={this._onFeatureSelected}
           threshold={40}>
           {/* The context menu that appears on the map when the user right-clicks */}
           <MapContextMenu />
@@ -347,37 +361,27 @@ class MapViewPresentation extends React.Component {
   }
 
   /**
-   * Event handler that is called when the user finishes the drag-box
-   * interaction on the map in "select" mode.
+   * Event handler that is called when the user finishes a drag-box
+   * interaction on the map.
    *
+   * @param  {string}  mode  the selection mode; one of 'add', 'remove',
+   *         or 'set'
    * @param  {ol.interaction.DragBox.Event} event  the event dispatched by
    *         the drag-box interaction
    */
   @autobind
-  _onBoxDragEnded (event) {
-    const mapBrowserEvent = event.mapBrowserEvent
-
-    let action
-
-    if (Condition.altKeyOnly(mapBrowserEvent)) {
-      action = removeFeaturesFromSelection
-    } else if (Condition.shiftKeyOnly(mapBrowserEvent)) {
-      action = addFeaturesToSelection
-    } else {
-      action = setSelectedFeatures
-    }
-
+  _onBoxDragEnded (mode, event) {
     const extent = event.target.getGeometry().getExtent()
-    const ids = []
+    const features = []
 
     getVisibleSelectableLayers(this.map.map).forEach(layer => {
       const source = layer.getSource()
       source.forEachFeatureIntersectingExtent(extent, feature => {
-        ids.push(feature.getId())
+        features.push(feature)
       })
     })
 
-    this.props.dispatch(action(ids))
+    this._onFeaturesSelected(mode, features)
   }
 
   /**
@@ -430,30 +434,50 @@ class MapViewPresentation extends React.Component {
   }
 
   /**
-   * Event handler that is called when the user selects a UAV or feature on
-   * the map by clicking or dragging.
+   * Event handler that is called when the user selects a single UAV or
+   * feature on the map by clicking.
    *
    * @param  {string}  mode  the selection mode; one of 'add', 'remove',
-   *         'toggle' or 'set'
+   *         'clear', 'toggle' or 'set'
    * @param  {ol.Feature}  feature  the selected feature
-   * @param  {number}  distance  the distance of the feature from the point
-   *         where the user clicked, in pixels
    */
   @autobind
-  _onFeaturesSelected (mode, feature, distance) {
-    const { selection } = this.props
+  _onFeatureSelected (mode, feature) {
     const id = feature ? feature.getId() : undefined
+    if (id === undefined && mode !== 'set' && mode !== 'clear') {
+      return
+    }
+
+    if (mode === 'toggle') {
+      const { selection } = this.props
+      mode = selection.includes(id) ? 'remove' : 'add'
+    } else if (mode === 'clear') {
+      mode = 'set'
+      feature = undefined
+    }
+
+    this._onFeaturesSelected(mode, feature ? [feature] : [])
+  }
+
+  /**
+   * Event handler that is called when the user selects multiple UAVs or
+   * features on the map by clicking or dragging.
+   *
+   * @param  {string}  mode  the selection mode; one of 'add', 'remove',
+   *         or 'set'
+   * @param  {ol.Feature[]}  features  the selected features
+   */
+  @autobind
+  _onFeaturesSelected (mode, features) {
     const actionMapping = {
       'add': addFeaturesToSelection,
-      'clear': clearSelection,
       'remove': removeFeaturesFromSelection,
-      'toggle': selection.includes(id)
-        ? removeFeaturesFromSelection
-        : addFeaturesToSelection
+      'set': setSelectedFeatures
     }
     const action = actionMapping[mode] || setSelectedFeatures
-    if (id) {
-      this.props.dispatch(action([id]))
+    const ids = features ? features.map(feature => feature.getId()) : []
+    if (action === setSelectedFeatures || (ids && ids.length > 0)) {
+      this.props.dispatch(action(ids))
     }
   }
 

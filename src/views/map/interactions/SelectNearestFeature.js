@@ -55,6 +55,11 @@ class SelectNearestFeatureInteraction extends Interaction {
   constructor (options = {}) {
     super({
       handleEvent: mapBrowserEvent => {
+        // Bail out if this is not a click
+        if (!Condition.click(mapBrowserEvent)) {
+          return true
+        }
+
         // Check whether the event matches the condition
         if (!this._condition(mapBrowserEvent)) {
           return true

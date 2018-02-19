@@ -38,7 +38,7 @@ export function isDrawingTool (tool) {
  *
  * @param  {string}  tool the tool identifier
  * @param  {ol.Map}  map  the map on which the tool will be drawing
- * @return {string}  the OpenLayers interaction props corresponding to the tool
+ * @return {Object}  the OpenLayers interaction props corresponding to the tool
  */
 export function toolToDrawInteractionProps (tool, map) {
   switch (tool) {

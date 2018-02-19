@@ -118,7 +118,11 @@ class ContextMenuInteraction extends Interaction {
    * @return {number} the distance of the feature from the event, in pixels
    */
   _distanceOfEventFromFeature (event, feature) {
-    const closestPoint = feature.getGeometry().getClosestPoint(event.coordinate)
+    const geom = feature.getGeometry()
+    if (geom.intersectsCoordinate(event.coordinate)) {
+      return 0
+    }
+    const closestPoint = geom.getClosestPoint(event.coordinate)
     const closestPixel = event.map.getPixelFromCoordinate(closestPoint)
     return euclideanDistance(event.pixel, closestPixel)
   }
