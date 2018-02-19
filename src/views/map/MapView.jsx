@@ -7,7 +7,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 
 import Condition from './conditions'
-import { MoveFeatures, SelectNearestFeature, ShowContextMenu } from './interactions'
+import { SelectNearestFeature, ShowContextMenu, TransformFeatures } from './interactions'
 import { Layers, stateObjectToLayer } from './layers'
 
 import DrawingToolbar from './DrawingToolbar'
@@ -133,7 +133,7 @@ const MapViewToolbars = () => ([
 const MapViewInteractions = (props, context) => {
   const {
     onDrawEnded, onAddFeaturesToSelection,
-    onFeaturesMoved, onRemoveFeaturesFromSelection,
+    onFeaturesTransformed, onRemoveFeaturesFromSelection,
     onSetSelectedFeatures, onSingleFeatureSelected,
     selectedFeaturesProvider, selectedTool
   } = props
@@ -160,25 +160,20 @@ const MapViewInteractions = (props, context) => {
 
   if (selectedTool === Tool.SELECT) {
     interactions.push(
-      /* SELECT mode | Drag a feature --> Move a feature to a new location */
-      <MoveFeatures key='MoveFeatures'
-        featureProvider={selectedFeaturesProvider}
-        translateend={onFeaturesMoved} />,
-
       /* SELECT mode |
           click --> Select nearest feature
-          Shift + Click or PlatMod + Click --> Toggle nearest feature in selection
+          PlatMod + Click --> Toggle nearest feature in selection
           Alt + Click --> Remove nearest feature from selection */
       <SelectNearestFeature key='SelectNearestFeature'
         addCondition={Condition.never}
         layers={isLayerSelectable}
         removeCondition={Condition.altKeyOnly}
-        toggleCondition={Condition.platformModifierKeyOrShiftKeyOnly}
+        toggleCondition={Condition.platformModifierKeyOnly}
         select={onSingleFeatureSelected}
         threshold={40} />,
 
       /* We cannot add "Drag --> Set selected features" here because it
-       * interferes with the MoveFeatures interaction */
+       * interferes with the SelectNearestFeature interaction */
 
       /* SELECT mode | Shift + Drag --> Box add features to selection */
       <interaction.DragBox key='DragBox.addToSelection'
@@ -188,7 +183,19 @@ const MapViewInteractions = (props, context) => {
       /* SELECT mode | Alt + Drag --> Box remove features from selection */
       <interaction.DragBox key='DragBox.removeFromSelection'
         condition={Condition.altKeyOnly}
-        boxend={onRemoveFeaturesFromSelection} />
+        boxend={onRemoveFeaturesFromSelection} />,
+
+      /* SELECT mode |
+           Drag a feature --> Move a feature to a new location
+           Alt + Drag --> Rotate a feature.
+         This must come last in order to ensure that it will get the
+         chance to process events before DragBox so Alt+something will not
+         start a drag-box when clicking on a selected feature */
+      <TransformFeatures key='TransformFeatures'
+        featureProvider={selectedFeaturesProvider}
+        moveCondition={Condition.noModifierKeys}
+        rotateCondition={Condition.altKeyOnly}
+        transformEnd={onFeaturesTransformed} />
     )
   }
 
@@ -224,7 +231,7 @@ MapViewInteractions.propTypes = {
 
   onAddFeaturesToSelection: PropTypes.func,
   onDrawEnded: PropTypes.func,
-  onFeaturesMoved: PropTypes.func,
+  onFeaturesTransformed: PropTypes.func,
   onRemoveFeaturesFromSelection: PropTypes.func,
   onSetSelectedFeatures: PropTypes.func,
   onSingleFeatureSelected: PropTypes.func
@@ -307,6 +314,10 @@ class MapViewPresentation extends React.Component {
       [Tool.EDIT_FEATURE]: 'tool-edit tool-edit-feature'
     }
 
+    /* setTimeout(() => {
+      console.log(this.map.map.getInteractions().getArray())
+    }, 1000); */
+
     return (
       <Map view={view} ref={this._assignMapRef}
         useDefaultControls={false} loadTilesWhileInteracting
@@ -324,7 +335,7 @@ class MapViewPresentation extends React.Component {
 
           onAddFeaturesToSelection={this._onAddFeaturesToSelection}
           onDrawEnded={this._onDrawEnded}
-          onFeaturesMoved={this._onFeaturesMoved}
+          onFeaturesTransformed={this._onFeaturesTransformed}
           onRemoveFeaturesFromSelection={this._onRemoveFeaturesFromSelection}
           onSetSelectedFeatures={this._onSetSelectedFeatures}
           onSingleFeatureSelected={this._onFeatureSelected}
@@ -429,7 +440,7 @@ class MapViewPresentation extends React.Component {
    * @param  {ol.Feature[]}  event.features  the features that were moved
    */
   @autobind
-  _onFeaturesMoved (event) {
+  _onFeaturesTransformed (event) {
     this._updateFeatures(event.features)
   }
 
@@ -482,7 +493,7 @@ class MapViewPresentation extends React.Component {
   }
 
   /**
-   * Common implementation for `_onFeaturesMoved` and `_onFeaturesModified`.
+   * Common implementation for `_onFeaturesTransformed` and `_onFeaturesModified`.
    *
    * @param  {ol.Feature[]}  features  the features that are to be updated
    */

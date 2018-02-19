@@ -1,9 +1,9 @@
-import MoveFeatures from './MoveFeatures'
 import SelectNearestFeature from './SelectNearestFeature'
 import ShowContextMenu from './ShowContextMenu'
+import TransformFeatures from './TransformFeatures'
 
 export {
-  MoveFeatures,
   SelectNearestFeature,
-  ShowContextMenu
+  ShowContextMenu,
+  TransformFeatures
 }
