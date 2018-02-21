@@ -20,6 +20,7 @@ import AppSettingsButton from './AppSettingsButton'
 import ConnectionSettingsButton from './ConnectionSettingsButton'
 import ConnectionStatusBadge from './ConnectionStatusBadge'
 import FullScreenButton from './FullScreenButton'
+import LogStatusBadge from './LogStatusBadge'
 
 const style = {
   backgroundColor: '#333',
@@ -56,7 +57,7 @@ const SidebarPresentation = ({ open, onToggleSidebar, workbench }) => (
         <Module id="clocks" icon={<ActionAlarm color='action' />} label="Clocks" component="clock-list" />
         <Module id="locations" icon={<MyLocation color='action' />} label="Locations" component="saved-location-list" />
         <hr />
-        <Module id="log" icon={<ActionList color='action' />} label="Event log" component="log-panel" />
+        <Module id="log" badge={<LogStatusBadge />} icon={<ActionList color='action' />} label="Event log" component="log-panel" />
       </ModuleTray>
       <hr />
       <div style={{ flexGrow: 1, flexShrink: 1 }}>{ /* spacer */ }</div>

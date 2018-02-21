@@ -15,9 +15,10 @@ import flock from '../../../flock'
 import { getSelection } from '../../../selectors'
 import { updateUAVFeatureColorsSignal } from '../../../signals'
 import { coordinateFromLonLat } from '../../../utils/geography'
-import * as logging from '../../../utils/logging'
+import makeLogger from '../../../utils/logging'
 
 const colors = ['pink', 'orange', 'yellow', 'green', 'blue', 'purple']
+const logger = makeLogger('UAVsLayer')
 
 const updatePredicates = (predicates, errorHandler) => {
   for (const color in predicates) {
@@ -129,7 +130,7 @@ class UAVsLayerPresentation extends React.Component {
   componentWillReceiveProps (newProps) {
     updatePredicates(
       newProps.layer.parameters.colorPredicates,
-      logging.addErrorItem
+      logger.error
     )
   }
 }

@@ -7,11 +7,12 @@ import AlertWarning from 'material-ui-icons/Warning'
 import PropTypes from 'prop-types'
 import React from 'react'
 import RedBox from 'redbox-react'
-import { addErrorItem } from './utils/logging'
+import makeLogger from './utils/logging'
 
 import isFunction from 'lodash/isFunction'
 
 const __PROD__ = process.env.NODE_ENV === 'production'
+const logger = makeLogger('error')
 
 /* eslint-disable handle-callback-err */
 const ProductionErrorHandler = ({ error }) => {
@@ -56,5 +57,5 @@ function errorToString (err) {
  * @param  {Error}  err  the error to handle
  */
 export function handleError (err) {
-  addErrorItem(errorToString(err))
+  logger.error(errorToString(err))
 }

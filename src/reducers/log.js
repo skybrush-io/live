@@ -4,6 +4,7 @@
  */
 
 import { handleActions } from 'redux-actions'
+import u from 'updeep'
 
 /**
  * Default content of the event log registry in the state object.
@@ -12,36 +13,38 @@ const defaultState = {
   items: [
     {
       id: 0,
-      level: 0,
+      level: 10,
       timestamp: Date.now() - 1000 * 60 * 7 - 3,
-      content: 'Information log entry #1.'
+      message: 'Information log entry #1.'
     },
     {
       id: 1,
-      level: 0,
+      level: 10,
       timestamp: Date.now() - 1000 * 60 * 7 - 2,
-      content: 'Information log entry #2.'
+      message: 'Information log entry #2.'
     },
     {
       id: 2,
-      level: 0,
+      level: 10,
       timestamp: Date.now() - 1000 * 60 * 7 - 1,
-      content: 'Information log entry #3.'
+      message: 'Information log entry #3.'
     },
     {
       id: 3,
-      level: 2,
+      level: 30,
       timestamp: Date.now() - 1000 * 60 * 5,
-      content: 'Something went wrong somewhere.'
+      message: 'Something went wrong somewhere.'
     },
     {
       id: 4,
-      level: 1,
+      level: 20,
       timestamp: Date.now(),
-      content: 'This is just a test message.'
+      message: 'This is just a test message.'
     }
   ],
-  nextId: 5
+  highestUnseenMessageLevel: -1,
+  nextId: 5,
+  panelVisible: false
 }
 
 /**
@@ -50,26 +53,47 @@ const defaultState = {
  */
 const reducer = handleActions({
   ADD_LOG_ITEM: (state, action) => {
-    const newItem = Object.assign({}, action.payload, {
+    const { message, level } = action.payload
+    const newItem = {
       id: state.nextId,
-      timestamp: Date.now()
-    })
-    return Object.assign({}, state, {
+      timestamp: Date.now(),
+      message: message || '',
+      level: level || 0
+    }
+    const updates = {
       items: [...state.items, newItem],
       nextId: state.nextId + 1
-    })
+    }
+    if (!state.panelVisible && level !== undefined) {
+      updates.highestUnseenMessageLevel = Math.max(
+        state.highestUnseenMessageLevel, level
+      )
+    }
+    return u(updates, state)
   },
 
   DELETE_LOG_ITEM: (state, action) => {
     const deletedItemId = action.payload
-
-    return Object.assign({}, state, {
-      items: state.items.filter(i => i.id !== deletedItemId)
-    })
+    return u({
+      items: u.reject(item => item.id === deletedItemId)
+    }, state)
   },
 
   CLEAR_LOG_ITEMS: (state, action) => {
-    return Object.assign({}, state, { items: [] })
+    return u({
+      items: [],
+      highestUnseenMessageLevel: -1
+    }, state)
+  },
+
+  UPDATE_LOG_PANEL_VISIBILITY: (state, action) => {
+    const updates = {
+      panelVisible: action.payload
+    }
+    if (action.payload) {
+      updates.highestUnseenMessageLevel = -1
+    }
+    return u(updates, state)
   }
 }, defaultState)
 

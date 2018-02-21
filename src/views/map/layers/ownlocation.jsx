@@ -10,7 +10,9 @@ import Style from 'ol/style/style'
 
 import { DeviceOrientation, Geolocation, layer, source } from 'ol-react'
 
-import { addLogItem } from '../../../actions/log'
+import makeLogger from '../../../utils/logging'
+
+const logger = makeLogger('OwnLocationLayer')
 
 // === Settings for this particular layer type ===
 
@@ -107,11 +109,6 @@ export const OwnLocationLayer = connect(
   (state, ownProps) => ({}),
   // mapDispatchToProps
   (dispatch, ownProps) => ({
-    onError (message) {
-      dispatch(addLogItem({
-        level: 2,
-        content: message
-      }))
-    }
+    onError: logger.warn
   })
 )(OwnLocationLayerPresentation)
