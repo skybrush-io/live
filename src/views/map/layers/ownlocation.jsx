@@ -1,15 +1,14 @@
+import { autobind } from 'core-decorators'
 import PropTypes from 'prop-types'
 import React from 'react'
 import { connect } from 'react-redux'
 
-import DeviceOrientation from 'ol/deviceorientation'
 import Feature from 'ol/feature'
-import Geolocation from 'ol/geolocation'
 import Point from 'ol/geom/point'
 import Icon from 'ol/style/icon'
 import Style from 'ol/style/style'
 
-import { layer, source } from 'ol-react'
+import { DeviceOrientation, Geolocation, layer, source } from 'ol-react'
 
 // === Settings for this particular layer type ===
 
@@ -37,10 +36,6 @@ class OwnLocationVectorSource extends source.Vector {
   constructor (props, context) {
     super(props)
 
-    this._onPositionChange = this._onPositionChange.bind(this)
-    this._onAccuracyGeometryChange = this._onAccuracyGeometryChange.bind(this)
-    this._onHeadingChange = this._onHeadingChange.bind(this)
-
     this.locationIcon = new Icon({
       rotateWithView: true,
       rotation: 0,
@@ -57,44 +52,48 @@ class OwnLocationVectorSource extends source.Vector {
 
     this.accuracyFeature = new Feature()
     this.source.addFeature(this.accuracyFeature)
-
-    this.olGeolocation = new Geolocation({
-      projection: context.map.getView().getProjection()
-    })
-    this.olGeolocation.on('change:position', this._onPositionChange)
-    this.olGeolocation.on('change:accuracyGeometry', this._onAccuracyGeometryChange)
-    this.olGeolocation.setTracking(true)
-
-    let deviceOrientation = new DeviceOrientation()
-    deviceOrientation.on('change:alpha', this._onHeadingChange)
-    deviceOrientation.setTracking(true)
   }
 
-  _onPositionChange () {
-    let coordinates = this.olGeolocation.getPosition()
+  _logError () {
+    console.log('error while getting position')
+  }
+
+  @autobind
+  _onPositionChange (event) {
+    const coordinates = event.target.getPosition()
     this.locationFeature.setGeometry(coordinates ? new Point(coordinates) : null)
   }
 
-  _onAccuracyGeometryChange () {
-    this.accuracyFeature.setGeometry(this.olGeolocation.getAccuracyGeometry())
+  @autobind
+  _onAccuracyGeometryChange (event) {
+    const accuracyGeometry = event.target.getAccuracyGeometry()
+    this.accuracyFeature.setGeometry(accuracyGeometry)
   }
 
-  _onHeadingChange (e) {
-    this.locationIcon.setRotation(-e.target.getAlpha())
+  @autobind
+  _onHeadingChange (event) {
+    this.locationIcon.setRotation(-event.target.getHeading())
     this.source.refresh()
+  }
+
+  render () {
+    return [
+      <Geolocation key='location' changePosition={this._onPositionChange}
+        changeAccuracyGeometry={this._onAccuracyGeometryChange}
+        error={this._logError} />,
+      <DeviceOrientation key='orientation' changeHeading={this._onHeadingChange} />
+    ]
   }
 }
 
 class OwnLocationLayerPresentation extends React.Component {
   render () {
     return (
-      <div>
-        <layer.Vector zIndex={this.props.zIndex}
-          updateWhileAnimating
-          updateWhileInteracting>
-          <OwnLocationVectorSource />
-        </layer.Vector>
-      </div>
+      <layer.Vector zIndex={this.props.zIndex}
+        updateWhileAnimating
+        updateWhileInteracting>
+        <OwnLocationVectorSource />
+      </layer.Vector>
     )
   }
 }
