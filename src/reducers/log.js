@@ -10,39 +10,8 @@ import u from 'updeep'
  * Default content of the event log registry in the state object.
  */
 const defaultState = {
-  items: [
-    {
-      id: 0,
-      level: 10,
-      timestamp: Date.now() - 1000 * 60 * 7 - 3,
-      message: 'Information log entry #1.'
-    },
-    {
-      id: 1,
-      level: 10,
-      timestamp: Date.now() - 1000 * 60 * 7 - 2,
-      message: 'Information log entry #2.'
-    },
-    {
-      id: 2,
-      level: 10,
-      timestamp: Date.now() - 1000 * 60 * 7 - 1,
-      message: 'Information log entry #3.'
-    },
-    {
-      id: 3,
-      level: 30,
-      timestamp: Date.now() - 1000 * 60 * 5,
-      message: 'Something went wrong somewhere.'
-    },
-    {
-      id: 4,
-      level: 20,
-      timestamp: Date.now(),
-      message: 'This is just a test message.'
-    }
-  ],
   highestUnseenMessageLevel: -1,
+  items: [],
   nextId: 5,
   panelVisible: false
 }
