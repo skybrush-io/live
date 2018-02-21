@@ -31,7 +31,7 @@ class LogPresentation extends React.Component {
         dataExtractor: row => row.level,
         displayRenderer: data => {
           const { Icon, color } = logLevelIcons[data]
-          return <Icon color={color} />
+          return <Icon style={{ color }} />
         },
         filterType: FilterTypes.list,
         filterList: Object.keys(logLevelIcons).map((k, i) => {

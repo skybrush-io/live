@@ -10,6 +10,8 @@ import Style from 'ol/style/style'
 
 import { DeviceOrientation, Geolocation, layer, source } from 'ol-react'
 
+import { addLogItem } from '../../../actions/log'
+
 // === Settings for this particular layer type ===
 
 class OwnLocationLayerSettingsPresentation extends React.Component {
@@ -54,10 +56,6 @@ class OwnLocationVectorSource extends source.Vector {
     this.source.addFeature(this.accuracyFeature)
   }
 
-  _logError () {
-    console.log('error while getting position')
-  }
-
   @autobind
   _onPositionChange (event) {
     const coordinates = event.target.getPosition()
@@ -76,6 +74,11 @@ class OwnLocationVectorSource extends source.Vector {
     this.source.refresh()
   }
 
+  @autobind
+  _logError (event) {
+    this.props.onError(`Error while getting position: ${event.message}`)
+  }
+
   render () {
     return [
       <Geolocation key='location' changePosition={this._onPositionChange}
@@ -86,21 +89,16 @@ class OwnLocationVectorSource extends source.Vector {
   }
 }
 
-class OwnLocationLayerPresentation extends React.Component {
-  render () {
-    return (
-      <layer.Vector zIndex={this.props.zIndex}
-        updateWhileAnimating
-        updateWhileInteracting>
-        <OwnLocationVectorSource />
-      </layer.Vector>
-    )
-  }
-}
+const OwnLocationLayerPresentation = ({ onError, zIndex }) => (
+  <layer.Vector zIndex={zIndex} updateWhileAnimating updateWhileInteracting>
+    <OwnLocationVectorSource onError={onError} />
+  </layer.Vector>
+)
 
 OwnLocationLayerPresentation.propTypes = {
   layer: PropTypes.object,
   layerId: PropTypes.string,
+  onError: PropTypes.func,
   zIndex: PropTypes.number
 }
 
@@ -108,5 +106,12 @@ export const OwnLocationLayer = connect(
   // mapStateToProps
   (state, ownProps) => ({}),
   // mapDispatchToProps
-  (dispatch, ownProps) => ({})
+  (dispatch, ownProps) => ({
+    onError (message) {
+      dispatch(addLogItem({
+        level: 2,
+        content: message
+      }))
+    }
+  })
 )(OwnLocationLayerPresentation)
