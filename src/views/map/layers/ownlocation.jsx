@@ -85,6 +85,7 @@ class OwnLocationVectorSource extends source.Vector {
     return [
       <Geolocation key='location' changePosition={this._onPositionChange}
         changeAccuracyGeometry={this._onAccuracyGeometryChange}
+        projection='EPSG:3857'
         error={this._logError} />,
       <DeviceOrientation key='orientation' changeHeading={this._onHeadingChange} />
     ]

@@ -13,6 +13,9 @@ let mainWindow
 // of the main window
 let mainWindowState
 
+// Set our own Google API key that we will use for geolocation requests
+process.env.GOOGLE_API_KEY = 'AIzaSyBm7xuMYXPGHw1kAHRBoxaAdbfpLPMJiGM'
+
 /**
  * Creates the main window of the application.
  *
@@ -61,9 +64,9 @@ function createMainWindow (opts) {
 
 function getURLToLoad () {
   if (process.env.NODE_ENV === 'production') {
-    let index = path.join(__dirname, "index.html")
+    let index = path.join(__dirname, 'index.html')
     if (!fs.existsSync(index)) {
-      index = path.join(__dirname, "..", "index.html")
+      index = path.join(__dirname, '..', 'index.html')
     }
 
     return url.format({
