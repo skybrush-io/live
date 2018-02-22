@@ -11,11 +11,10 @@ import PropTypes from 'prop-types'
 import { WorkbenchBuilder } from 'react-flexible-workbench'
 import { compose, getContext, renderNothing, withProps } from 'recompose'
 
-import MessagesPanel from './components/chat/MessagesPanel'
-import views from './views'
-
 import { saveWorkbenchState } from './actions/workbench'
+import MessagesPanel from './components/chat/MessagesPanel'
 import store from './store'
+import views from './views'
 
 require('../assets/css/workbench.less')
 
@@ -38,8 +37,8 @@ const getFlockFromContext = getContext({
 const componentRegistry = {
   'connection-list': views.ConnectionList,
   'clock-list': views.ClockDisplayList,
+  'feature-list': views.FeatureList,
   'layer-list': views.LayerList,
-  'saved-location-list': views.SavedLocationList,
   'log-panel': views.LogPanel,
   'map': views.MapView,
   'messages': compose(withProps({
@@ -48,6 +47,7 @@ const componentRegistry = {
     }
   }), getFlockFromContext)(MessagesPanel),
   'placeholder': renderNothing(),
+  'saved-location-list': views.SavedLocationList,
   'uav-list': getFlockFromContext(views.UAVList)
 }
 

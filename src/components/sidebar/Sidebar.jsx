@@ -6,6 +6,7 @@ import Map from 'material-ui-icons/Map'
 import MapsLayers from 'material-ui-icons/Layers'
 import Message from 'material-ui-icons/Message'
 import MyLocation from 'material-ui-icons/MyLocation'
+import ShowChart from 'material-ui-icons/ShowChart'
 
 import isElectron from 'is-electron'
 import PropTypes from 'prop-types'
@@ -49,6 +50,7 @@ const SidebarPresentation = ({ open, onToggleSidebar, workbench }) => (
       <ModuleTray allowMultipleSelection vertical workbench={workbench}>
         <Module id="map" icon={<Map color='action' />} label="Map" component="map" />
         <Module id="layers" icon={<MapsLayers color='action' />} label="Layers" component="layer-list" />
+        <Module id="features" icon={<ShowChart color='action' />} label="Features" component="feature-list" />
         <hr />
         <Module id="uavs" icon={<Flight color='action' />} label="UAVs" component="uav-list" />
         <Module id="messages" icon={<Message color='action' />} label="Messages" component="messages" />

@@ -4,6 +4,13 @@
  */
 
 import { unary } from 'lodash'
+import LocationOn from 'material-ui-icons/LocationOn'
+import ShowChart from 'material-ui-icons/ShowChart'
+import CropSquare from 'material-ui-icons/CropSquare'
+import PanoramaFishEye from 'material-ui-icons/PanoramaFishEye'
+import LabelOutline from 'material-ui-icons/LabelOutline'
+import React from 'react'
+
 import { lonLatFromCoordinate } from '../utils/geography'
 
 /**
@@ -13,7 +20,8 @@ export const FeatureType = {
   CIRCLE: 'circle',
   LINE_STRING: 'lineString',
   POINTS: 'points',
-  POLYGON: 'polygon'
+  POLYGON: 'polygon',
+  RECTANGLE: 'rectangle'
 }
 
 /**
@@ -82,11 +90,20 @@ export function createFeatureFromOpenLayers (olFeature) {
   return result
 }
 
+const _featureTypeIcons = {
+  [FeatureType.CIRCLE]: React.createElement(PanoramaFishEye),
+  [FeatureType.LINE_STRING]: React.createElement(ShowChart),
+  [FeatureType.POINTS]: React.createElement(LocationOn),
+  [FeatureType.POLYGON]: React.createElement(LabelOutline),
+  [FeatureType.RECTANGLE]: React.createElement(CropSquare)
+}
+
 const _featureTypeNames = {
-  'circle': 'Circle',
-  'lineString': 'Path',
-  'points': 'Marker',
-  'polygon': 'Polygon'
+  [FeatureType.CIRCLE]: 'Circle',
+  [FeatureType.LINE_STRING]: 'Path',
+  [FeatureType.POINTS]: 'Marker',
+  [FeatureType.POLYGON]: 'Polygon',
+  [FeatureType.RECTANGLE]: 'Rectangle'
 }
 
 /**
@@ -97,4 +114,14 @@ const _featureTypeNames = {
  */
 export function getNameOfFeatureType (type) {
   return _featureTypeNames[type] || 'Feature'
+}
+
+/**
+ * Returns an icon corresponding to the given feature type.
+ *
+ * @param  {string}  type  the feature type
+ * @return {JSX.Element}  an icon representing the feature type on the UI
+ */
+export function getIconOfFeatureType (type) {
+  return _featureTypeIcons[type] || _featureTypeIcons[FeatureType.POINTS]
 }
