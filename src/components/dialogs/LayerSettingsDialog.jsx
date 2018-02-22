@@ -215,7 +215,7 @@ class LayerSettingsDialogPresentation extends React.Component {
     )
 
     return (
-      <Dialog fullWidth maxWidth='md' open={dialogVisible} onClose={onClose}>
+      <Dialog fullWidth maxWidth='sm' open={dialogVisible} onClose={onClose}>
         <DialogContent style={{ overflow: 'auto' }}>
           <LayerSettingsContainer layerId={selectedLayerId} />
         </DialogContent>
