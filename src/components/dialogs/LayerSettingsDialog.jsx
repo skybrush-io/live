@@ -42,7 +42,7 @@ class BasicLayerSettingsFormPresentation extends React.Component {
           onKeyDown={this._onKeyDown}
         />
         <div>&nbsp;</div>
-        <Switch checked={layer.visible}
+        <Switch checked={layer.visible} color='primary'
           disabled={layer.type === LayerType.UNTYPED}
           onChange={onToggleLayerVisibility}
           style={{ flex: 'none' }}
@@ -160,7 +160,9 @@ class LayerSettingsContainerPresentation extends React.Component {
     // the form fields even if the layer selection changes
     return (
       <div key={'settings_' + layerId}>
-        <BasicLayerSettingsForm layer={layer} layerId={layerId} />
+        {layer.type !== LayerType.UNTYPED
+          ? <BasicLayerSettingsForm layer={layer} layerId={layerId} />
+          : null}
         {this.createChildrenForLayer(layer, layerId)}
       </div>
     )

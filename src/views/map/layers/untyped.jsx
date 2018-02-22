@@ -1,41 +1,42 @@
-import _ from 'lodash'
 import PropTypes from 'prop-types'
 import React from 'react'
 import { connect } from 'react-redux'
 
-import { FormControlLabel } from 'material-ui/Form'
-import Radio, { RadioGroup } from 'material-ui/Radio'
+import Card, { CardHeader } from 'material-ui/Card'
+import Grid from 'material-ui/Grid'
+import Typography from 'material-ui/Typography'
 
 import { changeLayerType } from '../../../actions/layers'
-import { LayerTypes, labelForLayerType } from '../../../model/layers'
+import { LayerTypes, iconForLayerType, labelForLayerType } from '../../../model/layers'
 
 // === Settings for this particular layer type ===
 
-class UntypedLayerSettingsPresentation extends React.Component {
-  render () {
-    const layerTypeRadioButtons = _.map(LayerTypes, layerType => (
-      <FormControlLabel value={layerType} key={layerType}
-        label={labelForLayerType(layerType)}
-        style={{ marginTop: 5 }} control={<Radio />} />
-    ))
-    return (
-      <div>
-        <p key='header'>Please select a layer
-        type from the following options:</p>
-        <RadioGroup name='types.untyped' key='baseProperties'
-          onChange={this.props.onLayerTypeChanged}>
-          {layerTypeRadioButtons}
-        </RadioGroup>
-      </div>
-    )
-  }
+/* eslint-disable react/jsx-no-bind */
+const UntypedLayerSettingsPresentation = ({ onLayerTypeSelected }) => {
+  const items = LayerTypes.map(layerType => (
+    <Grid item xs={8} sm={4} key={layerType}>
+      <Card className="no-select" onClick={() => onLayerTypeSelected(layerType)}>
+        <CardHeader avatar={iconForLayerType(layerType)}
+          title={labelForLayerType(layerType)} />
+      </Card>
+    </Grid>
+  ))
+  return (
+    <div>
+      <Typography variant="subheading" component="p" gutterBottom>Pick a layer type</Typography>
+      <Grid container>
+        {items}
+      </Grid>
+    </div>
+  )
 }
+/* eslint-enable react/jsx-no-bind */
 
 UntypedLayerSettingsPresentation.propTypes = {
   layer: PropTypes.object,
   layerId: PropTypes.string,
 
-  onLayerTypeChanged: PropTypes.func
+  onLayerTypeSelected: PropTypes.func
 }
 
 export const UntypedLayerSettings = connect(
@@ -43,7 +44,7 @@ export const UntypedLayerSettings = connect(
   (state, ownProps) => ({}),
   // mapDispatchToProps
   (dispatch, ownProps) => ({
-    onLayerTypeChanged: (event, value) => {
+    onLayerTypeSelected: value => {
       dispatch(changeLayerType(ownProps.layerId, value))
     }
   })
