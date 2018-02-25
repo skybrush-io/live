@@ -5,18 +5,11 @@ import React from 'react'
 import { WorkbenchView } from 'react-flexible-workbench'
 import { compose, withContext, withProps } from 'recompose'
 
+import dialogs from './components/dialogs'
 import GlobalSnackbar from './components/GlobalSnackbar'
 import HotkeyHandler from './components/HotkeyHandler'
 import ServerConnectionManager from './components/ServerConnectionManager'
 import Sidebar from './components/sidebar/Sidebar'
-
-import AppSettingsDialog from './components/dialogs/AppSettingsDialog'
-import GlobalErrorDialog from './components/dialogs/GlobalErrorDialog'
-import LayerSettingsDialog from './components/dialogs/LayerSettingsDialog'
-import MessagesDialog from './components/dialogs/MessagesDialog'
-import PromptDialog from './components/dialogs/PromptDialog'
-import SavedLocationEditorDialog from './components/dialogs/SavedLocationEditorDialog'
-import ServerSettingsDialog from './components/dialogs/ServerSettingsDialog'
 
 import flock from './flock'
 import { withErrorBoundary, wrapWith } from './hoc'
@@ -54,14 +47,15 @@ class Application extends React.Component {
 
         <ServerConnectionManager />
 
-        <AppSettingsDialog />
-        <LayerSettingsDialog />
-        <MessagesDialog flock={flock} />
-        <PromptDialog />
-        <SavedLocationEditorDialog />
-        <ServerSettingsDialog />
+        <dialogs.AppSettingsDialog />
+        <dialogs.FeatureEditorDialog />
+        <dialogs.GlobalErrorDialog />
+        <dialogs.LayerSettingsDialog />
+        <dialogs.MessagesDialog flock={flock} />
+        <dialogs.PromptDialog />
+        <dialogs.SavedLocationEditorDialog />
+        <dialogs.ServerSettingsDialog />
 
-        <GlobalErrorDialog />
         <GlobalSnackbar />
       </div>
     )

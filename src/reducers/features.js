@@ -27,7 +27,8 @@ const defaultState = {
       ],
       label: 'Test polygon',
       color: '#ffcc00',
-      labelStyle: LabelStyle.THIN_OUTLINE
+      labelStyle: LabelStyle.THIN_OUTLINE,
+      visible: true
     }
     /*
     examplePoint: {
@@ -115,6 +116,7 @@ const reducer = handleActions({
     const newFeature = {}
     newFeature[id] = JSON.parse(JSON.stringify(feature))
     newFeature[id].id = id
+    newFeature[id].visible = true
 
     // Store the ID of the feature that is about to be inserted on the
     // action so the caller of this action can decide what to do with it
@@ -142,6 +144,14 @@ const reducer = handleActions({
     const updates = mapValues(coordinates,
       coordinate => ({ points: coordinate })
     )
+    return u({ byId: u(updates) }, state)
+  },
+
+  UPDATE_FEATURE_VISIBILITY (state, action) {
+    const { id, visible } = action.payload
+    const updates = {
+      [id]: { visible }
+    }
     return u({ byId: u(updates) }, state)
   }
 }, defaultState)

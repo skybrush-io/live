@@ -31,8 +31,11 @@ const engine = debounce(
       : createEngine('flockwave-client'),
     [
       'whitelisted-key',
+      ['dialogs', 'appSettings'],
+      ['dialogs', 'featureEditor'],
       ['dialogs', 'layerSettings'],
       ['dialogs', 'messages'],
+      ['dialogs', 'savedLocationEditor'],
       ['dialogs', 'serverSettings'],
       ['features'],
       ['map'],

@@ -13,9 +13,9 @@ import { Switch, TextField } from 'redux-form-material-ui'
 
 import AppBar from 'material-ui/AppBar'
 import Button from 'material-ui/Button'
+import Dialog, { DialogActions, DialogContent } from 'material-ui/Dialog'
 import { FormControlLabel } from 'material-ui/Form'
 import { CircularProgress } from 'material-ui/Progress'
-import Dialog, { DialogActions, DialogContent } from 'material-ui/Dialog'
 import List, { ListItem, ListItemIcon, ListItemText } from 'material-ui/List'
 import Tabs, { Tab } from 'material-ui/Tabs'
 

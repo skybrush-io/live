@@ -1,5 +1,5 @@
 /**
-* @file React Component for the layer settings dialog.
+* @file React component for the layer settings dialog.
 */
 
 import { autobind } from 'core-decorators'

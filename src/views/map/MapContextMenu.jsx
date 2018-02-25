@@ -9,6 +9,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 
 import Divider from 'material-ui/Divider'
+import { ListItemIcon } from 'material-ui/List'
 import { MenuItem } from 'material-ui/Menu'
 import ActionDelete from 'material-ui-icons/Delete'
 import ActionFlightTakeoff from 'material-ui-icons/FlightTakeoff'
@@ -20,6 +21,7 @@ import Message from 'material-ui-icons/Message'
 
 import ContextMenu from '../../components/ContextMenu'
 
+import { showFeatureEditorDialog } from '../../actions/feature-editor'
 import { renameFeature, removeFeatures } from '../../actions/features'
 import { selectUAVInMessagesDialog, showMessagesDialog } from '../../actions/messages'
 import { showPromptDialog } from '../../actions/prompt'
@@ -58,35 +60,52 @@ class MapContextMenu extends React.Component {
       <ContextMenu ref={this._assignContextMenuRef}>
         <MenuItem dense disabled={selectedUAVIds.length === 0}
           onClick={this._takeoffSelectedUAVs}>
-          <ActionFlightTakeoff /> Takeoff
+          <ListItemIcon><ActionFlightTakeoff /></ListItemIcon>
+          Takeoff
         </MenuItem>
         <MenuItem dense disabled={selectedUAVIds.length === 0}
           onClick={this._landSelectedUAVs}>
-          <ActionFlightLand /> Land
+          <ListItemIcon><ActionFlightLand /></ListItemIcon>
+          Land
         </MenuItem>
         <MenuItem dense disabled={selectedUAVIds.length === 0}
           onClick={this._returnSelectedUAVs}>
-          <ActionHome /> Return to home
+          <ListItemIcon><ActionHome /></ListItemIcon>
+          Return to home
         </MenuItem>
         <MenuItem dense disabled={selectedUAVIds.length !== 1}
           onClick={this._showMessagesDialog}>
-          <Message /> Messages
+          <ListItemIcon><Message /></ListItemIcon>
+          Messages
         </MenuItem>
         <MenuItem dense disabled={selectedUAVIds.length === 0}
           onClick={this._shutdownSelectedUAVs}>
-          <ActionPowerSettingsNew color='secondary' /> Halt
+          <ListItemIcon><ActionPowerSettingsNew color='secondary' /></ListItemIcon>
+          Halt
         </MenuItem>
         <Divider />
         <MenuItem dense disabled={selectedFeatureIds.length !== 1}
-          onClick={this._renameSelectedFeatures}>
-          <ImageEdit /> Rename...
+          onClick={this._editSelectedFeature}>
+          <ListItemIcon><ImageEdit /></ListItemIcon>
+          Properties...
         </MenuItem>
         <MenuItem dense disabled={selectedFeatureIds.length === 0}
           onClick={this._removeSelectedFeatures}>
-          <ActionDelete /> Remove
+          <ListItemIcon><ActionDelete /></ListItemIcon>
+          Remove
         </MenuItem>
       </ContextMenu>
     )
+  }
+
+  @autobind
+  _editSelectedFeature () {
+    const { editFeature, selectedFeatureIds } = this.props
+    if (selectedFeatureIds.length !== 1) {
+      return
+    }
+
+    editFeature(selectedFeatureIds[0])
   }
 
   @autobind
@@ -100,7 +119,7 @@ class MapContextMenu extends React.Component {
   }
 
   @autobind
-  _renameSelectedFeatures () {
+  _renameSelectedFeature () {
     const { renameFeature, selectedFeatureIds,
       selectedFeatureLabels } = this.props
     if (selectedFeatureIds.length !== 1) {
@@ -136,6 +155,7 @@ class MapContextMenu extends React.Component {
 }
 
 MapContextMenu.propTypes = {
+  editFeature: PropTypes.func.isRequired,
   renameFeature: PropTypes.func.isRequired,
   removeFeaturesByIds: PropTypes.func.isRequired,
   selectedFeatureIds: PropTypes.arrayOf(PropTypes.string).isRequired,
@@ -154,6 +174,9 @@ const MapContextMenuContainer = connect(
   }),
   // mapDispatchToProps
   dispatch => ({
+    editFeature: id => {
+      dispatch(showFeatureEditorDialog(id))
+    },
     removeFeaturesByIds: (ids) => {
       dispatch(removeFeatures(ids))
     },

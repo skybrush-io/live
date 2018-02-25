@@ -4,7 +4,7 @@
 
 import { createAction } from 'redux-actions'
 import { ADD_FEATURE, REMOVE_FEATURES, RENAME_FEATURE,
-  UPDATE_FEATURE_COORDINATES } from './types'
+  UPDATE_FEATURE_COORDINATES, UPDATE_FEATURE_VISIBILITY } from './types'
 
 /**
  * Action factory that creates an action that adds a new feature to the map.
@@ -27,7 +27,7 @@ export const removeFeature = createAction(REMOVE_FEATURES,
 /**
  * Action factory that creates an action that renames a feature on the map.
  *
- * @param {string}  id  the ID of the feature to name
+ * @param {string}  id  the ID of the feature to rename
  * @param {string}  name  the new name of the feature
  */
 export const renameFeature = createAction(RENAME_FEATURE,
@@ -53,4 +53,15 @@ export const removeFeatures = createAction(REMOVE_FEATURES,
  */
 export const updateFeatureCoordinates = createAction(UPDATE_FEATURE_COORDINATES,
   coordinates => ({ coordinates })
+)
+
+/**
+ * Action factory that creates an action that updates the visibility of a
+ * feature on the map.
+ *
+ * @param {string}  id    the ID of the feature to update
+ * @param {string}  visible  the new visibility state of the feature
+ */
+export const updateFeatureVisibility = createAction(UPDATE_FEATURE_VISIBILITY,
+  (id, visible) => ({ id, visible })
 )
