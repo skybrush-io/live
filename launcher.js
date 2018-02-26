@@ -14,7 +14,7 @@ let mainWindow
 let mainWindowState
 
 // Set our own Google API key that we will use for geolocation requests
-process.env.GOOGLE_API_KEY = 'AIzaSyBm7xuMYXPGHw1kAHRBoxaAdbfpLPMJiGM'
+process.env.GOOGLE_API_KEY = 'AIzaSyC-Emzc-ogrp8ZW05zF6Sx0x5VDDyQfpLw'
 
 /**
  * Creates the main window of the application.
