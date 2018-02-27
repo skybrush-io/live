@@ -167,7 +167,7 @@ const FeaturesLayerPresentation = ({
   <layer.Vector updateWhileAnimating updateWhileInteracting zIndex={zIndex}
     ref={markAsSelectableAndEditable}>
     <source.Vector>
-      {features.map(feature =>
+      {features.filter(feature => feature.visible).map(feature =>
         renderFeature(feature, selectedFeatureIds.includes(feature.id))
       )}
       {selectedTool === Tool.EDIT_FEATURE

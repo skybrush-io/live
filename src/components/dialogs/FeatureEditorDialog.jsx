@@ -1,20 +1,23 @@
+import { partial } from 'lodash'
 import PropTypes from 'prop-types'
 import React from 'react'
 import { connect } from 'react-redux'
 import { reduxForm, submit, Field } from 'redux-form'
-import { Switch, TextField } from 'redux-form-material-ui'
+import { TextField } from 'redux-form-material-ui'
 
 import AppBar from 'material-ui/AppBar'
 import Button from 'material-ui/Button'
 import Dialog, { DialogActions, DialogContent } from 'material-ui/Dialog'
-import PureSwitch from 'material-ui/Switch'
+import Switch from 'material-ui/Switch'
 import Tabs, { Tab } from 'material-ui/Tabs'
 
+import {
+  updateFeatureVisibility
+} from '../../actions/features'
 import {
   closeFeatureEditorDialog,
   setFeatureEditorDialogTab
 } from '../../actions/feature-editor'
-
 
 const GeneralPropertiesFormPresentation = ({ feature, onToggleFeatureVisibility }) => (
   <div>
@@ -22,7 +25,7 @@ const GeneralPropertiesFormPresentation = ({ feature, onToggleFeatureVisibility 
       <Field name='label' label='Label' style={{ flex: 'auto' }}
         component={TextField} fullWidth />
       <div>&nbsp;</div>
-      <PureSwitch checked={feature.visible} color='primary'
+      <Switch checked={feature.visible} color='primary'
         onChange={onToggleFeatureVisibility}
         style={{ flex: 'none' }}
       />
@@ -48,6 +51,17 @@ const GeneralPropertiesForm = connect(
   },
   // mapDispatchToProps
   dispatch => ({
+    onToggleFeatureVisibility (featureId, event, checked) {
+      dispatch(updateFeatureVisibility(featureId, checked))
+    }
+  }),
+  // mergeProps
+  (stateProps, dispatchProps, ownProps) => ({
+    ...ownProps,
+    ...stateProps,
+    ...dispatchProps,
+    onToggleFeatureVisibility:
+      partial(dispatchProps.onToggleFeatureVisibility, stateProps.feature.id)
   })
 )(
   reduxForm({
