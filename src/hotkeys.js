@@ -6,6 +6,7 @@ import { showLayersDialog } from './actions/layers'
 import { selectAllUAVFeatures, clearSelectedFeatures,
   selectMapTool, selectMapSource } from './actions/map'
 import { showMessagesDialog } from './actions/messages'
+import { showSnackbarMessage } from './actions/snackbar'
 
 import flock from './flock'
 import { Source } from './model/sources'
@@ -54,6 +55,34 @@ export default [
     keys: 'PlatMod + KeyP',
     action: () => {
       store.dispatch(selectMapTool(Tool.PAN))
+    }
+  },
+
+  // Copy the actual coordinates of the cursor
+  {
+    description: 'Copy coordinates to clipboard',
+    on: 'down',
+    keys: 'Ctrl + Shift + KeyC',
+
+    // This might seem like a really hacky solution, but everything else seemed
+    // to be far more complex and probably would've been more prone to breaking.
+    action: () => {
+      const mousePositionDisplay = (
+        document.getElementsByClassName('ol-mouse-position')[0]
+      )
+
+      const mousePositionText = mousePositionDisplay.innerText
+
+      const hiddenInput = document.createElement('input')
+      hiddenInput.type = 'text'
+      hiddenInput.value = mousePositionText
+
+      mousePositionDisplay.appendChild(hiddenInput)
+      hiddenInput.select()
+      document.execCommand('copy')
+      mousePositionDisplay.removeChild(hiddenInput)
+
+      store.dispatch(showSnackbarMessage('Coordinates copied to clpboard.'))
     }
   },
 
