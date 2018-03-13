@@ -15,7 +15,7 @@ import { UPDATE_SAVED_LOCATION, DELETE_SAVED_LOCATION } from './types'
  */
 export const debouncedUpdateSavedLocation = createAction(
   UPDATE_SAVED_LOCATION,
-  (savedLocation) => ({savedLocation}),
+  (savedLocation) => ({ savedLocation }),
   debounced()
 )
 
@@ -27,7 +27,7 @@ export const debouncedUpdateSavedLocation = createAction(
  */
 export const updateSavedLocation = createAction(
   UPDATE_SAVED_LOCATION,
-  (savedLocation) => ({savedLocation})
+  (savedLocation) => ({ savedLocation })
 )
 
 /**
@@ -39,5 +39,5 @@ export const updateSavedLocation = createAction(
  */
 export const deleteSavedLocation = createAction(
   DELETE_SAVED_LOCATION,
-  (savedLocationId) => ({savedLocationId})
+  (savedLocationId) => ({ savedLocationId })
 )

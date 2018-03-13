@@ -94,20 +94,17 @@ class SavedLocationEditorDialogPresentation extends React.Component {
   constructor (props) {
     super(props)
 
+    this.currentLocation = {}
     this._assignFormRef = value => { this._form = value }
   }
 
   componentDidMount () {
-    addListenerToMapViewSignal.dispatch('center', center => {
-      this.props.requestCurrentLocationUpdate({ center })
-    })
-
-    addListenerToMapViewSignal.dispatch('rotation', rotation => {
-      this.props.requestCurrentLocationUpdate({ rotation })
-    })
-
-    addListenerToMapViewSignal.dispatch('zoom', zoom => {
-      this.props.requestCurrentLocationUpdate({ zoom })
+    const properties = [ 'center', 'rotation', 'zoom' ]
+    properties.forEach(property => {
+      addListenerToMapViewSignal.dispatch(property, data => {
+        this.currentLocation[property] = data
+        this.props.requestCurrentLocationUpdate(this.currentLocation)
+      })
     })
   }
 
@@ -198,9 +195,7 @@ const SavedLocationEditorDialog = connect(
       dispatch(cancelLocationEditing())
     },
     requestCurrentLocationUpdate (properties) {
-      dispatch(debouncedUpdateSavedLocation(
-        Object.assign({}, {id: 'current'}, properties)
-      ))
+      dispatch(debouncedUpdateSavedLocation({ id: 'current', ...properties }))
     }
   })
 )(SavedLocationEditorDialogPresentation)
