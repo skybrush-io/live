@@ -63,7 +63,10 @@ export default class MapRotationTextBox extends React.Component {
           <ImageRotateRight />
         </IconButton>
         <TextField
-          style={{ width: this.props.fieldWidth, verticalAlign: 'text-bottom' }}
+          style={{
+            width: this.props.fieldWidth
+            // verticalAlign: 'text-bottom'
+          }}
           type='number'
           value={
             this.state.isFocused
