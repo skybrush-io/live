@@ -1,4 +1,4 @@
-import { Badge } from 'react-flexible-workbench'
+import Badge from 'react-badger'
 import { withProps } from 'recompose'
 
 /**
