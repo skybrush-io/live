@@ -40,7 +40,5 @@ Steps to install
 
 6. Navigate to http://localhost:8080 from your browser.
 
-ps.: OpenLayers versions above and including 3.19.0 have issues with closing polygons, so until that is fixed we stick to 3.18.2.
-
 <a name="global-install-footnote">1</a>: You may need to run this command with elevated rights to succesfully install a package globally.  
 In case you would prefer to avoid using sudo for global installs: [https://docs.npmjs.com/getting-started/fixing-npm-permissions](https://docs.npmjs.com/getting-started/fixing-npm-permissions)
