@@ -51,9 +51,10 @@ class LogPresentation extends React.Component {
         dataExtractor: property('level'),
         displayRenderer: iconForLogLevel,
         filterType: FilterTypes.list,
-        filterList: Object.keys(LogLevel).map(level => (
-          { value: LogLevel[level], display: iconForLogLevel(level) }
-        )),
+        filterList: Object.keys(LogLevel).map(level => ({
+          value: LogLevel[level],
+          display: iconForLogLevel(LogLevel[level])
+        })),
         sorter: (a, b) => a.level - b.level
       },
       {

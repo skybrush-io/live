@@ -9,7 +9,6 @@ export const LogLevel = {
   DEBUG: 0,
   INFO: 10,
   WARNING: 20,
-  WARN: 20,
   ERROR: 30,
   FATAL: 40
 }
@@ -20,9 +19,13 @@ export function colorForLogLevel (level) {
   } else if (level <= LogLevel.INFO) {
     return '#08f'
   } else if (level <= LogLevel.WARNING) {
-    return '#fc0'
+    return '#fb0'
+  } else if (level <= LogLevel.ERROR) {
+    return '#f60'
+  } else if (level <= LogLevel.FATAL) {
+    return '#a00'
   } else {
-    return '#f00'
+    return '#000'
   }
 }
 

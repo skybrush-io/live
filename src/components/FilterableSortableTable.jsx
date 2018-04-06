@@ -11,7 +11,10 @@ import EditorHighlight from 'material-ui-icons/Highlight'
 import ContentSort from 'material-ui-icons/Sort'
 
 import Button from 'material-ui/Button'
+
+import { FormControlLabel } from 'material-ui/Form'
 import Checkbox from 'material-ui/Checkbox'
+
 import Popover from 'material-ui/Popover'
 import TextField from 'material-ui/TextField'
 
@@ -130,16 +133,22 @@ class FilterableSortableTable extends React.Component {
       [FilterTypes.list]: (filterProperties) => (
         <div>
           {filterProperties.list.map(item =>
-            <Checkbox key={`${item.item.value}_checkbox`}
-              label={item.item.display}
-              checked={item.visible}
-              onCheck={() => {
-                item.visible = !item.visible
-                filterProperties.map.set(item.item.value, item.visible)
 
-                this.forceUpdate()
-              }}
-            />
+            <FormControlLabel key={`${item.item.value}_checkbox`}
+              control={
+                <Checkbox
+                  checked={item.visible}
+                  onChange={() => {
+                    item.visible = !item.visible
+                    filterProperties.map.set(item.item.value, item.visible)
+
+                    this.forceUpdate()
+                  }}
+                />
+              }
+              label={item.item.display}
+             />
+
           )}
         </div>
       ),
@@ -259,7 +268,7 @@ class FilterableSortableTable extends React.Component {
         open={this.state.filterPopoverTargetElement !== undefined}
         anchorEl={this.state.filterPopoverTargetElement}
         anchorOrigin={{ horizontal: 'left', vertical: 'bottom' }}
-        targetOrigin={{ horizontal: 'left', vertical: 'top' }}
+        transformOrigin={{ horizontal: 'left', vertical: 'top' }}
         onClose={this._closeFilterPopover}
         style={{ padding: '5px', textAlign: 'center', overflow: 'visible' }}
       >
@@ -274,8 +283,8 @@ class FilterableSortableTable extends React.Component {
 
             this.forceUpdate()
           }}>
-          Reset
           <ActionSettingsBackupRestore />
+          Reset
         </Button>
       </Popover>
     )
