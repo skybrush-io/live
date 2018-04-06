@@ -3,7 +3,7 @@
  */
 
 import { showLayersDialog } from './actions/layers'
-import { selectAllUAVFeatures, clearSelectedFeatures,
+import { selectAllUAVFeatures, clearSelection,
   selectMapTool, selectMapSource } from './actions/map'
 import { showMessagesDialog } from './actions/messages'
 import { showSnackbarMessage } from './actions/snackbar'
@@ -31,7 +31,7 @@ export default [
     description: 'Clear selection',
     on: 'down',
     keys: 'PlatMod + Shift + KeyA',
-    action: () => { store.dispatch(clearSelectedFeatures()) }
+    action: () => { store.dispatch(clearSelection()) }
   },
 
   // Tool hotkeys
