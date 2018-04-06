@@ -30,6 +30,7 @@
     "autosuggest-highlight": "^3.1.1",
     "color": "^2.0.1",
     "coordinate-parser": "^1.0.2",
+    "copy-to-clipboard": "^3.0.8",
     "core-decorators": "^0.20.0",
     "electron-window-state": "^4.1.1",
     "es6-promise": "^4.2.2",

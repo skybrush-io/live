@@ -17,6 +17,8 @@ import {
 } from './utils/messaging'
 import { Tool } from './views/map/tools'
 
+import copy from 'copy-to-clipboard'
+
 export default [
   // Drone selection hotkeys
   {
@@ -63,25 +65,8 @@ export default [
     description: 'Copy coordinates to clipboard',
     on: 'down',
     keys: 'Ctrl + Shift + KeyC',
-
-    // This might seem like a really hacky solution, but everything else seemed
-    // to be far more complex and probably would've been more prone to breaking.
     action: () => {
-      const mousePositionDisplay = (
-        document.getElementsByClassName('ol-mouse-position')[0]
-      )
-
-      const mousePositionText = mousePositionDisplay.innerText
-
-      const hiddenInput = document.createElement('input')
-      hiddenInput.type = 'text'
-      hiddenInput.value = mousePositionText
-
-      mousePositionDisplay.appendChild(hiddenInput)
-      hiddenInput.select()
-      document.execCommand('copy')
-      mousePositionDisplay.removeChild(hiddenInput)
-
+      copy(document.getElementsByClassName('ol-mouse-position')[0].innerText)
       store.dispatch(showSnackbarMessage('Coordinates copied to clpboard.'))
     }
   },
