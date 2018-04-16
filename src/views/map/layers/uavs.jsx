@@ -6,29 +6,37 @@ import { connect } from 'react-redux'
 import Button from 'material-ui/Button'
 import TextField from 'material-ui/TextField'
 
-import { colorPredicates } from '../features/UAVFeature'
 import ActiveUAVsLayerSource from '../sources/ActiveUAVsLayerSource'
 
 import { setLayerParameterById } from '../../../actions/layers'
 import { showSnackbarMessage } from '../../../actions/snackbar'
 import flock from '../../../flock'
 import { getSelection } from '../../../selectors'
-import { updateUAVFeatureColorsSignal } from '../../../signals'
 import { coordinateFromLonLat } from '../../../utils/geography'
 import makeLogger from '../../../utils/logging'
 
 const colors = ['pink', 'orange', 'yellow', 'green', 'blue', 'purple']
 const logger = makeLogger('UAVsLayer')
 
-const updatePredicates = (predicates, errorHandler) => {
+const validatePredicates = (predicates, errorHandler) => {
+  const validPredicates = {}
+  const invalidPredicates = []
+
   for (const color in predicates) {
     try {
-      /* eslint no-new-func: "off" */
-      colorPredicates[color] = new Function('id', `return ${predicates[color]}`)
+      /* eslint no-new-func: "off", no-unused-vars: "off" */
+      const predicateFunction = new Function('id', `return ${predicates[color]}`)
+      // Testing the function for errors with a sample string parameter.
+      const testResult = predicateFunction('TEST-01')
+      // If it didn't produce any errors then it is stored.
+      validPredicates[color] = predicates[color]
     } catch (e) {
-      errorHandler(`Invalid color predicate for ${color} --> ${e}`)
+      invalidPredicates.push(color)
+      errorHandler(`Invalid color predicate for ${color}: "${e}"`)
     }
   }
+
+  return { validPredicates, invalidPredicates }
 }
 
 // === Settings for this particular layer type ===
@@ -38,10 +46,12 @@ class UAVsLayerSettingsPresentation extends React.Component {
     super(props)
 
     this.state = {
-      colorPredicates: props.layer.parameters.colorPredicates
+      colorPredicates: props.layer.parameters.colorPredicates,
+      invalidPredicates: []
     }
 
     this._makeChangeHandler = this._makeChangeHandler.bind(this)
+    this._handleKeyPress = this._handleKeyPress.bind(this)
     this._handleClick = this._handleClick.bind(this)
   }
 
@@ -52,8 +62,11 @@ class UAVsLayerSettingsPresentation extends React.Component {
         key={`${color}_predicate_textfield`}
         name={`${color}_predicate_textfield`}
         label={color}
-        value={this.state.colorPredicates[color]}
-        onChange={this._makeChangeHandler(color)} />
+        value={this.state.colorPredicates[color] || ''}
+        error={this.state.invalidPredicates.includes(color)}
+        onChange={this._makeChangeHandler(color)}
+        onKeyPress={this._handleKeyPress}
+      />
     ))
     return (
       <div>
@@ -68,14 +81,6 @@ class UAVsLayerSettingsPresentation extends React.Component {
     )
   }
 
-  componentWillReceiveProps (newProps) {
-    updatePredicates(
-      newProps.layer.parameters.colorPredicates,
-      this.props.showMessage
-    )
-    updateUAVFeatureColorsSignal.dispatch()
-  }
-
   _makeChangeHandler (color) {
     return (event) => {
       const colorPredicates = {
@@ -86,8 +91,23 @@ class UAVsLayerSettingsPresentation extends React.Component {
     }
   }
 
+  _handleKeyPress (e) {
+    if (e.key === 'Enter') {
+      this._handleClick()
+    }
+  }
+
   _handleClick () {
-    this.props.setLayerParameter('colorPredicates', this.state.colorPredicates)
+    const { validPredicates, invalidPredicates } = (
+      validatePredicates(this.state.colorPredicates, logger.error)
+    )
+
+    this.props.setLayerParameter(
+      'colorPredicates',
+      { ...this.props.layer.parameters.colorPredicates, ...validPredicates }
+    )
+
+    this.setState({ invalidPredicates })
   }
 }
 
@@ -121,16 +141,13 @@ class UAVsLayerPresentation extends React.Component {
     return (
       <layer.Vector updateWhileAnimating updateWhileInteracting
         zIndex={zIndex}>
-        <ActiveUAVsLayerSource selection={selection}
-          flock={flock} projection={projection} />
+        <ActiveUAVsLayerSource
+          selection={selection}
+          colorPredicates={this.props.layer.parameters.colorPredicates}
+          flock={flock}
+          projection={projection}
+        />
       </layer.Vector>
-    )
-  }
-
-  componentWillReceiveProps (newProps) {
-    updatePredicates(
-      newProps.layer.parameters.colorPredicates,
-      logger.error
     )
   }
 }

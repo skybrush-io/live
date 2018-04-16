@@ -141,7 +141,7 @@ class MapContextMenu extends React.Component {
 
   @autobind
   _shutdownSelectedUAVs () {
-    messaging.shutdownUAVs(this.props.selectedUAVIds)
+    messaging.haltUAVs(this.props.selectedUAVIds)
   }
 
   @autobind

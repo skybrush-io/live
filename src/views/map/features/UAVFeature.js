@@ -2,24 +2,10 @@
  * @file OpenLayers feature that represents an UAV on the map.
  */
 
-import { findKey } from 'lodash'
 import Feature from 'ol/feature'
 import Icon from 'ol/style/icon'
 import Style from 'ol/style/style'
 import Text from 'ol/style/text'
-
-/**
- * Object containing the conditions under which a drone should be colored
- * to a certain color.
- */
-export const colorPredicates = {}
-
-/**
- * @param {string} id the identifier of the drone
- *
- * @return {string} the assigned color ('black' if no predicates match)
- */
-const getColorById = id => findKey(colorPredicates, (p) => p(id)) || 'black'
 
 /**
 * Feature that represents an UAV on an OpenLayers map.
@@ -37,6 +23,7 @@ export default class UAVFeature extends Feature {
     super(geometryOrProperties)
 
     this._selected = false
+    this._color = ''
     this._heading = 0
     this.uavId = uavId
     this._setupStyle()
@@ -61,9 +48,9 @@ export default class UAVFeature extends Feature {
 
     this._heading = value
 
-    if (this.iconImage) {
-      this.iconImage.setRotation(((this._heading + 45) % 360) * Math.PI / 180)
-      this.selectionImage.setRotation(((this._heading + 45) % 360) * Math.PI / 180)
+    if (this._iconImage) {
+      this._iconImage.setRotation(((this._heading + 45) % 360) * Math.PI / 180)
+      this._selectionImage.setRotation(((this._heading + 45) % 360) * Math.PI / 180)
     }
   }
 
@@ -89,35 +76,65 @@ export default class UAVFeature extends Feature {
   }
 
   /**
+   * Returns the current display color of the UAV.
+   */
+  get color () {
+    return this._color
+  }
+
+  /**
+   * Sets the display color of the UAV.
+   *
+   * @param {string} value The new color to be used.
+   */
+  set color (value) {
+    if (this._color === value) {
+      return
+    }
+
+    this._color = value
+    this._setupStyle()
+  }
+
+  /**
    * Sets up or updates the style of the feature.
    */
   _setupStyle () {
-    let styles = []
+    const styles = []
 
-    this.iconImage = new Icon({
+    // Main image
+
+    const iconImage = new Icon({
       rotateWithView: true,
       rotation: ((this._heading + 45) % 360) * Math.PI / 180,
       snapToPixel: false,
-      /* Path should not have a leading slash otherwise it won't work in Electron */
-      src: `assets/drone.${getColorById(this.uavId)}.32x32.png`
+      // Path should not have a leading slash otherwise it won't work in Electron
+      src: `assets/drone.${this._color}.32x32.png`
     })
-    this.iconStyle = new Style({ image: this.iconImage })
-    styles.push(this.iconStyle)
+    this._iconImage = iconImage
 
-    this.selectionImage = new Icon({
+    const iconStyle = new Style({ image: iconImage })
+    styles.push(iconStyle)
+
+    // Selection image
+
+    const selectionImage = new Icon({
       rotateWithView: true,
       rotation: ((this._heading + 45) % 360) * Math.PI / 180,
       snapToPixel: false,
-      /* Path should not have a leading slash otherwise it won't work in Electron */
+      // Path should not have a leading slash otherwise it won't work in Electron
       src: 'assets/selection_glow.png'
     })
-    this.selectionStyle = new Style({ image: this.selectionImage })
+    this._selectionImage = selectionImage
 
+    const selectionStyle = new Style({ image: selectionImage })
     if (this._selected) {
-      styles.push(this.selectionStyle)
+      styles.push(selectionStyle)
     }
 
-    this.labelStyle = new Style({
+    // Label
+
+    const labelStyle = new Style({
       text: new Text({
         font: '12px sans-serif',
         offsetY: 24,
@@ -125,7 +142,7 @@ export default class UAVFeature extends Feature {
         textAlign: 'center'
       })
     })
-    styles.push(this.labelStyle)
+    styles.push(labelStyle)
 
     this.setStyle(styles)
   }

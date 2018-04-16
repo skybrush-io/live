@@ -13,7 +13,32 @@ import UAVFeature from '../features/UAVFeature'
 import Flock from '../../../model/flock'
 import { setLayerSelectable } from '../../../model/layers'
 import { uavIdToGlobalId } from '../../../model/identifiers'
-import { updateUAVFeatureColorsSignal } from '../../../signals'
+
+/**
+ * Function for assigning colors to UAV ids according to color predicates.
+ *
+ * @param {Object} colorPredicates Object containing the conditions under which
+ *        a drone should be colored to a certain color.
+ * @param {string} id The identifier of the drone.
+ *
+ * @return {string} The assigned color. (If no predicate matches then 'black'.)
+ */
+const cachedGetColorById = (() => {
+  const predicateFunctionCache = {}
+
+  return (colorPredicates, id) => (
+    /* eslint no-new-func: "off", no-unused-vars: "off" */
+    _.findKey(
+      colorPredicates,
+      p => {
+        if (!(p in predicateFunctionCache)) {
+          predicateFunctionCache[p] = new Function('id', `return ${p}`)
+        }
+        return predicateFunctionCache[p](id)
+      }
+    ) || 'black'
+  )
+})()
 
 /**
  * OpenLayers vector layer source that contains all the active UAVs
@@ -28,6 +53,7 @@ export default class ActiveUAVsLayerSource extends source.Vector {
 
     this._onFeatureAdded = this._onFeatureAdded.bind(this)
     this._onSelectionMaybeChanged = this._onSelectionMaybeChanged.bind(this)
+    this._onColorsMaybeChanged = this._onColorsMaybeChanged.bind(this)
     this._onUAVsUpdated = this._onUAVsUpdated.bind(this)
 
     this.featureManager = new FeatureManager(this.source)
@@ -35,20 +61,16 @@ export default class ActiveUAVsLayerSource extends source.Vector {
     this.featureManager.featureIdFunction = uavIdToGlobalId
     this.featureManager.featureAdded.add(this._onFeatureAdded)
 
-    updateUAVFeatureColorsSignal.add(() => {
-      const features = this.featureManager.getFeatureArray()
-      for (const feature of features) {
-        // TODO: we are using a private API here. This is not nice.
-        feature._setupStyle()
-      }
-    })
-
     this.eventBindings = {}
   }
 
   componentWillReceiveProps (newProps) {
     this._onFlockMaybeChanged(this.props.flock, newProps.flock)
     this._onSelectionMaybeChanged(this.props.selection, newProps.selection)
+    this._onColorsMaybeChanged(
+      this.props.colorPredicates,
+      newProps.colorPredicates
+    )
     this.featureManager.projection = newProps.projection
   }
 
@@ -126,6 +148,24 @@ export default class ActiveUAVsLayerSource extends source.Vector {
   }
 
   /**
+   * Function that checks whether the color predicates have changed and updates
+   * the features accordingly.
+   *
+   * @param {Object} oldColorPredicates The old color predicates.
+   * @param {Object} newColorPredicates The new color predicates.
+   */
+  _onColorsMaybeChanged (oldColorPredicates, newColorPredicates) {
+    if (newColorPredicates === oldColorPredicates) {
+      return
+    }
+
+    const features = this.featureManager.getFeatureArray()
+    for (const feature of features) {
+      feature.color = cachedGetColorById(newColorPredicates, feature.uavId)
+    }
+  }
+
+  /**
    * Event handler that is called when the status of some of the UAVs has
    * changed in the flock and the layer should be re-drawn.
    *
@@ -142,11 +182,16 @@ export default class ActiveUAVsLayerSource extends source.Vector {
       if (typeof uav.heading !== 'undefined') {
         feature.heading = uav.heading
       }
+
+      if (feature.color === '') {
+        feature.color = cachedGetColorById(this.props.colorPredicates, uav.id)
+      }
     })
   }
 }
 
 ActiveUAVsLayerSource.propTypes = {
+  colorPredicates: PropTypes.objectOf(PropTypes.string).isRequired,
   flock: PropTypes.instanceOf(Flock),
   projection: PropTypes.func,
   selection: PropTypes.arrayOf(PropTypes.string).isRequired

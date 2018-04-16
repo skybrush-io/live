@@ -3,14 +3,16 @@
  */
 
 import messageHub from '../message-hub'
-import * as logging from './logging'
+import makeLogger from './logging'
+
+const logger = makeLogger('messaging')
 
 export const takeoffUAVs = (uavs) => (
   messageHub.sendMessage({
     type: 'UAV-TAKEOFF',
     ids: uavs
   }).then(result => {
-    logging.addInfoItem('Takeoff command issued and response received.')
+    logger.info('Takeoff command issued and response received.')
   })
 )
 
@@ -19,7 +21,7 @@ export const landUAVs = (uavs) => (
     type: 'UAV-LAND',
     ids: uavs
   }).then(result => {
-    logging.addInfoItem('Land command issued and response received.')
+    logger.info('Land command issued and response received.')
   })
 )
 
@@ -28,16 +30,16 @@ export const returnToHomeUAVs = (uavs) => (
     type: 'UAV-RTH',
     ids: uavs
   }).then(result => {
-    logging.addInfoItem('Return to home command issued and response received.')
+    logger.info('Return to home command issued and response received.')
   })
 )
 
-export const shutdownUAVs = (uavs) => (
+export const haltUAVs = (uavs) => (
   messageHub.sendMessage({
     type: 'UAV-HALT',
     ids: uavs
   }).then(result => {
-    logging.addInfoItem('Land command issued and response received.')
+    logger.info('Halt command issued and response received.')
   })
 )
 
@@ -56,7 +58,7 @@ export const toggleErrorUAVs = (() => {
       command: 'error',
       args: currentError
     }).then(result => {
-      logging.addInfoItem(
+      logger.info(
         currentError.length === 0
           ? `The error state of UAVs ${uavs} were cleared.`
           : `UAVs ${uavs} were sent to error state ${currentError}.`
