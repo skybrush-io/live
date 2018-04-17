@@ -27,7 +27,7 @@ const cachedGetColorById = (() => {
   const predicateFunctionCache = {}
 
   return (colorPredicates, id) => (
-    /* eslint no-new-func: "off", no-unused-vars: "off" */
+    /* eslint no-new-func: "off" */
     _.findKey(
       colorPredicates,
       p => {

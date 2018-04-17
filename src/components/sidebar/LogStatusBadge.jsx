@@ -21,5 +21,8 @@ export default connect(
       color: colorForLogLevel(level),
       visible: level >= (ownProps.level || LogLevel.WARNING)
     }
-  }
+  },
+  // Return empty object from mapDispatchToProps to avoid invalid prop warning
+  // caused by react-badger not handling the automatically added dispatch prop.
+  () => ({})
 )(SidebarBadge)
