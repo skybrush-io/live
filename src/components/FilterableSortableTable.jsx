@@ -84,7 +84,11 @@ class FilterableSortableTable extends React.Component {
 
     this._makeFilterClickHandler = this._makeFilterClickHandler.bind(this)
     this._closeFilterPopover = this._closeFilterPopover.bind(this)
+    this._handleRangeChange = this._handleRangeChange.bind(this)
+    this._makeListChangeHandler = this._makeListChangeHandler.bind(this)
+    this._handleTextChange = this._handleTextChange.bind(this)
     this._makeFilterPopoverContent = this._makeFilterPopoverContent.bind(this)
+
     this._makeSortClickHandler = this._makeSortClickHandler.bind(this)
     this._makeColumnControls = this._makeColumnControls.bind(this)
     this._makeSeparatorHandler = this._makeSeparatorHandler.bind(this)
@@ -92,6 +96,11 @@ class FilterableSortableTable extends React.Component {
     this._resetFilter = this._resetFilter.bind(this)
   }
 
+  /**
+   * React lifecycle event handler to update the steps of range type columns.
+   *
+   * @param {Object} newProps The updated props that the component will receive.
+   */
   componentWillReceiveProps (newProps) {
     if (newProps.dataSource !== this.props.dataSource) {
       this.state.availableColumns.filter(
@@ -119,6 +128,9 @@ class FilterableSortableTable extends React.Component {
     }
   }
 
+  /**
+   * Gets the list of currently visible columns.
+   */
   get _columns () {
     return this.state.currentColumns.map(i => this.state.availableColumns[i])
   }
@@ -166,6 +178,62 @@ class FilterableSortableTable extends React.Component {
   }
 
   /**
+   * Function to create handlers that update the filterProperties of list type
+   * columns.
+   *
+   * @param {Object} item The list item to toggle visibility of.
+   *
+   * @return {function} The handler to be assigned to a given item's Checkbox
+   *         chage event.
+   */
+  _makeListChangeHandler (item) {
+    return e => {
+      const filterProperties = (
+        this._columns[this.state.filterPopoverTargetColumnId].filterProperties
+      )
+
+      filterProperties.map.set(
+        item.value,
+        !filterProperties.map.get(item.value)
+      )
+
+      this.forceUpdate()
+    }
+  }
+
+  /**
+   * Function to update the filterProperties of range type columns.
+   *
+   * @param {number[]} newLimits A numeric array containing the new lower and
+   *        upper bounds from the Range component of the rc-slider package.
+   */
+  _handleRangeChange ([newMin, newMax]) {
+    this._columns[this.state.filterPopoverTargetColumnId].filterProperties = {
+      ...this._columns[this.state.filterPopoverTargetColumnId].filterProperties,
+      min: newMin,
+      max: newMax
+    }
+
+    this.forceUpdate()
+  }
+
+  /**
+   * Function to update the filterProperties of text type columns.
+   *
+   * @param {InputEvent} e The change event fired by the TextField component.
+   */
+  _handleTextChange (e) {
+    console.log(e)
+
+    this._columns[this.state.filterPopoverTargetColumnId].filterProperties = {
+      ...this._columns[this.state.filterPopoverTargetColumnId].filterProperties,
+      text: e.target.value
+    }
+
+    this.forceUpdate()
+  }
+
+  /**
    * Generates the settings popover's content for the filter type of the column
    * specified by the id given in the parameter.
    *
@@ -182,22 +250,11 @@ class FilterableSortableTable extends React.Component {
       [FilterTypes.list]: (filterProperties) => (
         <div style={popoverContentStyle}>
           {filterProperties.list.map(item => {
-            console.log(item)
-
-            const toggleItemVisibility = () => {
-              filterProperties.map.set(
-                item.value,
-                !filterProperties.map.get(item.value)
-              )
-
-              this.forceUpdate()
-            }
-
             return <FormControlLabel key={`${item.value}_checkbox`}
               control={
                 <Checkbox
                   checked={filterProperties.map.get(item.value)}
-                  onChange={toggleItemVisibility}
+                  onChange={this._makeListChangeHandler(item)}
                 />
               }
               label={item.display}
@@ -215,12 +272,7 @@ class FilterableSortableTable extends React.Component {
               min={0}
               max={filterProperties.steps.length - 1}
               value={[filterProperties.min, filterProperties.max]}
-              onChange={([newMin, newMax]) => {
-                filterProperties.min = newMin
-                filterProperties.max = newMax
-
-                this.forceUpdate()
-              }}
+              onChange={this._handleRangeChange}
             />
 
             <div style={{ float: 'left' }}>
@@ -238,16 +290,21 @@ class FilterableSortableTable extends React.Component {
       [FilterTypes.text]: (filterProperties) => (
         <div style={popoverContentStyle}>
           <TextField id='filter-text' value={filterProperties.text}
-            onChange={e => {
-              filterProperties.text = e.target.value
-
-              this.forceUpdate()
-            }} />
+            onChange={this._handleTextChange} />
         </div>
       )
     })[targetColumn.filterType](targetColumn.filterProperties, targetColumnId)
   }
 
+  /**
+   * Creates a handler function that sorts the rows according to  the column
+   * specified by it's index. If the table is already being sorted by that
+   * column then it reverses the order on subsequent clicks.
+   *
+   * @param {number} i The index of the column.
+   *
+   * @return {function} The handler function to be assigned to an event.
+   */
   _makeSortClickHandler (i) {
     return () => {
       if (this.state.sortBy === i) {
@@ -337,6 +394,10 @@ class FilterableSortableTable extends React.Component {
     )
   }
 
+  /**
+   * Resets the filter properties of the column that has the popover currently
+   * active.
+   */
   _resetFilter () {
     const col = this._columns[this.state.filterPopoverTargetColumnId]
     col.filterProperties = filterPropertiesInitializers[col.filterType](col)
