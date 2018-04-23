@@ -52,6 +52,7 @@
     "ol-react": "git+https://github.com/collmot/ol-react.git#450327eb0efa641bbf13752add7acbe1dbfb98e0",
     "prop-types": "^15.6.0",
     "radix-64": "^1.0.4",
+    "rc-slider": "^8.6.1",
     "react": "^16.2.0",
     "react-autosuggest": "^9.3.2",
     "react-color": "^2.13.8",

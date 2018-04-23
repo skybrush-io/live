@@ -54,8 +54,7 @@ class LogPresentation extends React.Component {
         filterList: Object.keys(LogLevel).map(level => ({
           value: LogLevel[level],
           display: iconForLogLevel(LogLevel[level])
-        })),
-        sorter: (a, b) => a.level - b.level
+        }))
       },
       {
         name: 'Timestamp',
@@ -67,8 +66,7 @@ class LogPresentation extends React.Component {
           padStart(currentDate.getMinutes(), 2, '0') + ':' +
           padStart(currentDate.getSeconds(), 2, '0')
         },
-        filterType: FilterTypes.range,
-        sorter: (a, b) => a.timestamp - b.timestamp
+        filterType: FilterTypes.range
       },
       {
         name: 'Message',

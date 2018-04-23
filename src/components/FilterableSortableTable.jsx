@@ -12,13 +12,14 @@ import ContentSort from 'material-ui-icons/Sort'
 
 import Button from 'material-ui/Button'
 
+import Popover from 'material-ui/Popover'
 import { FormControlLabel } from 'material-ui/Form'
 import Checkbox from 'material-ui/Checkbox'
-
-import Popover from 'material-ui/Popover'
+import { Range } from 'rc-slider'
 import TextField from 'material-ui/TextField'
 
-require('../../assets/css/FilterableSortableTable.less')
+import 'rc-slider/assets/index.css'
+import '../../assets/css/FilterableSortableTable.less'
 
 export const FilterTypes = {
   list: Symbol('list'),
@@ -27,17 +28,30 @@ export const FilterTypes = {
 }
 
 const filterPropertiesInitializers = {
-  [FilterTypes.list]: (col) => ({
-    list: col.filterList.map(x => ({ visible: true, item: x })),
+  [FilterTypes.list]: col => ({
+    list: col.filterList,
     map: new Map(col.filterList.map(x => [x.value, true]))
   }),
-  [FilterTypes.range]: (col) => ({}),
-  [FilterTypes.text]: (col) => ({ text: '' })
+  [FilterTypes.range]: col => ({
+    steps: ('filterProperties' in col) ? col.filterProperties.steps : [],
+    min: 0,
+    max: (
+      ('filterProperties' in col)
+        ? col.filterProperties.steps.length - 1
+        : -1
+    ),
+    sorter: col.sorter || ((a, b) => ((a > b) - (a < b)))
+  }),
+  [FilterTypes.text]: col => ({ text: '' })
 }
 
 const filterTesters = {
   [FilterTypes.list]: (filterProperties, data) => filterProperties.map.get(data),
-  [FilterTypes.range]: (filterProperties, data) => true,
+  [FilterTypes.range]: (filterProperties, data) => {
+    const { steps, min, max, sorter } = filterProperties
+
+    return sorter(steps[min], data) <= 0 && sorter(data, steps[max]) <= 0
+  },
   [FilterTypes.text]: (filterProperties, data) => data.match(filterProperties.text)
 }
 
@@ -54,10 +68,8 @@ class FilterableSortableTable extends React.Component {
         displayName: col.name,
         displayRenderer: x => x,
         filterProperties: filterPropertiesInitializers[col.filterType](col),
-        sorter: (a, b) => (
-          (col.dataExtractor(a) > col.dataExtractor(b)) -
-          (col.dataExtractor(a) < col.dataExtractor(b))
-        ) // Default sorting with JavaScript comparison operator
+        // Default sorting with JavaScript comparison operator
+        sorter: (a, b) => ((a > b) - (a < b))
       }, col)
     ))
 
@@ -77,6 +89,34 @@ class FilterableSortableTable extends React.Component {
     this._makeColumnControls = this._makeColumnControls.bind(this)
     this._makeSeparatorHandler = this._makeSeparatorHandler.bind(this)
     this._makeSeparator = this._makeSeparator.bind(this)
+    this._resetFilter = this._resetFilter.bind(this)
+  }
+
+  componentWillReceiveProps (newProps) {
+    if (newProps.dataSource !== this.props.dataSource) {
+      this.state.availableColumns.filter(
+        col => col.filterType === FilterTypes.range
+      ).forEach(col => {
+        const sortedData = newProps.dataSource.map(
+          row => col.dataExtractor(row)
+        ).sort(col.sorter)
+
+        const wasMax = (
+          col.filterProperties.max === col.filterProperties.steps.length - 1
+        )
+
+        col.filterProperties.steps = sortedData.slice(1).reduce(
+          (acc, curr) => {
+            return col.sorter(acc[acc.length - 1], curr) === 0 ? acc : [...acc, curr]
+          },
+          [sortedData[0]]
+        )
+
+        if (wasMax) {
+          col.filterProperties.max = col.filterProperties.steps.length - 1
+        }
+      })
+    }
   }
 
   get _columns () {
@@ -98,7 +138,12 @@ class FilterableSortableTable extends React.Component {
     )
 
     const sortedData = [...filteredData].sort(
-      this.state.availableColumns[this.state.sortBy].sorter
+      (a, b) => (
+        this.state.availableColumns[this.state.sortBy].sorter(
+          this.state.availableColumns[this.state.sortBy].dataExtractor(a),
+          this.state.availableColumns[this.state.sortBy].dataExtractor(b)
+        )
+      )
     )
 
     return this.state.reverse ? sortedData.reverse() : sortedData
@@ -121,44 +166,77 @@ class FilterableSortableTable extends React.Component {
   }
 
   /**
-   * Generates the settings for the filter type of the column specified by
-   * the id given in the parameter.
+   * Generates the settings popover's content for the filter type of the column
+   * specified by the id given in the parameter.
    *
    * @param {number} targetColumnId Identifier of the column being filtered.
+   *
+   * @return {ReactElement} The contents of the filter popover.
    */
   _makeFilterPopoverContent (targetColumnId) {
     const targetColumn = this._columns[targetColumnId]
 
+    const popoverContentStyle = { margin: '10px' }
+
     return ({
       [FilterTypes.list]: (filterProperties) => (
-        <div>
-          {filterProperties.list.map(item =>
+        <div style={popoverContentStyle}>
+          {filterProperties.list.map(item => {
+            console.log(item)
 
-            <FormControlLabel key={`${item.item.value}_checkbox`}
+            const toggleItemVisibility = () => {
+              filterProperties.map.set(
+                item.value,
+                !filterProperties.map.get(item.value)
+              )
+
+              this.forceUpdate()
+            }
+
+            return <FormControlLabel key={`${item.value}_checkbox`}
               control={
                 <Checkbox
-                  checked={item.visible}
-                  onChange={() => {
-                    item.visible = !item.visible
-                    filterProperties.map.set(item.item.value, item.visible)
-
-                    this.forceUpdate()
-                  }}
+                  checked={filterProperties.map.get(item.value)}
+                  onChange={toggleItemVisibility}
                 />
               }
-              label={item.item.display}
-             />
-
-          )}
+              label={item.display}
+            />
+          })}
         </div>
       ),
       [FilterTypes.range]: (filterProperties) => (
-        <div>
-          Range
-        </div>
+        filterProperties.steps.length < 2
+          ? <div style={popoverContentStyle}>
+              Not enough data for range filter.
+          </div>
+          : <div style={{ ...popoverContentStyle, width: '200px' }}>
+            <Range
+              min={0}
+              max={filterProperties.steps.length - 1}
+              value={[filterProperties.min, filterProperties.max]}
+              onChange={([newMin, newMax]) => {
+                filterProperties.min = newMin
+                filterProperties.max = newMax
+
+                this.forceUpdate()
+              }}
+            />
+
+            <div style={{ float: 'left' }}>
+              {targetColumn.displayRenderer(
+                filterProperties.steps[filterProperties.min]
+              )}
+            </div>
+            <div style={{ float: 'right' }}>
+              {targetColumn.displayRenderer(
+                filterProperties.steps[filterProperties.max]
+              )}
+            </div>
+          </div>
       ),
       [FilterTypes.text]: (filterProperties) => (
-        <div>
+        <div style={popoverContentStyle}>
           <TextField id='filter-text' value={filterProperties.text}
             onChange={e => {
               filterProperties.text = e.target.value
@@ -186,6 +264,8 @@ class FilterableSortableTable extends React.Component {
    *
    * @param {Object} col The desctiptor object of the current column.
    * @param {number} i The position of the column in the visible column list.
+   *
+   * @return {ReactElement} A div containing the filter and sort buttons.
    */
   _makeColumnControls (col, i) {
     const sortStyle = Object.assign({},
@@ -215,6 +295,8 @@ class FilterableSortableTable extends React.Component {
    * the user lets go of the mouse button.
    *
    * @param {Object} col The desctiptor object of the current column.
+   *
+   * @return {function} A callback for handling the resizing of columns.
    */
   _makeSeparatorHandler (col) {
     return (e) => {
@@ -240,12 +322,26 @@ class FilterableSortableTable extends React.Component {
     }
   }
 
+  /**
+   * Function that creates a draggable column separator for resizing purposes.
+   *
+   * @param {Object} col The column to the left of the separator.
+   *
+   * @return {ReactElement} The created separator element.
+   */
   _makeSeparator (col) {
     return (
       <div key={`${col.name}_separator`} className='fst-separator'
         onMouseDown={this._makeSeparatorHandler(col)}
       />
     )
+  }
+
+  _resetFilter () {
+    const col = this._columns[this.state.filterPopoverTargetColumnId]
+    col.filterProperties = filterPropertiesInitializers[col.filterType](col)
+
+    this.forceUpdate()
   }
 
   render () {
@@ -276,13 +372,7 @@ class FilterableSortableTable extends React.Component {
           ? this._makeFilterPopoverContent(this.state.filterPopoverTargetColumnId)
           : false}
 
-        <Button
-          onClick={() => {
-            const col = this._columns[this.state.filterPopoverTargetColumnId]
-            col.filterProperties = filterPropertiesInitializers[col.filterType](col)
-
-            this.forceUpdate()
-          }}>
+        <Button onClick={this._resetFilter}>
           <ActionSettingsBackupRestore />
           Reset
         </Button>
