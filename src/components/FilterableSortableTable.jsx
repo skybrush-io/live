@@ -52,7 +52,10 @@ const filterTesters = {
 
     return sorter(steps[min], data) <= 0 && sorter(data, steps[max]) <= 0
   },
-  [FilterTypes.text]: (filterProperties, data) => data.match(filterProperties.text)
+  [FilterTypes.text]: (filterProperties, data) => (
+    data.match(filterProperties.text) ||
+    data.toLowerCase().match(filterProperties.text.toLowerCase())
+  )
 }
 
 class FilterableSortableTable extends React.Component {
@@ -223,8 +226,6 @@ class FilterableSortableTable extends React.Component {
    * @param {InputEvent} e The change event fired by the TextField component.
    */
   _handleTextChange (e) {
-    console.log(e)
-
     this._columns[this.state.filterPopoverTargetColumnId].filterProperties = {
       ...this._columns[this.state.filterPopoverTargetColumnId].filterProperties,
       text: e.target.value

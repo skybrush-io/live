@@ -8,6 +8,8 @@ import { selectAllUAVFeatures, clearSelection,
 import { showMessagesDialog } from './actions/messages'
 import { showSnackbarMessage } from './actions/snackbar'
 
+import { getSelectedUAVIds } from './selectors'
+
 import flock from './flock'
 import { Source } from './model/sources'
 import signals from './signals'
@@ -129,19 +131,19 @@ export default [
     description: 'Issue TAKEOFF command to selected UAVs',
     on: 'down',
     keys: 'PlatMod + Alt + KeyT',
-    action: () => takeoffUAVs(store.getState().map.selection)
+    action: () => takeoffUAVs(getSelectedUAVIds(store.getState()))
   },
   {
     description: 'Issue LAND command to selected UAVs',
     on: 'down',
     keys: 'PlatMod + Alt + KeyL',
-    action: () => landUAVs(store.getState().map.selection)
+    action: () => landUAVs(getSelectedUAVIds(store.getState()))
   },
   {
     description: 'Issue RTH (Return To Home) command to selected UAVs',
     on: 'down',
     keys: 'PlatMod + Alt + KeyR',
-    action: () => returnToHomeUAVs(store.getState().map.selection)
+    action: () => returnToHomeUAVs(getSelectedUAVIds(store.getState()))
   },
 
   // Temporary: Send selected UAVs into a random error state
@@ -149,7 +151,7 @@ export default [
     description: 'Send selected UAVs into a random error state',
     on: 'down',
     keys: 'PlatMod + Alt + KeyE',
-    action: () => toggleErrorUAVs(store.getState().map.selection)
+    action: () => toggleErrorUAVs(getSelectedUAVIds(store.getState()))
   },
 
   // Messages dialog related hotkeys

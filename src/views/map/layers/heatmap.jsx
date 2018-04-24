@@ -47,7 +47,7 @@ class HeatmapLayerSettingsPresentation extends React.Component {
     this._refs = {}
     this._assignRefs = {}
 
-    this._setAutoscale = (event, checked) => {
+    this._setAutoScale = (event, checked) => {
       this.props.setLayerParameter('autoScale', checked)
     }
     this._setSnapToGrid = (event, checked) => {
@@ -68,7 +68,7 @@ class HeatmapLayerSettingsPresentation extends React.Component {
 
     const textFieldStyle = {
       marginRight: 10,
-      width: 150
+      width: 125
     }
 
     return (
@@ -79,7 +79,7 @@ class HeatmapLayerSettingsPresentation extends React.Component {
           unit={parameters.unit}
           setUnit={partial(setLayerParameter, 'unit')} />
 
-        <Button raised style={{marginBottom: '10px'}}
+        <Button variant="raised" style={{marginBottom: '10px'}}
           onClick={this._showSubscriptionDialog}>
           Edit subscriptions
         </Button>
@@ -92,9 +92,6 @@ class HeatmapLayerSettingsPresentation extends React.Component {
             label='Threshold'
             type='number'
             defaultValue={formatNumber(parameters.threshold)} />
-        </FormGroup>
-
-        <FormGroup row>
           <TextField inputRef={this._assignRefs.minValue}
             style={textFieldStyle}
             label='Minimum value'
@@ -111,23 +108,35 @@ class HeatmapLayerSettingsPresentation extends React.Component {
         </FormGroup>
 
         <div style={{ padding: '24px 0' }}>
+          <input id='minHue'
+            ref={this._assignRefs.minHue}
+            type='range' min='0' max='360'
+            style={{width: '100px', verticalAlign: 'middle'}}
+            value={minHue}
+            onChange={this._handleChange}
+          />
+
           <div style={{
+            display: 'inline-block',
             width: '300px',
             height: '25px',
-            marginLeft: '50px',
+            margin: '5px',
+            verticalAlign: 'middle',
             background: `linear-gradient(-90deg,
               hsla(${maxHue}, 70%, 50%, 0.75),
               hsla(${minHue}, 70%, 50%, 0.75)
-            )`
+            )`,
+            borderRadius: '10px',
+            boxShadow: '0px 0px 3px 0px black'
           }} />
-          <input id='minHue' ref={this._assignRefs.minHue} type='range' min='0' max='360'
-            style={{width: '100px'}}
-            value={minHue}
-            onChange={this._handleChange} />
-          <input id='maxHue' ref={this._assignRefs.maxHue} type='range' min='0' max='360'
-            style={{width: '100px', marginLeft: '200px'}}
+
+          <input id='maxHue'
+            ref={this._assignRefs.maxHue}
+            type='range' min='0' max='360'
+            style={{width: '100px', verticalAlign: 'middle'}}
             value={maxHue}
-            onChange={this._handleChange} />
+            onChange={this._handleChange}
+          />
         </div>
 
         <FormGroup row>
@@ -153,7 +162,6 @@ class HeatmapLayerSettingsPresentation extends React.Component {
             Clear data
           </Button>
         </FormGroup>
-
       </div>
     )
   }
@@ -444,7 +452,8 @@ class HeatmapLayerPresentation extends React.Component {
             background: `linear-gradient(
               hsla(${this.props.layer.parameters.maxHue}, 70%, 50%, 0.75),
               hsla(${this.props.layer.parameters.minHue}, 70%, 50%, 0.75)
-            )`
+            )`,
+            borderRadius: '5px'
           }}>
           <span>{`${formatNumber(maxValue)} ${unit}`}</span>
           <span>{`${formatNumber((maxValue + minValue) / 2)} ${unit}`}</span>
