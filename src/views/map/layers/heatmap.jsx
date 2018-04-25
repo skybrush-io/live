@@ -11,9 +11,11 @@ import React from 'react'
 import { connect } from 'react-redux'
 
 import Button from 'material-ui/Button'
-import { FormControlLabel, FormGroup } from 'material-ui/Form'
-import { InputAdornment } from 'material-ui/Input'
+import { FormControl, FormControlLabel, FormGroup } from 'material-ui/Form'
+import { InputAdornment, InputLabel } from 'material-ui/Input'
+import { MenuItem } from 'material-ui/Menu'
 import Switch from 'material-ui/Switch'
+import Select from 'material-ui/Select'
 import TextField from 'material-ui/TextField'
 
 import { setLayerParameterById } from '../../../actions/layers'
@@ -28,6 +30,17 @@ import {
 
 const formatNumber = x => numbro(x).format('0.000')
 
+const heatmapColoringFunctions = {
+  'linear': {
+    name: 'Linear',
+    function: x => x
+  },
+  'logarithmic': {
+    name: 'Logarithmic',
+    function: x => Math.log(x)
+  }
+}
+
 // === Settings for this particular layer type ===
 
 class HeatmapLayerSettingsPresentation extends React.Component {
@@ -35,12 +48,16 @@ class HeatmapLayerSettingsPresentation extends React.Component {
     super(props)
 
     this.state = {
+      coloringFunction: props.layer.parameters.coloringFunction,
       minHue: props.layer.parameters.minHue,
       maxHue: props.layer.parameters.maxHue
     }
 
     this._showSubscriptionDialog = this._showSubscriptionDialog.bind(this)
-    this._handleChange = this._handleChange.bind(this)
+    this._handleColoringFunctionChange = (
+      this._handleColoringFunctionChange.bind(this)
+    )
+    this._handleHueChange = this._handleHueChange.bind(this)
     this._handleClick = this._handleClick.bind(this)
     this._clearData = this._clearData.bind(this)
 
@@ -79,7 +96,7 @@ class HeatmapLayerSettingsPresentation extends React.Component {
           unit={parameters.unit}
           setUnit={partial(setLayerParameter, 'unit')} />
 
-        <Button variant="raised" style={{marginBottom: '10px'}}
+        <Button variant='raised' style={{ marginBottom: '10px' }}
           onClick={this._showSubscriptionDialog}>
           Edit subscriptions
         </Button>
@@ -92,6 +109,24 @@ class HeatmapLayerSettingsPresentation extends React.Component {
             label='Threshold'
             type='number'
             defaultValue={formatNumber(parameters.threshold)} />
+
+          <FormControl style={{ width: '125px' }}>
+            <InputLabel htmlFor='selectedChannel'>Coloring function</InputLabel>
+
+            <Select
+              value={this.state.coloringFunction}
+              onChange={this._handleColoringFunctionChange}
+            >
+              {Object.keys(heatmapColoringFunctions).map(key => (
+                <MenuItem key={key} value={key}>
+                  {heatmapColoringFunctions[key].name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </FormGroup>
+
+        <FormGroup row>
           <TextField inputRef={this._assignRefs.minValue}
             style={textFieldStyle}
             label='Minimum value'
@@ -113,7 +148,7 @@ class HeatmapLayerSettingsPresentation extends React.Component {
             type='range' min='0' max='360'
             style={{width: '100px', verticalAlign: 'middle'}}
             value={minHue}
-            onChange={this._handleChange}
+            onChange={this._handleHueChange}
           />
 
           <div style={{
@@ -135,7 +170,7 @@ class HeatmapLayerSettingsPresentation extends React.Component {
             type='range' min='0' max='360'
             style={{width: '100px', verticalAlign: 'middle'}}
             value={maxHue}
-            onChange={this._handleChange}
+            onChange={this._handleHueChange}
           />
         </div>
 
@@ -144,7 +179,7 @@ class HeatmapLayerSettingsPresentation extends React.Component {
             label='Min distance'
             style={textFieldStyle}
             InputProps={{
-              endAdornment: <InputAdornment position="end">m</InputAdornment>
+              endAdornment: <InputAdornment position='end'>m</InputAdornment>
             }}
             type='number'
             defaultValue={formatNumber(parameters.minDistance)} />
@@ -171,15 +206,22 @@ class HeatmapLayerSettingsPresentation extends React.Component {
     this._refs.subscriptionDialog.showDialog()
   }
 
-  _handleChange (e) {
+  _handleHueChange (e) {
     this.setState({
       [e.target.id]: toNumber(e.target.value)
+    })
+  }
+
+  _handleColoringFunctionChange (e) {
+    this.setState({
+      coloringFunction: e.target.value
     })
   }
 
   _handleClick (e) {
     const layerParameters = {
       threshold: toNumber(this._refs.threshold.value),
+      coloringFunction: this.state.coloringFunction,
       minValue: toNumber(this._refs.minValue.value),
       maxValue: toNumber(this._refs.maxValue.value),
       minHue: this.state.minHue,
@@ -194,7 +236,11 @@ class HeatmapLayerSettingsPresentation extends React.Component {
 
   _clearData () {
     window.localStorage.removeItem(`${this.props.layerId}_data`)
+
+    this._refs.minValue.value = 0
     this.props.setLayerParameter('minValue', 0)
+
+    this._refs.maxValue.value = 0
     this.props.setLayerParameter('maxValue', 0)
   }
 }
@@ -417,13 +463,28 @@ class HeatmapLayerPresentation extends React.Component {
   }
 
   _colorForValue (value) {
-    const { minHue, maxHue, threshold, minValue, maxValue } = this.props.layer.parameters
+    const {
+      threshold,
+      coloringFunction,
+      minValue,
+      maxValue,
+      minHue,
+      maxHue
+    } = this.props.layer.parameters
+
+    const processValue = heatmapColoringFunctions[coloringFunction].function
+
+    const processedValue = processValue(value)
+    const processedMin = processValue(minValue)
+    const processedMax = processValue(maxValue)
 
     if (value < threshold) {
       return 'hsla(0, 100%, 100%, 0.5)'
     }
 
-    const hue = (value - minValue) / (maxValue - minValue) * (maxHue - minHue) + minHue
+    // const hue = (value - minValue) / (maxValue - minValue) * (maxHue - minHue) + minHue
+    const hueRatio = (processedValue - processedMin) / (processedMax - processedMin)
+    const hue = minHue + hueRatio * (maxHue - minHue)
 
     return `hsla(${hue}, 70%, 50%, 0.5)`
   }

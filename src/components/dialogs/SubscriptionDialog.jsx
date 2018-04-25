@@ -59,7 +59,7 @@ export default class SubscriptionDialog extends React.Component {
     const { available, selectedChannel, selectedDevice, selectedUAV,
       subscriptions, visible } = this.state
 
-    const uavMenuItems = Object.keys(available).map(uav =>
+    const uavMenuItems = Object.keys(available).sort().map(uav =>
       <MenuItem key={uav} value={uav}>{uav}</MenuItem>
     )
 
@@ -70,18 +70,18 @@ export default class SubscriptionDialog extends React.Component {
     }
 
     const deviceMenuItems = selectedUAV
-      ? Object.keys(available[selectedUAV]).map(device =>
+      ? Object.keys(available[selectedUAV]).sort().map(device =>
         <MenuItem key={device} value={device}>{device}</MenuItem>
       )
       : []
 
     const channelMenuItems = selectedDevice
-      ? Object.keys(available[selectedUAV][selectedDevice]).map(channel =>
+      ? Object.keys(available[selectedUAV][selectedDevice]).sort().map(channel =>
         <MenuItem key={channel} value={channel}>{channel}</MenuItem>
       )
       : []
 
-    const subscriptionItems = subscriptions.map(subscription =>
+    const subscriptionItems = [...subscriptions].sort().map(subscription =>
       <ListItem key={subscription}>
         <ListItemText primary={subscription} />
         <ListItemSecondaryAction>

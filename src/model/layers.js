@@ -98,6 +98,7 @@ const _propertiesForLayerTypes = {
       minHue: 100,
       maxHue: 0,
       threshold: 0,
+      coloringFunction: 'linear',
       minValue: 0,
       maxValue: 0,
       autoScale: true,
