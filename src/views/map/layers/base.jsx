@@ -10,7 +10,7 @@ import Radio, { RadioGroup } from 'material-ui/Radio'
 import { Source, Sources, labelForSource } from '../../../model/sources'
 import { selectMapSource } from '../../../actions/map'
 
-import { BingAPI } from 'config'
+const BING_API_KEY = process.env.FLOCKWAVE_BING_API_KEY
 
 // === Settings for this particular layer type ===
 
@@ -65,10 +65,10 @@ class LayerSource extends React.PureComponent {
         return <source.OSM />
 
       case Source.BING_MAPS.AERIAL_WITH_LABELS:
-        return <source.BingMaps apiKey={BingAPI.key} imagerySet="AerialWithLabels" maxZoom={19} />
+        return <source.BingMaps apiKey={BING_API_KEY} imagerySet="AerialWithLabels" maxZoom={19} />
 
       case Source.BING_MAPS.ROAD:
-        return <source.BingMaps apiKey={BingAPI.key} imagerySet="Road" />
+        return <source.BingMaps apiKey={BING_API_KEY} imagerySet="Road" />
     }
   }
 }
