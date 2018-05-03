@@ -1,6 +1,5 @@
 var merge = require('webpack-merge')
 var baseConfig = require('./base.config.js')
-var projectRoot = require('./helpers').projectRoot
 
 var enableSourceMap = false
 

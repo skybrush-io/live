@@ -14,6 +14,7 @@ var projectRoot = require('./helpers').projectRoot
 
 module.exports = {
   entry: './src/index',
+  mode: 'development',
   output: {
     devtoolModuleFilenameTemplate: '/[absolute-resource-path]',
     path: path.join(projectRoot, 'build'),
@@ -40,7 +41,7 @@ module.exports = {
     extensions: ['.webpack.js', '.web.js', '.js', '.jsx']
   },
   module: {
-    loaders: [
+    rules: [
       {
         test: /\.css$/,
         use: [
@@ -76,5 +77,8 @@ module.exports = {
       }
     ],
     noParse: [/dist\/ol.*\.js/]
-  }
+  },
+
+  /* no need for bundle size warnings */
+  performance: { hints: false }
 }

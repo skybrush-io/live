@@ -5,8 +5,8 @@
   "description": "Web frontend for a Flockwave server",
   "main": "build/launcher.bundle.js",
   "scripts": {
-    "bundle": "webpack -p --progress --config webpack/browser.config.js",
-    "bundle:electron": "NODE_ENV=production webpack -p --progress --config webpack/electron.config.js && NODE_ENV=production webpack -p --progress --config webpack/launcher.config.js",
+    "bundle": "webpack --mode=production --progress --config webpack/browser.config.js",
+    "bundle:electron": "NODE_ENV=production webpack --mode=production --progress --config webpack/electron.config.js && NODE_ENV=production webpack --mode=production --progress --config webpack/launcher.config.js",
     "dist": "npm run bundle:electron && electron-builder -mwl",
     "doc": "esdoc -c esdoc.json",
     "lint": "eslint 'src/**'",
@@ -15,8 +15,7 @@
     "start:electron": "webpack-dev-server --config webpack/electron.config.js --progress --colors",
     "start:public": "webpack-dev-server --config webpack/browser.config.js --progress --colors --host 0.0.0.0",
     "start:public:secure": "webpack-dev-server --config webpack/browser.config.js --progress --colors --https --host 0.0.0.0",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "watch": "webpack --watch"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
@@ -86,15 +85,15 @@
     "yargs": "^11.0.0"
   },
   "devDependencies": {
-    "babel-core": "^6.26.0",
-    "babel-eslint": "^8.1.2",
-    "babel-loader": "^7.1.2",
+    "babel-core": "^6.26.3",
+    "babel-eslint": "^8.2.3",
+    "babel-loader": "^7.1.4",
     "babel-plugin-transform-decorators-legacy": "^1.3.4",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-plugin-transform-runtime": "^6.23.0",
     "babel-preset-es2015": "^6.24.1",
     "babel-preset-react": "^6.24.1",
-    "css-loader": "^0.28.7",
+    "css-loader": "^0.28.11",
     "dotenv-webpack": "^1.5.5",
     "esdoc": "^1.0.4",
     "eslint": "^4.14.0",
@@ -104,14 +103,15 @@
     "eslint-plugin-promise": "^3.6.0",
     "eslint-plugin-react": "^7.5.1",
     "eslint-plugin-standard": "^3.0.1",
-    "file-loader": "^1.1.6",
-    "less": "^2.7.3",
-    "less-loader": "^4.0.5",
-    "style-loader": "^0.20.1",
-    "url-loader": "^0.6.2",
-    "webpack": "^3.10.0",
-    "webpack-dev-server": "^2.9.7",
-    "webpack-merge": "^4.1.1",
+    "file-loader": "^1.1.11",
+    "less": "^3.0.2",
+    "less-loader": "^4.1.0",
+    "style-loader": "^0.21.0",
+    "url-loader": "^1.0.1",
+    "webpack": "^4.6.0",
+    "webpack-cli": "^2.1.2",
+    "webpack-dev-server": "^3.1.4",
+    "webpack-merge": "^4.1.2",
     "webpack-shell-plugin": "^0.5.0"
   }
 }
