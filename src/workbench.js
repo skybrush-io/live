@@ -38,6 +38,7 @@ const componentRegistry = {
   'connection-list': views.ConnectionList,
   'clock-list': views.ClockDisplayList,
   'feature-list': views.FeatureList,
+  'ground-control-view': getFlockFromContext(views.GroundControlView),
   'layer-list': views.LayerList,
   'log-panel': views.LogPanel,
   'map': views.MapView,

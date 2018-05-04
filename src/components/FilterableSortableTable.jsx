@@ -413,7 +413,7 @@ class FilterableSortableTable extends React.Component {
           <div key={`${col.name}_column`} className='fst-cell'
             style={{ width: `${col.width - 3}px` }}
           >
-            {col.name}
+            {col.displayName || col.name}
             {this._makeColumnControls(col, i)}
           </div>,
           this._makeSeparator(col)

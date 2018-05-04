@@ -7,7 +7,7 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import { connect } from 'react-redux'
 
-import ActionReceipt from 'material-ui-icons/Receipt'
+// import ActionReceipt from 'material-ui-icons/Receipt'
 import ActionInfo from 'material-ui-icons/Info'
 import AlertWarning from 'material-ui-icons/Warning'
 import ContentReport from 'material-ui-icons/Report'
@@ -29,7 +29,7 @@ function iconForLogLevel (level) {
   }
 }
 
-class LogPresentation extends React.Component {
+class LogPanelPresentation extends React.Component {
   componentWillMount () {
     if (this.props.onMounting) {
       this.props.onMounting()
@@ -46,7 +46,7 @@ class LogPresentation extends React.Component {
     const tableColumns = [
       {
         name: 'Level',
-        displayName: <ActionReceipt />,
+        // displayName: <ActionReceipt />,
         width: 100,
         dataExtractor: property('level'),
         displayRenderer: iconForLogLevel,
@@ -87,14 +87,14 @@ class LogPresentation extends React.Component {
   }
 }
 
-LogPresentation.propTypes = {
+LogPanelPresentation.propTypes = {
   items: PropTypes.array,
 
   onMounting: PropTypes.func,
   onUnmounting: PropTypes.func
 }
 
-const Log = connect(
+const LogPanel = connect(
   // mapStateToProps
   state => ({
     items: state.log.items
@@ -114,6 +114,6 @@ const Log = connect(
       dispatch(updateLogPanelVisibility(false))
     }
   })
-)(LogPresentation)
+)(LogPanelPresentation)
 
-export default Log
+export default LogPanel
