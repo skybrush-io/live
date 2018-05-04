@@ -49,5 +49,5 @@ jspm_packages
 # Optional REPL history
 .node_repl_history
 
-# Production configuration file containing sensitive data (e.g.: API keys)
-config/production.js
+# Environment file containing sensitive data (e.g.: API keys)
+.env

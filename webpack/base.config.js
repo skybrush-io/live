@@ -8,11 +8,13 @@ require('es6-promise').polyfill()
 // will not like it
 var path = require('path')
 var webpack = require('webpack')
+var Dotenv = require('dotenv-webpack')
 
 var projectRoot = require('./helpers').projectRoot
 
 module.exports = {
   entry: './src/index',
+  mode: 'development',
   output: {
     devtoolModuleFilenameTemplate: '/[absolute-resource-path]',
     path: path.join(projectRoot, 'build'),
@@ -30,16 +32,16 @@ module.exports = {
     // Resolve process.env.NODE_ENV in the code
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development')
-    })
+    }),
+
+    // Add environment variables from .env
+    new Dotenv()
   ],
   resolve: {
-    alias: {
-      config: path.join(projectRoot, 'config', process.env.NODE_ENV || 'production')
-    },
     extensions: ['.webpack.js', '.web.js', '.js', '.jsx']
   },
   module: {
-    loaders: [
+    rules: [
       {
         test: /\.css$/,
         use: [
@@ -75,5 +77,8 @@ module.exports = {
       }
     ],
     noParse: [/dist\/ol.*\.js/]
-  }
+  },
+
+  /* no need for bundle size warnings */
+  performance: { hints: false }
 }
