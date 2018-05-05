@@ -4,7 +4,7 @@
 
 import { autobind } from 'core-decorators'
 import Immutable from 'immutable'
-import { padStart, property } from 'lodash'
+import _ from 'lodash'
 import u from 'updeep'
 
 import PropTypes from 'prop-types'
@@ -14,6 +14,17 @@ import { connect } from 'react-redux'
 import FilterableSortableTable, { FilterTypes } from '../../components/FilterableSortableTable'
 
 import Flock from '../../model/flock'
+
+/**
+ * Function for assigning a color based on a percentage value.
+ * The colors are red, yellow and green from the solarized palette.
+ *
+ * @param {number} percentage The given percentage value.
+ * @return {string} The assigned color as a hex string.
+ */
+const colorForPercentage = percentage => (
+  ['#dc322f', '#b58900', '#859900'][Math.floor(percentage / 34)]
+)
 
 class GroundControlViewPresentation extends React.Component {
   constructor (props) {
@@ -30,43 +41,55 @@ class GroundControlViewPresentation extends React.Component {
       {
         name: 'Name',
         width: 125,
-        dataExtractor: property('id'),
+        dataExtractor: _.property('id'),
         filterType: FilterTypes.text
+      },
+      {
+        name: 'Battery voltage',
+        width: 175,
+        dataExtractor: _.property('battery'),
+        displayRenderer: data => (
+          <span style={{ color: colorForPercentage(data.percentage) }}>
+            {`${_.round(data.voltage, 2)}V (${_.round(data.percentage, 2)}%)`}
+          </span>
+        ),
+        sorter: (a, b) => a.voltage - b.voltage,
+        filterType: FilterTypes.range
       },
       {
         name: 'Latitude',
         width: 150,
-        dataExtractor: property('lat'),
+        dataExtractor: _.property('lat'),
         filterType: FilterTypes.range
       },
       {
         name: 'Longtitude',
         width: 150,
-        dataExtractor: property('lon'),
+        dataExtractor: _.property('lon'),
         filterType: FilterTypes.range
       },
       {
         name: 'Heading',
         width: 150,
-        dataExtractor: property('heading'),
+        dataExtractor: _.property('heading'),
         filterType: FilterTypes.range
       },
       {
         name: 'Updated',
         width: 150,
-        dataExtractor: property('lastUpdated'),
+        dataExtractor: _.property('lastUpdated'),
         displayRenderer: data => {
           const currentDate = new Date(data)
-          return padStart(currentDate.getHours(), 2, '0') + ':' +
-          padStart(currentDate.getMinutes(), 2, '0') + ':' +
-          padStart(currentDate.getSeconds(), 2, '0')
+          return _.padStart(currentDate.getHours(), 2, '0') + ':' +
+          _.padStart(currentDate.getMinutes(), 2, '0') + ':' +
+          _.padStart(currentDate.getSeconds(), 2, '0')
         },
         filterType: FilterTypes.range
       },
       {
         name: 'Error',
         width: 150,
-        dataExtractor: property('error'),
+        dataExtractor: _.property('error'),
         filterType: FilterTypes.range
       }
     ]
@@ -155,7 +178,8 @@ class GroundControlViewPresentation extends React.Component {
       lat: uav.lat,
       lon: uav.lon,
       heading: uav.heading,
-      error: uav.error
+      error: uav.error,
+      battery: uav.battery
     }
   }
 
