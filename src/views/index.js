@@ -6,6 +6,7 @@
 import ClockDisplayList from './clocks'
 import ConnectionList from './connections'
 import FeatureList from './features'
+import GroundControlView from './groundcontrol'
 import LayerList from './layers'
 import MapView from './map'
 import SavedLocationList from './locations'
@@ -16,6 +17,7 @@ export default {
   ClockDisplayList,
   ConnectionList,
   FeatureList,
+  GroundControlView,
   LayerList,
   LogPanel,
   MapView,

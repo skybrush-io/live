@@ -49,7 +49,7 @@ const secondaryTextForServerItem = ({ protocol, type }) => (
 )
 
 const DetectedServersListPresentation = ({ isScanning, items, onItemSelected }) => (
-  <List style={{ height: 160, overflow: 'scroll' }}>
+  <List style={{ height: 160, overflow: 'auto' }}>
     {isScanning && (!items || items.length === 0) ? (
       <ListItem key='__scanning'>
         <ListItemIcon><CircularProgress size={24} /></ListItemIcon>

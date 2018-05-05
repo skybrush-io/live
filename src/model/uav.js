@@ -23,6 +23,7 @@ export default class UAV {
     this.lon = undefined
     this.heading = undefined
     this.error = undefined
+    this.battery = { voltage: undefined, percentage: undefined }
   }
 
   /**
@@ -43,7 +44,7 @@ export default class UAV {
    * @return {boolean}  whether the status information has been updated
    */
   handleUAVStatusInfo (status) {
-    const { timestamp, position, heading, error } = status
+    const { timestamp, position, heading, error, battery } = status
     let updated = false
 
     if (timestamp) {
@@ -64,6 +65,11 @@ export default class UAV {
 
     if (!_.isEqual(this.error, error)) {
       this.error = error
+      updated = true
+    }
+
+    if (battery && battery.voltage !== this.battery.voltage) {
+      this.battery = battery
       updated = true
     }
 
