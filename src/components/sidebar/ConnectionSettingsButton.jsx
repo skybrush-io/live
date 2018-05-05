@@ -12,16 +12,16 @@ import { ConnectionState, MASTER_CONNECTION_ID } from '../../model/connections'
 const badgeColorForState = {
   [ConnectionState.CONNECTED]: '#0c0',
   [ConnectionState.CONNECTING]: '#fc0',
-  [ConnectionState.DISCONNECTING]: '#fc0'
+  [ConnectionState.DISCONNECTING]: '#fc0',
+  [ConnectionState.DISCONNECTED]: '#f00'
 }
 
-const ConnectionSettingsButtonPresentation = ({ onClick, state }) => {
+const ConnectionSettingsButtonPresentation = ({ active, onClick, state }) => {
   const classes = ['wb-module']
   return (
     <div className={classes.join(' ')} onClick={onClick}>
       <span className='wb-icon wb-module-icon'>
-        <SidebarBadge visible={state !== ConnectionState.DISCONNECTED}
-          color={badgeColorForState[state]} />
+        <SidebarBadge visible={active} color={badgeColorForState[state]} />
         <ConnectionIcon />
       </span>
       Server Settings
@@ -30,6 +30,7 @@ const ConnectionSettingsButtonPresentation = ({ onClick, state }) => {
 }
 
 ConnectionSettingsButtonPresentation.propTypes = {
+  active: PropTypes.bool,
   onClick: PropTypes.func,
   state: PropTypes.string
 }
@@ -37,6 +38,7 @@ ConnectionSettingsButtonPresentation.propTypes = {
 export default connect(
   // mapStateToProps
   state => ({
+    active: state.dialogs.serverSettings.active,
     state: state.connections.byId[MASTER_CONNECTION_ID].state
   }),
   // mapDispatchToProps

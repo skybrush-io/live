@@ -44,6 +44,13 @@ class ServerConnectionManagerPresentation extends React.Component {
     }
   }
 
+  componentDidUpdate (prevProps) {
+    const { active, onDisconnected } = this.props
+    if (prevProps.active && !active && onDisconnected) {
+      onDisconnected()
+    }
+  }
+
   render () {
     const { active, hostName, port, protocol, onConnected, onConnecting,
       onConnectionError, onConnectionTimeout, onDisconnected, onMessage } = this.props
