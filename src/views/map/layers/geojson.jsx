@@ -8,6 +8,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 
 import TextField from 'material-ui/TextField'
+import ActionSystemUpdateAlt from 'material-ui-icons/SystemUpdateAlt'
 
 import PopupColorPicker from '../../../components/PopupColorPicker'
 
@@ -26,10 +27,16 @@ class GeoJSONLayerSettingsPresentation extends React.Component {
     super(props)
 
     this.state = {
+      strokeColor: props.layer.parameters.strokeColor,
+      fillColor: props.layer.parameters.fillColor,
+      strokeWidth: props.layer.parameters.strokeWidth,
       data: JSON.stringify(props.layer.parameters.data, null, 2)
     }
 
-    this._handleChange = this._handleChange.bind(this)
+    this._handleStrokeColorChange = this._handleStrokeColorChange.bind(this)
+    this._handleFillColorChange = this._handleFillColorChange.bind(this)
+    this._handleStrokeWidthChange = this._handleStrokeWidthChange.bind(this)
+    this._handleDataChange = this._handleDataChange.bind(this)
     this._handleClick = this._handleClick.bind(this)
   }
 
@@ -37,45 +44,69 @@ class GeoJSONLayerSettingsPresentation extends React.Component {
     return (
       <div>
         <span>Stroke color: </span>
-        <PopupColorPicker ref='strokeColor'
-          defaultValue={this.props.layer.parameters.strokeColor} />
+        <PopupColorPicker
+          value={this.state.strokeColor}
+          onChange={this._handleStrokeColorChange}
+        />
+
         <span style={{ marginLeft: '25px' }}>Fill color: </span>
-        <PopupColorPicker ref='fillColor'
-          defaultValue={this.props.layer.parameters.fillColor} />
+        <PopupColorPicker
+          value={this.state.fillColor}
+          onChange={this._handleFillColorChange}
+        />
 
-        <TextField ref='strokeWidth'
-          floatingLabelText='Stroke width:'
-          hintText='stroke width'
+        <TextField
+          style={{ marginLeft: '25px' }}
+          label='Stroke width:'
           type='number'
-          defaultValue={this.props.layer.parameters.strokeWidth} />
+          value={this.state.strokeWidth}
+          onChange={this._handleStrokeWidthChange}
+        />
 
-        <TextField ref='dataTextField'
-          floatingLabelText='Paste GeoJSON data here:'
-          hintText='GeoJSON'
-          multiLine
+        <TextField
+          label='GeoJSON data:'
+          placeholder='GeoJSON'
+          multiline
           rowsMax={10}
-          textareaStyle={{height: '85%'}}
           fullWidth
           value={this.state.data}
-          onChange={this._handleChange} />
+          onChange={this._handleDataChange}
+        />
 
         <div style={{ textAlign: 'center', paddingTop: '1em' }}>
-          <Button onClick={this._handleClick}>Import GeoJSON</Button>
+          <Button
+            variant='raised'
+            color='primary'
+            onClick={this._handleClick}
+          >
+            <ActionSystemUpdateAlt style={{ marginRight: '1em' }} />
+            Import GeoJSON
+          </Button>
         </div>
       </div>
     )
   }
 
-  _handleChange (e) {
-    this.setState({
-      data: e.target.value
-    })
+  _handleStrokeColorChange (value) {
+    this.setState({ strokeColor: value })
+  }
+
+  _handleFillColorChange (value) {
+    this.setState({ fillColor: value })
+  }
+
+  _handleStrokeWidthChange (e) {
+    this.setState({ strokeWidth: e.target.value })
+  }
+
+  _handleDataChange (e) {
+    this.setState({ data: e.target.value })
   }
 
   _handleClick () {
-    this.props.setLayerParameter('strokeColor', this.refs.strokeColor.getValue())
-    this.props.setLayerParameter('fillColor', this.refs.fillColor.getValue())
-    this.props.setLayerParameter('strokeWidth', _.toNumber(this.refs.strokeWidth.getValue()))
+    this.props.setLayerParameter('strokeColor', this.state.strokeColor)
+    this.props.setLayerParameter('fillColor', this.state.fillColor)
+    this.props.setLayerParameter('strokeWidth', _.toNumber(this.state.strokeWidth))
 
     try {
       const parsedData = JSON.parse(this.state.data)

@@ -3,30 +3,24 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import { SketchPicker } from 'react-color'
 
+const toPicker = ({ r, g, b, alpha }) => ({ r, g, b, a: alpha })
+const fromPicker = ({ r, g, b, a }) => ({ r, g, b, alpha: a })
+
 export default class PopupColorPicker extends React.Component {
   constructor (props) {
     super(props)
 
-    const { defaultValue } = this.props
-    const initialColor = defaultValue ? {
-      r: defaultValue.r,
-      g: defaultValue.g,
-      b: defaultValue.b,
-      alpha: defaultValue.alpha !== undefined ? defaultValue.alpha : defaultValue.a
-    } : {
-      r: 255,
-      g: 255,
-      b: 255,
-      alpha: 1.0
-    }
+    const { defaultValue, value } = this.props
 
     this.state = {
       open: false,
-      color: initialColor
+      color: value || defaultValue || { r: 255, g: 255, b: 255, alpha: 1.0 }
     }
 
     this._clickawayHandlerRegistered = false
     this._isMounted = false
+
+    this._setPickerContainerRef = this._setPickerContainerRef.bind(this)
 
     this._togglePicker = this._togglePicker.bind(this)
     this._registerClickawayHandlerIfNeeded =
@@ -45,46 +39,40 @@ export default class PopupColorPicker extends React.Component {
     this._registerClickawayHandlerIfNeeded()
   }
 
+  _setPickerContainerRef (ref) {
+    this._pickerContainer = ref
+  }
+
   render () {
     this._registerClickawayHandlerIfNeeded()
 
-    const pickerStyle = Object.assign({
-      position: 'absolute',
-      overflow: 'hidden',
-      zIndex: '2',
-      transition: 'height 0.3s'
-    }, this.state.open
-    ? {
-      height: 298
-    }
-    : {
-      height: 0
-    })
+    const pickerStyle = Object.assign(
+      {
+        position: 'absolute',
+        overflow: 'hidden',
+        zIndex: '2',
+        transition: 'height 0.3s'
+      },
+      this.state.open ? { height: 298 } : { height: 0 }
+    )
 
     const { color } = this.state
-    const colorForPicker = {
-      r: color.r,
-      g: color.g,
-      b: color.b,
-      a: color.alpha
-    }
 
     return (
-      <div className='popup-color-picker' ref='pickerContainer'>
+      <div className='popup-color-picker' ref={this._setPickerContainerRef}>
         <div className='popup-color-picker-button'
-          style={Object.assign({},
-            this.props.style,
-            {
-              backgroundColor: Color(color).rgb().string()
-            }
-          )}
+          style={{
+            ...this.props.style,
+            backgroundColor: Color(color).rgb().string()
+          }}
           onClick={this._togglePicker}
-         />
+        />
 
         <div className='popup-color-picker-dropdown' style={pickerStyle}>
           <SketchPicker
-            color={colorForPicker}
-            onChange={this._handleChange} />
+            color={toPicker(color)}
+            onChange={this._handleChange}
+          />
         </div>
       </div>
     )
@@ -107,18 +95,17 @@ export default class PopupColorPicker extends React.Component {
   }
 
   _handleChange (color) {
-    const colorInState = {
-      r: color.rgb.r,
-      g: color.rgb.b,
-      b: color.rgb.b,
-      alpha: color.rgb.a
+    const newColor = fromPicker(color.rgb)
+
+    this.setState({ color: newColor })
+
+    if (this.props.onChange) {
+      this.props.onChange(newColor)
     }
-    this.setState({ color: colorInState })
   }
 
   _handleClickAway (e) {
-    const { pickerContainer } = this.refs
-    if (pickerContainer && !pickerContainer.contains(e.target)) {
+    if (this._pickerContainer && !this._pickerContainer.contains(e.target)) {
       this._togglePicker()
       e.preventDefault()
       e.stopPropagation()
@@ -131,6 +118,8 @@ export default class PopupColorPicker extends React.Component {
 }
 
 PopupColorPicker.propTypes = {
+  defaultValue: PropTypes.object,
+  onChange: PropTypes.func,
   style: PropTypes.object,
-  defaultValue: PropTypes.object
+  value: PropTypes.object
 }
