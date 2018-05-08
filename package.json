@@ -41,7 +41,7 @@
     "is-electron": "^2.1.0",
     "lodash": "^4.17.4",
     "material-ui": "^1.0.0-beta.34",
-    "material-ui-icons": "^1.0.0-beta.17",
+    "material-ui-icons": "^1.0.0-beta.36",
     "mersenne-twister": "^1.1.0",
     "mini-signals": "^1.2.0",
     "moment": "^2.20.1",

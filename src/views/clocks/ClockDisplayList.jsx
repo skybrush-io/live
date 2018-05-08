@@ -4,7 +4,7 @@
 
 import { red, green } from 'material-ui/colors'
 import PlayArrow from 'material-ui-icons/PlayArrow'
-import Stop from 'material-ui-icons/stop'
+import Stop from 'material-ui-icons/Stop'
 import Avatar from 'material-ui/Avatar'
 import { ListItem, ListItemText } from 'material-ui/List'
 
