@@ -15,7 +15,8 @@ import { getSelection } from '../../../selectors'
 import { coordinateFromLonLat } from '../../../utils/geography'
 import makeLogger from '../../../utils/logging'
 
-const colors = ['pink', 'orange', 'yellow', 'green', 'blue', 'purple']
+const colors = [ 'blue', 'green', 'orange', 'pink', 'purple', 'yellow' ]
+
 const logger = makeLogger('UAVsLayer')
 
 const validatePredicates = (predicates, errorHandler) => {

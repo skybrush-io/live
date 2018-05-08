@@ -12,7 +12,9 @@ export const takeoffUAVs = (uavs) => (
     type: 'UAV-TAKEOFF',
     ids: uavs
   }).then(result => {
-    logger.info('Takeoff command issued and response received.')
+    logger.info(
+      `Takeoff command issued and response received. [${uavs.join(', ')}]`
+    )
   })
 )
 
@@ -21,7 +23,9 @@ export const landUAVs = (uavs) => (
     type: 'UAV-LAND',
     ids: uavs
   }).then(result => {
-    logger.info('Land command issued and response received.')
+    logger.info(
+      `Land command issued and response received. [${uavs.join(', ')}]`
+    )
   })
 )
 
@@ -30,7 +34,9 @@ export const returnToHomeUAVs = (uavs) => (
     type: 'UAV-RTH',
     ids: uavs
   }).then(result => {
-    logger.info('Return to home command issued and response received.')
+    logger.info(
+      `Return to home command issued and response received. [${uavs.join(', ')}]`
+    )
   })
 )
 
@@ -39,7 +45,9 @@ export const haltUAVs = (uavs) => (
     type: 'UAV-HALT',
     ids: uavs
   }).then(result => {
-    logger.info('Halt command issued and response received.')
+    logger.info(
+      `Halt command issued and response received. [${uavs.join(', ')}]`
+    )
   })
 )
 
