@@ -34,7 +34,7 @@ class UAVToolbar extends React.Component {
         <Tooltip placement='bottom' title='Takeoff'>
           <span>
             <IconButton disabled={isSelectionEmpty}
-              onClick={() => messaging.takeoffUAVs(selectedUAVIds)}>
+              onClick={this._takeoffSelectedUAVs}>
               <ActionFlightTakeoff />
             </IconButton>
           </span>
@@ -42,7 +42,7 @@ class UAVToolbar extends React.Component {
         <Tooltip placement='bottom' title='Land'>
           <span>
             <IconButton disabled={isSelectionEmpty}
-              onClick={() => messaging.landUAVs(selectedUAVIds)}>
+              onClick={this._}>
               <ActionFlightLand />
             </IconButton>
           </span>
@@ -50,20 +50,23 @@ class UAVToolbar extends React.Component {
         <Tooltip placement='bottom' title='Return to home'>
           <span>
             <IconButton disabled={isSelectionEmpty}
-              onClick={() => messaging.returnToHomeUAVs(selectedUAVIds)}>
+              onClick={this._returnToHomeSelectedUAVs}>
               <ActionHome />
             </IconButton>
           </span>
         </Tooltip>
         <Tooltip placement='bottom' title='Messages'>
-          <IconButton onClick={this._showMessagesDialog}>
-            <Message />
-          </IconButton>
+          <span>
+            <IconButton disabled={selectedUAVIds.length !== 1}
+              onClick={this._showMessagesDialog}>
+              <Message />
+            </IconButton>
+          </span>
         </Tooltip>
         <Tooltip placement='bottom' title='Halt'>
           <span>
             <IconButton disabled={isSelectionEmpty}
-              onClick={() => messaging.haltUAVs(selectedUAVIds)}>
+              onClick={this._haldSelectedUAVs}>
               <ActionPowerSettingsNew color={isSelectionEmpty ? undefined : 'secondary'} />
             </IconButton>
           </span>
@@ -86,12 +89,32 @@ class UAVToolbar extends React.Component {
   }
 
   @autobind
+  _takeoffSelectedUAVs () {
+    messaging.takeoffUAVs(this.props.selectedUAVIds)
+  }
+
+  @autobind
+  _landSelectedUAVs () {
+    messaging.landUAVs(this.props.selectedUAVIds)
+  }
+
+  @autobind
+  _returnToHomeSelectedUAVs () {
+    messaging.returnToHomeUAVs(this.props.selectedUAVIds)
+  }
+
+  @autobind
   _showMessagesDialog () {
     if (this.props.selectedUAVIds.length === 1) {
       this.props.selectUAVInMessagesDialog(this.props.selectedUAVIds[0])
     }
 
     this.props.showMessagesDialog()
+  }
+
+  @autobind
+  _haldSelectedUAVs () {
+    messaging.haltUAVs(this.props.selectedUAVIds)
   }
 }
 
