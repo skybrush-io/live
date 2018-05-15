@@ -245,8 +245,7 @@ export default class HotkeyHandler extends React.Component {
   _handleKey (direction, e) {
     const activeTag = document.activeElement.tagName
     if (activeTag === 'INPUT' || activeTag === 'TEXTAREA') {
-      // Never activate hotkeys if the user is in an input field or
-      // text area
+      // Never activate hotkeys if the user is in an input field or text area.
       return
     }
 

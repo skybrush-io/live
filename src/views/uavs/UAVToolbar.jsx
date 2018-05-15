@@ -42,7 +42,7 @@ class UAVToolbar extends React.Component {
         <Tooltip placement='bottom' title='Land'>
           <span>
             <IconButton disabled={isSelectionEmpty}
-              onClick={this._}>
+              onClick={this._landSelectedUAVs}>
               <ActionFlightLand />
             </IconButton>
           </span>

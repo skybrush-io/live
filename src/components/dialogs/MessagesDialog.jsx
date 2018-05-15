@@ -30,8 +30,6 @@ class MessagesDialogPresentation extends React.Component {
     this._wasOpen = false
 
     this._handleKeyWhileOpen = this._handleKeyWhileOpen.bind(this)
-
-    window.test = this
   }
 
   _onOpen () {

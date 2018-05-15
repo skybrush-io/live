@@ -118,8 +118,6 @@ class UAVTraceVectorSource extends source.Vector {
     this._handleUpdate = this._handleUpdate.bind(this)
 
     flock.uavsUpdated.add(this._handleUpdate)
-
-    window.sor = this.source
   }
 
   _handleUpdate (uavs) {
