@@ -6,6 +6,7 @@ import isElectron from 'is-electron'
 import { createStore, applyMiddleware } from 'redux'
 import createDebounce from 'redux-debounce'
 import { actionTypes as reduxFormActionTypes } from 'redux-form'
+import createSagaMiddleware from 'redux-saga'
 import * as storage from 'redux-storage'
 import thunk from 'redux-thunk'
 import debounce from 'redux-storage-decorator-debounce'
@@ -14,6 +15,7 @@ import createEngine from '@redux-storage-engine'
 
 import * as actions from './actions/types'
 import reducer from './reducers'
+import rootSaga from './sagas'
 
 /**
  * Storage engine for storing the application state. In the browser, we store
@@ -73,6 +75,11 @@ const debouncer = createDebounce({
 })
 
 /**
+ * Redux middleware that manages long-running background processes.
+ */
+const sagaMiddleware = createSagaMiddleware()
+
+/**
  * Redux middleware that saves the state of the application into the
  * browser's local storage after every action.
  */
@@ -84,7 +91,7 @@ const storageMiddleware = storage.createMiddleware(
  * Function to create a new Redux store with the required middlewares.
  */
 const createStoreWithMiddleware =
-  applyMiddleware(debouncer, thunk, storageMiddleware)(createStore)
+  applyMiddleware(debouncer, thunk, sagaMiddleware, storageMiddleware)(createStore)
 
 /**
  * The store for the application state.
@@ -112,5 +119,8 @@ export const loadStoreFromStorageBackend =
 export function clearStore () {
   engine.save({})
 }
+
+// Spin up the root saga
+sagaMiddleware.run(rootSaga)
 
 export default store

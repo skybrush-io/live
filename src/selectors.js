@@ -136,3 +136,22 @@ export const getSavedLocationsInOrder = createSelector(
   state => state.savedLocations,
   selectOrdered
 )
+
+/**
+ * Returns the list of directories in which a local Flockwave server instance
+ * will be searched, besides the standard system path.
+ *
+ * @param  {Object}  state  the state of the application
+ * @return {string[]}  the list of directories to add to the system path
+ */
+export const getLocalServerSearchPath =
+  state => state.settings.localServer.searchPath
+
+/**
+ * Returns the full path to the executable of a local Flockwave server.
+ *
+ * @param  {Object}  state  the state of the application
+ * @return {string|undefined}  the full path
+ */
+export const getLocalServerExecutable =
+  state => state.localServer.pathScan.result

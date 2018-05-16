@@ -14,7 +14,8 @@ module.exports = merge.smart(baseConfig, {
     alias: {
       '@dns': mock('dns'),
       '@redux-storage-engine$': 'redux-storage-engine-localstorage',
-      '@ssdp': mock('ssdp')
+      '@ssdp': mock('ssdp'),
+      '@which': mock('which')
     }
   }
 })
