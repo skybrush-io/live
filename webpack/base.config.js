@@ -74,6 +74,12 @@ module.exports = {
           { loader: 'url-loader?limit=8192' }
         ],
         include: path.join(projectRoot, 'assets')
+      },
+      {
+        test: /\.(woff|woff2|eot|ttf|svg)$/,
+        use: [
+          { loader: 'file-loader' }
+        ]
       }
     ],
     noParse: [/dist\/ol.*\.js/]

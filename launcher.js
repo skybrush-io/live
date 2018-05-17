@@ -1,4 +1,5 @@
 const { app, BrowserWindow } = require('electron')
+const logger = require('electron-timber')
 const windowStateKeeper = require('electron-window-state')
 const fs = require('fs')
 const path = require('path')
@@ -15,6 +16,10 @@ let mainWindowState
 
 // Set our own Google API key that we will use for geolocation requests
 process.env.GOOGLE_API_KEY = 'AIzaSyC-Emzc-ogrp8ZW05zF6Sx0x5VDDyQfpLw'
+
+// Decide whether we will connect to the Webpack dev server in development
+// mode or not
+const willUseWebpack = (process.env.NODE_ENV !== 'production')
 
 /**
  * Creates the main window of the application.
@@ -39,7 +44,11 @@ function createMainWindow (opts) {
     x,
     y,
     width,
-    height
+    height,
+    webPreferences: {
+      // contextIsolation: true       // TODO(ntamas): uncomment this
+      // nodeIntegration: false       // TODO(ntamas): uncomment this
+    }
   })
   mainWindowState.manage(mainWindow)
 
@@ -63,7 +72,7 @@ function createMainWindow (opts) {
 }
 
 function getURLToLoad () {
-  if (process.env.NODE_ENV === 'production') {
+  if (!willUseWebpack) {
     let index = path.join(__dirname, 'index.html')
     if (!fs.existsSync(index)) {
       index = path.join(__dirname, '..', 'index.html')
@@ -76,7 +85,7 @@ function getURLToLoad () {
     })
   } else {
     /* Load from webpack-dev-server */
-    return 'http://localhost:8080/index.html'
+    return 'https://localhost:8080/index.html'
   }
 }
 
@@ -109,17 +118,27 @@ function run (argv) {
       createMainWindow(windowOptions)
     }
   })
+
+  // Handle certificate errors
+  app.on('certificate-error', (event, webContents, url, error, cert, allowCallback) => {
+    if (willUseWebpack && url.match(/^(https|wss):\/\/localhost:.*\//)) {
+      event.preventDefault()
+      allowCallback(true)
+    } else {
+      logger.warn('Prevented connection to URL due to certificate error:', url)
+    }
+  })
 }
 
 // Don't use require('yargs') below because Webpack; see:
 // https://github.com/yargs/yargs/issues/781
 const parser = yargs()
-    .usage('$0 [options]', 'Launches Flockwave in a desktop window')
+  .usage('$0 [options]', 'Launches Flockwave in a desktop window')
 
-    .boolean('d')
-    .alias('d', 'debug')
-    .describe('d', 'Start in debug mode with the developer tools open')
+  .boolean('d')
+  .alias('d', 'debug')
+  .describe('d', 'Start in debug mode with the developer tools open')
 
-    .help()
+  .help()
 
 run(parser.parse(process.argv))

@@ -22,6 +22,8 @@ require('../assets/css/screen.less')
 require('../assets/css/chat.less')
 require('../assets/css/kbd.css')
 
+require('typeface-roboto')
+
 const rootStyle = {
   display: 'flex',
   width: '100%',

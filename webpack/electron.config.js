@@ -18,7 +18,7 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 module.exports = merge.smart(baseConfig, {
-  devtool: enableSourceMap ? 'inline-source-map' : 'eval',
+  devtool: enableSourceMap ? 'inline-source-map' : false,
 
   output: {
     filename: 'bundle.js'
@@ -27,6 +27,7 @@ module.exports = merge.smart(baseConfig, {
   resolve: {
     alias: {
       '@dns': nodeNative('dns'),
+      '@path': nodeNative('path'),
       '@redux-storage-engine$': 'redux-storage-engine-electron-store',
       '@ssdp': 'node-ssdp-lite',
       '@which': 'which'
