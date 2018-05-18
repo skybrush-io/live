@@ -27,17 +27,9 @@ module.exports = merge.smart(baseConfig, {
   resolve: {
     alias: {
       '@path': nodeNative('path'),
-      '@redux-storage-engine$': 'redux-storage-engine-electron-store',
-      '@ssdp': 'node-ssdp-lite',
       '@which': 'which'
     }
   },
 
-  /* hide the ws module -- we will be using the native WebSockets module from
-   * the browser env */
-  externals: ['ws'],
-
-  plugins: plugins,
-
-  target: 'electron-renderer'
+  plugins: plugins
 })

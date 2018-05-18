@@ -14,8 +14,6 @@ module.exports = merge.smart(baseConfig, {
     alias: {
       'electron': mock('electron'),
       '@path': 'path-browserify',
-      '@redux-storage-engine$': 'redux-storage-engine-localstorage',
-      '@ssdp': mock('ssdp'),
       '@which': mock('which')
     }
   }

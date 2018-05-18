@@ -50,9 +50,8 @@ function createMainWindow (opts) {
     height,
     icon: path.join(__dirname, 'assets/icons/png/64x64.png'),
     webPreferences: {
+      nodeIntegration: false,
       preload: path.join(__dirname, willUseWebpack ? 'preload.js' : 'preload.bundle.js')
-      // contextIsolation: true       // TODO(ntamas): uncomment this
-      // nodeIntegration: false       // TODO(ntamas): uncomment this
     }
   })
   mainWindowState.manage(mainWindow)

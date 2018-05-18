@@ -7,8 +7,6 @@ import React from 'react'
 import { connect } from 'react-redux'
 import url from 'url'
 
-import SSDPClient from '@ssdp'
-
 import {
   addDetectedServer,
   addInferredServer,
@@ -18,7 +16,9 @@ import {
   updateDetectedServerLabel
 } from '../actions/servers'
 
-export const isServerDetectionSupported = !SSDPClient.isMock
+export const isServerDetectionSupported = (
+  window.bridge && window.bridge.createSSDPClient
+)
 
 /**
  * Presentation component that regularly fires SSDP discovery requests and
@@ -49,8 +49,7 @@ class ServerDetectionManagerPresentation extends React.Component {
       onScanningStarted()
     }
 
-    this._ssdpClient = new SSDPClient()
-    this._ssdpClient.on('response', (headers, rinfo) => {
+    this._ssdpClient = window.bridge.createSSDPClient((headers, rinfo) => {
       if (this._ssdpClient === undefined) {
         // Component was already unmounted.
         return

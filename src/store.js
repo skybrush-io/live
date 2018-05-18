@@ -10,7 +10,7 @@ import * as storage from 'redux-storage'
 import thunk from 'redux-thunk'
 import debounce from 'redux-storage-decorator-debounce'
 import filter from 'redux-storage-decorator-filter'
-import createEngine from '@redux-storage-engine'
+import createEngine from 'redux-storage-engine-localstorage'
 
 import * as actions from './actions/types'
 import reducer from './reducers'
@@ -23,12 +23,8 @@ import rootSaga from './sagas'
  */
 const engine = debounce(
   filter(
-    window.isElectron
-      ? createEngine({
-        store: {
-          name: 'state'
-        }
-      })
+    window.bridge
+      ? window.bridge.createStateStore()
       : createEngine('flockwave-client'),
     [
       'whitelisted-key',

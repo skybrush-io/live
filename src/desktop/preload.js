@@ -8,7 +8,43 @@
 
 const dns = require('dns')
 const console = require('electron-timber')
+const SSDPClient = require('node-ssdp-lite')
 const pify = require('pify')
+const createStorageEngine = require('redux-storage-engine-electron-store').default
+
+/**
+ * Creates a new SSDP client object and registers the given function to be
+ * called when an SSDP response is received.
+ *
+ * @param  {Function} callback  the callback function to call. It will be
+ *         called with two arguments: the SSDP response headers and the
+ *         request info object
+ * @return {Object} a plain object with a `search()` method that can be called to
+ *         initiate a search
+ */
+function createSSDPClient (callback) {
+  const client = new SSDPClient()
+  if (callback) {
+    client.on('response', callback)
+  }
+  return {
+    search: client.search.bind(client)
+  }
+}
+
+/**
+ * Creates a Redux state store object that stores the Redux state in an
+ * Electron store.
+ *
+ * @return {Object}  a Redux storage engine that can be used by redux-storage
+ */
+function createStateStore () {
+  return createStorageEngine({
+    store: {
+      name: 'state'
+    }
+  })
+}
 
 const reverseDNSLookup = pify(dns.reverse)
 
@@ -22,5 +58,7 @@ window.isElectron = true
 // Node.js modules themselves
 window.bridge = {
   console,
+  createSSDPClient,
+  createStateStore,
   reverseDNSLookup
 }
