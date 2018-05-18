@@ -6,7 +6,11 @@
  * renderer processes can use to talk to Node.js.
  */
 
+const dns = require('dns')
 const console = require('electron-timber')
+const pify = require('pify')
+
+const reverseDNSLookup = pify(dns.reverse)
 
 // inject isElectron into 'window' so we can easily detect that we are
 // running inside Electron
@@ -17,5 +21,6 @@ window.isElectron = true
 // any functionality that requires Node.js -- they are not allowed to use
 // Node.js modules themselves
 window.bridge = {
-  console
+  console,
+  reverseDNSLookup
 }

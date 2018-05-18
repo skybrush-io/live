@@ -26,7 +26,6 @@ module.exports = merge.smart(baseConfig, {
 
   resolve: {
     alias: {
-      '@dns': nodeNative('dns'),
       '@path': nodeNative('path'),
       '@redux-storage-engine$': 'redux-storage-engine-electron-store',
       '@ssdp': 'node-ssdp-lite',
