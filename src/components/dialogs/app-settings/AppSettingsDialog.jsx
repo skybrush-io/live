@@ -1,4 +1,3 @@
-import isElectron from 'is-electron'
 import PropTypes from 'prop-types'
 import React from 'react'
 import { connect } from 'react-redux'
@@ -36,7 +35,7 @@ class AppSettingsDialogPresentation extends React.Component {
           <Tabs value={selectedTab} onChange={onTabSelected} centered>
             <Tab value='display' label="Display" />
             <Tab value='uavs' label="UAVs" />
-            {isElectron() ? <Tab value='server' label="Server" /> : null}
+            {window.isElectron ? <Tab value='server' label="Server" /> : null}
           </Tabs>
         </AppBar>
         <DialogContent>

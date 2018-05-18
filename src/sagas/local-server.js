@@ -68,7 +68,9 @@ function getPathsRelatedToAppLocation () {
 }
 
 const pathsRelatedToAppLocation = getPathsRelatedToAppLocation()
-console.log(pathsRelatedToAppLocation)
+if (window.bridge) {
+  window.bridge.console.log(pathsRelatedToAppLocation)
+}
 
 /**
  * Saga that attempts to find where the local server is installed on the

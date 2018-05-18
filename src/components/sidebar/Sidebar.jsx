@@ -9,7 +9,6 @@ import Message from 'material-ui-icons/Message'
 import MyLocation from 'material-ui-icons/MyLocation'
 import ShowChart from 'material-ui-icons/ShowChart'
 
-import isElectron from 'is-electron'
 import PropTypes from 'prop-types'
 import React from 'react'
 import { Module, ModuleTray, Workbench } from 'react-flexible-workbench'
@@ -73,7 +72,7 @@ const SidebarPresentation = ({ open, onToggleSidebar, workbench }) => (
       <hr />
       <AppSettingsButton />
       <ConnectionSettingsButton />
-      {!isElectron() ? <FullScreenButton /> : null}
+      {!window.isElectron ? <FullScreenButton /> : null}
     </div>
   </div>
 )

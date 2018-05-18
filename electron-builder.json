@@ -7,6 +7,7 @@
     "assets/**/*",
     "build/bundle.js",
     "build/launcher.bundle.js",
+    "build/preload.bundle.js",
     "!node_modules/**/*"
   ],
 
@@ -23,4 +24,3 @@
     "target": "portable"
   }
 }
-

@@ -2,7 +2,6 @@
  * @file The master store for the application state.
  */
 
-import isElectron from 'is-electron'
 import { createStore, applyMiddleware } from 'redux'
 import createDebounce from 'redux-debounce'
 import { actionTypes as reduxFormActionTypes } from 'redux-form'
@@ -24,7 +23,7 @@ import rootSaga from './sagas'
  */
 const engine = debounce(
   filter(
-    isElectron
+    window.isElectron
       ? createEngine({
         store: {
           name: 'state'
