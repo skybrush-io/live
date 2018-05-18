@@ -4,11 +4,11 @@
  */
 
 import { endsWith } from 'lodash'
+import path from 'path-browserify'
 import pify from 'pify'
 import { all, call, put, select, take } from 'redux-saga/effects'
 import { LOAD } from 'redux-storage'
 
-import path from '@path'
 import which from '@which'
 
 import {
@@ -38,15 +38,12 @@ import {
  *         directories added explicitly by the user in the settings
  */
 function getPathsRelatedToAppLocation () {
-  // Don't use import(); it won't work with Webpack
-  const { remote } = require('electron')
-  if (!remote) {
+  if (!window.isElectron) {
     // We are not running in Electron
     return []
   }
 
-  const appPath = remote.app.getPath('exe')
-  const appFolder = path.dirname(appPath)
+  const appFolder = window.bridge.getApplicationFolder()
   const folders = []
 
   if (isRunningOnMac) {

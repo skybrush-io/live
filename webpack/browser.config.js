@@ -12,8 +12,6 @@ module.exports = merge.smart(baseConfig, {
   },
   resolve: {
     alias: {
-      'electron': mock('electron'),
-      '@path': 'path-browserify',
       '@which': mock('which')
     }
   }

@@ -7,8 +7,10 @@
  */
 
 const dns = require('dns')
+const { remote } = require('electron')
 const console = require('electron-timber')
 const SSDPClient = require('node-ssdp-lite')
+const path = require('path')
 const pify = require('pify')
 const createStorageEngine = require('redux-storage-engine-electron-store').default
 
@@ -46,6 +48,17 @@ function createStateStore () {
   })
 }
 
+/**
+ * Returns the name of the folder that contains the main executable of the
+ * application.
+ *
+ * @return {string} the name of the folder that contains the main executable
+ *         of the application
+ */
+function getApplicationFolder () {
+  return path.dirname(remote.app.getPath('exe'))
+}
+
 const reverseDNSLookup = pify(dns.reverse)
 
 // inject isElectron into 'window' so we can easily detect that we are
@@ -60,5 +73,6 @@ window.bridge = {
   console,
   createSSDPClient,
   createStateStore,
+  getApplicationFolder,
   reverseDNSLookup
 }

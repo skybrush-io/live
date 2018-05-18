@@ -1,7 +1,6 @@
 var merge = require('webpack-merge')
 var WebpackShellPlugin = require('webpack-shell-plugin')
 var baseConfig = require('./base.config.js')
-var nodeNative = require('./helpers').nodeNative
 
 var enableSourceMap = false
 
@@ -26,7 +25,6 @@ module.exports = merge.smart(baseConfig, {
 
   resolve: {
     alias: {
-      '@path': nodeNative('path'),
       '@which': 'which'
     }
   },
