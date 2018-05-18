@@ -8,7 +8,7 @@ var enableSourceMap = false
 var plugins = []
 
 /* In dev mode, also run Electron and let it load the live bundle */
-if (process.env.NODE_ENV !== 'production') {
+if (process.env.NODE_ENV !== 'production' && process.env.DEPLOYMENT !== '1') {
   plugins.push(
     new WebpackShellPlugin({
       onBuildEnd: ['electron launcher.js'],

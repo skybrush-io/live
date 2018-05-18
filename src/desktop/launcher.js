@@ -19,7 +19,10 @@ process.env.GOOGLE_API_KEY = 'AIzaSyC-Emzc-ogrp8ZW05zF6Sx0x5VDDyQfpLw'
 
 // Decide whether we will connect to the Webpack dev server in development
 // mode or not
-const willUseWebpack = (process.env.NODE_ENV !== 'production')
+const willUseWebpack = (
+  process.env.NODE_ENV !== 'production' &&
+  process.env.DEPLOYMENT !== '1'
+)
 
 /**
  * Creates the main window of the application.
@@ -45,6 +48,7 @@ function createMainWindow (opts) {
     y,
     width,
     height,
+    icon: path.join(__dirname, 'assets/icons/png/64x64.png'),
     webPreferences: {
       preload: path.join(__dirname, willUseWebpack ? 'preload.js' : 'preload.bundle.js')
       // contextIsolation: true       // TODO(ntamas): uncomment this
