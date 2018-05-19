@@ -3,13 +3,8 @@
  * that is started by the client on-demand if it is configured to do so.
  */
 
-import { endsWith } from 'lodash'
-import path from 'path-browserify'
-import pify from 'pify'
 import { all, call, put, select, take } from 'redux-saga/effects'
 import { LOAD } from 'redux-storage'
-
-import which from '@which'
 
 import {
   notifyLocalServerExecutableSearchStarted,
@@ -20,60 +15,20 @@ import {
   REPLACE_APP_SETTINGS, UPDATE_APP_SETTINGS,
   START_LOCAL_SERVER_EXECUTABLE_SEARCH
 } from '../actions/types'
-import { isRunningOnMac } from '../utils/platform'
 import {
   getLocalServerExecutable,
   getLocalServerSearchPath
 } from '../selectors'
 
 /**
- * Returns an array containing the names of all directories to scan on
- * the system, _in addition to_ the system path.
- *
- * These directories are derived from the current installed location of
- * the application, with a few platform-specific tweaks.
- *
- * @return {string[]}  the names of the directories to search for the local
- *         Flockwave server executable, besides the system path and the
- *         directories added explicitly by the user in the settings
- */
-function getPathsRelatedToAppLocation () {
-  if (!window.isElectron) {
-    // We are not running in Electron
-    return []
-  }
-
-  const appFolder = window.bridge.getApplicationFolder()
-  const folders = []
-
-  if (isRunningOnMac) {
-    if (endsWith(appFolder, '.app/Contents/MacOS')) {
-      // This is an .app bundle so let's search the Resources folder within
-      // the bundle as well as the folder containing the app bundle itself
-      folders.push(path.resolve(path.dirname(appFolder), 'Resources'))
-      folders.push(path.dirname(appFolder.substr(0, appFolder.length - 15)))
-    } else {
-      // Probably not an .app bundle so let's just assume that the server
-      // might be in the same folder
-      folders.push(appFolder)
-    }
-  } else {
-    folders.push(appFolder)
-  }
-
-  return folders
-}
-
-const pathsRelatedToAppLocation = getPathsRelatedToAppLocation()
-if (window.bridge) {
-  window.bridge.console.log(pathsRelatedToAppLocation)
-}
-
-/**
  * Saga that attempts to find where the local server is installed on the
  * current machine, based on the local server settings.
+ *
+ * @param {Function} search  a function that can be invoked with a list of
+ *        search paths and that will return a promise that will eventually
+ *        resolve to the local server executable on the system
  */
-function* localServerExecutableDiscoverySaga () {
+function* localServerExecutableDiscoverySaga (search) {
   let oldSearchPath
 
   // Wait until the saved state is loaded back into Redux
@@ -89,15 +44,7 @@ function* localServerExecutableDiscoverySaga () {
       yield put(notifyLocalServerExecutableSearchStarted())
 
       try {
-        const serverPath = yield call(
-          () => pify(which)('flockwaved', {
-            path: [
-              ...pathsRelatedToAppLocation,
-              ...searchPath,
-              ...process.env.PATH.split(path.delimiter)
-            ].join(path.delimiter)
-          })
-        )
+        const serverPath = yield call(() => search(searchPath))
         yield put(notifyLocalServerExecutableSearchFinished(serverPath))
       } catch (reason) {
         if (reason.code === 'ENOENT') {
@@ -119,13 +66,20 @@ function* localServerExecutableDiscoverySaga () {
   }
 }
 
-export default function* localServerSaga () {
+/**
+ * Compound saga related to the discovery and management of the local server
+ * instance that is started by the client on-demand if it is configured to do
+ * so.
+ *
+ * @param {Function} search  a function that can be invoked with a list of
+ *        search paths and that will return a promise that will eventually
+ *        resolve to the local server executable on the system
+ */
+export default function* localServerSaga (search) {
   const sagas = []
 
-  // We start the discovery saga only if we have a "which" module that is not
-  // mocked out
-  if (!which.isMock) {
-    sagas.push(localServerExecutableDiscoverySaga())
+  if (search) {
+    sagas.push(localServerExecutableDiscoverySaga(search))
   }
 
   yield all(sagas)

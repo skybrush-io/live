@@ -48,7 +48,6 @@
     "numbro": "^2.0.5",
     "ol": "^4.6.4",
     "ol-react": "git+https://github.com/collmot/ol-react.git#e04cc09073d03d8ce26036d97df27a64a947db7c",
-    "path-browserify": "0.0.0",
     "pify": "^3.0.0",
     "prop-types": "^15.6.0",
     "radix-64": "^1.0.4",

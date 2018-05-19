@@ -23,11 +23,5 @@ module.exports = merge.smart(baseConfig, {
     filename: 'bundle.js'
   },
 
-  resolve: {
-    alias: {
-      '@which': 'which'
-    }
-  },
-
   plugins: plugins
 })

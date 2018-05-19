@@ -6,12 +6,15 @@
  * renderer processes can use to talk to Node.js.
  */
 
+const pify = require('pify')
+
 const dns = require('dns')
 const { remote } = require('electron')
 const console = require('electron-timber')
+const { endsWith } = require('lodash')
 const SSDPClient = require('node-ssdp-lite')
 const path = require('path')
-const pify = require('pify')
+const which = pify(require('which'))
 const createStorageEngine = require('redux-storage-engine-electron-store').default
 
 /**
@@ -59,6 +62,65 @@ function getApplicationFolder () {
   return path.dirname(remote.app.getPath('exe'))
 }
 
+/**
+ * Returns an array containing the names of all directories to scan on
+ * the system when looking for the server executable, _in addition to_ the
+ * system path.
+ *
+ * These directories are derived from the current installed location of
+ * the application, with a few platform-specific tweaks.
+ *
+ * @return {string[]}  the names of the directories to search for the local
+ *         Flockwave server executable, besides the system path and the
+ *         directories added explicitly by the user in the settings
+ */
+function getPathsRelatedToAppLocation () {
+  const appFolder = getApplicationFolder()
+  const folders = []
+
+  if (process.platform === 'darwin') {
+    if (endsWith(appFolder, '.app/Contents/MacOS')) {
+      // This is an .app bundle so let's search the Resources folder within
+      // the bundle as well as the folder containing the app bundle itself
+      folders.push(path.resolve(path.dirname(appFolder), 'Resources'))
+      folders.push(path.dirname(appFolder.substr(0, appFolder.length - 15)))
+    } else {
+      // Probably not an .app bundle so let's just assume that the server
+      // might be in the same folder
+      folders.push(appFolder)
+    }
+  } else {
+    folders.push(appFolder)
+  }
+
+  return folders
+}
+
+const pathsRelatedToAppLocation = getPathsRelatedToAppLocation()
+console.log(pathsRelatedToAppLocation)
+
+/**
+ * Searches for the local Flockwave server executable in the following places,
+ * in this order of precedence:
+ *
+ * - the application folder and typical platform-dependent related folders
+ * - custom folders specified by the user
+ * - the system path
+ *
+ * @param {string[]} paths    custom search folders to scan
+ * @return {Promise<string>}  a promise that resolves to the full path of the
+ *         server executable if found and `null` if it is not found
+ */
+const searchForServer = paths => which(
+  'bash', {
+    path: [
+      ...pathsRelatedToAppLocation,
+      ...paths,
+      ...process.env.PATH.split(path.delimiter)
+    ].join(path.delimiter)
+  }
+)
+
 const reverseDNSLookup = pify(dns.reverse)
 
 // inject isElectron into 'window' so we can easily detect that we are
@@ -74,5 +136,6 @@ window.bridge = {
   createSSDPClient,
   createStateStore,
   getApplicationFolder,
-  reverseDNSLookup
+  reverseDNSLookup,
+  searchForServer
 }
