@@ -17,6 +17,7 @@ import messageHub from '../message-hub'
 import { ConnectionState, MASTER_CONNECTION_ID,
   handleConnectionInformationMessage } from '../model/connections'
 import { handleClockInformationMessage } from '../model/clocks'
+import { shouldManageLocalServer } from '../selectors'
 
 /**
  * Proposes a protocol to use (http or https) depending on the protocol of
@@ -30,8 +31,33 @@ function proposeProtocol () {
 }
 
 /**
+ * Component that launches a local Flockwave server instance when mounted.
+ */
+class LocalServerExecutor extends React.Component {
+  constructor (props) {
+    super(props)
+    this._process = undefined
+  }
+
+  componentDidMount () {
+    // TODO
+  }
+
+  componentWillUnmount () {
+    // TODO
+  }
+
+  render () {
+    return null
+  }
+}
+
+/**
  * Presentation component that contains a Socket.io socket and handles
  * its events.
+ *
+ * It may also contain a LocalServerExecutor that launches a local server
+ * instance when mounted.
  */
 class ServerConnectionManagerPresentation extends React.Component {
   @autobind
@@ -52,8 +78,11 @@ class ServerConnectionManagerPresentation extends React.Component {
   }
 
   render () {
-    const { active, hostName, port, protocol, onConnected, onConnecting,
-      onConnectionError, onConnectionTimeout, onDisconnected, onMessage } = this.props
+    const {
+      active, hostName, needsLocalServer, port, protocol, onConnected,
+      onConnecting, onConnectionError, onConnectionTimeout, onDisconnected,
+      onMessage
+    } = this.props
     const url = hostName ? `${protocol || proposeProtocol()}//${hostName}:${port}` : undefined
 
     // The 'key' property of the wrapping <div> is set to the URL as well;
@@ -67,7 +96,10 @@ class ServerConnectionManagerPresentation extends React.Component {
 
     return url && active ? (
       <div key={url}>
-        <ReactSocket.Socket name="serverSocket" url={url} ref={this._bindSocketToHub} />
+        {needsLocalServer ? <LocalServerExecutor /> : null}
+        <ReactSocket.Socket name="serverSocket" url={url} options={{
+          transports: ['websocket']
+        }} ref={this._bindSocketToHub} />
         <ReactSocket.Listener socket="serverSocket" event="connect" callback={onConnected} />
         <ReactSocket.Listener socket="serverSocket" event="connect_error" callback={onConnectionError} />
         <ReactSocket.Listener socket="serverSocket" event="connect_timeout" callback={onConnectionTimeout} />
@@ -82,6 +114,7 @@ class ServerConnectionManagerPresentation extends React.Component {
 ServerConnectionManagerPresentation.propTypes = {
   active: PropTypes.bool,
   hostName: PropTypes.string,
+  needsLocalServer: PropTypes.bool,
   port: PropTypes.number,
   protocol: PropTypes.string,
   onConnected: PropTypes.func,
@@ -97,6 +130,7 @@ const ServerConnectionManager = connect(
   state => ({
     active: state.dialogs.serverSettings.active,
     hostName: state.dialogs.serverSettings.hostName,
+    needsLocalServer: shouldManageLocalServer(state),
     port: state.dialogs.serverSettings.port,
     protocol: state.dialogs.serverSettings.isSecure ? 'https:' : 'http:'
   }),

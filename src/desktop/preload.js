@@ -18,6 +18,11 @@ const which = pify(require('which'))
 const createStorageEngine = require('redux-storage-engine-electron-store').default
 
 /**
+ * Path to the local executable of the Flockwave server on this machine.
+ */
+let localServerPath
+
+/**
  * Creates a new SSDP client object and registers the given function to be
  * called when an SSDP response is received.
  *
@@ -100,6 +105,15 @@ const pathsRelatedToAppLocation = getPathsRelatedToAppLocation()
 console.log(pathsRelatedToAppLocation)
 
 /**
+ * Launches the local Flockwave server executable with the given arguments.
+ *
+ * @param {string[]} args  the arguments to pass to the server when launching
+ */
+function launchServer (args) {
+  console.log(localServerPath, args)
+}
+
+/**
  * Searches for the local Flockwave server executable in the following places,
  * in this order of precedence:
  *
@@ -107,19 +121,30 @@ console.log(pathsRelatedToAppLocation)
  * - custom folders specified by the user
  * - the system path
  *
+ * As a side effect, stores the path found with the last invocation so we
+ * can launch the executable later if needed. Note that we cannot trust the
+ * renderer process to provide us with the correct path if we want to protect
+ * against XSS; a malicious attacker may attempt to launch an arbitrary
+ * executable on our system if we allow the renderer process to provide the
+ * path to us directly.
+ *
  * @param {string[]} paths    custom search folders to scan
  * @return {Promise<string>}  a promise that resolves to the full path of the
  *         server executable if found and `null` if it is not found
  */
-const searchForServer = paths => which(
-  'bash', {
-    path: [
-      ...pathsRelatedToAppLocation,
-      ...paths,
-      ...process.env.PATH.split(path.delimiter)
-    ].join(path.delimiter)
-  }
-)
+const searchForServer = paths =>
+  which(
+    'bash', {
+      path: [
+        ...pathsRelatedToAppLocation,
+        ...paths,
+        ...process.env.PATH.split(path.delimiter)
+      ].join(path.delimiter)
+    }
+  ).then(result => {
+    localServerPath = result
+    return result
+  })
 
 const reverseDNSLookup = pify(dns.reverse)
 
@@ -136,6 +161,7 @@ window.bridge = {
   createSSDPClient,
   createStateStore,
   getApplicationFolder,
+  launchServer,
   reverseDNSLookup,
   searchForServer
 }

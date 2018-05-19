@@ -13,7 +13,6 @@ var Dotenv = require('dotenv-webpack')
 var projectRoot = require('./helpers').projectRoot
 
 module.exports = {
-  entry: './src/index',
   mode: 'development',
   output: {
     devtoolModuleFilenameTemplate: '/[absolute-resource-path]',

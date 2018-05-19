@@ -6,6 +6,7 @@ import { globalIdToFeatureId, globalIdToUavId } from './model/identifiers'
 import { isLayerVisible } from './model/layers'
 
 import { selectOrdered } from './utils/collections'
+import { isLocalHost } from './utils/networking'
 
 /**
  * Selector that retrieves the list of item IDs in the current selection
@@ -155,3 +156,17 @@ export const getLocalServerSearchPath =
  */
 export const getLocalServerExecutable =
   state => state.localServer.pathScan.result
+
+/**
+ * Returns whether a local Flockwave server launched directly by the Flockwave
+ * desktop app should be running in the background.
+ */
+export const shouldManageLocalServer = createSelector(
+  state => state.dialogs.serverSettings,
+  state => state.settings.localServer,
+  (serverSettings, localServer) => (
+    localServer.enabled &&
+    isLocalHost(serverSettings.hostName) &&
+    serverSettings.active
+  )
+)
