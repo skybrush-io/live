@@ -1,3 +1,4 @@
+import { remove, trim } from 'lodash'
 import PropTypes from 'prop-types'
 import React from 'react'
 import { connect } from 'react-redux'
@@ -13,7 +14,10 @@ import {
   updateAppSettings
 } from '../../../actions/app-settings'
 
-const ServerTabPresentation = ({ cliArguments, enabled, onDisable, onEnable, onTextFieldChanged }) => (
+const ServerTabPresentation = ({
+  cliArguments, enabled, onDisable, onEnable, onSearchPathChanged,
+  onTextFieldChanged, searchPath
+}) => (
   <React.Fragment>
     <List dense disablePadding style={{ margin: '0 -24px' }}>
       <PathScanner />
@@ -25,11 +29,16 @@ const ServerTabPresentation = ({ cliArguments, enabled, onDisable, onEnable, onT
       </ListItem>
     </List>
     <FormGroup>
-      <TextField id='arguments' label='Command line arguments'
+      <TextField id='cliArguments' label='Command line arguments'
         value={cliArguments} fullWidth
         helperText={'These arguments will be supplied to the local server ' +
           'upon startup.'}
         onChange={onTextFieldChanged} />
+      <TextField id='searchPath' label='Search path'
+        value={searchPath} fullWidth multiline
+        helperText={'Enter directories to search for the Flockwave server ' +
+          'executable, one per line.'}
+        onChange={onSearchPathChanged} />
     </FormGroup>
   </React.Fragment>
 )
@@ -40,13 +49,17 @@ ServerTabPresentation.propTypes = {
   onCheckboxToggled: PropTypes.func,
   onDisable: PropTypes.func,
   onEnable: PropTypes.func,
+  onSearchPathChanged: PropTypes.func,
   onTextFieldChanged: PropTypes.func,
-  searchPath: PropTypes.arrayOf(PropTypes.string)
+  searchPath: PropTypes.string
 }
 
 export default connect(
   // mapStateToProps
-  state => state.settings.localServer,
+  state => ({
+    ...state.settings.localServer,
+    searchPath: state.settings.localServer.searchPath.join('\n')
+  }),
   // mapDispatchToProps
   dispatch => ({
     onCheckboxToggled (event) {
@@ -62,6 +75,16 @@ export default connect(
 
     onEnable () {
       dispatch(updateAppSettings('localServer', { 'enabled': true }))
+    },
+
+    onSearchPathChanged (event) {
+      const paths = event.target.value.split('\n').map(item => trim(item))
+      const emptyItemIndex = paths.indexOf('')
+      remove(paths, (item, index) => !item && index > emptyItemIndex)
+      dispatch(updateAppSettings(
+        'localServer',
+        { 'searchPath': paths }
+      ))
     },
 
     onTextFieldChanged (event) {

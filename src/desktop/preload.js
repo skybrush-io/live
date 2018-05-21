@@ -8,19 +8,28 @@
 
 const pify = require('pify')
 
+const { spawn } = require('child_process')
 const dns = require('dns')
 const { remote } = require('electron')
 const console = require('electron-timber')
 const { endsWith } = require('lodash')
 const SSDPClient = require('node-ssdp-lite')
 const path = require('path')
+const pDefer = require('p-defer')
+const pTimeout = require('p-timeout')
 const which = pify(require('which'))
 const createStorageEngine = require('redux-storage-engine-electron-store').default
 
 /**
- * Path to the local executable of the Flockwave server on this machine.
+ * The local executable of the Flockwave server on this machine.
  */
 let localServerPath
+
+/**
+ * Deferred that will resolve to the local executable of the Flockwave server
+ * on this machine.
+ */
+let localServerPathDeferred = pDefer()
 
 /**
  * Creates a new SSDP client object and registers the given function to be
@@ -107,10 +116,42 @@ console.log(pathsRelatedToAppLocation)
 /**
  * Launches the local Flockwave server executable with the given arguments.
  *
- * @param {string[]} args  the arguments to pass to the server when launching
+ * @param {Object}   opts         options to tweak how the server is launched
+ * @param {string[]} opts.args    additional arguments to pass to the server
+ *        when launching
+ * @param {number}   opts.port    the port to launch the server on
+ * @param {number}   opts.timeout number of milliseconds to wait for the
+ *        server detection to complete and the server to launch
+ * @return {Promise<ChildProcess>}  a promise that resolves to the server
+ *         process that was launched
  */
-function launchServer (args) {
-  console.log(localServerPath, args)
+async function launchServer (opts) {
+  const { args, port, timeout } = {
+    port: 5000,
+    args: '',
+    timeout: 5000,
+    ...opts
+  }
+
+  if (localServerPathDeferred) {
+    localServerPathDeferred = pDefer()
+    await pTimeout(localServerPathDeferred.promise, timeout)
+  }
+
+  if (!localServerPath) {
+    throw new Error('local Flockwave server not found')
+  }
+
+  const realArgs = [
+    '-h', '127.0.0.1',
+    '-p', port,
+    ...args
+  ]
+
+  return spawn(localServerPath, realArgs, {
+    cwd: path.dirname(localServerPath),
+    stdio: 'ignore'
+  })
 }
 
 /**
@@ -132,19 +173,24 @@ function launchServer (args) {
  * @return {Promise<string>}  a promise that resolves to the full path of the
  *         server executable if found and `null` if it is not found
  */
-const searchForServer = paths =>
-  which(
-    'bash', {
+const searchForServer = paths => {
+  return which(
+    'flockwaved', {
       path: [
-        ...pathsRelatedToAppLocation,
         ...paths,
+        ...pathsRelatedToAppLocation,
         ...process.env.PATH.split(path.delimiter)
       ].join(path.delimiter)
     }
   ).then(result => {
     localServerPath = result
+    if (localServerPathDeferred) {
+      localServerPathDeferred.resolve(result)
+      localServerPathDeferred = undefined
+    }
     return result
   })
+}
 
 const reverseDNSLookup = pify(dns.reverse)
 

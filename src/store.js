@@ -38,6 +38,7 @@ const engine = debounce(
       ['map'],
       ['meta'],
       ['savedLocations'],
+      ['settings'],
       ['sidebar'],
       ['workbench']
     ]

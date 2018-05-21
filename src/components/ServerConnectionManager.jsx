@@ -8,6 +8,7 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import { connect } from 'react-redux'
 import ReactSocket from 'react-socket'
+import { parse } from 'shell-quote'
 
 import { clearClockList } from '../actions/clocks'
 import { clearConnectionList, setConnectionState } from '../actions/connections'
@@ -36,20 +37,75 @@ function proposeProtocol () {
 class LocalServerExecutor extends React.Component {
   constructor (props) {
     super(props)
+
+    this._killSignalSent = false
     this._process = undefined
+    this._onProcessExited = this._onProcessExited.bind(this)
+    this._onProcessStartFailed = this._onProcessStartFailed.bind(this)
   }
 
   componentDidMount () {
-    // TODO
+    window.bridge.launchServer({
+      args: parse(this.props.args),
+      port: this.props.port
+    }).then(
+      subprocess => {
+        this._process = subprocess
+        this._process.on('error', this._onProcessStartFailed)
+        this._process.on('exit', this._onProcessExited)
+        if (this.props.onStarted) {
+          this.props.onStarted()
+        }
+      },
+      this._onProcessStartFailed
+    )
+  }
+
+  componentDidUpdate (prevProps) {
+    if (this.props.port !== prevProps.port) {
+      console.warn('changing port while the server is running is not supported')
+    } else if (this.props.args !== prevProps.args) {
+      console.warn('changing args while the server is running is not supported')
+    }
   }
 
   componentWillUnmount () {
-    // TODO
+    if (this._process) {
+      this._killSignalSent = true
+      this._process.kill()
+      this._process = undefined
+    }
   }
 
   render () {
     return null
   }
+
+  _onProcessExited (code, signal) {
+    if (!this._killSignalSent) {
+      // Process died unexpectedly
+      if (this.props.onError) {
+        this.props.onError(
+          signal ? `exited with ${signal}` : `exited with code ${code}`
+        )
+      }
+    }
+    this._process = undefined
+  }
+
+  _onProcessStartFailed (reason) {
+    if (this.props.onError) {
+      this.props.onError(reason.message, reason)
+    }
+    this._process = undefined
+  }
+}
+
+LocalServerExecutor.propTypes = {
+  args: PropTypes.string,
+  onError: PropTypes.func,
+  onStarted: PropTypes.func,
+  port: PropTypes.number
 }
 
 /**
@@ -79,9 +135,9 @@ class ServerConnectionManagerPresentation extends React.Component {
 
   render () {
     const {
-      active, hostName, needsLocalServer, port, protocol, onConnected,
+      active, cliArguments, hostName, needsLocalServer, port, protocol, onConnected,
       onConnecting, onConnectionError, onConnectionTimeout, onDisconnected,
-      onMessage
+      onLocalServerError, onLocalServerStarted, onMessage
     } = this.props
     const url = hostName ? `${protocol || proposeProtocol()}//${hostName}:${port}` : undefined
 
@@ -96,7 +152,11 @@ class ServerConnectionManagerPresentation extends React.Component {
 
     return url && active ? (
       <div key={url}>
-        {needsLocalServer ? <LocalServerExecutor /> : null}
+        {needsLocalServer
+          ? <LocalServerExecutor args={cliArguments} port={port}
+            onError={onLocalServerError}
+            onStarted={onLocalServerStarted} />
+          : null}
         <ReactSocket.Socket name="serverSocket" url={url} options={{
           transports: ['websocket']
         }} ref={this._bindSocketToHub} />
@@ -113,6 +173,7 @@ class ServerConnectionManagerPresentation extends React.Component {
 
 ServerConnectionManagerPresentation.propTypes = {
   active: PropTypes.bool,
+  cliArguments: PropTypes.string,
   hostName: PropTypes.string,
   needsLocalServer: PropTypes.bool,
   port: PropTypes.number,
@@ -122,6 +183,8 @@ ServerConnectionManagerPresentation.propTypes = {
   onConnectionError: PropTypes.func,
   onConnectionTimeout: PropTypes.func,
   onDisconnected: PropTypes.func,
+  onLocalServerError: PropTypes.func,
+  onLocalServerStarted: PropTypes.func,
   onMessage: PropTypes.func
 }
 
@@ -129,6 +192,7 @@ const ServerConnectionManager = connect(
   // mapStateToProps
   state => ({
     active: state.dialogs.serverSettings.active,
+    cliArguments: state.settings.localServer.cliArguments,
     hostName: state.dialogs.serverSettings.hostName,
     needsLocalServer: shouldManageLocalServer(state),
     port: state.dialogs.serverSettings.port,
@@ -190,6 +254,18 @@ const ServerConnectionManager = connect(
       dispatch(showSnackbarMessage('Disconnected from Flockwave server'))
       dispatch(clearClockList())
       dispatch(clearConnectionList())
+    },
+
+    onLocalServerError (message) {
+      const baseMessage = 'Failed to launch local Flockwave server'
+      dispatch(setConnectionState(MASTER_CONNECTION_ID, ConnectionState.DISCONNECTED))
+      dispatch(showSnackbarMessage(
+        message ? `${baseMessage}: ${message}` : baseMessage
+      ))
+    },
+
+    onLocalServerStarted () {
+      dispatch(setConnectionState(MASTER_CONNECTION_ID, ConnectionState.CONNECTING))
     },
 
     onMessage (data) {

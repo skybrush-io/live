@@ -3,6 +3,7 @@
  * that is started by the client on-demand if it is configured to do so.
  */
 
+import { delay } from 'redux-saga'
 import { all, call, put, select, take } from 'redux-saga/effects'
 import { LOAD } from 'redux-storage'
 
@@ -58,11 +59,17 @@ function* localServerExecutableDiscoverySaga (search) {
     }
 
     // Wait for the next signal to start a search
-    yield take([
+    const action = yield take([
       REPLACE_APP_SETTINGS,
       UPDATE_APP_SETTINGS,
       START_LOCAL_SERVER_EXECUTABLE_SEARCH
     ])
+
+    if (action.type === UPDATE_APP_SETTINGS) {
+      // Wait a bit more, effectively throttling multiple signals into one
+      // action
+      yield call(delay, 1000)
+    }
   }
 }
 
