@@ -8,6 +8,8 @@
     "build/bundle.js",
     "build/launcher.bundle.js",
     "build/preload.bundle.js",
+    "build/*.woff",
+    "build/*.woff2",
     "!node_modules/**/*"
   ],
 
