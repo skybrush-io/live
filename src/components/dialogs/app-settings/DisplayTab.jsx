@@ -51,7 +51,6 @@ export default connect(
     },
 
     onHomePositionChanged (value) {
-      console.log('changed to', value)
       dispatch(setHomePosition(value))
     }
   })

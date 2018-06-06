@@ -31,6 +31,10 @@ export class CoordinateField extends React.Component {
     }
   }
 
+  componentWillUnmount () {
+    this._onMaybeCommitValue(/* mounted = */ false)
+  }
+
   render () {
     const { value, onChange, ...rest } = this.props
     const { error, text } = this.state
@@ -49,13 +53,16 @@ export class CoordinateField extends React.Component {
     this._validate(value)
   }
 
-  _onMaybeCommitValue (event) {
+  _onMaybeCommitValue (mounted = true) {
     const [valid, parsed] = this._validate()
     if (valid) {
       const { onChange, value } = this.props
       if (isEqual(value, parsed)) {
-        // Value did not change so we simply reset the text
-        this._reset()
+        // Value did not change so we simply reset the text if we are still
+        // mounted
+        if (mounted) {
+          this._reset()
+        }
       } else if (onChange) {
         // Value changed, let's call the callback to see what to do now
         onChange(parsed)
