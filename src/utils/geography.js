@@ -2,6 +2,7 @@
  * @file Geography-related utility functions and variables.
  */
 
+import CoordinateParser from 'coordinate-parser'
 import formatCoords from 'formatcoords'
 import { curry, minBy } from 'lodash'
 import Coordinate from 'ol/coordinate'
@@ -213,6 +214,23 @@ export const translateBy = curry((displacement, coordinates) => {
  * or a longitude-latitude pair as an array of two numbers.
  */
 export const formatCoordinate = makeDecimalCoordinateFormatter()
+
+/**
+ * Parses the given string as geographical coordinates and converts it into
+ * OpenLayers format (longitude first).
+ *
+ * @param  {string} text  the text to parse
+ * @return {number[]|undefined}  the parsed coordinates in OpenLayers format
+ *         or undefined in case of a parsing error
+ */
+export const parseCoordinate = text => {
+  try {
+    const parsed = new CoordinateParser(text)
+    return [parsed.getLongitude(), parsed.getLatitude()]
+  } catch (e) {
+    return undefined
+  }
+}
 
 /**
  * An OpenLayers sphere whose radius is equal to the semi-major axis of the

@@ -41,7 +41,7 @@ class ContextMenuInteraction extends Interaction {
         // matching layer
         const { coordinate, map } = mapBrowserEvent
         const distanceFunction = _.partial(this._distanceOfEventFromFeature, mapBrowserEvent)
-        const closestFeature = _(map.getLayers().getArray())
+        const relevantFeatures = _(map.getLayers().getArray())
           .filter(this._isLayerFeasible)
           .filter(this._layerSelectorFunction)
           .map(layer => {
@@ -51,15 +51,19 @@ class ContextMenuInteraction extends Interaction {
               : undefined
           })
           .filter(this._isFeatureFeasible)
-          .minBy(distanceFunction)
+        const closestFeature = (
+          relevantFeatures ? relevantFeatures.minBy(distanceFunction) : undefined
+        )
 
-        // Get the actual distance of the feature
-        const distance = distanceFunction(closestFeature)
+        if (closestFeature) {
+          // Get the actual distance of the feature
+          const distance = distanceFunction(closestFeature)
 
-        // If the feature is close enough...
-        if (distance <= this._threshold && this._selectAction) {
-          // Now call the callback
-          this._selectAction('add', closestFeature, distance)
+          // If the feature is close enough...
+          if (distance <= this._threshold && this._selectAction) {
+            // Now call the callback
+            this._selectAction('add', closestFeature, distance)
+          }
         }
 
         // Trigger the context menu hook function if the user specified

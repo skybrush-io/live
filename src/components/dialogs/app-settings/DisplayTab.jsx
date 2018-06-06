@@ -5,9 +5,9 @@ import { connect } from 'react-redux'
 import Checkbox from 'material-ui/Checkbox'
 import { FormControlLabel, FormGroup } from 'material-ui/Form'
 
-import {
-  updateAppSettings
-} from '../../../actions/app-settings'
+import { updateAppSettings } from '../../../actions/app-settings'
+import { setHomePosition } from '../../../actions/map-origin'
+import { CoordinateField } from '../../CoordinateField'
 
 const DisplayTabPresentation = props => (
   <FormGroup>
@@ -19,18 +19,27 @@ const DisplayTabPresentation = props => (
       control={<Checkbox checked={props.showScaleLine}
         name='showScaleLine'
         onChange={props.onCheckboxToggled} />} />
+    <CoordinateField label="Home position"
+      value={props.homePosition}
+      onChange={props.onHomePositionChanged}
+    />
   </FormGroup>
 )
 
 DisplayTabPresentation.propTypes = {
+  homePosition: PropTypes.arrayOf(PropTypes.number),
   onCheckboxToggled: PropTypes.func,
+  onHomePositionChanged: PropTypes.func,
   showMouseCoordinates: PropTypes.bool,
   showScaleLine: PropTypes.bool
 }
 
 export default connect(
   // mapStateToProps
-  state => state.settings.display,
+  state => ({
+    homePosition: state.map.origin.position,
+    ...state.settings.display
+  }),
   // mapDispatchToProps
   dispatch => ({
     onCheckboxToggled (event) {
@@ -38,6 +47,11 @@ export default connect(
         'display',
         { [event.target.name]: event.target.checked }
       ))
+    },
+
+    onHomePositionChanged (value) {
+      console.log('changed to', value)
+      dispatch(setHomePosition(value))
     }
   })
 )(DisplayTabPresentation)
