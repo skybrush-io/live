@@ -37,7 +37,7 @@ export const OwnLocationLayerSettings = connect(
 // === The actual layer to be rendered ===
 
 class OwnLocationVectorSource extends source.Vector {
-  constructor (props, context) {
+  constructor (props) {
     super(props)
 
     this.locationIcon = new Icon({
@@ -107,9 +107,9 @@ OwnLocationLayerPresentation.propTypes = {
 
 export const OwnLocationLayer = connect(
   // mapStateToProps
-  (state, ownProps) => ({}),
+  state => ({}),
   // mapDispatchToProps
-  (dispatch, ownProps) => ({
+  dispatch => ({
     onError: logger.warn
   })
 )(OwnLocationLayerPresentation)

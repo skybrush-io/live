@@ -6,16 +6,17 @@
 import _ from 'lodash'
 import React from 'react'
 
-import ActionHelpOutline from '@material-ui/icons/HelpOutline'
-import ActionTimeline from '@material-ui/icons/Timeline'
-import ActionTrackChanges from '@material-ui/icons/TrackChanges'
 import FileAttachment from '@material-ui/icons/Attachment'
 import FileCloud from '@material-ui/icons/Cloud'
 import Flight from '@material-ui/icons/Flight'
+import HelpOutline from '@material-ui/icons/HelpOutline'
+import Home from '@material-ui/icons/Home'
 import Streetview from '@material-ui/icons/Streetview'
 import ImageGridOn from '@material-ui/icons/GridOn'
 import Map from '@material-ui/icons/Map'
 import MyLocation from '@material-ui/icons/MyLocation'
+import Timeline from '@material-ui/icons/Timeline'
+import TrackChanges from '@material-ui/icons/TrackChanges'
 
 /**
  * Enum containing constants for the various layer types that we support.
@@ -26,6 +27,7 @@ export const LayerType = {
   GEOJSON: 'geojson',
   HEATMAP: 'heatmap',
   HEXGRID: 'hexgrid',
+  HOME: 'home',
   OWN_LOCATION: 'ownLocation',
   TILE_SERVER: 'tileServer',
   UAVS: 'uavs',
@@ -38,9 +40,8 @@ export const LayerType = {
  */
 export const LayerTypes = [
   LayerType.BASE, LayerType.TILE_SERVER, LayerType.FEATURES,
-  LayerType.UAVS, LayerType.UAV_TRACE,
-  LayerType.OWN_LOCATION, LayerType.GEOJSON, LayerType.HEXGRID,
-  LayerType.HEATMAP
+  LayerType.UAVS, LayerType.UAV_TRACE, LayerType.HOME,
+  LayerType.OWN_LOCATION, LayerType.GEOJSON, LayerType.HEATMAP
 ]
 
 /**
@@ -92,7 +93,7 @@ const _propertiesForLayerTypes = {
   },
   [LayerType.HEATMAP]: {
     label: 'Heatmap',
-    icon: <ActionTrackChanges />,
+    icon: <TrackChanges />,
     parameters: {
       subscriptions: [],
       minHue: 100,
@@ -117,6 +118,10 @@ const _propertiesForLayerTypes = {
       radius: 0.0005
     }
   },
+  [LayerType.HOME]: {
+    label: 'Home position',
+    icon: <Home />
+  },
   [LayerType.OWN_LOCATION]: {
     label: 'Own location',
     icon: <MyLocation />
@@ -139,7 +144,7 @@ const _propertiesForLayerTypes = {
   },
   [LayerType.UAV_TRACE]: {
     label: 'UAV trace',
-    icon: <ActionTimeline />,
+    icon: <Timeline />,
     parameters: {
       trailLength: 10,
       trailWidth: 2,
@@ -148,7 +153,7 @@ const _propertiesForLayerTypes = {
   },
   [LayerType.UNTYPED]: {
     label: 'Untyped layer',
-    icon: <ActionHelpOutline />
+    icon: <HelpOutline />
   }
 }
 
