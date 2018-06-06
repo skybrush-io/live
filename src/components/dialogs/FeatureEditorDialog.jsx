@@ -2,14 +2,17 @@ import { partial } from 'lodash'
 import PropTypes from 'prop-types'
 import React from 'react'
 import { connect } from 'react-redux'
-import { reduxForm, submit, Field } from 'redux-form'
+import { reduxForm, Field } from 'redux-form'
 import { TextField } from 'redux-form-material-ui'
 
-import AppBar from 'material-ui/AppBar'
-import Button from 'material-ui/Button'
-import Dialog, { DialogActions, DialogContent } from 'material-ui/Dialog'
-import Switch from 'material-ui/Switch'
-import Tabs, { Tab } from 'material-ui/Tabs'
+import AppBar from '@material-ui/core/AppBar'
+import Button from '@material-ui/core/Button'
+import Dialog from '@material-ui/core/Dialog'
+import DialogActions from '@material-ui/core/DialogActions'
+import DialogContent from '@material-ui/core/DialogContent'
+import Switch from '@material-ui/core/Switch'
+import Tab from '@material-ui/core/Tab'
+import Tabs from '@material-ui/core/Tabs'
 
 import {
   updateFeatureVisibility

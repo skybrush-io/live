@@ -6,17 +6,18 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 
-import ActionSettingsBackupRestore from 'material-ui-icons/SettingsBackupRestore'
-import EditorHighlight from 'material-ui-icons/Highlight'
-import ContentSort from 'material-ui-icons/Sort'
+import ActionSettingsBackupRestore from '@material-ui/icons/SettingsBackupRestore'
+import EditorHighlight from '@material-ui/icons/Highlight'
+import ContentSort from '@material-ui/icons/Sort'
 
-import Button from 'material-ui/Button'
+import Button from '@material-ui/core/Button'
 
-import Popover from 'material-ui/Popover'
-import { FormControlLabel } from 'material-ui/Form'
-import Checkbox from 'material-ui/Checkbox'
+import Popover from '@material-ui/core/Popover'
+import FormControlLabel from '@material-ui/core/FormControlLabel'
+import Checkbox from '@material-ui/core/Checkbox'
+import TextField from '@material-ui/core/TextField'
+
 import { Range } from 'rc-slider'
-import TextField from 'material-ui/TextField'
 
 import 'rc-slider/assets/index.css'
 import '../../assets/css/FilterableSortableTable.less'

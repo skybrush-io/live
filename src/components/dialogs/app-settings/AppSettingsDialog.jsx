@@ -2,9 +2,11 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import { connect } from 'react-redux'
 
-import AppBar from 'material-ui/AppBar'
-import Dialog, { DialogContent } from 'material-ui/Dialog'
-import Tabs, { Tab } from 'material-ui/Tabs'
+import AppBar from '@material-ui/core/AppBar'
+import Dialog from '@material-ui/core/Dialog'
+import DialogContent from '@material-ui/core/DialogContent'
+import Tab from '@material-ui/core/Tab'
+import Tabs from '@material-ui/core/Tabs'
 
 import {
   closeAppSettingsDialog,

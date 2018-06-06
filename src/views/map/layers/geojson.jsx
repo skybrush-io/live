@@ -7,12 +7,12 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import { connect } from 'react-redux'
 
-import TextField from 'material-ui/TextField'
-import ActionSystemUpdateAlt from 'material-ui-icons/SystemUpdateAlt'
+import TextField from '@material-ui/core/TextField'
+import ActionSystemUpdateAlt from '@material-ui/icons/SystemUpdateAlt'
 
 import PopupColorPicker from '../../../components/PopupColorPicker'
 
-import Button from 'material-ui/Button'
+import Button from '@material-ui/core/Button'
 
 import { setLayerParameterById } from '../../../actions/layers'
 import { showSnackbarMessage } from '../../../actions/snackbar'

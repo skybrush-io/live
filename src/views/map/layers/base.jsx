@@ -4,8 +4,9 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import { connect } from 'react-redux'
 
-import { FormControlLabel } from 'material-ui/Form'
-import Radio, { RadioGroup } from 'material-ui/Radio'
+import FormControlLabel from '@material-ui/core/FormControlLabel'
+import Radio from '@material-ui/core/Radio'
+import RadioGroup from '@material-ui/core/RadioGroup'
 
 import { Source, Sources, labelForSource } from '../../../model/sources'
 import { selectMapSource } from '../../../actions/map'

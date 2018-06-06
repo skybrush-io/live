@@ -10,7 +10,7 @@ import React from 'react'
 import { CirclePicker } from 'react-color'
 import { connect } from 'react-redux'
 
-import TextField from 'material-ui/TextField'
+import TextField from '@material-ui/core/TextField'
 
 import { setLayerParametersById } from '../../../actions/layers'
 

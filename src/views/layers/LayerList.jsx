@@ -7,8 +7,10 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { createSelector } from 'reselect'
 
-import List, { ListItem, ListItemText } from 'material-ui/List'
-import AddCircleOutline from 'material-ui-icons/AddCircleOutline'
+import List from '@material-ui/core/List'
+import ListItem from '@material-ui/core/ListItem'
+import ListItemText from '@material-ui/core/ListItemText'
+import AddCircleOutline from '@material-ui/icons/AddCircleOutline'
 
 import { addLayer, showLayersDialog } from '../../actions/layers'
 import { selectableListOf } from '../../components/helpers/lists'

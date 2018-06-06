@@ -7,8 +7,8 @@ import { autobind } from 'core-decorators'
 import PropTypes from 'prop-types'
 import React from 'react'
 
-import Popover from 'material-ui/Popover'
-import { MenuList } from 'material-ui/Menu'
+import Popover from '@material-ui/core/Popover'
+import MenuList from '@material-ui/core/MenuList'
 
 /**
  * Generic context menu using a Material-UI popover element.

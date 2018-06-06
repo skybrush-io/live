@@ -1,4 +1,4 @@
-import SettingsIcon from 'material-ui-icons/Settings'
+import SettingsIcon from '@material-ui/icons/Settings'
 
 import PropTypes from 'prop-types'
 import React from 'react'

@@ -3,10 +3,12 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import { connect } from 'react-redux'
 
-import { FormGroup } from 'material-ui/Form'
-import List, { ListItem, ListItemText } from 'material-ui/List'
-import Switch from 'material-ui/Switch'
-import TextField from 'material-ui/TextField'
+import FormGroup from '@material-ui/core/FormGroup'
+import List from '@material-ui/core/List'
+import ListItem from '@material-ui/core/ListItem'
+import ListItemText from '@material-ui/core/ListItemText'
+import Switch from '@material-ui/core/Switch'
+import TextField from '@material-ui/core/TextField'
 
 import PathScanner from './PathScanner'
 

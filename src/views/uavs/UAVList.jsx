@@ -5,10 +5,12 @@
 
 import Immutable from 'immutable'
 
-import IconButton from 'material-ui/IconButton'
-import { ListItem, ListItemSecondaryAction, ListItemText } from 'material-ui/List'
-import Tooltip from 'material-ui/Tooltip'
-import ImageAdjust from 'material-ui-icons/Adjust'
+import IconButton from '@material-ui/core/IconButton'
+import ListItem from '@material-ui/core/ListItem'
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction'
+import ListItemText from '@material-ui/core/ListItemText'
+import Tooltip from '@material-ui/core/Tooltip'
+import ImageAdjust from '@material-ui/icons/Adjust'
 
 import { autobind } from 'core-decorators'
 import Extent from 'ol/extent'

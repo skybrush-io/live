@@ -2,7 +2,7 @@
  * @file The global snackbar at the bottom of the main window.
  */
 
-import Snackbar from 'material-ui/Snackbar'
+import Snackbar from '@material-ui/core/Snackbar'
 import PropTypes from 'prop-types'
 import React from 'react'
 import { connect } from 'react-redux'

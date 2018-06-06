@@ -2,8 +2,9 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import { connect } from 'react-redux'
 
-import Checkbox from 'material-ui/Checkbox'
-import { FormControlLabel, FormGroup } from 'material-ui/Form'
+import Checkbox from '@material-ui/core/Checkbox'
+import FormControlLabel from '@material-ui/core/FormControlLabel'
+import FormGroup from '@material-ui/core/FormGroup'
 
 import { updateAppSettings } from '../../../actions/app-settings'
 import { setHomePosition } from '../../../actions/map-origin'

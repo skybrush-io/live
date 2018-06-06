@@ -4,12 +4,14 @@
  * the scan.
  */
 
-import { ListItem, ListItemIcon, ListItemText } from 'material-ui/List'
-import { CircularProgress } from 'material-ui/Progress'
-import { green, grey, red, yellow } from 'material-ui/colors'
-import Clear from 'material-ui-icons/Clear'
-import Done from 'material-ui-icons/Done'
-import Warning from 'material-ui-icons/Warning'
+import CircularProgress from '@material-ui/core/CircularProgress'
+import { green, grey, red, yellow } from '@material-ui/core/colors'
+import ListItem from '@material-ui/core/ListItem'
+import ListItemIcon from '@material-ui/core/ListItemIcon'
+import ListItemText from '@material-ui/core/ListItemText'
+import Clear from '@material-ui/icons/Clear'
+import Done from '@material-ui/icons/Done'
+import Warning from '@material-ui/icons/Warning'
 
 import PropTypes from 'prop-types'
 import React from 'react'

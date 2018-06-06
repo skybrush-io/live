@@ -1,4 +1,4 @@
-import TextField from 'material-ui/TextField'
+import TextField from '@material-ui/core/TextField'
 
 /**
  * Renders a text field from it's parameters.

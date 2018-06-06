@@ -3,8 +3,10 @@
  * to the UAVs.
  */
 
-import Button from 'material-ui/Button'
-import Dialog, { DialogActions, DialogContent } from 'material-ui/Dialog'
+import Button from '@material-ui/core/Button'
+import Dialog from '@material-ui/core/Dialog'
+import DialogActions from '@material-ui/core/DialogActions'
+import DialogContent from '@material-ui/core/DialogContent'
 import PropTypes from 'prop-types'
 import React from 'react'
 import { connect } from 'react-redux'
