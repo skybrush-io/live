@@ -7,8 +7,11 @@ import Style from 'ol/style/style'
 
 import { Feature, geom, layer, source } from 'ol-react'
 
+import { homePositionIdToGlobalId } from '../../../model/identifiers'
+import { setLayerSelectable } from '../../../model/layers'
+import { getSelectedHomePositionIds } from '../../../selectors'
 import { coordinateFromLonLat } from '../../../utils/geography'
-import { fill, thinOutline } from '../../../utils/styles'
+import { fill, whiteThickOutline, whiteThinOutline } from '../../../utils/styles'
 
 // === Settings for this particular layer type ===
 
@@ -19,7 +22,6 @@ class HomePositionsLayerSettingsPresentation extends React.Component {
 }
 
 HomePositionsLayerSettingsPresentation.propTypes = {
-  homePosition: PropTypes.arrayOf(PropTypes.number),
   layer: PropTypes.object,
   layerId: PropTypes.string
 }
@@ -33,21 +35,29 @@ export const HomePositionsLayerSettings = connect(
 
 // === The actual layer to be rendered ===
 
-const ownHomePositionStyle = new Style({
+function markAsSelectable (layer) {
+  if (layer) {
+    setLayerSelectable(layer.layer)
+  }
+}
+
+const ownHomePositionStyle = selected => new Style({
   image: new Circle({
     fill: fill('#f44'),
-    stroke: thinOutline('white'),
-    radius: 8
+    radius: 8,
+    stroke: selected ? whiteThickOutline : whiteThinOutline
   })
 })
 
 class HomePositionsVectorSource extends source.Vector {
   render () {
+    const { homePosition, selectedIds } = this.props
     const features = []
     if (this.props.homePosition) {
       features.push(
-        <Feature key="home" style={ownHomePositionStyle}>
-          <geom.Point>{coordinateFromLonLat(this.props.homePosition)}</geom.Point>
+        <Feature id={homePositionIdToGlobalId('')} key=''
+          style={ownHomePositionStyle(selectedIds.includes(''))}>
+          <geom.Point>{coordinateFromLonLat(homePosition)}</geom.Point>
         </Feature>
       )
     }
@@ -55,9 +65,10 @@ class HomePositionsVectorSource extends source.Vector {
   }
 }
 
-const HomePositionsLayerPresentation = ({ homePosition, zIndex }) => (
-  <layer.Vector zIndex={zIndex} updateWhileAnimating updateWhileInteracting>
-    <HomePositionsVectorSource homePosition={homePosition} />
+const HomePositionsLayerPresentation = ({ homePosition, selectedIds, zIndex }) => (
+  <layer.Vector zIndex={zIndex} updateWhileAnimating updateWhileInteracting
+    ref={markAsSelectable}>
+    <HomePositionsVectorSource homePosition={homePosition} selectedIds={selectedIds} />
   </layer.Vector>
 )
 
@@ -65,13 +76,15 @@ HomePositionsLayerPresentation.propTypes = {
   homePosition: PropTypes.arrayOf(PropTypes.number),
   layer: PropTypes.object,
   layerId: PropTypes.string,
+  selectedIds: PropTypes.arrayOf(PropTypes.string),
   zIndex: PropTypes.number
 }
 
 export const HomePositionsLayer = connect(
   // mapStateToProps
   state => ({
-    homePosition: state.map.origin.position
+    homePosition: state.map.origin.position,
+    selectedIds: getSelectedHomePositionIds(state)
   }),
   // mapDispatchToProps
   dispatch => ({

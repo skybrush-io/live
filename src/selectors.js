@@ -2,7 +2,11 @@ import { isNil, reject } from 'lodash'
 import Collection from 'ol/collection'
 import { createSelector } from 'reselect'
 
-import { globalIdToFeatureId, globalIdToUavId } from './model/identifiers'
+import {
+  globalIdToFeatureId,
+  globalIdToHomePositionId,
+  globalIdToUavId
+} from './model/identifiers'
 import { isLayerVisible } from './model/layers'
 
 import { selectOrdered } from './utils/collections'
@@ -18,18 +22,26 @@ import { isLocalHost } from './utils/networking'
 export const getSelection = state => state.map.selection
 
 /**
+ * Helper function that creates a selector that maps the current map selection
+ * to a subset of the IDs based on a mapping function from global IDs.
+ *
+ * @param {function} mapper  a function that takes a global ID as an input
+ *        argument and returns null or undefined if and only if the global ID
+ *        is not part of the subset being selected
+ * @return {function} a selector function
+ */
+const selectionForSubset = mapper => createSelector(
+  getSelection, selection => reject(selection.map(mapper), isNil)
+)
+
+/**
  * Selector that retrieves the list of selected feature IDs from the
  * state object.
  *
  * @param  {Object}  state  the state of the application
  * @return {string[]}  the list of selected feature IDs
  */
-export const getSelectedFeatureIds = createSelector(
-  getSelection,
-  selection => (
-    reject(selection.map(globalIdToFeatureId), isNil)
-  )
-)
+export const getSelectedFeatureIds = selectionForSubset(globalIdToFeatureId)
 
 const _selectedFeatureIdsCollection = new Collection([], { unique: true })
 
@@ -71,15 +83,19 @@ export const getSelectedFeatureLabels = createSelector(
 )
 
 /**
+ * Selector that retrieves the list of selected home position IDs from the
+ * state object.
+ *
+ * @param  {Object}  state  the state of the application
+ * @return {string[]}  the list of selected feature IDs
+ */
+export const getSelectedHomePositionIds = selectionForSubset(globalIdToHomePositionId)
+
+/**
  * Selector that calculates and caches the list of selected UAV IDs from
  * the state object.
  */
-export const getSelectedUAVIds = createSelector(
-  getSelection,
-  selection => (
-    reject(selection.map(globalIdToUavId), isNil)
-  )
-)
+export const getSelectedUAVIds = selectionForSubset(globalIdToUavId)
 
 /**
  * Selector that calculates and caches the list of all the servers detected

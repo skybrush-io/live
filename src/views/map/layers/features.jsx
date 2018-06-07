@@ -15,7 +15,7 @@ import { featureIdToGlobalId } from '../../../model/identifiers'
 import { setLayerEditable, setLayerSelectable } from '../../../model/layers'
 import { getFeaturesInOrder, getSelectedFeatureIds } from '../../../selectors'
 import { coordinateFromLonLat, euclideanDistance } from '../../../utils/geography'
-import { fill, thickOutline, thinOutline } from '../../../utils/styles'
+import { fill, thinOutline, whiteThickOutline, whiteThinOutline } from '../../../utils/styles'
 
 // === Settings for this particular layer type ===
 
@@ -67,8 +67,6 @@ const geometryForFeature = feature => {
   }
 }
 
-const whiteThinOutline = thinOutline('white')
-const whiteThickOutline = thickOutline('white')
 const whiteThickOutlineStyle = new Style({ stroke: whiteThickOutline })
 const labelStrokes = {
   [LabelStyle.THIN_OUTLINE]: whiteThinOutline,

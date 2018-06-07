@@ -8,3 +8,6 @@ import Stroke from 'ol/style/stroke'
 export const fill = (color) => new Fill({ color })
 export const thickOutline = (color) => new Stroke({ color, width: 5 })
 export const thinOutline = (color) => new Stroke({ color, width: 2 })
+
+export const whiteThinOutline = thinOutline('white')
+export const whiteThickOutline = thickOutline('white')
