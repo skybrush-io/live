@@ -2,8 +2,10 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import { connect } from 'react-redux'
 
+import LineString from 'ol/geom/linestring'
 import Circle from 'ol/style/circle'
 import Style from 'ol/style/style'
+import Text from 'ol/style/text'
 
 import { Feature, geom, layer, source } from 'ol-react'
 
@@ -11,7 +13,7 @@ import { homePositionIdToGlobalId } from '../../../model/identifiers'
 import { setLayerEditable, setLayerSelectable } from '../../../model/layers'
 import { getSelectedHomePositionIds } from '../../../selectors'
 import { coordinateFromLonLat } from '../../../utils/geography'
-import { fill, whiteThickOutline, whiteThinOutline } from '../../../utils/styles'
+import { fill, stroke, whiteThickOutline, whiteThinOutline } from '../../../utils/styles'
 
 // === Settings for this particular layer type ===
 
@@ -42,13 +44,44 @@ function markAsSelectable (layer) {
   }
 }
 
-const ownHomePositionStyle = selected => new Style({
-  image: new Circle({
-    fill: fill('#f44'),
-    radius: 8,
-    stroke: selected ? whiteThickOutline : whiteThinOutline
+const redLine = stroke('#f44', 2)
+
+const ownHomePositionStyles = selected => [
+  // circle
+  new Style({
+    image: new Circle({
+      fill: fill('#f44'),
+      radius: 8,
+      stroke: selected ? whiteThickOutline : whiteThinOutline
+    })
+  }),
+
+  // arrow
+  new Style({
+    geometry: feature => {
+      const geom = feature.getGeometry()
+      const origin = geom.getCoordinates()
+      const angle = 0
+      const angleInRad = angle * Math.PI / 180
+      const end = [
+        origin[0] + 40 * Math.cos(angleInRad),
+        origin[1] + 40 * Math.sin(angleInRad)
+      ]
+      return new LineString([origin, end])
+    },
+    stroke: redLine
+  }),
+
+  // text
+  new Style({
+    text: new Text({
+      font: '12px sans-serif',
+      offsetY: 16,
+      text: 'Origin',
+      textAlign: 'center'
+    })
   })
-})
+]
 
 class HomePositionsVectorSource extends source.Vector {
   render () {
@@ -57,7 +90,7 @@ class HomePositionsVectorSource extends source.Vector {
     if (this.props.homePosition) {
       features.push(
         <Feature id={homePositionIdToGlobalId('')} key=''
-          style={ownHomePositionStyle(selectedIds.includes(''))}>
+          style={ownHomePositionStyles(selectedIds.includes(''))}>
           <geom.Point>{coordinateFromLonLat(homePosition)}</geom.Point>
         </Feature>
       )

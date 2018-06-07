@@ -6,8 +6,9 @@ import Fill from 'ol/style/fill'
 import Stroke from 'ol/style/stroke'
 
 export const fill = (color) => new Fill({ color })
-export const thickOutline = (color) => new Stroke({ color, width: 5 })
-export const thinOutline = (color) => new Stroke({ color, width: 2 })
+export const stroke = (color, width = 1) => new Stroke({ color, width })
+export const thickOutline = (color) => stroke(color, 5)
+export const thinOutline = (color) => stroke(color, 2)
 
 export const whiteThinOutline = thinOutline('white')
 export const whiteThickOutline = thickOutline('white')
