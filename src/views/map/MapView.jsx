@@ -1,5 +1,5 @@
 import { autobind } from 'core-decorators'
-import { partial } from 'lodash'
+import { filter, isEmpty, partial } from 'lodash'
 import OLMap from 'ol/map'
 import { Map, View, control, interaction } from 'ol-react'
 import PropTypes from 'prop-types'
@@ -17,14 +17,18 @@ import MapToolbar from './MapToolbar'
 import { isDrawingTool, Tool, toolToDrawInteractionProps } from './tools'
 
 import { addFeature, updateFeatureCoordinates } from '../../actions/features'
-import { addFeaturesToSelection, setSelectedFeatures,
-  removeFeaturesFromSelection } from '../../actions/map'
+import {
+  addFeaturesToSelection,
+  setSelectedFeatures,
+  removeFeaturesFromSelection
+} from '../../actions/map'
+import { setHomePosition } from '../../actions/map-origin'
 import Widget from '../../components/Widget'
 import { handleError } from '../../error-handling'
 import mapViewManager from '../../mapViewManager'
-import { createFeatureFromOpenLayers } from '../../model/features'
+import { createFeatureFromOpenLayers, isFeatureTransformable } from '../../model/features'
 import { getVisibleSelectableLayers, isLayerSelectable } from '../../model/layers'
-import { featureIdToGlobalId, globalIdToFeatureId } from '../../model/identifiers'
+import { globalIdToFeatureId, globalIdToHomePositionId } from '../../model/identifiers'
 import { getSelectedFeatureIds, getSelection, getVisibleLayersInOrder } from '../../selectors'
 import { coordinateFromLonLat, findFeaturesById, formatCoordinate } from '../../utils/geography'
 
@@ -331,7 +335,7 @@ class MapViewPresentation extends React.Component {
         <MapViewControls />
         <MapViewInteractions
           selectedTool={selectedTool}
-          selectedFeaturesProvider={this._getSelectedFeatures}
+          selectedFeaturesProvider={this._getSelectedTransformableFeatures}
 
           onAddFeaturesToSelection={this._onAddFeaturesToSelection}
           onDrawEnded={this._onDrawEnded}
@@ -365,10 +369,20 @@ class MapViewPresentation extends React.Component {
     this.map = ref
   }
 
+  /**
+   * Returns the selected features that can be transformed with a standard
+   * transformation interaction in an array. The selection includes not
+   * only user-defined features but anything that can be transformed (e.g.,
+   * home position objects).
+   *
+   * @param  {Map} map  the map
+   * @return {ol.Feature[]} the selected OpenLayers features
+   */
   @autobind
-  _getSelectedFeatures (map) {
-    const ids = this.props.selectedFeatures.map(featureIdToGlobalId)
-    return findFeaturesById(map, ids)
+  _getSelectedTransformableFeatures (map) {
+    return filter(
+      findFeaturesById(map, this.props.selection), isFeatureTransformable
+    )
   }
 
   /**
@@ -435,7 +449,7 @@ class MapViewPresentation extends React.Component {
    * Event handler that is called when some features were moved on the
    * map by dragging.
    *
-   * @param  {MoveFeaturesInteractionEvent}  event  the event that was
+   * @param  {TransformFeaturesInteractionEvent}  event  the event that was
    *         triggered at the end of the interaction
    * @param  {ol.Feature[]}  event.features  the features that were moved
    */
@@ -498,12 +512,33 @@ class MapViewPresentation extends React.Component {
    * @param  {ol.Feature[]}  features  the features that are to be updated
    */
   _updateFeatures (features) {
-    const coordinates = {}
+    let updatedHomePosition
+    const updatedUserFeatures = {}
+    const { dispatch } = this.props
+
     features.forEach(feature => {
-      const featureId = globalIdToFeatureId(feature.getId())
-      coordinates[featureId] = createFeatureFromOpenLayers(feature).points
+      const globalId = feature.getId()
+      const userFeatureId = globalIdToFeatureId(globalId)
+      if (userFeatureId) {
+        // feature is a user-defined feature so update it in the Redux store
+        updatedUserFeatures[userFeatureId] =
+          createFeatureFromOpenLayers(feature).points
+      } else {
+        const homePositionFeatureId = globalIdToHomePositionId(globalId)
+        if (homePositionFeatureId === '') {
+          // feature is a home position feature
+          updatedHomePosition = createFeatureFromOpenLayers(feature).points[0]
+        }
+      }
     })
-    this.props.dispatch(updateFeatureCoordinates(coordinates))
+
+    if (!isEmpty(updatedUserFeatures)) {
+      dispatch(updateFeatureCoordinates(updatedUserFeatures))
+    }
+
+    if (updatedHomePosition) {
+      dispatch(setHomePosition(updatedHomePosition))
+    }
   }
 
   /**

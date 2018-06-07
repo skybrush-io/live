@@ -8,7 +8,7 @@ import Style from 'ol/style/style'
 import { Feature, geom, layer, source } from 'ol-react'
 
 import { homePositionIdToGlobalId } from '../../../model/identifiers'
-import { setLayerSelectable } from '../../../model/layers'
+import { setLayerEditable, setLayerSelectable } from '../../../model/layers'
 import { getSelectedHomePositionIds } from '../../../selectors'
 import { coordinateFromLonLat } from '../../../utils/geography'
 import { fill, whiteThickOutline, whiteThinOutline } from '../../../utils/styles'
@@ -37,6 +37,7 @@ export const HomePositionsLayerSettings = connect(
 
 function markAsSelectable (layer) {
   if (layer) {
+    setLayerEditable(layer.layer)
     setLayerSelectable(layer.layer)
   }
 }

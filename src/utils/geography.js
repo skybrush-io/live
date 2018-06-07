@@ -114,9 +114,9 @@ export const findFeaturesById = curry((map, featureIds) => {
     if (source && source.getFeatureById) {
       const n = features.length
       for (let i = 0; i < n; i++) {
-        if (features[i] === undefined) {
+        if (!features[i]) {
           const feature = source.getFeatureById(featureIds[i])
-          if (feature !== undefined) {
+          if (feature) {
             features[i] = feature
           }
         }
