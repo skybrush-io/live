@@ -1,5 +1,8 @@
 import { isEqual } from 'lodash'
+import InputAdornment from '@material-ui/core/InputAdornment'
+import IconButton from '@material-ui/core/IconButton'
 import TextField from '@material-ui/core/TextField'
+import Clear from '@material-ui/icons/Clear'
 import PropTypes from 'prop-types'
 import React from 'react'
 
@@ -22,7 +25,9 @@ export class CoordinateField extends React.Component {
     this.state.originalText = this.state.text
 
     this._onChange = this._onChange.bind(this)
+    this._onClearField = this._onClearField.bind(this)
     this._onMaybeCommitValue = this._onMaybeCommitValue.bind(this)
+    this._onMouseDownOnButton = this._onMouseDownOnButton.bind(this)
   }
 
   static getDerivedStateFromProps (props, state) {
@@ -38,11 +43,22 @@ export class CoordinateField extends React.Component {
   render () {
     const { value, onChange, ...rest } = this.props
     const { error, text } = this.state
+    const endAdornment = text ? (
+      <InputAdornment position='end'>
+        <IconButton
+          aria-label='Clear field'
+          onClick={this._onClearField}
+          onMouseDown={this._onMouseDownOnButton}>
+          <Clear />
+        </IconButton>
+      </InputAdornment>
+    ) : null
     return (
       <TextField value={text}
         error={!!error}
         onBlur={this._onMaybeCommitValue}
         onChange={this._onChange}
+        InputProps={{ endAdornment }}
         {...rest} />
     )
   }
@@ -53,8 +69,14 @@ export class CoordinateField extends React.Component {
     this._validate(value)
   }
 
-  _onMaybeCommitValue (mounted = true) {
-    const [valid, parsed] = this._validate()
+  _onClearField () {
+    this.setState({ text: '' })
+    this._validate('')
+    this._onMaybeCommitValue(true, '')
+  }
+
+  _onMaybeCommitValue (mounted = true, value = undefined) {
+    const [valid, parsed] = this._validate(value)
     if (valid) {
       const { onChange, value } = this.props
       if (isEqual(value, parsed)) {
@@ -68,6 +90,10 @@ export class CoordinateField extends React.Component {
         onChange(parsed)
       }
     }
+  }
+
+  _onMouseDownOnButton (event) {
+    event.preventDefault()
   }
 
   _reset () {
