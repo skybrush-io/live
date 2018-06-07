@@ -87,9 +87,7 @@ const styleForFeature = (feature, selected = false) => {
       styles.push(new Style({
         image: new Circle({
           stroke: selected ? whiteThinOutline : undefined,
-          fill: new Fill({
-            color: parsedColor.rgb().array()
-          }),
+          fill: fill(parsedColor.rgb().array()),
           radius
         })
       }))
@@ -115,10 +113,7 @@ const styleForFeature = (feature, selected = false) => {
         styles.push(whiteThickOutlineStyle)
       }
       styles.push(new Style({
-        stroke: new Stroke({
-          color: parsedColor.rgb().array(),
-          width: 2
-        })
+        stroke: thinOutline(parsedColor.rgb().array())
       }))
   }
 

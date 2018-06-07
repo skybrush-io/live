@@ -3,7 +3,6 @@ import React from 'react'
 import { connect } from 'react-redux'
 
 import Circle from 'ol/style/circle'
-import Icon from 'ol/style/icon'
 import Style from 'ol/style/style'
 
 import { Feature, geom, layer, source } from 'ol-react'
