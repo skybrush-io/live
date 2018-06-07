@@ -3,8 +3,6 @@ import { unary } from 'lodash'
 import { Feature, geom, interaction, layer, source } from 'ol-react'
 import PropTypes from 'prop-types'
 import Circle from 'ol/style/circle'
-import Fill from 'ol/style/fill'
-import Stroke from 'ol/style/stroke'
 import Style from 'ol/style/style'
 import Text from 'ol/style/text'
 import React from 'react'
@@ -17,6 +15,7 @@ import { featureIdToGlobalId } from '../../../model/identifiers'
 import { setLayerEditable, setLayerSelectable } from '../../../model/layers'
 import { getFeaturesInOrder, getSelectedFeatureIds } from '../../../selectors'
 import { coordinateFromLonLat, euclideanDistance } from '../../../utils/geography'
+import { fill, thickOutline, thinOutline } from '../../../utils/styles'
 
 // === Settings for this particular layer type ===
 
@@ -68,9 +67,6 @@ const geometryForFeature = feature => {
   }
 }
 
-const fill = (color) => new Fill({ color })
-const thinOutline = (color) => new Stroke({ color, width: 2 })
-const thickOutline = (color) => new Stroke({ color, width: 5 })
 const whiteThinOutline = thinOutline('white')
 const whiteThickOutline = thickOutline('white')
 const whiteThickOutlineStyle = new Style({ stroke: whiteThickOutline })
