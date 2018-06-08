@@ -19,7 +19,7 @@ import {
 import {
   getLocalServerExecutable,
   getLocalServerSearchPath
-} from '../selectors'
+} from '../selectors/local-server'
 
 /**
  * Saga that attempts to find where the local server is installed on the

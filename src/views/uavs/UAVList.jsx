@@ -25,7 +25,7 @@ import UAVToolbar from './UAVToolbar'
 import { setSelectedUAVIds } from '../../actions/map'
 import { multiSelectableListOf } from '../../components/helpers/lists'
 import Flock from '../../model/flock'
-import { getSelectedUAVIds } from '../../selectors'
+import { getSelectedUAVIds } from '../../selectors/selection'
 import { mapViewToExtentSignal, mapViewToLocationSignal } from '../../signals'
 import { coordinateFromLonLat, formatCoordinate } from '../../utils/geography'
 

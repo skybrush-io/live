@@ -38,7 +38,7 @@ import {
   closeServerSettingsDialog,
   setServerSettingsDialogTab
 } from '../../actions/server-settings'
-import { getDetectedServersInOrder } from '../../selectors'
+import { getDetectedServersInOrder } from '../../selectors/local-server'
 import { createValidator, between, integer, required } from '../../utils/validation'
 
 // eslint-disable-next-line react/prop-types

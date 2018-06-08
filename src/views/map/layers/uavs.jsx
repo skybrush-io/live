@@ -11,7 +11,7 @@ import ActiveUAVsLayerSource from '../sources/ActiveUAVsLayerSource'
 import { setLayerParameterById } from '../../../actions/layers'
 import { showSnackbarMessage } from '../../../actions/snackbar'
 import flock from '../../../flock'
-import { getSelection } from '../../../selectors'
+import { getSelection } from '../../../selectors/selection'
 import { coordinateFromLonLat } from '../../../utils/geography'
 import makeLogger from '../../../utils/logging'
 

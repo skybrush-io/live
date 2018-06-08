@@ -29,7 +29,8 @@ import mapViewManager from '../../mapViewManager'
 import { createFeatureFromOpenLayers, isFeatureTransformable } from '../../model/features'
 import { getVisibleSelectableLayers, isLayerSelectable } from '../../model/layers'
 import { globalIdToFeatureId, globalIdToHomePositionId } from '../../model/identifiers'
-import { getSelectedFeatureIds, getSelection, getVisibleLayersInOrder } from '../../selectors'
+import { getVisibleLayersInOrder } from '../../selectors/ordered'
+import { getSelectedFeatureIds, getSelection } from '../../selectors/selection'
 import { coordinateFromLonLat, findFeaturesById, formatCoordinate } from '../../utils/geography'
 
 require('ol/ol.css')

@@ -16,7 +16,7 @@ import { connect } from 'react-redux'
 
 import { editSavedLocation } from '../../actions/saved-location-editor'
 import { listOf } from '../../components/helpers/lists'
-import { getSavedLocationsInOrder } from '../../selectors'
+import { getSavedLocationsInOrder } from '../../selectors/ordered'
 import { mapViewToLocationSignal } from '../../signals'
 import { formatCoordinate } from '../../utils/geography'
 

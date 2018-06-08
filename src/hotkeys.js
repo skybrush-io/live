@@ -8,10 +8,9 @@ import { selectAllUAVFeatures, clearSelection,
 import { showMessagesDialog } from './actions/messages'
 import { showSnackbarMessage } from './actions/snackbar'
 
-import { getSelectedUAVIds } from './selectors'
-
 import flock from './flock'
 import { Source } from './model/sources'
+import { getSelectedUAVIds } from './selectors/selection'
 import signals from './signals'
 import store, { clearStore } from './store'
 import {

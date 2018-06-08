@@ -10,7 +10,7 @@ import { createSelector } from 'reselect'
 import SidebarBadge from './SidebarBadge'
 
 import { ConnectionState } from '../../model/connections'
-import { getConnectionsInOrder } from '../../selectors'
+import { getConnectionsInOrder } from '../../selectors/ordered'
 
 const severityLevels = ['error', 'warning', 'ok']
 

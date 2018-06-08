@@ -18,7 +18,7 @@ import messageHub from '../message-hub'
 import { ConnectionState, MASTER_CONNECTION_ID,
   handleConnectionInformationMessage } from '../model/connections'
 import { handleClockInformationMessage } from '../model/clocks'
-import { shouldManageLocalServer } from '../selectors'
+import { shouldManageLocalServer } from '../selectors/local-server'
 
 /**
  * Proposes a protocol to use (http or https) depending on the protocol of

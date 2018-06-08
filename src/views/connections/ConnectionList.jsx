@@ -25,7 +25,7 @@ import { TimeAgo } from 'react-time-ago'
 import { showServerSettingsDialog } from '../../actions/server-settings'
 import { listOf } from '../../components/helpers/lists'
 import { ConnectionState } from '../../model/connections'
-import { getConnectionsInOrder } from '../../selectors'
+import { getConnectionsInOrder } from '../../selectors/ordered'
 
 /**
  * Icons for the different connection states in the connection list.

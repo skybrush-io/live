@@ -25,7 +25,11 @@ import { showFeatureEditorDialog } from '../../actions/feature-editor'
 import { renameFeature, removeFeatures } from '../../actions/features'
 import { selectUAVInMessagesDialog, showMessagesDialog } from '../../actions/messages'
 import { showPromptDialog } from '../../actions/prompt'
-import { getSelectedFeatureIds, getSelectedFeatureLabels, getSelectedUAVIds } from '../../selectors'
+import {
+  getSelectedFeatureIds,
+  getSelectedFeatureLabels,
+  getSelectedUAVIds
+} from '../../selectors/selection'
 import * as messaging from '../../utils/messaging'
 
 /**

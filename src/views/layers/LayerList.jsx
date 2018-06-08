@@ -15,7 +15,7 @@ import AddCircleOutline from '@material-ui/icons/AddCircleOutline'
 import { addLayer, showLayersDialog } from '../../actions/layers'
 import { selectableListOf } from '../../components/helpers/lists'
 import { labelForLayerType, iconForLayerType } from '../../model/layers'
-import { getLayersInOrder } from '../../selectors'
+import { getLayersInOrder } from '../../selectors/ordered'
 
 /**
  * Creates a single list item for the layer list.

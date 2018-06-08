@@ -12,7 +12,7 @@ import { Feature, geom, layer, source } from 'ol-react'
 
 import { homePositionIdToGlobalId } from '../../../model/identifiers'
 import { setLayerEditable, setLayerSelectable } from '../../../model/layers'
-import { getSelectedHomePositionIds } from '../../../selectors'
+import { getSelectedHomePositionIds } from '../../../selectors/selection'
 import { coordinateFromLonLat } from '../../../utils/geography'
 import { fill, stroke, whiteThickOutline, whiteThinOutline } from '../../../utils/styles'
 
