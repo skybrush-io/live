@@ -81,7 +81,7 @@ class HomePositionsVectorSource extends source.Vector {
     if (homePosition) {
       const tail = coordinateFromLonLat(homePosition)
       const head = [0, 50]
-      Coordinate.rotate(head, angle * Math.PI / 180)
+      Coordinate.rotate(head, -angle * Math.PI / 180)
       Coordinate.add(head, tail)
       features.push(
         <Feature id={homePositionIdToGlobalId('')} key=''

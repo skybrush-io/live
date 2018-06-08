@@ -65,7 +65,6 @@ export default class MapRotationTextBox extends React.Component {
         <TextField
           style={{
             width: this.props.fieldWidth
-            // verticalAlign: 'text-bottom'
           }}
           type='number'
           value={

@@ -66,10 +66,10 @@ export default [
   {
     description: 'Copy coordinates to clipboard',
     on: 'down',
-    keys: 'Ctrl + Shift + KeyC',
+    keys: 'PlatMod + Shift + KeyC',
     action: () => {
       copy(document.getElementsByClassName('ol-mouse-position')[0].innerText)
-      store.dispatch(showSnackbarMessage('Coordinates copied to clpboard.'))
+      store.dispatch(showSnackbarMessage('Coordinates copied to clipboard.'))
     }
   },
 

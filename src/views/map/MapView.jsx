@@ -526,11 +526,11 @@ class MapViewPresentation extends React.Component {
           const coords = feature.getGeometry().getCoordinates()
           dispatch(setHomePosition(
             featureObject.points[0],
-            Math.atan2(
+            90 - Math.atan2(
               // don't use featureObject.points here because they are already
               // in lat-lon so they cannot be used to calculate an angle
               coords[1][1] - coords[0][1], coords[1][0] - coords[0][0]
-            ) * 180 / Math.PI - 90
+            ) * 180 / Math.PI
           ))
         }
       }

@@ -1,26 +1,29 @@
-import { isEqual } from 'lodash'
-import InputAdornment from '@material-ui/core/InputAdornment'
-import IconButton from '@material-ui/core/IconButton'
-import TextField from '@material-ui/core/TextField'
-import Clear from '@material-ui/icons/Clear'
+/**
+ * @file React component to display and adjust an angle in degrees.
+ */
+
 import PropTypes from 'prop-types'
 import React from 'react'
 
-import { formatCoordinate, parseCoordinate } from '../utils/geography'
+import IconButton from '@material-ui/core/IconButton'
+import InputAdornment from '@material-ui/core/InputAdornment'
+import TextField from '@material-ui/core/TextField'
+import Clear from '@material-ui/icons/Clear'
 
-const safelyFormatCoordinate = coordinate => (
-  coordinate !== undefined && coordinate !== null
-    ? formatCoordinate(coordinate)
-    : ''
-)
+export const normalizeAngle = angle => +(((angle % 360) + 360) % 360).toFixed(2)
+export const formatAngle =
+  angle => normalizeAngle(angle).toFixed(2).replace(',', '.') + '\u00B0'
 
-export default class CoordinateField extends React.Component {
+/**
+ * React component to display and adjust an angle in degrees.
+ */
+export default class RotationField extends React.Component {
   constructor (props) {
     super(props)
 
     this.state = {
       error: undefined,
-      text: safelyFormatCoordinate(props.value)
+      text: formatAngle(props.value)
     }
     this.state.originalText = this.state.text
 
@@ -32,7 +35,7 @@ export default class CoordinateField extends React.Component {
 
   static getDerivedStateFromProps (props, state) {
     return {
-      originalText: safelyFormatCoordinate(props.value)
+      originalText: formatAngle(props.value)
     }
   }
 
@@ -54,13 +57,16 @@ export default class CoordinateField extends React.Component {
         </IconButton>
       </InputAdornment>
     ) : null
+
     return (
-      <TextField value={text}
+      <TextField
         error={!!error}
         onBlur={this._onMaybeCommitValue}
         onChange={this._onChange}
+        value={text}
         InputProps={{ endAdornment }}
-        {...rest} />
+        {...rest}
+      />
     )
   }
 
@@ -71,24 +77,27 @@ export default class CoordinateField extends React.Component {
   }
 
   _onClearField () {
-    this.setState({ text: '' })
-    this._validate('')
-    this._onMaybeCommitValue(true, '')
+    this.setState({ text: '0' })
+    this._validate('0')
+    this._onMaybeCommitValue(true, '0')
   }
 
   _onMaybeCommitValue (mounted = true, value = undefined) {
     const [valid, parsed] = this._validate(value)
     if (valid) {
       const { onChange, value } = this.props
-      if (isEqual(value, parsed)) {
+      if (value === parsed) {
         // Value did not change so we simply reset the text if we are still
         // mounted
         if (mounted) {
           this._reset()
         }
-      } else if (onChange) {
-        // Value changed, let's call the callback to see what to do now
-        onChange(parsed)
+      } else {
+        if (onChange) {
+          // Value changed, let's call the callback to see what to do now
+          onChange(parsed)
+        }
+        this._updateTextFromValue(parsed)
       }
     }
   }
@@ -101,29 +110,32 @@ export default class CoordinateField extends React.Component {
     this.setState({ text: this.state.originalText })
   }
 
-  _validate (value) {
-    const { required } = this.props
+  _updateTextFromValue (value) {
+    if (value === undefined) {
+      value = this.props.value
+    }
+    this.setState({ text: formatAngle(value) })
+  }
 
+  _validate (value) {
     if (value === undefined) {
       value = this.state.text
     }
 
-    const parsed = parseCoordinate(value)
-    const hasError = ((value !== '' || required) && parsed === undefined)
+    const parsed = normalizeAngle(Number.parseFloat(value))
+    const hasError = isNaN(parsed)
     this.setState({
-      error: hasError ? 'Not a valid coordinate' : undefined
+      error: hasError ? 'Not a valid angle' : undefined
     })
 
     return [!hasError, parsed]
   }
 }
 
-CoordinateField.propTypes = {
+RotationField.propTypes = {
   onChange: PropTypes.func,
-  required: PropTypes.bool,
-  value: PropTypes.arrayOf(PropTypes.number)
+  value: PropTypes.number
 }
-CoordinateField.defaultProps = {
-  required: false,
+RotationField.defaultProps = {
   value: undefined
 }
