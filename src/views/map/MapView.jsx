@@ -318,10 +318,6 @@ class MapViewPresentation extends React.Component {
       [Tool.EDIT_FEATURE]: 'tool-edit tool-edit-feature'
     }
 
-    /* setTimeout(() => {
-      console.log(this.map.map.getInteractions().getArray())
-    }, 1000); */
-
     return (
       <Map view={view} ref={this._assignMapRef}
         useDefaultControls={false} loadTilesWhileInteracting
@@ -512,7 +508,6 @@ class MapViewPresentation extends React.Component {
    * @param  {ol.Feature[]}  features  the features that are to be updated
    */
   _updateFeatures (features) {
-    let updatedHomePosition
     const updatedUserFeatures = {}
     const { dispatch } = this.props
 
@@ -527,17 +522,22 @@ class MapViewPresentation extends React.Component {
         const homePositionFeatureId = globalIdToHomePositionId(globalId)
         if (homePositionFeatureId === '') {
           // feature is a home position feature
-          updatedHomePosition = createFeatureFromOpenLayers(feature).points[0]
+          const featureObject = createFeatureFromOpenLayers(feature)
+          const coords = feature.getGeometry().getCoordinates()
+          dispatch(setHomePosition(
+            featureObject.points[0],
+            Math.atan2(
+              // don't use featureObject.points here because they are already
+              // in lat-lon so they cannot be used to calculate an angle
+              coords[1][1] - coords[0][1], coords[1][0] - coords[0][0]
+            ) * 180 / Math.PI - 90
+          ))
         }
       }
     })
 
     if (!isEmpty(updatedUserFeatures)) {
       dispatch(updateFeatureCoordinates(updatedUserFeatures))
-    }
-
-    if (updatedHomePosition) {
-      dispatch(setHomePosition(updatedHomePosition))
     }
   }
 

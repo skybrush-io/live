@@ -13,10 +13,20 @@ import { CLEAR_HOME_POSITION, SET_HOME_POSITION } from './types'
 export const clearHomePosition = createAction(CLEAR_HOME_POSITION)
 
 /**
- * Action factory that creates an action that clears the origin (home position)
- * of the map.
+ * Action factory that creates an action that sets the origin (home position)
+ * and the orientation of the flat Earth coordinate system of the map.
+ *
+ * Both parameters are optional; when omitted, the corresponding parameter
+ * will not be updated.
  */
 export const setHomePosition = createAction(
-  SET_HOME_POSITION,
-  position => ({ position })
+  SET_HOME_POSITION, (position, angle) => ({ position, angle })
+)
+
+/**
+ * Action factory that creates an action that sets the orientation of the flat
+ * Earth coordinate system of the map.
+ */
+export const setFlatEarthCoordinateSystemOrientation = createAction(
+  SET_HOME_POSITION, angle => ({ angle })
 )

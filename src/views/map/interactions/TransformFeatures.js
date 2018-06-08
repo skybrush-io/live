@@ -79,9 +79,14 @@ export class TransformFeaturesInteraction extends PointerInteraction {
 
           if (type === 'rotate') {
             const extent = Extent.createEmpty()
-            features.forEach(feature =>
-              Extent.extend(extent, feature.getGeometry().getExtent())
-            )
+            features.forEach(feature => {
+              const geom = feature.getGeometry()
+              if (feature.getId().substr(0, 5) === 'home$') {
+                Extent.extend(extent, Extent.boundingExtent([geom.getFirstCoordinate()]))
+              } else {
+                Extent.extend(extent, geom.getExtent())
+              }
+            })
             this.transformation_.center = Extent.getCenter(extent)
           }
 

@@ -2,7 +2,8 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import { connect } from 'react-redux'
 
-import LineString from 'ol/geom/linestring'
+import Coordinate from 'ol/coordinate'
+import Point from 'ol/geom/point'
 import Circle from 'ol/style/circle'
 import Style from 'ol/style/style'
 import Text from 'ol/style/text'
@@ -47,51 +48,45 @@ function markAsSelectable (layer) {
 const redLine = stroke('#f44', 2)
 
 const ownHomePositionStyles = selected => [
-  // circle
+  // circle and label
   new Style({
+    geometry: feature => {
+      const geom = feature.getGeometry()
+      const origin = geom.getFirstCoordinate()
+      return new Point(origin)
+    },
     image: new Circle({
       fill: fill('#f44'),
       radius: 8,
       stroke: selected ? whiteThickOutline : whiteThinOutline
-    })
-  }),
-
-  // arrow
-  new Style({
-    geometry: feature => {
-      const geom = feature.getGeometry()
-      const origin = geom.getCoordinates()
-      const angle = 0
-      const angleInRad = angle * Math.PI / 180
-      const end = [
-        origin[0] + 40 * Math.cos(angleInRad),
-        origin[1] + 40 * Math.sin(angleInRad)
-      ]
-      return new LineString([origin, end])
-    },
-    stroke: redLine
-  }),
-
-  // text
-  new Style({
+    }),
     text: new Text({
       font: '12px sans-serif',
       offsetY: 16,
       text: 'Origin',
       textAlign: 'center'
     })
+  }),
+
+  // arrow
+  new Style({
+    stroke: redLine
   })
 ]
 
 class HomePositionsVectorSource extends source.Vector {
   render () {
-    const { homePosition, selectedIds } = this.props
+    const { angle, homePosition, selectedIds } = this.props
     const features = []
-    if (this.props.homePosition) {
+    if (homePosition) {
+      const tail = coordinateFromLonLat(homePosition)
+      const head = [0, 50]
+      Coordinate.rotate(head, angle * Math.PI / 180)
+      Coordinate.add(head, tail)
       features.push(
         <Feature id={homePositionIdToGlobalId('')} key=''
           style={ownHomePositionStyles(selectedIds.includes(''))}>
-          <geom.Point>{coordinateFromLonLat(homePosition)}</geom.Point>
+          <geom.LineString>{[tail, head]}</geom.LineString>
         </Feature>
       )
     }
@@ -99,14 +94,16 @@ class HomePositionsVectorSource extends source.Vector {
   }
 }
 
-const HomePositionsLayerPresentation = ({ homePosition, selectedIds, zIndex }) => (
+const HomePositionsLayerPresentation = ({ angle, homePosition, selectedIds, zIndex }) => (
   <layer.Vector zIndex={zIndex} updateWhileAnimating updateWhileInteracting
     ref={markAsSelectable}>
-    <HomePositionsVectorSource homePosition={homePosition} selectedIds={selectedIds} />
+    <HomePositionsVectorSource homePosition={homePosition} angle={angle}
+      selectedIds={selectedIds} />
   </layer.Vector>
 )
 
 HomePositionsLayerPresentation.propTypes = {
+  angle: PropTypes.number,
   homePosition: PropTypes.arrayOf(PropTypes.number),
   layer: PropTypes.object,
   layerId: PropTypes.string,
@@ -114,10 +111,15 @@ HomePositionsLayerPresentation.propTypes = {
   zIndex: PropTypes.number
 }
 
+HomePositionsLayerPresentation.defaultProps = {
+  angle: 0
+}
+
 export const HomePositionsLayer = connect(
   // mapStateToProps
   state => ({
     homePosition: state.map.origin.position,
+    angle: state.map.origin.angle,
     selectedIds: getSelectedHomePositionIds(state)
   }),
   // mapDispatchToProps

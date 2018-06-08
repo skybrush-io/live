@@ -7,7 +7,7 @@ import FormControlLabel from '@material-ui/core/FormControlLabel'
 import FormGroup from '@material-ui/core/FormGroup'
 
 import { updateAppSettings } from '../../../actions/app-settings'
-import { setHomePosition } from '../../../actions/map-origin'
+import { clearHomePosition, setHomePosition } from '../../../actions/map-origin'
 import { CoordinateField } from '../../CoordinateField'
 
 const DisplayTabPresentation = props => (
@@ -51,7 +51,7 @@ export default connect(
     },
 
     onHomePositionChanged (value) {
-      dispatch(setHomePosition(value))
+      dispatch(value ? setHomePosition(value) : clearHomePosition())
     }
   })
 )(DisplayTabPresentation)
