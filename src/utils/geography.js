@@ -181,10 +181,34 @@ export const getExactClosestPointOf = (geometry, coordinate) => {
  * or a longitude-latitude pair as an array of two numbers.
  *
  * @param {number} digits  the number of fractional digits to show
+ * @param {string} unit   the unit to show after the digits
  * @return {function} the constructed function
  */
-export const makeDecimalCoordinateFormatter = (digits = 6) =>
-  coordinate => Coordinate.format(coordinate, '{y}, {x}', digits)
+export const makeDecimalCoordinateFormatter = (digits = 6, unit = '') =>
+  unit
+    ? coordinate => Coordinate.format(coordinate, '{y}' + unit + ', {x}' + unit, digits)
+    : coordinate => Coordinate.format(coordinate, '{y}, {x}', digits)
+
+/**
+ * Creates a function that formats an OpenLayers polar coordinate pair into
+ * a nice human-readable representation with the given number of fractional
+ * digits.
+ *
+ * The constructed function accepts either a single OpenLayers coordinate
+ * or a longitude-latitude pair as an array of two numbers.
+ *
+ * @param {number} digits  the number of fractional digits to show
+ * @param {string} unit   the unit to show after the digits
+ * @return {function} the constructed function
+ */
+export const makePolarCoordinateFormatter = (digits = 6, unit = '') =>
+  unit
+    ? coordinate => Coordinate.format(
+      coordinate, '{x}' + unit + ' \u2220 {y}\u00b0', digits
+    )
+    : coordinate => Coordinate.format(
+      coordinate, '{x} \u2220 {y}\u00b0', digits
+    )
 
 /**
  * Creates a function that formats an OpenLayers coordinate into the
@@ -213,7 +237,7 @@ export const translateBy = curry((displacement, coordinates) => {
  * The constructed function accepts either a single OpenLayers coordinate
  * or a longitude-latitude pair as an array of two numbers.
  */
-export const formatCoordinate = makeDecimalCoordinateFormatter()
+export const formatCoordinate = makeDecimalCoordinateFormatter(6, '\u00b0')
 
 /**
  * Parses the given string as geographical coordinates and converts it into
@@ -233,11 +257,40 @@ export const parseCoordinate = text => {
 }
 
 /**
- * An OpenLayers sphere whose radius is equal to the semi-major axis of the
- * WGS84 ellipsoid, in metres. Useful for calculating distances on the Earth
- * (also in metres).
+ * Function that creates an object holding the standard properties of an
+ * ellipsoid model from the length of the semi-major axis and the inverse
+ * flattening.
+ *
+ * @param {number} semiMajorAxis  the length of the semi-major axis
+ * @param {number} inverseFlattening  the inverse flattening of the ellipsoid;
+ *        use Number.POSITIVE_INFINITY for perfect spheres
+ * @return {Object} an object holding the standard properties of the given
+ *         ellipsoid
  */
-export const wgs84Sphere = new Sphere(6378137)
+const makeEllipsoidModel = (semiMajorAxis, inverseFlattening) => {
+  const result = {
+    inverseFlattening,
+    semiMajorAxis,
+    flattening: 1.0 / inverseFlattening
+  }
+  result.eccentricitySquared = result.flattening * (2 - result.flattening)
+  result.eccentricity = Math.sqrt(result.eccentricitySquared)
+  result.semiMinorAxis = result.semiMajorAxis * (1 - result.flattening)
+  result.meanRadius = (result.semiMinorAxis + result.semiMajorAxis * 2) / 3
+  return Object.freeze(result)
+}
+
+/**
+ * Object holding details about the WGS84 ellipsoid model.
+ */
+export const WGS84 = makeEllipsoidModel(6378137, 298.257223563)
+
+/**
+ * An OpenLayers sphere whose radius is equal to the semi-major (equatorial)
+ * axis of the WGS84 ellipsoid, in metres. Useful for calculating distances on
+ * the Earth (also in metres).
+ */
+export const wgs84Sphere = new Sphere(WGS84.semiMajorAxis)
 
 /**
  * The defaul value for projection is "EPSG:3857", a Spherical Mercator
@@ -276,3 +329,93 @@ export const coordinateFromLonLat = Projection.fromLonLat
  * OpenLayers coordinates
  */
 export const lonLatFromCoordinate = Projection.toLonLat
+
+/**
+ * Class that defines a flat-Earth coordinate system centered at a given
+ * spherical coordinate.
+ */
+export class FlatEarthCoordinateSystem {
+  /**
+   * Constructor.
+   *
+   * @param {number[]} origin the longitude-latitude pair that defines the
+   *        origin of the coordinate system
+   * @param {number} angle the orientation of the zero-degree axis of the
+   *        coordinate system, in degrees (0 = North, 90 = East, 180 = South,
+   *        270 = West)
+   * @param {number} ellipsoid  the model of the ellipsoid on which the
+   *        coordinate system is defined; defaults to WGS84
+   */
+  constructor (origin, angle = 0, ellipsoid = WGS84) {
+    this._origin = origin
+    this._angle = angle * Math.PI / 180
+    this._ellipsoid = ellipsoid
+    this._precalculate()
+  }
+
+  /**
+   * Converts a longitude-latitude pair to flat Earth coordinates.
+   *
+   * @param {number[]} coords  a longitude-latitude pair to convert
+   * @return {number[]} the converted coordinates
+   */
+  fromLonLat (coords) {
+    // TODO(ntamas): rotate by angle
+    const result = [
+      (coords[1] - this._origin[1]) * this._piOver180 * this._r1,
+      (coords[0] - this._origin[0]) * this._piOver180 * this._r2OverCosOriginLatInRadians
+    ]
+    Coordinate.rotate(result, -this._angle)
+    return result
+  }
+
+  /**
+   * Converts a flat Earth coordinate pair to a longitude-latitude pair.
+   *
+   * @param {number[]} coords  a flat Earth coordinate pair to convert
+   * @return {number[]} the converted coordinates
+   */
+  toLonLat (coords) {
+    const result = [coords[0], coords[1]]
+    Coordinate.rotate(result, this._angle)
+    return [
+      result[1] / this._r2OverCosOriginLatInRadians / this._piOver180 + this._origin[0],
+      result[0] / this._r1 / this._piOver180 + this._origin[1]
+    ]
+  }
+
+  /**
+   * Precalculates a few cached values that are needed in calculations but
+   * that do not depend on the coordinate being transformed.
+   */
+  _precalculate () {
+    this._piOver180 = Math.PI / 180
+
+    const originLatInRadians = this._origin[1] * this._piOver180
+    const radius = this._ellipsoid.semiMajorAxis
+    const eccSq = this._ellipsoid.eccentricitySquared
+    const x = 1 - eccSq * (Math.sin(originLatInRadians) ** 2)
+
+    this._r1 = radius * (1 - eccSq) / Math.pow(x, 1.5)
+    this._r2OverCosOriginLatInRadians = radius / Math.sqrt(x) *
+      Math.cos(originLatInRadians)
+  }
+}
+
+/**
+ * Converts a pair of Cartesian coordinates into polar coordinates, assuming
+ * that the X axis points towards zero degrees.
+ *
+ * @param {number[]} coords  the Cartesian coordinates to convert
+ * @return {number[]} the polar coordinates, angle being expressed in degrees
+ *         between 0 and 360
+ */
+export function toPolar (coords) {
+  const dist = Math.sqrt(coords[0] * coords[0] + coords[1] * coords[1])
+  if (dist > 0) {
+    const angle = Math.atan2(coords[1], coords[0]) * 180 / Math.PI
+    return [dist, angle < 0 ? angle + 360 : angle]
+  } else {
+    return [0, 0]
+  }
+}

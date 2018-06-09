@@ -30,8 +30,9 @@ import { createFeatureFromOpenLayers, isFeatureTransformable } from '../../model
 import { getVisibleSelectableLayers, isLayerSelectable } from '../../model/layers'
 import { globalIdToFeatureId, globalIdToHomePositionId } from '../../model/identifiers'
 import { getVisibleLayersInOrder } from '../../selectors/ordered'
+import { getExtendedCoordinateFormatter } from '../../selectors/formatting'
 import { getSelectedFeatureIds, getSelection } from '../../selectors/selection'
-import { coordinateFromLonLat, findFeaturesById, formatCoordinate } from '../../utils/geography'
+import { coordinateFromLonLat, findFeaturesById } from '../../utils/geography'
 
 require('ol/ol.css')
 
@@ -88,7 +89,7 @@ const MapViewControlsPresentation = props => {
     result.push(
       <control.MousePosition key='control.MousePosition'
         projection='EPSG:4326'
-        coordinateFormat={formatCoordinate} />
+        coordinateFormat={props.formatCoordinate} />
     )
   }
 
@@ -107,7 +108,10 @@ const MapViewControlsPresentation = props => {
  */
 const MapViewControls = connect(
   // mapStateToProps
-  state => state.settings.display
+  state => ({
+    formatCoordinate: getExtendedCoordinateFormatter(state),
+    ...state.settings.display
+  })
 )(MapViewControlsPresentation)
 
 /* ********************************************************************** */
