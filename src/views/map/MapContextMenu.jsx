@@ -40,7 +40,7 @@ class MapContextMenu extends React.Component {
   constructor (props) {
     super(props)
 
-    this._assignContextMenuRef = (value) => { this._contextMenu = value }
+    this._contextMenu = React.createRef()
   }
 
   /**
@@ -53,15 +53,15 @@ class MapContextMenu extends React.Component {
    */
   @autobind
   open (position) {
-    if (this._contextMenu) {
-      this._contextMenu.open(position)
+    if (this._contextMenu.current) {
+      this._contextMenu.current.open(position)
     }
   }
 
   render () {
     const { selectedFeatureIds, selectedUAVIds } = this.props
     return (
-      <ContextMenu ref={this._assignContextMenuRef}>
+      <ContextMenu ref={this._contextMenu}>
         <MenuItem dense disabled={selectedUAVIds.length === 0}
           onClick={this._takeoffSelectedUAVs}>
           <ListItemIcon><ActionFlightTakeoff /></ListItemIcon>
