@@ -40,6 +40,7 @@ class LocalServerExecutor extends React.Component {
 
     this._killSignalSent = false
     this._process = undefined
+    this._processIsRunning = false
     this._onProcessExited = this._onProcessExited.bind(this)
     this._onProcessStartFailed = this._onProcessStartFailed.bind(this)
   }
@@ -54,6 +55,7 @@ class LocalServerExecutor extends React.Component {
         this._process.on('error', this._onProcessStartFailed)
         this._process.on('exit', this._onProcessExited)
         if (this.props.onStarted) {
+          this._processIsRunning = true
           this.props.onStarted()
         }
       },
@@ -74,6 +76,7 @@ class LocalServerExecutor extends React.Component {
       this._killSignalSent = true
       this._process.kill()
       this._process = undefined
+      this._processIsRunning = false
     }
   }
 
@@ -86,11 +89,13 @@ class LocalServerExecutor extends React.Component {
       // Process died unexpectedly
       if (this.props.onError) {
         this.props.onError(
-          signal ? `exited with ${signal}` : `exited with code ${code}`
+          signal ? `exited with ${signal}` : `exited with code ${code}`,
+          this._processIsRunning
         )
       }
     }
     this._process = undefined
+    this._processIsRunning = false
   }
 
   _onProcessStartFailed (reason) {
@@ -98,6 +103,7 @@ class LocalServerExecutor extends React.Component {
       this.props.onError(reason.message, reason)
     }
     this._process = undefined
+    this._processIsRunning = false
   }
 }
 
@@ -256,8 +262,12 @@ const ServerConnectionManager = connect(
       dispatch(clearConnectionList())
     },
 
-    onLocalServerError (message) {
-      const baseMessage = 'Failed to launch local Flockwave server'
+    onLocalServerError (message, wasRunning) {
+      const baseMessage = (
+        wasRunning
+          ? 'Flockwave server died unexpectedly'
+          : 'Failed to launch local Flockwave server'
+      )
       dispatch(setConnectionState(MASTER_CONNECTION_ID, ConnectionState.DISCONNECTED))
       dispatch(showSnackbarMessage(
         message ? `${baseMessage}: ${message}` : baseMessage
