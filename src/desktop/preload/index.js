@@ -206,7 +206,6 @@ window.bridge = {
   console,
   createSSDPClient,
   createStateStore,
-  getApplicationFolder,
   launchServer,
   reverseDNSLookup,
   searchForServer

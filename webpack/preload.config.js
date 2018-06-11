@@ -6,7 +6,7 @@ var enableSourceMap = false
 module.exports = merge.smart(baseConfig, {
   devtool: enableSourceMap ? 'inline-source-map' : false,
 
-  entry: './src/desktop/preload.js',
+  entry: './src/desktop/preload/index.js',
   output: {
     filename: 'preload.bundle.js'
   },
