@@ -50,11 +50,13 @@ class MapContextMenu extends React.Component {
    * should appear.
    * @property {number} x The value to forward as `left` into the style object.
    * @property {number} y The value to forward as `top` into the style object.
+   * @param {Object} context  Context object to pass to the click handlers of
+   *        the menu items in the context menu as their second argument
    */
   @autobind
-  open (position) {
+  open (position, context) {
     if (this._contextMenu.current) {
-      this._contextMenu.current.open(position)
+      this._contextMenu.current.open(position, context)
     }
   }
 
@@ -123,7 +125,7 @@ class MapContextMenu extends React.Component {
   }
 
   @autobind
-  _renameSelectedFeature () {
+  _renameSelectedFeature (event, context) {
     const { renameFeature, selectedFeatureIds,
       selectedFeatureLabels } = this.props
     if (selectedFeatureIds.length !== 1) {

@@ -9,6 +9,7 @@ import _ from 'lodash'
 import Interaction from 'ol/interaction/interaction'
 import Layer from 'ol/layer/layer'
 import VectorLayer from 'ol/layer/vector'
+import Projection from 'ol/proj'
 import { interaction } from 'ol-react'
 import PropTypes from 'prop-types'
 import React from 'react'
@@ -199,7 +200,21 @@ export default class ShowContextMenu extends interaction.OLInteraction {
   }
 
   @autobind
+  _getLonLatFromEvent (event) {
+    const { map } = this.context
+    if (map) {
+      const { projection } = this.props
+      return projection
+        ? Projection.transform(event.coordinate, 'EPSG:3857', projection)
+        : event.coordinate
+    } else {
+      return undefined
+    }
+  }
+
+  @autobind
   _openContextMenuFromChild (event) {
+    const coords = this._getLonLatFromEvent(event)
     const menu = this._contextMenu
     const open =
       menu.open || (
@@ -210,7 +225,7 @@ export default class ShowContextMenu extends interaction.OLInteraction {
         left: event.originalEvent.pageX,
         top: event.originalEvent.pageY
       }
-      open(position)
+      open(position, { coords })
     }
   }
 }
@@ -219,6 +234,7 @@ ShowContextMenu.propTypes = Object.assign({}, interaction.OLInteraction.propType
   layers: PropTypes.oneOfType([
     PropTypes.func, PropTypes.arrayOf(Layer)
   ]),
+  projection: PropTypes.string,
   select: PropTypes.func,
   contextMenu: PropTypes.func,
   threshold: PropTypes.number,

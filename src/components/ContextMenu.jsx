@@ -27,7 +27,8 @@ export default class ContextMenu extends React.Component {
       position: {
         top: 0,
         left: 0
-      }
+      },
+      context: undefined
     }
   }
 
@@ -35,11 +36,13 @@ export default class ContextMenu extends React.Component {
    * Public method to open the context menu.
    *
    * @param {Object} position Coordinates where the absolutely positioned popup
-   * should appear.
+   *        should appear.
    * @property {number} left The offset of the context menu from the left edge of the page.
    * @property {number} top The offset of the context menu from the top edge of the page.
+   * @param {Object} context Context object to pass to the click handlers of
+   *        the menu items as their second argument.
    */
-  open (position) {
+  open (position, context) {
     // Prevent the document body from firing a contextmenu event
     document.body.addEventListener(
       'contextmenu', this._preventDefault
@@ -49,7 +52,8 @@ export default class ContextMenu extends React.Component {
     this.setState({
       opening: true,
       open: false,
-      position
+      position,
+      context
     })
   }
 
@@ -64,7 +68,9 @@ export default class ContextMenu extends React.Component {
     )
 
     this.setState({
-      open: false, opening: false
+      open: false,
+      opening: false,
+      context: undefined
     })
   }
 
@@ -88,14 +94,14 @@ export default class ContextMenu extends React.Component {
 
   render () {
     const { children } = this.props
-    const { open, opening, position } = this.state
+    const { context, open, opening, position } = this.state
 
     const menuItems = React.Children.map(children,
       child => React.cloneElement(child,
         {
           onClick: child.props.onClick
             ? event => {
-              child.props.onClick(event)
+              child.props.onClick(event, context)
               this._handleClose()
             }
             : undefined
