@@ -51,14 +51,6 @@ export default class SubscriptionDialog extends React.Component {
       selectedChannel: null
     }
 
-    this._refs = {
-      deviceDropDown: null,
-      channelDropDown: null
-    }
-
-    this._assignDeviceDropDownRef = value => { this._refs.deviceDropDown = value }
-    this._assignChannelDropDownRef = value => { this._refs.channelDropDown = value }
-
     this._removeSubscription = this._removeSubscription.bind(this)
   }
 
@@ -125,7 +117,7 @@ export default class SubscriptionDialog extends React.Component {
 
               <FormControl style={formControlStyle}>
                 <InputLabel htmlFor='selectedDevice'>Device</InputLabel>
-                <Select inputRef={this._assignDeviceDropDownRef}
+                <Select
                   value={selectedDevice || ''} onChange={this._handleChange}
                   input={<Input name='selectedDevice' id='selectedDevice' />}>
                   {deviceMenuItems}
@@ -134,7 +126,7 @@ export default class SubscriptionDialog extends React.Component {
 
               <FormControl style={formControlStyle}>
                 <InputLabel htmlFor='selectedChannel'>Channel</InputLabel>
-                <Select autoWidth inputRef={this._assignChannelDropDownRef}
+                <Select autoWidth
                   value={selectedChannel || ''} onChange={this._handleChange}
                   input={<Input name='selectedChannel' id='selectedChannel' />}>
                   {channelMenuItems}
