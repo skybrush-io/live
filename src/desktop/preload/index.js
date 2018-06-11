@@ -8,28 +8,14 @@
 
 const pify = require('pify')
 
-const { spawn } = require('child_process')
 const dns = require('dns')
-const { remote } = require('electron')
+const ipc = require('electron-better-ipc')
 const console = require('electron-timber')
-const { endsWith } = require('lodash')
 const SSDPClient = require('node-ssdp-lite')
-const path = require('path')
-const pDefer = require('p-defer')
-const pTimeout = require('p-timeout')
-const which = pify(require('which'))
 const createStorageEngine = require('redux-storage-engine-electron-store').default
 
-/**
- * The local executable of the Flockwave server on this machine.
- */
-let localServerPath
-
-/**
- * Deferred that will resolve to the local executable of the Flockwave server
- * on this machine.
- */
-let localServerPathDeferred = pDefer()
+const localServer = require('./local-server')
+const setupIpc = require('./ipc')
 
 /**
  * Creates a new SSDP client object and registers the given function to be
@@ -65,133 +51,6 @@ function createStateStore () {
   })
 }
 
-/**
- * Returns the name of the folder that contains the main executable of the
- * application.
- *
- * @return {string} the name of the folder that contains the main executable
- *         of the application
- */
-function getApplicationFolder () {
-  return path.dirname(remote.app.getPath('exe'))
-}
-
-/**
- * Returns an array containing the names of all directories to scan on
- * the system when looking for the server executable, _in addition to_ the
- * system path.
- *
- * These directories are derived from the current installed location of
- * the application, with a few platform-specific tweaks.
- *
- * @return {string[]}  the names of the directories to search for the local
- *         Flockwave server executable, besides the system path and the
- *         directories added explicitly by the user in the settings
- */
-function getPathsRelatedToAppLocation () {
-  const appFolder = getApplicationFolder()
-  const folders = []
-
-  if (process.platform === 'darwin') {
-    if (endsWith(appFolder, '.app/Contents/MacOS')) {
-      // This is an .app bundle so let's search the Resources folder within
-      // the bundle as well as the folder containing the app bundle itself
-      folders.push(path.resolve(path.dirname(appFolder), 'Resources'))
-      folders.push(path.dirname(appFolder.substr(0, appFolder.length - 15)))
-    } else {
-      // Probably not an .app bundle so let's just assume that the server
-      // might be in the same folder
-      folders.push(appFolder)
-    }
-  } else {
-    folders.push(appFolder)
-  }
-
-  return folders
-}
-
-const pathsRelatedToAppLocation = getPathsRelatedToAppLocation()
-console.log(pathsRelatedToAppLocation)
-
-/**
- * Launches the local Flockwave server executable with the given arguments.
- *
- * @param {Object}   opts         options to tweak how the server is launched
- * @param {string[]} opts.args    additional arguments to pass to the server
- *        when launching
- * @param {number}   opts.port    the port to launch the server on
- * @param {number}   opts.timeout number of milliseconds to wait for the
- *        server detection to complete and the server to launch
- * @return {Promise<ChildProcess>}  a promise that resolves to the server
- *         process that was launched
- */
-async function launchServer (opts) {
-  const { args, port, timeout } = {
-    port: 5000,
-    args: '',
-    timeout: 5000,
-    ...opts
-  }
-
-  if (localServerPathDeferred) {
-    localServerPathDeferred = pDefer()
-    await pTimeout(localServerPathDeferred.promise, timeout)
-  }
-
-  if (!localServerPath) {
-    throw new Error('local Flockwave server not found')
-  }
-
-  const realArgs = [
-    '-h', '127.0.0.1',
-    '-p', port,
-    ...args
-  ]
-
-  return spawn(localServerPath, realArgs, {
-    cwd: path.dirname(localServerPath),
-    stdio: 'ignore'
-  })
-}
-
-/**
- * Searches for the local Flockwave server executable in the following places,
- * in this order of precedence:
- *
- * - the application folder and typical platform-dependent related folders
- * - custom folders specified by the user
- * - the system path
- *
- * As a side effect, stores the path found with the last invocation so we
- * can launch the executable later if needed. Note that we cannot trust the
- * renderer process to provide us with the correct path if we want to protect
- * against XSS; a malicious attacker may attempt to launch an arbitrary
- * executable on our system if we allow the renderer process to provide the
- * path to us directly.
- *
- * @param {string[]} paths    custom search folders to scan
- * @return {Promise<string>}  a promise that resolves to the full path of the
- *         server executable if found and `null` if it is not found
- */
-const searchForServer = paths => {
-  return which(
-    'flockwaved', {
-      path: [
-        ...paths,
-        ...pathsRelatedToAppLocation,
-        ...process.env.PATH.split(path.delimiter)
-      ].join(path.delimiter)
-    }
-  ).then(result => {
-    localServerPath = result
-    if (localServerPathDeferred) {
-      localServerPathDeferred.resolve(result)
-      localServerPathDeferred = undefined
-    }
-    return result
-  })
-}
-
 const reverseDNSLookup = pify(dns.reverse)
 
 // inject isElectron into 'window' so we can easily detect that we are
@@ -206,7 +65,10 @@ window.bridge = {
   console,
   createSSDPClient,
   createStateStore,
-  launchServer,
-  reverseDNSLookup,
-  searchForServer
+  getApplicationFolder: () => ipc.callMain('getApplicationFolder'),
+  localServer,
+  reverseDNSLookup
 }
+
+// Set up IPC channels that we are going to listen to
+setupIpc()

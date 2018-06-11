@@ -29,7 +29,7 @@ export const shouldManageLocalServer = createSelector(
   state => state.dialogs.serverSettings,
   state => state.settings.localServer,
   (serverSettings, localServer) => (
-    window.bridge && window.bridge.launchServer &&
+    window.bridge && window.bridge.localServer &&
     localServer.enabled &&
     isLocalHost(serverSettings.hostName) &&
     serverSettings.active

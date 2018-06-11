@@ -38,24 +38,25 @@ class LocalServerExecutor extends React.Component {
   constructor (props) {
     super(props)
 
-    this._killSignalSent = false
-    this._process = undefined
+    this._events = undefined
     this._processIsRunning = false
+
     this._onProcessExited = this._onProcessExited.bind(this)
     this._onProcessStartFailed = this._onProcessStartFailed.bind(this)
   }
 
   componentDidMount () {
-    window.bridge.launchServer({
+    const { localServer } = window.bridge
+    localServer.launch({
       args: parse(this.props.args),
       port: this.props.port
     }).then(
-      subprocess => {
-        this._process = subprocess
-        this._process.on('error', this._onProcessStartFailed)
-        this._process.on('exit', this._onProcessExited)
+      events => {
+        this._processIsRunning = true
+
+        this._attachProcessEventHandlersTo(events)
+
         if (this.props.onStarted) {
-          this._processIsRunning = true
           this.props.onStarted()
         }
       },
@@ -72,29 +73,50 @@ class LocalServerExecutor extends React.Component {
   }
 
   componentWillUnmount () {
-    if (this._process) {
-      this._killSignalSent = true
-      this._process.kill()
-      this._process = undefined
-      this._processIsRunning = false
-    }
+    this._detachProcessEventHandlers()
+
+    const { localServer } = window.bridge
+    this._processIsRunning = false
+    localServer.terminate()
   }
 
   render () {
     return null
   }
 
-  _onProcessExited (code, signal) {
-    if (!this._killSignalSent) {
-      // Process died unexpectedly
-      if (this.props.onError) {
-        this.props.onError(
-          signal ? `exited with ${signal}` : `exited with code ${code}`,
-          this._processIsRunning
-        )
-      }
+  _attachProcessEventHandlersTo (events) {
+    if (this._events === events) {
+      return
     }
-    this._process = undefined
+
+    if (this._events) {
+      this._events.off('exit', this._onProcessExited)
+      this._events.off('error', this._onProcessStartFailed)
+    }
+
+    this._events = events
+
+    if (this._events) {
+      this._events.on('exit', this._onProcessExited)
+      this._events.on('error', this._onProcessStartFailed)
+    }
+  }
+
+  _detachProcessEventHandlers () {
+    this._attachProcessEventHandlersTo(undefined)
+  }
+
+  _onProcessExited (code, signal) {
+    // Process died unexpectedly
+    if (this.props.onError) {
+      this.props.onError(
+        signal ? `exited with ${signal}` : `exited with code ${code}`,
+        this._processIsRunning
+      )
+    }
+
+    this._detachProcessEventHandlers()
+
     this._processIsRunning = false
   }
 
@@ -102,7 +124,9 @@ class LocalServerExecutor extends React.Component {
     if (this.props.onError) {
       this.props.onError(reason.message, reason)
     }
-    this._process = undefined
+
+    this._detachProcessEventHandlers()
+
     this._processIsRunning = false
   }
 }

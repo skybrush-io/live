@@ -11,10 +11,11 @@ import localServerSaga from './local-server'
  */
 
 export default function* rootSaga () {
+  const { localServer } = window.bridge
   const sagas = []
 
-  if (window.bridge && window.bridge.searchForServer) {
-    sagas.push(localServerSaga(window.bridge.searchForServer))
+  if (localServer && localServer.search) {
+    sagas.push(localServerSaga(localServer.search))
   }
 
   yield all(sagas)
