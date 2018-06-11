@@ -11,20 +11,22 @@ import { connect } from 'react-redux'
 import Divider from '@material-ui/core/Divider'
 import ListItemIcon from '@material-ui/core/ListItemIcon'
 import MenuItem from '@material-ui/core/MenuItem'
-import ActionDelete from '@material-ui/icons/Delete'
-import ActionFlightTakeoff from '@material-ui/icons/FlightTakeoff'
-import ActionFlightLand from '@material-ui/icons/FlightLand'
-import ActionHome from '@material-ui/icons/Home'
-import ActionPowerSettingsNew from '@material-ui/icons/PowerSettingsNew'
-import ImageEdit from '@material-ui/icons/Edit'
-import Message from '@material-ui/icons/Message'
 
-import ContextMenu from '../../components/ContextMenu'
+import ActionDelete from '@material-ui/icons/Delete'
+import Edit from '@material-ui/icons/Edit'
+import FlightTakeoff from '@material-ui/icons/FlightTakeoff'
+import FlightLand from '@material-ui/icons/FlightLand'
+import Home from '@material-ui/icons/Home'
+import Message from '@material-ui/icons/Message'
+import ActionPowerSettingsNew from '@material-ui/icons/PowerSettingsNew'
+import PinDrop from '@material-ui/icons/PinDrop'
 
 import { showFeatureEditorDialog } from '../../actions/feature-editor'
 import { renameFeature, removeFeatures } from '../../actions/features'
+import { setHomePosition } from '../../actions/map-origin'
 import { selectUAVInMessagesDialog, showMessagesDialog } from '../../actions/messages'
 import { showPromptDialog } from '../../actions/prompt'
+import ContextMenu from '../../components/ContextMenu'
 import {
   getSelectedFeatureIds,
   getSelectedFeatureLabels,
@@ -66,17 +68,17 @@ class MapContextMenu extends React.Component {
       <ContextMenu ref={this._contextMenu}>
         <MenuItem dense disabled={selectedUAVIds.length === 0}
           onClick={this._takeoffSelectedUAVs}>
-          <ListItemIcon><ActionFlightTakeoff /></ListItemIcon>
+          <ListItemIcon><FlightTakeoff /></ListItemIcon>
           Takeoff
         </MenuItem>
         <MenuItem dense disabled={selectedUAVIds.length === 0}
           onClick={this._landSelectedUAVs}>
-          <ListItemIcon><ActionFlightLand /></ListItemIcon>
+          <ListItemIcon><FlightLand /></ListItemIcon>
           Land
         </MenuItem>
         <MenuItem dense disabled={selectedUAVIds.length === 0}
           onClick={this._returnSelectedUAVs}>
-          <ListItemIcon><ActionHome /></ListItemIcon>
+          <ListItemIcon><Home /></ListItemIcon>
           Return to home
         </MenuItem>
         <MenuItem dense disabled={selectedUAVIds.length !== 1}
@@ -90,9 +92,14 @@ class MapContextMenu extends React.Component {
           Halt
         </MenuItem>
         <Divider />
+        <MenuItem dense onClick={this._setOrigin}>
+          <ListItemIcon><PinDrop /></ListItemIcon>
+          Set origin here
+        </MenuItem>
+        <Divider />
         <MenuItem dense disabled={selectedFeatureIds.length !== 1}
           onClick={this._editSelectedFeature}>
-          <ListItemIcon><ImageEdit /></ListItemIcon>
+          <ListItemIcon><Edit /></ListItemIcon>
           Properties...
         </MenuItem>
         <MenuItem dense disabled={selectedFeatureIds.length === 0}
@@ -146,6 +153,14 @@ class MapContextMenu extends React.Component {
   }
 
   @autobind
+  _setOrigin (event, context) {
+    const { coords } = context
+    if (coords) {
+      this.props.setHomePosition(coords)
+    }
+  }
+
+  @autobind
   _shutdownSelectedUAVs () {
     messaging.haltUAVs(this.props.selectedUAVIds)
   }
@@ -168,6 +183,7 @@ MapContextMenu.propTypes = {
   selectedFeatureLabels: PropTypes.arrayOf(PropTypes.string).isRequired,
   selectedUAVIds: PropTypes.arrayOf(PropTypes.string).isRequired,
   selectUAVInMessagesDialog: PropTypes.func.isRequired,
+  setHomePosition: PropTypes.func.isRequired,
   showMessagesDialog: PropTypes.func.isRequired
 }
 
@@ -197,6 +213,9 @@ const MapContextMenuContainer = connect(
     },
     selectUAVInMessagesDialog: (id) => {
       dispatch(selectUAVInMessagesDialog(id))
+    },
+    setHomePosition: coords => {
+      dispatch(setHomePosition(coords))
     },
     showMessagesDialog: () => {
       dispatch(showMessagesDialog())
