@@ -4,6 +4,7 @@
  */
 
 import { autobind } from 'core-decorators'
+import { isFunction } from 'lodash'
 import PropTypes from 'prop-types'
 import React from 'react'
 
@@ -43,6 +44,8 @@ export default class ContextMenu extends React.Component {
    *        the menu items as their second argument.
    */
   open (position, context) {
+    const { contextProvider } = this.props
+
     // Prevent the document body from firing a contextmenu event
     document.body.addEventListener(
       'contextmenu', this._preventDefault
@@ -52,8 +55,8 @@ export default class ContextMenu extends React.Component {
     this.setState({
       opening: true,
       open: false,
-      position,
-      context
+      context: contextProvider ? contextProvider(context) : context,
+      position
     })
   }
 
@@ -95,8 +98,11 @@ export default class ContextMenu extends React.Component {
   render () {
     const { children } = this.props
     const { context, open, opening, position } = this.state
+    const effectiveChildren = isFunction(children)
+      ? children(context || {}) : children
 
-    const menuItems = React.Children.map(children,
+    const menuItems = React.Children.map(
+      effectiveChildren,
       child => React.cloneElement(child,
         {
           onClick: child.props.onClick
@@ -104,7 +110,9 @@ export default class ContextMenu extends React.Component {
               child.props.onClick(event, context)
               this._handleClose()
             }
-            : undefined
+            : event => {
+              this._handleClose()
+            }
         }
       )
     )
@@ -126,5 +134,6 @@ export default class ContextMenu extends React.Component {
 }
 
 ContextMenu.propTypes = {
-  children: PropTypes.node
+  children: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
+  contextProvider: PropTypes.func
 }
