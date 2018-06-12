@@ -1,8 +1,6 @@
-import { partial } from 'lodash'
 import PropTypes from 'prop-types'
 import React from 'react'
 import { connect } from 'react-redux'
-import { reduxForm, Field } from 'redux-form'
 import { TextField } from 'redux-form-material-ui'
 
 import AppBar from '@material-ui/core/AppBar'
@@ -15,83 +13,93 @@ import Tab from '@material-ui/core/Tab'
 import Tabs from '@material-ui/core/Tabs'
 
 import {
+  renameFeature,
+  setFeatureColor,
   updateFeatureVisibility
 } from '../../actions/features'
 import {
   closeFeatureEditorDialog,
   setFeatureEditorDialogTab
 } from '../../actions/feature-editor'
+import CircleColorPicker from '../../components/CircleColorPicker'
+import { primaryColor } from '../../utils/styles'
 
-const GeneralPropertiesFormPresentation = ({ feature, onToggleFeatureVisibility }) => (
+const GeneralPropertiesFormPresentation = ({
+  feature, onSetFeatureColor, onSetFeatureLabel, onToggleFeatureVisibility
+}) => (
   <div>
     <div style={{ display: 'flex', padding: '1em 0' }}>
-      <Field name='label' label='Label' style={{ flex: 'auto' }}
-        component={TextField} fullWidth />
-      <div>&nbsp;</div>
-      <Switch checked={feature.visible} color='primary'
+      <div style={{ flex: 'auto' }}>
+        <TextField autoFocus label='Label' value={feature.label || ''} fullWidth
+          onChange={onSetFeatureLabel} />
+      </div>
+      <Switch
+        checked={feature.visible} color='primary'
         onChange={onToggleFeatureVisibility}
         style={{ flex: 'none' }}
       />
+    </div>
+    <div>
+      <CircleColorPicker value={feature.color || primaryColor}
+        onChangeComplete={onSetFeatureColor} />
     </div>
   </div>
 )
 
 GeneralPropertiesFormPresentation.propTypes = {
   feature: PropTypes.object.isRequired,
+  featureId: PropTypes.string.isRequired,
+  onSetFeatureColor: PropTypes.func,
+  onSetFeatureLabel: PropTypes.func,
   onToggleFeatureVisibility: PropTypes.func
 }
 
 const GeneralPropertiesForm = connect(
   // mapStateToProps
-  state => {
-    const feature = state.features.byId[state.dialogs.featureEditor.featureId]
+  (state, ownProps) => {
+    const feature = state.features.byId[ownProps.featureId]
     return {
-      feature,
-      initialValues: {
-        label: feature.label
-      }
+      feature
     }
   },
   // mapDispatchToProps
-  dispatch => ({
-    onToggleFeatureVisibility (featureId, event, checked) {
+  (dispatch, { featureId }) => ({
+    onSetFeatureColor (color) {
+      dispatch(setFeatureColor(featureId, color.hex))
+    },
+    onSetFeatureLabel (event) {
+      dispatch(renameFeature(featureId, event.target.value))
+    },
+    onToggleFeatureVisibility (event, checked) {
       dispatch(updateFeatureVisibility(featureId, checked))
     }
-  }),
-  // mergeProps
-  (stateProps, dispatchProps, ownProps) => ({
-    ...ownProps,
-    ...stateProps,
-    ...dispatchProps,
-    onToggleFeatureVisibility:
-      partial(dispatchProps.onToggleFeatureVisibility, stateProps.feature.id)
   })
-)(
-  reduxForm({
-    enableReinitialize: true,
-    form: 'generalFeatureSettings'
-  })(GeneralPropertiesFormPresentation)
-)
+)(GeneralPropertiesFormPresentation)
 
 const FeatureEditorDialogPresentation = props => {
+  const { featureId, onClose, onTabSelected, open, selectedTab } = props
   const actions = []
   let content
 
-  switch (props.selectedTab) {
+  switch (selectedTab) {
     case 'general':
-      content = <DialogContent><GeneralPropertiesForm /></DialogContent>
+      content = (
+        <DialogContent>
+          <GeneralPropertiesForm featureId={featureId} />
+        </DialogContent>
+      )
       break
 
     default:
       content = <DialogContent><p>Not implemented yet</p></DialogContent>
   }
 
-  actions.push(<Button key='close' onClick={props.onClose}>Close</Button>)
+  actions.push(<Button key='close' onClick={onClose}>Close</Button>)
 
   return (
-    <Dialog open={props.open} onClose={props.onClose} fullWidth maxWidth='xs'>
+    <Dialog open={open} onClose={onClose} fullWidth maxWidth='xs'>
       <AppBar position='static'>
-        <Tabs value={props.selectedTab} onChange={props.onTabSelected} fullWidth>
+        <Tabs value={selectedTab} onChange={onTabSelected} fullWidth>
           <Tab value='general' label="General" />
           <Tab value='points' label="Points" />
         </Tabs>

@@ -7,16 +7,16 @@ import Style from 'ol/style/style'
 import { layer, source } from 'ol-react'
 import PropTypes from 'prop-types'
 import React from 'react'
-import { CirclePicker } from 'react-color'
 import { connect } from 'react-redux'
 
 import TextField from '@material-ui/core/TextField'
 
 import { setLayerParametersById } from '../../../actions/layers'
-
+import CircleColorPicker from '../../../components/CircleColorPicker'
 import flock from '../../../flock'
 import { coordinateFromLonLat } from '../../../utils/geography'
-import { colorToString } from '../../../utils/coloring.js'
+import { colorToString } from '../../../utils/coloring'
+import { primaryColor } from '../../../utils/styles'
 
 // === Settings for this particular layer type ===
 
@@ -24,7 +24,7 @@ class UAVTraceLayerSettingsPresentation extends React.Component {
   render () {
     const { layer } = this.props
     const parameters = {
-      trailColor: '#0088ff',
+      trailColor: primaryColor,
       trailLength: 10,
       trailWidth: 2,
       ...layer.parameters
@@ -42,8 +42,7 @@ class UAVTraceLayerSettingsPresentation extends React.Component {
           type='number'
           value={trailWidth} onChange={this._onTrailWidthChanged} />
         <div style={{ paddingTop: '0.5em' }}>
-          <CirclePicker color={trailColor || '#2196f3'}
-            circleSpacing={7} width={343}
+          <CircleColorPicker color={trailColor || primaryColor}
             onChangeComplete={this._onColorChanged} />
         </div>
       </div>

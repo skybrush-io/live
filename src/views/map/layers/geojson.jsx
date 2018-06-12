@@ -19,6 +19,7 @@ import { showSnackbarMessage } from '../../../actions/snackbar'
 
 import { parseColor } from '../../../utils/coloring'
 import { convertSimpleStyleToOLStyle } from '../../../utils/simplestyle'
+import { primaryColor } from '../../../utils/styles'
 
 // === Settings for this particular layer type ===
 
@@ -216,8 +217,8 @@ class GeoJSONLayerPresentation extends React.Component {
   _updateStyleFromProps (props) {
     const { parameters } = props.layer
     const { strokeWidth } = parameters
-    const strokeColor = parseColor(parameters.strokeColor, '#0088ff')
-    const fillColor = parseColor(parameters.fillColor, Color('#0088ff').alpha(0.5))
+    const strokeColor = parseColor(parameters.strokeColor, primaryColor)
+    const fillColor = parseColor(parameters.fillColor, Color(primaryColor).alpha(0.5))
     this._styleDefaults = {
       'stroke': strokeColor.rgb().hex(),
       'stroke-opacity': strokeColor.alpha(),

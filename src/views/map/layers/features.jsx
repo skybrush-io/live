@@ -16,7 +16,9 @@ import { setLayerEditable, setLayerSelectable } from '../../../model/layers'
 import { getFeaturesInOrder } from '../../../selectors/ordered'
 import { getSelectedFeatureIds } from '../../../selectors/selection'
 import { coordinateFromLonLat, euclideanDistance } from '../../../utils/geography'
-import { fill, thinOutline, whiteThickOutline, whiteThinOutline } from '../../../utils/styles'
+import {
+  fill, primaryColor, thinOutline, whiteThickOutline, whiteThinOutline
+} from '../../../utils/styles'
 
 // === Settings for this particular layer type ===
 
@@ -77,7 +79,7 @@ const labelStrokes = {
 // TODO: cache the style somewhere?
 const styleForFeature = (feature, selected = false) => {
   const { color, label, labelStyle, type } = feature
-  const parsedColor = Color(color || '#0088ff')
+  const parsedColor = Color(color || primaryColor)
   const styles = []
   const radius = 6
 
