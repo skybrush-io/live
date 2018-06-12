@@ -65,49 +65,64 @@ class MapContextMenu extends React.Component {
   render () {
     return (
       <ContextMenu ref={this._contextMenu} contextProvider={this.props.contextProvider}>
-        {({ selectedFeatureIds, selectedUAVIds }) => ([
-          <MenuItem key="takeoff" dense disabled={!selectedUAVIds || selectedUAVIds.length === 0}
-            onClick={this._takeoffSelectedUAVs}>
-            <ListItemIcon><FlightTakeoff /></ListItemIcon>
-            Takeoff
-          </MenuItem>,
-          <MenuItem key="land" dense disabled={!selectedUAVIds || selectedUAVIds.length === 0}
-            onClick={this._landSelectedUAVs}>
-            <ListItemIcon><FlightLand /></ListItemIcon>
-            Land
-          </MenuItem>,
-          <MenuItem key="home" dense disabled={!selectedUAVIds || selectedUAVIds.length === 0}
-            onClick={this._returnSelectedUAVs}>
-            <ListItemIcon><Home /></ListItemIcon>
-            Return to home
-          </MenuItem>,
-          <MenuItem key="message" dense disabled={!selectedUAVIds || selectedUAVIds.length !== 1}
-            onClick={this._showMessagesDialog}>
-            <ListItemIcon><Message /></ListItemIcon>
-            Messages
-          </MenuItem>,
-          <MenuItem key="shutdown" dense disabled={!selectedUAVIds || selectedUAVIds.length === 0}
-            onClick={this._shutdownSelectedUAVs}>
-            <ListItemIcon><ActionPowerSettingsNew color='secondary' /></ListItemIcon>
-            Halt
-          </MenuItem>,
-          <Divider key="div1" />,
-          <MenuItem key="setOrigin" dense onClick={this._setOrigin}>
-            <ListItemIcon><PinDrop /></ListItemIcon>
-            Set origin here
-          </MenuItem>,
-          <Divider key="div2" />,
-          <MenuItem key="setProperties" dense disabled={!selectedFeatureIds || selectedFeatureIds.length !== 1}
-            onClick={this._editSelectedFeature}>
-            <ListItemIcon><Edit /></ListItemIcon>
-            Properties...
-          </MenuItem>,
-          <MenuItem key="remove" dense disabled={!selectedFeatureIds || selectedFeatureIds.length === 0}
-            onClick={this._removeSelectedFeatures}>
-            <ListItemIcon><ActionDelete /></ListItemIcon>
-            Remove
-          </MenuItem>
-        ])}
+        {({ selectedFeatureIds, selectedUAVIds }) => {
+          const result = []
+          const hasSelectedUAVs = selectedUAVIds && selectedUAVIds.length > 0
+          const hasSingleSelectedUAV = selectedUAVIds && selectedUAVIds.length === 1
+          const hasSelectedFeatures = selectedFeatureIds && selectedFeatureIds.length > 0
+
+          if (hasSelectedUAVs) {
+            result.push(
+              <MenuItem key="takeoff" dense onClick={this._takeoffSelectedUAVs}>
+                <ListItemIcon><FlightTakeoff /></ListItemIcon>
+                Takeoff
+              </MenuItem>,
+              <MenuItem key="land" dense onClick={this._landSelectedUAVs}>
+                <ListItemIcon><FlightLand /></ListItemIcon>
+                Land
+              </MenuItem>,
+              <MenuItem key="home" dense onClick={this._returnSelectedUAVs}>
+                <ListItemIcon><Home /></ListItemIcon>
+                Return to home
+              </MenuItem>,
+              <MenuItem key="message" dense disabled={!hasSingleSelectedUAV}
+                onClick={this._showMessagesDialog}>
+                <ListItemIcon><Message /></ListItemIcon>
+                Messages
+              </MenuItem>,
+              <MenuItem key="shutdown" dense onClick={this._shutdownSelectedUAVs}>
+                <ListItemIcon><ActionPowerSettingsNew color='secondary' /></ListItemIcon>
+                Halt
+              </MenuItem>,
+              <Divider key="div1" />
+            )
+          }
+
+          result.push(
+            <MenuItem key="setOrigin" dense onClick={this._setOrigin}>
+              <ListItemIcon><PinDrop /></ListItemIcon>
+              Set origin here
+            </MenuItem>
+          )
+
+          if (hasSelectedFeatures) {
+            result.push(
+              <Divider key="div2" />,
+              <MenuItem key="setProperties" dense disabled={!selectedFeatureIds || selectedFeatureIds.length !== 1}
+                onClick={this._editSelectedFeature}>
+                <ListItemIcon><Edit /></ListItemIcon>
+                Properties...
+              </MenuItem>,
+              <MenuItem key="remove" dense disabled={!selectedFeatureIds || selectedFeatureIds.length === 0}
+                onClick={this._removeSelectedFeatures}>
+                <ListItemIcon><ActionDelete /></ListItemIcon>
+                Remove
+              </MenuItem>
+            )
+          }
+
+          return result
+        }}
       </ContextMenu>
     )
   }
