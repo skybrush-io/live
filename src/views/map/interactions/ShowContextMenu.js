@@ -201,9 +201,8 @@ class ShowContextMenu extends interaction.OLInteraction {
 
   @autobind
   _getLonLatFromEvent (event) {
-    const { map } = this.context
+    const { map, projection } = this.props
     if (map) {
-      const { projection } = this.props
       return projection
         ? Projection.transform(event.coordinate, 'EPSG:3857', projection)
         : event.coordinate
