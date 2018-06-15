@@ -48,8 +48,8 @@ const cachedGetColorById = (() => {
  * show all the active UAVs on top of the map.
  */
 export default class ActiveUAVsLayerSource extends source.Vector {
-  constructor (props) {
-    super(props)
+  constructor (props, context) {
+    super(props, context)
 
     this._onFeatureAdded = this._onFeatureAdded.bind(this)
     this._onSelectionMaybeChanged = this._onSelectionMaybeChanged.bind(this)
@@ -64,14 +64,14 @@ export default class ActiveUAVsLayerSource extends source.Vector {
     this.eventBindings = {}
   }
 
-  componentWillReceiveProps (newProps) {
-    this._onFlockMaybeChanged(this.props.flock, newProps.flock)
-    this._onSelectionMaybeChanged(this.props.selection, newProps.selection)
+  componentDidUpdate (prevProps) {
+    this._onFlockMaybeChanged(prevProps.flock, this.props.flock)
+    this._onSelectionMaybeChanged(prevProps.selection, this.props.selection)
     this._onColorsMaybeChanged(
-      this.props.colorPredicates,
-      newProps.colorPredicates
+      prevProps.colorPredicates,
+      this.props.colorPredicates
     )
-    this.featureManager.projection = newProps.projection
+    this.featureManager.projection = this.props.projection
   }
 
   componentDidMount () {

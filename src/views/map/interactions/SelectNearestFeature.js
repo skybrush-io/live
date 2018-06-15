@@ -9,7 +9,7 @@ import Condition from 'ol/events/condition'
 import Interaction from 'ol/interaction/interaction'
 import Layer from 'ol/layer/layer'
 import VectorLayer from 'ol/layer/vector'
-import { interaction } from 'ol-react'
+import { interaction, withMap } from 'ol-react'
 import PropTypes from 'prop-types'
 
 import { euclideanDistance, getExactClosestPointOf } from '../../../utils/geography'
@@ -216,13 +216,14 @@ class SelectNearestFeatureInteraction extends Interaction {
  * React wrapper around an instance of {@link SelectNearestFeatureInteraction}
  * that allows us to use it in JSX.
  */
-export default class SelectNearestFeature extends interaction.OLInteraction {
+class SelectNearestFeature extends interaction.OLInteraction {
   createInteraction (props) {
     return new SelectNearestFeatureInteraction(props)
   }
 }
 
-SelectNearestFeature.propTypes = Object.assign({}, interaction.OLInteraction.propTypes, {
+SelectNearestFeature.propTypes = {
+  ...interaction.OLInteraction.propTypes,
   addCondition: PropTypes.func,
   layers: PropTypes.oneOfType([
     PropTypes.func, PropTypes.arrayOf(Layer)
@@ -231,4 +232,6 @@ SelectNearestFeature.propTypes = Object.assign({}, interaction.OLInteraction.pro
   select: PropTypes.func,
   threshold: PropTypes.number,
   toggleCondition: PropTypes.func
-})
+}
+
+export default withMap(SelectNearestFeature)

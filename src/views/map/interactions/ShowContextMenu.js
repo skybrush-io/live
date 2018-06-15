@@ -10,7 +10,7 @@ import Interaction from 'ol/interaction/interaction'
 import Layer from 'ol/layer/layer'
 import VectorLayer from 'ol/layer/vector'
 import Projection from 'ol/proj'
-import { interaction } from 'ol-react'
+import { interaction, withMap } from 'ol-react'
 import PropTypes from 'prop-types'
 import React from 'react'
 
@@ -177,7 +177,7 @@ class ContextMenuInteraction extends Interaction {
  * React wrapper around an instance of {@link ContextMenuInteraction}
  * that allows us to use it in JSX.
  */
-export default class ShowContextMenu extends interaction.OLInteraction {
+class ShowContextMenu extends interaction.OLInteraction {
   constructor (props) {
     super(props)
     this._assignContextMenuRef = (value) => { this._contextMenu = value }
@@ -240,3 +240,5 @@ ShowContextMenu.propTypes = Object.assign({}, interaction.OLInteraction.propType
   threshold: PropTypes.number,
   children: PropTypes.element
 })
+
+export default withMap(ShowContextMenu)

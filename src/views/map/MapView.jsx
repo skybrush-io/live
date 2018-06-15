@@ -1,7 +1,7 @@
 import { autobind } from 'core-decorators'
 import { filter, isEmpty, partial } from 'lodash'
 import OLMap from 'ol/map'
-import { Map, View, control, interaction } from 'ol-react'
+import { Map, View, control, interaction, withMap } from 'ol-react'
 import PropTypes from 'prop-types'
 import React from 'react'
 import { connect } from 'react-redux'
@@ -136,10 +136,9 @@ const MapViewToolbars = () => ([
  * React component that renders the active interactions of the map.
  *
  * @param  {Object}  props    the props of the component
- * @param  {Object}  context  the context of the component
  * @returns {JSX.Node[]}  the interactions on the map
  */
-const MapViewInteractions = (props, context) => {
+const MapViewInteractions = withMap(props => {
   const {
     onDrawEnded, onAddFeaturesToSelection,
     onFeaturesTransformed, onRemoveFeaturesFromSelection,
@@ -224,7 +223,7 @@ const MapViewInteractions = (props, context) => {
     interactions.push(
       /* DRAW mode | Click --> Draw a new feature */
       <interaction.Draw key='Draw'
-        {...toolToDrawInteractionProps(selectedTool, context.map)}
+        {...toolToDrawInteractionProps(selectedTool, props.map)}
         drawend={onDrawEnded}/>
     )
   }
@@ -232,7 +231,7 @@ const MapViewInteractions = (props, context) => {
   /* Tool.EDIT_FEATURE will be handled in the FeaturesLayer component */
 
   return interactions
-}
+})
 
 MapViewInteractions.propTypes = {
   selectedFeaturesProvider: PropTypes.func,
@@ -244,10 +243,6 @@ MapViewInteractions.propTypes = {
   onRemoveFeaturesFromSelection: PropTypes.func,
   onSetSelectedFeatures: PropTypes.func,
   onSingleFeatureSelected: PropTypes.func
-}
-
-MapViewInteractions.contextTypes = {
-  map: PropTypes.instanceOf(OLMap)
 }
 
 /* ********************************************************************** */
@@ -262,6 +257,8 @@ class MapViewPresentation extends React.Component {
     this._onAddFeaturesToSelection = partial(this._onBoxDragEnded, 'add')
     this._onRemoveFeaturesFromSelection = partial(this._onBoxDragEnded, 'remove')
     this._onSetSelectedFeatures = partial(this._onBoxDragEnded, 'set')
+
+    this._map = React.createRef()
   }
 
   componentDidMount () {
@@ -324,7 +321,7 @@ class MapViewPresentation extends React.Component {
     }
 
     return (
-      <Map view={view} ref={this._assignMapRef}
+      <Map view={view} ref={this._map}
         useDefaultControls={false} loadTilesWhileInteracting
         className={toolClasses[selectedTool]}
       >
@@ -361,17 +358,6 @@ class MapViewPresentation extends React.Component {
   }
 
   /**
-   * Handler called when the main map component is mounted. We use it to store
-   * a reference to the component within this component.
-   *
-   * @param  {Map} ref  the map being shown in this component
-   */
-  @autobind
-  _assignMapRef (ref) {
-    this.map = ref
-  }
-
-  /**
    * Returns the selected features that can be transformed with a standard
    * transformation interaction in an array. The selection includes not
    * only user-defined features but anything that can be transformed (e.g.,
@@ -400,8 +386,9 @@ class MapViewPresentation extends React.Component {
   _onBoxDragEnded (mode, event) {
     const extent = event.target.getGeometry().getExtent()
     const features = []
+    const map = this._map.current.map
 
-    getVisibleSelectableLayers(this.map.map).forEach(layer => {
+    getVisibleSelectableLayers(map).forEach(layer => {
       const source = layer.getSource()
       source.forEachFeatureIntersectingExtent(extent, feature => {
         features.push(feature)
@@ -552,7 +539,8 @@ class MapViewPresentation extends React.Component {
    */
   @autobind
   _disableDefaultContextMenu () {
-    this.map.map.getViewport().addEventListener(
+    const map = this._map.current.map
+    map.getViewport().addEventListener(
       'contextmenu',
       e => {
         e.preventDefault()
@@ -566,8 +554,9 @@ class MapViewPresentation extends React.Component {
    * the map view has changed.
    */
   updateSize () {
-    if (this.map) {
-      this.map.updateSize()
+    const map = this._map.current
+    if (map) {
+      map.updateSize()
     }
   }
 }

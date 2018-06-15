@@ -10,7 +10,7 @@ import OLEvent from 'ol/events/event'
 import Extent from 'ol/extent'
 import PointerInteraction from 'ol/interaction/pointer'
 import Layer from 'ol/layer/layer'
-import { interaction } from 'ol-react'
+import { interaction, withMap } from 'ol-react'
 import PropTypes from 'prop-types'
 
 import Condition from '../conditions'
@@ -278,7 +278,7 @@ class TransformFeaturesInteractionEvent extends OLEvent {
  * React wrapper around an instance of {@link TransformFeaturesInteraction}
  * that allows us to use it in JSX.
  */
-export default class TransformFeatures extends interaction.OLInteraction {
+class TransformFeatures extends interaction.OLInteraction {
   createInteraction (props) {
     return new TransformFeaturesInteraction(props)
   }
@@ -305,3 +305,5 @@ TransformFeatures.olProps = [
   'featureProvider', 'hitTolerance', 'layers',
   'moveCondition', 'rotateCondition'
 ]
+
+export default withMap(TransformFeatures)
