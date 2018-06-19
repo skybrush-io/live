@@ -12,13 +12,15 @@ var Dotenv = require('dotenv-webpack')
 
 var projectRoot = require('./helpers').projectRoot
 
+var enableSourceMap = process.env.NODE_ENV !== 'production'
+
 module.exports = {
   mode: 'development',
   output: {
-    devtoolModuleFilenameTemplate: '/[absolute-resource-path]',
     path: path.join(projectRoot, 'build'),
     publicPath: '/build/'
   },
+  devtool: enableSourceMap ? 'cheap-module-source-map' : undefined,
   plugins: [
     new webpack.NoEmitOnErrorsPlugin(),
 

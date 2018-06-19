@@ -5,7 +5,9 @@
 
 import _ from 'lodash'
 import PropTypes from 'prop-types'
-import { source } from 'ol-react'
+import React from 'react'
+import Layer from 'ol/layer/layer'
+import { source, withLayer } from '@collmot/ol-react'
 
 import FeatureManager from '../FeatureManager'
 import UAVFeature from '../features/UAVFeature'
@@ -32,7 +34,13 @@ const cachedGetColorById = (() => {
       colorPredicates,
       p => {
         if (!(p in predicateFunctionCache)) {
-          predicateFunctionCache[p] = new Function('id', `return ${p}`)
+          try {
+            predicateFunctionCache[p] = new Function('id', `return ${p}`)
+          } catch (e) {
+            // Probably it is blocked by the browser()
+            console.warn('Cannot create new UAV color predicate; maybe blocked by CSP?')
+            predicateFunctionCache[p] = _.stubFalse
+          }
         }
         return predicateFunctionCache[p](id)
       }
@@ -47,19 +55,22 @@ const cachedGetColorById = (() => {
  * This layer source can be passed to an OpenLayers layer as a source to
  * show all the active UAVs on top of the map.
  */
-export default class ActiveUAVsLayerSource extends source.Vector {
-  constructor (props, context) {
-    super(props, context)
+class ActiveUAVsLayerSource extends React.Component {
+  constructor (props) {
+    super(props)
 
+    this._assignSourceRef = this._assignSourceRef.bind(this)
     this._onFeatureAdded = this._onFeatureAdded.bind(this)
     this._onSelectionMaybeChanged = this._onSelectionMaybeChanged.bind(this)
     this._onColorsMaybeChanged = this._onColorsMaybeChanged.bind(this)
     this._onUAVsUpdated = this._onUAVsUpdated.bind(this)
 
-    this.featureManager = new FeatureManager(this.source)
-    this.featureManager.featureFactory = (id, geom) => (new UAVFeature(id, geom))
-    this.featureManager.featureIdFunction = uavIdToGlobalId
-    this.featureManager.featureAdded.add(this._onFeatureAdded)
+    this._sourceRef = undefined
+
+    this._featureManager = new FeatureManager()
+    this._featureManager.featureFactory = (id, geom) => new UAVFeature(id, geom)
+    this._featureManager.featureIdFunction = uavIdToGlobalId
+    this._featureManager.featureAdded.add(this._onFeatureAdded)
 
     this.eventBindings = {}
   }
@@ -71,25 +82,47 @@ export default class ActiveUAVsLayerSource extends source.Vector {
       prevProps.colorPredicates,
       this.props.colorPredicates
     )
-    this.featureManager.projection = this.props.projection
+    this._featureManager.projection = this.props.projection
   }
 
   componentDidMount () {
-    super.componentDidMount()
-
-    setLayerSelectable(this.context.layer)
+    if (this.props.layer) {
+      setLayerSelectable(this.props.layer)
+    }
 
     this._onFlockMaybeChanged(undefined, this.props.flock)
     this._onSelectionMaybeChanged(undefined, this.props.selection)
 
-    this.featureManager.projection = this.props.projection
+    this._featureManager.projection = this.props.projection
   }
 
   componentWillUnmount () {
     this._onFlockMaybeChanged(this.props.flock, undefined)
     this._onSelectionMaybeChanged(this.props.selection, undefined)
-    this.featureManager.projection = undefined
-    // no componentWillUnmount() in superclass so we don't call it
+
+    this._featureManager.projection = undefined
+  }
+
+  render () {
+    return (
+      <source.Vector ref={this._assignSourceRef} />
+    )
+  }
+
+  _assignSourceRef (value) {
+    if (value === this._sourceRef) {
+      return
+    }
+
+    if (this._sourceRef) {
+      this._featureManager.vectorSource = undefined
+    }
+
+    this._sourceRef = value
+
+    if (this._sourceRef) {
+      this._featureManager.vectorSource = value.source
+    }
   }
 
   /**
@@ -138,7 +171,12 @@ export default class ActiveUAVsLayerSource extends source.Vector {
    * @param {string[]}  newSelection  the new selection of UAVs
    */
   _onSelectionMaybeChanged (oldSelection, newSelection) {
-    const getFeatureById = this.source.getFeatureById.bind(this.source)
+    if (!this._sourceRef) {
+      return
+    }
+
+    const { source } = this._sourceRef
+    const getFeatureById = source.getFeatureById.bind(source)
     _(newSelection).difference(oldSelection).map(getFeatureById).filter().each(
       feature => { feature.selected = true }
     )
@@ -159,7 +197,7 @@ export default class ActiveUAVsLayerSource extends source.Vector {
       return
     }
 
-    const features = this.featureManager.getFeatureArray()
+    const features = this._featureManager.getFeatureArray()
     for (const feature of features) {
       feature.color = cachedGetColorById(newColorPredicates, feature.uavId)
     }
@@ -173,8 +211,8 @@ export default class ActiveUAVsLayerSource extends source.Vector {
    * @param {UAV[]} uavs  the UAVs that should be refreshed
    */
   _onUAVsUpdated (uavs) {
-    _.each(uavs, uav => {
-      const feature = this.featureManager.createOrUpdateFeatureById(
+    uavs.forEach(uav => {
+      const feature = this._featureManager.createOrUpdateFeatureById(
         uav.id, [uav.lon, uav.lat]
       )
 
@@ -193,6 +231,9 @@ export default class ActiveUAVsLayerSource extends source.Vector {
 ActiveUAVsLayerSource.propTypes = {
   colorPredicates: PropTypes.objectOf(PropTypes.string).isRequired,
   flock: PropTypes.instanceOf(Flock),
+  layer: PropTypes.instanceOf(Layer),
   projection: PropTypes.func,
   selection: PropTypes.arrayOf(PropTypes.string).isRequired
 }
+
+export default withLayer(ActiveUAVsLayerSource)

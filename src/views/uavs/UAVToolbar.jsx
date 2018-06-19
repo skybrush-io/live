@@ -66,7 +66,7 @@ class UAVToolbar extends React.Component {
         <Tooltip placement='bottom' title='Halt'>
           <span>
             <IconButton disabled={isSelectionEmpty}
-              onClick={this._haldSelectedUAVs}>
+              onClick={this._haltSelectedUAVs}>
               <ActionPowerSettingsNew color={isSelectionEmpty ? undefined : 'secondary'} />
             </IconButton>
           </span>
@@ -113,7 +113,7 @@ class UAVToolbar extends React.Component {
   }
 
   @autobind
-  _haldSelectedUAVs () {
+  _haltSelectedUAVs () {
     messaging.haltUAVs(this.props.selectedUAVIds)
   }
 }
@@ -128,9 +128,7 @@ UAVToolbar.propTypes = {
 
 export default connect(
   // mapStateToProps
-  (state, { fitSelectedUAVs }) => ({
-    fitSelectedUAVs
-  }),
+  null,
   // mapDispatchToProps
   dispatch => ({
     selectUAVInMessagesDialog: (id) => {

@@ -2,7 +2,7 @@ import Color from 'color'
 import _ from 'lodash'
 import GeoJSON from 'ol/format/geojson'
 import Point from 'ol/geom/point'
-import { layer, source } from 'ol-react'
+import { layer, source } from '@collmot/ol-react'
 import PropTypes from 'prop-types'
 import React from 'react'
 import { connect } from 'react-redux'
@@ -143,16 +143,37 @@ export const GeoJSONLayerSettings = connect(
 
 // === The actual layer to be rendered ===
 
-class GeoJSONVectorSource extends source.Vector {
+class GeoJSONVectorSource extends React.Component {
   constructor (props) {
     super(props)
+
+    this._assignSourceRef = this._assignSourceRef.bind(this)
+
+    this._sourceRef = undefined
 
     this.geojsonFormat = new GeoJSON()
     this._updateFeaturesFromProps(props)
   }
 
-  componentWillReceiveProps (newProps) {
-    this._updateFeaturesFromProps(newProps)
+  componentDidUpdate () {
+    this._updateFeaturesFromProps(this.props)
+  }
+
+  _assignSourceRef (value) {
+    if (this._sourceRef === value) {
+      return
+    }
+
+    if (this._sourceRef) {
+      const { source } = this._sourceRef
+      source.clear()
+    }
+
+    this._sourceRef = value
+
+    if (this._sourceRef) {
+      this._updateFeaturesFromProps(this.props)
+    }
   }
 
   _parseFeatures (data) {
@@ -168,8 +189,17 @@ class GeoJSONVectorSource extends source.Vector {
 
   _updateFeaturesFromProps (props) {
     const features = this._parseFeatures(props.data)
-    this.source.clear()
-    this.source.addFeatures(features)
+    if (this._sourceRef) {
+      const { source } = this._sourceRef
+      source.clear()
+      source.addFeatures(features)
+    }
+  }
+
+  render () {
+    return (
+      <source.Vector ref={this._assignSourceRef} />
+    )
   }
 }
 

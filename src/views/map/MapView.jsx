@@ -1,7 +1,6 @@
 import { autobind } from 'core-decorators'
 import { filter, isEmpty, partial } from 'lodash'
-import OLMap from 'ol/map'
-import { Map, View, control, interaction, withMap } from 'ol-react'
+import { Map, View, control, interaction, withMap } from '@collmot/ol-react'
 import PropTypes from 'prop-types'
 import React from 'react'
 import { connect } from 'react-redux'
@@ -431,6 +430,7 @@ class MapViewPresentation extends React.Component {
    */
   @autobind
   _onFeaturesModified (event) {
+    console.log(event)
     this._updateFeatures(event.features)
   }
 

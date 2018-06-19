@@ -13,6 +13,7 @@ import Tab from '@material-ui/core/Tab'
 import Tabs from '@material-ui/core/Tabs'
 
 import {
+  removeFeature,
   renameFeature,
   setFeatureColor,
   updateFeatureVisibility
@@ -56,12 +57,7 @@ GeneralPropertiesFormPresentation.propTypes = {
 
 const GeneralPropertiesForm = connect(
   // mapStateToProps
-  (state, ownProps) => {
-    const feature = state.features.byId[ownProps.featureId]
-    return {
-      feature
-    }
-  },
+  null,
   // mapDispatchToProps
   (dispatch, { featureId }) => ({
     onSetFeatureColor (color) {
@@ -77,24 +73,35 @@ const GeneralPropertiesForm = connect(
 )(GeneralPropertiesFormPresentation)
 
 const FeatureEditorDialogPresentation = props => {
-  const { featureId, onClose, onTabSelected, open, selectedTab } = props
+  const {
+    feature, featureId, onClose, onRemoveFeature, onTabSelected,
+    open, selectedTab
+  } = props
   const actions = []
   let content
 
-  switch (selectedTab) {
-    case 'general':
-      content = (
-        <DialogContent>
-          <GeneralPropertiesForm featureId={featureId} />
-        </DialogContent>
-      )
-      break
+  if (!feature) {
+    content = <DialogContent><p>Feature does not exist</p></DialogContent>
+  } else {
+    switch (selectedTab) {
+      case 'general':
+        content = (
+          <DialogContent>
+            <GeneralPropertiesForm feature={feature} featureId={featureId} />
+          </DialogContent>
+        )
+        break
 
-    default:
-      content = <DialogContent><p>Not implemented yet</p></DialogContent>
+      default:
+        content = <DialogContent><p>Not implemented yet</p></DialogContent>
+    }
   }
 
-  actions.push(<Button key='close' onClick={onClose}>Close</Button>)
+  actions.push(
+    <Button key='remove' color='secondary' onClick={onRemoveFeature}
+      disabled={!feature}>Remove</Button>,
+    <Button key='close' onClick={onClose}>Close</Button>
+  )
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth='xs'>
@@ -113,8 +120,10 @@ const FeatureEditorDialogPresentation = props => {
 }
 
 FeatureEditorDialogPresentation.propTypes = {
+  feature: PropTypes.object,
   featureId: PropTypes.string,
   onClose: PropTypes.func,
+  onRemoveFeature: PropTypes.func,
   onSubmit: PropTypes.func,
   onTabSelected: PropTypes.func,
   open: PropTypes.bool.isRequired,
@@ -132,19 +141,33 @@ FeatureEditorDialogPresentation.defaultProps = {
  */
 const FeatureEditorDialog = connect(
   // mapStateToProps
-  state => ({
-    featureId: state.dialogs.featureEditor.featureId,
-    open: state.dialogs.featureEditor.dialogVisible,
-    selectedTab: state.dialogs.featureEditor.selectedTab
-  }),
+  state => {
+    const { dialogVisible, featureId, selectedTab } = state.dialogs.featureEditor
+    return {
+      featureId,
+      selectedTab,
+      feature: state.features.byId[featureId],
+      open: dialogVisible
+    }
+  },
   // mapDispatchToProps
   dispatch => ({
     onClose () {
       dispatch(closeFeatureEditorDialog())
     },
+    onRemoveFeature (featureId) {
+      dispatch(removeFeature(featureId))
+      dispatch(closeFeatureEditorDialog())
+    },
     onTabSelected (event, value) {
       dispatch(setFeatureEditorDialogTab(value))
     }
+  }),
+  // mergeProps
+  (stateProps, dispatchProps) => ({
+    ...stateProps,
+    ...dispatchProps,
+    onRemoveFeature: () => dispatchProps.onRemoveFeature(stateProps.featureId)
   })
 )(FeatureEditorDialogPresentation)
 

@@ -4,7 +4,7 @@
  */
 
 import Map from 'ol/map'
-import { withMap } from 'ol-react'
+import { withMap } from '@collmot/ol-react'
 import PropTypes from 'prop-types'
 import React from 'react'
 import { mapReferenceRequestSignal } from '../../signals'

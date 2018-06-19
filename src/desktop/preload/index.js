@@ -9,6 +9,7 @@
 const pify = require('pify')
 
 const dns = require('dns')
+const { webFrame } = require('electron')
 const ipc = require('electron-better-ipc')
 const console = require('electron-timber')
 const SSDPClient = require('node-ssdp-lite')
@@ -16,6 +17,11 @@ const createStorageEngine = require('redux-storage-engine-electron-store').defau
 
 const localServer = require('./local-server')
 const setupIpc = require('./ipc')
+
+// Allow WebSocket connections to pass through even if we are being served
+// over https. TODO(ntamas): this is temporary and should be there only in
+// dev mode
+webFrame.registerURLSchemeAsSecure('ws')
 
 /**
  * Creates a new SSDP client object and registers the given function to be

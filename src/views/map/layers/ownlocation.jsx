@@ -8,7 +8,7 @@ import Point from 'ol/geom/point'
 import Icon from 'ol/style/icon'
 import Style from 'ol/style/style'
 
-import { DeviceOrientation, Geolocation, layer, source } from 'ol-react'
+import { DeviceOrientation, Geolocation, layer, source } from '@collmot/ol-react'
 
 import makeLogger from '../../../utils/logging'
 
@@ -36,9 +36,11 @@ export const OwnLocationLayerSettings = connect(
 
 // === The actual layer to be rendered ===
 
-class OwnLocationVectorSource extends source.Vector {
+class OwnLocationVectorSource extends React.Component {
   constructor (props) {
     super(props)
+
+    this._sourceRef = undefined
 
     this.locationIcon = new Icon({
       rotateWithView: true,
@@ -52,10 +54,34 @@ class OwnLocationVectorSource extends source.Vector {
     this.locationFeature.setStyle(
       new Style({ image: this.locationIcon })
     )
-    this.source.addFeature(this.locationFeature)
 
     this.accuracyFeature = new Feature()
-    this.source.addFeature(this.accuracyFeature)
+  }
+
+  @autobind
+  _assignSourceRef (value) {
+    if (this._sourceRef === value) {
+      return
+    }
+
+    if (this._sourceRef) {
+      const { source } = this._sourceRef
+      source.removeFeature(this.locationFeature)
+      source.removeFeature(this.accuracyFeature)
+    }
+
+    this._sourceRef = value
+
+    if (this._sourceRef) {
+      const { source } = this._sourceRef
+      source.addFeature(this.locationFeature)
+      source.addFeature(this.accuracyFeature)
+    }
+  }
+
+  @autobind
+  _logError (event) {
+    this.props.onError(`Error while getting position: ${event.message}`)
   }
 
   @autobind
@@ -73,12 +99,10 @@ class OwnLocationVectorSource extends source.Vector {
   @autobind
   _onHeadingChange (event) {
     this.locationIcon.setRotation(-event.target.getHeading())
-    this.source.refresh()
-  }
 
-  @autobind
-  _logError (event) {
-    this.props.onError(`Error while getting position: ${event.message}`)
+    if (this._sourceRef) {
+      this._sourceRef.source.refresh()
+    }
   }
 
   render () {
@@ -87,9 +111,14 @@ class OwnLocationVectorSource extends source.Vector {
         changeAccuracyGeometry={this._onAccuracyGeometryChange}
         projection='EPSG:3857'
         error={this._logError} />,
-      <DeviceOrientation key='orientation' changeHeading={this._onHeadingChange} />
+      <DeviceOrientation key='orientation' changeHeading={this._onHeadingChange} />,
+      <source.Vector key='source' ref={this._assignSourceRef} />
     ]
   }
+}
+
+OwnLocationVectorSource.propTypes = {
+  onError: PropTypes.func
 }
 
 const OwnLocationLayerPresentation = ({ onError, zIndex }) => (

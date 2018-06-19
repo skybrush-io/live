@@ -4,7 +4,7 @@ import Feature from 'ol/feature'
 import LineString from 'ol/geom/linestring'
 import Stroke from 'ol/style/stroke'
 import Style from 'ol/style/style'
-import { layer, source } from 'ol-react'
+import { layer, source } from '@collmot/ol-react'
 import PropTypes from 'prop-types'
 import React from 'react'
 import { connect } from 'react-redux'
@@ -109,33 +109,52 @@ const makeStrokeStyle = (color, width) => new Style({
   stroke: new Stroke({ color, width })
 })
 
-class UAVTraceVectorSource extends source.Vector {
+class UAVTraceVectorSource extends React.Component {
   constructor (props) {
     super(props)
+
+    this.features = []
     this.lineStringsById = {}
 
-    this._handleUpdate = this._handleUpdate.bind(this)
+    this._sourceRef = undefined
 
     flock.uavsUpdated.add(this._handleUpdate)
-
-    window.sor = this.source
   }
 
+  @autobind
+  _assignSourceRef (value) {
+    if (value === this._sourceRef) {
+      return
+    }
+
+    if (this._sourceRef) {
+      this._sourceRef.source.clear()
+    }
+
+    this._sourceRef = value
+
+    if (this._sourceRef) {
+      this._sourceRef.source.addFeatures(this.features)
+    }
+  }
+
+  @autobind
   _handleUpdate (uavs) {
     for (const uav of uavs) {
       if (uav._id in this.lineStringsById) {
+        // UAV exists, just extend its trace
         this.lineStringsById[uav._id].appendCoordinate(
           coordinateFromLonLat([uav.lon, uav.lat])
         )
       } else {
+        // UAV does not exist yet, add a new trace
         this.lineStringsById[uav._id] = new LineString(
           [coordinateFromLonLat([uav.lon, uav.lat])]
         )
-        let feature = new Feature(this.lineStringsById[uav._id])
-        feature.setStyle(makeStrokeStyle(this.props.trailColor, this.props.trailWidth))
-        this.source.addFeature(feature)
+        this._registerNewFeature(new Feature(this.lineStringsById[uav._id]))
       }
 
+      // Forget old coordinates from the trace
       while (this.lineStringsById[uav._id].getCoordinates().length > this.props.trailLength) {
         this.lineStringsById[uav._id].setCoordinates(
           this.lineStringsById[uav._id].getCoordinates().slice(1)
@@ -144,12 +163,31 @@ class UAVTraceVectorSource extends source.Vector {
     }
   }
 
-  componentWillReceiveProps (newProps) {
-    const features = this.source.getFeatures()
+  @autobind
+  _registerNewFeature (feature) {
+    feature.setStyle(makeStrokeStyle(this.props.trailColor, this.props.trailWidth))
 
-    for (const feature of features) {
-      feature.setStyle(makeStrokeStyle(newProps.trailColor, this.props.trailWidth))
+    this.features.push(feature)
+    if (this._sourceRef) {
+      this._sourceRef.source.addFeature(feature)
     }
+  }
+
+  componentDidUpdate () {
+    if (this._sourceRef) {
+      const features = this._sourceRef.source.getFeatures()
+
+      // Update the styles of all the features
+      for (const feature of features) {
+        feature.setStyle(makeStrokeStyle(this.props.trailColor, this.props.trailWidth))
+      }
+    }
+  }
+
+  render () {
+    return (
+      <source.Vector ref={this._assignSourceRef} />
+    )
   }
 }
 

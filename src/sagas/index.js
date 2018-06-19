@@ -11,7 +11,7 @@ import localServerSaga from './local-server'
  */
 
 export default function* rootSaga () {
-  const { localServer } = window.bridge
+  const { localServer } = (window ? window.bridge : null) || {}
   const sagas = []
 
   if (localServer && localServer.search) {

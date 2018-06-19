@@ -236,14 +236,16 @@ export default class FeatureManager {
     }
 
     if (this._vectorSource) {
-      throw new Error('A feature manager cannot be re-associated to a ' +
-        'new vector source once it has been bound to another one')
+      this._vectorSource.clear()
     }
 
     this._vectorSource = value
 
-    if (value) {
-      forOwn(this._featuresByObjectId, feature => value.addFeature(feature))
+    if (this._vectorSource) {
+      forOwn(
+        this._featuresByObjectId,
+        feature => this._vectorSource.addFeature(feature)
+      )
     }
   }
 }

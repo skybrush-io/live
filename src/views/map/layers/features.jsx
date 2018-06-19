@@ -1,6 +1,6 @@
 import Color from 'color'
 import { unary } from 'lodash'
-import { Feature, geom, interaction, layer, source } from 'ol-react'
+import { Feature, geom, interaction, layer, source } from '@collmot/ol-react'
 import PropTypes from 'prop-types'
 import Circle from 'ol/style/circle'
 import Style from 'ol/style/style'
@@ -42,7 +42,7 @@ const geometryForFeature = feature => {
       if (coordinates.length >= 2) {
         const center = coordinates[0]
         const radius = euclideanDistance(coordinates[0], coordinates[1])
-        return <geom.Circle radius={radius}>{center}</geom.Circle>
+        return <geom.Circle center={center} radius={radius} />
       } else {
         return null
       }
@@ -50,12 +50,12 @@ const geometryForFeature = feature => {
     case FeatureType.POINTS:
       return (
         coordinates.length > 1
-          ? <geom.MultiPoint>{coordinates}</geom.MultiPoint>
-          : <geom.Point>{coordinates[0]}</geom.Point>
+          ? <geom.MultiPoint coordinates={coordinates} />
+          : <geom.Point coordinates={coordinates[0]} />
       )
 
     case FeatureType.LINE_STRING:
-      return <geom.LineString>{coordinates}</geom.LineString>
+      return <geom.LineString coordinates={coordinates} />
 
     case FeatureType.POLYGON:
       // OpenLayers requires the last coordinate to be the same as the first
@@ -63,7 +63,7 @@ const geometryForFeature = feature => {
       if (coordinates.length > 0) {
         coordinates.push(coordinates[0])
       }
-      return <geom.Polygon>{coordinates}</geom.Polygon>
+      return <geom.Polygon coordinates={coordinates} />
 
     default:
       return null

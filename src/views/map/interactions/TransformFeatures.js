@@ -10,7 +10,7 @@ import OLEvent from 'ol/events/event'
 import Extent from 'ol/extent'
 import PointerInteraction from 'ol/interaction/pointer'
 import Layer from 'ol/layer/layer'
-import { interaction, withMap } from 'ol-react'
+import { createOLInteractionComponent } from '@collmot/ol-react/lib/interaction'
 import PropTypes from 'prop-types'
 
 import Condition from '../conditions'
@@ -278,32 +278,27 @@ class TransformFeaturesInteractionEvent extends OLEvent {
  * React wrapper around an instance of {@link TransformFeaturesInteraction}
  * that allows us to use it in JSX.
  */
-class TransformFeatures extends interaction.OLInteraction {
-  createInteraction (props) {
-    return new TransformFeaturesInteraction(props)
+export default createOLInteractionComponent(
+  'TransformFeatures',
+  props => new TransformFeaturesInteraction(props),
+  {
+    propTypes: {
+      featureProvider: PropTypes.func.isRequired,
+      hitTolerance: PropTypes.number,
+      layers: PropTypes.oneOfType([
+        PropTypes.func, PropTypes.arrayOf(Layer)
+      ]),
+      moveCondition: PropTypes.func,
+      rotateCondition: PropTypes.func,
+
+      transformEnd: PropTypes.func,
+      transforming: PropTypes.func,
+      transformStart: PropTypes.func
+    },
+    events: ['transformStart', 'transforming', 'transformEnd'],
+    fragileProps: [
+      'featureProvider', 'hitTolerance', 'layers',
+      'moveCondition', 'rotateCondition'
+    ]
   }
-}
-
-TransformFeatures.propTypes = {
-  ...interaction.OLInteraction.propTypes,
-  featureProvider: PropTypes.func.isRequired,
-  hitTolerance: PropTypes.number,
-  layers: PropTypes.oneOfType([
-    PropTypes.func, PropTypes.arrayOf(Layer)
-  ]),
-  moveCondition: PropTypes.func,
-  rotateCondition: PropTypes.func,
-
-  transformEnd: PropTypes.func,
-  transforming: PropTypes.func,
-  transformStart: PropTypes.func
-}
-TransformFeatures.olEvents = [
-  'transformStart', 'transforming', 'transformEnd'
-]
-TransformFeatures.olProps = [
-  'featureProvider', 'hitTolerance', 'layers',
-  'moveCondition', 'rotateCondition'
-]
-
-export default withMap(TransformFeatures)
+)

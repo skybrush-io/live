@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import { layer as olLayer, source } from 'ol-react'
+import { layer as olLayer, source } from '@collmot/ol-react'
 import PropTypes from 'prop-types'
 import React from 'react'
 import { connect } from 'react-redux'

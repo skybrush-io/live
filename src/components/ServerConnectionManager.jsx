@@ -90,8 +90,8 @@ class LocalServerExecutor extends React.Component {
     }
 
     if (this._events) {
-      this._events.off('exit', this._onProcessExited)
-      this._events.off('error', this._onProcessStartFailed)
+      this._events.removeListener('exit', this._onProcessExited)
+      this._events.removeListener('error', this._onProcessStartFailed)
     }
 
     this._events = events

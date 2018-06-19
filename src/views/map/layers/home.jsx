@@ -8,7 +8,7 @@ import Circle from 'ol/style/circle'
 import Style from 'ol/style/style'
 import Text from 'ol/style/text'
 
-import { Feature, geom, layer, source } from 'ol-react'
+import { Feature, geom, layer, source } from '@collmot/ol-react'
 
 import { homePositionIdToGlobalId } from '../../../model/identifiers'
 import { setLayerEditable, setLayerSelectable } from '../../../model/layers'
@@ -74,24 +74,33 @@ const ownHomePositionStyles = selected => [
   })
 ]
 
-class HomePositionsVectorSource extends source.Vector {
-  render () {
-    const { angle, homePosition, selectedIds } = this.props
-    const features = []
-    if (homePosition) {
-      const tail = coordinateFromLonLat(homePosition)
-      const head = [0, 50]
-      Coordinate.rotate(head, -angle * Math.PI / 180)
-      Coordinate.add(head, tail)
-      features.push(
-        <Feature id={homePositionIdToGlobalId('')} key=''
-          style={ownHomePositionStyles(selectedIds.includes(''))}>
-          <geom.LineString>{[tail, head]}</geom.LineString>
-        </Feature>
-      )
-    }
-    return features
+const HomePositionsVectorSource = ({ angle, homePosition, selectedIds }) => {
+  const features = []
+
+  if (homePosition) {
+    const tail = coordinateFromLonLat(homePosition)
+    const head = [0, 50]
+    Coordinate.rotate(head, -angle * Math.PI / 180)
+    Coordinate.add(head, tail)
+    features.push(
+      <Feature id={homePositionIdToGlobalId('')} key=''
+        style={ownHomePositionStyles(selectedIds.includes(''))}>
+        <geom.LineString coordinates={[tail, head]} />
+      </Feature>
+    )
   }
+
+  return (
+    <source.Vector>
+      {features}
+    </source.Vector>
+  )
+}
+
+HomePositionsVectorSource.propTypes = {
+  angle: PropTypes.number,
+  homePosition: PropTypes.arrayOf(PropTypes.number),
+  selectedIds: PropTypes.arrayOf(PropTypes.string)
 }
 
 const HomePositionsLayerPresentation = ({ angle, homePosition, selectedIds, zIndex }) => (
