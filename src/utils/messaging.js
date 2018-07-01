@@ -7,7 +7,7 @@ import makeLogger from './logging'
 
 const logger = makeLogger('messaging')
 
-export const takeoffUAVs = (uavs) => (
+export const takeoffUAVs = uavs => (
   messageHub.sendMessage({
     type: 'UAV-TAKEOFF',
     ids: uavs
@@ -18,7 +18,7 @@ export const takeoffUAVs = (uavs) => (
   })
 )
 
-export const landUAVs = (uavs) => (
+export const landUAVs = uavs => (
   messageHub.sendMessage({
     type: 'UAV-LAND',
     ids: uavs
@@ -29,7 +29,7 @@ export const landUAVs = (uavs) => (
   })
 )
 
-export const returnToHomeUAVs = (uavs) => (
+export const returnToHomeUAVs = uavs => (
   messageHub.sendMessage({
     type: 'UAV-RTH',
     ids: uavs
@@ -40,7 +40,7 @@ export const returnToHomeUAVs = (uavs) => (
   })
 )
 
-export const haltUAVs = (uavs) => (
+export const haltUAVs = uavs => (
   messageHub.sendMessage({
     type: 'UAV-HALT',
     ids: uavs
@@ -51,10 +51,20 @@ export const haltUAVs = (uavs) => (
   })
 )
 
+export const moveUAVs = (uavs, target) => (
+  messageHub.sendMessage({
+    type: 'UAV-FLY',
+    ids: uavs,
+    target
+  }).then(result => {
+    logger.info(JSON.stringify(result))
+  })
+)
+
 export const toggleErrorUAVs = (() => {
   let currentError = []
 
-  return (uavs) => {
+  return uavs => {
     currentError =
       currentError.length === 0
         ? [Math.floor(Math.random() * 256)]

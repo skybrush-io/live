@@ -14,6 +14,7 @@ import MenuItem from '@material-ui/core/MenuItem'
 
 import ActionDelete from '@material-ui/icons/Delete'
 import Edit from '@material-ui/icons/Edit'
+import Flight from '@material-ui/icons/Flight'
 import FlightTakeoff from '@material-ui/icons/FlightTakeoff'
 import FlightLand from '@material-ui/icons/FlightLand'
 import Home from '@material-ui/icons/Home'
@@ -73,6 +74,15 @@ class MapContextMenu extends React.Component {
 
           if (hasSelectedUAVs) {
             result.push(
+              <MenuItem key="fly" dense onClick={this._moveSelectedUAVsAtCurrentAltitude}>
+                <ListItemIcon><Flight /></ListItemIcon>
+                Fly here
+              </MenuItem>,
+              <MenuItem key="flyAtAltitude" dense disabled onClick={this._moveSelectedUAVsAtGivenAltitude}>
+                <ListItemIcon><Flight /></ListItemIcon>
+                Fly here at altitude...
+              </MenuItem>,
+              <Divider key="div2" />,
               <MenuItem key="takeoff" dense onClick={this._takeoffSelectedUAVs}>
                 <ListItemIcon><FlightTakeoff /></ListItemIcon>
                 Takeoff
@@ -125,6 +135,23 @@ class MapContextMenu extends React.Component {
         }}
       </ContextMenu>
     )
+  }
+
+  @autobind
+  _moveSelectedUAVsAtCurrentAltitude (event, context) {
+    const { coords, selectedUAVIds } = context
+    if (coords && coords.length === 2) {
+      messaging.moveUAVs(selectedUAVIds, {
+        lat: coords[1],
+        lon: coords[0],
+        agl: undefined
+      })
+    }
+  }
+
+  @autobind
+  _moveSelectedUAVsAtGivenAltitude (event, context) {
+    // TODO(ntamas)
   }
 
   @autobind

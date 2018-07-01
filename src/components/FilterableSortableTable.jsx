@@ -103,14 +103,15 @@ class FilterableSortableTable extends React.Component {
   /**
    * React lifecycle event handler to update the steps of range type columns.
    *
-   * @param {Object} newProps The updated props that the component will receive.
+   * @param {Object} oldProps The old props that the component used to have
+   *        before the update
    */
-  componentWillReceiveProps (newProps) {
-    if (newProps.dataSource !== this.props.dataSource) {
+  componentDidUpdate (oldProps) {
+    if (oldProps.dataSource !== this.props.dataSource) {
       this.state.availableColumns.filter(
         col => col.filterType === FilterTypes.range
       ).forEach(col => {
-        const sortedData = newProps.dataSource.map(
+        const sortedData = this.props.dataSource.map(
           row => col.dataExtractor(row)
         ).sort(col.sorter)
 

@@ -72,8 +72,10 @@ export default class ContextMenu extends React.Component {
 
     this.setState({
       open: false,
-      opening: false,
-      context: undefined
+      opening: false
+      // don't set the context to undefined here -- you could be running into
+      // strange problems with disappearing menu items during the animation
+      // when the menu fades out
     })
   }
 
