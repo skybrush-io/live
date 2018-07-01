@@ -57,14 +57,6 @@ class HeatmapLayerSettingsPresentation extends React.Component {
       maxHue: props.layer.parameters.maxHue
     }
 
-    this._showSubscriptionDialog = this._showSubscriptionDialog.bind(this)
-    this._handleColoringFunctionChange = (
-      this._handleColoringFunctionChange.bind(this)
-    )
-    this._handleHueChange = this._handleHueChange.bind(this)
-    this._handleClick = this._handleClick.bind(this)
-    this._clearData = this._clearData.bind(this)
-
     this._refs = {}
     this._assignRefs = {}
 
@@ -205,23 +197,27 @@ class HeatmapLayerSettingsPresentation extends React.Component {
     )
   }
 
+  @autobind
   _showSubscriptionDialog () {
     this._refs.subscriptionDialog._updateDeviceList()
     this._refs.subscriptionDialog.showDialog()
   }
 
+  @autobind
   _handleHueChange (e) {
     this.setState({
       [e.target.id]: toNumber(e.target.value)
     })
   }
 
+  @autobind
   _handleColoringFunctionChange (e) {
     this.setState({
       coloringFunction: e.target.value
     })
   }
 
+  @autobind
   _handleClick (e) {
     const layerParameters = {
       threshold: toNumber(this._refs.threshold.value),
@@ -238,6 +234,7 @@ class HeatmapLayerSettingsPresentation extends React.Component {
     }
   }
 
+  @autobind
   _clearData () {
     window.localStorage.removeItem(`${this.props.layerId}_data`)
 
