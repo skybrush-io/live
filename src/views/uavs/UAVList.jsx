@@ -9,8 +9,7 @@ import IconButton from '@material-ui/core/IconButton'
 import ListItem from '@material-ui/core/ListItem'
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction'
 import ListItemText from '@material-ui/core/ListItemText'
-import Tooltip from '@material-ui/core/Tooltip'
-import ImageAdjust from '@material-ui/icons/Adjust'
+import Search from '@material-ui/icons/Search'
 
 import { autobind } from 'core-decorators'
 import Extent from 'ol/extent'
@@ -54,11 +53,7 @@ const jumpToUAV = function (uav) {
  */
 const UAVListPresentation = multiSelectableListOf((uav, props, selected) => {
   const rightIconButton = (
-    <Tooltip placement='bottom' title={`Jump to ${uav.id}`}>
-      <IconButton onClick={() => jumpToUAV(uav)}>
-        <ImageAdjust />
-      </IconButton>
-    </Tooltip>
+    <IconButton onClick={() => jumpToUAV(uav)}><Search /></IconButton>
   )
 
   return (
@@ -91,12 +86,12 @@ class UAVList extends React.Component {
     }
   }
 
-  componentWillReceiveProps (newProps) {
-    this._onFlockMaybeChanged(this.props.flock, newProps.flock)
-  }
-
   componentDidMount () {
     this._onFlockMaybeChanged(undefined, this.props.flock)
+  }
+
+  componentDidUpdate (oldProps) {
+    this._onFlockMaybeChanged(oldProps.flock, this.props.flock)
   }
 
   componentWillUnmount () {
