@@ -12,6 +12,7 @@ import ListItemText from '@material-ui/core/ListItemText'
 import Search from '@material-ui/icons/Search'
 
 import { autobind } from 'core-decorators'
+import { pick } from 'lodash'
 import Extent from 'ol/extent'
 import PropTypes from 'prop-types'
 import React from 'react'
@@ -35,7 +36,8 @@ import { coordinateFromLonLat, formatCoordinate } from '../../utils/geography'
  * @return {string} the formatted secondary text of the UAV
  */
 function formatSecondaryTextForUAV (uav) {
-  return `at ${formatCoordinate([uav.lon, uav.lat])}, heading ${uav.heading.toFixed(1)}°`
+  return `${formatCoordinate([uav.lon, uav.lat])}, ${uav.heading.toFixed(1)}°` +
+    (uav.agl !== undefined ? ` @ ${uav.agl.toFixed(1)}m` : '')
 }
 
 const jumpToUAV = function (uav) {
@@ -177,14 +179,7 @@ class UAVList extends React.Component {
    * @return {Object}  the object containing the picked props
    */
   _pickRelevantUAVProps (uav) {
-    return {
-      id: uav.id,
-      lastUpdated: uav.lastUpdated,
-      lat: uav.lat,
-      lon: uav.lon,
-      heading: uav.heading,
-      error: uav.error
-    }
+    return pick(uav, ['id', 'lastUpdated', 'lat', 'lon', 'heading', 'error', 'agl'])
   }
 
   render () {

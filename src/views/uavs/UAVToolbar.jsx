@@ -5,7 +5,6 @@ import React from 'react'
 import { connect } from 'react-redux'
 
 import IconButton from '@material-ui/core/IconButton'
-import Tooltip from '@material-ui/core/Tooltip'
 import ActionFlightTakeoff from '@material-ui/icons/FlightTakeoff'
 import ActionFlightLand from '@material-ui/icons/FlightLand'
 import ActionHome from '@material-ui/icons/Home'
