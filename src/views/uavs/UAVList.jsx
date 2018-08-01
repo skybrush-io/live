@@ -5,12 +5,14 @@
 
 import Immutable from 'immutable'
 
-import IconButton from 'material-ui/IconButton'
-import { ListItem, ListItemSecondaryAction, ListItemText } from 'material-ui/List'
-import Tooltip from 'material-ui/Tooltip'
-import ImageAdjust from 'material-ui-icons/Adjust'
+import IconButton from '@material-ui/core/IconButton'
+import ListItem from '@material-ui/core/ListItem'
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction'
+import ListItemText from '@material-ui/core/ListItemText'
+import Search from '@material-ui/icons/Search'
 
 import { autobind } from 'core-decorators'
+import { pick } from 'lodash'
 import Extent from 'ol/extent'
 import PropTypes from 'prop-types'
 import React from 'react'
@@ -23,7 +25,7 @@ import UAVToolbar from './UAVToolbar'
 import { setSelectedUAVIds } from '../../actions/map'
 import { multiSelectableListOf } from '../../components/helpers/lists'
 import Flock from '../../model/flock'
-import { getSelectedUAVIds } from '../../selectors'
+import { getSelectedUAVIds } from '../../selectors/selection'
 import { mapViewToExtentSignal, mapViewToLocationSignal } from '../../signals'
 import { coordinateFromLonLat, formatCoordinate } from '../../utils/geography'
 
@@ -34,7 +36,8 @@ import { coordinateFromLonLat, formatCoordinate } from '../../utils/geography'
  * @return {string} the formatted secondary text of the UAV
  */
 function formatSecondaryTextForUAV (uav) {
-  return `at ${formatCoordinate([uav.lon, uav.lat])}, heading ${uav.heading.toFixed(1)}°`
+  return `${formatCoordinate([uav.lon, uav.lat])}, ${uav.heading.toFixed(1)}°` +
+    (uav.agl !== undefined ? ` @ ${uav.agl.toFixed(1)}m` : '')
 }
 
 const jumpToUAV = function (uav) {
@@ -52,11 +55,7 @@ const jumpToUAV = function (uav) {
  */
 const UAVListPresentation = multiSelectableListOf((uav, props, selected) => {
   const rightIconButton = (
-    <Tooltip placement='bottom' title={`Jump to ${uav.id}`}>
-      <IconButton onClick={() => jumpToUAV(uav)}>
-        <ImageAdjust />
-      </IconButton>
-    </Tooltip>
+    <IconButton onClick={() => jumpToUAV(uav)}><Search /></IconButton>
   )
 
   return (
@@ -89,12 +88,12 @@ class UAVList extends React.Component {
     }
   }
 
-  componentWillReceiveProps (newProps) {
-    this._onFlockMaybeChanged(this.props.flock, newProps.flock)
-  }
-
   componentDidMount () {
     this._onFlockMaybeChanged(undefined, this.props.flock)
+  }
+
+  componentDidUpdate (oldProps) {
+    this._onFlockMaybeChanged(oldProps.flock, this.props.flock)
   }
 
   componentWillUnmount () {
@@ -180,14 +179,7 @@ class UAVList extends React.Component {
    * @return {Object}  the object containing the picked props
    */
   _pickRelevantUAVProps (uav) {
-    return {
-      id: uav.id,
-      lastUpdated: uav.lastUpdated,
-      lat: uav.lat,
-      lon: uav.lon,
-      heading: uav.heading,
-      error: uav.error
-    }
+    return pick(uav, ['id', 'lastUpdated', 'lat', 'lon', 'heading', 'error', 'agl'])
   }
 
   render () {

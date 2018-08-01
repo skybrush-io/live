@@ -139,6 +139,11 @@ const reducer = handleActions({
     return u.updateIn(getKey(id, 'label'), name, state)
   },
 
+  SET_FEATURE_COLOR (state, action) {
+    const { id, color } = action.payload
+    return u.updateIn(getKey(id, 'color'), color, state)
+  },
+
   UPDATE_FEATURE_COORDINATES (state, action) {
     const { coordinates } = action.payload
     const updates = mapValues(coordinates,

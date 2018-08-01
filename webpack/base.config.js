@@ -12,14 +12,15 @@ var Dotenv = require('dotenv-webpack')
 
 var projectRoot = require('./helpers').projectRoot
 
+var enableSourceMap = process.env.NODE_ENV !== 'production'
+
 module.exports = {
-  entry: './src/index',
   mode: 'development',
   output: {
-    devtoolModuleFilenameTemplate: '/[absolute-resource-path]',
     path: path.join(projectRoot, 'build'),
     publicPath: '/build/'
   },
+  devtool: enableSourceMap ? 'cheap-module-source-map' : undefined,
   plugins: [
     new webpack.NoEmitOnErrorsPlugin(),
 
@@ -31,7 +32,8 @@ module.exports = {
 
     // Resolve process.env.NODE_ENV in the code
     new webpack.DefinePlugin({
-      'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development')
+      'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development'),
+      'process.env.DEPLOYMENT': JSON.stringify(process.env.DEPLOYMENT || '0')
     }),
 
     // Add environment variables from .env
@@ -74,6 +76,12 @@ module.exports = {
           { loader: 'url-loader?limit=8192' }
         ],
         include: path.join(projectRoot, 'assets')
+      },
+      {
+        test: /\.(woff|woff2|eot|ttf|svg)$/,
+        use: [
+          { loader: 'file-loader' }
+        ]
       }
     ],
     noParse: [/dist\/ol.*\.js/]

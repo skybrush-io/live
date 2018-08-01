@@ -3,13 +3,13 @@
  * for `window.prompt()`.
  */
 
-import Button from 'material-ui/Button'
+import Button from '@material-ui/core/Button'
 import Dialog, {
   DialogActions,
   DialogContent,
   DialogContentText,
   DialogTitle
-} from 'material-ui/Dialog'
+} from '@material-ui/core/Dialog'
 
 import PropTypes from 'prop-types'
 import { reduxForm, Field } from 'redux-form'

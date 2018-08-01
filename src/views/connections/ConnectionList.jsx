@@ -3,16 +3,19 @@
  * current server.
  */
 
-import IconButton from 'material-ui/IconButton'
-import { ListItem, ListItemIcon, ListItemSecondaryAction, ListItemText } from 'material-ui/List'
+import IconButton from '@material-ui/core/IconButton'
+import ListItem from '@material-ui/core/ListItem'
+import ListItemIcon from '@material-ui/core/ListItemIcon'
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction'
+import ListItemText from '@material-ui/core/ListItemText'
 
-import { green, grey, red, yellow } from 'material-ui/colors'
+import { green, grey, red, yellow } from '@material-ui/core/colors'
 
-import ActionDone from 'material-ui-icons/Done'
-import ActionHelpOutline from 'material-ui-icons/HelpOutline'
-import ActionSettings from 'material-ui-icons/Settings'
-import ActionSettingsEthernet from 'material-ui-icons/SettingsEthernet'
-import ContentClear from 'material-ui-icons/Clear'
+import ActionDone from '@material-ui/icons/Done'
+import ActionHelpOutline from '@material-ui/icons/HelpOutline'
+import ActionSettings from '@material-ui/icons/Settings'
+import ActionSettingsEthernet from '@material-ui/icons/SettingsEthernet'
+import ContentClear from '@material-ui/icons/Clear'
 
 import PropTypes from 'prop-types'
 import React from 'react'
@@ -22,7 +25,7 @@ import { TimeAgo } from 'react-time-ago'
 import { showServerSettingsDialog } from '../../actions/server-settings'
 import { listOf } from '../../components/helpers/lists'
 import { ConnectionState } from '../../model/connections'
-import { getConnectionsInOrder } from '../../selectors'
+import { getConnectionsInOrder } from '../../selectors/ordered'
 
 /**
  * Icons for the different connection states in the connection list.

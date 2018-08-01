@@ -3,12 +3,12 @@
  * that we use on the map.
  */
 
-import { unary } from 'lodash'
-import LocationOn from 'material-ui-icons/LocationOn'
-import ShowChart from 'material-ui-icons/ShowChart'
-import CropSquare from 'material-ui-icons/CropSquare'
-import PanoramaFishEye from 'material-ui-icons/PanoramaFishEye'
-import LabelOutline from 'material-ui-icons/LabelOutline'
+import { isNil, unary } from 'lodash'
+import LocationOn from '@material-ui/icons/LocationOn'
+import ShowChart from '@material-ui/icons/ShowChart'
+import CropSquare from '@material-ui/icons/CropSquare'
+import PanoramaFishEye from '@material-ui/icons/PanoramaFishEye'
+import LabelOutline from '@material-ui/icons/LabelOutline'
 import React from 'react'
 
 import { lonLatFromCoordinate } from '../utils/geography'
@@ -124,4 +124,31 @@ export function getNameOfFeatureType (type) {
  */
 export function getIconOfFeatureType (type) {
   return _featureTypeIcons[type] || _featureTypeIcons[FeatureType.POINTS]
+}
+
+/**
+ * Returns whether the given OpenLayers feature is transformable with a
+ * standard transformation interaction.
+ *
+ * @param  {ol.Feature|null|undefined}  feature  the feature to test
+ * @return {boolean} whether the feature is transformable
+ */
+export function isFeatureTransformable (feature) {
+  if (isNil(feature)) {
+    return false
+  }
+
+  const parts = feature.getId().split('$')
+  if (parts.length < 2) {
+    return false
+  }
+
+  switch (parts[0]) {
+    case 'feature':
+    case 'home':
+      return true
+
+    default:
+      return false
+  }
 }

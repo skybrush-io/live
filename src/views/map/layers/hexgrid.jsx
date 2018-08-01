@@ -5,13 +5,13 @@ import Polygon from 'ol/geom/polygon'
 import OLMath from 'ol/math'
 import Fill from 'ol/style/fill'
 import Style from 'ol/style/style'
-import { layer, source } from 'ol-react'
+import { source } from '@collmot/ol-react'
 import PropTypes from 'prop-types'
 import React from 'react'
 import { connect } from 'react-redux'
 
-import Button from 'material-ui/Button'
-import TextField from 'material-ui/TextField'
+import Button from '@material-ui/core/Button'
+import TextField from '@material-ui/core/TextField'
 
 import { setLayerParameterById } from '../../../actions/layers'
 
@@ -113,17 +113,32 @@ export const HexGridLayerSettings = connect(
 
 // === The actual layer to be rendered ===
 
-class HexGridVectorSource extends source.Vector {
-  constructor (props) {
-    super(props)
-
-    this._drawHexagonsFromProps(props)
+class HexGridVectorSource extends React.PureComponent {
+  componentDidUpdate () {
+    if (this._sourceRef) {
+      const { source } = this._sourceRef
+      this._drawHexagonsFromProps(this.props, source)
+    }
   }
 
-  componentWillReceiveProps (newProps) {
-    this.source.clear()
+  render () {
+    return (
+      <source.Vector ref={this._assignSourceRef} />
+    )
+  }
 
-    this._drawHexagonsFromProps(newProps)
+  @autobind
+  _assignSourceRef (value) {
+    if (this._sourceRef === value) {
+      return
+    }
+
+    if (this._sourceRef) {
+      const { source } = this._sourceRef
+      source.clear()
+    }
+
+    this._sourceRef = value
   }
 
   _getCorners (center, radius) {
@@ -144,8 +159,8 @@ class HexGridVectorSource extends source.Vector {
     )
   }
 
-  _drawHexagonsFromProps (props) {
-    const { center, size, radius } = props.parameters
+  _drawHexagonsFromProps (props, source) {
+    const { center, size, radius } = props
 
     const features = {}
 
@@ -160,7 +175,8 @@ class HexGridVectorSource extends source.Vector {
       }
     }
 
-    this.source.addFeatures(values(features))
+    source.clear()
+    source.addFeatures(values(features))
 
     for (const hash in features) {
       const coordinates = hash.split(',').map(toNumber)
@@ -171,15 +187,19 @@ class HexGridVectorSource extends source.Vector {
 }
 
 HexGridVectorSource.propTypes = {
-  parameters: PropTypes.object
+  center: PropTypes.object.isRequired,
+  size: PropTypes.number.isRequired,
+  radius: PropTypes.number.isRequired
 }
 
 class HexGridLayerPresentation extends React.Component {
   render () {
+    const { layer, zIndex } = this.props
+    const { center, size, radius } = this.props.layer.parameters
     return (
       <div>
-        <layer.Vector zIndex={this.props.zIndex}>
-          <HexGridVectorSource parameters={this.props.layer.parameters} />
+        <layer.Vector zIndex={zIndex}>
+          <HexGridVectorSource center={center} size={size} radius={radius} />
         </layer.Vector>
 
         <div id='heatmapScale'>

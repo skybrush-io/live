@@ -6,17 +6,18 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 
-import ActionSettingsBackupRestore from 'material-ui-icons/SettingsBackupRestore'
-import EditorHighlight from 'material-ui-icons/Highlight'
-import ContentSort from 'material-ui-icons/Sort'
+import ActionSettingsBackupRestore from '@material-ui/icons/SettingsBackupRestore'
+import EditorHighlight from '@material-ui/icons/Highlight'
+import ContentSort from '@material-ui/icons/Sort'
 
-import Button from 'material-ui/Button'
+import Button from '@material-ui/core/Button'
 
-import Popover from 'material-ui/Popover'
-import { FormControlLabel } from 'material-ui/Form'
-import Checkbox from 'material-ui/Checkbox'
+import Popover from '@material-ui/core/Popover'
+import FormControlLabel from '@material-ui/core/FormControlLabel'
+import Checkbox from '@material-ui/core/Checkbox'
+import TextField from '@material-ui/core/TextField'
+
 import { Range } from 'rc-slider'
-import TextField from 'material-ui/TextField'
 
 import 'rc-slider/assets/index.css'
 import '../../assets/css/FilterableSortableTable.less'
@@ -102,14 +103,15 @@ class FilterableSortableTable extends React.Component {
   /**
    * React lifecycle event handler to update the steps of range type columns.
    *
-   * @param {Object} newProps The updated props that the component will receive.
+   * @param {Object} oldProps The old props that the component used to have
+   *        before the update
    */
-  componentWillReceiveProps (newProps) {
-    if (newProps.dataSource !== this.props.dataSource) {
+  componentDidUpdate (oldProps) {
+    if (oldProps.dataSource !== this.props.dataSource) {
       this.state.availableColumns.filter(
         col => col.filterType === FilterTypes.range
       ).forEach(col => {
-        const sortedData = newProps.dataSource.map(
+        const sortedData = this.props.dataSource.map(
           row => col.dataExtractor(row)
         ).sort(col.sorter)
 

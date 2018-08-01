@@ -2,7 +2,9 @@
  * @file Component that shows the list of features created by the user.
  */
 
-import { ListItem, ListItemIcon, ListItemText } from 'material-ui/List'
+import ListItem from '@material-ui/core/ListItem'
+import ListItemIcon from '@material-ui/core/ListItemIcon'
+import ListItemText from '@material-ui/core/ListItemText'
 
 import PropTypes from 'prop-types'
 import React from 'react'
@@ -11,7 +13,7 @@ import { connect } from 'react-redux'
 import { showFeatureEditorDialog } from '../../actions/feature-editor'
 import { listOf } from '../../components/helpers/lists'
 import { getNameOfFeatureType, getIconOfFeatureType } from '../../model/features'
-import { getFeaturesInOrder } from '../../selectors'
+import { getFeaturesInOrder } from '../../selectors/ordered'
 
 /**
  * Presentation component for a single entry in the feature list.

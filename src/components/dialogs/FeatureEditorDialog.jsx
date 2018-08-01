@@ -1,94 +1,112 @@
-import { partial } from 'lodash'
 import PropTypes from 'prop-types'
 import React from 'react'
 import { connect } from 'react-redux'
-import { reduxForm, submit, Field } from 'redux-form'
 import { TextField } from 'redux-form-material-ui'
 
-import AppBar from 'material-ui/AppBar'
-import Button from 'material-ui/Button'
-import Dialog, { DialogActions, DialogContent } from 'material-ui/Dialog'
-import Switch from 'material-ui/Switch'
-import Tabs, { Tab } from 'material-ui/Tabs'
+import AppBar from '@material-ui/core/AppBar'
+import Button from '@material-ui/core/Button'
+import Dialog from '@material-ui/core/Dialog'
+import DialogActions from '@material-ui/core/DialogActions'
+import DialogContent from '@material-ui/core/DialogContent'
+import Switch from '@material-ui/core/Switch'
+import Tab from '@material-ui/core/Tab'
+import Tabs from '@material-ui/core/Tabs'
 
 import {
+  removeFeature,
+  renameFeature,
+  setFeatureColor,
   updateFeatureVisibility
 } from '../../actions/features'
 import {
   closeFeatureEditorDialog,
   setFeatureEditorDialogTab
 } from '../../actions/feature-editor'
+import CircleColorPicker from '../../components/CircleColorPicker'
+import { primaryColor } from '../../utils/styles'
 
-const GeneralPropertiesFormPresentation = ({ feature, onToggleFeatureVisibility }) => (
+const GeneralPropertiesFormPresentation = ({
+  feature, onSetFeatureColor, onSetFeatureLabel, onToggleFeatureVisibility
+}) => (
   <div>
     <div style={{ display: 'flex', padding: '1em 0' }}>
-      <Field name='label' label='Label' style={{ flex: 'auto' }}
-        component={TextField} fullWidth />
-      <div>&nbsp;</div>
-      <Switch checked={feature.visible} color='primary'
+      <div style={{ flex: 'auto' }}>
+        <TextField autoFocus label='Label' value={feature.label || ''} fullWidth
+          onChange={onSetFeatureLabel} />
+      </div>
+      <Switch
+        checked={feature.visible} color='primary'
         onChange={onToggleFeatureVisibility}
         style={{ flex: 'none' }}
       />
+    </div>
+    <div>
+      <CircleColorPicker value={feature.color || primaryColor}
+        onChangeComplete={onSetFeatureColor} />
     </div>
   </div>
 )
 
 GeneralPropertiesFormPresentation.propTypes = {
   feature: PropTypes.object.isRequired,
+  featureId: PropTypes.string.isRequired,
+  onSetFeatureColor: PropTypes.func,
+  onSetFeatureLabel: PropTypes.func,
   onToggleFeatureVisibility: PropTypes.func
 }
 
 const GeneralPropertiesForm = connect(
   // mapStateToProps
-  state => {
-    const feature = state.features.byId[state.dialogs.featureEditor.featureId]
-    return {
-      feature,
-      initialValues: {
-        label: feature.label
-      }
-    }
-  },
+  null,
   // mapDispatchToProps
-  dispatch => ({
-    onToggleFeatureVisibility (featureId, event, checked) {
+  (dispatch, { featureId }) => ({
+    onSetFeatureColor (color) {
+      dispatch(setFeatureColor(featureId, color.hex))
+    },
+    onSetFeatureLabel (event) {
+      dispatch(renameFeature(featureId, event.target.value))
+    },
+    onToggleFeatureVisibility (event, checked) {
       dispatch(updateFeatureVisibility(featureId, checked))
     }
-  }),
-  // mergeProps
-  (stateProps, dispatchProps, ownProps) => ({
-    ...ownProps,
-    ...stateProps,
-    ...dispatchProps,
-    onToggleFeatureVisibility:
-      partial(dispatchProps.onToggleFeatureVisibility, stateProps.feature.id)
   })
-)(
-  reduxForm({
-    enableReinitialize: true,
-    form: 'generalFeatureSettings'
-  })(GeneralPropertiesFormPresentation)
-)
+)(GeneralPropertiesFormPresentation)
 
 const FeatureEditorDialogPresentation = props => {
+  const {
+    feature, featureId, onClose, onRemoveFeature, onTabSelected,
+    open, selectedTab
+  } = props
   const actions = []
   let content
 
-  switch (props.selectedTab) {
-    case 'general':
-      content = <DialogContent><GeneralPropertiesForm /></DialogContent>
-      break
+  if (!feature) {
+    content = <DialogContent><p>Feature does not exist</p></DialogContent>
+  } else {
+    switch (selectedTab) {
+      case 'general':
+        content = (
+          <DialogContent>
+            <GeneralPropertiesForm feature={feature} featureId={featureId} />
+          </DialogContent>
+        )
+        break
 
-    default:
-      content = <DialogContent><p>Not implemented yet</p></DialogContent>
+      default:
+        content = <DialogContent><p>Not implemented yet</p></DialogContent>
+    }
   }
 
-  actions.push(<Button key='close' onClick={props.onClose}>Close</Button>)
+  actions.push(
+    <Button key='remove' color='secondary' onClick={onRemoveFeature}
+      disabled={!feature}>Remove</Button>,
+    <Button key='close' onClick={onClose}>Close</Button>
+  )
 
   return (
-    <Dialog open={props.open} onClose={props.onClose} fullWidth maxWidth='xs'>
+    <Dialog open={open} onClose={onClose} fullWidth maxWidth='xs'>
       <AppBar position='static'>
-        <Tabs value={props.selectedTab} onChange={props.onTabSelected} fullWidth>
+        <Tabs value={selectedTab} onChange={onTabSelected} fullWidth>
           <Tab value='general' label="General" />
           <Tab value='points' label="Points" />
         </Tabs>
@@ -102,8 +120,10 @@ const FeatureEditorDialogPresentation = props => {
 }
 
 FeatureEditorDialogPresentation.propTypes = {
+  feature: PropTypes.object,
   featureId: PropTypes.string,
   onClose: PropTypes.func,
+  onRemoveFeature: PropTypes.func,
   onSubmit: PropTypes.func,
   onTabSelected: PropTypes.func,
   open: PropTypes.bool.isRequired,
@@ -121,19 +141,33 @@ FeatureEditorDialogPresentation.defaultProps = {
  */
 const FeatureEditorDialog = connect(
   // mapStateToProps
-  state => ({
-    featureId: state.dialogs.featureEditor.featureId,
-    open: state.dialogs.featureEditor.dialogVisible,
-    selectedTab: state.dialogs.featureEditor.selectedTab
-  }),
+  state => {
+    const { dialogVisible, featureId, selectedTab } = state.dialogs.featureEditor
+    return {
+      featureId,
+      selectedTab,
+      feature: state.features.byId[featureId],
+      open: dialogVisible
+    }
+  },
   // mapDispatchToProps
   dispatch => ({
     onClose () {
       dispatch(closeFeatureEditorDialog())
     },
+    onRemoveFeature (featureId) {
+      dispatch(removeFeature(featureId))
+      dispatch(closeFeatureEditorDialog())
+    },
     onTabSelected (event, value) {
       dispatch(setFeatureEditorDialogTab(value))
     }
+  }),
+  // mergeProps
+  (stateProps, dispatchProps) => ({
+    ...stateProps,
+    ...dispatchProps,
+    onRemoveFeature: () => dispatchProps.onRemoveFeature(stateProps.featureId)
   })
 )(FeatureEditorDialogPresentation)
 

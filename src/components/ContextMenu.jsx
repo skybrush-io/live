@@ -4,11 +4,12 @@
  */
 
 import { autobind } from 'core-decorators'
+import { isFunction } from 'lodash'
 import PropTypes from 'prop-types'
 import React from 'react'
 
-import Popover from 'material-ui/Popover'
-import { MenuList } from 'material-ui/Menu'
+import Popover from '@material-ui/core/Popover'
+import MenuList from '@material-ui/core/MenuList'
 
 /**
  * Generic context menu using a Material-UI popover element.
@@ -27,7 +28,8 @@ export default class ContextMenu extends React.Component {
       position: {
         top: 0,
         left: 0
-      }
+      },
+      context: undefined
     }
   }
 
@@ -35,11 +37,15 @@ export default class ContextMenu extends React.Component {
    * Public method to open the context menu.
    *
    * @param {Object} position Coordinates where the absolutely positioned popup
-   * should appear.
+   *        should appear.
    * @property {number} left The offset of the context menu from the left edge of the page.
    * @property {number} top The offset of the context menu from the top edge of the page.
+   * @param {Object} context Context object to pass to the click handlers of
+   *        the menu items as their second argument.
    */
-  open (position) {
+  open (position, context) {
+    const { contextProvider } = this.props
+
     // Prevent the document body from firing a contextmenu event
     document.body.addEventListener(
       'contextmenu', this._preventDefault
@@ -49,6 +55,7 @@ export default class ContextMenu extends React.Component {
     this.setState({
       opening: true,
       open: false,
+      context: contextProvider ? contextProvider(context) : context,
       position
     })
   }
@@ -64,7 +71,11 @@ export default class ContextMenu extends React.Component {
     )
 
     this.setState({
-      open: false, opening: false
+      open: false,
+      opening: false
+      // don't set the context to undefined here -- you could be running into
+      // strange problems with disappearing menu items during the animation
+      // when the menu fades out
     })
   }
 
@@ -88,17 +99,22 @@ export default class ContextMenu extends React.Component {
 
   render () {
     const { children } = this.props
-    const { open, opening, position } = this.state
+    const { context, open, opening, position } = this.state
+    const effectiveChildren = isFunction(children)
+      ? children(context || {}) : children
 
-    const menuItems = React.Children.map(children,
+    const menuItems = React.Children.map(
+      effectiveChildren,
       child => React.cloneElement(child,
         {
           onClick: child.props.onClick
             ? event => {
-              child.props.onClick(event)
+              child.props.onClick(event, context)
               this._handleClose()
             }
-            : undefined
+            : event => {
+              this._handleClose()
+            }
         }
       )
     )
@@ -120,5 +136,6 @@ export default class ContextMenu extends React.Component {
 }
 
 ContextMenu.propTypes = {
-  children: PropTypes.node
+  children: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
+  contextProvider: PropTypes.func
 }

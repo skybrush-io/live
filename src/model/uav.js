@@ -19,6 +19,8 @@ export default class UAV {
   constructor (id) {
     this._id = id
     this.lastUpdated = undefined
+    this.agl = undefined
+    this.amsl = undefined
     this.lat = undefined
     this.lon = undefined
     this.heading = undefined
@@ -55,10 +57,16 @@ export default class UAV {
     if (position) {
       this.lat = position.lat
       this.lon = position.lon
+      if (position.agl !== undefined) {
+        this.agl = position.agl
+      }
+      if (position.amsl !== undefined) {
+        this.amsl = position.amsl
+      }
       updated = true
     }
 
-    if (typeof heading !== 'undefined') {
+    if (heading !== undefined) {
       this.heading = heading
       updated = true
     }

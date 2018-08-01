@@ -1,17 +1,17 @@
-import { layer } from 'ol-react'
+import { layer } from '@collmot/ol-react'
 import PropTypes from 'prop-types'
 import React from 'react'
 import { connect } from 'react-redux'
 
-import Button from 'material-ui/Button'
-import TextField from 'material-ui/TextField'
+import Button from '@material-ui/core/Button'
+import TextField from '@material-ui/core/TextField'
 
 import ActiveUAVsLayerSource from '../sources/ActiveUAVsLayerSource'
 
 import { setLayerParameterById } from '../../../actions/layers'
 import { showSnackbarMessage } from '../../../actions/snackbar'
 import flock from '../../../flock'
-import { getSelection } from '../../../selectors'
+import { getSelection } from '../../../selectors/selection'
 import { coordinateFromLonLat } from '../../../utils/geography'
 import makeLogger from '../../../utils/logging'
 

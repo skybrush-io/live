@@ -7,6 +7,7 @@
 import { combineReducers } from 'redux'
 
 import layersReducer from './layers'
+import originReducer from './origin'
 import selectionReducer from './selection'
 import toolsReducer from './tools'
 
@@ -16,6 +17,7 @@ import toolsReducer from './tools'
  */
 const reducer = combineReducers({
   layers: layersReducer,
+  origin: originReducer,
   selection: selectionReducer,
   tools: toolsReducer
 })

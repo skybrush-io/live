@@ -9,7 +9,7 @@ import Condition from 'ol/events/condition'
 import Interaction from 'ol/interaction/interaction'
 import Layer from 'ol/layer/layer'
 import VectorLayer from 'ol/layer/vector'
-import { interaction } from 'ol-react'
+import { createOLInteractionComponent } from '@collmot/ol-react/lib/interaction'
 import PropTypes from 'prop-types'
 
 import { euclideanDistance, getExactClosestPointOf } from '../../../utils/geography'
@@ -57,6 +57,13 @@ class SelectNearestFeatureInteraction extends Interaction {
       handleEvent: mapBrowserEvent => {
         // Bail out if this is not a click
         if (!Condition.click(mapBrowserEvent)) {
+          return true
+        }
+
+        // Bail out if this is not a primary click; this needs to be guarded
+        // with the previous condition, otherwise OL will throw exceptions
+        // for mouse move events
+        if (!Condition.primaryAction(mapBrowserEvent)) {
           return true
         }
 
@@ -216,19 +223,24 @@ class SelectNearestFeatureInteraction extends Interaction {
  * React wrapper around an instance of {@link SelectNearestFeatureInteraction}
  * that allows us to use it in JSX.
  */
-export default class SelectNearestFeature extends interaction.OLInteraction {
-  createInteraction (props) {
-    return new SelectNearestFeatureInteraction(props)
+export default createOLInteractionComponent(
+  'SelectNearestFeature',
+  props => new SelectNearestFeatureInteraction(props),
+  {
+    propTypes: {
+      addCondition: PropTypes.func,
+      layers: PropTypes.oneOfType([
+        PropTypes.func, PropTypes.arrayOf(Layer)
+      ]),
+      removeCondition: PropTypes.func,
+      select: PropTypes.func,
+      threshold: PropTypes.number,
+      toggleCondition: PropTypes.func
+    },
+    fragileProps: [
+      'addCondition', 'layers', 'removeCondition',
+      'threshold', 'toggleCondition'
+    ],
+    events: ['select']
   }
-}
-
-SelectNearestFeature.propTypes = Object.assign({}, interaction.OLInteraction.propTypes, {
-  addCondition: PropTypes.func,
-  layers: PropTypes.oneOfType([
-    PropTypes.func, PropTypes.arrayOf(Layer)
-  ]),
-  removeCondition: PropTypes.func,
-  select: PropTypes.func,
-  threshold: PropTypes.number,
-  toggleCondition: PropTypes.func
-})
+)

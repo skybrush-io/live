@@ -1,3 +1,4 @@
+import { autobind } from 'core-decorators'
 import { partial, toNumber } from 'lodash'
 import numbro from 'numbro'
 import Feature from 'ol/feature'
@@ -5,18 +6,21 @@ import Point from 'ol/geom/point'
 import Circle from 'ol/style/circle'
 import Fill from 'ol/style/fill'
 import Style from 'ol/style/style'
-import { layer, source } from 'ol-react'
+import { layer, source } from '@collmot/ol-react'
 import PropTypes from 'prop-types'
 import React from 'react'
 import { connect } from 'react-redux'
 
-import Button from 'material-ui/Button'
-import { FormControl, FormControlLabel, FormGroup } from 'material-ui/Form'
-import { InputAdornment, InputLabel } from 'material-ui/Input'
-import { MenuItem } from 'material-ui/Menu'
-import Switch from 'material-ui/Switch'
-import Select from 'material-ui/Select'
-import TextField from 'material-ui/TextField'
+import Button from '@material-ui/core/Button'
+import FormControl from '@material-ui/core/FormControl'
+import FormControlLabel from '@material-ui/core/FormControlLabel'
+import FormGroup from '@material-ui/core/FormGroup'
+import InputAdornment from '@material-ui/core/InputAdornment'
+import InputLabel from '@material-ui/core/InputLabel'
+import MenuItem from '@material-ui/core/MenuItem'
+import Switch from '@material-ui/core/Switch'
+import Select from '@material-ui/core/Select'
+import TextField from '@material-ui/core/TextField'
 
 import { setLayerParameterById } from '../../../actions/layers'
 import SubscriptionDialog from '../../../components/dialogs/SubscriptionDialog'
@@ -52,14 +56,6 @@ class HeatmapLayerSettingsPresentation extends React.Component {
       minHue: props.layer.parameters.minHue,
       maxHue: props.layer.parameters.maxHue
     }
-
-    this._showSubscriptionDialog = this._showSubscriptionDialog.bind(this)
-    this._handleColoringFunctionChange = (
-      this._handleColoringFunctionChange.bind(this)
-    )
-    this._handleHueChange = this._handleHueChange.bind(this)
-    this._handleClick = this._handleClick.bind(this)
-    this._clearData = this._clearData.bind(this)
 
     this._refs = {}
     this._assignRefs = {}
@@ -201,23 +197,27 @@ class HeatmapLayerSettingsPresentation extends React.Component {
     )
   }
 
+  @autobind
   _showSubscriptionDialog () {
     this._refs.subscriptionDialog._updateDeviceList()
     this._refs.subscriptionDialog.showDialog()
   }
 
+  @autobind
   _handleHueChange (e) {
     this.setState({
       [e.target.id]: toNumber(e.target.value)
     })
   }
 
+  @autobind
   _handleColoringFunctionChange (e) {
     this.setState({
       coloringFunction: e.target.value
     })
   }
 
+  @autobind
   _handleClick (e) {
     const layerParameters = {
       threshold: toNumber(this._refs.threshold.value),
@@ -234,6 +234,7 @@ class HeatmapLayerSettingsPresentation extends React.Component {
     }
   }
 
+  @autobind
   _clearData () {
     window.localStorage.removeItem(`${this.props.layerId}_data`)
 
@@ -289,26 +290,36 @@ const makePointStyle = (color, radius) => new Style({
   })
 })
 
-class HeatmapVectorSource extends source.Vector {
+class HeatmapVectorSource extends React.Component {
   constructor (props) {
     super(props)
 
-    this._getStoredData = this._getStoredData.bind(this)
-    this._setStoredData = this._setStoredData.bind(this)
-    this._drawFromStoredData = this._drawFromStoredData.bind(this)
-
-    this._trySubscribe = this._trySubscribe.bind(this)
-    this._processNotification = this._processNotification.bind(this)
-
-    this._makePoint = this._makePoint.bind(this)
-    this._drawPointFromData = this._drawPointFromData.bind(this)
+    this._sourceRef = undefined
 
     this.features = new HashedMap()
-    this._drawFromStoredData()
-
-    messageHub.registerNotificationHandler('DEV-INF', this._processNotification)
 
     this._trySubscribe(props.parameters.subscriptions)
+  }
+
+  @autobind
+  _assignSourceRef (value) {
+    if (this._sourceRef === value) {
+      return
+    }
+
+    if (this._sourceRef) {
+      this._sourceRef.source.clear()
+    }
+
+    this._sourceRef = value
+
+    if (this._sourceRef) {
+      this._drawFromStoredData()
+    }
+  }
+
+  componentDidMount () {
+    messageHub.registerNotificationHandler('DEV-INF', this._processNotification)
   }
 
   componentDidUpdate () {
@@ -319,6 +330,11 @@ class HeatmapVectorSource extends source.Vector {
     messageHub.unregisterNotificationHandler('DEV-INF', this._processNotification)
   }
 
+  render () {
+    return <source.Vector ref={this._assignSourceRef} />
+  }
+
+  @autobind
   _getStoredData () {
     if (!window.localStorage.getItem(this.props.storageKey)) {
       window.localStorage.setItem(this.props.storageKey, '[]')
@@ -327,32 +343,43 @@ class HeatmapVectorSource extends source.Vector {
     return new HashedMap(JSON.parse(window.localStorage.getItem(this.props.storageKey)))
   }
 
+  @autobind
   _setStoredData (values) {
     window.localStorage.setItem(this.props.storageKey, JSON.stringify([...values.data]))
   }
 
+  @autobind
   _drawFromStoredData () {
-    this.source.clear()
+    const { source } = this._sourceRef || {}
+    if (!source) {
+      return
+    }
+
+    source.clear()
     this.features = new HashedMap()
 
     const values = this._getStoredData()
 
     for (const [key, value] of values) {
-      this.features.set(key, this._drawPointFromData(Object.assign({value}, key)))
+      this.features.set(key,
+        this._drawPointFromData(source, Object.assign({value}, key))
+      )
     }
   }
 
+  @autobind
   _trySubscribe (subscriptions) {
     if (!messageHub._emitter) {
       setTimeout(() => { this._trySubscribe(subscriptions) }, 500)
     } else {
       messageHub.sendMessage({
-        'type': 'DEV-SUB',
-        'paths': subscriptions
+        type: 'DEV-SUB',
+        paths: subscriptions
       })
     }
   }
 
+  @autobind
   _processData (values, data) {
     const minDistance = this.props.parameters.minDistance
 
@@ -394,6 +421,7 @@ class HeatmapVectorSource extends source.Vector {
     this.features.set(key, this._drawPointFromData(data))
   }
 
+  @autobind
   _processNotification (message) {
     const values = this._getStoredData()
 
@@ -431,18 +459,18 @@ class HeatmapVectorSource extends source.Vector {
     }
   }
 
+  @autobind
   _makePoint (center) {
     return new Feature({
       geometry: new Point(coordinateFromLonLat(center))
     })
   }
 
-  _drawPointFromData (data) {
+  @autobind
+  _drawPointFromData (source, data) {
     const point = this._makePoint([data.lon, data.lat])
     point.measuredValue = data.value
-
-    this.source.addFeature(point)
-
+    source.addFeature(point)
     return point
   }
 }

@@ -7,9 +7,6 @@ import React from 'react'
 import { connect } from 'react-redux'
 import url from 'url'
 
-import dns from '@dns'
-import SSDPClient from '@ssdp'
-
 import {
   addDetectedServer,
   addInferredServer,
@@ -19,7 +16,9 @@ import {
   updateDetectedServerLabel
 } from '../actions/servers'
 
-export const isServerDetectionSupported = !SSDPClient.isMock
+export const isServerDetectionSupported = (
+  window.bridge && window.bridge.createSSDPClient
+)
 
 /**
  * Presentation component that regularly fires SSDP discovery requests and
@@ -50,8 +49,7 @@ class ServerDetectionManagerPresentation extends React.Component {
       onScanningStarted()
     }
 
-    this._ssdpClient = new SSDPClient()
-    this._ssdpClient.on('response', (headers, rinfo) => {
+    this._ssdpClient = window.bridge.createSSDPClient((headers, rinfo) => {
       if (this._ssdpClient === undefined) {
         // Component was already unmounted.
         return
@@ -86,16 +84,19 @@ class ServerDetectionManagerPresentation extends React.Component {
           this.props.onServerDetected(hostname, numericPort, protocol)
 
         // Perform a DNS lookup on the hostname if was newly added, it is not
-        // already a hostname and we have access to the DNS module
+        // already a hostname and we have access to a DNS lookup service
+        // via window.bridge
         if (key && wasAdded && (isV4Format(hostname) || isV6Format(hostname))) {
           const resolveTo = partial(this.props.onServerHostnameResolved, key)
           if (isLoopback(hostname)) {
             resolveTo('This computer')
-          } else {
-            dns.reverse(hostname, (err, names) => {
-              if (!err && names && names.length > 0) {
+          } else if (window.bridge) {
+            window.bridge.reverseDNSLookup(hostname).then(names => {
+              if (names && names.length > 0) {
                 resolveTo(names[0])
               }
+            }).catch(err => {
+              window.bridge.console.warn(err)
             })
           }
         }

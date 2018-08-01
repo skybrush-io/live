@@ -10,6 +10,14 @@
 export const isRunningOnMac = (navigator.platform.indexOf('Mac') !== -1)
 
 /**
+ * Constant that evaluates to true if we are running on Windows, false
+ * otherwise.
+ */
+export const isRunningOnWindows =
+  (navigator.platform.indexOf('Win32') !== -1) ||
+  (navigator.platform.indexOf('Windows') !== -1)
+
+/**
  * Returns whether the given browser event has the platform-specific
  * hotkey modifier pressed.
  *

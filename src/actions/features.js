@@ -3,7 +3,7 @@
  */
 
 import { createAction } from 'redux-actions'
-import { ADD_FEATURE, REMOVE_FEATURES, RENAME_FEATURE,
+import { ADD_FEATURE, REMOVE_FEATURES, RENAME_FEATURE, SET_FEATURE_COLOR,
   UPDATE_FEATURE_COORDINATES, UPDATE_FEATURE_VISIBILITY } from './types'
 
 /**
@@ -42,6 +42,17 @@ export const renameFeature = createAction(RENAME_FEATURE,
  */
 export const removeFeatures = createAction(REMOVE_FEATURES,
   ids => ({ ids })
+)
+
+/**
+ * Action factory that creates an action that sets the color of a feature on
+ * the map.
+ *
+ * @param {string}  id  the ID of the feature to rename
+ * @param {string}  color  the new color of the feature
+ */
+export const setFeatureColor = createAction(SET_FEATURE_COLOR,
+  (id, color) => ({ id, color })
 )
 
 /**
