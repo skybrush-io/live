@@ -8,24 +8,31 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import { connect } from 'react-redux'
 
-import Divider from 'material-ui/Divider'
-import { ListItemIcon } from 'material-ui/List'
-import { MenuItem } from 'material-ui/Menu'
-import ActionDelete from 'material-ui-icons/Delete'
-import ActionFlightTakeoff from 'material-ui-icons/FlightTakeoff'
-import ActionFlightLand from 'material-ui-icons/FlightLand'
-import ActionHome from 'material-ui-icons/Home'
-import ActionPowerSettingsNew from 'material-ui-icons/PowerSettingsNew'
-import ImageEdit from 'material-ui-icons/Edit'
-import Message from 'material-ui-icons/Message'
+import Divider from '@material-ui/core/Divider'
+import ListItemIcon from '@material-ui/core/ListItemIcon'
+import MenuItem from '@material-ui/core/MenuItem'
 
-import ContextMenu from '../../components/ContextMenu'
+import ActionDelete from '@material-ui/icons/Delete'
+import Edit from '@material-ui/icons/Edit'
+import Flight from '@material-ui/icons/Flight'
+import FlightTakeoff from '@material-ui/icons/FlightTakeoff'
+import FlightLand from '@material-ui/icons/FlightLand'
+import Home from '@material-ui/icons/Home'
+import Message from '@material-ui/icons/Message'
+import ActionPowerSettingsNew from '@material-ui/icons/PowerSettingsNew'
+import PinDrop from '@material-ui/icons/PinDrop'
 
 import { showFeatureEditorDialog } from '../../actions/feature-editor'
 import { renameFeature, removeFeatures } from '../../actions/features'
+import { setHomePosition } from '../../actions/map-origin'
 import { selectUAVInMessagesDialog, showMessagesDialog } from '../../actions/messages'
 import { showPromptDialog } from '../../actions/prompt'
-import { getSelectedFeatureIds, getSelectedFeatureLabels, getSelectedUAVIds } from '../../selectors'
+import ContextMenu from '../../components/ContextMenu'
+import {
+  getSelectedFeatureIds,
+  getSelectedFeatureLabels,
+  getSelectedUAVIds
+} from '../../selectors/selection'
 import * as messaging from '../../utils/messaging'
 
 /**
@@ -36,7 +43,7 @@ class MapContextMenu extends React.Component {
   constructor (props) {
     super(props)
 
-    this._assignContextMenuRef = (value) => { this._contextMenu = value }
+    this._contextMenu = React.createRef()
   }
 
   /**
@@ -46,61 +53,111 @@ class MapContextMenu extends React.Component {
    * should appear.
    * @property {number} x The value to forward as `left` into the style object.
    * @property {number} y The value to forward as `top` into the style object.
+   * @param {Object} context  Context object to pass to the click handlers of
+   *        the menu items in the context menu as their second argument
    */
   @autobind
-  open (position) {
-    if (this._contextMenu) {
-      this._contextMenu.open(position)
+  open (position, context) {
+    if (this._contextMenu.current) {
+      this._contextMenu.current.open(position, context)
     }
   }
 
   render () {
-    const { selectedFeatureIds, selectedUAVIds } = this.props
     return (
-      <ContextMenu ref={this._assignContextMenuRef}>
-        <MenuItem dense disabled={selectedUAVIds.length === 0}
-          onClick={this._takeoffSelectedUAVs}>
-          <ListItemIcon><ActionFlightTakeoff /></ListItemIcon>
-          Takeoff
-        </MenuItem>
-        <MenuItem dense disabled={selectedUAVIds.length === 0}
-          onClick={this._landSelectedUAVs}>
-          <ListItemIcon><ActionFlightLand /></ListItemIcon>
-          Land
-        </MenuItem>
-        <MenuItem dense disabled={selectedUAVIds.length === 0}
-          onClick={this._returnSelectedUAVs}>
-          <ListItemIcon><ActionHome /></ListItemIcon>
-          Return to home
-        </MenuItem>
-        <MenuItem dense disabled={selectedUAVIds.length !== 1}
-          onClick={this._showMessagesDialog}>
-          <ListItemIcon><Message /></ListItemIcon>
-          Messages
-        </MenuItem>
-        <MenuItem dense disabled={selectedUAVIds.length === 0}
-          onClick={this._shutdownSelectedUAVs}>
-          <ListItemIcon><ActionPowerSettingsNew color='secondary' /></ListItemIcon>
-          Halt
-        </MenuItem>
-        <Divider />
-        <MenuItem dense disabled={selectedFeatureIds.length !== 1}
-          onClick={this._editSelectedFeature}>
-          <ListItemIcon><ImageEdit /></ListItemIcon>
-          Properties...
-        </MenuItem>
-        <MenuItem dense disabled={selectedFeatureIds.length === 0}
-          onClick={this._removeSelectedFeatures}>
-          <ListItemIcon><ActionDelete /></ListItemIcon>
-          Remove
-        </MenuItem>
+      <ContextMenu ref={this._contextMenu} contextProvider={this.props.contextProvider}>
+        {({ selectedFeatureIds, selectedUAVIds }) => {
+          const result = []
+          const hasSelectedUAVs = selectedUAVIds && selectedUAVIds.length > 0
+          const hasSingleSelectedUAV = selectedUAVIds && selectedUAVIds.length === 1
+          const hasSelectedFeatures = selectedFeatureIds && selectedFeatureIds.length > 0
+
+          if (hasSelectedUAVs) {
+            result.push(
+              <MenuItem key="fly" dense onClick={this._moveSelectedUAVsAtCurrentAltitude}>
+                <ListItemIcon><Flight /></ListItemIcon>
+                Fly here
+              </MenuItem>,
+              <MenuItem key="flyAtAltitude" dense disabled onClick={this._moveSelectedUAVsAtGivenAltitude}>
+                <ListItemIcon><Flight /></ListItemIcon>
+                Fly here at altitude...
+              </MenuItem>,
+              <Divider key="div2" />,
+              <MenuItem key="takeoff" dense onClick={this._takeoffSelectedUAVs}>
+                <ListItemIcon><FlightTakeoff /></ListItemIcon>
+                Takeoff
+              </MenuItem>,
+              <MenuItem key="land" dense onClick={this._landSelectedUAVs}>
+                <ListItemIcon><FlightLand /></ListItemIcon>
+                Land
+              </MenuItem>,
+              <MenuItem key="home" dense onClick={this._returnSelectedUAVs}>
+                <ListItemIcon><Home /></ListItemIcon>
+                Return to home
+              </MenuItem>,
+              <MenuItem key="message" dense disabled={!hasSingleSelectedUAV}
+                onClick={this._showMessagesDialog}>
+                <ListItemIcon><Message /></ListItemIcon>
+                Messages
+              </MenuItem>,
+              <MenuItem key="shutdown" dense onClick={this._shutdownSelectedUAVs}>
+                <ListItemIcon><ActionPowerSettingsNew color='secondary' /></ListItemIcon>
+                Halt
+              </MenuItem>,
+              <Divider key="div1" />
+            )
+          }
+
+          result.push(
+            <MenuItem key="setOrigin" dense onClick={this._setOrigin}>
+              <ListItemIcon><PinDrop /></ListItemIcon>
+              Set origin here
+            </MenuItem>
+          )
+
+          if (hasSelectedFeatures) {
+            result.push(
+              <Divider key="div2" />,
+              <MenuItem key="setProperties" dense disabled={!selectedFeatureIds || selectedFeatureIds.length !== 1}
+                onClick={this._editSelectedFeature}>
+                <ListItemIcon><Edit /></ListItemIcon>
+                Properties...
+              </MenuItem>,
+              <MenuItem key="remove" dense disabled={!selectedFeatureIds || selectedFeatureIds.length === 0}
+                onClick={this._removeSelectedFeatures}>
+                <ListItemIcon><ActionDelete /></ListItemIcon>
+                Remove
+              </MenuItem>
+            )
+          }
+
+          return result
+        }}
       </ContextMenu>
     )
   }
 
   @autobind
-  _editSelectedFeature () {
-    const { editFeature, selectedFeatureIds } = this.props
+  _moveSelectedUAVsAtCurrentAltitude (event, context) {
+    const { coords, selectedUAVIds } = context
+    if (coords && coords.length === 2) {
+      messaging.moveUAVs(selectedUAVIds, {
+        lat: coords[1],
+        lon: coords[0],
+        agl: undefined
+      })
+    }
+  }
+
+  @autobind
+  _moveSelectedUAVsAtGivenAltitude (event, context) {
+    // TODO(ntamas)
+  }
+
+  @autobind
+  _editSelectedFeature (event, context) {
+    const { editFeature } = this.props
+    const { selectedFeatureIds } = context
     if (selectedFeatureIds.length !== 1) {
       return
     }
@@ -109,19 +166,22 @@ class MapContextMenu extends React.Component {
   }
 
   @autobind
-  _takeoffSelectedUAVs () {
-    messaging.takeoffUAVs(this.props.selectedUAVIds)
+  _takeoffSelectedUAVs (event, context) {
+    const { selectedUAVIds } = context
+    messaging.takeoffUAVs(selectedUAVIds)
   }
 
   @autobind
-  _landSelectedUAVs () {
-    messaging.landUAVs(this.props.selectedUAVIds)
+  _landSelectedUAVs (event, context) {
+    const { selectedUAVIds } = context
+    messaging.landUAVs(selectedUAVIds)
   }
 
   @autobind
-  _renameSelectedFeature () {
-    const { renameFeature, selectedFeatureIds,
-      selectedFeatureLabels } = this.props
+  _renameSelectedFeature (event, context) {
+    const { renameFeature } = this.props
+    const { selectedFeatureIds, selectedFeatureLabels } = context
+
     if (selectedFeatureIds.length !== 1) {
       return
     }
@@ -130,47 +190,60 @@ class MapContextMenu extends React.Component {
   }
 
   @autobind
-  _removeSelectedFeatures () {
-    this.props.removeFeaturesByIds(this.props.selectedFeatureIds)
+  _removeSelectedFeatures (event, context) {
+    const { selectedFeatureIds } = context
+    this.props.removeFeaturesByIds(selectedFeatureIds)
   }
 
   @autobind
-  _returnSelectedUAVs () {
-    messaging.returnToHomeUAVs(this.props.selectedUAVIds)
+  _returnSelectedUAVs (event, context) {
+    const { selectedUAVIds } = context
+    messaging.returnToHomeUAVs(selectedUAVIds)
   }
 
   @autobind
-  _shutdownSelectedUAVs () {
-    messaging.haltUAVs(this.props.selectedUAVIds)
-  }
-
-  @autobind
-  _showMessagesDialog () {
-    if (this.props.selectedUAVIds.length === 1) {
-      this.props.selectUAVInMessagesDialog(this.props.selectedUAVIds[0])
+  _setOrigin (event, context) {
+    const { coords } = context
+    if (coords) {
+      this.props.setHomePosition(coords)
     }
+  }
 
+  @autobind
+  _shutdownSelectedUAVs (event, context) {
+    const { selectedUAVIds } = context
+    messaging.haltUAVs(selectedUAVIds)
+  }
+
+  @autobind
+  _showMessagesDialog (event, context) {
+    const { selectedUAVIds } = context
+    if (selectedUAVIds.length === 1) {
+      this.props.selectUAVInMessagesDialog(selectedUAVIds[0])
+    }
     this.props.showMessagesDialog()
   }
 }
 
 MapContextMenu.propTypes = {
+  contextProvider: PropTypes.func,
   editFeature: PropTypes.func.isRequired,
   renameFeature: PropTypes.func.isRequired,
   removeFeaturesByIds: PropTypes.func.isRequired,
-  selectedFeatureIds: PropTypes.arrayOf(PropTypes.string).isRequired,
-  selectedFeatureLabels: PropTypes.arrayOf(PropTypes.string).isRequired,
-  selectedUAVIds: PropTypes.arrayOf(PropTypes.string).isRequired,
   selectUAVInMessagesDialog: PropTypes.func.isRequired,
+  setHomePosition: PropTypes.func.isRequired,
   showMessagesDialog: PropTypes.func.isRequired
 }
 
 const MapContextMenuContainer = connect(
   // mapStateToProps
   state => ({
-    selectedFeatureIds: getSelectedFeatureIds(state),
-    selectedFeatureLabels: getSelectedFeatureLabels(state),
-    selectedUAVIds: getSelectedUAVIds(state)
+    contextProvider: context => ({
+      selectedFeatureIds: getSelectedFeatureIds(state),
+      selectedFeatureLabels: getSelectedFeatureLabels(state),
+      selectedUAVIds: getSelectedUAVIds(state),
+      ...context
+    })
   }),
   // mapDispatchToProps
   dispatch => ({
@@ -191,6 +264,9 @@ const MapContextMenuContainer = connect(
     },
     selectUAVInMessagesDialog: (id) => {
       dispatch(selectUAVInMessagesDialog(id))
+    },
+    setHomePosition: coords => {
+      dispatch(setHomePosition(coords))
     },
     showMessagesDialog: () => {
       dispatch(showMessagesDialog())

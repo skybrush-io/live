@@ -4,15 +4,14 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import { connect } from 'react-redux'
 
-import IconButton from 'material-ui/IconButton'
-import Tooltip from 'material-ui/Tooltip'
-import ActionFlightTakeoff from 'material-ui-icons/FlightTakeoff'
-import ActionFlightLand from 'material-ui-icons/FlightLand'
-import ActionHome from 'material-ui-icons/Home'
-import ActionPowerSettingsNew from 'material-ui-icons/PowerSettingsNew'
-import ImageBlurCircular from 'material-ui-icons/BlurCircular'
-import ImageBlurOn from 'material-ui-icons/BlurOn'
-import Message from 'material-ui-icons/Message'
+import IconButton from '@material-ui/core/IconButton'
+import ActionFlightTakeoff from '@material-ui/icons/FlightTakeoff'
+import ActionFlightLand from '@material-ui/icons/FlightLand'
+import ActionHome from '@material-ui/icons/Home'
+import ActionPowerSettingsNew from '@material-ui/icons/PowerSettingsNew'
+import ImageBlurCircular from '@material-ui/icons/BlurCircular'
+import ImageBlurOn from '@material-ui/icons/BlurOn'
+import Message from '@material-ui/icons/Message'
 
 import { selectUAVInMessagesDialog, showMessagesDialog } from '../../actions/messages'
 import * as messaging from '../../utils/messaging'
@@ -31,59 +30,36 @@ class UAVToolbar extends React.Component {
 
     return (
       <div>
-        <Tooltip placement='bottom' title='Takeoff'>
-          <span>
-            <IconButton disabled={isSelectionEmpty}
-              onClick={this._takeoffSelectedUAVs}>
-              <ActionFlightTakeoff />
-            </IconButton>
-          </span>
-        </Tooltip>
-        <Tooltip placement='bottom' title='Land'>
-          <span>
-            <IconButton disabled={isSelectionEmpty}
-              onClick={this._landSelectedUAVs}>
-              <ActionFlightLand />
-            </IconButton>
-          </span>
-        </Tooltip>
-        <Tooltip placement='bottom' title='Return to home'>
-          <span>
-            <IconButton disabled={isSelectionEmpty}
-              onClick={this._returnToHomeSelectedUAVs}>
-              <ActionHome />
-            </IconButton>
-          </span>
-        </Tooltip>
-        <Tooltip placement='bottom' title='Messages'>
-          <span>
-            <IconButton disabled={selectedUAVIds.length !== 1}
-              onClick={this._showMessagesDialog}>
-              <Message />
-            </IconButton>
-          </span>
-        </Tooltip>
-        <Tooltip placement='bottom' title='Halt'>
-          <span>
-            <IconButton disabled={isSelectionEmpty}
-              onClick={this._haldSelectedUAVs}>
-              <ActionPowerSettingsNew color={isSelectionEmpty ? undefined : 'secondary'} />
-            </IconButton>
-          </span>
-        </Tooltip>
+        <IconButton disabled={isSelectionEmpty}
+          onClick={this._takeoffSelectedUAVs}>
+          <ActionFlightTakeoff />
+        </IconButton>
+        <IconButton disabled={isSelectionEmpty}
+          onClick={this._}>
+          <ActionFlightLand />
+        </IconButton>
+        <IconButton disabled={isSelectionEmpty}
+          onClick={this._returnToHomeSelectedUAVs}>
+          <ActionHome />
+        </IconButton>
+        <IconButton disabled={selectedUAVIds.length !== 1}
+          onClick={this._showMessagesDialog}>
+          <Message />
+        </IconButton>
+        <IconButton disabled={isSelectionEmpty}
+          onClick={this._haltSelectedUAVs}>
+          <ActionPowerSettingsNew color={isSelectionEmpty ? undefined : 'secondary'} />
+        </IconButton>
 
-        <Tooltip placement='bottom'
-          title={isSelectionEmpty ? 'Fit all UAVs' : 'Fit selected UAVs'}>
-          <IconButton
-            onClick={fitSelectedUAVs}
-            style={{
-              float: 'right',
-              padding: '0px',
-              marginRight: '4px'
-            }}>
-            {isSelectionEmpty ? <ImageBlurOn /> : <ImageBlurCircular />}
-          </IconButton>
-        </Tooltip>
+        <IconButton
+          onClick={fitSelectedUAVs}
+          style={{
+            float: 'right',
+            padding: '0px',
+            marginRight: '4px'
+          }}>
+          {isSelectionEmpty ? <ImageBlurOn /> : <ImageBlurCircular />}
+        </IconButton>
       </div>
     )
   }
@@ -113,7 +89,7 @@ class UAVToolbar extends React.Component {
   }
 
   @autobind
-  _haldSelectedUAVs () {
+  _haltSelectedUAVs () {
     messaging.haltUAVs(this.props.selectedUAVIds)
   }
 }
@@ -128,9 +104,7 @@ UAVToolbar.propTypes = {
 
 export default connect(
   // mapStateToProps
-  (state, { fitSelectedUAVs }) => ({
-    fitSelectedUAVs
-  }),
+  null,
   // mapDispatchToProps
   dispatch => ({
     selectUAVInMessagesDialog: (id) => {

@@ -1,4 +1,4 @@
-import ConnectionIcon from 'material-ui-icons/Power'
+import ConnectionIcon from '@material-ui/icons/Power'
 
 import PropTypes from 'prop-types'
 import React from 'react'

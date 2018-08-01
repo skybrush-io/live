@@ -2,11 +2,13 @@
  * @file Component that shows the list of locations saved by the user.
  */
 
-import IconButton from 'material-ui/IconButton'
-import { ListItem, ListItemSecondaryAction, ListItemText } from 'material-ui/List'
+import IconButton from '@material-ui/core/IconButton'
+import ListItem from '@material-ui/core/ListItem'
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction'
+import ListItemText from '@material-ui/core/ListItemText'
 
-import AddCircleOutline from 'material-ui-icons/AddCircleOutline'
-import ActionSettings from 'material-ui-icons/Settings'
+import AddCircleOutline from '@material-ui/icons/AddCircleOutline'
+import ActionSettings from '@material-ui/icons/Settings'
 
 import PropTypes from 'prop-types'
 import React from 'react'
@@ -14,7 +16,7 @@ import { connect } from 'react-redux'
 
 import { editSavedLocation } from '../../actions/saved-location-editor'
 import { listOf } from '../../components/helpers/lists'
-import { getSavedLocationsInOrder } from '../../selectors'
+import { getSavedLocationsInOrder } from '../../selectors/ordered'
 import { mapViewToLocationSignal } from '../../signals'
 import { formatCoordinate } from '../../utils/geography'
 

@@ -11,17 +11,23 @@ import { connect } from 'react-redux'
 import { reduxForm, submit, Field } from 'redux-form'
 import { Switch, TextField } from 'redux-form-material-ui'
 
-import AppBar from 'material-ui/AppBar'
-import Button from 'material-ui/Button'
-import Dialog, { DialogActions, DialogContent } from 'material-ui/Dialog'
-import { FormControlLabel } from 'material-ui/Form'
-import { CircularProgress } from 'material-ui/Progress'
-import List, { ListItem, ListItemIcon, ListItemText } from 'material-ui/List'
-import Tabs, { Tab } from 'material-ui/Tabs'
+import AppBar from '@material-ui/core/AppBar'
+import Button from '@material-ui/core/Button'
+import Dialog from '@material-ui/core/Dialog'
+import DialogActions from '@material-ui/core/DialogActions'
+import DialogContent from '@material-ui/core/DialogContent'
+import FormControlLabel from '@material-ui/core/FormControlLabel'
+import CircularProgress from '@material-ui/core/CircularProgress'
+import List from '@material-ui/core/List'
+import ListItem from '@material-ui/core/ListItem'
+import ListItemIcon from '@material-ui/core/ListItemIcon'
+import ListItemText from '@material-ui/core/ListItemText'
+import Tab from '@material-ui/core/Tab'
+import Tabs from '@material-ui/core/Tabs'
 
-import EditIcon from 'material-ui-icons/Edit'
-import LightbulbIcon from 'material-ui-icons/LightbulbOutline'
-import WifiIcon from 'material-ui-icons/Wifi'
+import EditIcon from '@material-ui/icons/Edit'
+import LightbulbIcon from '@material-ui/icons/LightbulbOutline'
+import WifiIcon from '@material-ui/icons/Wifi'
 
 import {
   ServerDetectionManager,
@@ -32,7 +38,7 @@ import {
   closeServerSettingsDialog,
   setServerSettingsDialogTab
 } from '../../actions/server-settings'
-import { getDetectedServersInOrder } from '../../selectors'
+import { getDetectedServersInOrder } from '../../selectors/ordered'
 import { createValidator, between, integer, required } from '../../utils/validation'
 
 // eslint-disable-next-line react/prop-types

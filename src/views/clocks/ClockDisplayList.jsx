@@ -2,11 +2,13 @@
  * @file Component that displays the status of a Flockwave clock.
  */
 
-import { red, green } from 'material-ui/colors'
-import PlayArrow from 'material-ui-icons/PlayArrow'
-import Stop from 'material-ui-icons/Stop'
-import Avatar from 'material-ui/Avatar'
-import { ListItem, ListItemText } from 'material-ui/List'
+import { red, green } from '@material-ui/core/colors'
+import PlayArrow from '@material-ui/icons/PlayArrow'
+import Stop from '@material-ui/icons/Stop'
+import Avatar from '@material-ui/core/Avatar'
+import List from '@material-ui/core/List'
+import ListItem from '@material-ui/core/ListItem'
+import ListItemText from '@material-ui/core/ListItemText'
 
 import isFunction from 'lodash/isFunction'
 import moment from 'moment'

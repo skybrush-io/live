@@ -1,11 +1,11 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 
-import IconButton from 'material-ui/IconButton'
-import withTheme from 'material-ui/styles/withTheme'
-import ActionPanTool from 'material-ui-icons/PanTool'
-import ActionZoomIn from 'material-ui-icons/ZoomIn'
-import ContentSelectAll from 'material-ui-icons/SelectAll'
+import IconButton from '@material-ui/core/IconButton'
+import withTheme from '@material-ui/core/styles/withTheme'
+import ActionPanTool from '@material-ui/icons/PanTool'
+import ActionZoomIn from '@material-ui/icons/ZoomIn'
+import ContentSelectAll from '@material-ui/icons/SelectAll'
 
 import MapRotationTextBox from './MapRotationTextBox'
 import FitAllFeaturesButton from './FitAllFeaturesButton'

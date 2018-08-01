@@ -18,9 +18,9 @@ import {
   mapViewToExtentSignal
 } from '../../signals'
 
-import IconButton from 'material-ui/IconButton'
-import DeviceGpsFixed from 'material-ui-icons/GpsFixed'
-import ActionAllOut from 'material-ui-icons/AllOut'
+import IconButton from '@material-ui/core/IconButton'
+import DeviceGpsFixed from '@material-ui/icons/GpsFixed'
+import ActionAllOut from '@material-ui/icons/AllOut'
 
 /**
  * React Component to adjust the view so that it fits all of the current features.

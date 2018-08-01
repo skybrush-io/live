@@ -1,5 +1,5 @@
-import Reboot from 'material-ui/Reboot'
-import { MuiThemeProvider } from 'material-ui/styles'
+import CssBaseline from '@material-ui/core/CssBaseline'
+import { MuiThemeProvider } from '@material-ui/core/styles'
 import PropTypes from 'prop-types'
 import React from 'react'
 import { WorkbenchView } from 'react-flexible-workbench'
@@ -22,6 +22,8 @@ require('../assets/css/screen.less')
 require('../assets/css/chat.less')
 require('../assets/css/kbd.css')
 
+require('typeface-roboto')
+
 const rootStyle = {
   display: 'flex',
   width: '100%',
@@ -36,7 +38,7 @@ class Application extends React.Component {
   render () {
     return (
       <div>
-        <Reboot />
+        <CssBaseline />
 
         <HotkeyHandler hotkeys={hotkeys} />
 

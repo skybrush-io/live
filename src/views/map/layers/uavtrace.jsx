@@ -4,19 +4,19 @@ import Feature from 'ol/feature'
 import LineString from 'ol/geom/linestring'
 import Stroke from 'ol/style/stroke'
 import Style from 'ol/style/style'
-import { layer, source } from 'ol-react'
+import { layer, source } from '@collmot/ol-react'
 import PropTypes from 'prop-types'
 import React from 'react'
-import { CirclePicker } from 'react-color'
 import { connect } from 'react-redux'
 
-import TextField from 'material-ui/TextField'
+import TextField from '@material-ui/core/TextField'
 
 import { setLayerParametersById } from '../../../actions/layers'
-
+import CircleColorPicker from '../../../components/CircleColorPicker'
 import flock from '../../../flock'
 import { coordinateFromLonLat } from '../../../utils/geography'
-import { colorToString } from '../../../utils/coloring.js'
+import { colorToString } from '../../../utils/coloring'
+import { primaryColor } from '../../../utils/styles'
 
 // === Settings for this particular layer type ===
 
@@ -24,7 +24,7 @@ class UAVTraceLayerSettingsPresentation extends React.Component {
   render () {
     const { layer } = this.props
     const parameters = {
-      trailColor: '#0088ff',
+      trailColor: primaryColor,
       trailLength: 10,
       trailWidth: 2,
       ...layer.parameters
@@ -42,8 +42,7 @@ class UAVTraceLayerSettingsPresentation extends React.Component {
           type='number'
           value={trailWidth} onChange={this._onTrailWidthChanged} />
         <div style={{ paddingTop: '0.5em' }}>
-          <CirclePicker color={trailColor || '#2196f3'}
-            circleSpacing={7} width={343}
+          <CircleColorPicker color={trailColor || primaryColor}
             onChangeComplete={this._onColorChanged} />
         </div>
       </div>
@@ -110,31 +109,52 @@ const makeStrokeStyle = (color, width) => new Style({
   stroke: new Stroke({ color, width })
 })
 
-class UAVTraceVectorSource extends source.Vector {
+class UAVTraceVectorSource extends React.Component {
   constructor (props) {
     super(props)
+
+    this.features = []
     this.lineStringsById = {}
 
-    this._handleUpdate = this._handleUpdate.bind(this)
+    this._sourceRef = undefined
 
     flock.uavsUpdated.add(this._handleUpdate)
   }
 
+  @autobind
+  _assignSourceRef (value) {
+    if (value === this._sourceRef) {
+      return
+    }
+
+    if (this._sourceRef) {
+      this._sourceRef.source.clear()
+    }
+
+    this._sourceRef = value
+
+    if (this._sourceRef) {
+      this._sourceRef.source.addFeatures(this.features)
+    }
+  }
+
+  @autobind
   _handleUpdate (uavs) {
     for (const uav of uavs) {
       if (uav._id in this.lineStringsById) {
+        // UAV exists, just extend its trace
         this.lineStringsById[uav._id].appendCoordinate(
           coordinateFromLonLat([uav.lon, uav.lat])
         )
       } else {
+        // UAV does not exist yet, add a new trace
         this.lineStringsById[uav._id] = new LineString(
           [coordinateFromLonLat([uav.lon, uav.lat])]
         )
-        let feature = new Feature(this.lineStringsById[uav._id])
-        feature.setStyle(makeStrokeStyle(this.props.trailColor, this.props.trailWidth))
-        this.source.addFeature(feature)
+        this._registerNewFeature(new Feature(this.lineStringsById[uav._id]))
       }
 
+      // Forget old coordinates from the trace
       while (this.lineStringsById[uav._id].getCoordinates().length > this.props.trailLength) {
         this.lineStringsById[uav._id].setCoordinates(
           this.lineStringsById[uav._id].getCoordinates().slice(1)
@@ -143,12 +163,31 @@ class UAVTraceVectorSource extends source.Vector {
     }
   }
 
-  componentWillReceiveProps (newProps) {
-    const features = this.source.getFeatures()
+  @autobind
+  _registerNewFeature (feature) {
+    feature.setStyle(makeStrokeStyle(this.props.trailColor, this.props.trailWidth))
 
-    for (const feature of features) {
-      feature.setStyle(makeStrokeStyle(newProps.trailColor, this.props.trailWidth))
+    this.features.push(feature)
+    if (this._sourceRef) {
+      this._sourceRef.source.addFeature(feature)
     }
+  }
+
+  componentDidUpdate () {
+    if (this._sourceRef) {
+      const features = this._sourceRef.source.getFeatures()
+
+      // Update the styles of all the features
+      for (const feature of features) {
+        feature.setStyle(makeStrokeStyle(this.props.trailColor, this.props.trailWidth))
+      }
+    }
+  }
+
+  render () {
+    return (
+      <source.Vector ref={this._assignSourceRef} />
+    )
   }
 }
 

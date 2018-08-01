@@ -7,9 +7,11 @@
 import { autobind } from 'core-decorators'
 import _ from 'lodash'
 import Interaction from 'ol/interaction/interaction'
-import Layer from 'ol/layer/layer'
 import VectorLayer from 'ol/layer/vector'
-import { interaction } from 'ol-react'
+import Map from 'ol/map'
+import Projection from 'ol/proj'
+import { OLPropTypes, withMap } from '@collmot/ol-react'
+import { createOLInteractionComponent } from '@collmot/ol-react/lib/interaction'
 import PropTypes from 'prop-types'
 import React from 'react'
 
@@ -41,7 +43,7 @@ class ContextMenuInteraction extends Interaction {
         // matching layer
         const { coordinate, map } = mapBrowserEvent
         const distanceFunction = _.partial(this._distanceOfEventFromFeature, mapBrowserEvent)
-        const closestFeature = _(map.getLayers().getArray())
+        const relevantFeatures = _(map.getLayers().getArray())
           .filter(this._isLayerFeasible)
           .filter(this._layerSelectorFunction)
           .map(layer => {
@@ -51,21 +53,25 @@ class ContextMenuInteraction extends Interaction {
               : undefined
           })
           .filter(this._isFeatureFeasible)
-          .minBy(distanceFunction)
+        const closestFeature = (
+          relevantFeatures ? relevantFeatures.minBy(distanceFunction) : undefined
+        )
 
-        // Get the actual distance of the feature
-        const distance = distanceFunction(closestFeature)
+        if (closestFeature) {
+          // Get the actual distance of the feature
+          const distance = distanceFunction(closestFeature)
 
-        // If the feature is close enough...
-        if (distance <= this._threshold && this._selectAction) {
-          // Now call the callback
-          this._selectAction('add', closestFeature, distance)
+          // If the feature is close enough...
+          if (distance <= this._threshold && this._selectAction) {
+            // Now call the callback
+            this._selectAction('add', closestFeature, distance)
+          }
         }
 
-        // Trigger the context menu hook function if the user specified
-        // one
+        // Trigger the context menu hook function if the user specified one
         if (this._onContextMenu) {
-          this._onContextMenu(mapBrowserEvent)
+          const coords = this._getLonLatFromEvent(mapBrowserEvent)
+          this._onContextMenu(mapBrowserEvent, coords)
         }
 
         return Condition.pointerMove(mapBrowserEvent)
@@ -79,6 +85,7 @@ class ContextMenuInteraction extends Interaction {
     options = Object.assign(defaultOptions, options)
 
     this._condition = options.condition
+    this._projection = options.projection
     this._selectAction = options.selectAction
     this._onContextMenu = options.onContextMenu
     this._threshold = options.threshold
@@ -138,6 +145,19 @@ class ContextMenuInteraction extends Interaction {
   }
 
   /**
+   * Returns the longitude and latitude of the point that the user clicked
+   * on, given a map event.
+   *
+   * @param {Event} event  the event corresponding to the click
+   * @return {number[]}  the longitude and latitude of the click
+   */
+  _getLonLatFromEvent (event) {
+    return this._projection
+      ? Projection.transform(event.coordinate, 'EPSG:3857', this._projection)
+      : event.coordinate
+  }
+
+  /**
    * Returns whether a given layer is visible and has an associated vector
    * source.
    *
@@ -168,35 +188,54 @@ class ContextMenuInteraction extends Interaction {
   }
 }
 
+const ShowContextMenu_ = createOLInteractionComponent(
+  'ShowContextMenuInner',
+  props => new ContextMenuInteraction(props),
+  {
+    propTypes: {
+      condition: PropTypes.func,
+      layers: OLPropTypes.LayerFilter,
+      onContextMenu: PropTypes.func,
+      selectAction: PropTypes.func,
+      threshold: PropTypes.number
+    },
+    fragileProps: [
+      'condition', 'layers', 'onContextMenu', 'selectAction', 'threshold'
+    ]
+  }
+)
+
 /**
  * React wrapper around an instance of {@link ContextMenuInteraction}
  * that allows us to use it in JSX.
  */
-export default class ShowContextMenu extends interaction.OLInteraction {
+class ShowContextMenu extends React.Component {
   constructor (props) {
     super(props)
-    this._assignContextMenuRef = (value) => { this._contextMenu = value }
-  }
-
-  createInteraction (props) {
-    const effectiveProps = { ...props }
-    if (!props.onContextMenu) {
-      effectiveProps.onContextMenu = this._openContextMenuFromChild
-    }
-    return new ContextMenuInteraction(effectiveProps)
+    this._contextMenuRef = React.createRef()
   }
 
   render () {
-    return this.props.children ? (
-      React.cloneElement(this.props.children, {
-        ref: this._assignContextMenuRef
-      })
-    ) : null
+    const { children, ...rest } = this.props
+    if (children) {
+      return (
+        <ShowContextMenu_ onContextMenu={this._openContextMenuFromChild} {...rest}>
+          {
+            React.cloneElement(
+              React.Children.only(this.props.children),
+              { ref: this._contextMenuRef }
+            )
+          }
+        </ShowContextMenu_>
+      )
+    } else {
+      return null
+    }
   }
 
   @autobind
-  _openContextMenuFromChild (event) {
-    const menu = this._contextMenu
+  _openContextMenuFromChild (event, coords) {
+    const menu = this._contextMenuRef.current
     const open =
       menu.open || (
         menu.getWrappedInstance ? menu.getWrappedInstance().open : undefined
@@ -206,17 +245,20 @@ export default class ShowContextMenu extends interaction.OLInteraction {
         left: event.originalEvent.pageX,
         top: event.originalEvent.pageY
       }
-      open(position)
+      open(position, { coords })
     }
   }
 }
 
-ShowContextMenu.propTypes = Object.assign({}, interaction.OLInteraction.propTypes, {
-  layers: PropTypes.oneOfType([
-    PropTypes.func, PropTypes.arrayOf(Layer)
-  ]),
+ShowContextMenu.propTypes = {
+  active: PropTypes.bool,
+  children: PropTypes.element,
+  layers: OLPropTypes.LayerFilter,
+  map: PropTypes.instanceOf(Map),
+  projection: PropTypes.string,
   select: PropTypes.func,
   contextMenu: PropTypes.func,
-  threshold: PropTypes.number,
-  children: PropTypes.element
-})
+  threshold: PropTypes.number
+}
+
+export default withMap(ShowContextMenu)

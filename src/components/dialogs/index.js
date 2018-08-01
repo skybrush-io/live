@@ -1,4 +1,4 @@
-import AppSettingsDialog from './AppSettingsDialog'
+import AppSettingsDialog from './app-settings'
 import FeatureEditorDialog from './FeatureEditorDialog'
 import GlobalErrorDialog from './GlobalErrorDialog'
 import LayerSettingsDialog from './LayerSettingsDialog'

@@ -8,9 +8,9 @@ import React from 'react'
 
 import { mapReferenceRequestSignal, mapRotationResetSignal } from '../../signals'
 
-import IconButton from 'material-ui/IconButton'
-import ImageRotateRight from 'material-ui-icons/RotateRight'
-import TextField from 'material-ui/TextField'
+import IconButton from '@material-ui/core/IconButton'
+import ImageRotateRight from '@material-ui/icons/RotateRight'
+import TextField from '@material-ui/core/TextField'
 
 export const normalizeAngle = (angle) => (((angle % 360) + 360) % 360).toFixed(2)
 
@@ -44,7 +44,7 @@ export default class MapRotationTextBox extends React.Component {
     }
 
     this._onMapReferenceReceived = this._onMapReferenceReceived.bind(this)
-    this._updateFromMap = this._updateFromMap.bind(this)
+    this._updateRotationFromMapView = this._updateRotationFromMapView.bind(this)
     this._onFocus = this._onFocus.bind(this)
     this._onBlur = this._onBlur.bind(this)
     this._onChange = this._onChange.bind(this)
@@ -65,7 +65,6 @@ export default class MapRotationTextBox extends React.Component {
         <TextField
           style={{
             width: this.props.fieldWidth
-            // verticalAlign: 'text-bottom'
           }}
           type='number'
           value={
@@ -88,13 +87,19 @@ export default class MapRotationTextBox extends React.Component {
    * @param {ol.Map} map the map to attach the event handlers to
    */
   _onMapReferenceReceived (map) {
+    const view = map ? map.getView() : undefined
+
     this.map = map
 
-    map.getView().on('propertychange', this._updateFromMap)
+    // If the map already has a view, bind an event listener to the view
+    if (view) {
+      view.on('propertychange', this._updateRotationFromMapView)
+    }
 
+    // Listen also for changes in the view of the map
     map.on('propertychange', (e) => {
       if (e.key === 'view') {
-        map.getView().on('propertychange', this._updateFromMap)
+        map.getView().on('propertychange', this._updateRotationFromMapView)
       }
     })
   }
@@ -104,7 +109,7 @@ export default class MapRotationTextBox extends React.Component {
    *
    * @param {ol.ObjectEvent} e the event fired from the OpenLayers View
    */
-  _updateFromMap (e) {
+  _updateRotationFromMapView (e) {
     if (e.key === 'rotation') {
       this.setState({
         rotation: -e.target.get('rotation') / (Math.PI / 180)

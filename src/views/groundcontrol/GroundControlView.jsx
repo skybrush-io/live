@@ -63,7 +63,7 @@ class GroundControlViewPresentation extends React.Component {
         filterType: FilterTypes.range
       },
       {
-        name: 'Longtitude',
+        name: 'Longitude',
         width: 150,
         dataExtractor: _.property('lon'),
         filterType: FilterTypes.range
@@ -95,8 +95,8 @@ class GroundControlViewPresentation extends React.Component {
     ]
   }
 
-  componentWillReceiveProps (newProps) {
-    this._onFlockMaybeChanged(this.props.flock, newProps.flock)
+  componentDidUpdate (oldProps) {
+    this._onFlockMaybeChanged(oldProps.flock, this.props.flock)
   }
 
   componentDidMount () {

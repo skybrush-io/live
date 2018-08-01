@@ -2,23 +2,24 @@ import Color from 'color'
 import _ from 'lodash'
 import GeoJSON from 'ol/format/geojson'
 import Point from 'ol/geom/point'
-import { layer, source } from 'ol-react'
+import { layer, source } from '@collmot/ol-react'
 import PropTypes from 'prop-types'
 import React from 'react'
 import { connect } from 'react-redux'
 
-import TextField from 'material-ui/TextField'
-import ActionSystemUpdateAlt from 'material-ui-icons/SystemUpdateAlt'
+import TextField from '@material-ui/core/TextField'
+import ActionSystemUpdateAlt from '@material-ui/icons/SystemUpdateAlt'
 
 import PopupColorPicker from '../../../components/PopupColorPicker'
 
-import Button from 'material-ui/Button'
+import Button from '@material-ui/core/Button'
 
 import { setLayerParameterById } from '../../../actions/layers'
 import { showSnackbarMessage } from '../../../actions/snackbar'
 
 import { parseColor } from '../../../utils/coloring'
 import { convertSimpleStyleToOLStyle } from '../../../utils/simplestyle'
+import { primaryColor } from '../../../utils/styles'
 
 // === Settings for this particular layer type ===
 
@@ -142,16 +143,37 @@ export const GeoJSONLayerSettings = connect(
 
 // === The actual layer to be rendered ===
 
-class GeoJSONVectorSource extends source.Vector {
+class GeoJSONVectorSource extends React.Component {
   constructor (props) {
     super(props)
+
+    this._assignSourceRef = this._assignSourceRef.bind(this)
+
+    this._sourceRef = undefined
 
     this.geojsonFormat = new GeoJSON()
     this._updateFeaturesFromProps(props)
   }
 
-  componentWillReceiveProps (newProps) {
-    this._updateFeaturesFromProps(newProps)
+  componentDidUpdate () {
+    this._updateFeaturesFromProps(this.props)
+  }
+
+  _assignSourceRef (value) {
+    if (this._sourceRef === value) {
+      return
+    }
+
+    if (this._sourceRef) {
+      const { source } = this._sourceRef
+      source.clear()
+    }
+
+    this._sourceRef = value
+
+    if (this._sourceRef) {
+      this._updateFeaturesFromProps(this.props)
+    }
   }
 
   _parseFeatures (data) {
@@ -167,8 +189,17 @@ class GeoJSONVectorSource extends source.Vector {
 
   _updateFeaturesFromProps (props) {
     const features = this._parseFeatures(props.data)
-    this.source.clear()
-    this.source.addFeatures(features)
+    if (this._sourceRef) {
+      const { source } = this._sourceRef
+      source.clear()
+      source.addFeatures(features)
+    }
+  }
+
+  render () {
+    return (
+      <source.Vector ref={this._assignSourceRef} />
+    )
   }
 }
 
@@ -216,8 +247,8 @@ class GeoJSONLayerPresentation extends React.Component {
   _updateStyleFromProps (props) {
     const { parameters } = props.layer
     const { strokeWidth } = parameters
-    const strokeColor = parseColor(parameters.strokeColor, '#0088ff')
-    const fillColor = parseColor(parameters.fillColor, Color('#0088ff').alpha(0.5))
+    const strokeColor = parseColor(parameters.strokeColor, primaryColor)
+    const fillColor = parseColor(parameters.fillColor, Color(primaryColor).alpha(0.5))
     this._styleDefaults = {
       'stroke': strokeColor.rgb().hex(),
       'stroke-opacity': strokeColor.alpha(),

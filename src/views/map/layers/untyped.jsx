@@ -2,9 +2,10 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import { connect } from 'react-redux'
 
-import Card, { CardHeader } from 'material-ui/Card'
-import Grid from 'material-ui/Grid'
-import Typography from 'material-ui/Typography'
+import Card from '@material-ui/core/Card'
+import CardHeader from '@material-ui/core/CardHeader'
+import Grid from '@material-ui/core/Grid'
+import Typography from '@material-ui/core/Typography'
 
 import { changeLayerType } from '../../../actions/layers'
 import { LayerTypes, iconForLayerType, labelForLayerType } from '../../../model/layers'

@@ -22,6 +22,16 @@ const defaultState = {
     // Whether to show the scale on the map
     showScaleLine: true
   },
+
+  localServer: {
+    // Additional command line arguments to pass to the server
+    cliArguments: '',
+    // Whether a local server has to be launched upon startup
+    enabled: true,
+    // Search path of the server
+    searchPath: []
+  },
+
   uavs: {
     // Number of seconds after which a UAV with no status updates is
     // marked by a warning state

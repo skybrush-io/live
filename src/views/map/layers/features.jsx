@@ -1,10 +1,8 @@
 import Color from 'color'
 import { unary } from 'lodash'
-import { Feature, geom, interaction, layer, source } from 'ol-react'
+import { Feature, geom, interaction, layer, source } from '@collmot/ol-react'
 import PropTypes from 'prop-types'
 import Circle from 'ol/style/circle'
-import Fill from 'ol/style/fill'
-import Stroke from 'ol/style/stroke'
 import Style from 'ol/style/style'
 import Text from 'ol/style/text'
 import React from 'react'
@@ -15,8 +13,12 @@ import { Tool } from '../tools'
 import { FeatureType, LabelStyle } from '../../../model/features'
 import { featureIdToGlobalId } from '../../../model/identifiers'
 import { setLayerEditable, setLayerSelectable } from '../../../model/layers'
-import { getFeaturesInOrder, getSelectedFeatureIds } from '../../../selectors'
+import { getFeaturesInOrder } from '../../../selectors/ordered'
+import { getSelectedFeatureIds } from '../../../selectors/selection'
 import { coordinateFromLonLat, euclideanDistance } from '../../../utils/geography'
+import {
+  fill, primaryColor, thinOutline, whiteThickOutline, whiteThinOutline
+} from '../../../utils/styles'
 
 // === Settings for this particular layer type ===
 
@@ -40,7 +42,7 @@ const geometryForFeature = feature => {
       if (coordinates.length >= 2) {
         const center = coordinates[0]
         const radius = euclideanDistance(coordinates[0], coordinates[1])
-        return <geom.Circle radius={radius}>{center}</geom.Circle>
+        return <geom.Circle center={center} radius={radius} />
       } else {
         return null
       }
@@ -48,12 +50,12 @@ const geometryForFeature = feature => {
     case FeatureType.POINTS:
       return (
         coordinates.length > 1
-          ? <geom.MultiPoint>{coordinates}</geom.MultiPoint>
-          : <geom.Point>{coordinates[0]}</geom.Point>
+          ? <geom.MultiPoint coordinates={coordinates} />
+          : <geom.Point coordinates={coordinates[0]} />
       )
 
     case FeatureType.LINE_STRING:
-      return <geom.LineString>{coordinates}</geom.LineString>
+      return <geom.LineString coordinates={coordinates} />
 
     case FeatureType.POLYGON:
       // OpenLayers requires the last coordinate to be the same as the first
@@ -61,18 +63,13 @@ const geometryForFeature = feature => {
       if (coordinates.length > 0) {
         coordinates.push(coordinates[0])
       }
-      return <geom.Polygon>{coordinates}</geom.Polygon>
+      return <geom.Polygon coordinates={coordinates} />
 
     default:
       return null
   }
 }
 
-const fill = (color) => new Fill({ color })
-const thinOutline = (color) => new Stroke({ color, width: 2 })
-const thickOutline = (color) => new Stroke({ color, width: 5 })
-const whiteThinOutline = thinOutline('white')
-const whiteThickOutline = thickOutline('white')
 const whiteThickOutlineStyle = new Style({ stroke: whiteThickOutline })
 const labelStrokes = {
   [LabelStyle.THIN_OUTLINE]: whiteThinOutline,
@@ -82,7 +79,7 @@ const labelStrokes = {
 // TODO: cache the style somewhere?
 const styleForFeature = (feature, selected = false) => {
   const { color, label, labelStyle, type } = feature
-  const parsedColor = Color(color || '#0088ff')
+  const parsedColor = Color(color || primaryColor)
   const styles = []
   const radius = 6
 
@@ -91,9 +88,7 @@ const styleForFeature = (feature, selected = false) => {
       styles.push(new Style({
         image: new Circle({
           stroke: selected ? whiteThinOutline : undefined,
-          fill: new Fill({
-            color: parsedColor.rgb().array()
-          }),
+          fill: fill(parsedColor.rgb().array()),
           radius
         })
       }))
@@ -119,10 +114,7 @@ const styleForFeature = (feature, selected = false) => {
         styles.push(whiteThickOutlineStyle)
       }
       styles.push(new Style({
-        stroke: new Stroke({
-          color: parsedColor.rgb().array(),
-          width: 2
-        })
+        stroke: thinOutline(parsedColor.rgb().array())
       }))
   }
 
