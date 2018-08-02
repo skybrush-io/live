@@ -35,7 +35,7 @@ class UAVToolbar extends React.Component {
           <ActionFlightTakeoff />
         </IconButton>
         <IconButton disabled={isSelectionEmpty}
-          onClick={this._}>
+          onClick={this._landSelectedUAVs}>
           <ActionFlightLand />
         </IconButton>
         <IconButton disabled={isSelectionEmpty}

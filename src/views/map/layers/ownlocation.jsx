@@ -8,7 +8,7 @@ import Point from 'ol/geom/point'
 import Icon from 'ol/style/icon'
 import Style from 'ol/style/style'
 
-import { DeviceOrientation, Geolocation, layer, source } from '@collmot/ol-react'
+import { Geolocation, layer, source } from '@collmot/ol-react'
 
 import makeLogger from '../../../utils/logging'
 
@@ -58,6 +58,24 @@ class OwnLocationVectorSource extends React.Component {
     this.accuracyFeature = new Feature()
   }
 
+  componentDidMount () {
+    if (window.DeviceOrientationEvent) {
+      window.addEventListener(
+        'deviceorientation',
+        this._onDeviceOrientationChange
+      )
+    }
+  }
+
+  componentWillUnmount () {
+    if (window.DeviceOrientationEvent) {
+      window.removeEventListener(
+        'deviceorientation',
+        this._onDeviceOrientationChange
+      )
+    }
+  }
+
   @autobind
   _assignSourceRef (value) {
     if (this._sourceRef === value) {
@@ -97,21 +115,36 @@ class OwnLocationVectorSource extends React.Component {
   }
 
   @autobind
-  _onHeadingChange (event) {
-    this.locationIcon.setRotation(-event.target.getHeading())
+  _onDeviceOrientationChange (event) {
+    this.locationIcon.setRotation(-event.alpha / 180 * Math.PI)
 
     if (this._sourceRef) {
       this._sourceRef.source.refresh()
     }
   }
 
+  // @autobind
+  // _onHeadingChange (event) {
+  //   this.locationIcon.setRotation(-event.target.getHeading())
+
+  //   if (this._sourceRef) {
+  //     this._sourceRef.source.refresh()
+  //   }
+  // }
+
   render () {
     return [
-      <Geolocation key='location' changePosition={this._onPositionChange}
+      <Geolocation
+        key='location'
+        changePosition={this._onPositionChange}
         changeAccuracyGeometry={this._onAccuracyGeometryChange}
         projection='EPSG:3857'
-        error={this._logError} />,
-      <DeviceOrientation key='orientation' changeHeading={this._onHeadingChange} />,
+        error={this._logError}
+      />,
+      // <DeviceOrientation
+      //   key='orientation'
+      //   changeHeading={this._onHeadingChange}
+      // />,
       <source.Vector key='source' ref={this._assignSourceRef} />
     ]
   }

@@ -251,9 +251,14 @@ class FilterableSortableTable extends React.Component {
 
     return ({
       [FilterTypes.list]: (filterProperties) => (
-        <div style={popoverContentStyle}>
+        <div style={{
+          ...popoverContentStyle,
+          display: 'flex',
+          flexDirection: 'column'
+        }}>
           {filterProperties.list.map(item => {
-            return <FormControlLabel key={`${item.value}_checkbox`}
+            return <FormControlLabel
+              key={`${item.value}_checkbox`}
               control={
                 <Checkbox
                   checked={filterProperties.map.get(item.value)}
