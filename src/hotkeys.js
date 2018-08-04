@@ -177,6 +177,7 @@ export default [
     action: () => {
       if (window.confirm('Are you sure? All settings will be lost.')) {
         clearStore()
+        window.localStorage.clear()
         window.location.reload()
       }
     }

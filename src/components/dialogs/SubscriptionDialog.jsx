@@ -9,7 +9,6 @@ import DialogActions from '@material-ui/core/DialogActions'
 import DialogContent from '@material-ui/core/DialogContent'
 import FormControl from '@material-ui/core/FormControl'
 import FormGroup from '@material-ui/core/FormGroup'
-import Input from '@material-ui/core/Input'
 import InputLabel from '@material-ui/core/InputLabel'
 import MenuItem from '@material-ui/core/MenuItem'
 import Select from '@material-ui/core/Select'
@@ -109,8 +108,14 @@ export default class SubscriptionDialog extends React.Component {
             <FormGroup row>
               <FormControl style={formControlStyle}>
                 <InputLabel htmlFor='selectedUAV'>UAV</InputLabel>
-                <Select value={selectedUAV || ''} onChange={this._handleChange}
-                  input={<Input name='selectedUAV' id='selectedUAV' />}>
+                <Select
+                  value={selectedUAV || ''}
+                  onChange={this._handleChange}
+                  inputProps={{
+                    name: 'selectedUAV',
+                    id: 'selectedUAV'
+                  }}
+                >
                   {uavMenuItems}
                 </Select>
               </FormControl>
@@ -118,17 +123,27 @@ export default class SubscriptionDialog extends React.Component {
               <FormControl style={formControlStyle}>
                 <InputLabel htmlFor='selectedDevice'>Device</InputLabel>
                 <Select
-                  value={selectedDevice || ''} onChange={this._handleChange}
-                  input={<Input name='selectedDevice' id='selectedDevice' />}>
+                  value={selectedDevice || ''}
+                  onChange={this._handleChange}
+                  inputProps={{
+                    name: 'selectedDevice',
+                    id: 'selectedDevice'
+                  }}
+                >
                   {deviceMenuItems}
                 </Select>
               </FormControl>
 
               <FormControl style={formControlStyle}>
                 <InputLabel htmlFor='selectedChannel'>Channel</InputLabel>
-                <Select autoWidth
-                  value={selectedChannel || ''} onChange={this._handleChange}
-                  input={<Input name='selectedChannel' id='selectedChannel' />}>
+                <Select
+                  value={selectedChannel || ''}
+                  onChange={this._handleChange}
+                  inputProps={{
+                    name: 'selectedChannel',
+                    id: 'selectedChannel'
+                  }}
+                >
                   {channelMenuItems}
                 </Select>
               </FormControl>
@@ -157,7 +172,11 @@ export default class SubscriptionDialog extends React.Component {
    * Function for requesting the available UAVs, devices and channels.
    */
   @autobind
-  _updateDeviceList () {
+  _tryUpdateDeviceList () {
+    if (!messageHub._emitter) {
+      return
+    }
+
     messageHub.sendMessage({
       'type': 'DEV-LIST',
       'ids': Object.keys(flock._uavsById)
@@ -305,6 +324,8 @@ export default class SubscriptionDialog extends React.Component {
 
   @autobind
   showDialog () {
+    this._tryUpdateDeviceList()
+
     this.setState({
       visible: true
     })

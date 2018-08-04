@@ -57,8 +57,17 @@ class HeatmapLayerSettingsPresentation extends React.Component {
       maxHue: props.layer.parameters.maxHue
     }
 
-    this._refs = {}
-    this._assignRefs = {}
+    this._refs = Object.assign({}, ...(
+      [
+        'subscriptionDialog',
+        'threshold',
+        'minValue',
+        'maxValue',
+        'minHue',
+        'maxHue',
+        'minDistance'
+      ].map(x => ({[x]: React.createRef()}))
+    ))
 
     this._setAutoScale = (event, checked) => {
       this.props.setLayerParameter('autoScale', checked)
@@ -66,12 +75,6 @@ class HeatmapLayerSettingsPresentation extends React.Component {
     this._setSnapToGrid = (event, checked) => {
       this.props.setLayerParameter('snapToGrid', checked)
     }
-
-    const assignRef = (key, value) => { this._refs[key] = value }
-    ['threshold', 'minValue', 'maxValue', 'minDistance', 'subscriptionDialog'].forEach(key => {
-      this._refs[key] = null
-      this._assignRefs[key] = partial(assignRef, key)
-    })
   }
 
   render () {
@@ -86,11 +89,13 @@ class HeatmapLayerSettingsPresentation extends React.Component {
 
     return (
       <div>
-        <SubscriptionDialog ref={this._assignRefs.subscriptionDialog}
+        <SubscriptionDialog
+          ref={this._refs.subscriptionDialog}
           subscriptions={parameters.subscriptions}
           setSubscriptions={partial(setLayerParameter, 'subscriptions')}
           unit={parameters.unit}
-          setUnit={partial(setLayerParameter, 'unit')} />
+          setUnit={partial(setLayerParameter, 'unit')}
+        />
 
         <Button variant='raised' style={{ marginBottom: '10px' }}
           onClick={this._showSubscriptionDialog}>
@@ -100,11 +105,13 @@ class HeatmapLayerSettingsPresentation extends React.Component {
         <br />
 
         <FormGroup row>
-          <TextField inputRef={this._assignRefs.threshold}
+          <TextField
+            inputRef={this._refs.threshold}
             style={textFieldStyle}
             label='Threshold'
             type='number'
-            defaultValue={formatNumber(parameters.threshold)} />
+            defaultValue={formatNumber(parameters.threshold)}
+          />
 
           <FormControl style={{ width: '125px' }}>
             <InputLabel htmlFor='selectedChannel'>Coloring function</InputLabel>
@@ -123,16 +130,20 @@ class HeatmapLayerSettingsPresentation extends React.Component {
         </FormGroup>
 
         <FormGroup row>
-          <TextField inputRef={this._assignRefs.minValue}
+          <TextField
+            inputRef={this._refs.minValue}
             style={textFieldStyle}
             label='Minimum value'
             type='number'
-            defaultValue={formatNumber(parameters.minValue)} />
-          <TextField inputRef={this._assignRefs.maxValue}
+            defaultValue={formatNumber(parameters.minValue)}
+          />
+          <TextField
+            inputRef={this._refs.maxValue}
             style={textFieldStyle}
             label='Maximum value'
             type='number'
-            defaultValue={formatNumber(parameters.maxValue)} />
+            defaultValue={formatNumber(parameters.maxValue)}
+          />
           <FormControlLabel label='Autoscale' control={
             <Switch checked={parameters.autoScale} onChange={this._setAutoScale} />
           } />
@@ -140,7 +151,7 @@ class HeatmapLayerSettingsPresentation extends React.Component {
 
         <div style={{ padding: '24px 0' }}>
           <input id='minHue'
-            ref={this._assignRefs.minHue}
+            ref={this._refs.minHue}
             type='range' min='0' max='360'
             style={{width: '100px', verticalAlign: 'middle'}}
             value={minHue}
@@ -162,7 +173,7 @@ class HeatmapLayerSettingsPresentation extends React.Component {
           }} />
 
           <input id='maxHue'
-            ref={this._assignRefs.maxHue}
+            ref={this._refs.maxHue}
             type='range' min='0' max='360'
             style={{width: '100px', verticalAlign: 'middle'}}
             value={maxHue}
@@ -171,14 +182,16 @@ class HeatmapLayerSettingsPresentation extends React.Component {
         </div>
 
         <FormGroup row>
-          <TextField inputRef={this._assignRefs.minDistance}
+          <TextField
+            inputRef={this._refs.minDistance}
             label='Min distance'
             style={textFieldStyle}
             InputProps={{
               endAdornment: <InputAdornment position='end'>m</InputAdornment>
             }}
             type='number'
-            defaultValue={formatNumber(parameters.minDistance)} />
+            defaultValue={formatNumber(parameters.minDistance)}
+          />
           <FormControlLabel label='Snap to grid' control={
             <Switch checked={parameters.snapToGrid} onChange={this._setSnapToGrid} />
           } />
@@ -199,8 +212,7 @@ class HeatmapLayerSettingsPresentation extends React.Component {
 
   @autobind
   _showSubscriptionDialog () {
-    this._refs.subscriptionDialog._updateDeviceList()
-    this._refs.subscriptionDialog.showDialog()
+    this._refs.subscriptionDialog.current.showDialog()
   }
 
   @autobind
@@ -220,13 +232,13 @@ class HeatmapLayerSettingsPresentation extends React.Component {
   @autobind
   _handleClick (e) {
     const layerParameters = {
-      threshold: toNumber(this._refs.threshold.value),
+      threshold: toNumber(this._refs.threshold.current.value),
       coloringFunction: this.state.coloringFunction,
-      minValue: toNumber(this._refs.minValue.value),
-      maxValue: toNumber(this._refs.maxValue.value),
+      minValue: toNumber(this._refs.minValue.current.value),
+      maxValue: toNumber(this._refs.maxValue.current.value),
       minHue: this.state.minHue,
       maxHue: this.state.maxHue,
-      minDistance: toNumber(this._refs.minDistance.value)
+      minDistance: toNumber(this._refs.minDistance.current.value)
     }
 
     for (const layerParameter in layerParameters) {
@@ -238,10 +250,10 @@ class HeatmapLayerSettingsPresentation extends React.Component {
   _clearData () {
     window.localStorage.removeItem(`${this.props.layerId}_data`)
 
-    this._refs.minValue.value = 0
+    this._refs.minValue.current.value = 0
     this.props.setLayerParameter('minValue', 0)
 
-    this._refs.maxValue.value = 0
+    this._refs.maxValue.current.value = 0
     this.props.setLayerParameter('maxValue', 0)
   }
 }
@@ -297,8 +309,6 @@ class HeatmapVectorSource extends React.Component {
     this._sourceRef = undefined
 
     this.features = new HashedMap()
-
-    this._trySubscribe(props.parameters.subscriptions)
   }
 
   @autobind
@@ -319,6 +329,7 @@ class HeatmapVectorSource extends React.Component {
   }
 
   componentDidMount () {
+    this._trySubscribe(this.props.parameters.subscriptions)
     messageHub.registerNotificationHandler('DEV-INF', this._processNotification)
   }
 
@@ -327,6 +338,7 @@ class HeatmapVectorSource extends React.Component {
   }
 
   componentWillUnmount () {
+    this._tryUnSubscribe(this.props.parameters.subscriptions)
     messageHub.unregisterNotificationHandler('DEV-INF', this._processNotification)
   }
 
@@ -362,7 +374,7 @@ class HeatmapVectorSource extends React.Component {
 
     for (const [key, value] of values) {
       this.features.set(key,
-        this._drawPointFromData(source, Object.assign({value}, key))
+        this._drawPointFromData(Object.assign({ value }, key))
       )
     }
   }
@@ -374,6 +386,18 @@ class HeatmapVectorSource extends React.Component {
     } else {
       messageHub.sendMessage({
         type: 'DEV-SUB',
+        paths: subscriptions
+      })
+    }
+  }
+
+  @autobind
+  _tryUnSubscribe (subscriptions) {
+    if (!messageHub._emitter) {
+      setTimeout(() => { this._tryUnSubscribe(subscriptions) }, 500)
+    } else {
+      messageHub.sendMessage({
+        type: 'DEV-UNSUB',
         paths: subscriptions
       })
     }
@@ -467,10 +491,15 @@ class HeatmapVectorSource extends React.Component {
   }
 
   @autobind
-  _drawPointFromData (source, data) {
+  _drawPointFromData (data) {
     const point = this._makePoint([data.lon, data.lat])
     point.measuredValue = data.value
-    source.addFeature(point)
+
+    const { source } = this._sourceRef || {}
+    if (source) {
+      source.addFeature(point)
+    }
+
     return point
   }
 }
@@ -528,6 +557,8 @@ class HeatmapLayerPresentation extends React.Component {
   render () {
     const { minValue, maxValue, unit } = this.props.layer.parameters
 
+    const displayedUnit = unit || ''
+
     return (
       <div>
         <layer.Vector zIndex={this.props.zIndex} style={this.styleFunction}>
@@ -544,9 +575,9 @@ class HeatmapLayerPresentation extends React.Component {
             )`,
             borderRadius: '5px'
           }}>
-          <span>{`${formatNumber(maxValue)} ${unit}`}</span>
-          <span>{`${formatNumber((maxValue + minValue) / 2)} ${unit}`}</span>
-          <span>{`${formatNumber(minValue)} ${unit}`}</span>
+          <span>{`${formatNumber(maxValue)} ${displayedUnit}`}</span>
+          <span>{`${formatNumber((maxValue + minValue) / 2)} ${displayedUnit}`}</span>
+          <span>{`${formatNumber(minValue)} ${displayedUnit}`}</span>
         </div>
       </div>
     )

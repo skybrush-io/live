@@ -16,16 +16,23 @@ import { LayerTypes, iconForLayerType, labelForLayerType } from '../../../model/
 const UntypedLayerSettingsPresentation = ({ onLayerTypeSelected }) => {
   const items = LayerTypes.map(layerType => (
     <Grid item xs={8} sm={4} key={layerType}>
-      <Card className="no-select" onClick={() => onLayerTypeSelected(layerType)}>
-        <CardHeader avatar={iconForLayerType(layerType)}
-          title={labelForLayerType(layerType)} />
+      <Card
+        className="no-select"
+        style={{ cursor: 'pointer' }}
+        onClick={() => onLayerTypeSelected(layerType)}
+      >
+        <CardHeader
+          avatar={iconForLayerType(layerType)}
+          title={labelForLayerType(layerType)}
+          style={{ paddingLeft: '20px', paddingRight: '20px' }}
+        />
       </Card>
     </Grid>
   ))
   return (
     <div>
       <Typography variant="subheading" component="p" gutterBottom>Pick a layer type</Typography>
-      <Grid container>
+      <Grid container spacing={8}>
         {items}
       </Grid>
     </div>
