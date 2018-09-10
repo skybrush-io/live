@@ -11,6 +11,11 @@ export const Source = {
   BING_MAPS: {
     AERIAL_WITH_LABELS: 'bingMaps.aerialWithLabels',
     ROAD: 'bingMaps.road'
+  },
+  GOOGLE_MAPS: {
+    DEFAULT: 'googleMaps.default',
+    SATELLITE: 'googleMaps.satellite',
+    ROADS: 'googleMaps.roads'
   }
 }
 
@@ -18,7 +23,11 @@ export const Source = {
  * Constant containing all the sources in the order preferred on the UI.
  */
 export const Sources = [
-  Source.OSM, Source.BING_MAPS.AERIAL_WITH_LABELS, Source.BING_MAPS.ROAD
+  Source.OSM,
+  Source.GOOGLE_MAPS.DEFAULT,
+  Source.GOOGLE_MAPS.SATELLITE,
+  Source.BING_MAPS.AERIAL_WITH_LABELS,
+  Source.BING_MAPS.ROAD
 ]
 
 /**
@@ -36,6 +45,12 @@ visualRepresentationsForSources[Source.BING_MAPS.AERIAL_WITH_LABELS] = {
 }
 visualRepresentationsForSources[Source.BING_MAPS.ROAD] = {
   label: 'Bing Maps (road)'
+}
+visualRepresentationsForSources[Source.GOOGLE_MAPS.DEFAULT] = {
+  label: 'Google Maps'
+}
+visualRepresentationsForSources[Source.GOOGLE_MAPS.SATELLITE] = {
+  label: 'Google Maps (satellite)'
 }
 
 /**

@@ -46,7 +46,7 @@ function markAsSelectable (layer) {
 }
 
 const redLine = stroke('#f44', 2)
-const greenLine = stroke('#060', 2)
+const greenLine = stroke('#4f4', 2)
 
 const ownHomePositionStyles = (selected, axis) => [
   // circle and label

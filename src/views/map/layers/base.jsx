@@ -65,6 +65,12 @@ class LayerSource extends React.PureComponent {
       case Source.OSM:
         return <source.OSM />
 
+      case Source.GOOGLE_MAPS.DEFAULT:
+        return <source.XYZ url="https://mt1.google.com/vt/lyrs=r&x={x}&y={y}&z={z}" />
+
+      case Source.GOOGLE_MAPS.SATELLITE:
+        return <source.XYZ url="https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}" />
+
       case Source.BING_MAPS.AERIAL_WITH_LABELS:
         return <source.BingMaps apiKey={BING_API_KEY} imagerySet="AerialWithLabels" maxZoom={19} />
 
