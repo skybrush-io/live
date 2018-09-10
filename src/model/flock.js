@@ -86,6 +86,8 @@ export default class Flock {
     // ID, update its own local status, and if the status was updated,
     // remember the UAV ID so we can ask the feature manager to refresh
     // the features of these UAVs
+
+    // body.status is frozen so we unfreeze it first
     const { addedUAVs, updatedUAVs } = _(body.status).transform(
       (accumulator, status, uavId) => {
         // Code duplicated from getOrCreateUAVById(); this is unfortunate

@@ -26,6 +26,8 @@ export default class UAV {
     this.heading = undefined
     this.error = undefined
     this.battery = { voltage: undefined, percentage: undefined }
+
+    this.handleUAVStatusInfo = this.handleUAVStatusInfo.bind(this)
   }
 
   /**

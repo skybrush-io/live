@@ -3,6 +3,7 @@
  * (position, rotation, zoom)
  */
 
+import Extent from 'ol/extent'
 import { round } from 'lodash'
 
 import { coordinateFromLonLat, lonLatFromCoordinate } from '../../utils/geography'
@@ -18,7 +19,7 @@ import {
 import { normalizeAngle } from './MapRotationTextBox.jsx'
 
 /**
- * Class for handling various parameters of an openlayers map's view.
+ * Class for handling various parameters of an OpenLayers map's view.
  * (center, rotation, zoom)
  */
 export default class MapViewManager {
@@ -171,6 +172,10 @@ export default class MapViewManager {
    * @param {number} duration The desired duration of the transition.
    */
   mapViewToExtent (extent, duration = 1000) {
-    this.view.fit(extent, { duration })
+    if (Extent.isEmpty(extent)) {
+      console.warn('Cannot fit empty extent')
+    } else {
+      this.view.fit(extent, { duration })
+    }
   }
 }

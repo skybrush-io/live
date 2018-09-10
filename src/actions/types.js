@@ -23,6 +23,7 @@ export const REMOVE_FEATURES_FROM_SELECTION = 'REMOVE_FEATURES_FROM_SELECTION'
 
 // Map origin-related actions
 export const CLEAR_HOME_POSITION = 'CLEAR_HOME_POSITION'
+export const SET_AXIS_TYPE = 'SET_AXIS_TYPE'
 export const SET_HOME_POSITION = 'SET_HOME_POSITION'
 
 // Layer-related actions

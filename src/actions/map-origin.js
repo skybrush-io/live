@@ -4,7 +4,7 @@
  */
 
 import { createAction } from 'redux-actions'
-import { CLEAR_HOME_POSITION, SET_HOME_POSITION } from './types'
+import { CLEAR_HOME_POSITION, SET_AXIS_TYPE, SET_HOME_POSITION } from './types'
 
 /**
  * Action factory that creates an action that clears the origin (home position)
@@ -29,4 +29,12 @@ export const setHomePosition = createAction(
  */
 export const setFlatEarthCoordinateSystemOrientation = createAction(
   SET_HOME_POSITION, angle => ({ angle })
+)
+
+/**
+ * Action factory that creates an action that sets the type of the
+ * flat Earth coordinate system (NEU or NWU) of the map.
+ */
+export const setFlatEarthCoordinateSystemType = createAction(
+  SET_AXIS_TYPE, type => ({ type })
 )

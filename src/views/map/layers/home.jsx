@@ -46,8 +46,9 @@ function markAsSelectable (layer) {
 }
 
 const redLine = stroke('#f44', 2)
+const greenLine = stroke('#060', 2)
 
-const ownHomePositionStyles = selected => [
+const ownHomePositionStyles = (selected, axis) => [
   // circle and label
   new Style({
     geometry: feature => {
@@ -70,22 +71,30 @@ const ownHomePositionStyles = selected => [
 
   // arrow
   new Style({
-    stroke: redLine
+    stroke: axis === 'x' ? redLine : greenLine
   })
 ]
 
-const HomePositionsVectorSource = ({ angle, homePosition, selectedIds }) => {
+const HomePositionsVectorSource = ({ angle, coordinateSystemType, homePosition, selectedIds }) => {
   const features = []
 
   if (homePosition) {
+    const id = homePositionIdToGlobalId('')
     const tail = coordinateFromLonLat(homePosition)
-    const head = [0, 50]
-    Coordinate.rotate(head, -angle * Math.PI / 180)
-    Coordinate.add(head, tail)
+    const headY = [0, 50]
+    const headX = [coordinateSystemType === 'neu' ? 50 : -50, 0]
+    Coordinate.rotate(headX, -angle * Math.PI / 180)
+    Coordinate.rotate(headY, -angle * Math.PI / 180)
+    Coordinate.add(headY, tail)
+    Coordinate.add(headX, tail)
     features.push(
-      <Feature id={homePositionIdToGlobalId('')} key=''
-        style={ownHomePositionStyles(selectedIds.includes(''))}>
-        <geom.LineString coordinates={[tail, head]} />
+      <Feature id={id + '$x'} key='x'
+        style={ownHomePositionStyles(selectedIds.includes(''), 'x')}>
+        <geom.LineString coordinates={[tail, headX]} />
+      </Feature>,
+      <Feature id={id} key='y'
+        style={ownHomePositionStyles(selectedIds.includes(''), 'y')}>
+        <geom.LineString coordinates={[tail, headY]} />
       </Feature>
     )
   }
@@ -99,20 +108,24 @@ const HomePositionsVectorSource = ({ angle, homePosition, selectedIds }) => {
 
 HomePositionsVectorSource.propTypes = {
   angle: PropTypes.number,
+  coordinateSystemType: PropTypes.oneOf(['neu', 'nwu']),
   homePosition: PropTypes.arrayOf(PropTypes.number),
   selectedIds: PropTypes.arrayOf(PropTypes.string)
 }
 
-const HomePositionsLayerPresentation = ({ angle, homePosition, selectedIds, zIndex }) => (
+const HomePositionsLayerPresentation = ({
+  angle, coordinateSystemType, homePosition, selectedIds, zIndex
+}) => (
   <layer.Vector zIndex={zIndex} updateWhileAnimating updateWhileInteracting
     ref={markAsSelectable}>
     <HomePositionsVectorSource homePosition={homePosition} angle={angle}
-      selectedIds={selectedIds} />
+      selectedIds={selectedIds} coordinateSystemType={coordinateSystemType} />
   </layer.Vector>
 )
 
 HomePositionsLayerPresentation.propTypes = {
   angle: PropTypes.number,
+  coordinateSystemType: PropTypes.oneOf(['neu', 'nwu']),
   homePosition: PropTypes.arrayOf(PropTypes.number),
   layer: PropTypes.object,
   layerId: PropTypes.string,
@@ -127,8 +140,9 @@ HomePositionsLayerPresentation.defaultProps = {
 export const HomePositionsLayer = connect(
   // mapStateToProps
   state => ({
-    homePosition: state.map.origin.position,
     angle: state.map.origin.angle,
+    coordinateSystemType: state.map.origin.type,
+    homePosition: state.map.origin.position,
     selectedIds: getSelectedHomePositionIds(state)
   }),
   // mapDispatchToProps

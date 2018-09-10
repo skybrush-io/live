@@ -110,7 +110,7 @@ class MessagesPanelPresentation extends React.Component {
   }
 
   render () {
-    const { chatEntries, flock, selectedUAVId, style, textFieldsAtBottom } = this.props
+    const { chatEntries, flock, style, textFieldsAtBottom } = this.props
     const chatComponents = convertMessagesToComponents(chatEntries, textFieldsAtBottom)
     const contentStyle = Object.assign({
       display: 'flex',
@@ -123,8 +123,7 @@ class MessagesPanelPresentation extends React.Component {
         <ActiveUAVsField style={{ width: '8em', paddingRight: '1em' }}
           flock={flock} />
         <TextField inputRef={this._setTextField} fullWidth label="Message"
-          onKeyDown={this._textFieldKeyDownHandler}
-          disabled={isNil(selectedUAVId)} />
+          onKeyDown={this._textFieldKeyDownHandler} />
       </div>
     const children = textFieldsAtBottom ? [chatArea, textFields] : [textFields, chatArea]
     return <div style={contentStyle}>{children}</div>

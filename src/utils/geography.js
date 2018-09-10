@@ -341,15 +341,23 @@ export class FlatEarthCoordinateSystem {
    * @param {number[]} origin the longitude-latitude pair that defines the
    *        origin of the coordinate system
    * @param {number} angle the orientation of the zero-degree axis of the
-   *        coordinate system, in degrees (0 = North, 90 = East, 180 = South,
-   *        270 = West)
-   * @param {number} ellipsoid  the model of the ellipsoid on which the
+   *        coordinate system, in degrees, zero being north, 90 degrees
+   *        being east, 180 degrees being south and 270 degrees being west.
+   * @param {string} type type of the axis configuration of the flat Earth
+   *        coordinate system: `neu` means that the coordinate system is
+   *        left-handed (north-east-up) `nwu` means that the coordinate system
+   *        is right-handed (north-west-up)
+   * @param {Object} ellipsoid  the model of the ellipsoid on which the
    *        coordinate system is defined; defaults to WGS84
    */
-  constructor (origin, angle = 0, ellipsoid = WGS84) {
+  constructor (origin, angle = 0, type = 'neu', ellipsoid = WGS84) {
+    if (type !== 'neu' && type !== 'nwu') {
+      throw new Error('unknown coordinate system type: ' + type)
+    }
     this._origin = origin
     this._angle = angle * Math.PI / 180
     this._ellipsoid = ellipsoid
+    this._type = type
     this._precalculate()
   }
 
@@ -360,12 +368,12 @@ export class FlatEarthCoordinateSystem {
    * @return {number[]} the converted coordinates
    */
   fromLonLat (coords) {
-    // TODO(ntamas): rotate by angle
     const result = [
       (coords[1] - this._origin[1]) * this._piOver180 * this._r1,
       (coords[0] - this._origin[0]) * this._piOver180 * this._r2OverCosOriginLatInRadians
     ]
     Coordinate.rotate(result, -this._angle)
+    result[1] = result[1] * this._yMul
     return result
   }
 
@@ -376,7 +384,7 @@ export class FlatEarthCoordinateSystem {
    * @return {number[]} the converted coordinates
    */
   toLonLat (coords) {
-    const result = [coords[0], coords[1]]
+    const result = [coords[0], coords[1] * this._yMul]
     Coordinate.rotate(result, this._angle)
     return [
       result[1] / this._r2OverCosOriginLatInRadians / this._piOver180 + this._origin[0],
@@ -399,6 +407,7 @@ export class FlatEarthCoordinateSystem {
     this._r1 = radius * (1 - eccSq) / Math.pow(x, 1.5)
     this._r2OverCosOriginLatInRadians = radius / Math.sqrt(x) *
       Math.cos(originLatInRadians)
+    this._yMul = (this._type === 'neu') ? 1 : -1
   }
 }
 

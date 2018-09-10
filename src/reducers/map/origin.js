@@ -14,7 +14,8 @@ import u from 'updeep'
  */
 const defaultState = {
   position: undefined,
-  angle: 0
+  angle: 0,
+  type: 'neu'
 }
 
 /**
@@ -26,13 +27,22 @@ const reducer = handleActions({
   }, state),
 
   SET_HOME_POSITION: (state, action) => {
-    const { position, angle } = action.payload
+    const { angle, position, type } = action.payload
     const updates = {
       position: u.constant(position)
     }
     if (angle !== undefined) {
-      updates.angle = u.constant(angle)
+      updates.angle = angle
     }
+    if (type !== undefined) {
+      updates.type = type
+    }
+    return u(updates, state)
+  },
+
+  SET_AXIS_TYPE: (state, action) => {
+    const { type } = action.payload
+    const updates = { type }
     return u(updates, state)
   }
 }, defaultState)

@@ -114,8 +114,8 @@ export class ActiveUAVsFieldPresentation extends React.Component {
     this.eventBindings = {}
   }
 
-  componentWillReceiveProps (newProps) {
-    this._onFlockMaybeChanged(this.props.flock, newProps.flock)
+  componentDidUpdate (prevProps) {
+    this._onFlockMaybeChanged(prevProps.flock, this.props.flock)
   }
 
   componentDidMount () {
