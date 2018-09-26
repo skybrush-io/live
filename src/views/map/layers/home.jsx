@@ -81,10 +81,10 @@ const HomePositionsVectorSource = ({ angle, coordinateSystemType, homePosition, 
   if (homePosition) {
     const id = homePositionIdToGlobalId('')
     const tail = coordinateFromLonLat(homePosition)
-    const headY = [0, 50]
-    const headX = [coordinateSystemType === 'neu' ? 50 : -50, 0]
-    Coordinate.rotate(headX, -angle * Math.PI / 180)
-    Coordinate.rotate(headY, -angle * Math.PI / 180)
+    const headY = [0, coordinateSystemType === 'nwu' ? 50 : -50]
+    const headX = [50, 0]
+    Coordinate.rotate(headX, (90 - angle) * Math.PI / 180)
+    Coordinate.rotate(headY, (90 - angle) * Math.PI / 180)
     Coordinate.add(headY, tail)
     Coordinate.add(headX, tail)
     features.push(

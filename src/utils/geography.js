@@ -180,14 +180,23 @@ export const getExactClosestPointOf = (geometry, coordinate) => {
  * The constructed function accepts either a single OpenLayers coordinate
  * or a longitude-latitude pair as an array of two numbers.
  *
- * @param {number} digits  the number of fractional digits to show
- * @param {string} unit   the unit to show after the digits
+ * @param {Object}  options  formatting options
+ * @param {number}  options.digits  the number of fractional digits to show
+ * @param {boolean} options.reverse  whether to reverse the X and Y coordinates
+ * @param {string}  options.unit   the unit to show after the digits
  * @return {function} the constructed function
  */
-export const makeDecimalCoordinateFormatter = (digits = 6, unit = '') =>
-  unit
-    ? coordinate => Coordinate.format(coordinate, '{y}' + unit + ', {x}' + unit, digits)
-    : coordinate => Coordinate.format(coordinate, '{y}, {x}', digits)
+export const makeDecimalCoordinateFormatter = options => {
+  const { digits, reverse, unit } = options
+  const formatString = (
+    reverse ? (
+      unit ? ('{y}' + unit + ', {x}' + unit) : '{y}, {x}'
+    ) : (
+      unit ? ('{x}' + unit + ', {y}' + unit) : '{x}, {y}'
+    )
+  )
+  return coordinate => Coordinate.format(coordinate, formatString, digits)
+}
 
 /**
  * Creates a function that formats an OpenLayers polar coordinate pair into
@@ -197,18 +206,21 @@ export const makeDecimalCoordinateFormatter = (digits = 6, unit = '') =>
  * The constructed function accepts either a single OpenLayers coordinate
  * or a longitude-latitude pair as an array of two numbers.
  *
- * @param {number} digits  the number of fractional digits to show
- * @param {string} unit   the unit to show after the digits
+ * @param {Object}  options  formatting options
+ * @param {number}  options.digits  the number of fractional digits to show
+ * @param {string}  options.unit   the unit to show after the digits
  * @return {function} the constructed function
  */
-export const makePolarCoordinateFormatter = (digits = 6, unit = '') =>
-  unit
+export const makePolarCoordinateFormatter = options => {
+  const { digits, unit } = options
+  return unit
     ? coordinate => Coordinate.format(
       coordinate, '{x}' + unit + ' \u2220 {y}\u00b0', digits
     )
     : coordinate => Coordinate.format(
       coordinate, '{x} \u2220 {y}\u00b0', digits
     )
+}
 
 /**
  * Creates a function that formats an OpenLayers coordinate into the
@@ -237,7 +249,11 @@ export const translateBy = curry((displacement, coordinates) => {
  * The constructed function accepts either a single OpenLayers coordinate
  * or a longitude-latitude pair as an array of two numbers.
  */
-export const formatCoordinate = makeDecimalCoordinateFormatter(6, '\u00b0')
+export const formatCoordinate = makeDecimalCoordinateFormatter({
+  digits: 6,
+  reverse: true,
+  unit: '\u00b0'
+})
 
 /**
  * Parses the given string as geographical coordinates and converts it into

@@ -50,7 +50,7 @@ const DisplayTabPresentation = props => (
         <MenuItem value="nwu">NWU (right-handed)</MenuItem>
       </Select>
     </FormControl>
-    <RotationField label='Orientation (Y+ axis)'
+    <RotationField label='Orientation (X+ axis)'
       value={props.orientation}
       onChange={props.onOrientationChanged}
     />

@@ -27,8 +27,8 @@ export const getFlatEarthCoordinateTransformer = createSelector(
   )
 )
 
-const cartesianFormatter = makeDecimalCoordinateFormatter(2, ' m')
-const polarFormatter = makePolarCoordinateFormatter(2, ' m')
+const cartesianFormatter = makeDecimalCoordinateFormatter({ digits: 2, unit: ' m' })
+const polarFormatter = makePolarCoordinateFormatter({ digits: 2, unit: ' m' })
 
 /**
  * Selector that returns a function that can be called with longitude-latitude
