@@ -101,6 +101,5 @@ export function convertSimpleStyleToOLStyle (style, defaults) {
     styleProps['text'].setOffsetY(markerSizeInPixels + 2)
   }
 
-  console.log(styleProps)
   return new Style(styleProps)
 }

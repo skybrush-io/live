@@ -70,7 +70,6 @@ export default [
       const displays = document.getElementsByClassName('ol-mouse-position')
       const text = (displays && displays.length > 0) ? displays[0].innerText : undefined
       if (text) {
-        console.log(text)
         copy(text.split('\n')[0])
         store.dispatch(showSnackbarMessage('Coordinates copied to clipboard.'))
       }

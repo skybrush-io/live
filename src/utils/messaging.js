@@ -87,7 +87,6 @@ export const toggleErrorUAVs = (() => {
           ? `The error state of UAVs ${uavs} were cleared.`
           : `UAVs ${uavs} were sent to error state ${currentError}.`
       )
-      console.log(result)
     })
   }
 })()
