@@ -102,7 +102,7 @@
     "babel-preset-react": "^6.24.1",
     "css-loader": "^0.28.11",
     "dotenv-webpack": "^1.5.7",
-    "electron": "^2.0.2",
+    "electron": "^3.0.0",
     "esdoc": "^1.1.0",
     "eslint": "^4.19.1",
     "eslint-config-standard": "^11.0.0",

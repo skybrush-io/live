@@ -1,4 +1,4 @@
-const { app } = require('electron')
+const { app, protocol } = require('electron')
 const logger = require('electron-timber')
 const yargs = require('yargs/yargs')
 
@@ -17,6 +17,15 @@ process.env.GOOGLE_API_KEY = 'AIzaSyC-Emzc-ogrp8ZW05zF6Sx0x5VDDyQfpLw'
 function run (argv) {
   const windowOptions = {
     debug: argv.debug
+  }
+
+  // Register the WebSocket protocol as secure even if it is not really a
+  // secure one. This is needed to allow us to connect to plain WebSocket
+  // servers (like our demo server) even if we are using https://, which is
+  // the case for our local development setup. Note that this is irrelevant
+  // if we are not using Webpack.
+  if (willUseWebpack) {
+    protocol.registerStandardSchemes(['ws'], { secure: true })
   }
 
   // Create the main window when the application is ready
