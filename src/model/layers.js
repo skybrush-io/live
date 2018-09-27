@@ -86,9 +86,9 @@ const _propertiesForLayerTypes = {
     icon: <FileAttachment />,
     parameters: {
       data: {},
-      strokeColor: {r: 85, g: 85, b: 225, alpha: 1},
+      strokeColor: { r: 85, g: 85, b: 225, alpha: 1 },
       strokeWidth: 2,
-      fillColor: {r: 170, g: 170, b: 225, alpha: 0.5}
+      fillColor: { r: 170, g: 170, b: 225, alpha: 0.5 }
     }
   },
   [LayerType.HEATMAP]: {
@@ -148,7 +148,7 @@ const _propertiesForLayerTypes = {
     parameters: {
       trailLength: 10,
       trailWidth: 2,
-      trailColor: {r: 0, g: 0, b: 0, a: 1}
+      trailColor: { r: 0, g: 0, b: 0, a: 1 }
     }
   },
   [LayerType.UNTYPED]: {

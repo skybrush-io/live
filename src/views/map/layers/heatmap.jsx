@@ -66,7 +66,7 @@ class HeatmapLayerSettingsPresentation extends React.Component {
         'minHue',
         'maxHue',
         'minDistance'
-      ].map(x => ({[x]: React.createRef()}))
+      ].map(x => ({ [x]: React.createRef() }))
     ))
 
     this._setAutoScale = (event, checked) => {
@@ -153,7 +153,7 @@ class HeatmapLayerSettingsPresentation extends React.Component {
           <input id='minHue'
             ref={this._refs.minHue}
             type='range' min='0' max='360'
-            style={{width: '100px', verticalAlign: 'middle'}}
+            style={{ width: '100px', verticalAlign: 'middle' }}
             value={minHue}
             onChange={this._handleHueChange}
           />
@@ -175,7 +175,7 @@ class HeatmapLayerSettingsPresentation extends React.Component {
           <input id='maxHue'
             ref={this._refs.maxHue}
             type='range' min='0' max='360'
-            style={{width: '100px', verticalAlign: 'middle'}}
+            style={{ width: '100px', verticalAlign: 'middle' }}
             value={maxHue}
             onChange={this._handleHueChange}
           />
@@ -419,7 +419,7 @@ class HeatmapVectorSource extends React.Component {
       data.lon = snappedLonLat[0]
       data.lat = snappedLonLat[1]
 
-      const snappedKey = {lon: data.lon, lat: data.lat}
+      const snappedKey = { lon: data.lon, lat: data.lat }
 
       if (values.has(snappedKey)) {
         data.value = (values.get(snappedKey) + data.value) / 2
@@ -440,7 +440,7 @@ class HeatmapVectorSource extends React.Component {
       }
     }
 
-    const key = {lon: data.lon, lat: data.lat}
+    const key = { lon: data.lon, lat: data.lat }
     values.set(key, data.value)
     this.features.set(key, this._drawPointFromData(data))
   }

@@ -88,7 +88,7 @@ export default class MapViewManager {
       const center = lonLatFromCoordinate(this.view.getCenter()).map(
         c => round(c, 6)
       )
-      this.callbacks.center.forEach(c => c({lon: center[0], lat: center[1]}))
+      this.callbacks.center.forEach(c => c({ lon: center[0], lat: center[1] }))
     } else if (e.key === 'rotation') {
       const rotation = this.view.getRotation() * (180 / -Math.PI)
       this.callbacks.rotation.forEach(c => c(normalizeAngle(rotation)))

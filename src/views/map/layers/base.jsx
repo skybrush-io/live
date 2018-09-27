@@ -44,7 +44,7 @@ export const BaseLayerSettings = connect(
   // mapDispatchToProps
   (dispatch, ownProps) => ({
     onLayerSourceChanged: (event, value) => {
-      dispatch(selectMapSource({layerId: ownProps.layerId, source: value}))
+      dispatch(selectMapSource({ layerId: ownProps.layerId, source: value }))
     }
   })
 )(BaseLayerSettingsPresentation)

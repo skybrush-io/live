@@ -28,7 +28,7 @@ const FeatureListEntry = (props) => {
     <ListItem button data-id={id} onClick={onEditFeature}>
       <ListItemIcon style={{ color }}>
         {getIconOfFeatureType(type)}
-     </ListItemIcon>
+      </ListItemIcon>
       { label
         ? <ListItemText primary={label} />
         : <ListItemText secondary={getNameOfFeatureType(type)} /> }

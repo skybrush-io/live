@@ -29,5 +29,11 @@ module.exports = {
       'requireReturn': false
     }],
     'react/jsx-no-bind': 'error'
+  },
+
+  'settings': {
+    'react': {
+	  'version': '16.0'
+    }
   }
 };

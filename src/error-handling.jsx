@@ -60,4 +60,4 @@ export function handleError (err) {
   logger.error(errorToString(err))
 }
 
-export default handleError;
+export default handleError

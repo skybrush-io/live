@@ -107,7 +107,7 @@ class FitAllFeaturesButton extends React.Component {
     this._CurrentIcon = ActionAllOut
 
     console.log(featureExtents)
-    
+
     const mergedExtent = featureExtents.reduce(
       (bigExtent, currentExtent) => Extent.extend(bigExtent, currentExtent),
       Extent.createEmpty()
