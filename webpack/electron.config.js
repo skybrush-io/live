@@ -15,7 +15,7 @@ if (process.env.NODE_ENV !== 'production' && process.env.DEPLOYMENT !== '1') {
 }
 
 module.exports = merge.smart(baseConfig, {
-  entry: './src/index',
+  entry: ['@babel/polyfill', './src/index'],
   output: {
     filename: 'bundle.js'
   },

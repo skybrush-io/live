@@ -7,7 +7,7 @@ import LocationOn from '@material-ui/icons/LocationOn'
 import ShowChart from '@material-ui/icons/ShowChart'
 import CropSquare from '@material-ui/icons/CropSquare'
 import PanoramaFishEye from '@material-ui/icons/PanoramaFishEye'
-import LabelOutline from '@material-ui/icons/LabelOutline'
+import StarBorder from '@material-ui/icons/StarBorder'
 
 import partial from 'lodash/partial'
 import { connect } from 'react-redux'
@@ -41,7 +41,7 @@ const DrawingToolbarPresentation = ({ onToolSelected, selectedTool, theme }) => 
         <CropSquare color={colorForTool(Tool.DRAW_RECTANGLE)} />
       </IconButton>
       <IconButton onClick={partial(onToolSelected, Tool.DRAW_POLYGON)} tooltip='Draw polygon'>
-        <LabelOutline color={colorForTool(Tool.DRAW_POLYGON)} />
+        <StarBorder color={colorForTool(Tool.DRAW_POLYGON)} />
       </IconButton>
       <IconButton onClick={partial(onToolSelected, Tool.EDIT_FEATURE)} tooltip='Edit feature'>
         <EditFeature color={colorForTool(Tool.EDIT_FEATURE)} />

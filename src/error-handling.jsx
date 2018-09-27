@@ -59,3 +59,5 @@ function errorToString (err) {
 export function handleError (err) {
   logger.error(errorToString(err))
 }
+
+export default handleError;

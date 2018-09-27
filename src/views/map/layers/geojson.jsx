@@ -7,8 +7,8 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import { connect } from 'react-redux'
 
+import ArrowDownward from '@material-ui/icons/ArrowDownward'
 import TextField from '@material-ui/core/TextField'
-import ActionSystemUpdateAlt from '@material-ui/icons/SystemUpdateAlt'
 
 import PopupColorPicker from '../../../components/PopupColorPicker'
 
@@ -80,7 +80,7 @@ class GeoJSONLayerSettingsPresentation extends React.Component {
             color='primary'
             onClick={this._handleClick}
           >
-            <ActionSystemUpdateAlt style={{ marginRight: '1em' }} />
+            <ArrowDownward style={{ marginRight: '1em' }} />
             Import GeoJSON
           </Button>
         </div>

@@ -1,4 +1,14 @@
 {
-    "presets": [ "es2015", "react" ],
-    "plugins": [ "transform-runtime", "transform-object-rest-spread", "transform-decorators-legacy" ]
+    "presets": [
+		["@babel/env", {
+			"targets": {
+				"browsers": ["last 2 versions"],
+				"node": "current"
+			}
+		}],
+		"@babel/react"
+	],
+    "plugins": [
+        ["@babel/plugin-proposal-decorators", { legacy: true }]
+    ]
 }

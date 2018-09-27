@@ -26,7 +26,7 @@ import Tab from '@material-ui/core/Tab'
 import Tabs from '@material-ui/core/Tabs'
 
 import EditIcon from '@material-ui/icons/Edit'
-import LightbulbIcon from '@material-ui/icons/LightbulbOutline'
+import SignalWifi0Bar from '@material-ui/icons/SignalWifi0Bar'
 import WifiIcon from '@material-ui/icons/Wifi'
 
 import {
@@ -43,7 +43,7 @@ import { createValidator, between, integer, required } from '../../utils/validat
 
 // eslint-disable-next-line react/prop-types
 const iconForServerItem = ({ type }) => (
-  type === 'inferred' ? <LightbulbIcon /> : <WifiIcon />
+  type === 'inferred' ? <SignalWifi0Bar /> : <WifiIcon />
 )
 
 const primaryTextForServerItem = ({ hostName, label, port }) => (
