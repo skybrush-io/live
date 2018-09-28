@@ -11,7 +11,11 @@ import { showSnackbarMessage } from './actions/snackbar'
 import flock from './flock'
 import { Source } from './model/sources'
 import { getSelectedUAVIds } from './selectors/selection'
-import signals from './signals'
+import {
+  fitAllFeaturesSignal,
+  focusMessagesDialogUAVSelectorFieldSignal,
+  mapRotationResetSignal
+} from './signals'
 import store, { clearStore } from './store'
 import {
   takeoffUAVs, landUAVs, returnToHomeUAVs, toggleErrorUAVs
@@ -82,7 +86,7 @@ export default [
     on: 'down',
     keys: 'PlatMod + KeyR',
     action: () => {
-      signals.mapRotationResetSignal.dispatch()
+      mapRotationResetSignal.dispatch()
     }
   },
   {
@@ -90,7 +94,7 @@ export default [
     on: 'down',
     keys: 'PlatMod + KeyF',
     action: () => {
-      signals.fitAllFeaturesSignal.dispatch()
+      fitAllFeaturesSignal.dispatch()
     }
   },
 
@@ -164,7 +168,7 @@ export default [
     keys: '@',
     action: () => {
       store.dispatch(showMessagesDialog())
-      signals.focusMessagesDialogUAVSelectorField.dispatch()
+      focusMessagesDialogUAVSelectorFieldSignal.dispatch()
     }
   },
 

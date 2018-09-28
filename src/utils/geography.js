@@ -5,14 +5,15 @@
 import CoordinateParser from 'coordinate-parser'
 import formatCoords from 'formatcoords'
 import { curry, minBy } from 'lodash'
-import Coordinate from 'ol/coordinate'
-import Extent from 'ol/extent'
-import GeometryCollection from 'ol/geom/geometrycollection'
-import MultiLineString from 'ol/geom/multilinestring'
-import Polygon from 'ol/geom/polygon'
-import MultiPolygon from 'ol/geom/multipolygon'
-import Projection from 'ol/proj'
-import Sphere from 'ol/sphere'
+import * as Coordinate from 'ol/coordinate'
+import * as Extent from 'ol/extent'
+import {
+  MultiLineString,
+  MultiPolygon,
+  Polygon
+} from 'ol/geom'
+import GeometryCollection from 'ol/geom/GeometryCollection'
+import * as Projection from 'ol/proj'
 
 /**
  * Creates an OpenLayers geometry function used by the "draw" interaction
@@ -301,15 +302,8 @@ const makeEllipsoidModel = (semiMajorAxis, inverseFlattening) => {
  */
 export const WGS84 = makeEllipsoidModel(6378137, 298.257223563)
 
-/**
- * An OpenLayers sphere whose radius is equal to the semi-major (equatorial)
- * axis of the WGS84 ellipsoid, in metres. Useful for calculating distances on
- * the Earth (also in metres).
- */
-export const wgs84Sphere = new Sphere(WGS84.semiMajorAxis)
-
-/**
- * The defaul value for projection is "EPSG:3857", a Spherical Mercator
+/*
+ * The default value for projection is "EPSG:3857", a Spherical Mercator
  * projection used by most tile-based mapping services.
  *
  * The values of "WGS 84" ("EPSG:4326") range from [-180, -90] to [180, 90]

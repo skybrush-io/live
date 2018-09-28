@@ -1,12 +1,11 @@
 import Color from 'color'
 import { unary } from 'lodash'
-import { Feature, geom, interaction, layer, source } from '@collmot/ol-react'
 import PropTypes from 'prop-types'
-import Circle from 'ol/style/circle'
-import Style from 'ol/style/style'
-import Text from 'ol/style/text'
+import { Circle, Style, Text } from 'ol/style'
 import React from 'react'
 import { connect } from 'react-redux'
+
+import { Feature, geom, interaction, layer, source } from '@collmot/ol-react'
 
 import { Tool } from '../tools'
 

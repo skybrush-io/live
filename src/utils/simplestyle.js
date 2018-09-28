@@ -3,11 +3,7 @@
  */
 
 import Color from 'color'
-import Circle from 'ol/style/circle'
-import Fill from 'ol/style/fill'
-import Stroke from 'ol/style/stroke'
-import Style from 'ol/style/style'
-import Text from 'ol/style/text'
+import { Circle, Fill, Stroke, Style, Text } from 'ol/style'
 
 /**
  * @private

@@ -2,8 +2,7 @@
  * @file Helper functions to create some simple OpenLayers styles.
  */
 
-import Fill from 'ol/style/fill'
-import Stroke from 'ol/style/stroke'
+import { Fill, Stroke } from 'ol/style'
 
 export const primaryColor = '#2196f3' // blue[500] in Material-UI
 

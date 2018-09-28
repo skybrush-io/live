@@ -1,11 +1,12 @@
 import Color from 'color'
 import _ from 'lodash'
-import GeoJSON from 'ol/format/geojson'
-import Point from 'ol/geom/point'
-import { layer, source } from '@collmot/ol-react'
+import GeoJSON from 'ol/format/GeoJSON'
+import Point from 'ol/geom/Point'
 import PropTypes from 'prop-types'
 import React from 'react'
 import { connect } from 'react-redux'
+
+import { layer, source } from '@collmot/ol-react'
 
 import ArrowDownward from '@material-ui/icons/ArrowDownward'
 import TextField from '@material-ui/core/TextField'

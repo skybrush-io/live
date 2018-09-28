@@ -2,11 +2,9 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import { connect } from 'react-redux'
 
-import Coordinate from 'ol/coordinate'
-import Point from 'ol/geom/point'
-import Circle from 'ol/style/circle'
-import Style from 'ol/style/style'
-import Text from 'ol/style/text'
+import * as Coordinate from 'ol/coordinate'
+import Point from 'ol/geom/Point'
+import { Circle, Style, Text } from 'ol/style'
 
 import { Feature, geom, layer, source } from '@collmot/ol-react'
 

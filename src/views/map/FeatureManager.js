@@ -7,8 +7,8 @@
 import { autobind } from 'core-decorators'
 import { forOwn, identity, values } from 'lodash'
 import Signal from 'mini-signals'
-import Feature from 'ol/feature'
-import Point from 'ol/geom/point'
+import Feature from 'ol/Feature'
+import Point from 'ol/geom/Point'
 
 /**
  * Object responsible for constructing features on an OpenLayers
@@ -26,8 +26,7 @@ import Point from 'ol/geom/point'
  *           that is used to map coordinates specified by the user to the
  *           coordinate system of the source layer
  */
-@autobind
-export default class FeatureManager {
+export default @autobind class FeatureManager {
   /**
    * Constructor.
    *

@@ -2,16 +2,15 @@
  * @file React Component to display and adjust the rotation of the map view.
  */
 
-import Easing from 'ol/easing'
-import Extent from 'ol/extent'
-import VectorLayer from 'ol/layer/vector'
+import { easeOut } from 'ol/easing'
+import * as Extent from 'ol/extent'
+import VectorLayer from 'ol/layer/Vector'
 import PropTypes from 'prop-types'
 import React from 'react'
 import { connect } from 'react-redux'
+
 import { showSnackbarMessage } from '../../actions/snackbar'
-
 import { coordinateFromLonLat } from '../../utils/geography'
-
 import {
   mapReferenceRequestSignal,
   fitAllFeaturesSignal,
@@ -143,7 +142,7 @@ class FitAllFeaturesButton extends React.Component {
     view.animate({
       pan: center,
       duration: this.props.duration,
-      easing: Easing.easeOut
+      easing: easeOut
     })
   }
 }

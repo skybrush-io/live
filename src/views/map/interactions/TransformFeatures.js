@@ -5,13 +5,14 @@
 
 import { autobind } from 'core-decorators'
 import { stubTrue } from 'lodash'
-import OLArray from 'ol/array'
-import OLEvent from 'ol/events/event'
-import Extent from 'ol/extent'
-import PointerInteraction from 'ol/interaction/pointer'
-import Layer from 'ol/layer/layer'
-import { createOLInteractionComponent } from '@collmot/ol-react/lib/interaction'
+import { includes } from 'ol/array'
+import OLEvent from 'ol/events/Event'
+import * as Extent from 'ol/extent'
+import PointerInteraction from 'ol/interaction/Pointer'
+import Layer from 'ol/layer/Layer'
 import PropTypes from 'prop-types'
+
+import { createOLInteractionComponent } from '@collmot/ol-react/lib/interaction'
 
 import Condition from '../conditions'
 
@@ -196,7 +197,7 @@ export class TransformFeaturesInteraction extends PointerInteraction {
         return options.layers
       } else {
         const layers = options.layers
-        return layer => OLArray.includes(layers, layer)
+        return layer => includes(layers, layer)
       }
     } else {
       return stubTrue

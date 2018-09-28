@@ -1,4 +1,4 @@
-import OLCondition from 'ol/events/condition'
+import * as OLCondition from 'ol/events/condition'
 
 import { eventHasPlatformModifierKey } from '../../utils/platform'
 

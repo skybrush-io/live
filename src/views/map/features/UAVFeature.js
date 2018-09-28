@@ -2,10 +2,8 @@
  * @file OpenLayers feature that represents an UAV on the map.
  */
 
-import Feature from 'ol/feature'
-import Icon from 'ol/style/icon'
-import Style from 'ol/style/style'
-import Text from 'ol/style/text'
+import Feature from 'ol/Feature'
+import { Icon, Style, Text } from 'ol/style'
 
 /**
 * Feature that represents an UAV on an OpenLayers map.

@@ -6,14 +6,15 @@
 
 import { autobind } from 'core-decorators'
 import _ from 'lodash'
-import Interaction from 'ol/interaction/interaction'
-import VectorLayer from 'ol/layer/vector'
-import Map from 'ol/map'
-import Projection from 'ol/proj'
-import { OLPropTypes, withMap } from '@collmot/ol-react'
-import { createOLInteractionComponent } from '@collmot/ol-react/lib/interaction'
+import Interaction from 'ol/interaction/Interaction'
+import VectorLayer from 'ol/layer/Vector'
+import Map from 'ol/Map'
+import { transform } from 'ol/proj'
 import PropTypes from 'prop-types'
 import React from 'react'
+
+import { OLPropTypes, withMap } from '@collmot/ol-react'
+import { createOLInteractionComponent } from '@collmot/ol-react/lib/interaction'
 
 import Condition from '../conditions'
 import { euclideanDistance } from '../../../utils/geography'
@@ -153,7 +154,7 @@ class ContextMenuInteraction extends Interaction {
    */
   _getLonLatFromEvent (event) {
     return this._projection
-      ? Projection.transform(event.coordinate, 'EPSG:3857', this._projection)
+      ? transform(event.coordinate, 'EPSG:3857', this._projection)
       : event.coordinate
   }
 

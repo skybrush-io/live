@@ -13,7 +13,7 @@ import Search from '@material-ui/icons/Search'
 
 import { autobind } from 'core-decorators'
 import { pick } from 'lodash'
-import Extent from 'ol/extent'
+import { boundingExtent, buffer } from 'ol/extent'
 import PropTypes from 'prop-types'
 import React from 'react'
 import { connect } from 'react-redux'
@@ -113,9 +113,9 @@ class UAVList extends React.Component {
       uav => coordinateFromLonLat([uav.lon, uav.lat])
     ).toArray()
 
-    const boundingExtent = Extent.boundingExtent(selectedUAVCoordinates)
-    const bufferedExtent = Extent.buffer(boundingExtent, 16)
-    mapViewToExtentSignal.dispatch(bufferedExtent, 500)
+    const bounds = boundingExtent(selectedUAVCoordinates)
+    const bufferedBounds = buffer(bounds, 16)
+    mapViewToExtentSignal.dispatch(bufferedBounds, 500)
   }
 
   /**

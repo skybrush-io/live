@@ -4,7 +4,7 @@
  */
 
 import { isNil, reject } from 'lodash'
-import Collection from 'ol/collection'
+import Collection from 'ol/Collection'
 import { createSelector } from 'reselect'
 
 import {

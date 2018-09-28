@@ -35,6 +35,7 @@ const LocationListEntry = (props) => {
   const mapViewToLocation = () => mapViewToLocationSignal.dispatch(location)
 
   const actionButton = (
+    // eslint-disable-next-line react/jsx-no-bind
     <IconButton onClick={editLocation}>
       {id === 'addNew' ? <AddCircleOutline /> : <ActionSettings />}
     </IconButton>

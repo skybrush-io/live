@@ -3,10 +3,9 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import { connect } from 'react-redux'
 
-import Feature from 'ol/feature'
-import Point from 'ol/geom/point'
-import Icon from 'ol/style/icon'
-import Style from 'ol/style/style'
+import Feature from 'ol/Feature'
+import Point from 'ol/geom/Point'
+import { Icon, Style } from 'ol/style'
 
 import { Geolocation, layer, source } from '@collmot/ol-react'
 

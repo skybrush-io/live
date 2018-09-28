@@ -5,12 +5,13 @@
  */
 
 import _, { includes, isArray, isFunction, partial, stubFalse, stubTrue } from 'lodash'
-import Condition from 'ol/events/condition'
-import Interaction from 'ol/interaction/interaction'
-import Layer from 'ol/layer/layer'
-import VectorLayer from 'ol/layer/vector'
-import { createOLInteractionComponent } from '@collmot/ol-react/lib/interaction'
+import * as Condition from 'ol/events/condition'
+import Interaction from 'ol/interaction/Interaction'
+import Layer from 'ol/layer/Layer'
+import VectorLayer from 'ol/layer/Vector'
 import PropTypes from 'prop-types'
+
+import { createOLInteractionComponent } from '@collmot/ol-react/lib/interaction'
 
 import { euclideanDistance, getExactClosestPointOf } from '../../../utils/geography'
 

@@ -4,9 +4,9 @@
  */
 
 import _ from 'lodash'
+import Layer from 'ol/layer/Layer'
 import PropTypes from 'prop-types'
 import React from 'react'
-import Layer from 'ol/layer/layer'
 import { source, withLayer } from '@collmot/ol-react'
 
 import FeatureManager from '../FeatureManager'

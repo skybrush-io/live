@@ -2,7 +2,7 @@
  * @file React Component to display and adjust the rotation of the map view.
  */
 
-import Easing from 'ol/easing'
+import { easeOut } from 'ol/easing'
 import PropTypes from 'prop-types'
 import React from 'react'
 
@@ -171,7 +171,7 @@ export default class MapRotationTextBox extends React.Component {
     this.map.getView().animate({
       rotation: 0,
       duration: this.props.resetDuration,
-      easing: Easing.easeOut
+      easing: easeOut
     })
   }
 }

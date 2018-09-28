@@ -3,7 +3,7 @@
  * (position, rotation, zoom)
  */
 
-import Extent from 'ol/extent'
+import { isEmpty } from 'ol/extent'
 import { round } from 'lodash'
 
 import { coordinateFromLonLat, lonLatFromCoordinate } from '../../utils/geography'
@@ -172,7 +172,7 @@ export default class MapViewManager {
    * @param {number} duration The desired duration of the transition.
    */
   mapViewToExtent (extent, duration = 1000) {
-    if (Extent.isEmpty(extent)) {
+    if (isEmpty(extent)) {
       console.warn('Cannot fit empty extent')
     } else {
       this.view.fit(extent, { duration })

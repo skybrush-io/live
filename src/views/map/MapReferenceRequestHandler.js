@@ -3,10 +3,12 @@
  * other components that request it through mini-signals.
  */
 
-import Map from 'ol/map'
-import { withMap } from '@collmot/ol-react'
+import Map from 'ol/Map'
 import PropTypes from 'prop-types'
 import React from 'react'
+
+import { withMap } from '@collmot/ol-react'
+
 import { mapReferenceRequestSignal } from '../../signals'
 
 /**

@@ -14,7 +14,7 @@ export const mapViewToExtentSignal = new Signal()
 export const addListenerToMapViewSignal = new Signal()
 export const removeListenerFromMapViewSignal = new Signal()
 
-export const focusMessagesDialogUAVSelectorField = new Signal()
+export const focusMessagesDialogUAVSelectorFieldSignal = new Signal()
 
 /**
  * The singleton object instance containing the signals used in the application.
@@ -30,5 +30,5 @@ export default {
   addListenerToMapViewSignal,
   removeListenerFromMapViewSignal,
 
-  focusMessagesDialogUAVSelectorField
+  focusMessagesDialogUAVSelectorFieldSignal
 }

@@ -15,6 +15,8 @@ const stateColors = {
 
 /**
  * Element for displaying a number on a colored background.
+ *
+ * @return {React.Element} a React element
  */
 const ColoredContainer = ({ color, title, text }) => (
   <span className='coloredContainer' style={{

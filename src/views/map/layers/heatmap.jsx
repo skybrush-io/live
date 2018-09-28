@@ -1,15 +1,15 @@
 import { autobind } from 'core-decorators'
 import { partial, toNumber } from 'lodash'
 import numbro from 'numbro'
-import Feature from 'ol/feature'
-import Point from 'ol/geom/point'
-import Circle from 'ol/style/circle'
-import Fill from 'ol/style/fill'
-import Style from 'ol/style/style'
-import { layer, source } from '@collmot/ol-react'
+import Feature from 'ol/Feature'
+import Point from 'ol/geom/Point'
+import { getDistance as haversineDistance } from 'ol/sphere'
+import { Circle, Fill, Style } from 'ol/style'
 import PropTypes from 'prop-types'
 import React from 'react'
 import { connect } from 'react-redux'
+
+import { layer, source } from '@collmot/ol-react'
 
 import Button from '@material-ui/core/Button'
 import FormControl from '@material-ui/core/FormControl'
@@ -28,8 +28,7 @@ import messageHub from '../../../message-hub'
 import HashedMap from '../../../utils/hashedmap'
 import {
   coordinateFromLonLat,
-  lonLatFromCoordinate,
-  wgs84Sphere
+  lonLatFromCoordinate
 } from '../../../utils/geography'
 
 const formatNumber = x => numbro(x).format('0.000')
@@ -285,7 +284,7 @@ export const HeatmapLayerSettings = connect(
  * @param {devicedata} b the second packet to compare
  * @return {number} the distance between the packets
  */
-const getDistance = (a, b) => wgs84Sphere.haversineDistance(
+const getDistance = (a, b) => haversineDistance(
   [a.lon, a.lat], [b.lon, b.lat]
 )
 

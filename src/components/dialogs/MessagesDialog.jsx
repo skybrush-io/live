@@ -15,7 +15,7 @@ import { closeMessagesDialog, clearMessagesOfSelectedUAV } from '../../actions/m
 import { MessagesPanel } from '../../components/chat'
 import Flock from '../../model/flock'
 
-import { focusMessagesDialogUAVSelectorField } from '../../signals'
+import { focusMessagesDialogUAVSelectorFieldSignal } from '../../signals'
 
 /**
  * Presentation component for the "Messages" dialog.
@@ -57,7 +57,7 @@ class MessagesDialogPresentation extends React.Component {
     if (e.key === '@') {
       e.preventDefault()
 
-      focusMessagesDialogUAVSelectorField.dispatch()
+      focusMessagesDialogUAVSelectorFieldSignal.dispatch()
     } else if (
       // The active element is not an input
       !['INPUT'].includes(document.activeElement.tagName) &&

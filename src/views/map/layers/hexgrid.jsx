@@ -1,10 +1,9 @@
 import { autobind } from 'core-decorators'
 import { sum, toNumber, values } from 'lodash'
-import Feature from 'ol/feature'
-import Polygon from 'ol/geom/polygon'
-import OLMath from 'ol/math'
-import Fill from 'ol/style/fill'
-import Style from 'ol/style/style'
+import Feature from 'ol/Feature'
+import Polygon from 'ol/geom/Polygon'
+import { toRadians } from 'ol/math'
+import { Fill, Style } from 'ol/style'
 import { source } from '@collmot/ol-react'
 import PropTypes from 'prop-types'
 import React from 'react'
@@ -142,7 +141,7 @@ class HexGridVectorSource extends React.PureComponent {
   }
 
   _getCorners (center, radius) {
-    const angles = [30, 90, 150, 210, 270, 330, 30].map(OLMath.toRadians)
+    const angles = [30, 90, 150, 210, 270, 330, 30].map(toRadians)
     return angles.map(angle => coordinateFromLonLat([
       center[0] + radius * Math.sin(angle),
       center[1] + radius * Math.cos(angle)
