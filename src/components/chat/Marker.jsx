@@ -4,7 +4,7 @@
 
 import PropTypes from 'prop-types'
 import React from 'react'
-import { TimeAgo } from 'react-time-ago'
+import TimeAgo from 'react-time-ago'
 
 /**
  * Mapping from level names to their corresponding CSS classes.
@@ -25,7 +25,7 @@ export default class Marker extends React.Component {
     const className = levelsToClassNames.hasOwnProperty(level)
       ? levelsToClassNames[level] : levelsToClassNames['info']
     const dateComponent = date
-      ? <span className='date'><TimeAgo>{date}</TimeAgo></span>
+      ? <span className='date'><TimeAgo date={date} /></span>
       : false
     return (
       <div className={className}>

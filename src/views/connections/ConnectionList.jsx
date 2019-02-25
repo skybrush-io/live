@@ -20,7 +20,7 @@ import ContentClear from '@material-ui/icons/Clear'
 import PropTypes from 'prop-types'
 import React from 'react'
 import { connect } from 'react-redux'
-import { TimeAgo } from 'react-time-ago'
+import TimeAgo from 'react-time-ago'
 
 import { showServerSettingsDialog } from '../../actions/server-settings'
 import { listOf } from '../../components/helpers/lists'
@@ -83,7 +83,7 @@ const ConnectionListEntry = (props) => {
   const { action, name, state, stateChangedAt } = props
   const avatar = iconsByState[state] || avatarForUnknownState
   const timeAgoComponent = stateChangedAt
-    ? <TimeAgo>{stateChangedAt}</TimeAgo>
+    ? <TimeAgo date={stateChangedAt} />
     : null
   const actionButton = action
     ? <IconButton onClick={action}><ActionSettings /></IconButton>
