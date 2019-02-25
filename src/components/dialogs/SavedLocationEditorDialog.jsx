@@ -75,7 +75,7 @@ const SavedLocationEditorForm = connect(
     const currentLocation = state.savedLocations.byId[id]
 
     return { initialValues: currentLocation }
-  }, null, null, { withRef: true }
+  }, null, null, { forwardRef: true }
 )(reduxForm({
   form: 'SavedLocationEditor',
   validate: createValidator({
