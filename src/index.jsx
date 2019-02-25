@@ -12,7 +12,7 @@ import workbench from './workbench'
 // const __DEV__ = !__PROD__
 
 function initialize () {
-  TimeAgo.locale(en)
+  TimeAgo.addLocale(en)
 
   return loadStoreFromStorageBackend().then(state => {
     if (state && state.workbench && state.workbench.state) {

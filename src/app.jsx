@@ -30,39 +30,31 @@ const rootStyle = {
   height: '100%'
 }
 
-/**
- * The main application component, without the execution context (flock,
- * store and Material UI theme).
- */
-class Application extends React.Component {
-  render () {
-    return (
-      <div>
-        <CssBaseline />
+const Application = () => (
+  <div>
+    <CssBaseline />
 
-        <HotkeyHandler hotkeys={hotkeys} />
+    <HotkeyHandler hotkeys={hotkeys} />
 
-        <div style={rootStyle}>
-          <Sidebar workbench={workbench} />
-          <WorkbenchView workbench={workbench} />
-        </div>
+    <div style={rootStyle}>
+      <Sidebar workbench={workbench} />
+      <WorkbenchView workbench={workbench} />
+    </div>
 
-        <ServerConnectionManager />
+    <ServerConnectionManager />
 
-        <dialogs.AppSettingsDialog />
-        <dialogs.FeatureEditorDialog />
-        <dialogs.GlobalErrorDialog />
-        <dialogs.LayerSettingsDialog />
-        <dialogs.MessagesDialog flock={flock} />
-        <dialogs.PromptDialog />
-        <dialogs.SavedLocationEditorDialog />
-        <dialogs.ServerSettingsDialog />
+    <dialogs.AppSettingsDialog />
+    <dialogs.FeatureEditorDialog />
+    <dialogs.GlobalErrorDialog />
+    <dialogs.LayerSettingsDialog />
+    <dialogs.MessagesDialog flock={flock} />
+    <dialogs.PromptDialog />
+    <dialogs.SavedLocationEditorDialog />
+    <dialogs.ServerSettingsDialog />
 
-        <GlobalSnackbar />
-      </div>
-    )
-  }
-}
+    <GlobalSnackbar />
+  </div>
+)
 
 /**
  * The context provider for the main application component and the
