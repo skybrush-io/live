@@ -3,8 +3,7 @@
  * that is started by the client on-demand if it is configured to do so.
  */
 
-import { delay } from 'redux-saga'
-import { all, call, put, select, take } from 'redux-saga/effects'
+import { all, call, delay, put, select, take } from 'redux-saga/effects'
 import { LOAD } from 'redux-storage'
 
 import {
@@ -68,7 +67,7 @@ function* localServerExecutableDiscoverySaga (search) {
     if (action.type === UPDATE_APP_SETTINGS) {
       // Wait a bit more, effectively throttling multiple signals into one
       // action
-      yield call(delay, 1000)
+      yield delay(1000)
     }
   }
 }
