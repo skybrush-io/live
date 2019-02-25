@@ -1,9 +1,6 @@
 import * as React from 'react'
 import TextField from '@material-ui/core/TextField'
 
-/**
- * Renders a text field from its parameters.
- */
 export const renderTextField = textField => (
   <TextField {...textField.input}
     style={textField.style}
