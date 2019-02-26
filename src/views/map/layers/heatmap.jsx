@@ -22,14 +22,14 @@ import Switch from '@material-ui/core/Switch'
 import Select from '@material-ui/core/Select'
 import TextField from '@material-ui/core/TextField'
 
-import { setLayerParameterById } from '../../../actions/layers'
-import SubscriptionDialog from '../../../components/dialogs/SubscriptionDialog'
-import messageHub from '../../../message-hub'
-import HashedMap from '../../../utils/hashedmap'
+import { setLayerParameterById } from '~/actions/layers'
+import SubscriptionDialog from '~/components/dialogs/SubscriptionDialog'
+import messageHub from '~/message-hub'
+import HashedMap from '~/utils/hashedmap'
 import {
   coordinateFromLonLat,
   lonLatFromCoordinate
-} from '../../../utils/geography'
+} from '~/utils/geography'
 
 const formatNumber = x => numbro(x).format('0.000')
 

@@ -40,6 +40,9 @@ module.exports = {
     new Dotenv()
   ],
   resolve: {
+    alias: {
+      '~': path.resolve(projectRoot, 'src')
+    },
     extensions: ['.webpack.js', '.web.js', '.js', '.jsx']
   },
   module: {

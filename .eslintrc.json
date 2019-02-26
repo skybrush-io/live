@@ -28,7 +28,10 @@
     "import/resolver": {
   	  "node": {
   		  "extensions": [".js", ".jsx"]
-  	  }
+  	  },
+      "webpack": {
+        "config": "webpack/base.config.js"
+      }
   	},
     "react": {
       "version": "16.0"
