@@ -6,20 +6,21 @@ import { connect } from 'react-redux'
 
 import { toggleAppSettingsDialog } from '../../actions/app-settings'
 
-const AppSettingsButtonPresentation = ({ onClick }) => {
+const AppSettingsButtonPresentation = ({ onClick, showLabel }) => {
   const classes = ['wb-module']
   return (
     <div className={classes.join(' ')} onClick={onClick}>
       <span className='wb-icon wb-module-icon'>
         <SettingsIcon />
       </span>
-      App settings
+      {showLabel ? <span className='wb-label wb-module-label'>App settings</span> : null}
     </div>
   )
 }
 
 AppSettingsButtonPresentation.propTypes = {
-  onClick: PropTypes.func
+  onClick: PropTypes.func,
+  showLabel: PropTypes.bool
 }
 
 export default connect(

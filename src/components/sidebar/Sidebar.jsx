@@ -13,19 +13,13 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import { Module, ModuleTray, Workbench } from 'react-flexible-workbench'
 import { connect } from 'react-redux'
-import Shapeshifter from 'react-shapeshifter'
 
-import { toggleSidebar } from '../../actions/sidebar'
-
-import AppSettingsButton from './AppSettingsButton'
-import ConnectionSettingsButton from './ConnectionSettingsButton'
 import ConnectionStatusBadge from './ConnectionStatusBadge'
-import FullScreenButton from './FullScreenButton'
 import LogStatusBadge from './LogStatusBadge'
 
 const style = {
   backgroundColor: '#333',
-  boxShadow: 'inset -3px 0 6px rgba(0, 0, 0, 0.5)',
+  boxShadow: 'inset -3px -6px 6px rgba(0, 0, 0, 0.5)',
   height: '100%'
 }
 
@@ -42,16 +36,9 @@ const innerStyle = {
  *
  * @returns  {Object}  the rendered sidebar component
  */
-const SidebarPresentation = ({ open, onToggleSidebar, workbench }) => (
+const SidebarPresentation = ({ open, workbench }) => (
   <div id='sidebar' style={{ ...style, overflow: 'hidden', width: open ? 240 : 48 }}>
     <div style={innerStyle}>
-      <Shapeshifter
-        color='#999'
-        style={{ cursor: 'pointer' }}
-        shape={open ? 'close' : 'menu'}
-        onClick={onToggleSidebar}
-      />
-      <hr />
       <ModuleTray allowMultipleSelection vertical workbench={workbench}>
         <Module id='map' icon={<Map color='action' />} label='Map' component='map' />
         <Module id='layers' icon={<MapsLayers color='action' />} label='Layers' component='layer-list' />
@@ -67,18 +54,11 @@ const SidebarPresentation = ({ open, onToggleSidebar, workbench }) => (
         <hr />
         <Module id='log' badge={<LogStatusBadge />} icon={<ActionList color='action' />} label='Event log' component='log-panel' />
       </ModuleTray>
-      <hr />
-      <div style={{ flexGrow: 1, flexShrink: 1 }}>{ /* spacer */ }</div>
-      <hr />
-      <AppSettingsButton />
-      <ConnectionSettingsButton />
-      {!window.isElectron ? <FullScreenButton /> : null}
     </div>
   </div>
 )
 
 SidebarPresentation.propTypes = {
-  onToggleSidebar: PropTypes.func.isRequired,
   open: PropTypes.bool.isRequired,
   workbench: PropTypes.instanceOf(Workbench).isRequired
 }
@@ -86,17 +66,9 @@ SidebarPresentation.propTypes = {
 /**
  * Sidebar at the left edge of the main window.
  */
-const Sidebar = connect(
+export const Sidebar = connect(
   // mapStateToProps
   (state, { workbench }) => ({
     ...state.sidebar, workbench
-  }),
-  // mapDispatchToProps
-  dispatch => ({
-    onToggleSidebar () {
-      dispatch(toggleSidebar())
-    }
   })
 )(SidebarPresentation)
-
-export default Sidebar

@@ -6,10 +6,11 @@ import { WorkbenchView } from 'react-flexible-workbench'
 import { compose, withContext, withProps } from 'recompose'
 
 import dialogs from './components/dialogs'
+import Header from './components/header'
+import Sidebar from './components/sidebar'
 import GlobalSnackbar from './components/GlobalSnackbar'
 import HotkeyHandler from './components/HotkeyHandler'
 import ServerConnectionManager from './components/ServerConnectionManager'
-import Sidebar from './components/sidebar/Sidebar'
 
 import flock from './flock'
 import { withErrorBoundary, wrapWith } from './hoc'
@@ -26,6 +27,14 @@ require('typeface-roboto')
 
 const rootStyle = {
   display: 'flex',
+  flexDirection: 'column',
+  width: '100%',
+  height: '100%'
+}
+
+const rootInnerStyle = {
+  display: 'flex',
+  flexGrow: 1,
   width: '100%',
   height: '100%'
 }
@@ -37,8 +46,11 @@ const Application = () => (
     <HotkeyHandler hotkeys={hotkeys} />
 
     <div style={rootStyle}>
-      <Sidebar workbench={workbench} />
-      <WorkbenchView workbench={workbench} />
+      <Header workbench={workbench} />
+      <div style={rootInnerStyle}>
+        <Sidebar workbench={workbench} />
+        <WorkbenchView workbench={workbench} />
+      </div>
     </div>
 
     <ServerConnectionManager />

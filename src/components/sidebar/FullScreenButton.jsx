@@ -5,7 +5,7 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import ScreenFull from 'screenfull'
 
-const FullScreenButtonPresentation = ({ enabled, isFullscreen, onClick }) => {
+const FullScreenButtonPresentation = ({ enabled, isFullscreen, onClick, showLabel }) => {
   const classes = ['wb-module']
   if (!enabled) {
     classes.push('wb-module-disabled')
@@ -15,7 +15,11 @@ const FullScreenButtonPresentation = ({ enabled, isFullscreen, onClick }) => {
       <span className='wb-icon wb-module-icon'>
         {isFullscreen ? <NavigationFullscreenExit color='action' /> : <NavigationFullscreen color='action' />}
       </span>
-      {isFullscreen ? 'Exit full screen' : 'Enter full screen'}
+      {showLabel ? (
+        <span className='wb-label wb-module-label'>
+          {isFullscreen ? 'Exit full screen' : 'Enter full screen'}
+        </span>
+      ) : null}
     </div>
   )
 }
@@ -23,7 +27,8 @@ const FullScreenButtonPresentation = ({ enabled, isFullscreen, onClick }) => {
 FullScreenButtonPresentation.propTypes = {
   enabled: PropTypes.bool.isRequired,
   isFullscreen: PropTypes.bool.isRequired,
-  onClick: PropTypes.func
+  onClick: PropTypes.func,
+  showLabel: PropTypes.bool
 }
 
 export default class FullScreenButton extends React.Component {

@@ -37,7 +37,10 @@ body .lm_header {
   box-sizing: border-box;
 }
 .wb-module {
-  padding: 0 15px 0 0 !important;
+  padding: 0 !important;
+}
+.wb-module .wb-module-label {
+  margin-right: 15px;
 }
 
 /* Horizontal separators in sidebar */
@@ -48,6 +51,16 @@ body .lm_header {
   border: none;
   background: #444;
   box-shadow: 0 -1px 4px rgba(0, 0, 0, 0.65);
+}
+
+/* Vertical separators in header */
+#header hr {
+  align-self: stretch;
+  width: 1px;
+  margin: 0 0.25em;
+  border: none;
+  background: #444;
+  box-shadow: -1px 0 4px rgba(0, 0, 0, 0.65);
 }
 
 .wb-modification-indicator {

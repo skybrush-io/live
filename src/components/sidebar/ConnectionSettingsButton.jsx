@@ -16,7 +16,7 @@ const badgeColorForState = {
   [ConnectionState.DISCONNECTED]: '#f00'
 }
 
-const ConnectionSettingsButtonPresentation = ({ active, onClick, state }) => {
+const ConnectionSettingsButtonPresentation = ({ active, onClick, showLabel, state }) => {
   const classes = ['wb-module']
   return (
     <div className={classes.join(' ')} onClick={onClick}>
@@ -24,7 +24,7 @@ const ConnectionSettingsButtonPresentation = ({ active, onClick, state }) => {
         <SidebarBadge visible={active} color={badgeColorForState[state]} />
         <ConnectionIcon />
       </span>
-      Server settings
+      {showLabel ? <span className='wb-label wb-module-label'>Server settings</span> : null}
     </div>
   )
 }
@@ -32,6 +32,7 @@ const ConnectionSettingsButtonPresentation = ({ active, onClick, state }) => {
 ConnectionSettingsButtonPresentation.propTypes = {
   active: PropTypes.bool,
   onClick: PropTypes.func,
+  showLabel: PropTypes.bool,
   state: PropTypes.string
 }
 
