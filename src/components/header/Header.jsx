@@ -11,7 +11,7 @@ import ConnectionSettingsButton from '../sidebar/ConnectionSettingsButton'
 import FullScreenButton from '../sidebar/FullScreenButton'
 
 const style = {
-  backgroundColor: '#222',
+  backgroundColor: '#333',
   flexGrow: 0,
   minHeight: 48
 }

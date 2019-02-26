@@ -18,7 +18,7 @@ import ConnectionStatusBadge from './ConnectionStatusBadge'
 import LogStatusBadge from './LogStatusBadge'
 
 const style = {
-  backgroundColor: '#444',
+  backgroundColor: '#333',
   boxShadow: 'inset -3px -6px 6px rgba(0, 0, 0, 0.5)',
   height: '100%'
 }
