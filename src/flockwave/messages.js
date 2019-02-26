@@ -4,6 +4,8 @@
 
 import isObject from 'lodash/isObject'
 import MersenneTwister from 'mersenne-twister'
+import pDefer from 'p-defer'
+import pTimeout from 'p-timeout'
 import radix64 from 'radix-64'
 
 import { createCommandRequest, createMessageWithType } from './builders'
@@ -474,6 +476,7 @@ export default class MessageHub {
 
     this._notificationHandlers = {}
     this._pendingResponses = {}
+    this._waitUntilReadyDeferred = undefined
 
     this._onMessageTimedOut = this._onMessageTimedOut.bind(this)
 
@@ -505,6 +508,11 @@ export default class MessageHub {
     this.cancelAllPendingResponses()
 
     this._emitter = value
+
+    if (this._emitter && this._waitUntilReadyDeferred) {
+      this._waitUntilReadyDeferred.resolve()
+      this._waitUntilReadyDeferred = undefined
+    }
   }
 
   /**
@@ -703,6 +711,31 @@ export default class MessageHub {
     }
 
     this._emitter('fw', createMessage(body))
+  }
+
+  /**
+   * Returns a promise that resolves when the message hub received an emitter
+   * function that it may use for sending messages.
+   *
+   * @param {number?} timeout  number of seconds to wait for the promise to
+   *        resolve
+   * @return {Promise<void>} a promise that resolves when the hub is ready to
+   *         send messages
+   */
+  waitUntilReady (timeout) {
+    if (this._emitter !== undefined) {
+      return Promise.resolve()
+    }
+
+    if (this._waitUntilReadyDeferred === undefined) {
+      this._waitUntilReadyDeferred = pDefer()
+    }
+
+    if (timeout && timeout > 0) {
+      return pTimeout(this._waitUntilReadyDeferred.promise, timeout)
+    } else {
+      return this._waitUntilReadyDeferred.promise
+    }
   }
 
   /**

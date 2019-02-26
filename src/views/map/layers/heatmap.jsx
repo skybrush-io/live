@@ -337,7 +337,7 @@ class HeatmapVectorSource extends React.Component {
   }
 
   componentWillUnmount () {
-    this._tryUnSubscribe(this.props.parameters.subscriptions)
+    this._tryUnsubscribe(this.props.parameters.subscriptions)
     messageHub.unregisterNotificationHandler('DEV-INF', this._processNotification)
   }
 
@@ -379,27 +379,21 @@ class HeatmapVectorSource extends React.Component {
   }
 
   @autobind
-  _trySubscribe (subscriptions) {
-    if (!messageHub._emitter) {
-      setTimeout(() => { this._trySubscribe(subscriptions) }, 500)
-    } else {
-      messageHub.sendMessage({
-        type: 'DEV-SUB',
-        paths: subscriptions
-      })
-    }
+  async _trySubscribe (subscriptions) {
+    await messageHub.waitUntilReady()
+    messageHub.sendMessage({
+      type: 'DEV-SUB',
+      paths: subscriptions
+    })
   }
 
   @autobind
-  _tryUnSubscribe (subscriptions) {
-    if (!messageHub._emitter) {
-      setTimeout(() => { this._tryUnSubscribe(subscriptions) }, 500)
-    } else {
-      messageHub.sendMessage({
-        type: 'DEV-UNSUB',
-        paths: subscriptions
-      })
-    }
+  async _tryUnsubscribe (subscriptions) {
+    await messageHub.waitUntilReady()
+    messageHub.sendMessage({
+      type: 'DEV-UNSUB',
+      paths: subscriptions
+    })
   }
 
   @autobind
