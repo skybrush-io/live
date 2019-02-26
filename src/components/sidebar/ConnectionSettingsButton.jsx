@@ -24,7 +24,7 @@ const ConnectionSettingsButtonPresentation = ({ active, onClick, state }) => {
         <SidebarBadge visible={active} color={badgeColorForState[state]} />
         <ConnectionIcon />
       </span>
-      Server Settings
+      Server settings
     </div>
   )
 }

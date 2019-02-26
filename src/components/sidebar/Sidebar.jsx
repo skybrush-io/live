@@ -57,7 +57,7 @@ const SidebarPresentation = ({ open, onToggleSidebar, workbench }) => (
         <Module id='layers' icon={<MapsLayers color='action' />} label='Layers' component='layer-list' />
         <Module id='features' icon={<ShowChart color='action' />} label='Features' component='feature-list' />
         <hr />
-        <Module id='groundcontrol' icon={<DeviceDVR color='action' />} label='Ground Control View' component='ground-control-view' />
+        <Module id='groundcontrol' icon={<DeviceDVR color='action' />} label='Ground control view' component='ground-control-view' />
         <Module id='uavs' icon={<Flight color='action' />} label='UAVs' component='uav-list' />
         <Module id='messages' icon={<Message color='action' />} label='Messages' component='messages' />
         <hr />

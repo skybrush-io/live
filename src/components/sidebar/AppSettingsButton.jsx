@@ -13,7 +13,7 @@ const AppSettingsButtonPresentation = ({ onClick }) => {
       <span className='wb-icon wb-module-icon'>
         <SettingsIcon />
       </span>
-      App Settings
+      App settings
     </div>
   )
 }
