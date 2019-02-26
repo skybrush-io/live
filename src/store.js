@@ -119,4 +119,9 @@ export function clearStore () {
 // Spin up the root saga
 sagaMiddleware.run(rootSaga)
 
+// Send the store dispatcher function back to the preloader
+if (window.bridge) {
+  window.bridge.dispatch = store.dispatch
+}
+
 export default store

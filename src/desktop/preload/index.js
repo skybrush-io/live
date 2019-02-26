@@ -65,6 +65,9 @@ window.bridge = {
   console,
   createSSDPClient,
   createStateStore,
+  dispatch: () => {
+    throw new Error('no store dispatcher was set up yet')
+  },
   getApplicationFolder: () => ipc.callMain('getApplicationFolder'),
   localServer,
   reverseDNSLookup

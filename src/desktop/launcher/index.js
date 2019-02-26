@@ -1,9 +1,10 @@
-const { app, protocol } = require('electron')
+const { app, Menu, protocol } = require('electron')
 const logger = require('electron-timber')
 const yargs = require('yargs/yargs')
 
 const setupIpc = require('./ipc')
-const createMainWindow = require('./main-window')
+const { createMainWindow } = require('./main-window')
+const createAppMenu = require('./app-menu')
 const { willUseWebpack } = require('./utils')
 
 // Set our own Google API key that we will use for geolocation requests
@@ -30,6 +31,7 @@ function run (argv) {
 
   // Create the main window when the application is ready
   app.on('ready', () => {
+    Menu.setApplicationMenu(createAppMenu(app))
     createMainWindow(app, windowOptions)
   })
 

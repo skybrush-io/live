@@ -43,7 +43,7 @@ function getURLToLoad () {
  * @param  {boolean}  opts.debug  whether to start with the developer tools open
  * @return {Object} the main window of the application that was created
  */
-module.exports = (app, opts) => {
+const createMainWindow = (app, opts) => {
   if (mainWindow !== undefined) {
     return mainWindow
   }
@@ -57,7 +57,6 @@ module.exports = (app, opts) => {
   }
 
   const { x, y, width, height } = mainWindowState
-
   mainWindow = new BrowserWindow({
     title: app.getName(),
     show: false,
@@ -67,6 +66,10 @@ module.exports = (app, opts) => {
     height,
     icon: path.join(__dirname, 'assets/icons/png/64x64.png'),
     webPreferences: {
+      // it would be nice to have contextIsolation: true, but I don't see
+      // how we could inject window.bridge into the main window if the
+      // two contexts are isolated
+      contextIsolation: false,
       nodeIntegration: false,
       preload: path.join(
         __dirname,
@@ -95,4 +98,17 @@ module.exports = (app, opts) => {
   mainWindow.loadURL(getURLToLoad())
 
   return mainWindow
+}
+
+/**
+ * Returns a reference to the main window of the application.
+ *
+ * @return {Object} the main window of the application, or undefined if there
+ *         is no main window at the moment
+ */
+const getMainWindow = () => mainWindow
+
+module.exports = {
+  createMainWindow,
+  getMainWindow
 }
