@@ -9,8 +9,11 @@ import createMuiTheme from '@material-ui/core/styles/createMuiTheme'
 export default createMuiTheme({
   palette: {
     action: {
-      active: common.darkBlack
+      active: common.black
     },
     primary: blue
+  },
+  typography: {
+    useNextVariants: true
   }
 })

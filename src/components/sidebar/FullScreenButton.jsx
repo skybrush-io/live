@@ -13,7 +13,7 @@ const FullScreenButtonPresentation = ({ enabled, isFullscreen, onClick, showLabe
   return (
     <div className={classes.join(' ')} onClick={onClick}>
       <span className='wb-icon wb-module-icon'>
-        {isFullscreen ? <NavigationFullscreenExit color='action' /> : <NavigationFullscreen color='action' />}
+        {isFullscreen ? <NavigationFullscreenExit /> : <NavigationFullscreen />}
       </span>
       {showLabel ? (
         <span className='wb-label wb-module-label'>

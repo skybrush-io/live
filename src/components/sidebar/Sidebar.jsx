@@ -18,7 +18,7 @@ import ConnectionStatusBadge from './ConnectionStatusBadge'
 import LogStatusBadge from './LogStatusBadge'
 
 const style = {
-  backgroundColor: '#333',
+  backgroundColor: '#444',
   boxShadow: 'inset -3px -6px 6px rgba(0, 0, 0, 0.5)',
   height: '100%'
 }
@@ -40,19 +40,19 @@ const SidebarPresentation = ({ open, workbench }) => (
   <div id='sidebar' style={{ ...style, overflow: 'hidden', width: open ? 240 : 48 }}>
     <div style={innerStyle}>
       <ModuleTray allowMultipleSelection vertical workbench={workbench}>
-        <Module id='map' icon={<Map color='action' />} label='Map' component='map' />
-        <Module id='layers' icon={<MapsLayers color='action' />} label='Layers' component='layer-list' />
-        <Module id='features' icon={<ShowChart color='action' />} label='Features' component='feature-list' />
+        <Module id='map' icon={<Map />} label='Map' component='map' />
+        <Module id='layers' icon={<MapsLayers />} label='Layers' component='layer-list' />
+        <Module id='features' icon={<ShowChart />} label='Features' component='feature-list' />
         <hr />
-        <Module id='groundcontrol' icon={<DeviceDVR color='action' />} label='Ground control view' component='ground-control-view' />
-        <Module id='uavs' icon={<Flight color='action' />} label='UAVs' component='uav-list' />
-        <Module id='messages' icon={<Message color='action' />} label='Messages' component='messages' />
+        <Module id='groundcontrol' icon={<DeviceDVR />} label='Ground control view' component='ground-control-view' />
+        <Module id='uavs' icon={<Flight />} label='UAVs' component='uav-list' />
+        <Module id='messages' icon={<Message />} label='Messages' component='messages' />
         <hr />
-        <Module id='connections' badge={<ConnectionStatusBadge />} icon={<ActionSettingsEthernet color='action' />} label='Connections' component='connection-list' />
-        <Module id='clocks' icon={<ActionAlarm color='action' />} label='Clocks' component='clock-list' />
-        <Module id='locations' icon={<MyLocation color='action' />} label='Locations' component='saved-location-list' />
+        <Module id='connections' badge={<ConnectionStatusBadge />} icon={<ActionSettingsEthernet />} label='Connections' component='connection-list' />
+        <Module id='clocks' icon={<ActionAlarm />} label='Clocks' component='clock-list' />
+        <Module id='locations' icon={<MyLocation />} label='Locations' component='saved-location-list' />
         <hr />
-        <Module id='log' badge={<LogStatusBadge />} icon={<ActionList color='action' />} label='Event log' component='log-panel' />
+        <Module id='log' badge={<LogStatusBadge />} icon={<ActionList />} label='Event log' component='log-panel' />
       </ModuleTray>
     </div>
   </div>

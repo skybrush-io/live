@@ -31,7 +31,7 @@ const UntypedLayerSettingsPresentation = ({ onLayerTypeSelected }) => {
   ))
   return (
     <div>
-      <Typography variant="subheading" component="p" gutterBottom>Pick a layer type</Typography>
+      <Typography variant="subtitle1" component="p" gutterBottom>Pick a layer type</Typography>
       <Grid container spacing={8}>
         {items}
       </Grid>

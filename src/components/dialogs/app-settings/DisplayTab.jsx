@@ -24,7 +24,7 @@ import RotationField from '../../RotationField'
 
 const DisplayTabPresentation = props => (
   <FormGroup>
-    <Typography variant='body2' style={{ marginTop: '1em' }}>Map widgets</Typography>
+    <Typography variant='body1' style={{ marginTop: '1em' }}>Map widgets</Typography>
     <FormControlLabel label='Show mouse coordinates'
       control={<Checkbox checked={props.showMouseCoordinates}
         name='showMouseCoordinates'
@@ -34,7 +34,7 @@ const DisplayTabPresentation = props => (
         name='showScaleLine'
         onChange={props.onCheckboxToggled} />} />
 
-    <Typography variant='body2' style={{ marginBottom: '0.5em' }}>
+    <Typography variant='body1' style={{ marginBottom: '0.5em' }}>
       Flat Earth coordinate system
     </Typography>
     <CoordinateField label='Origin'
