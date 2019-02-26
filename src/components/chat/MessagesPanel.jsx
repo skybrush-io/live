@@ -223,7 +223,7 @@ const MessagesPanel = connect(
   null,
 
   // options
-  { forwardRef: true }
+  { withRef: true }
 
   // ref is needed because we want to access the scrollToBottom() method
   // from the outside
