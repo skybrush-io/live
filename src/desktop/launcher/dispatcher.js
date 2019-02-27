@@ -11,9 +11,7 @@ const dispatch = async action => {
     return
   }
 
-  throw new Error('QQQ')
-
-  // await ipc.callRenderer(mainWindow, 'dispatch', action)
+  await ipc.callRenderer(mainWindow, 'dispatch', action)
 }
 
 module.exports = dispatch

@@ -1,8 +1,9 @@
 const { app, Menu, shell } = require('electron')
 const { aboutMenuItem, appMenu, is, openUrlMenuItem } = require('electron-util')
-const { createAction } = require('redux-actions')
 
 const dispatch = require('./dispatcher')
+
+const { showAppSettingsDialog } = require('../../actions/app-settings')
 
 const helpSubmenu = [
   openUrlMenuItem({
@@ -15,7 +16,7 @@ const preferencesItem = {
   label: 'Preferences...',
   accelerator: 'Command+,',
   click () {
-    dispatch(createAction('SHOW_APP_SETTINGS_DIALOG')())
+    dispatch(showAppSettingsDialog())
   }
 }
 
