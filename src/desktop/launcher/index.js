@@ -1,4 +1,5 @@
 const { app, Menu, protocol } = require('electron')
+const unhandled = require('electron-unhandled')
 const logger = require('electron-timber')
 const yargs = require('yargs/yargs')
 
@@ -19,6 +20,9 @@ function run (argv) {
   const windowOptions = {
     debug: argv.debug
   }
+
+  // Register unhandled error handler
+  unhandled({ logger: logger.error })
 
   // Register the WebSocket protocol as secure even if it is not really a
   // secure one. This is needed to allow us to connect to plain WebSocket

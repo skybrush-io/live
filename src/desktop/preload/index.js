@@ -10,12 +10,15 @@ const pify = require('pify')
 
 const dns = require('dns')
 const ipc = require('electron-better-ipc')
-const console = require('electron-timber')
+const logger = require('electron-timber')
+const unhandled = require('electron-unhandled')
 const SSDPClient = require('node-ssdp-lite')
 const createStorageEngine = require('redux-storage-engine-electron-store').default
 
 const localServer = require('./local-server')
 const setupIpc = require('./ipc')
+
+unhandled({ logger: logger.error })
 
 /**
  * Creates a new SSDP client object and registers the given function to be
@@ -62,7 +65,7 @@ window.isElectron = true
 // any functionality that requires Node.js -- they are not allowed to use
 // Node.js modules themselves
 window.bridge = {
-  console,
+  console: logger,
   createSSDPClient,
   createStateStore,
   dispatch: () => {
