@@ -31,8 +31,8 @@ const icons = {
     </ListItemIcon>
   ),
   scanning: (
-    <ListItemIcon style={{ margin: '0 11px' }}>
-      <CircularProgress variant='indeterminate' color='secondary' />
+    <ListItemIcon style={{ margin: '0 15px' }}>
+      <CircularProgress variant='indeterminate' color='secondary' size={32} />
     </ListItemIcon>
   ),
   error: (

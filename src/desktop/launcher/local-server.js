@@ -1,5 +1,4 @@
 const { spawn } = require('child_process')
-const logger = require('electron-timber')
 const { endsWith } = require('lodash')
 const path = require('path')
 const pify = require('pify')
@@ -71,7 +70,6 @@ function getPathsRelatedToAppLocation () {
 }
 
 const pathsRelatedToAppLocation = Object.freeze(getPathsRelatedToAppLocation())
-logger.log(pathsRelatedToAppLocation)
 
 /**
  * Launches the local Flockwave server executable with the given arguments.

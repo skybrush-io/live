@@ -30,6 +30,7 @@ import {
  */
 function* localServerExecutableDiscoverySaga (search) {
   let oldSearchPath
+  let minDuration = 0
 
   // Wait until the saved state is loaded back into Redux
   yield take(LOAD)
@@ -43,15 +44,27 @@ function* localServerExecutableDiscoverySaga (search) {
       // Start searching for the executable of the local server
       yield put(notifyLocalServerExecutableSearchStarted())
 
-      try {
-        const serverPath = yield call(() => search(searchPath))
+      const result = yield all([
+        call(async () => {
+          try {
+            return [await search(searchPath), undefined]
+          } catch (reason) {
+            if (reason.code === 'ENOENT') {
+              return ['', undefined]
+            } else {
+              return [undefined, String(reason)]
+            }
+          }
+        }),
+        delay(minDuration)
+      ])
+
+      const [serverPath, err] = result[0]
+
+      if (err) {
+        yield put(notifyLocalServerExecutableSearchFailed(err))
+      } else {
         yield put(notifyLocalServerExecutableSearchFinished(serverPath))
-      } catch (reason) {
-        if (reason.code === 'ENOENT') {
-          yield put(notifyLocalServerExecutableSearchFinished(''))
-        } else {
-          yield put(notifyLocalServerExecutableSearchFailed(String(reason)))
-        }
       }
 
       oldSearchPath = searchPath
@@ -69,6 +82,11 @@ function* localServerExecutableDiscoverySaga (search) {
       // action
       yield delay(1000)
     }
+
+    // We simulate a minimum duration of 1 second for the search if the
+    // user explicitly requested a re-scan; this is to ensure that the user
+    // sees some feedback on the UI that the search is in progress
+    minDuration = (action.type === START_LOCAL_SERVER_EXECUTABLE_SEARCH) ? 1000 : 0
   }
 }
 
