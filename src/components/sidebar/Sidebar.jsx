@@ -1,13 +1,14 @@
-import ActionAlarm from '@material-ui/icons/Alarm'
-import ActionList from '@material-ui/icons/List'
-import ActionSettingsEthernet from '@material-ui/icons/SettingsEthernet'
-import DeviceDVR from '@material-ui/icons/Dvr'
+import Alarm from '@material-ui/icons/Alarm'
 import Flight from '@material-ui/icons/Flight'
+import Layers from '@material-ui/icons/Layers'
 import Map from '@material-ui/icons/Map'
-import MapsLayers from '@material-ui/icons/Layers'
 import Message from '@material-ui/icons/Message'
 import MyLocation from '@material-ui/icons/MyLocation'
+import Notifications from '@material-ui/icons/Notifications'
+import SettingsEthernet from '@material-ui/icons/SettingsEthernet'
+import SettingsInputAntenna from '@material-ui/icons/SettingsInputAntenna'
 import ShowChart from '@material-ui/icons/ShowChart'
+import Storage from '@material-ui/icons/Storage'
 
 import PropTypes from 'prop-types'
 import React from 'react'
@@ -41,19 +42,19 @@ const SidebarPresentation = ({ open, workbench }) => (
     <div style={innerStyle}>
       <ModuleTray allowMultipleSelection vertical workbench={workbench}>
         <Module id='map' icon={<Map />} label='Map' component='map' />
-        <Module id='layers' icon={<MapsLayers />} label='Layers' component='layer-list' />
+        <Module id='layers' icon={<Layers />} label='Layers' component='layer-list' />
         <Module id='features' icon={<ShowChart />} label='Features' component='feature-list' />
         <hr />
-        <Module id='groundcontrol' icon={<DeviceDVR />} label='Ground control view' component='ground-control-view' />
+        <Module id='groundcontrol' icon={<SettingsInputAntenna />} label='Ground control view' component='ground-control-view' />
         <Module id='uavs' icon={<Flight />} label='UAVs' component='uav-list' />
         <Module id='messages' icon={<Message />} label='Messages' component='messages' />
         <hr />
-        <Module id='connections' badge={<ConnectionStatusBadge />} icon={<ActionSettingsEthernet />} label='Connections' component='connection-list' />
-        <Module id='clocks' icon={<ActionAlarm />} label='Clocks' component='clock-list' />
-        <Module id='datasets' icon={<ActionAlarm />} label='Datasets' component='dataset-list' />
+        <Module id='connections' badge={<ConnectionStatusBadge />} icon={<SettingsEthernet />} label='Connections' component='connection-list' />
+        <Module id='clocks' icon={<Alarm />} label='Clocks' component='clock-list' />
+        <Module id='datasets' icon={<Storage />} label='Datasets' component='dataset-list' />
         <Module id='locations' icon={<MyLocation />} label='Locations' component='saved-location-list' />
         <hr />
-        <Module id='log' badge={<LogStatusBadge />} icon={<ActionList />} label='Event log' component='log-panel' />
+        <Module id='log' badge={<LogStatusBadge />} icon={<Notifications />} label='Event log' component='log-panel' />
       </ModuleTray>
     </div>
   </div>
