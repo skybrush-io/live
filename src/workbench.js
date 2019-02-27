@@ -37,6 +37,7 @@ const getFlockFromContext = getContext({
 const componentRegistry = {
   'connection-list': views.ConnectionList,
   'clock-list': views.ClockDisplayList,
+  'dataset-list': views.DatasetList,
   'feature-list': views.FeatureList,
   'ground-control-view': getFlockFromContext(views.GroundControlView),
   'layer-list': views.LayerList,

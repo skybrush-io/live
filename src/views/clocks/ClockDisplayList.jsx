@@ -1,5 +1,5 @@
 /**
- * @file Component that displays the status of a Flockwave clock.
+ * @file Component that displays the status of Flockwave clocks.
  */
 
 import { red, green } from '@material-ui/core/colors'
@@ -15,7 +15,7 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import { connect } from 'react-redux'
 
-import { listOf } from '../../components/helpers/lists'
+import { listOf } from '~/components/helpers/lists'
 
 /**
  * Avatars for stopped and running clocks.

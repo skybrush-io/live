@@ -50,6 +50,7 @@ const SidebarPresentation = ({ open, workbench }) => (
         <hr />
         <Module id='connections' badge={<ConnectionStatusBadge />} icon={<ActionSettingsEthernet />} label='Connections' component='connection-list' />
         <Module id='clocks' icon={<ActionAlarm />} label='Clocks' component='clock-list' />
+        <Module id='datasets' icon={<ActionAlarm />} label='Datasets' component='dataset-list' />
         <Module id='locations' icon={<MyLocation />} label='Locations' component='saved-location-list' />
         <hr />
         <Module id='log' badge={<LogStatusBadge />} icon={<ActionList />} label='Event log' component='log-panel' />

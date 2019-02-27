@@ -1,7 +1,7 @@
 import { createSelector } from 'reselect'
 
-import { isLayerVisible } from '../model/layers'
-import { selectOrdered } from '../utils/collections'
+import { isLayerVisible } from '~/model/layers'
+import { selectOrdered } from '~/utils/collections'
 
 /**
  * Selector that calculates and caches the list of all the servers detected
@@ -20,6 +20,16 @@ export const getDetectedServersInOrder = createSelector(
  */
 export const getConnectionsInOrder = createSelector(
   state => state.connections,
+  selectOrdered
+)
+
+/**
+ * Selector that calculates and caches the list of all the datasets that
+ * we store in the state object, in exactly the same order as they should appear
+ * on the UI.
+ */
+export const getDatasetsInOrder = createSelector(
+  state => state.datasets,
   selectOrdered
 )
 

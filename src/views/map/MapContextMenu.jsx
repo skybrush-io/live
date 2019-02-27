@@ -271,7 +271,9 @@ const MapContextMenuContainer = connect(
     showMessagesDialog: () => {
       dispatch(showMessagesDialog())
     }
-  })
+  }),
+  null,
+  { withRef: true }
 )(MapContextMenu)
 
 export default MapContextMenuContainer

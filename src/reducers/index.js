@@ -6,6 +6,7 @@ import defaultMerger from 'redux-storage-merger-simple'
 import config from '../config'
 import clocksReducer from './clocks'
 import connectionsReducer from './connections'
+import datasetsReducer from './datasets'
 import dialogsReducer from './dialogs'
 import featuresReducer from './features'
 import localServerReducer from './local-server'
@@ -88,6 +89,7 @@ const reducer = storage.reducer(
   combineReducers({
     clocks: clocksReducer,
     connections: connectionsReducer,
+    datasets: datasetsReducer,
     dialogs: dialogsReducer,
     features: featuresReducer,
     form: formReducer,

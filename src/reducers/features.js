@@ -7,9 +7,9 @@ import { camelCase, capitalize, keys, map, mapValues } from 'lodash'
 import { handleActions } from 'redux-actions'
 import u from 'updeep'
 
-import { FeatureType, getNameOfFeatureType, LabelStyle } from '../model/features'
-import { deleteByIds, getKey } from '../utils/collections'
-import { chooseUniqueId, chooseUniqueName } from '../utils/naming'
+import { FeatureType, getNameOfFeatureType, LabelStyle } from '~/model/features'
+import { deleteByIds, getKey } from '~/utils/collections'
+import { chooseUniqueId, chooseUniqueName } from '~/utils/naming'
 
 /**
  * Default content of the feature registry in the state object.
