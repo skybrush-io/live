@@ -194,7 +194,7 @@ class ServerSettingsDialogPresentation extends React.Component {
     return (
       <Dialog open={open} onClose={onClose} fullWidth maxWidth='xs'>
         <AppBar position='static'>
-          <Tabs value={selectedTab} onChange={onTabSelected} fullWidth>
+          <Tabs value={selectedTab} onChange={onTabSelected} variant="fullWidth">
             <Tab value='auto' label="Autodetected" />
             <Tab value='manual' label="Manual" />
           </Tabs>

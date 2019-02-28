@@ -10,9 +10,10 @@ import InputAdornment from '@material-ui/core/InputAdornment'
 import TextField from '@material-ui/core/TextField'
 import Clear from '@material-ui/icons/Clear'
 
-export const normalizeAngle = angle => +(((angle % 360) + 360) % 360).toFixed(2)
+import { normalizeAngle } from '~/utils/geography'
+
 export const formatAngle =
-  angle => normalizeAngle(angle).toFixed(2).replace(',', '.') + '\u00B0'
+  angle => normalizeAngle(angle).replace(',', '.') + '\u00B0'
 
 /**
  * React component to display and adjust an angle in degrees.

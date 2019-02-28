@@ -233,6 +233,18 @@ export const makePolarCoordinateFormatter = options => {
 export const makeSexagesimalCoordinateFormatter = (decimalPlaces = 3) =>
   coordinate => formatCoords(coordinate, true).format('FFf', { decimalPlaces })
 
+/**
+ * Normalizes an angle given in degrees according to the conventions used in
+ * the app.
+ *
+ * The conventions are: the angle is always between 0 (inclusive) and 360
+ * (exclusive), rounded to 2 decimal digits.
+ *
+ * @param  {number|string} angle  the input angle
+ * @return {string}  the normalized angle as a string to avoid rounding errors
+ */
+export const normalizeAngle = angle => (((angle % 360) + 360) % 360).toFixed(2)
+
 export const translateBy = curry((displacement, coordinates) => {
   const dx = displacement[0]
   const dy = displacement[1]

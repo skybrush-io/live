@@ -136,7 +136,7 @@ class SelectNearestFeatureInteraction extends Interaction {
     this._addCondition = options.addCondition
     this._removeCondition = options.removeCondition
     this._toggleCondition = options.toggleCondition
-    this._select = options.select
+    this._select = options.onSelect
     this._threshold = options.threshold
     this.setLayers(options.layers)
   }
@@ -234,14 +234,13 @@ export default createOLInteractionComponent(
         PropTypes.func, PropTypes.arrayOf(Layer)
       ]),
       removeCondition: PropTypes.func,
-      select: PropTypes.func,
+      onSelect: PropTypes.func,
       threshold: PropTypes.number,
       toggleCondition: PropTypes.func
     },
     fragileProps: [
       'addCondition', 'layers', 'removeCondition',
       'threshold', 'toggleCondition'
-    ],
-    events: ['select']
+    ]
   }
 )

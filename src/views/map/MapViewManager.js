@@ -11,9 +11,11 @@ import {
   mapViewToLocationSignal,
   mapViewToExtentSignal
 } from '~/signals'
-import { coordinateFromLonLat, lonLatFromCoordinate } from '~/utils/geography'
-
-import { normalizeAngle } from './MapRotationTextBox.jsx'
+import {
+  coordinateFromLonLat,
+  lonLatFromCoordinate,
+  normalizeAngle
+} from '~/utils/geography'
 
 /**
  * Class for handling various parameters of an OpenLayers map's view.

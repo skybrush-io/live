@@ -292,11 +292,16 @@ export default createOLInteractionComponent(
       moveCondition: PropTypes.func,
       rotateCondition: PropTypes.func,
 
-      transformEnd: PropTypes.func,
-      transforming: PropTypes.func,
-      transformStart: PropTypes.func
+      onTransformEnd: PropTypes.func,
+      onTransforming: PropTypes.func,
+      onTransformStart: PropTypes.func
     },
     events: ['transformStart', 'transforming', 'transformEnd'],
+    eventMap: {
+      'onTransformStart': 'transformStart',
+      'onTransforming': 'transforming',
+      'onTransformEnd': 'transformEnd'
+    },
     fragileProps: [
       'featureProvider', 'hitTolerance', 'layers',
       'moveCondition', 'rotateCondition'

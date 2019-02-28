@@ -15,23 +15,26 @@ import MapReferenceRequestHandler from './MapReferenceRequestHandler'
 import MapToolbar from './MapToolbar'
 import { isDrawingTool, Tool, toolToDrawInteractionProps } from './tools'
 
-import { addFeature, updateFeatureCoordinates } from '../../actions/features'
+import { addFeature, updateFeatureCoordinates } from '~/actions/features'
 import {
   addFeaturesToSelection,
   setSelectedFeatures,
-  removeFeaturesFromSelection
-} from '../../actions/map'
-import { setHomePosition } from '../../actions/map-origin'
-import Widget from '../../components/Widget'
-import { handleError } from '../../error-handling'
-import mapViewManager from '../../mapViewManager'
-import { createFeatureFromOpenLayers, isFeatureTransformable } from '../../model/features'
-import { getVisibleSelectableLayers, isLayerSelectable } from '../../model/layers'
-import { globalIdToFeatureId, globalIdToHomePositionId } from '../../model/identifiers'
-import { getVisibleLayersInOrder } from '../../selectors/ordered'
-import { getExtendedCoordinateFormatter } from '../../selectors/formatting'
-import { getSelectedFeatureIds, getSelection } from '../../selectors/selection'
-import { coordinateFromLonLat, findFeaturesById } from '../../utils/geography'
+  removeFeaturesFromSelection,
+  updateMapViewSettings
+} from '~/actions/map'
+import { setHomePosition } from '~/actions/map-origin'
+import Widget from '~/components/Widget'
+import { handleError } from '~/error-handling'
+import mapViewManager from '~/mapViewManager'
+import { createFeatureFromOpenLayers, isFeatureTransformable } from '~/model/features'
+import { getVisibleSelectableLayers, isLayerSelectable } from '~/model/layers'
+import { globalIdToFeatureId, globalIdToHomePositionId } from '~/model/identifiers'
+import { getVisibleLayersInOrder } from '~/selectors/ordered'
+import { getExtendedCoordinateFormatter } from '~/selectors/formatting'
+import { getSelectedFeatureIds, getSelection } from '~/selectors/selection'
+import {
+  coordinateFromLonLat, findFeaturesById, lonLatFromCoordinate
+} from '~/utils/geography'
 
 require('ol/ol.css')
 
@@ -161,7 +164,7 @@ const MapViewInteractions = withMap(props => {
       /* PAN mode | Ctrl/Cmd + Drag --> Box select features */
       <interaction.DragBox key='DragBox.setSelection'
         condition={Condition.platformModifierKeyOnly}
-        boxend={onSetSelectedFeatures} />
+        onBoxEnd={onSetSelectedFeatures} />
     )
   }
 
@@ -176,7 +179,7 @@ const MapViewInteractions = withMap(props => {
         layers={isLayerSelectable}
         removeCondition={Condition.altKeyOnly}
         toggleCondition={Condition.platformModifierKeyOnly}
-        select={onSingleFeatureSelected}
+        onSelect={onSingleFeatureSelected}
         threshold={40} />,
 
       /* We cannot add "Drag --> Set selected features" here because it
@@ -185,12 +188,12 @@ const MapViewInteractions = withMap(props => {
       /* SELECT mode | Shift + Drag --> Box add features to selection */
       <interaction.DragBox key='DragBox.addToSelection'
         condition={Condition.shiftKeyOnly}
-        boxend={onAddFeaturesToSelection} />,
+        onBoxEnd={onAddFeaturesToSelection} />,
 
       /* SELECT mode | Alt + Drag --> Box remove features from selection */
       <interaction.DragBox key='DragBox.removeFromSelection'
         condition={Condition.altKeyOnly}
-        boxend={onRemoveFeaturesFromSelection} />,
+        onBoxEnd={onRemoveFeaturesFromSelection} />,
 
       /* SELECT mode |
            Drag a feature --> Move a feature to a new location
@@ -202,7 +205,7 @@ const MapViewInteractions = withMap(props => {
         featureProvider={selectedFeaturesProvider}
         moveCondition={Condition.noModifierKeys}
         rotateCondition={Condition.altKeyOnly}
-        transformEnd={onFeaturesTransformed} />
+        onTransformEnd={onFeaturesTransformed} />
     )
   }
 
@@ -223,7 +226,7 @@ const MapViewInteractions = withMap(props => {
       /* DRAW mode | Click --> Draw a new feature */
       <interaction.Draw key='Draw'
         {...toolToDrawInteractionProps(selectedTool, props.map)}
-        drawend={onDrawEnded}/>
+        onDrawEnd={onDrawEnded}/>
     )
   }
 
@@ -303,9 +306,8 @@ class MapViewPresentation extends React.Component {
   }
 
   render () {
-    const { projection, selectedTool } = this.props
-    const center = projection([19.061951, 47.473340])
-    const view = <View center={center} zoom={17} />
+    const { center, selectedTool, zoom } = this.props
+    const view = <View center={coordinateFromLonLat(center)} zoom={zoom} />
 
     const toolClasses = {
       [Tool.SELECT]: 'tool-select',
@@ -323,6 +325,7 @@ class MapViewPresentation extends React.Component {
       <Map view={view} ref={this._map}
         useDefaultControls={false} loadTilesWhileInteracting
         className={toolClasses[selectedTool]}
+        onMoveEnd={this._onMapMoved}
       >
 
         <MapReferenceRequestHandler />
@@ -495,6 +498,22 @@ class MapViewPresentation extends React.Component {
     }
   }
 
+  @autobind
+  _onMapMoved () {
+    const map = this._map.current.map
+    const view = map ? map.getView() : undefined
+
+    if (view) {
+      const position = lonLatFromCoordinate(view.getCenter())
+      const zoom = view.getZoom()
+      const angle = -view.getRotation() * 180 / Math.PI
+
+      this.props.dispatch(updateMapViewSettings({
+        position, angle, zoom
+      }))
+    }
+  }
+
   /**
    * Common implementation for `_onFeaturesTransformed` and `_onFeaturesModified`.
    *
@@ -562,12 +581,22 @@ class MapViewPresentation extends React.Component {
 }
 
 MapViewPresentation.propTypes = {
-  projection: PropTypes.func.isRequired,
+  dispatch: PropTypes.func.isRequired,
+
+  center: PropTypes.arrayOf(PropTypes.number).isRequired,
+  rotation: PropTypes.number.isRequired,
   selection: PropTypes.arrayOf(PropTypes.string).isRequired,
   selectedFeatures: PropTypes.arrayOf(PropTypes.string).isRequired,
   selectedTool: PropTypes.string,
-  dispatch: PropTypes.func.isRequired,
+  zoom: PropTypes.number.isRequired,
+
   glContainer: PropTypes.object
+}
+
+MapViewPresentation.defaultProps = {
+  center: [19.061951, 47.473340],
+  rotation: 0,
+  zoom: 17
 }
 
 /**
@@ -576,18 +605,14 @@ MapViewPresentation.propTypes = {
 const MapView = connect(
   // mapStateToProps
   state => ({
+    center: state.map.view.position,
+    rotation: state.map.view.angle,
+    zoom: state.map.view.zoom,
+
     selectedFeatures: getSelectedFeatureIds(state),
     selectedTool: state.map.tools.selectedTool,
     selection: getSelection(state)
   })
 )(MapViewPresentation)
-
-MapView.propTypes = {
-  projection: PropTypes.func.isRequired
-}
-
-MapView.defaultProps = {
-  projection: coordinateFromLonLat
-}
 
 export default MapView

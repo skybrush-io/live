@@ -6,13 +6,12 @@ import { easeOut } from 'ol/easing'
 import PropTypes from 'prop-types'
 import React from 'react'
 
-import { mapReferenceRequestSignal, mapRotationResetSignal } from '../../signals'
+import { mapReferenceRequestSignal, mapRotationResetSignal } from '~/signals'
+import { normalizeAngle } from '~/utils/geography'
 
 import IconButton from '@material-ui/core/IconButton'
 import ImageRotateRight from '@material-ui/icons/RotateRight'
 import TextField from '@material-ui/core/TextField'
-
-export const normalizeAngle = (angle) => (((angle % 360) + 360) % 360).toFixed(2)
 
 /**
  * React Component to display and adjust the rotation of the map view.

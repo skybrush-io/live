@@ -10,6 +10,7 @@ import layersReducer from './layers'
 import originReducer from './origin'
 import selectionReducer from './selection'
 import toolsReducer from './tools'
+import viewReducer from './view'
 
 /**
  * The reducer function that is responsible for handling all map-related
@@ -19,7 +20,8 @@ const reducer = combineReducers({
   layers: layersReducer,
   origin: originReducer,
   selection: selectionReducer,
-  tools: toolsReducer
+  tools: toolsReducer,
+  view: viewReducer
 })
 
 export default reducer
