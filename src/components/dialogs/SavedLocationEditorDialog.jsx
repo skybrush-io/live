@@ -70,7 +70,16 @@ const SavedLocationEditorForm = connect(
   // mapStateToProps
   state => {
     const id = state.dialogs.savedLocationEditor.editedLocationId
-    const currentLocation = state.savedLocations.byId[id]
+    const currentLocation = id === NEW_ITEM_ID
+      ? {
+        center: {
+          lon: state.map.view.position[0].toFixed(6),
+          lat: state.map.view.position[1].toFixed(6)
+        },
+        rotation: state.map.view.angle,
+        zoom: state.map.view.zoom
+      }
+      : state.savedLocations.byId[id]
 
     return { initialValues: currentLocation }
   },
