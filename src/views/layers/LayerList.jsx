@@ -5,9 +5,7 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import { connect } from 'react-redux'
-import { createSelector } from 'reselect'
 
-import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
 import ListItemText from '@material-ui/core/ListItemText'
 import AddCircleOutline from '@material-ui/icons/AddCircleOutline'
@@ -45,7 +43,7 @@ function createListItemForLayer (layer, props) {
 function createNewItemEntry (props) {
   /* eslint-disable react/prop-types */
   return (
-    <ListItem button key='__addNew__' onClick={props.onNewItem}>
+    <ListItem button key='__newItem__' onClick={props.onNewItem}>
       <AddCircleOutline />
       <ListItemText primary='Add new layer' />
     </ListItem>
@@ -54,33 +52,16 @@ function createNewItemEntry (props) {
 }
 
 /**
- * Selector that adds an extra "add new" item before the list of layers.
- */
-const getLayersInOrderWithExtraItem = createSelector(
-  getLayersInOrder,
-  layers => layers.concat('__addNew__').reverse()
-)
-
-/**
  * Presentation component for a list that shows the currently added
  * layers.
  */
 const LayerListPresentation = selectableListOf(
-  (layer, props) => (
-    layer === '__addNew__'
-      ? createNewItemEntry(props)
-      : createListItemForLayer(layer, props)
-  ),
+  createListItemForLayer,
   {
-    backgroundHint: 'No layers',
     dataProvider: 'layers',
-    /* eslint-disable react/display-name */
-    listFactory: (props, children) => (
-      <List dense>
-        {children}
-      </List>
-    )
-    /* eslint-enable react/display-name */
+    postprocess: (items, props) => ([
+      createNewItemEntry(props), ...items
+    ])
   }
 )
 
@@ -97,11 +78,10 @@ LayerListPresentation.propTypes = {
  */
 const LayerList = connect(
   // mapStateToProps
-  state => {
-    return {
-      layers: getLayersInOrderWithExtraItem(state)
-    }
-  },
+  state => ({
+    dense: true,
+    layers: getLayersInOrder(state)
+  }),
   // mapDispatchToProps
   dispatch => ({
     onChange (event, layerId) {
@@ -111,8 +91,8 @@ const LayerList = connect(
     onNewItem () {
       const action = addLayer()
       dispatch(action)
-      if (action.layerId) {
-        dispatch(showLayersDialog(action.layerId))
+      if (action.id) {
+        dispatch(showLayersDialog(action.id))
       }
     }
   })

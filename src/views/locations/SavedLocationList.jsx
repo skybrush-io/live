@@ -14,11 +14,11 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import { connect } from 'react-redux'
 
-import { editSavedLocation } from '../../actions/saved-location-editor'
-import { listOf } from '../../components/helpers/lists'
-import { getSavedLocationsInOrder } from '../../selectors/ordered'
-import { mapViewToLocationSignal } from '../../signals'
-import { formatCoordinate } from '../../utils/geography'
+import { createNewSavedLocation } from '~/actions/saved-locations'
+import { editSavedLocation } from '~/actions/saved-location-editor'
+import { listOf } from '~/components/helpers/lists'
+import { getSavedLocationsInOrder } from '~/selectors/ordered'
+import { mapViewToLocationSignal } from '~/signals'
 
 /**
  * Presentation component for a single entry in the location list.
@@ -27,46 +27,65 @@ import { formatCoordinate } from '../../utils/geography'
  * @return {Object} the React presentation component
  */
 const LocationListEntry = (props) => {
-  const { location, onEditLocation } = props
-  const { center: { lat, lon }, id, name, rotation } = location
-  const secondaryText = `${formatCoordinate([lon, lat])}, ${rotation}°`
+  const { location, onEditItem } = props
+  const { id, name } = location
 
-  const editLocation = () => onEditLocation(location.id)
+  const editLocation = () => onEditItem(id)
   const mapViewToLocation = () => mapViewToLocationSignal.dispatch(location)
 
   const actionButton = (
     // eslint-disable-next-line react/jsx-no-bind
-    <IconButton onClick={editLocation}>
-      {id === 'addNew' ? <AddCircleOutline /> : <ActionSettings />}
-    </IconButton>
+    <IconButton onClick={editLocation}><ActionSettings /></IconButton>
   )
 
-  const onClick = id === 'addNew' ? editLocation : mapViewToLocation
-
   return (
-    <ListItem button onClick={onClick}>
-      <ListItemText primary={name} secondary={secondaryText} />
+    // eslint-disable-next-line react/jsx-no-bind
+    <ListItem button onClick={mapViewToLocation}>
+      <ListItemText primary={name} />
       <ListItemSecondaryAction>{actionButton}</ListItemSecondaryAction>
     </ListItem>
   )
 }
 
 LocationListEntry.propTypes = {
-  onEditLocation: PropTypes.func.isRequired,
+  onEditItem: PropTypes.func.isRequired,
   location: PropTypes.object.isRequired
+}
+
+/**
+ * Creates the "add new layer" item for the layer list.
+ *
+ * @param  {Object} props  the props of the list in which this item will be placed
+ * @return {React.Node}  the rendered list item
+ */
+function createNewItemEntry (props) {
+  /* eslint-disable react/prop-types */
+  return (
+    <ListItem button key='__addNew__' onClick={props.onNewItem}>
+      <ListItemText primary='Add new location' />
+      <AddCircleOutline />
+    </ListItem>
+  )
+  /* eslint-enable react/prop-types */
 }
 
 /**
  * Presentation component for the entire location list.
  */
-export const LocationListPresentation = listOf((location, { onEditLocation }) => {
-  return <LocationListEntry key={location.id}
-    onEditLocation={onEditLocation}
-    location={location} />
-}, {
-  dataProvider: 'savedLocations',
-  backgroundHint: 'No saved locations'
-})
+export const LocationListPresentation = listOf(
+  (location, props) => (
+    <LocationListEntry key={location.id}
+      onEditItem={props.onEditItem}
+      location={location} />
+  ),
+  {
+    dataProvider: 'savedLocations',
+    backgroundHint: 'No saved locations',
+    postprocess: (items, props) => ([
+      createNewItemEntry(props), ...items
+    ])
+  }
+)
 LocationListPresentation.displayName = 'LocationListPresentation'
 
 const LocationList = connect(
@@ -77,8 +96,16 @@ const LocationList = connect(
   }),
   // mapDispatchToProps
   dispatch => ({
-    onEditLocation (id) {
+    onEditItem (id) {
       dispatch(editSavedLocation(id))
+    },
+
+    onNewItem () {
+      const action = createNewSavedLocation()
+      dispatch(action)
+      if (action.id) {
+        dispatch(editSavedLocation(action.id))
+      }
     }
   })
 )(LocationListPresentation)

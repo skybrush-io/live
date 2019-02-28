@@ -51,7 +51,7 @@ const reducer = handleActions({
 
     // Store the ID of the layer that is about to be inserted on the
     // action so the caller of this action can decide what to do with it
-    action.layerId = id
+    action.id = id
 
     // Update the state
     return u({

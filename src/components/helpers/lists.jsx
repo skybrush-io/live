@@ -3,7 +3,7 @@
  */
 
 import { get, partial } from 'lodash/fp'
-import { includes, isFunction, xor } from 'lodash'
+import { identity, includes, isFunction, xor } from 'lodash'
 import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
 import PropTypes from 'prop-types'
@@ -27,6 +27,11 @@ import { eventHasPlatformModifierKey } from '../../utils/platform'
  *         of the generated component and returns the items to show, or a
  *         string that contains the name of the React prop that holds the
  *         items to show in the generated component
+ * @param  {function}  options.postprocess  post-processor function that will
+ *         be called with the items generated for the list and the props of the
+ *         list, and must return the actual list of items to be included in the
+ *         list. Can be used to add extra items to the list without modifying
+ *         the data provider.
  * @param  {function|React.Component} options.listFactory  React component
  *         that will be used as the root component of the generated list,
  *         or a function that will be called with the props of the generated
@@ -36,14 +41,18 @@ import { eventHasPlatformModifierKey } from '../../utils/platform'
  * @return {React.Component}  the constructed React component
  */
 export function listOf (itemRenderer, options = {}) {
-  const { backgroundHint, dataProvider, listFactory } = validateOptions(options)
+  const { backgroundHint, dataProvider, listFactory, postprocess } =
+    validateOptions(options)
   itemRenderer = validateItemRenderer(itemRenderer)
 
   // A separate variable is needed here to make ESLint happy
   const ListView = props => {
     const items = dataProvider(props)
-    if (hasSomeItems(items)) {
-      const children = items.map(item => itemRenderer(item, props))
+    const children = postprocess(
+      items.map(item => itemRenderer(item, props)),
+      props
+    )
+    if (hasSomeItems(children)) {
       return listFactory(props, children)
     } else if (backgroundHint) {
       return <div className='background-hint'>{backgroundHint}</div>
@@ -98,15 +107,16 @@ export function listOf (itemRenderer, options = {}) {
  * @return {React.Component}  the constructed React component
  */
 export function selectableListOf (itemRenderer, options = {}) {
-  const { backgroundHint, dataProvider, listFactory } = validateOptions(options)
+  const { backgroundHint, dataProvider, listFactory, postprocess } =
+    validateOptions(options)
   itemRenderer = validateItemRenderer(itemRenderer)
 
   // A separate variable is needed here to make ESLint happy
   const SelectableListView = props => {
     const items = dataProvider(props)
-    if (hasSomeItems(items)) {
-      const children = items.map(item =>
-        itemRenderer(
+    const children = postprocess(
+      items.map(
+        item => itemRenderer(
           item,
           Object.assign({}, props, {
             onChange: undefined,
@@ -114,7 +124,10 @@ export function selectableListOf (itemRenderer, options = {}) {
           }),
           item.id === props.value
         )
-      )
+      ),
+      props
+    )
+    if (hasSomeItems(children)) {
       return listFactory(props, children)
     } else if (backgroundHint) {
       return <div className='background-hint'>{backgroundHint}</div>
@@ -182,15 +195,16 @@ export function selectableListOf (itemRenderer, options = {}) {
  * @return {React.Component}  the constructed React component
  */
 export function multiSelectableListOf (itemRenderer, options = {}) {
-  const { backgroundHint, dataProvider, listFactory } = validateOptions(options)
+  const { backgroundHint, dataProvider, listFactory, postprocess } =
+    validateOptions(options)
   itemRenderer = validateItemRenderer(itemRenderer)
 
   // A separate variable is needed here to make ESLint happy
   const MultiSelectableListView = props => {
     const items = dataProvider(props)
-    if (hasSomeItems(items)) {
-      const children = items.map(item =>
-        itemRenderer(
+    const children = postprocess(
+      items.map(
+        item => itemRenderer(
           item,
           Object.assign({}, props, {
             onChange: undefined,
@@ -204,7 +218,10 @@ export function multiSelectableListOf (itemRenderer, options = {}) {
           }),
           includes(props.value, item.id)
         )
-      )
+      ),
+      props
+    )
+    if (hasSomeItems(children)) {
       return listFactory(props, children)
     } else if (backgroundHint) {
       return <div className='background-hint'>{backgroundHint}</div>
@@ -232,7 +249,7 @@ export function multiSelectableListOf (itemRenderer, options = {}) {
  * @return {Object} the transformed options
  */
 function validateOptions (options) {
-  return Object.assign({}, options, {
+  return Object.assign({ postprocess: identity }, options, {
     dataProvider: validateDataProvider(options.dataProvider),
     listFactory: validateListFactory(options.listFactory)
   })

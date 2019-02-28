@@ -15,12 +15,10 @@ import DialogActions from '@material-ui/core/DialogActions'
 import DialogContent from '@material-ui/core/DialogContent'
 import DialogTitle from '@material-ui/core/DialogTitle'
 
-import { debouncedUpdateSavedLocation, deleteSavedLocation,
-  updateSavedLocation } from '../../actions/saved-locations'
-import { cancelLocationEditing } from '../../actions/saved-location-editor'
-import { createValidator, between, integer, finite, required } from '../../utils/validation'
-
-import { addListenerToMapViewSignal } from '../../signals'
+import { deleteSavedLocation, updateSavedLocation } from '~/actions/saved-locations'
+import { cancelLocationEditing } from '~/actions/saved-location-editor'
+import { NEW_ITEM_ID } from '~/utils/collections'
+import { createValidator, between, integer, finite, required } from '~/utils/validation'
 
 /**
  * Presentation of the form that shows the fields that the user can use to
@@ -75,7 +73,11 @@ const SavedLocationEditorForm = connect(
     const currentLocation = state.savedLocations.byId[id]
 
     return { initialValues: currentLocation }
-  }, null, null, { withRef: true }
+  },
+  // mapDispatchToProps
+  null,
+  null,
+  { withRef: true }
 )(reduxForm({
   form: 'SavedLocationEditor',
   validate: createValidator({
@@ -101,16 +103,6 @@ class SavedLocationEditorDialogPresentation extends React.Component {
     this._assignFormRef = value => { this._form = value }
   }
 
-  componentDidMount () {
-    const properties = [ 'center', 'rotation', 'zoom' ]
-    properties.forEach(property => {
-      addListenerToMapViewSignal.dispatch(property, data => {
-        this.currentLocation[property] = data
-        this.props.requestCurrentLocationUpdate(this.currentLocation)
-      })
-    })
-  }
-
   @autobind
   handleSubmit () {
     if (this._form) {
@@ -127,20 +119,30 @@ class SavedLocationEditorDialogPresentation extends React.Component {
 
   render () {
     const { editedLocationId, onClose, onDelete, onSubmit, open } = this.props
+    const isNew = editedLocationId === NEW_ITEM_ID
+    const title = isNew ? 'Create new location' : 'Edit saved location'
 
     const actions = [
-      <Button key='save' color='primary' onClick={this.handleSubmit}>Save</Button>,
-      <Button key='delete' color='secondary'
-        disabled={editedLocationId === 'addNew'}
-        onClick={onDelete(editedLocationId)}>
-        Delete
-      </Button>,
-      <Button key='cancel' onClick={onClose}>Cancel</Button>
+      <Button key='save' color='primary' onClick={this.handleSubmit}>Save</Button>
     ]
+
+    if (isNew) {
+      actions.push(
+        <Button key='discard' onClick={onDelete(editedLocationId)}>Discard</Button>
+      )
+    } else {
+      actions.push(
+        <Button key='delete' color='secondary'
+          onClick={onDelete(editedLocationId)}>
+          Delete
+        </Button>,
+        <Button key='cancel' onClick={onClose}>Cancel</Button>
+      )
+    }
 
     return (
       <Dialog open={open} fullWidth maxWidth='sm' onClose={onClose}>
-        <DialogTitle>Edit saved location</DialogTitle>
+        <DialogTitle>{title}</DialogTitle>
         <DialogContent>
           <SavedLocationEditorForm ref={this._assignFormRef}
             onSubmit={onSubmit}
@@ -157,8 +159,7 @@ SavedLocationEditorDialogPresentation.propTypes = {
   onClose: PropTypes.func.isRequired,
   onDelete: PropTypes.func.isRequired,
   onSubmit: PropTypes.func.isRequired,
-  open: PropTypes.bool.isRequired,
-  requestCurrentLocationUpdate: PropTypes.func.isRequired
+  open: PropTypes.bool.isRequired
 }
 
 SavedLocationEditorDialogPresentation.defaultProps = {
@@ -196,9 +197,6 @@ const SavedLocationEditorDialog = connect(
 
       dispatch(updateSavedLocation(currentLocation))
       dispatch(cancelLocationEditing())
-    },
-    requestCurrentLocationUpdate (properties) {
-      dispatch(debouncedUpdateSavedLocation({ id: 'current', ...properties }))
     }
   })
 )(SavedLocationEditorDialogPresentation)

@@ -6,15 +6,12 @@
 import { isEmpty } from 'ol/extent'
 import { round } from 'lodash'
 
-import { coordinateFromLonLat, lonLatFromCoordinate } from '../../utils/geography'
-
 import {
   mapReferenceRequestSignal,
   mapViewToLocationSignal,
-  mapViewToExtentSignal,
-  addListenerToMapViewSignal,
-  removeListenerFromMapViewSignal
-} from '../../signals'
+  mapViewToExtentSignal
+} from '~/signals'
+import { coordinateFromLonLat, lonLatFromCoordinate } from '~/utils/geography'
 
 import { normalizeAngle } from './MapRotationTextBox.jsx'
 
@@ -43,8 +40,6 @@ export default class MapViewManager {
 
     mapViewToLocationSignal.add(this.mapViewToLocation)
     mapViewToExtentSignal.add(this.mapViewToExtent)
-    addListenerToMapViewSignal.add(this.addListener)
-    removeListenerFromMapViewSignal.add(this.removeListener)
   }
 
   /**

@@ -6,26 +6,14 @@
  */
 
 import { handleActions } from 'redux-actions'
-import u from 'updeep'
 
-import { deleteById } from '../utils/collections'
-import { chooseUniqueIdFromName } from '../utils/naming'
+import { addToFront, createNewItemAtFrontOf, deleteById, update } from '~/utils/collections'
 
 /**
  * Default content of the saved location registry in the state object.
  */
 const defaultState = {
   byId: {
-    addNew: {
-      id: 'addNew',
-      name: 'Add new location',
-      center: {
-        lon: 19.061951,
-        lat: 47.473340
-      },
-      rotation: 0,
-      zoom: 17
-    },
     elte: {
       id: 'elte',
       name: 'ELTE Kert',
@@ -58,7 +46,7 @@ const defaultState = {
     }
   },
 
-  order: ['addNew', 'elte', 'fahegy', 'fina']
+  order: ['elte', 'fahegy', 'fina']
 }
 
 /**
@@ -66,37 +54,22 @@ const defaultState = {
  * saved location states.
  */
 const reducer = handleActions({
-  UPDATE_SAVED_LOCATION: (state, action) => {
-    const currentLocation = Object.assign({}, action.payload.savedLocation)
+  ADD_SAVED_LOCATION: (state, action) => {
+    const location = { ...action.payload.savedLocation }
+    return addToFront(location, state)
+  },
 
-    let updates = {}
-
-    if (currentLocation.id === 'current') {
-      currentLocation.id = 'addNew'
-      updates = { byId: { addNew: currentLocation } }
-    } else if (currentLocation.id === 'addNew') {
-      currentLocation.id = chooseUniqueIdFromName(
-        currentLocation.name, state.byId
-      )
-      updates = {
-        byId: { [currentLocation.id]: currentLocation },
-        order: [].concat(state.order, currentLocation.id)
-      }
-    } else {
-      updates = { byId: { [currentLocation.id]: currentLocation } }
-    }
-
-    return u(updates, state)
+  CREATE_NEW_SAVED_LOCATION: (state, action) => {
+    return createNewItemAtFrontOf(state, action)
   },
 
   DELETE_SAVED_LOCATION: (state, action) => {
     const currentLocationId = action.payload.savedLocationId
-    if (currentLocationId === 'addNew') {
-      return state
-    } else {
-      return deleteById(currentLocationId, state)
-    }
-  }
+    return deleteById(currentLocationId, state)
+  },
+
+  UPDATE_SAVED_LOCATION: (state, action) =>
+    update(action.payload.savedLocation, state)
 }, defaultState)
 
 export default reducer
