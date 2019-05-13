@@ -30,7 +30,9 @@ function run (argv) {
   // the case for our local development setup. Note that this is irrelevant
   // if we are not using Webpack.
   if (willUseWebpack) {
-    protocol.registerStandardSchemes(['ws'], { secure: true })
+    protocol.registerSchemesAsPrivileged([
+      { scheme: 'ws', privileges: { standard: true, secure: true } }
+    ])
   }
 
   // Create the main window when the application is ready

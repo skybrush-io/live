@@ -3,11 +3,13 @@
  * to all renderer processes.
  */
 
-const ipc = require('electron-better-ipc')
+const betterIpc = require('electron-better-ipc')
 const { is } = require('electron-util')
 const EventEmitter = require('events')
 
 const makeEventProxyChannelName = channel => `__eventProxy[${channel}]`
+
+const ipc = is.main ? betterIpc.ipcMain : betterIpc.ipcRenderer
 
 const makeEventProxy = is.main
   ? channel => {

@@ -1,4 +1,4 @@
-const ipc = require('electron-better-ipc')
+const { ipcRenderer: ipc } = require('electron-better-ipc')
 
 const makeEventProxy = require('../event-proxy')
 

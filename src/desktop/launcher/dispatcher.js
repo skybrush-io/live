@@ -1,4 +1,4 @@
-const ipc = require('electron-better-ipc')
+const { ipcMain: ipc } = require('electron-better-ipc')
 const logger = require('electron-timber')
 
 const { getMainWindow } = require('./main-window')

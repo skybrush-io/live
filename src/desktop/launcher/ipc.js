@@ -1,4 +1,4 @@
-const ipc = require('electron-better-ipc')
+const { ipcMain: ipc } = require('electron-better-ipc')
 
 const getApplicationFolder = require('./app-folder')
 const localServer = require('./local-server')

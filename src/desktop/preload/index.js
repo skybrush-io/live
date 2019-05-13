@@ -9,7 +9,7 @@
 const pify = require('pify')
 
 const dns = require('dns')
-const ipc = require('electron-better-ipc')
+const { ipcRenderer: ipc } = require('electron-better-ipc')
 const logger = require('electron-timber')
 const unhandled = require('electron-unhandled')
 const SSDPClient = require('node-ssdp-lite')
