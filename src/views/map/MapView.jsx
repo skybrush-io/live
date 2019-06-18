@@ -31,6 +31,7 @@ import { getVisibleSelectableLayers, isLayerSelectable } from '~/model/layers'
 import { globalIdToFeatureId, globalIdToHomePositionId } from '~/model/identifiers'
 import { getVisibleLayersInOrder } from '~/selectors/ordered'
 import { getExtendedCoordinateFormatter } from '~/selectors/formatting'
+import { getMapViewRotationAngle } from '~/selectors/map'
 import { getSelectedFeatureIds, getSelection } from '~/selectors/selection'
 import {
   coordinateFromLonLat, findFeaturesById, lonLatFromCoordinate
@@ -606,7 +607,7 @@ const MapView = connect(
   // mapStateToProps
   state => ({
     center: state.map.view.position,
-    rotation: state.map.view.angle,
+    rotation: getMapViewRotationAngle(state),
     zoom: state.map.view.zoom,
 
     selectedFeatures: getSelectedFeatureIds(state),

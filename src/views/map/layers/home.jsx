@@ -8,11 +8,12 @@ import { Circle, Style, Text } from 'ol/style'
 
 import { Feature, geom, layer, source } from '@collmot/ol-react'
 
-import { homePositionIdToGlobalId } from '../../../model/identifiers'
-import { setLayerEditable, setLayerSelectable } from '../../../model/layers'
-import { getSelectedHomePositionIds } from '../../../selectors/selection'
-import { coordinateFromLonLat } from '../../../utils/geography'
-import { fill, stroke, whiteThickOutline, whiteThinOutline } from '../../../utils/styles'
+import { homePositionIdToGlobalId } from '~/model/identifiers'
+import { setLayerEditable, setLayerSelectable } from '~/model/layers'
+import { getMapOriginRotationAngle } from '~/selectors/map'
+import { getSelectedHomePositionIds } from '~/selectors/selection'
+import { coordinateFromLonLat } from '~/utils/geography'
+import { fill, stroke, whiteThickOutline, whiteThinOutline } from '~/utils/styles'
 
 // === Settings for this particular layer type ===
 
@@ -138,7 +139,7 @@ HomePositionsLayerPresentation.defaultProps = {
 export const HomePositionsLayer = connect(
   // mapStateToProps
   state => ({
-    angle: state.map.origin.angle,
+    angle: getMapOriginRotationAngle(state),
     coordinateSystemType: state.map.origin.type,
     homePosition: state.map.origin.position,
     selectedIds: getSelectedHomePositionIds(state)
