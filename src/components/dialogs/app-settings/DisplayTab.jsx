@@ -12,15 +12,16 @@ import MenuItem from '@material-ui/core/MenuItem'
 import Select from '@material-ui/core/Select'
 import Typography from '@material-ui/core/Typography'
 
-import { updateAppSettings } from '../../../actions/app-settings'
+import { updateAppSettings } from '~/actions/app-settings'
 import {
   clearHomePosition,
   setFlatEarthCoordinateSystemOrientation,
   setFlatEarthCoordinateSystemType,
   setHomePosition
-} from '../../../actions/map-origin'
-import CoordinateField from '../../CoordinateField'
-import RotationField from '../../RotationField'
+} from '~/actions/map-origin'
+import CoordinateField from '~/components/CoordinateField'
+import RotationField from '~/components/RotationField'
+import { getMapOriginRotationAngle } from '~/selectors/map'
 
 const DisplayTabPresentation = props => (
   <FormGroup>
@@ -74,7 +75,7 @@ export default connect(
   state => ({
     coordinateSystemType: state.map.origin.type,
     homePosition: state.map.origin.position,
-    orientation: state.map.origin.angle,
+    orientation: getMapOriginRotationAngle(state),
     ...state.settings.display
   }),
   // mapDispatchToProps

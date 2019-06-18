@@ -17,6 +17,7 @@ import DialogTitle from '@material-ui/core/DialogTitle'
 
 import { deleteSavedLocation, updateSavedLocation } from '~/actions/saved-locations'
 import { cancelLocationEditing } from '~/actions/saved-location-editor'
+import { getMapViewRotationAngle } from '~/selectors/map'
 import { NEW_ITEM_ID } from '~/utils/collections'
 import { createValidator, between, integer, finite, required } from '~/utils/validation'
 
@@ -76,7 +77,7 @@ const SavedLocationEditorForm = connect(
           lon: state.map.view.position[0].toFixed(6),
           lat: state.map.view.position[1].toFixed(6)
         },
-        rotation: state.map.view.angle,
+        rotation: getMapViewRotationAngle(state),
         zoom: state.map.view.zoom
       }
       : state.savedLocations.byId[id]
