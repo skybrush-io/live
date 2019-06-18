@@ -27,6 +27,7 @@ import { renameFeature, removeFeatures } from '../../actions/features'
 import { setHomePosition } from '../../actions/map-origin'
 import { selectUAVInMessagesDialog, showMessagesDialog } from '../../actions/messages'
 import { showPromptDialog } from '../../actions/prompt'
+import { showSnackbarMessage } from '../../actions/snackbar'
 import ContextMenu from '../../components/ContextMenu'
 import {
   getSelectedFeatureIds,
@@ -78,7 +79,7 @@ class MapContextMenu extends React.Component {
                 <ListItemIcon><Flight /></ListItemIcon>
                 Fly here
               </MenuItem>,
-              <MenuItem key="flyAtAltitude" dense disabled onClick={this._moveSelectedUAVsAtGivenAltitude}>
+              <MenuItem key="flyAtAltitude" dense onClick={this._moveSelectedUAVsAtGivenAltitude}>
                 <ListItemIcon><Flight /></ListItemIcon>
                 Fly here at altitude...
               </MenuItem>,
@@ -140,18 +141,35 @@ class MapContextMenu extends React.Component {
   @autobind
   _moveSelectedUAVsAtCurrentAltitude (event, context) {
     const { coords, selectedUAVIds } = context
-    if (coords && coords.length === 2) {
-      messaging.moveUAVs(selectedUAVIds, {
-        lat: coords[1],
-        lon: coords[0],
-        agl: undefined
-      })
-    }
+    this._moveUAVs(selectedUAVIds, coords)
   }
 
   @autobind
   _moveSelectedUAVsAtGivenAltitude (event, context) {
-    // TODO(ntamas)
+    const coords = { ...context.coords }
+    const selectedUAVIds = [...context.selectedUAVIds]
+
+    this.props.showPromptDialog('Enter the target altitude').then(altitude => {
+      if (altitude !== undefined) {
+        const altitudeAsNumber = parseFloat(altitude)
+        if (!isNaN(altitudeAsNumber)) {
+          this._moveUAVs(selectedUAVIds, coords, altitudeAsNumber)
+        } else {
+          this.props.showErrorMessage('Invalid target altitude')
+        }
+      }
+    })
+  }
+
+  @autobind
+  _moveUAVs (uavIds, coords, agl) {
+    if (coords && coords.length === 2) {
+      messaging.moveUAVs(uavIds, {
+        lat: coords[1],
+        lon: coords[0],
+        agl
+      })
+    }
   }
 
   @autobind
@@ -232,7 +250,9 @@ MapContextMenu.propTypes = {
   removeFeaturesByIds: PropTypes.func.isRequired,
   selectUAVInMessagesDialog: PropTypes.func.isRequired,
   setHomePosition: PropTypes.func.isRequired,
-  showMessagesDialog: PropTypes.func.isRequired
+  showErrorMessage: PropTypes.func.isRequired,
+  showMessagesDialog: PropTypes.func.isRequired,
+  showPromptDialog: PropTypes.func.isRequired
 }
 
 const MapContextMenuContainer = connect(
@@ -268,8 +288,14 @@ const MapContextMenuContainer = connect(
     setHomePosition: coords => {
       dispatch(setHomePosition(coords))
     },
+    showErrorMessage: message => {
+      dispatch(showSnackbarMessage(message))
+    },
     showMessagesDialog: () => {
       dispatch(showMessagesDialog())
+    },
+    showPromptDialog: (message, options) => {
+      return dispatch(showPromptDialog(message, options))
     }
   }),
   null,
