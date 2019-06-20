@@ -146,7 +146,7 @@ class MapContextMenu extends React.Component {
 
   @autobind
   _moveSelectedUAVsAtGivenAltitude (event, context) {
-    const coords = { ...context.coords }
+    const coords = [...context.coords]
     const selectedUAVIds = [...context.selectedUAVIds]
 
     this.props.showPromptDialog('Enter the target altitude').then(altitude => {
