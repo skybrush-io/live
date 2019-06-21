@@ -28,8 +28,9 @@ const reducer = handleActions({
 
   SET_HOME_POSITION: (state, action) => {
     const { angle, position, type } = action.payload
-    const updates = {
-      position: u.constant(position)
+    const updates = {}
+    if ('position' in action.payload) {
+      updates.position = u.constant(position)
     }
     if (angle !== undefined) {
       updates.angle = angle
