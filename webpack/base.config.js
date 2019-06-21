@@ -76,7 +76,7 @@ module.exports = {
       {
         test: /\.(png|jpg)$/,
         use: [
-          { loader: 'url-loader?limit=8192' }
+          { loader: 'url-loader', options: { limit: 8192 } }
         ],
         include: path.join(projectRoot, 'assets')
       },
