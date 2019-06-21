@@ -56,10 +56,12 @@ export const createRotatedBoxGeometryFunction = (angle) =>
       )
     )
 
-    // Return the geometry
-    const geometry = optGeometry || new Polygon(null)
-    geometry.setCoordinates([newCoordinates])
-    return geometry
+    if (optGeometry) {
+      optGeometry.setCoordinates([newCoordinates])
+      return optGeometry
+    } else {
+      return new Polygon([newCoordinates])
+    }
   }
 
 /**

@@ -26,7 +26,7 @@
   "dependencies": {
     "@babel/plugin-proposal-decorators": "^7.4.4",
     "@babel/polyfill": "^7.4.4",
-    "@collmot/ol-react": "^0.4.0",
+    "@collmot/ol-react": "^0.4.1",
     "@material-ui/core": "^3.9.3",
     "@material-ui/icons": "^3.0.2",
     "autosuggest-highlight": "^3.1.1",
@@ -37,7 +37,7 @@
     "electron-better-ipc": "^0.3.0",
     "electron-timber": "^0.5.1",
     "electron-unhandled": "^2.2.0",
-    "electron-util": "^0.12.1",
+    "electron-util": "^0.11.0",
     "electron-window-state": "^5.0.3",
     "es6-promise": "^4.2.8",
     "esm": "^3.2.25",

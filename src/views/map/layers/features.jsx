@@ -162,7 +162,7 @@ const FeaturesLayerPresentation = ({
         renderFeature(feature, selectedFeatureIds.includes(feature.id))
       )}
       {selectedTool === Tool.EDIT_FEATURE
-        ? <interaction.Modify modifyend={onFeaturesModified} />
+        ? <interaction.Modify onModifyEnd={onFeaturesModified} />
         : null}
     </source.Vector>
   </layer.Vector>
@@ -192,5 +192,13 @@ export const FeaturesLayer = connect(
     selectedFeatureIds: getSelectedFeatureIds(state)
   }),
   // mapDispatchToProps
-  (dispatch, ownProps) => ({})
+  (dispatch, ownProps) => ({
+    onFeaturesModified: event => {
+      // const { features } = event
+
+      /* TODO(ntamas): features contains all the features in the layer, not
+       * only the ones being modified. We need to figure out which ones were
+       * actually modified and sync them back to the state store */
+    }
+  })
 )(FeaturesLayerPresentation)
