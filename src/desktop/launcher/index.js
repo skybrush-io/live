@@ -6,10 +6,15 @@ const yargs = require('yargs/yargs')
 const setupIpc = require('./ipc')
 const { createMainWindow } = require('./main-window')
 const createAppMenu = require('./app-menu')
-const { willUseWebpack } = require('./utils')
+const { isProduction, willUseWebpack } = require('./utils')
 
 // Set our own Google API key that we will use for geolocation requests
 process.env.GOOGLE_API_KEY = 'AIzaSyC-Emzc-ogrp8ZW05zF6Sx0x5VDDyQfpLw'
+
+// Trace promisification API progress if we are not in production mode
+if (!isProduction) {
+  process.enablePromiseAPIs = true
+}
 
 /**
  * Main entry point of the application.
