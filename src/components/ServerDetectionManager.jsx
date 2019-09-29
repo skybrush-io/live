@@ -5,7 +5,6 @@ import { partial } from 'lodash'
 import PropTypes from 'prop-types'
 import React from 'react'
 import { connect } from 'react-redux'
-import { URL } from 'url'
 
 import {
   addDetectedServer,
@@ -67,12 +66,17 @@ class ServerDetectionManagerPresentation extends React.Component {
         return
       }
 
-      const { hostname, port, protocol } = new URL(location)
+      const { protocol } = new URL(location)
       if (protocol !== 'sio:' && protocol !== 'sio+tls:') {
         // We only support Socket.IO and secure Socket.IO
         return
       }
 
+      // Create a new, fake URL with http: as the protocol so we can parse the
+      // hostname and the port (sio: and sio+tls: is not recognized by the URL
+      // class)
+      const httpLocation = `http:${location.substr(protocol.length)}`
+      const { hostname, port } = new URL(httpLocation)
       const numericPort = Number(port)
       if (!hostname || isNaN(numericPort) || numericPort <= 0 || numericPort > 65535) {
         // Invalid hostname or port
