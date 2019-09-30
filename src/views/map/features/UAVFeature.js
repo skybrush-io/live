@@ -47,8 +47,8 @@ export default class UAVFeature extends Feature {
     this._heading = value
 
     if (this._iconImage) {
-      this._iconImage.setRotation(((this._heading + 45) % 360) * Math.PI / 180)
-      this._selectionImage.setRotation(((this._heading + 45) % 360) * Math.PI / 180)
+      this._iconImage.setRotation(((45 - this._heading) % 360) * Math.PI / 180)
+      this._selectionImage.setRotation(((45 - this._heading) % 360) * Math.PI / 180)
     }
   }
 
