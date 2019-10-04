@@ -39,16 +39,16 @@ function findAllUAVFeatures (flock) {
  */
 function updateSelection (current, add, remove) {
   const selectionAsSet = {}
-  for (let item of current) {
+  for (const item of current) {
     selectionAsSet[item] = true
   }
   if (remove) {
-    for (let item of remove) {
+    for (const item of remove) {
       delete selectionAsSet[item]
     }
   }
   if (add) {
-    for (let item of add) {
+    for (const item of add) {
       selectionAsSet[item] = true
     }
   }

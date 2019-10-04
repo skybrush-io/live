@@ -34,9 +34,9 @@ const avatars = [
  * more human-readable.
  */
 const clockIdRemapping = {
-  'system': 'Server clock',
-  '__local__': 'Client clock',
-  'mtc': 'MIDI timecode'
+  system: 'Server clock',
+  __local__: 'Client clock',
+  mtc: 'MIDI timecode'
 }
 
 /**

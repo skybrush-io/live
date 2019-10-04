@@ -178,8 +178,8 @@ export default class SubscriptionDialog extends React.Component {
     }
 
     messageHub.sendMessage({
-      'type': 'DEV-LIST',
-      'ids': Object.keys(flock._uavsById)
+      type: 'DEV-LIST',
+      ids: Object.keys(flock._uavsById)
     }).then(this._deviceListReceived)
   }
 
@@ -193,7 +193,7 @@ export default class SubscriptionDialog extends React.Component {
   @autobind
   _deviceListReceived (message) {
     const data = message.body.devices
-    const available = { 'All': {} }
+    const available = { All: {} }
 
     for (const uav in data) {
       available[uav] = {}
@@ -273,12 +273,12 @@ export default class SubscriptionDialog extends React.Component {
       }
 
       messageHub.sendMessage({
-        'type': 'DEV-UNSUB',
-        'paths': this.state.subscriptions
+        type: 'DEV-UNSUB',
+        paths: this.state.subscriptions
       })
 
       messageHub.sendMessage({
-        'type': 'DEV-SUB',
+        type: 'DEV-SUB',
         paths
       })
 
@@ -290,8 +290,8 @@ export default class SubscriptionDialog extends React.Component {
       const path = this.currentPath
 
       messageHub.sendMessage({
-        'type': 'DEV-SUB',
-        'paths': [
+        type: 'DEV-SUB',
+        paths: [
           path
         ]
       })
@@ -311,8 +311,8 @@ export default class SubscriptionDialog extends React.Component {
   @autobind
   _removeSubscription (subscription) {
     messageHub.sendMessage({
-      'type': 'DEV-UNSUB',
-      'paths': [
+      type: 'DEV-UNSUB',
+      paths: [
         subscription
       ]
     })

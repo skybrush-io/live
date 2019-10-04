@@ -31,7 +31,8 @@ const defaultState = {
  */
 const reducer = handleActions({
   ADD_LAYER (state, action) {
-    let { name, type } = action.payload
+    let { name } = action.payload
+    const { type } = action.payload
 
     if (!name) {
       // Generate a sensible name if no name was given

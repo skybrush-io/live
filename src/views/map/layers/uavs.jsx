@@ -15,7 +15,7 @@ import { getSelection } from '../../../selectors/selection'
 import { coordinateFromLonLat } from '../../../utils/geography'
 import makeLogger from '../../../utils/logging'
 
-const colors = [ 'blue', 'green', 'orange', 'pink', 'purple', 'yellow' ]
+const colors = ['blue', 'green', 'orange', 'pink', 'purple', 'yellow']
 
 const logger = makeLogger('UAVsLayer')
 

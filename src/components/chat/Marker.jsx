@@ -2,6 +2,7 @@
  * @file React component showing a marker line in a chat session.
  */
 
+import has from 'lodash/has'
 import PropTypes from 'prop-types'
 import React from 'react'
 import TimeAgo from 'react-time-ago'
@@ -11,9 +12,9 @@ import TimeAgo from 'react-time-ago'
  * @type {Object}
  */
 const levelsToClassNames = {
-  'error': 'chat-marker chat-marker-error',
-  'warning': 'chat-marker chat-marker-warning',
-  'info': 'chat-marker chat-marker-info'
+  error: 'chat-marker chat-marker-error',
+  warning: 'chat-marker chat-marker-warning',
+  info: 'chat-marker chat-marker-info'
 }
 
 /**
@@ -22,7 +23,7 @@ const levelsToClassNames = {
 export default class Marker extends React.Component {
   render () {
     const { level, message, date } = this.props
-    const className = levelsToClassNames.hasOwnProperty(level)
+    const className = has(levelsToClassNames, level)
       ? levelsToClassNames[level] : levelsToClassNames['info']
     const dateComponent = date
       ? <span className='date'><TimeAgo date={date} /></span>

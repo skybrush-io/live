@@ -19,9 +19,9 @@ import ServerTab from './ServerTab'
 /* ===================================================================== */
 
 const tabNameToComponent = {
-  'display': <DisplayTab />,
-  'server': <ServerTab />,
-  'uavs': null
+  display: <DisplayTab />,
+  server: <ServerTab />,
+  uavs: null
 }
 
 /**

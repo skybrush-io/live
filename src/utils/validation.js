@@ -126,7 +126,7 @@ export function atMost (max) {
  */
 export function between (min, max) {
   if (min > max) {
-    [ min, max ] = [ max, min ]
+    [min, max] = [max, min]
   }
   return value => {
     if (Number(value) < min || Number(value) > max) {

@@ -488,9 +488,9 @@ class MapViewPresentation extends React.Component {
   @autobind
   _onFeaturesSelected (mode, features) {
     const actionMapping = {
-      'add': addFeaturesToSelection,
-      'remove': removeFeaturesFromSelection,
-      'set': setSelectedFeatures
+      add: addFeaturesToSelection,
+      remove: removeFeaturesFromSelection,
+      set: setSelectedFeatures
     }
     const action = actionMapping[mode] || setSelectedFeatures
     const ids = features ? features.map(feature => feature.getId()) : []

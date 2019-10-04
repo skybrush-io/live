@@ -22,10 +22,13 @@ export default class HashedMap {
   }
 
   set (key, value) { return this._map.set(JSON.stringify(key), value) }
+
   has (key) { return this._map.has(JSON.stringify(key)) }
+
   get (key) { return this._map.get(JSON.stringify(key)) }
 
   get data () { return this._map }
+
   get size () { return this._map.size }
 
   * keys () { for (const key of this._map.keys()) { yield JSON.parse(key) } }

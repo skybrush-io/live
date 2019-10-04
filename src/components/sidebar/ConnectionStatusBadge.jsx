@@ -15,9 +15,9 @@ import { getConnectionsInOrder } from '../../selectors/ordered'
 const severityLevels = ['error', 'warning', 'ok']
 
 const badgeColorForLevel = {
-  'ok': '#0c0',
-  'warning': '#fc0',
-  'error': '#f00'
+  ok: '#0c0',
+  warning: '#fc0',
+  error: '#f00'
 }
 
 /**

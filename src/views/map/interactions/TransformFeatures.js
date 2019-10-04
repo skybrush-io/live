@@ -298,9 +298,9 @@ export default createOLInteractionComponent(
     },
     events: ['transformStart', 'transforming', 'transformEnd'],
     eventMap: {
-      'onTransformStart': 'transformStart',
-      'onTransforming': 'transforming',
-      'onTransformEnd': 'transformEnd'
+      onTransformStart: 'transformStart',
+      onTransforming: 'transforming',
+      onTransformEnd: 'transformEnd'
     },
     fragileProps: [
       'featureProvider', 'hitTolerance', 'layers',

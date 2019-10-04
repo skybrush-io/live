@@ -5,7 +5,8 @@
  * that the Flockwave server reports via CONN-LIST and CONN-INF messages.
  */
 
-import { pick } from 'lodash'
+import has from 'lodash/has'
+import pick from 'lodash/pick'
 import { handleActions } from 'redux-actions'
 import { ConnectionState, MASTER_CONNECTION_ID } from '../model/connections'
 
@@ -39,7 +40,7 @@ const defaultState = {
 function updateStateOfConnection (state, id, properties) {
   const { byId } = state
 
-  if (!byId.hasOwnProperty(id)) {
+  if (!has(byId, id)) {
     byId[id] = {
       id, name: id, state: ConnectionState.DISCONNECTED
     }
@@ -68,7 +69,7 @@ const reducer = handleActions({
 
   SET_CONNECTION_STATE_MULTIPLE: (state, action) => {
     const newState = Object.assign({}, state)
-    for (let id of Object.keys(action.payload)) {
+    for (const id of Object.keys(action.payload)) {
       updateStateOfConnection(newState, id, action.payload[id])
     }
     return newState

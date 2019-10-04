@@ -20,10 +20,10 @@ const defaultState = {
       id: 'examplePolygon',
       type: FeatureType.POLYGON,
       points: [
-        [ 19.061313, 47.474040 ],
-        [ 19.063373, 47.473699 ],
-        [ 19.063619, 47.471821 ],
-        [ 19.061001, 47.471835 ]
+        [19.061313, 47.474040],
+        [19.063373, 47.473699],
+        [19.063619, 47.471821],
+        [19.061001, 47.471835]
       ],
       label: 'Test polygon',
       color: '#ffcc00',
@@ -93,7 +93,8 @@ const defaultState = {
  */
 const reducer = handleActions({
   ADD_FEATURE (state, action) {
-    let { name, feature } = action.payload
+    let { name } = action.payload
+    const { feature } = action.payload
     const { points, type } = feature
 
     if (!points || points.length < 1) {

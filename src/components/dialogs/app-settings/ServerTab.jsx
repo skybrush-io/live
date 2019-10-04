@@ -72,11 +72,11 @@ export default connect(
     },
 
     onDisable () {
-      dispatch(updateAppSettings('localServer', { 'enabled': false }))
+      dispatch(updateAppSettings('localServer', { enabled: false }))
     },
 
     onEnable () {
-      dispatch(updateAppSettings('localServer', { 'enabled': true }))
+      dispatch(updateAppSettings('localServer', { enabled: true }))
     },
 
     onSearchPathChanged (event) {
@@ -85,7 +85,7 @@ export default connect(
       remove(paths, (item, index) => !item && index > emptyItemIndex)
       dispatch(updateAppSettings(
         'localServer',
-        { 'searchPath': paths }
+        { searchPath: paths }
       ))
     },
 

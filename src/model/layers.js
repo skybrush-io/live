@@ -3,7 +3,8 @@
  * that we use on the map.
  */
 
-import _ from 'lodash'
+import cloneDeep from 'lodash/cloneDeep'
+import has from 'lodash/has'
 import React from 'react'
 
 import FileAttachment from '@material-ui/icons/Attachment'
@@ -188,8 +189,8 @@ export function createNewLayer (id, layerType, name, parameters) {
  */
 export function defaultParametersForLayerType (layerType) {
   const props = _propertiesForLayerTypes[layerType]
-  const template = props.hasOwnProperty('parameters') ? props.parameters : {}
-  return _.cloneDeep(template)
+  const template = has(props, 'parameters') ? props.parameters : {}
+  return cloneDeep(template)
 }
 
 /**
@@ -262,7 +263,7 @@ export function isLayerSelectable (layer) {
  * @return {boolean} whether the layer is visible
  */
 export function isLayerVisible (layer) {
-  return layer && (!layer.hasOwnProperty('visible') || !!layer.visible)
+  return layer && (!has(layer, 'visible') || !!layer.visible)
 }
 
 /**

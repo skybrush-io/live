@@ -4,6 +4,7 @@
  * the Flockwave server reports via CLK-LIST and CLK-INF messages.
  */
 
+import has from 'lodash/has'
 import { handleActions } from 'redux-actions'
 
 /**
@@ -41,7 +42,7 @@ const defaultState = {
 function updateStateOfClock (state, id, properties) {
   const { items } = state
 
-  if (!items.hasOwnProperty(id)) {
+  if (!has(items, id)) {
     items[id] = {
       id,
       running: false,
@@ -72,7 +73,7 @@ const reducer = handleActions({
 
   SET_CLOCK_STATE_MULTIPLE: (state, action) => {
     const newState = Object.assign({}, state)
-    for (let id of Object.keys(action.payload)) {
+    for (const id of Object.keys(action.payload)) {
       updateStateOfClock(newState, id, action.payload[id])
     }
     return newState

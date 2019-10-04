@@ -34,11 +34,11 @@ import {
 const formatNumber = x => numbro(x).format('0.000')
 
 const heatmapColoringFunctions = {
-  'linear': {
+  linear: {
     name: 'Linear',
     function: x => x
   },
-  'logarithmic': {
+  logarithmic: {
     name: 'Logarithmic',
     function: x => Math.log(x)
   }

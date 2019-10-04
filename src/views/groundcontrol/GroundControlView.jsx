@@ -147,7 +147,7 @@ class GroundControlViewPresentation extends React.Component {
   _onUAVsUpdated (updatedUavs) {
     let { uavs, uavIdToIndex } = this.state
 
-    for (let uav of updatedUavs) {
+    for (const uav of updatedUavs) {
       const index = uavIdToIndex.get(uav.id)
       const uavRepr = this._pickRelevantUAVProps(uav)
 

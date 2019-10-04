@@ -3,8 +3,8 @@
  */
 
 export default {
-  'server': {
-    'hostName': 'flockwave.collmot.com',
-    'port': 80
+  server: {
+    hostName: 'flockwave.collmot.com',
+    port: 80
   }
 }

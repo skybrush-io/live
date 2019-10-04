@@ -80,10 +80,10 @@ class FitAllFeaturesButton extends React.Component {
    * @param {Event} e the event fired from the IconButton component
    */
   _handleClick (e) {
-    let feasibleLayers = this.map.getLayers().getArray().filter(this._isLayerFeasible)
-    let featureArrays = feasibleLayers.map(l => l.getSource().getFeatures())
-    let features = [].concat.apply([], featureArrays)
-    let featureExtents = features.map(f => {
+    const feasibleLayers = this.map.getLayers().getArray().filter(this._isLayerFeasible)
+    const featureArrays = feasibleLayers.map(l => l.getSource().getFeatures())
+    const features = [].concat.apply([], featureArrays)
+    const featureExtents = features.map(f => {
       const geometry = f.getGeometry()
       return geometry ? geometry.getExtent() : undefined
     }).filter(e => e !== undefined)

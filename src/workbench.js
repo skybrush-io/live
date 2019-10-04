@@ -42,13 +42,13 @@ const componentRegistry = {
   'ground-control-view': getFlockFromContext(views.GroundControlView),
   'layer-list': views.LayerList,
   'log-panel': views.LogPanel,
-  'map': views.MapView,
-  'messages': compose(withProps({
+  map: views.MapView,
+  messages: compose(withProps({
     style: {
       padding: '0 10px'
     }
   }), getFlockFromContext)(MessagesPanel),
-  'placeholder': renderNothing(),
+  placeholder: renderNothing(),
   'saved-location-list': views.SavedLocationList,
   'uav-list': getFlockFromContext(views.UAVList)
 }

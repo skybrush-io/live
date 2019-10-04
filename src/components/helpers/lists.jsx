@@ -295,7 +295,7 @@ function validateDataProvider (dataProvider) {
  *         function
  */
 function validateItemRenderer (itemRenderer) {
-  if (React.Component.isPrototypeOf(itemRenderer)) {
+  if (Object.prototype.isPrototypeOf.call(React.Component, itemRenderer)) {
     /* eslint-disable react/display-name, react/prop-types */
     const clickHandler = (itemRenderer === ListItem) ? 'onTouchTap' : 'onClick'
     return (item, props, selected) => {
@@ -332,7 +332,7 @@ function validateListFactory (listFactory) {
       return React.createElement(List, { dense: props.dense }, children)
     }
     /* eslint-enable react/display-name, react/prop-types */
-  } else if (React.Component.isPrototypeOf(listFactory)) {
+  } else if (Object.prototype.isPrototypeOf.call(React.Component, listFactory)) {
     return partial(React.createElement, listFactory)
   } else {
     return listFactory

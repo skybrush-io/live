@@ -1,3 +1,4 @@
+import has from 'lodash/has'
 import { combineReducers } from 'redux'
 import { reducer as formReducer } from 'redux-form'
 import * as storage from 'redux-storage'
@@ -60,7 +61,7 @@ const merger = (oldState, newState) => {
     for (const key in newState) {
       // TODO: create a dedicated function for merging two ordered collections,
       // and then use that
-      if (oldState.hasOwnProperty(key) && oldState[key] && oldState[key].byId) {
+      if (has(oldState, key) && oldState[key] && oldState[key].byId) {
         delete oldState[key].byId
         delete oldState[key].order
       }

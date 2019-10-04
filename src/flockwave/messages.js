@@ -2,6 +2,7 @@
  * @file Functions and classes related to dealing with Flockwave messages.
  */
 
+import has from 'lodash/has'
 import isObject from 'lodash/isObject'
 import MersenneTwister from 'mersenne-twister'
 import pDefer from 'p-defer'
@@ -46,8 +47,8 @@ function createMessage (body = {}) {
   }
   return {
     '$fw.version': version,
-    'id': createMessageId(),
-    'body': body
+    id: createMessageId(),
+    body: body
   }
 }
 
@@ -348,7 +349,7 @@ class CommandExecutionManager {
    */
   cancelAll (error) {
     const pendingCommandExecutions = this._pendingCommandExecutions
-    for (let receipt of Object.keys(pendingCommandExecutions)) {
+    for (const receipt of Object.keys(pendingCommandExecutions)) {
       const pendingExecution = pendingCommandExecutions[receipt]
       if (pendingExecution) {
         pendingExecution.reject(error)
@@ -445,7 +446,7 @@ class CommandExecutionManager {
    */
   _onTimeoutReceived (message) {
     const { ids } = message.body
-    for (let id of ids) {
+    for (const id of ids) {
       const pendingCommandExecution = this._pendingCommandExecutions[id]
       if (pendingCommandExecution) {
         delete this._pendingCommandExecutions[id]
@@ -521,7 +522,7 @@ export default class MessageHub {
    */
   cancelAllPendingResponses () {
     const pendingResponses = this._pendingResponses
-    for (let messageId of Object.keys(pendingResponses)) {
+    for (const messageId of Object.keys(pendingResponses)) {
       const pendingResponse = pendingResponses[messageId]
       if (pendingResponse) {
         pendingResponse.reject(new EmitterChangedError())
@@ -552,7 +553,7 @@ export default class MessageHub {
       const type = message.body ? message.body.type : undefined
       const handlers = this._notificationHandlers[type]
       if (handlers) {
-        for (let handler of handlers) {
+        for (const handler of handlers) {
           handler(message)
         }
       }
@@ -572,7 +573,7 @@ export default class MessageHub {
    *        notification of the given type is received
    */
   registerNotificationHandler (type, handler) {
-    if (!this._notificationHandlers.hasOwnProperty(type)) {
+    if (!has(this._notificationHandlers, type)) {
       this._notificationHandlers[type] = []
     }
     this._notificationHandlers[type].push(handler)
@@ -587,7 +588,7 @@ export default class MessageHub {
    *        types to the corresponding handlers to register
    */
   registerNotificationHandlers (typesAndHandlers) {
-    for (let type of Object.keys(typesAndHandlers)) {
+    for (const type of Object.keys(typesAndHandlers)) {
       this.registerNotificationHandler(type, typesAndHandlers[type])
     }
   }
@@ -602,7 +603,7 @@ export default class MessageHub {
    */
   unregisterNotificationHandler (type, handler) {
     if (
-      !this._notificationHandlers.hasOwnProperty(type) ||
+      !has(this._notificationHandlers, type) ||
       !this._notificationHandlers[type].includes(handler)
     ) {
       throw new Error(
@@ -624,7 +625,7 @@ export default class MessageHub {
    *        types to the corresponding handlers to unregister
    */
   unregisterNotificationHandlers (typesAndHandlers) {
-    for (let type of Object.keys(typesAndHandlers)) {
+    for (const type of Object.keys(typesAndHandlers)) {
       this.unregisterNotificationHandler(type, typesAndHandlers[type])
     }
   }

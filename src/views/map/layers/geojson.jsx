@@ -251,10 +251,10 @@ class GeoJSONLayerPresentation extends React.Component {
     const strokeColor = parseColor(parameters.strokeColor, primaryColor)
     const fillColor = parseColor(parameters.fillColor, Color(primaryColor).alpha(0.5))
     this._styleDefaults = {
-      'stroke': strokeColor.rgb().hex(),
+      stroke: strokeColor.rgb().hex(),
       'stroke-opacity': strokeColor.alpha(),
       'stroke-width': strokeWidth,
-      'fill': fillColor.rgb().hex(),
+      fill: fillColor.rgb().hex(),
       'fill-opacity': fillColor.alpha()
     }
   }

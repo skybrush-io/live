@@ -11,9 +11,9 @@ import { Circle, Fill, Stroke, Style, Text } from 'ol/style'
  * in pixels.
  */
 const _markerSizeToRadius = {
-  'small': 10,
-  'medium': 15,
-  'large': 20
+  small: 10,
+  medium: 15,
+  large: 20
 }
 
 /**
