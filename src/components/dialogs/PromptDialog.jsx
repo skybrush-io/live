@@ -11,57 +11,51 @@ import DialogContentText from '@material-ui/core/DialogContentText'
 import DialogTitle from '@material-ui/core/DialogTitle'
 
 import PropTypes from 'prop-types'
-import { reduxForm, Field } from 'redux-form'
-import { TextField } from 'redux-form-material-ui'
+import { Form, Field } from 'react-final-form'
 import React from 'react'
 import { connect } from 'react-redux'
 
 import { cancelPromptDialog, submitPromptDialog } from '../../actions/prompt'
+import { TextField } from '../forms'
 
-const PromptDialogFormPresentation = ({
-  cancelButtonLabel, handleSubmit, hintText, message, onCancelled,
+const PromptDialogForm = ({
+  cancelButtonLabel, hintText, initialValues, message, onCancel, onSubmit,
   submitButtonLabel
 }) => (
-  <form onSubmit={handleSubmit}>
-    <DialogContent>
-      <DialogContentText>
-        {message}
-      </DialogContentText>
-      <Field component={TextField} autoFocus
-        name='value' margin='dense' id='value'
-        label={hintText} fullWidth />
-    </DialogContent>
-    <DialogActions>
-      <Button color="primary" type="submit">{submitButtonLabel}</Button>
-      <Button onClick={onCancelled}>{cancelButtonLabel}</Button>
-    </DialogActions>
-  </form>
+  <Form initialValues={initialValues} onSubmit={onSubmit}>
+    {({ handleSubmit }) => (
+      <form onSubmit={handleSubmit}>
+        <DialogContent>
+          <DialogContentText>
+            {message}
+          </DialogContentText>
+          <Field component={TextField} autoFocus
+            name='value' margin='dense' id='value'
+            label={hintText} fullWidth />
+        </DialogContent>
+        <DialogActions>
+          <Button color="primary" type="submit">{submitButtonLabel}</Button>
+          <Button onClick={onCancel}>{cancelButtonLabel}</Button>
+        </DialogActions>
+      </form>
+    )}
+  </Form>
 )
 
-PromptDialogFormPresentation.propTypes = {
+PromptDialogForm.propTypes = {
   cancelButtonLabel: PropTypes.string,
   hintText: PropTypes.string,
   message: PropTypes.string,
   submitButtonLabel: PropTypes.string,
 
-  handleSubmit: PropTypes.func,
-  onCancelled: PropTypes.func
+  onCancel: PropTypes.func,
+  onSubmit: PropTypes.func
 }
 
-const PromptDialogForm = reduxForm({
-  form: 'prompt',
-  initialValues: {
-    value: ''
-  }
-})(PromptDialogFormPresentation)
-
 const PromptDialogPresentation = props => {
-  const { initialValue, onCancelled, title, dialogVisible } = props
-
-  /* Some trickery is needed below to ensure that the form is unmounted
-   * when the dialog is closed, allowing redux-form to reinitialize it */
+  const { initialValue, onCancel, title, dialogVisible } = props
   return (
-    <Dialog open={dialogVisible} onClose={onCancelled}
+    <Dialog open={dialogVisible} onClose={onCancel}
       aria-labelledby={title ? 'prompt-dialog-title' : undefined}>
       {title ? <DialogTitle id="prompt-dialog-title">{title}</DialogTitle> : null}
       {dialogVisible && <PromptDialogForm {...props} initialValues={{ value: initialValue }} />}
@@ -70,7 +64,7 @@ const PromptDialogPresentation = props => {
 }
 
 PromptDialogPresentation.propTypes = {
-  ...PromptDialogFormPresentation.propTypes,
+  ...PromptDialogForm.propTypes,
   dialogVisible: PropTypes.bool,
   initialValue: PropTypes.string,
   title: PropTypes.string
@@ -81,7 +75,7 @@ const PromptDialog = connect(
   state => state.dialogs.prompt,
   // mapDispatchToProps
   dispatch => ({
-    onCancelled () {
+    onCancel () {
       dispatch(cancelPromptDialog())
     },
 

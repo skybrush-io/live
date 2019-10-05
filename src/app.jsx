@@ -3,6 +3,7 @@ import { MuiThemeProvider } from '@material-ui/core/styles'
 import PropTypes from 'prop-types'
 import React from 'react'
 import { WorkbenchView } from 'react-flexible-workbench'
+import { Provider as StoreProvider } from 'react-redux'
 import { compose, withContext, withProps } from 'recompose'
 
 import dialogs from './components/dialogs'
@@ -75,14 +76,16 @@ const Application = () => (
 const enhancer = compose(
   withContext(
     {
-      flock: PropTypes.object.isRequired,
-      store: PropTypes.object.isRequired
+      flock: PropTypes.object.isRequired
     },
-    props => ({ flock, store })
+    props => ({ flock })
   ),
   withErrorBoundary,
   wrapWith(
     withProps({ theme })(MuiThemeProvider)
+  ),
+  wrapWith(
+    withProps({ store })(StoreProvider)
   )
 )
 

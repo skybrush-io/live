@@ -7,13 +7,14 @@ import React from 'react'
 import { connect } from 'react-redux'
 
 import ListItem from '@material-ui/core/ListItem'
+import ListItemIcon from '@material-ui/core/ListItemIcon'
 import ListItemText from '@material-ui/core/ListItemText'
 import AddCircleOutline from '@material-ui/icons/AddCircleOutline'
 
-import { addLayer, showLayersDialog } from '../../actions/layers'
-import { selectableListOf } from '../../components/helpers/lists'
-import { labelForLayerType, iconForLayerType } from '../../model/layers'
-import { getLayersInOrder } from '../../selectors/ordered'
+import { addLayer, showLayersDialog } from '~/actions/layers'
+import { selectableListOf } from '~/components/helpers/lists'
+import { labelForLayerType, iconForLayerType } from '~/model/layers'
+import { getLayersInOrder } from '~/selectors/ordered'
 
 /**
  * Creates a single list item for the layer list.
@@ -23,11 +24,12 @@ import { getLayersInOrder } from '../../selectors/ordered'
  * @return {React.Node}  the rendered list item
  */
 function createListItemForLayer (layer, props) {
+  const icon = iconForLayerType(layer.type)
   return (
     /* eslint-disable react/prop-types */
     <ListItem button key={layer.id} onClick={props.onItemSelected}
       style={layer.visible ? undefined : { opacity: 0.3 }}>
-      {iconForLayerType(layer.type)}
+      {icon && <ListItemIcon>{icon}</ListItemIcon>}
       <ListItemText primary={layer.label} secondary={labelForLayerType(layer.type)} />
     </ListItem>
     /* eslint-enable react/prop-types */
@@ -44,7 +46,7 @@ function createNewItemEntry (props) {
   /* eslint-disable react/prop-types */
   return (
     <ListItem button key='__newItem__' onClick={props.onNewItem}>
-      <AddCircleOutline />
+      <ListItemIcon><AddCircleOutline /></ListItemIcon>
       <ListItemText primary='Add new layer' />
     </ListItem>
   )

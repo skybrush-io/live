@@ -11,14 +11,13 @@ import workbench from './workbench'
 // const __PROD__ = process.env.NODE_ENV === 'production'
 // const __DEV__ = !__PROD__
 
-function initialize () {
+async function initialize () {
   TimeAgo.addLocale(en)
 
-  return loadStoreFromStorageBackend().then(state => {
-    if (state && state.workbench && state.workbench.state) {
-      workbench.restoreState(state.workbench.state)
-    }
-  })
+  const state = await loadStoreFromStorageBackend()
+  if (state && state.workbench && state.workbench.state) {
+    workbench.restoreState(state.workbench.state)
+  }
 }
 
 function renderApplication () {

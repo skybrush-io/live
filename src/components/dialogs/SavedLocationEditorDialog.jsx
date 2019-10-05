@@ -5,9 +5,8 @@
 import { autobind } from 'core-decorators'
 import PropTypes from 'prop-types'
 import React from 'react'
+import { Form, Field } from 'react-final-form'
 import { connect } from 'react-redux'
-import { reduxForm, Field } from 'redux-form'
-import { TextField } from 'redux-form-material-ui'
 
 import Button from '@material-ui/core/Button'
 import Dialog from '@material-ui/core/Dialog'
@@ -18,49 +17,60 @@ import DialogTitle from '@material-ui/core/DialogTitle'
 import { deleteSavedLocation, updateSavedLocation } from '~/actions/saved-locations'
 import { cancelLocationEditing } from '~/actions/saved-location-editor'
 import { getMapViewRotationAngle } from '~/selectors/map'
+import { forceFormSubmission, TextField } from '~/components/forms'
 import { NEW_ITEM_ID } from '~/utils/collections'
 import { createValidator, between, integer, finite, required } from '~/utils/validation'
 
-/**
- * Presentation of the form that shows the fields that the user can use to
- * edit the server settings.
- */
-class SavedLocationEditorFormPresentation extends React.Component {
-  render () {
-    return (
-      <div onKeyPress={this.props.onKeyPress}>
-        <Field margin='normal' fullWidth
-          name='name'
-          component={TextField}
-          label='Name'
-        />
-        <Field margin='normal' fullWidth
-          name='center.lon'
-          component={TextField}
-          label='Longitude'
-        />
-        <Field margin='normal' fullWidth
-          name='center.lat'
-          component={TextField}
-          label='Latitude'
-        />
-        <Field margin='normal' fullWidth
-          name='rotation'
-          component={TextField}
-          label='Rotation'
-        />
-        <Field margin='normal' fullWidth
-          name='zoom'
-          component={TextField}
-          label='Zoom level'
-        />
-      </div>
-    )
-  }
-}
+const validator = createValidator({
+  name: required,
+  center: createValidator({
+    lon: [required, finite, between(-90, 90)],
+    lat: [required, finite, between(-180, 180)]
+  }),
+  rotation: [required, finite, between(0, 360)],
+  zoom: [required, integer, between(1, 30)]
+})
+
+const SavedLocationEditorFormPresentation = ({ initialValues, onKeyPress, onSubmit }) => (
+  <Form initialValues={initialValues} onSubmit={onSubmit} validate={validator}>
+    {({ handleSubmit }) => (
+      <form id='SavedLocationEditor' onSubmit={handleSubmit}>
+        <div onKeyPress={onKeyPress}>
+          <Field margin='normal' fullWidth
+            name='name'
+            component={TextField}
+            label='Name'
+          />
+          <Field margin='normal' fullWidth
+            name='center.lon'
+            component={TextField}
+            label='Longitude'
+          />
+          <Field margin='normal' fullWidth
+            name='center.lat'
+            component={TextField}
+            label='Latitude'
+          />
+          <Field margin='normal' fullWidth
+            name='rotation'
+            component={TextField}
+            label='Rotation'
+          />
+          <Field margin='normal' fullWidth
+            name='zoom'
+            component={TextField}
+            label='Zoom level'
+          />
+        </div>
+      </form>
+    )}
+  </Form>
+)
 
 SavedLocationEditorFormPresentation.propTypes = {
-  onKeyPress: PropTypes.func
+  initialValues: PropTypes.object,
+  onKeyPress: PropTypes.func,
+  onSubmit: PropTypes.func
 }
 
 /**
@@ -78,28 +88,13 @@ const SavedLocationEditorForm = connect(
           lat: state.map.view.position[1].toFixed(6)
         },
         rotation: getMapViewRotationAngle(state),
-        zoom: state.map.view.zoom
+        zoom: Math.round(state.map.view.zoom)
       }
       : state.savedLocations.byId[id]
 
     return { initialValues: currentLocation }
-  },
-  // mapDispatchToProps
-  null,
-  null,
-  { withRef: true }
-)(reduxForm({
-  form: 'SavedLocationEditor',
-  validate: createValidator({
-    name: required,
-    center: createValidator({
-      lon: [required, finite, between(-90, 90)],
-      lat: [required, finite, between(-180, 180)]
-    }),
-    rotation: [required, finite, between(0, 360)],
-    zoom: [required, integer, between(1, 30)]
-  })
-})(SavedLocationEditorFormPresentation))
+  }
+)(SavedLocationEditorFormPresentation)
 
 /**
  * Presentation component for the dialog that shows the form that the user
@@ -110,14 +105,11 @@ class SavedLocationEditorDialogPresentation extends React.Component {
     super(props)
 
     this.currentLocation = {}
-    this._assignFormRef = value => { this._form = value }
   }
 
   @autobind
-  handleSubmit () {
-    if (this._form) {
-      this._form.getWrappedInstance().submit()
-    }
+  _forceFormSubmission () {
+    forceFormSubmission('SavedLocationEditor')
   }
 
   @autobind
@@ -133,7 +125,7 @@ class SavedLocationEditorDialogPresentation extends React.Component {
     const title = isNew ? 'Create new location' : 'Edit saved location'
 
     const actions = [
-      <Button key='save' color='primary' onClick={this.handleSubmit}>Save</Button>
+      <Button key='save' color='primary' onClick={this._forceFormSubmission}>Save</Button>
     ]
 
     if (isNew) {
@@ -154,7 +146,7 @@ class SavedLocationEditorDialogPresentation extends React.Component {
       <Dialog open={open} fullWidth maxWidth='sm' onClose={onClose}>
         <DialogTitle>{title}</DialogTitle>
         <DialogContent>
-          <SavedLocationEditorForm ref={this._assignFormRef}
+          <SavedLocationEditorForm
             onSubmit={onSubmit}
             onKeyPress={this._handleKeyPress} />
         </DialogContent>

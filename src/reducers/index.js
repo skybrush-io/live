@@ -1,6 +1,5 @@
 import has from 'lodash/has'
 import { combineReducers } from 'redux'
-import { reducer as formReducer } from 'redux-form'
 import * as storage from 'redux-storage'
 import defaultMerger from 'redux-storage-merger-simple'
 
@@ -93,7 +92,6 @@ const reducer = storage.reducer(
     datasets: datasetsReducer,
     dialogs: dialogsReducer,
     features: featuresReducer,
-    form: formReducer,
     localServer: localServerReducer,
     log: logReducer,
     map: mapReducer,

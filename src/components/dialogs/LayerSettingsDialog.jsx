@@ -5,9 +5,8 @@
 import { autobind } from 'core-decorators'
 import PropTypes from 'prop-types'
 import React from 'react'
+import { Form, Field } from 'react-final-form'
 import { connect } from 'react-redux'
-import { reduxForm, Field } from 'redux-form'
-import { TextField } from 'redux-form-material-ui'
 
 import Button from '@material-ui/core/Button'
 import Dialog from '@material-ui/core/Dialog'
@@ -18,11 +17,17 @@ import Switch from '@material-ui/core/Switch'
 import ArrowDown from '@material-ui/icons/ArrowDropDown'
 import ArrowUp from '@material-ui/icons/ArrowDropUp'
 
+import { forceFormSubmission, TextField } from '../forms'
+
 import { adjustLayerZIndex, closeLayersDialog, renameLayer,
   toggleLayerVisibility, removeLayer } from '../../actions/layers'
 import { LayerType } from '../../model/layers'
 import { createValidator, required } from '../../utils/validation'
 import { LayerSettings, stateObjectToLayerSettings } from '../../views/map/layers'
+
+const validator = createValidator({
+  label: required
+})
 
 /**
  * Form for the basic settings of a layer that is applicable to all layers
@@ -30,26 +35,35 @@ import { LayerSettings, stateObjectToLayerSettings } from '../../views/map/layer
  */
 class BasicLayerSettingsFormPresentation extends React.Component {
   render () {
-    const { layer } = this.props
-    const { onToggleLayerVisibility } = this.props
+    const { initialValues, layer, onSubmit, onToggleLayerVisibility, validate } = this.props
 
     return (
-      <div style={{ display: 'flex', paddingBottom: '1em' }}>
-        <Field
-          name='label'
-          component={TextField}
-          label='Layer name'
-          placeholder='New layer'
-          style={{ flex: 'auto' }}
-          onKeyDown={this._onKeyDown}
-        />
-        <div>&nbsp;</div>
-        <Switch checked={layer.visible} color='primary'
-          disabled={layer.type === LayerType.UNTYPED}
-          onChange={onToggleLayerVisibility}
-          style={{ flex: 'none' }}
-        />
-      </div>
+      <Form
+        initialValues={initialValues}
+        onSubmit={onSubmit}
+        validate={validate}
+        validateOnBlur>
+        {({ handleSubmit }) => (
+          <form id='basicLayerSettings' onSubmit={handleSubmit}>
+            <div style={{ display: 'flex', paddingBottom: '1em' }}>
+              <Field
+                name='label'
+                component={TextField}
+                label='Layer name'
+                placeholder='New layer'
+                style={{ flex: 'auto' }}
+                onKeyDown={this._onKeyDown}
+              />
+              <div>&nbsp;</div>
+              <Switch checked={layer.visible} color='primary'
+                disabled={layer.type === LayerType.UNTYPED}
+                onChange={onToggleLayerVisibility}
+                style={{ flex: 'none' }}
+              />
+            </div>
+          </form>
+        )}
+      </Form>
     )
   }
 
@@ -66,9 +80,12 @@ class BasicLayerSettingsFormPresentation extends React.Component {
 }
 
 BasicLayerSettingsFormPresentation.propTypes = {
+  initialValues: PropTypes.object,
   layer: PropTypes.object,
   layerId: PropTypes.string,
+  validate: PropTypes.func,
 
+  onSubmit: PropTypes.func,
   onToggleLayerVisibility: PropTypes.func
 }
 
@@ -85,34 +102,29 @@ const BasicLayerSettingsForm = connect(
   }),
   // mapDispatchToProps
   (dispatch, ownProps) => ({
-    asyncValidate: values => {
-      // This is a horrible abuse of the async validation feature in
-      // redux-form; basically the only thing we want is to fire a callback
-      // routine if the synchronous validation of the label field passed
-      // so we can fire an action that updates the name of the layer.
+    onSubmit: values => {
       dispatch(renameLayer(ownProps.layerId, values.label))
-
-      // This function needs to return a Promise so we create one
-      return Promise.resolve()
     },
-    asyncBlurFields: ['label'],
 
-    // ensure that the base layer name is updated when the user changes the selected layer
-    enableReinitialize: true,
+    validate: values => {
+      const result = validator(values)
+
+      if (result === undefined || Object.keys(result).length === 0) {
+        // This is a horrible abuse of the async validation feature in
+        // react-final-form; basically the only thing we want is to fire a
+        // callback routine if the synchronous validation of the label field
+        // passed so we can fire an action that updates the name of the layer.
+        forceFormSubmission('basicLayerSettings')
+      }
+
+      return result
+    },
 
     onToggleLayerVisibility () {
       dispatch(toggleLayerVisibility(ownProps.layerId))
     }
   })
-)(reduxForm(
-  // config
-  {
-    form: 'basicLayerSettings',
-    validate: createValidator({
-      label: required
-    })
-  }
-)(BasicLayerSettingsFormPresentation))
+)(BasicLayerSettingsFormPresentation)
 
 /* ********************************************************************* */
 
@@ -288,16 +300,6 @@ const LayerSettingsDialog = connect(
   },
   // mapDispatchToProps
   dispatch => ({
-    /*
-    onAddLayer () {
-      const action = addLayer()
-      dispatch(action)
-      if (action.layerId) {
-        dispatch(setSelectedLayerInLayersDialog(action.layerId))
-      }
-    },
-    */
-
     onClose () {
       dispatch(closeLayersDialog())
     },

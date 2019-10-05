@@ -4,7 +4,6 @@
 
 import { createStore, applyMiddleware } from 'redux'
 import createDebounce from 'redux-debounce'
-import { actionTypes as reduxFormActionTypes } from 'redux-form'
 import createSagaMiddleware from 'redux-saga'
 import * as storage from 'redux-storage'
 import thunk from 'redux-thunk'
@@ -59,8 +58,7 @@ const actionBlacklist = [
   actions.SET_CONNECTION_STATE,
   actions.SET_CONNECTION_STATE_MULTIPLE,
   actions.SHOW_ERROR_MESSAGE,
-  actions.SHOW_SNACKBAR_MESSAGE,
-  ...Object.values(reduxFormActionTypes)
+  actions.SHOW_SNACKBAR_MESSAGE
 ]
 
 /**

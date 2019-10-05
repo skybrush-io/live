@@ -66,7 +66,7 @@ class MessagesDialogPresentation extends React.Component {
       // and the messages panel is mounted
       this._messagesPanel
     ) {
-      this._messagesPanel.getWrappedInstance().focusOnTextField()
+      this._messagesPanel.focusOnTextField()
     }
   }
 
@@ -75,7 +75,7 @@ class MessagesDialogPresentation extends React.Component {
 
     if (this._messagesPanel) {
       // Message panel just got mounted so scroll to the bottom
-      this._messagesPanel.getWrappedInstance().scrollToBottom()
+      this._messagesPanel.scrollToBottom()
     }
   }
 

@@ -299,7 +299,7 @@ const MapContextMenuContainer = connect(
     }
   }),
   null,
-  { withRef: true }
+  { forwardRef: true }
 )(MapContextMenu)
 
 export default MapContextMenuContainer

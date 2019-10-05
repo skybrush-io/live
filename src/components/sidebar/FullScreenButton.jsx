@@ -2,7 +2,8 @@ import NavigationFullscreen from '@material-ui/icons/Fullscreen'
 import NavigationFullscreenExit from '@material-ui/icons/FullscreenExit'
 
 import PropTypes from 'prop-types'
-import React from 'react'
+import React, { useCallback } from 'react'
+import { useEvent, useUpdate } from 'react-use'
 import ScreenFull from 'screenfull'
 
 const FullScreenButtonPresentation = ({ enabled, isFullscreen, onClick, showLabel }) => {
@@ -31,35 +32,17 @@ FullScreenButtonPresentation.propTypes = {
   showLabel: PropTypes.bool
 }
 
-export default class FullScreenButton extends React.Component {
-  constructor (props) {
-    super(props)
+const FullScreenButton = () => {
+  const toggleFullscreen = useCallback(() => ScreenFull.toggle(), [])
+  const update = useUpdate()
 
-    this._onFullScreenStateChanged = this._onFullScreenStateChanged.bind(this)
-  }
+  useEvent('change', update, ScreenFull)
+  useEvent('error', update, ScreenFull)
 
-  componentWillMount () {
-    ScreenFull.on('change', this._onFullScreenStateChanged)
-    ScreenFull.on('error', this._onFullScreenStateChanged)
-  }
-
-  componentWillUnmount () {
-    ScreenFull.off('change', this._onFullScreenStateChanged)
-    ScreenFull.off('error', this._onFullScreenStateChanged)
-  }
-
-  render () {
-    return (
-      <FullScreenButtonPresentation isFullscreen={ScreenFull.isFullscreen}
-        enabled={ScreenFull.enabled} onClick={this._toggleFullScreen} />
-    )
-  }
-
-  _onFullScreenStateChanged () {
-    this.forceUpdate()
-  }
-
-  _toggleFullScreen () {
-    ScreenFull.toggle()
-  }
+  return (
+    <FullScreenButtonPresentation isFullscreen={ScreenFull.isFullscreen}
+      enabled={ScreenFull.isEnabled} onClick={toggleFullscreen} />
+  )
 }
+
+export default FullScreenButton

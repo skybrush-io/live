@@ -51,7 +51,9 @@ const PathScannerPresentation = ({
     style={{ backgroundColor: grey[200], paddingTop: 12 }}
     onClick={onRequestReload}
   >
-    {scanning ? icons.scanning : (error ? icons.error : (result ? icons.found : icons.notFound))}
+    <ListItemIcon>
+      {scanning ? icons.scanning : (error ? icons.error : (result ? icons.found : icons.notFound))}
+    </ListItemIcon>
     <ListItemText
       primary={error || (result ? successMessage : (scanning ? scanningMessage : notFoundMessage))}
       secondary={scanning ? 'Looking for server' : (result || 'Click to scan again')} />

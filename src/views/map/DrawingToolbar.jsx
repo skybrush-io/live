@@ -69,7 +69,7 @@ const DrawingToolbar = connect(
     }
   })
 )(
-  withTheme()(DrawingToolbarPresentation)
+  withTheme(DrawingToolbarPresentation)
 )
 
 export default DrawingToolbar

@@ -7,7 +7,6 @@ import ListItem from '@material-ui/core/ListItem'
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction'
 import ListItemText from '@material-ui/core/ListItemText'
 
-import AddCircleOutline from '@material-ui/icons/AddCircleOutline'
 import ActionSettings from '@material-ui/icons/Settings'
 
 import PropTypes from 'prop-types'
@@ -63,7 +62,6 @@ function createNewItemEntry (props) {
   return (
     <ListItem button key='__addNew__' onClick={props.onNewItem}>
       <ListItemText primary='Add new location' />
-      <AddCircleOutline />
     </ListItem>
   )
   /* eslint-enable react/prop-types */

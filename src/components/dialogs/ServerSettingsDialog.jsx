@@ -7,9 +7,8 @@ import { autobind } from 'core-decorators'
 import { partial } from 'lodash'
 import PropTypes from 'prop-types'
 import React from 'react'
+import { Form, Field } from 'react-final-form'
 import { connect } from 'react-redux'
-import { reduxForm, submit, Field } from 'redux-form'
-import { Switch, TextField } from 'redux-form-material-ui'
 
 import AppBar from '@material-ui/core/AppBar'
 import Button from '@material-ui/core/Button'
@@ -38,6 +37,7 @@ import {
   closeServerSettingsDialog,
   setServerSettingsDialogTab
 } from '../../actions/server-settings'
+import { forceFormSubmission, Switch, TextField } from '../forms'
 import { getDetectedServersInOrder } from '../../selectors/ordered'
 import { createValidator, between, integer, required } from '../../utils/validation'
 
@@ -95,19 +95,30 @@ const DetectedServersList = connect(
   })
 )(DetectedServersListPresentation)
 
-const ServerSettingsFormPresentation = ({ onKeyPress }) => (
-  <div onKeyPress={onKeyPress}>
-    <Field name='hostName' label='Hostname' margin='normal'
-      component={TextField} fullWidth />
-    <Field name='port' label='Port' margin='normal'
-      component={TextField} fullWidth />
-    <FormControlLabel control={<Field name='isSecure' component={Switch} />}
-      label="Use secure connection" />
-  </div>
+const validator = createValidator({
+  hostName: required,
+  port: [required, integer, between(1, 65535)]
+})
+
+const ServerSettingsFormPresentation = ({ initialValues, onKeyPress, onSubmit }) => (
+  <Form initialValues={initialValues} onSubmit={onSubmit} validate={validator}>
+    {({ handleSubmit }) => (
+      <form id='serverSettings' onSubmit={handleSubmit} onKeyPress={onKeyPress}>
+        <Field name='hostName' label='Hostname' margin='normal'
+          component={TextField} fullWidth />
+        <Field name='port' label='Port' margin='normal'
+          component={TextField} fullWidth />
+        <FormControlLabel control={<Field name='isSecure' type='checkbox' component={Switch} />}
+          label="Use secure connection" />
+      </form>
+    )}
+  </Form>
 )
 
 ServerSettingsFormPresentation.propTypes = {
-  onKeyPress: PropTypes.func
+  initialValues: PropTypes.object,
+  onKeyPress: PropTypes.func,
+  onSubmit: PropTypes.func
 }
 
 /**
@@ -119,13 +130,7 @@ const ServerSettingsForm = connect(
   state => ({
     initialValues: state.dialogs.serverSettings
   })
-)(reduxForm({
-  form: 'serverSettings',
-  validate: createValidator({
-    hostName: required,
-    port: [required, integer, between(1, 65535)]
-  })
-})(ServerSettingsFormPresentation))
+)(ServerSettingsFormPresentation)
 
 /**
  * Presentation component for the dialog that shows the form that the user
@@ -175,8 +180,7 @@ class ServerSettingsDialogPresentation extends React.Component {
       case 'manual':
         content.push(
           <DialogContent key='contents'>
-            <ServerSettingsForm onSubmit={onSubmit}
-              onKeyPress={this._handleKeyPress} />
+            <ServerSettingsForm onSubmit={onSubmit} onKeyPress={this._handleKeyPress} />
           </DialogContent>
         )
         actions.push(
@@ -237,7 +241,7 @@ const ServerSettingsDialog = connect(
   // mapDispatchToProps
   dispatch => ({
     forceFormSubmission () {
-      dispatch(submit('serverSettings'))
+      forceFormSubmission('serverSettings')
     },
     onClose () {
       dispatch(closeServerSettingsDialog())

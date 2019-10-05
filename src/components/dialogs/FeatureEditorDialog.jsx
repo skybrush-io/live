@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import { connect } from 'react-redux'
-import { TextField } from 'redux-form-material-ui'
 
 import AppBar from '@material-ui/core/AppBar'
 import Button from '@material-ui/core/Button'
@@ -11,6 +10,7 @@ import DialogContent from '@material-ui/core/DialogContent'
 import Switch from '@material-ui/core/Switch'
 import Tab from '@material-ui/core/Tab'
 import Tabs from '@material-ui/core/Tabs'
+import TextField from '@material-ui/core/TextField'
 
 import {
   removeFeature,

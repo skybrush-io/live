@@ -88,6 +88,6 @@ const MapToolbar = connect(
       dispatch(selectMapTool(tool))
     }
   })
-)(withTheme()(MapToolbarPresentation))
+)(withTheme(MapToolbarPresentation))
 
 export default MapToolbar
