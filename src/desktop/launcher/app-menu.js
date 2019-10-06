@@ -3,7 +3,7 @@ const { aboutMenuItem, appMenu, is, openUrlMenuItem } = require('electron-util')
 
 const dispatch = require('./dispatcher')
 
-const { showAppSettingsDialog } = require('../../actions/app-settings')
+// const { showAppSettingsDialog } = esmRequire('../../actions/app-settings')
 
 const helpSubmenu = [
   openUrlMenuItem({
@@ -16,7 +16,7 @@ const preferencesItem = {
   label: 'Preferences...',
   accelerator: 'Command+,',
   click () {
-    dispatch(showAppSettingsDialog())
+    dispatch({ type: 'SHOW_APP_SETTINGS_DIALOG' })
   }
 }
 
