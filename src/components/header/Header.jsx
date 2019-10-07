@@ -4,11 +4,12 @@ import { Workbench } from 'react-flexible-workbench'
 import { connect } from 'react-redux'
 import Shapeshifter from 'react-shapeshifter'
 
-import { toggleSidebar } from '../../actions/sidebar'
+import { toggleSidebar } from '~/actions/sidebar'
 
-import AppSettingsButton from '../sidebar/AppSettingsButton'
-import ConnectionSettingsButton from '../sidebar/ConnectionSettingsButton'
-import FullScreenButton from '../sidebar/FullScreenButton'
+import AppSettingsButton from './AppSettingsButton'
+import AuthenticationButton from './AuthenticationButton'
+import ConnectionSettingsButton from './ConnectionSettingsButton'
+import FullScreenButton from './FullScreenButton'
 
 const style = {
   backgroundColor: '#333',
@@ -38,8 +39,10 @@ const HeaderPresentation = ({ onToggleSidebar, sidebarOpen, workbench }) => (
       />
       <div style={{ flexGrow: 1, flexShrink: 1 }}>{ /* spacer */ }</div>
       <hr />
-      <AppSettingsButton />
+      <AuthenticationButton />
       <ConnectionSettingsButton />
+      <hr />
+      <AppSettingsButton />
       {!window.isElectron ? <FullScreenButton /> : null}
     </div>
   </div>

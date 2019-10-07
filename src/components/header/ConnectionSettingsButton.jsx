@@ -4,10 +4,10 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import { connect } from 'react-redux'
 
-import SidebarBadge from './SidebarBadge'
+import SidebarBadge from '../sidebar/SidebarBadge'
 
-import { showServerSettingsDialog } from '../../actions/server-settings'
-import { ConnectionState, MASTER_CONNECTION_ID } from '../../model/connections'
+import { showServerSettingsDialog } from '~/actions/server-settings'
+import { ConnectionState } from '~/model/connections'
 
 const badgeColorForState = {
   [ConnectionState.CONNECTED]: '#0c0',
@@ -40,7 +40,7 @@ export default connect(
   // mapStateToProps
   state => ({
     active: state.dialogs.serverSettings.active,
-    state: state.connections.byId[MASTER_CONNECTION_ID].state
+    state: state.servers.current.state
   }),
   // mapDispatchToProps
   dispatch => ({

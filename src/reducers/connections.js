@@ -6,24 +6,17 @@
  */
 
 import has from 'lodash/has'
-import pick from 'lodash/pick'
 import { handleActions } from 'redux-actions'
-import { ConnectionState, MASTER_CONNECTION_ID } from '../model/connections'
+
+import { ConnectionState } from '~/model/connections'
 
 /**
  * Default content of the connection registry in the state object.
  */
 const defaultState = {
   // byId is a map from connection ID to the state of the connection
-  byId: {
-    [MASTER_CONNECTION_ID]: {
-      id: MASTER_CONNECTION_ID,
-      name: 'Flockwave server',
-      state: ConnectionState.DISCONNECTED
-    }
-  },
-  // order defines the preferred ordering of connections on the UI. Note that
-  // we never show the master connection
+  byId: {},
+  // order defines the preferred ordering of connections on the UI
   order: []
 }
 
@@ -56,7 +49,7 @@ function updateStateOfConnection (state, id, properties) {
  */
 const reducer = handleActions({
   CLEAR_CONNECTION_LIST: (state, action) => ({
-    byId: pick(state.byId, MASTER_CONNECTION_ID),
+    byId: {},
     order: []
   }),
 

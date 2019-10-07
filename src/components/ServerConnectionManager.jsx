@@ -10,15 +10,15 @@ import { connect } from 'react-redux'
 import ReactSocket from 'react-socket'
 import { parse } from 'shell-quote'
 
-import { clearClockList } from '../actions/clocks'
-import { clearConnectionList, setConnectionState } from '../actions/connections'
-import { showSnackbarMessage } from '../actions/snackbar'
-import handleError from '../error-handling'
-import messageHub from '../message-hub'
-import { ConnectionState, MASTER_CONNECTION_ID,
-  handleConnectionInformationMessage } from '../model/connections'
-import { handleClockInformationMessage } from '../model/clocks'
-import { shouldManageLocalServer } from '../selectors/local-server'
+import { clearClockList } from '~/actions/clocks'
+import { clearConnectionList } from '~/actions/connections'
+import { setCurrentServerConnectionState } from '~/actions/servers'
+import { showSnackbarMessage } from '~/actions/snackbar'
+import handleError from '~/error-handling'
+import messageHub from '~/message-hub'
+import { ConnectionState, handleConnectionInformationMessage } from '~/model/connections'
+import { handleClockInformationMessage } from '~/model/clocks'
+import { shouldManageLocalServer } from '~/selectors/local-server'
 
 /**
  * Proposes a protocol to use (http or https) depending on the protocol of
@@ -218,6 +218,42 @@ ServerConnectionManagerPresentation.propTypes = {
   onMessage: PropTypes.func
 }
 
+/**
+ * Helper function that executes all the background tasks that should be
+ * executed after establishing a new connection to a server.
+ *
+ * TODO(ntamas): maybe move this to a saga?
+ *
+ * @param {function} dispatch  the dispatcher function of the Redux store
+ */
+const executeTasksAfterConnection = async dispatch => {
+  let response
+
+  try {
+    // Send a CONN-LIST message to the server to get an up-to-date
+    // list of connections
+    response = await messageHub.sendMessage('CONN-LIST')
+    const connectionIds = response.body.ids || []
+
+    // For each connection ID that we have received, get its status
+    // via a CONN-INF message
+    response = await messageHub.sendMessage({ type: 'CONN-INF', ids: connectionIds })
+    handleConnectionInformationMessage(response.body, dispatch)
+
+    // Send a CLK-LIST message to the server to get an up-to-date
+    // list of clocks
+    response = await messageHub.sendMessage('CLK-LIST')
+    const clockIds = response.body.ids || []
+
+    // For each clock ID that we have received, get its status
+    // via a CLK-INF message
+    response = await messageHub.sendMessage({ type: 'CLK-INF', ids: clockIds })
+    handleClockInformationMessage(response.body, dispatch)
+  } catch (err) {
+    handleError(err)
+  }
+}
+
 const ServerConnectionManager = connect(
   // mapStateToProps
   state => ({
@@ -231,56 +267,30 @@ const ServerConnectionManager = connect(
   // mapDispatchToProps
   dispatch => ({
     onConnecting () {
-      dispatch(setConnectionState(MASTER_CONNECTION_ID, ConnectionState.CONNECTING))
+      dispatch(setCurrentServerConnectionState(ConnectionState.CONNECTING))
     },
 
     onConnected () {
       // Let the user know that we are connected
       dispatch(showSnackbarMessage('Connected to Flockwave server'))
-      dispatch(setConnectionState(MASTER_CONNECTION_ID, ConnectionState.CONNECTED))
+      dispatch(setCurrentServerConnectionState(ConnectionState.CONNECTED))
 
-      // Send a CONN-LIST message to the server to get an up-to-date
-      // list of connections
-      messageHub.sendMessage('CONN-LIST').then(result => {
-        const { body } = result
-
-        // For each connection ID that we have received, get its status
-        // via a CONN-INF message
-        return messageHub.sendMessage({
-          type: 'CONN-INF',
-          ids: body.ids || []
-        })
-      }).then(({ body }) => {
-        handleConnectionInformationMessage(body, dispatch)
-      }).catch(handleError)
-
-      // Send a CLK-LIST message to the server to get an up-to-date
-      // list of clocks
-      messageHub.sendMessage('CLK-LIST').then(result => {
-        const { body } = result
-
-        // For each clock ID that we have received, get its status
-        // via a CLK-INF message
-        return messageHub.sendMessage({
-          type: 'CLK-INF',
-          ids: body.ids || []
-        })
-      }).then(({ body }) => {
-        handleClockInformationMessage(body, dispatch)
-      }).catch(handleError)
+      // Execute all the tasks that should be executed after establishing a
+      // connection to the server
+      executeTasksAfterConnection(dispatch)
     },
 
     onConnectionError () {
-      dispatch(setConnectionState(MASTER_CONNECTION_ID, ConnectionState.DISCONNECTED))
+      dispatch(setCurrentServerConnectionState(ConnectionState.DISCONNECTED))
     },
 
     onConnectionTimeout () {
-      dispatch(setConnectionState(MASTER_CONNECTION_ID, ConnectionState.DISCONNECTED))
+      dispatch(setCurrentServerConnectionState(ConnectionState.DISCONNECTED))
       dispatch(showSnackbarMessage('Timeout while connecting to Flockwave server'))
     },
 
     onDisconnected () {
-      dispatch(setConnectionState(MASTER_CONNECTION_ID, ConnectionState.DISCONNECTED))
+      dispatch(setCurrentServerConnectionState(ConnectionState.DISCONNECTED))
       dispatch(showSnackbarMessage('Disconnected from Flockwave server'))
       dispatch(clearClockList())
       dispatch(clearConnectionList())
@@ -292,14 +302,14 @@ const ServerConnectionManager = connect(
           ? 'Flockwave server died unexpectedly'
           : 'Failed to launch local Flockwave server'
       )
-      dispatch(setConnectionState(MASTER_CONNECTION_ID, ConnectionState.DISCONNECTED))
+      dispatch(setCurrentServerConnectionState(ConnectionState.DISCONNECTED))
       dispatch(showSnackbarMessage(
         message ? `${baseMessage}: ${message}` : baseMessage
       ))
     },
 
     onLocalServerStarted () {
-      dispatch(setConnectionState(MASTER_CONNECTION_ID, ConnectionState.CONNECTING))
+      dispatch(setCurrentServerConnectionState(ConnectionState.CONNECTING))
     },
 
     onMessage (data) {

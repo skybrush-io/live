@@ -9,7 +9,7 @@ import { selectOrdered } from '~/utils/collections'
  * the UI.
  */
 export const getDetectedServersInOrder = createSelector(
-  state => state.servers,
+  state => state.servers.detected,
   selectOrdered
 )
 

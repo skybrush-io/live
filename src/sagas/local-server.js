@@ -4,21 +4,20 @@
  */
 
 import { all, call, delay, put, select, take } from 'redux-saga/effects'
-import { LOAD } from 'redux-storage'
 
 import {
   notifyLocalServerExecutableSearchStarted,
   notifyLocalServerExecutableSearchFinished,
   notifyLocalServerExecutableSearchFailed
-} from '../actions/local-server'
+} from '~/actions/local-server'
 import {
   REPLACE_APP_SETTINGS, UPDATE_APP_SETTINGS,
   START_LOCAL_SERVER_EXECUTABLE_SEARCH
-} from '../actions/types'
+} from '~/actions/types'
 import {
   getLocalServerExecutable,
   getLocalServerSearchPath
-} from '../selectors/local-server'
+} from '~/selectors/local-server'
 
 /**
  * Saga that attempts to find where the local server is installed on the
@@ -31,9 +30,6 @@ import {
 function* localServerExecutableDiscoverySaga (search) {
   let oldSearchPath
   let minDuration = 0
-
-  // Wait until the saved state is loaded back into Redux
-  yield take(LOAD)
 
   while (true) {
     const searchPath = yield select(getLocalServerSearchPath)

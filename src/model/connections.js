@@ -8,12 +8,6 @@ import { setConnectionStateMultiple } from '../actions/connections'
 import { parseISODate } from '../utils/parsing'
 
 /**
- * Connection identifier for the master connection leading to the Flockwave
- * server.
- */
-export const MASTER_CONNECTION_ID = '__master__'
-
-/**
  * Enum containing constants for the various connection states.
  */
 export const ConnectionState = {
@@ -44,6 +38,6 @@ export function handleConnectionInformationMessage (body, dispatch) {
         stateChangedAt: parseISODate(statusFromServer.timestamp)
       }, _.isUndefined)
     )
-  ).omit(MASTER_CONNECTION_ID).value()
+  ).value()
   dispatch(setConnectionStateMultiple(states))
 }

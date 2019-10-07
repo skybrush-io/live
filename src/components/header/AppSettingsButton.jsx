@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import { connect } from 'react-redux'
 
-import { toggleAppSettingsDialog } from '../../actions/app-settings'
+import { toggleAppSettingsDialog } from '~/actions/app-settings'
 
 const AppSettingsButtonPresentation = ({ onClick, showLabel }) => {
   const classes = ['wb-module']

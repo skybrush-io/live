@@ -6,9 +6,11 @@ import { createAction } from 'redux-actions'
 import {
   ADD_DETECTED_SERVER,
   REMOVE_ALL_DETECTED_SERVERS,
+  SET_CURRENT_SERVER_CONNECTION_STATE,
   START_SCANNING,
   STOP_SCANNING,
-  UPDATE_DETECTED_SERVER_LABEL
+  UPDATE_CURRENT_SERVER_AUTHENTICATION_SETTINGS,
+  UPDATE_DETECTED_SERVER_LABEL,
 } from './types'
 
 /**
@@ -43,6 +45,12 @@ export const addInferredServer = createAction(ADD_DETECTED_SERVER,
 export const removeAllDetectedServers = createAction(REMOVE_ALL_DETECTED_SERVERS)
 
 /**
+ * Action factory that creates an action that sets whether we are connected
+ * to the current server that the user is trying to communicate with or not.
+ */
+export const setCurrentServerConnectionState = createAction(SET_CURRENT_SERVER_CONNECTION_STATE)
+
+/**
  * Action factory that creates an action that notifies the store that the
  * scanning for servers has started.
  */
@@ -60,4 +68,11 @@ export const stopScanning = createAction(STOP_SCANNING)
 export const updateDetectedServerLabel = createAction(
   UPDATE_DETECTED_SERVER_LABEL,
   (key, label) => ({ key, label })
+)
+
+/**
+ * Updates the authentication settings known about the current server.
+ */
+export const updateCurrentServerAuthenticationSettings = createAction(
+  UPDATE_CURRENT_SERVER_AUTHENTICATION_SETTINGS
 )
