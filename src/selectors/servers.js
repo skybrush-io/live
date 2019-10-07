@@ -7,18 +7,10 @@ import { createSelector } from 'reselect'
  * Returns all the information that we know about the current Flockwave server.
  *
  * @param  {Object}  state  the state of the application
- * @return {boolean} all the information that we know about the current Flockwave
+ * @return {Object} all the information that we know about the current Flockwave
  *     server, directly from the state object
  */
 const getCurrentServerState = state => state.servers.current
-
-/**
- * Returns whether we are connected to the remote Flockwave server.
- */
-export const isConnected = createSelector(
-  getCurrentServerState,
-  current => current.state === ConnectionState.CONNECTED
-)
 
 /**
  * Returns all the information that we currently know about the authentication
@@ -34,6 +26,14 @@ const getAuthenticationSettings = createSelector(
 )
 
 /**
+ * Returns the name of the user that is currently authenticated to the server.
+ */
+export const getAuthenticatedUser = createSelector(
+  getAuthenticationSettings,
+  settings => settings.user
+)
+
+/**
  * Returns whether we have valid and up-to-date information about the
  * authentication methods supported by the server we are currently connected
  * to.
@@ -41,6 +41,32 @@ const getAuthenticationSettings = createSelector(
 export const areServerAuthenticationSettingsValid = createSelector(
   getAuthenticationSettings,
   settings => settings.valid
+)
+
+/**
+ * Returns whether the user is currently authenticated to the remote
+ * Flockwave server.
+ */
+export const isAuthenticated = createSelector(
+  getAuthenticatedUser,
+  user => !!user
+)
+
+/**
+ * Returns whether the user is currently attempting to authenticate to the
+ * remote Flockwave server.
+ *
+ * @param  {Object}  state  the state of the application
+ * @return {boolean} whether there is an authentication attempt in progress
+ */
+export const isAuthenticating = state => state.servers.isAuthenticating
+
+/**
+ * Returns whether we are connected to the remote Flockwave server.
+ */
+export const isConnected = createSelector(
+  getCurrentServerState,
+  current => current.state === ConnectionState.CONNECTED
 )
 
 /**

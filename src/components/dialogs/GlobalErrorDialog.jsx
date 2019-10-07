@@ -27,7 +27,7 @@ const GlobalErrorDialogPresentation = ({ open, message, onClose }) => {
   ]
 
   return (
-    <Dialog open={open} modal actions={actions}>
+    <Dialog open={open} actions={actions}>
       <DialogTitle>An error happened</DialogTitle>
       <DialogContent>
         <DialogContentText>{message}</DialogContentText>

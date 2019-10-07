@@ -31,6 +31,7 @@ const defaultState = {
     authentication: INVALID,
     state: ConnectionState.DISCONNECTED
   },
+  isAuthenticating: false,
   isScanning: false,
   detected: {
     byId: {},
@@ -73,6 +74,14 @@ const reducer = handleActions({
     })
   }, state),
 
+  SET_AUTHENTICATED_USER: (state, action) => u({
+    current: {
+      authentication: {
+        user: String(action.payload || '')
+      }
+    }
+  }, state),
+
   SET_CURRENT_SERVER_CONNECTION_STATE: (state, action) => {
     const updates = { state: action.payload }
 
@@ -85,9 +94,13 @@ const reducer = handleActions({
     return u({ current: u(updates) }, state)
   },
 
-  START_SCANNING: (state, action) => u({ isScanning: true }, state),
+  START_SCANNING: state => u({ isScanning: true }, state),
 
-  STOP_SCANNING: (state, action) => u({ isScanning: true }, state),
+  STOP_SCANNING: state => u({ isScanning: true }, state),
+
+  AUTHENTICATE_TO_SERVER_PENDING: state => u({ isAuthenticating: true }, state),
+  AUTHENTICATE_TO_SERVER_FULFILLED: state => u({ isAuthenticating: false }, state),
+  AUTHENTICATE_TO_SERVER_REJECTED: state => u({ isAuthenticating: false }, state),
 
   UPDATE_CURRENT_SERVER_AUTHENTICATION_SETTINGS: (state, action) => {
     const { methods, required } = action.payload

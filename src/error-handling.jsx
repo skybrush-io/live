@@ -43,7 +43,7 @@ export const ErrorHandler = __PROD__ ? ProductionErrorHandler : StackTraceErrorH
  * @param {Object}  err  the error object to convert
  * @return {string} the error object converted into a string
  */
-function errorToString (err) {
+export function errorToString (err) {
   if (err.toString && isFunction(err.toString)) {
     return err.toString()
   } else {

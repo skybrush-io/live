@@ -2,16 +2,24 @@
  * @file Action factories related to the management of detected servers.
  */
 
+import { Base64 } from 'js-base64'
+import pTimeout from 'p-timeout'
 import { createAction } from 'redux-actions'
 import {
   ADD_DETECTED_SERVER,
+  AUTHENTICATE_TO_SERVER,
+  CLOSE_AUTHENTICATION_DIALOG,
   REMOVE_ALL_DETECTED_SERVERS,
+  SET_AUTHENTICATED_USER,
   SET_CURRENT_SERVER_CONNECTION_STATE,
+  SHOW_AUTHENTICATION_DIALOG,
   START_SCANNING,
   STOP_SCANNING,
   UPDATE_CURRENT_SERVER_AUTHENTICATION_SETTINGS,
-  UPDATE_DETECTED_SERVER_LABEL,
+  UPDATE_DETECTED_SERVER_LABEL
 } from './types'
+
+import { errorToString } from '~/error-handling'
 
 /**
  * Action factory that creates an action that adds a detected server to the
@@ -39,16 +47,87 @@ export const addInferredServer = createAction(ADD_DETECTED_SERVER,
 )
 
 /**
+ * Action factory that creates an action that submits the data from the
+ * authentication dialog and starts an authentication attempt.
+ *
+ * The action factory must be invoked with an object with three keys:
+ * `messageHub, ``username` and `password`.
+ */
+export const authenticateToServer = createAction(AUTHENTICATE_TO_SERVER,
+  async ({ username, password, messageHub }) => {
+    try {
+      const { body } = await messageHub.sendMessage({
+        type: 'AUTH-REQ',
+        method: 'basic',
+        data: Base64.encode(`${username}:${password}`)
+      })
+
+      if (body.type === 'AUTH-RESP') {
+        if (body.data) {
+          throw new Error('Multi-step authentication not supported')
+        } else if (body.result) {
+          return {
+            result: true,
+            user: body.user
+          }
+        } else {
+          throw new Error(String(body.reason) || 'Authentication failed')
+        }
+      } else {
+        console.warn(`Expected AUTH-RESP, got ${body.type}`)
+        throw new Error(String(body.reason) || 'Unexpected message received from server')
+      }
+    } catch (e) {
+      let reason
+
+      if (e instanceof pTimeout.TimeoutError) {
+        reason = 'Authentication timeout; try again later'
+      } else {
+        reason = errorToString(e)
+      }
+      return {
+        result: false,
+        reason
+      }
+    }
+  }
+)
+
+/**
+ * Action factory that clears the name and domain of the currently authenticated
+ * user.
+ */
+export const clearAuthenticatedUser = createAction(SET_AUTHENTICATED_USER, () => undefined)
+
+/**
+ * Action factory that closes the authentication dialog and cancels the
+ * current authentication attempt.
+ */
+export const closeAuthenticationDialog = createAction(CLOSE_AUTHENTICATION_DIALOG)
+
+/**
  * Action factory that creates an action that removes all the previously
  * detected servers from the server registry.
  */
 export const removeAllDetectedServers = createAction(REMOVE_ALL_DETECTED_SERVERS)
 
 /**
+ * Action factory that sets the name and domain of the currently authenticated
+ * user.
+ */
+export const setAuthenticatedUser = createAction(SET_AUTHENTICATED_USER)
+
+/**
  * Action factory that creates an action that sets whether we are connected
  * to the current server that the user is trying to communicate with or not.
  */
 export const setCurrentServerConnectionState = createAction(SET_CURRENT_SERVER_CONNECTION_STATE)
+
+/**
+ * Action factory that opens the authentication dialog and starts a new
+ * authentication attempt.
+ */
+export const showAuthenticationDialog = createAction(SHOW_AUTHENTICATION_DIALOG)
 
 /**
  * Action factory that creates an action that notifies the store that the

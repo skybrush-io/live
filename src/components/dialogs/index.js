@@ -1,4 +1,5 @@
 import AppSettingsDialog from './app-settings'
+import AuthenticationDialog from './AuthenticationDialog'
 import FeatureEditorDialog from './FeatureEditorDialog'
 import GlobalErrorDialog from './GlobalErrorDialog'
 import LayerSettingsDialog from './LayerSettingsDialog'
@@ -10,6 +11,7 @@ import SubscriptionDialog from './SubscriptionDialog'
 
 export default {
   AppSettingsDialog,
+  AuthenticationDialog,
   FeatureEditorDialog,
   GlobalErrorDialog,
   LayerSettingsDialog,

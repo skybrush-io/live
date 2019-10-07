@@ -5,7 +5,8 @@ import React from 'react'
 import { render } from 'react-dom'
 
 import Application from './app'
-import { loadStoreFromStorageBackend } from './store'
+import rootSaga from './sagas'
+import { sagaMiddleware, loadStoreFromStorageBackend } from './store'
 import workbench from './workbench'
 
 // const __PROD__ = process.env.NODE_ENV === 'production'
@@ -14,6 +15,10 @@ import workbench from './workbench'
 async function initialize () {
   TimeAgo.addLocale(en)
 
+  // Spin up the root saga
+  sagaMiddleware.run(rootSaga)
+
+  // Restore the state of the application
   const state = await loadStoreFromStorageBackend()
   if (state && state.workbench && state.workbench.state) {
     workbench.restoreState(state.workbench.state)

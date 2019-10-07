@@ -3,17 +3,12 @@
  */
 
 import blue from '@material-ui/core/colors/blue'
-import common from '@material-ui/core/colors/common'
 import createMuiTheme from '@material-ui/core/styles/createMuiTheme'
+import red from '@material-ui/core/colors/red'
 
 export default createMuiTheme({
   palette: {
-    action: {
-      active: common.black
-    },
-    primary: blue
-  },
-  typography: {
-    useNextVariants: true
+    primary: blue,
+    secondary: red
   }
 })

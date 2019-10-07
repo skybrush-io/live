@@ -57,6 +57,7 @@ const Application = () => (
     <ServerConnectionManager />
 
     <dialogs.AppSettingsDialog />
+    <dialogs.AuthenticationDialog />
     <dialogs.FeatureEditorDialog />
     <dialogs.GlobalErrorDialog />
     <dialogs.LayerSettingsDialog />

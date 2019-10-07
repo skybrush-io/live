@@ -1,12 +1,16 @@
 import { all, call, put, select, take } from 'redux-saga/effects'
 
-import { updateCurrentServerAuthenticationSettings } from '~/actions/servers'
-import { SET_CURRENT_SERVER_CONNECTION_STATE } from '~/actions/types'
+import {
+  setAuthenticatedUser,
+  updateCurrentServerAuthenticationSettings
+} from '~/actions/servers'
+import { showSnackbarMessage } from '~/actions/snackbar'
+import { AUTHENTICATE_TO_SERVER, SET_CURRENT_SERVER_CONNECTION_STATE } from '~/actions/types'
+import messageHub from '~/message-hub'
 import {
   areServerAuthenticationSettingsValid,
   isConnected
 } from '~/selectors/servers'
-import messageHub from '~/message-hub'
 
 /**
  * Saga that detects when the authentication-related information of the
@@ -47,12 +51,44 @@ function* serverAuthenticationSettingsUpdaterSaga () {
 }
 
 /**
+ * Saga that detects successful or failed authentications and shows an
+ * appropriate message in the snackbar.
+ */
+function* authenticationResultNotifierSaga () {
+  while (true) {
+    const { payload } = yield take(AUTHENTICATE_TO_SERVER + '_FULFILLED')
+    const { result, reason, user } = payload
+
+    if (result) {
+      yield put(setAuthenticatedUser(user))
+      if (user) {
+        yield put(showSnackbarMessage({
+          message: `You are now authenticated as ${user}`,
+          semantics: 'success'
+        }))
+      } else {
+        yield put(showSnackbarMessage({
+          message: `You are now deauthenticated`,
+          semantics: 'success'
+        }))
+      }
+    } else {
+      yield put(showSnackbarMessage({
+        message: reason || 'Authentication failed',
+        semantics: 'error'
+      }))
+    }
+  }
+}
+
+/**
  * Compound saga related to the management of the connection to the upstream
  * Flockwave server.
  */
 export default function* serversSaga () {
   const sagas = [
-    serverAuthenticationSettingsUpdaterSaga()
+    serverAuthenticationSettingsUpdaterSaga(),
+    authenticationResultNotifierSaga()
   ]
   yield all(sagas)
 }

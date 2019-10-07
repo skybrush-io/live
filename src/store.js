@@ -4,6 +4,7 @@
 
 import { createStore, applyMiddleware } from 'redux'
 import createDebounce from 'redux-debounce'
+import promise from 'redux-promise-middleware'
 import createSagaMiddleware from 'redux-saga'
 import * as storage from 'redux-storage'
 import thunk from 'redux-thunk'
@@ -13,7 +14,6 @@ import createEngine from 'redux-storage-engine-localstorage'
 
 import * as actions from './actions/types'
 import reducer from './reducers'
-import rootSaga from './sagas'
 
 /**
  * Storage engine for storing the application state. In the browser, we store
@@ -71,7 +71,7 @@ const debouncer = createDebounce({
 /**
  * Redux middleware that manages long-running background processes.
  */
-const sagaMiddleware = createSagaMiddleware()
+export const sagaMiddleware = createSagaMiddleware()
 
 /**
  * Redux middleware that saves the state of the application into the
@@ -85,7 +85,7 @@ const storageMiddleware = storage.createMiddleware(
  * Function to create a new Redux store with the required middlewares.
  */
 const createStoreWithMiddleware =
-  applyMiddleware(debouncer, thunk, sagaMiddleware, storageMiddleware)(createStore)
+  applyMiddleware(debouncer, promise, thunk, sagaMiddleware, storageMiddleware)(createStore)
 
 /**
  * The store for the application state.
@@ -113,9 +113,6 @@ export const loadStoreFromStorageBackend =
 export function clearStore () {
   engine.save({})
 }
-
-// Spin up the root saga
-sagaMiddleware.run(rootSaga)
 
 // Send the store dispatcher function back to the preloader
 if (window.bridge) {

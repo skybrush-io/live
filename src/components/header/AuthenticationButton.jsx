@@ -1,13 +1,16 @@
 import PersonIcon from '@material-ui/icons/Person'
 
-import classNames from 'classnames'
+import clsx from 'clsx'
 import PropTypes from 'prop-types'
 import React from 'react'
 import { connect } from 'react-redux'
 
 import SidebarBadge from '../sidebar/SidebarBadge'
 
+import { showAuthenticationDialog } from '~/actions/servers'
 import {
+  isAuthenticated,
+  isAuthenticating,
   requiresAuthentication,
   supportsAuthentication
 } from '~/selectors/servers'
@@ -22,9 +25,10 @@ const badgeColorForState = {
 const AuthenticationButtonPresentation = ({
   authRequired, disabled, onClick, showLabel, state
 }) => (
-  <div className={classNames('wb-module', { 'wb-module-disabled': disabled })} onClick={onClick}>
-    <span className={classNames('wb-icon', 'wb-module-icon')}>
-      <SidebarBadge visible={authRequired} color={badgeColorForState[state]} />
+  <div className={clsx('wb-module', { 'wb-module-disabled': disabled })} onClick={onClick}>
+    <span className={clsx('wb-icon', 'wb-module-icon')}>
+      <SidebarBadge visible={badgeColorForState[state] !== undefined}
+        color={badgeColorForState[state]} />
       <PersonIcon />
     </span>
     {showLabel ? <span className='wb-label wb-module-label'>Authentication</span> : null}
@@ -45,9 +49,21 @@ export default connect(
     authRequired: requiresAuthentication(state),
     disabled: !supportsAuthentication(state),
     state: (
-      requiresAuthentication(state)
-        ? 'notAuthenticated'
-        : 'authenticationNotRequired'
+      isAuthenticated(state)
+        ? 'authenticated'
+        : (
+          isAuthenticating(state)
+            ? 'authenticating'
+            : (
+              requiresAuthentication(state)
+                ? 'notAuthenticated'
+                : 'authenticationNotRequired'
+            )
+        )
     )
+  }),
+  // mapDispatchToProps
+  dispatch => ({
+    onClick: () => dispatch(showAuthenticationDialog())
   })
 )(AuthenticationButtonPresentation)
