@@ -1,44 +1,44 @@
-import CssBaseline from '@material-ui/core/CssBaseline'
-import { MuiThemeProvider } from '@material-ui/core/styles'
-import PropTypes from 'prop-types'
-import React from 'react'
-import { WorkbenchView } from 'react-flexible-workbench'
-import { Provider as StoreProvider } from 'react-redux'
-import { compose, withContext, withProps } from 'recompose'
+import CssBaseline from '@material-ui/core/CssBaseline';
+import { MuiThemeProvider } from '@material-ui/core/styles';
+import PropTypes from 'prop-types';
+import React from 'react';
+import { WorkbenchView } from 'react-flexible-workbench';
+import { Provider as StoreProvider } from 'react-redux';
+import { compose, withContext, withProps } from 'recompose';
 
-import dialogs from './components/dialogs'
-import Header from './components/header'
-import Sidebar from './components/sidebar'
-import GlobalSnackbar from './components/GlobalSnackbar'
-import HotkeyHandler from './components/HotkeyHandler'
-import ServerConnectionManager from './components/ServerConnectionManager'
+import dialogs from './components/dialogs';
+import Header from './components/header';
+import Sidebar from './components/sidebar';
+import GlobalSnackbar from './components/GlobalSnackbar';
+import HotkeyHandler from './components/HotkeyHandler';
+import ServerConnectionManager from './components/ServerConnectionManager';
 
-import flock from './flock'
-import { withErrorBoundary, wrapWith } from './hoc'
-import hotkeys from './hotkeys'
-import store from './store'
-import theme from './theme'
-import workbench from './workbench'
+import flock from './flock';
+import { withErrorBoundary, wrapWith } from './hoc';
+import hotkeys from './hotkeys';
+import store from './store';
+import theme from './theme';
+import workbench from './workbench';
 
-require('../assets/css/screen.less')
-require('../assets/css/chat.less')
-require('../assets/css/kbd.css')
+require('../assets/css/screen.less');
+require('../assets/css/chat.less');
+require('../assets/css/kbd.css');
 
-require('typeface-roboto')
+require('typeface-roboto');
 
 const rootStyle = {
   display: 'flex',
   flexDirection: 'column',
   width: '100%',
   height: '100%'
-}
+};
 
 const rootInnerStyle = {
   display: 'flex',
   flexGrow: 1,
   width: '100%',
   height: '100%'
-}
+};
 
 const Application = () => (
   <div>
@@ -69,7 +69,7 @@ const Application = () => (
 
     <GlobalSnackbar />
   </div>
-)
+);
 
 /**
  * The context provider for the main application component and the
@@ -83,13 +83,9 @@ const enhancer = compose(
     props => ({ flock })
   ),
   withErrorBoundary,
-  wrapWith(
-    withProps({ theme })(MuiThemeProvider)
-  ),
-  wrapWith(
-    withProps({ store })(StoreProvider)
-  )
-)
+  wrapWith(withProps({ theme })(MuiThemeProvider)),
+  wrapWith(withProps({ store })(StoreProvider))
+);
 
-workbench.hoc = enhancer
-export default enhancer(Application)
+workbench.hoc = enhancer;
+export default enhancer(Application);

@@ -3,7 +3,7 @@
  * workbench component.
  */
 
-import { handleActions } from 'redux-actions'
+import { handleActions } from 'redux-actions';
 
 /**
  * The default state of the workbench.
@@ -14,17 +14,19 @@ const defaultState = {
   // define it in the usual sense (due to limitations in how
   // golden-layout works)
   state: undefined
-}
+};
 
 /**
  * The reducer function that handles actions related to the workbench.
  */
-const reducer = handleActions({
-  SAVE_WORKBENCH_STATE: (state, action) => (
-    Object.assign({}, state, {
-      state: action.payload
-    })
-  )
-}, defaultState)
+const reducer = handleActions(
+  {
+    SAVE_WORKBENCH_STATE: (state, action) =>
+      Object.assign({}, state, {
+        state: action.payload
+      })
+  },
+  defaultState
+);
 
-export default reducer
+export default reducer;

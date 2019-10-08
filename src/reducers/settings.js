@@ -3,10 +3,10 @@
  * stores the application-specific settings of the user.
  */
 
-import { handleActions } from 'redux-actions'
-import u from 'updeep'
+import { handleActions } from 'redux-actions';
+import u from 'updeep';
 
-import { CoordinateFormat } from '../model/settings'
+import { CoordinateFormat } from '../model/settings';
 
 /**
  * Default set of application settings. This is a two-level key-value
@@ -43,31 +43,34 @@ const defaultState = {
     // removed from the UAV list
     forgetThreshold: 600
   }
-}
+};
 
 /**
  * The reducer function that handles actions related to the settings.
  */
-const reducer = handleActions({
-  REPLACE_APP_SETTINGS: (state, action) => {
-    const { category, updates } = action.payload
+const reducer = handleActions(
+  {
+    REPLACE_APP_SETTINGS: (state, action) => {
+      const { category, updates } = action.payload;
 
-    if (state[category] === undefined) {
-      return state
-    } else {
-      return u({ [category]: u.constant(updates) }, state)
+      if (state[category] === undefined) {
+        return state;
+      }
+
+      return u({ [category]: u.constant(updates) }, state);
+    },
+
+    UPDATE_APP_SETTINGS: (state, action) => {
+      const { category, updates } = action.payload;
+
+      if (state[category] === undefined) {
+        return state;
+      }
+
+      return u({ [category]: updates }, state);
     }
   },
+  defaultState
+);
 
-  UPDATE_APP_SETTINGS: (state, action) => {
-    const { category, updates } = action.payload
-
-    if (state[category] === undefined) {
-      return state
-    } else {
-      return u({ [category]: updates }, state)
-    }
-  }
-}, defaultState)
-
-export default reducer
+export default reducer;

@@ -8,4 +8,4 @@ export const MessageSemantics = {
   ERROR: 'error',
   INFO: 'info',
   DEFAULT: 'default'
-}
+};

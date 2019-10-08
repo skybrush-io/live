@@ -4,11 +4,11 @@
  * identifier) and returning them on-demand by IDs.
  */
 
-import { autobind } from 'core-decorators'
-import { forOwn, identity, values } from 'lodash'
-import Signal from 'mini-signals'
-import Feature from 'ol/Feature'
-import Point from 'ol/geom/Point'
+import { autobind } from 'core-decorators';
+import { forOwn, identity, values } from 'lodash';
+import Signal from 'mini-signals';
+import Feature from 'ol/Feature';
+import Point from 'ol/geom/Point';
 
 /**
  * Object responsible for constructing features on an OpenLayers
@@ -26,7 +26,9 @@ import Point from 'ol/geom/Point'
  *           that is used to map coordinates specified by the user to the
  *           coordinate system of the source layer
  */
-export default @autobind class FeatureManager {
+export default
+@autobind
+class FeatureManager {
   /**
    * Constructor.
    *
@@ -37,16 +39,16 @@ export default @autobind class FeatureManager {
    *           that is used to map coordinates specified by the user to the
    *           coordinate system of the source layer
    */
-  constructor (vectorSource, projection) {
-    this._featuresByObjectId = {}
-    this._featureFactory = undefined
-    this._featureIdFunction = identity
+  constructor(vectorSource, projection) {
+    this._featuresByObjectId = {};
+    this._featureFactory = undefined;
+    this._featureIdFunction = identity;
 
-    this._vectorSource = vectorSource
-    this.projection = projection
+    this._vectorSource = vectorSource;
+    this.projection = projection;
 
-    this.featureAdded = new Signal()
-    this.featureRemoved = new Signal()
+    this.featureAdded = new Signal();
+    this.featureRemoved = new Signal();
   }
 
   /**
@@ -58,13 +60,14 @@ export default @autobind class FeatureManager {
    * @returns {ol.Feature}  the OpenLayers feature that represents the
    *          object with the given ID on the map
    */
-  createOrUpdateFeatureById (id, coordinate) {
-    coordinate = this.projection ? this.projection(coordinate) : coordinate
+  createOrUpdateFeatureById(id, coordinate) {
+    coordinate = this.projection ? this.projection(coordinate) : coordinate;
 
-    const feature = this.getFeatureById(id) || this._createFeatureById(id, coordinate)
-    feature.getGeometry().setCoordinates(coordinate)
+    const feature =
+      this.getFeatureById(id) || this._createFeatureById(id, coordinate);
+    feature.getGeometry().setCoordinates(coordinate);
 
-    return feature
+    return feature;
   }
 
   /**
@@ -82,21 +85,23 @@ export default @autobind class FeatureManager {
    * @returns {ol.Feature}  the OpenLayers feature that will represent the
    *          object with the given ID on the map
    */
-  _createFeatureById (id, coordinate) {
-    const point = new Point(coordinate)
-    const feature = this._featureFactory ? this._featureFactory(id, point) : new Feature(point)
-    const featureId = this._featureIdFunction(id)
+  _createFeatureById(id, coordinate) {
+    const point = new Point(coordinate);
+    const feature = this._featureFactory
+      ? this._featureFactory(id, point)
+      : new Feature(point);
+    const featureId = this._featureIdFunction(id);
 
-    feature.setId(featureId)
-    this._featuresByObjectId[id] = feature
+    feature.setId(featureId);
+    this._featuresByObjectId[id] = feature;
 
     if (this._vectorSource) {
-      this._vectorSource.addFeature(feature)
+      this._vectorSource.addFeature(feature);
     }
 
-    this.featureAdded.dispatch(feature)
+    this.featureAdded.dispatch(feature);
 
-    return feature
+    return feature;
   }
 
   /**
@@ -108,8 +113,8 @@ export default @autobind class FeatureManager {
    *         object with the given ID on the map, or undefined if the given
    *         object has no feature yet
    */
-  getFeatureById (id) {
-    return this._featuresByObjectId[id]
+  getFeatureById(id) {
+    return this._featuresByObjectId[id];
   }
 
   /**
@@ -121,8 +126,8 @@ export default @autobind class FeatureManager {
    * @return {Array<ol.Feature>}  an array containing all the features
    *         managed by this manager
    */
-  getFeatureArray () {
-    return values(this._featuresByObjectId)
+  getFeatureArray() {
+    return values(this._featuresByObjectId);
   }
 
   /**
@@ -133,14 +138,14 @@ export default @autobind class FeatureManager {
    * @return {ol.Feature}  the feature that was removed or undefined if
    *         there was no feature for the given ID
    */
-  removeFeatureById (id) {
-    const feature = this.getFeatureById(id)
+  removeFeatureById(id) {
+    const feature = this.getFeatureById(id);
 
     if (feature && this._vectorSource) {
-      this._vectorSource.removeFeatureById(feature)
+      this._vectorSource.removeFeatureById(feature);
     }
 
-    return feature
+    return feature;
   }
 
   /**
@@ -154,8 +159,8 @@ export default @autobind class FeatureManager {
    * @return {function(id: string, geom: ol.geom.Geometry): ol.Feature}
    *         the feature factory function
    */
-  get featureFactory () {
-    return this._featureFactory
+  get featureFactory() {
+    return this._featureFactory;
   }
 
   /**
@@ -170,8 +175,8 @@ export default @autobind class FeatureManager {
    *        the new feature factory function
    * @return {undefined}
    */
-  set featureFactory (value) {
-    this._featureFactory = value
+  set featureFactory(value) {
+    this._featureFactory = value;
   }
 
   /**
@@ -182,8 +187,8 @@ export default @autobind class FeatureManager {
    *
    * @return {function(id: string): string}  the feature ID mapping function
    */
-  get featureIdFunction () {
-    return this._featureIdFunction
+  get featureIdFunction() {
+    return this._featureIdFunction;
   }
 
   /**
@@ -195,8 +200,8 @@ export default @autobind class FeatureManager {
    * @param {function(id: string): string} value  the new feature ID mapping function
    * @return {undefined}
    */
-  set featureIdFunction (value) {
-    this._featureIdFunction = value
+  set featureIdFunction(value) {
+    this._featureIdFunction = value;
   }
 
   /**
@@ -211,8 +216,8 @@ export default @autobind class FeatureManager {
    * @return {ol.source.Vector}  the OpenLayers vector layer source
    *         attached to this feature manager
    */
-  get vectorSource () {
-    return this._vectorSource
+  get vectorSource() {
+    return this._vectorSource;
   }
 
   /**
@@ -229,22 +234,21 @@ export default @autobind class FeatureManager {
    *
    * @return {undefined}
    */
-  set vectorSource (value) {
+  set vectorSource(value) {
     if (this._vectorSource === value) {
-      return
+      return;
     }
 
     if (this._vectorSource) {
-      this._vectorSource.clear()
+      this._vectorSource.clear();
     }
 
-    this._vectorSource = value
+    this._vectorSource = value;
 
     if (this._vectorSource) {
-      forOwn(
-        this._featuresByObjectId,
-        feature => this._vectorSource.addFeature(feature)
-      )
+      forOwn(this._featuresByObjectId, feature =>
+        this._vectorSource.addFeature(feature)
+      );
     }
   }
 }

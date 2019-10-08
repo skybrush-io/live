@@ -10,8 +10,8 @@
  * @return {function} a function that will take a string and append it to
  *         the given prefix
  */
-export function appendTo (prefix) {
-  return input => prefix + input
+export function appendTo(prefix) {
+  return input => prefix + input;
 }
 
 /**
@@ -24,8 +24,8 @@ export function appendTo (prefix) {
  *         array plus the items specified in <code>items</code>; falsey
  *         values passed to the function are treated as an empty array
  */
-export function extendWith (...items) {
-  return array => (array || []).concat(items)
+export function extendWith(...items) {
+  return array => (array || []).concat(items);
 }
 
 /**
@@ -37,13 +37,13 @@ export function extendWith (...items) {
  * @return {function} a function that will take a string and strip the given
  *         prefix from it
  */
-export function stripPrefix (prefix) {
-  const length = prefix.length
+export function stripPrefix(prefix) {
+  const { length } = prefix;
   return input => {
     if (input && input.substr(0, length) === prefix) {
-      return input.substr(length)
-    } else {
-      return undefined
+      return input.substr(length);
     }
-  }
+
+    return undefined;
+  };
 }

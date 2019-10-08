@@ -1,51 +1,62 @@
-import PropTypes from 'prop-types'
-import React from 'react'
-import { connect } from 'react-redux'
+import PropTypes from 'prop-types';
+import React from 'react';
+import { connect } from 'react-redux';
 
-import AppBar from '@material-ui/core/AppBar'
-import Button from '@material-ui/core/Button'
-import Dialog from '@material-ui/core/Dialog'
-import DialogActions from '@material-ui/core/DialogActions'
-import DialogContent from '@material-ui/core/DialogContent'
-import Switch from '@material-ui/core/Switch'
-import Tab from '@material-ui/core/Tab'
-import Tabs from '@material-ui/core/Tabs'
-import TextField from '@material-ui/core/TextField'
+import AppBar from '@material-ui/core/AppBar';
+import Button from '@material-ui/core/Button';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import Switch from '@material-ui/core/Switch';
+import Tab from '@material-ui/core/Tab';
+import Tabs from '@material-ui/core/Tabs';
+import TextField from '@material-ui/core/TextField';
 
 import {
   removeFeature,
   renameFeature,
   setFeatureColor,
   updateFeatureVisibility
-} from '../../actions/features'
+} from '../../actions/features';
 import {
   closeFeatureEditorDialog,
   setFeatureEditorDialogTab
-} from '../../actions/feature-editor'
-import CircleColorPicker from '../../components/CircleColorPicker'
-import { primaryColor } from '../../utils/styles'
+} from '../../actions/feature-editor';
+import CircleColorPicker from '../../components/CircleColorPicker';
+import { primaryColor } from '../../utils/styles';
 
 const GeneralPropertiesFormPresentation = ({
-  feature, onSetFeatureColor, onSetFeatureLabel, onToggleFeatureVisibility
+  feature,
+  onSetFeatureColor,
+  onSetFeatureLabel,
+  onToggleFeatureVisibility
 }) => (
   <div>
     <div style={{ display: 'flex', padding: '1em 0' }}>
       <div style={{ flex: 'auto' }}>
-        <TextField autoFocus label='Label' value={feature.label || ''} fullWidth
-          onChange={onSetFeatureLabel} />
+        <TextField
+          autoFocus
+          fullWidth
+          label="Label"
+          value={feature.label || ''}
+          onChange={onSetFeatureLabel}
+        />
       </div>
       <Switch
-        checked={feature.visible} color='primary'
-        onChange={onToggleFeatureVisibility}
+        checked={feature.visible}
+        color="primary"
         style={{ flex: 'none' }}
+        onChange={onToggleFeatureVisibility}
       />
     </div>
     <div>
-      <CircleColorPicker value={feature.color || primaryColor}
-        onChangeComplete={onSetFeatureColor} />
+      <CircleColorPicker
+        value={feature.color || primaryColor}
+        onChangeComplete={onSetFeatureColor}
+      />
     </div>
   </div>
-)
+);
 
 GeneralPropertiesFormPresentation.propTypes = {
   feature: PropTypes.object.isRequired,
@@ -53,35 +64,44 @@ GeneralPropertiesFormPresentation.propTypes = {
   onSetFeatureColor: PropTypes.func,
   onSetFeatureLabel: PropTypes.func,
   onToggleFeatureVisibility: PropTypes.func
-}
+};
 
 const GeneralPropertiesForm = connect(
-  // mapStateToProps
+  // MapStateToProps
   null,
-  // mapDispatchToProps
+  // MapDispatchToProps
   (dispatch, { featureId }) => ({
-    onSetFeatureColor (color) {
-      dispatch(setFeatureColor(featureId, color.hex))
+    onSetFeatureColor(color) {
+      dispatch(setFeatureColor(featureId, color.hex));
     },
-    onSetFeatureLabel (event) {
-      dispatch(renameFeature(featureId, event.target.value))
+    onSetFeatureLabel(event) {
+      dispatch(renameFeature(featureId, event.target.value));
     },
-    onToggleFeatureVisibility (event, checked) {
-      dispatch(updateFeatureVisibility(featureId, checked))
+    onToggleFeatureVisibility(event, checked) {
+      dispatch(updateFeatureVisibility(featureId, checked));
     }
   })
-)(GeneralPropertiesFormPresentation)
+)(GeneralPropertiesFormPresentation);
 
 const FeatureEditorDialogPresentation = props => {
   const {
-    feature, featureId, onClose, onRemoveFeature, onTabSelected,
-    open, selectedTab
-  } = props
-  const actions = []
-  let content
+    feature,
+    featureId,
+    onClose,
+    onRemoveFeature,
+    onTabSelected,
+    open,
+    selectedTab
+  } = props;
+  const actions = [];
+  let content;
 
   if (!feature) {
-    content = <DialogContent><p>Feature does not exist</p></DialogContent>
+    content = (
+      <DialogContent>
+        <p>Feature does not exist</p>
+      </DialogContent>
+    );
   } else {
     switch (selectedTab) {
       case 'general':
@@ -89,35 +109,45 @@ const FeatureEditorDialogPresentation = props => {
           <DialogContent>
             <GeneralPropertiesForm feature={feature} featureId={featureId} />
           </DialogContent>
-        )
-        break
+        );
+        break;
 
       default:
-        content = <DialogContent><p>Not implemented yet</p></DialogContent>
+        content = (
+          <DialogContent>
+            <p>Not implemented yet</p>
+          </DialogContent>
+        );
     }
   }
 
   actions.push(
-    <Button key='remove' color='secondary' onClick={onRemoveFeature}
-      disabled={!feature}>Remove</Button>,
-    <Button key='close' onClick={onClose}>Close</Button>
-  )
+    <Button
+      key="remove"
+      color="secondary"
+      disabled={!feature}
+      onClick={onRemoveFeature}
+    >
+      Remove
+    </Button>,
+    <Button key="close" onClick={onClose}>
+      Close
+    </Button>
+  );
 
   return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth='xs'>
-      <AppBar position='static'>
-        <Tabs value={selectedTab} onChange={onTabSelected} variant="fullWidth">
-          <Tab value='general' label="General" />
-          <Tab value='points' label="Points" />
+    <Dialog fullWidth open={open} maxWidth="xs" onClose={onClose}>
+      <AppBar position="static">
+        <Tabs value={selectedTab} variant="fullWidth" onChange={onTabSelected}>
+          <Tab value="general" label="General" />
+          <Tab value="points" label="Points" />
         </Tabs>
       </AppBar>
       {content}
-      <DialogActions>
-        {actions}
-      </DialogActions>
+      <DialogActions>{actions}</DialogActions>
     </Dialog>
-  )
-}
+  );
+};
 
 FeatureEditorDialogPresentation.propTypes = {
   feature: PropTypes.object,
@@ -128,47 +158,51 @@ FeatureEditorDialogPresentation.propTypes = {
   onTabSelected: PropTypes.func,
   open: PropTypes.bool.isRequired,
   selectedTab: PropTypes.string
-}
+};
 
 FeatureEditorDialogPresentation.defaultProps = {
   open: false,
   selectedTab: 'general'
-}
+};
 
 /**
  * Container of the dialog that shows the form where a given feature can
  * be edited.
  */
 const FeatureEditorDialog = connect(
-  // mapStateToProps
+  // MapStateToProps
   state => {
-    const { dialogVisible, featureId, selectedTab } = state.dialogs.featureEditor
+    const {
+      dialogVisible,
+      featureId,
+      selectedTab
+    } = state.dialogs.featureEditor;
     return {
       featureId,
       selectedTab,
       feature: state.features.byId[featureId],
       open: dialogVisible
-    }
+    };
   },
-  // mapDispatchToProps
+  // MapDispatchToProps
   dispatch => ({
-    onClose () {
-      dispatch(closeFeatureEditorDialog())
+    onClose() {
+      dispatch(closeFeatureEditorDialog());
     },
-    onRemoveFeature (featureId) {
-      dispatch(removeFeature(featureId))
-      dispatch(closeFeatureEditorDialog())
+    onRemoveFeature(featureId) {
+      dispatch(removeFeature(featureId));
+      dispatch(closeFeatureEditorDialog());
     },
-    onTabSelected (event, value) {
-      dispatch(setFeatureEditorDialogTab(value))
+    onTabSelected(event, value) {
+      dispatch(setFeatureEditorDialogTab(value));
     }
   }),
-  // mergeProps
+  // MergeProps
   (stateProps, dispatchProps) => ({
     ...stateProps,
     ...dispatchProps,
     onRemoveFeature: () => dispatchProps.onRemoveFeature(stateProps.featureId)
   })
-)(FeatureEditorDialogPresentation)
+)(FeatureEditorDialogPresentation);
 
-export default FeatureEditorDialog
+export default FeatureEditorDialog;

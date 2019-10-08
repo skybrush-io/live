@@ -1,7 +1,7 @@
-import { curry, isNil, isPlainObject, reject } from 'lodash'
-import u from 'updeep'
+import { curry, isNil, isPlainObject, reject } from 'lodash';
+import u from 'updeep';
 
-import { chooseUniqueIdFromName } from './naming'
+import { chooseUniqueIdFromName } from './naming';
 
 /**
  * Helper functions to deal with ordered collections.
@@ -22,7 +22,7 @@ import { chooseUniqueIdFromName } from './naming'
  * placeholders until they are finalized (saved) by the user, in which case they
  * obtain a "real" ID and a place in the collection.
  */
-export const NEW_ITEM_ID = '@@newItem'
+export const NEW_ITEM_ID = '@@newItem';
 
 /**
  * Returns whether the given item has a "real" ID.
@@ -33,10 +33,12 @@ export const NEW_ITEM_ID = '@@newItem'
  * @param {Object}  item  the item to test
  * @return {boolean}  whether the item has a real ID
  */
-const hasValidId = item => (
-  item && item.id !== undefined && item.id !== null &&
-  item.id !== '' && item.id !== NEW_ITEM_ID
-)
+const hasValidId = item =>
+  item &&
+  item.id !== undefined &&
+  item.id !== null &&
+  item.id !== '' &&
+  item.id !== NEW_ITEM_ID;
 
 /**
  * Helper function that receives an item to be added to a collection, and
@@ -59,40 +61,46 @@ const hasValidId = item => (
  * @return {Object}  a copy of the collection after adding the given item
  */
 export const addToFront = (item, collection, idStore) => {
-  const isNew = item && item.id === NEW_ITEM_ID
+  const isNew = item && item.id === NEW_ITEM_ID;
 
-  item = Object.assign({}, item)
+  item = Object.assign({}, item);
 
   if (!hasValidId(item.id)) {
     if (item.name === undefined) {
-      throw new Error('New item needs either an ID or a name')
+      throw new Error('New item needs either an ID or a name');
     }
-    item.id = chooseUniqueIdFromName(item.name, collection)
+
+    item.id = chooseUniqueIdFromName(item.name, collection);
   }
 
-  const { order } = collection
-  const existingIndex = order ? order.indexOf(item.id) : -1
-  const newOrder = existingIndex >= 0
-    ? [item.id, ...order.slice(0, existingIndex), ...order.slice(existingIndex + 1)]
-    : [item.id, ...order]
+  const { order } = collection;
+  const existingIndex = order ? order.indexOf(item.id) : -1;
+  const newOrder =
+    existingIndex >= 0
+      ? [
+          item.id,
+          ...order.slice(0, existingIndex),
+          ...order.slice(existingIndex + 1)
+        ]
+      : [item.id, ...order];
 
   const updates = {
     byId: { [item.id]: u.constant(item) },
     order: newOrder
-  }
+  };
 
   if (isNew) {
-    updates.byId[NEW_ITEM_ID] = u.omitted
+    updates.byId[NEW_ITEM_ID] = u.omitted;
   }
 
   if (typeof idStore === 'function') {
-    idStore(item.id)
+    idStore(item.id);
   } else if (isPlainObject(idStore)) {
-    idStore.id = item.id
+    idStore.id = item.id;
   }
 
-  return u(updates, collection)
-}
+  return u(updates, collection);
+};
 
 /**
  * Creates a new item at the front of the given collection that can then
@@ -108,18 +116,21 @@ export const addToFront = (item, collection, idStore) => {
  *         the new item
  */
 export const createNewItemAtFrontOf = (collection, idStore) => {
-  const id = NEW_ITEM_ID
+  const id = NEW_ITEM_ID;
 
   if (typeof idStore === 'function') {
-    idStore(id)
+    idStore(id);
   } else if (isPlainObject(idStore)) {
-    idStore.id = id
+    idStore.id = id;
   }
 
-  return u({
-    byId: { [NEW_ITEM_ID]: u.constant({ id }) }
-  }, collection)
-}
+  return u(
+    {
+      byId: { [NEW_ITEM_ID]: u.constant({ id }) }
+    },
+    collection
+  );
+};
 
 /**
  * Helper function that receives an item ID and an ordered collection,
@@ -134,9 +145,9 @@ export const deleteById = curry((idToRemove, collection) => {
   const updates = {
     byId: u.omit(idToRemove),
     order: u.reject(id => id === idToRemove)
-  }
-  return u(updates, collection)
-})
+  };
+  return u(updates, collection);
+});
 
 /**
  * Helper function that receives multiple item IDs and an ordered collection,
@@ -149,15 +160,15 @@ export const deleteById = curry((idToRemove, collection) => {
  */
 export const deleteByIds = curry((idsToRemove, collection) => {
   if (idsToRemove.length === 1) {
-    return deleteById(idsToRemove[0], collection)
+    return deleteById(idsToRemove[0], collection);
   }
 
   const updates = {
     byId: u.omit(idsToRemove),
     order: u.reject(id => idsToRemove.includes(id))
-  }
-  return u(updates, collection)
-})
+  };
+  return u(updates, collection);
+});
 
 /**
  * Creates a key string that can be used in a call to <code>u.updateIn</code>
@@ -171,13 +182,13 @@ export const deleteByIds = curry((idsToRemove, collection) => {
  *         given ID
  */
 export const getKey = (itemId, ...subKeys) => {
-  if (itemId.indexOf('.') !== -1) {
-    throw new Error('Item ID cannot contain dots')
+  if (itemId.includes('.')) {
+    throw new Error('Item ID cannot contain dots');
   }
 
-  const subKey = subKeys.join('.')
-  return subKey ? `byId.${itemId}.${subKey}` : `byId.${itemId}`
-}
+  const subKey = subKeys.join('.');
+  return subKey ? `byId.${itemId}.${subKey}` : `byId.${itemId}`;
+};
 
 /**
  * Helper function that takes an ordered collection and converts it into an
@@ -187,11 +198,10 @@ export const getKey = (itemId, ...subKeys) => {
  * @return {Object[]} an array of values from the `byId` part of the ordered
  *     collection, filtered and sorted according to the `order` array
  */
-export const selectOrdered = ({ byId, order }) => (
-  (order !== undefined)
+export const selectOrdered = ({ byId, order }) =>
+  order !== undefined
     ? reject(order.map(id => byId[id]), isNil)
-    : Object.values(byId)
-)
+    : Object.values(byId);
 
 /**
  * Helper function that takes an array of item IDs and an ordered collection,
@@ -204,7 +214,7 @@ export const selectOrdered = ({ byId, order }) => (
  */
 export const reorder = curry((newOrder, collection) =>
   u({ order: newOrder }, collection)
-)
+);
 
 /**
  * Helper function that takes a single item with a key named `id`, and an
@@ -217,11 +227,11 @@ export const reorder = curry((newOrder, collection) =>
  */
 export const replace = (item, collection) => {
   if (hasValidId(item)) {
-    return u({ byId: { [item.id]: u.constant({ ...item }) } }, collection)
-  } else {
-    return addToFront(item, collection)
+    return u({ byId: { [item.id]: u.constant({ ...item }) } }, collection);
   }
-}
+
+  return addToFront(item, collection);
+};
 
 /**
  * Helper function that takes a single item with a key named `id`, and an
@@ -234,8 +244,8 @@ export const replace = (item, collection) => {
  */
 export const update = (item, collection) => {
   if (hasValidId(item)) {
-    return u({ byId: { [item.id]: { ...item } } }, collection)
-  } else {
-    return addToFront(item, collection)
+    return u({ byId: { [item.id]: { ...item } } }, collection);
   }
-}
+
+  return addToFront(item, collection);
+};

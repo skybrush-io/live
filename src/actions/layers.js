@@ -3,11 +3,19 @@
  * configuration of the map.
  */
 
-import { createAction } from 'redux-actions'
-import { SHOW_LAYERS_DIALOG,
-  CLOSE_LAYERS_DIALOG, TOGGLE_LAYER_VISIBILITY, RENAME_LAYER, REMOVE_LAYER,
-  ADD_LAYER, CHANGE_LAYER_TYPE, SET_LAYER_PARAMETER_BY_ID,
-  SET_LAYER_PARAMETERS_BY_ID, ADJUST_LAYER_Z_INDEX } from './types'
+import { createAction } from 'redux-actions';
+import {
+  SHOW_LAYERS_DIALOG,
+  CLOSE_LAYERS_DIALOG,
+  TOGGLE_LAYER_VISIBILITY,
+  RENAME_LAYER,
+  REMOVE_LAYER,
+  ADD_LAYER,
+  CHANGE_LAYER_TYPE,
+  SET_LAYER_PARAMETER_BY_ID,
+  SET_LAYER_PARAMETERS_BY_ID,
+  ADJUST_LAYER_Z_INDEX
+} from './types';
 
 /**
  * Action factory that creates an action that adds a new (typed or untyped)
@@ -19,18 +27,20 @@ import { SHOW_LAYERS_DIALOG,
  *        layer will be untyped and the user will be given an option to
  *        change its type
  */
-export const addLayer = createAction(ADD_LAYER,
-  (name, type) => ({ name, type })
-)
+export const addLayer = createAction(ADD_LAYER, (name, type) => ({
+  name,
+  type
+}));
 
 /**
  * Action factory that creates an action that will adjust the z-index of
  * the layer with the given amount. Positive values will bring the layer
  * to the front; negative values will bring the layer to the back.
  */
-export const adjustLayerZIndex = createAction(ADJUST_LAYER_Z_INDEX,
+export const adjustLayerZIndex = createAction(
+  ADJUST_LAYER_Z_INDEX,
   (id, delta) => ({ id, delta })
-)
+);
 
 /**
  * Action factory that changes the type of a currently untyped layer.
@@ -41,19 +51,20 @@ export const adjustLayerZIndex = createAction(ADJUST_LAYER_Z_INDEX,
  * @param {string?} id    the ID of the layer whose type is to be changed
  * @param {string}  type  the new type of the layer
  */
-export const changeLayerType = createAction(CHANGE_LAYER_TYPE,
-  (id, type) => ({ id, type })
-)
+export const changeLayerType = createAction(CHANGE_LAYER_TYPE, (id, type) => ({
+  id,
+  type
+}));
 
 /**
  * Action factory that creates an action that will close the layers dialog.
  */
-export const closeLayersDialog = createAction(CLOSE_LAYERS_DIALOG)
+export const closeLayersDialog = createAction(CLOSE_LAYERS_DIALOG);
 
 /**
  * Action factory that creates an action that removes a layer.
  */
-export const removeLayer = createAction(REMOVE_LAYER)
+export const removeLayer = createAction(REMOVE_LAYER);
 
 /**
  * Action factory that creates an action that renames a layer.
@@ -61,9 +72,10 @@ export const removeLayer = createAction(REMOVE_LAYER)
  * @param {string} id    the ID of the layer to rename
  * @param {string} name  the new name of the layer
  */
-export const renameLayer = createAction(RENAME_LAYER,
-  (id, name) => ({ id, name })
-)
+export const renameLayer = createAction(RENAME_LAYER, (id, name) => ({
+  id,
+  name
+}));
 
 /**
  * Action factory that sets a chosen parameter of the layer specified by the id.
@@ -72,9 +84,10 @@ export const renameLayer = createAction(RENAME_LAYER,
  * @param {string} parameter the parameter to change
  * @param {string} value the new value of the parameter
  */
-export const setLayerParameterById = createAction(SET_LAYER_PARAMETER_BY_ID,
+export const setLayerParameterById = createAction(
+  SET_LAYER_PARAMETER_BY_ID,
   (layerId, parameter, value) => ({ layerId, parameter, value })
-)
+);
 
 /**
  * Action factory that sets multiple parameters of the layer specified by the id.
@@ -85,15 +98,14 @@ export const setLayerParameterById = createAction(SET_LAYER_PARAMETER_BY_ID,
 export const setLayerParametersById = createAction(
   SET_LAYER_PARAMETERS_BY_ID,
   (layerId, parameters) => ({ layerId, parameters })
-)
+);
 
 /**
  * Action factory that creates an action that will show the layers dialog.
  */
-export const showLayersDialog = createAction(
-  SHOW_LAYERS_DIALOG,
-  layerId => ({ layerId })
-)
+export const showLayersDialog = createAction(SHOW_LAYERS_DIALOG, layerId => ({
+  layerId
+}));
 
 /**
  * Action factory that creates an action that toggles the visibility of a
@@ -102,4 +114,4 @@ export const showLayersDialog = createAction(
  * @param {string} layerId  the ID of the layer whose visibility is to be
  *        modified
  */
-export const toggleLayerVisibility = createAction(TOGGLE_LAYER_VISIBILITY)
+export const toggleLayerVisibility = createAction(TOGGLE_LAYER_VISIBILITY);

@@ -1,8 +1,8 @@
-var merge = require('webpack-merge')
-var WebpackShellPlugin = require('webpack-shell-plugin')
-var baseConfig = require('./base.config.js')
+const merge = require('webpack-merge');
+const WebpackShellPlugin = require('webpack-shell-plugin');
+const baseConfig = require('./base.config.js');
 
-var plugins = []
+const plugins = [];
 
 /* In dev mode, also run Electron and let it load the live bundle */
 if (process.env.NODE_ENV !== 'production' && process.env.DEPLOYMENT !== '1') {
@@ -11,7 +11,7 @@ if (process.env.NODE_ENV !== 'production' && process.env.DEPLOYMENT !== '1') {
       onBuildEnd: ['electron launcher.js'],
       dev: true
     })
-  )
+  );
 }
 
 module.exports = merge.smart(baseConfig, {
@@ -20,5 +20,5 @@ module.exports = merge.smart(baseConfig, {
     filename: 'bundle.js'
   },
 
-  plugins: plugins
-})
+  plugins
+});

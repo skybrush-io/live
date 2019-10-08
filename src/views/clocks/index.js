@@ -1,2 +1,2 @@
-import ClockDisplayList from './ClockDisplayList'
-export default ClockDisplayList
+import ClockDisplayList from './ClockDisplayList';
+export default ClockDisplayList;

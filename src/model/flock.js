@@ -3,10 +3,10 @@
  * a collection (flock) of UAVs.
  */
 
-import _ from 'lodash'
-import Signal from 'mini-signals'
+import _ from 'lodash';
+import Signal from 'mini-signals';
 
-import UAV from './uav'
+import UAV from './uav';
 
 /**
  * Representation of a UAV flock.
@@ -17,12 +17,12 @@ export default class Flock {
    *
    * Creates a new flock with no UAVs in it.
    */
-  constructor () {
-    this._uavs = []
-    this._uavsById = {}
-    this.uavsAdded = new Signal()
-    this.uavsUpdated = new Signal()
-    this.uavsRemoved = new Signal()
+  constructor() {
+    this._uavs = [];
+    this._uavsById = {};
+    this.uavsAdded = new Signal();
+    this.uavsUpdated = new Signal();
+    this.uavsRemoved = new Signal();
   }
 
   /**
@@ -33,8 +33,8 @@ export default class Flock {
    * @param {string}  id  the identifier of the UAV
    * @return {UAV}  the UAV with the given ID
    */
-  _createUAVById (id) {
-    return new UAV(id)
+  _createUAVById(id) {
+    return new UAV(id);
   }
 
   /**
@@ -43,8 +43,8 @@ export default class Flock {
    * @return {string[]}  the IDs of all the UAVs in the flock, in alphabetic
    *         order
    */
-  getAllUAVIds () {
-    return _.keys(this._uavsById).sort()
+  getAllUAVIds() {
+    return _.keys(this._uavsById).sort();
   }
 
   /**
@@ -54,8 +54,8 @@ export default class Flock {
    * @return {UAV}  the UAV with the given ID or undefined if there is no
    *         such UAV
    */
-  getUAVById (id) {
-    return this._uavsById[id]
+  getUAVById(id) {
+    return this._uavsById[id];
   }
 
   /**
@@ -65,12 +65,13 @@ export default class Flock {
    * @param {string}  id  the identifier of the UAV
    * @return {UAV}  the UAV with the given ID
    */
-  getOrCreateUAVById (id) {
-    let uav = this._uavsById[id]
+  getOrCreateUAVById(id) {
+    let uav = this._uavsById[id];
     if (!uav) {
-      this._uavsById[id] = uav = this._createUAVById(id)
+      this._uavsById[id] = uav = this._createUAVById(id);
     }
-    return uav
+
+    return uav;
   }
 
   /**
@@ -81,37 +82,42 @@ export default class Flock {
    * @param  {function} dispatch  the dispatch function of the Redux store
    * @fires  Flock#uavsUpdated
    */
-  handleUAVInformationMessage (body, dispatch) {
+  handleUAVInformationMessage(body, dispatch) {
     // For each UAV ID and status object pair, get the UAV with the given
     // ID, update its own local status, and if the status was updated,
     // remember the UAV ID so we can ask the feature manager to refresh
     // the features of these UAVs
 
     // body.status is frozen so we unfreeze it first
-    const { addedUAVs, updatedUAVs } = _(body.status).transform(
-      (accumulator, status, uavId) => {
-        // Code duplicated from getOrCreateUAVById(); this is unfortunate
-        // but we need to know whether we have added a UAV or not
-        let uav = this.getUAVById(uavId)
-        if (!uav) {
-          this._uavsById[uavId] = uav = this._createUAVById(uavId)
-          accumulator.addedUAVs.push(uav)
-        }
+    const { addedUAVs, updatedUAVs } = _(body.status)
+      .transform(
+        (accumulator, status, uavId) => {
+          // Code duplicated from getOrCreateUAVById(); this is unfortunate
+          // but we need to know whether we have added a UAV or not
+          let uav = this.getUAVById(uavId);
+          if (!uav) {
+            this._uavsById[uavId] = uav = this._createUAVById(uavId);
+            accumulator.addedUAVs.push(uav);
+          }
 
-        const updated = uav.handleUAVStatusInfo(status)
-        if (updated) {
-          accumulator.updatedUAVs.push(uav)
+          const updated = uav.handleUAVStatusInfo(status);
+          if (updated) {
+            accumulator.updatedUAVs.push(uav);
+          }
+        },
+        {
+          addedUAVs: [],
+          updatedUAVs: []
         }
-      }, {
-        addedUAVs: [],
-        updatedUAVs: []
-      }).value()
+      )
+      .value();
 
     if (!_.isEmpty(addedUAVs)) {
-      this.uavsAdded.dispatch(addedUAVs)
+      this.uavsAdded.dispatch(addedUAVs);
     }
+
     if (!_.isEmpty(updatedUAVs)) {
-      this.uavsUpdated.dispatch(updatedUAVs)
+      this.uavsUpdated.dispatch(updatedUAVs);
     }
   }
 }

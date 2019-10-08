@@ -6,19 +6,20 @@
  * renderer processes can use to talk to Node.js.
  */
 
-const pify = require('pify')
+const dns = require('dns');
+const pify = require('pify');
 
-const dns = require('dns')
-const { ipcRenderer: ipc } = require('electron-better-ipc')
-const logger = require('electron-timber')
-const unhandled = require('electron-unhandled')
-const SSDPClient = require('node-ssdp-lite')
-const createStorageEngine = require('redux-storage-engine-electron-store').default
+const { ipcRenderer: ipc } = require('electron-better-ipc');
+const logger = require('electron-timber');
+const unhandled = require('electron-unhandled');
+const SSDPClient = require('node-ssdp-lite');
+const createStorageEngine = require('redux-storage-engine-electron-store')
+  .default;
 
-const localServer = require('./local-server')
-const setupIpc = require('./ipc')
+const localServer = require('./local-server');
+const setupIpc = require('./ipc');
 
-unhandled({ logger: logger.error })
+unhandled({ logger: logger.error });
 
 /**
  * Creates a new SSDP client object and registers the given function to be
@@ -30,14 +31,15 @@ unhandled({ logger: logger.error })
  * @return {Object} a plain object with a `search()` method that can be called to
  *         initiate a search
  */
-function createSSDPClient (callback) {
-  const client = new SSDPClient()
+function createSSDPClient(callback) {
+  const client = new SSDPClient();
   if (callback) {
-    client.on('response', callback)
+    client.on('response', callback);
   }
+
   return {
     search: client.search.bind(client)
-  }
+  };
 }
 
 /**
@@ -46,21 +48,21 @@ function createSSDPClient (callback) {
  *
  * @return {Object}  a Redux storage engine that can be used by redux-storage
  */
-function createStateStore () {
+function createStateStore() {
   return createStorageEngine({
     store: {
       name: 'state'
     }
-  })
+  });
 }
 
-const reverseDNSLookup = pify(dns.reverse)
+const reverseDNSLookup = pify(dns.reverse);
 
-// inject isElectron into 'window' so we can easily detect that we are
+// Inject isElectron into 'window' so we can easily detect that we are
 // running inside Electron
-window.isElectron = true
+window.isElectron = true;
 
-// inject the bridge functions between the main and the renderer processes.
+// Inject the bridge functions between the main and the renderer processes.
 // These are the only functions that the renderer processes may call to access
 // any functionality that requires Node.js -- they are not allowed to use
 // Node.js modules themselves
@@ -69,12 +71,12 @@ window.bridge = {
   createSSDPClient,
   createStateStore,
   dispatch: () => {
-    throw new Error('no store dispatcher was set up yet')
+    throw new Error('no store dispatcher was set up yet');
   },
   getApplicationFolder: () => ipc.callMain('getApplicationFolder'),
   localServer,
   reverseDNSLookup
-}
+};
 
 // Set up IPC channels that we are going to listen to
-setupIpc()
+setupIpc();

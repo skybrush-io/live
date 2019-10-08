@@ -1,2 +1,2 @@
-import ConnectionList from './ConnectionList'
-export default ConnectionList
+import ConnectionList from './ConnectionList';
+export default ConnectionList;

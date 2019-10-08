@@ -5,9 +5,14 @@
  * that the user has saved earlier.
  */
 
-import { handleActions } from 'redux-actions'
+import { handleActions } from 'redux-actions';
 
-import { addToFront, createNewItemAtFrontOf, deleteById, update } from '~/utils/collections'
+import {
+  addToFront,
+  createNewItemAtFrontOf,
+  deleteById,
+  update
+} from '~/utils/collections';
 
 /**
  * Default content of the saved location registry in the state object.
@@ -19,7 +24,7 @@ const defaultState = {
       name: 'ELTE Kert',
       center: {
         lon: 19.061951,
-        lat: 47.473340
+        lat: 47.47334
       },
       rotation: 0,
       zoom: 17
@@ -47,29 +52,32 @@ const defaultState = {
   },
 
   order: ['elte', 'fahegy', 'fina']
-}
+};
 
 /**
  * The reducer function that handles actions related to the handling of
  * saved location states.
  */
-const reducer = handleActions({
-  ADD_SAVED_LOCATION: (state, action) => {
-    const location = { ...action.payload.savedLocation }
-    return addToFront(location, state)
+const reducer = handleActions(
+  {
+    ADD_SAVED_LOCATION: (state, action) => {
+      const location = { ...action.payload.savedLocation };
+      return addToFront(location, state);
+    },
+
+    CREATE_NEW_SAVED_LOCATION: (state, action) => {
+      return createNewItemAtFrontOf(state, action);
+    },
+
+    DELETE_SAVED_LOCATION: (state, action) => {
+      const currentLocationId = action.payload.savedLocationId;
+      return deleteById(currentLocationId, state);
+    },
+
+    UPDATE_SAVED_LOCATION: (state, action) =>
+      update(action.payload.savedLocation, state)
   },
+  defaultState
+);
 
-  CREATE_NEW_SAVED_LOCATION: (state, action) => {
-    return createNewItemAtFrontOf(state, action)
-  },
-
-  DELETE_SAVED_LOCATION: (state, action) => {
-    const currentLocationId = action.payload.savedLocationId
-    return deleteById(currentLocationId, state)
-  },
-
-  UPDATE_SAVED_LOCATION: (state, action) =>
-    update(action.payload.savedLocation, state)
-}, defaultState)
-
-export default reducer
+export default reducer;

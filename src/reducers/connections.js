@@ -5,20 +5,20 @@
  * that the Flockwave server reports via CONN-LIST and CONN-INF messages.
  */
 
-import has from 'lodash/has'
-import { handleActions } from 'redux-actions'
+import has from 'lodash/has';
+import { handleActions } from 'redux-actions';
 
-import { ConnectionState } from '~/model/connections'
+import { ConnectionState } from '~/model/connections';
 
 /**
  * Default content of the connection registry in the state object.
  */
 const defaultState = {
-  // byId is a map from connection ID to the state of the connection
+  // ById is a map from connection ID to the state of the connection
   byId: {},
-  // order defines the preferred ordering of connections on the UI
+  // Order defines the preferred ordering of connections on the UI
   order: []
-}
+};
 
 /**
  * Function that updates the state of a connection with the given ID in
@@ -30,43 +30,49 @@ const defaultState = {
  * @param  {string} id     the identifier of the connection to update
  * @param  {Object} properties  the new properties of the connection
  */
-function updateStateOfConnection (state, id, properties) {
-  const { byId } = state
+function updateStateOfConnection(state, id, properties) {
+  const { byId } = state;
 
   if (!has(byId, id)) {
     byId[id] = {
-      id, name: id, state: ConnectionState.DISCONNECTED
-    }
-    state.order.push(id)
+      id,
+      name: id,
+      state: ConnectionState.DISCONNECTED
+    };
+    state.order.push(id);
   }
 
-  Object.assign(byId[id], properties)
+  Object.assign(byId[id], properties);
 }
 
 /**
  * The reducer function that handles actions related to the handling of
  * connection states.
  */
-const reducer = handleActions({
-  CLEAR_CONNECTION_LIST: (state, action) => ({
-    byId: {},
-    order: []
-  }),
+const reducer = handleActions(
+  {
+    CLEAR_CONNECTION_LIST: (state, action) => ({
+      byId: {},
+      order: []
+    }),
 
-  SET_CONNECTION_STATE: (state, action) => {
-    const newState = Object.assign({}, state)
-    const { id } = action.payload
-    updateStateOfConnection(newState, id, action.payload)
-    return newState
-  },
+    SET_CONNECTION_STATE: (state, action) => {
+      const newState = Object.assign({}, state);
+      const { id } = action.payload;
+      updateStateOfConnection(newState, id, action.payload);
+      return newState;
+    },
 
-  SET_CONNECTION_STATE_MULTIPLE: (state, action) => {
-    const newState = Object.assign({}, state)
-    for (const id of Object.keys(action.payload)) {
-      updateStateOfConnection(newState, id, action.payload[id])
+    SET_CONNECTION_STATE_MULTIPLE: (state, action) => {
+      const newState = Object.assign({}, state);
+      for (const id of Object.keys(action.payload)) {
+        updateStateOfConnection(newState, id, action.payload[id]);
+      }
+
+      return newState;
     }
-    return newState
-  }
-}, defaultState)
+  },
+  defaultState
+);
 
-export default reducer
+export default reducer;

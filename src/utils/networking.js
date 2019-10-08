@@ -1,4 +1,4 @@
-import { isLoopback } from 'ip'
+import { isLoopback } from 'ip';
 
 /**
  * Returns whether the given hostname or IP address refers to the local host.
@@ -7,6 +7,6 @@ import { isLoopback } from 'ip'
  * @return {boolean}  whether the given hostname or IP address refers to the
  *     local host
  */
-export function isLocalHost (hostname) {
-  return hostname === 'localhost' || isLoopback(hostname)
+export function isLocalHost(hostname) {
+  return hostname === 'localhost' || isLoopback(hostname);
 }

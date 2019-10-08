@@ -3,8 +3,8 @@
  * stores the state of the feature editor dialog.
  */
 
-import { handleActions } from 'redux-actions'
-import u from 'updeep'
+import { handleActions } from 'redux-actions';
+import u from 'updeep';
 
 /**
  * The default settings for the part of the state object being defined here.
@@ -12,27 +12,30 @@ import u from 'updeep'
 const defaultState = {
   dialogVisible: false,
   selectedTab: 'general'
-}
+};
 
 /**
  * The reducer function that handles actions related to the server
  * settings.
  */
-const reducer = handleActions({
-  SHOW_FEATURE_EDITOR_DIALOG: (state, action) => (
-    u({
-      dialogVisible: true,
-      featureId: action.payload
-    }, state)
-  ),
+const reducer = handleActions(
+  {
+    SHOW_FEATURE_EDITOR_DIALOG: (state, action) =>
+      u(
+        {
+          dialogVisible: true,
+          featureId: action.payload
+        },
+        state
+      ),
 
-  CLOSE_FEATURE_EDITOR_DIALOG: (state, action) => (
-    u({ ...action.payload, dialogVisible: false }, state)
-  ),
+    CLOSE_FEATURE_EDITOR_DIALOG: (state, action) =>
+      u({ ...action.payload, dialogVisible: false }, state),
 
-  SET_FEATURE_EDITOR_DIALOG_TAB: (state, action) => (
-    u({ selectedTab: action.payload }, state)
-  )
-}, defaultState)
+    SET_FEATURE_EDITOR_DIALOG_TAB: (state, action) =>
+      u({ selectedTab: action.payload }, state)
+  },
+  defaultState
+);
 
-export default reducer
+export default reducer;

@@ -3,11 +3,11 @@
  * manages.
  */
 
-import Flock from './model/flock'
+import Flock from './model/flock';
 
 /**
  * The singleton flock instance that the application manages.
  */
-const flock = new Flock()
+const flock = new Flock();
 
-export default flock
+export default flock;

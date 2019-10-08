@@ -1,6 +1,6 @@
-const { ipcRenderer: ipc } = require('electron-better-ipc')
+const { ipcRenderer: ipc } = require('electron-better-ipc');
 
-const makeEventProxy = require('../event-proxy')
+const makeEventProxy = require('../event-proxy');
 
 /**
  * Event proxy for the local server object.
@@ -8,7 +8,7 @@ const makeEventProxy = require('../event-proxy')
  * This object will receive events when something happens with the server in the
  * main process.
  */
-const events = makeEventProxy('localServer')
+const events = makeEventProxy('localServer');
 
 /**
  * Asks the main process to launch the local Flockwave server executable with
@@ -24,9 +24,9 @@ const events = makeEventProxy('localServer')
  *         was launched successfully
  */
 const launch = async opts => {
-  await ipc.callMain('localServer.launch', opts)
-  return events
-}
+  await ipc.callMain('localServer.launch', opts);
+  return events;
+};
 
 /**
  * Asks the main process to search for the local Flockwave server executable in
@@ -41,8 +41,8 @@ const launch = async opts => {
  *         server executable if found and `null` if it is not found
  */
 const search = paths => {
-  return ipc.callMain('localServer.search', paths)
-}
+  return ipc.callMain('localServer.search', paths);
+};
 
 /**
  * Asks the main process to terminate the local server instance that it is
@@ -52,9 +52,12 @@ const search = paths => {
  *         signal was sent to the server successfully
  */
 const terminate = () => {
-  return ipc.callMain('localServer.terminate')
-}
+  return ipc.callMain('localServer.terminate');
+};
 
 module.exports = {
-  events, launch, search, terminate
-}
+  events,
+  launch,
+  search,
+  terminate
+};

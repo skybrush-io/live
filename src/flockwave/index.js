@@ -1,1 +1,1 @@
-export version from './version'
+export version from './version';

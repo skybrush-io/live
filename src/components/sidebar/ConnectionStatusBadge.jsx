@@ -3,22 +3,21 @@
  * status of all the connections reported by the server.
  */
 
-import { countBy } from 'lodash'
-import { connect } from 'react-redux'
-import { createSelector } from 'reselect'
+import { countBy } from 'lodash';
+import { connect } from 'react-redux';
+import { createSelector } from 'reselect';
 
-import SidebarBadge from './SidebarBadge'
+import { ConnectionState } from '../../model/connections';
+import { getConnectionsInOrder } from '../../selectors/ordered';
+import SidebarBadge from './SidebarBadge';
 
-import { ConnectionState } from '../../model/connections'
-import { getConnectionsInOrder } from '../../selectors/ordered'
-
-const severityLevels = ['error', 'warning', 'ok']
+const severityLevels = ['error', 'warning', 'ok'];
 
 const badgeColorForLevel = {
   ok: '#0c0',
   warning: '#fc0',
   error: '#f00'
-}
+};
 
 /**
  * Returns the severity class of the given connection based on its current
@@ -27,17 +26,17 @@ const badgeColorForLevel = {
  * @param {Object} connection  the connection object
  * @return {string} the severity level of the connection
  */
-function getSeverity (connection) {
+function getSeverity(connection) {
   switch (connection.state) {
     case ConnectionState.CONNECTED:
-      return 'ok'
+      return 'ok';
 
     case ConnectionState.CONNECTING:
     case ConnectionState.DISCONNECTING:
-      return 'warning'
+      return 'warning';
 
     default:
-      return 'error'
+      return 'error';
   }
 }
 
@@ -58,33 +57,34 @@ function getSeverity (connection) {
 const calculateStatusSummary = createSelector(
   getConnectionsInOrder,
   connections => {
-    const severityCounts = countBy(connections, getSeverity)
+    const severityCounts = countBy(connections, getSeverity);
     for (const level of severityLevels) {
       if (severityCounts[level]) {
-        return { level, count: severityCounts[level] }
+        return { level, count: severityCounts[level] };
       }
     }
+
     return {
       level: 'ok',
       count: 0
-    }
+    };
   }
-)
+);
 
 /**
  * @Smart badge component that colors and shows itself according to the
  * status of all the connections reported by the server.
  */
 export default connect(
-  // mapStateToProps
+  // MapStateToProps
   state => {
-    const { level } = calculateStatusSummary(state)
+    const { level } = calculateStatusSummary(state);
     return {
       color: badgeColorForLevel[level],
       visible: level !== 'ok'
-    }
+    };
   },
   // Return empty object from mapDispatchToProps to avoid invalid prop warning
   // caused by react-badger not handling the automatically added dispatch prop.
   () => ({})
-)(SidebarBadge)
+)(SidebarBadge);

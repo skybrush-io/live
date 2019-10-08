@@ -1,7 +1,7 @@
-import { createSelector } from 'reselect'
+import { createSelector } from 'reselect';
 
-import { isLayerVisible } from '~/model/layers'
-import { selectOrdered } from '~/utils/collections'
+import { isLayerVisible } from '~/model/layers';
+import { selectOrdered } from '~/utils/collections';
 
 /**
  * Selector that calculates and caches the list of all the servers detected
@@ -11,7 +11,7 @@ import { selectOrdered } from '~/utils/collections'
 export const getDetectedServersInOrder = createSelector(
   state => state.servers.detected,
   selectOrdered
-)
+);
 
 /**
  * Selector that calculates and caches the list of all the connections that
@@ -21,7 +21,7 @@ export const getDetectedServersInOrder = createSelector(
 export const getConnectionsInOrder = createSelector(
   state => state.connections,
   selectOrdered
-)
+);
 
 /**
  * Selector that calculates and caches the list of all the datasets that
@@ -31,7 +31,7 @@ export const getConnectionsInOrder = createSelector(
 export const getDatasetsInOrder = createSelector(
   state => state.datasets,
   selectOrdered
-)
+);
 
 /**
  * Selector that calculates and caches the list of all the features in the
@@ -40,7 +40,7 @@ export const getDatasetsInOrder = createSelector(
 export const getFeaturesInOrder = createSelector(
   state => state.features,
   selectOrdered
-)
+);
 
 /**
  * Selector that calculates and caches the list of all the layers in the
@@ -49,7 +49,7 @@ export const getFeaturesInOrder = createSelector(
 export const getLayersInOrder = createSelector(
   state => state.map.layers,
   selectOrdered
-)
+);
 
 /**
  * Selector that calculates and caches the list of visible layers in the
@@ -58,7 +58,7 @@ export const getLayersInOrder = createSelector(
 export const getVisibleLayersInOrder = createSelector(
   getLayersInOrder,
   layers => layers.filter(isLayerVisible)
-)
+);
 
 /**
  * Selector that calculates and caches the list of all the saved locations
@@ -68,4 +68,4 @@ export const getVisibleLayersInOrder = createSelector(
 export const getSavedLocationsInOrder = createSelector(
   state => state.savedLocations,
   selectOrdered
-)
+);

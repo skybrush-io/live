@@ -2,33 +2,33 @@
  * @file Component that displays the status of Flockwave clocks.
  */
 
-import { red, green } from '@material-ui/core/colors'
-import Avatar from '@material-ui/core/Avatar'
-import ListItem from '@material-ui/core/ListItem'
-import ListItemIcon from '@material-ui/core/ListItemIcon'
-import ListItemText from '@material-ui/core/ListItemText'
-import PlayArrow from '@material-ui/icons/PlayArrow'
-import Stop from '@material-ui/icons/Stop'
+import { red, green } from '@material-ui/core/colors';
+import Avatar from '@material-ui/core/Avatar';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+import PlayArrow from '@material-ui/icons/PlayArrow';
+import Stop from '@material-ui/icons/Stop';
 
-import isFunction from 'lodash/isFunction'
-import moment from 'moment'
-import PropTypes from 'prop-types'
-import React from 'react'
-import { connect } from 'react-redux'
+import isFunction from 'lodash/isFunction';
+import moment from 'moment';
+import PropTypes from 'prop-types';
+import React from 'react';
+import { connect } from 'react-redux';
 
-import { listOf } from '~/components/helpers/lists'
+import { listOf } from '~/components/helpers/lists';
 
 /**
  * Avatars for stopped and running clocks.
  */
 const avatars = [
-  <Avatar key='stop' style={{ backgroundColor: red['A700'] }}>
+  <Avatar key="stop" style={{ backgroundColor: red.A700 }}>
     <Stop />
   </Avatar>,
-  <Avatar key='play' style={{ backgroundColor: green[500] }}>
+  <Avatar key="play" style={{ backgroundColor: green[500] }}>
     <PlayArrow />
   </Avatar>
-]
+];
 
 /**
  * Remapping of commonly used clock IDs in a Flockwave server to something
@@ -38,112 +38,116 @@ const clockIdRemapping = {
   system: 'Server clock',
   __local__: 'Client clock',
   mtc: 'MIDI timecode'
-}
+};
 
 /**
  * Presentation component for showing the state of a single Flockwave clock.
  */
 class ClockDisplayListEntry extends React.Component {
-  constructor () {
-    super()
-    this.timeoutId = undefined
-    this.isStillMounted = false
+  constructor() {
+    super();
+    this.timeoutId = undefined;
+    this.isStillMounted = false;
 
-    this.clearTimeoutIfNeeded = this.clearTimeoutIfNeeded.bind(this)
-    this.formatTicks = this.formatTicks.bind(this)
-    this.tick = this.tick.bind(this)
+    this.clearTimeoutIfNeeded = this.clearTimeoutIfNeeded.bind(this);
+    this.formatTicks = this.formatTicks.bind(this);
+    this.tick = this.tick.bind(this);
   }
 
-  clearTimeoutIfNeeded () {
+  clearTimeoutIfNeeded() {
     if (this.timeoutId !== undefined) {
-      clearTimeout(this.timeoutId)
-      this.timeoutId = undefined
+      clearTimeout(this.timeoutId);
+      this.timeoutId = undefined;
     }
   }
 
-  componentDidMount () {
-    this.isStillMounted = true
+  componentDidMount() {
+    this.isStillMounted = true;
     if (this.props.running) {
       // Make sure that the timer is ticking
-      this.tick(/* forceRefresh = */ false)
+      this.tick(/* forceRefresh = */ false);
     }
   }
 
-  componentDidUpdate (newProps) {
-    if (newProps.id !== this.props.id ||
-        newProps.epoch !== this.props.epoch ||
-        newProps.format !== this.props.format ||
-        newProps.referenceTime !== this.props.referenceTime ||
-        newProps.running !== this.props.running ||
-        newProps.ticks !== this.props.ticks ||
-        newProps.ticksPerSecond !== this.props.ticksPerSecond ||
-        newProps.updateFrequency !== this.props.updateFrequency) {
-      this.clearTimeoutIfNeeded()
-      this.tick()
+  componentDidUpdate(newProps) {
+    if (
+      newProps.id !== this.props.id ||
+      newProps.epoch !== this.props.epoch ||
+      newProps.format !== this.props.format ||
+      newProps.referenceTime !== this.props.referenceTime ||
+      newProps.running !== this.props.running ||
+      newProps.ticks !== this.props.ticks ||
+      newProps.ticksPerSecond !== this.props.ticksPerSecond ||
+      newProps.updateFrequency !== this.props.updateFrequency
+    ) {
+      this.clearTimeoutIfNeeded();
+      this.tick();
     }
   }
 
-  componentWillUnmount () {
-    this.isStillMounted = false
-    this.clearTimeoutIfNeeded()
+  componentWillUnmount() {
+    this.isStillMounted = false;
+    this.clearTimeoutIfNeeded();
   }
 
-  formatClockId (id) {
-    return clockIdRemapping[id] || `Clock '${id}'`
+  formatClockId(id) {
+    return clockIdRemapping[id] || `Clock '${id}'`;
   }
 
-  formatTicks (ticks) {
-    const { epoch, format, ticksPerSecond } = this.props
+  formatTicks(ticks) {
+    const { epoch, format, ticksPerSecond } = this.props;
     if (epoch === undefined) {
       if (ticksPerSecond <= 1) {
         // No epoch, so we just simply show a HH:MM:SS timestamp
-        return moment.utc(0)
+        return moment
+          .utc(0)
           .add(Math.floor(ticks / ticksPerSecond), 'second')
-          .format('HH:mm:ss')
-      } else {
-        // No epoch, so we just simply show a HH:MM:SS:FF SMPTE-style
-        // timestamp. We (ab)use the millisecond part of the timestamp
-        // to represent the number of frames
-        return moment.utc(0)
-          .add(Math.floor(ticks / ticksPerSecond), 'second')
-          .add(ticks % ticksPerSecond * 10, 'millisecond')
-          .format('HH:mm:ss:SS')
+          .format('HH:mm:ss');
       }
-    } else {
-      // We have an epoch, so create a date and use the formatter
-      const date = moment.unix(epoch + ticks / ticksPerSecond)
-      return isFunction(format) ? format(date) : date.format(format)
+
+      // No epoch, so we just simply show a HH:MM:SS:FF SMPTE-style
+      // timestamp. We (ab)use the millisecond part of the timestamp
+      // to represent the number of frames
+      return moment
+        .utc(0)
+        .add(Math.floor(ticks / ticksPerSecond), 'second')
+        .add((ticks % ticksPerSecond) * 10, 'millisecond')
+        .format('HH:mm:ss:SS');
     }
+
+    // We have an epoch, so create a date and use the formatter
+    const date = moment.unix(epoch + ticks / ticksPerSecond);
+    return isFunction(format) ? format(date) : date.format(format);
   }
 
-  render () {
-    const { id, running } = this.props
-    const { referenceTime, ticks, ticksPerSecond } = this.props
-    const avatar = avatars[running ? 1 : 0]
-    const formattedId = this.formatClockId(id)
-    const elapsed = running ? (moment().valueOf() / 1000 - referenceTime) : 0
-    const extrapolatedTicks = ticks + elapsed * ticksPerSecond
-    const formattedTime = this.formatTicks(extrapolatedTicks)
+  render() {
+    const { id, running } = this.props;
+    const { referenceTime, ticks, ticksPerSecond } = this.props;
+    const avatar = avatars[running ? 1 : 0];
+    const formattedId = this.formatClockId(id);
+    const elapsed = running ? moment().valueOf() / 1000 - referenceTime : 0;
+    const extrapolatedTicks = ticks + elapsed * ticksPerSecond;
+    const formattedTime = this.formatTicks(extrapolatedTicks);
     return (
       <ListItem>
         <ListItemIcon>{avatar}</ListItemIcon>
         <ListItemText primary={formattedTime} secondary={formattedId} />
       </ListItem>
-    )
+    );
   }
 
-  tick (forceRefresh = true) {
-    const { running, updateFrequency } = this.props
+  tick(forceRefresh = true) {
+    const { running, updateFrequency } = this.props;
 
     if (!this.isStillMounted || !running || updateFrequency <= 0) {
-      this.clearTimeoutIfNeeded()
-      return
+      this.clearTimeoutIfNeeded();
+      return;
     }
 
-    this.timeoutId = setTimeout(this.tick, updateFrequency)
+    this.timeoutId = setTimeout(this.tick, updateFrequency);
 
     if (forceRefresh) {
-      this.forceUpdate()
+      this.forceUpdate();
     }
   }
 }
@@ -182,7 +186,7 @@ ClockDisplayListEntry.propTypes = {
    * X milliseconds.
    */
   updateFrequency: PropTypes.number.isRequired
-}
+};
 
 ClockDisplayListEntry.defaultProps = {
   format: 'YYYY-MM-DD HH:mm:ss Z',
@@ -192,7 +196,7 @@ ClockDisplayListEntry.defaultProps = {
   ticks: 0,
   ticksPerSecond: 1,
   updateFrequency: 1000
-}
+};
 
 /**
  * Presentation component for showing the state of a set of Flockwave
@@ -203,31 +207,30 @@ ClockDisplayListEntry.defaultProps = {
 const ClockDisplayListPresentation = listOf(ClockDisplayListEntry, {
   dataProvider: 'clocks',
   backgroundHint: 'No clocks'
-})
-ClockDisplayListPresentation.displayName = 'ClockDisplayListPresentation'
+});
+ClockDisplayListPresentation.displayName = 'ClockDisplayListPresentation';
 
 /**
  * Smart component for showing the state of the known Flockwave clocks from
  * the Redux store.
  */
 const ClockDisplayList = connect(
-  // mapStateToProps
+  // MapStateToProps
   state => ({
-    clocks: state.clocks.order.map(
-      entryName => {
-        const result = { ...state.clocks.items[entryName] }
-        if (result.ticksPerSecond > 1) {
-          result.updateFrequency = Math.max(1000 / result.ticksPerSecond, 100)
-        } else {
-          result.updateFrequency = 1000
-        }
-        return result
+    clocks: state.clocks.order.map(entryName => {
+      const result = { ...state.clocks.items[entryName] };
+      if (result.ticksPerSecond > 1) {
+        result.updateFrequency = Math.max(1000 / result.ticksPerSecond, 100);
+      } else {
+        result.updateFrequency = 1000;
       }
-    ),
+
+      return result;
+    }),
     dense: true
   }),
-  // mapDispatchToProps
+  // MapDispatchToProps
   undefined
-)(ClockDisplayListPresentation)
+)(ClockDisplayListPresentation);
 
-export default ClockDisplayList
+export default ClockDisplayList;

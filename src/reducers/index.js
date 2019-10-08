@@ -1,25 +1,25 @@
-import has from 'lodash/has'
-import { combineReducers } from 'redux'
-import * as storage from 'redux-storage'
-import defaultMerger from 'redux-storage-merger-simple'
+import has from 'lodash/has';
+import { combineReducers } from 'redux';
+import * as storage from 'redux-storage';
+import defaultMerger from 'redux-storage-merger-simple';
 
-import config from '../config'
-import clocksReducer from './clocks'
-import connectionsReducer from './connections'
-import datasetsReducer from './datasets'
-import dialogsReducer from './dialogs'
-import featuresReducer from './features'
-import localServerReducer from './local-server'
-import logReducer from './log'
-import mapReducer from './map'
-import messagesReducer from './messages'
-import metaReducer from './meta'
-import savedLocationsReducer from './saved-locations'
-import serversReducer from './servers'
-import settingsReducer from './settings'
-import sidebarReducer from './sidebar'
-import snackbarReducer from './snackbar'
-import workbenchReducer from './workbench'
+import config from '../config';
+import clocksReducer from './clocks';
+import connectionsReducer from './connections';
+import datasetsReducer from './datasets';
+import dialogsReducer from './dialogs';
+import featuresReducer from './features';
+import localServerReducer from './local-server';
+import logReducer from './log';
+import mapReducer from './map';
+import messagesReducer from './messages';
+import metaReducer from './meta';
+import savedLocationsReducer from './saved-locations';
+import serversReducer from './servers';
+import settingsReducer from './settings';
+import sidebarReducer from './sidebar';
+import snackbarReducer from './snackbar';
+import workbenchReducer from './workbench';
 
 /**
  * Returns the schema version of the state object.
@@ -27,9 +27,8 @@ import workbenchReducer from './workbench'
  * @param  {Object} state  the entire state store
  * @return {number} the schema version of the state object
  */
-const getSchemaVersion = state => (
-  (state && state.meta ? state.meta.schemaVersion : 0) || 0
-)
+const getSchemaVersion = state =>
+  (state && state.meta ? state.meta.schemaVersion : 0) || 0;
 
 /**
  * State merger that takes the default state of the Redux store and the
@@ -48,9 +47,9 @@ const getSchemaVersion = state => (
  * @return {Object} the merged state
  */
 const merger = (oldState, newState) => {
-  const newSchemaVersion = getSchemaVersion(newState)
-  const oldSchemaVersion = getSchemaVersion(oldState)
-  const willUpgrade = newSchemaVersion < oldSchemaVersion
+  const newSchemaVersion = getSchemaVersion(newState);
+  const oldSchemaVersion = getSchemaVersion(oldState);
+  const willUpgrade = newSchemaVersion < oldSchemaVersion;
 
   if (!willUpgrade) {
     // If we are not upgrading the schema, make sure that we don't restore
@@ -61,24 +60,24 @@ const merger = (oldState, newState) => {
       // TODO: create a dedicated function for merging two ordered collections,
       // and then use that
       if (has(oldState, key) && oldState[key] && oldState[key].byId) {
-        delete oldState[key].byId
-        delete oldState[key].order
+        delete oldState[key].byId;
+        delete oldState[key].order;
       }
     }
   }
 
-  const merged = defaultMerger(oldState, newState)
+  const merged = defaultMerger(oldState, newState);
 
   if (willUpgrade) {
-    merged.meta.schemaVersion = oldSchemaVersion
+    merged.meta.schemaVersion = oldSchemaVersion;
   }
 
   if (merged.dialogs.serverSettings.hostName === null) {
-    Object.assign(merged.dialogs.serverSettings, config.server)
+    Object.assign(merged.dialogs.serverSettings, config.server);
   }
 
-  return merged
-}
+  return merged;
+};
 
 /**
  * The global reducer of the application, wrapped in a wrapper provided by
@@ -105,6 +104,6 @@ const reducer = storage.reducer(
     workbench: workbenchReducer
   }),
   merger
-)
+);
 
-export default reducer
+export default reducer;

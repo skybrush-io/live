@@ -3,135 +3,165 @@
  * edit it.
  */
 
-import { autobind } from 'core-decorators'
-import { partial } from 'lodash'
-import PropTypes from 'prop-types'
-import React from 'react'
-import { Form, Field } from 'react-final-form'
-import { connect } from 'react-redux'
+import { autobind } from 'core-decorators';
+import { partial } from 'lodash';
+import PropTypes from 'prop-types';
+import React from 'react';
+import { Form, Field } from 'react-final-form';
+import { connect } from 'react-redux';
 
-import AppBar from '@material-ui/core/AppBar'
-import Button from '@material-ui/core/Button'
-import Dialog from '@material-ui/core/Dialog'
-import DialogActions from '@material-ui/core/DialogActions'
-import DialogContent from '@material-ui/core/DialogContent'
-import FormControlLabel from '@material-ui/core/FormControlLabel'
-import CircularProgress from '@material-ui/core/CircularProgress'
-import List from '@material-ui/core/List'
-import ListItem from '@material-ui/core/ListItem'
-import ListItemIcon from '@material-ui/core/ListItemIcon'
-import ListItemText from '@material-ui/core/ListItemText'
-import Tab from '@material-ui/core/Tab'
-import Tabs from '@material-ui/core/Tabs'
+import AppBar from '@material-ui/core/AppBar';
+import Button from '@material-ui/core/Button';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+import Tab from '@material-ui/core/Tab';
+import Tabs from '@material-ui/core/Tabs';
 
-import EditIcon from '@material-ui/icons/Edit'
-import SignalWifi0Bar from '@material-ui/icons/SignalWifi0Bar'
-import WifiIcon from '@material-ui/icons/Wifi'
+import EditIcon from '@material-ui/icons/Edit';
+import SignalWifi0Bar from '@material-ui/icons/SignalWifi0Bar';
+import WifiIcon from '@material-ui/icons/Wifi';
 
 import {
   ServerDetectionManager,
   isServerDetectionSupported
-} from '../ServerDetectionManager'
+} from '../ServerDetectionManager';
 
 import {
   closeServerSettingsDialog,
   disconnectFromServer,
   setServerSettingsDialogTab
-} from '~/actions/server-settings'
-import { forceFormSubmission, Switch, TextField } from '~/components/forms'
-import { getDetectedServersInOrder } from '~/selectors/ordered'
-import { createValidator, between, integer, required } from '~/utils/validation'
+} from '~/actions/server-settings';
+import { forceFormSubmission, Switch, TextField } from '~/components/forms';
+import { getDetectedServersInOrder } from '~/selectors/ordered';
+import {
+  createValidator,
+  between,
+  integer,
+  required
+} from '~/utils/validation';
 
 // eslint-disable-next-line react/prop-types
-const iconForServerItem = ({ type }) => (
-  type === 'inferred' ? <SignalWifi0Bar /> : <WifiIcon />
-)
+const iconForServerItem = ({ type }) =>
+  type === 'inferred' ? <SignalWifi0Bar /> : <WifiIcon />;
 
-const primaryTextForServerItem = ({ hostName, label, port }) => (
-  label || `${hostName}:${port}`
-)
+const primaryTextForServerItem = ({ hostName, label, port }) =>
+  label || `${hostName}:${port}`;
 
-const secondaryTextForServerItem = ({ protocol, type }) => (
-  protocol === 'sio+tls:' ? 'Secure connection' : 'Unencrypted connection'
-)
+const secondaryTextForServerItem = ({ protocol, type }) =>
+  protocol === 'sio+tls:' ? 'Secure connection' : 'Unencrypted connection';
 
-const DetectedServersListPresentation = ({ isScanning, items, onItemSelected }) => (
+const DetectedServersListPresentation = ({
+  isScanning,
+  items,
+  onItemSelected
+}) => (
   <List style={{ height: 160, overflow: 'auto' }}>
     {isScanning && (!items || items.length === 0) ? (
-      <ListItem key='__scanning'>
-        <ListItemIcon><CircularProgress size={24} /></ListItemIcon>
-        <ListItemText primary='Please wait...'
-          secondary='Scanning network for servers...' />
+      <ListItem key="__scanning">
+        <ListItemIcon>
+          <CircularProgress size={24} />
+        </ListItemIcon>
+        <ListItemText
+          primary="Please wait..."
+          secondary="Scanning network for servers..."
+        />
       </ListItem>
     ) : null}
     {items.map(item => (
       <ListItem key={item.id} button onClick={partial(onItemSelected, item)}>
         <ListItemIcon>{iconForServerItem(item)}</ListItemIcon>
-        <ListItemText primary={primaryTextForServerItem(item)}
-          secondary={secondaryTextForServerItem(item)} />
+        <ListItemText
+          primary={primaryTextForServerItem(item)}
+          secondary={secondaryTextForServerItem(item)}
+        />
       </ListItem>
     ))}
-    <ListItem key='__manual' button onClick={partial(onItemSelected, null)}>
-      <ListItemIcon><EditIcon /></ListItemIcon>
-      <ListItemText primary='Enter manually' />
+    <ListItem key="__manual" button onClick={partial(onItemSelected, null)}>
+      <ListItemIcon>
+        <EditIcon />
+      </ListItemIcon>
+      <ListItemText primary="Enter manually" />
     </ListItem>
   </List>
-)
+);
 
 DetectedServersListPresentation.propTypes = {
   isScanning: PropTypes.bool,
   items: PropTypes.array,
   onItemSelected: PropTypes.func
-}
+};
 
 /**
  * Container of the list that shows the running servers that we have
  * detected on the network.
  */
 const DetectedServersList = connect(
-  // mapStateToProps
+  // MapStateToProps
   state => ({
     isScanning: state.servers.isScanning,
     items: getDetectedServersInOrder(state)
   })
-)(DetectedServersListPresentation)
+)(DetectedServersListPresentation);
 
 const validator = createValidator({
   hostName: required,
   port: [required, integer, between(1, 65535)]
-})
+});
 
-const ServerSettingsFormPresentation = ({ initialValues, onKeyPress, onSubmit }) => (
-  <Form initialValues={initialValues} onSubmit={onSubmit} validate={validator}>
+const ServerSettingsFormPresentation = ({
+  initialValues,
+  onKeyPress,
+  onSubmit
+}) => (
+  <Form initialValues={initialValues} validate={validator} onSubmit={onSubmit}>
     {({ handleSubmit }) => (
-      <form id='serverSettings' onSubmit={handleSubmit} onKeyPress={onKeyPress}>
-        <Field name='hostName' label='Hostname' margin='normal'
-          component={TextField} fullWidth />
-        <Field name='port' label='Port' margin='normal'
-          component={TextField} fullWidth />
-        <FormControlLabel control={<Field name='isSecure' type='checkbox' component={Switch} />}
-          label="Use secure connection" />
+      <form id="serverSettings" onSubmit={handleSubmit} onKeyPress={onKeyPress}>
+        <Field
+          fullWidth
+          name="hostName"
+          label="Hostname"
+          margin="normal"
+          component={TextField}
+        />
+        <Field
+          fullWidth
+          name="port"
+          label="Port"
+          margin="normal"
+          component={TextField}
+        />
+        <FormControlLabel
+          control={<Field name="isSecure" type="checkbox" component={Switch} />}
+          label="Use secure connection"
+        />
       </form>
     )}
   </Form>
-)
+);
 
 ServerSettingsFormPresentation.propTypes = {
   initialValues: PropTypes.object,
   onKeyPress: PropTypes.func,
   onSubmit: PropTypes.func
-}
+};
 
 /**
  * Container of the form that shows the fields that the user can use to
  * edit the server settings.
  */
 const ServerSettingsForm = connect(
-  // mapStateToProps
+  // MapStateToProps
   state => ({
     initialValues: state.dialogs.serverSettings
   })
-)(ServerSettingsFormPresentation)
+)(ServerSettingsFormPresentation);
 
 /**
  * Presentation component for the dialog that shows the form that the user
@@ -139,76 +169,105 @@ const ServerSettingsForm = connect(
  */
 class ServerSettingsDialogPresentation extends React.Component {
   @autobind
-  _handleKeyPress (e) {
+  _handleKeyPress(e) {
     if (e.nativeEvent.code === 'Enter') {
-      this.props.forceFormSubmission()
+      this.props.forceFormSubmission();
     }
   }
 
   @autobind
-  _handleServerSelection (item) {
+  _handleServerSelection(item) {
     if (item === null || item === undefined) {
-      this.props.onTabSelected(null, 'manual')
+      this.props.onTabSelected(null, 'manual');
     } else {
       this.props.onSubmit({
         ...item,
         isSecure: item.protocol === 'sio+tls:'
-      })
+      });
     }
   }
 
-  render () {
-    const { active, forceFormSubmission, onClose, onDisconnect, onSubmit,
-      onTabSelected, open, selectedTab } = this.props
-    const actions = []
-    const content = []
+  render() {
+    const {
+      active,
+      forceFormSubmission,
+      onClose,
+      onDisconnect,
+      onSubmit,
+      onTabSelected,
+      open,
+      selectedTab
+    } = this.props;
+    const actions = [];
+    const content = [];
 
     switch (selectedTab) {
       case 'auto':
         content.push(
-          <DetectedServersList key='serverList'
-            onItemSelected={this._handleServerSelection} />
-        )
+          <DetectedServersList
+            key="serverList"
+            onItemSelected={this._handleServerSelection}
+          />
+        );
         if (!isServerDetectionSupported) {
           content.push(
-            <DialogContent key='contents'>
+            <DialogContent key="contents">
               Auto-discovery is not available in this version.
             </DialogContent>
-          )
+          );
         }
-        break
+
+        break;
 
       case 'manual':
         content.push(
-          <DialogContent key='contents'>
-            <ServerSettingsForm onSubmit={onSubmit} onKeyPress={this._handleKeyPress} />
+          <DialogContent key="contents">
+            <ServerSettingsForm
+              onSubmit={onSubmit}
+              onKeyPress={this._handleKeyPress}
+            />
           </DialogContent>
-        )
+        );
         actions.push(
-          <Button key='connect' color='primary' onClick={forceFormSubmission}>Connect</Button>
-        )
-        break
+          <Button key="connect" color="primary" onClick={forceFormSubmission}>
+            Connect
+          </Button>
+        );
+        break;
     }
 
     actions.push(
-      <Button key='disconnect' disabled={!active}
-        onClick={active ? onDisconnect : undefined}>Disconnect</Button>
-    )
-    actions.push(<Button key='close' onClick={onClose}>Close</Button>)
+      <Button
+        key="disconnect"
+        disabled={!active}
+        onClick={active ? onDisconnect : undefined}
+      >
+        Disconnect
+      </Button>
+    );
+    actions.push(
+      <Button key="close" onClick={onClose}>
+        Close
+      </Button>
+    );
 
     return (
-      <Dialog open={open} onClose={onClose} fullWidth maxWidth='xs'>
-        <AppBar position='static'>
-          <Tabs value={selectedTab} onChange={onTabSelected} variant="fullWidth">
-            <Tab value='auto' label="Autodetected" />
-            <Tab value='manual' label="Manual" />
+      <Dialog fullWidth open={open} maxWidth="xs" onClose={onClose}>
+        <AppBar position="static">
+          <Tabs
+            value={selectedTab}
+            variant="fullWidth"
+            onChange={onTabSelected}
+          >
+            <Tab value="auto" label="Autodetected" />
+            <Tab value="manual" label="Manual" />
           </Tabs>
         </AppBar>
         <ServerDetectionManager />
         {content}
         <DialogActions>{actions}</DialogActions>
       </Dialog>
-    )
+    );
   }
 }
 
@@ -221,49 +280,51 @@ ServerSettingsDialogPresentation.propTypes = {
   onTabSelected: PropTypes.func,
   open: PropTypes.bool.isRequired,
   selectedTab: PropTypes.string
-}
+};
 
 ServerSettingsDialogPresentation.defaultProps = {
   open: false,
   selectedTab: 'auto'
-}
+};
 
 /**
  * Container of the dialog that shows the form that the user can use to
  * edit the server settings.
  */
 const ServerSettingsDialog = connect(
-  // mapStateToProps
+  // MapStateToProps
   state => ({
     active: state.dialogs.serverSettings.active,
     open: state.dialogs.serverSettings.dialogVisible,
     selectedTab: state.dialogs.serverSettings.selectedTab
   }),
-  // mapDispatchToProps
+  // MapDispatchToProps
   dispatch => ({
-    forceFormSubmission () {
-      forceFormSubmission('serverSettings')
+    forceFormSubmission() {
+      forceFormSubmission('serverSettings');
     },
-    onClose () {
-      dispatch(closeServerSettingsDialog())
+    onClose() {
+      dispatch(closeServerSettingsDialog());
     },
-    onDisconnect () {
-      dispatch(closeServerSettingsDialog())
-      dispatch(disconnectFromServer())
+    onDisconnect() {
+      dispatch(closeServerSettingsDialog());
+      dispatch(disconnectFromServer());
     },
-    onSubmit (data) {
+    onSubmit(data) {
       // Cast the port into a number first, then dispatch the action
-      dispatch(closeServerSettingsDialog({
-        active: true,
-        hostName: data.hostName,
-        isSecure: data.isSecure,
-        port: Number(data.port)
-      }))
+      dispatch(
+        closeServerSettingsDialog({
+          active: true,
+          hostName: data.hostName,
+          isSecure: data.isSecure,
+          port: Number(data.port)
+        })
+      );
     },
-    onTabSelected (event, value) {
-      dispatch(setServerSettingsDialogTab(value))
+    onTabSelected(event, value) {
+      dispatch(setServerSettingsDialogTab(value));
     }
   })
-)(ServerSettingsDialogPresentation)
+)(ServerSettingsDialogPresentation);
 
-export default ServerSettingsDialog
+export default ServerSettingsDialog;

@@ -2,22 +2,22 @@
  * @file Component that shows the list of locations saved by the user.
  */
 
-import IconButton from '@material-ui/core/IconButton'
-import ListItem from '@material-ui/core/ListItem'
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction'
-import ListItemText from '@material-ui/core/ListItemText'
+import IconButton from '@material-ui/core/IconButton';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
+import ListItemText from '@material-ui/core/ListItemText';
 
-import ActionSettings from '@material-ui/icons/Settings'
+import ActionSettings from '@material-ui/icons/Settings';
 
-import PropTypes from 'prop-types'
-import React from 'react'
-import { connect } from 'react-redux'
+import PropTypes from 'prop-types';
+import React from 'react';
+import { connect } from 'react-redux';
 
-import { createNewSavedLocation } from '~/actions/saved-locations'
-import { editSavedLocation } from '~/actions/saved-location-editor'
-import { listOf } from '~/components/helpers/lists'
-import { getSavedLocationsInOrder } from '~/selectors/ordered'
-import { mapViewToLocationSignal } from '~/signals'
+import { createNewSavedLocation } from '~/actions/saved-locations';
+import { editSavedLocation } from '~/actions/saved-location-editor';
+import { listOf } from '~/components/helpers/lists';
+import { getSavedLocationsInOrder } from '~/selectors/ordered';
+import { mapViewToLocationSignal } from '~/signals';
 
 /**
  * Presentation component for a single entry in the location list.
@@ -25,17 +25,19 @@ import { mapViewToLocationSignal } from '~/signals'
  * @param  {Object} props  the properties of the component
  * @return {Object} the React presentation component
  */
-const LocationListEntry = (props) => {
-  const { location, onEditItem } = props
-  const { id, name } = location
+const LocationListEntry = props => {
+  const { location, onEditItem } = props;
+  const { id, name } = location;
 
-  const editLocation = () => onEditItem(id)
-  const mapViewToLocation = () => mapViewToLocationSignal.dispatch(location)
+  const editLocation = () => onEditItem(id);
+  const mapViewToLocation = () => mapViewToLocationSignal.dispatch(location);
 
   const actionButton = (
     // eslint-disable-next-line react/jsx-no-bind
-    <IconButton onClick={editLocation}><ActionSettings /></IconButton>
-  )
+    <IconButton onClick={editLocation}>
+      <ActionSettings />
+    </IconButton>
+  );
 
   return (
     // eslint-disable-next-line react/jsx-no-bind
@@ -43,13 +45,13 @@ const LocationListEntry = (props) => {
       <ListItemText primary={name} />
       <ListItemSecondaryAction>{actionButton}</ListItemSecondaryAction>
     </ListItem>
-  )
-}
+  );
+};
 
 LocationListEntry.propTypes = {
   onEditItem: PropTypes.func.isRequired,
   location: PropTypes.object.isRequired
-}
+};
 
 /**
  * Creates the "add new layer" item for the layer list.
@@ -57,13 +59,13 @@ LocationListEntry.propTypes = {
  * @param  {Object} props  the props of the list in which this item will be placed
  * @return {React.Node}  the rendered list item
  */
-function createNewItemEntry (props) {
+function createNewItemEntry(props) {
   /* eslint-disable react/prop-types */
   return (
-    <ListItem button key='__addNew__' onClick={props.onNewItem}>
-      <ListItemText primary='Add new location' />
+    <ListItem key="__addNew__" button onClick={props.onNewItem}>
+      <ListItemText primary="Add new location" />
     </ListItem>
-  )
+  );
   /* eslint-enable react/prop-types */
 }
 
@@ -72,40 +74,40 @@ function createNewItemEntry (props) {
  */
 export const LocationListPresentation = listOf(
   (location, props) => (
-    <LocationListEntry key={location.id}
+    <LocationListEntry
+      key={location.id}
+      location={location}
       onEditItem={props.onEditItem}
-      location={location} />
+    />
   ),
   {
     dataProvider: 'savedLocations',
     backgroundHint: 'No saved locations',
-    postprocess: (items, props) => ([
-      createNewItemEntry(props), ...items
-    ])
+    postprocess: (items, props) => [createNewItemEntry(props), ...items]
   }
-)
-LocationListPresentation.displayName = 'LocationListPresentation'
+);
+LocationListPresentation.displayName = 'LocationListPresentation';
 
 const LocationList = connect(
-  // mapStateToProps
+  // MapStateToProps
   state => ({
     dense: true,
     savedLocations: getSavedLocationsInOrder(state)
   }),
-  // mapDispatchToProps
+  // MapDispatchToProps
   dispatch => ({
-    onEditItem (id) {
-      dispatch(editSavedLocation(id))
+    onEditItem(id) {
+      dispatch(editSavedLocation(id));
     },
 
-    onNewItem () {
-      const action = createNewSavedLocation()
-      dispatch(action)
+    onNewItem() {
+      const action = createNewSavedLocation();
+      dispatch(action);
       if (action.id) {
-        dispatch(editSavedLocation(action.id))
+        dispatch(editSavedLocation(action.id));
       }
     }
   })
-)(LocationListPresentation)
+)(LocationListPresentation);
 
-export default LocationList
+export default LocationList;

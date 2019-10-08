@@ -3,15 +3,15 @@
  * the map.
  */
 
-import { isNil, reject } from 'lodash'
-import Collection from 'ol/Collection'
-import { createSelector } from 'reselect'
+import { isNil, reject } from 'lodash';
+import Collection from 'ol/Collection';
+import { createSelector } from 'reselect';
 
 import {
   globalIdToFeatureId,
   globalIdToHomePositionId,
   globalIdToUavId
-} from '../model/identifiers'
+} from '../model/identifiers';
 
 /**
  * Selector that retrieves the list of item IDs in the current selection
@@ -20,7 +20,7 @@ import {
  * @param  {Object}  state  the state of the application
  * @return {string[]}  the list of selected item IDs
  */
-export const getSelection = state => state.map.selection
+export const getSelection = state => state.map.selection;
 
 /**
  * Helper function that creates a selector that maps the current map selection
@@ -31,9 +31,11 @@ export const getSelection = state => state.map.selection
  *        is not part of the subset being selected
  * @return {function} a selector function
  */
-const selectionForSubset = mapper => createSelector(
-  getSelection, selection => reject(selection.map(mapper), isNil)
-)
+const selectionForSubset = mapper =>
+  createSelector(
+    getSelection,
+    selection => reject(selection.map(mapper), isNil)
+  );
 
 /**
  * Selector that retrieves the list of selected feature IDs from the
@@ -42,9 +44,9 @@ const selectionForSubset = mapper => createSelector(
  * @param  {Object}  state  the state of the application
  * @return {string[]}  the list of selected feature IDs
  */
-export const getSelectedFeatureIds = selectionForSubset(globalIdToFeatureId)
+export const getSelectedFeatureIds = selectionForSubset(globalIdToFeatureId);
 
-const _selectedFeatureIdsCollection = new Collection([], { unique: true })
+const _selectedFeatureIdsCollection = new Collection([], { unique: true });
 
 /**
  * Selector that retrieves an OpenLayers collection containing the list of
@@ -60,11 +62,11 @@ const _selectedFeatureIdsCollection = new Collection([], { unique: true })
 export const getSelectedFeatureIdsAsOpenLayersCollection = createSelector(
   getSelection,
   selection => {
-    _selectedFeatureIdsCollection.clear()
-    _selectedFeatureIdsCollection.extend(selection)
-    return _selectedFeatureIdsCollection
+    _selectedFeatureIdsCollection.clear();
+    _selectedFeatureIdsCollection.extend(selection);
+    return _selectedFeatureIdsCollection;
   }
-)
+);
 
 /**
  * Selector that retrieves the list of the labels of the selected features
@@ -76,12 +78,11 @@ export const getSelectedFeatureIdsAsOpenLayersCollection = createSelector(
 export const getSelectedFeatureLabels = createSelector(
   getSelectedFeatureIds,
   state => state.features.byId,
-  (featureIds, features) => (
-    reject(
-      featureIds.map(featureId => features[featureId]), isNil
-    ).map(feature => feature.label)
-  )
-)
+  (featureIds, features) =>
+    reject(featureIds.map(featureId => features[featureId]), isNil).map(
+      feature => feature.label
+    )
+);
 
 /**
  * Selector that retrieves the list of selected home position IDs from the
@@ -90,10 +91,12 @@ export const getSelectedFeatureLabels = createSelector(
  * @param  {Object}  state  the state of the application
  * @return {string[]}  the list of selected feature IDs
  */
-export const getSelectedHomePositionIds = selectionForSubset(globalIdToHomePositionId)
+export const getSelectedHomePositionIds = selectionForSubset(
+  globalIdToHomePositionId
+);
 
 /**
  * Selector that calculates and caches the list of selected UAV IDs from
  * the state object.
  */
-export const getSelectedUAVIds = selectionForSubset(globalIdToUavId)
+export const getSelectedUAVIds = selectionForSubset(globalIdToUavId);

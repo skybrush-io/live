@@ -3,22 +3,22 @@
  * to a given remote location using rsync
  */
 
-const execa = require('execa')
-const { copy, emptyDir, ensureDir, readJson } = require('fs-extra')
-const Listr = require('listr')
-const ora = require('ora')
-const path = require('path')
-const pify = require('pify')
-const webpack = require('webpack')
+const path = require('path');
+const execa = require('execa');
+const { copy, emptyDir, ensureDir, readJson } = require('fs-extra');
+const Listr = require('listr');
+const ora = require('ora');
+const pify = require('pify');
+const webpack = require('webpack');
 
 /** The root directory of the project */
-const projectRoot = path.resolve(__dirname, '..')
+const projectRoot = path.resolve(__dirname, '..');
 
 /** The build folder where we set up the stage for electron-builder */
-const buildDir = path.resolve(projectRoot, 'build')
+const buildDir = path.resolve(projectRoot, 'build');
 
 /** The output directory where the release will be built */
-let outputDir = path.resolve(projectRoot, 'dist')
+const outputDir = path.resolve(projectRoot, 'dist');
 
 const options = require('yargs')
   .usage('$0 [options] <target>')
@@ -28,59 +28,64 @@ const options = require('yargs')
     describe: 'whether to build the application in production mode',
     type: 'boolean'
   })
-  .help('h').alias('h', 'help')
-  .version(false)
-  .argv
+  .help('h')
+  .alias('h', 'help')
+  .version(false).argv;
 
-function loadAppConfig () {
-  return readJson(path.resolve(projectRoot, 'package.json'))
+function loadAppConfig() {
+  return readJson(path.resolve(projectRoot, 'package.json'));
 }
 
-async function cleanDirs () {
-  await emptyDir(buildDir)
-  await emptyDir(outputDir)
+async function cleanDirs() {
+  await emptyDir(buildDir);
+  await emptyDir(outputDir);
 }
 
-async function createBundle (configName) {
-  process.env.DEPLOYMENT = '1'
+async function createBundle(configName) {
+  process.env.DEPLOYMENT = '1';
 
-  const webpackConfig = require(path.resolve(projectRoot, 'webpack', configName + '.config.js'))
+  const webpackConfig = require(path.resolve(
+    projectRoot,
+    'webpack',
+    configName + '.config.js'
+  ));
 
-  webpackConfig.context = projectRoot
-  webpackConfig.mode = options.production ? 'production' : 'development'
+  webpackConfig.context = projectRoot;
+  webpackConfig.mode = options.production ? 'production' : 'development';
   webpackConfig.output = {
-    filename: configName === 'electron' ? 'bundle.js' : (configName + '.bundle.js'),
+    filename:
+      configName === 'electron' ? 'bundle.js' : configName + '.bundle.js',
     path: buildDir
-  }
+  };
 
-  await ensureDir(buildDir)
-  await pify(webpack)(webpackConfig)
+  await ensureDir(buildDir);
+  await pify(webpack)(webpackConfig);
 }
 
-async function copyIcons () {
+async function copyIcons() {
   await copy(
     path.resolve(projectRoot, 'assets', 'icons', 'mac', 'flockwave.icns'),
     path.resolve(buildDir, 'icon.icns')
-  )
+  );
   await copy(
     path.resolve(projectRoot, 'assets', 'icons', 'win', 'flockwave.ico'),
     path.resolve(buildDir, 'icon.ico')
-  )
+  );
 }
 
-async function invokeElectronBuilder (appConfig) {
+async function invokeElectronBuilder(appConfig) {
   await execa('electron-builder', ['-mwl'], {
     cwd: projectRoot
-  })
+  });
 }
 
 /**
  * Main entry point of the deployment script.
  */
-async function main () {
-  const appConfig = await loadAppConfig()
+async function main() {
+  const appConfig = await loadAppConfig();
 
-  // outputDir = path.resolve(outputDir, appConfig.version)
+  // OutputDir = path.resolve(outputDir, appConfig.version)
 
   const tasks = new Listr([
     {
@@ -88,20 +93,21 @@ async function main () {
       title: 'Cleaning build directories'
     },
     {
-      task: () => new Listr([
-        {
-          task: () => createBundle('electron'),
-          title: 'Main application'
-        },
-        {
-          task: () => createBundle('launcher'),
-          title: 'Launcher script'
-        },
-        {
-          task: () => createBundle('preload'),
-          title: 'Preload script'
-        }
-      ]),
+      task: () =>
+        new Listr([
+          {
+            task: () => createBundle('electron'),
+            title: 'Main application'
+          },
+          {
+            task: () => createBundle('launcher'),
+            title: 'Launcher script'
+          },
+          {
+            task: () => createBundle('preload'),
+            title: 'Preload script'
+          }
+        ]),
       title: 'Creating JavaScript bundles'
     },
     {
@@ -112,12 +118,12 @@ async function main () {
       task: ctx => invokeElectronBuilder(ctx.appConfig),
       title: 'Building executables'
     }
-  ])
+  ]);
 
-  await tasks.run({ appConfig }).catch(reason => {
-    ora(reason.message).fail()
-    process.exit(1)
-  })
+  await tasks.run({ appConfig }).catch(error => {
+    ora(error.message).fail();
+    process.exit(1);
+  });
 }
 
-main()
+main();

@@ -1,6 +1,6 @@
-import { createSelector } from 'reselect'
+import { createSelector } from 'reselect';
 
-import { isLocalHost } from '../utils/networking'
+import { isLocalHost } from '../utils/networking';
 
 /**
  * Returns the list of directories in which a local Flockwave server instance
@@ -9,8 +9,8 @@ import { isLocalHost } from '../utils/networking'
  * @param  {Object}  state  the state of the application
  * @return {string[]}  the list of directories to add to the system path
  */
-export const getLocalServerSearchPath =
-  state => state.settings.localServer.searchPath
+export const getLocalServerSearchPath = state =>
+  state.settings.localServer.searchPath;
 
 /**
  * Returns the full path to the executable of a local Flockwave server.
@@ -18,8 +18,8 @@ export const getLocalServerSearchPath =
  * @param  {Object}  state  the state of the application
  * @return {string|undefined}  the full path
  */
-export const getLocalServerExecutable =
-  state => state.localServer.pathScan.result
+export const getLocalServerExecutable = state =>
+  state.localServer.pathScan.result;
 
 /**
  * Returns whether a local Flockwave server launched directly by the Flockwave
@@ -28,10 +28,10 @@ export const getLocalServerExecutable =
 export const shouldManageLocalServer = createSelector(
   state => state.dialogs.serverSettings,
   state => state.settings.localServer,
-  (serverSettings, localServer) => (
-    window.bridge && window.bridge.localServer &&
+  (serverSettings, localServer) =>
+    window.bridge &&
+    window.bridge.localServer &&
     localServer.enabled &&
     isLocalHost(serverSettings.hostName) &&
     serverSettings.active
-  )
-)
+);

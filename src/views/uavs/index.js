@@ -1,2 +1,2 @@
-import UAVList from './UAVList'
-export default UAVList
+import UAVList from './UAVList';
+export default UAVList;

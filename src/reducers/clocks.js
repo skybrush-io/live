@@ -4,14 +4,14 @@
  * the Flockwave server reports via CLK-LIST and CLK-INF messages.
  */
 
-import has from 'lodash/has'
-import { handleActions } from 'redux-actions'
+import has from 'lodash/has';
+import { handleActions } from 'redux-actions';
 
 /**
  * Default content of the clock registry in the state object.
  */
 const defaultState = {
-  // items is a map from clock ID to the state of the clock
+  // Items is a map from clock ID to the state of the clock
   items: {
     // No items are added by default. Here's how an example item should
     // look like:
@@ -25,9 +25,9 @@ const defaultState = {
     //     updateFrequency: 1000                 /* optional, in milliseconds, defaults to 1000 */
     // }
   },
-  // order defines the preferred ordering of clocks on the UI
+  // Order defines the preferred ordering of clocks on the UI
   order: []
-}
+};
 
 /**
  * Function that updates the state of a clock with the given ID in
@@ -39,8 +39,8 @@ const defaultState = {
  * @param  {string} id     the identifier of the connection to update
  * @param  {Object} properties  the new properties of the connection
  */
-function updateStateOfClock (state, id, properties) {
-  const { items } = state
+function updateStateOfClock(state, id, properties) {
+  const { items } = state;
 
   if (!has(items, id)) {
     items[id] = {
@@ -48,36 +48,40 @@ function updateStateOfClock (state, id, properties) {
       running: false,
       updateFrequency: 1000,
       ticks: 0
-    }
-    state.order.push(id)
+    };
+    state.order.push(id);
   }
 
-  Object.assign(items[id], properties)
+  Object.assign(items[id], properties);
 }
 
 /**
  * The reducer function that handles actions related to the clock.
  */
-const reducer = handleActions({
-  CLEAR_CLOCK_LIST: (state, action) => ({
-    items: {},
-    order: []
-  }),
+const reducer = handleActions(
+  {
+    CLEAR_CLOCK_LIST: (state, action) => ({
+      items: {},
+      order: []
+    }),
 
-  SET_CLOCK_STATE: (state, action) => {
-    const newState = Object.assign({}, state)
-    const { id } = action.payload
-    updateStateOfClock(newState, id, action.payload)
-    return newState
-  },
+    SET_CLOCK_STATE: (state, action) => {
+      const newState = Object.assign({}, state);
+      const { id } = action.payload;
+      updateStateOfClock(newState, id, action.payload);
+      return newState;
+    },
 
-  SET_CLOCK_STATE_MULTIPLE: (state, action) => {
-    const newState = Object.assign({}, state)
-    for (const id of Object.keys(action.payload)) {
-      updateStateOfClock(newState, id, action.payload[id])
+    SET_CLOCK_STATE_MULTIPLE: (state, action) => {
+      const newState = Object.assign({}, state);
+      for (const id of Object.keys(action.payload)) {
+        updateStateOfClock(newState, id, action.payload[id]);
+      }
+
+      return newState;
     }
-    return newState
-  }
-}, defaultState)
+  },
+  defaultState
+);
 
-export default reducer
+export default reducer;

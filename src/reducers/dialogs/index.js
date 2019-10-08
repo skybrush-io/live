@@ -3,18 +3,18 @@
  * stores the state of the various dialogs.
  */
 
-import { combineReducers } from 'redux'
+import { combineReducers } from 'redux';
 
-import appSettingsReducer from './app-settings'
-import authenticationReducer from './authentication'
-import deauthenticationReducer from './deauthentication'
-import errorHandlingReducer from './error-handling'
-import featureEditorReducer from './feature-editor'
-import messagesReducer from './messages'
-import promptReducer from './prompt'
-import layerSettingsReducer from './layer-settings'
-import savedLocationEditorReducer from './saved-location-editor'
-import serverSettingsReducer from './server-settings'
+import appSettingsReducer from './app-settings';
+import authenticationReducer from './authentication';
+import deauthenticationReducer from './deauthentication';
+import errorHandlingReducer from './error-handling';
+import featureEditorReducer from './feature-editor';
+import messagesReducer from './messages';
+import promptReducer from './prompt';
+import layerSettingsReducer from './layer-settings';
+import savedLocationEditorReducer from './saved-location-editor';
+import serverSettingsReducer from './server-settings';
 
 /**
  * The reducer function that is responsible for handling all dialog-related
@@ -31,6 +31,6 @@ const reducer = combineReducers({
   prompt: promptReducer,
   savedLocationEditor: savedLocationEditorReducer,
   serverSettings: serverSettingsReducer
-})
+});
 
-export default reducer
+export default reducer;

@@ -1,8 +1,8 @@
-import * as OLCondition from 'ol/events/condition'
+import * as OLCondition from 'ol/events/condition';
 
-import { eventHasPlatformModifierKey } from '../../utils/platform'
+import { eventHasPlatformModifierKey } from '../../utils/platform';
 
-const Condition = Object.assign({}, OLCondition)
+const Condition = Object.assign({}, OLCondition);
 
 /**
  * Helper condition that checks if platform modifier
@@ -12,7 +12,7 @@ const Condition = Object.assign({}, OLCondition)
  * @return {boolean}  whether the condition was met
  */
 Condition.platformModifierKey = mapBrowserEvent =>
-  eventHasPlatformModifierKey(mapBrowserEvent.originalEvent)
+  eventHasPlatformModifierKey(mapBrowserEvent.originalEvent);
 
 /**
  * Helper condition that accepts either only platformModifier
@@ -21,10 +21,9 @@ Condition.platformModifierKey = mapBrowserEvent =>
  * @param {event}  mapBrowserEvent  the actual event
  * @return {boolean}  whether the condition was met
  */
-Condition.platformModifierKeyOrShiftKeyOnly = mapBrowserEvent => (
+Condition.platformModifierKeyOrShiftKeyOnly = mapBrowserEvent =>
   OLCondition.platformModifierKeyOnly(mapBrowserEvent) ||
-  OLCondition.shiftKeyOnly(mapBrowserEvent)
-)
+  OLCondition.shiftKeyOnly(mapBrowserEvent);
 
 /**
  * Helper condition that accepts Alt and Shift being held down
@@ -33,11 +32,10 @@ Condition.platformModifierKeyOrShiftKeyOnly = mapBrowserEvent => (
  * @param {event}  mapBrowserEvent  the actual event
  * @return {boolean}  whether the condition was met
  */
-Condition.altShiftKeyAndMiddleMouseButton = mapBrowserEvent => (
+Condition.altShiftKeyAndMiddleMouseButton = mapBrowserEvent =>
   mapBrowserEvent.originalEvent.button === 1 &&
   mapBrowserEvent.originalEvent.shiftKey &&
-  mapBrowserEvent.originalEvent.altKey
-)
+  mapBrowserEvent.originalEvent.altKey;
 
 /**
  * Helper condition that checks for a context menu event.
@@ -45,9 +43,8 @@ Condition.altShiftKeyAndMiddleMouseButton = mapBrowserEvent => (
  * @param {event}  mapBrowserEvent  the actual event
  * @return {boolean}  whether the condition was met
  */
-Condition.contextMenu = mapBrowserEvent => (
-  mapBrowserEvent.originalEvent.type === 'contextmenu'
-)
+Condition.contextMenu = mapBrowserEvent =>
+  mapBrowserEvent.originalEvent.type === 'contextmenu';
 
 /**
  * Helper condition that checks for a pointerdown event fired by a right click.
@@ -55,10 +52,9 @@ Condition.contextMenu = mapBrowserEvent => (
  * @param {event}  mapBrowserEvent  the actual event
  * @return {boolean}  whether the condition was met
  */
-Condition.rightClick = mapBrowserEvent => (
+Condition.rightClick = mapBrowserEvent =>
   mapBrowserEvent.pointerEvent &&
   mapBrowserEvent.pointerEvent.type === 'pointerup' &&
-  mapBrowserEvent.pointerEvent.button === 2
-)
+  mapBrowserEvent.pointerEvent.button === 2;
 
-export default Condition
+export default Condition;

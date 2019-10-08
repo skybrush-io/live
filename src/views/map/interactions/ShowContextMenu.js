@@ -4,20 +4,20 @@
  * is close enough to the point where the user clicked and triggers a context-menu.
  */
 
-import { autobind } from 'core-decorators'
-import _ from 'lodash'
-import Interaction from 'ol/interaction/Interaction'
-import VectorLayer from 'ol/layer/Vector'
-import Map from 'ol/Map'
-import { transform } from 'ol/proj'
-import PropTypes from 'prop-types'
-import React from 'react'
+import { autobind } from 'core-decorators';
+import _ from 'lodash';
+import Interaction from 'ol/interaction/Interaction';
+import VectorLayer from 'ol/layer/Vector';
+import Map from 'ol/Map';
+import { transform } from 'ol/proj';
+import PropTypes from 'prop-types';
+import React from 'react';
 
-import { OLPropTypes, withMap } from '@collmot/ol-react'
-import { createOLInteractionComponent } from '@collmot/ol-react/lib/interaction'
+import { OLPropTypes, withMap } from '@collmot/ol-react';
+import { createOLInteractionComponent } from '@collmot/ol-react/lib/interaction';
 
-import Condition from '../conditions'
-import { euclideanDistance } from '../../../utils/geography'
+import Condition from '../conditions';
+import { euclideanDistance } from '../../../utils/geography';
 
 /**
  * OpenLayers interaction (for right click by default) that overwrites the
@@ -25,72 +25,77 @@ import { euclideanDistance } from '../../../utils/geography'
  * is close enough to the point where the user clicked and triggers a context-menu.
  */
 class ContextMenuInteraction extends Interaction {
-  constructor (options = {}) {
+  constructor(options = {}) {
     super({
       handleEvent: mapBrowserEvent => {
         // Check whether the event matches the condition
         if (!this._condition(mapBrowserEvent)) {
-          return true
+          return true;
         }
 
-        mapBrowserEvent.originalEvent.preventDefault()
+        mapBrowserEvent.originalEvent.preventDefault();
 
         // Create the layer selector function if needed
         if (!this._layerSelectorFunction) {
-          this._layerSelectorFunction = this._createLayerSelectorFunction(this._layers)
+          this._layerSelectorFunction = this._createLayerSelectorFunction(
+            this._layers
+          );
         }
 
         // Find the feature that is closest to the selection, in each
         // matching layer
-        const { coordinate, map } = mapBrowserEvent
-        const distanceFunction = _.partial(this._distanceOfEventFromFeature, mapBrowserEvent)
+        const { coordinate, map } = mapBrowserEvent;
+        const distanceFunction = _.partial(
+          this._distanceOfEventFromFeature,
+          mapBrowserEvent
+        );
         const relevantFeatures = _(map.getLayers().getArray())
           .filter(this._isLayerFeasible)
           .filter(this._layerSelectorFunction)
           .map(layer => {
-            const source = layer.getSource()
+            const source = layer.getSource();
             return source
               ? source.getClosestFeatureToCoordinate(coordinate)
-              : undefined
+              : undefined;
           })
-          .filter(this._isFeatureFeasible)
-        const closestFeature = (
-          relevantFeatures ? relevantFeatures.minBy(distanceFunction) : undefined
-        )
+          .filter(this._isFeatureFeasible);
+        const closestFeature = relevantFeatures
+          ? relevantFeatures.minBy(distanceFunction)
+          : undefined;
 
         if (closestFeature) {
           // Get the actual distance of the feature
-          const distance = distanceFunction(closestFeature)
+          const distance = distanceFunction(closestFeature);
 
           // If the feature is close enough...
           if (distance <= this._threshold && this._selectAction) {
             // Now call the callback
-            this._selectAction('add', closestFeature, distance)
+            this._selectAction('add', closestFeature, distance);
           }
         }
 
         // Trigger the context menu hook function if the user specified one
         if (this._onContextMenu) {
-          const coords = this._getLonLatFromEvent(mapBrowserEvent)
-          this._onContextMenu(mapBrowserEvent, coords)
+          const coords = this._getLonLatFromEvent(mapBrowserEvent);
+          this._onContextMenu(mapBrowserEvent, coords);
         }
 
-        return Condition.pointerMove(mapBrowserEvent)
+        return Condition.pointerMove(mapBrowserEvent);
       }
-    })
+    });
 
     const defaultOptions = {
       condition: Condition.rightClick,
       threshold: Number.POSITIVE_INFINITY
-    }
-    options = Object.assign(defaultOptions, options)
+    };
+    options = Object.assign(defaultOptions, options);
 
-    this._condition = options.condition
-    this._projection = options.projection
-    this._selectAction = options.selectAction
-    this._onContextMenu = options.onContextMenu
-    this._threshold = options.threshold
-    this.setLayers(options.layers)
+    this._condition = options.condition;
+    this._projection = options.projection;
+    this._selectAction = options.selectAction;
+    this._onContextMenu = options.onContextMenu;
+    this._threshold = options.threshold;
+    this.setLayers(options.layers);
   }
 
   /**
@@ -103,18 +108,20 @@ class ContextMenuInteraction extends Interaction {
    * @return {function(layer: ol.layer.Layer):boolean} an appropriate layer
    *         selector function
    */
-  _createLayerSelectorFunction (layers) {
+  _createLayerSelectorFunction(layers) {
     if (layers) {
       if (_.isFunction(layers)) {
-        return layers
-      } else if (_.isArray(layers)) {
-        return layer => _.includes(layers, layer)
-      } else {
-        return _.stubFalse
+        return layers;
       }
-    } else {
-      return _.stubTrue
+
+      if (_.isArray(layers)) {
+        return layer => _.includes(layers, layer);
+      }
+
+      return _.stubFalse;
     }
+
+    return _.stubTrue;
   }
 
   /**
@@ -125,14 +132,15 @@ class ContextMenuInteraction extends Interaction {
    * @param {ol.Feature}          feature  the feature
    * @return {number} the distance of the feature from the event, in pixels
    */
-  _distanceOfEventFromFeature (event, feature) {
-    const geom = feature.getGeometry()
+  _distanceOfEventFromFeature(event, feature) {
+    const geom = feature.getGeometry();
     if (geom.intersectsCoordinate(event.coordinate)) {
-      return 0
+      return 0;
     }
-    const closestPoint = geom.getClosestPoint(event.coordinate)
-    const closestPixel = event.map.getPixelFromCoordinate(closestPoint)
-    return euclideanDistance(event.pixel, closestPixel)
+
+    const closestPoint = geom.getClosestPoint(event.coordinate);
+    const closestPixel = event.map.getPixelFromCoordinate(closestPoint);
+    return euclideanDistance(event.pixel, closestPixel);
   }
 
   /**
@@ -141,8 +149,8 @@ class ContextMenuInteraction extends Interaction {
    * @return {Array<ol.layer.Layer>|function(layer: ol.layer.Layer):boolean|undefined}
    *         the layer selector
    */
-  getLayers () {
-    return this._layers
+  getLayers() {
+    return this._layers;
   }
 
   /**
@@ -152,10 +160,10 @@ class ContextMenuInteraction extends Interaction {
    * @param {Event} event  the event corresponding to the click
    * @return {number[]}  the longitude and latitude of the click
    */
-  _getLonLatFromEvent (event) {
+  _getLonLatFromEvent(event) {
     return this._projection
       ? transform(event.coordinate, 'EPSG:3857', this._projection)
-      : event.coordinate
+      : event.coordinate;
   }
 
   /**
@@ -166,8 +174,8 @@ class ContextMenuInteraction extends Interaction {
    * @return {boolean} whether the layer is visible and has an associated
    *         vector source
    */
-  _isLayerFeasible (layer) {
-    return layer && layer.getVisible() && layer instanceof VectorLayer
+  _isLayerFeasible(layer) {
+    return layer && layer.getVisible() && layer instanceof VectorLayer;
   }
 
   /**
@@ -183,9 +191,9 @@ class ContextMenuInteraction extends Interaction {
    * @param {Array<ol.layer.Layer>|function(layer: ol.layer.Layer):boolean|undefined} value
    *        the new layer selector
    */
-  setLayers (value) {
-    this._layers = value
-    this._layerSelectorFunction = undefined
+  setLayers(value) {
+    this._layers = value;
+    this._layerSelectorFunction = undefined;
   }
 }
 
@@ -201,52 +209,55 @@ const ShowContextMenu_ = createOLInteractionComponent(
       threshold: PropTypes.number
     },
     fragileProps: [
-      'condition', 'layers', 'onContextMenu', 'selectAction', 'threshold'
+      'condition',
+      'layers',
+      'onContextMenu',
+      'selectAction',
+      'threshold'
     ]
   }
-)
+);
 
 /**
  * React wrapper around an instance of {@link ContextMenuInteraction}
  * that allows us to use it in JSX.
  */
 class ShowContextMenu extends React.Component {
-  constructor (props) {
-    super(props)
-    this._contextMenuRef = React.createRef()
+  constructor(props) {
+    super(props);
+    this._contextMenuRef = React.createRef();
   }
 
-  render () {
-    const { children, ...rest } = this.props
+  render() {
+    const { children, ...rest } = this.props;
     if (children) {
       return (
-        <ShowContextMenu_ onContextMenu={this._openContextMenuFromChild} {...rest}>
-          {
-            React.cloneElement(
-              React.Children.only(this.props.children),
-              { ref: this._contextMenuRef }
-            )
-          }
+        <ShowContextMenu_
+          onContextMenu={this._openContextMenuFromChild}
+          {...rest}
+        >
+          {React.cloneElement(React.Children.only(this.props.children), {
+            ref: this._contextMenuRef
+          })}
         </ShowContextMenu_>
-      )
-    } else {
-      return null
+      );
     }
+
+    return null;
   }
 
   @autobind
-  _openContextMenuFromChild (event, coords) {
-    const menu = this._contextMenuRef.current
+  _openContextMenuFromChild(event, coords) {
+    const menu = this._contextMenuRef.current;
     const open =
-      menu.open || (
-        menu.getWrappedInstance ? menu.getWrappedInstance().open : undefined
-      )
+      menu.open ||
+      (menu.getWrappedInstance ? menu.getWrappedInstance().open : undefined);
     if (open) {
       const position = {
         left: event.originalEvent.pageX,
         top: event.originalEvent.pageY
-      }
-      open(position, { coords })
+      };
+      open(position, { coords });
     }
   }
 }
@@ -260,6 +271,6 @@ ShowContextMenu.propTypes = {
   select: PropTypes.func,
   contextMenu: PropTypes.func,
   threshold: PropTypes.number
-}
+};
 
-export default withMap(ShowContextMenu)
+export default withMap(ShowContextMenu);

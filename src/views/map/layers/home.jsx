@@ -1,59 +1,64 @@
-import PropTypes from 'prop-types'
-import React from 'react'
-import { connect } from 'react-redux'
+import PropTypes from 'prop-types';
+import React from 'react';
+import { connect } from 'react-redux';
 
-import * as Coordinate from 'ol/coordinate'
-import Point from 'ol/geom/Point'
-import { Circle, Style, Text } from 'ol/style'
+import * as Coordinate from 'ol/coordinate';
+import Point from 'ol/geom/Point';
+import { Circle, Style, Text } from 'ol/style';
 
-import { Feature, geom, layer, source } from '@collmot/ol-react'
+import { Feature, geom, layer, source } from '@collmot/ol-react';
 
-import { homePositionIdToGlobalId } from '~/model/identifiers'
-import { setLayerEditable, setLayerSelectable } from '~/model/layers'
-import { getMapOriginRotationAngle } from '~/selectors/map'
-import { getSelectedHomePositionIds } from '~/selectors/selection'
-import { coordinateFromLonLat } from '~/utils/geography'
-import { fill, stroke, whiteThickOutline, whiteThinOutline } from '~/utils/styles'
+import { homePositionIdToGlobalId } from '~/model/identifiers';
+import { setLayerEditable, setLayerSelectable } from '~/model/layers';
+import { getMapOriginRotationAngle } from '~/selectors/map';
+import { getSelectedHomePositionIds } from '~/selectors/selection';
+import { coordinateFromLonLat } from '~/utils/geography';
+import {
+  fill,
+  stroke,
+  whiteThickOutline,
+  whiteThinOutline
+} from '~/utils/styles';
 
 // === Settings for this particular layer type ===
 
 class HomePositionsLayerSettingsPresentation extends React.Component {
-  render () {
-    return false
+  render() {
+    return false;
   }
 }
 
 HomePositionsLayerSettingsPresentation.propTypes = {
   layer: PropTypes.object,
   layerId: PropTypes.string
-}
+};
 
 export const HomePositionsLayerSettings = connect(
-  // mapStateToProps
+  // MapStateToProps
   (state, ownProps) => ({}),
-  // mapDispatchToProps
+  // MapDispatchToProps
   (dispatch, ownProps) => ({})
-)(HomePositionsLayerSettingsPresentation)
+)(HomePositionsLayerSettingsPresentation);
 
 // === The actual layer to be rendered ===
 
-function markAsSelectable (layer) {
+function markAsSelectable(layer) {
   if (layer) {
-    setLayerEditable(layer.layer)
-    setLayerSelectable(layer.layer)
+    setLayerEditable(layer.layer);
+    setLayerSelectable(layer.layer);
   }
 }
 
-const redLine = stroke('#f44', 2)
-const greenLine = stroke('#4f4', 2)
+const redLine = stroke('#f44', 2);
+const greenLine = stroke('#4f4', 2);
 
 const ownHomePositionStyles = (selected, axis) => [
-  // circle and label
+  // Circle and label
   new Style({
     geometry: feature => {
-      const geom = feature.getGeometry()
-      const origin = geom.getFirstCoordinate()
-      return new Point(origin)
+      const geom = feature.getGeometry();
+      const origin = geom.getFirstCoordinate();
+      return new Point(origin);
     },
     image: new Circle({
       fill: fill('#f44'),
@@ -68,59 +73,78 @@ const ownHomePositionStyles = (selected, axis) => [
     })
   }),
 
-  // arrow
+  // Arrow
   new Style({
     stroke: axis === 'x' ? redLine : greenLine
   })
-]
+];
 
-const HomePositionsVectorSource = ({ angle, coordinateSystemType, homePosition, selectedIds }) => {
-  const features = []
+const HomePositionsVectorSource = ({
+  angle,
+  coordinateSystemType,
+  homePosition,
+  selectedIds
+}) => {
+  const features = [];
 
   if (homePosition) {
-    const id = homePositionIdToGlobalId('')
-    const tail = coordinateFromLonLat(homePosition)
-    const headY = [0, coordinateSystemType === 'nwu' ? 50 : -50]
-    const headX = [50, 0]
-    Coordinate.rotate(headX, (90 - angle) * Math.PI / 180)
-    Coordinate.rotate(headY, (90 - angle) * Math.PI / 180)
-    Coordinate.add(headY, tail)
-    Coordinate.add(headX, tail)
+    const id = homePositionIdToGlobalId('');
+    const tail = coordinateFromLonLat(homePosition);
+    const headY = [0, coordinateSystemType === 'nwu' ? 50 : -50];
+    const headX = [50, 0];
+    Coordinate.rotate(headX, ((90 - angle) * Math.PI) / 180);
+    Coordinate.rotate(headY, ((90 - angle) * Math.PI) / 180);
+    Coordinate.add(headY, tail);
+    Coordinate.add(headX, tail);
     features.push(
-      <Feature id={id + '$x'} key='x'
-        style={ownHomePositionStyles(selectedIds.includes(''), 'x')}>
+      <Feature
+        key="x"
+        id={id + '$x'}
+        style={ownHomePositionStyles(selectedIds.includes(''), 'x')}
+      >
         <geom.LineString coordinates={[tail, headX]} />
       </Feature>,
-      <Feature id={id} key='y'
-        style={ownHomePositionStyles(selectedIds.includes(''), 'y')}>
+      <Feature
+        key="y"
+        id={id}
+        style={ownHomePositionStyles(selectedIds.includes(''), 'y')}
+      >
         <geom.LineString coordinates={[tail, headY]} />
       </Feature>
-    )
+    );
   }
 
-  return (
-    <source.Vector>
-      {features}
-    </source.Vector>
-  )
-}
+  return <source.Vector>{features}</source.Vector>;
+};
 
 HomePositionsVectorSource.propTypes = {
   angle: PropTypes.number,
   coordinateSystemType: PropTypes.oneOf(['neu', 'nwu']),
   homePosition: PropTypes.arrayOf(PropTypes.number),
   selectedIds: PropTypes.arrayOf(PropTypes.string)
-}
+};
 
 const HomePositionsLayerPresentation = ({
-  angle, coordinateSystemType, homePosition, selectedIds, zIndex
+  angle,
+  coordinateSystemType,
+  homePosition,
+  selectedIds,
+  zIndex
 }) => (
-  <layer.Vector zIndex={zIndex} updateWhileAnimating updateWhileInteracting
-    ref={markAsSelectable}>
-    <HomePositionsVectorSource homePosition={homePosition} angle={angle}
-      selectedIds={selectedIds} coordinateSystemType={coordinateSystemType} />
+  <layer.Vector
+    ref={markAsSelectable}
+    updateWhileAnimating
+    updateWhileInteracting
+    zIndex={zIndex}
+  >
+    <HomePositionsVectorSource
+      homePosition={homePosition}
+      angle={angle}
+      selectedIds={selectedIds}
+      coordinateSystemType={coordinateSystemType}
+    />
   </layer.Vector>
-)
+);
 
 HomePositionsLayerPresentation.propTypes = {
   angle: PropTypes.number,
@@ -130,21 +154,20 @@ HomePositionsLayerPresentation.propTypes = {
   layerId: PropTypes.string,
   selectedIds: PropTypes.arrayOf(PropTypes.string),
   zIndex: PropTypes.number
-}
+};
 
 HomePositionsLayerPresentation.defaultProps = {
   angle: 0
-}
+};
 
 export const HomePositionsLayer = connect(
-  // mapStateToProps
+  // MapStateToProps
   state => ({
     angle: getMapOriginRotationAngle(state),
     coordinateSystemType: state.map.origin.type,
     homePosition: state.map.origin.position,
     selectedIds: getSelectedHomePositionIds(state)
   }),
-  // mapDispatchToProps
-  dispatch => ({
-  })
-)(HomePositionsLayerPresentation)
+  // MapDispatchToProps
+  dispatch => ({})
+)(HomePositionsLayerPresentation);

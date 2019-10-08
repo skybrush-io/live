@@ -1,70 +1,87 @@
 /**
-* @file React component for the layer settings dialog.
-*/
+ * @file React component for the layer settings dialog.
+ */
 
-import { autobind } from 'core-decorators'
-import PropTypes from 'prop-types'
-import React from 'react'
-import { Form, Field } from 'react-final-form'
-import { connect } from 'react-redux'
+import { autobind } from 'core-decorators';
+import PropTypes from 'prop-types';
+import React from 'react';
+import { Form, Field } from 'react-final-form';
+import { connect } from 'react-redux';
 
-import Button from '@material-ui/core/Button'
-import Dialog from '@material-ui/core/Dialog'
-import DialogActions from '@material-ui/core/DialogActions'
-import DialogContent from '@material-ui/core/DialogContent'
-import IconButton from '@material-ui/core/IconButton'
-import Switch from '@material-ui/core/Switch'
-import ArrowDown from '@material-ui/icons/ArrowDropDown'
-import ArrowUp from '@material-ui/icons/ArrowDropUp'
+import Button from '@material-ui/core/Button';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import IconButton from '@material-ui/core/IconButton';
+import Switch from '@material-ui/core/Switch';
+import ArrowDown from '@material-ui/icons/ArrowDropDown';
+import ArrowUp from '@material-ui/icons/ArrowDropUp';
 
-import { forceFormSubmission, TextField } from '../forms'
+import { forceFormSubmission, TextField } from '../forms';
 
-import { adjustLayerZIndex, closeLayersDialog, renameLayer,
-  toggleLayerVisibility, removeLayer } from '../../actions/layers'
-import { LayerType } from '../../model/layers'
-import { createValidator, required } from '../../utils/validation'
-import { LayerSettings, stateObjectToLayerSettings } from '../../views/map/layers'
+import {
+  adjustLayerZIndex,
+  closeLayersDialog,
+  renameLayer,
+  toggleLayerVisibility,
+  removeLayer
+} from '../../actions/layers';
+import { LayerType } from '../../model/layers';
+import { createValidator, required } from '../../utils/validation';
+import {
+  LayerSettings,
+  stateObjectToLayerSettings
+} from '../../views/map/layers';
 
 const validator = createValidator({
   label: required
-})
+});
 
 /**
  * Form for the basic settings of a layer that is applicable to all layers
  * regardless of its type.
  */
 class BasicLayerSettingsFormPresentation extends React.Component {
-  render () {
-    const { initialValues, layer, onSubmit, onToggleLayerVisibility, validate } = this.props
+  render() {
+    const {
+      initialValues,
+      layer,
+      onSubmit,
+      onToggleLayerVisibility,
+      validate
+    } = this.props;
 
     return (
       <Form
+        validateOnBlur
         initialValues={initialValues}
-        onSubmit={onSubmit}
         validate={validate}
-        validateOnBlur>
+        onSubmit={onSubmit}
+      >
         {({ handleSubmit }) => (
-          <form id='basicLayerSettings' onSubmit={handleSubmit}>
+          <form id="basicLayerSettings" onSubmit={handleSubmit}>
             <div style={{ display: 'flex', paddingBottom: '1em' }}>
               <Field
-                name='label'
+                name="label"
                 component={TextField}
-                label='Layer name'
-                placeholder='New layer'
+                label="Layer name"
+                placeholder="New layer"
                 style={{ flex: 'auto' }}
                 onKeyDown={this._onKeyDown}
               />
               <div>&nbsp;</div>
-              <Switch checked={layer.visible} color='primary'
+              <Switch
+                checked={layer.visible}
+                color="primary"
                 disabled={layer.type === LayerType.UNTYPED}
-                onChange={onToggleLayerVisibility}
                 style={{ flex: 'none' }}
+                onChange={onToggleLayerVisibility}
               />
             </div>
           </form>
         )}
       </Form>
-    )
+    );
   }
 
   /**
@@ -72,9 +89,9 @@ class BasicLayerSettingsFormPresentation extends React.Component {
    *
    * @param {Event} e the event fired from the TextField React component
    */
-  _onKeyDown (e) {
+  _onKeyDown(e) {
     if (e.key === 'Enter') {
-      e.target.blur()
+      e.target.blur();
     }
   }
 }
@@ -87,44 +104,44 @@ BasicLayerSettingsFormPresentation.propTypes = {
 
   onSubmit: PropTypes.func,
   onToggleLayerVisibility: PropTypes.func
-}
+};
 
 /**
  * Container of the form that shows the fields that the user can use to
  * edit the basic settings of a layer.
  */
 const BasicLayerSettingsForm = connect(
-  // mapStateToProps
+  // MapStateToProps
   (state, ownProps) => ({
     initialValues: {
       label: ownProps.layer.label
     }
   }),
-  // mapDispatchToProps
+  // MapDispatchToProps
   (dispatch, ownProps) => ({
     onSubmit: values => {
-      dispatch(renameLayer(ownProps.layerId, values.label))
+      dispatch(renameLayer(ownProps.layerId, values.label));
     },
 
     validate: values => {
-      const result = validator(values)
+      const result = validator(values);
 
       if (result === undefined || Object.keys(result).length === 0) {
         // This is a horrible abuse of the async validation feature in
         // react-final-form; basically the only thing we want is to fire a
         // callback routine if the synchronous validation of the label field
         // passed so we can fire an action that updates the name of the layer.
-        forceFormSubmission('basicLayerSettings')
+        forceFormSubmission('basicLayerSettings');
       }
 
-      return result
+      return result;
     },
 
-    onToggleLayerVisibility () {
-      dispatch(toggleLayerVisibility(ownProps.layerId))
+    onToggleLayerVisibility() {
+      dispatch(toggleLayerVisibility(ownProps.layerId));
     }
   })
-)(BasicLayerSettingsFormPresentation)
+)(BasicLayerSettingsFormPresentation);
 
 /* ********************************************************************* */
 
@@ -140,16 +157,16 @@ class LayerSettingsContainerPresentation extends React.Component {
    * @param {string} layerId  the identifier of the layer being edited
    * @return {Object[]}  the list of child components to add
    */
-  createChildrenForLayer (layer, layerId) {
+  createChildrenForLayer(layer, layerId) {
     if (layer.type in LayerSettings) {
-      return stateObjectToLayerSettings(layer, layerId)
-    } else {
-      return []
+      return stateObjectToLayerSettings(layer, layerId);
     }
+
+    return [];
   }
 
-  render () {
-    const { layer, layerId } = this.props
+  render() {
+    const { layer, layerId } = this.props;
 
     if (!layerId) {
       // No layer is selected; let's show a hint that the user should
@@ -158,13 +175,13 @@ class LayerSettingsContainerPresentation extends React.Component {
         <div style={{ textAlign: 'center', marginTop: '2em' }}>
           Please select a layer from the layer list.
         </div>
-      )
+      );
     }
 
     if (typeof layer === 'undefined') {
       // A layer is selected by the user but the layer does not exist
       // any more. We just bail out silently.
-      return false
+      return false;
     }
 
     // The returned div must have a key to ensure that the forms in
@@ -174,12 +191,12 @@ class LayerSettingsContainerPresentation extends React.Component {
     // the form fields even if the layer selection changes
     return (
       <div key={'settings_' + layerId}>
-        {layer.type !== LayerType.UNTYPED
-          ? <BasicLayerSettingsForm layer={layer} layerId={layerId} />
-          : null}
+        {layer.type !== LayerType.UNTYPED ? (
+          <BasicLayerSettingsForm layer={layer} layerId={layerId} />
+        ) : null}
         {this.createChildrenForLayer(layer, layerId)}
       </div>
-    )
+    );
   }
 }
 
@@ -188,19 +205,19 @@ LayerSettingsContainerPresentation.propTypes = {
   layerId: PropTypes.string,
 
   onLayerSourceChanged: PropTypes.func
-}
+};
 
 /**
  * Container of the panel that contains the settings of a layer.
  */
 const LayerSettingsContainer = connect(
-  // mapStateToProps
+  // MapStateToProps
   (state, ownProps) => ({
     layer: state.map.layers.byId[ownProps.layerId]
   }),
-  // mapDispatchToProps
+  // MapDispatchToProps
   (dispatch, ownProps) => ({})
-)(LayerSettingsContainerPresentation)
+)(LayerSettingsContainerPresentation);
 
 /* ********************************************************************* */
 
@@ -209,59 +226,78 @@ const LayerSettingsContainer = connect(
  * a selected layer.
  */
 class LayerSettingsDialogPresentation extends React.Component {
-  render () {
-    const { canMoveUp, canMoveDown, dialogVisible, selectedLayerId } = this.props
-    const { onClose } = this.props
-    const actions = []
+  render() {
+    const {
+      canMoveUp,
+      canMoveDown,
+      dialogVisible,
+      selectedLayerId
+    } = this.props;
+    const { onClose } = this.props;
+    const actions = [];
 
     if (selectedLayerId) {
       actions.push(
-        <IconButton key='moveUp' disabled={!canMoveUp} onClick={this._moveSelectedLayerUp}>
+        <IconButton
+          key="moveUp"
+          disabled={!canMoveUp}
+          onClick={this._moveSelectedLayerUp}
+        >
           <ArrowUp />
         </IconButton>,
-        <IconButton key='moveDown' disabled={!canMoveDown} onClick={this._moveSelectedLayerDown}>
+        <IconButton
+          key="moveDown"
+          disabled={!canMoveDown}
+          onClick={this._moveSelectedLayerDown}
+        >
           <ArrowDown />
         </IconButton>,
-        <Button key='remove' color='secondary' onClick={this._removeSelectedLayer}>Remove</Button>
-      )
+        <Button
+          key="remove"
+          color="secondary"
+          onClick={this._removeSelectedLayer}
+        >
+          Remove
+        </Button>
+      );
     }
 
     actions.push(
-      <Button key='close' color='primary' onClick={onClose}>Close</Button>
-    )
+      <Button key="close" color="primary" onClick={onClose}>
+        Close
+      </Button>
+    );
 
     return (
-      <Dialog fullWidth maxWidth='sm' open={dialogVisible} onClose={onClose}>
+      <Dialog fullWidth maxWidth="sm" open={dialogVisible} onClose={onClose}>
         <DialogContent style={{ overflow: 'auto' }}>
           <LayerSettingsContainer layerId={selectedLayerId} />
         </DialogContent>
-        <DialogActions>
-          {actions}
-        </DialogActions>
+        <DialogActions>{actions}</DialogActions>
       </Dialog>
-    )
+    );
   }
 
   @autobind
-  _moveSelectedLayer (delta) {
-    const { selectedLayerId, onMoveLayer } = this.props
-    onMoveLayer(selectedLayerId, delta)
+  _moveSelectedLayer(delta) {
+    const { selectedLayerId, onMoveLayer } = this.props;
+    onMoveLayer(selectedLayerId, delta);
   }
 
   @autobind
-  _moveSelectedLayerDown () {
-    this._moveSelectedLayer(-1)
+  _moveSelectedLayerDown() {
+    this._moveSelectedLayer(-1);
   }
 
   @autobind
-  _moveSelectedLayerUp () {
-    this._moveSelectedLayer(1)
+  _moveSelectedLayerUp() {
+    this._moveSelectedLayer(1);
   }
 
   @autobind
-  _removeSelectedLayer () {
-    const { selectedLayerId, onRemoveLayer } = this.props
-    onRemoveLayer(selectedLayerId)
+  _removeSelectedLayer() {
+    const { selectedLayerId, onRemoveLayer } = this.props;
+    onRemoveLayer(selectedLayerId);
   }
 }
 
@@ -274,44 +310,45 @@ LayerSettingsDialogPresentation.propTypes = {
   onClose: PropTypes.func,
   onMoveLayer: PropTypes.func,
   onRemoveLayer: PropTypes.func
-}
+};
 
 LayerSettingsDialogPresentation.defaultProps = {
   dialogVisible: false
-}
+};
 
 /**
  * Container of the dialog that allows the user to configure the layers of
  * the map.
  */
 const LayerSettingsDialog = connect(
-  // mapStateToProps
+  // MapStateToProps
   state => {
-    const { layerSettings } = state.dialogs
-    const { order } = state.map.layers
-    const { dialogVisible, selectedLayer } = layerSettings
-    const layerIndex = selectedLayer && order ? order.indexOf(selectedLayer) : -1
+    const { layerSettings } = state.dialogs;
+    const { order } = state.map.layers;
+    const { dialogVisible, selectedLayer } = layerSettings;
+    const layerIndex =
+      selectedLayer && order ? order.indexOf(selectedLayer) : -1;
     return {
       canMoveDown: layerIndex > 0,
       canMoveUp: layerIndex >= 0 && layerIndex < order.length - 1,
-      dialogVisible: dialogVisible,
+      dialogVisible,
       selectedLayerId: selectedLayer
-    }
+    };
   },
-  // mapDispatchToProps
+  // MapDispatchToProps
   dispatch => ({
-    onClose () {
-      dispatch(closeLayersDialog())
+    onClose() {
+      dispatch(closeLayersDialog());
     },
 
-    onMoveLayer (layerId, delta) {
-      dispatch(adjustLayerZIndex(layerId, delta))
+    onMoveLayer(layerId, delta) {
+      dispatch(adjustLayerZIndex(layerId, delta));
     },
 
-    onRemoveLayer (layerId) {
-      dispatch(removeLayer(layerId))
+    onRemoveLayer(layerId) {
+      dispatch(removeLayer(layerId));
     }
   })
-)(LayerSettingsDialogPresentation)
+)(LayerSettingsDialogPresentation);
 
-export default LayerSettingsDialog
+export default LayerSettingsDialog;

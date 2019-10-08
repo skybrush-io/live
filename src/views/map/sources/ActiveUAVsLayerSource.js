@@ -3,18 +3,18 @@
  * currently known to the server.
  */
 
-import _ from 'lodash'
-import Layer from 'ol/layer/Layer'
-import PropTypes from 'prop-types'
-import React from 'react'
-import { source, withLayer } from '@collmot/ol-react'
+import _ from 'lodash';
+import Layer from 'ol/layer/Layer';
+import PropTypes from 'prop-types';
+import React from 'react';
+import { source, withLayer } from '@collmot/ol-react';
 
-import FeatureManager from '../FeatureManager'
-import UAVFeature from '../features/UAVFeature'
+import FeatureManager from '../FeatureManager';
+import UAVFeature from '../features/UAVFeature';
 
-import Flock from '../../../model/flock'
-import { setLayerSelectable } from '../../../model/layers'
-import { uavIdToGlobalId } from '../../../model/identifiers'
+import Flock from '../../../model/flock';
+import { setLayerSelectable } from '../../../model/layers';
+import { uavIdToGlobalId } from '../../../model/identifiers';
 
 /**
  * Function for assigning colors to UAV ids according to color predicates.
@@ -26,27 +26,26 @@ import { uavIdToGlobalId } from '../../../model/identifiers'
  * @return {string} The assigned color. (If no predicate matches then 'black'.)
  */
 const cachedGetColorById = (() => {
-  const predicateFunctionCache = {}
+  const predicateFunctionCache = {};
 
-  return (colorPredicates, id) => (
+  return (colorPredicates, id) =>
     /* eslint no-new-func: "off" */
-    _.findKey(
-      colorPredicates,
-      p => {
-        if (!(p in predicateFunctionCache)) {
-          try {
-            predicateFunctionCache[p] = new Function('id', `return ${p}`)
-          } catch (e) {
-            // Probably it is blocked by the browser()
-            console.warn('Cannot create new UAV color predicate; maybe blocked by CSP?')
-            predicateFunctionCache[p] = _.stubFalse
-          }
+    _.findKey(colorPredicates, p => {
+      if (!(p in predicateFunctionCache)) {
+        try {
+          predicateFunctionCache[p] = new Function('id', `return ${p}`);
+        } catch (error) {
+          // Probably it is blocked by the browser()
+          console.warn(
+            'Cannot create new UAV color predicate; maybe blocked by CSP?'
+          );
+          predicateFunctionCache[p] = _.stubFalse;
         }
-        return predicateFunctionCache[p](id)
       }
-    ) || 'black'
-  )
-})()
+
+      return predicateFunctionCache[p](id);
+    }) || 'black';
+})();
 
 /**
  * OpenLayers vector layer source that contains all the active UAVs
@@ -56,72 +55,71 @@ const cachedGetColorById = (() => {
  * show all the active UAVs on top of the map.
  */
 class ActiveUAVsLayerSource extends React.Component {
-  constructor (props) {
-    super(props)
+  constructor(props) {
+    super(props);
 
-    this._assignSourceRef = this._assignSourceRef.bind(this)
-    this._onFeatureAdded = this._onFeatureAdded.bind(this)
-    this._onSelectionMaybeChanged = this._onSelectionMaybeChanged.bind(this)
-    this._onColorsMaybeChanged = this._onColorsMaybeChanged.bind(this)
-    this._onUAVsUpdated = this._onUAVsUpdated.bind(this)
+    this._assignSourceRef = this._assignSourceRef.bind(this);
+    this._onFeatureAdded = this._onFeatureAdded.bind(this);
+    this._onSelectionMaybeChanged = this._onSelectionMaybeChanged.bind(this);
+    this._onColorsMaybeChanged = this._onColorsMaybeChanged.bind(this);
+    this._onUAVsUpdated = this._onUAVsUpdated.bind(this);
 
-    this._sourceRef = undefined
+    this._sourceRef = undefined;
 
-    this._featureManager = new FeatureManager()
-    this._featureManager.featureFactory = (id, geom) => new UAVFeature(id, geom)
-    this._featureManager.featureIdFunction = uavIdToGlobalId
-    this._featureManager.featureAdded.add(this._onFeatureAdded)
+    this._featureManager = new FeatureManager();
+    this._featureManager.featureFactory = (id, geom) =>
+      new UAVFeature(id, geom);
+    this._featureManager.featureIdFunction = uavIdToGlobalId;
+    this._featureManager.featureAdded.add(this._onFeatureAdded);
 
-    this.eventBindings = {}
+    this.eventBindings = {};
   }
 
-  componentDidUpdate (prevProps) {
-    this._onFlockMaybeChanged(prevProps.flock, this.props.flock)
-    this._onSelectionMaybeChanged(prevProps.selection, this.props.selection)
+  componentDidUpdate(prevProps) {
+    this._onFlockMaybeChanged(prevProps.flock, this.props.flock);
+    this._onSelectionMaybeChanged(prevProps.selection, this.props.selection);
     this._onColorsMaybeChanged(
       prevProps.colorPredicates,
       this.props.colorPredicates
-    )
-    this._featureManager.projection = this.props.projection
+    );
+    this._featureManager.projection = this.props.projection;
   }
 
-  componentDidMount () {
+  componentDidMount() {
     if (this.props.layer) {
-      setLayerSelectable(this.props.layer)
+      setLayerSelectable(this.props.layer);
     }
 
-    this._onFlockMaybeChanged(undefined, this.props.flock)
-    this._onSelectionMaybeChanged(undefined, this.props.selection)
+    this._onFlockMaybeChanged(undefined, this.props.flock);
+    this._onSelectionMaybeChanged(undefined, this.props.selection);
 
-    this._featureManager.projection = this.props.projection
+    this._featureManager.projection = this.props.projection;
   }
 
-  componentWillUnmount () {
-    this._onFlockMaybeChanged(this.props.flock, undefined)
-    this._onSelectionMaybeChanged(this.props.selection, undefined)
+  componentWillUnmount() {
+    this._onFlockMaybeChanged(this.props.flock, undefined);
+    this._onSelectionMaybeChanged(this.props.selection, undefined);
 
-    this._featureManager.projection = undefined
+    this._featureManager.projection = undefined;
   }
 
-  render () {
-    return (
-      <source.Vector ref={this._assignSourceRef} />
-    )
+  render() {
+    return <source.Vector ref={this._assignSourceRef} />;
   }
 
-  _assignSourceRef (value) {
+  _assignSourceRef(value) {
     if (value === this._sourceRef) {
-      return
+      return;
     }
 
     if (this._sourceRef) {
-      this._featureManager.vectorSource = undefined
+      this._featureManager.vectorSource = undefined;
     }
 
-    this._sourceRef = value
+    this._sourceRef = value;
 
     if (this._sourceRef) {
-      this._featureManager.vectorSource = value.source
+      this._featureManager.vectorSource = value.source;
     }
   }
 
@@ -131,10 +129,10 @@ class ActiveUAVsLayerSource extends React.Component {
    *
    * @param {UAVFeature}  feature  the feature that was added
    */
-  _onFeatureAdded (feature) {
+  _onFeatureAdded(feature) {
     // Ensure that the feature is selected automatically if it is part
     // of the current selection
-    feature.selected = _.includes(this.props.selection, feature.getId())
+    feature.selected = _.includes(this.props.selection, feature.getId());
   }
 
   /**
@@ -148,18 +146,20 @@ class ActiveUAVsLayerSource extends React.Component {
    * @param {Flock} oldFlock  the old flock associated to the layer
    * @param {Flock} newFlock  the new flock associated to the layer
    */
-  _onFlockMaybeChanged (oldFlock, newFlock) {
+  _onFlockMaybeChanged(oldFlock, newFlock) {
     if (oldFlock === newFlock) {
-      return
+      return;
     }
 
     if (oldFlock) {
-      oldFlock.uavsUpdated.detach(this.eventBindings.uavsUpdated)
-      delete this.eventBindings.uavsUpdated
+      oldFlock.uavsUpdated.detach(this.eventBindings.uavsUpdated);
+      delete this.eventBindings.uavsUpdated;
     }
 
     if (newFlock) {
-      this.eventBindings.uavsUpdated = newFlock.uavsUpdated.add(this._onUAVsUpdated)
+      this.eventBindings.uavsUpdated = newFlock.uavsUpdated.add(
+        this._onUAVsUpdated
+      );
     }
   }
 
@@ -170,19 +170,27 @@ class ActiveUAVsLayerSource extends React.Component {
    * @param {string[]}  oldSelection  the old selection of UAVs
    * @param {string[]}  newSelection  the new selection of UAVs
    */
-  _onSelectionMaybeChanged (oldSelection, newSelection) {
+  _onSelectionMaybeChanged(oldSelection, newSelection) {
     if (!this._sourceRef) {
-      return
+      return;
     }
 
-    const { source } = this._sourceRef
-    const getFeatureById = source.getFeatureById.bind(source)
-    _(newSelection).difference(oldSelection).map(getFeatureById).filter().each(
-      feature => { feature.selected = true }
-    )
-    _(oldSelection).difference(newSelection).map(getFeatureById).filter().each(
-      feature => { feature.selected = false }
-    )
+    const { source } = this._sourceRef;
+    const getFeatureById = source.getFeatureById.bind(source);
+    _(newSelection)
+      .difference(oldSelection)
+      .map(getFeatureById)
+      .filter()
+      .each(feature => {
+        feature.selected = true;
+      });
+    _(oldSelection)
+      .difference(newSelection)
+      .map(getFeatureById)
+      .filter()
+      .each(feature => {
+        feature.selected = false;
+      });
   }
 
   /**
@@ -192,14 +200,14 @@ class ActiveUAVsLayerSource extends React.Component {
    * @param {Object} oldColorPredicates The old color predicates.
    * @param {Object} newColorPredicates The new color predicates.
    */
-  _onColorsMaybeChanged (oldColorPredicates, newColorPredicates) {
+  _onColorsMaybeChanged(oldColorPredicates, newColorPredicates) {
     if (newColorPredicates === oldColorPredicates) {
-      return
+      return;
     }
 
-    const features = this._featureManager.getFeatureArray()
+    const features = this._featureManager.getFeatureArray();
     for (const feature of features) {
-      feature.color = cachedGetColorById(newColorPredicates, feature.uavId)
+      feature.color = cachedGetColorById(newColorPredicates, feature.uavId);
     }
   }
 
@@ -210,21 +218,22 @@ class ActiveUAVsLayerSource extends React.Component {
    * @listens Flock#uavsUpdated
    * @param {UAV[]} uavs  the UAVs that should be refreshed
    */
-  _onUAVsUpdated (uavs) {
+  _onUAVsUpdated(uavs) {
     uavs.forEach(uav => {
-      const feature = this._featureManager.createOrUpdateFeatureById(
-        uav.id, [uav.lon, uav.lat]
-      )
+      const feature = this._featureManager.createOrUpdateFeatureById(uav.id, [
+        uav.lon,
+        uav.lat
+      ]);
 
       // Set or update the heading of the feature
       if (typeof uav.heading !== 'undefined') {
-        feature.heading = uav.heading
+        feature.heading = uav.heading;
       }
 
       if (feature.color === '') {
-        feature.color = cachedGetColorById(this.props.colorPredicates, uav.id)
+        feature.color = cachedGetColorById(this.props.colorPredicates, uav.id);
       }
-    })
+    });
   }
 }
 
@@ -234,6 +243,6 @@ ActiveUAVsLayerSource.propTypes = {
   layer: PropTypes.instanceOf(Layer),
   projection: PropTypes.func,
   selection: PropTypes.arrayOf(PropTypes.string).isRequired
-}
+};
 
-export default withLayer(ActiveUAVsLayerSource)
+export default withLayer(ActiveUAVsLayerSource);

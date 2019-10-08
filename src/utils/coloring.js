@@ -2,7 +2,7 @@
  * @file Coloring-related utility functions and variables.
  */
 
-import Color from 'color'
+import Color from 'color';
 
 /**
  * Helper function that makes a css string from a color object.
@@ -11,8 +11,8 @@ import Color from 'color'
  * @return {string} the string representation of the color
  */
 export const colorToString = color => {
-  return `rgba(${color.r}, ${color.g}, ${color.b}, ${color.a})`
-}
+  return `rgba(${color.r}, ${color.g}, ${color.b}, ${color.a})`;
+};
 
 /**
  * Attempts to parse the given object as a color using the Color package,
@@ -27,8 +27,8 @@ export const colorToString = color => {
  */
 export const parseColor = (color, defaultColor) => {
   try {
-    return Color(color)
-  } catch (e) {
-    return Color(defaultColor)
+    return Color(color);
+  } catch (error) {
+    return Color(defaultColor);
   }
-}
+};

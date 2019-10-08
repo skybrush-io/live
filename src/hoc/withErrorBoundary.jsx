@@ -1,6 +1,6 @@
-import { withErrorBoundary as withErrorBoundary_ } from 'react-error-boundary'
+import { withErrorBoundary as withErrorBoundary_ } from 'react-error-boundary';
 
-import { ErrorHandler } from '../error-handling'
+import { ErrorHandler } from '../error-handling';
 
 /**
  * A React higher order component that can be used to provide other
@@ -11,8 +11,8 @@ import { ErrorHandler } from '../error-handling'
  * @return {React.Component}  the original component extended with an
  *         appropriate error handling mechanism
  */
-const withErrorBoundary = (component) => {
-  return withErrorBoundary_(component, ErrorHandler)
-}
+const withErrorBoundary = component => {
+  return withErrorBoundary_(component, ErrorHandler);
+};
 
-export default withErrorBoundary
+export default withErrorBoundary;

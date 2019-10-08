@@ -6,26 +6,30 @@
  * widgets around or close them.
  */
 
-import PropTypes from 'prop-types'
-import React from 'react'
+import PropTypes from 'prop-types';
+import React from 'react';
 
-import IconButton from '@material-ui/core/IconButton'
-import Paper from '@material-ui/core/Paper'
-import ContentClear from '@material-ui/icons/Clear'
+import IconButton from '@material-ui/core/IconButton';
+import Paper from '@material-ui/core/Paper';
+import ContentClear from '@material-ui/icons/Clear';
 
 const Widget = ({ children, showControls, style }) => {
   const controls = showControls ? (
-    <div className='widget-action-bar'>
-      <IconButton><ContentClear /></IconButton>
+    <div className="widget-action-bar">
+      <IconButton>
+        <ContentClear />
+      </IconButton>
     </div>
-  ) : false
+  ) : (
+    false
+  );
   return (
-    <Paper className='widget' style={style}>
-      { controls }
-      { children }
+    <Paper className="widget" style={style}>
+      {controls}
+      {children}
     </Paper>
-  )
-}
+  );
+};
 
 Widget.propTypes = {
   children: PropTypes.oneOfType([
@@ -34,12 +38,12 @@ Widget.propTypes = {
   ]),
   showControls: PropTypes.bool.isRequired,
   style: PropTypes.object
-}
+};
 
 Widget.defaultProps = {
   children: [],
   showControls: true,
   style: {}
-}
+};
 
-export default Widget
+export default Widget;

@@ -3,8 +3,8 @@
  * application.
  */
 
-import PropTypes from 'prop-types'
-import React from 'react'
+import PropTypes from 'prop-types';
+import React from 'react';
 
 /**
  * Component that gives a hint to the user about the usage of the
@@ -16,17 +16,17 @@ import React from 'react'
  * @return {Object} the rendered component
  */
 const BackgroundHint = ({ header, text }) => (
-  <div className='background-hint'>
+  <div className="background-hint">
     <div>
-      <div className='header'>{ header }</div>
-      <div className='text'>{ text }</div>
+      <div className="header">{header}</div>
+      <div className="text">{text}</div>
     </div>
   </div>
-)
+);
 
 BackgroundHint.propTypes = {
   header: PropTypes.string,
   text: PropTypes.string
-}
+};
 
-export default BackgroundHint
+export default BackgroundHint;

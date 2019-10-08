@@ -3,15 +3,15 @@
  * stores the tabular datasets loaded by the user.
  */
 
-import { handleActions } from 'redux-actions'
+import { handleActions } from 'redux-actions';
 
-import { deleteByIds } from '~/utils/collections'
+import { deleteByIds } from '~/utils/collections';
 
 /**
  * Default content of the dataset registry in the state object.
  */
 const defaultState = {
-  // items is a map from dataset ID to the dataset itself
+  // Items is a map from dataset ID to the dataset itself
   items: {
     // No datasets are added by default. Here's how an example item should
     // look like:
@@ -30,18 +30,21 @@ const defaultState = {
     //     }
     // }
   },
-  // order defines the preferred ordering of datasets on the UI
+  // Order defines the preferred ordering of datasets on the UI
   order: []
-}
+};
 
 /**
  * The reducer function that handles actions related to the datasets.
  */
-const reducer = handleActions({
-  REMOVE_DATASETS (state, action) {
-    const { ids } = action.payload
-    return deleteByIds(ids, state)
-  }
-}, defaultState)
+const reducer = handleActions(
+  {
+    REMOVE_DATASETS(state, action) {
+      const { ids } = action.payload;
+      return deleteByIds(ids, state);
+    }
+  },
+  defaultState
+);
 
-export default reducer
+export default reducer;

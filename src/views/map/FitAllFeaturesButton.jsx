@@ -2,24 +2,23 @@
  * @file React Component to display and adjust the rotation of the map view.
  */
 
-import { easeOut } from 'ol/easing'
-import * as Extent from 'ol/extent'
-import VectorLayer from 'ol/layer/Vector'
-import PropTypes from 'prop-types'
-import React from 'react'
-import { connect } from 'react-redux'
+import { easeOut } from 'ol/easing';
+import * as Extent from 'ol/extent';
+import VectorLayer from 'ol/layer/Vector';
+import PropTypes from 'prop-types';
+import React from 'react';
+import { connect } from 'react-redux';
 
-import { showSnackbarMessage } from '../../actions/snackbar'
-import { coordinateFromLonLat } from '../../utils/geography'
+import IconButton from '@material-ui/core/IconButton';
+import DeviceGpsFixed from '@material-ui/icons/GpsFixed';
+import ActionAllOut from '@material-ui/icons/AllOut';
+import { showSnackbarMessage } from '../../actions/snackbar';
+import { coordinateFromLonLat } from '../../utils/geography';
 import {
   mapReferenceRequestSignal,
   fitAllFeaturesSignal,
   mapViewToExtentSignal
-} from '../../signals'
-
-import IconButton from '@material-ui/core/IconButton'
-import DeviceGpsFixed from '@material-ui/icons/GpsFixed'
-import ActionAllOut from '@material-ui/icons/AllOut'
+} from '../../signals';
 
 /**
  * React Component to adjust the view so that it fits all of the current features.
@@ -43,26 +42,26 @@ class FitAllFeaturesButton extends React.Component {
    *
    * @emits {mapReferenceRequestSignal} requests map reference.
    */
-  constructor (props) {
-    super(props)
+  constructor(props) {
+    super(props);
 
-    this._onMapReferenceReceived = this._onMapReferenceReceived.bind(this)
-    this._handleClick = this._handleClick.bind(this)
-    this._geolocationReceived = this._geolocationReceived.bind(this)
+    this._onMapReferenceReceived = this._onMapReferenceReceived.bind(this);
+    this._handleClick = this._handleClick.bind(this);
+    this._geolocationReceived = this._geolocationReceived.bind(this);
 
-    this._CurrentIcon = ActionAllOut
+    this._CurrentIcon = ActionAllOut;
 
-    fitAllFeaturesSignal.add(this._handleClick)
+    fitAllFeaturesSignal.add(this._handleClick);
 
-    mapReferenceRequestSignal.dispatch(this._onMapReferenceReceived)
+    mapReferenceRequestSignal.dispatch(this._onMapReferenceReceived);
   }
 
-  render () {
+  render() {
     return (
-      <IconButton onClick={this._handleClick} tooltip='Fit all features'>
+      <IconButton tooltip="Fit all features" onClick={this._handleClick}>
         <this._CurrentIcon />
       </IconButton>
-    )
+    );
   }
 
   /**
@@ -70,8 +69,8 @@ class FitAllFeaturesButton extends React.Component {
    *
    * @param {ol.Map} map the map to attach the event handlers to
    */
-  _onMapReferenceReceived (map) {
-    this.map = map
+  _onMapReferenceReceived(map) {
+    this.map = map;
   }
 
   /**
@@ -79,40 +78,49 @@ class FitAllFeaturesButton extends React.Component {
    *
    * @param {Event} e the event fired from the IconButton component
    */
-  _handleClick (e) {
-    const feasibleLayers = this.map.getLayers().getArray().filter(this._isLayerFeasible)
-    const featureArrays = feasibleLayers.map(l => l.getSource().getFeatures())
-    const features = [].concat.apply([], featureArrays)
-    const featureExtents = features.map(f => {
-      const geometry = f.getGeometry()
-      return geometry ? geometry.getExtent() : undefined
-    }).filter(e => e !== undefined)
+  _handleClick(e) {
+    const feasibleLayers = this.map
+      .getLayers()
+      .getArray()
+      .filter(this._isLayerFeasible);
+    const featureArrays = feasibleLayers.map(l => l.getSource().getFeatures());
+    const features = [].concat.apply([], featureArrays);
+    const featureExtents = features
+      .map(f => {
+        const geometry = f.getGeometry();
+        return geometry ? geometry.getExtent() : undefined;
+      })
+      .filter(e => e !== undefined);
 
     if (featureExtents.length === 0) {
-      this.props.dispatch(showSnackbarMessage(
-        'No valid feature extents avaiable, trying to get geolocation instead'
-      ))
+      this.props.dispatch(
+        showSnackbarMessage(
+          'No valid feature extents avaiable, trying to get geolocation instead'
+        )
+      );
 
-      this._CurrentIcon = DeviceGpsFixed
+      this._CurrentIcon = DeviceGpsFixed;
 
       // This only works on secure origins
       if ('geolocation' in window.navigator) {
-        window.navigator.geolocation.getCurrentPosition(this._geolocationReceived)
+        window.navigator.geolocation.getCurrentPosition(
+          this._geolocationReceived
+        );
       }
 
-      return
+      return;
     }
 
-    this._CurrentIcon = ActionAllOut
+    this._CurrentIcon = ActionAllOut;
 
     const mergedExtent = featureExtents.reduce(
       (bigExtent, currentExtent) => Extent.extend(bigExtent, currentExtent),
       Extent.createEmpty()
-    )
+    );
 
-    const bufferedExtent = Extent.buffer(mergedExtent, this.props.margin)
+    const bufferedExtent = Extent.buffer(mergedExtent, this.props.margin);
 
-    mapViewToExtentSignal.dispatch(bufferedExtent)
+    mapViewToExtentSignal.dispatch(bufferedExtent);
   }
 
   /**
@@ -123,8 +131,8 @@ class FitAllFeaturesButton extends React.Component {
    * @return {boolean} whether the layer is visible and has an associated
    *         vector source
    */
-  _isLayerFeasible (layer) {
-    return layer && layer.getVisible() && layer instanceof VectorLayer
+  _isLayerFeasible(layer) {
+    return layer && layer.getVisible() && layer instanceof VectorLayer;
   }
 
   /**
@@ -132,16 +140,17 @@ class FitAllFeaturesButton extends React.Component {
    *
    * @param {Object} position the position object provided by the geolocation service
    */
-  _geolocationReceived (position) {
-    const view = this.map.getView()
-    const center = coordinateFromLonLat(
-      [position.coords.longitude, position.coords.latitude]
-    )
+  _geolocationReceived(position) {
+    const view = this.map.getView();
+    const center = coordinateFromLonLat([
+      position.coords.longitude,
+      position.coords.latitude
+    ]);
     view.animate({
       pan: center,
       duration: this.props.duration,
       easing: easeOut
-    })
+    });
   }
 }
 
@@ -149,6 +158,6 @@ FitAllFeaturesButton.propTypes = {
   duration: PropTypes.number,
   margin: PropTypes.number,
   dispatch: PropTypes.func
-}
+};
 
-export default connect()(FitAllFeaturesButton)
+export default connect()(FitAllFeaturesButton);

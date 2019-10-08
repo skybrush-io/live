@@ -4,20 +4,20 @@
  * the scan.
  */
 
-import CircularProgress from '@material-ui/core/CircularProgress'
-import { green, grey, red, yellow } from '@material-ui/core/colors'
-import ListItem from '@material-ui/core/ListItem'
-import ListItemIcon from '@material-ui/core/ListItemIcon'
-import ListItemText from '@material-ui/core/ListItemText'
-import Clear from '@material-ui/icons/Clear'
-import Done from '@material-ui/icons/Done'
-import Warning from '@material-ui/icons/Warning'
+import CircularProgress from '@material-ui/core/CircularProgress';
+import { green, grey, red, yellow } from '@material-ui/core/colors';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+import Clear from '@material-ui/icons/Clear';
+import Done from '@material-ui/icons/Done';
+import Warning from '@material-ui/icons/Warning';
 
-import PropTypes from 'prop-types'
-import React from 'react'
-import { connect } from 'react-redux'
+import PropTypes from 'prop-types';
+import React from 'react';
+import { connect } from 'react-redux';
 
-import { startLocalServerExecutableSearch } from '../../../actions/local-server'
+import { startLocalServerExecutableSearch } from '../../../actions/local-server';
 
 const icons = {
   found: (
@@ -32,7 +32,7 @@ const icons = {
   ),
   scanning: (
     <ListItemIcon style={{ margin: '0 15px' }}>
-      <CircularProgress variant='indeterminate' color='secondary' size={32} />
+      <CircularProgress variant="indeterminate" color="secondary" size={32} />
     </ListItemIcon>
   ),
   error: (
@@ -40,25 +40,43 @@ const icons = {
       <Clear />
     </ListItemIcon>
   )
-}
+};
 
 const PathScannerPresentation = ({
-  error, notFoundMessage, onRequestReload, result,
-  scanning, scanningMessage, successMessage
+  error,
+  notFoundMessage,
+  onRequestReload,
+  result,
+  scanning,
+  scanningMessage,
+  successMessage
 }) => (
   <ListItem
-    button divider
+    button
+    divider
     style={{ backgroundColor: grey[200], paddingTop: 12 }}
     onClick={onRequestReload}
   >
     <ListItemIcon>
-      {scanning ? icons.scanning : (error ? icons.error : (result ? icons.found : icons.notFound))}
+      {scanning
+        ? icons.scanning
+        : error
+        ? icons.error
+        : result
+        ? icons.found
+        : icons.notFound}
     </ListItemIcon>
     <ListItemText
-      primary={error || (result ? successMessage : (scanning ? scanningMessage : notFoundMessage))}
-      secondary={scanning ? 'Looking for server' : (result || 'Click to scan again')} />
+      primary={
+        error ||
+        (result ? successMessage : scanning ? scanningMessage : notFoundMessage)
+      }
+      secondary={
+        scanning ? 'Looking for server' : result || 'Click to scan again'
+      }
+    />
   </ListItem>
-)
+);
 
 PathScannerPresentation.propTypes = {
   error: PropTypes.string,
@@ -68,23 +86,23 @@ PathScannerPresentation.propTypes = {
   scanning: PropTypes.bool,
   scanningMessage: PropTypes.string,
   successMessage: PropTypes.string
-}
+};
 
 PathScannerPresentation.defaultProps = {
   notFoundMessage: 'Server executable not found.',
   scanningMessage: 'Please wait...',
   successMessage: 'Server executable found successfully.'
-}
+};
 
 export default connect(
-  // mapStateToProps
+  // MapStateToProps
   state => ({
     ...state.localServer.pathScan
   }),
-  // mapDispatchToProps
+  // MapDispatchToProps
   dispatch => ({
     onRequestReload: () => {
-      dispatch(startLocalServerExecutableSearch())
+      dispatch(startLocalServerExecutableSearch());
     }
   })
-)(PathScannerPresentation)
+)(PathScannerPresentation);

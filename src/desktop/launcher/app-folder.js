@@ -1,5 +1,5 @@
-const { app } = require('electron')
-const path = require('path')
+const { app } = require('electron');
+const path = require('path');
 
 /**
  * Returns the name of the folder that contains the main executable of the
@@ -8,4 +8,4 @@ const path = require('path')
  * @return {string} the name of the folder that contains the main executable
  *         of the application
  */
-module.exports = () => path.dirname(app.getPath('exe'))
+module.exports = () => path.dirname(app.getPath('exe'));

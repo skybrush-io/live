@@ -3,24 +3,27 @@
  * to the UAVs.
  */
 
-import { flatMap, isNil } from 'lodash'
-import CircularProgress from '@material-ui/core/CircularProgress'
-import TextField from '@material-ui/core/TextField'
-import PropTypes from 'prop-types'
-import React from 'react'
-import { connect } from 'react-redux'
+import { flatMap, isNil } from 'lodash';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import TextField from '@material-ui/core/TextField';
+import PropTypes from 'prop-types';
+import React from 'react';
+import { connect } from 'react-redux';
 
-import { addInboundMessage, addOutboundMessageToSelectedUAV,
-  addErrorMessageInMessagesDialog } from '../../actions/messages'
-import ActiveUAVsField from '../ActiveUAVsField'
-import BackgroundHint from '../BackgroundHint'
-import { ChatArea, ChatBubble, Marker } from '../chat'
+import {
+  addInboundMessage,
+  addOutboundMessageToSelectedUAV,
+  addErrorMessageInMessagesDialog
+} from '../../actions/messages';
+import ActiveUAVsField from '../ActiveUAVsField';
+import BackgroundHint from '../BackgroundHint';
 
-import { formatCommandResponseAsHTML } from '../../flockwave/formatting'
-import Flock from '../../model/flock'
-import { MessageType } from '../../model/messages'
-import messageHub from '../../message-hub'
-import { reorder, selectOrdered } from '../../utils/collections'
+import { formatCommandResponseAsHTML } from '../../flockwave/formatting';
+import Flock from '../../model/flock';
+import { MessageType } from '../../model/messages';
+import messageHub from '../../message-hub';
+import { reorder, selectOrdered } from '../../utils/collections';
+import { ChatArea, ChatBubble, Marker } from '.';
 
 /**
  * Converts a message object from the Redux store into React components
@@ -29,35 +32,58 @@ import { reorder, selectOrdered } from '../../utils/collections'
  * @param {Object} message  the message to convert
  * @return {React.Component[]}  the React components that render the message
  */
-function convertMessageToComponent (message) {
-  const keyBase = `message${message.id}`
-  const inProgress = !message.responseId
+function convertMessageToComponent(message) {
+  const keyBase = `message${message.id}`;
+  const inProgress = !message.responseId;
   switch (message.type) {
     case MessageType.OUTBOUND:
       return [
-        <ChatBubble key={keyBase} author={message.author} own raw={message.raw}
-          date={message.date} body={message.body}
-          rightComponent={inProgress ? <CircularProgress size={30} thickness={1.75} style={{ margin: 10 }} /> : false}
+        <ChatBubble
+          key={keyBase}
+          own
+          author={message.author}
+          raw={message.raw}
+          date={message.date}
+          body={message.body}
+          rightComponent={
+            inProgress ? (
+              <CircularProgress
+                size={30}
+                thickness={1.75}
+                style={{ margin: 10 }}
+              />
+            ) : (
+              false
+            )
+          }
         />
-      ]
+      ];
 
     case MessageType.INBOUND:
       return [
-        <ChatBubble key={keyBase} author={message.author} own={false} raw={message.raw}
-          date={message.date} body={message.body} />
-      ]
+        <ChatBubble
+          key={keyBase}
+          author={message.author}
+          own={false}
+          raw={message.raw}
+          date={message.date}
+          body={message.body}
+        />
+      ];
 
     case MessageType.ERROR:
       return [
-        <Marker key={keyBase + 'Marker'} level='error'
-          message={message.body} />
-      ]
+        <Marker key={keyBase + 'Marker'} level="error" message={message.body} />
+      ];
 
     default:
       return [
-        <Marker key={keyBase + 'Marker'} level='error'
-          message={`Invalid message type: ${message.type}`} />
-      ]
+        <Marker
+          key={keyBase + 'Marker'}
+          level="error"
+          message={`Invalid message type: ${message.type}`}
+        />
+      ];
   }
 }
 
@@ -70,20 +96,27 @@ function convertMessageToComponent (message) {
  *        the chat area (true) or above it
  * @return {React.Component[]}  the React components that render the message
  */
-function convertMessagesToComponents (messages, textFieldsBelow) {
+function convertMessagesToComponents(messages, textFieldsBelow) {
   if (isNil(messages)) {
     return [
-      <BackgroundHint key="backgroundHint" header="No UAV selected"
-        text="Enter the ID of a UAV to talk to in the lower left corner" />
-    ]
-  } else if (messages.length === 0) {
-    const hint = `Send a message to the selected UAV using the text box ${textFieldsBelow ? 'below' : 'above'}`
+      <BackgroundHint
+        key="backgroundHint"
+        header="No UAV selected"
+        text="Enter the ID of a UAV to talk to in the lower left corner"
+      />
+    ];
+  }
+
+  if (messages.length === 0) {
+    const hint = `Send a message to the selected UAV using the text box ${
+      textFieldsBelow ? 'below' : 'above'
+    }`;
     return [
       <BackgroundHint key="backgroundHint" header="No messages" text={hint} />
-    ]
-  } else {
-    return flatMap(messages, convertMessageToComponent)
+    ];
   }
+
+  return flatMap(messages, convertMessageToComponent);
 }
 
 /**
@@ -91,56 +124,75 @@ function convertMessagesToComponents (messages, textFieldsBelow) {
  * to type the messages into, and a target UAV selector.
  */
 class MessagesPanelPresentation extends React.Component {
-  constructor (props) {
-    super(props)
+  constructor(props) {
+    super(props);
 
-    this._chatArea = null
-    this._textField = null
+    this._chatArea = null;
+    this._textField = null;
 
-    this.focusOnTextField = this.focusOnTextField.bind(this)
-    this._setChatArea = this._setChatArea.bind(this)
-    this._setTextField = this._setTextField.bind(this)
-    this._textFieldKeyDownHandler = this._textFieldKeyDownHandler.bind(this)
+    this.focusOnTextField = this.focusOnTextField.bind(this);
+    this._setChatArea = this._setChatArea.bind(this);
+    this._setTextField = this._setTextField.bind(this);
+    this._textFieldKeyDownHandler = this._textFieldKeyDownHandler.bind(this);
   }
 
-  focusOnTextField () {
+  focusOnTextField() {
     if (this._textField) {
-      this._textField.focus()
+      this._textField.focus();
     }
   }
 
-  render () {
-    const { chatEntries, flock, style, textFieldsAtBottom } = this.props
-    const chatComponents = convertMessagesToComponents(chatEntries, textFieldsAtBottom)
-    const contentStyle = Object.assign({
-      display: 'flex',
-      flexDirection: 'column',
-      height: '100%'
-    }, style)
-    const chatArea = <ChatArea key="chatArea" ref={this._setChatArea}>{chatComponents}</ChatArea>
-    const textFields =
+  render() {
+    const { chatEntries, flock, style, textFieldsAtBottom } = this.props;
+    const chatComponents = convertMessagesToComponents(
+      chatEntries,
+      textFieldsAtBottom
+    );
+    const contentStyle = Object.assign(
+      {
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100%'
+      },
+      style
+    );
+    const chatArea = (
+      <ChatArea key="chatArea" ref={this._setChatArea}>
+        {chatComponents}
+      </ChatArea>
+    );
+    const textFields = (
       <div key="textFieldContainer" style={{ display: 'flex' }}>
-        <ActiveUAVsField style={{ width: '8em', paddingRight: '1em' }}
-          flock={flock} />
-        <TextField inputRef={this._setTextField} fullWidth label="Message"
-          onKeyDown={this._textFieldKeyDownHandler} />
+        <ActiveUAVsField
+          style={{ width: '8em', paddingRight: '1em' }}
+          flock={flock}
+        />
+        <TextField
+          fullWidth
+          inputRef={this._setTextField}
+          label="Message"
+          onKeyDown={this._textFieldKeyDownHandler}
+        />
       </div>
-    const children = textFieldsAtBottom ? [chatArea, textFields] : [textFields, chatArea]
-    return <div style={contentStyle}>{children}</div>
+    );
+    const children = textFieldsAtBottom
+      ? [chatArea, textFields]
+      : [textFields, chatArea];
+    return <div style={contentStyle}>{children}</div>;
   }
 
-  scrollToBottom () {
+  scrollToBottom() {
     if (this._chatArea) {
-      this._chatArea.scrollToBottom()
+      this._chatArea.scrollToBottom();
     }
   }
 
-  _setChatArea (value) {
-    this._chatArea = value
+  _setChatArea(value) {
+    this._chatArea = value;
   }
 
-  _setTextField (value) {
-    this._textField = value
+  _setTextField(value) {
+    this._textField = value;
   }
 
   /**
@@ -150,11 +202,11 @@ class MessagesPanelPresentation extends React.Component {
    * @param  {KeyboardEvent} event  the DOM event for the keypress
    * @return {undefined}
    */
-  _textFieldKeyDownHandler (event) {
+  _textFieldKeyDownHandler(event) {
     if (event.keyCode === 13) {
-      this.props.onSend(event.target.value)
-      event.target.value = ''
-      this.scrollToBottom()
+      this.props.onSend(event.target.value);
+      event.target.value = '';
+      this.scrollToBottom();
     }
   }
 }
@@ -166,67 +218,72 @@ MessagesPanelPresentation.propTypes = {
   selectedUAVId: PropTypes.string,
   style: PropTypes.object,
   textFieldsAtBottom: PropTypes.bool.isRequired
-}
+};
 
 MessagesPanelPresentation.defaultProps = {
   textFieldsAtBottom: false
-}
+};
 
 /**
  * Messages panel container component to bind it to the Redux store.
  */
 const MessagesPanel = connect(
-  // mapStateToProps
+  // MapStateToProps
   state => {
-    const { messages } = state
-    const { selectedUAVId } = messages
+    const { messages } = state;
+    const { selectedUAVId } = messages;
     const messageIds = selectedUAVId
-      ? (messages.uavIdsToMessageIds[selectedUAVId] || [])
-      : []
+      ? messages.uavIdsToMessageIds[selectedUAVId] || []
+      : [];
     const chatEntries = selectedUAVId
       ? selectOrdered(reorder(messageIds, messages))
-      : null
+      : null;
     return {
       chatEntries,
       selectedUAVId
-    }
+    };
   },
 
-  // mapDispatchToProps
+  // MapDispatchToProps
   dispatch => ({
-    onSend (message) {
+    onSend(message) {
       // Dispatch a Redux action. This will update the store but will not
       // send any actual message
-      const action = addOutboundMessageToSelectedUAV(message)
-      dispatch(action)
+      const action = addOutboundMessageToSelectedUAV(message);
+      dispatch(action);
 
       // Now also send the message via the message hub
-      const { uavId, messageId } = action
-      messageHub.sendCommandRequest(uavId, message).then(
-        // success handler
-        message => {
-          const { response } = message.body
-          const formattedMessage = formatCommandResponseAsHTML(response)
-          dispatch(addInboundMessage(formattedMessage, messageId))
-        }
-      ).catch(
-        // error handler
-        error => {
-          const message = error.userMessage || error.message
-          dispatch(addErrorMessageInMessagesDialog(message, uavId, messageId))
-        }
-      )
+      const { uavId, messageId } = action;
+      messageHub
+        .sendCommandRequest(uavId, message)
+        .then(
+          // Success handler
+          message => {
+            const { response } = message.body;
+            const formattedMessage = formatCommandResponseAsHTML(response);
+            dispatch(addInboundMessage(formattedMessage, messageId));
+          }
+        )
+        .catch(
+          // Error handler
+          error => {
+            const message = error.userMessage || error.message;
+            dispatch(
+              addErrorMessageInMessagesDialog(message, uavId, messageId)
+            );
+          }
+        );
     }
   }),
 
-  // mergeProps
+  // MergeProps
   null,
 
-  // options
+  // Options
   { forwardRef: true }
 
-  // ref is needed because we want to access the scrollToBottom() method
+  // Ref is needed because we want to access the scrollToBottom() method
   // from the outside
-)(MessagesPanelPresentation)
+)(MessagesPanelPresentation);
 
-export default MessagesPanel
+export default MessagesPanel;

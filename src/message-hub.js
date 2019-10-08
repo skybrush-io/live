@@ -4,14 +4,14 @@
  * send messages to the connected Flockwave server.
  */
 
-import MessageHub from './flockwave/messages'
+import MessageHub from './flockwave/messages';
 
-import { handleClockInformationMessage } from './model/clocks'
-import { handleConnectionInformationMessage } from './model/connections'
-import flock from './flock'
-import store from './store'
+import { handleClockInformationMessage } from './model/clocks';
+import { handleConnectionInformationMessage } from './model/connections';
+import flock from './flock';
+import store from './store';
 
-const dispatch = store.dispatch
+const { dispatch } = store;
 
 /**
  * The single application-wide message hub that other objects can use to
@@ -22,14 +22,13 @@ const dispatch = store.dispatch
  *
  * @type {MessageHub}
  */
-const messageHub = new MessageHub()
+const messageHub = new MessageHub();
 messageHub.registerNotificationHandlers({
-  'CLK-INF': message =>
-    handleClockInformationMessage(message.body, dispatch),
+  'CLK-INF': message => handleClockInformationMessage(message.body, dispatch),
   'CONN-INF': message =>
     handleConnectionInformationMessage(message.body, dispatch),
   'UAV-INF': message =>
     flock.handleUAVInformationMessage(message.body, dispatch)
-})
+});
 
-export default messageHub
+export default messageHub;

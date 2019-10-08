@@ -1,2 +1,2 @@
-export { PasswordField, Switch, TextField } from './fields'
-export { forceFormSubmission } from './utils'
+export { PasswordField, Switch, TextField } from './fields';
+export { forceFormSubmission } from './utils';

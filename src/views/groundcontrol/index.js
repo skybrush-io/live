@@ -1,2 +1,2 @@
-import GroundControlView from './GroundControlView'
-export default GroundControlView
+import GroundControlView from './GroundControlView';
+export default GroundControlView;

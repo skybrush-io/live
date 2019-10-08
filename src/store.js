@@ -2,18 +2,18 @@
  * @file The master store for the application state.
  */
 
-import { createStore, applyMiddleware } from 'redux'
-import createDebounce from 'redux-debounce'
-import promise from 'redux-promise-middleware'
-import createSagaMiddleware from 'redux-saga'
-import * as storage from 'redux-storage'
-import thunk from 'redux-thunk'
-import debounce from 'redux-storage-decorator-debounce'
-import filter from 'redux-storage-decorator-filter'
-import createEngine from 'redux-storage-engine-localstorage'
+import { createStore, applyMiddleware } from 'redux';
+import createDebounce from 'redux-debounce';
+import promise from 'redux-promise-middleware';
+import createSagaMiddleware from 'redux-saga';
+import * as storage from 'redux-storage';
+import thunk from 'redux-thunk';
+import debounce from 'redux-storage-decorator-debounce';
+import filter from 'redux-storage-decorator-filter';
+import createEngine from 'redux-storage-engine-localstorage';
 
-import * as actions from './actions/types'
-import reducer from './reducers'
+import * as actions from './actions/types';
+import reducer from './reducers';
 
 /**
  * Storage engine for storing the application state. In the browser, we store
@@ -42,8 +42,8 @@ const engine = debounce(
       ['workbench']
     ]
   ),
-  1000 /* msec */
-)
+  1000 /* Msec */
+);
 
 /**
  * Blacklisted actions that should not trigger a state save.
@@ -59,41 +59,45 @@ const actionBlacklist = [
   actions.SET_CONNECTION_STATE_MULTIPLE,
   actions.SHOW_ERROR_MESSAGE,
   actions.SHOW_SNACKBAR_MESSAGE
-]
+];
 
 /**
  * Redux middleware that debounces actions with the right metadata.
  */
 const debouncer = createDebounce({
-  simple: 300 /* msec */
-})
+  simple: 300 /* Msec */
+});
 
 /**
  * Redux middleware that manages long-running background processes.
  */
-export const sagaMiddleware = createSagaMiddleware()
+export const sagaMiddleware = createSagaMiddleware();
 
 /**
  * Redux middleware that saves the state of the application into the
  * browser's local storage after every action.
  */
-const storageMiddleware = storage.createMiddleware(
-  engine, actionBlacklist
-)
+const storageMiddleware = storage.createMiddleware(engine, actionBlacklist);
 
 /**
  * Function to create a new Redux store with the required middlewares.
  */
-const createStoreWithMiddleware =
-  applyMiddleware(debouncer, promise, thunk, sagaMiddleware, storageMiddleware)(createStore)
+const createStoreWithMiddleware = applyMiddleware(
+  debouncer,
+  promise,
+  thunk,
+  sagaMiddleware,
+  storageMiddleware
+)(createStore);
 
 /**
  * The store for the application state.
  */
 const store = createStoreWithMiddleware(
-  reducer, undefined,
+  reducer,
+  undefined,
   window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
-)
+);
 
 /**
  * Function that will load the contents of the store from the storage
@@ -103,20 +107,20 @@ const store = createStoreWithMiddleware(
  * @return  {Promise}  a promise that resolves when the state of the
  *          store is restored
  */
-export const loadStoreFromStorageBackend =
-  () => storage.createLoader(engine)(store)
+export const loadStoreFromStorageBackend = () =>
+  storage.createLoader(engine)(store);
 
 /**
  * Function that clears the contents of the store completely. It is strongly
  * advised to reload the app after this function was executed.
  */
-export function clearStore () {
-  engine.save({})
+export function clearStore() {
+  engine.save({});
 }
 
 // Send the store dispatcher function back to the preloader
 if (window.bridge) {
-  window.bridge.dispatch = store.dispatch
+  window.bridge.dispatch = store.dispatch;
 }
 
-export default store
+export default store;

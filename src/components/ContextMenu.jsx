@@ -3,13 +3,13 @@
  * currently selected UAVs.
  */
 
-import { autobind } from 'core-decorators'
-import { isFunction } from 'lodash'
-import PropTypes from 'prop-types'
-import React from 'react'
+import { autobind } from 'core-decorators';
+import { isFunction } from 'lodash';
+import PropTypes from 'prop-types';
+import React from 'react';
 
-import Popover from '@material-ui/core/Popover'
-import MenuList from '@material-ui/core/MenuList'
+import Popover from '@material-ui/core/Popover';
+import MenuList from '@material-ui/core/MenuList';
 
 /**
  * Generic context menu using a Material-UI popover element.
@@ -19,8 +19,8 @@ import MenuList from '@material-ui/core/MenuList'
  * component.
  */
 export default class ContextMenu extends React.Component {
-  constructor (props) {
-    super(props)
+  constructor(props) {
+    super(props);
 
     this.state = {
       open: false,
@@ -30,7 +30,7 @@ export default class ContextMenu extends React.Component {
         left: 0
       },
       context: undefined
-    }
+    };
   }
 
   /**
@@ -43,13 +43,11 @@ export default class ContextMenu extends React.Component {
    * @param {Object} context Context object to pass to the click handlers of
    *        the menu items as their second argument.
    */
-  open (position, context) {
-    const { contextProvider } = this.props
+  open(position, context) {
+    const { contextProvider } = this.props;
 
     // Prevent the document body from firing a contextmenu event
-    document.body.addEventListener(
-      'contextmenu', this._preventDefault
-    )
+    document.body.addEventListener('contextmenu', this._preventDefault);
 
     // Start opening the context menu
     this.setState({
@@ -57,7 +55,7 @@ export default class ContextMenu extends React.Component {
       open: false,
       context: contextProvider ? contextProvider(context) : context,
       position
-    })
+    });
   }
 
   /**
@@ -65,18 +63,16 @@ export default class ContextMenu extends React.Component {
    * selects a menu item or clicks away.
    */
   @autobind
-  _handleClose () {
-    document.body.removeEventListener(
-      'contextmenu', this._preventDefault
-    )
+  _handleClose() {
+    document.body.removeEventListener('contextmenu', this._preventDefault);
 
     this.setState({
       open: false,
       opening: false
-      // don't set the context to undefined here -- you could be running into
+      // Don't set the context to undefined here -- you could be running into
       // strange problems with disappearing menu items during the animation
       // when the menu fades out
-    })
+    });
   }
 
   /**
@@ -87,55 +83,51 @@ export default class ContextMenu extends React.Component {
    * @param {MouseEvent} e The event being fired.
    */
   @autobind
-  _preventDefault (e) {
+  _preventDefault(e) {
     if (this.state.opening) {
-      this.setState({ opening: false, open: true })
+      this.setState({ opening: false, open: true });
     } else {
-      this._handleClose()
+      this._handleClose();
     }
 
-    e.preventDefault()
+    e.preventDefault();
   }
 
-  render () {
-    const { children } = this.props
-    const { context, open, opening, position } = this.state
+  render() {
+    const { children } = this.props;
+    const { context, open, opening, position } = this.state;
     const effectiveChildren = isFunction(children)
-      ? children(context || {}) : children
+      ? children(context || {})
+      : children;
 
-    const menuItems = React.Children.map(
-      effectiveChildren,
-      child => React.cloneElement(child,
-        {
-          onClick: child.props.onClick
-            ? event => {
-              child.props.onClick(event, context)
-              this._handleClose()
+    const menuItems = React.Children.map(effectiveChildren, child =>
+      React.cloneElement(child, {
+        onClick: child.props.onClick
+          ? event => {
+              child.props.onClick(event, context);
+              this._handleClose();
             }
-            : event => {
-              this._handleClose()
+          : event => {
+              this._handleClose();
             }
-        }
-      )
-    )
+      })
+    );
 
     return (
       <Popover
         open={open || opening}
-        anchorReference='anchorPosition'
+        anchorReference="anchorPosition"
         anchorPosition={position}
         anchorOrigin={{ horizontal: 'left', vertical: 'bottom' }}
         onClose={this._handleClose}
       >
-        <MenuList>
-          {menuItems}
-        </MenuList>
+        <MenuList>{menuItems}</MenuList>
       </Popover>
-    )
+    );
   }
 }
 
 ContextMenu.propTypes = {
   children: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
   contextProvider: PropTypes.func
-}
+};

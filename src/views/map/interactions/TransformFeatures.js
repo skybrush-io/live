@@ -3,18 +3,18 @@
  * features by dragging.
  */
 
-import { autobind } from 'core-decorators'
-import { stubTrue } from 'lodash'
-import { includes } from 'ol/array'
-import OLEvent from 'ol/events/Event'
-import * as Extent from 'ol/extent'
-import PointerInteraction from 'ol/interaction/Pointer'
-import Layer from 'ol/layer/Layer'
-import PropTypes from 'prop-types'
+import { autobind } from 'core-decorators';
+import { stubTrue } from 'lodash';
+import { includes } from 'ol/array';
+import OLEvent from 'ol/events/Event';
+import * as Extent from 'ol/extent';
+import PointerInteraction from 'ol/interaction/Pointer';
+import Layer from 'ol/layer/Layer';
+import PropTypes from 'prop-types';
 
-import { createOLInteractionComponent } from '@collmot/ol-react/lib/interaction'
+import { createOLInteractionComponent } from '@collmot/ol-react/lib/interaction';
 
-import Condition from '../conditions'
+import Condition from '../conditions';
 
 /**
  * Enum containing the supported transformation types.
@@ -22,7 +22,7 @@ import Condition from '../conditions'
 export const TransformationType = {
   MOVE: 'move',
   ROTATE: 'rotate'
-}
+};
 
 /**
  * Mapping from supported transformation types to their handler functions.
@@ -31,17 +31,17 @@ export const TransformationType = {
  * transformation parameters.
  */
 const transformationTypeToHandler = {
-  move (geom, deltaX, deltaY) {
-    geom.translate(deltaX, deltaY)
+  move(geom, deltaX, deltaY) {
+    geom.translate(deltaX, deltaY);
   },
 
-  rotate (geom, deltaX, deltaY, totalDelta) {
-    const angle = totalDelta[1] * Math.PI / 180
-    const angleDelta = angle - (this.lastAngle || 0)
-    geom.rotate(angleDelta, this.center)
-    this.lastAngle = angle
+  rotate(geom, deltaX, deltaY, totalDelta) {
+    const angle = (totalDelta[1] * Math.PI) / 180;
+    const angleDelta = angle - (this.lastAngle || 0);
+    geom.rotate(angleDelta, this.center);
+    this.lastAngle = angle;
   }
-}
+};
 
 /**
  * OpenLayers interaction that allows the user to move or rotate the
@@ -56,118 +56,134 @@ const transformationTypeToHandler = {
  * selection here.
  */
 export class TransformFeaturesInteraction extends PointerInteraction {
-  constructor (options) {
+  constructor(options) {
     super({
       handleDownEvent: event => {
-        const type = this.decideTypeFromEvent_(event)
+        const type = this.decideTypeFromEvent_(event);
         if (!type) {
-          return false
+          return false;
         }
 
         const features = this.featureProvider_
           ? this.featureProvider_(event.map)
-          : []
+          : [];
 
-        this.lastFeature_ = this.featureAtPixel_(event.pixel, event.map, features)
+        this.lastFeature_ = this.featureAtPixel_(
+          event.pixel,
+          event.map,
+          features
+        );
         if (!this.lastCoordinate_ && this.lastFeature_) {
-          this.firstCoordinate_ = event.coordinate
-          this.lastCoordinate_ = event.coordinate
-          this.features_ = features
+          this.firstCoordinate_ = event.coordinate;
+          this.lastCoordinate_ = event.coordinate;
+          this.features_ = features;
           this.transformation_ = {
             handler: transformationTypeToHandler[type],
             type
-          }
+          };
 
           if (type === 'rotate') {
-            const extent = Extent.createEmpty()
+            const extent = Extent.createEmpty();
             features.forEach(feature => {
-              const geom = feature.getGeometry()
+              const geom = feature.getGeometry();
               if (feature.getId().substr(0, 5) === 'home$') {
-                Extent.extend(extent, Extent.boundingExtent([geom.getFirstCoordinate()]))
+                Extent.extend(
+                  extent,
+                  Extent.boundingExtent([geom.getFirstCoordinate()])
+                );
               } else {
-                Extent.extend(extent, geom.getExtent())
+                Extent.extend(extent, geom.getExtent());
               }
-            })
-            this.transformation_.center = Extent.getCenter(extent)
+            });
+            this.transformation_.center = Extent.getCenter(extent);
           }
 
           this.dispatchEvent(
             new TransformFeaturesInteractionEvent(
               TransformEventType.TRANSFORM_START,
-              features, event.coordinate, [0, 0]
+              features,
+              event.coordinate,
+              [0, 0]
             )
-          )
+          );
 
-          return true
+          return true;
         }
 
-        return false
+        return false;
       },
 
       handleDragEvent: event => {
         if (this.lastCoordinate_) {
-          const newCoordinate = event.coordinate
-          const deltaX = newCoordinate[0] - this.lastCoordinate_[0]
-          const deltaY = newCoordinate[1] - this.lastCoordinate_[1]
-          const totalDelta = this.calculateTotalDelta_()
-          const features = this.features_
+          const newCoordinate = event.coordinate;
+          const deltaX = newCoordinate[0] - this.lastCoordinate_[0];
+          const deltaY = newCoordinate[1] - this.lastCoordinate_[1];
+          const totalDelta = this.calculateTotalDelta_();
+          const features = this.features_;
 
           features.forEach(feature => {
-            const geom = feature.getGeometry()
-            this.transformation_.handler(geom, deltaX, deltaY, totalDelta)
-            feature.setGeometry(geom)
-          })
+            const geom = feature.getGeometry();
+            this.transformation_.handler(geom, deltaX, deltaY, totalDelta);
+            feature.setGeometry(geom);
+          });
 
-          this.lastCoordinate_ = newCoordinate
+          this.lastCoordinate_ = newCoordinate;
 
           this.dispatchEvent(
             new TransformFeaturesInteractionEvent(
               TransformEventType.TRANSFORMING,
-              features, newCoordinate, totalDelta
+              features,
+              newCoordinate,
+              totalDelta
             )
-          )
+          );
         }
       },
 
       handleUpEvent: event => {
         if (this.lastCoordinate_) {
-          const features = this.features_
-          const totalDelta = this.calculateTotalDelta_()
+          const features = this.features_;
+          const totalDelta = this.calculateTotalDelta_();
 
-          this.firstCoordinate_ = null
-          this.lastCoordinate_ = null
-          this.features_ = null
-          this.transformation_ = null
+          this.firstCoordinate_ = null;
+          this.lastCoordinate_ = null;
+          this.features_ = null;
+          this.transformation_ = null;
 
           this.dispatchEvent(
             new TransformFeaturesInteractionEvent(
               TransformEventType.TRANSFORM_END,
-              features, event.coordinate, totalDelta
+              features,
+              event.coordinate,
+              totalDelta
             )
-          )
+          );
 
-          return true
+          return true;
         }
-        return false
+
+        return false;
       }
-    })
+    });
 
     const effectiveOptions = {
       moveCondition: Condition.always,
       rotateCondition: Condition.never,
       ...options
-    }
+    };
 
-    this.firstCoordinate_ = null
-    this.lastCoordinate_ = null
-    this.features_ = null
-    this.featureProvider_ = effectiveOptions.featureProvider
-    this.layerFilter_ = this.createLayerFilterFromOptions_(effectiveOptions)
-    this.hitTolerance_ = effectiveOptions.hitTolerance ? effectiveOptions.hitTolerance : 0
-    this.lastFeature_ = null
-    this.moveCondition_ = effectiveOptions.moveCondition
-    this.rotateCondition_ = effectiveOptions.rotateCondition
-    this.transformation_ = null
+    this.firstCoordinate_ = null;
+    this.lastCoordinate_ = null;
+    this.features_ = null;
+    this.featureProvider_ = effectiveOptions.featureProvider;
+    this.layerFilter_ = this.createLayerFilterFromOptions_(effectiveOptions);
+    this.hitTolerance_ = effectiveOptions.hitTolerance
+      ? effectiveOptions.hitTolerance
+      : 0;
+    this.lastFeature_ = null;
+    this.moveCondition_ = effectiveOptions.moveCondition;
+    this.rotateCondition_ = effectiveOptions.rotateCondition;
+    this.transformation_ = null;
   }
 
   /**
@@ -176,11 +192,11 @@ export class TransformFeaturesInteraction extends PointerInteraction {
    *
    * @return {ol.Coordinate}  the total displacement
    */
-  calculateTotalDelta_ () {
+  calculateTotalDelta_() {
     return [
       this.lastCoordinate_[0] - this.firstCoordinate_[0],
       this.lastCoordinate_[1] - this.firstCoordinate_[1]
-    ]
+    ];
   }
 
   /**
@@ -191,17 +207,17 @@ export class TransformFeaturesInteraction extends PointerInteraction {
    * @return  {function}  a function that must be called with a layer and
    *          that will return true if the features in the layer can be moved
    */
-  createLayerFilterFromOptions_ (options) {
+  createLayerFilterFromOptions_(options) {
     if (options.layers) {
       if (typeof options.layers === 'function') {
-        return options.layers
-      } else {
-        const layers = options.layers
-        return layer => includes(layers, layer)
+        return options.layers;
       }
-    } else {
-      return stubTrue
+
+      const { layers } = options;
+      return layer => includes(layers, layer);
     }
+
+    return stubTrue;
   }
 
   /**
@@ -211,14 +227,16 @@ export class TransformFeaturesInteraction extends PointerInteraction {
    * @param  {ol.events.MapBrowserEvent}  event  the event
    * @return {string}  the type of the transformation to perform
    */
-  decideTypeFromEvent_ (event) {
+  decideTypeFromEvent_(event) {
     if (this.moveCondition_(event)) {
-      return 'move'
-    } else if (this.rotateCondition_(event)) {
-      return 'rotate'
-    } else {
-      return undefined
+      return 'move';
     }
+
+    if (this.rotateCondition_(event)) {
+      return 'rotate';
+    }
+
+    return undefined;
   }
 
   /**
@@ -235,25 +253,26 @@ export class TransformFeaturesInteraction extends PointerInteraction {
    *         selection function
    */
   @autobind
-  featureAtPixel_ (pixel, map, features) {
-    let result
+  featureAtPixel_(pixel, map, features) {
+    let result;
 
     if (features) {
-      map.forEachFeatureAtPixel(pixel,
+      map.forEachFeatureAtPixel(
+        pixel,
         feature => {
           if (features.includes(feature)) {
-            result = feature
-            return true // to stop further checks
+            result = feature;
+            return true; // To stop further checks
           }
         },
         {
           hitTolerance: this.hitTolerance_,
           layerFilter: this.layerFilter_
         }
-      )
+      );
     }
 
-    return result
+    return result;
   }
 }
 
@@ -264,14 +283,14 @@ const TransformEventType = {
   TRANSFORM_START: 'transformStart',
   TRANSFORMING: 'transforming',
   TRANSFORM_END: 'transformEnd'
-}
+};
 
 class TransformFeaturesInteractionEvent extends OLEvent {
-  constructor (type, features, coordinate, delta) {
-    super(type)
-    this.features = features
-    this.coordinate = coordinate
-    this.delta = delta
+  constructor(type, features, coordinate, delta) {
+    super(type);
+    this.features = features;
+    this.coordinate = coordinate;
+    this.delta = delta;
   }
 }
 
@@ -286,9 +305,7 @@ export default createOLInteractionComponent(
     propTypes: {
       featureProvider: PropTypes.func.isRequired,
       hitTolerance: PropTypes.number,
-      layers: PropTypes.oneOfType([
-        PropTypes.func, PropTypes.arrayOf(Layer)
-      ]),
+      layers: PropTypes.oneOfType([PropTypes.func, PropTypes.arrayOf(Layer)]),
       moveCondition: PropTypes.func,
       rotateCondition: PropTypes.func,
 
@@ -303,8 +320,11 @@ export default createOLInteractionComponent(
       onTransformEnd: 'transformEnd'
     },
     fragileProps: [
-      'featureProvider', 'hitTolerance', 'layers',
-      'moveCondition', 'rotateCondition'
+      'featureProvider',
+      'hitTolerance',
+      'layers',
+      'moveCondition',
+      'rotateCondition'
     ]
   }
-)
+);

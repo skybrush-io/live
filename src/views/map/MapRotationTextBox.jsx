@@ -2,16 +2,15 @@
  * @file React Component to display and adjust the rotation of the map view.
  */
 
-import { easeOut } from 'ol/easing'
-import PropTypes from 'prop-types'
-import React from 'react'
+import { easeOut } from 'ol/easing';
+import PropTypes from 'prop-types';
+import React from 'react';
 
-import { mapReferenceRequestSignal, mapRotationResetSignal } from '~/signals'
-import { normalizeAngle } from '~/utils/geography'
-
-import IconButton from '@material-ui/core/IconButton'
-import ImageRotateRight from '@material-ui/icons/RotateRight'
-import TextField from '@material-ui/core/TextField'
+import IconButton from '@material-ui/core/IconButton';
+import ImageRotateRight from '@material-ui/icons/RotateRight';
+import TextField from '@material-ui/core/TextField';
+import { normalizeAngle } from '~/utils/geography';
+import { mapReferenceRequestSignal, mapRotationResetSignal } from '~/signals';
 
 /**
  * React Component to display and adjust the rotation of the map view.
@@ -35,37 +34,39 @@ export default class MapRotationTextBox extends React.Component {
    *
    * @emits {mapReferenceRequestSignal} requests map reference
    */
-  constructor (props) {
-    super(props)
+  constructor(props) {
+    super(props);
     this.state = {
       isFocused: false,
       rotation: 0
-    }
+    };
 
-    this._onMapReferenceReceived = this._onMapReferenceReceived.bind(this)
-    this._updateRotationFromMapView = this._updateRotationFromMapView.bind(this)
-    this._onFocus = this._onFocus.bind(this)
-    this._onBlur = this._onBlur.bind(this)
-    this._onChange = this._onChange.bind(this)
-    this._onKeyDown = this._onKeyDown.bind(this)
-    this._onButtonClick = this._onButtonClick.bind(this)
+    this._onMapReferenceReceived = this._onMapReferenceReceived.bind(this);
+    this._updateRotationFromMapView = this._updateRotationFromMapView.bind(
+      this
+    );
+    this._onFocus = this._onFocus.bind(this);
+    this._onBlur = this._onBlur.bind(this);
+    this._onChange = this._onChange.bind(this);
+    this._onKeyDown = this._onKeyDown.bind(this);
+    this._onButtonClick = this._onButtonClick.bind(this);
 
-    mapRotationResetSignal.add(this._onButtonClick)
+    mapRotationResetSignal.add(this._onButtonClick);
 
-    mapReferenceRequestSignal.dispatch(this._onMapReferenceReceived)
+    mapReferenceRequestSignal.dispatch(this._onMapReferenceReceived);
   }
 
-  render () {
+  render() {
     return (
       <div style={this.props.style}>
-        <IconButton onClick={this._onButtonClick} tooltip='Reset rotation'>
+        <IconButton tooltip="Reset rotation" onClick={this._onButtonClick}>
           <ImageRotateRight />
         </IconButton>
         <TextField
           style={{
             width: this.props.fieldWidth
           }}
-          type='number'
+          type="number"
           value={
             this.state.isFocused
               ? this.state.rotation
@@ -74,9 +75,10 @@ export default class MapRotationTextBox extends React.Component {
           onFocus={this._onFocus}
           onBlur={this._onBlur}
           onChange={this._onChange}
-          onKeyDown={this._onKeyDown} />
+          onKeyDown={this._onKeyDown}
+        />
       </div>
-    )
+    );
   }
 
   /**
@@ -85,22 +87,22 @@ export default class MapRotationTextBox extends React.Component {
    *
    * @param {ol.Map} map the map to attach the event handlers to
    */
-  _onMapReferenceReceived (map) {
-    const view = map ? map.getView() : undefined
+  _onMapReferenceReceived(map) {
+    const view = map ? map.getView() : undefined;
 
-    this.map = map
+    this.map = map;
 
     // If the map already has a view, bind an event listener to the view
     if (view) {
-      view.on('propertychange', this._updateRotationFromMapView)
+      view.on('propertychange', this._updateRotationFromMapView);
     }
 
     // Listen also for changes in the view of the map
-    map.on('propertychange', (e) => {
+    map.on('propertychange', e => {
       if (e.key === 'view') {
-        map.getView().on('propertychange', this._updateRotationFromMapView)
+        map.getView().on('propertychange', this._updateRotationFromMapView);
       }
-    })
+    });
   }
 
   /**
@@ -108,11 +110,11 @@ export default class MapRotationTextBox extends React.Component {
    *
    * @param {ol.ObjectEvent} e the event fired from the OpenLayers View
    */
-  _updateRotationFromMapView (e) {
+  _updateRotationFromMapView(e) {
     if (e.key === 'rotation') {
       this.setState({
         rotation: -e.target.get('rotation') / (Math.PI / 180)
-      })
+      });
     }
   }
 
@@ -120,20 +122,20 @@ export default class MapRotationTextBox extends React.Component {
    * Event handler that sets the component's state according to the focus,
    * and normalizes it's value.
    */
-  _onFocus () {
+  _onFocus() {
     this.setState({
       isFocused: true,
       rotation: normalizeAngle(this.state.rotation)
-    })
+    });
   }
 
   /**
    * Event handler that unsets the component's focused state on blur.
    */
-  _onBlur () {
+  _onBlur() {
     this.setState({
       isFocused: false
-    })
+    });
   }
 
   /**
@@ -141,13 +143,13 @@ export default class MapRotationTextBox extends React.Component {
    *
    * @param {Event} e the event fired from the TextField React component
    */
-  _onChange (e) {
+  _onChange(e) {
     // Maybe this should be done in componentWill/DidUpdate, but it causes feedback loop
-    this.map.getView().setRotation(-e.target.value * (Math.PI / 180))
+    this.map.getView().setRotation(-e.target.value * (Math.PI / 180));
 
     this.setState({
       rotation: e.target.value
-    })
+    });
   }
 
   /**
@@ -155,23 +157,23 @@ export default class MapRotationTextBox extends React.Component {
    *
    * @param {Event} e the event fired from the TextField React component
    */
-  _onKeyDown (e) {
+  _onKeyDown(e) {
     if (e.key === 'Enter') {
-      e.target.blur()
+      e.target.blur();
     }
   }
 
   /**
-  * Event handler that resets the heading of the map to north
-  *
-  * @param {Event} e the event fired from the IconButton component
-  */
-  _onButtonClick (e) {
+   * Event handler that resets the heading of the map to north
+   *
+   * @param {Event} e the event fired from the IconButton component
+   */
+  _onButtonClick(e) {
     this.map.getView().animate({
       rotation: 0,
       duration: this.props.resetDuration,
       easing: easeOut
-    })
+    });
   }
 }
 
@@ -179,4 +181,4 @@ MapRotationTextBox.propTypes = {
   resetDuration: PropTypes.number,
   fieldWidth: PropTypes.string,
   style: PropTypes.object
-}
+};

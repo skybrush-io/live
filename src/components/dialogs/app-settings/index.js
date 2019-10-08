@@ -1,2 +1,2 @@
-import AppSettingsDialog from './AppSettingsDialog'
-export default AppSettingsDialog
+import AppSettingsDialog from './AppSettingsDialog';
+export default AppSettingsDialog;

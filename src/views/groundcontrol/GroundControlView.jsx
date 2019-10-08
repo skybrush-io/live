@@ -2,18 +2,20 @@
  * @file Component for displaying UAV info in a tabular format.
  */
 
-import { autobind } from 'core-decorators'
-import Immutable from 'immutable'
-import _ from 'lodash'
-import u from 'updeep'
+import { autobind } from 'core-decorators';
+import Immutable from 'immutable';
+import _ from 'lodash';
+import u from 'updeep';
 
-import PropTypes from 'prop-types'
-import React from 'react'
-import { connect } from 'react-redux'
+import PropTypes from 'prop-types';
+import React from 'react';
+import { connect } from 'react-redux';
 
-import FilterableSortableTable, { FilterTypes } from '../../components/FilterableSortableTable'
+import FilterableSortableTable, {
+  FilterTypes
+} from '../../components/FilterableSortableTable';
 
-import Flock from '../../model/flock'
+import Flock from '../../model/flock';
 
 /**
  * Function for assigning a color based on a percentage value.
@@ -22,20 +24,19 @@ import Flock from '../../model/flock'
  * @param {number} percentage The given percentage value.
  * @return {string} The assigned color as a hex string.
  */
-const colorForPercentage = percentage => (
-  ['#dc322f', '#b58900', '#859900'][Math.floor(percentage / 34)]
-)
+const colorForPercentage = percentage =>
+  ['#dc322f', '#b58900', '#859900'][Math.floor(percentage / 34)];
 
 class GroundControlViewPresentation extends React.Component {
-  constructor (props) {
-    super(props)
+  constructor(props) {
+    super(props);
 
-    this._eventBindings = {}
+    this._eventBindings = {};
 
     this.state = {
       uavs: Immutable.List(),
       uavIdToIndex: Immutable.Map()
-    }
+    };
 
     this.tableColumns = [
       {
@@ -79,10 +80,14 @@ class GroundControlViewPresentation extends React.Component {
         width: 150,
         dataExtractor: _.property('lastUpdated'),
         displayRenderer: data => {
-          const currentDate = new Date(data)
-          return _.padStart(currentDate.getHours(), 2, '0') + ':' +
-          _.padStart(currentDate.getMinutes(), 2, '0') + ':' +
-          _.padStart(currentDate.getSeconds(), 2, '0')
+          const currentDate = new Date(data);
+          return (
+            _.padStart(currentDate.getHours(), 2, '0') +
+            ':' +
+            _.padStart(currentDate.getMinutes(), 2, '0') +
+            ':' +
+            _.padStart(currentDate.getSeconds(), 2, '0')
+          );
         },
         filterType: FilterTypes.range
       },
@@ -92,19 +97,19 @@ class GroundControlViewPresentation extends React.Component {
         dataExtractor: _.property('error'),
         filterType: FilterTypes.range
       }
-    ]
+    ];
   }
 
-  componentDidUpdate (oldProps) {
-    this._onFlockMaybeChanged(oldProps.flock, this.props.flock)
+  componentDidUpdate(oldProps) {
+    this._onFlockMaybeChanged(oldProps.flock, this.props.flock);
   }
 
-  componentDidMount () {
-    this._onFlockMaybeChanged(undefined, this.props.flock)
+  componentDidMount() {
+    this._onFlockMaybeChanged(undefined, this.props.flock);
   }
 
-  componentWillUnmount () {
-    this._onFlockMaybeChanged(this.props.flock, undefined)
+  componentWillUnmount() {
+    this._onFlockMaybeChanged(this.props.flock, undefined);
   }
 
   /**
@@ -119,20 +124,20 @@ class GroundControlViewPresentation extends React.Component {
    * @param {Flock} newFlock The new flock associated to the component.
    */
   @autobind
-  _onFlockMaybeChanged (oldFlock, newFlock) {
+  _onFlockMaybeChanged(oldFlock, newFlock) {
     if (oldFlock === newFlock) {
-      return
+      return;
     }
 
     if (oldFlock) {
-      oldFlock.uavsUpdated.detach(this._eventBindings.uavsUpdated)
-      delete this._eventBindings.uavsUpdated
+      oldFlock.uavsUpdated.detach(this._eventBindings.uavsUpdated);
+      delete this._eventBindings.uavsUpdated;
     }
 
     if (newFlock) {
-      this._eventBindings.uavsUpdated = (
-        newFlock.uavsUpdated.add(this._onUAVsUpdated)
-      )
+      this._eventBindings.uavsUpdated = newFlock.uavsUpdated.add(
+        this._onUAVsUpdated
+      );
     }
   }
 
@@ -144,25 +149,25 @@ class GroundControlViewPresentation extends React.Component {
    * @param {UAV[]} updatedUavs The UAVs that should be refreshed.
    */
   @autobind
-  _onUAVsUpdated (updatedUavs) {
-    let { uavs, uavIdToIndex } = this.state
+  _onUAVsUpdated(updatedUavs) {
+    let { uavs, uavIdToIndex } = this.state;
 
     for (const uav of updatedUavs) {
-      const index = uavIdToIndex.get(uav.id)
-      const uavRepr = this._pickRelevantUAVProps(uav)
+      const index = uavIdToIndex.get(uav.id);
+      const uavRepr = this._pickRelevantUAVProps(uav);
 
       if (index === undefined) {
-        uavIdToIndex = uavIdToIndex.set(uav.id, uavs.size)
-        uavs = uavs.push(uavRepr)
+        uavIdToIndex = uavIdToIndex.set(uav.id, uavs.size);
+        uavs = uavs.push(uavRepr);
       } else {
-        uavs = uavs.set(index, uavRepr)
+        uavs = uavs.set(index, uavRepr);
       }
     }
 
-    const newState = u({ uavs, uavIdToIndex }, this.state)
-    this.setState(newState)
+    const newState = u({ uavs, uavIdToIndex }, this.state);
+    this.setState(newState);
 
-    this.forceUpdate()
+    this.forceUpdate();
   }
 
   /**
@@ -171,7 +176,7 @@ class GroundControlViewPresentation extends React.Component {
    * @param {UAV} uav The UAV to pick the properties from.
    * @return {Object} The object containing the picked props.
    */
-  _pickRelevantUAVProps (uav) {
+  _pickRelevantUAVProps(uav) {
     return {
       id: uav.id,
       lastUpdated: uav.lastUpdated,
@@ -180,28 +185,28 @@ class GroundControlViewPresentation extends React.Component {
       heading: uav.heading,
       error: uav.error,
       battery: uav.battery
-    }
+    };
   }
 
-  render () {
+  render() {
     return (
       <FilterableSortableTable
         dataSource={this.state.uavs.toJS()}
         availableColumns={this.tableColumns}
       />
-    )
+    );
   }
 }
 
 GroundControlViewPresentation.propTypes = {
   flock: PropTypes.instanceOf(Flock)
-}
+};
 
 const GroundControlView = connect(
-  // mapStateToProps
+  // MapStateToProps
   state => ({}),
-  // mapDispatchToProps
+  // MapDispatchToProps
   dispatch => ({})
-)(GroundControlViewPresentation)
+)(GroundControlViewPresentation);
 
-export default GroundControlView
+export default GroundControlView;

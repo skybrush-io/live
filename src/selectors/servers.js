@@ -1,7 +1,6 @@
-import { ConnectionState } from '~/model/connections'
-import { INVALID } from '~/reducers/servers'
-
-import { createSelector } from 'reselect'
+import { createSelector } from 'reselect';
+import { ConnectionState } from '~/model/connections';
+import { INVALID } from '~/reducers/servers';
 
 /**
  * Returns all the information that we know about the current Flockwave server.
@@ -10,7 +9,7 @@ import { createSelector } from 'reselect'
  * @return {Object} all the information that we know about the current Flockwave
  *     server, directly from the state object
  */
-const getCurrentServerState = state => state.servers.current
+const getCurrentServerState = state => state.servers.current;
 
 /**
  * Returns all the information that we currently know about the authentication
@@ -18,12 +17,11 @@ const getCurrentServerState = state => state.servers.current
  */
 const getAuthenticationSettings = createSelector(
   getCurrentServerState,
-  current => (
+  current =>
     current.state === ConnectionState.CONNECTED
       ? current.authentication
       : INVALID
-  )
-)
+);
 
 /**
  * Returns the name of the user that is currently authenticated to the server.
@@ -31,7 +29,7 @@ const getAuthenticationSettings = createSelector(
 export const getAuthenticatedUser = createSelector(
   getAuthenticationSettings,
   settings => settings.user
-)
+);
 
 /**
  * Returns whether we have valid and up-to-date information about the
@@ -41,7 +39,7 @@ export const getAuthenticatedUser = createSelector(
 export const areServerAuthenticationSettingsValid = createSelector(
   getAuthenticationSettings,
   settings => settings.valid
-)
+);
 
 /**
  * Returns whether the user is currently authenticated to the remote
@@ -49,8 +47,8 @@ export const areServerAuthenticationSettingsValid = createSelector(
  */
 export const isAuthenticated = createSelector(
   getAuthenticatedUser,
-  user => !!user
-)
+  user => Boolean(user)
+);
 
 /**
  * Returns whether the user is currently attempting to authenticate to the
@@ -59,7 +57,7 @@ export const isAuthenticated = createSelector(
  * @param  {Object}  state  the state of the application
  * @return {boolean} whether there is an authentication attempt in progress
  */
-export const isAuthenticating = state => state.servers.isAuthenticating
+export const isAuthenticating = state => state.servers.isAuthenticating;
 
 /**
  * Returns whether we are connected to the remote Flockwave server.
@@ -67,7 +65,7 @@ export const isAuthenticating = state => state.servers.isAuthenticating
 export const isConnected = createSelector(
   getCurrentServerState,
   current => current.state === ConnectionState.CONNECTED
-)
+);
 
 /**
  * Returns whether the server supports at least one authentication method.
@@ -75,7 +73,7 @@ export const isConnected = createSelector(
 export const supportsAuthentication = createSelector(
   getAuthenticationSettings,
   settings => settings.methods && settings.methods.length > 0
-)
+);
 
 /**
  * Returns whether the server requires the user to authenticate before
@@ -84,4 +82,4 @@ export const supportsAuthentication = createSelector(
 export const requiresAuthentication = createSelector(
   getAuthenticationSettings,
   settings => settings.required
-)
+);

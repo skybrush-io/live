@@ -13,7 +13,7 @@
  * @param  {string}  type  the type of the message
  * @return {Object}  the message
  */
-export const createMessageWithType = (type) => ({ type })
+export const createMessageWithType = type => ({ type });
 
 /**
  * Creates a CMD-REQ (command request) message
@@ -27,15 +27,17 @@ export const createMessageWithType = (type) => ({ type })
  *         undefined.
  * @return {Object}  the message
  */
-export function createCommandRequest (uavIds, command, args, kwds) {
-  const result = createMessageWithType('CMD-REQ')
-  result.ids = uavIds
-  result.command = command
+export function createCommandRequest(uavIds, command, args, kwds) {
+  const result = createMessageWithType('CMD-REQ');
+  result.ids = uavIds;
+  result.command = command;
   if (typeof args !== 'undefined') {
-    result.args = args
+    result.args = args;
   }
+
   if (typeof kwds !== 'undefined') {
-    result.kwds = kwds
+    result.kwds = kwds;
   }
-  return result
+
+  return result;
 }

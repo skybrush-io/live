@@ -7,15 +7,15 @@
  * Constant that evaluates to true if we are running on a Mac, false
  * otherwise.
  */
-export const isRunningOnMac = (navigator.platform.indexOf('Mac') !== -1)
+export const isRunningOnMac = navigator.platform.includes('Mac');
 
 /**
  * Constant that evaluates to true if we are running on Windows, false
  * otherwise.
  */
 export const isRunningOnWindows =
-  (navigator.platform.indexOf('Win32') !== -1) ||
-  (navigator.platform.indexOf('Windows') !== -1)
+  navigator.platform.includes('Win32') ||
+  navigator.platform.includes('Windows');
 
 /**
  * Returns whether the given browser event has the platform-specific
@@ -26,11 +26,11 @@ export const isRunningOnWindows =
  *         during the event, false otherwise
  */
 export const eventHasPlatformModifierKey = isRunningOnMac
-  ? event => !!event.metaKey
-  : event => !!event.ctrlKey
+  ? event => Boolean(event.metaKey)
+  : event => Boolean(event.ctrlKey);
 
 /**
  * Constant that evaluates to the name of the platform-specific hotkey
  * modifier: <code>Ctrl</code> on Windows and <code>Cmd</code> on Mac.
  */
-export const platformModifierKey = isRunningOnMac ? 'Cmd' : 'Ctrl'
+export const platformModifierKey = isRunningOnMac ? 'Cmd' : 'Ctrl';

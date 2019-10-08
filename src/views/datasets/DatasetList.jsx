@@ -2,15 +2,15 @@
  * @file Component that displays the list datasets.
  */
 
-import ListItem from '@material-ui/core/ListItem'
-import ListItemText from '@material-ui/core/ListItemText'
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
 
-import PropTypes from 'prop-types'
-import React from 'react'
-import { connect } from 'react-redux'
+import PropTypes from 'prop-types';
+import React from 'react';
+import { connect } from 'react-redux';
 
-import { listOf } from '~/components/helpers/lists'
-import { getDatasetsInOrder } from '~/selectors/ordered'
+import { listOf } from '~/components/helpers/lists';
+import { getDatasetsInOrder } from '~/selectors/ordered';
 
 /**
  * Presentation component for representing a single dataset in a dataset list.
@@ -22,7 +22,7 @@ const DatasetListEntry = props => (
   <ListItem>
     <ListItemText primary="Dataset" />
   </ListItem>
-)
+);
 
 DatasetListEntry.propTypes = {
   /** The epoch time of the clock, i.e. the number of seconds since the
@@ -58,9 +58,9 @@ DatasetListEntry.propTypes = {
    * X milliseconds.
    */
   updateFrequency: PropTypes.number.isRequired
-}
+};
 
-DatasetListEntry.defaultProps = {}
+DatasetListEntry.defaultProps = {};
 
 /**
  * Presentation component for showing a list of datasets.
@@ -70,21 +70,21 @@ DatasetListEntry.defaultProps = {}
 const DatasetListPresentation = listOf(DatasetListEntry, {
   dataProvider: 'datasets',
   backgroundHint: 'No datasets'
-})
-DatasetListPresentation.displayName = 'DatasetListPresentation'
+});
+DatasetListPresentation.displayName = 'DatasetListPresentation';
 
 /**
  * Smart component for showing the list of the known datasets from the Redux
  * store.
  */
 const DatasetList = connect(
-  // mapStateToProps
+  // MapStateToProps
   state => ({
     datasets: getDatasetsInOrder(state),
     dense: true
   }),
-  // mapDispatchToProps
+  // MapDispatchToProps
   undefined
-)(DatasetListPresentation)
+)(DatasetListPresentation);
 
-export default DatasetList
+export default DatasetList;

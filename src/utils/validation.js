@@ -8,8 +8,9 @@
  * Adapted from {@link https://github.com/erikras/react-redux-universal-hot-example/blob/master/src/utils/validation.js | this file}.
  */
 
-const isEmpty = value => value === undefined || value === null || value === ''
-const join = (rules) => (value, data) => rules.map(rule => rule(value, data)).filter(error => !!error)[0]
+const isEmpty = value => value === undefined || value === null || value === '';
+const join = rules => (value, data) =>
+  rules.map(rule => rule(value, data)).filter(error => Boolean(error))[0];
 
 /**
  * Checks that the given value is not empty. A value is empty if it is
@@ -19,9 +20,9 @@ const join = (rules) => (value, data) => rules.map(rule => rule(value, data)).fi
  * @return {?string} undefined if the value passes the validator, an error
  *     message otherwise
  */
-export function required (value) {
+export function required(value) {
   if (isEmpty(value)) {
-    return 'Value is required'
+    return 'Value is required';
   }
 }
 
@@ -33,9 +34,9 @@ export function required (value) {
  * @return {?string} undefined if the value passes the validator, an error message
  * otherwise
  */
-export function integer (value) {
+export function integer(value) {
   if (!Number.isInteger(Number(value))) {
-    return 'Value must be an integer'
+    return 'Value must be an integer';
   }
 }
 
@@ -50,9 +51,9 @@ export function integer (value) {
  * @return {?string} undefined if the value passes the validator, an error message
  * otherwise
  */
-export function number (value) {
+export function number(value) {
   if (!Number(value)) {
-    return 'Value must be a number or infinity'
+    return 'Value must be a number or infinity';
   }
 }
 
@@ -64,9 +65,9 @@ export function number (value) {
  * @return {?string} undefined if the value passes the validator, an error message
  * otherwise
  */
-export function finite (value) {
+export function finite(value) {
   if (!Number.isFinite(Number(value))) {
-    return 'Value must be a number'
+    return 'Value must be a number';
   }
 }
 
@@ -82,12 +83,12 @@ export function finite (value) {
  *        will accept
  * @return {function} a validator function
  */
-export function atLeast (min) {
+export function atLeast(min) {
   return value => {
     if (Number(value) < min) {
-      return `Minimum allowed value is ${min}`
+      return `Minimum allowed value is ${min}`;
     }
-  }
+  };
 }
 
 /**
@@ -102,12 +103,12 @@ export function atLeast (min) {
  *        will accept
  * @return {function} a validator function
  */
-export function atMost (max) {
+export function atMost(max) {
   return value => {
     if (Number(value) > max) {
-      return `Maximum allowed value is ${max}`
+      return `Maximum allowed value is ${max}`;
     }
-  }
+  };
 }
 
 /**
@@ -124,15 +125,16 @@ export function atMost (max) {
  *        will accept
  * @return {function} a validator function
  */
-export function between (min, max) {
+export function between(min, max) {
   if (min > max) {
-    [min, max] = [max, min]
+    [min, max] = [max, min];
   }
+
   return value => {
     if (Number(value) < min || Number(value) > max) {
-      return `Value must be between ${min} and ${max}`
+      return `Value must be between ${min} and ${max}`;
     }
-  }
+  };
 }
 
 /**
@@ -143,17 +145,17 @@ export function between (min, max) {
  *        functions or arrays of validator functions
  * @return {function} an appropriate validator function for the form
  */
-export function createValidator (rules) {
+export function createValidator(rules) {
   return (data = {}) => {
-    const errors = {}
-    Object.keys(rules).forEach((key) => {
-      // concat enables both functions and arrays of functions
-      const rule = join([].concat(rules[key]))
-      const error = rule(data[key], data)
+    const errors = {};
+    Object.keys(rules).forEach(key => {
+      // Concat enables both functions and arrays of functions
+      const rule = join([].concat(rules[key]));
+      const error = rule(data[key], data);
       if (error) {
-        errors[key] = error
+        errors[key] = error;
       }
-    })
-    return errors
-  }
+    });
+    return errors;
+  };
 }

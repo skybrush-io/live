@@ -3,11 +3,11 @@
  * stores the console messages exchanged between UAVs and the operator.
  */
 
-import { handleActions } from 'redux-actions'
-import u from 'updeep'
+import { handleActions } from 'redux-actions';
+import u from 'updeep';
 
-import { extendWith } from '../utils/operators'
-import { MessageType } from '../model/messages'
+import { extendWith } from '../utils/operators';
+import { MessageType } from '../model/messages';
 
 /**
  * Default content of the message history in the state object.
@@ -15,8 +15,7 @@ import { MessageType } from '../model/messages'
 const defaultState = {
   // Stores the messages received and sent and any additional entries to
   // show in chat histories, indexed by some arbitrary IDs (say, numbers)
-  byId: {
-  },
+  byId: {},
   // Message IDs sorted by UAV IDs
   uavIdsToMessageIds: {
     // Keys should be UAV IDs here. The corresponding values should be
@@ -26,7 +25,7 @@ const defaultState = {
   nextMessageId: 0,
   // Stores the ID of the UAV to target with the SEND_MESSAGE_TO_SELECTED_UAV action
   selectedUAVId: null
-}
+};
 
 /**
  * Returns the message IDs currently associated to the given UAV.
@@ -36,9 +35,8 @@ const defaultState = {
  * @return {string[]} the IDs of the messages associated to the given UAV,
  *         or an empty array if there is no such UAV
  */
-const getMessageIdsForUAV = (state, uavId) => (
-  state.uavIdsToMessageIds[uavId] || []
-)
+const getMessageIdsForUAV = (state, uavId) =>
+  state.uavIdsToMessageIds[uavId] || [];
 
 /**
  * Helper function that generates a "next" message ID given the current
@@ -47,7 +45,7 @@ const getMessageIdsForUAV = (state, uavId) => (
  * @param {number} messageId  the current message ID
  * @return {number} the next message ID
  */
-const generateNextMessageId = messageId => messageId + 1
+const generateNextMessageId = messageId => messageId + 1;
 
 /**
  * Updates the given state object by adding a new error message in the
@@ -65,13 +63,13 @@ const generateNextMessageId = messageId => messageId + 1
  *
  * @return {Object} the new state of the Redux store
  */
-function addErrorMessage (state, uavId, body, correlationId) {
+function addErrorMessage(state, uavId, body, correlationId) {
   const message = {
     id: state.nextMessageId,
     type: MessageType.ERROR,
     date: new Date(),
     body
-  }
+  };
 
   const updates = {
     byId: {
@@ -81,15 +79,15 @@ function addErrorMessage (state, uavId, body, correlationId) {
       [uavId]: extendWith(message.id)
     },
     nextMessageId: generateNextMessageId
-  }
+  };
 
   if (typeof correlationId !== 'undefined') {
     updates.byId[correlationId] = {
       responseId: message.id
-    }
+    };
   }
 
-  return u(updates, state)
+  return u(updates, state);
 }
 
 /**
@@ -105,14 +103,14 @@ function addErrorMessage (state, uavId, body, correlationId) {
  * @param {string} body   the body of the message that was received
  * @return {Object} the new state of the Redux store
  */
-function addInboundMessage (state, correlationId, body) {
-  const originalMessage = state.byId[correlationId]
+function addInboundMessage(state, correlationId, body) {
+  const originalMessage = state.byId[correlationId];
   if (!originalMessage) {
-    console.warn(`Stale response arrived for unknown message ${correlationId}`)
-    return state
+    console.warn(`Stale response arrived for unknown message ${correlationId}`);
+    return state;
   }
 
-  const { recipient } = originalMessage
+  const { recipient } = originalMessage;
   const response = {
     id: state.nextMessageId,
     type: MessageType.INBOUND,
@@ -121,7 +119,7 @@ function addInboundMessage (state, correlationId, body) {
     raw: true,
     recipient: 'Operator',
     body
-  }
+  };
 
   const updates = {
     byId: {
@@ -134,9 +132,9 @@ function addInboundMessage (state, correlationId, body) {
       [recipient]: extendWith(response.id)
     },
     nextMessageId: generateNextMessageId
-  }
+  };
 
-  return u(updates, state)
+  return u(updates, state);
 }
 
 /**
@@ -152,10 +150,10 @@ function addInboundMessage (state, correlationId, body) {
  * @param {string} body   the body of the message to send
  * @return {Object} the new state of the Redux store
  */
-function addOutboundMessageToUAV (state, recipient, body) {
+function addOutboundMessageToUAV(state, recipient, body) {
   if (!recipient) {
-    console.warn('Cannot send message to null recipient')
-    return state
+    console.warn('Cannot send message to null recipient');
+    return state;
   }
 
   const message = {
@@ -166,54 +164,64 @@ function addOutboundMessageToUAV (state, recipient, body) {
     responseId: null,
     recipient,
     body
-  }
+  };
 
-  return u({
-    byId: {
-      [message.id]: () => message
+  return u(
+    {
+      byId: {
+        [message.id]: () => message
+      },
+      uavIdsToMessageIds: {
+        [recipient]: extendWith(message.id)
+      },
+      nextMessageId: generateNextMessageId
     },
-    uavIdsToMessageIds: {
-      [recipient]: extendWith(message.id)
-    },
-    nextMessageId: generateNextMessageId
-  }, state)
+    state
+  );
 }
 
 /**
-  * The reducer function that handles actions related to message exchange
-  * between UAVs and the operator.
-  */
-const reducer = handleActions({
-  ADD_ERROR_MESSAGE_IN_MESSAGES_DIALOG (state, action) {
-    const { message, uavId, correlationId } = action.payload
-    return addErrorMessage(state, uavId, message, correlationId)
+ * The reducer function that handles actions related to message exchange
+ * between UAVs and the operator.
+ */
+const reducer = handleActions(
+  {
+    ADD_ERROR_MESSAGE_IN_MESSAGES_DIALOG(state, action) {
+      const { message, uavId, correlationId } = action.payload;
+      return addErrorMessage(state, uavId, message, correlationId);
+    },
+
+    ADD_INBOUND_MESSAGE(state, action) {
+      const { message, correlationId } = action.payload;
+      return addInboundMessage(state, correlationId, message);
+    },
+
+    ADD_OUTBOUND_MESSAGE_TO_SELECTED_UAV(state, action) {
+      action.messageId = state.nextMessageId;
+      action.uavId = state.selectedUAVId;
+      return addOutboundMessageToUAV(
+        state,
+        state.selectedUAVId,
+        action.payload
+      );
+    },
+
+    CLEAR_MESSAGES_OF_SELECTED_UAV(state, action) {
+      const { selectedUAVId } = state;
+      const messageIdsForUAV = getMessageIdsForUAV(state, selectedUAVId);
+      return u(
+        {
+          byId: u.omit(messageIdsForUAV),
+          uavIdsToMessageIds: u.omit(selectedUAVId)
+        },
+        state
+      );
+    },
+
+    SELECT_UAV_IN_MESSAGES_DIALOG: (state, action) =>
+      Object.assign({}, state, { selectedUAVId: action.payload })
   },
+  defaultState
+);
 
-  ADD_INBOUND_MESSAGE (state, action) {
-    const { message, correlationId } = action.payload
-    return addInboundMessage(state, correlationId, message)
-  },
-
-  ADD_OUTBOUND_MESSAGE_TO_SELECTED_UAV (state, action) {
-    action.messageId = state.nextMessageId
-    action.uavId = state.selectedUAVId
-    return addOutboundMessageToUAV(
-      state, state.selectedUAVId, action.payload
-    )
-  },
-
-  CLEAR_MESSAGES_OF_SELECTED_UAV (state, action) {
-    const { selectedUAVId } = state
-    const messageIdsForUAV = getMessageIdsForUAV(state, selectedUAVId)
-    return u({
-      byId: u.omit(messageIdsForUAV),
-      uavIdsToMessageIds: u.omit(selectedUAVId)
-    }, state)
-  },
-
-  SELECT_UAV_IN_MESSAGES_DIALOG: (state, action) => (
-    Object.assign({}, state, { selectedUAVId: action.payload })
-  )
-}, defaultState)
-
-export default reducer
+export default reducer;

@@ -2,27 +2,33 @@
  * @file File for storing hotkey configuration.
  */
 
-import { showLayersDialog } from './actions/layers'
-import { selectAllUAVFeatures, clearSelection,
-  selectMapTool, selectMapSource } from './actions/map'
-import { showMessagesDialog } from './actions/messages'
-import { showSnackbarMessage } from './actions/snackbar'
+import copy from 'copy-to-clipboard';
+import { showLayersDialog } from './actions/layers';
+import {
+  selectAllUAVFeatures,
+  clearSelection,
+  selectMapTool,
+  selectMapSource
+} from './actions/map';
+import { showMessagesDialog } from './actions/messages';
+import { showSnackbarMessage } from './actions/snackbar';
 
-import flock from './flock'
-import { Source } from './model/sources'
-import { getSelectedUAVIds } from './selectors/selection'
+import flock from './flock';
+import { Source } from './model/sources';
+import { getSelectedUAVIds } from './selectors/selection';
 import {
   fitAllFeaturesSignal,
   focusMessagesDialogUAVSelectorFieldSignal,
   mapRotationResetSignal
-} from './signals'
-import store, { clearStore } from './store'
+} from './signals';
+import store, { clearStore } from './store';
 import {
-  takeoffUAVs, landUAVs, returnToHomeUAVs, toggleErrorUAVs
-} from './utils/messaging'
-import { Tool } from './views/map/tools'
-
-import copy from 'copy-to-clipboard'
+  takeoffUAVs,
+  landUAVs,
+  returnToHomeUAVs,
+  toggleErrorUAVs
+} from './utils/messaging';
+import { Tool } from './views/map/tools';
 
 export default [
   // Drone selection hotkeys
@@ -30,13 +36,17 @@ export default [
     description: 'Select all drones',
     on: 'down',
     keys: 'PlatMod + KeyA',
-    action: () => { store.dispatch(selectAllUAVFeatures(flock)) }
+    action: () => {
+      store.dispatch(selectAllUAVFeatures(flock));
+    }
   },
   {
     description: 'Clear selection',
     on: 'down',
     keys: 'PlatMod + Shift + KeyA',
-    action: () => { store.dispatch(clearSelection()) }
+    action: () => {
+      store.dispatch(clearSelection());
+    }
   },
 
   // Tool hotkeys
@@ -45,7 +55,7 @@ export default [
     on: 'down',
     keys: 'PlatMod + KeyS',
     action: () => {
-      store.dispatch(selectMapTool(Tool.SELECT))
+      store.dispatch(selectMapTool(Tool.SELECT));
     }
   },
   {
@@ -53,7 +63,7 @@ export default [
     on: 'down',
     keys: 'PlatMod + KeyZ',
     action: () => {
-      store.dispatch(selectMapTool(Tool.ZOOM))
+      store.dispatch(selectMapTool(Tool.ZOOM));
     }
   },
   {
@@ -61,7 +71,7 @@ export default [
     on: 'down',
     keys: 'PlatMod + KeyP',
     action: () => {
-      store.dispatch(selectMapTool(Tool.PAN))
+      store.dispatch(selectMapTool(Tool.PAN));
     }
   },
 
@@ -71,11 +81,12 @@ export default [
     on: 'down',
     keys: 'PlatMod + Shift + KeyC',
     action: () => {
-      const displays = document.getElementsByClassName('ol-mouse-position')
-      const text = (displays && displays.length > 0) ? displays[0].innerText : undefined
+      const displays = document.querySelectorAll('.ol-mouse-position');
+      const text =
+        displays && displays.length > 0 ? displays[0].textContent : undefined;
       if (text) {
-        copy(text.split('\n')[0])
-        store.dispatch(showSnackbarMessage('Coordinates copied to clipboard.'))
+        copy(text.split('\n')[0]);
+        store.dispatch(showSnackbarMessage('Coordinates copied to clipboard.'));
       }
     }
   },
@@ -86,7 +97,7 @@ export default [
     on: 'down',
     keys: 'PlatMod + KeyR',
     action: () => {
-      mapRotationResetSignal.dispatch()
+      mapRotationResetSignal.dispatch();
     }
   },
   {
@@ -94,7 +105,7 @@ export default [
     on: 'down',
     keys: 'PlatMod + KeyF',
     action: () => {
-      fitAllFeaturesSignal.dispatch()
+      fitAllFeaturesSignal.dispatch();
     }
   },
 
@@ -104,7 +115,7 @@ export default [
     on: 'down',
     keys: 'PlatMod + KeyO',
     action: () => {
-      store.dispatch(selectMapSource({ layerId: 'base', source: Source.OSM }))
+      store.dispatch(selectMapSource({ layerId: 'base', source: Source.OSM }));
     }
   },
   {
@@ -112,7 +123,12 @@ export default [
     on: 'down',
     keys: 'PlatMod + KeyB',
     action: () => {
-      store.dispatch(selectMapSource({ layerId: 'base', source: Source.BING_MAPS.AERIAL_WITH_LABELS }))
+      store.dispatch(
+        selectMapSource({
+          layerId: 'base',
+          source: Source.BING_MAPS.AERIAL_WITH_LABELS
+        })
+      );
     }
   },
   {
@@ -120,7 +136,9 @@ export default [
     on: 'down',
     keys: 'PlatMod + Alt + KeyB',
     action: () => {
-      store.dispatch(selectMapSource({ layerId: 'base', source: Source.BING_MAPS.ROAD }))
+      store.dispatch(
+        selectMapSource({ layerId: 'base', source: Source.BING_MAPS.ROAD })
+      );
     }
   },
 
@@ -129,7 +147,7 @@ export default [
     on: 'down',
     keys: 'PlatMod + Shift + KeyL',
     action: () => {
-      store.dispatch(showLayersDialog())
+      store.dispatch(showLayersDialog());
     }
   },
 
@@ -167,8 +185,8 @@ export default [
     on: 'down',
     keys: '@',
     action: () => {
-      store.dispatch(showMessagesDialog())
-      focusMessagesDialogUAVSelectorFieldSignal.dispatch()
+      store.dispatch(showMessagesDialog());
+      focusMessagesDialogUAVSelectorFieldSignal.dispatch();
     }
   },
 
@@ -179,10 +197,10 @@ export default [
     keys: 'PlatMod + Alt + KeyC',
     action: () => {
       if (window.confirm('Are you sure? All settings will be lost.')) {
-        clearStore()
-        window.localStorage.clear()
-        window.location.reload()
+        clearStore();
+        window.localStorage.clear();
+        window.location.reload();
       }
     }
   }
-]
+];

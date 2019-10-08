@@ -3,7 +3,7 @@
  * objects on the user interface.
  */
 
-import { createSelector } from 'reselect'
+import { createSelector } from 'reselect';
 
 import {
   FlatEarthCoordinateSystem,
@@ -11,7 +11,7 @@ import {
   makeDecimalCoordinateFormatter,
   makePolarCoordinateFormatter,
   toPolar
-} from '../utils/geography'
+} from '../utils/geography';
 
 /**
  * Selector that returns a conversion object that can be used to transform
@@ -20,15 +20,21 @@ import {
  */
 export const getFlatEarthCoordinateTransformer = createSelector(
   state => state.map.origin,
-  origin => (
+  origin =>
     origin.position
-      ? new FlatEarthCoordinateSystem(origin.position, origin.angle, origin.type)
+      ? new FlatEarthCoordinateSystem(
+          origin.position,
+          origin.angle,
+          origin.type
+        )
       : undefined
-  )
-)
+);
 
-const cartesianFormatter = makeDecimalCoordinateFormatter({ digits: 2, unit: ' m' })
-const polarFormatter = makePolarCoordinateFormatter({ digits: 2, unit: ' m' })
+const cartesianFormatter = makeDecimalCoordinateFormatter({
+  digits: 2,
+  unit: ' m'
+});
+const polarFormatter = makePolarCoordinateFormatter({ digits: 2, unit: ' m' });
 
 /**
  * Selector that returns a function that can be called with longitude-latitude
@@ -39,12 +45,12 @@ export const getFlatEarthCartesianCoordinateFormatter = createSelector(
   getFlatEarthCoordinateTransformer,
   transformer => {
     if (transformer !== undefined) {
-      return coords => cartesianFormatter(transformer.fromLonLat(coords))
-    } else {
-      return undefined
+      return coords => cartesianFormatter(transformer.fromLonLat(coords));
     }
+
+    return undefined;
   }
-)
+);
 
 /**
  * Selector that returns a function that can be called with longitude-latitude
@@ -55,12 +61,12 @@ export const getFlatEarthPolarCoordinateFormatter = createSelector(
   getFlatEarthCoordinateTransformer,
   transformer => {
     if (transformer !== undefined) {
-      return coords => polarFormatter(toPolar(transformer.fromLonLat(coords)))
-    } else {
-      return undefined
+      return coords => polarFormatter(toPolar(transformer.fromLonLat(coords)));
     }
+
+    return undefined;
   }
-)
+);
 
 /**
  * Selector that returns a function that can be called with longitude-latitude
@@ -73,15 +79,18 @@ export const getFlatEarthCombinedCoordinateFormatter = createSelector(
   transformer => {
     if (transformer !== undefined) {
       return coords => {
-        const transformed = transformer.fromLonLat(coords)
-        return cartesianFormatter(transformed) + '<br/>' +
+        const transformed = transformer.fromLonLat(coords);
+        return (
+          cartesianFormatter(transformed) +
+          '<br/>' +
           polarFormatter(toPolar(transformed))
-      }
-    } else {
-      return undefined
+        );
+      };
     }
+
+    return undefined;
   }
-)
+);
 
 /**
  * Selector that returns a coordinate formatter that can be used in contexts
@@ -92,9 +101,9 @@ export const getExtendedCoordinateFormatter = createSelector(
   getFlatEarthCombinedCoordinateFormatter,
   formatter => coords => {
     if (formatter === undefined) {
-      return formatCoordinate(coords)
-    } else {
-      return formatCoordinate(coords) + '<br/>' + formatter(coords)
+      return formatCoordinate(coords);
     }
+
+    return formatCoordinate(coords) + '<br/>' + formatter(coords);
   }
-)
+);

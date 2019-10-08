@@ -1,2 +1,2 @@
-import DatasetList from './DatasetList'
-export default DatasetList
+import DatasetList from './DatasetList';
+export default DatasetList;

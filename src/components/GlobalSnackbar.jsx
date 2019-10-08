@@ -2,30 +2,30 @@
  * @file The global snackbar at the bottom of the main window.
  */
 
-import { amber, green } from '@material-ui/core/colors'
-import IconButton from '@material-ui/core/IconButton'
-import Snackbar from '@material-ui/core/Snackbar'
-import SnackbarContent from '@material-ui/core/SnackbarContent'
-import { makeStyles } from '@material-ui/core/styles'
-import CheckCircleIcon from '@material-ui/icons/CheckCircle'
-import CloseIcon from '@material-ui/icons/Close'
-import ErrorIcon from '@material-ui/icons/Error'
-import InfoIcon from '@material-ui/icons/Info'
-import WarningIcon from '@material-ui/icons/Warning'
-import clsx from 'clsx'
-import PropTypes from 'prop-types'
-import React from 'react'
-import { connect } from 'react-redux'
+import { amber, green } from '@material-ui/core/colors';
+import IconButton from '@material-ui/core/IconButton';
+import Snackbar from '@material-ui/core/Snackbar';
+import SnackbarContent from '@material-ui/core/SnackbarContent';
+import { makeStyles } from '@material-ui/core/styles';
+import CheckCircleIcon from '@material-ui/icons/CheckCircle';
+import CloseIcon from '@material-ui/icons/Close';
+import ErrorIcon from '@material-ui/icons/Error';
+import InfoIcon from '@material-ui/icons/Info';
+import WarningIcon from '@material-ui/icons/Warning';
+import clsx from 'clsx';
+import PropTypes from 'prop-types';
+import React from 'react';
+import { connect } from 'react-redux';
 
-import { dismissSnackbar } from '~/actions/snackbar'
-import { MessageSemantics } from '~/model/snackbar'
+import { dismissSnackbar } from '~/actions/snackbar';
+import { MessageSemantics } from '~/model/snackbar';
 
 const semanticsToIcon = {
   [MessageSemantics.SUCCESS]: CheckCircleIcon,
   [MessageSemantics.WARNING]: WarningIcon,
   [MessageSemantics.ERROR]: ErrorIcon,
   [MessageSemantics.INFO]: InfoIcon
-}
+};
 
 const useStyles = makeStyles(theme => ({
   success: {
@@ -51,12 +51,12 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
     alignItems: 'center'
   }
-}))
+}));
 
-function SnackbarContentWrapper (props) {
-  const classes = useStyles()
-  const { className, message, onClose, semantics, ...other } = props
-  const Icon = semanticsToIcon[semantics]
+function SnackbarContentWrapper(props) {
+  const classes = useStyles();
+  const { className, message, onClose, semantics, ...other } = props;
+  const Icon = semanticsToIcon[semantics];
 
   return (
     <SnackbarContent
@@ -69,13 +69,18 @@ function SnackbarContentWrapper (props) {
         </span>
       }
       action={[
-        <IconButton key="close" aria-label="close" color="inherit" onClick={onClose}>
+        <IconButton
+          key="close"
+          aria-label="close"
+          color="inherit"
+          onClick={onClose}
+        >
           <CloseIcon className={classes.icon} />
         </IconButton>
       ]}
       {...other}
     />
-  )
+  );
 }
 
 SnackbarContentWrapper.propTypes = {
@@ -83,7 +88,7 @@ SnackbarContentWrapper.propTypes = {
   message: PropTypes.string,
   onClose: PropTypes.func,
   semantics: PropTypes.oneOf(Object.values(MessageSemantics)).isRequired
-}
+};
 
 /**
  * Presentation component for the global snackbar at the bottom of the main
@@ -94,36 +99,44 @@ SnackbarContentWrapper.propTypes = {
 const GlobalSnackbarPresentation = ({ onClose, open, message, semantics }) => {
   if (semantics && semantics !== MessageSemantics.DEFAULT) {
     return (
-      <Snackbar open={open} onClose={onClose} autoHideDuration={3000}>
-        <SnackbarContentWrapper onClose={onClose} semantics={semantics} message={message} />
+      <Snackbar open={open} autoHideDuration={3000} onClose={onClose}>
+        <SnackbarContentWrapper
+          semantics={semantics}
+          message={message}
+          onClose={onClose}
+        />
       </Snackbar>
-    )
-  } else {
-    return (
-      <Snackbar open={open} message={message} autoHideDuration={3000}
-        onClose={onClose} />
-    )
+    );
   }
-}
+
+  return (
+    <Snackbar
+      open={open}
+      message={message}
+      autoHideDuration={3000}
+      onClose={onClose}
+    />
+  );
+};
 
 GlobalSnackbarPresentation.propTypes = {
   message: PropTypes.string.isRequired,
   onClose: PropTypes.func,
   open: PropTypes.bool.isRequired
-}
+};
 
 /**
  * Global snackbar at the bottom of the main window.
  */
 const GlobalSnackbar = connect(
-  // mapStateToProps
+  // MapStateToProps
   state => state.snackbar,
-  // mapDispatchToProps
+  // MapDispatchToProps
   dispatch => ({
-    onClose () {
-      dispatch(dismissSnackbar())
+    onClose() {
+      dispatch(dismissSnackbar());
     }
   })
-)(GlobalSnackbarPresentation)
+)(GlobalSnackbarPresentation);
 
-export default GlobalSnackbar
+export default GlobalSnackbar;

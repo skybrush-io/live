@@ -1,2 +1,2 @@
-import SavedLocationList from './SavedLocationList'
-export default SavedLocationList
+import SavedLocationList from './SavedLocationList';
+export default SavedLocationList;

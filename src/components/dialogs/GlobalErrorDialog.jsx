@@ -3,18 +3,18 @@
  * there is an unexpected error.
  */
 
-import Button from '@material-ui/core/Button'
-import Dialog from '@material-ui/core/Dialog'
-import DialogActions from '@material-ui/core/DialogActions'
-import DialogContent from '@material-ui/core/DialogContent'
-import DialogContentText from '@material-ui/core/DialogContentText'
-import DialogTitle from '@material-ui/core/DialogTitle'
+import Button from '@material-ui/core/Button';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
 
-import PropTypes from 'prop-types'
-import React from 'react'
-import { connect } from 'react-redux'
+import PropTypes from 'prop-types';
+import React from 'react';
+import { connect } from 'react-redux';
 
-import { closeErrorDialog } from '../../actions/error-handling'
+import { closeErrorDialog } from '../../actions/error-handling';
 
 /**
  * Presentation component for the global error dialog.
@@ -23,8 +23,10 @@ import { closeErrorDialog } from '../../actions/error-handling'
  */
 const GlobalErrorDialogPresentation = ({ open, message, onClose }) => {
   const actions = [
-    <Button onClick={onClose} key="close">Close</Button>
-  ]
+    <Button key="close" onClick={onClose}>
+      Close
+    </Button>
+  ];
 
   return (
     <Dialog open={open} actions={actions}>
@@ -34,27 +36,27 @@ const GlobalErrorDialogPresentation = ({ open, message, onClose }) => {
       </DialogContent>
       <DialogActions>{actions}</DialogActions>
     </Dialog>
-  )
-}
+  );
+};
 
 GlobalErrorDialogPresentation.propTypes = {
   message: PropTypes.string,
   open: PropTypes.bool.isRequired,
   onClose: PropTypes.func
-}
+};
 
 /**
  * Global error dialog.
  */
 const GlobalErrorDialog = connect(
-  // mapStateToProps
+  // MapStateToProps
   state => state.dialogs.error,
-  // mapDispatchToProps
+  // MapDispatchToProps
   dispatch => ({
-    onClose () {
-      dispatch(closeErrorDialog())
+    onClose() {
+      dispatch(closeErrorDialog());
     }
   })
-)(GlobalErrorDialogPresentation)
+)(GlobalErrorDialogPresentation);
 
-export default GlobalErrorDialog
+export default GlobalErrorDialog;

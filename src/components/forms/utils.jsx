@@ -4,9 +4,9 @@
  *
  * @param  {string} formId  ID of the form in the DOM
  */
-export function forceFormSubmission (formId) {
-  const form = document.getElementById(formId)
+export function forceFormSubmission(formId) {
+  const form = document.getElementById(formId);
   if (form) {
-    form.dispatchEvent(new Event('submit', { cancelable: true }))
+    form.dispatchEvent(new Event('submit', { cancelable: true }));
   }
 }

@@ -3,14 +3,14 @@
  * map.
  */
 
-import { handleActions } from 'redux-actions'
+import { handleActions } from 'redux-actions';
 
-import { uavIdToGlobalId } from '../../model/identifiers'
+import { uavIdToGlobalId } from '../../model/identifiers';
 
 /**
  * The default state of the selection.
  */
-const defaultState = []
+const defaultState = [];
 
 /**
  * Finds all the UAV features on the map.
@@ -19,8 +19,8 @@ const defaultState = []
  *
  * @returns {string[]} array containing the feature identifiers
  */
-function findAllUAVFeatures (flock) {
-  return Object.keys(flock._uavsById).map(uavIdToGlobalId)
+function findAllUAVFeatures(flock) {
+  return Object.keys(flock._uavsById).map(uavIdToGlobalId);
 }
 
 /**
@@ -37,47 +37,53 @@ function findAllUAVFeatures (flock) {
  *         object that is different (identity-wise) from the current
  *         selection and it will always be sorted.
  */
-function updateSelection (current, add, remove) {
-  const selectionAsSet = {}
+function updateSelection(current, add, remove) {
+  const selectionAsSet = {};
   for (const item of current) {
-    selectionAsSet[item] = true
+    selectionAsSet[item] = true;
   }
+
   if (remove) {
     for (const item of remove) {
-      delete selectionAsSet[item]
+      delete selectionAsSet[item];
     }
   }
+
   if (add) {
     for (const item of add) {
-      selectionAsSet[item] = true
+      selectionAsSet[item] = true;
     }
   }
-  return Object.keys(selectionAsSet).sort()
+
+  return Object.keys(selectionAsSet).sort();
 }
 
 /**
  * The reducer function that handles actions related to the snackbar.
  */
-const reducer = handleActions({
-  ADD_FEATURES_TO_SELECTION (state, action) {
-    return updateSelection(state, action.payload)
+const reducer = handleActions(
+  {
+    ADD_FEATURES_TO_SELECTION(state, action) {
+      return updateSelection(state, action.payload);
+    },
+
+    CLEAR_SELECTION(state, action) {
+      return updateSelection([]);
+    },
+
+    REMOVE_FEATURES_FROM_SELECTION(state, action) {
+      return updateSelection(state, [], action.payload);
+    },
+
+    SELECT_ALL_UAV_FEATURES(state, action) {
+      return updateSelection([], findAllUAVFeatures(action.payload));
+    },
+
+    SET_SELECTED_FEATURES(state, action) {
+      return updateSelection([], action.payload);
+    }
   },
+  defaultState
+);
 
-  CLEAR_SELECTION (state, action) {
-    return updateSelection([])
-  },
-
-  REMOVE_FEATURES_FROM_SELECTION (state, action) {
-    return updateSelection(state, [], action.payload)
-  },
-
-  SELECT_ALL_UAV_FEATURES (state, action) {
-    return updateSelection([], findAllUAVFeatures(action.payload))
-  },
-
-  SET_SELECTED_FEATURES (state, action) {
-    return updateSelection([], action.payload)
-  }
-}, defaultState)
-
-export default reducer
+export default reducer;

@@ -7,4 +7,4 @@ export default {
     hostName: 'flockwave.collmot.com',
     port: 80
   }
-}
+};

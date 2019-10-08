@@ -1,43 +1,55 @@
-import { autobind } from 'core-decorators'
-import { filter, isEmpty, partial } from 'lodash'
-import { Map, View, control, interaction, withMap } from '@collmot/ol-react'
-import PropTypes from 'prop-types'
-import React from 'react'
-import { connect } from 'react-redux'
+import { autobind } from 'core-decorators';
+import { filter, isEmpty, partial } from 'lodash';
+import { Map, View, control, interaction, withMap } from '@collmot/ol-react';
+import PropTypes from 'prop-types';
+import React from 'react';
+import { connect } from 'react-redux';
 
-import Condition from './conditions'
-import { SelectNearestFeature, ShowContextMenu, TransformFeatures } from './interactions'
-import { Layers, stateObjectToLayer } from './layers'
+import Condition from './conditions';
+import {
+  SelectNearestFeature,
+  ShowContextMenu,
+  TransformFeatures
+} from './interactions';
+import { Layers, stateObjectToLayer } from './layers';
 
-import DrawingToolbar from './DrawingToolbar'
-import MapContextMenu from './MapContextMenu'
-import MapReferenceRequestHandler from './MapReferenceRequestHandler'
-import MapToolbar from './MapToolbar'
-import { isDrawingTool, Tool, toolToDrawInteractionProps } from './tools'
+import DrawingToolbar from './DrawingToolbar';
+import MapContextMenu from './MapContextMenu';
+import MapReferenceRequestHandler from './MapReferenceRequestHandler';
+import MapToolbar from './MapToolbar';
+import { isDrawingTool, Tool, toolToDrawInteractionProps } from './tools';
 
-import { addFeature, updateFeatureCoordinates } from '~/actions/features'
+import { addFeature, updateFeatureCoordinates } from '~/actions/features';
 import {
   addFeaturesToSelection,
   setSelectedFeatures,
   removeFeaturesFromSelection,
   updateMapViewSettings
-} from '~/actions/map'
-import { setHomePosition } from '~/actions/map-origin'
-import Widget from '~/components/Widget'
-import { handleError } from '~/error-handling'
-import mapViewManager from '~/mapViewManager'
-import { createFeatureFromOpenLayers, isFeatureTransformable } from '~/model/features'
-import { getVisibleSelectableLayers, isLayerSelectable } from '~/model/layers'
-import { globalIdToFeatureId, globalIdToHomePositionId } from '~/model/identifiers'
-import { getVisibleLayersInOrder } from '~/selectors/ordered'
-import { getExtendedCoordinateFormatter } from '~/selectors/formatting'
-import { getMapViewRotationAngle } from '~/selectors/map'
-import { getSelectedFeatureIds, getSelection } from '~/selectors/selection'
+} from '~/actions/map';
+import { setHomePosition } from '~/actions/map-origin';
+import Widget from '~/components/Widget';
+import { handleError } from '~/error-handling';
+import mapViewManager from '~/mapViewManager';
 import {
-  coordinateFromLonLat, findFeaturesById, lonLatFromCoordinate
-} from '~/utils/geography'
+  createFeatureFromOpenLayers,
+  isFeatureTransformable
+} from '~/model/features';
+import { getVisibleSelectableLayers, isLayerSelectable } from '~/model/layers';
+import {
+  globalIdToFeatureId,
+  globalIdToHomePositionId
+} from '~/model/identifiers';
+import { getVisibleLayersInOrder } from '~/selectors/ordered';
+import { getExtendedCoordinateFormatter } from '~/selectors/formatting';
+import { getMapViewRotationAngle } from '~/selectors/map';
+import { getSelectedFeatureIds, getSelection } from '~/selectors/selection';
+import {
+  coordinateFromLonLat,
+  findFeaturesById,
+  lonLatFromCoordinate
+} from '~/utils/geography';
 
-require('ol/ol.css')
+require('ol/ol.css');
 
 /* ********************************************************************** */
 
@@ -46,76 +58,80 @@ require('ol/ol.css')
  *
  * @returns {JSX.Node[]}  the layers of the map
  */
-const MapViewLayersPresentation = ({ layers, onFeaturesModified, selectedTool }) => {
-  let zIndex = 0
-  const renderedLayers = []
+const MapViewLayersPresentation = ({
+  layers,
+  onFeaturesModified,
+  selectedTool
+}) => {
+  let zIndex = 0;
+  const renderedLayers = [];
 
   for (const layer of layers) {
     if (layer.type in Layers) {
-      renderedLayers.push(stateObjectToLayer(layer, {
-        onFeaturesModified,
-        selectedTool,
-        zIndex
-      }))
-      zIndex++
+      renderedLayers.push(
+        stateObjectToLayer(layer, {
+          onFeaturesModified,
+          selectedTool,
+          zIndex
+        })
+      );
+      zIndex++;
     }
   }
 
-  return renderedLayers
-}
+  return renderedLayers;
+};
 
 MapViewLayersPresentation.propTypes = {
   layers: PropTypes.arrayOf(PropTypes.object),
   onFeaturesModified: PropTypes.func,
   selectedTool: PropTypes.string.isRequired
-}
+};
 
 /**
  * Connects the map view layers to the Redux store.
  */
 const MapViewLayers = connect(
-  // mapStateToProps
+  // MapStateToProps
   state => ({
     layers: getVisibleLayersInOrder(state),
     selectedTool: state.map.tools.selectedTool
   })
-)(MapViewLayersPresentation)
+)(MapViewLayersPresentation);
 
 /* ********************************************************************** */
 
 const MapViewControlsPresentation = props => {
-  const result = [
-    <control.Zoom key='control.Zoom' />
-  ]
+  const result = [<control.Zoom key="control.Zoom" />];
 
   if (props.showMouseCoordinates) {
     result.push(
-      <control.MousePosition key='control.MousePosition'
-        projection='EPSG:4326'
-        coordinateFormat={props.formatCoordinate} />
-    )
+      <control.MousePosition
+        key="control.MousePosition"
+        projection="EPSG:4326"
+        coordinateFormat={props.formatCoordinate}
+      />
+    );
   }
 
   if (props.showScaleLine) {
-    result.push(
-      <control.ScaleLine key='control.ScaleLine' minWidth={128} />
-    )
+    result.push(<control.ScaleLine key="control.ScaleLine" minWidth={128} />);
   }
 
-  return result
-}
+  return result;
+};
 
 /**
  * React component that renders the standard OpenLayers controls that we
  * use on the map in the main window
  */
 const MapViewControls = connect(
-  // mapStateToProps
+  // MapStateToProps
   state => ({
     formatCoordinate: getExtendedCoordinateFormatter(state),
     ...state.settings.display
   })
-)(MapViewControlsPresentation)
+)(MapViewControlsPresentation);
 
 /* ********************************************************************** */
 
@@ -124,14 +140,22 @@ const MapViewControls = connect(
  *
  * @returns {JSX.Node[]}  the toolbars on the map
  */
-const MapViewToolbars = () => ([
-  <Widget style={{ top: 8, left: (8 + 24 + 8) }} showControls={false} key='Widget.MapToolbar'>
+const MapViewToolbars = () => [
+  <Widget
+    key="Widget.MapToolbar"
+    style={{ top: 8, left: 8 + 24 + 8 }}
+    showControls={false}
+  >
     <MapToolbar />
   </Widget>,
-  <Widget style={{ top: (8 + 48 + 8), left: 8 }} showControls={false} key='Widget.DrawingToolbar'>
+  <Widget
+    key="Widget.DrawingToolbar"
+    style={{ top: 8 + 48 + 8, left: 8 }}
+    showControls={false}
+  >
     <DrawingToolbar />
   </Widget>
-])
+];
 
 /* ********************************************************************** */
 
@@ -143,30 +167,40 @@ const MapViewToolbars = () => ([
  */
 const MapViewInteractions = withMap(props => {
   const {
-    onDrawEnded, onAddFeaturesToSelection,
-    onFeaturesTransformed, onRemoveFeaturesFromSelection,
-    onSetSelectedFeatures, onSingleFeatureSelected,
-    selectedFeaturesProvider, selectedTool
-  } = props
-  const interactions = []
+    onDrawEnded,
+    onAddFeaturesToSelection,
+    onFeaturesTransformed,
+    onRemoveFeaturesFromSelection,
+    onSetSelectedFeatures,
+    onSingleFeatureSelected,
+    selectedFeaturesProvider,
+    selectedTool
+  } = props;
+  const interactions = [];
 
   // Common interactions that can be used regardless of the selected tool
   /* Alt + Shift + drag --> Rotate view */
   /* Alt + Shift + middle button drag --> Rotate and zoom view */
   interactions.push(
-    <interaction.DragRotate key='DragRotate'
-      condition={Condition.altShiftKeysOnly} />,
-    <interaction.DragRotateAndZoom key='DragRotateAndZoom'
-      condition={Condition.altShiftKeyAndMiddleMouseButton} />
-  )
+    <interaction.DragRotate
+      key="DragRotate"
+      condition={Condition.altShiftKeysOnly}
+    />,
+    <interaction.DragRotateAndZoom
+      key="DragRotateAndZoom"
+      condition={Condition.altShiftKeyAndMiddleMouseButton}
+    />
+  );
 
   if (selectedTool === Tool.PAN) {
     interactions.push(
       /* PAN mode | Ctrl/Cmd + Drag --> Box select features */
-      <interaction.DragBox key='DragBox.setSelection'
+      <interaction.DragBox
+        key="DragBox.setSelection"
         condition={Condition.platformModifierKeyOnly}
-        onBoxEnd={onSetSelectedFeatures} />
-    )
+        onBoxEnd={onSetSelectedFeatures}
+      />
+    );
   }
 
   if (selectedTool === Tool.SELECT) {
@@ -175,26 +209,32 @@ const MapViewInteractions = withMap(props => {
           click --> Select nearest feature
           PlatMod + Click --> Toggle nearest feature in selection
           Alt + Click --> Remove nearest feature from selection */
-      <SelectNearestFeature key='SelectNearestFeature'
+      <SelectNearestFeature
+        key="SelectNearestFeature"
         addCondition={Condition.never}
         layers={isLayerSelectable}
         removeCondition={Condition.altKeyOnly}
         toggleCondition={Condition.platformModifierKeyOnly}
+        threshold={40}
         onSelect={onSingleFeatureSelected}
-        threshold={40} />,
+      />,
 
       /* We cannot add "Drag --> Set selected features" here because it
        * interferes with the SelectNearestFeature interaction */
 
       /* SELECT mode | Shift + Drag --> Box add features to selection */
-      <interaction.DragBox key='DragBox.addToSelection'
+      <interaction.DragBox
+        key="DragBox.addToSelection"
         condition={Condition.shiftKeyOnly}
-        onBoxEnd={onAddFeaturesToSelection} />,
+        onBoxEnd={onAddFeaturesToSelection}
+      />,
 
       /* SELECT mode | Alt + Drag --> Box remove features from selection */
-      <interaction.DragBox key='DragBox.removeFromSelection'
+      <interaction.DragBox
+        key="DragBox.removeFromSelection"
         condition={Condition.altKeyOnly}
-        onBoxEnd={onRemoveFeaturesFromSelection} />,
+        onBoxEnd={onRemoveFeaturesFromSelection}
+      />,
 
       /* SELECT mode |
            Drag a feature --> Move a feature to a new location
@@ -202,39 +242,45 @@ const MapViewInteractions = withMap(props => {
          This must come last in order to ensure that it will get the
          chance to process events before DragBox so Alt+something will not
          start a drag-box when clicking on a selected feature */
-      <TransformFeatures key='TransformFeatures'
+      <TransformFeatures
+        key="TransformFeatures"
         featureProvider={selectedFeaturesProvider}
         moveCondition={Condition.noModifierKeys}
         rotateCondition={Condition.altKeyOnly}
-        onTransformEnd={onFeaturesTransformed} />
-    )
+        onTransformEnd={onFeaturesTransformed}
+      />
+    );
   }
 
   if (selectedTool === Tool.ZOOM) {
     interactions.push(
       /* ZOOM mode | Drag --> Box zoom in */
-      <interaction.DragZoom key='DragZoom.in'
-        condition={Condition.always} />,
+      <interaction.DragZoom key="DragZoom.in" condition={Condition.always} />,
 
       /* ZOOM mode | Shift + Drag --> Box zoom out */
-      <interaction.DragZoom key='DragZoom.out'
-        condition={Condition.shiftKeyOnly} out />
-    )
+      <interaction.DragZoom
+        key="DragZoom.out"
+        out
+        condition={Condition.shiftKeyOnly}
+      />
+    );
   }
 
   if (isDrawingTool(selectedTool)) {
     interactions.push(
       /* DRAW mode | Click --> Draw a new feature */
-      <interaction.Draw key='Draw'
+      <interaction.Draw
+        key="Draw"
         {...toolToDrawInteractionProps(selectedTool, props.map)}
-        onDrawEnd={onDrawEnded}/>
-    )
+        onDrawEnd={onDrawEnded}
+      />
+    );
   }
 
   /* Tool.EDIT_FEATURE will be handled in the FeaturesLayer component */
 
-  return interactions
-})
+  return interactions;
+});
 
 MapViewInteractions.propTypes = {
   selectedFeaturesProvider: PropTypes.func,
@@ -246,7 +292,7 @@ MapViewInteractions.propTypes = {
   onRemoveFeaturesFromSelection: PropTypes.func,
   onSetSelectedFeatures: PropTypes.func,
   onSingleFeatureSelected: PropTypes.func
-}
+};
 
 /* ********************************************************************** */
 
@@ -254,35 +300,38 @@ MapViewInteractions.propTypes = {
  * React component for the map of the main window.
  */
 class MapViewPresentation extends React.Component {
-  constructor (props) {
-    super(props)
+  constructor(props) {
+    super(props);
 
-    this._onAddFeaturesToSelection = partial(this._onBoxDragEnded, 'add')
-    this._onRemoveFeaturesFromSelection = partial(this._onBoxDragEnded, 'remove')
-    this._onSetSelectedFeatures = partial(this._onBoxDragEnded, 'set')
+    this._onAddFeaturesToSelection = partial(this._onBoxDragEnded, 'add');
+    this._onRemoveFeaturesFromSelection = partial(
+      this._onBoxDragEnded,
+      'remove'
+    );
+    this._onSetSelectedFeatures = partial(this._onBoxDragEnded, 'set');
 
-    this._map = React.createRef()
+    this._map = React.createRef();
   }
 
-  componentDidMount () {
-    const { glContainer } = this.props
-    this.layoutManager = glContainer ? glContainer.layoutManager : undefined
+  componentDidMount() {
+    const { glContainer } = this.props;
+    this.layoutManager = glContainer ? glContainer.layoutManager : undefined;
 
-    mapViewManager.initialize()
-    this._disableDefaultContextMenu()
+    mapViewManager.initialize();
+    this._disableDefaultContextMenu();
   }
 
-  componentDidUpdate () {
-    const { glContainer } = this.props
-    this.layoutManager = glContainer ? glContainer.layoutManager : undefined
+  componentDidUpdate() {
+    const { glContainer } = this.props;
+    this.layoutManager = glContainer ? glContainer.layoutManager : undefined;
   }
 
   /**
    * Returns the layout manager that the map view currently participates in.
    * @return {GoldenLayout} the layout manager
    */
-  get layoutManager () {
-    return this._layoutManager
+  get layoutManager() {
+    return this._layoutManager;
   }
 
   /**
@@ -290,25 +339,25 @@ class MapViewPresentation extends React.Component {
    *
    * @param {GoldenLayout} value  the new layout manager
    */
-  set layoutManager (value) {
+  set layoutManager(value) {
     if (this._layoutManager === value) {
-      return
+      return;
     }
 
     if (this._layoutManager) {
-      this._layoutManager.off('stateChanged', this.updateSize, this)
+      this._layoutManager.off('stateChanged', this.updateSize, this);
     }
 
-    this._layoutManager = value
+    this._layoutManager = value;
 
     if (this._layoutManager) {
-      this._layoutManager.on('stateChanged', this.updateSize, this)
+      this._layoutManager.on('stateChanged', this.updateSize, this);
     }
   }
 
-  render () {
-    const { center, selectedTool, zoom } = this.props
-    const view = <View center={coordinateFromLonLat(center)} zoom={zoom} />
+  render() {
+    const { center, selectedTool, zoom } = this.props;
+    const view = <View center={coordinateFromLonLat(center)} zoom={zoom} />;
 
     const toolClasses = {
       [Tool.SELECT]: 'tool-select',
@@ -320,15 +369,17 @@ class MapViewPresentation extends React.Component {
       [Tool.DRAW_PATH]: 'tool-draw tool-draw-path',
       [Tool.DRAW_POLYGON]: 'tool-draw tool-draw-polygon',
       [Tool.EDIT_FEATURE]: 'tool-edit tool-edit-feature'
-    }
+    };
 
     return (
-      <Map view={view} ref={this._map}
-        useDefaultControls={false} loadTilesWhileInteracting
+      <Map
+        ref={this._map}
+        loadTilesWhileInteracting
+        view={view}
+        useDefaultControls={false}
         className={toolClasses[selectedTool]}
         onMoveEnd={this._onMapMoved}
       >
-
         <MapReferenceRequestHandler />
 
         <MapViewToolbars />
@@ -337,7 +388,6 @@ class MapViewPresentation extends React.Component {
         <MapViewInteractions
           selectedTool={selectedTool}
           selectedFeaturesProvider={this._getSelectedTransformableFeatures}
-
           onAddFeaturesToSelection={this._onAddFeaturesToSelection}
           onDrawEnded={this._onDrawEnded}
           onFeaturesTransformed={this._onFeaturesTransformed}
@@ -349,15 +399,15 @@ class MapViewPresentation extends React.Component {
         {/* OpenLayers interaction that triggers a context menu */}
         <ShowContextMenu
           layers={isLayerSelectable}
-          projection='EPSG:4326'
+          projection="EPSG:4326"
           selectAction={this._onFeatureSelected}
-          threshold={40}>
+          threshold={40}
+        >
           {/* The context menu that appears on the map when the user right-clicks */}
           <MapContextMenu />
         </ShowContextMenu>
-
       </Map>
-    )
+    );
   }
 
   /**
@@ -370,10 +420,11 @@ class MapViewPresentation extends React.Component {
    * @return {ol.Feature[]} the selected OpenLayers features
    */
   @autobind
-  _getSelectedTransformableFeatures (map) {
+  _getSelectedTransformableFeatures(map) {
     return filter(
-      findFeaturesById(map, this.props.selection), isFeatureTransformable
-    )
+      findFeaturesById(map, this.props.selection),
+      isFeatureTransformable
+    );
   }
 
   /**
@@ -386,19 +437,19 @@ class MapViewPresentation extends React.Component {
    *         the drag-box interaction
    */
   @autobind
-  _onBoxDragEnded (mode, event) {
-    const extent = event.target.getGeometry().getExtent()
-    const features = []
-    const map = this._map.current.map
+  _onBoxDragEnded(mode, event) {
+    const extent = event.target.getGeometry().getExtent();
+    const features = [];
+    const { map } = this._map.current;
 
     getVisibleSelectableLayers(map).forEach(layer => {
-      const source = layer.getSource()
+      const source = layer.getSource();
       source.forEachFeatureIntersectingExtent(extent, feature => {
-        features.push(feature)
-      })
-    })
+        features.push(feature);
+      });
+    });
 
-    this._onFeaturesSelected(mode, features)
+    this._onFeaturesSelected(mode, features);
   }
 
   /**
@@ -415,12 +466,12 @@ class MapViewPresentation extends React.Component {
    *         draw interaction
    */
   @autobind
-  _onDrawEnded (event) {
+  _onDrawEnded(event) {
     try {
-      const feature = createFeatureFromOpenLayers(event.feature)
-      this.props.dispatch(addFeature(feature))
-    } catch (err) {
-      handleError(err)
+      const feature = createFeatureFromOpenLayers(event.feature);
+      this.props.dispatch(addFeature(feature));
+    } catch (error) {
+      handleError(error);
     }
   }
 
@@ -433,9 +484,9 @@ class MapViewPresentation extends React.Component {
    * @param  {ol.Feature[]}  event.features  the features that were modified
    */
   @autobind
-  _onFeaturesModified (event) {
-    console.log(event)
-    this._updateFeatures(event.features)
+  _onFeaturesModified(event) {
+    console.log(event);
+    this._updateFeatures(event.features);
   }
 
   /**
@@ -447,8 +498,8 @@ class MapViewPresentation extends React.Component {
    * @param  {ol.Feature[]}  event.features  the features that were moved
    */
   @autobind
-  _onFeaturesTransformed (event) {
-    this._updateFeatures(event.features)
+  _onFeaturesTransformed(event) {
+    this._updateFeatures(event.features);
   }
 
   /**
@@ -460,21 +511,21 @@ class MapViewPresentation extends React.Component {
    * @param  {ol.Feature}  feature  the selected feature
    */
   @autobind
-  _onFeatureSelected (mode, feature) {
-    const id = feature ? feature.getId() : undefined
+  _onFeatureSelected(mode, feature) {
+    const id = feature ? feature.getId() : undefined;
     if (id === undefined && mode !== 'set' && mode !== 'clear') {
-      return
+      return;
     }
 
     if (mode === 'toggle') {
-      const { selection } = this.props
-      mode = selection.includes(id) ? 'remove' : 'add'
+      const { selection } = this.props;
+      mode = selection.includes(id) ? 'remove' : 'add';
     } else if (mode === 'clear') {
-      mode = 'set'
-      feature = undefined
+      mode = 'set';
+      feature = undefined;
     }
 
-    this._onFeaturesSelected(mode, feature ? [feature] : [])
+    this._onFeaturesSelected(mode, feature ? [feature] : []);
   }
 
   /**
@@ -486,32 +537,36 @@ class MapViewPresentation extends React.Component {
    * @param  {ol.Feature[]}  features  the selected features
    */
   @autobind
-  _onFeaturesSelected (mode, features) {
+  _onFeaturesSelected(mode, features) {
     const actionMapping = {
       add: addFeaturesToSelection,
       remove: removeFeaturesFromSelection,
       set: setSelectedFeatures
-    }
-    const action = actionMapping[mode] || setSelectedFeatures
-    const ids = features ? features.map(feature => feature.getId()) : []
+    };
+    const action = actionMapping[mode] || setSelectedFeatures;
+    const ids = features ? features.map(feature => feature.getId()) : [];
     if (action === setSelectedFeatures || (ids && ids.length > 0)) {
-      this.props.dispatch(action(ids))
+      this.props.dispatch(action(ids));
     }
   }
 
   @autobind
-  _onMapMoved () {
-    const map = this._map.current.map
-    const view = map ? map.getView() : undefined
+  _onMapMoved() {
+    const { map } = this._map.current;
+    const view = map ? map.getView() : undefined;
 
     if (view) {
-      const position = lonLatFromCoordinate(view.getCenter())
-      const zoom = view.getZoom()
-      const angle = -view.getRotation() * 180 / Math.PI
+      const position = lonLatFromCoordinate(view.getCenter());
+      const zoom = view.getZoom();
+      const angle = (-view.getRotation() * 180) / Math.PI;
 
-      this.props.dispatch(updateMapViewSettings({
-        position, angle, zoom
-      }))
+      this.props.dispatch(
+        updateMapViewSettings({
+          position,
+          angle,
+          zoom
+        })
+      );
     }
   }
 
@@ -520,37 +575,44 @@ class MapViewPresentation extends React.Component {
    *
    * @param  {ol.Feature[]}  features  the features that are to be updated
    */
-  _updateFeatures (features) {
-    const updatedUserFeatures = {}
-    const { dispatch } = this.props
+  _updateFeatures(features) {
+    const updatedUserFeatures = {};
+    const { dispatch } = this.props;
 
     features.forEach(feature => {
-      const globalId = feature.getId()
-      const userFeatureId = globalIdToFeatureId(globalId)
+      const globalId = feature.getId();
+      const userFeatureId = globalIdToFeatureId(globalId);
       if (userFeatureId) {
-        // feature is a user-defined feature so update it in the Redux store
-        updatedUserFeatures[userFeatureId] =
-          createFeatureFromOpenLayers(feature).points
+        // Feature is a user-defined feature so update it in the Redux store
+        updatedUserFeatures[userFeatureId] = createFeatureFromOpenLayers(
+          feature
+        ).points;
       } else {
-        const homePositionFeatureId = globalIdToHomePositionId(globalId)
+        const homePositionFeatureId = globalIdToHomePositionId(globalId);
         if (homePositionFeatureId === '') {
-          // feature is a home position feature
-          const featureObject = createFeatureFromOpenLayers(feature)
-          const coords = feature.getGeometry().getCoordinates()
-          dispatch(setHomePosition(
-            featureObject.points[0],
-            90 - Math.atan2(
-              // don't use featureObject.points here because they are already
-              // in lat-lon so they cannot be used to calculate an angle
-              coords[1][1] - coords[0][1], coords[1][0] - coords[0][0]
-            ) * 180 / Math.PI
-          ))
+          // Feature is a home position feature
+          const featureObject = createFeatureFromOpenLayers(feature);
+          const coords = feature.getGeometry().getCoordinates();
+          dispatch(
+            setHomePosition(
+              featureObject.points[0],
+              90 -
+                (Math.atan2(
+                  // Don't use featureObject.points here because they are already
+                  // in lat-lon so they cannot be used to calculate an angle
+                  coords[1][1] - coords[0][1],
+                  coords[1][0] - coords[0][0]
+                ) *
+                  180) /
+                  Math.PI
+            )
+          );
         }
       }
-    })
+    });
 
     if (!isEmpty(updatedUserFeatures)) {
-      dispatch(updateFeatureCoordinates(updatedUserFeatures))
+      dispatch(updateFeatureCoordinates(updatedUserFeatures));
     }
   }
 
@@ -558,25 +620,22 @@ class MapViewPresentation extends React.Component {
    * Method to disable the browsers default context menu.
    */
   @autobind
-  _disableDefaultContextMenu () {
-    const map = this._map.current.map
-    map.getViewport().addEventListener(
-      'contextmenu',
-      e => {
-        e.preventDefault()
-        return false
-      }
-    )
+  _disableDefaultContextMenu() {
+    const { map } = this._map.current;
+    map.getViewport().addEventListener('contextmenu', e => {
+      e.preventDefault();
+      return false;
+    });
   }
 
   /**
    * Method that must be called whenever the size of the container holding
    * the map view has changed.
    */
-  updateSize () {
-    const map = this._map.current
+  updateSize() {
+    const map = this._map.current;
     if (map) {
-      map.updateSize()
+      map.updateSize();
     }
   }
 }
@@ -592,19 +651,19 @@ MapViewPresentation.propTypes = {
   zoom: PropTypes.number.isRequired,
 
   glContainer: PropTypes.object
-}
+};
 
 MapViewPresentation.defaultProps = {
-  center: [19.061951, 47.473340],
+  center: [19.061951, 47.47334],
   rotation: 0,
   zoom: 17
-}
+};
 
 /**
  * Connects the map view to the Redux store.
  */
 const MapView = connect(
-  // mapStateToProps
+  // MapStateToProps
   state => ({
     center: state.map.view.position,
     rotation: getMapViewRotationAngle(state),
@@ -614,6 +673,6 @@ const MapView = connect(
     selectedTool: state.map.tools.selectedTool,
     selection: getSelection(state)
   })
-)(MapViewPresentation)
+)(MapViewPresentation);
 
-export default MapView
+export default MapView;

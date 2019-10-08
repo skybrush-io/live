@@ -2,51 +2,59 @@
  * @file Component for displaying logged messages.
  */
 
-import { padStart, property } from 'lodash'
-import PropTypes from 'prop-types'
-import React from 'react'
-import { connect } from 'react-redux'
+import { padStart, property } from 'lodash';
+import PropTypes from 'prop-types';
+import React from 'react';
+import { connect } from 'react-redux';
 
-// import ActionReceipt from '@material-ui/icons/Receipt'
-import ActionInfo from '@material-ui/icons/Info'
-import AlertWarning from '@material-ui/icons/Warning'
-import ContentReport from '@material-ui/icons/Report'
+// Import ActionReceipt from '@material-ui/icons/Receipt'
+import ActionInfo from '@material-ui/icons/Info';
+import AlertWarning from '@material-ui/icons/Warning';
+import ContentReport from '@material-ui/icons/Report';
 
-import { deleteLogItem, clearLogItems, updateLogPanelVisibility } from '../../actions/log'
-import FilterableSortableTable, { FilterTypes } from '../../components/FilterableSortableTable'
-import { colorForLogLevel, LogLevel } from '../../utils/logging'
+import {
+  deleteLogItem,
+  clearLogItems,
+  updateLogPanelVisibility
+} from '../../actions/log';
+import FilterableSortableTable, {
+  FilterTypes
+} from '../../components/FilterableSortableTable';
+import { colorForLogLevel, LogLevel } from '../../utils/logging';
 
-function iconForLogLevel (level) {
+function iconForLogLevel(level) {
   const style = {
     color: colorForLogLevel(level)
-  }
+  };
   if (level <= LogLevel.INFO) {
-    return <ActionInfo style={style} />
-  } else if (level <= LogLevel.WARNING) {
-    return <AlertWarning style={style} />
-  } else {
-    return <ContentReport style={style} />
+    return <ActionInfo style={style} />;
   }
+
+  if (level <= LogLevel.WARNING) {
+    return <AlertWarning style={style} />;
+  }
+
+  return <ContentReport style={style} />;
 }
 
 class LogPanelPresentation extends React.Component {
-  componentWillMount () {
+  componentWillMount() {
     if (this.props.onMounting) {
-      this.props.onMounting()
+      this.props.onMounting();
     }
   }
 
-  componentWillUnmount () {
+  componentWillUnmount() {
     if (this.props.onUnmounting) {
-      this.props.onUnmounting()
+      this.props.onUnmounting();
     }
   }
 
-  render () {
+  render() {
     const tableColumns = [
       {
         name: 'Level',
-        // displayName: <ActionReceipt />,
+        // DisplayName: <ActionReceipt />,
         width: 100,
         dataExtractor: property('level'),
         displayRenderer: iconForLogLevel,
@@ -61,10 +69,14 @@ class LogPanelPresentation extends React.Component {
         width: 150,
         dataExtractor: property('timestamp'),
         displayRenderer: data => {
-          const currentDate = new Date(data)
-          return padStart(currentDate.getHours(), 2, '0') + ':' +
-          padStart(currentDate.getMinutes(), 2, '0') + ':' +
-          padStart(currentDate.getSeconds(), 2, '0')
+          const currentDate = new Date(data);
+          return (
+            padStart(currentDate.getHours(), 2, '0') +
+            ':' +
+            padStart(currentDate.getMinutes(), 2, '0') +
+            ':' +
+            padStart(currentDate.getSeconds(), 2, '0')
+          );
         },
         filterType: FilterTypes.range
       },
@@ -74,16 +86,16 @@ class LogPanelPresentation extends React.Component {
         dataExtractor: property('message'),
         filterType: FilterTypes.text
       }
-    ]
+    ];
 
     return (
       <FilterableSortableTable
+        defaultReverse
         dataSource={this.props.items}
         availableColumns={tableColumns}
         defaultSortBy={1}
-        defaultReverse
       />
-    )
+    );
   }
 }
 
@@ -92,28 +104,28 @@ LogPanelPresentation.propTypes = {
 
   onMounting: PropTypes.func,
   onUnmounting: PropTypes.func
-}
+};
 
 const LogPanel = connect(
-  // mapStateToProps
+  // MapStateToProps
   state => ({
     items: state.log.items
   }),
-  // mapDispatchToProps
+  // MapDispatchToProps
   dispatch => ({
-    onDeleteLogItem (id) {
-      dispatch(deleteLogItem(id))
+    onDeleteLogItem(id) {
+      dispatch(deleteLogItem(id));
     },
-    onClearLogItems () {
-      dispatch(clearLogItems())
+    onClearLogItems() {
+      dispatch(clearLogItems());
     },
-    onMounting () {
-      dispatch(updateLogPanelVisibility(true))
+    onMounting() {
+      dispatch(updateLogPanelVisibility(true));
     },
-    onUnmounting () {
-      dispatch(updateLogPanelVisibility(false))
+    onUnmounting() {
+      dispatch(updateLogPanelVisibility(false));
     }
   })
-)(LogPanelPresentation)
+)(LogPanelPresentation);
 
-export default LogPanel
+export default LogPanel;

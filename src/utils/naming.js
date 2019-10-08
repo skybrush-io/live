@@ -2,7 +2,7 @@
  * @file Naming things is hard. These functions may help.
  */
 
-import { camelCase, includes, isArray, trimEnd } from 'lodash'
+import { camelCase, includes, isArray, trimEnd } from 'lodash';
 
 /**
  * Given an ID proposal and an array of existing IDs, returns a new
@@ -27,34 +27,30 @@ import { camelCase, includes, isArray, trimEnd } from 'lodash'
  * @return {string} an ID that is based on the ID proposal and that is
  *         not in the list of existing IDs
  */
-export function chooseUniqueId (idProposal, existingIds) {
-  const hasIdArray = isArray(existingIds)
+export function chooseUniqueId(idProposal, existingIds) {
+  const hasIdArray = isArray(existingIds);
 
   if (hasIdArray) {
     if (!includes(existingIds, idProposal)) {
-      return idProposal
+      return idProposal;
     }
-  } else {
-    if (!(idProposal in existingIds)) {
-      return idProposal
-    }
+  } else if (!(idProposal in existingIds)) {
+    return idProposal;
   }
 
-  let index = 0
-  let candidate
+  let index = 0;
+  let candidate;
 
   while (true) {
-    index++
-    candidate = `${idProposal}_${index}`
+    index++;
+    candidate = `${idProposal}_${index}`;
 
     if (hasIdArray) {
       if (!includes(existingIds, candidate)) {
-        return candidate
+        return candidate;
       }
-    } else {
-      if (!(candidate in existingIds)) {
-        return candidate
-      }
+    } else if (!(candidate in existingIds)) {
+      return candidate;
     }
   }
 }
@@ -85,21 +81,21 @@ export function chooseUniqueId (idProposal, existingIds) {
  * @return {string} a name that is based on the name proposal and that is
  *         not in the list of existing names
  */
-export function chooseUniqueName (nameProposal, existingNames) {
+export function chooseUniqueName(nameProposal, existingNames) {
   if (!includes(existingNames, nameProposal)) {
-    return nameProposal
+    return nameProposal;
   }
 
-  const match = nameProposal.match(/^(.*)\s+([0-9]+)$/)
-  const nameBase = match ? match[0] : trimEnd(nameProposal)
-  let index = match ? parseInt(match[1]) : 0
-  let candidate
+  const match = nameProposal.match(/^(.*)\s+(\d+)$/);
+  const nameBase = match ? match[0] : trimEnd(nameProposal);
+  let index = match ? parseInt(match[1]) : 0;
+  let candidate;
 
   while (true) {
-    index++
-    candidate = `${nameBase} ${index}`
+    index++;
+    candidate = `${nameBase} ${index}`;
     if (!includes(existingNames, candidate)) {
-      return candidate
+      return candidate;
     }
   }
 }
@@ -115,6 +111,6 @@ export function chooseUniqueName (nameProposal, existingNames) {
  *         that should not be returned
  * @return {string} the proposed ID of the object
  */
-export function chooseUniqueIdFromName (name, existingIds) {
-  return chooseUniqueId(camelCase(name), existingIds)
+export function chooseUniqueIdFromName(name, existingIds) {
+  return chooseUniqueId(camelCase(name), existingIds);
 }

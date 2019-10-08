@@ -13,4 +13,4 @@
  *         if you don't need any special treatment
  * @return {Object} the action metadata
  */
-export const debounced = (type = 'simple') => () => ({ debounce: type })
+export const debounced = (type = 'simple') => () => ({ debounce: type });

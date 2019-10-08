@@ -1,18 +1,18 @@
 // Use strict mode so we can have block-scoped declarations
-'use strict'
+'use strict';
 
 // Import the promise polyfill for ye olde Node installations
-require('es6-promise').polyfill()
+require('es6-promise').polyfill();
 
 // Don't use let in the line below because older Node.js versions on Linux
 // will not like it
-var path = require('path')
-var webpack = require('webpack')
-var Dotenv = require('dotenv-webpack')
+const path = require('path');
+const webpack = require('webpack');
+const Dotenv = require('dotenv-webpack');
 
-var projectRoot = require('./helpers').projectRoot
+const { projectRoot } = require('./helpers');
 
-var enableSourceMap = process.env.NODE_ENV !== 'production'
+const enableSourceMap = process.env.NODE_ENV !== 'production';
 
 module.exports = {
   mode: 'development',
@@ -32,7 +32,9 @@ module.exports = {
 
     // Resolve process.env.NODE_ENV in the code
     new webpack.DefinePlugin({
-      'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development'),
+      'process.env.NODE_ENV': JSON.stringify(
+        process.env.NODE_ENV || 'development'
+      ),
       'process.env.DEPLOYMENT': JSON.stringify(process.env.DEPLOYMENT || '0')
     }),
 
@@ -49,16 +51,11 @@ module.exports = {
     rules: [
       {
         test: /\.css$/,
-        use: [
-          { loader: 'style-loader' },
-          { loader: 'css-loader' }
-        ]
+        use: [{ loader: 'style-loader' }, { loader: 'css-loader' }]
       },
       {
         test: /\.jsx?$/,
-        use: [
-          { loader: 'babel-loader' }
-        ],
+        use: [{ loader: 'babel-loader' }],
         include: [
           path.join(projectRoot, 'config'),
           path.join(projectRoot, 'src')
@@ -75,21 +72,17 @@ module.exports = {
       },
       {
         test: /\.(png|jpg)$/,
-        use: [
-          { loader: 'url-loader', options: { limit: 8192 } }
-        ],
+        use: [{ loader: 'url-loader', options: { limit: 8192 } }],
         include: path.join(projectRoot, 'assets')
       },
       {
         test: /\.(woff|woff2|eot|ttf|svg)$/,
-        use: [
-          { loader: 'file-loader' }
-        ]
+        use: [{ loader: 'file-loader' }]
       }
     ],
     noParse: [/dist\/ol.*\.js/]
   },
 
-  /* no need for bundle size warnings */
+  /* No need for bundle size warnings */
   performance: { hints: false }
-}
+};

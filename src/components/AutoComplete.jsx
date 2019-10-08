@@ -3,17 +3,17 @@
  * in a dropdown menu.
  */
 
-import match from 'autosuggest-highlight/match'
-import parse from 'autosuggest-highlight/parse'
-import { autobind } from 'core-decorators'
-import { identity, toLower } from 'lodash'
-import MenuItem from '@material-ui/core/MenuItem'
-import MenuList from '@material-ui/core/MenuList'
-import Popover from '@material-ui/core/Popover'
-import TextField from '@material-ui/core/TextField'
-import PropTypes from 'prop-types'
-import React from 'react'
-import Autosuggest from 'react-autosuggest'
+import match from 'autosuggest-highlight/match';
+import parse from 'autosuggest-highlight/parse';
+import { autobind } from 'core-decorators';
+import { identity, toLower } from 'lodash';
+import MenuItem from '@material-ui/core/MenuItem';
+import MenuList from '@material-ui/core/MenuList';
+import Popover from '@material-ui/core/Popover';
+import TextField from '@material-ui/core/TextField';
+import PropTypes from 'prop-types';
+import React from 'react';
+import Autosuggest from 'react-autosuggest';
 
 // TODO: "Enter selects first item" feature
 
@@ -22,28 +22,30 @@ import Autosuggest from 'react-autosuggest'
  * in a dropdown menu.
  */
 export class AutoComplete extends React.Component {
-  constructor (props) {
-    super(props)
+  constructor(props) {
+    super(props);
 
-    this._inputRef = undefined
+    this._inputRef = undefined;
 
     this.state = {
       error: null,
       input: null,
       suggestions: [],
       value: ''
-    }
+    };
   }
 
   @autobind
-  _assignInputRef (value) {
+  _assignInputRef(value) {
     if (this._inputRef !== undefined) {
-      this._inputRef(value)
+      this._inputRef(value);
     }
+
     if (this.props.inputRef !== undefined) {
-      this.props.inputRef(value)
+      this.props.inputRef(value);
     }
-    this.setState({ input: value })
+
+    this.setState({ input: value });
   }
 
   /**
@@ -55,99 +57,114 @@ export class AutoComplete extends React.Component {
    *
    * @param  {string}  value  the value to commit
    */
-  _commitValue (value) {
-    const { onValueCommitted } = this.props
+  _commitValue(value) {
+    const { onValueCommitted } = this.props;
 
-    this.setState({ value })
+    this.setState({ value });
 
     if (onValueCommitted) {
-      onValueCommitted(value)
+      onValueCommitted(value);
     }
   }
 
   @autobind
-  _onBlur (event, { highlightedSuggestion }) {
-    const { value } = this.state
+  _onBlur(event, { highlightedSuggestion }) {
+    const { value } = this.state;
     if (this.validate(value)) {
-      this._commitValue(value)
+      this._commitValue(value);
     }
   }
 
   @autobind
-  _onSuggestionsClearRequested () {
+  _onSuggestionsClearRequested() {
     this.setState({
       suggestions: []
-    })
+    });
   }
 
   @autobind
-  _onSuggestionsFetchRequested ({ value }) {
-    const { fetchSuggestions } = this.props
+  _onSuggestionsFetchRequested({ value }) {
+    const { fetchSuggestions } = this.props;
     this.setState({
       suggestions: fetchSuggestions ? fetchSuggestions(value) : []
-    })
+    });
   }
 
   @autobind
-  _onValueChanged (event, { method, newValue }) {
+  _onValueChanged(event, { method, newValue }) {
     this.setState({
       value: newValue
-    })
+    });
 
-    if (method === 'enter' || method === 'click' || method === 'down' || method === 'up') {
-      const shouldCommit = (method === 'enter' || method === 'click') &&
-        this.validate(newValue)
+    if (
+      method === 'enter' ||
+      method === 'click' ||
+      method === 'down' ||
+      method === 'up'
+    ) {
+      const shouldCommit =
+        (method === 'enter' || method === 'click') && this.validate(newValue);
       if (shouldCommit) {
-        this._commitValue(newValue)
+        this._commitValue(newValue);
       }
     }
   }
 
   @autobind
-  _renderInput (inputProps) {
-    const { ref, ...restInputProps } = inputProps
-    this._inputRef = ref
-    return <TextField inputRef={this._assignInputRef} {...restInputProps} />
+  _renderInput(inputProps) {
+    const { ref, ...restInputProps } = inputProps;
+    this._inputRef = ref;
+    return <TextField inputRef={this._assignInputRef} {...restInputProps} />;
   }
 
   @autobind
-  _renderSuggestion (suggestion, { query, isHighlighted }) {
-    const { getSuggestionLabel, highlightMatches } = this.props
-    const label = getSuggestionLabel(suggestion)
+  _renderSuggestion(suggestion, { query, isHighlighted }) {
+    const { getSuggestionLabel, highlightMatches } = this.props;
+    const label = getSuggestionLabel(suggestion);
     const fragments = highlightMatches
       ? parse(label, match(label, query)).map((part, index) => (
-        <span key={index} style={{ backgroundColor: part.highlight ? 'yellow' : 'inherit' }}>
-          { part.text }
-        </span>
-      ))
-      : label
+          <span
+            key={index}
+            style={{ backgroundColor: part.highlight ? 'yellow' : 'inherit' }}
+          >
+            {part.text}
+          </span>
+        ))
+      : label;
 
     return (
-      <MenuItem selected={isHighlighted} component='div'>
+      <MenuItem selected={isHighlighted} component="div">
         {fragments}
       </MenuItem>
-    )
+    );
   }
 
   @autobind
-  _renderSuggestionsContainer ({ containerProps, children }) {
-    const numChildren = React.Children.count(children)
+  _renderSuggestionsContainer({ containerProps, children }) {
+    const numChildren = React.Children.count(children);
     return (
-      <Popover anchorEl={this.state.input} open={numChildren > 0}
-        anchorOrigin={{ horizontal: 'left', vertical: 'bottom' }}
+      <Popover
         disableAutoFocus
-        {...containerProps}>
-        <MenuList>
-          {children}
-        </MenuList>
+        anchorEl={this.state.input}
+        open={numChildren > 0}
+        anchorOrigin={{ horizontal: 'left', vertical: 'bottom' }}
+        {...containerProps}
+      >
+        <MenuList>{children}</MenuList>
       </Popover>
-    )
+    );
   }
 
-  render () {
-    const { autoFocus, getSuggestionValue, highlightFirstSuggestion,
-      label, placeholder, style } = this.props
-    const { error, suggestions, value } = this.state
+  render() {
+    const {
+      autoFocus,
+      getSuggestionValue,
+      highlightFirstSuggestion,
+      label,
+      placeholder,
+      style
+    } = this.props;
+    const { error, suggestions, value } = this.state;
 
     return (
       <Autosuggest
@@ -158,19 +175,19 @@ export class AutoComplete extends React.Component {
           placeholder,
           style,
           value,
-          error: !!error,
+          error: Boolean(error),
           label: error || label,
           onBlur: this._onBlur,
           onChange: this._onValueChanged
         }}
-        onSuggestionsFetchRequested={this._onSuggestionsFetchRequested}
-        onSuggestionsClearRequested={this._onSuggestionsClearRequested}
         renderInputComponent={this._renderInput}
         renderSuggestion={this._renderSuggestion}
         renderSuggestionsContainer={this._renderSuggestionsContainer}
         suggestions={suggestions}
+        onSuggestionsFetchRequested={this._onSuggestionsFetchRequested}
+        onSuggestionsClearRequested={this._onSuggestionsClearRequested}
       />
-    )
+    );
   }
 
   /**
@@ -180,29 +197,29 @@ export class AutoComplete extends React.Component {
    * @param  {string}  value  the value to validate
    * @return {boolean} whether the current value is valid
    */
-  validate (value) {
-    const { allowEmpty, validateValue } = this.props
-    let message = null
-    let isValid = true
+  validate(value) {
+    const { allowEmpty, validateValue } = this.props;
+    let message = null;
+    let isValid = true;
 
     if (value === '' && allowEmpty) {
       // Value is empty and it's okay to be so
     } else if (validateValue) {
-      const result = validateValue(value)
+      const result = validateValue(value);
       if (result === undefined || result === undefined || result === true) {
         // Value is valid, nothing to do
       } else if (result === false) {
-        message = 'Invalid value'
-        isValid = false
+        message = 'Invalid value';
+        isValid = false;
       } else {
-        message = String(result)
-        isValid = false
+        message = String(result);
+        isValid = false;
       }
     }
 
-    this.setState({ error: message })
+    this.setState({ error: message });
 
-    return isValid
+    return isValid;
   }
 
   /**
@@ -221,37 +238,37 @@ export class AutoComplete extends React.Component {
    * @return {function} a function that will map values typed into the
    *         autocomplete field to the corresponding suggestions
    */
-  static makePrefixBasedFetcher (values, options = {}) {
+  static makePrefixBasedFetcher(values, options = {}) {
     const effectiveOptions = {
       caseSensitive: true,
       maxItems: 5,
       ...options
-    }
+    };
     const valuesToMatch = effectiveOptions.caseSensitive
       ? values
-      : values.map(toLower)
+      : values.map(toLower);
 
-    return (value) => {
-      const result = []
-      const { maxItems } = effectiveOptions
+    return value => {
+      const result = [];
+      const { maxItems } = effectiveOptions;
 
       if (value && value.length > 0 && maxItems > 0) {
         if (!effectiveOptions.caseSensitive) {
-          value = toLower(value)
+          value = toLower(value);
         }
 
         valuesToMatch.forEach((item, index) => {
           if (item.startsWith(value)) {
-            result.push(values[index])
+            result.push(values[index]);
             if (result.length >= maxItems) {
-              return false
+              return false;
             }
           }
-        })
+        });
       }
 
-      return result
-    }
+      return result;
+    };
   }
 }
 
@@ -269,7 +286,7 @@ AutoComplete.propTypes = {
   placeholder: PropTypes.string,
   style: PropTypes.object,
   validateValue: PropTypes.func
-}
+};
 
 AutoComplete.defaultProps = {
   allowEmpty: true,
@@ -277,4 +294,4 @@ AutoComplete.defaultProps = {
   getSuggestionValue: identity,
   highlightFirstSuggestion: true,
   highlightMatches: true
-}
+};

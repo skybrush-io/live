@@ -6,9 +6,10 @@
  * @return {function} a selector function that takes the application state and
  *         returns whether the dialog with the given name is open
  */
-const isDialogOpen = name => state => state.dialogs[name] && state.dialogs[name].open
+const isDialogOpen = name => state =>
+  state.dialogs[name] && state.dialogs[name].open;
 
 /**
  * Selector that returns whether the authentication dialog is visible.
  */
-export const isAuthenticationDialogOpen = isDialogOpen('authentication')
+export const isAuthenticationDialogOpen = isDialogOpen('authentication');

@@ -3,21 +3,21 @@
  * that we use on the map.
  */
 
-import cloneDeep from 'lodash/cloneDeep'
-import has from 'lodash/has'
-import React from 'react'
+import cloneDeep from 'lodash/cloneDeep';
+import has from 'lodash/has';
+import React from 'react';
 
-import FileAttachment from '@material-ui/icons/Attachment'
-import FileCloud from '@material-ui/icons/Cloud'
-import Flight from '@material-ui/icons/Flight'
-import HelpOutline from '@material-ui/icons/HelpOutline'
-import Home from '@material-ui/icons/Home'
-import Streetview from '@material-ui/icons/Streetview'
-import ImageGridOn from '@material-ui/icons/GridOn'
-import Map from '@material-ui/icons/Map'
-import MyLocation from '@material-ui/icons/MyLocation'
-import Timeline from '@material-ui/icons/Timeline'
-import TrackChanges from '@material-ui/icons/TrackChanges'
+import FileAttachment from '@material-ui/icons/Attachment';
+import FileCloud from '@material-ui/icons/Cloud';
+import Flight from '@material-ui/icons/Flight';
+import HelpOutline from '@material-ui/icons/HelpOutline';
+import Home from '@material-ui/icons/Home';
+import Streetview from '@material-ui/icons/Streetview';
+import ImageGridOn from '@material-ui/icons/GridOn';
+import Map from '@material-ui/icons/Map';
+import MyLocation from '@material-ui/icons/MyLocation';
+import Timeline from '@material-ui/icons/Timeline';
+import TrackChanges from '@material-ui/icons/TrackChanges';
 
 /**
  * Enum containing constants for the various layer types that we support.
@@ -34,16 +34,22 @@ export const LayerType = {
   UAVS: 'uavs',
   UAV_TRACE: 'uavTrace',
   UNTYPED: 'untyped'
-}
+};
 
 /**
  * Constant containing all the layer types in the order preferred on the UI.
  */
 export const LayerTypes = [
-  LayerType.BASE, LayerType.TILE_SERVER, LayerType.FEATURES,
-  LayerType.UAVS, LayerType.UAV_TRACE, LayerType.HOME,
-  LayerType.OWN_LOCATION, LayerType.GEOJSON, LayerType.HEATMAP
-]
+  LayerType.BASE,
+  LayerType.TILE_SERVER,
+  LayerType.FEATURES,
+  LayerType.UAVS,
+  LayerType.UAV_TRACE,
+  LayerType.HOME,
+  LayerType.OWN_LOCATION,
+  LayerType.GEOJSON,
+  LayerType.HEATMAP
+];
 
 /**
  * Enum containing constants for the various tile server types that we support.
@@ -52,15 +58,17 @@ export const TileServerType = {
   WMS: 'wms',
   XYZ: 'xyz',
   TILE_CACHE: 'tileCache'
-}
+};
 
 /**
  * Constant containing all the supported tile server types in the order
  * preferred on the UI.
  */
 export const TileServerTypes = [
-  TileServerType.WMS, TileServerType.XYZ, TileServerType.TILE_CACHE
-]
+  TileServerType.WMS,
+  TileServerType.XYZ,
+  TileServerType.TILE_CACHE
+];
 
 /**
  * Object mapping layer type constants to their properties (labels,
@@ -79,8 +87,7 @@ const _propertiesForLayerTypes = {
   [LayerType.FEATURES]: {
     label: 'Features',
     icon: <Streetview />,
-    parameters: {
-    }
+    parameters: {}
   },
   [LayerType.GEOJSON]: {
     label: 'GeoJSON layer',
@@ -114,7 +121,7 @@ const _propertiesForLayerTypes = {
     label: 'Hex grid layer',
     icon: <ImageGridOn />,
     parameters: {
-      center: [19.061951, 47.473340],
+      center: [19.061951, 47.47334],
       size: 8,
       radius: 0.0005
     }
@@ -156,7 +163,7 @@ const _propertiesForLayerTypes = {
     label: 'Untyped layer',
     icon: <HelpOutline />
   }
-}
+};
 
 /**
  * Creates a new layer with the given unique identifier, name and type.
@@ -169,15 +176,15 @@ const _propertiesForLayerTypes = {
  * @param  {Object?} parameters  the parameters of the layer
  * @return {Object} a new layer object
  */
-export function createNewLayer (id, layerType, name, parameters) {
-  const effectiveLayerType = layerType || LayerType.UNTYPED
+export function createNewLayer(id, layerType, name, parameters) {
+  const effectiveLayerType = layerType || LayerType.UNTYPED;
   return {
-    id: id,
+    id,
     type: effectiveLayerType,
     label: name,
     visible: effectiveLayerType !== LayerType.UNTYPED,
     parameters: parameters || defaultParametersForLayerType(effectiveLayerType)
-  }
+  };
 }
 
 /**
@@ -187,10 +194,10 @@ export function createNewLayer (id, layerType, name, parameters) {
  *         constants from the {@link LayerType} enum
  * @return {Object} the default parameter settings of the layer
  */
-export function defaultParametersForLayerType (layerType) {
-  const props = _propertiesForLayerTypes[layerType]
-  const template = has(props, 'parameters') ? props.parameters : {}
-  return cloneDeep(template)
+export function defaultParametersForLayerType(layerType) {
+  const props = _propertiesForLayerTypes[layerType];
+  const template = has(props, 'parameters') ? props.parameters : {};
+  return cloneDeep(template);
 }
 
 /**
@@ -200,10 +207,12 @@ export function defaultParametersForLayerType (layerType) {
  * @param  {ol.Map} map the OpenLayers map
  * @return {Array} an array containing all the editable visible layers
  */
-export function getVisibleEditableLayers (map) {
-  return map.getLayers().getArray()
+export function getVisibleEditableLayers(map) {
+  return map
+    .getLayers()
+    .getArray()
     .filter(isLayerEditable)
-    .filter(isLayerVisible)
+    .filter(isLayerVisible);
 }
 
 /**
@@ -213,10 +222,12 @@ export function getVisibleEditableLayers (map) {
  * @param  {ol.Map} map the OpenLayers map
  * @return {Array} an array containing all the selectable visible layers
  */
-export function getVisibleSelectableLayers (map) {
-  return map.getLayers().getArray()
+export function getVisibleSelectableLayers(map) {
+  return map
+    .getLayers()
+    .getArray()
     .filter(isLayerSelectable)
-    .filter(isLayerVisible)
+    .filter(isLayerVisible);
 }
 
 /**
@@ -227,8 +238,8 @@ export function getVisibleSelectableLayers (map) {
  *         constants from the {@link LayerType} enum
  * @return {Object} the Material UI icon that represents the layer
  */
-export function iconForLayerType (layerType) {
-  return _propertiesForLayerTypes[layerType].icon
+export function iconForLayerType(layerType) {
+  return _propertiesForLayerTypes[layerType].icon;
 }
 
 /**
@@ -239,8 +250,8 @@ export function iconForLayerType (layerType) {
  * @return {boolean} whether the given layer contains features that may be
  *     edited by the user
  */
-export function isLayerEditable (layer) {
-  return layer && layer.getVisible() && layer.get('editable')
+export function isLayerEditable(layer) {
+  return layer && layer.getVisible() && layer.get('editable');
 }
 
 /**
@@ -251,8 +262,8 @@ export function isLayerEditable (layer) {
  * @return {boolean} whether the given layer contains features that may be
  *     selected by the user
  */
-export function isLayerSelectable (layer) {
-  return layer && layer.getVisible() && layer.get('selectable')
+export function isLayerSelectable(layer) {
+  return layer && layer.getVisible() && layer.get('selectable');
 }
 
 /**
@@ -262,8 +273,8 @@ export function isLayerSelectable (layer) {
  * @param  {Object}  layer  the layer object from the state store
  * @return {boolean} whether the layer is visible
  */
-export function isLayerVisible (layer) {
-  return layer && (!has(layer, 'visible') || !!layer.visible)
+export function isLayerVisible(layer) {
+  return layer && (!has(layer, 'visible') || Boolean(layer.visible));
 }
 
 /**
@@ -274,8 +285,8 @@ export function isLayerVisible (layer) {
  *         constants from the {@link LayerType} enum
  * @return {string} a human-readable description of the layer type
  */
-export function labelForLayerType (layerType) {
-  return _propertiesForLayerTypes[layerType].label
+export function labelForLayerType(layerType) {
+  return _propertiesForLayerTypes[layerType].label;
 }
 
 /**
@@ -284,8 +295,8 @@ export function labelForLayerType (layerType) {
  * @param  {ol.Layer}  layer  the layer to update
  * @param  {boolean}   editable  whether the layer should be editable
  */
-export function setLayerEditable (layer, editable = true) {
-  layer.set('editable', editable)
+export function setLayerEditable(layer, editable = true) {
+  layer.set('editable', editable);
 }
 
 /**
@@ -294,6 +305,6 @@ export function setLayerEditable (layer, editable = true) {
  * @param  {ol.Layer}  layer  the layer to update
  * @param  {boolean}   selectable  whether the layer should be selectable
  */
-export function setLayerSelectable (layer, selectable = true) {
-  layer.set('selectable', selectable)
+export function setLayerSelectable(layer, selectable = true) {
+  layer.set('selectable', selectable);
 }

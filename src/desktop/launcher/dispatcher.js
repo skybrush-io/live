@@ -1,17 +1,17 @@
-const { ipcMain: ipc } = require('electron-better-ipc')
-const logger = require('electron-timber')
+const { ipcMain: ipc } = require('electron-better-ipc');
+const logger = require('electron-timber');
 
-const { getMainWindow } = require('./main-window')
+const { getMainWindow } = require('./main-window');
 
 const dispatch = async action => {
-  const mainWindow = getMainWindow()
+  const mainWindow = getMainWindow();
 
   if (mainWindow === undefined) {
-    logger.warn('No main window; action ignored')
-    return
+    logger.warn('No main window; action ignored');
+    return;
   }
 
-  await ipc.callRenderer(mainWindow, 'dispatch', action)
-}
+  await ipc.callRenderer(mainWindow, 'dispatch', action);
+};
 
-module.exports = dispatch
+module.exports = dispatch;

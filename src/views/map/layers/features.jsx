@@ -1,172 +1,211 @@
-import Color from 'color'
-import { unary } from 'lodash'
-import PropTypes from 'prop-types'
-import { Circle, Style, Text } from 'ol/style'
-import React from 'react'
-import { connect } from 'react-redux'
+import Color from 'color';
+import { unary } from 'lodash';
+import PropTypes from 'prop-types';
+import { Circle, Style, Text } from 'ol/style';
+import React from 'react';
+import { connect } from 'react-redux';
 
-import { Feature, geom, interaction, layer, source } from '@collmot/ol-react'
+import { Feature, geom, interaction, layer, source } from '@collmot/ol-react';
 
-import { Tool } from '../tools'
+import { Tool } from '../tools';
 
-import { FeatureType, LabelStyle } from '../../../model/features'
-import { featureIdToGlobalId } from '../../../model/identifiers'
-import { setLayerEditable, setLayerSelectable } from '../../../model/layers'
-import { getFeaturesInOrder } from '../../../selectors/ordered'
-import { getSelectedFeatureIds } from '../../../selectors/selection'
-import { coordinateFromLonLat, euclideanDistance } from '../../../utils/geography'
+import { FeatureType, LabelStyle } from '../../../model/features';
+import { featureIdToGlobalId } from '../../../model/identifiers';
+import { setLayerEditable, setLayerSelectable } from '../../../model/layers';
+import { getFeaturesInOrder } from '../../../selectors/ordered';
+import { getSelectedFeatureIds } from '../../../selectors/selection';
 import {
-  fill, primaryColor, thinOutline, whiteThickOutline, whiteThinOutline
-} from '../../../utils/styles'
+  coordinateFromLonLat,
+  euclideanDistance
+} from '../../../utils/geography';
+import {
+  fill,
+  primaryColor,
+  thinOutline,
+  whiteThickOutline,
+  whiteThinOutline
+} from '../../../utils/styles';
 
 // === Settings for this particular layer type ===
 
-const FeaturesLayerSettingsPresentation = () => <noscript />
+const FeaturesLayerSettingsPresentation = () => <noscript />;
 
 export const FeaturesLayerSettings = connect(
-  // mapStateToProps
+  // MapStateToProps
   (state, ownProps) => ({}),
-  // mapDispatchToProps
+  // MapDispatchToProps
   (dispatch, ownProps) => ({})
-)(FeaturesLayerSettingsPresentation)
+)(FeaturesLayerSettingsPresentation);
 
 // === Helper functions ===
 
 const geometryForFeature = feature => {
-  const { points, type } = feature
-  const coordinates = points.map(unary(coordinateFromLonLat))
+  const { points, type } = feature;
+  const coordinates = points.map(unary(coordinateFromLonLat));
 
   switch (type) {
     case FeatureType.CIRCLE:
       if (coordinates.length >= 2) {
-        const center = coordinates[0]
-        const radius = euclideanDistance(coordinates[0], coordinates[1])
-        return <geom.Circle center={center} radius={radius} />
-      } else {
-        return null
+        const center = coordinates[0];
+        const radius = euclideanDistance(coordinates[0], coordinates[1]);
+        return <geom.Circle center={center} radius={radius} />;
       }
 
+      return null;
+
     case FeatureType.POINTS:
-      return (
-        coordinates.length > 1
-          ? <geom.MultiPoint coordinates={coordinates} />
-          : <geom.Point coordinates={coordinates[0]} />
-      )
+      return coordinates.length > 1 ? (
+        <geom.MultiPoint coordinates={coordinates} />
+      ) : (
+        <geom.Point coordinates={coordinates[0]} />
+      );
 
     case FeatureType.LINE_STRING:
-      return <geom.LineString coordinates={coordinates} />
+      return <geom.LineString coordinates={coordinates} />;
 
     case FeatureType.POLYGON:
       // OpenLayers requires the last coordinate to be the same as the first
       // one when a polygon is drawn
       if (coordinates.length > 0) {
-        coordinates.push(coordinates[0])
+        coordinates.push(coordinates[0]);
       }
-      return <geom.Polygon coordinates={coordinates} />
+
+      return <geom.Polygon coordinates={coordinates} />;
 
     default:
-      return null
+      return null;
   }
-}
+};
 
-const whiteThickOutlineStyle = new Style({ stroke: whiteThickOutline })
+const whiteThickOutlineStyle = new Style({ stroke: whiteThickOutline });
 const labelStrokes = {
   [LabelStyle.THIN_OUTLINE]: whiteThinOutline,
   [LabelStyle.THICK_OUTLINE]: whiteThickOutline
-}
+};
 
 // TODO: cache the style somewhere?
 const styleForFeature = (feature, selected = false) => {
-  const { color, label, labelStyle, type } = feature
-  const parsedColor = Color(color || primaryColor)
-  const styles = []
-  const radius = 6
+  const { color, label, labelStyle, type } = feature;
+  const parsedColor = Color(color || primaryColor);
+  const styles = [];
+  const radius = 6;
 
   switch (type) {
     case FeatureType.POINTS:
-      styles.push(new Style({
-        image: new Circle({
-          stroke: selected ? whiteThinOutline : undefined,
-          fill: fill(parsedColor.rgb().array()),
-          radius
+      styles.push(
+        new Style({
+          image: new Circle({
+            stroke: selected ? whiteThinOutline : undefined,
+            fill: fill(parsedColor.rgb().array()),
+            radius
+          })
         })
-      }))
-      break
+      );
+      break;
 
     case FeatureType.LINE_STRING:
       if (selected) {
-        styles.push(whiteThickOutlineStyle)
+        styles.push(whiteThickOutlineStyle);
       }
-      styles.push(new Style({
-        stroke: thinOutline(parsedColor.rgb().array())
-      }))
-      break
+
+      styles.push(
+        new Style({
+          stroke: thinOutline(parsedColor.rgb().array())
+        })
+      );
+      break;
 
     case FeatureType.POLYGON:
-      // fallthrough
+    // Fallthrough
 
     default:
-      styles.push(new Style({
-        fill: fill(parsedColor.fade(selected ? 0.5 : 0.75).rgb().array())
-      }))
+      styles.push(
+        new Style({
+          fill: fill(
+            parsedColor
+              .fade(selected ? 0.5 : 0.75)
+              .rgb()
+              .array()
+          )
+        })
+      );
       if (selected) {
-        styles.push(whiteThickOutlineStyle)
+        styles.push(whiteThickOutlineStyle);
       }
-      styles.push(new Style({
-        stroke: thinOutline(parsedColor.rgb().array())
-      }))
+
+      styles.push(
+        new Style({
+          stroke: thinOutline(parsedColor.rgb().array())
+        })
+      );
   }
 
   if (label && label.length > 0 && labelStyle !== LabelStyle.HIDDEN) {
-    styles.push(new Style({
-      text: new Text({
-        font: '12px sans-serif',
-        offsetY: type === 'points' ? radius + 10 : 0,
-        placement: (type === 'lineString') ? 'line' : 'point',
-        stroke: labelStrokes[labelStyle],
-        text: label,
-        textAlign: 'center'
+    styles.push(
+      new Style({
+        text: new Text({
+          font: '12px sans-serif',
+          offsetY: type === 'points' ? radius + 10 : 0,
+          placement: type === 'lineString' ? 'line' : 'point',
+          stroke: labelStrokes[labelStyle],
+          text: label,
+          textAlign: 'center'
+        })
       })
-    }))
+    );
   }
 
-  return styles
-}
+  return styles;
+};
 
 const renderFeature = (feature, selected) => {
-  const { id } = feature
+  const { id } = feature;
   return (
-    <Feature id={featureIdToGlobalId(id)} key={id} style={styleForFeature(feature, selected)}>
+    <Feature
+      key={id}
+      id={featureIdToGlobalId(id)}
+      style={styleForFeature(feature, selected)}
+    >
       {geometryForFeature(feature)}
     </Feature>
-  )
-}
+  );
+};
 
 // === The actual layer to be rendered ===
 
-function markAsSelectableAndEditable (layer) {
+function markAsSelectableAndEditable(layer) {
   if (layer) {
-    setLayerEditable(layer.layer)
-    setLayerSelectable(layer.layer)
+    setLayerEditable(layer.layer);
+    setLayerSelectable(layer.layer);
   }
 }
 
 const FeaturesLayerPresentation = ({
-  features, onFeaturesModified, projection, selectedFeatureIds,
-  selectedTool, zIndex
+  features,
+  onFeaturesModified,
+  projection,
+  selectedFeatureIds,
+  selectedTool,
+  zIndex
 }) => (
-  <layer.Vector updateWhileAnimating updateWhileInteracting zIndex={zIndex}
-    ref={markAsSelectableAndEditable}>
+  <layer.Vector
+    ref={markAsSelectableAndEditable}
+    updateWhileAnimating
+    updateWhileInteracting
+    zIndex={zIndex}
+  >
     <source.Vector>
-      {features.filter(feature => feature.visible).map(feature =>
-        renderFeature(feature, selectedFeatureIds.includes(feature.id))
-      )}
-      {selectedTool === Tool.EDIT_FEATURE
-        ? <interaction.Modify onModifyEnd={onFeaturesModified} />
-        : null}
+      {features
+        .filter(feature => feature.visible)
+        .map(feature =>
+          renderFeature(feature, selectedFeatureIds.includes(feature.id))
+        )}
+      {selectedTool === Tool.EDIT_FEATURE ? (
+        <interaction.Modify onModifyEnd={onFeaturesModified} />
+      ) : null}
     </source.Vector>
   </layer.Vector>
-)
+);
 
 FeaturesLayerPresentation.propTypes = {
   layer: PropTypes.object,
@@ -179,26 +218,25 @@ FeaturesLayerPresentation.propTypes = {
   selectedFeatureIds: PropTypes.arrayOf(PropTypes.string).isRequired,
 
   onFeaturesModified: PropTypes.func
-}
+};
 
 FeaturesLayerPresentation.defaultProps = {
   projection: coordinateFromLonLat
-}
+};
 
 export const FeaturesLayer = connect(
-  // mapStateToProps
+  // MapStateToProps
   (state, ownProps) => ({
     features: getFeaturesInOrder(state),
     selectedFeatureIds: getSelectedFeatureIds(state)
   }),
-  // mapDispatchToProps
+  // MapDispatchToProps
   (dispatch, ownProps) => ({
     onFeaturesModified: event => {
-      // const { features } = event
-
+      // Const { features } = event
       /* TODO(ntamas): features contains all the features in the layer, not
        * only the ones being modified. We need to figure out which ones were
        * actually modified and sync them back to the state store */
     }
   })
-)(FeaturesLayerPresentation)
+)(FeaturesLayerPresentation);

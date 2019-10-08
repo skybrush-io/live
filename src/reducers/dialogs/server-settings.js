@@ -3,8 +3,8 @@
  * stores the server to connect to.
  */
 
-import { handleActions } from 'redux-actions'
-import u from 'updeep'
+import { handleActions } from 'redux-actions';
+import u from 'updeep';
 
 /**
  * The default settings for the part of the state object being defined here.
@@ -23,30 +23,28 @@ const defaultState = {
   isSecure: false,
   dialogVisible: false,
   selectedTab: 'auto'
-}
+};
 
 /**
  * The reducer function that handles actions related to the server
  * settings.
  */
-const reducer = handleActions({
-  DISCONNECT_FROM_SERVER: state => u({ active: false }, state),
+const reducer = handleActions(
+  {
+    DISCONNECT_FROM_SERVER: state => u({ active: false }, state),
 
-  SHOW_SERVER_SETTINGS_DIALOG: (state, action) => (
-    u({ dialogVisible: true }, state)
-  ),
+    SHOW_SERVER_SETTINGS_DIALOG: (state, action) =>
+      u({ dialogVisible: true }, state),
 
-  CLOSE_SERVER_SETTINGS_DIALOG: (state, action) => (
-    u({ ...action.payload, dialogVisible: false }, state)
-  ),
+    CLOSE_SERVER_SETTINGS_DIALOG: (state, action) =>
+      u({ ...action.payload, dialogVisible: false }, state),
 
-  SET_SERVER_SETTINGS_DIALOG_TAB: (state, action) => (
-    u({ selectedTab: action.payload }, state)
-  ),
+    SET_SERVER_SETTINGS_DIALOG_TAB: (state, action) =>
+      u({ selectedTab: action.payload }, state),
 
-  UPDATE_SERVER_SETTINGS: (state, action) => u(
-    u(action.payload, state)
-  )
-}, defaultState)
+    UPDATE_SERVER_SETTINGS: (state, action) => u(u(action.payload, state))
+  },
+  defaultState
+);
 
-export default reducer
+export default reducer;

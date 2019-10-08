@@ -3,26 +3,25 @@
  * log messages with a given minimum severity level.
  */
 
-import { connect } from 'react-redux'
+import { connect } from 'react-redux';
 
-import SidebarBadge from './SidebarBadge'
-
-import { colorForLogLevel, LogLevel } from '../../utils/logging'
+import { colorForLogLevel, LogLevel } from '../../utils/logging';
+import SidebarBadge from './SidebarBadge';
 
 /**
  * Smart badge component that colors and shows itself according to the
  * status of all the connections reported by the server.
  */
 export default connect(
-  // mapStateToProps
+  // MapStateToProps
   (state, ownProps) => {
-    const level = state.log.highestUnseenMessageLevel
+    const level = state.log.highestUnseenMessageLevel;
     return {
       color: colorForLogLevel(level),
       visible: level >= (ownProps.level || LogLevel.WARNING)
-    }
+    };
   },
   // Return empty object from mapDispatchToProps to avoid invalid prop warning
   // caused by react-badger not handling the automatically added dispatch prop.
   () => ({})
-)(SidebarBadge)
+)(SidebarBadge);

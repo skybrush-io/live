@@ -1,37 +1,34 @@
-import { autobind } from 'core-decorators'
-import { partial, toNumber } from 'lodash'
-import numbro from 'numbro'
-import Feature from 'ol/Feature'
-import Point from 'ol/geom/Point'
-import { getDistance as haversineDistance } from 'ol/sphere'
-import { Circle, Fill, Style } from 'ol/style'
-import PropTypes from 'prop-types'
-import React from 'react'
-import { connect } from 'react-redux'
+import { autobind } from 'core-decorators';
+import { partial, toNumber } from 'lodash';
+import numbro from 'numbro';
+import Feature from 'ol/Feature';
+import Point from 'ol/geom/Point';
+import { getDistance as haversineDistance } from 'ol/sphere';
+import { Circle, Fill, Style } from 'ol/style';
+import PropTypes from 'prop-types';
+import React from 'react';
+import { connect } from 'react-redux';
 
-import { layer, source } from '@collmot/ol-react'
+import { layer, source } from '@collmot/ol-react';
 
-import Button from '@material-ui/core/Button'
-import FormControl from '@material-ui/core/FormControl'
-import FormControlLabel from '@material-ui/core/FormControlLabel'
-import FormGroup from '@material-ui/core/FormGroup'
-import InputAdornment from '@material-ui/core/InputAdornment'
-import InputLabel from '@material-ui/core/InputLabel'
-import MenuItem from '@material-ui/core/MenuItem'
-import Switch from '@material-ui/core/Switch'
-import Select from '@material-ui/core/Select'
-import TextField from '@material-ui/core/TextField'
+import Button from '@material-ui/core/Button';
+import FormControl from '@material-ui/core/FormControl';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import FormGroup from '@material-ui/core/FormGroup';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
+import Switch from '@material-ui/core/Switch';
+import Select from '@material-ui/core/Select';
+import TextField from '@material-ui/core/TextField';
 
-import { setLayerParameterById } from '~/actions/layers'
-import SubscriptionDialog from '~/components/dialogs/SubscriptionDialog'
-import messageHub from '~/message-hub'
-import HashedMap from '~/utils/hashedmap'
-import {
-  coordinateFromLonLat,
-  lonLatFromCoordinate
-} from '~/utils/geography'
+import { setLayerParameterById } from '~/actions/layers';
+import SubscriptionDialog from '~/components/dialogs/SubscriptionDialog';
+import messageHub from '~/message-hub';
+import HashedMap from '~/utils/hashedmap';
+import { coordinateFromLonLat, lonLatFromCoordinate } from '~/utils/geography';
 
-const formatNumber = x => numbro(x).format('0.000')
+const formatNumber = x => numbro(x).format('0.000');
 
 const heatmapColoringFunctions = {
   linear: {
@@ -42,22 +39,23 @@ const heatmapColoringFunctions = {
     name: 'Logarithmic',
     function: x => Math.log(x)
   }
-}
+};
 
 // === Settings for this particular layer type ===
 
 class HeatmapLayerSettingsPresentation extends React.Component {
-  constructor (props) {
-    super(props)
+  constructor(props) {
+    super(props);
 
     this.state = {
       coloringFunction: props.layer.parameters.coloringFunction,
       minHue: props.layer.parameters.minHue,
       maxHue: props.layer.parameters.maxHue
-    }
+    };
 
-    this._refs = Object.assign({}, ...(
-      [
+    this._refs = Object.assign(
+      {},
+      ...[
         'subscriptionDialog',
         'threshold',
         'minValue',
@@ -66,25 +64,26 @@ class HeatmapLayerSettingsPresentation extends React.Component {
         'maxHue',
         'minDistance'
       ].map(x => ({ [x]: React.createRef() }))
-    ))
+    );
 
     this._setAutoScale = (event, checked) => {
-      this.props.setLayerParameter('autoScale', checked)
-    }
+      this.props.setLayerParameter('autoScale', checked);
+    };
+
     this._setSnapToGrid = (event, checked) => {
-      this.props.setLayerParameter('snapToGrid', checked)
-    }
+      this.props.setLayerParameter('snapToGrid', checked);
+    };
   }
 
-  render () {
-    const { setLayerParameter } = this.props
-    const { parameters } = this.props.layer
-    const { minHue, maxHue } = this.state
+  render() {
+    const { setLayerParameter } = this.props;
+    const { parameters } = this.props.layer;
+    const { minHue, maxHue } = this.state;
 
     const textFieldStyle = {
       marginRight: 10,
       width: 125
-    }
+    };
 
     return (
       <div>
@@ -96,8 +95,11 @@ class HeatmapLayerSettingsPresentation extends React.Component {
           setUnit={partial(setLayerParameter, 'unit')}
         />
 
-        <Button variant='raised' style={{ marginBottom: '10px' }}
-          onClick={this._showSubscriptionDialog}>
+        <Button
+          variant="raised"
+          style={{ marginBottom: '10px' }}
+          onClick={this._showSubscriptionDialog}
+        >
           Edit subscriptions
         </Button>
 
@@ -107,13 +109,13 @@ class HeatmapLayerSettingsPresentation extends React.Component {
           <TextField
             inputRef={this._refs.threshold}
             style={textFieldStyle}
-            label='Threshold'
-            type='number'
+            label="Threshold"
+            type="number"
             defaultValue={formatNumber(parameters.threshold)}
           />
 
           <FormControl style={{ width: '125px' }}>
-            <InputLabel htmlFor='selectedChannel'>Coloring function</InputLabel>
+            <InputLabel htmlFor="selectedChannel">Coloring function</InputLabel>
 
             <Select
               value={this.state.coloringFunction}
@@ -132,48 +134,62 @@ class HeatmapLayerSettingsPresentation extends React.Component {
           <TextField
             inputRef={this._refs.minValue}
             style={textFieldStyle}
-            label='Minimum value'
-            type='number'
+            label="Minimum value"
+            type="number"
             defaultValue={formatNumber(parameters.minValue)}
           />
           <TextField
             inputRef={this._refs.maxValue}
             style={textFieldStyle}
-            label='Maximum value'
-            type='number'
+            label="Maximum value"
+            type="number"
             defaultValue={formatNumber(parameters.maxValue)}
           />
-          <FormControlLabel label='Autoscale' control={
-            <Switch checked={parameters.autoScale} onChange={this._setAutoScale} />
-          } />
+          <FormControlLabel
+            label="Autoscale"
+            control={
+              <Switch
+                checked={parameters.autoScale}
+                onChange={this._setAutoScale}
+              />
+            }
+          />
         </FormGroup>
 
         <div style={{ padding: '24px 0' }}>
-          <input id='minHue'
+          <input
             ref={this._refs.minHue}
-            type='range' min='0' max='360'
+            id="minHue"
+            type="range"
+            min="0"
+            max="360"
             style={{ width: '100px', verticalAlign: 'middle' }}
             value={minHue}
             onChange={this._handleHueChange}
           />
 
-          <div style={{
-            display: 'inline-block',
-            width: '300px',
-            height: '25px',
-            margin: '5px',
-            verticalAlign: 'middle',
-            background: `linear-gradient(-90deg,
+          <div
+            style={{
+              display: 'inline-block',
+              width: '300px',
+              height: '25px',
+              margin: '5px',
+              verticalAlign: 'middle',
+              background: `linear-gradient(-90deg,
               hsla(${maxHue}, 70%, 50%, 0.75),
               hsla(${minHue}, 70%, 50%, 0.75)
             )`,
-            borderRadius: '10px',
-            boxShadow: '0px 0px 3px 0px black'
-          }} />
+              borderRadius: '10px',
+              boxShadow: '0px 0px 3px 0px black'
+            }}
+          />
 
-          <input id='maxHue'
+          <input
             ref={this._refs.maxHue}
-            type='range' min='0' max='360'
+            id="maxHue"
+            type="range"
+            min="0"
+            max="360"
             style={{ width: '100px', verticalAlign: 'middle' }}
             value={maxHue}
             onChange={this._handleHueChange}
@@ -183,53 +199,57 @@ class HeatmapLayerSettingsPresentation extends React.Component {
         <FormGroup row>
           <TextField
             inputRef={this._refs.minDistance}
-            label='Min distance'
+            label="Min distance"
             style={textFieldStyle}
             InputProps={{
-              endAdornment: <InputAdornment position='end'>m</InputAdornment>
+              endAdornment: <InputAdornment position="end">m</InputAdornment>
             }}
-            type='number'
+            type="number"
             defaultValue={formatNumber(parameters.minDistance)}
           />
-          <FormControlLabel label='Snap to grid' control={
-            <Switch checked={parameters.snapToGrid} onChange={this._setSnapToGrid} />
-          } />
+          <FormControlLabel
+            label="Snap to grid"
+            control={
+              <Switch
+                checked={parameters.snapToGrid}
+                onChange={this._setSnapToGrid}
+              />
+            }
+          />
         </FormGroup>
 
         <FormGroup row style={{ paddingTop: 10 }}>
-          <Button onClick={this._handleClick}>
-            Update parameters
-          </Button>
+          <Button onClick={this._handleClick}>Update parameters</Button>
 
-          <Button color='secondary' onClick={this._clearData}>
+          <Button color="secondary" onClick={this._clearData}>
             Clear data
           </Button>
         </FormGroup>
       </div>
-    )
+    );
   }
 
   @autobind
-  _showSubscriptionDialog () {
-    this._refs.subscriptionDialog.current.showDialog()
+  _showSubscriptionDialog() {
+    this._refs.subscriptionDialog.current.showDialog();
   }
 
   @autobind
-  _handleHueChange (e) {
+  _handleHueChange(e) {
     this.setState({
       [e.target.id]: toNumber(e.target.value)
-    })
+    });
   }
 
   @autobind
-  _handleColoringFunctionChange (e) {
+  _handleColoringFunctionChange(e) {
     this.setState({
       coloringFunction: e.target.value
-    })
+    });
   }
 
   @autobind
-  _handleClick (e) {
+  _handleClick(e) {
     const layerParameters = {
       threshold: toNumber(this._refs.threshold.current.value),
       coloringFunction: this.state.coloringFunction,
@@ -238,22 +258,25 @@ class HeatmapLayerSettingsPresentation extends React.Component {
       minHue: this.state.minHue,
       maxHue: this.state.maxHue,
       minDistance: toNumber(this._refs.minDistance.current.value)
-    }
+    };
 
     for (const layerParameter in layerParameters) {
-      this.props.setLayerParameter(layerParameter, layerParameters[layerParameter])
+      this.props.setLayerParameter(
+        layerParameter,
+        layerParameters[layerParameter]
+      );
     }
   }
 
   @autobind
-  _clearData () {
-    window.localStorage.removeItem(`${this.props.layerId}_data`)
+  _clearData() {
+    window.localStorage.removeItem(`${this.props.layerId}_data`);
 
-    this._refs.minValue.current.value = 0
-    this.props.setLayerParameter('minValue', 0)
+    this._refs.minValue.current.value = 0;
+    this.props.setLayerParameter('minValue', 0);
 
-    this._refs.maxValue.current.value = 0
-    this.props.setLayerParameter('maxValue', 0)
+    this._refs.maxValue.current.value = 0;
+    this.props.setLayerParameter('maxValue', 0);
   }
 }
 
@@ -262,18 +285,18 @@ HeatmapLayerSettingsPresentation.propTypes = {
   layerId: PropTypes.string,
 
   setLayerParameter: PropTypes.func
-}
+};
 
 export const HeatmapLayerSettings = connect(
-  // mapStateToProps
+  // MapStateToProps
   (state, ownProps) => ({}),
-  // mapDispatchToProps
+  // MapDispatchToProps
   (dispatch, ownProps) => ({
     setLayerParameter: (parameter, value) => {
-      dispatch(setLayerParameterById(ownProps.layerId, parameter, value))
+      dispatch(setLayerParameterById(ownProps.layerId, parameter, value));
     }
   })
-)(HeatmapLayerSettingsPresentation)
+)(HeatmapLayerSettingsPresentation);
 
 // === The actual layer to be rendered ===
 
@@ -284,9 +307,7 @@ export const HeatmapLayerSettings = connect(
  * @param {devicedata} b the second packet to compare
  * @return {number} the distance between the packets
  */
-const getDistance = (a, b) => haversineDistance(
-  [a.lon, a.lat], [b.lon, b.lat]
-)
+const getDistance = (a, b) => haversineDistance([a.lon, a.lat], [b.lon, b.lat]);
 
 /**
  * Helper function that creates an OpenLayers fill style object from a color.
@@ -295,110 +316,124 @@ const getDistance = (a, b) => haversineDistance(
  * @param {number} radius the radius to fill
  * @return {Object} the OpenLayers style object
  */
-const makePointStyle = (color, radius) => new Style({
-  image: new Circle({
-    fill: new Fill({ color }), radius
-  })
-})
+const makePointStyle = (color, radius) =>
+  new Style({
+    image: new Circle({
+      fill: new Fill({ color }),
+      radius
+    })
+  });
 
 class HeatmapVectorSource extends React.Component {
-  constructor (props) {
-    super(props)
+  constructor(props) {
+    super(props);
 
-    this._sourceRef = undefined
+    this._sourceRef = undefined;
 
-    this.features = new HashedMap()
+    this.features = new HashedMap();
   }
 
   @autobind
-  _assignSourceRef (value) {
+  _assignSourceRef(value) {
     if (this._sourceRef === value) {
-      return
+      return;
     }
 
     if (this._sourceRef) {
-      this._sourceRef.source.clear()
+      this._sourceRef.source.clear();
     }
 
-    this._sourceRef = value
+    this._sourceRef = value;
 
     if (this._sourceRef) {
-      this._drawFromStoredData()
+      this._drawFromStoredData();
     }
   }
 
-  componentDidMount () {
-    this._trySubscribe(this.props.parameters.subscriptions)
-    messageHub.registerNotificationHandler('DEV-INF', this._processNotification)
+  componentDidMount() {
+    this._trySubscribe(this.props.parameters.subscriptions);
+    messageHub.registerNotificationHandler(
+      'DEV-INF',
+      this._processNotification
+    );
   }
 
-  componentDidUpdate () {
-    this._drawFromStoredData()
+  componentDidUpdate() {
+    this._drawFromStoredData();
   }
 
-  componentWillUnmount () {
-    this._tryUnsubscribe(this.props.parameters.subscriptions)
-    messageHub.unregisterNotificationHandler('DEV-INF', this._processNotification)
+  componentWillUnmount() {
+    this._tryUnsubscribe(this.props.parameters.subscriptions);
+    messageHub.unregisterNotificationHandler(
+      'DEV-INF',
+      this._processNotification
+    );
   }
 
-  render () {
-    return <source.Vector ref={this._assignSourceRef} />
+  render() {
+    return <source.Vector ref={this._assignSourceRef} />;
   }
 
   @autobind
-  _getStoredData () {
+  _getStoredData() {
     if (!window.localStorage.getItem(this.props.storageKey)) {
-      window.localStorage.setItem(this.props.storageKey, '[]')
+      window.localStorage.setItem(this.props.storageKey, '[]');
     }
 
-    return new HashedMap(JSON.parse(window.localStorage.getItem(this.props.storageKey)))
+    return new HashedMap(
+      JSON.parse(window.localStorage.getItem(this.props.storageKey))
+    );
   }
 
   @autobind
-  _setStoredData (values) {
-    window.localStorage.setItem(this.props.storageKey, JSON.stringify([...values.data]))
+  _setStoredData(values) {
+    window.localStorage.setItem(
+      this.props.storageKey,
+      JSON.stringify([...values.data])
+    );
   }
 
   @autobind
-  _drawFromStoredData () {
-    const { source } = this._sourceRef || {}
+  _drawFromStoredData() {
+    const { source } = this._sourceRef || {};
     if (!source) {
-      return
+      return;
     }
 
-    source.clear()
-    this.features = new HashedMap()
+    source.clear();
+    this.features = new HashedMap();
 
-    const values = this._getStoredData()
+    const values = this._getStoredData();
 
     for (const [key, value] of values) {
-      this.features.set(key,
+      this.features.set(
+        key,
         this._drawPointFromData(Object.assign({ value }, key))
-      )
+      );
     }
   }
 
   @autobind
-  async _trySubscribe (subscriptions) {
-    await messageHub.waitUntilReady()
+  async _trySubscribe(subscriptions) {
+    await messageHub.waitUntilReady();
     messageHub.sendMessage({
       type: 'DEV-SUB',
       paths: subscriptions
-    })
+    });
   }
 
   @autobind
-  async _tryUnsubscribe (subscriptions) {
-    await messageHub.waitUntilReady()
+  async _tryUnsubscribe(subscriptions) {
+    await messageHub.waitUntilReady();
     messageHub.sendMessage({
       type: 'DEV-UNSUB',
       paths: subscriptions
-    })
+    });
   }
 
   @autobind
-  _processData (values, data) {
-    const minDistance = this.props.parameters.minDistance
+  _processData(values, data) {
+    const { minDistance } = this.props.parameters;
 
     /* Converting to the EPSG:3857 projection, snapping it to the grid
     and then converting it back. */
@@ -407,93 +442,93 @@ class HeatmapVectorSource extends React.Component {
         coordinateFromLonLat([data.lon, data.lat]).map(
           c => Math.round(c / minDistance) * minDistance
         )
-      )
+      );
 
-      data.lon = snappedLonLat[0]
-      data.lat = snappedLonLat[1]
+      data.lon = snappedLonLat[0];
+      data.lat = snappedLonLat[1];
 
-      const snappedKey = { lon: data.lon, lat: data.lat }
+      const snappedKey = { lon: data.lon, lat: data.lat };
 
       if (values.has(snappedKey)) {
-        data.value = (values.get(snappedKey) + data.value) / 2
-        values.set(snappedKey, data.value)
-        this.features.get(snappedKey).measuredValue = data.value
+        data.value = (values.get(snappedKey) + data.value) / 2;
+        values.set(snappedKey, data.value);
+        this.features.get(snappedKey).measuredValue = data.value;
 
-        return
+        return;
       }
     } else {
       for (const key of values.keys()) {
         if (getDistance(key, data) < minDistance) {
-          data.value = (values.get(key) + data.value) / 2
-          values.set(key, data.value)
-          this.features.get(key).measuredValue = data.value
+          data.value = (values.get(key) + data.value) / 2;
+          values.set(key, data.value);
+          this.features.get(key).measuredValue = data.value;
 
-          return
+          return;
         }
       }
     }
 
-    const key = { lon: data.lon, lat: data.lat }
-    values.set(key, data.value)
-    this.features.set(key, this._drawPointFromData(data))
+    const key = { lon: data.lon, lat: data.lat };
+    values.set(key, data.value);
+    this.features.set(key, this._drawPointFromData(data));
   }
 
   @autobind
-  _processNotification (message) {
-    const values = this._getStoredData()
+  _processNotification(message) {
+    const values = this._getStoredData();
 
     for (const path in message.body.values) {
       // Check if we are subscribed to this channel
       if (this.props.parameters.subscriptions.includes(path)) {
         // Check if the message actually has a valid value
         if (message.body.values[path].value !== null) {
-          const data = message.body.values[path]
+          const data = message.body.values[path];
 
-          this._processData(values, data)
+          this._processData(values, data);
 
           if (this.props.parameters.autoScale) {
-            if (data.value > this.props.parameters.threshold && (
-              data.value < this.props.parameters.minValue || (
-                this.props.parameters.minValue === 0 &&
-                this.props.parameters.maxValue === 0
-              )
-            )) {
-              this.props.setLayerParameter('minValue', data.value)
+            if (
+              data.value > this.props.parameters.threshold &&
+              (data.value < this.props.parameters.minValue ||
+                (this.props.parameters.minValue === 0 &&
+                  this.props.parameters.maxValue === 0))
+            ) {
+              this.props.setLayerParameter('minValue', data.value);
             }
 
             if (data.value > this.props.parameters.maxValue) {
-              this.props.setLayerParameter('maxValue', data.value)
+              this.props.setLayerParameter('maxValue', data.value);
             }
           }
         }
       }
     }
 
-    this._setStoredData(values)
+    this._setStoredData(values);
 
     if (this.features.size !== values.size) {
-      this._drawFromStoredData()
+      this._drawFromStoredData();
     }
   }
 
   @autobind
-  _makePoint (center) {
+  _makePoint(center) {
     return new Feature({
       geometry: new Point(coordinateFromLonLat(center))
-    })
+    });
   }
 
   @autobind
-  _drawPointFromData (data) {
-    const point = this._makePoint([data.lon, data.lat])
-    point.measuredValue = data.value
+  _drawPointFromData(data) {
+    const point = this._makePoint([data.lon, data.lat]);
+    point.measuredValue = data.value;
 
-    const { source } = this._sourceRef || {}
+    const { source } = this._sourceRef || {};
     if (source) {
-      source.addFeature(point)
+      source.addFeature(point);
     }
 
-    return point
+    return point;
   }
 }
 
@@ -502,17 +537,17 @@ HeatmapVectorSource.propTypes = {
   parameters: PropTypes.object,
 
   setLayerParameter: PropTypes.func
-}
+};
 
 class HeatmapLayerPresentation extends React.Component {
-  constructor (props) {
-    super(props)
+  constructor(props) {
+    super(props);
 
-    this._colorForValue = this._colorForValue.bind(this)
-    this.styleFunction = this.styleFunction.bind(this)
+    this._colorForValue = this._colorForValue.bind(this);
+    this.styleFunction = this.styleFunction.bind(this);
   }
 
-  _colorForValue (value) {
+  _colorForValue(value) {
     const {
       threshold,
       coloringFunction,
@@ -520,60 +555,67 @@ class HeatmapLayerPresentation extends React.Component {
       maxValue,
       minHue,
       maxHue
-    } = this.props.layer.parameters
+    } = this.props.layer.parameters;
 
-    const processValue = heatmapColoringFunctions[coloringFunction].function
+    const processValue = heatmapColoringFunctions[coloringFunction].function;
 
-    const processedValue = processValue(value)
-    const processedMin = processValue(minValue)
-    const processedMax = processValue(maxValue)
+    const processedValue = processValue(value);
+    const processedMin = processValue(minValue);
+    const processedMax = processValue(maxValue);
 
     if (value < threshold) {
-      return 'hsla(0, 100%, 100%, 0.5)'
+      return 'hsla(0, 100%, 100%, 0.5)';
     }
 
-    // const hue = (value - minValue) / (maxValue - minValue) * (maxHue - minHue) + minHue
-    const hueRatio = (processedValue - processedMin) / (processedMax - processedMin)
-    const hue = minHue + hueRatio * (maxHue - minHue)
+    // Const hue = (value - minValue) / (maxValue - minValue) * (maxHue - minHue) + minHue
+    const hueRatio =
+      (processedValue - processedMin) / (processedMax - processedMin);
+    const hue = minHue + hueRatio * (maxHue - minHue);
 
-    return `hsla(${hue}, 70%, 50%, 0.5)`
+    return `hsla(${hue}, 70%, 50%, 0.5)`;
   }
 
-  styleFunction (feature, resolution) {
-    // const zoom = Math.round(17 - Math.log2(resolution))
+  styleFunction(feature, resolution) {
+    // Const zoom = Math.round(17 - Math.log2(resolution))
 
-    const radius = 0.9 / resolution + 1.5
+    const radius = 0.9 / resolution + 1.5;
 
-    return makePointStyle(this._colorForValue(feature.measuredValue), radius)
+    return makePointStyle(this._colorForValue(feature.measuredValue), radius);
   }
 
-  render () {
-    const { minValue, maxValue, unit } = this.props.layer.parameters
+  render() {
+    const { minValue, maxValue, unit } = this.props.layer.parameters;
 
-    const displayedUnit = unit || ''
+    const displayedUnit = unit || '';
 
     return (
       <div>
         <layer.Vector zIndex={this.props.zIndex} style={this.styleFunction}>
-          <HeatmapVectorSource storageKey={`${this.props.layerId}_data`}
+          <HeatmapVectorSource
+            storageKey={`${this.props.layerId}_data`}
             parameters={this.props.layer.parameters}
-            setLayerParameter={this.props.setLayerParameter} />
+            setLayerParameter={this.props.setLayerParameter}
+          />
         </layer.Vector>
 
-        <div id='heatmapScale'
+        <div
+          id="heatmapScale"
           style={{
             background: `linear-gradient(
               hsla(${this.props.layer.parameters.maxHue}, 70%, 50%, 0.75),
               hsla(${this.props.layer.parameters.minHue}, 70%, 50%, 0.75)
             )`,
             borderRadius: '5px'
-          }}>
+          }}
+        >
           <span>{`${formatNumber(maxValue)} ${displayedUnit}`}</span>
-          <span>{`${formatNumber((maxValue + minValue) / 2)} ${displayedUnit}`}</span>
+          <span>{`${formatNumber(
+            (maxValue + minValue) / 2
+          )} ${displayedUnit}`}</span>
           <span>{`${formatNumber(minValue)} ${displayedUnit}`}</span>
         </div>
       </div>
-    )
+    );
   }
 }
 
@@ -583,15 +625,15 @@ HeatmapLayerPresentation.propTypes = {
   zIndex: PropTypes.number,
 
   setLayerParameter: PropTypes.func
-}
+};
 
 export const HeatmapLayer = connect(
-  // mapStateToProps
+  // MapStateToProps
   (state, ownProps) => ({}),
-  // mapDispatchToProps
+  // MapDispatchToProps
   (dispatch, ownProps) => ({
     setLayerParameter: (parameter, value) => {
-      dispatch(setLayerParameterById(ownProps.layerId, parameter, value))
+      dispatch(setLayerParameterById(ownProps.layerId, parameter, value));
     }
   })
-)(HeatmapLayerPresentation)
+)(HeatmapLayerPresentation);

@@ -2,7 +2,7 @@
  * @file Selectors related to the map view.
  */
 
-import { createSelector } from 'reselect'
+import { createSelector } from 'reselect';
 
 /**
  * Selector that returns the rotation angle of the map view, cast into a
@@ -15,7 +15,7 @@ import { createSelector } from 'reselect'
 export const getMapViewRotationAngle = createSelector(
   state => state.map.view.angle,
   angle => parseFloat(angle)
-)
+);
 
 /**
  * Selector that returns the rotation angle of the flat Earth coordinate
@@ -28,4 +28,4 @@ export const getMapViewRotationAngle = createSelector(
 export const getMapOriginRotationAngle = createSelector(
   state => state.map.origin.angle,
   angle => parseFloat(angle)
-)
+);

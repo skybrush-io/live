@@ -1,35 +1,35 @@
-import Alarm from '@material-ui/icons/Alarm'
-import Flight from '@material-ui/icons/Flight'
-import Layers from '@material-ui/icons/Layers'
-import Map from '@material-ui/icons/Map'
-import Message from '@material-ui/icons/Message'
-import MyLocation from '@material-ui/icons/MyLocation'
-import Notifications from '@material-ui/icons/Notifications'
-import SettingsEthernet from '@material-ui/icons/SettingsEthernet'
-import SettingsInputAntenna from '@material-ui/icons/SettingsInputAntenna'
-import ShowChart from '@material-ui/icons/ShowChart'
-import Storage from '@material-ui/icons/Storage'
+import Alarm from '@material-ui/icons/Alarm';
+import Flight from '@material-ui/icons/Flight';
+import Layers from '@material-ui/icons/Layers';
+import Map from '@material-ui/icons/Map';
+import Message from '@material-ui/icons/Message';
+import MyLocation from '@material-ui/icons/MyLocation';
+import Notifications from '@material-ui/icons/Notifications';
+import SettingsEthernet from '@material-ui/icons/SettingsEthernet';
+import SettingsInputAntenna from '@material-ui/icons/SettingsInputAntenna';
+import ShowChart from '@material-ui/icons/ShowChart';
+import Storage from '@material-ui/icons/Storage';
 
-import PropTypes from 'prop-types'
-import React from 'react'
-import { Module, ModuleTray, Workbench } from 'react-flexible-workbench'
-import { connect } from 'react-redux'
+import PropTypes from 'prop-types';
+import React from 'react';
+import { Module, ModuleTray, Workbench } from 'react-flexible-workbench';
+import { connect } from 'react-redux';
 
-import ConnectionStatusBadge from './ConnectionStatusBadge'
-import LogStatusBadge from './LogStatusBadge'
+import ConnectionStatusBadge from './ConnectionStatusBadge';
+import LogStatusBadge from './LogStatusBadge';
 
 const style = {
   backgroundColor: '#333',
   boxShadow: 'inset -3px -6px 6px rgba(0, 0, 0, 0.5)',
   height: '100%'
-}
+};
 
 const innerStyle = {
   display: 'flex',
   flexFlow: 'column nowrap',
   height: '100%',
   width: 240
-}
+};
 
 /**
  * Presentation component for the sidebar at the left edge of the main
@@ -38,39 +38,90 @@ const innerStyle = {
  * @returns  {Object}  the rendered sidebar component
  */
 const SidebarPresentation = ({ open, workbench }) => (
-  <div id='sidebar' style={{ ...style, overflow: 'hidden', width: open ? 240 : 48 }}>
+  <div
+    id="sidebar"
+    style={{ ...style, overflow: 'hidden', width: open ? 240 : 48 }}
+  >
     <div style={innerStyle}>
       <ModuleTray allowMultipleSelection vertical workbench={workbench}>
-        <Module id='map' icon={<Map />} label='Map' component='map' />
-        <Module id='layers' icon={<Layers />} label='Layers' component='layer-list' />
-        <Module id='features' icon={<ShowChart />} label='Features' component='feature-list' />
+        <Module id="map" icon={<Map />} label="Map" component="map" />
+        <Module
+          id="layers"
+          icon={<Layers />}
+          label="Layers"
+          component="layer-list"
+        />
+        <Module
+          id="features"
+          icon={<ShowChart />}
+          label="Features"
+          component="feature-list"
+        />
         <hr />
-        <Module id='groundcontrol' icon={<SettingsInputAntenna />} label='Ground control view' component='ground-control-view' />
-        <Module id='uavs' icon={<Flight />} label='UAVs' component='uav-list' />
-        <Module id='messages' icon={<Message />} label='Messages' component='messages' />
+        <Module
+          id="groundcontrol"
+          icon={<SettingsInputAntenna />}
+          label="Ground control view"
+          component="ground-control-view"
+        />
+        <Module id="uavs" icon={<Flight />} label="UAVs" component="uav-list" />
+        <Module
+          id="messages"
+          icon={<Message />}
+          label="Messages"
+          component="messages"
+        />
         <hr />
-        <Module id='connections' badge={<ConnectionStatusBadge />} icon={<SettingsEthernet />} label='Connections' component='connection-list' />
-        <Module id='clocks' icon={<Alarm />} label='Clocks' component='clock-list' />
-        <Module id='datasets' icon={<Storage />} label='Datasets' component='dataset-list' />
-        <Module id='locations' icon={<MyLocation />} label='Locations' component='saved-location-list' />
+        <Module
+          id="connections"
+          badge={<ConnectionStatusBadge />}
+          icon={<SettingsEthernet />}
+          label="Connections"
+          component="connection-list"
+        />
+        <Module
+          id="clocks"
+          icon={<Alarm />}
+          label="Clocks"
+          component="clock-list"
+        />
+        <Module
+          id="datasets"
+          icon={<Storage />}
+          label="Datasets"
+          component="dataset-list"
+        />
+        <Module
+          id="locations"
+          icon={<MyLocation />}
+          label="Locations"
+          component="saved-location-list"
+        />
         <hr />
-        <Module id='log' badge={<LogStatusBadge />} icon={<Notifications />} label='Event log' component='log-panel' />
+        <Module
+          id="log"
+          badge={<LogStatusBadge />}
+          icon={<Notifications />}
+          label="Event log"
+          component="log-panel"
+        />
       </ModuleTray>
     </div>
   </div>
-)
+);
 
 SidebarPresentation.propTypes = {
   open: PropTypes.bool.isRequired,
   workbench: PropTypes.instanceOf(Workbench).isRequired
-}
+};
 
 /**
  * Sidebar at the left edge of the main window.
  */
 export const Sidebar = connect(
-  // mapStateToProps
+  // MapStateToProps
   (state, { workbench }) => ({
-    ...state.sidebar, workbench
+    ...state.sidebar,
+    workbench
   })
-)(SidebarPresentation)
+)(SidebarPresentation);

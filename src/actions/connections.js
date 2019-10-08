@@ -2,15 +2,18 @@
  * @file Actions related to the states of connections
  */
 
-import { createAction } from 'redux-actions'
-import { CLEAR_CONNECTION_LIST, SET_CONNECTION_STATE,
-  SET_CONNECTION_STATE_MULTIPLE } from './types'
+import { createAction } from 'redux-actions';
+import {
+  CLEAR_CONNECTION_LIST,
+  SET_CONNECTION_STATE,
+  SET_CONNECTION_STATE_MULTIPLE
+} from './types';
 
 /**
  * Action factory that creates an action that will clear the list of
  * connections, <em>except</em> for the master connection to the server.
  */
-export const clearConnectionList = createAction(CLEAR_CONNECTION_LIST)
+export const clearConnectionList = createAction(CLEAR_CONNECTION_LIST);
 
 /**
  * Action factory that creates an action that will set the state of a
@@ -24,9 +27,11 @@ export const clearConnectionList = createAction(CLEAR_CONNECTION_LIST)
 export const setConnectionState = createAction(
   SET_CONNECTION_STATE,
   (id, state) => ({
-    id, state, stateChangedAt: new Date()
+    id,
+    state,
+    stateChangedAt: new Date()
   })
-)
+);
 
 /**
  * Action factory that creates an action that will set the state of multiple
@@ -39,4 +44,4 @@ export const setConnectionState = createAction(
  */
 export const setConnectionStateMultiple = createAction(
   SET_CONNECTION_STATE_MULTIPLE
-)
+);

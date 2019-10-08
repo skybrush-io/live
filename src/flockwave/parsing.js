@@ -2,7 +2,7 @@
  * @file Utility functions to parse data out of Flockwave messages.
  */
 
-import _ from 'lodash'
+import _ from 'lodash';
 
 /**
  * Extracts the receipt corresponding to the given UAV from a CMD-REQ
@@ -16,24 +16,24 @@ import _ from 'lodash'
  * @throws Error  if the receipt cannot be extracted; the message of the
  *         error provides a human-readable reason
  */
-export function extractReceiptFromCommandRequest (message, uavId) {
-  const { body } = message
-  const { type } = body
+export function extractReceiptFromCommandRequest(message, uavId) {
+  const { body } = message;
+  const { type } = body;
 
   if (type === 'ACK-NAK') {
     // Server rejected to execute the command
-    throw new Error(body.reason || 'ACK-NAK received; no reason given')
+    throw new Error(body.reason || 'ACK-NAK received; no reason given');
   } else if (type === 'CMD-REQ') {
     // We may still have a rejection here
-    const { failure, receipts } = body
+    const { failure, receipts } = body;
     if (failure && _.includes(failure, uavId)) {
-      throw new Error(body.reasons[uavId] || 'Failed to execute command')
+      throw new Error(body.reasons[uavId] || 'Failed to execute command');
     } else if (!receipts || _.isNil(receipts[uavId])) {
-      throw new Error('Server did not provide a receipt for the command')
+      throw new Error('Server did not provide a receipt for the command');
     } else {
-      return receipts[uavId]
+      return receipts[uavId];
     }
   } else {
-    throw new Error(`${type} messages do not contain receipts`)
+    throw new Error(`${type} messages do not contain receipts`);
   }
 }

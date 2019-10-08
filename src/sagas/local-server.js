@@ -3,21 +3,22 @@
  * that is started by the client on-demand if it is configured to do so.
  */
 
-import { all, call, delay, put, select, take } from 'redux-saga/effects'
+import { all, call, delay, put, select, take } from 'redux-saga/effects';
 
 import {
   notifyLocalServerExecutableSearchStarted,
   notifyLocalServerExecutableSearchFinished,
   notifyLocalServerExecutableSearchFailed
-} from '~/actions/local-server'
+} from '~/actions/local-server';
 import {
-  REPLACE_APP_SETTINGS, UPDATE_APP_SETTINGS,
+  REPLACE_APP_SETTINGS,
+  UPDATE_APP_SETTINGS,
   START_LOCAL_SERVER_EXECUTABLE_SEARCH
-} from '~/actions/types'
+} from '~/actions/types';
 import {
   getLocalServerExecutable,
   getLocalServerSearchPath
-} from '~/selectors/local-server'
+} from '~/selectors/local-server';
 
 /**
  * Saga that attempts to find where the local server is installed on the
@@ -27,43 +28,43 @@ import {
  *        search paths and that will return a promise that will eventually
  *        resolve to the local server executable on the system
  */
-function* localServerExecutableDiscoverySaga (search) {
-  let oldSearchPath
-  let minDuration = 0
+function* localServerExecutableDiscoverySaga(search) {
+  let oldSearchPath;
+  let minDuration = 0;
 
   while (true) {
-    const searchPath = yield select(getLocalServerSearchPath)
-    const executable = yield select(getLocalServerExecutable)
+    const searchPath = yield select(getLocalServerSearchPath);
+    const executable = yield select(getLocalServerExecutable);
 
     if (executable === undefined || searchPath !== oldSearchPath) {
       // Path changed or a re-scan was forced
       // Start searching for the executable of the local server
-      yield put(notifyLocalServerExecutableSearchStarted())
+      yield put(notifyLocalServerExecutableSearchStarted());
 
       const result = yield all([
         call(async () => {
           try {
-            return [await search(searchPath), undefined]
-          } catch (reason) {
-            if (reason.code === 'ENOENT') {
-              return ['', undefined]
-            } else {
-              return [undefined, String(reason)]
+            return [await search(searchPath), undefined];
+          } catch (error) {
+            if (error.code === 'ENOENT') {
+              return ['', undefined];
             }
+
+            return [undefined, String(error)];
           }
         }),
         delay(minDuration)
-      ])
+      ]);
 
-      const [serverPath, err] = result[0]
+      const [serverPath, err] = result[0];
 
       if (err) {
-        yield put(notifyLocalServerExecutableSearchFailed(err))
+        yield put(notifyLocalServerExecutableSearchFailed(err));
       } else {
-        yield put(notifyLocalServerExecutableSearchFinished(serverPath))
+        yield put(notifyLocalServerExecutableSearchFinished(serverPath));
       }
 
-      oldSearchPath = searchPath
+      oldSearchPath = searchPath;
     }
 
     // Wait for the next signal to start a search
@@ -71,18 +72,19 @@ function* localServerExecutableDiscoverySaga (search) {
       REPLACE_APP_SETTINGS,
       UPDATE_APP_SETTINGS,
       START_LOCAL_SERVER_EXECUTABLE_SEARCH
-    ])
+    ]);
 
     if (action.type === UPDATE_APP_SETTINGS) {
       // Wait a bit more, effectively throttling multiple signals into one
       // action
-      yield delay(1000)
+      yield delay(1000);
     }
 
     // We simulate a minimum duration of 1 second for the search if the
     // user explicitly requested a re-scan; this is to ensure that the user
     // sees some feedback on the UI that the search is in progress
-    minDuration = (action.type === START_LOCAL_SERVER_EXECUTABLE_SEARCH) ? 1000 : 0
+    minDuration =
+      action.type === START_LOCAL_SERVER_EXECUTABLE_SEARCH ? 1000 : 0;
   }
 }
 
@@ -95,12 +97,12 @@ function* localServerExecutableDiscoverySaga (search) {
  *        search paths and that will return a promise that will eventually
  *        resolve to the local server executable on the system
  */
-export default function* localServerSaga (search) {
-  const sagas = []
+export default function* localServerSaga(search) {
+  const sagas = [];
 
   if (search) {
-    sagas.push(localServerExecutableDiscoverySaga(search))
+    sagas.push(localServerExecutableDiscoverySaga(search));
   }
 
-  yield all(sagas)
+  yield all(sagas);
 }

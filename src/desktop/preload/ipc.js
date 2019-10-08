@@ -1,7 +1,7 @@
-const { ipcRenderer: ipc } = require('electron-better-ipc')
+const { ipcRenderer: ipc } = require('electron-better-ipc');
 
 module.exports = store => {
   ipc.answerMain('dispatch', arg => {
-    window.bridge.dispatch(arg)
-  })
-}
+    window.bridge.dispatch(arg);
+  });
+};

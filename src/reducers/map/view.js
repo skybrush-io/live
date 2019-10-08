@@ -11,10 +11,10 @@
  * is mounted for the first time, it is initialized from the state of the store.
  */
 
-import { handleActions } from 'redux-actions'
-import u from 'updeep'
+import { handleActions } from 'redux-actions';
+import u from 'updeep';
 
-import { normalizeAngle } from '~/utils/geography'
+import { normalizeAngle } from '~/utils/geography';
 
 /**
  * The state of the origin (home position) and the global flat Earth coordinate
@@ -24,20 +24,27 @@ import { normalizeAngle } from '~/utils/geography'
  * degree heading points towards the heading given in the `angle` property.
  */
 const defaultState = {
-  position: [19.061951, 47.473340], // sensible default: ELTE court
+  position: [19.061951, 47.47334], // Sensible default: ELTE court
   angle: '0',
   zoom: 17
-}
+};
 
 /**
  * The reducer function that handles actions related to the tool selection.
  */
-const reducer = handleActions({
-  UPDATE_MAP_VIEW_SETTINGS: (state, action) => u({
-    position: action.payload.position,
-    angle: normalizeAngle(action.payload.angle),
-    zoom: Math.max(Math.min(action.payload.zoom, 20), 0)
-  }, state)
-}, defaultState)
+const reducer = handleActions(
+  {
+    UPDATE_MAP_VIEW_SETTINGS: (state, action) =>
+      u(
+        {
+          position: action.payload.position,
+          angle: normalizeAngle(action.payload.angle),
+          zoom: Math.max(Math.min(action.payload.zoom, 20), 0)
+        },
+        state
+      )
+  },
+  defaultState
+);
 
-export default reducer
+export default reducer;

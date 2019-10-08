@@ -1,13 +1,13 @@
-const { spawn } = require('child_process')
-const { endsWith } = require('lodash')
-const path = require('path')
-const pify = require('pify')
-const pDefer = require('p-defer')
-const pTimeout = require('p-timeout')
-const which = pify(require('which'))
+const { spawn } = require('child_process');
+const path = require('path');
+const { endsWith } = require('lodash');
+const pify = require('pify');
+const pDefer = require('p-defer');
+const pTimeout = require('p-timeout');
+const which = pify(require('which'));
 
-const getApplicationFolder = require('./app-folder')
-const makeEventProxy = require('../event-proxy')
+const makeEventProxy = require('../event-proxy');
+const getApplicationFolder = require('./app-folder');
 
 /**
  * Event proxy for the local server object.
@@ -16,24 +16,24 @@ const makeEventProxy = require('../event-proxy')
  * server in the main process. The events will be broadcast to all renderer
  * processes having the same event proxy.
  */
-const events = makeEventProxy('localServer')
+const events = makeEventProxy('localServer');
 
 /**
  * The local executable of the Flockwave server on this machine.
  */
-let localServerPath
+let localServerPath;
 
 /**
  * Deferred that will resolve to the local executable of the Flockwave server
  * on this machine.
  */
-let localServerPathDeferred = pDefer()
+let localServerPathDeferred = pDefer();
 
 /**
  * The process representing the laucnhed Flockwave server instance on this
  * machine.
  */
-let localServerProcess
+let localServerProcess;
 
 /**
  * Returns an array containing the names of all directories to scan on
@@ -47,29 +47,29 @@ let localServerProcess
  *         Flockwave server executable, besides the system path and the
  *         directories added explicitly by the user in the settings
  */
-function getPathsRelatedToAppLocation () {
-  const appFolder = getApplicationFolder()
-  const folders = []
+function getPathsRelatedToAppLocation() {
+  const appFolder = getApplicationFolder();
+  const folders = [];
 
   if (process.platform === 'darwin') {
     if (endsWith(appFolder, '.app/Contents/MacOS')) {
       // This is an .app bundle so let's search the Resources folder within
       // the bundle as well as the folder containing the app bundle itself
-      folders.push(path.resolve(path.dirname(appFolder), 'Resources'))
-      folders.push(path.dirname(appFolder.substr(0, appFolder.length - 15)))
+      folders.push(path.resolve(path.dirname(appFolder), 'Resources'));
+      folders.push(path.dirname(appFolder.substr(0, appFolder.length - 15)));
     } else {
       // Probably not an .app bundle so let's just assume that the server
       // might be in the same folder
-      folders.push(appFolder)
+      folders.push(appFolder);
     }
   } else {
-    folders.push(appFolder)
+    folders.push(appFolder);
   }
 
-  return folders
+  return folders;
 }
 
-const pathsRelatedToAppLocation = Object.freeze(getPathsRelatedToAppLocation())
+const pathsRelatedToAppLocation = Object.freeze(getPathsRelatedToAppLocation());
 
 /**
  * Launches the local Flockwave server executable with the given arguments.
@@ -84,7 +84,7 @@ const pathsRelatedToAppLocation = Object.freeze(getPathsRelatedToAppLocation())
 const launch = async opts => {
   if (localServerProcess) {
     // Terminate the previous instance
-    await terminate()
+    await terminate();
   }
 
   const { args, port, timeout } = {
@@ -92,37 +92,33 @@ const launch = async opts => {
     args: '',
     timeout: 5000,
     ...opts
-  }
+  };
 
   if (localServerPathDeferred) {
-    localServerPathDeferred = pDefer()
-    await pTimeout(localServerPathDeferred.promise, timeout)
+    localServerPathDeferred = pDefer();
+    await pTimeout(localServerPathDeferred.promise, timeout);
   }
 
   if (!localServerPath) {
-    throw new Error('local Flockwave server not found')
+    throw new Error('local Flockwave server not found');
   }
 
-  const realArgs = [
-    '-h', '127.0.0.1',
-    '-p', port,
-    ...args
-  ]
+  const realArgs = ['-h', '127.0.0.1', '-p', port, ...args];
 
   localServerProcess = spawn(localServerPath, realArgs, {
     cwd: path.dirname(localServerPath),
     stdio: 'ignore'
-  })
+  });
 
   localServerProcess.on('error', reason => {
-    events.emit('emit', 'error', reason)
-    localServerProcess = undefined
-  })
+    events.emit('emit', 'error', reason);
+    localServerProcess = undefined;
+  });
   localServerProcess.on('exit', (code, signal) => {
-    events.emit('emit', 'exit', code, signal)
-    localServerProcess = undefined
-  })
-}
+    events.emit('emit', 'exit', code, signal);
+    localServerProcess = undefined;
+  });
+};
 
 /**
  * Searches for the local Flockwave server executable in the following places,
@@ -147,13 +143,14 @@ const search = paths =>
       ...process.env.PATH.split(path.delimiter)
     ].join(path.delimiter)
   }).then(result => {
-    localServerPath = result
+    localServerPath = result;
     if (localServerPathDeferred) {
-      localServerPathDeferred.resolve(result)
-      localServerPathDeferred = undefined
+      localServerPathDeferred.resolve(result);
+      localServerPathDeferred = undefined;
     }
-    return result
-  })
+
+    return result;
+  });
 
 /**
  * Terminate the local server instance that the main process is currently
@@ -161,12 +158,15 @@ const search = paths =>
  */
 const terminate = () => {
   if (localServerProcess) {
-    localServerProcess.removeAllListeners()
-    localServerProcess.kill()
-    localServerProcess = undefined
+    localServerProcess.removeAllListeners();
+    localServerProcess.kill();
+    localServerProcess = undefined;
   }
-}
+};
 
 module.exports = {
-  events, launch, search, terminate
-}
+  events,
+  launch,
+  search,
+  terminate
+};
