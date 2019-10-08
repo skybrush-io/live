@@ -111,6 +111,7 @@
     "dotenv-webpack": "^1.7.0",
     "electron": "^6.0.11",
     "esdoc": "^1.1.0",
+    "eslint": "^6.5.1",
     "eslint-config-xo-react": "^0.20.0",
     "eslint-plugin-react": "^7.16.0",
     "eslint-plugin-react-hooks": "^2.1.2",
@@ -131,15 +132,19 @@
     "xo": "^0.25.3"
   },
   "prettier": {
-	"bracketSpacing": true
+    "bracketSpacing": true
   },
   "xo": {
     "extends": "xo-react",
-	"parser": "babel-eslint",
+    "parser": "babel-eslint",
     "space": true,
     "prettier": true,
-	"rules": {
-	  "object-curly-spacing": ["error", "always"]
-	}
+    "rules": {
+      "import/no-unassigned-import": 0,
+      "object-curly-spacing": [
+        "error",
+        "always"
+      ]
+    }
   }
 }

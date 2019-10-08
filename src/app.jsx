@@ -80,7 +80,7 @@ const enhancer = compose(
     {
       flock: PropTypes.object.isRequired
     },
-    props => ({ flock })
+    () => ({ flock })
   ),
   withErrorBoundary,
   wrapWith(withProps({ theme })(MuiThemeProvider)),
