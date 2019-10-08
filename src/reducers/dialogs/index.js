@@ -7,6 +7,7 @@ import { combineReducers } from 'redux'
 
 import appSettingsReducer from './app-settings'
 import authenticationReducer from './authentication'
+import deauthenticationReducer from './deauthentication'
 import errorHandlingReducer from './error-handling'
 import featureEditorReducer from './feature-editor'
 import messagesReducer from './messages'
@@ -22,6 +23,7 @@ import serverSettingsReducer from './server-settings'
 const reducer = combineReducers({
   appSettings: appSettingsReducer,
   authentication: authenticationReducer,
+  deauthentication: deauthenticationReducer,
   error: errorHandlingReducer,
   featureEditor: featureEditorReducer,
   layerSettings: layerSettingsReducer,

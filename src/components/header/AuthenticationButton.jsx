@@ -7,7 +7,10 @@ import { connect } from 'react-redux'
 
 import SidebarBadge from '../sidebar/SidebarBadge'
 
-import { showAuthenticationDialog } from '~/actions/servers'
+import {
+  showAuthenticationDialog,
+  showDeauthenticationDialog
+} from '~/actions/servers'
 import {
   isAuthenticated,
   isAuthenticating,
@@ -23,23 +26,27 @@ const badgeColorForState = {
 }
 
 const AuthenticationButtonPresentation = ({
-  authRequired, disabled, onClick, showLabel, state
+  authRequired, disabled, label, onAuthenticate, onDeauthenticate, state
 }) => (
-  <div className={clsx('wb-module', { 'wb-module-disabled': disabled })} onClick={onClick}>
+  <div
+    className={clsx('wb-module', { 'wb-module-disabled': disabled })}
+    onClick={state !== 'authenticated' ? onAuthenticate : onDeauthenticate}
+  >
     <span className={clsx('wb-icon', 'wb-module-icon')}>
       <SidebarBadge visible={badgeColorForState[state] !== undefined}
         color={badgeColorForState[state]} />
       <PersonIcon />
     </span>
-    {showLabel ? <span className='wb-label wb-module-label'>Authentication</span> : null}
+    {label ? <span className='wb-label wb-module-label'>{label}</span> : null}
   </div>
 )
 
 AuthenticationButtonPresentation.propTypes = {
   authRequired: PropTypes.bool,
   disabled: PropTypes.bool,
-  onClick: PropTypes.func,
-  showLabel: PropTypes.bool,
+  label: PropTypes.string,
+  onAuthenticate: PropTypes.func,
+  onDeauthenticate: PropTypes.func,
   state: PropTypes.string
 }
 
@@ -64,6 +71,7 @@ export default connect(
   }),
   // mapDispatchToProps
   dispatch => ({
-    onClick: () => dispatch(showAuthenticationDialog())
+    onAuthenticate: () => dispatch(showAuthenticationDialog()),
+    onDeauthenticate: () => dispatch(showDeauthenticationDialog())
   })
 )(AuthenticationButtonPresentation)

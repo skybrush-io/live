@@ -3,14 +3,25 @@
  */
 
 import { createAction } from 'redux-actions'
-import { SHOW_SERVER_SETTINGS_DIALOG, CLOSE_SERVER_SETTINGS_DIALOG,
-  SET_SERVER_SETTINGS_DIALOG_TAB, UPDATE_SERVER_SETTINGS } from './types'
+import {
+  CLOSE_SERVER_SETTINGS_DIALOG,
+  DISCONNECT_FROM_SERVER,
+  SET_SERVER_SETTINGS_DIALOG_TAB,
+  SHOW_SERVER_SETTINGS_DIALOG,
+  UPDATE_SERVER_SETTINGS
+} from './types'
 
 /**
  * Action factory that creates an action that will close the server settings
  * dialog and optionally update the current server settings from the payload.
  */
 export const closeServerSettingsDialog = createAction(CLOSE_SERVER_SETTINGS_DIALOG)
+
+/**
+ * Action factory that creates an action that will disconnect from the
+ * current server that we are connected to.
+ */
+export const disconnectFromServer = createAction(DISCONNECT_FROM_SERVER)
 
 /**
  * Action factory that creates an action that will set the selected tab in the

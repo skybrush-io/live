@@ -9,10 +9,12 @@ import {
   ADD_DETECTED_SERVER,
   AUTHENTICATE_TO_SERVER,
   CLOSE_AUTHENTICATION_DIALOG,
+  CLOSE_DEAUTHENTICATION_DIALOG,
   REMOVE_ALL_DETECTED_SERVERS,
   SET_AUTHENTICATED_USER,
   SET_CURRENT_SERVER_CONNECTION_STATE,
   SHOW_AUTHENTICATION_DIALOG,
+  SHOW_DEAUTHENTICATION_DIALOG,
   START_SCANNING,
   STOP_SCANNING,
   UPDATE_CURRENT_SERVER_AUTHENTICATION_SETTINGS,
@@ -106,6 +108,11 @@ export const clearAuthenticatedUser = createAction(SET_AUTHENTICATED_USER, () =>
 export const closeAuthenticationDialog = createAction(CLOSE_AUTHENTICATION_DIALOG)
 
 /**
+ * Action factory that closes the deauthentication dialog.
+ */
+export const closeDeauthenticationDialog = createAction(CLOSE_DEAUTHENTICATION_DIALOG)
+
+/**
  * Action factory that creates an action that removes all the previously
  * detected servers from the server registry.
  */
@@ -124,10 +131,14 @@ export const setAuthenticatedUser = createAction(SET_AUTHENTICATED_USER)
 export const setCurrentServerConnectionState = createAction(SET_CURRENT_SERVER_CONNECTION_STATE)
 
 /**
- * Action factory that opens the authentication dialog and starts a new
- * authentication attempt.
+ * Action factory that opens the authentication dialog.
  */
 export const showAuthenticationDialog = createAction(SHOW_AUTHENTICATION_DIALOG)
+
+/**
+ * Action factory that opens the deauthentication dialog.
+ */
+export const showDeauthenticationDialog = createAction(SHOW_DEAUTHENTICATION_DIALOG)
 
 /**
  * Action factory that creates an action that notifies the store that the

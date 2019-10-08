@@ -58,6 +58,7 @@ const Application = () => (
 
     <dialogs.AppSettingsDialog />
     <dialogs.AuthenticationDialog />
+    <dialogs.DeauthenticationDialog />
     <dialogs.FeatureEditorDialog />
     <dialogs.GlobalErrorDialog />
     <dialogs.LayerSettingsDialog />

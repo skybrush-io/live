@@ -272,7 +272,10 @@ const ServerConnectionManager = connect(
 
     onConnected () {
       // Let the user know that we are connected
-      dispatch(showSnackbarMessage('Connected to Flockwave server'))
+      dispatch(showSnackbarMessage({
+        message: 'Connected to Flockwave server',
+        semantics: 'info'
+      }))
       dispatch(setCurrentServerConnectionState(ConnectionState.CONNECTED))
 
       // Execute all the tasks that should be executed after establishing a
@@ -286,7 +289,10 @@ const ServerConnectionManager = connect(
 
     onConnectionTimeout () {
       dispatch(setCurrentServerConnectionState(ConnectionState.DISCONNECTED))
-      dispatch(showSnackbarMessage('Timeout while connecting to Flockwave server'))
+      dispatch(showSnackbarMessage({
+        message: 'Timeout while connecting to Flockwave server',
+        semantics: 'error'
+      }))
     },
 
     onDisconnected () {
@@ -303,9 +309,10 @@ const ServerConnectionManager = connect(
           : 'Failed to launch local Flockwave server'
       )
       dispatch(setCurrentServerConnectionState(ConnectionState.DISCONNECTED))
-      dispatch(showSnackbarMessage(
-        message ? `${baseMessage}: ${message}` : baseMessage
-      ))
+      dispatch(showSnackbarMessage({
+        message: message ? `${baseMessage}: ${message}` : baseMessage,
+        semantics: 'error'
+      }))
     },
 
     onLocalServerStarted () {

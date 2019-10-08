@@ -1,15 +1,24 @@
-import { all, call, put, select, take } from 'redux-saga/effects'
+import { all, call, delay, put, select, take } from 'redux-saga/effects'
 
 import {
   setAuthenticatedUser,
+  showAuthenticationDialog,
   updateCurrentServerAuthenticationSettings
 } from '~/actions/servers'
 import { showSnackbarMessage } from '~/actions/snackbar'
-import { AUTHENTICATE_TO_SERVER, SET_CURRENT_SERVER_CONNECTION_STATE } from '~/actions/types'
+import {
+  AUTHENTICATE_TO_SERVER,
+  SET_CURRENT_SERVER_CONNECTION_STATE,
+  UPDATE_CURRENT_SERVER_AUTHENTICATION_SETTINGS
+} from '~/actions/types'
 import messageHub from '~/message-hub'
+import { isAuthenticationDialogOpen } from '~/selectors/dialogs'
 import {
   areServerAuthenticationSettingsValid,
-  isConnected
+  isAuthenticated,
+  isAuthenticating,
+  isConnected,
+  requiresAuthentication
 } from '~/selectors/servers'
 
 /**
@@ -44,9 +53,7 @@ function* serverAuthenticationSettingsUpdaterSaga () {
     }
 
     // Wait for the next signal to start a search
-    yield take(
-      SET_CURRENT_SERVER_CONNECTION_STATE
-    )
+    yield take(SET_CURRENT_SERVER_CONNECTION_STATE)
   }
 }
 
@@ -82,12 +89,58 @@ function* authenticationResultNotifierSaga () {
 }
 
 /**
+ * Saga that enforces authentication if the server declares that it is
+ * authentication-only.
+ */
+function* enforceAuthenticationIfNeededSaga () {
+  while (true) {
+    const isConnectedToServer = yield select(isConnected)
+    const settingsValid = yield select(areServerAuthenticationSettingsValid)
+
+    if (isConnectedToServer && settingsValid) {
+      // We are connected; does the server need authentication?
+      const requiresAuth = yield select(requiresAuthentication)
+      if (requiresAuth) {
+        // Yes, it does. Show the authentication dialog if we are not
+        // authenticated and not authenticating yet.
+        while (true) {
+          const stillConnected = yield select(isConnected)
+          if (!stillConnected) {
+            break
+          }
+
+          const shouldShowAuthDialog = (
+            !(yield select(isAuthenticated)) &&
+            !(yield select(isAuthenticating)) &&
+            !(yield select(isAuthenticationDialogOpen))
+          )
+
+          if (shouldShowAuthDialog) {
+            yield put(showAuthenticationDialog())
+          }
+
+          yield delay(1000)
+        }
+      }
+    }
+
+    // Wait until the connection state of the server changes or we receive new
+    // authentication settings
+    yield take([
+      SET_CURRENT_SERVER_CONNECTION_STATE,
+      UPDATE_CURRENT_SERVER_AUTHENTICATION_SETTINGS
+    ])
+  }
+}
+
+/**
  * Compound saga related to the management of the connection to the upstream
  * Flockwave server.
  */
 export default function* serversSaga () {
   const sagas = [
     serverAuthenticationSettingsUpdaterSaga(),
+    enforceAuthenticationIfNeededSaga(),
     authenticationResultNotifierSaga()
   ]
   yield all(sagas)

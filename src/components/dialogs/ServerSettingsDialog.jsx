@@ -35,11 +35,12 @@ import {
 
 import {
   closeServerSettingsDialog,
+  disconnectFromServer,
   setServerSettingsDialogTab
-} from '../../actions/server-settings'
-import { forceFormSubmission, Switch, TextField } from '../forms'
-import { getDetectedServersInOrder } from '../../selectors/ordered'
-import { createValidator, between, integer, required } from '../../utils/validation'
+} from '~/actions/server-settings'
+import { forceFormSubmission, Switch, TextField } from '~/components/forms'
+import { getDetectedServersInOrder } from '~/selectors/ordered'
+import { createValidator, between, integer, required } from '~/utils/validation'
 
 // eslint-disable-next-line react/prop-types
 const iconForServerItem = ({ type }) => (
@@ -247,9 +248,8 @@ const ServerSettingsDialog = connect(
       dispatch(closeServerSettingsDialog())
     },
     onDisconnect () {
-      dispatch(closeServerSettingsDialog({
-        active: false
-      }))
+      dispatch(closeServerSettingsDialog())
+      dispatch(disconnectFromServer())
     },
     onSubmit (data) {
       // Cast the port into a number first, then dispatch the action

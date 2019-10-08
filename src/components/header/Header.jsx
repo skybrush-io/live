@@ -39,8 +39,8 @@ const HeaderPresentation = ({ onToggleSidebar, sidebarOpen, workbench }) => (
       />
       <div style={{ flexGrow: 1, flexShrink: 1 }}>{ /* spacer */ }</div>
       <hr />
-      <AuthenticationButton />
       <ConnectionSettingsButton />
+      <AuthenticationButton />
       <hr />
       <AppSettingsButton />
       {!window.isElectron ? <FullScreenButton /> : null}
