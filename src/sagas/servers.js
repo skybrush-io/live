@@ -40,12 +40,22 @@ function* serverAuthenticationSettingsUpdaterSaga() {
             methods: body.methods || [],
             required: body.required || false
           };
-        } catch (error) {
+        } catch {
           return undefined;
         }
       });
 
+      const user = yield call(async () => {
+        try {
+          const { body } = await messageHub.sendMessage('AUTH-WHOAMI');
+          return body.user || '';
+        } catch {
+          return '';
+        }
+      });
+
       if (result) {
+        result.user = user;
         yield put(updateCurrentServerAuthenticationSettings(result));
       }
     }
@@ -93,6 +103,31 @@ function* authenticationResultNotifierSaga() {
 }
 
 /**
+ * Infinite loop that ensures that the authentication dialog is shown if the
+ * user is not authenticated yet and is not authenticating at the moment.
+ * Returns if the connection breaks.
+ */
+function* ensureUserIsAuthenticated() {
+  while (true) {
+    const stillConnected = yield select(isConnected);
+    if (!stillConnected) {
+      break;
+    }
+
+    const shouldShowAuthDialog =
+      !(yield select(isAuthenticated)) &&
+      !(yield select(isAuthenticating)) &&
+      !(yield select(isAuthenticationDialogOpen));
+
+    if (shouldShowAuthDialog) {
+      yield put(showAuthenticationDialog());
+    }
+
+    yield delay(1000);
+  }
+}
+
+/**
  * Saga that enforces authentication if the server declares that it is
  * authentication-only.
  */
@@ -107,23 +142,7 @@ function* enforceAuthenticationIfNeededSaga() {
       if (requiresAuth) {
         // Yes, it does. Show the authentication dialog if we are not
         // authenticated and not authenticating yet.
-        while (true) {
-          const stillConnected = yield select(isConnected);
-          if (!stillConnected) {
-            break;
-          }
-
-          const shouldShowAuthDialog =
-            !(yield select(isAuthenticated)) &&
-            !(yield select(isAuthenticating)) &&
-            !(yield select(isAuthenticationDialogOpen));
-
-          if (shouldShowAuthDialog) {
-            yield put(showAuthenticationDialog());
-          }
-
-          yield delay(1000);
-        }
+        yield* ensureUserIsAuthenticated();
       }
     }
 

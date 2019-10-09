@@ -23,11 +23,12 @@ const defaultState = {
 const reducer = handleActions(
   {
     ADD_LOG_ITEM: (state, action) => {
-      const { message, level } = action.payload;
+      const { message, module, level } = action.payload;
       const newItem = {
         id: state.nextId,
         timestamp: Date.now(),
         message: message || '',
+        module: module || '',
         level: level || 0
       };
       const updates = {
@@ -54,7 +55,7 @@ const reducer = handleActions(
       );
     },
 
-    CLEAR_LOG_ITEMS: (state, action) => {
+    CLEAR_LOG_ITEMS: state => {
       return u(
         {
           items: [],

@@ -39,7 +39,7 @@ export function colorForLogLevel(level) {
 
 function Logger(module) {
   const add_ = function(level, message) {
-    store.dispatch(addLogItem({ level, message: String(message) }));
+    store.dispatch(addLogItem({ level, message: String(message), module }));
   };
 
   const assert_ = function(condition, message) {
@@ -56,4 +56,4 @@ function Logger(module) {
   this.assert = assert_.bind(this);
 }
 
-export default module => new Logger(module);
+export default module => new Logger(String(module || ''));
