@@ -97,7 +97,7 @@ AuthenticationDialogPresentation.propTypes = {
  * Authentication dialog.
  */
 const AuthenticationDialog = connect(
-  // MapStateToProps
+  // mapStateToProps
   state => ({
     ...state.dialogs.authentication,
     isAuthenticating: isAuthenticating(state),
@@ -105,7 +105,7 @@ const AuthenticationDialog = connect(
       ? 'Authentication required'
       : 'Authenticate to server'
   }),
-  // MapDispatchToProps
+  // mapDispatchToProps
   dispatch => ({
     onCancel() {
       dispatch(closeAuthenticationDialog());

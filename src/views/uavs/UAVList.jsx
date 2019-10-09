@@ -244,11 +244,11 @@ UAVList.defaultProps = {
 };
 
 const SmartUAVList = connect(
-  // MapStateToProps
+  // mapStateToProps
   state => ({
     selectedUAVIds: getSelectedUAVIds(state)
   }),
-  // MapDispatchToProps
+  // mapDispatchToProps
   dispatch => ({
     onSelectionChanged: (event, uavIds) => {
       dispatch(setSelectedUAVIds(uavIds));

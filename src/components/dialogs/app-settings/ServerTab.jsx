@@ -74,12 +74,12 @@ ServerTabPresentation.propTypes = {
 };
 
 export default connect(
-  // MapStateToProps
+  // mapStateToProps
   state => ({
     ...state.settings.localServer,
     searchPath: state.settings.localServer.searchPath.join('\n')
   }),
-  // MapDispatchToProps
+  // mapDispatchToProps
   dispatch => ({
     onCheckboxToggled(event) {
       dispatch(

@@ -67,9 +67,9 @@ GeneralPropertiesFormPresentation.propTypes = {
 };
 
 const GeneralPropertiesForm = connect(
-  // MapStateToProps
+  // mapStateToProps
   null,
-  // MapDispatchToProps
+  // mapDispatchToProps
   (dispatch, { featureId }) => ({
     onSetFeatureColor(color) {
       dispatch(setFeatureColor(featureId, color.hex));
@@ -170,7 +170,7 @@ FeatureEditorDialogPresentation.defaultProps = {
  * be edited.
  */
 const FeatureEditorDialog = connect(
-  // MapStateToProps
+  // mapStateToProps
   state => {
     const {
       dialogVisible,
@@ -184,7 +184,7 @@ const FeatureEditorDialog = connect(
       open: dialogVisible
     };
   },
-  // MapDispatchToProps
+  // mapDispatchToProps
   dispatch => ({
     onClose() {
       dispatch(closeFeatureEditorDialog());

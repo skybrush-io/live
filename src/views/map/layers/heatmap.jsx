@@ -288,9 +288,9 @@ HeatmapLayerSettingsPresentation.propTypes = {
 };
 
 export const HeatmapLayerSettings = connect(
-  // MapStateToProps
+  // mapStateToProps
   (state, ownProps) => ({}),
-  // MapDispatchToProps
+  // mapDispatchToProps
   (dispatch, ownProps) => ({
     setLayerParameter: (parameter, value) => {
       dispatch(setLayerParameterById(ownProps.layerId, parameter, value));
@@ -628,9 +628,9 @@ HeatmapLayerPresentation.propTypes = {
 };
 
 export const HeatmapLayer = connect(
-  // MapStateToProps
+  // mapStateToProps
   (state, ownProps) => ({}),
-  // MapDispatchToProps
+  // mapDispatchToProps
   (dispatch, ownProps) => ({
     setLayerParameter: (parameter, value) => {
       dispatch(setLayerParameterById(ownProps.layerId, parameter, value));

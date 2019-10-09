@@ -103,7 +103,7 @@ DetectedServersListPresentation.propTypes = {
  * detected on the network.
  */
 const DetectedServersList = connect(
-  // MapStateToProps
+  // mapStateToProps
   state => ({
     isScanning: state.servers.isScanning,
     items: getDetectedServersInOrder(state)
@@ -157,7 +157,7 @@ ServerSettingsFormPresentation.propTypes = {
  * edit the server settings.
  */
 const ServerSettingsForm = connect(
-  // MapStateToProps
+  // mapStateToProps
   state => ({
     initialValues: state.dialogs.serverSettings
   })
@@ -292,13 +292,13 @@ ServerSettingsDialogPresentation.defaultProps = {
  * edit the server settings.
  */
 const ServerSettingsDialog = connect(
-  // MapStateToProps
+  // mapStateToProps
   state => ({
     active: state.dialogs.serverSettings.active,
     open: state.dialogs.serverSettings.dialogVisible,
     selectedTab: state.dialogs.serverSettings.selectedTab
   }),
-  // MapDispatchToProps
+  // mapDispatchToProps
   dispatch => ({
     forceFormSubmission() {
       forceFormSubmission('serverSettings');

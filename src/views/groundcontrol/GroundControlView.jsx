@@ -203,9 +203,9 @@ GroundControlViewPresentation.propTypes = {
 };
 
 const GroundControlView = connect(
-  // MapStateToProps
+  // mapStateToProps
   state => ({}),
-  // MapDispatchToProps
+  // mapDispatchToProps
   dispatch => ({})
 )(GroundControlViewPresentation);
 

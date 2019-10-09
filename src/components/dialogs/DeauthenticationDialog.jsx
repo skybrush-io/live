@@ -68,13 +68,13 @@ DeauthenticationDialogPresentation.propTypes = {
  * Authentication dialog.
  */
 const DeauthenticationDialog = connect(
-  // MapStateToProps
+  // mapStateToProps
   state => ({
     ...state.dialogs.deauthentication,
     title: 'Log out from server',
     user: getAuthenticatedUser(state)
   }),
-  // MapDispatchToProps
+  // mapDispatchToProps
   dispatch => ({
     onCancel() {
       dispatch(closeDeauthenticationDialog());

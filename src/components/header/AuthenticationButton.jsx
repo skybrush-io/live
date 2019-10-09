@@ -58,7 +58,7 @@ AuthenticationButtonPresentation.propTypes = {
 };
 
 export default connect(
-  // MapStateToProps
+  // mapStateToProps
   state => ({
     authRequired: requiresAuthentication(state),
     disabled: !supportsAuthentication(state),
@@ -70,7 +70,7 @@ export default connect(
       ? 'notAuthenticated'
       : 'authenticationNotRequired'
   }),
-  // MapDispatchToProps
+  // mapDispatchToProps
   dispatch => ({
     onAuthenticate: () => dispatch(showAuthenticationDialog()),
     onDeauthenticate: () => dispatch(showDeauthenticationDialog())

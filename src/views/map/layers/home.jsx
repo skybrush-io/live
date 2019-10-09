@@ -34,9 +34,9 @@ HomePositionsLayerSettingsPresentation.propTypes = {
 };
 
 export const HomePositionsLayerSettings = connect(
-  // MapStateToProps
+  // mapStateToProps
   (state, ownProps) => ({}),
-  // MapDispatchToProps
+  // mapDispatchToProps
   (dispatch, ownProps) => ({})
 )(HomePositionsLayerSettingsPresentation);
 
@@ -161,13 +161,13 @@ HomePositionsLayerPresentation.defaultProps = {
 };
 
 export const HomePositionsLayer = connect(
-  // MapStateToProps
+  // mapStateToProps
   state => ({
     angle: getMapOriginRotationAngle(state),
     coordinateSystemType: state.map.origin.type,
     homePosition: state.map.origin.position,
     selectedIds: getSelectedHomePositionIds(state)
   }),
-  // MapDispatchToProps
+  // mapDispatchToProps
   dispatch => ({})
 )(HomePositionsLayerPresentation);

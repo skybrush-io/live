@@ -63,9 +63,9 @@ AppSettingsDialogPresentation.defaultProps = {
  * edit the server settings.
  */
 const AppSettingsDialog = connect(
-  // MapStateToProps
+  // mapStateToProps
   state => state.dialogs.appSettings,
-  // MapDispatchToProps
+  // mapDispatchToProps
   dispatch => ({
     onClose() {
       dispatch(closeAppSettingsDialog());

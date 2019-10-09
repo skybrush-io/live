@@ -54,9 +54,9 @@ UntypedLayerSettingsPresentation.propTypes = {
 };
 
 export const UntypedLayerSettings = connect(
-  // MapStateToProps
+  // mapStateToProps
   (state, ownProps) => ({}),
-  // MapDispatchToProps
+  // mapDispatchToProps
   (dispatch, ownProps) => ({
     onLayerTypeSelected: value => {
       dispatch(changeLayerType(ownProps.layerId, value));
@@ -75,8 +75,8 @@ class UntypedLayerPresentation extends React.Component {
 UntypedLayerPresentation.propTypes = {};
 
 export const UntypedLayer = connect(
-  // MapStateToProps
+  // mapStateToProps
   (state, ownProps) => ({}),
-  // MapDispatchToProps
+  // mapDispatchToProps
   (dispatch, ownProps) => ({})
 )(UntypedLayerPresentation);

@@ -49,9 +49,9 @@ GlobalErrorDialogPresentation.propTypes = {
  * Global error dialog.
  */
 const GlobalErrorDialog = connect(
-  // MapStateToProps
+  // mapStateToProps
   state => state.dialogs.error,
-  // MapDispatchToProps
+  // mapDispatchToProps
   dispatch => ({
     onClose() {
       dispatch(closeErrorDialog());

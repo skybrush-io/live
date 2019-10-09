@@ -85,9 +85,9 @@ MapToolbarPresentation.propTypes = {
  * Main toolbar on the map.
  */
 const MapToolbar = connect(
-  // MapStateToProps
+  // mapStateToProps
   state => Object.assign({}, state.map.tools),
-  // MapDispatchToProps
+  // mapDispatchToProps
   dispatch => ({
     onToolSelected(tool) {
       dispatch(selectMapTool(tool));

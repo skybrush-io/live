@@ -110,9 +110,9 @@ HexGridLayerSettingsPresentation.propTypes = {
 };
 
 export const HexGridLayerSettings = connect(
-  // MapStateToProps
+  // mapStateToProps
   (state, ownProps) => ({}),
-  // MapDispatchToProps
+  // mapDispatchToProps
   (dispatch, ownProps) => ({
     setLayerParameter: (parameter, value) => {
       dispatch(setLayerParameterById(ownProps.layerId, parameter, value));
@@ -231,8 +231,8 @@ HexGridLayerPresentation.propTypes = {
 };
 
 export const HexGridLayer = connect(
-  // MapStateToProps
+  // mapStateToProps
   (state, ownProps) => ({}),
-  // MapDispatchToProps
+  // mapDispatchToProps
   (dispatch, ownProps) => ({})
 )(HexGridLayerPresentation);

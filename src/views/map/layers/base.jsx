@@ -46,9 +46,9 @@ BaseLayerSettingsPresentation.propTypes = {
 };
 
 export const BaseLayerSettings = connect(
-  // MapStateToProps
+  // mapStateToProps
   (state, ownProps) => ({}),
-  // MapDispatchToProps
+  // mapDispatchToProps
   (dispatch, ownProps) => ({
     onLayerSourceChanged: (event, value) => {
       dispatch(selectMapSource({ layerId: ownProps.layerId, source: value }));

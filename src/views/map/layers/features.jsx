@@ -31,9 +31,9 @@ import {
 const FeaturesLayerSettingsPresentation = () => <noscript />;
 
 export const FeaturesLayerSettings = connect(
-  // MapStateToProps
+  // mapStateToProps
   (state, ownProps) => ({}),
-  // MapDispatchToProps
+  // mapDispatchToProps
   (dispatch, ownProps) => ({})
 )(FeaturesLayerSettingsPresentation);
 
@@ -225,12 +225,12 @@ FeaturesLayerPresentation.defaultProps = {
 };
 
 export const FeaturesLayer = connect(
-  // MapStateToProps
+  // mapStateToProps
   (state, ownProps) => ({
     features: getFeaturesInOrder(state),
     selectedFeatureIds: getSelectedFeatureIds(state)
   }),
-  // MapDispatchToProps
+  // mapDispatchToProps
   (dispatch, ownProps) => ({
     onFeaturesModified: event => {
       // Const { features } = event

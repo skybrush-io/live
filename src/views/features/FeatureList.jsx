@@ -64,12 +64,12 @@ export const FeatureListPresentation = listOf(
 FeatureListPresentation.displayName = 'FeatureListPresentation';
 
 export default connect(
-  // MapStateToProps
+  // mapStateToProps
   state => ({
     dense: true,
     features: getFeaturesInOrder(state)
   }),
-  // MapDispatchToProps
+  // mapDispatchToProps
   dispatch => ({
     onEditFeature(event) {
       const featureId = event.currentTarget.dataset.id;

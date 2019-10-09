@@ -228,7 +228,7 @@ MessagesPanelPresentation.defaultProps = {
  * Messages panel container component to bind it to the Redux store.
  */
 const MessagesPanel = connect(
-  // MapStateToProps
+  // mapStateToProps
   state => {
     const { messages } = state;
     const { selectedUAVId } = messages;
@@ -244,7 +244,7 @@ const MessagesPanel = connect(
     };
   },
 
-  // MapDispatchToProps
+  // mapDispatchToProps
   dispatch => ({
     onSend(message) {
       // Dispatch a Redux action. This will update the store but will not

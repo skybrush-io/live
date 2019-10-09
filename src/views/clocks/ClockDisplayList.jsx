@@ -215,7 +215,7 @@ ClockDisplayListPresentation.displayName = 'ClockDisplayListPresentation';
  * the Redux store.
  */
 const ClockDisplayList = connect(
-  // MapStateToProps
+  // mapStateToProps
   state => ({
     clocks: state.clocks.order.map(entryName => {
       const result = { ...state.clocks.items[entryName] };
@@ -229,7 +229,7 @@ const ClockDisplayList = connect(
     }),
     dense: true
   }),
-  // MapDispatchToProps
+  // mapDispatchToProps
   undefined
 )(ClockDisplayListPresentation);
 

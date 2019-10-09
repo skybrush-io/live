@@ -26,6 +26,14 @@ export const isServerDetectionSupported =
  * the same machine as the current page is.
  */
 class ServerDetectionManagerPresentation extends React.Component {
+  propTypes = {
+    onScanningStarted: PropTypes.func,
+    onScanningStopped: PropTypes.func,
+    onServerDetected: PropTypes.func,
+    onServerHostnameResolved: PropTypes.func,
+    onServerInferred: PropTypes.func
+  };
+
   constructor(props) {
     super(props);
 
@@ -48,7 +56,7 @@ class ServerDetectionManagerPresentation extends React.Component {
       onScanningStarted();
     }
 
-    this._ssdpClient = window.bridge.createSSDPClient((headers, rinfo) => {
+    this._ssdpClient = window.bridge.createSSDPClient(headers => {
       if (this._ssdpClient === undefined) {
         // Component was already unmounted.
         return;
@@ -75,7 +83,7 @@ class ServerDetectionManagerPresentation extends React.Component {
       // Create a new, fake URL with http: as the protocol so we can parse the
       // hostname and the port (sio: and sio+tls: is not recognized by the URL
       // class)
-      const httpLocation = `http:${location.substr(protocol.length)}`;
+      const httpLocation = `http:${location.slice(protocol.length)}`;
       const { hostname, port } = new URL(httpLocation);
       const numericPort = Number(port);
       if (
@@ -153,18 +161,10 @@ class ServerDetectionManagerPresentation extends React.Component {
   }
 }
 
-ServerDetectionManagerPresentation.propTypes = {
-  onScanningStarted: PropTypes.func,
-  onScanningStopped: PropTypes.func,
-  onServerDetected: PropTypes.func,
-  onServerHostnameResolved: PropTypes.func,
-  onServerInferred: PropTypes.func
-};
-
 export const ServerDetectionManager = connect(
-  // MapStateToProps
-  state => ({}),
-  // MapDispatchToProps
+  // mapStateToProps
+  () => ({}),
+  // mapDispatchToProps
   dispatch => ({
     onScanningStarted() {
       dispatch(removeAllDetectedServers());

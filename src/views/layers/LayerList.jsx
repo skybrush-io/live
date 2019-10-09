@@ -83,12 +83,12 @@ LayerListPresentation.propTypes = {
  * Container for the layer list that binds it to the Redux store.
  */
 const LayerList = connect(
-  // MapStateToProps
+  // mapStateToProps
   state => ({
     dense: true,
     layers: getLayersInOrder(state)
   }),
-  // MapDispatchToProps
+  // mapDispatchToProps
   dispatch => ({
     onChange(event, layerId) {
       dispatch(showLayersDialog(layerId));

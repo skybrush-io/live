@@ -129,9 +129,9 @@ GlobalSnackbarPresentation.propTypes = {
  * Global snackbar at the bottom of the main window.
  */
 const GlobalSnackbar = connect(
-  // MapStateToProps
+  // mapStateToProps
   state => state.snackbar,
-  // MapDispatchToProps
+  // mapDispatchToProps
   dispatch => ({
     onClose() {
       dispatch(dismissSnackbar());

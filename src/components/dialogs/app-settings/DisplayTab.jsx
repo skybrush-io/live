@@ -89,14 +89,14 @@ DisplayTabPresentation.propTypes = {
 };
 
 export default connect(
-  // MapStateToProps
+  // mapStateToProps
   state => ({
     coordinateSystemType: state.map.origin.type,
     homePosition: state.map.origin.position,
     orientation: getMapOriginRotationAngle(state),
     ...state.settings.display
   }),
-  // MapDispatchToProps
+  // mapDispatchToProps
   dispatch => ({
     onCheckboxToggled(event) {
       dispatch(

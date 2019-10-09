@@ -13,7 +13,7 @@ import SidebarBadge from './SidebarBadge';
  * status of all the connections reported by the server.
  */
 export default connect(
-  // MapStateToProps
+  // mapStateToProps
   (state, ownProps) => {
     const level = state.log.highestUnseenMessageLevel;
     return {

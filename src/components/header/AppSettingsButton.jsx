@@ -26,9 +26,9 @@ AppSettingsButtonPresentation.propTypes = {
 };
 
 export default connect(
-  // MapStateToProps
+  // mapStateToProps
   state => ({}),
-  // MapDispatchToProps
+  // mapDispatchToProps
   dispatch => ({
     onClick() {
       dispatch(toggleAppSettingsDialog());

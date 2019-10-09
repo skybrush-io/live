@@ -117,9 +117,9 @@ TileServerLayerSettingsPresentation.propTypes = {
 };
 
 export const TileServerLayerSettings = connect(
-  // MapStateToProps
+  // mapStateToProps
   (state, ownProps) => ({}),
-  // MapDispatchToProps
+  // mapDispatchToProps
   (dispatch, ownProps) => ({
     changeTileServerType: event => {
       dispatch(
@@ -187,8 +187,8 @@ TileServerLayerPresentation.propTypes = {
 };
 
 export const TileServerLayer = connect(
-  // MapStateToProps
+  // mapStateToProps
   (state, ownProps) => ({}),
-  // MapDispatchToProps
+  // mapDispatchToProps
   (dispatch, ownProps) => ({})
 )(TileServerLayerPresentation);

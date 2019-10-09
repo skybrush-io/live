@@ -95,11 +95,11 @@ PathScannerPresentation.defaultProps = {
 };
 
 export default connect(
-  // MapStateToProps
+  // mapStateToProps
   state => ({
     ...state.localServer.pathScan
   }),
-  // MapDispatchToProps
+  // mapDispatchToProps
   dispatch => ({
     onRequestReload: () => {
       dispatch(startLocalServerExecutableSearch());

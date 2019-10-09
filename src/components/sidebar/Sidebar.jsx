@@ -119,7 +119,7 @@ SidebarPresentation.propTypes = {
  * Sidebar at the left edge of the main window.
  */
 export const Sidebar = connect(
-  // MapStateToProps
+  // mapStateToProps
   (state, { workbench }) => ({
     ...state.sidebar,
     workbench

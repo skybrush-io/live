@@ -80,9 +80,9 @@ DrawingToolbarPresentation.propTypes = {
  * Drawing toolbar on the map.
  */
 const DrawingToolbar = connect(
-  // MapStateToProps
+  // mapStateToProps
   state => ({ ...state.map.tools }),
-  // MapDispatchToProps
+  // mapDispatchToProps
   dispatch => ({
     onToolSelected(tool) {
       dispatch(selectMapTool(tool));

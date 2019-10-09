@@ -111,13 +111,13 @@ BasicLayerSettingsFormPresentation.propTypes = {
  * edit the basic settings of a layer.
  */
 const BasicLayerSettingsForm = connect(
-  // MapStateToProps
+  // mapStateToProps
   (state, ownProps) => ({
     initialValues: {
       label: ownProps.layer.label
     }
   }),
-  // MapDispatchToProps
+  // mapDispatchToProps
   (dispatch, ownProps) => ({
     onSubmit: values => {
       dispatch(renameLayer(ownProps.layerId, values.label));
@@ -211,11 +211,11 @@ LayerSettingsContainerPresentation.propTypes = {
  * Container of the panel that contains the settings of a layer.
  */
 const LayerSettingsContainer = connect(
-  // MapStateToProps
+  // mapStateToProps
   (state, ownProps) => ({
     layer: state.map.layers.byId[ownProps.layerId]
   }),
-  // MapDispatchToProps
+  // mapDispatchToProps
   (dispatch, ownProps) => ({})
 )(LayerSettingsContainerPresentation);
 
@@ -321,7 +321,7 @@ LayerSettingsDialogPresentation.defaultProps = {
  * the map.
  */
 const LayerSettingsDialog = connect(
-  // MapStateToProps
+  // mapStateToProps
   state => {
     const { layerSettings } = state.dialogs;
     const { order } = state.map.layers;
@@ -335,7 +335,7 @@ const LayerSettingsDialog = connect(
       selectedLayerId: selectedLayer
     };
   },
-  // MapDispatchToProps
+  // mapDispatchToProps
   dispatch => ({
     onClose() {
       dispatch(closeLayersDialog());

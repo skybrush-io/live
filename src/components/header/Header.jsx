@@ -54,12 +54,12 @@ HeaderPresentation.propTypes = {
 };
 
 export const Header = connect(
-  // MapStateToProps
+  // mapStateToProps
   (state, { workbench }) => ({
     sidebarOpen: state.sidebar.open,
     workbench
   }),
-  // MapDispatchToProps
+  // mapDispatchToProps
   dispatch => ({
     onToggleSidebar() {
       dispatch(toggleSidebar());

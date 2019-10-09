@@ -131,12 +131,12 @@ export const ConnectionListPresentation = listOf(
 ConnectionListPresentation.displayName = 'ConnectionListPresentation';
 
 const ConnectionList = connect(
-  // MapStateToProps
+  // mapStateToProps
   state => ({
     connections: getConnectionsInOrder(state),
     dense: true
   }),
-  // MapDispatchToProps
+  // mapDispatchToProps
   dispatch => ({
     onShowSettings() {
       dispatch(showServerSettingsDialog());

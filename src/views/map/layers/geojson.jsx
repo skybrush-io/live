@@ -127,9 +127,9 @@ GeoJSONLayerSettingsPresentation.propTypes = {
 };
 
 export const GeoJSONLayerSettings = connect(
-  // MapStateToProps
+  // mapStateToProps
   (state, ownProps) => ({}),
-  // MapDispatchToProps
+  // mapDispatchToProps
   (dispatch, ownProps) => ({
     setLayerParameter: (parameter, value) => {
       dispatch(setLayerParameterById(ownProps.layerId, parameter, value));
@@ -266,8 +266,8 @@ GeoJSONLayerPresentation.propTypes = {
 };
 
 export const GeoJSONLayer = connect(
-  // MapStateToProps
+  // mapStateToProps
   (state, ownProps) => ({}),
-  // MapDispatchToProps
+  // mapDispatchToProps
   (dispatch, ownProps) => ({})
 )(GeoJSONLayerPresentation);

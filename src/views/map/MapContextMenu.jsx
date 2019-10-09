@@ -313,7 +313,7 @@ MapContextMenu.propTypes = {
 };
 
 const MapContextMenuContainer = connect(
-  // MapStateToProps
+  // mapStateToProps
   state => ({
     contextProvider: context => ({
       selectedFeatureIds: getSelectedFeatureIds(state),
@@ -322,7 +322,7 @@ const MapContextMenuContainer = connect(
       ...context
     })
   }),
-  // MapDispatchToProps
+  // mapDispatchToProps
   dispatch => ({
     editFeature: id => {
       dispatch(showFeatureEditorDialog(id));

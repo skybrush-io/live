@@ -138,7 +138,7 @@ MessagesDialogPresentation.propTypes = {
  * Messages dialog container component to bind it to the Redux store.
  */
 const MessagesDialog = connect(
-  // MapStateToProps
+  // mapStateToProps
   state => {
     const { dialogVisible } = state.dialogs.messages;
     const { messages } = state;
@@ -149,7 +149,7 @@ const MessagesDialog = connect(
     };
   },
 
-  // MapDispatchToProps
+  // mapDispatchToProps
   dispatch => ({
     onClear() {
       dispatch(clearMessagesOfSelectedUAV());

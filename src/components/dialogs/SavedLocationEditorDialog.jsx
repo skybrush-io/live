@@ -101,7 +101,7 @@ SavedLocationEditorFormPresentation.propTypes = {
  * edit the saved location.
  */
 const SavedLocationEditorForm = connect(
-  // MapStateToProps
+  // mapStateToProps
   state => {
     const id = state.dialogs.savedLocationEditor.editedLocationId;
     const currentLocation =
@@ -207,12 +207,12 @@ SavedLocationEditorDialogPresentation.defaultProps = {
  * edit the server settings.
  */
 const SavedLocationEditorDialog = connect(
-  // MapStateToProps
+  // mapStateToProps
   state => ({
     open: state.dialogs.savedLocationEditor.dialogVisible,
     editedLocationId: state.dialogs.savedLocationEditor.editedLocationId
   }),
-  // MapDispatchToProps
+  // mapDispatchToProps
   dispatch => ({
     onClose() {
       dispatch(cancelLocationEditing());

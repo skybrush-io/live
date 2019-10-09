@@ -313,7 +313,7 @@ const executeTasksAfterConnection = async dispatch => {
 };
 
 const ServerConnectionManager = connect(
-  // MapStateToProps
+  // mapStateToProps
   state => ({
     active: state.dialogs.serverSettings.active,
     cliArguments: state.settings.localServer.cliArguments,
@@ -322,7 +322,7 @@ const ServerConnectionManager = connect(
     port: state.dialogs.serverSettings.port,
     protocol: state.dialogs.serverSettings.isSecure ? 'https:' : 'http:'
   }),
-  // MapDispatchToProps
+  // mapDispatchToProps
   dispatch => ({
     onConnecting() {
       dispatch(setCurrentServerConnectionState(ConnectionState.CONNECTING));

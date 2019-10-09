@@ -107,11 +107,11 @@ class LogPanelPresentation extends React.Component {
 }
 
 const LogPanel = connect(
-  // MapStateToProps
+  // mapStateToProps
   state => ({
     items: state.log.items
   }),
-  // MapDispatchToProps
+  // mapDispatchToProps
   dispatch => ({
     onDeleteLogItem(id) {
       dispatch(deleteLogItem(id));

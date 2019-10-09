@@ -27,9 +27,9 @@ OwnLocationLayerSettingsPresentation.propTypes = {
 };
 
 export const OwnLocationLayerSettings = connect(
-  // MapStateToProps
+  // mapStateToProps
   (state, ownProps) => ({}),
-  // MapDispatchToProps
+  // mapDispatchToProps
   (dispatch, ownProps) => ({})
 )(OwnLocationLayerSettingsPresentation);
 
@@ -167,9 +167,9 @@ OwnLocationLayerPresentation.propTypes = {
 };
 
 export const OwnLocationLayer = connect(
-  // MapStateToProps
+  // mapStateToProps
   state => ({}),
-  // MapDispatchToProps
+  // mapDispatchToProps
   dispatch => ({
     onError: logger.warn
   })

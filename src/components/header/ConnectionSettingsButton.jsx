@@ -44,12 +44,12 @@ ConnectionSettingsButtonPresentation.propTypes = {
 };
 
 export default connect(
-  // MapStateToProps
+  // mapStateToProps
   state => ({
     active: state.dialogs.serverSettings.active,
     state: state.servers.current.state
   }),
-  // MapDispatchToProps
+  // mapDispatchToProps
   dispatch => ({
     onClick() {
       dispatch(showServerSettingsDialog());

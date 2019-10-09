@@ -92,7 +92,7 @@ MapViewLayersPresentation.propTypes = {
  * Connects the map view layers to the Redux store.
  */
 const MapViewLayers = connect(
-  // MapStateToProps
+  // mapStateToProps
   state => ({
     layers: getVisibleLayersInOrder(state),
     selectedTool: state.map.tools.selectedTool
@@ -126,7 +126,7 @@ const MapViewControlsPresentation = props => {
  * use on the map in the main window
  */
 const MapViewControls = connect(
-  // MapStateToProps
+  // mapStateToProps
   state => ({
     formatCoordinate: getExtendedCoordinateFormatter(state),
     ...state.settings.display
@@ -663,7 +663,7 @@ MapViewPresentation.defaultProps = {
  * Connects the map view to the Redux store.
  */
 const MapView = connect(
-  // MapStateToProps
+  // mapStateToProps
   state => ({
     center: state.map.view.position,
     rotation: getMapViewRotationAngle(state),

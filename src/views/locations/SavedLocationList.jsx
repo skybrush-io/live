@@ -87,12 +87,12 @@ export const LocationListPresentation = listOf(
 LocationListPresentation.displayName = 'LocationListPresentation';
 
 const LocationList = connect(
-  // MapStateToProps
+  // mapStateToProps
   state => ({
     dense: true,
     savedLocations: getSavedLocationsInOrder(state)
   }),
-  // MapDispatchToProps
+  // mapDispatchToProps
   dispatch => ({
     onEditItem(id) {
       dispatch(editSavedLocation(id));

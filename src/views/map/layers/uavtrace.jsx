@@ -94,9 +94,9 @@ UAVTraceLayerSettingsPresentation.propTypes = {
 };
 
 export const UAVTraceLayerSettings = connect(
-  // MapStateToProps
+  // mapStateToProps
   (state, ownProps) => ({}),
-  // MapDispatchToProps
+  // mapDispatchToProps
   (dispatch, ownProps) => ({
     setLayerParameters: parameters => {
       dispatch(setLayerParametersById(ownProps.layerId, parameters));
@@ -239,8 +239,8 @@ UAVTraceLayerPresentation.propTypes = {
 };
 
 export const UAVTraceLayer = connect(
-  // MapStateToProps
+  // mapStateToProps
   (state, ownProps) => ({}),
-  // MapDispatchToProps
+  // mapDispatchToProps
   (dispatch, ownProps) => ({})
 )(UAVTraceLayerPresentation);

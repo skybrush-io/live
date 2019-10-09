@@ -119,9 +119,9 @@ UAVToolbar.propTypes = {
 };
 
 export default connect(
-  // MapStateToProps
+  // mapStateToProps
   null,
-  // MapDispatchToProps
+  // mapDispatchToProps
   dispatch => ({
     selectUAVInMessagesDialog: id => {
       dispatch(selectUAVInMessagesDialog(id));

@@ -76,7 +76,7 @@ const calculateStatusSummary = createSelector(
  * status of all the connections reported by the server.
  */
 export default connect(
-  // MapStateToProps
+  // mapStateToProps
   state => {
     const { level } = calculateStatusSummary(state);
     return {

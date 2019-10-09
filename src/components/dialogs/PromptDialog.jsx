@@ -89,9 +89,9 @@ PromptDialogPresentation.propTypes = {
 };
 
 const PromptDialog = connect(
-  // MapStateToProps
+  // mapStateToProps
   state => state.dialogs.prompt,
-  // MapDispatchToProps
+  // mapDispatchToProps
   dispatch => ({
     onCancel() {
       dispatch(cancelPromptDialog());
