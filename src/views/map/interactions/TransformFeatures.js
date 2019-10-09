@@ -86,7 +86,7 @@ export class TransformFeaturesInteraction extends PointerInteraction {
             const extent = Extent.createEmpty();
             features.forEach(feature => {
               const geom = feature.getGeometry();
-              if (feature.getId().substr(0, 5) === 'home$') {
+              if (feature.getId().slice(0, 5) === 'home$') {
                 Extent.extend(
                   extent,
                   Extent.boundingExtent([geom.getFirstCoordinate()])

@@ -40,8 +40,8 @@ export function extendWith(...items) {
 export function stripPrefix(prefix) {
   const { length } = prefix;
   return input => {
-    if (input && input.substr(0, length) === prefix) {
-      return input.substr(length);
+    if (input && input.slice(0, length) === prefix) {
+      return input.slice(length);
     }
 
     return undefined;
