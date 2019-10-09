@@ -67,7 +67,7 @@ const reducer = handleActions(
       return updateSelection(state, action.payload);
     },
 
-    CLEAR_SELECTION(state, action) {
+    CLEAR_SELECTION() {
       return updateSelection([]);
     },
 

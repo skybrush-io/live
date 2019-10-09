@@ -38,7 +38,14 @@ function iconForLogLevel(level) {
 }
 
 class LogPanelPresentation extends React.Component {
-  componentWillMount() {
+  propTypes = {
+    items: PropTypes.array,
+
+    onMounting: PropTypes.func,
+    onUnmounting: PropTypes.func
+  };
+
+  componentDidMount() {
     if (this.props.onMounting) {
       this.props.onMounting();
     }
@@ -98,13 +105,6 @@ class LogPanelPresentation extends React.Component {
     );
   }
 }
-
-LogPanelPresentation.propTypes = {
-  items: PropTypes.array,
-
-  onMounting: PropTypes.func,
-  onUnmounting: PropTypes.func
-};
 
 const LogPanel = connect(
   // MapStateToProps

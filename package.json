@@ -139,12 +139,15 @@
     "parser": "babel-eslint",
     "space": true,
     "prettier": true,
+	"env": ["browser"],
     "rules": {
       "import/no-unassigned-import": 0,
       "object-curly-spacing": [
         "error",
         "always"
-      ]
+      ],
+	  "react/require-default-props": 0,
+	  "unicorn/filename-case": 0
     }
   }
 }

@@ -13,8 +13,7 @@ import makeLogger from './utils/logging';
 const __PROD__ = process.env.NODE_ENV === 'production';
 const logger = makeLogger('error');
 
-/* eslint-disable handle-callback-err */
-const ProductionErrorHandler = ({ error }) => {
+const ProductionErrorHandler = () => {
   return (
     <div className="error-panel">
       <div className="error-icon">
@@ -25,17 +24,12 @@ const ProductionErrorHandler = ({ error }) => {
   );
 };
 
-ProductionErrorHandler.propTypes = {
-  error: PropTypes.any
-};
-
 const StackTraceErrorHandler = ({ error }) => (
   <RedBox error={error} editorScheme="atm" />
 );
 StackTraceErrorHandler.propTypes = {
-  error: PropTypes.any
+  error: PropTypes.any.isRequired
 };
-/* eslint-enable handle-callback-err */
 
 export const ErrorHandler = __PROD__
   ? ProductionErrorHandler

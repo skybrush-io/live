@@ -33,14 +33,12 @@ const LocationListEntry = props => {
   const mapViewToLocation = () => mapViewToLocationSignal.dispatch(location);
 
   const actionButton = (
-    // eslint-disable-next-line react/jsx-no-bind
     <IconButton onClick={editLocation}>
       <ActionSettings />
     </IconButton>
   );
 
   return (
-    // eslint-disable-next-line react/jsx-no-bind
     <ListItem button onClick={mapViewToLocation}>
       <ListItemText primary={name} />
       <ListItemSecondaryAction>{actionButton}</ListItemSecondaryAction>
