@@ -26,7 +26,7 @@ export const isServerDetectionSupported =
  * the same machine as the current page is.
  */
 class ServerDetectionManagerPresentation extends React.Component {
-  propTypes = {
+  static propTypes = {
     onScanningStarted: PropTypes.func,
     onScanningStopped: PropTypes.func,
     onServerDetected: PropTypes.func,

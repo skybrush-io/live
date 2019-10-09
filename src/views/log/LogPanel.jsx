@@ -38,7 +38,7 @@ function iconForLogLevel(level) {
 }
 
 class LogPanelPresentation extends React.Component {
-  propTypes = {
+  static propTypes = {
     items: PropTypes.array,
 
     onMounting: PropTypes.func,
