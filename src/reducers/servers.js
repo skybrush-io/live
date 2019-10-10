@@ -101,7 +101,7 @@ const reducer = handleActions(
 
       // If we have connected or disconnected just now, clear the authentication
       // information as we don't know yet what the server provides
-      if (state === ConnectionState.DISCONNECTED) {
+      if (updates.state === ConnectionState.DISCONNECTED) {
         updates.authentication = u.constant(INVALID);
       }
 
@@ -120,7 +120,7 @@ const reducer = handleActions(
       u({ isAuthenticating: false }, state),
 
     UPDATE_CURRENT_SERVER_AUTHENTICATION_SETTINGS: (state, action) => {
-      const { methods, required } = action.payload;
+      const { methods, required, user } = action.payload;
 
       if (!Array.isArray(methods)) {
         return state;
@@ -132,6 +132,8 @@ const reducer = handleActions(
             authentication: u({
               required: Boolean(required),
               methods: methods.map(x => String(x)),
+              user:
+                user === undefined ? state.current.authentication.user : user,
               valid: true
             })
           })

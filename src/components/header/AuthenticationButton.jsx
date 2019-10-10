@@ -26,16 +26,15 @@ const badgeColorForState = {
 };
 
 const AuthenticationButtonPresentation = ({
-  authRequired,
-  disabled,
+  isDisabled,
   label,
   onAuthenticate,
   onDeauthenticate,
   state
 }) => (
   <div
-    className={clsx('wb-module', { 'wb-module-disabled': disabled })}
-    onClick={state !== 'authenticated' ? onAuthenticate : onDeauthenticate}
+    className={clsx('wb-module', { 'wb-module-disabled': isDisabled })}
+    onClick={state === 'authenticated' ? onDeauthenticate : onAuthenticate}
   >
     <span className={clsx('wb-icon', 'wb-module-icon')}>
       <SidebarBadge
@@ -49,8 +48,7 @@ const AuthenticationButtonPresentation = ({
 );
 
 AuthenticationButtonPresentation.propTypes = {
-  authRequired: PropTypes.bool,
-  disabled: PropTypes.bool,
+  isDisabled: PropTypes.bool,
   label: PropTypes.string,
   onAuthenticate: PropTypes.func,
   onDeauthenticate: PropTypes.func,
@@ -60,8 +58,8 @@ AuthenticationButtonPresentation.propTypes = {
 export default connect(
   // mapStateToProps
   state => ({
-    authRequired: requiresAuthentication(state),
-    disabled: !supportsAuthentication(state),
+    isAuthRequired: requiresAuthentication(state),
+    isDisabled: !supportsAuthentication(state),
     state: isAuthenticated(state)
       ? 'authenticated'
       : isAuthenticating(state)
