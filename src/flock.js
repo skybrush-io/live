@@ -3,11 +3,17 @@
  * manages.
  */
 
-import Flock from './model/flock';
+import React from 'react';
+import FlockModel from './model/flock';
 
 /**
  * The singleton flock instance that the application manages.
  */
-const flock = new Flock();
+const flock = new FlockModel();
+
+/**
+ * React context that exposes the flock instance to components.
+ */
+export const Flock = React.createContext();
 
 export default flock;

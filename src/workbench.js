@@ -7,12 +7,13 @@
  * workbench view and the sidebar.
  */
 
-import PropTypes from 'prop-types';
+import React from 'react';
 import { WorkbenchBuilder } from 'react-flexible-workbench';
-import { compose, getContext, renderNothing, withProps } from 'recompose';
+import { compose, renderNothing, withProps } from 'recompose';
 
 import { saveWorkbenchState } from './actions/workbench';
 import MessagesPanel from './components/chat/MessagesPanel';
+import { Flock } from './flock';
 import store from './store';
 import views from './views';
 
@@ -22,24 +23,27 @@ require('../assets/css/workbench.less');
  * Higher order component that propagates the flock passed in the context
  * as props into the wrapped component.
  */
-const getFlockFromContext = getContext({
-  flock: PropTypes.object.isRequired
-});
+const injectFlockFromContext = BaseComponent =>
+  React.forwardRef((props, ref) => (
+    <Flock.Consumer>
+      {flock => <BaseComponent {...props} ref={ref} flock={flock} />}
+    </Flock.Consumer>
+  ));
 
 /**
  * Registry that maps component types to be used in the top-level
  * GoldenLayout object to the corresponding React components.
  *
  * The React components will be created without any props. If you need the
- * components to have props, use the <code>getContext()</code> or
- * <code>withProps()</code> helper functions from <code>recompose</code>.
+ * components to have props, use the <code>withProps()</code> helper function
+ * from <code>recompose</code>.
  */
 const componentRegistry = {
   'connection-list': views.ConnectionList,
   'clock-list': views.ClockDisplayList,
   'dataset-list': views.DatasetList,
   'feature-list': views.FeatureList,
-  'ground-control-view': getFlockFromContext(views.GroundControlView),
+  'ground-control-view': injectFlockFromContext(views.GroundControlView),
   'layer-list': views.LayerList,
   'log-panel': views.LogPanel,
   map: views.MapView,
@@ -49,22 +53,21 @@ const componentRegistry = {
         padding: '0 10px'
       }
     }),
-    getFlockFromContext
+    injectFlockFromContext
   )(MessagesPanel),
   placeholder: renderNothing(),
   'saved-location-list': views.SavedLocationList,
-  'uav-list': getFlockFromContext(views.UAVList)
+  'uav-list': injectFlockFromContext(views.UAVList)
 };
 
 function constructDefaultWorkbench(store) {
   const builder = new WorkbenchBuilder();
 
   // Register all our supported components in the builder
-  for (const key in componentRegistry) {
+  for (const key of Object.keys(componentRegistry)) {
     builder.registerComponent(key, componentRegistry[key]);
   }
 
-  /* eslint-disable indent */
   const workbench = builder
     .makeColumns()
     .makeStack()
@@ -94,7 +97,6 @@ function constructDefaultWorkbench(store) {
     .setRelativeWidth(25)
     .finish()
     .build();
-  /* eslint-enable indent */
 
   // Wire the workbench to the store so the store is updated when
   // the workbench state changes

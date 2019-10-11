@@ -13,7 +13,7 @@ const wrapWith = WrapperComponent => BaseComponent => {
   };
   result.displayName = wrapDisplayName(
     BaseComponent,
-    'wrapWith[' + getDisplayName(WrapperComponent) + ']'
+    `wrapWith(${getDisplayName(WrapperComponent)})`
   );
   return result;
 };

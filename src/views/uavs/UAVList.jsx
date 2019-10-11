@@ -37,7 +37,7 @@ import CountMonitor from './CountMonitor';
 function formatSecondaryTextForUAV(uav) {
   return (
     `${formatCoordinate([uav.lon, uav.lat])}, ${uav.heading.toFixed(1)}°` +
-    (uav.agl !== undefined ? ` @ ${uav.agl.toFixed(1)}m` : '')
+    (uav.agl === undefined ? '' : ` @ ${uav.agl.toFixed(1)}m`)
   );
 }
 
@@ -53,7 +53,6 @@ const jumpToUAV = function(uav) {
   );
 };
 
-/* eslint-disable react/jsx-no-bind */
 /**
  * Presentation component for the entire UAV list.
  */
@@ -86,22 +85,27 @@ const UAVListPresentation = multiSelectableListOf(
   }
 );
 UAVListPresentation.displayName = 'UAVListPresentation';
-/* eslint-enable react/jsx-no-bind */
 
 /**
  * React component that shows the state of the known UAVs in a Flockwave
  * flock.
  */
 class UAVList extends React.Component {
+  static propTypes = {
+    flock: PropTypes.instanceOf(Flock),
+    selectedUAVIds: PropTypes.arrayOf(PropTypes.string).isRequired,
+    onSelectionChanged: PropTypes.func
+  };
+
+  state = {
+    uavs: new Immutable.List(),
+    uavIdToIndex: new Immutable.Map()
+  };
+
   constructor(props) {
     super(props);
 
     this._eventBindings = {};
-
-    this.state = {
-      uavs: Immutable.List(),
-      uavIdToIndex: Immutable.Map()
-    };
   }
 
   componentDidMount() {
@@ -232,16 +236,6 @@ class UAVList extends React.Component {
     );
   }
 }
-
-UAVList.propTypes = {
-  flock: PropTypes.instanceOf(Flock),
-  selectedUAVIds: PropTypes.arrayOf(PropTypes.string).isRequired,
-  onSelectionChanged: PropTypes.func
-};
-
-UAVList.defaultProps = {
-  selectedUAVIds: []
-};
 
 const SmartUAVList = connect(
   // mapStateToProps

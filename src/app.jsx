@@ -1,10 +1,9 @@
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { MuiThemeProvider } from '@material-ui/core/styles';
-import PropTypes from 'prop-types';
 import React from 'react';
 import { WorkbenchView } from 'react-flexible-workbench';
 import { Provider as StoreProvider } from 'react-redux';
-import { compose, withContext, withProps } from 'recompose';
+import { compose, withProps } from 'recompose';
 
 import dialogs from './components/dialogs';
 import Header from './components/header';
@@ -13,7 +12,7 @@ import GlobalSnackbar from './components/GlobalSnackbar';
 import HotkeyHandler from './components/HotkeyHandler';
 import ServerConnectionManager from './components/ServerConnectionManager';
 
-import flock from './flock';
+import flock, { Flock } from './flock';
 import { withErrorBoundary, wrapWith } from './hoc';
 import hotkeys from './hotkeys';
 import store from './store';
@@ -76,15 +75,10 @@ const Application = () => (
  * individual application panels.
  */
 const enhancer = compose(
-  withContext(
-    {
-      flock: PropTypes.object.isRequired
-    },
-    () => ({ flock })
-  ),
   withErrorBoundary,
   wrapWith(withProps({ theme })(MuiThemeProvider)),
-  wrapWith(withProps({ store })(StoreProvider))
+  wrapWith(withProps({ store })(StoreProvider)),
+  wrapWith(withProps({ value: flock })(Flock.Provider))
 );
 
 workbench.hoc = enhancer;
