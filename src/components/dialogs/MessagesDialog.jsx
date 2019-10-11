@@ -11,19 +11,28 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 
+import { MessagesPanel } from '../chat';
+
 import {
   closeMessagesDialog,
   clearMessagesOfSelectedUAV
-} from '../../actions/messages';
-import { MessagesPanel } from '../chat';
-import Flock from '../../model/flock';
+} from '~/actions/messages';
+import Flock from '~/model/flock';
 
-import { focusMessagesDialogUAVSelectorFieldSignal } from '../../signals';
+import { focusMessagesDialogUAVSelectorFieldSignal } from '~/signals';
 
 /**
  * Presentation component for the "Messages" dialog.
  */
 class MessagesDialogPresentation extends React.Component {
+  static propTypes = {
+    flock: PropTypes.instanceOf(Flock),
+    isOpen: PropTypes.bool.isRequired,
+    onClear: PropTypes.func,
+    onClose: PropTypes.func,
+    selectedUAVId: PropTypes.string
+  };
+
   constructor(props) {
     super(props);
 
@@ -32,9 +41,30 @@ class MessagesDialogPresentation extends React.Component {
     this._onOpen = this._onOpen.bind(this);
     this._onClose = this._onClose.bind(this);
     this._setMessagesPanel = this._setMessagesPanel.bind(this);
-    this._wasOpen = false;
 
     this._handleKeyWhileOpen = this._handleKeyWhileOpen.bind(this);
+  }
+
+  componentDidMount() {
+    this._maybeIsOpenChanged(false, this.props.isOpen);
+  }
+
+  componentDidUpdate(prevProps) {
+    this._maybeIsOpenChanged(prevProps.isOpen, this.props.isOpen);
+  }
+
+  componentWillUnmount() {
+    this._maybeIsOpenChanged(this.props.isOpen, false);
+  }
+
+  _maybeIsOpenChanged(oldValue, newValue) {
+    if (oldValue !== newValue) {
+      if (oldValue) {
+        this._onClose();
+      } else {
+        this._onOpen();
+      }
+    }
   }
 
   _onOpen() {
@@ -67,7 +97,6 @@ class MessagesDialogPresentation extends React.Component {
 
     if (e.key === '@') {
       e.preventDefault();
-
       focusMessagesDialogUAVSelectorFieldSignal.dispatch();
     } else if (
       // The active element is not an input
@@ -91,15 +120,7 @@ class MessagesDialogPresentation extends React.Component {
   }
 
   render() {
-    const { flock, open, onClear, onClose, selectedUAVId } = this.props;
-
-    if (!this._wasOpen && open) {
-      this._onOpen();
-    } else if (this._wasOpen && !open) {
-      this._onClose();
-    }
-
-    this._wasOpen = open;
+    const { flock, isOpen, onClear, onClose, selectedUAVId } = this.props;
 
     const actions = [
       <Button key="clear" disabled={!selectedUAVId} onClick={onClear}>
@@ -111,7 +132,7 @@ class MessagesDialogPresentation extends React.Component {
     ];
 
     return (
-      <Dialog open={open} onClose={onClose}>
+      <Dialog fullWidth open={isOpen} onClose={onClose}>
         <DialogContent>
           <MessagesPanel
             ref={this._setMessagesPanel}
@@ -126,14 +147,6 @@ class MessagesDialogPresentation extends React.Component {
   }
 }
 
-MessagesDialogPresentation.propTypes = {
-  flock: PropTypes.instanceOf(Flock),
-  open: PropTypes.bool.isRequired,
-  onClear: PropTypes.func,
-  onClose: PropTypes.func,
-  selectedUAVId: PropTypes.string
-};
-
 /**
  * Messages dialog container component to bind it to the Redux store.
  */
@@ -145,7 +158,7 @@ const MessagesDialog = connect(
     const { selectedUAVId } = messages;
     return {
       selectedUAVId,
-      open: dialogVisible
+      isOpen: dialogVisible
     };
   },
 
