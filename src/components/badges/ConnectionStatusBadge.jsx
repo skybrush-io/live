@@ -58,6 +58,7 @@ const calculateStatusSummary = createSelector(
   getConnectionsInOrder,
   connections => {
     const severityCounts = countBy(connections, getSeverity);
+
     for (const level of severityLevels) {
       if (severityCounts[level]) {
         return { level, count: severityCounts[level] };
@@ -66,7 +67,7 @@ const calculateStatusSummary = createSelector(
 
     return {
       level: 'ok',
-      count: 0
+      count: connections.length
     };
   }
 );
@@ -77,11 +78,11 @@ const calculateStatusSummary = createSelector(
  */
 export default connect(
   // mapStateToProps
-  state => {
-    const { level } = calculateStatusSummary(state);
+  (state, ownProps) => {
+    const { count, level } = calculateStatusSummary(state);
     return {
       color: badgeColorForLevel[level],
-      visible: level !== 'ok'
+      visible: ownProps.isAlwaysVisible ? count > 0 : level !== 'ok'
     };
   },
   // Return empty object from mapDispatchToProps to avoid invalid prop warning

@@ -7,9 +7,9 @@ import { useEvent, useUpdate } from 'react-use';
 import ScreenFull from 'screenfull';
 
 const FullScreenButtonPresentation = ({
-  hasLabel,
   isEnabled,
   isFullscreen,
+  label,
   onClick
 }) => {
   const classes = ['wb-module'];
@@ -22,19 +22,15 @@ const FullScreenButtonPresentation = ({
       <span className="wb-icon wb-module-icon">
         {isFullscreen ? <NavigationFullscreenExit /> : <NavigationFullscreen />}
       </span>
-      {hasLabel ? (
-        <span className="wb-label wb-module-label">
-          {isFullscreen ? 'Exit full screen' : 'Enter full screen'}
-        </span>
-      ) : null}
+      {label ? <span className="wb-label wb-module-label">{label}</span> : null}
     </div>
   );
 };
 
 FullScreenButtonPresentation.propTypes = {
-  hasLabel: PropTypes.bool,
   isEnabled: PropTypes.bool.isRequired,
   isFullscreen: PropTypes.bool.isRequired,
+  label: PropTypes.string,
   onClick: PropTypes.func
 };
 

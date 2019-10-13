@@ -5,7 +5,6 @@ import Map from '@material-ui/icons/Map';
 import Message from '@material-ui/icons/Message';
 import MyLocation from '@material-ui/icons/MyLocation';
 import Notifications from '@material-ui/icons/Notifications';
-import SettingsEthernet from '@material-ui/icons/SettingsEthernet';
 import SettingsInputAntenna from '@material-ui/icons/SettingsInputAntenna';
 import ShowChart from '@material-ui/icons/ShowChart';
 import Storage from '@material-ui/icons/Storage';
@@ -15,8 +14,7 @@ import React from 'react';
 import { Module, ModuleTray, Workbench } from 'react-flexible-workbench';
 import { connect } from 'react-redux';
 
-import ConnectionStatusBadge from './ConnectionStatusBadge';
-import LogStatusBadge from './LogStatusBadge';
+import LogStatusBadge from '../badges/LogStatusBadge';
 
 const style = {
   backgroundColor: '#333',
@@ -37,10 +35,10 @@ const innerStyle = {
  *
  * @returns  {Object}  the rendered sidebar component
  */
-const SidebarPresentation = ({ open, workbench }) => (
+const SidebarPresentation = ({ isOpen, workbench }) => (
   <div
     id="sidebar"
-    style={{ ...style, overflow: 'hidden', width: open ? 240 : 48 }}
+    style={{ ...style, overflow: 'hidden', width: isOpen ? 240 : 48 }}
   >
     <div style={innerStyle}>
       <ModuleTray allowMultipleSelection vertical workbench={workbench}>
@@ -73,13 +71,6 @@ const SidebarPresentation = ({ open, workbench }) => (
         />
         <hr />
         <Module
-          id="connections"
-          badge={<ConnectionStatusBadge />}
-          icon={<SettingsEthernet />}
-          label="Connections"
-          component="connection-list"
-        />
-        <Module
           id="clocks"
           icon={<Alarm />}
           label="Clocks"
@@ -111,7 +102,7 @@ const SidebarPresentation = ({ open, workbench }) => (
 );
 
 SidebarPresentation.propTypes = {
-  open: PropTypes.bool.isRequired,
+  isOpen: PropTypes.bool.isRequired,
   workbench: PropTypes.instanceOf(Workbench).isRequired
 };
 
@@ -121,7 +112,7 @@ SidebarPresentation.propTypes = {
 export const Sidebar = connect(
   // mapStateToProps
   (state, { workbench }) => ({
-    ...state.sidebar,
+    isOpen: state.sidebar.open,
     workbench
   })
 )(SidebarPresentation);

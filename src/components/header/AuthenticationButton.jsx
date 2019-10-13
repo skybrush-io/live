@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 
-import SidebarBadge from '../sidebar/SidebarBadge';
+import AuthenticationStatusBadge from '../badges/AuthenticationStatusBadge';
 
 import {
   showAuthenticationDialog,
@@ -13,34 +13,23 @@ import {
 } from '~/actions/servers';
 import {
   isAuthenticated,
-  isAuthenticating,
   requiresAuthentication,
   supportsAuthentication
 } from '~/selectors/servers';
 
-const badgeColorForState = {
-  authenticated: '#0c0',
-  authenticating: '#fc0',
-  notAuthenticated: '#f00',
-  authenticationNotRequired: undefined
-};
-
 const AuthenticationButtonPresentation = ({
+  isAuthenticated,
   isDisabled,
   label,
   onAuthenticate,
-  onDeauthenticate,
-  state
+  onDeauthenticate
 }) => (
   <div
     className={clsx('wb-module', { 'wb-module-disabled': isDisabled })}
-    onClick={state === 'authenticated' ? onDeauthenticate : onAuthenticate}
+    onClick={isAuthenticated ? onDeauthenticate : onAuthenticate}
   >
     <span className={clsx('wb-icon', 'wb-module-icon')}>
-      <SidebarBadge
-        visible={badgeColorForState[state] !== undefined}
-        color={badgeColorForState[state]}
-      />
+      <AuthenticationStatusBadge />
       <PersonIcon />
     </span>
     {label ? <span className="wb-label wb-module-label">{label}</span> : null}
@@ -48,25 +37,19 @@ const AuthenticationButtonPresentation = ({
 );
 
 AuthenticationButtonPresentation.propTypes = {
+  isAuthenticated: PropTypes.bool,
   isDisabled: PropTypes.bool,
   label: PropTypes.string,
   onAuthenticate: PropTypes.func,
-  onDeauthenticate: PropTypes.func,
-  state: PropTypes.string
+  onDeauthenticate: PropTypes.func
 };
 
 export default connect(
   // mapStateToProps
   state => ({
+    isAuthenticated: isAuthenticated(state),
     isAuthRequired: requiresAuthentication(state),
-    isDisabled: !supportsAuthentication(state),
-    state: isAuthenticated(state)
-      ? 'authenticated'
-      : isAuthenticating(state)
-      ? 'authenticating'
-      : requiresAuthentication(state)
-      ? 'notAuthenticated'
-      : 'authenticationNotRequired'
+    isDisabled: !supportsAuthentication(state)
   }),
   // mapDispatchToProps
   dispatch => ({

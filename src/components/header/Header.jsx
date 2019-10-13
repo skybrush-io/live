@@ -1,13 +1,13 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Workbench } from 'react-flexible-workbench';
 import { connect } from 'react-redux';
 import Shapeshifter from 'react-shapeshifter';
 
 import AppSettingsButton from './AppSettingsButton';
 import AuthenticationButton from './AuthenticationButton';
-import ConnectionSettingsButton from './ConnectionSettingsButton';
+import ConnectionStatusButton from './ConnectionStatusButton';
 import FullScreenButton from './FullScreenButton';
+import ServerConnectionSettingsButton from './ServerConnectionSettingsButton';
 import { toggleSidebar } from '~/actions/sidebar';
 
 const style = {
@@ -27,36 +27,37 @@ const innerStyle = {
  *
  * @returns  {Object}  the rendered header component
  */
-const HeaderPresentation = ({ onToggleSidebar, sidebarOpen, workbench }) => (
+const HeaderPresentation = ({ onToggleSidebar, isSidebarOpen }) => (
   <div id="header" style={{ ...style, overflow: 'hidden' }}>
     <div style={innerStyle}>
       <Shapeshifter
         color="#999"
         style={{ cursor: 'pointer' }}
-        shape={sidebarOpen ? 'close' : 'menu'}
+        shape={isSidebarOpen ? 'close' : 'menu'}
         onClick={onToggleSidebar}
       />
       <div style={{ flexGrow: 1, flexShrink: 1 }}>{/* spacer */}</div>
       <hr />
-      <ConnectionSettingsButton />
+      <ConnectionStatusButton isAlwaysVisible />
+      <hr />
+      <ServerConnectionSettingsButton />
       <AuthenticationButton />
       <hr />
       <AppSettingsButton />
-      {!window.isElectron ? <FullScreenButton /> : null}
+      {window.isElectron ? null : <FullScreenButton />}
     </div>
   </div>
 );
 
 HeaderPresentation.propTypes = {
-  onToggleSidebar: PropTypes.func.isRequired,
-  sidebarOpen: PropTypes.bool.isRequired,
-  workbench: PropTypes.instanceOf(Workbench).isRequired
+  isSidebarOpen: PropTypes.bool.isRequired,
+  onToggleSidebar: PropTypes.func.isRequired
 };
 
 export const Header = connect(
   // mapStateToProps
   (state, { workbench }) => ({
-    sidebarOpen: state.sidebar.open,
+    isSidebarOpen: state.sidebar.open,
     workbench
   }),
   // mapDispatchToProps

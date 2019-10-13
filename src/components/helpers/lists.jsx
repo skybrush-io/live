@@ -151,7 +151,6 @@ export function selectableListOf(itemRenderer, options = {}) {
   };
 
   SelectableListView.propTypes = {
-    children: PropTypes.node,
     onChange: PropTypes.func,
     value: PropTypes.any
   };
@@ -255,13 +254,10 @@ export function multiSelectableListOf(itemRenderer, options = {}) {
   };
 
   MultiSelectableListView.propTypes = {
-    children: PropTypes.node,
     onChange: PropTypes.func,
     value: PropTypes.arrayOf(PropTypes.any).isRequired
   };
-  MultiSelectableListView.defaultProps = {
-    value: []
-  };
+
   return MultiSelectableListView;
 }
 
@@ -321,7 +317,7 @@ function validateDataProvider(dataProvider) {
  */
 function validateItemRenderer(itemRenderer) {
   if (Object.prototype.isPrototypeOf.call(React.Component, itemRenderer)) {
-    /* eslint-disable react/display-name, react/prop-types */
+    /* eslint-disable react/prop-types */
     const clickHandler = itemRenderer === ListItem ? 'onTouchTap' : 'onClick';
     return (item, props, selected) => {
       return React.createElement(
@@ -333,7 +329,7 @@ function validateItemRenderer(itemRenderer) {
         })
       );
     };
-    /* eslint-enable react/display-name, react/prop-types */
+    /* eslint-enable react/prop-types */
   }
 
   return itemRenderer;
@@ -353,11 +349,11 @@ function validateItemRenderer(itemRenderer) {
  */
 function validateListFactory(listFactory) {
   if (listFactory === undefined) {
-    /* eslint-disable react/display-name, react/prop-types */
+    /* eslint-disable react/prop-types */
     return (props, children) => {
       return React.createElement(List, { dense: props.dense }, children);
     };
-    /* eslint-enable react/display-name, react/prop-types */
+    /* eslint-enable react/prop-types */
   }
 
   if (Object.prototype.isPrototypeOf.call(React.Component, listFactory)) {
