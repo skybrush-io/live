@@ -6,13 +6,16 @@ import { connect } from 'react-redux';
 import ConnectionStatusBadge from '../badges/ConnectionStatusBadge';
 import GenericHeaderButton from './GenericHeaderButton';
 
+import Tooltip from '~/components/Tooltip';
 import { isConnected } from '~/selectors/servers';
 
 const ConnectionStatusButtonPresentation = props => (
-  <GenericHeaderButton {...props}>
-    <ConnectionStatusBadge />
-    <SettingsEthernet />
-  </GenericHeaderButton>
+  <Tooltip content="Hello!" enabled={!props.isDisabled}>
+    <GenericHeaderButton {...props}>
+      <ConnectionStatusBadge />
+      <SettingsEthernet />
+    </GenericHeaderButton>
+  </Tooltip>
 );
 
 ConnectionStatusButtonPresentation.propTypes = {

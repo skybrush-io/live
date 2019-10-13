@@ -2,19 +2,17 @@ import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import React from 'react';
 
-export const GenericHeaderButton = ({
-  children,
-  isDisabled,
-  label,
-  onClick
-}) => (
-  <div
-    className={clsx('wb-module', { 'wb-module-disabled': isDisabled })}
-    onClick={onClick}
-  >
-    <span className="wb-icon wb-module-icon">{children}</span>
-    {label ? <span className="wb-label wb-module-label">{label}</span> : null}
-  </div>
+export const GenericHeaderButton = React.forwardRef(
+  ({ children, isDisabled, label, onClick }, ref) => (
+    <div
+      ref={ref}
+      className={clsx('wb-module', { 'wb-module-disabled': isDisabled })}
+      onClick={onClick}
+    >
+      <span className="wb-icon wb-module-icon">{children}</span>
+      {label ? <span className="wb-label wb-module-label">{label}</span> : null}
+    </div>
+  )
 );
 
 GenericHeaderButton.propTypes = {
