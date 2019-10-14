@@ -7,13 +7,14 @@ import { connect } from 'react-redux';
 
 import SidebarBadge from './SidebarBadge';
 
+import Colors from '~/components/colors';
 import { ConnectionState } from '~/model/connections';
 
 const colorForState = {
-  [ConnectionState.CONNECTED]: '#0c0',
-  [ConnectionState.CONNECTING]: '#fc0',
-  [ConnectionState.DISCONNECTING]: '#fc0',
-  [ConnectionState.DISCONNECTED]: '#f00'
+  [ConnectionState.CONNECTED]: Colors.success,
+  [ConnectionState.CONNECTING]: Colors.warning,
+  [ConnectionState.DISCONNECTING]: Colors.warning,
+  [ConnectionState.DISCONNECTED]: Colors.error
 };
 
 /**

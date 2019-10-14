@@ -7,16 +7,17 @@ import { countBy } from 'lodash';
 import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
 
-import { ConnectionState } from '../../model/connections';
-import { getConnectionsInOrder } from '../../selectors/ordered';
 import SidebarBadge from './SidebarBadge';
+import Colors from '~/components/colors';
+import { ConnectionState } from '~/model/connections';
+import { getConnectionsInOrder } from '~/selectors/ordered';
 
 const severityLevels = ['error', 'warning', 'ok'];
 
 const badgeColorForLevel = {
-  ok: '#0c0',
-  warning: '#fc0',
-  error: '#f00'
+  ok: Colors.success,
+  warning: Colors.warning,
+  error: Colors.error
 };
 
 /**

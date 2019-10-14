@@ -51,7 +51,7 @@ function updateStateOfConnection(state, id, properties) {
  */
 const reducer = handleActions(
   {
-    CLEAR_CONNECTION_LIST: (state, action) => ({
+    CLEAR_CONNECTION_LIST: () => ({
       byId: {},
       order: []
     }),

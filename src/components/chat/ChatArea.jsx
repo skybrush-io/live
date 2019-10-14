@@ -5,40 +5,43 @@
 
 import PropTypes from 'prop-types';
 import React from 'react';
-import ReactDOM from 'react-dom';
 
 /**
  * Stateless React component showing a chat area that may host one or
  * more chat bubbles.
  */
 export default class ChatArea extends React.Component {
+  static propTypes = {
+    children: PropTypes.oneOfType([
+      PropTypes.arrayOf(PropTypes.node),
+      PropTypes.node
+    ]),
+    style: PropTypes.object
+  };
+
   constructor(props) {
     super(props);
-
-    this._domNode = null;
-
-    this._setDOMNode = node => {
-      this._domNode = node;
-    };
+    this._domNode = React.createRef();
   }
 
-  componentDidUpdate() {
-    if (this.shouldScrollToBottom) {
+  componentDidUpdate(_prevProps, _prevState, snapshot) {
+    if (snapshot && snapshot.shouldScrollToBottom) {
       this.scrollToBottom();
     }
   }
 
-  componentWillUpdate() {
-    const node = this._domNode;
-    this.shouldScrollToBottom =
-      node && node.scrollTop + node.clientHeight >= node.scrollHeight - 5;
+  getSnapshotBeforeUpdate() {
+    const node = this._domNode.current;
+    return {
+      shouldScrollToBottom:
+        node && node.scrollTop + node.clientHeight >= node.scrollHeight - 5
+    };
   }
 
   render() {
-    window.ReactDOM = ReactDOM;
     const { children, style } = this.props;
     return (
-      <div ref={this._setDOMNode} className="chat-area" style={style}>
+      <div ref={this._domNode} className="chat-area" style={style}>
         {children}
       </div>
     );
@@ -49,20 +52,9 @@ export default class ChatArea extends React.Component {
    * insertion of a new chat bubble at the bottom.
    */
   scrollToBottom() {
-    if (this._domNode) {
-      this._domNode.scrollTop = this._domNode.scrollHeight;
+    const node = this._domNode.current;
+    if (node) {
+      node.scrollTop = node.scrollHeight;
     }
   }
 }
-
-ChatArea.propTypes = {
-  children: PropTypes.oneOfType([
-    PropTypes.arrayOf(PropTypes.node),
-    PropTypes.node
-  ]),
-  style: PropTypes.object
-};
-
-ChatArea.defaultProps = {
-  children: null
-};

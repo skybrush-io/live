@@ -50,22 +50,26 @@ export function listOf(itemRenderer, options = {}) {
   itemRenderer = validateItemRenderer(itemRenderer);
 
   // A separate variable is needed here to make ESLint happy
-  const ListView = props => {
+  const ListView = React.forwardRef((props, ref) => {
     const items = dataProvider(props);
     const children = postprocess(
       items.map(item => itemRenderer(item, props)),
       props
     );
     if (hasSomeItems(children)) {
-      return listFactory(props, children);
+      return listFactory(props, children, ref);
     }
 
     if (backgroundHint) {
-      return <div className="background-hint">{backgroundHint}</div>;
+      return (
+        <div ref={ref} className="background-hint">
+          {backgroundHint}
+        </div>
+      );
     }
 
     return null;
-  };
+  });
 
   return ListView;
 }
@@ -122,7 +126,7 @@ export function selectableListOf(itemRenderer, options = {}) {
   itemRenderer = validateItemRenderer(itemRenderer);
 
   // A separate variable is needed here to make ESLint happy
-  const SelectableListView = props => {
+  const SelectableListView = React.forwardRef((props, ref) => {
     const items = dataProvider(props);
     const children = postprocess(
       items.map(item =>
@@ -140,15 +144,19 @@ export function selectableListOf(itemRenderer, options = {}) {
       props
     );
     if (hasSomeItems(children)) {
-      return listFactory(props, children);
+      return listFactory(props, children, ref);
     }
 
     if (backgroundHint) {
-      return <div className="background-hint">{backgroundHint}</div>;
+      return (
+        <div ref={ref} className="background-hint">
+          {backgroundHint}
+        </div>
+      );
     }
 
     return null;
-  };
+  });
 
   SelectableListView.propTypes = {
     onChange: PropTypes.func,
@@ -218,7 +226,7 @@ export function multiSelectableListOf(itemRenderer, options = {}) {
   itemRenderer = validateItemRenderer(itemRenderer);
 
   // A separate variable is needed here to make ESLint happy
-  const MultiSelectableListView = props => {
+  const MultiSelectableListView = React.forwardRef((props, ref) => {
     const items = dataProvider(props);
     const children = postprocess(
       items.map(item =>
@@ -243,15 +251,19 @@ export function multiSelectableListOf(itemRenderer, options = {}) {
       props
     );
     if (hasSomeItems(children)) {
-      return listFactory(props, children);
+      return listFactory(props, children, ref);
     }
 
     if (backgroundHint) {
-      return <div className="background-hint">{backgroundHint}</div>;
+      return (
+        <div ref={ref} className="background-hint">
+          {backgroundHint}
+        </div>
+      );
     }
 
     return null;
-  };
+  });
 
   MultiSelectableListView.propTypes = {
     onChange: PropTypes.func,
@@ -350,8 +362,12 @@ function validateItemRenderer(itemRenderer) {
 function validateListFactory(listFactory) {
   if (listFactory === undefined) {
     /* eslint-disable react/prop-types */
-    return (props, children) => {
-      return React.createElement(List, { dense: props.dense }, children);
+    return (props, children, ref) => {
+      return React.createElement(
+        List,
+        { dense: props.dense || props.mini, disablePadding: props.mini, ref },
+        children
+      );
     };
     /* eslint-enable react/prop-types */
   }

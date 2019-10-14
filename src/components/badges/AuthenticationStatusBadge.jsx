@@ -7,6 +7,7 @@ import { connect } from 'react-redux';
 
 import SidebarBadge from './SidebarBadge';
 
+import Colors from '~/components/colors';
 import {
   isAuthenticated,
   isAuthenticating,
@@ -14,9 +15,9 @@ import {
 } from '~/selectors/servers';
 
 const colorForState = {
-  authenticated: '#0c0',
-  authenticating: '#fc0',
-  notAuthenticated: '#f00',
+  authenticated: Colors.success,
+  authenticating: Colors.warning,
+  notAuthenticated: Colors.error,
   authenticationNotRequired: undefined
 };
 
