@@ -38,6 +38,7 @@ export class AutoComplete extends React.Component {
     highlightFirstSuggestion: PropTypes.bool,
     highlightMatches: PropTypes.bool,
     label: PropTypes.node,
+    initialValue: PropTypes.string,
     inputRef: PropTypes.oneOfType([
       PropTypes.func,
       PropTypes.shape({ current: PropTypes.any })
@@ -48,13 +49,19 @@ export class AutoComplete extends React.Component {
     validateValue: PropTypes.func
   };
 
-  state = {
-    error: null,
-    suggestions: [],
-    value: ''
-  };
-
   _input = undefined;
+
+  constructor(props) {
+    super(props);
+
+    /* eslint-disable react/state-in-constructor */
+    this.state = {
+      error: null,
+      suggestions: [],
+      value: props.initialValue || ''
+    };
+    /* eslint-enable react/state-in-constructor */
+  }
 
   @autobind
   _assignInputRef(value) {

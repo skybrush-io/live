@@ -25,7 +25,6 @@ export class UAVSelectorField extends React.Component {
     ...AutoComplete.propTypes,
 
     allowEmpty: PropTypes.bool,
-    initialText: PropTypes.string,
     label: PropTypes.node,
     maxSearchResults: PropTypes.number,
     onValueChanged: PropTypes.func,
@@ -34,20 +33,13 @@ export class UAVSelectorField extends React.Component {
 
   static defaultProps = {
     allowEmpty: true,
-    initialText: '',
     label: 'UAV ID',
     maxSearchResults: 5,
     uavIds: []
   };
 
   render() {
-    const {
-      initialText,
-      maxSearchResults,
-      onValueChanged,
-      uavIds,
-      ...rest
-    } = this.props;
+    const { maxSearchResults, onValueChanged, uavIds, ...rest } = this.props;
     const fetchOpts = {
       caseSensitive: false,
       maxItems: maxSearchResults

@@ -157,7 +157,13 @@ class MessagesPanelPresentation extends React.Component {
   }
 
   render() {
-    const { chatEntries, flock, style, textFieldPlacement } = this.props;
+    const {
+      chatEntries,
+      flock,
+      selectedUAVId,
+      style,
+      textFieldPlacement
+    } = this.props;
     const chatComponents = flatMap(chatEntries, convertMessageToComponent);
     const contentStyle = {
       display: 'flex',
@@ -180,6 +186,7 @@ class MessagesPanelPresentation extends React.Component {
     const textFields = (
       <div key="textFieldContainer" style={{ display: 'flex' }}>
         <ActiveUAVsField
+          initialValue={selectedUAVId}
           inputRef={this._uavSelectorFieldRef}
           style={{ width: '8em', paddingRight: '1em' }}
           flock={flock}
