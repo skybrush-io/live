@@ -11,7 +11,7 @@ import {
   globalIdToFeatureId,
   globalIdToHomePositionId,
   globalIdToUavId
-} from '../model/identifiers';
+} from '~/model/identifiers';
 
 /**
  * Selector that retrieves the list of item IDs in the current selection

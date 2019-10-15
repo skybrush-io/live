@@ -3,9 +3,10 @@
  * map.
  */
 
+import { difference, uniq } from 'lodash';
 import { handleActions } from 'redux-actions';
 
-import { uavIdToGlobalId } from '../../model/identifiers';
+import { uavIdToGlobalId } from '~/model/identifiers';
 
 /**
  * The default state of the selection.
@@ -28,34 +29,26 @@ function findAllUAVFeatures(flock) {
  * the selection and removes some items from it, then returns the same
  * selection object.
  *
- * Additions take precedence over removals.
+ * It is assumed that removals happen first, and additions happen after
+ * removals, in exactly the same order as the order in the list.
  *
  * @param  {string[]} current The current selection
  * @param  {string[]} add     The list of items to add
  * @param  {string[]} remove  The list of items to remove
  * @return {string[]} The updated selection. It will always be an
  *         object that is different (identity-wise) from the current
- *         selection and it will always be sorted.
+ *         selection (even if nothing changed), and it is guaranteed that
+ *         items added later will be at lower indices in the array.
  */
 function updateSelection(current, add, remove) {
-  const selectionAsSet = {};
-  for (const item of current) {
-    selectionAsSet[item] = true;
+  const result = difference(current, remove || []);
+
+  if (add && add.length > 0) {
+    result.splice(0, 0, ...add);
+    return uniq(result);
   }
 
-  if (remove) {
-    for (const item of remove) {
-      delete selectionAsSet[item];
-    }
-  }
-
-  if (add) {
-    for (const item of add) {
-      selectionAsSet[item] = true;
-    }
-  }
-
-  return Object.keys(selectionAsSet).sort();
+  return result;
 }
 
 /**
