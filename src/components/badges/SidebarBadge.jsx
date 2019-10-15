@@ -1,5 +1,5 @@
 import Badge from 'react-badger';
-import { withProps } from 'recompose';
+import withProps from 'recompose/withProps';
 
 /**
  * Special variant of badges shown on the sidebar.

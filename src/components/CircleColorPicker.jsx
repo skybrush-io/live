@@ -4,7 +4,7 @@
  */
 
 import { CirclePicker } from 'react-color';
-import { withProps } from 'recompose';
+import withProps from 'recompose/withProps';
 
 export default withProps({
   circleSpacing: 7,

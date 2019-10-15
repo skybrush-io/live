@@ -47,15 +47,13 @@ export default class PopupColorPicker extends React.Component {
   render() {
     this._registerClickawayHandlerIfNeeded();
 
-    const pickerStyle = Object.assign(
-      {
-        position: 'absolute',
-        overflow: 'hidden',
-        zIndex: '2',
-        transition: 'height 0.3s'
-      },
-      this.state.open ? { height: 298 } : { height: 0 }
-    );
+    const pickerStyle = {
+      position: 'absolute',
+      overflow: 'hidden',
+      zIndex: '2',
+      transition: 'height 0.3s',
+      height: this.state.open ? 298 : 0
+    };
 
     const { color } = this.state;
 

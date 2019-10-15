@@ -15,10 +15,10 @@ import React from 'react';
  *
  * @return {Object} the rendered component
  */
-const BackgroundHint = ({ header, text }) => (
-  <div className="background-hint">
+const BackgroundHint = ({ header, text, ...props }) => (
+  <div className="background-hint" {...props}>
     <div>
-      <div className="header">{header}</div>
+      {header && <div className="header">{header}</div>}
       <div className="text">{text}</div>
     </div>
   </div>

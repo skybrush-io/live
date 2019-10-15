@@ -9,7 +9,9 @@
 
 import React from 'react';
 import { WorkbenchBuilder } from 'react-flexible-workbench';
-import { compose, renderNothing, withProps } from 'recompose';
+import compose from 'recompose/compose';
+import renderNothing from 'recompose/renderNothing';
+import withProps from 'recompose/withProps';
 
 import { saveWorkbenchState } from './actions/workbench';
 import MessagesPanel from './components/chat/MessagesPanel';

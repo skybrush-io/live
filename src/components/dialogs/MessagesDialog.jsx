@@ -9,6 +9,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import PropTypes from 'prop-types';
 import React from 'react';
+import EventListener, { withOptions } from 'react-event-listener';
 import { connect } from 'react-redux';
 
 import { MessagesPanel } from '../chat';
@@ -17,6 +18,7 @@ import {
   closeMessagesDialog,
   clearMessagesOfSelectedUAV
 } from '~/actions/messages';
+import SignalListener from '~/components/SignalListener';
 import Flock from '~/model/flock';
 
 import { focusMessagesDialogUAVSelectorFieldSignal } from '~/signals';
@@ -37,49 +39,19 @@ class MessagesDialogPresentation extends React.Component {
     super(props);
 
     this._messagesPanel = null;
-
-    this._onOpen = this._onOpen.bind(this);
-    this._onClose = this._onClose.bind(this);
     this._setMessagesPanel = this._setMessagesPanel.bind(this);
 
+    this._focusUAVSelectorField = this._focusUAVSelectorField.bind(this);
     this._handleKeyWhileOpen = this._handleKeyWhileOpen.bind(this);
   }
 
-  componentDidMount() {
-    this._maybeIsOpenChanged(false, this.props.isOpen);
-  }
-
-  componentDidUpdate(prevProps) {
-    this._maybeIsOpenChanged(prevProps.isOpen, this.props.isOpen);
-  }
-
-  componentWillUnmount() {
-    this._maybeIsOpenChanged(this.props.isOpen, false);
-  }
-
-  _maybeIsOpenChanged(oldValue, newValue) {
-    if (oldValue !== newValue) {
-      if (oldValue) {
-        this._onClose();
-      } else {
-        this._onOpen();
-      }
+  /**
+   * Sets the focus on the UAV selector field if the messages panel is shown.
+   */
+  _focusUAVSelectorField() {
+    if (this._messagesPanel) {
+      this._messagesPanel.focusOnUAVSelectorField();
     }
-  }
-
-  _onOpen() {
-    document.body.addEventListener('keydown', this._handleKeyWhileOpen, true);
-  }
-
-  _onClose() {
-    document.body.removeEventListener(
-      'keydown',
-      this._handleKeyWhileOpen,
-      true
-    );
-    setTimeout(() => {
-      document.querySelector('.ol-viewport').focus();
-    }, 100);
   }
 
   /**
@@ -89,12 +61,6 @@ class MessagesDialogPresentation extends React.Component {
    * @param {KeyboardEvent} e  the keypress event
    */
   _handleKeyWhileOpen(e) {
-    // To prevent panning of the map with the arrow keys and other default
-    // hotkeys, but letting Enter pass through for sending the message.
-    if (e.key !== 'Enter') {
-      e.stopPropagation();
-    }
-
     if (e.key === '@') {
       e.preventDefault();
       focusMessagesDialogUAVSelectorFieldSignal.dispatch();
@@ -134,6 +100,14 @@ class MessagesDialogPresentation extends React.Component {
     return (
       <Dialog fullWidth open={isOpen} onClose={onClose}>
         <DialogContent>
+          <EventListener
+            target={document.body}
+            onKeyDown={withOptions(this._handleKeyWhileOpen, { capture: true })}
+          />
+          <SignalListener
+            target={focusMessagesDialogUAVSelectorFieldSignal}
+            onDispatched={this._focusUAVSelectorField}
+          />
           <MessagesPanel
             ref={this._setMessagesPanel}
             textFieldsAtBottom

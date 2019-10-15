@@ -8,8 +8,25 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import PropTypes from 'prop-types';
 import React from 'react';
+import { isElement } from 'react-is';
 
 import { eventHasPlatformModifierKey } from '../../utils/platform';
+
+const createBackgroundHint = (backgroundHint, ref) => {
+  if (isElement(backgroundHint)) {
+    return <div>{backgroundHint}</div>;
+  }
+
+  if (backgroundHint) {
+    return (
+      <div ref={ref} className="background-hint">
+        {backgroundHint}
+      </div>
+    );
+  }
+
+  return null;
+};
 
 /**
  * Creates a React component that renders items received in an array using
@@ -60,15 +77,7 @@ export function listOf(itemRenderer, options = {}) {
       return listFactory(props, children, ref);
     }
 
-    if (backgroundHint) {
-      return (
-        <div ref={ref} className="background-hint">
-          {backgroundHint}
-        </div>
-      );
-    }
-
-    return null;
+    return createBackgroundHint(backgroundHint, ref);
   });
 
   return ListView;
@@ -132,12 +141,13 @@ export function selectableListOf(itemRenderer, options = {}) {
       items.map(item =>
         itemRenderer(
           item,
-          Object.assign({}, props, {
+          {
+            ...props,
             onChange: undefined,
             onItemSelected: props.onChange
               ? event => props.onChange(event, item.id)
               : undefined
-          }),
+          },
           item.id === props.value
         )
       ),
@@ -147,15 +157,7 @@ export function selectableListOf(itemRenderer, options = {}) {
       return listFactory(props, children, ref);
     }
 
-    if (backgroundHint) {
-      return (
-        <div ref={ref} className="background-hint">
-          {backgroundHint}
-        </div>
-      );
-    }
-
-    return null;
+    return createBackgroundHint(backgroundHint, ref);
   });
 
   SelectableListView.propTypes = {
@@ -232,7 +234,8 @@ export function multiSelectableListOf(itemRenderer, options = {}) {
       items.map(item =>
         itemRenderer(
           item,
-          Object.assign({}, props, {
+          {
+            ...props,
             onChange: undefined,
             onItemSelected: props.onChange
               ? event => {
@@ -244,7 +247,7 @@ export function multiSelectableListOf(itemRenderer, options = {}) {
                   return props.onChange(event, newSelection);
                 }
               : undefined
-          }),
+          },
           includes(props.value, item.id)
         )
       ),
@@ -254,15 +257,7 @@ export function multiSelectableListOf(itemRenderer, options = {}) {
       return listFactory(props, children, ref);
     }
 
-    if (backgroundHint) {
-      return (
-        <div ref={ref} className="background-hint">
-          {backgroundHint}
-        </div>
-      );
-    }
-
-    return null;
+    return createBackgroundHint(backgroundHint, ref);
   });
 
   MultiSelectableListView.propTypes = {
@@ -281,12 +276,12 @@ export function multiSelectableListOf(itemRenderer, options = {}) {
  * @param  {Object} options  the options passed to the list generation helper
  * @return {Object} the transformed options
  */
-function validateOptions(options) {
-  return Object.assign({ postprocess: identity }, options, {
-    dataProvider: validateDataProvider(options.dataProvider),
-    listFactory: validateListFactory(options.listFactory)
-  });
-}
+const validateOptions = options => ({
+  postprocess: identity,
+  ...options,
+  dataProvider: validateDataProvider(options.dataProvider),
+  listFactory: validateListFactory(options.listFactory)
+});
 
 /**
  * Helper function that returns true if the given array or immutable List
@@ -332,14 +327,12 @@ function validateItemRenderer(itemRenderer) {
     /* eslint-disable react/prop-types */
     const clickHandler = itemRenderer === ListItem ? 'onTouchTap' : 'onClick';
     return (item, props, selected) => {
-      return React.createElement(
-        itemRenderer,
-        Object.assign({}, item, {
-          key: item.id,
-          [clickHandler]: props.onItemSelected,
-          selected
-        })
-      );
+      return React.createElement(itemRenderer, {
+        ...item,
+        key: item.id,
+        [clickHandler]: props.onItemSelected,
+        selected
+      });
     };
     /* eslint-enable react/prop-types */
   }

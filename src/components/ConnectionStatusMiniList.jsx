@@ -9,6 +9,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import TimeAgo from 'react-time-ago';
 
+import BackgroundHint from '~/components/BackgroundHint';
 import Colors from '~/components/colors';
 import { listOf } from '~/components/helpers/lists';
 import { ConnectionState } from '~/model/connections';
@@ -53,6 +54,7 @@ const ConnectionStatusMiniListEntry = ({ id, name, state, stateChangedAt }) => (
 );
 
 ConnectionStatusMiniListEntry.propTypes = {
+  id: PropTypes.string,
   name: PropTypes.string,
   state: PropTypes.string,
   stateChangedAt: PropTypes.instanceOf(Date)
@@ -62,7 +64,9 @@ const ConnectionStatusMiniListPresentation = listOf(
   ConnectionStatusMiniListEntry,
   {
     dataProvider: 'connections',
-    backgroundHint: 'No connections'
+    backgroundHint: (
+      <BackgroundHint text="This server does not use any connections" />
+    )
   }
 );
 

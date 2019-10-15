@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { getDisplayName, wrapDisplayName } from 'recompose';
+import wrapDisplayName from 'recompose/wrapDisplayName';
 
 const wrapWith = WrapperComponent => BaseComponent => {
   const result = ({ children, ...restProps }) => (
@@ -13,7 +13,7 @@ const wrapWith = WrapperComponent => BaseComponent => {
   };
   result.displayName = wrapDisplayName(
     BaseComponent,
-    `wrapWith(${getDisplayName(WrapperComponent)})`
+    wrapDisplayName(WrapperComponent, 'wrapWith')
   );
   return result;
 };

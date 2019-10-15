@@ -8,12 +8,12 @@
     "bundle": "webpack --mode=production --progress --config webpack/browser.config.js",
     "dist": "node scripts/deploy.js -p",
     "doc": "esdoc -c esdoc.json",
-    "lint": "eslint 'src/**'",
+    "lint": "xo",
     "start": "webpack-dev-server --config webpack/browser.config.js --progress --colors",
     "start:electron": "webpack-dev-server --https --config webpack/electron.config.js --progress --colors",
     "start:public": "webpack-dev-server --config webpack/browser.config.js --progress --colors --host 0.0.0.0",
     "start:public:secure": "webpack-dev-server --https --config webpack/browser.config.js --progress --colors --host 0.0.0.0",
-    "test": "xo"
+    "test": "npm run lint"
   },
   "repository": {
     "type": "git",
@@ -71,8 +71,10 @@
     "react-color": "^2.17.3",
     "react-dom": "^16.10.2",
     "react-error-boundary": "^1.2.5",
+    "react-event-listener": "^0.6.6",
     "react-final-form": "^6.3.0",
     "react-flexible-workbench": "^4.0.3",
+    "react-is": "^16.10.2",
     "react-redux": "^7.1.1",
     "react-shapeshifter": "^1.0.5",
     "react-socket": "git+https://github.com/collmot/react-socket.git#c256c6a5f986797705461769058c66f4055a053f",
@@ -151,6 +153,7 @@
         "error",
         "always"
       ],
+      "react/boolean-prop-naming": 0,
       "react/require-default-props": 0,
       "unicorn/filename-case": 0
     }

@@ -3,7 +3,9 @@ import { MuiThemeProvider } from '@material-ui/core/styles';
 import React from 'react';
 import { WorkbenchView } from 'react-flexible-workbench';
 import { Provider as StoreProvider } from 'react-redux';
-import { compose, withProps } from 'recompose';
+import compose from 'recompose/compose';
+import toClass from 'recompose/toClass';
+import withProps from 'recompose/withProps';
 
 import dialogs from './components/dialogs';
 import Header from './components/header';
@@ -75,6 +77,7 @@ const Application = () => (
  * individual application panels.
  */
 const enhancer = compose(
+  toClass, // react-flexible-workbench likes class components at the top
   withErrorBoundary,
   wrapWith(withProps({ theme })(MuiThemeProvider)),
   wrapWith(withProps({ store })(StoreProvider)),

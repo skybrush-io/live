@@ -21,33 +21,46 @@ import { AutoComplete } from './AutoComplete';
  * set of UAV IDs.
  */
 export class UAVSelectorField extends React.Component {
+  static propTypes = {
+    ...AutoComplete.propTypes,
+
+    allowEmpty: PropTypes.bool,
+    initialText: PropTypes.string,
+    label: PropTypes.node,
+    maxSearchResults: PropTypes.number,
+    onValueChanged: PropTypes.func,
+    uavIds: PropTypes.arrayOf(PropTypes.string)
+  };
+
+  static defaultProps = {
+    allowEmpty: true,
+    initialText: '',
+    label: 'UAV ID',
+    maxSearchResults: 5,
+    uavIds: []
+  };
+
   render() {
     const {
-      allowEmpty,
-      label,
+      initialText,
       maxSearchResults,
       onValueChanged,
-      placeholder,
-      style,
-      uavIds
+      uavIds,
+      ...rest
     } = this.props;
     const fetchOpts = {
       caseSensitive: false,
       maxItems: maxSearchResults
     };
-
     return (
       <AutoComplete
-        allowEmpty={allowEmpty}
         fetchSuggestions={AutoComplete.makePrefixBasedFetcher(
           uavIds,
           fetchOpts
         )}
-        label={label}
-        placeholder={placeholder}
-        style={style}
         validateValue={this.validate}
         onValueCommitted={onValueChanged}
+        {...rest}
       />
     );
   }
@@ -67,12 +80,12 @@ export class UAVSelectorField extends React.Component {
       if (!this.props.allowEmpty) {
         return 'UAV ID must be specified';
       }
-    } else if (!this._valueIsAmongUAVIds(value)) {
-      // Value entered by the user is not in the list of UAV IDs
-      return 'No such UAV';
-    } else {
+    } else if (this._valueIsAmongUAVIds(value)) {
       // Value is correct, nothing to do
       return true;
+    } else {
+      // Value entered by the user is not in the list of UAV IDs
+      return 'No such UAV';
     }
   }
 
@@ -89,38 +102,33 @@ export class UAVSelectorField extends React.Component {
   }
 }
 
-UAVSelectorField.propTypes = {
-  allowEmpty: PropTypes.bool.isRequired,
-  initialText: PropTypes.string,
-  label: PropTypes.node,
-  maxSearchResults: PropTypes.number.isRequired,
-  placeholder: PropTypes.string,
-  style: PropTypes.object,
-  uavIds: PropTypes.arrayOf(PropTypes.string).isRequired,
-
-  onValueChanged: PropTypes.func
-};
-
-UAVSelectorField.defaultProps = {
-  allowEmpty: true,
-  initialValue: '',
-  label: 'UAV ID',
-  maxSearchResults: 5,
-  uavIds: []
-};
-
 /**
  * Smart component that binds a UAVSelectorField to a {@link Flock} instance
  * such that the set of UAV IDs accepted by the field is always updated from
  * the flock when a new UAV appears or a UAV leaves the flock.
  */
 export class ActiveUAVsFieldPresentation extends React.Component {
+  static propTypes = {
+    ...UAVSelectorField.propTypes,
+
+    allowEmpty: PropTypes.bool,
+    flock: PropTypes.instanceOf(Flock),
+    label: PropTypes.node,
+    value: PropTypes.string
+  };
+
+  static defaultProps = {
+    allowEmpty: true,
+    label: 'UAV ID',
+    value: ''
+  };
+
+  state = {
+    uavIds: []
+  };
+
   constructor(props) {
     super(props);
-
-    this.state = {
-      uavIds: []
-    };
 
     this._onUAVsAdded = this._onUAVsAdded.bind(this);
     this.eventBindings = {};
@@ -173,31 +181,14 @@ export class ActiveUAVsFieldPresentation extends React.Component {
    * @listens Flock#uavsAdded
    * @param {UAV[]} uavs  the UAVs that should be refreshed
    */
-  _onUAVsAdded(uavs) {
+  _onUAVsAdded() {
     this._updateUAVIdsFromFlock(this.props.flock);
   }
 
   render() {
-    const {
-      allowEmpty,
-      label,
-      placeholder,
-      style,
-      value,
-      onValueChanged
-    } = this.props;
+    const { flock, ...rest } = this.props;
     const { uavIds } = this.state;
-    return (
-      <UAVSelectorField
-        allowEmpty={allowEmpty}
-        label={label}
-        placeholder={placeholder}
-        style={style}
-        initialText={value}
-        uavIds={uavIds}
-        onValueChanged={onValueChanged}
-      />
-    );
+    return <UAVSelectorField uavIds={uavIds} {...rest} />;
   }
 
   /**
@@ -212,33 +203,16 @@ export class ActiveUAVsFieldPresentation extends React.Component {
   }
 }
 
-ActiveUAVsFieldPresentation.propTypes = {
-  allowEmpty: PropTypes.bool.isRequired,
-  flock: PropTypes.instanceOf(Flock),
-  label: PropTypes.node,
-  placeholder: PropTypes.string,
-  style: PropTypes.object,
-  value: PropTypes.string.isRequired,
-
-  onValueChanged: PropTypes.func
-};
-
-ActiveUAVsFieldPresentation.defaultProps = {
-  allowEmpty: true,
-  label: 'UAV ID',
-  value: ''
-};
-
 /**
  * Smart component that binds an ActiveUAVsFieldPresentation component to
  * the Redux store.
  */
 const ActiveUAVsField = connect(
-  // StateToProps
+  // stateToProps
   state => ({
     value: state.messages.selectedUAVId || ''
   }),
-  // DispatchToProps
+  // dispatchToProps
   dispatch => ({
     onValueChanged(value) {
       dispatch(selectUAVInMessagesDialog(value));

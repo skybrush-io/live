@@ -10,20 +10,21 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 
+import ActiveUAVsField from '../ActiveUAVsField';
+import BackgroundHint from '../BackgroundHint';
+
+import { ChatArea, ChatBubble, Marker } from '.';
+
 import {
   addInboundMessage,
   addOutboundMessageToSelectedUAV,
   addErrorMessageInMessagesDialog
-} from '../../actions/messages';
-import ActiveUAVsField from '../ActiveUAVsField';
-import BackgroundHint from '../BackgroundHint';
-
-import { formatCommandResponseAsHTML } from '../../flockwave/formatting';
-import Flock from '../../model/flock';
-import { MessageType } from '../../model/messages';
-import messageHub from '../../message-hub';
-import { reorder, selectOrdered } from '../../utils/collections';
-import { ChatArea, ChatBubble, Marker } from '.';
+} from '~/actions/messages';
+import { formatCommandResponseAsHTML } from '~/flockwave/formatting';
+import Flock from '~/model/flock';
+import { MessageType } from '~/model/messages';
+import messageHub from '~/message-hub';
+import { reorder, selectOrdered } from '~/utils/collections';
 
 /**
  * Converts a message object from the Redux store into React components
@@ -88,111 +89,120 @@ function convertMessageToComponent(message) {
 }
 
 /**
- * Converts a collection of message objects from the Redux store into React
- * component that can render them nicely.
- *
- * @param {Object[]} messages  the messages to convert
- * @param {boolean}  textFieldsBelow  whether the text fields are below
- *        the chat area (true) or above it
- * @return {React.Component[]}  the React components that render the message
+ * Specialized background hint for the chat area.
  */
-function convertMessagesToComponents(messages, textFieldsBelow) {
-  if (isNil(messages)) {
-    return [
-      <BackgroundHint
-        key="backgroundHint"
-        header="No UAV selected"
-        text="Enter the ID of a UAV to talk to in the lower left corner"
-      />
-    ];
-  }
+const ChatAreaBackgroundHint = ({ hasSelectedUAV, textFieldPlacement }) =>
+  hasSelectedUAV ? (
+    <BackgroundHint
+      key="backgroundHint"
+      header="No messages"
+      text={`Send a message to the selected UAV using the text box ${
+        textFieldPlacement === 'bottom' ? 'below' : 'above'
+      }`}
+    />
+  ) : (
+    <BackgroundHint
+      key="backgroundHint"
+      header="No UAV selected"
+      text={`Enter the ID of a UAV to talk to in the ${
+        textFieldPlacement === 'bottom' ? 'lower left' : 'upper left'
+      } corner`}
+    />
+  );
 
-  if (messages.length === 0) {
-    const hint = `Send a message to the selected UAV using the text box ${
-      textFieldsBelow ? 'below' : 'above'
-    }`;
-    return [
-      <BackgroundHint key="backgroundHint" header="No messages" text={hint} />
-    ];
-  }
-
-  return flatMap(messages, convertMessageToComponent);
-}
+ChatAreaBackgroundHint.propTypes = {
+  hasSelectedUAV: PropTypes.bool,
+  textFieldPlacement: PropTypes.oneOf(['bottom', 'top'])
+};
 
 /**
  * Presentation component for the "Messages" panel, containing a text field
  * to type the messages into, and a target UAV selector.
  */
 class MessagesPanelPresentation extends React.Component {
+  static propTypes = {
+    chatEntries: PropTypes.arrayOf(PropTypes.object),
+    flock: PropTypes.instanceOf(Flock),
+    onSend: PropTypes.func,
+    selectedUAVId: PropTypes.string,
+    style: PropTypes.object,
+    textFieldPlacement: PropTypes.oneOf(['bottom', 'top'])
+  };
+
+  static defaultProps = {
+    textFieldPlacement: 'bottom'
+  };
+
   constructor(props) {
     super(props);
 
-    this._chatArea = null;
-    this._textField = null;
+    this._chatAreaRef = React.createRef();
+    this._messageFieldRef = React.createRef();
+    this._uavSelectorFieldRef = React.createRef();
 
     this.focusOnTextField = this.focusOnTextField.bind(this);
-    this._setChatArea = this._setChatArea.bind(this);
-    this._setTextField = this._setTextField.bind(this);
     this._textFieldKeyDownHandler = this._textFieldKeyDownHandler.bind(this);
   }
 
+  focusOnUAVSelectorField() {
+    if (this._uavSelectorFieldRef.current) {
+      this._uavSelectorFieldRef.current.focus();
+    }
+  }
+
   focusOnTextField() {
-    if (this._textField) {
-      this._textField.focus();
+    if (this._messageFieldRef.current) {
+      this._messageFieldRef.current.focus();
     }
   }
 
   render() {
-    const { chatEntries, flock, style, textFieldsAtBottom } = this.props;
-    const chatComponents = convertMessagesToComponents(
-      chatEntries,
-      textFieldsAtBottom
-    );
-    const contentStyle = Object.assign(
-      {
-        display: 'flex',
-        flexDirection: 'column',
-        height: '100%'
-      },
-      style
-    );
-    const chatArea = (
-      <ChatArea key="chatArea" ref={this._setChatArea}>
-        {chatComponents}
-      </ChatArea>
-    );
+    const { chatEntries, flock, style, textFieldPlacement } = this.props;
+    const chatComponents = flatMap(chatEntries, convertMessageToComponent);
+    const contentStyle = {
+      display: 'flex',
+      flexDirection: 'column',
+      height: '100%',
+      ...style
+    };
+    const chatArea =
+      chatComponents.length > 0 ? (
+        <ChatArea key="chatArea" ref={this._chatAreaRef}>
+          {chatComponents}
+        </ChatArea>
+      ) : (
+        <ChatAreaBackgroundHint
+          key="chatAreaBackgroundHint"
+          hasSelectedUAV={!isNil(chatEntries)}
+          textFieldPlacement={textFieldPlacement}
+        />
+      );
     const textFields = (
       <div key="textFieldContainer" style={{ display: 'flex' }}>
         <ActiveUAVsField
+          inputRef={this._uavSelectorFieldRef}
           style={{ width: '8em', paddingRight: '1em' }}
           flock={flock}
         />
         <TextField
           fullWidth
-          inputRef={this._setTextField}
+          inputRef={this._messageFieldRef}
           label="Message"
           onKeyDown={this._textFieldKeyDownHandler}
         />
       </div>
     );
-    const children = textFieldsAtBottom
-      ? [chatArea, textFields]
-      : [textFields, chatArea];
+    const children =
+      textFieldPlacement === 'bottom'
+        ? [chatArea, textFields]
+        : [textFields, chatArea];
     return <div style={contentStyle}>{children}</div>;
   }
 
   scrollToBottom() {
-    if (this._chatArea) {
-      this._chatArea.scrollToBottom();
+    if (this._chatAreaRef.current) {
+      this._chatAreaRef.current.scrollToBottom();
     }
-  }
-
-  _setChatArea(value) {
-    this._chatArea = value;
-  }
-
-  _setTextField(value) {
-    this._textField = value;
   }
 
   /**
@@ -210,19 +220,6 @@ class MessagesPanelPresentation extends React.Component {
     }
   }
 }
-
-MessagesPanelPresentation.propTypes = {
-  chatEntries: PropTypes.arrayOf(PropTypes.object),
-  flock: PropTypes.instanceOf(Flock),
-  onSend: PropTypes.func,
-  selectedUAVId: PropTypes.string,
-  style: PropTypes.object,
-  textFieldsAtBottom: PropTypes.bool.isRequired
-};
-
-MessagesPanelPresentation.defaultProps = {
-  textFieldsAtBottom: false
-};
 
 /**
  * Messages panel container component to bind it to the Redux store.
@@ -276,13 +273,13 @@ const MessagesPanel = connect(
     }
   }),
 
-  // MergeProps
+  // mergeProps
   null,
 
-  // Options
+  // options
   { forwardRef: true }
 
-  // Ref is needed because we want to access the scrollToBottom() method
+  // ref is needed because we want to access the scrollToBottom() method
   // from the outside
 )(MessagesPanelPresentation);
 

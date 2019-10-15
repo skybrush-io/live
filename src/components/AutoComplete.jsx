@@ -7,45 +7,66 @@ import match from 'autosuggest-highlight/match';
 import parse from 'autosuggest-highlight/parse';
 import { autobind } from 'core-decorators';
 import { identity, toLower } from 'lodash';
+import Box from '@material-ui/core/Box';
 import MenuItem from '@material-ui/core/MenuItem';
-import MenuList from '@material-ui/core/MenuList';
-import Popover from '@material-ui/core/Popover';
+import Paper from '@material-ui/core/Paper';
+import Popper from '@material-ui/core/Popper';
 import TextField from '@material-ui/core/TextField';
 import PropTypes from 'prop-types';
 import React from 'react';
 import Autosuggest from 'react-autosuggest';
-
-// TODO: "Enter selects first item" feature
 
 /**
  * Generic autocomplete text field component that shows the suggestions
  * in a dropdown menu.
  */
 export class AutoComplete extends React.Component {
-  constructor(props) {
-    super(props);
+  static defaultProps = {
+    allowEmpty: true,
+    getSuggestionLabel: identity,
+    getSuggestionValue: identity,
+    highlightFirstSuggestion: true,
+    highlightMatches: true
+  };
 
-    this._inputRef = undefined;
+  static propTypes = {
+    allowEmpty: PropTypes.bool,
+    autoFocus: PropTypes.bool,
+    fetchSuggestions: PropTypes.func,
+    getSuggestionLabel: PropTypes.func,
+    getSuggestionValue: PropTypes.func,
+    highlightFirstSuggestion: PropTypes.bool,
+    highlightMatches: PropTypes.bool,
+    label: PropTypes.node,
+    inputRef: PropTypes.oneOfType([
+      PropTypes.func,
+      PropTypes.shape({ current: PropTypes.any })
+    ]),
+    onValueCommitted: PropTypes.func,
+    placeholder: PropTypes.string,
+    style: PropTypes.object,
+    validateValue: PropTypes.func
+  };
 
-    this.state = {
-      error: null,
-      input: null,
-      suggestions: [],
-      value: ''
-    };
-  }
+  state = {
+    error: null,
+    suggestions: [],
+    value: ''
+  };
+
+  _input = undefined;
 
   @autobind
   _assignInputRef(value) {
-    if (this._inputRef !== undefined) {
-      this._inputRef(value);
-    }
+    this._input = value;
 
-    if (this.props.inputRef !== undefined) {
-      this.props.inputRef(value);
+    if (this.props.inputRef) {
+      if ('current' in this.props.inputRef) {
+        this.props.inputRef.current = value;
+      } else {
+        this.props.inputRef(value);
+      }
     }
-
-    this.setState({ input: value });
   }
 
   /**
@@ -68,7 +89,7 @@ export class AutoComplete extends React.Component {
   }
 
   @autobind
-  _onBlur(event, { highlightedSuggestion }) {
+  _onBlur() {
     const { value } = this.state;
     if (this.validate(value)) {
       this._commitValue(value);
@@ -112,15 +133,25 @@ export class AutoComplete extends React.Component {
 
   @autobind
   _renderInput(inputProps) {
-    const { ref, ...restInputProps } = inputProps;
-    this._inputRef = ref;
-    return <TextField inputRef={this._assignInputRef} {...restInputProps} />;
+    const { inputRef, ref, ...restInputProps } = inputProps;
+    return (
+      <TextField
+        InputProps={{
+          inputRef: node => {
+            ref(node);
+            inputRef(node);
+          }
+        }}
+        {...restInputProps}
+      />
+    );
   }
 
   @autobind
   _renderSuggestion(suggestion, { query, isHighlighted }) {
     const { getSuggestionLabel, highlightMatches } = this.props;
     const label = getSuggestionLabel(suggestion);
+    /* eslint-disable react/no-array-index-key */
     const fragments = highlightMatches
       ? parse(label, match(label, query)).map((part, index) => (
           <span
@@ -131,10 +162,11 @@ export class AutoComplete extends React.Component {
           </span>
         ))
       : label;
+    /* eslint-enable react/no-array-index-key */
 
     return (
       <MenuItem selected={isHighlighted} component="div">
-        {fragments}
+        <Box fontSize="small">{fragments}</Box>
       </MenuItem>
     );
   }
@@ -143,15 +175,21 @@ export class AutoComplete extends React.Component {
   _renderSuggestionsContainer({ containerProps, children }) {
     const numChildren = React.Children.count(children);
     return (
-      <Popover
-        disableAutoFocus
-        anchorEl={this.state.input}
+      <Popper
+        anchorEl={this._input}
         open={numChildren > 0}
-        anchorOrigin={{ horizontal: 'left', vertical: 'bottom' }}
-        {...containerProps}
+        style={{ zIndex: 5000 }}
       >
-        <MenuList>{children}</MenuList>
-      </Popover>
+        <Paper
+          square
+          {...containerProps}
+          style={{
+            minWidth: this._input ? this._input.clientWidth : undefined
+          }}
+        >
+          {children}
+        </Paper>
+      </Popper>
     );
   }
 
@@ -176,6 +214,7 @@ export class AutoComplete extends React.Component {
           style,
           value,
           error: Boolean(error),
+          inputRef: this._assignInputRef,
           label: error || label,
           onBlur: this._onBlur,
           onChange: this._onValueChanged
@@ -271,27 +310,3 @@ export class AutoComplete extends React.Component {
     };
   }
 }
-
-AutoComplete.propTypes = {
-  allowEmpty: PropTypes.bool.isRequired,
-  autoFocus: PropTypes.bool,
-  fetchSuggestions: PropTypes.func,
-  getSuggestionLabel: PropTypes.func.isRequired,
-  getSuggestionValue: PropTypes.func.isRequired,
-  highlightFirstSuggestion: PropTypes.bool,
-  highlightMatches: PropTypes.bool,
-  label: PropTypes.node,
-  inputRef: PropTypes.func,
-  onValueCommitted: PropTypes.func,
-  placeholder: PropTypes.string,
-  style: PropTypes.object,
-  validateValue: PropTypes.func
-};
-
-AutoComplete.defaultProps = {
-  allowEmpty: true,
-  getSuggestionLabel: identity,
-  getSuggestionValue: identity,
-  highlightFirstSuggestion: true,
-  highlightMatches: true
-};

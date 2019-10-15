@@ -65,18 +65,14 @@ class FilterableSortableTable extends React.Component {
       )
     } = props;
 
-    const initializedAvailableColumns = props.availableColumns.map(col =>
-      Object.assign(
-        {
-          displayName: col.name,
-          displayRenderer: x => x,
-          filterProperties: filterPropertiesInitializers[col.filterType](col),
-          // Default sorting with JavaScript comparison operator
-          sorter: (a, b) => (a > b) - (a < b)
-        },
-        col
-      )
-    );
+    const initializedAvailableColumns = props.availableColumns.map(col => ({
+      displayName: col.name,
+      displayRenderer: x => x,
+      filterProperties: filterPropertiesInitializers[col.filterType](col),
+      // Default sorting with JavaScript comparison operator
+      sorter: (a, b) => (a > b) - (a < b),
+      ...col
+    }));
 
     this.state = {
       availableColumns: initializedAvailableColumns,
