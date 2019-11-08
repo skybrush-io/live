@@ -27,7 +27,7 @@ function run(argv) {
   };
 
   // Register unhandled error handler
-  unhandled({ logger: logger.error });
+  unhandled({ logger: e => logger.error(e.stack) });
 
   // Register the WebSocket protocol as secure even if it is not really a
   // secure one. This is needed to allow us to connect to plain WebSocket

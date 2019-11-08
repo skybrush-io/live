@@ -19,7 +19,7 @@ const createStorageEngine = require('redux-storage-engine-electron-store')
 const localServer = require('./local-server');
 const setupIpc = require('./ipc');
 
-unhandled({ logger: logger.error });
+unhandled({ logger: e => logger.error(e.stack) });
 
 /**
  * Creates a new SSDP client object and registers the given function to be
