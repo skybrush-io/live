@@ -44,6 +44,13 @@ const heatmapColoringFunctions = {
 // === Settings for this particular layer type ===
 
 class HeatmapLayerSettingsPresentation extends React.Component {
+  static propTypes = {
+    layer: PropTypes.object,
+    layerId: PropTypes.string,
+
+    setLayerParameter: PropTypes.func
+  };
+
   constructor(props) {
     super(props);
 
@@ -249,7 +256,7 @@ class HeatmapLayerSettingsPresentation extends React.Component {
   }
 
   @autobind
-  _handleClick(e) {
+  _handleClick() {
     const layerParameters = {
       threshold: toNumber(this._refs.threshold.current.value),
       coloringFunction: this.state.coloringFunction,
@@ -261,10 +268,14 @@ class HeatmapLayerSettingsPresentation extends React.Component {
     };
 
     for (const layerParameter in layerParameters) {
-      this.props.setLayerParameter(
-        layerParameter,
-        layerParameters[layerParameter]
-      );
+      if (
+        Object.prototype.hasOwnProperty.call(layerParameters, layerParameter)
+      ) {
+        this.props.setLayerParameter(
+          layerParameter,
+          layerParameters[layerParameter]
+        );
+      }
     }
   }
 
@@ -280,16 +291,9 @@ class HeatmapLayerSettingsPresentation extends React.Component {
   }
 }
 
-HeatmapLayerSettingsPresentation.propTypes = {
-  layer: PropTypes.object,
-  layerId: PropTypes.string,
-
-  setLayerParameter: PropTypes.func
-};
-
 export const HeatmapLayerSettings = connect(
   // mapStateToProps
-  (state, ownProps) => ({}),
+  () => ({}),
   // mapDispatchToProps
   (dispatch, ownProps) => ({
     setLayerParameter: (parameter, value) => {
@@ -325,6 +329,13 @@ const makePointStyle = (color, radius) =>
   });
 
 class HeatmapVectorSource extends React.Component {
+  static propTypes = {
+    storageKey: PropTypes.string,
+    parameters: PropTypes.object,
+
+    setLayerParameter: PropTypes.func
+  };
+
   constructor(props) {
     super(props);
 
@@ -479,26 +490,28 @@ class HeatmapVectorSource extends React.Component {
 
     for (const path in message.body.values) {
       // Check if we are subscribed to this channel
-      if (this.props.parameters.subscriptions.includes(path)) {
-        // Check if the message actually has a valid value
-        if (message.body.values[path].value !== null) {
-          const data = message.body.values[path];
+      if (!this.props.parameters.subscriptions.includes(path)) {
+        continue;
+      }
 
-          this._processData(values, data);
+      // Check if the message actually has a valid value
+      if (message.body.values[path].value !== null) {
+        const data = message.body.values[path];
 
-          if (this.props.parameters.autoScale) {
-            if (
-              data.value > this.props.parameters.threshold &&
-              (data.value < this.props.parameters.minValue ||
-                (this.props.parameters.minValue === 0 &&
-                  this.props.parameters.maxValue === 0))
-            ) {
-              this.props.setLayerParameter('minValue', data.value);
-            }
+        this._processData(values, data);
 
-            if (data.value > this.props.parameters.maxValue) {
-              this.props.setLayerParameter('maxValue', data.value);
-            }
+        if (this.props.parameters.autoScale) {
+          if (
+            data.value > this.props.parameters.threshold &&
+            (data.value < this.props.parameters.minValue ||
+              (this.props.parameters.minValue === 0 &&
+                this.props.parameters.maxValue === 0))
+          ) {
+            this.props.setLayerParameter('minValue', data.value);
+          }
+
+          if (data.value > this.props.parameters.maxValue) {
+            this.props.setLayerParameter('maxValue', data.value);
           }
         }
       }
@@ -532,14 +545,15 @@ class HeatmapVectorSource extends React.Component {
   }
 }
 
-HeatmapVectorSource.propTypes = {
-  storageKey: PropTypes.string,
-  parameters: PropTypes.object,
-
-  setLayerParameter: PropTypes.func
-};
-
 class HeatmapLayerPresentation extends React.Component {
+  static propTypes = {
+    layer: PropTypes.object,
+    layerId: PropTypes.string,
+    zIndex: PropTypes.number,
+
+    setLayerParameter: PropTypes.func
+  };
+
   constructor(props) {
     super(props);
 
@@ -569,18 +583,18 @@ class HeatmapLayerPresentation extends React.Component {
 
     // Const hue = (value - minValue) / (maxValue - minValue) * (maxHue - minHue) + minHue
     const hueRatio =
-      (processedValue - processedMin) / (processedMax - processedMin);
+      processedMax > processedMin
+        ? (processedValue - processedMin) / (processedMax - processedMin)
+        : 0;
     const hue = minHue + hueRatio * (maxHue - minHue);
 
     return `hsla(${hue}, 70%, 50%, 0.5)`;
   }
 
   styleFunction(feature, resolution) {
-    // Const zoom = Math.round(17 - Math.log2(resolution))
-
     const radius = 0.9 / resolution + 1.5;
-
-    return makePointStyle(this._colorForValue(feature.measuredValue), radius);
+    const color = this._colorForValue(feature.measuredValue);
+    return makePointStyle(color, radius);
   }
 
   render() {
@@ -619,17 +633,9 @@ class HeatmapLayerPresentation extends React.Component {
   }
 }
 
-HeatmapLayerPresentation.propTypes = {
-  layer: PropTypes.object,
-  layerId: PropTypes.string,
-  zIndex: PropTypes.number,
-
-  setLayerParameter: PropTypes.func
-};
-
 export const HeatmapLayer = connect(
   // mapStateToProps
-  (state, ownProps) => ({}),
+  () => ({}),
   // mapDispatchToProps
   (dispatch, ownProps) => ({
     setLayerParameter: (parameter, value) => {
