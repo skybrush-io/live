@@ -64,7 +64,7 @@ function SnackbarContentWrapper(props) {
       aria-describedby="client-snackbar"
       message={
         <span id="client-snackbar" className={classes.message}>
-          <Icon className={clsx(classes.icon, classes.iconVariant)} />
+          {Icon && <Icon className={clsx(classes.icon, classes.iconVariant)} />}
           {message}
         </span>
       }
@@ -96,33 +96,21 @@ SnackbarContentWrapper.propTypes = {
  *
  * @returns  {Object}  the rendered snackbar component
  */
-const GlobalSnackbarPresentation = ({ onClose, open, message, semantics }) => {
-  if (semantics && semantics !== MessageSemantics.DEFAULT) {
-    return (
-      <Snackbar open={open} autoHideDuration={3000} onClose={onClose}>
-        <SnackbarContentWrapper
-          semantics={semantics}
-          message={message}
-          onClose={onClose}
-        />
-      </Snackbar>
-    );
-  }
-
-  return (
-    <Snackbar
-      open={open}
+const GlobalSnackbarPresentation = ({ onClose, open, message, semantics }) => (
+  <Snackbar open={open} autoHideDuration={3000} onClose={onClose}>
+    <SnackbarContentWrapper
+      semantics={semantics || MessageSemantics.DEFAULT}
       message={message}
-      autoHideDuration={3000}
       onClose={onClose}
     />
-  );
-};
+  </Snackbar>
+);
 
 GlobalSnackbarPresentation.propTypes = {
   message: PropTypes.string.isRequired,
   onClose: PropTypes.func,
-  open: PropTypes.bool.isRequired
+  open: PropTypes.bool.isRequired,
+  semantics: PropTypes.oneOf(Object.values(MessageSemantics)).isRequired
 };
 
 /**
