@@ -47,12 +47,9 @@ export default class UAVFeature extends Feature {
     this._heading = value;
 
     if (this._iconImage) {
-      this._iconImage.setRotation(
-        (((45 - this._heading) % 360) * Math.PI) / 180
-      );
-      this._selectionImage.setRotation(
-        (((45 - this._heading) % 360) * Math.PI) / 180
-      );
+      const rotation = this._headingToRotation();
+      this._iconImage.setRotation(rotation);
+      this._selectionImage.setRotation(rotation);
     }
   }
 
@@ -105,13 +102,12 @@ export default class UAVFeature extends Feature {
     const styles = [];
 
     // Main image
-
     const iconImage = new Icon({
       rotateWithView: true,
-      rotation: (((this._heading + 45) % 360) * Math.PI) / 180,
+      rotation: this._headingToRotation(),
       snapToPixel: false,
       // Path should not have a leading slash otherwise it won't work in Electron
-      src: `assets/drone.${this._color}.32x32.png`
+      src: `assets/drone.x.${this._color}.32x32.png`
     });
     this._iconImage = iconImage;
 
@@ -122,7 +118,7 @@ export default class UAVFeature extends Feature {
 
     const selectionImage = new Icon({
       rotateWithView: true,
-      rotation: (((this._heading + 45) % 360) * Math.PI) / 180,
+      rotation: this._headingToRotation(),
       snapToPixel: false,
       // Path should not have a leading slash otherwise it won't work in Electron
       src: 'assets/selection_glow.png'
@@ -131,7 +127,7 @@ export default class UAVFeature extends Feature {
 
     const selectionStyle = new Style({ image: selectionImage });
     if (this._selected) {
-      styles.push(selectionStyle);
+      styles.splice(0, 0, selectionStyle);
     }
 
     // Label
@@ -147,5 +143,17 @@ export default class UAVFeature extends Feature {
     styles.push(labelStyle);
 
     this.setStyle(styles);
+  }
+
+  /**
+   * Converts the heading from the status information into the rotation
+   * value to use in the OpenLayers feature style.
+   */
+  _headingToRotation(heading) {
+    if (heading === undefined) {
+      heading = this._heading;
+    }
+
+    return ((heading % 360) * Math.PI) / 180;
   }
 }

@@ -23,15 +23,10 @@ const defaultState = {
  */
 const reducer = handleActions(
   {
-    DISMISS_SNACKBAR: (state, action) =>
-      u(
-        {
-          message: '',
-          open: false,
-          semantics: MessageSemantics.DEFAULT
-        },
-        state
-      ),
+    DISMISS_SNACKBAR: state =>
+      /* don't reset message or semantics here; it would cause a visual glitch
+       * when the snackbar is closing */
+      u({ open: false }, state),
 
     SHOW_SNACKBAR_MESSAGE: (state, action) => {
       let semantics;
