@@ -58,7 +58,7 @@ const createMainWindow = (app, opts) => {
 
   const { x, y, width, height } = mainWindowState;
   mainWindow = new BrowserWindow({
-    title: app.getName(),
+    title: app.name,
     show: false,
     x,
     y,
