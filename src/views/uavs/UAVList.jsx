@@ -12,12 +12,11 @@ import ListItemText from '@material-ui/core/ListItemText';
 import Search from '@material-ui/icons/Search';
 
 import { autobind } from 'core-decorators';
-import { pick } from 'lodash';
+import { pick, property, sortedIndexBy } from 'lodash';
 import { boundingExtent, buffer } from 'ol/extent';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
-import u from 'updeep';
 
 import { setSelectedUAVIds } from '../../actions/map';
 import { multiSelectableListOf } from '../../components/helpers/lists';
@@ -40,6 +39,8 @@ function formatSecondaryTextForUAV(uav) {
     (uav.agl === undefined ? '' : ` @ ${uav.agl.toFixed(1)}m`)
   );
 }
+
+const idGetter = property('id');
 
 const jumpToUAV = function(uav) {
   mapViewToLocationSignal.dispatch(
@@ -120,6 +121,18 @@ class UAVList extends React.Component {
     this._onFlockMaybeChanged(this.props.flock, undefined);
   }
 
+  _buildUAVIdToIndexMap(uavs) {
+    const result = [];
+    let index = 0;
+
+    for (const uav of uavs) {
+      result.push([uav.id, index]);
+      index++;
+    }
+
+    return new Immutable.Map(result);
+  }
+
   @autobind
   _fitSelectedUAVs() {
     const { selectedUAVIds } = this.props;
@@ -181,15 +194,15 @@ class UAVList extends React.Component {
       const uavRepr = this._pickRelevantUAVProps(uav);
 
       if (index === undefined) {
-        uavIdToIndex = uavIdToIndex.set(uav.id, uavs.size);
-        uavs = uavs.push(uavRepr);
+        const insertionIndex = sortedIndexBy(uavs.toArray(), uavRepr, idGetter);
+        uavs = uavs.splice(insertionIndex, 0, uavRepr);
+        uavIdToIndex = this._buildUAVIdToIndexMap(uavs);
       } else {
         uavs = uavs.set(index, uavRepr);
       }
     }
 
-    const newState = u({ uavs, uavIdToIndex }, this.state);
-    this.setState(newState);
+    this.setState({ uavs, uavIdToIndex });
   }
 
   /**

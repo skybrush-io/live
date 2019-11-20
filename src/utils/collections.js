@@ -199,9 +199,9 @@ export const getKey = (itemId, ...subKeys) => {
  *     collection, filtered and sorted according to the `order` array
  */
 export const selectOrdered = ({ byId, order }) =>
-  order !== undefined
-    ? reject(order.map(id => byId[id]), isNil)
-    : Object.values(byId);
+  order === undefined
+    ? Object.values(byId)
+    : reject(order.map(id => byId[id]), isNil);
 
 /**
  * Helper function that takes an array of item IDs and an ordered collection,
