@@ -28,35 +28,27 @@ class GeoJSONLayerSettingsPresentation extends React.Component {
     showMessage: PropTypes.func
   };
 
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      strokeColor: props.layer.parameters.strokeColor,
-      fillColor: props.layer.parameters.fillColor,
-      strokeWidth: props.layer.parameters.strokeWidth,
-      data: JSON.stringify(props.layer.parameters.data, null, 2)
-    };
-
-    this._handleStrokeColorChange = this._handleStrokeColorChange.bind(this);
-    this._handleFillColorChange = this._handleFillColorChange.bind(this);
-    this._handleStrokeWidthChange = this._handleStrokeWidthChange.bind(this);
-    this._handleDataChange = this._handleDataChange.bind(this);
-    this._handleClick = this._handleClick.bind(this);
-  }
+  state = {
+    strokeWidth: this.props.layer.parameters.strokeWidth,
+    data: JSON.stringify(this.props.layer.parameters.data, null, 2)
+  };
 
   render() {
+    const { layer } = this.props;
+    const { parameters } = layer;
+    const { fillColor, strokeColor } = parameters;
+
     return (
       <div>
         <span>Stroke color: </span>
         <PopupColorPicker
-          value={this.state.strokeColor}
+          value={strokeColor}
           onChange={this._handleStrokeColorChange}
         />
 
         <span style={{ marginLeft: 25 }}>Fill color: </span>
         <PopupColorPicker
-          value={this.state.fillColor}
+          value={fillColor}
           onChange={this._handleFillColorChange}
         />
 
@@ -93,25 +85,23 @@ class GeoJSONLayerSettingsPresentation extends React.Component {
     );
   }
 
-  _handleStrokeColorChange(value) {
-    this.setState({ strokeColor: value });
-  }
+  _handleStrokeColorChange = value => {
+    this.props.setLayerParameter('strokeColor', value);
+  };
 
-  _handleFillColorChange(value) {
-    this.setState({ fillColor: value });
-  }
+  _handleFillColorChange = value => {
+    this.props.setLayerParameter('fillColor', value);
+  };
 
-  _handleStrokeWidthChange(e) {
+  _handleStrokeWidthChange = e => {
     this.setState({ strokeWidth: e.target.value });
-  }
+  };
 
-  _handleDataChange(e) {
+  _handleDataChange = e => {
     this.setState({ data: e.target.value });
-  }
+  };
 
-  _handleClick() {
-    this.props.setLayerParameter('strokeColor', this.state.strokeColor);
-    this.props.setLayerParameter('fillColor', this.state.fillColor);
+  _handleClick = () => {
     this.props.setLayerParameter(
       'strokeWidth',
       toNumber(this.state.strokeWidth)
@@ -130,7 +120,7 @@ class GeoJSONLayerSettingsPresentation extends React.Component {
         semantics: 'error'
       });
     }
-  }
+  };
 }
 
 export const GeoJSONLayerSettings = connect(
