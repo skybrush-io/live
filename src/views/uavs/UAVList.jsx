@@ -121,18 +121,6 @@ class UAVList extends React.Component {
     this._onFlockMaybeChanged(this.props.flock, undefined);
   }
 
-  _buildUAVIdToIndexMap(uavs) {
-    const result = [];
-    let index = 0;
-
-    for (const uav of uavs) {
-      result.push([uav.id, index]);
-      index++;
-    }
-
-    return new Immutable.Map(result);
-  }
-
   @autobind
   _fitSelectedUAVs() {
     const { selectedUAVIds } = this.props;
@@ -196,7 +184,12 @@ class UAVList extends React.Component {
       if (index === undefined) {
         const insertionIndex = sortedIndexBy(uavs.toArray(), uavRepr, idGetter);
         uavs = uavs.splice(insertionIndex, 0, uavRepr);
-        uavIdToIndex = this._buildUAVIdToIndexMap(uavs);
+        uavIdToIndex = uavIdToIndex.withMutations(map => {
+          const n = uavs.size;
+          for (let i = insertionIndex; i < n; i++) {
+            map = map.set(uavs.get(i).id, i);
+          }
+        });
       } else {
         uavs = uavs.set(index, uavRepr);
       }
