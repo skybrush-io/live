@@ -1,6 +1,5 @@
 import createColor from 'color';
-import _ from 'lodash';
-import memoize from 'memoize-one';
+import { toNumber } from 'lodash';
 import GeoJSON from 'ol/format/GeoJSON';
 import Point from 'ol/geom/Point';
 import PropTypes from 'prop-types';
@@ -9,18 +8,15 @@ import { connect } from 'react-redux';
 
 import { layer as olLayer, source } from '@collmot/ol-react';
 
-import ArrowDownward from '@material-ui/icons/ArrowDownward';
+import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 
-import Button from '@material-ui/core/Button';
-import PopupColorPicker from '../../../components/PopupColorPicker';
-
-import { setLayerParameterById } from '../../../actions/layers';
-import { showSnackbarMessage } from '../../../actions/snackbar';
-
-import { parseColor } from '../../../utils/coloring';
-import { convertSimpleStyleToOLStyle } from '../../../utils/simplestyle';
-import { primaryColor } from '../../../utils/styles';
+import { setLayerParameterById } from '~/actions/layers';
+import { showSnackbarMessage } from '~/actions/snackbar';
+import PopupColorPicker from '~/components/PopupColorPicker';
+import { parseColor } from '~/utils/coloring';
+import { convertSimpleStyleToOLStyle } from '~/utils/simplestyle';
+import { primaryColor } from '~/utils/styles';
 
 // === Settings for this particular layer type ===
 
@@ -58,16 +54,18 @@ class GeoJSONLayerSettingsPresentation extends React.Component {
           onChange={this._handleStrokeColorChange}
         />
 
-        <span style={{ marginLeft: '25px' }}>Fill color: </span>
+        <span style={{ marginLeft: 25 }}>Fill color: </span>
         <PopupColorPicker
           value={this.state.fillColor}
           onChange={this._handleFillColorChange}
         />
 
         <TextField
-          style={{ marginLeft: '25px' }}
+          style={{ marginLeft: 25 }}
           label="Stroke width:"
           type="number"
+          min="1"
+          max="100"
           value={this.state.strokeWidth}
           onChange={this._handleStrokeWidthChange}
         />
@@ -88,8 +86,7 @@ class GeoJSONLayerSettingsPresentation extends React.Component {
             color="primary"
             onClick={this._handleClick}
           >
-            <ArrowDownward style={{ marginRight: '1em' }} />
-            Import GeoJSON
+            Update layer
           </Button>
         </div>
       </div>
@@ -117,15 +114,21 @@ class GeoJSONLayerSettingsPresentation extends React.Component {
     this.props.setLayerParameter('fillColor', this.state.fillColor);
     this.props.setLayerParameter(
       'strokeWidth',
-      _.toNumber(this.state.strokeWidth)
+      toNumber(this.state.strokeWidth)
     );
 
     try {
       const parsedData = JSON.parse(this.state.data);
       this.props.setLayerParameter('data', parsedData);
-      this.props.showMessage('GeoJSON imported successfully.');
+      this.props.showMessage({
+        message: 'GeoJSON imported successfully.',
+        semantics: 'success'
+      });
     } catch (_) {
-      this.props.showMessage('Invalid GeoJSON data.');
+      this.props.showMessage({
+        message: 'Invalid GeoJSON data.',
+        semantics: 'error'
+      });
     }
   }
 }
@@ -209,16 +212,15 @@ class GeoJSONVectorSource extends React.Component {
 }
 
 export const GeoJSONLayer = ({ layer, zIndex }) => {
-  const { parameters } = layer;
   const styleFunction = React.useMemo(() => {
+    const { parameters } = layer;
     const { strokeWidth } = parameters;
     const strokeColor = parseColor(parameters.strokeColor, primaryColor);
     const fillColor = parseColor(
       parameters.fillColor,
       createColor(primaryColor).alpha(0.5)
     );
-    console.log(strokeWidth);
-    const styleDefaults = {
+    const defaults = {
       stroke: strokeColor.rgb().hex(),
       'stroke-opacity': strokeColor.alpha(),
       'stroke-width': strokeWidth,
@@ -233,14 +235,14 @@ export const GeoJSONLayer = ({ layer, zIndex }) => {
         props['marker-symbol'] = 'marker';
       }
 
-      return convertSimpleStyleToOLStyle(props, styleDefaults);
+      return convertSimpleStyleToOLStyle(props, defaults);
     };
-  }, [parameters]);
+  }, [layer]);
 
   return (
     <div>
       <olLayer.Vector zIndex={zIndex} style={styleFunction}>
-        <GeoJSONVectorSource data={parameters.data} />
+        <GeoJSONVectorSource data={layer.parameters.data} />
       </olLayer.Vector>
     </div>
   );

@@ -28,15 +28,13 @@ const _markerSizeToRadius = {
  *         MapBox style specification
  */
 export function convertSimpleStyleToOLStyle(style, defaults) {
-  const realStyle = Object.assign(
-    {
-      'fill-opacity': 0.6,
-      'stroke-opacity': 1,
-      'stroke-width': 2
-    },
-    defaults,
-    style
-  );
+  const realStyle = {
+    'fill-opacity': 0.6,
+    'stroke-opacity': 1,
+    'stroke-width': 2,
+    ...defaults,
+    ...style
+  };
   const hasStroke = realStyle.stroke !== undefined;
   const hasFill = realStyle.fill !== undefined;
   const hasText = realStyle.title !== undefined;

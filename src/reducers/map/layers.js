@@ -116,9 +116,10 @@ const reducer = handleActions(
     },
 
     SET_LAYER_PARAMETER_BY_ID(state, action) {
+      const { layerId, parameter, value } = action.payload;
       return u.updateIn(
-        getKey(action.payload.layerId, 'parameters', action.payload.parameter),
-        action.payload.value,
+        getKey(layerId, 'parameters', parameter),
+        value,
         state
       );
     },
