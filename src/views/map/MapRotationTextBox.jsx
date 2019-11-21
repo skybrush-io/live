@@ -7,7 +7,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 import IconButton from '@material-ui/core/IconButton';
-import ImageRotateRight from '@material-ui/icons/RotateRight';
+import RotateLeft from '@material-ui/icons/RotateLeft';
 import TextField from '@material-ui/core/TextField';
 import { normalizeAngle } from '~/utils/geography';
 import { mapReferenceRequestSignal, mapRotationResetSignal } from '~/signals';
@@ -60,7 +60,7 @@ export default class MapRotationTextBox extends React.Component {
     return (
       <div style={this.props.style}>
         <IconButton tooltip="Reset rotation" onClick={this._onButtonClick}>
-          <ImageRotateRight />
+          <RotateLeft />
         </IconButton>
         <TextField
           style={{
