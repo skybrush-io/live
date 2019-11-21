@@ -357,7 +357,12 @@ class MapViewPresentation extends React.Component {
 
   render() {
     const { center, selectedTool, zoom } = this.props;
-    const view = <View center={coordinateFromLonLat(center)} zoom={zoom} />;
+    const view = (
+      <View
+        center={coordinateFromLonLat(center)} zoom={zoom}
+        constrainRotation={false}
+      />
+    );
 
     const toolClasses = {
       [Tool.SELECT]: 'tool-select',
