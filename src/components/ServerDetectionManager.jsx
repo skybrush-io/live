@@ -1,6 +1,6 @@
 import parseHeaders from 'http-headers';
 import { isLoopback, isV4Format, isV6Format } from 'ip';
-import { partial } from 'lodash';
+import partial from 'lodash-es/partial';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';

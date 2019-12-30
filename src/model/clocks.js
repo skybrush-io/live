@@ -2,7 +2,9 @@
  * @file Functions and constants related to handling clocks.
  */
 
-import _ from 'lodash';
+import isUndefined from 'lodash-es/isUndefined';
+import mapValues from 'lodash-es/mapValues';
+import omitBy from 'lodash-es/omitBy';
 
 import { setClockStateMultiple } from '../actions/clocks';
 import {
@@ -23,24 +25,22 @@ export function handleClockInformationMessage(body, dispatch) {
   // by our Redux actions. Omit keys for which the values are not
   // provided by the server.
 
-  const states = _(body.status)
-    .mapValues(statusFromServer =>
-      _.omitBy(
-        {
-          id: statusFromServer.id,
-          epoch: dateToTimestamp(
-            parseEpochIdentifierOrISODate(statusFromServer.epoch)
-          ),
-          referenceTime: dateToTimestamp(
-            parseISODate(statusFromServer.retrievedAt)
-          ),
-          running: statusFromServer.running,
-          ticks: statusFromServer.timestamp,
-          ticksPerSecond: statusFromServer.ticksPerSecond || 1
-        },
-        _.isUndefined
-      )
+  const states = mapValues(body.status, statusFromServer =>
+    omitBy(
+      {
+        id: statusFromServer.id,
+        epoch: dateToTimestamp(
+          parseEpochIdentifierOrISODate(statusFromServer.epoch)
+        ),
+        referenceTime: dateToTimestamp(
+          parseISODate(statusFromServer.retrievedAt)
+        ),
+        running: statusFromServer.running,
+        ticks: statusFromServer.timestamp,
+        ticksPerSecond: statusFromServer.ticksPerSecond || 1
+      },
+      isUndefined
     )
-    .value();
+  );
   dispatch(setClockStateMultiple(states));
 }

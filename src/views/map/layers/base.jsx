@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import { layer as olLayer, source } from '@collmot/ol-react';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -8,46 +7,43 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 
-import { Source, Sources, labelForSource } from '../../../model/sources';
-import { selectMapSource } from '../../../actions/map';
+import { selectMapSource } from '~/actions/map';
+import { Source, Sources, labelForSource } from '~/model/sources';
 
 const BING_API_KEY = process.env.FLOCKWAVE_BING_API_KEY;
 
 // === Settings for this particular layer type ===
 
-class BaseLayerSettingsPresentation extends React.Component {
-  render() {
-    const sourceRadioButtons = _.map(Sources, source => (
-      <FormControlLabel
-        key={source}
-        value={source}
-        label={labelForSource(source)}
-        style={{ marginTop: 5 }}
-        control={<Radio />}
-      />
-    ));
-    return (
-      <RadioGroup
-        key="baseProperties"
-        name="source.base"
-        value={this.props.layer.parameters.source}
-        onChange={this.props.onLayerSourceChanged}
-      >
-        {sourceRadioButtons}
-      </RadioGroup>
-    );
-  }
-}
+const BaseLayerSettingsPresentation = ({ layer, onLayerSourceChanged }) => {
+  const sourceRadioButtons = Sources.map(source => (
+    <FormControlLabel
+      key={source}
+      value={source}
+      label={labelForSource(source)}
+      style={{ marginTop: 5 }}
+      control={<Radio />}
+    />
+  ));
+  return (
+    <RadioGroup
+      key="baseProperties"
+      name="source.base"
+      value={layer.parameters.source}
+      onChange={onLayerSourceChanged}
+    >
+      {sourceRadioButtons}
+    </RadioGroup>
+  );
+};
 
 BaseLayerSettingsPresentation.propTypes = {
   layer: PropTypes.object,
-  layerId: PropTypes.string,
   onLayerSourceChanged: PropTypes.func
 };
 
 export const BaseLayerSettings = connect(
   // mapStateToProps
-  (state, ownProps) => ({}),
+  null,
   // mapDispatchToProps
   (dispatch, ownProps) => ({
     onLayerSourceChanged: (event, value) => {
@@ -65,37 +61,38 @@ export const BaseLayerSettings = connect(
 // Most likely it could be solved in ol-react as well, but it's easier to
 // do it here.
 
-class LayerSource extends React.PureComponent {
-  render() {
-    const { type } = this.props;
-    switch (type) {
-      case Source.OSM:
-        return <source.OSM />;
+const LayerSource = ({ type }) => {
+  switch (type) {
+    case Source.OSM:
+      return <source.OSM />;
 
-      case Source.GOOGLE_MAPS.DEFAULT:
-        return (
-          <source.XYZ url="https://mt1.google.com/vt/lyrs=r&x={x}&y={y}&z={z}" />
-        );
+    case Source.GOOGLE_MAPS.DEFAULT:
+      return (
+        <source.XYZ url="https://mt1.google.com/vt/lyrs=r&x={x}&y={y}&z={z}" />
+      );
 
-      case Source.GOOGLE_MAPS.SATELLITE:
-        return (
-          <source.XYZ url="https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}" />
-        );
+    case Source.GOOGLE_MAPS.SATELLITE:
+      return (
+        <source.XYZ url="https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}" />
+      );
 
-      case Source.BING_MAPS.AERIAL_WITH_LABELS:
-        return (
-          <source.BingMaps
-            apiKey={BING_API_KEY}
-            imagerySet="AerialWithLabels"
-            maxZoom={19}
-          />
-        );
+    case Source.BING_MAPS.AERIAL_WITH_LABELS:
+      return (
+        <source.BingMaps
+          apiKey={BING_API_KEY}
+          imagerySet="AerialWithLabels"
+          maxZoom={19}
+        />
+      );
 
-      case Source.BING_MAPS.ROAD:
-        return <source.BingMaps apiKey={BING_API_KEY} imagerySet="Road" />;
-    }
+    case Source.BING_MAPS.ROAD:
+      return <source.BingMaps apiKey={BING_API_KEY} imagerySet="Road" />;
+
+    default:
+      return null;
   }
-}
+};
+
 LayerSource.propTypes = {
   type: PropTypes.string
 };

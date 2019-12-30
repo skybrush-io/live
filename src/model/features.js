@@ -3,7 +3,8 @@
  * that we use on the map.
  */
 
-import { isNil, unary } from 'lodash';
+import isNil from 'lodash-es/isNil';
+import unary from 'lodash-es/unary';
 import LocationOn from '@material-ui/icons/LocationOn';
 import ShowChart from '@material-ui/icons/ShowChart';
 import CropSquare from '@material-ui/icons/CropSquare';
@@ -55,7 +56,7 @@ export function createFeatureFromOpenLayers(olFeature) {
       });
       break;
 
-    case 'Circle':
+    case 'Circle': {
       const center = geometry.getCenter();
       Object.assign(result, {
         type: FeatureType.CIRCLE,
@@ -65,6 +66,7 @@ export function createFeatureFromOpenLayers(olFeature) {
         ]
       });
       break;
+    }
 
     case 'LineString':
       Object.assign(result, {

@@ -1,6 +1,6 @@
 const { spawn } = require('child_process');
 const path = require('path');
-const { endsWith } = require('lodash');
+const endsWith = require('lodash-es/endsWith');
 const pify = require('pify');
 const pDefer = require('p-defer');
 const pTimeout = require('p-timeout');

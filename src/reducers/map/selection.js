@@ -3,7 +3,8 @@
  * map.
  */
 
-import { difference, uniq } from 'lodash';
+import difference from 'lodash-es/difference';
+import uniq from 'lodash-es/uniq';
 import { handleActions } from 'redux-actions';
 
 import { uavIdToGlobalId } from '~/model/identifiers';

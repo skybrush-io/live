@@ -1,4 +1,4 @@
-import { isEqual } from 'lodash';
+import isEqual from 'lodash-es/isEqual';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import IconButton from '@material-ui/core/IconButton';
 import TextField from '@material-ui/core/TextField';
@@ -14,6 +14,17 @@ const safelyFormatCoordinate = coordinate =>
     : '';
 
 export default class CoordinateField extends React.Component {
+  static propTypes = {
+    onChange: PropTypes.func,
+    required: PropTypes.bool,
+    value: PropTypes.arrayOf(PropTypes.number)
+  };
+
+  static defaultProps = {
+    required: false,
+    value: undefined
+  };
+
   constructor(props) {
     super(props);
 
@@ -29,7 +40,7 @@ export default class CoordinateField extends React.Component {
     this._onMouseDownOnButton = this._onMouseDownOnButton.bind(this);
   }
 
-  static getDerivedStateFromProps(props, state) {
+  static getDerivedStateFromProps(props) {
     return {
       originalText: safelyFormatCoordinate(props.value)
     };
@@ -100,7 +111,7 @@ export default class CoordinateField extends React.Component {
   }
 
   _reset() {
-    this.setState({ text: this.state.originalText });
+    this.setState(state => ({ text: state.originalText }));
   }
 
   _validate(value) {
@@ -119,13 +130,3 @@ export default class CoordinateField extends React.Component {
     return [!hasError, parsed];
   }
 }
-
-CoordinateField.propTypes = {
-  onChange: PropTypes.func,
-  required: PropTypes.bool,
-  value: PropTypes.arrayOf(PropTypes.number)
-};
-CoordinateField.defaultProps = {
-  required: false,
-  value: undefined
-};

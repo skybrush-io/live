@@ -3,7 +3,10 @@
  * currently known to the server.
  */
 
-import _ from 'lodash';
+import difference from 'lodash-es/difference';
+import findKey from 'lodash-es/findKey';
+import includes from 'lodash-es/includes';
+import stubFalse from 'lodash-es/stubFalse';
 import Layer from 'ol/layer/Layer';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -30,16 +33,16 @@ const cachedGetColorById = (() => {
 
   return (colorPredicates, id) =>
     /* eslint no-new-func: "off" */
-    _.findKey(colorPredicates, p => {
+    findKey(colorPredicates, p => {
       if (!(p in predicateFunctionCache)) {
         try {
           predicateFunctionCache[p] = new Function('id', `return ${p}`);
-        } catch (error) {
+        } catch {
           // Probably it is blocked by the browser()
           console.warn(
             'Cannot create new UAV color predicate; maybe blocked by CSP?'
           );
-          predicateFunctionCache[p] = _.stubFalse;
+          predicateFunctionCache[p] = stubFalse;
         }
       }
 
@@ -55,14 +58,16 @@ const cachedGetColorById = (() => {
  * show all the active UAVs on top of the map.
  */
 class ActiveUAVsLayerSource extends React.Component {
+  static propTypes = {
+    colorPredicates: PropTypes.objectOf(PropTypes.string).isRequired,
+    flock: PropTypes.instanceOf(Flock),
+    layer: PropTypes.instanceOf(Layer),
+    projection: PropTypes.func,
+    selection: PropTypes.arrayOf(PropTypes.string).isRequired
+  };
+
   constructor(props) {
     super(props);
-
-    this._assignSourceRef = this._assignSourceRef.bind(this);
-    this._onFeatureAdded = this._onFeatureAdded.bind(this);
-    this._onSelectionMaybeChanged = this._onSelectionMaybeChanged.bind(this);
-    this._onColorsMaybeChanged = this._onColorsMaybeChanged.bind(this);
-    this._onUAVsUpdated = this._onUAVsUpdated.bind(this);
 
     this._sourceRef = undefined;
 
@@ -107,7 +112,7 @@ class ActiveUAVsLayerSource extends React.Component {
     return <source.Vector ref={this._assignSourceRef} />;
   }
 
-  _assignSourceRef(value) {
+  _assignSourceRef = value => {
     if (value === this._sourceRef) {
       return;
     }
@@ -121,7 +126,7 @@ class ActiveUAVsLayerSource extends React.Component {
     if (this._sourceRef) {
       this._featureManager.vectorSource = value.source;
     }
-  }
+  };
 
   /**
    * Event handler that is called when a new feature was added by the feature
@@ -129,11 +134,11 @@ class ActiveUAVsLayerSource extends React.Component {
    *
    * @param {UAVFeature}  feature  the feature that was added
    */
-  _onFeatureAdded(feature) {
+  _onFeatureAdded = feature => {
     // Ensure that the feature is selected automatically if it is part
     // of the current selection
-    feature.selected = _.includes(this.props.selection, feature.getId());
-  }
+    feature.selected = includes(this.props.selection, feature.getId());
+  };
 
   /**
    * Function that is called when we suspect that the flock associated to
@@ -146,7 +151,7 @@ class ActiveUAVsLayerSource extends React.Component {
    * @param {Flock} oldFlock  the old flock associated to the layer
    * @param {Flock} newFlock  the new flock associated to the layer
    */
-  _onFlockMaybeChanged(oldFlock, newFlock) {
+  _onFlockMaybeChanged = (oldFlock, newFlock) => {
     if (oldFlock === newFlock) {
       return;
     }
@@ -161,7 +166,7 @@ class ActiveUAVsLayerSource extends React.Component {
         this._onUAVsUpdated
       );
     }
-  }
+  };
 
   /**
    * Function that is called when we suspect that the set of selected UAVs
@@ -170,28 +175,26 @@ class ActiveUAVsLayerSource extends React.Component {
    * @param {string[]}  oldSelection  the old selection of UAVs
    * @param {string[]}  newSelection  the new selection of UAVs
    */
-  _onSelectionMaybeChanged(oldSelection, newSelection) {
+  _onSelectionMaybeChanged = (oldSelection, newSelection) => {
     if (!this._sourceRef) {
       return;
     }
 
     const { source } = this._sourceRef;
     const getFeatureById = source.getFeatureById.bind(source);
-    _(newSelection)
-      .difference(oldSelection)
+    difference(newSelection, oldSelection)
       .map(getFeatureById)
       .filter()
       .each(feature => {
         feature.selected = true;
       });
-    _(oldSelection)
-      .difference(newSelection)
+    difference(oldSelection, newSelection)
       .map(getFeatureById)
       .filter()
       .each(feature => {
         feature.selected = false;
       });
-  }
+  };
 
   /**
    * Function that checks whether the color predicates have changed and updates
@@ -200,7 +203,7 @@ class ActiveUAVsLayerSource extends React.Component {
    * @param {Object} oldColorPredicates The old color predicates.
    * @param {Object} newColorPredicates The new color predicates.
    */
-  _onColorsMaybeChanged(oldColorPredicates, newColorPredicates) {
+  _onColorsMaybeChanged = (oldColorPredicates, newColorPredicates) => {
     if (newColorPredicates === oldColorPredicates) {
       return;
     }
@@ -209,7 +212,7 @@ class ActiveUAVsLayerSource extends React.Component {
     for (const feature of features) {
       feature.color = cachedGetColorById(newColorPredicates, feature.uavId);
     }
-  }
+  };
 
   /**
    * Event handler that is called when the status of some of the UAVs has
@@ -218,7 +221,7 @@ class ActiveUAVsLayerSource extends React.Component {
    * @listens Flock#uavsUpdated
    * @param {UAV[]} uavs  the UAVs that should be refreshed
    */
-  _onUAVsUpdated(uavs) {
+  _onUAVsUpdated = uavs => {
     uavs.forEach(uav => {
       const feature = this._featureManager.createOrUpdateFeatureById(uav.id, [
         uav.lon,
@@ -234,15 +237,7 @@ class ActiveUAVsLayerSource extends React.Component {
         feature.color = cachedGetColorById(this.props.colorPredicates, uav.id);
       }
     });
-  }
+  };
 }
-
-ActiveUAVsLayerSource.propTypes = {
-  colorPredicates: PropTypes.objectOf(PropTypes.string).isRequired,
-  flock: PropTypes.instanceOf(Flock),
-  layer: PropTypes.instanceOf(Layer),
-  projection: PropTypes.func,
-  selection: PropTypes.arrayOf(PropTypes.string).isRequired
-};
 
 export default withLayer(ActiveUAVsLayerSource);

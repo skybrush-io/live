@@ -2,7 +2,9 @@
  * @file Functions and constants related to handling connections.
  */
 
-import _ from 'lodash';
+import isUndefined from 'lodash-es/isUndefined';
+import mapValues from 'lodash-es/mapValues';
+import omitBy from 'lodash-es/omitBy';
 
 import { setConnectionStateMultiple } from '../actions/connections';
 import { parseISODate } from '../utils/parsing';
@@ -29,18 +31,16 @@ export function handleConnectionInformationMessage(body, dispatch) {
   // by our Redux actions. Omit keys for which the values are not
   // provided by the server, and also prevent accidental updates of
   // the master connection
-  const states = _(body.status)
-    .mapValues(statusFromServer =>
-      _.omitBy(
-        {
-          id: statusFromServer.id,
-          name: statusFromServer.description,
-          state: statusFromServer.status,
-          stateChangedAt: parseISODate(statusFromServer.timestamp)
-        },
-        _.isUndefined
-      )
+  const states = mapValues(body.status, statusFromServer =>
+    omitBy(
+      {
+        id: statusFromServer.id,
+        name: statusFromServer.description,
+        state: statusFromServer.status,
+        stateChangedAt: parseISODate(statusFromServer.timestamp)
+      },
+      isUndefined
     )
-    .value();
+  );
   dispatch(setConnectionStateMultiple(states));
 }

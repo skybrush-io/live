@@ -3,7 +3,7 @@
  * status of all the connections reported by the server.
  */
 
-import { countBy } from 'lodash';
+import countBy from 'lodash-es/countBy';
 import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
 

@@ -2,8 +2,12 @@
  * @file List-related component helper functions and higher order components.
  */
 
-import { get, partial } from 'lodash/fp';
-import { identity, includes, isFunction, xor } from 'lodash';
+import get from 'lodash-es/get';
+import identity from 'lodash-es/identity';
+import includes from 'lodash-es/includes';
+import isFunction from 'lodash-es/isFunction';
+import partial from 'lodash-es/partial';
+import xor from 'lodash-es/xor';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import PropTypes from 'prop-types';
@@ -306,7 +310,9 @@ function hasSomeItems(array) {
  * @return {function} the input argument converted into a function
  */
 function validateDataProvider(dataProvider) {
-  return isFunction(dataProvider) ? dataProvider : get(dataProvider);
+  return isFunction(dataProvider)
+    ? dataProvider
+    : value => get(value, dataProvider);
 }
 
 /**

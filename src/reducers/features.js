@@ -3,7 +3,11 @@
  * stores the features (waypoints, tracks and areas) shown on the map.
  */
 
-import { camelCase, capitalize, keys, map, mapValues } from 'lodash';
+import camelCase from 'lodash-es/camelCase';
+import capitalize from 'lodash-es/capitalize';
+import keys from 'lodash-es/keys';
+import map from 'lodash-es/map';
+import mapValues from 'lodash-es/mapValues';
 import { handleActions } from 'redux-actions';
 import u from 'updeep';
 

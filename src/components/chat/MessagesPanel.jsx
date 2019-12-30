@@ -3,7 +3,8 @@
  * to the UAVs.
  */
 
-import { flatMap, isNil } from 'lodash';
+import flatMap from 'lodash-es/flatMap';
+import isNil from 'lodash-es/isNil';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import TextField from '@material-ui/core/TextField';
 import PropTypes from 'prop-types';

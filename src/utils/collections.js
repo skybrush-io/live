@@ -1,4 +1,7 @@
-import { curry, isNil, isPlainObject, reject } from 'lodash';
+import curry from 'lodash-es/curry';
+import isNil from 'lodash-es/isNil';
+import isPlainObject from 'lodash-es/isPlainObject';
+import reject from 'lodash-es/reject';
 import u from 'updeep';
 
 import { chooseUniqueIdFromName } from './naming';

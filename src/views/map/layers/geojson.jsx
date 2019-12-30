@@ -1,5 +1,5 @@
 import createColor from 'color';
-import { toNumber } from 'lodash';
+import toNumber from 'lodash-es/toNumber';
 import GeoJSON from 'ol/format/GeoJSON';
 import Point from 'ol/geom/Point';
 import PropTypes from 'prop-types';

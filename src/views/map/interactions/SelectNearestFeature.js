@@ -4,14 +4,14 @@
  * along with a convenient React component wrapper.
  */
 
-import _, {
-  includes,
-  isArray,
-  isFunction,
-  partial,
-  stubFalse,
-  stubTrue
-} from 'lodash';
+import includes from 'lodash-es/includes';
+import isArray from 'lodash-es/isArray';
+import isFunction from 'lodash-es/isFunction';
+import minBy from 'lodash-es/minBy';
+import partial from 'lodash-es/partial';
+import stubFalse from 'lodash-es/stubFalse';
+import stubTrue from 'lodash-es/stubTrue';
+
 import * as Condition from 'ol/events/condition';
 import Interaction from 'ol/interaction/Interaction';
 import Layer from 'ol/layer/Layer';
@@ -102,17 +102,21 @@ class SelectNearestFeatureInteraction extends Interaction {
           this._distanceOfEventFromFeature,
           mapBrowserEvent
         );
-        const closestFeature = _(map.getLayers().getArray())
-          .filter(this._isLayerFeasible)
-          .filter(this._layerSelectorFunction)
-          .map(layer => {
-            const source = layer.getSource();
-            return source
-              ? source.getClosestFeatureToCoordinate(coordinate)
-              : undefined;
-          })
-          .filter(this._isFeatureFeasible)
-          .minBy(distanceFunction);
+        const closestFeature = minBy(
+          map
+            .getLayers()
+            .getArray()
+            .filter(this._isLayerFeasible)
+            .filter(this._layerSelectorFunction)
+            .map(layer => {
+              const source = layer.getSource();
+              return source
+                ? source.getClosestFeatureToCoordinate(coordinate)
+                : undefined;
+            })
+            .filter(this._isFeatureFeasible),
+          distanceFunction
+        );
 
         if (closestFeature !== undefined) {
           // Get the actual distance of the feature (if we have one)

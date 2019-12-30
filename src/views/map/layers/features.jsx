@@ -1,5 +1,5 @@
 import Color from 'color';
-import { unary } from 'lodash';
+import unary from 'lodash-es/unary';
 import PropTypes from 'prop-types';
 import { Circle, Style, Text } from 'ol/style';
 import React from 'react';

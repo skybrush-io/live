@@ -51,7 +51,6 @@
     "ip": "^1.1.5",
     "javascript-time-ago": "^2.0.5",
     "js-base64": "^2.5.1",
-    "lodash": "^4.17.15",
     "lodash-es": "^4.17.15",
     "mersenne-twister": "^1.1.0",
     "mini-signals": "^1.2.0",

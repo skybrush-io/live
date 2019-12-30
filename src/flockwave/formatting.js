@@ -1,4 +1,6 @@
-import { escape, isString, trimEnd } from 'lodash';
+import escape from 'lodash-es/escape';
+import isString from 'lodash-es/isString';
+import trimEnd from 'lodash-es/trimEnd';
 
 /**
  * Formats a Flockwave command response object found in a CMD-RESP message

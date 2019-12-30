@@ -1,4 +1,5 @@
-import { remove, trim } from 'lodash';
+import remove from 'lodash-es/remove';
+import trim from 'lodash-es/trim';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
@@ -65,7 +66,6 @@ const ServerTabPresentation = ({
 ServerTabPresentation.propTypes = {
   cliArguments: PropTypes.string,
   enabled: PropTypes.bool,
-  onCheckboxToggled: PropTypes.func,
   onDisable: PropTypes.func,
   onEnable: PropTypes.func,
   onSearchPathChanged: PropTypes.func,

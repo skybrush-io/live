@@ -2,7 +2,9 @@
  * @file Reducer function for handling the layer configuration of the map.
  */
 
-import { camelCase, keys, map } from 'lodash';
+import camelCase from 'lodash-es/camelCase';
+import keys from 'lodash-es/keys';
+import map from 'lodash-es/map';
 import { handleActions } from 'redux-actions';
 import u from 'updeep';
 
@@ -117,11 +119,7 @@ const reducer = handleActions(
 
     SET_LAYER_PARAMETER_BY_ID(state, action) {
       const { layerId, parameter, value } = action.payload;
-      return u.updateIn(
-        getKey(layerId, 'parameters', parameter),
-        value,
-        state
-      );
+      return u.updateIn(getKey(layerId, 'parameters', parameter), value, state);
     },
 
     SET_LAYER_PARAMETERS_BY_ID(state, action) {

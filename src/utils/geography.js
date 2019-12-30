@@ -4,7 +4,8 @@
 
 import CoordinateParser from 'coordinate-parser';
 import formatCoords from 'formatcoords';
-import { curry, minBy } from 'lodash';
+import curry from 'lodash-es/curry';
+import minBy from 'lodash-es/minBy';
 import * as Coordinate from 'ol/coordinate';
 import * as Extent from 'ol/extent';
 import { MultiLineString, MultiPolygon, Polygon } from 'ol/geom';
@@ -293,7 +294,7 @@ export const parseCoordinate = text => {
   try {
     const parsed = new CoordinateParser(text);
     return [parsed.getLongitude(), parsed.getLatitude()];
-  } catch (error) {
+  } catch {
     return undefined;
   }
 };

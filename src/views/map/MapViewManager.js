@@ -3,8 +3,8 @@
  * (position, rotation, zoom)
  */
 
+import round from 'lodash-es/round';
 import { isEmpty } from 'ol/extent';
-import { round } from 'lodash';
 
 import {
   mapReferenceRequestSignal,

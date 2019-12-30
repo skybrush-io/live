@@ -2,7 +2,10 @@
  * @file Naming things is hard. These functions may help.
  */
 
-import { camelCase, includes, isArray, trimEnd } from 'lodash';
+import camelCase from 'lodash-es/camelCase';
+import includes from 'lodash-es/includes';
+import isArray from 'lodash-es/isArray';
+import trimEnd from 'lodash-es/trimEnd';
 
 /**
  * Given an ID proposal and an array of existing IDs, returns a new
@@ -88,7 +91,7 @@ export function chooseUniqueName(nameProposal, existingNames) {
 
   const match = nameProposal.match(/^(.*)\s+(\d+)$/);
   const nameBase = match ? match[0] : trimEnd(nameProposal);
-  let index = match ? parseInt(match[1]) : 0;
+  let index = match ? parseInt(match[1], 10) : 0;
   let candidate;
 
   while (true) {

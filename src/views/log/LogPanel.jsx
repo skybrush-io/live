@@ -2,7 +2,8 @@
  * @file Component for displaying logged messages.
  */
 
-import { padStart, property } from 'lodash';
+import padStart from 'lodash-es/padStart';
+import property from 'lodash-es/property';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';

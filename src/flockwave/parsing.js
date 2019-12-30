@@ -2,7 +2,8 @@
  * @file Utility functions to parse data out of Flockwave messages.
  */
 
-import _ from 'lodash';
+import includes from 'lodash-es/includes';
+import isNil from 'lodash-es/isNil';
 
 /**
  * Extracts the receipt corresponding to the given UAV from a CMD-REQ
@@ -26,9 +27,9 @@ export function extractReceiptFromCommandRequest(message, uavId) {
   } else if (type === 'CMD-REQ') {
     // We may still have a rejection here
     const { failure, receipts } = body;
-    if (failure && _.includes(failure, uavId)) {
+    if (failure && includes(failure, uavId)) {
       throw new Error(body.reasons[uavId] || 'Failed to execute command');
-    } else if (!receipts || _.isNil(receipts[uavId])) {
+    } else if (!receipts || isNil(receipts[uavId])) {
       throw new Error('Server did not provide a receipt for the command');
     } else {
       return receipts[uavId];
