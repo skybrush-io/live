@@ -2,19 +2,17 @@
  * @file Utility file for sharing messaging related code between components.
  */
 
+import isNil from 'lodash-es/isNil';
+
 import messageHub from '../message-hub';
 import makeLogger from './logging';
 
 const logger = makeLogger('messaging');
 
 const processResponse = (expectedType, commandName) => response => {
-  if (!response) {
-    logger.error(`${commandName} response should not be empty`);
-  } else {
+  if (response) {
     const { body } = response;
-    if (!body) {
-      logger.error(`${commandName} response has no body`);
-    } else {
+    if (body) {
       const { failure, reason, type } = body;
       if (type === 'ACK-NAK') {
         logger.error(
@@ -33,7 +31,11 @@ const processResponse = (expectedType, commandName) => response => {
       } else {
         logger.info(`${commandName} execution was successful`);
       }
+    } else {
+      logger.error(`${commandName} response has no body`);
     }
+  } else {
+    logger.error(`${commandName} response should not be empty`);
   }
 };
 
@@ -74,30 +76,33 @@ export const moveUAVs = (uavs, target) =>
     .sendMessage({
       type: 'UAV-FLY',
       ids: uavs,
-      target
+      target: [
+        Math.round(target.lat * 1e7),
+        Math.round(target.lon * 1e7),
+        isNil(target.amsl) ? null : Math.round(target.amsl * 1e3),
+        isNil(target.agl) ? null : Math.round(target.agl * 1e3)
+      ]
     })
     .then(processResponse('UAV-FLY', 'Fly to target command'));
 
 export const toggleErrorUAVs = (() => {
   let currentError = [];
 
-  return uavs => {
+  return async uavs => {
     currentError =
       currentError.length === 0 ? [Math.floor(Math.random() * 256)] : [];
 
-    messageHub
-      .sendMessage({
-        type: 'CMD-REQ',
-        ids: uavs,
-        command: 'error',
-        args: currentError
-      })
-      .then(result => {
-        logger.info(
-          currentError.length === 0
-            ? `The error state of UAVs ${uavs} were cleared.`
-            : `UAVs ${uavs} were sent to error state ${currentError}.`
-        );
-      });
+    await messageHub.sendMessage({
+      type: 'CMD-REQ',
+      ids: uavs,
+      command: 'error',
+      args: currentError
+    });
+
+    logger.info(
+      currentError.length === 0
+        ? `The error state of UAVs ${uavs} were cleared.`
+        : `UAVs ${uavs} were sent to error state ${currentError}.`
+    );
   };
 })();

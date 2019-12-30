@@ -3,7 +3,8 @@
  * an UAV.
  */
 
-import _ from 'lodash';
+import isEqual from 'lodash-es/isEqual';
+import isNil from 'lodash-es/isNil';
 
 /**
  * Representation of a single UAV.
@@ -26,8 +27,6 @@ export default class UAV {
     this.heading = undefined;
     this.error = undefined;
     this.battery = { voltage: undefined, percentage: undefined };
-
-    this.handleUAVStatusInfo = this.handleUAVStatusInfo.bind(this);
   }
 
   /**
@@ -47,7 +46,7 @@ export default class UAV {
    *        UAV-INF message
    * @return {boolean}  whether the status information has been updated
    */
-  handleUAVStatusInfo(status) {
+  handleUAVStatusInfo = status => {
     const { timestamp, position, heading, error, battery } = status;
     let updated = false;
 
@@ -57,34 +56,35 @@ export default class UAV {
     }
 
     if (position) {
-      this.lat = position.lat;
-      this.lon = position.lon;
-      if (position.agl !== undefined) {
-        this.agl = position.agl;
+      this.lat = position[0] / 1e7;
+      this.lon = position[1] / 1e7;
+      if (!isNil(position[2])) {
+        this.agl = position.agl / 1e3;
       }
 
-      if (position.amsl !== undefined) {
-        this.amsl = position.amsl;
+      if (!isNil(position[3])) {
+        this.amsl = position.amsl / 1e3;
       }
 
       updated = true;
     }
 
     if (heading !== undefined) {
-      this.heading = heading;
+      this.heading = heading / 10; /* conversion to degrees */
       updated = true;
     }
 
-    if (!_.isEqual(this.error, error)) {
+    if (!isEqual(this.error, error)) {
       this.error = error;
       updated = true;
     }
 
     if (battery && battery.voltage !== this.battery.voltage) {
+      battery.voltage /= 10; /* conversion to volts */
       this.battery = battery;
       updated = true;
     }
 
     return updated;
-  }
+  };
 }

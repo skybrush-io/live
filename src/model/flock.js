@@ -3,7 +3,9 @@
  * a collection (flock) of UAVs.
  */
 
-import _ from 'lodash';
+import isEmpty from 'lodash-es/isEmpty';
+import keys from 'lodash-es/keys';
+import transform from 'lodash-es/transform';
 import Signal from 'mini-signals';
 
 import UAV from './uav';
@@ -44,7 +46,7 @@ export default class Flock {
    *         order
    */
   getAllUAVIds() {
-    return _.keys(this._uavsById).sort();
+    return keys(this._uavsById).sort();
   }
 
   /**
@@ -68,7 +70,8 @@ export default class Flock {
   getOrCreateUAVById(id) {
     let uav = this._uavsById[id];
     if (!uav) {
-      this._uavsById[id] = uav = this._createUAVById(id);
+      uav = this._createUAVById(id);
+      this._uavsById[id] = uav;
     }
 
     return uav;
@@ -82,41 +85,41 @@ export default class Flock {
    * @param  {function} dispatch  the dispatch function of the Redux store
    * @fires  Flock#uavsUpdated
    */
-  handleUAVInformationMessage(body, dispatch) {
+  handleUAVInformationMessage(body) {
     // For each UAV ID and status object pair, get the UAV with the given
     // ID, update its own local status, and if the status was updated,
     // remember the UAV ID so we can ask the feature manager to refresh
     // the features of these UAVs
 
     // body.status is frozen so we unfreeze it first
-    const { addedUAVs, updatedUAVs } = _(body.status)
-      .transform(
-        (accumulator, status, uavId) => {
-          // Code duplicated from getOrCreateUAVById(); this is unfortunate
-          // but we need to know whether we have added a UAV or not
-          let uav = this.getUAVById(uavId);
-          if (!uav) {
-            this._uavsById[uavId] = uav = this._createUAVById(uavId);
-            accumulator.addedUAVs.push(uav);
-          }
-
-          const updated = uav.handleUAVStatusInfo(status);
-          if (updated) {
-            accumulator.updatedUAVs.push(uav);
-          }
-        },
-        {
-          addedUAVs: [],
-          updatedUAVs: []
+    const { addedUAVs, updatedUAVs } = transform(
+      body.status,
+      (accumulator, status, uavId) => {
+        // Code duplicated from getOrCreateUAVById(); this is unfortunate
+        // but we need to know whether we have added a UAV or not
+        let uav = this.getUAVById(uavId);
+        if (!uav) {
+          uav = this._createUAVById(uavId);
+          this._uavsById[uavId] = uav;
+          accumulator.addedUAVs.push(uav);
         }
-      )
-      .value();
 
-    if (!_.isEmpty(addedUAVs)) {
+        const updated = uav.handleUAVStatusInfo(status);
+        if (updated) {
+          accumulator.updatedUAVs.push(uav);
+        }
+      },
+      {
+        addedUAVs: [],
+        updatedUAVs: []
+      }
+    );
+
+    if (!isEmpty(addedUAVs)) {
       this.uavsAdded.dispatch(addedUAVs);
     }
 
-    if (!_.isEmpty(updatedUAVs)) {
+    if (!isEmpty(updatedUAVs)) {
       this.uavsUpdated.dispatch(updatedUAVs);
     }
   }
