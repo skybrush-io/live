@@ -3,8 +3,8 @@
  * that we use on the map.
  */
 
-import cloneDeep from 'lodash/cloneDeep';
-import has from 'lodash/has';
+import cloneDeep from 'lodash-es/cloneDeep';
+import has from 'lodash-es/has';
 import React from 'react';
 
 import FileAttachment from '@material-ui/icons/Attachment';

@@ -29,12 +29,8 @@ export function handleClockInformationMessage(body, dispatch) {
     omitBy(
       {
         id: statusFromServer.id,
-        epoch: dateToTimestamp(
-          parseEpochIdentifierOrISODate(statusFromServer.epoch)
-        ),
-        referenceTime: dateToTimestamp(
-          parseISODate(statusFromServer.retrievedAt)
-        ),
+        epoch: parseEpochIdentifierOrISODate(statusFromServer.epoch),
+        referenceTime: parseISODate(statusFromServer.retrievedAt),
         running: statusFromServer.running,
         ticks: statusFromServer.timestamp,
         ticksPerSecond: statusFromServer.ticksPerSecond || 1

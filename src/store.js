@@ -2,12 +2,11 @@
  * @file The master store for the application state.
  */
 
-import { createStore, applyMiddleware } from 'redux';
+import { configureStore, getDefaultMiddleware } from '@reduxjs/toolkit';
 import createDebounce from 'redux-debounce';
 import promise from 'redux-promise-middleware';
 import createSagaMiddleware from 'redux-saga';
 import * as storage from 'redux-storage';
-import thunk from 'redux-thunk';
 import debounce from 'redux-storage-decorator-debounce';
 import filter from 'redux-storage-decorator-filter';
 import createEngine from 'redux-storage-engine-localstorage';
@@ -80,24 +79,18 @@ export const sagaMiddleware = createSagaMiddleware();
 const storageMiddleware = storage.createMiddleware(engine, actionBlacklist);
 
 /**
- * Function to create a new Redux store with the required middlewares.
- */
-const createStoreWithMiddleware = applyMiddleware(
-  debouncer,
-  promise,
-  thunk,
-  sagaMiddleware,
-  storageMiddleware
-)(createStore);
-
-/**
  * The store for the application state.
  */
-const store = createStoreWithMiddleware(
+const store = configureStore({
   reducer,
-  undefined,
-  window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
-);
+  middleware: [
+    ...getDefaultMiddleware(),
+    debouncer,
+    promise,
+    sagaMiddleware,
+    storageMiddleware
+  ]
+});
 
 /**
  * Function that will load the contents of the store from the storage

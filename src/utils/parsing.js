@@ -2,14 +2,14 @@
  * @file Parser functions for various data types.
  */
 
-import isString from 'lodash/isString';
+import isString from 'lodash-es/isString';
 import moment from 'moment';
 
 /**
  * Object mapping known epoch names to their corresponding date objects.
  */
 const knownEpochs = {
-  unix: new Date(0)
+  unix: moment(0).valueOf()
 };
 
 /**
@@ -44,10 +44,11 @@ export const parseEpochIdentifierOrISODate = value =>
   (isString(value) ? knownEpochs[value] : null) || parseISODate(value);
 
 /**
- * Parses a date that is formatted according to ISO 8601 from a string.
+ * Parses a date that is formatted according to ISO 8601 from a string, and
+ * returns the corresponding UNIX timestamp, in milliseconds.
  *
  * @param  {string}  value  the date to parse from a string
- * @return {Date} the parsed date
+ * @return {number} the parsed UNIX timestamp, in milliseconds.
  */
 export const parseISODate = value =>
-  value !== undefined ? moment(value, moment.ISO_8601).toDate() : undefined;
+  value === undefined ? undefined : moment(value, moment.ISO_8601).valueOf();

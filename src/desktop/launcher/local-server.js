@@ -1,6 +1,5 @@
 const { spawn } = require('child_process');
 const path = require('path');
-const endsWith = require('lodash-es/endsWith');
 const pify = require('pify');
 const pDefer = require('p-defer');
 const pTimeout = require('p-timeout');
@@ -34,6 +33,9 @@ let localServerPathDeferred = pDefer();
  * machine.
  */
 let localServerProcess;
+
+const endsWith = (string, target) =>
+  string.slice(string.length - target.length) === target;
 
 /**
  * Returns an array containing the names of all directories to scan on

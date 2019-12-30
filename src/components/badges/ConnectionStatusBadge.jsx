@@ -5,7 +5,7 @@
 
 import countBy from 'lodash-es/countBy';
 import { connect } from 'react-redux';
-import { createSelector } from 'reselect';
+import { createSelector } from '@reduxjs/toolkit';
 
 import SidebarBadge from './SidebarBadge';
 import Colors from '~/components/colors';

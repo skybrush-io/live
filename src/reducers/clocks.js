@@ -4,7 +4,7 @@
  * the Flockwave server reports via CLK-LIST and CLK-INF messages.
  */
 
-import has from 'lodash/has';
+import has from 'lodash-es/has';
 import { handleActions } from 'redux-actions';
 
 /**

@@ -10,7 +10,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import PlayArrow from '@material-ui/icons/PlayArrow';
 import Stop from '@material-ui/icons/Stop';
 
-import isFunction from 'lodash/isFunction';
+import isFunction from 'lodash-es/isFunction';
 import moment from 'moment';
 import PropTypes from 'prop-types';
 import React from 'react';

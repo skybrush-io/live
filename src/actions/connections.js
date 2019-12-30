@@ -29,7 +29,7 @@ export const setConnectionState = createAction(
   (id, state) => ({
     id,
     state,
-    stateChangedAt: new Date()
+    stateChangedAt: Date.now()
   })
 );
 

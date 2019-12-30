@@ -2,8 +2,8 @@
  * @file Functions and classes related to dealing with Flockwave messages.
  */
 
-import has from 'lodash/has';
-import isObject from 'lodash/isObject';
+import has from 'lodash-es/has';
+import isObject from 'lodash-es/isObject';
 import MersenneTwister from 'mersenne-twister';
 import pDefer from 'p-defer';
 import pTimeout from 'p-timeout';

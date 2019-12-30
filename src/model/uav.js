@@ -51,7 +51,7 @@ export default class UAV {
     let updated = false;
 
     if (timestamp) {
-      this.lastUpdated = new Date(timestamp);
+      this.lastUpdated = timestamp;
       updated = true;
     }
 

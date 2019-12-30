@@ -184,14 +184,14 @@ class ActiveUAVsLayerSource extends React.Component {
     const getFeatureById = source.getFeatureById.bind(source);
     difference(newSelection, oldSelection)
       .map(getFeatureById)
-      .filter()
-      .each(feature => {
+      .filter(Boolean)
+      .forEach(feature => {
         feature.selected = true;
       });
     difference(oldSelection, newSelection)
       .map(getFeatureById)
-      .filter()
-      .each(feature => {
+      .filter(Boolean)
+      .forEach(feature => {
         feature.selected = false;
       });
   };

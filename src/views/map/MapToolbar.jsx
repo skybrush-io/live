@@ -7,7 +7,7 @@ import ActionPanTool from '@material-ui/icons/PanTool';
 import ActionZoomIn from '@material-ui/icons/ZoomIn';
 import ContentSelectAll from '@material-ui/icons/SelectAll';
 
-import partial from 'lodash/partial';
+import partial from 'lodash-es/partial';
 import { connect } from 'react-redux';
 
 import { selectMapTool } from '../../actions/map';

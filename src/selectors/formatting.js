@@ -3,7 +3,7 @@
  * objects on the user interface.
  */
 
-import { createSelector } from 'reselect';
+import { createSelector } from '@reduxjs/toolkit';
 
 import {
   FlatEarthCoordinateSystem,

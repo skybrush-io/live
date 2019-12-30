@@ -67,7 +67,7 @@ function addErrorMessage(state, uavId, body, correlationId) {
   const message = {
     id: state.nextMessageId,
     type: MessageType.ERROR,
-    date: new Date(),
+    date: Date.now(),
     body
   };
 
@@ -115,7 +115,7 @@ function addInboundMessage(state, correlationId, body) {
     id: state.nextMessageId,
     type: MessageType.INBOUND,
     author: recipient,
-    date: new Date(),
+    date: Date.now(),
     raw: true,
     recipient: 'Operator',
     body
@@ -160,7 +160,7 @@ function addOutboundMessageToUAV(state, recipient, body) {
     id: state.nextMessageId,
     type: MessageType.OUTBOUND,
     author: 'Operator',
-    date: new Date(),
+    date: Date.now(),
     responseId: null,
     recipient,
     body

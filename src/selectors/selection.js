@@ -6,7 +6,7 @@
 import isNil from 'lodash-es/isNil';
 import reject from 'lodash-es/reject';
 import Collection from 'ol/Collection';
-import { createSelector } from 'reselect';
+import { createSelector } from '@reduxjs/toolkit';
 
 import {
   globalIdToFeatureId,

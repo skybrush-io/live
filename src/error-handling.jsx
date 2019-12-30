@@ -7,7 +7,7 @@ import AlertWarning from '@material-ui/icons/Warning';
 import PropTypes from 'prop-types';
 import React from 'react';
 import RedBox from 'redbox-react';
-import isFunction from 'lodash/isFunction';
+import isFunction from 'lodash-es/isFunction';
 import makeLogger from './utils/logging';
 
 const __PROD__ = process.env.NODE_ENV === 'production';

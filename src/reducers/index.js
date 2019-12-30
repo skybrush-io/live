@@ -1,4 +1,4 @@
-import has from 'lodash/has';
+import has from 'lodash-es/has';
 import { combineReducers } from 'redux';
 import * as storage from 'redux-storage';
 import defaultMerger from 'redux-storage-merger-simple';

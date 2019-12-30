@@ -2,7 +2,7 @@
  * @file Selectors related to the map view.
  */
 
-import { createSelector } from 'reselect';
+import { createSelector } from '@reduxjs/toolkit';
 
 /**
  * Selector that returns the rotation angle of the map view, cast into a

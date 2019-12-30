@@ -1,4 +1,4 @@
-import { createSelector } from 'reselect';
+import { createSelector } from '@reduxjs/toolkit';
 
 import { isLayerVisible } from '~/model/layers';
 import { selectOrdered } from '~/utils/collections';

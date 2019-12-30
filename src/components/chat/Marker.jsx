@@ -2,7 +2,7 @@
  * @file React component showing a marker line in a chat session.
  */
 
-import has from 'lodash/has';
+import has from 'lodash-es/has';
 import PropTypes from 'prop-types';
 import React from 'react';
 import TimeAgo from 'react-time-ago';
