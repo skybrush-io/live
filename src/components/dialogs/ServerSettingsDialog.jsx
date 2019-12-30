@@ -3,8 +3,7 @@
  * edit it.
  */
 
-import { autobind } from 'core-decorators';
-import { partial } from 'lodash';
+import partial from 'lodash-es/partial';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { Form, Field } from 'react-final-form';
@@ -54,7 +53,7 @@ const iconForServerItem = ({ type }) =>
 const primaryTextForServerItem = ({ hostName, label, port }) =>
   label || `${hostName}:${port}`;
 
-const secondaryTextForServerItem = ({ protocol, type }) =>
+const secondaryTextForServerItem = ({ protocol }) =>
   protocol === 'sio+tls:' ? 'Secure connection' : 'Unencrypted connection';
 
 const DetectedServersListPresentation = ({
@@ -168,15 +167,28 @@ const ServerSettingsForm = connect(
  * can use to edit the server settings.
  */
 class ServerSettingsDialogPresentation extends React.Component {
-  @autobind
-  _handleKeyPress(e) {
+  static propTypes = {
+    active: PropTypes.bool,
+    forceFormSubmission: PropTypes.func,
+    onClose: PropTypes.func,
+    onDisconnect: PropTypes.func,
+    onSubmit: PropTypes.func,
+    onTabSelected: PropTypes.func,
+    open: PropTypes.bool.isRequired,
+    selectedTab: PropTypes.string
+  };
+
+  static defaultProps = {
+    selectedTab: 'auto'
+  };
+
+  _handleKeyPress = e => {
     if (e.nativeEvent.code === 'Enter') {
       this.props.forceFormSubmission();
     }
-  }
+  };
 
-  @autobind
-  _handleServerSelection(item) {
+  _handleServerSelection = item => {
     if (item === null || item === undefined) {
       this.props.onTabSelected(null, 'manual');
     } else {
@@ -185,7 +197,7 @@ class ServerSettingsDialogPresentation extends React.Component {
         isSecure: item.protocol === 'sio+tls:'
       });
     }
-  }
+  };
 
   render() {
     const {
@@ -234,6 +246,9 @@ class ServerSettingsDialogPresentation extends React.Component {
           </Button>
         );
         break;
+
+      default:
+        break;
     }
 
     actions.push(
@@ -270,22 +285,6 @@ class ServerSettingsDialogPresentation extends React.Component {
     );
   }
 }
-
-ServerSettingsDialogPresentation.propTypes = {
-  active: PropTypes.bool,
-  forceFormSubmission: PropTypes.func,
-  onClose: PropTypes.func,
-  onDisconnect: PropTypes.func,
-  onSubmit: PropTypes.func,
-  onTabSelected: PropTypes.func,
-  open: PropTypes.bool.isRequired,
-  selectedTab: PropTypes.string
-};
-
-ServerSettingsDialogPresentation.defaultProps = {
-  open: false,
-  selectedTab: 'auto'
-};
 
 /**
  * Container of the dialog that shows the form that the user can use to

@@ -1,4 +1,3 @@
-import { autobind } from 'core-decorators';
 import parseHeaders from 'http-headers';
 import { isLoopback, isV4Format, isV6Format } from 'ip';
 import { partial } from 'lodash';
@@ -150,10 +149,9 @@ class ServerDetectionManagerPresentation extends React.Component {
     }
   }
 
-  @autobind
-  _onTimerFired() {
+  _onTimerFired = () => {
     this._ssdpClient.search('urn:collmot-com:service:flockwave-sio:1');
-  }
+  };
 
   render() {
     // Nothing to render; this is a component that works behind the scenes

@@ -3,8 +3,7 @@
  * currently selected UAVs.
  */
 
-import { autobind } from 'core-decorators';
-import { isFunction } from 'lodash';
+import isFunction from 'lodash-es/isFunction';
 import PropTypes from 'prop-types';
 import React from 'react';
 
@@ -19,19 +18,20 @@ import MenuList from '@material-ui/core/MenuList';
  * component.
  */
 export default class ContextMenu extends React.Component {
-  constructor(props) {
-    super(props);
+  static propTypes = {
+    children: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
+    contextProvider: PropTypes.func
+  };
 
-    this.state = {
-      open: false,
-      opening: false,
-      position: {
-        top: 0,
-        left: 0
-      },
-      context: undefined
-    };
-  }
+  state = {
+    open: false,
+    opening: false,
+    position: {
+      top: 0,
+      left: 0
+    },
+    context: undefined
+  };
 
   /**
    * Public method to open the context menu.
@@ -62,8 +62,7 @@ export default class ContextMenu extends React.Component {
    * Private method to request the closing of the context menu when the user
    * selects a menu item or clicks away.
    */
-  @autobind
-  _handleClose() {
+  _handleClose = () => {
     document.body.removeEventListener('contextmenu', this._preventDefault);
 
     this.setState({
@@ -73,7 +72,7 @@ export default class ContextMenu extends React.Component {
       // strange problems with disappearing menu items during the animation
       // when the menu fades out
     });
-  }
+  };
 
   /**
    * Right click handler to prevent the default context menu of the browser
@@ -82,8 +81,7 @@ export default class ContextMenu extends React.Component {
    *
    * @param {MouseEvent} e The event being fired.
    */
-  @autobind
-  _preventDefault(e) {
+  _preventDefault = e => {
     if (this.state.opening) {
       this.setState({ opening: false, open: true });
     } else {
@@ -91,7 +89,7 @@ export default class ContextMenu extends React.Component {
     }
 
     e.preventDefault();
-  }
+  };
 
   render() {
     const { children } = this.props;
@@ -107,7 +105,7 @@ export default class ContextMenu extends React.Component {
               child.props.onClick(event, context);
               this._handleClose();
             }
-          : event => {
+          : () => {
               this._handleClose();
             }
       })
@@ -126,8 +124,3 @@ export default class ContextMenu extends React.Component {
     );
   }
 }
-
-ContextMenu.propTypes = {
-  children: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
-  contextProvider: PropTypes.func
-};

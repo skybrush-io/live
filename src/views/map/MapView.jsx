@@ -1,5 +1,6 @@
-import { autobind } from 'core-decorators';
-import { filter, isEmpty, partial } from 'lodash';
+import filter from 'lodash-es/filter';
+import isEmpty from 'lodash-es/isEmpty';
+import partial from 'lodash-es/partial';
 import { Map, View, control, interaction, withMap } from '@collmot/ol-react';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -300,6 +301,22 @@ MapViewInteractions.propTypes = {
  * React component for the map of the main window.
  */
 class MapViewPresentation extends React.Component {
+  static propTypes = {
+    dispatch: PropTypes.func.isRequired,
+
+    center: PropTypes.arrayOf(PropTypes.number),
+    selection: PropTypes.arrayOf(PropTypes.string).isRequired,
+    selectedTool: PropTypes.string,
+    zoom: PropTypes.number,
+
+    glContainer: PropTypes.object
+  };
+
+  static defaultProps = {
+    center: [19.061951, 47.47334],
+    zoom: 17
+  };
+
   constructor(props) {
     super(props);
 
@@ -359,7 +376,8 @@ class MapViewPresentation extends React.Component {
     const { center, selectedTool, zoom } = this.props;
     const view = (
       <View
-        center={coordinateFromLonLat(center)} zoom={zoom}
+        center={coordinateFromLonLat(center)}
+        zoom={zoom}
         constrainRotation={false}
       />
     );
@@ -424,13 +442,12 @@ class MapViewPresentation extends React.Component {
    * @param  {Map} map  the map
    * @return {ol.Feature[]} the selected OpenLayers features
    */
-  @autobind
-  _getSelectedTransformableFeatures(map) {
+  _getSelectedTransformableFeatures = map => {
     return filter(
       findFeaturesById(map, this.props.selection),
       isFeatureTransformable
     );
-  }
+  };
 
   /**
    * Event handler that is called when the user finishes a drag-box
@@ -441,8 +458,7 @@ class MapViewPresentation extends React.Component {
    * @param  {ol.interaction.DragBox.Event} event  the event dispatched by
    *         the drag-box interaction
    */
-  @autobind
-  _onBoxDragEnded(mode, event) {
+  _onBoxDragEnded = (mode, event) => {
     const extent = event.target.getGeometry().getExtent();
     const features = [];
     const { map } = this._map.current;
@@ -455,7 +471,7 @@ class MapViewPresentation extends React.Component {
     });
 
     this._onFeaturesSelected(mode, features);
-  }
+  };
 
   /**
    * Event handler that is called when the user finishes drawing a new
@@ -470,15 +486,14 @@ class MapViewPresentation extends React.Component {
    * @param  {ol.interaction.Draw.Event} event  the event dispatched by the
    *         draw interaction
    */
-  @autobind
-  _onDrawEnded(event) {
+  _onDrawEnded = event => {
     try {
       const feature = createFeatureFromOpenLayers(event.feature);
       this.props.dispatch(addFeature(feature));
     } catch (error) {
       handleError(error);
     }
-  }
+  };
 
   /**
    * Event handler that is called when some features were modified on the
@@ -488,11 +503,9 @@ class MapViewPresentation extends React.Component {
    *         triggered at the end of the interaction
    * @param  {ol.Feature[]}  event.features  the features that were modified
    */
-  @autobind
-  _onFeaturesModified(event) {
-    console.log(event);
+  _onFeaturesModified = event => {
     this._updateFeatures(event.features);
-  }
+  };
 
   /**
    * Event handler that is called when some features were moved on the
@@ -502,10 +515,9 @@ class MapViewPresentation extends React.Component {
    *         triggered at the end of the interaction
    * @param  {ol.Feature[]}  event.features  the features that were moved
    */
-  @autobind
-  _onFeaturesTransformed(event) {
+  _onFeaturesTransformed = event => {
     this._updateFeatures(event.features);
-  }
+  };
 
   /**
    * Event handler that is called when the user selects a single UAV or
@@ -515,8 +527,7 @@ class MapViewPresentation extends React.Component {
    *         'clear', 'toggle' or 'set'
    * @param  {ol.Feature}  feature  the selected feature
    */
-  @autobind
-  _onFeatureSelected(mode, feature) {
+  _onFeatureSelected = (mode, feature) => {
     const id = feature ? feature.getId() : undefined;
     if (id === undefined && mode !== 'set' && mode !== 'clear') {
       return;
@@ -531,7 +542,7 @@ class MapViewPresentation extends React.Component {
     }
 
     this._onFeaturesSelected(mode, feature ? [feature] : []);
-  }
+  };
 
   /**
    * Event handler that is called when the user selects multiple UAVs or
@@ -541,8 +552,7 @@ class MapViewPresentation extends React.Component {
    *         or 'set'
    * @param  {ol.Feature[]}  features  the selected features
    */
-  @autobind
-  _onFeaturesSelected(mode, features) {
+  _onFeaturesSelected = (mode, features) => {
     const actionMapping = {
       add: addFeaturesToSelection,
       remove: removeFeaturesFromSelection,
@@ -553,10 +563,9 @@ class MapViewPresentation extends React.Component {
     if (action === setSelectedFeatures || (ids && ids.length > 0)) {
       this.props.dispatch(action(ids));
     }
-  }
+  };
 
-  @autobind
-  _onMapMoved() {
+  _onMapMoved = () => {
     const { map } = this._map.current;
     const view = map ? map.getView() : undefined;
 
@@ -573,7 +582,7 @@ class MapViewPresentation extends React.Component {
         })
       );
     }
-  }
+  };
 
   /**
    * Common implementation for `_onFeaturesTransformed` and `_onFeaturesModified`.
@@ -624,14 +633,13 @@ class MapViewPresentation extends React.Component {
   /**
    * Method to disable the browsers default context menu.
    */
-  @autobind
-  _disableDefaultContextMenu() {
+  _disableDefaultContextMenu = () => {
     const { map } = this._map.current;
     map.getViewport().addEventListener('contextmenu', e => {
       e.preventDefault();
       return false;
     });
-  }
+  };
 
   /**
    * Method that must be called whenever the size of the container holding
@@ -644,25 +652,6 @@ class MapViewPresentation extends React.Component {
     }
   }
 }
-
-MapViewPresentation.propTypes = {
-  dispatch: PropTypes.func.isRequired,
-
-  center: PropTypes.arrayOf(PropTypes.number).isRequired,
-  rotation: PropTypes.number.isRequired,
-  selection: PropTypes.arrayOf(PropTypes.string).isRequired,
-  selectedFeatures: PropTypes.arrayOf(PropTypes.string).isRequired,
-  selectedTool: PropTypes.string,
-  zoom: PropTypes.number.isRequired,
-
-  glContainer: PropTypes.object
-};
-
-MapViewPresentation.defaultProps = {
-  center: [19.061951, 47.47334],
-  rotation: 0,
-  zoom: 17
-};
 
 /**
  * Connects the map view to the Redux store.

@@ -1,5 +1,4 @@
-import { autobind } from 'core-decorators';
-import { isEmpty } from 'lodash';
+import isEmpty from 'lodash-es/isEmpty';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
@@ -23,6 +22,13 @@ import * as messaging from '../../utils/messaging';
  * Main toolbar for controlling the UAVs.
  */
 class UAVToolbar extends React.Component {
+  static propTypes = {
+    fitSelectedUAVs: PropTypes.func,
+    selectUAVInMessagesDialog: PropTypes.func,
+    showMessagesDialog: PropTypes.func,
+    selectedUAVIds: PropTypes.arrayOf(PropTypes.string)
+  };
+
   render() {
     const { fitSelectedUAVs, selectedUAVIds } = this.props;
     const isSelectionEmpty = isEmpty(selectedUAVIds);
@@ -80,43 +86,30 @@ class UAVToolbar extends React.Component {
     );
   }
 
-  @autobind
-  _takeoffSelectedUAVs() {
+  _takeoffSelectedUAVs = () => {
     messaging.takeoffUAVs(this.props.selectedUAVIds);
-  }
+  };
 
-  @autobind
-  _landSelectedUAVs() {
+  _landSelectedUAVs = () => {
     messaging.landUAVs(this.props.selectedUAVIds);
-  }
+  };
 
-  @autobind
-  _returnToHomeSelectedUAVs() {
+  _returnToHomeSelectedUAVs = () => {
     messaging.returnToHomeUAVs(this.props.selectedUAVIds);
-  }
+  };
 
-  @autobind
-  _showMessagesDialog() {
+  _showMessagesDialog = () => {
     if (this.props.selectedUAVIds.length === 1) {
       this.props.selectUAVInMessagesDialog(this.props.selectedUAVIds[0]);
     }
 
     this.props.showMessagesDialog();
-  }
+  };
 
-  @autobind
-  _haltSelectedUAVs() {
+  _haltSelectedUAVs = () => {
     messaging.haltUAVs(this.props.selectedUAVIds);
-  }
+  };
 }
-
-UAVToolbar.propTypes = {
-  fitSelectedUAVs: PropTypes.func,
-  isSelectionEmpty: PropTypes.bool,
-  selectUAVInMessagesDialog: PropTypes.func,
-  showMessagesDialog: PropTypes.func,
-  selectedUAVIds: PropTypes.arrayOf(PropTypes.string)
-};
 
 export default connect(
   // mapStateToProps

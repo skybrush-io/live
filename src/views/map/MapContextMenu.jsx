@@ -3,7 +3,6 @@
  * currently selected UAVs.
  */
 
-import { autobind } from 'core-decorators';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
@@ -44,6 +43,18 @@ import * as messaging from '../../utils/messaging';
  * user right-clicks on the map.
  */
 class MapContextMenu extends React.Component {
+  static propTypes = {
+    contextProvider: PropTypes.func,
+    editFeature: PropTypes.func.isRequired,
+    renameFeature: PropTypes.func.isRequired,
+    removeFeaturesByIds: PropTypes.func.isRequired,
+    selectUAVInMessagesDialog: PropTypes.func.isRequired,
+    setHomePosition: PropTypes.func.isRequired,
+    showErrorMessage: PropTypes.func.isRequired,
+    showMessagesDialog: PropTypes.func.isRequired,
+    showPromptDialog: PropTypes.func.isRequired
+  };
+
   constructor(props) {
     super(props);
 
@@ -60,12 +71,11 @@ class MapContextMenu extends React.Component {
    * @param {Object} context  Context object to pass to the click handlers of
    *        the menu items in the context menu as their second argument
    */
-  @autobind
-  open(position, context) {
+  open = (position, context) => {
     if (this._contextMenu.current) {
       this._contextMenu.current.open(position, context);
     }
-  }
+  };
 
   render() {
     return (
@@ -194,31 +204,29 @@ class MapContextMenu extends React.Component {
     );
   }
 
-  @autobind
-  _moveSelectedUAVsAtCurrentAltitude(event, context) {
+  _moveSelectedUAVsAtCurrentAltitude = (event, context) => {
     const { coords, selectedUAVIds } = context;
     this._moveUAVs(selectedUAVIds, coords);
-  }
+  };
 
-  @autobind
-  _moveSelectedUAVsAtGivenAltitude(event, context) {
+  _moveSelectedUAVsAtGivenAltitude = async (event, context) => {
     const coords = [...context.coords];
     const selectedUAVIds = [...context.selectedUAVIds];
 
-    this.props.showPromptDialog('Enter the target altitude').then(altitude => {
-      if (altitude !== undefined) {
-        const altitudeAsNumber = parseFloat(altitude);
-        if (!isNaN(altitudeAsNumber)) {
-          this._moveUAVs(selectedUAVIds, coords, altitudeAsNumber);
-        } else {
-          this.props.showErrorMessage('Invalid target altitude');
-        }
+    const altitude = await this.props.showPromptDialog(
+      'Enter the target altitude'
+    );
+    if (altitude !== undefined) {
+      const altitudeAsNumber = parseFloat(altitude);
+      if (isNaN(altitudeAsNumber)) {
+        this.props.showErrorMessage('Invalid target altitude');
+      } else {
+        this._moveUAVs(selectedUAVIds, coords, altitudeAsNumber);
       }
-    });
-  }
+    }
+  };
 
-  @autobind
-  _moveUAVs(uavIds, coords, agl) {
+  _moveUAVs = (uavIds, coords, agl) => {
     if (coords && coords.length === 2) {
       messaging.moveUAVs(uavIds, {
         lat: coords[1],
@@ -226,10 +234,9 @@ class MapContextMenu extends React.Component {
         agl
       });
     }
-  }
+  };
 
-  @autobind
-  _editSelectedFeature(event, context) {
+  _editSelectedFeature = (event, context) => {
     const { editFeature } = this.props;
     const { selectedFeatureIds } = context;
     if (selectedFeatureIds.length !== 1) {
@@ -237,22 +244,19 @@ class MapContextMenu extends React.Component {
     }
 
     editFeature(selectedFeatureIds[0]);
-  }
+  };
 
-  @autobind
-  _takeoffSelectedUAVs(event, context) {
+  _takeoffSelectedUAVs = (event, context) => {
     const { selectedUAVIds } = context;
     messaging.takeoffUAVs(selectedUAVIds);
-  }
+  };
 
-  @autobind
-  _landSelectedUAVs(event, context) {
+  _landSelectedUAVs = (event, context) => {
     const { selectedUAVIds } = context;
     messaging.landUAVs(selectedUAVIds);
-  }
+  };
 
-  @autobind
-  _renameSelectedFeature(event, context) {
+  _renameSelectedFeature = (event, context) => {
     const { renameFeature } = this.props;
     const { selectedFeatureIds, selectedFeatureLabels } = context;
 
@@ -261,56 +265,39 @@ class MapContextMenu extends React.Component {
     }
 
     renameFeature(selectedFeatureIds[0], selectedFeatureLabels[0]);
-  }
+  };
 
-  @autobind
-  _removeSelectedFeatures(event, context) {
+  _removeSelectedFeatures = (event, context) => {
     const { selectedFeatureIds } = context;
     this.props.removeFeaturesByIds(selectedFeatureIds);
-  }
+  };
 
-  @autobind
-  _returnSelectedUAVs(event, context) {
+  _returnSelectedUAVs = (event, context) => {
     const { selectedUAVIds } = context;
     messaging.returnToHomeUAVs(selectedUAVIds);
-  }
+  };
 
-  @autobind
-  _setOrigin(event, context) {
+  _setOrigin = (event, context) => {
     const { coords } = context;
     if (coords) {
       this.props.setHomePosition(coords);
     }
-  }
+  };
 
-  @autobind
-  _shutdownSelectedUAVs(event, context) {
+  _shutdownSelectedUAVs = (event, context) => {
     const { selectedUAVIds } = context;
     messaging.haltUAVs(selectedUAVIds);
-  }
+  };
 
-  @autobind
-  _showMessagesDialog(event, context) {
+  _showMessagesDialog = (event, context) => {
     const { selectedUAVIds } = context;
     if (selectedUAVIds.length === 1) {
       this.props.selectUAVInMessagesDialog(selectedUAVIds[0]);
     }
 
     this.props.showMessagesDialog();
-  }
+  };
 }
-
-MapContextMenu.propTypes = {
-  contextProvider: PropTypes.func,
-  editFeature: PropTypes.func.isRequired,
-  renameFeature: PropTypes.func.isRequired,
-  removeFeaturesByIds: PropTypes.func.isRequired,
-  selectUAVInMessagesDialog: PropTypes.func.isRequired,
-  setHomePosition: PropTypes.func.isRequired,
-  showErrorMessage: PropTypes.func.isRequired,
-  showMessagesDialog: PropTypes.func.isRequired,
-  showPromptDialog: PropTypes.func.isRequired
-};
 
 const MapContextMenuContainer = connect(
   // mapStateToProps

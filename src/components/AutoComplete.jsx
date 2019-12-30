@@ -5,8 +5,8 @@
 
 import match from 'autosuggest-highlight/match';
 import parse from 'autosuggest-highlight/parse';
-import { autobind } from 'core-decorators';
-import { identity, toLower } from 'lodash';
+import identity from 'lodash-es/identity';
+import toLower from 'lodash-es/toLower';
 import Box from '@material-ui/core/Box';
 import MenuItem from '@material-ui/core/MenuItem';
 import Paper from '@material-ui/core/Paper';
@@ -63,8 +63,7 @@ export class AutoComplete extends React.Component {
     /* eslint-enable react/state-in-constructor */
   }
 
-  @autobind
-  _assignInputRef(value) {
+  _assignInputRef = value => {
     this._input = value;
 
     if (this.props.inputRef) {
@@ -74,7 +73,7 @@ export class AutoComplete extends React.Component {
         this.props.inputRef(value);
       }
     }
-  }
+  };
 
   /**
    * Commits the given value into the autocomplete field and calls the
@@ -95,31 +94,27 @@ export class AutoComplete extends React.Component {
     }
   }
 
-  @autobind
-  _onBlur() {
+  _onBlur = () => {
     const { value } = this.state;
     if (this.validate(value)) {
       this._commitValue(value);
     }
-  }
+  };
 
-  @autobind
-  _onSuggestionsClearRequested() {
+  _onSuggestionsClearRequested = () => {
     this.setState({
       suggestions: []
     });
-  }
+  };
 
-  @autobind
-  _onSuggestionsFetchRequested({ value }) {
+  _onSuggestionsFetchRequested = ({ value }) => {
     const { fetchSuggestions } = this.props;
     this.setState({
       suggestions: fetchSuggestions ? fetchSuggestions(value) : []
     });
-  }
+  };
 
-  @autobind
-  _onValueChanged(event, { method, newValue }) {
+  _onValueChanged = (event, { method, newValue }) => {
     this.setState({
       value: newValue
     });
@@ -136,10 +131,9 @@ export class AutoComplete extends React.Component {
         this._commitValue(newValue);
       }
     }
-  }
+  };
 
-  @autobind
-  _renderInput(inputProps) {
+  _renderInput = inputProps => {
     const { inputRef, ref, ...restInputProps } = inputProps;
     return (
       <TextField
@@ -152,10 +146,9 @@ export class AutoComplete extends React.Component {
         {...restInputProps}
       />
     );
-  }
+  };
 
-  @autobind
-  _renderSuggestion(suggestion, { query, isHighlighted }) {
+  _renderSuggestion = (suggestion, { query, isHighlighted }) => {
     const { getSuggestionLabel, highlightMatches } = this.props;
     const label = getSuggestionLabel(suggestion);
     /* eslint-disable react/no-array-index-key */
@@ -176,10 +169,9 @@ export class AutoComplete extends React.Component {
         <Box fontSize="small">{fragments}</Box>
       </MenuItem>
     );
-  }
+  };
 
-  @autobind
-  _renderSuggestionsContainer({ containerProps, children }) {
+  _renderSuggestionsContainer = ({ containerProps, children }) => {
     const numChildren = React.Children.count(children);
     return (
       <Popper
@@ -198,7 +190,7 @@ export class AutoComplete extends React.Component {
         </Paper>
       </Popper>
     );
-  }
+  };
 
   render() {
     const {

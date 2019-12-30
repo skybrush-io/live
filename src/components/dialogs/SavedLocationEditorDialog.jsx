@@ -2,7 +2,6 @@
  * @file Dialog that shows the editor for a saved location.
  */
 
-import { autobind } from 'core-decorators';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { Form, Field } from 'react-final-form';
@@ -125,23 +124,29 @@ const SavedLocationEditorForm = connect(
  * can use to edit the saved location.
  */
 class SavedLocationEditorDialogPresentation extends React.Component {
+  static propTypes = {
+    editedLocationId: PropTypes.string,
+    onClose: PropTypes.func.isRequired,
+    onDelete: PropTypes.func.isRequired,
+    onSubmit: PropTypes.func.isRequired,
+    open: PropTypes.bool.isRequired
+  };
+
   constructor(props) {
     super(props);
 
     this.currentLocation = {};
   }
 
-  @autobind
-  _forceFormSubmission() {
+  _forceFormSubmission = () => {
     forceFormSubmission('SavedLocationEditor');
-  }
+  };
 
-  @autobind
-  _handleKeyPress(e) {
+  _handleKeyPress = e => {
     if (e.nativeEvent.code === 'Enter') {
       this.handleSubmit();
     }
-  }
+  };
 
   render() {
     const { editedLocationId, onClose, onDelete, onSubmit, open } = this.props;
@@ -189,18 +194,6 @@ class SavedLocationEditorDialogPresentation extends React.Component {
     );
   }
 }
-
-SavedLocationEditorDialogPresentation.propTypes = {
-  editedLocationId: PropTypes.string,
-  onClose: PropTypes.func.isRequired,
-  onDelete: PropTypes.func.isRequired,
-  onSubmit: PropTypes.func.isRequired,
-  open: PropTypes.bool.isRequired
-};
-
-SavedLocationEditorDialogPresentation.defaultProps = {
-  open: false
-};
 
 /**
  * Container of the dialog that shows the form that the user can use to

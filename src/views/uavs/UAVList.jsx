@@ -11,8 +11,9 @@ import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import ListItemText from '@material-ui/core/ListItemText';
 import Search from '@material-ui/icons/Search';
 
-import { autobind } from 'core-decorators';
-import { pick, property, sortedIndexBy } from 'lodash';
+import pick from 'lodash-es/pick';
+import property from 'lodash-es/property';
+import sortedIndexBy from 'lodash-es/sortedIndexBy';
 import { boundingExtent, buffer } from 'ol/extent';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -121,8 +122,7 @@ class UAVList extends React.Component {
     this._onFlockMaybeChanged(this.props.flock, undefined);
   }
 
-  @autobind
-  _fitSelectedUAVs() {
+  _fitSelectedUAVs = () => {
     const { selectedUAVIds } = this.props;
     const { uavs } = this.state;
 
@@ -136,7 +136,7 @@ class UAVList extends React.Component {
     const bounds = boundingExtent(selectedUAVCoordinates);
     const bufferedBounds = buffer(bounds, 16);
     mapViewToExtentSignal.dispatch(bufferedBounds, 500);
-  }
+  };
 
   /**
    * Function that is called when we suspect that the flock associated to
@@ -173,8 +173,7 @@ class UAVList extends React.Component {
    * @listens Flock#uavsUpdated
    * @param {UAV[]} updatedUavs  the UAVs that should be refreshed
    */
-  @autobind
-  _onUAVsUpdated(updatedUavs) {
+  _onUAVsUpdated = updatedUavs => {
     let { uavs, uavIdToIndex } = this.state;
 
     for (const uav of updatedUavs) {
@@ -196,7 +195,7 @@ class UAVList extends React.Component {
     }
 
     this.setState({ uavs, uavIdToIndex });
-  }
+  };
 
   /**
    * Picks the properties from an UAV object that are relevant for the list

@@ -3,7 +3,6 @@
  * by typing its name or selecting it from the autocompletion dropdown.
  */
 
-import { autobind } from 'core-decorators';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
@@ -65,8 +64,7 @@ export class UAVSelectorField extends React.Component {
    * @return {boolean} whether the value entered by the user passed the
    *         validation
    */
-  @autobind
-  validate(value) {
+  validate = value => {
     if (!value) {
       // Value is empty
       if (!this.props.allowEmpty) {
@@ -79,7 +77,7 @@ export class UAVSelectorField extends React.Component {
       // Value entered by the user is not in the list of UAV IDs
       return 'No such UAV';
     }
-  }
+  };
 
   /**
    * Returns whether the given value is among the valid UAV IDs accepted

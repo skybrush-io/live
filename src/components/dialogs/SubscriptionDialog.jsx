@@ -1,5 +1,6 @@
-import { autobind } from 'core-decorators';
-import _ from 'lodash';
+import omit from 'lodash-es/omit';
+import partial from 'lodash-es/partial';
+import without from 'lodash-es/without';
 import PropTypes from 'prop-types';
 import React from 'react';
 
@@ -34,6 +35,13 @@ import messageHub from '../../message-hub';
  * @property {function} setUnit function to set the unit of measurement
  */
 export default class SubscriptionDialog extends React.Component {
+  static propTypes = {
+    subscriptions: PropTypes.arrayOf(PropTypes.string),
+    unit: PropTypes.string,
+    setSubscriptions: PropTypes.func,
+    setUnit: PropTypes.func
+  };
+
   constructor(props) {
     super(props);
 
@@ -105,7 +113,7 @@ export default class SubscriptionDialog extends React.Component {
         <ListItemSecondaryAction>
           <IconButton
             aria-label="Unsubscribe"
-            onClick={_.partial(this._removeSubscription, subscription)}
+            onClick={partial(this._removeSubscription, subscription)}
           >
             <ContentRemoveCircleOutline />
           </IconButton>
@@ -192,8 +200,7 @@ export default class SubscriptionDialog extends React.Component {
   /**
    * Function for requesting the available UAVs, devices and channels.
    */
-  @autobind
-  _tryUpdateDeviceList() {
+  _tryUpdateDeviceList = () => {
     if (!messageHub._emitter) {
       return;
     }
@@ -204,7 +211,7 @@ export default class SubscriptionDialog extends React.Component {
         ids: Object.keys(flock._uavsById)
       })
       .then(this._deviceListReceived);
-  }
+  };
 
   /**
    * Function for processing and storing the received list of
@@ -213,14 +220,13 @@ export default class SubscriptionDialog extends React.Component {
    * @param {Object} message the response from the server
    * containing the requested data
    */
-  @autobind
-  _deviceListReceived(message) {
+  _deviceListReceived = message => {
     const data = message.body.devices;
     const available = { All: {} };
 
-    for (const uav in data) {
+    for (const uav of Object.keys(data)) {
       available[uav] = {};
-      for (const device in data[uav].children) {
+      for (const device of Object.keys(data[uav].children)) {
         if (!(device in available.All)) {
           available.All[device] = {};
         }
@@ -249,15 +255,14 @@ export default class SubscriptionDialog extends React.Component {
     this.setState({
       available
     });
-  }
+  };
 
   /**
    * Function to handle the drop-down menu value changes.
    *
    * @param {string} event the actual change event
    */
-  @autobind
-  _handleChange(event) {
+  _handleChange = event => {
     const parameter = event.target.name;
 
     this.setState({
@@ -268,7 +273,7 @@ export default class SubscriptionDialog extends React.Component {
     // with the new Material UI implementation. Let's not waste too much
     // time on this as we will refactor the entire component sooner or
     // later anyway.
-  }
+  };
 
   /**
    * Function for getting the currently selected path as a string.
@@ -285,8 +290,7 @@ export default class SubscriptionDialog extends React.Component {
    * (If the selected UAV value is 'All', then subscribes to all the UAVs
    * that have the selected channel available.)
    */
-  @autobind
-  _handleClick() {
+  _handleClick = () => {
     const {
       available,
       selectedChannel,
@@ -297,7 +301,7 @@ export default class SubscriptionDialog extends React.Component {
     if (this.state.selectedUAV === 'All') {
       const paths = [];
 
-      for (const uav in _.omit(available, 'All')) {
+      for (const uav in omit(available, 'All')) {
         if (
           selectedDevice in available[uav] &&
           selectedChannel in available[uav][selectedDevice]
@@ -328,53 +332,43 @@ export default class SubscriptionDialog extends React.Component {
         paths: [path]
       });
 
-      this.setState({
-        subscriptions: this.state.subscriptions.concat(path),
+      this.setState(state => ({
+        subscriptions: state.subscriptions.concat(path),
         unit: available[selectedUAV][selectedDevice][selectedChannel].unit
-      });
+      }));
     }
-  }
+  };
 
   /**
    * Function to handle unsubscription.
    *
    * @param {string} subscription the path of the subscription to cancel
    */
-  @autobind
-  _removeSubscription(subscription) {
+  _removeSubscription = subscription => {
     messageHub.sendMessage({
       type: 'DEV-UNSUB',
       paths: [subscription]
     });
 
-    this.setState({
-      subscriptions: _.without(this.state.subscriptions, subscription)
-    });
-  }
+    this.setState(state => ({
+      subscriptions: without(state.subscriptions, subscription)
+    }));
+  };
 
-  @autobind
-  showDialog() {
+  showDialog = () => {
     this._tryUpdateDeviceList();
 
     this.setState({
       visible: true
     });
-  }
+  };
 
-  @autobind
-  _hideDialog() {
+  _hideDialog = () => {
     this.props.setSubscriptions(this.state.subscriptions);
     this.props.setUnit(this.state.unit);
 
     this.setState({
       visible: false
     });
-  }
+  };
 }
-
-SubscriptionDialog.propTypes = {
-  subscriptions: PropTypes.arrayOf(PropTypes.string),
-  unit: PropTypes.string,
-  setSubscriptions: PropTypes.func,
-  setUnit: PropTypes.func
-};

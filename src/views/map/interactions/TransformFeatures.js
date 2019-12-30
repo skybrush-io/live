@@ -3,8 +3,7 @@
  * features by dragging.
  */
 
-import { autobind } from 'core-decorators';
-import { stubTrue } from 'lodash';
+import stubTrue from 'lodash-es/stubTrue';
 import { includes } from 'ol/array';
 import OLEvent from 'ol/events/Event';
 import * as Extent from 'ol/extent';
@@ -252,8 +251,7 @@ export class TransformFeaturesInteraction extends PointerInteraction {
    *         the provided feature array and that also matches the layer
    *         selection function
    */
-  @autobind
-  featureAtPixel_(pixel, map, features) {
+  featureAtPixel_ = (pixel, map, features) => {
     let result;
 
     if (features) {
@@ -273,7 +271,7 @@ export class TransformFeaturesInteraction extends PointerInteraction {
     }
 
     return result;
-  }
+  };
 }
 
 /**

@@ -4,8 +4,9 @@
  * identifier) and returning them on-demand by IDs.
  */
 
-import { autobind } from 'core-decorators';
-import { forOwn, identity, values } from 'lodash';
+import forOwn from 'lodash-es/forOwn';
+import identity from 'lodash-es/identity';
+import values from 'lodash-es/values';
 import Signal from 'mini-signals';
 import Feature from 'ol/Feature';
 import Point from 'ol/geom/Point';
@@ -26,9 +27,7 @@ import Point from 'ol/geom/Point';
  *           that is used to map coordinates specified by the user to the
  *           coordinate system of the source layer
  */
-export default
-@autobind
-class FeatureManager {
+export default class FeatureManager {
   /**
    * Constructor.
    *
@@ -60,7 +59,7 @@ class FeatureManager {
    * @returns {ol.Feature}  the OpenLayers feature that represents the
    *          object with the given ID on the map
    */
-  createOrUpdateFeatureById(id, coordinate) {
+  createOrUpdateFeatureById = (id, coordinate) => {
     coordinate = this.projection ? this.projection(coordinate) : coordinate;
 
     const feature =
@@ -68,7 +67,7 @@ class FeatureManager {
     feature.getGeometry().setCoordinates(coordinate);
 
     return feature;
-  }
+  };
 
   /**
    * Creates a new feature for the given object ID.
@@ -85,7 +84,7 @@ class FeatureManager {
    * @returns {ol.Feature}  the OpenLayers feature that will represent the
    *          object with the given ID on the map
    */
-  _createFeatureById(id, coordinate) {
+  _createFeatureById = (id, coordinate) => {
     const point = new Point(coordinate);
     const feature = this._featureFactory
       ? this._featureFactory(id, point)
@@ -102,7 +101,7 @@ class FeatureManager {
     this.featureAdded.dispatch(feature);
 
     return feature;
-  }
+  };
 
   /**
    * Returns the feature corresponding to the object with the given ID.
@@ -113,9 +112,9 @@ class FeatureManager {
    *         object with the given ID on the map, or undefined if the given
    *         object has no feature yet
    */
-  getFeatureById(id) {
+  getFeatureById = id => {
     return this._featuresByObjectId[id];
-  }
+  };
 
   /**
    * Returns an array containing all the features managed by this manager.
@@ -126,9 +125,9 @@ class FeatureManager {
    * @return {Array<ol.Feature>}  an array containing all the features
    *         managed by this manager
    */
-  getFeatureArray() {
+  getFeatureArray = () => {
     return values(this._featuresByObjectId);
-  }
+  };
 
   /**
    * Removes the feature corresponding to the object with the given ID.
@@ -138,7 +137,7 @@ class FeatureManager {
    * @return {ol.Feature}  the feature that was removed or undefined if
    *         there was no feature for the given ID
    */
-  removeFeatureById(id) {
+  removeFeatureById = id => {
     const feature = this.getFeatureById(id);
 
     if (feature && this._vectorSource) {
@@ -146,7 +145,7 @@ class FeatureManager {
     }
 
     return feature;
-  }
+  };
 
   /**
    * Returns the feature factory function that creates a new feature for a

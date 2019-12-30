@@ -4,8 +4,14 @@
  * is close enough to the point where the user clicked and triggers a context-menu.
  */
 
-import { autobind } from 'core-decorators';
-import _ from 'lodash';
+import includes from 'lodash-es/includes';
+import isArray from 'lodash-es/isArray';
+import isFunction from 'lodash-es/isFunction';
+import minBy from 'lodash-es/minBy';
+import partial from 'lodash-es/partial';
+import stubFalse from 'lodash-es/stubFalse';
+import stubTrue from 'lodash-es/stubTrue';
+
 import Interaction from 'ol/interaction/Interaction';
 import VectorLayer from 'ol/layer/Vector';
 import Map from 'ol/Map';
@@ -45,11 +51,13 @@ class ContextMenuInteraction extends Interaction {
         // Find the feature that is closest to the selection, in each
         // matching layer
         const { coordinate, map } = mapBrowserEvent;
-        const distanceFunction = _.partial(
+        const distanceFunction = partial(
           this._distanceOfEventFromFeature,
           mapBrowserEvent
         );
-        const relevantFeatures = _(map.getLayers().getArray())
+        const relevantFeatures = map
+          .getLayers()
+          .getArray()
           .filter(this._isLayerFeasible)
           .filter(this._layerSelectorFunction)
           .map(layer => {
@@ -59,9 +67,10 @@ class ContextMenuInteraction extends Interaction {
               : undefined;
           })
           .filter(this._isFeatureFeasible);
-        const closestFeature = relevantFeatures
-          ? relevantFeatures.minBy(distanceFunction)
-          : undefined;
+        const closestFeature =
+          relevantFeatures && relevantFeatures.length > 0
+            ? minBy(relevantFeatures, distanceFunction)
+            : undefined;
 
         if (closestFeature) {
           // Get the actual distance of the feature
@@ -110,18 +119,18 @@ class ContextMenuInteraction extends Interaction {
    */
   _createLayerSelectorFunction(layers) {
     if (layers) {
-      if (_.isFunction(layers)) {
+      if (isFunction(layers)) {
         return layers;
       }
 
-      if (_.isArray(layers)) {
-        return layer => _.includes(layers, layer);
+      if (isArray(layers)) {
+        return layer => includes(layers, layer);
       }
 
-      return _.stubFalse;
+      return stubFalse;
     }
 
-    return _.stubTrue;
+    return stubTrue;
   }
 
   /**
@@ -197,7 +206,7 @@ class ContextMenuInteraction extends Interaction {
   }
 }
 
-const ShowContextMenu_ = createOLInteractionComponent(
+const ShowContextMenuInner = createOLInteractionComponent(
   'ShowContextMenuInner',
   props => new ContextMenuInteraction(props),
   {
@@ -223,6 +232,17 @@ const ShowContextMenu_ = createOLInteractionComponent(
  * that allows us to use it in JSX.
  */
 class ShowContextMenu extends React.Component {
+  static propTypes = {
+    active: PropTypes.bool,
+    children: PropTypes.element,
+    layers: OLPropTypes.LayerFilter,
+    map: PropTypes.instanceOf(Map),
+    projection: PropTypes.string,
+    select: PropTypes.func,
+    contextMenu: PropTypes.func,
+    threshold: PropTypes.number
+  };
+
   constructor(props) {
     super(props);
     this._contextMenuRef = React.createRef();
@@ -232,22 +252,21 @@ class ShowContextMenu extends React.Component {
     const { children, ...rest } = this.props;
     if (children) {
       return (
-        <ShowContextMenu_
+        <ShowContextMenuInner
           onContextMenu={this._openContextMenuFromChild}
           {...rest}
         >
           {React.cloneElement(React.Children.only(this.props.children), {
             ref: this._contextMenuRef
           })}
-        </ShowContextMenu_>
+        </ShowContextMenuInner>
       );
     }
 
     return null;
   }
 
-  @autobind
-  _openContextMenuFromChild(event, coords) {
+  _openContextMenuFromChild = (event, coords) => {
     const menu = this._contextMenuRef.current;
     const open =
       menu.open ||
@@ -259,18 +278,7 @@ class ShowContextMenu extends React.Component {
       };
       open(position, { coords });
     }
-  }
+  };
 }
-
-ShowContextMenu.propTypes = {
-  active: PropTypes.bool,
-  children: PropTypes.element,
-  layers: OLPropTypes.LayerFilter,
-  map: PropTypes.instanceOf(Map),
-  projection: PropTypes.string,
-  select: PropTypes.func,
-  contextMenu: PropTypes.func,
-  threshold: PropTypes.number
-};
 
 export default withMap(ShowContextMenu);

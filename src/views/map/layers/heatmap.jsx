@@ -1,5 +1,5 @@
-import { autobind } from 'core-decorators';
-import { partial, toNumber } from 'lodash';
+import partial from 'lodash-es/partial';
+import toNumber from 'lodash-es/toNumber';
 import numbro from 'numbro';
 import Feature from 'ol/Feature';
 import Point from 'ol/geom/Point';
@@ -236,27 +236,23 @@ class HeatmapLayerSettingsPresentation extends React.Component {
     );
   }
 
-  @autobind
-  _showSubscriptionDialog() {
+  _showSubscriptionDialog = () => {
     this._refs.subscriptionDialog.current.showDialog();
-  }
+  };
 
-  @autobind
-  _handleHueChange(e) {
+  _handleHueChange = e => {
     this.setState({
       [e.target.id]: toNumber(e.target.value)
     });
-  }
+  };
 
-  @autobind
-  _handleColoringFunctionChange(e) {
+  _handleColoringFunctionChange = e => {
     this.setState({
       coloringFunction: e.target.value
     });
-  }
+  };
 
-  @autobind
-  _handleClick() {
+  _handleClick = () => {
     const layerParameters = {
       threshold: toNumber(this._refs.threshold.current.value),
       coloringFunction: this.state.coloringFunction,
@@ -277,10 +273,9 @@ class HeatmapLayerSettingsPresentation extends React.Component {
         );
       }
     }
-  }
+  };
 
-  @autobind
-  _clearData() {
+  _clearData = () => {
     window.localStorage.removeItem(`${this.props.layerId}_data`);
 
     this._refs.minValue.current.value = 0;
@@ -288,7 +283,7 @@ class HeatmapLayerSettingsPresentation extends React.Component {
 
     this._refs.maxValue.current.value = 0;
     this.props.setLayerParameter('maxValue', 0);
-  }
+  };
 }
 
 export const HeatmapLayerSettings = connect(
@@ -344,8 +339,7 @@ class HeatmapVectorSource extends React.Component {
     this.features = new HashedMap();
   }
 
-  @autobind
-  _assignSourceRef(value) {
+  _assignSourceRef = value => {
     if (this._sourceRef === value) {
       return;
     }
@@ -359,7 +353,7 @@ class HeatmapVectorSource extends React.Component {
     if (this._sourceRef) {
       this._drawFromStoredData();
     }
-  }
+  };
 
   componentDidMount() {
     this._trySubscribe(this.props.parameters.subscriptions);
@@ -385,8 +379,7 @@ class HeatmapVectorSource extends React.Component {
     return <source.Vector ref={this._assignSourceRef} />;
   }
 
-  @autobind
-  _getStoredData() {
+  _getStoredData = () => {
     if (!window.localStorage.getItem(this.props.storageKey)) {
       window.localStorage.setItem(this.props.storageKey, '[]');
     }
@@ -394,18 +387,16 @@ class HeatmapVectorSource extends React.Component {
     return new HashedMap(
       JSON.parse(window.localStorage.getItem(this.props.storageKey))
     );
-  }
+  };
 
-  @autobind
-  _setStoredData(values) {
+  _setStoredData = values => {
     window.localStorage.setItem(
       this.props.storageKey,
       JSON.stringify([...values.data])
     );
-  }
+  };
 
-  @autobind
-  _drawFromStoredData() {
+  _drawFromStoredData = () => {
     const { source } = this._sourceRef || {};
     if (!source) {
       return;
@@ -422,28 +413,25 @@ class HeatmapVectorSource extends React.Component {
         this._drawPointFromData(Object.assign({ value }, key))
       );
     }
-  }
+  };
 
-  @autobind
-  async _trySubscribe(subscriptions) {
+  _trySubscribe = async subscriptions => {
     await messageHub.waitUntilReady();
     messageHub.sendMessage({
       type: 'DEV-SUB',
       paths: subscriptions
     });
-  }
+  };
 
-  @autobind
-  async _tryUnsubscribe(subscriptions) {
+  _tryUnsubscribe = async subscriptions => {
     await messageHub.waitUntilReady();
     messageHub.sendMessage({
       type: 'DEV-UNSUB',
       paths: subscriptions
     });
-  }
+  };
 
-  @autobind
-  _processData(values, data) {
+  _processData = (values, data) => {
     const { minDistance } = this.props.parameters;
 
     /* Converting to the EPSG:3857 projection, snapping it to the grid
@@ -482,10 +470,9 @@ class HeatmapVectorSource extends React.Component {
     const key = { lon: data.lon, lat: data.lat };
     values.set(key, data.value);
     this.features.set(key, this._drawPointFromData(data));
-  }
+  };
 
-  @autobind
-  _processNotification(message) {
+  _processNotification = message => {
     const values = this._getStoredData();
 
     for (const path in message.body.values) {
@@ -522,17 +509,15 @@ class HeatmapVectorSource extends React.Component {
     if (this.features.size !== values.size) {
       this._drawFromStoredData();
     }
-  }
+  };
 
-  @autobind
-  _makePoint(center) {
+  _makePoint = center => {
     return new Feature({
       geometry: new Point(coordinateFromLonLat(center))
     });
-  }
+  };
 
-  @autobind
-  _drawPointFromData(data) {
+  _drawPointFromData = data => {
     const point = this._makePoint([data.lon, data.lat]);
     point.measuredValue = data.value;
 
@@ -542,7 +527,7 @@ class HeatmapVectorSource extends React.Component {
     }
 
     return point;
-  }
+  };
 }
 
 class HeatmapLayerPresentation extends React.Component {

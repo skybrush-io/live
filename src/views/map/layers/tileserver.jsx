@@ -1,4 +1,3 @@
-import { autobind } from 'core-decorators';
 import { layer, source } from '@collmot/ol-react';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -19,6 +18,14 @@ import { TileServerType, TileServerTypes } from '../../../model/layers';
 // === Settings for this particular layer type ===
 
 class TileServerLayerSettingsPresentation extends React.Component {
+  static propTypes = {
+    layer: PropTypes.object.isRequired,
+
+    changeTileServerType: PropTypes.func,
+    setLayerParameters: PropTypes.func,
+    showMessage: PropTypes.func
+  };
+
   constructor(props) {
     super(props);
 
@@ -60,16 +67,7 @@ class TileServerLayerSettingsPresentation extends React.Component {
           onChange={this._onUrlChanged}
         />
 
-        {parameters.type !== TileServerType.XYZ ? (
-          <TextField
-            fullWidth
-            label="Layers"
-            margin="normal"
-            placeholder="Layers to show (comma-separated)"
-            value={layers}
-            onChange={this._onLayersChanged}
-          />
-        ) : (
+        {parameters.type === TileServerType.XYZ ? (
           <div>
             <small>
               Use <code>{'{x}'}</code>, <code>{'{y}'}</code>,
@@ -80,6 +78,15 @@ class TileServerLayerSettingsPresentation extends React.Component {
               same tileset.
             </small>
           </div>
+        ) : (
+          <TextField
+            fullWidth
+            label="Layers"
+            margin="normal"
+            placeholder="Layers to show (comma-separated)"
+            value={layers}
+            onChange={this._onLayersChanged}
+          />
         )}
 
         <div style={{ textAlign: 'center', paddingTop: '1em' }}>
@@ -89,36 +96,24 @@ class TileServerLayerSettingsPresentation extends React.Component {
     );
   }
 
-  @autobind
-  _onLayersChanged(event) {
+  _onLayersChanged = event => {
     this.setState({ layers: event.target.value });
-  }
+  };
 
-  @autobind
-  _onUrlChanged(event) {
+  _onUrlChanged = event => {
     this.setState({ url: event.target.value });
-  }
+  };
 
-  @autobind
-  _handleClick() {
+  _handleClick = () => {
     const { layers, url } = this.state;
     this.props.setLayerParameters({ layers, url });
     this.props.showMessage('Layer settings saved successfully.');
-  }
+  };
 }
-
-TileServerLayerSettingsPresentation.propTypes = {
-  layer: PropTypes.object.isRequired,
-  layerId: PropTypes.string.isRequired,
-
-  changeTileServerType: PropTypes.func,
-  setLayerParameters: PropTypes.func,
-  showMessage: PropTypes.func
-};
 
 export const TileServerLayerSettings = connect(
   // mapStateToProps
-  (state, ownProps) => ({}),
+  () => ({}),
   // mapDispatchToProps
   (dispatch, ownProps) => ({
     changeTileServerType: event => {
@@ -140,6 +135,11 @@ export const TileServerLayerSettings = connect(
 // === The actual layer to be rendered ===
 
 class TileServerLayerPresentation extends React.Component {
+  static propTypes = {
+    layer: PropTypes.object,
+    zIndex: PropTypes.number
+  };
+
   render() {
     const mapSource = this._sourceFromParameters(this.props.layer.parameters);
     return (
@@ -166,13 +166,14 @@ class TileServerLayerPresentation extends React.Component {
       case TileServerType.XYZ:
         return <source.XYZ url={url} />;
 
-      case TileServerType.TILE_CACHE:
+      case TileServerType.TILE_CACHE: {
         const urlRoot =
           url && url.length > 0 && url.charAt(url.length - 1) === '/'
             ? url
             : url + '/';
         const tmsUrl = urlRoot + '1.0.0/' + layers + '/{z}/{x}/{-y}.png';
         return <source.XYZ url={tmsUrl} />;
+      }
 
       default:
         return [];
@@ -180,15 +181,9 @@ class TileServerLayerPresentation extends React.Component {
   }
 }
 
-TileServerLayerPresentation.propTypes = {
-  layer: PropTypes.object,
-  layerId: PropTypes.string,
-  zIndex: PropTypes.number
-};
-
 export const TileServerLayer = connect(
   // mapStateToProps
-  (state, ownProps) => ({}),
+  () => ({}),
   // mapDispatchToProps
-  (dispatch, ownProps) => ({})
+  () => ({})
 )(TileServerLayerPresentation);

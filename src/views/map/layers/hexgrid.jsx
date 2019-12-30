@@ -1,5 +1,6 @@
-import { autobind } from 'core-decorators';
-import { sum, toNumber, values } from 'lodash';
+import sum from 'lodash-es/sum';
+import toNumber from 'lodash-es/toNumber';
+import values from 'lodash-es/values';
 import Feature from 'ol/Feature';
 import Polygon from 'ol/geom/Polygon';
 import { toRadians } from 'ol/math';
@@ -30,6 +31,12 @@ const makeFillStyle = color =>
 // === Settings for this particular layer type ===
 
 class HexGridLayerSettingsPresentation extends React.Component {
+  static propTypes = {
+    layer: PropTypes.object,
+
+    setLayerParameter: PropTypes.func
+  };
+
   constructor(props) {
     super(props);
     this._inputFields = {};
@@ -70,48 +77,37 @@ class HexGridLayerSettingsPresentation extends React.Component {
     );
   }
 
-  @autobind
-  _assignCenterField(value) {
+  _assignCenterField = value => {
     this._inputFields.center = value;
-  }
+  };
 
-  @autobind
-  _assignRadiusField(value) {
+  _assignRadiusField = value => {
     this._inputFields.radius = value;
-  }
+  };
 
-  @autobind
-  _assignSizeField(value) {
+  _assignSizeField = value => {
     this._inputFields.size = value;
-  }
+  };
 
-  @autobind
-  _handleClick() {
+  _handleClick = () => {
     const layerParameters = {
       center: this._inputFields.center.value.split(',').map(toNumber),
       size: toNumber(this._inputFields.size.value),
       radius: toNumber(this._inputFields.radius.value)
     };
 
-    for (const layerParameter in layerParameters) {
+    for (const layerParameter of Object.keys(layerParameters)) {
       this.props.setLayerParameter(
         layerParameter,
         layerParameters[layerParameter]
       );
     }
-  }
+  };
 }
-
-HexGridLayerSettingsPresentation.propTypes = {
-  layer: PropTypes.object,
-  layerId: PropTypes.string,
-
-  setLayerParameter: PropTypes.func
-};
 
 export const HexGridLayerSettings = connect(
   // mapStateToProps
-  (state, ownProps) => ({}),
+  () => ({}),
   // mapDispatchToProps
   (dispatch, ownProps) => ({
     setLayerParameter: (parameter, value) => {
@@ -134,8 +130,7 @@ class HexGridVectorSource extends React.PureComponent {
     return <source.Vector ref={this._assignSourceRef} />;
   }
 
-  @autobind
-  _assignSourceRef(value) {
+  _assignSourceRef = value => {
     if (this._sourceRef === value) {
       return;
     }
@@ -146,7 +141,7 @@ class HexGridVectorSource extends React.PureComponent {
     }
 
     this._sourceRef = value;
-  }
+  };
 
   _getCorners(center, radius) {
     const angles = [30, 90, 150, 210, 270, 330, 30].map(toRadians);
@@ -190,7 +185,7 @@ class HexGridVectorSource extends React.PureComponent {
     source.clear();
     source.addFeatures(values(features));
 
-    for (const hash in features) {
+    for (const hash of Object.keys(features)) {
       const coordinates = hash.split(',').map(toNumber);
       const hue = (sum(coordinates.map(Math.abs)) / (size * 2 + 1)) * 115;
       features[hash].setStyle(makeFillStyle(`hsla(${hue}, 70%, 50%, 0.5)`));
@@ -198,41 +193,31 @@ class HexGridVectorSource extends React.PureComponent {
   }
 }
 
-HexGridVectorSource.propTypes = {
-  center: PropTypes.object.isRequired,
-  size: PropTypes.number.isRequired,
-  radius: PropTypes.number.isRequired
-};
+const HexGridLayerPresentation = ({ layer, zIndex }) => {
+  const { center, size, radius } = layer.parameters;
+  return (
+    <div>
+      <layer.Vector zIndex={zIndex}>
+        <HexGridVectorSource center={center} size={size} radius={radius} />
+      </layer.Vector>
 
-class HexGridLayerPresentation extends React.Component {
-  render() {
-    const { layer, zIndex } = this.props;
-    const { center, size, radius } = this.props.layer.parameters;
-    return (
-      <div>
-        <layer.Vector zIndex={zIndex}>
-          <HexGridVectorSource center={center} size={size} radius={radius} />
-        </layer.Vector>
-
-        <div id="heatmapScale">
-          <span>100%</span>
-          <span>50%</span>
-          <span>0%</span>
-        </div>
+      <div id="heatmapScale">
+        <span>100%</span>
+        <span>50%</span>
+        <span>0%</span>
       </div>
-    );
-  }
-}
+    </div>
+  );
+};
 
 HexGridLayerPresentation.propTypes = {
   layer: PropTypes.object,
-  layerId: PropTypes.string,
   zIndex: PropTypes.number
 };
 
 export const HexGridLayer = connect(
   // mapStateToProps
-  (state, ownProps) => ({}),
+  () => ({}),
   // mapDispatchToProps
-  (dispatch, ownProps) => ({})
+  () => ({})
 )(HexGridLayerPresentation);

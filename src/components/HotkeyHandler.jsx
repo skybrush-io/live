@@ -2,8 +2,9 @@
  * @file React Component for handling hotkeys.
  */
 
-import { autobind } from 'core-decorators';
-import _ from 'lodash';
+import pull from 'lodash-es/pull';
+import trim from 'lodash-es/trim';
+import upperFirst from 'lodash-es/upperFirst';
 import PropTypes from 'prop-types';
 import React from 'react';
 import u from 'updeep';
@@ -36,28 +37,56 @@ import { isRunningOnMac, platformModifierKey } from '../utils/platform';
  * @return {array} the formatted hotkey definition as an array of JSX tags
  */
 function formatHotkeyDefinition(definition) {
-  return _(definition)
-    .split(/\s+/)
-    .map((key, index) => {
-      if (key === '+') {
-        return ' + ';
-      }
+  return definition.split(/\s+/).map(key => {
+    if (key === '+') {
+      return ' + ';
+    }
 
-      const formattedKey = key
-        .replace(/^PlatMod$/, platformModifierKey)
-        .replace(/^Cmd$/, '\u2318')
-        .replace(/^Alt$/, isRunningOnMac ? '\u2325' : 'Alt')
-        .replace(/^Shift/, '\u21E7')
-        .replace(/^Key/, '');
-      return <kbd key={`key${index}`}>{formattedKey}</kbd>;
-    })
-    .value();
+    const formattedKey = key
+      .replace(/^PlatMod$/, platformModifierKey)
+      .replace(/^Cmd$/, '\u2318')
+      .replace(/^Alt$/, isRunningOnMac ? '\u2325' : 'Alt')
+      .replace(/^Shift/, '\u21E7')
+      .replace(/^Key/, '');
+    return <kbd key={key}>{formattedKey}</kbd>;
+  });
 }
 
 /**
  * React component for handling hotkeys.
  */
 export default class HotkeyHandler extends React.Component {
+  static condition = {
+    Alt: e => e.altKey,
+    Ctrl: e => e.ctrlKey,
+    Meta: e => e.metaKey,
+    PlatMod: e => (isRunningOnMac ? e.metaKey : e.ctrlKey),
+    Shift: e => e.shiftKey
+  };
+
+  static propTypes = {
+    hotkeys: PropTypes.arrayOf(
+      PropTypes.shape({
+        keys: PropTypes.string,
+        action: PropTypes.func
+      })
+    )
+  };
+
+  static defaultProps = {
+    hotkeys: []
+  };
+
+  state = {
+    dialogVisible: false,
+    keyboardModifiers: {
+      Alt: false,
+      Control: false,
+      Meta: false,
+      Shift: false
+    }
+  };
+
   /**
    * Constructor that binds the supplied actions to the key combinations.
    *
@@ -68,16 +97,6 @@ export default class HotkeyHandler extends React.Component {
     super(props);
 
     this._root = undefined;
-
-    this.state = {
-      dialogVisible: false,
-      keyboardModifiers: {
-        Alt: false,
-        Control: false,
-        Meta: false,
-        Shift: false
-      }
-    };
 
     this.listeners = { down: {}, up: {} };
 
@@ -91,26 +110,23 @@ export default class HotkeyHandler extends React.Component {
   /**
    * Function for showing the help dialog.
    */
-  @autobind
-  _showDialog() {
+  _showDialog = () => {
     this.setState({ dialogVisible: true });
-  }
+  };
 
   /**
    * Function for hiding the help dialog.
    */
-  @autobind
-  _hideDialog() {
+  _hideDialog = () => {
     this.setState({ dialogVisible: false });
-  }
+  };
 
   /**
    * Function for toggling the visibility of the help dialog.
    */
-  @autobind
-  _toggleDialog() {
-    this.setState({ dialogVisible: !this.state.dialogVisible });
-  }
+  _toggleDialog = () => {
+    this.setState(state => ({ dialogVisible: !state.dialogVisible }));
+  };
 
   /**
    * Function for attaching the help dialog control listeners.
@@ -162,8 +178,8 @@ export default class HotkeyHandler extends React.Component {
           <DialogContent>
             <Table>
               <TableBody>
-                {hotkeys.map((hotkey, index) => (
-                  <TableRow key={`hotkey_${index}`}>
+                {hotkeys.map(hotkey => (
+                  <TableRow key={`hotkey_${hotkey.keys}`}>
                     <TableCell padding="dense" style={keysColumnStyle}>
                       {formatHotkeyDefinition(hotkey.keys)}
                     </TableCell>
@@ -210,7 +226,7 @@ export default class HotkeyHandler extends React.Component {
     const hash = this._hotkeyToHash(keys);
 
     if (hash in this.listeners[on]) {
-      _.pull(this.listeners[on][hash], action);
+      pull(this.listeners[on][hash], action);
     }
   }
 
@@ -219,32 +235,30 @@ export default class HotkeyHandler extends React.Component {
    *
    * @param {KeyboardEvent} e the actual keyboard event
    */
-  @autobind
-  _handleKeyDown(e) {
+  _handleKeyDown = e => {
     if (e.repeat) {
       return;
     }
 
     if (e.key in this.state.keyboardModifiers) {
-      this.setState(u({ keyboardModifiers: { [e.key]: true } }, this.state));
+      this.setState(u({ keyboardModifiers: { [e.key]: true } }));
     } else {
       this._handleKey('down', e);
     }
-  }
+  };
 
   /**
    * Proxy for keyup event.
    *
    * @param {KeyboardEvent} e the actual keyboard event
    */
-  @autobind
-  _handleKeyUp(e) {
+  _handleKeyUp = e => {
     if (e.key in this.state.keyboardModifiers) {
-      this.setState(u({ keyboardModifiers: { [e.key]: false } }, this.state));
+      this.setState(u({ keyboardModifiers: { [e.key]: false } }));
     } else {
       this._handleKey('up', e);
     }
-  }
+  };
 
   /**
    * Event handler function that looks for attached actions and executes them.
@@ -252,8 +266,7 @@ export default class HotkeyHandler extends React.Component {
    * @param {string} direction 'down' or 'up', on which event the action should be fired
    * @param {KeyboardEvent} e the actual keyboard event
    */
-  @autobind
-  _handleKey(direction, e) {
+  _handleKey = (direction, e) => {
     const activeTag = document.activeElement.tagName;
     if (activeTag === 'INPUT' || activeTag === 'TEXTAREA') {
       // Never activate hotkeys if the user is in an input field or text area.
@@ -288,7 +301,7 @@ export default class HotkeyHandler extends React.Component {
         }
       }
     }
-  }
+  };
 
   /**
    * Function for converting hotkey into uniform hash.
@@ -301,8 +314,7 @@ export default class HotkeyHandler extends React.Component {
     return Hotkey.fromString(hotkey).toString();
   }
 
-  @autobind
-  _setRoot(root) {
+  _setRoot = root => {
     if (this._root === root) {
       return;
     }
@@ -318,33 +330,8 @@ export default class HotkeyHandler extends React.Component {
       this._root.addEventListener('keydown', this._handleKeyDown);
       this._root.addEventListener('keyup', this._handleKeyUp);
     }
-  }
+  };
 }
-
-HotkeyHandler.condition = {
-  Alt: e => e.altKey,
-  Ctrl: e => e.ctrlKey,
-  Meta: e => e.metaKey,
-  PlatMod: e => (isRunningOnMac ? e.metaKey : e.ctrlKey),
-  Shift: e => e.shiftKey
-};
-
-HotkeyHandler.propTypes = {
-  children: PropTypes.oneOfType([
-    PropTypes.arrayOf(PropTypes.node),
-    PropTypes.node
-  ]),
-  hotkeys: PropTypes.arrayOf(
-    PropTypes.shape({
-      keys: PropTypes.string,
-      action: PropTypes.func
-    })
-  )
-};
-
-HotkeyHandler.defaultProps = {
-  hotkeys: []
-};
 
 class Hotkey {
   /**
@@ -355,11 +342,10 @@ class Hotkey {
    * @return {Hotkey} the processed Hotkey object
    */
   static fromString(string) {
-    const data = _(string)
+    const data = string
       .split('+')
-      .map(_.trim)
-      .map(_.upperFirst)
-      .value();
+      .map(trim)
+      .map(upperFirst);
     const result = new Hotkey();
     result.key = data.pop();
     result.modifiers = data.sort();

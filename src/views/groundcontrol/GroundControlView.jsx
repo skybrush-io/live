@@ -2,9 +2,10 @@
  * @file Component for displaying UAV info in a tabular format.
  */
 
-import { autobind } from 'core-decorators';
 import Immutable from 'immutable';
-import _ from 'lodash';
+import padStart from 'lodash-es/padStart';
+import property from 'lodash-es/property';
+import round from 'lodash-es/round';
 import u from 'updeep';
 
 import PropTypes from 'prop-types';
@@ -28,30 +29,34 @@ const colorForPercentage = percentage =>
   ['#dc322f', '#b58900', '#859900'][Math.floor(percentage / 34)];
 
 class GroundControlViewPresentation extends React.Component {
+  static propTypes = {
+    flock: PropTypes.instanceOf(Flock)
+  };
+
+  state = {
+    uavs: Immutable.List(),
+    uavIdToIndex: Immutable.Map()
+  };
+
   constructor(props) {
     super(props);
 
     this._eventBindings = {};
 
-    this.state = {
-      uavs: Immutable.List(),
-      uavIdToIndex: Immutable.Map()
-    };
-
     this.tableColumns = [
       {
         name: 'Name',
         width: 125,
-        dataExtractor: _.property('id'),
+        dataExtractor: property('id'),
         filterType: FilterTypes.text
       },
       {
         name: 'Battery voltage',
         width: 175,
-        dataExtractor: _.property('battery'),
+        dataExtractor: property('battery'),
         displayRenderer: data => (
           <span style={{ color: colorForPercentage(data.percentage) }}>
-            {`${_.round(data.voltage, 2)}V (${_.round(data.percentage, 2)}%)`}
+            {`${round(data.voltage, 2)}V (${round(data.percentage, 2)}%)`}
           </span>
         ),
         sorter: (a, b) => a.voltage - b.voltage,
@@ -60,33 +65,33 @@ class GroundControlViewPresentation extends React.Component {
       {
         name: 'Latitude',
         width: 150,
-        dataExtractor: _.property('lat'),
+        dataExtractor: property('lat'),
         filterType: FilterTypes.range
       },
       {
         name: 'Longitude',
         width: 150,
-        dataExtractor: _.property('lon'),
+        dataExtractor: property('lon'),
         filterType: FilterTypes.range
       },
       {
         name: 'Heading',
         width: 150,
-        dataExtractor: _.property('heading'),
+        dataExtractor: property('heading'),
         filterType: FilterTypes.range
       },
       {
         name: 'Updated',
         width: 150,
-        dataExtractor: _.property('lastUpdated'),
+        dataExtractor: property('lastUpdated'),
         displayRenderer: data => {
           const currentDate = new Date(data);
           return (
-            _.padStart(currentDate.getHours(), 2, '0') +
+            padStart(currentDate.getHours(), 2, '0') +
             ':' +
-            _.padStart(currentDate.getMinutes(), 2, '0') +
+            padStart(currentDate.getMinutes(), 2, '0') +
             ':' +
-            _.padStart(currentDate.getSeconds(), 2, '0')
+            padStart(currentDate.getSeconds(), 2, '0')
           );
         },
         filterType: FilterTypes.range
@@ -94,7 +99,7 @@ class GroundControlViewPresentation extends React.Component {
       {
         name: 'Error',
         width: 150,
-        dataExtractor: _.property('error'),
+        dataExtractor: property('error'),
         filterType: FilterTypes.range
       }
     ];
@@ -123,8 +128,7 @@ class GroundControlViewPresentation extends React.Component {
    * @param {Flock} oldFlock The old flock associated to the component.
    * @param {Flock} newFlock The new flock associated to the component.
    */
-  @autobind
-  _onFlockMaybeChanged(oldFlock, newFlock) {
+  _onFlockMaybeChanged = (oldFlock, newFlock) => {
     if (oldFlock === newFlock) {
       return;
     }
@@ -139,7 +143,7 @@ class GroundControlViewPresentation extends React.Component {
         this._onUAVsUpdated
       );
     }
-  }
+  };
 
   /**
    * Event handler that is called when the status of some of the UAVs has
@@ -148,8 +152,7 @@ class GroundControlViewPresentation extends React.Component {
    * @listens Flock#uavsUpdated
    * @param {UAV[]} updatedUavs The UAVs that should be refreshed.
    */
-  @autobind
-  _onUAVsUpdated(updatedUavs) {
+  _onUAVsUpdated = updatedUavs => {
     let { uavs, uavIdToIndex } = this.state;
 
     for (const uav of updatedUavs) {
@@ -168,7 +171,7 @@ class GroundControlViewPresentation extends React.Component {
     this.setState(newState);
 
     this.forceUpdate();
-  }
+  };
 
   /**
    * Picks the properties from an UAV object that are displayed in the table.
@@ -197,10 +200,6 @@ class GroundControlViewPresentation extends React.Component {
     );
   }
 }
-
-GroundControlViewPresentation.propTypes = {
-  flock: PropTypes.instanceOf(Flock)
-};
 
 const GroundControlView = connect(
   // mapStateToProps

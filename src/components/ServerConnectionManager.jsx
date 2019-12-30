@@ -3,7 +3,6 @@
  * Flockwave server.
  */
 
-import { autobind } from 'core-decorators';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
@@ -38,6 +37,13 @@ function proposeProtocol() {
  * Component that launches a local Flockwave server instance when mounted.
  */
 class LocalServerExecutor extends React.Component {
+  static propTypes = {
+    args: PropTypes.string,
+    onError: PropTypes.func,
+    onStarted: PropTypes.func,
+    port: PropTypes.number
+  };
+
   constructor(props) {
     super(props);
 
@@ -137,13 +143,6 @@ class LocalServerExecutor extends React.Component {
   }
 }
 
-LocalServerExecutor.propTypes = {
-  args: PropTypes.string,
-  onError: PropTypes.func,
-  onStarted: PropTypes.func,
-  port: PropTypes.number
-};
-
 /**
  * Presentation component that contains a Socket.io socket and handles
  * its events.
@@ -152,8 +151,24 @@ LocalServerExecutor.propTypes = {
  * instance when mounted.
  */
 class ServerConnectionManagerPresentation extends React.Component {
-  @autobind
-  _bindSocketToHub(socket) {
+  static propTypes = {
+    active: PropTypes.bool,
+    cliArguments: PropTypes.string,
+    hostName: PropTypes.string,
+    needsLocalServer: PropTypes.bool,
+    port: PropTypes.number,
+    protocol: PropTypes.string,
+    onConnected: PropTypes.func,
+    onConnecting: PropTypes.func,
+    onConnectionError: PropTypes.func,
+    onConnectionTimeout: PropTypes.func,
+    onDisconnected: PropTypes.func,
+    onLocalServerError: PropTypes.func,
+    onLocalServerStarted: PropTypes.func,
+    onMessage: PropTypes.func
+  };
+
+  _bindSocketToHub = socket => {
     const wrappedSocket = socket ? socket.socket : null;
     messageHub.emitter = wrappedSocket
       ? wrappedSocket.emit.bind(wrappedSocket)
@@ -162,7 +177,7 @@ class ServerConnectionManagerPresentation extends React.Component {
     if (this.props.onConnecting) {
       this.props.onConnecting();
     }
-  }
+  };
 
   componentDidUpdate(prevProps) {
     const { active, onDisconnected } = this.props;
@@ -255,23 +270,6 @@ class ServerConnectionManagerPresentation extends React.Component {
     );
   }
 }
-
-ServerConnectionManagerPresentation.propTypes = {
-  active: PropTypes.bool,
-  cliArguments: PropTypes.string,
-  hostName: PropTypes.string,
-  needsLocalServer: PropTypes.bool,
-  port: PropTypes.number,
-  protocol: PropTypes.string,
-  onConnected: PropTypes.func,
-  onConnecting: PropTypes.func,
-  onConnectionError: PropTypes.func,
-  onConnectionTimeout: PropTypes.func,
-  onDisconnected: PropTypes.func,
-  onLocalServerError: PropTypes.func,
-  onLocalServerStarted: PropTypes.func,
-  onMessage: PropTypes.func
-};
 
 /**
  * Helper function that executes all the background tasks that should be

@@ -35,7 +35,6 @@
     "color": "^3.1.2",
     "coordinate-parser": "^1.0.2",
     "copy-to-clipboard": "^3.2.0",
-    "core-decorators": "^0.20.0",
     "delay": "^4.3.0",
     "electron-better-ipc": "^0.7.0",
     "electron-timber": "^0.5.1",

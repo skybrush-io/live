@@ -2,7 +2,6 @@
  * @file React component for the layer settings dialog.
  */
 
-import { autobind } from 'core-decorators';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { Form, Field } from 'react-final-form';
@@ -42,6 +41,15 @@ const validator = createValidator({
  * regardless of its type.
  */
 class BasicLayerSettingsFormPresentation extends React.Component {
+  static propTypes = {
+    initialValues: PropTypes.object,
+    layer: PropTypes.object,
+    validate: PropTypes.func,
+
+    onSubmit: PropTypes.func,
+    onToggleLayerVisibility: PropTypes.func
+  };
+
   render() {
     const {
       initialValues,
@@ -89,22 +97,12 @@ class BasicLayerSettingsFormPresentation extends React.Component {
    *
    * @param {Event} e the event fired from the TextField React component
    */
-  _onKeyDown(e) {
+  _onKeyDown = e => {
     if (e.key === 'Enter') {
       e.target.blur();
     }
-  }
+  };
 }
-
-BasicLayerSettingsFormPresentation.propTypes = {
-  initialValues: PropTypes.object,
-  layer: PropTypes.object,
-  layerId: PropTypes.string,
-  validate: PropTypes.func,
-
-  onSubmit: PropTypes.func,
-  onToggleLayerVisibility: PropTypes.func
-};
 
 /**
  * Container of the form that shows the fields that the user can use to
@@ -149,6 +147,11 @@ const BasicLayerSettingsForm = connect(
  * Presentation component for the settings of a layer.
  */
 class LayerSettingsContainerPresentation extends React.Component {
+  static propTypes = {
+    layer: PropTypes.object,
+    layerId: PropTypes.string
+  };
+
   /**
    * Creates the child components that allows the user to update the
    * layer-specific settings of the selected layer.
@@ -191,21 +194,14 @@ class LayerSettingsContainerPresentation extends React.Component {
     // the form fields even if the layer selection changes
     return (
       <div key={'settings_' + layerId}>
-        {layer.type !== LayerType.UNTYPED ? (
+        {layer.type === LayerType.UNTYPED ? null : (
           <BasicLayerSettingsForm layer={layer} layerId={layerId} />
-        ) : null}
+        )}
         {this.createChildrenForLayer(layer, layerId)}
       </div>
     );
   }
 }
-
-LayerSettingsContainerPresentation.propTypes = {
-  layer: PropTypes.object,
-  layerId: PropTypes.string,
-
-  onLayerSourceChanged: PropTypes.func
-};
 
 /**
  * Container of the panel that contains the settings of a layer.
@@ -214,9 +210,7 @@ const LayerSettingsContainer = connect(
   // mapStateToProps
   (state, ownProps) => ({
     layer: state.map.layers.byId[ownProps.layerId]
-  }),
-  // mapDispatchToProps
-  (dispatch, ownProps) => ({})
+  })
 )(LayerSettingsContainerPresentation);
 
 /* ********************************************************************* */
@@ -226,6 +220,17 @@ const LayerSettingsContainer = connect(
  * a selected layer.
  */
 class LayerSettingsDialogPresentation extends React.Component {
+  static propTypes = {
+    canMoveDown: PropTypes.bool.isRequired,
+    canMoveUp: PropTypes.bool.isRequired,
+    dialogVisible: PropTypes.bool.isRequired,
+    selectedLayerId: PropTypes.string,
+
+    onClose: PropTypes.func,
+    onMoveLayer: PropTypes.func,
+    onRemoveLayer: PropTypes.func
+  };
+
   render() {
     const {
       canMoveUp,
@@ -278,43 +283,24 @@ class LayerSettingsDialogPresentation extends React.Component {
     );
   }
 
-  @autobind
-  _moveSelectedLayer(delta) {
+  _moveSelectedLayer = delta => {
     const { selectedLayerId, onMoveLayer } = this.props;
     onMoveLayer(selectedLayerId, delta);
-  }
+  };
 
-  @autobind
-  _moveSelectedLayerDown() {
+  _moveSelectedLayerDown = () => {
     this._moveSelectedLayer(-1);
-  }
+  };
 
-  @autobind
-  _moveSelectedLayerUp() {
+  _moveSelectedLayerUp = () => {
     this._moveSelectedLayer(1);
-  }
+  };
 
-  @autobind
-  _removeSelectedLayer() {
+  _removeSelectedLayer = () => {
     const { selectedLayerId, onRemoveLayer } = this.props;
     onRemoveLayer(selectedLayerId);
-  }
+  };
 }
-
-LayerSettingsDialogPresentation.propTypes = {
-  canMoveDown: PropTypes.bool.isRequired,
-  canMoveUp: PropTypes.bool.isRequired,
-  dialogVisible: PropTypes.bool.isRequired,
-  selectedLayerId: PropTypes.string,
-
-  onClose: PropTypes.func,
-  onMoveLayer: PropTypes.func,
-  onRemoveLayer: PropTypes.func
-};
-
-LayerSettingsDialogPresentation.defaultProps = {
-  dialogVisible: false
-};
 
 /**
  * Container of the dialog that allows the user to configure the layers of
