@@ -21,22 +21,22 @@ import { startLocalServerExecutableSearch } from '../../../actions/local-server'
 
 const icons = {
   found: (
-    <ListItemIcon style={{ color: green[500], margin: '0 19px' }}>
+    <ListItemIcon style={{ color: green[500], margin: '0 0 0 19px' }}>
       <Done />
     </ListItemIcon>
   ),
   notFound: (
-    <ListItemIcon style={{ color: yellow[700], margin: '0 19px' }}>
+    <ListItemIcon style={{ color: yellow[700], margin: '0 0 0 19px' }}>
       <Warning />
     </ListItemIcon>
   ),
   scanning: (
-    <ListItemIcon style={{ margin: '0 15px' }}>
+    <ListItemIcon style={{ margin: '0 0 0 19px' }}>
       <CircularProgress variant="indeterminate" color="secondary" size={32} />
     </ListItemIcon>
   ),
   error: (
-    <ListItemIcon style={{ color: red[500], margin: '0 19px' }}>
+    <ListItemIcon style={{ color: red[500], margin: '0 0 0 19px' }}>
       <Clear />
     </ListItemIcon>
   )

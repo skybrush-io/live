@@ -11,11 +11,7 @@ import mapValues from 'lodash-es/mapValues';
 import { handleActions } from 'redux-actions';
 import u from 'updeep';
 
-import {
-  FeatureType,
-  getNameOfFeatureType,
-  LabelStyle
-} from '~/model/features';
+import { getNameOfFeatureType } from '~/model/features';
 import { deleteByIds, getKey } from '~/utils/collections';
 import { chooseUniqueId, chooseUniqueName } from '~/utils/naming';
 
@@ -24,6 +20,7 @@ import { chooseUniqueId, chooseUniqueName } from '~/utils/naming';
  */
 const defaultState = {
   byId: {
+    /*
     examplePolygon: {
       id: 'examplePolygon',
       type: FeatureType.POLYGON,
@@ -37,8 +34,7 @@ const defaultState = {
       color: '#ffcc00',
       labelStyle: LabelStyle.THIN_OUTLINE,
       visible: true
-    }
-    /*
+    },
     ExamplePoint: {
       id: 'examplePoint',
       type: FeatureType.POINTS,
@@ -92,7 +88,7 @@ const defaultState = {
     */
   },
 
-  order: ['examplePolygon']
+  order: []
 };
 
 /**

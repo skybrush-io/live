@@ -52,6 +52,9 @@ function formatHotkeyDefinition(definition) {
   });
 }
 
+const keysColumnStyle = { width: 160 };
+const actionColumnStyle = {};
+
 /**
  * React component for handling hotkeys.
  */
@@ -153,8 +156,6 @@ export default class HotkeyHandler extends React.Component {
     const { hotkeys } = this.props;
     const { dialogVisible, keyboardModifiers } = this.state;
 
-    const keysColumnStyle = { width: 120 };
-    const actionColumnStyle = {};
     const actions = [
       <Button key="_close" color="primary" onClick={this._hideDialog}>
         Close
@@ -176,14 +177,14 @@ export default class HotkeyHandler extends React.Component {
           <DialogTitle>Hotkeys</DialogTitle>
 
           <DialogContent>
-            <Table>
+            <Table size="small">
               <TableBody>
                 {hotkeys.map(hotkey => (
                   <TableRow key={`hotkey_${hotkey.keys}`}>
-                    <TableCell padding="dense" style={keysColumnStyle}>
+                    <TableCell style={keysColumnStyle}>
                       {formatHotkeyDefinition(hotkey.keys)}
                     </TableCell>
-                    <TableCell padding="dense" style={actionColumnStyle}>
+                    <TableCell style={actionColumnStyle}>
                       {hotkey.description}
                     </TableCell>
                   </TableRow>

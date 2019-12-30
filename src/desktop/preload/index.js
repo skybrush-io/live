@@ -13,8 +13,7 @@ const { ipcRenderer: ipc } = require('electron-better-ipc');
 const logger = require('electron-timber');
 const unhandled = require('electron-unhandled');
 const SSDPClient = require('node-ssdp-lite');
-const createStorageEngine = require('redux-storage-engine-electron-store')
-  .default;
+const createStorageEngine = require('redux-persist-electron-storage');
 
 const localServer = require('./local-server');
 const setupIpc = require('./ipc');

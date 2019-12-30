@@ -181,7 +181,7 @@ export default [
 
   // Messages dialog related hotkeys
   {
-    description: 'Open the Messages dialog and focus the UAV selector field',
+    description: 'Open the Messages dialog',
     on: 'down',
     keys: '@',
     action: () => {
@@ -195,10 +195,9 @@ export default [
     description: 'Clear stored settings and reload',
     on: 'down',
     keys: 'PlatMod + Alt + KeyC',
-    action: () => {
+    action: async () => {
       if (window.confirm('Are you sure? All settings will be lost.')) {
-        clearStore();
-        window.localStorage.clear();
+        await clearStore();
         window.location.reload();
       }
     }

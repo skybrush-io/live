@@ -2,8 +2,7 @@
  * The root saga of the Flockwave application.
  */
 
-import { all, take } from 'redux-saga/effects';
-import { LOAD } from 'redux-storage';
+import { all } from 'redux-saga/effects';
 
 import localServerSaga from './local-server';
 import serversSaga from './servers';
@@ -18,9 +17,6 @@ export default function* rootSaga() {
   if (localServer && localServer.search) {
     sagas.push(localServerSaga(localServer.search));
   }
-
-  // Wait until the saved state is loaded back into Redux
-  yield take(LOAD);
 
   yield all(sagas);
 }

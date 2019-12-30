@@ -28,28 +28,28 @@ const tabNameToComponent = {
  * Presentation component for the dialog that shows the form that the user
  * can use to edit the app settings.
  */
-class AppSettingsDialogPresentation extends React.Component {
-  render() {
-    const { onClose, onTabSelected, open, selectedTab } = this.props;
-    return (
-      <Dialog fullWidth open={open} maxWidth="sm" onClose={onClose}>
-        <AppBar position="static">
-          <Tabs centered value={selectedTab} onChange={onTabSelected}>
-            <Tab value="display" label="Display" />
-            <Tab value="uavs" label="UAVs" />
-            {window.isElectron ? <Tab value="server" label="Server" /> : null}
-          </Tabs>
-        </AppBar>
-        <DialogContent>{tabNameToComponent[selectedTab]}</DialogContent>
-      </Dialog>
-    );
-  }
-}
+const AppSettingsDialogPresentation = ({
+  onClose,
+  onTabSelected,
+  open,
+  selectedTab
+}) => (
+  <Dialog fullWidth open={open} maxWidth="sm" onClose={onClose}>
+    <AppBar position="static">
+      <Tabs centered value={selectedTab} onChange={onTabSelected}>
+        <Tab value="display" label="Display" />
+        <Tab value="uavs" label="UAVs" />
+        {window.isElectron ? <Tab value="server" label="Server" /> : null}
+      </Tabs>
+    </AppBar>
+    <DialogContent>{tabNameToComponent[selectedTab]}</DialogContent>
+  </Dialog>
+);
 
 AppSettingsDialogPresentation.propTypes = {
   onClose: PropTypes.func,
   onTabSelected: PropTypes.func,
-  open: PropTypes.bool.isRequired,
+  open: PropTypes.bool,
   selectedTab: PropTypes.string
 };
 

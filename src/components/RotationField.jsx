@@ -19,6 +19,15 @@ export const formatAngle = angle =>
  * React component to display and adjust an angle in degrees.
  */
 export default class RotationField extends React.Component {
+  static propTypes = {
+    onChange: PropTypes.func,
+    value: PropTypes.number
+  };
+
+  static defaultProps = {
+    value: undefined
+  };
+
   constructor(props) {
     super(props);
 
@@ -34,7 +43,7 @@ export default class RotationField extends React.Component {
     this._onMouseDownOnButton = this._onMouseDownOnButton.bind(this);
   }
 
-  static getDerivedStateFromProps(props, state) {
+  static getDerivedStateFromProps(props) {
     return {
       originalText: formatAngle(props.value)
     };
@@ -110,7 +119,7 @@ export default class RotationField extends React.Component {
   }
 
   _reset() {
-    this.setState({ text: this.state.originalText });
+    this.setState(state => ({ text: state.originalText }));
   }
 
   _updateTextFromValue(value) {
@@ -135,11 +144,3 @@ export default class RotationField extends React.Component {
     return [!hasError, parsed];
   }
 }
-
-RotationField.propTypes = {
-  onChange: PropTypes.func,
-  value: PropTypes.number
-};
-RotationField.defaultProps = {
-  value: undefined
-};

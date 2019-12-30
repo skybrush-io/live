@@ -59,9 +59,13 @@ const DeauthenticationDialogPresentation = ({
 DeauthenticationDialogPresentation.propTypes = {
   onCancel: PropTypes.func,
   onDisconnect: PropTypes.func,
-  open: PropTypes.bool.isRequired,
+  open: PropTypes.bool,
   title: PropTypes.string.isRequired,
   user: PropTypes.string
+};
+
+DeauthenticationDialogPresentation.defaultProps = {
+  open: false
 };
 
 /**

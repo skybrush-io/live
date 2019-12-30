@@ -6,8 +6,7 @@ import { render } from 'react-dom';
 
 import Application from './app';
 import rootSaga from './sagas';
-import { sagaMiddleware, loadStoreFromStorageBackend } from './store';
-import workbench from './workbench';
+import { sagaMiddleware, waitUntilStateRestored } from './store';
 
 // Const __PROD__ = process.env.NODE_ENV === 'production'
 // const __DEV__ = !__PROD__
@@ -17,22 +16,13 @@ import 'tippy.js/dist/tippy.css';
 import 'tippy.js/themes/light-border.css';
 /* eslint-enable import/no-extraneous-dependencies */
 
-async function initialize() {
-  TimeAgo.addLocale(en);
+TimeAgo.addLocale(en);
 
-  // Spin up the root saga
+// Spin up the root saga after the state has been restored
+waitUntilStateRestored().then(() => {
   sagaMiddleware.run(rootSaga);
+});
 
-  // Restore the state of the application
-  const state = await loadStoreFromStorageBackend();
-  if (state && state.workbench && state.workbench.state) {
-    workbench.restoreState(state.workbench.state);
-  }
-}
-
-function renderApplication() {
-  const root = document.querySelector('#root');
-  return render(<Application />, root);
-}
-
-initialize().then(renderApplication);
+// Render the application
+const root = document.querySelector('#root');
+render(<Application />, root);

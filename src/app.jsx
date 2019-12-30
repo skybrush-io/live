@@ -6,6 +6,7 @@ import { Provider as StoreProvider } from 'react-redux';
 import compose from 'recompose/compose';
 import toClass from 'recompose/toClass';
 import withProps from 'recompose/withProps';
+import { PersistGate } from 'redux-persist/es/integration/react';
 
 import dialogs from './components/dialogs';
 import Header from './components/header';
@@ -17,7 +18,7 @@ import ServerConnectionManager from './components/ServerConnectionManager';
 import flock, { Flock } from './flock';
 import { withErrorBoundary, wrapWith } from './hoc';
 import hotkeys from './hotkeys';
-import store from './store';
+import store, { persistor } from './store';
 import theme from './theme';
 import workbench from './workbench';
 
@@ -41,35 +42,48 @@ const rootInnerStyle = {
   height: '100%'
 };
 
+/**
+ * Helper function that restores the state of the workbench when it was loaded
+ * back from the local storage during startup.
+ */
+const restoreWorkbench = () => {
+  const state = store.getState();
+  if (state && state.workbench && state.workbench.state) {
+    workbench.restoreState(state.workbench.state);
+  }
+};
+
 const Application = () => (
-  <div>
-    <CssBaseline />
+  <StoreProvider store={store}>
+    <PersistGate persistor={persistor} onBeforeLift={restoreWorkbench}>
+      <CssBaseline />
 
-    <HotkeyHandler hotkeys={hotkeys} />
+      <HotkeyHandler hotkeys={hotkeys} />
 
-    <div style={rootStyle}>
-      <Header workbench={workbench} />
-      <div style={rootInnerStyle}>
-        <Sidebar workbench={workbench} />
-        <WorkbenchView workbench={workbench} />
+      <div style={rootStyle}>
+        <Header workbench={workbench} />
+        <div style={rootInnerStyle}>
+          <Sidebar workbench={workbench} />
+          <WorkbenchView workbench={workbench} />
+        </div>
       </div>
-    </div>
 
-    <ServerConnectionManager />
+      <ServerConnectionManager />
 
-    <dialogs.AppSettingsDialog />
-    <dialogs.AuthenticationDialog />
-    <dialogs.DeauthenticationDialog />
-    <dialogs.FeatureEditorDialog />
-    <dialogs.GlobalErrorDialog />
-    <dialogs.LayerSettingsDialog />
-    <dialogs.MessagesDialog flock={flock} />
-    <dialogs.PromptDialog />
-    <dialogs.SavedLocationEditorDialog />
-    <dialogs.ServerSettingsDialog />
+      <dialogs.AppSettingsDialog />
+      <dialogs.AuthenticationDialog />
+      <dialogs.DeauthenticationDialog />
+      <dialogs.FeatureEditorDialog />
+      <dialogs.GlobalErrorDialog />
+      <dialogs.LayerSettingsDialog />
+      <dialogs.MessagesDialog flock={flock} />
+      <dialogs.PromptDialog />
+      <dialogs.SavedLocationEditorDialog />
+      <dialogs.ServerSettingsDialog />
 
-    <GlobalSnackbar />
-  </div>
+      <GlobalSnackbar />
+    </PersistGate>
+  </StoreProvider>
 );
 
 /**

@@ -61,7 +61,7 @@ const DisplayTabPresentation = props => (
       <InputLabel htmlFor="flat-earth-coordinate-system-type">Type</InputLabel>
       <Select
         value={props.coordinateSystemType}
-        input={<Input id="flat-earth-coordinate-system-type" />}
+        inputProps={{ id: 'flat-earth-coordinate-system-type' }}
         onChange={props.onCoordinateSystemTypeChanged}
       >
         <MenuItem value="neu">NEU (left-handed)</MenuItem>

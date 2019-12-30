@@ -7,6 +7,7 @@ import { connect } from 'react-redux';
 import FormGroup from '@material-ui/core/FormGroup';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import Switch from '@material-ui/core/Switch';
 import TextField from '@material-ui/core/TextField';
@@ -23,11 +24,13 @@ const ServerTabPresentation = ({
   onTextFieldChanged,
   searchPath
 }) => (
-  <>
+  <div style={{ position: 'relative', top: -8 }}>
     <List dense disablePadding style={{ margin: '0 -24px' }}>
       <PathScanner />
       <ListItem button disableRipple onClick={enabled ? onDisable : onEnable}>
-        <Switch checked={enabled} />
+        <ListItemIcon style={{ margin: '0 17px 0 2px' }}>
+          <Switch checked={enabled} />
+        </ListItemIcon>
         <ListItemText
           primary="Launch local server at startup"
           secondary="Local server will be launched only if the application
@@ -60,7 +63,7 @@ const ServerTabPresentation = ({
         onChange={onSearchPathChanged}
       />
     </FormGroup>
-  </>
+  </div>
 );
 
 ServerTabPresentation.propTypes = {

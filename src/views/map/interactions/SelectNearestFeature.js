@@ -220,6 +220,13 @@ class SelectNearestFeatureInteraction extends Interaction {
   }
 
   /**
+   * Returns whether a given feature is feasible for selection.
+   */
+  _isFeatureFeasible(feature) {
+    return Boolean(feature);
+  }
+
+  /**
    * Returns whether a given layer is visible and has an associated vector
    * source.
    *

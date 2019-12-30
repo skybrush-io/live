@@ -89,8 +89,12 @@ AuthenticationDialogPresentation.propTypes = {
   lastError: PropTypes.string,
   onCancel: PropTypes.func,
   onSubmit: PropTypes.func,
-  open: PropTypes.bool.isRequired,
+  open: PropTypes.bool,
   title: PropTypes.string.isRequired
+};
+
+AuthenticationDialogPresentation.defaultProps = {
+  open: false
 };
 
 /**
