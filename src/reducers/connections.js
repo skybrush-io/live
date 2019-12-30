@@ -20,29 +20,35 @@ const defaultState = {
   order: []
 };
 
+const createDefaultItem = id => ({
+  id,
+  name: id,
+  state: ConnectionState.DISCONNECTED
+});
+
 /**
  * Function that updates the state of a connection with the given ID in
- * a state object. Note that the state object <em>must</em> not be the
- * "real" state object of the Redux store but a copy of it (to avoid
- * mutating the state).
+ * a state object.
  *
- * @param  {Object} state  the Redux state object to modify
+ * @param  {Object} state  the Redux state object to update
  * @param  {string} id     the identifier of the connection to update
  * @param  {Object} properties  the new properties of the connection
+ * @return {Object} the new Redux state object
  */
 function updateStateOfConnection(state, id, properties) {
-  const { byId } = state;
-
-  if (!has(byId, id)) {
-    byId[id] = {
-      id,
-      name: id,
-      state: ConnectionState.DISCONNECTED
-    };
-    state.order.push(id);
-  }
-
-  Object.assign(byId[id], properties);
+  const { byId, order } = state;
+  const exists = has(byId, id);
+  const newItem = {
+    ...(exists ? byId[id] : createDefaultItem(id)),
+    ...properties
+  };
+  return {
+    byId: {
+      ...byId,
+      [id]: newItem
+    },
+    order: exists ? order : [...order, id]
+  };
 }
 
 /**
@@ -57,19 +63,16 @@ const reducer = handleActions(
     }),
 
     SET_CONNECTION_STATE: (state, action) => {
-      const newState = Object.assign({}, state);
       const { id } = action.payload;
-      updateStateOfConnection(newState, id, action.payload);
-      return newState;
+      return updateStateOfConnection(state, id, action.payload);
     },
 
     SET_CONNECTION_STATE_MULTIPLE: (state, action) => {
-      const newState = Object.assign({}, state);
       for (const id of Object.keys(action.payload)) {
-        updateStateOfConnection(newState, id, action.payload[id]);
+        state = updateStateOfConnection(state, id, action.payload[id]);
       }
 
-      return newState;
+      return state;
     }
   },
   defaultState
