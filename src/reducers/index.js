@@ -6,7 +6,6 @@ import datasetsReducer from './datasets';
 import dialogsReducer from './dialogs';
 import featuresReducer from './features';
 import localServerReducer from './local-server';
-import logReducer from './log';
 import mapReducer from './map';
 import messagesReducer from './messages';
 import savedLocationsReducer from './saved-locations';
@@ -15,6 +14,7 @@ import settingsReducer from './settings';
 import sidebarReducer from './sidebar';
 import workbenchReducer from './workbench';
 
+import logReducer from '~/features/log/slice';
 import snackbarReducer from '~/features/snackbar/slice';
 
 /**

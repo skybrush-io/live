@@ -3,7 +3,7 @@
  */
 
 import store from '../store';
-import { addLogItem } from '../actions/log';
+import { addLogItem } from '~/features/log/slice';
 
 export const LogLevel = {
   DEBUG: 0,

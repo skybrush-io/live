@@ -125,12 +125,6 @@ export const CANCEL_PROMPT_DIALOG = 'CANCEL_PROMPT_DIALOG';
 export const SHOW_PROMPT_DIALOG = 'SHOW_PROMPT_DIALOG';
 export const SUBMIT_PROMPT_DIALOG = 'SUBMIT_PROMPT_DIALOG';
 
-// Event log related actions
-export const ADD_LOG_ITEM = 'ADD_LOG_ITEM';
-export const DELETE_LOG_ITEM = 'DELETE_LOG_ITEM';
-export const CLEAR_LOG_ITEMS = 'CLEAR_LOG_ITEMS';
-export const UPDATE_LOG_PANEL_VISIBILITY = 'UPDATE_LOG_PANEL_VISIBILITY';
-
 // Error handling related actions
 export const CLOSE_ERROR_DIALOG = 'CLOSE_ERROR_DIALOG';
 export const SHOW_ERROR_MESSAGE = 'SHOW_ERROR_MESSAGE';
