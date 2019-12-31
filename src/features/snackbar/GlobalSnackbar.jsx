@@ -97,11 +97,15 @@ SnackbarContentWrapper.propTypes = {
  * @returns  {Object}  the rendered snackbar component
  */
 const GlobalSnackbar = ({ dismissSnackbar, open, message, semantics }) => (
-  <Snackbar open={open} autoHideDuration={3000} onClose={dismissSnackbar}>
+  <Snackbar
+    open={open}
+    autoHideDuration={3000}
+    onClose={() => dismissSnackbar()}
+  >
     <SnackbarContentWrapper
       semantics={semantics || MessageSemantics.DEFAULT}
       message={message}
-      onClose={dismissSnackbar}
+      onClose={() => dismissSnackbar()}
     />
   </Snackbar>
 );

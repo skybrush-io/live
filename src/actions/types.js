@@ -129,8 +129,5 @@ export const SUBMIT_PROMPT_DIALOG = 'SUBMIT_PROMPT_DIALOG';
 export const CLOSE_ERROR_DIALOG = 'CLOSE_ERROR_DIALOG';
 export const SHOW_ERROR_MESSAGE = 'SHOW_ERROR_MESSAGE';
 
-// Sidebar-related actions
-export const TOGGLE_SIDEBAR = 'TOGGLE_SIDEBAR';
-
 // Workbench-related actions
 export const SAVE_WORKBENCH_STATE = 'SAVE_WORKBENCH_STATE';

@@ -8,7 +8,8 @@ import AuthenticationButton from './AuthenticationButton';
 import ConnectionStatusButton from './ConnectionStatusButton';
 import FullScreenButton from './FullScreenButton';
 import ServerConnectionSettingsButton from './ServerConnectionSettingsButton';
-import { toggleSidebar } from '~/actions/sidebar';
+
+import { toggleSidebar } from '~/features/sidebar/slice';
 
 const style = {
   backgroundColor: '#333',
@@ -27,14 +28,14 @@ const innerStyle = {
  *
  * @returns  {Object}  the rendered header component
  */
-const HeaderPresentation = ({ onToggleSidebar, isSidebarOpen }) => (
+const Header = ({ toggleSidebar, isSidebarOpen }) => (
   <div id="header" style={{ ...style, overflow: 'hidden' }}>
     <div style={innerStyle}>
       <Shapeshifter
         color="#999"
         style={{ cursor: 'pointer' }}
         shape={isSidebarOpen ? 'close' : 'menu'}
-        onClick={onToggleSidebar}
+        onClick={() => toggleSidebar()}
       />
       <div style={{ flexGrow: 1, flexShrink: 1 }}>{/* spacer */}</div>
       <hr />
@@ -49,21 +50,17 @@ const HeaderPresentation = ({ onToggleSidebar, isSidebarOpen }) => (
   </div>
 );
 
-HeaderPresentation.propTypes = {
+Header.propTypes = {
   isSidebarOpen: PropTypes.bool.isRequired,
-  onToggleSidebar: PropTypes.func.isRequired
+  toggleSidebar: PropTypes.func.isRequired
 };
 
-export const Header = connect(
+export default connect(
   // mapStateToProps
   (state, { workbench }) => ({
     isSidebarOpen: state.sidebar.open,
     workbench
   }),
   // mapDispatchToProps
-  dispatch => ({
-    onToggleSidebar() {
-      dispatch(toggleSidebar());
-    }
-  })
-)(HeaderPresentation);
+  { toggleSidebar }
+)(Header);
