@@ -11,11 +11,11 @@ import messagesReducer from './messages';
 import savedLocationsReducer from './saved-locations';
 import serversReducer from './servers';
 import settingsReducer from './settings';
-import workbenchReducer from './workbench';
 
 import logReducer from '~/features/log/slice';
 import sidebarReducer from '~/features/sidebar/slice';
 import snackbarReducer from '~/features/snackbar/slice';
+import workbenchReducer from '~/features/workbench/slice';
 
 /**
  * The global reducer of the application.

@@ -13,8 +13,8 @@ import compose from 'recompose/compose';
 import renderNothing from 'recompose/renderNothing';
 import withProps from 'recompose/withProps';
 
-import { saveWorkbenchState } from './actions/workbench';
 import MessagesPanel from './components/chat/MessagesPanel';
+import { saveWorkbenchState } from './features/workbench/slice';
 import { Flock } from './flock';
 import store from './store';
 import views from './views';
