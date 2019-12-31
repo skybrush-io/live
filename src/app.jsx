@@ -14,6 +14,7 @@ import Sidebar from './components/sidebar';
 import GlobalSnackbar from './components/GlobalSnackbar';
 import HotkeyHandler from './components/HotkeyHandler';
 import ServerConnectionManager from './components/ServerConnectionManager';
+import SplashScreen from './components/SplashScreen';
 
 import flock, { Flock } from './flock';
 import { withErrorBoundary, wrapWith } from './hoc';
@@ -26,6 +27,7 @@ require('../assets/css/screen.less');
 require('../assets/css/chat.less');
 require('../assets/css/kbd.css');
 
+require('react-cover-page/themes/default.css');
 require('typeface-roboto');
 
 const rootStyle = {
@@ -54,36 +56,38 @@ const restoreWorkbench = () => {
 };
 
 const Application = () => (
-  <StoreProvider store={store}>
-    <PersistGate persistor={persistor} onBeforeLift={restoreWorkbench}>
-      <CssBaseline />
+  <PersistGate
+    persistor={persistor}
+    loading={<SplashScreen />}
+    onBeforeLift={restoreWorkbench}
+  >
+    <CssBaseline />
 
-      <HotkeyHandler hotkeys={hotkeys} />
+    <HotkeyHandler hotkeys={hotkeys} />
 
-      <div style={rootStyle}>
-        <Header workbench={workbench} />
-        <div style={rootInnerStyle}>
-          <Sidebar workbench={workbench} />
-          <WorkbenchView workbench={workbench} />
-        </div>
+    <div style={rootStyle}>
+      <Header workbench={workbench} />
+      <div style={rootInnerStyle}>
+        <Sidebar workbench={workbench} />
+        <WorkbenchView workbench={workbench} />
       </div>
+    </div>
 
-      <ServerConnectionManager />
+    <ServerConnectionManager />
 
-      <dialogs.AppSettingsDialog />
-      <dialogs.AuthenticationDialog />
-      <dialogs.DeauthenticationDialog />
-      <dialogs.FeatureEditorDialog />
-      <dialogs.GlobalErrorDialog />
-      <dialogs.LayerSettingsDialog />
-      <dialogs.MessagesDialog flock={flock} />
-      <dialogs.PromptDialog />
-      <dialogs.SavedLocationEditorDialog />
-      <dialogs.ServerSettingsDialog />
+    <dialogs.AppSettingsDialog />
+    <dialogs.AuthenticationDialog />
+    <dialogs.DeauthenticationDialog />
+    <dialogs.FeatureEditorDialog />
+    <dialogs.GlobalErrorDialog />
+    <dialogs.LayerSettingsDialog />
+    <dialogs.MessagesDialog flock={flock} />
+    <dialogs.PromptDialog />
+    <dialogs.SavedLocationEditorDialog />
+    <dialogs.ServerSettingsDialog />
 
-      <GlobalSnackbar />
-    </PersistGate>
-  </StoreProvider>
+    <GlobalSnackbar />
+  </PersistGate>
 );
 
 /**
