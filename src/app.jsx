@@ -11,10 +11,11 @@ import { PersistGate } from 'redux-persist/es/integration/react';
 import dialogs from './components/dialogs';
 import Header from './components/header';
 import Sidebar from './components/sidebar';
-import GlobalSnackbar from './components/GlobalSnackbar';
 import HotkeyHandler from './components/HotkeyHandler';
 import ServerConnectionManager from './components/ServerConnectionManager';
 import SplashScreen from './components/SplashScreen';
+
+import GlobalSnackbar from './features/snackbar/GlobalSnackbar';
 
 import flock, { Flock } from './flock';
 import { withErrorBoundary, wrapWith } from './hoc';

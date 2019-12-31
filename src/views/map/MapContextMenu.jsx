@@ -29,7 +29,6 @@ import {
   showMessagesDialog
 } from '../../actions/messages';
 import { showPromptDialog } from '../../actions/prompt';
-import { showSnackbarMessage } from '../../actions/snackbar';
 import ContextMenu from '../../components/ContextMenu';
 import {
   getSelectedFeatureIds,
@@ -37,6 +36,8 @@ import {
   getSelectedUAVIds
 } from '../../selectors/selection';
 import * as messaging from '../../utils/messaging';
+
+import { showSnackbarMessage } from '~/features/snackbar/slice';
 
 /**
  * Context menu that shows the menu items that should appear when the

@@ -12,13 +12,14 @@ import { connect } from 'react-redux';
 import IconButton from '@material-ui/core/IconButton';
 import DeviceGpsFixed from '@material-ui/icons/GpsFixed';
 import ActionAllOut from '@material-ui/icons/AllOut';
-import { showSnackbarMessage } from '../../actions/snackbar';
+
 import { coordinateFromLonLat } from '../../utils/geography';
 import {
   mapReferenceRequestSignal,
   fitAllFeaturesSignal,
   mapViewToExtentSignal
 } from '../../signals';
+import { showSnackbarMessage } from '~/features/snackbar/slice';
 
 /**
  * React Component to adjust the view so that it fits all of the current features.

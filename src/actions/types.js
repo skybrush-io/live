@@ -138,9 +138,5 @@ export const SHOW_ERROR_MESSAGE = 'SHOW_ERROR_MESSAGE';
 // Sidebar-related actions
 export const TOGGLE_SIDEBAR = 'TOGGLE_SIDEBAR';
 
-// Snackbar-related actions
-export const DISMISS_SNACKBAR = 'DISMISS_SNACKBAR';
-export const SHOW_SNACKBAR_MESSAGE = 'SHOW_SNACKBAR_MESSAGE';
-
 // Workbench-related actions
 export const SAVE_WORKBENCH_STATE = 'SAVE_WORKBENCH_STATE';

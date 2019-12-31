@@ -11,7 +11,7 @@ import {
   selectMapSource
 } from './actions/map';
 import { showMessagesDialog } from './actions/messages';
-import { showSnackbarMessage } from './actions/snackbar';
+import { showSnackbarMessage } from './features/snackbar/slice';
 
 import flock from './flock';
 import { Source } from './model/sources';

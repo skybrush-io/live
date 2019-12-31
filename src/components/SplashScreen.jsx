@@ -6,7 +6,7 @@ const logo = require('~/../assets/icons/splash.png').default;
 export default () => (
   <CoverPage
     loading
-    icon={<img src={logo} width={96} height={96} alt="Flockwave logo" />}
+    icon={<img src={logo} width={96} height={96} alt="" />}
     title={
       <span>
         Flock<b style={{ fontWeight: 300 }}>wave</b>

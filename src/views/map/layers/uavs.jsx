@@ -9,11 +9,12 @@ import TextField from '@material-ui/core/TextField';
 import ActiveUAVsLayerSource from '../sources/ActiveUAVsLayerSource';
 
 import { setLayerParameterById } from '../../../actions/layers';
-import { showSnackbarMessage } from '../../../actions/snackbar';
 import flock from '../../../flock';
 import { getSelection } from '../../../selectors/selection';
 import { coordinateFromLonLat } from '../../../utils/geography';
 import makeLogger from '../../../utils/logging';
+
+import { showSnackbarMessage } from '~/features/snackbar/slice';
 
 const colors = ['blue', 'green', 'orange', 'pink', 'purple', 'yellow'];
 

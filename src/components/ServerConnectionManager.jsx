@@ -12,7 +12,7 @@ import { parse } from 'shell-quote';
 import { clearClockList } from '~/actions/clocks';
 import { clearConnectionList } from '~/actions/connections';
 import { setCurrentServerConnectionState } from '~/actions/servers';
-import { showSnackbarMessage } from '~/actions/snackbar';
+import { showSnackbarMessage } from '~/features/snackbar/slice';
 import handleError from '~/error-handling';
 import messageHub from '~/message-hub';
 import {

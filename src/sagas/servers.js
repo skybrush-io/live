@@ -5,12 +5,12 @@ import {
   showAuthenticationDialog,
   updateCurrentServerAuthenticationSettings
 } from '~/actions/servers';
-import { showSnackbarMessage } from '~/actions/snackbar';
 import {
   AUTHENTICATE_TO_SERVER,
   SET_CURRENT_SERVER_CONNECTION_STATE,
   UPDATE_CURRENT_SERVER_AUTHENTICATION_SETTINGS
 } from '~/actions/types';
+import { showSnackbarMessage } from '~/features/snackbar/slice';
 import messageHub from '~/message-hub';
 import { isAuthenticationDialogOpen } from '~/selectors/dialogs';
 import {

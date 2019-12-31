@@ -17,7 +17,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 
-import { dismissSnackbar } from '~/actions/snackbar';
+import { dismissSnackbar } from '~/features/snackbar/slice';
 import { MessageSemantics } from '~/model/snackbar';
 
 const semanticsToIcon = {

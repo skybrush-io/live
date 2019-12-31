@@ -13,8 +13,9 @@ import savedLocationsReducer from './saved-locations';
 import serversReducer from './servers';
 import settingsReducer from './settings';
 import sidebarReducer from './sidebar';
-import snackbarReducer from './snackbar';
 import workbenchReducer from './workbench';
+
+import snackbarReducer from '~/features/snackbar/slice';
 
 /**
  * The global reducer of the application.

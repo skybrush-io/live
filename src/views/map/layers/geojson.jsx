@@ -12,8 +12,8 @@ import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 
 import { setLayerParameterById } from '~/actions/layers';
-import { showSnackbarMessage } from '~/actions/snackbar';
 import PopupColorPicker from '~/components/PopupColorPicker';
+import { showSnackbarMessage } from '~/features/snackbar/slice';
 import { parseColor } from '~/utils/coloring';
 import { convertSimpleStyleToOLStyle } from '~/utils/simplestyle';
 import { primaryColor } from '~/utils/styles';
