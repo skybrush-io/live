@@ -5,7 +5,7 @@
 
 import { createSlice } from '@reduxjs/toolkit';
 
-import { MessageSemantics } from '~/model/snackbar';
+import { MessageSemantics } from './types';
 
 const { actions, reducer } = createSlice({
   name: 'snackbar',
@@ -25,8 +25,6 @@ const { actions, reducer } = createSlice({
     showSnackbarMessage(state, action) {
       let semantics;
       let message;
-
-      console.log(action);
 
       if (typeof action.payload === 'string') {
         message = String(action.payload);

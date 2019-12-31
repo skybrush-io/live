@@ -18,7 +18,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 
 import { dismissSnackbar } from '~/features/snackbar/slice';
-import { MessageSemantics } from '~/model/snackbar';
+import { MessageSemantics } from '~/features/snackbar/types';
 
 const semanticsToIcon = {
   [MessageSemantics.SUCCESS]: CheckCircleIcon,
@@ -96,19 +96,19 @@ SnackbarContentWrapper.propTypes = {
  *
  * @returns  {Object}  the rendered snackbar component
  */
-const GlobalSnackbarPresentation = ({ onClose, open, message, semantics }) => (
-  <Snackbar open={open} autoHideDuration={3000} onClose={onClose}>
+const GlobalSnackbar = ({ dismissSnackbar, open, message, semantics }) => (
+  <Snackbar open={open} autoHideDuration={3000} onClose={dismissSnackbar}>
     <SnackbarContentWrapper
       semantics={semantics || MessageSemantics.DEFAULT}
       message={message}
-      onClose={onClose}
+      onClose={dismissSnackbar}
     />
   </Snackbar>
 );
 
-GlobalSnackbarPresentation.propTypes = {
+GlobalSnackbar.propTypes = {
+  dismissSnackbar: PropTypes.func,
   message: PropTypes.string.isRequired,
-  onClose: PropTypes.func,
   open: PropTypes.bool.isRequired,
   semantics: PropTypes.oneOf(Object.values(MessageSemantics)).isRequired
 };
@@ -116,15 +116,9 @@ GlobalSnackbarPresentation.propTypes = {
 /**
  * Global snackbar at the bottom of the main window.
  */
-const GlobalSnackbar = connect(
+export default connect(
   // mapStateToProps
   state => state.snackbar,
   // mapDispatchToProps
-  dispatch => ({
-    onClose() {
-      dispatch(dismissSnackbar());
-    }
-  })
-)(GlobalSnackbarPresentation);
-
-export default GlobalSnackbar;
+  { dismissSnackbar }
+)(GlobalSnackbar);
