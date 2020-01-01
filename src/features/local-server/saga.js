@@ -6,19 +6,17 @@
 import { all, call, delay, put, select, take } from 'redux-saga/effects';
 
 import {
-  notifyLocalServerExecutableSearchStarted,
-  notifyLocalServerExecutableSearchFinished,
-  notifyLocalServerExecutableSearchFailed
-} from '~/actions/local-server';
-import {
-  REPLACE_APP_SETTINGS,
-  UPDATE_APP_SETTINGS,
-  START_LOCAL_SERVER_EXECUTABLE_SEARCH
-} from '~/actions/types';
-import {
   getLocalServerExecutable,
   getLocalServerSearchPath
-} from '~/selectors/local-server';
+} from './selectors';
+import {
+  notifyLocalServerExecutableSearchStarted,
+  notifyLocalServerExecutableSearchFinished,
+  notifyLocalServerExecutableSearchFailed,
+  startLocalServerExecutableSearch
+} from './slice';
+
+import { REPLACE_APP_SETTINGS, UPDATE_APP_SETTINGS } from '~/actions/types';
 
 /**
  * Saga that attempts to find where the local server is installed on the
@@ -71,7 +69,7 @@ function* localServerExecutableDiscoverySaga(search) {
     const action = yield take([
       REPLACE_APP_SETTINGS,
       UPDATE_APP_SETTINGS,
-      START_LOCAL_SERVER_EXECUTABLE_SEARCH
+      startLocalServerExecutableSearch.type
     ]);
 
     if (action.type === UPDATE_APP_SETTINGS) {
@@ -84,7 +82,7 @@ function* localServerExecutableDiscoverySaga(search) {
     // user explicitly requested a re-scan; this is to ensure that the user
     // sees some feedback on the UI that the search is in progress
     minDuration =
-      action.type === START_LOCAL_SERVER_EXECUTABLE_SEARCH ? 1000 : 0;
+      action.type === startLocalServerExecutableSearch.type ? 1000 : 0;
   }
 }
 

@@ -1,6 +1,6 @@
 import { createSelector } from '@reduxjs/toolkit';
 
-import { isLocalHost } from '../utils/networking';
+import { isLocalHost } from '~/utils/networking';
 
 /**
  * Returns the list of directories in which a local Flockwave server instance

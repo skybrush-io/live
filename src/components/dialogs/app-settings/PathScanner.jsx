@@ -17,7 +17,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 
-import { startLocalServerExecutableSearch } from '../../../actions/local-server';
+import { startLocalServerExecutableSearch } from '~/features/local-server/slice';
 
 const icons = {
   found: (

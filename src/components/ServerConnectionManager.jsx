@@ -12,6 +12,7 @@ import { parse } from 'shell-quote';
 import { clearClockList } from '~/actions/clocks';
 import { clearConnectionList } from '~/actions/connections';
 import { setCurrentServerConnectionState } from '~/actions/servers';
+import { shouldManageLocalServer } from '~/features/local-server/selectors';
 import { showSnackbarMessage } from '~/features/snackbar/slice';
 import handleError from '~/error-handling';
 import messageHub from '~/message-hub';
@@ -20,7 +21,6 @@ import {
   handleConnectionInformationMessage
 } from '~/model/connections';
 import { handleClockInformationMessage } from '~/model/clocks';
-import { shouldManageLocalServer } from '~/selectors/local-server';
 
 /**
  * Proposes a protocol to use (http or https) depending on the protocol of
