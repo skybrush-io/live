@@ -16,7 +16,7 @@ import { batch, connect } from 'react-redux';
 
 import { closeDeauthenticationDialog } from '~/actions/servers';
 import { disconnectFromServer } from '~/actions/server-settings';
-import { getAuthenticatedUser } from '~/selectors/servers';
+import { getAuthenticatedUser } from '~/features/servers/selectors';
 
 /**
  * Presentation component for the authentication dialog.

@@ -15,7 +15,7 @@ import {
   isAuthenticated,
   requiresAuthentication,
   supportsAuthentication
-} from '~/selectors/servers';
+} from '~/features/servers/selectors';
 
 const AuthenticationButtonPresentation = ({
   isAuthenticated,

@@ -8,12 +8,12 @@ import featuresReducer from './features';
 import mapReducer from './map';
 import messagesReducer from './messages';
 import savedLocationsReducer from './saved-locations';
-import serversReducer from './servers';
 import settingsReducer from './settings';
 
 import docksReducer from '~/features/docks/slice';
 import localServerReducer from '~/features/local-server/slice';
 import logReducer from '~/features/log/slice';
+import serversReducer from '~/features/servers/slice';
 import sidebarReducer from '~/features/sidebar/slice';
 import snackbarReducer from '~/features/snackbar/slice';
 import workbenchReducer from '~/features/workbench/slice';

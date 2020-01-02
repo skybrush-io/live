@@ -14,13 +14,14 @@ import React from 'react';
 import { Form, Field } from 'react-final-form';
 import { connect } from 'react-redux';
 
-import {
-  authenticateToServer,
-  closeAuthenticationDialog
-} from '~/actions/servers';
+import { closeAuthenticationDialog } from '~/actions/servers';
 import { PasswordField, TextField } from '~/components/forms';
+import { authenticateToServer } from '~/features/servers/actions';
 import messageHub from '~/message-hub';
-import { isAuthenticating, requiresAuthentication } from '~/selectors/servers';
+import {
+  isAuthenticating,
+  requiresAuthentication
+} from '~/features/servers/selectors';
 
 /**
  * Presentation component for the authentication form.
@@ -67,7 +68,6 @@ const AuthenticationForm = ({
 AuthenticationForm.propTypes = {
   initialValues: PropTypes.object,
   isAuthenticating: PropTypes.bool,
-  lastError: PropTypes.string,
   onCancel: PropTypes.func,
   onSubmit: PropTypes.func
 };
@@ -115,8 +115,14 @@ const AuthenticationDialog = connect(
       dispatch(closeAuthenticationDialog());
     },
 
-    onSubmit(data) {
-      dispatch(authenticateToServer({ ...data, messageHub }));
+    async onSubmit(data) {
+      const response = await dispatch(
+        authenticateToServer({ ...data, messageHub })
+      );
+      const success = response && response.value && response.value.result;
+      if (success) {
+        dispatch(closeAuthenticationDialog());
+      }
     }
   })
 )(AuthenticationDialogPresentation);

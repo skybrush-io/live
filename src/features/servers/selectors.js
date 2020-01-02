@@ -1,6 +1,7 @@
 import { createSelector } from '@reduxjs/toolkit';
+
+import { INVALID } from './slice';
 import { ConnectionState } from '~/model/connections';
-import { INVALID } from '~/reducers/servers';
 
 /**
  * Returns all the information that we know about the current Flockwave server.

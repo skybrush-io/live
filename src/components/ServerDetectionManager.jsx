@@ -12,7 +12,7 @@ import {
   startScanning,
   stopScanning,
   updateDetectedServerHostname
-} from '../actions/servers';
+} from '~/features/servers/slice';
 
 export const isServerDetectionSupported =
   window.bridge && window.bridge.createSSDPClient;
@@ -45,7 +45,11 @@ class ServerDetectionManagerPresentation extends React.Component {
 
     if (!isServerDetectionSupported) {
       if (onServerInferred) {
-        onServerInferred(window.location.hostname, 5000, 'sio:');
+        onServerInferred({
+          hostName: window.location.hostname,
+          port: 5000,
+          protocol: 'sio:'
+        });
       }
 
       return;
@@ -96,12 +100,12 @@ class ServerDetectionManagerPresentation extends React.Component {
       }
 
       if (this.props.onServerDetected) {
-        const { key, wasAdded } = this.props.onServerDetected(
-          hostname,
-          numericPort,
-          protocol,
-          parsedHeaders.headers['label.collmot.com']
-        );
+        const { key, wasAdded } = this.props.onServerDetected({
+          hostName: hostname,
+          port: numericPort,
+          label: parsedHeaders.headers['label.collmot.com'],
+          protocol
+        });
 
         // Perform a DNS lookup on the hostname if was newly added, it is not
         // already a hostname and we have access to a DNS lookup service
@@ -174,18 +178,18 @@ export const ServerDetectionManager = connect(
       dispatch(stopScanning());
     },
 
-    onServerDetected(host, port, protocol, label) {
-      const action = addDetectedServer(host, port, protocol, label);
+    onServerDetected({ hostName, port, protocol, label }) {
+      const action = addDetectedServer({ hostName, port, protocol, label });
       dispatch(action);
       return { key: action.key, wasAdded: Boolean(action.wasAdded) };
     },
 
-    onServerHostnameResolved(key, name) {
-      dispatch(updateDetectedServerHostname(key, name));
+    onServerHostnameResolved(key, hostName) {
+      dispatch(updateDetectedServerHostname({ key, hostName }));
     },
 
-    onServerInferred(host, port, protocol) {
-      const action = addInferredServer(host, port, protocol);
+    onServerInferred({ hostName, port, protocol }) {
+      const action = addInferredServer({ hostName, port, protocol });
       dispatch(action);
       return action.key;
     }

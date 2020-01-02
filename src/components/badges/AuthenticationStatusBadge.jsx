@@ -12,7 +12,7 @@ import {
   isAuthenticated,
   isAuthenticating,
   requiresAuthentication
-} from '~/selectors/servers';
+} from '~/features/servers/selectors';
 
 const colorForState = {
   authenticated: Colors.success,

@@ -4,8 +4,8 @@
 
 import { all } from 'redux-saga/effects';
 
-import serversSaga from './servers';
 import localServerSaga from '~/features/local-server/saga';
+import serversSaga from '~/features/servers/saga';
 
 /**
  * The root saga of the Flockwave application.

@@ -8,13 +8,14 @@ import {
   isPlain
 } from '@reduxjs/toolkit';
 
+import isPromise from 'is-promise';
 import localForage from 'localforage';
 import has from 'lodash-es/has';
 import isFunction from 'lodash-es/isFunction';
 import pickBy from 'lodash-es/pickBy';
 import createDeferred from 'p-defer';
 import createDebounce from 'redux-debounce';
-import promise from 'redux-promise-middleware';
+import { createPromise } from 'redux-promise-middleware';
 import createSagaMiddleware from 'redux-saga';
 import { persistStore, persistReducer } from 'redux-persist';
 import autoMergeLevel2 from 'redux-persist/lib/stateReconciler/autoMergeLevel2';
@@ -112,6 +113,14 @@ const debouncer = createDebounce({
 });
 
 /**
+ * Redux middleware that handles promises dispatched to the store.
+ */
+const promiseMiddleware = createPromise({
+  promiseTypeDelimiter: 'Promise',
+  promiseTypeSuffixes: ['Pending', 'Fulfilled', 'Rejected']
+});
+
+/**
  * Redux middleware that manages long-running background processes.
  */
 export const sagaMiddleware = createSagaMiddleware();
@@ -125,11 +134,12 @@ const store = configureStore({
     ...getDefaultMiddleware({
       serializableCheck: {
         /* redux-persist uses functions in actions; this silences a warning about them */
-        isSerializable: value => isPlain(value) || isFunction(value)
+        isSerializable: value =>
+          isPlain(value) || isFunction(value) || isPromise(value)
       }
     }),
     debouncer,
-    promise,
+    promiseMiddleware,
     sagaMiddleware
   ]
 });

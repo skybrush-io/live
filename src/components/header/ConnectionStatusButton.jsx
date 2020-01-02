@@ -8,7 +8,7 @@ import GenericHeaderButton from './GenericHeaderButton';
 
 import ConnectionStatusMiniList from '~/components/ConnectionStatusMiniList';
 import Tooltip from '~/components/Tooltip';
-import { isConnected } from '~/selectors/servers';
+import { isConnected } from '~/features/servers/selectors';
 
 const ConnectionStatusButtonPresentation = props => (
   <Tooltip content={<ConnectionStatusMiniList />} enabled={!props.isDisabled}>

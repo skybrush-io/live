@@ -11,8 +11,8 @@ import { parse } from 'shell-quote';
 
 import { clearClockList } from '~/actions/clocks';
 import { clearConnectionList } from '~/actions/connections';
-import { setCurrentServerConnectionState } from '~/actions/servers';
 import { shouldManageLocalServer } from '~/features/local-server/selectors';
+import { setCurrentServerConnectionState } from '~/features/servers/slice';
 import { showSnackbarMessage } from '~/features/snackbar/slice';
 import handleError from '~/error-handling';
 import messageHub from '~/message-hub';

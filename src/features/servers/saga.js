@@ -1,25 +1,23 @@
 import { all, call, delay, put, select, take } from 'redux-saga/effects';
 
 import {
-  setAuthenticatedUser,
-  showAuthenticationDialog,
-  updateCurrentServerAuthenticationSettings
-} from '~/actions/servers';
-import {
-  AUTHENTICATE_TO_SERVER,
-  SET_CURRENT_SERVER_CONNECTION_STATE,
-  UPDATE_CURRENT_SERVER_AUTHENTICATION_SETTINGS
-} from '~/actions/types';
-import { showSnackbarMessage } from '~/features/snackbar/slice';
-import messageHub from '~/message-hub';
-import { isAuthenticationDialogOpen } from '~/selectors/dialogs';
-import {
   areServerAuthenticationSettingsValid,
   isAuthenticated,
   isAuthenticating,
   isConnected,
   requiresAuthentication
-} from '~/selectors/servers';
+} from './selectors';
+import {
+  authenticateToServerPromiseFulfilled,
+  setAuthenticatedUser,
+  setCurrentServerConnectionState,
+  updateCurrentServerAuthenticationSettings
+} from './slice';
+
+import { showAuthenticationDialog } from '~/actions/servers';
+import { showSnackbarMessage } from '~/features/snackbar/slice';
+import messageHub from '~/message-hub';
+import { isAuthenticationDialogOpen } from '~/selectors/dialogs';
 
 /**
  * Saga that detects when the authentication-related information of the
@@ -61,7 +59,7 @@ function* serverAuthenticationSettingsUpdaterSaga() {
     }
 
     // Wait for the next signal to start a search
-    yield take(SET_CURRENT_SERVER_CONNECTION_STATE);
+    yield take(setCurrentServerConnectionState.type);
   }
 }
 
@@ -71,7 +69,7 @@ function* serverAuthenticationSettingsUpdaterSaga() {
  */
 function* authenticationResultNotifierSaga() {
   while (true) {
-    const { payload } = yield take(AUTHENTICATE_TO_SERVER + '_FULFILLED');
+    const { payload } = yield take(authenticateToServerPromiseFulfilled.type);
     const { result, reason, user } = payload;
 
     if (result) {
@@ -149,8 +147,8 @@ function* enforceAuthenticationIfNeededSaga() {
     // Wait until the connection state of the server changes or we receive new
     // authentication settings
     yield take([
-      SET_CURRENT_SERVER_CONNECTION_STATE,
-      UPDATE_CURRENT_SERVER_AUTHENTICATION_SETTINGS
+      setCurrentServerConnectionState.type,
+      updateCurrentServerAuthenticationSettings.type
     ]);
   }
 }
