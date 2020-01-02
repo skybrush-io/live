@@ -8,6 +8,7 @@ import MessageHub from './flockwave/messages';
 
 import { handleClockInformationMessage } from './model/clocks';
 import { handleConnectionInformationMessage } from './model/connections';
+import { handleObjectDeletionMessage } from './model/objects';
 import flock from './flock';
 import store from './store';
 
@@ -27,6 +28,7 @@ messageHub.registerNotificationHandlers({
   'CLK-INF': message => handleClockInformationMessage(message.body, dispatch),
   'CONN-INF': message =>
     handleConnectionInformationMessage(message.body, dispatch),
+  'OBJ-DEL': message => handleObjectDeletionMessage(message.body, dispatch),
   'UAV-INF': message =>
     flock.handleUAVInformationMessage(message.body, dispatch)
 });
