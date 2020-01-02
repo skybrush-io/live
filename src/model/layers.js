@@ -10,6 +10,7 @@ import React from 'react';
 import FileAttachment from '@material-ui/icons/Attachment';
 import FileCloud from '@material-ui/icons/Cloud';
 import Flight from '@material-ui/icons/Flight';
+import Gamepad from '@material-ui/icons/Gamepad';
 import HelpOutline from '@material-ui/icons/HelpOutline';
 import Home from '@material-ui/icons/Home';
 import Streetview from '@material-ui/icons/Streetview';
@@ -24,6 +25,7 @@ import TrackChanges from '@material-ui/icons/TrackChanges';
  */
 export const LayerType = {
   BASE: 'base',
+  DOCKS: 'docks',
   FEATURES: 'features',
   GEOJSON: 'geojson',
   HEATMAP: 'heatmap',
@@ -44,6 +46,7 @@ export const LayerTypes = [
   LayerType.TILE_SERVER,
   LayerType.FEATURES,
   LayerType.UAVS,
+  LayerType.DOCKS,
   LayerType.UAV_TRACE,
   LayerType.HOME,
   LayerType.OWN_LOCATION,
@@ -83,6 +86,11 @@ const _propertiesForLayerTypes = {
     parameters: {
       source: 'osm'
     }
+  },
+  [LayerType.DOCKS]: {
+    label: 'Docking stations',
+    icon: <Gamepad />,
+    parameters: {}
   },
   [LayerType.FEATURES]: {
     label: 'Features',

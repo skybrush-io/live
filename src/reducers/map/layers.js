@@ -26,10 +26,11 @@ const defaultState = {
     base: createNewLayer('base', LayerType.BASE, 'Base map'),
     features: createNewLayer('features', LayerType.FEATURES, 'Features'),
     home: createNewLayer('home', LayerType.HOME, 'Home position'),
-    uavs: createNewLayer('uavs', LayerType.UAVS, 'UAVs')
+    uavs: createNewLayer('uavs', LayerType.UAVS, 'UAVs'),
+    docks: createNewLayer('docks', LayerType.DOCKS, 'Docking stations')
   },
   // .order contains the order of the layers, from bottom to top
-  order: ['base', 'features', 'home', 'uavs']
+  order: ['base', 'features', 'home', 'uavs', 'docks']
 };
 
 /**

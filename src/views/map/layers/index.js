@@ -1,7 +1,7 @@
 import React from 'react';
 
-import { LayerType } from '../../../model/layers';
 import { BaseLayerSettings, BaseLayer } from './base';
+import { DocksLayerSettings, DocksLayer } from './docks';
 import { FeaturesLayerSettings, FeaturesLayer } from './features';
 import { GeoJSONLayerSettings, GeoJSONLayer } from './geojson';
 import { HeatmapLayerSettings, HeatmapLayer } from './heatmap';
@@ -13,8 +13,11 @@ import { UAVsLayerSettings, UAVsLayer } from './uavs';
 import { UAVTraceLayerSettings, UAVTraceLayer } from './uavtrace';
 import { UntypedLayerSettings, UntypedLayer } from './untyped';
 
+import { LayerType } from '~/model/layers';
+
 export const LayerSettings = {
   [LayerType.BASE]: BaseLayerSettings,
+  [LayerType.DOCKS]: DocksLayerSettings,
   [LayerType.FEATURES]: FeaturesLayerSettings,
   [LayerType.GEOJSON]: GeoJSONLayerSettings,
   [LayerType.HEATMAP]: HeatmapLayerSettings,
@@ -46,6 +49,7 @@ export const stateObjectToLayerSettings = (layer, layerId) => {
 
 export const Layers = {
   [LayerType.BASE]: BaseLayer,
+  [LayerType.DOCKS]: DocksLayer,
   [LayerType.FEATURES]: FeaturesLayer,
   [LayerType.GEOJSON]: GeoJSONLayer,
   [LayerType.HEATMAP]: HeatmapLayer,

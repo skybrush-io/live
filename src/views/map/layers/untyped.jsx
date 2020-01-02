@@ -8,12 +8,12 @@ import CardHeader from '@material-ui/core/CardHeader';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 
-import { changeLayerType } from '../../../actions/layers';
+import { changeLayerType } from '~/actions/layers';
 import {
   LayerTypes,
   iconForLayerType,
   labelForLayerType
-} from '../../../model/layers';
+} from '~/model/layers';
 
 // === Settings for this particular layer type ===
 

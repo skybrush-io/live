@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { connect } from 'react-redux';
 
 import Feature from 'ol/Feature';
 import Point from 'ol/geom/Point';
@@ -8,7 +7,7 @@ import { Icon, Style } from 'ol/style';
 
 import { Geolocation, layer, source } from '@collmot/ol-react';
 
-import makeLogger from '../../../utils/logging';
+import makeLogger from '~/utils/logging';
 
 const logger = makeLogger('OwnLocationLayer');
 
@@ -121,20 +120,12 @@ class OwnLocationVectorSource extends React.Component {
   }
 }
 
-const OwnLocationLayerPresentation = ({ onError, zIndex }) => (
+export const OwnLocationLayer = ({ zIndex }) => (
   <layer.Vector updateWhileAnimating updateWhileInteracting zIndex={zIndex}>
-    <OwnLocationVectorSource onError={onError} />
+    <OwnLocationVectorSource onError={logger.warn} />
   </layer.Vector>
 );
 
-OwnLocationLayerPresentation.propTypes = {
-  onError: PropTypes.func,
+OwnLocationLayer.propTypes = {
   zIndex: PropTypes.number
 };
-
-export const OwnLocationLayer = connect(
-  // mapStateToProps
-  () => ({
-    onError: logger.warn
-  })
-)(OwnLocationLayerPresentation);

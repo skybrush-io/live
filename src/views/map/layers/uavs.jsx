@@ -12,7 +12,7 @@ import { setLayerParameterById } from '../../../actions/layers';
 import flock from '../../../flock';
 import { getSelection } from '../../../selectors/selection';
 import { mapViewCoordinateFromLonLat } from '../../../utils/geography';
-import makeLogger from '../../../utils/logging';
+import makeLogger from '~/utils/logging';
 
 import { showSnackbarMessage } from '~/features/snackbar/slice';
 
