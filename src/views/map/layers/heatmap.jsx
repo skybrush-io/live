@@ -26,7 +26,7 @@ import { setLayerParameterById } from '~/actions/layers';
 import SubscriptionDialog from '~/components/dialogs/SubscriptionDialog';
 import messageHub from '~/message-hub';
 import HashedMap from '~/utils/hashedmap';
-import { coordinateFromLonLat, lonLatFromCoordinate } from '~/utils/geography';
+import { mapViewCoordinateFromLonLat, lonLatFromMapViewCoordinate } from '~/utils/geography';
 
 const formatNumber = x => numbro(x).format('0.000');
 
@@ -437,8 +437,8 @@ class HeatmapVectorSource extends React.Component {
     /* Converting to the EPSG:3857 projection, snapping it to the grid
     and then converting it back. */
     if (this.props.parameters.snapToGrid) {
-      const snappedLonLat = lonLatFromCoordinate(
-        coordinateFromLonLat([data.lon, data.lat]).map(
+      const snappedLonLat = lonLatFromMapViewCoordinate(
+        mapViewCoordinateFromLonLat([data.lon, data.lat]).map(
           c => Math.round(c / minDistance) * minDistance
         )
       );
@@ -513,7 +513,7 @@ class HeatmapVectorSource extends React.Component {
 
   _makePoint = center => {
     return new Feature({
-      geometry: new Point(coordinateFromLonLat(center))
+      geometry: new Point(mapViewCoordinateFromLonLat(center))
     });
   };
 

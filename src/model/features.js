@@ -12,7 +12,7 @@ import PanoramaFishEye from '@material-ui/icons/PanoramaFishEye';
 import StarBorder from '@material-ui/icons/StarBorder';
 import React from 'react';
 
-import { lonLatFromCoordinate } from '../utils/geography';
+import { lonLatFromMapViewCoordinate } from '../utils/geography';
 
 /**
  * Enum containing constants for the various feature types that we support.
@@ -52,7 +52,7 @@ export function createFeatureFromOpenLayers(olFeature) {
     case 'Point':
       Object.assign(result, {
         type: FeatureType.POINTS,
-        points: [lonLatFromCoordinate(coordinates)]
+        points: [lonLatFromMapViewCoordinate(coordinates)]
       });
       break;
 
@@ -61,8 +61,8 @@ export function createFeatureFromOpenLayers(olFeature) {
       Object.assign(result, {
         type: FeatureType.CIRCLE,
         points: [
-          lonLatFromCoordinate(center),
-          lonLatFromCoordinate([center[0] + geometry.getRadius(), center[1]])
+          lonLatFromMapViewCoordinate(center),
+          lonLatFromMapViewCoordinate([center[0] + geometry.getRadius(), center[1]])
         ]
       });
       break;
@@ -71,7 +71,7 @@ export function createFeatureFromOpenLayers(olFeature) {
     case 'LineString':
       Object.assign(result, {
         type: FeatureType.LINE_STRING,
-        points: coordinates.map(unary(lonLatFromCoordinate))
+        points: coordinates.map(unary(lonLatFromMapViewCoordinate))
       });
       break;
 
@@ -82,7 +82,7 @@ export function createFeatureFromOpenLayers(olFeature) {
 
       Object.assign(result, {
         type: FeatureType.POLYGON,
-        points: coordinates[0].map(unary(lonLatFromCoordinate)).slice(0, -1)
+        points: coordinates[0].map(unary(lonLatFromMapViewCoordinate)).slice(0, -1)
       });
       break;
 

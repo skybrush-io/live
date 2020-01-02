@@ -12,7 +12,7 @@ import { homePositionIdToGlobalId } from '~/model/identifiers';
 import { setLayerEditable, setLayerSelectable } from '~/model/layers';
 import { getMapOriginRotationAngle } from '~/selectors/map';
 import { getSelectedHomePositionIds } from '~/selectors/selection';
-import { coordinateFromLonLat } from '~/utils/geography';
+import { mapViewCoordinateFromLonLat } from '~/utils/geography';
 import {
   fill,
   stroke,
@@ -89,7 +89,7 @@ const HomePositionsVectorSource = ({
 
   if (homePosition) {
     const id = homePositionIdToGlobalId('');
-    const tail = coordinateFromLonLat(homePosition);
+    const tail = mapViewCoordinateFromLonLat(homePosition);
     const headY = [0, coordinateSystemType === 'nwu' ? 50 : -50];
     const headX = [50, 0];
     Coordinate.rotate(headX, ((90 - angle) * Math.PI) / 180);

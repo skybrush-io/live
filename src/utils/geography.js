@@ -351,7 +351,7 @@ export const WGS84 = makeEllipsoidModel(6378137, 298.257223563);
  * @return {Object} the OpenLayers coordinates corresponding to the given
  * longitude-latitude pair
  */
-export const coordinateFromLonLat = Projection.fromLonLat;
+export const mapViewCoordinateFromLonLat = Projection.fromLonLat;
 
 /**
  * Helper function to convert a coordinate from the map view into a
@@ -364,7 +364,7 @@ export const coordinateFromLonLat = Projection.fromLonLat;
  * @return {Object} the longtitude-latitude pair corresponding to the given
  * OpenLayers coordinates
  */
-export const lonLatFromCoordinate = Projection.toLonLat;
+export const lonLatFromMapViewCoordinate = Projection.toLonLat;
 
 /**
  * Class that defines a flat-Earth coordinate system centered at a given

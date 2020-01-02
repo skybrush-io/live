@@ -17,7 +17,7 @@ import { createNewSavedLocation } from '~/actions/saved-locations';
 import { editSavedLocation } from '~/actions/saved-location-editor';
 import { listOf } from '~/components/helpers/lists';
 import { getSavedLocationsInOrder } from '~/selectors/ordered';
-import { mapViewToLocationSignal } from '~/signals';
+import { scrollToMapLocation } from '~/signals';
 
 /**
  * Presentation component for a single entry in the location list.
@@ -30,7 +30,7 @@ const LocationListEntry = props => {
   const { id, name } = location;
 
   const editLocation = () => onEditItem(id);
-  const mapViewToLocation = () => mapViewToLocationSignal.dispatch(location);
+  const scrollToLocation = () => scrollToMapLocation(location);
 
   const actionButton = (
     <IconButton onClick={editLocation}>
@@ -39,7 +39,7 @@ const LocationListEntry = props => {
   );
 
   return (
-    <ListItem button onClick={mapViewToLocation}>
+    <ListItem button onClick={scrollToLocation}>
       <ListItemText primary={name} />
       <ListItemSecondaryAction>{actionButton}</ListItemSecondaryAction>
     </ListItem>

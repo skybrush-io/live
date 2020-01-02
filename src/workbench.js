@@ -44,6 +44,7 @@ const componentRegistry = {
   'connection-list': views.ConnectionList,
   'clock-list': views.ClockDisplayList,
   'dataset-list': views.DatasetList,
+  'dock-list': views.DockList,
   'feature-list': views.FeatureList,
   'ground-control-view': injectFlockFromContext(views.GroundControlView),
   'layer-list': views.LayerList,
@@ -91,6 +92,9 @@ function constructDefaultWorkbench(store) {
     .add('uav-list')
     .setTitle('UAVs')
     .setId('uavs')
+    .add('dock-list')
+    .setTitle('Docks')
+    .setId('docks')
     .add('messages')
     .setTitle('Messages')
     .setId('messages')

@@ -7,11 +7,7 @@ import mapValues from 'lodash-es/mapValues';
 import omitBy from 'lodash-es/omitBy';
 
 import { setClockStateMultiple } from '../actions/clocks';
-import {
-  dateToTimestamp,
-  parseEpochIdentifierOrISODate,
-  parseISODate
-} from '../utils/parsing';
+import { parseEpochIdentifierOrISODate, parseISODate } from '../utils/parsing';
 
 /**
  * Handles a CLK-INF message from a Flockwave server and updates the

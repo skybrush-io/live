@@ -72,14 +72,7 @@ class UAVToolbar extends React.Component {
           />
         </IconButton>
 
-        <IconButton
-          style={{
-            float: 'right',
-            padding: '0px',
-            marginRight: '4px'
-          }}
-          onClick={fitSelectedUAVs}
-        >
+        <IconButton style={{ float: 'right' }} onClick={fitSelectedUAVs}>
           {isSelectionEmpty ? <ImageBlurOn /> : <ImageBlurCircular />}
         </IconButton>
       </div>

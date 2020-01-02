@@ -15,7 +15,7 @@ import { setLayerEditable, setLayerSelectable } from '../../../model/layers';
 import { getFeaturesInOrder } from '../../../selectors/ordered';
 import { getSelectedFeatureIds } from '../../../selectors/selection';
 import {
-  coordinateFromLonLat,
+  mapViewCoordinateFromLonLat,
   euclideanDistance
 } from '../../../utils/geography';
 import {
@@ -41,7 +41,7 @@ export const FeaturesLayerSettings = connect(
 
 const geometryForFeature = feature => {
   const { points, type } = feature;
-  const coordinates = points.map(unary(coordinateFromLonLat));
+  const coordinates = points.map(unary(mapViewCoordinateFromLonLat));
 
   switch (type) {
     case FeatureType.CIRCLE:
@@ -221,7 +221,7 @@ FeaturesLayerPresentation.propTypes = {
 };
 
 FeaturesLayerPresentation.defaultProps = {
-  projection: coordinateFromLonLat
+  projection: mapViewCoordinateFromLonLat
 };
 
 export const FeaturesLayer = connect(

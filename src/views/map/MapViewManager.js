@@ -12,8 +12,8 @@ import {
   mapViewToExtentSignal
 } from '~/signals';
 import {
-  coordinateFromLonLat,
-  lonLatFromCoordinate,
+  mapViewCoordinateFromLonLat,
+  lonLatFromMapViewCoordinate,
   normalizeAngle
 } from '~/utils/geography';
 
@@ -22,34 +22,72 @@ import {
  * (center, rotation, zoom)
  */
 export default class MapViewManager {
-  /**
-   * Constructor that binds member functions and adds listener.
-   */
   constructor() {
-    this.initialize = this.initialize.bind(this);
-    this.mapViewToLocation = this.mapViewToLocation.bind(this);
-    this.mapViewToExtent = this.mapViewToExtent.bind(this);
-    this.onMapReferenceReceived = this.onMapReferenceReceived.bind(this);
-    this.viewListener = this.viewListener.bind(this);
-    this.addListener = this.addListener.bind(this);
-    this.removeListener = this.removeListener.bind(this);
-
     this.callbacks = {
       center: [],
       rotation: [],
       zoom: []
     };
 
-    mapViewToLocationSignal.add(this.mapViewToLocation);
-    mapViewToExtentSignal.add(this.mapViewToExtent);
+    mapViewToLocationSignal.add(this.scrollMapViewToLocation);
+    mapViewToExtentSignal.add(this.fitMapViewToExtent);
   }
 
   /**
    * Initializer function that requests the map reference.
    */
-  initialize() {
-    mapReferenceRequestSignal.dispatch(this.onMapReferenceReceived);
-  }
+  initialize = () => {
+    mapReferenceRequestSignal.dispatch(this._onMapReferenceReceived);
+  };
+
+  /**
+   * Make the map's view fit a given extent.
+   *
+   * @param {Object} extent The extent to fit.
+   * @param {number} options.duration The desired duration of the transition.
+   */
+  fitMapViewToExtent = (extent, options) => {
+    const { duration } = {
+      duration: 1000,
+      ...options
+    };
+
+    if (isEmpty(extent)) {
+      console.warn('Cannot fit empty extent');
+    } else {
+      this.view.fit(extent, { duration });
+    }
+  };
+
+  /**
+   * Jump to a specific location on the map's view.
+   *
+   * @param {Object} location The location descriptor to jump to.
+   * @param {number} options.duration The desired duration of the transition.
+   */
+  scrollMapViewToLocation = (location, options) => {
+    const { center, rotation, zoom } = location;
+    const { duration } = {
+      duration: 1000,
+      ...options
+    };
+
+    const animationParams = { duration };
+
+    if (center !== undefined) {
+      animationParams.center = mapViewCoordinateFromLonLat([center.lon, center.lat]);
+    }
+
+    if (rotation !== undefined) {
+      animationParams.rotation = rotation / (180 / -Math.PI);
+    }
+
+    if (zoom !== undefined) {
+      animationParams.zoom = zoom;
+    }
+
+    this.view.animate(animationParams);
+  };
 
   /**
    * Callback for receiving the map reference.
@@ -57,22 +95,22 @@ export default class MapViewManager {
    *
    * @param {ol.Map} map the map to attach the event handlers to.
    */
-  onMapReferenceReceived(map) {
+  _onMapReferenceReceived = map => {
     this.map = map;
 
     this.view = map.getView();
-    this.view.on('propertychange', this.viewListener);
+    this.view.on('propertychange', this._onViewPropertyChanged);
 
     // Map.getView().on('propertychange', this.updateFromMap_)
 
     map.on('propertychange', e => {
       if (e.key === 'view') {
-        this.view.un('propertychange', this.viewListener);
+        this.view.un('propertychange', this._onViewPropertyChanged);
         this.view = map.getView();
-        this.view.on('propertychange', this.viewListener);
+        this.view.on('propertychange', this._onViewPropertyChanged);
       }
     });
-  }
+  };
 
   /**
    * Listener function for running the appropriate callback functions when a
@@ -80,9 +118,9 @@ export default class MapViewManager {
    *
    * @param {ol.ObjectEvent} e the propertychange event emitted by openlayers.
    */
-  viewListener(e) {
+  _onViewPropertyChanged = e => {
     if (e.key === 'center') {
-      const center = lonLatFromCoordinate(this.view.getCenter()).map(c =>
+      const center = lonLatFromMapViewCoordinate(this.view.getCenter()).map(c =>
         round(c, 6)
       );
       this.callbacks.center.forEach(c => c({ lon: center[0], lat: center[1] }));
@@ -93,7 +131,7 @@ export default class MapViewManager {
       const zoom = this.view.getZoom();
       this.callbacks.zoom.forEach(c => c(zoom));
     }
-  }
+  };
 
   /**
    * Method for attaching an event listener to the change of
@@ -103,14 +141,14 @@ export default class MapViewManager {
    * @param {function} callback the function to run when the given
    * property changes.
    */
-  addListener(property, callback) {
+  addListener = (property, callback) => {
     if (!(property in this.callbacks)) {
       throw new Error(`Cannot add listener to unknown property: ${property}.`);
     }
 
     // Avoiding push to prevent mutation by side effects
     this.callbacks[property] = this.callbacks[property].concat(callback);
-  }
+  };
 
   /**
    * Method for removing an event listener from the change of a property.
@@ -118,7 +156,7 @@ export default class MapViewManager {
    * @param {string} property the property to remove the callback from.
    * @param {function} callback the function to remove.
    */
-  removeListener(property, callback) {
+  removeListener = (property, callback) => {
     if (!(property in this.callbacks)) {
       throw new Error(
         `Cannot remove listener from unknown property: ${property}.`
@@ -135,44 +173,5 @@ export default class MapViewManager {
     this.callbacks[property] = this.callbacks[property].filter(
       c => c !== callback
     );
-  }
-
-  /**
-   * Jump to a specific location on the map's view.
-   *
-   * @param {Object} location The location descriptor to jump to.
-   * @param {number} duration The desired duration of the transition.
-   */
-  mapViewToLocation(location, duration = 1000) {
-    const { center, rotation, zoom } = location;
-    const animationParams = { duration };
-
-    if (center !== undefined) {
-      animationParams.center = coordinateFromLonLat([center.lon, center.lat]);
-    }
-
-    if (rotation !== undefined) {
-      animationParams.rotation = rotation / (180 / -Math.PI);
-    }
-
-    if (zoom !== undefined) {
-      animationParams.zoom = zoom;
-    }
-
-    this.view.animate(animationParams);
-  }
-
-  /**
-   * Make the map's view fit a given extent.
-   *
-   * @param {Object} extent The extent to fit.
-   * @param {number} duration The desired duration of the transition.
-   */
-  mapViewToExtent(extent, duration = 1000) {
-    if (isEmpty(extent)) {
-      console.warn('Cannot fit empty extent');
-    } else {
-      this.view.fit(extent, { duration });
-    }
-  }
+  };
 }

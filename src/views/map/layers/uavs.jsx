@@ -11,7 +11,7 @@ import ActiveUAVsLayerSource from '../sources/ActiveUAVsLayerSource';
 import { setLayerParameterById } from '../../../actions/layers';
 import flock from '../../../flock';
 import { getSelection } from '../../../selectors/selection';
-import { coordinateFromLonLat } from '../../../utils/geography';
+import { mapViewCoordinateFromLonLat } from '../../../utils/geography';
 import makeLogger from '../../../utils/logging';
 
 import { showSnackbarMessage } from '~/features/snackbar/slice';
@@ -167,7 +167,7 @@ UAVsLayerPresentation.propTypes = {
 };
 
 UAVsLayerPresentation.defaultProps = {
-  projection: coordinateFromLonLat
+  projection: mapViewCoordinateFromLonLat
 };
 
 export const UAVsLayer = connect(

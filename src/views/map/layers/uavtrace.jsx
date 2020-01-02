@@ -13,7 +13,7 @@ import TextField from '@material-ui/core/TextField';
 import { setLayerParametersById } from '../../../actions/layers';
 import CircleColorPicker from '../../../components/CircleColorPicker';
 import flock from '../../../flock';
-import { coordinateFromLonLat } from '../../../utils/geography';
+import { mapViewCoordinateFromLonLat } from '../../../utils/geography';
 import { colorToString } from '../../../utils/coloring';
 import { primaryColor } from '../../../utils/styles';
 
@@ -153,12 +153,12 @@ class UAVTraceVectorSource extends React.Component {
       if (uav._id in this.lineStringsById) {
         // UAV exists, just extend its trace
         this.lineStringsById[uav._id].appendCoordinate(
-          coordinateFromLonLat([uav.lon, uav.lat])
+          mapViewCoordinateFromLonLat([uav.lon, uav.lat])
         );
       } else {
         // UAV does not exist yet, add a new trace
         this.lineStringsById[uav._id] = new LineString([
-          coordinateFromLonLat([uav.lon, uav.lat])
+          mapViewCoordinateFromLonLat([uav.lon, uav.lat])
         ]);
         this._registerNewFeature(new Feature(this.lineStringsById[uav._id]));
       }

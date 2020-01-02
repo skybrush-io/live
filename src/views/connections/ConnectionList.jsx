@@ -133,8 +133,7 @@ ConnectionListPresentation.displayName = 'ConnectionListPresentation';
 const ConnectionList = connect(
   // mapStateToProps
   state => ({
-    connections: getConnectionsInOrder(state),
-    dense: true
+    connections: getConnectionsInOrder(state)
   }),
   // mapDispatchToProps
   dispatch => ({

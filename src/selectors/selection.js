@@ -9,6 +9,7 @@ import Collection from 'ol/Collection';
 import { createSelector } from '@reduxjs/toolkit';
 
 import {
+  globalIdToDockId,
   globalIdToFeatureId,
   globalIdToHomePositionId,
   globalIdToUavId
@@ -84,6 +85,12 @@ export const getSelectedFeatureLabels = createSelector(
       feature => feature.label
     )
 );
+
+/**
+ * Selector that calculates and caches the list of selected docking station
+ * IDs from the state object.
+ */
+export const getSelectedDockIds = selectionForSubset(globalIdToDockId);
 
 /**
  * Selector that retrieves the list of selected home position IDs from the

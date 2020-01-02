@@ -13,7 +13,7 @@ import IconButton from '@material-ui/core/IconButton';
 import DeviceGpsFixed from '@material-ui/icons/GpsFixed';
 import ActionAllOut from '@material-ui/icons/AllOut';
 
-import { coordinateFromLonLat } from '../../utils/geography';
+import { mapViewCoordinateFromLonLat } from '../../utils/geography';
 import {
   mapReferenceRequestSignal,
   fitAllFeaturesSignal,
@@ -143,7 +143,7 @@ class FitAllFeaturesButton extends React.Component {
    */
   _geolocationReceived(position) {
     const view = this.map.getView();
-    const center = coordinateFromLonLat([
+    const center = mapViewCoordinateFromLonLat([
       position.coords.longitude,
       position.coords.latitude
     ]);

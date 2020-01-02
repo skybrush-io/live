@@ -15,7 +15,7 @@ import TextField from '@material-ui/core/TextField';
 
 import { setLayerParameterById } from '../../../actions/layers';
 
-import { coordinateFromLonLat } from '../../../utils/geography';
+import { mapViewCoordinateFromLonLat } from '../../../utils/geography';
 
 /**
  * Helper function that creates an OpenLayers fill style object from a color.
@@ -146,7 +146,7 @@ class HexGridVectorSource extends React.PureComponent {
   _getCorners(center, radius) {
     const angles = [30, 90, 150, 210, 270, 330, 30].map(toRadians);
     return angles.map(angle =>
-      coordinateFromLonLat([
+      mapViewCoordinateFromLonLat([
         center[0] + radius * Math.sin(angle),
         center[1] + radius * Math.cos(angle)
       ])

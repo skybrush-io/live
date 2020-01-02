@@ -45,9 +45,9 @@ import { getExtendedCoordinateFormatter } from '~/selectors/formatting';
 import { getMapViewRotationAngle } from '~/selectors/map';
 import { getSelectedFeatureIds, getSelection } from '~/selectors/selection';
 import {
-  coordinateFromLonLat,
+  mapViewCoordinateFromLonLat,
   findFeaturesById,
-  lonLatFromCoordinate
+  lonLatFromMapViewCoordinate
 } from '~/utils/geography';
 
 require('ol/ol.css');
@@ -376,7 +376,7 @@ class MapViewPresentation extends React.Component {
     const { center, selectedTool, zoom } = this.props;
     const view = (
       <View
-        center={coordinateFromLonLat(center)}
+        center={mapViewCoordinateFromLonLat(center)}
         zoom={zoom}
         constrainRotation={false}
       />
@@ -570,7 +570,7 @@ class MapViewPresentation extends React.Component {
     const view = map ? map.getView() : undefined;
 
     if (view) {
-      const position = lonLatFromCoordinate(view.getCenter());
+      const position = lonLatFromMapViewCoordinate(view.getCenter());
       const zoom = view.getZoom();
       const angle = (-view.getRotation() * 180) / Math.PI;
 

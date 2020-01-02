@@ -1,5 +1,6 @@
 import Alarm from '@material-ui/icons/Alarm';
 import Flight from '@material-ui/icons/Flight';
+import Gamepad from '@material-ui/icons/Gamepad';
 import Layers from '@material-ui/icons/Layers';
 import Map from '@material-ui/icons/Map';
 import Message from '@material-ui/icons/Message';
@@ -63,6 +64,12 @@ const Sidebar = ({ isOpen, workbench }) => (
           component="ground-control-view"
         />
         <Module id="uavs" icon={<Flight />} label="UAVs" component="uav-list" />
+        <Module
+          id="docks"
+          icon={<Gamepad />}
+          label="Docks"
+          component="dock-list"
+        />
         <Module
           id="messages"
           icon={<Message />}

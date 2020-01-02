@@ -34,6 +34,16 @@ export const getDatasetsInOrder = createSelector(
 );
 
 /**
+ * Selector that calculates and caches the list of all the docking stations that
+ * we store in the state object, in exactly the same order as they should appear
+ * on the UI.
+ */
+export const getDocksInOrder = createSelector(
+  state => state.docks,
+  selectOrdered
+);
+
+/**
  * Selector that calculates and caches the list of all the features in the
  * state object, in exactly the same order as they should appear on the UI.
  */

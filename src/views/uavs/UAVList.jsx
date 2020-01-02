@@ -5,6 +5,7 @@
 
 import Immutable from 'immutable';
 
+import Box from '@material-ui/core/Box';
 import IconButton from '@material-ui/core/IconButton';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
@@ -14,19 +15,19 @@ import Search from '@material-ui/icons/Search';
 import pick from 'lodash-es/pick';
 import property from 'lodash-es/property';
 import sortedIndexBy from 'lodash-es/sortedIndexBy';
-import { boundingExtent, buffer } from 'ol/extent';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 
-import { setSelectedUAVIds } from '../../actions/map';
-import { multiSelectableListOf } from '../../components/helpers/lists';
-import Flock from '../../model/flock';
-import { getSelectedUAVIds } from '../../selectors/selection';
-import { mapViewToExtentSignal, mapViewToLocationSignal } from '../../signals';
-import { coordinateFromLonLat, formatCoordinate } from '../../utils/geography';
 import UAVToolbar from './UAVToolbar';
 import CountMonitor from './CountMonitor';
+
+import { setSelectedUAVIds } from '~/actions/map';
+import { multiSelectableListOf } from '~/components/helpers/lists';
+import Flock from '~/model/flock';
+import { getSelectedUAVIds } from '~/selectors/selection';
+import { fitCoordinatesIntoMapView, scrollToMapLocation } from '~/signals';
+import { formatCoordinate } from '~/utils/geography';
 
 /**
  * Formats the secondary text to be shown for a single UAV in the UAV list.
@@ -43,25 +44,13 @@ function formatSecondaryTextForUAV(uav) {
 
 const idGetter = property('id');
 
-const jumpToUAV = function(uav) {
-  mapViewToLocationSignal.dispatch(
-    {
-      center: {
-        lon: uav.lon,
-        lat: uav.lat
-      }
-    },
-    500
-  );
-};
-
 /**
  * Presentation component for the entire UAV list.
  */
 const UAVListPresentation = multiSelectableListOf(
   (uav, props, selected) => {
     const rightIconButton = (
-      <IconButton onClick={() => jumpToUAV(uav)}>
+      <IconButton onClick={() => scrollToMapLocation(uav)}>
         <Search />
       </IconButton>
     );
@@ -86,7 +75,6 @@ const UAVListPresentation = multiSelectableListOf(
     dataProvider: 'uavs'
   }
 );
-UAVListPresentation.displayName = 'UAVListPresentation';
 
 /**
  * React component that shows the state of the known UAVs in a Flockwave
@@ -125,17 +113,11 @@ class UAVList extends React.Component {
   _fitSelectedUAVs = () => {
     const { selectedUAVIds } = this.props;
     const { uavs } = this.state;
-
-    const selectedUAVCoordinates = uavs
-      .filter(uav =>
-        selectedUAVIds.length === 0 ? true : selectedUAVIds.includes(uav.id)
-      )
-      .map(uav => coordinateFromLonLat([uav.lon, uav.lat]))
-      .toArray();
-
-    const bounds = boundingExtent(selectedUAVCoordinates);
-    const bufferedBounds = buffer(bounds, 16);
-    mapViewToExtentSignal.dispatch(bufferedBounds, 500);
+    const uavsToFit =
+      selectedUAVIds.length > 0
+        ? uavs.filter(uav => selectedUAVIds.includes(uav.id))
+        : uavs;
+    fitCoordinatesIntoMapView(uavsToFit.toArray());
   };
 
   /**
@@ -221,28 +203,28 @@ class UAVList extends React.Component {
     const { uavs } = this.state;
 
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+      <Box display="flex" flexDirection="column" height="100%">
         <UAVToolbar
           selectedUAVIds={selectedUAVIds}
           fitSelectedUAVs={this._fitSelectedUAVs}
         />
 
-        <div style={{ height: '100%', overflow: 'auto' }}>
+        <Box height="100%" overflow="auto">
           <UAVListPresentation
             dense
             uavs={uavs}
             value={selectedUAVIds || []}
             onChange={onSelectionChanged}
           />
-        </div>
+        </Box>
 
         <CountMonitor selectedUAVIds={selectedUAVIds} uavs={uavs} />
-      </div>
+      </Box>
     );
   }
 }
 
-const SmartUAVList = connect(
+export default connect(
   // mapStateToProps
   state => ({
     selectedUAVIds: getSelectedUAVIds(state)
@@ -254,5 +236,3 @@ const SmartUAVList = connect(
     }
   })
 )(UAVList);
-
-export default SmartUAVList;
