@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 
+import Box from '@material-ui/core/Box';
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
 import Grid from '@material-ui/core/Grid';
@@ -22,26 +23,32 @@ const UntypedLayerSettingsPresentation = ({ onLayerTypeSelected }) => {
     <Grid key={layerType} item xs={8} sm={4}>
       <Card
         className="no-select"
-        style={{ cursor: 'pointer' }}
+        style={{ cursor: 'pointer', height: '100%' }}
         onClick={() => onLayerTypeSelected(layerType)}
       >
         <CardHeader
           avatar={iconForLayerType(layerType)}
           title={labelForLayerType(layerType)}
-          style={{ paddingLeft: '20px', paddingRight: '20px' }}
+          style={{ paddingLeft: 16, paddingRight: 16, height: '100%' }}
         />
       </Card>
     </Grid>
   ));
   return (
-    <div>
+    <Box display="flex" flexDirection="column">
       <Typography gutterBottom variant="subtitle1" component="p">
         Pick a layer type
       </Typography>
-      <Grid container spacing={8}>
+      <Grid
+        container
+        flex="1"
+        alignItems="stretch"
+        justify="space-between"
+        spacing={2}
+      >
         {items}
       </Grid>
-    </div>
+    </Box>
   );
 };
 /* eslint-enable react/jsx-no-bind */
