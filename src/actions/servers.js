@@ -18,6 +18,7 @@ import {
   START_SCANNING,
   STOP_SCANNING,
   UPDATE_CURRENT_SERVER_AUTHENTICATION_SETTINGS,
+  UPDATE_DETECTED_SERVER_HOSTNAME,
   UPDATE_DETECTED_SERVER_LABEL
 } from './types';
 
@@ -33,7 +34,13 @@ import { errorToString } from '~/error-handling';
  */
 export const addDetectedServer = createAction(
   ADD_DETECTED_SERVER,
-  (hostName, port, protocol) => ({ hostName, port, protocol, type: 'detected' })
+  (hostName, port, protocol, label) => ({
+    hostName,
+    port,
+    protocol,
+    label,
+    type: 'detected'
+  })
 );
 
 /**
@@ -47,7 +54,13 @@ export const addDetectedServer = createAction(
  */
 export const addInferredServer = createAction(
   ADD_DETECTED_SERVER,
-  (hostName, port, protocol) => ({ hostName, port, protocol, type: 'inferred' })
+  (hostName, port, protocol, label) => ({
+    hostName,
+    port,
+    protocol,
+    label,
+    type: 'inferred'
+  })
 );
 
 /**
@@ -172,6 +185,15 @@ export const startScanning = createAction(START_SCANNING);
  * scanning for servers has stopped.
  */
 export const stopScanning = createAction(STOP_SCANNING);
+
+/**
+ * Updates the hostname of a detected server, used as a fallback when no
+ * label is available for the detected server.
+ */
+export const updateDetectedServerHostname = createAction(
+  UPDATE_DETECTED_SERVER_HOSTNAME,
+  (key, hostname) => ({ key, hostname })
+);
 
 /**
  * Updates the displayed label of a detected server.

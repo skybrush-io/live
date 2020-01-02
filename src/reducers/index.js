@@ -11,6 +11,7 @@ import savedLocationsReducer from './saved-locations';
 import serversReducer from './servers';
 import settingsReducer from './settings';
 
+import docksReducer from '~/features/docks/slice';
 import localServerReducer from '~/features/local-server/slice';
 import logReducer from '~/features/log/slice';
 import sidebarReducer from '~/features/sidebar/slice';
@@ -25,6 +26,7 @@ const reducer = combineReducers({
   connections: connectionsReducer,
   datasets: datasetsReducer,
   dialogs: dialogsReducer,
+  docks: docksReducer,
   features: featuresReducer,
   localServer: localServerReducer,
   log: logReducer,

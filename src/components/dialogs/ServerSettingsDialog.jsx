@@ -50,11 +50,21 @@ import {
 const iconForServerItem = ({ type }) =>
   type === 'inferred' ? <SignalWifi0Bar /> : <WifiIcon />;
 
-const primaryTextForServerItem = ({ hostName, label, port }) =>
-  label || `${hostName}:${port}`;
+const isItemSecure = ({ protocol }) => protocol === 'sio+tls:';
+const addressForServerItem = ({ hostName, port }) => `${hostName}:${port}`;
 
-const secondaryTextForServerItem = ({ protocol }) =>
-  protocol === 'sio+tls:' ? 'Secure connection' : 'Unencrypted connection';
+const protocolForServerItem = item =>
+  isItemSecure(item) ? 'Secure connection' : 'Unencrypted connection';
+const securityWarningForServerItem = item =>
+  isItemSecure(item) ? '' : ' (unsecured)';
+
+const primaryTextForServerItem = item =>
+  item.label || addressForServerItem(item);
+
+const secondaryTextForServerItem = item =>
+  item.label
+    ? `${addressForServerItem(item)}${securityWarningForServerItem(item)}`
+    : protocolForServerItem(item);
 
 const DetectedServersListPresentation = ({
   isScanning,

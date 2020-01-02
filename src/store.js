@@ -80,6 +80,7 @@ const persistConfig = {
     'clocks',
     'connections',
     'datasets',
+    'docks',
     'localServer',
     'log',
     'messages',

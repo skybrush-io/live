@@ -14,7 +14,7 @@ import React from 'react';
 import { Module, ModuleTray, Workbench } from 'react-flexible-workbench';
 import { connect } from 'react-redux';
 
-import LogStatusBadge from '../badges/LogStatusBadge';
+import LogStatusBadge from '~/components/badges/LogStatusBadge';
 
 const style = {
   backgroundColor: '#333',
@@ -35,7 +35,7 @@ const innerStyle = {
  *
  * @returns  {Object}  the rendered sidebar component
  */
-const SidebarPresentation = ({ isOpen, workbench }) => (
+const Sidebar = ({ isOpen, workbench }) => (
   <div
     id="sidebar"
     style={{ ...style, overflow: 'hidden', width: isOpen ? 240 : 48 }}
@@ -101,7 +101,7 @@ const SidebarPresentation = ({ isOpen, workbench }) => (
   </div>
 );
 
-SidebarPresentation.propTypes = {
+Sidebar.propTypes = {
   isOpen: PropTypes.bool.isRequired,
   workbench: PropTypes.instanceOf(Workbench).isRequired
 };
@@ -109,10 +109,10 @@ SidebarPresentation.propTypes = {
 /**
  * Sidebar at the left edge of the main window.
  */
-export const Sidebar = connect(
+export default connect(
   // mapStateToProps
   (state, { workbench }) => ({
     isOpen: state.sidebar.open,
     workbench
   })
-)(SidebarPresentation);
+)(Sidebar);

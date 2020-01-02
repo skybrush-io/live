@@ -11,7 +11,7 @@ import {
   removeAllDetectedServers,
   startScanning,
   stopScanning,
-  updateDetectedServerLabel
+  updateDetectedServerHostname
 } from '../actions/servers';
 
 export const isServerDetectionSupported =
@@ -99,7 +99,8 @@ class ServerDetectionManagerPresentation extends React.Component {
         const { key, wasAdded } = this.props.onServerDetected(
           hostname,
           numericPort,
-          protocol
+          protocol,
+          parsedHeaders.headers['label.collmot.com']
         );
 
         // Perform a DNS lookup on the hostname if was newly added, it is not
@@ -173,14 +174,14 @@ export const ServerDetectionManager = connect(
       dispatch(stopScanning());
     },
 
-    onServerDetected(host, port, protocol) {
-      const action = addDetectedServer(host, port, protocol);
+    onServerDetected(host, port, protocol, label) {
+      const action = addDetectedServer(host, port, protocol, label);
       dispatch(action);
       return { key: action.key, wasAdded: Boolean(action.wasAdded) };
     },
 
     onServerHostnameResolved(key, name) {
-      dispatch(updateDetectedServerLabel(key, name));
+      dispatch(updateDetectedServerHostname(key, name));
     },
 
     onServerInferred(host, port, protocol) {
