@@ -1,6 +1,5 @@
 import { combineReducers } from 'redux';
 
-import clocksReducer from './clocks';
 import connectionsReducer from './connections';
 import datasetsReducer from './datasets';
 import dialogsReducer from './dialogs';
@@ -10,6 +9,7 @@ import messagesReducer from './messages';
 import savedLocationsReducer from './saved-locations';
 import settingsReducer from './settings';
 
+import clocksReducer from '~/features/clocks/slice';
 import docksReducer from '~/features/docks/slice';
 import localServerReducer from '~/features/local-server/slice';
 import logReducer from '~/features/log/slice';

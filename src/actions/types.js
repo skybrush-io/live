@@ -2,11 +2,6 @@
  * @file Central repository of action type constants used in the app.
  */
 
-// Clock-related actions
-export const CLEAR_CLOCK_LIST = 'CLEAR_CLOCK_LIST';
-export const SET_CLOCK_STATE = 'SET_CLOCK_STATE';
-export const SET_CLOCK_STATE_MULTIPLE = 'SET_CLOCK_STATE_MULTIPLE';
-
 // Connection-related actions
 export const CLEAR_CONNECTION_LIST = 'CLEAR_CONNECTION_LIST';
 export const SET_CONNECTION_STATE = 'SET_CONNECTION_STATE';

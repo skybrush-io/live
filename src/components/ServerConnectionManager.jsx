@@ -9,8 +9,8 @@ import { connect } from 'react-redux';
 import ReactSocket from 'react-socket';
 import { parse } from 'shell-quote';
 
-import { clearClockList } from '~/actions/clocks';
 import { clearConnectionList } from '~/actions/connections';
+import { clearClockList } from '~/features/clocks/slice';
 import { shouldManageLocalServer } from '~/features/local-server/selectors';
 import { setCurrentServerConnectionState } from '~/features/servers/slice';
 import { showSnackbarMessage } from '~/features/snackbar/slice';
@@ -305,7 +305,17 @@ const executeTasksAfterConnection = async dispatch => {
     // via a CLK-INF message
     response = await messageHub.sendMessage({ type: 'CLK-INF', ids: clockIds });
     handleClockInformationMessage(response.body, dispatch);
+
+    // Send an OBJ-LIST message to the server to get an up-to-date
+    // list of docking stations
+    response = await messageHub.sendMessage({
+      type: 'OBJ-LIST',
+      filter: ['dock']
+    });
+    const dockIds = response.body.ids || [];
+    // console.log('Dock IDs:', dockIds);
   } catch (error) {
+    console.error(error);
     handleError(error);
   }
 };
