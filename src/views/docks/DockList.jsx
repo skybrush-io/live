@@ -25,7 +25,7 @@ import { fitCoordinatesIntoMapView, scrollToMapLocation } from '~/signals';
 const DockListPresentation = multiSelectableListOf(
   (dock, props, selected) => {
     const rightIconButton = (
-      <IconButton onClick={() => scrollToMapLocation(dock)}>
+      <IconButton edge="end" onClick={() => scrollToMapLocation(dock)}>
         <Search />
       </IconButton>
     );

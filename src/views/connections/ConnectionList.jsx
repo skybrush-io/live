@@ -86,7 +86,7 @@ const ConnectionListEntry = props => {
     <TimeAgo date={stateChangedAt} />
   ) : null;
   const actionButton = action ? (
-    <IconButton onClick={action}>
+    <IconButton edge="end" onClick={action}>
       <ActionSettings />
     </IconButton>
   ) : null;

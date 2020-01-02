@@ -112,6 +112,7 @@ export default class SubscriptionDialog extends React.Component {
         <ListItemText primary={subscription} />
         <ListItemSecondaryAction>
           <IconButton
+            edge="end"
             aria-label="Unsubscribe"
             onClick={partial(this._removeSubscription, subscription)}
           >

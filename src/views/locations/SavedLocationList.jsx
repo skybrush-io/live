@@ -33,7 +33,7 @@ const LocationListEntry = props => {
   const scrollToLocation = () => scrollToMapLocation(location);
 
   const actionButton = (
-    <IconButton onClick={editLocation}>
+    <IconButton edge="end" onClick={editLocation}>
       <ActionSettings />
     </IconButton>
   );

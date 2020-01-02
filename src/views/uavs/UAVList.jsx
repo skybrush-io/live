@@ -50,7 +50,7 @@ const idGetter = property('id');
 const UAVListPresentation = multiSelectableListOf(
   (uav, props, selected) => {
     const rightIconButton = (
-      <IconButton onClick={() => scrollToMapLocation(uav)}>
+      <IconButton edge="end" onClick={() => scrollToMapLocation(uav)}>
         <Search />
       </IconButton>
     );
