@@ -31,7 +31,7 @@ function updateStateOfClock(state, id, properties) {
 }
 
 const { actions, reducer } = createSlice({
-  name: 'docks',
+  name: 'clocks',
 
   initialState: {
     // byId is a map from clock ID to the state of the clock

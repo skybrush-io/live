@@ -6,8 +6,8 @@ import isUndefined from 'lodash-es/isUndefined';
 import mapValues from 'lodash-es/mapValues';
 import omitBy from 'lodash-es/omitBy';
 
-import { setConnectionStateMultiple } from '../actions/connections';
-import { parseISODate } from '../utils/parsing';
+import { setConnectionStateMultiple } from '~/actions/connections';
+import { parseISODate } from '~/utils/parsing';
 
 /**
  * Enum containing constants for the various connection states.

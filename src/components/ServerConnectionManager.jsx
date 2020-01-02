@@ -11,6 +11,7 @@ import { parse } from 'shell-quote';
 
 import { clearConnectionList } from '~/actions/connections';
 import { clearClockList } from '~/features/clocks/slice';
+import { clearDockList } from '~/features/docks/slice';
 import { shouldManageLocalServer } from '~/features/local-server/selectors';
 import { setCurrentServerConnectionState } from '~/features/servers/slice';
 import { showSnackbarMessage } from '~/features/snackbar/slice';
@@ -21,6 +22,7 @@ import {
   handleConnectionInformationMessage
 } from '~/model/connections';
 import { handleClockInformationMessage } from '~/model/clocks';
+import { handleDockIdList } from '~/model/docks';
 
 /**
  * Proposes a protocol to use (http or https) depending on the protocol of
@@ -312,8 +314,7 @@ const executeTasksAfterConnection = async dispatch => {
       type: 'OBJ-LIST',
       filter: ['dock']
     });
-    const dockIds = response.body.ids || [];
-    // console.log('Dock IDs:', dockIds);
+    handleDockIdList(response.body.ids || [], dispatch);
   } catch (error) {
     console.error(error);
     handleError(error);
@@ -370,6 +371,7 @@ const ServerConnectionManager = connect(
       dispatch(showSnackbarMessage('Disconnected from Flockwave server'));
       dispatch(clearClockList());
       dispatch(clearConnectionList());
+      dispatch(clearDockList());
     },
 
     onLocalServerError(message, wasRunning) {
