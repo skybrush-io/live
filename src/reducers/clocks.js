@@ -60,20 +60,20 @@ function updateStateOfClock(state, id, properties) {
  */
 const reducer = handleActions(
   {
-    CLEAR_CLOCK_LIST: (state, action) => ({
+    CLEAR_CLOCK_LIST: () => ({
       items: {},
       order: []
     }),
 
     SET_CLOCK_STATE: (state, action) => {
-      const newState = Object.assign({}, state);
+      const newState = { ...state };
       const { id } = action.payload;
       updateStateOfClock(newState, id, action.payload);
       return newState;
     },
 
     SET_CLOCK_STATE_MULTIPLE: (state, action) => {
-      const newState = Object.assign({}, state);
+      const newState = { ...state };
       for (const id of Object.keys(action.payload)) {
         updateStateOfClock(newState, id, action.payload[id]);
       }

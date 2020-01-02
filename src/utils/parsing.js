@@ -2,6 +2,7 @@
  * @file Parser functions for various data types.
  */
 
+import has from 'lodash-es/has';
 import isString from 'lodash-es/isString';
 import moment from 'moment';
 
@@ -40,8 +41,13 @@ export function dateToTimestamp(value) {
  * @param  {string}  value  the string to parse
  * @return {Date} the parsed date
  */
-export const parseEpochIdentifierOrISODate = value =>
-  (isString(value) ? knownEpochs[value] : null) || parseISODate(value);
+export const parseEpochIdentifierOrISODate = value => {
+  if (isString(value) && has(knownEpochs, value)) {
+    return knownEpochs[value];
+  }
+
+  return parseISODate(value);
+};
 
 /**
  * Parses a date that is formatted according to ISO 8601 from a string, and

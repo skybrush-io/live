@@ -38,5 +38,6 @@ export function handleClockInformationMessage(body, dispatch) {
       isUndefined
     )
   );
+
   dispatch(setClockStateMultiple(states));
 }
