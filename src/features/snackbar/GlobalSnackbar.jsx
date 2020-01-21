@@ -29,16 +29,20 @@ const semanticsToIcon = {
 
 const useStyles = makeStyles(theme => ({
   success: {
-    backgroundColor: green[600]
+    backgroundColor: green[600],
+    color: 'white'
   },
   error: {
-    backgroundColor: theme.palette.error.dark
+    backgroundColor: theme.palette.error.dark,
+    color: 'white'
   },
   info: {
-    backgroundColor: theme.palette.primary.main
+    backgroundColor: theme.palette.primary.main,
+    color: 'white'
   },
   warning: {
-    backgroundColor: amber[700]
+    backgroundColor: amber[700],
+    color: 'white'
   },
   icon: {
     fontSize: 20

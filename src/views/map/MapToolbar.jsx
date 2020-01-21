@@ -38,7 +38,7 @@ const MapToolbarSeparator = () => {
  *
  * @returns {React.Element} the rendered component
  */
-const MapToolbarPresentation = ({ onToolSelected, selectedTool, theme }) => {
+const MapToolbarPresentation = ({ onToolSelected, selectedTool }) => {
   const colorForTool = tool => (selectedTool === tool ? 'primary' : undefined);
 
   return (
@@ -77,8 +77,7 @@ const MapToolbarPresentation = ({ onToolSelected, selectedTool, theme }) => {
 
 MapToolbarPresentation.propTypes = {
   onToolSelected: PropTypes.func,
-  selectedTool: PropTypes.string,
-  theme: PropTypes.object.isRequired
+  selectedTool: PropTypes.string
 };
 
 /**

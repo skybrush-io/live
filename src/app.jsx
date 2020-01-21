@@ -1,5 +1,4 @@
 import CssBaseline from '@material-ui/core/CssBaseline';
-import { MuiThemeProvider } from '@material-ui/core/styles';
 import React from 'react';
 import { WorkbenchView } from 'react-flexible-workbench';
 import { Provider as StoreProvider } from 'react-redux';
@@ -21,7 +20,7 @@ import flock, { Flock } from './flock';
 import { withErrorBoundary, wrapWith } from './hoc';
 import hotkeys from './hotkeys';
 import store, { persistor } from './store';
-import theme from './theme';
+import ThemeProvider from './theme';
 import workbench from './workbench';
 
 require('../assets/css/screen.less');
@@ -98,7 +97,7 @@ const Application = () => (
 const enhancer = compose(
   toClass, // react-flexible-workbench likes class components at the top
   withErrorBoundary,
-  wrapWith(withProps({ theme })(MuiThemeProvider)),
+  wrapWith(ThemeProvider),
   wrapWith(withProps({ store })(StoreProvider)),
   wrapWith(withProps({ value: flock })(Flock.Provider))
 );

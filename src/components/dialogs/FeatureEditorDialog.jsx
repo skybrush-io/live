@@ -2,28 +2,28 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 
-import AppBar from '@material-ui/core/AppBar';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import Switch from '@material-ui/core/Switch';
 import Tab from '@material-ui/core/Tab';
-import Tabs from '@material-ui/core/Tabs';
 import TextField from '@material-ui/core/TextField';
+
+import DialogTabs from './DialogTabs';
 
 import {
   removeFeature,
   renameFeature,
   setFeatureColor,
   updateFeatureVisibility
-} from '../../actions/features';
+} from '~/actions/features';
 import {
   closeFeatureEditorDialog,
   setFeatureEditorDialogTab
-} from '../../actions/feature-editor';
-import CircleColorPicker from '../../components/CircleColorPicker';
-import { primaryColor } from '../../utils/styles';
+} from '~/actions/feature-editor';
+import CircleColorPicker from '~/components/CircleColorPicker';
+import { primaryColor } from '~/utils/styles';
 
 const GeneralPropertiesFormPresentation = ({
   feature,
@@ -137,12 +137,10 @@ const FeatureEditorDialogPresentation = props => {
 
   return (
     <Dialog fullWidth open={open} maxWidth="xs" onClose={onClose}>
-      <AppBar position="static">
-        <Tabs value={selectedTab} variant="fullWidth" onChange={onTabSelected}>
-          <Tab value="general" label="General" />
-          <Tab value="points" label="Points" />
-        </Tabs>
-      </AppBar>
+      <DialogTabs value={selectedTab} onChange={onTabSelected}>
+        <Tab value="general" label="General" />
+        <Tab value="points" label="Points" />
+      </DialogTabs>
       {content}
       <DialogActions>{actions}</DialogActions>
     </Dialog>

@@ -9,7 +9,7 @@ export default () => (
     icon={<img src={logo} width={96} height={96} alt="" />}
     title={
       <span>
-        Flock<b style={{ fontWeight: 300 }}>wave</b>
+        skybrush <b style={{ fontWeight: 300 }}>live</b>
       </span>
     }
   />

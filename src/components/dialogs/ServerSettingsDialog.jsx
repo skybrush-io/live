@@ -9,7 +9,6 @@ import React from 'react';
 import { Form, Field } from 'react-final-form';
 import { connect } from 'react-redux';
 
-import AppBar from '@material-ui/core/AppBar';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -21,7 +20,6 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import Tab from '@material-ui/core/Tab';
-import Tabs from '@material-ui/core/Tabs';
 
 import EditIcon from '@material-ui/icons/Edit';
 import SignalWifi0Bar from '@material-ui/icons/SignalWifi0Bar';
@@ -31,6 +29,8 @@ import {
   ServerDetectionManager,
   isServerDetectionSupported
 } from '../ServerDetectionManager';
+
+import DialogTabs from './DialogTabs';
 
 import {
   closeServerSettingsDialog,
@@ -278,16 +278,10 @@ class ServerSettingsDialogPresentation extends React.Component {
 
     return (
       <Dialog fullWidth open={open} maxWidth="xs" onClose={onClose}>
-        <AppBar position="static">
-          <Tabs
-            value={selectedTab}
-            variant="fullWidth"
-            onChange={onTabSelected}
-          >
-            <Tab value="auto" label="Autodetected" />
-            <Tab value="manual" label="Manual" />
-          </Tabs>
-        </AppBar>
+        <DialogTabs value={selectedTab} onChange={onTabSelected}>
+          <Tab value="auto" label="Autodetected" />
+          <Tab value="manual" label="Manual" />
+        </DialogTabs>
         <ServerDetectionManager />
         {content}
         <DialogActions>{actions}</DialogActions>

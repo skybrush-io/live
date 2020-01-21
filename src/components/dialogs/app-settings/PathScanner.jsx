@@ -5,10 +5,11 @@
  */
 
 import CircularProgress from '@material-ui/core/CircularProgress';
-import { green, grey, red, yellow } from '@material-ui/core/colors';
+import { green, red, yellow } from '@material-ui/core/colors';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
+import { makeStyles } from '@material-ui/core/styles';
 import Clear from '@material-ui/icons/Clear';
 import Done from '@material-ui/icons/Done';
 import Warning from '@material-ui/icons/Warning';
@@ -42,6 +43,16 @@ const icons = {
   )
 };
 
+const useStyles = makeStyles(theme => ({
+  root: {
+    backgroundColor:
+      theme.palette.type === 'dark'
+        ? theme.palette.grey.A400
+        : theme.palette.grey[200],
+    paddingTop: 6
+  }
+}));
+
 const PathScannerPresentation = ({
   error,
   notFoundMessage,
@@ -50,33 +61,35 @@ const PathScannerPresentation = ({
   scanning,
   scanningMessage,
   successMessage
-}) => (
-  <ListItem
-    button
-    divider
-    style={{ backgroundColor: grey[200], paddingTop: 12 }}
-    onClick={onRequestReload}
-  >
-    <ListItemIcon>
-      {scanning
-        ? icons.scanning
-        : error
-        ? icons.error
-        : result
-        ? icons.found
-        : icons.notFound}
-    </ListItemIcon>
-    <ListItemText
-      primary={
-        error ||
-        (result ? successMessage : scanning ? scanningMessage : notFoundMessage)
-      }
-      secondary={
-        scanning ? 'Looking for server' : result || 'Click to scan again'
-      }
-    />
-  </ListItem>
-);
+}) => {
+  const classes = useStyles();
+  return (
+    <ListItem button divider className={classes.root} onClick={onRequestReload}>
+      <ListItemIcon>
+        {scanning
+          ? icons.scanning
+          : error
+          ? icons.error
+          : result
+          ? icons.found
+          : icons.notFound}
+      </ListItemIcon>
+      <ListItemText
+        primary={
+          error ||
+          (result
+            ? successMessage
+            : scanning
+            ? scanningMessage
+            : notFoundMessage)
+        }
+        secondary={
+          scanning ? 'Looking for server' : result || 'Click to scan again'
+        }
+      />
+    </ListItem>
+  );
+};
 
 PathScannerPresentation.propTypes = {
   error: PropTypes.string,

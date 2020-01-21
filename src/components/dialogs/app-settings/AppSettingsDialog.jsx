@@ -2,19 +2,19 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 
-import AppBar from '@material-ui/core/AppBar';
 import Dialog from '@material-ui/core/Dialog';
 import DialogContent from '@material-ui/core/DialogContent';
 import Tab from '@material-ui/core/Tab';
-import Tabs from '@material-ui/core/Tabs';
+
+import DialogTabs from '../DialogTabs';
+
+import DisplayTab from './DisplayTab';
+import ServerTab from './ServerTab';
 
 import {
   closeAppSettingsDialog,
   setAppSettingsDialogTab
-} from '../../../actions/app-settings';
-
-import DisplayTab from './DisplayTab';
-import ServerTab from './ServerTab';
+} from '~/actions/app-settings';
 
 /* ===================================================================== */
 
@@ -35,13 +35,11 @@ const AppSettingsDialogPresentation = ({
   selectedTab
 }) => (
   <Dialog fullWidth open={open} maxWidth="sm" onClose={onClose}>
-    <AppBar position="static">
-      <Tabs centered value={selectedTab} onChange={onTabSelected}>
-        <Tab value="display" label="Display" />
-        <Tab value="uavs" label="UAVs" />
-        {window.isElectron ? <Tab value="server" label="Server" /> : null}
-      </Tabs>
-    </AppBar>
+    <DialogTabs value={selectedTab} onChange={onTabSelected}>
+      <Tab value="display" label="Display" />
+      <Tab value="uavs" label="UAVs" />
+      {window.isElectron ? <Tab value="server" label="Server" /> : null}
+    </DialogTabs>
     <DialogContent>{tabNameToComponent[selectedTab]}</DialogContent>
   </Dialog>
 );
