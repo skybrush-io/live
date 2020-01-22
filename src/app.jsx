@@ -26,6 +26,7 @@ import workbench from './workbench';
 require('../assets/css/screen.less');
 require('../assets/css/chat.less');
 require('../assets/css/kbd.css');
+require('../assets/css/tooltips.less');
 
 require('react-cover-page/themes/default.css');
 require('typeface-roboto');
