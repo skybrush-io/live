@@ -6,13 +6,11 @@ import Checkbox from '@material-ui/core/Checkbox';
 import FormControl from '@material-ui/core/FormControl';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormGroup from '@material-ui/core/FormGroup';
-import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import Typography from '@material-ui/core/Typography';
 
-import { updateAppSettings } from '~/actions/app-settings';
 import {
   clearHomePosition,
   setFlatEarthCoordinateSystemOrientation,
@@ -21,6 +19,7 @@ import {
 } from '~/actions/map-origin';
 import CoordinateField from '~/components/CoordinateField';
 import RotationField from '~/components/RotationField';
+import { updateAppSettings } from '~/features/settings/slice';
 import { getMapOriginRotationAngle } from '~/selectors/map';
 
 const DisplayTabPresentation = props => (

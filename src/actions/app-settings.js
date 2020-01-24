@@ -5,30 +5,10 @@
 import { createAction } from 'redux-actions';
 import {
   CLOSE_APP_SETTINGS_DIALOG,
-  REPLACE_APP_SETTINGS,
   SET_APP_SETTINGS_DIALOG_TAB,
   SHOW_APP_SETTINGS_DIALOG,
-  TOGGLE_APP_SETTINGS_DIALOG,
-  UPDATE_APP_SETTINGS
+  TOGGLE_APP_SETTINGS_DIALOG
 } from './types';
-
-/**
- * Action factory that creates an action that will replace all the
- * settings in a category with the given values.
- */
-export const replaceAppSettings = createAction(
-  REPLACE_APP_SETTINGS,
-  (category, updates) => ({ category, updates })
-);
-
-/**
- * Action factory that creates an action that will update the given
- * new settings into a setting category.
- */
-export const updateAppSettings = createAction(
-  UPDATE_APP_SETTINGS,
-  (category, updates) => ({ category, updates })
-);
 
 /**
  * Action factory that creates an action that will close the app settings

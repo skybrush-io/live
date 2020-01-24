@@ -12,8 +12,9 @@ import ListItemText from '@material-ui/core/ListItemText';
 import Switch from '@material-ui/core/Switch';
 import TextField from '@material-ui/core/TextField';
 
-import { updateAppSettings } from '../../../actions/app-settings';
 import PathScanner from './PathScanner';
+
+import { updateAppSettings } from '~/features/settings/slice';
 
 const ServerTabPresentation = ({
   cliArguments,
