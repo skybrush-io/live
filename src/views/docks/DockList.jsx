@@ -25,7 +25,7 @@ import { fitCoordinatesIntoMapView, scrollToMapLocation } from '~/signals';
 const DockListPresentation = multiSelectableListOf(
   (dock, props, selected) => {
     const rightIconButton = (
-      <IconButton edge="end" onClick={() => scrollToMapLocation(dock)}>
+      <IconButton edge="end" onClick={() => scrollToMapLocation(dock.position)}>
         <Search />
       </IconButton>
     );
@@ -49,7 +49,7 @@ const DockListPresentation = multiSelectableListOf(
 );
 
 /**
- * React component that shows the state of the known docks in a Flockwave
+ * React component that shows the state of the known docks in a Skybrush
  * server.
  */
 const DockList = ({ onSelectionChanged, selectedIds, ...rest }) => (

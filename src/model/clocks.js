@@ -10,7 +10,7 @@ import { setClockStateMultiple } from '~/features/clocks/slice';
 import { parseEpochIdentifierOrISODate, parseISODate } from '~/utils/parsing';
 
 /**
- * Handles a CLK-INF message from a Flockwave server and updates the
+ * Handles a CLK-INF message from a Skybrush server and updates the
  * state of the Redux store appropriately.
  *
  * @param  {Object} body  the body of the CLK-INF message

@@ -18,18 +18,18 @@ const getApplicationFolder = require('./app-folder');
 const events = makeEventProxy('localServer');
 
 /**
- * The local executable of the Flockwave server on this machine.
+ * The local executable of the Skybrush server on this machine.
  */
 let localServerPath;
 
 /**
- * Deferred that will resolve to the local executable of the Flockwave server
+ * Deferred that will resolve to the local executable of the Skybrush server
  * on this machine.
  */
 let localServerPathDeferred = pDefer();
 
 /**
- * The process representing the laucnhed Flockwave server instance on this
+ * The process representing the laucnhed Skybrush server instance on this
  * machine.
  */
 let localServerProcess;
@@ -46,7 +46,7 @@ const endsWith = (string, target) =>
  * the application, with a few platform-specific tweaks.
  *
  * @return {string[]}  the names of the directories to search for the local
- *         Flockwave server executable, besides the system path and the
+ *         Skybrush server executable, besides the system path and the
  *         directories added explicitly by the user in the settings
  */
 function getPathsRelatedToAppLocation() {
@@ -74,7 +74,7 @@ function getPathsRelatedToAppLocation() {
 const pathsRelatedToAppLocation = Object.freeze(getPathsRelatedToAppLocation());
 
 /**
- * Launches the local Flockwave server executable with the given arguments.
+ * Launches the local Skybrush server executable with the given arguments.
  *
  * @param {Object}   opts         options to tweak how the server is launched
  * @param {string[]} opts.args    additional arguments to pass to the server
@@ -102,7 +102,7 @@ const launch = async opts => {
   }
 
   if (!localServerPath) {
-    throw new Error('local Flockwave server not found');
+    throw new Error('local Skybrush server not found');
   }
 
   const realArgs = ['-h', '127.0.0.1', '-p', port, ...args];
@@ -123,7 +123,7 @@ const launch = async opts => {
 };
 
 /**
- * Searches for the local Flockwave server executable in the following places,
+ * Searches for the local Skybrush server executable in the following places,
  * in this order of precedence:
  *
  * - the application folder and typical platform-dependent related folders

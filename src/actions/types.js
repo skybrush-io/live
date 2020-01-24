@@ -7,7 +7,7 @@ export const CLEAR_CONNECTION_LIST = 'CLEAR_CONNECTION_LIST';
 export const SET_CONNECTION_STATE = 'SET_CONNECTION_STATE';
 export const SET_CONNECTION_STATE_MULTIPLE = 'SET_CONNECTION_STATE_MULTIPLE';
 
-// Connection-related actions for the Flockwave server itself
+// Connection-related actions for the server itself
 export const DISCONNECT_FROM_SERVER = 'DISCONNECT_FROM_SERVER';
 
 // Map-related actions
@@ -53,15 +53,6 @@ export const SHOW_FEATURE_EDITOR_DIALOG = 'SHOW_FEATURE_EDITOR_DIALOG';
 // Saved location related actions
 export const EDIT_SAVED_LOCATION = 'EDIT_SAVED_LOCATION';
 export const CANCEL_LOCATION_EDITING = 'CANCEL_LOCATION_EDITING';
-
-export const ADD_SAVED_LOCATION = 'ADD_SAVED_LOCATION';
-export const CREATE_NEW_SAVED_LOCATION = 'CREATE_NEW_SAVED_LOCATION';
-export const DELETE_SAVED_LOCATION = 'DELETE_SAVED_LOCATION';
-export const UPDATE_SAVED_LOCATION = 'UPDATE_SAVED_LOCATION';
-
-// Dataset-related actions
-export const ADD_DATASET = 'ADD_DATASET';
-export const REMOVE_DATASETS = 'REMOVE_DATASETS';
 
 // Actions related to the authentication / deauthentication dialogs
 export const SHOW_AUTHENTICATION_DIALOG = 'SHOW_AUTHENTICATION_DIALOG';

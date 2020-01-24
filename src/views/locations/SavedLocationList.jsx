@@ -13,9 +13,9 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 
-import { createNewSavedLocation } from '~/actions/saved-locations';
 import { editSavedLocation } from '~/actions/saved-location-editor';
 import { listOf } from '~/components/helpers/lists';
+import { createNewSavedLocation } from '~/features/saved-locations/slice';
 import { getSavedLocationsInOrder } from '~/selectors/ordered';
 import { scrollToMapLocation } from '~/signals';
 
@@ -30,7 +30,7 @@ const LocationListEntry = props => {
   const { id, name } = location;
 
   const editLocation = () => onEditItem(id);
-  const scrollToLocation = () => scrollToMapLocation(location);
+  const scrollToLocation = () => scrollToMapLocation(location.center);
 
   const actionButton = (
     <IconButton edge="end" onClick={editLocation}>

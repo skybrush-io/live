@@ -21,8 +21,8 @@ export const isServerDetectionSupported =
  * Presentation component that regularly fires SSDP discovery requests and
  * collects the results when the app is running in a Node.js environment.
  * When UDP sockets are not available (e.g., in the browser), the component
- * simply makes an educated guess for a possible Flockwave server hosted on
- * the same machine as the current page is.
+ * simply makes an educated guess for a possible server hosted on the same
+ * machine as the current page is.
  */
 class ServerDetectionManagerPresentation extends React.Component {
   static propTypes = {

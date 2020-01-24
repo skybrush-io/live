@@ -155,7 +155,7 @@ function* enforceAuthenticationIfNeededSaga() {
 
 /**
  * Compound saga related to the management of the connection to the upstream
- * Flockwave server.
+ * Skybrush server.
  */
 export default function* serversSaga() {
   const sagas = [

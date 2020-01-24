@@ -1,7 +1,7 @@
 import { addDocksByIds } from '~/features/docks/slice';
 
 /**
- * Handles a response to an OBJ-LIST message from a Flockwave server where
+ * Handles a response to an OBJ-LIST message from a Skybrush server where
  * we queried the list of dock IDs, and updates the state of the Redux store
  * appropriately.
  *

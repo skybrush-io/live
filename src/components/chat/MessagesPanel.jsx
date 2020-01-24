@@ -241,7 +241,7 @@ const MessagesPanel = connect(
       ? messages.uavIdsToMessageIds[selectedUAVId] || []
       : [];
     const chatEntries = selectedUAVId
-      ? selectOrdered(reorder(messageIds, messages))
+      ? selectOrdered(reorder(messages, messageIds))
       : null;
     return {
       chatEntries,

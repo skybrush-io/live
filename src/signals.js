@@ -68,11 +68,15 @@ export function scrollToMapLocation(coordinate, options) {
     duration: 500,
     ...options
   };
+
   const coord = coordinateToLonLat(coordinate);
-  mapViewToLocationSignal.dispatch(
-    { center: { lon: coord[0], lat: coord[1] } },
-    signalOptions
-  );
+
+  if (Array.isArray(coord) && coord.length >= 2) {
+    mapViewToLocationSignal.dispatch(
+      { center: { lon: coord[0], lat: coord[1] } },
+      signalOptions
+    );
+  }
 }
 
 export default {

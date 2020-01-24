@@ -1,10 +1,10 @@
 /**
- * @file Functions and constants related to handling generic Flockwave server-side
+ * @file Functions and constants related to handling generic Skybrush server-side
  * objects..
  */
 
 /**
- * Handles an OBJ-DEL message from a Flockwave server and updates the
+ * Handles an OBJ-DEL message from a Skybrush server and updates the
  * state of the Redux store appropriately.
  *
  * @param  {Object} body  the body of the OBJ-DEL message

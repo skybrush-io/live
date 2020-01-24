@@ -1,5 +1,5 @@
 /**
- * @file Component that displays the status of the known UAVs in a Flockwave
+ * @file Component that displays the status of the known UAVs in a Skybrush
  * flock.
  */
 
@@ -77,7 +77,7 @@ const UAVListPresentation = multiSelectableListOf(
 );
 
 /**
- * React component that shows the state of the known UAVs in a Flockwave
+ * React component that shows the state of the known UAVs in a Skybrush
  * flock.
  */
 class UAVList extends React.Component {

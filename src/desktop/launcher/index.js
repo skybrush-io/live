@@ -83,7 +83,7 @@ module.exports = argv => {
   // Don't use require('yargs') below because Webpack; see:
   // https://github.com/yargs/yargs/issues/781
   const parser = yargs()
-    .usage('$0 [options]', 'Launches Flockwave in a desktop window')
+    .usage('$0 [options]', 'Launches Skybrush in a desktop window')
 
     .boolean('d')
     .alias('d', 'debug')

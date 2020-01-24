@@ -5,6 +5,8 @@
 
 import { createSlice } from '@reduxjs/toolkit';
 
+import { clearOrderedCollection } from '~/utils/collections';
+
 const { actions, reducer } = createSlice({
   name: 'docks',
 
@@ -40,8 +42,7 @@ const { actions, reducer } = createSlice({
      * Clears the dock list.
      */
     clearDockList(state) {
-      state.byId = {};
-      state.order = [];
+      clearOrderedCollection(state);
     }
   }
 });

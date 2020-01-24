@@ -1,7 +1,7 @@
 /**
  * @file
  * The single applicaiton-wide message hub that other objects can use to
- * send messages to the connected Flockwave server.
+ * send messages to the connected Skybrush server.
  */
 
 import MessageHub from './flockwave/messages';
@@ -16,7 +16,7 @@ const { dispatch } = store;
 
 /**
  * The single application-wide message hub that other objects can use to
- * send messages to the connected Flockwave server.
+ * send messages to the connected Skybrush server.
  *
  * Note that you need to connect the hub to a Socket.IO socket first before
  * using it.

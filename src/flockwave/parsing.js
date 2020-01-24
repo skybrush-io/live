@@ -1,5 +1,5 @@
 /**
- * @file Utility functions to parse data out of Flockwave messages.
+ * @file Utility functions to parse data out of Skybrush messages.
  */
 
 import includes from 'lodash-es/includes';
@@ -10,7 +10,7 @@ import isNil from 'lodash-es/isNil';
  * response from the server. Throws an error if the message represents a
  * failure and no receipt is available.
  *
- * @param  {Object} message the Flockwave message to parse
+ * @param  {Object} message the Skybrush message to parse
  * @param  {string} uavId   the ID of the UAV whose receipt we wish to
  *         extract from the message
  * @return {string} the receipt corresponding to the UAV

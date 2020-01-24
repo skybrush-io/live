@@ -1,10 +1,12 @@
 /**
  * @file Slice of the state object that stores the last known states of the
- * clocks of the Flockwave server.
+ * clocks of the server.
  */
 
 import has from 'lodash-es/has';
 import { createSlice } from '@reduxjs/toolkit';
+
+import { clearOrderedCollection } from '~/utils/collections';
 
 /**
  * Function that updates the state of a clock with the given ID in
@@ -54,8 +56,7 @@ const { actions, reducer } = createSlice({
 
   reducers: {
     clearClockList(state) {
-      state.byId = {};
-      state.order = [];
+      clearOrderedCollection(state);
     },
 
     setClockState(state, action) {

@@ -3,7 +3,7 @@ import { createSelector } from '@reduxjs/toolkit';
 import { isLocalHost } from '~/utils/networking';
 
 /**
- * Returns the list of directories in which a local Flockwave server instance
+ * Returns the list of directories in which a local Skybrush server instance
  * will be searched, besides the standard system path.
  *
  * @param  {Object}  state  the state of the application
@@ -13,7 +13,7 @@ export const getLocalServerSearchPath = state =>
   state.settings.localServer.searchPath;
 
 /**
- * Returns the full path to the executable of a local Flockwave server.
+ * Returns the full path to the executable of a local Skybrush server.
  *
  * @param  {Object}  state  the state of the application
  * @return {string|undefined}  the full path
@@ -22,7 +22,7 @@ export const getLocalServerExecutable = state =>
   state.localServer.pathScan.result;
 
 /**
- * Returns whether the full path to the executable of a local Flockwave server
+ * Returns whether the full path to the executable of a local Skybrush server
  * was found.
  *
  * @param  {Object}  state  the state of the application
@@ -34,7 +34,7 @@ export const foundLocalServerExecutable = createSelector(
 );
 
 /**
- * Returns whether a local Flockwave server launched directly by the Flockwave
+ * Returns whether a local Skybrush server launched directly by the Skybrush
  * desktop app should be running in the background.
  */
 export const shouldManageLocalServer = createSelector(

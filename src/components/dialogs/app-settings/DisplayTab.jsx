@@ -24,8 +24,8 @@ import RotationField from '~/components/RotationField';
 import { getMapOriginRotationAngle } from '~/selectors/map';
 
 const DisplayTabPresentation = props => (
-  <FormGroup>
-    <Typography variant="body1" style={{ marginTop: '1em' }}>
+  <FormGroup style={{ marginBottom: '1em' }}>
+    <Typography variant="button" style={{ marginTop: '1em' }}>
       Map widgets
     </Typography>
     <FormControlLabel
@@ -49,7 +49,10 @@ const DisplayTabPresentation = props => (
       }
     />
 
-    <Typography variant="body1" style={{ marginBottom: '0.5em' }}>
+    <Typography
+      variant="button"
+      style={{ marginTop: '1em', marginBottom: '0.5em' }}
+    >
       Flat Earth coordinate system
     </Typography>
     <CoordinateField

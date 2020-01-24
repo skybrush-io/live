@@ -78,7 +78,7 @@ export default class Flock {
   }
 
   /**
-   * Handles a UAV-INF message from a Flockwave server and updates the state
+   * Handles a UAV-INF message from a Skybrush server and updates the state
    * of the flock appropriately.
    *
    * @param  {Object} body  the body of the UAV-INF message

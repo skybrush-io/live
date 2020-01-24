@@ -11,7 +11,7 @@ const makeEventProxy = require('../event-proxy');
 const events = makeEventProxy('localServer');
 
 /**
- * Asks the main process to launch the local Flockwave server executable with
+ * Asks the main process to launch the local Skybrush server executable with
  * the given arguments.
  *
  * @param {Object}   opts         options to tweak how the server is launched
@@ -29,7 +29,7 @@ const launch = async opts => {
 };
 
 /**
- * Asks the main process to search for the local Flockwave server executable in
+ * Asks the main process to search for the local Skybrush server executable in
  * the following places, in this order of precedence:
  *
  * - the application folder and typical platform-dependent related folders

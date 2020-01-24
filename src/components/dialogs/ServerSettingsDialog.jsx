@@ -21,6 +21,7 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import Tab from '@material-ui/core/Tab';
 
+import Computer from '@material-ui/icons/Computer';
 import EditIcon from '@material-ui/icons/Edit';
 import SignalWifi0Bar from '@material-ui/icons/SignalWifi0Bar';
 import WifiIcon from '@material-ui/icons/Wifi';
@@ -47,8 +48,14 @@ import {
 } from '~/utils/validation';
 
 // eslint-disable-next-line react/prop-types
-const iconForServerItem = ({ type }) =>
-  type === 'inferred' ? <SignalWifi0Bar /> : <WifiIcon />;
+const iconForServerItem = ({ hostName, type }) =>
+  type === 'inferred' ? (
+    <SignalWifi0Bar />
+  ) : hostName === 'localhost' ? (
+    <Computer />
+  ) : (
+    <WifiIcon />
+  );
 
 const isItemSecure = ({ protocol }) => protocol === 'sio+tls:';
 const addressForServerItem = ({ hostName, port }) => `${hostName}:${port}`;

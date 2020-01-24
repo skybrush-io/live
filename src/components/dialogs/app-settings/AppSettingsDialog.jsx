@@ -40,7 +40,9 @@ const AppSettingsDialogPresentation = ({
       <Tab value="uavs" label="UAVs" />
       {window.isElectron ? <Tab value="server" label="Server" /> : null}
     </DialogTabs>
-    <DialogContent>{tabNameToComponent[selectedTab]}</DialogContent>
+    <DialogContent style={{ minHeight: 200 }}>
+      {tabNameToComponent[selectedTab]}
+    </DialogContent>
   </Dialog>
 );
 

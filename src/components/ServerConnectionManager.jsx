@@ -1,6 +1,6 @@
 /**
  * @file Manager component that is responsible for connecting to the
- * Flockwave server.
+ * Skybrush server.
  */
 
 import PropTypes from 'prop-types';
@@ -36,7 +36,7 @@ function proposeProtocol() {
 }
 
 /**
- * Component that launches a local Flockwave server instance when mounted.
+ * Component that launches a local Skybrush server instance when mounted.
  */
 class LocalServerExecutor extends React.Component {
   static propTypes = {
@@ -341,7 +341,7 @@ const ServerConnectionManager = connect(
       // Let the user know that we are connected
       dispatch(
         showSnackbarMessage({
-          message: 'Connected to Flockwave server',
+          message: 'Connected to Skybrush server',
           semantics: 'info'
         })
       );
@@ -360,7 +360,7 @@ const ServerConnectionManager = connect(
       dispatch(setCurrentServerConnectionState(ConnectionState.DISCONNECTED));
       dispatch(
         showSnackbarMessage({
-          message: 'Timeout while connecting to Flockwave server',
+          message: 'Timeout while connecting to Skybrush server',
           semantics: 'error'
         })
       );
@@ -368,7 +368,7 @@ const ServerConnectionManager = connect(
 
     onDisconnected() {
       dispatch(setCurrentServerConnectionState(ConnectionState.DISCONNECTED));
-      dispatch(showSnackbarMessage('Disconnected from Flockwave server'));
+      dispatch(showSnackbarMessage('Disconnected from Skybrush server'));
       dispatch(clearClockList());
       dispatch(clearConnectionList());
       dispatch(clearDockList());
@@ -376,8 +376,8 @@ const ServerConnectionManager = connect(
 
     onLocalServerError(message, wasRunning) {
       const baseMessage = wasRunning
-        ? 'Flockwave server died unexpectedly'
-        : 'Failed to launch local Flockwave server';
+        ? 'Skybrush server died unexpectedly'
+        : 'Failed to launch local Skybrush server';
       dispatch(setCurrentServerConnectionState(ConnectionState.DISCONNECTED));
       dispatch(
         showSnackbarMessage({

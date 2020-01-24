@@ -1,5 +1,5 @@
 /**
- * @file Component that displays the status of Flockwave clocks.
+ * @file Component that displays the status of Skybrush clocks.
  */
 
 import { red, green } from '@material-ui/core/colors';
@@ -32,7 +32,7 @@ const avatars = [
 ];
 
 /**
- * Remapping of commonly used clock IDs in a Flockwave server to something
+ * Remapping of commonly used clock IDs in a Skybrush server to something
  * more human-readable.
  */
 const clockIdRemapping = {
@@ -42,7 +42,7 @@ const clockIdRemapping = {
 };
 
 /**
- * Presentation component for showing the state of a single Flockwave clock.
+ * Presentation component for showing the state of a single Skybrush clock.
  */
 class ClockDisplayListEntry extends React.Component {
   static propTypes = {
@@ -71,7 +71,7 @@ class ClockDisplayListEntry extends React.Component {
      * The number of clock ticks per second.
      */
     ticksPerSecond: PropTypes.number.isRequired,
-    /** Whether the clock is running according to the Flockwave server */
+    /** Whether the clock is running according to the Skybrush server */
     running: PropTypes.bool.isRequired,
     /**
      * The update frequency of the clock display when it is running, expressed
@@ -196,7 +196,7 @@ class ClockDisplayListEntry extends React.Component {
 }
 
 /**
- * Presentation component for showing the state of a set of Flockwave
+ * Presentation component for showing the state of a set of Skybrush
  * clocks.
  *
  * @return  {Object}  the rendered clock display list component
@@ -208,7 +208,7 @@ const ClockDisplayListPresentation = listOf(ClockDisplayListEntry, {
 ClockDisplayListPresentation.displayName = 'ClockDisplayListPresentation';
 
 /**
- * Smart component for showing the state of the known Flockwave clocks from
+ * Smart component for showing the state of the known Skybrush clocks from
  * the Redux store.
  */
 const ClockDisplayList = connect(

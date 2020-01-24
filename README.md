@@ -1,7 +1,7 @@
 flockwave-web
 =============
 
-This is the official web and desktop frontend for the Flockwave server.
+This is the official web and desktop frontend for the Skybrush server.
 
 Steps to install
 ----------------
@@ -25,7 +25,7 @@ Steps to install
    installation of Babel.
 
 3. Install all the dependencies of `flockwave-web` by running `npm install`
-   from a fresh checkout of the repository.  
+   from a fresh checkout of the repository.
    _(Note for Windows: For some reason the `PATH` environment variable of
    `cmd` is not always the same as the one in `PowerShell`, so you may have
    to use the latter one or alternatively `git-shell` for the command above
@@ -36,7 +36,8 @@ Steps to install
 
 5. Start a development web server with `npm start` inside `flockwave-web`, and
    navigate to http://localhost:8080 from your browser. Alternatively, run
-   `npm run start:electron` to run Flockwave within its own desktop app window.
+   `npm run start:electron` to run Skybrush Live within its own desktop app
+   window.
 
-<a name="global-install-footnote">1</a>: You may need to run this command with elevated rights to succesfully install a package globally.  
+<a name="global-install-footnote">1</a>: You may need to run this command with elevated rights to succesfully install a package globally.
 In case you would prefer to avoid using sudo for global installs: [https://docs.npmjs.com/getting-started/fixing-npm-permissions](https://docs.npmjs.com/getting-started/fixing-npm-permissions)

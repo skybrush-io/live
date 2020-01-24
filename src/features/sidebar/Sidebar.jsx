@@ -8,7 +8,7 @@ import MyLocation from '@material-ui/icons/MyLocation';
 import Notifications from '@material-ui/icons/Notifications';
 import SettingsInputAntenna from '@material-ui/icons/SettingsInputAntenna';
 import ShowChart from '@material-ui/icons/ShowChart';
-import Storage from '@material-ui/icons/Storage';
+// import Storage from '@material-ui/icons/Storage';
 
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -57,12 +57,6 @@ const Sidebar = ({ isOpen, workbench }) => (
           component="feature-list"
         />
         <hr />
-        <Module
-          id="groundcontrol"
-          icon={<SettingsInputAntenna />}
-          label="Ground control view"
-          component="ground-control-view"
-        />
         <Module id="uavs" icon={<Flight />} label="UAVs" component="uav-list" />
         <Module
           id="docks"
@@ -76,6 +70,12 @@ const Sidebar = ({ isOpen, workbench }) => (
           label="Messages"
           component="messages"
         />
+        <Module
+          id="configuration"
+          icon={<SettingsInputAntenna />}
+          label="Configuration"
+          component="configuration"
+        />
         <hr />
         <Module
           id="clocks"
@@ -83,12 +83,14 @@ const Sidebar = ({ isOpen, workbench }) => (
           label="Clocks"
           component="clock-list"
         />
+        {/*
         <Module
           id="datasets"
           icon={<Storage />}
           label="Datasets"
           component="dataset-list"
         />
+        */}
         <Module
           id="locations"
           icon={<MyLocation />}

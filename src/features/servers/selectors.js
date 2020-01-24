@@ -4,10 +4,10 @@ import { INVALID } from './slice';
 import { ConnectionState } from '~/model/connections';
 
 /**
- * Returns all the information that we know about the current Flockwave server.
+ * Returns all the information that we know about the current Skybrush server.
  *
  * @param  {Object}  state  the state of the application
- * @return {Object} all the information that we know about the current Flockwave
+ * @return {Object} all the information that we know about the current Skybrush
  *     server, directly from the state object
  */
 const getCurrentServerState = state => state.servers.current;
@@ -44,7 +44,7 @@ export const areServerAuthenticationSettingsValid = createSelector(
 
 /**
  * Returns whether the user is currently authenticated to the remote
- * Flockwave server.
+ * Skybrush server.
  */
 export const isAuthenticated = createSelector(
   getAuthenticatedUser,
@@ -53,7 +53,7 @@ export const isAuthenticated = createSelector(
 
 /**
  * Returns whether the user is currently attempting to authenticate to the
- * remote Flockwave server.
+ * remote Skybrush server.
  *
  * @param  {Object}  state  the state of the application
  * @return {boolean} whether there is an authentication attempt in progress
@@ -61,7 +61,7 @@ export const isAuthenticated = createSelector(
 export const isAuthenticating = state => state.servers.isAuthenticating;
 
 /**
- * Returns whether we are connected to the remote Flockwave server.
+ * Returns whether we are connected to the remote Skybrush server.
  */
 export const isConnected = createSelector(
   getCurrentServerState,

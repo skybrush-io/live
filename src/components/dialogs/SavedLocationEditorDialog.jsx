@@ -13,11 +13,11 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 
+import { cancelLocationEditing } from '~/actions/saved-location-editor';
 import {
   deleteSavedLocation,
   updateSavedLocation
-} from '~/actions/saved-locations';
-import { cancelLocationEditing } from '~/actions/saved-location-editor';
+} from '~/features/saved-locations/slice';
 import { getMapViewRotationAngle } from '~/selectors/map';
 import { forceFormSubmission, TextField } from '~/components/forms';
 import { NEW_ITEM_ID } from '~/utils/collections';
@@ -49,6 +49,7 @@ const SavedLocationEditorFormPresentation = ({
       <form id="SavedLocationEditor" onSubmit={handleSubmit}>
         <div onKeyPress={onKeyPress}>
           <Field
+            autoFocus
             fullWidth
             margin="normal"
             name="name"
@@ -212,8 +213,8 @@ const SavedLocationEditorDialog = connect(
     },
     onDelete(id) {
       return () => {
-        dispatch(deleteSavedLocation(id));
         dispatch(cancelLocationEditing());
+        dispatch(deleteSavedLocation(id));
       };
     },
     onSubmit(data) {

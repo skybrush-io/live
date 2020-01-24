@@ -1,8 +1,8 @@
 /**
  * @file Reducer function for handling the part of the state object that
  * stores the state of connections. The connection list includes the
- * master connection (to the Flockwave server) and any other connection
- * that the Flockwave server reports via CONN-LIST and CONN-INF messages.
+ * master connection (to the Skybrush server) and any other connection
+ * that the Skybrush server reports via CONN-LIST and CONN-INF messages.
  */
 
 import has from 'lodash-es/has';

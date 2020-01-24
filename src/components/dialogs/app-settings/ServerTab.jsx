@@ -57,7 +57,7 @@ const ServerTabPresentation = ({
         label="Search path"
         value={searchPath}
         helperText={
-          'Enter directories to search for the Flockwave server ' +
+          'Enter directories to search for the Skybrush server ' +
           'executable, one per line.'
         }
         onChange={onSearchPathChanged}
