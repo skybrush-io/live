@@ -6,13 +6,16 @@ import { all } from 'redux-saga/effects';
 
 import localServerSaga from '~/features/local-server/saga';
 import serversSaga from '~/features/servers/saga';
+import uavSyncSaga from '~/features/uavs/saga';
+
+import flock from '~/flock';
 
 /**
  * The root saga of the Skybrush application.
  */
 export default function* rootSaga() {
   const { localServer } = (window ? window.bridge : null) || {};
-  const sagas = [serversSaga()];
+  const sagas = [serversSaga(), uavSyncSaga(flock)];
 
   if (localServer && localServer.search) {
     sagas.push(localServerSaga(localServer.search));

@@ -16,7 +16,10 @@ import {
   startLocalServerExecutableSearch
 } from './slice';
 
-import { REPLACE_APP_SETTINGS, UPDATE_APP_SETTINGS } from '~/actions/types';
+import {
+  replaceAppSettings,
+  updateAppSettings
+} from '~/features/settings/slice';
 
 /**
  * Saga that attempts to find where the local server is installed on the
@@ -67,12 +70,12 @@ function* localServerExecutableDiscoverySaga(search) {
 
     // Wait for the next signal to start a search
     const action = yield take([
-      REPLACE_APP_SETTINGS,
-      UPDATE_APP_SETTINGS,
+      replaceAppSettings.type,
+      updateAppSettings.type,
       startLocalServerExecutableSearch.type
     ]);
 
-    if (action.type === UPDATE_APP_SETTINGS) {
+    if (action.type === replaceAppSettings.type) {
       // Wait a bit more, effectively throttling multiple signals into one
       // action
       yield delay(1000);

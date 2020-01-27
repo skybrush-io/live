@@ -7,7 +7,7 @@ import mapValues from 'lodash-es/mapValues';
 import omitBy from 'lodash-es/omitBy';
 
 import { setClockStateMultiple } from '~/features/clocks/slice';
-import { parseEpochIdentifierOrISODate, parseISODate } from '~/utils/parsing';
+import { parseEpochIdentifierOrISODate } from '~/utils/parsing';
 
 /**
  * Handles a CLK-INF message from a Skybrush server and updates the
@@ -26,9 +26,9 @@ export function handleClockInformationMessage(body, dispatch) {
       {
         id: statusFromServer.id,
         epoch: parseEpochIdentifierOrISODate(statusFromServer.epoch),
-        referenceTime: parseISODate(statusFromServer.retrievedAt),
+        referenceTime: statusFromServer.retrievedAt,
         running: statusFromServer.running,
-        ticks: statusFromServer.timestamp,
+        ticks: statusFromServer.ticks,
         ticksPerSecond: statusFromServer.ticksPerSecond || 1
       },
       isUndefined

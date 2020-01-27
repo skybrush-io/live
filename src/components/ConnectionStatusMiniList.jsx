@@ -57,7 +57,7 @@ ConnectionStatusMiniListEntry.propTypes = {
   id: PropTypes.string,
   name: PropTypes.string,
   state: PropTypes.string,
-  stateChangedAt: PropTypes.instanceOf(Date)
+  stateChangedAt: PropTypes.number
 };
 
 const ConnectionStatusMiniListPresentation = listOf(

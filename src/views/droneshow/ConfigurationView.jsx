@@ -14,7 +14,10 @@ const drones = [
   {
     id: '1',
     progress: 30,
-    status: 'ok'
+    status: 'success',
+    secondaryStatus: 'off',
+    text: 'Armed',
+    textSemantics: 'success'
   },
   {
     id: '2',

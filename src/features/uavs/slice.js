@@ -26,12 +26,20 @@ const { actions, reducer } = createSlice({
   },
 
   reducers: {
+    addUAVs(state) {},
+
     clearUAVList(state) {
       clearOrderedCollection(state);
+    },
+
+    removeUAVs(state) {},
+
+    updateUAVs(state, action) {
+      // console.log(action.payload);
     }
   }
 });
 
-export const { clearUAVList } = actions;
+export const { addUAVs, clearUAVList, removeUAVs, updateUAVs } = actions;
 
 export default reducer;

@@ -7,7 +7,6 @@ import mapValues from 'lodash-es/mapValues';
 import omitBy from 'lodash-es/omitBy';
 
 import { setConnectionStateMultiple } from '~/actions/connections';
-import { parseISODate } from '~/utils/parsing';
 
 /**
  * Enum containing constants for the various connection states.
@@ -37,7 +36,7 @@ export function handleConnectionInformationMessage(body, dispatch) {
         id: statusFromServer.id,
         name: statusFromServer.description,
         state: statusFromServer.status,
-        stateChangedAt: parseISODate(statusFromServer.timestamp)
+        stateChangedAt: statusFromServer.timestamp
       },
       isUndefined
     )

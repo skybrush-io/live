@@ -54,7 +54,7 @@ export default class ChatBubble extends React.Component {
 ChatBubble.propTypes = {
   author: PropTypes.string.isRequired,
   body: PropTypes.string.isRequired,
-  date: PropTypes.instanceOf(Date),
+  date: PropTypes.number,
   own: PropTypes.bool.isRequired,
   raw: PropTypes.bool,
   leftComponent: PropTypes.oneOfType([

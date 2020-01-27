@@ -7,6 +7,9 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import { makeStyles } from '@material-ui/core/styles';
 
 import BatteryIndicator from './BatteryIndicator';
+import SecondaryStatusLight from './SecondaryStatusLight';
+import SummaryPill from './SummaryPill';
+
 import Colors from '~/components/colors';
 
 const useStyles = makeStyles(theme => ({
@@ -14,7 +17,11 @@ const useStyles = makeStyles(theme => ({
     alignItems: 'center',
     display: 'flex',
     flexDirection: 'column',
-    margin: theme.spacing(1)
+    margin: theme.spacing(1),
+    minWidth: theme.spacing(8),
+    '& div': {
+      marginBottom: theme.spacing(0.5)
+    }
   },
 
   avatarWrapper: {
@@ -46,32 +53,51 @@ const useStyles = makeStyles(theme => ({
     color: 'black'
   },
 
-  'avatar-ok': {
-    backgroundColor: Colors.success
+  'avatar-off': {
+    backgroundColor: Colors.off,
+    color: theme.palette.getContrastText(Colors.off)
+  },
+
+  'avatar-success': {
+    backgroundColor: Colors.success,
+    color: theme.palette.getContrastText(Colors.success)
   },
 
   'avatar-warning': {
     backgroundColor: Colors.warning,
-    boxShadow: `0 0 8px 2px ${Colors.warning}`
+    boxShadow: `0 0 8px 2px ${Colors.warning}`,
+    color: theme.palette.getContrastText(Colors.warning)
   },
 
   'avatar-rth': {
-    animation: 'flash 1s infinite',
+    animation: '$flash 0.5s infinite',
+    animationDirection: 'alternate',
     backgroundColor: Colors.warning,
-    boxShadow: `0 0 8px 2px ${Colors.warning}`
+    boxShadow: `0 0 8px 2px ${Colors.warning}`,
+    color: theme.palette.getContrastText(Colors.warning)
   },
 
   'avatar-error': {
     backgroundColor: Colors.error,
     boxShadow: `0 0 8px 2px ${Colors.error}`,
-    color: 'white'
+    color: theme.palette.getContrastText(Colors.error)
   },
 
   'avatar-critical': {
-    animation: 'flash 1s infinite',
+    animation: '$flash 0.5s infinite',
+    animationDirection: 'alternate',
     backgroundColor: Colors.error,
     boxShadow: `0 0 8px 2px ${Colors.error}`,
-    color: 'white'
+    color: theme.palette.getContrastText(Colors.error)
+  },
+
+  '@keyframes flash': {
+    '0%, 49%': {
+      opacity: 0.2
+    },
+    '50%, 100%': {
+      opacity: 1
+    }
   },
 
   progress: {
@@ -84,7 +110,15 @@ const useStyles = makeStyles(theme => ({
 /**
  * Avatar that represents a single drone.
  */
-const DroneAvatar = ({ crossed, id, progress, status }) => {
+const DroneAvatar = ({
+  crossed,
+  id,
+  progress,
+  secondaryStatus,
+  status,
+  text,
+  textSemantics
+}) => {
   const classes = useStyles();
   return (
     <div className={classes.root}>
@@ -100,7 +134,9 @@ const DroneAvatar = ({ crossed, id, progress, status }) => {
             variant="static"
           />
         )}
+        {secondaryStatus && <SecondaryStatusLight status={secondaryStatus} />}
       </div>
+      {text && <SummaryPill status={textSemantics}>{text}</SummaryPill>}
       <BatteryIndicator voltage="12.3" />
     </div>
   );
@@ -110,11 +146,37 @@ DroneAvatar.propTypes = {
   crossed: PropTypes.bool,
   id: PropTypes.string,
   progress: PropTypes.number,
-  status: PropTypes.oneOf(['off', 'ok', 'warning', 'rth', 'error', 'critical'])
+  secondaryStatus: PropTypes.oneOf([
+    'off',
+    'success',
+    'warning',
+    'rth',
+    'error',
+    'critical'
+  ]),
+  status: PropTypes.oneOf([
+    'off',
+    'success',
+    'warning',
+    'rth',
+    'error',
+    'critical'
+  ]),
+  text: PropTypes.string,
+  textSemantics: PropTypes.oneOf([
+    'off',
+    'info',
+    'success',
+    'warning',
+    'rth',
+    'error',
+    'critical'
+  ])
 };
 
 DroneAvatar.defaultProps = {
-  status: 'off'
+  status: 'off',
+  textSemantics: 'info'
 };
 
 export default DroneAvatar;

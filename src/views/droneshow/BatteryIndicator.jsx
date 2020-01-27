@@ -1,3 +1,4 @@
+import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import React from 'react';
 
@@ -15,34 +16,36 @@ import BatteryFullIcon from '@material-ui/icons/BatteryFull';
 import Colors from '~/components/colors';
 
 const useStyles = makeStyles(theme => ({
-  batteryFull: {
-    color: Colors.success,
-    fontWeight: 'bold',
-    padding: 2
+  root: {
+    padding: '0 2px',
+    textAlign: 'center',
+    width: '100%'
   },
 
-  batteryOk: {
-    padding: 2
+  batteryFull: {
+    color: Colors.success,
+    fontWeight: 'bold'
   },
+
+  batteryOk: {},
 
   batteryWarning: {
     backgroundColor: Colors.warning,
     borderRadius: `${theme.shape.borderRadius * 2}px`,
-    color: 'white',
-    padding: 2
+    color: theme.palette.getContrastText(Colors.warning)
   },
 
   batteryError: {
     backgroundColor: Colors.error,
     borderRadius: `${theme.shape.borderRadius * 2}px`,
-    color: 'white',
-    fontWeight: 'bold',
-    padding: 2
+    color: theme.palette.getContrastText(Colors.error),
+    fontWeight: 'bold'
   }
 }));
 
 const iconStyle = {
-  marginLeft: -4,
+  marginLeft: -8,
+  marginTop: -2,
   verticalAlign: 'bottom'
 };
 
@@ -90,7 +93,7 @@ const BatteryIndicator = ({ percentage, voltage }) => {
       : voltagePerCell > voltageThresholdsPerCell.Warning
       ? 'Warning'
       : 'Error';
-  const rootClass = classes[`battery${status}`];
+  const rootClass = clsx(classes.root, classes[`battery${status}`]);
 
   const batteryIcon =
     percentage === undefined

@@ -112,7 +112,7 @@ const ConnectionListEntry = props => {
 ConnectionListEntry.propTypes = {
   name: PropTypes.string.isRequired,
   state: PropTypes.string.isRequired,
-  stateChangedAt: PropTypes.instanceOf(Date),
+  stateChangedAt: PropTypes.number,
   action: PropTypes.func
 };
 

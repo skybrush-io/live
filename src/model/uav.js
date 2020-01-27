@@ -19,14 +19,43 @@ export default class UAV {
    */
   constructor(id) {
     this._id = id;
-    this.lastUpdated = undefined;
-    this.agl = undefined;
-    this.amsl = undefined;
-    this.lat = undefined;
-    this.lon = undefined;
-    this.heading = undefined;
-    this.error = undefined;
+    this._position = {
+      lat: undefined,
+      lon: undefined,
+      amsl: undefined,
+      agl: undefined
+    };
+    this._rawHeading = undefined;
+    this._rawVoltage = undefined;
+
     this.battery = { voltage: undefined, percentage: undefined };
+    this.errors = [];
+    this.heading = undefined;
+    this.lastUpdated = undefined;
+  }
+
+  /**
+   * Returns the altitude above ground level, if known.
+   */
+  get agl() {
+    return this._position.agl;
+  }
+
+  /**
+   * Returns the altitude above mean sea level, if known.
+   */
+  get amsl() {
+    return this._position.amsl;
+  }
+
+  /**
+   * Returns a single error code from the list of error codes sent by the
+   * UAV, or undefined if there are no errors.
+   */
+  get error() {
+    return this._errors && this._errors.length > 0
+      ? this._errors[0]
+      : undefined;
   }
 
   /**
@@ -39,6 +68,20 @@ export default class UAV {
   }
 
   /**
+   * Returns the latitude of the UAV, if known.
+   */
+  get lat() {
+    return this._position.lat;
+  }
+
+  /**
+   * Returns the longitude of the UAV, if known.
+   */
+  get lon() {
+    return this._position.lon;
+  }
+
+  /**
    * Handles the status information related to a single UAV from an UAV-INF
    * message.
    *
@@ -48,6 +91,7 @@ export default class UAV {
    */
   handleUAVStatusInfo = status => {
     const { timestamp, position, heading, error, battery } = status;
+    let errorList;
     let updated = false;
 
     if (timestamp) {
@@ -56,35 +100,74 @@ export default class UAV {
     }
 
     if (position) {
-      this.lat = position[0] / 1e7;
-      this.lon = position[1] / 1e7;
+      this._position.lat = position[0] / 1e7;
+      this._position.lon = position[1] / 1e7;
       if (!isNil(position[2])) {
-        this.agl = position.agl / 1e3;
+        this._position.amsl = position[2] / 1e3;
       }
 
       if (!isNil(position[3])) {
-        this.amsl = position.amsl / 1e3;
+        this._position.agl = position[3] / 1e3;
       }
 
       updated = true;
     }
 
-    if (heading !== undefined) {
+    if (heading !== undefined && this._rawHeading !== heading) {
+      this._rawHeading = heading;
       this.heading = heading / 10; /* conversion to degrees */
       updated = true;
     }
 
-    if (!isEqual(this.error, error)) {
-      this.error = error;
+    if (Array.isArray(error)) {
+      errorList = error;
+    } else {
+      errorList = error ? [error] : [];
+    }
+
+    if (!isEqual(this.errors, errorList)) {
+      this.errors.splice(0, this.errors.length, ...errorList);
       updated = true;
     }
 
-    if (battery && battery.voltage !== this.battery.voltage) {
-      battery.voltage /= 10; /* conversion to volts */
-      this.battery = battery;
-      updated = true;
+    if (Array.isArray(battery)) {
+      let newVoltageRaw;
+      let newPercentage;
+
+      if (battery.length > 0) {
+        newVoltageRaw = Number.parseInt(battery[0], 10);
+        if (battery.length > 1) {
+          newPercentage = Number.parseInt(battery[1], 10);
+        }
+      }
+
+      if (newPercentage !== battery.percentage) {
+        this.battery.percentage = newPercentage;
+        updated = true;
+      }
+
+      if (newVoltageRaw !== this._rawVoltage) {
+        this._rawVoltage = battery.voltage;
+        this.battery.voltage = newVoltageRaw / 10;
+        updated = true;
+      }
     }
 
     return updated;
   };
+
+  /**
+   * Returns a pure JavaScript object representation of the UAV that can be
+   * used in a Redux store.
+   */
+  toJSON() {
+    return {
+      id: this._id,
+      battery: { ...this.battery },
+      errors: [...this.errors],
+      heading: this.heading,
+      lastUpdated: this.lastUpdated,
+      position: { ...this._position }
+    };
+  }
 }
