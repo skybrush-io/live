@@ -14,7 +14,7 @@ import {
   labelForLayerType,
   defaultParametersForLayerType
 } from '../../model/layers';
-import { deleteById, getKey } from '../../utils/collections';
+import { copyAndDeleteItemById, getKey } from '../../utils/collections';
 import { chooseUniqueId, chooseUniqueName } from '../../utils/naming';
 
 /**
@@ -133,7 +133,7 @@ const reducer = handleActions(
 
     REMOVE_LAYER(state, action) {
       const selectedLayer = action.payload;
-      return deleteById(selectedLayer, state);
+      return copyAndDeleteItemById(selectedLayer, state);
     },
 
     RENAME_LAYER(state, action) {

@@ -21,6 +21,7 @@ import { persistStore, persistReducer } from 'redux-persist';
 import autoMergeLevel2 from 'redux-persist/lib/stateReconciler/autoMergeLevel2';
 import { createFilter } from 'redux-persist-transform-filter';
 
+import { updateUAVs } from './features/uavs/slice';
 import reducer from './reducers';
 
 /**
@@ -86,7 +87,8 @@ const persistConfig = {
     'log',
     'messages',
     'servers',
-    'snackbar'
+    'snackbar',
+    'uavs'
   ],
 
   // do not save more frequently than once every second
@@ -141,7 +143,10 @@ const store = configureStore({
     debouncer,
     promiseMiddleware,
     sagaMiddleware
-  ]
+  ],
+  devTools: {
+    actionsBlacklist: [updateUAVs.type]
+  }
 });
 
 /**

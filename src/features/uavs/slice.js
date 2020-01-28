@@ -7,7 +7,12 @@
 
 import { createSlice } from '@reduxjs/toolkit';
 
-import { clearOrderedCollection } from '~/utils/collections';
+import {
+  addItemSorted,
+  clearOrderedCollection,
+  deleteItemsByIds,
+  replaceItemOrAddSorted
+} from '~/utils/collections';
 
 const { actions, reducer } = createSlice({
   name: 'uavs',
@@ -19,23 +24,42 @@ const { actions, reducer } = createSlice({
       // look like:
       // {
       //     id: "01",
+      //     lastUpdated: 1580225775722,
+      //     position: {
+      //         lat: 47.4732476, lon: 19.0618718, amsl: undefined, agl: 0
+      //     },
+      //     heading: 210,
+      //     errors: [],
+      //     battery: {
+      //         voltage: 10.4,
+      //         percentage: 41
+      //     }
       // }
     },
-    // Order defines the preferred ordering of UAVs on the UI
+    // Order defines the preferred ordering of UAVs on the UI. CUrrently we sort
+    // automatically based on IDs.
     order: []
   },
 
   reducers: {
-    addUAVs(state) {},
+    addUAVs(state, action) {
+      for (const uav of Object.values(action.payload)) {
+        addItemSorted(state, uav);
+      }
+    },
 
     clearUAVList(state) {
       clearOrderedCollection(state);
     },
 
-    removeUAVs(state) {},
+    removeUAVs(state, action) {
+      deleteItemsByIds(state, action.payload);
+    },
 
     updateUAVs(state, action) {
-      // console.log(action.payload);
+      for (const uav of Object.values(action.payload)) {
+        replaceItemOrAddSorted(state, uav);
+      }
     }
   }
 });

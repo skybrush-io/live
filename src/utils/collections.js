@@ -1,6 +1,10 @@
-import curry from 'lodash-es/curry';
+import has from 'lodash-es/has';
 import isNil from 'lodash-es/isNil';
 import isPlainObject from 'lodash-es/isPlainObject';
+import property from 'lodash-es/property';
+import pull from 'lodash-es/pull';
+import sortedIndex from 'lodash-es/sortedIndex';
+import sortedIndexBy from 'lodash-es/sortedIndexBy';
 import reject from 'lodash-es/reject';
 import u from 'updeep';
 
@@ -52,6 +56,110 @@ const storeId = (idStore, id) => {
 };
 
 /**
+ * Ensures that the given item has an ID property.
+ *
+ * If the item has no ID property yet, but it has a name instead, an ID will
+ * be generated from the name and it will be assigned to the item in-place.
+ *
+ * If the item has no ID property yet, and it has no name either, an exception
+ * will be thrown.
+ *
+ * @param  collection  the collection that the item will be a part of
+ * @param  item  the item that needs a unique ID in the collection
+ */
+const ensureItemHasValidId = (collection, item) => {
+  if (!hasValidId(item)) {
+    if (item.name === undefined) {
+      throw new Error('New item needs either an ID or a name');
+    }
+
+    item.id = chooseUniqueIdFromName(item.name, collection);
+  } else if (has(collection.byId, item.id)) {
+    throw new Error('An item with the same ID already exists');
+  }
+};
+
+/**
+ * Helper function that receives an item to be added to a collection, and
+ * adds it to the collection at the given index.
+ *
+ * When the index is negative or zero, the item will be added at the front.
+ *
+ * When the item is larger than or equal to the length of the collection, the
+ * item will be added at the back.
+ *
+ * The item should already have an assigned `id` property. If there is no such
+ * property, or it is equal to the special "new item" value, a new ID will be
+ * generated based on the `name` property of the item. If there is no `name`
+ * property either, an error will be thrown.
+ *
+ * If an item with the generated ID already exists in the collection, an error
+ * will be thrown.
+ *
+ * @param  {Object}   collection  the ordered collection to add the item to
+ * @param  {Object}   item   the item to add
+ * @param  {number}   index  the index to add the given item at
+ */
+export const addItemAt = (collection, item, index) => {
+  const isNew = item && item.id === NEW_ITEM_ID;
+
+  item = { ...item };
+  ensureItemHasValidId(collection, item);
+
+  collection.byId[item.id] = item;
+
+  if (index < 0) {
+    collection.order.splice(0, 0, item.id);
+  } else if (index >= collection.order.length) {
+    collection.order.push(item.id);
+  } else {
+    collection.order.splice(index, 0, item.id);
+  }
+
+  if (isNew) {
+    delete collection.byId[NEW_ITEM_ID];
+  }
+};
+
+/**
+ * Helper function that receives an item to be added to a collection, and
+ * adds it to the collection based on a sorting key function.
+ *
+ * It is assumed that the collection is already sorted based on the sorting
+ * key function.
+ *
+ * The item should already have an assigned `id` property. If there is no such
+ * property, or it is equal to the special "new item" value, a new ID will be
+ * generated based on the `name` property of the item. If there is no `name`
+ * property either, an error will be thrown.
+ *
+ * If an item with the generated ID already exists in the collection, an error
+ * will be thrown.
+ *
+ * @param  {Object}   collection  the ordered collection to add the item to
+ * @param  {Object}   item  the item to add
+ * @param  {function|string} key   a function that can be called with a
+ *         single item and that returns a value that is used to compare items,
+ *         or the name of a single property that is used as a sorting key
+ */
+export const addItemSorted = (collection, item, key = 'id') => {
+  let index;
+
+  if (key === 'id') {
+    /* shortcut for the common case */
+    index = sortedIndex(collection.order, item.id);
+  } else {
+    const getter = typeof key === 'string' ? property(key) : key;
+    index = sortedIndexBy(collection.order, item.id, id => {
+      const existingItem = collection.byId[id];
+      return existingItem === undefined ? getter(item) : getter(existingItem);
+    });
+  }
+
+  return addItemAt(collection, item, index);
+};
+
+/**
  * Helper function that receives an item to be added to a collection, and
  * adds it to the front of the collection.
  *
@@ -60,39 +168,14 @@ const storeId = (idStore, id) => {
  * generated based on the `name` property of the item. If there is no `name`
  * property either, an error will be thrown.
  *
- * If an item with the generated ID already exists in the collection, it will
- * be moved to the front of the collection.
+ * If an item with the generated ID already exists in the collection, an error
+ * will be thrown.
  *
  * @param  {Object}   collection  the ordered collection to add the item to
  * @param  {Object}   item  the item to add
  */
-export const addToFront = (collection, item) => {
-  const isNew = item && item.id === NEW_ITEM_ID;
-
-  item = { ...item };
-
-  if (!hasValidId(item)) {
-    if (item.name === undefined) {
-      throw new Error('New item needs either an ID or a name');
-    }
-
-    item.id = chooseUniqueIdFromName(item.name, collection);
-  }
-
-  const { order } = collection;
-  const existingIndex = order ? order.indexOf(item.id) : -1;
-
-  if (existingIndex >= 0) {
-    collection.order.splice(existingIndex, 1);
-  }
-
-  collection.byId[item.id] = item;
-  collection.order.splice(0, 0, item.id);
-
-  if (isNew) {
-    delete collection.byId[NEW_ITEM_ID];
-  }
-};
+export const addItemToFront = (collection, item) =>
+  addItemAt(collection, item, 0);
 
 /**
  * Helper function that removes all items from an ordered collection.
@@ -115,7 +198,7 @@ export const clearOrderedCollection = collection => {
  * @return {Object}  a copy of the collection after initiating the creation of
  *         the new item
  */
-export const createNewItemAtFrontOf = (collection, idStore) => {
+export const createNewItemInFrontOf = (collection, idStore) => {
   const id = NEW_ITEM_ID;
   storeId(idStore, id);
   collection.byId[id] = { id };
@@ -130,7 +213,7 @@ export const createNewItemAtFrontOf = (collection, idStore) => {
  * @param  {Object}  collection  the ordered collection to modify
  * @return {Object}  the collection with the given item removed
  */
-export const deleteById = (idToRemove, collection) => {
+export const copyAndDeleteItemById = (idToRemove, collection) => {
   const updates = {
     byId: u.omit(idToRemove),
     order: u.reject(id => id === idToRemove)
@@ -147,9 +230,9 @@ export const deleteById = (idToRemove, collection) => {
  * @param  {Object}    collection  the ordered collection to modify
  * @return {Object}    the collection with the given items removed
  */
-export const deleteByIds = (idsToRemove, collection) => {
+export const copyAnddeleteItemsByIds = (idsToRemove, collection) => {
   if (idsToRemove.length === 1) {
-    return deleteById(idsToRemove[0], collection);
+    return copyAndDeleteItemById(idsToRemove[0], collection);
   }
 
   const updates = {
@@ -157,6 +240,33 @@ export const deleteByIds = (idsToRemove, collection) => {
     order: u.reject(id => idsToRemove.includes(id))
   };
   return u(updates, collection);
+};
+
+/**
+ * Helper function that receives an item ID and an ordered collection,
+ * and removes the item with the given ID from the ordered collection.
+ *
+ * @param  {Object}  collection  the ordered collection to modify
+ * @param  {string}  idToRemove  the item ID to remove
+ */
+export const deleteItemById = (collection, idToRemove) => {
+  delete collection.byId[idToRemove];
+  pull(collection.order, idToRemove);
+};
+
+/**
+ * Helper function that receives multiple item IDs and an ordered collection,
+ * removes the items with the given IDs from the ordered collection.
+ *
+ * @param  {Object}    collection  the ordered collection to modify
+ * @param  {string[]}  idsToRemove  the item IDs to remove
+ */
+export const deleteItemsByIds = (collection, idsToRemove) => {
+  for (const id of idsToRemove) {
+    delete collection.byId[id];
+  }
+
+  pull(collection.order, ...idsToRemove);
 };
 
 /**
@@ -205,21 +315,46 @@ export const reorder = (collection, newOrder) =>
   u({ order: newOrder }, collection);
 
 /**
- * Helper function that takes a single item with a key named `id`, and an
- * ordered collection, and merges the item into the collection based on its
- * ID.
+ * Helper function that takes a single item and an ordered collection, and
+ * attempts to replace the item in the collection based on its ID.
+ *
+ * If the incoming object has a valid ID, it is assumed that it is already
+ * in the collection, but its representation will be replaced.
+ *
+ * If the incoming object has no ID yet, it will be added to the collection
+ * in a way that maintains sortedness according to the given key.
+ *
+ * @param  {Object}  item  the item to replace in the collection
+ * @param  {Object}  collection  the ordered collection to update
+ * @param  {function|string} key   a function that can be called with a
+ *         single item and that returns a value that is used to compare items,
+ *         or the name of a single property that is used as a sorting key
+ */
+export const replaceItemOrAddSorted = (collection, item, key = 'id') => {
+  if (hasValidId(item)) {
+    collection.byId[item.id] = { ...item };
+  } else {
+    addItemSorted(collection, item, key);
+  }
+};
+
+/**
+ * Helper function that takes a single item and an ordered collection, and
+ * attempts to replace the item in the collection based on its ID.
+ *
+ * If the incoming object has a valid ID, it is assumed that it is already
+ * in the collection, but its representation will be replaced.
  *
  * If the incoming object has no ID yet, it will be added to the front of
  * the collection as a new item.
  *
- * @param  {Object}  item  the item to update in the collection
+ * @param  {Object}  item  the item to replace in the collection
  * @param  {Object}  collection  the ordered collection to update
- * @return {Object}  the updated collection
  */
-export const updateOrAdd = (collection, item) => {
+export const replaceItemOrAddToFront = (collection, item) => {
   if (hasValidId(item)) {
     collection.byId[item.id] = { ...item };
   } else {
-    addToFront(collection, item);
+    addItemToFront(collection, item);
   }
 };

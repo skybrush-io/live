@@ -9,9 +9,9 @@ import pull from 'lodash-es/pull';
 import { createSlice } from '@reduxjs/toolkit';
 
 import {
-  addToFront,
-  createNewItemAtFrontOf,
-  updateOrAdd
+  addItemToFront,
+  createNewItemInFrontOf,
+  replaceItemOrAddToFront
 } from '~/utils/collections';
 
 const { actions, reducer } = createSlice({
@@ -48,11 +48,11 @@ const { actions, reducer } = createSlice({
 
   reducers: {
     addSavedLocation(state, action) {
-      return addToFront(state, action.payload);
+      return addItemToFront(state, action.payload);
     },
 
     createNewSavedLocation(state, action) {
-      return createNewItemAtFrontOf(state, action);
+      return createNewItemInFrontOf(state, action);
     },
 
     deleteSavedLocation(state, action) {
@@ -63,7 +63,7 @@ const { actions, reducer } = createSlice({
     },
 
     updateSavedLocation(state, action) {
-      return updateOrAdd(state, action.payload);
+      return replaceItemOrAddToFront(state, action.payload);
     }
   }
 });

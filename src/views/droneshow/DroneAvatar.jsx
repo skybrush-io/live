@@ -1,6 +1,7 @@
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import React from 'react';
+import { connect } from 'react-redux';
 
 import Avatar from '@material-ui/core/Avatar';
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -111,6 +112,7 @@ const useStyles = makeStyles(theme => ({
  * Avatar that represents a single drone.
  */
 const DroneAvatar = ({
+  batteryStatus,
   crossed,
   id,
   progress,
@@ -137,12 +139,16 @@ const DroneAvatar = ({
         {secondaryStatus && <SecondaryStatusLight status={secondaryStatus} />}
       </div>
       {text && <SummaryPill status={textSemantics}>{text}</SummaryPill>}
-      <BatteryIndicator voltage="12.3" />
+      <BatteryIndicator {...batteryStatus} />
     </div>
   );
 };
 
 DroneAvatar.propTypes = {
+  batteryStatus: PropTypes.shape({
+    votlage: PropTypes.number,
+    percentage: PropTypes.number
+  }),
   crossed: PropTypes.bool,
   id: PropTypes.string,
   progress: PropTypes.number,
@@ -179,4 +185,48 @@ DroneAvatar.defaultProps = {
   textSemantics: 'info'
 };
 
-export default DroneAvatar;
+/**
+ * Function that takes a drone object from the Redux store and derives the
+ * generic status summary of the drone.
+ *
+ * The rules are as follows (the first matching rule wins);
+ *
+ * - If the drone has at least one error code where `(errorCode & 0xFF) >> 6`
+ *   is 3, the status is "critical".
+ *
+ * - If the drone has at least one error code where `(errorCode & 0xFF) >> 6`
+ *   is 2, the status is "error".
+ *
+ * - If the drone has at least one error code where `(errorCode & 0xFF) >> 6`
+ *   is 1, the status is "warning".
+ *
+ * - If no status updates were received from the drone since a predefined
+ *   longer time frame (say, 60 seconds), the status is "off" and the secondary
+ *   status display will read "GONE".
+ *
+ * - If no status updates were received from the drone since a predefined time
+ *   frame, the status is "warning". You can distinguish this from warnings
+ *   derived from error codes by looking at the secondary status display,
+ *   which should read "AWAY".
+ *
+ * - If the drone is still initializing or running prearm checks, the status
+ *   is "warning". You can distinguish this from warnings derived from error
+ *   codes by looking at the secondary status display, which should read "INIT"
+ *   or "PREARM".
+ *
+ * - Otherwise, the status is "success".
+ */
+function getDroneStatus(uav) {
+  return 'success';
+}
+
+export default connect(
+  // mapStateToProps
+  (state, ownProps) => {
+    const uav = state.uavs.byId[ownProps.id];
+    return {
+      batteryStatus: uav.battery,
+      status: getDroneStatus(uav)
+    };
+  }
+)(DroneAvatar);

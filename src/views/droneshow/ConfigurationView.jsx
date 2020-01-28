@@ -10,6 +10,8 @@ import Box from '@material-ui/core/Box';
 
 import DroneAvatar from './DroneAvatar';
 
+import { getUAVIdList } from '~/features/uavs/selectors';
+
 const drones = [
   {
     id: '1',
@@ -41,16 +43,16 @@ const drones = [
 /**
  * Presentation component for showing the drone show configuration view.
  */
-const ConfigurationViewPresentation = ({ drones }) => (
+const ConfigurationViewPresentation = ({ uavIds }) => (
   <Box display="flex" flexDirection="row" flexWrap="wrap" px={1} py={2}>
-    {drones.map(drone => (
-      <DroneAvatar key={drone.id} {...drone} />
+    {uavIds.map(uavId => (
+      <DroneAvatar key={uavId} id={uavId} />
     ))}
   </Box>
 );
 
 ConfigurationViewPresentation.propTypes = {
-  drones: PropTypes.array
+  uavIds: PropTypes.array
 };
 
 /**
@@ -58,9 +60,9 @@ ConfigurationViewPresentation.propTypes = {
  */
 const ConfigurationView = connect(
   // mapStateToProps
-  () => ({
+  state => ({
     dense: true,
-    drones
+    uavIds: getUAVIdList(state)
   }),
   // mapDispatchToProps
   undefined

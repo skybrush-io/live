@@ -19,6 +19,7 @@ const useStyles = makeStyles(theme => ({
   root: {
     padding: '0 2px',
     textAlign: 'center',
+    userSelect: 'none',
     width: '100%'
   },
 

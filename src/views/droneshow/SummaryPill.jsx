@@ -17,6 +17,7 @@ const useStyles = makeStyles(theme => ({
     padding: `0 ${theme.spacing(0.5)}`,
     textAlign: 'center',
     textTransform: 'uppercase',
+    userSelect: 'none',
     whiteSpace: 'nowrap',
     width: '100%'
   },

@@ -10,6 +10,7 @@ import DialogTabs from '../DialogTabs';
 
 import DisplayTab from './DisplayTab';
 import ServerTab from './ServerTab';
+import UAVsTab from './UAVsTab';
 
 import {
   closeAppSettingsDialog,
@@ -21,7 +22,7 @@ import {
 const tabNameToComponent = {
   display: <DisplayTab />,
   server: <ServerTab />,
-  uavs: null
+  uavs: <UAVsTab />
 };
 
 /**

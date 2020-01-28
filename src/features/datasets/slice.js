@@ -5,7 +5,7 @@
 
 import { createSlice } from '@reduxjs/toolkit';
 
-import { deleteByIds } from '~/utils/collections';
+import { deleteItemsByIds } from '~/utils/collections';
 
 const { actions, reducer } = createSlice({
   name: 'datasets',
@@ -36,8 +36,7 @@ const { actions, reducer } = createSlice({
 
   reducers: {
     removeDatasets(state, action) {
-      const { ids } = action.payload;
-      return deleteByIds(ids, state);
+      return deleteItemsByIds(state, action.payload);
     }
   }
 });

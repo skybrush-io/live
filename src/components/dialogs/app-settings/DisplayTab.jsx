@@ -10,6 +10,7 @@ import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import Typography from '@material-ui/core/Typography';
+import { useTheme } from '@material-ui/core/styles';
 
 import {
   clearHomePosition,
@@ -22,61 +23,66 @@ import RotationField from '~/components/RotationField';
 import { updateAppSettings } from '~/features/settings/slice';
 import { getMapOriginRotationAngle } from '~/selectors/map';
 
-const DisplayTabPresentation = props => (
-  <FormGroup style={{ marginBottom: '1em' }}>
-    <Typography variant="button" style={{ marginTop: '1em' }}>
-      Map widgets
-    </Typography>
-    <FormControlLabel
-      label="Show mouse coordinates"
-      control={
-        <Checkbox
-          checked={props.showMouseCoordinates}
-          name="showMouseCoordinates"
-          onChange={props.onCheckboxToggled}
-        />
-      }
-    />
-    <FormControlLabel
-      label="Show scale line"
-      control={
-        <Checkbox
-          checked={props.showScaleLine}
-          name="showScaleLine"
-          onChange={props.onCheckboxToggled}
-        />
-      }
-    />
+const DisplayTabPresentation = props => {
+  const theme = useTheme();
+  return (
+    <FormGroup style={{ marginBottom: theme.spacing(2) }}>
+      <Typography variant="button" style={{ marginTop: theme.spacing(2) }}>
+        Map widgets
+      </Typography>
+      <FormControlLabel
+        label="Show mouse coordinates"
+        control={
+          <Checkbox
+            checked={props.showMouseCoordinates}
+            name="showMouseCoordinates"
+            onChange={props.onCheckboxToggled}
+          />
+        }
+      />
+      <FormControlLabel
+        label="Show scale line"
+        control={
+          <Checkbox
+            checked={props.showScaleLine}
+            name="showScaleLine"
+            onChange={props.onCheckboxToggled}
+          />
+        }
+      />
 
-    <Typography
-      variant="button"
-      style={{ marginTop: '1em', marginBottom: '0.5em' }}
-    >
-      Flat Earth coordinate system
-    </Typography>
-    <CoordinateField
-      label="Origin"
-      value={props.homePosition}
-      onChange={props.onHomePositionChanged}
-    />
-    <FormControl>
-      <InputLabel htmlFor="flat-earth-coordinate-system-type">Type</InputLabel>
-      <Select
-        value={props.coordinateSystemType}
-        inputProps={{ id: 'flat-earth-coordinate-system-type' }}
-        onChange={props.onCoordinateSystemTypeChanged}
+      <Typography
+        variant="button"
+        style={{ marginTop: theme.spacing(2), marginBottom: theme.spacing(1) }}
       >
-        <MenuItem value="neu">NEU (left-handed)</MenuItem>
-        <MenuItem value="nwu">NWU (right-handed)</MenuItem>
-      </Select>
-    </FormControl>
-    <RotationField
-      label="Orientation (X+ axis)"
-      value={props.orientation}
-      onChange={props.onOrientationChanged}
-    />
-  </FormGroup>
-);
+        Flat Earth coordinate system
+      </Typography>
+      <CoordinateField
+        label="Origin"
+        value={props.homePosition}
+        onChange={props.onHomePositionChanged}
+      />
+      <FormControl>
+        <InputLabel htmlFor="flat-earth-coordinate-system-type">
+          Type
+        </InputLabel>
+        <Select
+          value={props.coordinateSystemType}
+          inputProps={{ id: 'flat-earth-coordinate-system-type' }}
+          onChange={props.onCoordinateSystemTypeChanged}
+        >
+          <MenuItem value="neu">NEU (left-handed)</MenuItem>
+          <MenuItem value="nwu">NWU (right-handed)</MenuItem>
+        </Select>
+      </FormControl>
+      <RotationField
+        label="Orientation (X+ axis)"
+        value={props.orientation}
+        onChange={props.onOrientationChanged}
+      />
+    </FormGroup>
+  );
+};
 
 DisplayTabPresentation.propTypes = {
   coordinateSystemType: PropTypes.oneOf(['neu', 'nwu']),
