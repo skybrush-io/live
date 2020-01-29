@@ -3,7 +3,7 @@ import isString from 'lodash-es/isString';
 import trimEnd from 'lodash-es/trimEnd';
 
 /**
- * Formats a Skybrush command response object found in a CMD-RESP message
+ * Formats a Flockwave command response object found in a CMD-RESP message
  * into HTML.
  *
  * @param  {string|Object}  response  the response object in a CMD-RESP

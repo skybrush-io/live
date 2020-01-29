@@ -1,10 +1,10 @@
 /**
- * @file Builder functions for commonly used Skybrush messages.
+ * @file Builder functions for commonly used Flockwave messages.
  *
- * If you dispatch a Skybrush message frequently, consider adding a builder
+ * If you dispatch a Flockwave message frequently, consider adding a builder
  * function here; this way the actual formatting of the message is abstracted
  * away behind a function and you will only need to change the function body
- * if the Skybrush protocol changes.
+ * if the Flockwave protocol changes.
  */
 
 /**

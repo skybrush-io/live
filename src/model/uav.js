@@ -19,6 +19,7 @@ export default class UAV {
    */
   constructor(id) {
     this._id = id;
+    this._errors = [];
     this._position = {
       lat: undefined,
       lon: undefined,
@@ -29,7 +30,6 @@ export default class UAV {
     this._rawVoltage = undefined;
 
     this.battery = { voltage: undefined, percentage: undefined };
-    this.errors = [];
     this.heading = undefined;
     this.lastUpdated = undefined;
   }
@@ -90,7 +90,7 @@ export default class UAV {
    * @return {boolean}  whether the status information has been updated
    */
   handleUAVStatusInfo = status => {
-    const { timestamp, position, heading, error, battery } = status;
+    const { timestamp, position, heading, errors, battery } = status;
     let errorList;
     let updated = false;
 
@@ -119,14 +119,14 @@ export default class UAV {
       updated = true;
     }
 
-    if (Array.isArray(error)) {
-      errorList = error;
+    if (Array.isArray(errors)) {
+      errorList = errors;
     } else {
-      errorList = error ? [error] : [];
+      errorList = errors ? [errors] : [];
     }
 
-    if (!isEqual(this.errors, errorList)) {
-      this.errors.splice(0, this.errors.length, ...errorList);
+    if (!isEqual(this._errors, errorList)) {
+      this._errors.splice(0, this._errors.length, ...errorList);
       updated = true;
     }
 
@@ -164,7 +164,7 @@ export default class UAV {
     return {
       id: this._id,
       battery: { ...this.battery },
-      errors: [...this.errors],
+      errors: [...this._errors],
       heading: this.heading,
       lastUpdated: this.lastUpdated,
       position: { ...this._position }

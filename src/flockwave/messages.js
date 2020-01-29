@@ -1,5 +1,5 @@
 /**
- * @file Functions and classes related to dealing with Skybrush messages.
+ * @file Functions and classes related to dealing with Flockwave messages.
  */
 
 import has from 'lodash-es/has';
@@ -14,7 +14,7 @@ import { extractReceiptFromCommandRequest } from './parsing';
 import version from './version';
 
 /**
- * Radix-64 encoder for generating Skybrush message IDs.
+ * Radix-64 encoder for generating Flockwave message IDs.
  */
 const radix64Encoder = radix64();
 
@@ -24,21 +24,21 @@ const radix64Encoder = radix64();
 const rng = new MersenneTwister();
 
 /**
- * Creates a new Skybrush message ID.
+ * Creates a new Flockwave message ID.
  *
- * @return {string} a new, random Skybrush message ID
+ * @return {string} a new, random Flockwave message ID
  */
 const createMessageId = () =>
   radix64Encoder.encodeInt(rng.random_int() & 0x3fffffff) +
   radix64Encoder.encodeInt(rng.random_int() & 0x3fffffff, 5);
 
 /**
- * Creates a new Skybrush message with the given body.
+ * Creates a new Flockwave message with the given body.
  *
  * @param {Object} body  the body of the message to send, or the type of
  *        the message to send (in which case an appropriate body with
  *        only the given type is created)
- * @return {Object}  the Skybrush message with the given body
+ * @return {Object}  the Flockwave message with the given body
  */
 function createMessage(body = {}) {
   if (!isObject(body)) {
@@ -75,7 +75,7 @@ export class NoEmitterError extends Error {
 }
 
 /**
- * Error class thrown when the Skybrush server failed to respond to a
+ * Error class thrown when the server failed to respond to a
  * message in time. This class is exported in MessageHub as
  * <code>MessageHub.Timeout</code>.
  */
@@ -87,7 +87,7 @@ export class MessageTimeout extends Error {
 }
 
 /**
- * Error class thrown when the Skybrush server failed to respond to a
+ * Error class thrown when the server failed to respond to a
  * command execution request in time, or when it responded with a
  * CMD-TIMEOUT message.
  */
@@ -101,7 +101,7 @@ export class CommandExecutionTimeout extends Error {
 }
 
 /**
- * Error class thrown when the Skybrush server responded to a request with
+ * Error class thrown when the server responded to a request with
  * a CMD-TIMEOUT message.
  */
 export class ServerSideCommandExecutionTimeout extends CommandExecutionTimeout {
@@ -290,7 +290,7 @@ class CommandExecutionManager {
    * @param {number} timeout  number of seconds to wait for a CMD-RESP or a
    *        CMD-TIMEOUT message in response to a CMD-REQ request before we
    *        consider the command request as timed out. The reference
-   *        Skybrush server implementation waits for 30 seconds before
+   *        server implementation waits for 30 seconds before
    *        sending a CMD-TIMEOUT so this should probably be larger.
    */
   constructor(hub, timeout = 60) {
@@ -364,7 +364,7 @@ class CommandExecutionManager {
   }
 
   /**
-   * Sends a Skybrush command request (CMD-REQ) with the given body and
+   * Sends a Flockwave command request (CMD-REQ) with the given body and
    * positional and keyword arguments and returns a promise that resolves
    * when one of the following events happen:
    *
@@ -471,7 +471,7 @@ class CommandExecutionManager {
 }
 
 /**
- * Message hub class that can be used to send Skybrush messages and get
+ * Message hub class that can be used to send Flockwave messages and get
  * promises that will resolve when the server responds to them.
  */
 export default class MessageHub {
@@ -598,7 +598,7 @@ export default class MessageHub {
    *
    * See {@link registerNotificationHandler} for more details.
    *
-   * @param {Object} typesAndHandlers  object mapping Skybrush message
+   * @param {Object} typesAndHandlers  object mapping Flockwave message
    *        types to the corresponding handlers to register
    */
   registerNotificationHandlers(typesAndHandlers) {
@@ -635,7 +635,7 @@ export default class MessageHub {
    *
    * See {@link unregisterNotificationHandler} for more details.
    *
-   * @param {Object} typesAndHandlers  object mapping Skybrush message
+   * @param {Object} typesAndHandlers  object mapping Flockwave message
    *        types to the corresponding handlers to unregister
    */
   unregisterNotificationHandlers(typesAndHandlers) {
@@ -645,7 +645,7 @@ export default class MessageHub {
   }
 
   /**
-   * Sends a Skybrush command request (CMD-REQ) with the given body and
+   * Sends a Flockwave command request (CMD-REQ) with the given body and
    * positional and keyword arguments and returns a promise that resolves
    * when one of the following events happen:
    *
@@ -685,7 +685,7 @@ export default class MessageHub {
   }
 
   /**
-   * Sends a Skybrush message with the given body and then return a promise
+   * Sends a Flockwave message with the given body and then return a promise
    * that resolves when the server responds to the message.
    *
    * The promise may also throw an error if the server fails to respond to
@@ -721,7 +721,7 @@ export default class MessageHub {
   }
 
   /**
-   * Sends a Skybrush notification with the given body. No response is
+   * Sends a Flockwave notification with the given body. No response is
    * expected to be provided by the server, and therefore no promise will
    * be returned.
    *

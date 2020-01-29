@@ -1,5 +1,5 @@
 /**
- * @file Utility functions to parse data out of Skybrush messages.
+ * @file Utility functions to parse data out of Flockwave messages.
  */
 
 import includes from 'lodash-es/includes';

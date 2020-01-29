@@ -12,6 +12,7 @@ import SecondaryStatusLight from './SecondaryStatusLight';
 import SummaryPill from './SummaryPill';
 
 import Colors from '~/components/colors';
+import { getSeverityOfMostSevereErrorCode, Severity } from '~/flockwave/errors';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -217,7 +218,32 @@ DroneAvatar.defaultProps = {
  * - Otherwise, the status is "success".
  */
 function getDroneStatus(uav) {
+  if (uav.errors && uav.errors.length > 0) {
+    const severity = getSeverityOfMostSevereErrorCode(uav.errors);
+    switch (severity) {
+      case Severity.FATAL:
+        return 'critical';
+      case Severity.ERROR:
+        return 'error';
+      case Severity.WARNING:
+        return 'warning';
+      default:
+      // nothing to do
+    }
+  }
+
+  // TODO: check expiry dates
+
   return 'success';
+}
+
+function getDroneText(uav) {
+  // TODO(ntamas): don't hardcode, use an enum
+  if (uav.errors && uav.errors.includes(2)) {
+    return { text: 'init', textSemantics: 'info' };
+  }
+
+  return { text: 'armed', textSemantics: 'success' };
 }
 
 export default connect(
@@ -226,7 +252,8 @@ export default connect(
     const uav = state.uavs.byId[ownProps.id];
     return {
       batteryStatus: uav.battery,
-      status: getDroneStatus(uav)
+      status: getDroneStatus(uav),
+      ...getDroneText(uav)
     };
   }
 )(DroneAvatar);
