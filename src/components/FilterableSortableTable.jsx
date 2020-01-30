@@ -39,7 +39,7 @@ const filterPropertiesInitializers = {
     max: 'filterProperties' in col ? col.filterProperties.steps.length - 1 : -1,
     sorter: col.sorter || ((a, b) => (a > b) - (a < b))
   }),
-  [FilterTypes.text]: col => ({ text: '' })
+  [FilterTypes.text]: () => ({ text: '' })
 };
 
 const filterTesters = {
@@ -48,7 +48,15 @@ const filterTesters = {
   [FilterTypes.range]: (filterProperties, data) => {
     const { steps, min, max, sorter } = filterProperties;
 
-    return sorter(steps[min], data) <= 0 && sorter(data, steps[max]) <= 0;
+    if (steps[min] !== undefined && sorter(steps[min], data) > 0) {
+      return false;
+    }
+
+    if (steps[max] !== undefined && sorter(steps[max], data) < 0) {
+      return false;
+    }
+
+    return true;
   },
   [FilterTypes.text]: (filterProperties, data) =>
     data.match(filterProperties.text) ||
@@ -56,6 +64,30 @@ const filterTesters = {
 };
 
 class FilterableSortableTable extends React.Component {
+  static propTypes = {
+    dataSource: PropTypes.array.isRequired,
+    rowIdGenerator: PropTypes.func,
+    availableColumns: PropTypes.array.isRequired,
+    defaultColumns: PropTypes.array,
+    defaultSortBy: PropTypes.number,
+    defaultReverse: PropTypes.bool
+  };
+
+  static defaultProps = {
+    rowIdGenerator: row => {
+      if (!('id' in row)) {
+        throw new Error(
+          'FilterableSortableTable: Please include a field named "id"' +
+            'in the row objects or provide your own rowIdGenerator implementation!'
+        );
+      }
+
+      return row.id;
+    },
+    defaultSortBy: 0,
+    defaultReverse: false
+  };
+
   constructor(props) {
     super(props);
 
@@ -100,15 +132,20 @@ class FilterableSortableTable extends React.Component {
   /**
    * React lifecycle event handler to update the steps of range type columns.
    *
-   * @param {Object} oldProps The old props that the component used to have
-   *        before the update
+   * @param {Object} newProps The new props that the component will have after
+   *        the update
    */
-  componentDidUpdate(oldProps) {
-    if (oldProps.dataSource !== this.props.dataSource) {
+  shouldComponentUpdate(newProps) {
+    const oldProps = this.props;
+
+    // This is a nasty hack; we are using this to tap into the component update
+    // process so we can update range filters _before_ the component gets
+    // rendered.
+    if (oldProps.dataSource !== newProps.dataSource) {
       this.state.availableColumns
         .filter(col => col.filterType === FilterTypes.range)
         .forEach(col => {
-          const sortedData = this.props.dataSource
+          const sortedData = newProps.dataSource
             .map(row => col.dataExtractor(row))
             .sort(col.sorter);
 
@@ -117,9 +154,11 @@ class FilterableSortableTable extends React.Component {
 
           col.filterProperties.steps = sortedData.slice(1).reduce(
             (acc, curr) => {
-              return col.sorter(acc[acc.length - 1], curr) === 0
-                ? acc
-                : [...acc, curr];
+              if (col.sorter(acc[acc.length - 1], curr) !== 0) {
+                acc.push(curr);
+              }
+
+              return acc;
             },
             [sortedData[0]]
           );
@@ -129,6 +168,8 @@ class FilterableSortableTable extends React.Component {
           }
         });
     }
+
+    return true;
   }
 
   /**
@@ -144,6 +185,7 @@ class FilterableSortableTable extends React.Component {
    */
   get _data() {
     const filteringColumns = this._columns.filter(col => 'filterType' in col);
+    console.log(filteringColumns);
 
     const filteredData = this.props.dataSource.filter(row =>
       filteringColumns
@@ -192,7 +234,7 @@ class FilterableSortableTable extends React.Component {
    *         chage event.
    */
   _makeListChangeHandler(item) {
-    return e => {
+    return () => {
       const { filterProperties } = this._columns[
         this.state.filterPopoverTargetColumnId
       ];
@@ -324,7 +366,7 @@ class FilterableSortableTable extends React.Component {
   _makeSortClickHandler(i) {
     return () => {
       if (this.state.sortBy === i) {
-        this.setState({ reverse: !this.state.reverse });
+        this.setState(state => ({ reverse: !state.reverse }));
       } else {
         this.setState({ sortBy: i });
       }
@@ -461,11 +503,11 @@ class FilterableSortableTable extends React.Component {
         style={{ padding: '5px', textAlign: 'center', overflow: 'visible' }}
         onClose={this._closeFilterPopover}
       >
-        {this.state.filterPopoverTargetColumnId !== undefined
-          ? this._makeFilterPopoverContent(
+        {this.state.filterPopoverTargetColumnId === undefined
+          ? false
+          : this._makeFilterPopoverContent(
               this.state.filterPopoverTargetColumnId
-            )
-          : false}
+            )}
 
         <Button onClick={this._resetFilter}>
           <ActionSettingsBackupRestore />
@@ -504,29 +546,5 @@ class FilterableSortableTable extends React.Component {
     );
   }
 }
-
-FilterableSortableTable.propTypes = {
-  dataSource: PropTypes.array.isRequired,
-  rowIdGenerator: PropTypes.func.isRequired,
-  availableColumns: PropTypes.array.isRequired,
-  defaultColumns: PropTypes.array,
-  defaultSortBy: PropTypes.number,
-  defaultReverse: PropTypes.bool
-};
-
-FilterableSortableTable.defaultProps = {
-  rowIdGenerator: row => {
-    if (!('id' in row)) {
-      throw new Error(
-        'FilterableSortableTable: Please include a field named "id"' +
-          'in the row objects or provide your own rowIdGenerator implementation!'
-      );
-    }
-
-    return row.id;
-  },
-  defaultSortBy: 0,
-  defaultReverse: false
-};
 
 export default FilterableSortableTable;
