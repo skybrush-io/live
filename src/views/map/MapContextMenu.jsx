@@ -82,8 +82,6 @@ class MapContextMenu extends React.Component {
   };
 
   render() {
-    console.log('Rendering context menu');
-
     return (
       <ContextMenu
         ref={this._contextMenu}

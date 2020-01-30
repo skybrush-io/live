@@ -36,9 +36,8 @@ function iconForLogLevel(level) {
 
 const tableColumns = [
   {
-    name: 'Level',
-    // DisplayName: <ActionReceipt />,
-    width: 100,
+    name: '',
+    width: 32,
     dataExtractor: property('level'),
     displayRenderer: iconForLogLevel,
     filterType: FilterTypes.list,
@@ -49,7 +48,7 @@ const tableColumns = [
   },
   {
     name: 'Timestamp',
-    width: 150,
+    width: 100,
     dataExtractor: property('timestamp'),
     displayRenderer: data => {
       const currentDate = new Date(data);
@@ -65,7 +64,7 @@ const tableColumns = [
   },
   {
     name: 'Message',
-    width: 600,
+    width: 700,
     dataExtractor: property('message'),
     filterType: FilterTypes.text
   }

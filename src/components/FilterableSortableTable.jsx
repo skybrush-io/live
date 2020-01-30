@@ -185,7 +185,6 @@ class FilterableSortableTable extends React.Component {
    */
   get _data() {
     const filteringColumns = this._columns.filter(col => 'filterType' in col);
-    console.log(filteringColumns);
 
     const filteredData = this.props.dataSource.filter(row =>
       filteringColumns
