@@ -3,16 +3,20 @@
  */
 
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { connect } from 'react-redux';
 
+import AppBar from '@material-ui/core/AppBar';
 import Box from '@material-ui/core/Box';
 
 import DroneAvatar from './DroneAvatar';
 import DroneListItem from './DroneListItem';
 
+import { setSelectedUAVIds } from '~/actions/map';
+import { createSelectionHandlerFactory } from '~/components/helpers/lists';
 import { getUAVIdList } from '~/features/uavs/selectors';
 import { getSelectedUAVIds } from '~/selectors/selection';
+import UAVToolbar from '~/views/uavs/UAVToolbar';
 
 const drones = [
   {
@@ -45,21 +49,46 @@ const drones = [
 /**
  * Presentation component for showing the drone show configuration view.
  */
-const ConfigurationViewPresentation = ({ selectedUAVIds, uavIds }) => (
-  <Box display="flex" flexDirection="row" flexWrap="wrap" px={1} py={2}>
-    {uavIds.map(uavId => (
-      <DroneListItem key={uavId} selected={selectedUAVIds.includes(uavId)}>
-        <DroneAvatar
-          key={uavId}
-          id={uavId}
-          selected={selectedUAVIds.includes(uavId)}
-        />
-      </DroneListItem>
-    ))}
-  </Box>
-);
+const ConfigurationViewPresentation = ({
+  onSelectionChanged,
+  selectedUAVIds,
+  uavIds
+}) => {
+  const onSelected = useMemo(
+    () =>
+      createSelectionHandlerFactory({
+        getSelection: () => selectedUAVIds,
+        setSelection: onSelectionChanged
+      }),
+    [selectedUAVIds, onSelectionChanged]
+  );
+
+  return (
+    <Box display="flex" flexDirection="column">
+      <AppBar color="default" position="static">
+        <UAVToolbar flex={0} selectedUAVIds={selectedUAVIds} />
+      </AppBar>
+      <Box display="flex" flex={1} flexDirection="row" flexWrap="wrap">
+        {uavIds.map(uavId => (
+          <DroneListItem
+            key={uavId}
+            selected={selectedUAVIds.includes(uavId)}
+            onClick={onSelected(uavId)}
+          >
+            <DroneAvatar
+              key={uavId}
+              id={uavId}
+              selected={selectedUAVIds.includes(uavId)}
+            />
+          </DroneListItem>
+        ))}
+      </Box>
+    </Box>
+  );
+};
 
 ConfigurationViewPresentation.propTypes = {
+  onSelectionChanged: PropTypes.func,
   selectedUAVIds: PropTypes.array,
   uavIds: PropTypes.array
 };
@@ -70,12 +99,15 @@ ConfigurationViewPresentation.propTypes = {
 const ConfigurationView = connect(
   // mapStateToProps
   state => ({
-    dense: true,
     selectedUAVIds: getSelectedUAVIds(state),
     uavIds: getUAVIdList(state)
   }),
   // mapDispatchToProps
-  undefined
+  dispatch => ({
+    onSelectionChanged: uavIds => {
+      dispatch(setSelectedUAVIds(uavIds));
+    }
+  })
 )(ConfigurationViewPresentation);
 
 export default ConfigurationView;

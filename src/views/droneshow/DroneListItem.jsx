@@ -1,6 +1,7 @@
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import React from 'react';
+
 import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles(
@@ -10,8 +11,8 @@ const useStyles = makeStyles(
       cursor: 'hand',
       display: 'flex',
       flexDirection: 'column',
-      padding: theme.spacing(0.5),
-      minWidth: theme.spacing(9),
+      padding: theme.spacing(1),
+      minWidth: theme.spacing(10),
 
       '&:hover': {
         backgroundColor: theme.palette.action.hover
@@ -35,10 +36,13 @@ const useStyles = makeStyles(
   }
 );
 
-const DroneListItem = ({ children, selected }) => {
+const DroneListItem = ({ children, onClick, selected }) => {
   const classes = useStyles();
   return (
-    <div className={clsx(classes.root, selected && classes.selected)}>
+    <div
+      className={clsx(classes.root, selected && classes.selected)}
+      onClick={onClick}
+    >
       {children}
     </div>
   );
@@ -46,6 +50,7 @@ const DroneListItem = ({ children, selected }) => {
 
 DroneListItem.propTypes = {
   children: PropTypes.node,
+  onClick: PropTypes.func,
   selected: PropTypes.bool
 };
 

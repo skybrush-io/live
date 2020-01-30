@@ -4,6 +4,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 
 import IconButton from '@material-ui/core/IconButton';
+import Toolbar from '@material-ui/core/Toolbar';
 import ActionFlightTakeoff from '@material-ui/icons/FlightTakeoff';
 import ActionFlightLand from '@material-ui/icons/FlightLand';
 import ActionHome from '@material-ui/icons/Home';
@@ -39,7 +40,7 @@ class UAVToolbar extends React.Component {
      * component gives us a warning anyway. */
 
     return (
-      <div>
+      <Toolbar disableGutters variant="dense">
         <IconButton
           disabled={isSelectionEmpty}
           onClick={this._takeoffSelectedUAVs}
@@ -82,10 +83,12 @@ class UAVToolbar extends React.Component {
           />
         </IconButton>
 
-        <IconButton style={{ float: 'right' }} onClick={fitSelectedUAVs}>
-          {isSelectionEmpty ? <ImageBlurOn /> : <ImageBlurCircular />}
-        </IconButton>
-      </div>
+        {fitSelectedUAVs && (
+          <IconButton style={{ float: 'right' }} onClick={fitSelectedUAVs}>
+            {isSelectionEmpty ? <ImageBlurOn /> : <ImageBlurCircular />}
+          </IconButton>
+        )}
+      </Toolbar>
     );
   }
 

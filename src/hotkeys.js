@@ -13,7 +13,6 @@ import {
 import { showMessagesDialog } from './actions/messages';
 import { showSnackbarMessage } from './features/snackbar/slice';
 
-import flock from './flock';
 import { Source } from './model/sources';
 import { getSelectedUAVIds } from './selectors/selection';
 import {
@@ -37,7 +36,7 @@ export default [
     on: 'down',
     keys: 'PlatMod + KeyA',
     action: () => {
-      store.dispatch(selectAllUAVFeatures(flock));
+      store.dispatch(selectAllUAVFeatures());
     }
   },
   {

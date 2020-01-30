@@ -5,6 +5,7 @@
 
 import Immutable from 'immutable';
 
+import AppBar from '@material-ui/core/AppBar';
 import Box from '@material-ui/core/Box';
 import IconButton from '@material-ui/core/IconButton';
 import ListItem from '@material-ui/core/ListItem';
@@ -204,10 +205,12 @@ class UAVList extends React.Component {
 
     return (
       <Box display="flex" flexDirection="column" height="100%">
-        <UAVToolbar
-          selectedUAVIds={selectedUAVIds}
-          fitSelectedUAVs={this._fitSelectedUAVs}
-        />
+        <AppBar color="default" position="static">
+          <UAVToolbar
+            selectedUAVIds={selectedUAVIds}
+            fitSelectedUAVs={this._fitSelectedUAVs}
+          />
+        </AppBar>
 
         <Box height="100%" overflow="auto">
           <UAVListPresentation
@@ -231,7 +234,7 @@ export default connect(
   }),
   // mapDispatchToProps
   dispatch => ({
-    onSelectionChanged: (event, uavIds) => {
+    onSelectionChanged: uavIds => {
       dispatch(setSelectedUAVIds(uavIds));
     }
   })

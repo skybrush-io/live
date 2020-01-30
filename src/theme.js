@@ -13,7 +13,7 @@ import useDarkMode from '~/hooks/useDarkMode';
 
 const DarkAwareThemeProvider = ({ children }) => {
   const darkMode = useDarkMode();
-  const theme = React.useMemo(
+  const baseTheme = React.useMemo(
     () =>
       createMuiTheme({
         palette: {
@@ -23,6 +23,19 @@ const DarkAwareThemeProvider = ({ children }) => {
         }
       }),
     [darkMode]
+  );
+  const theme = React.useMemo(
+    () => ({
+      ...baseTheme,
+      overrides: {
+        MuiAppBar: {
+          colorDefault: {
+            backgroundColor: baseTheme.palette.background.paper
+          }
+        }
+      }
+    }),
+    [baseTheme]
   );
 
   return <ThemeProvider theme={theme}>{children}</ThemeProvider>;

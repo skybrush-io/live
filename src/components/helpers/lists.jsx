@@ -88,6 +88,31 @@ export function listOf(itemRenderer, options = {}) {
 }
 
 /**
+ * Creates a selection event handler factory that encapsulates the common
+ * login for selection handling in lists.
+ *
+ * This function takes two functions as inputs: one that returns the current
+ * selection in a list, and another one that sets the selection in the list.
+ *
+ * The result is an event handler _factory_ that can be called with a single
+ * item ID and that returns an event handler that sets the selection to this
+ * item when it receives an event without the Ctrl (Cmd) key being pressed,
+ * and that _toggles_ the item in the current selection when it receives an
+ * event _with_ the Ctrl (Cmd) key being pressed.
+ */
+export function createSelectionHandlerFactory({ getSelection, setSelection }) {
+  return setSelection
+    ? id => event => {
+        const newSelection =
+          eventHasPlatformModifierKey(event.nativeEvent) && getSelection
+            ? xor(getSelection(), [id])
+            : [id];
+        return setSelection(newSelection);
+      }
+    : () => undefined;
+}
+
+/**
  * Creates a React component that renders items received in an array using
  * the given item renderer function, optionally shows a small textual
  * hint instead if there are no items, and allows the user to select a
@@ -234,6 +259,10 @@ export function multiSelectableListOf(itemRenderer, options = {}) {
   // A separate variable is needed here to make ESLint happy
   const MultiSelectableListView = React.forwardRef((props, ref) => {
     const items = dataProvider(props);
+    const onItemSelected = createSelectionHandlerFactory({
+      getSelection: () => props.value,
+      setSelection: props.onChange
+    });
     const children = postprocess(
       items.map(item =>
         itemRenderer(
@@ -241,16 +270,7 @@ export function multiSelectableListOf(itemRenderer, options = {}) {
           {
             ...props,
             onChange: undefined,
-            onItemSelected: props.onChange
-              ? event => {
-                  const newSelection = eventHasPlatformModifierKey(
-                    event.nativeEvent
-                  )
-                    ? xor(props.value, [item.id])
-                    : [item.id];
-                  return props.onChange(event, newSelection);
-                }
-              : undefined
+            onItemSelected: onItemSelected(item.id)
           },
           includes(props.value, item.id)
         )
@@ -364,7 +384,11 @@ function validateListFactory(listFactory) {
     return (props, children, ref) => {
       return React.createElement(
         List,
-        { dense: props.dense || props.mini, disablePadding: props.mini, ref },
+        {
+          dense: props.dense || props.mini,
+          disablePadding: props.disablePadding || props.mini,
+          ref
+        },
         children
       );
     };

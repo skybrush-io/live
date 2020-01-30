@@ -7,6 +7,7 @@ import difference from 'lodash-es/difference';
 import uniq from 'lodash-es/uniq';
 import { handleActions } from 'redux-actions';
 
+import flock from '~/flock';
 import { uavIdToGlobalId } from '~/model/identifiers';
 
 /**
@@ -17,11 +18,9 @@ const defaultState = [];
 /**
  * Finds all the UAV features on the map.
  *
- * @param {Flock} flock the object that contains the drones
- *
  * @returns {string[]} array containing the feature identifiers
  */
-function findAllUAVFeatures(flock) {
+function findAllUAVFeatures() {
   return Object.keys(flock._uavsById).map(uavIdToGlobalId);
 }
 
