@@ -232,8 +232,14 @@ function getDroneStatus(uav) {
 
 function getDroneText(uav) {
   // TODO(ntamas): don't hardcode, use an enum
-  if (uav.errors && uav.errors.includes(2)) {
-    return { text: 'init', textSemantics: 'info' };
+  if (uav.errors) {
+    if (uav.errors.includes(2)) {
+      return { text: 'init', textSemantics: 'info' };
+    }
+
+    if (uav.errors.includes(4)) {
+      return { text: 'disarm', textSemantics: 'error' };
+    }
   }
 
   return { text: 'armed', textSemantics: 'success' };
