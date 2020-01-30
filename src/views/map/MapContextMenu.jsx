@@ -20,6 +20,9 @@ import Home from '@material-ui/icons/Home';
 import Message from '@material-ui/icons/Message';
 import ActionPowerSettingsNew from '@material-ui/icons/PowerSettingsNew';
 import PinDrop from '@material-ui/icons/PinDrop';
+import Refresh from '@material-ui/icons/Refresh';
+
+import { createSelector } from '@reduxjs/toolkit';
 
 import { showFeatureEditorDialog } from '../../actions/feature-editor';
 import { renameFeature, removeFeatures } from '../../actions/features';
@@ -79,6 +82,8 @@ class MapContextMenu extends React.Component {
   };
 
   render() {
+    console.log('Rendering context menu');
+
     return (
       <ContextMenu
         ref={this._contextMenu}
@@ -114,7 +119,7 @@ class MapContextMenu extends React.Component {
                 </ListItemIcon>
                 Fly here at altitude...
               </MenuItem>,
-              <Divider key="div2" />,
+              <Divider key="div1" />,
               <MenuItem key="takeoff" dense onClick={this._takeoffSelectedUAVs}>
                 <ListItemIcon>
                   <FlightTakeoff />
@@ -144,6 +149,13 @@ class MapContextMenu extends React.Component {
                 </ListItemIcon>
                 Messages
               </MenuItem>,
+              <Divider key="div2" />,
+              <MenuItem key="reset" dense onClick={this._resetSelectedUAVs}>
+                <ListItemIcon>
+                  <Refresh color="secondary" />
+                </ListItemIcon>
+                Halt
+              </MenuItem>,
               <MenuItem
                 key="shutdown"
                 dense
@@ -154,7 +166,7 @@ class MapContextMenu extends React.Component {
                 </ListItemIcon>
                 Halt
               </MenuItem>,
-              <Divider key="div1" />
+              <Divider key="div3" />
             );
           }
 
@@ -169,7 +181,7 @@ class MapContextMenu extends React.Component {
 
           if (hasSelectedFeatures) {
             result.push(
-              <Divider key="div2" />,
+              <Divider key="div4" />,
               <MenuItem
                 key="setProperties"
                 dense
@@ -273,6 +285,11 @@ class MapContextMenu extends React.Component {
     this.props.removeFeaturesByIds(selectedFeatureIds);
   };
 
+  _resetSelectedUAVs = (event, context) => {
+    const { selectedUAVIds } = context;
+    messaging.resetUAVs(selectedUAVIds);
+  };
+
   _returnSelectedUAVs = (event, context) => {
     const { selectedUAVIds } = context;
     messaging.returnToHomeUAVs(selectedUAVIds);
@@ -300,15 +317,22 @@ class MapContextMenu extends React.Component {
   };
 }
 
+const getContextProvider = createSelector(
+  getSelectedFeatureIds,
+  getSelectedFeatureLabels,
+  getSelectedUAVIds,
+  (selectedFeatureIds, selectedFeatureLabels, selectedUAVIds) => context => ({
+    selectedFeatureIds,
+    selectedFeatureLabels,
+    selectedUAVIds,
+    ...context
+  })
+);
+
 const MapContextMenuContainer = connect(
   // mapStateToProps
   state => ({
-    contextProvider: context => ({
-      selectedFeatureIds: getSelectedFeatureIds(state),
-      selectedFeatureLabels: getSelectedFeatureLabels(state),
-      selectedUAVIds: getSelectedUAVIds(state),
-      ...context
-    })
+    contextProvider: getContextProvider(state)
   }),
   // mapDispatchToProps
   dispatch => ({
