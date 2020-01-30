@@ -13,6 +13,8 @@ const processResponse = (expectedType, commandName) => response => {
   if (response) {
     const { body } = response;
     if (body) {
+      // TODO(ntamas): need to handle if any of the commands returned a
+      // receipt instead of a success / failure response
       const { failure, reason, type } = body;
       if (type === 'ACK-NAK') {
         logger.error(
@@ -54,6 +56,20 @@ export const landUAVs = uavs =>
       ids: uavs
     })
     .then(processResponse('UAV-LAND', 'Landing command'));
+
+export const resetUAVs = async (uavs, component) => {
+  const request = {
+    type: 'UAV-RST',
+    ids: uavs
+  };
+
+  if (component) {
+    request.component = component;
+  }
+
+  const response = await messageHub.sendMessage(request);
+  return processResponse('UAV-RST', 'Reset command')(response);
+};
 
 export const returnToHomeUAVs = uavs =>
   messageHub

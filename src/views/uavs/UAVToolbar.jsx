@@ -11,12 +11,13 @@ import ActionPowerSettingsNew from '@material-ui/icons/PowerSettingsNew';
 import ImageBlurCircular from '@material-ui/icons/BlurCircular';
 import ImageBlurOn from '@material-ui/icons/BlurOn';
 import Message from '@material-ui/icons/Message';
+import Refresh from '@material-ui/icons/Refresh';
 
 import {
   selectUAVInMessagesDialog,
   showMessagesDialog
-} from '../../actions/messages';
-import * as messaging from '../../utils/messaging';
+} from '~/actions/messages';
+import * as messaging from '~/utils/messaging';
 
 /**
  * Main toolbar for controlling the UAVs.
@@ -65,6 +66,15 @@ class UAVToolbar extends React.Component {
         </IconButton>
         <IconButton
           disabled={isSelectionEmpty}
+          onClick={this._resetSelectedUAVs}
+        >
+          <Refresh
+            color={isSelectionEmpty ? undefined : 'secondary'}
+            disabled={isSelectionEmpty}
+          />
+        </IconButton>
+        <IconButton
+          disabled={isSelectionEmpty}
           onClick={this._haltSelectedUAVs}
         >
           <ActionPowerSettingsNew
@@ -85,6 +95,10 @@ class UAVToolbar extends React.Component {
 
   _landSelectedUAVs = () => {
     messaging.landUAVs(this.props.selectedUAVIds);
+  };
+
+  _resetSelectedUAVs = () => {
+    messaging.resetUAVs(this.props.selectedUAVIds);
   };
 
   _returnToHomeSelectedUAVs = () => {
