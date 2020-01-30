@@ -27,35 +27,38 @@ const semanticsToIcon = {
   [MessageSemantics.INFO]: InfoIcon
 };
 
-const useStyles = makeStyles(theme => ({
-  success: {
-    backgroundColor: green[600],
-    color: 'white'
-  },
-  error: {
-    backgroundColor: theme.palette.error.dark,
-    color: 'white'
-  },
-  info: {
-    backgroundColor: theme.palette.primary.main,
-    color: 'white'
-  },
-  warning: {
-    backgroundColor: amber[700],
-    color: 'white'
-  },
-  icon: {
-    fontSize: 20
-  },
-  iconVariant: {
-    opacity: 0.9,
-    marginRight: theme.spacing(1)
-  },
-  message: {
-    display: 'flex',
-    alignItems: 'center'
-  }
-}));
+const useStyles = makeStyles(
+  theme => ({
+    success: {
+      backgroundColor: green[600],
+      color: 'white'
+    },
+    error: {
+      backgroundColor: theme.palette.error.dark,
+      color: 'white'
+    },
+    info: {
+      backgroundColor: theme.palette.primary.main,
+      color: 'white'
+    },
+    warning: {
+      backgroundColor: amber[700],
+      color: 'white'
+    },
+    icon: {
+      fontSize: 20
+    },
+    iconVariant: {
+      opacity: 0.9,
+      marginRight: theme.spacing(1)
+    },
+    message: {
+      display: 'flex',
+      alignItems: 'center'
+    }
+  }),
+  { name: 'GlobalSnackbar' }
+);
 
 function SnackbarContentWrapper(props) {
   const classes = useStyles();

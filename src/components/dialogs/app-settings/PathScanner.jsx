@@ -43,15 +43,18 @@ const icons = {
   )
 };
 
-const useStyles = makeStyles(theme => ({
-  root: {
-    backgroundColor:
-      theme.palette.type === 'dark'
-        ? theme.palette.grey.A400
-        : theme.palette.grey[200],
-    paddingTop: 6
-  }
-}));
+const useStyles = makeStyles(
+  theme => ({
+    root: {
+      backgroundColor:
+        theme.palette.type === 'dark'
+          ? theme.palette.grey.A400
+          : theme.palette.grey[200],
+      paddingTop: 6
+    }
+  }),
+  { name: 'PathScanner' }
+);
 
 const PathScannerPresentation = ({
   error,

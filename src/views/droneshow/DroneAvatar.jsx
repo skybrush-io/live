@@ -14,89 +14,92 @@ import SummaryPill from './SummaryPill';
 import Colors from '~/components/colors';
 import { getSeverityOfMostSevereErrorCode, Severity } from '~/flockwave/errors';
 
-const useStyles = makeStyles(theme => ({
-  avatarWrapper: {
-    position: 'relative',
-    marginBottom: theme.spacing(0.5),
+const useStyles = makeStyles(
+  theme => ({
+    avatarWrapper: {
+      position: 'relative',
+      marginBottom: theme.spacing(0.5),
 
-    '&::after': {
-      background: Colors.error,
-      boxShadow:
-        '1px 1px 4px rgba(0, 0, 0, 0.6), 1px 1px 2px rgba(255, 255, 255, 0.3) inset',
-      content: '""',
-      height: 4,
-      left: '50%',
+      '&::after': {
+        background: Colors.error,
+        boxShadow:
+          '1px 1px 4px rgba(0, 0, 0, 0.6), 1px 1px 2px rgba(255, 255, 255, 0.3) inset',
+        content: '""',
+        height: 4,
+        left: '50%',
+        position: 'absolute',
+        top: 'calc(50% - 2px)',
+        transform: 'rotate(-45deg)',
+        transition: 'left 300ms, width 300ms',
+        width: '0%'
+      },
+
+      '&.crossed::after': {
+        left: '-20%',
+        width: '140%'
+      }
+    },
+
+    avatar: {
+      border: '1px solid rgba(0, 0, 0, 0.3)',
+      color: 'black'
+    },
+
+    'avatar-off': {
+      backgroundColor: Colors.off,
+      color: theme.palette.getContrastText(Colors.off)
+    },
+
+    'avatar-success': {
+      backgroundColor: Colors.success,
+      color: theme.palette.getContrastText(Colors.success)
+    },
+
+    'avatar-warning': {
+      backgroundColor: Colors.warning,
+      boxShadow: `0 0 8px 2px ${Colors.warning}`,
+      color: theme.palette.getContrastText(Colors.warning)
+    },
+
+    'avatar-rth': {
+      animation: '$flash 0.5s infinite',
+      animationDirection: 'alternate',
+      backgroundColor: Colors.warning,
+      boxShadow: `0 0 8px 2px ${Colors.warning}`,
+      color: theme.palette.getContrastText(Colors.warning)
+    },
+
+    'avatar-error': {
+      backgroundColor: Colors.error,
+      boxShadow: `0 0 8px 2px ${Colors.error}`,
+      color: theme.palette.getContrastText(Colors.error)
+    },
+
+    'avatar-critical': {
+      animation: '$flash 0.5s infinite',
+      animationDirection: 'alternate',
+      backgroundColor: Colors.error,
+      boxShadow: `0 0 8px 2px ${Colors.error}`,
+      color: theme.palette.getContrastText(Colors.error)
+    },
+
+    '@keyframes flash': {
+      '0%, 49%': {
+        opacity: 0.2
+      },
+      '50%, 100%': {
+        opacity: 1
+      }
+    },
+
+    progress: {
       position: 'absolute',
-      top: 'calc(50% - 2px)',
-      transform: 'rotate(-45deg)',
-      transition: 'left 300ms, width 300ms',
-      width: '0%'
-    },
-
-    '&.crossed::after': {
-      left: '-20%',
-      width: '140%'
+      top: -2,
+      left: -2
     }
-  },
-
-  avatar: {
-    border: '1px solid rgba(0, 0, 0, 0.3)',
-    color: 'black'
-  },
-
-  'avatar-off': {
-    backgroundColor: Colors.off,
-    color: theme.palette.getContrastText(Colors.off)
-  },
-
-  'avatar-success': {
-    backgroundColor: Colors.success,
-    color: theme.palette.getContrastText(Colors.success)
-  },
-
-  'avatar-warning': {
-    backgroundColor: Colors.warning,
-    boxShadow: `0 0 8px 2px ${Colors.warning}`,
-    color: theme.palette.getContrastText(Colors.warning)
-  },
-
-  'avatar-rth': {
-    animation: '$flash 0.5s infinite',
-    animationDirection: 'alternate',
-    backgroundColor: Colors.warning,
-    boxShadow: `0 0 8px 2px ${Colors.warning}`,
-    color: theme.palette.getContrastText(Colors.warning)
-  },
-
-  'avatar-error': {
-    backgroundColor: Colors.error,
-    boxShadow: `0 0 8px 2px ${Colors.error}`,
-    color: theme.palette.getContrastText(Colors.error)
-  },
-
-  'avatar-critical': {
-    animation: '$flash 0.5s infinite',
-    animationDirection: 'alternate',
-    backgroundColor: Colors.error,
-    boxShadow: `0 0 8px 2px ${Colors.error}`,
-    color: theme.palette.getContrastText(Colors.error)
-  },
-
-  '@keyframes flash': {
-    '0%, 49%': {
-      opacity: 0.2
-    },
-    '50%, 100%': {
-      opacity: 1
-    }
-  },
-
-  progress: {
-    position: 'absolute',
-    top: -2,
-    left: -2
-  }
-}));
+  }),
+  { name: 'DroneAvatar' }
+);
 
 /**
  * Avatar that represents a single drone.

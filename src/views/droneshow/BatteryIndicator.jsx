@@ -15,34 +15,37 @@ import BatteryFullIcon from '@material-ui/icons/BatteryFull';
 
 import Colors from '~/components/colors';
 
-const useStyles = makeStyles(theme => ({
-  root: {
-    padding: '0 2px',
-    textAlign: 'center',
-    userSelect: 'none',
-    width: '100%'
-  },
+const useStyles = makeStyles(
+  theme => ({
+    root: {
+      padding: '0 2px',
+      textAlign: 'center',
+      userSelect: 'none',
+      width: '100%'
+    },
 
-  batteryFull: {
-    color: Colors.success,
-    fontWeight: 'bold'
-  },
+    batteryFull: {
+      color: Colors.success,
+      fontWeight: 'bold'
+    },
 
-  batteryOk: {},
+    batteryOk: {},
 
-  batteryWarning: {
-    backgroundColor: Colors.warning,
-    borderRadius: `${theme.shape.borderRadius * 2}px`,
-    color: theme.palette.getContrastText(Colors.warning)
-  },
+    batteryWarning: {
+      backgroundColor: Colors.warning,
+      borderRadius: `${theme.shape.borderRadius * 2}px`,
+      color: theme.palette.getContrastText(Colors.warning)
+    },
 
-  batteryError: {
-    backgroundColor: Colors.error,
-    borderRadius: `${theme.shape.borderRadius * 2}px`,
-    color: theme.palette.getContrastText(Colors.error),
-    fontWeight: 'bold'
-  }
-}));
+    batteryError: {
+      backgroundColor: Colors.error,
+      borderRadius: `${theme.shape.borderRadius * 2}px`,
+      color: theme.palette.getContrastText(Colors.error),
+      fontWeight: 'bold'
+    }
+  }),
+  { name: 'BatteryIndicator' }
+);
 
 const iconStyle = {
   marginLeft: -8,
