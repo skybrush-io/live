@@ -9,8 +9,10 @@ import { connect } from 'react-redux';
 import Box from '@material-ui/core/Box';
 
 import DroneAvatar from './DroneAvatar';
+import DroneListItem from './DroneListItem';
 
 import { getUAVIdList } from '~/features/uavs/selectors';
+import { getSelectedUAVIds } from '~/selectors/selection';
 
 const drones = [
   {
@@ -43,15 +45,22 @@ const drones = [
 /**
  * Presentation component for showing the drone show configuration view.
  */
-const ConfigurationViewPresentation = ({ uavIds }) => (
+const ConfigurationViewPresentation = ({ selectedUAVIds, uavIds }) => (
   <Box display="flex" flexDirection="row" flexWrap="wrap" px={1} py={2}>
     {uavIds.map(uavId => (
-      <DroneAvatar key={uavId} id={uavId} />
+      <DroneListItem key={uavId} selected={selectedUAVIds.includes(uavId)}>
+        <DroneAvatar
+          key={uavId}
+          id={uavId}
+          selected={selectedUAVIds.includes(uavId)}
+        />
+      </DroneListItem>
     ))}
   </Box>
 );
 
 ConfigurationViewPresentation.propTypes = {
+  selectedUAVIds: PropTypes.array,
   uavIds: PropTypes.array
 };
 
@@ -62,6 +71,7 @@ const ConfigurationView = connect(
   // mapStateToProps
   state => ({
     dense: true,
+    selectedUAVIds: getSelectedUAVIds(state),
     uavIds: getUAVIdList(state)
   }),
   // mapDispatchToProps

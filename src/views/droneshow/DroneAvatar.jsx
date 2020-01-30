@@ -15,17 +15,6 @@ import Colors from '~/components/colors';
 import { getSeverityOfMostSevereErrorCode, Severity } from '~/flockwave/errors';
 
 const useStyles = makeStyles(theme => ({
-  root: {
-    alignItems: 'center',
-    display: 'flex',
-    flexDirection: 'column',
-    margin: theme.spacing(1),
-    minWidth: theme.spacing(8),
-    '& div': {
-      marginBottom: theme.spacing(0.5)
-    }
-  },
-
   avatarWrapper: {
     position: 'relative',
     marginBottom: theme.spacing(0.5),
@@ -124,7 +113,7 @@ const DroneAvatar = ({
 }) => {
   const classes = useStyles();
   return (
-    <div className={classes.root}>
+    <>
       <div className={clsx(classes.avatarWrapper, crossed && 'crossed')}>
         <Avatar className={clsx(classes.avatar, classes[`avatar-${status}`])}>
           {id}
@@ -141,7 +130,7 @@ const DroneAvatar = ({
       </div>
       {text && <SummaryPill status={textSemantics}>{text}</SummaryPill>}
       <BatteryIndicator {...batteryStatus} />
-    </div>
+    </>
   );
 };
 
@@ -161,6 +150,7 @@ DroneAvatar.propTypes = {
     'error',
     'critical'
   ]),
+  selected: PropTypes.bool,
   status: PropTypes.oneOf([
     'off',
     'success',

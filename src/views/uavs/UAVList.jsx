@@ -59,7 +59,7 @@ const UAVListPresentation = multiSelectableListOf(
       <ListItem
         key={uav.id}
         button
-        className={selected ? 'selected-list-item' : undefined}
+        selected={selected}
         onClick={props.onItemSelected}
       >
         <ListItemText
