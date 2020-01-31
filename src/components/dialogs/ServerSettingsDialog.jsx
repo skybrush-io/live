@@ -58,12 +58,17 @@ const iconForServerItem = ({ hostName, type }) =>
   );
 
 const isItemSecure = ({ protocol }) => protocol === 'sio+tls:';
+const isItemLocal = ({ hostName }) => hostName === 'localhost';
 const addressForServerItem = ({ hostName, port }) => `${hostName}:${port}`;
 
 const protocolForServerItem = item =>
-  isItemSecure(item) ? 'Secure connection' : 'Unencrypted connection';
+  isItemSecure(item)
+    ? 'Secure connection'
+    : isItemLocal(item)
+    ? 'Local connection'
+    : 'Unsecured connection';
 const securityWarningForServerItem = item =>
-  isItemSecure(item) ? '' : ' (unsecured)';
+  isItemSecure(item) || isItemLocal(item) ? '' : ' (unsecured)';
 
 const primaryTextForServerItem = item =>
   item.label || addressForServerItem(item);

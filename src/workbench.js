@@ -13,6 +13,7 @@ import compose from 'recompose/compose';
 import renderNothing from 'recompose/renderNothing';
 import withProps from 'recompose/withProps';
 
+import BackgroundHint from './components/BackgroundHint';
 import MessagesPanel from './components/chat/MessagesPanel';
 import { saveWorkbenchState } from './features/workbench/slice';
 import { Flock } from './flock';
@@ -49,7 +50,6 @@ const componentRegistry = {
   'ground-control-view': injectFlockFromContext(views.GroundControlView),
   'layer-list': views.LayerList,
   'log-panel': views.LogPanel,
-  configuration: injectFlockFromContext(views.DroneShowConfigurationView),
   map: views.MapView,
   messages: compose(
     withProps({
@@ -63,6 +63,13 @@ const componentRegistry = {
   'saved-location-list': views.SavedLocationList,
   'uav-list': injectFlockFromContext(views.UAVList)
 };
+
+/**
+ * Fallback component to use in the workbench in case of errors.
+ */
+const FallbackComponent = () => (
+  <BackgroundHint text="This component is not available" />
+);
 
 function constructDefaultWorkbench(store) {
   const builder = new WorkbenchBuilder();
@@ -78,6 +85,9 @@ function constructDefaultWorkbench(store) {
     .add('map')
     .setTitle('Map')
     .setId('map')
+    .add('uav-list')
+    .setTitle('UAVs')
+    .setId('uavs')
     .finish()
     .makeRows()
     .makeStack()
@@ -90,9 +100,6 @@ function constructDefaultWorkbench(store) {
     .finish()
     .setRelativeHeight(25)
     .makeStack()
-    .add('uav-list')
-    .setTitle('UAVs')
-    .setId('uavs')
     .add('dock-list')
     .setTitle('Docks')
     .setId('docks')
@@ -104,6 +111,9 @@ function constructDefaultWorkbench(store) {
     .setRelativeWidth(25)
     .finish()
     .build();
+
+  // Set a fallback component for cases when we cannot show a component
+  workbench.fallback = FallbackComponent;
 
   // Wire the workbench to the store so the store is updated when
   // the workbench state changes

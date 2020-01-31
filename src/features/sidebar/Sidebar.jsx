@@ -6,7 +6,6 @@ import Map from '@material-ui/icons/Map';
 import Message from '@material-ui/icons/Message';
 import MyLocation from '@material-ui/icons/MyLocation';
 import Notifications from '@material-ui/icons/Notifications';
-import SettingsInputAntenna from '@material-ui/icons/SettingsInputAntenna';
 import ShowChart from '@material-ui/icons/ShowChart';
 // import Storage from '@material-ui/icons/Storage';
 
@@ -69,12 +68,6 @@ const Sidebar = ({ isOpen, workbench }) => (
           icon={<Message />}
           label="Messages"
           component="messages"
-        />
-        <Module
-          id="configuration"
-          icon={<SettingsInputAntenna />}
-          label="Configuration"
-          component="configuration"
         />
         <hr />
         <Module

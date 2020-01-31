@@ -7,7 +7,6 @@ import ClockDisplayList from './clocks';
 import ConnectionList from './connections';
 import DatasetList from './datasets';
 import DockList from './docks';
-import DroneShowConfigurationView from './droneshow';
 import FeatureList from './features';
 import GroundControlView from './groundcontrol';
 import LayerList from './layers';
@@ -21,7 +20,6 @@ export default {
   ConnectionList,
   DatasetList,
   DockList,
-  DroneShowConfigurationView,
   FeatureList,
   GroundControlView,
   LayerList,
