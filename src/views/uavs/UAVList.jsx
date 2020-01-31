@@ -9,6 +9,7 @@ import { connect } from 'react-redux';
 
 import AppBar from '@material-ui/core/AppBar';
 import Box from '@material-ui/core/Box';
+import makeStyles from '@material-ui/core/styles/makeStyles';
 
 import DroneAvatar from './DroneAvatar';
 import DroneListItem from './DroneListItem';
@@ -16,6 +17,7 @@ import DroneListItem from './DroneListItem';
 import { setSelectedUAVIds } from '~/actions/map';
 import { createSelectionHandlerFactory } from '~/components/helpers/lists';
 import { getUAVIdList } from '~/features/uavs/selectors';
+import useDarkMode from '~/hooks/useDarkMode';
 import { getSelectedUAVIds } from '~/selectors/selection';
 import UAVToolbar from '~/views/uavs/UAVToolbar';
 
@@ -47,6 +49,18 @@ const drones = [
   }
 ];
 
+const useStyles = makeStyles(
+  theme => ({
+    root: {
+      backgroundColor: theme.palette.background.paper
+    },
+    rootDark: {
+      backgroundColor: theme.palette.primary.main
+    }
+  }),
+  { name: 'UAVList' }
+);
+
 /**
  * Presentation component for showing the drone show configuration view.
  */
@@ -55,6 +69,8 @@ const UAVListPresentation = ({
   selectedUAVIds,
   uavIds
 }) => {
+  const classes = useStyles();
+  const darkMode = useDarkMode();
   const onSelected = useMemo(
     () =>
       createSelectionHandlerFactory({
@@ -66,7 +82,11 @@ const UAVListPresentation = ({
 
   return (
     <Box display="flex" flexDirection="column">
-      <AppBar color="default" position="static">
+      <AppBar
+        color="default"
+        position="static"
+        className={darkMode ? classes.rootDark : classes.root}
+      >
         <UAVToolbar flex={0} selectedUAVIds={selectedUAVIds} />
       </AppBar>
       <Box display="flex" flex={1} flexDirection="row" flexWrap="wrap">

@@ -2,7 +2,7 @@
  * @file The global snackbar at the bottom of the main window.
  */
 
-import { amber, green } from '@material-ui/core/colors';
+import { amber, green, lightBlue } from '@material-ui/core/colors';
 import IconButton from '@material-ui/core/IconButton';
 import Snackbar from '@material-ui/core/Snackbar';
 import SnackbarContent from '@material-ui/core/SnackbarContent';
@@ -38,7 +38,7 @@ const useStyles = makeStyles(
       color: 'white'
     },
     info: {
-      backgroundColor: theme.palette.primary.main,
+      backgroundColor: lightBlue[500],
       color: 'white'
     },
     warning: {

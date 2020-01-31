@@ -3,13 +3,29 @@ import React from 'react';
 
 import AppBar from '@material-ui/core/AppBar';
 import Tabs from '@material-ui/core/Tabs';
+import { makeStyles } from '@material-ui/core/styles';
 
 import useDarkMode from '~/hooks/useDarkMode';
 
+const useStyles = makeStyles(
+  theme => ({
+    root: {},
+    rootDark: {
+      backgroundColor: '#222'
+    }
+  }),
+  { name: 'DialogTabs' }
+);
+
 const DialogTabs = ({ children, ...rest }) => {
   const darkMode = useDarkMode();
+  const classes = useStyles();
   return (
-    <AppBar position="static" color={darkMode ? 'default' : 'primary'}>
+    <AppBar
+      position="static"
+      color="primary"
+      className={darkMode ? classes.rootDark : classes.root}
+    >
       <Tabs centered variant="fullWidth" {...rest}>
         {children}
       </Tabs>
