@@ -11,7 +11,8 @@ const useStyles = makeStyles(
   theme => ({
     root: {},
     rootDark: {
-      backgroundColor: '#222'
+      backgroundColor: '#222',
+      color: theme.palette.getContrastText('#222')
     }
   }),
   { name: 'DialogTabs' }

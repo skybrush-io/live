@@ -54,7 +54,9 @@ const UAVToolbar = ({
 }) => {
   const [useAllUAVs, toggleUseAllUAVs] = useToggle();
   const classes = useStyles();
+
   const isSelectionEmpty = isEmpty(selectedUAVIds);
+  const isSelectionSingle = selectedUAVIds.length === 1;
 
   const takeoffSelectedUAVs = () => {
     messaging.takeoffUAVs(selectedUAVIds);
@@ -73,7 +75,7 @@ const UAVToolbar = ({
   };
 
   const selectUAVAndShowMessagesDialog = () => {
-    if (selectedUAVIds.length === 1) {
+    if (isSelectionSingle) {
       selectUAVInMessagesDialog(selectedUAVIds[0]);
     }
 
@@ -111,7 +113,7 @@ const UAVToolbar = ({
         <ActionHome />
       </IconButton>
       <IconButton
-        disabled={selectedUAVIds.length !== 1}
+        disabled={!isSelectionSingle}
         onClick={selectUAVAndShowMessagesDialog}
       >
         <Message />

@@ -5,7 +5,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import { blue, lightBlue, red } from '@material-ui/core/colors';
+import { blue, lightBlue, orange, red } from '@material-ui/core/colors';
 import createMuiTheme from '@material-ui/core/styles/createMuiTheme';
 import { ThemeProvider } from '@material-ui/core/styles';
 
@@ -18,11 +18,7 @@ const DarkAwareThemeProvider = ({ children }) => {
       createMuiTheme({
         palette: {
           type: darkMode ? 'dark' : 'light',
-          primary: darkMode
-            ? {
-                main: '#444'
-              }
-            : blue,
+          primary: darkMode ? orange : blue,
           secondary: darkMode ? lightBlue : red
         }
       }),

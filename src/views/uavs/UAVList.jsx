@@ -55,7 +55,7 @@ const useStyles = makeStyles(
       backgroundColor: theme.palette.background.paper
     },
     rootDark: {
-      backgroundColor: theme.palette.primary.main
+      backgroundColor: '#444'
     }
   }),
   { name: 'UAVList' }
