@@ -4,6 +4,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { useToggle } from 'react-use';
 
+import Box from '@material-ui/core/Box';
 import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -22,6 +23,8 @@ import {
   selectUAVInMessagesDialog,
   showMessagesDialog
 } from '~/actions/messages';
+import { isShowingMissionIds } from '~/features/settings/selectors';
+import { toggleMissionIds } from '~/features/settings/slice';
 import * as messaging from '~/utils/messaging';
 
 const useStyles = makeStyles(
@@ -50,7 +53,9 @@ const UAVToolbar = ({
   fitSelectedUAVs,
   selectedUAVIds,
   selectUAVInMessagesDialog,
-  showMessagesDialog
+  showMessagesDialog,
+  showMissionIds,
+  toggleMissionIds
 }) => {
   const [useAllUAVs, toggleUseAllUAVs] = useToggle();
   const classes = useStyles();
@@ -89,6 +94,7 @@ const UAVToolbar = ({
   return (
     <Toolbar disableGutters className={classes.root} variant="dense">
       <ToggleButton
+        disabled
         className={classes.toggleButton}
         size="small"
         value="all"
@@ -135,11 +141,25 @@ const UAVToolbar = ({
 
       <Divider className={classes.divider} orientation="vertical" />
 
+      <Box flex={1} />
+
+      <Divider className={classes.divider} orientation="vertical" />
+
       {fitSelectedUAVs && (
         <IconButton style={{ float: 'right' }} onClick={fitSelectedUAVs}>
           {isSelectionEmpty ? <ImageBlurOn /> : <ImageBlurCircular />}
         </IconButton>
       )}
+
+      <ToggleButton
+        className={classes.toggleButton}
+        size="small"
+        value="missionIds"
+        selected={showMissionIds}
+        onChange={toggleMissionIds}
+      >
+        Show IDs
+      </ToggleButton>
     </Toolbar>
   );
 };
@@ -147,20 +167,27 @@ const UAVToolbar = ({
 UAVToolbar.propTypes = {
   fitSelectedUAVs: PropTypes.func,
   selectUAVInMessagesDialog: PropTypes.func,
+  selectedUAVIds: PropTypes.arrayOf(PropTypes.string),
   showMessagesDialog: PropTypes.func,
-  selectedUAVIds: PropTypes.arrayOf(PropTypes.string)
+  showMissionIds: PropTypes.bool,
+  toggleMissionIds: PropTypes.func
 };
 
 export default connect(
   // mapStateToProps
-  null,
+  state => ({
+    showMissionIds: isShowingMissionIds(state)
+  }),
   // mapDispatchToProps
   dispatch => ({
-    selectUAVInMessagesDialog: id => {
+    selectUAVInMessagesDialog(id) {
       dispatch(selectUAVInMessagesDialog(id));
     },
-    showMessagesDialog: () => {
+    showMessagesDialog() {
       dispatch(showMessagesDialog());
+    },
+    toggleMissionIds() {
+      dispatch(toggleMissionIds());
     }
   })
 )(UAVToolbar);

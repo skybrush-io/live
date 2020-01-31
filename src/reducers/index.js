@@ -11,6 +11,7 @@ import datasetsReducer from '~/features/datasets/slice';
 import docksReducer from '~/features/docks/slice';
 import localServerReducer from '~/features/local-server/slice';
 import logReducer from '~/features/log/slice';
+import missionReducer from '~/features/mission/slice';
 import savedLocationsReducer from '~/features/saved-locations/slice';
 import serversReducer from '~/features/servers/slice';
 import settingsReducer from '~/features/settings/slice';
@@ -33,6 +34,7 @@ const reducer = combineReducers({
   log: logReducer,
   map: mapReducer,
   messages: messagesReducer,
+  mission: missionReducer,
   savedLocations: savedLocationsReducer,
   servers: serversReducer,
   settings: settingsReducer,

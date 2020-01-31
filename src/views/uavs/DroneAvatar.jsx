@@ -108,6 +108,7 @@ const DroneAvatar = ({
   batteryStatus,
   crossed,
   id,
+  label,
   progress,
   secondaryStatus,
   status,
@@ -119,7 +120,7 @@ const DroneAvatar = ({
     <>
       <div className={clsx(classes.avatarWrapper, crossed && 'crossed')}>
         <Avatar className={clsx(classes.avatar, classes[`avatar-${status}`])}>
-          {id}
+          {label === undefined ? id : label}
         </Avatar>
         {progress > 0 && (
           <CircularProgress
@@ -132,7 +133,7 @@ const DroneAvatar = ({
         {secondaryStatus && <SecondaryStatusLight status={secondaryStatus} />}
       </div>
       {text && <SummaryPill status={textSemantics}>{text}</SummaryPill>}
-      <BatteryIndicator {...batteryStatus} />
+      {batteryStatus && <BatteryIndicator {...batteryStatus} />}
     </>
   );
 };
@@ -144,6 +145,7 @@ DroneAvatar.propTypes = {
   }),
   crossed: PropTypes.bool,
   id: PropTypes.string,
+  label: PropTypes.string,
   progress: PropTypes.number,
   secondaryStatus: PropTypes.oneOf([
     'off',
@@ -231,6 +233,10 @@ function getDroneStatus(uav) {
 }
 
 function getDroneText(uav) {
+  if (!uav) {
+    return { text: 'missing', textSemantics: 'error' };
+  }
+
   // TODO(ntamas): don't hardcode, use an enum
   if (uav.errors) {
     if (uav.errors.includes(2)) {
@@ -249,10 +255,14 @@ export default connect(
   // mapStateToProps
   (state, ownProps) => {
     const uav = state.uavs.byId[ownProps.id];
-    return {
-      batteryStatus: uav.battery,
-      status: getDroneStatus(uav),
-      ...getDroneText(uav)
-    };
+    return uav === undefined
+      ? {
+          ...getDroneText(uav)
+        }
+      : {
+          batteryStatus: uav.battery,
+          status: getDroneStatus(uav),
+          ...getDroneText(uav)
+        };
   }
 )(DroneAvatar);

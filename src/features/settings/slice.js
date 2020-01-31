@@ -17,6 +17,8 @@ const { actions, reducer } = createSlice({
     display: {
       // Display format of coordinates
       coordinateFormat: CoordinateFormat.DEGREES,
+      // Whether to show mission IDs or drone IDs in the UAV list
+      showMissionIds: false,
       // Whether to show the mouse coordinates on the map
       showMouseCoordinates: true,
       // Whether to show the scale on the map
@@ -63,6 +65,10 @@ const { actions, reducer } = createSlice({
       }
     },
 
+    toggleMissionIds(state) {
+      state.display.showMissionIds = !state.display.showMissionIds;
+    },
+
     updateAppSettings: {
       prepare: (category, updates) => ({
         payload: { category, updates }
@@ -79,6 +85,10 @@ const { actions, reducer } = createSlice({
   }
 });
 
-export const { replaceAppSettings, updateAppSettings } = actions;
+export const {
+  replaceAppSettings,
+  toggleMissionIds,
+  updateAppSettings
+} = actions;
 
 export default reducer;

@@ -3,19 +3,25 @@
  * flock.
  */
 
+import isNil from 'lodash-es/isNil';
 import PropTypes from 'prop-types';
 import React, { useMemo } from 'react';
 import { connect } from 'react-redux';
 
 import AppBar from '@material-ui/core/AppBar';
 import Box from '@material-ui/core/Box';
+import ListSubheader from '@material-ui/core/ListSubheader';
 import makeStyles from '@material-ui/core/styles/makeStyles';
+import { createSelector } from '@reduxjs/toolkit';
 
 import DroneAvatar from './DroneAvatar';
 import DroneListItem from './DroneListItem';
+import DronePlaceholder from './DronePlaceholder';
 
 import { setSelectedUAVIds } from '~/actions/map';
 import { createSelectionHandlerFactory } from '~/components/helpers/lists';
+import { getMissionMapping } from '~/features/mission/selectors';
+import { isShowingMissionIds } from '~/features/settings/selectors';
 import { getUAVIdList } from '~/features/uavs/selectors';
 import useDarkMode from '~/hooks/useDarkMode';
 import { getSelectedUAVIds } from '~/selectors/selection';
@@ -62,6 +68,31 @@ const useStyles = makeStyles(
 );
 
 /**
+ * Helper function to show a list of drone avatars and placeholders.
+ */
+const createListItems = (items, { onSelected, selectedUAVIds }) =>
+  items.map(([uavId, label]) =>
+    uavId === undefined ? (
+      <DroneListItem key={`placeholder-${label}`}>
+        <DronePlaceholder label={label} />
+      </DroneListItem>
+    ) : (
+      <DroneListItem
+        key={uavId}
+        selected={selectedUAVIds.includes(uavId)}
+        onClick={onSelected(uavId)}
+      >
+        <DroneAvatar
+          key={uavId}
+          id={uavId}
+          label={label}
+          selected={selectedUAVIds.includes(uavId)}
+        />
+      </DroneListItem>
+    )
+  );
+
+/**
  * Presentation component for showing the drone show configuration view.
  */
 const UAVListPresentation = ({
@@ -79,6 +110,12 @@ const UAVListPresentation = ({
       }),
     [selectedUAVIds, onSelectionChanged]
   );
+  const { mainUAVIds, spareUAVIds } = uavIds;
+
+  const listItemProps = {
+    onSelected,
+    selectedUAVIds
+  };
 
   return (
     <Box display="flex" flexDirection="column">
@@ -89,20 +126,20 @@ const UAVListPresentation = ({
       >
         <UAVToolbar flex={0} selectedUAVIds={selectedUAVIds} />
       </AppBar>
-      <Box display="flex" flex={1} flexDirection="row" flexWrap="wrap">
-        {uavIds.map(uavId => (
-          <DroneListItem
-            key={uavId}
-            selected={selectedUAVIds.includes(uavId)}
-            onClick={onSelected(uavId)}
-          >
-            <DroneAvatar
-              key={uavId}
-              id={uavId}
-              selected={selectedUAVIds.includes(uavId)}
-            />
-          </DroneListItem>
-        ))}
+      <Box flex={1}>
+        <Box display="flex" flexDirection="row" flexWrap="wrap">
+          {createListItems(mainUAVIds, listItemProps)}
+        </Box>
+        {spareUAVIds.length > 0 ? (
+          <>
+            <ListSubheader key="__spare" flex="0 0 100%">
+              Spare UAVs
+            </ListSubheader>
+            <Box display="flex" flexDirection="row" flexWrap="wrap">
+              {createListItems(spareUAVIds, listItemProps)}
+            </Box>
+          </>
+        ) : null}
       </Box>
     </Box>
   );
@@ -111,8 +148,59 @@ const UAVListPresentation = ({
 UAVListPresentation.propTypes = {
   onSelectionChanged: PropTypes.func,
   selectedUAVIds: PropTypes.array,
-  uavIds: PropTypes.array
+  uavIds: PropTypes.exact({
+    mainUAVIds: PropTypes.arrayOf(PropTypes.array).isRequired,
+    spareUAVIds: PropTypes.arrayOf(PropTypes.array).isRequired
+  }).isRequired
 };
+
+/**
+ * Selector that provides the list of UAV IDs to show in the UAV list when we
+ * are using the UAV IDs without their mission-specific identifiers.
+ *
+ * The main section of the view will be sorted based on the UAV IDs in the
+ * state store. The "spare UAVs" section in the view will be empty.
+ */
+const getDisplayedUAVIdList = createSelector(
+  getUAVIdList,
+  uavIds => ({
+    mainUAVIds: uavIds.map(uavId => [uavId, uavId]),
+    spareUAVIds: []
+  })
+);
+
+const getDisplayedMissionIdList = createSelector(
+  getMissionMapping,
+  getUAVIdList,
+  (mapping, uavIds) => {
+    const mainUAVIds = [];
+    const spareUAVIds = [];
+    const seenUAVIds = new Set();
+
+    mapping.forEach((uavId, index) => {
+      const missionId = `s${index}`;
+      if (isNil(uavId)) {
+        mainUAVIds.push([undefined, missionId]);
+      } else {
+        mainUAVIds.push([uavId, missionId]);
+        seenUAVIds.add(uavId);
+      }
+    });
+
+    for (const uavId of uavIds) {
+      if (!seenUAVIds.has(uavId)) {
+        spareUAVIds.push([uavId, uavId]);
+      }
+    }
+
+    return { mainUAVIds, spareUAVIds };
+  }
+);
+
+const getDisplayedIdList = state =>
+  isShowingMissionIds(state)
+    ? getDisplayedMissionIdList(state)
+    : getDisplayedUAVIdList(state);
 
 /**
  * Smart component for showing the drone show configuration view.
@@ -121,7 +209,7 @@ const UAVList = connect(
   // mapStateToProps
   state => ({
     selectedUAVIds: getSelectedUAVIds(state),
-    uavIds: getUAVIdList(state)
+    uavIds: getDisplayedIdList(state)
   }),
   // mapDispatchToProps
   dispatch => ({
