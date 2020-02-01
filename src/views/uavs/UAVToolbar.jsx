@@ -19,12 +19,12 @@ import Message from '@material-ui/icons/Message';
 import Refresh from '@material-ui/icons/Refresh';
 import ToggleButton from '@material-ui/lab/ToggleButton';
 
+import MappingButtonGroup from './MappingButtonGroup';
+
 import {
   selectUAVInMessagesDialog,
   showMessagesDialog
 } from '~/actions/messages';
-import { isShowingMissionIds } from '~/features/settings/selectors';
-import { toggleMissionIds } from '~/features/settings/slice';
 import * as messaging from '~/utils/messaging';
 
 const useStyles = makeStyles(
@@ -53,11 +53,10 @@ const UAVToolbar = ({
   fitSelectedUAVs,
   selectedUAVIds,
   selectUAVInMessagesDialog,
-  showMessagesDialog,
-  showMissionIds,
-  toggleMissionIds
+  showMessagesDialog
 }) => {
   const [useAllUAVs, toggleUseAllUAVs] = useToggle();
+
   const classes = useStyles();
 
   const isSelectionEmpty = isEmpty(selectedUAVIds);
@@ -151,15 +150,7 @@ const UAVToolbar = ({
         </IconButton>
       )}
 
-      <ToggleButton
-        className={classes.toggleButton}
-        size="small"
-        value="missionIds"
-        selected={showMissionIds}
-        onChange={toggleMissionIds}
-      >
-        Show IDs
-      </ToggleButton>
+      <MappingButtonGroup />
     </Toolbar>
   );
 };
@@ -168,16 +159,12 @@ UAVToolbar.propTypes = {
   fitSelectedUAVs: PropTypes.func,
   selectUAVInMessagesDialog: PropTypes.func,
   selectedUAVIds: PropTypes.arrayOf(PropTypes.string),
-  showMessagesDialog: PropTypes.func,
-  showMissionIds: PropTypes.bool,
-  toggleMissionIds: PropTypes.func
+  showMessagesDialog: PropTypes.func
 };
 
 export default connect(
   // mapStateToProps
-  state => ({
-    showMissionIds: isShowingMissionIds(state)
-  }),
+  null,
   // mapDispatchToProps
   dispatch => ({
     selectUAVInMessagesDialog(id) {
@@ -185,9 +172,6 @@ export default connect(
     },
     showMessagesDialog() {
       dispatch(showMessagesDialog());
-    },
-    toggleMissionIds() {
-      dispatch(toggleMissionIds());
     }
   })
 )(UAVToolbar);

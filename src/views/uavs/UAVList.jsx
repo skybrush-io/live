@@ -6,6 +6,8 @@
 import isNil from 'lodash-es/isNil';
 import PropTypes from 'prop-types';
 import React, { useMemo } from 'react';
+import { DndProvider } from 'react-dnd';
+import HTML5Backend from 'react-dnd-html5-backend';
 import { connect } from 'react-redux';
 
 import AppBar from '@material-ui/core/AppBar';
@@ -20,7 +22,11 @@ import DronePlaceholder from './DronePlaceholder';
 
 import { setSelectedUAVIds } from '~/actions/map';
 import { createSelectionHandlerFactory } from '~/components/helpers/lists';
-import { getMissionMapping } from '~/features/mission/selectors';
+import { adjustMissionMapping } from '~/features/mission/slice';
+import {
+  getMissionMapping,
+  isMappingEditable
+} from '~/features/mission/selectors';
 import { isShowingMissionIds } from '~/features/settings/selectors';
 import { getUAVIdList } from '~/features/uavs/selectors';
 import useDarkMode from '~/hooks/useDarkMode';
@@ -70,17 +76,26 @@ const useStyles = makeStyles(
 /**
  * Helper function to show a list of drone avatars and placeholders.
  */
-const createListItems = (items, { onSelected, selectedUAVIds }) =>
-  items.map(([uavId, label]) =>
+const createListItems = (
+  items,
+  { draggable, onDropped, onSelected, selectedUAVIds }
+) =>
+  items.map(([uavId, missionIndex, label]) =>
     uavId === undefined ? (
-      <DroneListItem key={`placeholder-${label}`}>
+      <DroneListItem
+        key={`placeholder-${label}`}
+        onDrop={onDropped ? onDropped(missionIndex) : undefined}
+      >
         <DronePlaceholder label={label} />
       </DroneListItem>
     ) : (
       <DroneListItem
         key={uavId}
+        draggable={draggable}
         selected={selectedUAVIds.includes(uavId)}
+        uavId={uavId}
         onClick={onSelected(uavId)}
+        onDrop={onDropped ? onDropped(missionIndex) : undefined}
       >
         <DroneAvatar
           key={uavId}
@@ -96,6 +111,8 @@ const createListItems = (items, { onSelected, selectedUAVIds }) =>
  * Presentation component for showing the drone show configuration view.
  */
 const UAVListPresentation = ({
+  editingMapping,
+  onMappingAdjusted,
   onSelectionChanged,
   selectedUAVIds,
   uavIds
@@ -110,14 +127,25 @@ const UAVListPresentation = ({
       }),
     [selectedUAVIds, onSelectionChanged]
   );
+  const onDropped = useMemo(
+    () => targetIndex => droppedUAVId => {
+      onMappingAdjusted({
+        uavId: droppedUAVId,
+        to: targetIndex
+      });
+    },
+    [onMappingAdjusted]
+  );
   const { mainUAVIds, spareUAVIds } = uavIds;
 
   const listItemProps = {
+    draggable: editingMapping,
+    onDropped: editingMapping && onDropped,
     onSelected,
     selectedUAVIds
   };
 
-  return (
+  const mainBox = (
     <Box display="flex" flexDirection="column">
       <AppBar
         color="default"
@@ -130,7 +158,7 @@ const UAVListPresentation = ({
         <Box display="flex" flexDirection="row" flexWrap="wrap">
           {createListItems(mainUAVIds, listItemProps)}
         </Box>
-        {spareUAVIds.length > 0 ? (
+        {spareUAVIds.length > 0 || editingMapping ? (
           <>
             <ListSubheader key="__spare" flex="0 0 100%">
               Spare UAVs
@@ -143,9 +171,17 @@ const UAVListPresentation = ({
       </Box>
     </Box>
   );
+
+  return editingMapping ? (
+    <DndProvider backend={HTML5Backend}>{mainBox}</DndProvider>
+  ) : (
+    mainBox
+  );
 };
 
 UAVListPresentation.propTypes = {
+  editingMapping: PropTypes.bool,
+  onMappingAdjusted: PropTypes.func,
   onSelectionChanged: PropTypes.func,
   selectedUAVIds: PropTypes.array,
   uavIds: PropTypes.exact({
@@ -164,15 +200,16 @@ UAVListPresentation.propTypes = {
 const getDisplayedUAVIdList = createSelector(
   getUAVIdList,
   uavIds => ({
-    mainUAVIds: uavIds.map(uavId => [uavId, uavId]),
+    mainUAVIds: uavIds.map(uavId => [uavId, undefined, uavId]),
     spareUAVIds: []
   })
 );
 
 const getDisplayedMissionIdList = createSelector(
   getMissionMapping,
+  isMappingEditable,
   getUAVIdList,
-  (mapping, uavIds) => {
+  (mapping, editable, uavIds) => {
     const mainUAVIds = [];
     const spareUAVIds = [];
     const seenUAVIds = new Set();
@@ -180,16 +217,20 @@ const getDisplayedMissionIdList = createSelector(
     mapping.forEach((uavId, index) => {
       const missionId = `s${index}`;
       if (isNil(uavId)) {
-        mainUAVIds.push([undefined, missionId]);
+        // No UAV assigned to this slot
+        mainUAVIds.push([undefined, index, missionId]);
       } else {
-        mainUAVIds.push([uavId, missionId]);
+        // Some UAV is assigned to this slot. If we are not editing the
+        // mapping, we show the mission ID. Otherwise we show the UAV ID.
+        mainUAVIds.push([uavId, index, editable ? uavId : missionId]);
         seenUAVIds.add(uavId);
       }
     });
 
     for (const uavId of uavIds) {
       if (!seenUAVIds.has(uavId)) {
-        spareUAVIds.push([uavId, uavId]);
+        // This UAV is not part of the current mapping.
+        spareUAVIds.push([uavId, undefined, uavId]);
       }
     }
 
@@ -208,15 +249,15 @@ const getDisplayedIdList = state =>
 const UAVList = connect(
   // mapStateToProps
   state => ({
+    editingMapping: isMappingEditable(state),
     selectedUAVIds: getSelectedUAVIds(state),
     uavIds: getDisplayedIdList(state)
   }),
   // mapDispatchToProps
-  dispatch => ({
-    onSelectionChanged: uavIds => {
-      dispatch(setSelectedUAVIds(uavIds));
-    }
-  })
+  {
+    onMappingAdjusted: adjustMissionMapping,
+    onSelectionChanged: setSelectedUAVIds
+  }
 )(UAVListPresentation);
 
 export default UAVList;

@@ -74,6 +74,8 @@
     "react-badger": "^2.0.3",
     "react-color": "^2.18.0",
     "react-cover-page": "^2.0.6",
+    "react-dnd": "^10.0.2",
+    "react-dnd-html5-backend": "^10.0.2",
     "react-dom": "^16.12.0",
     "react-error-boundary": "^1.2.5",
     "react-event-listener": "^0.6.6",

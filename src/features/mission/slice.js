@@ -8,7 +8,7 @@
 
 import { createSlice } from '@reduxjs/toolkit';
 
-const { reducer } = createSlice({
+const { actions, reducer } = createSlice({
   name: 'mission',
 
   initialState: {
@@ -17,12 +17,74 @@ const { reducer } = createSlice({
     // mission-specific identifier. The mapping may store UAV IDs and
     // undefined values for identifiers where the corresponding physical UAV
     // is not assigned yet.
-    mapping: ['03', undefined, '01', '02', undefined]
+    mapping: ['03', undefined, '01', '02', undefined],
+
+    // Stores whether the mapping is currently being edited on the UI
+    mappingIsEditable: false
   },
 
-  reducers: {}
+  reducers: {
+    adjustMissionMapping(state, action) {
+      const { uavId, to } = action.payload;
+      const from = state.mapping.indexOf(uavId);
+      const uavIdToReplace = state.mapping[to];
+
+      if (from >= 0) {
+        state.mapping[from] = uavIdToReplace;
+      }
+
+      state.mapping[to] = uavId;
+    },
+
+    /**
+     * Clears the entire mission mapping.
+     */
+    clearMapping(state) {
+      const numItems = state.mapping.length;
+      state.mapping = new Array(numItems).fill(undefined);
+    },
+
+    /**
+     * Clears a single slot in the mission mapping.
+     */
+    clearMappingSlot(state, action) {
+      const index = action.payload;
+      if (index >= 0 && index < length) {
+        state.mapping[index] = undefined;
+      }
+    },
+
+    /**
+     * Removes a single UAV from the mission mapping.
+     */
+    removeUAVsFromMapping(state, action) {
+      for (const uavId of action.payload) {
+        const index = state.mapping.indexOf(uavId);
+        if (index >= 0) {
+          state.mapping[index] = undefined;
+        }
+      }
+    },
+
+    /**
+     * Toggles whether the user is currently editing the mission mapping
+     * or not.
+     */
+    toggleMappingIsEditable: {
+      prepare: () => ({}), // this is to swallow event arguments
+      reducer(state) {
+        state.mappingIsEditable = !state.mappingIsEditable;
+      }
+    }
+  }
 });
 
-// export const { addUAVs, clearUAVList, removeUAVs, updateUAVs } = actions;
+export const {
+  adjustMissionMapping,
+  clearMapping,
+  clearMappingSlot,
+  removeUAVsFromMission,
+  toggleMappingIsEditable
+} = actions;
 
 export default reducer;

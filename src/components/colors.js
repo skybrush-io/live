@@ -5,7 +5,9 @@ export const Colors = {
   error: '#f00', // possible alternative: red.A400
   info: lightBlue[500],
   success: green.A700,
-  warning: yellow[700]
+  warning: yellow[700],
+
+  dropTarget: 'rgba(3, 169, 244, 0.5)' // lightblue.500
 };
 
 export default Colors;

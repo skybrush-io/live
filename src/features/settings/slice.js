@@ -65,8 +65,11 @@ const { actions, reducer } = createSlice({
       }
     },
 
-    toggleMissionIds(state) {
-      state.display.showMissionIds = !state.display.showMissionIds;
+    toggleMissionIds: {
+      prepare: () => ({}), // this is to swallow event arguments
+      reducer(state) {
+        state.display.showMissionIds = !state.display.showMissionIds;
+      }
     },
 
     updateAppSettings: {
