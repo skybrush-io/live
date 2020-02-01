@@ -99,22 +99,20 @@ class MessagesDialogPresentation extends React.Component {
 
     return (
       <Dialog fullWidth open={isOpen} onClose={onClose}>
-        <DialogContent>
-          <EventListener
-            target={document.body}
-            onKeyDown={withOptions(this._handleKeyWhileOpen, { capture: true })}
-          />
-          <SignalListener
-            target={focusMessagesDialogUAVSelectorFieldSignal}
-            onDispatched={this._focusUAVSelectorField}
-          />
-          <MessagesPanel
-            ref={this._setMessagesPanel}
-            textFieldsAtBottom
-            style={{ height: '35ex' }}
-            flock={flock}
-          />
-        </DialogContent>
+        <EventListener
+          target={document.body}
+          onKeyDown={withOptions(this._handleKeyWhileOpen, { capture: true })}
+        />
+        <SignalListener
+          target={focusMessagesDialogUAVSelectorFieldSignal}
+          onDispatched={this._focusUAVSelectorField}
+        />
+        <MessagesPanel
+          ref={this._setMessagesPanel}
+          textFieldsAtBottom
+          style={{ height: '35ex' }}
+          flock={flock}
+        />
         <DialogActions>{actions}</DialogActions>
       </Dialog>
     );

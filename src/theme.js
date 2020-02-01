@@ -27,6 +27,11 @@ const DarkAwareThemeProvider = ({ children }) => {
   return <ThemeProvider theme={theme}>{children}</ThemeProvider>;
 };
 
+/**
+ * Returns whether the given Material UI theme is a dark theme.
+ */
+export const isDark = theme => theme.palette.type === 'dark';
+
 DarkAwareThemeProvider.propTypes = {
   children: PropTypes.oneOfType([
     PropTypes.arrayOf(PropTypes.node),

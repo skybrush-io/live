@@ -6,6 +6,8 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 
+import Box from '@material-ui/core/Box';
+
 /**
  * Stateless React component showing a chat area that may host one or
  * more chat bubbles.
@@ -21,7 +23,9 @@ export default class ChatArea extends React.Component {
 
   constructor(props) {
     super(props);
+
     this._domNode = React.createRef();
+    this._endNode = React.createRef();
   }
 
   componentDidUpdate(_prevProps, _prevState, snapshot) {
@@ -34,16 +38,23 @@ export default class ChatArea extends React.Component {
     const node = this._domNode.current;
     return {
       shouldScrollToBottom:
-        node && node.scrollTop + node.clientHeight >= node.scrollHeight - 5
+        node && node.scrollTop + node.clientHeight >= node.scrollHeight - 20
     };
   }
 
   render() {
-    const { children, style } = this.props;
+    const { children, ...rest } = this.props;
     return (
-      <div ref={this._domNode} className="chat-area" style={style}>
+      <Box
+        ref={this._domNode}
+        position="relative"
+        overflow="auto"
+        flex="1 1 100%"
+        {...rest}
+      >
         {children}
-      </div>
+        <div ref={this._endNode} />
+      </Box>
     );
   }
 
@@ -52,9 +63,9 @@ export default class ChatArea extends React.Component {
    * insertion of a new chat bubble at the bottom.
    */
   scrollToBottom() {
-    const node = this._domNode.current;
+    const node = this._endNode.current;
     if (node) {
-      node.scrollTop = node.scrollHeight;
+      node.scrollIntoView({ behaviour: 'smooth' });
     }
   }
 }

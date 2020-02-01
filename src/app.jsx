@@ -23,7 +23,6 @@ import store, { persistor } from './store';
 import ThemeProvider from './theme';
 import workbench from './workbench';
 
-require('../assets/css/chat.less');
 require('../assets/css/kbd.css');
 require('../assets/css/screen.less');
 require('../assets/css/tooltips.less');

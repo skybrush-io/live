@@ -5,16 +5,20 @@
 
 import flatMap from 'lodash-es/flatMap';
 import isNil from 'lodash-es/isNil';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import TextField from '@material-ui/core/TextField';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 
+import Box from '@material-ui/core/Box';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import TextField from '@material-ui/core/TextField';
+
 import ActiveUAVsField from '../ActiveUAVsField';
 import BackgroundHint from '../BackgroundHint';
 
-import { ChatArea, ChatBubble, Marker } from '.';
+import ChatArea from './ChatArea';
+import ChatBubble from './ChatBubble';
+import Marker from './Marker';
 
 import {
   addInboundMessage,
@@ -22,6 +26,7 @@ import {
   addErrorMessageInMessagesDialog
 } from '~/actions/messages';
 import { formatCommandResponseAsHTML } from '~/flockwave/formatting';
+import { parseCommandFromString } from '~/flockwave/messages';
 import Flock from '~/model/flock';
 import { MessageType } from '~/model/messages';
 import messageHub from '~/message-hub';
@@ -116,6 +121,11 @@ ChatAreaBackgroundHint.propTypes = {
   textFieldPlacement: PropTypes.oneOf(['bottom', 'top'])
 };
 
+const shadow = {
+  boxShadow: 'rgba(0, 0, 0, 0.3) 0 -10px 10px -10px',
+  zIndex: 10
+};
+
 /**
  * Presentation component for the "Messages" panel, containing a text field
  * to type the messages into, and a target UAV selector.
@@ -174,7 +184,7 @@ class MessagesPanelPresentation extends React.Component {
     };
     const chatArea =
       chatComponents.length > 0 ? (
-        <ChatArea key="chatArea" ref={this._chatAreaRef}>
+        <ChatArea key="chatArea" ref={this._chatAreaRef} px={2} pt={2}>
           {chatComponents}
         </ChatArea>
       ) : (
@@ -185,7 +195,7 @@ class MessagesPanelPresentation extends React.Component {
         />
       );
     const textFields = (
-      <div key="textFieldContainer" style={{ display: 'flex' }}>
+      <Box key="textFieldContainer" display="flex" style={shadow} pt={1} px={2}>
         <ActiveUAVsField
           initialValue={selectedUAVId}
           inputRef={this._uavSelectorFieldRef}
@@ -198,7 +208,7 @@ class MessagesPanelPresentation extends React.Component {
           label="Message"
           onKeyDown={this._textFieldKeyDownHandler}
         />
-      </div>
+      </Box>
     );
     const children =
       textFieldPlacement === 'bottom'
@@ -257,10 +267,13 @@ const MessagesPanel = connect(
       const action = addOutboundMessageToSelectedUAV(message);
       dispatch(action);
 
+      // Parse the message and extract positional and keyword arguments
+      const { command, args, kwds } = parseCommandFromString(message);
+
       // Now also send the message via the message hub
       const { uavId, messageId } = action;
       messageHub
-        .sendCommandRequest(uavId, message)
+        .sendCommandRequest(uavId, command, args, kwds)
         .then(
           // Success handler
           message => {
@@ -272,9 +285,9 @@ const MessagesPanel = connect(
         .catch(
           // Error handler
           error => {
-            const message = error.userMessage || error.message;
+            const errorMessage = error.userMessage || error.message;
             dispatch(
-              addErrorMessageInMessagesDialog(message, uavId, messageId)
+              addErrorMessageInMessagesDialog(errorMessage, uavId, messageId)
             );
           }
         );

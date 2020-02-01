@@ -12,7 +12,11 @@ import SecondaryStatusLight from './SecondaryStatusLight';
 import SummaryPill from './SummaryPill';
 
 import Colors from '~/components/colors';
-import { getSeverityOfMostSevereErrorCode, Severity } from '~/flockwave/errors';
+import {
+  getSeverityOfErrorCode,
+  getSeverityOfMostSevereErrorCode,
+  Severity
+} from '~/flockwave/errors';
 
 const useStyles = makeStyles(
   theme => ({
@@ -181,6 +185,21 @@ DroneAvatar.defaultProps = {
   textSemantics: 'info'
 };
 
+function severityToSemantics(severity) {
+  switch (severity) {
+    case Severity.FATAL:
+      return 'critical';
+    case Severity.ERROR:
+      return 'error';
+    case Severity.WARNING:
+      return 'warning';
+    case Severity.INFO:
+      return 'info';
+    default:
+      return 'off';
+  }
+}
+
 /**
  * Function that takes a drone object from the Redux store and derives the
  * generic status summary of the drone.
@@ -215,15 +234,8 @@ DroneAvatar.defaultProps = {
 function getDroneStatus(uav) {
   if (uav.errors && uav.errors.length > 0) {
     const severity = getSeverityOfMostSevereErrorCode(uav.errors);
-    switch (severity) {
-      case Severity.FATAL:
-        return 'critical';
-      case Severity.ERROR:
-        return 'error';
-      case Severity.WARNING:
-        return 'warning';
-      default:
-      // nothing to do
+    if (severity >= Severity.WARNING) {
+      return severityToSemantics(severity);
     }
   }
 
@@ -233,22 +245,42 @@ function getDroneStatus(uav) {
 }
 
 function getDroneText(uav) {
+  let text;
+  let textSemantics;
+
   if (!uav) {
-    return { text: 'missing', textSemantics: 'error' };
-  }
+    text = 'missing';
+    textSemantics = 'error';
+  } else if (uav.errors) {
+    const maxError = Math.max(...uav.errors);
+    const severity = getSeverityOfErrorCode(maxError);
 
-  // TODO(ntamas): don't hardcode, use an enum
-  if (uav.errors) {
-    if (uav.errors.includes(2)) {
-      return { text: 'init', textSemantics: 'info' };
+    // TODO: don't hardcode, use enums
+    switch (maxError) {
+      case 2:
+        text = 'init';
+        break;
+
+      case 4:
+        text = 'disarm';
+        break;
+
+      default:
+        text = `e${maxError}`;
     }
 
-    if (uav.errors.includes(4)) {
-      return { text: 'disarm', textSemantics: 'error' };
+    if (maxError === 4) {
+      // disarm is treated separately; it is always shown as an error
+      textSemantics = 'error';
+    } else {
+      textSemantics = severityToSemantics(severity);
     }
+  } else {
+    text = 'ready';
+    textSemantics = 'success';
   }
 
-  return { text: 'armed', textSemantics: 'success' };
+  return { text, textSemantics };
 }
 
 export default connect(

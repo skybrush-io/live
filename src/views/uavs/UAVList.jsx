@@ -26,7 +26,6 @@ import MappingEditorToolbar from './MappingEditorToolbar';
 import UAVToolbar from './UAVToolbar';
 
 import { setSelectedUAVIds } from '~/actions/map';
-import Colors from '~/components/colors';
 import { createSelectionHandlerFactory } from '~/components/helpers/lists';
 import { adjustMissionMapping } from '~/features/mission/slice';
 import {
@@ -35,8 +34,8 @@ import {
 } from '~/features/mission/selectors';
 import { isShowingMissionIds } from '~/features/settings/selectors';
 import { getUAVIdList } from '~/features/uavs/selectors';
-import useDarkMode from '~/hooks/useDarkMode';
 import { getSelectedUAVIds } from '~/selectors/selection';
+import { isDark } from '~/theme';
 
 const drones = [
   {
@@ -68,11 +67,8 @@ const drones = [
 
 const useStyles = makeStyles(
   theme => ({
-    root: {
-      backgroundColor: theme.palette.background.paper
-    },
-    rootDark: {
-      backgroundColor: '#444'
+    appBar: {
+      backgroundColor: isDark(theme) ? '#444' : theme.palette.background.paper
     }
   }),
   { name: 'UAVList' }
@@ -126,7 +122,6 @@ const UAVListPresentation = ({
   uavIds
 }) => {
   const classes = useStyles();
-  const darkMode = useDarkMode();
   const onSelected = useMemo(
     () =>
       createSelectionHandlerFactory({
@@ -155,11 +150,7 @@ const UAVListPresentation = ({
 
   const mainBox = (
     <Box display="flex" flexDirection="column">
-      <AppBar
-        color="default"
-        position="static"
-        className={darkMode ? classes.rootDark : classes.root}
-      >
+      <AppBar color="default" position="static" className={classes.appBar}>
         <Fade mountOnEnter unmountOnExit direction="up" in={!editingMapping}>
           <UAVToolbar selectedUAVIds={selectedUAVIds} />
         </Fade>

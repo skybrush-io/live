@@ -33,6 +33,20 @@ const createMessageId = () =>
   radix64Encoder.encodeInt(rng.random_int() & 0x3fffffff, 5);
 
 /**
+ * Takes an outbound message to send to a UAV as a single string, and
+ * parses it to an object consisting of the command itself, the positional
+ * and the keyword arguments.
+ */
+export function parseCommandFromString(string) {
+  const parts = string && string.length > 0 ? string.split(/\s+/) : [''];
+  return {
+    command: parts[0],
+    args: parts.slice(1),
+    kwds: {}
+  };
+}
+
+/**
  * Creates a new Flockwave message with the given body.
  *
  * @param {Object} body  the body of the message to send, or the type of

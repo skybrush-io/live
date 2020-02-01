@@ -2,48 +2,62 @@
  * @file React component showing a marker line in a chat session.
  */
 
-import has from 'lodash-es/has';
+import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import React from 'react';
 import TimeAgo from 'react-time-ago';
 
-/**
- * Mapping from level names to their corresponding CSS classes.
- * @type {Object}
- */
-const levelsToClassNames = {
-  error: 'chat-marker chat-marker-error',
-  warning: 'chat-marker chat-marker-warning',
-  info: 'chat-marker chat-marker-info'
-};
+import { makeStyles } from '@material-ui/core/styles';
+
+const useStyles = makeStyles(theme => ({
+  root: {
+    fontSize: 'smaller',
+    margin: theme.spacing(0.5, 0),
+
+    '& .date': {
+      color: theme.palette.text.secondary
+    }
+  },
+
+  'level-error': {
+    '& .message': {
+      fontWeight: 'bold',
+      color: theme.palette.error.main
+    }
+  },
+
+  'level-warning': {
+    '& .message': {
+      fontWeight: 'bold',
+      color: theme.palette.warning.main
+    }
+  }
+}));
 
 /**
  * Stateless React component showing a marker line in a chat session.
  */
-export default class Marker extends React.Component {
-  render() {
-    const { level, message, date } = this.props;
-    const className = has(levelsToClassNames, level)
-      ? levelsToClassNames[level]
-      : levelsToClassNames.info;
-    const dateComponent = date ? (
-      <span className="date">
-        <TimeAgo date={date} />
-      </span>
-    ) : (
-      false
-    );
-    return (
-      <div className={className}>
-        <span className="message">{message}</span> {dateComponent}
-      </div>
-    );
-  }
-}
+export const Marker = ({ date, level, message }) => {
+  const classes = useStyles();
+  const className = clsx(
+    classes.root,
+    classes[`level-${level}`] || classes['level-info']
+  );
+  const dateComponent = date && (
+    <span className="date">
+      <TimeAgo date={date} />
+    </span>
+  );
+  return (
+    <div className={className}>
+      <span className="message">{message}</span> {dateComponent}
+    </div>
+  );
+};
 
 Marker.propTypes = {
-  level: PropTypes.string.isRequired,
-  message: PropTypes.string.isRequired,
+  level: PropTypes.string,
+  message: PropTypes.string,
   date: PropTypes.instanceOf(Date)
 };
 
@@ -51,3 +65,5 @@ Marker.defaultProps = {
   level: 'info',
   message: ''
 };
+
+export default Marker;
