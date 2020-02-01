@@ -1,4 +1,5 @@
 import clsx from 'clsx';
+import * as color from 'color';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
@@ -54,6 +55,13 @@ const useStyles = makeStyles(
       color: theme.palette.getContrastText(Colors.off)
     },
 
+    'avatar-editing': {
+      backgroundColor: Colors.info,
+      color: theme.palette.getContrastText(Colors.info),
+      animation: '$pulse 0.5s infinite',
+      animationDirection: 'alternate'
+    },
+
     'avatar-success': {
       backgroundColor: Colors.success,
       color: theme.palette.getContrastText(Colors.success)
@@ -87,6 +95,15 @@ const useStyles = makeStyles(
       color: theme.palette.getContrastText(Colors.error)
     },
 
+    '@keyframes pulse': {
+      '0%': {
+        boxShadow: `0 0 8px 2px ${color(Colors.info).alpha(0)}`
+      },
+      '100%': {
+        boxShadow: `0 0 8px 2px ${Colors.info}`
+      }
+    },
+
     '@keyframes flash': {
       '0%, 49%': {
         opacity: 0.2
@@ -111,6 +128,7 @@ const useStyles = makeStyles(
 const DroneAvatar = ({
   batteryStatus,
   crossed,
+  editing,
   id,
   label,
   progress,
@@ -123,7 +141,12 @@ const DroneAvatar = ({
   return (
     <>
       <div className={clsx(classes.avatarWrapper, crossed && 'crossed')}>
-        <Avatar className={clsx(classes.avatar, classes[`avatar-${status}`])}>
+        <Avatar
+          className={clsx(
+            classes.avatar,
+            classes[`avatar-${editing ? 'editing' : status}`]
+          )}
+        >
           {label === undefined ? id : label}
         </Avatar>
         {progress > 0 && (
@@ -148,6 +171,7 @@ DroneAvatar.propTypes = {
     percentage: PropTypes.number
   }),
   crossed: PropTypes.bool,
+  editing: PropTypes.bool,
   id: PropTypes.string,
   label: PropTypes.string,
   progress: PropTypes.number,

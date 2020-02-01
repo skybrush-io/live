@@ -1,4 +1,5 @@
 import clsx from 'clsx';
+import * as color from 'color';
 import PropTypes from 'prop-types';
 import React from 'react';
 
@@ -23,10 +24,26 @@ const useStyles = makeStyles(
       opacity: 0.5
     },
 
+    'avatar-editing': {
+      backgroundColor: Colors.info,
+      color: theme.palette.getContrastText(Colors.info),
+      animation: '$pulse 0.5s infinite',
+      animationDirection: 'alternate'
+    },
+
     'avatar-error': {
       backgroundColor: Colors.error,
       boxShadow: `0 0 8px 2px ${Colors.error}`,
       color: theme.palette.getContrastText(Colors.error)
+    },
+
+    '@keyframes pulse': {
+      '0%': {
+        boxShadow: `0 0 8px 2px ${color(Colors.info).alpha(0)}`
+      },
+      '100%': {
+        boxShadow: `0 0 8px 2px ${Colors.info}`
+      }
     }
   }),
   { name: 'DronePlaceholder' }
@@ -37,11 +54,16 @@ const useStyles = makeStyles(
  * don't want to display a drone avatar but want to show a placeholder
  * instead that is of the same size as the avatar.
  */
-const DronePlaceholder = ({ label, status }) => {
+const DronePlaceholder = ({ editing, label, status }) => {
   const classes = useStyles();
   return (
     <div className={classes.root}>
-      <Avatar className={clsx(classes.avatar, classes[`avatar-${status}`])}>
+      <Avatar
+        className={clsx(
+          classes.avatar,
+          classes[`avatar-${editing ? 'editing' : status}`]
+        )}
+      >
         {label}
       </Avatar>
     </div>
@@ -49,8 +71,9 @@ const DronePlaceholder = ({ label, status }) => {
 };
 
 DronePlaceholder.propTypes = {
+  editing: PropTypes.bool,
   label: PropTypes.node,
-  status: PropTypes.oneOf(['off', 'error'])
+  status: PropTypes.oneOf(['off', 'editing', 'error'])
 };
 
 DronePlaceholder.defaultProps = {

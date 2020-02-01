@@ -19,15 +19,21 @@ const { actions, reducer } = createSlice({
     // is not assigned yet.
     mapping: ['03', undefined, '01', '02', undefined],
 
-    // Stores whether the mapping is currently being edited on the UI
-    mappingIsEditable: false
+    mappingEditor: {
+      // Stores whether the mapping is currently being edited on the UI
+      enabled: false,
+
+      // Stores the index of the slot in the mapping that is being edited;
+      // -1 if no slot is being edited
+      indexBeingEdited: -1
+    }
   },
 
   reducers: {
     adjustMissionMapping(state, action) {
       const { uavId, to } = action.payload;
       const from = state.mapping.indexOf(uavId);
-      const uavIdToReplace = to !== undefined ? state.mapping[to] : undefined;
+      const uavIdToReplace = to === undefined ? undefined : state.mapping[to];
 
       if (from >= 0) {
         state.mapping[from] = uavIdToReplace;
@@ -62,7 +68,8 @@ const { actions, reducer } = createSlice({
     finishMappingEditorSession: {
       prepare: () => ({}), // this is to swallow event arguments
       reducer(state) {
-        state.mappingIsEditable = false;
+        state.mappingEditor.enabled = false;
+        state.mappingEditor.indexBeingEdited = -1;
       }
     },
 
@@ -79,23 +86,28 @@ const { actions, reducer } = createSlice({
     },
 
     /**
+     * Starts the current editing session of the mapping, and marks the
+     * given slot in the mapping as the one being edited.
+     */
+    startMappingEditorSessionAtSlot(state, action) {
+      const tentativeIndex =
+        typeof action.payload === 'number' ? action.payload : -1;
+      const numItems = state.mapping.length;
+      const index =
+        tentativeIndex < 0 || tentativeIndex >= numItems ? -1 : tentativeIndex;
+
+      state.mappingEditor.enabled = true;
+      state.mappingEditor.indexBeingEdited = index;
+    },
+
+    /**
      * Starts the current editing session of the mapping.
      */
     startMappingEditorSession: {
       prepare: () => ({}), // this is to swallow event arguments
       reducer(state) {
-        state.mappingIsEditable = true;
-      }
-    },
-
-    /**
-     * Toggles whether the user is currently editing the mission mapping
-     * or not.
-     */
-    toggleMappingIsEditable: {
-      prepare: () => ({}), // this is to swallow event arguments
-      reducer(state) {
-        state.mappingIsEditable = !state.mappingIsEditable;
+        state.mappingEditor.enabled = true;
+        state.mappingEditor.indexBeingEdited = -1;
       }
     }
   }
@@ -108,7 +120,7 @@ export const {
   finishMappingEditorSession,
   removeUAVsFromMission,
   startMappingEditorSession,
-  toggleMappingIsEditable
+  startMappingEditorSessionAtSlot
 } = actions;
 
 export default reducer;

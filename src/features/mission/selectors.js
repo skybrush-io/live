@@ -11,9 +11,24 @@ import { getSelectedUAVIds } from '~/selectors/selection';
 export const getMissionMapping = state => state.mission.mapping;
 
 /**
+ * Returns the index of the mapping slot being edited.
+ */
+export const getIndexOfMappingSlotBeingEdited = state =>
+  state.mission.mappingEditor.indexBeingEdited;
+
+/**
+ * Returns the ID of the UAV that is currently at the mapping slot being edited.
+ */
+export const getUAVIdForMappingSlotBeingEdited = createSelector(
+  getMissionMapping,
+  getIndexOfMappingSlotBeingEdited,
+  (mapping, index) => (index >= 0 ? mapping[index] : undefined)
+);
+
+/**
  * Returns whether the current mapping is editable at the moment.
  */
-export const isMappingEditable = state => state.mission.mappingIsEditable;
+export const isMappingEditable = state => state.mission.mappingEditor.enabled;
 
 /**
  * Returns whether the current selection has at least one drone that appears in

@@ -23,7 +23,9 @@ const MappingEditorToolbar = React.forwardRef(
 
     return (
       <Toolbar ref={ref} disableGutters variant="dense" {...rest}>
-        <Box pl={1.5}>Drag nodes to rearrange the mapping.</Box>
+        <Box pl={1.5}>
+          Click to edit a single slot. Drag nodes to rearrange the mapping.
+        </Box>
         <Box flex={1} />
         <IconButton onClick={finishMappingEditorSession}>
           <Check />

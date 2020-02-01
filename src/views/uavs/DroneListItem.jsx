@@ -55,6 +55,10 @@ const addDropIndicator = {
   style: { backgroundColor: Colors.dropTarget }
 };
 
+/**
+ * Component that encapsulates the logic required to handle drag-and-drop
+ * gestures in a list item.
+ */
 const DragDropArea = ({ children, id, onDrop, ...rest }) => {
   const [collectedDragProps, drag] = useDrag({
     item: { id, type: 'uav' },
@@ -106,7 +110,12 @@ const DroneListItem = ({
     selected && classes.selected
   );
   return draggable || onDrop ? (
-    <DragDropArea className={className} id={uavId} onDrop={onDrop}>
+    <DragDropArea
+      className={className}
+      id={uavId}
+      onClick={onClick}
+      onDrop={onDrop}
+    >
       {children}
     </DragDropArea>
   ) : (
