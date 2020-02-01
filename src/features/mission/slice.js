@@ -57,6 +57,16 @@ const { actions, reducer } = createSlice({
     },
 
     /**
+     * Finishes the current editing session of the mapping.
+     */
+    finishMappingEditorSession: {
+      prepare: () => ({}), // this is to swallow event arguments
+      reducer(state) {
+        state.mappingIsEditable = false;
+      }
+    },
+
+    /**
      * Removes a single UAV from the mission mapping.
      */
     removeUAVsFromMapping(state, action) {
@@ -65,6 +75,16 @@ const { actions, reducer } = createSlice({
         if (index >= 0) {
           state.mapping[index] = undefined;
         }
+      }
+    },
+
+    /**
+     * Starts the current editing session of the mapping.
+     */
+    startMappingEditorSession: {
+      prepare: () => ({}), // this is to swallow event arguments
+      reducer(state) {
+        state.mappingIsEditable = true;
       }
     },
 
@@ -85,7 +105,9 @@ export const {
   adjustMissionMapping,
   clearMapping,
   clearMappingSlot,
+  finishMappingEditorSession,
   removeUAVsFromMission,
+  startMappingEditorSession,
   toggleMappingIsEditable
 } = actions;
 

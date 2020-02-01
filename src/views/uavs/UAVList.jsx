@@ -12,6 +12,7 @@ import { connect } from 'react-redux';
 
 import AppBar from '@material-ui/core/AppBar';
 import Box from '@material-ui/core/Box';
+import Fade from '@material-ui/core/Fade';
 import ListSubheader from '@material-ui/core/ListSubheader';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Delete from '@material-ui/icons/Delete';
@@ -21,7 +22,11 @@ import DroneAvatar from './DroneAvatar';
 import DroneListItem from './DroneListItem';
 import DronePlaceholder from './DronePlaceholder';
 
+import MappingEditorToolbar from './MappingEditorToolbar';
+import UAVToolbar from './UAVToolbar';
+
 import { setSelectedUAVIds } from '~/actions/map';
+import Colors from '~/components/colors';
 import { createSelectionHandlerFactory } from '~/components/helpers/lists';
 import { adjustMissionMapping } from '~/features/mission/slice';
 import {
@@ -32,7 +37,6 @@ import { isShowingMissionIds } from '~/features/settings/selectors';
 import { getUAVIdList } from '~/features/uavs/selectors';
 import useDarkMode from '~/hooks/useDarkMode';
 import { getSelectedUAVIds } from '~/selectors/selection';
-import UAVToolbar from '~/views/uavs/UAVToolbar';
 
 const drones = [
   {
@@ -87,7 +91,10 @@ const createListItems = (
         key={`placeholder-${label}`}
         onDrop={onDropped ? onDropped(missionIndex) : undefined}
       >
-        <DronePlaceholder label={label} />
+        <DronePlaceholder
+          label={label}
+          status={missionIndex === undefined ? 'error' : 'off'}
+        />
       </DroneListItem>
     ) : (
       <DroneListItem
@@ -153,7 +160,12 @@ const UAVListPresentation = ({
         position="static"
         className={darkMode ? classes.rootDark : classes.root}
       >
-        <UAVToolbar flex={0} selectedUAVIds={selectedUAVIds} />
+        <Fade mountOnEnter unmountOnExit direction="up" in={!editingMapping}>
+          <UAVToolbar selectedUAVIds={selectedUAVIds} />
+        </Fade>
+        <Fade mountOnEnter unmountOnExit direction="down" in={editingMapping}>
+          <MappingEditorToolbar />
+        </Fade>
       </AppBar>
       <Box flex={1}>
         <Box display="flex" flexDirection="row" flexWrap="wrap">

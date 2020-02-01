@@ -2,23 +2,18 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 
-import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Edit from '@material-ui/icons/Edit';
-import MoreVert from '@material-ui/icons/MoreVert';
 import ToggleButton from '@material-ui/lab/ToggleButton';
 
 import { isMappingEditable } from '~/features/mission/selectors';
 import { isShowingMissionIds } from '~/features/settings/selectors';
 import {
   clearMapping,
-  toggleMappingIsEditable
+  startMappingEditorSession
 } from '~/features/mission/slice';
 import { toggleMissionIds } from '~/features/settings/slice';
-import useDropdown from '~/hooks/useDropdown';
 
 const useStyles = makeStyles(
   () => ({
@@ -35,13 +30,11 @@ const useStyles = makeStyles(
  * clear or edit the mapping.
  */
 const MappingButtonGroup = ({
-  clearMapping,
   mappingEditable,
   showMissionIds,
-  toggleMappingIsEditable,
+  startMappingEditorSession,
   toggleMissionIds
 }) => {
-  const [menuAnchorEl, openMappingMenu, closeMappingMenu] = useDropdown();
   const classes = useStyles();
 
   return (
@@ -55,39 +48,21 @@ const MappingButtonGroup = ({
       >
         Mapping
       </ToggleButton>
-      <ToggleButton
+      <IconButton
         className={classes.toggleButton}
-        size="small"
-        value="editMode"
-        disabled={!showMissionIds}
-        selected={mappingEditable}
-        onChange={toggleMappingIsEditable}
+        disabled={mappingEditable || !showMissionIds}
+        onClick={startMappingEditorSession}
       >
         <Edit />
-      </ToggleButton>
-      <IconButton onClick={openMappingMenu}>
-        <MoreVert />
       </IconButton>
-      <Menu
-        anchorEl={menuAnchorEl}
-        open={menuAnchorEl !== null}
-        variant="menu"
-        onClose={closeMappingMenu}
-      >
-        <MenuItem disabled>Import...</MenuItem>
-        <MenuItem disabled>Export...</MenuItem>
-        <Divider />
-        <MenuItem onClick={closeMappingMenu(clearMapping)}>Clear</MenuItem>
-      </Menu>
     </>
   );
 };
 
 MappingButtonGroup.propTypes = {
-  clearMapping: PropTypes.func,
   mappingEditable: PropTypes.bool,
   showMissionIds: PropTypes.bool,
-  toggleMappingIsEditable: PropTypes.func,
+  startMappingEditorSession: PropTypes.func,
   toggleMissionIds: PropTypes.func
 };
 
@@ -98,5 +73,5 @@ export default connect(
     showMissionIds: isShowingMissionIds(state)
   }),
   // mapDispatchToProps
-  { clearMapping, toggleMappingIsEditable, toggleMissionIds }
+  { clearMapping, startMappingEditorSession, toggleMissionIds }
 )(MappingButtonGroup);

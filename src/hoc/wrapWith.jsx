@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import wrapDisplayName from 'recompose/wrapDisplayName';
 
-const wrapWith = WrapperComponent => BaseComponent => {
+export default WrapperComponent => BaseComponent => {
   const result = ({ children, ...restProps }) => (
     <WrapperComponent>
       <BaseComponent {...restProps}>{children}</BaseComponent>
@@ -17,5 +17,3 @@ const wrapWith = WrapperComponent => BaseComponent => {
   );
   return result;
 };
-
-export default wrapWith;

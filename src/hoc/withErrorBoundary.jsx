@@ -11,8 +11,6 @@ import { ErrorHandler } from '../error-handling';
  * @return {React.Component}  the original component extended with an
  *         appropriate error handling mechanism
  */
-const withErrorBoundary = component => {
+export default component => {
   return withErrorBoundary_(component, ErrorHandler);
 };
-
-export default withErrorBoundary;
