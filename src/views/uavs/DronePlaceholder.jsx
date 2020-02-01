@@ -37,7 +37,7 @@ const DronePlaceholder = ({ label }) => {
 };
 
 DronePlaceholder.propTypes = {
-  label: PropTypes.string
+  label: PropTypes.node
 };
 
 export default DronePlaceholder;

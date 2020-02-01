@@ -14,6 +14,7 @@ import AppBar from '@material-ui/core/AppBar';
 import Box from '@material-ui/core/Box';
 import ListSubheader from '@material-ui/core/ListSubheader';
 import makeStyles from '@material-ui/core/styles/makeStyles';
+import Delete from '@material-ui/icons/Delete';
 import { createSelector } from '@reduxjs/toolkit';
 
 import DroneAvatar from './DroneAvatar';
@@ -232,6 +233,12 @@ const getDisplayedMissionIdList = createSelector(
         // This UAV is not part of the current mapping.
         spareUAVIds.push([uavId, undefined, uavId]);
       }
+    }
+
+    // If we are in editing mode, we always add one extra spare UAV slot
+    // where the user can drag UAVs that should be deleted
+    if (editable) {
+      spareUAVIds.push([undefined, undefined, <Delete key="__delete" />]);
     }
 
     return { mainUAVIds, spareUAVIds };

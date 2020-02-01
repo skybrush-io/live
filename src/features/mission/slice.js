@@ -27,13 +27,15 @@ const { actions, reducer } = createSlice({
     adjustMissionMapping(state, action) {
       const { uavId, to } = action.payload;
       const from = state.mapping.indexOf(uavId);
-      const uavIdToReplace = state.mapping[to];
+      const uavIdToReplace = to !== undefined ? state.mapping[to] : undefined;
 
       if (from >= 0) {
         state.mapping[from] = uavIdToReplace;
       }
 
-      state.mapping[to] = uavId;
+      if (to !== undefined) {
+        state.mapping[to] = uavId;
+      }
     },
 
     /**
