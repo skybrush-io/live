@@ -23,6 +23,7 @@ import DroneListItem from './DroneListItem';
 import DronePlaceholder from './DronePlaceholder';
 
 import MappingEditorToolbar from './MappingEditorToolbar';
+import MappingSlotEditor from './MappingSlotEditor';
 import UAVToolbar from './UAVToolbar';
 
 import { setSelectedUAVIds } from '~/actions/map';
@@ -102,6 +103,7 @@ const createListItems = (
         onDrop={onDropped ? onDropped(missionIndex) : undefined}
         {...listItemProps}
       >
+        {editing && <MappingSlotEditor />}
         <DronePlaceholder
           editing={editing}
           label={editing ? '' : label}
@@ -115,6 +117,7 @@ const createListItems = (
         uavId={uavId}
         {...listItemProps}
       >
+        {editing && <MappingSlotEditor />}
         <DroneAvatar
           key={uavId}
           id={uavId}

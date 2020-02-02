@@ -14,16 +14,17 @@ const useStyles = makeStyles(
       cursor: 'hand',
       display: 'flex',
       flexDirection: 'column',
-      padding: theme.spacing(1),
       minWidth: theme.spacing(10),
+      padding: theme.spacing(1),
+      position: 'relative',
+      transition: theme.transitions.create(['background-color', 'box-shadow']),
 
       '& div': {
         marginBottom: theme.spacing(0.5)
       },
       '& div:last-child': {
         marginBottom: 0
-      },
-      transition: theme.transitions.create(['background-color', 'box-shadow'])
+      }
     },
 
     draggable: {

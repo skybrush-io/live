@@ -9,6 +9,7 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import Toolbar from '@material-ui/core/Toolbar';
 import Check from '@material-ui/icons/Check';
+import Info from '@material-ui/icons/Info';
 import MoreVert from '@material-ui/icons/MoreVert';
 
 import {
@@ -23,7 +24,10 @@ const MappingEditorToolbar = React.forwardRef(
 
     return (
       <Toolbar ref={ref} disableGutters variant="dense" {...rest}>
-        <Box pl={1.5}>
+        <IconButton disabled>
+          <Info />
+        </IconButton>
+        <Box style={{ userSelect: 'none' }}>
           Click to edit a single slot. Drag nodes to rearrange the mapping.
         </Box>
         <Box flex={1} />

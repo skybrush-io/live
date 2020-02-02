@@ -45,6 +45,13 @@ const { actions, reducer } = createSlice({
     },
 
     /**
+     * Cancels the current editing session of the mapping at the current slot.
+     */
+    cancelMappingEditorSessionAtCurrentSlot(state) {
+      state.mappingEditor.indexBeingEdited = -1;
+    },
+
+    /**
      * Clears the entire mission mapping.
      */
     clearMapping(state) {
@@ -57,7 +64,8 @@ const { actions, reducer } = createSlice({
      */
     clearMappingSlot(state, action) {
       const index = action.payload;
-      if (index >= 0 && index < length) {
+      const numItems = state.mapping.length;
+      if (index >= 0 && index < numItems) {
         state.mapping[index] = undefined;
       }
     },
@@ -71,6 +79,25 @@ const { actions, reducer } = createSlice({
         state.mappingEditor.enabled = false;
         state.mappingEditor.indexBeingEdited = -1;
       }
+    },
+
+    /**
+     * FInishes the editing of a single slot in the mapping.
+     */
+    finishMappingEditorSessionAtCurrentSlot(state, action) {
+      const { value } = action.payload;
+      const validatedValue =
+        typeof value === 'string' && value.length > 0 ? value : undefined;
+      const index = state.mappingEditor.indexBeingEdited;
+      const numItems = state.mapping.length;
+
+      if (index >= 0 && index < numItems) {
+        state.mapping[index] = validatedValue;
+        // TODO: prevent duplicates!
+      }
+
+      // TODO: select the next slot, or the next empty slot?
+      state.mappingEditor.indexBeingEdited = -1;
     },
 
     /**
@@ -115,9 +142,11 @@ const { actions, reducer } = createSlice({
 
 export const {
   adjustMissionMapping,
+  cancelMappingEditorSessionAtCurrentSlot,
   clearMapping,
   clearMappingSlot,
   finishMappingEditorSession,
+  finishMappingEditorSessionAtCurrentSlot,
   removeUAVsFromMission,
   startMappingEditorSession,
   startMappingEditorSessionAtSlot
