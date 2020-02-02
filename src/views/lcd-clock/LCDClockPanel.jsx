@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { useMeasure } from 'react-use';
 
 import Box from '@material-ui/core/Box';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
 
 import LCDText from './LCDText';
 
@@ -35,15 +35,17 @@ const useStyles = makeStyles(
  */
 const LCDClockPanel = () => {
   const classes = useStyles();
+  const theme = useTheme();
   const [ref, { height }] = useMeasure();
+  const color = theme.palette.secondary.main;
 
   return (
     <Box className={clsx(classes.root)}>
       <Box display="flex" flexDirection="row">
-        <LCDText offSegments color="red" decoration="glow" p={0.5}>
+        <LCDText offSegments color={color} decoration="glow" p={0.5}>
           MTC
         </LCDText>
-        <LCDText offSegments off color="red" decoration="glow" p={0.5}>
+        <LCDText offSegments off color={color} decoration="glow" p={0.5}>
           TIME
         </LCDText>
       </Box>
@@ -51,7 +53,7 @@ const LCDClockPanel = () => {
         <LCDText
           offSegments
           height={height}
-          color="red"
+          color={color}
           decoration="glow"
           variant="7segment"
         >
