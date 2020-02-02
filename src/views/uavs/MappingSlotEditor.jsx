@@ -55,8 +55,10 @@ const MappingSlotEditor = ({
 }) => {
   const classes = useStyles();
 
-  const onBlur = () => {
-    // cancelMappingEditorSessionAtCurrentSlot();
+  const onBlur = event => {
+    commitMappingEditorSessionAtCurrentSlot({
+      value: event.target.value
+    });
   };
 
   const onFocus = event => event.target.select();
@@ -67,7 +69,18 @@ const MappingSlotEditor = ({
         continue: !event.shiftKey,
         value: event.target.value
       });
-    } else if (event.keyCode === 27) {
+
+      event.preventDefault();
+      return false;
+    }
+
+    if (event.key === 'Tab') {
+      // TODO(ntamas)
+      event.preventDefault();
+      return false;
+    }
+
+    if (event.keyCode === 27) {
       cancelMappingEditorSessionAtCurrentSlot();
     }
   };
