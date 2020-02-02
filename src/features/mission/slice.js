@@ -82,9 +82,10 @@ const { actions, reducer } = createSlice({
     },
 
     /**
-     * FInishes the editing of a single slot in the mapping.
+     * Commits the new value in the mapping editor to the current slot being
+     * edited, and optionally continues with the next slot.
      */
-    finishMappingEditorSessionAtCurrentSlot(state, action) {
+    commitMappingEditorSessionAtCurrentSlot(state, action) {
       const { value } = action.payload;
       const validatedValue =
         typeof value === 'string' && value.length > 0 ? value : undefined;
@@ -92,8 +93,17 @@ const { actions, reducer } = createSlice({
       const numItems = state.mapping.length;
 
       if (index >= 0 && index < numItems) {
+        const oldValue = state.mapping[index];
+        const existingIndex = state.mapping.indexOf(validatedValue);
+
+        // Prevent duplicates: if the value being entered already exists
+        // elsewhere in the mapping, swap it with the old value of the
+        // slot being edited.
+        if (existingIndex >= 0) {
+          state.mapping[existingIndex] = oldValue;
+        }
+
         state.mapping[index] = validatedValue;
-        // TODO: prevent duplicates!
       }
 
       // TODO: select the next slot, or the next empty slot?
@@ -145,8 +155,8 @@ export const {
   cancelMappingEditorSessionAtCurrentSlot,
   clearMapping,
   clearMappingSlot,
+  commitMappingEditorSessionAtCurrentSlot,
   finishMappingEditorSession,
-  finishMappingEditorSessionAtCurrentSlot,
   removeUAVsFromMission,
   startMappingEditorSession,
   startMappingEditorSessionAtSlot

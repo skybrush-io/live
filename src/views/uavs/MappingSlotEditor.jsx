@@ -11,7 +11,7 @@ import Colors from '~/components/colors';
 import { getUAVIdForMappingSlotBeingEdited } from '~/features/mission/selectors';
 import {
   cancelMappingEditorSessionAtCurrentSlot,
-  finishMappingEditorSessionAtCurrentSlot
+  commitMappingEditorSessionAtCurrentSlot
 } from '~/features/mission/slice';
 
 const useStyles = makeStyles(
@@ -51,7 +51,7 @@ const inputProps = {
 const MappingSlotEditor = ({
   cancelMappingEditorSessionAtCurrentSlot,
   defaultValue,
-  finishMappingEditorSessionAtCurrentSlot
+  commitMappingEditorSessionAtCurrentSlot
 }) => {
   const classes = useStyles();
 
@@ -63,7 +63,8 @@ const MappingSlotEditor = ({
 
   const onKeyDown = event => {
     if (event.key === 'Enter') {
-      finishMappingEditorSessionAtCurrentSlot({
+      commitMappingEditorSessionAtCurrentSlot({
+        continue: !event.shiftKey,
         value: event.target.value
       });
     } else if (event.keyCode === 27) {
@@ -90,7 +91,7 @@ const MappingSlotEditor = ({
 MappingSlotEditor.propTypes = {
   cancelMappingEditorSessionAtCurrentSlot: PropTypes.func,
   defaultValue: PropTypes.string,
-  finishMappingEditorSessionAtCurrentSlot: PropTypes.func
+  commitMappingEditorSessionAtCurrentSlot: PropTypes.func
 };
 
 export default connect(
@@ -101,6 +102,6 @@ export default connect(
   // mapDispatchToProps
   {
     cancelMappingEditorSessionAtCurrentSlot,
-    finishMappingEditorSessionAtCurrentSlot
+    commitMappingEditorSessionAtCurrentSlot
   }
 )(MappingSlotEditor);
