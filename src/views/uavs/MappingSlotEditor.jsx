@@ -66,7 +66,7 @@ const MappingSlotEditor = ({
   const onKeyDown = event => {
     if (event.key === 'Enter') {
       commitMappingEditorSessionAtCurrentSlot({
-        continue: !event.shiftKey,
+        continuation: event.shiftKey ? false : 'next',
         value: event.target.value
       });
 
@@ -75,7 +75,11 @@ const MappingSlotEditor = ({
     }
 
     if (event.key === 'Tab') {
-      // TODO(ntamas)
+      commitMappingEditorSessionAtCurrentSlot({
+        continuation: event.shiftKey ? 'prevEmpty' : 'nextEmpty',
+        value: event.target.value
+      });
+
       event.preventDefault();
       return false;
     }

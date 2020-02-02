@@ -6,7 +6,11 @@
  * in the mission.
  */
 
+import isNil from 'lodash-es/isNil';
+
 import { createSlice } from '@reduxjs/toolkit';
+
+import { getNewEditIndex } from './utils';
 
 const { actions, reducer } = createSlice({
   name: 'mission',
@@ -15,9 +19,9 @@ const { actions, reducer } = createSlice({
     // Stores a mapping from the mission-specific consecutive identifiers
     // to the IDs of the UAVs that participate in the mission with that
     // mission-specific identifier. The mapping may store UAV IDs and
-    // undefined values for identifiers where the corresponding physical UAV
+    // null values for identifiers where the corresponding physical UAV
     // is not assigned yet.
-    mapping: ['03', undefined, '01', '02', undefined],
+    mapping: ['03', null, '01', '02', null],
 
     mappingEditor: {
       // Stores whether the mapping is currently being edited on the UI
@@ -33,13 +37,17 @@ const { actions, reducer } = createSlice({
     adjustMissionMapping(state, action) {
       const { uavId, to } = action.payload;
       const from = state.mapping.indexOf(uavId);
-      const uavIdToReplace = to === undefined ? undefined : state.mapping[to];
+      const uavIdToReplace = isNil(to) ? null : state.mapping[to];
+
+      if (uavIdToReplace === undefined) {
+        uavIdToReplace = null;
+      }
 
       if (from >= 0) {
         state.mapping[from] = uavIdToReplace;
       }
 
-      if (to !== undefined) {
+      if (!isNil(to)) {
         state.mapping[to] = uavId;
       }
     },
@@ -86,9 +94,9 @@ const { actions, reducer } = createSlice({
      * edited, and optionally continues with the next slot.
      */
     commitMappingEditorSessionAtCurrentSlot(state, action) {
-      const { value } = action.payload;
+      const { continuation, value } = action.payload;
       const validatedValue =
-        typeof value === 'string' && value.length > 0 ? value : undefined;
+        typeof value === 'string' && value.length > 0 ? value : null;
       const index = state.mappingEditor.indexBeingEdited;
       const numItems = state.mapping.length;
 
@@ -106,8 +114,10 @@ const { actions, reducer } = createSlice({
         state.mapping[index] = validatedValue;
       }
 
-      // TODO: select the next slot, or the next empty slot?
-      state.mappingEditor.indexBeingEdited = -1;
+      state.mappingEditor.indexBeingEdited = getNewEditIndex(
+        state,
+        continuation
+      );
     },
 
     /**
@@ -117,7 +127,7 @@ const { actions, reducer } = createSlice({
       for (const uavId of action.payload) {
         const index = state.mapping.indexOf(uavId);
         if (index >= 0) {
-          state.mapping[index] = undefined;
+          state.mapping[index] = null;
         }
       }
     },
