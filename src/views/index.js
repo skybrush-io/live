@@ -10,6 +10,7 @@ import DockList from './docks';
 import FeatureList from './features';
 import GroundControlView from './groundcontrol';
 import LayerList from './layers';
+import LCDClockPanel from './lcd-clock';
 import MapView from './map';
 import SavedLocationList from './locations';
 import LogPanel from './log';
@@ -23,6 +24,7 @@ export default {
   FeatureList,
   GroundControlView,
   LayerList,
+  LCDClockPanel,
   LogPanel,
   MapView,
   SavedLocationList,

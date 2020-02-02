@@ -215,7 +215,7 @@ const ClockDisplayList = connect(
   // mapStateToProps
   state => ({
     clocks: state.clocks.order.map(entryName => {
-      const result = { ...state.clocks.items[entryName] };
+      const result = { ...state.clocks.byId[entryName] };
       if (result.ticksPerSecond > 1) {
         result.updateFrequency = Math.max(1000 / result.ticksPerSecond, 100);
       } else {

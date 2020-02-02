@@ -49,6 +49,7 @@ const componentRegistry = {
   'feature-list': views.FeatureList,
   'ground-control-view': injectFlockFromContext(views.GroundControlView),
   'layer-list': views.LayerList,
+  'lcd-clock-panel': views.LCDClockPanel,
   'log-panel': views.LogPanel,
   map: views.MapView,
   messages: compose(

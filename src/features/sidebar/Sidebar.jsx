@@ -1,4 +1,5 @@
 import Alarm from '@material-ui/icons/Alarm';
+import Apps from '@material-ui/icons/Apps';
 import Flight from '@material-ui/icons/Flight';
 import Gamepad from '@material-ui/icons/Gamepad';
 import Layers from '@material-ui/icons/Layers';
@@ -75,6 +76,12 @@ const Sidebar = ({ isOpen, workbench }) => (
           icon={<Alarm />}
           label="Clocks"
           component="clock-list"
+        />
+        <Module
+          id="lcd-clock"
+          icon={<Apps />}
+          label="LCD clock"
+          component="lcd-clock-panel"
         />
         {/*
         <Module

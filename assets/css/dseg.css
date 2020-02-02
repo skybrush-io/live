@@ -1,0 +1,17 @@
+@font-face {
+  font-family: 'DSEG14-Classic';
+  src: url('../fonts/DSEG14-Classic/DSEG14Classic-Regular.woff2') format('woff2'),
+  url('../fonts/DSEG14-Classic/DSEG14Classic-Regular.woff') format('woff'),
+  url('../fonts/DSEG14-Classic/DSEG14Classic-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'DSEG7-Classic';
+  src: url('../fonts/DSEG7-Classic/DSEG7Classic-Regular.woff2') format('woff2'),
+  url('../fonts/DSEG7-Classic/DSEG7Classic-Regular.woff') format('woff'),
+  url('../fonts/DSEG7-Classic/DSEG7Classic-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}

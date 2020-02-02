@@ -11,7 +11,6 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Check from '@material-ui/icons/Check';
 import Mouse from '@material-ui/icons/Mouse';
 import MoreVert from '@material-ui/icons/MoreVert';
-import OpenWith from '@material-ui/icons/OpenWith';
 
 import {
   clearMapping,
@@ -19,13 +18,7 @@ import {
 } from '~/features/mission/slice';
 import useDropdown from '~/hooks/useDropdown';
 
-const instructionsStyle = {
-  overflow: 'ellipsis',
-  userSelect: 'none',
-  whiteSpace: 'nowrap'
-};
-
-const MappingEditorToolbar = React.forwardRef(
+const MappingSlotEditorToolbar = React.forwardRef(
   ({ clearMapping, finishMappingEditorSession, ...rest }, ref) => {
     const [menuAnchorEl, openMappingMenu, closeMappingMenu] = useDropdown();
 
@@ -34,12 +27,9 @@ const MappingEditorToolbar = React.forwardRef(
         <IconButton disabled>
           <Mouse />
         </IconButton>
-        <Box style={instructionsStyle}>Click to edit a single slot.</Box>
-        <IconButton disabled>
-          <OpenWith />
-        </IconButton>
-        <Box style={instructionsStyle}>
-          Drag nodes to rearrange the mapping.
+        <Box style={{ userSelect: 'none' }}>
+          Enter to save. Tab to move to the next empty slot. Shift reverses
+          direction.
         </Box>
         <Box flex={1} />
         <IconButton onClick={finishMappingEditorSession}>
@@ -64,7 +54,7 @@ const MappingEditorToolbar = React.forwardRef(
   }
 );
 
-MappingEditorToolbar.propTypes = {
+MappingSlotEditorToolbar.propTypes = {
   clearMapping: PropTypes.func,
   finishMappingEditorSession: PropTypes.func,
   selectedUAVIds: PropTypes.array
@@ -77,4 +67,4 @@ export default connect(
   { clearMapping, finishMappingEditorSession },
   null,
   { forwardRef: true }
-)(MappingEditorToolbar);
+)(MappingSlotEditorToolbar);

@@ -24,6 +24,7 @@ import DronePlaceholder from './DronePlaceholder';
 
 import MappingEditorToolbar from './MappingEditorToolbar';
 import MappingSlotEditor from './MappingSlotEditor';
+import MappingSlotEditorToolbar from './MappingSlotEditorToolbar';
 import UAVToolbar from './UAVToolbar';
 
 import { setSelectedUAVIds } from '~/actions/map';
@@ -73,7 +74,15 @@ const drones = [
 const useStyles = makeStyles(
   theme => ({
     appBar: {
-      backgroundColor: isDark(theme) ? '#444' : theme.palette.background.paper
+      backgroundColor: isDark(theme) ? '#444' : theme.palette.background.paper,
+      height: 48
+    },
+
+    toolbar: {
+      position: 'absolute',
+      left: 0,
+      right: 0,
+      top: 0
     }
   }),
   { name: 'UAVList' }
@@ -179,11 +188,25 @@ const UAVListPresentation = ({
   const mainBox = (
     <Box display="flex" flexDirection="column">
       <AppBar color="default" position="static" className={classes.appBar}>
-        <Fade mountOnEnter unmountOnExit direction="up" in={!editingMapping}>
-          <UAVToolbar selectedUAVIds={selectedUAVIds} />
+        <Fade mountOnEnter unmountOnExit in={!editingMapping}>
+          <UAVToolbar
+            className={classes.toolbar}
+            selectedUAVIds={selectedUAVIds}
+          />
         </Fade>
-        <Fade mountOnEnter unmountOnExit direction="down" in={editingMapping}>
-          <MappingEditorToolbar />
+        <Fade
+          mountOnEnter
+          unmountOnExit
+          in={editingMapping && mappingSlotBeingEdited < 0}
+        >
+          <MappingEditorToolbar className={classes.toolbar} />
+        </Fade>
+        <Fade
+          mountOnEnter
+          unmountOnExit
+          in={editingMapping && mappingSlotBeingEdited >= 0}
+        >
+          <MappingSlotEditorToolbar className={classes.toolbar} />
         </Fade>
       </AppBar>
       <Box flex={1}>
