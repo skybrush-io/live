@@ -63,10 +63,7 @@ const LCDText = ({
         }
 
         case 'shadow': {
-          const shadowOffset =
-            fontSize === undefined
-              ? 2
-              : Math.round(Math.min(Math.max(2, fontSize / 8), 4));
+          const shadowOffset = 2;
           const shadowColor = new Color(color || 'black').alpha(0.3).string();
           result.textShadow = `${shadowOffset}px ${shadowOffset}px 0 ${shadowColor}`;
           break;
