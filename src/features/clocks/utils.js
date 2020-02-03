@@ -74,3 +74,22 @@ export function getCurrentTickCountOnClock(clock) {
   const elapsed = running ? (moment().valueOf() - referenceTime) / 1000 : 0;
   return ticks + elapsed * ticksPerSecond;
 }
+
+/**
+ * Returns the preferred update frequency of the given clock.
+ *
+ * @param {object} clock  the clock object
+ * @return {number}  the number of milliseconds that should pass between
+ *         consecutive updates of the flock
+ */
+export function getPreferredUpdateIntervalOfClock(clock) {
+  if (!clock) {
+    return 1000;
+  }
+
+  if (clock.ticksPerSecond > 1) {
+    return Math.max(1000 / clock.ticksPerSecond, 100);
+  }
+
+  return 1000;
+}

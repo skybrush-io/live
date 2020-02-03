@@ -16,7 +16,7 @@ import { connect } from 'react-redux';
 import { editSavedLocation } from '~/actions/saved-location-editor';
 import { listOf } from '~/components/helpers/lists';
 import { createNewSavedLocation } from '~/features/saved-locations/slice';
-import { getSavedLocationsInOrder } from '~/selectors/ordered';
+import { getSavedLocationsInOrder } from '~/features/saved-locations/selectors';
 import { scrollToMapLocation } from '~/signals';
 
 /**

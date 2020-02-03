@@ -39,7 +39,7 @@ import {
   setServerSettingsDialogTab
 } from '~/actions/server-settings';
 import { forceFormSubmission, Switch, TextField } from '~/components/forms';
-import { getDetectedServersInOrder } from '~/selectors/ordered';
+import { getDetectedServersInOrder } from '~/features/servers/selectors';
 import {
   createValidator,
   between,

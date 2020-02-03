@@ -9,7 +9,6 @@ import Collection from 'ol/Collection';
 import { createSelector } from '@reduxjs/toolkit';
 
 import {
-  globalIdToDockId,
   globalIdToFeatureId,
   globalIdToHomePositionId,
   globalIdToUavId
@@ -33,7 +32,7 @@ export const getSelection = state => state.map.selection;
  *        is not part of the subset being selected
  * @return {function} a selector function
  */
-const selectionForSubset = mapper =>
+export const selectionForSubset = mapper =>
   createSelector(
     getSelection,
     selection => reject(selection.map(mapper), isNil)
@@ -85,12 +84,6 @@ export const getSelectedFeatureLabels = createSelector(
       feature => feature.label
     )
 );
-
-/**
- * Selector that calculates and caches the list of selected docking station
- * IDs from the state object.
- */
-export const getSelectedDockIds = selectionForSubset(globalIdToDockId);
 
 /**
  * Selector that retrieves the list of selected home position IDs from the

@@ -23,7 +23,6 @@ function updateStateOfClock(state, id, properties) {
     byId[id] = {
       id,
       running: false,
-      updateFrequency: 1000,
       ticks: 0
     };
     state.order.push(id);
@@ -48,7 +47,6 @@ const { actions, reducer } = createSlice({
       //     running: false,
       //     ticks: 0,
       //     ticksPerSecond: 1,                    /* optional, defaults to 1 */
-      //     updateFrequency: 1000                 /* optional, in milliseconds, defaults to 1000 */
       // }
     },
     // Order defines the preferred ordering of clocks on the UI

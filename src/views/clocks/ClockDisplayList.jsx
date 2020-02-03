@@ -15,6 +15,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 
 import { listOf } from '~/components/helpers/lists';
+import { getClocksWithUpdateIntervalsInOrder } from '~/features/clocks/selectors';
 import {
   formatClockId,
   formatTicksOnClock,
@@ -65,11 +66,11 @@ class ClockDisplayListEntry extends React.Component {
       /** Whether the clock is running according to the Skybrush server */
       running: PropTypes.bool.isRequired,
       /**
-       * The update frequency of the clock display when it is running, expressed
+       * The update interval of the clock display when it is running, expressed
        * in milliseconds. The clock display will be refreshed once in every
        * X milliseconds.
        */
-      updateFrequency: PropTypes.number.isRequired
+      updateInterval: PropTypes.number.isRequired
     }),
     /** The format to use for displaying the clock value */
     format: PropTypes.oneOfType([PropTypes.string, PropTypes.func])
@@ -83,6 +84,8 @@ class ClockDisplayListEntry extends React.Component {
     super();
     this.intervalId = undefined;
     this._isMounted = false;
+
+    this.tick = this.forceUpdate.bind(this);
   }
 
   clearIntervalIfNeeded = () => {
@@ -97,10 +100,7 @@ class ClockDisplayListEntry extends React.Component {
     const shouldBeRunning = clock && clock.running;
 
     if (shouldBeRunning && this.intervalId === undefined) {
-      this.intervalId = setInterval(
-        this.forceUpdate,
-        this.props.clock.updateFrequency
-      );
+      this.intervalId = setInterval(this.tick, this.props.clock.updateInterval);
     }
   }
 
@@ -144,7 +144,7 @@ class ClockDisplayListEntry extends React.Component {
  * @return  {Object}  the rendered clock display list component
  */
 const ClockDisplayListPresentation = listOf(
-  clock => <ClockDisplayListEntry clock={clock} />,
+  clock => <ClockDisplayListEntry key={clock.id} clock={clock} />,
   {
     dataProvider: 'clocks',
     backgroundHint: 'No clocks'
@@ -159,16 +159,7 @@ ClockDisplayListPresentation.displayName = 'ClockDisplayListPresentation';
 const ClockDisplayList = connect(
   // mapStateToProps
   state => ({
-    clocks: state.clocks.order.map(entryName => {
-      const result = { ...state.clocks.byId[entryName] };
-      if (result.ticksPerSecond > 1) {
-        result.updateFrequency = Math.max(1000 / result.ticksPerSecond, 100);
-      } else {
-        result.updateFrequency = 1000;
-      }
-
-      return result;
-    }),
+    clocks: getClocksWithUpdateIntervalsInOrder(state),
     dense: true
   }),
   // mapDispatchToProps

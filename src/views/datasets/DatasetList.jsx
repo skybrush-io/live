@@ -10,7 +10,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 
 import { listOf } from '~/components/helpers/lists';
-import { getDatasetsInOrder } from '~/selectors/ordered';
+import { getDatasetsInOrder } from '~/features/datasets/selectors';
 
 /**
  * Presentation component for representing a single dataset in a dataset list.

@@ -15,8 +15,10 @@ import { connect } from 'react-redux';
 
 import { setSelectedDockIds } from '~/actions/map';
 import { multiSelectableListOf } from '~/components/helpers/lists';
-import { getSelectedDockIds } from '~/selectors/selection';
-import { getDocksInOrder } from '~/selectors/ordered';
+import {
+  getDocksInOrder,
+  getSelectedDockIds
+} from '~/features/docks/selectors';
 import { fitCoordinatesIntoMapView, scrollToMapLocation } from '~/signals';
 
 /**

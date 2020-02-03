@@ -2,6 +2,7 @@ import { createSelector } from '@reduxjs/toolkit';
 
 import { INVALID } from './slice';
 import { ConnectionState } from '~/model/connections';
+import { selectOrdered } from '~/utils/collections';
 
 /**
  * Returns all the information that we know about the current Skybrush server.
@@ -11,6 +12,16 @@ import { ConnectionState } from '~/model/connections';
  *     server, directly from the state object
  */
 const getCurrentServerState = state => state.servers.current;
+
+/**
+ * Selector that calculates and caches the list of all the servers detected
+ * on the local network, in exactly the same order as they should appear on
+ * the UI.
+ */
+export const getDetectedServersInOrder = createSelector(
+  state => state.servers.detected,
+  selectOrdered
+);
 
 /**
  * Returns all the information that we currently know about the authentication

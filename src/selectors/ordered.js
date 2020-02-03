@@ -4,42 +4,12 @@ import { isLayerVisible } from '~/model/layers';
 import { selectOrdered } from '~/utils/collections';
 
 /**
- * Selector that calculates and caches the list of all the servers detected
- * on the local network, in exactly the same order as they should appear on
- * the UI.
- */
-export const getDetectedServersInOrder = createSelector(
-  state => state.servers.detected,
-  selectOrdered
-);
-
-/**
  * Selector that calculates and caches the list of all the connections that
  * the upstream server maintains to its auxiliary devices, in exactly the
  * same order as they should appear on the UI.
  */
 export const getConnectionsInOrder = createSelector(
   state => state.connections,
-  selectOrdered
-);
-
-/**
- * Selector that calculates and caches the list of all the datasets that
- * we store in the state object, in exactly the same order as they should appear
- * on the UI.
- */
-export const getDatasetsInOrder = createSelector(
-  state => state.datasets,
-  selectOrdered
-);
-
-/**
- * Selector that calculates and caches the list of all the docking stations that
- * we store in the state object, in exactly the same order as they should appear
- * on the UI.
- */
-export const getDocksInOrder = createSelector(
-  state => state.docks,
   selectOrdered
 );
 
@@ -68,14 +38,4 @@ export const getLayersInOrder = createSelector(
 export const getVisibleLayersInOrder = createSelector(
   getLayersInOrder,
   layers => layers.filter(isLayerVisible)
-);
-
-/**
- * Selector that calculates and caches the list of all the saved locations
- * in the state object, in exactly the same order as they should appear on
- * the UI.
- */
-export const getSavedLocationsInOrder = createSelector(
-  state => state.savedLocations,
-  selectOrdered
 );
