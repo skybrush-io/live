@@ -12,6 +12,7 @@ import Stop from '@material-ui/icons/Stop';
 
 import PropTypes from 'prop-types';
 import React from 'react';
+import { useInterval, useUpdate } from 'react-use';
 import { connect } from 'react-redux';
 
 import { listOf } from '~/components/helpers/lists';
@@ -37,105 +38,66 @@ const avatars = [
 /**
  * Presentation component for showing the state of a single Skybrush clock.
  */
-class ClockDisplayListEntry extends React.Component {
-  static propTypes = {
-    clock: PropTypes.shape({
-      /** The epoch time of the clock, i.e. the number of seconds since the
-       * UNIX epoch when the tick count of the clock was zero. If this is
-       * given, the clock display will show a regular date. If this is not
-       * specified, the clock display will show the date in
-       * hours:minutes:seconds:ticks format.
-       */
-      epoch: PropTypes.number,
-      /** The identifier of the clock */
-      id: PropTypes.string.isRequired,
-      /**
-       * The reference time in the local clock that corresponds to the tick
-       * value stored in the 'ticks' property, expressed in the number of
-       * seconds elapsed since the Unix epoch.
-       */
-      referenceTime: PropTypes.number.isRequired,
-      /**
-       * The current number of clock ticks that should be shown.
-       */
-      ticks: PropTypes.number.isRequired,
-      /**
-       * The number of clock ticks per second.
-       */
-      ticksPerSecond: PropTypes.number.isRequired,
-      /** Whether the clock is running according to the Skybrush server */
-      running: PropTypes.bool.isRequired,
-      /**
-       * The update interval of the clock display when it is running, expressed
-       * in milliseconds. The clock display will be refreshed once in every
-       * X milliseconds.
-       */
-      updateInterval: PropTypes.number.isRequired
-    }),
-    /** The format to use for displaying the clock value */
-    format: PropTypes.oneOfType([PropTypes.string, PropTypes.func])
-  };
+const ClockDisplayListEntry = ({ clock, format }) => {
+  const { id, running, updateInterval } = clock;
+  const avatar = avatars[running ? 1 : 0];
+  const formattedId = formatClockId(id);
+  const ticks = getCurrentTickCountOnClock(clock);
+  const formattedTime = formatTicksOnClock(ticks, clock, { format });
+  const update = useUpdate();
 
-  static defaultProps = {
-    format: 'YYYY-MM-DD HH:mm:ss Z'
-  };
+  useInterval(update, running ? updateInterval : null);
 
-  constructor() {
-    super();
-    this.intervalId = undefined;
-    this._isMounted = false;
+  return (
+    <ListItem>
+      <ListItemIcon>{avatar}</ListItemIcon>
+      <ListItemText primary={formattedTime} secondary={formattedId} />
+    </ListItem>
+  );
+};
 
-    this.tick = this.forceUpdate.bind(this);
-  }
+ClockDisplayListEntry.propTypes = {
+  clock: PropTypes.shape({
+    /** The epoch time of the clock, i.e. the number of seconds since the
+     * UNIX epoch when the tick count of the clock was zero. If this is
+     * given, the clock display will show a regular date. If this is not
+     * specified, the clock display will show the date in
+     * hours:minutes:seconds:ticks format.
+     */
+    epoch: PropTypes.number,
+    /** The identifier of the clock */
+    id: PropTypes.string.isRequired,
+    /**
+     * The reference time in the local clock that corresponds to the tick
+     * value stored in the 'ticks' property, expressed in the number of
+     * seconds elapsed since the Unix epoch.
+     */
+    referenceTime: PropTypes.number.isRequired,
+    /**
+     * The current number of clock ticks that should be shown.
+     */
+    ticks: PropTypes.number.isRequired,
+    /**
+     * The number of clock ticks per second.
+     */
+    ticksPerSecond: PropTypes.number.isRequired,
+    /** Whether the clock is running according to the Skybrush server */
+    running: PropTypes.bool.isRequired,
+    /**
+     * The update interval of the clock display when it is running, expressed
+     * in milliseconds. The clock display will be refreshed once in every
+     * X milliseconds.
+     */
+    updateInterval: PropTypes.number.isRequired
+  }),
 
-  clearIntervalIfNeeded = () => {
-    if (this.intervalId !== undefined) {
-      clearInterval(this.intervalId);
-      this.intervalId = undefined;
-    }
-  };
+  /** The format to use for displaying the clock value */
+  format: PropTypes.oneOfType([PropTypes.string, PropTypes.func])
+};
 
-  startIntervalIfNeeded() {
-    const { clock } = this.props;
-    const shouldBeRunning = clock && clock.running;
-
-    if (shouldBeRunning && this.intervalId === undefined) {
-      this.intervalId = setInterval(this.tick, this.props.clock.updateInterval);
-    }
-  }
-
-  componentDidMount() {
-    this._isMounted = true;
-    this.startIntervalIfNeeded();
-  }
-
-  componentDidUpdate(newProps) {
-    if (newProps.clock !== this.props.clock) {
-      this.clearIntervalIfNeeded();
-      this.startIntervalIfNeeded();
-    }
-  }
-
-  componentWillUnmount() {
-    this._isMounted = false;
-    this.clearIntervalIfNeeded();
-  }
-
-  render() {
-    const { clock, format } = this.props;
-    const { id, running } = clock;
-    const avatar = avatars[running ? 1 : 0];
-    const formattedId = formatClockId(id);
-    const ticks = getCurrentTickCountOnClock(clock);
-    const formattedTime = formatTicksOnClock(ticks, clock, { format });
-    return (
-      <ListItem>
-        <ListItemIcon>{avatar}</ListItemIcon>
-        <ListItemText primary={formattedTime} secondary={formattedId} />
-      </ListItem>
-    );
-  }
-}
+ClockDisplayListEntry.defaultProps = {
+  format: 'YYYY-MM-DD HH:mm:ss Z'
+};
 
 /**
  * Presentation component for showing the state of a set of clocks on the
