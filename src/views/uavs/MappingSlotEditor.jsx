@@ -56,7 +56,6 @@ const MappingSlotEditor = ({
   const classes = useStyles();
 
   const onBlur = event => {
-    return;
     commitMappingEditorSessionAtCurrentSlot({
       value: event.target.value
     });
