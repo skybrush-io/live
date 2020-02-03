@@ -14,7 +14,8 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { isElement } from 'react-is';
 
-import { eventHasPlatformModifierKey } from '../../utils/platform';
+import BackgroundHint from '~/components/BackgroundHint';
+import { eventHasPlatformModifierKey } from '~/utils/platform';
 
 const createBackgroundHint = (backgroundHint, ref) => {
   if (isElement(backgroundHint)) {
@@ -22,11 +23,7 @@ const createBackgroundHint = (backgroundHint, ref) => {
   }
 
   if (backgroundHint) {
-    return (
-      <div ref={ref} className="background-hint">
-        {backgroundHint}
-      </div>
-    );
+    return <BackgroundHint ref={ref} text={backgroundHint} />;
   }
 
   return null;

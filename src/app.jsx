@@ -20,7 +20,7 @@ import flock, { Flock } from './flock';
 import { withErrorBoundary, wrapWith } from './hoc';
 import hotkeys from './hotkeys';
 import store, { persistor } from './store';
-import ThemeProvider from './theme';
+import ThemeProvider, { DarkModeExtraCSSProvider } from './theme';
 import workbench from './workbench';
 
 require('../assets/css/kbd.css');
@@ -64,6 +64,7 @@ const Application = () => (
     <CssBaseline />
 
     <HotkeyHandler hotkeys={hotkeys} />
+    <DarkModeExtraCSSProvider />
 
     <div style={rootStyle}>
       <Header workbench={workbench} />

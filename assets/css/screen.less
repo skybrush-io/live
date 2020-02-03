@@ -5,9 +5,7 @@
 @long-transition-duration: 1s;
 
 @box-background-color-light: #ffffff;
-@box-background-color-dark: #444444;
 @box-foreground-color-light: #000000;
-@box-foreground-color-dark: #ffffff;
 
 body {
   font-family: Roboto, sans-serif;
@@ -48,34 +46,10 @@ body {
   user-select: none;
 }
 
-/* Mixin for box background based on dark mode selection */
-.box-background() {
-  background-color: @box-background-color-light;
-  @media (prefers-color-scheme: dark) {
-    background-color: @box-background-color-dark;
-  }
-}
-
-/* Mixin for box foreground based on dark mode selection */
-.box-foreground() {
-  color: @box-foreground-color-light;
-  @media (prefers-color-scheme: dark) {
-    color: @box-foreground-color-dark;
-  }
-}
-
-/* Mixin for box border color based on dark mode selection */
-.box-border-color() {
-  border-color: @box-foreground-color-light;
-  @media (prefers-color-scheme: dark) {
-    border-color: @box-foreground-color-dark;
-  }
-}
-
 /* Mixin for styling boxes with drop shadows */
 .drop-shadow-box() {
-  .box-background();
-  .box-foreground();
+  background-color: @box-background-color-light;
+  color: @box-foreground-color-light;
   padding: 0 !important;
   border-radius: 2px !important;
   box-shadow: rgba(0, 0, 0, 0.117647) 0px 1px 6px, rgba(0, 0, 0, 0.117647) 0px 1px 4px;
@@ -126,30 +100,6 @@ body {
 .react-autosuggest__suggestions-list {
   list-style-type: none;
   padding-left: 0;
-}
-
-/* Background hints */
-.background-hint {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  text-align: center;
-
-  width: 100%;
-  height: 100%;
-
-  .header {
-    font-size: 150%;
-    padding-bottom: 1em;
-  }
-  .text {
-  }
-
-  color: fade(@box-foreground-color-light, 0.541176);
-  @media (prefers-color-scheme: dark) {
-    color: fade(@box-foreground-color-dark, 54.1176%);
-  }
 }
 
 /* Error panels */
@@ -205,15 +155,15 @@ body {
   .drop-shadow-box();
 
   button {
-    .box-background();
-    .box-foreground();
+    background-color: @box-background-color-light;
+    color: @box-foreground-color-light;
     margin: 0px;            /* to fit the Material design better */
     width: 24px;            /* 24px because Material buttons are 48px */
     height: 24px;
 
     &:hover, &:focus {
-      .box-background();
-      .box-foreground();
+      background-color: @box-background-color-light;
+      color: @box-foreground-color-light;
     }
   }
 
@@ -245,12 +195,11 @@ body {
 /* OpenLayers scale line should have a half-transparent "box styling" */
 .ol-scale-line {
   .drop-shadow-box();
-  background-color: fade(@box-background-color-light, 75%);
   bottom: 0.5em;
 }
 .ol-scale-line-inner {
-  .box-foreground();
-  .box-border-color();
+  border-color: @box-foreground-color-light;
+  color: @box-foreground-color-light;
 }
 
 .ol-viewport {

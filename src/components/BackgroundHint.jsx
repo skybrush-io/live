@@ -6,6 +6,22 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 
+import Box from '@material-ui/core/Box';
+import Typography from '@material-ui/core/Typography';
+import { makeStyles } from '@material-ui/core/styles';
+
+const useStyles = makeStyles(theme => ({
+  root: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    textAlign: 'center',
+    width: '100%',
+    height: '100%',
+    userSelect: 'none'
+  }
+}));
+
 /**
  * Component that gives a hint to the user about the usage of the
  * application.
@@ -15,14 +31,22 @@ import React from 'react';
  *
  * @return {Object} the rendered component
  */
-const BackgroundHint = ({ header, text, ...props }) => (
-  <div className="background-hint" {...props}>
-    <div>
-      {header && <div className="header">{header}</div>}
-      <div className="text">{text}</div>
-    </div>
-  </div>
-);
+const BackgroundHint = ({ header, text, ...rest }) => {
+  const classes = useStyles();
+
+  return (
+    <Box color="text.secondary" className={classes.root} {...rest}>
+      <div>
+        {header && (
+          <Typography paragraph variant="h6">
+            {header}
+          </Typography>
+        )}
+        <div>{text}</div>
+      </div>
+    </Box>
+  );
+};
 
 BackgroundHint.propTypes = {
   header: PropTypes.string,
