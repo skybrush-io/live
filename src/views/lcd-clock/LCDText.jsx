@@ -62,7 +62,7 @@ const LCDText = ({
         }
 
         case 'shadow': {
-          const shadowOffset = 2;
+          const shadowOffset = fontSize === undefined || fontSize <= 16 ? 1 : 2;
           const shadowColor = new Color(color || 'black').alpha(0.3).string();
           result.textShadow = `${shadowOffset}px ${shadowOffset}px 0 ${shadowColor}`;
           break;
@@ -97,7 +97,7 @@ const LCDText = ({
     >
       {offSegments && variant !== 'default' && (
         <div style={offSegmentStyle}>
-          {children.replace(/[^:.]/g, variants[variant].allSegmentsChar || '')}
+          {children.replace(/[^:. ]/g, variants[variant].allSegmentsChar || '')}
         </div>
       )}
       <div style={textStyle}>{children}</div>

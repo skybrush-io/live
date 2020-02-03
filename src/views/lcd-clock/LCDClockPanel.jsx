@@ -5,6 +5,7 @@ import { useMeasure } from 'react-use';
 
 import Box from '@material-ui/core/Box';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
+import Lens from '@material-ui/icons/Lens';
 
 import LCDText from './LCDText';
 
@@ -14,19 +15,22 @@ const noiseImage =
 const useStyles = makeStyles(
   theme => ({
     root: {
+      alignItems: 'stretch',
       backgroundImage: theme.palette.type === 'light' ? noiseImage : undefined,
       backgroundColor:
-        theme.palette.type === 'light' ? 'rgb(149, 177, 89)' : 'black',
-      alignItems: 'center',
+        theme.palette.type === 'light'
+          ? 'rgb(149, 177, 89)' /* 'rgb(0, 192, 255)' */
+          : 'black',
       display: 'flex',
       flexDirection: 'column',
       height: '100%',
       overflow: 'hidden',
+      padding: theme.spacing(0, 1),
       position: 'relative',
       userSelect: 'none',
       boxShadow:
         theme.palette.type === 'light'
-          ? '0 0 4px rgba(0, 0, 0, 0.7) inset'
+          ? '0 0 6px 2px rgba(0, 0, 0, 0.4) inset'
           : undefined
     }
   }),
@@ -40,7 +44,7 @@ const useStyles = makeStyles(
 const LCDClockPanel = () => {
   const classes = useStyles();
   const theme = useTheme();
-  const [ref, { height }] = useMeasure();
+  const [ref, { height, width }] = useMeasure();
   const lcdStyle =
     theme.palette.type === 'dark'
       ? {
@@ -53,19 +57,34 @@ const LCDClockPanel = () => {
           decoration: 'shadow'
         };
 
+  // We assume that we show timestamps like 00:00:00:00 in the LCD display,
+  // which is roughly 5x wider than tall.
+  const lcdHeight = Math.floor(width < 5 * height ? width / 5 : height);
+
   return (
     <Box className={clsx(classes.root)}>
-      <Box display="flex" flexDirection="row">
+      <Box
+        display="flex"
+        flexDirection="row"
+        alignItems="center"
+        justifyContent="center"
+      >
+        <LCDText {...lcdStyle}>+</LCDText>
+        <Box flex={1} />
         <LCDText {...lcdStyle} p={0.5}>
           MTC
         </LCDText>
         <LCDText off {...lcdStyle} p={0.5}>
           TIME
         </LCDText>
+        <Box flex={1} />
+        <LCDText {...lcdStyle}>
+          <Lens style={{ fontSize: 12 }} />
+        </LCDText>
       </Box>
-      <Box ref={ref} flex={1} overflow="hidden">
-        <LCDText height={height} variant="7segment" {...lcdStyle}>
-          00:17:41
+      <Box ref={ref} flex={1} overflow="hidden" textAlign="center">
+        <LCDText height={lcdHeight} variant="7segment" {...lcdStyle}>
+          00:00:17:41
         </LCDText>
       </Box>
     </Box>
