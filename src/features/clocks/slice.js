@@ -43,6 +43,7 @@ const { actions, reducer } = createSlice({
       // {
       //     format: 'YYYY-MM-DD HH:mm:ss Z',      /* optional */
       //     id: 'system',
+      //     epoch: 'unix',                        /* optional */
       //     referenceTime: 0,                     /* optional */
       //     running: false,
       //     ticks: 0,
