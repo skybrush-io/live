@@ -45,6 +45,17 @@ body .lm_header .lm_tab.lm_active {
   border-color: #444 !important;
 }
 
+/* Keyboard tag styling */
+kbd {
+  background: #616161 !important;
+  box-shadow: 1px 1px 1px #333;
+  color: #ddd !important;
+}
+
+kbd:hover, kbd:hover * {
+  color: white !important;
+}
+
 /* The rest comes directly from the dark mode stylesheet of react-flexible-workbench */
 .lm_dragProxy .lm_content {
   box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9);
