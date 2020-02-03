@@ -1,9 +1,11 @@
 import React from 'react';
 import Tippy from '@tippy.js/react';
 
-import useDarkMode from '~/hooks/useDarkMode';
+import { useTheme } from '@material-ui/core/styles';
 
 export default props => {
-  const theme = useDarkMode() ? 'dark-border' : 'light-border';
-  return <Tippy theme={theme} {...props} />;
+  const appTheme = useTheme();
+  const tippyTheme =
+    appTheme.palette.type === 'dark' ? 'dark-border' : 'light-border';
+  return <Tippy theme={tippyTheme} {...props} />;
 };

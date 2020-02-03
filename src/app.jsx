@@ -97,8 +97,8 @@ const Application = () => (
 const enhancer = compose(
   toClass, // react-flexible-workbench likes class components at the top
   withErrorBoundary,
-  wrapWith(ThemeProvider),
   wrapWith(withProps({ store })(StoreProvider)),
+  wrapWith(ThemeProvider),
   wrapWith(withProps({ value: flock })(Flock.Provider))
 );
 

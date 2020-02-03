@@ -56,8 +56,7 @@ const LCDText = ({
     if (!off) {
       switch (decoration) {
         case 'glow': {
-          const glowSize =
-            fontSize === undefined ? 4 : Math.round(Math.max(2, fontSize / 4));
+          const glowSize = fontSize === undefined ? 4 : Math.round(fontSize);
           result.textShadow = `0 0 ${glowSize}px ${color || 'currentColor'}`;
           break;
         }

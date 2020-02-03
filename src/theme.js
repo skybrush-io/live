@@ -4,6 +4,7 @@
 
 import PropTypes from 'prop-types';
 import React from 'react';
+import { connect } from 'react-redux';
 
 import { blue, lightBlue, orange, red } from '@material-ui/core/colors';
 import createMuiTheme from '@material-ui/core/styles/createMuiTheme';
@@ -11,19 +12,16 @@ import { ThemeProvider } from '@material-ui/core/styles';
 
 import useDarkMode from '~/hooks/useDarkMode';
 
-const DarkAwareThemeProvider = ({ children }) => {
-  const darkMode = useDarkMode();
-  const theme = React.useMemo(
-    () =>
-      createMuiTheme({
-        palette: {
-          type: darkMode ? 'dark' : 'light',
-          primary: darkMode ? orange : blue,
-          secondary: darkMode ? lightBlue : red
-        }
-      }),
-    [darkMode]
-  );
+const DarkModeAwareThemeProvider = ({ children, type }) => {
+  const osHasDarkMode = useDarkMode();
+  const isThemeDark = (type === 'auto' && osHasDarkMode) || type === 'dark';
+  const theme = createMuiTheme({
+    palette: {
+      type: isThemeDark ? 'dark' : 'light',
+      primary: isThemeDark ? orange : blue,
+      secondary: isThemeDark ? lightBlue : red
+    }
+  });
   return <ThemeProvider theme={theme}>{children}</ThemeProvider>;
 };
 
@@ -32,11 +30,17 @@ const DarkAwareThemeProvider = ({ children }) => {
  */
 export const isDark = theme => theme.palette.type === 'dark';
 
-DarkAwareThemeProvider.propTypes = {
+DarkModeAwareThemeProvider.propTypes = {
   children: PropTypes.oneOfType([
     PropTypes.arrayOf(PropTypes.node),
     PropTypes.node
-  ])
+  ]),
+  type: PropTypes.oneOf(['auto', 'dark', 'light'])
 };
 
-export default DarkAwareThemeProvider;
+export default connect(
+  // mapStateToProps
+  state => ({
+    type: state.settings.display.theme
+  })
+)(DarkModeAwareThemeProvider);

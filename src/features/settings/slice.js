@@ -22,7 +22,9 @@ const { actions, reducer } = createSlice({
       // Whether to show the mouse coordinates on the map
       showMouseCoordinates: true,
       // Whether to show the scale on the map
-      showScaleLine: true
+      showScaleLine: true,
+      // Which UI theme to use (choose from OS, use light mode or use dark mode)
+      theme: 'auto'
     },
 
     localServer: {
