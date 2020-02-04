@@ -275,18 +275,18 @@ function getDroneText(uav) {
   if (!uav) {
     text = 'missing';
     textSemantics = 'error';
-  } else if (uav.errors) {
+  } else if (uav.errors && uav.errors.length > 0) {
     const maxError = Math.max(...uav.errors);
     const severity = getSeverityOfErrorCode(maxError);
 
     // TODO: don't hardcode, use enums
     switch (maxError) {
-      case 2:
-        text = 'init';
+      case 1:
+        text = 'disarm';
         break;
 
       case 4:
-        text = 'disarm';
+        text = 'init';
         break;
 
       default:

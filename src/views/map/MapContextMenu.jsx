@@ -152,7 +152,7 @@ class MapContextMenu extends React.Component {
                 <ListItemIcon>
                   <Refresh color="secondary" />
                 </ListItemIcon>
-                Halt
+                Reboot
               </MenuItem>,
               <MenuItem
                 key="shutdown"
