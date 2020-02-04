@@ -12,15 +12,19 @@ import {
   getPreferredUpdateIntervalOfClock
 } from '~/features/clocks/utils';
 
-const LCDClockDisplayLabel = ({ clock, clockId, updateInterval, ...rest }) => {
+const LCDClockDisplayLabel = ({
+  clock,
+  clockId,
+  format,
+  updateInterval,
+  ...rest
+}) => {
   const { running } = clock || {};
   const ticks = clock ? getCurrentTickCountOnClock(clock) : undefined;
   const formattedTime =
     ticks === undefined
       ? '--:--:--'
-      : formatTicksOnClock(ticks, clock, {
-          format: 'HH:mm:ss'
-        });
+      : formatTicksOnClock(ticks, clock, { format });
   const update = useUpdate();
 
   useHarmonicIntervalFn(update, running ? updateInterval : null);
@@ -31,7 +35,12 @@ const LCDClockDisplayLabel = ({ clock, clockId, updateInterval, ...rest }) => {
 LCDClockDisplayLabel.propTypes = {
   clock: PropTypes.object,
   clockId: PropTypes.string,
+  format: PropTypes.string,
   updateInterval: PropTypes.number
+};
+
+LCDClockDisplayLabel.defaultProps = {
+  format: 'HH:mm:ss'
 };
 
 export default connect(

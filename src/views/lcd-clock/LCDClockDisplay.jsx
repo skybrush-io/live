@@ -18,6 +18,7 @@ import {
   getClockIdForLCDDisplayById,
   getPresetIndexForLCDDisplayById
 } from '~/features/lcd-clock/selectors';
+import { setClockIdForClockDisplay } from '~/features/lcd-clock/slice';
 import { isDark } from '~/theme';
 
 const noiseImage =
@@ -85,6 +86,7 @@ const LCDClockDisplay = ({
   clocks,
   id,
   onAdd,
+  onClockSelected,
   onNextPreset,
   onRemove,
   preset,
@@ -145,6 +147,7 @@ const LCDClockDisplay = ({
           clocks={clocks}
           lcdStyle={lcdStyle}
           selectedClockId={selectedClockId}
+          onClick={onClockSelected}
         />
         <Box flex={1} />
         <Box className={clsx(classes.button)} onClick={onNextPreset}>
@@ -157,7 +160,7 @@ const LCDClockDisplay = ({
         <LCDClockDisplayLabel
           clockId={selectedClockId}
           height={lcdHeight}
-          variant="7segment"
+          variant="14segment"
           {...lcdStyle}
         />
       </Box>
@@ -175,6 +178,7 @@ LCDClockDisplay.propTypes = {
   id: PropTypes.string,
   preset: PropTypes.number,
   onAdd: PropTypes.func,
+  onClockSelected: PropTypes.func,
   onNextPreset: PropTypes.func,
   onRemove: PropTypes.func,
   selectedClockId: PropTypes.string,
@@ -194,6 +198,10 @@ export default connect(
   }),
   // mapDispatchToProps
   (dispatch, ownProps) => ({
+    onClockSelected(clockId) {
+      dispatch(setClockIdForClockDisplay({ clockId, id: ownProps.id }));
+    },
+
     onNextPreset() {
       dispatch(cyclePreset(ownProps.id));
     }

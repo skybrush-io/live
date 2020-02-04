@@ -53,7 +53,7 @@ export function formatClockById(id) {
  */
 export function formatClockAbbreviation(clock) {
   const props = clock ? clockIdToProps[clock.id] : null;
-  return (props ? props.abbrevation : null) || 'CLK';
+  return (props ? props.abbreviation : null) || 'CLK';
 }
 
 /**
@@ -81,7 +81,7 @@ export function formatTicksOnClock(ticks, clock, options) {
   const { format = clock.format } = options;
 
   if (isNil(epoch) || isNaN(epoch)) {
-    if (ticksPerSecond <= 1) {
+    if (clock.id !== 'mtc' && ticksPerSecond <= 1) {
       // No epoch, so we just simply show a HH:MM:SS timestamp
       return moment
         .utc(0)
