@@ -6,10 +6,31 @@ import moment from 'moment';
  * Remapping of commonly used clock IDs in a Skybrush server to something
  * more human-readable.
  */
-const clockIdRemapping = {
-  system: 'Server clock',
-  __local__: 'Client clock',
-  mtc: 'MIDI timecode'
+const clockIdToProps = {
+  system: {
+    label: 'Server clock',
+    abbreviation: 'SRV'
+  },
+
+  __local__: {
+    label: 'Client clock',
+    abbreviation: 'Time'
+  },
+
+  mission: {
+    label: 'Mission clock',
+    abbreviation: 'MSN'
+  },
+
+  mtc: {
+    label: 'MIDI timecode',
+    abbreviation: 'MTC'
+  },
+
+  show: {
+    label: 'Drone show clock',
+    abbreviation: 'Show'
+  }
 };
 
 /**
@@ -18,8 +39,31 @@ const clockIdRemapping = {
  * @param  {string} id the ID of the clock
  * @return {string} a human-readable description of the clock
  */
-export function formatClockId(id) {
-  return clockIdRemapping[id] || `Clock '${id}'`;
+export function formatClockById(id) {
+  const props = clockIdToProps[id];
+  return (props ? props.label : null) || `Clock '${id}'`;
+}
+
+/**
+ * Returns an appropriate abbreviation for a clock.
+ *
+ * @param  {object}  clock  the clock object
+ * @return {string}  an appropriate abbreviation of the clock that represents
+ *         its purpse
+ */
+export function formatClockAbbreviation(clock) {
+  const props = clock ? clockIdToProps[clock.id] : null;
+  return (props ? props.abbrevation : null) || 'CLK';
+}
+
+/**
+ * Returns a human-readable name of a clock.
+ *
+ * @param  {object}  clock  the clock object
+ * @return {string}  a human-readable description of the clock
+ */
+export function formatClockLabel(clock) {
+  return clock ? formatClockById(clock.id) : '';
 }
 
 /**
@@ -85,6 +129,10 @@ export function getCurrentTickCountOnClock(clock) {
 export function getPreferredUpdateIntervalOfClock(clock) {
   if (!clock) {
     return 1000;
+  }
+
+  if (clock.updateInterval) {
+    return clock.updateInterval;
   }
 
   if (clock.ticksPerSecond > 1) {

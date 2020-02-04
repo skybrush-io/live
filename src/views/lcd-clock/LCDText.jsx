@@ -73,6 +73,8 @@ const LCDText = ({
       }
     }
 
+    result.transition = 'color 150ms';
+
     return result;
   }, [color, decoration, height, off]);
 
@@ -106,7 +108,7 @@ const LCDText = ({
 };
 
 LCDText.propTypes = {
-  children: PropTypes.string,
+  children: PropTypes.node,
   color: PropTypes.string,
   decoration: PropTypes.oneOf(['plain', 'glow', 'shadow']),
   height: PropTypes.number,

@@ -12,7 +12,7 @@ import { handleActions } from 'redux-actions';
 import u from 'updeep';
 
 import { getNameOfFeatureType } from '~/model/features';
-import { copyAnddeleteItemsByIds, getKey } from '~/utils/collections';
+import { copyAndDeleteItemsByIds, getKey } from '~/utils/collections';
 import { chooseUniqueId, chooseUniqueName } from '~/utils/naming';
 
 /**
@@ -140,7 +140,7 @@ const reducer = handleActions(
 
     REMOVE_FEATURES(state, action) {
       const { ids } = action.payload;
-      return copyAnddeleteItemsByIds(ids, state);
+      return copyAndDeleteItemsByIds(ids, state);
     },
 
     RENAME_FEATURE(state, action) {

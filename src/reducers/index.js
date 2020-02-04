@@ -9,6 +9,7 @@ import messagesReducer from './messages';
 import clocksReducer from '~/features/clocks/slice';
 import datasetsReducer from '~/features/datasets/slice';
 import docksReducer from '~/features/docks/slice';
+import lcdClockReducer from '~/features/lcd-clock/slice';
 import localServerReducer from '~/features/local-server/slice';
 import logReducer from '~/features/log/slice';
 import missionReducer from '~/features/mission/slice';
@@ -30,6 +31,7 @@ const reducer = combineReducers({
   dialogs: dialogsReducer,
   docks: docksReducer,
   features: featuresReducer,
+  lcdClock: lcdClockReducer,
   localServer: localServerReducer,
   log: logReducer,
   map: mapReducer,

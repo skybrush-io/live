@@ -12,13 +12,13 @@ import Stop from '@material-ui/icons/Stop';
 
 import PropTypes from 'prop-types';
 import React from 'react';
-import { useInterval, useUpdate } from 'react-use';
+import { useHarmonicIntervalFn, useUpdate } from 'react-use';
 import { connect } from 'react-redux';
 
 import { listOf } from '~/components/helpers/lists';
 import { getClocksWithUpdateIntervalsInOrder } from '~/features/clocks/selectors';
 import {
-  formatClockId,
+  formatClockLabel,
   formatTicksOnClock,
   getCurrentTickCountOnClock
 } from '~/features/clocks/utils';
@@ -39,19 +39,19 @@ const avatars = [
  * Presentation component for showing the state of a single Skybrush clock.
  */
 const ClockDisplayListEntry = ({ clock, format }) => {
-  const { id, running, updateInterval } = clock;
+  const { running, updateInterval } = clock;
   const avatar = avatars[running ? 1 : 0];
-  const formattedId = formatClockId(id);
+  const label = formatClockLabel(clock);
   const ticks = getCurrentTickCountOnClock(clock);
   const formattedTime = formatTicksOnClock(ticks, clock, { format });
   const update = useUpdate();
 
-  useInterval(update, running ? updateInterval : null);
+  useHarmonicIntervalFn(update, running ? updateInterval : null);
 
   return (
     <ListItem>
       <ListItemIcon>{avatar}</ListItemIcon>
-      <ListItemText primary={formattedTime} secondary={formattedId} />
+      <ListItemText primary={formattedTime} secondary={label} />
     </ListItem>
   );
 };

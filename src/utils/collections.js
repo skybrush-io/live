@@ -161,6 +161,24 @@ export const addItemSorted = (collection, item, key = 'id') => {
 
 /**
  * Helper function that receives an item to be added to a collection, and
+ * adds it to the back of the collection.
+ *
+ * The item should already have an assigned `id` property. If there is no such
+ * property, or it is equal to the special "new item" value, a new ID will be
+ * generated based on the `name` property of the item. If there is no `name`
+ * property either, an error will be thrown.
+ *
+ * If an item with the generated ID already exists in the collection, an error
+ * will be thrown.
+ *
+ * @param  {Object}   collection  the ordered collection to add the item to
+ * @param  {Object}   item  the item to add
+ */
+export const addItemToBack = (collection, item) =>
+  addItemAt(collection, item, collection.order.length);
+
+/**
+ * Helper function that receives an item to be added to a collection, and
  * adds it to the front of the collection.
  *
  * The item should already have an assigned `id` property. If there is no such
@@ -230,7 +248,7 @@ export const copyAndDeleteItemById = (idToRemove, collection) => {
  * @param  {Object}    collection  the ordered collection to modify
  * @return {Object}    the collection with the given items removed
  */
-export const copyAnddeleteItemsByIds = (idsToRemove, collection) => {
+export const copyAndDeleteItemsByIds = (idsToRemove, collection) => {
   if (idsToRemove.length === 1) {
     return copyAndDeleteItemById(idsToRemove[0], collection);
   }
@@ -288,6 +306,22 @@ export const getKey = (itemId, ...subKeys) => {
   const subKey = subKeys.join('.');
   return subKey ? `byId.${itemId}.${subKey}` : `byId.${itemId}`;
 };
+
+/**
+ * Helper function that takes an ordered collection and returns the first item
+ * in the collection, or undefined if the collection is empty.
+ */
+export const selectFirst = ({ byId, order }) =>
+  order === undefined || order.length === 0 ? undefined : byId[0];
+
+/**
+ * Helper function that takes an ordered collection and returns the last item
+ * in the collection, or undefined if the collection is empty.
+ */
+export const selectLast = ({ byId, order }) =>
+  order === undefined || order.length === 0
+    ? undefined
+    : byId[order.length - 1];
 
 /**
  * Helper function that takes an ordered collection and converts it into an
