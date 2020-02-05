@@ -42,7 +42,7 @@ const useStyles = makeStyles(
     },
 
     'status-rth': {
-      animation: '$flash 0.33s infinite',
+      animation: '$flash 0.5s infinite',
       animationDirection: 'alternate',
       backgroundColor: Colors.warning
     },
@@ -53,7 +53,7 @@ const useStyles = makeStyles(
     },
 
     'status-critical': {
-      animation: '$flash 0.33s infinite',
+      animation: '$flash 0.5s infinite',
       animationDirection: 'alternate',
       backgroundColor: Colors.error,
       color: 'white'

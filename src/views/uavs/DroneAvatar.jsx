@@ -14,6 +14,7 @@ import SummaryPill from './SummaryPill';
 
 import Colors from '~/components/colors';
 import {
+  abbreviateError,
   getSeverityOfErrorCode,
   getSeverityOfMostSevereErrorCode,
   Severity
@@ -279,21 +280,9 @@ function getDroneText(uav) {
     const maxError = Math.max(...uav.errors);
     const severity = getSeverityOfErrorCode(maxError);
 
-    // TODO: don't hardcode, use enums
-    switch (maxError) {
-      case 1:
-        text = 'disarm';
-        break;
+    text = abbreviateError(maxError);
 
-      case 4:
-        text = 'init';
-        break;
-
-      default:
-        text = `e${maxError}`;
-    }
-
-    if (maxError === 4) {
+    if (maxError === 1) {
       // disarm is treated separately; it is always shown as an error
       textSemantics = 'error';
     } else {
