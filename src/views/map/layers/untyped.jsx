@@ -22,8 +22,7 @@ const UntypedLayerSettingsPresentation = ({ onLayerTypeSelected }) => {
   const items = LayerTypes.map(layerType => (
     <Grid key={layerType} item xs={8} sm={4}>
       <Card
-        className="no-select"
-        style={{ cursor: 'pointer', height: '100%' }}
+        style={{ cursor: 'pointer', height: '100%', userSelect: 'none' }}
         onClick={() => onLayerTypeSelected(layerType)}
       >
         <CardHeader

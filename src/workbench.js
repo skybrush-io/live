@@ -62,6 +62,7 @@ const componentRegistry = {
   )(MessagesPanel),
   placeholder: renderNothing(),
   'saved-location-list': views.SavedLocationList,
+  'show-control': views.ShowControlPanel,
   'uav-list': injectFlockFromContext(views.UAVList)
 };
 
@@ -101,9 +102,9 @@ function constructDefaultWorkbench(store) {
     .finish()
     .setRelativeHeight(25)
     .makeStack()
-    .add('dock-list')
-    .setTitle('Docks')
-    .setId('docks')
+    .add('show-control')
+    .setTitle('Show control')
+    .setId('show')
     .add('messages')
     .setTitle('Messages')
     .setId('messages')

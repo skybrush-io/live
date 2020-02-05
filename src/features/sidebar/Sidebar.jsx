@@ -2,6 +2,7 @@ import Alarm from '@material-ui/icons/Alarm';
 import Apps from '@material-ui/icons/Apps';
 import Flight from '@material-ui/icons/Flight';
 import Gamepad from '@material-ui/icons/Gamepad';
+import Grain from '@material-ui/icons/Grain';
 import Layers from '@material-ui/icons/Layers';
 import Map from '@material-ui/icons/Map';
 import Message from '@material-ui/icons/Message';
@@ -69,6 +70,13 @@ const Sidebar = ({ isOpen, workbench }) => (
           icon={<Message />}
           label="Messages"
           component="messages"
+        />
+        <hr />
+        <Module
+          id="show"
+          icon={<Grain />}
+          label="Show control"
+          component="show-control"
         />
         <hr />
         <Module

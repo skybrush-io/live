@@ -121,11 +121,6 @@ ChatAreaBackgroundHint.propTypes = {
   textFieldPlacement: PropTypes.oneOf(['bottom', 'top'])
 };
 
-const shadow = {
-  boxShadow: 'rgba(0, 0, 0, 0.3) 0 -10px 10px -10px',
-  zIndex: 10
-};
-
 /**
  * Presentation component for the "Messages" panel, containing a text field
  * to type the messages into, and a target UAV selector.
@@ -195,7 +190,13 @@ class MessagesPanelPresentation extends React.Component {
         />
       );
     const textFields = (
-      <Box key="textFieldContainer" display="flex" style={shadow} pt={1} px={2}>
+      <Box
+        key="textFieldContainer"
+        display="flex"
+        className="bottom-bar"
+        pt={1}
+        px={2}
+      >
         <ActiveUAVsField
           initialValue={selectedUAVId}
           inputRef={this._uavSelectorFieldRef}

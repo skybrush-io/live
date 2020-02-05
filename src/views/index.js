@@ -8,12 +8,12 @@ import ConnectionList from './connections';
 import DatasetList from './datasets';
 import DockList from './docks';
 import FeatureList from './features';
-import GroundControlView from './groundcontrol';
 import LayerList from './layers';
 import LCDClockPanel from './lcd-clock';
-import MapView from './map';
 import SavedLocationList from './locations';
 import LogPanel from './log';
+import MapView from './map';
+import ShowControlPanel from './show-control';
 import UAVList from './uavs';
 
 export default {
@@ -22,11 +22,11 @@ export default {
   DatasetList,
   DockList,
   FeatureList,
-  GroundControlView,
   LayerList,
   LCDClockPanel,
   LogPanel,
   MapView,
   SavedLocationList,
+  ShowControlPanel,
   UAVList
 };
