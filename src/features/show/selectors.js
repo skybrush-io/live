@@ -19,11 +19,37 @@ export const getNumberOfDronesInShow = createSelector(
 );
 
 /**
+ * Returns the duration of a single drone trajectory.
+ */
+const getTrajectoryDuration = trajectory => {
+  if (
+    !trajectory ||
+    typeof trajectory !== 'object' ||
+    trajectory.version !== 1
+  ) {
+    return 0;
+  }
+
+  const { points } = trajectory;
+
+  if (points && Array.isArray(points) && points.length > 0) {
+    const lastPoint = points[points.length - 1];
+    if (Array.isArray(lastPoint) && lastPoint.length > 1) {
+      return lastPoint[0];
+    }
+  }
+
+  return 0;
+};
+
+/**
  * Returns the total duration of the show, in seconds.
  */
 export const getShowDuration = createSelector(
   getDroneSwarmSpecification,
   swarm => {
+    let maxLength = 0;
+
     for (const drone of swarm) {
       if (typeof drone !== 'object') {
         continue;
@@ -35,10 +61,10 @@ export const getShowDuration = createSelector(
       }
 
       const { trajectory } = settings;
-      console.log(trajectory);
+      maxLength = Math.max(maxLength, getTrajectoryDuration(trajectory));
     }
 
-    return 0;
+    return maxLength;
   }
 );
 
