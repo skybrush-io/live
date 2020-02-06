@@ -1,4 +1,6 @@
+// import PropTypes from 'prop-types';
 import React from 'react';
+// import { connect } from 'react-redux';
 
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
@@ -12,6 +14,8 @@ import CloudUpload from '@material-ui/icons/CloudUpload';
 import Edit from '@material-ui/icons/Edit';
 import PlayArrow from '@material-ui/icons/PlayArrow';
 
+import LoadShowFromFileButton from './LoadShowFromFileButton';
+
 /**
  * Panel that shows the widgets that are needed to load and configure a drone
  * show.
@@ -21,12 +25,7 @@ const ShowControlPanel = () => {
     <Box display="flex" flexDirection="column" height="100%">
       <Box style={{ overflow: 'auto' }} flex={1}>
         <List dense>
-          <ListItem button>
-            <ListItemText
-              primary="No show file loaded"
-              secondary="Click here to open a show file"
-            />
-          </ListItem>
+          <LoadShowFromFileButton />
           <Divider />
           <ListItem button disabled>
             <ListItemText primary="Environment" secondary="Outdoor" />
@@ -82,5 +81,7 @@ const ShowControlPanel = () => {
     </Box>
   );
 };
+
+ShowControlPanel.propTypes = {};
 
 export default ShowControlPanel;

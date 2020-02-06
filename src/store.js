@@ -11,6 +11,7 @@ import {
 import isPromise from 'is-promise';
 import localForage from 'localforage';
 import has from 'lodash-es/has';
+import isError from 'lodash-es/isError';
 import isFunction from 'lodash-es/isFunction';
 import pickBy from 'lodash-es/pickBy';
 import createDeferred from 'p-defer';
@@ -88,6 +89,7 @@ const persistConfig = {
     'messages',
     'servers',
     'snackbar',
+    'show',
     'uavs'
   ],
 
@@ -134,10 +136,24 @@ const store = configureStore({
   reducer: persistReducer(persistConfig, reducer),
   middleware: [
     ...getDefaultMiddleware({
+      immutableCheck: {
+        // Checking the show specification takes a long time and it should not
+        // be necessary anyway
+        ignore: ['show.data']
+      },
+
       serializableCheck: {
-        /* redux-persist uses functions in actions; this silences a warning about them */
+        /* redux-persist uses functions in actions and redux-promise-middleware
+         * uses errors. This setting  silences a warning about them */
         isSerializable: value =>
-          isPlain(value) || isFunction(value) || isPromise(value)
+          isPlain(value) ||
+          isFunction(value) ||
+          isPromise(value) ||
+          isError(value),
+
+        // Checking the show specification takes a long time and it should not
+        // be necessary anyway
+        ignoredPaths: ['show.data']
       }
     }),
     debouncer,

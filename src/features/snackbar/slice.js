@@ -14,6 +14,7 @@ const { actions, reducer } = createSlice({
     messageId: 0,
     message: '',
     open: false,
+    permanent: false,
     semantics: MessageSemantics.DEFAULT
   },
 
@@ -25,19 +26,28 @@ const { actions, reducer } = createSlice({
     showSnackbarMessage(state, action) {
       let semantics;
       let message;
+      let permanent;
 
       if (typeof action.payload === 'string') {
         message = String(action.payload);
         semantics = MessageSemantics.DEFAULT;
+        permanent = false;
       } else {
         message = String(action.payload.message);
         semantics = action.payload.semantics;
+        permanent = Boolean(action.payload.permanent);
       }
 
       state.messageId += 1;
       state.message = message;
       state.open = true;
+      state.permanent = permanent;
       state.semantics = semantics;
+    },
+
+    showPermanentSnackbarMessage(state, action) {
+      showSnackbarMessage(state, action);
+      state.permanent = true;
     }
   }
 });

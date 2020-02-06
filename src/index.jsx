@@ -16,6 +16,13 @@ import 'tippy.js/dist/tippy.css';
 import 'tippy.js/themes/light-border.css';
 /* eslint-enable import/no-extraneous-dependencies */
 
+// Configure Moment
+/* eslint-disable no-unused-vars */
+const moment = require('moment');
+const momentDurationFormatSetup = require('moment-duration-format');
+/* eslint-enable no-unused-vars */
+
+// Configure TimeAgo
 TimeAgo.addLocale(en);
 
 // Spin up the root saga after the state has been restored

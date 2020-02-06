@@ -51,3 +51,7 @@ jspm_packages
 
 # Environment file containing sensitive data (e.g.: API keys)
 .env
+
+# Show files used as examples during testing
+assets/shows/
+

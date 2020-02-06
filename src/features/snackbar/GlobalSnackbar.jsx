@@ -103,10 +103,16 @@ SnackbarContentWrapper.propTypes = {
  *
  * @returns  {Object}  the rendered snackbar component
  */
-const GlobalSnackbar = ({ dismissSnackbar, open, message, semantics }) => (
+const GlobalSnackbar = ({
+  dismissSnackbar,
+  open,
+  message,
+  permanent,
+  semantics
+}) => (
   <Snackbar
     open={open}
-    autoHideDuration={3000}
+    autoHideDuration={permanent ? null : 3000}
     onClose={() => dismissSnackbar()}
   >
     <SnackbarContentWrapper
@@ -121,6 +127,7 @@ GlobalSnackbar.propTypes = {
   dismissSnackbar: PropTypes.func,
   message: PropTypes.string.isRequired,
   open: PropTypes.bool.isRequired,
+  permanent: PropTypes.bool,
   semantics: PropTypes.oneOf(Object.values(MessageSemantics)).isRequired
 };
 

@@ -17,6 +17,7 @@ import savedLocationsReducer from '~/features/saved-locations/slice';
 import serversReducer from '~/features/servers/slice';
 import settingsReducer from '~/features/settings/slice';
 import sidebarReducer from '~/features/sidebar/slice';
+import showReducer from '~/features/show/slice';
 import snackbarReducer from '~/features/snackbar/slice';
 import uavReducer from '~/features/uavs/slice';
 import workbenchReducer from '~/features/workbench/slice';
@@ -40,6 +41,7 @@ const reducer = combineReducers({
   savedLocations: savedLocationsReducer,
   servers: serversReducer,
   settings: settingsReducer,
+  show: showReducer,
   sidebar: sidebarReducer,
   snackbar: snackbarReducer,
   uavs: uavReducer,
