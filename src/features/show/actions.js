@@ -1,10 +1,12 @@
+import get from 'lodash-es/get';
 import pMinDelay from 'p-min-delay';
 
 import { loadShowFromFile as processFile } from './processing';
-import { createAsyncAction } from '~/utils/redux';
 
+import { setMappingLength } from '~/features/mission/slice';
 import { showSnackbarMessage } from '~/features/snackbar/slice';
 import { MessageSemantics } from '~/features/snackbar/types';
+import { createAsyncAction } from '~/utils/redux';
 
 const loadShowFromFileInner = createAsyncAction('show/loading', async file => {
   return pMinDelay(processFile(file), 500);
@@ -18,8 +20,10 @@ const loadShowFromFileInner = createAsyncAction('show/loading', async file => {
  * the show from.
  */
 export const loadShowFromFile = file => async dispatch => {
+  let result;
+
   try {
-    await dispatch(loadShowFromFileInner(file));
+    result = await dispatch(loadShowFromFileInner(file));
   } catch (error) {
     dispatch(
       showSnackbarMessage({
@@ -30,4 +34,8 @@ export const loadShowFromFile = file => async dispatch => {
     );
     console.error(error);
   }
+
+  const spec = result.value;
+  const drones = get(spec, 'swarm.drones');
+  await dispatch(setMappingLength(drones.length));
 };

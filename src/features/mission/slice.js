@@ -21,7 +21,7 @@ const { actions, reducer } = createSlice({
     // mission-specific identifier. The mapping may store UAV IDs and
     // null values for identifiers where the corresponding physical UAV
     // is not assigned yet.
-    mapping: ['03', null, '01', '02', null],
+    mapping: [],
 
     mappingEditor: {
       // Stores whether the mapping is currently being edited on the UI
@@ -37,7 +37,7 @@ const { actions, reducer } = createSlice({
     adjustMissionMapping(state, action) {
       const { uavId, to } = action.payload;
       const from = state.mapping.indexOf(uavId);
-      const uavIdToReplace = isNil(to) ? null : state.mapping[to];
+      let uavIdToReplace = isNil(to) ? null : state.mapping[to];
 
       if (uavIdToReplace === undefined) {
         uavIdToReplace = null;
@@ -64,7 +64,7 @@ const { actions, reducer } = createSlice({
      */
     clearMapping(state) {
       const numItems = state.mapping.length;
-      state.mapping = new Array(numItems).fill(undefined);
+      state.mapping = new Array(numItems).fill(null);
     },
 
     /**
@@ -74,7 +74,7 @@ const { actions, reducer } = createSlice({
       const index = action.payload;
       const numItems = state.mapping.length;
       if (index >= 0 && index < numItems) {
-        state.mapping[index] = undefined;
+        state.mapping[index] = null;
       }
     },
 
@@ -133,6 +133,30 @@ const { actions, reducer } = createSlice({
     },
 
     /**
+     * Sets the length of the mapping. When the new length is smaller than the
+     * old length, the mapping will be truncated from the end. When the new
+     * length is larger than the old length, empty slots will be added to the
+     * end of the mapping.
+     */
+    setMappingLength(state, action) {
+      const desiredLength = Number.parseInt(action.payload, 10);
+
+      if (isNaN(desiredLength) || desiredLength < 0 || desiredLength > 1000) {
+        return;
+      }
+
+      const currentLength = state.mapping.length;
+
+      if (desiredLength < currentLength) {
+        state.mapping.splice(desiredLength);
+      } else if (desiredLength > currentLength) {
+        state.mapping.push(
+          ...new Array(desiredLength - currentLength).fill(null)
+        );
+      }
+    },
+
+    /**
      * Starts the current editing session of the mapping, and marks the
      * given slot in the mapping as the one being edited.
      */
@@ -168,6 +192,7 @@ export const {
   commitMappingEditorSessionAtCurrentSlot,
   finishMappingEditorSession,
   removeUAVsFromMission,
+  setMappingLength,
   startMappingEditorSession,
   startMappingEditorSessionAtSlot
 } = actions;

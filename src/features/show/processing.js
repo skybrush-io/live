@@ -6,6 +6,8 @@
 import RefParser from 'json-schema-ref-parser';
 import JSZip from 'jszip';
 
+import { MAX_DRONE_COUNT } from './constants';
+
 /**
  * Runs some basic checks on a JSON-based show specification to see whether it
  * looks like a valid show specification.
@@ -24,7 +26,15 @@ function validateShowSpecification(spec) {
     throw new Error('Show specification contains no drones');
   }
 
-  for (const drone of spec.swarm.drones) {
+  const { drones } = spec.swarm;
+
+  if (drones.length > MAX_DRONE_COUNT) {
+    throw new Error(
+      `Too many drones in show file; maximum allowed is ${MAX_DRONE_COUNT}`
+    );
+  }
+
+  for (const drone of drones) {
     if (
       !drone.settings ||
       typeof drone.settings !== 'object' ||
@@ -69,6 +79,7 @@ function createZIPResolver(zip) {
  * Loads a drone show from a file.
  *
  * @param  {File}  file  the file that the user selected
+ * @return {object} the parsed show specification
  */
 export async function loadShowFromFile(file) {
   const zip = await JSZip.loadAsync(file);
