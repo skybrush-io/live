@@ -21,6 +21,9 @@ module.exports = {
     publicPath: '/build/'
   },
   devtool: enableSourceMap ? 'cheap-module-source-map' : undefined,
+  devServer: {
+    hot: true
+  },
   plugins: [
     new webpack.NoEmitOnErrorsPlugin(),
 
