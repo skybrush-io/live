@@ -13,9 +13,9 @@ import u from 'updeep';
  * degree heading points towards the heading given in the `angle` property.
  */
 const defaultState = {
-  position: undefined,
-  angle: 0,
-  type: 'neu'
+  position: null,
+  angle: '0',
+  type: 'nwu'
 };
 
 /**
@@ -23,15 +23,9 @@ const defaultState = {
  */
 const reducer = handleActions(
   {
-    CLEAR_HOME_POSITION: (state, action) =>
-      u(
-        {
-          position: u.constant(undefined)
-        },
-        state
-      ),
+    CLEAR_ORIGIN: state => u({ position: u.constant(null) }, state),
 
-    SET_HOME_POSITION: (state, action) => {
+    SET_ORIGIN: (state, action) => {
       const { angle, position, type } = action.payload;
       const updates = {};
       if ('position' in action.payload) {

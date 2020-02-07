@@ -2,6 +2,7 @@ import get from 'lodash-es/get';
 import pMinDelay from 'p-min-delay';
 
 import { loadShowFromFile as processFile } from './processing';
+import { setEnvironmentType } from './slice';
 
 import { setMappingLength } from '~/features/mission/slice';
 import { showSnackbarMessage } from '~/features/snackbar/slice';
@@ -37,5 +38,10 @@ export const loadShowFromFile = file => async dispatch => {
 
   const spec = result.value;
   const drones = get(spec, 'swarm.drones');
-  await dispatch(setMappingLength(drones.length));
+  dispatch(setMappingLength(drones.length));
+
+  const environment = get(spec, 'environment');
+  if (environment.type) {
+    dispatch(setEnvironmentType(environment.type));
+  }
 };

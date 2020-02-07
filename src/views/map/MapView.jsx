@@ -27,7 +27,7 @@ import {
   removeFeaturesFromSelection,
   updateMapViewSettings
 } from '~/actions/map';
-import { setHomePosition } from '~/actions/map-origin';
+import { setFlatEarthCoordinateSystemOrigin } from '~/actions/map-origin';
 import Widget from '~/components/Widget';
 import { handleError } from '~/error-handling';
 import mapViewManager from '~/mapViewManager';
@@ -608,7 +608,7 @@ class MapViewPresentation extends React.Component {
           const featureObject = createFeatureFromOpenLayers(feature);
           const coords = feature.getGeometry().getCoordinates();
           dispatch(
-            setHomePosition(
+            setFlatEarthCoordinateSystemOrigin(
               featureObject.points[0],
               90 -
                 (Math.atan2(

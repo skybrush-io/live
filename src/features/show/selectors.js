@@ -11,6 +11,26 @@ export const getDroneSwarmSpecification = state => {
 };
 
 /**
+ * Selector that returns the definition of the coordinate system of an outdoor
+ * show.
+ */
+const getOutdoorShowCoordinateSystem = state =>
+  state.show.environment.coordinateSystem;
+
+/**
+ * Selector that returns the orientation of the positive X axis of the show
+ * coordinate system, cast into a float.
+ *
+ * This is needed because we store the orientation of the show coordinate
+ * system as a string by default to avoid rounding errors, but most components
+ * require a float instead.
+ */
+export const getOutdoorShowOrientation = createSelector(
+  getOutdoorShowCoordinateSystem,
+  coordinateSystem => parseFloat(coordinateSystem.orientation)
+);
+
+/**
  * Returns the number of drones in the currently loaded show.
  */
 export const getNumberOfDronesInShow = createSelector(

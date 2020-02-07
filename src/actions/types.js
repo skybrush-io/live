@@ -21,9 +21,9 @@ export const REMOVE_FEATURES_FROM_SELECTION = 'REMOVE_FEATURES_FROM_SELECTION';
 export const UPDATE_MAP_VIEW_SETTINGS = 'UPDATE_MAP_VIEW_SETTINGS';
 
 // Map origin-related actions
-export const CLEAR_HOME_POSITION = 'CLEAR_HOME_POSITION';
+export const CLEAR_ORIGIN = 'CLEAR_ORIGIN';
 export const SET_AXIS_TYPE = 'SET_AXIS_TYPE';
-export const SET_HOME_POSITION = 'SET_HOME_POSITION';
+export const SET_ORIGIN = 'SET_ORIGIN';
 
 // Layer-related actions
 export const ADD_LAYER = 'ADD_LAYER';

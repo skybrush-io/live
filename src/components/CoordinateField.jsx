@@ -25,38 +25,34 @@ export default class CoordinateField extends React.Component {
     value: undefined
   };
 
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      error: undefined,
-      text: safelyFormatCoordinate(props.value)
-    };
-    this.state.originalText = this.state.text;
-
-    this._onChange = this._onChange.bind(this);
-    this._onClearField = this._onClearField.bind(this);
-    this._onMaybeCommitValue = this._onMaybeCommitValue.bind(this);
-    this._onMouseDownOnButton = this._onMouseDownOnButton.bind(this);
-  }
-
   static getDerivedStateFromProps(props) {
     return {
       originalText: safelyFormatCoordinate(props.value)
     };
   }
 
+  state = {
+    dirty: false,
+    error: undefined,
+    originalText: undefined,
+    text: undefined
+  };
+
   componentWillUnmount() {
-    this._onMaybeCommitValue(/* mounted = */ false);
+    if (this.state.dirty) {
+      this._onMaybeCommitValue({ text: this.state.text, mounted: false });
+    }
   }
 
   render() {
     const { onChange, value, ...rest } = this.props;
-    const { error, text } = this.state;
-    const endAdornment = text ? (
+    const { dirty, error, originalText, text } = this.state;
+    const shownText = dirty ? text : originalText;
+    const endAdornment = shownText ? (
       <InputAdornment position="end">
         <IconButton
           aria-label="Clear field"
+          edge="end"
           tabIndex={-1}
           onClick={this._onClearField}
           onMouseDown={this._onMouseDownOnButton}
@@ -67,66 +63,82 @@ export default class CoordinateField extends React.Component {
     ) : null;
     return (
       <TextField
-        value={text}
+        value={shownText}
         error={Boolean(error)}
         InputProps={{ endAdornment }}
-        onBlur={this._onMaybeCommitValue}
+        onBlur={this._onBlur}
         onChange={this._onChange}
+        onKeyDown={this._onKeyDown}
         {...rest}
       />
     );
   }
 
-  _onChange(event) {
-    const { value } = event.target;
-    this.setState({ text: value });
-    this._validate(value);
-  }
+  _onBlur = event => {
+    this._onMaybeCommitValue({ text: event.target.value });
+  };
 
-  _onClearField() {
-    this.setState({ text: '' });
-    this._validate('');
-    this._onMaybeCommitValue(true, '');
-  }
+  _onChange = event => {
+    this._updateValueFromText(event.target.value);
+  };
 
-  _onMaybeCommitValue(mounted = true, value = undefined) {
-    const [valid, parsed] = this._validate(value);
+  _onClearField = () => {
+    this._updateValueFromText('', { commit: true });
+  };
+
+  _onKeyDown = event => {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      this._updateValueFromText(event.target.value, { commit: true });
+    }
+  };
+
+  _onMaybeCommitValue = ({ mounted = true, text }) => {
+    const [valid, parsed] = this._validate(text);
     if (valid) {
       const { onChange, value } = this.props;
-      if (isEqual(value, parsed)) {
-        // Value did not change so we simply reset the text if we are still
-        // mounted
-        if (mounted) {
-          this._reset();
-        }
-      } else if (onChange) {
-        // Value changed, let's call the callback to see what to do now
+      if (onChange && !isEqual(value, parsed)) {
         onChange(parsed);
       }
+
+      // If we are still unmounted, mark ourselves as not dirty
+      if (mounted) {
+        this._reset();
+      }
     }
-  }
+  };
 
-  _onMouseDownOnButton(event) {
+  _onMouseDownOnButton = event => {
     event.preventDefault();
-  }
+  };
 
-  _reset() {
-    this.setState(state => ({ text: state.originalText }));
-  }
+  _reset = () => {
+    this.setState({ dirty: false, text: undefined });
+  };
 
-  _validate(value) {
+  _updateValueFromText = (text, { commit } = {}) => {
+    this.setState(state =>
+      text === state.originalText
+        ? { dirty: false, text: undefined }
+        : { dirty: true, text }
+    );
+
+    if (commit) {
+      this._onMaybeCommitValue({ text, mounted: true });
+    } else {
+      this._validate(text);
+    }
+  };
+
+  _validate = text => {
     const { required } = this.props;
 
-    if (value === undefined) {
-      value = this.state.text;
-    }
-
-    const parsed = parseCoordinate(value);
-    const hasError = (value !== '' || required) && parsed === undefined;
+    const value = parseCoordinate(text);
+    const hasError = (text !== '' || required) && value === undefined;
     this.setState({
       error: hasError ? 'Not a valid coordinate' : undefined
     });
 
-    return [!hasError, parsed];
-  }
+    return [!hasError, value];
+  };
 }

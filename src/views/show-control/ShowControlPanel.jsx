@@ -1,19 +1,16 @@
-// import PropTypes from 'prop-types';
 import React from 'react';
-// import { connect } from 'react-redux';
 
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import Divider from '@material-ui/core/Divider';
-import IconButton from '@material-ui/core/IconButton';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import ListItemText from '@material-ui/core/ListItemText';
 import CloudUpload from '@material-ui/icons/CloudUpload';
-import Edit from '@material-ui/icons/Edit';
 import PlayArrow from '@material-ui/icons/PlayArrow';
 
+import EnvironmentButton from './EnvironmentButton';
+import EnvironmentEditorDialog from './EnvironmentEditorDialog';
 import LoadShowFromFileButton from './LoadShowFromFileButton';
 
 /**
@@ -27,14 +24,7 @@ const ShowControlPanel = () => {
         <List dense>
           <LoadShowFromFileButton />
           <Divider />
-          <ListItem button disabled>
-            <ListItemText primary="Environment" secondary="Outdoor" />
-            <ListItemSecondaryAction>
-              <IconButton disabled edge="end">
-                <Edit />
-              </IconButton>
-            </ListItemSecondaryAction>
-          </ListItem>
+          <EnvironmentButton />
           <ListItem button disabled>
             <ListItemText
               primary="Drone swarm"
@@ -78,6 +68,8 @@ const ShowControlPanel = () => {
           Start
         </Button>
       </Box>
+
+      <EnvironmentEditorDialog />
     </Box>
   );
 };

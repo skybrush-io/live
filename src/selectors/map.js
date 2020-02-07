@@ -14,7 +14,7 @@ import { createSelector } from '@reduxjs/toolkit';
  */
 export const getMapViewRotationAngle = createSelector(
   state => state.map.view.angle,
-  angle => parseFloat(angle)
+  parseFloat
 );
 
 /**
@@ -27,5 +27,5 @@ export const getMapViewRotationAngle = createSelector(
  */
 export const getMapOriginRotationAngle = createSelector(
   state => state.map.origin.angle,
-  angle => parseFloat(angle)
+  parseFloat
 );

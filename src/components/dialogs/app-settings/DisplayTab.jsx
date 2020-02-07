@@ -10,31 +10,17 @@ import FormGroup from '@material-ui/core/FormGroup';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
-import Typography from '@material-ui/core/Typography';
 
 import {
-  clearHomePosition,
+  clearOrigin,
   setFlatEarthCoordinateSystemOrientation,
   setFlatEarthCoordinateSystemType,
-  setHomePosition
+  setFlatEarthCoordinateSystemOrigin
 } from '~/actions/map-origin';
-import CoordinateField from '~/components/CoordinateField';
-import RotationField from '~/components/RotationField';
+import CoordinateSystemFields from '~/components/CoordinateSystemFields';
+import Header from '~/components/dialogs/FormHeader';
 import { updateAppSettings } from '~/features/settings/slice';
 import { getMapOriginRotationAngle } from '~/selectors/map';
-
-const Header = ({ children, disablePadding, ...rest }) => (
-  <Box color="text.secondary" mt={disablePadding ? 0 : 2} mb={0.5} {...rest}>
-    <Typography variant="button" component="span">
-      {children}
-    </Typography>
-  </Box>
-);
-
-Header.propTypes = {
-  children: PropTypes.node,
-  disablePadding: PropTypes.bool
-};
 
 const DisplayTabPresentation = props => (
   <Box my={2}>
@@ -80,44 +66,25 @@ const DisplayTabPresentation = props => (
 
     <FormGroup>
       <Header>Flat Earth coordinate system</Header>
-      <CoordinateField
-        label="Origin"
-        value={props.homePosition}
-        onChange={props.onHomePositionChanged}
+      <CoordinateSystemFields
+        origin={props.origin}
+        orientation={props.orientation}
+        type={props.coordinateSystemType}
+        onOrientationChanged={props.onOrientationChanged}
+        onOriginChanged={props.onOriginChanged}
+        onTypeChanged={props.onCoordinateSystemTypeChanged}
       />
-      <Box display="flex" flexDirection="row">
-        <FormControl fullWidth>
-          <InputLabel htmlFor="flat-earth-coordinate-system-type">
-            Type
-          </InputLabel>
-          <Select
-            value={props.coordinateSystemType}
-            inputProps={{ id: 'flat-earth-coordinate-system-type' }}
-            onChange={props.onCoordinateSystemTypeChanged}
-          >
-            <MenuItem value="neu">NEU (left-handed)</MenuItem>
-            <MenuItem value="nwu">NWU (right-handed)</MenuItem>
-          </Select>
-        </FormControl>
-        <Box p={1} />
-        <RotationField
-          fullWidth
-          label="Orientation (X+ axis)"
-          value={props.orientation}
-          onChange={props.onOrientationChanged}
-        />
-      </Box>
     </FormGroup>
   </Box>
 );
 
 DisplayTabPresentation.propTypes = {
   coordinateSystemType: PropTypes.oneOf(['neu', 'nwu']),
-  homePosition: PropTypes.arrayOf(PropTypes.number),
+  origin: PropTypes.arrayOf(PropTypes.number),
   onCheckboxToggled: PropTypes.func,
   onCoordinateSystemTypeChanged: PropTypes.func,
   onFieldChanged: PropTypes.func,
-  onHomePositionChanged: PropTypes.func,
+  onOriginChanged: PropTypes.func,
   onOrientationChanged: PropTypes.func,
   orientation: PropTypes.number,
   showMouseCoordinates: PropTypes.bool,
@@ -129,7 +96,7 @@ export default connect(
   // mapStateToProps
   state => ({
     coordinateSystemType: state.map.origin.type,
-    homePosition: state.map.origin.position,
+    origin: state.map.origin.position,
     orientation: getMapOriginRotationAngle(state),
     ...state.settings.display
   }),
@@ -155,8 +122,8 @@ export default connect(
       );
     },
 
-    onHomePositionChanged(value) {
-      dispatch(value ? setHomePosition(value) : clearHomePosition());
+    onOriginChanged(value) {
+      dispatch(value ? setFlatEarthCoordinateSystemOrigin(value) : clearOrigin());
     },
 
     onOrientationChanged(value) {

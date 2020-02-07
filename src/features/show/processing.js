@@ -18,6 +18,9 @@ import { MAX_DRONE_COUNT } from './constants';
  * @param {object} spec  the specification to validate
  */
 function validateShowSpecification(spec) {
+  // TODO(ntamas): write a proper JSON-Schema specification for the show files
+  // and use that.
+
   if (spec.version !== 1) {
     throw new Error('Only version 1 files are supported');
   }
@@ -46,6 +49,22 @@ function validateShowSpecification(spec) {
     if (drone.settings.trajectory.version !== 1) {
       throw new Error('Only version 1 trajectories are supported');
     }
+  }
+
+  if (spec.environment === undefined) {
+    spec.environment = {};
+  } else if (typeof spec.environment !== 'object') {
+    throw new TypeError('Invalid environment in show specification');
+  }
+
+  const { environment } = spec;
+
+  if (environment.type === undefined) {
+    environment.type = 'outdoor';
+  }
+
+  if (!['outdoor', 'indoor'].includes(environment.type)) {
+    throw new Error('Invalid environment type in show specification');
   }
 }
 

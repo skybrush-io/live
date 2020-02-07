@@ -26,7 +26,7 @@ import { createSelector } from '@reduxjs/toolkit';
 
 import { showFeatureEditorDialog } from '../../actions/feature-editor';
 import { renameFeature, removeFeatures } from '../../actions/features';
-import { setHomePosition } from '../../actions/map-origin';
+import { setFlatEarthCoordinateSystemOrigin } from '../../actions/map-origin';
 import {
   selectUAVInMessagesDialog,
   showMessagesDialog
@@ -53,7 +53,7 @@ class MapContextMenu extends React.Component {
     renameFeature: PropTypes.func.isRequired,
     removeFeaturesByIds: PropTypes.func.isRequired,
     selectUAVInMessagesDialog: PropTypes.func.isRequired,
-    setHomePosition: PropTypes.func.isRequired,
+    setFlatEarthCoordinateSystemOrigin: PropTypes.func.isRequired,
     showErrorMessage: PropTypes.func.isRequired,
     showMessagesDialog: PropTypes.func.isRequired,
     showPromptDialog: PropTypes.func.isRequired
@@ -169,7 +169,7 @@ class MapContextMenu extends React.Component {
           }
 
           result.push(
-            <MenuItem key="setOrigin" dense onClick={this._setOrigin}>
+            <MenuItem key="setFlatEarthCoordinateSystemOrigin" dense onClick={this._setFlatEarthCoordinateSystemOrigin}>
               <ListItemIcon>
                 <PinDrop />
               </ListItemIcon>
@@ -293,10 +293,10 @@ class MapContextMenu extends React.Component {
     messaging.returnToHomeUAVs(selectedUAVIds);
   };
 
-  _setOrigin = (event, context) => {
+  _setFlatEarthCoordinateSystemOrigin = (event, context) => {
     const { coords } = context;
     if (coords) {
-      this.props.setHomePosition(coords);
+      this.props.setFlatEarthCoordinateSystemOrigin(coords);
     }
   };
 
@@ -352,8 +352,8 @@ const MapContextMenuContainer = connect(
     selectUAVInMessagesDialog: id => {
       dispatch(selectUAVInMessagesDialog(id));
     },
-    setHomePosition: coords => {
-      dispatch(setHomePosition(coords));
+    setFlatEarthCoordinateSystemOrigin: coords => {
+      dispatch(setFlatEarthCoordinateSystemOrigin(coords));
     },
     showErrorMessage: message => {
       dispatch(showSnackbarMessage(message));

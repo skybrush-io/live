@@ -4,13 +4,13 @@
  */
 
 import { createAction } from 'redux-actions';
-import { CLEAR_HOME_POSITION, SET_AXIS_TYPE, SET_HOME_POSITION } from './types';
+import { CLEAR_ORIGIN, SET_AXIS_TYPE, SET_ORIGIN } from './types';
 
 /**
  * Action factory that creates an action that clears the origin (home position)
  * of the map.
  */
-export const clearHomePosition = createAction(CLEAR_HOME_POSITION);
+export const clearOrigin = createAction(CLEAR_ORIGIN);
 
 /**
  * Action factory that creates an action that sets the origin (home position)
@@ -19,9 +19,12 @@ export const clearHomePosition = createAction(CLEAR_HOME_POSITION);
  * Both parameters are optional; when omitted, the corresponding parameter
  * will not be updated.
  */
-export const setHomePosition = createAction(
-  SET_HOME_POSITION,
-  (position, angle) => ({ position, angle })
+export const setFlatEarthCoordinateSystemOrigin = createAction(
+  SET_ORIGIN,
+  (position, angle) => ({
+    position,
+    angle
+  })
 );
 
 /**
@@ -29,7 +32,7 @@ export const setHomePosition = createAction(
  * Earth coordinate system of the map.
  */
 export const setFlatEarthCoordinateSystemOrientation = createAction(
-  SET_HOME_POSITION,
+  SET_ORIGIN,
   angle => ({ angle })
 );
 

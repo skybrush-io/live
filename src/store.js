@@ -20,7 +20,10 @@ import { createPromise } from 'redux-promise-middleware';
 import createSagaMiddleware from 'redux-saga';
 import { persistStore, persistReducer } from 'redux-persist';
 import autoMergeLevel2 from 'redux-persist/lib/stateReconciler/autoMergeLevel2';
-import { createFilter } from 'redux-persist-transform-filter';
+import {
+  createBlacklistFilter,
+  createFilter
+} from 'redux-persist-transform-filter';
 
 import { updateUAVs } from './features/uavs/slice';
 import reducer from './reducers';
@@ -89,7 +92,6 @@ const persistConfig = {
     'messages',
     'servers',
     'snackbar',
-    'show',
     'uavs'
   ],
 
@@ -105,7 +107,9 @@ const persistConfig = {
       'messages',
       'savedLocationEditor',
       'serverSettings'
-    ])
+    ]),
+
+    createBlacklistFilter('show', ['data'])
   ]
 };
 
