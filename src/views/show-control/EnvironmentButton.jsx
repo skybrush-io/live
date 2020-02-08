@@ -5,8 +5,11 @@ import { connect } from 'react-redux';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 
-import { hasLoadedShowFile } from '~/features/show/selectors';
+import StepperStatusLight, {
+  StepperStatus
+} from '~/components/StepperStatusLight';
 import { openEnvironmentEditorDialog } from '~/features/show/slice';
+import { getSetupStageStatuses } from '~/features/show/stages';
 
 /**
  * Converts an environment type to a human-readable string.
@@ -27,11 +30,17 @@ function environmentTypeToString(type) {
  * show environment and to customize the origin of the show (for outdoor shows)
  * or the size of the stage (for indoor shows).
  */
-const EnvironmentButton = ({ onEditEnvironment, type, ...rest }) => {
+const EnvironmentButton = ({ onEditEnvironment, status, type, ...rest }) => {
   return (
-    <ListItem button onClick={onEditEnvironment} {...rest}>
+    <ListItem
+      button
+      disabled={status === StepperStatus.off}
+      onClick={onEditEnvironment}
+      {...rest}
+    >
+      <StepperStatusLight status={status} />
       <ListItemText
-        primary="Environment"
+        primary="Setup environment"
         secondary={environmentTypeToString(type)}
       />
     </ListItem>
@@ -40,6 +49,7 @@ const EnvironmentButton = ({ onEditEnvironment, type, ...rest }) => {
 
 EnvironmentButton.propTypes = {
   onEditEnvironment: PropTypes.func,
+  status: PropTypes.oneOf(Object.keys(StepperStatus)),
   type: PropTypes.string
 };
 
@@ -50,7 +60,7 @@ EnvironmentButton.defaultProps = {
 export default connect(
   // mapStateToProps
   state => ({
-    disabled: false && !hasLoadedShowFile(state),
+    status: getSetupStageStatuses(state).setupEnvironment,
     type: state.show.environment.type
   }),
   // mapDispatchToProps

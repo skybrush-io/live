@@ -8,6 +8,8 @@ import JSZip from 'jszip';
 
 import { MAX_DRONE_COUNT } from './constants';
 
+const idle = async () => new Promise(resolve => requestIdleCallback(resolve));
+
 /**
  * Runs some basic checks on a JSON-based show specification to see whether it
  * looks like a valid show specification.
@@ -86,6 +88,8 @@ function createZIPResolver(zip) {
       if (url.protocol !== 'zip:') {
         throw new Error(`unsupported protocol: ${url.protocol}`);
       }
+
+      await idle();
 
       // TODO: use strings only for JSON and YAML files; use some binary
       // encoding for embedded assets

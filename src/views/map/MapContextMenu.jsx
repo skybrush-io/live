@@ -16,6 +16,7 @@ import Edit from '@material-ui/icons/Edit';
 import Flight from '@material-ui/icons/Flight';
 import FlightTakeoff from '@material-ui/icons/FlightTakeoff';
 import FlightLand from '@material-ui/icons/FlightLand';
+import Grain from '@material-ui/icons/Grain';
 import Home from '@material-ui/icons/Home';
 import Message from '@material-ui/icons/Message';
 import ActionPowerSettingsNew from '@material-ui/icons/PowerSettingsNew';
@@ -40,6 +41,7 @@ import {
 } from '../../selectors/selection';
 import * as messaging from '../../utils/messaging';
 
+import { setOutdoorShowOrigin } from '~/features/show/slice';
 import { showSnackbarMessage } from '~/features/snackbar/slice';
 
 /**
@@ -53,7 +55,8 @@ class MapContextMenu extends React.Component {
     renameFeature: PropTypes.func.isRequired,
     removeFeaturesByIds: PropTypes.func.isRequired,
     selectUAVInMessagesDialog: PropTypes.func.isRequired,
-    setFlatEarthCoordinateSystemOrigin: PropTypes.func.isRequired,
+    setMapCoordinateSystemOrigin: PropTypes.func,
+    setShowCoordinateSystemOrigin: PropTypes.func,
     showErrorMessage: PropTypes.func.isRequired,
     showMessagesDialog: PropTypes.func.isRequired,
     showPromptDialog: PropTypes.func.isRequired
@@ -168,14 +171,35 @@ class MapContextMenu extends React.Component {
             );
           }
 
-          result.push(
-            <MenuItem key="setFlatEarthCoordinateSystemOrigin" dense onClick={this._setFlatEarthCoordinateSystemOrigin}>
-              <ListItemIcon>
-                <PinDrop />
-              </ListItemIcon>
-              Set origin here
-            </MenuItem>
-          );
+          if (this.props.setMapCoordinateSystemOrigin) {
+            result.push(
+              <MenuItem
+                key="setMapCoordinateSystemOrigin"
+                dense
+                onClick={this._setMapCoordinateSystemOrigin}
+              >
+                <ListItemIcon>
+                  <PinDrop />
+                </ListItemIcon>
+                Set map origin here
+              </MenuItem>
+            );
+          }
+
+          if (this.props.setShowCoordinateSystemOrigin) {
+            result.push(
+              <MenuItem
+                key="setShowCoordinateSystemOrigin"
+                dense
+                onClick={this._setShowCoordinateSystemOrigin}
+              >
+                <ListItemIcon>
+                  <Grain />
+                </ListItemIcon>
+                Set show origin here
+              </MenuItem>
+            );
+          }
 
           if (hasSelectedFeatures) {
             result.push(
@@ -293,10 +317,17 @@ class MapContextMenu extends React.Component {
     messaging.returnToHomeUAVs(selectedUAVIds);
   };
 
-  _setFlatEarthCoordinateSystemOrigin = (event, context) => {
+  _setMapCoordinateSystemOrigin = (event, context) => {
     const { coords } = context;
     if (coords) {
-      this.props.setFlatEarthCoordinateSystemOrigin(coords);
+      this.props.setMapCoordinateSystemOrigin(coords);
+    }
+  };
+
+  _setShowCoordinateSystemOrigin = (event, context) => {
+    const { coords } = context;
+    if (coords) {
+      this.props.setShowCoordinateSystemOrigin(coords);
     }
   };
 
@@ -352,8 +383,11 @@ const MapContextMenuContainer = connect(
     selectUAVInMessagesDialog: id => {
       dispatch(selectUAVInMessagesDialog(id));
     },
-    setFlatEarthCoordinateSystemOrigin: coords => {
+    setMapCoordinateSystemOrigin: coords => {
       dispatch(setFlatEarthCoordinateSystemOrigin(coords));
+    },
+    setShowCoordinateSystemOrigin: coords => {
+      dispatch(setOutdoorShowOrigin(coords));
     },
     showErrorMessage: message => {
       dispatch(showSnackbarMessage(message));

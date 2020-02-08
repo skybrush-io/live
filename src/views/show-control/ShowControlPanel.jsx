@@ -4,14 +4,18 @@ import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import Divider from '@material-ui/core/Divider';
 import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
 import CloudUpload from '@material-ui/icons/CloudUpload';
 import PlayArrow from '@material-ui/icons/PlayArrow';
 
 import EnvironmentButton from './EnvironmentButton';
 import EnvironmentEditorDialog from './EnvironmentEditorDialog';
 import LoadShowFromFileButton from './LoadShowFromFileButton';
+import ManualPreflightChecksButton from './ManualPreflightChecksButton';
+import OnboardPreflightChecksButton from './OnboardPreflightChecksButton';
+import StartTimeButton from './StartTimeButton';
+import TakeoffAreaButton from './TakeoffAreaButton';
+import TakeoffAreaSetupDialog from './TakeoffAreaSetupDialog';
+import UploadButton from './UploadButton';
 
 /**
  * Panel that shows the widgets that are needed to load and configure a drone
@@ -25,22 +29,13 @@ const ShowControlPanel = () => {
           <LoadShowFromFileButton />
           <Divider />
           <EnvironmentButton />
-          <ListItem button disabled>
-            <ListItemText
-              primary="Drone swarm"
-              secondary="Use virtual drones"
-            />
-          </ListItem>
+          <TakeoffAreaButton />
           <Divider />
-          <ListItem button disabled>
-            <ListItemText primary="Start time" secondary="Not set yet" />
-          </ListItem>
-          <ListItem button disabled>
-            <ListItemText
-              primary="Start signal"
-              secondary="Remote controller"
-            />
-          </ListItem>
+          <UploadButton />
+          <StartTimeButton />
+          <Divider />
+          <OnboardPreflightChecksButton />
+          <ManualPreflightChecksButton />
         </List>
       </Box>
 
@@ -70,6 +65,7 @@ const ShowControlPanel = () => {
       </Box>
 
       <EnvironmentEditorDialog />
+      <TakeoffAreaSetupDialog />
     </Box>
   );
 };

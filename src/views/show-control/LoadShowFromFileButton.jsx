@@ -12,6 +12,9 @@ import Clear from '@material-ui/icons/Clear';
 
 import FileListItem from './FileListItem';
 
+import StepperStatusLight, {
+  StepperStatus
+} from '~/components/StepperStatusLight';
 import { loadShowFromFile } from '~/features/show/actions';
 import { clearLoadedShow } from '~/features/show/slice';
 import {
@@ -20,6 +23,7 @@ import {
   hasLoadedShowFile,
   isLoadingShowFile
 } from '~/features/show/selectors';
+import { getSetupStageStatuses } from '~/features/show/stages';
 
 /**
  * Helper function to test whether a dropped file is a real file and not a
@@ -36,6 +40,7 @@ const LoadShowFromFileButton = ({
   loading,
   onClearLoadedShow,
   onShowFileSelected,
+  status,
   title
 }) => (
   <FileListItem
@@ -43,6 +48,7 @@ const LoadShowFromFileButton = ({
     accepts={isFile}
     onSelected={onShowFileSelected}
   >
+    <StepperStatusLight status={status} />
     <ListItemText
       disableTypography
       primary={
@@ -87,6 +93,7 @@ LoadShowFromFileButton.propTypes = {
   loading: PropTypes.bool,
   onClearLoadedShow: PropTypes.func,
   onShowFileSelected: PropTypes.func,
+  status: PropTypes.oneOf(Object.keys(StepperStatus)),
   title: PropTypes.string
 };
 
@@ -96,6 +103,7 @@ export default connect(
     description: getShowDescription(state),
     hasLoadedShowFile: hasLoadedShowFile(state),
     loading: isLoadingShowFile(state),
+    status: getSetupStageStatuses(state).selectShowFile,
     title: getShowTitle(state)
   }),
   // mapDispatchToProps

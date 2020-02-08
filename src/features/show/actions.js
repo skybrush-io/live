@@ -2,7 +2,11 @@ import get from 'lodash-es/get';
 import pMinDelay from 'p-min-delay';
 
 import { loadShowFromFile as processFile } from './processing';
-import { setEnvironmentType } from './slice';
+import {
+  setEnvironmentType,
+  signOffOnManualPreflightChecksAt,
+  signOffOnOnboardPreflightChecksAt
+} from './slice';
 
 import { setMappingLength } from '~/features/mission/slice';
 import { showSnackbarMessage } from '~/features/snackbar/slice';
@@ -44,4 +48,20 @@ export const loadShowFromFile = file => async dispatch => {
   if (environment.type) {
     dispatch(setEnvironmentType(environment.type));
   }
+};
+
+/**
+ * Thunk that signs off on the manual preflight checks with the current
+ * timestamp.
+ */
+export const signOffOnManualPreflightChecks = () => dispatch => {
+  dispatch(signOffOnManualPreflightChecksAt(Date.now()));
+};
+
+/**
+ * Thunk that signs off on the onboard preflight checks with the current
+ * timestamp.
+ */
+export const signOffOnOnboardPreflightChecks = () => dispatch => {
+  dispatch(signOffOnOnboardPreflightChecksAt(Date.now()));
 };

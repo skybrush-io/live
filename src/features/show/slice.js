@@ -12,6 +12,7 @@ const { actions, reducer } = createSlice({
 
   initialState: {
     data: null,
+
     environment: {
       editing: false,
       outdoor: {
@@ -22,12 +23,29 @@ const { actions, reducer } = createSlice({
       },
       type: 'outdoor'
     },
+
+    preflight: {
+      manualChecksSignedOffAt: null,
+      onboardChecksSignedOffAt: null
+    },
+
     loading: false
   },
 
   reducers: {
     clearLoadedShow: noPayload(state => {
       state.data = null;
+
+      state.preflight.manualChecksSignedOffAt = null;
+      state.preflight.onboardChecksSignedOffAt = null;
+    }),
+
+    clearManualPreflightChecks: noPayload(state => {
+      state.preflight.manualChecksSignedOffAt = null;
+    }),
+
+    clearOnboardPreflightChecks: noPayload(state => {
+      state.preflight.onboardChecksSignedOffAt = null;
     }),
 
     closeEnvironmentEditorDialog: noPayload(state => {
@@ -64,17 +82,29 @@ const { actions, reducer } = createSlice({
     setOutdoorShowOrigin(state, action) {
       state.environment.outdoor.coordinateSystem.origin =
         action.payload || null;
+    },
+
+    signOffOnManualPreflightChecksAt(state, action) {
+      state.preflight.manualChecksSignedOffAt = action.payload;
+    },
+
+    signOffOnOnboardPreflightChecksAt(state, action) {
+      state.preflight.onboardChecksSignedOffAt = action.payload;
     }
   }
 });
 
 export const {
   clearLoadedShow,
+  clearManualPreflightChecks,
+  clearOnboardPreflightChecks,
   closeEnvironmentEditorDialog,
   openEnvironmentEditorDialog,
   setEnvironmentType,
   setOutdoorShowOrientation,
-  setOutdoorShowOrigin
+  setOutdoorShowOrigin,
+  signOffOnManualPreflightChecksAt,
+  signOffOnOnboardPreflightChecksAt
 } = actions;
 
 export default reducer;

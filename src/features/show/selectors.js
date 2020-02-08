@@ -3,6 +3,20 @@ import moment from 'moment';
 import { createSelector } from '@reduxjs/toolkit';
 
 /**
+ * Returns whether the manual preflight checks are signed off (i.e. approved)
+ * by the operator.
+ */
+export const areManualPreflightChecksSignedOff = state =>
+  Boolean(state.show.preflight.manualChecksSignedOffAt);
+
+/**
+ * Returns whether the onboard preflight checks are signed off (i.e. approved)
+ * by the operator.
+ */
+export const areOnboardPreflightChecksSignedOff = state =>
+  Boolean(state.show.preflight.onboardChecksSignedOffAt);
+
+/**
  * Returns the specification of the drone swarm in the currently loaded show.
  */
 export const getDroneSwarmSpecification = state => {
@@ -127,6 +141,13 @@ export const getShowTitle = createSelector(
  * Returns whether there is a show file currently loaded.
  */
 export const hasLoadedShowFile = state => Boolean(state.show.data);
+
+/**
+ * Returns whether the origin of the coordinate system of the show has been
+ * set up.
+ */
+export const hasShowOrigin = state =>
+  Boolean(get(state, 'show.environment.outdoor.coordinateSystem.origin'));
 
 /**
  * Returns whether we are currently loading a show file.
