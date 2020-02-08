@@ -22,11 +22,11 @@ export const getFlatEarthCoordinateTransformer = createSelector(
   state => state.map.origin,
   origin =>
     origin.position
-      ? new FlatEarthCoordinateSystem(
-          origin.position,
-          origin.angle,
-          origin.type
-        )
+      ? new FlatEarthCoordinateSystem({
+          origin: origin.position,
+          orientation: origin.angle,
+          type: origin.type
+        })
       : undefined
 );
 

@@ -1,6 +1,10 @@
 import get from 'lodash-es/get';
+import maxBy from 'lodash-es/maxBy';
 import moment from 'moment';
+
 import { createSelector } from '@reduxjs/toolkit';
+
+import { FlatEarthCoordinateSystem } from '~/utils/geography';
 
 /**
  * Returns whether the manual preflight checks are signed off (i.e. approved)
@@ -17,6 +21,15 @@ export const areOnboardPreflightChecksSignedOff = state =>
   Boolean(state.show.preflight.onboardChecksSignedOffAt);
 
 /**
+ * Returns whether a trajectory object "looks like" a valid trajectory.
+ */
+export const isValidTrajectory = trajectory =>
+  typeof trajectory === 'object' &&
+  trajectory.version === 1 &&
+  typeof trajectory.points === 'object' &&
+  Array.isArray(trajectory.points);
+
+/**
  * Returns the specification of the drone swarm in the currently loaded show.
  */
 export const getDroneSwarmSpecification = state => {
@@ -29,7 +42,36 @@ export const getDroneSwarmSpecification = state => {
  * show.
  */
 const getOutdoorShowCoordinateSystem = state =>
-  state.show.environment.coordinateSystem;
+  state.show.environment.outdoor.coordinateSystem;
+
+/**
+ * Selector that returns an object that can be used to transform GPS coordinates
+ * from/to the show coordinate system.
+ */
+const getShowCoordinateSystemTransformationObject = createSelector(
+  getOutdoorShowCoordinateSystem,
+  coordinateSystem =>
+    coordinateSystem.origin
+      ? new FlatEarthCoordinateSystem(coordinateSystem)
+      : undefined
+);
+
+/**
+ * Selector that returns a function that can be invoked with show coordinate
+ * XYZ triplets and that returns the corresponding world coordinates.
+ */
+const getShowToWorldCoordinateSystemTransformation = createSelector(
+  getShowCoordinateSystemTransformationObject,
+  transform =>
+    transform
+      ? point => {
+          // point.{xyz} is in centimeters; we need meters for toLonLat()
+          const [x, y, z] = point;
+          const [lon, lat] = transform.toLonLat([x / 100, y / 100]);
+          return { lon, lat, amsl: undefined, agl: z };
+        }
+      : undefined
+);
 
 /**
  * Selector that returns the orientation of the positive X axis of the show
@@ -53,52 +95,72 @@ export const getNumberOfDronesInShow = createSelector(
 );
 
 /**
+ * Returns an array containing all the trajectories. The array will contain
+ * undefined for all the drones that have no fixed trajectories in the mission.
+ */
+const getTrajectories = createSelector(
+  getDroneSwarmSpecification,
+  swarm =>
+    swarm.map(drone => {
+      const trajectory = get(drone, 'settings.trajectory');
+      return isValidTrajectory(trajectory) ? trajectory : undefined;
+    })
+);
+
+/**
  * Returns the duration of a single drone trajectory.
  */
 const getTrajectoryDuration = trajectory => {
-  if (
-    !trajectory ||
-    typeof trajectory !== 'object' ||
-    trajectory.version !== 1
-  ) {
+  if (!isValidTrajectory(trajectory)) {
     return 0;
   }
 
   const { points } = trajectory;
 
-  if (points && Array.isArray(points) && points.length > 0) {
+  if (points.length > 0) {
     const lastPoint = points[points.length - 1];
     if (Array.isArray(lastPoint) && lastPoint.length > 1) {
       return lastPoint[0];
     }
+  } else {
+    return 0;
   }
-
-  return 0;
 };
+
+/**
+ * Returns the starting point of a single drone trajectory.
+ */
+const getStartingPointOfTrajectory = trajectory => {
+  return isValidTrajectory(trajectory) ? trajectory.points[0][1] : undefined;
+};
+
+/**
+ * Returns an array holding the starting points of all the trajectories.
+ * These are in the flat Earth coordinate system of the show so they are not
+ * usable directly as home positions. Use
+ * `getStartingPointsOfTrajectoriesInWorldCoordinates()` if you need them
+ * as GPS coordinates.
+ */
+export const getStartingPointsOfTrajectories = createSelector(
+  getTrajectories,
+  trajectories => trajectories.map(getStartingPointOfTrajectory)
+);
+
+export const getStartingPointsOfTrajectoriesInWorldCoordinates = createSelector(
+  getStartingPointsOfTrajectories,
+  getShowToWorldCoordinateSystemTransformation,
+  (points, transform) =>
+    transform ? points.map(transform) : new Array(points.length).fill(undefined)
+);
 
 /**
  * Returns the total duration of the show, in seconds.
  */
 export const getShowDuration = createSelector(
-  getDroneSwarmSpecification,
-  swarm => {
-    let maxLength = 0;
-
-    for (const drone of swarm) {
-      if (typeof drone !== 'object') {
-        continue;
-      }
-
-      const { settings } = drone;
-      if (typeof settings !== 'object') {
-        continue;
-      }
-
-      const { trajectory } = settings;
-      maxLength = Math.max(maxLength, getTrajectoryDuration(trajectory));
-    }
-
-    return maxLength;
+  getTrajectories,
+  trajectories => {
+    const longest = maxBy(trajectories, getTrajectoryDuration);
+    return longest ? getTrajectoryDuration(longest) : 0;
   }
 );
 

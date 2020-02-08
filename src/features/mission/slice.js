@@ -23,6 +23,11 @@ const { actions, reducer } = createSlice({
     // is not assigned yet.
     mapping: [],
 
+    // Stores the destired home position (starting point) of each drone
+    // in the mission. The array is indexed by mission-specific identifiers.
+    homePositions: [],
+
+    // Stores the state of the mapping editor
     mappingEditor: {
       // Stores whether the mapping is currently being edited on the UI
       enabled: false,
@@ -149,9 +154,13 @@ const { actions, reducer } = createSlice({
 
       if (desiredLength < currentLength) {
         state.mapping.splice(desiredLength);
+        state.homePositions.splice(desiredLength);
       } else if (desiredLength > currentLength) {
         state.mapping.push(
           ...new Array(desiredLength - currentLength).fill(null)
+        );
+        state.homePositions.push(
+          ...new Array(desiredLength - state.homePositions.length).fill(null)
         );
       }
     },
@@ -180,6 +189,14 @@ const { actions, reducer } = createSlice({
         state.mappingEditor.enabled = true;
         state.mappingEditor.indexBeingEdited = -1;
       }
+    },
+
+    /**
+     * Updates the home positions of all the drones in the mission.
+     */
+    updateHomePositions(state, action) {
+      // TODO(ntamas): synchronize the length of the mapping with it?
+      state.homePositions = action.payload;
     }
   }
 });
@@ -194,7 +211,8 @@ export const {
   removeUAVsFromMission,
   setMappingLength,
   startMappingEditorSession,
-  startMappingEditorSessionAtSlot
+  startMappingEditorSessionAtSlot,
+  updateHomePositions
 } = actions;
 
 export default reducer;

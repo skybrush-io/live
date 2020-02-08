@@ -2,13 +2,17 @@ import get from 'lodash-es/get';
 import pMinDelay from 'p-min-delay';
 
 import { loadShowFromFile as processFile } from './processing';
+import { getStartingPointsOfTrajectoriesInWorldCoordinates } from './selectors';
 import {
   setEnvironmentType,
   signOffOnManualPreflightChecksAt,
   signOffOnOnboardPreflightChecksAt
 } from './slice';
 
-import { setMappingLength } from '~/features/mission/slice';
+import {
+  updateHomePositions,
+  setMappingLength
+} from '~/features/mission/slice';
 import { showSnackbarMessage } from '~/features/snackbar/slice';
 import { MessageSemantics } from '~/features/snackbar/types';
 import { createAsyncAction } from '~/utils/redux';
@@ -24,7 +28,7 @@ const loadShowFromFileInner = createAsyncAction('show/loading', async file => {
  * The thunk must be invoked with the file that the user wants to open
  * the show from.
  */
-export const loadShowFromFile = file => async dispatch => {
+export const loadShowFromFile = file => async (dispatch, getState) => {
   let result;
 
   try {
@@ -48,6 +52,12 @@ export const loadShowFromFile = file => async dispatch => {
   if (environment.type) {
     dispatch(setEnvironmentType(environment.type));
   }
+
+  // TODO(ntamas): map this to GPS coordinates if the show is outdoor
+  const homePositions = getStartingPointsOfTrajectoriesInWorldCoordinates(
+    getState()
+  );
+  dispatch(updateHomePositions(homePositions));
 };
 
 /**

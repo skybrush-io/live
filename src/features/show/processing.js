@@ -8,6 +8,11 @@ import JSZip from 'jszip';
 
 import { MAX_DRONE_COUNT } from './constants';
 
+/**
+ * Async function that blocks until the next idle cycle of the browser. Used to
+ * ensure that the browser UI does not block when resolving references in the
+ * show file.
+ */
 const idle = async () => new Promise(resolve => requestIdleCallback(resolve));
 
 /**

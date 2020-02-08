@@ -274,9 +274,11 @@ function getDroneText(uav) {
   let textSemantics;
 
   if (!uav) {
+    // No such UAV
     text = 'missing';
     textSemantics = 'error';
   } else if (uav.errors && uav.errors.length > 0) {
+    // UAV has some status information that it wishes to report
     const maxError = Math.max(...uav.errors);
     const severity = getSeverityOfErrorCode(maxError);
 
@@ -288,7 +290,12 @@ function getDroneText(uav) {
     } else {
       textSemantics = severityToSemantics(severity);
     }
+  } else if (uav.position && uav.position.agl > 0) {
+    // UAV is in the air
+    text = `${uav.position.agl.toFixed(2)}m`;
+    textSemantics = 'success';
   } else {
+    // UAV is ready on the ground
     text = 'ready';
     textSemantics = 'success';
   }

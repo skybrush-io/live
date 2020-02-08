@@ -376,7 +376,7 @@ export class FlatEarthCoordinateSystem {
    *
    * @param {number[]} origin the longitude-latitude pair that defines the
    *        origin of the coordinate system
-   * @param {number} angle the orientation of the zero-degree axis of the
+   * @param {number} orientation the orientation of the zero-degree axis of the
    *        coordinate system, in degrees, zero being north, 90 degrees
    *        being east, 180 degrees being south and 270 degrees being west.
    * @param {string} type type of the axis configuration of the flat Earth
@@ -386,13 +386,21 @@ export class FlatEarthCoordinateSystem {
    * @param {Object} ellipsoid  the model of the ellipsoid on which the
    *        coordinate system is defined; defaults to WGS84
    */
-  constructor(origin, angle = 0, type = 'neu', ellipsoid = WGS84) {
+  constructor({ origin, orientation = 0, type = 'neu', ellipsoid = WGS84 }) {
     if (type !== 'neu' && type !== 'nwu') {
       throw new Error('unknown coordinate system type: ' + type);
     }
 
+    if (typeof orientation !== 'number') {
+      orientation = Number.parseFloat(orientation);
+    }
+
+    if (isNaN(orientation)) {
+      throw new TypeError('invalid orientation');
+    }
+
     this._origin = origin;
-    this._angle = (angle * Math.PI) / 180;
+    this._orientation = (orientation * Math.PI) / 180;
     this._ellipsoid = ellipsoid;
     this._type = type;
     this._precalculate();
@@ -411,9 +419,19 @@ export class FlatEarthCoordinateSystem {
         this._piOver180 *
         this._r2OverCosOriginLatInRadians
     ];
-    Coordinate.rotate(result, -this._angle);
+    Coordinate.rotate(result, -this._orientation);
     result[1] *= this._yMul;
     return result;
+  }
+
+  /**
+   * Converts a longitude-latitude-AGL triplet to flat Earth coordinates.
+   *
+   * @param {number[]} coords  a longitude-latitude-AGL triplet to convert
+   * @return {number[]} the converted coordinates
+   */
+  fromLonLatAgl(coords) {
+    return [...this.fromLonLat(coords), coords[2]];
   }
 
   /**
@@ -424,12 +442,25 @@ export class FlatEarthCoordinateSystem {
    */
   toLonLat(coords) {
     const result = [coords[0], coords[1] * this._yMul];
-    Coordinate.rotate(result, this._angle);
+    Coordinate.rotate(result, this._orientation);
     return [
       result[1] / this._r2OverCosOriginLatInRadians / this._piOver180 +
         this._origin[0],
       result[0] / this._r1 / this._piOver180 + this._origin[1]
     ];
+  }
+
+  /**
+   * Converts a flat Earth coordinate triplet to a longitude-latitude-AGL
+   * triplet.
+   *
+   * The Z coordinate of the triplet is copied straight to the AGL value.
+   *
+   * @param {number[]} coords  a flat Earth coordinate triplet to convert
+   * @return {number[]} the converted coordinates
+   */
+  toLonLatAgl(coords) {
+    return [...this.toLonLat(coords), coords[2]];
   }
 
   /**
