@@ -13,6 +13,8 @@ const { actions, reducer } = createSlice({
   initialState: {
     data: null,
 
+    loading: false,
+
     environment: {
       editing: false,
       outdoor: {
@@ -29,7 +31,9 @@ const { actions, reducer } = createSlice({
       onboardChecksSignedOffAt: null
     },
 
-    loading: false
+    takeoffAreaSetupDialog: {
+      open: false
+    }
   },
 
   reducers: {
@@ -52,6 +56,10 @@ const { actions, reducer } = createSlice({
       state.environment.editing = false;
     }),
 
+    closeTakeoffAreaSetupDialog: noPayload(state => {
+      state.takeoffAreaSetupDialog.open = false;
+    }),
+
     loadingPromisePending(state) {
       state.loading = true;
     },
@@ -67,6 +75,10 @@ const { actions, reducer } = createSlice({
 
     openEnvironmentEditorDialog: noPayload(state => {
       state.environment.editing = true;
+    }),
+
+    openTakeoffAreaSetupDialog: noPayload(state => {
+      state.takeoffAreaSetupDialog.open = true;
     }),
 
     setEnvironmentType(state, action) {
@@ -99,7 +111,9 @@ export const {
   clearManualPreflightChecks,
   clearOnboardPreflightChecks,
   closeEnvironmentEditorDialog,
+  closeTakeoffAreaSetupDialog,
   openEnvironmentEditorDialog,
+  openTakeoffAreaSetupDialog,
   setEnvironmentType,
   setOutdoorShowOrientation,
   setOutdoorShowOrigin,
