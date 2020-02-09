@@ -65,9 +65,8 @@ const getShowToWorldCoordinateSystemTransformation = createSelector(
   transform =>
     transform
       ? point => {
-          // point.{xyz} is in centimeters; we need meters for toLonLat()
           const [x, y, z] = point;
-          const [lon, lat] = transform.toLonLat([x / 100, y / 100]);
+          const [lon, lat] = transform.toLonLat([x, y]);
           return { lon, lat, amsl: undefined, agl: z };
         }
       : undefined
@@ -128,26 +127,54 @@ const getTrajectoryDuration = trajectory => {
 };
 
 /**
- * Returns the starting point of a single drone trajectory.
+ * Returns the first point of a single drone trajectory.
  */
-const getStartingPointOfTrajectory = trajectory => {
+const getFirstPointOfTrajectory = trajectory => {
   return isValidTrajectory(trajectory) ? trajectory.points[0][1] : undefined;
 };
 
 /**
- * Returns an array holding the starting points of all the trajectories.
+ * Returns an array holding the first points of all the trajectories.
  * These are in the flat Earth coordinate system of the show so they are not
  * usable directly as home positions. Use
- * `getStartingPointsOfTrajectoriesInWorldCoordinates()` if you need them
+ * `getFirstPointsOfTrajectoriesInWorldCoordinates()` if you need them
  * as GPS coordinates.
  */
-export const getStartingPointsOfTrajectories = createSelector(
+export const getFirstPointsOfTrajectories = createSelector(
   getTrajectories,
-  trajectories => trajectories.map(getStartingPointOfTrajectory)
+  trajectories => trajectories.map(getFirstPointOfTrajectory)
 );
 
-export const getStartingPointsOfTrajectoriesInWorldCoordinates = createSelector(
-  getStartingPointsOfTrajectories,
+export const getFirstPointsOfTrajectoriesInWorldCoordinates = createSelector(
+  getFirstPointsOfTrajectories,
+  getShowToWorldCoordinateSystemTransformation,
+  (points, transform) =>
+    transform ? points.map(transform) : new Array(points.length).fill(undefined)
+);
+
+/**
+ * Returns the last point of a single drone trajectory.
+ */
+const getLastPointOfTrajectory = trajectory => {
+  return isValidTrajectory(trajectory)
+    ? trajectory.points[trajectory.points.length - 1][1]
+    : undefined;
+};
+
+/**
+ * Returns an array holding the last points of all the trajectories.
+ * These are in the flat Earth coordinate system of the show so they are not
+ * usable directly as landing positions. Use
+ * `getLastPointsOfTrajectoriesInWorldCoordinates()` if you need them
+ * as GPS coordinates.
+ */
+export const getLastPointsOfTrajectories = createSelector(
+  getTrajectories,
+  trajectories => trajectories.map(getLastPointOfTrajectory)
+);
+
+export const getLastPointsOfTrajectoriesInWorldCoordinates = createSelector(
+  getLastPointsOfTrajectories,
   getShowToWorldCoordinateSystemTransformation,
   (points, transform) =>
     transform ? points.map(transform) : new Array(points.length).fill(undefined)

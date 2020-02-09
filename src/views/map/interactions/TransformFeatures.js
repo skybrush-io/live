@@ -15,6 +15,8 @@ import { createOLInteractionComponent } from '@collmot/ol-react/lib/interaction'
 
 import Condition from '../conditions';
 
+import { toRadians } from '~/utils/math';
+
 /**
  * Enum containing the supported transformation types.
  */
@@ -35,7 +37,7 @@ const transformationTypeToHandler = {
   },
 
   rotate(geom, deltaX, deltaY, totalDelta) {
-    const angle = (totalDelta[1] * Math.PI) / 180;
+    const angle = toRadians(totalDelta[1]);
     const angleDelta = angle - (this.lastAngle || 0);
     geom.rotate(angleDelta, this.center);
     this.lastAngle = angle;

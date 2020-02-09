@@ -36,10 +36,7 @@ import {
   isFeatureTransformable
 } from '~/model/features';
 import { getVisibleSelectableLayers, isLayerSelectable } from '~/model/layers';
-import {
-  globalIdToFeatureId,
-  globalIdToHomePositionId
-} from '~/model/identifiers';
+import { globalIdToFeatureId, globalIdToOriginId } from '~/model/identifiers';
 import { getVisibleLayersInOrder } from '~/selectors/ordered';
 import { getExtendedCoordinateFormatter } from '~/selectors/formatting';
 import { getMapViewRotationAngle } from '~/selectors/map';
@@ -49,6 +46,7 @@ import {
   findFeaturesById,
   lonLatFromMapViewCoordinate
 } from '~/utils/geography';
+import { toDegrees } from '~/utils/math';
 
 require('ol/ol.css');
 
@@ -572,7 +570,7 @@ class MapViewPresentation extends React.Component {
     if (view) {
       const position = lonLatFromMapViewCoordinate(view.getCenter());
       const zoom = view.getZoom();
-      const angle = (-view.getRotation() * 180) / Math.PI;
+      const angle = toDegrees(-view.getRotation());
 
       this.props.dispatch(
         updateMapViewSettings({
@@ -602,23 +600,23 @@ class MapViewPresentation extends React.Component {
           feature
         ).points;
       } else {
-        const homePositionFeatureId = globalIdToHomePositionId(globalId);
-        if (homePositionFeatureId === '') {
-          // Feature is a home position feature
+        const originFeatureId = globalIdToOriginId(globalId);
+        if (originFeatureId === '') {
+          // Feature is a coordinate system origin feature
           const featureObject = createFeatureFromOpenLayers(feature);
           const coords = feature.getGeometry().getCoordinates();
           dispatch(
             setFlatEarthCoordinateSystemOrigin(
               featureObject.points[0],
               90 -
-                (Math.atan2(
-                  // Don't use featureObject.points here because they are already
-                  // in lat-lon so they cannot be used to calculate an angle
-                  coords[1][1] - coords[0][1],
-                  coords[1][0] - coords[0][0]
-                ) *
-                  180) /
-                  Math.PI
+                toDegrees(
+                  Math.atan2(
+                    // Don't use featureObject.points here because they are already
+                    // in lat-lon so they cannot be used to calculate an angle
+                    coords[1][1] - coords[0][1],
+                    coords[1][0] - coords[0][0]
+                  )
+                )
             )
           );
         }

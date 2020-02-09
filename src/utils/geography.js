@@ -12,6 +12,8 @@ import { MultiLineString, MultiPolygon, Polygon } from 'ol/geom';
 import GeometryCollection from 'ol/geom/GeometryCollection';
 import * as Projection from 'ol/proj';
 
+import { toDegrees, toRadians } from '~/utils/math';
+
 /**
  * Creates an OpenLayers geometry function used by the "draw" interaction
  * to draw a box whose sides are parallel to axes obtained by rotating the
@@ -400,7 +402,7 @@ export class FlatEarthCoordinateSystem {
     }
 
     this._origin = origin;
-    this._orientation = (orientation * Math.PI) / 180;
+    this._orientation = toRadians(orientation);
     this._ellipsoid = ellipsoid;
     this._type = type;
     this._precalculate();
@@ -468,13 +470,12 @@ export class FlatEarthCoordinateSystem {
    * that do not depend on the coordinate being transformed.
    */
   _precalculate() {
-    this._piOver180 = Math.PI / 180;
-
-    const originLatInRadians = this._origin[1] * this._piOver180;
+    const originLatInRadians = toRadians(this._origin[1]);
     const radius = this._ellipsoid.semiMajorAxis;
     const eccSq = this._ellipsoid.eccentricitySquared;
     const x = 1 - eccSq * Math.sin(originLatInRadians) ** 2;
 
+    this._piOver180 = Math.PI / 180;
     this._r1 = (radius * (1 - eccSq)) / x ** 1.5;
     this._r2OverCosOriginLatInRadians =
       (radius / Math.sqrt(x)) * Math.cos(originLatInRadians);
@@ -493,7 +494,7 @@ export class FlatEarthCoordinateSystem {
 export function toPolar(coords) {
   const dist = Math.sqrt(coords[0] * coords[0] + coords[1] * coords[1]);
   if (dist > 0) {
-    const angle = (Math.atan2(coords[1], coords[0]) * 180) / Math.PI;
+    const angle = toDegrees(Math.atan2(coords[1], coords[0]));
     return [dist, angle < 0 ? angle + 360 : angle];
   }
 

@@ -27,6 +27,10 @@ const { actions, reducer } = createSlice({
     // in the mission. The array is indexed by mission-specific identifiers.
     homePositions: [],
 
+    // Stores the destired landing position of each drone in the mission. The
+    // array is indexed by mission-specific identifiers.
+    landingPositions: [],
+
     // Stores the state of the mapping editor
     mappingEditor: {
       // Stores whether the mapping is currently being edited on the UI
@@ -196,7 +200,17 @@ const { actions, reducer } = createSlice({
      */
     updateHomePositions(state, action) {
       // TODO(ntamas): synchronize the length of the mapping with it?
+      // Or constrain the payload length to the length of the mapping?
       state.homePositions = action.payload;
+    },
+
+    /**
+     * Updates the landing positions of all the drones in the mission.
+     */
+    updateLandingPositions(state, action) {
+      // TODO(ntamas): synchronize the length of the mapping with it?
+      // Or constrain the payload length to the length of the mapping?
+      state.landingPositions = action.payload;
     }
   }
 });
@@ -212,7 +226,8 @@ export const {
   setMappingLength,
   startMappingEditorSession,
   startMappingEditorSessionAtSlot,
-  updateHomePositions
+  updateHomePositions,
+  updateLandingPositions
 } = actions;
 
 export default reducer;

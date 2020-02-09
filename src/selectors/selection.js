@@ -10,7 +10,7 @@ import { createSelector } from '@reduxjs/toolkit';
 
 import {
   globalIdToFeatureId,
-  globalIdToHomePositionId,
+  globalIdToOriginId,
   globalIdToUavId
 } from '~/model/identifiers';
 
@@ -86,15 +86,13 @@ export const getSelectedFeatureLabels = createSelector(
 );
 
 /**
- * Selector that retrieves the list of selected home position IDs from the
- * state object.
+ * Selector that retrieves the list of selected coordinate system origin IDs
+ * from the state object.
  *
  * @param  {Object}  state  the state of the application
  * @return {string[]}  the list of selected feature IDs
  */
-export const getSelectedHomePositionIds = selectionForSubset(
-  globalIdToHomePositionId
-);
+export const getSelectedOriginIds = selectionForSubset(globalIdToOriginId);
 
 /**
  * Selector that calculates and caches the list of selected UAV IDs from

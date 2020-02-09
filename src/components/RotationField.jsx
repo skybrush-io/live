@@ -21,7 +21,7 @@ export const formatAngle = angle =>
 export default class RotationField extends React.Component {
   static propTypes = {
     onChange: PropTypes.func,
-    value: PropTypes.string
+    value: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
   };
 
   static defaultProps = {

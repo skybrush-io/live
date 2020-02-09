@@ -12,6 +12,8 @@ import TextField from '@material-ui/core/TextField';
 import { normalizeAngle } from '~/utils/geography';
 import { mapReferenceRequestSignal, mapRotationResetSignal } from '~/signals';
 
+import { toDegrees, toRadians } from '~/utils/math';
+
 /**
  * React Component to display and adjust the rotation of the map view.
  *
@@ -113,7 +115,7 @@ export default class MapRotationTextBox extends React.Component {
   _updateRotationFromMapView(e) {
     if (e.key === 'rotation') {
       this.setState({
-        rotation: -e.target.get('rotation') / (Math.PI / 180)
+        rotation: toDegrees(-e.target.get('rotation'))
       });
     }
   }
@@ -145,7 +147,7 @@ export default class MapRotationTextBox extends React.Component {
    */
   _onChange(e) {
     // Maybe this should be done in componentWill/DidUpdate, but it causes feedback loop
-    this.map.getView().setRotation(-e.target.value * (Math.PI / 180));
+    this.map.getView().setRotation(toRadians(-e.target.value));
 
     this.setState({
       rotation: e.target.value

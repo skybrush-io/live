@@ -3,6 +3,21 @@ import { createSelector } from '@reduxjs/toolkit';
 import { getSelectedUAVIds } from '~/selectors/selection';
 
 /**
+ * Returns the current list of home positions in the mission.
+ *
+ * @param  {Object}  state  the state of the application
+ */
+export const getHomePositionsInMission = state => state.mission.homePositions;
+
+/**
+ * Returns the current list of landing positions in the mission.
+ *
+ * @param  {Object}  state  the state of the application
+ */
+export const getLandingPositionsInMission = state =>
+  state.mission.landingPositions;
+
+/**
  * Returns the current mapping from mission-specific slots to the corresponding
  * UAV identifiers.
  *

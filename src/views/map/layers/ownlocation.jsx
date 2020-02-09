@@ -7,6 +7,7 @@ import { Icon, Style } from 'ol/style';
 
 import { Geolocation, layer, source } from '@collmot/ol-react';
 
+import { toRadians } from '~/utils/math';
 import makeLogger from '~/utils/logging';
 
 const logger = makeLogger('OwnLocationLayer');
@@ -96,7 +97,7 @@ class OwnLocationVectorSource extends React.Component {
   };
 
   _onDeviceOrientationChange = event => {
-    this.locationIcon.setRotation((-event.alpha / 180) * Math.PI);
+    this.locationIcon.setRotation(toRadians(-event.alpha));
 
     if (this._sourceRef) {
       this._sourceRef.source.refresh();

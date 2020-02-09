@@ -10,6 +10,9 @@ export const fill = color => new Fill({ color });
 export const stroke = (color, width = 1) => new Stroke({ color, width });
 export const thickOutline = color => stroke(color, 5);
 export const thinOutline = color => stroke(color, 2);
+export const veryThinOutline = color => stroke(color, 1);
 
+export const shadowOutline = veryThinOutline('rgba(0, 0, 0, 0.3)');
+export const whiteVeryThinOutline = veryThinOutline('white');
 export const whiteThinOutline = thinOutline('white');
 export const whiteThickOutline = thickOutline('white');

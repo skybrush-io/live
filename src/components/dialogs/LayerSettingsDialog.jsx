@@ -7,6 +7,7 @@ import React from 'react';
 import { Form, Field } from 'react-final-form';
 import { connect } from 'react-redux';
 
+import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -68,10 +69,11 @@ class BasicLayerSettingsFormPresentation extends React.Component {
       >
         {({ handleSubmit }) => (
           <form id="basicLayerSettings" onSubmit={handleSubmit}>
-            <div style={{ display: 'flex', paddingBottom: '1em' }}>
+            <Box display="flex" pb={2}>
               <Field
                 name="label"
                 component={TextField}
+                variant="filled"
                 label="Layer name"
                 placeholder="New layer"
                 style={{ flex: 'auto' }}
@@ -85,7 +87,7 @@ class BasicLayerSettingsFormPresentation extends React.Component {
                 style={{ flex: 'none' }}
                 onChange={onToggleLayerVisibility}
               />
-            </div>
+            </Box>
           </form>
         )}
       </Form>

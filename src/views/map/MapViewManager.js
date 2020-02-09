@@ -6,6 +6,8 @@
 import round from 'lodash-es/round';
 import { isEmpty } from 'ol/extent';
 
+import { toRadians } from '~/utils/math';
+
 import {
   mapReferenceRequestSignal,
   mapViewToLocationSignal,
@@ -75,11 +77,14 @@ export default class MapViewManager {
     const animationParams = { duration };
 
     if (center !== undefined) {
-      animationParams.center = mapViewCoordinateFromLonLat([center.lon, center.lat]);
+      animationParams.center = mapViewCoordinateFromLonLat([
+        center.lon,
+        center.lat
+      ]);
     }
 
     if (rotation !== undefined) {
-      animationParams.rotation = rotation / (180 / -Math.PI);
+      animationParams.rotation = toRadians(-rotation);
     }
 
     if (zoom !== undefined) {
@@ -125,7 +130,7 @@ export default class MapViewManager {
       );
       this.callbacks.center.forEach(c => c({ lon: center[0], lat: center[1] }));
     } else if (e.key === 'rotation') {
-      const rotation = this.view.getRotation() * (180 / -Math.PI);
+      const rotation = toDegrees(-this.view.getRotation());
       this.callbacks.rotation.forEach(c => c(normalizeAngle(rotation)));
     } else if (e.key === 'resolution') {
       const zoom = this.view.getZoom();

@@ -5,6 +5,8 @@
 import Feature from 'ol/Feature';
 import { Icon, Style, Text } from 'ol/style';
 
+import { toRadians } from '~/utils/math';
+
 /**
  * Feature that represents an UAV on an OpenLayers map.
  */
@@ -154,6 +156,6 @@ export default class UAVFeature extends Feature {
       heading = this._heading;
     }
 
-    return ((heading % 360) * Math.PI) / 180;
+    return toRadians(heading % 360);
   }
 }

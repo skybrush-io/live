@@ -2,7 +2,10 @@ import get from 'lodash-es/get';
 import pMinDelay from 'p-min-delay';
 
 import { loadShowFromFile as processFile } from './processing';
-import { getStartingPointsOfTrajectoriesInWorldCoordinates } from './selectors';
+import {
+  getFirstPointsOfTrajectoriesInWorldCoordinates,
+  getLastPointsOfTrajectoriesInWorldCoordinates
+} from './selectors';
 import {
   setEnvironmentType,
   signOffOnManualPreflightChecksAt,
@@ -11,6 +14,7 @@ import {
 
 import {
   updateHomePositions,
+  updateLandingPositions,
   setMappingLength
 } from '~/features/mission/slice';
 import { showSnackbarMessage } from '~/features/snackbar/slice';
@@ -53,11 +57,15 @@ export const loadShowFromFile = file => async (dispatch, getState) => {
     dispatch(setEnvironmentType(environment.type));
   }
 
-  // TODO(ntamas): map this to GPS coordinates if the show is outdoor
-  const homePositions = getStartingPointsOfTrajectoriesInWorldCoordinates(
+  // TODO(ntamas): map this to GPS coordinates only if the show is outdoor
+  const homePositions = getFirstPointsOfTrajectoriesInWorldCoordinates(
+    getState()
+  );
+  const landingPositions = getLastPointsOfTrajectoriesInWorldCoordinates(
     getState()
   );
   dispatch(updateHomePositions(homePositions));
+  dispatch(updateLandingPositions(landingPositions));
 };
 
 /**
