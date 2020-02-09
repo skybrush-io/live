@@ -18,6 +18,8 @@ import {
   getLandingPositionsInMission
 } from '~/features/mission/selectors';
 import {
+  globalIdToHomePositionId,
+  globalIdToLandingPositionId,
   homePositionIdToGlobalId,
   landingPositionIdToGlobalId,
   originIdToGlobalId
@@ -173,44 +175,56 @@ const originStyles = (selected, axis) => [
  * Style for the marker representing the takeoff positions of the drones in
  * the current mission.
  */
-const takeoffPositionStyle = text =>
-  new Style({
+const takeoffPositionStyle = (feature, resolution) => {
+  const index = globalIdToHomePositionId(feature.getId());
+  const style = {
     image: new RegularShape({
       fill: orangeFill,
       points: 3,
       radius: 6,
       stroke: blackVeryThinOutline
-    }),
+    })
+  };
 
-    text: new Text({
+  if (resolution < 0.4) {
+    style.text = new Text({
       font: '12px sans-serif',
       offsetY: 12,
-      text,
+      text: `s${index}`,
       textAlign: 'center'
-    })
-  });
+    });
+  }
+
+  return new Style(style);
+};
 
 /**
  * Style for the marker representing the landing positions of the drones in
  * the current mission.
  */
-const landingPositionStyle = text =>
-  new Style({
+const landingPositionStyle = (feature, resolution) => {
+  const index = globalIdToHomePositionId(feature.getId());
+  const style = {
     image: new RegularShape({
       fill: greenFill,
       points: 3,
       radius: 6,
       rotation: Math.PI,
       stroke: blackVeryThinOutline
-    }),
+    })
+  };
 
-    text: new Text({
+  if (resolution < 0.4) {
+    style.text = new Text({
       font: '12px sans-serif',
       offsetY: -12,
-      text,
+      text: `s${index}`,
       textAlign: 'center'
-    })
-  });
+    });
+  }
+
+  return new Style(style);
+};
 
 const HomePositionsVectorSource = ({
   coordinateSystemType,
@@ -245,7 +259,7 @@ const HomePositionsVectorSource = ({
             <Feature
               key={featureKey}
               id={globalIdOfFeature}
-              style={landingPositionStyle(`s${index}`)}
+              style={landingPositionStyle}
             >
               <geom.Point coordinates={center} />
             </Feature>
@@ -275,7 +289,7 @@ const HomePositionsVectorSource = ({
             <Feature
               key={featureKey}
               id={globalIdOfFeature}
-              style={takeoffPositionStyle(`s${index}`)}
+              style={takeoffPositionStyle}
             >
               <geom.Point coordinates={center} />
             </Feature>
