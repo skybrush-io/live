@@ -1,3 +1,4 @@
+import isNil from 'lodash-es/isNil';
 import { createSelector } from '@reduxjs/toolkit';
 
 import { getSelectedUAVIds } from '~/selectors/selection';
@@ -30,6 +31,21 @@ export const getMissionMapping = state => state.mission.mapping;
  */
 export const getIndexOfMappingSlotBeingEdited = state =>
   state.mission.mappingEditor.indexBeingEdited;
+
+/**
+ * Returns the reverse mapping from UAV IDs to the corresponding mission IDs.
+ */
+export const getReverseMissionMapping = createSelector(
+  getMissionMapping,
+  mapping =>
+    mapping.reduce((acc, uavId, index) => {
+      if (!isNil(uavId)) {
+        acc[uavId] = index;
+      }
+
+      return acc;
+    }, {})
+);
 
 /**
  * Returns the ID of the UAV that is currently at the mapping slot being edited.
