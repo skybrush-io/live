@@ -1,4 +1,4 @@
-import { layer } from '@collmot/ol-react';
+import { layer as olLayer } from '@collmot/ol-react';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
@@ -141,29 +141,23 @@ export const UAVsLayerSettings = connect(
 
 // === The actual layer to be rendered ===
 
-class UAVsLayerPresentation extends React.Component {
-  render() {
-    const { projection, selection, zIndex } = this.props;
-    return (
-      <layer.Vector updateWhileAnimating updateWhileInteracting zIndex={zIndex}>
-        <ActiveUAVsLayerSource
-          selection={selection}
-          colorPredicates={this.props.layer.parameters.colorPredicates}
-          flock={flock}
-          projection={projection}
-        />
-      </layer.Vector>
-    );
-  }
-}
+const UAVsLayerPresentation = ({ layer, projection, selection, zIndex }) => (
+  <olLayer.Vector updateWhileAnimating updateWhileInteracting zIndex={zIndex}>
+    <ActiveUAVsLayerSource
+      selection={selection}
+      colorPredicates={layer.parameters.colorPredicates}
+      flock={flock}
+      projection={projection}
+    />
+  </olLayer.Vector>
+);
 
 UAVsLayerPresentation.propTypes = {
   layer: PropTypes.object,
-  layerId: PropTypes.string,
   zIndex: PropTypes.number,
 
   selection: PropTypes.arrayOf(PropTypes.string).isRequired,
-  projection: PropTypes.func.isRequired
+  projection: PropTypes.func
 };
 
 UAVsLayerPresentation.defaultProps = {
@@ -172,9 +166,9 @@ UAVsLayerPresentation.defaultProps = {
 
 export const UAVsLayer = connect(
   // mapStateToProps
-  (state, ownProps) => ({
+  state => ({
     selection: getSelection(state)
   }),
   // mapDispatchToProps
-  (dispatch, ownProps) => ({})
+  () => ({})
 )(UAVsLayerPresentation);

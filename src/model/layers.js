@@ -136,7 +136,12 @@ const _propertiesForLayerTypes = {
   },
   [LayerType.HOME]: {
     label: 'Home position',
-    icon: <Home />
+    icon: <Home />,
+    parameters: {
+      showOrigin: true,
+      showHomePositions: true,
+      showLandingPositions: false
+    }
   },
   [LayerType.OWN_LOCATION]: {
     label: 'Own location',

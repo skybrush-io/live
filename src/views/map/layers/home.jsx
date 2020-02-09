@@ -6,8 +6,13 @@ import * as Coordinate from 'ol/coordinate';
 import Point from 'ol/geom/Point';
 import { Circle, RegularShape, Style, Text } from 'ol/style';
 
-import { Feature, geom, layer, source } from '@collmot/ol-react';
+import { Feature, geom, layer as olLayer, source } from '@collmot/ol-react';
 
+import CheckBox from '@material-ui/core/CheckBox';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import FormGroup from '@material-ui/core/FormGroup';
+
+import { setLayerParameterById } from '~/actions/layers';
 import {
   getHomePositionsInMission,
   getLandingPositionsInMission
@@ -23,6 +28,7 @@ import { getSelectedOriginIds } from '~/selectors/selection';
 import { mapViewCoordinateFromLonLat } from '~/utils/geography';
 import { toRadians } from '~/utils/math';
 import {
+  blackVeryThinOutline,
   fill,
   stroke,
   whiteThickOutline,
@@ -31,16 +37,71 @@ import {
 
 // === Settings for this particular layer type ===
 
-const HomePositionsLayerSettingsPresentation = () => null;
+const HomePositionsLayerSettingsPresentation = ({
+  layer,
+  setLayerParameter
+}) => {
+  const { parameters } = layer;
+  const { showOrigin, showHomePositions, showLandingPositions } =
+    parameters || {};
+
+  const handleChange = name => event =>
+    setLayerParameter(name, event.target.checked);
+
+  return (
+    <FormGroup>
+      <FormControlLabel
+        control={
+          <CheckBox
+            checked={showOrigin}
+            value="showOrigin"
+            onChange={handleChange('showOrigin')}
+          />
+        }
+        label="Show map origin"
+      />
+      <FormControlLabel
+        control={
+          <CheckBox
+            checked={showHomePositions}
+            value="showHomePositions"
+            onChange={handleChange('showHomePositions')}
+          />
+        }
+        label="Show home positions"
+      />
+      <FormControlLabel
+        control={
+          <CheckBox
+            checked={showLandingPositions}
+            value="showLandingPositions"
+            onChange={handleChange('showLandingPositions')}
+          />
+        }
+        label="Show landing positions"
+      />
+    </FormGroup>
+  );
+};
 
 HomePositionsLayerSettingsPresentation.propTypes = {
   layer: PropTypes.object,
-  layerId: PropTypes.string
+  setLayerParameter: PropTypes.func
 };
 
 export const HomePositionsLayerSettings = connect(
   // mapStateToProps
-  () => ({})
+  () => ({
+    homePositionsVisible: true,
+    landingPositionsVisible: true,
+    originVisible: true
+  }),
+  // mapDispatchToProps
+  (dispatch, ownProps) => ({
+    setLayerParameter: (parameter, value) => {
+      dispatch(setLayerParameterById(ownProps.layerId, parameter, value));
+    }
+  })
 )(HomePositionsLayerSettingsPresentation);
 
 // === The actual layer to be rendered ===
@@ -63,9 +124,14 @@ const redLine = stroke('#f44', 2);
 const greenLine = stroke('#4f4', 2);
 
 /**
- * Red fill color to use for takeoff markers.
+ * Red fill color to use for the origin marker.
  */
 const redFill = fill('#f44');
+
+/**
+ * Orange fill color to use for takeoff markers.
+ */
+const orangeFill = fill('#fc0');
 
 /**
  * Green fill color to use for landing markers.
@@ -110,9 +176,10 @@ const originStyles = (selected, axis) => [
 const takeoffPositionStyle = text =>
   new Style({
     image: new RegularShape({
-      fill: redFill,
+      fill: orangeFill,
       points: 3,
-      radius: 6
+      radius: 6,
+      stroke: blackVeryThinOutline
     }),
 
     text: new Text({
@@ -133,7 +200,8 @@ const landingPositionStyle = text =>
       fill: greenFill,
       points: 3,
       radius: 6,
-      rotation: Math.PI
+      rotation: Math.PI,
+      stroke: blackVeryThinOutline
     }),
 
     text: new Text({
@@ -150,67 +218,74 @@ const HomePositionsVectorSource = ({
   landingPositions,
   orientation,
   origin,
-  selectedOriginIds
+  selectedOriginIds,
+  showHomePositions,
+  showLandingPositions,
+  showOrigin
 }) => {
   const features = [];
 
-  features.push(
-    ...homePositions
-      .map((homePosition, index) => {
-        const featureKey = `home..${index}`;
+  if (showLandingPositions) {
+    features.push(
+      ...landingPositions
+        .map((landingPosition, index) => {
+          const featureKey = `land.${index}`;
 
-        if (!homePosition) {
-          return null;
-        }
+          if (!landingPosition) {
+            return null;
+          }
 
-        const globalIdOfFeature = homePositionIdToGlobalId(index);
-        const center = mapViewCoordinateFromLonLat([
-          homePosition.lon,
-          homePosition.lat
-        ]);
+          const globalIdOfFeature = landingPositionIdToGlobalId(index);
+          const center = mapViewCoordinateFromLonLat([
+            landingPosition.lon,
+            landingPosition.lat
+          ]);
 
-        return (
-          <Feature
-            key={featureKey}
-            id={globalIdOfFeature}
-            style={takeoffPositionStyle(`s${index}`)}
-          >
-            <geom.Point coordinates={center} />
-          </Feature>
-        );
-      })
-      .filter(Boolean)
-  );
+          return (
+            <Feature
+              key={featureKey}
+              id={globalIdOfFeature}
+              style={landingPositionStyle(`s${index}`)}
+            >
+              <geom.Point coordinates={center} />
+            </Feature>
+          );
+        })
+        .filter(Boolean)
+    );
+  }
 
-  features.push(
-    ...landingPositions
-      .map((landingPosition, index) => {
-        const featureKey = `land.${index}`;
+  if (showHomePositions) {
+    features.push(
+      ...homePositions
+        .map((homePosition, index) => {
+          const featureKey = `home..${index}`;
 
-        if (!landingPosition) {
-          return null;
-        }
+          if (!homePosition) {
+            return null;
+          }
 
-        const globalIdOfFeature = landingPositionIdToGlobalId(index);
-        const center = mapViewCoordinateFromLonLat([
-          landingPosition.lon,
-          landingPosition.lat
-        ]);
+          const globalIdOfFeature = homePositionIdToGlobalId(index);
+          const center = mapViewCoordinateFromLonLat([
+            homePosition.lon,
+            homePosition.lat
+          ]);
 
-        return (
-          <Feature
-            key={featureKey}
-            id={globalIdOfFeature}
-            style={landingPositionStyle(`s${index}`)}
-          >
-            <geom.Point coordinates={center} />
-          </Feature>
-        );
-      })
-      .filter(Boolean)
-  );
+          return (
+            <Feature
+              key={featureKey}
+              id={globalIdOfFeature}
+              style={takeoffPositionStyle(`s${index}`)}
+            >
+              <geom.Point coordinates={center} />
+            </Feature>
+          );
+        })
+        .filter(Boolean)
+    );
+  }
 
-  if (origin) {
+  if (showOrigin && origin) {
     const globalIdOfOrigin = originIdToGlobalId('');
     const tail = mapViewCoordinateFromLonLat(origin);
     const armLength = 50; /* meters */
@@ -257,25 +332,34 @@ HomePositionsVectorSource.propTypes = {
   ),
   orientation: PropTypes.number,
   origin: PropTypes.arrayOf(PropTypes.number),
-  selectedOriginIds: PropTypes.arrayOf(PropTypes.string)
+  selectedOriginIds: PropTypes.arrayOf(PropTypes.string),
+  showHomePositions: PropTypes.bool,
+  showLandingPositions: PropTypes.bool,
+  showOrigin: PropTypes.bool
 };
 
 HomePositionsVectorSource.defaultProps = {
   orientation: 0
 };
 
-const HomePositionsLayerPresentation = ({ zIndex, ...rest }) => (
-  <layer.Vector
+const HomePositionsLayerPresentation = ({ layer, zIndex, ...rest }) => (
+  <olLayer.Vector
     ref={markAsSelectable}
     updateWhileAnimating
     updateWhileInteracting
     zIndex={zIndex}
   >
-    <HomePositionsVectorSource {...rest} />
-  </layer.Vector>
+    <HomePositionsVectorSource
+      showHomePositions={layer.parameters.showHomePositions}
+      showLandingPositions={layer.parameters.showLandingPositions}
+      showOrigin={layer.parameters.showOrigin}
+      {...rest}
+    />
+  </olLayer.Vector>
 );
 
 HomePositionsLayerPresentation.propTypes = {
+  layer: PropTypes.object,
   zIndex: PropTypes.number
 };
 
