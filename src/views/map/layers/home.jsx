@@ -191,7 +191,7 @@ const takeoffPositionStyle = (feature, resolution) => {
     style.text = new Text({
       font: '12px sans-serif',
       offsetY: 12,
-      text: formatMissionId(index),
+      text: formatMissionId(Number.parseInt(index, 10)),
       textAlign: 'center'
     });
   }
@@ -219,7 +219,7 @@ const landingPositionStyle = (feature, resolution) => {
     style.text = new Text({
       font: '12px sans-serif',
       offsetY: -12,
-      text: formatMissionId(index),
+      text: formatMissionId(Number.parseInt(index, 10)),
       textAlign: 'center'
     });
   }

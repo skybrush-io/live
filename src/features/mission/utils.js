@@ -1,6 +1,29 @@
 import isNil from 'lodash-es/isNil';
 
 /**
+ * Helper function that takes an array and returns an array that is a shallow
+ * copy of the input array, but its length is constrained to a given value.
+ *
+ * When the input array is shorter than the desired length, it will be padded
+ * with null values.
+ *
+ * When the input array is longer than the desired length, it will be
+ * truncated.
+ */
+export function copyAndEnsureLengthEquals(length, input) {
+  const inputLength = input.length;
+
+  if (inputLength < length) {
+    const result = input.concat();
+    result.length = length;
+    result.fill(null, inputLength);
+    return result;
+  }
+
+  return input.slice(0, length);
+}
+
+/**
  * Returns the index of the mapping slot to edit next after the termination
  * of an editing session.
  *

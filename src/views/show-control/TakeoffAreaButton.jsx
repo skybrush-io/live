@@ -23,13 +23,13 @@ const formatStatusText = (status, maxDistance) => {
       return 'Place the drones in the takeoff area';
 
     case StepperStatus.COMPLETED:
-      return 'Drones placed successfully';
+      return 'Drone placement approved';
 
     case StepperStatus.ERROR:
       return 'Error in drone placement';
 
     case StepperStatus.SKIPPED:
-      return 'Partial drone placement';
+      return 'Partial drone placement approved';
 
     case StepperStatus.WAITING:
       return 'Checking drone placement...';
@@ -46,7 +46,12 @@ const formatStatusText = (status, maxDistance) => {
  */
 const TakeoffAreaButton = ({ maxDistance, onClick, status, ...rest }) => {
   return (
-    <ListItem button onClick={onClick} {...rest}>
+    <ListItem
+      button
+      disabled={status === StepperStatus.OFF}
+      onClick={onClick}
+      {...rest}
+    >
       <StepperStatusLight status={status} />
       <ListItemText
         primary="Setup takeoff area"

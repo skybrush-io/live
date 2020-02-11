@@ -37,6 +37,11 @@ const useStyles = makeStyles(
       color: theme.palette.getContrastText(Colors.error)
     },
 
+    'avatar-success': {
+      backgroundColor: Colors.success,
+      color: theme.palette.getContrastText(Colors.success)
+    },
+
     '@keyframes pulse': {
       '0%': {
         boxShadow: `0 0 8px 2px ${color(Colors.info).alpha(0)}`
@@ -73,7 +78,7 @@ const DronePlaceholder = ({ editing, label, status }) => {
 DronePlaceholder.propTypes = {
   editing: PropTypes.bool,
   label: PropTypes.node,
-  status: PropTypes.oneOf(['off', 'editing', 'error'])
+  status: PropTypes.oneOf(['off', 'editing', 'error', 'success'])
 };
 
 DronePlaceholder.defaultProps = {

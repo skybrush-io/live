@@ -10,6 +10,7 @@ import { blue, lightBlue, orange, red } from '@material-ui/core/colors';
 import createMuiTheme from '@material-ui/core/styles/createMuiTheme';
 import { ThemeProvider, useTheme } from '@material-ui/core/styles';
 
+import Colors from '~/components/colors';
 import useDarkMode from '~/hooks/useDarkMode';
 
 // eslint-disable-next-line import/no-webpack-loader-syntax, import/extensions
@@ -33,7 +34,11 @@ const DarkModeAwareThemeProvider = ({ children, type }) => {
     palette: {
       type: isThemeDark ? 'dark' : 'light',
       primary: isThemeDark ? orange : blue,
-      secondary: isThemeDark ? lightBlue : red
+      secondary: isThemeDark ? lightBlue : red,
+
+      success: {
+        main: Colors.success
+      }
     }
   });
 

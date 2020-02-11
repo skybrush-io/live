@@ -10,7 +10,9 @@ import isNil from 'lodash-es/isNil';
 
 import { createSlice } from '@reduxjs/toolkit';
 
-import { getNewEditIndex } from './utils';
+import { copyAndEnsureLengthEquals, getNewEditIndex } from './utils';
+
+import { noPayload } from '~/utils/redux';
 
 const { actions, reducer } = createSlice({
   name: 'mission',
@@ -23,13 +25,17 @@ const { actions, reducer } = createSlice({
     // is not assigned yet.
     mapping: [],
 
-    // Stores the destired home position (starting point) of each drone
+    // Stores the desired home position (starting point) of each drone
     // in the mission. The array is indexed by mission-specific identifiers.
     homePositions: [],
 
-    // Stores the destired landing position of each drone in the mission. The
+    // Stores the desired landing position of each drone in the mission. The
     // array is indexed by mission-specific identifiers.
     landingPositions: [],
+
+    // Stores the takeoff headings of each drone in the missino. The array is
+    // indexed by mission-specific identifiers.
+    takeoffHeadings: [],
 
     // Stores the state of the mapping editor
     mappingEditor: {
@@ -64,9 +70,9 @@ const { actions, reducer } = createSlice({
     /**
      * Cancels the current editing session of the mapping at the current slot.
      */
-    cancelMappingEditorSessionAtCurrentSlot(state) {
+    cancelMappingEditorSessionAtCurrentSlot: noPayload(state => {
       state.mappingEditor.indexBeingEdited = -1;
-    },
+    }),
 
     /**
      * Clears the entire mission mapping.
@@ -111,7 +117,8 @@ const { actions, reducer } = createSlice({
 
       if (index >= 0 && index < numItems) {
         const oldValue = state.mapping[index];
-        const existingIndex = state.mapping.indexOf(validatedValue);
+        const existingIndex =
+          validatedValue === null ? -1 : state.mapping.indexOf(validatedValue);
 
         // Prevent duplicates: if the value being entered already exists
         // elsewhere in the mapping, swap it with the old value of the
@@ -199,18 +206,38 @@ const { actions, reducer } = createSlice({
      * Updates the home positions of all the drones in the mission.
      */
     updateHomePositions(state, action) {
-      // TODO(ntamas): synchronize the length of the mapping with it?
-      // Or constrain the payload length to the length of the mapping?
-      state.homePositions = action.payload;
+      state.homePositions = copyAndEnsureLengthEquals(
+        state.mapping.length,
+        action.payload
+      );
     },
 
     /**
      * Updates the landing positions of all the drones in the mission.
      */
     updateLandingPositions(state, action) {
+      state.landingPositions = copyAndEnsureLengthEquals(
+        state.mapping.length,
+        action.payload
+      );
+    },
+
+    /**
+     * Updates the takeoff headings of all the drones in the mission.
+     */
+    updateTakeoffHeadings(state, action) {
       // TODO(ntamas): synchronize the length of the mapping with it?
       // Or constrain the payload length to the length of the mapping?
-      state.landingPositions = action.payload;
+      if (Array.isArray(action.payload)) {
+        state.takeoffHeadings = copyAndEnsureLengthEquals(
+          state.mapping.length,
+          action.payload
+        );
+      } else {
+        state.takeoffHeadings = new Array(state.mapping.length).fill(
+          action.payload
+        );
+      }
     }
   }
 });
@@ -227,7 +254,8 @@ export const {
   startMappingEditorSession,
   startMappingEditorSessionAtSlot,
   updateHomePositions,
-  updateLandingPositions
+  updateLandingPositions,
+  updateTakeoffHeadings
 } = actions;
 
 export default reducer;

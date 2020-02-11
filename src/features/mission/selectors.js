@@ -20,6 +20,12 @@ export const getLandingPositionsInMission = state =>
   state.mission.landingPositions;
 
 /**
+ * Returns the current list of takeoff headings in the mission.
+ */
+export const getTakeoffHeadingsInMission = state =>
+  state.mission.takeoffHeadings;
+
+/**
  * Returns the current mapping from mission-specific slots to the corresponding
  * UAV identifiers.
  *

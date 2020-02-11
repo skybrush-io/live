@@ -62,7 +62,7 @@ const { actions, reducer } = createSlice({
       state.environment.editing = false;
     }),
 
-    closetakeoffAreaSetupDialog: noPayload(state => {
+    closeTakeoffAreaSetupDialog: noPayload(state => {
       state.takeoffAreaSetupDialog.open = false;
     }),
 
@@ -95,7 +95,7 @@ const { actions, reducer } = createSlice({
       state.environment.type = action.payload;
     },
 
-    setOutdoorShowOrientation(state, action) {
+    _setOutdoorShowOrientation(state, action) {
       state.environment.outdoor.coordinateSystem.orientation = String(
         action.payload
       );
@@ -122,12 +122,12 @@ export const {
   clearManualPreflightChecks,
   clearOnboardPreflightChecks,
   closeEnvironmentEditorDialog,
-  closetakeoffAreaSetupDialog,
+  closeTakeoffAreaSetupDialog,
   openEnvironmentEditorDialog,
   openTakeoffAreaSetupDialog,
   revokeTakeoffAreaApproval,
   setEnvironmentType,
-  setOutdoorShowOrientation,
+  _setOutdoorShowOrientation,
   setOutdoorShowOrigin,
   signOffOnManualPreflightChecksAt,
   signOffOnOnboardPreflightChecksAt

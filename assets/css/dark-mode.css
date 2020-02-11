@@ -44,6 +44,10 @@ body .lm_header .lm_tab.lm_active {
   background-color: #444 !important;
   border-color: #444 !important;
 }
+.ol-scale-line-inner {
+  border-color: #fff !important;
+  color: #fff !important;
+}
 
 /* Keyboard tag styling */
 kbd {
