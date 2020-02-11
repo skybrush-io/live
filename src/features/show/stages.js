@@ -8,7 +8,8 @@ import {
   areOnboardPreflightChecksSignedOff,
   hasLoadedShowFile,
   hasShowOrigin,
-  isLoadingShowFile
+  isLoadingShowFile,
+  isTakeoffAreaApproved
 } from './selectors';
 import { StepperStatus } from '~/components/StepperStatusLight';
 
@@ -20,10 +21,10 @@ const stages = {
   selectShowFile: {
     evaluate: state =>
       hasLoadedShowFile(state)
-        ? StepperStatus.completed
+        ? StepperStatus.COMPLETED
         : isLoadingShowFile(state)
-        ? StepperStatus.waiting
-        : StepperStatus.off
+        ? StepperStatus.WAITING
+        : StepperStatus.OFF
   },
 
   setupEnvironment: {
@@ -32,7 +33,7 @@ const stages = {
   },
 
   setupTakeoffArea: {
-    evaluate: () => false,
+    evaluate: state => isTakeoffAreaApproved(state),
     requires: ['setupEnvironment']
   },
 
@@ -89,11 +90,11 @@ export const getSetupStageStatuses = state => {
 
     for (const requirementId of stage.requires || []) {
       if (
-        result[requirementId] !== StepperStatus.completed &&
-        result[requirementId] !== StepperStatus.skipped
+        result[requirementId] !== StepperStatus.COMPLETED &&
+        result[requirementId] !== StepperStatus.SKIPPED
       ) {
         // not all dependencies are satisfied for this task so we mark it as 'off'
-        status = StepperStatus.off;
+        status = StepperStatus.OFF;
         break;
       }
     }
@@ -104,14 +105,14 @@ export const getSetupStageStatuses = state => {
 
       // convert booleans to StepperStatus
       if (typeof status === 'boolean') {
-        status = status ? StepperStatus.completed : StepperStatus.off;
+        status = status ? StepperStatus.COMPLETED : StepperStatus.OFF;
       }
 
-      if (status === StepperStatus.off) {
+      if (status === StepperStatus.OFF) {
         // state has not been acted on by the user, but all its dependencies are
         // ready so we mark it as a potential candidate for the user to perform
         // next
-        status = StepperStatus.next;
+        status = StepperStatus.NEXT;
       }
     }
 

@@ -1,4 +1,5 @@
 import isNil from 'lodash-es/isNil';
+import range from 'lodash-es/range';
 import { createSelector } from '@reduxjs/toolkit';
 
 import { getSelectedUAVIds } from '~/selectors/selection';
@@ -25,6 +26,16 @@ export const getLandingPositionsInMission = state =>
  * @param  {Object}  state  the state of the application
  */
 export const getMissionMapping = state => state.mission.mapping;
+
+/**
+ * Returns a list containing the indices of all the empty mapping slots (i.e.
+ * slots that have no assigned drone yet).
+ */
+export const getEmptyMappingSlotIndices = createSelector(
+  getMissionMapping,
+  mapping =>
+    mapping ? range(mapping.length).filter(index => isNil(mapping[index])) : []
+);
 
 /**
  * Returns the index of the mapping slot being edited.

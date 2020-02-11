@@ -16,7 +16,7 @@ import { getSetupStageStatuses } from '~/features/show/stages';
  */
 const StartTimeButton = ({ status, ...rest }) => {
   return (
-    <ListItem button disabled={status === StepperStatus.off} {...rest}>
+    <ListItem button disabled={status === StepperStatus.OFF} {...rest}>
       <StepperStatusLight status={status} />
       <ListItemText primary="Choose start time" secondary="Not set yet" />
     </ListItem>
@@ -24,7 +24,7 @@ const StartTimeButton = ({ status, ...rest }) => {
 };
 
 StartTimeButton.propTypes = {
-  status: PropTypes.oneOf(Object.keys(StepperStatus))
+  status: PropTypes.oneOf(Object.values(StepperStatus))
 };
 
 StartTimeButton.defaultProps = {};

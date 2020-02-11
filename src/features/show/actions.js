@@ -7,6 +7,7 @@ import {
   getLastPointsOfTrajectoriesInWorldCoordinates
 } from './selectors';
 import {
+  approveTakeoffAreaAt,
   setEnvironmentType,
   signOffOnManualPreflightChecksAt,
   signOffOnOnboardPreflightChecksAt
@@ -20,6 +21,13 @@ import {
 import { showSnackbarMessage } from '~/features/snackbar/slice';
 import { MessageSemantics } from '~/features/snackbar/types';
 import { createAsyncAction } from '~/utils/redux';
+
+/**
+ * Thunk that approves the takeoff area arrangement with the current timestamp.
+ */
+export const approveTakeoffArea = () => dispatch => {
+  dispatch(approveTakeoffArea(Date.now()));
+};
 
 const loadShowFromFileInner = createAsyncAction('show/loading', async file => {
   return pMinDelay(processFile(file), 500);

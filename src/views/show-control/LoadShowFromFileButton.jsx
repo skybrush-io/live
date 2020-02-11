@@ -93,7 +93,7 @@ LoadShowFromFileButton.propTypes = {
   loading: PropTypes.bool,
   onClearLoadedShow: PropTypes.func,
   onShowFileSelected: PropTypes.func,
-  status: PropTypes.oneOf(Object.keys(StepperStatus)),
+  status: PropTypes.oneOf(Object.values(StepperStatus)),
   title: PropTypes.string
 };
 

@@ -20,7 +20,6 @@ import { createSelector } from '@reduxjs/toolkit';
 
 import DroneAvatar from './DroneAvatar';
 import DroneListItem from './DroneListItem';
-import DronePlaceholder from './DronePlaceholder';
 
 import MappingEditorToolbar from './MappingEditorToolbar';
 import MappingSlotEditor from './MappingSlotEditor';
@@ -29,6 +28,7 @@ import UAVToolbar from './UAVToolbar';
 
 import { setSelectedUAVIds } from '~/actions/map';
 import { createSelectionHandlerFactory } from '~/components/helpers/lists';
+import DronePlaceholder from '~/components/uavs/DronePlaceholder';
 import {
   adjustMissionMapping,
   startMappingEditorSessionAtSlot
@@ -42,6 +42,7 @@ import { isShowingMissionIds } from '~/features/settings/selectors';
 import { getUAVIdList } from '~/features/uavs/selectors';
 import { getSelectedUAVIds } from '~/selectors/selection';
 import { isDark } from '~/theme';
+import { formatMissionId } from '~/utils/formatting';
 
 const drones = [
   {
@@ -272,7 +273,7 @@ const getDisplayedMissionIdList = createSelector(
     const seenUAVIds = new Set();
 
     mapping.forEach((uavId, index) => {
-      const missionId = `s${index}`;
+      const missionId = formatMissionId(index);
       if (isNil(uavId)) {
         // No UAV assigned to this slot
         mainUAVIds.push([undefined, index, missionId]);

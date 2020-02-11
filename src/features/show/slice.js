@@ -28,7 +28,8 @@ const { actions, reducer } = createSlice({
 
     preflight: {
       manualChecksSignedOffAt: null,
-      onboardChecksSignedOffAt: null
+      onboardChecksSignedOffAt: null,
+      takeoffAreaApprovedAt: null
     },
 
     takeoffAreaSetupDialog: {
@@ -37,11 +38,16 @@ const { actions, reducer } = createSlice({
   },
 
   reducers: {
+    approveTakeoffAreaAt(state, action) {
+      state.preflight.takeoffAreaApprovedAt = action.payload;
+    },
+
     clearLoadedShow: noPayload(state => {
       state.data = null;
 
       state.preflight.manualChecksSignedOffAt = null;
       state.preflight.onboardChecksSignedOffAt = null;
+      state.preflight.takeoffAreaApprovedAt = null;
     }),
 
     clearManualPreflightChecks: noPayload(state => {
@@ -56,7 +62,7 @@ const { actions, reducer } = createSlice({
       state.environment.editing = false;
     }),
 
-    closeTakeoffAreaSetupDialog: noPayload(state => {
+    closetakeoffAreaSetupDialog: noPayload(state => {
       state.takeoffAreaSetupDialog.open = false;
     }),
 
@@ -79,6 +85,10 @@ const { actions, reducer } = createSlice({
 
     openTakeoffAreaSetupDialog: noPayload(state => {
       state.takeoffAreaSetupDialog.open = true;
+    }),
+
+    revokeTakeoffAreaApproval: noPayload(state => {
+      state.preflight.takeoffAreaApprovedAt = null;
     }),
 
     setEnvironmentType(state, action) {
@@ -107,13 +117,15 @@ const { actions, reducer } = createSlice({
 });
 
 export const {
+  approveTakeoffAreaAt,
   clearLoadedShow,
   clearManualPreflightChecks,
   clearOnboardPreflightChecks,
   closeEnvironmentEditorDialog,
-  closeTakeoffAreaSetupDialog,
+  closetakeoffAreaSetupDialog,
   openEnvironmentEditorDialog,
   openTakeoffAreaSetupDialog,
+  revokeTakeoffAreaApproval,
   setEnvironmentType,
   setOutdoorShowOrientation,
   setOutdoorShowOrigin,

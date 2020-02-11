@@ -2,6 +2,8 @@ import isNil from 'lodash-es/isNil';
 import { getDistance as haversineDistance } from 'ol/sphere';
 import createCachedSelector from 're-reselect';
 
+import { createSelector } from '@reduxjs/toolkit';
+
 import {
   getHomePositionsInMission,
   getMissionMapping,
@@ -102,3 +104,14 @@ export const getFarthestDistanceFromHome = state => {
 
   return maxDistance < 0 ? undefined : maxDistance;
 };
+
+/**
+ * Returns an array containing all the UAV IDs that appear in the mission mapping
+ * but are not present in the UAV registry.
+ */
+export const getMissingUAVIdsInMapping = createSelector(
+  getMissionMapping,
+  state => state.uavs.byId,
+  (mapping, uavsById) =>
+    mapping.filter(uavId => !isNil(uavId) && isNil(uavsById[uavId]))
+);

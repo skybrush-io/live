@@ -34,7 +34,7 @@ const EnvironmentButton = ({ onEditEnvironment, status, type, ...rest }) => {
   return (
     <ListItem
       button
-      disabled={status === StepperStatus.off}
+      disabled={status === StepperStatus.OFF}
       onClick={onEditEnvironment}
       {...rest}
     >
@@ -49,7 +49,7 @@ const EnvironmentButton = ({ onEditEnvironment, status, type, ...rest }) => {
 
 EnvironmentButton.propTypes = {
   onEditEnvironment: PropTypes.func,
-  status: PropTypes.oneOf(Object.keys(StepperStatus)),
+  status: PropTypes.oneOf(Object.values(StepperStatus)),
   type: PropTypes.string
 };
 

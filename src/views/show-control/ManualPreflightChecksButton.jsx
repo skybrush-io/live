@@ -28,7 +28,7 @@ const ManualPreflightChecksButton = ({
   ...rest
 }) => {
   return (
-    <ListItem button disabled={status === StepperStatus.off} {...rest}>
+    <ListItem button disabled={status === StepperStatus.OFF} {...rest}>
       <StepperStatusLight status={status} />
       <ListItemText primary="Manual preflight checks" />
       {/* TODO: show how many checks were not ticked off by the user yet */}
@@ -47,7 +47,7 @@ ManualPreflightChecksButton.propTypes = {
   areChecksSignedOff: PropTypes.bool,
   onApprove: PropTypes.func,
   onRevoke: PropTypes.func,
-  status: PropTypes.oneOf(Object.keys(StepperStatus))
+  status: PropTypes.oneOf(Object.values(StepperStatus))
 };
 
 ManualPreflightChecksButton.defaultProps = {};

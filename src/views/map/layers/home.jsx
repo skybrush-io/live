@@ -27,6 +27,7 @@ import {
 import { setLayerEditable, setLayerSelectable } from '~/model/layers';
 import { getMapOriginRotationAngle } from '~/selectors/map';
 import { getSelectedOriginIds } from '~/selectors/selection';
+import { formatMissionId } from '~/utils/formatting';
 import { mapViewCoordinateFromLonLat } from '~/utils/geography';
 import { toRadians } from '~/utils/math';
 import {
@@ -190,7 +191,7 @@ const takeoffPositionStyle = (feature, resolution) => {
     style.text = new Text({
       font: '12px sans-serif',
       offsetY: 12,
-      text: `s${index}`,
+      text: formatMissionId(index),
       textAlign: 'center'
     });
   }
@@ -203,7 +204,7 @@ const takeoffPositionStyle = (feature, resolution) => {
  * the current mission.
  */
 const landingPositionStyle = (feature, resolution) => {
-  const index = globalIdToHomePositionId(feature.getId());
+  const index = globalIdToLandingPositionId(feature.getId());
   const style = {
     image: new RegularShape({
       fill: greenFill,
@@ -218,7 +219,7 @@ const landingPositionStyle = (feature, resolution) => {
     style.text = new Text({
       font: '12px sans-serif',
       offsetY: -12,
-      text: `s${index}`,
+      text: formatMissionId(index),
       textAlign: 'center'
     });
   }

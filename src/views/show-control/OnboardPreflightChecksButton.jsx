@@ -28,7 +28,7 @@ const OnboardPreflightChecksButton = ({
   ...rest
 }) => {
   return (
-    <ListItem button disabled={status === StepperStatus.off} {...rest}>
+    <ListItem button disabled={status === StepperStatus.OFF} {...rest}>
       <StepperStatusLight status={status} />
       <ListItemText primary="Onboard preflight checks" />
       {/* TODO: show how many drones have nonzero error codes */}
@@ -47,7 +47,7 @@ OnboardPreflightChecksButton.propTypes = {
   areChecksSignedOff: PropTypes.bool,
   onApprove: PropTypes.func,
   onRevoke: PropTypes.func,
-  status: PropTypes.oneOf(Object.keys(StepperStatus))
+  status: PropTypes.oneOf(Object.values(StepperStatus))
 };
 
 OnboardPreflightChecksButton.defaultProps = {};

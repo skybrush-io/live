@@ -9,12 +9,12 @@ import { makeStyles } from '@material-ui/core/styles';
 import Colors from '~/components/colors';
 
 export const StepperStatus = {
-  completed: 'completed',
-  error: 'error',
-  next: 'next',
-  off: 'off',
-  skipped: 'skipped',
-  waiting: 'waiting'
+  COMPLETED: 'completed',
+  ERROR: 'error',
+  NEXT: 'next',
+  OFF: 'off',
+  SKIPPED: 'skipped',
+  WAITING: 'waiting'
 };
 
 const useStyles = makeStyles(
@@ -139,7 +139,7 @@ const StepperStatusLight = ({ size, status, ...rest }) => {
 
 StepperStatusLight.propTypes = {
   size: PropTypes.oneOf(['small', 'normal', 'large']),
-  status: PropTypes.oneOf(Object.keys(StepperStatus))
+  status: PropTypes.oneOf(Object.values(StepperStatus))
 };
 
 StepperStatusLight.defaultProps = {

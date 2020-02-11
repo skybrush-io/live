@@ -12,6 +12,33 @@ import { openTakeoffAreaSetupDialog } from '~/features/show/slice';
 import { getSetupStageStatuses } from '~/features/show/stages';
 import { getFarthestDistanceFromHome } from '~/features/uavs/selectors';
 
+const formatStatusText = (status, maxDistance) => {
+  if (typeof maxDistance === 'number') {
+    return `Current maximum distance: ${maxDistance.toFixed(2)} m`;
+  }
+
+  switch (status) {
+    case StepperStatus.OFF:
+    case StepperStatus.NEXT:
+      return 'Place the drones in the takeoff area';
+
+    case StepperStatus.COMPLETED:
+      return 'Drones placed successfully';
+
+    case StepperStatus.ERROR:
+      return 'Error in drone placement';
+
+    case StepperStatus.SKIPPED:
+      return 'Partial drone placement';
+
+    case StepperStatus.WAITING:
+      return 'Checking drone placement...';
+
+    default:
+      return '';
+  }
+};
+
 /**
  * Component with a button that shows a dialog that allows the user to check how
  * accurately the drones are placed in the takeoff area. The dialog also allows
@@ -23,11 +50,7 @@ const TakeoffAreaButton = ({ maxDistance, onClick, status, ...rest }) => {
       <StepperStatusLight status={status} />
       <ListItemText
         primary="Setup takeoff area"
-        secondary={
-          typeof maxDistance === 'number'
-            ? `Current maximum distance: ${maxDistance.toFixed(2)} m`
-            : 'Place the drones in the takeoff area'
-        }
+        secondary={formatStatusText(status, maxDistance)}
       />
     </ListItem>
   );
@@ -36,7 +59,7 @@ const TakeoffAreaButton = ({ maxDistance, onClick, status, ...rest }) => {
 TakeoffAreaButton.propTypes = {
   maxDistance: PropTypes.number,
   onClick: PropTypes.func,
-  status: PropTypes.oneOf(Object.keys(StepperStatus))
+  status: PropTypes.oneOf(Object.values(StepperStatus))
 };
 
 TakeoffAreaButton.defaultProps = {};
@@ -46,7 +69,10 @@ export default connect(
   state => ({
     // TODO(ntamas): getFarthestDistanceFromHome() is recalculated all the time;
     // we need to fix this
-    maxDistance: getFarthestDistanceFromHome(state),
+    maxDistance:
+      getSetupStageStatuses(state).setupTakeoffArea === StepperStatus.NEXT
+        ? getFarthestDistanceFromHome(state)
+        : undefined,
     status: getSetupStageStatuses(state).setupTakeoffArea
   }),
   // mapDispatchToProps

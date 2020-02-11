@@ -21,6 +21,12 @@ export const areOnboardPreflightChecksSignedOff = state =>
   Boolean(state.show.preflight.onboardChecksSignedOffAt);
 
 /**
+ * Returns whether the takeoff area arrangement was approved by the operator.
+ */
+export const isTakeoffAreaApproved = state =>
+  Boolean(state.show.preflight.takeoffAreaApprovedAt);
+
+/**
  * Returns whether a trajectory object "looks like" a valid trajectory.
  */
 export const isValidTrajectory = trajectory =>
