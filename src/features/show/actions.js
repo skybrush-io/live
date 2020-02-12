@@ -3,6 +3,7 @@ import pMinDelay from 'p-min-delay';
 
 import { loadShowFromFile as processFile } from './processing';
 import {
+  getFailedUploadItems,
   getFirstPointsOfTrajectoriesInWorldCoordinates,
   getLastPointsOfTrajectoriesInWorldCoordinates,
   getOutdoorShowOrientation
@@ -13,6 +14,7 @@ import {
   setEnvironmentType,
   signOffOnManualPreflightChecksAt,
   signOffOnOnboardPreflightChecksAt,
+  _retryFailedUploads,
   _setOutdoorShowOrientation
 } from './slice';
 
@@ -83,6 +85,17 @@ export const loadShowFromFile = file => async (dispatch, getState) => {
   // Revoke the approval of the takeoff area in case it was approved
   dispatch(revokeTakeoffAreaApproval());
 };
+
+/**
+ * Thunk that retrieves all failed upload items from the state and then
+ * places all of them in the upload queue.
+ */
+export function retryFailedUploads() {
+  return (dispatch, getState) => {
+    const failedItems = getFailedUploadItems(getState());
+    dispatch(_retryFailedUploads(failedItems));
+  };
+}
 
 export function setOutdoorShowOrientationAndUpdateTakeoffHeadings(orientation) {
   return (dispatch, getState) => {

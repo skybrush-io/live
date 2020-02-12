@@ -5,7 +5,7 @@
 
 import { createSlice } from '@reduxjs/toolkit';
 
-import { moveItemBetweenQueues } from './utils';
+import { moveItemsBetweenQueues } from './utils';
 
 import { noPayload } from '~/utils/redux';
 
@@ -80,6 +80,10 @@ const { actions, reducer } = createSlice({
       state.preflight.onboardChecksSignedOffAt = null;
     }),
 
+    clearUploadQueue: noPayload(state => {
+      state.upload.itemsWaitingToStart = [];
+    }),
+
     closeEnvironmentEditorDialog: noPayload(state => {
       state.environment.editing = false;
     }),
@@ -125,7 +129,7 @@ const { actions, reducer } = createSlice({
     },
 
     notifyUploadOnUavCancelled(state, action) {
-      moveItemBetweenQueues({
+      moveItemsBetweenQueues({
         source: 'itemsInProgress',
         target: 'itemsWaitingToStart',
         state,
@@ -134,7 +138,7 @@ const { actions, reducer } = createSlice({
     },
 
     notifyUploadOnUavFailed(state, action) {
-      moveItemBetweenQueues({
+      moveItemsBetweenQueues({
         source: 'itemsInProgress',
         target: 'failedItems',
         state,
@@ -143,7 +147,7 @@ const { actions, reducer } = createSlice({
     },
 
     notifyUploadOnUavQueued(state, action) {
-      moveItemBetweenQueues({
+      moveItemsBetweenQueues({
         source: 'itemsWaitingToStart',
         target: 'itemsQueued',
         state,
@@ -152,7 +156,7 @@ const { actions, reducer } = createSlice({
     },
 
     notifyUploadOnUavStarted(state, action) {
-      moveItemBetweenQueues({
+      moveItemsBetweenQueues({
         source: 'itemsQueued',
         target: 'itemsInProgress',
         state,
@@ -161,7 +165,7 @@ const { actions, reducer } = createSlice({
     },
 
     notifyUploadOnUavSucceeded(state, action) {
-      moveItemBetweenQueues({
+      moveItemsBetweenQueues({
         source: 'itemsInProgress',
         state,
         action
@@ -180,6 +184,7 @@ const { actions, reducer } = createSlice({
       state.upload.lastUploadResult = null;
       state.uploadDialog.showLastUploadResult = false;
       state.uploadDialog.open = true;
+      state.uploadDialog.uploadTarget = 'all';
     }),
 
     revokeTakeoffAreaApproval: noPayload(state => {
@@ -188,6 +193,15 @@ const { actions, reducer } = createSlice({
 
     setEnvironmentType(state, action) {
       state.environment.type = action.payload;
+    },
+
+    _retryFailedUploads(state, action) {
+      moveItemsBetweenQueues({
+        source: 'failedItems',
+        target: 'itemsWaitingToStart',
+        state,
+        action
+      });
     },
 
     _setOutdoorShowOrientation(state, action) {
@@ -231,6 +245,7 @@ export const {
   clearLoadedShow,
   clearManualPreflightChecks,
   clearOnboardPreflightChecks,
+  clearUploadQueue,
   closeEnvironmentEditorDialog,
   closeTakeoffAreaSetupDialog,
   closeUploadDialog,
@@ -244,6 +259,7 @@ export const {
   openEnvironmentEditorDialog,
   openTakeoffAreaSetupDialog,
   openUploadDialog,
+  _retryFailedUploads,
   revokeTakeoffAreaApproval,
   setEnvironmentType,
   _setOutdoorShowOrientation,

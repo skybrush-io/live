@@ -34,6 +34,7 @@ const STOP = Symbol('STOP');
  */
 async function runSingleUpload(uavId) {
   await delay(Math.random() * 1000 + 500);
+  throw new Error('fail ' + uavId);
 }
 
 /**
@@ -89,7 +90,7 @@ function* runUploadWorker(chan, failed) {
 /**
  * Saga that handles the uploading of the show to a set of drones.
  */
-function* showUploadSaga({ numWorkers = 10 } = {}) {
+function* showUploadSaga({ numWorkers = 8 } = {}) {
   const failed = [];
   const chan = yield call(channel);
   const workers = [];

@@ -11,18 +11,22 @@
  *        to add the item to; `undefined` means not to add the item to a new
  *        queue
  */
-export const moveItemBetweenQueues = ({ source, target, state, action }) => {
-  const uavId = action.payload;
+export const moveItemsBetweenQueues = ({ source, target, state, action }) => {
+  const uavIds = Array.isArray(action.payload)
+    ? action.payload
+    : [action.payload];
 
   source = state.upload[source];
   target = target ? state.upload[target] : undefined;
 
-  const index = source.indexOf(uavId);
-  if (index >= 0) {
-    const item = source[index];
-    source.splice(index, 1);
-    if (target) {
-      target.push(item);
+  for (const uavId of uavIds) {
+    const index = source.indexOf(uavId);
+    if (index >= 0) {
+      const item = source[index];
+      source.splice(index, 1);
+      if (target) {
+        target.push(item);
+      }
     }
   }
 };

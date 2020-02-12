@@ -13,6 +13,7 @@ import { formatMissionId } from '~/utils/formatting';
  * is too long.
  */
 const DronePlaceholderList = ({
+  actions,
   emptyMessage,
   items = [],
   maxCount,
@@ -62,11 +63,23 @@ const DronePlaceholderList = ({
           </Box>
         )
       ) : null}
+      {actions && (
+        <>
+          <Box key="padding" flex={1} />
+          <Box key="actions" ml={1}>
+            {actions}
+          </Box>
+        </>
+      )}
     </Box>
   </Box>
 );
 
 DronePlaceholderList.propTypes = {
+  actions: PropTypes.oneOfType([
+    PropTypes.node,
+    PropTypes.arrayOf(PropTypes.node)
+  ]),
   emptyMessage: PropTypes.node,
   items: PropTypes.arrayOf(
     PropTypes.oneOfType([PropTypes.number, PropTypes.string])

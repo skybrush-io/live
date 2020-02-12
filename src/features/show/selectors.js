@@ -250,6 +250,11 @@ export const hasShowOrigin = state =>
 export const isLoadingShowFile = state => state.show.loading;
 
 /**
+ * Returns the failed upload items from the uploader.
+ */
+export const getFailedUploadItems = state => state.show.upload.failedItems;
+
+/**
  * Returns the upload items that are currently in the backlog of the uploader:
  * the ones that are waiting to be started and the ones that have been queued
  * inside the uploader saga but have not been taken up by a worker yet.
