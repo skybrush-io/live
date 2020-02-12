@@ -11,6 +11,7 @@ import Typography from '@material-ui/core/Typography';
 import StepperStatusLight, {
   StepperStatus
 } from '~/components/StepperStatusLight';
+import { openUploadDialog } from '~/features/show/slice';
 import { getSetupStageStatuses } from '~/features/show/stages';
 
 /**
@@ -18,7 +19,7 @@ import { getSetupStageStatuses } from '~/features/show/stages';
  * upload process of the current show to the drones.
  */
 const UploadButton = ({ status, ...rest }) => (
-  <ListItem button disabled={status === StepperStatus.OFF} {...rest}>
+  <ListItem button {...rest}>
     <StepperStatusLight status={status} />
     <ListItemText
       disableTypography
@@ -41,6 +42,7 @@ const UploadButton = ({ status, ...rest }) => (
 );
 
 UploadButton.propTypes = {
+  onClick: PropTypes.func,
   status: PropTypes.oneOf(Object.values(StepperStatus))
 };
 
@@ -50,5 +52,7 @@ export default connect(
     status: getSetupStageStatuses(state).uploadShow
   }),
   // mapDispatchToProps
-  {}
+  {
+    onClick: openUploadDialog
+  }
 )(UploadButton);

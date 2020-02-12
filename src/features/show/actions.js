@@ -1,7 +1,11 @@
 import get from 'lodash-es/get';
+import CancelablePromise, { CancelError } from 'p-cancelable';
 import pMinDelay from 'p-min-delay';
 
-import { loadShowFromFile as processFile } from './processing';
+import {
+  loadShowFromFile as processFile,
+  uploadShowToDrones as uploadShow
+} from './processing';
 import {
   getFirstPointsOfTrajectoriesInWorldCoordinates,
   getLastPointsOfTrajectoriesInWorldCoordinates,
@@ -84,17 +88,16 @@ export const loadShowFromFile = file => async (dispatch, getState) => {
   dispatch(revokeTakeoffAreaApproval());
 };
 
-export const setOutdoorShowOrientationAndUpdateTakeoffHeadings = orientation => (
-  dispatch,
-  getState
-) => {
-  dispatch(_setOutdoorShowOrientation(orientation));
+export function setOutdoorShowOrientationAndUpdateTakeoffHeadings(orientation) {
+  return (dispatch, getState) => {
+    dispatch(_setOutdoorShowOrientation(orientation));
 
-  const state = getState();
-  const orientation = getOutdoorShowOrientation(state);
+    const state = getState();
+    const newOrientation = getOutdoorShowOrientation(state);
 
-  dispatch(updateTakeoffHeadings(orientation));
-};
+    dispatch(updateTakeoffHeadings(newOrientation));
+  };
+}
 
 /**
  * Thunk that signs off on the manual preflight checks with the current
@@ -111,3 +114,62 @@ export const signOffOnManualPreflightChecks = () => dispatch => {
 export const signOffOnOnboardPreflightChecks = () => dispatch => {
   dispatch(signOffOnOnboardPreflightChecksAt(Date.now()));
 };
+
+let lastUploadPromise;
+
+/**
+ * Thunk that creates an async action that uploads the drone show trajectories
+ * to the drones in the current mission.
+ */
+export const uploadShowToDrones = (...args) => async dispatch => {
+  if (lastUploadPromise !== undefined) {
+    dispatch(
+      showSnackbarMessage({
+        message: 'Another upload is already in progress.',
+        semantics: MessageSemantics.ERROR
+      })
+    );
+    return;
+  }
+
+  const uploader = CancelablePromise.fn(uploadShow);
+
+  try {
+    lastUploadPromise = uploader(...args);
+    await dispatch({ type: 'show/uploading', payload: lastUploadPromise });
+  } catch (error) {
+    if (error instanceof CancelError) {
+      dispatch(
+        showSnackbarMessage({
+          message: 'Upload cancelled.',
+          semantics: MessageSemantics.WARNING
+        })
+      );
+    } else {
+      dispatch(
+        showSnackbarMessage({
+          message: 'Failed to upload show.',
+          semantics: MessageSemantics.ERROR,
+          permanent: true
+        })
+      );
+      console.error(error);
+    }
+  } finally {
+    // eslint-disable-next-line require-atomic-updates
+    lastUploadPromise = undefined;
+  }
+};
+
+/**
+ * Cancels the last upload attempt that we have started.
+ */
+export function cancelUploadToDrones() {
+  return () => {
+    if (lastUploadPromise) {
+      lastUploadPromise.cancel();
+    } else {
+      console.warn('There is no upload to cancel');
+    }
+  };
+}

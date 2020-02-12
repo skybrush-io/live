@@ -109,7 +109,7 @@ const persistConfig = {
       'serverSettings'
     ]),
 
-    createBlacklistFilter('show', ['data'])
+    createBlacklistFilter('show', ['data', 'upload'])
   ]
 };
 

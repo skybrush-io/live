@@ -3,6 +3,7 @@
  * format.
  */
 
+import delay from 'delay';
 import RefParser from 'json-schema-ref-parser';
 import JSZip from 'jszip';
 
@@ -131,4 +132,18 @@ export async function loadShowFromFile(file) {
   validateShowSpecification(showSpec);
 
   return showSpec;
+}
+
+export async function uploadShowToDrones(onCancel) {
+  let cancelled = false;
+
+  onCancel(() => {
+    cancelled = true;
+  });
+
+  for (let i = 0; i < 10 && !cancelled; i++) {
+    await delay(500);
+  }
+
+  return 42;
 }

@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 
 import Box from '@material-ui/core/Box';
 import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
@@ -157,7 +158,7 @@ const TakeoffAreaSetupDialog = ({
       <MisplacedDronesIndicator uavIds={misplacedUAVIds} />
       <MisalignedDronesIndicator uavIds={misalignedUAVIds} />
 
-      <Box textAlign="center" my={2}>
+      <Box textAlign="center" mt={2}>
         <FormControlLabel
           control={
             <Switch
@@ -170,6 +171,7 @@ const TakeoffAreaSetupDialog = ({
         />
       </Box>
     </DialogContent>
+    <DialogActions />
   </Dialog>
 );
 

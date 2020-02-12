@@ -16,6 +16,7 @@ import StartTimeButton from './StartTimeButton';
 import TakeoffAreaButton from './TakeoffAreaButton';
 import TakeoffAreaSetupDialog from './TakeoffAreaSetupDialog';
 import UploadButton from './UploadButton';
+import UploadDialog from './UploadDialog';
 
 /**
  * Panel that shows the widgets that are needed to load and configure a drone
@@ -66,6 +67,7 @@ const ShowControlPanel = () => {
 
       <EnvironmentEditorDialog />
       <TakeoffAreaSetupDialog />
+      <UploadDialog />
     </Box>
   );
 };

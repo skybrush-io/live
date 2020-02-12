@@ -34,6 +34,17 @@ const { actions, reducer } = createSlice({
 
     takeoffAreaSetupDialog: {
       open: false
+    },
+
+    upload: {
+      running: false,
+      inProgress: [],
+      queue: []
+    },
+
+    uploadDialog: {
+      open: false,
+      uploadTarget: 'all'
     }
   },
 
@@ -66,6 +77,10 @@ const { actions, reducer } = createSlice({
       state.takeoffAreaSetupDialog.open = false;
     }),
 
+    closeUploadDialog: noPayload(state => {
+      state.uploadDialog.open = false;
+    }),
+
     loadingPromisePending(state) {
       state.loading = true;
     },
@@ -87,6 +102,10 @@ const { actions, reducer } = createSlice({
       state.takeoffAreaSetupDialog.open = true;
     }),
 
+    openUploadDialog: noPayload(state => {
+      state.uploadDialog.open = true;
+    }),
+
     revokeTakeoffAreaApproval: noPayload(state => {
       state.preflight.takeoffAreaApprovedAt = null;
     }),
@@ -106,12 +125,28 @@ const { actions, reducer } = createSlice({
         action.payload || null;
     },
 
+    setUploadTarget(state, action) {
+      state.uploadDialog.uploadTarget = action.payload;
+    },
+
     signOffOnManualPreflightChecksAt(state, action) {
       state.preflight.manualChecksSignedOffAt = action.payload;
     },
 
     signOffOnOnboardPreflightChecksAt(state, action) {
       state.preflight.onboardChecksSignedOffAt = action.payload;
+    },
+
+    uploadingPromisePending(state) {
+      state.upload.running = true;
+    },
+
+    uploadingPromiseFulfilled(state) {
+      state.upload.running = false;
+    },
+
+    uploadingPromiseRejected(state) {
+      state.upload.running = false;
     }
   }
 });
@@ -123,14 +158,20 @@ export const {
   clearOnboardPreflightChecks,
   closeEnvironmentEditorDialog,
   closeTakeoffAreaSetupDialog,
+  closeUploadDialog,
   openEnvironmentEditorDialog,
   openTakeoffAreaSetupDialog,
+  openUploadDialog,
   revokeTakeoffAreaApproval,
   setEnvironmentType,
   _setOutdoorShowOrientation,
   setOutdoorShowOrigin,
+  setUploadTarget,
   signOffOnManualPreflightChecksAt,
-  signOffOnOnboardPreflightChecksAt
+  signOffOnOnboardPreflightChecksAt,
+  uploadingPromisePending,
+  uploadingPromiseFulfilled,
+  uploadingPromiseRejected
 } = actions;
 
 export default reducer;
