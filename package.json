@@ -91,6 +91,7 @@
     "react-shapeshifter": "^1.0.6",
     "react-socket": "git+https://github.com/collmot/react-socket.git#bed151e",
     "react-time-ago": "^5.0.7",
+    "react-transition-group": "^4.3.0",
     "react-use": "^13.22.4",
     "react-use-toggle": "^0.1.0",
     "recompose": "^0.30.0",

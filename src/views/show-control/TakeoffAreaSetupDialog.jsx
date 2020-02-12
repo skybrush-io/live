@@ -8,9 +8,9 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
-import Typography from '@material-ui/core/Typography';
 
-import DronePlaceholder from '~/components/uavs/DronePlaceholder';
+import DronePlaceholderList from './DronePlaceholderList';
+
 import { getEmptyMappingSlotIndices } from '~/features/mission/selectors';
 import { approveTakeoffArea } from '~/features/show/actions';
 import { isTakeoffAreaApproved } from '~/features/show/selectors';
@@ -23,61 +23,14 @@ import {
   createSelectorToGetMisalignedUAVIds,
   getMissingUAVIdsInMapping
 } from '~/features/uavs/selectors';
-import { formatMissionId } from '~/utils/formatting';
-
-/**
- * Presentation component that receives a list of mapping slot indices and
- * formats them nicely, truncating the list as appropriate if it is too long.
- */
-const SlotList = ({ indices, successMessage, title }) => (
-  <Box mt={1}>
-    <Box display="flex" flexDirection="row" alignItems="center">
-      <Box key="lead" minWidth={85}>
-        {title}
-      </Box>
-      {indices.slice(0, 8).map(index => (
-        <Box key={index} ml={1}>
-          <DronePlaceholder
-            label={
-              typeof index === 'number' ? formatMissionId(index) : String(index)
-            }
-          />
-        </Box>
-      ))}
-      {indices.length > 8 ? (
-        <Box key="more" ml={1} color="text.secondary">
-          <Typography variant="body2">+ {indices.length - 8} more</Typography>
-        </Box>
-      ) : null}
-      {indices.length === 0 ? (
-        <>
-          <Box key="ok" ml={1}>
-            <DronePlaceholder label="OK" status="success" />
-          </Box>
-          <Box key="successMessage" color="success.main" ml={1}>
-            <Typography variant="body2">{successMessage}</Typography>
-          </Box>
-        </>
-      ) : null}
-    </Box>
-  </Box>
-);
-
-SlotList.propTypes = {
-  indices: PropTypes.arrayOf(
-    PropTypes.oneOfType([PropTypes.number, PropTypes.string])
-  ),
-  successMessage: PropTypes.node,
-  title: PropTypes.string
-};
 
 /**
  * Presentation component that shows how many mapping slots are empty at the
  * moment.
  */
 const EmptySlotsIndicator = ({ indices }) => (
-  <SlotList
-    indices={indices}
+  <DronePlaceholderList
+    items={indices}
     title="Empty slots:"
     successMessage="All slots in the mapping are filled."
   />
@@ -93,8 +46,8 @@ EmptySlotsIndicator.propTypes = {
  * status report about them).
  */
 const MissingDronesIndicator = ({ uavIds }) => (
-  <SlotList
-    indices={uavIds}
+  <DronePlaceholderList
+    items={uavIds}
     title="Missing:"
     successMessage="All drones in the mapping are online."
   />
@@ -109,8 +62,8 @@ MissingDronesIndicator.propTypes = {
  * place (far from its takeoff position).
  */
 const MisplacedDronesIndicator = ({ uavIds }) => (
-  <SlotList
-    indices={uavIds}
+  <DronePlaceholderList
+    items={uavIds}
     title="Misplaced:"
     successMessage="All drones are placed at their takeoff positions."
   />
@@ -125,8 +78,8 @@ MisplacedDronesIndicator.propTypes = {
  * direction.
  */
 const MisalignedDronesIndicator = ({ uavIds }) => (
-  <SlotList
-    indices={uavIds}
+  <DronePlaceholderList
+    items={uavIds}
     title="Misaligned:"
     successMessage="All drones are facing the correct direction."
   />

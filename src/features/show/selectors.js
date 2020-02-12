@@ -248,3 +248,27 @@ export const hasShowOrigin = state =>
  * Returns whether we are currently loading a show file.
  */
 export const isLoadingShowFile = state => state.show.loading;
+
+/**
+ * Returns the upload items that are currently in the backlog of the uploader:
+ * the ones that are waiting to be started and the ones that have been queued
+ * inside the uploader saga but have not been taken up by a worker yet.
+ */
+export const getItemsInUploadBacklog = createSelector(
+  state => state.show.upload.itemsQueued,
+  state => state.show.upload.itemsWaitingToStart,
+  (queued, waiting) => [...queued, ...waiting]
+);
+
+/**
+ * Returns the ID of the next drone from the upload queue during an upload
+ * process, or undefined if the queue is empty.
+ */
+export const getNextDroneFromUploadQueue = state => {
+  const { itemsWaitingToStart } = state.show.upload;
+  if (itemsWaitingToStart && itemsWaitingToStart.length > 0) {
+    return itemsWaitingToStart[0];
+  }
+
+  return undefined;
+};
