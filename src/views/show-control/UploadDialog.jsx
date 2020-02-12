@@ -14,10 +14,11 @@ import CloudUpload from '@material-ui/icons/CloudUpload';
 
 import Header from '~/components/dialogs/FormHeader';
 import {
-  cancelUploadToDrones,
-  uploadShowToDrones
-} from '~/features/show/actions';
-import { closeUploadDialog, setUploadTarget } from '~/features/show/slice';
+  cancelUpload,
+  closeUploadDialog,
+  setUploadTarget,
+  startUpload
+} from '~/features/show/slice';
 
 /**
  * Presentation component for the dialog that allows the user to upload the
@@ -67,7 +68,7 @@ const UploadDialog = ({
             Cancel upload
           </Button>
         ) : (
-          <Button startIcon={<CloudUpload />} onClick={() => onStartUpload()}>
+          <Button startIcon={<CloudUpload />} onClick={onStartUpload}>
             Start upload
           </Button>
         )}
@@ -104,9 +105,9 @@ export default connect(
 
   // mapDispatchToProps
   {
-    onCancelUpload: cancelUploadToDrones,
+    onCancelUpload: cancelUpload,
     onChangeUploadTarget: setUploadTarget,
     onClose: closeUploadDialog,
-    onStartUpload: uploadShowToDrones
+    onStartUpload: startUpload
   }
 )(UploadDialog);

@@ -53,6 +53,10 @@ const { actions, reducer } = createSlice({
       state.preflight.takeoffAreaApprovedAt = action.payload;
     },
 
+    cancelUpload: noPayload(state => {
+      // The action will stop the upload saga; nothing to do here.
+    }),
+
     clearLoadedShow: noPayload(state => {
       state.data = null;
 
@@ -93,6 +97,11 @@ const { actions, reducer } = createSlice({
     loadingPromiseRejected(state) {
       state.loading = false;
     },
+
+    notifyUploadFinished: noPayload(state => {
+      // Dispatched by the saga; should not be dispatched manually
+      state.upload.running = false;
+    }),
 
     openEnvironmentEditorDialog: noPayload(state => {
       state.environment.editing = true;
@@ -137,28 +146,23 @@ const { actions, reducer } = createSlice({
       state.preflight.onboardChecksSignedOffAt = action.payload;
     },
 
-    uploadingPromisePending(state) {
+    startUpload: noPayload(state => {
       state.upload.running = true;
-    },
-
-    uploadingPromiseFulfilled(state) {
-      state.upload.running = false;
-    },
-
-    uploadingPromiseRejected(state) {
-      state.upload.running = false;
-    }
+      // Thie action will also trigger the upload saga
+    })
   }
 });
 
 export const {
   approveTakeoffAreaAt,
+  cancelUpload,
   clearLoadedShow,
   clearManualPreflightChecks,
   clearOnboardPreflightChecks,
   closeEnvironmentEditorDialog,
   closeTakeoffAreaSetupDialog,
   closeUploadDialog,
+  notifyUploadFinished,
   openEnvironmentEditorDialog,
   openTakeoffAreaSetupDialog,
   openUploadDialog,
@@ -169,6 +173,7 @@ export const {
   setUploadTarget,
   signOffOnManualPreflightChecksAt,
   signOffOnOnboardPreflightChecksAt,
+  startUpload,
   uploadingPromisePending,
   uploadingPromiseFulfilled,
   uploadingPromiseRejected
