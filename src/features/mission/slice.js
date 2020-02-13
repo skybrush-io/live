@@ -149,6 +149,23 @@ const { actions, reducer } = createSlice({
     },
 
     /**
+     * Replaces the entire mission mapping with a new one.
+     */
+    replaceMapping(state, action) {
+      const newMapping = action.payload;
+
+      if (!Array.isArray(newMapping)) {
+        throw new TypeError('New mapping must be an array');
+      }
+
+      if (newMapping.length !== state.mapping.length) {
+        throw new Error('Cannot change mapping length with replaceMapping()');
+      }
+
+      state.mapping = newMapping;
+    },
+
+    /**
      * Sets the length of the mapping. When the new length is smaller than the
      * old length, the mapping will be truncated from the end. When the new
      * length is larger than the old length, empty slots will be added to the
@@ -250,6 +267,7 @@ export const {
   commitMappingEditorSessionAtCurrentSlot,
   finishMappingEditorSession,
   removeUAVsFromMission,
+  replaceMapping,
   setMappingLength,
   startMappingEditorSession,
   startMappingEditorSessionAtSlot,

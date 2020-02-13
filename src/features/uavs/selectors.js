@@ -245,3 +245,14 @@ export const getMissingUAVIdsInMapping = createSelector(
   (mapping, uavsById) =>
     mapping.filter(uavId => !isNil(uavId) && isNil(uavsById[uavId]))
 );
+
+/**
+ * Returns the list of UAV IDs that the server knows about but that do not
+ * participate in the mapping.
+ */
+export const getUnmappedUAVIds = createSelector(
+  getReverseMissionMapping,
+  getUAVIdList,
+  (reverseMapping, uavIds) =>
+    uavIds.filter(uavId => isNil(reverseMapping[uavId]))
+);
