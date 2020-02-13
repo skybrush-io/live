@@ -19,6 +19,7 @@ import DronePlaceholderList from './DronePlaceholderList';
 import DialogToolbar from '~/components/dialogs/DialogToolbar';
 import { augmentMappingAutomaticallyFromSpareDrones } from '~/features/mission/actions';
 import { getEmptyMappingSlotIndices } from '~/features/mission/selectors';
+import { supportsVirtualDrones } from '~/features/servers/selectors';
 import { approveTakeoffArea } from '~/features/show/actions';
 import { isTakeoffAreaApproved } from '~/features/show/selectors';
 import {
@@ -103,6 +104,7 @@ MisalignedDronesIndicator.propTypes = {
 const TakeoffAreaSetupDialog = ({
   approved,
   emptySlotIndices,
+  hasVirtualDrones,
   missingUAVIds,
   misplacedUAVIds,
   misalignedUAVIds,
@@ -118,7 +120,9 @@ const TakeoffAreaSetupDialog = ({
         Takeoff area setup
       </Typography>
       <Box flex={1} />
-      <Button startIcon={<Add />}>Add virtual drones</Button>
+      {hasVirtualDrones && (
+        <Button startIcon={<Add />}>Add virtual drones</Button>
+      )}
       <IconButton onClick={onAutomap}>
         <Shuffle />
       </IconButton>
@@ -150,6 +154,7 @@ const TakeoffAreaSetupDialog = ({
 TakeoffAreaSetupDialog.propTypes = {
   approved: PropTypes.bool,
   emptySlotIndices: PropTypes.arrayOf(PropTypes.number),
+  hasVirtualDrones: PropTypes.bool,
   missingUAVIds: PropTypes.arrayOf(PropTypes.string),
   misplacedUAVIds: PropTypes.arrayOf(PropTypes.string),
   misalignedUAVIds: PropTypes.arrayOf(PropTypes.string),
@@ -181,6 +186,7 @@ export default connect(
       ...state.show.takeoffAreaSetupDialog,
       approved: isTakeoffAreaApproved(state),
       emptySlotIndices: getEmptyMappingSlotIndices(state),
+      hasVirtualDrones: supportsVirtualDrones(state),
       missingUAVIds: getMissingUAVIdsInMapping(state),
       misplacedUAVIds: getMisplacedUAVIds(state),
       misalignedUAVIds: getMisalignedUAVIds(state)

@@ -48,6 +48,7 @@ const { actions, reducer } = createSlice({
   initialState: {
     current: {
       authentication: INVALID,
+      features: {},
       state: ConnectionState.DISCONNECTED
     },
     isAuthenticating: false,
@@ -60,8 +61,8 @@ const { actions, reducer } = createSlice({
 
   reducers: {
     /**
-     * Action factory that creates an action that adds a detected server to the
-     * list of detected servers in the server registry.
+     * Adds a detected server to the list of detected servers in the server
+     * registry.
      *
      * The action will receive a property named `key` when the addition is
      * completed; this will contain an opaque identifier that can be used later
@@ -72,9 +73,9 @@ const { actions, reducer } = createSlice({
     },
 
     /**
-     * Action factory that creates an action that adds a server whose settings
-     * were inferred in the absence of a reliable detection mechanism (such as
-     * SSDP) to the list of detected servers in the server registry.
+     * Adds a server whose settings were inferred in the absence of a reliable
+     * detection mechanism (such as SSDP) to the list of detected servers in
+     * the server registry.
      *
      * The action will receive a property named `key` when the addition is
      * completed; this will contain an opaque identifier that can be used later
@@ -82,6 +83,20 @@ const { actions, reducer } = createSlice({
      */
     addInferredServer(state, action) {
       addServer(state, { action, inferred: true });
+    },
+
+    /**
+     * Adds a new feature to the list of features supported by the server.
+     */
+    addServerFeature(state, action) {
+      let { payload } = action;
+
+      if (typeof payload !== 'object') {
+        payload = { name: String(payload), data: true };
+      }
+
+      const { name, data } = payload;
+      state.current.features[name] = data;
     },
 
     authenticateToServerPromisePending(state) {
@@ -97,11 +112,18 @@ const { actions, reducer } = createSlice({
     },
 
     /**
-     * Action factory that clears the name and domain of the currently authenticated
-     * user.
+     * Clears the name and domain of the currently authenticated user.
      */
     clearAuthenticatedUser(state) {
       state.current.authentication.user = '';
+    },
+
+    /**
+     * Clears the list of features that we know are supported on the server that
+     * we are connected to.
+     */
+    clearServerFeatures(state) {
+      state.current.features = {};
     },
 
     /**
@@ -202,10 +224,12 @@ const { actions, reducer } = createSlice({
 export const {
   addDetectedServer,
   addInferredServer,
+  addServerFeature,
   authenticateToServerPromiseFulfilled,
   authenticateToServerPromisePending,
   authenticateToServerPromiseRejected,
   clearAuthenticatedUser,
+  clearServerFeatures,
   removeAllDetectedServers,
   setAuthenticatedUser,
   setCurrentServerConnectionState,

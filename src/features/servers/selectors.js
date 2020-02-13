@@ -14,6 +14,17 @@ import { selectOrdered } from '~/utils/collections';
 const getCurrentServerState = state => state.servers.current;
 
 /**
+ * Returns the list of features that we know are supported by the current
+ * Skybrush server.
+ *
+ * @param  {Object}  state  the state of the application
+ * @return {Object[]}  an object mapping names of features supported by the
+ *     current Skybrush server to any additional information we know about the
+ *     feature.
+ */
+const getCurrentServerFeatures = state => state.servers.current.features;
+
+/**
  * Selector that calculates and caches the list of all the servers detected
  * on the local network, in exactly the same order as they should appear on
  * the UI.
@@ -85,6 +96,23 @@ export const isConnected = createSelector(
 export const supportsAuthentication = createSelector(
   getAuthenticationSettings,
   settings => settings.methods && settings.methods.length > 0
+);
+
+/**
+ * Creates a selector that returns whether the server supports the feature with
+ * the given name.
+ */
+const makeSupportsFeatureSelector = name =>
+  createSelector(
+    getCurrentServerFeatures,
+    features => features[name] !== undefined
+  );
+
+/**
+ * Returns whehther the server we are connected to supports virtual drones.
+ */
+export const supportsVirtualDrones = makeSupportsFeatureSelector(
+  'virtual_uavs'
 );
 
 /**

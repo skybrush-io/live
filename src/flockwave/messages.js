@@ -11,6 +11,7 @@ import radix64 from 'radix-64';
 
 import { createCommandRequest, createMessageWithType } from './builders';
 import { extractReceiptFromCommandRequest } from './parsing';
+import { QueryHandler } from './queries';
 import version from './version';
 
 /**
@@ -505,6 +506,8 @@ export default class MessageHub {
     this._pendingResponses = {};
     this._waitUntilReadyDeferred = undefined;
 
+    this._query = undefined;
+
     this._onMessageTimedOut = this._onMessageTimedOut.bind(this);
 
     this._commandExecutionManager = new CommandExecutionManager(this);
@@ -540,6 +543,18 @@ export default class MessageHub {
       this._waitUntilReadyDeferred.resolve();
       this._waitUntilReadyDeferred = undefined;
     }
+  }
+
+  /**
+   * Returns an object that can be used to send commonly used queries to the
+   * server via the message hub.
+   */
+  get query() {
+    if (!this._query) {
+      this._query = new QueryHandler(this);
+    }
+
+    return this._query;
   }
 
   /**

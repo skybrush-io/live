@@ -13,7 +13,11 @@ import { clearConnectionList } from '~/actions/connections';
 import { clearClockList } from '~/features/clocks/slice';
 import { clearDockList } from '~/features/docks/slice';
 import { shouldManageLocalServer } from '~/features/local-server/selectors';
-import { setCurrentServerConnectionState } from '~/features/servers/slice';
+import {
+  addServerFeature,
+  clearServerFeatures,
+  setCurrentServerConnectionState
+} from '~/features/servers/slice';
 import { showSnackbarMessage } from '~/features/snackbar/slice';
 import handleError from '~/error-handling';
 import messageHub from '~/message-hub';
@@ -315,6 +319,15 @@ const executeTasksAfterConnection = async dispatch => {
       filter: ['dock']
     });
     handleDockIdList(response.body.ids || [], dispatch);
+
+    // Send an EXT-LIST message to the server to see if we support virtual
+    // drones
+    const supportsVirtualDrones = await messageHub.query.isExtensionLoaded(
+      'virtual_uavs'
+    );
+    if (supportsVirtualDrones) {
+      dispatch(addServerFeature('virtual_uavs'));
+    }
   } catch (error) {
     console.error(error);
     handleError(error);
@@ -372,6 +385,7 @@ const ServerConnectionManager = connect(
       dispatch(clearClockList());
       dispatch(clearConnectionList());
       dispatch(clearDockList());
+      dispatch(clearServerFeatures());
     },
 
     onLocalServerError(message, wasRunning) {
