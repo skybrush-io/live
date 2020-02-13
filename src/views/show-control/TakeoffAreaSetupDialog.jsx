@@ -8,12 +8,16 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
+import IconButton from '@material-ui/core/IconButton';
 import Switch from '@material-ui/core/Switch';
 import Typography from '@material-ui/core/Typography';
+import Add from '@material-ui/icons/Add';
+import Shuffle from '@material-ui/icons/Shuffle';
 
 import DronePlaceholderList from './DronePlaceholderList';
 
 import DialogToolbar from '~/components/dialogs/DialogToolbar';
+import { augmentMappingAutomaticallyFromSpareDrones } from '~/features/mission/actions';
 import { getEmptyMappingSlotIndices } from '~/features/mission/selectors';
 import { approveTakeoffArea } from '~/features/show/actions';
 import { isTakeoffAreaApproved } from '~/features/show/selectors';
@@ -104,6 +108,7 @@ const TakeoffAreaSetupDialog = ({
   misalignedUAVIds,
   open,
   onApprove,
+  onAutomap,
   onClose,
   onRevoke
 }) => (
@@ -113,7 +118,10 @@ const TakeoffAreaSetupDialog = ({
         Takeoff area setup
       </Typography>
       <Box flex={1} />
-      <Button>Add virtual drones</Button>
+      <Button startIcon={<Add />}>Add virtual drones</Button>
+      <IconButton onClick={onAutomap}>
+        <Shuffle />
+      </IconButton>
     </DialogToolbar>
 
     <DialogContent>
@@ -146,6 +154,7 @@ TakeoffAreaSetupDialog.propTypes = {
   misplacedUAVIds: PropTypes.arrayOf(PropTypes.string),
   misalignedUAVIds: PropTypes.arrayOf(PropTypes.string),
   onApprove: PropTypes.func,
+  onAutomap: PropTypes.func,
   onClose: PropTypes.func,
   onRevoke: PropTypes.func,
   open: PropTypes.bool
@@ -183,6 +192,10 @@ export default connect(
     onApprove() {
       dispatch(approveTakeoffArea());
       setTimeout(() => dispatch(closeTakeoffAreaSetupDialog()), 300);
+    },
+
+    onAutomap() {
+      dispatch(augmentMappingAutomaticallyFromSpareDrones());
     },
 
     onClose() {

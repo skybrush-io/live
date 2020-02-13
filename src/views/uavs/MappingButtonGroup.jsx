@@ -11,6 +11,7 @@ import Mapping from '@material-ui/icons/LooksOne';
 import Shuffle from '@material-ui/icons/Shuffle';
 import ToggleButton from '@material-ui/lab/ToggleButton';
 
+import { augmentMappingAutomaticallyFromSpareDrones } from '~/features/mission/actions';
 import { isMappingEditable } from '~/features/mission/selectors';
 import { isShowingMissionIds } from '~/features/settings/selectors';
 import {
@@ -34,6 +35,7 @@ const useStyles = makeStyles(
  * clear or edit the mapping.
  */
 const MappingButtonGroup = ({
+  augmentMappingAutomaticallyFromSpareDrones,
   mappingEditable,
   showMissionIds,
   startMappingEditorSession,
@@ -55,7 +57,7 @@ const MappingButtonGroup = ({
       )}
       {showMissionIds && (
         <Zoom key="automap">
-          <IconButton>
+          <IconButton onClick={augmentMappingAutomaticallyFromSpareDrones}>
             <Shuffle />
           </IconButton>
         </Zoom>
@@ -76,6 +78,7 @@ const MappingButtonGroup = ({
 };
 
 MappingButtonGroup.propTypes = {
+  augmentMappingAutomaticallyFromSpareDrones: PropTypes.func,
   mappingEditable: PropTypes.bool,
   showMissionIds: PropTypes.bool,
   startMappingEditorSession: PropTypes.func,
@@ -89,5 +92,10 @@ export default connect(
     showMissionIds: isShowingMissionIds(state)
   }),
   // mapDispatchToProps
-  { clearMapping, startMappingEditorSession, toggleMissionIds }
+  {
+    augmentMappingAutomaticallyFromSpareDrones,
+    clearMapping,
+    startMappingEditorSession,
+    toggleMissionIds
+  }
 )(MappingButtonGroup);
