@@ -1,10 +1,14 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import { TransitionGroup } from 'react-transition-group';
 import { connect } from 'react-redux';
 
+import Zoom from '@material-ui/core/Zoom';
 import IconButton from '@material-ui/core/IconButton';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Edit from '@material-ui/icons/Edit';
+import Mapping from '@material-ui/icons/LooksOne';
+import Shuffle from '@material-ui/icons/Shuffle';
 import ToggleButton from '@material-ui/lab/ToggleButton';
 
 import { isMappingEditable } from '~/features/mission/selectors';
@@ -38,24 +42,36 @@ const MappingButtonGroup = ({
   const classes = useStyles();
 
   return (
-    <>
-      <ToggleButton
-        className={classes.toggleButton}
-        size="small"
-        value="missionIds"
-        selected={showMissionIds}
-        onChange={toggleMissionIds}
-      >
-        Mapping
-      </ToggleButton>
-      <IconButton
-        className={classes.toggleButton}
-        disabled={mappingEditable || !showMissionIds}
-        onClick={startMappingEditorSession}
-      >
-        <Edit />
-      </IconButton>
-    </>
+    <TransitionGroup>
+      {showMissionIds && (
+        <Zoom key="editMapping">
+          <IconButton
+            disabled={mappingEditable || !showMissionIds}
+            onClick={startMappingEditorSession}
+          >
+            <Edit />
+          </IconButton>
+        </Zoom>
+      )}
+      {showMissionIds && (
+        <Zoom key="automap">
+          <IconButton>
+            <Shuffle />
+          </IconButton>
+        </Zoom>
+      )}
+      <Zoom key="showMapping">
+        <ToggleButton
+          className={classes.toggleButton}
+          size="small"
+          value="missionIds"
+          selected={showMissionIds}
+          onChange={toggleMissionIds}
+        >
+          <Mapping />
+        </ToggleButton>
+      </Zoom>
+    </TransitionGroup>
   );
 };
 

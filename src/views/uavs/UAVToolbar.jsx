@@ -43,8 +43,6 @@ const UAVToolbar = React.forwardRef(
 
         <Box flex={1} />
 
-        <Divider className={classes.divider} orientation="vertical" />
-
         {fitSelectedUAVs && (
           <IconButton style={{ float: 'right' }} onClick={fitSelectedUAVs}>
             {isSelectionEmpty ? <ImageBlurOn /> : <ImageBlurCircular />}

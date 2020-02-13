@@ -3,14 +3,17 @@ import React from 'react';
 import { connect } from 'react-redux';
 
 import Box from '@material-ui/core/Box';
+import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
+import Typography from '@material-ui/core/Typography';
 
 import DronePlaceholderList from './DronePlaceholderList';
 
+import DialogToolbar from '~/components/dialogs/DialogToolbar';
 import { getEmptyMappingSlotIndices } from '~/features/mission/selectors';
 import { approveTakeoffArea } from '~/features/show/actions';
 import { isTakeoffAreaApproved } from '~/features/show/selectors';
@@ -105,13 +108,21 @@ const TakeoffAreaSetupDialog = ({
   onRevoke
 }) => (
   <Dialog fullWidth open={open} maxWidth="sm" onClose={onClose}>
+    <DialogToolbar>
+      <Typography noWrap variant="subtitle1">
+        Takeoff area setup
+      </Typography>
+      <Box flex={1} />
+      <Button>Add virtual drones</Button>
+    </DialogToolbar>
+
     <DialogContent>
       <EmptySlotsIndicator indices={emptySlotIndices} />
       <MissingDronesIndicator uavIds={missingUAVIds} />
       <MisplacedDronesIndicator uavIds={misplacedUAVIds} />
       <MisalignedDronesIndicator uavIds={misalignedUAVIds} />
 
-      <Box textAlign="center" mt={2}>
+      <Box className="bottom-bar" textAlign="center" mt={2} pt={2}>
         <FormControlLabel
           control={
             <Switch
