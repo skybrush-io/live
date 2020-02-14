@@ -108,7 +108,7 @@
     "redux-thunk": "^2.3.0",
     "screenfull": "^5.0.1",
     "shell-quote": "^1.7.2",
-    "typeface-roboto": "0.0.75",
+    "typeface-fira-sans": "0.0.75",
     "updeep": "^1.2.0",
     "url": "^0.11.0",
     "which": "^2.0.2",

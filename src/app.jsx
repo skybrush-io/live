@@ -28,7 +28,7 @@ require('../assets/css/screen.less');
 require('../assets/css/tooltips.less');
 
 require('react-cover-page/themes/default.css');
-require('typeface-roboto');
+require('typeface-fira-sans');
 
 const rootStyle = {
   display: 'flex',

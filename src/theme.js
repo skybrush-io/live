@@ -39,6 +39,10 @@ const DarkModeAwareThemeProvider = ({ children, type }) => {
       success: {
         main: Colors.success
       }
+    },
+
+    typography: {
+      fontFamily: 'Fira Sans'
     }
   });
 
