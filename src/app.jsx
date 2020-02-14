@@ -3,6 +3,7 @@ import React from 'react';
 import { WorkbenchView } from 'react-flexible-workbench';
 import { Provider as StoreProvider } from 'react-redux';
 import compose from 'recompose/compose';
+import setDisplayName from 'recompose/setDisplayName';
 import toClass from 'recompose/toClass';
 import withProps from 'recompose/withProps';
 import { PersistGate } from 'redux-persist/es/integration/react';
@@ -96,6 +97,7 @@ const Application = () => (
  * individual application panels.
  */
 const enhancer = compose(
+  setDisplayName('WorkbenchRoot'), // to have short names in the React profiler
   toClass, // react-flexible-workbench likes class components at the top
   withErrorBoundary,
   wrapWith(withProps({ store })(StoreProvider)),

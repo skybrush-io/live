@@ -9,9 +9,7 @@
 
 import React from 'react';
 import { WorkbenchBuilder } from 'react-flexible-workbench';
-import compose from 'recompose/compose';
 import renderNothing from 'recompose/renderNothing';
-import withProps from 'recompose/withProps';
 
 import BackgroundHint from './components/BackgroundHint';
 import MessagesPanel from './components/chat/MessagesPanel';
@@ -52,14 +50,7 @@ const componentRegistry = {
   'lcd-clock-panel': views.LCDClockPanel,
   'log-panel': views.LogPanel,
   map: views.MapView,
-  messages: compose(
-    withProps({
-      style: {
-        padding: '0 10px'
-      }
-    }),
-    injectFlockFromContext
-  )(MessagesPanel),
+  messages: injectFlockFromContext(MessagesPanel),
   placeholder: renderNothing(),
   'saved-location-list': views.SavedLocationList,
   'show-control': views.ShowControlPanel,
