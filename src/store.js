@@ -20,11 +20,9 @@ import { createPromise } from 'redux-promise-middleware';
 import createSagaMiddleware from 'redux-saga';
 import { persistStore, persistReducer } from 'redux-persist';
 import autoMergeLevel2 from 'redux-persist/lib/stateReconciler/autoMergeLevel2';
-import {
-  createBlacklistFilter,
-  createFilter
-} from 'redux-persist-transform-filter';
+import { createFilter } from 'redux-persist-transform-filter';
 
+import { loadingPromiseFulfilled } from './features/show/slice';
 import { updateUAVs } from './features/uavs/slice';
 import reducer from './reducers';
 
@@ -109,7 +107,15 @@ const persistConfig = {
       'serverSettings'
     ]),
 
-    createBlacklistFilter('show', ['data', 'upload'])
+    // it would be better to use a blacklist filter here that simply excludes
+    // 'data' and 'upload', but it makes a deep copy, which is very expensive
+    // if we have a show loaded in 'data'
+    createFilter('show', [
+      'environment',
+      'preflight',
+      'takeoffAreaSetupDialog',
+      'uploadDialog'
+    ])
   ]
 };
 
@@ -154,6 +160,10 @@ const store = configureStore({
           isFunction(value) ||
           isPromise(value) ||
           isError(value),
+
+        // Checking the action dispatched when a show was loaded successfully
+        // takes a long time and it should not be necessary anyway
+        ignoredActions: [loadingPromiseFulfilled],
 
         // Checking the show specification takes a long time and it should not
         // be necessary anyway

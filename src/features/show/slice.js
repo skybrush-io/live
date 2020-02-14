@@ -250,6 +250,7 @@ export const {
   closeTakeoffAreaSetupDialog,
   closeUploadDialog,
   dismissLastUploadResult,
+  loadingPromiseFulfilled,
   notifyUploadFinished,
   notifyUploadOnUavCancelled,
   notifyUploadOnUavFailed,
