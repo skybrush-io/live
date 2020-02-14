@@ -19,7 +19,8 @@ const clockIdToProps = {
 
   mission: {
     label: 'Mission clock',
-    abbreviation: 'MSN'
+    abbreviation: 'MSN',
+    signed: true
   },
 
   mtc: {
@@ -29,7 +30,8 @@ const clockIdToProps = {
 
   show: {
     label: 'Drone show clock',
-    abbreviation: 'SHOW'
+    abbreviation: 'SHOW',
+    signed: true
   }
 };
 
@@ -81,22 +83,28 @@ export function formatTicksOnClock(ticks, clock, options) {
   const { format = clock.format } = options;
 
   if (isNil(epoch) || isNaN(epoch)) {
-    if (clock.id !== 'mtc' && ticksPerSecond <= 1) {
-      // No epoch, so we just simply show a HH:MM:SS timestamp
+    if (clock.id === 'mtc') {
+      // No epoch, so we just simply show a HH:MM:SS:FF SMPTE-style
+      // timestamp. We (ab)use the millisecond part of the timestamp
+      // to represent the number of frames
       return moment
         .utc(0)
         .add(Math.floor(ticks / ticksPerSecond), 'second')
-        .format('HH:mm:ss');
+        .add((ticks % ticksPerSecond) * 10, 'millisecond')
+        .format('HH:mm:ss:SS');
     }
 
-    // No epoch, so we just simply show a HH:MM:SS:FF SMPTE-style
-    // timestamp. We (ab)use the millisecond part of the timestamp
-    // to represent the number of frames
+    if (ticksPerSecond <= 1) {
+      // No epoch, so we just simply show a HH:MM:SS timestamp
+      return moment
+        .duration(ticks / ticksPerSecond, 'second')
+        .format('HH:mm:ss', { trim: false });
+    }
+
+    // No epoch, we show the timestamp up to 1/10th of seconds
     return moment
-      .utc(0)
-      .add(Math.floor(ticks / ticksPerSecond), 'second')
-      .add((ticks % ticksPerSecond) * 10, 'millisecond')
-      .format('HH:mm:ss:SS');
+      .duration(ticks / ticksPerSecond, 'second')
+      .format('HH:mm:ss', { precision: 1, trim: false });
   }
 
   // We have an epoch, so create a date and use the formatter
@@ -140,4 +148,13 @@ export function getPreferredUpdateIntervalOfClock(clock) {
   }
 
   return 1000;
+}
+
+/**
+ * Returns whether the given clock is 'signed', i.e. can have a negative
+ * tick count.
+ */
+export function isClockSigned(clock) {
+  const props = clock ? clockIdToProps[clock.id] : null;
+  return props ? props.signed : false;
 }
