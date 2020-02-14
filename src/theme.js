@@ -42,7 +42,7 @@ const DarkModeAwareThemeProvider = ({ children, type }) => {
     },
 
     typography: {
-      fontFamily: 'Fira Sans'
+      fontFamily: '"Fira Sans", "Helvetica", "Arial", sans-serif'
     }
   });
 
