@@ -6,6 +6,32 @@
 import get from 'lodash-es/get';
 
 /**
+ * Returns the current configuration object of the server extension with the
+ * given name.
+ */
+export async function getConfigurationOfExtension(hub, name) {
+  if (name.includes('.')) {
+    throw new Error(`Invalid extension name: ${name}`);
+  }
+
+  const response = await hub.sendMessage({
+    type: 'EXT-CFG',
+    ids: [name]
+  });
+
+  const configuration = get(response, `body.status.${name}`);
+  if (!configuration) {
+    // No such extension, most likely.
+    const reason = get(response, `body.reasons.${name}`);
+    throw new Error(
+      reason || `Failed to retrieve configuration for extension: ${name}`
+    );
+  }
+
+  return configuration;
+}
+
+/**
  * Checks whether the extension with the given name is currently loaded in
  * the server.
  *
@@ -34,6 +60,7 @@ export async function isExtensionLoaded(hub, name) {
  */
 export class QueryHandler {
   _queries = {
+    getConfigurationOfExtension,
     isExtensionLoaded
   };
 

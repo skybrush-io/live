@@ -17,7 +17,10 @@ import Shuffle from '@material-ui/icons/Shuffle';
 import DronePlaceholderList from './DronePlaceholderList';
 
 import DialogToolbar from '~/components/dialogs/DialogToolbar';
-import { augmentMappingAutomaticallyFromSpareDrones } from '~/features/mission/actions';
+import {
+  addVirtualDronesForMission,
+  augmentMappingAutomaticallyFromSpareDrones
+} from '~/features/mission/actions';
 import { getEmptyMappingSlotIndices } from '~/features/mission/selectors';
 import { supportsVirtualDrones } from '~/features/servers/selectors';
 import { approveTakeoffArea } from '~/features/show/actions';
@@ -109,6 +112,7 @@ const TakeoffAreaSetupDialog = ({
   misplacedUAVIds,
   misalignedUAVIds,
   open,
+  onAddVirtualDrones,
   onApprove,
   onAutomap,
   onClose,
@@ -121,7 +125,9 @@ const TakeoffAreaSetupDialog = ({
       </Typography>
       <Box flex={1} />
       {hasVirtualDrones && (
-        <Button startIcon={<Add />}>Add virtual drones</Button>
+        <Button startIcon={<Add />} onClick={onAddVirtualDrones}>
+          Add virtual drones
+        </Button>
       )}
       <IconButton onClick={onAutomap}>
         <Shuffle />
@@ -158,6 +164,7 @@ TakeoffAreaSetupDialog.propTypes = {
   missingUAVIds: PropTypes.arrayOf(PropTypes.string),
   misplacedUAVIds: PropTypes.arrayOf(PropTypes.string),
   misalignedUAVIds: PropTypes.arrayOf(PropTypes.string),
+  onAddVirtualDrones: PropTypes.func,
   onApprove: PropTypes.func,
   onAutomap: PropTypes.func,
   onClose: PropTypes.func,
@@ -195,6 +202,10 @@ export default connect(
 
   // mapDispatchToProps
   dispatch => ({
+    async onAddVirtualDrones() {
+      dispatch(addVirtualDronesForMission());
+    },
+
     onApprove() {
       dispatch(approveTakeoffArea());
       setTimeout(() => dispatch(closeTakeoffAreaSetupDialog()), 300);

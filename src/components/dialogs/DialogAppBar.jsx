@@ -9,8 +9,10 @@ import { isDark } from '~/theme';
 const useStyles = makeStyles(
   theme => ({
     root: {
-      backgroundColor: isDark(theme) ? '#222' : undefined,
-      color: isDark(theme) ? theme.palette.getContrastText('#222') : undefined
+      backgroundColor: isDark(theme) ? '#535353' : undefined,
+      color: isDark(theme)
+        ? theme.palette.getContrastText('#535353')
+        : undefined
     }
   }),
   { name: 'DialogAppBar' }

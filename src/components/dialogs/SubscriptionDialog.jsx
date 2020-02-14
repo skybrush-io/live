@@ -21,8 +21,8 @@ import ListItemText from '@material-ui/core/ListItemText';
 import IconButton from '@material-ui/core/IconButton';
 import ContentRemoveCircleOutline from '@material-ui/icons/RemoveCircleOutline';
 
-import flock from '../../flock';
-import messageHub from '../../message-hub';
+import flock from '~/flock';
+import messageHub from '~/message-hub';
 
 /**
  * React Component to chose the subscribed UAV device channels.
