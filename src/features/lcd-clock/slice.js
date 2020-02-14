@@ -16,9 +16,14 @@ const { actions, reducer } = createSlice({
         id: 'server',
         clockId: 'system',
         preset: 0
+      },
+      show: {
+        id: 'show',
+        clockId: 'show',
+        preset: 1
       }
     },
-    order: ['server']
+    order: ['server', 'show']
   },
 
   reducers: {

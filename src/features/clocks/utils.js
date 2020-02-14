@@ -29,7 +29,7 @@ const clockIdToProps = {
 
   show: {
     label: 'Drone show clock',
-    abbreviation: 'Show'
+    abbreviation: 'SHOW'
   }
 };
 

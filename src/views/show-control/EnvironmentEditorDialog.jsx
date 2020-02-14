@@ -154,7 +154,6 @@ export default connect(
     },
 
     onSetCoordinateSystemFromMap(mapCoordinateSystem) {
-      console.log(setupMissionFromShow);
       dispatch(setOutdoorShowOrigin(mapCoordinateSystem.position));
       dispatch(setOutdoorShowOrientation(mapCoordinateSystem.angle));
       dispatch(setupMissionFromShow());
