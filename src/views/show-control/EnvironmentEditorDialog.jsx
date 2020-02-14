@@ -18,10 +18,11 @@ import {
 } from '~/actions/map-origin';
 import CoordinateSystemFields from '~/components/CoordinateSystemFields';
 import FormHeader from '~/components/dialogs/FormHeader';
-import { setOutdoorShowOrientationAndUpdateTakeoffHeadings } from '~/features/show/actions';
+import { setupMissionFromShow } from '~/features/show/actions';
 import { COORDINATE_SYSTEM_TYPE } from '~/features/show/constants';
 import {
   closeEnvironmentEditorDialog,
+  setOutdoorShowOrientation,
   setOutdoorShowOrigin
 } from '~/features/show/slice';
 import { showSnackbarMessage } from '~/features/snackbar/slice';
@@ -143,20 +144,20 @@ export default connect(
     },
 
     onOrientationChanged(value) {
-      dispatch(setOutdoorShowOrientationAndUpdateTakeoffHeadings(value));
+      dispatch(setOutdoorShowOrientation(value));
+      dispatch(setupMissionFromShow());
     },
 
     onOriginChanged(value) {
       dispatch(setOutdoorShowOrigin(value));
+      dispatch(setupMissionFromShow());
     },
 
     onSetCoordinateSystemFromMap(mapCoordinateSystem) {
+      console.log(setupMissionFromShow);
       dispatch(setOutdoorShowOrigin(mapCoordinateSystem.position));
-      dispatch(
-        setOutdoorShowOrientationAndUpdateTakeoffHeadings(
-          mapCoordinateSystem.angle
-        )
-      );
+      dispatch(setOutdoorShowOrientation(mapCoordinateSystem.angle));
+      dispatch(setupMissionFromShow());
       dispatch(
         showSnackbarMessage({
           message: 'Show coordinate system updated from map.',

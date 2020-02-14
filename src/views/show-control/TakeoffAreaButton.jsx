@@ -14,7 +14,7 @@ import { getFarthestDistanceFromHome } from '~/features/uavs/selectors';
 
 const formatStatusText = (status, maxDistance) => {
   if (typeof maxDistance === 'number') {
-    return `Current maximum distance: ${maxDistance.toFixed(2)} m`;
+    return `Placement accuracy ≤ ${maxDistance.toFixed(2)} m`;
   }
 
   switch (status) {

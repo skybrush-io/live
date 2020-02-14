@@ -14,8 +14,7 @@ import {
   setEnvironmentType,
   signOffOnManualPreflightChecksAt,
   signOffOnOnboardPreflightChecksAt,
-  _retryFailedUploads,
-  _setOutdoorShowOrientation
+  _retryFailedUploads
 } from './slice';
 
 import {
@@ -40,13 +39,30 @@ const loadShowFromFileInner = createAsyncAction('show/loading', async file => {
 });
 
 /**
+ * Updates the takeoff and landing positions and the takeoff headings in the
+ * current mission from the show settings and trajectories.
+ */
+export const setupMissionFromShow = () => (dispatch, getState) => {
+  const state = getState();
+
+  // TODO(ntamas): map these to GPS coordinates only if the show is outdoor
+  const homePositions = getFirstPointsOfTrajectoriesInWorldCoordinates(state);
+  const landingPositions = getLastPointsOfTrajectoriesInWorldCoordinates(state);
+  const orientation = getOutdoorShowOrientation(state);
+
+  dispatch(updateHomePositions(homePositions));
+  dispatch(updateLandingPositions(landingPositions));
+  dispatch(updateTakeoffHeadings(orientation));
+};
+
+/**
  * Thunk that creates an async action that loads a drone show from a Skybrush
  * compiled drone show file.
  *
  * The thunk must be invoked with the file that the user wants to open
  * the show from.
  */
-export const loadShowFromFile = file => async (dispatch, getState) => {
+export const loadShowFromFile = file => async dispatch => {
   let result;
 
   try {
@@ -72,15 +88,13 @@ export const loadShowFromFile = file => async (dispatch, getState) => {
     dispatch(setEnvironmentType(environment.type));
   }
 
-  // TODO(ntamas): map this to GPS coordinates only if the show is outdoor
-  const state = getState();
-  const homePositions = getFirstPointsOfTrajectoriesInWorldCoordinates(state);
-  const landingPositions = getLastPointsOfTrajectoriesInWorldCoordinates(state);
-  const orientation = getOutdoorShowOrientation(state);
+  // TODO(ntamas): if the number of drones is different than the number of
+  // drones in the previous file, it is probably a completely new show so
+  // we should forget the show coordinate system completely
 
-  dispatch(updateHomePositions(homePositions));
-  dispatch(updateLandingPositions(landingPositions));
-  dispatch(updateTakeoffHeadings(orientation));
+  // Update the takeoff and landing positions and the takeoff headings in the
+  // mission from the loaded show settings
+  dispatch(setupMissionFromShow());
 
   // Revoke the approval of the takeoff area in case it was approved
   dispatch(revokeTakeoffAreaApproval());
@@ -94,17 +108,6 @@ export function retryFailedUploads() {
   return (dispatch, getState) => {
     const failedItems = getFailedUploadItems(getState());
     dispatch(_retryFailedUploads(failedItems));
-  };
-}
-
-export function setOutdoorShowOrientationAndUpdateTakeoffHeadings(orientation) {
-  return (dispatch, getState) => {
-    dispatch(_setOutdoorShowOrientation(orientation));
-
-    const state = getState();
-    const newOrientation = getOutdoorShowOrientation(state);
-
-    dispatch(updateTakeoffHeadings(newOrientation));
   };
 }
 

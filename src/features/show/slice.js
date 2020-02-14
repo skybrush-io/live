@@ -206,7 +206,7 @@ const { actions, reducer } = createSlice({
       });
     },
 
-    _setOutdoorShowOrientation(state, action) {
+    setOutdoorShowOrientation(state, action) {
       state.environment.outdoor.coordinateSystem.orientation = String(
         action.payload
       );
@@ -265,7 +265,7 @@ export const {
   _retryFailedUploads,
   revokeTakeoffAreaApproval,
   setEnvironmentType,
-  _setOutdoorShowOrientation,
+  setOutdoorShowOrientation,
   setOutdoorShowOrigin,
   setUploadTarget,
   signOffOnManualPreflightChecksAt,
