@@ -11,8 +11,8 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import IconButton from '@material-ui/core/IconButton';
 import Switch from '@material-ui/core/Switch';
 import Typography from '@material-ui/core/Typography';
-import Add from '@material-ui/icons/Add';
 import Shuffle from '@material-ui/icons/Shuffle';
+import VerticalAlignBottom from '@material-ui/icons/VerticalAlignBottom';
 
 import DronePlaceholderList from './DronePlaceholderList';
 
@@ -125,8 +125,11 @@ const TakeoffAreaSetupDialog = ({
       </Typography>
       <Box flex={1} />
       {hasVirtualDrones && (
-        <Button startIcon={<Add />} onClick={onAddVirtualDrones}>
-          Add virtual drones
+        <Button
+          startIcon={<VerticalAlignBottom />}
+          onClick={onAddVirtualDrones}
+        >
+          Place virtual drones
         </Button>
       )}
       <IconButton onClick={onAutomap}>
@@ -202,7 +205,7 @@ export default connect(
 
   // mapDispatchToProps
   dispatch => ({
-    async onAddVirtualDrones() {
+    onAddVirtualDrones() {
       dispatch(addVirtualDronesForMission());
     },
 

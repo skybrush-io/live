@@ -2,6 +2,7 @@
  * @file Utility functions to parse data out of Flockwave messages.
  */
 
+import get from 'lodash-es/get';
 import includes from 'lodash-es/includes';
 import isNil from 'lodash-es/isNil';
 
@@ -37,4 +38,35 @@ export function extractReceiptFromCommandRequest(message, uavId) {
   } else {
     throw new Error(`${type} messages do not contain receipts`);
   }
+}
+
+/**
+ * Extracts the object corresponding to a given ID in a standard response
+ * object having keys named `status`, `failure` and `reasons` (which is the
+ * case for many Flockwave messages.)
+ */
+export function extractResponseForId(message, id, options = {}) {
+  const failures = get(message, 'body.failure');
+
+  if (Array.isArray(failures) && failures.includes(id)) {
+    // Response indicates a failure for the given ID
+    const reasons = get(message, 'body.reasons');
+    if (typeof reasons === 'object' && typeof reasons[id] === 'string') {
+      throw new TypeError(reasons[id]);
+    } else {
+      const { error } = options;
+      throw new Error(
+        error || `Failed to retrieve result for ID ${id} from response`
+      );
+    }
+  }
+
+  const results = get(message, 'body.status');
+  if (typeof results === 'object' && typeof results[id] !== 'undefined') {
+    return results[id];
+  }
+
+  throw new Error(
+    `No result for ID ${id} but no failure either; this should not have happened.`
+  );
 }

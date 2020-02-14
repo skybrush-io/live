@@ -5,6 +5,7 @@
 
 import { createSlice } from '@reduxjs/toolkit';
 
+import { COORDINATE_SYSTEM_TYPE } from './constants';
 import { moveItemsBetweenQueues } from './utils';
 
 import { noPayload } from '~/utils/redux';
@@ -22,7 +23,8 @@ const { actions, reducer } = createSlice({
       outdoor: {
         coordinateSystem: {
           orientation: '0', // stored as a string to avoid rounding errors
-          origin: null
+          origin: null,
+          type: COORDINATE_SYSTEM_TYPE
         }
       },
       type: 'outdoor'

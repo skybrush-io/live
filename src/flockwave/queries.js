@@ -5,30 +5,24 @@
 
 import get from 'lodash-es/get';
 
+import { extractResponseForId } from './parsing';
+import { validateExtensionName } from './validation';
+
 /**
  * Returns the current configuration object of the server extension with the
  * given name.
  */
 export async function getConfigurationOfExtension(hub, name) {
-  if (name.includes('.')) {
-    throw new Error(`Invalid extension name: ${name}`);
-  }
+  validateExtensionName(name);
 
   const response = await hub.sendMessage({
     type: 'EXT-CFG',
     ids: [name]
   });
 
-  const configuration = get(response, `body.status.${name}`);
-  if (!configuration) {
-    // No such extension, most likely.
-    const reason = get(response, `body.reasons.${name}`);
-    throw new Error(
-      reason || `Failed to retrieve configuration for extension: ${name}`
-    );
-  }
-
-  return configuration;
+  return extractResponseForId(response, name, {
+    error: `Failed to retrieve configuration for extension: ${name}`
+  });
 }
 
 /**
@@ -55,8 +49,6 @@ export async function isExtensionLoaded(hub, name) {
 /**
  * Query handler object that can be used to initiate queries to a Flockwave
  * server using a given message hub.
- *
- * The entry point is the `sendQuery()`
  */
 export class QueryHandler {
   _queries = {

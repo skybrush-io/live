@@ -47,14 +47,14 @@ export const getDroneSwarmSpecification = state => {
  * Selector that returns the definition of the coordinate system of an outdoor
  * show.
  */
-const getOutdoorShowCoordinateSystem = state =>
+export const getOutdoorShowCoordinateSystem = state =>
   state.show.environment.outdoor.coordinateSystem;
 
 /**
  * Selector that returns an object that can be used to transform GPS coordinates
  * from/to the show coordinate system.
  */
-const getShowCoordinateSystemTransformationObject = createSelector(
+export const getShowCoordinateSystemTransformationObject = createSelector(
   getOutdoorShowCoordinateSystem,
   coordinateSystem =>
     coordinateSystem.origin
@@ -66,7 +66,7 @@ const getShowCoordinateSystemTransformationObject = createSelector(
  * Selector that returns a function that can be invoked with show coordinate
  * XYZ triplets and that returns the corresponding world coordinates.
  */
-const getShowToWorldCoordinateSystemTransformation = createSelector(
+export const getShowToWorldCoordinateSystemTransformation = createSelector(
   getShowCoordinateSystemTransformationObject,
   transform =>
     transform

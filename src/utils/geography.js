@@ -437,6 +437,13 @@ export class FlatEarthCoordinateSystem {
   }
 
   /**
+   * Returns the type of the coordinate system.
+   */
+  get type() {
+    return this._type;
+  }
+
+  /**
    * Converts a flat Earth coordinate pair to a longitude-latitude pair.
    *
    * @param {number[]} coords  a flat Earth coordinate pair to convert

@@ -19,6 +19,7 @@ import {
 import CoordinateSystemFields from '~/components/CoordinateSystemFields';
 import FormHeader from '~/components/dialogs/FormHeader';
 import { setOutdoorShowOrientationAndUpdateTakeoffHeadings } from '~/features/show/actions';
+import { COORDINATE_SYSTEM_TYPE } from '~/features/show/constants';
 import {
   closeEnvironmentEditorDialog,
   setOutdoorShowOrigin
@@ -67,7 +68,7 @@ const EnvironmentEditorDialog = ({
         <FormHeader>Coordinate system</FormHeader>
         {type === 'outdoor' && (
           <CoordinateSystemFields
-            type="nwu"
+            type={COORDINATE_SYSTEM_TYPE}
             {...outdoor.coordinateSystem}
             onOriginChanged={onOriginChanged}
             onOrientationChanged={onOrientationChanged}

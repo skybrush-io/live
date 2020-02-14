@@ -11,6 +11,7 @@ import radix64 from 'radix-64';
 
 import { createCommandRequest, createMessageWithType } from './builders';
 import { extractReceiptFromCommandRequest } from './parsing';
+import { OperationExecutor } from './operations';
 import { QueryHandler } from './queries';
 import version from './version';
 
@@ -506,6 +507,7 @@ export default class MessageHub {
     this._pendingResponses = {};
     this._waitUntilReadyDeferred = undefined;
 
+    this._executor = undefined;
     this._query = undefined;
 
     this._onMessageTimedOut = this._onMessageTimedOut.bind(this);
@@ -543,6 +545,18 @@ export default class MessageHub {
       this._waitUntilReadyDeferred.resolve();
       this._waitUntilReadyDeferred = undefined;
     }
+  }
+
+  /**
+   * Returns an object that can be used to execute commonly used operations on
+   * the server via the message hub.
+   */
+  get execute() {
+    if (!this._executor) {
+      this._executor = new OperationExecutor(this);
+    }
+
+    return this._executor;
   }
 
   /**
