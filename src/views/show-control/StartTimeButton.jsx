@@ -16,13 +16,12 @@ import { getSetupStageStatuses } from '~/features/show/stages';
  * Component with a button that shows a dialog that allows the user to set up
  * the preferred start time of the show.
  */
-const StartTimeButton = ({ formattedStartTime, onClick, status, ...rest }) => {
+const StartTimeButton = ({ formattedStartTime, onClick, status }) => {
   return (
     <ListItem
       button
       disabled={false && status === StepperStatus.OFF}
       onClick={onClick}
-      {...rest}
     >
       <StepperStatusLight status={status} />
       <ListItemText

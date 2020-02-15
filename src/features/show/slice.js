@@ -41,7 +41,8 @@ const { actions, reducer } = createSlice({
 
     start: {
       time: null,
-      method: 'rc'
+      method: 'rc',
+      syncStatusWithServer: 'notSynced'
     },
 
     startTimeDialog: {

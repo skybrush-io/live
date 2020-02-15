@@ -24,6 +24,19 @@ export const areOnboardPreflightChecksSignedOff = state =>
   Boolean(state.show.preflight.onboardChecksSignedOffAt);
 
 /**
+ * Returns whether the start time and start method of the show are synchronized
+ * with the server (i.e. the server "knows" about the same desired start time
+ * as the client).
+ */
+export const areStartConditionsSyncedWithServer = state =>
+  state.show.start.syncStatusWithServer === 'synced';
+
+/**
+ * Returns whether there is a scheduled start time for the drone show.
+ */
+export const hasScheduledStartTime = state => !isNil(state.show.start.time);
+
+/**
  * Returns whether the takeoff area arrangement was approved by the operator.
  */
 export const isTakeoffAreaApproved = state =>

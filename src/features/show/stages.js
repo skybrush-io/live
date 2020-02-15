@@ -8,7 +8,9 @@ import isEmpty from 'lodash-es/isEmpty';
 import {
   areManualPreflightChecksSignedOff,
   areOnboardPreflightChecksSignedOff,
+  areStartConditionsSyncedWithServer,
   hasLoadedShowFile,
+  hasScheduledStartTime,
   hasShowOrigin,
   isLoadingShowFile,
   isTakeoffAreaApproved
@@ -55,7 +57,12 @@ const stages = {
   },
 
   setupStartTime: {
-    evaluate: () => false,
+    evaluate: state =>
+      hasScheduledStartTime(state)
+        ? areStartConditionsSyncedWithServer(state)
+          ? StepperStatus.COMPLETED
+          : StepperStatus.WAITING
+        : StepperStatus.OFF,
     requires: ['selectShowFile']
   },
 

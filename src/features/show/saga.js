@@ -90,7 +90,7 @@ function* runUploadWorker(chan, failed) {
 /**
  * Saga that handles the uploading of the show to a set of drones.
  */
-function* showUploadSaga({ numWorkers = 8 } = {}) {
+function* showUploaderSaga({ numWorkers = 8 } = {}) {
   const failed = [];
   const chan = yield call(channel);
   const workers = [];
@@ -125,20 +125,50 @@ function* showUploadSaga({ numWorkers = 8 } = {}) {
 }
 
 /**
- * Compound saga related to the management of the background processes related
- * to drone shows; e.g., the uploading of a show to the drones.
-x */
-export default function* showSaga() {
-  while (yield take(startUpload)) {
-    const { cancelled, success } = yield race({
-      success: call(showUploadSaga),
-      cancelled: take(cancelUpload)
-    });
+ * Saga that starts an upload saga and waits for either the upload saga to
+ * finish, or a cancellation action.
+ */
+function* showUploaderSagaWithCancellation() {
+  const { cancelled, success } = yield race({
+    success: call(showUploaderSaga),
+    cancelled: take(cancelUpload)
+  });
 
-    if (cancelled) {
-      yield put(notifyUploadFinished({ cancelled }));
-    } else {
-      yield put(notifyUploadFinished({ success }));
-    }
+  if (cancelled) {
+    yield put(notifyUploadFinished({ cancelled }));
+  } else {
+    yield put(notifyUploadFinished({ success }));
   }
 }
+
+const sagaCreator = mapping =>
+  function*() {
+    const actions = Object.keys(mapping);
+    const tasks = {};
+
+    while (true) {
+      const action = yield take(actions);
+
+      if (tasks[action.type]) {
+        if (tasks[action.type].isRunning()) {
+          // ignore the action
+          continue;
+        } else {
+          delete tasks[action.type];
+        }
+      }
+
+      const saga = mapping[action.type];
+      if (saga) {
+        tasks[startUpload] = yield fork(saga, action);
+      }
+    }
+  };
+
+/**
+ * Compound saga related to the management of the background processes related
+ * to drone shows; e.g., the uploading of a show to the drones.
+ */
+export default sagaCreator({
+  [startUpload]: showUploaderSagaWithCancellation
+});
