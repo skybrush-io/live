@@ -132,7 +132,7 @@ export function getCurrentTickCountOnClock(clock) {
  *
  * @param {object} clock  the clock object
  * @return {number}  the number of milliseconds that should pass between
- *         consecutive updates of the flock
+ *         consecutive updates of the clock
  */
 export function getPreferredUpdateIntervalOfClock(clock) {
   if (!clock) {

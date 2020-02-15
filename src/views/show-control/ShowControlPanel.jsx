@@ -13,6 +13,7 @@ import LoadShowFromFileButton from './LoadShowFromFileButton';
 import ManualPreflightChecksButton from './ManualPreflightChecksButton';
 import OnboardPreflightChecksButton from './OnboardPreflightChecksButton';
 import StartTimeButton from './StartTimeButton';
+import StartTimeDialog from './StartTimeDialog';
 import TakeoffAreaButton from './TakeoffAreaButton';
 import TakeoffAreaSetupDialog from './TakeoffAreaSetupDialog';
 import UploadButton from './UploadButton';
@@ -66,6 +67,7 @@ const ShowControlPanel = () => {
       </Box>
 
       <EnvironmentEditorDialog />
+      <StartTimeDialog />
       <TakeoffAreaSetupDialog />
       <UploadDialog />
     </Box>

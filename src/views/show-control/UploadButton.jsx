@@ -19,7 +19,7 @@ import { getSetupStageStatuses } from '~/features/show/stages';
  * upload process of the current show to the drones.
  */
 const UploadButton = ({ status, ...rest }) => (
-  <ListItem button {...rest}>
+  <ListItem button disabled={status === StepperStatus.OFF} {...rest}>
     <StepperStatusLight status={status} />
     <ListItemText
       disableTypography

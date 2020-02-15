@@ -198,7 +198,11 @@ const UploadDialog = ({
             Cancel upload
           </Button>
         ) : (
-          <Button startIcon={<CloudUpload />} onClick={onStartUpload}>
+          <Button
+            color="primary"
+            startIcon={<CloudUpload />}
+            onClick={onStartUpload}
+          >
             Start upload
           </Button>
         )}

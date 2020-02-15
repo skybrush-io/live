@@ -114,6 +114,7 @@ const persistConfig = {
       'environment',
       'preflight',
       'takeoffAreaSetupDialog',
+      'startTimeDialog',
       'uploadDialog'
     ])
   ]

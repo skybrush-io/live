@@ -36,6 +36,15 @@ const { actions, reducer } = createSlice({
       takeoffAreaApprovedAt: null
     },
 
+    start: {
+      time: null,
+      method: 'rc'
+    },
+
+    startTimeDialog: {
+      open: false
+    },
+
     takeoffAreaSetupDialog: {
       open: false
     },
@@ -88,6 +97,10 @@ const { actions, reducer } = createSlice({
 
     closeEnvironmentEditorDialog: noPayload(state => {
       state.environment.editing = false;
+    }),
+
+    closeStartTimeDialog: noPayload(state => {
+      state.startTimeDialog.open = false;
     }),
 
     closeTakeoffAreaSetupDialog: noPayload(state => {
@@ -178,6 +191,10 @@ const { actions, reducer } = createSlice({
       state.environment.editing = true;
     }),
 
+    openStartTimeDialog: noPayload(state => {
+      state.startTimeDialog.open = true;
+    }),
+
     openTakeoffAreaSetupDialog: noPayload(state => {
       state.takeoffAreaSetupDialog.open = true;
     }),
@@ -249,6 +266,7 @@ export const {
   clearOnboardPreflightChecks,
   clearUploadQueue,
   closeEnvironmentEditorDialog,
+  closeStartTimeDialog,
   closeTakeoffAreaSetupDialog,
   closeUploadDialog,
   dismissLastUploadResult,
@@ -260,6 +278,7 @@ export const {
   notifyUploadOnUavStarted,
   notifyUploadOnUavSucceeded,
   openEnvironmentEditorDialog,
+  openStartTimeDialog,
   openTakeoffAreaSetupDialog,
   openUploadDialog,
   _retryFailedUploads,
