@@ -1,6 +1,7 @@
 import {
   addMinutes,
   endOfDay,
+  formatISO9075,
   fromUnixTime,
   getUnixTime,
   isPast,
@@ -23,8 +24,10 @@ import DialogContent from '@material-ui/core/DialogContent';
 import FormGroup from '@material-ui/core/FormGroup';
 import MenuItem from '@material-ui/core/MenuItem';
 import AccessTime from '@material-ui/icons/AccessTime';
+import Alert from '@material-ui/lab/Alert';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 
+import Header from '~/components/dialogs/FormHeader';
 import {
   closeStartTimeDialog,
   setStartMethod,
@@ -56,7 +59,13 @@ function validateForm(values) {
  * Form in the start time management dialog that keeps track of the changes
  * made by the user before the changes are submitted.
  */
-const StartTimeForm = ({ alwaysAllowSubmission, initialValues, onSubmit }) => (
+const StartTimeForm = ({
+  alwaysAllowSubmission,
+  initialValues,
+  onClearStartTime,
+  onSubmit,
+  originalStartTime
+}) => (
   <Form
     initialValues={initialValues}
     validate={validateForm}
@@ -65,17 +74,30 @@ const StartTimeForm = ({ alwaysAllowSubmission, initialValues, onSubmit }) => (
     {({ dirty, form, handleSubmit }) => (
       <form id="start-time-form" onSubmit={handleSubmit}>
         <DialogContent>
-          <Select
-            labelId="start-signal-label"
-            name="method"
-            label="Start signal"
-            formControlProps={{ fullWidth: true, variant: 'filled' }}
+          <Alert
+            severity={originalStartTime ? 'info' : 'warning'}
+            variant="filled"
+            onClose={originalStartTime ? onClearStartTime : null}
           >
-            <MenuItem value="rc">
-              Start show with remote controller (safer)
-            </MenuItem>
-            <MenuItem value="auto">Start show automatically</MenuItem>
-          </Select>
+            <Box>
+              {originalStartTime ? (
+                <>
+                  Start time is set to{' '}
+                  <strong>{formatISO9075(originalStartTime)}</strong>
+                </>
+              ) : (
+                'No start time is set at the moment.'
+              )}
+            </Box>
+          </Alert>
+
+          <Box mt={2}>
+            <Header>
+              {originalStartTime
+                ? 'Set a new start time below'
+                : 'Set the start time of the show below'}
+            </Header>
+          </Box>
 
           {/* we use separate pickers for the date and the time; this is
            * because in most cases the date should default to the current
@@ -108,6 +130,19 @@ const StartTimeForm = ({ alwaysAllowSubmission, initialValues, onSubmit }) => (
               />
             </Box>
           </FormGroup>
+
+          <Select
+            labelId="start-signal-label"
+            margin="dense"
+            name="method"
+            label="Start signal"
+            formControlProps={{ fullWidth: true, variant: 'filled' }}
+          >
+            <MenuItem value="rc">
+              Start show with remote controller (safer)
+            </MenuItem>
+            <MenuItem value="auto">Start show automatically</MenuItem>
+          </Select>
         </DialogContent>
         <DialogActions>
           <Button disabled={!dirty} onClick={() => form.reset()}>
@@ -131,14 +166,23 @@ StartTimeForm.propTypes = {
   initialValues: PropTypes.shape({
     method: PropTypes.oneOf(['rc', 'auto'])
   }),
-  onSubmit: PropTypes.func
+  onClearStartTime: PropTypes.func,
+  onSubmit: PropTypes.func,
+  originalStartTime: PropTypes.instanceOf(Date)
 };
 
 /**
  * Presentation component for the dialog that allows the user to set up the
  * start time and the start metod of the drone show.
  */
-const StartTimeDialog = ({ method, open, onClose, onUpdateSettings, time }) => {
+const StartTimeDialog = ({
+  method,
+  open,
+  onClearStartTime,
+  onClose,
+  onUpdateSettings,
+  time
+}) => {
   const hasStartTime = typeof time === 'number';
   const startDateTime = hasStartTime
     ? fromUnixTime(time)
@@ -148,12 +192,14 @@ const StartTimeDialog = ({ method, open, onClose, onUpdateSettings, time }) => {
     <MuiPickersUtilsProvider utils={DateFnsUtils}>
       <Dialog fullWidth open={open} maxWidth="xs" onClose={onClose}>
         <StartTimeForm
-          alwayAllowSubmission={hasStartTime}
+          alwaysAllowSubmission={!hasStartTime}
           initialValues={{
             method,
             date: startOfDay(startDateTime),
             time: startDateTime
           }}
+          originalStartTime={hasStartTime ? startDateTime : null}
+          onClearStartTime={onClearStartTime}
           onSubmit={onUpdateSettings}
         />
       </Dialog>
@@ -163,6 +209,7 @@ const StartTimeDialog = ({ method, open, onClose, onUpdateSettings, time }) => {
 
 StartTimeDialog.propTypes = {
   method: PropTypes.oneOf(['rc', 'auto']),
+  onClearStartTime: PropTypes.func,
   onClose: PropTypes.func,
   onUpdateSettings: PropTypes.func,
   open: PropTypes.bool,
@@ -183,6 +230,10 @@ export default connect(
 
   // mapDispatchToProps
   dispatch => ({
+    onClearStartTime() {
+      dispatch(setStartTime(null));
+    },
+
     onClose() {
       dispatch(closeStartTimeDialog());
     },

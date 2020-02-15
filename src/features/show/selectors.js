@@ -1,4 +1,7 @@
+import formatISO9075 from 'date-fns/formatISO9075';
+import fromUnixTime from 'date-fns/fromUnixTime';
 import get from 'lodash-es/get';
+import isNil from 'lodash-es/isNil';
 import maxBy from 'lodash-es/maxBy';
 import moment from 'moment';
 
@@ -221,6 +224,15 @@ export const getShowDescription = createSelector(
 export const getShowMetadata = createSelector(
   state => state.show.data,
   data => (data && typeof data.meta === 'object' ? data.meta : null) || {}
+);
+
+/**
+ * Returns the scheduled start time of the show as a string. Returns undefined
+ * if no start time is set.
+ */
+export const getShowStartTimeAsString = createSelector(
+  state => state.show.start.time,
+  time => (isNil(time) ? undefined : formatISO9075(fromUnixTime(time)))
 );
 
 /**

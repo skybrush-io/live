@@ -4,6 +4,8 @@
  */
 
 import { getUnixTime } from 'date-fns';
+import isNil from 'lodash-es/isNil';
+
 import { createSlice } from '@reduxjs/toolkit';
 
 import { COORDINATE_SYSTEM_TYPE } from './constants';
@@ -243,10 +245,19 @@ const { actions, reducer } = createSlice({
 
     setStartTime(state, action) {
       const { payload } = action;
-      const dateTime = payload instanceof Date ? getUnixTime(payload) : payload;
 
-      if (typeof dateTime === 'number' && dateTime > getUnixTime(new Date())) {
-        state.start.time = dateTime;
+      if (isNil(payload)) {
+        state.start.time = null;
+      } else {
+        const dateTime =
+          payload instanceof Date ? getUnixTime(payload) : payload;
+
+        if (
+          typeof dateTime === 'number' &&
+          dateTime > getUnixTime(new Date())
+        ) {
+          state.start.time = dateTime;
+        }
       }
     },
 
