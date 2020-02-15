@@ -3,6 +3,7 @@
  * show being executed.
  */
 
+import { getUnixTime } from 'date-fns';
 import { createSlice } from '@reduxjs/toolkit';
 
 import { COORDINATE_SYSTEM_TYPE } from './constants';
@@ -234,6 +235,21 @@ const { actions, reducer } = createSlice({
         action.payload || null;
     },
 
+    setStartMethod(state, action) {
+      if (action.payload === 'rc' || action.payload === 'auto') {
+        state.start.method = action.payload;
+      }
+    },
+
+    setStartTime(state, action) {
+      const { payload } = action;
+      const dateTime = payload instanceof Date ? getUnixTime(payload) : payload;
+
+      if (typeof dateTime === 'number' && dateTime > getUnixTime(new Date())) {
+        state.start.time = dateTime;
+      }
+    },
+
     setUploadTarget(state, action) {
       state.uploadDialog.uploadTarget = action.payload;
     },
@@ -286,6 +302,8 @@ export const {
   setEnvironmentType,
   setOutdoorShowOrientation,
   setOutdoorShowOrigin,
+  setStartMethod,
+  setStartTime,
   setUploadTarget,
   signOffOnManualPreflightChecksAt,
   signOffOnOnboardPreflightChecksAt,
