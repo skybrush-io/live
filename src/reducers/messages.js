@@ -57,13 +57,13 @@ const generateNextMessageId = messageId => messageId + 1;
  * @param {Object} state  the Redux store to update
  * @param {string} uavId  the ID of the drone to add the error message to
  * @param {string} body   the error message to add
- * @param {?string} correlationId  the ID of the message that this error
+ * @param {?string} refs  the ID of the message that this error
  *        message relates to. Removes the "in progress" state of the
  *        message if given.
  *
  * @return {Object} the new state of the Redux store
  */
-function addErrorMessage(state, uavId, body, correlationId) {
+function addErrorMessage(state, uavId, body, refs) {
   const message = {
     id: state.nextMessageId,
     type: MessageType.ERROR,
@@ -81,8 +81,8 @@ function addErrorMessage(state, uavId, body, correlationId) {
     nextMessageId: generateNextMessageId
   };
 
-  if (typeof correlationId !== 'undefined') {
-    updates.byId[correlationId] = {
+  if (typeof refs !== 'undefined') {
+    updates.byId[refs] = {
       responseId: message.id
     };
   }
@@ -98,15 +98,15 @@ function addErrorMessage(state, uavId, body, correlationId) {
  * appropriately constructed new state object will be returned instead.
  *
  * @param {Object} state  the Redux store to update
- * @param {string} correlationId  the ID of the original message to which
+ * @param {string} refs  the ID of the original message to which
  *        this message is a response
  * @param {string} body   the body of the message that was received
  * @return {Object} the new state of the Redux store
  */
-function addInboundMessage(state, correlationId, body) {
-  const originalMessage = state.byId[correlationId];
+function addInboundMessage(state, refs, body) {
+  const originalMessage = state.byId[refs];
   if (!originalMessage) {
-    console.warn(`Stale response arrived for unknown message ${correlationId}`);
+    console.warn(`Stale response arrived for unknown message ${refs}`);
     return state;
   }
 
@@ -187,13 +187,13 @@ function addOutboundMessageToUAV(state, recipient, body) {
 const reducer = handleActions(
   {
     ADD_ERROR_MESSAGE_IN_MESSAGES_DIALOG(state, action) {
-      const { message, uavId, correlationId } = action.payload;
-      return addErrorMessage(state, uavId, message, correlationId);
+      const { message, uavId, refs } = action.payload;
+      return addErrorMessage(state, uavId, message, refs);
     },
 
     ADD_INBOUND_MESSAGE(state, action) {
-      const { message, correlationId } = action.payload;
-      return addInboundMessage(state, correlationId, message);
+      const { message, refs } = action.payload;
+      return addInboundMessage(state, refs, message);
     },
 
     ADD_OUTBOUND_MESSAGE_TO_SELECTED_UAV(state, action) {

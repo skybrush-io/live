@@ -20,12 +20,12 @@ import {
  * @param {string} message  the message to add
  * @param {string} uavId    the ID of the UAV whose stream should contain
  *        this error message
- * @param {?string} correlationId  the ID of the outbound message that
+ * @param {?string} refs  the ID of the outbound message that
  *        concluded with this error, if known
  */
 export const addErrorMessageInMessagesDialog = createAction(
   ADD_ERROR_MESSAGE_IN_MESSAGES_DIALOG,
-  (message, uavId, correlationId) => ({ message, uavId, correlationId })
+  (message, uavId, refs) => ({ message, uavId, refs })
 );
 
 /**
@@ -33,12 +33,12 @@ export const addErrorMessageInMessagesDialog = createAction(
  * in response to a given outbound message.
  *
  * @param {string} message  the message to add
- * @param {number} correlationId  the ID of the message in the Redux store
+ * @param {number} refs  the ID of the message in the Redux store
  *        that this message responds to
  */
 export const addInboundMessage = createAction(
   ADD_INBOUND_MESSAGE,
-  (message, correlationId) => ({ message, correlationId })
+  (message, refs) => ({ message, refs })
 );
 
 /**

@@ -593,14 +593,14 @@ export default class MessageHub {
    * @param {Object} message  the message to process
    */
   processIncomingMessage(message) {
-    const { correlationId } = message;
+    const { refs } = message;
 
     // If this message is a response to something else, call the associated
     // callback
-    if (correlationId) {
-      const pendingResponse = this._pendingResponses[correlationId];
+    if (refs) {
+      const pendingResponse = this._pendingResponses[refs];
       if (pendingResponse) {
-        delete this._pendingResponses[correlationId];
+        delete this._pendingResponses[refs];
         pendingResponse.resolve(message);
       }
     } else {
