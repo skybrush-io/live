@@ -1,4 +1,3 @@
-import delay from 'delay';
 import get from 'lodash-es/get';
 import isNil from 'lodash-es/isNil';
 import isNumber from 'lodash-es/isNumber';

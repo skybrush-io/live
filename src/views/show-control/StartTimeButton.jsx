@@ -18,11 +18,7 @@ import { getSetupStageStatuses } from '~/features/show/stages';
  */
 const StartTimeButton = ({ formattedStartTime, onClick, status }) => {
   return (
-    <ListItem
-      button
-      disabled={false && status === StepperStatus.OFF}
-      onClick={onClick}
-    >
+    <ListItem button disabled={status === StepperStatus.OFF} onClick={onClick}>
       <StepperStatusLight status={status} />
       <ListItemText
         primary="Choose start time"

@@ -21,10 +21,14 @@ import Refresh from '@material-ui/icons/Refresh';
 import Alert from '@material-ui/lab/Alert';
 
 import DronePlaceholderList from './DronePlaceholderList';
+import UploadProgressBar from './UploadProgressBar';
 
 import { getUAVIdsParticipatingInMission } from '~/features/mission/selectors';
 import { retryFailedUploads } from '~/features/show/actions';
-import { getItemsInUploadBacklog } from '~/features/show/selectors';
+import {
+  getItemsInUploadBacklog,
+  getNumberOfDronesInShow
+} from '~/features/show/selectors';
 import {
   cancelUpload,
   clearUploadQueue,
@@ -109,6 +113,7 @@ const useStyles = makeStyles(theme => ({
  * trajectories and light programs to the drones.
  */
 const UploadDialog = ({
+  canStartUpload,
   failedItems,
   itemsInProgress,
   lastUploadResult,
@@ -182,6 +187,9 @@ const UploadDialog = ({
             )
           }
         />
+        <Box mt={1}>
+          <UploadProgressBar />
+        </Box>
         <Fade in={showLastUploadResult}>
           <UploadResultIndicator
             className={classes.uploadResultIndicator}
@@ -202,6 +210,7 @@ const UploadDialog = ({
         ) : (
           <Button
             color="primary"
+            disabled={false && !canStartUpload}
             startIcon={<CloudUpload />}
             onClick={onStartUpload}
           >
@@ -214,6 +223,7 @@ const UploadDialog = ({
 };
 
 UploadDialog.propTypes = {
+  canStartUpload: PropTypes.bool,
   failedItems: PropTypes.arrayOf(PropTypes.string),
   itemsInProgress: PropTypes.arrayOf(PropTypes.string),
   lastUploadResult: PropTypes.oneOf(['success', 'error', 'cancelled']),
@@ -248,6 +258,7 @@ export default connect(
   state => ({
     ...state.show.uploadDialog,
     ...state.show.upload,
+    canStartUpload: getNumberOfDronesInShow(state) > 0,
     itemsInBacklog: getItemsInUploadBacklog(state),
     selectedUAVIds: getSelectedUAVIds(state)
   }),
@@ -261,8 +272,14 @@ export default connect(
     onDismissLastUploadResult: dismissLastUploadResult,
     onRetryFailedUploads: retryFailedUploads,
     onStartUpload: () => (dispatch, getState) => {
-      const uavIds = getUAVIdsParticipatingInMission(getState());
-      dispatch(prepareForNextUpload(uavIds));
+      const state = getState();
+      const backlog = getItemsInUploadBacklog(state);
+
+      if (isEmpty(backlog)) {
+        const uavIds = getUAVIdsParticipatingInMission(state);
+        dispatch(prepareForNextUpload(uavIds));
+      }
+
       dispatch(startUpload());
     }
   }

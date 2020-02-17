@@ -2,16 +2,14 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 
-import Box from '@material-ui/core/Box';
 import IconButton from '@material-ui/core/IconButton';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import ListItemText from '@material-ui/core/ListItemText';
-import Typography from '@material-ui/core/Typography';
 import Clear from '@material-ui/icons/Clear';
 
 import FileListItem from './FileListItem';
 
+import ListItemTextWithProgress from '~/components/ListItemTextWithProgress';
 import StepperStatusLight, {
   StepperStatus
 } from '~/components/StepperStatusLight';
@@ -49,8 +47,7 @@ const LoadShowFromFileButton = ({
     onSelected={onShowFileSelected}
   >
     <StepperStatusLight status={status} />
-    <ListItemText
-      disableTypography
+    <ListItemTextWithProgress
       primary={
         loading
           ? 'Please wait, loading show file...'
@@ -59,22 +56,13 @@ const LoadShowFromFileButton = ({
           : 'No show file loaded'
       }
       secondary={
-        <Box
-          minHeight={20.1}
-          display="flex"
-          flexDirection="column"
-          justifyContent="center"
-        >
-          <Typography component="div" variant="body2" color="textSecondary">
-            {loading ? (
-              <LinearProgress />
-            ) : hasLoadedShowFile ? (
-              description
-            ) : (
-              'Select or drop a show file here to open it'
-            )}
-          </Typography>
-        </Box>
+        loading ? (
+          <LinearProgress />
+        ) : hasLoadedShowFile ? (
+          description
+        ) : (
+          'Select or drop a show file here to open it'
+        )
       }
     />
     {hasLoadedShowFile && (

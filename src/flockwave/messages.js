@@ -407,7 +407,7 @@ class CommandExecutionManager {
    *         to the command or errors out in case of execution errors and
    *         timeouts.
    */
-  sendCommandRequest(uavId, command, args, kwds) {
+  sendCommandRequest({ uavId, command, args, kwds }) {
     const request = createCommandRequest([uavId], command, args, kwds);
     const { hub } = this;
     return new Promise((resolve, reject) => {
@@ -718,13 +718,13 @@ export default class MessageHub {
    *         to the command or errors out in case of execution errors and
    *         timeouts.
    */
-  sendCommandRequest(uavId, command, args, kwds) {
-    return this._commandExecutionManager.sendCommandRequest(
+  sendCommandRequest({ uavId, command, args, kwds }) {
+    return this._commandExecutionManager.sendCommandRequest({
       uavId,
       command,
       args,
       kwds
-    );
+    });
   }
 
   /**

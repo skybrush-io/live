@@ -309,3 +309,55 @@ export const getNextDroneFromUploadQueue = state => {
 
   return undefined;
 };
+
+/**
+ * Returns a summary of the progress of the upload process in the form of
+ * two numbers. The first is a percentage of items for which the upload has
+ * either finished successfully or has failed. The second is a percentage of
+ * items for which the upload has finished successfully, is in progress or
+ * has failed.
+ */
+export const getUploadProgress = createSelector(
+  state => state.show.upload,
+  ({
+    failedItems,
+    itemsFinished,
+    itemsInProgress,
+    itemsQueued,
+    itemsWaitingToStart
+  }) => {
+    const numFailedItems = Array.isArray(failedItems) ? failedItems.length : 0;
+    const numItemsFinished = Array.isArray(itemsFinished)
+      ? itemsFinished.length
+      : 0;
+    const numItemsInProgress = Array.isArray(itemsInProgress)
+      ? itemsInProgress.length
+      : 0;
+    const numItemsQueued = Array.isArray(itemsQueued) ? itemsQueued.length : 0;
+    const numItemsWaitingToStart = Array.isArray(itemsWaitingToStart)
+      ? itemsWaitingToStart.length
+      : 0;
+
+    const total =
+      numFailedItems +
+      numItemsInProgress +
+      numItemsQueued +
+      numItemsWaitingToStart +
+      numItemsFinished;
+    if (total > 0) {
+      const num1 = numFailedItems + numItemsFinished;
+      const num2 = num1 + numItemsInProgress;
+      return [
+        Math.round((100 * num1) / total),
+        Math.round((100 * num2) / total)
+      ];
+    }
+
+    return [0, 0];
+  }
+);
+
+/**
+ * Returns whether we are currently uploading show data to the drones.
+ */
+export const isUploadInProgress = state => state.show.upload.running;

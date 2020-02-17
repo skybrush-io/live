@@ -274,7 +274,7 @@ const MessagesPanel = connect(
       // Now also send the message via the message hub
       const { uavId, messageId } = action;
       messageHub
-        .sendCommandRequest(uavId, command, args, kwds)
+        .sendCommandRequest({ uavId, command, args, kwds })
         .then(
           // Success handler
           message => {

@@ -59,7 +59,8 @@ const { actions, reducer } = createSlice({
       running: false,
       itemsInProgress: [],
       itemsWaitingToStart: [],
-      itemsQueued: []
+      itemsQueued: [],
+      itemsFinished: []
     },
 
     uploadDialog: {
@@ -191,6 +192,7 @@ const { actions, reducer } = createSlice({
     notifyUploadOnUavSucceeded(state, action) {
       moveItemsBetweenQueues({
         source: 'itemsInProgress',
+        target: 'itemsFinished',
         state,
         action
       });
@@ -214,6 +216,15 @@ const { actions, reducer } = createSlice({
       state.uploadDialog.open = true;
       state.uploadDialog.uploadTarget = 'all';
     }),
+
+    prepareForNextUpload(state, action) {
+      const { payload } = action;
+
+      state.upload.failedItems = [];
+      state.upload.itemsFinished = [];
+      state.upload.itemsWaitingToStart = [...payload];
+      state.uploadDialog.showLastUploadResult = false;
+    },
 
     revokeTakeoffAreaApproval: noPayload(state => {
       state.preflight.takeoffAreaApprovedAt = null;
@@ -282,14 +293,6 @@ const { actions, reducer } = createSlice({
 
     signOffOnOnboardPreflightChecksAt(state, action) {
       state.preflight.onboardChecksSignedOffAt = action.payload;
-    },
-
-    prepareForNextUpload(state, action) {
-      const { payload } = action;
-
-      state.upload.failedItems = [];
-      state.upload.itemsWaitingToStart = [...payload];
-      state.uploadDialog.showLastUploadResult = false;
     },
 
     startUpload(state) {
