@@ -284,15 +284,20 @@ const { actions, reducer } = createSlice({
       state.preflight.onboardChecksSignedOffAt = action.payload;
     },
 
-    startUpload: noPayload(state => {
-      // TODO(ntamas): we must make sure that the next line is processed before
-      // the saga reacts on the action
+    prepareForNextUpload(state, action) {
+      const { payload } = action;
+
       state.upload.failedItems = [];
-      state.upload.itemsWaitingToStart = ['A', 'B', 'C', 'D'];
+      state.upload.itemsWaitingToStart = [...payload];
       state.uploadDialog.showLastUploadResult = false;
+    },
+
+    startUpload(state) {
       state.upload.running = true;
-      // Thie action will also trigger the upload saga
-    }),
+      // Nothing else to do, this action simply triggers a saga that will do the
+      // hard work. The saga might be triggered a bit earlier than the previous
+      // assignment, but we don't care.
+    },
 
     synchronizeShowSettings() {
       // Nothing to do, this action simply triggers a saga that will do the
@@ -325,6 +330,7 @@ export const {
   openStartTimeDialog,
   openTakeoffAreaSetupDialog,
   openUploadDialog,
+  prepareForNextUpload,
   _retryFailedUploads,
   revokeTakeoffAreaApproval,
   setEnvironmentType,

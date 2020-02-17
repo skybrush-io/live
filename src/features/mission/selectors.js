@@ -1,5 +1,6 @@
 import isNil from 'lodash-es/isNil';
 import range from 'lodash-es/range';
+import reject from 'lodash-es/reject';
 import { createSelector } from '@reduxjs/toolkit';
 
 import { getSelectedUAVIds } from '~/selectors/selection';
@@ -71,6 +72,22 @@ export const getUAVIdForMappingSlotBeingEdited = createSelector(
   getMissionMapping,
   getIndexOfMappingSlotBeingEdited,
   (mapping, index) => (index >= 0 ? mapping[index] : undefined)
+);
+
+/**
+ * Returns a list of all the UAV IDs that participate in the mission, without
+ * the null entries, sorted in ascending order.
+ *
+ * Note that this also includes the IDs of UAVs that are currently not seen
+ * by the server but are nevertheless in the mapping.
+ */
+export const getUAVIdsParticipatingInMission = createSelector(
+  getMissionMapping,
+  mapping => {
+    const result = reject(mapping, isNil);
+    result.sort();
+    return result;
+  }
 );
 
 /**

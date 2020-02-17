@@ -22,6 +22,7 @@ import Alert from '@material-ui/lab/Alert';
 
 import DronePlaceholderList from './DronePlaceholderList';
 
+import { getUAVIdsParticipatingInMission } from '~/features/mission/selectors';
 import { retryFailedUploads } from '~/features/show/actions';
 import { getItemsInUploadBacklog } from '~/features/show/selectors';
 import {
@@ -29,6 +30,7 @@ import {
   clearUploadQueue,
   closeUploadDialog,
   dismissLastUploadResult,
+  prepareForNextUpload,
   setUploadTarget,
   startUpload
 } from '~/features/show/slice';
@@ -258,6 +260,10 @@ export default connect(
     onClose: closeUploadDialog,
     onDismissLastUploadResult: dismissLastUploadResult,
     onRetryFailedUploads: retryFailedUploads,
-    onStartUpload: startUpload
+    onStartUpload: () => (dispatch, getState) => {
+      const uavIds = getUAVIdsParticipatingInMission(getState());
+      dispatch(prepareForNextUpload(uavIds));
+      dispatch(startUpload());
+    }
   }
 )(UploadDialog);

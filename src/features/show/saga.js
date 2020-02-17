@@ -39,11 +39,20 @@ import messageHub from '~/message-hub';
 const STOP = Symbol('STOP');
 
 /**
+ * Private selector that constructs the show description to be uploaded to a
+ * drone with the given ID.
+ */
+function createShowDescriptionForUav(state, uavId) {
+  return {
+    version: 1
+  };
+}
+
+/**
  * Handles a single trajectory upload to a drone.
  */
-async function runSingleUpload(uavId) {
-  await delay(Math.random() * 1000 + 500);
-  throw new Error('fail ' + uavId);
+async function runSingleUpload(uavId, data) {
+  await messageHub.execute.uploadDroneShow({ uavId, data });
 }
 
 /**
@@ -64,7 +73,8 @@ function* runUploadWorker(chan, failed) {
 
     try {
       yield put(notifyUploadOnUavStarted(uavId));
-      yield call(runSingleUpload, uavId);
+      const data = yield select(createShowDescriptionForUav, uavId);
+      yield call(runSingleUpload, uavId, data);
       outcome = 'success';
     } catch (error) {
       console.error(error);

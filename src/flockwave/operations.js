@@ -58,6 +58,22 @@ export async function setShowConfiguration(hub, config) {
 }
 
 /**
+ * Asks the server to upload a drone show specification to a given UAV.
+ */
+export async function uploadDroneShow(hub, { uavId, data }) {
+  const response = await hub.sendMessage({
+    type: 'SHOW-UPLOAD',
+    data: {
+      [uavId]: data
+    }
+  });
+
+  if (response.body.type !== 'ACK-ACK') {
+    throw new Error('Failed to upload show data to the server');
+  }
+}
+
+/**
  * Query handler object that can be used to perform common operations on a
  * Flockwave server using a given message hub.
  */
@@ -65,7 +81,8 @@ export class OperationExecutor {
   _operations = {
     configureExtension,
     reloadExtension,
-    setShowConfiguration
+    setShowConfiguration,
+    uploadDroneShow
   };
 
   /**
