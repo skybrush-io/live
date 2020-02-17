@@ -64,6 +64,7 @@
     "jszip": "^3.2.2",
     "localforage": "^1.7.3",
     "lodash-es": "^4.17.15",
+    "memoizee": "^0.4.14",
     "mersenne-twister": "^1.1.0",
     "mini-signals": "^1.2.0",
     "moment": "^2.24.0",

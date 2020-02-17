@@ -4,6 +4,7 @@
  */
 
 import get from 'lodash-es/get';
+import memoize from 'memoizee';
 
 import { extractResponseForId } from './parsing';
 import { validateExtensionName } from './validation';
@@ -26,21 +27,51 @@ export async function getConfigurationOfExtension(hub, name) {
 }
 
 /**
+ * Returns the configuration of the current drone show managed by the server.
+ */
+export async function getShowConfiguration(hub) {
+  const response = await hub.sendMessage({ type: 'SHOW-CFG' });
+  const configuration = get(response, 'body.configuration');
+  if (configuration && typeof configuration === 'object') {
+    return configuration;
+  }
+
+  throw new Error('No show configuration returned');
+}
+
+/**
+ * Returns the list of loaded extensions and the list of extensions known to
+ * the server, in an object with keys named `loaded` and `available`.
+ *
+ * The response is cached for a short period of time (a few seconds).
+ *
+ * @param  {MessageHub}  hub  the message hub used to send the message
+ */
+const listExtensions = memoize(
+  async hub => {
+    const response = await hub.sendMessage('EXT-LIST');
+    return response.body;
+  },
+  {
+    maxAge: 5000 /* 5 seconds */,
+    promise: true
+  }
+);
+
+/**
  * Checks whether the extension with the given name is currently loaded in
  * the server.
  *
- * @param  {Messagehub}  hub  the message hub used to send the message
+ * @param  {MessageHub}  hub  the message hub used to send the message
  * @param  {string}      name  the name of the extension
  *
  * @return {Boolean} whether the extension is loaded
  */
 export async function isExtensionLoaded(hub, name) {
-  const response = await hub.sendMessage('EXT-LIST');
+  const extensions = await listExtensions(hub);
 
-  /* TODO(ntamas): cache the EXT-LIST response for a few seconds */
-
-  if (Array.isArray(get(response, 'body.loaded'))) {
-    return response.body.loaded.includes(name);
+  if (Array.isArray(get(extensions, 'loaded'))) {
+    return extensions.loaded.includes(name);
   }
 
   return false;
@@ -53,7 +84,9 @@ export async function isExtensionLoaded(hub, name) {
 export class QueryHandler {
   _queries = {
     getConfigurationOfExtension,
-    isExtensionLoaded
+    getShowConfiguration,
+    isExtensionLoaded,
+    listExtensions
   };
 
   /**

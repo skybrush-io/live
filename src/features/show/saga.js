@@ -1,5 +1,8 @@
 import delay from 'delay';
+import get from 'lodash-es/get';
 import isNil from 'lodash-es/isNil';
+import isNumber from 'lodash-es/isNumber';
+import isString from 'lodash-es/isString';
 import { channel } from 'redux-saga';
 import {
   call,
@@ -21,8 +24,14 @@ import {
   notifyUploadOnUavStarted,
   notifyUploadOnUavSucceeded,
   notifyUploadFinished,
-  startUpload
+  setShowSettingsSynchronizationStatus,
+  setStartMethod,
+  setStartTime,
+  startUpload,
+  synchronizeShowSettings
 } from './slice';
+
+import messageHub from '~/message-hub';
 
 /**
  * Special symbol used to make a worker task quit.
@@ -141,6 +150,68 @@ function* showUploaderSagaWithCancellation() {
   }
 }
 
+/**
+ * Saga that retrieves the current show settings from the server and updates
+ * the local store accordingly.
+ */
+function* pullSettingsFromServer() {
+  const config = yield call(messageHub.query.getShowConfiguration);
+  const { time, method } = get(config, 'start');
+
+  if ((isNumber(time) || isNil(time)) && isString(method)) {
+    yield put(setStartTime(time));
+    yield put(setStartMethod(method));
+  } else {
+    throw new TypeError('Invalid configuration object received from server');
+  }
+}
+
+/**
+ * Saga that sends the current show settings to the server.
+ */
+function* pushSettingsToServer() {
+  const { time, method } = yield select(state => state.show.start);
+
+  yield messageHub.execute.setShowConfiguration({
+    start: { time, method }
+  });
+}
+
+/**
+ * Saga that synchronizes the settings of the show (start time, start method
+ * etc) between the server and the local client.
+ *
+ * The payload of the action specifies the direction of the synchronization
+ */
+function* showSettingsSynchronizerSaga(action) {
+  const { payload } = action;
+
+  let success = false;
+
+  yield put(setShowSettingsSynchronizationStatus('inProgress'));
+
+  try {
+    if (payload === 'fromServer' || payload === 'toClient') {
+      yield pullSettingsFromServer();
+      success = true;
+    } else if (payload === 'toServer' || payload === 'fromClient') {
+      yield pushSettingsToServer();
+      success = true;
+    } else {
+      yield put(setShowSettingsSynchronizationStatus('syncInProgress'));
+    }
+  } catch (error) {
+    console.error(error);
+    success = false;
+  }
+
+  if (success) {
+    yield put(setShowSettingsSynchronizationStatus('synced'));
+  } else {
+    yield put(setShowSettingsSynchronizationStatus('error'));
+  }
+}
+
 const sagaCreator = mapping =>
   function*() {
     const actions = Object.keys(mapping);
@@ -170,5 +241,6 @@ const sagaCreator = mapping =>
  * to drone shows; e.g., the uploading of a show to the drones.
  */
 export default sagaCreator({
-  [startUpload]: showUploaderSagaWithCancellation
+  [startUpload]: showUploaderSagaWithCancellation,
+  [synchronizeShowSettings]: showSettingsSynchronizerSaga
 });

@@ -31,7 +31,8 @@ import Header from '~/components/dialogs/FormHeader';
 import {
   closeStartTimeDialog,
   setStartMethod,
-  setStartTime
+  setStartTime,
+  synchronizeShowSettings
 } from '~/features/show/slice';
 
 function createDateTimeFromParts(date, time) {
@@ -232,6 +233,7 @@ export default connect(
   dispatch => ({
     onClearStartTime() {
       dispatch(setStartTime(null));
+      dispatch(synchronizeShowSettings('toServer'));
     },
 
     onClose() {
@@ -241,6 +243,7 @@ export default connect(
     onUpdateSettings({ date, method, time }) {
       dispatch(setStartMethod(method));
       dispatch(setStartTime(getUnixTime(createDateTimeFromParts(date, time))));
+      dispatch(synchronizeShowSettings('toServer'));
     }
   })
 )(StartTimeDialog);

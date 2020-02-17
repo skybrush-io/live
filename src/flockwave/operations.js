@@ -44,13 +44,28 @@ export async function reloadExtension(hub, name) {
 }
 
 /**
+ * Sets the configuration of the current drone show on the server.
+ */
+export async function setShowConfiguration(hub, config) {
+  const response = await hub.sendMessage({
+    type: 'SHOW-SETCFG',
+    configuration: config
+  });
+
+  if (response.body.type !== 'ACK-ACK') {
+    throw new Error('Failed to set new show configuration on the server');
+  }
+}
+
+/**
  * Query handler object that can be used to perform common operations on a
  * Flockwave server using a given message hub.
  */
 export class OperationExecutor {
   _operations = {
     configureExtension,
-    reloadExtension
+    reloadExtension,
+    setShowConfiguration
   };
 
   /**

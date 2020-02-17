@@ -32,6 +32,13 @@ export const areStartConditionsSyncedWithServer = state =>
   state.show.start.syncStatusWithServer === 'synced';
 
 /**
+ * Returns whether the synchronization of the start time and start method of the
+ * show with the server failed when we attempted it the last time.
+ */
+export const didStartConditionSyncFail = state =>
+  state.show.start.syncStatusWithServer === 'error';
+
+/**
  * Returns whether there is a scheduled start time for the drone show.
  */
 export const hasScheduledStartTime = state => !isNil(state.show.start.time);

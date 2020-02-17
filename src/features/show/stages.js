@@ -9,6 +9,7 @@ import {
   areManualPreflightChecksSignedOff,
   areOnboardPreflightChecksSignedOff,
   areStartConditionsSyncedWithServer,
+  didStartConditionSyncFail,
   hasLoadedShowFile,
   hasScheduledStartTime,
   hasShowOrigin,
@@ -58,11 +59,13 @@ const stages = {
 
   setupStartTime: {
     evaluate: state =>
-      hasScheduledStartTime(state)
-        ? areStartConditionsSyncedWithServer(state)
+      didStartConditionSyncFail(state)
+        ? StepperStatus.ERROR
+        : areStartConditionsSyncedWithServer(state)
+        ? hasScheduledStartTime(state)
           ? StepperStatus.COMPLETED
-          : StepperStatus.WAITING
-        : StepperStatus.OFF,
+          : StepperStatus.OFF
+        : StepperStatus.WAITING,
     requires: ['selectShowFile']
   },
 

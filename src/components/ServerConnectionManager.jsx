@@ -18,6 +18,10 @@ import {
   clearServerFeatures,
   setCurrentServerConnectionState
 } from '~/features/servers/slice';
+import {
+  clearStartTimeAndMethod,
+  synchronizeShowSettings
+} from '~/features/show/slice';
 import { showSnackbarMessage } from '~/features/snackbar/slice';
 import handleError from '~/error-handling';
 import messageHub from '~/message-hub';
@@ -278,14 +282,16 @@ class ServerConnectionManagerPresentation extends React.Component {
 }
 
 /**
- * Helper function that executes all the background tasks that should be
- * executed after establishing a new connection to a server.
+ * Helper function that executes all the tasks that should be executed after
+ * establishing a new connection to a server.
  *
- * TODO(ntamas): maybe move this to a saga?
+ * TODO(ntamas): this should eventually be refactored such that we only
+ * dispatch an event, and the slices in ~/features/.../slice can subscribe
+ * to this event if they want to update themselves when the server connects
  *
  * @param {function} dispatch  the dispatcher function of the Redux store
  */
-const executeTasksAfterConnection = async dispatch => {
+async function executeTasksAfterConnection(dispatch) {
   let response;
 
   try {
@@ -320,19 +326,45 @@ const executeTasksAfterConnection = async dispatch => {
     });
     handleDockIdList(response.body.ids || [], dispatch);
 
-    // Send an EXT-LIST message to the server to see if we support virtual
-    // drones
+    // Check if the server supports virtual drones
     const supportsVirtualDrones = await messageHub.query.isExtensionLoaded(
       'virtual_uavs'
     );
     if (supportsVirtualDrones) {
       dispatch(addServerFeature('virtual_uavs'));
     }
+
+    // Check if the server supports drone show execution, and if so,
+    // synchronize the show settings
+    const supportsDroneShows = await messageHub.query.isExtensionLoaded('show');
+    if (supportsDroneShows) {
+      // Synchronize the start time and start method of the show _from_ the
+      // server _to_ the local client.
+      dispatch(synchronizeShowSettings('fromServer'));
+    }
   } catch (error) {
     console.error(error);
     handleError(error);
   }
-};
+}
+
+/**
+ * Helper function that executes all the tasks that should be executed after
+ * disconnecting from a server.
+ *
+ * TODO(ntamas): this should eventually be refactored such that we only
+ * dispatch an event, and the slices in ~/features/.../slice can subscribe
+ * to this event if they want to update themselves when the server disconnects
+ *
+ * @param {function} dispatch  the dispatcher function of the Redux store
+ */
+async function executeTasksAfterDisconnection(dispatch) {
+  dispatch(clearClockList());
+  dispatch(clearConnectionList());
+  dispatch(clearDockList());
+  dispatch(clearServerFeatures());
+  dispatch(clearStartTimeAndMethod());
+}
 
 const ServerConnectionManager = connect(
   // mapStateToProps
@@ -382,10 +414,10 @@ const ServerConnectionManager = connect(
     onDisconnected() {
       dispatch(setCurrentServerConnectionState(ConnectionState.DISCONNECTED));
       dispatch(showSnackbarMessage('Disconnected from Skybrush server'));
-      dispatch(clearClockList());
-      dispatch(clearConnectionList());
-      dispatch(clearDockList());
-      dispatch(clearServerFeatures());
+
+      // Execute all the tasks that should be executed after disconnecting from
+      // the server
+      executeTasksAfterDisconnection(dispatch);
     },
 
     onLocalServerError(message, wasRunning) {

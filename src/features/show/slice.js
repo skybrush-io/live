@@ -95,6 +95,11 @@ const { actions, reducer } = createSlice({
       state.preflight.onboardChecksSignedOffAt = null;
     }),
 
+    clearStartTimeAndMethod(state) {
+      state.start.time = null;
+      state.start.method = 'rc';
+    },
+
     clearUploadQueue: noPayload(state => {
       state.upload.itemsWaitingToStart = [];
     }),
@@ -238,6 +243,14 @@ const { actions, reducer } = createSlice({
         action.payload || null;
     },
 
+    setShowSettingsSynchronizationStatus(state, action) {
+      if (
+        ['synced', 'notSynced', 'inProgress', 'error'].includes(action.payload)
+      ) {
+        state.start.syncStatusWithServer = action.payload;
+      }
+    },
+
     setStartMethod(state, action) {
       if (action.payload === 'rc' || action.payload === 'auto') {
         state.start.method = action.payload;
@@ -253,10 +266,7 @@ const { actions, reducer } = createSlice({
         const dateTime =
           payload instanceof Date ? getUnixTime(payload) : payload;
 
-        if (
-          typeof dateTime === 'number' &&
-          dateTime > getUnixTime(new Date())
-        ) {
+        if (typeof dateTime === 'number') {
           state.start.time = dateTime;
         }
       }
@@ -282,7 +292,12 @@ const { actions, reducer } = createSlice({
       state.uploadDialog.showLastUploadResult = false;
       state.upload.running = true;
       // Thie action will also trigger the upload saga
-    })
+    }),
+
+    synchronizeShowSettings() {
+      // Nothing to do, this action simply triggers a saga that will do the
+      // hard work.
+    }
   }
 });
 
@@ -292,6 +307,7 @@ export const {
   clearLoadedShow,
   clearManualPreflightChecks,
   clearOnboardPreflightChecks,
+  clearStartTimeAndMethod,
   clearUploadQueue,
   closeEnvironmentEditorDialog,
   closeStartTimeDialog,
@@ -314,12 +330,14 @@ export const {
   setEnvironmentType,
   setOutdoorShowOrientation,
   setOutdoorShowOrigin,
+  setShowSettingsSynchronizationStatus,
   setStartMethod,
   setStartTime,
   setUploadTarget,
   signOffOnManualPreflightChecksAt,
   signOffOnOnboardPreflightChecksAt,
   startUpload,
+  synchronizeShowSettings,
   uploadingPromisePending,
   uploadingPromiseFulfilled,
   uploadingPromiseRejected
