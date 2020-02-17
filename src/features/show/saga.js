@@ -14,7 +14,11 @@ import {
   take
 } from 'redux-saga/effects';
 
-import { getNextDroneFromUploadQueue } from './selectors';
+import {
+  getCommonShowSettings,
+  getDroneSwarmSpecification,
+  getNextDroneFromUploadQueue
+} from './selectors';
 import {
   cancelUpload,
   notifyUploadOnUavCancelled,
@@ -31,6 +35,7 @@ import {
 } from './slice';
 
 import messageHub from '~/message-hub';
+import { getReverseMissionMapping } from '~/features/mission/selectors';
 
 /**
  * Special symbol used to make a worker task quit.
@@ -41,9 +46,36 @@ const STOP = Symbol('STOP');
  * Private selector that constructs the show description to be uploaded to a
  * drone with the given ID.
  */
-function createShowDescriptionForUav(state, uavId) {
+function createShowConfigurationForUav(state, uavId) {
+  const reverseMapping = getReverseMissionMapping(state);
+  const missionIndex = reverseMapping ? reverseMapping[uavId] : undefined;
+
+  if (isNil(missionIndex)) {
+    throw new Error(`UAV ${uavId} is not in the current mission`);
+  }
+
+  const drones = getDroneSwarmSpecification(state);
+  if (!drones || !Array.isArray(drones)) {
+    throw new Error('Invalid show configuration in state store');
+  }
+
+  const droneSpec = drones[missionIndex];
+  if (!droneSpec || typeof droneSpec !== 'object') {
+    throw new Error(
+      `No specification for UAV ${uavId} (index ${missionIndex})`
+    );
+  }
+
+  const { settings } = droneSpec;
+  if (typeof settings !== 'object') {
+    throw new TypeError(
+      `Invalid show configuration for UAV ${uavId} (index ${missionIndex}) in state store`
+    );
+  }
+
   return {
-    version: 1
+    ...getCommonShowSettings(state),
+    ...settings
   };
 }
 
@@ -72,7 +104,7 @@ function* runUploadWorker(chan, failed) {
 
     try {
       yield put(notifyUploadOnUavStarted(uavId));
-      const data = yield select(createShowDescriptionForUav, uavId);
+      const data = yield select(createShowConfigurationForUav, uavId);
       yield call(runSingleUpload, uavId, data);
       outcome = 'success';
     } catch (error) {

@@ -59,6 +59,15 @@ export const isValidTrajectory = trajectory =>
   Array.isArray(trajectory.points);
 
 /**
+ * Returns the common show settings that apply to all drones in the currently
+ * loaded show.
+ */
+export const getCommonShowSettings = state => {
+  const result = get(state, 'show.data.settings');
+  return typeof result === 'object' ? result : {};
+};
+
+/**
  * Returns the specification of the drone swarm in the currently loaded show.
  */
 export const getDroneSwarmSpecification = state => {
