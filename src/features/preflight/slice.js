@@ -153,6 +153,23 @@ const { actions, reducer } = createSlice({
           state.checked.splice(index, 1);
         }
       }
+    },
+
+    /**
+     * Toggles the checked status of a preflight check.
+     */
+    togglePreflightCheckStatus(state, action) {
+      const id = action.payload;
+      const item = state.items.byId[id];
+      const index = state.checked.indexOf(id);
+
+      if (item) {
+        if (index < 0) {
+          state.checked.push(id);
+        } else if (index >= 0) {
+          state.checked.splice(index, 1);
+        }
+      }
     }
   }
 });
@@ -160,7 +177,8 @@ const { actions, reducer } = createSlice({
 export const {
   clearPreflightCheckGroups,
   clearPreflightCheckListItems,
-  setPreflightCheckStatus
+  setPreflightCheckStatus,
+  togglePreflightCheckStatus
 } = actions;
 
 export default reducer;

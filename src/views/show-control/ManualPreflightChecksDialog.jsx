@@ -19,7 +19,10 @@ import {
   getCheckedPreflightCheckItems,
   getHeadersAndItems
 } from '~/features/preflight/selectors';
-import { setPreflightCheckStatus } from '~/features/preflight/slice';
+import {
+  setPreflightCheckStatus,
+  togglePreflightCheckStatus
+} from '~/features/preflight/slice';
 import { signOffOnManualPreflightChecks } from '~/features/show/actions';
 import { areManualPreflightChecksSignedOff } from '~/features/show/selectors';
 import {
@@ -34,7 +37,7 @@ import {
 const PreflightCheckListPresentation = ({
   checkedItemIds,
   items,
-  onChange,
+  onToggle,
   ...rest
 }) => (
   <List dense disablePadding {...rest}>
@@ -49,15 +52,18 @@ const PreflightCheckListPresentation = ({
 
       const itemId = `preflight-item-${item.id}`;
       return (
-        <ListItem key={itemId}>
+        <ListItem
+          key={itemId}
+          button
+          disableRipple
+          onClick={() => onToggle(item.id)}
+        >
           <ListItemIcon>
             <Checkbox
-              disableRipple
-              edge="start"
               checked={checkedItemIds.includes(item.id)}
+              edge="start"
               inputProps={{ 'aria-labelledby': itemId }}
               value={item.id}
-              onChange={onChange}
             />
           </ListItemIcon>
           <ListItemText id={itemId} primary={item.label} />
@@ -75,7 +81,7 @@ PreflightCheckListPresentation.propTypes = {
       type: PropTypes.string
     })
   ),
-  onChange: PropTypes.func
+  onToggle: PropTypes.func
 };
 
 const PreflightCheckList = connect(
@@ -86,9 +92,8 @@ const PreflightCheckList = connect(
   }),
   // mapDispatchToProps
   dispatch => ({
-    onChange(event) {
-      const { checked, value } = event.target;
-      dispatch(setPreflightCheckStatus({ id: value, checked }));
+    onToggle(id) {
+      dispatch(togglePreflightCheckStatus(id));
     }
   })
 )(PreflightCheckListPresentation);
