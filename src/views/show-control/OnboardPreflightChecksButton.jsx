@@ -12,7 +12,10 @@ import StepperStatusLight, {
 } from '~/components/StepperStatusLight';
 import { signOffOnOnboardPreflightChecks } from '~/features/show/actions';
 import { areOnboardPreflightChecksSignedOff } from '~/features/show/selectors';
-import { clearOnboardPreflightChecks } from '~/features/show/slice';
+import {
+  clearOnboardPreflightChecks,
+  openOnboardPreflightChecksDialog
+} from '~/features/show/slice';
 import { getSetupStageStatuses } from '~/features/show/stages';
 
 /**
@@ -28,7 +31,7 @@ const OnboardPreflightChecksButton = ({
   ...rest
 }) => {
   return (
-    <ListItem button {...rest}>
+    <ListItem button disabled={false && status === StepperStatus.OFF} {...rest}>
       <StepperStatusLight status={status} />
       <ListItemText primary="Onboard preflight checks" />
       {/* TODO: show how many drones have nonzero error codes */}
@@ -61,6 +64,7 @@ export default connect(
   // mapDispatchToProps
   {
     onApprove: signOffOnOnboardPreflightChecks,
+    onClick: openOnboardPreflightChecksDialog,
     onRevoke: clearOnboardPreflightChecks
   }
 )(OnboardPreflightChecksButton);

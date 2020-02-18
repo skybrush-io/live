@@ -12,7 +12,10 @@ import StepperStatusLight, {
 } from '~/components/StepperStatusLight';
 import { signOffOnManualPreflightChecks } from '~/features/show/actions';
 import { areManualPreflightChecksSignedOff } from '~/features/show/selectors';
-import { clearManualPreflightChecks } from '~/features/show/slice';
+import {
+  clearManualPreflightChecks,
+  openManualPreflightChecksDialog
+} from '~/features/show/slice';
 import { getSetupStageStatuses } from '~/features/show/stages';
 
 /**
@@ -28,7 +31,7 @@ const ManualPreflightChecksButton = ({
   ...rest
 }) => {
   return (
-    <ListItem button disabled={status === StepperStatus.OFF} {...rest}>
+    <ListItem button disabled={false && status === StepperStatus.OFF} {...rest}>
       <StepperStatusLight status={status} />
       <ListItemText primary="Manual preflight checks" />
       {/* TODO: show how many checks were not ticked off by the user yet */}
@@ -46,6 +49,7 @@ const ManualPreflightChecksButton = ({
 ManualPreflightChecksButton.propTypes = {
   areChecksSignedOff: PropTypes.bool,
   onApprove: PropTypes.func,
+  onClick: PropTypes.func,
   onRevoke: PropTypes.func,
   status: PropTypes.oneOf(Object.values(StepperStatus))
 };
@@ -61,6 +65,7 @@ export default connect(
   // mapDispatchToProps
   {
     onApprove: signOffOnManualPreflightChecks,
+    onClick: openManualPreflightChecksDialog,
     onRevoke: clearManualPreflightChecks
   }
 )(ManualPreflightChecksButton);

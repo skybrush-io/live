@@ -33,6 +33,14 @@ const { actions, reducer } = createSlice({
       type: 'outdoor'
     },
 
+    manualPreflightChecksDialog: {
+      open: false
+    },
+
+    onboardPreflightChecksDialog: {
+      open: false
+    },
+
     preflight: {
       manualChecksSignedOffAt: null,
       onboardChecksSignedOffAt: null,
@@ -107,6 +115,14 @@ const { actions, reducer } = createSlice({
 
     closeEnvironmentEditorDialog: noPayload(state => {
       state.environment.editing = false;
+    }),
+
+    closeManualPreflightChecksDialog: noPayload(state => {
+      state.manualPreflightChecksDialog.open = false;
+    }),
+
+    closeOnboardPreflightChecksDialog: noPayload(state => {
+      state.onboardPreflightChecksDialog.open = false;
     }),
 
     closeStartTimeDialog: noPayload(state => {
@@ -200,6 +216,14 @@ const { actions, reducer } = createSlice({
 
     openEnvironmentEditorDialog: noPayload(state => {
       state.environment.editing = true;
+    }),
+
+    openManualPreflightChecksDialog: noPayload(state => {
+      state.manualPreflightChecksDialog.open = true;
+    }),
+
+    openOnboardPreflightChecksDialog: noPayload(state => {
+      state.onboardPreflightChecksDialog.open = true;
     }),
 
     openStartTimeDialog: noPayload(state => {
@@ -318,6 +342,8 @@ export const {
   clearStartTimeAndMethod,
   clearUploadQueue,
   closeEnvironmentEditorDialog,
+  closeManualPreflightChecksDialog,
+  closeOnboardPreflightChecksDialog,
   closeStartTimeDialog,
   closeTakeoffAreaSetupDialog,
   closeUploadDialog,
@@ -330,6 +356,8 @@ export const {
   notifyUploadOnUavStarted,
   notifyUploadOnUavSucceeded,
   openEnvironmentEditorDialog,
+  openManualPreflightChecksDialog,
+  openOnboardPreflightChecksDialog,
   openStartTimeDialog,
   openTakeoffAreaSetupDialog,
   openUploadDialog,

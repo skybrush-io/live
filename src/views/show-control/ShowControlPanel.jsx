@@ -11,7 +11,9 @@ import EnvironmentButton from './EnvironmentButton';
 import EnvironmentEditorDialog from './EnvironmentEditorDialog';
 import LoadShowFromFileButton from './LoadShowFromFileButton';
 import ManualPreflightChecksButton from './ManualPreflightChecksButton';
+import ManualPreflightChecksDialog from './ManualPreflightChecksDialog';
 import OnboardPreflightChecksButton from './OnboardPreflightChecksButton';
+import OnboardPreflightChecksDialog from './OnboardPreflightChecksDialog';
 import StartTimeButton from './StartTimeButton';
 import StartTimeDialog from './StartTimeDialog';
 import TakeoffAreaButton from './TakeoffAreaButton';
@@ -70,6 +72,8 @@ const ShowControlPanel = () => {
       <StartTimeDialog />
       <TakeoffAreaSetupDialog />
       <UploadDialog />
+      <OnboardPreflightChecksDialog />
+      <ManualPreflightChecksDialog />
     </Box>
   );
 };
