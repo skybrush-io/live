@@ -43,6 +43,14 @@ const DarkModeAwareThemeProvider = ({ children, type }) => {
 
     typography: {
       fontFamily: '"Fira Sans", "Helvetica", "Arial", sans-serif'
+    },
+
+    overrides: {
+      MuiList: {
+        root: {
+          background: isThemeDark ? '#444' : '#fff'
+        }
+      }
     }
   });
 

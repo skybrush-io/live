@@ -13,9 +13,9 @@ import {
   createNewLayer,
   labelForLayerType,
   defaultParametersForLayerType
-} from '../../model/layers';
-import { copyAndDeleteItemById, getKey } from '../../utils/collections';
-import { chooseUniqueId, chooseUniqueName } from '../../utils/naming';
+} from '~/model/layers';
+import { copyAndDeleteItemById, getKey } from '~/utils/collections';
+import { chooseUniqueId, chooseUniqueName } from '~/utils/naming';
 
 /**
  * The default layer configuration of the map.

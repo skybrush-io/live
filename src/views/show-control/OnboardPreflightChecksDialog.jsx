@@ -31,7 +31,7 @@ const OnboardPreflightChecksDialog = ({
   return (
     <Dialog fullWidth open={open} maxWidth="xs" onClose={onClose}>
       <DialogContent>
-        <Box className="bottom-bar" textAlign="center" mt={2} pt={2}>
+        <Box className="bottom-bar" textAlign="center" pt={2}>
           <FormControlLabel
             control={
               <Switch

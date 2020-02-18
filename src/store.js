@@ -20,7 +20,10 @@ import { createPromise } from 'redux-promise-middleware';
 import createSagaMiddleware from 'redux-saga';
 import { persistStore, persistReducer } from 'redux-persist';
 import autoMergeLevel2 from 'redux-persist/lib/stateReconciler/autoMergeLevel2';
-import { createFilter } from 'redux-persist-transform-filter';
+import {
+  createBlacklistFilter,
+  createFilter
+} from 'redux-persist-transform-filter';
 
 import { loadingPromiseFulfilled } from './features/show/slice';
 import { updateUAVs } from './features/uavs/slice';
@@ -106,6 +109,9 @@ const persistConfig = {
       'savedLocationEditor',
       'serverSettings'
     ]),
+
+    // We do not wish to save which preflight checks the user has ticked off
+    createBlacklistFilter('preflight', ['checked']),
 
     // it would be better to use a blacklist filter here that simply excludes
     // 'data' and 'upload', but it makes a deep copy, which is very expensive

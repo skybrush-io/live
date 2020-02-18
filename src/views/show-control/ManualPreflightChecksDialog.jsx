@@ -3,18 +3,95 @@ import React from 'react';
 import { connect } from 'react-redux';
 
 import Box from '@material-ui/core/Box';
+import Checkbox from '@material-ui/core/Checkbox';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+import ListSubheader from '@material-ui/core/ListSubheader';
 import Switch from '@material-ui/core/Switch';
 
+import {
+  getCheckedPreflightCheckItems,
+  getHeadersAndItems
+} from '~/features/preflight/selectors';
+import { setPreflightCheckStatus } from '~/features/preflight/slice';
 import { signOffOnManualPreflightChecks } from '~/features/show/actions';
 import { areManualPreflightChecksSignedOff } from '~/features/show/selectors';
 import {
   clearManualPreflightChecks,
   closeManualPreflightChecksDialog
 } from '~/features/show/slice';
+
+/**
+ * Presentation component that shows a list of manual preflight checks and whether they
+ * have been checked or not.
+ */
+const PreflightCheckListPresentation = ({
+  checkedItemIds,
+  items,
+  onChange,
+  ...rest
+}) => (
+  <List dense disablePadding {...rest}>
+    {items.map(item => {
+      if (item.type === 'header') {
+        return (
+          <ListSubheader key={`preflight-header-${item.id}`}>
+            {item.label}
+          </ListSubheader>
+        );
+      }
+
+      const itemId = `preflight-item-${item.id}`;
+      return (
+        <ListItem key={itemId}>
+          <ListItemIcon>
+            <Checkbox
+              disableRipple
+              edge="start"
+              checked={checkedItemIds.includes(item.id)}
+              inputProps={{ 'aria-labelledby': itemId }}
+              value={item.id}
+              onChange={onChange}
+            />
+          </ListItemIcon>
+          <ListItemText id={itemId} primary={item.label} />
+        </ListItem>
+      );
+    })}
+  </List>
+);
+
+PreflightCheckListPresentation.propTypes = {
+  checkedItemIds: PropTypes.arrayOf(PropTypes.string),
+  items: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.string,
+      type: PropTypes.string
+    })
+  ),
+  onChange: PropTypes.func
+};
+
+const PreflightCheckList = connect(
+  // mapStateToProps
+  state => ({
+    checkedItemIds: getCheckedPreflightCheckItems(state),
+    items: getHeadersAndItems(state)
+  }),
+  // mapDispatchToProps
+  dispatch => ({
+    onChange(event) {
+      const { checked, value } = event.target;
+      dispatch(setPreflightCheckStatus({ id: value, checked }));
+    }
+  })
+)(PreflightCheckListPresentation);
 
 /**
  * Presentation component for the dialog that allows the user to inspect the
@@ -30,8 +107,18 @@ const ManualPreflightChecksDialog = ({
 }) => {
   return (
     <Dialog fullWidth open={open} maxWidth="xs" onClose={onClose}>
-      <DialogContent>
-        <Box className="bottom-bar" textAlign="center" mt={2} pt={2}>
+      <DialogContent
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          paddingLeft: '1em',
+          marginRight: '1em'
+        }}
+      >
+        <Box flex={1} overflow="auto" minHeight={0}>
+          <PreflightCheckList />
+        </Box>
+        <Box className="bottom-bar" textAlign="center" pt={2}>
           <FormControlLabel
             control={
               <Switch

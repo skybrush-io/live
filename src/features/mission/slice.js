@@ -45,15 +45,6 @@ const { actions, reducer } = createSlice({
       // Stores the index of the slot in the mapping that is being edited;
       // -1 if no slot is being edited
       indexBeingEdited: -1
-    },
-
-    preflight: {
-      // List of manual preflight checks that the user should tick off on the
-      // UI before takeoff
-      items: [],
-
-      // Stores whether the preflight checks are ticked off
-      checked: []
     }
   },
 
