@@ -30,22 +30,20 @@ function environmentTypeToString(type) {
  * show environment and to customize the origin of the show (for outdoor shows)
  * or the size of the stage (for indoor shows).
  */
-const EnvironmentButton = ({ onEditEnvironment, status, type, ...rest }) => {
-  return (
-    <ListItem
-      button
-      disabled={status === StepperStatus.OFF}
-      onClick={onEditEnvironment}
-      {...rest}
-    >
-      <StepperStatusLight status={status} />
-      <ListItemText
-        primary="Setup environment"
-        secondary={environmentTypeToString(type)}
-      />
-    </ListItem>
-  );
-};
+const EnvironmentButton = ({ onEditEnvironment, status, type, ...rest }) => (
+  <ListItem
+    button
+    disabled={status === StepperStatus.OFF}
+    onClick={onEditEnvironment}
+    {...rest}
+  >
+    <StepperStatusLight status={status} />
+    <ListItemText
+      primary="Setup environment"
+      secondary={environmentTypeToString(type)}
+    />
+  </ListItem>
+);
 
 EnvironmentButton.propTypes = {
   onEditEnvironment: PropTypes.func,

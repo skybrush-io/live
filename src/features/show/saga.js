@@ -27,6 +27,7 @@ import {
   notifyUploadOnUavStarted,
   notifyUploadOnUavSucceeded,
   notifyUploadFinished,
+  setShowAuthorization,
   setShowSettingsSynchronizationStatus,
   setStartMethod,
   setStartTime,
@@ -197,9 +198,10 @@ function* showUploaderSagaWithCancellation() {
  */
 function* pullSettingsFromServer() {
   const config = yield call(messageHub.query.getShowConfiguration);
-  const { time, method } = get(config, 'start');
+  const { authorized, time, method } = get(config, 'start');
 
   if ((isNumber(time) || isNil(time)) && isString(method)) {
+    yield put(setShowAuthorization(Boolean(authorized)));
     yield put(setStartTime(time));
     yield put(setStartMethod(method));
   } else {

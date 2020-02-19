@@ -31,7 +31,7 @@ const OnboardPreflightChecksButton = ({
   ...rest
 }) => {
   return (
-    <ListItem button disabled={false && status === StepperStatus.OFF} {...rest}>
+    <ListItem button disabled={status === StepperStatus.OFF} {...rest}>
       <StepperStatusLight status={status} />
       <ListItemText primary="Onboard preflight checks" />
       {/* TODO: show how many drones have nonzero error codes */}

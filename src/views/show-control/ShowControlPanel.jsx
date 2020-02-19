@@ -1,12 +1,10 @@
 import React from 'react';
 
 import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
 import Divider from '@material-ui/core/Divider';
 import List from '@material-ui/core/List';
-import CloudUpload from '@material-ui/icons/CloudUpload';
-import PlayArrow from '@material-ui/icons/PlayArrow';
 
+import AuthorizationButton from './AuthorizationButton';
 import EnvironmentButton from './EnvironmentButton';
 import EnvironmentEditorDialog from './EnvironmentEditorDialog';
 import LoadShowFromFileButton from './LoadShowFromFileButton';
@@ -43,29 +41,10 @@ const ShowControlPanel = () => {
         </List>
       </Box>
 
-      <Box
-        className="bottom-bar"
-        display="flex"
-        justifyContent="space-around"
-        py={2}
-        px={2}
-      >
-        <Button
-          disabled
-          variant="contained"
-          color="primary"
-          startIcon={<CloudUpload />}
-        >
-          Upload
-        </Button>
-        <Button
-          disabled
-          variant="contained"
-          color="secondary"
-          startIcon={<PlayArrow />}
-        >
-          Start
-        </Button>
+      <Box className="bottom-bar">
+        <List dense disablePadding>
+          <AuthorizationButton />
+        </List>
       </Box>
 
       <EnvironmentEditorDialog />

@@ -16,7 +16,7 @@ import ListSubheader from '@material-ui/core/ListSubheader';
 import Switch from '@material-ui/core/Switch';
 
 import {
-  getCheckedPreflightCheckItems,
+  getTickedPreflightCheckItems,
   getHeadersAndItems
 } from '~/features/preflight/selectors';
 import { togglePreflightCheckStatus } from '~/features/preflight/slice';
@@ -84,7 +84,7 @@ PreflightCheckListPresentation.propTypes = {
 const PreflightCheckList = connect(
   // mapStateToProps
   state => ({
-    checkedItemIds: getCheckedPreflightCheckItems(state),
+    checkedItemIds: getTickedPreflightCheckItems(state),
     items: getHeadersAndItems(state)
   }),
   // mapDispatchToProps

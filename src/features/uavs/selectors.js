@@ -282,8 +282,10 @@ export const getErrorCodeSummaryForUAVsInMission = createSelector(
 
     for (const uavId of uavIds) {
       const uavState = uavStatesById[uavId];
-      for (const code of uavState.errors) {
-        result.push([code, [uavId, reverseMapping[uavId] || null]]);
+      if (uavState) {
+        for (const code of uavState.errors) {
+          result.push([code, [uavId, reverseMapping[uavId] || null]]);
+        }
       }
     }
 
@@ -294,5 +296,24 @@ export const getErrorCodeSummaryForUAVsInMission = createSelector(
       code: key,
       uavIdsAndIndices: value.map(x => x[1])
     }));
+  }
+);
+
+/**
+ * Returns whether none of the UAVs in the current mission have an error code.
+ */
+export const areAllUAVsInMissionWithoutErrors = createSelector(
+  getReverseMissionMapping,
+  getUAVIdsParticipatingInMission,
+  state => state.uavs.byId,
+  (reverseMapping, uavIds, uavStatesById) => {
+    for (const uavId of uavIds) {
+      const uavState = uavStatesById[uavId];
+      if (uavState && uavState.errors && uavState.errors.length > 0) {
+        return false;
+      }
+    }
+
+    return true;
   }
 );

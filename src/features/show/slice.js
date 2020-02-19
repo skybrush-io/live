@@ -48,6 +48,7 @@ const { actions, reducer } = createSlice({
     },
 
     start: {
+      authorized: false,
       time: null,
       method: 'rc',
       syncStatusWithServer: 'notSynced'
@@ -278,6 +279,12 @@ const { actions, reducer } = createSlice({
         action.payload || null;
     },
 
+    setShowAuthorization(state, action) {
+      // We only accept 'true' for authorization to be on the safe side, not
+      // just any truthy value
+      state.start.authorized = action.payload === true;
+    },
+
     setShowSettingsSynchronizationStatus(state, action) {
       if (
         ['synced', 'notSynced', 'inProgress', 'error'].includes(action.payload)
@@ -367,6 +374,7 @@ export const {
   setEnvironmentType,
   setOutdoorShowOrientation,
   setOutdoorShowOrigin,
+  setShowAuthorization,
   setShowSettingsSynchronizationStatus,
   setStartMethod,
   setStartTime,

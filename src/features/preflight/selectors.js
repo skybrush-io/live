@@ -54,6 +54,15 @@ export const getHeadersAndItems = createSelector(
 
 /**
  * Returns an array containing the IDs of all preflight checks that have been
- * selected by the user.
+ * ticked by the user.
  */
-export const getCheckedPreflightCheckItems = state => state.preflight.checked;
+export const getTickedPreflightCheckItems = state => state.preflight.checked;
+
+/**
+ * Returns whether all preflight checks have been ticked by the user.
+ */
+export const areAllPreflightChecksTicked = createSelector(
+  getPreflightItemsInOrder,
+  state => state.preflight.checked,
+  (allItems, checkedItems) => allItems.length === checkedItems.length
+);

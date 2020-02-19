@@ -44,6 +44,22 @@ export const didStartConditionSyncFail = state =>
 export const hasScheduledStartTime = state => !isNil(state.show.start.time);
 
 /**
+ * Returns whether the show has received human authorization to start,
+ * irrespectively of whether this setting has been synchronized to the server
+ * or not.
+ */
+export const isShowAuthorizedToStartLocally = state =>
+  Boolean(state.show.start.authorized);
+
+/**
+ * Returns whether the show has received human authorization to start _and_
+ * this has been synchronized with the server.
+ */
+export const isShowAuthorizedToStart = state =>
+  isShowAuthorizedToStartLocally(state) &&
+  areStartConditionsSyncedWithServer(state);
+
+/**
  * Returns whether the takeoff area arrangement was approved by the operator.
  */
 export const isTakeoffAreaApproved = state =>

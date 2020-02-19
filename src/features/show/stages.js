@@ -14,11 +14,17 @@ import {
   hasScheduledStartTime,
   hasShowOrigin,
   isLoadingShowFile,
+  isShowAuthorizedToStart,
+  isShowAuthorizedToStartLocally,
   isTakeoffAreaApproved
 } from './selectors';
 
 import { getEmptyMappingSlotIndices } from '~/features/mission/selectors';
-import { getMissingUAVIdsInMapping } from '~/features/uavs/selectors';
+import { areAllPreflightChecksTicked } from '~/features/preflight/selectors';
+import {
+  areAllUAVsInMissionWithoutErrors,
+  getMissingUAVIdsInMapping
+} from '~/features/uavs/selectors';
 
 import { StepperStatus } from '~/components/StepperStatusLight';
 
@@ -70,17 +76,35 @@ const stages = {
   },
 
   waitForOnboardPreflightChecks: {
-    // TODO(ntamas): return a warning only if there is at least one drone with
-    // a non-zero error code
-    evaluate: areOnboardPreflightChecksSignedOff,
+    evaluate: state =>
+      areOnboardPreflightChecksSignedOff(state)
+        ? areAllUAVsInMissionWithoutErrors(state)
+          ? StepperStatus.COMPLETED
+          : StepperStatus.SKIPPED
+        : StepperStatus.OFF,
     suggests: ['setupStartTime']
   },
 
   performManualPreflightChecks: {
-    // TODO(ntamas): return a warning only if there is at least one preflight
-    // check that the user has not ticked off explicitly
-    evaluate: areManualPreflightChecksSignedOff,
+    evaluate: state =>
+      areManualPreflightChecksSignedOff(state)
+        ? areAllPreflightChecksTicked(state)
+          ? StepperStatus.COMPLETED
+          : StepperStatus.SKIPPED
+        : StepperStatus.OFF,
     suggests: ['setupStartTime']
+  },
+
+  authorization: {
+    evaluate: state =>
+      isShowAuthorizedToStart(state)
+        ? StepperStatus.COMPLETED
+        : didStartConditionSyncFail(state)
+        ? StepperStatus.ERROR
+        : isShowAuthorizedToStartLocally(state)
+        ? StepperStatus.WAITING
+        : StepperStatus.OFF,
+    requires: ['waitForOnboardPreflightChecks', 'performManualPreflightChecks']
   }
 };
 
@@ -95,7 +119,8 @@ const stageOrder = [
   'setupStartTime',
   'uploadShow',
   'waitForOnboardPreflightChecks',
-  'performManualPreflightChecks'
+  'performManualPreflightChecks',
+  'authorization'
 ];
 
 /**
