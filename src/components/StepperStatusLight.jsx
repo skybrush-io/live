@@ -11,6 +11,7 @@ import Colors from '~/components/colors';
 export const StepperStatus = {
   COMPLETED: 'completed',
   ERROR: 'error',
+  INFO: 'info',
   NEXT: 'next',
   OFF: 'off',
   SKIPPED: 'skipped',
@@ -50,6 +51,11 @@ const useStyles = makeStyles(
       backgroundColor: Colors.error,
       boxShadow: `0 0 4px 1px ${Colors.error}`,
       color: theme.palette.getContrastText(Colors.error)
+    },
+
+    'status-info': {
+      backgroundColor: Colors.info,
+      color: theme.palette.getContrastText(Colors.info)
     },
 
     'status-next': {

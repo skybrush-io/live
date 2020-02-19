@@ -5,11 +5,10 @@ import { connect } from 'react-redux';
 
 import Zoom from '@material-ui/core/Zoom';
 import IconButton from '@material-ui/core/IconButton';
-import makeStyles from '@material-ui/core/styles/makeStyles';
 import Edit from '@material-ui/icons/Edit';
-import Mapping from '@material-ui/icons/LooksOne';
 import Shuffle from '@material-ui/icons/Shuffle';
-import ToggleButton from '@material-ui/lab/ToggleButton';
+
+import MappingToggleButton from './MappingToggleButton';
 
 import { augmentMappingAutomaticallyFromSpareDrones } from '~/features/mission/actions';
 import { isMappingEditable } from '~/features/mission/selectors';
@@ -20,15 +19,6 @@ import {
 } from '~/features/mission/slice';
 import { toggleMissionIds } from '~/features/settings/slice';
 
-const useStyles = makeStyles(
-  () => ({
-    toggleButton: {
-      border: 0
-    }
-  }),
-  { name: 'MappingButton' }
-);
-
 /**
  * Button on the UAV toolbar that allows the user to toggle whether the mission
  * mapping is being used. It also adds a dropdown menu to allow the user to
@@ -38,51 +28,37 @@ const MappingButtonGroup = ({
   augmentMappingAutomaticallyFromSpareDrones,
   mappingEditable,
   showMissionIds,
-  startMappingEditorSession,
-  toggleMissionIds
-}) => {
-  const classes = useStyles();
-
-  return (
-    <TransitionGroup>
-      {showMissionIds && (
-        <Zoom key="editMapping">
-          <IconButton
-            disabled={mappingEditable || !showMissionIds}
-            onClick={startMappingEditorSession}
-          >
-            <Edit />
-          </IconButton>
-        </Zoom>
-      )}
-      {showMissionIds && (
-        <Zoom key="automap">
-          <IconButton onClick={augmentMappingAutomaticallyFromSpareDrones}>
-            <Shuffle />
-          </IconButton>
-        </Zoom>
-      )}
-      <Zoom key="showMapping">
-        <ToggleButton
-          className={classes.toggleButton}
-          size="small"
-          value="missionIds"
-          selected={showMissionIds}
-          onChange={toggleMissionIds}
+  startMappingEditorSession
+}) => (
+  <TransitionGroup>
+    {showMissionIds && (
+      <Zoom key="editMapping">
+        <IconButton
+          disabled={mappingEditable || !showMissionIds}
+          onClick={startMappingEditorSession}
         >
-          <Mapping />
-        </ToggleButton>
+          <Edit />
+        </IconButton>
       </Zoom>
-    </TransitionGroup>
-  );
-};
+    )}
+    {showMissionIds && (
+      <Zoom key="automap">
+        <IconButton onClick={augmentMappingAutomaticallyFromSpareDrones}>
+          <Shuffle />
+        </IconButton>
+      </Zoom>
+    )}
+    <Zoom key="showMapping">
+      <MappingToggleButton />
+    </Zoom>
+  </TransitionGroup>
+);
 
 MappingButtonGroup.propTypes = {
   augmentMappingAutomaticallyFromSpareDrones: PropTypes.func,
   mappingEditable: PropTypes.bool,
   showMissionIds: PropTypes.bool,
-  startMappingEditorSession: PropTypes.func,
-  toggleMissionIds: PropTypes.func
+  startMappingEditorSession: PropTypes.func
 };
 
 export default connect(

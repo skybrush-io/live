@@ -31,7 +31,7 @@ const ManualPreflightChecksButton = ({
   ...rest
 }) => {
   return (
-    <ListItem button disabled={false && status === StepperStatus.OFF} {...rest}>
+    <ListItem button disabled={status === StepperStatus.OFF} {...rest}>
       <StepperStatusLight status={status} />
       <ListItemText primary="Manual preflight checks" />
       {/* TODO: show how many checks were not ticked off by the user yet */}

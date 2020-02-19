@@ -19,10 +19,7 @@ import {
   getCheckedPreflightCheckItems,
   getHeadersAndItems
 } from '~/features/preflight/selectors';
-import {
-  setPreflightCheckStatus,
-  togglePreflightCheckStatus
-} from '~/features/preflight/slice';
+import { togglePreflightCheckStatus } from '~/features/preflight/slice';
 import { signOffOnManualPreflightChecks } from '~/features/show/actions';
 import { areManualPreflightChecksSignedOff } from '~/features/show/selectors';
 import {
@@ -117,7 +114,7 @@ const ManualPreflightChecksDialog = ({
           display: 'flex',
           flexDirection: 'column',
           paddingLeft: '1em',
-          marginRight: '1em'
+          paddingRight: '1em'
         }}
       >
         <Box flex={1} overflow="auto" minHeight={0}>

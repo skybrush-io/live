@@ -1,4 +1,6 @@
+import groupBy from 'lodash-es/groupBy';
 import isNil from 'lodash-es/isNil';
+import sortBy from 'lodash-es/sortBy';
 import { getDistance as haversineDistance } from 'ol/sphere';
 import createCachedSelector from 're-reselect';
 
@@ -8,6 +10,7 @@ import {
   getHomePositionsInMission,
   getMissionMapping,
   getReverseMissionMapping,
+  getUAVIdsParticipatingInMission,
   getTakeoffHeadingsInMission
 } from '~/features/mission/selectors';
 
@@ -255,4 +258,41 @@ export const getUnmappedUAVIds = createSelector(
   getUAVIdList,
   (reverseMapping, uavIds) =>
     uavIds.filter(uavId => isNil(reverseMapping[uavId]))
+);
+
+/**
+ * Returns a list summarizing the error codes of all the UAVs in the mission
+ * that currently have a non-zero error code.
+ *
+ * The returned array will contain objects of the following form:
+ *
+ * ```
+ * {
+ *   code: 3,
+ *   uavIdsAndIndices: [['UAV_ID', 42], ['UAV_ID_2', 43]]
+ * }
+ * ```
+ */
+export const getErrorCodeSummaryForUAVsInMission = createSelector(
+  getReverseMissionMapping,
+  getUAVIdsParticipatingInMission,
+  state => state.uavs.byId,
+  (reverseMapping, uavIds, uavStatesById) => {
+    const result = [];
+
+    for (const uavId of uavIds) {
+      const uavState = uavStatesById[uavId];
+      for (const code of uavState.errors) {
+        result.push([code, [uavId, reverseMapping[uavId] || null]]);
+      }
+    }
+
+    return sortBy(
+      Object.entries(groupBy(result, item => item[0])),
+      ([code, _]) => Number.parseInt(code, 10)
+    ).map(([key, value]) => ({
+      code: key,
+      uavIdsAndIndices: value.map(x => x[1])
+    }));
+  }
 );
