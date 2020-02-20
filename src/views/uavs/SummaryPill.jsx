@@ -13,7 +13,6 @@ const useStyles = makeStyles(
       borderRadius: theme.spacing(1),
       color: theme.palette.getContrastText.primary,
       fontSize: 'small',
-      fontWeight: 'bold',
       overflow: 'hidden',
       padding: `0 ${theme.spacing(0.5)}`,
       textAlign: 'center',
@@ -22,8 +21,6 @@ const useStyles = makeStyles(
       whiteSpace: 'nowrap',
       width: '100%'
     },
-
-    'status-off': {},
 
     'status-info': {
       backgroundColor: Colors.info,
@@ -37,26 +34,30 @@ const useStyles = makeStyles(
 
     'status-warning': {
       backgroundColor: Colors.warning,
-      color: theme.palette.getContrastText(Colors.warning)
+      color: theme.palette.getContrastText(Colors.warning),
+      fontWeight: 'bold'
     },
 
     'status-rth': {
       animation: '$flash 0.5s infinite',
       animationDirection: 'alternate',
       backgroundColor: Colors.warning,
-      color: theme.palette.getContrastText(Colors.warning)
+      color: theme.palette.getContrastText(Colors.warning),
+      fontWeight: 'bold'
     },
 
     'status-error': {
       backgroundColor: Colors.error,
-      color: theme.palette.getContrastText(Colors.error)
+      color: theme.palette.getContrastText(Colors.error),
+      fontWeight: 'bold'
     },
 
     'status-critical': {
       animation: '$flash 0.5s infinite',
       animationDirection: 'alternate',
       backgroundColor: Colors.error,
-      color: theme.palette.getContrastText(Colors.error)
+      color: theme.palette.getContrastText(Colors.error),
+      fontWeight: 'bold'
     },
 
     '@keyframes flash': {

@@ -29,8 +29,6 @@ const useStyles = makeStyles(
       fontWeight: 'bold'
     },
 
-    batteryOk: {},
-
     batteryWarning: {
       backgroundColor: Colors.warning,
       borderRadius: `${theme.shape.borderRadius * 2}px`,
@@ -74,31 +72,59 @@ const batteryIconsByStatus = {
   Error: batteryIcons[0]
 };
 
+// Percentage thresholds for full, normal, low
+const percentageThresholds = {
+  Full: 95,
+  NearFull: 60,
+  Ok: 20,
+  Warning: 10
+};
+
 // Thresholds for full, normal, low
 const voltageThresholdsPerCell = {
   Full: 4.1,
+  NearFull: 3.9,
   Ok: 3.7,
   Warning: 3.5
 };
 
-const numCells = 3;
+/**
+ * Returns a suggested battery status level, given the voltage and charge
+ * percentage of the battery.
+ */
+function getBatteryStatus(voltage, percentage) {
+  if (percentage) {
+    return percentage > percentageThresholds.Full
+      ? 'Full'
+      : percentage > percentageThresholds.NearFull
+      ? 'NearFull'
+      : percentage > percentageThresholds.Ok
+      ? 'Ok'
+      : percentage > percentageThresholds.Warning
+      ? 'Warning'
+      : 'Error';
+  }
+
+  const numCells = 3;
+  const voltagePerCell = voltage === undefined ? 0 : voltage / numCells;
+  return voltagePerCell > voltageThresholdsPerCell.Full
+    ? 'Full'
+    : voltagePerCell > voltageThresholdsPerCell.NearFull
+    ? 'NearFull'
+    : voltagePerCell > voltageThresholdsPerCell.Ok
+    ? 'Ok'
+    : voltagePerCell > voltageThresholdsPerCell.Warning
+    ? 'Warning'
+    : 'Error';
+}
 
 /**
  * Presentational component for a battery charge indicator.
  */
 const BatteryIndicator = ({ percentage, voltage }) => {
   const classes = useStyles();
-  const voltagePerCell = voltage === undefined ? 0 : voltage / numCells;
-  const status =
-    voltagePerCell > voltageThresholdsPerCell.Full
-      ? 'Full'
-      : voltagePerCell > voltageThresholdsPerCell.Ok
-      ? 'Ok'
-      : voltagePerCell > voltageThresholdsPerCell.Warning
-      ? 'Warning'
-      : 'Error';
   const rootClass = clsx(classes.root, classes[`battery${status}`]);
-
+  const status = getBatteryStatus(voltage, percentage);
   const batteryIcon =
     percentage === undefined
       ? batteryIconsByStatus[status]
