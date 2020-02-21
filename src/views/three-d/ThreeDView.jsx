@@ -7,6 +7,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 
 import CoordinateSystemAxes from './CoordinateSystemAxes';
+import Scenery from './Scenery';
 
 // eslint-disable-next-line no-unused-vars
 import AFrame from '~/aframe';
@@ -32,9 +33,7 @@ const ThreeDView = React.forwardRef(({ isCoordinateSystemLeftHanded }, ref) => (
     */}
 
     {/* Move the floor slightly down to ensure that the coordinate axes are nicely visible */}
-    <a-entity position="0 -0.001 0">
-      <a-entity environment="preset: default; groundColor: #8eb971; groundColor2: #507a32; groundTexture: walkernoise" />
-    </a-entity>
+    <Scenery type="night" />
   </a-scene>
 ));
 
