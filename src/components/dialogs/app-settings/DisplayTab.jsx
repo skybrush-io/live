@@ -123,7 +123,9 @@ export default connect(
     },
 
     onOriginChanged(value) {
-      dispatch(value ? setFlatEarthCoordinateSystemOrigin(value) : clearOrigin());
+      dispatch(
+        value ? setFlatEarthCoordinateSystemOrigin(value) : clearOrigin()
+      );
     },
 
     onOrientationChanged(value) {

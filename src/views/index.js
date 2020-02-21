@@ -15,6 +15,7 @@ import LogPanel from './log';
 import MapView from './map';
 import ShowControlPanel from './show-control';
 import UAVList from './uavs';
+import ThreeDTopLevelView from './three-d';
 
 export default {
   ClockDisplayList,
@@ -28,5 +29,6 @@ export default {
   MapView,
   SavedLocationList,
   ShowControlPanel,
-  UAVList
+  UAVList,
+  ThreeDTopLevelView
 };

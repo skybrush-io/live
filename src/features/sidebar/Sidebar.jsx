@@ -10,6 +10,7 @@ import MyLocation from '@material-ui/icons/MyLocation';
 import Notifications from '@material-ui/icons/Notifications';
 import ShowChart from '@material-ui/icons/ShowChart';
 // import Storage from '@material-ui/icons/Storage';
+import ThreeDRotation from '@material-ui/icons/ThreeDRotation';
 
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -45,6 +46,12 @@ const Sidebar = ({ isOpen, workbench }) => (
     <div style={innerStyle}>
       <ModuleTray allowMultipleSelection vertical workbench={workbench}>
         <Module id="map" icon={<Map />} label="Map" component="map" />
+        <Module
+          id="threeDView"
+          icon={<ThreeDRotation />}
+          label="3D View"
+          component="three-d-view"
+        />
         <Module
           id="layers"
           icon={<Layers />}

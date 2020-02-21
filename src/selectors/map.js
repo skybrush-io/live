@@ -29,3 +29,10 @@ export const getMapOriginRotationAngle = createSelector(
   state => state.map.origin.angle,
   parseFloat
 );
+
+/**
+ * Selector that returns whether the current coordinate system is left-handed
+ * or right-handed.
+ */
+export const isMapCoordinateSystemLeftHanded = state =>
+  state.map.origin.type === 'neu';

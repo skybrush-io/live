@@ -46,9 +46,10 @@ module.exports = {
   ],
   resolve: {
     alias: {
-      '~': path.resolve(projectRoot, 'src')
+      '~': path.resolve(projectRoot, 'src'),
+      'layout-bmfont-text': '@collmot/layout-bmfont-text'
     },
-    extensions: ['.webpack.js', '.web.js', '.js', '.jsx']
+    extensions: ['.webpack.js', '.web.js', '.js', '.jsx', '.json']
   },
   module: {
     rules: [

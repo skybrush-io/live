@@ -54,6 +54,7 @@ const componentRegistry = {
   placeholder: renderNothing(),
   'saved-location-list': views.SavedLocationList,
   'show-control': views.ShowControlPanel,
+  'three-d-view': views.ThreeDTopLevelView,
   'uav-list': injectFlockFromContext(views.UAVList)
 };
 
@@ -81,6 +82,9 @@ function constructDefaultWorkbench(store) {
     .add('uav-list')
     .setTitle('UAVs')
     .setId('uavs')
+    .add('three-d-view')
+    .setTitle('3D View')
+    .setId('threeDView')
     .finish()
     .makeRows()
     .makeStack()
