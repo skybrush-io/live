@@ -161,6 +161,7 @@ const { actions, reducer } = createSlice({
       // Dispatched by the saga; should not be dispatched manually
       // TODO(ntamas): move all items still in progress back to the queue
       state.upload.itemsInProgress = [];
+      state.upload.itemsQueued = [];
       state.upload.running = false;
       state.upload.lastUploadResult = cancelled
         ? 'cancelled'
@@ -247,6 +248,7 @@ const { actions, reducer } = createSlice({
 
       state.upload.failedItems = [];
       state.upload.itemsFinished = [];
+      state.upload.itemsQueued = [];
       state.upload.itemsWaitingToStart = [...payload];
       state.uploadDialog.showLastUploadResult = false;
     },
