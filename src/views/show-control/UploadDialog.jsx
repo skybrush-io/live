@@ -8,19 +8,15 @@ import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
-import Divider from '@material-ui/core/Divider';
 import Fade from '@material-ui/core/Fade';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
 import IconButton from '@material-ui/core/IconButton';
-import Radio from '@material-ui/core/Radio';
-import RadioGroup from '@material-ui/core/RadioGroup';
 import { makeStyles } from '@material-ui/core/styles';
 import Clear from '@material-ui/icons/Clear';
-import CloudUpload from '@material-ui/icons/CloudUpload';
 import Refresh from '@material-ui/icons/Refresh';
 import Alert from '@material-ui/lab/Alert';
 
 import DronePlaceholderList from './DronePlaceholderList';
+import StartUploadButton from './StartUploadButton';
 import UploadProgressBar from './UploadProgressBar';
 
 import { getUAVIdsParticipatingInMission } from '~/features/mission/selectors';
@@ -99,6 +95,9 @@ UploadResultIndicator.propTypes = {
 };
 
 const useStyles = makeStyles(theme => ({
+  actions: {
+    padding: theme.spacing(1, 3, 3, 3)
+  },
   uploadResultIndicator: {
     position: 'absolute',
     top: 0,
@@ -136,28 +135,7 @@ const UploadDialog = ({
 
   return (
     <Dialog fullWidth open={open} maxWidth="sm" onClose={onClose}>
-      <DialogContent style={{ minHeight: 240 }}>
-        <RadioGroup
-          row
-          value={uploadTarget}
-          onChange={event => onChangeUploadTarget(event.target.value)}
-        >
-          <FormControlLabel
-            value="all"
-            disabled={running}
-            control={<Radio />}
-            label="All drones"
-          />
-          <FormControlLabel
-            value="selected"
-            disabled={running || isEmpty(selectedUAVIds)}
-            control={<Radio />}
-            label="Selected drones only"
-          />
-        </RadioGroup>
-
-        <Divider />
-
+      <DialogContent>
         <DronePlaceholderList
           title="Queued:"
           items={itemsInBacklog}
@@ -198,7 +176,7 @@ const UploadDialog = ({
           />
         </Fade>
       </DialogContent>
-      <DialogActions>
+      <DialogActions className={classes.actions}>
         {running ? (
           <Button
             color="secondary"
@@ -208,14 +186,13 @@ const UploadDialog = ({
             Cancel upload
           </Button>
         ) : (
-          <Button
-            color="primary"
-            disabled={false && !canStartUpload}
-            startIcon={<CloudUpload />}
+          <StartUploadButton
+            disabled={!canStartUpload}
+            hasSelection={selectedUAVIds && selectedUAVIds.length > 0}
+            uploadTarget={uploadTarget}
+            onChangeUploadTarget={onChangeUploadTarget}
             onClick={onStartUpload}
-          >
-            Start upload
-          </Button>
+          />
         )}
       </DialogActions>
     </Dialog>
@@ -274,13 +251,25 @@ export default connect(
     onStartUpload: () => (dispatch, getState) => {
       const state = getState();
       const backlog = getItemsInUploadBacklog(state);
+      const { uploadTarget } = state.show.uploadDialog;
+      let canStart = false;
 
       if (isEmpty(backlog)) {
-        const uavIds = getUAVIdsParticipatingInMission(state);
-        dispatch(prepareForNextUpload(uavIds));
+        const uavIds =
+          uploadTarget === 'selected'
+            ? getSelectedUAVIds(state)
+            : getUAVIdsParticipatingInMission(state);
+        if (uavIds && uavIds.length > 0) {
+          canStart = true;
+          dispatch(prepareForNextUpload(uavIds));
+        }
+      } else {
+        canStart = true;
       }
 
-      dispatch(startUpload());
+      if (canStart) {
+        dispatch(startUpload());
+      }
     }
   }
 )(UploadDialog);

@@ -72,8 +72,6 @@ export async function uploadDroneShow(hub, { uavId, data }) {
     }
   });
 
-  console.log(response);
-
   if (!response.body.response) {
     throw new Error('Failed to upload show data to the server');
   }
