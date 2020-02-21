@@ -1,17 +1,20 @@
+import partial from 'lodash-es/partial';
+import PropTypes from 'prop-types';
+import React from 'react';
+import { connect } from 'react-redux';
+import TimeAgo from 'react-time-ago';
+
 import Box from '@material-ui/core/Box';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ActionDone from '@material-ui/icons/Done';
 import ActionSettingsEthernet from '@material-ui/icons/SettingsEthernet';
 import ContentClear from '@material-ui/icons/Clear';
-import PropTypes from 'prop-types';
-import React from 'react';
-import { connect } from 'react-redux';
-import TimeAgo from 'react-time-ago';
 
 import BackgroundHint from '~/components/BackgroundHint';
 import Colors from '~/components/colors';
 import { listOf } from '~/components/helpers/lists';
+import TransparentList from '~/components/TransparentList';
 import { ConnectionState } from '~/model/connections';
 import { getConnectionsInOrder } from '~/selectors/ordered';
 
@@ -66,14 +69,16 @@ const ConnectionStatusMiniListPresentation = listOf(
     dataProvider: 'connections',
     backgroundHint: (
       <BackgroundHint text="This server does not use any connections" />
-    )
+    ),
+    listFactory: partial(React.createElement, TransparentList)
   }
 );
 
 export default connect(
   state => ({
     connections: getConnectionsInOrder(state),
-    mini: true
+    dense: true,
+    disablePadding: true
   }),
   () => ({})
 )(ConnectionStatusMiniListPresentation);

@@ -8,10 +8,8 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
-import IconButton from '@material-ui/core/IconButton';
 import Switch from '@material-ui/core/Switch';
 import Typography from '@material-ui/core/Typography';
-import Shuffle from '@material-ui/icons/Shuffle';
 import VerticalAlignBottom from '@material-ui/icons/VerticalAlignBottom';
 
 import DronePlaceholderList from './DronePlaceholderList';
@@ -34,6 +32,7 @@ import {
   createSelectorToGetMisalignedUAVIds,
   getMissingUAVIdsInMapping
 } from '~/features/uavs/selectors';
+import AugmentMappingButton from '~/views/uavs/AugmentMappingButton';
 
 /**
  * Presentation component that shows how many mapping slots are empty at the
@@ -114,7 +113,6 @@ const TakeoffAreaSetupDialog = ({
   open,
   onAddVirtualDrones,
   onApprove,
-  onAutomap,
   onClose,
   onRevoke
 }) => (
@@ -132,9 +130,7 @@ const TakeoffAreaSetupDialog = ({
           Place virtual drones
         </Button>
       )}
-      <IconButton onClick={onAutomap}>
-        <Shuffle />
-      </IconButton>
+      <AugmentMappingButton />
     </DialogToolbar>
 
     <DialogContent>
@@ -169,7 +165,6 @@ TakeoffAreaSetupDialog.propTypes = {
   misalignedUAVIds: PropTypes.arrayOf(PropTypes.string),
   onAddVirtualDrones: PropTypes.func,
   onApprove: PropTypes.func,
-  onAutomap: PropTypes.func,
   onClose: PropTypes.func,
   onRevoke: PropTypes.func,
   open: PropTypes.bool

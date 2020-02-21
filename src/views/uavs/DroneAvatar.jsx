@@ -265,6 +265,7 @@ function getDroneStatus(uav) {
   }
 
   // TODO: check expiry dates
+  // TODO: handle RTH events
 
   return 'success';
 }

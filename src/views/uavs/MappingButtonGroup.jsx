@@ -6,17 +6,16 @@ import { connect } from 'react-redux';
 import Zoom from '@material-ui/core/Zoom';
 import IconButton from '@material-ui/core/IconButton';
 import Edit from '@material-ui/icons/Edit';
-import Shuffle from '@material-ui/icons/Shuffle';
 
+import AugmentMappingButton from './AugmentMappingButton';
 import MappingToggleButton from './MappingToggleButton';
 
-import { augmentMappingAutomaticallyFromSpareDrones } from '~/features/mission/actions';
 import { isMappingEditable } from '~/features/mission/selectors';
-import { isShowingMissionIds } from '~/features/settings/selectors';
 import {
   clearMapping,
   startMappingEditorSession
 } from '~/features/mission/slice';
+import { isShowingMissionIds } from '~/features/settings/selectors';
 import { toggleMissionIds } from '~/features/settings/slice';
 
 /**
@@ -25,7 +24,6 @@ import { toggleMissionIds } from '~/features/settings/slice';
  * clear or edit the mapping.
  */
 const MappingButtonGroup = ({
-  augmentMappingAutomaticallyFromSpareDrones,
   mappingEditable,
   showMissionIds,
   startMappingEditorSession
@@ -43,9 +41,7 @@ const MappingButtonGroup = ({
     )}
     {showMissionIds && (
       <Zoom key="automap">
-        <IconButton onClick={augmentMappingAutomaticallyFromSpareDrones}>
-          <Shuffle />
-        </IconButton>
+        <AugmentMappingButton />
       </Zoom>
     )}
     <Zoom key="showMapping">
@@ -55,7 +51,6 @@ const MappingButtonGroup = ({
 );
 
 MappingButtonGroup.propTypes = {
-  augmentMappingAutomaticallyFromSpareDrones: PropTypes.func,
   mappingEditable: PropTypes.bool,
   showMissionIds: PropTypes.bool,
   startMappingEditorSession: PropTypes.func
@@ -69,7 +64,6 @@ export default connect(
   }),
   // mapDispatchToProps
   {
-    augmentMappingAutomaticallyFromSpareDrones,
     clearMapping,
     startMappingEditorSession,
     toggleMissionIds

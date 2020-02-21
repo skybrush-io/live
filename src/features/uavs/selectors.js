@@ -111,7 +111,7 @@ export const getXYDistanceToHomePositionByUavId = createCachedSelector(
   getHomePositionByUavId,
   getCurrentPositionByUavId,
   (homePosition, currentPosition) => {
-    if (homePosition !== undefined && currentPosition !== undefined) {
+    if (!isNil(homePosition) && !isNil(currentPosition)) {
       return haversineDistance(
         [homePosition.lon, homePosition.lat],
         [currentPosition.lon, currentPosition.lat]

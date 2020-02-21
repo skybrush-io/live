@@ -91,6 +91,23 @@ export const getUAVIdsParticipatingInMission = createSelector(
 );
 
 /**
+ * Returns whether it currently makes sense to enable the "augment mapping from
+ * current drone positions automatically" button. This action makes sense only
+ * if there is at least one spare drone, at least one empty slot in the mapping
+ * and the home coordinates are set.
+ *
+ * Note that right now we don't check whether there are spare drones as we would
+ * need to reach out to another slice of the state store for that. This can be
+ * added later.
+ */
+export const canAugmentMappingAutomaticallyFromSpareDrones = createSelector(
+  getEmptyMappingSlotIndices,
+  getHomePositionsInMission,
+  (emptySlots, homePositions) =>
+    emptySlots.length > 0 && homePositions.some(position => !isNil(position))
+);
+
+/**
  * Returns whether the current mapping is editable at the moment.
  */
 export const isMappingEditable = state => state.mission.mappingEditor.enabled;

@@ -17,7 +17,8 @@ import {
 import {
   getCommonShowSettings,
   getDroneSwarmSpecification,
-  getNextDroneFromUploadQueue
+  getNextDroneFromUploadQueue,
+  getOutdoorShowCoordinateSystem
 } from './selectors';
 import {
   cancelUpload,
@@ -55,6 +56,14 @@ function createShowConfigurationForUav(state, uavId) {
     throw new Error(`UAV ${uavId} is not in the current mission`);
   }
 
+  const coordinateSystem = getOutdoorShowCoordinateSystem(state);
+  if (
+    typeof coordinateSystem !== 'object' ||
+    !Array.isArray(coordinateSystem.origin)
+  ) {
+    throw new TypeError('Show coordinate system not specified');
+  }
+
   const drones = getDroneSwarmSpecification(state);
   if (!drones || !Array.isArray(drones)) {
     throw new Error('Invalid show configuration in state store');
@@ -76,7 +85,8 @@ function createShowConfigurationForUav(state, uavId) {
 
   return {
     ...getCommonShowSettings(state),
-    ...settings
+    ...settings,
+    coordinateSystem
   };
 }
 
