@@ -37,7 +37,19 @@ const { actions, reducer } = createSlice({
       grid: 'none',
 
       // Rendering quality of the 3D view (low, medium or high)
-      quality: 'medium'
+      quality: 'medium',
+
+      // Whether to show the coordinate system axes
+      showAxes: true,
+
+      // Whether to show the home positions of the UAVs
+      showHomePositions: true,
+
+      // Whether to show the landing positions of the UAVs
+      showLandingPositions: false,
+
+      // Whether to show statistics about the rendering in an overlay
+      showStatistics: false
     },
 
     localServer: {
