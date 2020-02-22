@@ -133,6 +133,9 @@ ThreeDViewTab.propTypes = {
   onCheckboxToggled: PropTypes.func,
   onFieldChanged: PropTypes.func,
   scenery: PropTypes.string,
+  showAxes: PropTypes.bool,
+  showHomePositions: PropTypes.bool,
+  showLandingPositions: PropTypes.bool,
   showStatistics: PropTypes.bool
 };
 
