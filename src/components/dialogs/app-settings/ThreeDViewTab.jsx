@@ -22,6 +22,10 @@ const sceneries = [
   {
     id: 'night',
     label: 'Night'
+  },
+  {
+    id: 'indoor',
+    label: 'Indoor'
   }
 ];
 

@@ -10,19 +10,33 @@ const grounds = {
     groundColor2: '#507a32',
     groundTexture: 'walkernoise',
     groundYScale: 9
+  },
+  /* Checkerboard indoor texture */
+  indoor: {
+    ground: 'flat',
+    groundColor: '#444',
+    groundColor2: '#666',
+    groundTexture: 'checkerboard'
   }
 };
 
 const environments = {
   day: {
     preset: 'default',
-    gridColor: '#ffffff',
+    gridColor: '#fff',
     ...grounds.default
   },
   night: {
     preset: 'starry',
     gridColor: '#39d2f2',
     ...grounds.default
+  },
+  indoor: {
+    preset: 'default',
+    gridColor: '#888',
+    skyType: 'color',
+    skyColor: '#222',
+    ...grounds.indoor
   }
 };
 
