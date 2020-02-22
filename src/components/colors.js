@@ -7,7 +7,17 @@ export const Colors = {
   success: green.A700,
   warning: yellow[700],
 
-  dropTarget: 'rgba(3, 169, 244, 0.5)' // lightblue.500
+  dropTarget: 'rgba(3, 169, 244, 0.5)', // lightblue.500
+
+  axisColors: {
+    x: '#f44',
+    y: '#4f4',
+    z: '#06f'
+  },
+
+  landingMarker: '#3c3',
+  originMarker: '#f44',
+  takeoffMarker: '#fc0'
 };
 
 export default Colors;

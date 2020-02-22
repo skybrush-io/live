@@ -36,3 +36,9 @@ export const getMapOriginRotationAngle = createSelector(
  */
 export const isMapCoordinateSystemLeftHanded = state =>
   state.map.origin.type === 'neu';
+
+/**
+ * Selector that returns whether the map coordinate system is specified.
+ */
+export const isMapCoordinateSystemSpecified = state =>
+  Array.isArray(state.map.origin.position);

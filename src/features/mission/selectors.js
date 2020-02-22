@@ -10,14 +10,14 @@ import { getSelectedUAVIds } from '~/selectors/selection';
  *
  * @param  {Object}  state  the state of the application
  */
-export const getHomePositionsInMission = state => state.mission.homePositions;
+export const getGPSBasedHomePositionsInMission = state => state.mission.homePositions;
 
 /**
  * Returns the current list of landing positions in the mission.
  *
  * @param  {Object}  state  the state of the application
  */
-export const getLandingPositionsInMission = state =>
+export const getGPSBasedLandingPositionsInMission = state =>
   state.mission.landingPositions;
 
 /**
@@ -102,7 +102,7 @@ export const getUAVIdsParticipatingInMission = createSelector(
  */
 export const canAugmentMappingAutomaticallyFromSpareDrones = createSelector(
   getEmptyMappingSlotIndices,
-  getHomePositionsInMission,
+  getGPSBasedHomePositionsInMission,
   (emptySlots, homePositions) =>
     emptySlots.length > 0 && homePositions.some(position => !isNil(position))
 );

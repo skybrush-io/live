@@ -27,10 +27,16 @@ export const setAppSettingsDialogTab = createAction(
 /**
  * Action factory that creates an action that shows the app settings dialog.
  */
-export const showAppSettingsDialog = createAction(SHOW_APP_SETTINGS_DIALOG);
+export const showAppSettingsDialog = createAction(
+  SHOW_APP_SETTINGS_DIALOG,
+  () => null
+);
 
 /**
  * Action factory that creates an action that toggles the visibility of
  * the app settings dialog.
  */
-export const toggleAppSettingsDialog = createAction(TOGGLE_APP_SETTINGS_DIALOG);
+export const toggleAppSettingsDialog = createAction(
+  TOGGLE_APP_SETTINGS_DIALOG,
+  () => null
+);

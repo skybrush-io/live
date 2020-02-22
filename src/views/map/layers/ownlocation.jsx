@@ -33,7 +33,7 @@ class OwnLocationVectorSource extends React.Component {
       rotation: 0,
       snapToPixel: false,
       /* Path should not have a leading slash otherwise it won't work in Electron */
-      src: 'assets/location.32x32.png'
+      src: 'assets/img/location.32x32.png'
     });
 
     this.locationFeature = new Feature();

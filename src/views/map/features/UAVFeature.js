@@ -109,7 +109,7 @@ export default class UAVFeature extends Feature {
       rotation: this._headingToRotation(),
       snapToPixel: false,
       // Path should not have a leading slash otherwise it won't work in Electron
-      src: `assets/drone.x.${this._color}.32x32.png`
+      src: `assets/img/drone.x.${this._color}.32x32.png`
     });
     this._iconImage = iconImage;
 
@@ -123,7 +123,7 @@ export default class UAVFeature extends Feature {
       rotation: this._headingToRotation(),
       snapToPixel: false,
       // Path should not have a leading slash otherwise it won't work in Electron
-      src: 'assets/selection_glow.png'
+      src: 'assets/img/selection-glow.png'
     });
     this._selectionImage = selectionImage;
 

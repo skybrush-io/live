@@ -7,7 +7,7 @@ import createCachedSelector from 're-reselect';
 import { createSelector } from '@reduxjs/toolkit';
 
 import {
-  getHomePositionsInMission,
+  getGPSBasedHomePositionsInMission,
   getMissionMapping,
   getReverseMissionMapping,
   getUAVIdsParticipatingInMission,
@@ -59,7 +59,7 @@ export const getCurrentHeadingByUavId = (state, uavId) => {
  */
 export const getHomePositionByUavId = createCachedSelector(
   getReverseMissionMapping,
-  getHomePositionsInMission,
+  getGPSBasedHomePositionsInMission,
   selectUavId,
   (revMapping, homePositions, uavId) => {
     const index = revMapping[uavId];

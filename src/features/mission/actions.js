@@ -6,7 +6,7 @@ import { getDistance as haversineDistance } from 'ol/sphere';
 
 import {
   getEmptyMappingSlotIndices,
-  getHomePositionsInMission,
+  getGPSBasedHomePositionsInMission,
   getMissionMapping
 } from './selectors';
 import { replaceMapping } from './slice';
@@ -53,7 +53,7 @@ export const augmentMappingAutomaticallyFromSpareDrones = () => (
   const state = getState();
 
   const emptySlots = getEmptyMappingSlotIndices(state);
-  const homePositions = getHomePositionsInMission(state);
+  const homePositions = getGPSBasedHomePositionsInMission(state);
 
   const slotsToFill = emptySlots.filter(index => !isNil(homePositions[index]));
   const targets = slotsToFill.map(index => ({
@@ -106,7 +106,7 @@ export const addVirtualDronesForMission = () => async (dispatch, getState) => {
   // Get the home coordinates of the drones from the current mission. The
   // configured origin and orientation of the virtual_uavs extension on the
   // server side does not matter as we will be sending explicit home coordinates.
-  const homeCoordinates = getHomePositionsInMission(state).filter(Boolean);
+  const homeCoordinates = getGPSBasedHomePositionsInMission(state).filter(Boolean);
   const numDrones = homeCoordinates.length;
   const numDigits = String(numDrones).length;
 

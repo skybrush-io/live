@@ -8,8 +8,6 @@ const {
 
 const dispatch = require('./dispatcher');
 
-// Const { showAppSettingsDialog } = esmRequire('../../actions/app-settings')
-
 const helpSubmenu = [
   openUrlMenuItem({
     label: 'Website',

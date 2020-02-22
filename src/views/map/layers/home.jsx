@@ -13,9 +13,10 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormGroup from '@material-ui/core/FormGroup';
 
 import { setLayerParameterById } from '~/actions/layers';
+import Colors from '~/components/colors';
 import {
-  getHomePositionsInMission,
-  getLandingPositionsInMission
+  getGPSBasedHomePositionsInMission,
+  getGPSBasedLandingPositionsInMission
 } from '~/features/mission/selectors';
 import {
   globalIdToHomePositionId,
@@ -119,27 +120,27 @@ function markAsSelectable(layer) {
 /**
  * Styling for stroke of the X axis of the coordinate system.
  */
-const redLine = stroke('#f44', 2);
+const redLine = stroke(Colors.axisColors.x, 2);
 
 /**
  * Styling for the stroke of the Y axis of the coordinate system.
  */
-const greenLine = stroke('#4f4', 2);
+const greenLine = stroke(Colors.axisColors.y, 2);
 
 /**
- * Red fill color to use for the origin marker.
+ * Fill color to use for the origin marker.
  */
-const redFill = fill('#f44');
+const originMarkerFill = fill(Colors.originMarker);
 
 /**
- * Orange fill color to use for takeoff markers.
+ * Fill color to use for takeoff markers.
  */
-const orangeFill = fill('#fc0');
+const takeoffMarkerFill = fill(Colors.takeoffMarker);
 
 /**
  * Green fill color to use for landing markers.
  */
-const greenFill = fill('#3c3');
+const landingMarkerFill = fill(Colors.landingMarker);
 
 /**
  * Styling function for the marker representing the origin of the map
@@ -154,7 +155,7 @@ const originStyles = (selected, axis) => [
       return new Point(origin);
     },
     image: new Circle({
-      fill: redFill,
+      fill: originMarkerFill,
       radius: 8,
       stroke: selected ? whiteThickOutline : whiteThinOutline
     }),
@@ -180,7 +181,7 @@ const takeoffPositionStyle = (feature, resolution) => {
   const index = globalIdToHomePositionId(feature.getId());
   const style = {
     image: new RegularShape({
-      fill: orangeFill,
+      fill: takeoffMarkerFill,
       points: 3,
       radius: 6,
       stroke: blackVeryThinOutline
@@ -207,7 +208,7 @@ const landingPositionStyle = (feature, resolution) => {
   const index = globalIdToLandingPositionId(feature.getId());
   const style = {
     image: new RegularShape({
-      fill: greenFill,
+      fill: landingMarkerFill,
       points: 3,
       radius: 6,
       rotation: Math.PI,
@@ -382,8 +383,8 @@ export const HomePositionsLayer = connect(
   // mapStateToProps
   state => ({
     coordinateSystemType: state.map.origin.type,
-    homePositions: getHomePositionsInMission(state),
-    landingPositions: getLandingPositionsInMission(state),
+    homePositions: getGPSBasedHomePositionsInMission(state),
+    landingPositions: getGPSBasedLandingPositionsInMission(state),
     orientation: getMapOriginRotationAngle(state),
     origin: state.map.origin.position,
     selectedOriginIds: getSelectedOriginIds(state)
