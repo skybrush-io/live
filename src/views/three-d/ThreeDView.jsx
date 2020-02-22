@@ -8,6 +8,7 @@ import { connect } from 'react-redux';
 
 import CoordinateSystemAxes from './CoordinateSystemAxes';
 import HomePositionMarkers from './HomePositionMarkers';
+import LandingPositionMarkers from './LandingPositionMarkers';
 import Scenery from './Scenery';
 
 // eslint-disable-next-line no-unused-vars
@@ -67,7 +68,7 @@ const ThreeDView = React.forwardRef((props, ref) => {
           <CoordinateSystemAxes leftHanded={isCoordinateSystemLeftHanded} />
         )}
         {showHomePositions && <HomePositionMarkers />}
-        {showLandingPositions && null}
+        {showLandingPositions && <LandingPositionMarkers />}
 
         <a-sphere
           segments-width="18"

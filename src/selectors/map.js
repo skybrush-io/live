@@ -4,6 +4,25 @@
 
 import { createSelector } from '@reduxjs/toolkit';
 
+import { FlatEarthCoordinateSystem } from '~/utils/geography';
+
+/**
+ * Selector that returns a conversion object that can be used to transform
+ * longitude-latitude pairs to/from flat Earth coordinates according to the
+ * current parameters set in the state object.
+ */
+export const getFlatEarthCoordinateTransformer = createSelector(
+  state => state.map.origin,
+  origin =>
+    origin.position
+      ? new FlatEarthCoordinateSystem({
+          origin: origin.position,
+          orientation: origin.angle,
+          type: origin.type
+        })
+      : undefined
+);
+
 /**
  * Selector that returns the rotation angle of the map view, cast into a
  * float.
