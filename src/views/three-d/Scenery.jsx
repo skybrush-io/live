@@ -24,11 +24,15 @@ const environments = {
   day: {
     preset: 'default',
     gridColor: '#fff',
+    skyType: 'atmosphere',
+    skyColor: '#88c',
     ...grounds.default
   },
   night: {
     preset: 'starry',
     gridColor: '#39d2f2',
+    skyType: 'atmosphere',
+    skyColor: '#88c',
     ...grounds.default
   },
   indoor: {

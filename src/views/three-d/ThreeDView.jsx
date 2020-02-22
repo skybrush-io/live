@@ -13,6 +13,7 @@ import Scenery from './Scenery';
 
 // eslint-disable-next-line no-unused-vars
 import AFrame from '~/aframe';
+import { objectToString } from '~/aframe/utils';
 import Colors from '~/components/colors';
 import { isMapCoordinateSystemLeftHanded } from '~/selectors/map';
 
@@ -30,6 +31,8 @@ const ThreeDView = React.forwardRef((props, ref) => {
     showLandingPositions,
     showStatistics
   } = props;
+
+  const extraCameraProps = {};
   const extraSceneProps = {};
 
   if (showStatistics) {
@@ -61,7 +64,7 @@ const ThreeDView = React.forwardRef((props, ref) => {
         />
       </a-assets>
 
-      <a-camera look-controls="reverseMouseDrag: true" />
+      <a-camera look-controls="reverseMouseDrag: true" {...extraCameraProps} />
 
       <a-entity rotation="-90 0 90">
         {showAxes && (
