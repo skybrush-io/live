@@ -27,6 +27,19 @@ const { actions, reducer } = createSlice({
       theme: 'auto'
     },
 
+    threeD: {
+      // Scenery to use in the 3D view
+      scenery: 'night',
+
+      // Whether to show grid lines on the ground in 3D view. Values correspond
+      // to the 'grid' setting of aframe-environment-component; currently we
+      // support 'none', '1x1' and '2x2'
+      grid: 'none',
+
+      // Rendering quality of the 3D view (low, medium or high)
+      quality: 'medium'
+    },
+
     localServer: {
       // Additional command line arguments to pass to the server
       cliArguments: '',

@@ -20,6 +20,7 @@ import settingsReducer from '~/features/settings/slice';
 import sidebarReducer from '~/features/sidebar/slice';
 import showReducer from '~/features/show/slice';
 import snackbarReducer from '~/features/snackbar/slice';
+import threeDReducer from '~/features/three-d/slice';
 import uavReducer from '~/features/uavs/slice';
 import workbenchReducer from '~/features/workbench/slice';
 
@@ -46,6 +47,7 @@ const reducer = combineReducers({
   show: showReducer,
   sidebar: sidebarReducer,
   snackbar: snackbarReducer,
+  threeD: threeDReducer,
   uavs: uavReducer,
   workbench: workbenchReducer
 });

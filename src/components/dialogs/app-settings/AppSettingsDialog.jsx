@@ -10,6 +10,7 @@ import DialogTabs from '../DialogTabs';
 
 import DisplayTab from './DisplayTab';
 import ServerTab from './ServerTab';
+import ThreeDViewTab from './ThreeDViewTab';
 import UAVsTab from './UAVsTab';
 
 import {
@@ -21,6 +22,7 @@ import {
 
 const tabNameToComponent = {
   display: <DisplayTab />,
+  threeD: <ThreeDViewTab />,
   server: <ServerTab />,
   uavs: <UAVsTab />
 };
@@ -38,6 +40,7 @@ const AppSettingsDialogPresentation = ({
   <Dialog fullWidth open={open} maxWidth="sm" onClose={onClose}>
     <DialogTabs value={selectedTab} onChange={onTabSelected}>
       <Tab value="display" label="Display" />
+      <Tab value="threeD" label="3D View" />
       <Tab value="uavs" label="UAVs" />
       {window.isElectron ? <Tab value="server" label="Server" /> : null}
     </DialogTabs>

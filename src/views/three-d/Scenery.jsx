@@ -35,14 +35,14 @@ const Scenery = ({ grid, type }) => (
     <a-entity
       environment={objectToString({
         ...environments[type],
-        grid: grid ? '1x1' : 'none'
+        grid: typeof grid === 'string' ? grid : grid ? '1x1' : 'none'
       })}
     />
   </a-entity>
 );
 
 Scenery.propTypes = {
-  grid: PropTypes.bool,
+  grid: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]),
   type: PropTypes.oneOf(Object.keys(environments))
 };
 
