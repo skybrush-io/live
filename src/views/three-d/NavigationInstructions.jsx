@@ -27,8 +27,8 @@ const instructionsByMode = {
         <kbd>S</kbd>
         <kbd>D</kbd>
         <span> Walk around </span>
-        <kbd>+</kbd>
-        <kbd>-</kbd>
+        <kbd>E</kbd>
+        <kbd>C</kbd>
         <span> Altitude </span>
       </div>
       <IconButton disabled>
@@ -47,8 +47,8 @@ const instructionsByMode = {
         <kbd>A</kbd>
         <kbd>D</kbd>
         <span> Strafe left / right </span>
-        <kbd>+</kbd>
-        <kbd>-</kbd>
+        <kbd>E</kbd>
+        <kbd>C</kbd>
         <span> Altitude </span>
       </div>
       <IconButton disabled>

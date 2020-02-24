@@ -13,7 +13,12 @@ import AFrame from '../aframe';
 
 const CLAMP_VELOCITY = 0.00001;
 const MAX_DELTA = 0.2;
-const KEYS = ['+', '=', '-', '_'];
+const KEYS = ['KeyE', 'KeyC'];
+const KEYCODE_TO_CODE = {
+  '67': 'KeyC',
+  '69': 'KeyE'
+};
+
 const { THREE } = AFrame;
 
 AFrame.registerComponent('altitude-control', {
@@ -95,11 +100,11 @@ AFrame.registerComponent('altitude-control', {
     }
 
     // Update velocity using keys pressed
-    if (keys['+'] || keys['=']) {
+    if (keys.KeyE) {
       this.velocity += data.acceleration * delta;
     }
 
-    if (keys['-'] || keys._) {
+    if (keys.KeyC) {
       this.velocity -= data.acceleration * delta;
     }
   },
@@ -155,15 +160,14 @@ AFrame.registerComponent('altitude-control', {
       return;
     }
 
-    const key = event.key;
-
-    if (KEYS.includes(key)) {
-      this.keys[key] = true;
+    const code = event.code || KEYCODE_TO_CODE[event.keyCode];
+    if (KEYS.includes(code)) {
+      this.keys[code] = true;
     }
   },
 
   onKeyUp(event) {
-    const key = event.key;
-    delete this.keys[key];
+    const code = event.code || KEYCODE_TO_CODE[event.keyCode];
+    delete this.keys[code];
   }
 });
