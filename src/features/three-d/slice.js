@@ -4,21 +4,40 @@
 
 import { createSlice } from '@reduxjs/toolkit';
 
-const { reducer } = createSlice({
-  name: 'three-d',
+const { actions, reducer } = createSlice({
+  name: 'threeD',
 
-  initialState: {},
+  initialState: {
+    navigation: {
+      mode: 'walk',
+      parameters: {}
+    }
+  },
 
-  reducers: {}
+  reducers: {
+    setNavigationMode(state, action) {
+      const { payload } = action;
+
+      if (typeof payload === 'string') {
+        state.navigation.mode = payload;
+        state.navigation.parameters = {};
+      } else {
+        const { mode, parameters } = payload;
+
+        if (typeof mode === 'string' && typeof parameters === 'object') {
+          state.navigation.mode = mode;
+          state.navigation.parameters = parameters;
+        }
+      }
+    }
+  }
 });
 
-/*
 export const {
-  addClockDisplay,
+  setNavigationMode,
   removeClockDisplay,
   setClockIdForClockDisplay,
   setPresetIndexForClockDisplay
 } = actions;
-*/
 
 export default reducer;

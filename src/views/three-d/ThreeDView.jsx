@@ -25,6 +25,7 @@ const ThreeDView = React.forwardRef((props, ref) => {
   const {
     grid,
     isCoordinateSystemLeftHanded,
+    navigation,
     scenery,
     showAxes,
     showHomePositions,
@@ -32,7 +33,15 @@ const ThreeDView = React.forwardRef((props, ref) => {
     showStatistics
   } = props;
 
-  const extraCameraProps = {};
+  const extraCameraProps = {
+    'altitude-control': objectToString({
+      enabled: true
+    }),
+    'wasd-controls': objectToString({
+      acceleration: 100,
+      fly: navigation && navigation.mode === 'fly'
+    })
+  };
   const extraSceneProps = {};
 
   if (showStatistics) {
@@ -93,6 +102,10 @@ const ThreeDView = React.forwardRef((props, ref) => {
 ThreeDView.propTypes = {
   grid: PropTypes.string,
   isCoordinateSystemLeftHanded: PropTypes.bool,
+  navigation: PropTypes.shape({
+    mode: PropTypes.oneOf(['walk', 'fly']),
+    parameters: PropTypes.object
+  }),
   scenery: PropTypes.string,
   showAxes: PropTypes.bool,
   showHomePositions: PropTypes.bool,
@@ -104,7 +117,8 @@ export default connect(
   // mapStateToProps
   state => ({
     isCoordinateSystemLeftHanded: isMapCoordinateSystemLeftHanded(state),
-    ...state.settings.threeD
+    ...state.settings.threeD,
+    ...state.threeD
   }),
   // mapDispatchToProps
   {},

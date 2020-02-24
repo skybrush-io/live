@@ -38,6 +38,7 @@
     "@tippy.js/react": "^3.1.1",
     "aframe": "^1.0.4",
     "aframe-environment-component": "^2.0.0",
+    "aframe-orbit-controls": "^1.2.0",
     "autosuggest-highlight": "^3.1.1",
     "clsx": "^1.1.0",
     "color": "^3.1.2",

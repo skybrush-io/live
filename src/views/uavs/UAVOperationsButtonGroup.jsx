@@ -13,7 +13,8 @@ import ActionHome from '@material-ui/icons/Home';
 import ActionPowerSettingsNew from '@material-ui/icons/PowerSettingsNew';
 import Message from '@material-ui/icons/Message';
 import Refresh from '@material-ui/icons/Refresh';
-import ToggleButton from '@material-ui/lab/ToggleButton';
+
+import ToggleButton from '~/components/ToggleButton';
 
 import {
   selectUAVInMessagesDialog,
@@ -27,10 +28,6 @@ const useStyles = makeStyles(
       alignSelf: 'stretch',
       height: 'auto',
       margin: theme.spacing(1, 0.5)
-    },
-
-    toggleButton: {
-      border: 0
     }
   }),
   { name: 'UAVOperationsButtonGroup' }
@@ -83,7 +80,6 @@ const UAVOperationsButtonGroup = ({
     <>
       <ToggleButton
         disabled
-        className={classes.toggleButton}
         value="all"
         selected={useAllUAVs}
         onChange={toggleUseAllUAVs}

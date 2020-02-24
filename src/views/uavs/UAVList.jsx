@@ -12,7 +12,6 @@ import { connect } from 'react-redux';
 
 import AppBar from '@material-ui/core/AppBar';
 import Box from '@material-ui/core/Box';
-import Fade from '@material-ui/core/Fade';
 import ListSubheader from '@material-ui/core/ListSubheader';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Delete from '@material-ui/icons/Delete';
@@ -28,6 +27,7 @@ import UAVToolbar from './UAVToolbar';
 
 import { setSelectedUAVIds } from '~/actions/map';
 import { createSelectionHandlerFactory } from '~/components/helpers/lists';
+import FadeAndSlide from '~/components/transitions/FadeAndSlide';
 import DronePlaceholder from '~/components/uavs/DronePlaceholder';
 import {
   adjustMissionMapping,
@@ -43,34 +43,6 @@ import { getUAVIdList } from '~/features/uavs/selectors';
 import { getSelectedUAVIds } from '~/selectors/selection';
 import { isDark } from '~/theme';
 import { formatMissionId } from '~/utils/formatting';
-
-const drones = [
-  {
-    id: '1',
-    progress: 30,
-    status: 'success',
-    secondaryStatus: 'off',
-    text: 'Armed',
-    textSemantics: 'success'
-  },
-  {
-    id: '2',
-    crossed: true,
-    status: 'rth'
-  },
-  {
-    id: '3',
-    status: 'warning'
-  },
-  {
-    id: '4',
-    status: 'error'
-  },
-  {
-    id: '5',
-    status: 'critical'
-  }
-];
 
 const useStyles = makeStyles(
   theme => ({
@@ -189,26 +161,26 @@ const UAVListPresentation = ({
   const mainBox = (
     <Box display="flex" flexDirection="column">
       <AppBar color="default" position="static" className={classes.appBar}>
-        <Fade mountOnEnter unmountOnExit in={!editingMapping}>
+        <FadeAndSlide mountOnEnter unmountOnExit in={!editingMapping}>
           <UAVToolbar
             className={classes.toolbar}
             selectedUAVIds={selectedUAVIds}
           />
-        </Fade>
-        <Fade
+        </FadeAndSlide>
+        <FadeAndSlide
           mountOnEnter
           unmountOnExit
           in={editingMapping && mappingSlotBeingEdited < 0}
         >
           <MappingEditorToolbar className={classes.toolbar} />
-        </Fade>
-        <Fade
+        </FadeAndSlide>
+        <FadeAndSlide
           mountOnEnter
           unmountOnExit
           in={editingMapping && mappingSlotBeingEdited >= 0}
         >
           <MappingSlotEditorToolbar className={classes.toolbar} />
-        </Fade>
+        </FadeAndSlide>
       </AppBar>
       <Box flex={1}>
         <Box display="flex" flexDirection="row" flexWrap="wrap">
@@ -255,13 +227,10 @@ UAVListPresentation.propTypes = {
  * The main section of the view will be sorted based on the UAV IDs in the
  * state store. The "spare UAVs" section in the view will be empty.
  */
-const getDisplayedUAVIdList = createSelector(
-  getUAVIdList,
-  uavIds => ({
-    mainUAVIds: uavIds.map(uavId => [uavId, undefined, uavId]),
-    spareUAVIds: []
-  })
-);
+const getDisplayedUAVIdList = createSelector(getUAVIdList, uavIds => ({
+  mainUAVIds: uavIds.map(uavId => [uavId, undefined, uavId]),
+  spareUAVIds: []
+}));
 
 const getDisplayedMissionIdList = createSelector(
   getMissionMapping,
