@@ -93,14 +93,16 @@ function subscribeToFlock(flock) {
       }
     }
 
-    flock.uavsAdded.add(onUAVsAdded);
-    flock.uavsRemoved.add(onUAVsRemoved);
-    flock.uavsUpdated.add(onUAVsUpdated);
+    const bindings = {
+      uavsAdded: flock.uavsAdded.add(onUAVsAdded),
+      uavsRemoved: flock.uavsRemoved.add(onUAVsRemoved),
+      uavsUpdated: flock.uavsUpdated.add(onUAVsUpdated)
+    };
 
     return () => {
-      flock.uavsAdded.detach(onUAVsAdded);
-      flock.uavsRemoved.detach(onUAVsRemoved);
-      flock.uavsUpdated.detach(onUAVsUpdated);
+      flock.uavsAdded.detach(bindings.uavsAdded);
+      flock.uavsRemoved.detach(bindings.uavsRemoved);
+      flock.uavsUpdated.detach(bindings.uavsUpdated);
     };
   });
 }

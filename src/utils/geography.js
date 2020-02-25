@@ -401,6 +401,7 @@ export class FlatEarthCoordinateSystem {
       throw new TypeError('invalid orientation');
     }
 
+    this._vec = [0, 0, 0]; // dummy vector used to avoid allocations
     this._origin = origin;
     this._orientation = toRadians(orientation);
     this._ellipsoid = ellipsoid;
@@ -415,15 +416,8 @@ export class FlatEarthCoordinateSystem {
    * @return {number[]} the converted coordinates
    */
   fromLonLat(coords) {
-    const result = [
-      (coords[1] - this._origin[1]) * this._piOver180 * this._r1,
-      (coords[0] - this._origin[0]) *
-        this._piOver180 *
-        this._r2OverCosOriginLatInRadians
-    ];
-    Coordinate.rotate(result, -this._orientation);
-    result[1] *= this._yMul;
-    return result;
+    const result = [0, 0];
+    return this._updateArrayFromLonLat(result, coords[0], coords[1]);
   }
 
   /**
@@ -433,7 +427,8 @@ export class FlatEarthCoordinateSystem {
    * @return {number[]} the converted coordinates
    */
   fromLonLatAgl(coords) {
-    return [...this.fromLonLat(coords), coords[2]];
+    const result = [0, 0, coords[2]];
+    return this._updateArrayFromLonLat(result, coords[0], coords[1]);
   }
 
   /**
@@ -473,6 +468,25 @@ export class FlatEarthCoordinateSystem {
   }
 
   /**
+   * Updates a THREE.Vector3 object from a longitude-latitude-AGL triplet.
+   *
+   * This function is designed in a way that it avoids object allocations at
+   * all costs.
+   *
+   * @param {THREE.Vector3}  vec  the vector to update
+   * @param {number}  lon  the longitude
+   * @param {number}  lat  the latitude
+   * @param {number}  agl  the altitude above ground level
+   */
+  updateVector3FromLonLatAgl(vec, lon, lat, agl) {
+    this._updateArrayFromLonLat(this._vec, lon, lat);
+
+    vec.x = this._vec[0];
+    vec.y = this._vec[1];
+    vec.z = agl;
+  }
+
+  /**
    * Precalculates a few cached values that are needed in calculations but
    * that do not depend on the coordinate being transformed.
    */
@@ -487,6 +501,26 @@ export class FlatEarthCoordinateSystem {
     this._r2OverCosOriginLatInRadians =
       (radius / Math.sqrt(x)) * Math.cos(originLatInRadians);
     this._yMul = this._type === 'neu' ? 1 : -1;
+  }
+
+  /**
+   * Hlper function that takes an input array of length 2 or 3 and updates the
+   * first two components such that they represent the X and Y coordinates
+   * corresponding to the given longitude and latitde.
+   *
+   * @param  {number[]} result  the array to update
+   * @param  {number}   lon     the longitude
+   * @param  {number}   lat     the latitude
+   */
+  _updateArrayFromLonLat(result, lon, lat) {
+    result[0] = (lat - this._origin[1]) * this._piOver180 * this._r1;
+    result[1] =
+      (lon - this._origin[0]) *
+      this._piOver180 *
+      this._r2OverCosOriginLatInRadians;
+    Coordinate.rotate(result, -this._orientation);
+    result[1] *= this._yMul;
+    return result;
   }
 }
 

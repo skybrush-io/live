@@ -7,18 +7,25 @@ import {
 } from '~/features/mission/selectors';
 import { getFlatEarthCoordinateTransformer } from '~/selectors/map';
 
-const convertCoordinates = (homePositions, transformation) =>
-  homePositions.map(homePosition => {
-    if (isNil(homePosition)) {
+/**
+ * Returns a function that can be called with a single object having `lon`,
+ * `lat` and `agl` properties and that returns the corresponding coordinate
+ * in the coordinate system used by the 3D view.
+ */
+export const getGPSToWorldTransformation = createSelector(
+  getFlatEarthCoordinateTransformer,
+  transformation => coordinate => {
+    if (isNil(coordinate)) {
       return null;
     }
 
     return transformation.fromLonLatAgl([
-      homePosition.lon,
-      homePosition.lat,
-      homePosition.agl
+      coordinate.lon,
+      coordinate.lat,
+      coordinate.agl
     ]);
-  });
+  }
+);
 
 /**
  * Returns an array containing the home positions of each UAV in the current
@@ -26,8 +33,8 @@ const convertCoordinates = (homePositions, transformation) =>
  */
 export const getFlatEarthHomePositionsInMission = createSelector(
   getGPSBasedHomePositionsInMission,
-  getFlatEarthCoordinateTransformer,
-  convertCoordinates
+  getGPSToWorldTransformation,
+  (homePositions, transformation) => homePositions.map(transformation)
 );
 
 /**
@@ -36,6 +43,6 @@ export const getFlatEarthHomePositionsInMission = createSelector(
  */
 export const getFlatEarthLandingPositionsInMission = createSelector(
   getGPSBasedLandingPositionsInMission,
-  getFlatEarthCoordinateTransformer,
-  convertCoordinates
+  getGPSToWorldTransformation,
+  (homePositions, transformation) => homePositions.map(transformation)
 );

@@ -16,6 +16,9 @@ if (!isProduction) {
   process.enablePromiseAPIs = true;
 }
 
+// Set allowRendererProcessReuse explicitly to avoid an Electron warning
+app.allowRendererProcessReuse = true;
+
 /**
  * Main entry point of the application.
  *

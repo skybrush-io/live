@@ -100,7 +100,7 @@ const ThreeDView = React.forwardRef((props, ref) => {
       </a-entity>
 
       {/* Move the floor slightly down to ensure that the coordinate axes are nicely visible */}
-      <Scenery type={scenery} grid={grid} />
+      <Scenery scale={10} type={scenery} grid={grid} />
     </a-scene>
   );
   // eslint-enable no-template-curly-in-string

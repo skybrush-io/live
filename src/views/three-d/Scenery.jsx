@@ -23,6 +23,7 @@ const grounds = {
 const environments = {
   day: {
     preset: 'default',
+    fog: 0,
     gridColor: '#fff',
     skyType: 'atmosphere',
     skyColor: '#88c',
@@ -30,6 +31,7 @@ const environments = {
   },
   night: {
     preset: 'starry',
+    fog: 0,
     gridColor: '#39d2f2',
     skyType: 'atmosphere',
     skyColor: '#88c',
@@ -37,6 +39,7 @@ const environments = {
   },
   indoor: {
     preset: 'default',
+    fog: 0,
     gridColor: '#888',
     skyType: 'color',
     skyColor: '#222',
@@ -47,8 +50,8 @@ const environments = {
 /**
  * Component that renders a basic scenery in which the drones will be placed.
  */
-const Scenery = ({ grid, type }) => (
-  <a-entity position="0 -0.001 0">
+const Scenery = ({ grid, scale, type }) => (
+  <a-entity position="0 -0.001 0" scale={`${scale} ${scale} ${scale}`}>
     {/* Move the floor slightly down to ensure that the coordinate axes are nicely visible */}
     <a-entity
       environment={objectToString({
@@ -61,7 +64,12 @@ const Scenery = ({ grid, type }) => (
 
 Scenery.propTypes = {
   grid: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]),
+  scale: PropTypes.number,
   type: PropTypes.oneOf(Object.keys(environments))
+};
+
+Scenery.defaultProps = {
+  scale: 1
 };
 
 export default memo(Scenery);
