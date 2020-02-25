@@ -9,6 +9,7 @@ import './components/better-wasd-controls';
 import './components/deallocate';
 import './components/drone-flock';
 import './components/sprite';
+import './components/sync-pose-with-store';
 
 import './primitives/drone-flock';
 

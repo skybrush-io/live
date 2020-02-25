@@ -8,6 +8,11 @@ import {
 import { getFlatEarthCoordinateTransformer } from '~/selectors/map';
 
 /**
+ * Returns the position and rotation of the camera in the 3D view.
+ */
+export const getCameraPose = state => state.threeD.camera;
+
+/**
  * Returns a function that can be called with a single object having `lon`,
  * `lat` and `agl` properties and that returns the corresponding coordinate
  * in the coordinate system used by the 3D view.

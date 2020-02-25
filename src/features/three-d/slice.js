@@ -8,6 +8,11 @@ const { actions, reducer } = createSlice({
   name: 'threeD',
 
   initialState: {
+    camera: {
+      position: null,
+      rotation: null
+    },
+
     navigation: {
       mode: 'walk',
       parameters: {}
@@ -17,6 +22,12 @@ const { actions, reducer } = createSlice({
   },
 
   reducers: {
+    setCameraPose(state, action) {
+      const { position, rotation } = action.payload;
+      state.camera.position = position;
+      state.camera.rotation = rotation;
+    },
+
     setNavigationMode(state, action) {
       const { payload } = action;
 
@@ -43,6 +54,11 @@ const { actions, reducer } = createSlice({
   }
 });
 
-export const { hideTooltip, setNavigationMode, showTooltip } = actions;
+export const {
+  hideTooltip,
+  setCameraPose,
+  setNavigationMode,
+  showTooltip
+} = actions;
 
 export default reducer;

@@ -122,7 +122,10 @@ const persistConfig = {
       'takeoffAreaSetupDialog',
       'startTimeDialog',
       'uploadDialog'
-    ])
+    ]),
+
+    // We do not wish to save 3D view tooltips or camera pose
+    createBlacklistFilter('threeD', ['camera', 'tooltip'])
   ]
 };
 

@@ -9,6 +9,7 @@ export default connect(
   // mapStateToProps
   state => ({
     content: state.threeD.tooltip || '',
+    duration: 0,
     followCursor: true,
     hideOnClick: false,
     ignoreAttributes: true,

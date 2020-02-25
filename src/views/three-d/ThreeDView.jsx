@@ -77,6 +77,7 @@ const ThreeDView = React.forwardRef((props, ref) => {
       </a-assets>
 
       <a-camera
+        sync-pose-with-store=""
         id="three-d-camera"
         look-controls="reverseMouseDrag: true"
         {...extraCameraProps}
