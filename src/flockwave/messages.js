@@ -4,10 +4,9 @@
 
 import has from 'lodash-es/has';
 import isObject from 'lodash-es/isObject';
-import MersenneTwister from 'mersenne-twister';
 import pDefer from 'p-defer';
 import pTimeout from 'p-timeout';
-import radix64 from 'radix-64';
+import shortid from 'shortid';
 
 import { createCommandRequest, createMessageWithType } from './builders';
 import { extractReceiptFromCommandRequest } from './parsing';
@@ -16,23 +15,11 @@ import { QueryHandler } from './queries';
 import version from './version';
 
 /**
- * Radix-64 encoder for generating Flockwave message IDs.
- */
-const radix64Encoder = radix64();
-
-/**
- * Private Mersenne Twister random number generator for message IDs.
- */
-const rng = new MersenneTwister();
-
-/**
  * Creates a new Flockwave message ID.
  *
  * @return {string} a new, random Flockwave message ID
  */
-const createMessageId = () =>
-  radix64Encoder.encodeInt(rng.random_int() & 0x3fffffff) +
-  radix64Encoder.encodeInt(rng.random_int() & 0x3fffffff, 5);
+const createMessageId = shortid.generate;
 
 /**
  * Takes an outbound message to send to a UAV as a single string, and

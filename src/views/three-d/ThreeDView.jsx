@@ -37,9 +37,11 @@ const ThreeDView = React.forwardRef((props, ref) => {
     'altitude-control': objectToString({
       enabled: true
     }),
-    'wasd-controls': objectToString({
-      acceleration: 100,
+    'better-wasd-controls': objectToString({
       fly: navigation && navigation.mode === 'fly'
+    }),
+    'wasd-controls': objectToString({
+      enabled: false
     })
   };
   const extraSceneProps = {};
@@ -48,6 +50,7 @@ const ThreeDView = React.forwardRef((props, ref) => {
     extraSceneProps.stats = 'true';
   }
 
+  // eslint-disable no-template-curly-in-string
   return (
     <a-scene
       ref={ref}
@@ -82,12 +85,15 @@ const ThreeDView = React.forwardRef((props, ref) => {
         {showHomePositions && <HomePositionMarkers />}
         {showLandingPositions && <LandingPositionMarkers />}
 
+        <a-drone-flock template="#droneTemplate" />
+
         <a-sphere
+          id="droneTemplate"
           segments-width="18"
           segments-height="9"
           radius="0.5"
           material="color: #08f; shader: flat"
-          position="5 0 0"
+          visible="false"
         >
           <a-entity sprite="blending: additive; color: #08f; scale: 2 2 1; src: #glow-texture; transparent: 0" />
         </a-sphere>
@@ -97,6 +103,7 @@ const ThreeDView = React.forwardRef((props, ref) => {
       <Scenery type={scenery} grid={grid} />
     </a-scene>
   );
+  // eslint-enable no-template-curly-in-string
 });
 
 ThreeDView.propTypes = {

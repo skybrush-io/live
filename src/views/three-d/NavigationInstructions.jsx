@@ -4,7 +4,6 @@ import { TransitionGroup } from 'react-transition-group';
 
 import Box from '@material-ui/core/Box';
 import IconButton from '@material-ui/core/IconButton';
-import Keyboard from '@material-ui/icons/Keyboard';
 import Mouse from '@material-ui/icons/Mouse';
 
 import FadeAndSlide from '~/components/transitions/FadeAndSlide';

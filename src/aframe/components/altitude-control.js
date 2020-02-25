@@ -11,7 +11,7 @@ import { shouldCaptureKeyEvent } from 'aframe/src/utils';
 
 import AFrame from '../aframe';
 
-const CLAMP_VELOCITY = 0.00001;
+const CLAMP_VELOCITY = 0.001;
 const MAX_DELTA = 0.2;
 const KEYS = ['KeyE', 'KeyC'];
 const KEYCODE_TO_CODE = {
@@ -23,7 +23,7 @@ const { THREE } = AFrame;
 
 AFrame.registerComponent('altitude-control', {
   schema: {
-    acceleration: { default: 65 },
+    acceleration: { default: 65 } /* [m/s] */,
     enabled: { default: true }
   },
 
@@ -87,7 +87,7 @@ AFrame.registerComponent('altitude-control', {
     const scaledEasing = (1 / this.easing) ** (delta * 60);
     // Velocity easing.
     if (this.velocity !== 0) {
-      this.velocity -= this.velocity * scaledEasing;
+      this.velocity *= scaledEasing;
     }
 
     // Clamp velocity easing.
