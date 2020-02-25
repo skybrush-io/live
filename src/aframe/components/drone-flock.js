@@ -13,6 +13,7 @@ import flock from '~/flock';
 import store from '~/store';
 
 import { hideTooltip, showTooltip } from '~/features/three-d/slice';
+import { convertRGB565ToHex } from '~/flockwave/parsing';
 import { getFlatEarthCoordinateTransformer } from '~/selectors/map';
 
 /**
@@ -85,6 +86,17 @@ AFrame.registerSystem('drone-flock', {
   updateEntityFromUAV(entity, uav) {
     if (this._updatePositionFromGPSCoordinates) {
       this._updatePositionFromGPSCoordinates(uav, entity.object3D.position);
+    }
+
+    const color = convertRGB565ToHex(uav.color | 0);
+    entity.getObject3D('mesh').material.color.setHex(color);
+
+    // TODO(ntamas): this is quite complex; we probably need to encapsulate the
+    // glow as a separate component so we can simplify both the cloning code and
+    // this part here.
+    const group = entity.object3D.children[1];
+    if (group && group.children[0]) {
+      group.children[0].material.color.setHex(color);
     }
   },
 

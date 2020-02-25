@@ -23,6 +23,7 @@ const grounds = {
 const environments = {
   day: {
     preset: 'default',
+    fog: 0.2,
     gridColor: '#fff',
     skyType: 'atmosphere',
     skyColor: '#88c',
@@ -30,6 +31,7 @@ const environments = {
   },
   night: {
     preset: 'starry',
+    fog: 0.2,
     gridColor: '#39d2f2',
     skyType: 'atmosphere',
     skyColor: '#88c',
@@ -37,6 +39,7 @@ const environments = {
   },
   indoor: {
     preset: 'default',
+    fog: 0.2,
     gridColor: '#888',
     skyType: 'color',
     skyColor: '#222',

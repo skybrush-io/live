@@ -101,9 +101,8 @@ const ThreeDView = React.forwardRef((props, ref) => {
           segments-width="18"
           segments-height="9"
           radius="0.5"
-          material="color: #08f; shader: flat"
-          visible="true"
-          label-on-hover="text: Foo"
+          material="color: #08f; fog: false; shader: flat"
+          visible="false"
         >
           <a-entity sprite="blending: additive; color: #08f; scale: 2 2 1; src: #glow-texture; transparent: 0" />{' '}
         </a-sphere>

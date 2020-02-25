@@ -26,6 +26,7 @@ export const ErrorCode = Object.freeze({
   TAKEOFF: 5,
   LANDING: 6,
   LANDED: 7,
+  RETURN_TO_HOME: 63,
 
   // Warnings
   LOW_DISK_SPACE: 64,
@@ -98,6 +99,7 @@ const errorCodeToAbbreviation = {
   5: 'takeoff',
   6: 'landing',
   7: 'landed',
+  63: 'RTH',
   64: 'storage',
   65: 'RC lost',
   66: 'lowbat',

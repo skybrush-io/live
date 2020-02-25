@@ -10,6 +10,7 @@ export default connect(
   state => ({
     content: state.threeD.tooltip || '',
     followCursor: true,
+    hideOnClick: false,
     ignoreAttributes: true,
     visible: Boolean(state.threeD.tooltip),
     plugins

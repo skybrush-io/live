@@ -30,6 +30,7 @@ export default class UAV {
     this._rawVoltage = undefined;
 
     this.battery = { voltage: undefined, percentage: undefined };
+    this.color = 0xffff; /* white in RGB565 */
     this.heading = undefined;
     this.lastUpdated = undefined;
   }

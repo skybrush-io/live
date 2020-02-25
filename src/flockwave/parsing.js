@@ -7,6 +7,20 @@ import includes from 'lodash-es/includes';
 import isNil from 'lodash-es/isNil';
 
 /**
+ * Converts a color in RGB565 format to a hex value.
+ */
+export function convertRGB565ToHex(value) {
+  const red5 = (value & 0xf800) >> 11;
+  const green6 = (value & 0x7e0) >> 5;
+  const blue5 = value & 0x1f;
+  return (
+    (((red5 << 3) + (red5 >> 2)) << 16) |
+    (((green6 << 2) + (green6 >> 4)) << 8) |
+    ((blue5 << 3) + (blue5 >> 2))
+  );
+}
+
+/**
  * Extracts the receipt corresponding to the given UAV from a CMD-REQ
  * response from the server. Throws an error if the message represents a
  * failure and no receipt is available.

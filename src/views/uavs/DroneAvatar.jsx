@@ -17,6 +17,7 @@ import {
   abbreviateError,
   getSeverityOfErrorCode,
   getSeverityOfMostSevereErrorCode,
+  ErrorCode,
   Severity
 } from '~/flockwave/errors';
 
@@ -264,8 +265,13 @@ function getDroneStatus(uav) {
     }
   }
 
+  const maxError = Math.max(...uav.errors);
+
+  if (maxError === ErrorCode.RETURN_TO_HOME) {
+    return 'rth';
+  }
+
   // TODO: check expiry dates
-  // TODO: handle RTH events
 
   return 'success';
 }
@@ -285,7 +291,10 @@ function getDroneText(uav) {
 
     text = abbreviateError(maxError);
 
-    if (maxError === 1) {
+    if (maxError === ErrorCode.RETURN_TO_HOME) {
+      // disarm is treated separately; it is always shown as the special RTH state
+      textSemantics = 'rth';
+    } else if (maxError === ErrorCode.DISARMED) {
       // disarm is treated separately; it is always shown as an error
       textSemantics = 'error';
     } else {
