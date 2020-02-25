@@ -12,6 +12,7 @@ import AFrame from '../aframe';
 import flock from '~/flock';
 import store from '~/store';
 
+import { hideTooltip, showTooltip } from '~/features/three-d/slice';
 import { getFlatEarthCoordinateTransformer } from '~/selectors/map';
 
 /**
@@ -57,14 +58,28 @@ AFrame.registerSystem('drone-flock', {
       return undefined;
     }
 
-    const clone = template.object3D.clone();
+    const el = document.createElement('a-entity');
+    el.setAttribute('visible', true);
+    el.setAttribute('position', '0 0 0');
 
-    const entity = document.createElement('a-entity');
-    entity.setAttribute('visible', true);
-    entity.setAttribute('position', '0 0 0');
-    entity.object3D = clone;
+    // This line is needed to copy the actual mesh from the template and make
+    // cursor interactions work
+    el.setObject3D('mesh', template.getObject3D('mesh').clone());
 
-    return entity;
+    // This line is needed to add the glow to the clone
+    for (const childEntity of template.getChildEntities()) {
+      const childEl = document.createElement('a-entity');
+      const childMap = childEntity.object3DMap;
+      for (const key in childMap) {
+        if (Object.prototype.hasOwnProperty.call(childMap, key)) {
+          childEl.setObject3D(key, childMap[key].clone());
+        }
+      }
+
+      el.append(childEl);
+    }
+
+    return el;
   },
 
   updateEntityFromUAV(entity, uav) {
@@ -131,6 +146,15 @@ AFrame.registerComponent('drone-flock', {
 
       if (entity) {
         this.el.append(entity);
+
+        entity.className = 'three-d-clickable';
+        entity.addEventListener('mouseenter', () => {
+          store.dispatch(showTooltip(id));
+        });
+        entity.addEventListener('mouseleave', () => {
+          store.dispatch(hideTooltip());
+        });
+
         this._uavIdToEntity[id] = entity;
         return entity;
       }

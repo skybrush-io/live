@@ -8,7 +8,11 @@ import React from 'react';
 const Markers = ({ coordinates, mixin }) =>
   coordinates.map((coordinate, index) => {
     const key = `${mixin}-${index}`;
-    return <a-entity key={key} mixin={mixin} position={coordinate.join(' ')} />;
+    return (
+      coordinate && (
+        <a-entity key={key} mixin={mixin} position={coordinate.join(' ')} />
+      )
+    );
   });
 
 Markers.propTypes = {

@@ -20,6 +20,7 @@ import AlertTitle from '@material-ui/lab/AlertTitle';
 import NavigationButtonGroup from './NavigationButtonGroup';
 import NavigationInstructions from './NavigationInstructions';
 import Overlay from './Overlay';
+import SelectionTooltip from './SelectionTooltip';
 import ThreeDView from './ThreeDView';
 
 import {
@@ -84,7 +85,9 @@ const ThreeDTopLevelView = ({
         </Toolbar>
       </AppBar>
       <Box ref={ref} position="relative" flex={1}>
-        <ThreeDView ref={threeDViewRef} />
+        <SelectionTooltip>
+          <ThreeDView ref={threeDViewRef} />
+        </SelectionTooltip>
         {!hasMapCoordinateSystem && (
           <Overlay left={8} right={8} top={8}>
             <Alert

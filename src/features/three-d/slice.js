@@ -11,7 +11,9 @@ const { actions, reducer } = createSlice({
     navigation: {
       mode: 'walk',
       parameters: {}
-    }
+    },
+
+    tooltip: null
   },
 
   reducers: {
@@ -29,15 +31,18 @@ const { actions, reducer } = createSlice({
           state.navigation.parameters = parameters;
         }
       }
+    },
+
+    showTooltip(state, action) {
+      state.tooltip = action.payload ? String(action.payload) : null;
+    },
+
+    hideTooltip(state) {
+      state.tooltip = null;
     }
   }
 });
 
-export const {
-  setNavigationMode,
-  removeClockDisplay,
-  setClockIdForClockDisplay,
-  setPresetIndexForClockDisplay
-} = actions;
+export const { hideTooltip, setNavigationMode, showTooltip } = actions;
 
 export default reducer;

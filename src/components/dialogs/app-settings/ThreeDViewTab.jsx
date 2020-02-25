@@ -36,11 +36,11 @@ const grids = [
   },
   {
     id: '1x1',
-    label: '1x1 meters'
+    label: '10x10 meters'
   },
   {
     id: '2x2',
-    label: '2x2 meters'
+    label: '20x20 meters'
   }
 ];
 

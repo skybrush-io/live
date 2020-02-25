@@ -106,7 +106,9 @@ export const addVirtualDronesForMission = () => async (dispatch, getState) => {
   // Get the home coordinates of the drones from the current mission. The
   // configured origin and orientation of the virtual_uavs extension on the
   // server side does not matter as we will be sending explicit home coordinates.
-  const homeCoordinates = getGPSBasedHomePositionsInMission(state).filter(Boolean);
+  const homeCoordinates = getGPSBasedHomePositionsInMission(state).filter(
+    Boolean
+  );
   const numDrones = homeCoordinates.length;
   const numDigits = String(numDrones).length;
 
@@ -117,10 +119,7 @@ export const addVirtualDronesForMission = () => async (dispatch, getState) => {
   );
 
   // Update the coordinate system of the show
-  config.origin = {
-    lat: showCoordinateSystem.origin[1],
-    lon: showCoordinateSystem.origin[0]
-  };
+  config.origin = showCoordinateSystem.origin.slice(0, 2);
   config.orientation = orientation;
   config.type = showCoordinateSystem.type;
 

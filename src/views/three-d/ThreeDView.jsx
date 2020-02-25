@@ -76,7 +76,16 @@ const ThreeDView = React.forwardRef((props, ref) => {
         />
       </a-assets>
 
-      <a-camera look-controls="reverseMouseDrag: true" {...extraCameraProps} />
+      <a-camera
+        id="three-d-camera"
+        look-controls="reverseMouseDrag: true"
+        {...extraCameraProps}
+      >
+        <a-entity
+          cursor="rayOrigin: mouse"
+          raycaster="objects: .three-d-clickable; interval: 100"
+        />
+      </a-camera>
 
       <a-entity rotation="-90 0 90">
         {showAxes && (
@@ -93,9 +102,10 @@ const ThreeDView = React.forwardRef((props, ref) => {
           segments-height="9"
           radius="0.5"
           material="color: #08f; shader: flat"
-          visible="false"
+          visible="true"
+          label-on-hover="text: Foo"
         >
-          <a-entity sprite="blending: additive; color: #08f; scale: 2 2 1; src: #glow-texture; transparent: 0" />
+          <a-entity sprite="blending: additive; color: #08f; scale: 2 2 1; src: #glow-texture; transparent: 0" />{' '}
         </a-sphere>
       </a-entity>
 
