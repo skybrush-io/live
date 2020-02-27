@@ -30,9 +30,9 @@ export default class UAV {
     this._rawVoltage = undefined;
 
     this.battery = { voltage: undefined, percentage: undefined };
-    this.color = 0xffff; /* white in RGB565 */
     this.heading = undefined;
     this.lastUpdated = undefined;
+    this.light = 0xffff; /* white in RGB565 */
   }
 
   /**
@@ -91,7 +91,7 @@ export default class UAV {
    * @return {boolean}  whether the status information has been updated
    */
   handleUAVStatusInfo = status => {
-    const { timestamp, position, heading, errors, battery } = status;
+    const { timestamp, position, heading, errors, battery, light } = status;
     let errorList;
     let updated = false;
 
@@ -117,6 +117,11 @@ export default class UAV {
     if (heading !== undefined && this._rawHeading !== heading) {
       this._rawHeading = heading;
       this.heading = heading / 10; /* conversion to degrees */
+      updated = true;
+    }
+
+    if (light !== undefined) {
+      this.light = light;
       updated = true;
     }
 

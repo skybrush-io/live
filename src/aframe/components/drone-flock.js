@@ -16,6 +16,8 @@ import { hideTooltip, showTooltip } from '~/features/three-d/slice';
 import { convertRGB565ToHex } from '~/flockwave/parsing';
 import { getFlatEarthCoordinateTransformer } from '~/selectors/map';
 
+const { THREE } = AFrame;
+
 /**
  * Returns a function that can be called with two arguments; the first argument
  * must be a object having `lon`, `lat` and `agl` properties, while the second
@@ -53,32 +55,31 @@ AFrame.registerSystem('drone-flock', {
     this._updatePositionFromGPSCoordinates = getter();
   },
 
-  createNewUAVEntity({ template }) {
-    if (!template) {
-      console.error('No UAV entity template to clone');
-      return undefined;
-    }
-
+  createNewUAVEntity() {
     const el = document.createElement('a-entity');
-    el.setAttribute('visible', true);
+    el.setAttribute('geometry', {
+      primitive: 'sphere',
+      radius: 0.5,
+      segmentsHeight: 9,
+      segmentsWidth: 18
+    });
+    el.setAttribute('material', {
+      color: new THREE.Color('#0088ff'),
+      fog: false,
+      shader: 'flat'
+    });
     el.setAttribute('position', '0 0 0');
 
-    // This line is needed to copy the actual mesh from the template and make
-    // cursor interactions work
-    el.setObject3D('mesh', template.getObject3D('mesh').clone());
+    const glowEl = document.createElement('a-entity');
+    glowEl.setAttribute('sprite', {
+      blending: 'additive',
+      color: new THREE.Color('#ff8800'),
+      scale: '2 2 1',
+      src: '#glow-texture',
+      transparent: true
+    });
 
-    // This line is needed to add the glow to the clone
-    for (const childEntity of template.getChildEntities()) {
-      const childEl = document.createElement('a-entity');
-      const childMap = childEntity.object3DMap;
-      for (const key in childMap) {
-        if (Object.prototype.hasOwnProperty.call(childMap, key)) {
-          childEl.setObject3D(key, childMap[key].clone());
-        }
-      }
-
-      el.append(childEl);
-    }
+    el.append(glowEl);
 
     return el;
   },
@@ -88,15 +89,29 @@ AFrame.registerSystem('drone-flock', {
       this._updatePositionFromGPSCoordinates(uav, entity.object3D.position);
     }
 
-    const color = convertRGB565ToHex(uav.color | 0);
-    entity.getObject3D('mesh').material.color.setHex(color);
+    const color = convertRGB565ToHex(uav.light | 0);
+    const mesh = entity.getObject3D('mesh');
+    if (mesh) {
+      mesh.material.color.setHex(color);
+    } else {
+      // TODO(ntamas): sometimes it happens that we get here earlier than the
+      // mesh is ready (it's an async process). In this case we should store
+      // the color somewhere and attempt setting it again in case there will be
+      // no further updates from the UAV for a while
+    }
 
     // TODO(ntamas): this is quite complex; we probably need to encapsulate the
     // glow as a separate component so we can simplify both the cloning code and
     // this part here.
-    const group = entity.object3D.children[1];
-    if (group && group.children[0]) {
-      group.children[0].material.color.setHex(color);
+    //
+    // Also, we could cache the glow material somewhere so we don't need to look
+    // it up all the time.
+    const glowEntity = entity.childNodes[0];
+    if (glowEntity) {
+      const glowMesh = glowEntity.getObject3D('mesh');
+      if (glowMesh && glowMesh.material) {
+        glowMesh.material.color.setHex(color);
+      }
     }
   },
 
@@ -106,9 +121,7 @@ AFrame.registerSystem('drone-flock', {
 });
 
 AFrame.registerComponent('drone-flock', {
-  schema: {
-    template: { type: 'selector' }
-  },
+  schema: {},
 
   init() {
     this._onUAVsAdded = this._onUAVsAdded.bind(this);
@@ -152,9 +165,7 @@ AFrame.registerComponent('drone-flock', {
     const { id } = uav;
 
     if (id && id.length > 0) {
-      const entity = this.system.createNewUAVEntity({
-        template: this.data.template
-      });
+      const entity = this.system.createNewUAVEntity();
 
       if (entity) {
         this.el.append(entity);
