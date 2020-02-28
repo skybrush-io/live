@@ -237,10 +237,12 @@ UAVListPresentation.propTypes = {
   selectionInfo: PropTypes.exact({
     mainUAVIds: PropTypes.exact({
       checked: PropTypes.bool,
+      disabled: PropTypes.bool,
       indeterminate: PropTypes.bool
     }),
     spareUAVIds: PropTypes.exact({
       checked: PropTypes.bool,
+      disabled: PropTypes.bool,
       indeterminate: PropTypes.bool
     })
   }),
@@ -299,10 +301,10 @@ const getDisplayedMissionIdList = createSelector(
       }
     }
 
-    // If we are in editing mode, we always add one extra spare UAV slot
+    // If we are in editing mode, we always add one extra main UAV slot
     // where the user can drag UAVs that should be deleted
     if (editable) {
-      spareUAVIds.push([undefined, undefined, <Delete key="__delete" />]);
+      mainUAVIds.push([undefined, undefined, <Delete key="__delete" />]);
     }
 
     return { mainUAVIds, spareUAVIds };
@@ -355,7 +357,8 @@ const getSelectionInfo = createSelector(
 
       return {
         checked: false,
-        indeterminate: false
+        indeterminate: false,
+        disabled: true
       };
     })
 );
