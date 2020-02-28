@@ -151,13 +151,11 @@ export const getNumberOfDronesInShow = createSelector(
  * Returns an array containing all the trajectories. The array will contain
  * undefined for all the drones that have no fixed trajectories in the mission.
  */
-const getTrajectories = createSelector(
-  getDroneSwarmSpecification,
-  swarm =>
-    swarm.map(drone => {
-      const trajectory = get(drone, 'settings.trajectory');
-      return isValidTrajectory(trajectory) ? trajectory : undefined;
-    })
+const getTrajectories = createSelector(getDroneSwarmSpecification, swarm =>
+  swarm.map(drone => {
+    const trajectory = get(drone, 'settings.trajectory');
+    return isValidTrajectory(trajectory) ? trajectory : undefined;
+  })
 );
 
 /**
@@ -168,12 +166,12 @@ const getTrajectoryDuration = trajectory => {
     return 0;
   }
 
-  const { points } = trajectory;
+  const { points, takeoffTime } = trajectory;
 
   if (points.length > 0) {
     const lastPoint = points[points.length - 1];
     if (Array.isArray(lastPoint) && lastPoint.length > 1) {
-      return lastPoint[0];
+      return lastPoint[0] + (takeoffTime || 0);
     }
   } else {
     return 0;
@@ -237,13 +235,10 @@ export const getLastPointsOfTrajectoriesInWorldCoordinates = createSelector(
 /**
  * Returns the total duration of the show, in seconds.
  */
-export const getShowDuration = createSelector(
-  getTrajectories,
-  trajectories => {
-    const longest = maxBy(trajectories, getTrajectoryDuration);
-    return longest ? getTrajectoryDuration(longest) : 0;
-  }
-);
+export const getShowDuration = createSelector(getTrajectories, trajectories => {
+  const longest = maxBy(trajectories, getTrajectoryDuration);
+  return longest ? getTrajectoryDuration(longest) : 0;
+});
 
 /**
  * Returns the total duration of the show, as a human-readable string.

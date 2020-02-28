@@ -25,6 +25,8 @@ const useStyles = makeStyles(
       borderRadius: '50%',
       color: 'black',
       height: '1em',
+      minWidth:
+        '1em' /* needed for narrow cases; setting width alone is not enough */,
       marginRight: theme.spacing(2),
       position: 'relative',
       width: '1em'
