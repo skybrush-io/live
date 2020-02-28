@@ -244,6 +244,7 @@ export default connect(
       dispatch(setStartMethod(method));
       dispatch(setStartTime(getUnixTime(createDateTimeFromParts(date, time))));
       dispatch(synchronizeShowSettings('toServer'));
+      dispatch(closeStartTimeDialog());
     }
   })
 )(StartTimeDialog);

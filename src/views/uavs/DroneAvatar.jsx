@@ -97,6 +97,18 @@ const useStyles = makeStyles(
       color: theme.palette.getContrastText(Colors.error)
     },
 
+    hint: {
+      fontSize: '0.75rem',
+      color: theme.palette.text.hint,
+      height: theme.spacing(2),
+      lineHeight: theme.spacing(2) + 'px',
+      position: 'absolute',
+      right: theme.spacing(0.5),
+      textAlign: 'right',
+      top: theme.spacing(0.5),
+      whiteSpace: 'nowrap'
+    },
+
     '@keyframes pulse': {
       '0%': {
         boxShadow: `0 0 8px 2px ${color(Colors.info).alpha(0)}`
@@ -129,6 +141,7 @@ const useStyles = makeStyles(
  */
 const DroneAvatar = ({
   batteryStatus,
+  hint,
   crossed,
   editing,
   id,
@@ -142,6 +155,13 @@ const DroneAvatar = ({
   const classes = useStyles();
   return (
     <>
+      <div className={classes.hint}>
+        {hint === undefined
+          ? label === undefined || label === id
+            ? ''
+            : id
+          : hint}
+      </div>
       <div className={clsx(classes.avatarWrapper, crossed && 'crossed')}>
         <Avatar
           className={clsx(
@@ -172,6 +192,7 @@ DroneAvatar.propTypes = {
     votlage: PropTypes.number,
     percentage: PropTypes.number
   }),
+  hint: PropTypes.string,
   crossed: PropTypes.bool,
   editing: PropTypes.bool,
   id: PropTypes.string,
@@ -277,6 +298,7 @@ function getDroneStatus(uav) {
 }
 
 function getDroneText(uav) {
+  let hint;
   let text;
   let textSemantics;
 
@@ -310,7 +332,7 @@ function getDroneText(uav) {
     textSemantics = 'success';
   }
 
-  return { text, textSemantics };
+  return { hint, text, textSemantics };
 }
 
 export default connect(

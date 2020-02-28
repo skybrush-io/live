@@ -118,7 +118,6 @@ const persistConfig = {
     // if we have a show loaded in 'data'
     createFilter('show', [
       'environment',
-      'preflight',
       'takeoffAreaSetupDialog',
       'startTimeDialog',
       'uploadDialog'
