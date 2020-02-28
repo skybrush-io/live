@@ -52,7 +52,8 @@ function updateSelection(current, add, remove) {
 }
 
 /**
- * The reducer function that handles actions related to the snackbar.
+ * The reducer function that handles actions related to the selection on the
+ * map.
  */
 const reducer = handleActions(
   {

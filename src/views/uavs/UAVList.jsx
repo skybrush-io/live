@@ -3,7 +3,10 @@
  * flock.
  */
 
+import difference from 'lodash-es/difference';
 import isNil from 'lodash-es/isNil';
+import mapValues from 'lodash-es/mapValues';
+import union from 'lodash-es/union';
 import PropTypes from 'prop-types';
 import React, { useCallback, useMemo } from 'react';
 import { DndProvider } from 'react-dnd';
@@ -12,17 +15,16 @@ import { connect } from 'react-redux';
 
 import AppBar from '@material-ui/core/AppBar';
 import Box from '@material-ui/core/Box';
-import ListSubheader from '@material-ui/core/ListSubheader';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Delete from '@material-ui/icons/Delete';
 import { createSelector } from '@reduxjs/toolkit';
 
 import DroneAvatar from './DroneAvatar';
 import DroneListItem from './DroneListItem';
-
 import MappingEditorToolbar from './MappingEditorToolbar';
 import MappingSlotEditor from './MappingSlotEditor';
 import MappingSlotEditorToolbar from './MappingSlotEditorToolbar';
+import UAVListSubheader from './UAVListSubheader';
 import UAVToolbar from './UAVToolbar';
 
 import { setSelectedUAVIds } from '~/actions/map';
@@ -120,7 +122,9 @@ const UAVListPresentation = ({
   onEditMappingSlot,
   onMappingAdjusted,
   onSelectionChanged,
+  onSelectSection,
   selectedUAVIds,
+  selectionInfo,
   uavIds
 }) => {
   const classes = useStyles();
@@ -183,14 +187,29 @@ const UAVListPresentation = ({
         </FadeAndSlide>
       </AppBar>
       <Box flex={1}>
-        <Box display="flex" flexDirection="row" flexWrap="wrap">
-          {createListItems(mainUAVIds, listItemProps)}
-        </Box>
+        {mainUAVIds.length > 0 ? (
+          <>
+            <UAVListSubheader
+              key="__main"
+              label="Active UAVs"
+              value="mainUAVIds"
+              onChange={onSelectSection}
+              {...selectionInfo.mainUAVIds}
+            />
+            <Box display="flex" flexDirection="row" flexWrap="wrap">
+              {createListItems(mainUAVIds, listItemProps)}
+            </Box>
+          </>
+        ) : null}
         {spareUAVIds.length > 0 || editingMapping ? (
           <>
-            <ListSubheader key="__spare" flex="0 0 100%">
-              Spare UAVs
-            </ListSubheader>
+            <UAVListSubheader
+              key="__spare"
+              label="Spare UAVs"
+              value="spareUAVIds"
+              onChange={onSelectSection}
+              {...selectionInfo.spareUAVIds}
+            />
             <Box display="flex" flexDirection="row" flexWrap="wrap">
               {createListItems(spareUAVIds, listItemProps)}
             </Box>
@@ -213,7 +232,18 @@ UAVListPresentation.propTypes = {
   onEditMappingSlot: PropTypes.func,
   onMappingAdjusted: PropTypes.func,
   onSelectionChanged: PropTypes.func,
+  onSelectSection: PropTypes.func,
   selectedUAVIds: PropTypes.array,
+  selectionInfo: PropTypes.exact({
+    mainUAVIds: PropTypes.exact({
+      checked: PropTypes.bool,
+      indeterminate: PropTypes.bool
+    }),
+    spareUAVIds: PropTypes.exact({
+      checked: PropTypes.bool,
+      indeterminate: PropTypes.bool
+    })
+  }),
   uavIds: PropTypes.exact({
     mainUAVIds: PropTypes.arrayOf(PropTypes.array).isRequired,
     spareUAVIds: PropTypes.arrayOf(PropTypes.array).isRequired
@@ -232,6 +262,14 @@ const getDisplayedUAVIdList = createSelector(getUAVIdList, uavIds => ({
   spareUAVIds: []
 }));
 
+/**
+ * Selector that provides the list of UAV IDs to show in the UAV list when
+ * we are using the mission-specific identifiers.
+ *
+ * The main section of the view will be sorted based on the mission-specific
+ * indices. The "spare UAVs" section in the view will include all the UAVs
+ * that are not currently assigned to the mission.
+ */
 const getDisplayedMissionIdList = createSelector(
   getMissionMapping,
   isMappingEditable,
@@ -271,10 +309,56 @@ const getDisplayedMissionIdList = createSelector(
   }
 );
 
+/**
+ * Selector that provides the list of UAV IDs to show in the UAV list.
+ */
 const getDisplayedIdList = state =>
   isShowingMissionIds(state)
     ? getDisplayedMissionIdList(state)
     : getDisplayedUAVIdList(state);
+
+/**
+ * Selector that takes the displayed list of UAV IDs sorted by sections,
+ * and then returns an object mapping section identifiers to two booleans:
+ * one that denotes whether _all_ the items are selected in the section, and
+ * one that denotes whether _some_ but not all the items are selected in the
+ * section. These are assigned to keys named `checked` and `indeterminate`,
+ * respectively, so they can be used directly for an UAVListSubheader
+ * component.
+ */
+const getSelectionInfo = createSelector(
+  getDisplayedIdList,
+  getSelectedUAVIds,
+  (displayedIdList, selectedIds) =>
+    mapValues(displayedIdList, idsAndLabels => {
+      const nonEmptyIdsAndLabels = idsAndLabels.filter(
+        idAndLabel => !isNil(idAndLabel[0])
+      );
+      const itemIsSelected = idAndLabel => selectedIds.includes(idAndLabel[0]);
+      if (nonEmptyIdsAndLabels.length > 0) {
+        // Check the first item in idsAndLabels; it will settle either someSelected
+        // or allSelected
+        if (itemIsSelected(nonEmptyIdsAndLabels[0])) {
+          const allIsSelected = nonEmptyIdsAndLabels.every(itemIsSelected);
+          return {
+            checked: allIsSelected,
+            indeterminate: !allIsSelected
+          };
+        }
+
+        const someIsSelected = nonEmptyIdsAndLabels.some(itemIsSelected);
+        return {
+          checked: false,
+          indeterminate: someIsSelected
+        };
+      }
+
+      return {
+        checked: false,
+        indeterminate: false
+      };
+    })
+);
 
 /**
  * Smart component for showing the drone show configuration view.
@@ -285,13 +369,34 @@ const UAVList = connect(
     editingMapping: isMappingEditable(state),
     mappingSlotBeingEdited: getIndexOfMappingSlotBeingEdited(state),
     selectedUAVIds: getSelectedUAVIds(state),
+    selectionInfo: getSelectionInfo(state),
     uavIds: getDisplayedIdList(state)
   }),
   // mapDispatchToProps
   {
     onEditMappingSlot: startMappingEditorSessionAtSlot,
     onMappingAdjusted: adjustMissionMapping,
-    onSelectionChanged: setSelectedUAVIds
+    onSelectionChanged: setSelectedUAVIds,
+    onSelectSection: event => (dispatch, getState) => {
+      const { value } = event.target;
+      const displayedIdsAndLabels = getDisplayedIdList(getState())[value];
+      const selectedUAVIds = getSelectedUAVIds(getState());
+      const selectionInfo = getSelectionInfo(getState())[value];
+
+      if (selectionInfo && displayedIdsAndLabels) {
+        const displayedIds = displayedIdsAndLabels.reduce((acc, idAndLabel) => {
+          if (!isNil(idAndLabel[0])) {
+            acc.push(idAndLabel[0]);
+          }
+
+          return acc;
+        }, []);
+        const newSelection = selectionInfo.checked
+          ? difference(selectedUAVIds, displayedIds)
+          : union(selectedUAVIds, displayedIds);
+        dispatch(setSelectedUAVIds(newSelection));
+      }
+    }
   }
 )(UAVListPresentation);
 

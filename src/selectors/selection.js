@@ -33,9 +33,8 @@ export const getSelection = state => state.map.selection;
  * @return {function} a selector function
  */
 export const selectionForSubset = mapper =>
-  createSelector(
-    getSelection,
-    selection => reject(selection.map(mapper), isNil)
+  createSelector(getSelection, selection =>
+    reject(selection.map(mapper), isNil)
   );
 
 /**
@@ -80,9 +79,10 @@ export const getSelectedFeatureLabels = createSelector(
   getSelectedFeatureIds,
   state => state.features.byId,
   (featureIds, features) =>
-    reject(featureIds.map(featureId => features[featureId]), isNil).map(
-      feature => feature.label
-    )
+    reject(
+      featureIds.map(featureId => features[featureId]),
+      isNil
+    ).map(feature => feature.label)
 );
 
 /**

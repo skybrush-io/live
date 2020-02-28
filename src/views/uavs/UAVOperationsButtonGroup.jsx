@@ -2,7 +2,6 @@ import isEmpty from 'lodash-es/isEmpty';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
-import { useToggle } from 'react-use';
 
 import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
@@ -13,8 +12,6 @@ import ActionHome from '@material-ui/icons/Home';
 import ActionPowerSettingsNew from '@material-ui/icons/PowerSettingsNew';
 import Message from '@material-ui/icons/Message';
 import Refresh from '@material-ui/icons/Refresh';
-
-import ToggleButton from '~/components/ToggleButton';
 
 import {
   selectUAVInMessagesDialog,
@@ -41,8 +38,6 @@ const UAVOperationsButtonGroup = ({
   selectUAVInMessagesDialog,
   showMessagesDialog
 }) => {
-  const [useAllUAVs, toggleUseAllUAVs] = useToggle();
-
   const classes = useStyles();
 
   const isSelectionEmpty = isEmpty(selectedUAVIds);
@@ -78,17 +73,6 @@ const UAVOperationsButtonGroup = ({
 
   return (
     <>
-      <ToggleButton
-        disabled
-        value="all"
-        selected={useAllUAVs}
-        onChange={toggleUseAllUAVs}
-      >
-        All
-      </ToggleButton>
-
-      <Divider className={classes.divider} orientation="vertical" />
-
       <IconButton disabled={isSelectionEmpty} onClick={takeoffSelectedUAVs}>
         <ActionFlightTakeoff />
       </IconButton>
