@@ -251,12 +251,15 @@ body {
   border: 1px solid #08f;
 }
 
-/* OpenLayers attribution widget should be in the lower left corner
+/* OpenLayers attribution widget should be in the lower right corner
 * by default */
 .ol-attribution {
-  right: auto;
-  bottom: 2.4em;
-  left: 0.5em;
+  .drop-shadow-box();
+}
+.ol-attribution.ol-uncollapsible {
+  left: auto;
+  bottom: 8px;
+  right: 8px;
 }
 
 .ol-mouse-position {
@@ -264,7 +267,7 @@ body {
 
   top: auto;
   right: 8px;
-  bottom: 0.5em;
+  bottom: 2.4em;
 
   padding: 10px !important;
 }

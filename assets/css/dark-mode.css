@@ -36,6 +36,18 @@ body .lm_header .lm_tab.lm_active {
   background-color: #444 !important;
   color: #fff !important;
 }
+.ol-attribution {
+  background-color: #444 !important;
+  color: #fff !important;
+}
+.ol-attribution ul {
+  color: rgba(255, 255, 255, 0.7) !important;
+  text-shadow: none !important;
+}
+.ol-attribution ul a, .ol-attribution ul a:hover, .ol-attribution ul a:active, .ol-attribution ul a:visited  {
+  color: #fff !important;
+  text-decoration: none;
+}
 .ol-mouse-position {
   background-color: #444 !important;
   color: #fff !important;
