@@ -100,25 +100,3 @@ export const moveUAVs = (uavs, target) =>
       ]
     })
     .then(processResponse('UAV-FLY', 'Fly to target command'));
-
-export const toggleErrorUAVs = (() => {
-  let currentError = [];
-
-  return async uavs => {
-    currentError =
-      currentError.length === 0 ? [Math.floor(Math.random() * 256)] : [];
-
-    await messageHub.sendMessage({
-      type: 'CMD-REQ',
-      ids: uavs,
-      command: 'error',
-      args: currentError
-    });
-
-    logger.info(
-      currentError.length === 0
-        ? `The error state of UAVs ${uavs} were cleared.`
-        : `UAVs ${uavs} were sent to error state ${currentError}.`
-    );
-  };
-})();

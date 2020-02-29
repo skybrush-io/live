@@ -19,12 +19,7 @@ import {
   mapRotationResetSignal
 } from './signals';
 import store, { clearStore } from './store';
-import {
-  takeoffUAVs,
-  landUAVs,
-  returnToHomeUAVs,
-  toggleErrorUAVs
-} from './utils/messaging';
+import { takeoffUAVs, landUAVs, returnToHomeUAVs } from './utils/messaging';
 import { Tool } from './views/map/tools';
 
 export default [
@@ -133,14 +128,6 @@ export default [
     on: 'down',
     keys: 'PlatMod + Alt + KeyR',
     action: () => returnToHomeUAVs(getSelectedUAVIds(store.getState()))
-  },
-
-  // Temporary: Send selected UAVs into a random error state
-  {
-    description: 'Send selected UAVs into a random error state',
-    on: 'down',
-    keys: 'PlatMod + Alt + KeyE',
-    action: () => toggleErrorUAVs(getSelectedUAVIds(store.getState()))
   },
 
   // Messages dialog related hotkeys
