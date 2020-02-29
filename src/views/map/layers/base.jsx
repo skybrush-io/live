@@ -1,4 +1,5 @@
 import { layer as olLayer, source } from '@collmot/ol-react';
+import MVTFormat from 'ol/format/MVT';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
@@ -8,9 +9,14 @@ import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 
 import { selectMapSource } from '~/actions/map';
-import { Source, Sources, labelForSource } from '~/model/sources';
-
-const BING_API_KEY = process.env.FLOCKWAVE_BING_API_KEY;
+import APIKeys from '~/api-keys';
+import {
+  Source,
+  Sources,
+  attributionsForSource,
+  labelForSource
+} from '~/model/sources';
+import { streetsV6Style } from '~/views/map/styles/mapbox';
 
 // === Settings for this particular layer type ===
 
@@ -54,17 +60,128 @@ export const BaseLayerSettings = connect(
 
 // === The actual layer to be rendered ===
 
-// This component needs to be pure to avoid flickering when the BaseLayer
-// component is re-rendered; otherwise it would re-render the source, which
-// would in turn re-create the layer source object.
-//
-// Most likely it could be solved in ol-react as well, but it's easier to
-// do it here.
+const mvtFormat = new MVTFormat();
+
+const LayerType = ({ children, type, zIndex }) => {
+  switch (type) {
+    case Source.MAPBOX.VECTOR:
+    case Source.NEXTZEN:
+      return (
+        <olLayer.VectorTile declutter style={streetsV6Style} zIndex={zIndex}>
+          {children}
+        </olLayer.VectorTile>
+      );
+
+    default:
+      return <olLayer.Tile zIndex={zIndex}>{children}</olLayer.Tile>;
+  }
+};
+
+LayerType.propTypes = {
+  children: PropTypes.node,
+  type: PropTypes.string,
+  zIndex: PropTypes.number
+};
+
+const createMapTilerSource = (name, tileSize = 256) => (
+  <source.TileJSON
+    crossOrigin="anonymous"
+    tileSize={tileSize}
+    url={`https://api.maptiler.com/${name}/tiles.json?key=${APIKeys.MAPTILER}`}
+  />
+);
 
 const LayerSource = ({ type }) => {
+  const attributions = attributionsForSource(type);
+
   switch (type) {
+    case Source.MAPBOX.STATIC:
+      return (
+        <source.XYZ
+          attributions={attributions}
+          tileSize={512}
+          url={`https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/512/{z}/{x}/{y}@2x?access_token=${APIKeys.MAPBOX}`}
+        />
+      );
+
+    case Source.MAPBOX.SATELLITE:
+      return (
+        <source.XYZ
+          attributions={attributions}
+          attributionsCollapsible={false}
+          tileSize={512}
+          url={`https://api.mapbox.com/v4/mapbox.satellite/{z}/{x}/{y}@2x.jpg90?access_token=${APIKeys.MAPBOX}`}
+        />
+      );
+
+    case Source.MAPBOX.VECTOR:
+      // TODO(ntamas): this could be updated to mapbox-streets-v8 once we get
+      // a proper styling function for it
+      return (
+        <source.VectorTile
+          attributions={attributions}
+          format={mvtFormat}
+          url={`https://{a-d}.tiles.mapbox.com/v4/mapbox.mapbox-streets-v8/{z}/{x}/{y}.vector.pbf?access_token=${APIKeys.MAPBOX}`}
+        />
+      );
+
+    case Source.MAPTILER.BASIC:
+      // TODO(ntamas): this would probably look better in vector format; we need
+      // a proper styling function for it
+      return createMapTilerSource('maps/basic', 512);
+
+    case Source.MAPTILER.HYBRID:
+      // TODO(ntamas): this would probably look better in vector format; we need
+      // a proper styling function for it
+      return createMapTilerSource('maps/hybrid', 512);
+
+    case Source.MAPTILER.SATELLITE:
+      return createMapTilerSource('tiles/satellite', 256);
+
+    case Source.MAPTILER.STREETS:
+      // TODO(ntamas): this would probably look better in vector format; we need
+      // a proper styling function for it
+      return createMapTilerSource('maps/streets', 512);
+
+    case Source.NEXTZEN:
+      // TODO(ntamas): this is not quite ready; the Mapbox styling function does
+      // not work for it and we don't have a Nextzen-specific styling function
+      return (
+        <source.VectorTile
+          attributions={attributions}
+          attributionsCollapsible={false}
+          format={mvtFormat}
+          maxZoom={16}
+          url={`https://tile.nextzen.org/tilezen/vector/v1/512/all/{z}/{x}/{y}.mvt?api_key=${APIKeys.NEXTZEN}`}
+        />
+      );
+
     case Source.OSM:
       return <source.OSM />;
+
+    case Source.STAMEN.TERRAIN:
+      return (
+        <source.XYZ
+          attributionsCollapsible={false}
+          url="https://stamen-tiles-{a-d}.a.ssl.fastly.net/terrain/{z}/{x}/{y}.jpg"
+        />
+      );
+
+    case Source.STAMEN.TONER:
+      return (
+        <source.XYZ
+          attributionsCollapsible={false}
+          url="https://stamen-tiles-{a-d}.a.ssl.fastly.net/toner/{z}/{x}/{y}.png"
+        />
+      );
+
+    case Source.STAMEN.WATERCOLOR:
+      return (
+        <source.XYZ
+          attributionsCollapsible={false}
+          url="https://stamen-tiles-{a-d}.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.jpg"
+        />
+      );
 
     case Source.GOOGLE_MAPS.DEFAULT:
       return (
@@ -79,14 +196,14 @@ const LayerSource = ({ type }) => {
     case Source.BING_MAPS.AERIAL_WITH_LABELS:
       return (
         <source.BingMaps
-          apiKey={BING_API_KEY}
+          apiKey={APIKeys.BING}
           imagerySet="AerialWithLabels"
           maxZoom={19}
         />
       );
 
     case Source.BING_MAPS.ROAD:
-      return <source.BingMaps apiKey={BING_API_KEY} imagerySet="Road" />;
+      return <source.BingMaps apiKey={APIKeys.BING} imagerySet="Road" />;
 
     default:
       return null;
@@ -98,10 +215,11 @@ LayerSource.propTypes = {
 };
 
 export const BaseLayer = ({ layer, zIndex }) => (
-  <olLayer.Tile zIndex={zIndex}>
+  <LayerType type={layer.parameters.source} zIndex={zIndex}>
     <LayerSource type={layer.parameters.source} />
-  </olLayer.Tile>
+  </LayerType>
 );
+
 BaseLayer.propTypes = {
   layer: PropTypes.object,
   zIndex: PropTypes.number

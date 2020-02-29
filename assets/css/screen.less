@@ -5,7 +5,7 @@
 @long-transition-duration: 1s;
 
 @box-background-color-light: #ffffff;
-@box-foreground-color-light: #000000;
+@box-foreground-color-light: rgba(0, 0, 0, 0.87);
 
 body {
   font-family: 'Fira Sans', Arial, sans-serif;
@@ -193,7 +193,8 @@ body {
 /* OpenLayers scale line should have a half-transparent "box styling" */
 .ol-scale-line {
   .drop-shadow-box();
-  bottom: 0.5em;
+  bottom: 8px;
+  left: 8px;
 }
 .ol-scale-line-inner {
   border-color: @box-foreground-color-light;
@@ -255,11 +256,28 @@ body {
 * by default */
 .ol-attribution {
   .drop-shadow-box();
+
+  left: 8px;
+  bottom: 32px;
+  right: unset;
+
+  ul {
+    color: rgba(0, 0, 0, 0.54);
+
+    a, a:hover, a:active, a:visited {
+      color: @box-foreground-color-light;
+      text-decoration: none;
+      text-shadow: none;
+    }
+  }
 }
 .ol-attribution.ol-uncollapsible {
-  left: auto;
-  bottom: 8px;
-  right: 8px;
+  border: 0 !important;
+  border-radius: 0 !important;
+  left: 0px;
+  bottom: 0px;
+  right: 0px;
+  max-width: unset;
 }
 
 .ol-mouse-position {
@@ -267,7 +285,7 @@ body {
 
   top: auto;
   right: 8px;
-  bottom: 2.4em;
+  bottom: 8px;
 
   padding: 10px !important;
 }

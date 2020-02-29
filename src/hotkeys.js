@@ -7,13 +7,11 @@ import { showLayersDialog } from './actions/layers';
 import {
   selectAllUAVFeatures,
   clearSelection,
-  selectMapTool,
-  selectMapSource
+  selectMapTool
 } from './actions/map';
 import { showMessagesDialog } from './actions/messages';
 import { showSnackbarMessage } from './features/snackbar/slice';
 
-import { Source } from './model/sources';
 import { getSelectedUAVIds } from './selectors/selection';
 import {
   fitAllFeaturesSignal,
@@ -105,39 +103,6 @@ export default [
     keys: 'PlatMod + KeyF',
     action: () => {
       fitAllFeaturesSignal.dispatch();
-    }
-  },
-
-  // Layer related hotkeys
-  {
-    description: 'Switch to OpenStreetMaps source',
-    on: 'down',
-    keys: 'PlatMod + KeyO',
-    action: () => {
-      store.dispatch(selectMapSource({ layerId: 'base', source: Source.OSM }));
-    }
-  },
-  {
-    description: 'Switch to Bing Maps Aerial with Labels source',
-    on: 'down',
-    keys: 'PlatMod + KeyB',
-    action: () => {
-      store.dispatch(
-        selectMapSource({
-          layerId: 'base',
-          source: Source.BING_MAPS.AERIAL_WITH_LABELS
-        })
-      );
-    }
-  },
-  {
-    description: 'Switch to Bing Maps Road source',
-    on: 'down',
-    keys: 'PlatMod + Alt + KeyB',
-    action: () => {
-      store.dispatch(
-        selectMapSource({ layerId: 'base', source: Source.BING_MAPS.ROAD })
-      );
     }
   },
 

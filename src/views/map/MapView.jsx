@@ -103,7 +103,7 @@ const MapViewLayers = connect(
 const MapViewControlsPresentation = props => {
   const result = [
     <control.Zoom key="control.Zoom" />,
-    <control.Attribution key="control.Attribution" />
+    <control.Attribution key="control.Attribution" collapseLabel="&laquo;" />
   ];
 
   if (props.showMouseCoordinates) {
@@ -395,6 +395,9 @@ class MapViewPresentation extends React.Component {
       [Tool.EDIT_FEATURE]: 'tool-edit tool-edit-feature'
     };
 
+    // Note that we use a background color. This is intenitonal -- vector tile
+    // based maps assume that there is a light background.
+
     return (
       <Map
         ref={this._map}
@@ -402,6 +405,7 @@ class MapViewPresentation extends React.Component {
         view={view}
         useDefaultControls={false}
         className={toolClasses[selectedTool]}
+        style={{ background: '#f8f4f0' }}
         onMoveEnd={this._onMapMoved}
       >
         <MapReferenceRequestHandler />
