@@ -5,6 +5,7 @@ import {
   fromUnixTime,
   getUnixTime,
   isPast,
+  isValid,
   setSeconds,
   startOfDay
 } from 'date-fns';
@@ -44,8 +45,12 @@ function createDateTimeFromParts(date, time) {
 function validateForm(values) {
   const errors = {};
 
-  if (isPast(endOfDay(values.date))) {
+  if (!isValid(values.date)) {
+    errors.date = 'Invalid date';
+  } else if (isPast(endOfDay(values.date))) {
     errors.date = 'Date cannot be in the past';
+  } else if (!isValid(values.time)) {
+    errors.time = 'Invalid time';
   } else {
     const dateTime = createDateTimeFromParts(values.date, values.time);
     if (isPast(dateTime)) {
@@ -72,7 +77,7 @@ const StartTimeForm = ({
     validate={validateForm}
     onSubmit={onSubmit}
   >
-    {({ dirty, form, handleSubmit }) => (
+    {({ dirty, form, handleSubmit, invalid }) => (
       <form id="start-time-form" onSubmit={handleSubmit}>
         <DialogContent>
           <Alert
@@ -152,7 +157,7 @@ const StartTimeForm = ({
           <Button
             color="primary"
             type="submit"
-            disabled={!alwaysAllowSubmission && !dirty}
+            disabled={invalid || (!alwaysAllowSubmission && !dirty)}
           >
             Update
           </Button>
