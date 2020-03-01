@@ -32,6 +32,15 @@ export const areStartConditionsSyncedWithServer = state =>
   state.show.start.syncStatusWithServer === 'synced';
 
 /**
+ * Returns the number of drones that are currently scheduled to take off
+ * automatically on the server.
+ */
+export const countUAVsTakingOffAutomatically = state => {
+  const toStart = state.show.start.uavIds;
+  return toStart ? toStart.length : 0;
+};
+
+/**
  * Returns whether the synchronization of the start time and start method of the
  * show with the server failed when we attempted it the last time.
  */

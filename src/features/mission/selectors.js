@@ -10,7 +10,8 @@ import { getSelectedUAVIds } from '~/selectors/selection';
  *
  * @param  {Object}  state  the state of the application
  */
-export const getGPSBasedHomePositionsInMission = state => state.mission.homePositions;
+export const getGPSBasedHomePositionsInMission = state =>
+  state.mission.homePositions;
 
 /**
  * Returns the current list of landing positions in the mission.

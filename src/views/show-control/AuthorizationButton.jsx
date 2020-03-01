@@ -13,7 +13,10 @@ import {
   setShowAuthorization,
   synchronizeShowSettings
 } from '~/features/show/slice';
-import { isShowAuthorizedToStartLocally } from '~/features/show/selectors';
+import {
+  countUAVsTakingOffAutomatically,
+  isShowAuthorizedToStartLocally
+} from '~/features/show/selectors';
 import { getSetupStageStatuses } from '~/features/show/stages';
 
 /**
@@ -21,14 +24,25 @@ import { getSetupStageStatuses } from '~/features/show/stages';
  * drone show. Such an authorization is needed even if the show is set to start
  * in automatic mode.
  */
-const AuthorizationButton = ({ isAuthorized, status, ...rest }) => (
+const AuthorizationButton = ({
+  isAuthorized,
+  numUAVsTakingOffAutomatically,
+  status,
+  ...rest
+}) => (
   <ListItem
     button
-    disabled={status === StepperStatus.OFF}
+    disabled={!isAuthorized && status === StepperStatus.OFF}
     selected={isAuthorized}
     {...rest}
   >
-    <StepperStatusLight status={status} />
+    <StepperStatusLight
+      status={
+        isAuthorized && status === StepperStatus.OFF
+          ? StepperStatus.SKIPPED
+          : status
+      }
+    />
     <ListItemText
       disableTypography
       primary={
@@ -41,7 +55,11 @@ const AuthorizationButton = ({ isAuthorized, status, ...rest }) => (
       secondary={
         <Typography variant="body2" color="textSecondary">
           {isAuthorized
-            ? 'Click here to revoke authorization'
+            ? numUAVsTakingOffAutomatically <= 0
+              ? 'Click here to revoke authorization'
+              : numUAVsTakingOffAutomatically === 1
+              ? 'One drone will take off automatically'
+              : `${numUAVsTakingOffAutomatically} drones will take off automatically`
             : 'Authorization required before takeoff'}
         </Typography>
       }
@@ -51,6 +69,7 @@ const AuthorizationButton = ({ isAuthorized, status, ...rest }) => (
 
 AuthorizationButton.propTypes = {
   isAuthorized: PropTypes.bool,
+  numUAVsTakingOffAutomatically: PropTypes.number,
   status: PropTypes.oneOf(Object.values(StepperStatus))
 };
 
@@ -58,6 +77,7 @@ export default connect(
   // mapStateToProps
   state => ({
     isAuthorized: isShowAuthorizedToStartLocally(state),
+    numUAVsTakingOffAutomatically: countUAVsTakingOffAutomatically(state),
     status: getSetupStageStatuses(state).authorization
   }),
   // mapDispatchToProps

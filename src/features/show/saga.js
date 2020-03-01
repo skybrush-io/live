@@ -2,6 +2,7 @@ import get from 'lodash-es/get';
 import isNil from 'lodash-es/isNil';
 import isNumber from 'lodash-es/isNumber';
 import isString from 'lodash-es/isString';
+import reject from 'lodash-es/reject';
 import { channel } from 'redux-saga';
 import {
   call,
@@ -18,7 +19,8 @@ import {
   getCommonShowSettings,
   getDroneSwarmSpecification,
   getNextDroneFromUploadQueue,
-  getOutdoorShowCoordinateSystem
+  getOutdoorShowCoordinateSystem,
+  isShowAuthorizedToStartLocally
 } from './selectors';
 import {
   cancelUpload,
@@ -32,12 +34,16 @@ import {
   setShowSettingsSynchronizationStatus,
   setStartMethod,
   setStartTime,
+  setUAVIdsToStartAutomatically,
   startUpload,
   synchronizeShowSettings
 } from './slice';
 
 import messageHub from '~/message-hub';
-import { getReverseMissionMapping } from '~/features/mission/selectors';
+import {
+  getMissionMapping,
+  getReverseMissionMapping
+} from '~/features/mission/selectors';
 
 /**
  * Special symbol used to make a worker task quit.
@@ -208,12 +214,17 @@ function* showUploaderSagaWithCancellation() {
  */
 function* pullSettingsFromServer() {
   const config = yield call(messageHub.query.getShowConfiguration);
-  const { authorized, time, method } = get(config, 'start');
+  const { authorized, time, method, uavIds } = get(config, 'start');
 
-  if ((isNumber(time) || isNil(time)) && isString(method)) {
+  if (
+    (isNumber(time) || isNil(time)) &&
+    isString(method) &&
+    Array.isArray(uavIds)
+  ) {
     yield put(setShowAuthorization(Boolean(authorized)));
     yield put(setStartTime(time));
     yield put(setStartMethod(method));
+    yield put(setUAVIdsToStartAutomatically(reject(uavIds || [], isNil)));
   } else {
     throw new TypeError('Invalid configuration object received from server');
   }
@@ -224,10 +235,17 @@ function* pullSettingsFromServer() {
  */
 function* pushSettingsToServer() {
   const { time, method } = yield select(state => state.show.start);
-
-  yield messageHub.execute.setShowConfiguration({
-    start: { time, method }
+  const authorized = yield select(isShowAuthorizedToStartLocally);
+  const mapping = yield select(getMissionMapping);
+  const uavIdsToStartAutomatically =
+    method === 'auto' ? reject(mapping || [], isNil) : [];
+  yield call(messageHub.execute.setShowConfiguration, {
+    start: { authorized, time, method, uavIds: uavIdsToStartAutomatically }
   });
+
+  // TODO(ntamas): it would be nicer to read the values back from the server
+  // by explicitly pulling it
+  yield put(setUAVIdsToStartAutomatically(uavIdsToStartAutomatically));
 }
 
 /**

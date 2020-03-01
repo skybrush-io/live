@@ -48,9 +48,23 @@ const { actions, reducer } = createSlice({
     },
 
     start: {
+      // whether the show has been authorized to start
       authorized: false,
+
+      // the start time of the show
       time: null,
+
+      // whether the show is started automatically or manually with a remote
+      // controller
       method: 'rc',
+
+      // the list of UAV IDs that the server will start automatically. This
+      // value is read from the server only but is never written there; we will
+      // infer the UAV ID list from the mapping instead and write that to the
+      // server. It is not relevant if the show is set to start manually
+      uavIds: [],
+
+      // whether the state variables in this object are synced with the server
       syncStatusWithServer: 'notSynced'
     },
 
@@ -316,6 +330,12 @@ const { actions, reducer } = createSlice({
       }
     },
 
+    setUAVIdsToStartAutomatically(state, action) {
+      if (Array.isArray(action.payload)) {
+        state.start.uavIds = action.payload;
+      }
+    },
+
     setUploadTarget(state, action) {
       state.uploadDialog.uploadTarget = action.payload;
     },
@@ -380,6 +400,7 @@ export const {
   setShowSettingsSynchronizationStatus,
   setStartMethod,
   setStartTime,
+  setUAVIdsToStartAutomatically,
   setUploadTarget,
   signOffOnManualPreflightChecksAt,
   signOffOnOnboardPreflightChecksAt,

@@ -338,8 +338,8 @@ async function executeTasksAfterConnection(dispatch) {
     // synchronize the show settings
     const supportsDroneShows = await messageHub.query.isExtensionLoaded('show');
     if (supportsDroneShows) {
-      // Synchronize the start time and start method of the show _from_ the
-      // server _to_ the local client.
+      // Synchronize the start time, the start method and the mapping of the
+      // show _from_ the server _to_ the local client.
       dispatch(synchronizeShowSettings('fromServer'));
     }
   } catch (error) {
