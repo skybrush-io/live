@@ -26,7 +26,7 @@ import {
 } from 'redux-persist-transform-filter';
 
 import { loadingPromiseFulfilled } from './features/show/slice';
-import { updateUAVs } from './features/uavs/slice';
+import { updateAgesOfUAVs, updateUAVs } from './features/uavs/slice';
 import reducer from './reducers';
 
 /**
@@ -184,7 +184,7 @@ const store = configureStore({
     sagaMiddleware
   ],
   devTools: {
-    actionsBlacklist: [updateUAVs.type],
+    actionsBlacklist: [updateUAVs.type, updateAgesOfUAVs.type],
 
     // make sure that the show object that we load is not cached / tracked by
     // the Redux devtools

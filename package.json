@@ -78,6 +78,7 @@
     "node-ssdp-lite": "^0.2.0",
     "numbro": "^2.1.2",
     "ol": "^6.2.1",
+    "ol-mapbox-style": "^6.0.1",
     "p-defer": "^3.0.0",
     "p-min-delay": "^3.1.0",
     "p-timeout": "^3.2.0",
@@ -120,6 +121,7 @@
     "screenfull": "^5.0.2",
     "shell-quote": "^1.7.2",
     "shortid": "^2.2.15",
+    "tick-tock": "^1.0.0",
     "typeface-fira-sans": "0.0.75",
     "updeep": "^1.2.0",
     "url": "^0.11.0",
@@ -173,6 +175,7 @@
     "rules": {
       "capitalized-comments": 0,
       "import/no-unassigned-import": 0,
+      "no-negated-condition": 0,
       "no-warning-comments": 0,
       "object-curly-spacing": [
         "error",

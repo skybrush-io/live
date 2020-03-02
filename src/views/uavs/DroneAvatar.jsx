@@ -20,6 +20,7 @@ import {
   ErrorCode,
   Severity
 } from '~/flockwave/errors';
+import { UAVAge } from '~/model/uav';
 
 const useStyles = makeStyles(
   theme => ({
@@ -263,13 +264,14 @@ function severityToSemantics(severity) {
  *   is 1, the status is "warning".
  *
  * - If no status updates were received from the drone since a predefined
- *   longer time frame (say, 60 seconds), the status is "off" and the secondary
- *   status display will read "GONE".
+ *   longer time frame (say, 60 seconds), the status is "off". The secondary
+ *   status display may also read "GONE" if there is no other message to
+ *   report.
  *
  * - If no status updates were received from the drone since a predefined time
  *   frame, the status is "warning". You can distinguish this from warnings
  *   derived from error codes by looking at the secondary status display,
- *   which should read "AWAY".
+ *   which should read "AWAY" if there is no other warning to report.
  *
  * - If the drone is still initializing or running prearm checks, the status
  *   is "warning". You can distinguish this from warnings derived from error
@@ -286,13 +288,19 @@ function getDroneStatus(uav) {
     }
   }
 
+  if (uav.age === UAVAge.GONE) {
+    return 'off';
+  }
+
+  if (uav.age === UAVAge.INACTIVE) {
+    return 'warning';
+  }
+
   const maxError = Math.max(...uav.errors);
 
   if (maxError === ErrorCode.RETURN_TO_HOME) {
     return 'rth';
   }
-
-  // TODO: check expiry dates
 
   return 'success';
 }
@@ -330,6 +338,22 @@ function getDroneText(uav) {
     // UAV is ready on the ground
     text = 'ready';
     textSemantics = 'success';
+  }
+
+  if (textSemantics === 'success') {
+    if (uav.age === UAVAge.GONE) {
+      if (text === 'ready') {
+        text = 'gone';
+      }
+
+      textSemantics = 'off';
+    } else if (uav.age === UAVAge.INACTIVE) {
+      if (text === 'ready') {
+        text = 'inactive';
+      }
+
+      textSemantics = 'warning';
+    }
   }
 
   return { hint, text, textSemantics };

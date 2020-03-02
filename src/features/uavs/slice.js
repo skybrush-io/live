@@ -33,7 +33,8 @@ const { actions, reducer } = createSlice({
       //     battery: {
       //         voltage: 10.4,
       //         percentage: 41
-      //     }
+      //     },
+      //     age: "active"   /* one of 'active', 'inactive', 'gone' */
       // }
     },
     // Order defines the preferred ordering of UAVs on the UI. CUrrently we sort
@@ -56,6 +57,15 @@ const { actions, reducer } = createSlice({
       deleteItemsByIds(state, action.payload);
     },
 
+    updateAgesOfUAVs(state, action) {
+      for (const [uavId, age] of Object.entries(action.payload)) {
+        const uav = uavId ? state.byId[uavId] : undefined;
+        if (uav) {
+          uav.age = age;
+        }
+      }
+    },
+
     updateUAVs(state, action) {
       for (const uav of Object.values(action.payload)) {
         replaceItemOrAddSorted(state, uav);
@@ -64,6 +74,12 @@ const { actions, reducer } = createSlice({
   }
 });
 
-export const { addUAVs, clearUAVList, removeUAVs, updateUAVs } = actions;
+export const {
+  addUAVs,
+  clearUAVList,
+  removeUAVs,
+  updateAgesOfUAVs,
+  updateUAVs
+} = actions;
 
 export default reducer;

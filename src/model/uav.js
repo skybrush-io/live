@@ -7,6 +7,16 @@ import isEqual from 'lodash-es/isEqual';
 import isNil from 'lodash-es/isNil';
 
 /**
+ * Age constants for a UAV. Used in the Redux store to mark UAVs for which we
+ * have not received a status update for a while.
+ */
+export const UAVAge = {
+  ACTIVE: 'active',
+  INACTIVE: 'inactive',
+  GONE: 'gone'
+};
+
+/**
  * Representation of a single UAV.
  */
 export default class UAV {
