@@ -64,18 +64,24 @@ async function createBundle(configName) {
 
 async function copyIcons() {
   await copy(
-    path.resolve(projectRoot, 'assets', 'icons', 'mac', 'flockwave.icns'),
+    path.resolve(projectRoot, 'assets', 'icons', 'mac', 'skybrush.icns'),
     path.resolve(buildDir, 'icon.icns')
   );
   await copy(
-    path.resolve(projectRoot, 'assets', 'icons', 'win', 'flockwave.ico'),
+    path.resolve(projectRoot, 'assets', 'icons', 'win', 'skybrush.ico'),
     path.resolve(buildDir, 'icon.ico')
   );
 }
 
 async function invokeElectronBuilder(appConfig) {
-  await execa('electron-builder', ['-mwl'], {
-    cwd: projectRoot
+  await execa('electron-builder', ['-mw'], {
+    cwd: projectRoot,
+    env: {
+      // next line is needed because react-final-form depends on ts-essentials
+      // (instead of dev-depending on it), which would need typescript as a
+      // peer dependency, and electron-builder chokes on it
+      ELECTRON_BUILDER_ALLOW_UNRESOLVED_DEPENDENCIES: "true"
+    }
   });
 }
 

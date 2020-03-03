@@ -3,12 +3,21 @@ _Android Asset Studio_:
 
 https://romannurik.github.io/AndroidAssetStudio/icons-launcher.html
 
-Background color: #0078b2 ("CollMot blue")
-Font: Allura
-Padding: 0%
+Background color: #007bff ("Skybrush blue", probably from the Bootstrap
+palette)
+Clipart: brush
+Font (if we need): Allura
+Padding (if we need text): 0%
 
-The downloaded hi-res web icon was then converted into .ico and .icns
-formats with the following tool:
+Take the 512px version, scale it up to 1024px and add rounded corners in
+GIMP with a corner radius of 180px. Then upload the image to the following
+URL to get it converted to .icns format:
 
-https://iconverticons.com/online/
+https://cloudconvert.com/
+
+Also add rounded corners to the 512px version with a corner radius of 90px,
+and upload this icon to the following URL to get it converted to .ico format
+for Windows:
+
+https://icoconvert.com/
 
