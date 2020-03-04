@@ -8,7 +8,7 @@ import { Circle, RegularShape, Style, Text } from 'ol/style';
 
 import { Feature, geom, layer as olLayer, source } from '@collmot/ol-react';
 
-import CheckBox from '@material-ui/core/CheckBox';
+import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormGroup from '@material-ui/core/FormGroup';
 
@@ -56,7 +56,7 @@ const HomePositionsLayerSettingsPresentation = ({
     <FormGroup>
       <FormControlLabel
         control={
-          <CheckBox
+          <Checkbox
             checked={showOrigin}
             value="showOrigin"
             onChange={handleChange('showOrigin')}
@@ -66,7 +66,7 @@ const HomePositionsLayerSettingsPresentation = ({
       />
       <FormControlLabel
         control={
-          <CheckBox
+          <Checkbox
             checked={showHomePositions}
             value="showHomePositions"
             onChange={handleChange('showHomePositions')}
@@ -76,7 +76,7 @@ const HomePositionsLayerSettingsPresentation = ({
       />
       <FormControlLabel
         control={
-          <CheckBox
+          <Checkbox
             checked={showLandingPositions}
             value="showLandingPositions"
             onChange={handleChange('showLandingPositions')}

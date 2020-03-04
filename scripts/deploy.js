@@ -61,7 +61,16 @@ async function createBundle(configName) {
   };
 
   await ensureDir(buildDir);
-  await pify(webpack)(webpackConfig);
+  const stats = await pify(webpack)(webpackConfig);
+
+  if (stats.hasErrors()) {
+    console.log(
+      stats.toString({
+        colors: true // Shows colors in the console
+      })
+    );
+    throw new Error('Error while compiling Webpack bundle');
+  }
 }
 
 async function copyIcons() {
@@ -92,6 +101,7 @@ async function invokeElectronBuilder(appConfig) {
     title: 'Linux and Windows'
   };
 
+  /*
   if (!isDocker()) {
     tasks.push({
       task: () => invokeElectronBuilderForMacOS(appConfig),
@@ -103,6 +113,7 @@ async function invokeElectronBuilder(appConfig) {
       }
     });
   }
+  */
 
   if (process.platform === 'darwin') {
     // On macOS, we need to run the Linux and Windows builds in Docker because
@@ -122,8 +133,40 @@ async function invokeElectronBuilder(appConfig) {
   throw new Error('Cannot build with electron-builder on this platform');
 }
 
-async function invokeElectronBuilderInDocker() {
-  throw new Error('Docker builds not supported yet!');
+async function invokeElectronBuilderInDocker(appConfig) {
+  const home = process.env.HOME;
+  const cacheRoot =
+    process.platform === 'darwin'
+      ? path.resolve(home, 'Library', 'Caches')
+      : path.resolve(home, '.cache');
+
+  const npmToken = 'Rg9NGmrAVDgE6OMz0TluQaHIQUVBDm2srtp/Kt75eCw=';
+
+  if (!home) {
+    throw new Error('No HOME variable in environment');
+  }
+
+  await execa('docker', [
+    'run',
+    '--rm',
+    '-i',
+    '--env',
+    'ELECTRON_CACHE=/root/.cache/electron',
+    '--env',
+    'ELECTRON_BUILDER_CACHE=/root/.cache/electron-builder',
+    '-v',
+    projectRoot + ':/project',
+    '-v',
+    appConfig.name + '-node-modules:/project/node_modules',
+    '-v',
+    cacheRoot + '/electron:/root/cache/.electron',
+    '-v',
+    cacheRoot + '/electron-builder:/root/cache/.electron-builder',
+    'electronuserland/builder:wine',
+    '/bin/bash',
+    '-c',
+    `echo '//npm.collmot.com/:_authToken="${npmToken}"' >~/.npmrc && npm i && npm run dist`
+  ]);
 }
 
 async function invokeElectronBuilderForMacOS() {

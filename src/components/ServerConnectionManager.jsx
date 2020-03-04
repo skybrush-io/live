@@ -6,8 +6,9 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
-import ReactSocket from 'react-socket';
 import { parse } from 'shell-quote';
+
+import ReactSocket from '@collmot/react-socket';
 
 import { clearConnectionList } from '~/actions/connections';
 import { clearClockList } from '~/features/clocks/slice';

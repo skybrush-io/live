@@ -1,13 +1,13 @@
 {
   "presets": [
-		["@babel/env", {
-			"targets": {
-				"browsers": ["last 2 versions"],
-				"node": "current"
-			}
-		}],
-		"@babel/react"
-	],
+    ["@babel/preset-env", {
+      "targets": {
+        "browsers": ["last 2 versions"],
+        "node": "current"
+      }
+    }],
+    "@babel/preset-react"
+  ],
   "plugins": [
     ["@babel/plugin-proposal-decorators", { legacy: true }],
     ["@babel/plugin-proposal-class-properties", { loose: true }]
