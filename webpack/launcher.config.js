@@ -1,6 +1,8 @@
 const merge = require('webpack-merge');
 const baseConfig = require('./base.config.js');
 
+const plugins = [];
+
 module.exports = merge.smart(baseConfig, {
   entry: ['@babel/polyfill', './launcher.js'],
   output: {
@@ -12,7 +14,7 @@ module.exports = merge.smart(baseConfig, {
     __filename: false
   },
 
-  plugins: [],
+  plugins,
 
   // Prevent warnings arising from the usage of require() in yargs
   stats: { warnings: false },

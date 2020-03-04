@@ -150,16 +150,14 @@ export const getDistancesFromHome = state => {
  * positions.
  */
 export const createSelectorToGetUAVIdsTooFarFromHome = threshold =>
-  createSelector(
-    getDistancesFromHome,
-    distances =>
-      Object.entries(distances).reduce((acc, [uavId, distance]) => {
-        if (distance > threshold) {
-          acc.push(uavId);
-        }
+  createSelector(getDistancesFromHome, distances =>
+    Object.entries(distances).reduce((acc, [uavId, distance]) => {
+      if (distance > threshold) {
+        acc.push(uavId);
+      }
 
-        return acc;
-      }, [])
+      return acc;
+    }, [])
   );
 
 /**
@@ -226,16 +224,14 @@ export const getDeviationsFromTakeoffHeadings = state => {
  * positions.
  */
 export const createSelectorToGetMisalignedUAVIds = threshold =>
-  createSelector(
-    getDeviationsFromTakeoffHeadings,
-    deviations =>
-      Object.entries(deviations).reduce((acc, [uavId, deviation]) => {
-        if (Math.abs(deviation) > threshold) {
-          acc.push(uavId);
-        }
+  createSelector(getDeviationsFromTakeoffHeadings, deviations =>
+    Object.entries(deviations).reduce((acc, [uavId, deviation]) => {
+      if (Math.abs(deviation) > threshold) {
+        acc.push(uavId);
+      }
 
-        return acc;
-      }, [])
+      return acc;
+    }, [])
   );
 
 /**

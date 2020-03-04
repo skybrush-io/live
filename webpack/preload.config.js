@@ -1,8 +1,10 @@
 const merge = require('webpack-merge');
 const baseConfig = require('./base.config.js');
 
+const plugins = [];
+
 module.exports = merge.smart(baseConfig, {
-  entry: './src/desktop/preload/index.js',
+  entry: ['@babel/polyfill', './src/desktop/preload/index.js'],
   output: {
     filename: 'preload.bundle.js'
   },
@@ -12,7 +14,7 @@ module.exports = merge.smart(baseConfig, {
     __filename: false
   },
 
-  plugins: [],
+  plugins,
 
   target: 'electron-renderer'
 });

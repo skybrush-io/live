@@ -1,9 +1,8 @@
 const { spawn } = require('child_process');
 const path = require('path');
-const pify = require('pify');
 const pDefer = require('p-defer');
 const pTimeout = require('p-timeout');
-const which = pify(require('which'));
+const which = require('which');
 
 const makeEventProxy = require('../event-proxy');
 const getApplicationFolder = require('./app-folder');
@@ -58,7 +57,7 @@ function getPathsRelatedToAppLocation() {
       // This is an .app bundle so let's search the Resources folder within
       // the bundle as well as the folder containing the app bundle itself
       folders.push(path.resolve(path.dirname(appFolder), 'Resources'));
-      folders.push(path.dirname(appFolder.slice(0, appFolder.length - 15)));
+      folders.push(path.dirname(appFolder.slice(0, -15)));
     } else {
       // Probably not an .app bundle so let's just assume that the server
       // might be in the same folder
@@ -137,22 +136,29 @@ const launch = async opts => {
  * @return {Promise<string>}  a promise that resolves to the full path of the
  *         server executable if found and `null` if it is not found
  */
-const search = paths =>
-  which('flockwaved', {
+const search = async paths => {
+  // Do _not_ use the async version of which here. It does not have a nothrow
+  // option, and when it throws an exception, it will be caught by
+  // electron-unhandled, which will throw a dialog box in the user's face in
+  // production mode even though we nicely handle the exception later.
+
+  const result = which.sync('flockwaved', {
+    nothrow: true,
     path: [
       ...paths,
       ...pathsRelatedToAppLocation,
       ...process.env.PATH.split(path.delimiter)
     ].join(path.delimiter)
-  }).then(result => {
-    localServerPath = result;
-    if (localServerPathDeferred) {
-      localServerPathDeferred.resolve(result);
-      localServerPathDeferred = undefined;
-    }
-
-    return result;
   });
+
+  localServerPath = result;
+  if (localServerPathDeferred) {
+    localServerPathDeferred.resolve(result);
+    localServerPathDeferred = undefined;
+  }
+
+  return result;
+};
 
 /**
  * Terminate the local server instance that the main process is currently

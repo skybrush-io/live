@@ -3,11 +3,12 @@
  * to a given remote location using rsync
  */
 
-const path = require('path');
 const execa = require('execa');
 const { copy, emptyDir, ensureDir, readJson } = require('fs-extra');
+const isDocker = require('is-docker');
 const Listr = require('listr');
 const ora = require('ora');
+const path = require('path');
 const pify = require('pify');
 const webpack = require('webpack');
 
@@ -43,6 +44,7 @@ async function cleanDirs() {
 
 async function createBundle(configName) {
   process.env.DEPLOYMENT = '1';
+  process.env.NODE_ENV = 'production';
 
   const webpackConfig = require(path.resolve(
     projectRoot,
@@ -73,16 +75,63 @@ async function copyIcons() {
   );
 }
 
+const electronBuilderSpawnOptions = {
+  cwd: projectRoot,
+  env: {
+    // next line is needed because react-final-form depends on ts-essentials
+    // (instead of dev-depending on it), which would need typescript as a
+    // peer dependency, and electron-builder chokes on it
+    ELECTRON_BUILDER_ALLOW_UNRESOLVED_DEPENDENCIES: 'true'
+  }
+};
+
 async function invokeElectronBuilder(appConfig) {
-  await execa('electron-builder', ['-mw'], {
-    cwd: projectRoot,
-    env: {
-      // next line is needed because react-final-form depends on ts-essentials
-      // (instead of dev-depending on it), which would need typescript as a
-      // peer dependency, and electron-builder chokes on it
-      ELECTRON_BUILDER_ALLOW_UNRESOLVED_DEPENDENCIES: "true"
-    }
-  });
+  const tasks = [];
+  const linuxAndWindowsTask = {
+    task: () => invokeElectronBuilderForLinuxAndWindows(appConfig),
+    title: 'Linux and Windows'
+  };
+
+  if (!isDocker()) {
+    tasks.push({
+      task: () => invokeElectronBuilderForMacOS(appConfig),
+      title: 'macOS',
+      skip: () => {
+        if (process.platform !== 'darwin') {
+          return 'macOS packages can only be built on macOS';
+        }
+      }
+    });
+  }
+
+  if (process.platform === 'darwin') {
+    // On macOS, we need to run the Linux and Windows builds in Docker because
+    // Wine is not supported on macOS Catalina at the moment
+    tasks.push({
+      task: () => invokeElectronBuilderInDocker(appConfig),
+      title: 'Linux and Windows (in Docker)'
+    });
+  } else {
+    tasks.push(linuxAndWindowsTask);
+  }
+
+  if (tasks.length > 0) {
+    return new Listr(tasks);
+  }
+
+  throw new Error('Cannot build with electron-builder on this platform');
+}
+
+async function invokeElectronBuilderInDocker() {
+  throw new Error('Docker builds not supported yet!');
+}
+
+async function invokeElectronBuilderForMacOS() {
+  await execa('electron-builder', ['-m'], electronBuilderSpawnOptions);
+}
+
+async function invokeElectronBuilderForLinuxAndWindows() {
+  await execa('electron-builder', ['-lw'], electronBuilderSpawnOptions);
 }
 
 /**

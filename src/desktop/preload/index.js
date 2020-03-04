@@ -10,7 +10,6 @@ const dns = require('dns');
 const pify = require('pify');
 
 const { ipcRenderer: ipc } = require('electron-better-ipc');
-const logger = require('electron-timber');
 const unhandled = require('electron-unhandled');
 const SSDPClient = require('node-ssdp-lite');
 const createStorageEngine = require('redux-persist-electron-storage');
@@ -18,7 +17,14 @@ const createStorageEngine = require('redux-persist-electron-storage');
 const localServer = require('./local-server');
 const setupIpc = require('./ipc');
 
-unhandled({ logger: e => logger.error(e.stack) });
+unhandled({
+  logger: e => console.error(e.stack),
+  // tippy.js seems to have a bug with the tooltips we use in the 3D view, and
+  // this sometimes throws unhandled exceptions. We don't want these to
+  // interfere with the user so we disable the unhandled exception dialog until
+  // the bug is fixed in tippy.js
+  showDialog: false
+});
 
 /**
  * Creates a new SSDP client object and registers the given function to be
@@ -66,7 +72,6 @@ window.isElectron = true;
 // any functionality that requires Node.js -- they are not allowed to use
 // Node.js modules themselves
 window.bridge = {
-  console: logger,
   createSSDPClient,
   createStateStore,
   dispatch: () => {

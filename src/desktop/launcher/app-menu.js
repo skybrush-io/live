@@ -11,7 +11,7 @@ const dispatch = require('./dispatcher');
 const helpSubmenu = [
   openUrlMenuItem({
     label: 'Website',
-    url: 'https://collmot.com'
+    url: 'https://skybrush.io'
   })
 ];
 

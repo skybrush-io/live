@@ -4,7 +4,7 @@ const url = require('url');
 const path = require('path');
 const windowStateKeeper = require('electron-window-state');
 
-const { willUseWebpack } = require('./utils');
+const { willUseWebpackDevServer } = require('./utils');
 
 // Keep a global reference to the main window to prevent the garbage
 // collector from destroying it
@@ -15,7 +15,7 @@ let mainWindow;
 let mainWindowState;
 
 function getURLToLoad() {
-  if (!willUseWebpack) {
+  if (!willUseWebpackDevServer) {
     let index = path.join(__dirname, 'index.html');
     if (!fs.existsSync(index)) {
       index = path.join(__dirname, '..', 'index.html');
@@ -56,25 +56,27 @@ const createMainWindow = (app, opts) => {
     });
   }
 
+  const preloadScriptPath = path.join(
+    __dirname,
+    willUseWebpackDevServer ? '../preload/index.js' : 'preload.bundle.js'
+  );
+
   const { x, y, width, height } = mainWindowState;
   mainWindow = new BrowserWindow({
     title: app.name,
     show: false,
+    backgroundColor: '#fff', // for nicer font antialiasing
     x,
     y,
     width,
     height,
-    icon: path.join(__dirname, 'assets/icons/png/64x64.png'),
     webPreferences: {
       // It would be nice to have contextIsolation: true, but I don't see
       // how we could inject window.bridge into the main window if the
       // two contexts are isolated
       contextIsolation: false,
       nodeIntegration: false,
-      preload: path.join(
-        __dirname,
-        willUseWebpack ? '../preload/index.js' : 'preload.bundle.js'
-      )
+      preload: preloadScriptPath
     }
   });
   mainWindowState.manage(mainWindow);

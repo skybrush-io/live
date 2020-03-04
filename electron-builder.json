@@ -8,8 +8,11 @@
     "build/bundle.js",
     "build/launcher.bundle.js",
     "build/preload.bundle.js",
-    "build/*.woff",
-    "build/*.woff2",
+    "bulld/preload.js",
+    {
+      "from": "build",
+      "filter": ["*.png", "*.ttf", "*.woff", "*.woff2"]
+    },
     "!node_modules/**/*"
   ],
 

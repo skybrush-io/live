@@ -45,12 +45,8 @@ function* localServerExecutableDiscoverySaga(search) {
       const result = yield all([
         call(async () => {
           try {
-            return [await search(searchPath), undefined];
+            return [(await search(searchPath)) || '', undefined];
           } catch (error) {
-            if (error.code === 'ENOENT') {
-              return ['', undefined];
-            }
-
             return [undefined, String(error)];
           }
         }),
