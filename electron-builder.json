@@ -3,17 +3,21 @@
   "productName": "Skybrush Live",
 
   "files": [
-    "index.html",
-    "assets/**/*",
-    "build/bundle.js",
-    "build/launcher.bundle.js",
-    "build/preload.bundle.js",
-    "bulld/preload.js",
+    {
+      "filter": [
+        "index.html",
+        "assets/**/*",
+        "build/bundle.js",
+        "build/launcher.bundle.js",
+        "build/preload.bundle.js",
+        "bulld/preload.js",
+        "!node_modules"
+      ]
+    },
     {
       "from": "build",
       "filter": ["*.png", "*.ttf", "*.woff", "*.woff2"]
-    },
-    "!node_modules/**/*"
+    }
   ],
 
   "linux": {
