@@ -1,4 +1,5 @@
 import { Fill, Icon, Stroke, Style, Text } from 'ol/style';
+import styleFunction from 'ol-mapbox-style/dist/stylefunction';
 
 /**
  * Creates a style function for the mapbox-streets-v6 vector tile data set.
@@ -416,3 +417,26 @@ function createMapboxStreetsV6Style() {
 }
 
 export const streetsV6Style = createMapboxStreetsV6Style();
+
+// ol-mapbox-style does this, but it needs a layer that it can work on.
+// We provide a fake layer here.
+const fakeLayer = {
+  changed() {},
+  set() {},
+  setStyle() {}
+};
+
+/**
+ * Creates a Mapbox style function from its JSON representation.
+ */
+export function createMapboxStyleFromJSON(style, source) {
+  return styleFunction(fakeLayer, style, source);
+}
+
+/*
+const maptilerBasicStyleData = require('~/../assets/map-styles/maptiler-basic.json');
+export const maptilerBasicStyle = createMapboxStyleFromJSON(
+  maptilerBasicStyleData,
+  'openmaptiles'
+);
+*/

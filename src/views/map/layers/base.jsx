@@ -72,6 +72,19 @@ const LayerType = ({ children, type, zIndex }) => {
         </olLayer.VectorTile>
       );
 
+    /*
+    case Source.MAPTILER.BASIC:
+      return (
+        <olLayer.VectorTile
+          declutter
+          style={maptilerBasicStyle}
+          zIndex={zIndex}
+        >
+          {children}
+        </olLayer.VectorTile>
+      );
+    */
+
     default:
       return <olLayer.Tile zIndex={zIndex}>{children}</olLayer.Tile>;
   }
@@ -91,6 +104,16 @@ const createMapTilerSource = (name, tileSize = 256) => (
   />
 );
 
+/*
+const createMapTilerVectorSource = () => (
+  <source.VectorTile
+    crossOrigin="anonymous"
+    format={mvtFormat}
+    url={`https://api.maptiler.com/tiles/v3/{z}/{x}/{y}.pbf?key=${APIKeys.MAPTILER}`}
+  />
+);
+*/
+
 const LayerSource = ({ type }) => {
   const attributions = attributionsForSource(type);
 
@@ -108,7 +131,6 @@ const LayerSource = ({ type }) => {
       return (
         <source.XYZ
           attributions={attributions}
-          attributionsCollapsible={false}
           tileSize={512}
           url={`https://api.mapbox.com/v4/mapbox.satellite/{z}/{x}/{y}@2x.jpg90?access_token=${APIKeys.MAPBOX}`}
         />
@@ -149,7 +171,6 @@ const LayerSource = ({ type }) => {
       return (
         <source.VectorTile
           attributions={attributions}
-          attributionsCollapsible={false}
           format={mvtFormat}
           maxZoom={16}
           url={`https://tile.nextzen.org/tilezen/vector/v1/512/all/{z}/{x}/{y}.mvt?api_key=${APIKeys.NEXTZEN}`}
@@ -162,7 +183,7 @@ const LayerSource = ({ type }) => {
     case Source.STAMEN.TERRAIN:
       return (
         <source.XYZ
-          attributionsCollapsible={false}
+          attributions={attributions}
           url="https://stamen-tiles-{a-d}.a.ssl.fastly.net/terrain/{z}/{x}/{y}.jpg"
         />
       );
@@ -170,7 +191,7 @@ const LayerSource = ({ type }) => {
     case Source.STAMEN.TONER:
       return (
         <source.XYZ
-          attributionsCollapsible={false}
+          attributions={attributions}
           url="https://stamen-tiles-{a-d}.a.ssl.fastly.net/toner/{z}/{x}/{y}.png"
         />
       );
@@ -178,7 +199,7 @@ const LayerSource = ({ type }) => {
     case Source.STAMEN.WATERCOLOR:
       return (
         <source.XYZ
-          attributionsCollapsible={false}
+          attributions={attributions}
           url="https://stamen-tiles-{a-d}.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.jpg"
         />
       );
