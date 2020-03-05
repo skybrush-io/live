@@ -1,12 +1,12 @@
 import { combineReducers } from 'redux';
 
-import connectionsReducer from './connections';
 import dialogsReducer from './dialogs';
 import featuresReducer from './features';
 import mapReducer from './map';
 import messagesReducer from './messages';
 
 import clocksReducer from '~/features/clocks/slice';
+import connectionsReducer from '~/features/connections/slice';
 import datasetsReducer from '~/features/datasets/slice';
 import docksReducer from '~/features/docks/slice';
 import lcdClockReducer from '~/features/lcd-clock/slice';

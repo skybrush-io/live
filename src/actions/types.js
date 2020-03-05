@@ -2,11 +2,6 @@
  * @file Central repository of action type constants used in the app.
  */
 
-// Connection-related actions
-export const CLEAR_CONNECTION_LIST = 'CLEAR_CONNECTION_LIST';
-export const SET_CONNECTION_STATE = 'SET_CONNECTION_STATE';
-export const SET_CONNECTION_STATE_MULTIPLE = 'SET_CONNECTION_STATE_MULTIPLE';
-
 // Connection-related actions for the server itself
 export const DISCONNECT_FROM_SERVER = 'DISCONNECT_FROM_SERVER';
 

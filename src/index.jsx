@@ -25,7 +25,7 @@ const momentDurationFormatSetup = require('moment-duration-format');
 // Configure TimeAgo
 TimeAgo.addLocale(en);
 
-// Spin up the root saga after the state has been restored
+// Spin up the root saga after the state has been restored.
 waitUntilStateRestored().then(() => {
   sagaMiddleware.run(rootSaga);
 });

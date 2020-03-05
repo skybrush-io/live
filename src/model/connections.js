@@ -6,7 +6,7 @@ import isUndefined from 'lodash-es/isUndefined';
 import mapValues from 'lodash-es/mapValues';
 import omitBy from 'lodash-es/omitBy';
 
-import { setConnectionStateMultiple } from '~/actions/connections';
+import { updateConnections } from '~/features/connections/slice';
 
 /**
  * Enum containing constants for the various connection states.
@@ -41,5 +41,5 @@ export function handleConnectionInformationMessage(body, dispatch) {
       isUndefined
     )
   );
-  dispatch(setConnectionStateMultiple(states));
+  dispatch(updateConnections(states));
 }

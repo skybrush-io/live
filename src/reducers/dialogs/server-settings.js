@@ -33,8 +33,7 @@ const reducer = handleActions(
   {
     DISCONNECT_FROM_SERVER: state => u({ active: false }, state),
 
-    SHOW_SERVER_SETTINGS_DIALOG: (state, action) =>
-      u({ dialogVisible: true }, state),
+    SHOW_SERVER_SETTINGS_DIALOG: state => u({ dialogVisible: true }, state),
 
     CLOSE_SERVER_SETTINGS_DIALOG: (state, action) =>
       u({ ...action.payload, dialogVisible: false }, state),
@@ -42,7 +41,7 @@ const reducer = handleActions(
     SET_SERVER_SETTINGS_DIALOG_TAB: (state, action) =>
       u({ selectedTab: action.payload }, state),
 
-    UPDATE_SERVER_SETTINGS: (state, action) => u(u(action.payload, state))
+    UPDATE_SERVER_SETTINGS: (state, action) => u(action.payload, state)
   },
   defaultState
 );

@@ -10,8 +10,8 @@ import { parse } from 'shell-quote';
 
 import ReactSocket from '@collmot/react-socket';
 
-import { clearConnectionList } from '~/actions/connections';
 import { clearClockList } from '~/features/clocks/slice';
+import { clearConnectionList } from '~/features/connections/slice';
 import { clearDockList } from '~/features/docks/slice';
 import { shouldManageLocalServer } from '~/features/local-server/selectors';
 import {
