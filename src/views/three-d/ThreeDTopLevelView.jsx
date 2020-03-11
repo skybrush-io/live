@@ -51,7 +51,7 @@ const useStyles = makeStyles(
       top: 0
     }
   }),
-  { name: 'UAVList' }
+  { name: 'ThreeDTopLevelView' }
 );
 
 const ThreeDTopLevelView = ({
