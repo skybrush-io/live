@@ -1,5 +1,5 @@
 import React from 'react';
-import Tippy from '@tippy.js/react';
+import Tippy from '@tippyjs/react';
 
 import { useTheme } from '@material-ui/core/styles';
 
