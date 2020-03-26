@@ -10,6 +10,9 @@ const path = require('path');
 const webpack = require('webpack');
 const Dotenv = require('dotenv-webpack');
 
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
+
 const { projectRoot } = require('./helpers');
 
 const enableSourceMap = process.env.NODE_ENV !== 'production';
@@ -42,7 +45,10 @@ module.exports = {
     }),
 
     // Add environment variables from .env
-    new Dotenv()
+    new Dotenv(),
+
+    // Clean build folder before building
+    new CleanWebpackPlugin()
   ],
   resolve: {
     alias: {
@@ -80,11 +86,28 @@ module.exports = {
         include: path.join(projectRoot, 'assets')
       },
       {
-        test: /\.(woff|woff2|eot|ttf|svg)$/,
+        test: /\.(woff|woff2|eot|ttf|svg|mp3|wav|ogg)$/,
         use: [{ loader: 'file-loader' }]
       }
     ],
     noParse: [/dist\/ol.*\.js/]
+  },
+
+  optimization: {
+    minimizer: [
+      new TerserPlugin({
+        /* Extract license comments to a separate file */
+        extractComments: /^@preserve|license|CC-/i,
+
+        /* Drop console.log() calls in production */
+        terserOptions: {
+          compress: {
+            // eslint-disable-next-line camelcase
+            drop_console: true
+          }
+        }
+      })
+    ]
   },
 
   /* No need for bundle size warnings */
