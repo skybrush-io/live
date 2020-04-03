@@ -97,7 +97,7 @@ module.exports = {
     minimizer: [
       new TerserPlugin({
         /* Extract license comments to a separate file */
-        extractComments: /^@preserve|license|CC-/i,
+        extractComments: /^@preserve|license|cc-/i,
 
         /* Drop console.log() calls in production */
         terserOptions: {
