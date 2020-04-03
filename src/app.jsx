@@ -89,7 +89,7 @@ const App = () => (
     <dialogs.SavedLocationEditorDialog />
     <dialogs.ServerSettingsDialog />
 
-    <ToastProvider placement="bottom-center">
+    <ToastProvider placement="top-center">
       <ToastNotificationManager />
     </ToastProvider>
   </PersistGate>

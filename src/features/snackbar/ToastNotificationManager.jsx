@@ -30,11 +30,12 @@ const ToastNotificationManager = ({
 }) => {
   const { addToast } = useToasts();
   useEffect(() => {
-    console.log(semantics);
-    addToast(message, {
-      appearance: semanticsToAppearance[semantics] || 'info',
-      autoDismiss: !permanent
-    });
+    if (message) {
+      addToast(message, {
+        appearance: semanticsToAppearance[semantics] || 'info',
+        autoDismiss: !permanent
+      });
+    }
   }, [addToast, message, messageId, semantics, permanent]);
   return null;
 };
