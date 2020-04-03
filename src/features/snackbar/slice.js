@@ -13,16 +13,11 @@ const { actions, reducer } = createSlice({
   initialState: {
     messageId: 0,
     message: '',
-    open: false,
     permanent: false,
     semantics: MessageSemantics.DEFAULT
   },
 
   reducers: {
-    dismissSnackbar(state) {
-      state.open = false;
-    },
-
     showSnackbarMessage(state, action) {
       let semantics;
       let message;
@@ -40,7 +35,6 @@ const { actions, reducer } = createSlice({
 
       state.messageId += 1;
       state.message = message;
-      state.open = true;
       state.permanent = permanent;
       state.semantics = semantics;
     },
@@ -52,6 +46,6 @@ const { actions, reducer } = createSlice({
   }
 });
 
-export const { dismissSnackbar, showSnackbarMessage } = actions;
+export const { showSnackbarMessage } = actions;
 
 export default reducer;

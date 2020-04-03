@@ -2,6 +2,7 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import React from 'react';
 import { WorkbenchView } from 'react-flexible-workbench';
 import { Provider as StoreProvider } from 'react-redux';
+import { ToastProvider } from 'react-toast-notifications';
 import compose from 'recompose/compose';
 import setDisplayName from 'recompose/setDisplayName';
 import toClass from 'recompose/toClass';
@@ -15,7 +16,7 @@ import ServerConnectionManager from './components/ServerConnectionManager';
 import SplashScreen from './components/SplashScreen';
 
 import Sidebar from './features/sidebar/Sidebar';
-import GlobalSnackbar from './features/snackbar/GlobalSnackbar';
+import ToastNotificationManager from './features/snackbar/ToastNotificationManager';
 
 import flock, { Flock } from './flock';
 import { withErrorBoundary, wrapWith } from './hoc';
@@ -56,7 +57,7 @@ const restoreWorkbench = () => {
   }
 };
 
-const Application = () => (
+const App = () => (
   <PersistGate
     persistor={persistor}
     loading={<SplashScreen />}
@@ -88,7 +89,9 @@ const Application = () => (
     <dialogs.SavedLocationEditorDialog />
     <dialogs.ServerSettingsDialog />
 
-    <GlobalSnackbar />
+    <ToastProvider placement="bottom-center">
+      <ToastNotificationManager />
+    </ToastProvider>
   </PersistGate>
 );
 
@@ -106,4 +109,4 @@ const enhancer = compose(
 );
 
 workbench.hoc = enhancer;
-export default enhancer(Application);
+export default enhancer(App);
