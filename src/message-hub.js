@@ -9,6 +9,9 @@ import MessageHub from './flockwave/messages';
 import { handleClockInformationMessage } from './model/clocks';
 import { handleConnectionInformationMessage } from './model/connections';
 import { handleObjectDeletionMessage } from './model/objects';
+
+import { showSnackbarMessage } from './features/snackbar/slice';
+
 import flock from './flock';
 import store from './store';
 
@@ -29,6 +32,17 @@ messageHub.registerNotificationHandlers({
   'CONN-INF': message =>
     handleConnectionInformationMessage(message.body, dispatch),
   'OBJ-DEL': message => handleObjectDeletionMessage(message.body, dispatch),
+  'SYS-CLOSE': message => {
+    console.log(message);
+    if (message.body && message.body.reason) {
+      dispatch(
+        showSnackbarMessage({
+          message: message.body.reason,
+          semantics: 'error'
+        })
+      );
+    }
+  },
   'UAV-INF': message =>
     flock.handleUAVInformationMessage(message.body, dispatch)
 });
