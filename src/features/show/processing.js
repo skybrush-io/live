@@ -3,7 +3,7 @@
  * format.
  */
 
-import RefParser from 'json-schema-ref-parser';
+import RefParser from '@apidevtools/json-schema-ref-parser';
 import JSZip from 'jszip';
 
 import { MAX_DRONE_COUNT } from './constants';
