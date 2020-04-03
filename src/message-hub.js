@@ -11,6 +11,7 @@ import { handleConnectionInformationMessage } from './model/connections';
 import { handleObjectDeletionMessage } from './model/objects';
 
 import { showSnackbarMessage } from './features/snackbar/slice';
+import { semanticsFromSeverity } from './features/snackbar/types';
 
 import flock from './flock';
 import store from './store';
@@ -33,12 +34,22 @@ messageHub.registerNotificationHandlers({
     handleConnectionInformationMessage(message.body, dispatch),
   'OBJ-DEL': message => handleObjectDeletionMessage(message.body, dispatch),
   'SYS-CLOSE': message => {
-    console.log(message);
     if (message.body && message.body.reason) {
       dispatch(
         showSnackbarMessage({
           message: message.body.reason,
           semantics: 'error'
+        })
+      );
+    }
+  },
+  'SYS-MSG': message => {
+    if (message.body && message.body.message) {
+      const { severity } = message.body;
+      dispatch(
+        showSnackbarMessage({
+          message: message.body.message,
+          semantics: semanticsFromSeverity(severity)
         })
       );
     }
