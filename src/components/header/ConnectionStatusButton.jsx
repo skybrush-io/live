@@ -11,7 +11,7 @@ import Tooltip from '~/components/Tooltip';
 import { isConnected } from '~/features/servers/selectors';
 
 const ConnectionStatusButtonPresentation = props => (
-  <Tooltip content={<ConnectionStatusMiniList />} enabled={!props.isDisabled}>
+  <Tooltip content={<ConnectionStatusMiniList />} disabled={props.isDisabled}>
     <GenericHeaderButton {...props}>
       <ConnectionStatusBadge />
       <SettingsEthernet />

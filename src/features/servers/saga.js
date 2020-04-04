@@ -138,8 +138,9 @@ function* enforceAuthenticationIfNeededSaga() {
       // We are connected; does the server need authentication?
       const requiresAuth = yield select(requiresAuthentication);
       if (requiresAuth) {
-        // Yes, it does. Show the authentication dialog if we are not
-        // authenticated and not authenticating yet.
+        // Yes, it does. Attempt to authenticate with a non-interactive method
+        // if we can, or show the authentication dialog -- but only if we are
+        // not authenticated and not authenticating yet.
         yield* ensureUserIsAuthenticated();
       }
     }
