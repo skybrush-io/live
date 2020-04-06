@@ -19,14 +19,17 @@ const enableSourceMap = process.env.NODE_ENV !== 'production';
 
 module.exports = {
   mode: 'development',
+
   output: {
-    path: path.join(projectRoot, 'build'),
-    publicPath: '/build/'
+    filename: '[name].bundle.js'
   },
+
   devtool: enableSourceMap ? 'cheap-module-source-map' : undefined,
+
   devServer: {
     hot: true
   },
+
   plugins: [
     new webpack.NoEmitOnErrorsPlugin(),
 
