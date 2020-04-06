@@ -4,24 +4,24 @@
 
   "files": [
     {
-      "filter": [
-        "index.html",
-        "assets/**/*",
-        "build/bundle.js",
-        "build/launcher.bundle.js",
-        "build/preload.bundle.js",
-        "bulld/preload.js",
-        "!node_modules"
-      ]
+      "filter": ["assets/**/*", "!node_modules"]
     },
     {
       "from": "build",
-      "filter": ["*.png", "*.ttf", "*.woff", "*.woff2"]
+      "filter": [
+        "*.bundle.js",
+        "index.html",
+        "*.png",
+        "*.ttf",
+        "*.woff",
+        "*.woff2"
+      ]
     }
   ],
 
   "linux": {
-    "category": "Utility"
+    "category": "Utility",
+    "target": "AppImage"
   },
 
   "mac": {

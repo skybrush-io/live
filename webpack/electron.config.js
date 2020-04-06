@@ -7,12 +7,14 @@ const WebpackShellPlugin = require('webpack-shell-plugin');
 const baseConfig = require('./base.config.js');
 const { projectRoot } = require('./helpers');
 
+const htmlWebPackPluginConfiguration = {
+  template: path.resolve(projectRoot, 'index.html'),
+  title: 'Skybrush Live'
+};
+
 const plugins = [
   // Create index.html on-the-fly
-  new HtmlWebpackPlugin({
-    template: path.resolve(projectRoot, 'index.html'),
-    title: 'Skybrush Live'
-  })
+  new HtmlWebpackPlugin(htmlWebPackPluginConfiguration)
 ];
 
 /* In dev mode, also run Electron and let it load the live bundle */

@@ -5,7 +5,6 @@
 
 const execa = require('execa');
 const { copy, emptyDir, ensureDir, readJson } = require('fs-extra');
-const isDocker = require('is-docker');
 const Listr = require('listr');
 const ora = require('ora');
 const path = require('path');
@@ -56,7 +55,9 @@ async function createBundle(configName) {
   webpackConfig.mode = options.production ? 'production' : 'development';
   webpackConfig.output = {
     filename:
-      configName === 'electron' ? 'bundle.js' : configName + '.bundle.js',
+      configName === 'electron'
+        ? '[name].bundle.js'
+        : configName + '.bundle.js',
     path: buildDir
   };
 
@@ -82,6 +83,10 @@ async function copyIcons() {
     path.resolve(projectRoot, 'assets', 'icons', 'win', 'skybrush.ico'),
     path.resolve(buildDir, 'icon.ico')
   );
+  await copy(
+    path.resolve(projectRoot, 'assets', 'icons', 'linux', 'skybrush.png'),
+    path.resolve(buildDir, 'icon.png')
+  );
 }
 
 const electronBuilderSpawnOptions = {
@@ -96,35 +101,26 @@ const electronBuilderSpawnOptions = {
 
 async function invokeElectronBuilder(appConfig) {
   const tasks = [];
-  const linuxAndWindowsTask = {
-    task: () => invokeElectronBuilderForLinuxAndWindows(appConfig),
-    title: 'Linux and Windows'
-  };
 
-  /*
-  if (!isDocker()) {
-    tasks.push({
-      task: () => invokeElectronBuilderForMacOS(appConfig),
-      title: 'macOS',
-      skip: () => {
-        if (process.platform !== 'darwin') {
-          return 'macOS packages can only be built on macOS';
-        }
+  tasks.push({
+    task: () => invokeElectronBuilderForMacOS(appConfig),
+    title: 'macOS',
+    skip: () => {
+      if (process.platform !== 'darwin') {
+        return 'macOS packages can only be built on macOS';
       }
-    });
-  }
-  */
+    }
+  });
 
-  if (process.platform === 'darwin') {
-    // On macOS, we need to run the Linux and Windows builds in Docker because
-    // Wine is not supported on macOS Catalina at the moment
-    tasks.push({
-      task: () => invokeElectronBuilderInDocker(appConfig),
-      title: 'Linux and Windows (in Docker)'
-    });
-  } else {
-    tasks.push(linuxAndWindowsTask);
-  }
+  tasks.push({
+    task: () => invokeElectronBuilderForWindows(appConfig),
+    title: 'Windows'
+  });
+
+  tasks.push({
+    task: () => invokeElectronBuilderForLinux(appConfig),
+    title: 'Linux'
+  });
 
   if (tasks.length > 0) {
     return new Listr(tasks);
@@ -133,48 +129,16 @@ async function invokeElectronBuilder(appConfig) {
   throw new Error('Cannot build with electron-builder on this platform');
 }
 
-async function invokeElectronBuilderInDocker(appConfig) {
-  const home = process.env.HOME;
-  const cacheRoot =
-    process.platform === 'darwin'
-      ? path.resolve(home, 'Library', 'Caches')
-      : path.resolve(home, '.cache');
-
-  const npmToken = 'Rg9NGmrAVDgE6OMz0TluQaHIQUVBDm2srtp/Kt75eCw=';
-
-  if (!home) {
-    throw new Error('No HOME variable in environment');
-  }
-
-  await execa('docker', [
-    'run',
-    '--rm',
-    '-i',
-    '--env',
-    'ELECTRON_CACHE=/root/.cache/electron',
-    '--env',
-    'ELECTRON_BUILDER_CACHE=/root/.cache/electron-builder',
-    '-v',
-    projectRoot + ':/project',
-    '-v',
-    appConfig.name + '-node-modules:/project/node_modules',
-    '-v',
-    cacheRoot + '/electron:/root/cache/.electron',
-    '-v',
-    cacheRoot + '/electron-builder:/root/cache/.electron-builder',
-    'electronuserland/builder:wine',
-    '/bin/bash',
-    '-c',
-    `echo '//npm.collmot.com/:_authToken="${npmToken}"' >~/.npmrc && npm i && npm run dist`
-  ]);
-}
-
 async function invokeElectronBuilderForMacOS() {
   await execa('electron-builder', ['-m'], electronBuilderSpawnOptions);
 }
 
-async function invokeElectronBuilderForLinuxAndWindows() {
-  await execa('electron-builder', ['-lw'], electronBuilderSpawnOptions);
+async function invokeElectronBuilderForLinux() {
+  await execa('electron-builder', ['-l'], electronBuilderSpawnOptions);
+}
+
+async function invokeElectronBuilderForWindows() {
+  await execa('electron-builder', ['-w'], electronBuilderSpawnOptions);
 }
 
 /**

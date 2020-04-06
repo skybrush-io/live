@@ -1,6 +1,7 @@
 // Webpack configuration for the output that is directly usable on
 // https://live.skybrush.io
 
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
 const merge = require('webpack-merge');
@@ -20,6 +21,9 @@ module.exports = merge.smart(baseConfig, {
   },
 
   plugins: [
+    // Clean build folder before building
+    new CleanWebpackPlugin(),
+
     // Create index.html on-the-fly
     new HtmlWebpackPlugin({
       template: path.resolve(projectRoot, 'index.html'),
