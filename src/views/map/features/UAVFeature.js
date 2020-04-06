@@ -7,6 +7,9 @@ import { Icon, Style, Text } from 'ol/style';
 
 import { toRadians } from '~/utils/math';
 
+const DroneImage = require('~/../assets/img/drone-x-black-32x32.png').default;
+const SelectionGlow = require('~/../assets/img/selection-glow.png').default;
+
 /**
  * Feature that represents an UAV on an OpenLayers map.
  */
@@ -108,8 +111,7 @@ export default class UAVFeature extends Feature {
       rotateWithView: true,
       rotation: this._headingToRotation(),
       snapToPixel: false,
-      // Path should not have a leading slash otherwise it won't work in Electron
-      src: `assets/img/drone.x.${this._color}.32x32.png`
+      src: DroneImage
     });
     this._iconImage = iconImage;
 
@@ -122,8 +124,7 @@ export default class UAVFeature extends Feature {
       rotateWithView: true,
       rotation: this._headingToRotation(),
       snapToPixel: false,
-      // Path should not have a leading slash otherwise it won't work in Electron
-      src: 'assets/img/selection-glow.png'
+      src: SelectionGlow
     });
     this._selectionImage = selectionImage;
 

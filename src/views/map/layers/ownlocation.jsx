@@ -10,6 +10,8 @@ import { Geolocation, layer, source } from '@collmot/ol-react';
 import { toRadians } from '~/utils/math';
 import makeLogger from '~/utils/logging';
 
+const LocationIcon = require('~/../assets/img/location-32x32.png').default;
+
 const logger = makeLogger('OwnLocationLayer');
 
 // === Settings for this particular layer type ===
@@ -32,8 +34,7 @@ class OwnLocationVectorSource extends React.Component {
       rotateWithView: true,
       rotation: 0,
       snapToPixel: false,
-      /* Path should not have a leading slash otherwise it won't work in Electron */
-      src: 'assets/img/location.32x32.png'
+      src: LocationIcon
     });
 
     this.locationFeature = new Feature();
