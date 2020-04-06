@@ -1,10 +1,12 @@
+#!/usr/bin/env node
+
 /*
  * Builds a production-ready version of the application and deploys it
  * to a given remote location using rsync
  */
 
 const execa = require('execa');
-const { copy, emptyDir, ensureDir, readJson } = require('fs-extra');
+const { copy, emptyDir, ensureDir, readJson, remove } = require('fs-extra');
 const Listr = require('listr');
 const ora = require('ora');
 const path = require('path');
@@ -141,6 +143,14 @@ async function invokeElectronBuilderForWindows() {
   await execa('electron-builder', ['-w'], electronBuilderSpawnOptions);
 }
 
+async function cleanup() {
+  await Promise.all(
+    ['linux-unpacked', 'mac', 'win-unpacked'].map(subdir =>
+      remove(path.resolve(outputDir, subdir))
+    )
+  );
+}
+
 /**
  * Main entry point of the deployment script.
  */
@@ -179,13 +189,21 @@ async function main() {
     {
       task: ctx => invokeElectronBuilder(ctx.appConfig),
       title: 'Building executables'
+    },
+    {
+      task: cleanup,
+      title: 'Cleaning up'
     }
   ]);
 
-  await tasks.run({ appConfig }).catch(error => {
+  try {
+    await tasks.run({ appConfig });
+    console.log('');
+    ora().info(`Installers are now built in ${outputDir}`);
+  } catch (error) {
     ora(error.message).fail();
     process.exit(1);
-  });
+  }
 }
 
 main();
