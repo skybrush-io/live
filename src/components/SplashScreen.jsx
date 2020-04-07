@@ -9,7 +9,7 @@ export default () => (
     icon={<img src={logo} width={96} height={96} alt="" />}
     title={
       <span>
-        skybrush <b style={{ fontWeight: 'bold' }}>live</b>
+        skybrush <b style={{ fontWeight: 400 }}>live</b>
       </span>
     }
   />
