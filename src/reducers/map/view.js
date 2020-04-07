@@ -24,7 +24,7 @@ import { normalizeAngle } from '~/utils/geography';
  * degree heading points towards the heading given in the `angle` property.
  */
 const defaultState = {
-  position: [19.061951, 47.47334], // Sensible default: ELTE court
+  position: [18.915125, 47.486305], // Sensible default: Farkashegy Airfield
   angle: '0',
   zoom: 17
 };
