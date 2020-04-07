@@ -15,7 +15,7 @@ module.exports = merge.smart(baseConfig, {
   },
 
   output: {
-    publicPath: '/_/',
+    publicPath: '_/',
     path: path.resolve(outputDir, '_')
   },
 
