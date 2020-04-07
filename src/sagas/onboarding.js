@@ -14,17 +14,44 @@ export default function* onboardingSaga() {
   );
 
   if (isNil(currentHostName)) {
-    let port = Number.parseInt(config.server.port, 10);
+    let { connectAutomatically, hostName, isSecure, port } = config.server;
 
-    if (isNaN(port)) {
-      port = 443;
+    // If the server is configured to connect automatically, infer a reasonable
+    // default for the hostname if it is not given. If the server does not
+    // connect automatically, we can leave the hostname empty.
+    if (connectAutomatically) {
+      const url = new URL(window.location.href);
+
+      if (!hostName) {
+        hostName = url.hostname;
+      }
+
+      if (isNil(port) || !port) {
+        if (url.port && url.port.length > 0) {
+          port = url.port;
+        } else if (url.protocol === 'http:') {
+          port = 80;
+        } else if (url.protocol === 'https:') {
+          port = 443;
+        } else {
+          port = 443;
+        }
+      }
+    }
+
+    // Parse the port into a number with some reasonable defaults
+    if (isNil(port)) {
+      port = Number.parseInt(config.server.port, 10);
+      if (isNaN(port)) {
+        port = 443;
+      }
     }
 
     const updates = {
-      active: Boolean(config.server.connectAutomatically),
-      hostName: config.server.hostName,
+      active: connectAutomatically,
+      hostName,
       port,
-      isSecure: !isNil(config.server.isSecure) || port === 443
+      isSecure: isSecure || port === 443
     };
 
     yield put(updateServerSettings(updates));
