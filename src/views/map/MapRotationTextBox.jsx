@@ -25,6 +25,17 @@ import { toDegrees, toRadians } from '~/utils/math';
  * @emits {mapReferenceRequestSignal} requests map reference
  */
 export default class MapRotationTextBox extends React.Component {
+  static propTypes = {
+    resetDuration: PropTypes.number,
+    fieldWidth: PropTypes.string,
+    style: PropTypes.object
+  };
+
+  state = {
+    isFocused: false,
+    rotation: 0
+  };
+
   /**
    * Constructor that sets initial state, binds context to functions,
    * adds signal event handler and requests map reference.
@@ -38,10 +49,6 @@ export default class MapRotationTextBox extends React.Component {
    */
   constructor(props) {
     super(props);
-    this.state = {
-      isFocused: false,
-      rotation: 0
-    };
 
     this._onMapReferenceReceived = this._onMapReferenceReceived.bind(this);
     this._updateRotationFromMapView = this._updateRotationFromMapView.bind(
@@ -65,7 +72,9 @@ export default class MapRotationTextBox extends React.Component {
           <RotateLeft />
         </IconButton>
         <TextField
+          size="small"
           style={{
+            padding: '8px 0',
             width: this.props.fieldWidth
           }}
           type="number"
@@ -100,8 +109,8 @@ export default class MapRotationTextBox extends React.Component {
     }
 
     // Listen also for changes in the view of the map
-    map.on('propertychange', e => {
-      if (e.key === 'view') {
+    map.on('propertychange', event => {
+      if (event.key === 'view') {
         map.getView().on('propertychange', this._updateRotationFromMapView);
       }
     });
@@ -110,12 +119,12 @@ export default class MapRotationTextBox extends React.Component {
   /**
    * Event handler that processes and updates the state from the map.
    *
-   * @param {ol.ObjectEvent} e the event fired from the OpenLayers View
+   * @param {ol.ObjectEvent} event the event fired from the OpenLayers View
    */
-  _updateRotationFromMapView(e) {
-    if (e.key === 'rotation') {
+  _updateRotationFromMapView(event) {
+    if (event.key === 'rotation') {
       this.setState({
-        rotation: toDegrees(-e.target.get('rotation'))
+        rotation: toDegrees(-event.target.get('rotation'))
       });
     }
   }
@@ -125,10 +134,10 @@ export default class MapRotationTextBox extends React.Component {
    * and normalizes it's value.
    */
   _onFocus() {
-    this.setState({
+    this.setState(state => ({
       isFocused: true,
-      rotation: normalizeAngle(this.state.rotation)
-    });
+      rotation: normalizeAngle(state.rotation)
+    }));
   }
 
   /**
@@ -143,34 +152,34 @@ export default class MapRotationTextBox extends React.Component {
   /**
    * Event handler that processes input from the TextField component.
    *
-   * @param {Event} e the event fired from the TextField React component
+   * @param {Event} event the event fired from the TextField React component
    */
-  _onChange(e) {
+  _onChange(event) {
     // Maybe this should be done in componentWill/DidUpdate, but it causes feedback loop
-    this.map.getView().setRotation(toRadians(-e.target.value));
+    this.map.getView().setRotation(toRadians(-event.target.value));
 
     this.setState({
-      rotation: e.target.value
+      rotation: event.target.value
     });
   }
 
   /**
    * Function to normalize the field's value when Enter is pressed.
    *
-   * @param {Event} e the event fired from the TextField React component
+   * @param {Event} event the event fired from the TextField React component
    */
-  _onKeyDown(e) {
-    if (e.key === 'Enter') {
-      e.target.blur();
+  _onKeyDown(event) {
+    if (event.key === 'Enter') {
+      event.target.blur();
     }
   }
 
   /**
    * Event handler that resets the heading of the map to north
    *
-   * @param {Event} e the event fired from the IconButton component
+   * @param {Event} event the event fired from the IconButton component
    */
-  _onButtonClick(e) {
+  _onButtonClick() {
     this.map.getView().animate({
       rotation: 0,
       duration: this.props.resetDuration,
@@ -178,9 +187,3 @@ export default class MapRotationTextBox extends React.Component {
     });
   }
 }
-
-MapRotationTextBox.propTypes = {
-  resetDuration: PropTypes.number,
-  fieldWidth: PropTypes.string,
-  style: PropTypes.object
-};

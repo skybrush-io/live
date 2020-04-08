@@ -93,7 +93,7 @@ const Sidebar = ({ isOpen, workbench }) => (
           component="clock-list"
         />
         <Module
-          id="lcd-clock"
+          id="lcdClock"
           icon={<Apps />}
           label="LCD clock"
           component="lcd-clock-panel"
