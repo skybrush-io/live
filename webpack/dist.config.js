@@ -19,6 +19,12 @@ module.exports = merge.smart(baseConfig, {
     path: path.resolve(outputDir, '_')
   },
 
+  resolve: {
+    alias: {
+      config: path.resolve(projectRoot, 'config', 'webapp-demo')
+    }
+  },
+
   plugins: [
     // Create index.html on-the-fly
     new HtmlWebpackPlugin({

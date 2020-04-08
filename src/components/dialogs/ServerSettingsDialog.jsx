@@ -3,6 +3,8 @@
  * edit it.
  */
 
+import config from 'config';
+
 import partial from 'lodash-es/partial';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -84,6 +86,9 @@ const secondaryTextForServerItem = item =>
     ? `${addressForServerItem(item)}${securityWarningForServerItem(item)}`
     : protocolForServerItem(item);
 
+const manualSetupAllowed =
+  config && config.server && !config.server.preventManualSetup;
+
 const ConnectionInProgressIndicator = props => (
   <Box
     alignItems="center"
@@ -129,12 +134,14 @@ const DetectedServersListPresentation = ({
         />
       </ListItem>
     ))}
-    <ListItem key="__manual" button onClick={partial(onItemSelected, null)}>
-      <ListItemIcon>
-        <EditIcon />
-      </ListItemIcon>
-      <ListItemText primary="Enter manually" />
-    </ListItem>
+    {manualSetupAllowed && (
+      <ListItem key="__manual" button onClick={partial(onItemSelected, null)}>
+        <ListItemIcon>
+          <EditIcon />
+        </ListItemIcon>
+        <ListItemText primary="Enter manually" />
+      </ListItem>
+    )}
   </List>
 );
 
@@ -238,7 +245,9 @@ class ServerSettingsDialogPresentation extends React.Component {
 
   _handleServerSelection = item => {
     if (item === null || item === undefined) {
-      this.props.onTabSelected(null, 'manual');
+      if (manualSetupAllowed) {
+        this.props.onTabSelected(null, 'manual');
+      }
     } else {
       this.props.onSubmit({
         ...item,
@@ -263,7 +272,7 @@ class ServerSettingsDialogPresentation extends React.Component {
     const content = [];
 
     actions.push(
-      <Fade in={isConnecting}>
+      <Fade key="__connectionIndicator" in={isConnecting}>
         <ConnectionInProgressIndicator />
       </Fade>
     );
@@ -289,19 +298,22 @@ class ServerSettingsDialogPresentation extends React.Component {
         break;
 
       case 'manual':
-        content.push(
-          <DialogContent key="contents">
-            <ServerSettingsForm
-              onSubmit={onSubmit}
-              onKeyPress={this._handleKeyPress}
-            />
-          </DialogContent>
-        );
-        actions.push(
-          <Button key="connect" color="primary" onClick={forceFormSubmission}>
-            Connect
-          </Button>
-        );
+        if (manualSetupAllowed) {
+          content.push(
+            <DialogContent key="contents">
+              <ServerSettingsForm
+                onSubmit={onSubmit}
+                onKeyPress={this._handleKeyPress}
+              />
+            </DialogContent>
+          );
+          actions.push(
+            <Button key="connect" color="primary" onClick={forceFormSubmission}>
+              Connect
+            </Button>
+          );
+        }
+
         break;
 
       default:
@@ -327,7 +339,7 @@ class ServerSettingsDialogPresentation extends React.Component {
       <Dialog fullWidth open={open} maxWidth="xs" onClose={onClose}>
         <DialogTabs value={selectedTab} onChange={onTabSelected}>
           <Tab value="auto" label="Autodetected" />
-          <Tab value="manual" label="Manual" />
+          {manualSetupAllowed && <Tab value="manual" label="Manual" />}
         </DialogTabs>
         <ServerDetectionManager />
         {content}
