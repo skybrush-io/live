@@ -5,20 +5,21 @@ import { errorToString } from '~/error-handling';
 import { createAsyncAction } from '~/utils/redux';
 
 /**
- * Action factory that creates an action that submits the data from the
- * authentication dialog and starts an authentication attempt.
+ * Action factory that creates an action that starts an authentication attempt.
  *
  * The action factory must be invoked with an object with three keys:
- * `messageHub, ``username` and `password`.
+ * `messageHub, ``method` and `data`, where `method` is the authentication
+ * method to use, `data` is the authentication data to submit, and
+ * `messageHub` is the message hub used to dispatch messages to the hserver.
  */
 export const authenticateToServer = createAsyncAction(
   'servers/authenticateToServer',
-  async ({ username, password, messageHub }) => {
+  async ({ method, data, messageHub }) => {
     try {
       const { body } = await messageHub.sendMessage({
         type: 'AUTH-REQ',
-        method: 'basic',
-        data: Base64.encode(`${username}:${password}`)
+        method,
+        data
       });
 
       if (body.type === 'AUTH-RESP') {
@@ -54,3 +55,22 @@ export const authenticateToServer = createAsyncAction(
     }
   }
 );
+
+/**
+ * Action factory that creates an action that submits the data from the
+ * authentication dialog and starts a basic authentication attempt.
+ *
+ * The action factory must be invoked with an object with three keys:
+ * `messageHub, ``username` and `password`.
+ */
+export function authenticateToServerWithBasicAuthentication({
+  username,
+  password,
+  messageHub
+}) {
+  return authenticateToServer({
+    method: 'basic',
+    data: Base64.encode(`${username}:${password}`),
+    messageHub
+  });
+}

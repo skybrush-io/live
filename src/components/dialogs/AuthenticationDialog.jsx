@@ -8,6 +8,7 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import { makeStyles } from '@material-ui/core/styles';
 
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -16,12 +17,29 @@ import { connect } from 'react-redux';
 
 import { closeAuthenticationDialog } from '~/actions/servers';
 import { PasswordField, TextField } from '~/components/forms';
-import { authenticateToServer } from '~/features/servers/actions';
-import messageHub from '~/message-hub';
+import { authenticateToServerWithBasicAuthentication } from '~/features/servers/actions';
 import {
   isAuthenticating,
   requiresAuthentication
 } from '~/features/servers/selectors';
+import messageHub from '~/message-hub';
+
+const useStyles = makeStyles(
+  theme => ({
+    root: {
+      marginBottom: 0,
+
+      '& .MuiDialogContent-root': {
+        paddingTop: 0
+      },
+
+      '& .MuiTextField-root': {
+        marginBottom: theme.spacing(1)
+      }
+    }
+  }),
+  { name: 'AuthenticationForm' }
+);
 
 /**
  * Presentation component for the authentication form.
@@ -33,37 +51,41 @@ const AuthenticationForm = ({
   isAuthenticating,
   onCancel,
   onSubmit
-}) => (
-  <Form initialValues={initialValues} onSubmit={onSubmit}>
-    {({ handleSubmit }) => (
-      <form onSubmit={handleSubmit}>
-        <DialogContent>
-          <Field
-            autoFocus
-            fullWidth
-            component={TextField}
-            name="username"
-            label="Username"
-            autoComplete="username"
-          />
-          <Field
-            fullWidth
-            component={PasswordField}
-            name="password"
-            label="Password"
-            autoComplete="current-password"
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button disabled={isAuthenticating} color="primary" type="submit">
-            {isAuthenticating ? 'Logging in...' : 'Log in'}
-          </Button>
-          <Button onClick={onCancel}>Cancel</Button>
-        </DialogActions>
-      </form>
-    )}
-  </Form>
-);
+}) => {
+  const classes = useStyles();
+
+  return (
+    <Form initialValues={initialValues} onSubmit={onSubmit}>
+      {({ handleSubmit }) => (
+        <form className={classes.root} onSubmit={handleSubmit}>
+          <DialogContent>
+            <Field
+              autoFocus
+              fullWidth
+              component={TextField}
+              name="username"
+              label="Username"
+              autoComplete="username"
+            />
+            <Field
+              fullWidth
+              component={PasswordField}
+              name="password"
+              label="Password"
+              autoComplete="current-password"
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button disabled={isAuthenticating} color="primary" type="submit">
+              {isAuthenticating ? 'Logging in…' : 'Log in'}
+            </Button>
+            <Button onClick={onCancel}>Cancel</Button>
+          </DialogActions>
+        </form>
+      )}
+    </Form>
+  );
+};
 
 AuthenticationForm.propTypes = {
   initialValues: PropTypes.object,
@@ -117,7 +139,7 @@ const AuthenticationDialog = connect(
 
     async onSubmit(data) {
       const response = await dispatch(
-        authenticateToServer({ ...data, messageHub })
+        authenticateToServerWithBasicAuthentication({ ...data, messageHub })
       );
       const success = response && response.value && response.value.result;
       if (success) {

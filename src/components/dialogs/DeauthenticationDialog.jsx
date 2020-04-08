@@ -17,6 +17,7 @@ import { batch, connect } from 'react-redux';
 import { closeDeauthenticationDialog } from '~/actions/servers';
 import { disconnectFromServer } from '~/actions/server-settings';
 import { getAuthenticatedUser } from '~/features/servers/selectors';
+import { clearAuthenticationToken } from '~/features/servers/slice';
 
 /**
  * Presentation component for the authentication dialog.
@@ -87,6 +88,7 @@ const DeauthenticationDialog = connect(
     onDisconnect() {
       batch(() => {
         dispatch(closeDeauthenticationDialog());
+        dispatch(clearAuthenticationToken());
         dispatch(disconnectFromServer());
       });
     }

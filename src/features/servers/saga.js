@@ -1,7 +1,17 @@
-import { all, call, delay, put, select, take } from 'redux-saga/effects';
+import {
+  all,
+  call,
+  delay,
+  put,
+  putResolve,
+  select,
+  take
+} from 'redux-saga/effects';
 
+import { authenticateToServer } from './actions';
 import {
   areServerAuthenticationSettingsValid,
+  getAuthenticationToken,
   isAuthenticated,
   isAuthenticating,
   isConnected,
@@ -112,13 +122,25 @@ function* ensureUserIsAuthenticated() {
       break;
     }
 
-    const shouldShowAuthDialog =
+    const shouldAttemptAuthenticationNow =
       !(yield select(isAuthenticated)) &&
       !(yield select(isAuthenticating)) &&
       !(yield select(isAuthenticationDialogOpen));
 
-    if (shouldShowAuthDialog) {
-      yield put(showAuthenticationDialog());
+    if (shouldAttemptAuthenticationNow) {
+      let unsupervisedAuthenticationSuccessful = false;
+
+      try {
+        unsupervisedAuthenticationSuccessful = yield call(
+          authenticateWithoutSupervision
+        );
+      } catch (error) {
+        console.error(error);
+      }
+
+      if (!unsupervisedAuthenticationSuccessful) {
+        yield put(showAuthenticationDialog());
+      }
     }
 
     yield delay(1000);
@@ -152,6 +174,33 @@ function* enforceAuthenticationIfNeededSaga() {
       updateCurrentServerAuthenticationSettings.type
     ]);
   }
+}
+
+/**
+ * Attempts to authenticate the user in an unsupervised manner. This function
+ * performs authentication if the user is in possession of a JWT token that the
+ * server can digest.
+ */
+function* authenticateWithoutSupervision() {
+  const token = yield select(getAuthenticationToken);
+
+  if (token) {
+    const { value } = yield putResolve(
+      authenticateToServer({
+        method: 'jwt',
+        data: token,
+        messageHub
+      })
+    );
+
+    if (value && value.result) {
+      return true;
+    }
+
+    return false;
+  }
+
+  return false;
 }
 
 /**

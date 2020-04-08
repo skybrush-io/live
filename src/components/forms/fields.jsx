@@ -52,6 +52,7 @@ export const PasswordField = ({ input, meta, ...rest }) => {
     meta.touched;
   return (
     <MaterialUITextField
+      variant="filled"
       {...rest}
       name={name}
       type={passwordIsMasked ? 'password' : 'text'}
@@ -100,6 +101,7 @@ export const TextField = ({ input, meta, ...rest }) => {
     meta.touched;
   return (
     <MaterialUITextField
+      variant="filled"
       {...rest}
       name={name}
       helperText={showError ? meta.error || meta.submitError : undefined}

@@ -42,6 +42,9 @@ function addServer(state, { action, inferred }) {
   state.detected.byId[key] = item;
 }
 
+const url = new URL(window.location.href);
+const token = url.searchParams ? url.searchParams.get('token') : undefined;
+
 const { actions, reducer } = createSlice({
   name: 'servers',
 
@@ -56,7 +59,8 @@ const { actions, reducer } = createSlice({
     detected: {
       byId: {},
       order: []
-    }
+    },
+    token
   },
 
   reducers: {
@@ -116,6 +120,13 @@ const { actions, reducer } = createSlice({
      */
     clearAuthenticatedUser(state) {
       state.current.authentication.user = '';
+    },
+
+    /**
+     * Clears the stored authentication token.
+     */
+    clearAuthenticationToken(state) {
+      state.token = undefined;
     },
 
     /**
@@ -229,6 +240,7 @@ export const {
   authenticateToServerPromisePending,
   authenticateToServerPromiseRejected,
   clearAuthenticatedUser,
+  clearAuthenticationToken,
   clearServerFeatures,
   removeAllDetectedServers,
   setAuthenticatedUser,

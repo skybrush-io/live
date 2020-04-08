@@ -5,6 +5,14 @@ import { ConnectionState } from '~/model/connections';
 import { selectOrdered } from '~/utils/collections';
 
 /**
+ * Returns the current authentication token that the user possesses.
+ *
+ * @return {string|undefined}  the current authentication token or undefined if
+ *         the user has no authentication token
+ */
+export const getAuthenticationToken = state => state.servers.token || undefined;
+
+/**
  * Returns all the information that we know about the current Skybrush server.
  *
  * @param  {Object}  state  the state of the application
