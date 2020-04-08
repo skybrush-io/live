@@ -83,12 +83,12 @@ class LocalServerExecutor extends React.Component {
       }, this._onProcessStartFailed);
   }
 
-  componentDidUpdate(prevProps) {
-    if (this.props.port !== prevProps.port) {
+  componentDidUpdate(previousProps) {
+    if (this.props.port !== previousProps.port) {
       console.warn(
         'changing port while the server is running is not supported'
       );
-    } else if (this.props.args !== prevProps.args) {
+    } else if (this.props.args !== previousProps.args) {
       console.warn(
         'changing args while the server is running is not supported'
       );
@@ -190,9 +190,9 @@ class ServerConnectionManagerPresentation extends React.Component {
     }
   };
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(previousProps) {
     const { active, onDisconnected } = this.props;
-    if (prevProps.active && !active && onDisconnected) {
+    if (previousProps.active && !active && onDisconnected) {
       onDisconnected();
     }
   }

@@ -9,10 +9,12 @@ import React from 'react';
 import { Form, Field } from 'react-final-form';
 import { connect } from 'react-redux';
 
+import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
+import Fade from '@material-ui/core/Fade';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import List from '@material-ui/core/List';
@@ -20,6 +22,7 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import Tab from '@material-ui/core/Tab';
+import Typography from '@material-ui/core/Typography';
 
 import Computer from '@material-ui/icons/Computer';
 import EditIcon from '@material-ui/icons/Edit';
@@ -39,7 +42,10 @@ import {
   setServerSettingsDialogTab
 } from '~/actions/server-settings';
 import { forceFormSubmission, Switch, TextField } from '~/components/forms';
-import { getDetectedServersInOrder } from '~/features/servers/selectors';
+import {
+  getDetectedServersInOrder,
+  isConnecting
+} from '~/features/servers/selectors';
 import {
   createValidator,
   between,
@@ -78,6 +84,25 @@ const secondaryTextForServerItem = item =>
     ? `${addressForServerItem(item)}${securityWarningForServerItem(item)}`
     : protocolForServerItem(item);
 
+const ConnectionInProgressIndicator = props => (
+  <Box
+    alignItems="center"
+    flex={1}
+    padding={1}
+    display="flex"
+    flexDirection="row"
+    {...props}
+  >
+    <Box pr={1}>
+      <CircularProgress color="secondary" size={16} />
+    </Box>
+    <Typography variant="body2" color="textSecondary">
+      {' '}
+      Connecting…
+    </Typography>
+  </Box>
+);
+
 const DetectedServersListPresentation = ({
   isScanning,
   items,
@@ -90,8 +115,8 @@ const DetectedServersListPresentation = ({
           <CircularProgress size={24} />
         </ListItemIcon>
         <ListItemText
-          primary="Please wait..."
-          secondary="Scanning network for servers..."
+          primary="Please wait…"
+          secondary="Scanning network for servers…"
         />
       </ListItem>
     ) : null}
@@ -192,6 +217,7 @@ class ServerSettingsDialogPresentation extends React.Component {
   static propTypes = {
     active: PropTypes.bool,
     forceFormSubmission: PropTypes.func,
+    isConnecting: PropTypes.bool,
     onClose: PropTypes.func,
     onDisconnect: PropTypes.func,
     onSubmit: PropTypes.func,
@@ -204,8 +230,8 @@ class ServerSettingsDialogPresentation extends React.Component {
     selectedTab: 'auto'
   };
 
-  _handleKeyPress = e => {
-    if (e.nativeEvent.code === 'Enter') {
+  _handleKeyPress = event => {
+    if (event.nativeEvent.code === 'Enter') {
       this.props.forceFormSubmission();
     }
   };
@@ -225,6 +251,7 @@ class ServerSettingsDialogPresentation extends React.Component {
     const {
       active,
       forceFormSubmission,
+      isConnecting,
       onClose,
       onDisconnect,
       onSubmit,
@@ -234,6 +261,12 @@ class ServerSettingsDialogPresentation extends React.Component {
     } = this.props;
     const actions = [];
     const content = [];
+
+    actions.push(
+      <Fade in={isConnecting}>
+        <ConnectionInProgressIndicator />
+      </Fade>
+    );
 
     switch (selectedTab) {
       case 'auto':
@@ -246,7 +279,9 @@ class ServerSettingsDialogPresentation extends React.Component {
         if (!isServerDetectionSupported) {
           content.push(
             <DialogContent key="contents">
-              Auto-discovery is not available in this version.
+              <Typography variant="body2" color="textSecondary">
+                Auto-discovery is not available in this version.
+              </Typography>
             </DialogContent>
           );
         }
@@ -310,6 +345,7 @@ const ServerSettingsDialog = connect(
   // mapStateToProps
   state => ({
     active: state.dialogs.serverSettings.active,
+    isConnecting: isConnecting(state),
     open: state.dialogs.serverSettings.dialogVisible,
     selectedTab: state.dialogs.serverSettings.selectedTab
   }),

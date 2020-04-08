@@ -68,9 +68,8 @@ export const areServerAuthenticationSettingsValid = createSelector(
  * Returns whether the user is currently authenticated to the remote
  * Skybrush server.
  */
-export const isAuthenticated = createSelector(
-  getAuthenticatedUser,
-  user => Boolean(user)
+export const isAuthenticated = createSelector(getAuthenticatedUser, user =>
+  Boolean(user)
 );
 
 /**
@@ -88,6 +87,15 @@ export const isAuthenticating = state => state.servers.isAuthenticating;
 export const isConnected = createSelector(
   getCurrentServerState,
   current => current.state === ConnectionState.CONNECTED
+);
+
+/**
+ * Returns whether we are currently trying to connect to the remote Skybrush
+ * server.
+ */
+export const isConnecting = createSelector(
+  getCurrentServerState,
+  current => current.state === ConnectionState.CONNECTING
 );
 
 /**

@@ -45,11 +45,25 @@ class ServerDetectionManagerPresentation extends React.Component {
 
     if (!isServerDetectionSupported) {
       if (onServerInferred) {
-        onServerInferred({
-          hostName: window.location.hostname,
-          port: 5000,
-          protocol: 'sio:'
-        });
+        if (window.location.hostname === 'localhost') {
+          // We are running in a local environment in the browser; the server
+          // is most likely running on port 5000 as this is the default.
+          onServerInferred({
+            hostName: window.location.hostname,
+            port: 5000,
+            protocol: 'sio:'
+          });
+        } else {
+          // We are deployed somewhere; the server is most likely running on
+          // the same port as ourselves.
+          onServerInferred({
+            hostName: window.location.hostname,
+            port:
+              window.location.port ||
+              (window.location.protocol === 'http:' ? 80 : 443),
+            protocol: 'sio:'
+          });
+        }
       }
 
       return;
