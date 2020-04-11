@@ -1,3 +1,4 @@
+import isNil from 'lodash-es/isNil';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
@@ -6,6 +7,7 @@ import IconButton from '@material-ui/core/IconButton';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import Clear from '@material-ui/icons/Clear';
+import CloudDownload from '@material-ui/icons/CloudDownload';
 
 import FileListItem from './FileListItem';
 
@@ -14,9 +16,13 @@ import StepperStatusLight, {
   StepperStatus
 } from '~/components/StepperStatusLight';
 import { loadShowFromFile } from '~/features/show/actions';
-import { clearLoadedShow } from '~/features/show/slice';
+import {
+  clearLoadedShow,
+  openLoadShowFromCloudDialog
+} from '~/features/show/slice';
 import {
   getShowDescription,
+  getShowLoadingProgressPercentage,
   getShowTitle,
   hasLoadedShowFile,
   isLoadingShowFile
@@ -37,7 +43,9 @@ const LoadShowFromFileButton = ({
   hasLoadedShowFile,
   loading,
   onClearLoadedShow,
+  onLoadShowFromCloud,
   onShowFileSelected,
+  progress,
   status,
   title
 }) => (
@@ -50,28 +58,32 @@ const LoadShowFromFileButton = ({
     <ListItemTextWithProgress
       primary={
         loading
-          ? 'Please wait, loading show file...'
+          ? 'Please wait, loading show file…'
           : hasLoadedShowFile
           ? title
           : 'No show file loaded'
       }
       secondary={
         loading ? (
-          <LinearProgress />
+          <LinearProgress value={progress} variant={!isNil(progress) ? "determinate" : "indeterminate"}/>
         ) : hasLoadedShowFile ? (
           description
         ) : (
-          'Select or drop a show file here to open it'
+          'Select or drop a show file here'
         )
       }
     />
-    {hasLoadedShowFile && (
-      <ListItemSecondaryAction>
+    <ListItemSecondaryAction>
+      {hasLoadedShowFile ? (
         <IconButton edge="end" onClick={onClearLoadedShow}>
           <Clear />
         </IconButton>
-      </ListItemSecondaryAction>
-    )}
+      ) : (
+        <IconButton edge="end" onClick={onLoadShowFromCloud}>
+          <CloudDownload />
+        </IconButton>
+      )}
+    </ListItemSecondaryAction>
   </FileListItem>
 );
 
@@ -80,6 +92,7 @@ LoadShowFromFileButton.propTypes = {
   hasLoadedShowFile: PropTypes.bool,
   loading: PropTypes.bool,
   onClearLoadedShow: PropTypes.func,
+  onLoadShowFromCloud: PropTypes.func,
   onShowFileSelected: PropTypes.func,
   status: PropTypes.oneOf(Object.values(StepperStatus)),
   title: PropTypes.string
@@ -91,12 +104,14 @@ export default connect(
     description: getShowDescription(state),
     hasLoadedShowFile: hasLoadedShowFile(state),
     loading: isLoadingShowFile(state),
+    progress: getShowLoadingProgressPercentage(state),
     status: getSetupStageStatuses(state).selectShowFile,
     title: getShowTitle(state)
   }),
   // mapDispatchToProps
   {
     onClearLoadedShow: clearLoadedShow,
+    onLoadShowFromCloud: openLoadShowFromCloudDialog,
     onShowFileSelected: loadShowFromFile
   }
 )(LoadShowFromFileButton);

@@ -268,6 +268,15 @@ export const getShowDescription = createSelector(
 );
 
 /**
+ * Returns the progress of the current show loading process, as a percentage
+ * between 0 and 100.
+ */
+export const getShowLoadingProgressPercentage = state => {
+  const { progress } = state.show;
+  return typeof progress === 'number' ? progress * 100 : null;
+}
+
+/**
  * Returns the metadata of the show, if any.
  */
 export const getShowMetadata = createSelector(

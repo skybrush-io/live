@@ -3,10 +3,12 @@
  * places where there is enough space.
  */
 
+import React from 'react';
 import { CirclePicker } from 'react-color';
-import withProps from 'recompose/withProps';
 
-export default withProps({
+const circlePickerProps = {
   circleSpacing: 7,
   width: 343
-})(CirclePicker);
+};
+
+export default props => <CirclePicker {...circlePickerProps} {...props} />;

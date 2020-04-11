@@ -10,7 +10,7 @@ const { projectRoot } = require('./helpers');
 
 module.exports = merge.smart(baseConfig, {
   entry: {
-    polyfill: '@babel/polyfill',
+    polyfill: ['@babel/polyfill', 'whatwg-fetch'],
     app: './src/index'
   },
 

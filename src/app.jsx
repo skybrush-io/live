@@ -1,12 +1,9 @@
 import CssBaseline from '@material-ui/core/CssBaseline';
 import React from 'react';
+import { ErrorBoundary } from 'react-error-boundary';
 import { WorkbenchView } from 'react-flexible-workbench';
 import { Provider as StoreProvider } from 'react-redux';
 import { ToastProvider } from 'react-toast-notifications';
-import compose from 'recompose/compose';
-import setDisplayName from 'recompose/setDisplayName';
-import toClass from 'recompose/toClass';
-import withProps from 'recompose/withProps';
 import { PersistGate } from 'redux-persist/es/integration/react';
 
 import dialogs from './components/dialogs';
@@ -15,11 +12,12 @@ import HotkeyHandler from './components/HotkeyHandler';
 import ServerConnectionManager from './components/ServerConnectionManager';
 import SplashScreen from './components/SplashScreen';
 
+import { ErrorHandler } from './error-handling';
+
 import Sidebar from './features/sidebar/Sidebar';
 import ToastNotificationManager from './features/snackbar/ToastNotificationManager';
 
 import flock, { Flock } from './flock';
-import { withErrorBoundary, wrapWith } from './hoc';
 import hotkeys from './hotkeys';
 import store, { persistor } from './store';
 import ThemeProvider, { DarkModeExtraCSSProvider } from './theme';
@@ -98,15 +96,28 @@ const App = () => (
 /**
  * The context provider for the main application component and the
  * individual application panels.
+ *
+ * react-flexible-workbench likes class components at the top so that's why
+ * we are returning a class.
  */
-const enhancer = compose(
-  setDisplayName('WorkbenchRoot'), // to have short names in the React profiler
-  toClass, // react-flexible-workbench likes class components at the top
-  withErrorBoundary,
-  wrapWith(withProps({ store })(StoreProvider)),
-  wrapWith(ThemeProvider),
-  wrapWith(withProps({ value: flock })(Flock.Provider))
-);
+const enhancer = Component =>
+  class extends React.Component {
+    static displayName = 'WorkbenchRoot';
+
+    render() {
+      return (
+        <ErrorBoundary FallbackComponent={ErrorHandler}>
+          <StoreProvider store={store}>
+            <ThemeProvider>
+              <Flock.Provider value={flock}>
+                <Component {...this.props} />
+              </Flock.Provider>
+            </ThemeProvider>
+          </StoreProvider>
+        </ErrorBoundary>
+      );
+    }
+  };
 
 workbench.hoc = enhancer;
 export default enhancer(App);

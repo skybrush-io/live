@@ -1,9 +1,11 @@
+import React from 'react';
 import Badge from 'react-badger';
-import withProps from 'recompose/withProps';
+
+const badgeProps = {
+  offset: [8, 8]
+};
 
 /**
  * Special variant of badges shown on the sidebar.
  */
-export default withProps({
-  offset: [8, 8]
-})(Badge);
+export default props => <Badge {...badgeProps} {...props} />;

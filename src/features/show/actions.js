@@ -1,5 +1,7 @@
 import get from 'lodash-es/get';
-import pMinDelay from 'p-min-delay';
+import throttle from 'lodash-es/throttle';
+import ky from 'ky';
+import PProgress from 'p-progress';
 
 import { loadShowFromFile as processFile } from './processing';
 import {
@@ -10,6 +12,7 @@ import {
 } from './selectors';
 import {
   approveTakeoffAreaAt,
+  loadingProgress,
   revokeTakeoffAreaApproval,
   setEnvironmentType,
   signOffOnManualPreflightChecksAt,
@@ -34,10 +37,6 @@ export const approveTakeoffArea = () => dispatch => {
   dispatch(approveTakeoffAreaAt(Date.now()));
 };
 
-const loadShowFromFileInner = createAsyncAction('show/loading', async file => {
-  return pMinDelay(processFile(file), 500);
-});
-
 /**
  * Updates the takeoff and landing positions and the takeoff headings in the
  * current mission from the show settings and trajectories.
@@ -55,6 +54,52 @@ export const setupMissionFromShow = () => (dispatch, getState) => {
   dispatch(updateTakeoffHeadings(orientation));
 };
 
+const createShowLoaderThunkFactory = (
+  dataSourceToShowSpecification,
+  options = {}
+) => {
+  const { errorMessage } = options;
+
+  /**
+   * First, format-specific step of the show loading process that takes a show
+   * file from some data source (given as input arguments), and converts it
+   * into JSON format, resolving JSON references where needed so we have a
+   * single JSON object in the end.
+   */
+  const actionFactory = createAsyncAction(
+    'show/loading',
+    dataSourceToShowSpecification,
+    { minDelay: 500 }
+  );
+
+  return arg => async (dispatch, getState) => {
+    const onProgress = throttle(
+      progress => {
+        dispatch({
+          type: loadingProgress.type,
+          payload: progress
+        });
+      },
+      200
+    );
+    try {
+      const promise = dispatch(actionFactory(arg, { dispatch, getState, onProgress }));
+      const { value: spec } = await promise;
+      processShowInJSONFormatAndDispatchActions(spec, dispatch);
+    } catch (error) {
+      dispatch(
+        showSnackbarMessage({
+          message: errorMessage || 'Failed to load show.',
+          semantics: MessageSemantics.ERROR,
+          permanent: true
+        })
+      );
+      console.error(error);
+      return;
+    }
+  };
+};
+
 /**
  * Thunk that creates an async action that loads a drone show from a Skybrush
  * compiled drone show file.
@@ -62,24 +107,36 @@ export const setupMissionFromShow = () => (dispatch, getState) => {
  * The thunk must be invoked with the file that the user wants to open
  * the show from.
  */
-export const loadShowFromFile = file => async dispatch => {
-  let result;
-
-  try {
-    result = await dispatch(loadShowFromFileInner(file));
-  } catch (error) {
-    dispatch(
-      showSnackbarMessage({
-        message: 'Failed to load show from the given file.',
-        semantics: MessageSemantics.ERROR,
-        permanent: true
-      })
-    );
-    console.error(error);
-    return;
+export const loadShowFromFile = createShowLoaderThunkFactory(
+  file => processFile(file),
+  {
+    errorMessage: 'Failed to load show from the given file.'
   }
+);
 
-  const spec = result.value;
+export const loadExampleShow = createShowLoaderThunkFactory(
+  async (_, { onProgress }) => {
+    const response = await ky(
+      "https://httpbin.org/drip?delay=0&numbytes=200&duration=2",
+      {
+        onDownloadProgress: info => {
+          onProgress(info.percent);
+        }
+      }
+    ).arrayBuffer();
+    return null;
+  },
+  {
+    errorMessage: 'Failed to load show from the given simulated source.',
+  }
+);
+
+/**
+ * Second step of the show loading process that takes a show in JSON format
+ * and dispatches the appropriate actions to update the state store with the
+ * new show.
+ */
+function processShowInJSONFormatAndDispatchActions(spec, dispatch) {
   const drones = get(spec, 'swarm.drones');
   dispatch(setMappingLength(drones.length));
 
@@ -98,7 +155,7 @@ export const loadShowFromFile = file => async dispatch => {
 
   // Revoke the approval of the takeoff area in case it was approved
   dispatch(revokeTakeoffAreaApproval());
-};
+}
 
 /**
  * Thunk that retrieves all failed upload items from the state and then

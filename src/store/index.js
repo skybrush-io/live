@@ -129,7 +129,10 @@ const store = configureStore({
       immutableCheck: {
         // Checking the show specification takes a long time and it should not
         // be necessary anyway
-        ignore: ['show.data']
+        ignore: ['show.data'],
+        // ignore was renamed to ignoredPaths in newer versions of the middleware.
+        // Let's specify both to be on the safe side.
+        ignoredPaths: ['show.data']
       },
 
       serializableCheck: {

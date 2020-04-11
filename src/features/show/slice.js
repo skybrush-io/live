@@ -20,6 +20,7 @@ const { actions, reducer } = createSlice({
     data: null,
 
     loading: false,
+    progress: 0.0,
 
     environment: {
       editing: false,
@@ -31,6 +32,10 @@ const { actions, reducer } = createSlice({
         }
       },
       type: 'outdoor'
+    },
+
+    loadShowFromCloudDialog: {
+      open: false
     },
 
     manualPreflightChecksDialog: {
@@ -132,6 +137,10 @@ const { actions, reducer } = createSlice({
       state.environment.editing = false;
     }),
 
+    closeLoadShowFromCloudDialog: noPayload(state => {
+      state.loadShowFromCloudDialog.open = false;
+    }),
+
     closeManualPreflightChecksDialog: noPayload(state => {
       state.manualPreflightChecksDialog.open = false;
     }),
@@ -156,17 +165,31 @@ const { actions, reducer } = createSlice({
       state.uploadDialog.showLastUploadResult = false;
     }),
 
+    loadingProgress(state, action) {
+      if (state.loading) {
+        const value = Number(action.payload);
+        if (isNaN(value)) {
+          state.progress = null;
+        } else {
+          state.progress = Math.min(1.0, Math.max(value, 0.0));
+        }
+      }
+    },
+
     loadingPromisePending(state) {
       state.loading = true;
+      state.progress = null;
     },
 
     loadingPromiseFulfilled(state, action) {
       state.data = action.payload;
       state.loading = false;
+      state.progress = null;
     },
 
     loadingPromiseRejected(state) {
       state.loading = false;
+      state.progress = null;
     },
 
     notifyUploadFinished: (state, action) => {
@@ -232,6 +255,10 @@ const { actions, reducer } = createSlice({
 
     openEnvironmentEditorDialog: noPayload(state => {
       state.environment.editing = true;
+    }),
+
+    openLoadShowFromCloudDialog: noPayload(state => {
+      state.loadShowFromCloudDialog.open = true;
     }),
 
     openManualPreflightChecksDialog: noPayload(state => {
@@ -371,12 +398,14 @@ export const {
   clearStartTimeAndMethod,
   clearUploadQueue,
   closeEnvironmentEditorDialog,
+  closeLoadShowFromCloudDialog,
   closeManualPreflightChecksDialog,
   closeOnboardPreflightChecksDialog,
   closeStartTimeDialog,
   closeTakeoffAreaSetupDialog,
   closeUploadDialog,
   dismissLastUploadResult,
+  loadingProgress,
   loadingPromiseFulfilled,
   notifyUploadFinished,
   notifyUploadOnUavCancelled,
@@ -385,6 +414,7 @@ export const {
   notifyUploadOnUavStarted,
   notifyUploadOnUavSucceeded,
   openEnvironmentEditorDialog,
+  openLoadShowFromCloudDialog,
   openManualPreflightChecksDialog,
   openOnboardPreflightChecksDialog,
   openStartTimeDialog,

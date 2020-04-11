@@ -7,6 +7,7 @@ import List from '@material-ui/core/List';
 import AuthorizationButton from './AuthorizationButton';
 import EnvironmentButton from './EnvironmentButton';
 import EnvironmentEditorDialog from './EnvironmentEditorDialog';
+import LoadShowFromCloudDialog from './LoadShowFromCloudDialog';
 import LoadShowFromFileButton from './LoadShowFromFileButton';
 import ManualPreflightChecksButton from './ManualPreflightChecksButton';
 import ManualPreflightChecksDialog from './ManualPreflightChecksDialog';
@@ -47,6 +48,7 @@ const ShowControlPanel = () => {
         </List>
       </Box>
 
+      <LoadShowFromCloudDialog />
       <EnvironmentEditorDialog />
       <StartTimeDialog />
       <TakeoffAreaSetupDialog />

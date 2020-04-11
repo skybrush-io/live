@@ -9,7 +9,6 @@
 
 import React from 'react';
 import { WorkbenchBuilder } from 'react-flexible-workbench';
-import renderNothing from 'recompose/renderNothing';
 
 import BackgroundHint from './components/BackgroundHint';
 import MessagesPanel from './components/chat/MessagesPanel';
@@ -31,13 +30,14 @@ const injectFlockFromContext = BaseComponent =>
     </Flock.Consumer>
   ));
 
+const Nothing = () => null;
+
 /**
  * Registry that maps component types to be used in the top-level
  * GoldenLayout object to the corresponding React components.
  *
  * The React components will be created without any props. If you need the
- * components to have props, use the <code>withProps()</code> helper function
- * from <code>recompose</code>.
+ * components to have props, use a wrapper HOC.
  */
 const componentRegistry = {
   'connection-list': views.ConnectionList,
@@ -51,7 +51,7 @@ const componentRegistry = {
   'log-panel': views.LogPanel,
   map: views.MapView,
   messages: injectFlockFromContext(MessagesPanel),
-  placeholder: renderNothing(),
+  placeholder: Nothing,
   'saved-location-list': views.SavedLocationList,
   'show-control': views.ShowControlPanel,
   'three-d-view': views.ThreeDTopLevelView,
