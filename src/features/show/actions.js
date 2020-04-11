@@ -114,20 +114,26 @@ export const loadShowFromFile = createShowLoaderThunkFactory(
   }
 );
 
-export const loadExampleShow = createShowLoaderThunkFactory(
-  async (_, { onProgress }) => {
-    const response = await ky(
-      "https://httpbin.org/drip?delay=0&numbytes=200&duration=2",
-      {
-        onDownloadProgress: info => {
+/**
+ * Thunk that creates an async action that loads a drone show from a Skybrush
+ * compiled drone show file provided at a remote URL.
+ *
+ * The thunk must be invoked with the URL that the user wants to open
+ * the show from.
+ */
+export const loadShowFromUrl = createShowLoaderThunkFactory(
+  async (url, { onProgress }) => {
+    const response = await ky(url, {
+      onDownloadProgress: info => {
+        if (info.totalBytes > 0) {
           onProgress(info.percent);
         }
       }
-    ).arrayBuffer();
-    return null;
+    }).arrayBuffer();
+    return processFile(response);
   },
   {
-    errorMessage: 'Failed to load show from the given simulated source.',
+    errorMessage: 'Failed to load show from the given URL.',
   }
 );
 

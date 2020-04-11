@@ -10,15 +10,23 @@ import ListItemText from '@material-ui/core/ListItemText';
 import Tab from '@material-ui/core/Tab';
 
 import DialogTabs from '~/components/dialogs/DialogTabs';
-import { loadExampleShow } from '~/features/show/actions';
+import { loadShowFromUrl } from '~/features/show/actions';
 import { closeLoadShowFromCloudDialog } from '~/features/show/slice';
+
+const EXAMPLES = [
+  {
+    id: "example-40",
+    title: "Example show with 40 drones",
+    url: require("~/../assets/shows/demo.skyc").default
+  }
+];
 
 /**
  * Presentation component for the dialog that allows the user to load a show
  * file from a remote data source such as his/her Skybrush Account or a git
  * repository
  */
-const LoadShowFromCloudDialog = ({ open, onClose, onLoadExampleShow }) => {
+const LoadShowFromCloudDialog = ({ open, onClose, onLoadShowFromUrl }) => {
   return (
     <Dialog fullWidth open={open} onClose={onClose}>
       <DialogTabs value="skybrushAccount">
@@ -28,9 +36,11 @@ const LoadShowFromCloudDialog = ({ open, onClose, onLoadExampleShow }) => {
       </DialogTabs>
       <List>
         <ListSubheader>Shared with me</ListSubheader>
-        <ListItem button onClick={onLoadExampleShow}>
-          <ListItemText primary="Example show with 40 drones" />
-        </ListItem>
+        {EXAMPLES.map(({ id, title, url }) => (
+          <ListItem key={id} button onClick={() => onLoadShowFromUrl(url)}>
+            <ListItemText primary={title} />
+          </ListItem>
+        ))}
       </List>
     </Dialog>
   );
@@ -38,7 +48,7 @@ const LoadShowFromCloudDialog = ({ open, onClose, onLoadExampleShow }) => {
 
 LoadShowFromCloudDialog.propTypes = {
   onClose: PropTypes.func,
-  onLoadExampleShow: PropTypes.func,
+  onLoadShowFromUrl: PropTypes.func,
   open: PropTypes.bool
 };
 
@@ -58,9 +68,9 @@ export default connect(
       dispatch(closeLoadShowFromCloudDialog());
     },
 
-    onLoadExampleShow() {
+    onLoadShowFromUrl(url) {
       dispatch(closeLoadShowFromCloudDialog());
-      dispatch(loadExampleShow());
+      dispatch(loadShowFromUrl(url));
     }
   })
 )(LoadShowFromCloudDialog);

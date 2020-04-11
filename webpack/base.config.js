@@ -81,7 +81,7 @@ module.exports = {
         include: path.join(projectRoot, 'assets', 'css')
       },
       {
-        test: /\.(png|jpg)$/,
+        test: /\.(png|jpg|skyc)$/,
         use: [{ loader: 'url-loader', options: { limit: 8192 } }],
         include: path.join(projectRoot, 'assets')
       },
