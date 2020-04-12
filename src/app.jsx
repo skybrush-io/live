@@ -100,7 +100,7 @@ const App = () => (
  * react-flexible-workbench likes class components at the top so that's why
  * we are returning a class.
  */
-const enhancer = Component =>
+const enhancer = (Component) =>
   class extends React.Component {
     static displayName = 'WorkbenchRoot';
 

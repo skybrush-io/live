@@ -102,7 +102,7 @@ SavedLocationEditorFormPresentation.propTypes = {
  */
 const SavedLocationEditorForm = connect(
   // mapStateToProps
-  state => {
+  (state) => {
     const id = state.dialogs.savedLocationEditor.editedLocationId;
     const currentLocation =
       id === NEW_ITEM_ID
@@ -143,7 +143,7 @@ class SavedLocationEditorDialogPresentation extends React.Component {
     forceFormSubmission('SavedLocationEditor');
   };
 
-  _handleKeyPress = e => {
+  _handleKeyPress = (e) => {
     if (e.nativeEvent.code === 'Enter') {
       this.handleSubmit();
     }
@@ -202,12 +202,12 @@ class SavedLocationEditorDialogPresentation extends React.Component {
  */
 const SavedLocationEditorDialog = connect(
   // mapStateToProps
-  state => ({
+  (state) => ({
     open: state.dialogs.savedLocationEditor.dialogVisible,
     editedLocationId: state.dialogs.savedLocationEditor.editedLocationId
   }),
   // mapDispatchToProps
-  dispatch => ({
+  (dispatch) => ({
     onClose() {
       dispatch(cancelLocationEditing());
     },

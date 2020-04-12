@@ -10,7 +10,7 @@ import { createSlice } from '@reduxjs/toolkit';
 import { ConnectionState } from '~/model/connections';
 import { clearOrderedCollection } from '~/utils/collections';
 
-const createDefaultItem = id => ({
+const createDefaultItem = (id) => ({
   id,
   name: id,
   state: ConnectionState.DISCONNECTED,

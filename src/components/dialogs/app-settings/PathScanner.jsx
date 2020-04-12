@@ -44,7 +44,7 @@ const icons = {
 };
 
 const useStyles = makeStyles(
-  theme => ({
+  (theme) => ({
     root: {
       backgroundColor:
         theme.palette.type === 'dark'
@@ -106,17 +106,17 @@ PathScannerPresentation.propTypes = {
 
 PathScannerPresentation.defaultProps = {
   notFoundMessage: 'Server executable not found.',
-  scanningMessage: 'Please wait...',
+  scanningMessage: 'Please wait…',
   successMessage: 'Server executable found successfully.'
 };
 
 export default connect(
   // mapStateToProps
-  state => ({
+  (state) => ({
     ...state.localServer.pathScan
   }),
   // mapDispatchToProps
-  dispatch => ({
+  (dispatch) => ({
     onRequestReload: () => {
       dispatch(startLocalServerExecutableSearch());
     }

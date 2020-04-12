@@ -43,7 +43,7 @@ const { actions, reducer } = createSlice({
 
     deleteLogItem(state, action) {
       const deletedItemId = action.payload;
-      const index = state.items.find(item => item.id === deletedItemId);
+      const index = state.items.find((item) => item.id === deletedItemId);
       if (index >= 0) {
         state.items.splice(index, 1);
       }

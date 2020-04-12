@@ -23,7 +23,7 @@ import { toDegrees, toRadians } from '~/utils/math';
  *         a function that returns the angle when invoked
  * @return {ol.DrawGeometryFunctionType}  the geometry function
  */
-export const createRotatedBoxGeometryFunction = angle => (
+export const createRotatedBoxGeometryFunction = (angle) => (
   coordinates,
   optGeometry
 ) => {
@@ -57,7 +57,7 @@ export const createRotatedBoxGeometryFunction = angle => (
     Extent.getTopRight(extent),
     Extent.getTopLeft(extent),
     Extent.getBottomLeft(extent)
-  ].map(coordinate =>
+  ].map((coordinate) =>
     Coordinate.add(Coordinate.rotate(coordinate, -effectiveAngle), mid)
   );
 
@@ -114,7 +114,7 @@ export const findFeaturesById = curry((map, featureIds) => {
   const features = [];
   features.length = featureIds.length;
 
-  map.getLayers().forEach(layer => {
+  map.getLayers().forEach((layer) => {
     if (!layer.getVisible()) {
       return;
     }
@@ -172,7 +172,7 @@ export const getExactClosestPointOf = (geometry, coordinate) => {
   }
 
   if (subGeometries !== undefined) {
-    const closestPoints = subGeometries.map(subGeometry =>
+    const closestPoints = subGeometries.map((subGeometry) =>
       getExactClosestPointOf(subGeometry, coordinate)
     );
     return minBy(closestPoints, euclideanDistance.bind(null, coordinate));
@@ -196,7 +196,7 @@ export const getExactClosestPointOf = (geometry, coordinate) => {
  * @param {string}  options.unit   the unit to show after the digits
  * @return {function} the constructed function
  */
-export const makeDecimalCoordinateFormatter = options => {
+export const makeDecimalCoordinateFormatter = (options) => {
   const { digits, reverse, unit } = options;
   const formatString = reverse
     ? unit
@@ -205,7 +205,7 @@ export const makeDecimalCoordinateFormatter = options => {
     : unit
     ? '{x}' + unit + ', {y}' + unit
     : '{x}, {y}';
-  return coordinate => Coordinate.format(coordinate, formatString, digits);
+  return (coordinate) => Coordinate.format(coordinate, formatString, digits);
 };
 
 /**
@@ -221,16 +221,16 @@ export const makeDecimalCoordinateFormatter = options => {
  * @param {string}  options.unit   the unit to show after the digits
  * @return {function} the constructed function
  */
-export const makePolarCoordinateFormatter = options => {
+export const makePolarCoordinateFormatter = (options) => {
   const { digits, unit } = options;
   return unit
-    ? coordinate =>
+    ? (coordinate) =>
         Coordinate.format(
           coordinate,
           '{x}' + unit + ' \u2220 {y}\u00b0',
           digits
         )
-    : coordinate =>
+    : (coordinate) =>
         Coordinate.format(coordinate, '{x} \u2220 {y}\u00b0', digits);
 };
 
@@ -241,10 +241,9 @@ export const makePolarCoordinateFormatter = options => {
  * @param {number} decimalPlaces  the number of decimal places to show
  * @return {function} the constructed function
  */
-export const makeSexagesimalCoordinateFormatter = (
-  decimalPlaces = 3
-) => coordinate =>
-  formatCoords(coordinate, true).format('FFf', { decimalPlaces });
+export const makeSexagesimalCoordinateFormatter = (decimalPlaces = 3) => (
+  coordinate
+) => formatCoords(coordinate, true).format('FFf', { decimalPlaces });
 
 /**
  * Normalizes an angle given in degrees according to the conventions used in
@@ -256,7 +255,8 @@ export const makeSexagesimalCoordinateFormatter = (
  * @param  {number|string} angle  the input angle
  * @return {string}  the normalized angle as a string to avoid rounding errors
  */
-export const normalizeAngle = angle => (((angle % 360) + 360) % 360).toFixed(2);
+export const normalizeAngle = (angle) =>
+  (((angle % 360) + 360) % 360).toFixed(2);
 
 export const translateBy = curry((displacement, coordinates) => {
   const dx = displacement[0];
@@ -265,7 +265,7 @@ export const translateBy = curry((displacement, coordinates) => {
     return coordinates;
   }
 
-  return coordinates.map(coordinate => [
+  return coordinates.map((coordinate) => [
     coordinate[0] + dx,
     coordinate[1] + dy
   ]);
@@ -292,7 +292,7 @@ export const formatCoordinate = makeDecimalCoordinateFormatter({
  * @return {number[]|undefined}  the parsed coordinates in OpenLayers format
  *         or undefined in case of a parsing error
  */
-export const parseCoordinate = text => {
+export const parseCoordinate = (text) => {
   try {
     const parsed = new CoordinateParser(text);
     return [parsed.getLongitude(), parsed.getLatitude()];

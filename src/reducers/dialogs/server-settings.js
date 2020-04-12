@@ -31,9 +31,9 @@ const defaultState = {
  */
 const reducer = handleActions(
   {
-    DISCONNECT_FROM_SERVER: state => u({ active: false }, state),
+    DISCONNECT_FROM_SERVER: (state) => u({ active: false }, state),
 
-    SHOW_SERVER_SETTINGS_DIALOG: state => u({ dialogVisible: true }, state),
+    SHOW_SERVER_SETTINGS_DIALOG: (state) => u({ dialogVisible: true }, state),
 
     CLOSE_SERVER_SETTINGS_DIALOG: (state, action) =>
       u({ ...action.payload, dialogVisible: false }, state),

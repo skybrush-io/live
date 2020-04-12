@@ -81,12 +81,12 @@ DockList.propTypes = {
 
 export default connect(
   // mapStateToProps
-  state => ({
+  (state) => ({
     docks: getDocksInOrder(state),
     selectedIds: getSelectedDockIds(state)
   }),
   // mapDispatchToProps
-  dispatch => ({
+  (dispatch) => ({
     onSelectionChanged: (event, dockIds) => {
       dispatch(setSelectedDockIds(dockIds));
     }

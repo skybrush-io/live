@@ -40,7 +40,7 @@ export const NEW_ITEM_ID = '@@newItem';
  * @param {Object}  item  the item to test
  * @return {boolean}  whether the item has a real ID
  */
-const hasValidId = item =>
+const hasValidId = (item) =>
   item &&
   item.id !== undefined &&
   item.id !== null &&
@@ -150,7 +150,7 @@ export const addItemSorted = (collection, item, key = 'id') => {
     index = sortedIndex(collection.order, item.id);
   } else {
     const getter = typeof key === 'string' ? property(key) : key;
-    index = sortedIndexBy(collection.order, item.id, id => {
+    index = sortedIndexBy(collection.order, item.id, (id) => {
       const existingItem = collection.byId[id];
       return existingItem === undefined ? getter(item) : getter(existingItem);
     });
@@ -198,7 +198,7 @@ export const addItemToFront = (collection, item) =>
 /**
  * Helper function that removes all items from an ordered collection.
  */
-export const clearOrderedCollection = collection => {
+export const clearOrderedCollection = (collection) => {
   collection.byId = {};
   collection.order = [];
 };
@@ -234,7 +234,7 @@ export const createNewItemInFrontOf = (collection, idStore) => {
 export const copyAndDeleteItemById = (idToRemove, collection) => {
   const updates = {
     byId: u.omit(idToRemove),
-    order: u.reject(id => id === idToRemove)
+    order: u.reject((id) => id === idToRemove)
   };
   return u(updates, collection);
 };
@@ -255,7 +255,7 @@ export const copyAndDeleteItemsByIds = (idsToRemove, collection) => {
 
   const updates = {
     byId: u.omit(idsToRemove),
-    order: u.reject(id => idsToRemove.includes(id))
+    order: u.reject((id) => idsToRemove.includes(id))
   };
   return u(updates, collection);
 };
@@ -334,7 +334,10 @@ export const selectLast = ({ byId, order }) =>
 export const selectOrdered = ({ byId, order }) =>
   order === undefined
     ? Object.values(byId)
-    : reject(order.map(id => byId[id]), isNil);
+    : reject(
+        order.map((id) => byId[id]),
+        isNil
+      );
 
 /**
  * Helper function that takes an array of item IDs and an ordered collection,

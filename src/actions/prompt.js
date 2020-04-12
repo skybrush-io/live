@@ -45,7 +45,7 @@ const cancelPromptDialogNow = createAction(CANCEL_PROMPT_DIALOG);
  * @returns  {function}  a Redux thunk
  */
 export function cancelPromptDialog() {
-  return dispatch => {
+  return (dispatch) => {
     dispatch(cancelPromptDialogNow());
     resolveTo(undefined);
   };
@@ -57,7 +57,7 @@ export function cancelPromptDialog() {
  *
  * This is not exported because the thunk version should be used instead.
  */
-const submitPromptDialogNow = createAction(SUBMIT_PROMPT_DIALOG, value => ({
+const submitPromptDialogNow = createAction(SUBMIT_PROMPT_DIALOG, (value) => ({
   value
 }));
 
@@ -73,7 +73,7 @@ export function submitPromptDialog(value) {
     return cancelPromptDialog();
   }
 
-  return dispatch => {
+  return (dispatch) => {
     dispatch(submitPromptDialogNow());
     resolveTo(value);
   };
@@ -104,10 +104,10 @@ const showPromptDialogNow = createAction(
  * @return {function} a Redux thunk
  */
 export function showPromptDialog(message, options) {
-  return dispatch => {
+  return (dispatch) => {
     resolveTo(undefined);
     dispatch(showPromptDialogNow(message, options));
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       _resolver = resolve;
     });
   };

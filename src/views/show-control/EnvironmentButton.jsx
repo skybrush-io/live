@@ -57,7 +57,7 @@ EnvironmentButton.defaultProps = {
 
 export default connect(
   // mapStateToProps
-  state => ({
+  (state) => ({
     status: getSetupStageStatuses(state).setupEnvironment,
     type: state.show.environment.type
   }),

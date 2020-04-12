@@ -8,6 +8,6 @@ import { selectOrdered } from '~/utils/collections';
  * on the UI.
  */
 export const getDatasetsInOrder = createSelector(
-  state => state.datasets,
+  (state) => state.datasets,
   selectOrdered
 );

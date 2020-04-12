@@ -13,7 +13,7 @@ import { MAX_DRONE_COUNT } from './constants';
  * ensure that the browser UI does not block when resolving references in the
  * show file.
  */
-const idle = async () => new Promise(resolve => requestIdleCallback(resolve));
+const idle = async () => new Promise((resolve) => requestIdleCallback(resolve));
 
 /**
  * Runs some basic checks on a JSON-based show specification to see whether it

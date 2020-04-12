@@ -10,14 +10,14 @@ import { UAVAge } from '~/model/uav';
 /**
  * Helper function to convert a single UAV to its Redux representation.
  */
-const convertUAVToRedux = uav => uav.toJSON();
+const convertUAVToRedux = (uav) => uav.toJSON();
 
 /**
  * Helper function to convert an object mapping UAV IDs to their corresponding
  * UAVs to an object mapping UAV IDs to their corresponding Redux
  * representations.
  */
-const convertUAVsToRedux = objects => mapValues(objects, convertUAVToRedux);
+const convertUAVsToRedux = (objects) => mapValues(objects, convertUAVToRedux);
 
 /**
  * Returns a proposed age code for a UAV, given the time when it was last
@@ -69,7 +69,7 @@ function updateAgeCodeForUAVs(uavs) {
  * @return an appropriate Redux channel
  */
 function subscribeToFlock(flock) {
-  return eventChannel(emit => {
+  return eventChannel((emit) => {
     let updateTimer = null;
     let pendingUpdates = {};
 
@@ -206,8 +206,8 @@ function* uavAgingSaga() {
   while (true) {
     yield delay(1000);
 
-    const uavs = yield select(state => state.uavs.byId);
-    const uavIds = yield select(state => state.uavs.order);
+    const uavs = yield select((state) => state.uavs.byId);
+    const uavIds = yield select((state) => state.uavs.order);
     const now = Date.now();
     const updates = {};
 

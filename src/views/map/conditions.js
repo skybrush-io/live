@@ -11,7 +11,7 @@ const Condition = Object.assign({}, OLCondition);
  * @param {event}  mapBrowserEvent  the actual event
  * @return {boolean}  whether the condition was met
  */
-Condition.platformModifierKey = mapBrowserEvent =>
+Condition.platformModifierKey = (mapBrowserEvent) =>
   eventHasPlatformModifierKey(mapBrowserEvent.originalEvent);
 
 /**
@@ -21,7 +21,7 @@ Condition.platformModifierKey = mapBrowserEvent =>
  * @param {event}  mapBrowserEvent  the actual event
  * @return {boolean}  whether the condition was met
  */
-Condition.platformModifierKeyOrShiftKeyOnly = mapBrowserEvent =>
+Condition.platformModifierKeyOrShiftKeyOnly = (mapBrowserEvent) =>
   OLCondition.platformModifierKeyOnly(mapBrowserEvent) ||
   OLCondition.shiftKeyOnly(mapBrowserEvent);
 
@@ -32,7 +32,7 @@ Condition.platformModifierKeyOrShiftKeyOnly = mapBrowserEvent =>
  * @param {event}  mapBrowserEvent  the actual event
  * @return {boolean}  whether the condition was met
  */
-Condition.altShiftKeyAndMiddleMouseButton = mapBrowserEvent =>
+Condition.altShiftKeyAndMiddleMouseButton = (mapBrowserEvent) =>
   mapBrowserEvent.originalEvent.button === 1 &&
   mapBrowserEvent.originalEvent.shiftKey &&
   mapBrowserEvent.originalEvent.altKey;
@@ -43,7 +43,7 @@ Condition.altShiftKeyAndMiddleMouseButton = mapBrowserEvent =>
  * @param {event}  mapBrowserEvent  the actual event
  * @return {boolean}  whether the condition was met
  */
-Condition.contextMenu = mapBrowserEvent =>
+Condition.contextMenu = (mapBrowserEvent) =>
   mapBrowserEvent.originalEvent.type === 'contextmenu';
 
 /**
@@ -52,7 +52,7 @@ Condition.contextMenu = mapBrowserEvent =>
  * @param {event}  mapBrowserEvent  the actual event
  * @return {boolean}  whether the condition was met
  */
-Condition.rightClick = mapBrowserEvent =>
+Condition.rightClick = (mapBrowserEvent) =>
   mapBrowserEvent.pointerEvent &&
   mapBrowserEvent.pointerEvent.type === 'pointerup' &&
   mapBrowserEvent.pointerEvent.button === 2;

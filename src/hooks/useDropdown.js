@@ -1,9 +1,9 @@
 import { useState } from 'react';
 
 export default () => {
-  const [anchorEl, setAnchorEl] = useState(null);
+  const [anchorElement, setAnchorElement] = useState(null);
 
-  const openMenu = event => setAnchorEl(event.currentTarget);
+  const openMenu = (event) => setAnchorElement(event.currentTarget);
   const closeMenu = (...args) => {
     if (args.length > 0) {
       if (typeof args[0] === 'function') {
@@ -18,8 +18,8 @@ export default () => {
       }
     }
 
-    setAnchorEl(null);
+    setAnchorElement(null);
   };
 
-  return [anchorEl, openMenu, closeMenu];
+  return [anchorElement, openMenu, closeMenu];
 };

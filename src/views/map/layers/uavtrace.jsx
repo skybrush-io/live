@@ -63,13 +63,13 @@ class UAVTraceLayerSettingsPresentation extends React.Component {
     );
   }
 
-  _onColorChanged = color => {
+  _onColorChanged = (color) => {
     this.props.setLayerParameters({
       trailColor: color.hex
     });
   };
 
-  _onTrailLengthChanged = event => {
+  _onTrailLengthChanged = (event) => {
     const value = toNumber(event.target.value);
     if (value > 0 && isFinite(value)) {
       this.props.setLayerParameters({
@@ -78,7 +78,7 @@ class UAVTraceLayerSettingsPresentation extends React.Component {
     }
   };
 
-  _onTrailWidthChanged = event => {
+  _onTrailWidthChanged = (event) => {
     const value = toNumber(event.target.value);
     if (value > 0 && value < 20) {
       this.props.setLayerParameters({
@@ -93,7 +93,7 @@ export const UAVTraceLayerSettings = connect(
   () => ({}),
   // mapDispatchToProps
   (dispatch, ownProps) => ({
-    setLayerParameters: parameters => {
+    setLayerParameters: (parameters) => {
       dispatch(setLayerParametersById(ownProps.layerId, parameters));
     }
   })
@@ -132,7 +132,7 @@ class UAVTraceVectorSource extends React.Component {
     flock.uavsUpdated.add(this._handleUpdate);
   }
 
-  _assignSourceRef = value => {
+  _assignSourceRef = (value) => {
     if (value === this._sourceRef) {
       return;
     }
@@ -148,7 +148,7 @@ class UAVTraceVectorSource extends React.Component {
     }
   };
 
-  _handleUpdate = uavs => {
+  _handleUpdate = (uavs) => {
     for (const uav of uavs) {
       if (uav._id in this.lineStringsById) {
         // UAV exists, just extend its trace
@@ -175,7 +175,7 @@ class UAVTraceVectorSource extends React.Component {
     }
   };
 
-  _registerNewFeature = feature => {
+  _registerNewFeature = (feature) => {
     feature.setStyle(
       makeStrokeStyle(this.props.trailColor, this.props.trailWidth)
     );

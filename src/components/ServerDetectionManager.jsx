@@ -73,7 +73,7 @@ class ServerDetectionManagerPresentation extends React.Component {
       onScanningStarted();
     }
 
-    this._ssdpClient = window.bridge.createSSDPClient(headers => {
+    this._ssdpClient = window.bridge.createSSDPClient((headers) => {
       if (this._ssdpClient === undefined) {
         // Component was already unmounted.
         return;
@@ -131,12 +131,12 @@ class ServerDetectionManagerPresentation extends React.Component {
           } else if (window.bridge) {
             window.bridge
               .reverseDNSLookup(hostname)
-              .then(names => {
+              .then((names) => {
                 if (names && names.length > 0) {
                   resolveTo(names[0]);
                 }
               })
-              .catch(error => {
+              .catch((error) => {
                 window.bridge.console.warn(error);
               });
           }
@@ -182,7 +182,7 @@ export const ServerDetectionManager = connect(
   // mapStateToProps
   () => ({}),
   // mapDispatchToProps
-  dispatch => ({
+  (dispatch) => ({
     onScanningStarted() {
       dispatch(removeAllDetectedServers());
       dispatch(startScanning());

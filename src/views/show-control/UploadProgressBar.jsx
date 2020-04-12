@@ -31,7 +31,7 @@ UploadProgressBar.propTypes = {
 
 export default connect(
   // mapStateToProps
-  state => ({
+  (state) => ({
     progress: getUploadProgress(state),
     running: state.show.upload.running
   }),

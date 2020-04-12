@@ -7,6 +7,7 @@ import { all } from 'redux-saga/effects';
 import localServerSaga from '~/features/local-server/saga';
 import serversSaga from '~/features/servers/saga';
 import showSaga from '~/features/show/saga';
+import tourSaga from '~/features/tour/saga';
 import uavSyncSaga from '~/features/uavs/saga';
 import flock from '~/flock';
 
@@ -21,6 +22,7 @@ export default function* rootSaga() {
     onboardingSaga(),
     serversSaga(),
     showSaga(),
+    tourSaga(),
     uavSyncSaga(flock)
   ];
 

@@ -63,7 +63,7 @@ PromptDialogForm.propTypes = {
   onSubmit: PropTypes.func
 };
 
-const PromptDialogPresentation = props => {
+const PromptDialogPresentation = (props) => {
   const { initialValue, onCancel, title, dialogVisible } = props;
   return (
     <Dialog
@@ -90,9 +90,9 @@ PromptDialogPresentation.propTypes = {
 
 const PromptDialog = connect(
   // mapStateToProps
-  state => state.dialogs.prompt,
+  (state) => state.dialogs.prompt,
   // mapDispatchToProps
-  dispatch => ({
+  (dispatch) => ({
     onCancel() {
       dispatch(cancelPromptDialog());
     },

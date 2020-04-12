@@ -25,7 +25,7 @@ import {
 import messageHub from '~/message-hub';
 
 const useStyles = makeStyles(
-  theme => ({
+  (theme) => ({
     root: {
       marginBottom: 0,
 
@@ -124,7 +124,7 @@ AuthenticationDialogPresentation.defaultProps = {
  */
 const AuthenticationDialog = connect(
   // mapStateToProps
-  state => ({
+  (state) => ({
     ...state.dialogs.authentication,
     isAuthenticating: isAuthenticating(state),
     title: requiresAuthentication(state)
@@ -132,7 +132,7 @@ const AuthenticationDialog = connect(
       : 'Authenticate to server'
   }),
   // mapDispatchToProps
-  dispatch => ({
+  (dispatch) => ({
     onCancel() {
       dispatch(closeAuthenticationDialog());
     },

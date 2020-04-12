@@ -6,12 +6,12 @@ import { Fill, Stroke } from 'ol/style';
 
 export const primaryColor = '#2196f3'; // Blue[500] in Material-UI
 
-export const fill = color => new Fill({ color });
+export const fill = (color) => new Fill({ color });
 export const stroke = (color, width = 1) => new Stroke({ color, width });
 
-export const thickOutline = color => stroke(color, 5);
-export const thinOutline = color => stroke(color, 2);
-export const veryThinOutline = color => stroke(color, 1);
+export const thickOutline = (color) => stroke(color, 5);
+export const thinOutline = (color) => stroke(color, 2);
+export const veryThinOutline = (color) => stroke(color, 1);
 
 export const blackVeryThinOutline = veryThinOutline('black');
 export const blackThinOutline = thinOutline('black');

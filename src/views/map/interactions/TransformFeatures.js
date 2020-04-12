@@ -59,7 +59,7 @@ const transformationTypeToHandler = {
 export class TransformFeaturesInteraction extends PointerInteraction {
   constructor(options) {
     super({
-      handleDownEvent: event => {
+      handleDownEvent: (event) => {
         const type = this.decideTypeFromEvent_(event);
         if (!type) {
           return false;
@@ -85,7 +85,7 @@ export class TransformFeaturesInteraction extends PointerInteraction {
 
           if (type === 'rotate') {
             const extent = Extent.createEmpty();
-            features.forEach(feature => {
+            features.forEach((feature) => {
               const geom = feature.getGeometry();
               if (feature.getId().slice(0, 5) === 'home$') {
                 Extent.extend(
@@ -114,7 +114,7 @@ export class TransformFeaturesInteraction extends PointerInteraction {
         return false;
       },
 
-      handleDragEvent: event => {
+      handleDragEvent: (event) => {
         if (this.lastCoordinate_) {
           const newCoordinate = event.coordinate;
           const deltaX = newCoordinate[0] - this.lastCoordinate_[0];
@@ -122,7 +122,7 @@ export class TransformFeaturesInteraction extends PointerInteraction {
           const totalDelta = this.calculateTotalDelta_();
           const features = this.features_;
 
-          features.forEach(feature => {
+          features.forEach((feature) => {
             const geom = feature.getGeometry();
             this.transformation_.handler(geom, deltaX, deltaY, totalDelta);
             feature.setGeometry(geom);
@@ -141,7 +141,7 @@ export class TransformFeaturesInteraction extends PointerInteraction {
         }
       },
 
-      handleUpEvent: event => {
+      handleUpEvent: (event) => {
         if (this.lastCoordinate_) {
           const features = this.features_;
           const totalDelta = this.calculateTotalDelta_();
@@ -215,7 +215,7 @@ export class TransformFeaturesInteraction extends PointerInteraction {
       }
 
       const { layers } = options;
-      return layer => includes(layers, layer);
+      return (layer) => includes(layers, layer);
     }
 
     return stubTrue;
@@ -259,7 +259,7 @@ export class TransformFeaturesInteraction extends PointerInteraction {
     if (features) {
       map.forEachFeatureAtPixel(
         pixel,
-        feature => {
+        (feature) => {
           if (features.includes(feature)) {
             result = feature;
             return true; // To stop further checks
@@ -300,7 +300,7 @@ class TransformFeaturesInteractionEvent extends OLEvent {
  */
 export default createOLInteractionComponent(
   'TransformFeatures',
-  props => new TransformFeaturesInteraction(props),
+  (props) => new TransformFeaturesInteraction(props),
   {
     propTypes: {
       featureProvider: PropTypes.func.isRequired,

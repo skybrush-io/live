@@ -37,7 +37,7 @@ export function copyAndEnsureLengthEquals(length, input) {
 export function getNewEditIndex(state, continuation) {
   const { mapping } = state;
   const currentIndex = state.mappingEditor.indexBeingEdited;
-  const numItems = mapping.length;
+  const numberItems = mapping.length;
   const step =
     continuation === 'prev' || continuation === 'prevEmpty'
       ? -1
@@ -51,8 +51,12 @@ export function getNewEditIndex(state, continuation) {
   if (step === 0) {
     newIndex = -1;
   } else {
-    newIndex = (currentIndex + step) % numItems;
-    for (; newIndex !== currentIndex; newIndex = (newIndex + step) % numItems) {
+    newIndex = (currentIndex + step) % numberItems;
+    for (
+      ;
+      newIndex !== currentIndex;
+      newIndex = (newIndex + step) % numberItems
+    ) {
       if (!needsEmpty || isNil(mapping[newIndex])) {
         break;
       }

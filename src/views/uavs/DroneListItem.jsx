@@ -8,7 +8,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Colors from '~/components/colors';
 
 const useStyles = makeStyles(
-  theme => ({
+  (theme) => ({
     root: {
       alignItems: 'center',
       cursor: 'hand',
@@ -63,19 +63,19 @@ const addDropIndicator = {
 const DragDropArea = ({ children, id, onDrop, ...rest }) => {
   const [collectedDragProps, drag] = useDrag({
     item: { id, type: 'uav' },
-    collect: monitor => monitor.isDragging() && hideItem
+    collect: (monitor) => monitor.isDragging() && hideItem
   });
 
   const [collectedDropProps, drop] = useDrop({
     accept: 'uav',
-    canDrop: item => id !== item.id,
-    collect: monitor =>
+    canDrop: (item) => id !== item.id,
+    collect: (monitor) =>
       monitor.isOver() && monitor.canDrop() && addDropIndicator,
-    drop: onDrop ? item => onDrop(item.id) : undefined
+    drop: onDrop ? (item) => onDrop(item.id) : undefined
   });
 
   const ref = useCallback(
-    value => {
+    (value) => {
       drag(value);
       drop(value);
     },

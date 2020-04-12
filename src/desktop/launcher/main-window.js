@@ -43,7 +43,7 @@ function getURLToLoad() {
  * @param  {boolean}  opts.debug  whether to start with the developer tools open
  * @return {Object} the main window of the application that was created
  */
-const createMainWindow = (app, opts) => {
+const createMainWindow = (app, options) => {
   if (mainWindow !== undefined) {
     return mainWindow;
   }
@@ -90,7 +90,7 @@ const createMainWindow = (app, opts) => {
     mainWindow.show();
     mainWindow.focus();
 
-    if (opts.debug) {
+    if (options.debug) {
       mainWindow.webContents.openDevTools({
         mode: 'undocked'
       });

@@ -55,7 +55,7 @@ LCDClockPanel.defaultProps = {};
 
 export default connect(
   // mapStateToProps
-  state => ({
+  (state) => ({
     ids: state.lcdClock.order
   }),
   // mapDispatchToProps

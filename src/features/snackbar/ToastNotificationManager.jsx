@@ -51,7 +51,7 @@ ToastNotificationManager.propTypes = {
  */
 export default connect(
   // mapStateToProps
-  state => state.snackbar,
+  (state) => state.snackbar,
   // mapDispatchToProps
   {}
 )(ToastNotificationManager);

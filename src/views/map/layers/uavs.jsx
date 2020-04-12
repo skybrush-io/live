@@ -61,7 +61,7 @@ class UAVsLayerSettingsPresentation extends React.Component {
   }
 
   render() {
-    const colorInputs = colors.map(color => (
+    const colorInputs = colors.map((color) => (
       <TextField
         key={`${color}_predicate_textfield`}
         fullWidth
@@ -76,7 +76,7 @@ class UAVsLayerSettingsPresentation extends React.Component {
     return (
       <div>
         <p key="header">
-          Color predicates (e.g. <code>id.includes(&apos;1&apos;)</code>)
+          Color predicates (e.g. <code>i\id.\includes(’1’)i</code>)
         </p>
         {colorInputs}
         <p style={{ textAlign: 'center' }}>
@@ -87,7 +87,7 @@ class UAVsLayerSettingsPresentation extends React.Component {
   }
 
   _makeChangeHandler(color) {
-    return event => {
+    return (event) => {
       const colorPredicates = {
         ...this.state.colorPredicates,
         [color]: event.target.value
@@ -133,7 +133,7 @@ export const UAVsLayerSettings = connect(
     setLayerParameter: (parameter, value) => {
       dispatch(setLayerParameterById(ownProps.layerId, parameter, value));
     },
-    showMessage: message => {
+    showMessage: (message) => {
       dispatch(showSnackbarMessage(message));
     }
   })
@@ -166,7 +166,7 @@ UAVsLayerPresentation.defaultProps = {
 
 export const UAVsLayer = connect(
   // mapStateToProps
-  state => ({
+  (state) => ({
     selection: getSelection(state)
   }),
   // mapDispatchToProps

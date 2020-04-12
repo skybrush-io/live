@@ -157,14 +157,14 @@ function* runUploadWorker(chan, failed) {
 /**
  * Saga that handles the uploading of the show to a set of drones.
  */
-function* showUploaderSaga({ numWorkers = 8 } = {}) {
+function* showUploaderSaga({ numWorkers: numberWorkers = 8 } = {}) {
   const failed = [];
   const chan = yield call(channel);
   const workers = [];
 
   // create a given number of worker tasks, depending on the max concurrency
   // that we allow for the uploads
-  for (let i = 0; i < numWorkers; i++) {
+  for (let i = 0; i < numberWorkers; i++) {
     const worker = yield fork(runUploadWorker, chan, failed);
     workers.push(worker);
   }
@@ -181,7 +181,7 @@ function* showUploaderSaga({ numWorkers = 8 } = {}) {
   }
 
   // send the stop signal to the workers
-  for (let i = 0; i < numWorkers; i++) {
+  for (let i = 0; i < numberWorkers; i++) {
     yield put(chan, STOP);
   }
 
@@ -234,7 +234,7 @@ function* pullSettingsFromServer() {
  * Saga that sends the current show settings to the server.
  */
 function* pushSettingsToServer() {
-  const { time, method } = yield select(state => state.show.start);
+  const { time, method } = yield select((state) => state.show.start);
   const authorized = yield select(isShowAuthorizedToStartLocally);
   const mapping = yield select(getMissionMapping);
   const uavIdsToStartAutomatically =
@@ -283,8 +283,8 @@ function* showSettingsSynchronizerSaga(action) {
   }
 }
 
-const sagaCreator = mapping =>
-  function*() {
+const sagaCreator = (mapping) =>
+  function* () {
     const actions = Object.keys(mapping);
     const tasks = {};
 

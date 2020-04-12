@@ -120,7 +120,7 @@ ThreeDView.propTypes = {
 
 export default connect(
   // mapStateToProps
-  state => ({
+  (state) => ({
     isCoordinateSystemLeftHanded: isMapCoordinateSystemLeftHanded(state),
     ...state.settings.threeD,
     ...state.threeD

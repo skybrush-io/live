@@ -61,7 +61,7 @@ class OwnLocationVectorSource extends React.Component {
     }
   }
 
-  _assignSourceRef = value => {
+  _assignSourceRef = (value) => {
     if (this._sourceRef === value) {
       return;
     }
@@ -81,23 +81,23 @@ class OwnLocationVectorSource extends React.Component {
     }
   };
 
-  _logError = event => {
+  _logError = (event) => {
     this.props.onError(`Error while getting position: ${event.message}`);
   };
 
-  _onPositionChange = event => {
+  _onPositionChange = (event) => {
     const coordinates = event.target.getPosition();
     this.locationFeature.setGeometry(
       coordinates ? new Point(coordinates) : null
     );
   };
 
-  _onAccuracyGeometryChange = event => {
+  _onAccuracyGeometryChange = (event) => {
     const accuracyGeometry = event.target.getAccuracyGeometry();
     this.accuracyFeature.setGeometry(accuracyGeometry);
   };
 
-  _onDeviceOrientationChange = event => {
+  _onDeviceOrientationChange = (event) => {
     this.locationIcon.setRotation(toRadians(-event.alpha));
 
     if (this._sourceRef) {

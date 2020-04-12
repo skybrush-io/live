@@ -8,7 +8,7 @@ import LCDText from './LCDText';
  * a clock tp show in the LCD panel slot.
  */
 const ClockSelector = ({ clocks, lcdStyle, onClick, selectedClockId }) =>
-  clocks.map(clock => (
+  clocks.map((clock) => (
     <LCDText
       key={clock.id}
       {...lcdStyle}

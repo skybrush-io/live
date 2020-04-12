@@ -44,7 +44,7 @@ const grids = [
   }
 ];
 
-const ThreeDViewTab = props => (
+const ThreeDViewTab = (props) => (
   <Box mb={2}>
     <FormGroup>
       <Header>Environment</Header>
@@ -57,7 +57,7 @@ const ThreeDViewTab = props => (
             value={props.scenery}
             onChange={props.onFieldChanged}
           >
-            {sceneries.map(item => (
+            {sceneries.map((item) => (
               <MenuItem key={item.id} value={item.id}>
                 {item.label}
               </MenuItem>
@@ -73,7 +73,7 @@ const ThreeDViewTab = props => (
             value={props.grid}
             onChange={props.onFieldChanged}
           >
-            {grids.map(item => (
+            {grids.map((item) => (
               <MenuItem key={item.id} value={item.id}>
                 {item.label}
               </MenuItem>
@@ -145,11 +145,11 @@ ThreeDViewTab.propTypes = {
 
 export default connect(
   // mapStateToProps
-  state => ({
+  (state) => ({
     ...state.settings.threeD
   }),
   // mapDispatchToProps
-  dispatch => ({
+  (dispatch) => ({
     onCheckboxToggled(event) {
       dispatch(
         updateAppSettings('threeD', {

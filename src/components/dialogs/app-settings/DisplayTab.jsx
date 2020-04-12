@@ -22,7 +22,7 @@ import Header from '~/components/dialogs/FormHeader';
 import { updateAppSettings } from '~/features/settings/slice';
 import { getMapOriginRotationAngle } from '~/selectors/map';
 
-const DisplayTabPresentation = props => (
+const DisplayTabPresentation = (props) => (
   <Box my={2}>
     <FormControl fullWidth variant="filled">
       <InputLabel id="display-theme-label">Theme</InputLabel>
@@ -94,14 +94,14 @@ DisplayTabPresentation.propTypes = {
 
 export default connect(
   // mapStateToProps
-  state => ({
+  (state) => ({
     coordinateSystemType: state.map.origin.type,
     origin: state.map.origin.position,
     orientation: getMapOriginRotationAngle(state),
     ...state.settings.display
   }),
   // mapDispatchToProps
-  dispatch => ({
+  (dispatch) => ({
     onCheckboxToggled(event) {
       dispatch(
         updateAppSettings('display', {

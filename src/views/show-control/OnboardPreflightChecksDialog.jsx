@@ -72,7 +72,7 @@ function formatUAVIds(uavIds, { maxCount = 8, separator = ' \u00B7 ' } = {}) {
 const PreflightCheckListPresentation = ({ items, showMissionIds, ...rest }) =>
   items.length > 0 ? (
     <List dense disablePadding {...rest}>
-      {items.map(item => {
+      {items.map((item) => {
         const itemId = `preflight-item-${item.code}`;
         const status = severityToStatus[getSeverityOfErrorCode(item.code)];
         return (
@@ -84,8 +84,8 @@ const PreflightCheckListPresentation = ({ items, showMissionIds, ...rest }) =>
               secondary={formatUAVIds(
                 item.uavIdsAndIndices.map(
                   showMissionIds
-                    ? x => formatMissionId(x[1])
-                    : x => String(x[0])
+                    ? (x) => formatMissionId(x[1])
+                    : (x) => String(x[0])
                 )
               )}
             />
@@ -113,7 +113,7 @@ PreflightCheckListPresentation.propTypes = {
 
 const PreflightCheckList = connect(
   // mapStateToProps
-  state => ({
+  (state) => ({
     items: getErrorCodeSummaryForUAVsInMission(state),
     showMissionIds: isShowingMissionIds(state)
   }),
@@ -184,7 +184,7 @@ OnboardPreflightChecksDialog.defaultProps = {
 
 export default connect(
   // mapStateToProps
-  state => ({
+  (state) => ({
     ...state.show.onboardPreflightChecksDialog,
     signedOff: areOnboardPreflightChecksSignedOff(state)
   }),

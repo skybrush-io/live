@@ -33,7 +33,7 @@ const cachedGetColorById = (() => {
 
   return (colorPredicates, id) =>
     /* eslint no-new-func: "off" */
-    findKey(colorPredicates, p => {
+    findKey(colorPredicates, (p) => {
       if (!(p in predicateFunctionCache)) {
         try {
           predicateFunctionCache[p] = new Function('id', `return ${p}`);
@@ -80,11 +80,14 @@ class ActiveUAVsLayerSource extends React.Component {
     this.eventBindings = {};
   }
 
-  componentDidUpdate(prevProps) {
-    this._onFlockMaybeChanged(prevProps.flock, this.props.flock);
-    this._onSelectionMaybeChanged(prevProps.selection, this.props.selection);
+  componentDidUpdate(previousProps) {
+    this._onFlockMaybeChanged(previousProps.flock, this.props.flock);
+    this._onSelectionMaybeChanged(
+      previousProps.selection,
+      this.props.selection
+    );
     this._onColorsMaybeChanged(
-      prevProps.colorPredicates,
+      previousProps.colorPredicates,
       this.props.colorPredicates
     );
     this._featureManager.projection = this.props.projection;
@@ -112,7 +115,7 @@ class ActiveUAVsLayerSource extends React.Component {
     return <source.Vector ref={this._assignSourceRef} />;
   }
 
-  _assignSourceRef = value => {
+  _assignSourceRef = (value) => {
     if (value === this._sourceRef) {
       return;
     }
@@ -134,7 +137,7 @@ class ActiveUAVsLayerSource extends React.Component {
    *
    * @param {UAVFeature}  feature  the feature that was added
    */
-  _onFeatureAdded = feature => {
+  _onFeatureAdded = (feature) => {
     // Ensure that the feature is selected automatically if it is part
     // of the current selection
     feature.selected = includes(this.props.selection, feature.getId());
@@ -185,13 +188,13 @@ class ActiveUAVsLayerSource extends React.Component {
     difference(newSelection, oldSelection)
       .map(getFeatureById)
       .filter(Boolean)
-      .forEach(feature => {
+      .forEach((feature) => {
         feature.selected = true;
       });
     difference(oldSelection, newSelection)
       .map(getFeatureById)
       .filter(Boolean)
-      .forEach(feature => {
+      .forEach((feature) => {
         feature.selected = false;
       });
   };
@@ -221,8 +224,8 @@ class ActiveUAVsLayerSource extends React.Component {
    * @listens Flock#uavsUpdated
    * @param {UAV[]} uavs  the UAVs that should be refreshed
    */
-  _onUAVsUpdated = uavs => {
-    uavs.forEach(uav => {
+  _onUAVsUpdated = (uavs) => {
+    uavs.forEach((uav) => {
       const feature = this._featureManager.createOrUpdateFeatureById(uav.id, [
         uav.lon,
         uav.lat

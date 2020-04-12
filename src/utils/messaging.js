@@ -9,7 +9,7 @@ import makeLogger from './logging';
 
 const logger = makeLogger('messaging');
 
-const processResponse = (expectedType, commandName) => response => {
+const processResponse = (expectedType, commandName) => (response) => {
   if (response) {
     const { body } = response;
     if (body) {
@@ -41,7 +41,7 @@ const processResponse = (expectedType, commandName) => response => {
   }
 };
 
-export const takeoffUAVs = uavs =>
+export const takeoffUAVs = (uavs) =>
   messageHub
     .sendMessage({
       type: 'UAV-TAKEOFF',
@@ -49,7 +49,7 @@ export const takeoffUAVs = uavs =>
     })
     .then(processResponse('UAV-TAKEOFF', 'Takeoff command'));
 
-export const landUAVs = uavs =>
+export const landUAVs = (uavs) =>
   messageHub
     .sendMessage({
       type: 'UAV-LAND',
@@ -71,7 +71,7 @@ export const resetUAVs = async (uavs, component) => {
   return processResponse('UAV-RST', 'Reset command')(response);
 };
 
-export const returnToHomeUAVs = uavs =>
+export const returnToHomeUAVs = (uavs) =>
   messageHub
     .sendMessage({
       type: 'UAV-RTH',
@@ -79,7 +79,7 @@ export const returnToHomeUAVs = uavs =>
     })
     .then(processResponse('UAV-RTH', 'Return to home command'));
 
-export const haltUAVs = uavs =>
+export const haltUAVs = (uavs) =>
   messageHub
     .sendMessage({
       type: 'UAV-HALT',

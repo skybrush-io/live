@@ -138,7 +138,7 @@ const store = configureStore({
       serializableCheck: {
         /* redux-persist uses functions in actions and redux-promise-middleware
          * uses errors. This setting  silences a warning about them */
-        isSerializable: value =>
+        isSerializable: (value) =>
           isPlain(value) ||
           isFunction(value) ||
           isPromise(value) ||
@@ -162,11 +162,11 @@ const store = configureStore({
 
     // make sure that the show object that we load is not cached / tracked by
     // the Redux devtools
-    actionSanitizer: action =>
+    actionSanitizer: (action) =>
       action.type === loadingPromiseFulfilled.type && action.payload
         ? { ...action, payload: '<<JSON_DATA>>' }
         : action,
-    stateSanitizer: state =>
+    stateSanitizer: (state) =>
       state.show && state.show.data
         ? {
             ...state,

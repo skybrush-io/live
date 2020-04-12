@@ -20,7 +20,7 @@ import {
 import * as messaging from '~/utils/messaging';
 
 const useStyles = makeStyles(
-  theme => ({
+  (theme) => ({
     divider: {
       alignSelf: 'stretch',
       height: 'auto',
@@ -119,7 +119,7 @@ export default connect(
   // mapStateToProps
   null,
   // mapDispatchToProps
-  dispatch => ({
+  (dispatch) => ({
     selectUAVInMessagesDialog(id) {
       dispatch(selectUAVInMessagesDialog(id));
     },

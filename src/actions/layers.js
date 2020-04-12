@@ -103,7 +103,7 @@ export const setLayerParametersById = createAction(
 /**
  * Action factory that creates an action that will show the layers dialog.
  */
-export const showLayersDialog = createAction(SHOW_LAYERS_DIALOG, layerId => ({
+export const showLayersDialog = createAction(SHOW_LAYERS_DIALOG, (layerId) => ({
   layerId
 }));
 

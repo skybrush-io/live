@@ -43,14 +43,14 @@ AFrame.registerComponent('sprite', {
   },
 
   update(oldData) {
-    const el = this.el;
+    const element = this.el;
 
     if (this.data.src !== oldData.src) {
       const savedSrc = this.data.src;
-      el.sceneEl.systems.material.loadTexture(
+      element.sceneEl.systems.material.loadTexture(
         savedSrc,
         { src: savedSrc },
-        texture => {
+        (texture) => {
           // Check whether the 'src' property has been changed while loading
           // the image
           if (this.data.src === savedSrc) {
@@ -89,13 +89,13 @@ AFrame.registerComponent('sprite', {
       this.material.needsUpdate = true;
     }
 
-    let mesh = el.getObject3D('mesh');
+    let mesh = element.getObject3D('mesh');
     if (mesh) {
       mesh.scale.copy(this.data.scale);
     } else {
       mesh = new Sprite(this.material);
       mesh.scale.copy(this.data.scale);
-      el.setObject3D('mesh', mesh);
+      element.setObject3D('mesh', mesh);
     }
   },
 

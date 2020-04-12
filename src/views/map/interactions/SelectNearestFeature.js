@@ -65,7 +65,7 @@ class SelectNearestFeatureInteraction extends Interaction {
    */
   constructor(options = {}) {
     super({
-      handleEvent: mapBrowserEvent => {
+      handleEvent: (mapBrowserEvent) => {
         // Bail out if this is not a click
         if (!Condition.click(mapBrowserEvent)) {
           return true;
@@ -108,7 +108,7 @@ class SelectNearestFeatureInteraction extends Interaction {
             .getArray()
             .filter(this._isLayerFeasible)
             .filter(this._layerSelectorFunction)
-            .map(layer => {
+            .map((layer) => {
               const source = layer.getSource();
               return source
                 ? source.getClosestFeatureToCoordinate(coordinate)
@@ -183,7 +183,7 @@ class SelectNearestFeatureInteraction extends Interaction {
       }
 
       if (isArray(layers)) {
-        return layer => includes(layers, layer);
+        return (layer) => includes(layers, layer);
       }
 
       return stubFalse;
@@ -263,7 +263,7 @@ class SelectNearestFeatureInteraction extends Interaction {
  */
 export default createOLInteractionComponent(
   'SelectNearestFeature',
-  props => new SelectNearestFeatureInteraction(props),
+  (props) => new SelectNearestFeatureInteraction(props),
   {
     propTypes: {
       addCondition: PropTypes.func,

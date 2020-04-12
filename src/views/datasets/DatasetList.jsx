@@ -48,7 +48,7 @@ DatasetListPresentation.displayName = 'DatasetListPresentation';
  */
 const DatasetList = connect(
   // mapStateToProps
-  state => ({
+  (state) => ({
     datasets: getDatasetsInOrder(state),
     dense: true
   }),

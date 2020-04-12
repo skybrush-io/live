@@ -48,7 +48,7 @@ export async function getShowConfiguration(hub) {
  * @param  {MessageHub}  hub  the message hub used to send the message
  */
 const listExtensions = memoize(
-  async hub => {
+  async (hub) => {
     const response = await hub.sendMessage('EXT-LIST');
     return response.body;
   },

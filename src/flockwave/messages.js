@@ -400,7 +400,7 @@ class CommandExecutionManager {
     return new Promise((resolve, reject) => {
       hub
         .sendMessage(request)
-        .then(response => {
+        .then((response) => {
           const receipt = extractReceiptFromCommandRequest(response, uavId);
           const pendingCommandExecution = new PendingCommandExecution(
             receipt,
@@ -651,7 +651,7 @@ export default class MessageHub {
       !this._notificationHandlers[type].includes(handler)
     ) {
       throw new Error(
-        `Unable to unregister handler from ${type}. Handler doesn't exist.`
+        `Unable to unregister handler from ${type}. Handler doesn’t exist.`
       );
     }
 

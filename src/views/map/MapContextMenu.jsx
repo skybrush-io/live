@@ -118,7 +118,7 @@ class MapContextMenu extends React.Component {
                 <ListItemIcon>
                   <Flight />
                 </ListItemIcon>
-                Fly here at altitude...
+                \n Fly here at altitude…\n
               </MenuItem>,
               <Divider key="div1" />,
               <MenuItem key="takeoff" dense onClick={this._takeoffSelectedUAVs}>
@@ -215,7 +215,7 @@ class MapContextMenu extends React.Component {
                 <ListItemIcon>
                   <Edit />
                 </ListItemIcon>
-                Properties...
+                \n Properties…\n
               </MenuItem>,
               <MenuItem
                 key="remove"
@@ -252,7 +252,7 @@ class MapContextMenu extends React.Component {
       'Enter the target altitude'
     );
     if (altitude !== undefined) {
-      const altitudeAsNumber = parseFloat(altitude);
+      const altitudeAsNumber = Number.parseFloat(altitude);
       if (isNaN(altitudeAsNumber)) {
         this.props.showErrorMessage('Invalid target altitude');
       } else {
@@ -350,7 +350,7 @@ const getContextProvider = createSelector(
   getSelectedFeatureIds,
   getSelectedFeatureLabels,
   getSelectedUAVIds,
-  (selectedFeatureIds, selectedFeatureLabels, selectedUAVIds) => context => ({
+  (selectedFeatureIds, selectedFeatureLabels, selectedUAVIds) => (context) => ({
     selectedFeatureIds,
     selectedFeatureLabels,
     selectedUAVIds,
@@ -360,36 +360,36 @@ const getContextProvider = createSelector(
 
 const MapContextMenuContainer = connect(
   // mapStateToProps
-  state => ({
+  (state) => ({
     contextProvider: getContextProvider(state)
   }),
   // mapDispatchToProps
-  dispatch => ({
-    editFeature: id => {
+  (dispatch) => ({
+    editFeature: (id) => {
       dispatch(showFeatureEditorDialog(id));
     },
-    removeFeaturesByIds: ids => {
+    removeFeaturesByIds: (ids) => {
       dispatch(removeFeatures(ids));
     },
     renameFeature: (id, label) => {
       dispatch(
         showPromptDialog('Enter the new name of the feature', label)
-      ).then(newLabel => {
+      ).then((newLabel) => {
         if (newLabel) {
           dispatch(renameFeature(id, newLabel));
         }
       });
     },
-    selectUAVInMessagesDialog: id => {
+    selectUAVInMessagesDialog: (id) => {
       dispatch(selectUAVInMessagesDialog(id));
     },
-    setMapCoordinateSystemOrigin: coords => {
+    setMapCoordinateSystemOrigin: (coords) => {
       dispatch(setFlatEarthCoordinateSystemOrigin(coords));
     },
-    setShowCoordinateSystemOrigin: coords => {
+    setShowCoordinateSystemOrigin: (coords) => {
       dispatch(setOutdoorShowOrigin(coords));
     },
-    showErrorMessage: message => {
+    showErrorMessage: (message) => {
       dispatch(showSnackbarMessage(message));
     },
     showMessagesDialog: () => {

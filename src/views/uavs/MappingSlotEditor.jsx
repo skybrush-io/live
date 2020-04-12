@@ -15,7 +15,7 @@ import {
 } from '~/features/mission/slice';
 
 const useStyles = makeStyles(
-  theme => ({
+  (theme) => ({
     root: {
       position: 'absolute',
       width: 48,
@@ -55,15 +55,15 @@ const MappingSlotEditor = ({
 }) => {
   const classes = useStyles();
 
-  const onBlur = event => {
+  const onBlur = (event) => {
     commitMappingEditorSessionAtCurrentSlot({
       value: event.target.value
     });
   };
 
-  const onFocus = event => event.target.select();
+  const onFocus = (event) => event.target.select();
 
-  const onKeyDown = event => {
+  const onKeyDown = (event) => {
     if (event.key === 'Enter') {
       commitMappingEditorSessionAtCurrentSlot({
         continuation: event.shiftKey ? false : 'next',
@@ -113,7 +113,7 @@ MappingSlotEditor.propTypes = {
 
 export default connect(
   // mapStateToProps
-  state => ({
+  (state) => ({
     defaultValue: getUAVIdForMappingSlotBeingEdited(state)
   }),
   // mapDispatchToProps

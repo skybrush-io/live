@@ -12,7 +12,7 @@ import Clear from '@material-ui/icons/Clear';
 
 import { normalizeAngle } from '~/utils/geography';
 
-export const formatAngle = angle =>
+export const formatAngle = (angle) =>
   normalizeAngle(angle).replace(',', '.') + '\u00B0';
 
 /**
@@ -76,11 +76,11 @@ export default class RotationField extends React.Component {
     );
   }
 
-  _onBlur = event => {
+  _onBlur = (event) => {
     this._onMaybeCommitValue({ text: event.target.value });
   };
 
-  _onChange = event => {
+  _onChange = (event) => {
     this._updateValueFromText(event.target.value);
   };
 
@@ -88,7 +88,7 @@ export default class RotationField extends React.Component {
     this._updateValueFromText('0', { commit: true });
   };
 
-  _onKeyDown = event => {
+  _onKeyDown = (event) => {
     if (event.key === 'Enter') {
       event.preventDefault();
       this._updateValueFromText(event.target.value, { commit: true });
@@ -110,7 +110,7 @@ export default class RotationField extends React.Component {
     }
   };
 
-  _onMouseDownOnButton = event => {
+  _onMouseDownOnButton = (event) => {
     event.preventDefault();
   };
 
@@ -119,7 +119,7 @@ export default class RotationField extends React.Component {
   };
 
   _updateValueFromText = (text, { commit } = {}) => {
-    this.setState(state =>
+    this.setState((state) =>
       text === state.originalText
         ? { dirty: false, text: undefined }
         : { dirty: true, text }
@@ -132,7 +132,7 @@ export default class RotationField extends React.Component {
     }
   };
 
-  _validate = text => {
+  _validate = (text) => {
     const value = normalizeAngle(Number.parseFloat(text));
     const hasError = isNaN(value);
     this.setState({

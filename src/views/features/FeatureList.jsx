@@ -21,7 +21,7 @@ import { getFeaturesInOrder } from '~/selectors/ordered';
  * @param  {Object} props  the properties of the component
  * @return {Object} the React presentation component
  */
-const FeatureListEntry = props => {
+const FeatureListEntry = (props) => {
   const { feature, onEditFeature } = props;
   const { id, color, label, type } = feature;
   return (
@@ -65,12 +65,12 @@ FeatureListPresentation.displayName = 'FeatureListPresentation';
 
 export default connect(
   // mapStateToProps
-  state => ({
+  (state) => ({
     dense: true,
     features: getFeaturesInOrder(state)
   }),
   // mapDispatchToProps
-  dispatch => ({
+  (dispatch) => ({
     onEditFeature(event) {
       const featureId = event.currentTarget.dataset.id;
       if (featureId) {

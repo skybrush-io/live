@@ -20,13 +20,14 @@ const defaultState = {
  */
 const reducer = handleActions(
   {
-    SHOW_AUTHENTICATION_DIALOG: state =>
+    SHOW_AUTHENTICATION_DIALOG: (state) =>
       u({ lastError: undefined, open: true }, state),
 
-    CLOSE_AUTHENTICATION_DIALOG: state =>
+    CLOSE_AUTHENTICATION_DIALOG: (state) =>
       u({ lastError: undefined, open: false }, state),
 
-    AUTHENTICATE_TO_SERVER_PENDING: state => u({ lastError: undefined }, state),
+    AUTHENTICATE_TO_SERVER_PENDING: (state) =>
+      u({ lastError: undefined }, state),
 
     AUTHENTICATE_TO_SERVER_FULFILLED: (state, action) => {
       const { payload } = action;

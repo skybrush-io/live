@@ -91,7 +91,7 @@ export function chooseUniqueName(nameProposal, existingNames) {
 
   const match = nameProposal.match(/^(.*)\s+(\d+)$/);
   const nameBase = match ? match[0] : trimEnd(nameProposal);
-  let index = match ? parseInt(match[1], 10) : 0;
+  let index = match ? Number.parseInt(match[1], 10) : 0;
   let candidate;
 
   while (true) {

@@ -75,13 +75,13 @@ export const ErrorCode = Object.freeze({
 /**
  * Returns the severity class of a Flockwave error code.
  */
-export const getSeverityOfErrorCode = code => (code & 0xff) >> 6;
+export const getSeverityOfErrorCode = (code) => (code & 0xff) >> 6;
 
 /**
  * Returns the severity class of the most severe error code from a list of
  * Flockwave error codes.
  */
-export const getSeverityOfMostSevereErrorCode = codes =>
+export const getSeverityOfMostSevereErrorCode = (codes) =>
   codes && codes.length > 0
     ? Math.max(...codes.map(getSeverityOfErrorCode))
     : Severity.INFO;

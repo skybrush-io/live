@@ -7,8 +7,8 @@ import React from 'react';
 
 import { makeStyles } from '@material-ui/core/styles';
 
-const lineStyle = theme => ({
-  content: "''",
+const lineStyle = (theme) => ({
+  content: '’’',
   position: 'absolute',
   top: '50%',
   width: 9999,
@@ -16,7 +16,7 @@ const lineStyle = theme => ({
   background: theme.palette.text.hint
 });
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {
     display: 'block',
     textAlign: 'center',

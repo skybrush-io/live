@@ -25,7 +25,7 @@ import { scrollToMapLocation } from '~/signals';
  * @param  {Object} props  the properties of the component
  * @return {Object} the React presentation component
  */
-const LocationListEntry = props => {
+const LocationListEntry = (props) => {
   const { location, onEditItem } = props;
   const { id, name } = location;
 
@@ -57,7 +57,7 @@ LocationListEntry.propTypes = {
  * @param  {Object} props  the props of the list in which this item will be placed
  * @return {React.Node}  the rendered list item
  */
-function createNewItemEntry(props) {
+const createNewItemEntry = (props) => {
   /* eslint-disable react/prop-types */
   return (
     <ListItem key="__addNew__" button onClick={props.onNewItem}>
@@ -65,7 +65,7 @@ function createNewItemEntry(props) {
     </ListItem>
   );
   /* eslint-enable react/prop-types */
-}
+};
 
 /**
  * Presentation component for the entire location list.
@@ -88,12 +88,12 @@ LocationListPresentation.displayName = 'LocationListPresentation';
 
 const LocationList = connect(
   // mapStateToProps
-  state => ({
+  (state) => ({
     dense: true,
     savedLocations: getSavedLocationsInOrder(state)
   }),
   // mapDispatchToProps
-  dispatch => ({
+  (dispatch) => ({
     onEditItem(id) {
       dispatch(editSavedLocation(id));
     },

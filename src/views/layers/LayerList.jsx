@@ -23,7 +23,7 @@ import { getLayersInOrder } from '~/selectors/ordered';
  * @param  {Object} props  the props of the list in which this item will be placed
  * @return {React.Node}  the rendered list item
  */
-function createListItemForLayer(layer, props) {
+const createListItemForLayer = (layer, props) => {
   const icon = iconForLayerType(layer.type);
   return (
     /* eslint-disable react/prop-types */
@@ -41,7 +41,7 @@ function createListItemForLayer(layer, props) {
     </ListItem>
     /* eslint-enable react/prop-types */
   );
-}
+};
 
 /**
  * Creates the "add new layer" item for the layer list.
@@ -49,7 +49,7 @@ function createListItemForLayer(layer, props) {
  * @param  {Object} props  the props of the list in which this item will be placed
  * @return {React.Node}  the rendered list item
  */
-function createNewItemEntry(props) {
+const createNewItemEntry = (props) => {
   /* eslint-disable react/prop-types */
   return (
     <ListItem key="__newItem__" button onClick={props.onNewItem}>
@@ -60,7 +60,7 @@ function createNewItemEntry(props) {
     </ListItem>
   );
   /* eslint-enable react/prop-types */
-}
+};
 
 /**
  * Presentation component for a list that shows the currently added
@@ -84,12 +84,12 @@ LayerListPresentation.propTypes = {
  */
 const LayerList = connect(
   // mapStateToProps
-  state => ({
+  (state) => ({
     dense: true,
     layers: getLayersInOrder(state)
   }),
   // mapDispatchToProps
-  dispatch => ({
+  (dispatch) => ({
     onChange(event, layerId) {
       dispatch(showLayersDialog(layerId));
     },

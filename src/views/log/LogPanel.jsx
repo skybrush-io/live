@@ -19,7 +19,7 @@ import FilterableSortableTable, {
 import { updateLogPanelVisibility } from '~/features/log/slice';
 import { colorForLogLevel, LogLevel } from '~/utils/logging';
 
-function iconForLogLevel(level) {
+const iconForLogLevel = (level) => {
   const style = {
     color: colorForLogLevel(level)
   };
@@ -32,7 +32,7 @@ function iconForLogLevel(level) {
   }
 
   return <ContentReport style={style} />;
-}
+};
 
 const tableColumns = [
   {
@@ -41,7 +41,7 @@ const tableColumns = [
     dataExtractor: property('level'),
     displayRenderer: iconForLogLevel,
     filterType: FilterTypes.list,
-    filterList: Object.keys(LogLevel).map(level => ({
+    filterList: Object.keys(LogLevel).map((level) => ({
       value: LogLevel[level],
       display: iconForLogLevel(LogLevel[level])
     }))
@@ -50,7 +50,7 @@ const tableColumns = [
     name: 'Timestamp',
     width: 100,
     dataExtractor: property('timestamp'),
-    displayRenderer: data => {
+    displayRenderer: (data) => {
       const currentDate = new Date(data);
       return (
         padStart(currentDate.getHours(), 2, '0') +
@@ -93,7 +93,7 @@ LogPanel.propTypes = {
 
 export default connect(
   // mapStateToProps
-  state => ({
+  (state) => ({
     items: state.log.items
   }),
   // mapDispatchToProps

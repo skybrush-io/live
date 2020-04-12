@@ -27,7 +27,7 @@ const colorForState = {
  */
 export default connect(
   // mapStateToProps
-  state => {
+  (state) => {
     const authState = isAuthenticated(state)
       ? 'authenticated'
       : isAuthenticating(state)

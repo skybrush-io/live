@@ -18,10 +18,10 @@ const defaultState = {
  */
 const reducer = handleActions(
   {
-    SHOW_MESSAGES_DIALOG: state =>
+    SHOW_MESSAGES_DIALOG: (state) =>
       Object.assign({}, state, { dialogVisible: true }),
 
-    CLOSE_MESSAGES_DIALOG: state =>
+    CLOSE_MESSAGES_DIALOG: (state) =>
       Object.assign({}, state, { dialogVisible: false })
   },
   defaultState

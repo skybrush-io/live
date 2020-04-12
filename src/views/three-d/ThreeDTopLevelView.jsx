@@ -32,7 +32,7 @@ import { isMapCoordinateSystemSpecified } from '~/selectors/map';
 import { isDark } from '~/theme';
 
 const useStyles = makeStyles(
-  theme => ({
+  (theme) => ({
     appBar: {
       backgroundColor: isDark(theme) ? '#444' : theme.palette.background.paper,
       height: 48
@@ -127,7 +127,7 @@ ThreeDTopLevelView.propTypes = {
 
 export default connect(
   // mapStateToProps
-  state => ({
+  (state) => ({
     hasMapCoordinateSystem: isMapCoordinateSystemSpecified(state),
     ...state.threeD
   }),
@@ -135,7 +135,7 @@ export default connect(
   {
     onSetNavigationMode: setNavigationMode,
 
-    onShowSettings: () => dispatch => {
+    onShowSettings: () => (dispatch) => {
       dispatch(setAppSettingsDialogTab('display'));
       dispatch(showAppSettingsDialog());
     }

@@ -57,7 +57,7 @@ OnboardPreflightChecksButton.defaultProps = {};
 
 export default connect(
   // mapStateToProps
-  state => ({
+  (state) => ({
     areChecksSignedOff: areOnboardPreflightChecksSignedOff(state),
     status: getSetupStageStatuses(state).waitForOnboardPreflightChecks
   }),

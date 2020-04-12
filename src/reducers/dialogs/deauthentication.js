@@ -19,9 +19,9 @@ const defaultState = {
  */
 const reducer = handleActions(
   {
-    SHOW_DEAUTHENTICATION_DIALOG: state => u({ open: true }, state),
+    SHOW_DEAUTHENTICATION_DIALOG: (state) => u({ open: true }, state),
 
-    CLOSE_DEAUTHENTICATION_DIALOG: state => u({ open: false }, state)
+    CLOSE_DEAUTHENTICATION_DIALOG: (state) => u({ open: false }, state)
   },
   defaultState
 );

@@ -23,8 +23,8 @@ const events = makeEventProxy('localServer');
  * @return {Promise<EventEmitter>}  a promise that resolves when the server process
  *         was launched successfully
  */
-const launch = async opts => {
-  await ipc.callMain('localServer.launch', opts);
+const launch = async (options) => {
+  await ipc.callMain('localServer.launch', options);
   return events;
 };
 
@@ -40,7 +40,7 @@ const launch = async opts => {
  * @return {Promise<string>}  a promise that resolves to the full path of the
  *         server executable if found and `null` if it is not found
  */
-const search = paths => {
+const search = (paths) => {
   return ipc.callMain('localServer.search', paths);
 };
 

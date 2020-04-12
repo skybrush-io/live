@@ -29,11 +29,11 @@ const { dispatch } = store;
  */
 const messageHub = new MessageHub();
 messageHub.registerNotificationHandlers({
-  'CLK-INF': message => handleClockInformationMessage(message.body, dispatch),
-  'CONN-INF': message =>
+  'CLK-INF': (message) => handleClockInformationMessage(message.body, dispatch),
+  'CONN-INF': (message) =>
     handleConnectionInformationMessage(message.body, dispatch),
-  'OBJ-DEL': message => handleObjectDeletionMessage(message.body, dispatch),
-  'SYS-CLOSE': message => {
+  'OBJ-DEL': (message) => handleObjectDeletionMessage(message.body, dispatch),
+  'SYS-CLOSE': (message) => {
     if (message.body && message.body.reason) {
       dispatch(
         showSnackbarMessage({
@@ -43,7 +43,7 @@ messageHub.registerNotificationHandlers({
       );
     }
   },
-  'SYS-MSG': message => {
+  'SYS-MSG': (message) => {
     if (message.body && message.body.message) {
       const { severity } = message.body;
       dispatch(
@@ -54,7 +54,7 @@ messageHub.registerNotificationHandlers({
       );
     }
   },
-  'UAV-INF': message =>
+  'UAV-INF': (message) =>
     flock.handleUAVInformationMessage(message.body, dispatch)
 });
 

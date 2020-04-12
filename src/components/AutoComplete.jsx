@@ -63,7 +63,7 @@ export class AutoComplete extends React.Component {
     /* eslint-enable react/state-in-constructor */
   }
 
-  _assignInputRef = value => {
+  _assignInputRef = (value) => {
     this._input = value;
 
     if (this.props.inputRef) {
@@ -133,12 +133,12 @@ export class AutoComplete extends React.Component {
     }
   };
 
-  _renderInput = inputProps => {
+  _renderInput = (inputProps) => {
     const { inputRef, ref, ...restInputProps } = inputProps;
     return (
       <TextField
         InputProps={{
-          inputRef: node => {
+          inputRef: (node) => {
             ref(node);
             inputRef(node);
           }
@@ -172,11 +172,11 @@ export class AutoComplete extends React.Component {
   };
 
   _renderSuggestionsContainer = ({ containerProps, children }) => {
-    const numChildren = React.Children.count(children);
+    const numberChildren = React.Children.count(children);
     return (
       <Popper
         anchorEl={this._input}
-        open={numChildren > 0}
+        open={numberChildren > 0}
         style={{ zIndex: 5000 }}
       >
         <Paper
@@ -286,7 +286,7 @@ export class AutoComplete extends React.Component {
       ? values
       : values.map(toLower);
 
-    return value => {
+    return (value) => {
       const result = [];
       const { maxItems } = effectiveOptions;
 

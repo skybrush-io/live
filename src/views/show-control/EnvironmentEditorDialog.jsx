@@ -117,13 +117,13 @@ EnvironmentEditorDialog.defaultProps = {
 
 export default connect(
   // mapStateToProps
-  state => ({
+  (state) => ({
     ...state.show.environment,
     mapCoordinateSystem: state.map.origin
   }),
 
   // mapDispatchToProps
-  dispatch => ({
+  (dispatch) => ({
     onClose() {
       dispatch(closeEnvironmentEditorDialog());
     },

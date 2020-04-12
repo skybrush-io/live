@@ -187,7 +187,7 @@ export default connect(
     const getMisalignedUAVIds = createSelectorToGetMisalignedUAVIds(
       20 /* degrees */
     );
-    return state => ({
+    return (state) => ({
       ...state.show.takeoffAreaSetupDialog,
       approved: isTakeoffAreaApproved(state),
       emptySlotIndices: getEmptyMappingSlotIndices(state),
@@ -199,7 +199,7 @@ export default connect(
   },
 
   // mapDispatchToProps
-  dispatch => ({
+  (dispatch) => ({
     onAddVirtualDrones() {
       dispatch(addVirtualDronesForMission());
     },

@@ -7,7 +7,7 @@ import GenericHeaderButton from './GenericHeaderButton';
 
 import { toggleAppSettingsDialog } from '~/actions/app-settings';
 
-const AppSettingsButtonPresentation = props => (
+const AppSettingsButtonPresentation = (props) => (
   <GenericHeaderButton {...props}>
     <SettingsIcon />
   </GenericHeaderButton>

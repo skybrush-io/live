@@ -9,7 +9,7 @@ import { isLocalHost } from '~/utils/networking';
  * @param  {Object}  state  the state of the application
  * @return {string[]}  the list of directories to add to the system path
  */
-export const getLocalServerSearchPath = state =>
+export const getLocalServerSearchPath = (state) =>
   state.settings.localServer.searchPath;
 
 /**
@@ -18,7 +18,7 @@ export const getLocalServerSearchPath = state =>
  * @param  {Object}  state  the state of the application
  * @return {string|undefined}  the full path
  */
-export const getLocalServerExecutable = state =>
+export const getLocalServerExecutable = (state) =>
   state.localServer.pathScan.result;
 
 /**
@@ -30,7 +30,7 @@ export const getLocalServerExecutable = state =>
  */
 export const foundLocalServerExecutable = createSelector(
   getLocalServerExecutable,
-  executable => typeof executable === 'string' && executable.length > 0
+  (executable) => typeof executable === 'string' && executable.length > 0
 );
 
 /**
@@ -38,8 +38,8 @@ export const foundLocalServerExecutable = createSelector(
  * desktop app should be running in the background.
  */
 export const shouldManageLocalServer = createSelector(
-  state => state.dialogs.serverSettings,
-  state => state.settings.localServer,
+  (state) => state.dialogs.serverSettings,
+  (state) => state.settings.localServer,
   foundLocalServerExecutable,
   (serverSettings, localServer, found) =>
     window.bridge &&

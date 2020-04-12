@@ -8,7 +8,7 @@ import React from 'react';
 
 import { formatCoordinate, parseCoordinate } from '../utils/geography';
 
-const safelyFormatCoordinate = coordinate =>
+const safelyFormatCoordinate = (coordinate) =>
   coordinate !== undefined && coordinate !== null
     ? formatCoordinate(coordinate)
     : '';
@@ -74,11 +74,11 @@ export default class CoordinateField extends React.Component {
     );
   }
 
-  _onBlur = event => {
+  _onBlur = (event) => {
     this._onMaybeCommitValue({ text: event.target.value });
   };
 
-  _onChange = event => {
+  _onChange = (event) => {
     this._updateValueFromText(event.target.value);
   };
 
@@ -86,7 +86,7 @@ export default class CoordinateField extends React.Component {
     this._updateValueFromText('', { commit: true });
   };
 
-  _onKeyDown = event => {
+  _onKeyDown = (event) => {
     if (event.key === 'Enter') {
       event.preventDefault();
       this._updateValueFromText(event.target.value, { commit: true });
@@ -108,7 +108,7 @@ export default class CoordinateField extends React.Component {
     }
   };
 
-  _onMouseDownOnButton = event => {
+  _onMouseDownOnButton = (event) => {
     event.preventDefault();
   };
 
@@ -117,7 +117,7 @@ export default class CoordinateField extends React.Component {
   };
 
   _updateValueFromText = (text, { commit } = {}) => {
-    this.setState(state =>
+    this.setState((state) =>
       text === state.originalText
         ? { dirty: false, text: undefined }
         : { dirty: true, text }
@@ -130,7 +130,7 @@ export default class CoordinateField extends React.Component {
     }
   };
 
-  _validate = text => {
+  _validate = (text) => {
     const { required } = this.props;
 
     const value = parseCoordinate(text);

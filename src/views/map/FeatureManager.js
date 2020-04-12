@@ -112,7 +112,7 @@ export default class FeatureManager {
    *         object with the given ID on the map, or undefined if the given
    *         object has no feature yet
    */
-  getFeatureById = id => {
+  getFeatureById = (id) => {
     return this._featuresByObjectId[id];
   };
 
@@ -137,7 +137,7 @@ export default class FeatureManager {
    * @return {ol.Feature}  the feature that was removed or undefined if
    *         there was no feature for the given ID
    */
-  removeFeatureById = id => {
+  removeFeatureById = (id) => {
     const feature = this.getFeatureById(id);
 
     if (feature && this._vectorSource) {
@@ -245,7 +245,7 @@ export default class FeatureManager {
     this._vectorSource = value;
 
     if (this._vectorSource) {
-      forOwn(this._featuresByObjectId, feature =>
+      forOwn(this._featuresByObjectId, (feature) =>
         this._vectorSource.addFeature(feature)
       );
     }

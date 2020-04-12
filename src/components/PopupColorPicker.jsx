@@ -63,9 +63,7 @@ export default class PopupColorPicker extends React.Component {
           className="popup-color-picker-button"
           style={{
             ...this.props.style,
-            backgroundColor: Color(color)
-              .rgb()
-              .string()
+            backgroundColor: Color(color).rgb().string()
           }}
           onClick={this._togglePicker}
         />

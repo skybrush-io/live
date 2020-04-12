@@ -10,7 +10,7 @@ import ConnectionStatusMiniList from '~/components/ConnectionStatusMiniList';
 import Tooltip from '~/components/Tooltip';
 import { isConnected } from '~/features/servers/selectors';
 
-const ConnectionStatusButtonPresentation = props => (
+const ConnectionStatusButtonPresentation = (props) => (
   <Tooltip content={<ConnectionStatusMiniList />} disabled={props.isDisabled}>
     <GenericHeaderButton {...props}>
       <ConnectionStatusBadge />
@@ -25,7 +25,7 @@ ConnectionStatusButtonPresentation.propTypes = {
 
 export default connect(
   // mapStateToProps
-  state => ({
+  (state) => ({
     isDisabled: !isConnected(state)
   }),
   // mapDispatchToProps

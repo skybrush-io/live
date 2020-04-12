@@ -26,8 +26,8 @@ export const isRunningOnWindows =
  *         during the event, false otherwise
  */
 export const eventHasPlatformModifierKey = isRunningOnMac
-  ? event => Boolean(event.metaKey)
-  : event => Boolean(event.ctrlKey);
+  ? (event) => Boolean(event.metaKey)
+  : (event) => Boolean(event.ctrlKey);
 
 /**
  * Constant that evaluates to the name of the platform-specific hotkey

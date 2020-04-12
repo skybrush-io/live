@@ -58,7 +58,7 @@ MappingButtonGroup.propTypes = {
 
 export default connect(
   // mapStateToProps
-  state => ({
+  (state) => ({
     mappingEditable: isMappingEditable(state),
     showMissionIds: isShowingMissionIds(state)
   }),

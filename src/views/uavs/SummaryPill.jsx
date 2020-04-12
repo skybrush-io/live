@@ -7,7 +7,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Colors from '~/components/colors';
 
 const useStyles = makeStyles(
-  theme => ({
+  (theme) => ({
     root: {
       backgroundColor: theme.palette.background.paper,
       borderRadius: theme.spacing(1),

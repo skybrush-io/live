@@ -10,7 +10,7 @@ import Color from 'color';
  * @param {Object} color the color to be converted
  * @return {string} the string representation of the color
  */
-export const colorToString = color => {
+export const colorToString = (color) => {
   return `rgba(${color.r}, ${color.g}, ${color.b}, ${color.a})`;
 };
 

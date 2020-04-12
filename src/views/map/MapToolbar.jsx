@@ -39,7 +39,8 @@ const MapToolbarSeparator = () => {
  * @returns {React.Element} the rendered component
  */
 const MapToolbarPresentation = ({ onToolSelected, selectedTool }) => {
-  const colorForTool = tool => (selectedTool === tool ? 'primary' : undefined);
+  const colorForTool = (tool) =>
+    selectedTool === tool ? 'primary' : undefined;
 
   return (
     <div>
@@ -85,9 +86,9 @@ MapToolbarPresentation.propTypes = {
  */
 const MapToolbar = connect(
   // mapStateToProps
-  state => Object.assign({}, state.map.tools),
+  (state) => Object.assign({}, state.map.tools),
   // mapDispatchToProps
-  dispatch => ({
+  (dispatch) => ({
     onToolSelected(tool) {
       dispatch(selectMapTool(tool));
     }

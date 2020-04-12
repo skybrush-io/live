@@ -21,7 +21,7 @@ import { streetsV6Style } from '~/views/map/styles/mapbox';
 // === Settings for this particular layer type ===
 
 const BaseLayerSettingsPresentation = ({ layer, onLayerSourceChanged }) => {
-  const sourceRadioButtons = Sources.map(source => (
+  const sourceRadioButtons = Sources.map((source) => (
     <FormControlLabel
       key={source}
       value={source}

@@ -19,7 +19,7 @@ import darkModeExtraCSS from '!!raw-loader!~/../assets/css/dark-mode.css';
 /**
  * Helper function that returns whether the given Material UI theme is a dark theme.
  */
-export const isDark = theme => theme.palette.type === 'dark';
+export const isDark = (theme) => theme.palette.type === 'dark';
 
 /**
  * Specialized Material-UI theme provider that is aware about the user's
@@ -91,7 +91,7 @@ export const DarkModeExtraCSSProvider = () => {
 
 export default connect(
   // mapStateToProps
-  state => ({
+  (state) => ({
     type: state.settings.display.theme
   })
 )(DarkModeAwareThemeProvider);

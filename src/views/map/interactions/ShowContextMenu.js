@@ -33,7 +33,7 @@ import { euclideanDistance } from '../../../utils/geography';
 class ContextMenuInteraction extends Interaction {
   constructor(options = {}) {
     super({
-      handleEvent: mapBrowserEvent => {
+      handleEvent: (mapBrowserEvent) => {
         // Check whether the event matches the condition
         if (!this._condition(mapBrowserEvent)) {
           return true;
@@ -60,7 +60,7 @@ class ContextMenuInteraction extends Interaction {
           .getArray()
           .filter(this._isLayerFeasible)
           .filter(this._layerSelectorFunction)
-          .map(layer => {
+          .map((layer) => {
             const source = layer.getSource();
             return source
               ? source.getClosestFeatureToCoordinate(coordinate)
@@ -124,7 +124,7 @@ class ContextMenuInteraction extends Interaction {
       }
 
       if (isArray(layers)) {
-        return layer => includes(layers, layer);
+        return (layer) => includes(layers, layer);
       }
 
       return stubFalse;
@@ -215,7 +215,7 @@ class ContextMenuInteraction extends Interaction {
 
 const ShowContextMenuInner = createOLInteractionComponent(
   'ShowContextMenuInner',
-  props => new ContextMenuInteraction(props),
+  (props) => new ContextMenuInteraction(props),
   {
     propTypes: {
       condition: PropTypes.func,

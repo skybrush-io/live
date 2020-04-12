@@ -109,7 +109,7 @@ export default class MapRotationTextBox extends React.Component {
     }
 
     // Listen also for changes in the view of the map
-    map.on('propertychange', event => {
+    map.on('propertychange', (event) => {
       if (event.key === 'view') {
         map.getView().on('propertychange', this._updateRotationFromMapView);
       }
@@ -134,7 +134,7 @@ export default class MapRotationTextBox extends React.Component {
    * and normalizes it's value.
    */
   _onFocus() {
-    this.setState(state => ({
+    this.setState((state) => ({
       isFocused: true,
       rotation: normalizeAngle(state.rotation)
     }));

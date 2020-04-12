@@ -34,7 +34,7 @@ import { StepperStatus } from '~/components/StepperStatusLight';
  */
 const stages = {
   selectShowFile: {
-    evaluate: state =>
+    evaluate: (state) =>
       hasLoadedShowFile(state)
         ? StepperStatus.COMPLETED
         : isLoadingShowFile(state)
@@ -43,12 +43,12 @@ const stages = {
   },
 
   setupEnvironment: {
-    evaluate: state => hasLoadedShowFile(state) && hasShowOrigin(state),
+    evaluate: (state) => hasLoadedShowFile(state) && hasShowOrigin(state),
     requires: ['selectShowFile']
   },
 
   setupTakeoffArea: {
-    evaluate: state =>
+    evaluate: (state) =>
       isTakeoffAreaApproved(state)
         ? isEmpty(getEmptyMappingSlotIndices(state)) &&
           isEmpty(getMissingUAVIdsInMapping(state))
@@ -64,7 +64,7 @@ const stages = {
   },
 
   setupStartTime: {
-    evaluate: state =>
+    evaluate: (state) =>
       didStartConditionSyncFail(state)
         ? StepperStatus.ERROR
         : areStartConditionsSyncedWithServer(state)
@@ -76,7 +76,7 @@ const stages = {
   },
 
   waitForOnboardPreflightChecks: {
-    evaluate: state =>
+    evaluate: (state) =>
       areOnboardPreflightChecksSignedOff(state)
         ? areAllUAVsInMissionWithoutErrors(state)
           ? StepperStatus.COMPLETED
@@ -86,7 +86,7 @@ const stages = {
   },
 
   performManualPreflightChecks: {
-    evaluate: state =>
+    evaluate: (state) =>
       areManualPreflightChecksSignedOff(state)
         ? areAllPreflightChecksTicked(state)
           ? StepperStatus.COMPLETED
@@ -96,7 +96,7 @@ const stages = {
   },
 
   authorization: {
-    evaluate: state =>
+    evaluate: (state) =>
       isShowAuthorizedToStart(state)
         ? StepperStatus.COMPLETED
         : didStartConditionSyncFail(state)
@@ -127,21 +127,21 @@ const stageOrder = [
  * Returns whether the status code is treated as "done" from the point of view
  * of inspecting dependencies between stages.
  */
-const isDone = status =>
+const isDone = (status) =>
   status === StepperStatus.COMPLETED || status === StepperStatus.SKIPPED;
 
 /**
  * Returns whether all dependencies in the given list are considered "done"
  */
 const allDone = (result, deps) =>
-  (deps || []).every(dep => isDone(result[dep]));
+  (deps || []).every((dep) => isDone(result[dep]));
 
 /**
  * Returns an object mapping the name of each stage in the show setup process
  * to a status constant, marking the next suggested stage that the user should
  * execute with 'next'.
  */
-export const getSetupStageStatuses = state => {
+export const getSetupStageStatuses = (state) => {
   const result = {};
 
   for (const stageId of stageOrder) {

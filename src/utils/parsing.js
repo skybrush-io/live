@@ -41,7 +41,7 @@ export function dateToTimestamp(value) {
  * @param  {string}  value  the string to parse
  * @return {Date} the parsed date
  */
-export const parseEpochIdentifierOrISODate = value => {
+export const parseEpochIdentifierOrISODate = (value) => {
   if (isString(value) && has(knownEpochs, value)) {
     return knownEpochs[value];
   }
@@ -56,5 +56,5 @@ export const parseEpochIdentifierOrISODate = value => {
  * @param  {string}  value  the date to parse from a string
  * @return {number} the parsed UNIX timestamp, in milliseconds.
  */
-export const parseISODate = value =>
+export const parseISODate = (value) =>
   value === undefined ? undefined : moment(value, moment.ISO_8601).valueOf();

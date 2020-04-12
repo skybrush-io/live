@@ -20,7 +20,7 @@ import {
  *
  * @param  {Object}  state  the state of the application
  */
-export const getUAVIdList = state => state.uavs.order;
+export const getUAVIdList = (state) => state.uavs.order;
 
 /**
  * Key selector function for cached selectors that cache things by UAV ID.
@@ -129,7 +129,7 @@ export const getXYDistanceToHomePositionByUavId = createCachedSelector(
  * Returns the distances of the UAVs from their home positions, restricted to the
  * UAVs that are in the mapping.
  */
-export const getDistancesFromHome = state => {
+export const getDistancesFromHome = (state) => {
   const mapping = getMissionMapping(state);
   const result = {};
 
@@ -149,8 +149,8 @@ export const getDistancesFromHome = state => {
  * and that are farther than a given threshold from their designated home
  * positions.
  */
-export const createSelectorToGetUAVIdsTooFarFromHome = threshold =>
-  createSelector(getDistancesFromHome, distances =>
+export const createSelectorToGetUAVIdsTooFarFromHome = (threshold) =>
+  createSelector(getDistancesFromHome, (distances) =>
     Object.entries(distances).reduce((acc, [uavId, distance]) => {
       if (distance > threshold) {
         acc.push(uavId);
@@ -164,7 +164,7 @@ export const createSelectorToGetUAVIdsTooFarFromHome = threshold =>
  * Returns the farthest distance of an UAV from its home position, or undefined
  * if there are no UAVs with known current and home positions
  */
-export const getFarthestDistanceFromHome = state => {
+export const getFarthestDistanceFromHome = (state) => {
   const distancesByUavId = getDistancesFromHome(state);
   let maxDistance = -1;
 
@@ -203,7 +203,7 @@ export const getDeviationFromTakeoffHeadingByUavId = createCachedSelector(
  * Returns the deviations of the headings of the UAVs from their preferred
  * headings during the mission, restricted to the UAVs that are in the mapping.
  */
-export const getDeviationsFromTakeoffHeadings = state => {
+export const getDeviationsFromTakeoffHeadings = (state) => {
   const mapping = getMissionMapping(state);
   const result = {};
 
@@ -223,8 +223,8 @@ export const getDeviationsFromTakeoffHeadings = state => {
  * and that are farther than a given threshold from their designated home
  * positions.
  */
-export const createSelectorToGetMisalignedUAVIds = threshold =>
-  createSelector(getDeviationsFromTakeoffHeadings, deviations =>
+export const createSelectorToGetMisalignedUAVIds = (threshold) =>
+  createSelector(getDeviationsFromTakeoffHeadings, (deviations) =>
     Object.entries(deviations).reduce((acc, [uavId, deviation]) => {
       if (Math.abs(deviation) > threshold) {
         acc.push(uavId);
@@ -240,9 +240,9 @@ export const createSelectorToGetMisalignedUAVIds = threshold =>
  */
 export const getMissingUAVIdsInMapping = createSelector(
   getMissionMapping,
-  state => state.uavs.byId,
+  (state) => state.uavs.byId,
   (mapping, uavsById) =>
-    mapping.filter(uavId => !isNil(uavId) && isNil(uavsById[uavId]))
+    mapping.filter((uavId) => !isNil(uavId) && isNil(uavsById[uavId]))
 );
 
 /**
@@ -253,7 +253,7 @@ export const getUnmappedUAVIds = createSelector(
   getReverseMissionMapping,
   getUAVIdList,
   (reverseMapping, uavIds) =>
-    uavIds.filter(uavId => isNil(reverseMapping[uavId]))
+    uavIds.filter((uavId) => isNil(reverseMapping[uavId]))
 );
 
 /**
@@ -272,7 +272,7 @@ export const getUnmappedUAVIds = createSelector(
 export const getErrorCodeSummaryForUAVsInMission = createSelector(
   getReverseMissionMapping,
   getUAVIdsParticipatingInMission,
-  state => state.uavs.byId,
+  (state) => state.uavs.byId,
   (reverseMapping, uavIds, uavStatesById) => {
     const result = [];
 
@@ -286,11 +286,11 @@ export const getErrorCodeSummaryForUAVsInMission = createSelector(
     }
 
     return sortBy(
-      Object.entries(groupBy(result, item => item[0])),
+      Object.entries(groupBy(result, (item) => item[0])),
       ([code, _]) => Number.parseInt(code, 10)
     ).map(([key, value]) => ({
       code: key,
-      uavIdsAndIndices: value.map(x => x[1])
+      uavIdsAndIndices: value.map((x) => x[1])
     }));
   }
 );
@@ -301,7 +301,7 @@ export const getErrorCodeSummaryForUAVsInMission = createSelector(
 export const areAllUAVsInMissionWithoutErrors = createSelector(
   getReverseMissionMapping,
   getUAVIdsParticipatingInMission,
-  state => state.uavs.byId,
+  (state) => state.uavs.byId,
   (reverseMapping, uavIds, uavStatesById) => {
     for (const uavId of uavIds) {
       const uavState = uavStatesById[uavId];

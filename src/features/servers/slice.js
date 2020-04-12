@@ -199,7 +199,7 @@ const { actions, reducer } = createSlice({
       }
 
       state.current.authentication.required = Boolean(required);
-      state.current.authentication.methods = methods.map(x => String(x));
+      state.current.authentication.methods = methods.map((x) => String(x));
       if (user !== undefined) {
         state.current.authentication.user = user;
       }

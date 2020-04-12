@@ -32,7 +32,7 @@ const formatStatusText = (status, maxDistance) => {
       return 'Partial drone placement approved';
 
     case StepperStatus.WAITING:
-      return 'Checking drone placement...';
+      return 'Checking drone placement…';
 
     default:
       return '';
@@ -71,7 +71,7 @@ TakeoffAreaButton.defaultProps = {};
 
 export default connect(
   // mapStateToProps
-  state => ({
+  (state) => ({
     // TODO(ntamas): getFarthestDistanceFromHome() is recalculated all the time;
     // we need to fix this
     maxDistance:

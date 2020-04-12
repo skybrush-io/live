@@ -23,7 +23,7 @@ import { mapViewCoordinateFromLonLat } from '../../../utils/geography';
  * @param {color} color the color of the filling
  * @return {Object} the OpenLayers style object
  */
-const makeFillStyle = color =>
+const makeFillStyle = (color) =>
   new Style({
     fill: new Fill({ color })
   });
@@ -77,15 +77,15 @@ class HexGridLayerSettingsPresentation extends React.Component {
     );
   }
 
-  _assignCenterField = value => {
+  _assignCenterField = (value) => {
     this._inputFields.center = value;
   };
 
-  _assignRadiusField = value => {
+  _assignRadiusField = (value) => {
     this._inputFields.radius = value;
   };
 
-  _assignSizeField = value => {
+  _assignSizeField = (value) => {
     this._inputFields.size = value;
   };
 
@@ -130,7 +130,7 @@ class HexGridVectorSource extends React.PureComponent {
     return <source.Vector ref={this._assignSourceRef} />;
   }
 
-  _assignSourceRef = value => {
+  _assignSourceRef = (value) => {
     if (this._sourceRef === value) {
       return;
     }
@@ -145,7 +145,7 @@ class HexGridVectorSource extends React.PureComponent {
 
   _getCorners(center, radius) {
     const angles = [30, 90, 150, 210, 270, 330, 30].map(toRadians);
-    return angles.map(angle =>
+    return angles.map((angle) =>
       mapViewCoordinateFromLonLat([
         center[0] + radius * Math.sin(angle),
         center[1] + radius * Math.cos(angle)

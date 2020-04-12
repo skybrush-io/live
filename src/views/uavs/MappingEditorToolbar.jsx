@@ -27,7 +27,11 @@ const instructionsStyle = {
 
 const MappingEditorToolbar = React.forwardRef(
   ({ clearMapping, finishMappingEditorSession, ...rest }, ref) => {
-    const [menuAnchorEl, openMappingMenu, closeMappingMenu] = useDropdown();
+    const [
+      menuAnchorElement,
+      openMappingMenu,
+      closeMappingMenu
+    ] = useDropdown();
 
     return (
       <Toolbar ref={ref} disableGutters variant="dense" {...rest}>
@@ -49,13 +53,13 @@ const MappingEditorToolbar = React.forwardRef(
           <MoreVert />
         </IconButton>
         <Menu
-          anchorEl={menuAnchorEl}
-          open={menuAnchorEl !== null}
+          anchorEl={menuAnchorElement}
+          open={menuAnchorElement !== null}
           variant="menu"
           onClose={closeMappingMenu}
         >
-          <MenuItem disabled>Import...</MenuItem>
-          <MenuItem disabled>Export...</MenuItem>
+          <MenuItem disabled>I\Import…I</MenuItem>
+          <MenuItem disabled>E\Export…E</MenuItem>
           <Divider />
           <MenuItem onClick={closeMappingMenu(clearMapping)}>Clear</MenuItem>
         </Menu>

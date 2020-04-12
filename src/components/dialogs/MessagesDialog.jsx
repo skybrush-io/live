@@ -124,7 +124,7 @@ class MessagesDialogPresentation extends React.Component {
  */
 const MessagesDialog = connect(
   // mapStateToProps
-  state => {
+  (state) => {
     const { dialogVisible } = state.dialogs.messages;
     const { messages } = state;
     const { selectedUAVId } = messages;
@@ -135,7 +135,7 @@ const MessagesDialog = connect(
   },
 
   // mapDispatchToProps
-  dispatch => ({
+  (dispatch) => ({
     onClear() {
       dispatch(clearMessagesOfSelectedUAV());
     },

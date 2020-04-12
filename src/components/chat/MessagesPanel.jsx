@@ -245,7 +245,7 @@ class MessagesPanelPresentation extends React.Component {
  */
 const MessagesPanel = connect(
   // mapStateToProps
-  state => {
+  (state) => {
     const { messages } = state;
     const { selectedUAVId } = messages;
     const messageIds = selectedUAVId
@@ -261,7 +261,7 @@ const MessagesPanel = connect(
   },
 
   // mapDispatchToProps
-  dispatch => ({
+  (dispatch) => ({
     onSend(message) {
       // Dispatch a Redux action. This will update the store but will not
       // send any actual message
@@ -277,7 +277,7 @@ const MessagesPanel = connect(
         .sendCommandRequest({ uavId, command, args, kwds })
         .then(
           // Success handler
-          message => {
+          (message) => {
             const { response } = message.body;
             const formattedMessage = formatCommandResponseAsHTML(response);
             dispatch(addInboundMessage(formattedMessage, messageId));
@@ -285,7 +285,7 @@ const MessagesPanel = connect(
         )
         .catch(
           // Error handler
-          error => {
+          (error) => {
             const errorMessage = error.userMessage || error.message;
             dispatch(
               addErrorMessageInMessagesDialog(errorMessage, uavId, messageId)

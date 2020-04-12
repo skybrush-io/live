@@ -10,7 +10,8 @@ import { selectOrdered } from '~/utils/collections';
  * @return {string|undefined}  the current authentication token or undefined if
  *         the user has no authentication token
  */
-export const getAuthenticationToken = state => state.servers.token || undefined;
+export const getAuthenticationToken = (state) =>
+  state.servers.token || undefined;
 
 /**
  * Returns all the information that we know about the current Skybrush server.
@@ -19,7 +20,7 @@ export const getAuthenticationToken = state => state.servers.token || undefined;
  * @return {Object} all the information that we know about the current Skybrush
  *     server, directly from the state object
  */
-const getCurrentServerState = state => state.servers.current;
+const getCurrentServerState = (state) => state.servers.current;
 
 /**
  * Returns the list of features that we know are supported by the current
@@ -30,7 +31,7 @@ const getCurrentServerState = state => state.servers.current;
  *     current Skybrush server to any additional information we know about the
  *     feature.
  */
-const getCurrentServerFeatures = state => state.servers.current.features;
+const getCurrentServerFeatures = (state) => state.servers.current.features;
 
 /**
  * Selector that calculates and caches the list of all the servers detected
@@ -38,7 +39,7 @@ const getCurrentServerFeatures = state => state.servers.current.features;
  * the UI.
  */
 export const getDetectedServersInOrder = createSelector(
-  state => state.servers.detected,
+  (state) => state.servers.detected,
   selectOrdered
 );
 
@@ -48,7 +49,7 @@ export const getDetectedServersInOrder = createSelector(
  */
 const getAuthenticationSettings = createSelector(
   getCurrentServerState,
-  current =>
+  (current) =>
     current.state === ConnectionState.CONNECTED
       ? current.authentication
       : INVALID
@@ -59,7 +60,7 @@ const getAuthenticationSettings = createSelector(
  */
 export const getAuthenticatedUser = createSelector(
   getAuthenticationSettings,
-  settings => settings.user
+  (settings) => settings.user
 );
 
 /**
@@ -69,14 +70,14 @@ export const getAuthenticatedUser = createSelector(
  */
 export const areServerAuthenticationSettingsValid = createSelector(
   getAuthenticationSettings,
-  settings => settings.valid
+  (settings) => settings.valid
 );
 
 /**
  * Returns whether the user is currently authenticated to the remote
  * Skybrush server.
  */
-export const isAuthenticated = createSelector(getAuthenticatedUser, user =>
+export const isAuthenticated = createSelector(getAuthenticatedUser, (user) =>
   Boolean(user)
 );
 
@@ -87,14 +88,14 @@ export const isAuthenticated = createSelector(getAuthenticatedUser, user =>
  * @param  {Object}  state  the state of the application
  * @return {boolean} whether there is an authentication attempt in progress
  */
-export const isAuthenticating = state => state.servers.isAuthenticating;
+export const isAuthenticating = (state) => state.servers.isAuthenticating;
 
 /**
  * Returns whether we are connected to the remote Skybrush server.
  */
 export const isConnected = createSelector(
   getCurrentServerState,
-  current => current.state === ConnectionState.CONNECTED
+  (current) => current.state === ConnectionState.CONNECTED
 );
 
 /**
@@ -103,7 +104,7 @@ export const isConnected = createSelector(
  */
 export const isConnecting = createSelector(
   getCurrentServerState,
-  current => current.state === ConnectionState.CONNECTING
+  (current) => current.state === ConnectionState.CONNECTING
 );
 
 /**
@@ -111,17 +112,17 @@ export const isConnecting = createSelector(
  */
 export const supportsAuthentication = createSelector(
   getAuthenticationSettings,
-  settings => settings.methods && settings.methods.length > 0
+  (settings) => settings.methods && settings.methods.length > 0
 );
 
 /**
  * Creates a selector that returns whether the server supports the feature with
  * the given name.
  */
-const makeSupportsFeatureSelector = name =>
+const makeSupportsFeatureSelector = (name) =>
   createSelector(
     getCurrentServerFeatures,
-    features => features[name] !== undefined
+    (features) => features[name] !== undefined
   );
 
 /**
@@ -137,5 +138,5 @@ export const supportsVirtualDrones = makeSupportsFeatureSelector(
  */
 export const requiresAuthentication = createSelector(
   getAuthenticationSettings,
-  settings => settings.required
+  (settings) => settings.required
 );

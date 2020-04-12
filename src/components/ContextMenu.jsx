@@ -81,7 +81,7 @@ export default class ContextMenu extends React.Component {
    *
    * @param {MouseEvent} e The event being fired.
    */
-  _preventDefault = e => {
+  _preventDefault = (e) => {
     if (this.state.opening) {
       this.setState({ opening: false, open: true });
     } else {
@@ -98,10 +98,10 @@ export default class ContextMenu extends React.Component {
       ? children(context || {})
       : children;
 
-    const menuItems = React.Children.map(effectiveChildren, child =>
+    const menuItems = React.Children.map(effectiveChildren, (child) =>
       React.cloneElement(child, {
         onClick: child.props.onClick
-          ? event => {
+          ? (event) => {
               child.props.onClick(event, context);
               this._handleClose();
             }

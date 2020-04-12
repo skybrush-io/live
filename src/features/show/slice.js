@@ -20,7 +20,7 @@ const { actions, reducer } = createSlice({
     data: null,
 
     loading: false,
-    progress: 0.0,
+    progress: 0,
 
     environment: {
       editing: false,
@@ -108,7 +108,7 @@ const { actions, reducer } = createSlice({
       // State will be update in notifyUploadFinished()
     }),
 
-    clearLoadedShow: noPayload(state => {
+    clearLoadedShow: noPayload((state) => {
       state.data = null;
 
       state.preflight.manualChecksSignedOffAt = null;
@@ -116,11 +116,11 @@ const { actions, reducer } = createSlice({
       state.preflight.takeoffAreaApprovedAt = null;
     }),
 
-    clearManualPreflightChecks: noPayload(state => {
+    clearManualPreflightChecks: noPayload((state) => {
       state.preflight.manualChecksSignedOffAt = null;
     }),
 
-    clearOnboardPreflightChecks: noPayload(state => {
+    clearOnboardPreflightChecks: noPayload((state) => {
       state.preflight.onboardChecksSignedOffAt = null;
     }),
 
@@ -129,39 +129,39 @@ const { actions, reducer } = createSlice({
       state.start.method = 'rc';
     },
 
-    clearUploadQueue: noPayload(state => {
+    clearUploadQueue: noPayload((state) => {
       state.upload.itemsWaitingToStart = [];
     }),
 
-    closeEnvironmentEditorDialog: noPayload(state => {
+    closeEnvironmentEditorDialog: noPayload((state) => {
       state.environment.editing = false;
     }),
 
-    closeLoadShowFromCloudDialog: noPayload(state => {
+    closeLoadShowFromCloudDialog: noPayload((state) => {
       state.loadShowFromCloudDialog.open = false;
     }),
 
-    closeManualPreflightChecksDialog: noPayload(state => {
+    closeManualPreflightChecksDialog: noPayload((state) => {
       state.manualPreflightChecksDialog.open = false;
     }),
 
-    closeOnboardPreflightChecksDialog: noPayload(state => {
+    closeOnboardPreflightChecksDialog: noPayload((state) => {
       state.onboardPreflightChecksDialog.open = false;
     }),
 
-    closeStartTimeDialog: noPayload(state => {
+    closeStartTimeDialog: noPayload((state) => {
       state.startTimeDialog.open = false;
     }),
 
-    closeTakeoffAreaSetupDialog: noPayload(state => {
+    closeTakeoffAreaSetupDialog: noPayload((state) => {
       state.takeoffAreaSetupDialog.open = false;
     }),
 
-    closeUploadDialog: noPayload(state => {
+    closeUploadDialog: noPayload((state) => {
       state.uploadDialog.open = false;
     }),
 
-    dismissLastUploadResult: noPayload(state => {
+    dismissLastUploadResult: noPayload((state) => {
       state.uploadDialog.showLastUploadResult = false;
     }),
 
@@ -171,7 +171,7 @@ const { actions, reducer } = createSlice({
         if (isNaN(value)) {
           state.progress = null;
         } else {
-          state.progress = Math.min(1.0, Math.max(value, 0.0));
+          state.progress = Math.min(1, Math.max(value, 0));
         }
       }
     },
@@ -253,31 +253,31 @@ const { actions, reducer } = createSlice({
       });
     },
 
-    openEnvironmentEditorDialog: noPayload(state => {
+    openEnvironmentEditorDialog: noPayload((state) => {
       state.environment.editing = true;
     }),
 
-    openLoadShowFromCloudDialog: noPayload(state => {
+    openLoadShowFromCloudDialog: noPayload((state) => {
       state.loadShowFromCloudDialog.open = true;
     }),
 
-    openManualPreflightChecksDialog: noPayload(state => {
+    openManualPreflightChecksDialog: noPayload((state) => {
       state.manualPreflightChecksDialog.open = true;
     }),
 
-    openOnboardPreflightChecksDialog: noPayload(state => {
+    openOnboardPreflightChecksDialog: noPayload((state) => {
       state.onboardPreflightChecksDialog.open = true;
     }),
 
-    openStartTimeDialog: noPayload(state => {
+    openStartTimeDialog: noPayload((state) => {
       state.startTimeDialog.open = true;
     }),
 
-    openTakeoffAreaSetupDialog: noPayload(state => {
+    openTakeoffAreaSetupDialog: noPayload((state) => {
       state.takeoffAreaSetupDialog.open = true;
     }),
 
-    openUploadDialog: noPayload(state => {
+    openUploadDialog: noPayload((state) => {
       state.upload.lastUploadResult = null;
       state.uploadDialog.showLastUploadResult = false;
       state.uploadDialog.open = true;
@@ -294,7 +294,7 @@ const { actions, reducer } = createSlice({
       state.uploadDialog.showLastUploadResult = false;
     },
 
-    revokeTakeoffAreaApproval: noPayload(state => {
+    revokeTakeoffAreaApproval: noPayload((state) => {
       state.preflight.takeoffAreaApprovedAt = null;
     }),
 

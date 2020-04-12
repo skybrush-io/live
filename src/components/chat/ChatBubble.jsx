@@ -13,7 +13,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { isDark } from '~/theme';
 
 const useStyles = makeStyles(
-  theme => ({
+  (theme) => ({
     root: {
       margin: theme.spacing(0.5, 0),
       display: 'flex',

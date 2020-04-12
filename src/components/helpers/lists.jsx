@@ -71,7 +71,7 @@ export function listOf(itemRenderer, options = {}) {
   const ListView = React.forwardRef((props, ref) => {
     const items = dataProvider(props);
     const children = postprocess(
-      items.map(item => itemRenderer(item, props)),
+      items.map((item) => itemRenderer(item, props)),
       props
     );
     if (hasSomeItems(children)) {
@@ -99,7 +99,7 @@ export function listOf(itemRenderer, options = {}) {
  */
 export function createSelectionHandlerFactory({ getSelection, setSelection }) {
   return setSelection
-    ? id => event => {
+    ? (id) => (event) => {
         const newSelection =
           eventHasPlatformModifierKey(event.nativeEvent) && getSelection
             ? xor(getSelection(), [id])
@@ -164,14 +164,14 @@ export function selectableListOf(itemRenderer, options = {}) {
   const SelectableListView = React.forwardRef((props, ref) => {
     const items = dataProvider(props);
     const children = postprocess(
-      items.map(item =>
+      items.map((item) =>
         itemRenderer(
           item,
           {
             ...props,
             onChange: undefined,
             onItemSelected: props.onChange
-              ? event => props.onChange(event, item.id)
+              ? (event) => props.onChange(event, item.id)
               : undefined
           },
           item.id === props.value
@@ -261,7 +261,7 @@ export function multiSelectableListOf(itemRenderer, options = {}) {
       setSelection: props.onChange
     });
     const children = postprocess(
-      items.map(item =>
+      items.map((item) =>
         itemRenderer(
           item,
           {
@@ -297,7 +297,7 @@ export function multiSelectableListOf(itemRenderer, options = {}) {
  * @param  {Object} options  the options passed to the list generation helper
  * @return {Object} the transformed options
  */
-const validateOptions = options => ({
+const validateOptions = (options) => ({
   postprocess: identity,
   ...options,
   dataProvider: validateDataProvider(options.dataProvider),
@@ -329,7 +329,7 @@ function hasSomeItems(array) {
 function validateDataProvider(dataProvider) {
   return isFunction(dataProvider)
     ? dataProvider
-    : value => get(value, dataProvider);
+    : (value) => get(value, dataProvider);
 }
 
 /**

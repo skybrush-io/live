@@ -21,7 +21,7 @@ import {
  * @param  {Object}  state  the state of the application
  * @return {string[]}  the list of selected item IDs
  */
-export const getSelection = state => state.map.selection;
+export const getSelection = (state) => state.map.selection;
 
 /**
  * Helper function that creates a selector that maps the current map selection
@@ -32,8 +32,8 @@ export const getSelection = state => state.map.selection;
  *        is not part of the subset being selected
  * @return {function} a selector function
  */
-export const selectionForSubset = mapper =>
-  createSelector(getSelection, selection =>
+export const selectionForSubset = (mapper) =>
+  createSelector(getSelection, (selection) =>
     reject(selection.map(mapper), isNil)
   );
 
@@ -61,7 +61,7 @@ const _selectedFeatureIdsCollection = new Collection([], { unique: true });
  */
 export const getSelectedFeatureIdsAsOpenLayersCollection = createSelector(
   getSelection,
-  selection => {
+  (selection) => {
     _selectedFeatureIdsCollection.clear();
     _selectedFeatureIdsCollection.extend(selection);
     return _selectedFeatureIdsCollection;
@@ -77,12 +77,12 @@ export const getSelectedFeatureIdsAsOpenLayersCollection = createSelector(
  */
 export const getSelectedFeatureLabels = createSelector(
   getSelectedFeatureIds,
-  state => state.features.byId,
+  (state) => state.features.byId,
   (featureIds, features) =>
     reject(
-      featureIds.map(featureId => features[featureId]),
+      featureIds.map((featureId) => features[featureId]),
       isNil
-    ).map(feature => feature.label)
+    ).map((feature) => feature.label)
 );
 
 /**

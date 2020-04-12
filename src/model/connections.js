@@ -30,7 +30,7 @@ export function handleConnectionInformationMessage(body, dispatch) {
   // by our Redux actions. Omit keys for which the values are not
   // provided by the server, and also prevent accidental updates of
   // the master connection
-  const states = mapValues(body.status, statusFromServer =>
+  const states = mapValues(body.status, (statusFromServer) =>
     omitBy(
       {
         id: statusFromServer.id,

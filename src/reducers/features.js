@@ -108,7 +108,7 @@ const reducer = handleActions(
 
       if (!name) {
         // Generate a sensible name if no name was given
-        const existingNames = map(state.byId, feature => feature.id);
+        const existingNames = map(state.byId, (feature) => feature.id);
         const nameBase = capitalize(getNameOfFeatureType(type));
         name = chooseUniqueName(nameBase, existingNames);
       }
@@ -131,8 +131,8 @@ const reducer = handleActions(
       // Update the state
       return u(
         {
-          byId: oldFeatures => Object.assign({}, oldFeatures, newFeature),
-          order: oldOrder => [].concat(oldOrder, [id])
+          byId: (oldFeatures) => Object.assign({}, oldFeatures, newFeature),
+          order: (oldOrder) => [].concat(oldOrder, [id])
         },
         state
       );
@@ -155,7 +155,7 @@ const reducer = handleActions(
 
     UPDATE_FEATURE_COORDINATES(state, action) {
       const { coordinates } = action.payload;
-      const updates = mapValues(coordinates, coordinate => ({
+      const updates = mapValues(coordinates, (coordinate) => ({
         points: coordinate
       }));
       return u({ byId: u(updates) }, state);

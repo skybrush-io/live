@@ -69,7 +69,7 @@ export const removeFeaturesFromSelection = createAction(
  *        and so will be any feature that is not a docking station.
  * @return {Object} an appropriately constructed action
  */
-export const setSelectedDockIds = ids =>
+export const setSelectedDockIds = (ids) =>
   setSelectedFeatures(ids.map(dockIdToGlobalId));
 
 /**
@@ -90,7 +90,7 @@ export const setSelectedFeatures = createAction(SET_SELECTED_FEATURES);
  *        any feature that is not an UAV.
  * @return {Object} an appropriately constructed action
  */
-export const setSelectedUAVIds = ids =>
+export const setSelectedUAVIds = (ids) =>
   setSelectedFeatures(ids.map(uavIdToGlobalId));
 
 /**

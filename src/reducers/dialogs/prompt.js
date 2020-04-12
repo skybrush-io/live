@@ -33,7 +33,7 @@ const reducer = handleActions(
         dialogVisible: true
       }),
 
-    SUBMIT_PROMPT_DIALOG: state =>
+    SUBMIT_PROMPT_DIALOG: (state) =>
       u(
         {
           dialogVisible: false
@@ -41,7 +41,7 @@ const reducer = handleActions(
         state
       ),
 
-    CANCEL_PROMPT_DIALOG: state =>
+    CANCEL_PROMPT_DIALOG: (state) =>
       u(
         {
           dialogVisible: false

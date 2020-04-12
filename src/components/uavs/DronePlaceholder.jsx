@@ -9,7 +9,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Colors from '~/components/colors';
 
 const useStyles = makeStyles(
-  theme => ({
+  (theme) => ({
     root: {
       position: 'relative',
       marginBottom: theme.spacing(0.5)

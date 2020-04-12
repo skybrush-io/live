@@ -26,18 +26,21 @@ import { setLayerParameterById } from '~/actions/layers';
 import SubscriptionDialog from '~/components/dialogs/SubscriptionDialog';
 import messageHub from '~/message-hub';
 import HashedMap from '~/utils/hashedmap';
-import { mapViewCoordinateFromLonLat, lonLatFromMapViewCoordinate } from '~/utils/geography';
+import {
+  mapViewCoordinateFromLonLat,
+  lonLatFromMapViewCoordinate
+} from '~/utils/geography';
 
-const formatNumber = x => numbro(x).format('0.000');
+const formatNumber = (x) => numbro(x).format('0.000');
 
 const heatmapColoringFunctions = {
   linear: {
     name: 'Linear',
-    function: x => x
+    function: (x) => x
   },
   logarithmic: {
     name: 'Logarithmic',
-    function: x => Math.log(x)
+    function: (x) => Math.log(x)
   }
 };
 
@@ -70,7 +73,7 @@ class HeatmapLayerSettingsPresentation extends React.Component {
         'minHue',
         'maxHue',
         'minDistance'
-      ].map(x => ({ [x]: React.createRef() }))
+      ].map((x) => ({ [x]: React.createRef() }))
     );
 
     this._setAutoScale = (event, checked) => {
@@ -128,7 +131,7 @@ class HeatmapLayerSettingsPresentation extends React.Component {
               value={this.state.coloringFunction}
               onChange={this._handleColoringFunctionChange}
             >
-              {Object.keys(heatmapColoringFunctions).map(key => (
+              {Object.keys(heatmapColoringFunctions).map((key) => (
                 <MenuItem key={key} value={key}>
                   {heatmapColoringFunctions[key].name}
                 </MenuItem>
@@ -240,13 +243,13 @@ class HeatmapLayerSettingsPresentation extends React.Component {
     this._refs.subscriptionDialog.current.showDialog();
   };
 
-  _handleHueChange = e => {
+  _handleHueChange = (e) => {
     this.setState({
       [e.target.id]: toNumber(e.target.value)
     });
   };
 
-  _handleColoringFunctionChange = e => {
+  _handleColoringFunctionChange = (e) => {
     this.setState({
       coloringFunction: e.target.value
     });
@@ -339,7 +342,7 @@ class HeatmapVectorSource extends React.Component {
     this.features = new HashedMap();
   }
 
-  _assignSourceRef = value => {
+  _assignSourceRef = (value) => {
     if (this._sourceRef === value) {
       return;
     }
@@ -389,7 +392,7 @@ class HeatmapVectorSource extends React.Component {
     );
   };
 
-  _setStoredData = values => {
+  _setStoredData = (values) => {
     window.localStorage.setItem(
       this.props.storageKey,
       JSON.stringify([...values.data])
@@ -415,7 +418,7 @@ class HeatmapVectorSource extends React.Component {
     }
   };
 
-  _trySubscribe = async subscriptions => {
+  _trySubscribe = async (subscriptions) => {
     await messageHub.waitUntilReady();
     messageHub.sendMessage({
       type: 'DEV-SUB',
@@ -423,7 +426,7 @@ class HeatmapVectorSource extends React.Component {
     });
   };
 
-  _tryUnsubscribe = async subscriptions => {
+  _tryUnsubscribe = async (subscriptions) => {
     await messageHub.waitUntilReady();
     messageHub.sendMessage({
       type: 'DEV-UNSUB',
@@ -439,7 +442,7 @@ class HeatmapVectorSource extends React.Component {
     if (this.props.parameters.snapToGrid) {
       const snappedLonLat = lonLatFromMapViewCoordinate(
         mapViewCoordinateFromLonLat([data.lon, data.lat]).map(
-          c => Math.round(c / minDistance) * minDistance
+          (c) => Math.round(c / minDistance) * minDistance
         )
       );
 
@@ -472,7 +475,7 @@ class HeatmapVectorSource extends React.Component {
     this.features.set(key, this._drawPointFromData(data));
   };
 
-  _processNotification = message => {
+  _processNotification = (message) => {
     const values = this._getStoredData();
 
     for (const path in message.body.values) {
@@ -511,13 +514,13 @@ class HeatmapVectorSource extends React.Component {
     }
   };
 
-  _makePoint = center => {
+  _makePoint = (center) => {
     return new Feature({
       geometry: new Point(mapViewCoordinateFromLonLat(center))
     });
   };
 
-  _drawPointFromData = data => {
+  _drawPointFromData = (data) => {
     const point = this._makePoint([data.lon, data.lat]);
     point.measuredValue = data.value;
 

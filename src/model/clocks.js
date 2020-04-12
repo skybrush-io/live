@@ -21,7 +21,7 @@ export function handleClockInformationMessage(body, dispatch) {
   // by our Redux actions. Omit keys for which the values are not
   // provided by the server.
 
-  const states = mapValues(body.status, statusFromServer =>
+  const states = mapValues(body.status, (statusFromServer) =>
     omitBy(
       {
         id: statusFromServer.id,

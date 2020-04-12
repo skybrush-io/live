@@ -33,7 +33,7 @@ Switch.propTypes = {
   meta: PropTypes.any
 };
 
-const preventDefault = event => event.preventDefault();
+const preventDefault = (event) => event.preventDefault();
 
 /**
  * Render function for `react-final-form` that binds a `<Field>` component

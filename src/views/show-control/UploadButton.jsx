@@ -26,7 +26,7 @@ const UploadButton = ({ loading, status, ...rest }) => (
     <StepperStatusLight status={status} />
     <ListItemTextWithProgress
       primary={
-        loading ? 'Please wait, uploading show data...' : 'Upload show data'
+        loading ? 'Please wait, uploading show data…' : 'Upload show data'
       }
       secondary={
         loading ? (
@@ -47,7 +47,7 @@ UploadButton.propTypes = {
 
 export default connect(
   // mapStateToProps
-  state => ({
+  (state) => ({
     loading: isUploadInProgress(state),
     progress: getUploadProgress(state),
     status: getSetupStageStatuses(state).uploadShow

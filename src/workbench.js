@@ -23,10 +23,10 @@ require('../assets/css/workbench.less');
  * Higher order component that propagates the flock passed in the context
  * as props into the wrapped component.
  */
-const injectFlockFromContext = BaseComponent =>
+const injectFlockFromContext = (BaseComponent) =>
   React.forwardRef((props, ref) => (
     <Flock.Consumer>
-      {flock => <BaseComponent {...props} ref={ref} flock={flock} />}
+      {(flock) => <BaseComponent {...props} ref={ref} flock={flock} />}
     </Flock.Consumer>
   ));
 

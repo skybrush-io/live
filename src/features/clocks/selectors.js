@@ -28,7 +28,7 @@ export const getClockAndUpdateIntervalById = (state, id) => {
  * appear on the UI.
  */
 export const getClocksInOrder = createSelector(
-  state => state.clocks,
+  (state) => state.clocks,
   selectOrdered
 );
 
@@ -39,8 +39,8 @@ export const getClocksInOrder = createSelector(
  */
 export const getClocksWithUpdateIntervalsInOrder = createSelector(
   getClocksInOrder,
-  clocks =>
-    clocks.map(clock => ({
+  (clocks) =>
+    clocks.map((clock) => ({
       ...clock,
       updateInterval: getPreferredUpdateIntervalOfClock(clock)
     }))

@@ -46,10 +46,10 @@ const StartUploadButton = ({
   const anchorRef = useRef(null);
 
   const handleToggle = () => {
-    setOpen(prevOpen => !prevOpen);
+    setOpen((previousOpen) => !previousOpen);
   };
 
-  const handleClose = event => {
+  const handleClose = (event) => {
     if (anchorRef.current && anchorRef.current.contains(event.target)) {
       return;
     }
@@ -57,7 +57,7 @@ const StartUploadButton = ({
     setOpen(false);
   };
 
-  const handleMenuItemClick = value => {
+  const handleMenuItemClick = (value) => {
     onChangeUploadTarget(value);
     setOpen(false);
   };
@@ -109,7 +109,7 @@ const StartUploadButton = ({
             <Paper>
               <ClickAwayListener onClickAway={handleClose}>
                 <MenuList id="split-button-menu">
-                  {options.order.map(id => (
+                  {options.order.map((id) => (
                     <MenuItem
                       key={id}
                       disabled={

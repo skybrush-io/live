@@ -19,7 +19,7 @@ import {
 
 /* eslint-disable react/jsx-no-bind */
 const UntypedLayerSettingsPresentation = ({ onLayerTypeSelected }) => {
-  const items = LayerTypes.map(layerType => (
+  const items = LayerTypes.map((layerType) => (
     <Grid key={layerType} item xs={8} sm={4}>
       <Card
         style={{ cursor: 'pointer', height: '100%', userSelect: 'none' }}
@@ -64,7 +64,7 @@ export const UntypedLayerSettings = connect(
   (state, ownProps) => ({}),
   // mapDispatchToProps
   (dispatch, ownProps) => ({
-    onLayerTypeSelected: value => {
+    onLayerTypeSelected: (value) => {
       dispatch(changeLayerType(ownProps.layerId, value));
     }
   })

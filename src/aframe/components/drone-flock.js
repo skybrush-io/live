@@ -31,7 +31,7 @@ const { THREE } = AFrame;
  */
 const updatePositionFromGPSCoordinates = createSelector(
   getFlatEarthCoordinateTransformer,
-  transformation => (coordinate, result) => {
+  (transformation) => (coordinate, result) => {
     if (coordinate !== null && coordinate !== undefined) {
       return transformation.updateVector3FromLonLatAgl(
         result,
@@ -47,7 +47,7 @@ AFrame.registerSystem('drone-flock', {
   init() {
     const getter = () => updatePositionFromGPSCoordinates(store.getState());
     store.subscribe(
-      watch(getter)(newValue => {
+      watch(getter)((newValue) => {
         this._updatePositionFromGPSCoordinates = newValue;
       })
     );
@@ -56,22 +56,22 @@ AFrame.registerSystem('drone-flock', {
   },
 
   createNewUAVEntity() {
-    const el = document.createElement('a-entity');
-    el.setAttribute('geometry', {
+    const element = document.createElement('a-entity');
+    element.setAttribute('geometry', {
       primitive: 'sphere',
       radius: 0.5,
       segmentsHeight: 9,
       segmentsWidth: 18
     });
-    el.setAttribute('material', {
+    element.setAttribute('material', {
       color: new THREE.Color('#0088ff'),
       fog: false,
       shader: 'flat'
     });
-    el.setAttribute('position', '0 0 0');
+    element.setAttribute('position', '0 0 0');
 
-    const glowEl = document.createElement('a-entity');
-    glowEl.setAttribute('sprite', {
+    const glowElement = document.createElement('a-entity');
+    glowElement.setAttribute('sprite', {
       blending: 'additive',
       color: new THREE.Color('#ff8800'),
       scale: '2 2 1',
@@ -79,9 +79,9 @@ AFrame.registerSystem('drone-flock', {
       transparent: true
     });
 
-    el.append(glowEl);
+    element.append(glowElement);
 
-    return el;
+    return element;
   },
 
   updateEntityFromUAV(entity, uav) {

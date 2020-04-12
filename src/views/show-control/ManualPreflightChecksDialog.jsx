@@ -38,7 +38,7 @@ const PreflightCheckListPresentation = ({
   ...rest
 }) => (
   <List dense disablePadding {...rest}>
-    {items.map(item => {
+    {items.map((item) => {
       if (item.type === 'header') {
         return (
           <ListSubheader key={`preflight-header-${item.id}`}>
@@ -83,12 +83,12 @@ PreflightCheckListPresentation.propTypes = {
 
 const PreflightCheckList = connect(
   // mapStateToProps
-  state => ({
+  (state) => ({
     checkedItemIds: getTickedPreflightCheckItems(state),
     items: getHeadersAndItems(state)
   }),
   // mapDispatchToProps
-  dispatch => ({
+  (dispatch) => ({
     onToggle(id) {
       dispatch(togglePreflightCheckStatus(id));
     }
@@ -153,7 +153,7 @@ ManualPreflightChecksDialog.defaultProps = {
 
 export default connect(
   // mapStateToProps
-  state => ({
+  (state) => ({
     ...state.show.manualPreflightChecksDialog,
     signedOff: areManualPreflightChecksSignedOff(state)
   }),

@@ -82,7 +82,7 @@ const pathsRelatedToAppLocation = Object.freeze(getPathsRelatedToAppLocation());
  * @param {number}   opts.timeout number of milliseconds to wait for the
  *        server detection to complete and the server to launch
  */
-const launch = async opts => {
+const launch = async (options) => {
   if (localServerProcess) {
     // Terminate the previous instance
     await terminate();
@@ -92,7 +92,7 @@ const launch = async opts => {
     port: 5000,
     args: '',
     timeout: 5000,
-    ...opts
+    ...options
   };
 
   if (localServerPathDeferred) {
@@ -111,7 +111,7 @@ const launch = async opts => {
     stdio: 'ignore'
   });
 
-  localServerProcess.on('error', reason => {
+  localServerProcess.on('error', (reason) => {
     events.emit('emit', 'error', reason);
     localServerProcess = undefined;
   });
@@ -136,7 +136,7 @@ const launch = async opts => {
  * @return {Promise<string>}  a promise that resolves to the full path of the
  *         server executable if found and `null` if it is not found
  */
-const search = async paths => {
+const search = async (paths) => {
   // Do _not_ use the async version of which here. It does not have a nothrow
   // option, and when it throws an exception, it will be caught by
   // electron-unhandled, which will throw a dialog box in the user's face in

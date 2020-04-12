@@ -94,7 +94,7 @@ UploadResultIndicator.propTypes = {
   result: PropTypes.oneOf(['success', 'error', 'cancelled'])
 };
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   actions: {
     padding: theme.spacing(1, 3, 3, 3)
   },
@@ -232,7 +232,7 @@ UploadDialog.defaultProps = {
 
 export default connect(
   // mapStateToProps
-  state => ({
+  (state) => ({
     ...state.show.uploadDialog,
     ...state.show.upload,
     canStartUpload: getNumberOfDronesInShow(state) > 0,

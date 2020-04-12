@@ -37,7 +37,7 @@ import { isRunningOnMac, platformModifierKey } from '../utils/platform';
  * @return {array} the formatted hotkey definition as an array of JSX tags
  */
 function formatHotkeyDefinition(definition) {
-  return definition.split(/\s+/).map(key => {
+  return definition.split(/\s+/).map((key) => {
     if (key === '+') {
       return ' + ';
     }
@@ -60,11 +60,11 @@ const actionColumnStyle = {};
  */
 export default class HotkeyHandler extends React.Component {
   static condition = {
-    Alt: e => e.altKey,
-    Ctrl: e => e.ctrlKey,
-    Meta: e => e.metaKey,
-    PlatMod: e => (isRunningOnMac ? e.metaKey : e.ctrlKey),
-    Shift: e => e.shiftKey
+    Alt: (e) => e.altKey,
+    Ctrl: (e) => e.ctrlKey,
+    Meta: (e) => e.metaKey,
+    PlatMod: (e) => (isRunningOnMac ? e.metaKey : e.ctrlKey),
+    Shift: (e) => e.shiftKey
   };
 
   static propTypes = {
@@ -128,7 +128,7 @@ export default class HotkeyHandler extends React.Component {
    * Function for toggling the visibility of the help dialog.
    */
   _toggleDialog = () => {
-    this.setState(state => ({ dialogVisible: !state.dialogVisible }));
+    this.setState((state) => ({ dialogVisible: !state.dialogVisible }));
   };
 
   /**
@@ -179,7 +179,7 @@ export default class HotkeyHandler extends React.Component {
           <DialogContent>
             <Table size="small">
               <TableBody>
-                {hotkeys.map(hotkey => (
+                {hotkeys.map((hotkey) => (
                   <TableRow key={`hotkey_${hotkey.keys}`}>
                     <TableCell style={keysColumnStyle}>
                       {formatHotkeyDefinition(hotkey.keys)}
@@ -236,7 +236,7 @@ export default class HotkeyHandler extends React.Component {
    *
    * @param {KeyboardEvent} e the actual keyboard event
    */
-  _handleKeyDown = e => {
+  _handleKeyDown = (e) => {
     if (e.repeat) {
       return;
     }
@@ -253,7 +253,7 @@ export default class HotkeyHandler extends React.Component {
    *
    * @param {KeyboardEvent} e the actual keyboard event
    */
-  _handleKeyUp = e => {
+  _handleKeyUp = (e) => {
     if (e.key in this.state.keyboardModifiers) {
       this.setState(u({ keyboardModifiers: { [e.key]: false } }));
     } else {
@@ -315,7 +315,7 @@ export default class HotkeyHandler extends React.Component {
     return Hotkey.fromString(hotkey).toString();
   }
 
-  _setRoot = root => {
+  _setRoot = (root) => {
     if (this._root === root) {
       return;
     }
@@ -343,10 +343,7 @@ class Hotkey {
    * @return {Hotkey} the processed Hotkey object
    */
   static fromString(string) {
-    const data = string
-      .split('+')
-      .map(trim)
-      .map(upperFirst);
+    const data = string.split('+').map(trim).map(upperFirst);
     const result = new Hotkey();
     result.key = data.pop();
     result.modifiers = data.sort();
@@ -354,7 +351,7 @@ class Hotkey {
     for (const modifier of result.modifiers) {
       if (!(modifier in HotkeyHandler.condition)) {
         throw new Error(
-          `Unknown modifier '${modifier}' in hotkey '${string}'.`
+          `Unknown modifier ’${modifier}’ in hotkey ’${string}’.`
         );
       }
     }

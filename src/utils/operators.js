@@ -11,7 +11,7 @@
  *         the given prefix
  */
 export function appendTo(prefix) {
-  return input => prefix + input;
+  return (input) => prefix + input;
 }
 
 /**
@@ -25,7 +25,7 @@ export function appendTo(prefix) {
  *         values passed to the function are treated as an empty array
  */
 export function extendWith(...items) {
-  return array => (array || []).concat(items);
+  return (array) => (array || []).concat(items);
 }
 
 /**
@@ -39,7 +39,7 @@ export function extendWith(...items) {
  */
 export function stripPrefix(prefix) {
   const { length } = prefix;
-  return input => {
+  return (input) => {
     if (input && input.slice(0, length) === prefix) {
       return input.slice(length);
     }

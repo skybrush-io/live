@@ -13,14 +13,14 @@ import { FlatEarthCoordinateSystem } from '~/utils/geography';
  * Returns whether the manual preflight checks are signed off (i.e. approved)
  * by the operator.
  */
-export const areManualPreflightChecksSignedOff = state =>
+export const areManualPreflightChecksSignedOff = (state) =>
   Boolean(state.show.preflight.manualChecksSignedOffAt);
 
 /**
  * Returns whether the onboard preflight checks are signed off (i.e. approved)
  * by the operator.
  */
-export const areOnboardPreflightChecksSignedOff = state =>
+export const areOnboardPreflightChecksSignedOff = (state) =>
   Boolean(state.show.preflight.onboardChecksSignedOffAt);
 
 /**
@@ -28,14 +28,14 @@ export const areOnboardPreflightChecksSignedOff = state =>
  * with the server (i.e. the server "knows" about the same desired start time
  * as the client).
  */
-export const areStartConditionsSyncedWithServer = state =>
+export const areStartConditionsSyncedWithServer = (state) =>
   state.show.start.syncStatusWithServer === 'synced';
 
 /**
  * Returns the number of drones that are currently scheduled to take off
  * automatically on the server.
  */
-export const countUAVsTakingOffAutomatically = state => {
+export const countUAVsTakingOffAutomatically = (state) => {
   const toStart = state.show.start.uavIds;
   return toStart ? toStart.length : 0;
 };
@@ -44,40 +44,40 @@ export const countUAVsTakingOffAutomatically = state => {
  * Returns whether the synchronization of the start time and start method of the
  * show with the server failed when we attempted it the last time.
  */
-export const didStartConditionSyncFail = state =>
+export const didStartConditionSyncFail = (state) =>
   state.show.start.syncStatusWithServer === 'error';
 
 /**
  * Returns whether there is a scheduled start time for the drone show.
  */
-export const hasScheduledStartTime = state => !isNil(state.show.start.time);
+export const hasScheduledStartTime = (state) => !isNil(state.show.start.time);
 
 /**
  * Returns whether the show has received human authorization to start,
  * irrespectively of whether this setting has been synchronized to the server
  * or not.
  */
-export const isShowAuthorizedToStartLocally = state =>
+export const isShowAuthorizedToStartLocally = (state) =>
   Boolean(state.show.start.authorized);
 
 /**
  * Returns whether the show has received human authorization to start _and_
  * this has been synchronized with the server.
  */
-export const isShowAuthorizedToStart = state =>
+export const isShowAuthorizedToStart = (state) =>
   isShowAuthorizedToStartLocally(state) &&
   areStartConditionsSyncedWithServer(state);
 
 /**
  * Returns whether the takeoff area arrangement was approved by the operator.
  */
-export const isTakeoffAreaApproved = state =>
+export const isTakeoffAreaApproved = (state) =>
   Boolean(state.show.preflight.takeoffAreaApprovedAt);
 
 /**
  * Returns whether a trajectory object "looks like" a valid trajectory.
  */
-export const isValidTrajectory = trajectory =>
+export const isValidTrajectory = (trajectory) =>
   typeof trajectory === 'object' &&
   trajectory.version === 1 &&
   typeof trajectory.points === 'object' &&
@@ -87,7 +87,7 @@ export const isValidTrajectory = trajectory =>
  * Returns the common show settings that apply to all drones in the currently
  * loaded show.
  */
-export const getCommonShowSettings = state => {
+export const getCommonShowSettings = (state) => {
   const result = get(state, 'show.data.settings');
   return typeof result === 'object' ? result : {};
 };
@@ -95,7 +95,7 @@ export const getCommonShowSettings = state => {
 /**
  * Returns the specification of the drone swarm in the currently loaded show.
  */
-export const getDroneSwarmSpecification = state => {
+export const getDroneSwarmSpecification = (state) => {
   const result = get(state, 'show.data.swarm.drones');
   return Array.isArray(result) ? result : [];
 };
@@ -104,7 +104,7 @@ export const getDroneSwarmSpecification = state => {
  * Selector that returns the definition of the coordinate system of an outdoor
  * show.
  */
-export const getOutdoorShowCoordinateSystem = state =>
+export const getOutdoorShowCoordinateSystem = (state) =>
   state.show.environment.outdoor.coordinateSystem;
 
 /**
@@ -113,7 +113,7 @@ export const getOutdoorShowCoordinateSystem = state =>
  */
 export const getShowCoordinateSystemTransformationObject = createSelector(
   getOutdoorShowCoordinateSystem,
-  coordinateSystem =>
+  (coordinateSystem) =>
     coordinateSystem.origin
       ? new FlatEarthCoordinateSystem(coordinateSystem)
       : undefined
@@ -125,9 +125,9 @@ export const getShowCoordinateSystemTransformationObject = createSelector(
  */
 export const getShowToWorldCoordinateSystemTransformation = createSelector(
   getShowCoordinateSystemTransformationObject,
-  transform =>
+  (transform) =>
     transform
-      ? point => {
+      ? (point) => {
           const [x, y, z] = point;
           const [lon, lat] = transform.toLonLat([x, y]);
           return { lon, lat, amsl: undefined, agl: z };
@@ -145,7 +145,7 @@ export const getShowToWorldCoordinateSystemTransformation = createSelector(
  */
 export const getOutdoorShowOrientation = createSelector(
   getOutdoorShowCoordinateSystem,
-  coordinateSystem => parseFloat(coordinateSystem.orientation)
+  (coordinateSystem) => Number.parseFloat(coordinateSystem.orientation)
 );
 
 /**
@@ -153,15 +153,15 @@ export const getOutdoorShowOrientation = createSelector(
  */
 export const getNumberOfDronesInShow = createSelector(
   getDroneSwarmSpecification,
-  swarm => swarm.length
+  (swarm) => swarm.length
 );
 
 /**
  * Returns an array containing all the trajectories. The array will contain
  * undefined for all the drones that have no fixed trajectories in the mission.
  */
-const getTrajectories = createSelector(getDroneSwarmSpecification, swarm =>
-  swarm.map(drone => {
+const getTrajectories = createSelector(getDroneSwarmSpecification, (swarm) =>
+  swarm.map((drone) => {
     const trajectory = get(drone, 'settings.trajectory');
     return isValidTrajectory(trajectory) ? trajectory : undefined;
   })
@@ -170,7 +170,7 @@ const getTrajectories = createSelector(getDroneSwarmSpecification, swarm =>
 /**
  * Returns the duration of a single drone trajectory.
  */
-const getTrajectoryDuration = trajectory => {
+const getTrajectoryDuration = (trajectory) => {
   if (!isValidTrajectory(trajectory)) {
     return 0;
   }
@@ -190,7 +190,7 @@ const getTrajectoryDuration = trajectory => {
 /**
  * Returns the first point of a single drone trajectory.
  */
-const getFirstPointOfTrajectory = trajectory => {
+const getFirstPointOfTrajectory = (trajectory) => {
   return isValidTrajectory(trajectory) ? trajectory.points[0][1] : undefined;
 };
 
@@ -203,7 +203,7 @@ const getFirstPointOfTrajectory = trajectory => {
  */
 export const getFirstPointsOfTrajectories = createSelector(
   getTrajectories,
-  trajectories => trajectories.map(getFirstPointOfTrajectory)
+  (trajectories) => trajectories.map(getFirstPointOfTrajectory)
 );
 
 export const getFirstPointsOfTrajectoriesInWorldCoordinates = createSelector(
@@ -216,7 +216,7 @@ export const getFirstPointsOfTrajectoriesInWorldCoordinates = createSelector(
 /**
  * Returns the last point of a single drone trajectory.
  */
-const getLastPointOfTrajectory = trajectory => {
+const getLastPointOfTrajectory = (trajectory) => {
   return isValidTrajectory(trajectory)
     ? trajectory.points[trajectory.points.length - 1][1]
     : undefined;
@@ -231,7 +231,7 @@ const getLastPointOfTrajectory = trajectory => {
  */
 export const getLastPointsOfTrajectories = createSelector(
   getTrajectories,
-  trajectories => trajectories.map(getLastPointOfTrajectory)
+  (trajectories) => trajectories.map(getLastPointOfTrajectory)
 );
 
 export const getLastPointsOfTrajectoriesInWorldCoordinates = createSelector(
@@ -244,17 +244,20 @@ export const getLastPointsOfTrajectoriesInWorldCoordinates = createSelector(
 /**
  * Returns the total duration of the show, in seconds.
  */
-export const getShowDuration = createSelector(getTrajectories, trajectories => {
-  const longest = maxBy(trajectories, getTrajectoryDuration);
-  return longest ? getTrajectoryDuration(longest) : 0;
-});
+export const getShowDuration = createSelector(
+  getTrajectories,
+  (trajectories) => {
+    const longest = maxBy(trajectories, getTrajectoryDuration);
+    return longest ? getTrajectoryDuration(longest) : 0;
+  }
+);
 
 /**
  * Returns the total duration of the show, as a human-readable string.
  */
 export const getShowDurationAsString = createSelector(
   getShowDuration,
-  duration =>
+  (duration) =>
     moment.duration(duration, 'seconds').format('m:ss', { trim: false })
 );
 
@@ -264,24 +267,24 @@ export const getShowDurationAsString = createSelector(
 export const getShowDescription = createSelector(
   getNumberOfDronesInShow,
   getShowDurationAsString,
-  (numDrones, duration) => `${numDrones} drones, ${duration}`
+  (numberDrones, duration) => `${numberDrones} drones, ${duration}`
 );
 
 /**
  * Returns the progress of the current show loading process, as a percentage
  * between 0 and 100.
  */
-export const getShowLoadingProgressPercentage = state => {
+export const getShowLoadingProgressPercentage = (state) => {
   const { progress } = state.show;
   return typeof progress === 'number' ? progress * 100 : null;
-}
+};
 
 /**
  * Returns the metadata of the show, if any.
  */
 export const getShowMetadata = createSelector(
-  state => state.show.data,
-  data => (data && typeof data.meta === 'object' ? data.meta : null) || {}
+  (state) => state.show.data,
+  (data) => (data && typeof data.meta === 'object' ? data.meta : null) || {}
 );
 
 /**
@@ -289,8 +292,8 @@ export const getShowMetadata = createSelector(
  * if no start time is set.
  */
 export const getShowStartTimeAsString = createSelector(
-  state => state.show.start.time,
-  time =>
+  (state) => state.show.start.time,
+  (time) =>
     isNil(time) || isNaN(time) ? undefined : formatISO9075(fromUnixTime(time))
 );
 
@@ -300,30 +303,30 @@ export const getShowStartTimeAsString = createSelector(
 export const getShowTitle = createSelector(
   getShowMetadata,
   getNumberOfDronesInShow,
-  (meta, numDrones) => meta.title || `Show with ${numDrones} drones`
+  (meta, numberDrones) => meta.title || `Show with ${numberDrones} drones`
 );
 
 /**
  * Returns whether there is a show file currently loaded.
  */
-export const hasLoadedShowFile = state => Boolean(state.show.data);
+export const hasLoadedShowFile = (state) => Boolean(state.show.data);
 
 /**
  * Returns whether the origin of the coordinate system of the show has been
  * set up.
  */
-export const hasShowOrigin = state =>
+export const hasShowOrigin = (state) =>
   Boolean(get(state, 'show.environment.outdoor.coordinateSystem.origin'));
 
 /**
  * Returns whether we are currently loading a show file.
  */
-export const isLoadingShowFile = state => state.show.loading;
+export const isLoadingShowFile = (state) => state.show.loading;
 
 /**
  * Returns the failed upload items from the uploader.
  */
-export const getFailedUploadItems = state => state.show.upload.failedItems;
+export const getFailedUploadItems = (state) => state.show.upload.failedItems;
 
 /**
  * Returns the upload items that are currently in the backlog of the uploader:
@@ -331,8 +334,8 @@ export const getFailedUploadItems = state => state.show.upload.failedItems;
  * inside the uploader saga but have not been taken up by a worker yet.
  */
 export const getItemsInUploadBacklog = createSelector(
-  state => state.show.upload.itemsQueued,
-  state => state.show.upload.itemsWaitingToStart,
+  (state) => state.show.upload.itemsQueued,
+  (state) => state.show.upload.itemsWaitingToStart,
   (queued, waiting) => [...queued, ...waiting]
 );
 
@@ -340,7 +343,7 @@ export const getItemsInUploadBacklog = createSelector(
  * Returns the ID of the next drone from the upload queue during an upload
  * process, or undefined if the queue is empty.
  */
-export const getNextDroneFromUploadQueue = state => {
+export const getNextDroneFromUploadQueue = (state) => {
   const { itemsWaitingToStart } = state.show.upload;
   if (itemsWaitingToStart && itemsWaitingToStart.length > 0) {
     return itemsWaitingToStart[0];
@@ -357,7 +360,7 @@ export const getNextDroneFromUploadQueue = state => {
  * has failed.
  */
 export const getUploadProgress = createSelector(
-  state => state.show.upload,
+  (state) => state.show.upload,
   ({
     failedItems,
     itemsFinished,
@@ -365,30 +368,34 @@ export const getUploadProgress = createSelector(
     itemsQueued,
     itemsWaitingToStart
   }) => {
-    const numFailedItems = Array.isArray(failedItems) ? failedItems.length : 0;
-    const numItemsFinished = Array.isArray(itemsFinished)
+    const numberFailedItems = Array.isArray(failedItems)
+      ? failedItems.length
+      : 0;
+    const numberItemsFinished = Array.isArray(itemsFinished)
       ? itemsFinished.length
       : 0;
-    const numItemsInProgress = Array.isArray(itemsInProgress)
+    const numberItemsInProgress = Array.isArray(itemsInProgress)
       ? itemsInProgress.length
       : 0;
-    const numItemsQueued = Array.isArray(itemsQueued) ? itemsQueued.length : 0;
-    const numItemsWaitingToStart = Array.isArray(itemsWaitingToStart)
+    const numberItemsQueued = Array.isArray(itemsQueued)
+      ? itemsQueued.length
+      : 0;
+    const numberItemsWaitingToStart = Array.isArray(itemsWaitingToStart)
       ? itemsWaitingToStart.length
       : 0;
 
     const total =
-      numFailedItems +
-      numItemsInProgress +
-      numItemsQueued +
-      numItemsWaitingToStart +
-      numItemsFinished;
+      numberFailedItems +
+      numberItemsInProgress +
+      numberItemsQueued +
+      numberItemsWaitingToStart +
+      numberItemsFinished;
     if (total > 0) {
-      const num1 = numFailedItems + numItemsFinished;
-      const num2 = num1 + numItemsInProgress;
+      const number1 = numberFailedItems + numberItemsFinished;
+      const number2 = number1 + numberItemsInProgress;
       return [
-        Math.round((100 * num1) / total),
-        Math.round((100 * num2) / total)
+        Math.round((100 * number1) / total),
+        Math.round((100 * number2) / total)
       ];
     }
 
@@ -399,4 +406,4 @@ export const getUploadProgress = createSelector(
 /**
  * Returns whether we are currently uploading show data to the drones.
  */
-export const isUploadInProgress = state => state.show.upload.running;
+export const isUploadInProgress = (state) => state.show.upload.running;

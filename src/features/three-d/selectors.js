@@ -10,7 +10,7 @@ import { getFlatEarthCoordinateTransformer } from '~/selectors/map';
 /**
  * Returns the position and rotation of the camera in the 3D view.
  */
-export const getCameraPose = state => state.threeD.camera;
+export const getCameraPose = (state) => state.threeD.camera;
 
 /**
  * Returns a function that can be called with a single object having `lon`,
@@ -19,7 +19,7 @@ export const getCameraPose = state => state.threeD.camera;
  */
 export const getGPSToWorldTransformation = createSelector(
   getFlatEarthCoordinateTransformer,
-  transformation => coordinate => {
+  (transformation) => (coordinate) => {
     if (isNil(coordinate)) {
       return null;
     }

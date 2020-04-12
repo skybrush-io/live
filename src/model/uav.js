@@ -100,7 +100,7 @@ export default class UAV {
    *        UAV-INF message
    * @return {boolean}  whether the status information has been updated
    */
-  handleUAVStatusInfo = status => {
+  handleUAVStatusInfo = (status) => {
     const { timestamp, position, heading, errors, battery, light } = status;
     let errorList;
     let updated = false;

@@ -33,7 +33,7 @@ import { createAsyncAction } from '~/utils/redux';
 /**
  * Thunk that approves the takeoff area arrangement with the current timestamp.
  */
-export const approveTakeoffArea = () => dispatch => {
+export const approveTakeoffArea = () => (dispatch) => {
   dispatch(approveTakeoffAreaAt(Date.now()));
 };
 
@@ -72,18 +72,17 @@ const createShowLoaderThunkFactory = (
     { minDelay: 500 }
   );
 
-  return arg => async (dispatch, getState) => {
-    const onProgress = throttle(
-      progress => {
-        dispatch({
-          type: loadingProgress.type,
-          payload: progress
-        });
-      },
-      200
-    );
+  return (arg) => async (dispatch, getState) => {
+    const onProgress = throttle((progress) => {
+      dispatch({
+        type: loadingProgress.type,
+        payload: progress
+      });
+    }, 200);
     try {
-      const promise = dispatch(actionFactory(arg, { dispatch, getState, onProgress }));
+      const promise = dispatch(
+        actionFactory(arg, { dispatch, getState, onProgress })
+      );
       const { value: spec } = await promise;
       processShowInJSONFormatAndDispatchActions(spec, dispatch);
     } catch (error) {
@@ -95,7 +94,6 @@ const createShowLoaderThunkFactory = (
         })
       );
       console.error(error);
-      return;
     }
   };
 };
@@ -108,7 +106,7 @@ const createShowLoaderThunkFactory = (
  * the show from.
  */
 export const loadShowFromFile = createShowLoaderThunkFactory(
-  file => processFile(file),
+  (file) => processFile(file),
   {
     errorMessage: 'Failed to load show from the given file.'
   }
@@ -124,7 +122,7 @@ export const loadShowFromFile = createShowLoaderThunkFactory(
 export const loadShowFromUrl = createShowLoaderThunkFactory(
   async (url, { onProgress }) => {
     const response = await ky(url, {
-      onDownloadProgress: info => {
+      onDownloadProgress: (info) => {
         if (info.totalBytes > 0) {
           onProgress(info.percent);
         }
@@ -133,7 +131,7 @@ export const loadShowFromUrl = createShowLoaderThunkFactory(
     return processFile(response);
   },
   {
-    errorMessage: 'Failed to load show from the given URL.',
+    errorMessage: 'Failed to load show from the given URL.'
   }
 );
 
@@ -178,7 +176,7 @@ export function retryFailedUploads() {
  * Thunk that signs off on the manual preflight checks with the current
  * timestamp.
  */
-export const signOffOnManualPreflightChecks = () => dispatch => {
+export const signOffOnManualPreflightChecks = () => (dispatch) => {
   dispatch(signOffOnManualPreflightChecksAt(Date.now()));
 };
 
@@ -186,6 +184,6 @@ export const signOffOnManualPreflightChecks = () => dispatch => {
  * Thunk that signs off on the onboard preflight checks with the current
  * timestamp.
  */
-export const signOffOnOnboardPreflightChecks = () => dispatch => {
+export const signOffOnOnboardPreflightChecks = () => (dispatch) => {
   dispatch(signOffOnOnboardPreflightChecksAt(Date.now()));
 };

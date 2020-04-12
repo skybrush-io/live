@@ -7,7 +7,7 @@ const { THREE } = AFrame;
 
 const CLAMP_VELOCITY = 0.001;
 const MAX_DELTA = 0.2;
-const KEYS = [
+const KEYS = new Set([
   'KeyW',
   'KeyA',
   'KeyS',
@@ -16,7 +16,7 @@ const KEYS = [
   'ArrowLeft',
   'ArrowRight',
   'ArrowDown'
-];
+]);
 
 /**
  * WASD component to control entities using WASD keys.
@@ -52,7 +52,7 @@ AFrame.registerComponent('better-wasd-controls', {
 
   tick(time, delta) {
     const data = this.data;
-    const el = this.el;
+    const element = this.el;
     const velocity = this.velocity;
 
     if (
@@ -72,7 +72,7 @@ AFrame.registerComponent('better-wasd-controls', {
     }
 
     // Get movement vector and translate position.
-    el.object3D.position.add(this.getMovementVector(delta));
+    element.object3D.position.add(this.getMovementVector(delta));
   },
 
   remove() {
@@ -158,11 +158,11 @@ AFrame.registerComponent('better-wasd-controls', {
     }
   },
 
-  getMovementVector: (function() {
+  getMovementVector: (function () {
     const directionVector = new THREE.Vector3(0, 0, 0);
     const rotationEuler = new THREE.Euler(0, 0, 0, 'YXZ');
 
-    return function(delta) {
+    return function (delta) {
       const rotation = this.el.getAttribute('rotation');
       const velocity = this.velocity;
       let xRotation;
@@ -233,7 +233,7 @@ AFrame.registerComponent('better-wasd-controls', {
     }
 
     code = event.code || KEYCODE_TO_CODE[event.keyCode];
-    if (KEYS.includes(code)) {
+    if (KEYS.has(code)) {
       this.keys[code] = true;
     }
   },

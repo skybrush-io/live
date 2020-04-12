@@ -10,7 +10,7 @@ import { updateServerSettings } from '~/actions/server-settings';
  */
 export default function* onboardingSaga() {
   const currentHostName = yield select(
-    state => state.dialogs.serverSettings.hostName
+    (state) => state.dialogs.serverSettings.hostName
   );
 
   if (isNil(currentHostName)) {

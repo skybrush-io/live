@@ -92,7 +92,7 @@ MapViewLayersPresentation.propTypes = {
  */
 const MapViewLayers = connect(
   // mapStateToProps
-  state => ({
+  (state) => ({
     layers: getVisibleLayersInOrder(state),
     selectedTool: state.map.tools.selectedTool
   })
@@ -100,7 +100,7 @@ const MapViewLayers = connect(
 
 /* ********************************************************************** */
 
-const MapViewControlsPresentation = props => {
+const MapViewControlsPresentation = (props) => {
   const result = [
     <control.Zoom key="control.Zoom" />,
     <control.Attribution key="control.Attribution" collapseLabel="&laquo;" />
@@ -129,7 +129,7 @@ const MapViewControlsPresentation = props => {
  */
 const MapViewControls = connect(
   // mapStateToProps
-  state => ({
+  (state) => ({
     formatCoordinate: getExtendedCoordinateFormatter(state),
     ...state.settings.display
   })
@@ -167,7 +167,7 @@ const MapViewToolbars = () => [
  * @param  {Object}  props    the props of the component
  * @returns {JSX.Node[]}  the interactions on the map
  */
-const MapViewInteractions = withMap(props => {
+const MapViewInteractions = withMap((props) => {
   const {
     onDrawEnded,
     onAddFeaturesToSelection,
@@ -447,7 +447,7 @@ class MapViewPresentation extends React.Component {
    * @param  {Map} map  the map
    * @return {ol.Feature[]} the selected OpenLayers features
    */
-  _getSelectedTransformableFeatures = map => {
+  _getSelectedTransformableFeatures = (map) => {
     return filter(
       findFeaturesById(map, this.props.selection),
       isFeatureTransformable
@@ -468,9 +468,9 @@ class MapViewPresentation extends React.Component {
     const features = [];
     const { map } = this._map.current;
 
-    getVisibleSelectableLayers(map).forEach(layer => {
+    getVisibleSelectableLayers(map).forEach((layer) => {
       const source = layer.getSource();
-      source.forEachFeatureIntersectingExtent(extent, feature => {
+      source.forEachFeatureIntersectingExtent(extent, (feature) => {
         features.push(feature);
       });
     });
@@ -491,7 +491,7 @@ class MapViewPresentation extends React.Component {
    * @param  {ol.interaction.Draw.Event} event  the event dispatched by the
    *         draw interaction
    */
-  _onDrawEnded = event => {
+  _onDrawEnded = (event) => {
     try {
       const feature = createFeatureFromOpenLayers(event.feature);
       this.props.dispatch(addFeature(feature));
@@ -508,7 +508,7 @@ class MapViewPresentation extends React.Component {
    *         triggered at the end of the interaction
    * @param  {ol.Feature[]}  event.features  the features that were modified
    */
-  _onFeaturesModified = event => {
+  _onFeaturesModified = (event) => {
     this._updateFeatures(event.features);
   };
 
@@ -520,7 +520,7 @@ class MapViewPresentation extends React.Component {
    *         triggered at the end of the interaction
    * @param  {ol.Feature[]}  event.features  the features that were moved
    */
-  _onFeaturesTransformed = event => {
+  _onFeaturesTransformed = (event) => {
     this._updateFeatures(event.features);
   };
 
@@ -564,7 +564,7 @@ class MapViewPresentation extends React.Component {
       set: setSelectedFeatures
     };
     const action = actionMapping[mode] || setSelectedFeatures;
-    const ids = features ? features.map(feature => feature.getId()) : [];
+    const ids = features ? features.map((feature) => feature.getId()) : [];
     if (action === setSelectedFeatures || (ids && ids.length > 0)) {
       this.props.dispatch(action(ids));
     }
@@ -598,7 +598,7 @@ class MapViewPresentation extends React.Component {
     const updatedUserFeatures = {};
     const { dispatch } = this.props;
 
-    features.forEach(feature => {
+    features.forEach((feature) => {
       const globalId = feature.getId();
       const userFeatureId = globalIdToFeatureId(globalId);
       if (userFeatureId) {
@@ -640,7 +640,7 @@ class MapViewPresentation extends React.Component {
    */
   _disableDefaultContextMenu = () => {
     const { map } = this._map.current;
-    map.getViewport().addEventListener('contextmenu', e => {
+    map.getViewport().addEventListener('contextmenu', (e) => {
       e.preventDefault();
       return false;
     });
@@ -663,7 +663,7 @@ class MapViewPresentation extends React.Component {
  */
 const MapView = connect(
   // mapStateToProps
-  state => ({
+  (state) => ({
     center: state.map.view.position,
     rotation: getMapViewRotationAngle(state),
     zoom: state.map.view.zoom,

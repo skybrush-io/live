@@ -44,7 +44,7 @@ const reducer = handleActions(
 
       if (!name) {
         // Generate a sensible name if no name was given
-        const existingNames = map(state.byId, layer => layer.label);
+        const existingNames = map(state.byId, (layer) => layer.label);
         name = chooseUniqueName('New layer', existingNames);
       }
 
@@ -65,8 +65,8 @@ const reducer = handleActions(
       // Update the state
       return u(
         {
-          byId: oldLayers => Object.assign({}, oldLayers, newLayer),
-          order: oldOrder => [].concat(oldOrder, [id])
+          byId: (oldLayers) => Object.assign({}, oldLayers, newLayer),
+          order: (oldOrder) => [].concat(oldOrder, [id])
         },
         state
       );
@@ -94,7 +94,7 @@ const reducer = handleActions(
       const layerUpdate = {};
       const { id, type } = action.payload;
       if (state.byId[id].type === LayerType.UNTYPED) {
-        const existingNames = map(state.byId, layer => layer.label);
+        const existingNames = map(state.byId, (layer) => layer.label);
         const suggestedName = chooseUniqueName(
           labelForLayerType(type),
           existingNames
@@ -149,7 +149,7 @@ const reducer = handleActions(
     TOGGLE_LAYER_VISIBILITY(state, action) {
       return u.updateIn(
         getKey(action.payload, 'visible'),
-        value => !value,
+        (value) => !value,
         state
       );
     }

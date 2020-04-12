@@ -45,7 +45,7 @@ const getMessageIdsForUAV = (state, uavId) =>
  * @param {number} messageId  the current message ID
  * @return {number} the next message ID
  */
-const generateNextMessageId = messageId => messageId + 1;
+const generateNextMessageId = (messageId) => messageId + 1;
 
 /**
  * Updates the given state object by adding a new error message in the

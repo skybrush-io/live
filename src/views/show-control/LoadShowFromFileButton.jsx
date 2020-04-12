@@ -33,7 +33,7 @@ import { getSetupStageStatuses } from '~/features/show/stages';
  * Helper function to test whether a dropped file is a real file and not a
  * directory.
  */
-const isFile = item => item && item.size > 0;
+const isFile = (item) => item && item.size > 0;
 
 /**
  * React component for the button that allows the user to open a show file.
@@ -65,7 +65,10 @@ const LoadShowFromFileButton = ({
       }
       secondary={
         loading ? (
-          <LinearProgress value={progress} variant={!isNil(progress) ? "determinate" : "indeterminate"}/>
+          <LinearProgress
+            value={progress}
+            variant={!isNil(progress) ? 'determinate' : 'indeterminate'}
+          />
         ) : hasLoadedShowFile ? (
           description
         ) : (
@@ -100,7 +103,7 @@ LoadShowFromFileButton.propTypes = {
 
 export default connect(
   // mapStateToProps
-  state => ({
+  (state) => ({
     description: getShowDescription(state),
     hasLoadedShowFile: hasLoadedShowFile(state),
     loading: isLoadingShowFile(state),

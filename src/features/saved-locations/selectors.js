@@ -8,6 +8,6 @@ import { selectOrdered } from '~/utils/collections';
  * the UI.
  */
 export const getSavedLocationsInOrder = createSelector(
-  state => state.savedLocations,
+  (state) => state.savedLocations,
   selectOrdered
 );

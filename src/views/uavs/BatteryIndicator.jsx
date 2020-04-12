@@ -16,7 +16,7 @@ import BatteryFullIcon from '@material-ui/icons/BatteryFull';
 import Colors from '~/components/colors';
 
 const useStyles = makeStyles(
-  theme => ({
+  (theme) => ({
     root: {
       padding: '0 2px',
       textAlign: 'center',
@@ -105,8 +105,8 @@ function getBatteryStatus(voltage, percentage) {
       : 'Error';
   }
 
-  const numCells = 3;
-  const voltagePerCell = voltage === undefined ? 0 : voltage / numCells;
+  const numberCells = 3;
+  const voltagePerCell = voltage === undefined ? 0 : voltage / numberCells;
   return voltagePerCell > voltageThresholdsPerCell.Full
     ? 'Full'
     : voltagePerCell > voltageThresholdsPerCell.NearFull

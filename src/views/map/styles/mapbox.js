@@ -43,7 +43,7 @@ function createMapboxStreetsV6Style() {
   const styles = [];
 
   // eslint-disable-next-line complexity
-  return function(feature, resolution) {
+  return function (feature, resolution) {
     let length = 0;
     const layer = feature.get('layer');
     const cls = feature.get('class');

@@ -1,3 +1,5 @@
+import config from 'config';
+
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
@@ -12,14 +14,6 @@ import Tab from '@material-ui/core/Tab';
 import DialogTabs from '~/components/dialogs/DialogTabs';
 import { loadShowFromUrl } from '~/features/show/actions';
 import { closeLoadShowFromCloudDialog } from '~/features/show/slice';
-
-const EXAMPLES = [
-  {
-    id: "example-40",
-    title: "Example show with 40 drones",
-    url: require("~/../assets/shows/demo.skyc").default
-  }
-];
 
 /**
  * Presentation component for the dialog that allows the user to load a show
@@ -36,7 +30,7 @@ const LoadShowFromCloudDialog = ({ open, onClose, onLoadShowFromUrl }) => {
       </DialogTabs>
       <List>
         <ListSubheader>Shared with me</ListSubheader>
-        {EXAMPLES.map(({ id, title, url }) => (
+        {(config.examples || []).map(({ id, title, url }) => (
           <ListItem key={id} button onClick={() => onLoadShowFromUrl(url)}>
             <ListItemText primary={title} />
           </ListItem>
@@ -58,12 +52,12 @@ LoadShowFromCloudDialog.defaultProps = {
 
 export default connect(
   // mapStateToProps
-  state => ({
+  (state) => ({
     ...state.show.loadShowFromCloudDialog
   }),
 
   // mapDispatchToProps
-  dispatch => ({
+  (dispatch) => ({
     onClose() {
       dispatch(closeLoadShowFromCloudDialog());
     },

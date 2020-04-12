@@ -58,7 +58,7 @@ ManualPreflightChecksButton.defaultProps = {};
 
 export default connect(
   // mapStateToProps
-  state => ({
+  (state) => ({
     areChecksSignedOff: areManualPreflightChecksSignedOff(state),
     status: getSetupStageStatuses(state).performManualPreflightChecks
   }),

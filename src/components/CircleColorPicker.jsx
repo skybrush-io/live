@@ -11,4 +11,4 @@ const circlePickerProps = {
   width: 343
 };
 
-export default props => <CirclePicker {...circlePickerProps} {...props} />;
+export default (props) => <CirclePicker {...circlePickerProps} {...props} />;

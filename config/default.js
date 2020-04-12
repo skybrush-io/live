@@ -3,5 +3,7 @@
  */
 
 export default {
-  server: {}
+  examples: [],
+  server: {},
+  tour: null
 };

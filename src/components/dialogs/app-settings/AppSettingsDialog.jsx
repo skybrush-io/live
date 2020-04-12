@@ -68,9 +68,9 @@ AppSettingsDialogPresentation.defaultProps = {
  */
 const AppSettingsDialog = connect(
   // mapStateToProps
-  state => state.dialogs.appSettings,
+  (state) => state.dialogs.appSettings,
   // mapDispatchToProps
-  dispatch => ({
+  (dispatch) => ({
     onClose() {
       dispatch(closeAppSettingsDialog());
     },

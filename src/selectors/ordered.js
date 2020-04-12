@@ -9,7 +9,7 @@ import { selectOrdered } from '~/utils/collections';
  * same order as they should appear on the UI.
  */
 export const getConnectionsInOrder = createSelector(
-  state => state.connections,
+  (state) => state.connections,
   selectOrdered
 );
 
@@ -18,7 +18,7 @@ export const getConnectionsInOrder = createSelector(
  * state object, in exactly the same order as they should appear on the UI.
  */
 export const getFeaturesInOrder = createSelector(
-  state => state.features,
+  (state) => state.features,
   selectOrdered
 );
 
@@ -27,7 +27,7 @@ export const getFeaturesInOrder = createSelector(
  * state object, in exactly the same order as they should appear on the UI.
  */
 export const getLayersInOrder = createSelector(
-  state => state.map.layers,
+  (state) => state.map.layers,
   selectOrdered
 );
 
@@ -37,5 +37,5 @@ export const getLayersInOrder = createSelector(
  */
 export const getVisibleLayersInOrder = createSelector(
   getLayersInOrder,
-  layers => layers.filter(isLayerVisible)
+  (layers) => layers.filter(isLayerVisible)
 );

@@ -74,13 +74,13 @@ DeauthenticationDialogPresentation.defaultProps = {
  */
 const DeauthenticationDialog = connect(
   // mapStateToProps
-  state => ({
+  (state) => ({
     ...state.dialogs.deauthentication,
     title: 'Log out from server',
     user: getAuthenticatedUser(state)
   }),
   // mapDispatchToProps
-  dispatch => ({
+  (dispatch) => ({
     onCancel() {
       dispatch(closeDeauthenticationDialog());
     },

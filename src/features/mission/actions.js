@@ -37,8 +37,8 @@ function calculateDistanceMatrix(sources, targets, { getter = null } = {}) {
   const sourcePositions = sources.map(getter);
   const targetPositions = targets.map(getter);
 
-  return sourcePositions.map(source =>
-    targetPositions.map(target => haversineDistance(source, target))
+  return sourcePositions.map((source) =>
+    targetPositions.map((target) => haversineDistance(source, target))
   );
 }
 
@@ -55,19 +55,21 @@ export const augmentMappingAutomaticallyFromSpareDrones = () => (
   const emptySlots = getEmptyMappingSlotIndices(state);
   const homePositions = getGPSBasedHomePositionsInMission(state);
 
-  const slotsToFill = emptySlots.filter(index => !isNil(homePositions[index]));
-  const targets = slotsToFill.map(index => ({
+  const slotsToFill = emptySlots.filter(
+    (index) => !isNil(homePositions[index])
+  );
+  const targets = slotsToFill.map((index) => ({
     index,
     position: homePositions[index]
   }));
 
   const spareUAVIds = getUnmappedUAVIds(state);
-  const sources = spareUAVIds.map(uavId => ({
+  const sources = spareUAVIds.map((uavId) => ({
     uavId,
     position: getCurrentPositionByUavId(state, uavId)
   }));
 
-  const getter = item => [item.position.lat, item.position.lon];
+  const getter = (item) => [item.position.lat, item.position.lon];
   const distances = calculateDistanceMatrix(sources, targets, { getter });
   const matching = hungarianAlgorithm(distances);
 
@@ -109,8 +111,8 @@ export const addVirtualDronesForMission = () => async (dispatch, getState) => {
   const homeCoordinates = getGPSBasedHomePositionsInMission(state).filter(
     Boolean
   );
-  const numDrones = homeCoordinates.length;
-  const numDigits = String(numDrones).length;
+  const numberDrones = homeCoordinates.length;
+  const numberDigits = String(numberDrones).length;
 
   // Okay, this will have nothing to do with dispatching actions -- we
   // will simply send requests to the server.
@@ -136,7 +138,7 @@ export const addVirtualDronesForMission = () => async (dispatch, getState) => {
 
   // Update the ID style depending on the number of virtual drones
   // eslint-disable-next-line camelcase
-  config.id_format = `{0:0${numDigits}}`;
+  config.id_format = `{0:0${numberDigits}}`;
 
   // Update the number of drones as well for sake of consistency
   config.count = config.takeoff_area.coordinates.length;

@@ -84,14 +84,16 @@ class FitAllFeaturesButton extends React.Component {
       .getLayers()
       .getArray()
       .filter(this._isLayerFeasible);
-    const featureArrays = feasibleLayers.map(l => l.getSource().getFeatures());
+    const featureArrays = feasibleLayers.map((l) =>
+      l.getSource().getFeatures()
+    );
     const features = [].concat.apply([], featureArrays);
     const featureExtents = features
-      .map(f => {
+      .map((f) => {
         const geometry = f.getGeometry();
         return geometry ? geometry.getExtent() : undefined;
       })
-      .filter(e => e !== undefined);
+      .filter((e) => e !== undefined);
 
     if (featureExtents.length === 0) {
       this.props.dispatch(

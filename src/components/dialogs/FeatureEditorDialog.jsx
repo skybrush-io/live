@@ -83,7 +83,7 @@ const GeneralPropertiesForm = connect(
   })
 )(GeneralPropertiesFormPresentation);
 
-const FeatureEditorDialogPresentation = props => {
+const FeatureEditorDialogPresentation = (props) => {
   const {
     feature,
     featureId,
@@ -169,7 +169,7 @@ FeatureEditorDialogPresentation.defaultProps = {
  */
 const FeatureEditorDialog = connect(
   // mapStateToProps
-  state => {
+  (state) => {
     const {
       dialogVisible,
       featureId,
@@ -183,7 +183,7 @@ const FeatureEditorDialog = connect(
     };
   },
   // mapDispatchToProps
-  dispatch => ({
+  (dispatch) => ({
     onClose() {
       dispatch(closeFeatureEditorDialog());
     },

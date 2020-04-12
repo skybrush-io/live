@@ -43,7 +43,7 @@ const clockIdToProps = {
  */
 export function formatClockById(id) {
   const props = clockIdToProps[id];
-  return (props ? props.label : null) || `Clock '${id}'`;
+  return (props ? props.label : null) || `Clock ’${id}’`;
 }
 
 /**

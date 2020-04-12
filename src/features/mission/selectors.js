@@ -10,7 +10,7 @@ import { getSelectedUAVIds } from '~/selectors/selection';
  *
  * @param  {Object}  state  the state of the application
  */
-export const getGPSBasedHomePositionsInMission = state =>
+export const getGPSBasedHomePositionsInMission = (state) =>
   state.mission.homePositions;
 
 /**
@@ -18,13 +18,13 @@ export const getGPSBasedHomePositionsInMission = state =>
  *
  * @param  {Object}  state  the state of the application
  */
-export const getGPSBasedLandingPositionsInMission = state =>
+export const getGPSBasedLandingPositionsInMission = (state) =>
   state.mission.landingPositions;
 
 /**
  * Returns the current list of takeoff headings in the mission.
  */
-export const getTakeoffHeadingsInMission = state =>
+export const getTakeoffHeadingsInMission = (state) =>
   state.mission.takeoffHeadings;
 
 /**
@@ -33,7 +33,7 @@ export const getTakeoffHeadingsInMission = state =>
  *
  * @param  {Object}  state  the state of the application
  */
-export const getMissionMapping = state => state.mission.mapping;
+export const getMissionMapping = (state) => state.mission.mapping;
 
 /**
  * Returns a list containing the indices of all the empty mapping slots (i.e.
@@ -41,14 +41,16 @@ export const getMissionMapping = state => state.mission.mapping;
  */
 export const getEmptyMappingSlotIndices = createSelector(
   getMissionMapping,
-  mapping =>
-    mapping ? range(mapping.length).filter(index => isNil(mapping[index])) : []
+  (mapping) =>
+    mapping
+      ? range(mapping.length).filter((index) => isNil(mapping[index]))
+      : []
 );
 
 /**
  * Returns the index of the mapping slot being edited.
  */
-export const getIndexOfMappingSlotBeingEdited = state =>
+export const getIndexOfMappingSlotBeingEdited = (state) =>
   state.mission.mappingEditor.indexBeingEdited;
 
 /**
@@ -56,7 +58,7 @@ export const getIndexOfMappingSlotBeingEdited = state =>
  */
 export const getReverseMissionMapping = createSelector(
   getMissionMapping,
-  mapping =>
+  (mapping) =>
     mapping.reduce((acc, uavId, index) => {
       if (!isNil(uavId)) {
         acc[uavId] = index;
@@ -84,7 +86,7 @@ export const getUAVIdForMappingSlotBeingEdited = createSelector(
  */
 export const getUAVIdsParticipatingInMission = createSelector(
   getMissionMapping,
-  mapping => {
+  (mapping) => {
     const result = reject(mapping, isNil);
     result.sort();
     return result;
@@ -105,13 +107,13 @@ export const canAugmentMappingAutomaticallyFromSpareDrones = createSelector(
   getEmptyMappingSlotIndices,
   getGPSBasedHomePositionsInMission,
   (emptySlots, homePositions) =>
-    emptySlots.length > 0 && homePositions.some(position => !isNil(position))
+    emptySlots.length > 0 && homePositions.some((position) => !isNil(position))
 );
 
 /**
  * Returns whether the current mapping is editable at the moment.
  */
-export const isMappingEditable = state => state.mission.mappingEditor.enabled;
+export const isMappingEditable = (state) => state.mission.mappingEditor.enabled;
 
 /**
  * Returns whether the current selection has at least one drone that appears in

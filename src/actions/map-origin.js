@@ -33,7 +33,7 @@ export const setFlatEarthCoordinateSystemOrigin = createAction(
  */
 export const setFlatEarthCoordinateSystemOrientation = createAction(
   SET_ORIGIN,
-  angle => ({ angle })
+  (angle) => ({ angle })
 );
 
 /**
@@ -42,5 +42,5 @@ export const setFlatEarthCoordinateSystemOrientation = createAction(
  */
 export const setFlatEarthCoordinateSystemType = createAction(
   SET_AXIS_TYPE,
-  type => ({ type })
+  (type) => ({ type })
 );

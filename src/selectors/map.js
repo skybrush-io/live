@@ -12,8 +12,8 @@ import { FlatEarthCoordinateSystem } from '~/utils/geography';
  * current parameters set in the state object.
  */
 export const getFlatEarthCoordinateTransformer = createSelector(
-  state => state.map.origin,
-  origin =>
+  (state) => state.map.origin,
+  (origin) =>
     origin.position
       ? new FlatEarthCoordinateSystem({
           origin: origin.position,
@@ -32,8 +32,8 @@ export const getFlatEarthCoordinateTransformer = createSelector(
  * a float instead.
  */
 export const getMapViewRotationAngle = createSelector(
-  state => state.map.view.angle,
-  parseFloat
+  (state) => state.map.view.angle,
+  Number.parseFloat
 );
 
 /**
@@ -45,19 +45,19 @@ export const getMapViewRotationAngle = createSelector(
  * a float instead.
  */
 export const getMapOriginRotationAngle = createSelector(
-  state => state.map.origin.angle,
-  parseFloat
+  (state) => state.map.origin.angle,
+  Number.parseFloat
 );
 
 /**
  * Selector that returns whether the current coordinate system is left-handed
  * or right-handed.
  */
-export const isMapCoordinateSystemLeftHanded = state =>
+export const isMapCoordinateSystemLeftHanded = (state) =>
   state.map.origin.type === 'neu';
 
 /**
  * Selector that returns whether the map coordinate system is specified.
  */
-export const isMapCoordinateSystemSpecified = state =>
+export const isMapCoordinateSystemSpecified = (state) =>
   Array.isArray(state.map.origin.position);

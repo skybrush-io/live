@@ -13,7 +13,7 @@
  * @param  {string}  type  the type of the message
  * @return {Object}  the message
  */
-export const createMessageWithType = type => ({ type });
+export const createMessageWithType = (type) => ({ type });
 
 /**
  * Creates a CMD-REQ (command request) message

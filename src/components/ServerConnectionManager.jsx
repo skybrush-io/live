@@ -72,7 +72,7 @@ class LocalServerExecutor extends React.Component {
         args: parse(this.props.args),
         port: this.props.port
       })
-      .then(events => {
+      .then((events) => {
         this._processIsRunning = true;
 
         this._attachProcessEventHandlersTo(events);
@@ -179,7 +179,7 @@ class ServerConnectionManagerPresentation extends React.Component {
     onMessage: PropTypes.func
   };
 
-  _bindSocketToHub = socket => {
+  _bindSocketToHub = (socket) => {
     const wrappedSocket = socket ? socket.socket : null;
     messageHub.emitter = wrappedSocket
       ? wrappedSocket.emit.bind(wrappedSocket)
@@ -369,7 +369,7 @@ async function executeTasksAfterDisconnection(dispatch) {
 
 const ServerConnectionManager = connect(
   // mapStateToProps
-  state => ({
+  (state) => ({
     active: state.dialogs.serverSettings.active,
     cliArguments: state.settings.localServer.cliArguments,
     hostName: state.dialogs.serverSettings.hostName,
@@ -378,7 +378,7 @@ const ServerConnectionManager = connect(
     protocol: state.dialogs.serverSettings.isSecure ? 'https:' : 'http:'
   }),
   // mapDispatchToProps
-  dispatch => ({
+  (dispatch) => ({
     onConnecting() {
       dispatch(setCurrentServerConnectionState(ConnectionState.CONNECTING));
     },

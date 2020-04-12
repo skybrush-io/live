@@ -37,7 +37,7 @@ class TileServerLayerSettingsPresentation extends React.Component {
   }
 
   render() {
-    const serverTypeMenuItems = TileServerTypes.map(type => (
+    const serverTypeMenuItems = TileServerTypes.map((type) => (
       <MenuItem key={type} value={type}>
         {type.toUpperCase()}
       </MenuItem>
@@ -96,11 +96,11 @@ class TileServerLayerSettingsPresentation extends React.Component {
     );
   }
 
-  _onLayersChanged = event => {
+  _onLayersChanged = (event) => {
     this.setState({ layers: event.target.value });
   };
 
-  _onUrlChanged = event => {
+  _onUrlChanged = (event) => {
     this.setState({ url: event.target.value });
   };
 
@@ -116,17 +116,17 @@ export const TileServerLayerSettings = connect(
   () => ({}),
   // mapDispatchToProps
   (dispatch, ownProps) => ({
-    changeTileServerType: event => {
+    changeTileServerType: (event) => {
       dispatch(
         setLayerParametersById(ownProps.layerId, {
           type: event.target.value
         })
       );
     },
-    setLayerParameters: parameters => {
+    setLayerParameters: (parameters) => {
       dispatch(setLayerParametersById(ownProps.layerId, parameters));
     },
-    showMessage: message => {
+    showMessage: (message) => {
       dispatch(showSnackbarMessage(message));
     }
   })

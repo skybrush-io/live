@@ -12,7 +12,7 @@ import { EDIT_SAVED_LOCATION, CANCEL_LOCATION_EDITING } from './types';
  *
  * @param {number} id  the identifier of the saved location to edit
  */
-export const editSavedLocation = createAction(EDIT_SAVED_LOCATION, id => ({
+export const editSavedLocation = createAction(EDIT_SAVED_LOCATION, (id) => ({
   id
 }));
 

@@ -145,7 +145,7 @@ async function invokeElectronBuilderForWindows() {
 
 async function cleanup() {
   await Promise.all(
-    ['linux-unpacked', 'mac', 'win-unpacked'].map(subdir =>
+    ['linux-unpacked', 'mac', 'win-unpacked'].map((subdir) =>
       remove(path.resolve(outputDir, subdir))
     )
   );
@@ -187,7 +187,7 @@ async function main() {
       title: 'Copying icons'
     },
     {
-      task: ctx => invokeElectronBuilder(ctx.appConfig),
+      task: (ctx) => invokeElectronBuilder(ctx.appConfig),
       title: 'Building executables'
     },
     {

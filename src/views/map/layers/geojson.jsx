@@ -85,19 +85,19 @@ class GeoJSONLayerSettingsPresentation extends React.Component {
     );
   }
 
-  _handleStrokeColorChange = value => {
+  _handleStrokeColorChange = (value) => {
     this.props.setLayerParameter('strokeColor', value);
   };
 
-  _handleFillColorChange = value => {
+  _handleFillColorChange = (value) => {
     this.props.setLayerParameter('fillColor', value);
   };
 
-  _handleStrokeWidthChange = e => {
+  _handleStrokeWidthChange = (e) => {
     this.setState({ strokeWidth: e.target.value });
   };
 
-  _handleDataChange = e => {
+  _handleDataChange = (e) => {
     this.setState({ data: e.target.value });
   };
 
@@ -131,7 +131,7 @@ export const GeoJSONLayerSettings = connect(
     setLayerParameter: (parameter, value) => {
       dispatch(setLayerParameterById(ownProps.layerId, parameter, value));
     },
-    showMessage: message => {
+    showMessage: (message) => {
       dispatch(showSnackbarMessage(message));
     }
   })
@@ -217,7 +217,7 @@ export const GeoJSONLayer = ({ layer, zIndex }) => {
       fill: fillColor.rgb().hex(),
       'fill-opacity': fillColor.alpha()
     };
-    return feature => {
+    return (feature) => {
       const props = feature.getProperties();
 
       // Force point geometries to always have a marker

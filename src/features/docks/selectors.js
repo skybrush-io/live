@@ -10,7 +10,7 @@ import { selectOrdered } from '~/utils/collections';
  * on the UI.
  */
 export const getDocksInOrder = createSelector(
-  state => state.docks,
+  (state) => state.docks,
   selectOrdered
 );
 

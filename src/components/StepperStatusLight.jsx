@@ -19,7 +19,7 @@ export const StepperStatus = {
 };
 
 const useStyles = makeStyles(
-  theme => ({
+  (theme) => ({
     root: {
       border: '1px solid rgba(0, 0, 0, 0.3)',
       borderRadius: '50%',

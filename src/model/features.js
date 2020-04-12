@@ -62,7 +62,10 @@ export function createFeatureFromOpenLayers(olFeature) {
         type: FeatureType.CIRCLE,
         points: [
           lonLatFromMapViewCoordinate(center),
-          lonLatFromMapViewCoordinate([center[0] + geometry.getRadius(), center[1]])
+          lonLatFromMapViewCoordinate([
+            center[0] + geometry.getRadius(),
+            center[1]
+          ])
         ]
       });
       break;
@@ -82,7 +85,9 @@ export function createFeatureFromOpenLayers(olFeature) {
 
       Object.assign(result, {
         type: FeatureType.POLYGON,
-        points: coordinates[0].map(unary(lonLatFromMapViewCoordinate)).slice(0, -1)
+        points: coordinates[0]
+          .map(unary(lonLatFromMapViewCoordinate))
+          .slice(0, -1)
       });
       break;
 

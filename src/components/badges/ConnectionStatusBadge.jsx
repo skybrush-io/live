@@ -57,7 +57,7 @@ function getSeverity(connection) {
  */
 const calculateStatusSummary = createSelector(
   getConnectionsInOrder,
-  connections => {
+  (connections) => {
     const severityCounts = countBy(connections, getSeverity);
 
     for (const level of severityLevels) {

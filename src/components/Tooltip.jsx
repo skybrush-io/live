@@ -3,7 +3,7 @@ import Tippy from '@tippyjs/react';
 
 import { useTheme } from '@material-ui/core/styles';
 
-export default props => {
+export default (props) => {
   const appTheme = useTheme();
   const tippyTheme =
     appTheme.palette.type === 'dark' ? 'dark-border' : 'light-border';

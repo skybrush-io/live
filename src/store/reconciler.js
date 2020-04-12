@@ -14,8 +14,8 @@ export function defaultStateReconciler(
   // the store by default to "come back" every time the state is rehydrated
   // at application startup.
 
-  const isCollection = stateSlice => stateSlice && has(stateSlice, 'byId');
-  const isSubslice = stateSlice =>
+  const isCollection = (stateSlice) => stateSlice && has(stateSlice, 'byId');
+  const isSubslice = (stateSlice) =>
     stateSlice !== null &&
     typeof stateSlice === 'object' &&
     !Array.isArray(stateSlice);

@@ -45,7 +45,7 @@ export function fitCoordinatesIntoMapView(coordinates, options) {
   */
 
   const bounds = boundingExtent(
-    coordinates.map(coord =>
+    coordinates.map((coord) =>
       mapViewCoordinateFromLonLat(coordinateToLonLat(coord))
     )
   );

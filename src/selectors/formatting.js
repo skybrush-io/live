@@ -27,9 +27,9 @@ const polarFormatter = makePolarCoordinateFormatter({ digits: 2, unit: ' m' });
  */
 export const getFlatEarthCartesianCoordinateFormatter = createSelector(
   getFlatEarthCoordinateTransformer,
-  transformer => {
+  (transformer) => {
     if (transformer !== undefined) {
-      return coords => cartesianFormatter(transformer.fromLonLat(coords));
+      return (coords) => cartesianFormatter(transformer.fromLonLat(coords));
     }
 
     return undefined;
@@ -43,9 +43,10 @@ export const getFlatEarthCartesianCoordinateFormatter = createSelector(
  */
 export const getFlatEarthPolarCoordinateFormatter = createSelector(
   getFlatEarthCoordinateTransformer,
-  transformer => {
+  (transformer) => {
     if (transformer !== undefined) {
-      return coords => polarFormatter(toPolar(transformer.fromLonLat(coords)));
+      return (coords) =>
+        polarFormatter(toPolar(transformer.fromLonLat(coords)));
     }
 
     return undefined;
@@ -60,9 +61,9 @@ export const getFlatEarthPolarCoordinateFormatter = createSelector(
  */
 export const getFlatEarthCombinedCoordinateFormatter = createSelector(
   getFlatEarthCoordinateTransformer,
-  transformer => {
+  (transformer) => {
     if (transformer !== undefined) {
-      return coords => {
+      return (coords) => {
         const transformed = transformer.fromLonLat(coords);
         return (
           cartesianFormatter(transformed) +
@@ -83,7 +84,7 @@ export const getFlatEarthCombinedCoordinateFormatter = createSelector(
  */
 export const getExtendedCoordinateFormatter = createSelector(
   getFlatEarthCombinedCoordinateFormatter,
-  formatter => coords => {
+  (formatter) => (coords) => {
     if (formatter === undefined) {
       return formatCoordinate(coords);
     }

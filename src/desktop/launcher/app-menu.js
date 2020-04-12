@@ -16,7 +16,7 @@ const helpSubmenu = [
 ];
 
 const preferencesItem = {
-  label: 'Preferences...',
+  label: 'Preferences…',
   accelerator: 'Command+,',
   click() {
     dispatch({ type: 'SHOW_APP_SETTINGS_DIALOG' });
@@ -91,4 +91,4 @@ if (is.development) {
   });
 }
 
-module.exports = app => Menu.buildFromTemplate(template);
+module.exports = (app) => Menu.buildFromTemplate(template);

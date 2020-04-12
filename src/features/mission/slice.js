@@ -70,7 +70,7 @@ const { actions, reducer } = createSlice({
     /**
      * Cancels the current editing session of the mapping at the current slot.
      */
-    cancelMappingEditorSessionAtCurrentSlot: noPayload(state => {
+    cancelMappingEditorSessionAtCurrentSlot: noPayload((state) => {
       state.mappingEditor.indexBeingEdited = -1;
     }),
 
@@ -78,8 +78,8 @@ const { actions, reducer } = createSlice({
      * Clears the entire mission mapping.
      */
     clearMapping(state) {
-      const numItems = state.mapping.length;
-      state.mapping = new Array(numItems).fill(null);
+      const numberItems = state.mapping.length;
+      state.mapping = new Array(numberItems).fill(null);
     },
 
     /**
@@ -87,8 +87,8 @@ const { actions, reducer } = createSlice({
      */
     clearMappingSlot(state, action) {
       const index = action.payload;
-      const numItems = state.mapping.length;
-      if (index >= 0 && index < numItems) {
+      const numberItems = state.mapping.length;
+      if (index >= 0 && index < numberItems) {
         state.mapping[index] = null;
       }
     },
@@ -113,9 +113,9 @@ const { actions, reducer } = createSlice({
       const validatedValue =
         typeof value === 'string' && value.length > 0 ? value : null;
       const index = state.mappingEditor.indexBeingEdited;
-      const numItems = state.mapping.length;
+      const numberItems = state.mapping.length;
 
-      if (index >= 0 && index < numItems) {
+      if (index >= 0 && index < numberItems) {
         const oldValue = state.mapping[index];
         const existingIndex =
           validatedValue === null ? -1 : state.mapping.indexOf(validatedValue);
@@ -200,9 +200,11 @@ const { actions, reducer } = createSlice({
     startMappingEditorSessionAtSlot(state, action) {
       const tentativeIndex =
         typeof action.payload === 'number' ? action.payload : -1;
-      const numItems = state.mapping.length;
+      const numberItems = state.mapping.length;
       const index =
-        tentativeIndex < 0 || tentativeIndex >= numItems ? -1 : tentativeIndex;
+        tentativeIndex < 0 || tentativeIndex >= numberItems
+          ? -1
+          : tentativeIndex;
 
       state.mappingEditor.enabled = true;
       state.mappingEditor.indexBeingEdited = index;

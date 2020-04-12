@@ -49,7 +49,7 @@ const HomePositionsLayerSettingsPresentation = ({
   const { showOrigin, showHomePositions, showLandingPositions } =
     parameters || {};
 
-  const handleChange = name => event =>
+  const handleChange = (name) => (event) =>
     setLayerParameter(name, event.target.checked);
 
   return (
@@ -149,7 +149,7 @@ const landingMarkerFill = fill(Colors.landingMarker);
 const originStyles = (selected, axis) => [
   // Circle and label
   new Style({
-    geometry: feature => {
+    geometry: (feature) => {
       const geom = feature.getGeometry();
       const origin = geom.getFirstCoordinate();
       return new Point(origin);
@@ -381,7 +381,7 @@ HomePositionsLayerPresentation.propTypes = {
 
 export const HomePositionsLayer = connect(
   // mapStateToProps
-  state => ({
+  (state) => ({
     coordinateSystemType: state.map.origin.type,
     homePositions: getGPSBasedHomePositionsInMission(state),
     landingPositions: getGPSBasedLandingPositionsInMission(state),

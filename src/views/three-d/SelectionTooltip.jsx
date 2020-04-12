@@ -7,7 +7,7 @@ const plugins = [followCursor];
 
 export default connect(
   // mapStateToProps
-  state => ({
+  (state) => ({
     content: state.threeD.tooltip || '',
     duration: 0,
     followCursor: true,

@@ -40,7 +40,7 @@ StartTimeButton.defaultProps = {};
 
 export default connect(
   // mapStateToProps
-  state => ({
+  (state) => ({
     ...state.show.start,
     formattedStartTime: getShowStartTimeAsString(state),
     status: getSetupStageStatuses(state).setupStartTime

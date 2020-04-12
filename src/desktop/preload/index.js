@@ -18,7 +18,7 @@ const localServer = require('./local-server');
 const setupIpc = require('./ipc');
 
 unhandled({
-  logger: e => console.error(e.stack),
+  logger: (e) => console.error(e.stack),
   // tippy.js seems to have a bug with the tooltips we use in the 3D view, and
   // this sometimes throws unhandled exceptions. We don't want these to
   // interfere with the user so we disable the unhandled exception dialog until

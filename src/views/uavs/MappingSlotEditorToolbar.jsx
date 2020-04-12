@@ -13,7 +13,7 @@ import Keyboard from '@material-ui/icons/Keyboard';
 import { cancelMappingEditorSessionAtCurrentSlot } from '~/features/mission/slice';
 
 const useStyles = makeStyles(
-  theme => ({
+  (theme) => ({
     box: {
       userSelect: 'none',
       whiteSpace: 'nowrap'

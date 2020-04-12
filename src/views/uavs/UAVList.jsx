@@ -47,7 +47,7 @@ import { isDark } from '~/theme';
 import { formatMissionId } from '~/utils/formatting';
 
 const useStyles = makeStyles(
-  theme => ({
+  (theme) => ({
     appBar: {
       backgroundColor: isDark(theme) ? '#444' : theme.palette.background.paper,
       height: 48
@@ -139,7 +139,7 @@ const UAVListPresentation = ({
   );
 
   const onDropped = useCallback(
-    targetIndex => droppedUAVId =>
+    (targetIndex) => (droppedUAVId) =>
       onMappingAdjusted({
         uavId: droppedUAVId,
         to: targetIndex
@@ -259,8 +259,8 @@ UAVListPresentation.propTypes = {
  * The main section of the view will be sorted based on the UAV IDs in the
  * state store. The "spare UAVs" section in the view will be empty.
  */
-const getDisplayedUAVIdList = createSelector(getUAVIdList, uavIds => ({
-  mainUAVIds: uavIds.map(uavId => [uavId, undefined, uavId]),
+const getDisplayedUAVIdList = createSelector(getUAVIdList, (uavIds) => ({
+  mainUAVIds: uavIds.map((uavId) => [uavId, undefined, uavId]),
   spareUAVIds: []
 }));
 
@@ -314,7 +314,7 @@ const getDisplayedMissionIdList = createSelector(
 /**
  * Selector that provides the list of UAV IDs to show in the UAV list.
  */
-const getDisplayedIdList = state =>
+const getDisplayedIdList = (state) =>
   isShowingMissionIds(state)
     ? getDisplayedMissionIdList(state)
     : getDisplayedUAVIdList(state);
@@ -332,11 +332,12 @@ const getSelectionInfo = createSelector(
   getDisplayedIdList,
   getSelectedUAVIds,
   (displayedIdList, selectedIds) =>
-    mapValues(displayedIdList, idsAndLabels => {
+    mapValues(displayedIdList, (idsAndLabels) => {
       const nonEmptyIdsAndLabels = idsAndLabels.filter(
-        idAndLabel => !isNil(idAndLabel[0])
+        (idAndLabel) => !isNil(idAndLabel[0])
       );
-      const itemIsSelected = idAndLabel => selectedIds.includes(idAndLabel[0]);
+      const itemIsSelected = (idAndLabel) =>
+        selectedIds.includes(idAndLabel[0]);
       if (nonEmptyIdsAndLabels.length > 0) {
         // Check the first item in idsAndLabels; it will settle either someSelected
         // or allSelected
@@ -368,7 +369,7 @@ const getSelectionInfo = createSelector(
  */
 const UAVList = connect(
   // mapStateToProps
-  state => ({
+  (state) => ({
     editingMapping: isMappingEditable(state),
     mappingSlotBeingEdited: getIndexOfMappingSlotBeingEdited(state),
     selectedUAVIds: getSelectedUAVIds(state),
@@ -380,7 +381,7 @@ const UAVList = connect(
     onEditMappingSlot: startMappingEditorSessionAtSlot,
     onMappingAdjusted: adjustMissionMapping,
     onSelectionChanged: setSelectedUAVIds,
-    onSelectSection: event => (dispatch, getState) => {
+    onSelectSection: (event) => (dispatch, getState) => {
       const { value } = event.target;
       const displayedIdsAndLabels = getDisplayedIdList(getState())[value];
       const selectedUAVIds = getSelectedUAVIds(getState());

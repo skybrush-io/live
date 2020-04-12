@@ -8,9 +8,10 @@
  * Adapted from {@link https://github.com/erikras/react-redux-universal-hot-example/blob/master/src/utils/validation.js | this file}.
  */
 
-const isEmpty = value => value === undefined || value === null || value === '';
-const join = rules => (value, data) =>
-  rules.map(rule => rule(value, data)).filter(error => Boolean(error))[0];
+const isEmpty = (value) =>
+  value === undefined || value === null || value === '';
+const join = (rules) => (value, data) =>
+  rules.map((rule) => rule(value, data)).filter((error) => Boolean(error))[0];
 
 /**
  * Checks that the given value is not empty. A value is empty if it is
@@ -84,7 +85,7 @@ export function finite(value) {
  * @return {function} a validator function
  */
 export function atLeast(min) {
-  return value => {
+  return (value) => {
     if (Number(value) < min) {
       return `Minimum allowed value is ${min}`;
     }
@@ -104,7 +105,7 @@ export function atLeast(min) {
  * @return {function} a validator function
  */
 export function atMost(max) {
-  return value => {
+  return (value) => {
     if (Number(value) > max) {
       return `Maximum allowed value is ${max}`;
     }
@@ -130,7 +131,7 @@ export function between(min, max) {
     [min, max] = [max, min];
   }
 
-  return value => {
+  return (value) => {
     if (Number(value) < min || Number(value) > max) {
       return `Value must be between ${min} and ${max}`;
     }
@@ -148,7 +149,7 @@ export function between(min, max) {
 export function createValidator(rules) {
   return (data = {}) => {
     const errors = {};
-    Object.keys(rules).forEach(key => {
+    Object.keys(rules).forEach((key) => {
       // Concat enables both functions and arrays of functions
       const rule = join([].concat(rules[key]));
       const error = rule(data[key], data);

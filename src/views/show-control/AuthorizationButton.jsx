@@ -75,7 +75,7 @@ AuthorizationButton.propTypes = {
 
 export default connect(
   // mapStateToProps
-  state => ({
+  (state) => ({
     isAuthorized: isShowAuthorizedToStartLocally(state),
     numUAVsTakingOffAutomatically: countUAVsTakingOffAutomatically(state),
     status: getSetupStageStatuses(state).authorization

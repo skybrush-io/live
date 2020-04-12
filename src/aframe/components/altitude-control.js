@@ -13,7 +13,7 @@ import AFrame from '../aframe';
 
 const CLAMP_VELOCITY = 0.001;
 const MAX_DELTA = 0.2;
-const KEYS = ['KeyE', 'KeyC'];
+const KEYS = new Set(['KeyE', 'KeyC']);
 const KEYCODE_TO_CODE = {
   '67': 'KeyC',
   '69': 'KeyE'
@@ -109,9 +109,9 @@ AFrame.registerComponent('altitude-control', {
     }
   },
 
-  getMovementVector: (function() {
+  getMovementVector: (function () {
     const directionVector = new THREE.Vector3(0, 0, 0);
-    return function(delta) {
+    return function (delta) {
       directionVector.y = this.velocity * delta;
       return directionVector;
     };
@@ -161,7 +161,7 @@ AFrame.registerComponent('altitude-control', {
     }
 
     const code = event.code || KEYCODE_TO_CODE[event.keyCode];
-    if (KEYS.includes(code)) {
+    if (KEYS.has(code)) {
       this.keys[code] = true;
     }
   },

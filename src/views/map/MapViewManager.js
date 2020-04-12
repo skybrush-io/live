@@ -74,24 +74,24 @@ export default class MapViewManager {
       ...options
     };
 
-    const animationParams = { duration };
+    const animationParameters = { duration };
 
     if (center !== undefined) {
-      animationParams.center = mapViewCoordinateFromLonLat([
+      animationParameters.center = mapViewCoordinateFromLonLat([
         center.lon,
         center.lat
       ]);
     }
 
     if (rotation !== undefined) {
-      animationParams.rotation = toRadians(-rotation);
+      animationParameters.rotation = toRadians(-rotation);
     }
 
     if (zoom !== undefined) {
-      animationParams.zoom = zoom;
+      animationParameters.zoom = zoom;
     }
 
-    this.view.animate(animationParams);
+    this.view.animate(animationParameters);
   };
 
   /**
@@ -100,7 +100,7 @@ export default class MapViewManager {
    *
    * @param {ol.Map} map the map to attach the event handlers to.
    */
-  _onMapReferenceReceived = map => {
+  _onMapReferenceReceived = (map) => {
     this.map = map;
 
     this.view = map.getView();
@@ -108,7 +108,7 @@ export default class MapViewManager {
 
     // Map.getView().on('propertychange', this.updateFromMap_)
 
-    map.on('propertychange', e => {
+    map.on('propertychange', (e) => {
       if (e.key === 'view') {
         this.view.un('propertychange', this._onViewPropertyChanged);
         this.view = map.getView();
@@ -123,18 +123,20 @@ export default class MapViewManager {
    *
    * @param {ol.ObjectEvent} e the propertychange event emitted by openlayers.
    */
-  _onViewPropertyChanged = e => {
+  _onViewPropertyChanged = (e) => {
     if (e.key === 'center') {
-      const center = lonLatFromMapViewCoordinate(this.view.getCenter()).map(c =>
-        round(c, 6)
+      const center = lonLatFromMapViewCoordinate(
+        this.view.getCenter()
+      ).map((c) => round(c, 6));
+      this.callbacks.center.forEach((c) =>
+        c({ lon: center[0], lat: center[1] })
       );
-      this.callbacks.center.forEach(c => c({ lon: center[0], lat: center[1] }));
     } else if (e.key === 'rotation') {
       const rotation = toDegrees(-this.view.getRotation());
-      this.callbacks.rotation.forEach(c => c(normalizeAngle(rotation)));
+      this.callbacks.rotation.forEach((c) => c(normalizeAngle(rotation)));
     } else if (e.key === 'resolution') {
       const zoom = this.view.getZoom();
-      this.callbacks.zoom.forEach(c => c(zoom));
+      this.callbacks.zoom.forEach((c) => c(zoom));
     }
   };
 
@@ -176,7 +178,7 @@ export default class MapViewManager {
 
     // Avoiding splice to prevent mutation by side effects
     this.callbacks[property] = this.callbacks[property].filter(
-      c => c !== callback
+      (c) => c !== callback
     );
   };
 }

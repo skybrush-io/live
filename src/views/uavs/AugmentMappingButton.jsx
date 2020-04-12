@@ -11,7 +11,7 @@ import { canAugmentMappingAutomaticallyFromSpareDrones } from '~/features/missio
  * Button that allows the user to augment the current mapping with spare
  * drones based on their current positions automatically.
  */
-const AugmentMappingButton = props => (
+const AugmentMappingButton = (props) => (
   <IconButton {...props}>
     <Shuffle />
   </IconButton>
@@ -19,7 +19,7 @@ const AugmentMappingButton = props => (
 
 export default connect(
   // mapStateToProps
-  state => ({
+  (state) => ({
     disabled: !canAugmentMappingAutomaticallyFromSpareDrones(state)
   }),
   // mapDispatchToProps

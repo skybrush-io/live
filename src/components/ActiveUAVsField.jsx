@@ -39,7 +39,7 @@ export class UAVSelectorField extends React.Component {
 
   render() {
     const { maxSearchResults, onValueChanged, uavIds, ...rest } = this.props;
-    const fetchOpts = {
+    const fetchOptions = {
       caseSensitive: false,
       maxItems: maxSearchResults
     };
@@ -47,7 +47,7 @@ export class UAVSelectorField extends React.Component {
       <AutoComplete
         fetchSuggestions={AutoComplete.makePrefixBasedFetcher(
           uavIds,
-          fetchOpts
+          fetchOptions
         )}
         validateValue={this.validate}
         onValueCommitted={onValueChanged}
@@ -64,7 +64,7 @@ export class UAVSelectorField extends React.Component {
    * @return {boolean} whether the value entered by the user passed the
    *         validation
    */
-  validate = value => {
+  validate = (value) => {
     if (!value) {
       // Value is empty
       if (!this.props.allowEmpty) {
@@ -124,8 +124,8 @@ export class ActiveUAVsFieldPresentation extends React.Component {
     this.eventBindings = {};
   }
 
-  componentDidUpdate(prevProps) {
-    this._onFlockMaybeChanged(prevProps.flock, this.props.flock);
+  componentDidUpdate(previousProps) {
+    this._onFlockMaybeChanged(previousProps.flock, this.props.flock);
   }
 
   componentDidMount() {
@@ -199,11 +199,11 @@ export class ActiveUAVsFieldPresentation extends React.Component {
  */
 const ActiveUAVsField = connect(
   // stateToProps
-  state => ({
+  (state) => ({
     value: state.messages.selectedUAVId || ''
   }),
   // dispatchToProps
-  dispatch => ({
+  (dispatch) => ({
     onValueChanged(value) {
       dispatch(selectUAVInMessagesDialog(value));
     }

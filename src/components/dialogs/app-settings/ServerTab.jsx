@@ -79,12 +79,12 @@ ServerTabPresentation.propTypes = {
 
 export default connect(
   // mapStateToProps
-  state => ({
+  (state) => ({
     ...state.settings.localServer,
     searchPath: state.settings.localServer.searchPath.join('\n')
   }),
   // mapDispatchToProps
-  dispatch => ({
+  (dispatch) => ({
     onCheckboxToggled(event) {
       dispatch(
         updateAppSettings('localServer', {
@@ -102,7 +102,7 @@ export default connect(
     },
 
     onSearchPathChanged(event) {
-      const paths = event.target.value.split('\n').map(item => trim(item));
+      const paths = event.target.value.split('\n').map((item) => trim(item));
       const emptyItemIndex = paths.indexOf('');
       remove(paths, (item, index) => !item && index > emptyItemIndex);
       dispatch(updateAppSettings('localServer', { searchPath: paths }));

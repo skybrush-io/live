@@ -39,7 +39,7 @@ export const FeaturesLayerSettings = connect(
 
 // === Helper functions ===
 
-const geometryForFeature = feature => {
+const geometryForFeature = (feature) => {
   const { points, type } = feature;
   const coordinates = points.map(unary(mapViewCoordinateFromLonLat));
 
@@ -196,8 +196,8 @@ const FeaturesLayerPresentation = ({
   >
     <source.Vector>
       {features
-        .filter(feature => feature.visible)
-        .map(feature =>
+        .filter((feature) => feature.visible)
+        .map((feature) =>
           renderFeature(feature, selectedFeatureIds.includes(feature.id))
         )}
       {selectedTool === Tool.EDIT_FEATURE ? (
@@ -232,7 +232,7 @@ export const FeaturesLayer = connect(
   }),
   // mapDispatchToProps
   (dispatch, ownProps) => ({
-    onFeaturesModified: event => {
+    onFeaturesModified: (event) => {
       // Const { features } = event
       /* TODO(ntamas): features contains all the features in the layer, not
        * only the ones being modified. We need to figure out which ones were

@@ -7,7 +7,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { isDark } from '~/theme';
 
 const useStyles = makeStyles(
-  theme => ({
+  (theme) => ({
     root: {
       backgroundColor: isDark(theme) ? '#535353' : undefined,
       color: isDark(theme)

@@ -7,12 +7,12 @@ const EventEmitter = require('events');
 const betterIpc = require('electron-better-ipc');
 const { is } = require('electron-util');
 
-const makeEventProxyChannelName = channel => `__eventProxy[${channel}]`;
+const makeEventProxyChannelName = (channel) => `__eventProxy[${channel}]`;
 
 const ipc = is.main ? betterIpc.ipcMain : betterIpc.ipcRenderer;
 
 const makeEventProxy = is.main
-  ? channel => {
+  ? (channel) => {
       const emitter = new EventEmitter();
       const realChannel = makeEventProxyChannelName(channel);
       emitter.on('emit', (_, ...args) =>
@@ -22,7 +22,7 @@ const makeEventProxy = is.main
         emit: (...args) => emitter.emit('emit', ...args)
       };
     }
-  : channel => {
+  : (channel) => {
       const emitter = new EventEmitter();
       const realChannel = makeEventProxyChannelName(channel);
       ipc.on(realChannel, (_, args) => {

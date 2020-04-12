@@ -10,12 +10,12 @@ const variants = {
   default: {},
 
   '7segment': {
-    fontFamily: "'DSEG7-Classic'",
+    fontFamily: '’DSEG7-Classic’',
     allSegmentsChar: '8'
   },
 
   '14segment': {
-    fontFamily: "'DSEG14-Classic'",
+    fontFamily: '’DSEG14-Classic’',
     allSegmentsChar: '~'
   }
 };

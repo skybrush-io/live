@@ -26,7 +26,7 @@ function run(argv) {
   };
 
   // Register unhandled error handler
-  unhandled({ logger: e => console.error(e.stack) });
+  unhandled({ logger: (e) => console.error(e.stack) });
 
   // Register the WebSocket protocol as secure even if it is not really a
   // secure one. This is needed to allow us to connect to plain WebSocket
@@ -81,7 +81,7 @@ function run(argv) {
   setupIpc();
 }
 
-module.exports = argv => {
+module.exports = (argv) => {
   // Don't use require('yargs') below because Webpack; see:
   // https://github.com/yargs/yargs/issues/781
   const parser = yargs()

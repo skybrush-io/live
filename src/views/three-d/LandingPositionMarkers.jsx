@@ -6,7 +6,7 @@ import Markers from './Markers';
 
 export default connect(
   // mapStateToProps
-  state => ({
+  (state) => ({
     coordinates: getFlatEarthLandingPositionsInMission(state),
     mixin: 'landing-marker'
   }),

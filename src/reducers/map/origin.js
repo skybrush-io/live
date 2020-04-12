@@ -23,7 +23,7 @@ const defaultState = {
  */
 const reducer = handleActions(
   {
-    CLEAR_ORIGIN: state => u({ position: u.constant(null) }, state),
+    CLEAR_ORIGIN: (state) => u({ position: u.constant(null) }, state),
 
     SET_ORIGIN: (state, action) => {
       const { angle, position, type } = action.payload;

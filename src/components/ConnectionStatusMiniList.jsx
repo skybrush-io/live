@@ -75,7 +75,7 @@ const ConnectionStatusMiniListPresentation = listOf(
 );
 
 export default connect(
-  state => ({
+  (state) => ({
     connections: getConnectionsInOrder(state),
     dense: true,
     disablePadding: true

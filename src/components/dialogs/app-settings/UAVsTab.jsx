@@ -110,11 +110,11 @@ UAVsTabPresentation.propTypes = {
 
 export default connect(
   // mapStateToProps
-  state => ({
+  (state) => ({
     ...state.settings.uavs
   }),
   // mapDispatchToProps
-  dispatch => ({
+  (dispatch) => ({
     onCheckboxToggled(event) {
       dispatch(
         updateAppSettings('uavs', {

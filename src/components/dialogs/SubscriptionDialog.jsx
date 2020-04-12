@@ -73,7 +73,7 @@ export default class SubscriptionDialog extends React.Component {
 
     const uavMenuItems = Object.keys(available)
       .sort()
-      .map(uav => (
+      .map((uav) => (
         <MenuItem key={uav} value={uav}>
           {uav}
         </MenuItem>
@@ -90,7 +90,7 @@ export default class SubscriptionDialog extends React.Component {
     const deviceMenuItems = selectedUAV
       ? Object.keys(available[selectedUAV])
           .sort()
-          .map(device => (
+          .map((device) => (
             <MenuItem key={device} value={device}>
               {device}
             </MenuItem>
@@ -100,14 +100,14 @@ export default class SubscriptionDialog extends React.Component {
     const channelMenuItems = selectedDevice
       ? Object.keys(available[selectedUAV][selectedDevice])
           .sort()
-          .map(channel => (
+          .map((channel) => (
             <MenuItem key={channel} value={channel}>
               {channel}
             </MenuItem>
           ))
       : [];
 
-    const subscriptionItems = [...subscriptions].sort().map(subscription => (
+    const subscriptionItems = [...subscriptions].sort().map((subscription) => (
       <ListItem key={subscription}>
         <ListItemText primary={subscription} />
         <ListItemSecondaryAction>
@@ -221,7 +221,7 @@ export default class SubscriptionDialog extends React.Component {
    * @param {Object} message the response from the server
    * containing the requested data
    */
-  _deviceListReceived = message => {
+  _deviceListReceived = (message) => {
     const data = message.body.devices;
     const available = { All: {} };
 
@@ -263,7 +263,7 @@ export default class SubscriptionDialog extends React.Component {
    *
    * @param {string} event the actual change event
    */
-  _handleChange = event => {
+  _handleChange = (event) => {
     const parameter = event.target.name;
 
     this.setState({
@@ -333,7 +333,7 @@ export default class SubscriptionDialog extends React.Component {
         paths: [path]
       });
 
-      this.setState(state => ({
+      this.setState((state) => ({
         subscriptions: state.subscriptions.concat(path),
         unit: available[selectedUAV][selectedDevice][selectedChannel].unit
       }));
@@ -345,13 +345,13 @@ export default class SubscriptionDialog extends React.Component {
    *
    * @param {string} subscription the path of the subscription to cancel
    */
-  _removeSubscription = subscription => {
+  _removeSubscription = (subscription) => {
     messageHub.sendMessage({
       type: 'DEV-UNSUB',
       paths: [subscription]
     });
 
-    this.setState(state => ({
+    this.setState((state) => ({
       subscriptions: without(state.subscriptions, subscription)
     }));
   };

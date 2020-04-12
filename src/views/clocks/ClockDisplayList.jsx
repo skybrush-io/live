@@ -106,7 +106,7 @@ ClockDisplayListEntry.defaultProps = {
  * @return  {Object}  the rendered clock display list component
  */
 const ClockDisplayListPresentation = listOf(
-  clock => <ClockDisplayListEntry key={clock.id} clock={clock} />,
+  (clock) => <ClockDisplayListEntry key={clock.id} clock={clock} />,
   {
     dataProvider: 'clocks',
     backgroundHint: 'No clocks'
@@ -120,7 +120,7 @@ ClockDisplayListPresentation.displayName = 'ClockDisplayListPresentation';
  */
 const ClockDisplayList = connect(
   // mapStateToProps
-  state => ({
+  (state) => ({
     clocks: getClocksWithUpdateIntervalsInOrder(state),
     dense: true
   }),

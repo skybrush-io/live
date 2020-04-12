@@ -99,7 +99,7 @@ class BasicLayerSettingsFormPresentation extends React.Component {
    *
    * @param {Event} e the event fired from the TextField React component
    */
-  _onKeyDown = e => {
+  _onKeyDown = (e) => {
     if (e.key === 'Enter') {
       e.target.blur();
     }
@@ -119,11 +119,11 @@ const BasicLayerSettingsForm = connect(
   }),
   // mapDispatchToProps
   (dispatch, ownProps) => ({
-    onSubmit: values => {
+    onSubmit: (values) => {
       dispatch(renameLayer(ownProps.layerId, values.label));
     },
 
-    validate: values => {
+    validate: (values) => {
       const result = validator(values);
 
       if (result === undefined || Object.keys(result).length === 0) {
@@ -285,7 +285,7 @@ class LayerSettingsDialogPresentation extends React.Component {
     );
   }
 
-  _moveSelectedLayer = delta => {
+  _moveSelectedLayer = (delta) => {
     const { selectedLayerId, onMoveLayer } = this.props;
     onMoveLayer(selectedLayerId, delta);
   };
@@ -310,7 +310,7 @@ class LayerSettingsDialogPresentation extends React.Component {
  */
 const LayerSettingsDialog = connect(
   // mapStateToProps
-  state => {
+  (state) => {
     const { layerSettings } = state.dialogs;
     const { order } = state.map.layers;
     const { dialogVisible, selectedLayer } = layerSettings;
@@ -324,7 +324,7 @@ const LayerSettingsDialog = connect(
     };
   },
   // mapDispatchToProps
-  dispatch => ({
+  (dispatch) => ({
     onClose() {
       dispatch(closeLayersDialog());
     },

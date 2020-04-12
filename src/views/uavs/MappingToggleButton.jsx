@@ -30,7 +30,7 @@ MappingToggleButton.propTypes = {
 
 export default connect(
   // mapStateToProps
-  state => ({
+  (state) => ({
     selected: isShowingMissionIds(state)
   }),
   // mapDispatchToProps

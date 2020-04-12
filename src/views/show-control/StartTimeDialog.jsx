@@ -229,13 +229,13 @@ StartTimeDialog.defaultProps = {
 
 export default connect(
   // mapStateToProps
-  state => ({
+  (state) => ({
     ...state.show.startTimeDialog,
     ...state.show.start
   }),
 
   // mapDispatchToProps
-  dispatch => ({
+  (dispatch) => ({
     onClearStartTime() {
       dispatch(setStartTime(null));
       dispatch(synchronizeShowSettings('toServer'));

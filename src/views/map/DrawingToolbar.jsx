@@ -26,7 +26,8 @@ const DrawingToolbarPresentation = ({
   selectedTool,
   theme
 }) => {
-  const colorForTool = tool => (selectedTool === tool ? 'primary' : undefined);
+  const colorForTool = (tool) =>
+    selectedTool === tool ? 'primary' : undefined;
 
   return (
     <div style={{ display: 'flex', flexFlow: 'column nowrap' }}>
@@ -81,9 +82,9 @@ DrawingToolbarPresentation.propTypes = {
  */
 const DrawingToolbar = connect(
   // mapStateToProps
-  state => ({ ...state.map.tools }),
+  (state) => ({ ...state.map.tools }),
   // mapDispatchToProps
-  dispatch => ({
+  (dispatch) => ({
     onToolSelected(tool) {
       dispatch(selectMapTool(tool));
     }

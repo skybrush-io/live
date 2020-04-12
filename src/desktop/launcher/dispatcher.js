@@ -2,7 +2,7 @@ const { ipcMain: ipc } = require('electron-better-ipc');
 
 const { getMainWindow } = require('./main-window');
 
-const dispatch = async action => {
+const dispatch = async (action) => {
   const mainWindow = getMainWindow();
 
   if (mainWindow === undefined) {

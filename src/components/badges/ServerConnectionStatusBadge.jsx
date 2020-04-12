@@ -23,7 +23,7 @@ const colorForState = {
  */
 export default connect(
   // mapStateToProps
-  state => ({
+  (state) => ({
     color: colorForState[state.servers.current.state],
     visible: state.dialogs.serverSettings.active
   }),

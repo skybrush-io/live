@@ -69,19 +69,19 @@ const isItemSecure = ({ protocol }) => protocol === 'sio+tls:';
 const isItemLocal = ({ hostName }) => hostName === 'localhost';
 const addressForServerItem = ({ hostName, port }) => `${hostName}:${port}`;
 
-const protocolForServerItem = item =>
+const protocolForServerItem = (item) =>
   isItemSecure(item)
     ? 'Secure connection'
     : isItemLocal(item)
     ? 'Local connection'
     : 'Unsecured connection';
-const securityWarningForServerItem = item =>
+const securityWarningForServerItem = (item) =>
   isItemSecure(item) || isItemLocal(item) ? '' : ' (unsecured)';
 
-const primaryTextForServerItem = item =>
+const primaryTextForServerItem = (item) =>
   item.label || addressForServerItem(item);
 
-const secondaryTextForServerItem = item =>
+const secondaryTextForServerItem = (item) =>
   item.label
     ? `${addressForServerItem(item)}${securityWarningForServerItem(item)}`
     : protocolForServerItem(item);
@@ -89,7 +89,7 @@ const secondaryTextForServerItem = item =>
 const manualSetupAllowed =
   config && config.server && !config.server.preventManualSetup;
 
-const ConnectionInProgressIndicator = props => (
+const ConnectionInProgressIndicator = (props) => (
   <Box
     alignItems="center"
     flex={1}
@@ -125,7 +125,7 @@ const DetectedServersListPresentation = ({
         />
       </ListItem>
     ) : null}
-    {items.map(item => (
+    {items.map((item) => (
       <ListItem key={item.id} button onClick={partial(onItemSelected, item)}>
         <ListItemIcon>{iconForServerItem(item)}</ListItemIcon>
         <ListItemText
@@ -157,7 +157,7 @@ DetectedServersListPresentation.propTypes = {
  */
 const DetectedServersList = connect(
   // mapStateToProps
-  state => ({
+  (state) => ({
     isScanning: state.servers.isScanning,
     items: getDetectedServersInOrder(state)
   })
@@ -211,7 +211,7 @@ ServerSettingsFormPresentation.propTypes = {
  */
 const ServerSettingsForm = connect(
   // mapStateToProps
-  state => ({
+  (state) => ({
     initialValues: state.dialogs.serverSettings
   })
 )(ServerSettingsFormPresentation);
@@ -237,13 +237,13 @@ class ServerSettingsDialogPresentation extends React.Component {
     selectedTab: 'auto'
   };
 
-  _handleKeyPress = event => {
+  _handleKeyPress = (event) => {
     if (event.nativeEvent.code === 'Enter') {
       this.props.forceFormSubmission();
     }
   };
 
-  _handleServerSelection = item => {
+  _handleServerSelection = (item) => {
     if (item === null || item === undefined) {
       if (manualSetupAllowed) {
         this.props.onTabSelected(null, 'manual');
@@ -355,14 +355,14 @@ class ServerSettingsDialogPresentation extends React.Component {
  */
 const ServerSettingsDialog = connect(
   // mapStateToProps
-  state => ({
+  (state) => ({
     active: state.dialogs.serverSettings.active,
     isConnecting: isConnecting(state),
     open: state.dialogs.serverSettings.dialogVisible,
     selectedTab: state.dialogs.serverSettings.selectedTab
   }),
   // mapDispatchToProps
-  dispatch => ({
+  (dispatch) => ({
     forceFormSubmission() {
       forceFormSubmission('serverSettings');
     },

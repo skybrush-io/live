@@ -23,7 +23,7 @@ import {
 import { UAVAge } from '~/model/uav';
 
 const useStyles = makeStyles(
-  theme => ({
+  (theme) => ({
     avatarWrapper: {
       position: 'relative',
       marginBottom: theme.spacing(0.5),

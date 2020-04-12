@@ -79,7 +79,7 @@ const stateNames = {
  * @param  {Object} props  the properties of the component
  * @return {Object} the React presentation component
  */
-const ConnectionListEntry = props => {
+const ConnectionListEntry = (props) => {
   const { action, name, state, stateChangedAt } = props;
   const avatar = iconsByState[state] || avatarForUnknownState;
   const timeAgoComponent = stateChangedAt ? (
@@ -120,7 +120,7 @@ ConnectionListEntry.propTypes = {
  * Presentation component for the entire connection list.
  */
 export const ConnectionListPresentation = listOf(
-  connection => {
+  (connection) => {
     return <ConnectionListEntry key={connection.id} {...connection} />;
   },
   {
@@ -132,11 +132,11 @@ ConnectionListPresentation.displayName = 'ConnectionListPresentation';
 
 const ConnectionList = connect(
   // mapStateToProps
-  state => ({
+  (state) => ({
     connections: getConnectionsInOrder(state)
   }),
   // mapDispatchToProps
-  dispatch => ({
+  (dispatch) => ({
     onShowSettings() {
       dispatch(showServerSettingsDialog());
     }
