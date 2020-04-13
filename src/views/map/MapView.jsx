@@ -1,54 +1,54 @@
-import filter from 'lodash-es/filter';
-import isEmpty from 'lodash-es/isEmpty';
-import partial from 'lodash-es/partial';
-import { Map, View, control, interaction, withMap } from '@collmot/ol-react';
-import PropTypes from 'prop-types';
-import React from 'react';
-import { connect } from 'react-redux';
+import filter from "lodash-es/filter";
+import isEmpty from "lodash-es/isEmpty";
+import partial from "lodash-es/partial";
+import { Map, View, control, interaction, withMap } from "@collmot/ol-react";
+import PropTypes from "prop-types";
+import React from "react";
+import { connect } from "react-redux";
 
-import Condition from './conditions';
+import Condition from "./conditions";
 import {
   SelectNearestFeature,
   ShowContextMenu,
-  TransformFeatures
-} from './interactions';
-import { Layers, stateObjectToLayer } from './layers';
+  TransformFeatures,
+} from "./interactions";
+import { Layers, stateObjectToLayer } from "./layers";
 
-import DrawingToolbar from './DrawingToolbar';
-import MapContextMenu from './MapContextMenu';
-import MapReferenceRequestHandler from './MapReferenceRequestHandler';
-import MapToolbar from './MapToolbar';
-import { isDrawingTool, Tool, toolToDrawInteractionProps } from './tools';
+import DrawingToolbar from "./DrawingToolbar";
+import MapContextMenu from "./MapContextMenu";
+import MapReferenceRequestHandler from "./MapReferenceRequestHandler";
+import MapToolbar from "./MapToolbar";
+import { isDrawingTool, Tool, toolToDrawInteractionProps } from "./tools";
 
-import { addFeature, updateFeatureCoordinates } from '~/actions/features';
+import { addFeature, updateFeatureCoordinates } from "~/actions/features";
 import {
   addFeaturesToSelection,
   setSelectedFeatures,
   removeFeaturesFromSelection,
-  updateMapViewSettings
-} from '~/actions/map';
-import { setFlatEarthCoordinateSystemOrigin } from '~/actions/map-origin';
-import Widget from '~/components/Widget';
-import { handleError } from '~/error-handling';
-import mapViewManager from '~/mapViewManager';
+  updateMapViewSettings,
+} from "~/actions/map";
+import { setFlatEarthCoordinateSystemOrigin } from "~/actions/map-origin";
+import Widget from "~/components/Widget";
+import { handleError } from "~/error-handling";
+import mapViewManager from "~/mapViewManager";
 import {
   createFeatureFromOpenLayers,
-  isFeatureTransformable
-} from '~/model/features';
-import { getVisibleSelectableLayers, isLayerSelectable } from '~/model/layers';
-import { globalIdToFeatureId, globalIdToOriginId } from '~/model/identifiers';
-import { getVisibleLayersInOrder } from '~/selectors/ordered';
-import { getExtendedCoordinateFormatter } from '~/selectors/formatting';
-import { getMapViewRotationAngle } from '~/selectors/map';
-import { getSelectedFeatureIds, getSelection } from '~/selectors/selection';
+  isFeatureTransformable,
+} from "~/model/features";
+import { getVisibleSelectableLayers, isLayerSelectable } from "~/model/layers";
+import { globalIdToFeatureId, globalIdToOriginId } from "~/model/identifiers";
+import { getVisibleLayersInOrder } from "~/selectors/ordered";
+import { getExtendedCoordinateFormatter } from "~/selectors/formatting";
+import { getMapViewRotationAngle } from "~/selectors/map";
+import { getSelectedFeatureIds, getSelection } from "~/selectors/selection";
 import {
   mapViewCoordinateFromLonLat,
   findFeaturesById,
-  lonLatFromMapViewCoordinate
-} from '~/utils/geography';
-import { toDegrees } from '~/utils/math';
+  lonLatFromMapViewCoordinate,
+} from "~/utils/geography";
+import { toDegrees } from "~/utils/math";
 
-require('ol/ol.css');
+require("ol/ol.css");
 
 /* ********************************************************************** */
 
@@ -60,7 +60,7 @@ require('ol/ol.css');
 const MapViewLayersPresentation = ({
   layers,
   onFeaturesModified,
-  selectedTool
+  selectedTool,
 }) => {
   let zIndex = 0;
   const renderedLayers = [];
@@ -71,7 +71,7 @@ const MapViewLayersPresentation = ({
         stateObjectToLayer(layer, {
           onFeaturesModified,
           selectedTool,
-          zIndex
+          zIndex,
         })
       );
       zIndex++;
@@ -84,7 +84,7 @@ const MapViewLayersPresentation = ({
 MapViewLayersPresentation.propTypes = {
   layers: PropTypes.arrayOf(PropTypes.object),
   onFeaturesModified: PropTypes.func,
-  selectedTool: PropTypes.string.isRequired
+  selectedTool: PropTypes.string.isRequired,
 };
 
 /**
@@ -94,7 +94,7 @@ const MapViewLayers = connect(
   // mapStateToProps
   (state) => ({
     layers: getVisibleLayersInOrder(state),
-    selectedTool: state.map.tools.selectedTool
+    selectedTool: state.map.tools.selectedTool,
   })
 )(MapViewLayersPresentation);
 
@@ -103,7 +103,7 @@ const MapViewLayers = connect(
 const MapViewControlsPresentation = (props) => {
   const result = [
     <control.Zoom key="control.Zoom" />,
-    <control.Attribution key="control.Attribution" collapseLabel="&laquo;" />
+    <control.Attribution key="control.Attribution" collapseLabel="&laquo;" />,
   ];
 
   if (props.showMouseCoordinates) {
@@ -131,7 +131,7 @@ const MapViewControls = connect(
   // mapStateToProps
   (state) => ({
     formatCoordinate: getExtendedCoordinateFormatter(state),
-    ...state.settings.display
+    ...state.settings.display,
   })
 )(MapViewControlsPresentation);
 
@@ -156,7 +156,7 @@ const MapViewToolbars = () => [
     showControls={false}
   >
     <DrawingToolbar />
-  </Widget>
+  </Widget>,
 ];
 
 /* ********************************************************************** */
@@ -176,7 +176,7 @@ const MapViewInteractions = withMap((props) => {
     onSetSelectedFeatures,
     onSingleFeatureSelected,
     selectedFeaturesProvider,
-    selectedTool
+    selectedTool,
   } = props;
   const interactions = [];
 
@@ -293,7 +293,7 @@ MapViewInteractions.propTypes = {
   onFeaturesTransformed: PropTypes.func,
   onRemoveFeaturesFromSelection: PropTypes.func,
   onSetSelectedFeatures: PropTypes.func,
-  onSingleFeatureSelected: PropTypes.func
+  onSingleFeatureSelected: PropTypes.func,
 };
 
 /* ********************************************************************** */
@@ -310,23 +310,23 @@ class MapViewPresentation extends React.Component {
     selectedTool: PropTypes.string,
     zoom: PropTypes.number,
 
-    glContainer: PropTypes.object
+    glContainer: PropTypes.object,
   };
 
   static defaultProps = {
     center: [19.061951, 47.47334],
-    zoom: 17
+    zoom: 17,
   };
 
   constructor(props) {
     super(props);
 
-    this._onAddFeaturesToSelection = partial(this._onBoxDragEnded, 'add');
+    this._onAddFeaturesToSelection = partial(this._onBoxDragEnded, "add");
     this._onRemoveFeaturesFromSelection = partial(
       this._onBoxDragEnded,
-      'remove'
+      "remove"
     );
-    this._onSetSelectedFeatures = partial(this._onBoxDragEnded, 'set');
+    this._onSetSelectedFeatures = partial(this._onBoxDragEnded, "set");
 
     this._map = React.createRef();
   }
@@ -363,13 +363,13 @@ class MapViewPresentation extends React.Component {
     }
 
     if (this._layoutManager) {
-      this._layoutManager.off('stateChanged', this.updateSize, this);
+      this._layoutManager.off("stateChanged", this.updateSize, this);
     }
 
     this._layoutManager = value;
 
     if (this._layoutManager) {
-      this._layoutManager.on('stateChanged', this.updateSize, this);
+      this._layoutManager.on("stateChanged", this.updateSize, this);
     }
   }
 
@@ -384,15 +384,15 @@ class MapViewPresentation extends React.Component {
     );
 
     const toolClasses = {
-      [Tool.SELECT]: 'tool-select',
-      [Tool.ZOOM]: 'tool-zoom',
-      [Tool.PAN]: 'tool-pan',
-      [Tool.DRAW_POINT]: 'tool-draw tool-draw-point',
-      [Tool.DRAW_CIRCLE]: 'tool-draw tool-draw-circle',
-      [Tool.DRAW_RECTANGLE]: 'tool-draw tool-draw-rectangle',
-      [Tool.DRAW_PATH]: 'tool-draw tool-draw-path',
-      [Tool.DRAW_POLYGON]: 'tool-draw tool-draw-polygon',
-      [Tool.EDIT_FEATURE]: 'tool-edit tool-edit-feature'
+      [Tool.SELECT]: "tool-select",
+      [Tool.ZOOM]: "tool-zoom",
+      [Tool.PAN]: "tool-pan",
+      [Tool.DRAW_POINT]: "tool-draw tool-draw-point",
+      [Tool.DRAW_CIRCLE]: "tool-draw tool-draw-circle",
+      [Tool.DRAW_RECTANGLE]: "tool-draw tool-draw-rectangle",
+      [Tool.DRAW_PATH]: "tool-draw tool-draw-path",
+      [Tool.DRAW_POLYGON]: "tool-draw tool-draw-polygon",
+      [Tool.EDIT_FEATURE]: "tool-edit tool-edit-feature",
     };
 
     // Note that we use a background color. This is intenitonal -- vector tile
@@ -400,12 +400,13 @@ class MapViewPresentation extends React.Component {
 
     return (
       <Map
+        id="tour-map"
         ref={this._map}
         loadTilesWhileInteracting
         view={view}
         useDefaultControls={false}
         className={toolClasses[selectedTool]}
-        style={{ background: '#f8f4f0' }}
+        style={{ background: "#f8f4f0" }}
         onMoveEnd={this._onMapMoved}
       >
         <MapReferenceRequestHandler />
@@ -534,15 +535,15 @@ class MapViewPresentation extends React.Component {
    */
   _onFeatureSelected = (mode, feature) => {
     const id = feature ? feature.getId() : undefined;
-    if (id === undefined && mode !== 'set' && mode !== 'clear') {
+    if (id === undefined && mode !== "set" && mode !== "clear") {
       return;
     }
 
-    if (mode === 'toggle') {
+    if (mode === "toggle") {
       const { selection } = this.props;
-      mode = selection.includes(id) ? 'remove' : 'add';
-    } else if (mode === 'clear') {
-      mode = 'set';
+      mode = selection.includes(id) ? "remove" : "add";
+    } else if (mode === "clear") {
+      mode = "set";
       feature = undefined;
     }
 
@@ -561,7 +562,7 @@ class MapViewPresentation extends React.Component {
     const actionMapping = {
       add: addFeaturesToSelection,
       remove: removeFeaturesFromSelection,
-      set: setSelectedFeatures
+      set: setSelectedFeatures,
     };
     const action = actionMapping[mode] || setSelectedFeatures;
     const ids = features ? features.map((feature) => feature.getId()) : [];
@@ -583,7 +584,7 @@ class MapViewPresentation extends React.Component {
         updateMapViewSettings({
           position,
           angle,
-          zoom
+          zoom,
         })
       );
     }
@@ -608,7 +609,7 @@ class MapViewPresentation extends React.Component {
         ).points;
       } else {
         const originFeatureId = globalIdToOriginId(globalId);
-        if (originFeatureId === '') {
+        if (originFeatureId === "") {
           // Feature is a coordinate system origin feature
           const featureObject = createFeatureFromOpenLayers(feature);
           const coords = feature.getGeometry().getCoordinates();
@@ -640,7 +641,7 @@ class MapViewPresentation extends React.Component {
    */
   _disableDefaultContextMenu = () => {
     const { map } = this._map.current;
-    map.getViewport().addEventListener('contextmenu', (e) => {
+    map.getViewport().addEventListener("contextmenu", (e) => {
       e.preventDefault();
       return false;
     });
@@ -670,7 +671,7 @@ const MapView = connect(
 
     selectedFeatures: getSelectedFeatureIds(state),
     selectedTool: state.map.tools.selectedTool,
-    selection: getSelection(state)
+    selection: getSelection(state),
   })
 )(MapViewPresentation);
 

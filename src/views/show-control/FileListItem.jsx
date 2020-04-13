@@ -1,24 +1,24 @@
-import Color from 'color';
-import PropTypes from 'prop-types';
-import React, { useCallback } from 'react';
-import { DndProvider, useDrop } from 'react-dnd';
-import HTML5Backend, { NativeTypes } from 'react-dnd-html5-backend';
+import Color from "color";
+import PropTypes from "prop-types";
+import React, { useCallback } from "react";
+import { DndProvider, useDrop } from "react-dnd";
+import HTML5Backend, { NativeTypes } from "react-dnd-html5-backend";
 
-import ListItem from '@material-ui/core/ListItem';
-import { makeStyles } from '@material-ui/core/styles';
+import ListItem from "@material-ui/core/ListItem";
+import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles((theme) => ({
   input: {
-    display: 'none'
+    display: "none",
   },
 
   hover: {
-    background: theme.palette.action.hover
+    background: theme.palette.action.hover,
   },
 
   hoverError: {
-    background: new Color(theme.palette.error.main).alpha(0.5).string()
-  }
+    background: new Color(theme.palette.error.main).alpha(0.5).string(),
+  },
 }));
 
 /**
@@ -28,6 +28,7 @@ const FileListItem = ({
   accepts,
   children,
   id,
+  inputId,
   multiple,
   onSelected,
   onSelectionFailed,
@@ -76,8 +77,8 @@ const FileListItem = ({
         ? monitor.canDrop()
           ? classes.hover
           : classes.hoverError
-        : undefined
-    })
+        : undefined,
+    }),
   });
 
   return (
@@ -85,11 +86,11 @@ const FileListItem = ({
       <input
         className={classes.input}
         type="file"
-        id={id}
+        id={inputId}
         multiple={multiple}
         onChange={(event) => onHandleSelection(event.target)}
       />
-      <label htmlFor={id}>
+      <label id={id} htmlFor={inputId}>
         <ListItem ref={dropRef} button {...collectedProps} {...rest}>
           {children}
         </ListItem>
@@ -101,10 +102,11 @@ const FileListItem = ({
 FileListItem.propTypes = {
   accepts: PropTypes.func,
   children: PropTypes.node,
-  id: PropTypes.string.isRequired,
+  id: PropTypes.string,
+  inputId: PropTypes.string.isRequired,
   multiple: PropTypes.bool,
   onSelected: PropTypes.func,
-  onSelectionFailed: PropTypes.func
+  onSelectionFailed: PropTypes.func,
 };
 
 export default (props) => {

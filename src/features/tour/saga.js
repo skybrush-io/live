@@ -1,6 +1,7 @@
-import { delay, select } from 'redux-saga/effects';
+import { delay, put, select } from "redux-saga/effects";
 
-import { shouldOfferTourToUser } from '~/features/tour/selectors';
+import { shouldOfferTourToUser } from "~/features/tour/selectors";
+import { startTour } from "~/features/tour/slice";
 
 /**
  * Compound saga related to the management of the guided tour that appears when
@@ -10,8 +11,8 @@ export default function* tourManagementSaga(flock) {
   // Wait 3 seconds before we kick in
   yield delay(3000);
 
-  const shouldShow = yield select(shouldOfferTourToUser);
-  if (shouldShow) {
-    console.log('Tour should start now');
+  const shouldShowTour = yield select(shouldOfferTourToUser);
+  if (shouldShowTour) {
+    yield put(startTour());
   }
 }

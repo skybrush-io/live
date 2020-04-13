@@ -3,14 +3,14 @@
  * the first time the user starts up the application.
  */
 
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice } from "@reduxjs/toolkit";
 
 const { actions, reducer } = createSlice({
-  name: 'tour',
+  name: "tour",
 
   initialState: {
     isOpen: false,
-    seen: false
+    seen: false,
   },
 
   reducers: {
@@ -21,9 +21,9 @@ const { actions, reducer } = createSlice({
 
     startTour(state) {
       state.isOpen = true;
-      state.seen = true;
-    }
-  }
+      // state.seen = true;
+    },
+  },
 });
 
 export const { dismissTour, startTour } = actions;

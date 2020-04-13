@@ -1,25 +1,28 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import { connect } from 'react-redux';
-import Shapeshifter from 'react-shapeshifter';
+import config from "config";
 
-import AppSettingsButton from './AppSettingsButton';
-import AuthenticationButton from './AuthenticationButton';
-import ConnectionStatusButton from './ConnectionStatusButton';
-import FullScreenButton from './FullScreenButton';
-import ServerConnectionSettingsButton from './ServerConnectionSettingsButton';
+import PropTypes from "prop-types";
+import React from "react";
+import { connect } from "react-redux";
+import Shapeshifter from "react-shapeshifter";
 
-import { toggleSidebar } from '~/features/sidebar/slice';
+import AppSettingsButton from "./AppSettingsButton";
+import AuthenticationButton from "./AuthenticationButton";
+import ConnectionStatusButton from "./ConnectionStatusButton";
+import FullScreenButton from "./FullScreenButton";
+import HelpButton from "./HelpButton";
+import ServerConnectionSettingsButton from "./ServerConnectionSettingsButton";
+
+import { toggleSidebar } from "~/features/sidebar/slice";
 
 const style = {
-  backgroundColor: '#333',
+  backgroundColor: "#333",
   flexGrow: 0,
-  minHeight: 48
+  minHeight: 48,
 };
 
 const innerStyle = {
-  display: 'flex',
-  flexFlow: 'row nowrap'
+  display: "flex",
+  flexFlow: "row nowrap",
 };
 
 /**
@@ -29,12 +32,12 @@ const innerStyle = {
  * @returns  {Object}  the rendered header component
  */
 const Header = ({ toggleSidebar, isSidebarOpen }) => (
-  <div id="header" style={{ ...style, overflow: 'hidden' }}>
+  <div id="header" style={{ ...style, overflow: "hidden" }}>
     <div style={innerStyle}>
       <Shapeshifter
         color="#999"
-        style={{ cursor: 'pointer' }}
-        shape={isSidebarOpen ? 'close' : 'menu'}
+        style={{ cursor: "pointer" }}
+        shape={isSidebarOpen ? "close" : "menu"}
         onClick={() => toggleSidebar()}
       />
       <div style={{ flexGrow: 1, flexShrink: 1 }}>{/* spacer */}</div>
@@ -45,6 +48,7 @@ const Header = ({ toggleSidebar, isSidebarOpen }) => (
       <AuthenticationButton />
       <hr />
       <AppSettingsButton />
+      {config.helpUrl ? <HelpButton /> : null}
       {window.isElectron ? null : <FullScreenButton />}
     </div>
   </div>
@@ -52,14 +56,14 @@ const Header = ({ toggleSidebar, isSidebarOpen }) => (
 
 Header.propTypes = {
   isSidebarOpen: PropTypes.bool.isRequired,
-  toggleSidebar: PropTypes.func.isRequired
+  toggleSidebar: PropTypes.func.isRequired,
 };
 
 export default connect(
   // mapStateToProps
   (state, { workbench }) => ({
     isSidebarOpen: state.sidebar.open,
-    workbench
+    workbench,
   }),
   // mapDispatchToProps
   { toggleSidebar }

@@ -6,10 +6,10 @@ export default {
   // We bundle an example show with the webapp demo but not with the "real" one
   examples: [
     {
-      id: 'example-40',
-      title: 'Example show with 40 drones',
-      url: require('~/../assets/shows/demo.skyc').default
-    }
+      id: "example-40",
+      title: "Example show with 40 drones",
+      url: require("~/../assets/shows/demo.skyc").default,
+    },
   ],
 
   // Defaults are suitable for the web app demo deployment. Connects back to the
@@ -17,11 +17,16 @@ export default {
   // hostname and port from the dialog.
   server: {
     connectAutomatically: true,
-    preventManualSetup: true
+    preventManualSetup: true,
   },
 
   // Tour setup customized to suit the default screen of the web app
   tour: {
-    steps: []
-  }
+    steps: [
+      {
+        selector: "#show-file-upload",
+        content: "Yay! A tour!",
+      },
+    ],
+  },
 };

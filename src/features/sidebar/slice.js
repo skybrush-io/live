@@ -3,22 +3,30 @@
  * app window.
  */
 
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice } from "@reduxjs/toolkit";
 
 const { actions, reducer } = createSlice({
-  name: 'sidebar',
+  name: "sidebar",
 
   initialState: {
-    open: false
+    open: false,
   },
 
   reducers: {
+    closeSidebar(state) {
+      state.open = false;
+    },
+
+    openSidebar(state) {
+      state.open = true;
+    },
+
     toggleSidebar(state) {
       state.open = !state.open;
-    }
-  }
+    },
+  },
 });
 
-export const { toggleSidebar } = actions;
+export const { closeSidebar, openSidebar, toggleSidebar } = actions;
 
 export default reducer;
