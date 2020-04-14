@@ -134,7 +134,7 @@ export default class RotationField extends React.Component {
 
   _validate = (text) => {
     const value = normalizeAngle(Number.parseFloat(text));
-    const hasError = isNaN(value);
+    const hasError = Number.isNaN(value);
     this.setState({
       error: hasError ? 'Not a valid angle' : undefined,
     });

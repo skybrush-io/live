@@ -105,7 +105,7 @@ class ServerDetectionManagerPresentation extends React.Component {
       const numericPort = Number(port);
       if (
         !hostname ||
-        isNaN(numericPort) ||
+        Number.isNaN(numericPort) ||
         numericPort <= 0 ||
         numericPort > 65535
       ) {

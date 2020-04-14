@@ -397,7 +397,7 @@ export class FlatEarthCoordinateSystem {
       orientation = Number.parseFloat(orientation);
     }
 
-    if (isNaN(orientation)) {
+    if (Number.isNaN(orientation)) {
       throw new TypeError('invalid orientation');
     }
 

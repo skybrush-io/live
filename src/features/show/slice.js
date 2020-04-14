@@ -168,7 +168,7 @@ const { actions, reducer } = createSlice({
     loadingProgress(state, action) {
       if (state.loading) {
         const value = Number(action.payload);
-        if (isNaN(value)) {
+        if (Number.isNaN(value)) {
           state.progress = null;
         } else {
           state.progress = Math.min(1, Math.max(value, 0));

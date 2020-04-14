@@ -82,7 +82,7 @@ export function formatTicksOnClock(ticks, clock, options) {
   const { epoch, ticksPerSecond } = clock;
   const { format = clock.format } = options;
 
-  if (isNil(epoch) || isNaN(epoch)) {
+  if (isNil(epoch) || Number.isNaN(epoch)) {
     if (clock.id === 'mtc') {
       // No epoch, so we just simply show a HH:MM:SS:FF SMPTE-style
       // timestamp. We (ab)use the millisecond part of the timestamp

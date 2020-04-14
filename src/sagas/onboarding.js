@@ -41,7 +41,7 @@ export default function* onboardingSaga() {
 
     // Parse the port into a number with some reasonable defaults
     port = Number.parseInt(isNil(port) ? config.server.port : port, 10);
-    if (isNaN(port)) {
+    if (Number.isNaN(port)) {
       port = 443;
     }
 

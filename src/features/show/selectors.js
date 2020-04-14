@@ -294,7 +294,7 @@ export const getShowMetadata = createSelector(
 export const getShowStartTimeAsString = createSelector(
   (state) => state.show.start.time,
   (time) =>
-    isNil(time) || isNaN(time) ? undefined : formatISO9075(fromUnixTime(time))
+    isNil(time) || Number.isNaN(time) ? undefined : formatISO9075(fromUnixTime(time))
 );
 
 /**

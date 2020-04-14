@@ -253,7 +253,7 @@ class MapContextMenu extends React.Component {
     );
     if (altitude !== undefined) {
       const altitudeAsNumber = Number.parseFloat(altitude);
-      if (isNaN(altitudeAsNumber)) {
+      if (Number.isNaN(altitudeAsNumber)) {
         this.props.showErrorMessage('Invalid target altitude');
       } else {
         this._moveUAVs(selectedUAVIds, coords, altitudeAsNumber);
