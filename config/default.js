@@ -8,5 +8,5 @@ export default {
   examples: [],
   server: {},
   tour: null,
-  helpUrl: 'https://doc.collmot.com/skybrush-live-doc/latest/index.html',
+  helpUrl: 'https://doc.collmot.com/public/skybrush-live-doc/latest/index.html',
 };
