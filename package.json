@@ -1,7 +1,7 @@
 {
   "name": "flockwave-web",
   "productName": "Skybrush Live",
-  "version": "0.2.0",
+  "version": "0.3.1",
   "description": "Web frontend for a Skybrush server",
   "main": "launcher.bundle.js",
   "scripts": {
