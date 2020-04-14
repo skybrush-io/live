@@ -31,14 +31,14 @@ const { actions, reducer } = createSlice({
       // }
     },
     // Order defines the preferred ordering of datasets on the UI
-    order: []
+    order: [],
   },
 
   reducers: {
     removeDatasets(state, action) {
       return deleteItemsByIds(state, action.payload);
-    }
-  }
+    },
+  },
 });
 
 export const { removeDatasets } = actions;

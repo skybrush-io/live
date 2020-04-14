@@ -28,12 +28,12 @@ ClockSelector.propTypes = {
   clocks: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.string,
-      label: PropTypes.string
+      label: PropTypes.string,
     })
   ),
   lcdStyle: PropTypes.object,
   onClock: PropTypes.func,
-  selectedClockId: PropTypes.string
+  selectedClockId: PropTypes.string,
 };
 
 export default ClockSelector;

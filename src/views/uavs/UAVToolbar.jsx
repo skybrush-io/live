@@ -19,7 +19,7 @@ const UAVToolbar = React.forwardRef(
     const isSelectionEmpty = isEmpty(selectedUAVIds);
 
     return (
-      <Toolbar ref={ref} disableGutters variant="dense" {...rest}>
+      <Toolbar ref={ref} disableGutters variant='dense' {...rest}>
         <UAVOperationsButtonGroup selectedUAVIds={selectedUAVIds} />
 
         <Box flex={1} />
@@ -38,7 +38,7 @@ const UAVToolbar = React.forwardRef(
 
 UAVToolbar.propTypes = {
   fitSelectedUAVs: PropTypes.func,
-  selectedUAVIds: PropTypes.array
+  selectedUAVIds: PropTypes.array,
 };
 
 export default UAVToolbar;

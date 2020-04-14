@@ -50,7 +50,7 @@ const iconsByState = {
     <ListItemIcon style={{ color: yellow[700] }}>
       <ActionSettingsEthernet />
     </ListItemIcon>
-  )
+  ),
 };
 
 /**
@@ -70,7 +70,7 @@ const stateNames = {
   [ConnectionState.CONNECTED]: 'Connected',
   [ConnectionState.CONNECTING]: 'Connecting',
   [ConnectionState.DISCONNECTED]: 'Disconnected',
-  [ConnectionState.DISCONNECTING]: 'Disconnecting'
+  [ConnectionState.DISCONNECTING]: 'Disconnecting',
 };
 
 /**
@@ -86,7 +86,7 @@ const ConnectionListEntry = (props) => {
     <TimeAgo date={stateChangedAt} />
   ) : null;
   const actionButton = action ? (
-    <IconButton edge="end" onClick={action}>
+    <IconButton edge='end' onClick={action}>
       <ActionSettings />
     </IconButton>
   ) : null;
@@ -113,7 +113,7 @@ ConnectionListEntry.propTypes = {
   name: PropTypes.string.isRequired,
   state: PropTypes.string.isRequired,
   stateChangedAt: PropTypes.number,
-  action: PropTypes.func
+  action: PropTypes.func,
 };
 
 /**
@@ -125,7 +125,7 @@ export const ConnectionListPresentation = listOf(
   },
   {
     dataProvider: 'connections',
-    backgroundHint: 'No connections'
+    backgroundHint: 'No connections',
   }
 );
 ConnectionListPresentation.displayName = 'ConnectionListPresentation';
@@ -133,13 +133,13 @@ ConnectionListPresentation.displayName = 'ConnectionListPresentation';
 const ConnectionList = connect(
   // mapStateToProps
   (state) => ({
-    connections: getConnectionsInOrder(state)
+    connections: getConnectionsInOrder(state),
   }),
   // mapDispatchToProps
   (dispatch) => ({
     onShowSettings() {
       dispatch(showServerSettingsDialog());
-    }
+    },
   })
 )(ConnectionListPresentation);
 

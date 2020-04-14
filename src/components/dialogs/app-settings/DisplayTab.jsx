@@ -15,7 +15,7 @@ import {
   clearOrigin,
   setFlatEarthCoordinateSystemOrientation,
   setFlatEarthCoordinateSystemType,
-  setFlatEarthCoordinateSystemOrigin
+  setFlatEarthCoordinateSystemOrigin,
 } from '~/actions/map-origin';
 import CoordinateSystemFields from '~/components/CoordinateSystemFields';
 import Header from '~/components/dialogs/FormHeader';
@@ -24,40 +24,40 @@ import { getMapOriginRotationAngle } from '~/selectors/map';
 
 const DisplayTabPresentation = (props) => (
   <Box my={2}>
-    <FormControl fullWidth variant="filled">
-      <InputLabel id="display-theme-label">Theme</InputLabel>
+    <FormControl fullWidth variant='filled'>
+      <InputLabel id='display-theme-label'>Theme</InputLabel>
       <Select
-        labelId="display-theme-label"
-        name="theme"
+        labelId='display-theme-label'
+        name='theme'
         value={props.theme}
         onChange={props.onFieldChanged}
       >
-        <MenuItem value="auto">
+        <MenuItem value='auto'>
           Choose automatically based on OS settings
         </MenuItem>
-        <MenuItem value="light">Light mode</MenuItem>
-        <MenuItem value="dark">Dark mode</MenuItem>
+        <MenuItem value='light'>Light mode</MenuItem>
+        <MenuItem value='dark'>Dark mode</MenuItem>
       </Select>
     </FormControl>
 
     <FormGroup>
       <Header>Map widgets</Header>
       <FormControlLabel
-        label="Show mouse coordinates"
+        label='Show mouse coordinates'
         control={
           <Checkbox
             checked={props.showMouseCoordinates}
-            name="showMouseCoordinates"
+            name='showMouseCoordinates'
             onChange={props.onCheckboxToggled}
           />
         }
       />
       <FormControlLabel
-        label="Show scale line"
+        label='Show scale line'
         control={
           <Checkbox
             checked={props.showScaleLine}
-            name="showScaleLine"
+            name='showScaleLine'
             onChange={props.onCheckboxToggled}
           />
         }
@@ -89,7 +89,7 @@ DisplayTabPresentation.propTypes = {
   orientation: PropTypes.number,
   showMouseCoordinates: PropTypes.bool,
   showScaleLine: PropTypes.bool,
-  theme: PropTypes.oneOf(['auto', 'dark', 'light'])
+  theme: PropTypes.oneOf(['auto', 'dark', 'light']),
 };
 
 export default connect(
@@ -98,14 +98,14 @@ export default connect(
     coordinateSystemType: state.map.origin.type,
     origin: state.map.origin.position,
     orientation: getMapOriginRotationAngle(state),
-    ...state.settings.display
+    ...state.settings.display,
   }),
   // mapDispatchToProps
   (dispatch) => ({
     onCheckboxToggled(event) {
       dispatch(
         updateAppSettings('display', {
-          [event.target.name]: event.target.checked
+          [event.target.name]: event.target.checked,
         })
       );
     },
@@ -117,7 +117,7 @@ export default connect(
     onFieldChanged(event) {
       dispatch(
         updateAppSettings('display', {
-          [event.target.name]: event.target.value
+          [event.target.name]: event.target.value,
         })
       );
     },
@@ -130,6 +130,6 @@ export default connect(
 
     onOrientationChanged(value) {
       dispatch(setFlatEarthCoordinateSystemOrientation(value || 0));
-    }
+    },
   })
 )(DisplayTabPresentation);

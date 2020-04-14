@@ -14,7 +14,7 @@ const AppSettingsButtonPresentation = (props) => (
 );
 
 AppSettingsButtonPresentation.propTypes = {
-  ...GenericHeaderButton.propTypes
+  ...GenericHeaderButton.propTypes,
 };
 
 export default connect(
@@ -22,6 +22,6 @@ export default connect(
   null,
   // mapDispatchToProps
   {
-    onClick: toggleAppSettingsDialog
+    onClick: toggleAppSettingsDialog,
   }
 )(AppSettingsButtonPresentation);

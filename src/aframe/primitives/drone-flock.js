@@ -8,9 +8,9 @@ import AFrame from '../aframe';
 AFrame.registerPrimitive('a-drone-flock', {
   // Attaches the 'drone-flock' component by default.
   defaultComponents: {
-    'drone-flock': {}
+    'drone-flock': {},
   },
   mappings: {
-    template: 'drone-flock.template'
-  }
+    template: 'drone-flock.template',
+  },
 });

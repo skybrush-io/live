@@ -10,7 +10,7 @@ import { handleActions } from 'redux-actions';
  */
 const defaultState = {
   dialogVisible: false,
-  editedLocationId: undefined
+  editedLocationId: undefined,
 };
 
 /**
@@ -22,14 +22,14 @@ const reducer = handleActions(
     EDIT_SAVED_LOCATION: (state, action) =>
       Object.assign({}, state, {
         dialogVisible: true,
-        editedLocationId: action.payload.id
+        editedLocationId: action.payload.id,
       }),
 
     CANCEL_LOCATION_EDITING: (state, action) =>
       Object.assign({}, state, {
         dialogVisible: false,
-        editedLocationId: undefined
-      })
+        editedLocationId: undefined,
+      }),
   },
   defaultState
 );

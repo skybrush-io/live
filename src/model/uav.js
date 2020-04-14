@@ -13,7 +13,7 @@ import isNil from 'lodash-es/isNil';
 export const UAVAge = {
   ACTIVE: 'active',
   INACTIVE: 'inactive',
-  GONE: 'gone'
+  GONE: 'gone',
 };
 
 /**
@@ -34,7 +34,7 @@ export default class UAV {
       lat: undefined,
       lon: undefined,
       amsl: undefined,
-      agl: undefined
+      agl: undefined,
     };
     this._rawHeading = undefined;
     this._rawVoltage = undefined;
@@ -183,7 +183,7 @@ export default class UAV {
       errors: [...this._errors],
       heading: this.heading,
       lastUpdated: this.lastUpdated,
-      position: { ...this._position }
+      position: { ...this._position },
     };
   }
 }

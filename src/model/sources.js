@@ -11,31 +11,31 @@ import APIKeys from '~/api-keys';
 export const Source = {
   BING_MAPS: {
     AERIAL_WITH_LABELS: 'bingMaps.aerialWithLabels',
-    ROAD: 'bingMaps.road'
+    ROAD: 'bingMaps.road',
   },
   GOOGLE_MAPS: {
     DEFAULT: 'googleMaps.default',
     SATELLITE: 'googleMaps.satellite',
-    ROADS: 'googleMaps.roads'
+    ROADS: 'googleMaps.roads',
   },
   MAPBOX: {
     SATELLITE: 'mapbox.satellite',
     STATIC: 'mapbox.static',
-    VECTOR: 'mapbox.vector'
+    VECTOR: 'mapbox.vector',
   },
   MAPTILER: {
     BASIC: 'maptiler.basic',
     HYBRID: 'maptiler.hybrid',
     SATELLITE: 'maptiler.satellite',
-    STREETS: 'maptiler.streets'
+    STREETS: 'maptiler.streets',
   },
   NEXTZEN: 'nextzen',
   OSM: 'osm',
   STAMEN: {
     TERRAIN: 'stamen.terrain',
     TONER: 'stamen.toner',
-    WATERCOLOR: 'stamen.watercolor'
-  }
+    WATERCOLOR: 'stamen.watercolor',
+  },
 };
 
 /**
@@ -73,12 +73,12 @@ const attributions = {
   mapbox: [
     '© <a href="https://www.mapbox.com/map-feedback/">Mapbox</a>',
     '© <a href="https://www.openstreetmap.org/copyright">' +
-      'OpenStreetMap contributors</a>'
+      'OpenStreetMap contributors</a>',
   ],
   maptiler: [
     '© <a href="https://www.maptiler.com/copyright/">Maptiler</a>',
     '© <a href="https://www.openstreetmap.org/copyright">' +
-      'OpenStreetMap contributors</a>'
+      'OpenStreetMap contributors</a>',
   ],
   nextzen:
     'Map data &copy; OpenStreetMap contributors, Who’s On First, ' +
@@ -87,8 +87,8 @@ const attributions = {
     'Map tiles by <a href="https://stamen.com/" target="_blank">Stamen ' +
       'Design</a>, under <a href="https://creativecommons.org/licenses/by/3.0/" ' +
       'target="_blank">CC BY 3.0</a>.',
-    '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-  ]
+    '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+  ],
 };
 
 /**
@@ -99,53 +99,53 @@ const attributions = {
  */
 const visualRepresentationsForSources = {
   [Source.BING_MAPS.AERIAL_WITH_LABELS]: {
-    label: 'Bing Maps (aerial with labels)'
+    label: 'Bing Maps (aerial with labels)',
   },
   [Source.BING_MAPS.ROAD]: { label: 'Bing Maps (road)' },
   [Source.GOOGLE_MAPS.DEFAULT]: { label: 'Google Maps' },
   [Source.GOOGLE_MAPS.SATELLITE]: { label: 'Google Maps (satellite)' },
   [Source.MAPBOX.STATIC]: {
     label: 'Mapbox',
-    attributions: attributions.mapbox
+    attributions: attributions.mapbox,
   },
   [Source.MAPBOX.SATELLITE]: {
     label: 'Mapbox satellite',
-    attributions: attributions.mapbox
+    attributions: attributions.mapbox,
   },
   [Source.MAPBOX.VECTOR]: {
     label: 'Mapbox vector',
-    attributions: attributions.mapbox
+    attributions: attributions.mapbox,
   },
   [Source.MAPTILER.BASIC]: {
     label: 'Maptiler',
-    attributions: attributions.maptiler
+    attributions: attributions.maptiler,
   },
   [Source.MAPTILER.HYBRID]: {
     label: 'Maptiler hybrid',
-    attributions: attributions.maptiler
+    attributions: attributions.maptiler,
   },
   [Source.MAPTILER.SATELLITE]: {
     label: 'Maptiler satellite',
-    attributions: attributions.maptiler
+    attributions: attributions.maptiler,
   },
   [Source.MAPTILER.STREETS]: {
     label: 'Maptiler streets',
-    attributions: attributions.maptiler
+    attributions: attributions.maptiler,
   },
   [Source.NEXTZEN]: { label: 'Nextzen', attributions: attributions.nextzen },
   [Source.OSM]: { label: 'OpenStreetMap' },
   [Source.STAMEN.TERRAIN]: {
     label: 'Stamen terrain',
-    attributions: attributions.stamen
+    attributions: attributions.stamen,
   },
   [Source.STAMEN.TONER]: {
     label: 'Stamen toner',
-    attributions: attributions.stamen
+    attributions: attributions.stamen,
   },
   [Source.STAMEN.WATERCOLOR]: {
     label: 'Stamen watercolor',
-    attributions: attributions.stamen
-  }
+    attributions: attributions.stamen,
+  },
 };
 
 /**

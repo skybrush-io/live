@@ -26,14 +26,14 @@ const UploadProgressBar = ({ progress, running }) => {
 
 UploadProgressBar.propTypes = {
   progress: PropTypes.arrayOf(PropTypes.number),
-  running: PropTypes.bool
+  running: PropTypes.bool,
 };
 
 export default connect(
   // mapStateToProps
   (state) => ({
     progress: getUploadProgress(state),
-    running: state.show.upload.running
+    running: state.show.upload.running,
   }),
   // mapDispatchToProps
   null

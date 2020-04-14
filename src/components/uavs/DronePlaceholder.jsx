@@ -12,44 +12,44 @@ const useStyles = makeStyles(
   (theme) => ({
     root: {
       position: 'relative',
-      marginBottom: theme.spacing(0.5)
+      marginBottom: theme.spacing(0.5),
     },
 
     avatar: {
       backgroundColor: Colors.off,
-      color: theme.palette.getContrastText(Colors.off)
+      color: theme.palette.getContrastText(Colors.off),
     },
 
     'avatar-off': {
-      opacity: 0.5
+      opacity: 0.5,
     },
 
     'avatar-editing': {
       backgroundColor: Colors.info,
       color: theme.palette.getContrastText(Colors.info),
       animation: '$pulse 0.5s infinite',
-      animationDirection: 'alternate'
+      animationDirection: 'alternate',
     },
 
     'avatar-error': {
       backgroundColor: Colors.error,
       boxShadow: `0 0 8px 2px ${Colors.error}`,
-      color: theme.palette.getContrastText(Colors.error)
+      color: theme.palette.getContrastText(Colors.error),
     },
 
     'avatar-success': {
       backgroundColor: Colors.success,
-      color: theme.palette.getContrastText(Colors.success)
+      color: theme.palette.getContrastText(Colors.success),
     },
 
     '@keyframes pulse': {
       '0%': {
-        boxShadow: `0 0 8px 2px ${color(Colors.info).alpha(0)}`
+        boxShadow: `0 0 8px 2px ${color(Colors.info).alpha(0)}`,
       },
       '100%': {
-        boxShadow: `0 0 8px 2px ${Colors.info}`
-      }
-    }
+        boxShadow: `0 0 8px 2px ${Colors.info}`,
+      },
+    },
   }),
   { name: 'DronePlaceholder' }
 );
@@ -78,11 +78,11 @@ const DronePlaceholder = ({ editing, label, status }) => {
 DronePlaceholder.propTypes = {
   editing: PropTypes.bool,
   label: PropTypes.node,
-  status: PropTypes.oneOf(['off', 'editing', 'error', 'success'])
+  status: PropTypes.oneOf(['off', 'editing', 'error', 'success']),
 };
 
 DronePlaceholder.defaultProps = {
-  status: 'off'
+  status: 'off',
 };
 
 export default DronePlaceholder;

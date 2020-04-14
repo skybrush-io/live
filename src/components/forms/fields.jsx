@@ -30,7 +30,7 @@ export const Switch = ({ input, meta, ...rest }) => {
 
 Switch.propTypes = {
   input: PropTypes.any,
-  meta: PropTypes.any
+  meta: PropTypes.any,
 };
 
 const preventDefault = (event) => event.preventDefault();
@@ -52,7 +52,7 @@ export const PasswordField = ({ input, meta, ...rest }) => {
     meta.touched;
   return (
     <MaterialUITextField
-      variant="filled"
+      variant='filled'
       {...rest}
       name={name}
       type={passwordIsMasked ? 'password' : 'text'}
@@ -62,20 +62,20 @@ export const PasswordField = ({ input, meta, ...rest }) => {
       inputProps={{
         autoComplete: 'current-password',
         ...restInput,
-        type: passwordIsMasked ? 'password' : 'text'
+        type: passwordIsMasked ? 'password' : 'text',
       }}
       InputProps={{
         endAdornment: (
-          <InputAdornment position="end">
+          <InputAdornment position='end'>
             <IconButton
-              aria-label="toggle password visibility"
+              aria-label='toggle password visibility'
               onClick={togglePasswordMask}
               onMouseDown={preventDefault}
             >
               {passwordIsMasked ? <Visibility /> : <VisibilityOff />}
             </IconButton>
           </InputAdornment>
-        )
+        ),
       }}
       onChange={onChange}
     />
@@ -84,7 +84,7 @@ export const PasswordField = ({ input, meta, ...rest }) => {
 
 PasswordField.propTypes = {
   input: PropTypes.any,
-  meta: PropTypes.any
+  meta: PropTypes.any,
 };
 
 /**
@@ -101,7 +101,7 @@ export const TextField = ({ input, meta, ...rest }) => {
     meta.touched;
   return (
     <MaterialUITextField
-      variant="filled"
+      variant='filled'
       {...rest}
       name={name}
       helperText={showError ? meta.error || meta.submitError : undefined}
@@ -115,5 +115,5 @@ export const TextField = ({ input, meta, ...rest }) => {
 
 TextField.propTypes = {
   input: PropTypes.any,
-  meta: PropTypes.any
+  meta: PropTypes.any,
 };

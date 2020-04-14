@@ -17,7 +17,7 @@ import DronePlaceholderList from './DronePlaceholderList';
 import DialogToolbar from '~/components/dialogs/DialogToolbar';
 import {
   addVirtualDronesForMission,
-  augmentMappingAutomaticallyFromSpareDrones
+  augmentMappingAutomaticallyFromSpareDrones,
 } from '~/features/mission/actions';
 import { getEmptyMappingSlotIndices } from '~/features/mission/selectors';
 import { supportsVirtualDrones } from '~/features/servers/selectors';
@@ -25,12 +25,12 @@ import { approveTakeoffArea } from '~/features/show/actions';
 import { isTakeoffAreaApproved } from '~/features/show/selectors';
 import {
   closeTakeoffAreaSetupDialog,
-  revokeTakeoffAreaApproval
+  revokeTakeoffAreaApproval,
 } from '~/features/show/slice';
 import {
   createSelectorToGetUAVIdsTooFarFromHome,
   createSelectorToGetMisalignedUAVIds,
-  getMissingUAVIdsInMapping
+  getMissingUAVIdsInMapping,
 } from '~/features/uavs/selectors';
 import AugmentMappingButton from '~/views/uavs/AugmentMappingButton';
 
@@ -41,13 +41,13 @@ import AugmentMappingButton from '~/views/uavs/AugmentMappingButton';
 const EmptySlotsIndicator = ({ indices }) => (
   <DronePlaceholderList
     items={indices}
-    title="Empty slots:"
-    successMessage="All slots in the mapping are filled."
+    title='Empty slots:'
+    successMessage='All slots in the mapping are filled.'
   />
 );
 
 EmptySlotsIndicator.propTypes = {
-  indices: PropTypes.arrayOf(PropTypes.number)
+  indices: PropTypes.arrayOf(PropTypes.number),
 };
 
 /**
@@ -58,13 +58,13 @@ EmptySlotsIndicator.propTypes = {
 const MissingDronesIndicator = ({ uavIds }) => (
   <DronePlaceholderList
     items={uavIds}
-    title="Missing:"
-    successMessage="All drones in the mapping are online."
+    title='Missing:'
+    successMessage='All drones in the mapping are online.'
   />
 );
 
 MissingDronesIndicator.propTypes = {
-  uavIds: PropTypes.arrayOf(PropTypes.string)
+  uavIds: PropTypes.arrayOf(PropTypes.string),
 };
 
 /**
@@ -74,13 +74,13 @@ MissingDronesIndicator.propTypes = {
 const MisplacedDronesIndicator = ({ uavIds }) => (
   <DronePlaceholderList
     items={uavIds}
-    title="Misplaced:"
-    successMessage="All drones are placed at their takeoff positions."
+    title='Misplaced:'
+    successMessage='All drones are placed at their takeoff positions.'
   />
 );
 
 MisplacedDronesIndicator.propTypes = {
-  uavIds: PropTypes.arrayOf(PropTypes.string)
+  uavIds: PropTypes.arrayOf(PropTypes.string),
 };
 
 /**
@@ -90,13 +90,13 @@ MisplacedDronesIndicator.propTypes = {
 const MisalignedDronesIndicator = ({ uavIds }) => (
   <DronePlaceholderList
     items={uavIds}
-    title="Misaligned:"
-    successMessage="All drones are facing the correct direction."
+    title='Misaligned:'
+    successMessage='All drones are facing the correct direction.'
   />
 );
 
 MisalignedDronesIndicator.propTypes = {
-  uavIds: PropTypes.arrayOf(PropTypes.string)
+  uavIds: PropTypes.arrayOf(PropTypes.string),
 };
 
 /**
@@ -114,11 +114,11 @@ const TakeoffAreaSetupDialog = ({
   onAddVirtualDrones,
   onApprove,
   onClose,
-  onRevoke
+  onRevoke,
 }) => (
-  <Dialog fullWidth open={open} maxWidth="sm" onClose={onClose}>
+  <Dialog fullWidth open={open} maxWidth='sm' onClose={onClose}>
     <DialogToolbar>
-      <Typography noWrap variant="subtitle1">
+      <Typography noWrap variant='subtitle1'>
         Takeoff area setup
       </Typography>
       <Box flex={1} />
@@ -139,16 +139,16 @@ const TakeoffAreaSetupDialog = ({
       <MisplacedDronesIndicator uavIds={misplacedUAVIds} />
       <MisalignedDronesIndicator uavIds={misalignedUAVIds} />
 
-      <Box className="bottom-bar" textAlign="center" mt={2} pt={2}>
+      <Box className='bottom-bar' textAlign='center' mt={2} pt={2}>
         <FormControlLabel
           control={
             <Switch
               checked={approved}
-              value="approved"
+              value='approved'
               onChange={approved ? onRevoke : onApprove}
             />
           }
-          label="Approve takeoff area arrangement"
+          label='Approve takeoff area arrangement'
         />
       </Box>
     </DialogContent>
@@ -167,12 +167,12 @@ TakeoffAreaSetupDialog.propTypes = {
   onApprove: PropTypes.func,
   onClose: PropTypes.func,
   onRevoke: PropTypes.func,
-  open: PropTypes.bool
+  open: PropTypes.bool,
 };
 
 TakeoffAreaSetupDialog.defaultProps = {
   approved: false,
-  open: false
+  open: false,
 };
 
 // TODO(ntamas): most selectors should return a combination of show and
@@ -194,7 +194,7 @@ export default connect(
       hasVirtualDrones: supportsVirtualDrones(state),
       missingUAVIds: getMissingUAVIdsInMapping(state),
       misplacedUAVIds: getMisplacedUAVIds(state),
-      misalignedUAVIds: getMisalignedUAVIds(state)
+      misalignedUAVIds: getMisalignedUAVIds(state),
     });
   },
 
@@ -219,6 +219,6 @@ export default connect(
 
     onRevoke() {
       dispatch(revokeTakeoffAreaApproval());
-    }
+    },
   })
 )(TakeoffAreaSetupDialog);

@@ -49,7 +49,7 @@ export default function* onboardingSaga() {
       active: connectAutomatically,
       hostName,
       port,
-      isSecure: isSecure || port === 443
+      isSecure: isSecure || port === 443,
     };
 
     yield put(updateServerSettings(updates));

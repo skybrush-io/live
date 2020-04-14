@@ -16,14 +16,14 @@ import Typography from '@material-ui/core/Typography';
 import BackgroundHint from '~/components/BackgroundHint';
 import DialogToolbar from '~/components/dialogs/DialogToolbar';
 import StepperStatusLight, {
-  StepperStatus
+  StepperStatus,
 } from '~/components/StepperStatusLight';
 import { isShowingMissionIds } from '~/features/settings/selectors';
 import { signOffOnOnboardPreflightChecks } from '~/features/show/actions';
 import { areOnboardPreflightChecksSignedOff } from '~/features/show/selectors';
 import {
   clearOnboardPreflightChecks,
-  closeOnboardPreflightChecksDialog
+  closeOnboardPreflightChecksDialog,
 } from '~/features/show/slice';
 import { getErrorCodeSummaryForUAVsInMission } from '~/features/uavs/selectors';
 import { describeError, getSeverityOfErrorCode } from '~/flockwave/errors';
@@ -34,7 +34,7 @@ const severityToStatus = [
   StepperStatus.INFO,
   StepperStatus.SKIPPED,
   StepperStatus.ERROR,
-  StepperStatus.ERROR
+  StepperStatus.ERROR,
 ];
 
 /**
@@ -95,8 +95,8 @@ const PreflightCheckListPresentation = ({ items, showMissionIds, ...rest }) =>
     </List>
   ) : (
     <BackgroundHint
-      header="Onboard preflight checks passed."
-      text="None of the UAVs indicated an error."
+      header='Onboard preflight checks passed.'
+      text='None of the UAVs indicated an error.'
     />
   );
 
@@ -104,18 +104,18 @@ PreflightCheckListPresentation.propTypes = {
   items: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.string,
-      type: PropTypes.string
+      type: PropTypes.string,
     })
   ),
   onToggle: PropTypes.func,
-  showMissionIds: PropTypes.bool
+  showMissionIds: PropTypes.bool,
 };
 
 const PreflightCheckList = connect(
   // mapStateToProps
   (state) => ({
     items: getErrorCodeSummaryForUAVsInMission(state),
-    showMissionIds: isShowingMissionIds(state)
+    showMissionIds: isShowingMissionIds(state),
   }),
   // mapDispatchToProps
   () => ({})
@@ -131,12 +131,12 @@ const OnboardPreflightChecksDialog = ({
   onClear,
   onClose,
   onSignOff,
-  signedOff
+  signedOff,
 }) => {
   return (
-    <Dialog fullWidth open={open} maxWidth="xs" onClose={onClose}>
+    <Dialog fullWidth open={open} maxWidth='xs' onClose={onClose}>
       <DialogToolbar>
-        <Typography variant="subtitle1">Onboard preflight checks</Typography>
+        <Typography variant='subtitle1'>Onboard preflight checks</Typography>
         <Box flex={1} />
         <MappingToggleButton />
       </DialogToolbar>
@@ -145,22 +145,22 @@ const OnboardPreflightChecksDialog = ({
           display: 'flex',
           flexDirection: 'column',
           paddingLeft: '1em',
-          paddingRight: '1em'
+          paddingRight: '1em',
         }}
       >
-        <Box flex={1} overflow="auto" minHeight={240}>
+        <Box flex={1} overflow='auto' minHeight={240}>
           <PreflightCheckList />
         </Box>
-        <Box className="bottom-bar" textAlign="center" pt={2}>
+        <Box className='bottom-bar' textAlign='center' pt={2}>
           <FormControlLabel
             control={
               <Switch
                 checked={signedOff}
-                value="signedOff"
+                value='signedOff'
                 onChange={signedOff ? onClear : onSignOff}
               />
             }
-            label="Sign off on onboard preflight checks"
+            label='Sign off on onboard preflight checks'
           />
         </Box>
       </DialogContent>
@@ -174,25 +174,25 @@ OnboardPreflightChecksDialog.propTypes = {
   onClose: PropTypes.func,
   onSignOff: PropTypes.func,
   open: PropTypes.bool,
-  signedOff: PropTypes.bool
+  signedOff: PropTypes.bool,
 };
 
 OnboardPreflightChecksDialog.defaultProps = {
   open: false,
-  signedOff: false
+  signedOff: false,
 };
 
 export default connect(
   // mapStateToProps
   (state) => ({
     ...state.show.onboardPreflightChecksDialog,
-    signedOff: areOnboardPreflightChecksSignedOff(state)
+    signedOff: areOnboardPreflightChecksSignedOff(state),
   }),
 
   // mapDispatchToProps
   {
     onClear: clearOnboardPreflightChecks,
     onClose: closeOnboardPreflightChecksDialog,
-    onSignOff: signOffOnOnboardPreflightChecks
+    onSignOff: signOffOnOnboardPreflightChecks,
   }
 )(OnboardPreflightChecksDialog);

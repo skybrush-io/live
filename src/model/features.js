@@ -22,7 +22,7 @@ export const FeatureType = {
   LINE_STRING: 'lineString',
   POINTS: 'points',
   POLYGON: 'polygon',
-  RECTANGLE: 'rectangle'
+  RECTANGLE: 'rectangle',
 };
 
 /**
@@ -32,7 +32,7 @@ export const LabelStyle = {
   HIDDEN: 'hidden',
   NORMAL: 'normal',
   THICK_OUTLINE: 'thickOutline',
-  THIN_OUTLINE: 'thinOutline'
+  THIN_OUTLINE: 'thinOutline',
 };
 
 /**
@@ -52,7 +52,7 @@ export function createFeatureFromOpenLayers(olFeature) {
     case 'Point':
       Object.assign(result, {
         type: FeatureType.POINTS,
-        points: [lonLatFromMapViewCoordinate(coordinates)]
+        points: [lonLatFromMapViewCoordinate(coordinates)],
       });
       break;
 
@@ -64,9 +64,9 @@ export function createFeatureFromOpenLayers(olFeature) {
           lonLatFromMapViewCoordinate(center),
           lonLatFromMapViewCoordinate([
             center[0] + geometry.getRadius(),
-            center[1]
-          ])
-        ]
+            center[1],
+          ]),
+        ],
       });
       break;
     }
@@ -74,7 +74,7 @@ export function createFeatureFromOpenLayers(olFeature) {
     case 'LineString':
       Object.assign(result, {
         type: FeatureType.LINE_STRING,
-        points: coordinates.map(unary(lonLatFromMapViewCoordinate))
+        points: coordinates.map(unary(lonLatFromMapViewCoordinate)),
       });
       break;
 
@@ -87,7 +87,7 @@ export function createFeatureFromOpenLayers(olFeature) {
         type: FeatureType.POLYGON,
         points: coordinates[0]
           .map(unary(lonLatFromMapViewCoordinate))
-          .slice(0, -1)
+          .slice(0, -1),
       });
       break;
 
@@ -103,7 +103,7 @@ const _featureTypeIcons = {
   [FeatureType.LINE_STRING]: React.createElement(ShowChart),
   [FeatureType.POINTS]: React.createElement(LocationOn),
   [FeatureType.POLYGON]: React.createElement(StarBorder),
-  [FeatureType.RECTANGLE]: React.createElement(CropSquare)
+  [FeatureType.RECTANGLE]: React.createElement(CropSquare),
 };
 
 const _featureTypeNames = {
@@ -111,7 +111,7 @@ const _featureTypeNames = {
   [FeatureType.LINE_STRING]: 'Path',
   [FeatureType.POINTS]: 'Marker',
   [FeatureType.POLYGON]: 'Polygon',
-  [FeatureType.RECTANGLE]: 'Rectangle'
+  [FeatureType.RECTANGLE]: 'Rectangle',
 };
 
 /**

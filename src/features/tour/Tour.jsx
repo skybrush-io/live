@@ -1,30 +1,30 @@
-import config from "config";
+import config from 'config';
 
-import PropTypes from "prop-types";
-import React from "react";
-import ReactTour from "reactour";
-import { connect } from "react-redux";
+import PropTypes from 'prop-types';
+import React from 'react';
+import ReactTour from 'reactour';
+import { connect } from 'react-redux';
 
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles } from '@material-ui/core/styles';
 
-import { closeSidebar, openSidebar } from "~/features/sidebar/slice";
-import { dismissTour } from "~/features/tour/slice";
+import { closeSidebar, openSidebar } from '~/features/sidebar/slice';
+import { dismissTour } from '~/features/tour/slice';
 
 const useStyles = makeStyles(
   (theme) => ({
     root: {
-      color: "#222",
+      color: '#222',
     },
     button: {
-      backgroundColor: "#007aff",
-      color: "white",
+      backgroundColor: '#007aff',
+      color: 'white',
       padding: theme.spacing(1),
       borderRadius: theme.spacing(0.5),
       fontSize: theme.typography.fontSize,
     },
   }),
   {
-    name: "Tour",
+    name: 'Tour',
   }
 );
 
@@ -36,15 +36,15 @@ const Tour = ({ onClose, isOpen, steps }) => {
   const classes = useStyles();
   return (
     <ReactTour
+      disableInteraction
       className={classes.root}
       closeWithMask={false}
-      disableInteraction
       lastStepNextButton={<div className={classes.button}>Get started!</div>}
       maskSpace={20}
       steps={steps}
       isOpen={config.tour ? isOpen : false}
-      onRequestClose={onClose}
       rounded={4}
+      onRequestClose={onClose}
     />
   );
 };

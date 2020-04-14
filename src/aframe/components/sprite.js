@@ -10,30 +10,30 @@ const {
   AdditiveBlending,
   NormalBlending,
   Sprite,
-  SpriteMaterial
+  SpriteMaterial,
 } = AFrame.THREE;
 
 AFrame.registerComponent('sprite', {
   schema: {
     blending: {
       type: 'string',
-      default: 'normal'
+      default: 'normal',
     },
     color: {
       type: 'color',
-      default: '#ffffff'
+      default: '#ffffff',
     },
     src: {
-      type: 'map'
+      type: 'map',
     },
     scale: {
       type: 'vec3',
-      default: { x: 1, y: 1, z: 1 }
+      default: { x: 1, y: 1, z: 1 },
     },
     transparent: {
       type: 'boolean',
-      default: true
-    }
+      default: true,
+    },
   },
 
   init() {
@@ -101,15 +101,15 @@ AFrame.registerComponent('sprite', {
 
   remove() {
     this.el.removeObject3D('mesh');
-  }
+  },
 });
 
 AFrame.registerPrimitive('a-sprite', {
   defaultComponents: {
-    sprite: {}
+    sprite: {},
   },
   mappings: {
     src: 'sprite.src',
-    resize: 'sprite.scale'
-  }
+    resize: 'sprite.scale',
+  },
 });

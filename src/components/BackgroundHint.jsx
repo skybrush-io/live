@@ -18,8 +18,8 @@ const useStyles = makeStyles((theme) => ({
     textAlign: 'center',
     width: '100%',
     height: '100%',
-    userSelect: 'none'
-  }
+    userSelect: 'none',
+  },
 }));
 
 /**
@@ -35,10 +35,10 @@ const BackgroundHint = ({ header, text, ...rest }) => {
   const classes = useStyles();
 
   return (
-    <Box color="text.secondary" className={classes.root} {...rest}>
+    <Box color='text.secondary' className={classes.root} {...rest}>
       <div>
         {header && (
-          <Typography paragraph variant="h6">
+          <Typography paragraph variant='h6'>
             {header}
           </Typography>
         )}
@@ -50,7 +50,7 @@ const BackgroundHint = ({ header, text, ...rest }) => {
 
 BackgroundHint.propTypes = {
   header: PropTypes.string,
-  text: PropTypes.string
+  text: PropTypes.string,
 };
 
 export default BackgroundHint;

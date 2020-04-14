@@ -22,7 +22,7 @@ import { primaryColor } from '../../../utils/styles';
 class UAVTraceLayerSettingsPresentation extends React.Component {
   static propTypes = {
     layer: PropTypes.object,
-    setLayerParameters: PropTypes.func
+    setLayerParameters: PropTypes.func,
   };
 
   render() {
@@ -31,7 +31,7 @@ class UAVTraceLayerSettingsPresentation extends React.Component {
       trailColor: primaryColor,
       trailLength: 10,
       trailWidth: 2,
-      ...layer.parameters
+      ...layer.parameters,
     };
     const { trailColor, trailLength, trailWidth } = parameters;
 
@@ -39,17 +39,17 @@ class UAVTraceLayerSettingsPresentation extends React.Component {
       <div>
         <TextField
           style={{ paddingRight: '1em', width: 150 }}
-          label="Trail length"
-          placeholder="Samples"
-          type="number"
+          label='Trail length'
+          placeholder='Samples'
+          type='number'
           value={trailLength}
           onChange={this._onTrailLengthChanged}
         />
         <TextField
           style={{ paddingRight: '1em', width: 150 }}
-          label="Trail width"
-          placeholder="Pixels"
-          type="number"
+          label='Trail width'
+          placeholder='Pixels'
+          type='number'
           value={trailWidth}
           onChange={this._onTrailWidthChanged}
         />
@@ -65,7 +65,7 @@ class UAVTraceLayerSettingsPresentation extends React.Component {
 
   _onColorChanged = (color) => {
     this.props.setLayerParameters({
-      trailColor: color.hex
+      trailColor: color.hex,
     });
   };
 
@@ -73,7 +73,7 @@ class UAVTraceLayerSettingsPresentation extends React.Component {
     const value = toNumber(event.target.value);
     if (value > 0 && isFinite(value)) {
       this.props.setLayerParameters({
-        trailLength: value
+        trailLength: value,
       });
     }
   };
@@ -82,7 +82,7 @@ class UAVTraceLayerSettingsPresentation extends React.Component {
     const value = toNumber(event.target.value);
     if (value > 0 && value < 20) {
       this.props.setLayerParameters({
-        trailWidth: value
+        trailWidth: value,
       });
     }
   };
@@ -95,7 +95,7 @@ export const UAVTraceLayerSettings = connect(
   (dispatch, ownProps) => ({
     setLayerParameters: (parameters) => {
       dispatch(setLayerParametersById(ownProps.layerId, parameters));
-    }
+    },
   })
 )(UAVTraceLayerSettingsPresentation);
 
@@ -111,14 +111,14 @@ export const UAVTraceLayerSettings = connect(
  */
 const makeStrokeStyle = (color, width) =>
   new Style({
-    stroke: new Stroke({ color, width })
+    stroke: new Stroke({ color, width }),
   });
 
 class UAVTraceVectorSource extends React.Component {
   static propTypes = {
     trailLength: PropTypes.number,
     trailColor: PropTypes.string,
-    trailWidth: PropTypes.number
+    trailWidth: PropTypes.number,
   };
 
   constructor(props) {
@@ -158,7 +158,7 @@ class UAVTraceVectorSource extends React.Component {
       } else {
         // UAV does not exist yet, add a new trace
         this.lineStringsById[uav._id] = new LineString([
-          mapViewCoordinateFromLonLat([uav.lon, uav.lat])
+          mapViewCoordinateFromLonLat([uav.lon, uav.lat]),
         ]);
         this._registerNewFeature(new Feature(this.lineStringsById[uav._id]));
       }
@@ -218,7 +218,7 @@ const UAVTraceLayerPresentation = ({ layer, zIndex }) => (
 
 UAVTraceLayerPresentation.propTypes = {
   layer: PropTypes.object,
-  zIndex: PropTypes.number
+  zIndex: PropTypes.number,
 };
 
 export const UAVTraceLayer = connect(

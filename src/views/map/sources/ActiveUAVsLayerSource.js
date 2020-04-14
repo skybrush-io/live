@@ -63,7 +63,7 @@ class ActiveUAVsLayerSource extends React.Component {
     flock: PropTypes.instanceOf(Flock),
     layer: PropTypes.instanceOf(Layer),
     projection: PropTypes.func,
-    selection: PropTypes.arrayOf(PropTypes.string).isRequired
+    selection: PropTypes.arrayOf(PropTypes.string).isRequired,
   };
 
   constructor(props) {
@@ -228,7 +228,7 @@ class ActiveUAVsLayerSource extends React.Component {
     uavs.forEach((uav) => {
       const feature = this._featureManager.createOrUpdateFeatureById(uav.id, [
         uav.lon,
-        uav.lat
+        uav.lat,
       ]);
 
       // Set or update the heading of the feature

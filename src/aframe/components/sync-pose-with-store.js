@@ -11,7 +11,7 @@ import store from '~/store';
 
 AFrame.registerComponent('sync-pose-with-store', {
   schema: {
-    interval: { type: 'number', default: 1000 }
+    interval: { type: 'number', default: 1000 },
   },
 
   init() {
@@ -70,7 +70,7 @@ AFrame.registerComponent('sync-pose-with-store', {
       store.dispatch(
         setCameraPose({
           position: position.toArray(),
-          rotation: rotation.toArray()
+          rotation: rotation.toArray(),
         })
       );
     }
@@ -89,5 +89,5 @@ AFrame.registerComponent('sync-pose-with-store', {
     if (this.data.interval && this.data.interval > 0) {
       this._intervalHandle = setInterval(this._synchronize, this.data.interval);
     }
-  }
+  },
 });

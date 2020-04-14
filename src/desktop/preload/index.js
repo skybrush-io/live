@@ -23,7 +23,7 @@ unhandled({
   // this sometimes throws unhandled exceptions. We don't want these to
   // interfere with the user so we disable the unhandled exception dialog until
   // the bug is fixed in tippy.js
-  showDialog: false
+  showDialog: false,
 });
 
 /**
@@ -43,7 +43,7 @@ function createSSDPClient(callback) {
   }
 
   return {
-    search: client.search.bind(client)
+    search: client.search.bind(client),
   };
 }
 
@@ -56,8 +56,8 @@ function createSSDPClient(callback) {
 function createStateStore() {
   return createStorageEngine({
     store: {
-      name: 'state'
-    }
+      name: 'state',
+    },
   });
 }
 
@@ -79,7 +79,7 @@ window.bridge = {
   },
   getApplicationFolder: () => ipc.callMain('getApplicationFolder'),
   localServer,
-  reverseDNSLookup
+  reverseDNSLookup,
 };
 
 // Set up IPC channels that we are going to listen to

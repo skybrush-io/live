@@ -10,7 +10,7 @@ import moment from 'moment';
  * Object mapping known epoch names to their corresponding date objects.
  */
 const knownEpochs = {
-  unix: moment(0).valueOf()
+  unix: moment(0).valueOf(),
 };
 
 /**

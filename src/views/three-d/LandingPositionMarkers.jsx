@@ -8,7 +8,7 @@ export default connect(
   // mapStateToProps
   (state) => ({
     coordinates: getFlatEarthLandingPositionsInMission(state),
-    mixin: 'landing-marker'
+    mixin: 'landing-marker',
   }),
   // mapDispatchToProps
   {}

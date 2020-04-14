@@ -17,8 +17,8 @@ function createMapboxStreetsV6Style() {
     text: new Text({
       text: '',
       fill,
-      stroke
-    })
+      stroke,
+    }),
   });
   const iconCache = {};
   function getIcon(iconName) {
@@ -31,8 +31,8 @@ function createMapboxStreetsV6Style() {
             iconName +
             '-15.svg',
           imgSize: [15, 15],
-          crossOrigin: 'anonymous'
-        })
+          crossOrigin: 'anonymous',
+        }),
       });
       iconCache[iconName] = icon;
     }
@@ -423,7 +423,7 @@ export const streetsV6Style = createMapboxStreetsV6Style();
 const fakeLayer = {
   changed() {},
   set() {},
-  setStyle() {}
+  setStyle() {},
 };
 
 /**

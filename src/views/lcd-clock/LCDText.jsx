@@ -1,27 +1,27 @@
-import Color from "color";
-import PropTypes from "prop-types";
-import React, { useMemo } from "react";
+import Color from 'color';
+import PropTypes from 'prop-types';
+import React, { useMemo } from 'react';
 
-import Box from "@material-ui/core/Box";
+import Box from '@material-ui/core/Box';
 
-require("~/../assets/css/dseg.css");
+require('~/../assets/css/dseg.css');
 
 const variants = {
   default: {},
 
-  "7segment": {
-    fontFamily: "DSEG7-Classic",
-    allSegmentsChar: "8",
+  '7segment': {
+    fontFamily: 'DSEG7-Classic',
+    allSegmentsChar: '8',
   },
 
-  "14segment": {
-    fontFamily: "DSEG14-Classic",
-    allSegmentsChar: "~",
+  '14segment': {
+    fontFamily: 'DSEG14-Classic',
+    allSegmentsChar: '~',
   },
 };
 
 const offSegmentStyleBase = {
-  position: "absolute",
+  position: 'absolute',
   left: 0,
   top: 0,
   opacity: 0.2,
@@ -55,15 +55,15 @@ const LCDText = ({
 
     if (!off) {
       switch (decoration) {
-        case "glow": {
+        case 'glow': {
           const glowSize = fontSize === undefined ? 4 : Math.round(fontSize);
-          result.textShadow = `0 0 ${glowSize}px ${color || "currentColor"}`;
+          result.textShadow = `0 0 ${glowSize}px ${color || 'currentColor'}`;
           break;
         }
 
-        case "shadow": {
+        case 'shadow': {
           const shadowOffset = fontSize === undefined || fontSize <= 16 ? 1 : 2;
-          const shadowColor = new Color(color || "black").alpha(0.3).string();
+          const shadowColor = new Color(color || 'black').alpha(0.3).string();
           result.textShadow = `${shadowOffset}px ${shadowOffset}px 0 ${shadowColor}`;
           break;
         }
@@ -73,7 +73,7 @@ const LCDText = ({
       }
     }
 
-    result.transition = "color 150ms";
+    result.transition = 'color 150ms';
 
     return result;
   }, [color, decoration, height, off]);
@@ -82,24 +82,24 @@ const LCDText = ({
     const fontSize = Math.floor(height * 0.7);
     return {
       ...offSegmentStyleBase,
-      color: color || "black",
+      color: color || 'black',
       fontSize,
       height,
     };
   }, [color, height]);
 
-  variant = variant || "default";
+  variant = variant || 'default';
 
   return (
     <Box
-      position="relative"
-      display="inline-block"
+      position='relative'
+      display='inline-block'
       fontFamily={variants[variant].fontFamily}
       {...rest}
     >
-      {offSegments && variant !== "default" && (
+      {offSegments && variant !== 'default' && (
         <div style={offSegmentStyle}>
-          {children.replace(/[^:. ]/g, variants[variant].allSegmentsChar || "")}
+          {children.replace(/[^:. ]/g, variants[variant].allSegmentsChar || '')}
         </div>
       )}
       <div style={textStyle}>{children}</div>
@@ -110,16 +110,16 @@ const LCDText = ({
 LCDText.propTypes = {
   children: PropTypes.node,
   color: PropTypes.string,
-  decoration: PropTypes.oneOf(["plain", "glow", "shadow"]),
+  decoration: PropTypes.oneOf(['plain', 'glow', 'shadow']),
   height: PropTypes.number,
   off: PropTypes.bool,
   offSegments: PropTypes.bool,
-  variant: PropTypes.oneOf(["default", "7segment", "14segment"]),
+  variant: PropTypes.oneOf(['default', '7segment', '14segment']),
 };
 
 LCDText.defaultProps = {
-  decoration: "plain",
-  variant: "default",
+  decoration: 'plain',
+  variant: 'default',
 };
 
 export default LCDText;

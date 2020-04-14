@@ -20,13 +20,13 @@ module.exports = {
   mode: 'development',
 
   output: {
-    filename: '[name].bundle.js'
+    filename: '[name].bundle.js',
   },
 
   devtool: enableSourceMap ? 'cheap-module-source-map' : undefined,
 
   devServer: {
-    hot: true
+    hot: true,
   },
 
   plugins: [
@@ -35,7 +35,7 @@ module.exports = {
     // The next module is needed for golden-layout to work nicely
     new webpack.ProvidePlugin({
       ReactDOM: 'react-dom',
-      React: 'react'
+      React: 'react',
     }),
 
     // Resolve process.env.NODE_ENV in the code
@@ -43,54 +43,54 @@ module.exports = {
       'process.env.NODE_ENV': JSON.stringify(
         process.env.NODE_ENV || 'development'
       ),
-      'process.env.DEPLOYMENT': JSON.stringify(process.env.DEPLOYMENT || '0')
+      'process.env.DEPLOYMENT': JSON.stringify(process.env.DEPLOYMENT || '0'),
     }),
 
     // Add environment variables from .env
-    new Dotenv()
+    new Dotenv(),
   ],
   resolve: {
     alias: {
       '~': path.resolve(projectRoot, 'src'),
       config: path.resolve(projectRoot, 'config', 'default'),
-      'layout-bmfont-text': '@collmot/layout-bmfont-text'
+      'layout-bmfont-text': '@collmot/layout-bmfont-text',
     },
-    extensions: ['.webpack.js', '.web.js', '.js', '.jsx', '.json']
+    extensions: ['.webpack.js', '.web.js', '.js', '.jsx', '.json'],
   },
   module: {
     rules: [
       {
         test: /\.css$/,
-        use: [{ loader: 'style-loader' }, { loader: 'css-loader' }]
+        use: [{ loader: 'style-loader' }, { loader: 'css-loader' }],
       },
       {
         test: /\.jsx?$/,
         use: [{ loader: 'babel-loader' }],
         include: [
           path.join(projectRoot, 'config'),
-          path.join(projectRoot, 'src')
-        ]
+          path.join(projectRoot, 'src'),
+        ],
       },
       {
         test: /\.less$/,
         use: [
           { loader: 'style-loader' },
           { loader: 'css-loader' },
-          { loader: 'less-loader' }
+          { loader: 'less-loader' },
         ],
-        include: path.join(projectRoot, 'assets', 'css')
+        include: path.join(projectRoot, 'assets', 'css'),
       },
       {
         test: /\.(png|jpg|skyc)$/,
         use: [{ loader: 'url-loader', options: { limit: 8192 } }],
-        include: path.join(projectRoot, 'assets')
+        include: path.join(projectRoot, 'assets'),
       },
       {
         test: /\.(woff|woff2|eot|ttf|svg|mp3|wav|ogg)$/,
-        use: [{ loader: 'file-loader' }]
-      }
+        use: [{ loader: 'file-loader' }],
+      },
     ],
-    noParse: [/dist\/ol.*\.js/]
+    noParse: [/dist\/ol.*\.js/],
   },
 
   optimization: {
@@ -103,13 +103,13 @@ module.exports = {
         terserOptions: {
           compress: {
             // eslint-disable-next-line camelcase
-            drop_console: true
-          }
-        }
-      })
-    ]
+            drop_console: true,
+          },
+        },
+      }),
+    ],
   },
 
   /* No need for bundle size warnings */
-  performance: { hints: false }
+  performance: { hints: false },
 };

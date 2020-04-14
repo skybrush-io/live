@@ -11,7 +11,7 @@ import Colors from '~/components/colors';
 import { getUAVIdForMappingSlotBeingEdited } from '~/features/mission/selectors';
 import {
   cancelMappingEditorSessionAtCurrentSlot,
-  commitMappingEditorSessionAtCurrentSlot
+  commitMappingEditorSessionAtCurrentSlot,
 } from '~/features/mission/slice';
 
 const useStyles = makeStyles(
@@ -21,7 +21,7 @@ const useStyles = makeStyles(
       width: 48,
       height: 48,
       top: theme.spacing(0.5),
-      zIndex: 1000
+      zIndex: 1000,
     },
 
     input: {
@@ -31,17 +31,17 @@ const useStyles = makeStyles(
       fontSize: '1.25rem',
 
       '& input::selection': {
-        backgroundColor: new Color(Colors.info).darken(0.2).string()
-      }
-    }
+        backgroundColor: new Color(Colors.info).darken(0.2).string(),
+      },
+    },
   }),
   { name: 'MappingSlotEditor' }
 );
 
 const inputProps = {
   style: {
-    textAlign: 'center'
-  }
+    textAlign: 'center',
+  },
 };
 
 /**
@@ -51,13 +51,13 @@ const inputProps = {
 const MappingSlotEditor = ({
   cancelMappingEditorSessionAtCurrentSlot,
   defaultValue,
-  commitMappingEditorSessionAtCurrentSlot
+  commitMappingEditorSessionAtCurrentSlot,
 }) => {
   const classes = useStyles();
 
   const onBlur = (event) => {
     commitMappingEditorSessionAtCurrentSlot({
-      value: event.target.value
+      value: event.target.value,
     });
   };
 
@@ -67,7 +67,7 @@ const MappingSlotEditor = ({
     if (event.key === 'Enter') {
       commitMappingEditorSessionAtCurrentSlot({
         continuation: event.shiftKey ? false : 'next',
-        value: event.target.value
+        value: event.target.value,
       });
 
       event.preventDefault();
@@ -77,7 +77,7 @@ const MappingSlotEditor = ({
     if (event.key === 'Tab') {
       commitMappingEditorSessionAtCurrentSlot({
         continuation: event.shiftKey ? 'prevEmpty' : 'nextEmpty',
-        value: event.target.value
+        value: event.target.value,
       });
 
       event.preventDefault();
@@ -108,17 +108,17 @@ const MappingSlotEditor = ({
 MappingSlotEditor.propTypes = {
   cancelMappingEditorSessionAtCurrentSlot: PropTypes.func,
   defaultValue: PropTypes.string,
-  commitMappingEditorSessionAtCurrentSlot: PropTypes.func
+  commitMappingEditorSessionAtCurrentSlot: PropTypes.func,
 };
 
 export default connect(
   // mapStateToProps
   (state) => ({
-    defaultValue: getUAVIdForMappingSlotBeingEdited(state)
+    defaultValue: getUAVIdForMappingSlotBeingEdited(state),
   }),
   // mapDispatchToProps
   {
     cancelMappingEditorSessionAtCurrentSlot,
-    commitMappingEditorSessionAtCurrentSlot
+    commitMappingEditorSessionAtCurrentSlot,
   }
 )(MappingSlotEditor);

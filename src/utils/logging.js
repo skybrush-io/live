@@ -10,7 +10,7 @@ export const LogLevel = {
   INFO: 10,
   WARNING: 20,
   ERROR: 30,
-  FATAL: 40
+  FATAL: 40,
 };
 
 export function colorForLogLevel(level) {

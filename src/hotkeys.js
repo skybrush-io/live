@@ -7,7 +7,7 @@ import { showLayersDialog } from './actions/layers';
 import {
   selectAllUAVFeatures,
   clearSelection,
-  selectMapTool
+  selectMapTool,
 } from './actions/map';
 import { showMessagesDialog } from './actions/messages';
 import { showSnackbarMessage } from './features/snackbar/slice';
@@ -16,7 +16,7 @@ import { getSelectedUAVIds } from './selectors/selection';
 import {
   fitAllFeaturesSignal,
   focusMessagesDialogUAVSelectorFieldSignal,
-  mapRotationResetSignal
+  mapRotationResetSignal,
 } from './signals';
 import store, { clearStore } from './store';
 import { takeoffUAVs, landUAVs, returnToHomeUAVs } from './utils/messaging';
@@ -30,7 +30,7 @@ export default [
     keys: 'PlatMod + KeyA',
     action: () => {
       store.dispatch(selectAllUAVFeatures());
-    }
+    },
   },
   {
     description: 'Clear selection',
@@ -38,7 +38,7 @@ export default [
     keys: 'PlatMod + Shift + KeyA',
     action: () => {
       store.dispatch(clearSelection());
-    }
+    },
   },
 
   // Tool hotkeys
@@ -48,7 +48,7 @@ export default [
     keys: 'PlatMod + KeyS',
     action: () => {
       store.dispatch(selectMapTool(Tool.SELECT));
-    }
+    },
   },
   {
     description: 'Switch to Zoom tool',
@@ -56,7 +56,7 @@ export default [
     keys: 'PlatMod + KeyZ',
     action: () => {
       store.dispatch(selectMapTool(Tool.ZOOM));
-    }
+    },
   },
   {
     description: 'Switch to Pan tool',
@@ -64,7 +64,7 @@ export default [
     keys: 'PlatMod + KeyP',
     action: () => {
       store.dispatch(selectMapTool(Tool.PAN));
-    }
+    },
   },
 
   // Copy the actual coordinates of the cursor
@@ -80,7 +80,7 @@ export default [
         copy(text.split('\n')[0]);
         store.dispatch(showSnackbarMessage('Coordinates copied to clipboard.'));
       }
-    }
+    },
   },
 
   // Map view adjustment hotkeys
@@ -90,7 +90,7 @@ export default [
     keys: 'PlatMod + KeyR',
     action: () => {
       mapRotationResetSignal.dispatch();
-    }
+    },
   },
   {
     description: 'Fit all features into view',
@@ -98,7 +98,7 @@ export default [
     keys: 'PlatMod + KeyF',
     action: () => {
       fitAllFeaturesSignal.dispatch();
-    }
+    },
   },
 
   {
@@ -107,7 +107,7 @@ export default [
     keys: 'PlatMod + Shift + KeyL',
     action: () => {
       store.dispatch(showLayersDialog());
-    }
+    },
   },
 
   // UAV Control hotkeys
@@ -115,19 +115,19 @@ export default [
     description: 'Issue TAKEOFF command to selected UAVs',
     on: 'down',
     keys: 'PlatMod + Alt + KeyT',
-    action: () => takeoffUAVs(getSelectedUAVIds(store.getState()))
+    action: () => takeoffUAVs(getSelectedUAVIds(store.getState())),
   },
   {
     description: 'Issue LAND command to selected UAVs',
     on: 'down',
     keys: 'PlatMod + Alt + KeyL',
-    action: () => landUAVs(getSelectedUAVIds(store.getState()))
+    action: () => landUAVs(getSelectedUAVIds(store.getState())),
   },
   {
     description: 'Issue RTH (Return To Home) command to selected UAVs',
     on: 'down',
     keys: 'PlatMod + Alt + KeyR',
-    action: () => returnToHomeUAVs(getSelectedUAVIds(store.getState()))
+    action: () => returnToHomeUAVs(getSelectedUAVIds(store.getState())),
   },
 
   // Messages dialog related hotkeys
@@ -138,7 +138,7 @@ export default [
     action: () => {
       store.dispatch(showMessagesDialog());
       focusMessagesDialogUAVSelectorFieldSignal.dispatch();
-    }
+    },
   },
 
   // Clear stored settings and reload
@@ -151,6 +151,6 @@ export default [
         await clearStore();
         window.location.reload();
       }
-    }
-  }
+    },
+  },
 ];

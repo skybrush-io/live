@@ -14,7 +14,7 @@ import Typography from '@material-ui/core/Typography';
 
 import {
   setFlatEarthCoordinateSystemOrigin,
-  setFlatEarthCoordinateSystemOrientation
+  setFlatEarthCoordinateSystemOrientation,
 } from '~/actions/map-origin';
 import CoordinateSystemFields from '~/components/CoordinateSystemFields';
 import FormHeader from '~/components/dialogs/FormHeader';
@@ -23,7 +23,7 @@ import { COORDINATE_SYSTEM_TYPE } from '~/features/show/constants';
 import {
   closeEnvironmentEditorDialog,
   setOutdoorShowOrientation,
-  setOutdoorShowOrigin
+  setOutdoorShowOrigin,
 } from '~/features/show/slice';
 import { showSnackbarMessage } from '~/features/snackbar/slice';
 import { MessageSemantics } from '~/features/snackbar/types';
@@ -36,15 +36,15 @@ const instructionsByType = {
   outdoor:
     'This show is an outdoor show. You need to specify at least ' +
     'the origin and orientation of the coordinate system so Skybrush can map ' +
-    'the show into GPS coordinates.'
+    'the show into GPS coordinates.',
 };
 
 const Instructions = ({ type }) => (
-  <Typography variant="body1">{instructionsByType[type]}</Typography>
+  <Typography variant='body1'>{instructionsByType[type]}</Typography>
 );
 
 Instructions.propTypes = {
-  type: PropTypes.oneOf(Object.keys(instructionsByType))
+  type: PropTypes.oneOf(Object.keys(instructionsByType)),
 };
 
 /**
@@ -59,9 +59,9 @@ const EnvironmentEditorDialog = ({
   onOrientationChanged,
   onSetCoordinateSystemFromMap,
   outdoor,
-  type
+  type,
 }) => (
-  <Dialog fullWidth open={editing} maxWidth="sm" onClose={onClose}>
+  <Dialog fullWidth open={editing} maxWidth='sm' onClose={onClose}>
     <Box m={3}>
       <Instructions type={type} />
 
@@ -77,17 +77,17 @@ const EnvironmentEditorDialog = ({
         )}
       </FormGroup>
 
-      <Box textAlign="right" pt={1}>
+      <Box textAlign='right' pt={1}>
         <Button onClick={onSetCoordinateSystemFromMap}>Set from map</Button>
         <Button onClick={onCopyCoordinateSystemToMap}>Copy to map</Button>
       </Box>
 
       <FormGroup>
         <FormHeader>RTK corrections</FormHeader>
-        <FormControl style={{ minWidth: 90 }} variant="filled">
-          <InputLabel htmlFor="rtk-corrections">Type</InputLabel>
-          <Select disabled value="none" inputProps={{ id: 'rtk-corrections' }}>
-            <MenuItem value="none">No RTK data source on server</MenuItem>
+        <FormControl style={{ minWidth: 90 }} variant='filled'>
+          <InputLabel htmlFor='rtk-corrections'>Type</InputLabel>
+          <Select disabled value='none' inputProps={{ id: 'rtk-corrections' }}>
+            <MenuItem value='none'>No RTK data source on server</MenuItem>
           </Select>
         </FormControl>
       </FormGroup>
@@ -100,26 +100,26 @@ EnvironmentEditorDialog.propTypes = {
   outdoor: PropTypes.shape({
     coordinateSystem: PropTypes.shape({
       orientation: PropTypes.string.isRequired,
-      origin: PropTypes.arrayOf(PropTypes.number)
-    })
+      origin: PropTypes.arrayOf(PropTypes.number),
+    }),
   }),
   onClose: PropTypes.func,
   onCopyCoordinateSystemToMap: PropTypes.func,
   onOriginChanged: PropTypes.func,
   onOrientationChanged: PropTypes.func,
   onSetCoordinateSystemFromMap: PropTypes.func,
-  type: PropTypes.oneOf(['indoor', 'outdoor'])
+  type: PropTypes.oneOf(['indoor', 'outdoor']),
 };
 
 EnvironmentEditorDialog.defaultProps = {
-  editing: false
+  editing: false,
 };
 
 export default connect(
   // mapStateToProps
   (state) => ({
     ...state.show.environment,
-    mapCoordinateSystem: state.map.origin
+    mapCoordinateSystem: state.map.origin,
   }),
 
   // mapDispatchToProps
@@ -138,7 +138,7 @@ export default connect(
       dispatch(
         showSnackbarMessage({
           message: 'Show coordinate system applied to map.',
-          semantics: MessageSemantics.SUCCESS
+          semantics: MessageSemantics.SUCCESS,
         })
       );
     },
@@ -160,10 +160,10 @@ export default connect(
       dispatch(
         showSnackbarMessage({
           message: 'Show coordinate system updated from map.',
-          semantics: MessageSemantics.SUCCESS
+          semantics: MessageSemantics.SUCCESS,
         })
       );
-    }
+    },
   }),
   // mergeProps
   (stateProps, dispatchProps, ownProps) => {
@@ -178,7 +178,7 @@ export default connect(
       onSetCoordinateSystemFromMap: () =>
         dispatchProps.onSetCoordinateSystemFromMap(
           stateProps.mapCoordinateSystem
-        )
+        ),
     };
 
     delete mergedProps.mapCoordinateSystem;

@@ -44,7 +44,7 @@ class MapReferenceRequestHandler extends React.Component {
 }
 
 MapReferenceRequestHandler.propTypes = {
-  map: PropTypes.instanceOf(Map)
+  map: PropTypes.instanceOf(Map),
 };
 
 export default withMap(MapReferenceRequestHandler);

@@ -8,7 +8,7 @@ import { CirclePicker } from 'react-color';
 
 const circlePickerProps = {
   circleSpacing: 7,
-  width: 343
+  width: 343,
 };
 
 export default (props) => <CirclePicker {...circlePickerProps} {...props} />;

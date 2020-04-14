@@ -18,7 +18,7 @@ export const getFlatEarthCoordinateTransformer = createSelector(
       ? new FlatEarthCoordinateSystem({
           origin: origin.position,
           orientation: origin.angle,
-          type: origin.type
+          type: origin.type,
         })
       : undefined
 );

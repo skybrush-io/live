@@ -14,7 +14,7 @@ import {
   Source,
   Sources,
   attributionsForSource,
-  labelForSource
+  labelForSource,
 } from '~/model/sources';
 import { streetsV6Style } from '~/views/map/styles/mapbox';
 
@@ -32,8 +32,8 @@ const BaseLayerSettingsPresentation = ({ layer, onLayerSourceChanged }) => {
   ));
   return (
     <RadioGroup
-      key="baseProperties"
-      name="source.base"
+      key='baseProperties'
+      name='source.base'
       value={layer.parameters.source}
       onChange={onLayerSourceChanged}
     >
@@ -44,7 +44,7 @@ const BaseLayerSettingsPresentation = ({ layer, onLayerSourceChanged }) => {
 
 BaseLayerSettingsPresentation.propTypes = {
   layer: PropTypes.object,
-  onLayerSourceChanged: PropTypes.func
+  onLayerSourceChanged: PropTypes.func,
 };
 
 export const BaseLayerSettings = connect(
@@ -54,7 +54,7 @@ export const BaseLayerSettings = connect(
   (dispatch, ownProps) => ({
     onLayerSourceChanged: (event, value) => {
       dispatch(selectMapSource({ layerId: ownProps.layerId, source: value }));
-    }
+    },
   })
 )(BaseLayerSettingsPresentation);
 
@@ -93,12 +93,12 @@ const LayerType = ({ children, type, zIndex }) => {
 LayerType.propTypes = {
   children: PropTypes.node,
   type: PropTypes.string,
-  zIndex: PropTypes.number
+  zIndex: PropTypes.number,
 };
 
 const createMapTilerSource = (name, tileSize = 256) => (
   <source.TileJSON
-    crossOrigin="anonymous"
+    crossOrigin='anonymous'
     tileSize={tileSize}
     url={`https://api.maptiler.com/${name}/tiles.json?key=${APIKeys.MAPTILER}`}
   />
@@ -184,7 +184,7 @@ const LayerSource = ({ type }) => {
       return (
         <source.XYZ
           attributions={attributions}
-          url="https://stamen-tiles-{a-d}.a.ssl.fastly.net/terrain/{z}/{x}/{y}.jpg"
+          url='https://stamen-tiles-{a-d}.a.ssl.fastly.net/terrain/{z}/{x}/{y}.jpg'
         />
       );
 
@@ -192,7 +192,7 @@ const LayerSource = ({ type }) => {
       return (
         <source.XYZ
           attributions={attributions}
-          url="https://stamen-tiles-{a-d}.a.ssl.fastly.net/toner/{z}/{x}/{y}.png"
+          url='https://stamen-tiles-{a-d}.a.ssl.fastly.net/toner/{z}/{x}/{y}.png'
         />
       );
 
@@ -200,31 +200,31 @@ const LayerSource = ({ type }) => {
       return (
         <source.XYZ
           attributions={attributions}
-          url="https://stamen-tiles-{a-d}.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.jpg"
+          url='https://stamen-tiles-{a-d}.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.jpg'
         />
       );
 
     case Source.GOOGLE_MAPS.DEFAULT:
       return (
-        <source.XYZ url="https://mt1.google.com/vt/lyrs=r&x={x}&y={y}&z={z}" />
+        <source.XYZ url='https://mt1.google.com/vt/lyrs=r&x={x}&y={y}&z={z}' />
       );
 
     case Source.GOOGLE_MAPS.SATELLITE:
       return (
-        <source.XYZ url="https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}" />
+        <source.XYZ url='https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}' />
       );
 
     case Source.BING_MAPS.AERIAL_WITH_LABELS:
       return (
         <source.BingMaps
           apiKey={APIKeys.BING}
-          imagerySet="AerialWithLabels"
+          imagerySet='AerialWithLabels'
           maxZoom={19}
         />
       );
 
     case Source.BING_MAPS.ROAD:
-      return <source.BingMaps apiKey={APIKeys.BING} imagerySet="Road" />;
+      return <source.BingMaps apiKey={APIKeys.BING} imagerySet='Road' />;
 
     default:
       return null;
@@ -232,7 +232,7 @@ const LayerSource = ({ type }) => {
 };
 
 LayerSource.propTypes = {
-  type: PropTypes.string
+  type: PropTypes.string,
 };
 
 export const BaseLayer = ({ layer, zIndex }) => (
@@ -243,5 +243,5 @@ export const BaseLayer = ({ layer, zIndex }) => (
 
 BaseLayer.propTypes = {
   layer: PropTypes.object,
-  zIndex: PropTypes.number
+  zIndex: PropTypes.number,
 };

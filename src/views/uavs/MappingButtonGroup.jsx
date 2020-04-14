@@ -13,7 +13,7 @@ import MappingToggleButton from './MappingToggleButton';
 import { isMappingEditable } from '~/features/mission/selectors';
 import {
   clearMapping,
-  startMappingEditorSession
+  startMappingEditorSession,
 } from '~/features/mission/slice';
 import { isShowingMissionIds } from '~/features/settings/selectors';
 import { toggleMissionIds } from '~/features/settings/slice';
@@ -26,11 +26,11 @@ import { toggleMissionIds } from '~/features/settings/slice';
 const MappingButtonGroup = ({
   mappingEditable,
   showMissionIds,
-  startMappingEditorSession
+  startMappingEditorSession,
 }) => (
   <TransitionGroup>
     {showMissionIds && (
-      <Zoom key="editMapping">
+      <Zoom key='editMapping'>
         <IconButton
           disabled={mappingEditable || !showMissionIds}
           onClick={startMappingEditorSession}
@@ -40,11 +40,11 @@ const MappingButtonGroup = ({
       </Zoom>
     )}
     {showMissionIds && (
-      <Zoom key="automap">
+      <Zoom key='automap'>
         <AugmentMappingButton />
       </Zoom>
     )}
-    <Zoom key="showMapping">
+    <Zoom key='showMapping'>
       <MappingToggleButton />
     </Zoom>
   </TransitionGroup>
@@ -53,19 +53,19 @@ const MappingButtonGroup = ({
 MappingButtonGroup.propTypes = {
   mappingEditable: PropTypes.bool,
   showMissionIds: PropTypes.bool,
-  startMappingEditorSession: PropTypes.func
+  startMappingEditorSession: PropTypes.func,
 };
 
 export default connect(
   // mapStateToProps
   (state) => ({
     mappingEditable: isMappingEditable(state),
-    showMissionIds: isShowingMissionIds(state)
+    showMissionIds: isShowingMissionIds(state),
   }),
   // mapDispatchToProps
   {
     clearMapping,
     startMappingEditorSession,
-    toggleMissionIds
+    toggleMissionIds,
   }
 )(MappingButtonGroup);

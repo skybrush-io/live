@@ -15,7 +15,7 @@ export const ConnectionState = {
   DISCONNECTED: 'disconnected',
   CONNECTING: 'connecting',
   CONNECTED: 'connected',
-  DISCONNECTING: 'disconnecting'
+  DISCONNECTING: 'disconnecting',
 };
 
 /**
@@ -36,7 +36,7 @@ export function handleConnectionInformationMessage(body, dispatch) {
         id: statusFromServer.id,
         name: statusFromServer.description,
         state: statusFromServer.status,
-        stateChangedAt: statusFromServer.timestamp
+        stateChangedAt: statusFromServer.timestamp,
       },
       isUndefined
     )

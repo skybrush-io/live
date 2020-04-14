@@ -17,7 +17,7 @@ export const getClockAndUpdateIntervalById = (state, id) => {
   return clock
     ? {
         ...clock,
-        updateInterval: getPreferredUpdateIntervalOfClock(clock)
+        updateInterval: getPreferredUpdateIntervalOfClock(clock),
       }
     : undefined;
 };
@@ -42,6 +42,6 @@ export const getClocksWithUpdateIntervalsInOrder = createSelector(
   (clocks) =>
     clocks.map((clock) => ({
       ...clock,
-      updateInterval: getPreferredUpdateIntervalOfClock(clock)
+      updateInterval: getPreferredUpdateIntervalOfClock(clock),
     }))
 );

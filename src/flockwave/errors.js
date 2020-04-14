@@ -9,7 +9,7 @@ export const Severity = Object.freeze({
   INFO: 0,
   WARNING: 1,
   ERROR: 2,
-  FATAL: 3
+  FATAL: 3,
 });
 
 /**
@@ -69,7 +69,7 @@ export const ErrorCode = Object.freeze({
   CRASH: 207,
   SIMULATED_CRITICAL_ERROR: 253,
   CRITICAL_SENSOR_FAILURE: 254,
-  UNSPECIFIED_CRITICAL_ERROR: 255
+  UNSPECIFIED_CRITICAL_ERROR: 255,
 });
 
 /**
@@ -136,7 +136,7 @@ const errorCodeToAbbreviation = {
   207: 'crash',
   253: 'simcrit',
   254: 'sensor',
-  255: 'fatal'
+  255: 'fatal',
 };
 
 /**
@@ -188,7 +188,7 @@ const errorCodeToDescription = {
   207: 'Drone crashed',
   253: 'Simulated critical error',
   254: 'Unspecified critical sensor failure',
-  255: 'Unspecified critical error'
+  255: 'Unspecified critical error',
 };
 
 /**

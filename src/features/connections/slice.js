@@ -14,7 +14,7 @@ const createDefaultItem = (id) => ({
   id,
   name: id,
   state: ConnectionState.DISCONNECTED,
-  stateChangedAt: undefined
+  stateChangedAt: undefined,
 });
 
 /**
@@ -50,7 +50,7 @@ const { actions, reducer } = createSlice({
       //   stateChangedAt: 1234567
       // }
     },
-    order: []
+    order: [],
   },
 
   reducers: {
@@ -69,8 +69,8 @@ const { actions, reducer } = createSlice({
       for (const id of Object.keys(action.payload)) {
         updateStateOfConnection(state, id, action.payload[id]);
       }
-    }
-  }
+    },
+  },
 });
 
 export const { clearConnectionList, updateConnections } = actions;

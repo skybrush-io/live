@@ -6,5 +6,5 @@ import { styled } from '@material-ui/core/styles';
  * the parent component could decide what the background color should be.
  */
 export default styled(List)({
-  background: 'unset'
+  background: 'unset',
 });

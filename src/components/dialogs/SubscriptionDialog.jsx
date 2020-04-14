@@ -39,7 +39,7 @@ export default class SubscriptionDialog extends React.Component {
     subscriptions: PropTypes.arrayOf(PropTypes.string),
     unit: PropTypes.string,
     setSubscriptions: PropTypes.func,
-    setUnit: PropTypes.func
+    setUnit: PropTypes.func,
   };
 
   constructor(props) {
@@ -55,7 +55,7 @@ export default class SubscriptionDialog extends React.Component {
 
       selectedUAV: null,
       selectedDevice: null,
-      selectedChannel: null
+      selectedChannel: null,
     };
 
     this._removeSubscription = this._removeSubscription.bind(this);
@@ -68,7 +68,7 @@ export default class SubscriptionDialog extends React.Component {
       selectedDevice,
       selectedUAV,
       subscriptions,
-      visible
+      visible,
     } = this.state;
 
     const uavMenuItems = Object.keys(available)
@@ -81,7 +81,7 @@ export default class SubscriptionDialog extends React.Component {
 
     if (uavMenuItems.length === 0) {
       uavMenuItems.push(
-        <MenuItem key="__empty__" value="">
+        <MenuItem key='__empty__' value=''>
           <em>No UAV</em>
         </MenuItem>
       );
@@ -112,8 +112,8 @@ export default class SubscriptionDialog extends React.Component {
         <ListItemText primary={subscription} />
         <ListItemSecondaryAction>
           <IconButton
-            edge="end"
-            aria-label="Unsubscribe"
+            edge='end'
+            aria-label='Unsubscribe'
             onClick={partial(this._removeSubscription, subscription)}
           >
             <ContentRemoveCircleOutline />
@@ -123,29 +123,29 @@ export default class SubscriptionDialog extends React.Component {
     ));
 
     const actions = [
-      <Button key="done" color="primary" onClick={this._hideDialog}>
+      <Button key='done' color='primary' onClick={this._hideDialog}>
         Done
-      </Button>
+      </Button>,
     ];
 
     const formControlStyle = {
       minWidth: 120,
       margin: 8,
-      verticalAlign: 'text-bottom'
+      verticalAlign: 'text-bottom',
     };
 
     return (
-      <Dialog fullWidth open={visible} maxWidth="sm">
+      <Dialog fullWidth open={visible} maxWidth='sm'>
         <DialogContent>
           <div style={{ display: 'flex', alignItems: 'flex-end' }}>
             <FormGroup row>
               <FormControl style={formControlStyle}>
-                <InputLabel htmlFor="selectedUAV">UAV</InputLabel>
+                <InputLabel htmlFor='selectedUAV'>UAV</InputLabel>
                 <Select
                   value={selectedUAV || ''}
                   inputProps={{
                     name: 'selectedUAV',
-                    id: 'selectedUAV'
+                    id: 'selectedUAV',
                   }}
                   onChange={this._handleChange}
                 >
@@ -154,12 +154,12 @@ export default class SubscriptionDialog extends React.Component {
               </FormControl>
 
               <FormControl style={formControlStyle}>
-                <InputLabel htmlFor="selectedDevice">Device</InputLabel>
+                <InputLabel htmlFor='selectedDevice'>Device</InputLabel>
                 <Select
                   value={selectedDevice || ''}
                   inputProps={{
                     name: 'selectedDevice',
-                    id: 'selectedDevice'
+                    id: 'selectedDevice',
                   }}
                   onChange={this._handleChange}
                 >
@@ -168,12 +168,12 @@ export default class SubscriptionDialog extends React.Component {
               </FormControl>
 
               <FormControl style={formControlStyle}>
-                <InputLabel htmlFor="selectedChannel">Channel</InputLabel>
+                <InputLabel htmlFor='selectedChannel'>Channel</InputLabel>
                 <Select
                   value={selectedChannel || ''}
                   inputProps={{
                     name: 'selectedChannel',
-                    id: 'selectedChannel'
+                    id: 'selectedChannel',
                   }}
                   onChange={this._handleChange}
                 >
@@ -209,7 +209,7 @@ export default class SubscriptionDialog extends React.Component {
     messageHub
       .sendMessage({
         type: 'DEV-LIST',
-        ids: Object.keys(flock._uavsById)
+        ids: Object.keys(flock._uavsById),
       })
       .then(this._deviceListReceived);
   };
@@ -241,12 +241,12 @@ export default class SubscriptionDialog extends React.Component {
           ) {
             if (!(channel in available.All[device])) {
               available.All[device][channel] = {
-                unit: data[uav].children[device].children[channel].unit
+                unit: data[uav].children[device].children[channel].unit,
               };
             }
 
             available[uav][device][channel] = {
-              unit: data[uav].children[device].children[channel].unit
+              unit: data[uav].children[device].children[channel].unit,
             };
           }
         }
@@ -254,7 +254,7 @@ export default class SubscriptionDialog extends React.Component {
     }
 
     this.setState({
-      available
+      available,
     });
   };
 
@@ -267,7 +267,7 @@ export default class SubscriptionDialog extends React.Component {
     const parameter = event.target.name;
 
     this.setState({
-      [parameter]: event.target.value
+      [parameter]: event.target.value,
     });
 
     // TODO: opening the Select field programmatically is not possible
@@ -296,7 +296,7 @@ export default class SubscriptionDialog extends React.Component {
       available,
       selectedChannel,
       selectedDevice,
-      selectedUAV
+      selectedUAV,
     } = this.state;
 
     if (this.state.selectedUAV === 'All') {
@@ -313,29 +313,29 @@ export default class SubscriptionDialog extends React.Component {
 
       messageHub.sendMessage({
         type: 'DEV-UNSUB',
-        paths: this.state.subscriptions
+        paths: this.state.subscriptions,
       });
 
       messageHub.sendMessage({
         type: 'DEV-SUB',
-        paths
+        paths,
       });
 
       this.setState({
         subscriptions: paths,
-        unit: available[selectedUAV][selectedDevice][selectedChannel].unit
+        unit: available[selectedUAV][selectedDevice][selectedChannel].unit,
       });
     } else {
       const path = this.currentPath;
 
       messageHub.sendMessage({
         type: 'DEV-SUB',
-        paths: [path]
+        paths: [path],
       });
 
       this.setState((state) => ({
         subscriptions: state.subscriptions.concat(path),
-        unit: available[selectedUAV][selectedDevice][selectedChannel].unit
+        unit: available[selectedUAV][selectedDevice][selectedChannel].unit,
       }));
     }
   };
@@ -348,11 +348,11 @@ export default class SubscriptionDialog extends React.Component {
   _removeSubscription = (subscription) => {
     messageHub.sendMessage({
       type: 'DEV-UNSUB',
-      paths: [subscription]
+      paths: [subscription],
     });
 
     this.setState((state) => ({
-      subscriptions: without(state.subscriptions, subscription)
+      subscriptions: without(state.subscriptions, subscription),
     }));
   };
 
@@ -360,7 +360,7 @@ export default class SubscriptionDialog extends React.Component {
     this._tryUpdateDeviceList();
 
     this.setState({
-      visible: true
+      visible: true,
     });
   };
 
@@ -369,7 +369,7 @@ export default class SubscriptionDialog extends React.Component {
     this.props.setUnit(this.state.unit);
 
     this.setState({
-      visible: false
+      visible: false,
     });
   };
 }

@@ -5,8 +5,8 @@ import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 
 const FormHeader = ({ children, disablePadding, ...rest }) => (
-  <Box color="text.secondary" mt={disablePadding ? 0 : 2} mb={0.5} {...rest}>
-    <Typography variant="button" component="span">
+  <Box color='text.secondary' mt={disablePadding ? 0 : 2} mb={0.5} {...rest}>
+    <Typography variant='button' component='span'>
       {children}
     </Typography>
   </Box>
@@ -14,7 +14,7 @@ const FormHeader = ({ children, disablePadding, ...rest }) => (
 
 FormHeader.propTypes = {
   children: PropTypes.node,
-  disablePadding: PropTypes.bool
+  disablePadding: PropTypes.bool,
 };
 
 export default FormHeader;

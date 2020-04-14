@@ -11,7 +11,7 @@ import DialogAppBar from './DialogAppBar';
  */
 const DialogToolbar = ({ children, ...rest }) => (
   <DialogAppBar>
-    <Toolbar variant="dense" {...rest}>
+    <Toolbar variant='dense' {...rest}>
       {children}
     </Toolbar>
   </DialogAppBar>
@@ -20,8 +20,8 @@ const DialogToolbar = ({ children, ...rest }) => (
 DialogToolbar.propTypes = {
   children: PropTypes.oneOfType([
     PropTypes.arrayOf(PropTypes.node),
-    PropTypes.node
-  ])
+    PropTypes.node,
+  ]),
 };
 
 export default DialogToolbar;

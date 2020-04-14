@@ -10,15 +10,15 @@ const { actions, reducer } = createSlice({
   initialState: {
     camera: {
       position: null,
-      rotation: null
+      rotation: null,
     },
 
     navigation: {
       mode: 'walk',
-      parameters: {}
+      parameters: {},
     },
 
-    tooltip: null
+    tooltip: null,
   },
 
   reducers: {
@@ -50,15 +50,15 @@ const { actions, reducer } = createSlice({
 
     hideTooltip(state) {
       state.tooltip = null;
-    }
-  }
+    },
+  },
 });
 
 export const {
   hideTooltip,
   setCameraPose,
   setNavigationMode,
-  showTooltip
+  showTooltip,
 } = actions;
 
 export default reducer;

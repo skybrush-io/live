@@ -11,7 +11,7 @@ const { projectRoot } = require('./helpers');
 module.exports = merge.smart(baseConfig, {
   entry: {
     polyfill: ['@babel/polyfill', 'whatwg-fetch'],
-    app: './src/index'
+    app: './src/index',
   },
 
   plugins: [
@@ -19,7 +19,7 @@ module.exports = merge.smart(baseConfig, {
     new HtmlWebpackPlugin({
       template: path.resolve(projectRoot, 'index.html'),
       title:
-        'Skybrush Live | The Next-generation Drone Light Show Software Suite'
-    })
-  ]
+        'Skybrush Live | The Next-generation Drone Light Show Software Suite',
+    }),
+  ],
 });

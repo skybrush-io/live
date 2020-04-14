@@ -3,7 +3,7 @@ import { createSelector } from '@reduxjs/toolkit';
 
 import {
   getGPSBasedHomePositionsInMission,
-  getGPSBasedLandingPositionsInMission
+  getGPSBasedLandingPositionsInMission,
 } from '~/features/mission/selectors';
 import { getFlatEarthCoordinateTransformer } from '~/selectors/map';
 
@@ -27,7 +27,7 @@ export const getGPSToWorldTransformation = createSelector(
     return transformation.fromLonLatAgl([
       coordinate.lon,
       coordinate.lat,
-      coordinate.agl
+      coordinate.agl,
     ]);
   }
 );

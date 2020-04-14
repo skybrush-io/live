@@ -7,20 +7,20 @@ import { getDistance as haversineDistance } from 'ol/sphere';
 import {
   getEmptyMappingSlotIndices,
   getGPSBasedHomePositionsInMission,
-  getMissionMapping
+  getMissionMapping,
 } from './selectors';
 import { replaceMapping } from './slice';
 
 import {
   getOutdoorShowCoordinateSystem,
   getOutdoorShowOrientation,
-  getShowCoordinateSystemTransformationObject
+  getShowCoordinateSystemTransformationObject,
 } from '~/features/show/selectors';
 import { showSnackbarMessage } from '~/features/snackbar/slice';
 import { MessageSemantics } from '~/features/snackbar/types';
 import {
   getCurrentPositionByUavId,
-  getUnmappedUAVIds
+  getUnmappedUAVIds,
 } from '~/features/uavs/selectors';
 import messageHub from '~/message-hub';
 
@@ -60,13 +60,13 @@ export const augmentMappingAutomaticallyFromSpareDrones = () => (
   );
   const targets = slotsToFill.map((index) => ({
     index,
-    position: homePositions[index]
+    position: homePositions[index],
   }));
 
   const spareUAVIds = getUnmappedUAVIds(state);
   const sources = spareUAVIds.map((uavId) => ({
     uavId,
-    position: getCurrentPositionByUavId(state, uavId)
+    position: getCurrentPositionByUavId(state, uavId),
   }));
 
   const getter = (item) => [item.position.lat, item.position.lon];
@@ -133,7 +133,7 @@ export const addVirtualDronesForMission = () => async (dispatch, getState) => {
     coordinates: homeCoordinates.map(({ lat, lon }) => {
       const [x, y] = showCoordinateSystemTransformation.fromLonLat([lon, lat]);
       return [x.toFixed(2), y.toFixed(2)];
-    })
+    }),
   };
 
   // Update the ID style depending on the number of virtual drones
@@ -153,7 +153,7 @@ export const addVirtualDronesForMission = () => async (dispatch, getState) => {
   dispatch(
     showSnackbarMessage({
       message: 'Virtual drones configured successfully.',
-      semantics: MessageSemantics.SUCCESS
+      semantics: MessageSemantics.SUCCESS,
     })
   );
 };

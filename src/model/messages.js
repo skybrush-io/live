@@ -9,5 +9,5 @@
 export const MessageType = {
   OUTBOUND: 'outbound',
   INBOUND: 'inbound',
-  ERROR: 'error'
+  ERROR: 'error',
 };

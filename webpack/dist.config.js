@@ -11,18 +11,18 @@ const { outputDir, projectRoot } = require('./helpers');
 module.exports = merge.smart(baseConfig, {
   entry: {
     polyfill: ['@babel/polyfill', 'whatwg-fetch'],
-    app: './src/index'
+    app: './src/index',
   },
 
   output: {
     publicPath: '_/',
-    path: path.resolve(outputDir, '_')
+    path: path.resolve(outputDir, '_'),
   },
 
   resolve: {
     alias: {
-      config: path.resolve(projectRoot, 'config', 'webapp-demo')
-    }
+      config: path.resolve(projectRoot, 'config', 'webapp-demo'),
+    },
   },
 
   plugins: [
@@ -31,7 +31,7 @@ module.exports = merge.smart(baseConfig, {
       template: path.resolve(projectRoot, 'index.html'),
       filename: path.resolve(outputDir, 'index.html'),
       title:
-        'Skybrush Live | The Next-generation Drone Light Show Software Suite'
-    })
-  ]
+        'Skybrush Live | The Next-generation Drone Light Show Software Suite',
+    }),
+  ],
 });

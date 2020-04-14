@@ -22,7 +22,7 @@ const defaultState = {
   port: 5000,
   isSecure: false,
   dialogVisible: false,
-  selectedTab: 'auto'
+  selectedTab: 'auto',
 };
 
 /**
@@ -41,7 +41,7 @@ const reducer = handleActions(
     SET_SERVER_SETTINGS_DIALOG_TAB: (state, action) =>
       u({ selectedTab: action.payload }, state),
 
-    UPDATE_SERVER_SETTINGS: (state, action) => u(action.payload, state)
+    UPDATE_SERVER_SETTINGS: (state, action) => u(action.payload, state),
   },
   defaultState
 );

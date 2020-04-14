@@ -28,12 +28,12 @@ export default class MapRotationTextBox extends React.Component {
   static propTypes = {
     resetDuration: PropTypes.number,
     fieldWidth: PropTypes.string,
-    style: PropTypes.object
+    style: PropTypes.object,
   };
 
   state = {
     isFocused: false,
-    rotation: 0
+    rotation: 0,
   };
 
   /**
@@ -68,16 +68,16 @@ export default class MapRotationTextBox extends React.Component {
   render() {
     return (
       <div style={this.props.style}>
-        <IconButton tooltip="Reset rotation" onClick={this._onButtonClick}>
+        <IconButton tooltip='Reset rotation' onClick={this._onButtonClick}>
           <RotateLeft />
         </IconButton>
         <TextField
-          size="small"
+          size='small'
           style={{
             padding: '8px 0',
-            width: this.props.fieldWidth
+            width: this.props.fieldWidth,
           }}
-          type="number"
+          type='number'
           value={
             this.state.isFocused
               ? this.state.rotation
@@ -124,7 +124,7 @@ export default class MapRotationTextBox extends React.Component {
   _updateRotationFromMapView(event) {
     if (event.key === 'rotation') {
       this.setState({
-        rotation: toDegrees(-event.target.get('rotation'))
+        rotation: toDegrees(-event.target.get('rotation')),
       });
     }
   }
@@ -136,7 +136,7 @@ export default class MapRotationTextBox extends React.Component {
   _onFocus() {
     this.setState((state) => ({
       isFocused: true,
-      rotation: normalizeAngle(state.rotation)
+      rotation: normalizeAngle(state.rotation),
     }));
   }
 
@@ -145,7 +145,7 @@ export default class MapRotationTextBox extends React.Component {
    */
   _onBlur() {
     this.setState({
-      isFocused: false
+      isFocused: false,
     });
   }
 
@@ -159,7 +159,7 @@ export default class MapRotationTextBox extends React.Component {
     this.map.getView().setRotation(toRadians(-event.target.value));
 
     this.setState({
-      rotation: event.target.value
+      rotation: event.target.value,
     });
   }
 
@@ -183,7 +183,7 @@ export default class MapRotationTextBox extends React.Component {
     this.map.getView().animate({
       rotation: 0,
       duration: this.props.resetDuration,
-      easing: easeOut
+      easing: easeOut,
     });
   }
 }

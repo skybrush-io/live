@@ -11,7 +11,7 @@ import {
   removeAllDetectedServers,
   startScanning,
   stopScanning,
-  updateDetectedServerHostname
+  updateDetectedServerHostname,
 } from '~/features/servers/slice';
 
 export const isServerDetectionSupported =
@@ -30,7 +30,7 @@ class ServerDetectionManagerPresentation extends React.Component {
     onScanningStopped: PropTypes.func,
     onServerDetected: PropTypes.func,
     onServerHostnameResolved: PropTypes.func,
-    onServerInferred: PropTypes.func
+    onServerInferred: PropTypes.func,
   };
 
   constructor(props) {
@@ -51,7 +51,7 @@ class ServerDetectionManagerPresentation extends React.Component {
           onServerInferred({
             hostName: window.location.hostname,
             port: 5000,
-            protocol: 'sio:'
+            protocol: 'sio:',
           });
         } else {
           // We are deployed somewhere; the server is most likely running on
@@ -61,7 +61,7 @@ class ServerDetectionManagerPresentation extends React.Component {
             port:
               window.location.port ||
               (window.location.protocol === 'http:' ? 80 : 443),
-            protocol: 'sio:'
+            protocol: 'sio:',
           });
         }
       }
@@ -118,7 +118,7 @@ class ServerDetectionManagerPresentation extends React.Component {
           hostName: hostname,
           port: numericPort,
           label: parsedHeaders.headers['label.collmot.com'],
-          protocol
+          protocol,
         });
 
         // Perform a DNS lookup on the hostname if was newly added, it is not
@@ -206,6 +206,6 @@ export const ServerDetectionManager = connect(
       const action = addInferredServer({ hostName, port, protocol });
       dispatch(action);
       return action.key;
-    }
+    },
   })
 )(ServerDetectionManagerPresentation);

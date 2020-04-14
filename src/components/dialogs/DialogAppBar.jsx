@@ -12,8 +12,8 @@ const useStyles = makeStyles(
       backgroundColor: isDark(theme) ? '#535353' : undefined,
       color: isDark(theme)
         ? theme.palette.getContrastText('#535353')
-        : undefined
-    }
+        : undefined,
+    },
   }),
   { name: 'DialogAppBar' }
 );
@@ -26,8 +26,8 @@ const DialogAppBar = ({ children, ...rest }) => {
   const classes = useStyles();
   return (
     <AppBar
-      position="static"
-      color="primary"
+      position='static'
+      color='primary'
       className={classes.root}
       {...rest}
     >
@@ -39,8 +39,8 @@ const DialogAppBar = ({ children, ...rest }) => {
 DialogAppBar.propTypes = {
   children: PropTypes.oneOfType([
     PropTypes.arrayOf(PropTypes.node),
-    PropTypes.node
-  ])
+    PropTypes.node,
+  ]),
 };
 
 export default DialogAppBar;

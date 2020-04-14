@@ -26,7 +26,7 @@ export class AutoComplete extends React.Component {
     getSuggestionLabel: identity,
     getSuggestionValue: identity,
     highlightFirstSuggestion: true,
-    highlightMatches: true
+    highlightMatches: true,
   };
 
   static propTypes = {
@@ -41,12 +41,12 @@ export class AutoComplete extends React.Component {
     initialValue: PropTypes.string,
     inputRef: PropTypes.oneOfType([
       PropTypes.func,
-      PropTypes.shape({ current: PropTypes.any })
+      PropTypes.shape({ current: PropTypes.any }),
     ]),
     onValueCommitted: PropTypes.func,
     placeholder: PropTypes.string,
     style: PropTypes.object,
-    validateValue: PropTypes.func
+    validateValue: PropTypes.func,
   };
 
   _input = undefined;
@@ -58,7 +58,7 @@ export class AutoComplete extends React.Component {
     this.state = {
       error: null,
       suggestions: [],
-      value: props.initialValue || ''
+      value: props.initialValue || '',
     };
     /* eslint-enable react/state-in-constructor */
   }
@@ -103,20 +103,20 @@ export class AutoComplete extends React.Component {
 
   _onSuggestionsClearRequested = () => {
     this.setState({
-      suggestions: []
+      suggestions: [],
     });
   };
 
   _onSuggestionsFetchRequested = ({ value }) => {
     const { fetchSuggestions } = this.props;
     this.setState({
-      suggestions: fetchSuggestions ? fetchSuggestions(value) : []
+      suggestions: fetchSuggestions ? fetchSuggestions(value) : [],
     });
   };
 
   _onValueChanged = (event, { method, newValue }) => {
     this.setState({
-      value: newValue
+      value: newValue,
     });
 
     if (
@@ -141,7 +141,7 @@ export class AutoComplete extends React.Component {
           inputRef: (node) => {
             ref(node);
             inputRef(node);
-          }
+          },
         }}
         {...restInputProps}
       />
@@ -165,8 +165,8 @@ export class AutoComplete extends React.Component {
     /* eslint-enable react/no-array-index-key */
 
     return (
-      <MenuItem selected={isHighlighted} component="div">
-        <Box fontSize="small">{fragments}</Box>
+      <MenuItem selected={isHighlighted} component='div'>
+        <Box fontSize='small'>{fragments}</Box>
       </MenuItem>
     );
   };
@@ -183,7 +183,7 @@ export class AutoComplete extends React.Component {
           square
           {...containerProps}
           style={{
-            minWidth: this._input ? this._input.clientWidth : undefined
+            minWidth: this._input ? this._input.clientWidth : undefined,
           }}
         >
           {children}
@@ -199,7 +199,7 @@ export class AutoComplete extends React.Component {
       highlightFirstSuggestion,
       label,
       placeholder,
-      style
+      style,
     } = this.props;
     const { error, suggestions, value } = this.state;
 
@@ -216,7 +216,7 @@ export class AutoComplete extends React.Component {
           inputRef: this._assignInputRef,
           label: error || label,
           onBlur: this._onBlur,
-          onChange: this._onValueChanged
+          onChange: this._onValueChanged,
         }}
         renderInputComponent={this._renderInput}
         renderSuggestion={this._renderSuggestion}
@@ -280,7 +280,7 @@ export class AutoComplete extends React.Component {
     const effectiveOptions = {
       caseSensitive: true,
       maxItems: 5,
-      ...options
+      ...options,
     };
     const valuesToMatch = effectiveOptions.caseSensitive
       ? values

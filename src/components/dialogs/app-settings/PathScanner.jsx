@@ -33,14 +33,14 @@ const icons = {
   ),
   scanning: (
     <ListItemIcon style={{ margin: '0 0 0 19px' }}>
-      <CircularProgress variant="indeterminate" color="secondary" size={32} />
+      <CircularProgress variant='indeterminate' color='secondary' size={32} />
     </ListItemIcon>
   ),
   error: (
     <ListItemIcon style={{ color: red[500], margin: '0 0 0 19px' }}>
       <Clear />
     </ListItemIcon>
-  )
+  ),
 };
 
 const useStyles = makeStyles(
@@ -50,8 +50,8 @@ const useStyles = makeStyles(
         theme.palette.type === 'dark'
           ? theme.palette.grey.A400
           : theme.palette.grey[200],
-      paddingTop: 6
-    }
+      paddingTop: 6,
+    },
   }),
   { name: 'PathScanner' }
 );
@@ -63,7 +63,7 @@ const PathScannerPresentation = ({
   result,
   scanning,
   scanningMessage,
-  successMessage
+  successMessage,
 }) => {
   const classes = useStyles();
   return (
@@ -101,24 +101,24 @@ PathScannerPresentation.propTypes = {
   result: PropTypes.string,
   scanning: PropTypes.bool,
   scanningMessage: PropTypes.string,
-  successMessage: PropTypes.string
+  successMessage: PropTypes.string,
 };
 
 PathScannerPresentation.defaultProps = {
   notFoundMessage: 'Server executable not found.',
   scanningMessage: 'Please wait…',
-  successMessage: 'Server executable found successfully.'
+  successMessage: 'Server executable found successfully.',
 };
 
 export default connect(
   // mapStateToProps
   (state) => ({
-    ...state.localServer.pathScan
+    ...state.localServer.pathScan,
   }),
   // mapDispatchToProps
   (dispatch) => ({
     onRequestReload: () => {
       dispatch(startLocalServerExecutableSearch());
-    }
+    },
   })
 )(PathScannerPresentation);

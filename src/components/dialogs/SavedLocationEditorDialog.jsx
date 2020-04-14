@@ -16,7 +16,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import { cancelLocationEditing } from '~/actions/saved-location-editor';
 import {
   deleteSavedLocation,
-  updateSavedLocation
+  updateSavedLocation,
 } from '~/features/saved-locations/slice';
 import { getMapViewRotationAngle } from '~/selectors/map';
 import { forceFormSubmission, TextField } from '~/components/forms';
@@ -26,63 +26,63 @@ import {
   between,
   integer,
   finite,
-  required
+  required,
 } from '~/utils/validation';
 
 const validator = createValidator({
   name: required,
   center: createValidator({
     lon: [required, finite, between(-90, 90)],
-    lat: [required, finite, between(-180, 180)]
+    lat: [required, finite, between(-180, 180)],
   }),
   rotation: [required, finite, between(0, 360)],
-  zoom: [required, integer, between(1, 30)]
+  zoom: [required, integer, between(1, 30)],
 });
 
 const SavedLocationEditorFormPresentation = ({
   initialValues,
   onKeyPress,
-  onSubmit
+  onSubmit,
 }) => (
   <Form initialValues={initialValues} validate={validator} onSubmit={onSubmit}>
     {({ handleSubmit }) => (
-      <form id="SavedLocationEditor" onSubmit={handleSubmit}>
+      <form id='SavedLocationEditor' onSubmit={handleSubmit}>
         <div onKeyPress={onKeyPress}>
           <Field
             autoFocus
             fullWidth
-            margin="normal"
-            name="name"
+            margin='normal'
+            name='name'
             component={TextField}
-            label="Name"
+            label='Name'
           />
           <Field
             fullWidth
-            margin="normal"
-            name="center.lon"
+            margin='normal'
+            name='center.lon'
             component={TextField}
-            label="Longitude"
+            label='Longitude'
           />
           <Field
             fullWidth
-            margin="normal"
-            name="center.lat"
+            margin='normal'
+            name='center.lat'
             component={TextField}
-            label="Latitude"
+            label='Latitude'
           />
           <Field
             fullWidth
-            margin="normal"
-            name="rotation"
+            margin='normal'
+            name='rotation'
             component={TextField}
-            label="Rotation"
+            label='Rotation'
           />
           <Field
             fullWidth
-            margin="normal"
-            name="zoom"
+            margin='normal'
+            name='zoom'
             component={TextField}
-            label="Zoom level"
+            label='Zoom level'
           />
         </div>
       </form>
@@ -93,7 +93,7 @@ const SavedLocationEditorFormPresentation = ({
 SavedLocationEditorFormPresentation.propTypes = {
   initialValues: PropTypes.object,
   onKeyPress: PropTypes.func,
-  onSubmit: PropTypes.func
+  onSubmit: PropTypes.func,
 };
 
 /**
@@ -109,10 +109,10 @@ const SavedLocationEditorForm = connect(
         ? {
             center: {
               lon: state.map.view.position[0].toFixed(6),
-              lat: state.map.view.position[1].toFixed(6)
+              lat: state.map.view.position[1].toFixed(6),
             },
             rotation: getMapViewRotationAngle(state),
-            zoom: Math.round(state.map.view.zoom)
+            zoom: Math.round(state.map.view.zoom),
           }
         : state.savedLocations.byId[id];
 
@@ -130,7 +130,7 @@ class SavedLocationEditorDialogPresentation extends React.Component {
     onClose: PropTypes.func.isRequired,
     onDelete: PropTypes.func.isRequired,
     onSubmit: PropTypes.func.isRequired,
-    open: PropTypes.bool.isRequired
+    open: PropTypes.bool.isRequired,
   };
 
   constructor(props) {
@@ -155,34 +155,34 @@ class SavedLocationEditorDialogPresentation extends React.Component {
     const title = isNew ? 'Create new location' : 'Edit saved location';
 
     const actions = [
-      <Button key="save" color="primary" onClick={this._forceFormSubmission}>
+      <Button key='save' color='primary' onClick={this._forceFormSubmission}>
         Save
-      </Button>
+      </Button>,
     ];
 
     if (isNew) {
       actions.push(
-        <Button key="discard" onClick={onDelete(editedLocationId)}>
+        <Button key='discard' onClick={onDelete(editedLocationId)}>
           Discard
         </Button>
       );
     } else {
       actions.push(
         <Button
-          key="delete"
-          color="secondary"
+          key='delete'
+          color='secondary'
           onClick={onDelete(editedLocationId)}
         >
           Delete
         </Button>,
-        <Button key="cancel" onClick={onClose}>
+        <Button key='cancel' onClick={onClose}>
           Cancel
         </Button>
       );
     }
 
     return (
-      <Dialog fullWidth open={open} maxWidth="sm" onClose={onClose}>
+      <Dialog fullWidth open={open} maxWidth='sm' onClose={onClose}>
         <DialogTitle>{title}</DialogTitle>
         <DialogContent>
           <SavedLocationEditorForm
@@ -204,7 +204,7 @@ const SavedLocationEditorDialog = connect(
   // mapStateToProps
   (state) => ({
     open: state.dialogs.savedLocationEditor.dialogVisible,
-    editedLocationId: state.dialogs.savedLocationEditor.editedLocationId
+    editedLocationId: state.dialogs.savedLocationEditor.editedLocationId,
   }),
   // mapDispatchToProps
   (dispatch) => ({
@@ -227,7 +227,7 @@ const SavedLocationEditorDialog = connect(
 
       dispatch(updateSavedLocation(currentLocation));
       dispatch(cancelLocationEditing());
-    }
+    },
   })
 )(SavedLocationEditorDialogPresentation);
 

@@ -6,12 +6,12 @@ const plugins = [];
 module.exports = merge.smart(baseConfig, {
   entry: ['@babel/polyfill', './launcher.js'],
   output: {
-    filename: 'launcher.bundle.js'
+    filename: 'launcher.bundle.js',
   },
 
   node: {
     __dirname: false,
-    __filename: false
+    __filename: false,
   },
 
   plugins,
@@ -19,5 +19,5 @@ module.exports = merge.smart(baseConfig, {
   // Prevent warnings arising from the usage of require() in yargs
   stats: { warnings: false },
 
-  target: 'electron-main'
+  target: 'electron-main',
 });

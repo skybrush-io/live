@@ -8,7 +8,7 @@ import Box from '@material-ui/core/Box';
  * HTML components.
  */
 const Overlay = ({ children, ...rest }) => (
-  <Box position="absolute" zIndex={1} {...rest}>
+  <Box position='absolute' zIndex={1} {...rest}>
     {children}
   </Box>
 );
@@ -16,8 +16,8 @@ const Overlay = ({ children, ...rest }) => (
 Overlay.propTypes = {
   children: PropTypes.oneOfType([
     PropTypes.node,
-    PropTypes.arrayOf(PropTypes.node)
-  ])
+    PropTypes.arrayOf(PropTypes.node),
+  ]),
 };
 
 export default Overlay;

@@ -17,17 +17,17 @@ export default class CoordinateField extends React.Component {
   static propTypes = {
     onChange: PropTypes.func,
     required: PropTypes.bool,
-    value: PropTypes.arrayOf(PropTypes.number)
+    value: PropTypes.arrayOf(PropTypes.number),
   };
 
   static defaultProps = {
     required: false,
-    value: undefined
+    value: undefined,
   };
 
   static getDerivedStateFromProps(props) {
     return {
-      originalText: safelyFormatCoordinate(props.value)
+      originalText: safelyFormatCoordinate(props.value),
     };
   }
 
@@ -35,7 +35,7 @@ export default class CoordinateField extends React.Component {
     dirty: false,
     error: undefined,
     originalText: undefined,
-    text: undefined
+    text: undefined,
   };
 
   componentWillUnmount() {
@@ -49,10 +49,10 @@ export default class CoordinateField extends React.Component {
     const { dirty, error, originalText, text } = this.state;
     const shownText = dirty ? text : originalText;
     const endAdornment = shownText ? (
-      <InputAdornment position="end">
+      <InputAdornment position='end'>
         <IconButton
-          aria-label="Clear field"
-          edge="end"
+          aria-label='Clear field'
+          edge='end'
           tabIndex={-1}
           onClick={this._onClearField}
           onMouseDown={this._onMouseDownOnButton}
@@ -136,7 +136,7 @@ export default class CoordinateField extends React.Component {
     const value = parseCoordinate(text);
     const hasError = (text !== '' || required) && value === undefined;
     this.setState({
-      error: hasError ? 'Not a valid coordinate' : undefined
+      error: hasError ? 'Not a valid coordinate' : undefined,
     });
 
     return [!hasError, value];

@@ -17,7 +17,7 @@ const Markers = ({ coordinates, mixin }) =>
 
 Markers.propTypes = {
   coordinates: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.number)),
-  mixin: PropTypes.string
+  mixin: PropTypes.string,
 };
 
 export default Markers;

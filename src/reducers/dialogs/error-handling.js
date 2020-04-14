@@ -10,7 +10,7 @@ import { handleActions } from 'redux-actions';
  * error dialog.
  */
 const defaultState = {
-  open: false
+  open: false,
 };
 
 /**
@@ -21,16 +21,16 @@ const reducer = handleActions(
   {
     CLOSE_ERROR_DIALOG: (state, action) => {
       return Object.assign({}, state, {
-        open: false
+        open: false,
       });
     },
 
     SHOW_ERROR_MESSAGE: (state, action) => {
       return Object.assign({}, state, {
         message: action.payload,
-        open: true
+        open: true,
       });
-    }
+    },
   },
   defaultState
 );

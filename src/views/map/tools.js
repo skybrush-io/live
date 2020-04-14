@@ -19,7 +19,7 @@ export const Tool = {
   DRAW_PATH: 'drawPath',
   DRAW_POLYGON: 'drawPolygon',
 
-  EDIT_FEATURE: 'editFeature'
+  EDIT_FEATURE: 'editFeature',
 };
 
 /**
@@ -44,12 +44,12 @@ export function toolToDrawInteractionProps(tool, map) {
   switch (tool) {
     case Tool.DRAW_POINT:
       return {
-        type: 'Point'
+        type: 'Point',
       };
 
     case Tool.DRAW_CIRCLE:
       return {
-        type: 'Circle'
+        type: 'Circle',
       };
 
     case Tool.DRAW_RECTANGLE:
@@ -57,22 +57,22 @@ export function toolToDrawInteractionProps(tool, map) {
         geometryFunction: createRotatedBoxGeometryFunction(() =>
           map ? -map.getView().getRotation() : 0
         ),
-        type: 'Circle'
+        type: 'Circle',
       };
 
     case Tool.DRAW_PATH:
       return {
-        type: 'LineString'
+        type: 'LineString',
       };
 
     case Tool.DRAW_POLYGON:
       return {
-        type: 'Polygon'
+        type: 'Polygon',
       };
 
     default:
       return {
-        type: 'Point'
+        type: 'Point',
       };
   }
 }

@@ -16,7 +16,7 @@ const MAX_DELTA = 0.2;
 const KEYS = new Set(['KeyE', 'KeyC']);
 const KEYCODE_TO_CODE = {
   '67': 'KeyC',
-  '69': 'KeyE'
+  '69': 'KeyE',
 };
 
 const { THREE } = AFrame;
@@ -24,7 +24,7 @@ const { THREE } = AFrame;
 AFrame.registerComponent('altitude-control', {
   schema: {
     acceleration: { default: 65 } /* [m/s] */,
-    enabled: { default: true }
+    enabled: { default: true },
   },
 
   init() {
@@ -169,5 +169,5 @@ AFrame.registerComponent('altitude-control', {
   onKeyUp(event) {
     const code = event.code || KEYCODE_TO_CODE[event.keyCode];
     delete this.keys[code];
-  }
+  },
 });

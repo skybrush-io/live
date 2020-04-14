@@ -21,7 +21,7 @@ const reducer = combineReducers({
   origin: originReducer,
   selection: selectionReducer,
   tools: toolsReducer,
-  view: viewReducer
+  view: viewReducer,
 });
 
 export default reducer;

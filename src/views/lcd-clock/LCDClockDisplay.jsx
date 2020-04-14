@@ -16,7 +16,7 @@ import { cyclePreset } from '~/features/lcd-clock/actions';
 import {
   getClockIdsAndAbbreviations,
   getClockIdForLCDDisplayById,
-  getPresetIndexForLCDDisplayById
+  getPresetIndexForLCDDisplayById,
 } from '~/features/lcd-clock/selectors';
 import { setClockIdForClockDisplay } from '~/features/lcd-clock/slice';
 import { isDark } from '~/theme';
@@ -45,15 +45,15 @@ const useStyles = makeStyles(
       transition: 'background-color 150ms',
 
       '&:last-child': {
-        borderBottom: 'none'
-      }
+        borderBottom: 'none',
+      },
     },
 
     button: {
       width: 24,
       textAlign: 'center',
-      lineHeight: '24px'
-    }
+      lineHeight: '24px',
+    },
   }),
   { name: 'LCDClockDisplay' }
 );
@@ -62,20 +62,20 @@ const presets = {
   dark: [
     {
       backgroundColor: 'black',
-      color: (theme) => theme.palette.secondary.main
+      color: (theme) => theme.palette.secondary.main,
     },
     { backgroundColor: 'black', color: '#f00' },
     { backgroundColor: 'black', color: '#0f0' },
     { backgroundColor: 'black', color: '#fc0' },
-    { backgroundColor: 'black', color: '#c0f' }
+    { backgroundColor: 'black', color: '#c0f' },
   ],
   light: [
     { backgroundColor: 'rgb(149, 177, 89)', color: 'black', noise: true },
     { backgroundColor: '#f80', color: 'black', noise: true },
     { backgroundColor: '#0cf', color: 'black', noise: true },
     { backgroundColor: '#fc0', color: 'black', noise: true },
-    { backgroundColor: '#4fc', color: 'black', noise: true }
-  ]
+    { backgroundColor: '#4fc', color: 'black', noise: true },
+  ],
 };
 
 const call = (theme, value, defaultValue) =>
@@ -108,11 +108,11 @@ const LCDClockDisplay = ({
       ? {
           color: call(theme, presetProps.color, theme.palette.secondary.main),
           decoration: 'glow',
-          offSegments: true
+          offSegments: true,
         }
       : {
           color: call(theme, presetProps.color, 'black'),
-          decoration: 'shadow'
+          decoration: 'shadow',
         };
 
   // We assume that we show timestamps like 00:00:00:00 in the LCD display,
@@ -124,16 +124,16 @@ const LCDClockDisplay = ({
     backgroundImage: call(theme, presetProps.noise, false)
       ? noiseImage
       : undefined,
-    ...style
+    ...style,
   };
 
   return (
     <Box className={clsx(classes.root)} style={finalStyle} {...rest}>
       <Box
-        display="flex"
-        flexDirection="row"
-        alignItems="center"
-        justifyContent="center"
+        display='flex'
+        flexDirection='row'
+        alignItems='center'
+        justifyContent='center'
       >
         {onAdd && (
           <Box className={clsx(classes.button)} onClick={onAdd}>
@@ -159,11 +159,11 @@ const LCDClockDisplay = ({
           </LCDText>
         </Box>
       </Box>
-      <Box ref={ref} flex={1} overflow="hidden" textAlign="center">
+      <Box ref={ref} flex={1} overflow='hidden' textAlign='center'>
         <LCDClockDisplayLabel
           clockId={selectedClockId}
           height={lcdHeight}
-          variant="14segment"
+          variant='14segment'
           {...lcdStyle}
         />
       </Box>
@@ -175,7 +175,7 @@ LCDClockDisplay.propTypes = {
   clocks: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.string,
-      label: PropTypes.string
+      label: PropTypes.string,
     })
   ),
   id: PropTypes.string,
@@ -185,11 +185,11 @@ LCDClockDisplay.propTypes = {
   onNextPreset: PropTypes.func,
   onRemove: PropTypes.func,
   selectedClockId: PropTypes.string,
-  style: PropTypes.object
+  style: PropTypes.object,
 };
 
 LCDClockDisplay.defaultProps = {
-  preset: 0
+  preset: 0,
 };
 
 export default connect(
@@ -197,7 +197,7 @@ export default connect(
   (state, ownProps) => ({
     clocks: getClockIdsAndAbbreviations(state),
     preset: getPresetIndexForLCDDisplayById(state, ownProps.id),
-    selectedClockId: getClockIdForLCDDisplayById(state, ownProps.id)
+    selectedClockId: getClockIdForLCDDisplayById(state, ownProps.id),
   }),
   // mapDispatchToProps
   (dispatch, ownProps) => ({
@@ -207,6 +207,6 @@ export default connect(
 
     onNextPreset() {
       dispatch(cyclePreset(ownProps.id));
-    }
+    },
   })
 )(LCDClockDisplay);

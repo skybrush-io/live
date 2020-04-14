@@ -24,7 +24,7 @@ const defaultState = {
   // Stores the next message ID that will be used
   nextMessageId: 0,
   // Stores the ID of the UAV to target with the SEND_MESSAGE_TO_SELECTED_UAV action
-  selectedUAVId: null
+  selectedUAVId: null,
 };
 
 /**
@@ -68,22 +68,22 @@ function addErrorMessage(state, uavId, body, refs) {
     id: state.nextMessageId,
     type: MessageType.ERROR,
     date: Date.now(),
-    body
+    body,
   };
 
   const updates = {
     byId: {
-      [message.id]: () => message
+      [message.id]: () => message,
     },
     uavIdsToMessageIds: {
-      [uavId]: extendWith(message.id)
+      [uavId]: extendWith(message.id),
     },
-    nextMessageId: generateNextMessageId
+    nextMessageId: generateNextMessageId,
   };
 
   if (typeof refs !== 'undefined') {
     updates.byId[refs] = {
-      responseId: message.id
+      responseId: message.id,
     };
   }
 
@@ -118,20 +118,20 @@ function addInboundMessage(state, refs, body) {
     date: Date.now(),
     raw: true,
     recipient: 'Operator',
-    body
+    body,
   };
 
   const updates = {
     byId: {
       [originalMessage.id]: {
-        responseId: response.id
+        responseId: response.id,
       },
-      [response.id]: () => response
+      [response.id]: () => response,
     },
     uavIdsToMessageIds: {
-      [recipient]: extendWith(response.id)
+      [recipient]: extendWith(response.id),
     },
-    nextMessageId: generateNextMessageId
+    nextMessageId: generateNextMessageId,
   };
 
   return u(updates, state);
@@ -163,18 +163,18 @@ function addOutboundMessageToUAV(state, recipient, body) {
     date: Date.now(),
     responseId: null,
     recipient,
-    body
+    body,
   };
 
   return u(
     {
       byId: {
-        [message.id]: () => message
+        [message.id]: () => message,
       },
       uavIdsToMessageIds: {
-        [recipient]: extendWith(message.id)
+        [recipient]: extendWith(message.id),
       },
-      nextMessageId: generateNextMessageId
+      nextMessageId: generateNextMessageId,
     },
     state
   );
@@ -212,14 +212,14 @@ const reducer = handleActions(
       return u(
         {
           byId: u.omit(messageIdsForUAV),
-          uavIdsToMessageIds: u.omit(selectedUAVId)
+          uavIdsToMessageIds: u.omit(selectedUAVId),
         },
         state
       );
     },
 
     SELECT_UAV_IN_MESSAGES_DIALOG: (state, action) =>
-      Object.assign({}, state, { selectedUAVId: action.payload })
+      Object.assign({}, state, { selectedUAVId: action.payload }),
   },
   defaultState
 );

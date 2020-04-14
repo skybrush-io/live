@@ -15,11 +15,11 @@ export async function configureExtension(hub, name, configuration) {
 
   const response = await hub.sendMessage({
     type: 'EXT-SETCFG',
-    ids: { [name]: configuration }
+    ids: { [name]: configuration },
   });
 
   const status = extractResponseForId(response, name, {
-    error: `Failed to retrieve configuration for extension: ${name}`
+    error: `Failed to retrieve configuration for extension: ${name}`,
   });
 
   return Boolean(status);
@@ -33,11 +33,11 @@ export async function reloadExtension(hub, name) {
 
   const response = await hub.sendMessage({
     type: 'EXT-RELOAD',
-    ids: [name]
+    ids: [name],
   });
 
   const status = extractResponseForId(response, name, {
-    error: `Failed to reload extension: ${name}`
+    error: `Failed to reload extension: ${name}`,
   });
 
   return Boolean(status);
@@ -49,7 +49,7 @@ export async function reloadExtension(hub, name) {
 export async function setShowConfiguration(hub, config) {
   const response = await hub.sendMessage({
     type: 'SHOW-SETCFG',
-    configuration: config
+    configuration: config,
   });
 
   if (response.body.type !== 'ACK-ACK') {
@@ -68,8 +68,8 @@ export async function uploadDroneShow(hub, { uavId, data }) {
     uavId,
     command: '__show_upload',
     kwds: {
-      show: data
-    }
+      show: data,
+    },
   });
 
   if (!response.body.response) {
@@ -86,7 +86,7 @@ export class OperationExecutor {
     configureExtension,
     reloadExtension,
     setShowConfiguration,
-    uploadDroneShow
+    uploadDroneShow,
   };
 
   /**

@@ -366,7 +366,7 @@ export const getUploadProgress = createSelector(
     itemsFinished,
     itemsInProgress,
     itemsQueued,
-    itemsWaitingToStart
+    itemsWaitingToStart,
   }) => {
     const numberFailedItems = Array.isArray(failedItems)
       ? failedItems.length
@@ -395,7 +395,7 @@ export const getUploadProgress = createSelector(
       const number2 = number1 + numberItemsInProgress;
       return [
         Math.round((100 * number1) / total),
-        Math.round((100 * number2) / total)
+        Math.round((100 * number2) / total),
       ];
     }
 

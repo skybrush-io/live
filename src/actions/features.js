@@ -9,7 +9,7 @@ import {
   RENAME_FEATURE,
   SET_FEATURE_COLOR,
   UPDATE_FEATURE_COORDINATES,
-  UPDATE_FEATURE_VISIBILITY
+  UPDATE_FEATURE_VISIBILITY,
 } from './types';
 
 /**
@@ -25,7 +25,7 @@ export const addFeature = createAction(ADD_FEATURE, (feature) => ({ feature }));
  * @param {string}  id  the ID of the feature to remove
  */
 export const removeFeature = createAction(REMOVE_FEATURES, (id) => ({
-  ids: [id]
+  ids: [id],
 }));
 
 /**
@@ -36,7 +36,7 @@ export const removeFeature = createAction(REMOVE_FEATURES, (id) => ({
  */
 export const renameFeature = createAction(RENAME_FEATURE, (id, name) => ({
   id,
-  name
+  name,
 }));
 
 /**
@@ -56,7 +56,7 @@ export const removeFeatures = createAction(REMOVE_FEATURES, (ids) => ({ ids }));
  */
 export const setFeatureColor = createAction(SET_FEATURE_COLOR, (id, color) => ({
   id,
-  color
+  color,
 }));
 
 /**

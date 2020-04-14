@@ -45,7 +45,7 @@ export const takeoffUAVs = (uavs) =>
   messageHub
     .sendMessage({
       type: 'UAV-TAKEOFF',
-      ids: uavs
+      ids: uavs,
     })
     .then(processResponse('UAV-TAKEOFF', 'Takeoff command'));
 
@@ -53,14 +53,14 @@ export const landUAVs = (uavs) =>
   messageHub
     .sendMessage({
       type: 'UAV-LAND',
-      ids: uavs
+      ids: uavs,
     })
     .then(processResponse('UAV-LAND', 'Landing command'));
 
 export const resetUAVs = async (uavs, component) => {
   const request = {
     type: 'UAV-RST',
-    ids: uavs
+    ids: uavs,
   };
 
   if (component) {
@@ -75,7 +75,7 @@ export const returnToHomeUAVs = (uavs) =>
   messageHub
     .sendMessage({
       type: 'UAV-RTH',
-      ids: uavs
+      ids: uavs,
     })
     .then(processResponse('UAV-RTH', 'Return to home command'));
 
@@ -83,7 +83,7 @@ export const haltUAVs = (uavs) =>
   messageHub
     .sendMessage({
       type: 'UAV-HALT',
-      ids: uavs
+      ids: uavs,
     })
     .then(processResponse('UAV-HALT', 'Halt command'));
 
@@ -96,7 +96,7 @@ export const moveUAVs = (uavs, target) =>
         Math.round(target.lat * 1e7),
         Math.round(target.lon * 1e7),
         isNil(target.amsl) ? null : Math.round(target.amsl * 1e3),
-        isNil(target.agl) ? null : Math.round(target.agl * 1e3)
-      ]
+        isNil(target.agl) ? null : Math.round(target.agl * 1e3),
+      ],
     })
     .then(processResponse('UAV-FLY', 'Fly to target command'));

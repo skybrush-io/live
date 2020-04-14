@@ -6,7 +6,7 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 
 import StepperStatusLight, {
-  StepperStatus
+  StepperStatus,
 } from '~/components/StepperStatusLight';
 import { openTakeoffAreaSetupDialog } from '~/features/show/slice';
 import { getSetupStageStatuses } from '~/features/show/stages';
@@ -54,7 +54,7 @@ const TakeoffAreaButton = ({ maxDistance, onClick, status, ...rest }) => {
     >
       <StepperStatusLight status={status} />
       <ListItemText
-        primary="Setup takeoff area"
+        primary='Setup takeoff area'
         secondary={formatStatusText(status, maxDistance)}
       />
     </ListItem>
@@ -64,7 +64,7 @@ const TakeoffAreaButton = ({ maxDistance, onClick, status, ...rest }) => {
 TakeoffAreaButton.propTypes = {
   maxDistance: PropTypes.number,
   onClick: PropTypes.func,
-  status: PropTypes.oneOf(Object.values(StepperStatus))
+  status: PropTypes.oneOf(Object.values(StepperStatus)),
 };
 
 TakeoffAreaButton.defaultProps = {};
@@ -78,10 +78,10 @@ export default connect(
       getSetupStageStatuses(state).setupTakeoffArea === StepperStatus.NEXT
         ? getFarthestDistanceFromHome(state)
         : undefined,
-    status: getSetupStageStatuses(state).setupTakeoffArea
+    status: getSetupStageStatuses(state).setupTakeoffArea,
   }),
   // mapDispatchToProps
   {
-    onClick: openTakeoffAreaSetupDialog
+    onClick: openTakeoffAreaSetupDialog,
   }
 )(TakeoffAreaButton);

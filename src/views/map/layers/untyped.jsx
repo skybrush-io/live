@@ -12,7 +12,7 @@ import { changeLayerType } from '~/actions/layers';
 import {
   LayerTypes,
   iconForLayerType,
-  labelForLayerType
+  labelForLayerType,
 } from '~/model/layers';
 
 // === Settings for this particular layer type ===
@@ -34,15 +34,15 @@ const UntypedLayerSettingsPresentation = ({ onLayerTypeSelected }) => {
     </Grid>
   ));
   return (
-    <Box display="flex" flexDirection="column">
-      <Typography gutterBottom variant="subtitle1" component="p">
+    <Box display='flex' flexDirection='column'>
+      <Typography gutterBottom variant='subtitle1' component='p'>
         Pick a layer type
       </Typography>
       <Grid
         container
-        flex="1"
-        alignItems="stretch"
-        justify="space-between"
+        flex='1'
+        alignItems='stretch'
+        justify='space-between'
         spacing={2}
       >
         {items}
@@ -56,7 +56,7 @@ UntypedLayerSettingsPresentation.propTypes = {
   layer: PropTypes.object,
   layerId: PropTypes.string,
 
-  onLayerTypeSelected: PropTypes.func
+  onLayerTypeSelected: PropTypes.func,
 };
 
 export const UntypedLayerSettings = connect(
@@ -66,7 +66,7 @@ export const UntypedLayerSettings = connect(
   (dispatch, ownProps) => ({
     onLayerTypeSelected: (value) => {
       dispatch(changeLayerType(ownProps.layerId, value));
-    }
+    },
   })
 )(UntypedLayerSettingsPresentation);
 

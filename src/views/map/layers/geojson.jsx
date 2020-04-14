@@ -25,12 +25,12 @@ class GeoJSONLayerSettingsPresentation extends React.Component {
     layer: PropTypes.object,
 
     setLayerParameter: PropTypes.func,
-    showMessage: PropTypes.func
+    showMessage: PropTypes.func,
   };
 
   state = {
     strokeWidth: this.props.layer.parameters.strokeWidth,
-    data: JSON.stringify(this.props.layer.parameters.data, null, 2)
+    data: JSON.stringify(this.props.layer.parameters.data, null, 2),
   };
 
   render() {
@@ -54,10 +54,10 @@ class GeoJSONLayerSettingsPresentation extends React.Component {
 
         <TextField
           style={{ marginLeft: 25 }}
-          label="Stroke width:"
-          type="number"
-          min="1"
-          max="100"
+          label='Stroke width:'
+          type='number'
+          min='1'
+          max='100'
           value={this.state.strokeWidth}
           onChange={this._handleStrokeWidthChange}
         />
@@ -65,8 +65,8 @@ class GeoJSONLayerSettingsPresentation extends React.Component {
         <TextField
           multiline
           fullWidth
-          label="GeoJSON data:"
-          placeholder="GeoJSON"
+          label='GeoJSON data:'
+          placeholder='GeoJSON'
           rowsMax={10}
           value={this.state.data}
           onChange={this._handleDataChange}
@@ -74,8 +74,8 @@ class GeoJSONLayerSettingsPresentation extends React.Component {
 
         <div style={{ textAlign: 'center', paddingTop: '1em' }}>
           <Button
-            variant="contained"
-            color="primary"
+            variant='contained'
+            color='primary'
             onClick={this._handleClick}
           >
             Update layer
@@ -112,12 +112,12 @@ class GeoJSONLayerSettingsPresentation extends React.Component {
       this.props.setLayerParameter('data', parsedData);
       this.props.showMessage({
         message: 'GeoJSON imported successfully.',
-        semantics: 'success'
+        semantics: 'success',
       });
     } catch (_) {
       this.props.showMessage({
         message: 'Invalid GeoJSON data.',
-        semantics: 'error'
+        semantics: 'error',
       });
     }
   };
@@ -133,12 +133,12 @@ export const GeoJSONLayerSettings = connect(
     },
     showMessage: (message) => {
       dispatch(showSnackbarMessage(message));
-    }
+    },
   })
 )(GeoJSONLayerSettingsPresentation);
 
 GeoJSONLayerSettings.propTypes = {
-  layerId: PropTypes.string
+  layerId: PropTypes.string,
 };
 
 // === The actual layer to be rendered ===
@@ -179,7 +179,7 @@ class GeoJSONVectorSource extends React.Component {
   _parseFeatures(data) {
     try {
       return this.geojsonFormat.readFeatures(data, {
-        featureProjection: 'EPSG:3857'
+        featureProjection: 'EPSG:3857',
       });
     } catch (_) {
       console.error('Failed to parse GeoJSON data in layer');
@@ -215,7 +215,7 @@ export const GeoJSONLayer = ({ layer, zIndex }) => {
       'stroke-opacity': strokeColor.alpha(),
       'stroke-width': strokeWidth,
       fill: fillColor.rgb().hex(),
-      'fill-opacity': fillColor.alpha()
+      'fill-opacity': fillColor.alpha(),
     };
     return (feature) => {
       const props = feature.getProperties();
@@ -240,5 +240,5 @@ export const GeoJSONLayer = ({ layer, zIndex }) => {
 
 GeoJSONLayer.propTypes = {
   layer: PropTypes.object,
-  zIndex: PropTypes.number
+  zIndex: PropTypes.number,
 };

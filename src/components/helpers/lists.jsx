@@ -63,7 +63,7 @@ export function listOf(itemRenderer, options = {}) {
     backgroundHint,
     dataProvider,
     listFactory,
-    postprocess
+    postprocess,
   } = validateOptions(options);
   itemRenderer = validateItemRenderer(itemRenderer);
 
@@ -156,7 +156,7 @@ export function selectableListOf(itemRenderer, options = {}) {
     backgroundHint,
     dataProvider,
     listFactory,
-    postprocess
+    postprocess,
   } = validateOptions(options);
   itemRenderer = validateItemRenderer(itemRenderer);
 
@@ -172,7 +172,7 @@ export function selectableListOf(itemRenderer, options = {}) {
             onChange: undefined,
             onItemSelected: props.onChange
               ? (event) => props.onChange(event, item.id)
-              : undefined
+              : undefined,
           },
           item.id === props.value
         )
@@ -188,7 +188,7 @@ export function selectableListOf(itemRenderer, options = {}) {
 
   SelectableListView.propTypes = {
     onChange: PropTypes.func,
-    value: PropTypes.any
+    value: PropTypes.any,
   };
   return SelectableListView;
 }
@@ -249,7 +249,7 @@ export function multiSelectableListOf(itemRenderer, options = {}) {
     backgroundHint,
     dataProvider,
     listFactory,
-    postprocess
+    postprocess,
   } = validateOptions(options);
   itemRenderer = validateItemRenderer(itemRenderer);
 
@@ -258,7 +258,7 @@ export function multiSelectableListOf(itemRenderer, options = {}) {
     const items = dataProvider(props);
     const onItemSelected = createSelectionHandlerFactory({
       getSelection: () => props.value,
-      setSelection: props.onChange
+      setSelection: props.onChange,
     });
     const children = postprocess(
       items.map((item) =>
@@ -267,7 +267,7 @@ export function multiSelectableListOf(itemRenderer, options = {}) {
           {
             ...props,
             onChange: undefined,
-            onItemSelected: onItemSelected(item.id)
+            onItemSelected: onItemSelected(item.id),
           },
           includes(props.value, item.id)
         )
@@ -283,7 +283,7 @@ export function multiSelectableListOf(itemRenderer, options = {}) {
 
   MultiSelectableListView.propTypes = {
     onChange: PropTypes.func,
-    value: PropTypes.arrayOf(PropTypes.any).isRequired
+    value: PropTypes.arrayOf(PropTypes.any).isRequired,
   };
 
   return MultiSelectableListView;
@@ -301,7 +301,7 @@ const validateOptions = (options) => ({
   postprocess: identity,
   ...options,
   dataProvider: validateDataProvider(options.dataProvider),
-  listFactory: validateListFactory(options.listFactory)
+  listFactory: validateListFactory(options.listFactory),
 });
 
 /**
@@ -354,7 +354,7 @@ function validateItemRenderer(itemRenderer) {
         ...item,
         key: item.id,
         [clickHandler]: props.onItemSelected,
-        selected
+        selected,
       });
     };
     /* eslint-enable react/prop-types */
@@ -384,7 +384,7 @@ function validateListFactory(listFactory) {
         {
           dense: props.dense || props.mini,
           disablePadding: props.disablePadding || props.mini,
-          ref
+          ref,
         },
         children
       );

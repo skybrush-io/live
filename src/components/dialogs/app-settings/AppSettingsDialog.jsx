@@ -15,7 +15,7 @@ import UAVsTab from './UAVsTab';
 
 import {
   closeAppSettingsDialog,
-  setAppSettingsDialogTab
+  setAppSettingsDialogTab,
 } from '~/actions/app-settings';
 
 /* ===================================================================== */
@@ -24,7 +24,7 @@ const tabNameToComponent = {
   display: <DisplayTab />,
   threeD: <ThreeDViewTab />,
   server: <ServerTab />,
-  uavs: <UAVsTab />
+  uavs: <UAVsTab />,
 };
 
 /**
@@ -35,14 +35,14 @@ const AppSettingsDialogPresentation = ({
   onClose,
   onTabSelected,
   open,
-  selectedTab
+  selectedTab,
 }) => (
-  <Dialog fullWidth open={open} maxWidth="sm" onClose={onClose}>
+  <Dialog fullWidth open={open} maxWidth='sm' onClose={onClose}>
     <DialogTabs value={selectedTab} onChange={onTabSelected}>
-      <Tab value="display" label="Display" />
-      <Tab value="threeD" label="3D View" />
-      <Tab value="uavs" label="UAVs" />
-      {window.isElectron ? <Tab value="server" label="Server" /> : null}
+      <Tab value='display' label='Display' />
+      <Tab value='threeD' label='3D View' />
+      <Tab value='uavs' label='UAVs' />
+      {window.isElectron ? <Tab value='server' label='Server' /> : null}
     </DialogTabs>
     <DialogContent style={{ minHeight: 200 }}>
       {tabNameToComponent[selectedTab]}
@@ -54,12 +54,12 @@ AppSettingsDialogPresentation.propTypes = {
   onClose: PropTypes.func,
   onTabSelected: PropTypes.func,
   open: PropTypes.bool,
-  selectedTab: PropTypes.string
+  selectedTab: PropTypes.string,
 };
 
 AppSettingsDialogPresentation.defaultProps = {
   open: false,
-  selectedTab: 'auto'
+  selectedTab: 'auto',
 };
 
 /**
@@ -76,7 +76,7 @@ const AppSettingsDialog = connect(
     },
     onTabSelected(event, value) {
       dispatch(setAppSettingsDialogTab(value));
-    }
+    },
   })
 )(AppSettingsDialogPresentation);
 

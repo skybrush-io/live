@@ -6,9 +6,9 @@ export default {
   // We bundle an example show with the webapp demo but not with the "real" one
   examples: [
     {
-      id: "example-40",
-      title: "Example show with 40 drones",
-      url: require("~/../assets/shows/demo.skyc").default,
+      id: 'example-40',
+      title: 'Example show with 40 drones',
+      url: require('~/../assets/shows/demo.skyc').default,
     },
   ],
 
@@ -23,7 +23,7 @@ export default {
   tour: {
     steps: [
       {
-        selector: "#tour-welcome",
+        selector: '#tour-welcome',
         content: (
           <>
             <b>Welcome to Skybrush Live!</b>
@@ -40,7 +40,7 @@ export default {
         ),
       },
       {
-        selector: "#tour-map",
+        selector: '#tour-map',
         content: (
           <>
             <b>This is the map view of Skybrush Live.</b>
@@ -57,7 +57,7 @@ export default {
         ),
       },
       {
-        selector: "#sidebar",
+        selector: '#sidebar',
         content: (
           <>
             In fact, the entire user interface of Skybrush Live is based on tabs
@@ -72,7 +72,7 @@ export default {
         ),
       },
       {
-        selector: "#show-file-upload",
+        selector: '#show-file-upload',
         content: (
           <>
             <b>Now, let's get down to business!</b>
@@ -88,7 +88,7 @@ export default {
         ),
       },
       {
-        selector: "#tour-show-control",
+        selector: '#tour-show-control',
         content: (
           <>
             You need the rest of the <b>Show control</b> panel to set up the
@@ -103,7 +103,7 @@ export default {
         ),
       },
       {
-        selector: "#tour-help-button",
+        selector: '#tour-help-button',
         content: (
           <>
             <b>Help is always just one click away.</b>
@@ -117,5 +117,5 @@ export default {
     ],
   },
 
-  helpUrl: "https://doc.collmot.com/skybrush-live-doc/latest/index.html",
+  helpUrl: 'https://doc.collmot.com/skybrush-live-doc/latest/index.html',
 };

@@ -17,18 +17,18 @@ const options = Object.freeze({
     all: {
       id: 'all',
       buttonLabel: 'Start upload',
-      label: 'All drones'
+      label: 'All drones',
     },
 
     selected: {
       id: 'selected',
       buttonLabel: 'Start upload to selected drones',
       disabled: ({ hasSelection }) => !hasSelection,
-      label: 'Selected drones only'
-    }
+      label: 'Selected drones only',
+    },
   },
 
-  order: ['all', 'selected']
+  order: ['all', 'selected'],
 });
 
 /**
@@ -72,19 +72,19 @@ const StartUploadButton = ({
           disabled ||
           (selectedOption.disabled && selectedOption.disabled({ hasSelection }))
         }
-        variant="contained"
-        color="primary"
-        aria-label="split button"
+        variant='contained'
+        color='primary'
+        aria-label='split button'
       >
         <Button startIcon={<CloudUpload />} {...rest}>
           {selectedOption.buttonLabel || 'Start upload'}
         </Button>
         <Button
-          size="small"
+          size='small'
           aria-controls={open ? 'split-button-menu' : undefined}
           aria-expanded={open ? 'true' : undefined}
-          aria-label="select upload set"
-          aria-haspopup="menu"
+          aria-label='select upload set'
+          aria-haspopup='menu'
           onClick={handleToggle}
         >
           <ArrowDropDown />
@@ -103,12 +103,12 @@ const StartUploadButton = ({
             {...TransitionProps}
             style={{
               transformOrigin:
-                placement === 'bottom' ? 'center top' : 'center bottom'
+                placement === 'bottom' ? 'center top' : 'center bottom',
             }}
           >
             <Paper>
               <ClickAwayListener onClickAway={handleClose}>
-                <MenuList id="split-button-menu">
+                <MenuList id='split-button-menu'>
                   {options.order.map((id) => (
                     <MenuItem
                       key={id}
@@ -137,7 +137,7 @@ StartUploadButton.propTypes = {
   disabled: PropTypes.bool,
   hasSelection: PropTypes.bool,
   onChangeUploadTarget: PropTypes.func,
-  uploadTarget: PropTypes.oneOf(options.order)
+  uploadTarget: PropTypes.oneOf(options.order),
 };
 
 export default StartUploadButton;

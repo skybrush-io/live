@@ -7,7 +7,7 @@ import {
   isPast,
   isValid,
   setSeconds,
-  startOfDay
+  startOfDay,
 } from 'date-fns';
 import { KeyboardDatePicker, KeyboardTimePicker, Select } from 'mui-rff';
 import PropTypes from 'prop-types';
@@ -33,7 +33,7 @@ import {
   closeStartTimeDialog,
   setStartMethod,
   setStartTime,
-  synchronizeShowSettings
+  synchronizeShowSettings,
 } from '~/features/show/slice';
 
 function createDateTimeFromParts(date, time) {
@@ -70,7 +70,7 @@ const StartTimeForm = ({
   initialValues,
   onClearStartTime,
   onSubmit,
-  originalStartTime
+  originalStartTime,
 }) => (
   <Form
     initialValues={initialValues}
@@ -78,11 +78,11 @@ const StartTimeForm = ({
     onSubmit={onSubmit}
   >
     {({ dirty, form, handleSubmit, invalid }) => (
-      <form id="start-time-form" onSubmit={handleSubmit}>
+      <form id='start-time-form' onSubmit={handleSubmit}>
         <DialogContent>
           <Alert
             severity={originalStartTime ? 'info' : 'warning'}
-            variant="filled"
+            variant='filled'
             onClose={originalStartTime ? onClearStartTime : null}
           >
             <Box>
@@ -113,41 +113,41 @@ const StartTimeForm = ({
             <Box flex={1} mr={1}>
               <KeyboardDatePicker
                 disablePast
-                format="yyyy-MM-dd"
+                format='yyyy-MM-dd'
                 fullWidth={false}
-                inputVariant="filled"
-                label="Start date"
-                margin="dense"
-                name="date"
-                variant="dialog"
+                inputVariant='filled'
+                label='Start date'
+                margin='dense'
+                name='date'
+                variant='dialog'
               />
             </Box>
             <Box flex={1}>
               <KeyboardTimePicker
                 ampm={false}
-                format="HH:mm:ss"
+                format='HH:mm:ss'
                 fullWidth={false}
-                inputVariant="filled"
+                inputVariant='filled'
                 keyboardIcon={<AccessTime />}
-                label="Start time"
-                margin="dense"
-                name="time"
-                variant="dialog"
+                label='Start time'
+                margin='dense'
+                name='time'
+                variant='dialog'
               />
             </Box>
           </FormGroup>
 
           <Select
-            labelId="start-signal-label"
-            margin="dense"
-            name="method"
-            label="Start signal"
+            labelId='start-signal-label'
+            margin='dense'
+            name='method'
+            label='Start signal'
             formControlProps={{ fullWidth: true, variant: 'filled' }}
           >
-            <MenuItem value="rc">
+            <MenuItem value='rc'>
               Start show with remote controller (safer)
             </MenuItem>
-            <MenuItem value="auto">Start show automatically</MenuItem>
+            <MenuItem value='auto'>Start show automatically</MenuItem>
           </Select>
         </DialogContent>
         <DialogActions>
@@ -155,8 +155,8 @@ const StartTimeForm = ({
             Reset
           </Button>
           <Button
-            color="primary"
-            type="submit"
+            color='primary'
+            type='submit'
             disabled={invalid || (!alwaysAllowSubmission && !dirty)}
           >
             Update
@@ -170,11 +170,11 @@ const StartTimeForm = ({
 StartTimeForm.propTypes = {
   alwaysAllowSubmission: PropTypes.bool,
   initialValues: PropTypes.shape({
-    method: PropTypes.oneOf(['rc', 'auto'])
+    method: PropTypes.oneOf(['rc', 'auto']),
   }),
   onClearStartTime: PropTypes.func,
   onSubmit: PropTypes.func,
-  originalStartTime: PropTypes.instanceOf(Date)
+  originalStartTime: PropTypes.instanceOf(Date),
 };
 
 /**
@@ -187,7 +187,7 @@ const StartTimeDialog = ({
   onClearStartTime,
   onClose,
   onUpdateSettings,
-  time
+  time,
 }) => {
   const hasStartTime = typeof time === 'number';
   const startDateTime = hasStartTime
@@ -196,13 +196,13 @@ const StartTimeDialog = ({
 
   return (
     <MuiPickersUtilsProvider utils={DateFnsUtils}>
-      <Dialog fullWidth open={open} maxWidth="xs" onClose={onClose}>
+      <Dialog fullWidth open={open} maxWidth='xs' onClose={onClose}>
         <StartTimeForm
           alwaysAllowSubmission={!hasStartTime}
           initialValues={{
             method,
             date: startOfDay(startDateTime),
-            time: startDateTime
+            time: startDateTime,
           }}
           originalStartTime={hasStartTime ? startDateTime : null}
           onClearStartTime={onClearStartTime}
@@ -219,19 +219,19 @@ StartTimeDialog.propTypes = {
   onClose: PropTypes.func,
   onUpdateSettings: PropTypes.func,
   open: PropTypes.bool,
-  time: PropTypes.number
+  time: PropTypes.number,
 };
 
 StartTimeDialog.defaultProps = {
   method: 'rc',
-  open: false
+  open: false,
 };
 
 export default connect(
   // mapStateToProps
   (state) => ({
     ...state.show.startTimeDialog,
-    ...state.show.start
+    ...state.show.start,
   }),
 
   // mapDispatchToProps
@@ -250,6 +250,6 @@ export default connect(
       dispatch(setStartTime(getUnixTime(createDateTimeFromParts(date, time))));
       dispatch(synchronizeShowSettings('toServer'));
       dispatch(closeStartTimeDialog());
-    }
+    },
   })
 )(StartTimeDialog);

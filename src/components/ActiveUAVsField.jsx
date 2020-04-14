@@ -27,21 +27,21 @@ export class UAVSelectorField extends React.Component {
     label: PropTypes.node,
     maxSearchResults: PropTypes.number,
     onValueChanged: PropTypes.func,
-    uavIds: PropTypes.arrayOf(PropTypes.string)
+    uavIds: PropTypes.arrayOf(PropTypes.string),
   };
 
   static defaultProps = {
     allowEmpty: true,
     label: 'UAV ID',
     maxSearchResults: 5,
-    uavIds: []
+    uavIds: [],
   };
 
   render() {
     const { maxSearchResults, onValueChanged, uavIds, ...rest } = this.props;
     const fetchOptions = {
       caseSensitive: false,
-      maxItems: maxSearchResults
+      maxItems: maxSearchResults,
     };
     return (
       <AutoComplete
@@ -104,17 +104,17 @@ export class ActiveUAVsFieldPresentation extends React.Component {
     allowEmpty: PropTypes.bool,
     flock: PropTypes.instanceOf(Flock),
     label: PropTypes.node,
-    value: PropTypes.string
+    value: PropTypes.string,
   };
 
   static defaultProps = {
     allowEmpty: true,
     label: 'UAV ID',
-    value: ''
+    value: '',
   };
 
   state = {
-    uavIds: []
+    uavIds: [],
   };
 
   constructor(props) {
@@ -188,7 +188,7 @@ export class ActiveUAVsFieldPresentation extends React.Component {
    */
   _updateUAVIdsFromFlock(flock) {
     this.setState({
-      uavIds: flock ? flock.getAllUAVIds() : []
+      uavIds: flock ? flock.getAllUAVIds() : [],
     });
   }
 }
@@ -200,13 +200,13 @@ export class ActiveUAVsFieldPresentation extends React.Component {
 const ActiveUAVsField = connect(
   // stateToProps
   (state) => ({
-    value: state.messages.selectedUAVId || ''
+    value: state.messages.selectedUAVId || '',
   }),
   // dispatchToProps
   (dispatch) => ({
     onValueChanged(value) {
       dispatch(selectUAVInMessagesDialog(value));
-    }
+    },
   })
 )(ActiveUAVsFieldPresentation);
 

@@ -16,11 +16,11 @@ import {
   removeFeature,
   renameFeature,
   setFeatureColor,
-  updateFeatureVisibility
+  updateFeatureVisibility,
 } from '~/actions/features';
 import {
   closeFeatureEditorDialog,
-  setFeatureEditorDialogTab
+  setFeatureEditorDialogTab,
 } from '~/actions/feature-editor';
 import CircleColorPicker from '~/components/CircleColorPicker';
 import { primaryColor } from '~/utils/styles';
@@ -29,7 +29,7 @@ const GeneralPropertiesFormPresentation = ({
   feature,
   onSetFeatureColor,
   onSetFeatureLabel,
-  onToggleFeatureVisibility
+  onToggleFeatureVisibility,
 }) => (
   <div>
     <div style={{ display: 'flex', padding: '1em 0' }}>
@@ -37,14 +37,14 @@ const GeneralPropertiesFormPresentation = ({
         <TextField
           autoFocus
           fullWidth
-          label="Label"
+          label='Label'
           value={feature.label || ''}
           onChange={onSetFeatureLabel}
         />
       </div>
       <Switch
         checked={feature.visible}
-        color="primary"
+        color='primary'
         style={{ flex: 'none' }}
         onChange={onToggleFeatureVisibility}
       />
@@ -63,7 +63,7 @@ GeneralPropertiesFormPresentation.propTypes = {
   featureId: PropTypes.string.isRequired,
   onSetFeatureColor: PropTypes.func,
   onSetFeatureLabel: PropTypes.func,
-  onToggleFeatureVisibility: PropTypes.func
+  onToggleFeatureVisibility: PropTypes.func,
 };
 
 const GeneralPropertiesForm = connect(
@@ -79,7 +79,7 @@ const GeneralPropertiesForm = connect(
     },
     onToggleFeatureVisibility(event, checked) {
       dispatch(updateFeatureVisibility(featureId, checked));
-    }
+    },
   })
 )(GeneralPropertiesFormPresentation);
 
@@ -91,7 +91,7 @@ const FeatureEditorDialogPresentation = (props) => {
     onRemoveFeature,
     onTabSelected,
     open,
-    selectedTab
+    selectedTab,
   } = props;
   const actions = [];
   let content;
@@ -123,23 +123,23 @@ const FeatureEditorDialogPresentation = (props) => {
 
   actions.push(
     <Button
-      key="remove"
-      color="secondary"
+      key='remove'
+      color='secondary'
       disabled={!feature}
       onClick={onRemoveFeature}
     >
       Remove
     </Button>,
-    <Button key="close" onClick={onClose}>
+    <Button key='close' onClick={onClose}>
       Close
     </Button>
   );
 
   return (
-    <Dialog fullWidth open={open} maxWidth="xs" onClose={onClose}>
+    <Dialog fullWidth open={open} maxWidth='xs' onClose={onClose}>
       <DialogTabs value={selectedTab} onChange={onTabSelected}>
-        <Tab value="general" label="General" />
-        <Tab value="points" label="Points" />
+        <Tab value='general' label='General' />
+        <Tab value='points' label='Points' />
       </DialogTabs>
       {content}
       <DialogActions>{actions}</DialogActions>
@@ -155,12 +155,12 @@ FeatureEditorDialogPresentation.propTypes = {
   onSubmit: PropTypes.func,
   onTabSelected: PropTypes.func,
   open: PropTypes.bool.isRequired,
-  selectedTab: PropTypes.string
+  selectedTab: PropTypes.string,
 };
 
 FeatureEditorDialogPresentation.defaultProps = {
   open: false,
-  selectedTab: 'general'
+  selectedTab: 'general',
 };
 
 /**
@@ -173,13 +173,13 @@ const FeatureEditorDialog = connect(
     const {
       dialogVisible,
       featureId,
-      selectedTab
+      selectedTab,
     } = state.dialogs.featureEditor;
     return {
       featureId,
       selectedTab,
       feature: state.features.byId[featureId],
-      open: dialogVisible
+      open: dialogVisible,
     };
   },
   // mapDispatchToProps
@@ -193,13 +193,13 @@ const FeatureEditorDialog = connect(
     },
     onTabSelected(event, value) {
       dispatch(setFeatureEditorDialogTab(value));
-    }
+    },
   }),
   // MergeProps
   (stateProps, dispatchProps) => ({
     ...stateProps,
     ...dispatchProps,
-    onRemoveFeature: () => dispatchProps.onRemoveFeature(stateProps.featureId)
+    onRemoveFeature: () => dispatchProps.onRemoveFeature(stateProps.featureId),
   })
 )(FeatureEditorDialogPresentation);
 

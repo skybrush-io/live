@@ -23,9 +23,9 @@ import { closeErrorDialog } from '../../actions/error-handling';
  */
 const GlobalErrorDialogPresentation = ({ open, message, onClose }) => {
   const actions = [
-    <Button key="close" onClick={onClose}>
+    <Button key='close' onClick={onClose}>
       Close
-    </Button>
+    </Button>,
   ];
 
   return (
@@ -42,7 +42,7 @@ const GlobalErrorDialogPresentation = ({ open, message, onClose }) => {
 GlobalErrorDialogPresentation.propTypes = {
   message: PropTypes.string,
   open: PropTypes.bool.isRequired,
-  onClose: PropTypes.func
+  onClose: PropTypes.func,
 };
 
 /**
@@ -55,7 +55,7 @@ const GlobalErrorDialog = connect(
   (dispatch) => ({
     onClose() {
       dispatch(closeErrorDialog());
-    }
+    },
   })
 )(GlobalErrorDialogPresentation);
 

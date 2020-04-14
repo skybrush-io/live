@@ -92,7 +92,7 @@ const launch = async (options) => {
     port: 5000,
     args: '',
     timeout: 5000,
-    ...options
+    ...options,
   };
 
   if (localServerPathDeferred) {
@@ -108,7 +108,7 @@ const launch = async (options) => {
 
   localServerProcess = spawn(localServerPath, realArgs, {
     cwd: path.dirname(localServerPath),
-    stdio: 'ignore'
+    stdio: 'ignore',
   });
 
   localServerProcess.on('error', (reason) => {
@@ -147,8 +147,8 @@ const search = async (paths) => {
     path: [
       ...paths,
       ...pathsRelatedToAppLocation,
-      ...process.env.PATH.split(path.delimiter)
-    ].join(path.delimiter)
+      ...process.env.PATH.split(path.delimiter),
+    ].join(path.delimiter),
   });
 
   localServerPath = result;
@@ -176,5 +176,5 @@ module.exports = {
   events,
   launch,
   search,
-  terminate
+  terminate,
 };

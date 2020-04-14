@@ -16,13 +16,13 @@ const useStyles = makeStyles(
   (theme) => ({
     box: {
       userSelect: 'none',
-      whiteSpace: 'nowrap'
+      whiteSpace: 'nowrap',
     },
     divider: {
       alignSelf: 'stretch',
       height: 'auto',
-      margin: theme.spacing(1, 1)
-    }
+      margin: theme.spacing(1, 1),
+    },
   }),
   { name: 'MappingSlotEditorToolbar' }
 );
@@ -31,18 +31,18 @@ const MappingSlotEditorToolbar = React.forwardRef(
   ({ cancelMappingEditorSessionAtCurrentSlot, ...rest }, ref) => {
     const classes = useStyles();
     return (
-      <Toolbar ref={ref} disableGutters variant="dense" {...rest}>
+      <Toolbar ref={ref} disableGutters variant='dense' {...rest}>
         <IconButton disabled>
           <Keyboard />
         </IconButton>
         <Box className={classes.box}>
           <kbd>Enter</kbd> Save
         </Box>
-        <Divider orientation="vertical" className={classes.divider} />
+        <Divider orientation='vertical' className={classes.divider} />
         <Box className={classes.box}>
           <kbd>Tab</kbd> Select next empty slot
         </Box>
-        <Divider orientation="vertical" className={classes.divider} />
+        <Divider orientation='vertical' className={classes.divider} />
         <Box className={classes.box}>
           Hold <kbd>Shift</kbd> to reverse direction.
         </Box>
@@ -58,7 +58,7 @@ const MappingSlotEditorToolbar = React.forwardRef(
 MappingSlotEditorToolbar.propTypes = {
   cancelMappingEditorSessionAtCurrentSlot: PropTypes.func,
   finishMappingEditorSession: PropTypes.func,
-  selectedUAVIds: PropTypes.array
+  selectedUAVIds: PropTypes.array,
 };
 
 export default connect(

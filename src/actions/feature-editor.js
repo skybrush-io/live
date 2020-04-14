@@ -7,7 +7,7 @@ import { createAction } from 'redux-actions';
 import {
   SHOW_FEATURE_EDITOR_DIALOG,
   CLOSE_FEATURE_EDITOR_DIALOG,
-  SET_FEATURE_EDITOR_DIALOG_TAB
+  SET_FEATURE_EDITOR_DIALOG_TAB,
 } from './types';
 
 /**

@@ -10,7 +10,7 @@ import {
   formatTicksOnClock,
   getCurrentTickCountOnClock,
   getPreferredUpdateIntervalOfClock,
-  isClockSigned
+  isClockSigned,
 } from '~/features/clocks/utils';
 
 const LCDClockDisplayLabel = ({
@@ -44,11 +44,11 @@ LCDClockDisplayLabel.propTypes = {
   clockId: PropTypes.string,
   format: PropTypes.string,
   signed: PropTypes.bool,
-  updateInterval: PropTypes.number
+  updateInterval: PropTypes.number,
 };
 
 LCDClockDisplayLabel.defaultProps = {
-  format: 'HH:mm:ss'
+  format: 'HH:mm:ss',
 };
 
 export default connect(

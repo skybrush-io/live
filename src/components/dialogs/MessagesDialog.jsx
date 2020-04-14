@@ -16,7 +16,7 @@ import { MessagesPanel } from '../chat';
 
 import {
   closeMessagesDialog,
-  clearMessagesOfSelectedUAV
+  clearMessagesOfSelectedUAV,
 } from '~/actions/messages';
 import SignalListener from '~/components/SignalListener';
 import Flock from '~/model/flock';
@@ -32,7 +32,7 @@ class MessagesDialogPresentation extends React.Component {
     isOpen: PropTypes.bool.isRequired,
     onClear: PropTypes.func,
     onClose: PropTypes.func,
-    selectedUAVId: PropTypes.string
+    selectedUAVId: PropTypes.string,
   };
 
   constructor(props) {
@@ -89,12 +89,12 @@ class MessagesDialogPresentation extends React.Component {
     const { flock, isOpen, onClear, onClose, selectedUAVId } = this.props;
 
     const actions = [
-      <Button key="clear" disabled={!selectedUAVId} onClick={onClear}>
+      <Button key='clear' disabled={!selectedUAVId} onClick={onClear}>
         Clear
       </Button>,
-      <Button key="close" onClick={onClose}>
+      <Button key='close' onClick={onClose}>
         Close
-      </Button>
+      </Button>,
     ];
 
     return (
@@ -130,7 +130,7 @@ const MessagesDialog = connect(
     const { selectedUAVId } = messages;
     return {
       selectedUAVId,
-      isOpen: dialogVisible
+      isOpen: dialogVisible,
     };
   },
 
@@ -142,7 +142,7 @@ const MessagesDialog = connect(
 
     onClose() {
       dispatch(closeMessagesDialog());
-    }
+    },
   })
 )(MessagesDialogPresentation);
 

@@ -15,7 +15,7 @@ import { updateAppSettings } from '~/features/settings/slice';
 const DurationField = ({ max, min, size, ...rest }) => (
   <TextField
     InputProps={{
-      endAdornment: <InputAdornment position="end">seconds</InputAdornment>
+      endAdornment: <InputAdornment position='end'>seconds</InputAdornment>,
     }}
     inputProps={{ max, min, size, type: 'number' }}
     {...rest}
@@ -27,11 +27,11 @@ DurationField.propTypes = {
   min: PropTypes.number,
   onChange: PropTypes.func,
   size: PropTypes.number,
-  value: PropTypes.number
+  value: PropTypes.number,
 };
 
 DurationField.defaultProps = {
-  size: 4
+  size: 4,
 };
 
 const UAVsTabPresentation = ({
@@ -40,18 +40,18 @@ const UAVsTabPresentation = ({
   goneThreshold,
   onCheckboxToggled,
   onDurationFieldUpdated,
-  warnThreshold
+  warnThreshold,
 }) => {
   const theme = useTheme();
   return (
     <FormGroup style={{ marginBottom: theme.spacing(2) }}>
       <FormControl style={{ alignItems: 'center', flexDirection: 'row' }}>
         <FormControlLabel
-          label="Warn about drones not seen for at least"
+          label='Warn about drones not seen for at least'
           control={<Checkbox checked style={{ visibility: 'hidden' }} />}
         />
         <DurationField
-          name="warnThreshold"
+          name='warnThreshold'
           min={1}
           max={3600}
           value={warnThreshold}
@@ -62,11 +62,11 @@ const UAVsTabPresentation = ({
 
       <FormControl style={{ alignItems: 'center', flexDirection: 'row' }}>
         <FormControlLabel
-          label="Mark drones as gone after"
+          label='Mark drones as gone after'
           control={<Checkbox checked style={{ visibility: 'hidden' }} />}
         />
         <DurationField
-          name="goneThreshold"
+          name='goneThreshold'
           min={1}
           max={3600}
           value={goneThreshold}
@@ -77,17 +77,17 @@ const UAVsTabPresentation = ({
 
       <FormControl style={{ alignItems: 'center', flexDirection: 'row' }}>
         <FormControlLabel
-          label="Forget unseen drones after"
+          label='Forget unseen drones after'
           control={
             <Checkbox
               checked={Boolean(autoRemove)}
-              name="autoRemove"
+              name='autoRemove'
               onChange={onCheckboxToggled}
             />
           }
         />
         <DurationField
-          name="forgetThreshold"
+          name='forgetThreshold'
           min={1}
           max={3600}
           value={forgetThreshold}
@@ -105,20 +105,20 @@ UAVsTabPresentation.propTypes = {
   goneThreshold: PropTypes.number,
   onCheckboxToggled: PropTypes.func,
   onDurationFieldUpdated: PropTypes.func,
-  warnThreshold: PropTypes.number
+  warnThreshold: PropTypes.number,
 };
 
 export default connect(
   // mapStateToProps
   (state) => ({
-    ...state.settings.uavs
+    ...state.settings.uavs,
   }),
   // mapDispatchToProps
   (dispatch) => ({
     onCheckboxToggled(event) {
       dispatch(
         updateAppSettings('uavs', {
-          [event.target.name]: event.target.checked
+          [event.target.name]: event.target.checked,
         })
       );
     },
@@ -129,10 +129,10 @@ export default connect(
       if (duration > 0) {
         dispatch(
           updateAppSettings('uavs', {
-            [event.target.name]: duration
+            [event.target.name]: duration,
           })
         );
       }
-    }
+    },
   })
 )(UAVsTabPresentation);

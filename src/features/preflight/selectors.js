@@ -41,7 +41,7 @@ export const getHeadersAndItems = createSelector(
         result.push(
           {
             type: 'header',
-            ...group
+            ...group,
           },
           ...itemsInGroup
         );

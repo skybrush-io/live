@@ -15,7 +15,7 @@ import u from 'updeep';
 const defaultState = {
   position: null,
   angle: '0',
-  type: 'nwu'
+  type: 'nwu',
 };
 
 /**
@@ -47,7 +47,7 @@ const reducer = handleActions(
       const { type } = action.payload;
       const updates = { type };
       return u(updates, state);
-    }
+    },
   },
   defaultState
 );

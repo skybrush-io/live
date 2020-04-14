@@ -11,7 +11,7 @@ import {
   SET_SELECTED_FEATURES,
   REMOVE_FEATURES_FROM_SELECTION,
   SELECT_MAP_SOURCE,
-  UPDATE_MAP_VIEW_SETTINGS
+  UPDATE_MAP_VIEW_SETTINGS,
 } from './types';
 
 import { dockIdToGlobalId, uavIdToGlobalId } from '~/model/identifiers';

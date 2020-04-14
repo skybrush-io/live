@@ -22,7 +22,7 @@ import { toRadians } from '~/utils/math';
  */
 export const TransformationType = {
   MOVE: 'move',
-  ROTATE: 'rotate'
+  ROTATE: 'rotate',
 };
 
 /**
@@ -41,7 +41,7 @@ const transformationTypeToHandler = {
     const angleDelta = angle - (this.lastAngle || 0);
     geom.rotate(angleDelta, this.center);
     this.lastAngle = angle;
-  }
+  },
 };
 
 /**
@@ -80,7 +80,7 @@ export class TransformFeaturesInteraction extends PointerInteraction {
           this.features_ = features;
           this.transformation_ = {
             handler: transformationTypeToHandler[type],
-            type
+            type,
           };
 
           if (type === 'rotate') {
@@ -164,13 +164,13 @@ export class TransformFeaturesInteraction extends PointerInteraction {
         }
 
         return false;
-      }
+      },
     });
 
     const effectiveOptions = {
       moveCondition: Condition.always,
       rotateCondition: Condition.never,
-      ...options
+      ...options,
     };
 
     this.firstCoordinate_ = null;
@@ -196,7 +196,7 @@ export class TransformFeaturesInteraction extends PointerInteraction {
   calculateTotalDelta_() {
     return [
       this.lastCoordinate_[0] - this.firstCoordinate_[0],
-      this.lastCoordinate_[1] - this.firstCoordinate_[1]
+      this.lastCoordinate_[1] - this.firstCoordinate_[1],
     ];
   }
 
@@ -267,7 +267,7 @@ export class TransformFeaturesInteraction extends PointerInteraction {
         },
         {
           hitTolerance: this.hitTolerance_,
-          layerFilter: this.layerFilter_
+          layerFilter: this.layerFilter_,
         }
       );
     }
@@ -282,7 +282,7 @@ export class TransformFeaturesInteraction extends PointerInteraction {
 const TransformEventType = {
   TRANSFORM_START: 'transformStart',
   TRANSFORMING: 'transforming',
-  TRANSFORM_END: 'transformEnd'
+  TRANSFORM_END: 'transformEnd',
 };
 
 class TransformFeaturesInteractionEvent extends OLEvent {
@@ -311,20 +311,20 @@ export default createOLInteractionComponent(
 
       onTransformEnd: PropTypes.func,
       onTransforming: PropTypes.func,
-      onTransformStart: PropTypes.func
+      onTransformStart: PropTypes.func,
     },
     events: ['transformStart', 'transforming', 'transformEnd'],
     eventMap: {
       onTransformStart: 'transformStart',
       onTransforming: 'transforming',
-      onTransformEnd: 'transformEnd'
+      onTransformEnd: 'transformEnd',
     },
     fragileProps: [
       'featureProvider',
       'hitTolerance',
       'layers',
       'moveCondition',
-      'rotateCondition'
-    ]
+      'rotateCondition',
+    ],
   }
 );

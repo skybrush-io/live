@@ -46,7 +46,7 @@ export const getClockIdsAndAbbreviations = createSelector(
   (clocks) => {
     const result = clocks.map((clock) => ({
       id: clock.id,
-      label: formatClockAbbreviation(clock)
+      label: formatClockAbbreviation(clock),
     }));
 
     const counts = countBy(result, 'label');

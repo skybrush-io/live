@@ -24,17 +24,17 @@ import {
   closeLayersDialog,
   renameLayer,
   toggleLayerVisibility,
-  removeLayer
+  removeLayer,
 } from '../../actions/layers';
 import { LayerType } from '../../model/layers';
 import { createValidator, required } from '../../utils/validation';
 import {
   LayerSettings,
-  stateObjectToLayerSettings
+  stateObjectToLayerSettings,
 } from '../../views/map/layers';
 
 const validator = createValidator({
-  label: required
+  label: required,
 });
 
 /**
@@ -48,7 +48,7 @@ class BasicLayerSettingsFormPresentation extends React.Component {
     validate: PropTypes.func,
 
     onSubmit: PropTypes.func,
-    onToggleLayerVisibility: PropTypes.func
+    onToggleLayerVisibility: PropTypes.func,
   };
 
   render() {
@@ -57,7 +57,7 @@ class BasicLayerSettingsFormPresentation extends React.Component {
       layer,
       onSubmit,
       onToggleLayerVisibility,
-      validate
+      validate,
     } = this.props;
 
     return (
@@ -68,21 +68,21 @@ class BasicLayerSettingsFormPresentation extends React.Component {
         onSubmit={onSubmit}
       >
         {({ handleSubmit }) => (
-          <form id="basicLayerSettings" onSubmit={handleSubmit}>
-            <Box display="flex" pb={2}>
+          <form id='basicLayerSettings' onSubmit={handleSubmit}>
+            <Box display='flex' pb={2}>
               <Field
-                name="label"
+                name='label'
                 component={TextField}
-                variant="filled"
-                label="Layer name"
-                placeholder="New layer"
+                variant='filled'
+                label='Layer name'
+                placeholder='New layer'
                 style={{ flex: 'auto' }}
                 onKeyDown={this._onKeyDown}
               />
               <div>&nbsp;</div>
               <Switch
                 checked={layer.visible}
-                color="primary"
+                color='primary'
                 disabled={layer.type === LayerType.UNTYPED}
                 style={{ flex: 'none' }}
                 onChange={onToggleLayerVisibility}
@@ -114,8 +114,8 @@ const BasicLayerSettingsForm = connect(
   // mapStateToProps
   (state, ownProps) => ({
     initialValues: {
-      label: ownProps.layer.label
-    }
+      label: ownProps.layer.label,
+    },
   }),
   // mapDispatchToProps
   (dispatch, ownProps) => ({
@@ -139,7 +139,7 @@ const BasicLayerSettingsForm = connect(
 
     onToggleLayerVisibility() {
       dispatch(toggleLayerVisibility(ownProps.layerId));
-    }
+    },
   })
 )(BasicLayerSettingsFormPresentation);
 
@@ -151,7 +151,7 @@ const BasicLayerSettingsForm = connect(
 class LayerSettingsContainerPresentation extends React.Component {
   static propTypes = {
     layer: PropTypes.object,
-    layerId: PropTypes.string
+    layerId: PropTypes.string,
   };
 
   /**
@@ -211,7 +211,7 @@ class LayerSettingsContainerPresentation extends React.Component {
 const LayerSettingsContainer = connect(
   // mapStateToProps
   (state, ownProps) => ({
-    layer: state.map.layers.byId[ownProps.layerId]
+    layer: state.map.layers.byId[ownProps.layerId],
   })
 )(LayerSettingsContainerPresentation);
 
@@ -230,7 +230,7 @@ class LayerSettingsDialogPresentation extends React.Component {
 
     onClose: PropTypes.func,
     onMoveLayer: PropTypes.func,
-    onRemoveLayer: PropTypes.func
+    onRemoveLayer: PropTypes.func,
   };
 
   render() {
@@ -238,7 +238,7 @@ class LayerSettingsDialogPresentation extends React.Component {
       canMoveUp,
       canMoveDown,
       dialogVisible,
-      selectedLayerId
+      selectedLayerId,
     } = this.props;
     const { onClose } = this.props;
     const actions = [];
@@ -246,22 +246,22 @@ class LayerSettingsDialogPresentation extends React.Component {
     if (selectedLayerId) {
       actions.push(
         <IconButton
-          key="moveUp"
+          key='moveUp'
           disabled={!canMoveUp}
           onClick={this._moveSelectedLayerUp}
         >
           <ArrowUp />
         </IconButton>,
         <IconButton
-          key="moveDown"
+          key='moveDown'
           disabled={!canMoveDown}
           onClick={this._moveSelectedLayerDown}
         >
           <ArrowDown />
         </IconButton>,
         <Button
-          key="remove"
-          color="secondary"
+          key='remove'
+          color='secondary'
           onClick={this._removeSelectedLayer}
         >
           Remove
@@ -270,13 +270,13 @@ class LayerSettingsDialogPresentation extends React.Component {
     }
 
     actions.push(
-      <Button key="close" color="primary" onClick={onClose}>
+      <Button key='close' color='primary' onClick={onClose}>
         Close
       </Button>
     );
 
     return (
-      <Dialog fullWidth maxWidth="sm" open={dialogVisible} onClose={onClose}>
+      <Dialog fullWidth maxWidth='sm' open={dialogVisible} onClose={onClose}>
         <DialogContent style={{ overflow: 'auto' }}>
           <LayerSettingsContainer layerId={selectedLayerId} />
         </DialogContent>
@@ -320,7 +320,7 @@ const LayerSettingsDialog = connect(
       canMoveDown: layerIndex > 0,
       canMoveUp: layerIndex >= 0 && layerIndex < order.length - 1,
       dialogVisible,
-      selectedLayerId: selectedLayer
+      selectedLayerId: selectedLayer,
     };
   },
   // mapDispatchToProps
@@ -335,7 +335,7 @@ const LayerSettingsDialog = connect(
 
     onRemoveLayer(layerId) {
       dispatch(removeLayer(layerId));
-    }
+    },
   })
 )(LayerSettingsDialogPresentation);
 

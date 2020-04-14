@@ -20,40 +20,40 @@ const useStyles = makeStyles(
       transition: theme.transitions.create(['background-color', 'box-shadow']),
 
       '& div': {
-        marginBottom: theme.spacing(0.5)
+        marginBottom: theme.spacing(0.5),
       },
       '& div:last-child': {
-        marginBottom: 0
-      }
+        marginBottom: 0,
+      },
     },
 
     draggable: {
       '&:hover': {
-        boxShadow: theme.shadows[4]
-      }
+        boxShadow: theme.shadows[4],
+      },
     },
 
     selectable: {
       '&:hover': {
-        backgroundColor: theme.palette.action.hover
-      }
+        backgroundColor: theme.palette.action.hover,
+      },
     },
 
     selected: {
       backgroundColor: theme.palette.action.selected,
       '&:hover': {
-        backgroundColor: theme.palette.action.selected
-      }
-    }
+        backgroundColor: theme.palette.action.selected,
+      },
+    },
   }),
   {
-    name: 'DroneListItem'
+    name: 'DroneListItem',
   }
 );
 
 const hideItem = { style: { opacity: 0 } };
 const addDropIndicator = {
-  style: { backgroundColor: Colors.dropTarget }
+  style: { backgroundColor: Colors.dropTarget },
 };
 
 /**
@@ -63,7 +63,7 @@ const addDropIndicator = {
 const DragDropArea = ({ children, id, onDrop, ...rest }) => {
   const [collectedDragProps, drag] = useDrag({
     item: { id, type: 'uav' },
-    collect: (monitor) => monitor.isDragging() && hideItem
+    collect: (monitor) => monitor.isDragging() && hideItem,
   });
 
   const [collectedDropProps, drop] = useDrop({
@@ -71,7 +71,7 @@ const DragDropArea = ({ children, id, onDrop, ...rest }) => {
     canDrop: (item) => id !== item.id,
     collect: (monitor) =>
       monitor.isOver() && monitor.canDrop() && addDropIndicator,
-    drop: onDrop ? (item) => onDrop(item.id) : undefined
+    drop: onDrop ? (item) => onDrop(item.id) : undefined,
   });
 
   const ref = useCallback(
@@ -92,7 +92,7 @@ const DragDropArea = ({ children, id, onDrop, ...rest }) => {
 DragDropArea.propTypes = {
   children: PropTypes.node,
   id: PropTypes.string,
-  onDrop: PropTypes.func
+  onDrop: PropTypes.func,
 };
 
 const DroneListItem = ({
@@ -101,7 +101,7 @@ const DroneListItem = ({
   onClick,
   onDrop,
   selected,
-  uavId
+  uavId,
 }) => {
   const classes = useStyles();
   const className = clsx(
@@ -132,7 +132,7 @@ DroneListItem.propTypes = {
   onClick: PropTypes.func,
   onDrop: PropTypes.func,
   selected: PropTypes.bool,
-  uavId: PropTypes.string
+  uavId: PropTypes.string,
 };
 
 export default DroneListItem;

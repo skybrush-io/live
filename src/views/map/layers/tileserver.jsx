@@ -23,7 +23,7 @@ class TileServerLayerSettingsPresentation extends React.Component {
 
     changeTileServerType: PropTypes.func,
     setLayerParameters: PropTypes.func,
-    showMessage: PropTypes.func
+    showMessage: PropTypes.func,
   };
 
   constructor(props) {
@@ -32,7 +32,7 @@ class TileServerLayerSettingsPresentation extends React.Component {
     const { layers, url } = props.layer.parameters;
     this.state = {
       layers: layers || '',
-      url: url || ''
+      url: url || '',
     };
   }
 
@@ -49,10 +49,10 @@ class TileServerLayerSettingsPresentation extends React.Component {
     return (
       <div>
         <FormControl fullWidth>
-          <InputLabel htmlFor="tile-server-type">Tile server type</InputLabel>
+          <InputLabel htmlFor='tile-server-type'>Tile server type</InputLabel>
           <Select
             value={parameters.type}
-            input={<Input id="tile-server-type" />}
+            input={<Input id='tile-server-type' />}
             onChange={changeTileServerType}
           >
             {serverTypeMenuItems}
@@ -61,8 +61,8 @@ class TileServerLayerSettingsPresentation extends React.Component {
 
         <TextField
           fullWidth
-          label="Tile server URL"
-          margin="normal"
+          label='Tile server URL'
+          margin='normal'
           value={url}
           onChange={this._onUrlChanged}
         />
@@ -81,9 +81,9 @@ class TileServerLayerSettingsPresentation extends React.Component {
         ) : (
           <TextField
             fullWidth
-            label="Layers"
-            margin="normal"
-            placeholder="Layers to show (comma-separated)"
+            label='Layers'
+            margin='normal'
+            placeholder='Layers to show (comma-separated)'
             value={layers}
             onChange={this._onLayersChanged}
           />
@@ -119,7 +119,7 @@ export const TileServerLayerSettings = connect(
     changeTileServerType: (event) => {
       dispatch(
         setLayerParametersById(ownProps.layerId, {
-          type: event.target.value
+          type: event.target.value,
         })
       );
     },
@@ -128,7 +128,7 @@ export const TileServerLayerSettings = connect(
     },
     showMessage: (message) => {
       dispatch(showSnackbarMessage(message));
-    }
+    },
   })
 )(TileServerLayerSettingsPresentation);
 
@@ -137,7 +137,7 @@ export const TileServerLayerSettings = connect(
 class TileServerLayerPresentation extends React.Component {
   static propTypes = {
     layer: PropTypes.object,
-    zIndex: PropTypes.number
+    zIndex: PropTypes.number,
   };
 
   render() {
@@ -158,7 +158,7 @@ class TileServerLayerPresentation extends React.Component {
             url={url}
             params={{
               LAYERS: layers,
-              TILED: true
+              TILED: true,
             }}
           />
         );

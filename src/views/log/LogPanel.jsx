@@ -14,14 +14,14 @@ import AlertWarning from '@material-ui/icons/Warning';
 import ContentReport from '@material-ui/icons/Report';
 
 import FilterableSortableTable, {
-  FilterTypes
+  FilterTypes,
 } from '~/components/FilterableSortableTable';
 import { updateLogPanelVisibility } from '~/features/log/slice';
 import { colorForLogLevel, LogLevel } from '~/utils/logging';
 
 const iconForLogLevel = (level) => {
   const style = {
-    color: colorForLogLevel(level)
+    color: colorForLogLevel(level),
   };
   if (level <= LogLevel.INFO) {
     return <ActionInfo style={style} />;
@@ -43,8 +43,8 @@ const tableColumns = [
     filterType: FilterTypes.list,
     filterList: Object.keys(LogLevel).map((level) => ({
       value: LogLevel[level],
-      display: iconForLogLevel(LogLevel[level])
-    }))
+      display: iconForLogLevel(LogLevel[level]),
+    })),
   },
   {
     name: 'Timestamp',
@@ -60,14 +60,14 @@ const tableColumns = [
         padStart(currentDate.getSeconds(), 2, '0')
       );
     },
-    filterType: FilterTypes.range
+    filterType: FilterTypes.range,
   },
   {
     name: 'Message',
     width: 700,
     dataExtractor: property('message'),
-    filterType: FilterTypes.text
-  }
+    filterType: FilterTypes.text,
+  },
 ];
 
 const LogPanel = ({ items, updateLogPanelVisibility }) => {
@@ -88,13 +88,13 @@ const LogPanel = ({ items, updateLogPanelVisibility }) => {
 
 LogPanel.propTypes = {
   items: PropTypes.array,
-  updateLogPanelVisibility: PropTypes.func.isRequired
+  updateLogPanelVisibility: PropTypes.func.isRequired,
 };
 
 export default connect(
   // mapStateToProps
   (state) => ({
-    items: state.log.items
+    items: state.log.items,
   }),
   // mapDispatchToProps
   { updateLogPanelVisibility }

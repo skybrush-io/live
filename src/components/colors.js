@@ -12,12 +12,12 @@ export const Colors = {
   axisColors: {
     x: '#f44',
     y: '#4f4',
-    z: '#06f'
+    z: '#06f',
   },
 
   landingMarker: '#3c3',
   originMarker: '#f44',
-  takeoffMarker: '#fc0'
+  takeoffMarker: '#fc0',
 };
 
 export default Colors;

@@ -11,7 +11,7 @@ import u from 'updeep';
  */
 const defaultState = {
   lastError: undefined,
-  open: false
+  open: false,
 };
 
 /**
@@ -34,7 +34,7 @@ const reducer = handleActions(
       return payload.result
         ? u({ lastError: undefined, open: false }, state)
         : u({ lastError: payload.reason || 'Unexpected failure' }, state);
-    }
+    },
   },
   defaultState
 );

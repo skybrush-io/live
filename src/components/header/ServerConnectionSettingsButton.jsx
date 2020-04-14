@@ -11,7 +11,7 @@ import { showServerSettingsDialog } from '~/actions/server-settings';
 export default (props) => {
   const dispatch = useDispatch();
   const onClick = useCallback(() => dispatch(showServerSettingsDialog()), [
-    dispatch
+    dispatch,
   ]);
   return (
     <GenericHeaderButton {...props} onClick={onClick}>

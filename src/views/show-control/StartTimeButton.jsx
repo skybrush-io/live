@@ -6,7 +6,7 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 
 import StepperStatusLight, {
-  StepperStatus
+  StepperStatus,
 } from '~/components/StepperStatusLight';
 import { getShowStartTimeAsString } from '~/features/show/selectors';
 import { openStartTimeDialog } from '~/features/show/slice';
@@ -21,7 +21,7 @@ const StartTimeButton = ({ formattedStartTime, onClick, status }) => {
     <ListItem button disabled={status === StepperStatus.OFF} onClick={onClick}>
       <StepperStatusLight status={status} />
       <ListItemText
-        primary="Choose start time"
+        primary='Choose start time'
         secondary={
           formattedStartTime ? `Starts at ${formattedStartTime}` : 'Not set yet'
         }
@@ -33,7 +33,7 @@ const StartTimeButton = ({ formattedStartTime, onClick, status }) => {
 StartTimeButton.propTypes = {
   formattedStartTime: PropTypes.string,
   onClick: PropTypes.func,
-  status: PropTypes.oneOf(Object.values(StepperStatus))
+  status: PropTypes.oneOf(Object.values(StepperStatus)),
 };
 
 StartTimeButton.defaultProps = {};
@@ -43,10 +43,10 @@ export default connect(
   (state) => ({
     ...state.show.start,
     formattedStartTime: getShowStartTimeAsString(state),
-    status: getSetupStageStatuses(state).setupStartTime
+    status: getSetupStageStatuses(state).setupStartTime,
   }),
   // mapDispatchToProps
   {
-    onClick: openStartTimeDialog
+    onClick: openStartTimeDialog,
   }
 )(StartTimeButton);

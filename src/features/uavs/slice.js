@@ -11,7 +11,7 @@ import {
   addItemSorted,
   clearOrderedCollection,
   deleteItemsByIds,
-  replaceItemOrAddSorted
+  replaceItemOrAddSorted,
 } from '~/utils/collections';
 
 const { actions, reducer } = createSlice({
@@ -39,7 +39,7 @@ const { actions, reducer } = createSlice({
     },
     // Order defines the preferred ordering of UAVs on the UI. CUrrently we sort
     // automatically based on IDs.
-    order: []
+    order: [],
   },
 
   reducers: {
@@ -70,8 +70,8 @@ const { actions, reducer } = createSlice({
       for (const uav of Object.values(action.payload)) {
         replaceItemOrAddSorted(state, uav);
       }
-    }
-  }
+    },
+  },
 });
 
 export const {
@@ -79,7 +79,7 @@ export const {
   clearUAVList,
   removeUAVs,
   updateAgesOfUAVs,
-  updateUAVs
+  updateUAVs,
 } = actions;
 
 export default reducer;

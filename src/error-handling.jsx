@@ -15,8 +15,8 @@ const logger = makeLogger('error');
 
 const ProductionErrorHandler = () => {
   return (
-    <div className="error-panel">
-      <div className="error-icon">
+    <div className='error-panel'>
+      <div className='error-icon'>
         <AlertWarning style={{ width: 48, height: 48 }} />
       </div>
       <div>An error happened while rendering this component.</div>
@@ -25,10 +25,10 @@ const ProductionErrorHandler = () => {
 };
 
 const StackTraceErrorHandler = ({ error }) => (
-  <RedBox error={error} editorScheme="atm" />
+  <RedBox error={error} editorScheme='atm' />
 );
 StackTraceErrorHandler.propTypes = {
-  error: PropTypes.any.isRequired
+  error: PropTypes.any.isRequired,
 };
 
 export const ErrorHandler = __PROD__

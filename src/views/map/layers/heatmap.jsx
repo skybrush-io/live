@@ -28,7 +28,7 @@ import messageHub from '~/message-hub';
 import HashedMap from '~/utils/hashedmap';
 import {
   mapViewCoordinateFromLonLat,
-  lonLatFromMapViewCoordinate
+  lonLatFromMapViewCoordinate,
 } from '~/utils/geography';
 
 const formatNumber = (x) => numbro(x).format('0.000');
@@ -36,12 +36,12 @@ const formatNumber = (x) => numbro(x).format('0.000');
 const heatmapColoringFunctions = {
   linear: {
     name: 'Linear',
-    function: (x) => x
+    function: (x) => x,
   },
   logarithmic: {
     name: 'Logarithmic',
-    function: (x) => Math.log(x)
-  }
+    function: (x) => Math.log(x),
+  },
 };
 
 // === Settings for this particular layer type ===
@@ -51,7 +51,7 @@ class HeatmapLayerSettingsPresentation extends React.Component {
     layer: PropTypes.object,
     layerId: PropTypes.string,
 
-    setLayerParameter: PropTypes.func
+    setLayerParameter: PropTypes.func,
   };
 
   constructor(props) {
@@ -60,7 +60,7 @@ class HeatmapLayerSettingsPresentation extends React.Component {
     this.state = {
       coloringFunction: props.layer.parameters.coloringFunction,
       minHue: props.layer.parameters.minHue,
-      maxHue: props.layer.parameters.maxHue
+      maxHue: props.layer.parameters.maxHue,
     };
 
     this._refs = Object.assign(
@@ -72,7 +72,7 @@ class HeatmapLayerSettingsPresentation extends React.Component {
         'maxValue',
         'minHue',
         'maxHue',
-        'minDistance'
+        'minDistance',
       ].map((x) => ({ [x]: React.createRef() }))
     );
 
@@ -92,7 +92,7 @@ class HeatmapLayerSettingsPresentation extends React.Component {
 
     const textFieldStyle = {
       marginRight: 10,
-      width: 125
+      width: 125,
     };
 
     return (
@@ -106,7 +106,7 @@ class HeatmapLayerSettingsPresentation extends React.Component {
         />
 
         <Button
-          variant="raised"
+          variant='raised'
           style={{ marginBottom: '10px' }}
           onClick={this._showSubscriptionDialog}
         >
@@ -119,13 +119,13 @@ class HeatmapLayerSettingsPresentation extends React.Component {
           <TextField
             inputRef={this._refs.threshold}
             style={textFieldStyle}
-            label="Threshold"
-            type="number"
+            label='Threshold'
+            type='number'
             defaultValue={formatNumber(parameters.threshold)}
           />
 
           <FormControl style={{ width: '125px' }}>
-            <InputLabel htmlFor="selectedChannel">Coloring function</InputLabel>
+            <InputLabel htmlFor='selectedChannel'>Coloring function</InputLabel>
 
             <Select
               value={this.state.coloringFunction}
@@ -144,19 +144,19 @@ class HeatmapLayerSettingsPresentation extends React.Component {
           <TextField
             inputRef={this._refs.minValue}
             style={textFieldStyle}
-            label="Minimum value"
-            type="number"
+            label='Minimum value'
+            type='number'
             defaultValue={formatNumber(parameters.minValue)}
           />
           <TextField
             inputRef={this._refs.maxValue}
             style={textFieldStyle}
-            label="Maximum value"
-            type="number"
+            label='Maximum value'
+            type='number'
             defaultValue={formatNumber(parameters.maxValue)}
           />
           <FormControlLabel
-            label="Autoscale"
+            label='Autoscale'
             control={
               <Switch
                 checked={parameters.autoScale}
@@ -169,10 +169,10 @@ class HeatmapLayerSettingsPresentation extends React.Component {
         <div style={{ padding: '24px 0' }}>
           <input
             ref={this._refs.minHue}
-            id="minHue"
-            type="range"
-            min="0"
-            max="360"
+            id='minHue'
+            type='range'
+            min='0'
+            max='360'
             style={{ width: '100px', verticalAlign: 'middle' }}
             value={minHue}
             onChange={this._handleHueChange}
@@ -190,16 +190,16 @@ class HeatmapLayerSettingsPresentation extends React.Component {
               hsla(${minHue}, 70%, 50%, 0.75)
             )`,
               borderRadius: '10px',
-              boxShadow: '0px 0px 3px 0px black'
+              boxShadow: '0px 0px 3px 0px black',
             }}
           />
 
           <input
             ref={this._refs.maxHue}
-            id="maxHue"
-            type="range"
-            min="0"
-            max="360"
+            id='maxHue'
+            type='range'
+            min='0'
+            max='360'
             style={{ width: '100px', verticalAlign: 'middle' }}
             value={maxHue}
             onChange={this._handleHueChange}
@@ -209,16 +209,16 @@ class HeatmapLayerSettingsPresentation extends React.Component {
         <FormGroup row>
           <TextField
             inputRef={this._refs.minDistance}
-            label="Min distance"
+            label='Min distance'
             style={textFieldStyle}
             InputProps={{
-              endAdornment: <InputAdornment position="end">m</InputAdornment>
+              endAdornment: <InputAdornment position='end'>m</InputAdornment>,
             }}
-            type="number"
+            type='number'
             defaultValue={formatNumber(parameters.minDistance)}
           />
           <FormControlLabel
-            label="Snap to grid"
+            label='Snap to grid'
             control={
               <Switch
                 checked={parameters.snapToGrid}
@@ -231,7 +231,7 @@ class HeatmapLayerSettingsPresentation extends React.Component {
         <FormGroup row style={{ paddingTop: 10 }}>
           <Button onClick={this._handleClick}>Update parameters</Button>
 
-          <Button color="secondary" onClick={this._clearData}>
+          <Button color='secondary' onClick={this._clearData}>
             Clear data
           </Button>
         </FormGroup>
@@ -245,13 +245,13 @@ class HeatmapLayerSettingsPresentation extends React.Component {
 
   _handleHueChange = (e) => {
     this.setState({
-      [e.target.id]: toNumber(e.target.value)
+      [e.target.id]: toNumber(e.target.value),
     });
   };
 
   _handleColoringFunctionChange = (e) => {
     this.setState({
-      coloringFunction: e.target.value
+      coloringFunction: e.target.value,
     });
   };
 
@@ -263,7 +263,7 @@ class HeatmapLayerSettingsPresentation extends React.Component {
       maxValue: toNumber(this._refs.maxValue.current.value),
       minHue: this.state.minHue,
       maxHue: this.state.maxHue,
-      minDistance: toNumber(this._refs.minDistance.current.value)
+      minDistance: toNumber(this._refs.minDistance.current.value),
     };
 
     for (const layerParameter in layerParameters) {
@@ -296,7 +296,7 @@ export const HeatmapLayerSettings = connect(
   (dispatch, ownProps) => ({
     setLayerParameter: (parameter, value) => {
       dispatch(setLayerParameterById(ownProps.layerId, parameter, value));
-    }
+    },
   })
 )(HeatmapLayerSettingsPresentation);
 
@@ -322,8 +322,8 @@ const makePointStyle = (color, radius) =>
   new Style({
     image: new Circle({
       fill: new Fill({ color }),
-      radius
-    })
+      radius,
+    }),
   });
 
 class HeatmapVectorSource extends React.Component {
@@ -331,7 +331,7 @@ class HeatmapVectorSource extends React.Component {
     storageKey: PropTypes.string,
     parameters: PropTypes.object,
 
-    setLayerParameter: PropTypes.func
+    setLayerParameter: PropTypes.func,
   };
 
   constructor(props) {
@@ -422,7 +422,7 @@ class HeatmapVectorSource extends React.Component {
     await messageHub.waitUntilReady();
     messageHub.sendMessage({
       type: 'DEV-SUB',
-      paths: subscriptions
+      paths: subscriptions,
     });
   };
 
@@ -430,7 +430,7 @@ class HeatmapVectorSource extends React.Component {
     await messageHub.waitUntilReady();
     messageHub.sendMessage({
       type: 'DEV-UNSUB',
-      paths: subscriptions
+      paths: subscriptions,
     });
   };
 
@@ -516,7 +516,7 @@ class HeatmapVectorSource extends React.Component {
 
   _makePoint = (center) => {
     return new Feature({
-      geometry: new Point(mapViewCoordinateFromLonLat(center))
+      geometry: new Point(mapViewCoordinateFromLonLat(center)),
     });
   };
 
@@ -539,7 +539,7 @@ class HeatmapLayerPresentation extends React.Component {
     layerId: PropTypes.string,
     zIndex: PropTypes.number,
 
-    setLayerParameter: PropTypes.func
+    setLayerParameter: PropTypes.func,
   };
 
   constructor(props) {
@@ -556,7 +556,7 @@ class HeatmapLayerPresentation extends React.Component {
       minValue,
       maxValue,
       minHue,
-      maxHue
+      maxHue,
     } = this.props.layer.parameters;
 
     const processValue = heatmapColoringFunctions[coloringFunction].function;
@@ -601,13 +601,13 @@ class HeatmapLayerPresentation extends React.Component {
         </layer.Vector>
 
         <div
-          id="heatmapScale"
+          id='heatmapScale'
           style={{
             background: `linear-gradient(
               hsla(${this.props.layer.parameters.maxHue}, 70%, 50%, 0.75),
               hsla(${this.props.layer.parameters.minHue}, 70%, 50%, 0.75)
             )`,
-            borderRadius: '5px'
+            borderRadius: '5px',
           }}
         >
           <span>{`${formatNumber(maxValue)} ${displayedUnit}`}</span>
@@ -628,6 +628,6 @@ export const HeatmapLayer = connect(
   (dispatch, ownProps) => ({
     setLayerParameter: (parameter, value) => {
       dispatch(setLayerParameterById(ownProps.layerId, parameter, value));
-    }
+    },
   })
 )(HeatmapLayerPresentation);

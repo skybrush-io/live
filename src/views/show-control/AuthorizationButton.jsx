@@ -7,15 +7,15 @@ import ListItemText from '@material-ui/core/ListItemText';
 import Typography from '@material-ui/core/Typography';
 
 import StepperStatusLight, {
-  StepperStatus
+  StepperStatus,
 } from '~/components/StepperStatusLight';
 import {
   setShowAuthorization,
-  synchronizeShowSettings
+  synchronizeShowSettings,
 } from '~/features/show/slice';
 import {
   countUAVsTakingOffAutomatically,
-  isShowAuthorizedToStartLocally
+  isShowAuthorizedToStartLocally,
 } from '~/features/show/selectors';
 import { getSetupStageStatuses } from '~/features/show/stages';
 
@@ -46,14 +46,14 @@ const AuthorizationButton = ({
     <ListItemText
       disableTypography
       primary={
-        <Typography variant="button">
+        <Typography variant='button'>
           {isAuthorized
             ? 'Show authorized to start'
             : 'Authorize start of show'}
         </Typography>
       }
       secondary={
-        <Typography variant="body2" color="textSecondary">
+        <Typography variant='body2' color='textSecondary'>
           {isAuthorized
             ? numUAVsTakingOffAutomatically <= 0
               ? 'Click here to revoke authorization'
@@ -70,7 +70,7 @@ const AuthorizationButton = ({
 AuthorizationButton.propTypes = {
   isAuthorized: PropTypes.bool,
   numUAVsTakingOffAutomatically: PropTypes.number,
-  status: PropTypes.oneOf(Object.values(StepperStatus))
+  status: PropTypes.oneOf(Object.values(StepperStatus)),
 };
 
 export default connect(
@@ -78,7 +78,7 @@ export default connect(
   (state) => ({
     isAuthorized: isShowAuthorizedToStartLocally(state),
     numUAVsTakingOffAutomatically: countUAVsTakingOffAutomatically(state),
-    status: getSetupStageStatuses(state).authorization
+    status: getSetupStageStatuses(state).authorization,
   }),
   // mapDispatchToProps
   {
@@ -86,6 +86,6 @@ export default connect(
       const state = getState();
       dispatch(setShowAuthorization(!isShowAuthorizedToStartLocally(state)));
       dispatch(synchronizeShowSettings('toServer'));
-    }
+    },
   }
 )(AuthorizationButton);

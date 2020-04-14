@@ -18,7 +18,7 @@ import {
   getSeverityOfErrorCode,
   getSeverityOfMostSevereErrorCode,
   ErrorCode,
-  Severity
+  Severity,
 } from '~/flockwave/errors';
 import { UAVAge } from '~/model/uav';
 
@@ -39,41 +39,41 @@ const useStyles = makeStyles(
         top: 'calc(50% - 2px)',
         transform: 'rotate(-45deg)',
         transition: 'left 300ms, width 300ms',
-        width: '0%'
+        width: '0%',
       },
 
       '&.crossed::after': {
         left: '-20%',
-        width: '140%'
-      }
+        width: '140%',
+      },
     },
 
     avatar: {
       border: '1px solid rgba(0, 0, 0, 0.3)',
-      color: 'black'
+      color: 'black',
     },
 
     'avatar-off': {
       backgroundColor: Colors.off,
-      color: theme.palette.getContrastText(Colors.off)
+      color: theme.palette.getContrastText(Colors.off),
     },
 
     'avatar-editing': {
       backgroundColor: Colors.info,
       color: theme.palette.getContrastText(Colors.info),
       animation: '$pulse 0.5s infinite',
-      animationDirection: 'alternate'
+      animationDirection: 'alternate',
     },
 
     'avatar-success': {
       backgroundColor: Colors.success,
-      color: theme.palette.getContrastText(Colors.success)
+      color: theme.palette.getContrastText(Colors.success),
     },
 
     'avatar-warning': {
       backgroundColor: Colors.warning,
       boxShadow: `0 0 8px 2px ${Colors.warning}`,
-      color: theme.palette.getContrastText(Colors.warning)
+      color: theme.palette.getContrastText(Colors.warning),
     },
 
     'avatar-rth': {
@@ -81,13 +81,13 @@ const useStyles = makeStyles(
       animationDirection: 'alternate',
       backgroundColor: Colors.warning,
       boxShadow: `0 0 8px 2px ${Colors.warning}`,
-      color: theme.palette.getContrastText(Colors.warning)
+      color: theme.palette.getContrastText(Colors.warning),
     },
 
     'avatar-error': {
       backgroundColor: Colors.error,
       boxShadow: `0 0 8px 2px ${Colors.error}`,
-      color: theme.palette.getContrastText(Colors.error)
+      color: theme.palette.getContrastText(Colors.error),
     },
 
     'avatar-critical': {
@@ -95,7 +95,7 @@ const useStyles = makeStyles(
       animationDirection: 'alternate',
       backgroundColor: Colors.error,
       boxShadow: `0 0 8px 2px ${Colors.error}`,
-      color: theme.palette.getContrastText(Colors.error)
+      color: theme.palette.getContrastText(Colors.error),
     },
 
     hint: {
@@ -107,32 +107,32 @@ const useStyles = makeStyles(
       right: theme.spacing(0.5),
       textAlign: 'right',
       top: theme.spacing(0.5),
-      whiteSpace: 'nowrap'
+      whiteSpace: 'nowrap',
     },
 
     '@keyframes pulse': {
       '0%': {
-        boxShadow: `0 0 8px 2px ${color(Colors.info).alpha(0)}`
+        boxShadow: `0 0 8px 2px ${color(Colors.info).alpha(0)}`,
       },
       '100%': {
-        boxShadow: `0 0 8px 2px ${Colors.info}`
-      }
+        boxShadow: `0 0 8px 2px ${Colors.info}`,
+      },
     },
 
     '@keyframes flash': {
       '0%, 49%': {
-        opacity: 0.2
+        opacity: 0.2,
       },
       '50%, 100%': {
-        opacity: 1
-      }
+        opacity: 1,
+      },
     },
 
     progress: {
       position: 'absolute',
       top: -2,
-      left: -2
-    }
+      left: -2,
+    },
   }),
   { name: 'DroneAvatar' }
 );
@@ -151,7 +151,7 @@ const DroneAvatar = ({
   secondaryStatus,
   status,
   text,
-  textSemantics
+  textSemantics,
 }) => {
   const classes = useStyles();
   return (
@@ -177,7 +177,7 @@ const DroneAvatar = ({
             className={classes.progress}
             size={44}
             value={progress}
-            variant="static"
+            variant='static'
           />
         )}
         {secondaryStatus && <SecondaryStatusLight status={secondaryStatus} />}
@@ -191,7 +191,7 @@ const DroneAvatar = ({
 DroneAvatar.propTypes = {
   batteryStatus: PropTypes.shape({
     votlage: PropTypes.number,
-    percentage: PropTypes.number
+    percentage: PropTypes.number,
   }),
   hint: PropTypes.string,
   crossed: PropTypes.bool,
@@ -205,7 +205,7 @@ DroneAvatar.propTypes = {
     'warning',
     'rth',
     'error',
-    'critical'
+    'critical',
   ]),
   selected: PropTypes.bool,
   status: PropTypes.oneOf([
@@ -214,7 +214,7 @@ DroneAvatar.propTypes = {
     'warning',
     'rth',
     'error',
-    'critical'
+    'critical',
   ]),
   text: PropTypes.string,
   textSemantics: PropTypes.oneOf([
@@ -224,13 +224,13 @@ DroneAvatar.propTypes = {
     'warning',
     'rth',
     'error',
-    'critical'
-  ])
+    'critical',
+  ]),
 };
 
 DroneAvatar.defaultProps = {
   status: 'off',
-  textSemantics: 'info'
+  textSemantics: 'info',
 };
 
 function severityToSemantics(severity) {
@@ -365,12 +365,12 @@ export default connect(
     const uav = state.uavs.byId[ownProps.id];
     return uav === undefined
       ? {
-          ...getDroneText(uav)
+          ...getDroneText(uav),
         }
       : {
           batteryStatus: uav.battery,
           status: getDroneStatus(uav),
-          ...getDroneText(uav)
+          ...getDroneText(uav),
         };
   }
 )(DroneAvatar);

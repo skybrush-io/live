@@ -25,7 +25,7 @@ import ThreeDView from './ThreeDView';
 
 import {
   setAppSettingsDialogTab,
-  showAppSettingsDialog
+  showAppSettingsDialog,
 } from '~/actions/app-settings';
 import { setNavigationMode } from '~/features/three-d/slice';
 import { isMapCoordinateSystemSpecified } from '~/selectors/map';
@@ -35,21 +35,21 @@ const useStyles = makeStyles(
   (theme) => ({
     appBar: {
       backgroundColor: isDark(theme) ? '#444' : theme.palette.background.paper,
-      height: 48
+      height: 48,
     },
 
     divider: {
       alignSelf: 'stretch',
       height: 'auto',
-      margin: theme.spacing(1, 0.5)
+      margin: theme.spacing(1, 0.5),
     },
 
     toolbar: {
       position: 'absolute',
       left: theme.spacing(1),
       right: theme.spacing(1),
-      top: 0
-    }
+      top: 0,
+    },
   }),
   { name: 'ThreeDTopLevelView' }
 );
@@ -58,7 +58,7 @@ const ThreeDTopLevelView = ({
   hasMapCoordinateSystem,
   navigation,
   onSetNavigationMode,
-  onShowSettings
+  onShowSettings,
 }) => {
   const classes = useStyles();
 
@@ -68,34 +68,34 @@ const ThreeDTopLevelView = ({
       if (threeDViewRef.current) {
         threeDViewRef.current.resize();
       }
-    }
+    },
   });
 
   return (
-    <Box display="flex" flexDirection="column" height="100%">
-      <AppBar color="default" position="static" className={classes.appBar}>
-        <Toolbar disableGutters variant="dense" className={classes.toolbar}>
+    <Box display='flex' flexDirection='column' height='100%'>
+      <AppBar color='default' position='static' className={classes.appBar}>
+        <Toolbar disableGutters variant='dense' className={classes.toolbar}>
           <NavigationButtonGroup
             mode={navigation.mode}
             parameters={navigation.parameters}
             onChange={onSetNavigationMode}
           />
-          <Divider className={classes.divider} orientation="vertical" />
+          <Divider className={classes.divider} orientation='vertical' />
           <NavigationInstructions mode={navigation.mode} />
         </Toolbar>
       </AppBar>
-      <Box ref={ref} position="relative" flex={1}>
+      <Box ref={ref} position='relative' flex={1}>
         <SelectionTooltip>
           <ThreeDView ref={threeDViewRef} />
         </SelectionTooltip>
         {!hasMapCoordinateSystem && (
           <Overlay left={8} right={8} top={8}>
             <Alert
-              severity="warning"
+              severity='warning'
               action={
                 <IconButton
-                  color="inherit"
-                  size="small"
+                  color='inherit'
+                  size='small'
                   onClick={onShowSettings}
                 >
                   <Settings />
@@ -119,17 +119,17 @@ ThreeDTopLevelView.propTypes = {
   hasMapCoordinateSystem: PropTypes.bool,
   navigation: PropTypes.shape({
     mode: PropTypes.string,
-    parameters: PropTypes.object
+    parameters: PropTypes.object,
   }),
   onSetNavigationMode: PropTypes.func,
-  onShowSettings: PropTypes.func
+  onShowSettings: PropTypes.func,
 };
 
 export default connect(
   // mapStateToProps
   (state) => ({
     hasMapCoordinateSystem: isMapCoordinateSystemSpecified(state),
-    ...state.threeD
+    ...state.threeD,
   }),
   // mapDispatchToProps
   {
@@ -138,6 +138,6 @@ export default connect(
     onShowSettings: () => (dispatch) => {
       dispatch(setAppSettingsDialogTab('display'));
       dispatch(showAppSettingsDialog());
-    }
+    },
   }
 )(ThreeDTopLevelView);

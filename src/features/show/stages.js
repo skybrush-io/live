@@ -16,14 +16,14 @@ import {
   isLoadingShowFile,
   isShowAuthorizedToStart,
   isShowAuthorizedToStartLocally,
-  isTakeoffAreaApproved
+  isTakeoffAreaApproved,
 } from './selectors';
 
 import { getEmptyMappingSlotIndices } from '~/features/mission/selectors';
 import { areAllPreflightChecksTicked } from '~/features/preflight/selectors';
 import {
   areAllUAVsInMissionWithoutErrors,
-  getMissingUAVIdsInMapping
+  getMissingUAVIdsInMapping,
 } from '~/features/uavs/selectors';
 
 import { StepperStatus } from '~/components/StepperStatusLight';
@@ -39,12 +39,12 @@ const stages = {
         ? StepperStatus.COMPLETED
         : isLoadingShowFile(state)
         ? StepperStatus.WAITING
-        : StepperStatus.OFF
+        : StepperStatus.OFF,
   },
 
   setupEnvironment: {
     evaluate: (state) => hasLoadedShowFile(state) && hasShowOrigin(state),
-    requires: ['selectShowFile']
+    requires: ['selectShowFile'],
   },
 
   setupTakeoffArea: {
@@ -55,12 +55,12 @@ const stages = {
           ? StepperStatus.COMPLETED
           : StepperStatus.SKIPPED
         : StepperStatus.OFF,
-    requires: ['setupEnvironment']
+    requires: ['setupEnvironment'],
   },
 
   uploadShow: {
     evaluate: () => false,
-    requires: ['selectShowFile', 'setupEnvironment']
+    requires: ['selectShowFile', 'setupEnvironment'],
   },
 
   setupStartTime: {
@@ -72,7 +72,7 @@ const stages = {
           ? StepperStatus.COMPLETED
           : StepperStatus.OFF
         : StepperStatus.WAITING,
-    requires: ['selectShowFile']
+    requires: ['selectShowFile'],
   },
 
   waitForOnboardPreflightChecks: {
@@ -82,7 +82,7 @@ const stages = {
           ? StepperStatus.COMPLETED
           : StepperStatus.SKIPPED
         : StepperStatus.OFF,
-    suggests: ['setupStartTime']
+    suggests: ['setupStartTime'],
   },
 
   performManualPreflightChecks: {
@@ -92,7 +92,7 @@ const stages = {
           ? StepperStatus.COMPLETED
           : StepperStatus.SKIPPED
         : StepperStatus.OFF,
-    suggests: ['setupStartTime']
+    suggests: ['setupStartTime'],
   },
 
   authorization: {
@@ -104,8 +104,8 @@ const stages = {
         : isShowAuthorizedToStartLocally(state)
         ? StepperStatus.WAITING
         : StepperStatus.OFF,
-    requires: ['waitForOnboardPreflightChecks', 'performManualPreflightChecks']
-  }
+    requires: ['waitForOnboardPreflightChecks', 'performManualPreflightChecks'],
+  },
 };
 
 /**
@@ -120,7 +120,7 @@ const stageOrder = [
   'uploadShow',
   'waitForOnboardPreflightChecks',
   'performManualPreflightChecks',
-  'authorization'
+  'authorization',
 ];
 
 /**

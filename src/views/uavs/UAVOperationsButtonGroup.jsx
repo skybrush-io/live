@@ -15,7 +15,7 @@ import Refresh from '@material-ui/icons/Refresh';
 
 import {
   selectUAVInMessagesDialog,
-  showMessagesDialog
+  showMessagesDialog,
 } from '~/actions/messages';
 import * as messaging from '~/utils/messaging';
 
@@ -24,8 +24,8 @@ const useStyles = makeStyles(
     divider: {
       alignSelf: 'stretch',
       height: 'auto',
-      margin: theme.spacing(1, 0.5)
-    }
+      margin: theme.spacing(1, 0.5),
+    },
   }),
   { name: 'UAVOperationsButtonGroup' }
 );
@@ -36,7 +36,7 @@ const useStyles = makeStyles(
 const UAVOperationsButtonGroup = ({
   selectedUAVIds,
   selectUAVInMessagesDialog,
-  showMessagesDialog
+  showMessagesDialog,
 }) => {
   const classes = useStyles();
 
@@ -92,7 +92,7 @@ const UAVOperationsButtonGroup = ({
         <Message />
       </IconButton>
 
-      <Divider className={classes.divider} orientation="vertical" />
+      <Divider className={classes.divider} orientation='vertical' />
 
       <IconButton disabled={isSelectionEmpty} onClick={resetSelectedUAVs}>
         <Refresh
@@ -112,7 +112,7 @@ const UAVOperationsButtonGroup = ({
 UAVOperationsButtonGroup.propTypes = {
   selectUAVInMessagesDialog: PropTypes.func,
   selectedUAVIds: PropTypes.arrayOf(PropTypes.string),
-  showMessagesDialog: PropTypes.func
+  showMessagesDialog: PropTypes.func,
 };
 
 export default connect(
@@ -125,6 +125,6 @@ export default connect(
     },
     showMessagesDialog() {
       dispatch(showMessagesDialog());
-    }
+    },
   })
 )(UAVOperationsButtonGroup);

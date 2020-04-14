@@ -9,14 +9,14 @@ import {
   formatCoordinate,
   makeDecimalCoordinateFormatter,
   makePolarCoordinateFormatter,
-  toPolar
+  toPolar,
 } from '~/utils/geography';
 
 import { getFlatEarthCoordinateTransformer } from './map';
 
 const cartesianFormatter = makeDecimalCoordinateFormatter({
   digits: 2,
-  unit: ' m'
+  unit: ' m',
 });
 const polarFormatter = makePolarCoordinateFormatter({ digits: 2, unit: ' m' });
 

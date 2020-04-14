@@ -24,7 +24,7 @@ import { Tool } from './tools';
 const DrawingToolbarPresentation = ({
   onToolSelected,
   selectedTool,
-  theme
+  theme,
 }) => {
   const colorForTool = (tool) =>
     selectedTool === tool ? 'primary' : undefined;
@@ -32,37 +32,37 @@ const DrawingToolbarPresentation = ({
   return (
     <div style={{ display: 'flex', flexFlow: 'column nowrap' }}>
       <IconButton
-        tooltip="Add marker"
+        tooltip='Add marker'
         onClick={partial(onToolSelected, Tool.DRAW_POINT)}
       >
         <LocationOn color={colorForTool(Tool.DRAW_POINT)} />
       </IconButton>
       <IconButton
-        tooltip="Draw path"
+        tooltip='Draw path'
         onClick={partial(onToolSelected, Tool.DRAW_PATH)}
       >
         <ShowChart color={colorForTool(Tool.DRAW_PATH)} />
       </IconButton>
       <IconButton
-        tooltip="Draw circle"
+        tooltip='Draw circle'
         onClick={partial(onToolSelected, Tool.DRAW_CIRCLE)}
       >
         <PanoramaFishEye color={colorForTool(Tool.DRAW_CIRCLE)} />
       </IconButton>
       <IconButton
-        tooltip="Draw rectangle"
+        tooltip='Draw rectangle'
         onClick={partial(onToolSelected, Tool.DRAW_RECTANGLE)}
       >
         <CropSquare color={colorForTool(Tool.DRAW_RECTANGLE)} />
       </IconButton>
       <IconButton
-        tooltip="Draw polygon"
+        tooltip='Draw polygon'
         onClick={partial(onToolSelected, Tool.DRAW_POLYGON)}
       >
         <StarBorder color={colorForTool(Tool.DRAW_POLYGON)} />
       </IconButton>
       <IconButton
-        tooltip="Edit feature"
+        tooltip='Edit feature'
         onClick={partial(onToolSelected, Tool.EDIT_FEATURE)}
       >
         <EditFeature color={colorForTool(Tool.EDIT_FEATURE)} />
@@ -74,7 +74,7 @@ const DrawingToolbarPresentation = ({
 DrawingToolbarPresentation.propTypes = {
   onToolSelected: PropTypes.func,
   selectedTool: PropTypes.string,
-  theme: PropTypes.object.isRequired
+  theme: PropTypes.object.isRequired,
 };
 
 /**
@@ -87,7 +87,7 @@ const DrawingToolbar = connect(
   (dispatch) => ({
     onToolSelected(tool) {
       dispatch(selectMapTool(tool));
-    }
+    },
   })
 )(withTheme(DrawingToolbarPresentation));
 

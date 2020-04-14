@@ -24,7 +24,7 @@ function getURLToLoad() {
     return url.format({
       pathname: index,
       protocol: 'file:',
-      slashes: true
+      slashes: true,
     });
   }
 
@@ -52,7 +52,7 @@ const createMainWindow = (app, options) => {
     mainWindowState = windowStateKeeper({
       defaultWidth: 1280,
       defaultHeight: 800,
-      fullScreen: false
+      fullScreen: false,
     });
   }
 
@@ -76,8 +76,8 @@ const createMainWindow = (app, options) => {
       // two contexts are isolated
       contextIsolation: false,
       nodeIntegration: false,
-      preload: preloadScriptPath
-    }
+      preload: preloadScriptPath,
+    },
   });
   mainWindowState.manage(mainWindow);
 
@@ -92,7 +92,7 @@ const createMainWindow = (app, options) => {
 
     if (options.debug) {
       mainWindow.webContents.openDevTools({
-        mode: 'undocked'
+        mode: 'undocked',
       });
     }
   });
@@ -112,5 +112,5 @@ const getMainWindow = () => mainWindow;
 
 module.exports = {
   createMainWindow,
-  getMainWindow
+  getMainWindow,
 };

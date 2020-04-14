@@ -33,7 +33,7 @@ import WifiIcon from '@material-ui/icons/Wifi';
 
 import {
   ServerDetectionManager,
-  isServerDetectionSupported
+  isServerDetectionSupported,
 } from '../ServerDetectionManager';
 
 import DialogTabs from './DialogTabs';
@@ -41,18 +41,18 @@ import DialogTabs from './DialogTabs';
 import {
   closeServerSettingsDialog,
   disconnectFromServer,
-  setServerSettingsDialogTab
+  setServerSettingsDialogTab,
 } from '~/actions/server-settings';
 import { forceFormSubmission, Switch, TextField } from '~/components/forms';
 import {
   getDetectedServersInOrder,
-  isConnecting
+  isConnecting,
 } from '~/features/servers/selectors';
 import {
   createValidator,
   between,
   integer,
-  required
+  required,
 } from '~/utils/validation';
 
 // eslint-disable-next-line react/prop-types
@@ -91,17 +91,17 @@ const manualSetupAllowed =
 
 const ConnectionInProgressIndicator = (props) => (
   <Box
-    alignItems="center"
+    alignItems='center'
     flex={1}
     padding={1}
-    display="flex"
-    flexDirection="row"
+    display='flex'
+    flexDirection='row'
     {...props}
   >
     <Box pr={1}>
-      <CircularProgress color="secondary" size={16} />
+      <CircularProgress color='secondary' size={16} />
     </Box>
-    <Typography variant="body2" color="textSecondary">
+    <Typography variant='body2' color='textSecondary'>
       {' '}
       Connecting…
     </Typography>
@@ -111,17 +111,17 @@ const ConnectionInProgressIndicator = (props) => (
 const DetectedServersListPresentation = ({
   isScanning,
   items,
-  onItemSelected
+  onItemSelected,
 }) => (
   <List style={{ height: 160, overflow: 'auto' }}>
     {isScanning && (!items || items.length === 0) ? (
-      <ListItem key="__scanning">
+      <ListItem key='__scanning'>
         <ListItemIcon>
           <CircularProgress size={24} />
         </ListItemIcon>
         <ListItemText
-          primary="Please wait…"
-          secondary="Scanning network for servers…"
+          primary='Please wait…'
+          secondary='Scanning network for servers…'
         />
       </ListItem>
     ) : null}
@@ -135,11 +135,11 @@ const DetectedServersListPresentation = ({
       </ListItem>
     ))}
     {manualSetupAllowed && (
-      <ListItem key="__manual" button onClick={partial(onItemSelected, null)}>
+      <ListItem key='__manual' button onClick={partial(onItemSelected, null)}>
         <ListItemIcon>
           <EditIcon />
         </ListItemIcon>
-        <ListItemText primary="Enter manually" />
+        <ListItemText primary='Enter manually' />
       </ListItem>
     )}
   </List>
@@ -148,7 +148,7 @@ const DetectedServersListPresentation = ({
 DetectedServersListPresentation.propTypes = {
   isScanning: PropTypes.bool,
   items: PropTypes.array,
-  onItemSelected: PropTypes.func
+  onItemSelected: PropTypes.func,
 };
 
 /**
@@ -159,40 +159,40 @@ const DetectedServersList = connect(
   // mapStateToProps
   (state) => ({
     isScanning: state.servers.isScanning,
-    items: getDetectedServersInOrder(state)
+    items: getDetectedServersInOrder(state),
   })
 )(DetectedServersListPresentation);
 
 const validator = createValidator({
   hostName: required,
-  port: [required, integer, between(1, 65535)]
+  port: [required, integer, between(1, 65535)],
 });
 
 const ServerSettingsFormPresentation = ({
   initialValues,
   onKeyPress,
-  onSubmit
+  onSubmit,
 }) => (
   <Form initialValues={initialValues} validate={validator} onSubmit={onSubmit}>
     {({ handleSubmit }) => (
-      <form id="serverSettings" onSubmit={handleSubmit} onKeyPress={onKeyPress}>
+      <form id='serverSettings' onSubmit={handleSubmit} onKeyPress={onKeyPress}>
         <Field
           fullWidth
-          name="hostName"
-          label="Hostname"
-          margin="normal"
+          name='hostName'
+          label='Hostname'
+          margin='normal'
           component={TextField}
         />
         <Field
           fullWidth
-          name="port"
-          label="Port"
-          margin="normal"
+          name='port'
+          label='Port'
+          margin='normal'
           component={TextField}
         />
         <FormControlLabel
-          control={<Field name="isSecure" type="checkbox" component={Switch} />}
-          label="Use secure connection"
+          control={<Field name='isSecure' type='checkbox' component={Switch} />}
+          label='Use secure connection'
         />
       </form>
     )}
@@ -202,7 +202,7 @@ const ServerSettingsFormPresentation = ({
 ServerSettingsFormPresentation.propTypes = {
   initialValues: PropTypes.object,
   onKeyPress: PropTypes.func,
-  onSubmit: PropTypes.func
+  onSubmit: PropTypes.func,
 };
 
 /**
@@ -212,7 +212,7 @@ ServerSettingsFormPresentation.propTypes = {
 const ServerSettingsForm = connect(
   // mapStateToProps
   (state) => ({
-    initialValues: state.dialogs.serverSettings
+    initialValues: state.dialogs.serverSettings,
   })
 )(ServerSettingsFormPresentation);
 
@@ -230,11 +230,11 @@ class ServerSettingsDialogPresentation extends React.Component {
     onSubmit: PropTypes.func,
     onTabSelected: PropTypes.func,
     open: PropTypes.bool.isRequired,
-    selectedTab: PropTypes.string
+    selectedTab: PropTypes.string,
   };
 
   static defaultProps = {
-    selectedTab: 'auto'
+    selectedTab: 'auto',
   };
 
   _handleKeyPress = (event) => {
@@ -251,7 +251,7 @@ class ServerSettingsDialogPresentation extends React.Component {
     } else {
       this.props.onSubmit({
         ...item,
-        isSecure: item.protocol === 'sio+tls:'
+        isSecure: item.protocol === 'sio+tls:',
       });
     }
   };
@@ -266,13 +266,13 @@ class ServerSettingsDialogPresentation extends React.Component {
       onSubmit,
       onTabSelected,
       open,
-      selectedTab
+      selectedTab,
     } = this.props;
     const actions = [];
     const content = [];
 
     actions.push(
-      <Fade key="__connectionIndicator" in={isConnecting}>
+      <Fade key='__connectionIndicator' in={isConnecting}>
         <ConnectionInProgressIndicator />
       </Fade>
     );
@@ -281,14 +281,14 @@ class ServerSettingsDialogPresentation extends React.Component {
       case 'auto':
         content.push(
           <DetectedServersList
-            key="serverList"
+            key='serverList'
             onItemSelected={this._handleServerSelection}
           />
         );
         if (!isServerDetectionSupported) {
           content.push(
-            <DialogContent key="contents">
-              <Typography variant="body2" color="textSecondary">
+            <DialogContent key='contents'>
+              <Typography variant='body2' color='textSecondary'>
                 Auto-discovery is not available in this version.
               </Typography>
             </DialogContent>
@@ -300,7 +300,7 @@ class ServerSettingsDialogPresentation extends React.Component {
       case 'manual':
         if (manualSetupAllowed) {
           content.push(
-            <DialogContent key="contents">
+            <DialogContent key='contents'>
               <ServerSettingsForm
                 onSubmit={onSubmit}
                 onKeyPress={this._handleKeyPress}
@@ -308,7 +308,7 @@ class ServerSettingsDialogPresentation extends React.Component {
             </DialogContent>
           );
           actions.push(
-            <Button key="connect" color="primary" onClick={forceFormSubmission}>
+            <Button key='connect' color='primary' onClick={forceFormSubmission}>
               Connect
             </Button>
           );
@@ -322,7 +322,7 @@ class ServerSettingsDialogPresentation extends React.Component {
 
     actions.push(
       <Button
-        key="disconnect"
+        key='disconnect'
         disabled={!active}
         onClick={active ? onDisconnect : undefined}
       >
@@ -330,16 +330,16 @@ class ServerSettingsDialogPresentation extends React.Component {
       </Button>
     );
     actions.push(
-      <Button key="close" onClick={onClose}>
+      <Button key='close' onClick={onClose}>
         Close
       </Button>
     );
 
     return (
-      <Dialog fullWidth open={open} maxWidth="xs" onClose={onClose}>
+      <Dialog fullWidth open={open} maxWidth='xs' onClose={onClose}>
         <DialogTabs value={selectedTab} onChange={onTabSelected}>
-          <Tab value="auto" label="Autodetected" />
-          {manualSetupAllowed && <Tab value="manual" label="Manual" />}
+          <Tab value='auto' label='Autodetected' />
+          {manualSetupAllowed && <Tab value='manual' label='Manual' />}
         </DialogTabs>
         <ServerDetectionManager />
         {content}
@@ -359,7 +359,7 @@ const ServerSettingsDialog = connect(
     active: state.dialogs.serverSettings.active,
     isConnecting: isConnecting(state),
     open: state.dialogs.serverSettings.dialogVisible,
-    selectedTab: state.dialogs.serverSettings.selectedTab
+    selectedTab: state.dialogs.serverSettings.selectedTab,
   }),
   // mapDispatchToProps
   (dispatch) => ({
@@ -380,13 +380,13 @@ const ServerSettingsDialog = connect(
           active: true,
           hostName: data.hostName,
           isSecure: data.isSecure,
-          port: Number(data.port)
+          port: Number(data.port),
         })
       );
     },
     onTabSelected(event, value) {
       dispatch(setServerSettingsDialogTab(value));
-    }
+    },
   })
 )(ServerSettingsDialogPresentation);
 

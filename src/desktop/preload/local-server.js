@@ -59,5 +59,5 @@ module.exports = {
   events,
   launch,
   search,
-  terminate
+  terminate,
 };

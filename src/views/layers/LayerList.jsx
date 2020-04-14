@@ -52,11 +52,11 @@ const createListItemForLayer = (layer, props) => {
 const createNewItemEntry = (props) => {
   /* eslint-disable react/prop-types */
   return (
-    <ListItem key="__newItem__" button onClick={props.onNewItem}>
+    <ListItem key='__newItem__' button onClick={props.onNewItem}>
       <ListItemIcon>
         <AddCircleOutline />
       </ListItemIcon>
-      <ListItemText primary="Add new layer" />
+      <ListItemText primary='Add new layer' />
     </ListItem>
   );
   /* eslint-enable react/prop-types */
@@ -68,7 +68,7 @@ const createNewItemEntry = (props) => {
  */
 const LayerListPresentation = selectableListOf(createListItemForLayer, {
   dataProvider: 'layers',
-  postprocess: (items, props) => [createNewItemEntry(props), ...items]
+  postprocess: (items, props) => [createNewItemEntry(props), ...items],
 });
 
 LayerListPresentation.propTypes = {
@@ -76,7 +76,7 @@ LayerListPresentation.propTypes = {
   onNewItem: PropTypes.func,
   layers: PropTypes.arrayOf(
     PropTypes.oneOfType([PropTypes.object, PropTypes.string])
-  ).isRequired
+  ).isRequired,
 };
 
 /**
@@ -86,7 +86,7 @@ const LayerList = connect(
   // mapStateToProps
   (state) => ({
     dense: true,
-    layers: getLayersInOrder(state)
+    layers: getLayersInOrder(state),
   }),
   // mapDispatchToProps
   (dispatch) => ({
@@ -100,7 +100,7 @@ const LayerList = connect(
       if (action.id) {
         dispatch(showLayersDialog(action.id));
       }
-    }
+    },
   })
 )(LayerListPresentation);
 

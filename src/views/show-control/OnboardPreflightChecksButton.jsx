@@ -8,13 +8,13 @@ import ListItemText from '@material-ui/core/ListItemText';
 import Switch from '@material-ui/core/Switch';
 
 import StepperStatusLight, {
-  StepperStatus
+  StepperStatus,
 } from '~/components/StepperStatusLight';
 import { signOffOnOnboardPreflightChecks } from '~/features/show/actions';
 import { areOnboardPreflightChecksSignedOff } from '~/features/show/selectors';
 import {
   clearOnboardPreflightChecks,
-  openOnboardPreflightChecksDialog
+  openOnboardPreflightChecksDialog,
 } from '~/features/show/slice';
 import { getSetupStageStatuses } from '~/features/show/stages';
 
@@ -33,12 +33,12 @@ const OnboardPreflightChecksButton = ({
   return (
     <ListItem button disabled={status === StepperStatus.OFF} {...rest}>
       <StepperStatusLight status={status} />
-      <ListItemText primary="Onboard preflight checks" />
+      <ListItemText primary='Onboard preflight checks' />
       {/* TODO: show how many drones have nonzero error codes */}
       <ListItemSecondaryAction>
         <Switch
           checked={areChecksSignedOff}
-          edge="end"
+          edge='end'
           onChange={areChecksSignedOff ? onRevoke : onApprove}
         />
       </ListItemSecondaryAction>
@@ -50,7 +50,7 @@ OnboardPreflightChecksButton.propTypes = {
   areChecksSignedOff: PropTypes.bool,
   onApprove: PropTypes.func,
   onRevoke: PropTypes.func,
-  status: PropTypes.oneOf(Object.values(StepperStatus))
+  status: PropTypes.oneOf(Object.values(StepperStatus)),
 };
 
 OnboardPreflightChecksButton.defaultProps = {};
@@ -59,12 +59,12 @@ export default connect(
   // mapStateToProps
   (state) => ({
     areChecksSignedOff: areOnboardPreflightChecksSignedOff(state),
-    status: getSetupStageStatuses(state).waitForOnboardPreflightChecks
+    status: getSetupStageStatuses(state).waitForOnboardPreflightChecks,
   }),
   // mapDispatchToProps
   {
     onApprove: signOffOnOnboardPreflightChecks,
     onClick: openOnboardPreflightChecksDialog,
-    onRevoke: clearOnboardPreflightChecks
+    onRevoke: clearOnboardPreflightChecks,
   }
 )(OnboardPreflightChecksButton);

@@ -9,7 +9,7 @@ import { handleActions } from 'redux-actions';
  * The default settings for the part of the state object being defined here.
  */
 const defaultState = {
-  dialogVisible: false
+  dialogVisible: false,
 };
 
 /**
@@ -22,7 +22,7 @@ const reducer = handleActions(
       Object.assign({}, state, { dialogVisible: true }),
 
     CLOSE_MESSAGES_DIALOG: (state) =>
-      Object.assign({}, state, { dialogVisible: false })
+      Object.assign({}, state, { dialogVisible: false }),
   },
   defaultState
 );

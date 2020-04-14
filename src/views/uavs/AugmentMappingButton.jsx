@@ -20,10 +20,10 @@ const AugmentMappingButton = (props) => (
 export default connect(
   // mapStateToProps
   (state) => ({
-    disabled: !canAugmentMappingAutomaticallyFromSpareDrones(state)
+    disabled: !canAugmentMappingAutomaticallyFromSpareDrones(state),
   }),
   // mapDispatchToProps
   {
-    onClick: augmentMappingAutomaticallyFromSpareDrones
+    onClick: augmentMappingAutomaticallyFromSpareDrones,
   }
 )(AugmentMappingButton);

@@ -20,22 +20,22 @@ const { actions, reducer } = createSlice({
         // }
         weather: {
           id: 'weather',
-          label: 'Weather'
+          label: 'Weather',
         },
         permissions: {
           id: 'permissions',
-          label: 'Permissions'
+          label: 'Permissions',
         },
         equipment: {
           id: 'equipment',
-          label: 'Equipment'
+          label: 'Equipment',
         },
         environment: {
           id: 'environment',
-          label: 'Environment'
-        }
+          label: 'Environment',
+        },
       },
-      order: ['weather', 'permissions', 'equipment', 'environment']
+      order: ['weather', 'permissions', 'equipment', 'environment'],
     },
 
     items: {
@@ -49,58 +49,58 @@ const { actions, reducer } = createSlice({
         'weather-wind-speed': {
           id: 'weather-wind-speed',
           label: 'Wind speed is within an acceptable range',
-          groupId: 'weather'
+          groupId: 'weather',
         },
         'weather-visibility': {
           id: 'weather-visibility',
           label: 'Visibility sufficient for flight',
-          groupId: 'weather'
+          groupId: 'weather',
         },
         'weather-precipitation': {
           id: 'weather-precipitation',
           label: 'Precipitation within acceptable range',
-          groupId: 'weather'
+          groupId: 'weather',
         },
         'permissions-drone-pilot-license': {
           id: 'permissions-drone-pilot-license',
           label: 'Drone pilot license is valid',
-          groupId: 'permissions'
+          groupId: 'permissions',
         },
         'permissions-airspace-authorization': {
           id: 'permissions-airspace-authorization',
           label: 'Airspace authorization has been obtained',
-          groupId: 'permissions'
+          groupId: 'permissions',
         },
         'equipment-rc-charged': {
           id: 'equipment-rc-charged',
           label: 'Remote controller batteries are charged',
-          groupId: 'equipment'
+          groupId: 'equipment',
         },
         'equipment-propellers-mounted': {
           id: 'equipment-propellers-mounted',
           label: 'Drone propellers are securely mounted',
-          groupId: 'equipment'
+          groupId: 'equipment',
         },
         'equipment-no-visible-damage': {
           id: 'equipment-no-visible-damage',
           label: 'No visible damage on drone components',
-          groupId: 'equipment'
+          groupId: 'equipment',
         },
         'environment-no-obstructions': {
           id: 'environment-no-obstructions',
           label: 'No obstructions in takeoff area',
-          groupId: 'environment'
+          groupId: 'environment',
         },
         'environment-cordoned-off': {
           id: 'environment-cordoned-off',
           label: 'Takeoff and landing area cordoned off',
-          groupId: 'environment'
+          groupId: 'environment',
         },
         'environment-flight-path-clear': {
           id: 'environment-flight-path-clear',
           label: 'No people below flight paths',
-          groupId: 'environment'
-        }
+          groupId: 'environment',
+        },
       },
       order: [
         'weather-wind-speed',
@@ -113,11 +113,11 @@ const { actions, reducer } = createSlice({
         'equipment-no-visible-damage',
         'environment-no-obstructions',
         'environment-cordoned-off',
-        'environment-flight-path-clear'
-      ]
+        'environment-flight-path-clear',
+      ],
     },
 
-    checked: []
+    checked: [],
   },
 
   reducers: {
@@ -170,15 +170,15 @@ const { actions, reducer } = createSlice({
           state.checked.splice(index, 1);
         }
       }
-    }
-  }
+    },
+  },
 });
 
 export const {
   clearPreflightCheckGroups,
   clearPreflightCheckListItems,
   setPreflightCheckStatus,
-  togglePreflightCheckStatus
+  togglePreflightCheckStatus,
 } = actions;
 
 export default reducer;

@@ -111,7 +111,7 @@ export default class UAVFeature extends Feature {
       rotateWithView: true,
       rotation: this._headingToRotation(),
       snapToPixel: false,
-      src: DroneImage
+      src: DroneImage,
     });
     this._iconImage = iconImage;
 
@@ -124,7 +124,7 @@ export default class UAVFeature extends Feature {
       rotateWithView: true,
       rotation: this._headingToRotation(),
       snapToPixel: false,
-      src: SelectionGlow
+      src: SelectionGlow,
     });
     this._selectionImage = selectionImage;
 
@@ -140,8 +140,8 @@ export default class UAVFeature extends Feature {
         font: '12px sans-serif',
         offsetY: 24,
         text: this.uavId || 'undefined',
-        textAlign: 'center'
-      })
+        textAlign: 'center',
+      }),
     });
     styles.push(labelStyle);
 

@@ -14,7 +14,7 @@ export default connect(
     hideOnClick: false,
     ignoreAttributes: true,
     visible: Boolean(state.threeD.tooltip),
-    plugins
+    plugins,
   }),
   // mapDispatchToProps
   {}

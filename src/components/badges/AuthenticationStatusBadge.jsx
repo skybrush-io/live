@@ -11,14 +11,14 @@ import Colors from '~/components/colors';
 import {
   isAuthenticated,
   isAuthenticating,
-  requiresAuthentication
+  requiresAuthentication,
 } from '~/features/servers/selectors';
 
 const colorForState = {
   authenticated: Colors.success,
   authenticating: Colors.warning,
   notAuthenticated: Colors.error,
-  authenticationNotRequired: undefined
+  authenticationNotRequired: undefined,
 };
 
 /**
@@ -38,7 +38,7 @@ export default connect(
     const color = colorForState[authState];
     return {
       color,
-      visible: color !== undefined
+      visible: color !== undefined,
     };
   },
   // Return empty object from mapDispatchToProps to avoid invalid prop warning

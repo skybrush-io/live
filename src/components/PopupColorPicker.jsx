@@ -14,7 +14,7 @@ export default class PopupColorPicker extends React.Component {
 
     this.state = {
       open: false,
-      color: value || defaultValue || { r: 255, g: 255, b: 255, alpha: 1 }
+      color: value || defaultValue || { r: 255, g: 255, b: 255, alpha: 1 },
     };
 
     this._clickawayHandlerRegistered = false;
@@ -52,23 +52,23 @@ export default class PopupColorPicker extends React.Component {
       overflow: 'hidden',
       zIndex: '2',
       transition: 'height 0.3s',
-      height: this.state.open ? 298 : 0
+      height: this.state.open ? 298 : 0,
     };
 
     const { color } = this.state;
 
     return (
-      <div ref={this._setPickerContainerRef} className="popup-color-picker">
+      <div ref={this._setPickerContainerRef} className='popup-color-picker'>
         <div
-          className="popup-color-picker-button"
+          className='popup-color-picker-button'
           style={{
             ...this.props.style,
-            backgroundColor: Color(color).rgb().string()
+            backgroundColor: Color(color).rgb().string(),
           }}
           onClick={this._togglePicker}
         />
 
-        <div className="popup-color-picker-dropdown" style={pickerStyle}>
+        <div className='popup-color-picker-dropdown' style={pickerStyle}>
           <SketchPicker color={toPicker(color)} onChange={this._handleChange} />
         </div>
       </div>
@@ -118,5 +118,5 @@ PopupColorPicker.propTypes = {
   defaultValue: PropTypes.object,
   onChange: PropTypes.func,
   style: PropTypes.object,
-  value: PropTypes.object
+  value: PropTypes.object,
 };

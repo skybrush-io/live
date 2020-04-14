@@ -90,12 +90,12 @@ class ContextMenuInteraction extends Interaction {
         }
 
         return Condition.pointerMove(mapBrowserEvent);
-      }
+      },
     });
 
     const defaultOptions = {
       condition: Condition.rightClick,
-      threshold: Number.POSITIVE_INFINITY
+      threshold: Number.POSITIVE_INFINITY,
     };
     options = Object.assign(defaultOptions, options);
 
@@ -222,15 +222,15 @@ const ShowContextMenuInner = createOLInteractionComponent(
       layers: OLPropTypes.LayerFilter,
       onContextMenu: PropTypes.func,
       selectAction: PropTypes.func,
-      threshold: PropTypes.number
+      threshold: PropTypes.number,
     },
     fragileProps: [
       'condition',
       'layers',
       'onContextMenu',
       'selectAction',
-      'threshold'
-    ]
+      'threshold',
+    ],
   }
 );
 
@@ -247,7 +247,7 @@ class ShowContextMenu extends React.Component {
     projection: PropTypes.string,
     select: PropTypes.func,
     contextMenu: PropTypes.func,
-    threshold: PropTypes.number
+    threshold: PropTypes.number,
   };
 
   constructor(props) {
@@ -264,7 +264,7 @@ class ShowContextMenu extends React.Component {
           {...rest}
         >
           {React.cloneElement(React.Children.only(this.props.children), {
-            ref: this._contextMenuRef
+            ref: this._contextMenuRef,
           })}
         </ShowContextMenuInner>
       );
@@ -281,7 +281,7 @@ class ShowContextMenu extends React.Component {
     if (open) {
       const position = {
         left: event.originalEvent.pageX,
-        top: event.originalEvent.pageY
+        top: event.originalEvent.pageY,
       };
       open(position, { coords });
     }

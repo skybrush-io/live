@@ -44,8 +44,8 @@ const { actions, reducer } = createSlice({
 
       // Stores the index of the slot in the mapping that is being edited;
       // -1 if no slot is being edited
-      indexBeingEdited: -1
-    }
+      indexBeingEdited: -1,
+    },
   },
 
   reducers: {
@@ -101,7 +101,7 @@ const { actions, reducer } = createSlice({
       reducer(state) {
         state.mappingEditor.enabled = false;
         state.mappingEditor.indexBeingEdited = -1;
-      }
+      },
     },
 
     /**
@@ -218,7 +218,7 @@ const { actions, reducer } = createSlice({
       reducer(state) {
         state.mappingEditor.enabled = true;
         state.mappingEditor.indexBeingEdited = -1;
-      }
+      },
     },
 
     /**
@@ -257,8 +257,8 @@ const { actions, reducer } = createSlice({
           action.payload
         );
       }
-    }
-  }
+    },
+  },
 });
 
 export const {
@@ -275,7 +275,7 @@ export const {
   startMappingEditorSessionAtSlot,
   updateHomePositions,
   updateLandingPositions,
-  updateTakeoffHeadings
+  updateTakeoffHeadings,
 } = actions;
 
 export default reducer;

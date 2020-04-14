@@ -13,5 +13,5 @@ AFrame.registerComponent('deallocate', {
   remove() {
     Cache.clear();
     this.el.renderer.forceContextLoss();
-  }
+  },
 });

@@ -13,7 +13,7 @@ const semanticsToAppearance = {
   [MessageSemantics.INFO]: 'info',
   [MessageSemantics.SUCCESS]: 'success',
   [MessageSemantics.WARNING]: 'warning',
-  [MessageSemantics.ERROR]: 'error'
+  [MessageSemantics.ERROR]: 'error',
 };
 
 /**
@@ -26,14 +26,14 @@ const ToastNotificationManager = ({
   message,
   messageId,
   permanent,
-  semantics
+  semantics,
 }) => {
   const { addToast } = useToasts();
   useEffect(() => {
     if (message) {
       addToast(message, {
         appearance: semanticsToAppearance[semantics] || 'info',
-        autoDismiss: !permanent
+        autoDismiss: !permanent,
       });
     }
   }, [addToast, message, messageId, semantics, permanent]);
@@ -43,7 +43,7 @@ const ToastNotificationManager = ({
 ToastNotificationManager.propTypes = {
   message: PropTypes.string.isRequired,
   permanent: PropTypes.bool,
-  semantics: PropTypes.oneOf(Object.values(MessageSemantics)).isRequired
+  semantics: PropTypes.oneOf(Object.values(MessageSemantics)).isRequired,
 };
 
 /**

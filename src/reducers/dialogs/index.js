@@ -30,7 +30,7 @@ const reducer = combineReducers({
   messages: messagesReducer,
   prompt: promptReducer,
   savedLocationEditor: savedLocationEditorReducer,
-  serverSettings: serverSettingsReducer
+  serverSettings: serverSettingsReducer,
 });
 
 export default reducer;

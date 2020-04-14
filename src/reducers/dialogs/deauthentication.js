@@ -10,7 +10,7 @@ import u from 'updeep';
  * The default state for the deauthentication dialog.
  */
 const defaultState = {
-  open: false
+  open: false,
 };
 
 /**
@@ -21,7 +21,7 @@ const reducer = handleActions(
   {
     SHOW_DEAUTHENTICATION_DIALOG: (state) => u({ open: true }, state),
 
-    CLOSE_DEAUTHENTICATION_DIALOG: (state) => u({ open: false }, state)
+    CLOSE_DEAUTHENTICATION_DIALOG: (state) => u({ open: false }, state),
   },
   defaultState
 );

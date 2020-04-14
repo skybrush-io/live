@@ -12,7 +12,7 @@ import {
   put,
   race,
   select,
-  take
+  take,
 } from 'redux-saga/effects';
 
 import {
@@ -20,7 +20,7 @@ import {
   getDroneSwarmSpecification,
   getNextDroneFromUploadQueue,
   getOutdoorShowCoordinateSystem,
-  isShowAuthorizedToStartLocally
+  isShowAuthorizedToStartLocally,
 } from './selectors';
 import {
   cancelUpload,
@@ -36,13 +36,13 @@ import {
   setStartTime,
   setUAVIdsToStartAutomatically,
   startUpload,
-  synchronizeShowSettings
+  synchronizeShowSettings,
 } from './slice';
 
 import messageHub from '~/message-hub';
 import {
   getMissionMapping,
-  getReverseMissionMapping
+  getReverseMissionMapping,
 } from '~/features/mission/selectors';
 
 /**
@@ -92,7 +92,7 @@ function createShowConfigurationForUav(state, uavId) {
   return {
     ...getCommonShowSettings(state),
     ...settings,
-    coordinateSystem
+    coordinateSystem,
   };
 }
 
@@ -198,7 +198,7 @@ function* showUploaderSaga({ numWorkers: numberWorkers = 8 } = {}) {
 function* showUploaderSagaWithCancellation() {
   const { cancelled, success } = yield race({
     success: call(showUploaderSaga),
-    cancelled: take(cancelUpload)
+    cancelled: take(cancelUpload),
   });
 
   if (cancelled) {
@@ -240,7 +240,7 @@ function* pushSettingsToServer() {
   const uavIdsToStartAutomatically =
     method === 'auto' ? reject(mapping || [], isNil) : [];
   yield call(messageHub.execute.setShowConfiguration, {
-    start: { authorized, time, method, uavIds: uavIdsToStartAutomatically }
+    start: { authorized, time, method, uavIds: uavIdsToStartAutomatically },
   });
 
   // TODO(ntamas): it would be nicer to read the values back from the server
@@ -313,5 +313,5 @@ const sagaCreator = (mapping) =>
  */
 export default sagaCreator({
   [startUpload]: showUploaderSagaWithCancellation,
-  [synchronizeShowSettings]: showSettingsSynchronizerSaga
+  [synchronizeShowSettings]: showSettingsSynchronizerSaga,
 });

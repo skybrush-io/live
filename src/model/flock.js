@@ -111,7 +111,7 @@ export default class Flock {
       },
       {
         addedUAVs: [],
-        updatedUAVs: []
+        updatedUAVs: [],
       }
     );
 

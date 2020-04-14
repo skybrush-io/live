@@ -21,26 +21,26 @@ const useStyles = makeStyles(
       padding: '0 2px',
       textAlign: 'center',
       userSelect: 'none',
-      width: '100%'
+      width: '100%',
     },
 
     batteryFull: {
       color: Colors.success,
-      fontWeight: 'bold'
+      fontWeight: 'bold',
     },
 
     batteryWarning: {
       backgroundColor: Colors.warning,
       borderRadius: `${theme.shape.borderRadius * 2}px`,
-      color: theme.palette.getContrastText(Colors.warning)
+      color: theme.palette.getContrastText(Colors.warning),
     },
 
     batteryError: {
       backgroundColor: Colors.error,
       borderRadius: `${theme.shape.borderRadius * 2}px`,
       color: theme.palette.getContrastText(Colors.error),
-      fontWeight: 'bold'
-    }
+      fontWeight: 'bold',
+    },
   }),
   { name: 'BatteryIndicator' }
 );
@@ -48,28 +48,28 @@ const useStyles = makeStyles(
 const iconStyle = {
   marginLeft: -8,
   marginTop: -2,
-  verticalAlign: 'bottom'
+  verticalAlign: 'bottom',
 };
 
 const batteryIcons = [
-  <BatteryAlertIcon key="batteryIcon" fontSize="small" style={iconStyle} />,
-  <BatteryAlertIcon key="batteryIcon" fontSize="small" style={iconStyle} />,
-  <Battery20Icon key="batteryIcon" fontSize="small" style={iconStyle} />,
-  <Battery30Icon key="batteryIcon" fontSize="small" style={iconStyle} />,
-  <Battery50Icon key="batteryIcon" fontSize="small" style={iconStyle} />,
-  <Battery50Icon key="batteryIcon" fontSize="small" style={iconStyle} />,
-  <Battery60Icon key="batteryIcon" fontSize="small" style={iconStyle} />,
-  <Battery80Icon key="batteryIcon" fontSize="small" style={iconStyle} />,
-  <Battery80Icon key="batteryIcon" fontSize="small" style={iconStyle} />,
-  <Battery90Icon key="batteryIcon" fontSize="small" style={iconStyle} />,
-  <BatteryFullIcon key="batteryIcon" fontSize="small" style={iconStyle} />
+  <BatteryAlertIcon key='batteryIcon' fontSize='small' style={iconStyle} />,
+  <BatteryAlertIcon key='batteryIcon' fontSize='small' style={iconStyle} />,
+  <Battery20Icon key='batteryIcon' fontSize='small' style={iconStyle} />,
+  <Battery30Icon key='batteryIcon' fontSize='small' style={iconStyle} />,
+  <Battery50Icon key='batteryIcon' fontSize='small' style={iconStyle} />,
+  <Battery50Icon key='batteryIcon' fontSize='small' style={iconStyle} />,
+  <Battery60Icon key='batteryIcon' fontSize='small' style={iconStyle} />,
+  <Battery80Icon key='batteryIcon' fontSize='small' style={iconStyle} />,
+  <Battery80Icon key='batteryIcon' fontSize='small' style={iconStyle} />,
+  <Battery90Icon key='batteryIcon' fontSize='small' style={iconStyle} />,
+  <BatteryFullIcon key='batteryIcon' fontSize='small' style={iconStyle} />,
 ];
 
 const batteryIconsByStatus = {
   Full: batteryIcons[10],
   Ok: batteryIcons[8],
   Warning: batteryIcons[3],
-  Error: batteryIcons[0]
+  Error: batteryIcons[0],
 };
 
 // Percentage thresholds for full, normal, low
@@ -77,7 +77,7 @@ const percentageThresholds = {
   Full: 95,
   NearFull: 60,
   Ok: 20,
-  Warning: 10
+  Warning: 10,
 };
 
 // Thresholds for full, normal, low
@@ -85,7 +85,7 @@ const voltageThresholdsPerCell = {
   Full: 4.1,
   NearFull: 3.9,
   Ok: 3.7,
-  Warning: 3.5
+  Warning: 3.5,
 };
 
 /**
@@ -131,7 +131,7 @@ const BatteryIndicator = ({ percentage, voltage }) => {
       : batteryIcons[Math.round(Math.min(Math.max(percentage, 0), 100) / 10)];
 
   return (
-    <Box fontSize="small" className={rootClass}>
+    <Box fontSize='small' className={rootClass}>
       {batteryIcon}
       {percentage === undefined
         ? voltage === undefined
@@ -144,7 +144,7 @@ const BatteryIndicator = ({ percentage, voltage }) => {
 
 BatteryIndicator.propTypes = {
   percentage: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-  voltage: PropTypes.oneOfType([PropTypes.number, PropTypes.string])
+  voltage: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
 };
 
 export default BatteryIndicator;

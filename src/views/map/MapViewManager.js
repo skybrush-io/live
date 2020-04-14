@@ -11,12 +11,12 @@ import { toRadians } from '~/utils/math';
 import {
   mapReferenceRequestSignal,
   mapViewToLocationSignal,
-  mapViewToExtentSignal
+  mapViewToExtentSignal,
 } from '~/signals';
 import {
   mapViewCoordinateFromLonLat,
   lonLatFromMapViewCoordinate,
-  normalizeAngle
+  normalizeAngle,
 } from '~/utils/geography';
 
 /**
@@ -28,7 +28,7 @@ export default class MapViewManager {
     this.callbacks = {
       center: [],
       rotation: [],
-      zoom: []
+      zoom: [],
     };
 
     mapViewToLocationSignal.add(this.scrollMapViewToLocation);
@@ -51,7 +51,7 @@ export default class MapViewManager {
   fitMapViewToExtent = (extent, options) => {
     const { duration } = {
       duration: 1000,
-      ...options
+      ...options,
     };
 
     if (isEmpty(extent)) {
@@ -71,7 +71,7 @@ export default class MapViewManager {
     const { center, rotation, zoom } = location;
     const { duration } = {
       duration: 1000,
-      ...options
+      ...options,
     };
 
     const animationParameters = { duration };
@@ -79,7 +79,7 @@ export default class MapViewManager {
     if (center !== undefined) {
       animationParameters.center = mapViewCoordinateFromLonLat([
         center.lon,
-        center.lat
+        center.lat,
       ]);
     }
 

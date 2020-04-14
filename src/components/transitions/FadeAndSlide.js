@@ -12,27 +12,27 @@ import { duration } from '@material-ui/core/styles/transitions';
 import useTheme from '@material-ui/core/styles/useTheme';
 import {
   reflow,
-  getTransitionProps
+  getTransitionProps,
 } from '@material-ui/core/transitions/utils';
 import useForkRef from '@material-ui/core/utils/useForkRef';
 
 const styles = {
   entering: {
     opacity: 1,
-    transform: 'translateY(0)'
+    transform: 'translateY(0)',
   },
   entered: {
     opacity: 1,
-    transform: 'translateY(0)'
+    transform: 'translateY(0)',
   },
   exiting: {
-    transform: 'translateY(-16px)'
-  }
+    transform: 'translateY(-16px)',
+  },
 };
 
 const defaultTimeout = {
   enter: duration.enteringScreen,
-  exit: duration.leavingScreen
+  exit: duration.leavingScreen,
 };
 
 const FadeAndSlide = React.forwardRef((props, ref) => {
@@ -54,7 +54,7 @@ const FadeAndSlide = React.forwardRef((props, ref) => {
     const transitionProps = getTransitionProps(
       { style, timeout },
       {
-        mode: 'enter'
+        mode: 'enter',
       }
     );
     node.style.webkitTransition = theme.transitions.create(
@@ -75,7 +75,7 @@ const FadeAndSlide = React.forwardRef((props, ref) => {
     const transitionProps = getTransitionProps(
       { style, timeout },
       {
-        mode: 'exit'
+        mode: 'exit',
       }
     );
     node.style.webkitTransition = theme.transitions.create(
@@ -109,10 +109,10 @@ const FadeAndSlide = React.forwardRef((props, ref) => {
             visibility: state === 'exited' && !inProp ? 'hidden' : undefined,
             ...styles[state],
             ...style,
-            ...children.props.style
+            ...children.props.style,
           },
           ref: handleRef,
-          ...childProps
+          ...childProps,
         });
       }}
     </Transition>
@@ -146,8 +146,8 @@ FadeAndSlide.propTypes = {
    */
   timeout: PropTypes.oneOfType([
     PropTypes.number,
-    PropTypes.shape({ enter: PropTypes.number, exit: PropTypes.number })
-  ])
+    PropTypes.shape({ enter: PropTypes.number, exit: PropTypes.number }),
+  ]),
 };
 
 export default FadeAndSlide;

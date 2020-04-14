@@ -18,12 +18,12 @@ const DronePlaceholderList = ({
   items = [],
   maxCount,
   successMessage,
-  title
+  title,
 }) => (
   <Box mt={1}>
-    <Box display="flex" flexDirection="row" alignItems="center" minHeight={44}>
+    <Box display='flex' flexDirection='row' alignItems='center' minHeight={44}>
       {title && (
-        <Box key="lead" minWidth={85}>
+        <Box key='lead' minWidth={85}>
           {title}
         </Box>
       )}
@@ -37,8 +37,8 @@ const DronePlaceholderList = ({
         </Box>
       ))}
       {items.length > maxCount ? (
-        <Box key="more" ml={1} color="text.secondary">
-          <Typography variant="body2">
+        <Box key='more' ml={1} color='text.secondary'>
+          <Typography variant='body2'>
             + {items.length - maxCount} more
           </Typography>
         </Box>
@@ -46,27 +46,27 @@ const DronePlaceholderList = ({
       {items.length === 0 ? (
         successMessage ? (
           <>
-            <Box key="ok" ml={title ? 1 : 0}>
-              <DronePlaceholder label="OK" status="success" />
+            <Box key='ok' ml={title ? 1 : 0}>
+              <DronePlaceholder label='OK' status='success' />
             </Box>
-            <Box key="successMessage" color="success.main" ml={1}>
-              <Typography variant="body2">{successMessage}</Typography>
+            <Box key='successMessage' color='success.main' ml={1}>
+              <Typography variant='body2'>{successMessage}</Typography>
             </Box>
           </>
         ) : (
           <Box
-            key="emptyMessage"
+            key='emptyMessage'
             color={title ? 'text.secondary' : null}
             ml={title ? 1 : 0}
           >
-            <Typography variant="body2">{emptyMessage}</Typography>
+            <Typography variant='body2'>{emptyMessage}</Typography>
           </Box>
         )
       ) : null}
       {actions && (
         <>
-          <Box key="padding" flex={1} />
-          <Box key="actions" ml={1}>
+          <Box key='padding' flex={1} />
+          <Box key='actions' ml={1}>
             {actions}
           </Box>
         </>
@@ -78,7 +78,7 @@ const DronePlaceholderList = ({
 DronePlaceholderList.propTypes = {
   actions: PropTypes.oneOfType([
     PropTypes.node,
-    PropTypes.arrayOf(PropTypes.node)
+    PropTypes.arrayOf(PropTypes.node),
   ]),
   emptyMessage: PropTypes.node,
   items: PropTypes.arrayOf(
@@ -86,11 +86,11 @@ DronePlaceholderList.propTypes = {
   ),
   maxCount: PropTypes.number,
   successMessage: PropTypes.node,
-  title: PropTypes.string
+  title: PropTypes.string,
 };
 
 DronePlaceholderList.defaultProps = {
-  maxCount: 8
+  maxCount: 8,
 };
 
 export default DronePlaceholderList;

@@ -11,7 +11,7 @@ import {
   getMissionMapping,
   getReverseMissionMapping,
   getUAVIdsParticipatingInMission,
-  getTakeoffHeadingsInMission
+  getTakeoffHeadingsInMission,
 } from '~/features/mission/selectors';
 
 /**
@@ -73,7 +73,7 @@ export const getHomePositionByUavId = createCachedSelector(
     return homePositions[index];
   }
 )({
-  keySelector: selectUavId
+  keySelector: selectUavId,
   // TODO: use a FIFO or LRU cache if it becomes necessary
 });
 
@@ -100,7 +100,7 @@ export const getTakeoffHeadingByUavId = createCachedSelector(
     return takeoffHeadings[index];
   }
 )({
-  keySelector: selectUavId
+  keySelector: selectUavId,
   // TODO: use a FIFO or LRU cache if it becomes necessary
 });
 
@@ -121,7 +121,7 @@ export const getXYDistanceToHomePositionByUavId = createCachedSelector(
     return undefined;
   }
 )({
-  keySelector: selectUavId
+  keySelector: selectUavId,
   // TODO: use a FIFO or LRU cache if it becomes necessary
 });
 
@@ -195,7 +195,7 @@ export const getDeviationFromTakeoffHeadingByUavId = createCachedSelector(
     return undefined;
   }
 )({
-  keySelector: selectUavId
+  keySelector: selectUavId,
   // TODO: use a FIFO or LRU cache if it becomes necessary
 });
 
@@ -290,7 +290,7 @@ export const getErrorCodeSummaryForUAVsInMission = createSelector(
       ([code, _]) => Number.parseInt(code, 10)
     ).map(([key, value]) => ({
       code: key,
-      uavIdsAndIndices: value.map((x) => x[1])
+      uavIdsAndIndices: value.map((x) => x[1]),
     }));
   }
 );

@@ -37,6 +37,6 @@ export function createAsyncAction(name, prepare, options = {}) {
 export function noPayload(func) {
   return {
     prepare: () => ({}),
-    reducer: func
+    reducer: func,
   };
 }

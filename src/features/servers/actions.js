@@ -19,7 +19,7 @@ export const authenticateToServer = createAsyncAction(
       const { body } = await messageHub.sendMessage({
         type: 'AUTH-REQ',
         method,
-        data
+        data,
       });
 
       if (body.type === 'AUTH-RESP') {
@@ -28,7 +28,7 @@ export const authenticateToServer = createAsyncAction(
         } else if (body.result) {
           return {
             result: true,
-            user: body.user
+            user: body.user,
           };
         } else {
           throw new Error(String(body.reason) || 'Authentication failed');
@@ -50,7 +50,7 @@ export const authenticateToServer = createAsyncAction(
 
       return {
         result: false,
-        reason
+        reason,
       };
     }
   }
@@ -66,11 +66,11 @@ export const authenticateToServer = createAsyncAction(
 export function authenticateToServerWithBasicAuthentication({
   username,
   password,
-  messageHub
+  messageHub,
 }) {
   return authenticateToServer({
     method: 'basic',
     data: Base64.encode(`${username}:${password}`),
-    messageHub
+    messageHub,
   });
 }

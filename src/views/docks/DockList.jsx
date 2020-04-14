@@ -17,7 +17,7 @@ import { setSelectedDockIds } from '~/actions/map';
 import { multiSelectableListOf } from '~/components/helpers/lists';
 import {
   getDocksInOrder,
-  getSelectedDockIds
+  getSelectedDockIds,
 } from '~/features/docks/selectors';
 import { fitCoordinatesIntoMapView, scrollToMapLocation } from '~/signals';
 
@@ -27,7 +27,7 @@ import { fitCoordinatesIntoMapView, scrollToMapLocation } from '~/signals';
 const DockListPresentation = multiSelectableListOf(
   (dock, props, selected) => {
     const rightIconButton = (
-      <IconButton edge="end" onClick={() => scrollToMapLocation(dock.position)}>
+      <IconButton edge='end' onClick={() => scrollToMapLocation(dock.position)}>
         <Search />
       </IconButton>
     );
@@ -46,7 +46,7 @@ const DockListPresentation = multiSelectableListOf(
   },
   {
     backgroundHint: 'No docking stations',
-    dataProvider: 'docks'
+    dataProvider: 'docks',
   }
 );
 
@@ -55,7 +55,7 @@ const DockListPresentation = multiSelectableListOf(
  * server.
  */
 const DockList = ({ onSelectionChanged, selectedIds, ...rest }) => (
-  <Box display="flex" flexDirection="column" height="100%">
+  <Box display='flex' flexDirection='column' height='100%'>
     {/*
     <UAVToolbar
       selectedUAVIds={selectedUAVIds}
@@ -63,7 +63,7 @@ const DockList = ({ onSelectionChanged, selectedIds, ...rest }) => (
     />
     */}
 
-    <Box height="100%" overflow="auto">
+    <Box height='100%' overflow='auto'>
       <DockListPresentation
         dense
         value={selectedIds || []}
@@ -76,19 +76,19 @@ const DockList = ({ onSelectionChanged, selectedIds, ...rest }) => (
 
 DockList.propTypes = {
   selectedIds: PropTypes.arrayOf(PropTypes.string).isRequired,
-  onSelectionChanged: PropTypes.func
+  onSelectionChanged: PropTypes.func,
 };
 
 export default connect(
   // mapStateToProps
   (state) => ({
     docks: getDocksInOrder(state),
-    selectedIds: getSelectedDockIds(state)
+    selectedIds: getSelectedDockIds(state),
   }),
   // mapDispatchToProps
   (dispatch) => ({
     onSelectionChanged: (event, dockIds) => {
       dispatch(setSelectedDockIds(dockIds));
-    }
+    },
   })
 )(DockList);

@@ -17,7 +17,7 @@ const severityLevels = ['error', 'warning', 'ok'];
 const badgeColorForLevel = {
   ok: Colors.success,
   warning: Colors.warning,
-  error: Colors.error
+  error: Colors.error,
 };
 
 /**
@@ -68,7 +68,7 @@ const calculateStatusSummary = createSelector(
 
     return {
       level: 'ok',
-      count: connections.length
+      count: connections.length,
     };
   }
 );
@@ -83,7 +83,7 @@ export default connect(
     const { count, level } = calculateStatusSummary(state);
     return {
       color: badgeColorForLevel[level],
-      visible: ownProps.isAlwaysVisible ? count > 0 : level !== 'ok'
+      visible: ownProps.isAlwaysVisible ? count > 0 : level !== 'ok',
     };
   },
   // Return empty object from mapDispatchToProps to avoid invalid prop warning

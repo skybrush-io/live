@@ -39,7 +39,7 @@ export function polarCCW({ center = [0, 0], angle, radius = 1 }) {
   const rad = toRadians(angle);
   return [
     center[0] + radius * Math.cos(rad),
-    center[1] + radius * Math.sin(rad)
+    center[1] + radius * Math.sin(rad),
   ];
 }
 
@@ -59,7 +59,7 @@ export function polarCW({ center, angle, radius = 1 }) {
   const rad = toRadians(-angle);
   return [
     center[0] + radius * Math.cos(rad),
-    center[1] + radius * Math.sin(rad)
+    center[1] + radius * Math.sin(rad),
   ];
 }
 
@@ -79,7 +79,7 @@ export function polarCWNorth({ center, angle, radius = 1 }) {
   const rad = toRadians(90 - angle);
   return [
     center[0] + radius * Math.cos(rad),
-    center[1] + radius * Math.sin(rad)
+    center[1] + radius * Math.sin(rad),
   ];
 }
 

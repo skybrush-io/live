@@ -10,11 +10,11 @@ import FadeAndSlide from '~/components/transitions/FadeAndSlide';
 
 const divStyle = {
   display: 'inline-block',
-  transform: 'translateY(1px)'
+  transform: 'translateY(1px)',
 };
 
 const noWrap = {
-  whiteSpace: 'nowrap'
+  whiteSpace: 'nowrap',
 };
 
 const instructionsByMode = {
@@ -55,7 +55,7 @@ const instructionsByMode = {
       </IconButton>
       <div style={{ ...divStyle, marginLeft: -8 }}>Look around</div>
     </div>
-  )
+  ),
 };
 
 /**
@@ -63,17 +63,17 @@ const instructionsByMode = {
  * current navigation mode.
  */
 const NavigationInstructions = ({ mode }) => (
-  <Box mx={1} flex={1} alignSelf="stretch" position="relative">
+  <Box mx={1} flex={1} alignSelf='stretch' position='relative'>
     <TransitionGroup>
       <FadeAndSlide key={mode}>
         <Box
-          position="absolute"
+          position='absolute'
           left={0}
           top={0}
           bottom={0}
-          display="flex"
-          flexDirection="column"
-          justifyContent="center"
+          display='flex'
+          flexDirection='column'
+          justifyContent='center'
         >
           {instructionsByMode[mode] ||
             'No instructions for this navigation mode'}
@@ -84,7 +84,7 @@ const NavigationInstructions = ({ mode }) => (
 );
 
 NavigationInstructions.propTypes = {
-  mode: PropTypes.oneOf(['walk', 'fly'])
+  mode: PropTypes.oneOf(['walk', 'fly']),
 };
 
 export default NavigationInstructions;

@@ -18,11 +18,11 @@ export async function getConfigurationOfExtension(hub, name) {
 
   const response = await hub.sendMessage({
     type: 'EXT-CFG',
-    ids: [name]
+    ids: [name],
   });
 
   return extractResponseForId(response, name, {
-    error: `Failed to retrieve configuration for extension: ${name}`
+    error: `Failed to retrieve configuration for extension: ${name}`,
   });
 }
 
@@ -54,7 +54,7 @@ const listExtensions = memoize(
   },
   {
     maxAge: 5000 /* 5 seconds */,
-    promise: true
+    promise: true,
   }
 );
 
@@ -86,7 +86,7 @@ export class QueryHandler {
     getConfigurationOfExtension,
     getShowConfiguration,
     isExtensionLoaded,
-    listExtensions
+    listExtensions,
   };
 
   /**

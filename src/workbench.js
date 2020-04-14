@@ -55,14 +55,14 @@ const componentRegistry = {
   'saved-location-list': views.SavedLocationList,
   'show-control': views.ShowControlPanel,
   'three-d-view': views.ThreeDTopLevelView,
-  'uav-list': injectFlockFromContext(views.UAVList)
+  'uav-list': injectFlockFromContext(views.UAVList),
 };
 
 /**
  * Fallback component to use in the workbench in case of errors.
  */
 const FallbackComponent = () => (
-  <BackgroundHint text="This component is not available" />
+  <BackgroundHint text='This component is not available' />
 );
 
 function constructDefaultWorkbench(store) {

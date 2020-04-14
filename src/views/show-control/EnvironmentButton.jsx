@@ -6,7 +6,7 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 
 import StepperStatusLight, {
-  StepperStatus
+  StepperStatus,
 } from '~/components/StepperStatusLight';
 import { openEnvironmentEditorDialog } from '~/features/show/slice';
 import { getSetupStageStatuses } from '~/features/show/stages';
@@ -39,7 +39,7 @@ const EnvironmentButton = ({ onEditEnvironment, status, type, ...rest }) => (
   >
     <StepperStatusLight status={status} />
     <ListItemText
-      primary="Setup environment"
+      primary='Setup environment'
       secondary={environmentTypeToString(type)}
     />
   </ListItem>
@@ -48,21 +48,21 @@ const EnvironmentButton = ({ onEditEnvironment, status, type, ...rest }) => (
 EnvironmentButton.propTypes = {
   onEditEnvironment: PropTypes.func,
   status: PropTypes.oneOf(Object.values(StepperStatus)),
-  type: PropTypes.string
+  type: PropTypes.string,
 };
 
 EnvironmentButton.defaultProps = {
-  type: 'outdoor'
+  type: 'outdoor',
 };
 
 export default connect(
   // mapStateToProps
   (state) => ({
     status: getSetupStageStatuses(state).setupEnvironment,
-    type: state.show.environment.type
+    type: state.show.environment.type,
   }),
   // mapDispatchToProps
   {
-    onEditEnvironment: openEnvironmentEditorDialog
+    onEditEnvironment: openEnvironmentEditorDialog,
   }
 )(EnvironmentButton);

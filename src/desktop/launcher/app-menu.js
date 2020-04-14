@@ -3,7 +3,7 @@ const {
   aboutMenuItem,
   appMenu,
   is,
-  openUrlMenuItem
+  openUrlMenuItem,
 } = require('electron-util');
 
 const dispatch = require('./dispatcher');
@@ -11,8 +11,8 @@ const dispatch = require('./dispatcher');
 const helpSubmenu = [
   openUrlMenuItem({
     label: 'Website',
-    url: 'https://skybrush.io'
-  })
+    url: 'https://skybrush.io',
+  }),
 ];
 
 const preferencesItem = {
@@ -20,45 +20,45 @@ const preferencesItem = {
   accelerator: 'Command+,',
   click() {
     dispatch({ type: 'SHOW_APP_SETTINGS_DIALOG' });
-  }
+  },
 };
 
 const macOsMenuTemplate = [
   appMenu([preferencesItem]),
   {
-    role: 'editMenu'
+    role: 'editMenu',
   },
   {
-    role: 'windowMenu'
+    role: 'windowMenu',
   },
   {
     role: 'help',
-    submenu: helpSubmenu
-  }
+    submenu: helpSubmenu,
+  },
 ];
 
 const linuxWindowsMenuTemplate = [
   {
     label: 'File',
-    submenu: [preferencesItem, { type: 'separator' }, { role: 'quit' }]
+    submenu: [preferencesItem, { type: 'separator' }, { role: 'quit' }],
   },
   {
-    role: 'editMenu'
+    role: 'editMenu',
   },
   {
-    role: 'windowMenu'
+    role: 'windowMenu',
   },
   {
     role: 'help',
-    submenu: helpSubmenu
-  }
+    submenu: helpSubmenu,
+  },
 ];
 
 if (!is.macos) {
   helpSubmenu.push(
     { type: 'separator' },
     aboutMenuItem({
-      copyright: 'Copyright © CollMot Robotics'
+      copyright: 'Copyright © CollMot Robotics',
     })
   );
 }
@@ -77,7 +77,7 @@ if (is.development) {
         label: 'Show App Data',
         click() {
           shell.openItem(app.getPath('userData'));
-        }
+        },
       },
       {
         label: 'Delete App Data',
@@ -85,9 +85,9 @@ if (is.development) {
           shell.moveItemToTrash(app.getPath('userData'));
           app.relaunch();
           app.quit();
-        }
-      }
-    ]
+        },
+      },
+    ],
   });
 }
 

@@ -169,7 +169,10 @@
     "webpack-shell-plugin": "^0.5.0"
   },
   "prettier": {
-    "bracketSpacing": true
+    "bracketSpacing": true,
+    "jsxSingleQuote": true,
+    "singleQuote": true,
+    "trailingComma": "es5"
   },
   "xo": {
     "extends": "xo-react",

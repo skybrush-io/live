@@ -11,7 +11,7 @@ import u from 'updeep';
  */
 const defaultState = {
   dialogVisible: false,
-  selectedTab: 'general'
+  selectedTab: 'general',
 };
 
 /**
@@ -24,7 +24,7 @@ const reducer = handleActions(
       u(
         {
           dialogVisible: true,
-          featureId: action.payload
+          featureId: action.payload,
         },
         state
       ),
@@ -33,7 +33,7 @@ const reducer = handleActions(
       u({ ...action.payload, dialogVisible: false }, state),
 
     SET_FEATURE_EDITOR_DIALOG_TAB: (state, action) =>
-      u({ selectedTab: action.payload }, state)
+      u({ selectedTab: action.payload }, state),
   },
   defaultState
 );

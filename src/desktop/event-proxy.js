@@ -19,7 +19,7 @@ const makeEventProxy = is.main
         ipc.sendToRenderers(realChannel, args)
       );
       return {
-        emit: (...args) => emitter.emit('emit', ...args)
+        emit: (...args) => emitter.emit('emit', ...args),
       };
     }
   : (channel) => {

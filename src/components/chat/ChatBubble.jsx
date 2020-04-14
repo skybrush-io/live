@@ -18,7 +18,7 @@ const useStyles = makeStyles(
       margin: theme.spacing(0.5, 0),
       display: 'flex',
       alignItems: 'flex-start',
-      width: '100%'
+      width: '100%',
     },
 
     bubble: {
@@ -29,15 +29,15 @@ const useStyles = makeStyles(
       minHeight: theme.spacing(1),
       overflowX: 'auto',
       '& pre': {
-        margin: theme.spacing(0.5)
-      }
+        margin: theme.spacing(0.5),
+      },
     },
 
     ownBubble: {
       background: isDark(theme) ? blue[400] : blue[600],
       color: theme.palette.getContrastText(
         isDark(theme) ? blue[400] : blue[600]
-      )
+      ),
     },
 
     otherBubble: {
@@ -47,8 +47,8 @@ const useStyles = makeStyles(
       ),
 
       '& .chat-meta': {
-        textAlign: 'right'
-      }
+        textAlign: 'right',
+      },
     },
 
     meta: {
@@ -57,13 +57,13 @@ const useStyles = makeStyles(
 
       '& .author': {
         fontWeight: 'bold',
-        color: theme.palette.text.secondary
+        color: theme.palette.text.secondary,
       },
 
       '& .date': {
-        color: theme.palette.text.hint
-      }
-    }
+        color: theme.palette.text.hint,
+      },
+    },
   }),
   { name: 'ChatBubble' }
 );
@@ -79,11 +79,11 @@ const ChatBubble = ({
   leftComponent,
   own,
   raw,
-  rightComponent
+  rightComponent,
 }) => {
   const classes = useStyles();
   const dateComponent = date && (
-    <span className="date">
+    <span className='date'>
       <TimeAgo date={date} />
     </span>
   );
@@ -108,7 +108,7 @@ const ChatBubble = ({
       {leftComponentWrapper}
       <div style={{ flex: 1, maxWidth: '100%' }}>
         <div className={classes.meta}>
-          <span className="author">{author}</span> {dateComponent}
+          <span className='author'>{author}</span> {dateComponent}
         </div>
         {bubble}
       </div>
@@ -125,19 +125,19 @@ ChatBubble.propTypes = {
   raw: PropTypes.bool,
   leftComponent: PropTypes.oneOfType([
     PropTypes.node,
-    PropTypes.arrayOf(PropTypes.node)
+    PropTypes.arrayOf(PropTypes.node),
   ]),
   rightComponent: PropTypes.oneOfType([
     PropTypes.node,
-    PropTypes.arrayOf(PropTypes.node)
-  ])
+    PropTypes.arrayOf(PropTypes.node),
+  ]),
 };
 
 ChatBubble.defaultProps = {
   author: 'Anonymous',
   body: '',
   own: true,
-  raw: false
+  raw: false,
 };
 
 export default ChatBubble;

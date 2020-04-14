@@ -35,7 +35,7 @@ export const LayerType = {
   TILE_SERVER: 'tileServer',
   UAVS: 'uavs',
   UAV_TRACE: 'uavTrace',
-  UNTYPED: 'untyped'
+  UNTYPED: 'untyped',
 };
 
 /**
@@ -51,7 +51,7 @@ export const LayerTypes = [
   LayerType.HOME,
   LayerType.OWN_LOCATION,
   LayerType.GEOJSON,
-  LayerType.HEATMAP
+  LayerType.HEATMAP,
 ];
 
 /**
@@ -60,7 +60,7 @@ export const LayerTypes = [
 export const TileServerType = {
   WMS: 'wms',
   XYZ: 'xyz',
-  TILE_CACHE: 'tileCache'
+  TILE_CACHE: 'tileCache',
 };
 
 /**
@@ -70,7 +70,7 @@ export const TileServerType = {
 export const TileServerTypes = [
   TileServerType.WMS,
   TileServerType.XYZ,
-  TileServerType.TILE_CACHE
+  TileServerType.TILE_CACHE,
 ];
 
 /**
@@ -84,18 +84,18 @@ const _propertiesForLayerTypes = {
     label: 'Base layer',
     icon: <Map />,
     parameters: {
-      source: 'osm'
-    }
+      source: 'osm',
+    },
   },
   [LayerType.DOCKS]: {
     label: 'Docking stations',
     icon: <Gamepad />,
-    parameters: {}
+    parameters: {},
   },
   [LayerType.FEATURES]: {
     label: 'Features',
     icon: <Streetview />,
-    parameters: {}
+    parameters: {},
   },
   [LayerType.GEOJSON]: {
     label: 'GeoJSON layer',
@@ -104,8 +104,8 @@ const _propertiesForLayerTypes = {
       data: {},
       strokeColor: { r: 85, g: 85, b: 225, alpha: 1 },
       strokeWidth: 2,
-      fillColor: { r: 170, g: 170, b: 225, alpha: 0.5 }
-    }
+      fillColor: { r: 170, g: 170, b: 225, alpha: 0.5 },
+    },
   },
   [LayerType.HEATMAP]: {
     label: 'Heatmap',
@@ -122,8 +122,8 @@ const _propertiesForLayerTypes = {
       maxPoints: 1000,
       unit: '',
       minDistance: 5,
-      snapToGrid: false
-    }
+      snapToGrid: false,
+    },
   },
   [LayerType.HEXGRID]: {
     label: 'Hex grid layer',
@@ -131,8 +131,8 @@ const _propertiesForLayerTypes = {
     parameters: {
       center: [19.061951, 47.47334],
       size: 8,
-      radius: 0.0005
-    }
+      radius: 0.0005,
+    },
   },
   [LayerType.HOME]: {
     label: 'Home position',
@@ -140,12 +140,12 @@ const _propertiesForLayerTypes = {
     parameters: {
       showOrigin: true,
       showHomePositions: true,
-      showLandingPositions: false
-    }
+      showLandingPositions: false,
+    },
   },
   [LayerType.OWN_LOCATION]: {
     label: 'Own location',
-    icon: <MyLocation />
+    icon: <MyLocation />,
   },
   [LayerType.TILE_SERVER]: {
     label: 'Tile server',
@@ -153,15 +153,15 @@ const _propertiesForLayerTypes = {
     parameters: {
       type: TileServerType.WMS,
       url: 'http://ows.mundialis.de/services/service',
-      layers: 'TOPO-OSM-WMS'
-    }
+      layers: 'TOPO-OSM-WMS',
+    },
   },
   [LayerType.UAVS]: {
     label: 'UAVs',
     icon: <Flight />,
     parameters: {
-      colorPredicates: {}
-    }
+      colorPredicates: {},
+    },
   },
   [LayerType.UAV_TRACE]: {
     label: 'UAV trace',
@@ -169,13 +169,13 @@ const _propertiesForLayerTypes = {
     parameters: {
       trailLength: 10,
       trailWidth: 2,
-      trailColor: { r: 0, g: 0, b: 0, a: 1 }
-    }
+      trailColor: { r: 0, g: 0, b: 0, a: 1 },
+    },
   },
   [LayerType.UNTYPED]: {
     label: 'Untyped layer',
-    icon: <HelpOutline />
-  }
+    icon: <HelpOutline />,
+  },
 };
 
 /**
@@ -196,7 +196,7 @@ export function createNewLayer(id, layerType, name, parameters) {
     type: effectiveLayerType,
     label: name,
     visible: effectiveLayerType !== LayerType.UNTYPED,
-    parameters: parameters || defaultParametersForLayerType(effectiveLayerType)
+    parameters: parameters || defaultParametersForLayerType(effectiveLayerType),
   };
 }
 

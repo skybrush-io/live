@@ -27,7 +27,7 @@ export const LayerSettings = {
   [LayerType.TILE_SERVER]: TileServerLayerSettings,
   [LayerType.UAVS]: UAVsLayerSettings,
   [LayerType.UAV_TRACE]: UAVTraceLayerSettings,
-  [LayerType.UNTYPED]: UntypedLayerSettings
+  [LayerType.UNTYPED]: UntypedLayerSettings,
 };
 
 export const stateObjectToLayerSettings = (layer, layerId) => {
@@ -59,7 +59,7 @@ export const Layers = {
   [LayerType.TILE_SERVER]: TileServerLayer,
   [LayerType.UAVS]: UAVsLayer,
   [LayerType.UAV_TRACE]: UAVTraceLayer,
-  [LayerType.UNTYPED]: UntypedLayer
+  [LayerType.UNTYPED]: UntypedLayer,
 };
 
 export const stateObjectToLayer = (layer, props) => {

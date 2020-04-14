@@ -15,15 +15,15 @@ const { actions, reducer } = createSlice({
       server: {
         id: 'server',
         clockId: 'system',
-        preset: 0
+        preset: 0,
       },
       show: {
         id: 'show',
         clockId: 'show',
-        preset: 1
-      }
+        preset: 1,
+      },
     },
-    order: ['server', 'show']
+    order: ['server', 'show'],
   },
 
   reducers: {
@@ -49,15 +49,15 @@ const { actions, reducer } = createSlice({
       if (state.byId[id] && typeof preset === 'number') {
         state.byId[id].preset = preset;
       }
-    }
-  }
+    },
+  },
 });
 
 export const {
   addClockDisplay,
   removeClockDisplay,
   setClockIdForClockDisplay,
-  setPresetIndexForClockDisplay
+  setPresetIndexForClockDisplay,
 } = actions;
 
 export default reducer;

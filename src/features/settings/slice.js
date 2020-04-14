@@ -24,7 +24,7 @@ const { actions, reducer } = createSlice({
       // Whether to show the scale on the map
       showScaleLine: true,
       // Which UI theme to use (choose from OS, use light mode or use dark mode)
-      theme: 'auto'
+      theme: 'auto',
     },
 
     threeD: {
@@ -49,7 +49,7 @@ const { actions, reducer } = createSlice({
       showLandingPositions: false,
 
       // Whether to show statistics about the rendering in an overlay
-      showStatistics: false
+      showStatistics: false,
     },
 
     localServer: {
@@ -58,7 +58,7 @@ const { actions, reducer } = createSlice({
       // Whether a local server has to be launched upon startup
       enabled: true,
       // Search path of the server
-      searchPath: []
+      searchPath: [],
     },
 
     uavs: {
@@ -73,14 +73,14 @@ const { actions, reducer } = createSlice({
       goneThreshold: 60,
       // Number of seconds after which a UAV with no status updates is
       // removed from the UAV list
-      forgetThreshold: 600
-    }
+      forgetThreshold: 600,
+    },
   },
 
   reducers: {
     replaceAppSettings: {
       prepare: (category, updates) => ({
-        payload: { category, updates }
+        payload: { category, updates },
       }),
 
       reducer: (state, action) => {
@@ -89,19 +89,19 @@ const { actions, reducer } = createSlice({
         if (state[category] !== undefined) {
           state[category] = updates;
         }
-      }
+      },
     },
 
     toggleMissionIds: {
       prepare: () => ({}), // this is to swallow event arguments
       reducer(state) {
         state.display.showMissionIds = !state.display.showMissionIds;
-      }
+      },
     },
 
     updateAppSettings: {
       prepare: (category, updates) => ({
-        payload: { category, updates }
+        payload: { category, updates },
       }),
 
       reducer: (state, action) => {
@@ -110,15 +110,15 @@ const { actions, reducer } = createSlice({
         if (state[category] !== undefined) {
           state[category] = { ...state[category], ...updates };
         }
-      }
-    }
-  }
+      },
+    },
+  },
 });
 
 export const {
   replaceAppSettings,
   toggleMissionIds,
-  updateAppSettings
+  updateAppSettings,
 } = actions;
 
 export default reducer;

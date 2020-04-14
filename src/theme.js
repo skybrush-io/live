@@ -37,21 +37,21 @@ const DarkModeAwareThemeProvider = ({ children, type }) => {
       secondary: isThemeDark ? lightBlue : red,
 
       success: {
-        main: Colors.success
-      }
+        main: Colors.success,
+      },
     },
 
     typography: {
-      fontFamily: '"Fira Sans", "Helvetica", "Arial", sans-serif'
+      fontFamily: '"Fira Sans", "Helvetica", "Arial", sans-serif',
     },
 
     overrides: {
       MuiList: {
         root: {
-          background: isThemeDark ? '#444' : '#fff'
-        }
-      }
-    }
+          background: isThemeDark ? '#444' : '#fff',
+        },
+      },
+    },
   });
 
   return <ThemeProvider theme={theme}>{children}</ThemeProvider>;
@@ -60,9 +60,9 @@ const DarkModeAwareThemeProvider = ({ children, type }) => {
 DarkModeAwareThemeProvider.propTypes = {
   children: PropTypes.oneOfType([
     PropTypes.arrayOf(PropTypes.node),
-    PropTypes.node
+    PropTypes.node,
   ]),
-  type: PropTypes.oneOf(['auto', 'dark', 'light'])
+  type: PropTypes.oneOf(['auto', 'dark', 'light']),
 };
 
 /**
@@ -92,6 +92,6 @@ export const DarkModeExtraCSSProvider = () => {
 export default connect(
   // mapStateToProps
   (state) => ({
-    type: state.settings.display.theme
+    type: state.settings.display.theme,
   })
 )(DarkModeAwareThemeProvider);

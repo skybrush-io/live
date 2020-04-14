@@ -7,7 +7,7 @@ import { createAction } from 'redux-actions';
 import {
   CANCEL_PROMPT_DIALOG,
   SHOW_PROMPT_DIALOG,
-  SUBMIT_PROMPT_DIALOG
+  SUBMIT_PROMPT_DIALOG,
 } from './types';
 
 /**
@@ -58,7 +58,7 @@ export function cancelPromptDialog() {
  * This is not exported because the thunk version should be used instead.
  */
 const submitPromptDialogNow = createAction(SUBMIT_PROMPT_DIALOG, (value) => ({
-  value
+  value,
 }));
 
 /**
@@ -88,7 +88,7 @@ const showPromptDialogNow = createAction(
   (message, options) => {
     if (typeof options === 'string') {
       options = {
-        initialValue: options
+        initialValue: options,
       };
     }
 

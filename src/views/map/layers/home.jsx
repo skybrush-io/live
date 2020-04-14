@@ -16,14 +16,14 @@ import { setLayerParameterById } from '~/actions/layers';
 import Colors from '~/components/colors';
 import {
   getGPSBasedHomePositionsInMission,
-  getGPSBasedLandingPositionsInMission
+  getGPSBasedLandingPositionsInMission,
 } from '~/features/mission/selectors';
 import {
   globalIdToHomePositionId,
   globalIdToLandingPositionId,
   homePositionIdToGlobalId,
   landingPositionIdToGlobalId,
-  originIdToGlobalId
+  originIdToGlobalId,
 } from '~/model/identifiers';
 import { setLayerEditable, setLayerSelectable } from '~/model/layers';
 import { getMapOriginRotationAngle } from '~/selectors/map';
@@ -36,14 +36,14 @@ import {
   fill,
   stroke,
   whiteThickOutline,
-  whiteThinOutline
+  whiteThinOutline,
 } from '~/utils/styles';
 
 // === Settings for this particular layer type ===
 
 const HomePositionsLayerSettingsPresentation = ({
   layer,
-  setLayerParameter
+  setLayerParameter,
 }) => {
   const { parameters } = layer;
   const { showOrigin, showHomePositions, showLandingPositions } =
@@ -58,31 +58,31 @@ const HomePositionsLayerSettingsPresentation = ({
         control={
           <Checkbox
             checked={showOrigin}
-            value="showOrigin"
+            value='showOrigin'
             onChange={handleChange('showOrigin')}
           />
         }
-        label="Show map origin"
+        label='Show map origin'
       />
       <FormControlLabel
         control={
           <Checkbox
             checked={showHomePositions}
-            value="showHomePositions"
+            value='showHomePositions'
             onChange={handleChange('showHomePositions')}
           />
         }
-        label="Show home positions"
+        label='Show home positions'
       />
       <FormControlLabel
         control={
           <Checkbox
             checked={showLandingPositions}
-            value="showLandingPositions"
+            value='showLandingPositions'
             onChange={handleChange('showLandingPositions')}
           />
         }
-        label="Show landing positions"
+        label='Show landing positions'
       />
     </FormGroup>
   );
@@ -90,7 +90,7 @@ const HomePositionsLayerSettingsPresentation = ({
 
 HomePositionsLayerSettingsPresentation.propTypes = {
   layer: PropTypes.object,
-  setLayerParameter: PropTypes.func
+  setLayerParameter: PropTypes.func,
 };
 
 export const HomePositionsLayerSettings = connect(
@@ -98,13 +98,13 @@ export const HomePositionsLayerSettings = connect(
   () => ({
     homePositionsVisible: true,
     landingPositionsVisible: true,
-    originVisible: true
+    originVisible: true,
   }),
   // mapDispatchToProps
   (dispatch, ownProps) => ({
     setLayerParameter: (parameter, value) => {
       dispatch(setLayerParameterById(ownProps.layerId, parameter, value));
-    }
+    },
   })
 )(HomePositionsLayerSettingsPresentation);
 
@@ -157,20 +157,20 @@ const originStyles = (selected, axis) => [
     image: new Circle({
       fill: originMarkerFill,
       radius: 8,
-      stroke: selected ? whiteThickOutline : whiteThinOutline
+      stroke: selected ? whiteThickOutline : whiteThinOutline,
     }),
     text: new Text({
       font: '12px sans-serif',
       offsetY: 16,
       text: 'Origin',
-      textAlign: 'center'
-    })
+      textAlign: 'center',
+    }),
   }),
 
   // Arrow
   new Style({
-    stroke: axis === 'x' ? redLine : greenLine
-  })
+    stroke: axis === 'x' ? redLine : greenLine,
+  }),
 ];
 
 /**
@@ -184,8 +184,8 @@ const takeoffPositionStyle = (feature, resolution) => {
       fill: takeoffMarkerFill,
       points: 3,
       radius: 6,
-      stroke: blackVeryThinOutline
-    })
+      stroke: blackVeryThinOutline,
+    }),
   };
 
   if (resolution < 0.4) {
@@ -193,7 +193,7 @@ const takeoffPositionStyle = (feature, resolution) => {
       font: '12px sans-serif',
       offsetY: 12,
       text: formatMissionId(Number.parseInt(index, 10)),
-      textAlign: 'center'
+      textAlign: 'center',
     });
   }
 
@@ -212,8 +212,8 @@ const landingPositionStyle = (feature, resolution) => {
       points: 3,
       radius: 6,
       rotation: Math.PI,
-      stroke: blackVeryThinOutline
-    })
+      stroke: blackVeryThinOutline,
+    }),
   };
 
   if (resolution < 0.4) {
@@ -221,7 +221,7 @@ const landingPositionStyle = (feature, resolution) => {
       font: '12px sans-serif',
       offsetY: -12,
       text: formatMissionId(Number.parseInt(index, 10)),
-      textAlign: 'center'
+      textAlign: 'center',
     });
   }
 
@@ -237,7 +237,7 @@ const HomePositionsVectorSource = ({
   selectedOriginIds,
   showHomePositions,
   showLandingPositions,
-  showOrigin
+  showOrigin,
 }) => {
   const features = [];
 
@@ -254,7 +254,7 @@ const HomePositionsVectorSource = ({
           const globalIdOfFeature = landingPositionIdToGlobalId(index);
           const center = mapViewCoordinateFromLonLat([
             landingPosition.lon,
-            landingPosition.lat
+            landingPosition.lat,
           ]);
 
           return (
@@ -284,7 +284,7 @@ const HomePositionsVectorSource = ({
           const globalIdOfFeature = homePositionIdToGlobalId(index);
           const center = mapViewCoordinateFromLonLat([
             homePosition.lon,
-            homePosition.lat
+            homePosition.lat,
           ]);
 
           return (
@@ -313,14 +313,14 @@ const HomePositionsVectorSource = ({
     Coordinate.add(headX, tail);
     features.push(
       <Feature
-        key="x"
+        key='x'
         id={globalIdOfOrigin + '$x'}
         style={originStyles(selectedOriginIds.includes(''), 'x')}
       >
         <geom.LineString coordinates={[tail, headX]} />
       </Feature>,
       <Feature
-        key="y"
+        key='y'
         id={globalIdOfOrigin}
         style={originStyles(selectedOriginIds.includes(''), 'y')}
       >
@@ -337,13 +337,13 @@ HomePositionsVectorSource.propTypes = {
   homePositions: PropTypes.arrayOf(
     PropTypes.shape({
       lat: PropTypes.number.isRequired,
-      lon: PropTypes.number.isRequired
+      lon: PropTypes.number.isRequired,
     })
   ),
   landingPositions: PropTypes.arrayOf(
     PropTypes.shape({
       lat: PropTypes.number.isRequired,
-      lon: PropTypes.number.isRequired
+      lon: PropTypes.number.isRequired,
     })
   ),
   orientation: PropTypes.number,
@@ -351,11 +351,11 @@ HomePositionsVectorSource.propTypes = {
   selectedOriginIds: PropTypes.arrayOf(PropTypes.string),
   showHomePositions: PropTypes.bool,
   showLandingPositions: PropTypes.bool,
-  showOrigin: PropTypes.bool
+  showOrigin: PropTypes.bool,
 };
 
 HomePositionsVectorSource.defaultProps = {
-  orientation: 0
+  orientation: 0,
 };
 
 const HomePositionsLayerPresentation = ({ layer, zIndex, ...rest }) => (
@@ -376,7 +376,7 @@ const HomePositionsLayerPresentation = ({ layer, zIndex, ...rest }) => (
 
 HomePositionsLayerPresentation.propTypes = {
   layer: PropTypes.object,
-  zIndex: PropTypes.number
+  zIndex: PropTypes.number,
 };
 
 export const HomePositionsLayer = connect(
@@ -387,7 +387,7 @@ export const HomePositionsLayer = connect(
     landingPositions: getGPSBasedLandingPositionsInMission(state),
     orientation: getMapOriginRotationAngle(state),
     origin: state.map.origin.position,
-    selectedOriginIds: getSelectedOriginIds(state)
+    selectedOriginIds: getSelectedOriginIds(state),
   }),
   // mapDispatchToProps
   () => ({})

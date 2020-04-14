@@ -18,7 +18,7 @@ export default connect(
     const level = state.log.highestUnseenMessageLevel;
     return {
       color: colorForLogLevel(level),
-      visible: level >= (ownProps.level || LogLevel.WARNING)
+      visible: level >= (ownProps.level || LogLevel.WARNING),
     };
   },
   // Return empty object from mapDispatchToProps to avoid invalid prop warning

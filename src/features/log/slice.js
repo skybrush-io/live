@@ -11,7 +11,7 @@ const { actions, reducer } = createSlice({
     highestUnseenMessageLevel: -1,
     items: [],
     nextId: 0,
-    panelVisible: false
+    panelVisible: false,
   },
 
   reducers: {
@@ -22,7 +22,7 @@ const { actions, reducer } = createSlice({
         timestamp: Date.now(),
         message: message || '',
         module: module || '',
-        level: level || 0
+        level: level || 0,
       };
 
       state.items.push(newItem);
@@ -55,15 +55,15 @@ const { actions, reducer } = createSlice({
       if (state.panelVisible) {
         state.highestUnseenMessageLevel = -1;
       }
-    }
-  }
+    },
+  },
 });
 
 export const {
   addLogItem,
   clearLogItems,
   deleteLogItem,
-  updateLogPanelVisibility
+  updateLogPanelVisibility,
 } = actions;
 
 export default reducer;

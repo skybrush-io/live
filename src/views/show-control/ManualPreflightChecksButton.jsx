@@ -8,13 +8,13 @@ import ListItemText from '@material-ui/core/ListItemText';
 import Switch from '@material-ui/core/Switch';
 
 import StepperStatusLight, {
-  StepperStatus
+  StepperStatus,
 } from '~/components/StepperStatusLight';
 import { signOffOnManualPreflightChecks } from '~/features/show/actions';
 import { areManualPreflightChecksSignedOff } from '~/features/show/selectors';
 import {
   clearManualPreflightChecks,
-  openManualPreflightChecksDialog
+  openManualPreflightChecksDialog,
 } from '~/features/show/slice';
 import { getSetupStageStatuses } from '~/features/show/stages';
 
@@ -33,12 +33,12 @@ const ManualPreflightChecksButton = ({
   return (
     <ListItem button disabled={status === StepperStatus.OFF} {...rest}>
       <StepperStatusLight status={status} />
-      <ListItemText primary="Manual preflight checks" />
+      <ListItemText primary='Manual preflight checks' />
       {/* TODO: show how many checks were not ticked off by the user yet */}
       <ListItemSecondaryAction>
         <Switch
           checked={areChecksSignedOff}
-          edge="end"
+          edge='end'
           onChange={areChecksSignedOff ? onRevoke : onApprove}
         />
       </ListItemSecondaryAction>
@@ -51,7 +51,7 @@ ManualPreflightChecksButton.propTypes = {
   onApprove: PropTypes.func,
   onClick: PropTypes.func,
   onRevoke: PropTypes.func,
-  status: PropTypes.oneOf(Object.values(StepperStatus))
+  status: PropTypes.oneOf(Object.values(StepperStatus)),
 };
 
 ManualPreflightChecksButton.defaultProps = {};
@@ -60,12 +60,12 @@ export default connect(
   // mapStateToProps
   (state) => ({
     areChecksSignedOff: areManualPreflightChecksSignedOff(state),
-    status: getSetupStageStatuses(state).performManualPreflightChecks
+    status: getSetupStageStatuses(state).performManualPreflightChecks,
   }),
   // mapDispatchToProps
   {
     onApprove: signOffOnManualPreflightChecks,
     onClick: openManualPreflightChecksDialog,
-    onRevoke: clearManualPreflightChecks
+    onRevoke: clearManualPreflightChecks,
   }
 )(ManualPreflightChecksButton);

@@ -17,7 +17,7 @@ const useStyles = makeStyles(
       backgroundColor: theme.palette.background.paper,
       border: `2px solid ${theme.palette.background.paper}`,
       borderRadius: '50%',
-      boxSizing: 'content-box'
+      boxSizing: 'content-box',
     },
 
     light: {
@@ -26,47 +26,47 @@ const useStyles = makeStyles(
       height: '100%',
       backgroundColor: theme.palette.background.paper,
       borderRadius: '50%',
-      boxSizing: 'content-box'
+      boxSizing: 'content-box',
     },
 
     'status-off': {
-      backgroundColor: Colors.off
+      backgroundColor: Colors.off,
     },
 
     'status-success': {
-      backgroundColor: Colors.success
+      backgroundColor: Colors.success,
     },
 
     'status-warning': {
-      backgroundColor: Colors.warning
+      backgroundColor: Colors.warning,
     },
 
     'status-rth': {
       animation: '$flash 0.5s infinite',
       animationDirection: 'alternate',
-      backgroundColor: Colors.warning
+      backgroundColor: Colors.warning,
     },
 
     'status-error': {
       backgroundColor: Colors.error,
-      color: 'white'
+      color: 'white',
     },
 
     'status-critical': {
       animation: '$flash 0.5s infinite',
       animationDirection: 'alternate',
       backgroundColor: Colors.error,
-      color: 'white'
+      color: 'white',
     },
 
     '@keyframes flash': {
       '0%, 49%': {
-        opacity: 0.5
+        opacity: 0.5,
       },
       '50%, 100%': {
-        opacity: 1
-      }
-    }
+        opacity: 1,
+      },
+    },
   }),
   { name: 'SecondaryStatusLight' }
 );
@@ -91,12 +91,12 @@ SecondaryStatusLight.propTypes = {
     'warning',
     'rth',
     'error',
-    'critical'
-  ])
+    'critical',
+  ]),
 };
 
 SecondaryStatusLight.defaultProps = {
-  status: 'off'
+  status: 'off',
 };
 
 export default SecondaryStatusLight;

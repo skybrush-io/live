@@ -11,7 +11,7 @@ import u from 'updeep';
  */
 const defaultState = {
   dialogVisible: false,
-  selectedLayer: undefined
+  selectedLayer: undefined,
 };
 
 /**
@@ -24,7 +24,7 @@ const reducer = handleActions(
         return u(
           {
             dialogVisible: false,
-            selectedLayer: undefined
+            selectedLayer: undefined,
           },
           state
         );
@@ -37,7 +37,7 @@ const reducer = handleActions(
       u(
         {
           dialogVisible: true,
-          selectedLayer: action.payload.layerId
+          selectedLayer: action.payload.layerId,
         },
         state
       ),
@@ -46,10 +46,10 @@ const reducer = handleActions(
       u(
         {
           dialogVisible: false,
-          selectedLayer: undefined
+          selectedLayer: undefined,
         },
         state
-      )
+      ),
   },
   defaultState
 );

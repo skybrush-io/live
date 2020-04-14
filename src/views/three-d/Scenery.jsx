@@ -9,15 +9,15 @@ const grounds = {
     groundColor: '#8eb971',
     groundColor2: '#507a32',
     groundTexture: 'walkernoise',
-    groundYScale: 9
+    groundYScale: 9,
   },
   /* Checkerboard indoor texture */
   indoor: {
     ground: 'flat',
     groundColor: '#444',
     groundColor2: '#666',
-    groundTexture: 'checkerboard'
-  }
+    groundTexture: 'checkerboard',
+  },
 };
 
 const environments = {
@@ -27,7 +27,7 @@ const environments = {
     gridColor: '#fff',
     skyType: 'atmosphere',
     skyColor: '#88c',
-    ...grounds.default
+    ...grounds.default,
   },
   night: {
     preset: 'starry',
@@ -35,7 +35,7 @@ const environments = {
     gridColor: '#39d2f2',
     skyType: 'atmosphere',
     skyColor: '#88c',
-    ...grounds.default
+    ...grounds.default,
   },
   indoor: {
     preset: 'default',
@@ -43,20 +43,20 @@ const environments = {
     gridColor: '#888',
     skyType: 'color',
     skyColor: '#222',
-    ...grounds.indoor
-  }
+    ...grounds.indoor,
+  },
 };
 
 /**
  * Component that renders a basic scenery in which the drones will be placed.
  */
 const Scenery = ({ grid, scale, type }) => (
-  <a-entity position="0 -0.001 0" scale={`${scale} ${scale} ${scale}`}>
+  <a-entity position='0 -0.001 0' scale={`${scale} ${scale} ${scale}`}>
     {/* Move the floor slightly down to ensure that the coordinate axes are nicely visible */}
     <a-entity
       environment={objectToString({
         ...environments[type],
-        grid: typeof grid === 'string' ? grid : grid ? '1x1' : 'none'
+        grid: typeof grid === 'string' ? grid : grid ? '1x1' : 'none',
       })}
     />
   </a-entity>
@@ -65,11 +65,11 @@ const Scenery = ({ grid, scale, type }) => (
 Scenery.propTypes = {
   grid: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]),
   scale: PropTypes.number,
-  type: PropTypes.oneOf(Object.keys(environments))
+  type: PropTypes.oneOf(Object.keys(environments)),
 };
 
 Scenery.defaultProps = {
-  scale: 1
+  scale: 1,
 };
 
 export default memo(Scenery);

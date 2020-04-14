@@ -5,5 +5,5 @@
 export const CoordinateFormat = {
   DEGREES: 'd',
   DEGREES_MINUTES: 'dm',
-  DEGREES_MINUTES_SECONDS: 'dms'
+  DEGREES_MINUTES_SECONDS: 'dms',
 };

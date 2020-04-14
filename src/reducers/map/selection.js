@@ -75,7 +75,7 @@ const reducer = handleActions(
 
     SET_SELECTED_FEATURES(state, action) {
       return updateSelection([], action.payload);
-    }
+    },
   },
   defaultState
 );

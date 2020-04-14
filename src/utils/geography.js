@@ -56,7 +56,7 @@ export const createRotatedBoxGeometryFunction = (angle) => (
     Extent.getBottomRight(extent),
     Extent.getTopRight(extent),
     Extent.getTopLeft(extent),
-    Extent.getBottomLeft(extent)
+    Extent.getBottomLeft(extent),
   ].map((coordinate) =>
     Coordinate.add(Coordinate.rotate(coordinate, -effectiveAngle), mid)
   );
@@ -267,7 +267,7 @@ export const translateBy = curry((displacement, coordinates) => {
 
   return coordinates.map((coordinate) => [
     coordinate[0] + dx,
-    coordinate[1] + dy
+    coordinate[1] + dy,
   ]);
 });
 
@@ -281,7 +281,7 @@ export const translateBy = curry((displacement, coordinates) => {
 export const formatCoordinate = makeDecimalCoordinateFormatter({
   digits: 6,
   reverse: true,
-  unit: '\u00B0'
+  unit: '\u00B0',
 });
 
 /**
@@ -316,7 +316,7 @@ const makeEllipsoidModel = (semiMajorAxis, inverseFlattening) => {
   const result = {
     inverseFlattening,
     semiMajorAxis,
-    flattening: 1 / inverseFlattening
+    flattening: 1 / inverseFlattening,
   };
   result.eccentricitySquared = result.flattening * (2 - result.flattening);
   result.eccentricity = Math.sqrt(result.eccentricitySquared);
@@ -450,7 +450,7 @@ export class FlatEarthCoordinateSystem {
     return [
       result[1] / this._r2OverCosOriginLatInRadians / this._piOver180 +
         this._origin[0],
-      result[0] / this._r1 / this._piOver180 + this._origin[1]
+      result[0] / this._r1 / this._piOver180 + this._origin[1],
     ];
   }
 

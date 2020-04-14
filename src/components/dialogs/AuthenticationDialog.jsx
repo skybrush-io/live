@@ -20,7 +20,7 @@ import { PasswordField, TextField } from '~/components/forms';
 import { authenticateToServerWithBasicAuthentication } from '~/features/servers/actions';
 import {
   isAuthenticating,
-  requiresAuthentication
+  requiresAuthentication,
 } from '~/features/servers/selectors';
 import messageHub from '~/message-hub';
 
@@ -30,13 +30,13 @@ const useStyles = makeStyles(
       marginBottom: 0,
 
       '& .MuiDialogContent-root': {
-        paddingTop: 0
+        paddingTop: 0,
       },
 
       '& .MuiTextField-root': {
-        marginBottom: theme.spacing(1)
-      }
-    }
+        marginBottom: theme.spacing(1),
+      },
+    },
   }),
   { name: 'AuthenticationForm' }
 );
@@ -50,7 +50,7 @@ const AuthenticationForm = ({
   initialValues,
   isAuthenticating,
   onCancel,
-  onSubmit
+  onSubmit,
 }) => {
   const classes = useStyles();
 
@@ -63,20 +63,20 @@ const AuthenticationForm = ({
               autoFocus
               fullWidth
               component={TextField}
-              name="username"
-              label="Username"
-              autoComplete="username"
+              name='username'
+              label='Username'
+              autoComplete='username'
             />
             <Field
               fullWidth
               component={PasswordField}
-              name="password"
-              label="Password"
-              autoComplete="current-password"
+              name='password'
+              label='Password'
+              autoComplete='current-password'
             />
           </DialogContent>
           <DialogActions>
-            <Button disabled={isAuthenticating} color="primary" type="submit">
+            <Button disabled={isAuthenticating} color='primary' type='submit'>
               {isAuthenticating ? 'Logging in…' : 'Log in'}
             </Button>
             <Button onClick={onCancel}>Cancel</Button>
@@ -91,7 +91,7 @@ AuthenticationForm.propTypes = {
   initialValues: PropTypes.object,
   isAuthenticating: PropTypes.bool,
   onCancel: PropTypes.func,
-  onSubmit: PropTypes.func
+  onSubmit: PropTypes.func,
 };
 
 /**
@@ -100,7 +100,7 @@ AuthenticationForm.propTypes = {
  * @returns  {Object}  the rendered component
  */
 const AuthenticationDialogPresentation = ({ open, title, ...rest }) => (
-  <Dialog maxWidth="xs" open={open}>
+  <Dialog maxWidth='xs' open={open}>
     <DialogTitle>{title}</DialogTitle>
     <AuthenticationForm {...rest} />
   </Dialog>
@@ -112,11 +112,11 @@ AuthenticationDialogPresentation.propTypes = {
   onCancel: PropTypes.func,
   onSubmit: PropTypes.func,
   open: PropTypes.bool,
-  title: PropTypes.string.isRequired
+  title: PropTypes.string.isRequired,
 };
 
 AuthenticationDialogPresentation.defaultProps = {
-  open: false
+  open: false,
 };
 
 /**
@@ -129,7 +129,7 @@ const AuthenticationDialog = connect(
     isAuthenticating: isAuthenticating(state),
     title: requiresAuthentication(state)
       ? 'Authentication required'
-      : 'Authenticate to server'
+      : 'Authenticate to server',
   }),
   // mapDispatchToProps
   (dispatch) => ({
@@ -145,7 +145,7 @@ const AuthenticationDialog = connect(
       if (success) {
         dispatch(closeAuthenticationDialog());
       }
-    }
+    },
   })
 )(AuthenticationDialogPresentation);
 

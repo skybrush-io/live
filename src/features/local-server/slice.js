@@ -12,9 +12,9 @@ const { actions, reducer } = createSlice({
     pathScan: {
       scanning: false,
       result: undefined,
-      error: undefined
+      error: undefined,
     },
-    running: false
+    running: false,
   },
 
   reducers: {
@@ -42,15 +42,15 @@ const { actions, reducer } = createSlice({
       // start the scanning again
       state.pathScan.result = undefined;
       state.pathScan.error = undefined;
-    }
-  }
+    },
+  },
 });
 
 export const {
   notifyLocalServerExecutableSearchStarted,
   notifyLocalServerExecutableSearchFinished,
   notifyLocalServerExecutableSearchFailed,
-  startLocalServerExecutableSearch
+  startLocalServerExecutableSearch,
 } = actions;
 
 export default reducer;

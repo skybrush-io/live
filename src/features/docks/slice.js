@@ -18,7 +18,7 @@ const { actions, reducer } = createSlice({
       //   id: 'DOCK:123456'
       // }
     },
-    order: []
+    order: [],
   },
 
   reducers: {
@@ -31,7 +31,7 @@ const { actions, reducer } = createSlice({
       for (const dockId of action.payload) {
         if (state.byId[dockId] === undefined) {
           state.byId[dockId] = {
-            id: dockId
+            id: dockId,
           };
           state.order.push(dockId);
         }
@@ -43,8 +43,8 @@ const { actions, reducer } = createSlice({
      */
     clearDockList(state) {
       clearOrderedCollection(state);
-    }
-  }
+    },
+  },
 });
 
 export const { addDocksByIds, clearDockList } = actions;

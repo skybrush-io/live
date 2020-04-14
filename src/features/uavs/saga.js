@@ -151,7 +151,7 @@ function subscribeToFlock(flock) {
     const bindings = {
       uavsAdded: flock.uavsAdded.add(onUAVsAdded),
       uavsRemoved: flock.uavsRemoved.add(onUAVsRemoved),
-      uavsUpdated: flock.uavsUpdated.add(onUAVsUpdated)
+      uavsUpdated: flock.uavsUpdated.add(onUAVsUpdated),
     };
 
     return () => {

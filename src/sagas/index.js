@@ -23,7 +23,7 @@ export default function* rootSaga() {
     serversSaga(),
     showSaga(),
     tourSaga(),
-    uavSyncSaga(flock)
+    uavSyncSaga(flock),
   ];
 
   if (localServer && localServer.search) {

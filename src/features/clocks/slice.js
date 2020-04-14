@@ -23,7 +23,7 @@ function updateStateOfClock(state, id, properties) {
     byId[id] = {
       id,
       running: false,
-      ticks: 0
+      ticks: 0,
     };
     state.order.push(id);
   }
@@ -50,7 +50,7 @@ const { actions, reducer } = createSlice({
       // }
     },
     // Order defines the preferred ordering of clocks on the UI
-    order: []
+    order: [],
   },
 
   reducers: {
@@ -68,8 +68,8 @@ const { actions, reducer } = createSlice({
       for (const id of Object.keys(payload)) {
         updateStateOfClock(state, id, payload[id]);
       }
-    }
-  }
+    },
+  },
 });
 
 export const { clearClockList, setClockState, setClockStateMultiple } = actions;

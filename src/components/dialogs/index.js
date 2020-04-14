@@ -21,5 +21,5 @@ export default {
   PromptDialog,
   SavedLocationEditorDialog,
   ServerSettingsDialog,
-  SubscriptionDialog
+  SubscriptionDialog,
 };

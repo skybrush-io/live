@@ -24,33 +24,33 @@ import { getConnectionsInOrder } from '~/selectors/ordered';
 const iconsByState = {
   [ConnectionState.CONNECTED]: (
     <ListItemIcon style={{ color: Colors.success, minWidth: 28 }}>
-      <ActionDone fontSize="small" />
+      <ActionDone fontSize='small' />
     </ListItemIcon>
   ),
   [ConnectionState.CONNECTING]: (
     <ListItemIcon style={{ color: Colors.warning, minWidth: 28 }}>
-      <ActionSettingsEthernet fontSize="small" />
+      <ActionSettingsEthernet fontSize='small' />
     </ListItemIcon>
   ),
   [ConnectionState.DISCONNECTED]: (
     <ListItemIcon style={{ color: Colors.error, minWidth: 28 }}>
-      <ContentClear fontSize="small" />
+      <ContentClear fontSize='small' />
     </ListItemIcon>
   ),
   [ConnectionState.DISCONNECTING]: (
     <ListItemIcon style={{ color: Colors.warning, minWidth: 28 }}>
-      <ActionSettingsEthernet fontSize="small" />
+      <ActionSettingsEthernet fontSize='small' />
     </ListItemIcon>
-  )
+  ),
 };
 
 const ConnectionStatusMiniListEntry = ({ id, name, state, stateChangedAt }) => (
   <ListItem key={id} disableGutters>
     {iconsByState[state]}
-    <Box display="flex" flexDirection="row" flexGrow={1}>
+    <Box display='flex' flexDirection='row' flexGrow={1}>
       <Box flexGrow={1}>{name}</Box>
-      <Box color="text.secondary" ml={1}>
-        <TimeAgo timeStyle="twitter" date={stateChangedAt} />
+      <Box color='text.secondary' ml={1}>
+        <TimeAgo timeStyle='twitter' date={stateChangedAt} />
       </Box>
     </Box>
   </ListItem>
@@ -60,7 +60,7 @@ ConnectionStatusMiniListEntry.propTypes = {
   id: PropTypes.string,
   name: PropTypes.string,
   state: PropTypes.string,
-  stateChangedAt: PropTypes.number
+  stateChangedAt: PropTypes.number,
 };
 
 const ConnectionStatusMiniListPresentation = listOf(
@@ -68,9 +68,9 @@ const ConnectionStatusMiniListPresentation = listOf(
   {
     dataProvider: 'connections',
     backgroundHint: (
-      <BackgroundHint text="This server does not use any connections" />
+      <BackgroundHint text='This server does not use any connections' />
     ),
-    listFactory: partial(React.createElement, TransparentList)
+    listFactory: partial(React.createElement, TransparentList),
   }
 );
 
@@ -78,7 +78,7 @@ export default connect(
   (state) => ({
     connections: getConnectionsInOrder(state),
     dense: true,
-    disablePadding: true
+    disablePadding: true,
   }),
   () => ({})
 )(ConnectionStatusMiniListPresentation);

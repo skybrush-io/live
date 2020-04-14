@@ -23,7 +23,7 @@ const ServerTabPresentation = ({
   onEnable,
   onSearchPathChanged,
   onTextFieldChanged,
-  searchPath
+  searchPath,
 }) => (
   <div style={{ position: 'relative', top: -8 }}>
     <List dense disablePadding style={{ margin: '0 -24px' }}>
@@ -33,17 +33,17 @@ const ServerTabPresentation = ({
           <Switch checked={enabled} />
         </ListItemIcon>
         <ListItemText
-          primary="Launch local server at startup"
-          secondary="Local server will be launched only if the application
-          is set to connect to localhost"
+          primary='Launch local server at startup'
+          secondary='Local server will be launched only if the application
+          is set to connect to localhost'
         />
       </ListItem>
     </List>
     <FormGroup>
       <TextField
         fullWidth
-        id="cliArguments"
-        label="Command line arguments"
+        id='cliArguments'
+        label='Command line arguments'
         value={cliArguments}
         helperText={
           'These arguments will be supplied to the local server ' +
@@ -54,8 +54,8 @@ const ServerTabPresentation = ({
       <TextField
         fullWidth
         multiline
-        id="searchPath"
-        label="Search path"
+        id='searchPath'
+        label='Search path'
         value={searchPath}
         helperText={
           'Enter directories to search for the Skybrush server ' +
@@ -74,21 +74,21 @@ ServerTabPresentation.propTypes = {
   onEnable: PropTypes.func,
   onSearchPathChanged: PropTypes.func,
   onTextFieldChanged: PropTypes.func,
-  searchPath: PropTypes.string
+  searchPath: PropTypes.string,
 };
 
 export default connect(
   // mapStateToProps
   (state) => ({
     ...state.settings.localServer,
-    searchPath: state.settings.localServer.searchPath.join('\n')
+    searchPath: state.settings.localServer.searchPath.join('\n'),
   }),
   // mapDispatchToProps
   (dispatch) => ({
     onCheckboxToggled(event) {
       dispatch(
         updateAppSettings('localServer', {
-          [event.target.name]: event.target.checked
+          [event.target.name]: event.target.checked,
         })
       );
     },
@@ -111,9 +111,9 @@ export default connect(
     onTextFieldChanged(event) {
       dispatch(
         updateAppSettings('localServer', {
-          [event.target.id]: event.target.value
+          [event.target.id]: event.target.value,
         })
       );
-    }
+    },
   })
 )(ServerTabPresentation);

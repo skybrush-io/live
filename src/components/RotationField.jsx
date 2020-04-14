@@ -21,16 +21,16 @@ export const formatAngle = (angle) =>
 export default class RotationField extends React.Component {
   static propTypes = {
     onChange: PropTypes.func,
-    value: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+    value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   };
 
   static defaultProps = {
-    value: undefined
+    value: undefined,
   };
 
   static getDerivedStateFromProps(props) {
     return {
-      originalText: formatAngle(props.value)
+      originalText: formatAngle(props.value),
     };
   }
 
@@ -38,7 +38,7 @@ export default class RotationField extends React.Component {
     dirty: false,
     error: undefined,
     originalText: undefined,
-    text: undefined
+    text: undefined,
   };
 
   componentWillUnmount() {
@@ -50,10 +50,10 @@ export default class RotationField extends React.Component {
     const { dirty, error, originalText, text } = this.state;
     const shownText = dirty ? text : originalText;
     const endAdornment = shownText ? (
-      <InputAdornment position="end">
+      <InputAdornment position='end'>
         <IconButton
-          aria-label="Clear field"
-          edge="end"
+          aria-label='Clear field'
+          edge='end'
           tabIndex={-1}
           onClick={this._onClearField}
           onMouseDown={this._onMouseDownOnButton}
@@ -136,7 +136,7 @@ export default class RotationField extends React.Component {
     const value = normalizeAngle(Number.parseFloat(text));
     const hasError = isNaN(value);
     this.setState({
-      error: hasError ? 'Not a valid angle' : undefined
+      error: hasError ? 'Not a valid angle' : undefined,
     });
 
     return [!hasError, value];

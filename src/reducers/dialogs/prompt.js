@@ -17,7 +17,7 @@ const defaultState = {
   hintText: undefined,
   message: undefined,
   submitButtonLabel: 'Submit',
-  title: undefined
+  title: undefined,
 };
 
 /**
@@ -30,13 +30,13 @@ const reducer = handleActions(
       ({
         ...defaultState,
         ...action.payload,
-        dialogVisible: true
+        dialogVisible: true,
       }),
 
     SUBMIT_PROMPT_DIALOG: (state) =>
       u(
         {
-          dialogVisible: false
+          dialogVisible: false,
         },
         state
       ),
@@ -44,10 +44,10 @@ const reducer = handleActions(
     CANCEL_PROMPT_DIALOG: (state) =>
       u(
         {
-          dialogVisible: false
+          dialogVisible: false,
         },
         state
-      )
+      ),
   },
   defaultState
 );

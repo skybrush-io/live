@@ -1,21 +1,21 @@
-import PersonIcon from "@material-ui/icons/Person";
+import PersonIcon from '@material-ui/icons/Person';
 
-import clsx from "clsx";
-import PropTypes from "prop-types";
-import React from "react";
-import { connect } from "react-redux";
+import clsx from 'clsx';
+import PropTypes from 'prop-types';
+import React from 'react';
+import { connect } from 'react-redux';
 
-import AuthenticationStatusBadge from "../badges/AuthenticationStatusBadge";
+import AuthenticationStatusBadge from '../badges/AuthenticationStatusBadge';
 
 import {
   showAuthenticationDialog,
   showDeauthenticationDialog,
-} from "~/actions/servers";
+} from '~/actions/servers';
 import {
   isAuthenticated,
   requiresAuthentication,
   supportsAuthentication,
-} from "~/features/servers/selectors";
+} from '~/features/servers/selectors';
 
 const AuthenticationButtonPresentation = ({
   isAuthenticated,
@@ -25,14 +25,14 @@ const AuthenticationButtonPresentation = ({
   onDeauthenticate,
 }) => (
   <div
-    className={clsx("wb-module", isDisabled && "wb-module-disabled")}
+    className={clsx('wb-module', isDisabled && 'wb-module-disabled')}
     onClick={isAuthenticated ? onDeauthenticate : onAuthenticate}
   >
-    <span className={clsx("wb-icon", "wb-module-icon")}>
+    <span className={clsx('wb-icon', 'wb-module-icon')}>
       <AuthenticationStatusBadge />
       <PersonIcon />
     </span>
-    {label ? <span className="wb-label wb-module-label">{label}</span> : null}
+    {label ? <span className='wb-label wb-module-label'>{label}</span> : null}
   </div>
 );
 

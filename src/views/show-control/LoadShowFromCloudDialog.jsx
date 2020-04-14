@@ -23,10 +23,10 @@ import { closeLoadShowFromCloudDialog } from '~/features/show/slice';
 const LoadShowFromCloudDialog = ({ open, onClose, onLoadShowFromUrl }) => {
   return (
     <Dialog fullWidth open={open} onClose={onClose}>
-      <DialogTabs value="skybrushAccount">
-        <Tab value="skybrushAccount" label="Skybrush Account" />
-        <Tab disabled value="web" label="Web Link" />
-        <Tab disabled value="git" label="Git Repository" />
+      <DialogTabs value='skybrushAccount'>
+        <Tab value='skybrushAccount' label='Skybrush Account' />
+        <Tab disabled value='web' label='Web Link' />
+        <Tab disabled value='git' label='Git Repository' />
       </DialogTabs>
       <List>
         <ListSubheader>Shared with me</ListSubheader>
@@ -43,17 +43,17 @@ const LoadShowFromCloudDialog = ({ open, onClose, onLoadShowFromUrl }) => {
 LoadShowFromCloudDialog.propTypes = {
   onClose: PropTypes.func,
   onLoadShowFromUrl: PropTypes.func,
-  open: PropTypes.bool
+  open: PropTypes.bool,
 };
 
 LoadShowFromCloudDialog.defaultProps = {
-  open: false
+  open: false,
 };
 
 export default connect(
   // mapStateToProps
   (state) => ({
-    ...state.show.loadShowFromCloudDialog
+    ...state.show.loadShowFromCloudDialog,
   }),
 
   // mapDispatchToProps
@@ -65,6 +65,6 @@ export default connect(
     onLoadShowFromUrl(url) {
       dispatch(closeLoadShowFromCloudDialog());
       dispatch(loadShowFromUrl(url));
-    }
+    },
   })
 )(LoadShowFromCloudDialog);

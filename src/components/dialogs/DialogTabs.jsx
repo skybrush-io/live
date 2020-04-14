@@ -11,7 +11,7 @@ import DialogAppBar from './DialogAppBar';
  */
 const DialogTabs = ({ children, ...rest }) => (
   <DialogAppBar>
-    <Tabs centered variant="fullWidth" {...rest}>
+    <Tabs centered variant='fullWidth' {...rest}>
       {children}
     </Tabs>
   </DialogAppBar>
@@ -20,8 +20,8 @@ const DialogTabs = ({ children, ...rest }) => (
 DialogTabs.propTypes = {
   children: PropTypes.oneOfType([
     PropTypes.arrayOf(PropTypes.node),
-    PropTypes.node
-  ])
+    PropTypes.node,
+  ]),
 };
 
 export default DialogTabs;

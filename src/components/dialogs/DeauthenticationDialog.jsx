@@ -29,9 +29,9 @@ const DeauthenticationDialogPresentation = ({
   onDisconnect,
   open,
   title,
-  user
+  user,
 }) => (
-  <Dialog maxWidth="xs" open={open}>
+  <Dialog maxWidth='xs' open={open}>
     <DialogTitle>{title}</DialogTitle>
     <DialogContent>
       <Typography paragraph>
@@ -49,7 +49,7 @@ const DeauthenticationDialogPresentation = ({
       </Typography>
     </DialogContent>
     <DialogActions>
-      <Button color="secondary" onClick={onDisconnect}>
+      <Button color='secondary' onClick={onDisconnect}>
         Disconnect
       </Button>
       <Button onClick={onCancel}>Cancel</Button>
@@ -62,11 +62,11 @@ DeauthenticationDialogPresentation.propTypes = {
   onDisconnect: PropTypes.func,
   open: PropTypes.bool,
   title: PropTypes.string.isRequired,
-  user: PropTypes.string
+  user: PropTypes.string,
 };
 
 DeauthenticationDialogPresentation.defaultProps = {
-  open: false
+  open: false,
 };
 
 /**
@@ -77,7 +77,7 @@ const DeauthenticationDialog = connect(
   (state) => ({
     ...state.dialogs.deauthentication,
     title: 'Log out from server',
-    user: getAuthenticatedUser(state)
+    user: getAuthenticatedUser(state),
   }),
   // mapDispatchToProps
   (dispatch) => ({
@@ -91,7 +91,7 @@ const DeauthenticationDialog = connect(
         dispatch(clearAuthenticationToken());
         dispatch(disconnectFromServer());
       });
-    }
+    },
   })
 )(DeauthenticationDialogPresentation);
 

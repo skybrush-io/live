@@ -17,8 +17,8 @@ const useStyles = makeStyles(
       display: 'flex',
       flexDirection: 'column',
       height: '100%',
-      overflow: 'hidden'
-    }
+      overflow: 'hidden',
+    },
   }),
   { name: 'LCDClockPanel' }
 );
@@ -48,7 +48,7 @@ const LCDClockPanel = ({ addClockDisplay, ids, removeClockDisplay }) => {
 LCDClockPanel.propTypes = {
   ids: PropTypes.arrayOf(PropTypes.string),
   addClockDisplay: PropTypes.func,
-  removeClockDisplay: PropTypes.func
+  removeClockDisplay: PropTypes.func,
 };
 
 LCDClockPanel.defaultProps = {};
@@ -56,7 +56,7 @@ LCDClockPanel.defaultProps = {};
 export default connect(
   // mapStateToProps
   (state) => ({
-    ids: state.lcdClock.order
+    ids: state.lcdClock.order,
   }),
   // mapDispatchToProps
   { addClockDisplay: addClockDisplayAutomatically, removeClockDisplay }

@@ -12,22 +12,22 @@ const { actions, reducer } = createSlice({
     // Redux store only 'follows' the workbench state, it does not
     // define it in the usual sense (due to limitations in how
     // golden-layout works)
-    state: undefined
+    state: undefined,
   },
 
   reducers: {
     saveWorkbenchState: {
       prepare(workbench) {
         return {
-          payload: workbench.getState()
+          payload: workbench.getState(),
         };
       },
 
       reducer(state, action) {
         state.state = action.payload;
-      }
-    }
-  }
+      },
+    },
+  },
 });
 
 export const { saveWorkbenchState } = actions;

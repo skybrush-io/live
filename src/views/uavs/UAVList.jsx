@@ -33,12 +33,12 @@ import FadeAndSlide from '~/components/transitions/FadeAndSlide';
 import DronePlaceholder from '~/components/uavs/DronePlaceholder';
 import {
   adjustMissionMapping,
-  startMappingEditorSessionAtSlot
+  startMappingEditorSessionAtSlot,
 } from '~/features/mission/slice';
 import {
   getIndexOfMappingSlotBeingEdited,
   getMissionMapping,
-  isMappingEditable
+  isMappingEditable,
 } from '~/features/mission/selectors';
 import { isShowingMissionIds } from '~/features/settings/selectors';
 import { getUAVIdList } from '~/features/uavs/selectors';
@@ -50,15 +50,15 @@ const useStyles = makeStyles(
   (theme) => ({
     appBar: {
       backgroundColor: isDark(theme) ? '#444' : theme.palette.background.paper,
-      height: 48
+      height: 48,
     },
 
     toolbar: {
       position: 'absolute',
       left: 0,
       right: 0,
-      top: 0
-    }
+      top: 0,
+    },
   }),
   { name: 'UAVList' }
 );
@@ -79,7 +79,7 @@ const createListItems = (
       onClick: onSelected ? onSelected(uavId, missionIndex) : undefined,
       onDrop: onDropped ? onDropped(missionIndex) : undefined,
       editing,
-      selected
+      selected,
     };
     return uavId === undefined ? (
       <DroneListItem
@@ -125,7 +125,7 @@ const UAVListPresentation = ({
   onSelectSection,
   selectedUAVIds,
   selectionInfo,
-  uavIds
+  uavIds,
 }) => {
   const classes = useStyles();
 
@@ -133,7 +133,7 @@ const UAVListPresentation = ({
     () =>
       createSelectionHandlerFactory({
         getSelection: () => selectedUAVIds,
-        setSelection: onSelectionChanged
+        setSelection: onSelectionChanged,
       }),
     [selectedUAVIds, onSelectionChanged]
   );
@@ -142,7 +142,7 @@ const UAVListPresentation = ({
     (targetIndex) => (droppedUAVId) =>
       onMappingAdjusted({
         uavId: droppedUAVId,
-        to: targetIndex
+        to: targetIndex,
       }),
     [onMappingAdjusted]
   );
@@ -159,12 +159,12 @@ const UAVListPresentation = ({
     mappingSlotBeingEdited,
     onDropped: editingMapping && onDropped,
     onSelected: editingMapping ? onStartEditing : onUpdateSelection,
-    selectedUAVIds
+    selectedUAVIds,
   };
 
   const mainBox = (
-    <Box display="flex" flexDirection="column">
-      <AppBar color="default" position="static" className={classes.appBar}>
+    <Box display='flex' flexDirection='column'>
+      <AppBar color='default' position='static' className={classes.appBar}>
         <FadeAndSlide mountOnEnter unmountOnExit in={!editingMapping}>
           <UAVToolbar
             className={classes.toolbar}
@@ -190,13 +190,13 @@ const UAVListPresentation = ({
         {mainUAVIds.length > 0 ? (
           <>
             <UAVListSubheader
-              key="__main"
-              label="Active UAVs"
-              value="mainUAVIds"
+              key='__main'
+              label='Active UAVs'
+              value='mainUAVIds'
               onChange={onSelectSection}
               {...selectionInfo.mainUAVIds}
             />
-            <Box display="flex" flexDirection="row" flexWrap="wrap">
+            <Box display='flex' flexDirection='row' flexWrap='wrap'>
               {createListItems(mainUAVIds, listItemProps)}
             </Box>
           </>
@@ -204,13 +204,13 @@ const UAVListPresentation = ({
         {spareUAVIds.length > 0 || editingMapping ? (
           <>
             <UAVListSubheader
-              key="__spare"
-              label="Spare UAVs"
-              value="spareUAVIds"
+              key='__spare'
+              label='Spare UAVs'
+              value='spareUAVIds'
               onChange={onSelectSection}
               {...selectionInfo.spareUAVIds}
             />
-            <Box display="flex" flexDirection="row" flexWrap="wrap">
+            <Box display='flex' flexDirection='row' flexWrap='wrap'>
               {createListItems(spareUAVIds, listItemProps)}
             </Box>
           </>
@@ -238,18 +238,18 @@ UAVListPresentation.propTypes = {
     mainUAVIds: PropTypes.exact({
       checked: PropTypes.bool,
       disabled: PropTypes.bool,
-      indeterminate: PropTypes.bool
+      indeterminate: PropTypes.bool,
     }),
     spareUAVIds: PropTypes.exact({
       checked: PropTypes.bool,
       disabled: PropTypes.bool,
-      indeterminate: PropTypes.bool
-    })
+      indeterminate: PropTypes.bool,
+    }),
   }),
   uavIds: PropTypes.exact({
     mainUAVIds: PropTypes.arrayOf(PropTypes.array).isRequired,
-    spareUAVIds: PropTypes.arrayOf(PropTypes.array).isRequired
-  }).isRequired
+    spareUAVIds: PropTypes.arrayOf(PropTypes.array).isRequired,
+  }).isRequired,
 };
 
 /**
@@ -261,7 +261,7 @@ UAVListPresentation.propTypes = {
  */
 const getDisplayedUAVIdList = createSelector(getUAVIdList, (uavIds) => ({
   mainUAVIds: uavIds.map((uavId) => [uavId, undefined, uavId]),
-  spareUAVIds: []
+  spareUAVIds: [],
 }));
 
 /**
@@ -304,7 +304,7 @@ const getDisplayedMissionIdList = createSelector(
     // If we are in editing mode, we always add one extra main UAV slot
     // where the user can drag UAVs that should be deleted
     if (editable) {
-      mainUAVIds.push([undefined, undefined, <Delete key="__delete" />]);
+      mainUAVIds.push([undefined, undefined, <Delete key='__delete' />]);
     }
 
     return { mainUAVIds, spareUAVIds };
@@ -345,21 +345,21 @@ const getSelectionInfo = createSelector(
           const allIsSelected = nonEmptyIdsAndLabels.every(itemIsSelected);
           return {
             checked: allIsSelected,
-            indeterminate: !allIsSelected
+            indeterminate: !allIsSelected,
           };
         }
 
         const someIsSelected = nonEmptyIdsAndLabels.some(itemIsSelected);
         return {
           checked: false,
-          indeterminate: someIsSelected
+          indeterminate: someIsSelected,
         };
       }
 
       return {
         checked: false,
         indeterminate: false,
-        disabled: true
+        disabled: true,
       };
     })
 );
@@ -374,7 +374,7 @@ const UAVList = connect(
     mappingSlotBeingEdited: getIndexOfMappingSlotBeingEdited(state),
     selectedUAVIds: getSelectedUAVIds(state),
     selectionInfo: getSelectionInfo(state),
-    uavIds: getDisplayedIdList(state)
+    uavIds: getDisplayedIdList(state),
   }),
   // mapDispatchToProps
   {
@@ -400,7 +400,7 @@ const UAVList = connect(
           : union(selectedUAVIds, displayedIds);
         dispatch(setSelectedUAVIds(newSelection));
       }
-    }
+    },
   }
 )(UAVListPresentation);
 

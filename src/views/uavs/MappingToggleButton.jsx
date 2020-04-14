@@ -14,8 +14,8 @@ import { toggleMissionIds } from '~/features/settings/slice';
  */
 const MappingToggleButton = ({ selected, onChange }) => (
   <ToggleButton
-    size="small"
-    value="missionIds"
+    size='small'
+    value='missionIds'
     selected={selected}
     onChange={onChange}
   >
@@ -25,16 +25,16 @@ const MappingToggleButton = ({ selected, onChange }) => (
 
 MappingToggleButton.propTypes = {
   selected: PropTypes.bool,
-  onChange: PropTypes.func
+  onChange: PropTypes.func,
 };
 
 export default connect(
   // mapStateToProps
   (state) => ({
-    selected: isShowingMissionIds(state)
+    selected: isShowingMissionIds(state),
   }),
   // mapDispatchToProps
   {
-    onChange: toggleMissionIds
+    onChange: toggleMissionIds,
   }
 )(MappingToggleButton);

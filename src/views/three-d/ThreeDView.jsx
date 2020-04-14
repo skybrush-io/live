@@ -18,7 +18,7 @@ import Colors from '~/components/colors';
 import { isMapCoordinateSystemLeftHanded } from '~/selectors/map';
 
 const images = {
-  glow: 'assets/img/sphere-glow-hollow.png'
+  glow: 'assets/img/sphere-glow-hollow.png',
 };
 
 const ThreeDView = React.forwardRef((props, ref) => {
@@ -30,19 +30,19 @@ const ThreeDView = React.forwardRef((props, ref) => {
     showAxes,
     showHomePositions,
     showLandingPositions,
-    showStatistics
+    showStatistics,
   } = props;
 
   const extraCameraProps = {
     'altitude-control': objectToString({
-      enabled: true
+      enabled: true,
     }),
     'better-wasd-controls': objectToString({
-      fly: navigation && navigation.mode === 'fly'
+      fly: navigation && navigation.mode === 'fly',
     }),
     'wasd-controls': objectToString({
-      enabled: false
-    })
+      enabled: false,
+    }),
   };
   const extraSceneProps = {};
 
@@ -54,41 +54,41 @@ const ThreeDView = React.forwardRef((props, ref) => {
     <a-scene
       ref={ref}
       deallocate
-      embedded="true"
-      keyboard-shortcuts="enterVR: false"
-      loading-screen="backgroundColor: #444; dotsColor: #888"
-      renderer="antialias: false"
-      vr-mode-ui="enabled: false"
+      embedded='true'
+      keyboard-shortcuts='enterVR: false'
+      loading-screen='backgroundColor: #444; dotsColor: #888'
+      renderer='antialias: false'
+      vr-mode-ui='enabled: false'
       {...extraSceneProps}
     >
       <a-assets>
-        <img crossOrigin="anonymous" id="glow-texture" src={images.glow} />
+        <img crossOrigin='anonymous' id='glow-texture' src={images.glow} />
 
         <a-mixin
-          id="takeoff-marker"
-          geometry="primitive: triangle; vertexA: 1 0 0; vertexB: -0.5 0.866 0; vertexC: -0.5 -0.866 0"
+          id='takeoff-marker'
+          geometry='primitive: triangle; vertexA: 1 0 0; vertexB: -0.5 0.866 0; vertexC: -0.5 -0.866 0'
           material={`shader: flat; color: ${Colors.takeoffMarker}`}
         />
         <a-mixin
-          id="landing-marker"
-          geometry="primitive: triangle; vertexA: -1 0 0; vertexB: 0.5 -0.866 0; vertexC: 0.5 0.866 0"
+          id='landing-marker'
+          geometry='primitive: triangle; vertexA: -1 0 0; vertexB: 0.5 -0.866 0; vertexC: 0.5 0.866 0'
           material={`shader: flat; color: ${Colors.landingMarker}`}
         />
       </a-assets>
 
       <a-camera
-        sync-pose-with-store=""
-        id="three-d-camera"
-        look-controls="reverseMouseDrag: true"
+        sync-pose-with-store=''
+        id='three-d-camera'
+        look-controls='reverseMouseDrag: true'
         {...extraCameraProps}
       >
         <a-entity
-          cursor="rayOrigin: mouse"
-          raycaster="objects: .three-d-clickable; interval: 100"
+          cursor='rayOrigin: mouse'
+          raycaster='objects: .three-d-clickable; interval: 100'
         />
       </a-camera>
 
-      <a-entity rotation="-90 0 90">
+      <a-entity rotation='-90 0 90'>
         {showAxes && (
           <CoordinateSystemAxes leftHanded={isCoordinateSystemLeftHanded} />
         )}
@@ -109,13 +109,13 @@ ThreeDView.propTypes = {
   isCoordinateSystemLeftHanded: PropTypes.bool,
   navigation: PropTypes.shape({
     mode: PropTypes.oneOf(['walk', 'fly']),
-    parameters: PropTypes.object
+    parameters: PropTypes.object,
   }),
   scenery: PropTypes.string,
   showAxes: PropTypes.bool,
   showHomePositions: PropTypes.bool,
   showLandingPositions: PropTypes.bool,
-  showStatistics: PropTypes.bool
+  showStatistics: PropTypes.bool,
 };
 
 export default connect(
@@ -123,7 +123,7 @@ export default connect(
   (state) => ({
     isCoordinateSystemLeftHanded: isMapCoordinateSystemLeftHanded(state),
     ...state.settings.threeD,
-    ...state.threeD
+    ...state.threeD,
   }),
   // mapDispatchToProps
   {},

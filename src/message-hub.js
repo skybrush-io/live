@@ -38,7 +38,7 @@ messageHub.registerNotificationHandlers({
       dispatch(
         showSnackbarMessage({
           message: message.body.reason,
-          semantics: 'error'
+          semantics: 'error',
         })
       );
     }
@@ -49,13 +49,13 @@ messageHub.registerNotificationHandlers({
       dispatch(
         showSnackbarMessage({
           message: message.body.message,
-          semantics: semanticsFromSeverity(severity)
+          semantics: semanticsFromSeverity(severity),
         })
       );
     }
   },
   'UAV-INF': (message) =>
-    flock.handleUAVInformationMessage(message.body, dispatch)
+    flock.handleUAVInformationMessage(message.body, dispatch),
 });
 
 export default messageHub;

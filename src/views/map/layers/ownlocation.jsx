@@ -22,7 +22,7 @@ export const OwnLocationLayerSettings = () => false;
 
 class OwnLocationVectorSource extends React.Component {
   static propTypes = {
-    onError: PropTypes.func
+    onError: PropTypes.func,
   };
 
   constructor(props) {
@@ -34,7 +34,7 @@ class OwnLocationVectorSource extends React.Component {
       rotateWithView: true,
       rotation: 0,
       snapToPixel: false,
-      src: LocationIcon
+      src: LocationIcon,
     });
 
     this.locationFeature = new Feature();
@@ -109,14 +109,14 @@ class OwnLocationVectorSource extends React.Component {
     return (
       <>
         <Geolocation
-          key="location"
+          key='location'
           changePosition={this._onPositionChange}
           changeAccuracyGeometry={this._onAccuracyGeometryChange}
-          projection="EPSG:3857"
+          projection='EPSG:3857'
           error={this._logError}
         />
         ,
-        <source.Vector key="source" ref={this._assignSourceRef} />
+        <source.Vector key='source' ref={this._assignSourceRef} />
       </>
     );
   }
@@ -129,5 +129,5 @@ export const OwnLocationLayer = ({ zIndex }) => (
 );
 
 OwnLocationLayer.propTypes = {
-  zIndex: PropTypes.number
+  zIndex: PropTypes.number,
 };

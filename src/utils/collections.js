@@ -234,7 +234,7 @@ export const createNewItemInFrontOf = (collection, idStore) => {
 export const copyAndDeleteItemById = (idToRemove, collection) => {
   const updates = {
     byId: u.omit(idToRemove),
-    order: u.reject((id) => id === idToRemove)
+    order: u.reject((id) => id === idToRemove),
   };
   return u(updates, collection);
 };
@@ -255,7 +255,7 @@ export const copyAndDeleteItemsByIds = (idsToRemove, collection) => {
 
   const updates = {
     byId: u.omit(idsToRemove),
-    order: u.reject((id) => idsToRemove.includes(id))
+    order: u.reject((id) => idsToRemove.includes(id)),
   };
   return u(updates, collection);
 };

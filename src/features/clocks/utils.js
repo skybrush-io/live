@@ -9,30 +9,30 @@ import moment from 'moment';
 const clockIdToProps = {
   system: {
     label: 'Server clock',
-    abbreviation: 'SRV'
+    abbreviation: 'SRV',
   },
 
   __local__: {
     label: 'Client clock',
-    abbreviation: 'Time'
+    abbreviation: 'Time',
   },
 
   mission: {
     label: 'Mission clock',
     abbreviation: 'MSN',
-    signed: true
+    signed: true,
   },
 
   mtc: {
     label: 'MIDI timecode',
-    abbreviation: 'MTC'
+    abbreviation: 'MTC',
   },
 
   show: {
     label: 'Drone show clock',
     abbreviation: 'SHOW',
-    signed: true
-  }
+    signed: true,
+  },
 };
 
 /**

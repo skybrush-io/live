@@ -51,7 +51,7 @@ const reducer = combineReducers({
   threeD: threeDReducer,
   tour: tourReducer,
   uavs: uavReducer,
-  workbench: workbenchReducer
+  workbench: workbenchReducer,
 });
 
 export default reducer;

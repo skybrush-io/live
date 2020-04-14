@@ -23,7 +23,7 @@ import Marker from './Marker';
 import {
   addInboundMessage,
   addOutboundMessageToSelectedUAV,
-  addErrorMessageInMessagesDialog
+  addErrorMessageInMessagesDialog,
 } from '~/actions/messages';
 import { formatCommandResponseAsHTML } from '~/flockwave/formatting';
 import { parseCommandFromString } from '~/flockwave/messages';
@@ -63,7 +63,7 @@ function convertMessageToComponent(message) {
               false
             )
           }
-        />
+        />,
       ];
 
     case MessageType.INBOUND:
@@ -75,21 +75,25 @@ function convertMessageToComponent(message) {
           raw={message.raw}
           date={message.date}
           body={message.body}
-        />
+        />,
       ];
 
     case MessageType.ERROR:
       return [
-        <Marker key={keyBase + 'Marker'} level="error" message={message.body} />
+        <Marker
+          key={keyBase + 'Marker'}
+          level='error'
+          message={message.body}
+        />,
       ];
 
     default:
       return [
         <Marker
           key={keyBase + 'Marker'}
-          level="error"
+          level='error'
           message={`Invalid message type: ${message.type}`}
-        />
+        />,
       ];
   }
 }
@@ -100,16 +104,16 @@ function convertMessageToComponent(message) {
 const ChatAreaBackgroundHint = ({ hasSelectedUAV, textFieldPlacement }) =>
   hasSelectedUAV ? (
     <BackgroundHint
-      key="backgroundHint"
-      header="No messages"
+      key='backgroundHint'
+      header='No messages'
       text={`Send a message to the selected UAV using the text box ${
         textFieldPlacement === 'bottom' ? 'below' : 'above'
       }`}
     />
   ) : (
     <BackgroundHint
-      key="backgroundHint"
-      header="No UAV selected"
+      key='backgroundHint'
+      header='No UAV selected'
       text={`Enter the ID of a UAV to talk to in the ${
         textFieldPlacement === 'bottom' ? 'lower left' : 'upper left'
       } corner`}
@@ -118,7 +122,7 @@ const ChatAreaBackgroundHint = ({ hasSelectedUAV, textFieldPlacement }) =>
 
 ChatAreaBackgroundHint.propTypes = {
   hasSelectedUAV: PropTypes.bool,
-  textFieldPlacement: PropTypes.oneOf(['bottom', 'top'])
+  textFieldPlacement: PropTypes.oneOf(['bottom', 'top']),
 };
 
 /**
@@ -132,11 +136,11 @@ class MessagesPanelPresentation extends React.Component {
     onSend: PropTypes.func,
     selectedUAVId: PropTypes.string,
     style: PropTypes.object,
-    textFieldPlacement: PropTypes.oneOf(['bottom', 'top'])
+    textFieldPlacement: PropTypes.oneOf(['bottom', 'top']),
   };
 
   static defaultProps = {
-    textFieldPlacement: 'bottom'
+    textFieldPlacement: 'bottom',
   };
 
   constructor(props) {
@@ -168,32 +172,32 @@ class MessagesPanelPresentation extends React.Component {
       flock,
       selectedUAVId,
       style,
-      textFieldPlacement
+      textFieldPlacement,
     } = this.props;
     const chatComponents = flatMap(chatEntries, convertMessageToComponent);
     const contentStyle = {
       display: 'flex',
       flexDirection: 'column',
       height: '100%',
-      ...style
+      ...style,
     };
     const chatArea =
       chatComponents.length > 0 ? (
-        <ChatArea key="chatArea" ref={this._chatAreaRef} px={2} pt={2}>
+        <ChatArea key='chatArea' ref={this._chatAreaRef} px={2} pt={2}>
           {chatComponents}
         </ChatArea>
       ) : (
         <ChatAreaBackgroundHint
-          key="chatAreaBackgroundHint"
+          key='chatAreaBackgroundHint'
           hasSelectedUAV={!isNil(chatEntries)}
           textFieldPlacement={textFieldPlacement}
         />
       );
     const textFields = (
       <Box
-        key="textFieldContainer"
-        display="flex"
-        className="bottom-bar"
+        key='textFieldContainer'
+        display='flex'
+        className='bottom-bar'
         pt={1}
         px={2}
       >
@@ -206,7 +210,7 @@ class MessagesPanelPresentation extends React.Component {
         <TextField
           fullWidth
           inputRef={this._messageFieldRef}
-          label="Message"
+          label='Message'
           onKeyDown={this._textFieldKeyDownHandler}
         />
       </Box>
@@ -256,7 +260,7 @@ const MessagesPanel = connect(
       : null;
     return {
       chatEntries,
-      selectedUAVId
+      selectedUAVId,
     };
   },
 
@@ -292,7 +296,7 @@ const MessagesPanel = connect(
             );
           }
         );
-    }
+    },
   }),
 
   // mergeProps

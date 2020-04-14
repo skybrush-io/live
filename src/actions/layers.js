@@ -14,7 +14,7 @@ import {
   CHANGE_LAYER_TYPE,
   SET_LAYER_PARAMETER_BY_ID,
   SET_LAYER_PARAMETERS_BY_ID,
-  ADJUST_LAYER_Z_INDEX
+  ADJUST_LAYER_Z_INDEX,
 } from './types';
 
 /**
@@ -29,7 +29,7 @@ import {
  */
 export const addLayer = createAction(ADD_LAYER, (name, type) => ({
   name,
-  type
+  type,
 }));
 
 /**
@@ -53,7 +53,7 @@ export const adjustLayerZIndex = createAction(
  */
 export const changeLayerType = createAction(CHANGE_LAYER_TYPE, (id, type) => ({
   id,
-  type
+  type,
 }));
 
 /**
@@ -74,7 +74,7 @@ export const removeLayer = createAction(REMOVE_LAYER);
  */
 export const renameLayer = createAction(RENAME_LAYER, (id, name) => ({
   id,
-  name
+  name,
 }));
 
 /**
@@ -104,7 +104,7 @@ export const setLayerParametersById = createAction(
  * Action factory that creates an action that will show the layers dialog.
  */
 export const showLayersDialog = createAction(SHOW_LAYERS_DIALOG, (layerId) => ({
-  layerId
+  layerId,
 }));
 
 /**

@@ -17,11 +17,11 @@ const ListItemTextWithProgress = ({ secondary, ...rest }) => (
     secondary={
       <Box
         minHeight={20.1}
-        display="flex"
-        flexDirection="column"
-        justifyContent="center"
+        display='flex'
+        flexDirection='column'
+        justifyContent='center'
       >
-        <Typography component="div" variant="body2" color="textSecondary">
+        <Typography component='div' variant='body2' color='textSecondary'>
           {secondary}
         </Typography>
       </Box>
@@ -30,7 +30,7 @@ const ListItemTextWithProgress = ({ secondary, ...rest }) => (
 );
 
 ListItemTextWithProgress.propTypes = {
-  secondary: PropTypes.node
+  secondary: PropTypes.node,
 };
 
 export default ListItemTextWithProgress;

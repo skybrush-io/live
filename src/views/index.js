@@ -30,5 +30,5 @@ export default {
   SavedLocationList,
   ShowControlPanel,
   UAVList,
-  ThreeDTopLevelView
+  ThreeDTopLevelView,
 };

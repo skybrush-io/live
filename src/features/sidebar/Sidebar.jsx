@@ -22,14 +22,14 @@ import LogStatusBadge from '~/components/badges/LogStatusBadge';
 const style = {
   backgroundColor: '#333',
   boxShadow: 'inset -3px -6px 6px rgba(0, 0, 0, 0.5)',
-  height: '100%'
+  height: '100%',
 };
 
 const innerStyle = {
   display: 'flex',
   flexFlow: 'column nowrap',
   height: '100%',
-  width: 240
+  width: 240,
 };
 
 /**
@@ -40,63 +40,63 @@ const innerStyle = {
  */
 const Sidebar = ({ isOpen, workbench }) => (
   <div
-    id="sidebar"
+    id='sidebar'
     style={{ ...style, overflow: 'hidden', width: isOpen ? 240 : 48 }}
   >
     <div style={innerStyle}>
       <ModuleTray allowMultipleSelection vertical workbench={workbench}>
-        <Module id="map" icon={<Map />} label="Map" component="map" />
+        <Module id='map' icon={<Map />} label='Map' component='map' />
         <Module
-          id="threeDView"
+          id='threeDView'
           icon={<ThreeDRotation />}
-          label="3D View"
-          component="three-d-view"
+          label='3D View'
+          component='three-d-view'
         />
         <Module
-          id="layers"
+          id='layers'
           icon={<Layers />}
-          label="Layers"
-          component="layer-list"
+          label='Layers'
+          component='layer-list'
         />
         <Module
-          id="features"
+          id='features'
           icon={<ShowChart />}
-          label="Features"
-          component="feature-list"
+          label='Features'
+          component='feature-list'
         />
         <hr />
-        <Module id="uavs" icon={<Flight />} label="UAVs" component="uav-list" />
+        <Module id='uavs' icon={<Flight />} label='UAVs' component='uav-list' />
         <Module
-          id="docks"
+          id='docks'
           icon={<Gamepad />}
-          label="Docks"
-          component="dock-list"
+          label='Docks'
+          component='dock-list'
         />
         <Module
-          id="messages"
+          id='messages'
           icon={<Message />}
-          label="Messages"
-          component="messages"
+          label='Messages'
+          component='messages'
         />
         <hr />
         <Module
-          id="show"
+          id='show'
           icon={<Grain />}
-          label="Show control"
-          component="show-control"
+          label='Show control'
+          component='show-control'
         />
         <hr />
         <Module
-          id="clocks"
+          id='clocks'
           icon={<Alarm />}
-          label="Clocks"
-          component="clock-list"
+          label='Clocks'
+          component='clock-list'
         />
         <Module
-          id="lcdClock"
+          id='lcdClock'
           icon={<Apps />}
-          label="LCD clock"
-          component="lcd-clock-panel"
+          label='LCD clock'
+          component='lcd-clock-panel'
         />
         {/*
         <Module
@@ -107,18 +107,18 @@ const Sidebar = ({ isOpen, workbench }) => (
         />
         */}
         <Module
-          id="locations"
+          id='locations'
           icon={<MyLocation />}
-          label="Locations"
-          component="saved-location-list"
+          label='Locations'
+          component='saved-location-list'
         />
         <hr />
         <Module
-          id="log"
+          id='log'
           badge={<LogStatusBadge />}
           icon={<Notifications />}
-          label="Event log"
-          component="log-panel"
+          label='Event log'
+          component='log-panel'
         />
       </ModuleTray>
     </div>
@@ -127,7 +127,7 @@ const Sidebar = ({ isOpen, workbench }) => (
 
 Sidebar.propTypes = {
   isOpen: PropTypes.bool.isRequired,
-  workbench: PropTypes.instanceOf(Workbench).isRequired
+  workbench: PropTypes.instanceOf(Workbench).isRequired,
 };
 
 /**
@@ -137,6 +137,6 @@ export default connect(
   // mapStateToProps
   (state, { workbench }) => ({
     isOpen: state.sidebar.open,
-    workbench
+    workbench,
   })
 )(Sidebar);

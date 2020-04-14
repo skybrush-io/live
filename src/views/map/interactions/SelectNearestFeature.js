@@ -22,7 +22,7 @@ import { createOLInteractionComponent } from '@collmot/ol-react/lib/interaction'
 
 import {
   euclideanDistance,
-  getExactClosestPointOf
+  getExactClosestPointOf,
 } from '../../../utils/geography';
 
 /**
@@ -145,7 +145,7 @@ class SelectNearestFeatureInteraction extends Interaction {
         }
 
         return Condition.pointerMove(mapBrowserEvent);
-      }
+      },
     });
 
     const defaultOptions = {
@@ -153,7 +153,7 @@ class SelectNearestFeatureInteraction extends Interaction {
       addCondition: Condition.never,
       removeCondition: Condition.never,
       toggleCondition: Condition.never,
-      threshold: Number.POSITIVE_INFINITY
+      threshold: Number.POSITIVE_INFINITY,
     };
     options = Object.assign(defaultOptions, options);
 
@@ -271,14 +271,14 @@ export default createOLInteractionComponent(
       removeCondition: PropTypes.func,
       onSelect: PropTypes.func,
       threshold: PropTypes.number,
-      toggleCondition: PropTypes.func
+      toggleCondition: PropTypes.func,
     },
     fragileProps: [
       'addCondition',
       'layers',
       'removeCondition',
       'threshold',
-      'toggleCondition'
-    ]
+      'toggleCondition',
+    ],
   }
 );

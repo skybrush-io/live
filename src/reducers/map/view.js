@@ -26,7 +26,7 @@ import { normalizeAngle } from '~/utils/geography';
 const defaultState = {
   position: [18.915125, 47.486305], // Sensible default: Farkashegy Airfield
   angle: '0',
-  zoom: 17
+  zoom: 17,
 };
 
 /**
@@ -39,10 +39,10 @@ const reducer = handleActions(
         {
           position: action.payload.position,
           angle: normalizeAngle(action.payload.angle),
-          zoom: Math.max(Math.min(action.payload.zoom, 20), 0)
+          zoom: Math.max(Math.min(action.payload.zoom, 20), 0),
         },
         state
-      )
+      ),
   },
   defaultState
 );

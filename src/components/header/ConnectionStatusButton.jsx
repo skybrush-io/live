@@ -20,16 +20,16 @@ const ConnectionStatusButtonPresentation = (props) => (
 );
 
 ConnectionStatusButtonPresentation.propTypes = {
-  ...GenericHeaderButton.propTypes
+  ...GenericHeaderButton.propTypes,
 };
 
 export default connect(
   // mapStateToProps
   (state) => ({
-    isDisabled: !isConnected(state)
+    isDisabled: !isConnected(state),
   }),
   // mapDispatchToProps
   () => ({
-    onClick() {}
+    onClick() {},
   })
 )(ConnectionStatusButtonPresentation);

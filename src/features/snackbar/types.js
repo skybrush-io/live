@@ -7,7 +7,7 @@ export const MessageSemantics = {
   WARNING: 'warning',
   ERROR: 'error',
   INFO: 'info',
-  DEFAULT: 'default'
+  DEFAULT: 'default',
 };
 
 /**

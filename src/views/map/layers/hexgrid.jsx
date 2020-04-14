@@ -25,7 +25,7 @@ import { mapViewCoordinateFromLonLat } from '../../../utils/geography';
  */
 const makeFillStyle = (color) =>
   new Style({
-    fill: new Fill({ color })
+    fill: new Fill({ color }),
   });
 
 // === Settings for this particular layer type ===
@@ -34,7 +34,7 @@ class HexGridLayerSettingsPresentation extends React.Component {
   static propTypes = {
     layer: PropTypes.object,
 
-    setLayerParameter: PropTypes.func
+    setLayerParameter: PropTypes.func,
   };
 
   constructor(props) {
@@ -51,22 +51,22 @@ class HexGridLayerSettingsPresentation extends React.Component {
         <TextField
           style={{ paddingRight: '1em' }}
           inputRef={this._assignCenterField}
-          label="Center of the grid"
-          placeholder="Center (comma separated)"
+          label='Center of the grid'
+          placeholder='Center (comma separated)'
           defaultValue={centerAsString}
         />
         <TextField
           style={{ paddingRight: '1em' }}
           inputRef={this._assignSizeField}
-          label="Size of the grid"
-          placeholder="Size"
+          label='Size of the grid'
+          placeholder='Size'
           defaultValue={String(size)}
         />
         <TextField
           style={{ paddingRight: '1em' }}
           inputRef={this._assignRadiusField}
-          label="Radius of one cell"
-          placeholder="Radius"
+          label='Radius of one cell'
+          placeholder='Radius'
           defaultValue={String(radius)}
         />
         <br />
@@ -93,7 +93,7 @@ class HexGridLayerSettingsPresentation extends React.Component {
     const layerParameters = {
       center: this._inputFields.center.value.split(',').map(toNumber),
       size: toNumber(this._inputFields.size.value),
-      radius: toNumber(this._inputFields.radius.value)
+      radius: toNumber(this._inputFields.radius.value),
     };
 
     for (const layerParameter of Object.keys(layerParameters)) {
@@ -112,7 +112,7 @@ export const HexGridLayerSettings = connect(
   (dispatch, ownProps) => ({
     setLayerParameter: (parameter, value) => {
       dispatch(setLayerParameterById(ownProps.layerId, parameter, value));
-    }
+    },
   })
 )(HexGridLayerSettingsPresentation);
 
@@ -148,14 +148,14 @@ class HexGridVectorSource extends React.PureComponent {
     return angles.map((angle) =>
       mapViewCoordinateFromLonLat([
         center[0] + radius * Math.sin(angle),
-        center[1] + radius * Math.cos(angle)
+        center[1] + radius * Math.cos(angle),
       ])
     );
   }
 
   _getHexagon(center, radius) {
     return new Feature({
-      geometry: new Polygon([this._getCorners(center, radius)])
+      geometry: new Polygon([this._getCorners(center, radius)]),
     });
   }
 
@@ -174,7 +174,7 @@ class HexGridVectorSource extends React.PureComponent {
         features[hash] = this._getHexagon(
           [
             center[0] + radius * 1.5 * x,
-            center[1] - radius * Math.sqrt(3) * (0.5 * x + z)
+            center[1] - radius * Math.sqrt(3) * (0.5 * x + z),
           ],
           radius
         );
@@ -201,7 +201,7 @@ const HexGridLayerPresentation = ({ layer, zIndex }) => {
         <HexGridVectorSource center={center} size={size} radius={radius} />
       </layer.Vector>
 
-      <div id="heatmapScale">
+      <div id='heatmapScale'>
         <span>100%</span>
         <span>50%</span>
         <span>0%</span>
@@ -212,7 +212,7 @@ const HexGridLayerPresentation = ({ layer, zIndex }) => {
 
 HexGridLayerPresentation.propTypes = {
   layer: PropTypes.object,
-  zIndex: PropTypes.number
+  zIndex: PropTypes.number,
 };
 
 export const HexGridLayer = connect(

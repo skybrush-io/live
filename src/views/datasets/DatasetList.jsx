@@ -20,13 +20,13 @@ import { getDatasetsInOrder } from '~/features/datasets/selectors';
  */
 const DatasetListEntry = () => (
   <ListItem>
-    <ListItemText primary="Dataset" />
+    <ListItemText primary='Dataset' />
   </ListItem>
 );
 
 DatasetListEntry.propTypes = {
   /** The identifier of the dataset */
-  id: PropTypes.string.isRequired
+  id: PropTypes.string.isRequired,
 };
 
 DatasetListEntry.defaultProps = {};
@@ -38,7 +38,7 @@ DatasetListEntry.defaultProps = {};
  */
 const DatasetListPresentation = listOf(DatasetListEntry, {
   dataProvider: 'datasets',
-  backgroundHint: 'No datasets'
+  backgroundHint: 'No datasets',
 });
 DatasetListPresentation.displayName = 'DatasetListPresentation';
 
@@ -50,7 +50,7 @@ const DatasetList = connect(
   // mapStateToProps
   (state) => ({
     datasets: getDatasetsInOrder(state),
-    dense: true
+    dense: true,
   }),
   // mapDispatchToProps
   undefined

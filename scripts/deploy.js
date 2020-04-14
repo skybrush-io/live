@@ -28,7 +28,7 @@ const options = require('yargs')
     alias: 'production',
     default: false,
     describe: 'whether to build the application in production mode',
-    type: 'boolean'
+    type: 'boolean',
   })
   .help('h')
   .alias('h', 'help')
@@ -60,7 +60,7 @@ async function createBundle(configName) {
       configName === 'electron'
         ? '[name].bundle.js'
         : configName + '.bundle.js',
-    path: buildDir
+    path: buildDir,
   };
 
   await ensureDir(buildDir);
@@ -69,7 +69,7 @@ async function createBundle(configName) {
   if (stats.hasErrors()) {
     console.log(
       stats.toString({
-        colors: true // Shows colors in the console
+        colors: true, // Shows colors in the console
       })
     );
     throw new Error('Error while compiling Webpack bundle');
@@ -97,8 +97,8 @@ const electronBuilderSpawnOptions = {
     // next line is needed because react-final-form depends on ts-essentials
     // (instead of dev-depending on it), which would need typescript as a
     // peer dependency, and electron-builder chokes on it
-    ELECTRON_BUILDER_ALLOW_UNRESOLVED_DEPENDENCIES: 'true'
-  }
+    ELECTRON_BUILDER_ALLOW_UNRESOLVED_DEPENDENCIES: 'true',
+  },
 };
 
 async function invokeElectronBuilder(appConfig) {
@@ -111,17 +111,17 @@ async function invokeElectronBuilder(appConfig) {
       if (process.platform !== 'darwin') {
         return 'macOS packages can only be built on macOS';
       }
-    }
+    },
   });
 
   tasks.push({
     task: () => invokeElectronBuilderForWindows(appConfig),
-    title: 'Windows'
+    title: 'Windows',
   });
 
   tasks.push({
     task: () => invokeElectronBuilderForLinux(appConfig),
-    title: 'Linux'
+    title: 'Linux',
   });
 
   if (tasks.length > 0) {
@@ -162,38 +162,38 @@ async function main() {
   const tasks = new Listr([
     {
       task: cleanDirs,
-      title: 'Cleaning build directories'
+      title: 'Cleaning build directories',
     },
     {
       task: () =>
         new Listr([
           {
             task: () => createBundle('electron'),
-            title: 'Main application'
+            title: 'Main application',
           },
           {
             task: () => createBundle('launcher'),
-            title: 'Launcher script'
+            title: 'Launcher script',
           },
           {
             task: () => createBundle('preload'),
-            title: 'Preload script'
-          }
+            title: 'Preload script',
+          },
         ]),
-      title: 'Creating JavaScript bundles'
+      title: 'Creating JavaScript bundles',
     },
     {
       task: copyIcons,
-      title: 'Copying icons'
+      title: 'Copying icons',
     },
     {
       task: (ctx) => invokeElectronBuilder(ctx.appConfig),
-      title: 'Building executables'
+      title: 'Building executables',
     },
     {
       task: cleanup,
-      title: 'Cleaning up'
-    }
+      title: 'Cleaning up',
+    },
   ]);
 
   try {

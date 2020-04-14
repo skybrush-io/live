@@ -29,7 +29,7 @@ export function handleClockInformationMessage(body, dispatch) {
         referenceTime: statusFromServer.retrievedAt,
         running: statusFromServer.running,
         ticks: statusFromServer.ticks,
-        ticksPerSecond: statusFromServer.ticksPerSecond || 1
+        ticksPerSecond: statusFromServer.ticksPerSecond || 1,
       },
       isUndefined
     )

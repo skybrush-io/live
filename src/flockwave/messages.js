@@ -31,7 +31,7 @@ export function parseCommandFromString(string) {
   return {
     command: parts[0],
     args: parts.slice(1),
-    kwds: {}
+    kwds: {},
   };
 }
 
@@ -51,7 +51,7 @@ function createMessage(body = {}) {
   return {
     '$fw.version': version,
     id: createMessageId(),
-    body
+    body,
   };
 }
 
@@ -343,7 +343,7 @@ class CommandExecutionManager {
       // Register our own notification handlers
       this._hub.registerNotificationHandlers({
         'CMD-RESP': this._onResponseReceived,
-        'CMD-TIMEOUT': this._onTimeoutReceived
+        'CMD-TIMEOUT': this._onTimeoutReceived,
       });
     }
   }
@@ -710,7 +710,7 @@ export default class MessageHub {
       uavId,
       command,
       args,
-      kwds
+      kwds,
     });
   }
 

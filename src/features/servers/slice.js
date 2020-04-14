@@ -16,7 +16,7 @@ export const INVALID = {
   methods: [],
   required: false,
   user: '',
-  valid: false
+  valid: false,
 };
 
 /**
@@ -52,15 +52,15 @@ const { actions, reducer } = createSlice({
     current: {
       authentication: INVALID,
       features: {},
-      state: ConnectionState.DISCONNECTED
+      state: ConnectionState.DISCONNECTED,
     },
     isAuthenticating: false,
     isScanning: false,
     detected: {
       byId: {},
-      order: []
+      order: [],
     },
-    token
+    token,
   },
 
   reducers: {
@@ -144,7 +144,7 @@ const { actions, reducer } = createSlice({
     removeAllDetectedServers(state) {
       state.detected = {
         byId: {},
-        order: []
+        order: [],
       };
     },
 
@@ -228,8 +228,8 @@ const { actions, reducer } = createSlice({
         // Server is still there, update the name
         state.detected.byId[key].label = label;
       }
-    }
-  }
+    },
+  },
 });
 
 export const {
@@ -249,7 +249,7 @@ export const {
   stopScanning,
   updateCurrentServerAuthenticationSettings,
   updateDetectedServerHostname,
-  updateDetectedServerLabel
+  updateDetectedServerLabel,
 } = actions;
 
 export default reducer;

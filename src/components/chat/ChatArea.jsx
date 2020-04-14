@@ -16,9 +16,9 @@ export default class ChatArea extends React.Component {
   static propTypes = {
     children: PropTypes.oneOfType([
       PropTypes.arrayOf(PropTypes.node),
-      PropTypes.node
+      PropTypes.node,
     ]),
-    style: PropTypes.object
+    style: PropTypes.object,
   };
 
   constructor(props) {
@@ -38,7 +38,7 @@ export default class ChatArea extends React.Component {
     const node = this._domNode.current;
     return {
       shouldScrollToBottom:
-        node && node.scrollTop + node.clientHeight >= node.scrollHeight - 20
+        node && node.scrollTop + node.clientHeight >= node.scrollHeight - 20,
     };
   }
 
@@ -47,9 +47,9 @@ export default class ChatArea extends React.Component {
     return (
       <Box
         ref={this._domNode}
-        position="relative"
-        overflow="auto"
-        flex="1 1 100%"
+        position='relative'
+        overflow='auto'
+        flex='1 1 100%'
         {...rest}
       >
         {children}

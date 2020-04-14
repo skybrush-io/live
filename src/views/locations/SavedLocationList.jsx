@@ -33,7 +33,7 @@ const LocationListEntry = (props) => {
   const scrollToLocation = () => scrollToMapLocation(location.center);
 
   const actionButton = (
-    <IconButton edge="end" onClick={editLocation}>
+    <IconButton edge='end' onClick={editLocation}>
       <ActionSettings />
     </IconButton>
   );
@@ -48,7 +48,7 @@ const LocationListEntry = (props) => {
 
 LocationListEntry.propTypes = {
   onEditItem: PropTypes.func.isRequired,
-  location: PropTypes.object.isRequired
+  location: PropTypes.object.isRequired,
 };
 
 /**
@@ -60,8 +60,8 @@ LocationListEntry.propTypes = {
 const createNewItemEntry = (props) => {
   /* eslint-disable react/prop-types */
   return (
-    <ListItem key="__addNew__" button onClick={props.onNewItem}>
-      <ListItemText primary="Add new location" />
+    <ListItem key='__addNew__' button onClick={props.onNewItem}>
+      <ListItemText primary='Add new location' />
     </ListItem>
   );
   /* eslint-enable react/prop-types */
@@ -81,7 +81,7 @@ export const LocationListPresentation = listOf(
   {
     dataProvider: 'savedLocations',
     backgroundHint: 'No saved locations',
-    postprocess: (items, props) => [createNewItemEntry(props), ...items]
+    postprocess: (items, props) => [createNewItemEntry(props), ...items],
   }
 );
 LocationListPresentation.displayName = 'LocationListPresentation';
@@ -90,7 +90,7 @@ const LocationList = connect(
   // mapStateToProps
   (state) => ({
     dense: true,
-    savedLocations: getSavedLocationsInOrder(state)
+    savedLocations: getSavedLocationsInOrder(state),
   }),
   // mapDispatchToProps
   (dispatch) => ({
@@ -104,7 +104,7 @@ const LocationList = connect(
       if (action.id) {
         dispatch(editSavedLocation(action.id));
       }
-    }
+    },
   })
 )(LocationListPresentation);
 

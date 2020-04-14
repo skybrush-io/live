@@ -15,7 +15,7 @@ const KEYS = new Set([
   'ArrowUp',
   'ArrowLeft',
   'ArrowRight',
-  'ArrowDown'
+  'ArrowDown',
 ]);
 
 /**
@@ -31,7 +31,7 @@ AFrame.registerComponent('better-wasd-controls', {
     fly: { default: false },
     wsAxis: { default: 'z', oneOf: ['x', 'y', 'z'] },
     wsEnabled: { default: true },
-    wsInverted: { default: false }
+    wsInverted: { default: false },
   },
 
   init() {
@@ -242,7 +242,7 @@ AFrame.registerComponent('better-wasd-controls', {
     let code;
     code = event.code || KEYCODE_TO_CODE[event.keyCode];
     delete this.keys[code];
-  }
+  },
 });
 
 function isEmptyObject(keys) {

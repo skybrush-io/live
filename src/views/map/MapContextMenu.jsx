@@ -30,14 +30,14 @@ import { renameFeature, removeFeatures } from '../../actions/features';
 import { setFlatEarthCoordinateSystemOrigin } from '../../actions/map-origin';
 import {
   selectUAVInMessagesDialog,
-  showMessagesDialog
+  showMessagesDialog,
 } from '../../actions/messages';
 import { showPromptDialog } from '../../actions/prompt';
 import ContextMenu from '../../components/ContextMenu';
 import {
   getSelectedFeatureIds,
   getSelectedFeatureLabels,
-  getSelectedUAVIds
+  getSelectedUAVIds,
 } from '../../selectors/selection';
 import * as messaging from '../../utils/messaging';
 
@@ -59,7 +59,7 @@ class MapContextMenu extends React.Component {
     setShowCoordinateSystemOrigin: PropTypes.func,
     showErrorMessage: PropTypes.func.isRequired,
     showMessagesDialog: PropTypes.func.isRequired,
-    showPromptDialog: PropTypes.func.isRequired
+    showPromptDialog: PropTypes.func.isRequired,
   };
 
   constructor(props) {
@@ -101,7 +101,7 @@ class MapContextMenu extends React.Component {
           if (hasSelectedUAVs) {
             result.push(
               <MenuItem
-                key="fly"
+                key='fly'
                 dense
                 onClick={this._moveSelectedUAVsAtCurrentAltitude}
               >
@@ -111,7 +111,7 @@ class MapContextMenu extends React.Component {
                 Fly here
               </MenuItem>,
               <MenuItem
-                key="flyAtAltitude"
+                key='flyAtAltitude'
                 dense
                 onClick={this._moveSelectedUAVsAtGivenAltitude}
               >
@@ -120,27 +120,27 @@ class MapContextMenu extends React.Component {
                 </ListItemIcon>
                 \n Fly here at altitude…\n
               </MenuItem>,
-              <Divider key="div1" />,
-              <MenuItem key="takeoff" dense onClick={this._takeoffSelectedUAVs}>
+              <Divider key='div1' />,
+              <MenuItem key='takeoff' dense onClick={this._takeoffSelectedUAVs}>
                 <ListItemIcon>
                   <FlightTakeoff />
                 </ListItemIcon>
                 Takeoff
               </MenuItem>,
-              <MenuItem key="land" dense onClick={this._landSelectedUAVs}>
+              <MenuItem key='land' dense onClick={this._landSelectedUAVs}>
                 <ListItemIcon>
                   <FlightLand />
                 </ListItemIcon>
                 Land
               </MenuItem>,
-              <MenuItem key="home" dense onClick={this._returnSelectedUAVs}>
+              <MenuItem key='home' dense onClick={this._returnSelectedUAVs}>
                 <ListItemIcon>
                   <Home />
                 </ListItemIcon>
                 Return to home
               </MenuItem>,
               <MenuItem
-                key="message"
+                key='message'
                 dense
                 disabled={!hasSingleSelectedUAV}
                 onClick={this._showMessagesDialog}
@@ -150,31 +150,31 @@ class MapContextMenu extends React.Component {
                 </ListItemIcon>
                 Messages
               </MenuItem>,
-              <Divider key="div2" />,
-              <MenuItem key="reset" dense onClick={this._resetSelectedUAVs}>
+              <Divider key='div2' />,
+              <MenuItem key='reset' dense onClick={this._resetSelectedUAVs}>
                 <ListItemIcon>
-                  <Refresh color="secondary" />
+                  <Refresh color='secondary' />
                 </ListItemIcon>
                 Reboot
               </MenuItem>,
               <MenuItem
-                key="shutdown"
+                key='shutdown'
                 dense
                 onClick={this._shutdownSelectedUAVs}
               >
                 <ListItemIcon>
-                  <ActionPowerSettingsNew color="secondary" />
+                  <ActionPowerSettingsNew color='secondary' />
                 </ListItemIcon>
                 Halt
               </MenuItem>,
-              <Divider key="div3" />
+              <Divider key='div3' />
             );
           }
 
           if (this.props.setMapCoordinateSystemOrigin) {
             result.push(
               <MenuItem
-                key="setMapCoordinateSystemOrigin"
+                key='setMapCoordinateSystemOrigin'
                 dense
                 onClick={this._setMapCoordinateSystemOrigin}
               >
@@ -189,7 +189,7 @@ class MapContextMenu extends React.Component {
           if (this.props.setShowCoordinateSystemOrigin) {
             result.push(
               <MenuItem
-                key="setShowCoordinateSystemOrigin"
+                key='setShowCoordinateSystemOrigin'
                 dense
                 onClick={this._setShowCoordinateSystemOrigin}
               >
@@ -203,9 +203,9 @@ class MapContextMenu extends React.Component {
 
           if (hasSelectedFeatures) {
             result.push(
-              <Divider key="div4" />,
+              <Divider key='div4' />,
               <MenuItem
-                key="setProperties"
+                key='setProperties'
                 dense
                 disabled={
                   !selectedFeatureIds || selectedFeatureIds.length !== 1
@@ -218,7 +218,7 @@ class MapContextMenu extends React.Component {
                 \n Properties…\n
               </MenuItem>,
               <MenuItem
-                key="remove"
+                key='remove'
                 dense
                 disabled={
                   !selectedFeatureIds || selectedFeatureIds.length === 0
@@ -266,7 +266,7 @@ class MapContextMenu extends React.Component {
       messaging.moveUAVs(uavIds, {
         lat: coords[1],
         lon: coords[0],
-        agl
+        agl,
       });
     }
   };
@@ -354,14 +354,14 @@ const getContextProvider = createSelector(
     selectedFeatureIds,
     selectedFeatureLabels,
     selectedUAVIds,
-    ...context
+    ...context,
   })
 );
 
 const MapContextMenuContainer = connect(
   // mapStateToProps
   (state) => ({
-    contextProvider: getContextProvider(state)
+    contextProvider: getContextProvider(state),
   }),
   // mapDispatchToProps
   (dispatch) => ({
@@ -397,7 +397,7 @@ const MapContextMenuContainer = connect(
     },
     showPromptDialog: (message, options) => {
       return dispatch(showPromptDialog(message, options));
-    }
+    },
   }),
   null,
   { forwardRef: true }

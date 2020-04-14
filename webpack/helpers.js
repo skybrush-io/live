@@ -4,5 +4,5 @@ const outputDir = path.resolve(projectRoot, 'build');
 
 module.exports = {
   projectRoot,
-  outputDir
+  outputDir,
 };

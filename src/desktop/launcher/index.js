@@ -22,7 +22,7 @@ app.allowRendererProcessReuse = true;
  */
 function run(argv) {
   const windowOptions = {
-    debug: argv.debug
+    debug: argv.debug,
   };
 
   // Register unhandled error handler
@@ -35,7 +35,7 @@ function run(argv) {
   // if we are not using Webpack.
   if (willUseWebpackDevServer) {
     protocol.registerSchemesAsPrivileged([
-      { scheme: 'ws', privileges: { standard: true, secure: true } }
+      { scheme: 'ws', privileges: { standard: true, secure: true } },
     ]);
   }
 

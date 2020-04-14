@@ -17,7 +17,7 @@ import { mapViewCoordinateFromLonLat } from '../../utils/geography';
 import {
   mapReferenceRequestSignal,
   fitAllFeaturesSignal,
-  mapViewToExtentSignal
+  mapViewToExtentSignal,
 } from '../../signals';
 import { showSnackbarMessage } from '~/features/snackbar/slice';
 
@@ -59,7 +59,7 @@ class FitAllFeaturesButton extends React.Component {
 
   render() {
     return (
-      <IconButton tooltip="Fit all features" onClick={this._handleClick}>
+      <IconButton tooltip='Fit all features' onClick={this._handleClick}>
         <this._CurrentIcon />
       </IconButton>
     );
@@ -147,12 +147,12 @@ class FitAllFeaturesButton extends React.Component {
     const view = this.map.getView();
     const center = mapViewCoordinateFromLonLat([
       position.coords.longitude,
-      position.coords.latitude
+      position.coords.latitude,
     ]);
     view.animate({
       pan: center,
       duration: this.props.duration,
-      easing: easeOut
+      easing: easeOut,
     });
   }
 }
@@ -160,7 +160,7 @@ class FitAllFeaturesButton extends React.Component {
 FitAllFeaturesButton.propTypes = {
   duration: PropTypes.number,
   margin: PropTypes.number,
-  dispatch: PropTypes.func
+  dispatch: PropTypes.func,
 };
 
 export default connect()(FitAllFeaturesButton);

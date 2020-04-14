@@ -28,28 +28,28 @@ const { actions, reducer } = createSlice({
         coordinateSystem: {
           orientation: '0', // stored as a string to avoid rounding errors
           origin: null,
-          type: COORDINATE_SYSTEM_TYPE
-        }
+          type: COORDINATE_SYSTEM_TYPE,
+        },
       },
-      type: 'outdoor'
+      type: 'outdoor',
     },
 
     loadShowFromCloudDialog: {
-      open: false
+      open: false,
     },
 
     manualPreflightChecksDialog: {
-      open: false
+      open: false,
     },
 
     onboardPreflightChecksDialog: {
-      open: false
+      open: false,
     },
 
     preflight: {
       manualChecksSignedOffAt: null,
       onboardChecksSignedOffAt: null,
-      takeoffAreaApprovedAt: null
+      takeoffAreaApprovedAt: null,
     },
 
     start: {
@@ -70,15 +70,15 @@ const { actions, reducer } = createSlice({
       uavIds: [],
 
       // whether the state variables in this object are synced with the server
-      syncStatusWithServer: 'notSynced'
+      syncStatusWithServer: 'notSynced',
     },
 
     startTimeDialog: {
-      open: false
+      open: false,
     },
 
     takeoffAreaSetupDialog: {
-      open: false
+      open: false,
     },
 
     upload: {
@@ -88,14 +88,14 @@ const { actions, reducer } = createSlice({
       itemsInProgress: [],
       itemsWaitingToStart: [],
       itemsQueued: [],
-      itemsFinished: []
+      itemsFinished: [],
     },
 
     uploadDialog: {
       open: false,
       showLastUploadResult: false,
-      uploadTarget: 'all'
-    }
+      uploadTarget: 'all',
+    },
   },
 
   reducers: {
@@ -213,7 +213,7 @@ const { actions, reducer } = createSlice({
         source: 'itemsInProgress',
         target: 'itemsWaitingToStart',
         state,
-        action
+        action,
       });
     },
 
@@ -222,7 +222,7 @@ const { actions, reducer } = createSlice({
         source: 'itemsInProgress',
         target: 'failedItems',
         state,
-        action
+        action,
       });
     },
 
@@ -231,7 +231,7 @@ const { actions, reducer } = createSlice({
         source: 'itemsWaitingToStart',
         target: 'itemsQueued',
         state,
-        action
+        action,
       });
     },
 
@@ -240,7 +240,7 @@ const { actions, reducer } = createSlice({
         source: 'itemsQueued',
         target: 'itemsInProgress',
         state,
-        action
+        action,
       });
     },
 
@@ -249,7 +249,7 @@ const { actions, reducer } = createSlice({
         source: 'itemsInProgress',
         target: 'itemsFinished',
         state,
-        action
+        action,
       });
     },
 
@@ -307,7 +307,7 @@ const { actions, reducer } = createSlice({
         source: 'failedItems',
         target: 'itemsWaitingToStart',
         state,
-        action
+        action,
       });
     },
 
@@ -385,8 +385,8 @@ const { actions, reducer } = createSlice({
     synchronizeShowSettings() {
       // Nothing to do, this action simply triggers a saga that will do the
       // hard work.
-    }
-  }
+    },
+  },
 });
 
 export const {
@@ -438,7 +438,7 @@ export const {
   synchronizeShowSettings,
   uploadingPromisePending,
   uploadingPromiseFulfilled,
-  uploadingPromiseRejected
+  uploadingPromiseRejected,
 } = actions;
 
 export default reducer;

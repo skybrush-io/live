@@ -24,11 +24,11 @@ const CoordinateSystemAxes = ({ leftHanded, lineWidth }) => (
 
 CoordinateSystemAxes.propTypes = {
   leftHanded: PropTypes.bool,
-  lineWidth: PropTypes.number
+  lineWidth: PropTypes.number,
 };
 
 CoordinateSystemAxes.defaultProps = {
-  lineWidth: 10
+  lineWidth: 10,
 };
 
 export default memo(CoordinateSystemAxes);

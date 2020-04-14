@@ -15,7 +15,7 @@ import ContentClear from '@material-ui/icons/Clear';
 
 const Widget = ({ children, showControls, style }) => {
   const controls = showControls ? (
-    <div className="widget-action-bar">
+    <div className='widget-action-bar'>
       <IconButton>
         <ContentClear />
       </IconButton>
@@ -24,7 +24,7 @@ const Widget = ({ children, showControls, style }) => {
     false
   );
   return (
-    <Paper className="widget" style={style}>
+    <Paper className='widget' style={style}>
       {controls}
       {children}
     </Paper>
@@ -34,16 +34,16 @@ const Widget = ({ children, showControls, style }) => {
 Widget.propTypes = {
   children: PropTypes.oneOfType([
     PropTypes.arrayOf(PropTypes.node),
-    PropTypes.node
+    PropTypes.node,
   ]),
   showControls: PropTypes.bool.isRequired,
-  style: PropTypes.object
+  style: PropTypes.object,
 };
 
 Widget.defaultProps = {
   children: [],
   showControls: true,
-  style: {}
+  style: {},
 };
 
 export default Widget;

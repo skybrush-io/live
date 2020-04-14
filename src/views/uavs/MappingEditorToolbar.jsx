@@ -15,14 +15,14 @@ import OpenWith from '@material-ui/icons/OpenWith';
 
 import {
   clearMapping,
-  finishMappingEditorSession
+  finishMappingEditorSession,
 } from '~/features/mission/slice';
 import useDropdown from '~/hooks/useDropdown';
 
 const instructionsStyle = {
   overflow: 'ellipsis',
   userSelect: 'none',
-  whiteSpace: 'nowrap'
+  whiteSpace: 'nowrap',
 };
 
 const MappingEditorToolbar = React.forwardRef(
@@ -30,11 +30,11 @@ const MappingEditorToolbar = React.forwardRef(
     const [
       menuAnchorElement,
       openMappingMenu,
-      closeMappingMenu
+      closeMappingMenu,
     ] = useDropdown();
 
     return (
-      <Toolbar ref={ref} disableGutters variant="dense" {...rest}>
+      <Toolbar ref={ref} disableGutters variant='dense' {...rest}>
         <IconButton disabled>
           <Mouse />
         </IconButton>
@@ -55,7 +55,7 @@ const MappingEditorToolbar = React.forwardRef(
         <Menu
           anchorEl={menuAnchorElement}
           open={menuAnchorElement !== null}
-          variant="menu"
+          variant='menu'
           onClose={closeMappingMenu}
         >
           <MenuItem disabled>I\Import…I</MenuItem>
@@ -71,7 +71,7 @@ const MappingEditorToolbar = React.forwardRef(
 MappingEditorToolbar.propTypes = {
   clearMapping: PropTypes.func,
   finishMappingEditorSession: PropTypes.func,
-  selectedUAVIds: PropTypes.array
+  selectedUAVIds: PropTypes.array,
 };
 
 export default connect(

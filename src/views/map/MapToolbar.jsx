@@ -27,7 +27,7 @@ const MapToolbarSeparator = () => {
         display: 'inline-block',
         height: '48px',
         borderLeft: '1px solid rgba(0, 0, 0,  0.172549)',
-        verticalAlign: 'top'
+        verticalAlign: 'top',
       }}
     />
   );
@@ -45,15 +45,15 @@ const MapToolbarPresentation = ({ onToolSelected, selectedTool }) => {
   return (
     <div>
       <IconButton
-        tooltip="Select"
+        tooltip='Select'
         onClick={partial(onToolSelected, Tool.SELECT)}
       >
         <ContentSelectAll color={colorForTool(Tool.SELECT)} />
       </IconButton>
-      <IconButton tooltip="Pan" onClick={partial(onToolSelected, Tool.PAN)}>
+      <IconButton tooltip='Pan' onClick={partial(onToolSelected, Tool.PAN)}>
         <ActionPanTool color={colorForTool(Tool.PAN)} />
       </IconButton>
-      <IconButton tooltip="Zoom" onClick={partial(onToolSelected, Tool.ZOOM)}>
+      <IconButton tooltip='Zoom' onClick={partial(onToolSelected, Tool.ZOOM)}>
         <ActionZoomIn color={colorForTool(Tool.ZOOM)} />
       </IconButton>
 
@@ -61,11 +61,11 @@ const MapToolbarPresentation = ({ onToolSelected, selectedTool }) => {
 
       <MapRotationTextBox
         resetDuration={500}
-        fieldWidth="75px"
+        fieldWidth='75px'
         style={{
           display: 'inline-block',
           marginRight: '12px',
-          verticalAlign: 'top'
+          verticalAlign: 'top',
         }}
       />
 
@@ -78,7 +78,7 @@ const MapToolbarPresentation = ({ onToolSelected, selectedTool }) => {
 
 MapToolbarPresentation.propTypes = {
   onToolSelected: PropTypes.func,
-  selectedTool: PropTypes.string
+  selectedTool: PropTypes.string,
 };
 
 /**
@@ -91,7 +91,7 @@ const MapToolbar = connect(
   (dispatch) => ({
     onToolSelected(tool) {
       dispatch(selectMapTool(tool));
-    }
+    },
   })
 )(withTheme(MapToolbarPresentation));
 

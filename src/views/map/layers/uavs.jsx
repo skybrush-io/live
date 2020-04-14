@@ -52,7 +52,7 @@ class UAVsLayerSettingsPresentation extends React.Component {
 
     this.state = {
       colorPredicates: props.layer.parameters.colorPredicates,
-      invalidPredicates: []
+      invalidPredicates: [],
     };
 
     this._makeChangeHandler = this._makeChangeHandler.bind(this);
@@ -75,7 +75,7 @@ class UAVsLayerSettingsPresentation extends React.Component {
     ));
     return (
       <div>
-        <p key="header">
+        <p key='header'>
           Color predicates (e.g. <code>i\id.\includes(’1’)i</code>)
         </p>
         {colorInputs}
@@ -90,7 +90,7 @@ class UAVsLayerSettingsPresentation extends React.Component {
     return (event) => {
       const colorPredicates = {
         ...this.state.colorPredicates,
-        [color]: event.target.value
+        [color]: event.target.value,
       };
       this.setState({ colorPredicates });
     };
@@ -110,7 +110,7 @@ class UAVsLayerSettingsPresentation extends React.Component {
 
     this.props.setLayerParameter('colorPredicates', {
       ...this.props.layer.parameters.colorPredicates,
-      ...validPredicates
+      ...validPredicates,
     });
 
     this.setState({ invalidPredicates });
@@ -122,7 +122,7 @@ UAVsLayerSettingsPresentation.propTypes = {
   layerId: PropTypes.string,
 
   setLayerParameter: PropTypes.func,
-  showMessage: PropTypes.func
+  showMessage: PropTypes.func,
 };
 
 export const UAVsLayerSettings = connect(
@@ -135,7 +135,7 @@ export const UAVsLayerSettings = connect(
     },
     showMessage: (message) => {
       dispatch(showSnackbarMessage(message));
-    }
+    },
   })
 )(UAVsLayerSettingsPresentation);
 
@@ -157,17 +157,17 @@ UAVsLayerPresentation.propTypes = {
   zIndex: PropTypes.number,
 
   selection: PropTypes.arrayOf(PropTypes.string).isRequired,
-  projection: PropTypes.func
+  projection: PropTypes.func,
 };
 
 UAVsLayerPresentation.defaultProps = {
-  projection: mapViewCoordinateFromLonLat
+  projection: mapViewCoordinateFromLonLat,
 };
 
 export const UAVsLayer = connect(
   // mapStateToProps
   (state) => ({
-    selection: getSelection(state)
+    selection: getSelection(state),
   }),
   // mapDispatchToProps
   () => ({})

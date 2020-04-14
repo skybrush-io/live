@@ -1,49 +1,49 @@
-import delay from "delay";
-import CssBaseline from "@material-ui/core/CssBaseline";
-import React, { useState } from "react";
-import { ErrorBoundary } from "react-error-boundary";
-import { WorkbenchView } from "react-flexible-workbench";
-import { Provider as StoreProvider } from "react-redux";
-import { ToastProvider } from "react-toast-notifications";
-import { PersistGate } from "redux-persist/es/integration/react";
+import delay from 'delay';
+import CssBaseline from '@material-ui/core/CssBaseline';
+import React, { useState } from 'react';
+import { ErrorBoundary } from 'react-error-boundary';
+import { WorkbenchView } from 'react-flexible-workbench';
+import { Provider as StoreProvider } from 'react-redux';
+import { ToastProvider } from 'react-toast-notifications';
+import { PersistGate } from 'redux-persist/es/integration/react';
 
-import dialogs from "./components/dialogs";
-import Header from "./components/header";
-import HotkeyHandler from "./components/HotkeyHandler";
-import ServerConnectionManager from "./components/ServerConnectionManager";
-import SplashScreen from "./components/SplashScreen";
+import dialogs from './components/dialogs';
+import Header from './components/header';
+import HotkeyHandler from './components/HotkeyHandler';
+import ServerConnectionManager from './components/ServerConnectionManager';
+import SplashScreen from './components/SplashScreen';
 
-import { ErrorHandler } from "./error-handling";
+import { ErrorHandler } from './error-handling';
 
-import Sidebar from "./features/sidebar/Sidebar";
-import ToastNotificationManager from "./features/snackbar/ToastNotificationManager";
-import Tour from "./features/tour/Tour";
+import Sidebar from './features/sidebar/Sidebar';
+import ToastNotificationManager from './features/snackbar/ToastNotificationManager';
+import Tour from './features/tour/Tour';
 
-import flock, { Flock } from "./flock";
-import hotkeys from "./hotkeys";
-import store, { persistor } from "./store";
-import ThemeProvider, { DarkModeExtraCSSProvider } from "./theme";
-import workbench from "./workbench";
+import flock, { Flock } from './flock';
+import hotkeys from './hotkeys';
+import store, { persistor } from './store';
+import ThemeProvider, { DarkModeExtraCSSProvider } from './theme';
+import workbench from './workbench';
 
-require("../assets/css/kbd.css");
-require("../assets/css/screen.less");
-require("../assets/css/tooltips.less");
+require('../assets/css/kbd.css');
+require('../assets/css/screen.less');
+require('../assets/css/tooltips.less');
 
-require("react-cover-page/themes/default.css");
-require("typeface-fira-sans");
+require('react-cover-page/themes/default.css');
+require('typeface-fira-sans');
 
 const rootStyle = {
-  display: "flex",
-  flexDirection: "column",
-  width: "100%",
-  height: "100%",
+  display: 'flex',
+  flexDirection: 'column',
+  width: '100%',
+  height: '100%',
 };
 
 const rootInnerStyle = {
-  display: "flex",
+  display: 'flex',
   flexGrow: 1,
-  width: "100%",
-  height: "100%",
+  width: '100%',
+  height: '100%',
 };
 
 /**
@@ -109,7 +109,7 @@ const App = () => {
                 <dialogs.SavedLocationEditorDialog />
                 <dialogs.ServerSettingsDialog />
 
-                <ToastProvider placement="top-center">
+                <ToastProvider placement='top-center'>
                   <ToastNotificationManager />
                 </ToastProvider>
 
@@ -132,7 +132,7 @@ const App = () => {
  */
 const enhancer = (Component) =>
   class extends React.Component {
-    static displayName = "WorkbenchRoot";
+    static displayName = 'WorkbenchRoot';
 
     render() {
       return (

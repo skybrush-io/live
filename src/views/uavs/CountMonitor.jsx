@@ -10,7 +10,7 @@ const stateColors = {
   away: 'hsl(50, 100%, 42%)',
   error: 'hsl(0, 100%, 42%)',
   lost: 'hsl(0, 0%, 42%)',
-  all: 'hsl(250, 100%, 42%)'
+  all: 'hsl(250, 100%, 42%)',
 };
 
 /**
@@ -20,14 +20,14 @@ const stateColors = {
  */
 const ColoredContainer = ({ color, title, text }) => (
   <span
-    className="coloredContainer"
+    className='coloredContainer'
     style={{
       padding: '5px',
       borderRadius: '10px',
       color: 'white',
       margin: '0px 5px',
 
-      backgroundColor: color
+      backgroundColor: color,
     }}
   >
     <span>{title}: </span>
@@ -37,7 +37,7 @@ const ColoredContainer = ({ color, title, text }) => (
 ColoredContainer.propTypes = {
   color: PropTypes.string,
   title: PropTypes.string,
-  text: PropTypes.string
+  text: PropTypes.string,
 };
 
 /**
@@ -72,13 +72,13 @@ class CountMonitor extends React.Component {
           Count Monitor:
           <ColoredContainer
             color={stateColors.selected}
-            title="Selected"
+            title='Selected'
             text={`${selectedCount}`}
           />
           /
           <ColoredContainer
             color={stateColors.normal}
-            title="Normal"
+            title='Normal'
             text={`${normalCount}`}
           />
           {awayCount > 0 && (
@@ -86,7 +86,7 @@ class CountMonitor extends React.Component {
               +
               <ColoredContainer
                 color={stateColors.away}
-                title="Away"
+                title='Away'
                 text={`${awayCount}`}
               />
             </span>
@@ -96,7 +96,7 @@ class CountMonitor extends React.Component {
               +
               <ColoredContainer
                 color={stateColors.error}
-                title="Errored"
+                title='Errored'
                 text={`${errorCount}`}
               />
             </span>
@@ -106,7 +106,7 @@ class CountMonitor extends React.Component {
               +
               <ColoredContainer
                 color={stateColors.lost}
-                title="Lost"
+                title='Lost'
                 text={`${lostCount}`}
               />
             </span>
@@ -115,7 +115,7 @@ class CountMonitor extends React.Component {
             =
             <ColoredContainer
               color={stateColors.all}
-              title="All"
+              title='All'
               text={`${allCount}`}
             />
           </span>
@@ -127,7 +127,7 @@ class CountMonitor extends React.Component {
 
 CountMonitor.propTypes = {
   selectedUAVIds: PropTypes.arrayOf(PropTypes.string),
-  uavs: PropTypes.object
+  uavs: PropTypes.object,
 };
 
 export default CountMonitor;

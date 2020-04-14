@@ -14,7 +14,7 @@ const colorForState = {
   [ConnectionState.CONNECTED]: Colors.success,
   [ConnectionState.CONNECTING]: Colors.warning,
   [ConnectionState.DISCONNECTING]: Colors.warning,
-  [ConnectionState.DISCONNECTED]: Colors.error
+  [ConnectionState.DISCONNECTED]: Colors.error,
 };
 
 /**
@@ -25,7 +25,7 @@ export default connect(
   // mapStateToProps
   (state) => ({
     color: colorForState[state.servers.current.state],
-    visible: state.dialogs.serverSettings.active
+    visible: state.dialogs.serverSettings.active,
   }),
   // Return empty object from mapDispatchToProps to avoid invalid prop warning
   // caused by react-badger not handling the automatically added dispatch prop.

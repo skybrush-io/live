@@ -40,7 +40,7 @@ const FeatureListEntry = (props) => {
 
 FeatureListEntry.propTypes = {
   onEditFeature: PropTypes.func,
-  feature: PropTypes.object.isRequired
+  feature: PropTypes.object.isRequired,
 };
 
 /**
@@ -58,7 +58,7 @@ export const FeatureListPresentation = listOf(
   },
   {
     dataProvider: 'features',
-    backgroundHint: 'No features'
+    backgroundHint: 'No features',
   }
 );
 FeatureListPresentation.displayName = 'FeatureListPresentation';
@@ -67,7 +67,7 @@ export default connect(
   // mapStateToProps
   (state) => ({
     dense: true,
-    features: getFeaturesInOrder(state)
+    features: getFeaturesInOrder(state),
   }),
   // mapDispatchToProps
   (dispatch) => ({
@@ -76,6 +76,6 @@ export default connect(
       if (featureId) {
         dispatch(showFeatureEditorDialog(featureId));
       }
-    }
+    },
   })
 )(FeatureListPresentation);

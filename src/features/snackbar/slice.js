@@ -14,7 +14,7 @@ const { actions, reducer } = createSlice({
     messageId: 0,
     message: '',
     permanent: false,
-    semantics: MessageSemantics.DEFAULT
+    semantics: MessageSemantics.DEFAULT,
   },
 
   reducers: {
@@ -42,8 +42,8 @@ const { actions, reducer } = createSlice({
     showPermanentSnackbarMessage(state, action) {
       showSnackbarMessage(state, action);
       state.permanent = true;
-    }
-  }
+    },
+  },
 });
 
 export const { showSnackbarMessage } = actions;

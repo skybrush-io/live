@@ -10,22 +10,22 @@ import ToggleButton from '~/components/ToggleButton';
  * used in the 3D view.
  */
 const NavigationButtonGroup = ({ mode, onChange }) => (
-  <ToggleButtonGroup size="small">
+  <ToggleButtonGroup size='small'>
     <ToggleButton
       selected={mode === 'walk'}
-      value="walk"
+      value='walk'
       onClick={() => onChange('walk')}
     >
       Walk
     </ToggleButton>
     <ToggleButton
       selected={mode === 'fly'}
-      value="fly"
+      value='fly'
       onClick={() => onChange('fly')}
     >
       Fly
     </ToggleButton>
-    <ToggleButton disabled selected={mode === 'track'} value="track">
+    <ToggleButton disabled selected={mode === 'track'} value='track'>
       Track
     </ToggleButton>
   </ToggleButtonGroup>
@@ -33,7 +33,7 @@ const NavigationButtonGroup = ({ mode, onChange }) => (
 
 NavigationButtonGroup.propTypes = {
   mode: PropTypes.oneOf(['walk', 'fly']),
-  onChange: PropTypes.func
+  onChange: PropTypes.func,
 };
 
 export default NavigationButtonGroup;

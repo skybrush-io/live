@@ -23,7 +23,7 @@ export const setFlatEarthCoordinateSystemOrigin = createAction(
   SET_ORIGIN,
   (position, angle) => ({
     position,
-    angle
+    angle,
   })
 );
 

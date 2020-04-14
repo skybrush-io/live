@@ -16,14 +16,14 @@ import { getFeaturesInOrder } from '../../../selectors/ordered';
 import { getSelectedFeatureIds } from '../../../selectors/selection';
 import {
   mapViewCoordinateFromLonLat,
-  euclideanDistance
+  euclideanDistance,
 } from '../../../utils/geography';
 import {
   fill,
   primaryColor,
   thinOutline,
   whiteThickOutline,
-  whiteThinOutline
+  whiteThinOutline,
 } from '../../../utils/styles';
 
 // === Settings for this particular layer type ===
@@ -80,7 +80,7 @@ const geometryForFeature = (feature) => {
 const whiteThickOutlineStyle = new Style({ stroke: whiteThickOutline });
 const labelStrokes = {
   [LabelStyle.THIN_OUTLINE]: whiteThinOutline,
-  [LabelStyle.THICK_OUTLINE]: whiteThickOutline
+  [LabelStyle.THICK_OUTLINE]: whiteThickOutline,
 };
 
 // TODO: cache the style somewhere?
@@ -97,8 +97,8 @@ const styleForFeature = (feature, selected = false) => {
           image: new Circle({
             stroke: selected ? whiteThinOutline : undefined,
             fill: fill(parsedColor.rgb().array()),
-            radius
-          })
+            radius,
+          }),
         })
       );
       break;
@@ -110,7 +110,7 @@ const styleForFeature = (feature, selected = false) => {
 
       styles.push(
         new Style({
-          stroke: thinOutline(parsedColor.rgb().array())
+          stroke: thinOutline(parsedColor.rgb().array()),
         })
       );
       break;
@@ -126,7 +126,7 @@ const styleForFeature = (feature, selected = false) => {
               .fade(selected ? 0.5 : 0.75)
               .rgb()
               .array()
-          )
+          ),
         })
       );
       if (selected) {
@@ -135,7 +135,7 @@ const styleForFeature = (feature, selected = false) => {
 
       styles.push(
         new Style({
-          stroke: thinOutline(parsedColor.rgb().array())
+          stroke: thinOutline(parsedColor.rgb().array()),
         })
       );
   }
@@ -149,8 +149,8 @@ const styleForFeature = (feature, selected = false) => {
           placement: type === 'lineString' ? 'line' : 'point',
           stroke: labelStrokes[labelStyle],
           text: label,
-          textAlign: 'center'
-        })
+          textAlign: 'center',
+        }),
       })
     );
   }
@@ -186,7 +186,7 @@ const FeaturesLayerPresentation = ({
   projection,
   selectedFeatureIds,
   selectedTool,
-  zIndex
+  zIndex,
 }) => (
   <layer.Vector
     ref={markAsSelectableAndEditable}
@@ -217,18 +217,18 @@ FeaturesLayerPresentation.propTypes = {
   features: PropTypes.arrayOf(PropTypes.object).isRequired,
   selectedFeatureIds: PropTypes.arrayOf(PropTypes.string).isRequired,
 
-  onFeaturesModified: PropTypes.func
+  onFeaturesModified: PropTypes.func,
 };
 
 FeaturesLayerPresentation.defaultProps = {
-  projection: mapViewCoordinateFromLonLat
+  projection: mapViewCoordinateFromLonLat,
 };
 
 export const FeaturesLayer = connect(
   // mapStateToProps
   (state, ownProps) => ({
     features: getFeaturesInOrder(state),
-    selectedFeatureIds: getSelectedFeatureIds(state)
+    selectedFeatureIds: getSelectedFeatureIds(state),
   }),
   // mapDispatchToProps
   (dispatch, ownProps) => ({
@@ -237,6 +237,6 @@ export const FeaturesLayer = connect(
       /* TODO(ntamas): features contains all the features in the layer, not
        * only the ones being modified. We need to figure out which ones were
        * actually modified and sync them back to the state store */
-    }
+    },
   })
 )(FeaturesLayerPresentation);

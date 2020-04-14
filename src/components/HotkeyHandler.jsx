@@ -64,20 +64,20 @@ export default class HotkeyHandler extends React.Component {
     Ctrl: (e) => e.ctrlKey,
     Meta: (e) => e.metaKey,
     PlatMod: (e) => (isRunningOnMac ? e.metaKey : e.ctrlKey),
-    Shift: (e) => e.shiftKey
+    Shift: (e) => e.shiftKey,
   };
 
   static propTypes = {
     hotkeys: PropTypes.arrayOf(
       PropTypes.shape({
         keys: PropTypes.string,
-        action: PropTypes.func
+        action: PropTypes.func,
       })
-    )
+    ),
   };
 
   static defaultProps = {
-    hotkeys: []
+    hotkeys: [],
   };
 
   state = {
@@ -86,8 +86,8 @@ export default class HotkeyHandler extends React.Component {
       Alt: false,
       Control: false,
       Meta: false,
-      Shift: false
-    }
+      Shift: false,
+    },
   };
 
   /**
@@ -157,9 +157,9 @@ export default class HotkeyHandler extends React.Component {
     const { dialogVisible, keyboardModifiers } = this.state;
 
     const actions = [
-      <Button key="_close" color="primary" onClick={this._hideDialog}>
+      <Button key='_close' color='primary' onClick={this._hideDialog}>
         Close
-      </Button>
+      </Button>,
     ];
 
     const classString = []
@@ -177,7 +177,7 @@ export default class HotkeyHandler extends React.Component {
           <DialogTitle>Hotkeys</DialogTitle>
 
           <DialogContent>
-            <Table size="small">
+            <Table size='small'>
               <TableBody>
                 {hotkeys.map((hotkey) => (
                   <TableRow key={`hotkey_${hotkey.keys}`}>
@@ -279,7 +279,7 @@ export default class HotkeyHandler extends React.Component {
         (e.ctrlKey ? 'Ctrl + ' : '') +
         (e.shiftKey ? 'Shift + ' : '') +
         e.code,
-      e.key
+      e.key,
     ];
 
     if (e.ctrlKey || e.metaKey) {

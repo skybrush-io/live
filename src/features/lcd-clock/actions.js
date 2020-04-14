@@ -13,7 +13,7 @@ export function addClockDisplayAutomatically() {
     const state = getState();
     const action = addClockDisplay({
       clockId: getLeastUsedClockId(state),
-      preset: getLeastUsedPreset(state)
+      preset: getLeastUsedPreset(state),
     });
     dispatch(action);
   };
@@ -31,7 +31,7 @@ export function cyclePreset(id) {
     dispatch(
       setPresetIndexForClockDisplay({
         id,
-        preset: getNextPresetIndex(preset)
+        preset: getNextPresetIndex(preset),
       })
     );
   };

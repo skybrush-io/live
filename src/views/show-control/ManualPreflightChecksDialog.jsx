@@ -17,14 +17,14 @@ import Switch from '@material-ui/core/Switch';
 
 import {
   getTickedPreflightCheckItems,
-  getHeadersAndItems
+  getHeadersAndItems,
 } from '~/features/preflight/selectors';
 import { togglePreflightCheckStatus } from '~/features/preflight/slice';
 import { signOffOnManualPreflightChecks } from '~/features/show/actions';
 import { areManualPreflightChecksSignedOff } from '~/features/show/selectors';
 import {
   clearManualPreflightChecks,
-  closeManualPreflightChecksDialog
+  closeManualPreflightChecksDialog,
 } from '~/features/show/slice';
 
 /**
@@ -58,7 +58,7 @@ const PreflightCheckListPresentation = ({
           <ListItemIcon>
             <Checkbox
               checked={checkedItemIds.includes(item.id)}
-              edge="start"
+              edge='start'
               inputProps={{ 'aria-labelledby': itemId }}
               value={item.id}
             />
@@ -75,23 +75,23 @@ PreflightCheckListPresentation.propTypes = {
   items: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.string,
-      type: PropTypes.string
+      type: PropTypes.string,
     })
   ),
-  onToggle: PropTypes.func
+  onToggle: PropTypes.func,
 };
 
 const PreflightCheckList = connect(
   // mapStateToProps
   (state) => ({
     checkedItemIds: getTickedPreflightCheckItems(state),
-    items: getHeadersAndItems(state)
+    items: getHeadersAndItems(state),
   }),
   // mapDispatchToProps
   (dispatch) => ({
     onToggle(id) {
       dispatch(togglePreflightCheckStatus(id));
-    }
+    },
   })
 )(PreflightCheckListPresentation);
 
@@ -105,31 +105,31 @@ const ManualPreflightChecksDialog = ({
   onClear,
   onClose,
   onSignOff,
-  signedOff
+  signedOff,
 }) => {
   return (
-    <Dialog fullWidth open={open} maxWidth="xs" onClose={onClose}>
+    <Dialog fullWidth open={open} maxWidth='xs' onClose={onClose}>
       <DialogContent
         style={{
           display: 'flex',
           flexDirection: 'column',
           paddingLeft: '1em',
-          paddingRight: '1em'
+          paddingRight: '1em',
         }}
       >
-        <Box flex={1} overflow="auto" minHeight={0}>
+        <Box flex={1} overflow='auto' minHeight={0}>
           <PreflightCheckList />
         </Box>
-        <Box className="bottom-bar" textAlign="center" pt={2}>
+        <Box className='bottom-bar' textAlign='center' pt={2}>
           <FormControlLabel
             control={
               <Switch
                 checked={signedOff}
-                value="signedOff"
+                value='signedOff'
                 onChange={signedOff ? onClear : onSignOff}
               />
             }
-            label="Sign off on manual preflight checks"
+            label='Sign off on manual preflight checks'
           />
         </Box>
       </DialogContent>
@@ -143,25 +143,25 @@ ManualPreflightChecksDialog.propTypes = {
   onClose: PropTypes.func,
   onSignOff: PropTypes.func,
   open: PropTypes.bool,
-  signedOff: PropTypes.bool
+  signedOff: PropTypes.bool,
 };
 
 ManualPreflightChecksDialog.defaultProps = {
   open: false,
-  signedOff: false
+  signedOff: false,
 };
 
 export default connect(
   // mapStateToProps
   (state) => ({
     ...state.show.manualPreflightChecksDialog,
-    signedOff: areManualPreflightChecksSignedOff(state)
+    signedOff: areManualPreflightChecksSignedOff(state),
   }),
 
   // mapDispatchToProps
   {
     onClear: clearManualPreflightChecks,
     onClose: closeManualPreflightChecksDialog,
-    onSignOff: signOffOnManualPreflightChecks
+    onSignOff: signOffOnManualPreflightChecks,
   }
 )(ManualPreflightChecksDialog);

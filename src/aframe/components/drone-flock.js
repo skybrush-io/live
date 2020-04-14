@@ -61,12 +61,12 @@ AFrame.registerSystem('drone-flock', {
       primitive: 'sphere',
       radius: 0.5,
       segmentsHeight: 9,
-      segmentsWidth: 18
+      segmentsWidth: 18,
     });
     element.setAttribute('material', {
       color: new THREE.Color('#0088ff'),
       fog: false,
-      shader: 'flat'
+      shader: 'flat',
     });
     element.setAttribute('position', '0 0 0');
 
@@ -76,7 +76,7 @@ AFrame.registerSystem('drone-flock', {
       color: new THREE.Color('#ff8800'),
       scale: '2 2 1',
       src: '#glow-texture',
-      transparent: true
+      transparent: true,
     });
 
     element.append(glowElement);
@@ -117,7 +117,7 @@ AFrame.registerSystem('drone-flock', {
 
   _onTransformationChanged(newValue) {
     this._gpsToWorld = newValue;
-  }
+  },
 });
 
 AFrame.registerComponent('drone-flock', {
@@ -133,7 +133,7 @@ AFrame.registerComponent('drone-flock', {
     this._signals = {
       uavsAdded: flock.uavsAdded.add(this._onUAVsAdded),
       uavsRemoved: flock.uavsRemoved.add(this._onUAVsRemoved),
-      uavsUpdated: flock.uavsUpdated.add(this._onUAVsUpdated)
+      uavsUpdated: flock.uavsUpdated.add(this._onUAVsUpdated),
     };
 
     this._pendingUAVsToAdd = flock.getAllUAVIds();
@@ -217,5 +217,5 @@ AFrame.registerComponent('drone-flock', {
         this.system.updateEntityFromUAV(entity, uav);
       }
     }
-  }
+  },
 });

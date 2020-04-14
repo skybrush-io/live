@@ -15,7 +15,7 @@ export const StepperStatus = {
   NEXT: 'next',
   OFF: 'off',
   SKIPPED: 'skipped',
-  WAITING: 'waiting'
+  WAITING: 'waiting',
 };
 
 const useStyles = makeStyles(
@@ -29,35 +29,35 @@ const useStyles = makeStyles(
         '1em' /* needed for narrow cases; setting width alone is not enough */,
       marginRight: theme.spacing(2),
       position: 'relative',
-      width: '1em'
+      width: '1em',
     },
 
     'size-small': {
-      fontSize: '1.25rem'
+      fontSize: '1.25rem',
     },
 
     'size-normal': {
-      fontSize: '1.5rem'
+      fontSize: '1.5rem',
     },
 
     'size-large': {
-      fontSize: '2rem'
+      fontSize: '2rem',
     },
 
     'status-completed': {
       backgroundColor: Colors.success,
-      color: theme.palette.getContrastText(Colors.success)
+      color: theme.palette.getContrastText(Colors.success),
     },
 
     'status-error': {
       backgroundColor: Colors.error,
       boxShadow: `0 0 4px 1px ${Colors.error}`,
-      color: theme.palette.getContrastText(Colors.error)
+      color: theme.palette.getContrastText(Colors.error),
     },
 
     'status-info': {
       backgroundColor: Colors.info,
-      color: theme.palette.getContrastText(Colors.info)
+      color: theme.palette.getContrastText(Colors.info),
     },
 
     'status-next': {
@@ -72,56 +72,56 @@ const useStyles = makeStyles(
         borderRadius: '50%',
         animation: '$ripple 1.2s infinite ease-in-out',
         border: `2px solid ${Colors.info}`,
-        content: '""'
-      }
+        content: '""',
+      },
     },
 
     'status-off': {
       backgroundColor: Colors.off,
-      color: theme.palette.getContrastText(Colors.off)
+      color: theme.palette.getContrastText(Colors.off),
     },
 
     'status-skipped': {
       backgroundColor: Colors.warning,
       boxShadow: `0 0 4px 1px ${Colors.warning}`,
-      color: theme.palette.getContrastText(Colors.warning)
+      color: theme.palette.getContrastText(Colors.warning),
     },
 
     'status-waiting': {
       backgroundColor: Colors.info,
       color: theme.palette.getContrastText(Colors.info),
       animation: '$flash 0.5s infinite',
-      animationDirection: 'alternate'
+      animationDirection: 'alternate',
     },
 
     '@keyframes flash': {
       '0%, 49%': {
-        opacity: 0.2
+        opacity: 0.2,
       },
       '50%, 100%': {
-        opacity: 1
-      }
+        opacity: 1,
+      },
     },
 
     '@keyframes pulse': {
       '0%': {
-        boxShadow: `0 0 8px 2px ${color(Colors.info).alpha(0)}`
+        boxShadow: `0 0 8px 2px ${color(Colors.info).alpha(0)}`,
       },
       '100%': {
-        boxShadow: `0 0 8px 2px ${Colors.info}`
-      }
+        boxShadow: `0 0 8px 2px ${Colors.info}`,
+      },
     },
 
     '@keyframes ripple': {
       '0%': {
         transform: 'scale(.8)',
-        opacity: 1
+        opacity: 1,
       },
       '100%': {
         transform: 'scale(2.4)',
-        opacity: 0
-      }
-    }
+        opacity: 0,
+      },
+    },
   }),
   { name: 'StepperStatusLight' }
 );
@@ -147,11 +147,11 @@ const StepperStatusLight = ({ size, status, ...rest }) => {
 
 StepperStatusLight.propTypes = {
   size: PropTypes.oneOf(['small', 'normal', 'large']),
-  status: PropTypes.oneOf(Object.values(StepperStatus))
+  status: PropTypes.oneOf(Object.values(StepperStatus)),
 };
 
 StepperStatusLight.defaultProps = {
-  status: 'off'
+  status: 'off',
 };
 
 export default StepperStatusLight;

@@ -1,7 +1,7 @@
-import { delay, put, select } from "redux-saga/effects";
+import { delay, put, select } from 'redux-saga/effects';
 
-import { shouldOfferTourToUser } from "~/features/tour/selectors";
-import { startTour } from "~/features/tour/slice";
+import { shouldOfferTourToUser } from '~/features/tour/selectors';
+import { startTour } from '~/features/tour/slice';
 
 /**
  * Compound saga related to the management of the guided tour that appears when

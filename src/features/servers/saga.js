@@ -5,7 +5,7 @@ import {
   put,
   putResolve,
   select,
-  take
+  take,
 } from 'redux-saga/effects';
 
 import { authenticateToServer } from './actions';
@@ -15,13 +15,13 @@ import {
   isAuthenticated,
   isAuthenticating,
   isConnected,
-  requiresAuthentication
+  requiresAuthentication,
 } from './selectors';
 import {
   authenticateToServerPromiseFulfilled,
   setAuthenticatedUser,
   setCurrentServerConnectionState,
-  updateCurrentServerAuthenticationSettings
+  updateCurrentServerAuthenticationSettings,
 } from './slice';
 
 import { showAuthenticationDialog } from '~/actions/servers';
@@ -46,7 +46,7 @@ function* serverAuthenticationSettingsUpdaterSaga() {
           const { body } = await messageHub.sendMessage('AUTH-INF');
           return {
             methods: body.methods || [],
-            required: body.required || false
+            required: body.required || false,
           };
         } catch {
           return undefined;
@@ -88,14 +88,14 @@ function* authenticationResultNotifierSaga() {
         yield put(
           showSnackbarMessage({
             message: `You are now authenticated as ${user}`,
-            semantics: 'success'
+            semantics: 'success',
           })
         );
       } else {
         yield put(
           showSnackbarMessage({
             message: `You are now deauthenticated`,
-            semantics: 'success'
+            semantics: 'success',
           })
         );
       }
@@ -103,7 +103,7 @@ function* authenticationResultNotifierSaga() {
       yield put(
         showSnackbarMessage({
           message: reason || 'Authentication failed',
-          semantics: 'error'
+          semantics: 'error',
         })
       );
     }
@@ -171,7 +171,7 @@ function* enforceAuthenticationIfNeededSaga() {
     // authentication settings
     yield take([
       setCurrentServerConnectionState.type,
-      updateCurrentServerAuthenticationSettings.type
+      updateCurrentServerAuthenticationSettings.type,
     ]);
   }
 }
@@ -189,7 +189,7 @@ function* authenticateWithoutSupervision() {
       authenticateToServer({
         method: 'jwt',
         data: token,
-        messageHub
+        messageHub,
       })
     );
 
@@ -211,7 +211,7 @@ export default function* serversSaga() {
   const sagas = [
     serverAuthenticationSettingsUpdaterSaga(),
     enforceAuthenticationIfNeededSaga(),
-    authenticationResultNotifierSaga()
+    authenticationResultNotifierSaga(),
   ];
   yield all(sagas);
 }

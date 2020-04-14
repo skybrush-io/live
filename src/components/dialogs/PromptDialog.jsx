@@ -25,7 +25,7 @@ const PromptDialogForm = ({
   message,
   onCancel,
   onSubmit,
-  submitButtonLabel
+  submitButtonLabel,
 }) => (
   <Form initialValues={initialValues} onSubmit={onSubmit}>
     {({ handleSubmit }) => (
@@ -36,14 +36,14 @@ const PromptDialogForm = ({
             autoFocus
             fullWidth
             component={TextField}
-            name="value"
-            margin="dense"
-            id="value"
+            name='value'
+            margin='dense'
+            id='value'
             label={hintText}
           />
         </DialogContent>
         <DialogActions>
-          <Button color="primary" type="submit">
+          <Button color='primary' type='submit'>
             {submitButtonLabel}
           </Button>
           <Button onClick={onCancel}>{cancelButtonLabel}</Button>
@@ -60,7 +60,7 @@ PromptDialogForm.propTypes = {
   submitButtonLabel: PropTypes.string,
 
   onCancel: PropTypes.func,
-  onSubmit: PropTypes.func
+  onSubmit: PropTypes.func,
 };
 
 const PromptDialogPresentation = (props) => {
@@ -72,7 +72,7 @@ const PromptDialogPresentation = (props) => {
       onClose={onCancel}
     >
       {title ? (
-        <DialogTitle id="prompt-dialog-title">{title}</DialogTitle>
+        <DialogTitle id='prompt-dialog-title'>{title}</DialogTitle>
       ) : null}
       {dialogVisible && (
         <PromptDialogForm {...props} initialValues={{ value: initialValue }} />
@@ -85,7 +85,7 @@ PromptDialogPresentation.propTypes = {
   ...PromptDialogForm.propTypes,
   dialogVisible: PropTypes.bool,
   initialValue: PropTypes.string,
-  title: PropTypes.string
+  title: PropTypes.string,
 };
 
 const PromptDialog = connect(
@@ -99,7 +99,7 @@ const PromptDialog = connect(
 
     onSubmit(data) {
       dispatch(submitPromptDialog(data.value));
-    }
+    },
   })
 )(PromptDialogPresentation);
 

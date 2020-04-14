@@ -99,7 +99,7 @@ function createZIPResolver(zip) {
       // TODO: use strings only for JSON and YAML files; use some binary
       // encoding for embedded assets
       return zip.file(url.pathname).async('string');
-    }
+    },
   };
 }
 
@@ -123,9 +123,9 @@ export async function loadShowFromFile(file) {
   const showSpec = await RefParser.dereference(root, {
     resolve: {
       zip: {
-        ...createZIPResolver(zip)
-      }
-    }
+        ...createZIPResolver(zip),
+      },
+    },
   });
 
   validateShowSpecification(showSpec);

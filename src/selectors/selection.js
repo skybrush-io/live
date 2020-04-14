@@ -11,7 +11,7 @@ import { createSelector } from '@reduxjs/toolkit';
 import {
   globalIdToFeatureId,
   globalIdToOriginId,
-  globalIdToUavId
+  globalIdToUavId,
 } from '~/model/identifiers';
 
 /**

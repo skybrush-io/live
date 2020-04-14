@@ -6,15 +6,15 @@ const plugins = [];
 module.exports = merge.smart(baseConfig, {
   entry: ['@babel/polyfill', './src/desktop/preload/index.js'],
   output: {
-    filename: 'preload.bundle.js'
+    filename: 'preload.bundle.js',
   },
 
   node: {
     __dirname: false,
-    __filename: false
+    __filename: false,
   },
 
   plugins,
 
-  target: 'electron-renderer'
+  target: 'electron-renderer',
 });

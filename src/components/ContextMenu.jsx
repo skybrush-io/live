@@ -20,7 +20,7 @@ import MenuList from '@material-ui/core/MenuList';
 export default class ContextMenu extends React.Component {
   static propTypes = {
     children: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
-    contextProvider: PropTypes.func
+    contextProvider: PropTypes.func,
   };
 
   state = {
@@ -28,9 +28,9 @@ export default class ContextMenu extends React.Component {
     opening: false,
     position: {
       top: 0,
-      left: 0
+      left: 0,
     },
-    context: undefined
+    context: undefined,
   };
 
   /**
@@ -54,7 +54,7 @@ export default class ContextMenu extends React.Component {
       opening: true,
       open: false,
       context: contextProvider ? contextProvider(context) : context,
-      position
+      position,
     });
   }
 
@@ -67,7 +67,7 @@ export default class ContextMenu extends React.Component {
 
     this.setState({
       open: false,
-      opening: false
+      opening: false,
       // Don't set the context to undefined here -- you could be running into
       // strange problems with disappearing menu items during the animation
       // when the menu fades out
@@ -107,14 +107,14 @@ export default class ContextMenu extends React.Component {
             }
           : () => {
               this._handleClose();
-            }
+            },
       })
     );
 
     return (
       <Popover
         open={open || opening}
-        anchorReference="anchorPosition"
+        anchorReference='anchorPosition'
         anchorPosition={position}
         anchorOrigin={{ horizontal: 'left', vertical: 'bottom' }}
         onClose={this._handleClose}

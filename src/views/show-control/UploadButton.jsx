@@ -8,11 +8,11 @@ import UploadProgressBar from './UploadProgressBar';
 
 import ListItemTextWithProgress from '~/components/ListItemTextWithProgress';
 import StepperStatusLight, {
-  StepperStatus
+  StepperStatus,
 } from '~/components/StepperStatusLight';
 import {
   getUploadProgress,
-  isUploadInProgress
+  isUploadInProgress,
 } from '~/features/show/selectors';
 import { openUploadDialog } from '~/features/show/slice';
 import { getSetupStageStatuses } from '~/features/show/stages';
@@ -42,7 +42,7 @@ const UploadButton = ({ loading, status, ...rest }) => (
 UploadButton.propTypes = {
   loading: PropTypes.bool,
   onClick: PropTypes.func,
-  status: PropTypes.oneOf(Object.values(StepperStatus))
+  status: PropTypes.oneOf(Object.values(StepperStatus)),
 };
 
 export default connect(
@@ -50,10 +50,10 @@ export default connect(
   (state) => ({
     loading: isUploadInProgress(state),
     progress: getUploadProgress(state),
-    status: getSetupStageStatuses(state).uploadShow
+    status: getSetupStageStatuses(state).uploadShow,
   }),
   // mapDispatchToProps
   {
-    onClick: openUploadDialog
+    onClick: openUploadDialog,
   }
 )(UploadButton);

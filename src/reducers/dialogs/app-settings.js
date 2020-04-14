@@ -12,7 +12,7 @@ import u from 'updeep';
  */
 const defaultState = {
   open: false,
-  selectedTab: 'display'
+  selectedTab: 'display',
 };
 
 /**
@@ -28,7 +28,7 @@ const reducer = handleActions(
     CLOSE_APP_SETTINGS_DIALOG: (state) => u({ open: false }, state),
 
     SET_APP_SETTINGS_DIALOG_TAB: (state, action) =>
-      u({ selectedTab: action.payload }, state)
+      u({ selectedTab: action.payload }, state),
   },
   defaultState
 );

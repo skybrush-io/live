@@ -3,10 +3,10 @@
  * app window.
  */
 
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice } from '@reduxjs/toolkit';
 
 const { actions, reducer } = createSlice({
-  name: "sidebar",
+  name: 'sidebar',
 
   initialState: {
     open: false,

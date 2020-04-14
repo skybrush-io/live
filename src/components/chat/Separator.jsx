@@ -13,7 +13,7 @@ const lineStyle = (theme) => ({
   top: '50%',
   width: 9999,
   height: 1,
-  background: theme.palette.text.hint
+  background: theme.palette.text.hint,
 });
 
 const useStyles = makeStyles((theme) => ({
@@ -28,27 +28,27 @@ const useStyles = makeStyles((theme) => ({
       position: 'relative',
       display: 'inline-block',
       textTransform: 'uppercase',
-      fontSize: 'smaller'
+      fontSize: 'smaller',
     },
 
     '& > span:before': {
       right: '100%',
       marginRight: theme.spacing(0.5),
-      ...lineStyle(theme)
+      ...lineStyle(theme),
     },
 
     '& > span:after': {
       left: '100%',
       marginLeft: theme.spacing(0.5),
-      ...lineStyle(theme)
-    }
+      ...lineStyle(theme),
+    },
   },
 
   separator: {
     backgroundColor: theme.palette.text.hint,
     border: 'none',
-    height: 2
-  }
+    height: 2,
+  },
 }));
 
 const Separator = ({ message }) => {
@@ -63,7 +63,7 @@ const Separator = ({ message }) => {
 };
 
 Separator.propTypes = {
-  message: PropTypes.string
+  message: PropTypes.string,
 };
 
 export default Separator;

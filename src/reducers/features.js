@@ -88,7 +88,7 @@ const defaultState = {
     */
   },
 
-  order: []
+  order: [],
 };
 
 /**
@@ -132,7 +132,7 @@ const reducer = handleActions(
       return u(
         {
           byId: (oldFeatures) => Object.assign({}, oldFeatures, newFeature),
-          order: (oldOrder) => [].concat(oldOrder, [id])
+          order: (oldOrder) => [].concat(oldOrder, [id]),
         },
         state
       );
@@ -156,7 +156,7 @@ const reducer = handleActions(
     UPDATE_FEATURE_COORDINATES(state, action) {
       const { coordinates } = action.payload;
       const updates = mapValues(coordinates, (coordinate) => ({
-        points: coordinate
+        points: coordinate,
       }));
       return u({ byId: u(updates) }, state);
     },
@@ -164,10 +164,10 @@ const reducer = handleActions(
     UPDATE_FEATURE_VISIBILITY(state, action) {
       const { id, visible } = action.payload;
       const updates = {
-        [id]: { visible }
+        [id]: { visible },
       };
       return u({ byId: u(updates) }, state);
-    }
+    },
   },
   defaultState
 );

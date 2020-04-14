@@ -7,18 +7,18 @@ import { all, call, delay, put, select, take } from 'redux-saga/effects';
 
 import {
   getLocalServerExecutable,
-  getLocalServerSearchPath
+  getLocalServerSearchPath,
 } from './selectors';
 import {
   notifyLocalServerExecutableSearchStarted,
   notifyLocalServerExecutableSearchFinished,
   notifyLocalServerExecutableSearchFailed,
-  startLocalServerExecutableSearch
+  startLocalServerExecutableSearch,
 } from './slice';
 
 import {
   replaceAppSettings,
-  updateAppSettings
+  updateAppSettings,
 } from '~/features/settings/slice';
 
 /**
@@ -50,7 +50,7 @@ function* localServerExecutableDiscoverySaga(search) {
             return [undefined, String(error)];
           }
         }),
-        delay(minDuration)
+        delay(minDuration),
       ]);
 
       const [serverPath, err] = result[0];
@@ -68,7 +68,7 @@ function* localServerExecutableDiscoverySaga(search) {
     const action = yield take([
       replaceAppSettings.type,
       updateAppSettings.type,
-      startLocalServerExecutableSearch.type
+      startLocalServerExecutableSearch.type,
     ]);
 
     if (action.type === replaceAppSettings.type) {

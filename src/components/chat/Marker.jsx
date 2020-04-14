@@ -15,23 +15,23 @@ const useStyles = makeStyles((theme) => ({
     margin: theme.spacing(0.5, 0),
 
     '& .date': {
-      color: theme.palette.text.secondary
-    }
+      color: theme.palette.text.secondary,
+    },
   },
 
   'level-error': {
     '& .message': {
       fontWeight: 'bold',
-      color: theme.palette.error.main
-    }
+      color: theme.palette.error.main,
+    },
   },
 
   'level-warning': {
     '& .message': {
       fontWeight: 'bold',
-      color: theme.palette.warning.main
-    }
-  }
+      color: theme.palette.warning.main,
+    },
+  },
 }));
 
 /**
@@ -44,13 +44,13 @@ export const Marker = ({ date, level, message }) => {
     classes[`level-${level}`] || classes['level-info']
   );
   const dateComponent = date && (
-    <span className="date">
+    <span className='date'>
       <TimeAgo date={date} />
     </span>
   );
   return (
     <div className={className}>
-      <span className="message">{message}</span> {dateComponent}
+      <span className='message'>{message}</span> {dateComponent}
     </div>
   );
 };
@@ -58,12 +58,12 @@ export const Marker = ({ date, level, message }) => {
 Marker.propTypes = {
   level: PropTypes.string,
   message: PropTypes.string,
-  date: PropTypes.instanceOf(Date)
+  date: PropTypes.instanceOf(Date),
 };
 
 Marker.defaultProps = {
   level: 'info',
-  message: ''
+  message: '',
 };
 
 export default Marker;

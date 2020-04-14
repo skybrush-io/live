@@ -19,23 +19,23 @@ const useStyles = makeStyles(
       textTransform: 'uppercase',
       userSelect: 'none',
       whiteSpace: 'nowrap',
-      width: '100%'
+      width: '100%',
     },
 
     'status-info': {
       backgroundColor: Colors.info,
-      color: theme.palette.getContrastText(Colors.info)
+      color: theme.palette.getContrastText(Colors.info),
     },
 
     'status-success': {
       backgroundColor: Colors.success,
-      color: theme.palette.getContrastText(Colors.success)
+      color: theme.palette.getContrastText(Colors.success),
     },
 
     'status-warning': {
       backgroundColor: Colors.warning,
       color: theme.palette.getContrastText(Colors.warning),
-      fontWeight: 'bold'
+      fontWeight: 'bold',
     },
 
     'status-rth': {
@@ -43,13 +43,13 @@ const useStyles = makeStyles(
       animationDirection: 'alternate',
       backgroundColor: Colors.warning,
       color: theme.palette.getContrastText(Colors.warning),
-      fontWeight: 'bold'
+      fontWeight: 'bold',
     },
 
     'status-error': {
       backgroundColor: Colors.error,
       color: theme.palette.getContrastText(Colors.error),
-      fontWeight: 'bold'
+      fontWeight: 'bold',
     },
 
     'status-critical': {
@@ -57,17 +57,17 @@ const useStyles = makeStyles(
       animationDirection: 'alternate',
       backgroundColor: Colors.error,
       color: theme.palette.getContrastText(Colors.error),
-      fontWeight: 'bold'
+      fontWeight: 'bold',
     },
 
     '@keyframes flash': {
       '0%, 49%': {
-        opacity: 0.5
+        opacity: 0.5,
       },
       '50%, 100%': {
-        opacity: 1
-      }
-    }
+        opacity: 1,
+      },
+    },
   }),
   { name: 'SummaryPill' }
 );
@@ -94,12 +94,12 @@ SummaryPill.propTypes = {
     'warning',
     'rth',
     'error',
-    'critical'
-  ])
+    'critical',
+  ]),
 };
 
 SummaryPill.defaultProps = {
-  status: 'info'
+  status: 'info',
 };
 
 export default SummaryPill;

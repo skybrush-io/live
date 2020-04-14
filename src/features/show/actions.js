@@ -8,7 +8,7 @@ import {
   getFailedUploadItems,
   getFirstPointsOfTrajectoriesInWorldCoordinates,
   getLastPointsOfTrajectoriesInWorldCoordinates,
-  getOutdoorShowOrientation
+  getOutdoorShowOrientation,
 } from './selectors';
 import {
   approveTakeoffAreaAt,
@@ -17,14 +17,14 @@ import {
   setEnvironmentType,
   signOffOnManualPreflightChecksAt,
   signOffOnOnboardPreflightChecksAt,
-  _retryFailedUploads
+  _retryFailedUploads,
 } from './slice';
 
 import {
   updateHomePositions,
   updateLandingPositions,
   updateTakeoffHeadings,
-  setMappingLength
+  setMappingLength,
 } from '~/features/mission/slice';
 import { showSnackbarMessage } from '~/features/snackbar/slice';
 import { MessageSemantics } from '~/features/snackbar/types';
@@ -76,7 +76,7 @@ const createShowLoaderThunkFactory = (
     const onProgress = throttle((progress) => {
       dispatch({
         type: loadingProgress.type,
-        payload: progress
+        payload: progress,
       });
     }, 200);
     try {
@@ -90,7 +90,7 @@ const createShowLoaderThunkFactory = (
         showSnackbarMessage({
           message: errorMessage || 'Failed to load show.',
           semantics: MessageSemantics.ERROR,
-          permanent: true
+          permanent: true,
         })
       );
       console.error(error);
@@ -108,7 +108,7 @@ const createShowLoaderThunkFactory = (
 export const loadShowFromFile = createShowLoaderThunkFactory(
   (file) => processFile(file),
   {
-    errorMessage: 'Failed to load show from the given file.'
+    errorMessage: 'Failed to load show from the given file.',
   }
 );
 
@@ -126,12 +126,12 @@ export const loadShowFromUrl = createShowLoaderThunkFactory(
         if (info.totalBytes > 0) {
           onProgress(info.percent);
         }
-      }
+      },
     }).arrayBuffer();
     return processFile(response);
   },
   {
-    errorMessage: 'Failed to load show from the given URL.'
+    errorMessage: 'Failed to load show from the given URL.',
   }
 );
 

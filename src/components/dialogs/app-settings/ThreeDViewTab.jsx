@@ -17,43 +17,43 @@ import { updateAppSettings } from '~/features/settings/slice';
 const sceneries = [
   {
     id: 'day',
-    label: 'Day'
+    label: 'Day',
   },
   {
     id: 'night',
-    label: 'Night'
+    label: 'Night',
   },
   {
     id: 'indoor',
-    label: 'Indoor'
-  }
+    label: 'Indoor',
+  },
 ];
 
 const grids = [
   {
     id: 'none',
-    label: 'No grid'
+    label: 'No grid',
   },
   {
     id: '1x1',
-    label: '10x10 meters'
+    label: '10x10 meters',
   },
   {
     id: '2x2',
-    label: '20x20 meters'
-  }
+    label: '20x20 meters',
+  },
 ];
 
 const ThreeDViewTab = (props) => (
   <Box mb={2}>
     <FormGroup>
       <Header>Environment</Header>
-      <Box display="flex">
-        <FormControl fullWidth variant="filled">
-          <InputLabel id="threed-scenery-label">Scenery</InputLabel>
+      <Box display='flex'>
+        <FormControl fullWidth variant='filled'>
+          <InputLabel id='threed-scenery-label'>Scenery</InputLabel>
           <Select
-            labelId="threed-scenery-label"
-            name="scenery"
+            labelId='threed-scenery-label'
+            name='scenery'
             value={props.scenery}
             onChange={props.onFieldChanged}
           >
@@ -65,11 +65,11 @@ const ThreeDViewTab = (props) => (
           </Select>
         </FormControl>
         <Box px={1} />
-        <FormControl fullWidth variant="filled">
-          <InputLabel id="threed-grid-label">Grid</InputLabel>
+        <FormControl fullWidth variant='filled'>
+          <InputLabel id='threed-grid-label'>Grid</InputLabel>
           <Select
-            labelId="threed-grid-label"
-            name="grid"
+            labelId='threed-grid-label'
+            name='grid'
             value={props.grid}
             onChange={props.onFieldChanged}
           >
@@ -83,33 +83,33 @@ const ThreeDViewTab = (props) => (
       </Box>
 
       <FormControlLabel
-        label="Show coordinate system axes"
+        label='Show coordinate system axes'
         control={
           <Checkbox
             checked={props.showAxes}
-            name="showAxes"
+            name='showAxes'
             onChange={props.onCheckboxToggled}
           />
         }
       />
 
       <FormControlLabel
-        label="Show home positions"
+        label='Show home positions'
         control={
           <Checkbox
             checked={props.showHomePositions}
-            name="showHomePositions"
+            name='showHomePositions'
             onChange={props.onCheckboxToggled}
           />
         }
       />
 
       <FormControlLabel
-        label="Show landing positions"
+        label='Show landing positions'
         control={
           <Checkbox
             checked={props.showLandingPositions}
-            name="showLandingPositions"
+            name='showLandingPositions'
             onChange={props.onCheckboxToggled}
           />
         }
@@ -119,11 +119,11 @@ const ThreeDViewTab = (props) => (
     <FormGroup>
       <Header>Rendering</Header>
       <FormControlLabel
-        label="Show rendering statistics (advanced)"
+        label='Show rendering statistics (advanced)'
         control={
           <Checkbox
             checked={props.showStatistics}
-            name="showStatistics"
+            name='showStatistics'
             onChange={props.onCheckboxToggled}
           />
         }
@@ -140,20 +140,20 @@ ThreeDViewTab.propTypes = {
   showAxes: PropTypes.bool,
   showHomePositions: PropTypes.bool,
   showLandingPositions: PropTypes.bool,
-  showStatistics: PropTypes.bool
+  showStatistics: PropTypes.bool,
 };
 
 export default connect(
   // mapStateToProps
   (state) => ({
-    ...state.settings.threeD
+    ...state.settings.threeD,
   }),
   // mapDispatchToProps
   (dispatch) => ({
     onCheckboxToggled(event) {
       dispatch(
         updateAppSettings('threeD', {
-          [event.target.name]: event.target.checked
+          [event.target.name]: event.target.checked,
         })
       );
     },
@@ -161,9 +161,9 @@ export default connect(
     onFieldChanged(event) {
       dispatch(
         updateAppSettings('threeD', {
-          [event.target.name]: event.target.value
+          [event.target.name]: event.target.value,
         })
       );
-    }
+    },
   })
 )(ThreeDViewTab);

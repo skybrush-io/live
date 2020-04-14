@@ -17,18 +17,18 @@ import { shouldManageLocalServer } from '~/features/local-server/selectors';
 import {
   addServerFeature,
   clearServerFeatures,
-  setCurrentServerConnectionState
+  setCurrentServerConnectionState,
 } from '~/features/servers/slice';
 import {
   clearStartTimeAndMethod,
-  synchronizeShowSettings
+  synchronizeShowSettings,
 } from '~/features/show/slice';
 import { showSnackbarMessage } from '~/features/snackbar/slice';
 import handleError from '~/error-handling';
 import messageHub from '~/message-hub';
 import {
   ConnectionState,
-  handleConnectionInformationMessage
+  handleConnectionInformationMessage,
 } from '~/model/connections';
 import { handleClockInformationMessage } from '~/model/clocks';
 import { handleDockIdList } from '~/model/docks';
@@ -52,7 +52,7 @@ class LocalServerExecutor extends React.Component {
     args: PropTypes.string,
     onError: PropTypes.func,
     onStarted: PropTypes.func,
-    port: PropTypes.number
+    port: PropTypes.number,
   };
 
   constructor(props) {
@@ -70,7 +70,7 @@ class LocalServerExecutor extends React.Component {
     localServer
       .launch({
         args: parse(this.props.args),
-        port: this.props.port
+        port: this.props.port,
       })
       .then((events) => {
         this._processIsRunning = true;
@@ -176,7 +176,7 @@ class ServerConnectionManagerPresentation extends React.Component {
     onDisconnected: PropTypes.func,
     onLocalServerError: PropTypes.func,
     onLocalServerStarted: PropTypes.func,
-    onMessage: PropTypes.func
+    onMessage: PropTypes.func,
   };
 
   _bindSocketToHub = (socket) => {
@@ -212,7 +212,7 @@ class ServerConnectionManagerPresentation extends React.Component {
       onDisconnected,
       onLocalServerError,
       onLocalServerStarted,
-      onMessage
+      onMessage,
     } = this.props;
     const url = hostName
       ? `${protocol || proposeProtocol()}//${hostName}:${port}`
@@ -239,40 +239,40 @@ class ServerConnectionManagerPresentation extends React.Component {
         ) : null}
         <ReactSocket.Socket
           ref={this._bindSocketToHub}
-          name="serverSocket"
+          name='serverSocket'
           url={url}
           options={{
-            transports: ['websocket']
+            transports: ['websocket'],
           }}
         />
         <ReactSocket.Listener
-          socket="serverSocket"
-          event="connect"
+          socket='serverSocket'
+          event='connect'
           callback={onConnected}
         />
         <ReactSocket.Listener
-          socket="serverSocket"
-          event="connect_error"
+          socket='serverSocket'
+          event='connect_error'
           callback={onConnectionError}
         />
         <ReactSocket.Listener
-          socket="serverSocket"
-          event="connect_timeout"
+          socket='serverSocket'
+          event='connect_timeout'
           callback={onConnectionTimeout}
         />
         <ReactSocket.Listener
-          socket="serverSocket"
-          event="disconnect"
+          socket='serverSocket'
+          event='disconnect'
           callback={onDisconnected}
         />
         <ReactSocket.Listener
-          socket="serverSocket"
-          event="fw"
+          socket='serverSocket'
+          event='fw'
           callback={onMessage}
         />
         <ReactSocket.Listener
-          socket="serverSocket"
-          event="reconnect_attempt"
+          socket='serverSocket'
+          event='reconnect_attempt'
           callback={onConnecting}
         />
       </div>
@@ -305,7 +305,7 @@ async function executeTasksAfterConnection(dispatch) {
     // via a CONN-INF message
     response = await messageHub.sendMessage({
       type: 'CONN-INF',
-      ids: connectionIds
+      ids: connectionIds,
     });
     handleConnectionInformationMessage(response.body, dispatch);
 
@@ -323,7 +323,7 @@ async function executeTasksAfterConnection(dispatch) {
     // list of docking stations
     response = await messageHub.sendMessage({
       type: 'OBJ-LIST',
-      filter: ['dock']
+      filter: ['dock'],
     });
     handleDockIdList(response.body.ids || [], dispatch);
 
@@ -375,7 +375,7 @@ const ServerConnectionManager = connect(
     hostName: state.dialogs.serverSettings.hostName,
     needsLocalServer: shouldManageLocalServer(state),
     port: state.dialogs.serverSettings.port,
-    protocol: state.dialogs.serverSettings.isSecure ? 'https:' : 'http:'
+    protocol: state.dialogs.serverSettings.isSecure ? 'https:' : 'http:',
   }),
   // mapDispatchToProps
   (dispatch) => ({
@@ -388,7 +388,7 @@ const ServerConnectionManager = connect(
       dispatch(
         showSnackbarMessage({
           message: 'Connected to Skybrush server',
-          semantics: 'info'
+          semantics: 'info',
         })
       );
       dispatch(setCurrentServerConnectionState(ConnectionState.CONNECTED));
@@ -407,7 +407,7 @@ const ServerConnectionManager = connect(
       dispatch(
         showSnackbarMessage({
           message: 'Timeout while connecting to Skybrush server',
-          semantics: 'error'
+          semantics: 'error',
         })
       );
     },
@@ -429,7 +429,7 @@ const ServerConnectionManager = connect(
       dispatch(
         showSnackbarMessage({
           message: message ? `${baseMessage}: ${message}` : baseMessage,
-          semantics: 'error'
+          semantics: 'error',
         })
       );
     },
@@ -440,7 +440,7 @@ const ServerConnectionManager = connect(
 
     onMessage(data) {
       messageHub.processIncomingMessage(data);
-    }
+    },
   })
 )(ServerConnectionManagerPresentation);
 

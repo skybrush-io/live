@@ -11,7 +11,7 @@ import { createSlice } from '@reduxjs/toolkit';
 import {
   addItemToFront,
   createNewItemInFrontOf,
-  replaceItemOrAddToFront
+  replaceItemOrAddToFront,
 } from '~/utils/collections';
 
 const { actions, reducer } = createSlice({
@@ -25,25 +25,25 @@ const { actions, reducer } = createSlice({
         name: 'Farkashegy Airfield',
         center: {
           lon: 18.915125,
-          lat: 47.486305
+          lat: 47.486305,
         },
         rotation: 59,
-        zoom: 17
+        zoom: 17,
       },
       elte: {
         id: 'elte',
         name: 'ELTE Garden',
         center: {
           lon: 19.061951,
-          lat: 47.47334
+          lat: 47.47334,
         },
         rotation: 0,
-        zoom: 17
-      }
+        zoom: 17,
+      },
     },
 
     // Order defines the preferred ordering of locations on the UI
-    order: ['fahegy', 'elte']
+    order: ['fahegy', 'elte'],
   },
 
   reducers: {
@@ -64,15 +64,15 @@ const { actions, reducer } = createSlice({
 
     updateSavedLocation(state, action) {
       return replaceItemOrAddToFront(state, action.payload);
-    }
-  }
+    },
+  },
 });
 
 export const {
   addSavedLocation,
   createNewSavedLocation,
   deleteSavedLocation,
-  updateSavedLocation
+  updateSavedLocation,
 } = actions;
 
 export default reducer;

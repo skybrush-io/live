@@ -13,7 +13,7 @@ import { Circle, Fill, Stroke, Style, Text } from 'ol/style';
 const _markerSizeToRadius = {
   small: 10,
   medium: 15,
-  large: 20
+  large: 20,
 };
 
 /**
@@ -33,7 +33,7 @@ export function convertSimpleStyleToOLStyle(style, defaults) {
     'stroke-opacity': 1,
     'stroke-width': 2,
     ...defaults,
-    ...style
+    ...style,
   };
   const hasStroke = realStyle.stroke !== undefined;
   const hasFill = realStyle.fill !== undefined;
@@ -56,13 +56,13 @@ export function convertSimpleStyleToOLStyle(style, defaults) {
   if (strokeColor) {
     styleProps.stroke = new Stroke({
       color: strokeColor.array(),
-      width: Number(realStyle['stroke-width'])
+      width: Number(realStyle['stroke-width']),
     });
   }
 
   if (fillColor) {
     styleProps.fill = new Fill({
-      color: fillColor.array()
+      color: fillColor.array(),
     });
   }
 
@@ -75,12 +75,12 @@ export function convertSimpleStyleToOLStyle(style, defaults) {
         : _markerSizeToRadius.medium;
     styleProps.image = new Circle({
       fill: new Fill({
-        color: markerColor.array()
+        color: markerColor.array(),
       }),
       stroke: new Stroke({
-        color: markerColor.blacken(0.5)
+        color: markerColor.blacken(0.5),
       }),
-      radius: markerSizeInPixels / 2
+      radius: markerSizeInPixels / 2,
     });
   }
 
@@ -89,12 +89,12 @@ export function convertSimpleStyleToOLStyle(style, defaults) {
       text: title,
       font: 'normal 14px Arial',
       fill: new Fill({
-        color: '#ffffff'
+        color: '#ffffff',
       }),
       stroke: new Stroke({
         color: '#000000',
-        width: 2
-      })
+        width: 2,
+      }),
     });
   }
 

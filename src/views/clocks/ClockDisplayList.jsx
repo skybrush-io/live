@@ -20,19 +20,19 @@ import { getClocksWithUpdateIntervalsInOrder } from '~/features/clocks/selectors
 import {
   formatClockLabel,
   formatTicksOnClock,
-  getCurrentTickCountOnClock
+  getCurrentTickCountOnClock,
 } from '~/features/clocks/utils';
 
 /**
  * Avatars for stopped and running clocks.
  */
 const avatars = [
-  <Avatar key="stop" style={{ backgroundColor: red.A700 }}>
+  <Avatar key='stop' style={{ backgroundColor: red.A700 }}>
     <Stop />
   </Avatar>,
-  <Avatar key="play" style={{ backgroundColor: green[500] }}>
+  <Avatar key='play' style={{ backgroundColor: green[500] }}>
     <PlayArrow />
-  </Avatar>
+  </Avatar>,
 ];
 
 /**
@@ -88,15 +88,15 @@ ClockDisplayListEntry.propTypes = {
      * in milliseconds. The clock display will be refreshed once in every
      * X milliseconds.
      */
-    updateInterval: PropTypes.number.isRequired
+    updateInterval: PropTypes.number.isRequired,
   }),
 
   /** The format to use for displaying the clock value */
-  format: PropTypes.oneOfType([PropTypes.string, PropTypes.func])
+  format: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
 };
 
 ClockDisplayListEntry.defaultProps = {
-  format: 'YYYY-MM-DD HH:mm:ss Z'
+  format: 'YYYY-MM-DD HH:mm:ss Z',
 };
 
 /**
@@ -109,7 +109,7 @@ const ClockDisplayListPresentation = listOf(
   (clock) => <ClockDisplayListEntry key={clock.id} clock={clock} />,
   {
     dataProvider: 'clocks',
-    backgroundHint: 'No clocks'
+    backgroundHint: 'No clocks',
   }
 );
 ClockDisplayListPresentation.displayName = 'ClockDisplayListPresentation';
@@ -122,7 +122,7 @@ const ClockDisplayList = connect(
   // mapStateToProps
   (state) => ({
     clocks: getClocksWithUpdateIntervalsInOrder(state),
-    dense: true
+    dense: true,
   }),
   // mapDispatchToProps
   undefined

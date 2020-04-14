@@ -2,7 +2,7 @@ import React from 'react';
 import Badge from 'react-badger';
 
 const badgeProps = {
-  offset: [8, 8]
+  offset: [8, 8],
 };
 
 /**

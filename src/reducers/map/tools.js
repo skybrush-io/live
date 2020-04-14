@@ -8,7 +8,7 @@ import { handleActions } from 'redux-actions';
  * The default selected tool.
  */
 const defaultState = {
-  selectedTool: 'select'
+  selectedTool: 'select',
 };
 
 /**
@@ -18,9 +18,9 @@ const reducer = handleActions(
   {
     SELECT_MAP_TOOL(state, action) {
       return Object.assign({}, state, {
-        selectedTool: action.payload
+        selectedTool: action.payload,
       });
-    }
+    },
   },
   defaultState
 );

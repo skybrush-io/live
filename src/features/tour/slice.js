@@ -3,10 +3,10 @@
  * the first time the user starts up the application.
  */
 
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice } from '@reduxjs/toolkit';
 
 const { actions, reducer } = createSlice({
-  name: "tour",
+  name: 'tour',
 
   initialState: {
     isOpen: false,

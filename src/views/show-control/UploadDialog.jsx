@@ -23,7 +23,7 @@ import { getUAVIdsParticipatingInMission } from '~/features/mission/selectors';
 import { retryFailedUploads } from '~/features/show/actions';
 import {
   getItemsInUploadBacklog,
-  getNumberOfDronesInShow
+  getNumberOfDronesInShow,
 } from '~/features/show/selectors';
 import {
   cancelUpload,
@@ -32,7 +32,7 @@ import {
   dismissLastUploadResult,
   prepareForNextUpload,
   setUploadTarget,
-  startUpload
+  startUpload,
 } from '~/features/show/slice';
 import { getSelectedUAVIds } from '~/selectors/selection';
 
@@ -45,13 +45,13 @@ const UploadResultIndicator = ({ onDismiss, result, ...rest }) => {
 
   const alertProps = {
     variant: 'filled',
-    onClose: onDismiss
+    onClose: onDismiss,
   };
 
   switch (result) {
     case 'success':
       alert = (
-        <Alert severity="success" {...alertProps}>
+        <Alert severity='success' {...alertProps}>
           Upload finished successfully.
         </Alert>
       );
@@ -59,7 +59,7 @@ const UploadResultIndicator = ({ onDismiss, result, ...rest }) => {
 
     case 'cancelled':
       alert = (
-        <Alert severity="warning" {...alertProps}>
+        <Alert severity='warning' {...alertProps}>
           Upload cancelled by user.
         </Alert>
       );
@@ -67,7 +67,7 @@ const UploadResultIndicator = ({ onDismiss, result, ...rest }) => {
 
     case 'error':
       alert = (
-        <Alert severity="error" {...alertProps}>
+        <Alert severity='error' {...alertProps}>
           Upload attempt failed.
         </Alert>
       );
@@ -75,7 +75,7 @@ const UploadResultIndicator = ({ onDismiss, result, ...rest }) => {
 
     default:
       alert = (
-        <Alert severity="info" {...alertProps}>
+        <Alert severity='info' {...alertProps}>
           Upload not finished yet.
         </Alert>
       );
@@ -91,20 +91,20 @@ const UploadResultIndicator = ({ onDismiss, result, ...rest }) => {
 
 UploadResultIndicator.propTypes = {
   onDismiss: PropTypes.func,
-  result: PropTypes.oneOf(['success', 'error', 'cancelled'])
+  result: PropTypes.oneOf(['success', 'error', 'cancelled']),
 };
 
 const useStyles = makeStyles((theme) => ({
   actions: {
-    padding: theme.spacing(1, 3, 3, 3)
+    padding: theme.spacing(1, 3, 3, 3),
   },
   uploadResultIndicator: {
     position: 'absolute',
     top: 0,
     left: theme.spacing(2),
     right: theme.spacing(2),
-    boxShadow: theme.shadows[2]
-  }
+    boxShadow: theme.shadows[2],
+  },
 }));
 
 /**
@@ -129,37 +129,37 @@ const UploadDialog = ({
   running,
   selectedUAVIds,
   showLastUploadResult,
-  uploadTarget
+  uploadTarget,
 }) => {
   const classes = useStyles();
 
   return (
-    <Dialog fullWidth open={open} maxWidth="sm" onClose={onClose}>
+    <Dialog fullWidth open={open} maxWidth='sm' onClose={onClose}>
       <DialogContent>
         <DronePlaceholderList
-          title="Queued:"
+          title='Queued:'
           items={itemsInBacklog}
-          emptyMessage="No drones in upload queue."
+          emptyMessage='No drones in upload queue.'
           actions={
             isEmpty(itemsWaitingToStart) ? null : (
-              <IconButton edge="end" onClick={onClearUploadQueue}>
+              <IconButton edge='end' onClick={onClearUploadQueue}>
                 <Clear />
               </IconButton>
             )
           }
         />
         <DronePlaceholderList
-          title="In progress:"
+          title='In progress:'
           items={itemsInProgress}
-          emptyMessage="No uploads are in progress."
+          emptyMessage='No uploads are in progress.'
         />
         <DronePlaceholderList
-          title="Failed:"
+          title='Failed:'
           items={failedItems}
-          emptyMessage="No failures."
+          emptyMessage='No failures.'
           actions={
             isEmpty(failedItems) ? null : (
-              <IconButton edge="end" onClick={onRetryFailedUploads}>
+              <IconButton edge='end' onClick={onRetryFailedUploads}>
                 <Refresh />
               </IconButton>
             )
@@ -179,7 +179,7 @@ const UploadDialog = ({
       <DialogActions className={classes.actions}>
         {running ? (
           <Button
-            color="secondary"
+            color='secondary'
             startIcon={<Clear />}
             onClick={onCancelUpload}
           >
@@ -217,14 +217,14 @@ UploadDialog.propTypes = {
   running: PropTypes.bool,
   selectedUAVIds: PropTypes.arrayOf(PropTypes.string),
   showLastUploadResult: PropTypes.bool,
-  uploadTarget: PropTypes.oneOf(['all', 'selected'])
+  uploadTarget: PropTypes.oneOf(['all', 'selected']),
 };
 
 UploadDialog.defaultProps = {
   open: false,
   running: false,
   showLastUploadResult: false,
-  uploadTarget: 'all'
+  uploadTarget: 'all',
 };
 
 // TODO(ntamas): most selectors should return a combination of show and
@@ -237,7 +237,7 @@ export default connect(
     ...state.show.upload,
     canStartUpload: getNumberOfDronesInShow(state) > 0,
     itemsInBacklog: getItemsInUploadBacklog(state),
-    selectedUAVIds: getSelectedUAVIds(state)
+    selectedUAVIds: getSelectedUAVIds(state),
   }),
 
   // mapDispatchToProps
@@ -270,6 +270,6 @@ export default connect(
       if (canStart) {
         dispatch(startUpload());
       }
-    }
+    },
   }
 )(UploadDialog);

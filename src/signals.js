@@ -37,7 +37,7 @@ export function fitCoordinatesIntoMapView(coordinates, options) {
   const { margin, ...rest } = {
     margin: 16,
     duration: 500,
-    ...options
+    ...options,
   };
   /*
     .map(uav => mapViewCoordinateFromLonLat([uav.lon, uav.lat]))
@@ -66,7 +66,7 @@ export function fitCoordinatesIntoMapView(coordinates, options) {
 export function scrollToMapLocation(coordinate, options) {
   const signalOptions = {
     duration: 500,
-    ...options
+    ...options,
   };
 
   const coord = coordinateToLonLat(coordinate);
@@ -88,5 +88,5 @@ export default {
   mapViewToLocationSignal,
   mapViewToExtentSignal,
 
-  focusMessagesDialogUAVSelectorFieldSignal
+  focusMessagesDialogUAVSelectorFieldSignal,
 };
