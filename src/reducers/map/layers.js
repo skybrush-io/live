@@ -12,7 +12,7 @@ import {
   LayerType,
   createNewLayer,
   labelForLayerType,
-  defaultParametersForLayerType
+  defaultParametersForLayerType,
 } from '~/model/layers';
 import { copyAndDeleteItemById, getKey } from '~/utils/collections';
 import { chooseUniqueId, chooseUniqueName } from '~/utils/naming';
@@ -27,10 +27,9 @@ const defaultState = {
     features: createNewLayer('features', LayerType.FEATURES, 'Features'),
     home: createNewLayer('home', LayerType.HOME, 'Home position'),
     uavs: createNewLayer('uavs', LayerType.UAVS, 'UAVs'),
-    docks: createNewLayer('docks', LayerType.DOCKS, 'Docking stations')
   },
   // .order contains the order of the layers, from bottom to top
-  order: ['base', 'features', 'home', 'uavs', 'docks']
+  order: ['base', 'features', 'home', 'uavs'],
 };
 
 /**
@@ -66,7 +65,7 @@ const reducer = handleActions(
       return u(
         {
           byId: (oldLayers) => Object.assign({}, oldLayers, newLayer),
-          order: (oldOrder) => [].concat(oldOrder, [id])
+          order: (oldOrder) => [].concat(oldOrder, [id]),
         },
         state
       );
@@ -107,7 +106,7 @@ const reducer = handleActions(
           type,
           label,
           parameters: () => defaultParametersForLayerType(type),
-          visible: true
+          visible: true,
         };
         return u({ byId: layerUpdate }, state);
       }
@@ -152,7 +151,7 @@ const reducer = handleActions(
         (value) => !value,
         state
       );
-    }
+    },
   },
   defaultState
 );
