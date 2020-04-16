@@ -5,7 +5,7 @@
   "description": "Web frontend for a Skybrush server",
   "main": "launcher.bundle.js",
   "scripts": {
-    "bundle": "rimraf build && webpack --mode=production --progress --config webpack/dist.config.js",
+    "bundle": "rimraf build && cross-env NODE_ENV=production webpack --mode=production --progress --config webpack/dist.config.js",
     "dist": "node scripts/deploy.js -p",
     "doc": "esdoc -c esdoc.json",
     "lint": "xo",
@@ -140,6 +140,7 @@
     "@babel/preset-react": "^7.9.4",
     "babel-eslint": "^10.1.0",
     "babel-loader": "^8.1.0",
+    "cross-env": "^7.0.2",
     "css-loader": "^3.5.1",
     "dotenv-webpack": "^1.7.0",
     "electron": "^8.2.1",
