@@ -42,7 +42,9 @@ export default class RotationField extends React.Component {
   };
 
   componentWillUnmount() {
-    this._onMaybeCommitValue({ mounted: false });
+    const { dirty, originalText, text } = this.state;
+    const shownText = dirty ? text : originalText;
+    this._onMaybeCommitValue({ mounted: false, text: shownText });
   }
 
   render() {
@@ -133,12 +135,12 @@ export default class RotationField extends React.Component {
   };
 
   _validate = (text) => {
-    const value = normalizeAngle(Number.parseFloat(text));
+    const value = Number.parseFloat(text);
     const hasError = Number.isNaN(value);
     this.setState({
       error: hasError ? 'Not a valid angle' : undefined,
     });
 
-    return [!hasError, value];
+    return [!hasError, normalizeAngle(value)];
   };
 }
