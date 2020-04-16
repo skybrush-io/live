@@ -16,7 +16,7 @@ module.exports = merge.smart(baseConfig, {
 
   output: {
     publicPath: '_/',
-    path: path.resolve(outputDir, '_'),
+    path: path.resolve(outputDir, '_')
   },
 
   resolve: {
@@ -30,6 +30,7 @@ module.exports = merge.smart(baseConfig, {
     new HtmlWebpackPlugin({
       template: path.resolve(projectRoot, 'index.html'),
       filename: path.resolve(outputDir, 'index.html'),
+      hash: true, /* for cache busting */
       title:
         'Skybrush Live | The Next-generation Drone Light Show Software Suite',
     }),
