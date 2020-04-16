@@ -6,7 +6,7 @@
 import round from 'lodash-es/round';
 import { isEmpty } from 'ol/extent';
 
-import { toRadians } from '~/utils/math';
+import { toDegrees, toRadians } from '~/utils/math';
 
 import {
   mapReferenceRequestSignal,
