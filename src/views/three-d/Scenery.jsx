@@ -70,6 +70,7 @@ Scenery.propTypes = {
 
 Scenery.defaultProps = {
   scale: 1,
+  type: 'night'
 };
 
 export default memo(Scenery);
