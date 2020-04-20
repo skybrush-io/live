@@ -19,7 +19,7 @@ import {
   addVirtualDronesForMission,
   augmentMappingAutomaticallyFromSpareDrones,
 } from '~/features/mission/actions';
-import { getEmptyMappingSlotIndices } from '~/features/mission/selectors';
+import { getEmptyMappingSlotIndices, hasNonemptyMappingSlot } from '~/features/mission/selectors';
 import { supportsVirtualDrones } from '~/features/servers/selectors';
 import { approveTakeoffArea } from '~/features/show/actions';
 import { isTakeoffAreaApproved } from '~/features/show/selectors';
@@ -55,15 +55,18 @@ EmptySlotsIndicator.propTypes = {
  * slot such that the UAV itself does not seem to exist (i.e. we have received no
  * status report about them).
  */
-const MissingDronesIndicator = ({ uavIds }) => (
+const MissingDronesIndicator = ({ hasNonemptyMappingSlot, uavIds }) => (
   <DronePlaceholderList
     items={uavIds}
     title='Missing:'
     successMessage='All drones in the mapping are online.'
+    emptyMessage='There are no drones in the mapping.'
+    preferEmptyMessage={!hasNonemptyMappingSlot}
   />
 );
 
 MissingDronesIndicator.propTypes = {
+  hasNonemptyMappingSlot: PropTypes.bool,
   uavIds: PropTypes.arrayOf(PropTypes.string),
 };
 
@@ -71,15 +74,18 @@ MissingDronesIndicator.propTypes = {
  * Presentation component that shows which UAVs seem to be placed at the wrong
  * place (far from its takeoff position).
  */
-const MisplacedDronesIndicator = ({ uavIds }) => (
+const MisplacedDronesIndicator = ({ hasNonemptyMappingSlot, uavIds }) => (
   <DronePlaceholderList
     items={uavIds}
     title='Misplaced:'
     successMessage='All drones are placed at their takeoff positions.'
+    emptyMessage='There are no drones in the mapping.'
+    preferEmptyMessage={!hasNonemptyMappingSlot}
   />
 );
 
 MisplacedDronesIndicator.propTypes = {
+  hasNonemptyMappingSlot: PropTypes.bool,
   uavIds: PropTypes.arrayOf(PropTypes.string),
 };
 
@@ -87,15 +93,18 @@ MisplacedDronesIndicator.propTypes = {
  * Presentation component that shows which UAVs seem to be facing the wrong
  * direction.
  */
-const MisalignedDronesIndicator = ({ uavIds }) => (
+const MisalignedDronesIndicator = ({ hasNonemptyMappingSlot, uavIds }) => (
   <DronePlaceholderList
     items={uavIds}
     title='Misaligned:'
     successMessage='All drones are facing the correct direction.'
+    emptyMessage='There are no drones in the mapping.'
+    preferEmptyMessage={!hasNonemptyMappingSlot}
   />
 );
 
 MisalignedDronesIndicator.propTypes = {
+  hasNonemptyMappingSlot: PropTypes.bool,
   uavIds: PropTypes.arrayOf(PropTypes.string),
 };
 
@@ -106,6 +115,7 @@ MisalignedDronesIndicator.propTypes = {
 const TakeoffAreaSetupDialog = ({
   approved,
   emptySlotIndices,
+  hasNonemptyMappingSlot,
   hasVirtualDrones,
   missingUAVIds,
   misplacedUAVIds,
@@ -135,9 +145,9 @@ const TakeoffAreaSetupDialog = ({
 
     <DialogContent>
       <EmptySlotsIndicator indices={emptySlotIndices} />
-      <MissingDronesIndicator uavIds={missingUAVIds} />
-      <MisplacedDronesIndicator uavIds={misplacedUAVIds} />
-      <MisalignedDronesIndicator uavIds={misalignedUAVIds} />
+      <MissingDronesIndicator uavIds={missingUAVIds} hasNonemptyMappingSlot={hasNonemptyMappingSlot} />
+      <MisplacedDronesIndicator uavIds={misplacedUAVIds} hasNonemptyMappingSlot={hasNonemptyMappingSlot} />
+      <MisalignedDronesIndicator uavIds={misalignedUAVIds} hasNonemptyMappingSlot={hasNonemptyMappingSlot} />
 
       <Box className='bottom-bar' textAlign='center' mt={2} pt={2}>
         <FormControlLabel
@@ -159,6 +169,7 @@ const TakeoffAreaSetupDialog = ({
 TakeoffAreaSetupDialog.propTypes = {
   approved: PropTypes.bool,
   emptySlotIndices: PropTypes.arrayOf(PropTypes.number),
+  hasNonemptyMappingSlot: PropTypes.bool,
   hasVirtualDrones: PropTypes.bool,
   missingUAVIds: PropTypes.arrayOf(PropTypes.string),
   misplacedUAVIds: PropTypes.arrayOf(PropTypes.string),
@@ -191,6 +202,7 @@ export default connect(
       ...state.show.takeoffAreaSetupDialog,
       approved: isTakeoffAreaApproved(state),
       emptySlotIndices: getEmptyMappingSlotIndices(state),
+      hasNonemptyMappingSlot: hasNonemptyMappingSlot(state),
       hasVirtualDrones: supportsVirtualDrones(state),
       missingUAVIds: getMissingUAVIdsInMapping(state),
       misplacedUAVIds: getMisplacedUAVIds(state),

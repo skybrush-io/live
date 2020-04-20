@@ -17,6 +17,7 @@ const DronePlaceholderList = ({
   emptyMessage,
   items = [],
   maxCount,
+  preferEmptyMessage,
   successMessage,
   title,
 }) => (
@@ -44,7 +45,7 @@ const DronePlaceholderList = ({
         </Box>
       ) : null}
       {items.length === 0 ? (
-        successMessage ? (
+        (successMessage && !preferEmptyMessage) ? (
           <>
             <Box key='ok' ml={title ? 1 : 0}>
               <DronePlaceholder label='OK' status='success' />
@@ -85,6 +86,7 @@ DronePlaceholderList.propTypes = {
     PropTypes.oneOfType([PropTypes.number, PropTypes.string])
   ),
   maxCount: PropTypes.number,
+  preferEmptyMessage: PropTypes.bool,
   successMessage: PropTypes.node,
   title: PropTypes.string,
 };

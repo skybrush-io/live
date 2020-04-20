@@ -94,6 +94,14 @@ export const getUAVIdsParticipatingInMission = createSelector(
 );
 
 /**
+ * Returns whether there is at least one non-empty mapping slot in the mapping.
+ */
+export const hasNonemptyMappingSlot = createSelector(
+  getMissionMapping,
+  (mapping) => mapping ? !mapping.every(isNil) : false
+);
+
+/**
  * Returns whether it currently makes sense to enable the "augment mapping from
  * current drone positions automatically" button. This action makes sense only
  * if there is at least one spare drone, at least one empty slot in the mapping
