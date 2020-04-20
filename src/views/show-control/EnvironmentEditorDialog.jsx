@@ -66,7 +66,7 @@ const EnvironmentEditorDialog = ({
       <Instructions type={type} />
 
       <FormGroup>
-        <FormHeader>Coordinate system</FormHeader>
+        <FormHeader>Coordinate system of show</FormHeader>
         {type === 'outdoor' && (
           <CoordinateSystemFields
             type={COORDINATE_SYSTEM_TYPE}

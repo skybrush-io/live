@@ -118,7 +118,7 @@ class MapContextMenu extends React.Component {
                 <ListItemIcon>
                   <Flight />
                 </ListItemIcon>
-                \n Fly here at altitude…\n
+                Fly here at altitude…
               </MenuItem>,
               <Divider key='div1' />,
               <MenuItem key='takeoff' dense onClick={this._takeoffSelectedUAVs}>
