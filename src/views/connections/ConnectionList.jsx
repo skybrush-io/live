@@ -20,7 +20,7 @@ import ContentClear from '@material-ui/icons/Clear';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
-import TimeAgo from 'react-time-ago';
+import TimeAgo from 'react-timeago';
 
 import { showServerSettingsDialog } from '~/actions/server-settings';
 import { listOf } from '~/components/helpers/lists';

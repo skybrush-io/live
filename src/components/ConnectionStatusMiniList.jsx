@@ -2,7 +2,7 @@ import partial from 'lodash-es/partial';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
-import TimeAgo from 'react-time-ago';
+import TimeAgo from 'react-timeago';
 
 import Box from '@material-ui/core/Box';
 import ListItem from '@material-ui/core/ListItem';
@@ -17,6 +17,8 @@ import { listOf } from '~/components/helpers/lists';
 import TransparentList from '~/components/TransparentList';
 import { ConnectionState } from '~/model/connections';
 import { getConnectionsInOrder } from '~/selectors/ordered';
+
+const shortFormatter = (value, unit) => unit == "month" ? `${value}mo` : `${value}${unit.charAt(0)}`;
 
 /**
  * Icons for the different connection states in the connection list.
@@ -50,7 +52,7 @@ const ConnectionStatusMiniListEntry = ({ id, name, state, stateChangedAt }) => (
     <Box display='flex' flexDirection='row' flexGrow={1}>
       <Box flexGrow={1}>{name}</Box>
       <Box color='text.secondary' ml={1}>
-        <TimeAgo timeStyle='twitter' date={stateChangedAt} />
+        <TimeAgo formatter={shortFormatter} date={stateChangedAt} />
       </Box>
     </Box>
   </ListItem>

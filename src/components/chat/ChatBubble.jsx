@@ -5,7 +5,7 @@
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import React from 'react';
-import TimeAgo from 'react-time-ago';
+import TimeAgo from 'react-timeago';
 
 import { blue, grey } from '@material-ui/core/colors';
 import { makeStyles } from '@material-ui/core/styles';
