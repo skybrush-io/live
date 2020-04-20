@@ -103,7 +103,7 @@ const MapViewLayers = connect(
 const MapViewControlsPresentation = (props) => {
   const result = [
     <control.Zoom key='control.Zoom' />,
-    <control.Attribution key='control.Attribution' collapseLabel='&laquo;' />,
+    <control.Attribution collapsed key='control.Attribution' collapseLabel='&laquo;' />,
   ];
 
   if (props.showMouseCoordinates) {
