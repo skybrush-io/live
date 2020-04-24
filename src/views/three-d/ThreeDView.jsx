@@ -59,6 +59,7 @@ const ThreeDView = React.forwardRef((props, ref) => {
       loading-screen='backgroundColor: #444; dotsColor: #888'
       renderer='antialias: false'
       vr-mode-ui='enabled: false'
+      device-orientation-permission-ui='enabled: false'
       {...extraSceneProps}
     >
       <a-assets>
