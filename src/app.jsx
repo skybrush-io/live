@@ -52,6 +52,7 @@ const rootInnerStyle = {
  */
 const restoreWorkbench = (setShowSplashScreen) => async () => {
   const state = store.getState();
+
   if (state && state.workbench && state.workbench.state) {
     workbench.restoreState(state.workbench.state);
   }
@@ -124,6 +125,12 @@ const App = () => {
 };
 
 /**
+ * Placeholder component to render when a panel is being dragged from the
+ * sidebar to the workbench.
+ */
+const DragProxy = () => <div />;
+
+/**
  * The context provider for the main application component and the
  * individual application panels.
  *
@@ -135,17 +142,25 @@ const enhancer = (Component) =>
     static displayName = 'WorkbenchRoot';
 
     render() {
-      return (
-        <ErrorBoundary FallbackComponent={ErrorHandler}>
-          <StoreProvider store={store}>
-            <ThemeProvider>
-              <Flock.Provider value={flock}>
-                <Component {...this.props} />
-              </Flock.Provider>
-            </ThemeProvider>
-          </StoreProvider>
-        </ErrorBoundary>
-      );
+      if (this.props.glDragging) {
+        return (
+          <ErrorBoundary FallbackComponent={ErrorHandler}>
+            <DragProxy />
+          </ErrorBoundary>
+        );
+      } else {
+        return (
+          <ErrorBoundary FallbackComponent={ErrorHandler}>
+            <StoreProvider store={store}>
+              <ThemeProvider>
+                <Flock.Provider value={flock}>
+                  <Component {...this.props} />
+                </Flock.Provider>
+              </ThemeProvider>
+            </StoreProvider>
+          </ErrorBoundary>
+        );
+      }
     }
   };
 

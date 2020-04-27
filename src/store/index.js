@@ -24,6 +24,7 @@ import {
 
 import { loadingPromiseFulfilled } from '../features/show/slice';
 import { updateAgesOfUAVs, updateUAVs } from '../features/uavs/slice';
+import { saveWorkbenchState } from '../features/workbench/slice';
 import reducer from '../reducers';
 
 import { defaultStateReconciler, pristineReconciler } from './reconciler';
@@ -128,11 +129,11 @@ const store = configureStore({
     ...getDefaultMiddleware({
       immutableCheck: {
         // Checking the show specification takes a long time and it should not
-        // be necessary anyway
-        ignore: ['show.data'],
+        // be necessary anyway; same for the workbench state
+        ignore: ['show.data', 'workbench'],
         // ignore was renamed to ignoredPaths in newer versions of the middleware.
         // Let's specify both to be on the safe side.
-        ignoredPaths: ['show.data'],
+        ignoredPaths: ['show.data', 'workbench'],
       },
 
       serializableCheck: {
@@ -146,11 +147,11 @@ const store = configureStore({
 
         // Checking the action dispatched when a show was loaded successfully
         // takes a long time and it should not be necessary anyway
-        ignoredActions: [loadingPromiseFulfilled],
+        ignoredActions: [loadingPromiseFulfilled, saveWorkbenchState],
 
         // Checking the show specification takes a long time and it should not
-        // be necessary anyway
-        ignoredPaths: ['show.data'],
+        // be necessary anyway; same for the workbench state
+        ignoredPaths: ['show.data', 'workbench'],
       },
     }),
     debouncer,

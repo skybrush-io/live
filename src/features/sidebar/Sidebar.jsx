@@ -51,6 +51,7 @@ const Sidebar = ({ isOpen, workbench }) => (
           icon={<ThreeDRotation />}
           label='3D View'
           component='three-d-view'
+          reorderEnabled={false}
         />
         <Module
           id='layers'
