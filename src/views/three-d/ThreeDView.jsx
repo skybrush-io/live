@@ -18,7 +18,7 @@ import Colors from '~/components/colors';
 import { isMapCoordinateSystemLeftHanded } from '~/selectors/map';
 
 const images = {
-  glow: 'assets/img/sphere-glow-hollow.png',
+  glow: require('~/../assets/img/sphere-glow-hollow.png').default
 };
 
 const ThreeDView = React.forwardRef((props, ref) => {

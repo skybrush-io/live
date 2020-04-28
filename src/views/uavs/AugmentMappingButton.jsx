@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 
-import IconButton from '@material-ui/core/IconButton';
+import Button from '@material-ui/core/Button';
 import Shuffle from '@material-ui/icons/Shuffle';
 
 import { augmentMappingAutomaticallyFromSpareDrones } from '~/features/mission/actions';
@@ -12,9 +12,12 @@ import { canAugmentMappingAutomaticallyFromSpareDrones } from '~/features/missio
  * drones based on their current positions automatically.
  */
 const AugmentMappingButton = (props) => (
-  <IconButton {...props}>
-    <Shuffle />
-  </IconButton>
+  <Button
+    startIcon={<Shuffle />}
+    {...props}
+  >
+    Update mapping
+  </Button>
 );
 
 export default connect(
