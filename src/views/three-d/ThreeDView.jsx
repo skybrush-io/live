@@ -26,6 +26,7 @@ const ThreeDView = React.forwardRef((props, ref) => {
     grid,
     isCoordinateSystemLeftHanded,
     navigation,
+    sceneId,
     scenery,
     showAxes,
     showHomePositions,
@@ -52,6 +53,7 @@ const ThreeDView = React.forwardRef((props, ref) => {
 
   return (
     <a-scene
+      key={sceneId}
       ref={ref}
       deallocate
       embedded='true'

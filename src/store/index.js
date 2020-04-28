@@ -85,8 +85,8 @@ const persistConfig = {
       'uploadDialog',
     ]),
 
-    // We do not wish to save 3D view tooltips or camera pose
-    createBlacklistFilter('threeD', ['camera', 'tooltip']),
+    // We do not wish to save 3D view tooltips, camera pose or the scene ID
+    createBlacklistFilter('threeD', ['camera', 'tooltip', 'sceneId']),
   ],
 };
 
