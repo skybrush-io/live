@@ -1,7 +1,7 @@
 {
   "name": "flockwave-web",
   "productName": "Skybrush Live",
-  "version": "0.3.7",
+  "version": "0.3.8",
   "description": "Web frontend for a Skybrush server",
   "main": "launcher.bundle.js",
   "scripts": {
@@ -196,7 +196,7 @@
       "react/jsx-no-duplicate-props": 0,
       "react/require-default-props": 0,
       "unicorn/filename-case": 0,
-	  "unicorn/no-fn-reference-in-iterator": 0
+      "unicorn/no-fn-reference-in-iterator": 0
     }
   }
 }
