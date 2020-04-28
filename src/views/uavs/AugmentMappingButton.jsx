@@ -12,10 +12,7 @@ import { canAugmentMappingAutomaticallyFromSpareDrones } from '~/features/missio
  * drones based on their current positions automatically.
  */
 const AugmentMappingButton = (props) => (
-  <Button
-    startIcon={<Shuffle />}
-    {...props}
-  >
+  <Button startIcon={<Shuffle />} {...props}>
     Update mapping
   </Button>
 );

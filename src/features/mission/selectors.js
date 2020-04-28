@@ -98,7 +98,7 @@ export const getUAVIdsParticipatingInMission = createSelector(
  */
 export const hasNonemptyMappingSlot = createSelector(
   getMissionMapping,
-  (mapping) => mapping ? !mapping.every(isNil) : false
+  (mapping) => (mapping ? !mapping.every(isNil) : false)
 );
 
 /**

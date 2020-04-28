@@ -45,7 +45,7 @@ const DronePlaceholderList = ({
         </Box>
       ) : null}
       {items.length === 0 ? (
-        (successMessage && !preferEmptyMessage) ? (
+        successMessage && !preferEmptyMessage ? (
           <>
             <Box key='ok' ml={title ? 1 : 0}>
               <DronePlaceholder label='OK' status='success' />

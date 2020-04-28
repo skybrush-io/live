@@ -18,7 +18,8 @@ import TransparentList from '~/components/TransparentList';
 import { ConnectionState } from '~/model/connections';
 import { getConnectionsInOrder } from '~/selectors/ordered';
 
-const shortFormatter = (value, unit) => unit == "month" ? `${value}mo` : `${value}${unit.charAt(0)}`;
+const shortFormatter = (value, unit) =>
+  unit === 'month' ? `${value}mo` : `${value}${unit.charAt(0)}`;
 
 /**
  * Icons for the different connection states in the connection list.

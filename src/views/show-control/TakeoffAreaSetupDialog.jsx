@@ -19,7 +19,10 @@ import {
   addVirtualDronesForMission,
   augmentMappingAutomaticallyFromSpareDrones,
 } from '~/features/mission/actions';
-import { getEmptyMappingSlotIndices, hasNonemptyMappingSlot } from '~/features/mission/selectors';
+import {
+  getEmptyMappingSlotIndices,
+  hasNonemptyMappingSlot,
+} from '~/features/mission/selectors';
 import { supportsVirtualDrones } from '~/features/servers/selectors';
 import { approveTakeoffArea } from '~/features/show/actions';
 import { isTakeoffAreaApproved } from '~/features/show/selectors';
@@ -145,9 +148,18 @@ const TakeoffAreaSetupDialog = ({
 
     <DialogContent>
       <EmptySlotsIndicator indices={emptySlotIndices} />
-      <MissingDronesIndicator uavIds={missingUAVIds} hasNonemptyMappingSlot={hasNonemptyMappingSlot} />
-      <MisplacedDronesIndicator uavIds={misplacedUAVIds} hasNonemptyMappingSlot={hasNonemptyMappingSlot} />
-      <MisalignedDronesIndicator uavIds={misalignedUAVIds} hasNonemptyMappingSlot={hasNonemptyMappingSlot} />
+      <MissingDronesIndicator
+        uavIds={missingUAVIds}
+        hasNonemptyMappingSlot={hasNonemptyMappingSlot}
+      />
+      <MisplacedDronesIndicator
+        uavIds={misplacedUAVIds}
+        hasNonemptyMappingSlot={hasNonemptyMappingSlot}
+      />
+      <MisalignedDronesIndicator
+        uavIds={misalignedUAVIds}
+        hasNonemptyMappingSlot={hasNonemptyMappingSlot}
+      />
 
       <Box className='bottom-bar' textAlign='center' mt={2} pt={2}>
         <FormControlLabel

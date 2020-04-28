@@ -174,7 +174,11 @@ const { actions, reducer } = createSlice({
     setMappingLength(state, action) {
       const desiredLength = Number.parseInt(action.payload, 10);
 
-      if (Number.isNaN(desiredLength) || desiredLength < 0 || desiredLength > 1000) {
+      if (
+        Number.isNaN(desiredLength) ||
+        desiredLength < 0 ||
+        desiredLength > 1000
+      ) {
         return;
       }
 

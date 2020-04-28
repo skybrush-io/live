@@ -119,9 +119,12 @@ function constructDefaultWorkbench(store) {
 
   // Wire the workbench to the store so the store is updated when
   // the workbench state changes
-  workbench.on('stateChanged', debounce(() => {
-    store.dispatch(saveWorkbenchState(workbench));
-  }, 1000));
+  workbench.on(
+    'stateChanged',
+    debounce(() => {
+      store.dispatch(saveWorkbenchState(workbench));
+    }, 1000)
+  );
 
   return workbench;
 }

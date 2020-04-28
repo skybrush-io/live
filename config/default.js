@@ -2,8 +2,6 @@
  * @file Default application configuration at startup.
  */
 
-import React from 'react';
-
 export default {
   examples: [],
   server: {},

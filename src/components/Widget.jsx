@@ -36,7 +36,7 @@ Widget.propTypes = {
     PropTypes.arrayOf(PropTypes.node),
     PropTypes.node,
   ]),
-  showControls: PropTypes.bool.isRequired,
+  showControls: PropTypes.bool,
   style: PropTypes.object,
 };
 

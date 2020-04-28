@@ -10,7 +10,7 @@ import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles({
   root: {
     display: 'flex',
     alignItems: 'center',
@@ -20,7 +20,7 @@ const useStyles = makeStyles((theme) => ({
     height: '100%',
     userSelect: 'none',
   },
-}));
+});
 
 /**
  * Component that gives a hint to the user about the usage of the

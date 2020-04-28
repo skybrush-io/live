@@ -18,13 +18,9 @@ import {
 } from '~/actions/map-origin';
 import CoordinateSystemFields from '~/components/CoordinateSystemFields';
 import FormHeader from '~/components/dialogs/FormHeader';
-import { setupMissionFromShow } from '~/features/show/actions';
+import { updateOutdoorShowSettings } from '~/features/show/actions';
 import { COORDINATE_SYSTEM_TYPE } from '~/features/show/constants';
-import {
-  closeEnvironmentEditorDialog,
-  setOutdoorShowOrientation,
-  setOutdoorShowOrigin,
-} from '~/features/show/slice';
+import { closeEnvironmentEditorDialog } from '~/features/show/slice';
 import { showSnackbarMessage } from '~/features/snackbar/slice';
 import { MessageSemantics } from '~/features/snackbar/types';
 
@@ -144,19 +140,31 @@ export default connect(
     },
 
     onOrientationChanged(value) {
-      dispatch(setOutdoorShowOrientation(value));
-      dispatch(setupMissionFromShow());
+      dispatch(
+        updateOutdoorShowSettings({
+          orientation: value,
+          setupMission: true,
+        })
+      );
     },
 
     onOriginChanged(value) {
-      dispatch(setOutdoorShowOrigin(value));
-      dispatch(setupMissionFromShow());
+      dispatch(
+        updateOutdoorShowSettings({
+          origin: value,
+          setupMission: true,
+        })
+      );
     },
 
     onSetCoordinateSystemFromMap(mapCoordinateSystem) {
-      dispatch(setOutdoorShowOrigin(mapCoordinateSystem.position));
-      dispatch(setOutdoorShowOrientation(mapCoordinateSystem.angle));
-      dispatch(setupMissionFromShow());
+      dispatch(
+        updateOutdoorShowSettings({
+          origin: mapCoordinateSystem.position,
+          orientation: mapCoordinateSystem.angle,
+          setupMission: true,
+        })
+      );
       dispatch(
         showSnackbarMessage({
           message: 'Show coordinate system updated from map.',

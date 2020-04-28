@@ -20,7 +20,7 @@ const { actions, reducer } = createSlice({
 
     tooltip: null,
 
-    sceneId: 0
+    sceneId: 0,
   },
 
   reducers: {

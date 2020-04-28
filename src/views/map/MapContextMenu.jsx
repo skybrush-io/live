@@ -41,7 +41,7 @@ import {
 } from '../../selectors/selection';
 import * as messaging from '../../utils/messaging';
 
-import { setOutdoorShowOrigin } from '~/features/show/slice';
+import { updateOutdoorShowSettings } from '~/features/show/actions';
 import { showSnackbarMessage } from '~/features/snackbar/slice';
 
 /**
@@ -387,7 +387,9 @@ const MapContextMenuContainer = connect(
       dispatch(setFlatEarthCoordinateSystemOrigin(coords));
     },
     setShowCoordinateSystemOrigin: (coords) => {
-      dispatch(setOutdoorShowOrigin(coords));
+      dispatch(
+        updateOutdoorShowSettings({ origin: coords, setupMission: true })
+      );
     },
     showErrorMessage: (message) => {
       dispatch(showSnackbarMessage(message));

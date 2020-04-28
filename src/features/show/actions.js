@@ -15,6 +15,8 @@ import {
   loadingProgress,
   revokeTakeoffAreaApproval,
   setEnvironmentType,
+  setOutdoorShowOrigin,
+  setOutdoorShowOrientation,
   signOffOnManualPreflightChecksAt,
   signOffOnOnboardPreflightChecksAt,
   _retryFailedUploads,
@@ -52,6 +54,28 @@ export const setupMissionFromShow = () => (dispatch, getState) => {
   dispatch(updateHomePositions(homePositions));
   dispatch(updateLandingPositions(landingPositions));
   dispatch(updateTakeoffHeadings(orientation));
+};
+
+export const updateOutdoorShowSettings = ({
+  origin,
+  orientation,
+  setupMission,
+}) => (dispatch) => {
+  let changed = false;
+
+  if (origin) {
+    dispatch(setOutdoorShowOrigin(origin));
+    changed = true;
+  }
+
+  if (orientation) {
+    dispatch(setOutdoorShowOrientation(orientation));
+    changed = true;
+  }
+
+  if (setupMission && changed) {
+    dispatch(setupMissionFromShow());
+  }
 };
 
 const createShowLoaderThunkFactory = (
