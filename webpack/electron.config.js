@@ -5,9 +5,10 @@ const merge = require('webpack-merge');
 const WebpackShellPlugin = require('webpack-shell-plugin');
 
 const baseConfig = require('./base.config.js');
-const { projectRoot } = require('./helpers');
+const { htmlMetaTags, projectRoot } = require('./helpers');
 
 const htmlWebPackPluginConfiguration = {
+  meta: htmlMetaTags,
   template: path.resolve(projectRoot, 'index.html'),
   title: 'Skybrush Live',
 };

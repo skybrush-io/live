@@ -6,7 +6,11 @@ const path = require('path');
 const merge = require('webpack-merge');
 
 const baseConfig = require('./base.config.js');
-const { outputDir, projectRoot } = require('./helpers');
+const { htmlMetaTags: baseHtmlMetaTags, outputDir, projectRoot } = require('./helpers');
+
+const htmlMetaTags = { ...baseHtmlMetaTags };
+
+delete htmlMetaTags["Content-Security-Policy"];
 
 module.exports = merge.smart(baseConfig, {
   entry: {
@@ -28,6 +32,7 @@ module.exports = merge.smart(baseConfig, {
   plugins: [
     // Create index.html on-the-fly
     new HtmlWebpackPlugin({
+      meta: htmlMetaTags,
       template: path.resolve(projectRoot, 'index.html'),
       filename: path.resolve(outputDir, 'index.html'),
       hash: true, /* for cache busting */

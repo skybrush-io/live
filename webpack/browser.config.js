@@ -6,7 +6,7 @@ const path = require('path');
 const merge = require('webpack-merge');
 
 const baseConfig = require('./base.config.js');
-const { projectRoot } = require('./helpers');
+const { htmlMetaTags, projectRoot } = require('./helpers');
 
 module.exports = merge.smart(baseConfig, {
   entry: {
@@ -17,6 +17,7 @@ module.exports = merge.smart(baseConfig, {
   plugins: [
     // Create index.html on-the-fly
     new HtmlWebpackPlugin({
+      meta: htmlMetaTags,
       template: path.resolve(projectRoot, 'index.html'),
       title:
         'Skybrush Live | The Next-generation Drone Light Show Software Suite',
