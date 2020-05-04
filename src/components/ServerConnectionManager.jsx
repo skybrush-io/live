@@ -370,7 +370,7 @@ async function executeTasksAfterDisconnection(dispatch) {
 const ServerConnectionManager = connect(
   // mapStateToProps
   (state) => ({
-    active: state.dialogs.serverSettings.active,
+    active: state.dialogs.serverSettings.active && !state.session.isExpired,
     cliArguments: state.settings.localServer.cliArguments,
     hostName: state.dialogs.serverSettings.hostName,
     needsLocalServer: shouldManageLocalServer(state),

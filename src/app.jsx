@@ -109,6 +109,7 @@ const App = () => {
                 <dialogs.PromptDialog />
                 <dialogs.SavedLocationEditorDialog />
                 <dialogs.ServerSettingsDialog />
+                <dialogs.SessionExpiryDialog />
 
                 <ToastProvider placement='top-center'>
                   <ToastNotificationManager />

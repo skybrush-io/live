@@ -21,6 +21,11 @@ body .lm_header {
   }
 }
 
+/* Prevent selection in the panel titles */
+.lm_title {
+  user-select: none;
+}
+
 /* Settings button */
 .lm_controls .lm_settings {
   background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJCAYAAADgkQYQAAAAFUlEQVQY02NgGJzgPxTjZDMNQkcDAOi4Bf2rdMdGAAAAAElFTkSuQmCC);
@@ -67,10 +72,5 @@ body .lm_header {
   font-size: 10px;
   text-align: center;
 
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -khtml-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
   user-select: none;
 }

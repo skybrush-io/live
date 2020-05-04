@@ -8,6 +8,7 @@ import MessagesDialog from './MessagesDialog';
 import PromptDialog from './PromptDialog';
 import SavedLocationEditorDialog from './SavedLocationEditorDialog';
 import ServerSettingsDialog from './ServerSettingsDialog';
+import SessionExpiryDialog from './SessionExpiryDialog';
 import SubscriptionDialog from './SubscriptionDialog';
 
 export default {
@@ -21,5 +22,6 @@ export default {
   PromptDialog,
   SavedLocationEditorDialog,
   ServerSettingsDialog,
+  SessionExpiryDialog,
   SubscriptionDialog,
 };
