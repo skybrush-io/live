@@ -21,7 +21,7 @@ import LogStatusBadge from '~/components/badges/LogStatusBadge';
 
 const style = {
   backgroundColor: '#333',
-  boxShadow: 'inset -3px -6px 6px rgba(0, 0, 0, 0.5)',
+  boxShadow: 'rgba(0, 0, 0, 0.3) -9px -3px 6px -6px inset',
   height: '100%',
 };
 

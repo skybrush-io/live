@@ -75,7 +75,6 @@ const createMainWindow = (app, options) => {
       // how we could inject window.bridge into the main window if the
       // two contexts are isolated
       contextIsolation: false,
-      nodeIntegration: false,
       preload: preloadScriptPath,
     },
   });

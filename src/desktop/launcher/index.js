@@ -77,6 +77,36 @@ function run(argv) {
     }
   );
 
+  // Prevent the creation of additional windows or web views. Also prevent
+  // navigation.
+  app.on(
+    'web-contents-created',
+    (event, webContents) => {
+      webContents.on('will-attach-webview', (event, webPreferences, params) => {
+        // Disable Node.js integration
+        webPreferences.nodeIntegration = false;
+
+        // Prevent creating web views that point outside
+        if (
+          !params.src.startsWith('file://') &&
+          !params.src.startsWith('http://localhost') &&
+          !params.src.startsWith('https://localhost')
+        ) {
+          event.preventDefault();
+        }
+      });
+
+      webContents.on('will-navigate', (event) => {
+        event.preventDefault();
+      });
+
+      webContents.on('new-window', async (event, navigationUrl) => {
+        event.preventDefault();
+        await shell.openExternal(navigationUrl);
+      });
+    }
+  );
+
   // Set up IPC handlers
   setupIpc();
 }
