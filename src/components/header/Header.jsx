@@ -29,12 +29,17 @@ const innerStyle = {
   flexFlow: 'row nowrap',
 };
 
+const headingFormatter = (value, unit, suffix) =>
+  (suffix === "ago") ? "Session expired" : "Session expires";
+
 const SessionExpiryBox = ({ expiresAt }) => {
   return (
     <Box alignSelf="center" px={1}>
-      <Typography color="textSecondary" variant="body2" align="right">Demo session expires</Typography>
+      <Typography color="textSecondary" variant="body2" align="right">
+        <TimeAgo date={expiresAt} formatter={headingFormatter} />
+      </Typography>
       <Typography color="textPrimary" variant="body2" align="right">
-        <TimeAgo date={expiresAt} />
+        <b><TimeAgo date={expiresAt} /></b>
       </Typography>
     </Box>
   );

@@ -33,7 +33,7 @@ export default function* rootSaga() {
     sagas.push(localServerSaga(localServer.search));
   }
 
-  if (config && config.session && config.session.maxLengthInSeconds) {
+  if (config && config.session) {
     sagas.push(sessionSaga(config.session));
   }
 

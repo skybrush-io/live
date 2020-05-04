@@ -6,6 +6,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 import { ConnectionState } from '~/model/connections';
+import { getAuthenticationTokenFromUrl } from '~/utils/authentication';
 
 /**
  * Part of the default state object that represents a connection where the
@@ -42,9 +43,6 @@ function addServer(state, { action, inferred }) {
   state.detected.byId[key] = item;
 }
 
-const url = new URL(window.location.href);
-const token = url.searchParams ? url.searchParams.get('token') : undefined;
-
 const { actions, reducer } = createSlice({
   name: 'servers',
 
@@ -60,7 +58,7 @@ const { actions, reducer } = createSlice({
       byId: {},
       order: [],
     },
-    token,
+    token: getAuthenticationTokenFromUrl(),
   },
 
   reducers: {

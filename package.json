@@ -66,6 +66,7 @@
     "is-promise": "^4.0.0",
     "javascript-time-ago": "^2.0.7",
     "js-base64": "^2.5.2",
+    "jsonwebtoken": "^8.5.1",
     "jszip": "^3.4.0",
     "ky": "^0.19.1",
     "localforage": "^1.7.3",
