@@ -1,22 +1,31 @@
 import ConnectionIcon from '@material-ui/icons/Power';
 
+import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
-import { useDispatch } from 'react-redux';
+import { connect } from 'react-redux';
 
 import ServerConnectionStatusBadge from '../badges/ServerConnectionStatusBadge';
 import GenericHeaderButton from './GenericHeaderButton';
 
 import { showServerSettingsDialog } from '~/actions/server-settings';
+import Tooltip from '~/components/Tooltip';
 
-export default (props) => {
-  const dispatch = useDispatch();
-  const onClick = useCallback(() => dispatch(showServerSettingsDialog()), [
-    dispatch,
-  ]);
-  return (
-    <GenericHeaderButton {...props} onClick={onClick}>
-      <ServerConnectionStatusBadge />
-      <ConnectionIcon />
-    </GenericHeaderButton>
-  );
+const ServerConnectionSettingsButton = (props) => (
+  <GenericHeaderButton {...props}>
+    <ServerConnectionStatusBadge />
+    <ConnectionIcon />
+  </GenericHeaderButton>
+);
+
+ServerConnectionSettingsButton.propTypes = {
+  onClick: PropTypes.func
 };
+
+export default connect(
+  // mapStateToProps
+  null,
+  // mapDispatchToProps
+  {
+    onClick: showServerSettingsDialog
+  }
+)(ServerConnectionSettingsButton);

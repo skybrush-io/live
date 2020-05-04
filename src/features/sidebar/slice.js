@@ -5,6 +5,8 @@
 
 import { createSlice } from '@reduxjs/toolkit';
 
+import { noPayload } from '~/utils/redux';
+
 const { actions, reducer } = createSlice({
   name: 'sidebar',
 
@@ -21,9 +23,9 @@ const { actions, reducer } = createSlice({
       state.open = true;
     },
 
-    toggleSidebar(state) {
+    toggleSidebar: noPayload((state) => {
       state.open = !state.open;
-    },
+    }),
   },
 });
 

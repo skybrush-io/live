@@ -5,6 +5,9 @@
 export default {
   examples: [],
   server: {},
+  session: {},
   tour: null,
-  helpUrl: 'https://doc.collmot.com/public/skybrush-live-doc/latest/index.html',
+  urls: {
+    help: 'https://doc.collmot.com/public/skybrush-live-doc/latest/index.html'
+  },
 };

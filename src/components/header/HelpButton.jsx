@@ -3,8 +3,8 @@ import config from 'config';
 import Help from '@material-ui/icons/HelpOutline';
 
 const showHelp = () => {
-  if (config.helpUrl) {
-    window.open(config.helpUrl, '_blank');
+  if (config.urls.help) {
+    window.open(config.urls.help, '_blank');
   }
 };
 

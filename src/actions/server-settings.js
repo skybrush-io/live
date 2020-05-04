@@ -37,7 +37,7 @@ export const setServerSettingsDialogTab = createAction(
  * Action factory that creates an action that shows the server settings dialog.
  */
 export const showServerSettingsDialog = createAction(
-  SHOW_SERVER_SETTINGS_DIALOG
+  SHOW_SERVER_SETTINGS_DIALOG, () => ({})
 );
 
 /**

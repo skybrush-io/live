@@ -19,6 +19,12 @@ export default {
     connectAutomatically: true,
     preventManualSetup: true,
   },
+
+  // Session setup
+  session: {
+    maxLengthInSeconds: 3600
+  },
+
   // Tour setup customized to suit the default screen of the web app
   tour: {
     steps: [
@@ -117,5 +123,8 @@ export default {
     ],
   },
 
-  helpUrl: 'https://doc.collmot.com/public/skybrush-live-doc/latest/index.html',
+  urls: {
+    exit: 'https://account.skybrush.io',
+    help: 'https://doc.collmot.com/public/skybrush-live-doc/latest/index.html'
+  },
 };

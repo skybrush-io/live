@@ -54,6 +54,7 @@ const persistConfig = {
     'log',
     'messages',
     'servers',
+    'session',
     'snackbar',
     'uavs',
   ],

@@ -16,6 +16,7 @@ import missionReducer from '~/features/mission/slice';
 import preflightReducer from '~/features/preflight/slice';
 import savedLocationsReducer from '~/features/saved-locations/slice';
 import serversReducer from '~/features/servers/slice';
+import sessionReducer from '~/features/session/slice';
 import settingsReducer from '~/features/settings/slice';
 import sidebarReducer from '~/features/sidebar/slice';
 import showReducer from '~/features/show/slice';
@@ -44,6 +45,7 @@ const reducer = combineReducers({
   preflight: preflightReducer,
   savedLocations: savedLocationsReducer,
   servers: serversReducer,
+  session: sessionReducer,
   settings: settingsReducer,
   show: showReducer,
   sidebar: sidebarReducer,
