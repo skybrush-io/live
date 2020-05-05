@@ -113,7 +113,7 @@ const DetectedServersListPresentation = ({
   items,
   onItemSelected,
 }) => (
-  <List style={{ height: 160, overflow: 'auto' }}>
+  <List disablePadding style={{ height: 160, overflow: 'auto' }}>
     {isScanning && (!items || items.length === 0) ? (
       <ListItem key='__scanning'>
         <ListItemIcon>
@@ -285,17 +285,26 @@ class ServerSettingsDialogPresentation extends React.Component {
             onItemSelected={this._handleServerSelection}
           />
         );
-        /* Don't show this, it's confusing.
-        if (!isServerDetectionSupported) {
+
+        if (manualSetupAllowed) {
+          if (!isServerDetectionSupported) {
+            content.push(
+              <DialogContent key='contents'>
+                <Typography variant='body2' color='textSecondary'>
+                  Auto-discovery is not available in this version.
+                </Typography>
+              </DialogContent>
+            );
+          }
+        } else {
           content.push(
             <DialogContent key='contents'>
               <Typography variant='body2' color='textSecondary'>
-                Auto-discovery is not available in this version.
+                Connecting to other servers is not supported in this version.
               </Typography>
             </DialogContent>
           );
         }
-        */
         break;
 
       case 'manual':
@@ -321,15 +330,18 @@ class ServerSettingsDialogPresentation extends React.Component {
         break;
     }
 
-    actions.push(
-      <Button
-        key='disconnect'
-        disabled={!active}
-        onClick={active ? onDisconnect : undefined}
-      >
-        Disconnect
-      </Button>
-    );
+    if (manualSetupAllowed) {
+      actions.push(
+        <Button
+          key='disconnect'
+          disabled={!active}
+          onClick={active ? onDisconnect : undefined}
+        >
+          Disconnect
+        </Button>
+      );
+    }
+
     actions.push(
       <Button key='close' onClick={onClose}>
         Close
@@ -339,7 +351,7 @@ class ServerSettingsDialogPresentation extends React.Component {
     return (
       <Dialog fullWidth open={open} maxWidth='xs' onClose={onClose}>
         <DialogTabs value={selectedTab} onChange={onTabSelected}>
-          <Tab value='auto' label='Autodetected' />
+          <Tab value='auto' label={!manualSetupAllowed ? 'Preconfigured server' : 'Autodetected'} />
           {manualSetupAllowed && <Tab value='manual' label='Manual' />}
         </DialogTabs>
         <ServerDetectionManager />

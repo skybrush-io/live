@@ -10,6 +10,7 @@ import { parse } from 'shell-quote';
 
 import ReactSocket from '@collmot/react-socket';
 
+import { disconnectFromServer } from '~/actions/server-settings';
 import { clearClockList } from '~/features/clocks/slice';
 import { clearConnectionList } from '~/features/connections/slice';
 import { clearDockList } from '~/features/docks/slice';
@@ -24,6 +25,7 @@ import {
   synchronizeShowSettings,
 } from '~/features/show/slice';
 import { showSnackbarMessage } from '~/features/snackbar/slice';
+import { MessageSemantics } from '~/features/snackbar/types';
 import handleError from '~/error-handling';
 import messageHub from '~/message-hub';
 import {
@@ -272,6 +274,11 @@ class ServerConnectionManagerPresentation extends React.Component {
         />
         <ReactSocket.Listener
           socket='serverSocket'
+          event='reconnecting'
+          callback={onConnecting}
+        />
+        <ReactSocket.Listener
+          socket='serverSocket'
           event='reconnect_attempt'
           callback={onConnecting}
         />
@@ -412,9 +419,44 @@ const ServerConnectionManager = connect(
       );
     },
 
-    onDisconnected() {
+    onDisconnected(reason) {
+      // reason = io client disconnect -- okay
+      // reason = io server disconnect -- okay
+      // reason = undefined -- okay
+      // reason = ping timeout -- will reconnect
+      console.log(reason);
+
       dispatch(setCurrentServerConnectionState(ConnectionState.DISCONNECTED));
-      dispatch(showSnackbarMessage('Disconnected from Skybrush server'));
+
+      if (reason === 'io client disconnect') {
+        dispatch(showSnackbarMessage('Disconnected from Skybrush server'));
+      } else if (reason === 'io server disconnect') {
+        // Server does not close the connection without sending a SYS-CLOSE
+        // message so there is no need to show another
+      } else if (reason === 'transport close') {
+        dispatch(
+          showSnackbarMessage({
+            message: 'Skybrush server closed connection unexpectedly',
+            semantics: MessageSemantics.ERROR,
+          })
+        );
+      } else if (reason === 'ping timeout') {
+        dispatch(
+          showSnackbarMessage({
+            message: 'Connection to Skybrush server lost',
+            semantics: MessageSemantics.ERROR,
+          })
+        );
+      }
+
+      // Determine whether Socket.IO will try to reconnect on its own
+      const willReconnect =
+        reason === 'ping timeout' || reason === 'transport close';
+      if (!willReconnect) {
+        // Make sure that our side is notified that the connection mechanism
+        // is not active any more
+        dispatch(disconnectFromServer());
+      }
 
       // Execute all the tasks that should be executed after disconnecting from
       // the server
