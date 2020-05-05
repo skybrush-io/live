@@ -1,5 +1,12 @@
 /* dark mode specific stylesheet tweaks */
 
+/* Adjust error panel for dark mode *.
+/* Error panels */
+.error-panel {
+  background: #444 !important;
+  color: white;
+}
+
 /* Change the background color of the workbench and its panels in dark mode */
 .lm_goldenlayout {
   background: #333;

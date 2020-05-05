@@ -34,13 +34,13 @@ const headingFormatter = (value, unit, suffix) =>
 
 const SessionExpiryBox = ({ expiresAt }) => {
   return (
-    <Box alignSelf="center" px={1}>
-      <Typography color="textSecondary" variant="body2" align="right">
+    <Box alignSelf="center" px={1} style={{ color: 'white', fontSize: '0.875rem', textAlign: 'right' }}>
+      <div style={{ color: 'rgba(255, 255, 255, 0.54)' }}>
         <TimeAgo date={expiresAt} formatter={headingFormatter} />
-      </Typography>
-      <Typography color="textPrimary" variant="body2" align="right">
+      </div>
+      <div>
         <b><TimeAgo date={expiresAt} /></b>
-      </Typography>
+      </div>
     </Box>
   );
 };
