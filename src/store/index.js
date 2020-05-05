@@ -159,7 +159,7 @@ const store = configureStore({
     promiseMiddleware,
     sagaMiddleware,
   ],
-  devTools: {
+  devTools: process.env.NODE_ENV === 'production' ? false : {
     actionsBlacklist: [updateUAVs.type, updateAgesOfUAVs.type],
 
     // make sure that the show object that we load is not cached / tracked by
