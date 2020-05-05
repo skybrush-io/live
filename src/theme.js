@@ -52,6 +52,19 @@ const DarkModeAwareThemeProvider = ({ children, type }) => {
         },
       },
     },
+
+    // Customize z indices to ensure that react-toast-notifications appear
+    // above Material-UI stuff. (react-toast-notifications has a Z index of
+    // 1000 and it is hard to customize)
+    zIndex: {
+      mobileStepper: 600,
+      speedDial: 650,
+      appBar: 700,
+      drawer: 800,
+      modal: 900,
+      snackbar: 1000,
+      tooltip: 1100
+    }
   });
 
   return <ThemeProvider theme={theme}>{children}</ThemeProvider>;
