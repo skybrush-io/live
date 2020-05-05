@@ -105,6 +105,12 @@ module.exports = {
             // eslint-disable-next-line camelcase
             drop_console: true,
           },
+          output: {
+            // This is needed because otherwise Terser will strip away the
+            // quotes around special non-Latin characters in lodash/deburr,
+            // which makes the parser in Electron blow up
+            keep_quoted_props: true
+          }
         },
       }),
     ],
