@@ -1,4 +1,4 @@
-const { app, Menu, protocol } = require('electron');
+const { app, Menu, protocol, shell } = require('electron');
 const unhandled = require('electron-unhandled');
 const yargs = require('yargs/yargs');
 

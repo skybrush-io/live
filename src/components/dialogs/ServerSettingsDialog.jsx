@@ -117,7 +117,7 @@ const DetectedServersListPresentation = ({
     {isScanning && (!items || items.length === 0) ? (
       <ListItem key='__scanning'>
         <ListItemIcon>
-          <CircularProgress size={24} />
+          <CircularProgress color='secondary' size={24} />
         </ListItemIcon>
         <ListItemText
           primary='Please wait…'
