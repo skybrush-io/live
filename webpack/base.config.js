@@ -106,10 +106,15 @@ module.exports = {
             drop_console: true,
           },
           output: {
-            // This is needed because otherwise Terser will strip away the
-            // quotes around special non-Latin characters in lodash/deburr,
-            // which makes the parser in Electron blow up
-            keep_quoted_props: true
+            // This is needed because otherwise Terser will happily replace
+            // escape sequences in string literals with their Unicode
+            // equivalents, which makes Electron blow up when starting the app,
+            // at least on macOS. Electron will start reading the file as ASCII,
+            // not UTF-8, and it will ultimately crash because lodash/deburr
+            // contains fancy accented characters as keys in an object, and
+            // the UTF-8 representations of these accented characters get parsed
+            // as ASCII, leading to invalid JS code.
+            ascii_only: true
           }
         },
       }),
