@@ -11,7 +11,7 @@ import serversSaga from '~/features/servers/saga';
 import showSaga from '~/features/show/saga';
 import sessionSaga from '~/features/session/saga';
 import tourSaga from '~/features/tour/saga';
-import uavSyncSaga from '~/features/uavs/saga';
+import uavManagementSaga from '~/features/uavs/saga';
 import flock from '~/flock';
 
 import onboardingSaga from './onboarding';
@@ -26,7 +26,7 @@ export default function* rootSaga() {
     serversSaga(),
     showSaga(),
     tourSaga(),
-    uavSyncSaga(flock),
+    uavManagementSaga(flock),
   ];
 
   if (localServer && localServer.search) {
