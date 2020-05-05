@@ -25,6 +25,8 @@ AFrame.registerComponent('altitude-control', {
   schema: {
     acceleration: { default: 65 } /* [m/s] */,
     enabled: { default: true },
+    max: { default: NaN, type: 'number' },
+    min: { default: NaN, type: 'number' },
   },
 
   init() {
@@ -57,7 +59,21 @@ AFrame.registerComponent('altitude-control', {
     }
 
     // Get movement vector and add translate position.
-    this.el.object3D.position.add(this.getMovementVector(delta));
+    const { position } = this.el.object3D;
+
+    position.add(this.getMovementVector(delta));
+    
+    if (!isNaN(this.data.min)) {
+      if (position.y < this.data.min) {
+        position.y = this.data.min;
+      }
+    }
+
+    if (!isNaN(this.data.max)) {
+      if (position.y > this.data.max) {
+        position.y = this.data.max;
+      }
+    }
   },
 
   remove() {

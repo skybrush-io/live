@@ -37,6 +37,7 @@ const ThreeDView = React.forwardRef((props, ref) => {
   const extraCameraProps = {
     'altitude-control': objectToString({
       enabled: true,
+      min: 0.01
     }),
     'better-wasd-controls': objectToString({
       fly: navigation && navigation.mode === 'fly',
@@ -70,12 +71,12 @@ const ThreeDView = React.forwardRef((props, ref) => {
         <a-mixin
           id='takeoff-marker'
           geometry='primitive: triangle; vertexA: 1 0 0; vertexB: -0.5 0.866 0; vertexC: -0.5 -0.866 0'
-          material={`shader: flat; color: ${Colors.takeoffMarker}`}
+          material={`color: ${Colors.takeoffMarker}; shader: flat; side: double`}
         />
         <a-mixin
           id='landing-marker'
           geometry='primitive: triangle; vertexA: -1 0 0; vertexB: 0.5 -0.866 0; vertexC: 0.5 0.866 0'
-          material={`shader: flat; color: ${Colors.landingMarker}`}
+          material={`color: ${Colors.landingMarker}; shader: flat; side: double`}
         />
       </a-assets>
 
