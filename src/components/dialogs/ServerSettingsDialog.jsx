@@ -285,6 +285,7 @@ class ServerSettingsDialogPresentation extends React.Component {
             onItemSelected={this._handleServerSelection}
           />
         );
+        /* Don't show this, it's confusing.
         if (!isServerDetectionSupported) {
           content.push(
             <DialogContent key='contents'>
@@ -294,7 +295,7 @@ class ServerSettingsDialogPresentation extends React.Component {
             </DialogContent>
           );
         }
-
+        */
         break;
 
       case 'manual':

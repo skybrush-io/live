@@ -17,6 +17,13 @@ const calculateNewExpiry = (state, expiry) => {
   }
 };
 
+const updateExpiry = (state, expiry) => {
+  state.expiresAt = calculateNewExpiry(state, expiry);
+  if (state.expiresAt <= Date.now()) {
+    state.isExpired = true;
+  }
+}
+
 const { actions, reducer } = createSlice({
   name: 'session',
 
@@ -31,20 +38,19 @@ const { actions, reducer } = createSlice({
     // demo starts, and there is no way to extend that programmatically.
 
     ensureSessionExpiresNoLaterThan(state, action) {
-      state.expiresAt = calculateNewExpiry(state, action.payload);
+      updateExpiry(state, action.payload);
     },
 
     ensureSessionIsNotLongerThan(state, action) {
       const seconds = action.payload;
       if (typeof seconds === 'number' && seconds >= 0) {
-        const expiry = new Date().getTime() + seconds * 1000;
-        state.expiresAt = calculateNewExpiry(state, expiry);
+        const expiry = Date.now() + seconds * 1000;
+        updateExpiry(state, expiry);
       }
     },
 
     expireSession(state) {
-      state.expiresAt = new Date().getTime();
-      state.isExpired = true;
+      updateExpiry(state, Date.now());
     },
   },
 });
