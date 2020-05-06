@@ -103,10 +103,6 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(1, 3, 3, 3),
   },
   uploadResultIndicator: {
-    position: 'absolute',
-    top: 0,
-    left: theme.spacing(2),
-    right: theme.spacing(2),
     boxShadow: theme.shadows[2],
   },
 }));
