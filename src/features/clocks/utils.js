@@ -123,7 +123,7 @@ export function formatTicksOnClock(ticks, clock, options) {
  */
 export function getCurrentTickCountOnClock(clock) {
   const { referenceTime, running, ticks, ticksPerSecond } = clock;
-  const elapsed = running ? (moment().valueOf() - referenceTime) / 1000 : 0;
+  const elapsed = running ? (Date.now() - referenceTime) / 1000 : 0;
   return ticks + elapsed * ticksPerSecond;
 }
 

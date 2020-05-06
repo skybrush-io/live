@@ -2,44 +2,24 @@
  * @file Parser functions for various data types.
  */
 
+import parse from 'date-fns/parse';
 import has from 'lodash-es/has';
 import isString from 'lodash-es/isString';
-import moment from 'moment';
 
 /**
- * Object mapping known epoch names to their corresponding date objects.
+ * Object mapping known epoch names to their corresponding timestamps (number
+ * of seconds) relative to the UNIX epoch.
  */
 const knownEpochs = {
-  unix: moment(0).valueOf(),
+  unix: 0
 };
-
-/**
- * Converts a Date object to the number of seconds since the UNIX epoch,
- * handling nulls and undefined values gracefully.
- *
- * @param  {?Date}    value  the date object to convert
- * @return {?number}  the number of seconds since the UNIX epoch at the
- *         given date, or null if the date was null, or undefined if the
- *         date was undefined
- */
-export function dateToTimestamp(value) {
-  if (value === undefined) {
-    return undefined;
-  }
-
-  if (value === null) {
-    return null;
-  }
-
-  return value.getTime() / 1000;
-}
 
 /**
  * Parses a string that contains either a date in ISO 8601 format or the
  * name of a commonly known epoch.
  *
  * @param  {string}  value  the string to parse
- * @return {Date} the parsed date
+ * @return {number} the parsed date as a timestamp
  */
 export const parseEpochIdentifierOrISODate = (value) => {
   if (isString(value) && has(knownEpochs, value)) {
@@ -57,4 +37,4 @@ export const parseEpochIdentifierOrISODate = (value) => {
  * @return {number} the parsed UNIX timestamp, in milliseconds.
  */
 export const parseISODate = (value) =>
-  value === undefined ? undefined : moment(value, moment.ISO_8601).valueOf();
+  value === undefined ? undefined : parse(value).getTime();

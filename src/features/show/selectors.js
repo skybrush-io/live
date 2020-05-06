@@ -3,7 +3,6 @@ import fromUnixTime from 'date-fns/fromUnixTime';
 import get from 'lodash-es/get';
 import isNil from 'lodash-es/isNil';
 import maxBy from 'lodash-es/maxBy';
-import moment from 'moment';
 
 import { createSelector } from '@reduxjs/toolkit';
 
@@ -257,8 +256,14 @@ export const getShowDuration = createSelector(
  */
 export const getShowDurationAsString = createSelector(
   getShowDuration,
-  (duration) =>
-    moment.duration(duration, 'seconds').format('m:ss', { trim: false })
+  (duration) => {
+    const minutes = Math.floor(duration / 60);
+    let seconds = String(Math.floor(duration) % 60);
+    if (seconds.length < 2) {
+      seconds = '0' + seconds;
+    }
+    return `${minutes}:${seconds}`
+  }
 );
 
 /**
