@@ -17,7 +17,9 @@ import { clearDockList } from '~/features/docks/slice';
 import { shouldManageLocalServer } from '~/features/local-server/selectors';
 import {
   addServerFeature,
+  clearClockSkew,
   clearServerFeatures,
+  setClockSkewInMilliseconds,
   setCurrentServerConnectionState,
 } from '~/features/servers/slice';
 import {
@@ -350,6 +352,23 @@ async function executeTasksAfterConnection(dispatch) {
       // show _from_ the server _to_ the local client.
       dispatch(synchronizeShowSettings('fromServer'));
     }
+
+    // Get the server time to have a quick estimate of the clock skew.
+    // We do this late in the connection process; doing it early results in
+    // overly high skew estimates when the browser loads the JS page and the
+    // connection is established right at startup. (We get >500ms skew
+    // frequently).
+    // 
+    // TODO(ntamas): later on, we should do this regularly. Take a look at the
+    // clockskew package on npm and implement a saga that is similar.
+    response = await messageHub.sendMessage('SYS-TIME');
+    dispatch(
+      setClockSkewInMilliseconds(
+        response.body.timestamp && typeof response.body.timestamp === 'number'
+          ? response.body.timestamp - Date.now()
+          : null
+      )
+    );
   } catch (error) {
     console.error(error);
     handleError(error);
@@ -368,6 +387,7 @@ async function executeTasksAfterConnection(dispatch) {
  */
 async function executeTasksAfterDisconnection(dispatch) {
   dispatch(clearClockList());
+  dispatch(clearClockSkew());
   dispatch(clearConnectionList());
   dispatch(clearDockList());
   dispatch(clearServerFeatures());
@@ -424,8 +444,6 @@ const ServerConnectionManager = connect(
       // reason = io server disconnect -- okay
       // reason = undefined -- okay
       // reason = ping timeout -- will reconnect
-      console.log(reason);
-
       dispatch(setCurrentServerConnectionState(ConnectionState.DISCONNECTED));
 
       if (reason === 'io client disconnect') {

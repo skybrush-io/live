@@ -5,6 +5,7 @@ import { all, call, delay, put, select, take } from 'redux-saga/effects';
 
 import { addUAVs, removeUAVs, updateAgesOfUAVs, updateUAVs } from './slice';
 
+import { getClockSkewInMilliseconds } from '~/features/servers/selectors';
 import { UAVAge } from '~/model/uav';
 
 /**
@@ -208,7 +209,9 @@ function* uavAgingSaga() {
 
     const uavs = yield select((state) => state.uavs.byId);
     const uavIds = yield select((state) => state.uavs.order);
-    const now = Date.now();
+    const clockSkew = (yield select(getClockSkewInMilliseconds)) || 0;
+
+    const now = Date.now() + clockSkew;
     const updates = {};
 
     for (const uavId of uavIds) {

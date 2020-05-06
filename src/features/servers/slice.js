@@ -49,6 +49,7 @@ const { actions, reducer } = createSlice({
   initialState: {
     current: {
       authentication: INVALID,
+      clockSkew: null,
       features: {},
       state: ConnectionState.DISCONNECTED,
     },
@@ -128,6 +129,13 @@ const { actions, reducer } = createSlice({
     },
 
     /**
+     * Clears the stored clock skew of the server.
+     */
+    clearClockSkew(state) {
+      state.current.clockSkew = null;
+    },
+
+    /**
      * Clears the list of features that we know are supported on the server that
      * we are connected to.
      */
@@ -152,6 +160,18 @@ const { actions, reducer } = createSlice({
      */
     setAuthenticatedUser(state, action) {
       state.current.authentication.user = action.payload || '';
+    },
+
+    /**
+     * Action factory that sets the clock skew of the current server.
+     *
+     * Positive numbers mean that the server is "ahead us", negative numbers
+     * mean that the server is "behind".
+     */
+    setClockSkewInMilliseconds(state, action) {
+      const skew = action.payload;
+      state.current.clockSkew =
+        typeof skew === 'number' && Number.isFinite(skew) ? skew : null;
     },
 
     /**
@@ -239,9 +259,11 @@ export const {
   authenticateToServerPromiseRejected,
   clearAuthenticatedUser,
   clearAuthenticationToken,
+  clearClockSkew,
   clearServerFeatures,
   removeAllDetectedServers,
   setAuthenticatedUser,
+  setClockSkewInMilliseconds,
   setCurrentServerConnectionState,
   startScanning,
   stopScanning,

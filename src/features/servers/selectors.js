@@ -14,6 +14,13 @@ export const getAuthenticationToken = (state) =>
   state.servers.token || undefined;
 
 /**
+ * Returns the estimated clock skew between us and the server, in milliseconds.
+ *
+ * Positive numbers mean that the server is "ahead" us.
+ */
+export const getClockSkewInMilliseconds = (state) => state.servers.current.clockSkew;
+
+/**
  * Returns all the information that we know about the current Skybrush server.
  *
  * @param  {Object}  state  the state of the application
