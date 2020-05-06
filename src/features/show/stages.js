@@ -59,7 +59,16 @@ const stages = {
   },
 
   uploadShow: {
-    evaluate: () => false,
+    evaluate: (state) => {
+      const { lastUploadResult: result } = state.show.upload;
+      return result === 'error'
+        ? StepperStatus.ERROR
+        : result === 'cancelled'
+        ? StepperStatus.SKIPPED
+        : result === 'success'
+        ? StepperStatus.COMPLETED
+        : StepperStatus.OFF;
+    },
     requires: ['selectShowFile', 'setupEnvironment'],
   },
 
