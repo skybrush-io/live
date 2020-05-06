@@ -9,7 +9,10 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import Fade from '@material-ui/core/Fade';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 import IconButton from '@material-ui/core/IconButton';
+import Switch from '@material-ui/core/Switch';
+import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Clear from '@material-ui/icons/Clear';
 import Refresh from '@material-ui/icons/Refresh';
@@ -19,6 +22,7 @@ import DronePlaceholderList from './DronePlaceholderList';
 import StartUploadButton from './StartUploadButton';
 import UploadProgressBar from './UploadProgressBar';
 
+import DialogToolbar from '~/components/dialogs/DialogToolbar';
 import { getUAVIdsParticipatingInMission } from '~/features/mission/selectors';
 import { retryFailedUploads } from '~/features/show/actions';
 import {
@@ -135,6 +139,18 @@ const UploadDialog = ({
 
   return (
     <Dialog fullWidth open={open} maxWidth='sm' onClose={onClose}>
+      <DialogToolbar>
+        <Typography noWrap variant='subtitle1'>
+          Upload show data
+        </Typography>
+        <Box flex={1} />
+        <FormControlLabel
+          control={<Switch size="small" checked />}
+          label="Auto geofence"
+          labelPlacement="start"
+        />
+      </DialogToolbar>
+
       <DialogContent>
         <DronePlaceholderList
           title='Queued:'
