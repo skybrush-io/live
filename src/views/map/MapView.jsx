@@ -378,10 +378,11 @@ class MapViewPresentation extends React.Component {
   }
 
   render() {
-    const { center, selectedTool, zoom } = this.props;
+    const { center, rotation, selectedTool, zoom } = this.props;
     const view = (
       <View
         center={mapViewCoordinateFromLonLat(center)}
+        rotation={-rotation * Math.PI / 180}
         zoom={zoom}
         constrainRotation={false}
       />

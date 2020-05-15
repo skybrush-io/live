@@ -10,7 +10,9 @@ import ContentSelectAll from '@material-ui/icons/SelectAll';
 import partial from 'lodash-es/partial';
 import { connect } from 'react-redux';
 
-import { selectMapTool } from '../../actions/map';
+import { selectMapTool } from '~/actions/map';
+import { getMapViewRotationAngle } from '~/selectors/map';
+
 import FitAllFeaturesButton from './FitAllFeaturesButton';
 import MapRotationTextBox from './MapRotationTextBox';
 import { Tool } from './tools';
@@ -38,7 +40,7 @@ const MapToolbarSeparator = () => {
  *
  * @returns {React.Element} the rendered component
  */
-const MapToolbarPresentation = ({ onToolSelected, selectedTool }) => {
+const MapToolbarPresentation = ({ initialRotation, onToolSelected, selectedTool }) => {
   const colorForTool = (tool) =>
     selectedTool === tool ? 'primary' : undefined;
 
@@ -60,6 +62,7 @@ const MapToolbarPresentation = ({ onToolSelected, selectedTool }) => {
       <MapToolbarSeparator />
 
       <MapRotationTextBox
+        initialRotation={initialRotation}
         resetDuration={500}
         fieldWidth='75px'
         style={{
@@ -86,7 +89,10 @@ MapToolbarPresentation.propTypes = {
  */
 const MapToolbar = connect(
   // mapStateToProps
-  (state) => Object.assign({}, state.map.tools),
+  (state) => ({
+    ...state.map.tools,
+    initialRotation: getMapViewRotationAngle(state)
+  }),
   // mapDispatchToProps
   (dispatch) => ({
     onToolSelected(tool) {
