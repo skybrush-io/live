@@ -42,7 +42,6 @@ const Nothing = () => null;
  */
 const componentRegistry = {
   'connection-list': views.ConnectionList,
-  'clock-list': views.ClockDisplayList,
   'dataset-list': views.DatasetList,
   'dock-list': views.DockList,
   'feature-list': views.FeatureList,
@@ -91,8 +90,8 @@ function constructDefaultWorkbench(store) {
     .makeRows()
     .makeStack()
     .add('lcd-clock-panel')
-    .setTitle('LCD clock')
-    .setId('lcdClock')
+    .setTitle('Clocks')
+    .setId('clocks')
     .add('saved-location-list')
     .setTitle('Locations')
     .setId('locations')
