@@ -191,7 +191,7 @@ const UAVListPresentation = ({
           <>
             <UAVListSubheader
               key='__main'
-              label='Active UAVs'
+              label='Assigned UAVs'
               value='mainUAVIds'
               onChange={onSelectSection}
               {...selectionInfo.mainUAVIds}
