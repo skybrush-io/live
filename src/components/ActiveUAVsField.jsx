@@ -205,7 +205,7 @@ const ActiveUAVsField = connect(
   // dispatchToProps
   (dispatch) => ({
     onValueChanged(value) {
-      dispatch(selectUAVInMessagesDialog(value));
+      dispatch(selectUAVInMessagesDialog(value && value.length > 0 ? value : null));
     },
   })
 )(ActiveUAVsFieldPresentation);

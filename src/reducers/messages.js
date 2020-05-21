@@ -219,7 +219,7 @@ const reducer = handleActions(
     },
 
     SELECT_UAV_IN_MESSAGES_DIALOG: (state, action) =>
-      Object.assign({}, state, { selectedUAVId: action.payload }),
+      Object.assign({}, state, { selectedUAVId: action.payload || null }),
   },
   defaultState
 );

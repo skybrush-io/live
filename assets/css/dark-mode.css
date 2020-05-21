@@ -1,7 +1,6 @@
 /* dark mode specific stylesheet tweaks */
 
-/* Adjust error panel for dark mode *.
-/* Error panels */
+/* Adjust error panel for dark mode */
 .error-panel {
   background: #444 !important;
   color: white;

@@ -206,6 +206,7 @@ class MessagesPanelPresentation extends React.Component {
           inputRef={this._uavSelectorFieldRef}
           style={{ width: '8em', paddingRight: '1em' }}
           flock={flock}
+          commitWhenInvalid
         />
         <TextField
           fullWidth

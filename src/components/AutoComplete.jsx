@@ -32,6 +32,7 @@ export class AutoComplete extends React.Component {
   static propTypes = {
     allowEmpty: PropTypes.bool,
     autoFocus: PropTypes.bool,
+    commitWhenInvalid: PropTypes.bool,
     fetchSuggestions: PropTypes.func,
     getSuggestionLabel: PropTypes.func,
     getSuggestionValue: PropTypes.func,
@@ -95,9 +96,13 @@ export class AutoComplete extends React.Component {
   }
 
   _onBlur = () => {
+    const { commitWhenInvalid } = this.props;
     const { value } = this.state;
-    if (this.validate(value)) {
+    const isValid = this.validate(value);
+    if (isValid) {
       this._commitValue(value);
+    } else if (commitWhenInvalid) {
+      this._commitValue('');
     }
   };
 
@@ -125,10 +130,15 @@ export class AutoComplete extends React.Component {
       method === 'down' ||
       method === 'up'
     ) {
-      const shouldCommit =
-        (method === 'enter' || method === 'click') && this.validate(newValue);
-      if (shouldCommit) {
-        this._commitValue(newValue);
+      const isFinalized = (method === 'enter' || method === 'click');
+      const isValid = this.validate(newValue);
+      const shouldCommit = isFinalized && this.validate(newValue);
+      if (isFinalized) {
+        if (isValid) {
+          this._commitValue(newValue);
+        } else if (this.props.commitWhenInvalid) {
+          this._commitValue('');
+        }
       }
     }
   };
@@ -154,12 +164,11 @@ export class AutoComplete extends React.Component {
     /* eslint-disable react/no-array-index-key */
     const fragments = highlightMatches
       ? parse(label, match(label, query)).map((part, index) => (
-          <span
-            key={index}
-            style={{ backgroundColor: part.highlight ? 'yellow' : 'inherit' }}
-          >
-            {part.text}
-          </span>
+          part.highlight ? (
+            <mark key={index}>{part.text}</mark>
+          ) : (
+            <span key={index}>{part.text}</span>
+          )
         ))
       : label;
     /* eslint-enable react/no-array-index-key */
@@ -185,6 +194,7 @@ export class AutoComplete extends React.Component {
           style={{
             minWidth: this._input ? this._input.clientWidth : undefined,
           }}
+          elevation={4}
         >
           {children}
         </Paper>
