@@ -30,7 +30,7 @@ import { parseCommandFromString } from '~/flockwave/messages';
 import Flock from '~/model/flock';
 import { MessageType } from '~/model/messages';
 import messageHub from '~/message-hub';
-import { reorder, selectOrdered } from '~/utils/collections';
+import { selectMessagesOfSelectedUAVInOrder } from '~/selectors/messages';
 
 /**
  * Converts a message object from the Redux store into React components
@@ -250,20 +250,10 @@ class MessagesPanelPresentation extends React.Component {
  */
 const MessagesPanel = connect(
   // mapStateToProps
-  (state) => {
-    const { messages } = state;
-    const { selectedUAVId } = messages;
-    const messageIds = selectedUAVId
-      ? messages.uavIdsToMessageIds[selectedUAVId] || []
-      : [];
-    const chatEntries = selectedUAVId
-      ? selectOrdered(reorder(messages, messageIds))
-      : null;
-    return {
-      chatEntries,
-      selectedUAVId,
-    };
-  },
+  (state) => ({
+    chatEntries: selectMessagesOfSelectedUAVInOrder(state),
+    selectedUAVId: state.messages.selectedUAVId
+  }),
 
   // mapDispatchToProps
   (dispatch) => ({
