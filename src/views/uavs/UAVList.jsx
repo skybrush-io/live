@@ -287,6 +287,7 @@ const deletionMarker = [undefined, undefined, <Delete key='__delete' />];
 const getDisplayedUAVIdList = createSelector(getUAVIdList, (uavIds) => ({
   mainUAVIds: uavIds.map((uavId) => [uavId, undefined, uavId]),
   spareUAVIds: [],
+  extraSlots: []
 }));
 
 /**
