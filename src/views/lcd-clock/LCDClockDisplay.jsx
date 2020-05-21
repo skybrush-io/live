@@ -117,7 +117,9 @@ const LCDClockDisplay = ({
 
   // We assume that we show timestamps like 00:00:00:00 in the LCD display,
   // which is roughly 5x wider than tall.
-  const lcdHeight = Math.floor(width < 5 * height ? width / 5 : height);
+  const lcdHeight = (width > 0 && height > 0)
+    ? Math.floor(width < 5 * height ? width / 5 : height)
+    : 0;
 
   const finalStyle = {
     backgroundColor: call(theme, presetProps.backgroundColor, 'black'),
