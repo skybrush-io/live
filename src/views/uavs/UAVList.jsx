@@ -70,7 +70,8 @@ const createListItems = (
   items,
   { draggable, mappingSlotBeingEdited, onDropped, onSelected, selectedUAVIds }
 ) =>
-  items.map(([uavId, missionIndex, label]) => {
+  items.map((item) => {
+    const [uavId, missionIndex, label] = item;
     const editing =
       mappingSlotBeingEdited !== undefined &&
       missionIndex === mappingSlotBeingEdited;
@@ -81,9 +82,14 @@ const createListItems = (
       editing,
       selected,
     };
+
+    if (item === deletionMarker) {
+      listItemProps.fill = true;
+    }
+
     return uavId === undefined ? (
       <DroneListItem
-        key={`placeholder-${label}`}
+        key={`placeholder-${label || 'null'}`}
         onDrop={onDropped ? onDropped(missionIndex) : undefined}
         {...listItemProps}
       >
@@ -152,7 +158,7 @@ const UAVListPresentation = ({
     [onEditMappingSlot]
   );
 
-  const { mainUAVIds, spareUAVIds } = uavIds;
+  const { mainUAVIds, spareUAVIds, extraSlots } = uavIds;
 
   const listItemProps = {
     draggable: editingMapping,
@@ -163,7 +169,7 @@ const UAVListPresentation = ({
   };
 
   const mainBox = (
-    <Box display='flex' flexDirection='column'>
+    <Box display='flex' flexDirection='column' height="100%">
       <AppBar color='default' position='static' className={classes.appBar}>
         <FadeAndSlide mountOnEnter unmountOnExit in={!editingMapping}>
           <UAVToolbar
@@ -186,7 +192,7 @@ const UAVListPresentation = ({
           <MappingSlotEditorToolbar className={classes.toolbar} />
         </FadeAndSlide>
       </AppBar>
-      <Box flex={1}>
+      <Box flex={1} overflow="auto">
         {mainUAVIds.length > 0 ? (
           <>
             <UAVListSubheader
@@ -216,6 +222,13 @@ const UAVListPresentation = ({
           </>
         ) : null}
       </Box>
+      {extraSlots.length > 0 ? (
+        <Box className='bottom-bar'>
+          <Box display='flex' flexDirection='row' flexWrap='wrap'>
+            {createListItems(extraSlots, listItemProps)}
+          </Box>
+        </Box>
+      ) : null}
     </Box>
   );
 
@@ -245,12 +258,24 @@ UAVListPresentation.propTypes = {
       disabled: PropTypes.bool,
       indeterminate: PropTypes.bool,
     }),
+    extraSlots: PropTypes.exact({
+      checked: PropTypes.bool,
+      disabled: PropTypes.bool,
+      indeterminate: PropTypes.bool
+    })
   }),
   uavIds: PropTypes.exact({
     mainUAVIds: PropTypes.arrayOf(PropTypes.array).isRequired,
     spareUAVIds: PropTypes.arrayOf(PropTypes.array).isRequired,
+    extraSlots: PropTypes.arrayOf(PropTypes.array).isRequired,
   }).isRequired,
 };
+
+/**
+ * Special marker that we can place into the list items returned from
+ * getDisplayedIdList() to produce a slot where deleted UAVs can be dragged.
+ */
+const deletionMarker = [undefined, undefined, <Delete key='__delete' />];
 
 /**
  * Selector that provides the list of UAV IDs to show in the UAV list when we
@@ -279,6 +304,7 @@ const getDisplayedMissionIdList = createSelector(
   (mapping, editable, uavIds) => {
     const mainUAVIds = [];
     const spareUAVIds = [];
+    const extraSlots = [];
     const seenUAVIds = new Set();
 
     mapping.forEach((uavId, index) => {
@@ -301,13 +327,13 @@ const getDisplayedMissionIdList = createSelector(
       }
     }
 
-    // If we are in editing mode, we always add one extra main UAV slot
-    // where the user can drag UAVs that should be deleted
+    // If we are in editing mode, we always add one extra slot where the user
+    // can drag UAVs that should be deleted
     if (editable) {
-      mainUAVIds.push([undefined, undefined, <Delete key='__delete' />]);
+      extraSlots.push(deletionMarker);
     }
 
-    return { mainUAVIds, spareUAVIds };
+    return { mainUAVIds, spareUAVIds, extraSlots };
   }
 );
 

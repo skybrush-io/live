@@ -26,7 +26,7 @@ import { toDegrees, toRadians } from '~/utils/math';
  */
 export default class MapRotationTextBox extends React.Component {
   static propTypes = {
-    initialRotation: PropTypes.oneOfType(PropTypes.number, PropTypes.string),
+    initialRotation: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
     resetDuration: PropTypes.number,
     fieldWidth: PropTypes.string,
     style: PropTypes.object,

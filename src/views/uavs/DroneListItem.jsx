@@ -45,6 +45,11 @@ const useStyles = makeStyles(
         backgroundColor: theme.palette.action.selected,
       },
     },
+
+    fill: {
+      flexGrow: 1,
+      padding: theme.spacing(2, 0)
+    }
   }),
   {
     name: 'DroneListItem',
@@ -97,22 +102,26 @@ DragDropArea.propTypes = {
 
 const DroneListItem = ({
   children,
+  className,
   draggable,
+  editing,
+  fill,
   onClick,
   onDrop,
   selected,
-  uavId,
+  uavId
 }) => {
   const classes = useStyles();
-  const className = clsx(
+  const mergedClassNames = clsx(
     classes.root,
     onClick && classes.selectable,
     draggable && classes.draggable,
-    selected && classes.selected
+    selected && classes.selected,
+    fill && classes.fill
   );
   return draggable || onDrop ? (
     <DragDropArea
-      className={className}
+      className={mergedClassNames}
       id={uavId}
       onClick={onClick}
       onDrop={onDrop}
@@ -120,7 +129,7 @@ const DroneListItem = ({
       {children}
     </DragDropArea>
   ) : (
-    <div className={className} onClick={onClick}>
+    <div className={mergedClassNames} onClick={onClick}>
       {children}
     </div>
   );
@@ -128,7 +137,10 @@ const DroneListItem = ({
 
 DroneListItem.propTypes = {
   children: PropTypes.node,
+  className: PropTypes.string,
   draggable: PropTypes.bool,
+  editing: PropTypes.bool,
+  fill: PropTypes.bool,
   onClick: PropTypes.func,
   onDrop: PropTypes.func,
   selected: PropTypes.bool,
