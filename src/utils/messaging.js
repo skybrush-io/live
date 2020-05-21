@@ -31,7 +31,7 @@ const processResponse = (expectedType, commandName) => (response) => {
           `${commandName} execution failed for ${failure.join(', ')}`
         );
       } else {
-        logger.info(`${commandName} execution was successful`);
+        logger.info(`${commandName} sent successfully`);
       }
     } else {
       logger.error(`${commandName} response has no body`);
