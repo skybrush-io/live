@@ -107,6 +107,7 @@ const Sidebar = ({ isOpen, workbench }) => (
           label='Locations'
           component='saved-location-list'
         />
+        {/*
         <hr />
         <Module
           id='log'
@@ -115,6 +116,7 @@ const Sidebar = ({ isOpen, workbench }) => (
           label='Event log'
           component='log-panel'
         />
+        */}
       </ModuleTray>
     </div>
   </div>
