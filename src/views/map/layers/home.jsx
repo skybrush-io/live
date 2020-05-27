@@ -110,7 +110,7 @@ export const HomePositionsLayerSettings = connect(
 
 // === The actual layer to be rendered ===
 
-function markAsSelectable(layer) {
+function markAsSelectableAndEditable(layer) {
   if (layer) {
     setLayerEditable(layer.layer);
     setLayerSelectable(layer.layer);
@@ -360,7 +360,7 @@ HomePositionsVectorSource.defaultProps = {
 
 const HomePositionsLayerPresentation = ({ layer, zIndex, ...rest }) => (
   <olLayer.Vector
-    ref={markAsSelectable}
+    ref={markAsSelectableAndEditable}
     updateWhileAnimating
     updateWhileInteracting
     zIndex={zIndex}

@@ -39,10 +39,6 @@ export function fitCoordinatesIntoMapView(coordinates, options) {
     duration: 500,
     ...options,
   };
-  /*
-    .map(uav => mapViewCoordinateFromLonLat([uav.lon, uav.lat]))
-    .toArray();
-  */
 
   const bounds = boundingExtent(
     coordinates.map((coord) =>

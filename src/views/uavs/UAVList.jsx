@@ -10,7 +10,7 @@ import union from 'lodash-es/union';
 import PropTypes from 'prop-types';
 import React, { useCallback, useMemo } from 'react';
 import { DndProvider } from 'react-dnd';
-import HTML5Backend from 'react-dnd-html5-backend';
+import { HTML5Backend } from 'react-dnd-html5-backend';
 import { connect } from 'react-redux';
 
 import AppBar from '@material-ui/core/AppBar';

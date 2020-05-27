@@ -35,7 +35,7 @@ import {
   handleConnectionInformationMessage,
 } from '~/model/connections';
 import { handleClockInformationMessage } from '~/model/clocks';
-import { handleDockIdList } from '~/model/docks';
+import { handleDockInformationMessage } from '~/model/docks';
 
 /**
  * Proposes a protocol to use (http or https) depending on the protocol of
@@ -334,7 +334,15 @@ async function executeTasksAfterConnection(dispatch) {
       type: 'OBJ-LIST',
       filter: ['dock'],
     });
-    handleDockIdList(response.body.ids || [], dispatch);
+    const dockIds = response.body.ids || [];
+
+    // For each dock ID that we have received, get its status
+    // via a DOCK-INF message
+    response = await messageHub.sendMessage({
+      type: 'DOCK-INF',
+      ids: dockIds,
+    });
+    handleDockInformationMessage(response.body, dispatch);
 
     // Check if the server supports virtual drones
     const supportsVirtualDrones = await messageHub.query.isExtensionLoaded(
@@ -358,7 +366,7 @@ async function executeTasksAfterConnection(dispatch) {
     // overly high skew estimates when the browser loads the JS page and the
     // connection is established right at startup. (We get >500ms skew
     // frequently).
-    // 
+    //
     // TODO(ntamas): later on, we should do this regularly. Take a look at the
     // clockskew package on npm and implement a saga that is similar.
     response = await messageHub.sendMessage('SYS-TIME');

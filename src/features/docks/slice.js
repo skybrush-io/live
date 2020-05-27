@@ -3,9 +3,32 @@
  * docking stations.
  */
 
+import has from 'lodash-es/has';
 import { createSlice } from '@reduxjs/toolkit';
 
 import { clearOrderedCollection } from '~/utils/collections';
+
+/**
+ * Function that updates the state of a dock with the given ID in
+ * a state object.
+ *
+ * @param  {Object} state  the Redux state object to modify
+ * @param  {string} id     the identifier of the connection to update
+ * @param  {Object} properties  the new properties of the dock
+ */
+function updateStateOfDock(state, id, properties) {
+  const { byId } = state;
+
+  if (!has(byId, id)) {
+    byId[id] = {
+      id,
+      position: null,
+    };
+    state.order.push(id);
+  }
+
+  Object.assign(byId[id], properties);
+}
 
 const { actions, reducer } = createSlice({
   name: 'docks',
@@ -23,30 +46,34 @@ const { actions, reducer } = createSlice({
 
   reducers: {
     /**
-     * Adds some dock objects given a list of dock identifiers.
-     *
-     * This function does nothing for docks that already exist.
-     */
-    addDocksByIds(state, action) {
-      for (const dockId of action.payload) {
-        if (state.byId[dockId] === undefined) {
-          state.byId[dockId] = {
-            id: dockId,
-          };
-          state.order.push(dockId);
-        }
-      }
-    },
-
-    /**
      * Clears the dock list.
      */
     clearDockList(state) {
       clearOrderedCollection(state);
     },
+
+    /**
+     * Updates the state of a single dock, creating the dock if it does not
+     * exist yet.
+     */
+    setDockState(state, action) {
+      const { id, ...rest } = action.payload;
+      updateStateOfDock(state, id, rest);
+    },
+
+    /**
+     * Updates the state of multiple docks, creating the docks that do not
+     * exist yet.
+     */
+    setDockStateMultiple(state, action) {
+      const { payload } = action;
+      for (const id of Object.keys(payload)) {
+        updateStateOfDock(state, id, payload[id]);
+      }
+    },
   },
 });
 
-export const { addDocksByIds, clearDockList } = actions;
+export const { clearDockList, setDockState, setDockStateMultiple } = actions;
 
 export default reducer;

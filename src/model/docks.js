@@ -1,13 +1,41 @@
-import { addDocksByIds } from '~/features/docks/slice';
+import isNil from 'lodash-es/isNil';
+import isUndefined from 'lodash-es/isUndefined';
+import mapValues from 'lodash-es/mapValues';
+import omitBy from 'lodash-es/omitBy';
+
+import { setDockStateMultiple } from '~/features/docks/slice';
+
+const mapPosition = (positionFromServer) =>
+  positionFromServer
+    ? {
+        lat: positionFromServer[0] / 1e7,
+        lon: positionFromServer[1] / 1e7,
+        amsl: isNil(positionFromServer[2]) ? null : positionFromServer[2] / 1e3,
+        agl: isNil(positionFromServer[3]) ? null : positionFromServer[3] / 1e3,
+      }
+    : null;
 
 /**
- * Handles a response to an OBJ-LIST message from a Skybrush server where
- * we queried the list of dock IDs, and updates the state of the Redux store
- * appropriately.
+ * Handles a DOCK-INF message from a Skybrush server and updates the
+ * state of the Redux store appropriately.
  *
- * @param  {string[]} dockIds  the array of dock IDs
+ * @param  {Object} body  the body of the DOCK-INF message
  * @param  {function} dispatch  the dispatch function of the Redux store
  */
-export function handleDockIdList(dockIds, dispatch) {
-  dispatch(addDocksByIds(dockIds));
+export function handleDockInformationMessage(body, dispatch) {
+  // Map the status objects from the server into the format expected
+  // by our Redux actions. Omit keys for which the values are not
+  // provided by the server.
+
+  const states = mapValues(body.status, ({ id, position }) =>
+    omitBy(
+      {
+        id,
+        position: mapPosition(position),
+      },
+      isUndefined
+    )
+  );
+
+  dispatch(setDockStateMultiple(states));
 }

@@ -2,7 +2,7 @@ import Color from 'color';
 import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
 import { DndProvider, useDrop } from 'react-dnd';
-import HTML5Backend, { NativeTypes } from 'react-dnd-html5-backend';
+import { HTML5Backend, NativeTypes } from 'react-dnd-html5-backend';
 
 import ListItem from '@material-ui/core/ListItem';
 import { makeStyles } from '@material-ui/core/styles';

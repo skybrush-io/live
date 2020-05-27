@@ -1,4 +1,4 @@
-import Color from 'color';
+import createColor from 'color';
 import unary from 'lodash-es/unary';
 import PropTypes from 'prop-types';
 import { Circle, Style, Text } from 'ol/style';
@@ -9,32 +9,32 @@ import { Feature, geom, interaction, layer, source } from '@collmot/ol-react';
 
 import { Tool } from '../tools';
 
-import { FeatureType, LabelStyle } from '../../../model/features';
-import { featureIdToGlobalId } from '../../../model/identifiers';
-import { setLayerEditable, setLayerSelectable } from '../../../model/layers';
-import { getFeaturesInOrder } from '../../../selectors/ordered';
-import { getSelectedFeatureIds } from '../../../selectors/selection';
+import { FeatureType, LabelStyle } from '~/model/features';
+import { featureIdToGlobalId } from '~/model/identifiers';
+import { setLayerEditable, setLayerSelectable } from '~/model/layers';
+import { getFeaturesInOrder } from '~/selectors/ordered';
+import { getSelectedFeatureIds } from '~/selectors/selection';
 import {
   mapViewCoordinateFromLonLat,
   euclideanDistance,
-} from '../../../utils/geography';
+} from '~/utils/geography';
 import {
   fill,
   primaryColor,
   thinOutline,
   whiteThickOutline,
   whiteThinOutline,
-} from '../../../utils/styles';
+} from '~/utils/styles';
 
 // === Settings for this particular layer type ===
 
-const FeaturesLayerSettingsPresentation = () => <noscript />;
+const FeaturesLayerSettingsPresentation = () => null;
 
 export const FeaturesLayerSettings = connect(
   // mapStateToProps
-  (state, ownProps) => ({}),
+  null,
   // mapDispatchToProps
-  (dispatch, ownProps) => ({})
+  null
 )(FeaturesLayerSettingsPresentation);
 
 // === Helper functions ===
@@ -86,7 +86,7 @@ const labelStrokes = {
 // TODO: cache the style somewhere?
 const styleForFeature = (feature, selected = false) => {
   const { color, label, labelStyle, type } = feature;
-  const parsedColor = Color(color || primaryColor);
+  const parsedColor = createColor(color || primaryColor);
   const styles = [];
   const radius = 6;
 
@@ -183,7 +183,6 @@ function markAsSelectableAndEditable(layer) {
 const FeaturesLayerPresentation = ({
   features,
   onFeaturesModified,
-  projection,
   selectedFeatureIds,
   selectedTool,
   zIndex,
@@ -208,9 +207,6 @@ const FeaturesLayerPresentation = ({
 );
 
 FeaturesLayerPresentation.propTypes = {
-  layer: PropTypes.object,
-  layerId: PropTypes.string,
-  projection: PropTypes.func.isRequired,
   selectedTool: PropTypes.string,
   zIndex: PropTypes.number,
 
@@ -220,19 +216,15 @@ FeaturesLayerPresentation.propTypes = {
   onFeaturesModified: PropTypes.func,
 };
 
-FeaturesLayerPresentation.defaultProps = {
-  projection: mapViewCoordinateFromLonLat,
-};
-
 export const FeaturesLayer = connect(
   // mapStateToProps
-  (state, ownProps) => ({
+  (state) => ({
     features: getFeaturesInOrder(state),
     selectedFeatureIds: getSelectedFeatureIds(state),
   }),
   // mapDispatchToProps
-  (dispatch, ownProps) => ({
-    onFeaturesModified: (event) => {
+  () => ({
+    onFeaturesModified: () => {
       // Const { features } = event
       /* TODO(ntamas): features contains all the features in the layer, not
        * only the ones being modified. We need to figure out which ones were
