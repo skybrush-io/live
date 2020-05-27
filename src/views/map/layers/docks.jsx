@@ -1,4 +1,4 @@
-import { Icon, Style, Text } from 'ol/style';
+import { RegularShape, Style, Text } from 'ol/style';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
@@ -12,8 +12,9 @@ import {
 import { mapViewCoordinateFromLonLat } from '~/utils/geography';
 import { dockIdToGlobalId } from '~/model/identifiers';
 import { setLayerSelectable } from '~/model/layers';
+import { shadowVeryThinOutline, shadowThinOutline, fill } from '~/utils/styles';
 
-const DockImage = require('~/../assets/img/dock-32x32.png').default;
+// const DockImage = require('~/../assets/img/dock-32x32.png').default;
 
 // === Settings for this particular layer type ===
 
@@ -21,16 +22,20 @@ export const DocksLayerSettings = () => false;
 
 // === Helper functions ===
 
-const createDockStyle = (label) => [
+const createDockStyle = (label, selected) => [
   new Style({
-    image: new Icon({
-      src: DockImage,
+    image: new RegularShape({
+      points: 4,
+      fill: fill([0, 136, 255, selected ? 1 : 0.5]),
+      stroke: selected ? shadowThinOutline : shadowVeryThinOutline,
+      radius: 10,
+      rotation: Math.PI / 4,
     }),
   }),
   new Style({
     text: new Text({
       font: '12px sans-serif',
-      offsetY: 24,
+      offsetY: 18,
       placement: 'point',
       text: label,
       textAlign: 'center',

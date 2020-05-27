@@ -30,21 +30,26 @@ const innerStyle = {
 };
 
 const headingFormatter = (value, unit, suffix) =>
-  (suffix === "ago") ? "Session expired" : "Session expires";
+  suffix === 'ago' ? 'Session expired' : 'Session expires';
 
 const SessionExpiryBox = ({ expiresAt }) => {
   return (
-    <Box alignSelf="center" px={1} style={{ color: 'white', fontSize: '0.875rem', textAlign: 'right' }}>
+    <Box
+      alignSelf='center'
+      px={1}
+      style={{ color: 'white', fontSize: '0.875rem', textAlign: 'right' }}
+    >
       <div style={{ color: 'rgba(255, 255, 255, 0.54)' }}>
         <TimeAgo date={expiresAt} formatter={headingFormatter} />
       </div>
       <div>
-        <b><TimeAgo date={expiresAt} /></b>
+        <b>
+          <TimeAgo date={expiresAt} />
+        </b>
       </div>
     </Box>
   );
 };
-
 
 /**
  * Presentation component for the header at the top edge of the main
@@ -61,7 +66,9 @@ const Header = ({ isSidebarOpen, sessionExpiresAt, toggleSidebar }) => (
         shape={isSidebarOpen ? 'close' : 'menu'}
         onClick={toggleSidebar}
       />
-      <Box flexGrow={1} flexShrink={1}>{/* spacer */}</Box>
+      <Box flexGrow={1} flexShrink={1}>
+        {/* spacer */}
+      </Box>
       {sessionExpiresAt && <SessionExpiryBox expiresAt={sessionExpiresAt} />}
       <hr />
       <ConnectionStatusButton isAlwaysVisible />
