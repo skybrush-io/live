@@ -10,6 +10,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 
 import IconButton from '@material-ui/core/IconButton';
+import Tooltip from '~/components/Tooltip';
 import DeviceGpsFixed from '@material-ui/icons/GpsFixed';
 import ActionAllOut from '@material-ui/icons/AllOut';
 
@@ -59,9 +60,11 @@ class FitAllFeaturesButton extends React.Component {
 
   render() {
     return (
-      <IconButton tooltip='Fit all features' onClick={this._handleClick}>
-        <this._CurrentIcon />
-      </IconButton>
+      <Tooltip content='Fit all features'>
+        <IconButton onClick={this._handleClick}>
+          <this._CurrentIcon />
+        </IconButton>
+      </Tooltip>
     );
   }
 

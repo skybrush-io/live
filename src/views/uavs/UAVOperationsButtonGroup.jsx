@@ -12,6 +12,7 @@ import ActionHome from '@material-ui/icons/Home';
 import ActionPowerSettingsNew from '@material-ui/icons/PowerSettingsNew';
 import Message from '@material-ui/icons/Message';
 import Refresh from '@material-ui/icons/Refresh';
+import Tooltip from '~/components/Tooltip';
 
 import {
   selectUAVInMessagesDialog,
@@ -73,38 +74,54 @@ const UAVOperationsButtonGroup = ({
 
   return (
     <>
-      <IconButton disabled={isSelectionEmpty} onClick={takeoffSelectedUAVs}>
-        <ActionFlightTakeoff />
-      </IconButton>
-      <IconButton disabled={isSelectionEmpty} onClick={landSelectedUAVs}>
-        <ActionFlightLand />
-      </IconButton>
-      <IconButton
-        disabled={isSelectionEmpty}
-        onClick={returnToHomeSelectedUAVs}
-      >
-        <ActionHome />
-      </IconButton>
-      <IconButton
-        disabled={!isSelectionSingle}
-        onClick={selectUAVAndShowMessagesDialog}
-      >
-        <Message />
-      </IconButton>
+      <Tooltip content='Takeoff'>
+        <IconButton disabled={isSelectionEmpty} onClick={takeoffSelectedUAVs}>
+          <ActionFlightTakeoff />
+        </IconButton>
+      </Tooltip>
+
+      <Tooltip content='Land'>
+        <IconButton disabled={isSelectionEmpty} onClick={landSelectedUAVs}>
+          <ActionFlightLand />
+        </IconButton>
+      </Tooltip>
+
+      <Tooltip content='Return to home'>
+        <IconButton
+          disabled={isSelectionEmpty}
+          onClick={returnToHomeSelectedUAVs}
+        >
+          <ActionHome />
+        </IconButton>
+      </Tooltip>
+
+      <Tooltip content='Send message'>
+        <IconButton
+          disabled={!isSelectionSingle}
+          onClick={selectUAVAndShowMessagesDialog}
+        >
+          <Message />
+        </IconButton>
+      </Tooltip>
 
       <Divider className={classes.divider} orientation='vertical' />
 
-      <IconButton disabled={isSelectionEmpty} onClick={resetSelectedUAVs}>
-        <Refresh
-          color={isSelectionEmpty ? undefined : 'secondary'}
-          disabled={isSelectionEmpty}
-        />
-      </IconButton>
-      <IconButton disabled={isSelectionEmpty} onClick={haltSelectedUAVs}>
-        <ActionPowerSettingsNew
-          color={isSelectionEmpty ? undefined : 'secondary'}
-        />
-      </IconButton>
+      <Tooltip content='Reboot'>
+        <IconButton disabled={isSelectionEmpty} onClick={resetSelectedUAVs}>
+          <Refresh
+            color={isSelectionEmpty ? undefined : 'secondary'}
+            disabled={isSelectionEmpty}
+          />
+        </IconButton>
+      </Tooltip>
+
+      <Tooltip content='Power off'>
+        <IconButton disabled={isSelectionEmpty} onClick={haltSelectedUAVs}>
+          <ActionPowerSettingsNew
+            color={isSelectionEmpty ? undefined : 'secondary'}
+          />
+        </IconButton>
+      </Tooltip>
     </>
   );
 };

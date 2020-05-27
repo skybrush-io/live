@@ -6,6 +6,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 
 import AuthenticationStatusBadge from '../badges/AuthenticationStatusBadge';
+import Tooltip from '../Tooltip';
 
 import {
   showAuthenticationDialog,
@@ -24,16 +25,18 @@ const AuthenticationButtonPresentation = ({
   onAuthenticate,
   onDeauthenticate,
 }) => (
-  <div
-    className={clsx('wb-module', isDisabled && 'wb-module-disabled')}
-    onClick={isAuthenticated ? onDeauthenticate : onAuthenticate}
-  >
-    <span className={clsx('wb-icon', 'wb-module-icon')}>
-      <AuthenticationStatusBadge />
-      <PersonIcon />
-    </span>
-    {label ? <span className='wb-label wb-module-label'>{label}</span> : null}
-  </div>
+  <Tooltip content='Authentication'>
+    <div
+      className={clsx('wb-module', isDisabled && 'wb-module-disabled')}
+      onClick={isAuthenticated ? onDeauthenticate : onAuthenticate}
+    >
+      <span className={clsx('wb-icon', 'wb-module-icon')}>
+        <AuthenticationStatusBadge />
+        <PersonIcon />
+      </span>
+      {label ? <span className='wb-label wb-module-label'>{label}</span> : null}
+    </div>
+  </Tooltip>
 );
 
 AuthenticationButtonPresentation.propTypes = {

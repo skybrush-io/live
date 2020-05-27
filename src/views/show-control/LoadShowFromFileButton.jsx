@@ -15,6 +15,7 @@ import ListItemTextWithProgress from '~/components/ListItemTextWithProgress';
 import StepperStatusLight, {
   StepperStatus,
 } from '~/components/StepperStatusLight';
+import Tooltip from '~/components/Tooltip';
 import { loadShowFromFile } from '~/features/show/actions';
 import {
   clearLoadedShow,
@@ -79,13 +80,17 @@ const LoadShowFromFileButton = ({
     />
     <ListItemSecondaryAction>
       {hasLoadedShowFile ? (
-        <IconButton edge='end' onClick={onClearLoadedShow}>
-          <Clear />
-        </IconButton>
+        <Tooltip content='Clear loaded show'>
+          <IconButton edge='end' onClick={onClearLoadedShow}>
+            <Clear />
+          </IconButton>
+        </Tooltip>
       ) : (
-        <IconButton edge='end' onClick={onLoadShowFromCloud}>
-          <CloudDownload />
-        </IconButton>
+        <Tooltip content='Load show from cloud'>
+          <IconButton edge='end' onClick={onLoadShowFromCloud}>
+            <CloudDownload />
+          </IconButton>
+        </Tooltip>
       )}
     </ListItemSecondaryAction>
   </FileListItem>

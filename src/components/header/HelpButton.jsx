@@ -1,6 +1,9 @@
 import config from 'config';
+import React from 'react';
 
 import Help from '@material-ui/icons/HelpOutline';
+
+import GenericHeaderButton from './GenericHeaderButton';
 
 const showHelp = () => {
   if (config.urls.help) {
@@ -9,11 +12,9 @@ const showHelp = () => {
 };
 
 const HelpButton = () => (
-  <div className='wb-module' id='tour-help-button' onClick={showHelp}>
-    <span className='wb-icon wb-module-icon'>
-      <Help />
-    </span>
-  </div>
+  <GenericHeaderButton id='tour-help-button' tooltip='Help' onClick={showHelp}>
+    <Help />
+  </GenericHeaderButton>
 );
 
 export default HelpButton;

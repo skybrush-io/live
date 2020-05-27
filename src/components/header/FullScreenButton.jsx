@@ -1,31 +1,25 @@
 import clsx from 'clsx';
-import NavigationFullscreen from '@material-ui/icons/Fullscreen';
-import NavigationFullscreenExit from '@material-ui/icons/FullscreenExit';
-
 import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
 import { useEvent, useUpdate } from 'react-use';
 import ScreenFull from 'screenfull';
 
-const FullScreenButtonPresentation = ({
-  isEnabled,
-  isFullscreen,
-  label,
-  onClick,
-}) => (
-  <div
-    className={clsx('wb-module', !isEnabled && 'wb-module-disabled')}
-    onClick={onClick}
+import NavigationFullscreen from '@material-ui/icons/Fullscreen';
+import NavigationFullscreenExit from '@material-ui/icons/FullscreenExit';
+
+import GenericHeaderButton from './GenericHeaderButton';
+
+const FullScreenButtonPresentation = ({ isFullscreen, ...rest }) => (
+  <GenericHeaderButton
+    {...rest}
+    tooltip={isFullscreen ? 'Exit full screen mode' : 'Full screen mode'}
   >
-    <span className='wb-icon wb-module-icon'>
-      {isFullscreen ? <NavigationFullscreenExit /> : <NavigationFullscreen />}
-    </span>
-    {label ? <span className='wb-label wb-module-label'>{label}</span> : null}
-  </div>
+    {isFullscreen ? <NavigationFullscreenExit /> : <NavigationFullscreen />}
+  </GenericHeaderButton>
 );
 
 FullScreenButtonPresentation.propTypes = {
-  isEnabled: PropTypes.bool.isRequired,
+  disabled: PropTypes.bool.isRequired,
   isFullscreen: PropTypes.bool.isRequired,
   label: PropTypes.string,
   onClick: PropTypes.func,
@@ -41,7 +35,7 @@ const FullScreenButton = () => {
   return (
     <FullScreenButtonPresentation
       isFullscreen={ScreenFull.isFullscreen}
-      isEnabled={ScreenFull.isEnabled}
+      disabled={!ScreenFull.isEnabled}
       onClick={toggleFullscreen}
     />
   );

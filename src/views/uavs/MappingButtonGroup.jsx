@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 
 import Zoom from '@material-ui/core/Zoom';
 import IconButton from '@material-ui/core/IconButton';
+import Tooltip from '~/components/Tooltip';
 import Edit from '@material-ui/icons/Edit';
 
 import AugmentMappingButton from './AugmentMappingButton';
@@ -31,12 +32,14 @@ const MappingButtonGroup = ({
   <TransitionGroup>
     {showMissionIds && (
       <Zoom key='editMapping'>
-        <IconButton
-          disabled={mappingEditable || !showMissionIds}
-          onClick={startMappingEditorSession}
-        >
-          <Edit />
-        </IconButton>
+        <Tooltip content='Edit mapping'>
+          <IconButton
+            disabled={mappingEditable || !showMissionIds}
+            onClick={startMappingEditorSession}
+          >
+            <Edit />
+          </IconButton>
+        </Tooltip>
       </Zoom>
     )}
     {showMissionIds && (

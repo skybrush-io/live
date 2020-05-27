@@ -12,6 +12,7 @@ import Fade from '@material-ui/core/Fade';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import IconButton from '@material-ui/core/IconButton';
 import Switch from '@material-ui/core/Switch';
+import Tooltip from '~/components/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Clear from '@material-ui/icons/Clear';
@@ -141,9 +142,9 @@ const UploadDialog = ({
         </Typography>
         <Box flex={1} />
         <FormControlLabel
-          control={<Switch size="small" checked />}
-          label="Auto geofence"
-          labelPlacement="start"
+          control={<Switch checked size='small' />}
+          label='Auto geofence'
+          labelPlacement='start'
         />
       </DialogToolbar>
 
@@ -154,9 +155,11 @@ const UploadDialog = ({
           emptyMessage='No drones in upload queue.'
           actions={
             isEmpty(itemsWaitingToStart) ? null : (
-              <IconButton edge='end' onClick={onClearUploadQueue}>
-                <Clear />
-              </IconButton>
+              <Tooltip content='Clear upload queue'>
+                <IconButton edge='end' onClick={onClearUploadQueue}>
+                  <Clear />
+                </IconButton>
+              </Tooltip>
             )
           }
         />
@@ -171,9 +174,11 @@ const UploadDialog = ({
           emptyMessage='No failures.'
           actions={
             isEmpty(failedItems) ? null : (
-              <IconButton edge='end' onClick={onRetryFailedUploads}>
-                <Refresh />
-              </IconButton>
+              <Tooltip content='Retry failed uploads'>
+                <IconButton edge='end' onClick={onRetryFailedUploads}>
+                  <Refresh />
+                </IconButton>
+              </Tooltip>
             )
           }
         />

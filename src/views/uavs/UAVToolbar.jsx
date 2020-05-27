@@ -5,6 +5,7 @@ import React from 'react';
 import Box from '@material-ui/core/Box';
 import IconButton from '@material-ui/core/IconButton';
 import Toolbar from '@material-ui/core/Toolbar';
+import Tooltip from '~/components/Tooltip';
 import ImageBlurCircular from '@material-ui/icons/BlurCircular';
 import ImageBlurOn from '@material-ui/icons/BlurOn';
 
@@ -25,9 +26,11 @@ const UAVToolbar = React.forwardRef(
         <Box flex={1} />
 
         {fitSelectedUAVs && (
-          <IconButton style={{ float: 'right' }} onClick={fitSelectedUAVs}>
-            {isSelectionEmpty ? <ImageBlurOn /> : <ImageBlurCircular />}
-          </IconButton>
+          <Tooltip content='Fit selection into view'>
+            <IconButton style={{ float: 'right' }} onClick={fitSelectedUAVs}>
+              {isSelectionEmpty ? <ImageBlurOn /> : <ImageBlurCircular />}
+            </IconButton>
+          </Tooltip>
         )}
 
         <MappingButtonGroup />

@@ -40,12 +40,17 @@ const MapToolbarSeparator = () => {
  *
  * @returns {React.Element} the rendered component
  */
-const MapToolbarPresentation = ({ initialRotation, onToolSelected, selectedTool }) => {
+const MapToolbarPresentation = ({
+  initialRotation,
+  onToolSelected,
+  selectedTool,
+}) => {
   const colorForTool = (tool) =>
     selectedTool === tool ? 'primary' : undefined;
 
   return (
     <div>
+      {/*
       <IconButton
         tooltip='Select'
         onClick={partial(onToolSelected, Tool.SELECT)}
@@ -60,6 +65,7 @@ const MapToolbarPresentation = ({ initialRotation, onToolSelected, selectedTool 
       </IconButton>
 
       <MapToolbarSeparator />
+      */}
 
       <MapRotationTextBox
         initialRotation={initialRotation}
@@ -91,7 +97,7 @@ const MapToolbar = connect(
   // mapStateToProps
   (state) => ({
     ...state.map.tools,
-    initialRotation: getMapViewRotationAngle(state)
+    initialRotation: getMapViewRotationAngle(state),
   }),
   // mapDispatchToProps
   (dispatch) => ({

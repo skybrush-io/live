@@ -9,6 +9,7 @@ import React from 'react';
 import IconButton from '@material-ui/core/IconButton';
 import RotateLeft from '@material-ui/icons/RotateLeft';
 import TextField from '@material-ui/core/TextField';
+import Tooltip from '~/components/Tooltip';
 import { normalizeAngle } from '~/utils/geography';
 import { mapReferenceRequestSignal, mapRotationResetSignal } from '~/signals';
 
@@ -71,9 +72,11 @@ export default class MapRotationTextBox extends React.Component {
   render() {
     return (
       <div style={this.props.style}>
-        <IconButton tooltip='Reset rotation' onClick={this._onButtonClick}>
-          <RotateLeft />
-        </IconButton>
+        <Tooltip content='Reset rotation'>
+          <IconButton onClick={this._onButtonClick}>
+            <RotateLeft />
+          </IconButton>
+        </Tooltip>
         <TextField
           size='small'
           style={{

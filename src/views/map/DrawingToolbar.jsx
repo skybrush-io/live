@@ -8,6 +8,7 @@ import ShowChart from '@material-ui/icons/ShowChart';
 import CropSquare from '@material-ui/icons/CropSquare';
 import PanoramaFishEye from '@material-ui/icons/PanoramaFishEye';
 import StarBorder from '@material-ui/icons/StarBorder';
+import Tooltip from '~/components/Tooltip';
 
 import partial from 'lodash-es/partial';
 import { connect } from 'react-redux';
@@ -31,42 +32,41 @@ const DrawingToolbarPresentation = ({
 
   return (
     <div style={{ display: 'flex', flexFlow: 'column nowrap' }}>
-      <IconButton
-        tooltip='Add marker'
-        onClick={partial(onToolSelected, Tool.DRAW_POINT)}
-      >
-        <LocationOn color={colorForTool(Tool.DRAW_POINT)} />
-      </IconButton>
-      <IconButton
-        tooltip='Draw path'
-        onClick={partial(onToolSelected, Tool.DRAW_PATH)}
-      >
-        <ShowChart color={colorForTool(Tool.DRAW_PATH)} />
-      </IconButton>
-      <IconButton
-        tooltip='Draw circle'
-        onClick={partial(onToolSelected, Tool.DRAW_CIRCLE)}
-      >
-        <PanoramaFishEye color={colorForTool(Tool.DRAW_CIRCLE)} />
-      </IconButton>
-      <IconButton
-        tooltip='Draw rectangle'
-        onClick={partial(onToolSelected, Tool.DRAW_RECTANGLE)}
-      >
-        <CropSquare color={colorForTool(Tool.DRAW_RECTANGLE)} />
-      </IconButton>
-      <IconButton
-        tooltip='Draw polygon'
-        onClick={partial(onToolSelected, Tool.DRAW_POLYGON)}
-      >
-        <StarBorder color={colorForTool(Tool.DRAW_POLYGON)} />
-      </IconButton>
-      <IconButton
-        tooltip='Edit feature'
-        onClick={partial(onToolSelected, Tool.EDIT_FEATURE)}
-      >
-        <EditFeature color={colorForTool(Tool.EDIT_FEATURE)} />
-      </IconButton>
+      <Tooltip content='Add marker'>
+        <IconButton onClick={partial(onToolSelected, Tool.DRAW_POINT)}>
+          <LocationOn color={colorForTool(Tool.DRAW_POINT)} />
+        </IconButton>
+      </Tooltip>
+
+      <Tooltip content='Draw path'>
+        <IconButton onClick={partial(onToolSelected, Tool.DRAW_PATH)}>
+          <ShowChart color={colorForTool(Tool.DRAW_PATH)} />
+        </IconButton>
+      </Tooltip>
+
+      <Tooltip content='Draw circle'>
+        <IconButton onClick={partial(onToolSelected, Tool.DRAW_CIRCLE)}>
+          <PanoramaFishEye color={colorForTool(Tool.DRAW_CIRCLE)} />
+        </IconButton>
+      </Tooltip>
+
+      <Tooltip content='Draw rectangle'>
+        <IconButton onClick={partial(onToolSelected, Tool.DRAW_RECTANGLE)}>
+          <CropSquare color={colorForTool(Tool.DRAW_RECTANGLE)} />
+        </IconButton>
+      </Tooltip>
+
+      <Tooltip content='Draw polygon'>
+        <IconButton onClick={partial(onToolSelected, Tool.DRAW_POLYGON)}>
+          <StarBorder color={colorForTool(Tool.DRAW_POLYGON)} />
+        </IconButton>
+      </Tooltip>
+
+      <Tooltip content='Edit feature'>
+        <IconButton onClick={partial(onToolSelected, Tool.EDIT_FEATURE)}>
+          <EditFeature color={colorForTool(Tool.EDIT_FEATURE)} />
+        </IconButton>
+      </Tooltip>
     </div>
   );
 };

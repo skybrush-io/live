@@ -6,6 +6,7 @@ import IconButton from '@material-ui/core/IconButton';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import ListItemText from '@material-ui/core/ListItemText';
+import Tooltip from '~/components/Tooltip';
 
 import ActionSettings from '@material-ui/icons/Settings';
 
@@ -33,9 +34,11 @@ const LocationListEntry = (props) => {
   const scrollToLocation = () => scrollToMapLocation(location.center);
 
   const actionButton = (
-    <IconButton edge='end' onClick={editLocation}>
-      <ActionSettings />
-    </IconButton>
+    <Tooltip content='Edit location'>
+      <IconButton edge='end' onClick={editLocation}>
+        <ActionSettings />
+      </IconButton>
+    </Tooltip>
   );
 
   return (
