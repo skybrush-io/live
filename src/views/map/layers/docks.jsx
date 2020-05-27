@@ -26,7 +26,7 @@ const createDockStyle = (label, selected) => [
   new Style({
     image: new RegularShape({
       points: 4,
-      fill: fill([0, 136, 255, selected ? 1 : 0.5]),
+      fill: fill([255, 136, 0, selected ? 1 : 0.5]),
       stroke: selected ? shadowThinOutline : shadowVeryThinOutline,
       radius: 10,
       rotation: Math.PI / 4,
