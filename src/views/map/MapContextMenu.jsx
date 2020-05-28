@@ -215,7 +215,7 @@ class MapContextMenu extends React.Component {
                 <ListItemIcon>
                   <Edit />
                 </ListItemIcon>
-                \n Properties…\n
+                Properties…
               </MenuItem>,
               <MenuItem
                 key='remove'

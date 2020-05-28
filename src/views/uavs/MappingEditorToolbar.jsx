@@ -58,8 +58,8 @@ const MappingEditorToolbar = React.forwardRef(
           variant='menu'
           onClose={closeMappingMenu}
         >
-          <MenuItem disabled>I\Import…I</MenuItem>
-          <MenuItem disabled>E\Export…E</MenuItem>
+          <MenuItem disabled>Import…</MenuItem>
+          <MenuItem disabled>Export…</MenuItem>
           <Divider />
           <MenuItem onClick={closeMappingMenu(clearMapping)}>Clear</MenuItem>
         </Menu>
