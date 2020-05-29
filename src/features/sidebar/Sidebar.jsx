@@ -127,11 +127,13 @@ const Sidebar = ({ isOpen, workbench }) => (
         */}
       </ModuleTray>
     </div>
-    <Box py={0.5} px={1} style={{ opacity: 0.3, width: SIDEBAR_OPEN_WIDTH }}>
-      <Typography align='right' variant='caption' component='footer'>
-        {VERSION}
-      </Typography>
-    </Box>
+    {isOpen && (
+      <Box py={0.5} px={1} style={{ opacity: 0.3, width: SIDEBAR_OPEN_WIDTH }}>
+        <Typography align='center' variant='caption' component='footer'>
+          {VERSION}
+        </Typography>
+      </Box>
+    )}
   </div>
 );
 
