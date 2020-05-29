@@ -33,6 +33,12 @@ import { showSnackbarMessage } from '~/features/snackbar/slice';
  * @emits {mapReferenceRequestSignal} requests map reference.
  */
 class FitAllFeaturesButton extends React.Component {
+  static propTypes = {
+    duration: PropTypes.number,
+    margin: PropTypes.number,
+    dispatch: PropTypes.func,
+  };
+
   /**
    * Constructor that binds context to functions,
    * and requests map reference with callback.
@@ -79,10 +85,8 @@ class FitAllFeaturesButton extends React.Component {
 
   /**
    * Event handler that calculates the target extent and fits it into the view.
-   *
-   * @param {Event} e the event fired from the IconButton component
    */
-  _handleClick(e) {
+  _handleClick() {
     const feasibleLayers = this.map
       .getLayers()
       .getArray()
@@ -92,25 +96,27 @@ class FitAllFeaturesButton extends React.Component {
     );
     const features = [].concat.apply([], featureArrays);
     const featureExtents = features
-      .map((f) => {
-        const geometry = f.getGeometry();
+      .map((feature) => {
+        const geometry = feature.getGeometry();
         return geometry ? geometry.getExtent() : undefined;
       })
-      .filter((e) => e !== undefined);
+      .filter((event) => event !== undefined);
 
     if (featureExtents.length === 0) {
-      this.props.dispatch(
-        showSnackbarMessage(
-          'No valid feature extents avaiable, trying to get geolocation instead'
-        )
-      );
-
       this._CurrentIcon = DeviceGpsFixed;
 
       // This only works on secure origins
       if ('geolocation' in window.navigator) {
         window.navigator.geolocation.getCurrentPosition(
           this._geolocationReceived
+        );
+      } else {
+        this.props.dispatch(
+          showSnackbarMessage({
+            message:
+              'There are no features to fit into the view, and geolocation is not available',
+            semantics: 'error',
+          })
         );
       }
 
@@ -159,11 +165,5 @@ class FitAllFeaturesButton extends React.Component {
     });
   }
 }
-
-FitAllFeaturesButton.propTypes = {
-  duration: PropTypes.number,
-  margin: PropTypes.number,
-  dispatch: PropTypes.func,
-};
 
 export default connect()(FitAllFeaturesButton);

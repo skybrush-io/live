@@ -92,6 +92,7 @@ export default [
       mapRotationResetSignal.dispatch();
     },
   },
+  /*
   {
     description: 'Fit all features into view',
     on: 'down',
@@ -100,6 +101,7 @@ export default [
       fitAllFeaturesSignal.dispatch();
     },
   },
+  */
 
   {
     description: 'Open the Layers dialog',
