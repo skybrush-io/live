@@ -1,5 +1,7 @@
+import Box from '@material-ui/core/Box';
+import Typography from '@material-ui/core/Typography';
 import Alarm from '@material-ui/icons/Alarm';
-import Apps from '@material-ui/icons/Apps';
+// import Apps from '@material-ui/icons/Apps';
 import Flight from '@material-ui/icons/Flight';
 import Gamepad from '@material-ui/icons/Gamepad';
 import Grain from '@material-ui/icons/Grain';
@@ -7,7 +9,7 @@ import Layers from '@material-ui/icons/Layers';
 import Map from '@material-ui/icons/Map';
 import Message from '@material-ui/icons/Message';
 import MyLocation from '@material-ui/icons/MyLocation';
-import Notifications from '@material-ui/icons/Notifications';
+// import Notifications from '@material-ui/icons/Notifications';
 import ShowChart from '@material-ui/icons/ShowChart';
 // import Storage from '@material-ui/icons/Storage';
 import ThreeDRotation from '@material-ui/icons/ThreeDRotation';
@@ -19,17 +21,23 @@ import { connect } from 'react-redux';
 
 import LogStatusBadge from '~/components/badges/LogStatusBadge';
 
+const SIDEBAR_OPEN_WIDTH = 160;
+
 const style = {
   backgroundColor: '#333',
   boxShadow: 'rgba(0, 0, 0, 0.3) -9px -3px 6px -6px inset',
-  height: '100%',
+  display: 'flex',
+  flexFlow: 'column nowrap',
+  height: 'calc(100vh - 48px)',
+  overflow: 'hidden',
 };
 
 const innerStyle = {
   display: 'flex',
   flexFlow: 'column nowrap',
-  height: '100%',
-  width: 240,
+  flexGrow: 1,
+  overflow: 'auto',
+  width: SIDEBAR_OPEN_WIDTH,
 };
 
 /**
@@ -41,7 +49,7 @@ const innerStyle = {
 const Sidebar = ({ isOpen, workbench }) => (
   <div
     id='sidebar'
-    style={{ ...style, overflow: 'hidden', width: isOpen ? 240 : 48 }}
+    style={{ ...style, width: isOpen ? SIDEBAR_OPEN_WIDTH : 48 }}
   >
     <div style={innerStyle}>
       <ModuleTray allowMultipleSelection vertical workbench={workbench}>
@@ -119,6 +127,11 @@ const Sidebar = ({ isOpen, workbench }) => (
         */}
       </ModuleTray>
     </div>
+    <Box py={0.5} px={1} style={{ opacity: 0.3, width: SIDEBAR_OPEN_WIDTH }}>
+      <Typography align='right' variant='caption' component='footer'>
+        {VERSION}
+      </Typography>
+    </Box>
   </div>
 );
 

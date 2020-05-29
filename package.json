@@ -155,6 +155,7 @@
     "execa": "^4.0.2",
     "file-loader": "^6.0.0",
     "fs-extra": "^9.0.0",
+    "git-revision-webpack-plugin": "^3.0.6",
     "html-webpack-plugin": "^4.3.0",
     "less": "^3.11.1",
     "less-loader": "^6.1.0",

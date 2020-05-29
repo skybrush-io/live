@@ -10,11 +10,14 @@ const path = require('path');
 const webpack = require('webpack');
 const Dotenv = require('dotenv-webpack');
 
+const GitRevisionPlugin = require('git-revision-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 
 const { projectRoot } = require('./helpers');
 
 const enableSourceMap = process.env.NODE_ENV !== 'production';
+
+const gitRevisionPlugin = new GitRevisionPlugin();
 
 module.exports = {
   mode: 'development',
@@ -44,10 +47,15 @@ module.exports = {
         process.env.NODE_ENV || 'development'
       ),
       'process.env.DEPLOYMENT': JSON.stringify(process.env.DEPLOYMENT || '0'),
+      VERSION: JSON.stringify(gitRevisionPlugin.version()),
+      COMMIT_HASH: JSON.stringify(gitRevisionPlugin.commithash()),
     }),
 
     // Add environment variables from .env
     new Dotenv(),
+
+    // Add VERSION and COMMITHASH file to output
+    gitRevisionPlugin,
   ],
   resolve: {
     alias: {
@@ -114,8 +122,8 @@ module.exports = {
             // contains fancy accented characters as keys in an object, and
             // the UTF-8 representations of these accented characters get parsed
             // as ASCII, leading to invalid JS code.
-            ascii_only: true
-          }
+            ascii_only: true,
+          },
         },
       }),
     ],
