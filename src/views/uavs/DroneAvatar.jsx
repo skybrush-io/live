@@ -10,17 +10,11 @@ import { makeStyles } from '@material-ui/core/styles';
 
 import BatteryIndicator from './BatteryIndicator';
 import SecondaryStatusLight from './SecondaryStatusLight';
-import SummaryPill from './SummaryPill';
 
 import Colors from '~/components/colors';
-import {
-  abbreviateError,
-  getSeverityOfErrorCode,
-  getSeverityOfMostSevereErrorCode,
-  ErrorCode,
-  Severity,
-} from '~/flockwave/errors';
-import { UAVAge } from '~/model/uav';
+import { Status } from '~/components/semantics';
+import StatusPill from '~/components/StatusPill';
+import { createSingleUAVStatusSummarySelector } from '~/features/uavs/selectors';
 
 const useStyles = makeStyles(
   (theme) => ({
@@ -154,6 +148,11 @@ const DroneAvatar = ({
   textSemantics,
 }) => {
   const classes = useStyles();
+
+  if (status === Status.INFO) {
+    status = Status.SUCCESS;
+  }
+
   return (
     <>
       <div className={classes.hint}>
@@ -182,7 +181,7 @@ const DroneAvatar = ({
         )}
         {secondaryStatus && <SecondaryStatusLight status={secondaryStatus} />}
       </div>
-      {text && <SummaryPill status={textSemantics}>{text}</SummaryPill>}
+      {text && <StatusPill status={textSemantics}>{text}</StatusPill>}
       {batteryStatus && <BatteryIndicator {...batteryStatus} />}
     </>
   );
@@ -201,6 +200,7 @@ DroneAvatar.propTypes = {
   progress: PropTypes.number,
   secondaryStatus: PropTypes.oneOf([
     'off',
+    'info',
     'success',
     'warning',
     'rth',
@@ -210,6 +210,7 @@ DroneAvatar.propTypes = {
   selected: PropTypes.bool,
   status: PropTypes.oneOf([
     'off',
+    'info',
     'success',
     'warning',
     'rth',
@@ -233,144 +234,16 @@ DroneAvatar.defaultProps = {
   textSemantics: 'info',
 };
 
-function severityToSemantics(severity) {
-  switch (severity) {
-    case Severity.FATAL:
-      return 'critical';
-    case Severity.ERROR:
-      return 'error';
-    case Severity.WARNING:
-      return 'warning';
-    case Severity.INFO:
-      return 'info';
-    default:
-      return 'off';
-  }
-}
-
-/**
- * Function that takes a drone object from the Redux store and derives the
- * generic status summary of the drone.
- *
- * The rules are as follows (the first matching rule wins);
- *
- * - If the drone has at least one error code where `(errorCode & 0xFF) >> 6`
- *   is 3, the status is "critical".
- *
- * - If the drone has at least one error code where `(errorCode & 0xFF) >> 6`
- *   is 2, the status is "error".
- *
- * - If the drone has at least one error code where `(errorCode & 0xFF) >> 6`
- *   is 1, the status is "warning".
- *
- * - If no status updates were received from the drone since a predefined
- *   longer time frame (say, 60 seconds), the status is "off". The secondary
- *   status display may also read "GONE" if there is no other message to
- *   report.
- *
- * - If no status updates were received from the drone since a predefined time
- *   frame, the status is "warning". You can distinguish this from warnings
- *   derived from error codes by looking at the secondary status display,
- *   which should read "AWAY" if there is no other warning to report.
- *
- * - If the drone is still initializing or running prearm checks, the status
- *   is "warning". You can distinguish this from warnings derived from error
- *   codes by looking at the secondary status display, which should read "INIT"
- *   or "PREARM".
- *
- * - Otherwise, the status is "success".
- */
-function getDroneStatus(uav) {
-  if (uav.errors && uav.errors.length > 0) {
-    const severity = getSeverityOfMostSevereErrorCode(uav.errors);
-    if (severity >= Severity.WARNING) {
-      return severityToSemantics(severity);
-    }
-  }
-
-  if (uav.age === UAVAge.GONE) {
-    return 'off';
-  }
-
-  if (uav.age === UAVAge.INACTIVE) {
-    return 'warning';
-  }
-
-  const maxError = Math.max(...uav.errors);
-
-  if (maxError === ErrorCode.RETURN_TO_HOME) {
-    return 'rth';
-  }
-
-  return 'success';
-}
-
-function getDroneText(uav) {
-  let hint;
-  let text;
-  let textSemantics;
-
-  if (!uav) {
-    // No such UAV
-    text = 'missing';
-    textSemantics = 'error';
-  } else if (uav.errors && uav.errors.length > 0) {
-    // UAV has some status information that it wishes to report
-    const maxError = Math.max(...uav.errors);
-    const severity = getSeverityOfErrorCode(maxError);
-
-    text = abbreviateError(maxError);
-
-    if (maxError === ErrorCode.RETURN_TO_HOME) {
-      // disarm is treated separately; it is always shown as the special RTH state
-      textSemantics = 'rth';
-    } else if (maxError === ErrorCode.DISARMED) {
-      // disarm is treated separately; it is always shown as an error
-      textSemantics = 'error';
-    } else {
-      textSemantics = severityToSemantics(severity);
-    }
-  } else if (uav.position && uav.position.agl > 0) {
-    // UAV is in the air
-    text = `${uav.position.agl.toFixed(2)}m`;
-    textSemantics = 'success';
-  } else {
-    // UAV is ready on the ground
-    text = 'ready';
-    textSemantics = 'success';
-  }
-
-  if (textSemantics === 'success') {
-    if (uav.age === UAVAge.GONE) {
-      if (text === 'ready') {
-        text = 'gone';
-      }
-
-      textSemantics = 'off';
-    } else if (uav.age === UAVAge.INACTIVE) {
-      if (text === 'ready') {
-        text = 'inactive';
-      }
-
-      textSemantics = 'warning';
-    }
-  }
-
-  return { hint, text, textSemantics };
-}
-
 export default connect(
   // mapStateToProps
-  (state, ownProps) => {
-    const uav = state.uavs.byId[ownProps.id];
-    return uav === undefined
-      ? {
-          ...getDroneText(uav),
-        }
-      : {
-          batteryStatus: uav.battery,
-          status: getDroneStatus(uav),
-          ...getDroneText(uav),
-        };
+  () => {
+    const statusSummarySelector = createSingleUAVStatusSummarySelector();
+    return (state, ownProps) => {
+      const uav = state.uavs.byId[ownProps.id];
+      return {
+        batteryStatus: uav ? uav.battery : undefined,
+        ...statusSummarySelector(state, ownProps.id),
+      };
+    };
   }
 )(DroneAvatar);

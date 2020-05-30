@@ -5,9 +5,9 @@ import { connect } from 'react-redux';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 
-import StepperStatusLight, {
-  StepperStatus,
-} from '~/components/StepperStatusLight';
+import StatusLight from '~/components/StatusLight';
+import { Status } from '~/components/semantics';
+
 import { openTakeoffAreaSetupDialog } from '~/features/show/slice';
 import { getSetupStageStatuses } from '~/features/show/stages';
 import { getFarthestDistanceFromHome } from '~/features/uavs/selectors';
@@ -18,20 +18,20 @@ const formatStatusText = (status, maxDistance) => {
   }
 
   switch (status) {
-    case StepperStatus.OFF:
-    case StepperStatus.NEXT:
+    case Status.OFF:
+    case Status.NEXT:
       return 'Place the drones in the takeoff area';
 
-    case StepperStatus.COMPLETED:
+    case Status.SUCCESS:
       return 'Drone placement approved';
 
-    case StepperStatus.ERROR:
+    case Status.ERROR:
       return 'Error in drone placement';
 
-    case StepperStatus.SKIPPED:
+    case Status.SKIPPED:
       return 'Partial drone placement approved';
 
-    case StepperStatus.WAITING:
+    case Status.WAITING:
       return 'Checking drone placement…';
 
     default:
@@ -48,11 +48,11 @@ const TakeoffAreaButton = ({ maxDistance, onClick, status, ...rest }) => {
   return (
     <ListItem
       button
-      disabled={status === StepperStatus.OFF}
+      disabled={status === Status.OFF}
       onClick={onClick}
       {...rest}
     >
-      <StepperStatusLight status={status} />
+      <StatusLight status={status} />
       <ListItemText
         primary='Setup takeoff area'
         secondary={formatStatusText(status, maxDistance)}
@@ -64,7 +64,7 @@ const TakeoffAreaButton = ({ maxDistance, onClick, status, ...rest }) => {
 TakeoffAreaButton.propTypes = {
   maxDistance: PropTypes.number,
   onClick: PropTypes.func,
-  status: PropTypes.oneOf(Object.values(StepperStatus)),
+  status: PropTypes.oneOf(Object.values(Status)),
 };
 
 TakeoffAreaButton.defaultProps = {};
@@ -75,7 +75,7 @@ export default connect(
     // TODO(ntamas): getFarthestDistanceFromHome() is recalculated all the time;
     // we need to fix this
     maxDistance:
-      getSetupStageStatuses(state).setupTakeoffArea === StepperStatus.NEXT
+      getSetupStageStatuses(state).setupTakeoffArea === Status.NEXT
         ? getFarthestDistanceFromHome(state)
         : undefined,
     status: getSetupStageStatuses(state).setupTakeoffArea,

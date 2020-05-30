@@ -14,10 +14,10 @@ import Switch from '@material-ui/core/Switch';
 import Typography from '@material-ui/core/Typography';
 
 import BackgroundHint from '~/components/BackgroundHint';
+import StatusLight from '~/components/StatusLight';
 import DialogToolbar from '~/components/dialogs/DialogToolbar';
-import StepperStatusLight, {
-  StepperStatus,
-} from '~/components/StepperStatusLight';
+import { Status } from '~/components/semantics';
+
 import { isShowingMissionIds } from '~/features/settings/selectors';
 import { signOffOnOnboardPreflightChecks } from '~/features/show/actions';
 import { areOnboardPreflightChecksSignedOff } from '~/features/show/selectors';
@@ -27,42 +27,18 @@ import {
 } from '~/features/show/slice';
 import { getErrorCodeSummaryForUAVsInMission } from '~/features/uavs/selectors';
 import { describeError, getSeverityOfErrorCode } from '~/flockwave/errors';
-import { formatMissionId } from '~/utils/formatting';
+import {
+  formatIdsAndTruncateTrailingItems as formatUAVIds,
+  formatMissionId,
+} from '~/utils/formatting';
 import MappingToggleButton from '~/views/uavs/MappingToggleButton';
 
 const severityToStatus = [
-  StepperStatus.INFO,
-  StepperStatus.SKIPPED,
-  StepperStatus.ERROR,
-  StepperStatus.ERROR,
+  Status.INFO,
+  Status.SKIPPED,
+  Status.ERROR,
+  Status.ERROR,
 ];
-
-/**
- * Formats a list of UAV IDs in a manner that is suitable for display in the
- * secondary text of a list item.
- *
- * @param  {string[]}  uavIds  the array of UAV IDs to format
- * @param  {number}    maxCount  the maximum number of UAV IDs to show before
- *         adding the "+X more" suffix
- * @return {string}  the formatted UAV ID list
- */
-function formatUAVIds(uavIds, { maxCount = 8, separator = ' \u00B7 ' } = {}) {
-  const length = Array.isArray(uavIds) ? uavIds.length : 0;
-  if (length === 0) {
-    return '';
-  }
-
-  if (length > maxCount) {
-    return (
-      uavIds.slice(0, maxCount - 1).join(separator) +
-      ' and ' +
-      (length - maxCount + 1) +
-      ' more'
-    );
-  }
-
-  return uavIds.join(separator);
-}
 
 /**
  * Presentation component that shows all the onboard preflight checks that have
@@ -77,7 +53,7 @@ const PreflightCheckListPresentation = ({ items, showMissionIds, ...rest }) =>
         const status = severityToStatus[getSeverityOfErrorCode(item.code)];
         return (
           <ListItem key={itemId} button disableRipple>
-            <StepperStatusLight status={status} />
+            <StatusLight status={status} />
             <ListItemText
               id={itemId}
               primary={describeError(item.code)}

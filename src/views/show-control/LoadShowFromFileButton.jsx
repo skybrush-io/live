@@ -12,9 +12,9 @@ import CloudDownload from '@material-ui/icons/CloudDownload';
 import FileListItem from './FileListItem';
 
 import ListItemTextWithProgress from '~/components/ListItemTextWithProgress';
-import StepperStatusLight, {
-  StepperStatus,
-} from '~/components/StepperStatusLight';
+import StatusLight from '~/components/StatusLight';
+import { Status } from '~/components/semantics';
+
 import Tooltip from '~/components/Tooltip';
 import { loadShowFromFile } from '~/features/show/actions';
 import {
@@ -56,7 +56,7 @@ const LoadShowFromFileButton = ({
     accepts={isFile}
     onSelected={onShowFileSelected}
   >
-    <StepperStatusLight status={status} />
+    <StatusLight status={status} />
     <ListItemTextWithProgress
       primary={
         loading
@@ -103,7 +103,7 @@ LoadShowFromFileButton.propTypes = {
   onClearLoadedShow: PropTypes.func,
   onLoadShowFromCloud: PropTypes.func,
   onShowFileSelected: PropTypes.func,
-  status: PropTypes.oneOf(Object.values(StepperStatus)),
+  status: PropTypes.oneOf(Object.values(Status)),
   title: PropTypes.string,
 };
 

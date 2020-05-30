@@ -5,9 +5,9 @@ import { connect } from 'react-redux';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 
-import StepperStatusLight, {
-  StepperStatus,
-} from '~/components/StepperStatusLight';
+import StatusLight from '~/components/StatusLight';
+import { Status } from '~/components/semantics';
+
 import { openEnvironmentEditorDialog } from '~/features/show/slice';
 import { getSetupStageStatuses } from '~/features/show/stages';
 
@@ -33,11 +33,11 @@ function environmentTypeToString(type) {
 const EnvironmentButton = ({ onEditEnvironment, status, type, ...rest }) => (
   <ListItem
     button
-    disabled={status === StepperStatus.OFF}
+    disabled={status === Status.OFF}
     onClick={onEditEnvironment}
     {...rest}
   >
-    <StepperStatusLight status={status} />
+    <StatusLight status={status} />
     <ListItemText
       primary='Setup environment'
       secondary={environmentTypeToString(type)}
@@ -47,7 +47,7 @@ const EnvironmentButton = ({ onEditEnvironment, status, type, ...rest }) => (
 
 EnvironmentButton.propTypes = {
   onEditEnvironment: PropTypes.func,
-  status: PropTypes.oneOf(Object.values(StepperStatus)),
+  status: PropTypes.oneOf(Object.values(Status)),
   type: PropTypes.string,
 };
 

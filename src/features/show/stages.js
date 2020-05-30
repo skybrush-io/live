@@ -19,14 +19,14 @@ import {
   isTakeoffAreaApproved,
 } from './selectors';
 
+import { Status } from '~/components/semantics';
+
 import { getEmptyMappingSlotIndices } from '~/features/mission/selectors';
 import { areAllPreflightChecksTicked } from '~/features/preflight/selectors';
 import {
   areAllUAVsInMissionWithoutErrors,
   getMissingUAVIdsInMapping,
 } from '~/features/uavs/selectors';
-
-import { StepperStatus } from '~/components/StepperStatusLight';
 
 /**
  * Definitions of the stages that one needs to pass through in order to launch
@@ -36,10 +36,10 @@ const stages = {
   selectShowFile: {
     evaluate: (state) =>
       hasLoadedShowFile(state)
-        ? StepperStatus.COMPLETED
+        ? Status.SUCCESS
         : isLoadingShowFile(state)
-        ? StepperStatus.WAITING
-        : StepperStatus.OFF,
+        ? Status.WAITING
+        : Status.OFF,
   },
 
   setupEnvironment: {
@@ -52,9 +52,9 @@ const stages = {
       isTakeoffAreaApproved(state)
         ? isEmpty(getEmptyMappingSlotIndices(state)) &&
           isEmpty(getMissingUAVIdsInMapping(state))
-          ? StepperStatus.COMPLETED
-          : StepperStatus.SKIPPED
-        : StepperStatus.OFF,
+          ? Status.SUCCESS
+          : Status.SKIPPED
+        : Status.OFF,
     requires: ['setupEnvironment'],
   },
 
@@ -62,12 +62,12 @@ const stages = {
     evaluate: (state) => {
       const { lastUploadResult: result } = state.show.upload;
       return result === 'error'
-        ? StepperStatus.ERROR
+        ? Status.ERROR
         : result === 'cancelled'
-        ? StepperStatus.SKIPPED
+        ? Status.SKIPPED
         : result === 'success'
-        ? StepperStatus.COMPLETED
-        : StepperStatus.OFF;
+        ? Status.SUCCESS
+        : Status.OFF;
     },
     requires: ['selectShowFile', 'setupEnvironment'],
   },
@@ -75,12 +75,12 @@ const stages = {
   setupStartTime: {
     evaluate: (state) =>
       didStartConditionSyncFail(state)
-        ? StepperStatus.ERROR
+        ? Status.ERROR
         : areStartConditionsSyncedWithServer(state)
         ? hasScheduledStartTime(state)
-          ? StepperStatus.COMPLETED
-          : StepperStatus.OFF
-        : StepperStatus.WAITING,
+          ? Status.SUCCESS
+          : Status.OFF
+        : Status.WAITING,
     requires: ['selectShowFile'],
   },
 
@@ -88,9 +88,9 @@ const stages = {
     evaluate: (state) =>
       areOnboardPreflightChecksSignedOff(state)
         ? areAllUAVsInMissionWithoutErrors(state)
-          ? StepperStatus.COMPLETED
-          : StepperStatus.SKIPPED
-        : StepperStatus.OFF,
+          ? Status.SUCCESS
+          : Status.SKIPPED
+        : Status.OFF,
     suggests: ['setupStartTime'],
   },
 
@@ -98,21 +98,21 @@ const stages = {
     evaluate: (state) =>
       areManualPreflightChecksSignedOff(state)
         ? areAllPreflightChecksTicked(state)
-          ? StepperStatus.COMPLETED
-          : StepperStatus.SKIPPED
-        : StepperStatus.OFF,
+          ? Status.SUCCESS
+          : Status.SKIPPED
+        : Status.OFF,
     suggests: ['setupStartTime'],
   },
 
   authorization: {
     evaluate: (state) =>
       isShowAuthorizedToStart(state)
-        ? StepperStatus.COMPLETED
+        ? Status.SUCCESS
         : didStartConditionSyncFail(state)
-        ? StepperStatus.ERROR
+        ? Status.ERROR
         : isShowAuthorizedToStartLocally(state)
-        ? StepperStatus.WAITING
-        : StepperStatus.OFF,
+        ? Status.WAITING
+        : Status.OFF,
     requires: ['waitForOnboardPreflightChecks', 'performManualPreflightChecks'],
   },
 };
@@ -137,7 +137,7 @@ const stageOrder = [
  * of inspecting dependencies between stages.
  */
 const isDone = (status) =>
-  status === StepperStatus.COMPLETED || status === StepperStatus.SKIPPED;
+  status === Status.SUCCESS || status === Status.SKIPPED;
 
 /**
  * Returns whether all dependencies in the given list are considered "done"
@@ -161,21 +161,19 @@ export const getSetupStageStatuses = (state) => {
       // all dependencies are satisfied, so we can check its own state
       status = stage.evaluate(state);
 
-      // convert booleans to StepperStatus
+      // convert booleans to Status
       if (typeof status === 'boolean') {
-        status = status ? StepperStatus.COMPLETED : StepperStatus.OFF;
+        status = status ? Status.SUCCESS : Status.OFF;
       }
 
-      if (status === StepperStatus.OFF) {
+      if (status === Status.OFF) {
         // state has not been acted on by the user, but all its dependencies are
         // ready so we mark it as a potential candidate for the user to perform
         // next if all its 'suggests' dependencies are read
-        status = allDone(result, stage.suggests)
-          ? StepperStatus.NEXT
-          : StepperStatus.OFF;
+        status = allDone(result, stage.suggests) ? Status.NEXT : Status.OFF;
       }
     } else {
-      status = StepperStatus.OFF;
+      status = Status.OFF;
     }
 
     result[stageId] = status;

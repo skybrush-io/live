@@ -7,9 +7,9 @@ import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import ListItemText from '@material-ui/core/ListItemText';
 import Switch from '@material-ui/core/Switch';
 
-import StepperStatusLight, {
-  StepperStatus,
-} from '~/components/StepperStatusLight';
+import StatusLight from '~/components/StatusLight';
+import { Status } from '~/components/semantics';
+
 import { signOffOnOnboardPreflightChecks } from '~/features/show/actions';
 import { areOnboardPreflightChecksSignedOff } from '~/features/show/selectors';
 import {
@@ -31,8 +31,8 @@ const OnboardPreflightChecksButton = ({
   ...rest
 }) => {
   return (
-    <ListItem button disabled={status === StepperStatus.OFF} {...rest}>
-      <StepperStatusLight status={status} />
+    <ListItem button disabled={status === Status.OFF} {...rest}>
+      <StatusLight status={status} />
       <ListItemText primary='Onboard preflight checks' />
       {/* TODO: show how many drones have nonzero error codes */}
       <ListItemSecondaryAction>
@@ -50,7 +50,7 @@ OnboardPreflightChecksButton.propTypes = {
   areChecksSignedOff: PropTypes.bool,
   onApprove: PropTypes.func,
   onRevoke: PropTypes.func,
-  status: PropTypes.oneOf(Object.values(StepperStatus)),
+  status: PropTypes.oneOf(Object.values(Status)),
 };
 
 OnboardPreflightChecksButton.defaultProps = {};

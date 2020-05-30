@@ -6,9 +6,8 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import Typography from '@material-ui/core/Typography';
 
-import StepperStatusLight, {
-  StepperStatus,
-} from '~/components/StepperStatusLight';
+import { Status } from '~/components/semantics';
+import StatusLight from '~/components/StatusLight';
 import {
   setShowAuthorization,
   synchronizeShowSettings,
@@ -32,16 +31,12 @@ const AuthorizationButton = ({
 }) => (
   <ListItem
     button
-    disabled={!isAuthorized && status === StepperStatus.OFF}
+    disabled={!isAuthorized && status === Status.OFF}
     selected={isAuthorized}
     {...rest}
   >
-    <StepperStatusLight
-      status={
-        isAuthorized && status === StepperStatus.OFF
-          ? StepperStatus.SKIPPED
-          : status
-      }
+    <StatusLight
+      status={isAuthorized && status === Status.OFF ? Status.SKIPPED : status}
     />
     <ListItemText
       disableTypography
@@ -70,7 +65,7 @@ const AuthorizationButton = ({
 AuthorizationButton.propTypes = {
   isAuthorized: PropTypes.bool,
   numUAVsTakingOffAutomatically: PropTypes.number,
-  status: PropTypes.oneOf(Object.values(StepperStatus)),
+  status: PropTypes.oneOf(Object.values(Status)),
 };
 
 export default connect(

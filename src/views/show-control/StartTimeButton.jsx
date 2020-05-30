@@ -5,9 +5,9 @@ import { connect } from 'react-redux';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 
-import StepperStatusLight, {
-  StepperStatus,
-} from '~/components/StepperStatusLight';
+import StatusLight from '~/components/StatusLight';
+import { Status } from '~/components/semantics';
+
 import { getShowStartTimeAsString } from '~/features/show/selectors';
 import { openStartTimeDialog } from '~/features/show/slice';
 import { getSetupStageStatuses } from '~/features/show/stages';
@@ -18,8 +18,8 @@ import { getSetupStageStatuses } from '~/features/show/stages';
  */
 const StartTimeButton = ({ formattedStartTime, onClick, status }) => {
   return (
-    <ListItem button disabled={status === StepperStatus.OFF} onClick={onClick}>
-      <StepperStatusLight status={status} />
+    <ListItem button disabled={status === Status.OFF} onClick={onClick}>
+      <StatusLight status={status} />
       <ListItemText
         primary='Choose start time'
         secondary={
@@ -33,7 +33,7 @@ const StartTimeButton = ({ formattedStartTime, onClick, status }) => {
 StartTimeButton.propTypes = {
   formattedStartTime: PropTypes.string,
   onClick: PropTypes.func,
-  status: PropTypes.oneOf(Object.values(StepperStatus)),
+  status: PropTypes.oneOf(Object.values(Status)),
 };
 
 StartTimeButton.defaultProps = {};

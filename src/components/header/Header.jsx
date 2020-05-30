@@ -7,7 +7,6 @@ import Shapeshifter from 'react-shapeshifter';
 import TimeAgo from 'react-timeago';
 
 import Box from '@material-ui/core/Box';
-import Typography from '@material-ui/core/Typography';
 
 import AppSettingsButton from './AppSettingsButton';
 import AuthenticationButton from './AuthenticationButton';
@@ -15,6 +14,8 @@ import ConnectionStatusButton from './ConnectionStatusButton';
 import FullScreenButton from './FullScreenButton';
 import HelpButton from './HelpButton';
 import ServerConnectionSettingsButton from './ServerConnectionSettingsButton';
+
+import UAVStatusSummary from '../uavs/UAVStatusSummary';
 
 import { toggleSidebar } from '~/features/sidebar/slice';
 
@@ -69,8 +70,14 @@ const Header = ({ isSidebarOpen, sessionExpiresAt, toggleSidebar }) => (
       <Box flexGrow={1} flexShrink={1}>
         {/* spacer */}
       </Box>
-      {sessionExpiresAt && <SessionExpiryBox expiresAt={sessionExpiresAt} />}
+      <UAVStatusSummary />
       <hr />
+      {sessionExpiresAt && (
+        <>
+          <SessionExpiryBox expiresAt={sessionExpiresAt} />,
+          <hr />
+        </>
+      )}
       <ConnectionStatusButton isAlwaysVisible />
       <hr />
       <ServerConnectionSettingsButton />

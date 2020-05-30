@@ -66,16 +66,13 @@ ConnectionStatusMiniListEntry.propTypes = {
   stateChangedAt: PropTypes.number,
 };
 
-const ConnectionStatusMiniListPresentation = listOf(
-  ConnectionStatusMiniListEntry,
-  {
-    dataProvider: 'connections',
-    backgroundHint: (
-      <BackgroundHint text='This server does not use any connections' />
-    ),
-    listFactory: partial(React.createElement, TransparentList),
-  }
-);
+const ConnectionStatusMiniList = listOf(ConnectionStatusMiniListEntry, {
+  dataProvider: 'connections',
+  backgroundHint: (
+    <BackgroundHint text='This server does not use any connections' />
+  ),
+  listFactory: partial(React.createElement, TransparentList),
+});
 
 export default connect(
   (state) => ({
@@ -84,4 +81,4 @@ export default connect(
     disablePadding: true,
   }),
   () => ({})
-)(ConnectionStatusMiniListPresentation);
+)(ConnectionStatusMiniList);

@@ -7,9 +7,9 @@ import ListItem from '@material-ui/core/ListItem';
 import UploadProgressBar from './UploadProgressBar';
 
 import ListItemTextWithProgress from '~/components/ListItemTextWithProgress';
-import StepperStatusLight, {
-  StepperStatus,
-} from '~/components/StepperStatusLight';
+import StatusLight from '~/components/StatusLight';
+import { Status } from '~/components/semantics';
+
 import {
   getUploadProgress,
   isUploadInProgress,
@@ -22,8 +22,8 @@ import { getSetupStageStatuses } from '~/features/show/stages';
  * upload process of the current show to the drones.
  */
 const UploadButton = ({ loading, status, ...rest }) => (
-  <ListItem button disabled={status === StepperStatus.OFF} {...rest}>
-    <StepperStatusLight status={status} />
+  <ListItem button disabled={status === Status.OFF} {...rest}>
+    <StatusLight status={status} />
     <ListItemTextWithProgress
       primary={
         loading ? 'Please wait, uploading show data…' : 'Upload show data'
@@ -42,7 +42,7 @@ const UploadButton = ({ loading, status, ...rest }) => (
 UploadButton.propTypes = {
   loading: PropTypes.bool,
   onClick: PropTypes.func,
-  status: PropTypes.oneOf(Object.values(StepperStatus)),
+  status: PropTypes.oneOf(Object.values(Status)),
 };
 
 export default connect(

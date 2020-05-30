@@ -6,17 +6,8 @@ import React from 'react';
 import Box from '@material-ui/core/Box';
 import { makeStyles } from '@material-ui/core/styles';
 
-import Colors from '~/components/colors';
-
-export const StepperStatus = {
-  COMPLETED: 'completed',
-  ERROR: 'error',
-  INFO: 'info',
-  NEXT: 'next',
-  OFF: 'off',
-  SKIPPED: 'skipped',
-  WAITING: 'waiting',
-};
+import Colors from './colors';
+import { Status } from './semantics';
 
 const useStyles = makeStyles(
   (theme) => ({
@@ -32,21 +23,25 @@ const useStyles = makeStyles(
       width: '1em',
     },
 
-    'size-small': {
-      fontSize: '1.25rem',
+    inline: {
+      display: 'inline-block',
+      marginRight: [0, '!important'],
     },
 
-    'size-normal': {
-      fontSize: '1.5rem',
+    'size-small': {
+      fontSize: '0.75em',
     },
 
     'size-large': {
-      fontSize: '2rem',
+      fontSize: '1.25em',
     },
 
-    'status-completed': {
-      backgroundColor: Colors.success,
-      color: theme.palette.getContrastText(Colors.success),
+    'status-critical': {
+      backgroundColor: Colors.error,
+      boxShadow: `0 0 4px 1px ${Colors.error}`,
+      color: theme.palette.getContrastText(Colors.error),
+      animation: '$flash 0.5s infinite',
+      animationDirection: 'alternate',
     },
 
     'status-error': {
@@ -81,7 +76,26 @@ const useStyles = makeStyles(
       color: theme.palette.getContrastText(Colors.off),
     },
 
+    'status-rth': {
+      backgroundColor: Colors.warning,
+      boxShadow: `0 0 4px 1px ${Colors.warning}`,
+      color: theme.palette.getContrastText(Colors.warning),
+      animation: '$flash 0.5s infinite',
+      animationDirection: 'alternate',
+    },
+
     'status-skipped': {
+      backgroundColor: Colors.warning,
+      boxShadow: `0 0 4px 1px ${Colors.warning}`,
+      color: theme.palette.getContrastText(Colors.warning),
+    },
+
+    'status-success': {
+      backgroundColor: Colors.success,
+      color: theme.palette.getContrastText(Colors.success),
+    },
+
+    'status-warning': {
       backgroundColor: Colors.warning,
       boxShadow: `0 0 4px 1px ${Colors.warning}`,
       color: theme.palette.getContrastText(Colors.warning),
@@ -123,35 +137,39 @@ const useStyles = makeStyles(
       },
     },
   }),
-  { name: 'StepperStatusLight' }
+  { name: 'StatusLight' }
 );
 
 /**
  * Small component resembling a multi-color status light that can be used to
  * represent the state of a single step in a multi-step process.
  */
-const StepperStatusLight = ({ size, status, ...rest }) => {
+const StatusLight = ({ inline, size, status, ...rest }) => {
   const classes = useStyles();
 
   return (
     <Box
       className={clsx(
         classes.root,
+        inline && classes.inline,
         classes[`size-${size}`],
         classes[`status-${status}`]
       )}
+      component={inline ? 'span' : 'div'}
       {...rest}
     />
   );
 };
 
-StepperStatusLight.propTypes = {
+StatusLight.propTypes = {
+  inline: PropTypes.bool,
   size: PropTypes.oneOf(['small', 'normal', 'large']),
-  status: PropTypes.oneOf(Object.values(StepperStatus)),
+  status: PropTypes.oneOf(Object.values(Status)),
 };
 
-StepperStatusLight.defaultProps = {
+StatusLight.defaultProps = {
   status: 'off',
+  size: 'normal',
 };
 
-export default StepperStatusLight;
+export default StatusLight;

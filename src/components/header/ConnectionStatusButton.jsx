@@ -7,16 +7,19 @@ import ConnectionStatusBadge from '../badges/ConnectionStatusBadge';
 import GenericHeaderButton from './GenericHeaderButton';
 
 import ConnectionStatusMiniList from '~/components/ConnectionStatusMiniList';
-import Tooltip from '~/components/Tooltip';
+import LazyTooltip from '~/components/LazyTooltip';
 import { isConnected } from '~/features/servers/selectors';
 
 const ConnectionStatusButtonPresentation = (props) => (
-  <Tooltip content={<ConnectionStatusMiniList />} disabled={props.isDisabled}>
+  <LazyTooltip
+    content={<ConnectionStatusMiniList />}
+    disabled={props.isDisabled}
+  >
     <GenericHeaderButton {...props}>
       <ConnectionStatusBadge />
       <SettingsEthernet />
     </GenericHeaderButton>
-  </Tooltip>
+  </LazyTooltip>
 );
 
 ConnectionStatusButtonPresentation.propTypes = {

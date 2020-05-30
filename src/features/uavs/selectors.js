@@ -13,6 +13,14 @@ import {
   getUAVIdsParticipatingInMission,
   getTakeoffHeadingsInMission,
 } from '~/features/mission/selectors';
+import {
+  abbreviateError,
+  getSeverityOfErrorCode,
+  getSeverityOfMostSevereErrorCode,
+  ErrorCode,
+  Severity,
+} from '~/flockwave/errors';
+import { UAVAge } from '~/model/uav';
 
 /**
  * Returns the list of UAV IDs that should be shown on the UI, in the
@@ -25,19 +33,19 @@ export const getUAVIdList = (state) => state.uavs.order;
 /**
  * Key selector function for cached selectors that cache things by UAV ID.
  */
-const selectUavId = (_state, uavId) => uavId;
+const selectUAVId = (_state, uavId) => uavId;
 
 /**
  * Returns the UAV with the given ID, given the current state.
  */
-export const getUavById = (state, uavId) => state.uavs.byId[uavId];
+export const getUAVById = (state, uavId) => state.uavs.byId[uavId];
 
 /**
  * Returns the current position of the UAV with the given ID, given the current
  * state.
  */
 export const getCurrentPositionByUavId = (state, uavId) => {
-  const uav = getUavById(state, uavId);
+  const uav = getUAVById(state, uavId);
   return uav ? uav.position : undefined;
 };
 
@@ -46,7 +54,7 @@ export const getCurrentPositionByUavId = (state, uavId) => {
  * state.
  */
 export const getCurrentHeadingByUavId = (state, uavId) => {
-  const uav = getUavById(state, uavId);
+  const uav = getUAVById(state, uavId);
   return uav ? uav.heading : undefined;
 };
 
@@ -60,7 +68,7 @@ export const getCurrentHeadingByUavId = (state, uavId) => {
 export const getHomePositionByUavId = createCachedSelector(
   getReverseMissionMapping,
   getGPSBasedHomePositionsInMission,
-  selectUavId,
+  selectUAVId,
   (revMapping, homePositions, uavId) => {
     const index = revMapping[uavId];
 
@@ -73,7 +81,7 @@ export const getHomePositionByUavId = createCachedSelector(
     return homePositions[index];
   }
 )({
-  keySelector: selectUavId,
+  keySelector: selectUAVId,
   // TODO: use a FIFO or LRU cache if it becomes necessary
 });
 
@@ -87,7 +95,7 @@ export const getHomePositionByUavId = createCachedSelector(
 export const getTakeoffHeadingByUavId = createCachedSelector(
   getReverseMissionMapping,
   getTakeoffHeadingsInMission,
-  selectUavId,
+  selectUAVId,
   (revMapping, takeoffHeadings, uavId) => {
     const index = revMapping[uavId];
 
@@ -100,7 +108,7 @@ export const getTakeoffHeadingByUavId = createCachedSelector(
     return takeoffHeadings[index];
   }
 )({
-  keySelector: selectUavId,
+  keySelector: selectUAVId,
   // TODO: use a FIFO or LRU cache if it becomes necessary
 });
 
@@ -121,7 +129,7 @@ export const getXYDistanceToHomePositionByUavId = createCachedSelector(
     return undefined;
   }
 )({
-  keySelector: selectUavId,
+  keySelector: selectUAVId,
   // TODO: use a FIFO or LRU cache if it becomes necessary
 });
 
@@ -195,7 +203,7 @@ export const getDeviationFromTakeoffHeadingByUavId = createCachedSelector(
     return undefined;
   }
 )({
-  keySelector: selectUavId,
+  keySelector: selectUAVId,
   // TODO: use a FIFO or LRU cache if it becomes necessary
 });
 
@@ -313,3 +321,141 @@ export const areAllUAVsInMissionWithoutErrors = createSelector(
     return true;
   }
 );
+
+function severityToSemantics(severity) {
+  switch (severity) {
+    case Severity.FATAL:
+      return 'critical';
+    case Severity.ERROR:
+      return 'error';
+    case Severity.WARNING:
+      return 'warning';
+    case Severity.INFO:
+      return 'info';
+    default:
+      return 'off';
+  }
+}
+
+export function getSingleUAVStatusLevel(uav) {
+  let severity = -1;
+
+  if (uav.errors && uav.errors.length > 0) {
+    severity = getSeverityOfMostSevereErrorCode(uav.errors);
+    if (severity >= Severity.WARNING) {
+      return severityToSemantics(severity);
+    }
+  }
+
+  if (uav.age === UAVAge.GONE) {
+    return 'off';
+  }
+
+  if (uav.age === UAVAge.INACTIVE) {
+    return 'warning';
+  }
+
+  const maxError = Math.max(...uav.errors);
+
+  if (maxError === ErrorCode.RETURN_TO_HOME) {
+    return 'rth';
+  }
+
+  if (severity >= Severity.INFO) {
+    return severityToSemantics(severity);
+  }
+
+  return 'success';
+}
+
+/**
+ * Function that takes a drone object from the Redux store and derives the
+ * generic status summary of the drone.
+ *
+ * The rules are as follows (the first matching rule wins);
+ *
+ * - If the drone has at least one error code where `(errorCode & 0xFF) >> 6`
+ *   is 3, the status is "critical".
+ *
+ * - If the drone has at least one error code where `(errorCode & 0xFF) >> 6`
+ *   is 2, the status is "error".
+ *
+ * - If the drone has at least one error code where `(errorCode & 0xFF) >> 6`
+ *   is 1, the status is "warning".
+ *
+ * - If no status updates were received from the drone since a predefined
+ *   longer time frame (say, 60 seconds), the status is "off". The secondary
+ *   status display may also read "GONE" if there is no other message to
+ *   report.
+ *
+ * - If no status updates were received from the drone since a predefined time
+ *   frame, the status is "warning". You can distinguish this from warnings
+ *   derived from error codes by looking at the secondary status display,
+ *   which should read "AWAY" if there is no other warning to report.
+ *
+ * - If the drone is still initializing or running prearm checks, the status
+ *   is "warning". You can distinguish this from warnings derived from error
+ *   codes by looking at the secondary status display, which should read "INIT"
+ *   or "PREARM".
+ *
+ * - Otherwise, the status is "success".
+ */
+export function getSingleUAVStatusSummary(uav) {
+  let status;
+  let text;
+  let textSemantics;
+
+  if (!uav) {
+    // No such UAV
+    status = undefined;
+    text = 'missing';
+    textSemantics = 'error';
+  } else if (uav.errors && uav.errors.length > 0) {
+    // UAV has some status information that it wishes to report
+    const maxError = Math.max(...uav.errors);
+    const severity = getSeverityOfErrorCode(maxError);
+
+    text = abbreviateError(maxError);
+
+    if (maxError === ErrorCode.RETURN_TO_HOME) {
+      // disarm is treated separately; it is always shown as the special RTH state
+      textSemantics = 'rth';
+    } else if (maxError === ErrorCode.DISARMED) {
+      // disarm is treated separately; it is always shown as an error
+      textSemantics = 'error';
+    } else {
+      textSemantics = severityToSemantics(severity);
+    }
+  } else if (uav.position && uav.position.agl > 0) {
+    // UAV is in the air
+    text = `${uav.position.agl.toFixed(2)}m`;
+    textSemantics = 'success';
+  } else {
+    // UAV is ready on the ground
+    text = 'ready';
+    textSemantics = 'success';
+  }
+
+  if (textSemantics === 'success') {
+    if (uav.age === UAVAge.GONE) {
+      if (text === 'ready') {
+        text = 'gone';
+      }
+
+      textSemantics = 'off';
+    } else if (uav.age === UAVAge.INACTIVE) {
+      if (text === 'ready') {
+        text = 'inactive';
+      }
+
+      textSemantics = 'warning';
+    }
+  }
+
+  status = getSingleUAVStatusLevel(uav);
+
+  return { status, text, textSemantics };
+}
+
+export const createSingleUAVStatusSummarySelector = () =>
+  createSelector(getUAVById, getSingleUAVStatusSummary);

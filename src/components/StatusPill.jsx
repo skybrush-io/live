@@ -5,6 +5,7 @@ import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 
 import Colors from '~/components/colors';
+import { Status } from './semantics';
 
 const useStyles = makeStyles(
   (theme) => ({
@@ -27,9 +28,24 @@ const useStyles = makeStyles(
       color: theme.palette.getContrastText(Colors.info),
     },
 
+    'status-waiting': {
+      backgroundColor: Colors.info,
+      color: theme.palette.getContrastText(Colors.info),
+    },
+
+    'status-next': {
+      backgroundColor: Colors.info,
+      color: theme.palette.getContrastText(Colors.info),
+    },
+
     'status-success': {
       backgroundColor: Colors.success,
       color: theme.palette.getContrastText(Colors.success),
+    },
+
+    'status-skipped': {
+      backgroundColor: Colors.warning,
+      color: theme.palette.getContrastText(Colors.warning),
     },
 
     'status-warning': {
@@ -69,14 +85,14 @@ const useStyles = makeStyles(
       },
     },
   }),
-  { name: 'SummaryPill' }
+  { name: 'StatusPill' }
 );
 
 /**
  * Summary pill that can be placed below the drone avatar to show a single
  * line of additional textual information.
  */
-const SummaryPill = ({ children, status }) => {
+const StatusPill = ({ children, status }) => {
   const classes = useStyles();
   return (
     <div className={clsx(classes.root, classes[`status-${status}`])}>
@@ -85,21 +101,13 @@ const SummaryPill = ({ children, status }) => {
   );
 };
 
-SummaryPill.propTypes = {
+StatusPill.propTypes = {
   children: PropTypes.node,
-  status: PropTypes.oneOf([
-    'off',
-    'info',
-    'success',
-    'warning',
-    'rth',
-    'error',
-    'critical',
-  ]),
+  status: PropTypes.oneOf(Object.values(Status)),
 };
 
-SummaryPill.defaultProps = {
+StatusPill.defaultProps = {
   status: 'info',
 };
 
-export default SummaryPill;
+export default StatusPill;

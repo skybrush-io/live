@@ -7,9 +7,9 @@ import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import ListItemText from '@material-ui/core/ListItemText';
 import Switch from '@material-ui/core/Switch';
 
-import StepperStatusLight, {
-  StepperStatus,
-} from '~/components/StepperStatusLight';
+import StatusLight from '~/components/StatusLight';
+import { Status } from '~/components/semantics';
+
 import { signOffOnManualPreflightChecks } from '~/features/show/actions';
 import { areManualPreflightChecksSignedOff } from '~/features/show/selectors';
 import {
@@ -31,8 +31,8 @@ const ManualPreflightChecksButton = ({
   ...rest
 }) => {
   return (
-    <ListItem button disabled={status === StepperStatus.OFF} {...rest}>
-      <StepperStatusLight status={status} />
+    <ListItem button disabled={status === Status.OFF} {...rest}>
+      <StatusLight status={status} />
       <ListItemText primary='Manual preflight checks' />
       {/* TODO: show how many checks were not ticked off by the user yet */}
       <ListItemSecondaryAction>
@@ -51,7 +51,7 @@ ManualPreflightChecksButton.propTypes = {
   onApprove: PropTypes.func,
   onClick: PropTypes.func,
   onRevoke: PropTypes.func,
-  status: PropTypes.oneOf(Object.values(StepperStatus)),
+  status: PropTypes.oneOf(Object.values(Status)),
 };
 
 ManualPreflightChecksButton.defaultProps = {};
