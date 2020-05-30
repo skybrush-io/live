@@ -1,5 +1,6 @@
 import delay from 'delay';
 import CssBaseline from '@material-ui/core/CssBaseline';
+import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { WorkbenchView } from 'react-flexible-workbench';
@@ -142,6 +143,10 @@ const enhancer = (Component) =>
   class extends React.Component {
     static displayName = 'WorkbenchRoot';
 
+    static propTypes = {
+      glDragging: PropTypes.bool,
+    };
+
     render() {
       if (this.props.glDragging) {
         return (
@@ -149,19 +154,19 @@ const enhancer = (Component) =>
             <DragProxy />
           </ErrorBoundary>
         );
-      } else {
-        return (
-          <ErrorBoundary FallbackComponent={ErrorHandler}>
-            <StoreProvider store={store}>
-              <ThemeProvider>
-                <Flock.Provider value={flock}>
-                  <Component {...this.props} />
-                </Flock.Provider>
-              </ThemeProvider>
-            </StoreProvider>
-          </ErrorBoundary>
-        );
       }
+
+      return (
+        <ErrorBoundary FallbackComponent={ErrorHandler}>
+          <StoreProvider store={store}>
+            <ThemeProvider>
+              <Flock.Provider value={flock}>
+                <Component {...this.props} />
+              </Flock.Provider>
+            </ThemeProvider>
+          </StoreProvider>
+        </ErrorBoundary>
+      );
     }
   };
 

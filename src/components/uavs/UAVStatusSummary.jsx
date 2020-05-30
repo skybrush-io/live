@@ -13,6 +13,8 @@ import { Status } from '~/components/semantics';
 
 import { getSingleUAVStatusLevel } from '~/features/uavs/selectors';
 
+import { Workbench } from '~/workbench';
+
 import UAVStatusMiniList from './UAVStatusMiniList';
 
 /* ************************************************************************ */
@@ -93,12 +95,12 @@ const useStyles = makeStyles(
 
 const statusOrder = [Status.SUCCESS, Status.INFO, Status.WARNING, Status.ERROR];
 
-const UAVStatusSummary = ({ counts }) => {
+const UAVStatusSummary = ({ counts, ...rest }) => {
   const classes = useStyles();
 
   return (
     <LazyTooltip content={<UAVStatusMiniList />}>
-      <Box className={clsx(classes.root, 'wb-module')}>
+      <Box className={clsx(classes.root, 'wb-module')} {...rest}>
         <div className={classes.inner}>
           {statusOrder.map((statusCode, index) => (
             <React.Fragment key={statusCode}>
@@ -126,11 +128,25 @@ UAVStatusSummary.propTypes = {
   counts: PropTypes.arrayOf(PropTypes.number),
 };
 
-export default connect(
+const ConnectedUAVStatusSummary = connect(
   // mapStateToProps
   (state) => ({
     counts: getStatusSummary(state),
   }),
   // mapDispatchToProps
-  null
+  {}
 )(UAVStatusSummary);
+
+const onClick = (workbench) => {
+  if (!workbench.bringToFront('uavs')) {
+    /* TODO(ntamas) */
+  }
+};
+
+export default () => (
+  <Workbench.Consumer>
+    {(workbench) => (
+      <ConnectedUAVStatusSummary onClick={() => onClick(workbench)} />
+    )}
+  </Workbench.Consumer>
+);

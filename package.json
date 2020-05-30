@@ -101,7 +101,7 @@
     "react-error-boundary": "^2.2.1",
     "react-event-listener": "^0.6.6",
     "react-final-form": "^6.4.0",
-    "react-flexible-workbench": "^5.1.0",
+    "react-flexible-workbench": "^5.2.0",
     "react-is": "^16.13.1",
     "react-redux": "^7.2.0",
     "react-shapeshifter": "^1.0.6",

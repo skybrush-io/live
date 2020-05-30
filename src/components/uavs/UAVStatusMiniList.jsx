@@ -8,6 +8,7 @@ import { createSelector } from '@reduxjs/toolkit';
 import Box from '@material-ui/core/Box';
 import ListItem from '@material-ui/core/ListItem';
 
+import BackgroundHint from '~/components/BackgroundHint';
 import StatusPill from '~/components/StatusPill';
 import TransparentList from '~/components/TransparentList';
 import { listOf } from '~/components/helpers/lists';
@@ -75,6 +76,9 @@ UAVStatusMiniListEntry.propTypes = {
 
 const UAVStatusMiniList = listOf(UAVStatusMiniListEntry, {
   dataProvider: 'items',
+  backgroundHint: (
+    <BackgroundHint text='There are no connected UAVs at the moment' />
+  ),
   listFactory: partial(React.createElement, TransparentList),
 });
 

@@ -130,4 +130,9 @@ function constructDefaultWorkbench(store) {
 
 const workbench = constructDefaultWorkbench(store);
 
+/**
+ * React context that exposes the workbench instance to components.
+ */
+export const Workbench = React.createContext(workbench);
+
 export default workbench;
