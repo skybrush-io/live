@@ -64,9 +64,9 @@ const useStyles = makeStyles(
 );
 
 /**
- * Helper function to show a list of drone avatars and placeholders.
+ * Helper function to show a grid view of drone avatars and placeholders.
  */
-const createListItems = (
+const createGridItems = (
   items,
   { draggable, mappingSlotBeingEdited, onDropped, onSelected, selectedUAVIds }
 ) =>
@@ -119,11 +119,35 @@ const createListItems = (
     );
   });
 
+const UAVListSection = ({
+  forceVisible,
+  ids,
+  layout,
+  listItemProps,
+  ...rest
+}) =>
+  ids.length > 0 || forceVisible ? (
+    <>
+      <UAVListSubheader {...rest} />
+      <Box display='flex' flexDirection='row' flexWrap='wrap'>
+        {createGridItems(ids, listItemProps)}
+      </Box>
+    </>
+  ) : null;
+
+UAVListSection.propTypes = {
+  forceVisible: PropTypes.bool,
+  ids: PropTypes.array,
+  layout: PropTypes.oneOf(['grid', 'list']),
+  listItemProps: PropTypes.object,
+};
+
 /**
  * Presentation component for showing the drone show configuration view.
  */
 const UAVListPresentation = ({
   editingMapping,
+  layout,
   mappingSlotBeingEdited,
   onEditMappingSlot,
   onMappingAdjusted,
@@ -169,7 +193,7 @@ const UAVListPresentation = ({
   };
 
   const mainBox = (
-    <Box display='flex' flexDirection='column' height="100%">
+    <Box display='flex' flexDirection='column' height='100%'>
       <AppBar color='default' position='static' className={classes.appBar}>
         <FadeAndSlide mountOnEnter unmountOnExit in={!editingMapping}>
           <UAVToolbar
@@ -192,40 +216,31 @@ const UAVListPresentation = ({
           <MappingSlotEditorToolbar className={classes.toolbar} />
         </FadeAndSlide>
       </AppBar>
-      <Box flex={1} overflow="auto">
-        {mainUAVIds.length > 0 ? (
-          <>
-            <UAVListSubheader
-              key='__main'
-              label='Assigned UAVs'
-              value='mainUAVIds'
-              onChange={onSelectSection}
-              {...selectionInfo.mainUAVIds}
-            />
-            <Box display='flex' flexDirection='row' flexWrap='wrap'>
-              {createListItems(mainUAVIds, listItemProps)}
-            </Box>
-          </>
-        ) : null}
-        {spareUAVIds.length > 0 || editingMapping ? (
-          <>
-            <UAVListSubheader
-              key='__spare'
-              label='Spare UAVs'
-              value='spareUAVIds'
-              onChange={onSelectSection}
-              {...selectionInfo.spareUAVIds}
-            />
-            <Box display='flex' flexDirection='row' flexWrap='wrap'>
-              {createListItems(spareUAVIds, listItemProps)}
-            </Box>
-          </>
-        ) : null}
+      <Box flex={1} overflow='auto'>
+        <UAVListSection
+          ids={mainUAVIds}
+          listItemProps={listItemProps}
+          label='Assigned UAVs'
+          layout={layout}
+          value='mainUAVIds'
+          onSelect={onSelectSection}
+          {...selectionInfo.mainUAVIds}
+        />
+        <UAVListSection
+          ids={spareUAVIds}
+          listItemProps={listItemProps}
+          label='Spare UAVs'
+          layout={layout}
+          value='spareUAVIds'
+          forceVisible={editingMapping}
+          onSelect={onSelectSection}
+          {...selectionInfo.spareUAVIds}
+        />
       </Box>
       {extraSlots.length > 0 ? (
         <Box className='bottom-bar'>
           <Box display='flex' flexDirection='row' flexWrap='wrap'>
-            {createListItems(extraSlots, listItemProps)}
+            {createGridItems(extraSlots, listItemProps)}
           </Box>
         </Box>
       ) : null}
@@ -242,6 +257,7 @@ const UAVListPresentation = ({
 UAVListPresentation.propTypes = {
   editingMapping: PropTypes.bool,
   mappingSlotBeingEdited: PropTypes.number,
+  layout: PropTypes.oneOf(['list', 'grid']),
   onEditMappingSlot: PropTypes.func,
   onMappingAdjusted: PropTypes.func,
   onSelectionChanged: PropTypes.func,
@@ -261,8 +277,8 @@ UAVListPresentation.propTypes = {
     extraSlots: PropTypes.exact({
       checked: PropTypes.bool,
       disabled: PropTypes.bool,
-      indeterminate: PropTypes.bool
-    })
+      indeterminate: PropTypes.bool,
+    }),
   }),
   uavIds: PropTypes.exact({
     mainUAVIds: PropTypes.arrayOf(PropTypes.array).isRequired,
@@ -287,7 +303,7 @@ const deletionMarker = [undefined, undefined, <Delete key='__delete' />];
 const getDisplayedUAVIdList = createSelector(getUAVIdList, (uavIds) => ({
   mainUAVIds: uavIds.map((uavId) => [uavId, undefined, uavId]),
   spareUAVIds: [],
-  extraSlots: []
+  extraSlots: [],
 }));
 
 /**
@@ -399,6 +415,7 @@ const UAVList = connect(
   (state) => ({
     editingMapping: isMappingEditable(state),
     mappingSlotBeingEdited: getIndexOfMappingSlotBeingEdited(state),
+    layout: 'grid',
     selectedUAVIds: getSelectedUAVIds(state),
     selectionInfo: getSelectionInfo(state),
     uavIds: getDisplayedIdList(state),

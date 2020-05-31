@@ -138,6 +138,7 @@ const DroneAvatar = ({
   batteryStatus,
   hint,
   crossed,
+  details,
   editing,
   id,
   label,
@@ -181,7 +182,9 @@ const DroneAvatar = ({
         )}
         {secondaryStatus && <SecondaryStatusLight status={secondaryStatus} />}
       </div>
-      {text && <StatusPill status={textSemantics}>{text}</StatusPill>}
+      {(details || text) && (
+        <StatusPill status={textSemantics}>{details || text}</StatusPill>
+      )}
       {batteryStatus && <BatteryIndicator {...batteryStatus} />}
     </>
   );

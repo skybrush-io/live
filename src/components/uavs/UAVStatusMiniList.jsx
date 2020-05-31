@@ -60,7 +60,7 @@ const getListItems = createSelector(
 
 const UAVStatusMiniListEntry = ({ id, label, status, uavIds }) => (
   <ListItem key={id} disableGutters>
-    <Box width={64} mr={1}>
+    <Box width={80} mr={1}>
       <StatusPill status={status}>{label}</StatusPill>
     </Box>
     {formatUAVIds(uavIds)}

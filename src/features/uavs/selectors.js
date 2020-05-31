@@ -402,6 +402,7 @@ export function getSingleUAVStatusLevel(uav) {
  */
 export function getSingleUAVStatusSummary(uav) {
   let status;
+  let details;
   let text;
   let textSemantics;
 
@@ -428,7 +429,8 @@ export function getSingleUAVStatusSummary(uav) {
     }
   } else if (uav.position && uav.position.agl > 0) {
     // UAV is in the air
-    text = `${uav.position.agl.toFixed(2)}m`;
+    text = 'airborne';
+    details = `${uav.position.agl.toFixed(2)}m`;
     textSemantics = 'success';
   } else {
     // UAV is ready on the ground
@@ -454,7 +456,7 @@ export function getSingleUAVStatusSummary(uav) {
 
   status = getSingleUAVStatusLevel(uav);
 
-  return { status, text, textSemantics };
+  return { status, details: details || text, text, textSemantics };
 }
 
 export const createSingleUAVStatusSummarySelector = () =>
