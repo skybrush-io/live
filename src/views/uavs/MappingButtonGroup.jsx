@@ -11,7 +11,6 @@ import ViewModule from '@material-ui/icons/ViewModule';
 
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 
-import AugmentMappingButton from './AugmentMappingButton';
 import MappingToggleButton from './MappingToggleButton';
 
 import ToggleButton from '~/components/ToggleButton';
@@ -49,11 +48,6 @@ const MappingButtonGroup = ({
           >
             <Edit />
           </IconButton>
-        </Zoom>
-      )}
-      {showMissionIds && (
-        <Zoom key='automap'>
-          <AugmentMappingButton />
         </Zoom>
       )}
     </TransitionGroup>

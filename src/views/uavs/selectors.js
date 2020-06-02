@@ -11,26 +11,12 @@ import {
 import { isShowingMissionIds } from '~/features/settings/selectors';
 import { getUAVIdList } from '~/features/uavs/selectors';
 import { getSelectedUAVIds } from '~/selectors/selection';
-import { formatMissionId } from '~/utils/formatting';
 
 /**
  * Special marker that we can place into the list items returned from
  * getDisplayedIdList() to produce a slot where deleted UAVs can be dragged.
  */
 export const deletionMarker = [undefined, undefined, <Delete key='__delete' />];
-
-/**
- * Selector that provides the list of UAV IDs to show in the UAV list when we
- * are using the UAV IDs without their mission-specific identifiers.
- *
- * The main section of the view will be sorted based on the UAV IDs in the
- * state store. The "spare UAVs" section in the view will be empty.
- */
-const getDisplayedUAVIdList = createSelector(getUAVIdList, (uavIds) => ({
-  mainUAVIds: uavIds.map((uavId) => [uavId, undefined, uavId]),
-  spareUAVIds: [],
-  extraSlots: [],
-}));
 
 /**
  * Selector that provides the list of UAV IDs to show in the UAV list when
@@ -40,7 +26,7 @@ const getDisplayedUAVIdList = createSelector(getUAVIdList, (uavIds) => ({
  * indices. The "spare UAVs" section in the view will include all the UAVs
  * that are not currently assigned to the mission.
  */
-const getDisplayedMissionIdList = createSelector(
+const getDisplayListSortedByMissionId = createSelector(
   getMissionMapping,
   isMappingEditable,
   getUAVIdList,
@@ -51,14 +37,12 @@ const getDisplayedMissionIdList = createSelector(
     const seenUAVIds = new Set();
 
     mapping.forEach((uavId, index) => {
-      const missionId = formatMissionId(index);
       if (isNil(uavId)) {
         // No UAV assigned to this slot
-        mainUAVIds.push([undefined, index, missionId]);
+        mainUAVIds.push([undefined, index]);
       } else {
-        // Some UAV is assigned to this slot. If we are not editing the
-        // mapping, we show the mission ID. Otherwise we show the UAV ID.
-        mainUAVIds.push([uavId, index, editable ? uavId : missionId]);
+        // Some UAV is assigned to this slot
+        mainUAVIds.push([uavId, index]);
         seenUAVIds.add(uavId);
       }
     });
@@ -66,7 +50,7 @@ const getDisplayedMissionIdList = createSelector(
     for (const uavId of uavIds) {
       if (!seenUAVIds.has(uavId)) {
         // This UAV is not part of the current mapping.
-        spareUAVIds.push([uavId, undefined, uavId]);
+        spareUAVIds.push([uavId, undefined]);
       }
     }
 
@@ -81,12 +65,25 @@ const getDisplayedMissionIdList = createSelector(
 );
 
 /**
+ * Selector that provides the list of UAV IDs to show in the UAV list when we
+ * are using the UAV IDs without their mission-specific identifiers.
+ *
+ * The main section of the view will be sorted based on the UAV IDs in the
+ * state store. The "spare UAVs" section in the view will be empty.
+ */
+const getDisplayListSortedByUavId = createSelector(getUAVIdList, (uavIds) => ({
+  mainUAVIds: uavIds.map((uavId) => [uavId, undefined]),
+  spareUAVIds: [],
+  extraSlots: [],
+}));
+
+/**
  * Selector that provides the list of UAV IDs to show in the UAV list.
  */
 export const getDisplayedIdList = (state) =>
   isShowingMissionIds(state)
-    ? getDisplayedMissionIdList(state)
-    : getDisplayedUAVIdList(state);
+    ? getDisplayListSortedByMissionId(state)
+    : getDisplayListSortedByUavId(state);
 
 /**
  * Selector that takes the displayed list of UAV IDs sorted by sections,

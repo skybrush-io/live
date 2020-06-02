@@ -13,6 +13,8 @@ import Mouse from '@material-ui/icons/Mouse';
 import MoreVert from '@material-ui/icons/MoreVert';
 import OpenWith from '@material-ui/icons/OpenWith';
 
+import { augmentMappingAutomaticallyFromSpareDrones } from '~/features/mission/actions';
+import { canAugmentMappingAutomaticallyFromSpareDrones } from '~/features/mission/selectors';
 import {
   clearMapping,
   finishMappingEditorSession,
@@ -26,7 +28,16 @@ const instructionsStyle = {
 };
 
 const MappingEditorToolbar = React.forwardRef(
-  ({ clearMapping, finishMappingEditorSession, ...rest }, ref) => {
+  (
+    {
+      augmentMapping,
+      canAugmentMapping,
+      clearMapping,
+      finishMappingEditorSession,
+      ...rest
+    },
+    ref
+  ) => {
     const [
       menuAnchorElement,
       openMappingMenu,
@@ -58,6 +69,13 @@ const MappingEditorToolbar = React.forwardRef(
           variant='menu'
           onClose={closeMappingMenu}
         >
+          <MenuItem
+            disabled={!canAugmentMapping}
+            onClick={canAugmentMapping && closeMappingMenu(augmentMapping)}
+          >
+            Assign spares
+          </MenuItem>
+          <Divider />
           <MenuItem disabled>Import…</MenuItem>
           <MenuItem disabled>Export…</MenuItem>
           <Divider />
@@ -69,6 +87,8 @@ const MappingEditorToolbar = React.forwardRef(
 );
 
 MappingEditorToolbar.propTypes = {
+  augmentMapping: PropTypes.func,
+  canAugmentMapping: PropTypes.bool,
   clearMapping: PropTypes.func,
   finishMappingEditorSession: PropTypes.func,
   selectedUAVIds: PropTypes.array,
@@ -76,9 +96,15 @@ MappingEditorToolbar.propTypes = {
 
 export default connect(
   // mapStateToProps
-  null,
+  (state) => ({
+    canAugmentMapping: canAugmentMappingAutomaticallyFromSpareDrones(state),
+  }),
   // mapDispatchToProps
-  { clearMapping, finishMappingEditorSession },
+  {
+    augmentMapping: augmentMappingAutomaticallyFromSpareDrones,
+    clearMapping,
+    finishMappingEditorSession,
+  },
   null,
   { forwardRef: true }
 )(MappingEditorToolbar);

@@ -37,9 +37,13 @@ import {
   getIndexOfMappingSlotBeingEdited,
   isMappingEditable,
 } from '~/features/mission/selectors';
-import { getUAVListLayout } from '~/features/settings/selectors';
+import {
+  getUAVListLayout,
+  isShowingMissionIds,
+} from '~/features/settings/selectors';
 import { getSelectedUAVIds } from '~/selectors/selection';
 import { isDark } from '~/theme';
+import { formatMissionId } from '~/utils/formatting';
 
 import {
   deletionMarker,
@@ -101,18 +105,26 @@ const useListSectionStyles = makeStyles(
  */
 const createGridItems = (
   items,
-  { draggable, mappingSlotBeingEdited, onDropped, onSelected, selectedUAVIds }
+  {
+    draggable,
+    isInEditMode,
+    mappingSlotBeingEdited,
+    onDropped,
+    onSelected,
+    selectedUAVIds,
+    showMissionIds,
+  }
 ) =>
   items.map((item) => {
-    const [uavId, missionIndex, label] = item;
-    const editing =
+    const [uavId, missionIndex, proposedLabel] = item;
+    const editingThisItem =
       mappingSlotBeingEdited !== undefined &&
       missionIndex === mappingSlotBeingEdited;
     const selected = selectedUAVIds.includes(uavId);
     const listItemProps = {
       onClick: onSelected ? onSelected(uavId, missionIndex) : undefined,
       onDrop: onDropped ? onDropped(missionIndex) : undefined,
-      editing,
+      editing: editingThisItem,
       selected,
     };
 
@@ -120,31 +132,51 @@ const createGridItems = (
       listItemProps.fill = true;
     }
 
+    // Derive the label of the grid item. The rules are:
+    //
+    // - if we have a proposed label, use that
+    // - if we are not showing mission IDs, use the UAV ID
+    // - if we are showing mission IDs and we are not edit mode, format the
+    //   mission ID nicely and show that -- unless we don't have a mission ID
+    //   (we are in a spare slot), in which case use the UAV ID
+    // - if we are editing the mission mapping, show the UAV ID because that's
+    //   what we are going to allow the user to modify
+
+    const label =
+      proposedLabel ||
+      (showMissionIds
+        ? missionIndex !== undefined && (!isInEditMode || uavId === undefined)
+          ? formatMissionId(missionIndex)
+          : uavId
+        : uavId);
+
+    const key = uavId === undefined ? `placeholder-${label || 'null'}` : uavId;
+
     return uavId === undefined ? (
       <DroneListItem
-        key={`placeholder-${label || 'null'}`}
+        key={key}
         onDrop={onDropped ? onDropped(missionIndex) : undefined}
         {...listItemProps}
       >
-        {editing && <MappingSlotEditor />}
+        {editingThisItem && <MappingSlotEditor />}
         <DronePlaceholder
-          editing={editing}
-          label={editing ? '' : label}
+          editing={editingThisItem}
+          label={editingThisItem ? '' : label}
           status={missionIndex === undefined ? 'error' : 'off'}
         />
       </DroneListItem>
     ) : (
       <DroneListItem
-        key={uavId}
+        key={key}
         draggable={draggable}
         uavId={uavId}
         {...listItemProps}
       >
-        {editing && <MappingSlotEditor />}
+        {editingThisItem && <MappingSlotEditor />}
         <DroneAvatar
           id={uavId}
-          editing={editing}
-          label={editing ? '' : label}
+          editing={editingThisItem}
+          label={editingThisItem ? '' : label}
           selected={selected}
         />
       </DroneListItem>
@@ -157,10 +189,16 @@ const createGridItems = (
  */
 const createListItems = (
   items,
-  { mappingSlotBeingEdited, onDropped, onSelected, selectedUAVIds }
+  {
+    mappingSlotBeingEdited,
+    onDropped,
+    onSelected,
+    selectedUAVIds,
+    showMissionIds,
+  }
 ) =>
   items.map((item) => {
-    const [uavId, missionIndex, label] = item;
+    const [uavId, missionIndex, proposedLabel] = item;
     const editing =
       mappingSlotBeingEdited !== undefined &&
       missionIndex === mappingSlotBeingEdited;
@@ -171,11 +209,19 @@ const createListItems = (
       editing,
       selected,
     };
-    const key = uavId === undefined ? `placeholder-${label || 'null'}` : uavId;
 
     if (item === deletionMarker) {
       listItemProps.fill = true;
     }
+
+    const label =
+      proposedLabel ||
+      (showMissionIds
+        ? missionIndex !== undefined
+          ? formatMissionId(missionIndex)
+          : uavId
+        : uavId);
+    const key = uavId === undefined ? `placeholder-${label || 'null'}` : uavId;
 
     return (
       <DroneListItem key={key} stretch {...listItemProps}>
@@ -187,8 +233,9 @@ const createListItems = (
 const UAVListSection = ({
   forceVisible,
   ids,
+  itemFactory,
+  itemFactoryOptions,
   layout,
-  listItemProps,
   ...rest
 }) => {
   const classes = useListSectionStyles();
@@ -197,12 +244,11 @@ const UAVListSection = ({
     return null;
   }
 
-  const itemFactory = layout === 'grid' ? createGridItems : createListItems;
   return (
     <>
       <UAVListSubheader {...rest} />
       <Box className={layout === 'grid' ? classes.grid : classes.list}>
-        {itemFactory(ids, listItemProps)}
+        {itemFactory(ids, itemFactoryOptions)}
       </Box>
     </>
   );
@@ -211,8 +257,9 @@ const UAVListSection = ({
 UAVListSection.propTypes = {
   forceVisible: PropTypes.bool,
   ids: PropTypes.array,
+  itemFactory: PropTypes.func,
+  itemFactoryOptions: PropTypes.object,
   layout: PropTypes.oneOf(['grid', 'list']),
-  listItemProps: PropTypes.object,
 };
 
 /**
@@ -228,6 +275,7 @@ const UAVListPresentation = ({
   onSelectSection,
   selectedUAVIds,
   selectionInfo,
+  showMissionIds,
   uavIds,
 }) => {
   const classes = useListStyles();
@@ -257,12 +305,16 @@ const UAVListPresentation = ({
 
   const { mainUAVIds, spareUAVIds, extraSlots } = uavIds;
 
-  const listItemProps = {
+  const itemFactory = layout === 'grid' ? createGridItems : createListItems;
+
+  const itemFactoryOptions = {
     draggable: editingMapping,
+    isInEditMode: editingMapping,
     mappingSlotBeingEdited,
     onDropped: editingMapping && onDropped,
     onSelected: editingMapping ? onStartEditing : onUpdateSelection,
     selectedUAVIds,
+    showMissionIds,
   };
 
   const mainBox = (
@@ -292,7 +344,8 @@ const UAVListPresentation = ({
       <Box flex={1} overflow='auto'>
         <UAVListSection
           ids={mainUAVIds}
-          listItemProps={listItemProps}
+          itemFactory={itemFactory}
+          itemFactoryOptions={itemFactoryOptions}
           label='Assigned UAVs'
           layout={layout}
           value='mainUAVIds'
@@ -301,7 +354,8 @@ const UAVListPresentation = ({
         />
         <UAVListSection
           ids={spareUAVIds}
-          listItemProps={listItemProps}
+          itemFactory={itemFactory}
+          itemFactoryOptions={itemFactoryOptions}
           label='Spare UAVs'
           layout={layout}
           value='spareUAVIds'
@@ -313,7 +367,7 @@ const UAVListPresentation = ({
       {extraSlots.length > 0 ? (
         <Box className='bottom-bar'>
           <Box display='flex' flexDirection='row' flexWrap='wrap'>
-            {createGridItems(extraSlots, listItemProps)}
+            {createGridItems(extraSlots, itemFactoryOptions)}
           </Box>
         </Box>
       ) : null}
@@ -353,6 +407,7 @@ UAVListPresentation.propTypes = {
       indeterminate: PropTypes.bool,
     }),
   }),
+  showMissionIds: PropTypes.bool,
   uavIds: PropTypes.exact({
     mainUAVIds: PropTypes.arrayOf(PropTypes.array).isRequired,
     spareUAVIds: PropTypes.arrayOf(PropTypes.array).isRequired,
@@ -371,6 +426,7 @@ const UAVList = connect(
     layout: getUAVListLayout(state),
     selectedUAVIds: getSelectedUAVIds(state),
     selectionInfo: getSelectionInfo(state),
+    showMissionIds: isShowingMissionIds(state),
     uavIds: getDisplayedIdList(state),
   }),
   // mapDispatchToProps

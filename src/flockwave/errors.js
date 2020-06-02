@@ -26,6 +26,7 @@ export const ErrorCode = Object.freeze({
   TAKEOFF: 5,
   LANDING: 6,
   LANDED: 7,
+  MOTORS_RUNNING_WHILE_ON_GROUND: 8,
   RETURN_TO_HOME: 63,
 
   // Warnings
@@ -99,6 +100,7 @@ const errorCodeToAbbreviation = {
   5: 'takeoff',
   6: 'landing',
   7: 'landed',
+  8: 'motors',
   63: 'RTH',
   64: 'storage',
   65: 'RC lost',
@@ -152,6 +154,7 @@ const errorCodeToDescription = {
   5: 'Drone is taking off',
   6: 'Drone is landing',
   7: 'Drone has landed successfully',
+  8: 'Motors are running while on ground',
   64: 'Low disk space',
   65: 'RC lost',
   66: 'Battery low',
