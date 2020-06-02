@@ -410,7 +410,7 @@ export function getSingleUAVStatusSummary(uav) {
     // No such UAV
     status = undefined;
     text = 'missing';
-    textSemantics = 'error';
+    textSemantics = 'warning';
   } else if (uav.errors && uav.errors.length > 0) {
     // UAV has some status information that it wishes to report
     const maxError = Math.max(...uav.errors);
@@ -454,7 +454,9 @@ export function getSingleUAVStatusSummary(uav) {
     }
   }
 
-  status = getSingleUAVStatusLevel(uav);
+  if (uav) {
+    status = getSingleUAVStatusLevel(uav);
+  }
 
   return { status, details: details || text, text, textSemantics };
 }

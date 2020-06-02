@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 
-import Mapping from '@material-ui/icons/LooksOne';
+import Mapping from '@material-ui/icons/FormatLineSpacing';
 
 import ToggleButton from '~/components/ToggleButton';
 import { isShowingMissionIds } from '~/features/settings/selectors';
@@ -13,12 +13,7 @@ import { toggleMissionIds } from '~/features/settings/slice';
  * mission IDs in the application.
  */
 const MappingToggleButton = ({ selected, onChange }) => (
-  <ToggleButton
-    size='small'
-    value='missionIds'
-    selected={selected}
-    onChange={onChange}
-  >
+  <ToggleButton value='missionIds' selected={selected} onChange={onChange}>
     <Mapping />
   </ToggleButton>
 );

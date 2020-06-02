@@ -11,18 +11,17 @@ const useStyles = makeStyles(
   (theme) => ({
     root: {
       alignItems: 'center',
-      cursor: 'hand',
+      cursor: 'pointer',
       display: 'flex',
       flexDirection: 'column',
       minWidth: theme.spacing(10),
-      padding: theme.spacing(1),
       position: 'relative',
       transition: theme.transitions.create(['background-color', 'box-shadow']),
 
-      '& div': {
+      '&>div': {
         marginBottom: theme.spacing(0.5),
       },
-      '& div:last-child': {
+      '&>div:last-child': {
         marginBottom: 0,
       },
     },
@@ -48,8 +47,12 @@ const useStyles = makeStyles(
 
     fill: {
       flexGrow: 1,
-      padding: theme.spacing(2, 0)
-    }
+      padding: theme.spacing(2, 0),
+    },
+
+    stretch: {
+      alignItems: ['stretch', '!important'],
+    },
   }),
   {
     name: 'DroneListItem',
@@ -102,14 +105,13 @@ DragDropArea.propTypes = {
 
 const DroneListItem = ({
   children,
-  className,
   draggable,
-  editing,
   fill,
   onClick,
   onDrop,
   selected,
-  uavId
+  stretch,
+  uavId,
 }) => {
   const classes = useStyles();
   const mergedClassNames = clsx(
@@ -117,7 +119,8 @@ const DroneListItem = ({
     onClick && classes.selectable,
     draggable && classes.draggable,
     selected && classes.selected,
-    fill && classes.fill
+    fill && classes.fill,
+    stretch && classes.stretch
   );
   return draggable || onDrop ? (
     <DragDropArea
@@ -137,13 +140,12 @@ const DroneListItem = ({
 
 DroneListItem.propTypes = {
   children: PropTypes.node,
-  className: PropTypes.string,
   draggable: PropTypes.bool,
-  editing: PropTypes.bool,
   fill: PropTypes.bool,
   onClick: PropTypes.func,
   onDrop: PropTypes.func,
   selected: PropTypes.bool,
+  stretch: PropTypes.bool,
   uavId: PropTypes.string,
 };
 

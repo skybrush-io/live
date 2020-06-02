@@ -193,18 +193,23 @@ export const getExactClosestPointOf = (geometry, coordinate) => {
  * @param {Object}  options  formatting options
  * @param {number}  options.digits  the number of fractional digits to show
  * @param {boolean} options.reverse  whether to reverse the X and Y coordinates
+ * @param {string}  options.separator  separator between the X and Y coordinates
  * @param {string}  options.unit   the unit to show after the digits
  * @return {function} the constructed function
  */
-export const makeDecimalCoordinateFormatter = (options) => {
-  const { digits, reverse, unit } = options;
+export const makeDecimalCoordinateFormatter = ({
+  digits,
+  reverse,
+  separator = ', ',
+  unit,
+}) => {
   const formatString = reverse
     ? unit
-      ? '{y}' + unit + ', {x}' + unit
-      : '{y}, {x}'
+      ? '{y}' + unit + separator + '{x}' + unit
+      : '{y}' + separator + '{x}'
     : unit
-    ? '{x}' + unit + ', {y}' + unit
-    : '{x}, {y}';
+    ? '{x}' + unit + separator + '{y}' + unit
+    : '{x}' + separator + '{y}';
   return (coordinate) => Coordinate.format(coordinate, formatString, digits);
 };
 
@@ -227,11 +232,11 @@ export const makePolarCoordinateFormatter = (options) => {
     ? (coordinate) =>
         Coordinate.format(
           coordinate,
-          '{x}' + unit + ' \u2220 {y}\u00b0',
+          '{x}' + unit + ' \u2220 {y}\u00B0',
           digits
         )
     : (coordinate) =>
-        Coordinate.format(coordinate, '{x} \u2220 {y}\u00b0', digits);
+        Coordinate.format(coordinate, '{x} \u2220 {y}\u00B0', digits);
 };
 
 /**

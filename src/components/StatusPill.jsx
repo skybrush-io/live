@@ -10,7 +10,6 @@ import { Status } from './semantics';
 const useStyles = makeStyles(
   (theme) => ({
     root: {
-      backgroundColor: theme.palette.background.paper,
       borderRadius: theme.spacing(1),
       color: theme.palette.getContrastText.primary,
       fontSize: 'small',
@@ -20,6 +19,9 @@ const useStyles = makeStyles(
       textTransform: 'uppercase',
       userSelect: 'none',
       whiteSpace: 'nowrap',
+    },
+
+    fullWidth: {
       width: '100%',
     },
 
@@ -36,6 +38,10 @@ const useStyles = makeStyles(
     'status-next': {
       backgroundColor: Colors.info,
       color: theme.palette.getContrastText(Colors.info),
+    },
+
+    'status-off': {
+      backgroundColor: theme.palette.action.selected,
     },
 
     'status-success': {
@@ -76,6 +82,50 @@ const useStyles = makeStyles(
       fontWeight: 'bold',
     },
 
+    'status-hollow-info': {
+      color: Colors.info,
+    },
+
+    'status-hollow-waiting': {
+      color: Colors.info,
+    },
+
+    'status-hollow-next': {
+      color: Colors.info,
+    },
+
+    'status-hollow-success': {
+      color: Colors.success,
+    },
+
+    'status-hollow-skipped': {
+      color: Colors.warning,
+    },
+
+    'status-hollow-warning': {
+      color: Colors.warning,
+      fontWeight: 'bold',
+    },
+
+    'status-hollow-rth': {
+      animation: '$flash 0.5s infinite',
+      animationDirection: 'alternate',
+      color: Colors.warning,
+      fontWeight: 'bold',
+    },
+
+    'status-hollow-error': {
+      color: Colors.error,
+      fontWeight: 'bold',
+    },
+
+    'status-hollow-critical': {
+      animation: '$flash 0.5s infinite',
+      animationDirection: 'alternate',
+      color: Colors.error,
+      fontWeight: 'bold',
+    },
+
     '@keyframes flash': {
       '0%, 49%': {
         opacity: 0.5,
@@ -92,10 +142,19 @@ const useStyles = makeStyles(
  * Summary pill that can be placed below the drone avatar to show a single
  * line of additional textual information.
  */
-const StatusPill = ({ children, status }) => {
+const StatusPill = ({ children, className, inline, hollow, status }) => {
   const classes = useStyles();
   return (
-    <div className={clsx(classes.root, classes[`status-${status}`])}>
+    <div
+      className={clsx(
+        className,
+        classes.root,
+        !inline && classes.fullWidth,
+        hollow
+          ? classes[`status-hollow-${status}`]
+          : classes[`status-${status}`]
+      )}
+    >
       {children}
     </div>
   );
@@ -103,6 +162,9 @@ const StatusPill = ({ children, status }) => {
 
 StatusPill.propTypes = {
   children: PropTypes.node,
+  className: PropTypes.string,
+  hollow: PropTypes.bool,
+  inline: PropTypes.bool,
   status: PropTypes.oneOf(Object.values(Status)),
 };
 

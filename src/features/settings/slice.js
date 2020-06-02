@@ -16,7 +16,7 @@ const { actions, reducer } = createSlice({
   initialState: {
     display: {
       // Display format of coordinates
-      coordinateFormat: CoordinateFormat.DEGREES,
+      coordinateFormat: CoordinateFormat.SIGNED_DEGREES,
       // Whether to show mission IDs or drone IDs in the UAV list
       showMissionIds: false,
       // Whether to show the mouse coordinates on the map
@@ -25,6 +25,8 @@ const { actions, reducer } = createSlice({
       showScaleLine: true,
       // Which UI theme to use (choose from OS, use light mode or use dark mode)
       theme: 'auto',
+      // Layout of the UAV list: grid or list
+      uavListLayout: 'grid',
     },
 
     threeD: {

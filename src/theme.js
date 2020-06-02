@@ -63,9 +63,16 @@ const DarkModeAwareThemeProvider = ({ children, type }) => {
       drawer: 800,
       modal: 900,
       snackbar: 1000,
-      tooltip: 1100
-    }
+      tooltip: 1100,
+    },
   });
+
+  /* Request from Ubi and Soma: selection should have more contrast; 0.08 is
+   * the default */
+  theme.palette.action.selected = isThemeDark
+    ? 'rgba(255, 255, 255, 0.16)'
+    : 'rgba(0, 0, 0, 0.16)';
+  theme.palette.action.selectedOpacity = 0.16;
 
   return <ThemeProvider theme={theme}>{children}</ThemeProvider>;
 };

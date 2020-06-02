@@ -3,10 +3,11 @@
  * objects on the user interface.
  */
 
+import formatCoords from 'formatcoords';
 import { createSelector } from '@reduxjs/toolkit';
 
+import { CoordinateFormat } from '~/model/settings';
 import {
-  formatCoordinate,
   makeDecimalCoordinateFormatter,
   makePolarCoordinateFormatter,
   toPolar,
@@ -19,6 +20,46 @@ const cartesianFormatter = makeDecimalCoordinateFormatter({
   unit: ' m',
 });
 const polarFormatter = makePolarCoordinateFormatter({ digits: 2, unit: ' m' });
+
+const signedGeographicFormatter = makeDecimalCoordinateFormatter({
+  digits: 6,
+  reverse: true,
+  separator: ' ',
+  unit: '\u00B0',
+});
+
+const _formattersForCoordinateFormat = {
+  [CoordinateFormat.DEGREES]: ([lon, lat]) =>
+    formatCoords(lon, lat, true).format('Xdd', { decimalPlaces: 6 }),
+  [CoordinateFormat.DEGREES_MINUTES]: ([lon, lat]) =>
+    formatCoords(lon, lat, true).format('XDDmm', { decimalPlaces: 4 }),
+  [CoordinateFormat.DEGREES_MINUTES_SECONDS]: ([lon, lat]) =>
+    formatCoords(lon, lat, true).format('XDDMMss', { decimalPlaces: 3 }),
+  [CoordinateFormat.SIGNED_DEGREES]: signedGeographicFormatter,
+  [CoordinateFormat.SIGNED_DEGREES_MINUTES]: ([lon, lat]) =>
+    formatCoords(lon, lat, true).format('-DDmm', { decimalPlaces: 4 }),
+  [CoordinateFormat.SIGNED_DEGREES_MINUTES_SECONDS]: ([lon, lat]) =>
+    formatCoords(lon, lat, true).format('-DDMMss', { decimalPlaces: 3 }),
+};
+
+/**
+ * Returns the preferred formatter function for the coordinate format
+ * specified in the argument.
+ *
+ * The coordinate format must be a member of the CoordinateFormat enum.
+ */
+export const getFormatterForCoordinateFormat = (coordinateFormat) =>
+  _formattersForCoordinateFormat[coordinateFormat] || signedGeographicFormatter;
+
+/**
+ * Selector that returns a function that can be called with longitude-latitde
+ * pairs and that returns a nicely formatted representation according to the
+ * preferred format of the user.
+ */
+export const getPreferredCoordinateFormatter = createSelector(
+  (state) => state.settings.display.coordinateFormat,
+  getFormatterForCoordinateFormat
+);
 
 /**
  * Selector that returns a function that can be called with longitude-latitude
@@ -83,12 +124,15 @@ export const getFlatEarthCombinedCoordinateFormatter = createSelector(
  * relative to the origin of the flat Earth coordinate system.
  */
 export const getExtendedCoordinateFormatter = createSelector(
+  getPreferredCoordinateFormatter,
   getFlatEarthCombinedCoordinateFormatter,
-  (formatter) => (coords) => {
-    if (formatter === undefined) {
-      return formatCoordinate(coords);
+  (geographicFormatter, flatEarthFormatter) => (coords) => {
+    const geoCoords = geographicFormatter(coords);
+
+    if (flatEarthFormatter === undefined) {
+      return geoCoords;
     }
 
-    return formatCoordinate(coords) + '<br/>' + formatter(coords);
+    return geoCoords + '<br/>' + flatEarthFormatter(coords);
   }
 );

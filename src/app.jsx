@@ -26,11 +26,13 @@ import store, { persistor } from './store';
 import ThemeProvider, { DarkModeExtraCSSProvider } from './theme';
 import workbench from './workbench';
 
+require('../assets/css/proggy-vector.css');
 require('../assets/css/kbd.css');
 require('../assets/css/screen.less');
 require('../assets/css/tooltips.less');
 
 require('react-cover-page/themes/default.css');
+
 require('typeface-fira-sans');
 
 const rootStyle = {

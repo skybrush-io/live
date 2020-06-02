@@ -197,6 +197,7 @@ DroneAvatar.propTypes = {
   }),
   hint: PropTypes.string,
   crossed: PropTypes.bool,
+  details: PropTypes.string,
   editing: PropTypes.bool,
   id: PropTypes.string,
   label: PropTypes.string,

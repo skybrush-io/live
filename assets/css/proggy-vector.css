@@ -1,0 +1,8 @@
+@font-face {
+  font-family: 'Proggy Vector';
+  src: url('../fonts/ProggyVector/ProggyVector-Regular.woff2') format('woff2'),
+  url('../fonts/ProggyVector/ProggyVector-Regular.woff') format('woff'),
+  url('../fonts/ProggyVector/ProggyVector-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}

@@ -20,65 +20,98 @@ import {
 import CoordinateSystemFields from '~/components/CoordinateSystemFields';
 import Header from '~/components/dialogs/FormHeader';
 import { updateAppSettings } from '~/features/settings/slice';
+import { CoordinateFormat, describeCoordinateFormat } from '~/model/settings';
 import { getMapOriginRotationAngle } from '~/selectors/map';
 
+const exampleCoordinate = [19.061491, 47.474113]; /* ELTE */
+
+const coordinateFormatOrder = [
+  CoordinateFormat.DEGREES,
+  CoordinateFormat.DEGREES_MINUTES,
+  CoordinateFormat.DEGREES_MINUTES_SECONDS,
+  CoordinateFormat.SIGNED_DEGREES,
+  CoordinateFormat.SIGNED_DEGREES_MINUTES,
+  CoordinateFormat.SIGNED_DEGREES_MINUTES_SECONDS,
+];
+
 const DisplayTabPresentation = (props) => (
-  <Box my={2}>
-    <FormControl fullWidth variant='filled'>
-      <InputLabel id='display-theme-label'>Theme</InputLabel>
-      <Select
-        labelId='display-theme-label'
-        name='theme'
-        value={props.theme}
-        onChange={props.onFieldChanged}
-      >
-        <MenuItem value='auto'>
-          Choose automatically based on OS settings
-        </MenuItem>
-        <MenuItem value='light'>Light mode</MenuItem>
-        <MenuItem value='dark'>Dark mode</MenuItem>
-      </Select>
-    </FormControl>
+  <>
+    <Box my={2}>
+      <FormControl fullWidth variant='filled'>
+        <InputLabel id='display-theme-label'>Theme</InputLabel>
+        <Select
+          labelId='display-theme-label'
+          name='theme'
+          value={props.theme}
+          onChange={props.onFieldChanged}
+        >
+          <MenuItem value='auto'>
+            Choose automatically based on OS settings
+          </MenuItem>
+          <MenuItem value='light'>Light mode</MenuItem>
+          <MenuItem value='dark'>Dark mode</MenuItem>
+        </Select>
+      </FormControl>
+    </Box>
 
-    <FormGroup>
-      <Header>Map widgets</Header>
-      <FormControlLabel
-        label='Show mouse coordinates'
-        control={
-          <Checkbox
-            checked={props.showMouseCoordinates}
-            name='showMouseCoordinates'
-            onChange={props.onCheckboxToggled}
-          />
-        }
-      />
-      <FormControlLabel
-        label='Show scale line'
-        control={
-          <Checkbox
-            checked={props.showScaleLine}
-            name='showScaleLine'
-            onChange={props.onCheckboxToggled}
-          />
-        }
-      />
-    </FormGroup>
+    <Box my={2}>
+      <FormControl fullWidth variant='filled'>
+        <InputLabel id='coordinate-format-label'>Coordinate format</InputLabel>
+        <Select
+          labelId='coordinate-format-label'
+          name='coordinateFormat'
+          value={props.coordinateFormat}
+          onChange={props.onFieldChanged}
+        >
+          {coordinateFormatOrder.map((coordinateFormat) => (
+            <MenuItem key={coordinateFormat} value={coordinateFormat}>
+              {describeCoordinateFormat(coordinateFormat)}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
 
-    <FormGroup>
-      <Header>Flat Earth coordinate system</Header>
-      <CoordinateSystemFields
-        origin={props.origin}
-        orientation={props.orientation}
-        type={props.coordinateSystemType}
-        onOrientationChanged={props.onOrientationChanged}
-        onOriginChanged={props.onOriginChanged}
-        onTypeChanged={props.onCoordinateSystemTypeChanged}
-      />
-    </FormGroup>
-  </Box>
+      <FormGroup>
+        <Header>Map widgets</Header>
+        <FormControlLabel
+          label='Show mouse coordinates'
+          control={
+            <Checkbox
+              checked={props.showMouseCoordinates}
+              name='showMouseCoordinates'
+              onChange={props.onCheckboxToggled}
+            />
+          }
+        />
+        <FormControlLabel
+          label='Show scale line'
+          control={
+            <Checkbox
+              checked={props.showScaleLine}
+              name='showScaleLine'
+              onChange={props.onCheckboxToggled}
+            />
+          }
+        />
+      </FormGroup>
+
+      <FormGroup>
+        <Header>Flat Earth coordinate system</Header>
+        <CoordinateSystemFields
+          origin={props.origin}
+          orientation={props.orientation}
+          type={props.coordinateSystemType}
+          onOrientationChanged={props.onOrientationChanged}
+          onOriginChanged={props.onOriginChanged}
+          onTypeChanged={props.onCoordinateSystemTypeChanged}
+        />
+      </FormGroup>
+    </Box>
+  </>
 );
 
 DisplayTabPresentation.propTypes = {
+  coordinateFormat: PropTypes.oneOf(coordinateFormatOrder),
   coordinateSystemType: PropTypes.oneOf(['neu', 'nwu']),
   origin: PropTypes.arrayOf(PropTypes.number),
   onCheckboxToggled: PropTypes.func,

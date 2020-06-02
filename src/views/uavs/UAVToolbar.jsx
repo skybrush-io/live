@@ -5,9 +5,10 @@ import React from 'react';
 import Box from '@material-ui/core/Box';
 import IconButton from '@material-ui/core/IconButton';
 import Toolbar from '@material-ui/core/Toolbar';
-import Tooltip from '~/components/Tooltip';
 import ImageBlurCircular from '@material-ui/icons/BlurCircular';
 import ImageBlurOn from '@material-ui/icons/BlurOn';
+
+import Tooltip from '~/components/Tooltip';
 
 import MappingButtonGroup from './MappingButtonGroup';
 import UAVOperationsButtonGroup from './UAVOperationsButtonGroup';

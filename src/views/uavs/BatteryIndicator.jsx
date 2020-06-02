@@ -121,9 +121,9 @@ function getBatteryStatus(voltage, percentage) {
 /**
  * Presentational component for a battery charge indicator.
  */
-const BatteryIndicator = ({ percentage, voltage }) => {
+const BatteryIndicator = ({ className, percentage, voltage }) => {
   const classes = useStyles();
-  const rootClass = clsx(classes.root, classes[`battery${status}`]);
+  const rootClass = clsx(className, classes.root, classes[`battery${status}`]);
   const status = getBatteryStatus(voltage, percentage);
   const batteryIcon =
     percentage === undefined
@@ -143,6 +143,7 @@ const BatteryIndicator = ({ percentage, voltage }) => {
 };
 
 BatteryIndicator.propTypes = {
+  className: PropTypes.string,
   percentage: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   voltage: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
 };

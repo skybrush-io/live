@@ -27,6 +27,7 @@ import {
   setAppSettingsDialogTab,
   showAppSettingsDialog,
 } from '~/actions/app-settings';
+import ToolbarDivider from '~/components/ToolbarDivider';
 import { setNavigationMode } from '~/features/three-d/slice';
 import { isMapCoordinateSystemSpecified } from '~/selectors/map';
 import { isDark } from '~/theme';
@@ -36,12 +37,6 @@ const useStyles = makeStyles(
     appBar: {
       backgroundColor: isDark(theme) ? '#444' : theme.palette.background.paper,
       height: 48,
-    },
-
-    divider: {
-      alignSelf: 'stretch',
-      height: 'auto',
-      margin: theme.spacing(1, 0.5),
     },
 
     toolbar: {
@@ -80,7 +75,7 @@ const ThreeDTopLevelView = ({
             parameters={navigation.parameters}
             onChange={onSetNavigationMode}
           />
-          <Divider className={classes.divider} orientation='vertical' />
+          <ToolbarDivider orientation='vertical' />
           <NavigationInstructions mode={navigation.mode} />
         </Toolbar>
       </AppBar>

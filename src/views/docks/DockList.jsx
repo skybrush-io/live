@@ -62,13 +62,6 @@ const DockListPresentation = multiSelectableListOf(
  */
 const DockList = ({ onSelectionChanged, selectedIds, ...rest }) => (
   <Box display='flex' flexDirection='column' height='100%'>
-    {/*
-    <UAVToolbar
-      selectedUAVIds={selectedUAVIds}
-      fitSelectedUAVs={this._fitSelectedUAVs}
-    />
-    */}
-
     <Box height='100%' overflow='auto'>
       <DockListPresentation
         dense
