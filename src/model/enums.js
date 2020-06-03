@@ -82,10 +82,10 @@ const _propertiesForFlightModes = {
  * Returns the abbreviation of the given flight mode.
  */
 export function abbreviateFlightMode(mode) {
-  const props =
-    _propertiesForFlightModes[mode] ||
-    _propertiesForFlightModes[FlightMode.UNKNOWN];
-  return props.abbreviation;
+  const effectiveMode =
+    mode && typeof mode === 'string' ? mode : FlightMode.UNKNOWN;
+  const props = _propertiesForFlightModes[effectiveMode];
+  return props ? props.abbreviation : mode.slice(0, 4);
 }
 
 /**
