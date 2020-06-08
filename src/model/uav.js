@@ -265,6 +265,9 @@ export default class UAV {
    * used in a Redux store.
    */
   toJSON() {
+    /* Null Island is treated as "no position info" */
+    const position =
+      this._position.lat && this._position.lon ? { ...this._position } : null;
     return {
       id: this._id,
       battery: { ...this.battery },
@@ -274,7 +277,7 @@ export default class UAV {
       heading: this.heading,
       lastUpdated: this.lastUpdated,
       mode: this.mode,
-      position: { ...this._position },
+      position,
     };
   }
 }
