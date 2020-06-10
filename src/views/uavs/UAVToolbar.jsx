@@ -27,7 +27,13 @@ const UAVToolbar = React.forwardRef(
         <Box flex={1} />
 
         {fitSelectedUAVs && (
-          <Tooltip content='Fit selection into view'>
+          <Tooltip
+            content={
+              isSelectionEmpty
+                ? 'Fit all features into view'
+                : 'Fit selection into view'
+            }
+          >
             <IconButton style={{ float: 'right' }} onClick={fitSelectedUAVs}>
               {isSelectionEmpty ? <ImageBlurOn /> : <ImageBlurCircular />}
             </IconButton>

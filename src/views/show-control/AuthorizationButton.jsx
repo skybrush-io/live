@@ -6,6 +6,7 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import Typography from '@material-ui/core/Typography';
 
+import { setSelectedUAVIds } from '~/actions/map';
 import { Status } from '~/components/semantics';
 import StatusLight from '~/components/StatusLight';
 import {
@@ -17,6 +18,7 @@ import {
   isShowAuthorizedToStartLocally,
 } from '~/features/show/selectors';
 import { getSetupStageStatuses } from '~/features/show/stages';
+import { getUAVIdsParticipatingInMission } from '~/features/mission/selectors';
 
 /**
  * Button that allows the user to express her explicit consent to starting the
@@ -79,8 +81,12 @@ export default connect(
   {
     onClick: () => (dispatch, getState) => {
       const state = getState();
-      dispatch(setShowAuthorization(!isShowAuthorizedToStartLocally(state)));
+      const newAuthorizationState = !isShowAuthorizedToStartLocally(state);
+      dispatch(setShowAuthorization(newAuthorizationState));
       dispatch(synchronizeShowSettings('toServer'));
+      if (newAuthorizationState) {
+        dispatch(setSelectedUAVIds(getUAVIdsParticipatingInMission(state)));
+      }
     },
   }
 )(AuthorizationButton);

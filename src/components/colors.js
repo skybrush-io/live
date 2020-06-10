@@ -1,3 +1,4 @@
+import createColor from 'color';
 import { lightBlue, grey, green, yellow } from '@material-ui/core/colors';
 
 export const Colors = {
@@ -19,5 +20,9 @@ export const Colors = {
   originMarker: '#f44',
   takeoffMarker: '#fc0',
 };
+
+Colors.seriousWarning = createColor(Colors.warning)
+  .mix(createColor(Colors.error))
+  .string();
 
 export default Colors;

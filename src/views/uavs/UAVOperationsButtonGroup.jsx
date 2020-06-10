@@ -18,7 +18,7 @@ import {
   selectUAVInMessagesDialog,
   showMessagesDialog,
 } from '~/actions/messages';
-import * as messaging from '~/utils/messaging';
+import { createSelectionRelatedActions } from '~/utils/messaging';
 
 const useStyles = makeStyles(
   (theme) => ({
@@ -44,21 +44,13 @@ const UAVOperationsButtonGroup = ({
   const isSelectionEmpty = isEmpty(selectedUAVIds);
   const isSelectionSingle = selectedUAVIds.length === 1;
 
-  const takeoffSelectedUAVs = () => {
-    messaging.takeoffUAVs(selectedUAVIds);
-  };
-
-  const landSelectedUAVs = () => {
-    messaging.landUAVs(selectedUAVIds);
-  };
-
-  const resetSelectedUAVs = () => {
-    messaging.resetUAVs(selectedUAVIds);
-  };
-
-  const returnToHomeSelectedUAVs = () => {
-    messaging.returnToHomeUAVs(selectedUAVIds);
-  };
+  const {
+    haltSelectedUAVs,
+    landSelectedUAVs,
+    resetSelectedUAVs,
+    returnToHomeSelectedUAVs,
+    takeoffSelectedUAVs,
+  } = createSelectionRelatedActions(selectedUAVIds);
 
   const selectUAVAndShowMessagesDialog = () => {
     if (isSelectionSingle) {
@@ -66,10 +58,6 @@ const UAVOperationsButtonGroup = ({
     }
 
     showMessagesDialog();
-  };
-
-  const haltSelectedUAVs = () => {
-    messaging.haltUAVs(selectedUAVIds);
   };
 
   return (

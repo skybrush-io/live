@@ -16,17 +16,43 @@ import {
 } from '@material-ui/core/transitions/utils';
 import useForkRef from '@material-ui/core/utils/useForkRef';
 
-const styles = {
-  entering: {
-    opacity: 1,
-    transform: 'translateY(0)',
+const transitionStyles = {
+  up: {
+    entering: {
+      opacity: 1,
+      transform: 'translateY(0)',
+    },
+    entered: {
+      opacity: 1,
+      transform: 'translateY(0)',
+    },
+    exiting: {
+      opacity: 0,
+      transform: 'translateY(-16px)',
+    },
+    exited: {
+      opacity: 0,
+      transform: 'translateY(16px)',
+    },
   },
-  entered: {
-    opacity: 1,
-    transform: 'translateY(0)',
-  },
-  exiting: {
-    transform: 'translateY(-16px)',
+
+  left: {
+    entering: {
+      opacity: 1,
+      transform: 'translateX(0)',
+    },
+    entered: {
+      opacity: 1,
+      transform: 'translateX(0)',
+    },
+    exiting: {
+      opacity: 0,
+      transform: 'translateX(-16px)',
+    },
+    exited: {
+      opacity: 0,
+      transform: 'translateX(16px)',
+    },
   },
 };
 
@@ -38,6 +64,7 @@ const defaultTimeout = {
 const FadeAndSlide = React.forwardRef((props, ref) => {
   const {
     children,
+    direction,
     in: inProp,
     onEnter,
     onExit,
@@ -47,6 +74,7 @@ const FadeAndSlide = React.forwardRef((props, ref) => {
   } = props;
   const theme = useTheme();
   const handleRef = useForkRef(children.ref, ref);
+  const transitionStyle = transitionStyles[direction];
 
   const handleEnter = (node, isAppearing) => {
     reflow(node); // So the animation always start from the start.
@@ -94,7 +122,6 @@ const FadeAndSlide = React.forwardRef((props, ref) => {
 
   return (
     <Transition
-      appear
       in={inProp}
       timeout={timeout}
       onEnter={handleEnter}
@@ -104,10 +131,8 @@ const FadeAndSlide = React.forwardRef((props, ref) => {
       {(state, childProps) => {
         return React.cloneElement(children, {
           style: {
-            opacity: 0,
-            transform: 'translateY(16px)',
             visibility: state === 'exited' && !inProp ? 'hidden' : undefined,
-            ...styles[state],
+            ...transitionStyle[state],
             ...style,
             ...children.props.style,
           },
@@ -124,6 +149,10 @@ FadeAndSlide.propTypes = {
    * A single child content element.
    */
   children: PropTypes.element,
+  /**
+   * The direction of the transition.
+   */
+  direction: PropTypes.oneOf(Object.keys(transitionStyles)),
   /**
    * If `true`, the component will transition in.
    */
@@ -148,6 +177,10 @@ FadeAndSlide.propTypes = {
     PropTypes.number,
     PropTypes.shape({ enter: PropTypes.number, exit: PropTypes.number }),
   ]),
+};
+
+FadeAndSlide.defaultProps = {
+  direction: 'up',
 };
 
 export default FadeAndSlide;

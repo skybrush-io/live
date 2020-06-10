@@ -1,64 +1,45 @@
 import React from 'react';
 
 import Box from '@material-ui/core/Box';
-import Divider from '@material-ui/core/Divider';
 import List from '@material-ui/core/List';
 
 import AuthorizationButton from './AuthorizationButton';
-import EnvironmentButton from './EnvironmentButton';
 import EnvironmentEditorDialog from './EnvironmentEditorDialog';
 import LoadShowFromCloudDialog from './LoadShowFromCloudDialog';
-import LoadShowFromFileButton from './LoadShowFromFileButton';
-import ManualPreflightChecksButton from './ManualPreflightChecksButton';
 import ManualPreflightChecksDialog from './ManualPreflightChecksDialog';
-import OnboardPreflightChecksButton from './OnboardPreflightChecksButton';
 import OnboardPreflightChecksDialog from './OnboardPreflightChecksDialog';
-import StartTimeButton from './StartTimeButton';
+import ShowControlPanelUpperSegment from './ShowControlPanelUpperSegment';
 import StartTimeDialog from './StartTimeDialog';
-import TakeoffAreaButton from './TakeoffAreaButton';
 import TakeoffAreaSetupDialog from './TakeoffAreaSetupDialog';
-import UploadButton from './UploadButton';
 import UploadDialog from './UploadDialog';
 
 /**
  * Panel that shows the widgets that are needed to load and configure a drone
  * show.
  */
-const ShowControlPanel = () => {
-  return (
-    <Box display='flex' flexDirection='column' height='100%'>
-      <Box style={{ overflow: 'auto' }} flex={1}>
-        <List dense id='tour-show-control'>
-          <LoadShowFromFileButton />
-          <Divider />
-          <EnvironmentButton />
-          <TakeoffAreaButton />
-          <Divider />
-          <UploadButton />
-          <StartTimeButton />
-          <Divider />
-          <OnboardPreflightChecksButton />
-          <ManualPreflightChecksButton />
-        </List>
-      </Box>
+const ShowControlPanel = () => (
+  <Box
+    display='flex'
+    flexDirection='column'
+    height='100%'
+    id='tour-show-control'
+  >
+    <ShowControlPanelUpperSegment />
 
-      <Box className='bottom-bar'>
-        <List dense disablePadding>
-          <AuthorizationButton />
-        </List>
-      </Box>
-
-      <LoadShowFromCloudDialog />
-      <EnvironmentEditorDialog />
-      <StartTimeDialog />
-      <TakeoffAreaSetupDialog />
-      <UploadDialog />
-      <OnboardPreflightChecksDialog />
-      <ManualPreflightChecksDialog />
+    <Box className='bottom-bar'>
+      <List dense disablePadding>
+        <AuthorizationButton />
+      </List>
     </Box>
-  );
-};
 
-ShowControlPanel.propTypes = {};
+    <LoadShowFromCloudDialog />
+    <EnvironmentEditorDialog />
+    <StartTimeDialog />
+    <TakeoffAreaSetupDialog />
+    <UploadDialog />
+    <OnboardPreflightChecksDialog />
+    <ManualPreflightChecksDialog />
+  </Box>
+);
 
 export default ShowControlPanel;

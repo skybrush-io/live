@@ -100,3 +100,29 @@ export const moveUAVs = (uavs, target) =>
       ],
     })
     .then(processResponse('UAV-FLY', 'Fly to target command'));
+
+export const createSelectionRelatedActions = (selectedUAVIds) => ({
+  haltSelectedUAVs: () => {
+    haltUAVs(selectedUAVIds);
+  },
+
+  landSelectedUAVs: () => {
+    landUAVs(selectedUAVIds);
+  },
+
+  resetSelectedUAVs: () => {
+    resetUAVs(selectedUAVIds);
+  },
+
+  returnToHomeSelectedUAVs: () => {
+    returnToHomeUAVs(selectedUAVIds);
+  },
+
+  takeoffSelectedUAVs: () => {
+    takeoffUAVs(selectedUAVIds);
+  },
+
+  turnMotorsOnForSelectedUAVs: () => {
+    console.warn('Not implemented yet');
+  },
+});

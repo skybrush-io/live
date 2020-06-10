@@ -262,7 +262,8 @@ export const getShowDurationAsString = createSelector(
     if (seconds.length < 2) {
       seconds = '0' + seconds;
     }
-    return `${minutes}:${seconds}`
+
+    return `${minutes}:${seconds}`;
   }
 );
 

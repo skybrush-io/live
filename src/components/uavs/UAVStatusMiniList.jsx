@@ -63,7 +63,7 @@ const UAVStatusMiniListEntry = ({ id, label, status, uavIds }) => (
     <Box width={80} mr={1}>
       <StatusPill status={status}>{label}</StatusPill>
     </Box>
-    {formatUAVIds(uavIds)}
+    {formatUAVIds(uavIds, { maxCount: 6 })}
   </ListItem>
 );
 

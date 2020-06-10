@@ -1,3 +1,4 @@
+import intersection from 'lodash-es/intersection';
 import isNil from 'lodash-es/isNil';
 import range from 'lodash-es/range';
 import reject from 'lodash-es/reject';
@@ -99,6 +100,25 @@ export const getUAVIdsParticipatingInMission = createSelector(
 export const hasNonemptyMappingSlot = createSelector(
   getMissionMapping,
   (mapping) => (mapping ? !mapping.every(isNil) : false)
+);
+
+/**
+ * Returns whether the current UAV selection includes _exactly_ those UAVs that
+ * participate in the mission, and nothing else.
+ */
+export const areAllUAVsInMissionSelectedAndNothingElse = createSelector(
+  getSelectedUAVIds,
+  getUAVIdsParticipatingInMission,
+  (selectedUAVIds, missionUAVIds) => {
+    if (selectedUAVIds.length !== missionUAVIds.length) {
+      return false;
+    }
+
+    return (
+      intersection(selectedUAVIds, missionUAVIds).length ===
+      selectedUAVIds.length
+    );
+  }
 );
 
 /**

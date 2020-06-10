@@ -72,6 +72,26 @@ const stages = {
     requires: ['selectShowFile', 'setupEnvironment'],
   },
 
+  waitForOnboardPreflightChecks: {
+    evaluate: (state) =>
+      areOnboardPreflightChecksSignedOff(state)
+        ? areAllUAVsInMissionWithoutErrors(state)
+          ? Status.SUCCESS
+          : Status.SKIPPED
+        : Status.OFF,
+    requires: ['uploadShow'],
+  },
+
+  performManualPreflightChecks: {
+    evaluate: (state) =>
+      areManualPreflightChecksSignedOff(state)
+        ? areAllPreflightChecksTicked(state)
+          ? Status.SUCCESS
+          : Status.SKIPPED
+        : Status.OFF,
+    requires: ['uploadShow'],
+  },
+
   setupStartTime: {
     evaluate: (state) =>
       didStartConditionSyncFail(state)
@@ -82,26 +102,7 @@ const stages = {
           : Status.OFF
         : Status.WAITING,
     requires: ['selectShowFile'],
-  },
-
-  waitForOnboardPreflightChecks: {
-    evaluate: (state) =>
-      areOnboardPreflightChecksSignedOff(state)
-        ? areAllUAVsInMissionWithoutErrors(state)
-          ? Status.SUCCESS
-          : Status.SKIPPED
-        : Status.OFF,
-    suggests: ['setupStartTime'],
-  },
-
-  performManualPreflightChecks: {
-    evaluate: (state) =>
-      areManualPreflightChecksSignedOff(state)
-        ? areAllPreflightChecksTicked(state)
-          ? Status.SUCCESS
-          : Status.SKIPPED
-        : Status.OFF,
-    suggests: ['setupStartTime'],
+    suggests: ['waitForOnboardPreflightChecks', 'performManualPreflightChecks'],
   },
 
   authorization: {
@@ -125,10 +126,10 @@ const stageOrder = [
   'selectShowFile',
   'setupEnvironment',
   'setupTakeoffArea',
-  'setupStartTime',
   'uploadShow',
   'waitForOnboardPreflightChecks',
   'performManualPreflightChecks',
+  'setupStartTime',
   'authorization',
 ];
 
@@ -169,7 +170,7 @@ export const getSetupStageStatuses = (state) => {
       if (status === Status.OFF) {
         // state has not been acted on by the user, but all its dependencies are
         // ready so we mark it as a potential candidate for the user to perform
-        // next if all its 'suggests' dependencies are read
+        // next if all its 'suggests' dependencies are ready
         status = allDone(result, stage.suggests) ? Status.NEXT : Status.OFF;
       }
     } else {
