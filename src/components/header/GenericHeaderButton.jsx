@@ -5,10 +5,11 @@ import React from 'react';
 import Tooltip from '~/components/Tooltip';
 
 export const GenericHeaderButton = React.forwardRef(
-  ({ children, isDisabled, label, onClick, tooltip }, ref) => {
+  ({ children, isDisabled, id, label, onClick, tooltip }, ref) => {
     const result = (
       <div
         ref={ref}
+        id={id}
         className={clsx('wb-module', { 'wb-module-disabled': isDisabled })}
         onClick={onClick}
       >
@@ -29,6 +30,7 @@ export const GenericHeaderButton = React.forwardRef(
 
 GenericHeaderButton.propTypes = {
   children: PropTypes.node,
+  id: PropTypes.string,
   isDisabled: PropTypes.bool,
   label: PropTypes.string,
   onClick: PropTypes.func,
