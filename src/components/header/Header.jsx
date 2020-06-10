@@ -74,7 +74,7 @@ const Header = ({ isSidebarOpen, sessionExpiresAt, toggleSidebar }) => (
       <hr />
       {sessionExpiresAt && (
         <>
-          <SessionExpiryBox expiresAt={sessionExpiresAt} />,
+          <SessionExpiryBox expiresAt={sessionExpiresAt} />
           <hr />
         </>
       )}
