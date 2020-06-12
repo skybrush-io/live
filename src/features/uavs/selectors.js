@@ -438,7 +438,9 @@ export function getSingleUAVStatusSummary(uav) {
     textSemantics = 'success';
   }
 
-  if (textSemantics === 'success') {
+  // We allow "normal" and "informational" messages to be overridden by the
+  // "gone" or "inactive" warnings
+  if (textSemantics === 'success' || textSemantics === 'info') {
     if (uav.age === UAVAge.GONE) {
       if (text === 'ready') {
         text = 'gone';
