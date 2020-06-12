@@ -130,8 +130,6 @@ const BatteryIndicator = ({ className, percentage, voltage }) => {
       ? batteryIconsByStatus[status]
       : batteryIcons[Math.round(Math.min(Math.max(percentage, 0), 100) / 10)];
 
-  console.log(rootClass);
-
   return (
     <Box fontSize='small' className={rootClass}>
       {batteryIcon}
