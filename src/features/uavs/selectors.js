@@ -419,7 +419,7 @@ export function getSingleUAVStatusSummary(uav) {
     text = abbreviateError(maxError);
 
     if (maxError === ErrorCode.RETURN_TO_HOME) {
-      // disarm is treated separately; it is always shown as the special RTH state
+      // RTH is treated separately; it is always shown as the special RTH state
       textSemantics = 'rth';
     } else if (maxError === ErrorCode.DISARMED) {
       // disarm is treated separately; it is always shown as an error
@@ -427,7 +427,7 @@ export function getSingleUAVStatusSummary(uav) {
     } else {
       textSemantics = severityToSemantics(severity);
     }
-  } else if (uav.position && uav.position.agl > 0) {
+  } else if (uav.position && Math.abs(uav.position.agl) >= 0.3) {
     // UAV is in the air
     text = 'airborne';
     details = `${uav.position.agl.toFixed(2)}m`;
