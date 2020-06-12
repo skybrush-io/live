@@ -123,12 +123,14 @@ function getBatteryStatus(voltage, percentage) {
  */
 const BatteryIndicator = ({ className, percentage, voltage }) => {
   const classes = useStyles();
-  const rootClass = clsx(className, classes.root, classes[`battery${status}`]);
   const status = getBatteryStatus(voltage, percentage);
+  const rootClass = clsx(className, classes.root, classes[`battery${status}`]);
   const batteryIcon =
     percentage === undefined
       ? batteryIconsByStatus[status]
       : batteryIcons[Math.round(Math.min(Math.max(percentage, 0), 100) / 10)];
+
+  console.log(rootClass);
 
   return (
     <Box fontSize='small' className={rootClass}>
