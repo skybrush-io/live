@@ -5,6 +5,7 @@
 import has from 'lodash-es/has';
 import isObject from 'lodash-es/isObject';
 import pDefer from 'p-defer';
+import pProps from 'p-props';
 import pTimeout from 'p-timeout';
 import shortid from 'shortid';
 
@@ -813,6 +814,27 @@ export default class MessageHub {
   }
 
   /**
+   * Sends a message to the server whose expected response is a standard
+   * multi-object async response with keys named `result`, `error` and
+   * `receipts`. (The response to many messages in the protocol specification
+   * follow this template). Returns a promise that resolves when _all_ the
+   * spawned async operations on the server have resolved to their results or
+   * have terminated with an error or a timeout.
+   *
+   * The promise resolves to a mapping from object IDs to their corresponding
+   * results or errors (represented as Error objects).
+   */
+  async startAsyncOperation(message) {
+    const { type: expectedType } = message;
+    if (!expectedType) {
+      throw new Error('Message must have a type');
+    }
+
+    const response = await this.sendMessage(message);
+    return this._processMultiAsyncOperationResponse(response, expectedType);
+  }
+
+  /**
    * Returns a promise that resolves when the message hub received an emitter
    * function that it may use for sending messages.
    *
@@ -845,5 +867,51 @@ export default class MessageHub {
    */
   _onMessageTimedOut(messageId) {
     console.warn(`Response to message with ID=${messageId} timed out`);
+  }
+
+  /**
+   * Helper function to process the response to a multi-object async operation.
+   * See <code>startAsyncOperation()</code> for more details.
+   */
+  async _processMultiAsyncOperationResponse(response, expectedType) {
+    if (!response) {
+      throw new Error('Response should not be empty');
+    } else if (!response.body) {
+      throw new Error('Response has no body');
+    } else if (response.body.type === 'ACK-NAK') {
+      throw new Error(
+        `Execution rejected by server; reason: ${
+          response.body.reason || 'unknown'
+        }`
+      );
+    } else if (response.body.type !== expectedType) {
+      throw new Error(
+        `Response has an unexpected type: ${response.body.type}, expected ${expectedType}`
+      );
+    } else {
+      const { body } = response;
+      const { error, result, receipts } = body;
+      const results = { ...result };
+
+      for (const erroredId of Object.keys(error || [])) {
+        results[erroredId] = new Error(String(error[erroredId]));
+      }
+
+      for (const idWithReceipt of Object.keys(receipts || [])) {
+        try {
+          results[
+            idWithReceipt
+          ] = this._asyncOperationManager.handleMultiAsyncResponseForSingleId(
+            response,
+            idWithReceipt,
+            { noThrow: true }
+          );
+        } catch (error) {
+          results[idWithReceipt] = error;
+        }
+      }
+
+      return pProps(results);
+    }
   }
 }

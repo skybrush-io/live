@@ -2,62 +2,112 @@
  * @file Utility file for sharing messaging related code between components.
  */
 
+import countBy from 'lodash-es/countBy';
 import isNil from 'lodash-es/isNil';
+import values from 'lodash-es/values';
 
 import messageHub from '~/message-hub';
+import { showNotification } from '~/features/snackbar/slice';
+import { MessageSemantics } from '~/features/snackbar/types';
+import store from '~/store';
 
 import makeLogger from './logging';
 
 const logger = makeLogger('messaging');
 
 const processResponse = (expectedType, commandName) => (response) => {
-  if (response) {
-    const { body } = response;
-    if (body) {
-      // TODO(ntamas): need to handle if any of the commands returned a
-      // receipt instead of a success / failure response
-      const { error, result, receipts, type } = body;
-
-      if (type === 'ACK-NAK') {
-        logger.error(
-          `${commandName} execution rejected by server; ` +
-            `reason: ${body.reason || 'unknown'}`
-        );
-      } else if (type !== expectedType) {
-        logger.error(
-          `${commandName} response has an unexpected type: ` +
-            `${type}, expected ${expectedType}`
-        );
-      } else if (error) {
-        logger.error(
-          `${commandName} execution failed for ${Object.keys(error).join(', ')}`
-        );
-      } else {
-        logger.info(`${commandName} sent successfully`);
-      }
-    } else {
-      logger.error(`${commandName} response has no body`);
-    }
-  } else {
+  if (!response) {
     logger.error(`${commandName} response should not be empty`);
+  } else if (!response.body) {
+    logger.error(`${commandName} response has no body`);
+  } else if (response.body.type === 'ACK-NAK') {
+    logger.error(
+      `${commandName} execution rejected by server; ` +
+        `reason: ${response.body.reason || 'unknown'}`
+    );
+  } else if (response.body.type !== expectedType) {
+    logger.error(
+      `${commandName} response has an unexpected type: ` +
+        `${response.body.type}, expected ${expectedType}`
+    );
+  } else {
+    const { body } = response;
+    const { error } = body;
+
+    if (error) {
+      logger.error(
+        `${commandName} execution failed for ${Object.keys(error).join(', ')}`
+      );
+    } else {
+      logger.info(`${commandName} sent successfully`);
+    }
   }
 };
 
-export const takeoffUAVs = (uavs) =>
-  messageHub
-    .sendMessage({
-      type: 'UAV-TAKEOFF',
-      ids: uavs,
-    })
-    .then(processResponse('UAV-TAKEOFF', 'Takeoff command'));
+const processResponses = (commandName, responses) => {
+  const responseCounts = countBy(values(responses));
+  const numberOfSuccesses = responseCounts.true;
+  const numberOfFailures = responseCounts.false;
 
-export const landUAVs = (uavs) =>
-  messageHub
-    .sendMessage({
-      type: 'UAV-LAND',
-      ids: uavs,
+  let message;
+  let semantics;
+
+  if (numberOfFailures) {
+    semantics = MessageSemantics.ERROR;
+    if (numberOfSuccesses > 1) {
+      message = `${commandName} sent for ${numberOfSuccesses} UAVs, failed for ${numberOfFailures}`;
+    } else if (numberOfSuccesses) {
+      message = `${commandName} sent for one UAV, failed for ${numberOfFailures}`;
+    } else if (numberOfFailures > 1) {
+      message = `${commandName} failed for ${numberOfFailures} UAVs`;
+    } else {
+      message = `${commandName} failed`;
+    }
+  } else {
+    semantics = MessageSemantics.SUCCESS;
+    if (numberOfSuccesses > 1) {
+      message = `${commandName} sent for ${numberOfSuccesses} UAVs`;
+    } else if (numberOfSuccesses) {
+      message = `${commandName} sent successfully`;
+    }
+  }
+
+  store.dispatch(
+    showNotification({
+      message,
+      semantics,
     })
-    .then(processResponse('UAV-LAND', 'Landing command'));
+  );
+};
+
+const performMassOperation = (type, name) => async (uavs) => {
+  try {
+    const responses = await messageHub.startAsyncOperation({
+      type,
+      ids: uavs,
+    });
+    processResponses(name, responses);
+  } catch (error) {
+    logger.error(`${name}: ${String(error)}`);
+  }
+};
+
+export const takeoffUAVs = performMassOperation(
+  'UAV-TAKEOFF',
+  'Takeoff command'
+);
+
+export const landUAVs = performMassOperation('UAV-LAND', 'Landing command');
+
+export const returnToHomeUAVs = performMassOperation(
+  'UAV-RTH',
+  'Return to home command'
+);
+
+export const shutdownUAVs = performMassOperation(
+  'UAV-HALT',
+  'Shutdown command'
+);
 
 export const resetUAVs = async (uavs, component) => {
   const request = {
@@ -72,22 +122,6 @@ export const resetUAVs = async (uavs, component) => {
   const response = await messageHub.sendMessage(request);
   return processResponse('UAV-RST', 'Reset command')(response);
 };
-
-export const returnToHomeUAVs = (uavs) =>
-  messageHub
-    .sendMessage({
-      type: 'UAV-RTH',
-      ids: uavs,
-    })
-    .then(processResponse('UAV-RTH', 'Return to home command'));
-
-export const haltUAVs = (uavs) =>
-  messageHub
-    .sendMessage({
-      type: 'UAV-HALT',
-      ids: uavs,
-    })
-    .then(processResponse('UAV-HALT', 'Halt command'));
 
 export const moveUAVs = (uavs, target) =>
   messageHub
@@ -105,7 +139,7 @@ export const moveUAVs = (uavs, target) =>
 
 export const createSelectionRelatedActions = (selectedUAVIds) => ({
   haltSelectedUAVs: () => {
-    haltUAVs(selectedUAVIds);
+    shutdownUAVs(selectedUAVIds);
   },
 
   landSelectedUAVs: () => {

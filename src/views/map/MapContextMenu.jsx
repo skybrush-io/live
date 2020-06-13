@@ -333,7 +333,7 @@ class MapContextMenu extends React.Component {
 
   _shutdownSelectedUAVs = (event, context) => {
     const { selectedUAVIds } = context;
-    messaging.haltUAVs(selectedUAVIds);
+    messaging.shutdownUAVs(selectedUAVIds);
   };
 
   _showMessagesDialog = (event, context) => {

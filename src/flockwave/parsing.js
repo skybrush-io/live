@@ -18,6 +18,16 @@ export function convertRGB565ToHex(value) {
   );
 }
 
+const MESSAGES_WITH_RECEIPTS = {
+  'OBJ-CMD': true,
+  'UAV-FLY': true,
+  'UAV-HALT': true,
+  'UAV-LAND': true,
+  'UAV-RST': true,
+  'UAV-RTH': true,
+  'UAV-TAKEOFF': true,
+};
+
 /**
  * Extracts the receipt corresponding to the given UAV from an OBJ-CMD
  * response from the server. Throws an error if the message represents a
@@ -37,7 +47,7 @@ export function extractResultOrReceiptFromMaybeAsyncResponse(message, uavId) {
   if (type === 'ACK-NAK') {
     // Server rejected to execute the command
     throw new Error(body.reason || 'ACK-NAK received; no reason given');
-  } else if (type === 'OBJ-CMD') {
+  } else if (MESSAGES_WITH_RECEIPTS[type]) {
     // We may still have a rejection here
     const { error, receipts, result } = body;
     if (error && error[uavId] !== undefined) {
