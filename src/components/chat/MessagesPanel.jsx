@@ -202,11 +202,11 @@ class MessagesPanelPresentation extends React.Component {
         px={2}
       >
         <ActiveUAVsField
+          commitWhenInvalid
           initialValue={selectedUAVId}
           inputRef={this._uavSelectorFieldRef}
           style={{ width: '8em', paddingRight: '1em' }}
           flock={flock}
-          commitWhenInvalid
         />
         <TextField
           fullWidth
@@ -252,12 +252,12 @@ const MessagesPanel = connect(
   // mapStateToProps
   (state) => ({
     chatEntries: selectMessagesOfSelectedUAVInOrder(state),
-    selectedUAVId: state.messages.selectedUAVId
+    selectedUAVId: state.messages.selectedUAVId,
   }),
 
   // mapDispatchToProps
   (dispatch) => ({
-    onSend(message) {
+    async onSend(message) {
       // Dispatch a Redux action. This will update the store but will not
       // send any actual message
       const action = addOutboundMessageToSelectedUAV(message);
@@ -268,25 +268,22 @@ const MessagesPanel = connect(
 
       // Now also send the message via the message hub
       const { uavId, messageId } = action;
-      messageHub
-        .sendCommandRequest({ uavId, command, args, kwds })
-        .then(
-          // Success handler
-          (message) => {
-            const { response } = message.body;
-            const formattedMessage = formatCommandResponseAsHTML(response);
-            dispatch(addInboundMessage(formattedMessage, messageId));
-          }
-        )
-        .catch(
-          // Error handler
-          (error) => {
-            const errorMessage = error.userMessage || error.message;
-            dispatch(
-              addErrorMessageInMessagesDialog(errorMessage, uavId, messageId)
-            );
-          }
+
+      try {
+        const result = await messageHub.sendCommandRequest({
+          uavId,
+          command,
+          args,
+          kwds,
+        });
+        const formattedMessage = formatCommandResponseAsHTML(result);
+        dispatch(addInboundMessage(formattedMessage, messageId));
+      } catch (error) {
+        const errorMessage = error.userMessage || error.message;
+        dispatch(
+          addErrorMessageInMessagesDialog(errorMessage, uavId, messageId)
         );
+      }
     },
   }),
 

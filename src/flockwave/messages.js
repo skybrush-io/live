@@ -9,7 +9,7 @@ import pTimeout from 'p-timeout';
 import shortid from 'shortid';
 
 import { createCommandRequest, createMessageWithType } from './builders';
-import { extractReceiptFromCommandRequest } from './parsing';
+import { extractResultOrReceiptFromCommandRequest } from './parsing';
 import { OperationExecutor } from './operations';
 import { QueryHandler } from './queries';
 import version from './version';
@@ -91,8 +91,8 @@ export class MessageTimeout extends Error {
 
 /**
  * Error class thrown when the server failed to respond to a
- * command execution request in time, or when it responded with a
- * CMD-TIMEOUT message.
+ * command execution request in time, or when it responded with an
+ * ASYNC-TIMEOUT message.
  */
 export class CommandExecutionTimeout extends Error {
   constructor(receipt) {
@@ -105,13 +105,13 @@ export class CommandExecutionTimeout extends Error {
 
 /**
  * Error class thrown when the server responded to a request with
- * a CMD-TIMEOUT message.
+ * an ASYNC-TIMEOUT message.
  */
 export class ServerSideCommandExecutionTimeout extends CommandExecutionTimeout {
   constructor(receipt) {
     super(receipt);
-    this.message += ' (no response from UAV)';
-    this.userMessage += ' (no response from UAV)';
+    this.message += ' (no response from target)';
+    this.userMessage += ' (no response from target)';
   }
 }
 
@@ -200,7 +200,7 @@ class PendingResponse {
  * Lightweight class that stores the information necessary to resolve or
  * fail the promise that we return when the user sends a command request
  * (CMD-REQ) via the message hub and we are waiting for the corresponding
- * CMD-RESP or CMD-TIMEOUT message.
+ * ASYNC-RESP or ASYNC-TIMEOUT message.
  */
 class PendingCommandExecution {
   /**
@@ -261,7 +261,7 @@ class PendingCommandExecution {
   /**
    * Function to call when the response to the request has timed out on the
    * server side, i.e. the server has signalled that it is not waiting for
-   * the execution of the command on the UAV any more.
+   * the execution of the command on the target any more.
    */
   serverSideTimeout() {
     this.reject(new ServerSideCommandExecutionTimeout(this.receipt));
@@ -280,21 +280,21 @@ class PendingCommandExecution {
 
 /**
  * Manager class that keeps track of command execution requests that were
- * sent to the server and watches the incoming CMD-RESP and CMD-TIMEOUT
+ * sent to the server and watches the incoming ASYNC-RESP and ASYNC-TIMEOUT
  * messages so it gets notified whenever a pending command execution has
- * finished or timed out.
+ * finished.
  */
 class CommandExecutionManager {
   /**
    * Constructor. Creates a new manager that will attach to the given
-   * message hub to inspect the incoming CMD-RESP and CMD-TIMEOUT messages.
+   * message hub to inspect the incoming ASYNC-RESP and ASYNC-TIMEOUT messages.
    *
    * @param {MessageHub} hub  the message hub that the manager will attach to
-   * @param {number} timeout  number of seconds to wait for a CMD-RESP or a
-   *        CMD-TIMEOUT message in response to a CMD-REQ request before we
-   *        consider the command request as timed out. The reference
-   *        server implementation waits for 30 seconds before
-   *        sending a CMD-TIMEOUT so this should probably be larger.
+   * @param {number} timeout  number of seconds to wait for an ASYNC-RESP or
+   *        ASYNC-TIMEOUT message in response to an OBJ-CMD request before we
+   *        consider the command request as timed out. The reference server
+   *        implementation waits for 30 seconds before declaring a timeout so
+   *        this should probably be larger.
    */
   constructor(hub, timeout = 60) {
     this.timeout = timeout;
@@ -332,8 +332,7 @@ class CommandExecutionManager {
 
     if (this._hub) {
       throw new Error(
-        'You may not detach a PendingCommandExecutionManager' +
-          'from its message hub'
+        'You may not detach a CommandExecutionManager from its message hub'
       );
     }
 
@@ -342,8 +341,10 @@ class CommandExecutionManager {
     if (this._hub) {
       // Register our own notification handlers
       this._hub.registerNotificationHandlers({
-        'CMD-RESP': this._onResponseReceived,
-        'CMD-TIMEOUT': this._onTimeoutReceived,
+        'ASYNC-RESP': this._onResponseReceived,
+        'ASYNC-TIMEOUT': this._onTimeoutReceived,
+        'OBJ-CMD': this
+          ._onResponseReceived /* legacy, should be removed soon */,
       });
     }
   }
@@ -367,20 +368,22 @@ class CommandExecutionManager {
   }
 
   /**
-   * Sends a Flockwave command request (CMD-REQ) with the given body and
+   * Sends a Flockwave command request (OBJ-CMD) with the given body and
    * positional and keyword arguments and returns a promise that resolves
    * when one of the following events happen:
    *
    * <ul>
-   * <li>The server signals an execution failure in a direct CMD-REQ
+   * <li>The server signals an execution failure in a direct OBJ-CMD
    * response to the original request. In this case, the promise errors
    * out with an appropriate human-readable message.</li>
-   * <li>The server returns the response to the request in a CMD-RESP
+   * <li>The server returns the response to the request in a direct OBJ-CMD
    * message. In this case, the promise resolves normally with the
-   * CMD-RESP message itself.</li>
-   * <li>The server signals a timeout for the request in a CMD-TIMEOUT
+   * OBJ-CMD message itself.</li>
+   * <li>The server signals a timeout or error for the request in a direct OBJ-CMD
    * message. In this case, the promise errors out with an appropriate
    * human-readable message.</li>
+   * <li>Any of the above, but in a separate notification delivered asynchronously
+   * with ASYNC-RESP (for responses and errors) or ASYNC-TIMEOUT (for timeouts).</li>
    * </ul>
    *
    * @param  {string}    uavId   ID of the UAV to send the request to
@@ -392,7 +395,8 @@ class CommandExecutionManager {
    *         undefined.
    * @return {Promise} a promise that resolves to the response of the UAV
    *         to the command or errors out in case of execution errors and
-   *         timeouts.
+   *         timeouts. Note that not the entire response message will be
+   *         returned, only the _result_ from the response.
    */
   sendCommandRequest({ uavId, command, args, kwds }) {
     const request = createCommandRequest([uavId], command, args, kwds);
@@ -401,20 +405,28 @@ class CommandExecutionManager {
       hub
         .sendMessage(request)
         .then((response) => {
-          const receipt = extractReceiptFromCommandRequest(response, uavId);
-          const pendingCommandExecution = new PendingCommandExecution(
-            receipt,
-            resolve,
-            reject
+          const { receipt, result } = extractResultOrReceiptFromCommandRequest(
+            response,
+            uavId
           );
 
-          pendingCommandExecution.timeoutId = setTimeout(
-            this._onResponseTimedOut,
-            this.timeout * 1000,
-            [receipt]
-          );
+          if (receipt) {
+            const pendingCommandExecution = new PendingCommandExecution(
+              receipt,
+              resolve,
+              reject
+            );
 
-          this._pendingCommandExecutions[receipt] = pendingCommandExecution;
+            pendingCommandExecution.timeoutId = setTimeout(
+              this._onResponseTimedOut,
+              this.timeout * 1000,
+              [receipt]
+            );
+
+            this._pendingCommandExecutions[receipt] = pendingCommandExecution;
+          } else {
+            resolve(result);
+          }
         })
         .catch(reject);
     });
@@ -422,24 +434,33 @@ class CommandExecutionManager {
 
   /**
    * Handler called when the server returns a response for a command
-   * execution request in the form of a CMD-RESP notification.
+   * execution request in the form of an ASYNC-RESP notification.
    *
    * @param {string} message  the message sent by the server
    */
   _onResponseReceived(message) {
-    const { id } = message.body;
+    const { id, error, result } = message.body;
     const pendingCommandExecution = this._pendingCommandExecutions[id];
     if (pendingCommandExecution) {
       delete this._pendingCommandExecutions[id];
-      pendingCommandExecution.resolve(message);
+
+      if (error !== undefined) {
+        pendingCommandExecution.reject(new Error(error));
+      } else if (result !== undefined) {
+        pendingCommandExecution.resolve(result);
+      } else {
+        pendingCommandExecution.reject(
+          new Error('Malformed response was provided by the server')
+        );
+      }
     } else {
       console.warn(`Stale command response received for receipt=${id}`);
     }
   }
 
   /**
-   * Handler called when the server failed to respond with either a CMD-RESP
-   * or a CMD-TIMEOUT notification in time.
+   * Handler called when the server failed to respond with an ASYNC-RESP
+   * or ASYNC-TIMEOUT notification in time.
    *
    * @param {string} receipt  the receipt ID for which the server failed
    *        to respond
@@ -455,7 +476,7 @@ class CommandExecutionManager {
 
   /**
    * Handler called when the server signals a timeout for a command
-   * execution request in the form of a CMD-TIMEOUT notification.
+   * execution request in the form of an ASYNC-TIMEOUT notification.
    *
    * @param {string} message  the message sent by the server
    */
@@ -675,20 +696,22 @@ export default class MessageHub {
   }
 
   /**
-   * Sends a Flockwave command request (CMD-REQ) with the given body and
+   * Sends a Flockwave command request (OBJ-CMD) with the given body and
    * positional and keyword arguments and returns a promise that resolves
    * when one of the following events happen:
    *
    * <ul>
-   * <li>The server signals an execution failure in a direct CMD-REQ
+   * <li>The server signals an execution failure in a direct OBJ-CMD
    * response to the original request. In this case, the promise errors
    * out with an appropriate human-readable message.</li>
-   * <li>The server returns the response to the request in a CMD-RESP
+   * <li>The server returns the response to the request in a direct OBJ-CMD
    * message. In this case, the promise resolves normally with the
-   * CMD-RESP message itself.</li>
-   * <li>The server signals a timeout for the request in a CMD-TIMEOUT
+   * OBJ-CMD message itself.</li>
+   * <li>The server signals a timeout or error for the request in a direct OBJ-CMD
    * message. In this case, the promise errors out with an appropriate
    * human-readable message.</li>
+   * <li>Any of the above, but in a separate notification delivered asynchronously
+   * with ASYNC-RESP (for responses and errors) or ASYNC-TIMEOUT (for timeouts).</li>
    * </ul>
    *
    * The method is a proxy to the similarly named method in the encapsulated

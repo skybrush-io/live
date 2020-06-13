@@ -16,7 +16,7 @@
 export const createMessageWithType = (type) => ({ type });
 
 /**
- * Creates a CMD-REQ (command request) message
+ * Creates an OBJ-CMD (command request) message
  *
  * @param  {Object[]}  uavIds  IDs of the UAVs to send the request to
  * @param  {string}    command the command to send to a UAV
@@ -28,14 +28,15 @@ export const createMessageWithType = (type) => ({ type });
  * @return {Object}  the message
  */
 export function createCommandRequest(uavIds, command, args, kwds) {
-  const result = createMessageWithType('CMD-REQ');
+  const result = createMessageWithType('OBJ-CMD');
   result.ids = uavIds;
   result.command = command;
-  if (typeof args !== 'undefined') {
+
+  if (args !== undefined) {
     result.args = args;
   }
 
-  if (typeof kwds !== 'undefined') {
+  if (kwds !== undefined) {
     result.kwds = kwds;
   }
 

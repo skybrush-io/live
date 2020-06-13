@@ -3,8 +3,6 @@
  */
 
 import get from 'lodash-es/get';
-import includes from 'lodash-es/includes';
-import isNil from 'lodash-es/isNil';
 
 /**
  * Converts a color in RGB565 format to a hex value.
@@ -21,7 +19,7 @@ export function convertRGB565ToHex(value) {
 }
 
 /**
- * Extracts the receipt corresponding to the given UAV from a CMD-REQ
+ * Extracts the receipt corresponding to the given UAV from an OBJ-CMD
  * response from the server. Throws an error if the message represents a
  * failure and no receipt is available.
  *
@@ -32,22 +30,26 @@ export function convertRGB565ToHex(value) {
  * @throws Error  if the receipt cannot be extracted; the message of the
  *         error provides a human-readable reason
  */
-export function extractReceiptFromCommandRequest(message, uavId) {
+export function extractResultOrReceiptFromCommandRequest(message, uavId) {
   const { body } = message;
   const { type } = body;
 
   if (type === 'ACK-NAK') {
     // Server rejected to execute the command
     throw new Error(body.reason || 'ACK-NAK received; no reason given');
-  } else if (type === 'CMD-REQ') {
+  } else if (type === 'OBJ-CMD') {
     // We may still have a rejection here
-    const { failure, receipts } = body;
-    if (failure && includes(failure, uavId)) {
-      throw new Error(body.reasons[uavId] || 'Failed to execute command');
-    } else if (!receipts || isNil(receipts[uavId])) {
-      throw new Error('Server did not provide a receipt for the command');
+    const { error, receipts, result } = body;
+    if (error && error[uavId] !== undefined) {
+      throw new Error(body.error[uavId] || 'Failed to execute command');
+    } else if (result && result[uavId] !== undefined) {
+      return { result: result[uavId] };
+    } else if (receipts && receipts[uavId] !== undefined) {
+      return { receipt: receipts[uavId] };
     } else {
-      return receipts[uavId];
+      throw new Error(
+        'Server did not provide a response or receipt for the command'
+      );
     }
   } else {
     throw new Error(`${type} messages do not contain receipts`);
@@ -56,17 +58,16 @@ export function extractReceiptFromCommandRequest(message, uavId) {
 
 /**
  * Extracts the object corresponding to a given ID in a standard response
- * object having keys named `status`, `failure` and `reasons` (which is the
+ * object having keys named `status` and `error` (which is the
  * case for many Flockwave messages.)
  */
 export function extractResponseForId(message, id, options = {}) {
-  const failures = get(message, 'body.failure');
+  const errors = get(message, 'body.error');
 
-  if (Array.isArray(failures) && failures.includes(id)) {
-    // Response indicates a failure for the given ID
-    const reasons = get(message, 'body.reasons');
-    if (typeof reasons === 'object' && typeof reasons[id] === 'string') {
-      throw new TypeError(reasons[id]);
+  if (typeof errors === 'object' && errors[id] !== undefined) {
+    // Response indicates an error for the given ID
+    if (typeof errors[id] === 'string') {
+      throw new TypeError(errors[id]);
     } else {
       const { error } = options;
       throw new Error(
@@ -81,6 +82,6 @@ export function extractResponseForId(message, id, options = {}) {
   }
 
   throw new Error(
-    `No result for ID ${id} but no failure either; this should not have happened.`
+    `No result for ID ${id} but no error either; this should not have happened.`
   );
 }

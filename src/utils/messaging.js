@@ -15,7 +15,7 @@ const processResponse = (expectedType, commandName) => (response) => {
     if (body) {
       // TODO(ntamas): need to handle if any of the commands returned a
       // receipt instead of a success / failure response
-      const { failure, reason, type } = body;
+      const { error, type } = body;
       if (type === 'ACK-NAK') {
         logger.error(
           `${commandName} execution rejected by server; ` +
@@ -26,9 +26,9 @@ const processResponse = (expectedType, commandName) => (response) => {
           `${commandName} response has an unexpected type: ` +
             `${type}, expected ${expectedType}`
         );
-      } else if (failure) {
+      } else if (error) {
         logger.error(
-          `${commandName} execution failed for ${failure.join(', ')}`
+          `${commandName} execution failed for ${Object.keys(error).join(', ')}`
         );
       } else {
         logger.info(`${commandName} sent successfully`);

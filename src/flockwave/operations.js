@@ -64,7 +64,7 @@ export async function uploadDroneShow(hub, { uavId, data }) {
   // HACK HACK HACK we are (ab)using the command execution mechanism. This is
   // probably okay as a temporary solution, but we might need a better solution
   // in the long term.
-  const response = await hub.sendCommandRequest({
+  const result = await hub.sendCommandRequest({
     uavId,
     command: '__show_upload',
     kwds: {
@@ -72,7 +72,7 @@ export async function uploadDroneShow(hub, { uavId, data }) {
     },
   });
 
-  if (!response.body.response) {
+  if (!result) {
     throw new Error('Failed to upload show data to the server');
   }
 }
