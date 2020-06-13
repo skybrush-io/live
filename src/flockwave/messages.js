@@ -138,16 +138,18 @@ class PendingResponse {
    *
    * @param {string} messageId  the identifier of the Skybrush message
    *        to which this pending response belongs
-   * @param {function} resolve  the resolver function of a promise to
-   *        call when the response has arrived
-   * @param {function} reject   the rejector function of a promise to
-   *        call when the response has not arrived in time or we failed
-   *        to resolve the promise for any other reason
    */
-  constructor(messageId, resolve, reject) {
+  constructor(messageId, { timeout = 5, onTimeout } = {}) {
     this._messageId = messageId;
-    this._promiseResolver = resolve;
-    this._promiseRejector = reject;
+    this._deferred = pDefer();
+
+    if (timeout > 0) {
+      this._timeoutId = setTimeout(this._onTimeout, timeout * 1000);
+      this._timeoutCallback = onTimeout;
+    } else {
+      this._timeoutId = undefined;
+      this._timeoutCallback = undefined;
+    }
   }
 
   /**
@@ -164,7 +166,7 @@ class PendingResponse {
    */
   resolve(result) {
     this._clearTimeoutIfNeeded();
-    this._promiseResolver(result);
+    this._deferred.resolve(result);
   }
 
   /**
@@ -175,25 +177,40 @@ class PendingResponse {
    */
   reject(error) {
     this._clearTimeoutIfNeeded();
-    this._promiseRejector(error);
+    this._deferred.reject(error);
   }
 
   /**
-   * Function to call when the response to the message has timed out.
+   * Waits until the response is resolved, either with a result or with an
+   * error.
    */
-  timeout() {
-    this._promiseRejector(new MessageTimeout(this.messageId));
+  async wait() {
+    return this._deferred.promise;
   }
 
   /**
    * Clears the timeout associated to the pending response if needed.
    */
   _clearTimeoutIfNeeded() {
-    if (this.timeoutId) {
-      clearTimeout(this.timeoutId);
-      this.timeoutId = undefined;
+    if (this._timeoutId) {
+      clearTimeout(this._timeoutId);
+      this._timeoutId = undefined;
+      this._timeoutCallback = undefined;
     }
   }
+
+  /**
+   * Function to call when the response to the request has timed out on the
+   * client side, i.e. the client decided that it does not wait for the
+   * response from the server any more.
+   */
+  _onTimeout = () => {
+    this.reject(new MessageTimeout(this.messageId));
+
+    if (this._timeoutCallback) {
+      this._timeoutCallback(this.receipt);
+    }
+  };
 }
 
 /**
@@ -207,17 +224,21 @@ class PendingCommandExecution {
    * Constructor.
    *
    * @param {string} receipt  the receipt of the command execution that we
-   *        are waiting for
-   * @param {function} resolve  the resolver function of a promise to
-   *        call when the response has arrived
-   * @param {function} reject   the rejector function of a promise to
-   *        call when the response has not arrived in time or we failed
-   *        to resolve the promise for any other reason
+   *         are waiting for
+   * @param {number} timeout  number of seconds to wait for the result of the
+   *        command
    */
-  constructor(receipt, resolve, reject) {
+  constructor(receipt, { timeout = 5, onTimeout } = {}) {
     this._receipt = receipt;
-    this._promiseResolver = resolve;
-    this._promiseRejector = reject;
+    this._deferred = pDefer();
+
+    if (timeout > 0) {
+      this._timeoutId = setTimeout(this._onTimeout, timeout * 1000);
+      this._timeoutCallback = onTimeout;
+    } else {
+      this._timeoutId = undefined;
+      this._timeoutCallback = undefined;
+    }
   }
 
   /**
@@ -228,15 +249,6 @@ class PendingCommandExecution {
   }
 
   /**
-   * Function to call when the response to the request has timed out on the
-   * client side, i.e. the client decided that it does not wait for the
-   * response from the server any more.
-   */
-  clientSideTimeout() {
-    this.reject(new ClientSideCommandExecutionTimeout(this.receipt));
-  }
-
-  /**
    * Function to call when the response to the command execution request has
    * arrived.
    *
@@ -244,7 +256,7 @@ class PendingCommandExecution {
    */
   resolve(result) {
     this._clearTimeoutIfNeeded();
-    this._promiseResolver(result);
+    this._deferred.resolve(result);
   }
 
   /**
@@ -255,7 +267,7 @@ class PendingCommandExecution {
    */
   reject(error) {
     this._clearTimeoutIfNeeded();
-    this._promiseRejector(error);
+    this._deferred.reject(error);
   }
 
   /**
@@ -268,14 +280,36 @@ class PendingCommandExecution {
   }
 
   /**
+   * Waits until the response is resolved, either with a result or with an
+   * error.
+   */
+  async wait() {
+    return this._deferred.promise;
+  }
+
+  /**
    * Clears the timeout associated to the pending response if needed.
    */
   _clearTimeoutIfNeeded() {
-    if (this.timeoutId) {
+    if (this._timeoutId !== undefined) {
       clearTimeout(this.timeoutId);
-      this.timeoutId = undefined;
+      this._timeoutId = undefined;
+      this._timeoutCallback = undefined;
     }
   }
+
+  /**
+   * Function to call when the response to the request has timed out on the
+   * client side, i.e. the client decided that it does not wait for the
+   * response from the server any more.
+   */
+  _onTimeout = () => {
+    this.reject(new ClientSideCommandExecutionTimeout(this.receipt));
+
+    if (this._timeoutCallback) {
+      this._timeoutCallback(this.receipt);
+    }
+  };
 }
 
 /**
@@ -398,38 +432,30 @@ class CommandExecutionManager {
    *         timeouts. Note that not the entire response message will be
    *         returned, only the _result_ from the response.
    */
-  sendCommandRequest({ uavId, command, args, kwds }) {
+  async sendCommandRequest({ uavId, command, args, kwds }) {
     const request = createCommandRequest([uavId], command, args, kwds);
     const { hub } = this;
-    return new Promise((resolve, reject) => {
-      hub
-        .sendMessage(request)
-        .then((response) => {
-          const { receipt, result } = extractResultOrReceiptFromCommandRequest(
-            response,
-            uavId
-          );
+    const response = await hub.sendMessage(request);
+    const { receipt, result } = extractResultOrReceiptFromCommandRequest(
+      response,
+      uavId
+    );
 
-          if (receipt) {
-            const pendingCommandExecution = new PendingCommandExecution(
-              receipt,
-              resolve,
-              reject
-            );
+    if (receipt) {
+      const execution = new PendingCommandExecution(receipt, {
+        timeout: this.timeout,
+        onTimeout: this._onResponseTimedOut,
+      });
 
-            pendingCommandExecution.timeoutId = setTimeout(
-              this._onResponseTimedOut,
-              this.timeout * 1000,
-              [receipt]
-            );
-
-            this._pendingCommandExecutions[receipt] = pendingCommandExecution;
-          } else {
-            resolve(result);
-          }
-        })
-        .catch(reject);
-    });
+      this._pendingCommandExecutions[receipt] = execution;
+      try {
+        return await execution.wait();
+      } finally {
+        delete this._pendingCommandExecutions[receipt];
+      }
+    } else {
+      return result;
+    }
   }
 
   /**
@@ -442,8 +468,6 @@ class CommandExecutionManager {
     const { id, error, result } = message.body;
     const pendingCommandExecution = this._pendingCommandExecutions[id];
     if (pendingCommandExecution) {
-      delete this._pendingCommandExecutions[id];
-
       if (error !== undefined) {
         pendingCommandExecution.reject(new Error(error));
       } else if (result !== undefined) {
@@ -467,11 +491,6 @@ class CommandExecutionManager {
    */
   _onResponseTimedOut(receipt) {
     console.warn(`Response to command with receipt=${receipt} timed out`);
-    const pendingCommandExecution = this._pendingCommandExecutions[receipt];
-    if (pendingCommandExecution) {
-      delete this._pendingCommandExecutions[receipt];
-      pendingCommandExecution.clientSideTimeout();
-    }
   }
 
   /**
@@ -485,7 +504,6 @@ class CommandExecutionManager {
     for (const id of ids) {
       const pendingCommandExecution = this._pendingCommandExecutions[id];
       if (pendingCommandExecution) {
-        delete this._pendingCommandExecutions[id];
         pendingCommandExecution.serverSideTimeout();
       } else {
         console.warn(`Stale command timeout received for receipt=${id}`);
@@ -591,8 +609,6 @@ export default class MessageHub {
         pendingResponse.reject(new EmitterChangedError());
       }
     }
-
-    this._pendingResponses = {};
   }
 
   /**
@@ -608,7 +624,6 @@ export default class MessageHub {
     if (refs) {
       const pendingResponse = this._pendingResponses[refs];
       if (pendingResponse) {
-        delete this._pendingResponses[refs];
         pendingResponse.resolve(message);
       }
     } else {
@@ -750,7 +765,7 @@ export default class MessageHub {
    *        only the given type is created)
    * @return {Promise} a promise that resolves to the response of the server
    */
-  sendMessage(body = {}) {
+  async sendMessage(body = {}) {
     if (!this._emitter) {
       console.warn(
         'sendMessage() was called before associating an emitter ' +
@@ -760,17 +775,21 @@ export default class MessageHub {
     }
 
     const message = createMessage(body);
-    return new Promise((resolve, reject) => {
-      const pendingResponse = new PendingResponse(message.id, resolve, reject);
-      this._pendingResponses[message.id] = pendingResponse;
+    const messageId = message.id;
 
-      pendingResponse.timeoutId = setTimeout(
-        this._onMessageTimedOut,
-        this.timeout * 1000,
-        message.id
-      );
-      this._emitter('fw', message);
+    const pendingResponse = new PendingResponse(messageId, {
+      timeout: this.timeout,
+      onTimeout: this._onMessageTimedOut,
     });
+
+    this._emitter('fw', message);
+
+    this._pendingResponses[messageId] = pendingResponse;
+    try {
+      return await pendingResponse.wait();
+    } finally {
+      delete this._pendingResponses[message.id];
+    }
   }
 
   /**
@@ -825,10 +844,5 @@ export default class MessageHub {
    */
   _onMessageTimedOut(messageId) {
     console.warn(`Response to message with ID=${messageId} timed out`);
-    const pendingResponse = this._pendingResponses[messageId];
-    if (pendingResponse) {
-      delete this._pendingResponses[messageId];
-      pendingResponse.timeout();
-    }
   }
 }
