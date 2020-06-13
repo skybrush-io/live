@@ -10,7 +10,7 @@ import {
   selectMapTool,
 } from './actions/map';
 import { showMessagesDialog } from './actions/messages';
-import { showSnackbarMessage } from './features/snackbar/slice';
+import { showNotification } from './features/snackbar/slice';
 
 import { getSelectedUAVIds } from './selectors/selection';
 import {
@@ -78,7 +78,7 @@ export default [
         displays && displays.length > 0 ? displays[0].textContent : undefined;
       if (text) {
         copy(text.split('\n')[0]);
-        store.dispatch(showSnackbarMessage('Coordinates copied to clipboard.'));
+        store.dispatch(showNotification('Coordinates copied to clipboard.'));
       }
     },
   },

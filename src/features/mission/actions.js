@@ -16,7 +16,7 @@ import {
   getOutdoorShowOrientation,
   getShowCoordinateSystemTransformationObject,
 } from '~/features/show/selectors';
-import { showSnackbarMessage } from '~/features/snackbar/slice';
+import { showNotification } from '~/features/snackbar/slice';
 import { MessageSemantics } from '~/features/snackbar/types';
 import {
   getCurrentPositionByUavId,
@@ -151,7 +151,7 @@ export const addVirtualDronesForMission = () => async (dispatch, getState) => {
 
   // Show a snackbar message
   dispatch(
-    showSnackbarMessage({
+    showNotification({
       message: 'Virtual drones configured successfully.',
       semantics: MessageSemantics.SUCCESS,
     })

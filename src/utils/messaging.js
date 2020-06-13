@@ -4,7 +4,8 @@
 
 import isNil from 'lodash-es/isNil';
 
-import messageHub from '../message-hub';
+import messageHub from '~/message-hub';
+
 import makeLogger from './logging';
 
 const logger = makeLogger('messaging');
@@ -15,11 +16,11 @@ const processResponse = (expectedType, commandName) => (response) => {
     if (body) {
       // TODO(ntamas): need to handle if any of the commands returned a
       // receipt instead of a success / failure response
-      const { error, type } = body;
+      const { error, result, receipts, type } = body;
       if (type === 'ACK-NAK') {
         logger.error(
           `${commandName} execution rejected by server; ` +
-            `reason: ${reason || 'unknown'}`
+            `reason: ${body.reason || 'unknown'}`
         );
       } else if (type !== expectedType) {
         logger.error(

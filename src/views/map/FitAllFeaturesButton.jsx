@@ -20,7 +20,7 @@ import {
   fitAllFeaturesSignal,
   mapViewToExtentSignal,
 } from '../../signals';
-import { showSnackbarMessage } from '~/features/snackbar/slice';
+import { showNotification } from '~/features/snackbar/slice';
 
 /**
  * React Component to adjust the view so that it fits all of the current features.
@@ -112,7 +112,7 @@ class FitAllFeaturesButton extends React.Component {
         );
       } else {
         this.props.dispatch(
-          showSnackbarMessage({
+          showNotification({
             message:
               'There are no features to fit into the view, and geolocation is not available',
             semantics: 'error',

@@ -7,7 +7,8 @@ import { useEffect } from 'react';
 import { connect } from 'react-redux';
 import { useToasts } from 'react-toast-notifications';
 
-import { MessageSemantics } from '~/features/snackbar/types';
+import { selectActiveNotification } from './selectors';
+import { MessageSemantics } from './types';
 
 const semanticsToAppearance = {
   [MessageSemantics.INFO]: 'info',
@@ -22,28 +23,28 @@ const semanticsToAppearance = {
  *
  * @returns  {Object}  the rendered snackbar component
  */
-const ToastNotificationManager = ({
-  message,
-  messageId,
-  permanent,
-  semantics,
-}) => {
+const ToastNotificationManager = ({ notification }) => {
   const { addToast } = useToasts();
+
   useEffect(() => {
+    const { message, semantics, permanent } = notification;
     if (message) {
       addToast(message, {
         appearance: semanticsToAppearance[semantics] || 'info',
         autoDismiss: !permanent,
       });
     }
-  }, [addToast, message, messageId, semantics, permanent]);
+  }, [addToast, notification]);
+
   return null;
 };
 
 ToastNotificationManager.propTypes = {
-  message: PropTypes.string.isRequired,
-  permanent: PropTypes.bool,
-  semantics: PropTypes.oneOf(Object.values(MessageSemantics)).isRequired,
+  notification: PropTypes.shape({
+    message: PropTypes.string.isRequired,
+    permanent: PropTypes.bool,
+    semantics: PropTypes.oneOf(Object.values(MessageSemantics)).isRequired,
+  }),
 };
 
 /**
@@ -51,7 +52,9 @@ ToastNotificationManager.propTypes = {
  */
 export default connect(
   // mapStateToProps
-  (state) => state.snackbar,
+  (state) => ({
+    notification: selectActiveNotification(state),
+  }),
   // mapDispatchToProps
   {}
 )(ToastNotificationManager);

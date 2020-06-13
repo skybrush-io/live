@@ -13,7 +13,7 @@ import TextField from '@material-ui/core/TextField';
 
 import { setLayerParametersById } from '../../../actions/layers';
 import { TileServerType, TileServerTypes } from '../../../model/layers';
-import { showSnackbarMessage } from '~/features/snackbar/slice';
+import { showNotification } from '~/features/snackbar/slice';
 
 // === Settings for this particular layer type ===
 
@@ -127,7 +127,7 @@ export const TileServerLayerSettings = connect(
       dispatch(setLayerParametersById(ownProps.layerId, parameters));
     },
     showMessage: (message) => {
-      dispatch(showSnackbarMessage(message));
+      dispatch(showNotification(message));
     },
   })
 )(TileServerLayerSettingsPresentation);

@@ -28,7 +28,7 @@ import {
   updateTakeoffHeadings,
   setMappingLength,
 } from '~/features/mission/slice';
-import { showSnackbarMessage } from '~/features/snackbar/slice';
+import { showNotification } from '~/features/snackbar/slice';
 import { MessageSemantics } from '~/features/snackbar/types';
 import { createAsyncAction } from '~/utils/redux';
 
@@ -111,7 +111,7 @@ const createShowLoaderThunkFactory = (
       processShowInJSONFormatAndDispatchActions(spec, dispatch);
     } catch (error) {
       dispatch(
-        showSnackbarMessage({
+        showNotification({
           message: errorMessage || 'Failed to load show.',
           semantics: MessageSemantics.ERROR,
           permanent: true,

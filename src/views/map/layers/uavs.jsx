@@ -14,7 +14,7 @@ import { getSelection } from '../../../selectors/selection';
 import { mapViewCoordinateFromLonLat } from '../../../utils/geography';
 import makeLogger from '~/utils/logging';
 
-import { showSnackbarMessage } from '~/features/snackbar/slice';
+import { showNotification } from '~/features/snackbar/slice';
 
 const colors = ['blue', 'green', 'orange', 'pink', 'purple', 'yellow'];
 
@@ -134,7 +134,7 @@ export const UAVsLayerSettings = connect(
       dispatch(setLayerParameterById(ownProps.layerId, parameter, value));
     },
     showMessage: (message) => {
-      dispatch(showSnackbarMessage(message));
+      dispatch(showNotification(message));
     },
   })
 )(UAVsLayerSettingsPresentation);

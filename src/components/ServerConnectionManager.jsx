@@ -26,7 +26,7 @@ import {
   clearStartTimeAndMethod,
   synchronizeShowSettings,
 } from '~/features/show/slice';
-import { showSnackbarMessage } from '~/features/snackbar/slice';
+import { showNotification } from '~/features/snackbar/slice';
 import { MessageSemantics } from '~/features/snackbar/types';
 import handleError from '~/error-handling';
 import messageHub from '~/message-hub';
@@ -421,7 +421,7 @@ const ServerConnectionManager = connect(
     onConnected() {
       // Let the user know that we are connected
       dispatch(
-        showSnackbarMessage({
+        showNotification({
           message: 'Connected to Skybrush server',
           semantics: 'info',
         })
@@ -440,7 +440,7 @@ const ServerConnectionManager = connect(
     onConnectionTimeout() {
       dispatch(setCurrentServerConnectionState(ConnectionState.DISCONNECTED));
       dispatch(
-        showSnackbarMessage({
+        showNotification({
           message: 'Timeout while connecting to Skybrush server',
           semantics: 'error',
         })
@@ -455,20 +455,20 @@ const ServerConnectionManager = connect(
       dispatch(setCurrentServerConnectionState(ConnectionState.DISCONNECTED));
 
       if (reason === 'io client disconnect') {
-        dispatch(showSnackbarMessage('Disconnected from Skybrush server'));
+        dispatch(showNotification('Disconnected from Skybrush server'));
       } else if (reason === 'io server disconnect') {
         // Server does not close the connection without sending a SYS-CLOSE
         // message so there is no need to show another
       } else if (reason === 'transport close') {
         dispatch(
-          showSnackbarMessage({
+          showNotification({
             message: 'Skybrush server closed connection unexpectedly',
             semantics: MessageSemantics.ERROR,
           })
         );
       } else if (reason === 'ping timeout') {
         dispatch(
-          showSnackbarMessage({
+          showNotification({
             message: 'Connection to Skybrush server lost',
             semantics: MessageSemantics.ERROR,
           })
@@ -495,7 +495,7 @@ const ServerConnectionManager = connect(
         : 'Failed to launch local Skybrush server';
       dispatch(setCurrentServerConnectionState(ConnectionState.DISCONNECTED));
       dispatch(
-        showSnackbarMessage({
+        showNotification({
           message: message ? `${baseMessage}: ${message}` : baseMessage,
           semantics: 'error',
         })

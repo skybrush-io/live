@@ -21,7 +21,7 @@ import FormHeader from '~/components/dialogs/FormHeader';
 import { updateOutdoorShowSettings } from '~/features/show/actions';
 import { COORDINATE_SYSTEM_TYPE } from '~/features/show/constants';
 import { closeEnvironmentEditorDialog } from '~/features/show/slice';
-import { showSnackbarMessage } from '~/features/snackbar/slice';
+import { showNotification } from '~/features/snackbar/slice';
 import { MessageSemantics } from '~/features/snackbar/types';
 
 const instructionsByType = {
@@ -132,7 +132,7 @@ export default connect(
         )
       );
       dispatch(
-        showSnackbarMessage({
+        showNotification({
           message: 'Show coordinate system applied to map.',
           semantics: MessageSemantics.SUCCESS,
         })
@@ -166,7 +166,7 @@ export default connect(
         })
       );
       dispatch(
-        showSnackbarMessage({
+        showNotification({
           message: 'Show coordinate system updated from map.',
           semantics: MessageSemantics.SUCCESS,
         })

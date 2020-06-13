@@ -42,7 +42,7 @@ import {
 import * as messaging from '../../utils/messaging';
 
 import { updateOutdoorShowSettings } from '~/features/show/actions';
-import { showSnackbarMessage } from '~/features/snackbar/slice';
+import { showNotification } from '~/features/snackbar/slice';
 
 /**
  * Context menu that shows the menu items that should appear when the
@@ -392,7 +392,7 @@ const MapContextMenuContainer = connect(
       );
     },
     showErrorMessage: (message) => {
-      dispatch(showSnackbarMessage(message));
+      dispatch(showNotification(message));
     },
     showMessagesDialog: () => {
       dispatch(showMessagesDialog());

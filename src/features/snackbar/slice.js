@@ -11,41 +11,42 @@ const { actions, reducer } = createSlice({
   name: 'snackbar',
 
   initialState: {
-    messageId: 0,
-    message: '',
-    permanent: false,
-    semantics: MessageSemantics.DEFAULT,
+    notification: {
+      message: '',
+      permanent: false,
+      semantics: MessageSemantics.DEFAULT,
+    },
   },
 
   reducers: {
-    showSnackbarMessage(state, action) {
-      let semantics;
-      let message;
-      let permanent;
+    /**
+     * Adds a fire-and-forget type of notification to the snackbar of the
+     * application.
+     */
+    showNotification(state, action) {
+      let newNotification;
 
       if (typeof action.payload === 'string') {
-        message = String(action.payload);
-        semantics = MessageSemantics.DEFAULT;
-        permanent = false;
+        newNotification = {
+          message: String(action.payload),
+          semantics: MessageSemantics.DEFAULT,
+          permanent: false,
+        };
       } else {
-        message = String(action.payload.message);
-        semantics = action.payload.semantics;
-        permanent = Boolean(action.payload.permanent);
+        const { message, semantics, permanent } = action.payload;
+
+        newNotification = {
+          message: String(message),
+          semantics: String(semantics),
+          permanent: Boolean(permanent),
+        };
       }
 
-      state.messageId += 1;
-      state.message = message;
-      state.permanent = permanent;
-      state.semantics = semantics;
-    },
-
-    showPermanentSnackbarMessage(state, action) {
-      showSnackbarMessage(state, action);
-      state.permanent = true;
+      state.notification = newNotification;
     },
   },
 });
 
-export const { showSnackbarMessage } = actions;
+export const { showNotification } = actions;
 
 export default reducer;

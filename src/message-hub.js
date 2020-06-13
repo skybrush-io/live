@@ -10,7 +10,7 @@ import { handleClockInformationMessage } from './model/clocks';
 import { handleConnectionInformationMessage } from './model/connections';
 import { handleObjectDeletionMessage } from './model/objects';
 
-import { showSnackbarMessage } from './features/snackbar/slice';
+import { showNotification } from './features/snackbar/slice';
 import { semanticsFromSeverity } from './features/snackbar/types';
 
 import flock from './flock';
@@ -36,7 +36,7 @@ messageHub.registerNotificationHandlers({
   'SYS-CLOSE': (message) => {
     if (message.body && message.body.reason) {
       dispatch(
-        showSnackbarMessage({
+        showNotification({
           message: message.body.reason,
           semantics: 'error',
         })
@@ -47,7 +47,7 @@ messageHub.registerNotificationHandlers({
     if (message.body && message.body.message) {
       const { severity } = message.body;
       dispatch(
-        showSnackbarMessage({
+        showNotification({
           message: message.body.message,
           semantics: semanticsFromSeverity(severity),
         })

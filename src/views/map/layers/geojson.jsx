@@ -13,7 +13,7 @@ import TextField from '@material-ui/core/TextField';
 
 import { setLayerParameterById } from '~/actions/layers';
 import PopupColorPicker from '~/components/PopupColorPicker';
-import { showSnackbarMessage } from '~/features/snackbar/slice';
+import { showNotification } from '~/features/snackbar/slice';
 import { parseColor } from '~/utils/coloring';
 import { convertSimpleStyleToOLStyle } from '~/utils/simplestyle';
 import { primaryColor } from '~/utils/styles';
@@ -132,7 +132,7 @@ export const GeoJSONLayerSettings = connect(
       dispatch(setLayerParameterById(ownProps.layerId, parameter, value));
     },
     showMessage: (message) => {
-      dispatch(showSnackbarMessage(message));
+      dispatch(showNotification(message));
     },
   })
 )(GeoJSONLayerSettingsPresentation);

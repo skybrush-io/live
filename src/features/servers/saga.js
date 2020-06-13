@@ -25,7 +25,7 @@ import {
 } from './slice';
 
 import { showAuthenticationDialog } from '~/actions/servers';
-import { showSnackbarMessage } from '~/features/snackbar/slice';
+import { showNotification } from '~/features/snackbar/slice';
 import messageHub from '~/message-hub';
 import { isAuthenticationDialogOpen } from '~/selectors/dialogs';
 
@@ -86,14 +86,14 @@ function* authenticationResultNotifierSaga() {
       yield put(setAuthenticatedUser(user));
       if (user) {
         yield put(
-          showSnackbarMessage({
+          showNotification({
             message: `You are now authenticated as ${user}`,
             semantics: 'success',
           })
         );
       } else {
         yield put(
-          showSnackbarMessage({
+          showNotification({
             message: `You are now deauthenticated`,
             semantics: 'success',
           })
@@ -101,7 +101,7 @@ function* authenticationResultNotifierSaga() {
       }
     } else {
       yield put(
-        showSnackbarMessage({
+        showNotification({
           message: reason || 'Authentication failed',
           semantics: 'error',
         })
