@@ -159,23 +159,26 @@ const store = configureStore({
     promiseMiddleware,
     sagaMiddleware,
   ],
-  devTools: process.env.NODE_ENV === 'production' ? false : {
-    actionsBlacklist: [updateUAVs.type, updateAgesOfUAVs.type],
+  devTools:
+    process.env.NODE_ENV === 'production'
+      ? false
+      : {
+          actionsBlacklist: [updateUAVs.type, updateAgesOfUAVs.type],
 
-    // make sure that the show object that we load is not cached / tracked by
-    // the Redux devtools
-    actionSanitizer: (action) =>
-      action.type === loadingPromiseFulfilled.type && action.payload
-        ? { ...action, payload: '<<JSON_DATA>>' }
-        : action,
-    stateSanitizer: (state) =>
-      state.show && state.show.data
-        ? {
-            ...state,
-            show: { ...state.show, data: '<<JSON_DATA>>' },
-          }
-        : state,
-  },
+          // make sure that the show object that we load is not cached / tracked by
+          // the Redux devtools
+          actionSanitizer: (action) =>
+            action.type === loadingPromiseFulfilled.type && action.payload
+              ? { ...action, payload: '<<JSON_DATA>>' }
+              : action,
+          stateSanitizer: (state) =>
+            state.show && state.show.data
+              ? {
+                  ...state,
+                  show: { ...state.show, data: '<<JSON_DATA>>' },
+                }
+              : state,
+        },
 });
 
 /**
