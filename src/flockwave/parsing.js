@@ -30,7 +30,7 @@ export function convertRGB565ToHex(value) {
  * @throws Error  if the receipt cannot be extracted; the message of the
  *         error provides a human-readable reason
  */
-export function extractResultOrReceiptFromCommandRequest(message, uavId) {
+export function extractResultOrReceiptFromMaybeAsyncResponse(message, uavId) {
   const { body } = message;
   const { type } = body;
 

@@ -17,6 +17,7 @@ const processResponse = (expectedType, commandName) => (response) => {
       // TODO(ntamas): need to handle if any of the commands returned a
       // receipt instead of a success / failure response
       const { error, result, receipts, type } = body;
+
       if (type === 'ACK-NAK') {
         logger.error(
           `${commandName} execution rejected by server; ` +

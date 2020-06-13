@@ -28,6 +28,7 @@ const { dispatch } = store;
  * @type {MessageHub}
  */
 const messageHub = new MessageHub();
+
 messageHub.registerNotificationHandlers({
   'CLK-INF': (message) => handleClockInformationMessage(message.body, dispatch),
   'CONN-INF': (message) =>
