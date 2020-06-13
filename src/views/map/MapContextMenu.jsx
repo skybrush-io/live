@@ -264,9 +264,11 @@ class MapContextMenu extends React.Component {
   _moveUAVs = (uavIds, coords, agl) => {
     if (coords && coords.length === 2) {
       messaging.moveUAVs(uavIds, {
-        lat: coords[1],
-        lon: coords[0],
-        agl,
+        target: {
+          lat: coords[1],
+          lon: coords[0],
+          agl,
+        },
       });
     }
   };

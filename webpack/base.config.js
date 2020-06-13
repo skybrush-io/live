@@ -1,9 +1,6 @@
 // Use strict mode so we can have block-scoped declarations
 'use strict';
 
-// Import the promise polyfill for ye olde Node installations
-require('es6-promise').polyfill();
-
 // Don't use let in the line below because older Node.js versions on Linux
 // will not like it
 const path = require('path');
@@ -122,6 +119,8 @@ module.exports = {
             // contains fancy accented characters as keys in an object, and
             // the UTF-8 representations of these accented characters get parsed
             // as ASCII, leading to invalid JS code.
+            //
+            // eslint-disable-next-line camelcase
             ascii_only: true,
           },
         },
