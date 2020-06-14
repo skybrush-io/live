@@ -73,7 +73,7 @@ export async function uploadDroneShow(hub, { uavId, data }) {
       },
     });
   } catch {
-    throw new Error('Failed to upload show data to the server');
+    throw new Error(`Failed to upload show data to UAV ${uavId}`);
   }
 }
 
