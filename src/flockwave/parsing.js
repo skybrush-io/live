@@ -49,13 +49,13 @@ export function extractResultOrReceiptFromMaybeAsyncResponse(message, uavId) {
     throw new Error(body.reason || 'ACK-NAK received; no reason given');
   } else if (MESSAGES_WITH_RECEIPTS[type]) {
     // We may still have a rejection here
-    const { error, receipts, result } = body;
+    const { error, receipt, result } = body;
     if (error && error[uavId] !== undefined) {
       throw new Error(body.error[uavId] || 'Failed to execute command');
     } else if (result && result[uavId] !== undefined) {
       return { result: result[uavId] };
-    } else if (receipts && receipts[uavId] !== undefined) {
-      return { receipt: receipts[uavId] };
+    } else if (receipt && receipt[uavId] !== undefined) {
+      return { receipt: receipt[uavId] };
     } else {
       throw new Error(
         'Server did not provide a response or receipt for the command'

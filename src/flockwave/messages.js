@@ -407,11 +407,11 @@ class AsyncOperationManager {
    * a response.
    *
    * The multi-object async response contains three sub-objects:
-   * <code>result</code>, <code>error</code> and <code>receipts</code>. Each
+   * <code>result</code>, <code>error</code> and <code>receipt</code>. Each
    * object maps object IDs that a command was executed on into "something".
    * For <code>result</code>, the value is the result of the operation. For
    * <code>error</code>, the value is an error that happened during the
-   * operation. For <code>receipts</code>, each value is a unique identifier
+   * operation. For <code>receipt</code>, each value is a unique identifier
    * that indicates that the operation has started executing in the background,
    * asynchronously, and the receipt ID will appear in later <code>ASYNC-RESP</code>
    * and <code>ASYNC-TIMEOUT</code> messages that deliver the <em>real</em>
@@ -816,7 +816,7 @@ export default class MessageHub {
   /**
    * Sends a message to the server whose expected response is a standard
    * multi-object async response with keys named `result`, `error` and
-   * `receipts`. (The response to many messages in the protocol specification
+   * `receipt`. (The response to many messages in the protocol specification
    * follow this template). Returns a promise that resolves when _all_ the
    * spawned async operations on the server have resolved to their results or
    * have terminated with an error or a timeout.
@@ -890,14 +890,14 @@ export default class MessageHub {
       );
     } else {
       const { body } = response;
-      const { error, result, receipts } = body;
+      const { error, result, receipt } = body;
       const results = { ...result };
 
       for (const erroredId of Object.keys(error || [])) {
         results[erroredId] = new Error(String(error[erroredId]));
       }
 
-      for (const idWithReceipt of Object.keys(receipts || [])) {
+      for (const idWithReceipt of Object.keys(receipt || [])) {
         try {
           results[
             idWithReceipt
