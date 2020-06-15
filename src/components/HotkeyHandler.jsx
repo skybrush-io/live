@@ -60,11 +60,11 @@ const actionColumnStyle = {};
  */
 export default class HotkeyHandler extends React.Component {
   static condition = {
-    Alt: (e) => e.altKey,
-    Ctrl: (e) => e.ctrlKey,
-    Meta: (e) => e.metaKey,
-    PlatMod: (e) => (isRunningOnMac ? e.metaKey : e.ctrlKey),
-    Shift: (e) => e.shiftKey,
+    Alt: (event) => event.altKey,
+    Ctrl: (event) => event.ctrlKey,
+    Meta: (event) => event.metaKey,
+    PlatMod: (event) => (isRunningOnMac ? event.metaKey : event.ctrlKey),
+    Shift: (event) => event.shiftKey,
   };
 
   static propTypes = {
@@ -234,30 +234,30 @@ export default class HotkeyHandler extends React.Component {
   /**
    * Proxy for keydown event.
    *
-   * @param {KeyboardEvent} e the actual keyboard event
+   * @param {KeyboardEvent} event the actual keyboard event
    */
-  _handleKeyDown = (e) => {
-    if (e.repeat) {
+  _handleKeyDown = (event) => {
+    if (event.repeat) {
       return;
     }
 
-    if (e.key in this.state.keyboardModifiers) {
-      this.setState(u({ keyboardModifiers: { [e.key]: true } }));
+    if (event.key in this.state.keyboardModifiers) {
+      this.setState(u({ keyboardModifiers: { [event.key]: true } }));
     } else {
-      this._handleKey('down', e);
+      this._handleKey('down', event);
     }
   };
 
   /**
    * Proxy for keyup event.
    *
-   * @param {KeyboardEvent} e the actual keyboard event
+   * @param {KeyboardEvent} event the actual keyboard event
    */
-  _handleKeyUp = (e) => {
-    if (e.key in this.state.keyboardModifiers) {
-      this.setState(u({ keyboardModifiers: { [e.key]: false } }));
+  _handleKeyUp = (event) => {
+    if (event.key in this.state.keyboardModifiers) {
+      this.setState(u({ keyboardModifiers: { [event.key]: false } }));
     } else {
-      this._handleKey('up', e);
+      this._handleKey('up', event);
     }
   };
 
@@ -267,7 +267,7 @@ export default class HotkeyHandler extends React.Component {
    * @param {string} direction 'down' or 'up', on which event the action should be fired
    * @param {KeyboardEvent} e the actual keyboard event
    */
-  _handleKey = (direction, e) => {
+  _handleKey = (direction, event) => {
     const activeTag = document.activeElement.tagName;
     if (activeTag === 'INPUT' || activeTag === 'TEXTAREA') {
       // Never activate hotkeys if the user is in an input field or text area.
@@ -275,27 +275,27 @@ export default class HotkeyHandler extends React.Component {
     }
 
     const hashes = [
-      (e.altKey ? 'Alt + ' : '') +
-        (e.ctrlKey ? 'Ctrl + ' : '') +
-        (e.shiftKey ? 'Shift + ' : '') +
-        e.code,
-      e.key,
+      (event.altKey ? 'Alt + ' : '') +
+        (event.ctrlKey ? 'Ctrl + ' : '') +
+        (event.shiftKey ? 'Shift + ' : '') +
+        event.code,
+      event.key,
     ];
 
-    if (e.ctrlKey || e.metaKey) {
+    if (event.ctrlKey || event.metaKey) {
       hashes.push(
-        (e.altKey ? 'Alt + ' : '') +
+        (event.altKey ? 'Alt + ' : '') +
           'PlatMod + ' +
-          (e.shiftKey ? 'Shift + ' : '') +
-          e.code,
-        e.key
+          (event.shiftKey ? 'Shift + ' : '') +
+          event.code,
+        event.key
       );
     }
 
     for (const hash of hashes) {
       const listeners = this.listeners[direction];
       if (hash in listeners) {
-        e.preventDefault();
+        event.preventDefault();
 
         for (const callback of listeners[hash]) {
           callback();

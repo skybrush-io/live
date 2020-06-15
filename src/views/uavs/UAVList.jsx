@@ -191,6 +191,7 @@ const createGridItems = (
 const createListItems = (
   items,
   {
+    isInEditMode,
     mappingSlotBeingEdited,
     onDropped,
     onSelected,
@@ -204,7 +205,6 @@ const createListItems = (
     }
 
     const [uavId, missionIndex, proposedLabel] = item;
-    const isInEditMode = mappingSlotBeingEdited !== undefined;
     const editingThisItem =
       isInEditMode && missionIndex === mappingSlotBeingEdited;
     const selected = selectedUAVIds.includes(uavId);
