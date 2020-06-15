@@ -13,7 +13,10 @@ import Mouse from '@material-ui/icons/Mouse';
 import MoreVert from '@material-ui/icons/MoreVert';
 import OpenWith from '@material-ui/icons/OpenWith';
 
-import { augmentMappingAutomaticallyFromSpareDrones } from '~/features/mission/actions';
+import {
+  augmentMappingAutomaticallyFromSpareDrones,
+  removeMissingUAVsFromMapping,
+} from '~/features/mission/actions';
 import { canAugmentMappingAutomaticallyFromSpareDrones } from '~/features/mission/selectors';
 import {
   clearMapping,
@@ -34,6 +37,7 @@ const MappingEditorToolbar = React.forwardRef(
       canAugmentMapping,
       clearMapping,
       finishMappingEditorSession,
+      removeMissingUAVsFromMapping,
       ...rest
     },
     ref
@@ -80,6 +84,9 @@ const MappingEditorToolbar = React.forwardRef(
           <MenuItem disabled>Export…</MenuItem>
           <Divider />
           <MenuItem onClick={closeMappingMenu(clearMapping)}>Clear</MenuItem>
+          <MenuItem onClick={closeMappingMenu(removeMissingUAVsFromMapping)}>
+            Clear missing
+          </MenuItem>
         </Menu>
       </Toolbar>
     );
@@ -91,6 +98,7 @@ MappingEditorToolbar.propTypes = {
   canAugmentMapping: PropTypes.bool,
   clearMapping: PropTypes.func,
   finishMappingEditorSession: PropTypes.func,
+  removeMissingUAVsFromMapping: PropTypes.func,
   selectedUAVIds: PropTypes.array,
 };
 
@@ -104,6 +112,7 @@ export default connect(
     augmentMapping: augmentMappingAutomaticallyFromSpareDrones,
     clearMapping,
     finishMappingEditorSession,
+    removeMissingUAVsFromMapping,
   },
   null,
   { forwardRef: true }

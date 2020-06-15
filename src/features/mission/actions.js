@@ -9,7 +9,7 @@ import {
   getGPSBasedHomePositionsInMission,
   getMissionMapping,
 } from './selectors';
-import { replaceMapping } from './slice';
+import { removeUAVsFromMapping, replaceMapping } from './slice';
 
 import {
   getOutdoorShowCoordinateSystem,
@@ -20,6 +20,7 @@ import { showNotification } from '~/features/snackbar/slice';
 import { MessageSemantics } from '~/features/snackbar/types';
 import {
   getCurrentPositionByUavId,
+  getMissingUAVIdsInMapping,
   getUnmappedUAVIds,
 } from '~/features/uavs/selectors';
 import messageHub from '~/message-hub';
@@ -156,4 +157,14 @@ export const addVirtualDronesForMission = () => async (dispatch, getState) => {
       semantics: MessageSemantics.SUCCESS,
     })
   );
+};
+
+/**
+ * Thunk that removes all the UAVs from the mapping that are currently
+ * considered as missing.
+ */
+export const removeMissingUAVsFromMapping = () => (dispatch, getState) => {
+  const state = getState();
+  const missingUAVIds = getMissingUAVIdsInMapping(state);
+  dispatch(removeUAVsFromMapping(missingUAVIds));
 };

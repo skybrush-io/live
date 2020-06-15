@@ -137,7 +137,7 @@ const { actions, reducer } = createSlice({
     },
 
     /**
-     * Removes a single UAV from the mission mapping.
+     * Removes some UAVs from the mission mapping.
      */
     removeUAVsFromMapping(state, action) {
       for (const uavId of action.payload) {
@@ -272,7 +272,7 @@ export const {
   clearMappingSlot,
   commitMappingEditorSessionAtCurrentSlot,
   finishMappingEditorSession,
-  removeUAVsFromMission,
+  removeUAVsFromMapping,
   replaceMapping,
   setMappingLength,
   startMappingEditorSession,
