@@ -65,8 +65,9 @@ const { actions, reducer } = createSlice({
 
     uavs: {
       // Stores whether UAVs that have not been seen for a long while should
-      // be forgotten automatically
-      autoRemove: true,
+      // be forgotten automatically. We start with safe settings so this is
+      // set to false by default
+      autoRemove: false,
       // Number of seconds after which a UAV with no status updates is
       // marked by a warning state
       warnThreshold: 3,
