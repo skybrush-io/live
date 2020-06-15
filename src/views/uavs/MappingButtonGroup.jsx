@@ -40,7 +40,7 @@ const MappingButtonGroup = ({
 }) => (
   <>
     <TransitionGroup>
-      {showMissionIds && layout === 'grid' && (
+      {showMissionIds && (
         <Zoom key='editMapping'>
           <IconButton
             disabled={mappingEditable || !showMissionIds}

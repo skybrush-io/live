@@ -13,42 +13,58 @@ import {
   cancelMappingEditorSessionAtCurrentSlot,
   commitMappingEditorSessionAtCurrentSlot,
 } from '~/features/mission/slice';
+import { monospacedFont } from '~/theme';
+
+const WIDTH = 64;
 
 const useStyles = makeStyles(
   (theme) => ({
     root: {
       position: 'absolute',
-      width: 48,
-      height: 48,
-      top: theme.spacing(0.5),
+
+      boxSizing: 'border-box',
+      width: WIDTH,
+      left: theme.spacing(1),
+      top: -7,
+      bottom: -12,
       zIndex: 1000,
+
+      backgroundColor: 'rgba(0, 0, 0, 0.16)',
+      border: '1px solid rgba(0, 0, 0, 0.5)',
+      borderRadius: theme.spacing(0.5),
+      boxShadow: `0 0 4px 2px rgba(0, 0, 0, 0.3)`,
+
+      padding: theme.spacing(0, 0.5),
     },
 
     input: {
+      fontFamily: monospacedFont,
+      fontSize: 'small',
+
+      padding: theme.spacing(0, 0.5),
       position: 'absolute',
       top: '50%',
+      left: 0,
+      right: 0,
       transform: 'translateY(-50%)',
-      fontSize: '1.25rem',
+
+      '& input': {
+        textAlign: 'right',
+      },
 
       '& input::selection': {
         backgroundColor: new Color(Colors.info).darken(0.2).string(),
       },
     },
   }),
-  { name: 'MappingSlotEditor' }
+  { name: 'MappingSlotEditorForList' }
 );
-
-const inputProps = {
-  style: {
-    textAlign: 'center',
-  },
-};
 
 /**
  * Simple text field overlaid on top of a drone avatar or drone placeholder
  * when we are editing the mapping slot at a given index.
  */
-const MappingSlotEditor = ({
+const MappingSlotEditorForList = ({
   cancelMappingEditorSessionAtCurrentSlot,
   defaultValue,
   commitMappingEditorSessionAtCurrentSlot,
@@ -96,7 +112,6 @@ const MappingSlotEditor = ({
         fullWidth
         className={classes.input}
         defaultValue={defaultValue}
-        inputProps={inputProps}
         onBlur={onBlur}
         onFocus={onFocus}
         onKeyDown={onKeyDown}
@@ -105,7 +120,7 @@ const MappingSlotEditor = ({
   );
 };
 
-MappingSlotEditor.propTypes = {
+MappingSlotEditorForList.propTypes = {
   cancelMappingEditorSessionAtCurrentSlot: PropTypes.func,
   defaultValue: PropTypes.string,
   commitMappingEditorSessionAtCurrentSlot: PropTypes.func,
@@ -121,4 +136,4 @@ export default connect(
     cancelMappingEditorSessionAtCurrentSlot,
     commitMappingEditorSessionAtCurrentSlot,
   }
-)(MappingSlotEditor);
+)(MappingSlotEditorForList);

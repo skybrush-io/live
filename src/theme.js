@@ -21,6 +21,9 @@ import darkModeExtraCSS from '!!raw-loader!~/../assets/css/dark-mode.css';
  */
 export const isDark = (theme) => theme.palette.type === 'dark';
 
+export const monospacedFont =
+  '"Proggy Vector", "Menlo", "Consolas", "DejaVu Sans Mono", "Courier New", "Courier", monospace';
+
 /**
  * Specialized Material-UI theme provider that is aware about the user's
  * preference about whether to use a dark or a light theme.

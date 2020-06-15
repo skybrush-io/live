@@ -20,7 +20,8 @@ import DroneAvatar from './DroneAvatar';
 import DroneListItem from './DroneListItem';
 import DroneStatusLine from './DroneStatusLine';
 import MappingEditorToolbar from './MappingEditorToolbar';
-import MappingSlotEditor from './MappingSlotEditor';
+import MappingSlotEditorForGrid from './MappingSlotEditorForGrid';
+import MappingSlotEditorForList from './MappingSlotEditorForList';
 import MappingSlotEditorToolbar from './MappingSlotEditorToolbar';
 import UAVListSubheader from './UAVListSubheader';
 import UAVToolbar from './UAVToolbar';
@@ -158,7 +159,7 @@ const createGridItems = (
         onDrop={onDropped ? onDropped(missionIndex) : undefined}
         {...listItemProps}
       >
-        {editingThisItem && <MappingSlotEditor />}
+        {editingThisItem && <MappingSlotEditorForGrid />}
         <DronePlaceholder
           editing={editingThisItem}
           label={editingThisItem ? '' : label}
@@ -172,7 +173,7 @@ const createGridItems = (
         uavId={uavId}
         {...listItemProps}
       >
-        {editingThisItem && <MappingSlotEditor />}
+        {editingThisItem && <MappingSlotEditorForGrid />}
         <DroneAvatar
           id={uavId}
           editing={editingThisItem}
@@ -198,21 +199,21 @@ const createListItems = (
   }
 ) =>
   items.map((item) => {
+    if (item === deletionMarker) {
+      return null;
+    }
+
     const [uavId, missionIndex, proposedLabel] = item;
-    const editing =
-      mappingSlotBeingEdited !== undefined &&
-      missionIndex === mappingSlotBeingEdited;
+    const isInEditMode = mappingSlotBeingEdited !== undefined;
+    const editingThisItem =
+      isInEditMode && missionIndex === mappingSlotBeingEdited;
     const selected = selectedUAVIds.includes(uavId);
     const listItemProps = {
       onClick: onSelected ? onSelected(uavId, missionIndex) : undefined,
       onDrop: onDropped ? onDropped(missionIndex) : undefined,
-      editing,
-      selected,
+      editing: editingThisItem,
+      selected: isInEditMode ? editingThisItem : selected,
     };
-
-    if (item === deletionMarker) {
-      listItemProps.fill = true;
-    }
 
     const label =
       proposedLabel ||
@@ -225,7 +226,8 @@ const createListItems = (
 
     return (
       <DroneListItem key={key} stretch {...listItemProps}>
-        <DroneStatusLine id={uavId} label={label} selected={selected} />
+        {editingThisItem && <MappingSlotEditorForList />}
+        <DroneStatusLine id={uavId} editing={editingThisItem} label={label} />
       </DroneListItem>
     );
   });
@@ -364,7 +366,7 @@ const UAVListPresentation = ({
           {...selectionInfo.spareUAVIds}
         />
       </Box>
-      {extraSlots.length > 0 ? (
+      {extraSlots.length > 0 && layout === 'grid' ? (
         <Box className='bottom-bar'>
           <Box display='flex' flexDirection='row' flexWrap='wrap'>
             {createGridItems(extraSlots, itemFactoryOptions)}

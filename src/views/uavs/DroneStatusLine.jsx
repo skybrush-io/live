@@ -22,6 +22,7 @@ import {
   GPSFixType,
 } from '~/model/enums';
 import { getPreferredCoordinateFormatter } from '~/selectors/formatting';
+import { monospacedFont } from '~/theme';
 
 /**
  * Converts the absolute value of a heading deviation, in degrees, to the
@@ -62,8 +63,7 @@ const useStyles = makeStyles(
   (theme) => ({
     root: {
       flexGrow: 1,
-      fontFamily:
-        '"Proggy Vector", "Menlo", "Consolas", "DejaVu Sans Mono", "Courier New", "Courier", monospace',
+      fontFamily: monospacedFont,
       fontSize: 'small',
       fontVariantNumeric: 'lining-nums tabular-nums',
       marginTop: [-2, '!important'],
@@ -106,6 +106,7 @@ const DroneStatusLine = ({
   coordinateFormatter,
   debugString,
   details,
+  editing,
   heading,
   headingDeviation,
   id,
@@ -121,9 +122,7 @@ const DroneStatusLine = ({
 
   /* TODO:
    * yaw ("  0'")
-   * [_00_]
    * ...
-   * [debug]
    * lamp color
    */
 
@@ -131,7 +130,7 @@ const DroneStatusLine = ({
     <div className={classes.root}>
       {padStart(label, 4)}
       <span className={classes.muted}>
-        {padStart(id !== label ? id : '', 4)}
+        {padStart(!editing && id !== label ? id : '', 4)}
       </span>
       {(details || text) && (
         <StatusPill
@@ -196,6 +195,7 @@ DroneStatusLine.propTypes = {
   coordinateFormatter: PropTypes.func,
   debugString: PropTypes.string,
   details: PropTypes.string,
+  editing: PropTypes.bool,
   gpsFixType: PropTypes.number,
   heading: PropTypes.number,
   headingDeviation: PropTypes.number,
@@ -209,7 +209,6 @@ DroneStatusLine.propTypes = {
     amsl: PropTypes.number,
     agl: PropTypes.number,
   }),
-  selected: PropTypes.bool,
   text: PropTypes.string,
   textSemantics: PropTypes.oneOf([
     'off',
