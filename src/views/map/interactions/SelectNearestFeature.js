@@ -111,7 +111,10 @@ class SelectNearestFeatureInteraction extends Interaction {
             .map((layer) => {
               const source = layer.getSource();
               return source
-                ? source.getClosestFeatureToCoordinate(coordinate)
+                ? source.getClosestFeatureToCoordinate(
+                    coordinate,
+                    this._isFeatureFeasible
+                  )
                 : undefined;
             })
             .filter(this._isFeatureFeasible),

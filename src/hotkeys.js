@@ -36,8 +36,17 @@ const hotkeys = [
     keys: 'PlatMod + Shift + KeyC',
     action: () => {
       const displays = document.querySelectorAll('.ol-mouse-position');
+      const firstDisplay =
+        displays && displays.length > 0 ? displays[0] : undefined;
+      const textNodes = firstDisplay
+        ? Array.from(firstDisplay.childNodes).filter(
+            (node) => node.nodeType === Node.TEXT_NODE
+          )
+        : [];
       const text =
-        displays && displays.length > 0 ? displays[0].textContent : undefined;
+        textNodes && textNodes.length > 0
+          ? textNodes[0].textContent
+          : undefined;
       if (text) {
         copy(text.split('\n')[0]);
         store.dispatch(showNotification('Coordinates copied to clipboard.'));
