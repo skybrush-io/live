@@ -3,9 +3,15 @@ import mapValues from 'lodash-es/mapValues';
 import { eventChannel } from 'redux-saga';
 import { all, call, delay, put, select, take } from 'redux-saga/effects';
 
-import { addUAVs, removeUAVs, updateAgesOfUAVs, updateUAVs } from './slice';
+import {
+  addUAVs,
+  removeUAVsByIds,
+  updateAgesOfUAVs,
+  updateUAVs,
+} from './slice';
 
 import { getClockSkewInMilliseconds } from '~/features/servers/selectors';
+import { getUAVAgingThresholds } from '~/features/settings/selectors';
 import { UAVAge } from '~/model/uav';
 
 /**
@@ -27,38 +33,37 @@ const convertUAVsToRedux = (objects) => mapValues(objects, convertUAVToRedux);
  * @param  {number}  lastUpdatedAt  the time when the UAV was updated the
  *         last time
  * @param  {number}  now  the current timestamp, in milliseconds
- * @return {string} the proposed new age code of the UAV
+ * @param  {number}  warnThreshold  number of milliseconds after which a UAV goes
+ *         into the "inactive" state
+ * @param  {number}  goneThreshold  number of milliseconds after which a UAV goes
+ *         into the "gone" state
+ * @param  {number}  forgetThreshold  number of milliseconds after which a UAV
+ *         is "forgotten" and removed from the client
+ * @return {string} the proposed new age code of the UAV, or an empty string if
+ *         the UAV should be removed
  */
-function proposeAgeCode(lastUpdatedAt, now) {
+function proposeAgeCode(
+  lastUpdatedAt,
+  now,
+  { warnThreshold, goneThreshold, forgetThreshold }
+) {
   const age = lastUpdatedAt ? now - lastUpdatedAt : 600000000;
 
-  if (age >= 600000) {
+  if (age > forgetThreshold) {
     /* UAV was not seen for at least 10 minutes; remove it completely */
-    /* TODO(ntamas) */
-    return UAVAge.GONE;
+    return UAVAge.FORGOTTEN;
   }
 
-  if (age >= 60000) {
+  if (age > goneThreshold) {
     /* UAV was not seen for at least a minute */
     return UAVAge.GONE;
   }
 
-  if (age >= 3000) {
+  if (age > warnThreshold) {
     return UAVAge.INACTIVE;
   }
 
   return UAVAge.ACTIVE;
-}
-
-/**
- * Schedules all the given UAVs to be checked whether we have seen a status
- * message from them recently enough.
- */
-function updateAgeCodeForUAVs(uavs) {
-  const now = Date.now();
-  for (const uav of uavs) {
-    uav.age = proposeAgeCode(uav.lastUpdatedAt, now);
-  }
 }
 
 /**
@@ -117,8 +122,6 @@ function subscribeToFlock(flock) {
           additions[uav.id] = uav;
         }
       }
-
-      updateAgeCodeForUAVs(uavs);
 
       // Dispatch an "added" event immediately - we do not batch these
       emit(['added', additions]);
@@ -186,7 +189,7 @@ function* uavSyncSaga(flock) {
         break;
 
       case 'removed':
-        yield put(removeUAVs(convertUAVsToRedux(args[0])));
+        yield put(removeUAVsByIds(args[0].map((uav) => uav.id)));
         break;
 
       case 'updated':
@@ -210,15 +213,19 @@ function* uavAgingSaga() {
     const uavs = yield select((state) => state.uavs.byId);
     const uavIds = yield select((state) => state.uavs.order);
     const clockSkew = (yield select(getClockSkewInMilliseconds)) || 0;
+    const thresholds = yield select(getUAVAgingThresholds);
 
     const now = Date.now() + clockSkew;
     const updates = {};
+    const removals = [];
 
     for (const uavId of uavIds) {
       const uav = uavs[uavId];
       if (uav) {
-        const newAgeCode = proposeAgeCode(uav.lastUpdated, now);
-        if (newAgeCode !== uav.age) {
+        const newAgeCode = proposeAgeCode(uav.lastUpdated, now, thresholds);
+        if (newAgeCode === UAVAge.FORGOTTEN) {
+          removals.push(uavId);
+        } else if (newAgeCode !== uav.age) {
           updates[uavId] = newAgeCode;
         }
       }
@@ -226,6 +233,10 @@ function* uavAgingSaga() {
 
     if (!isEmpty(updates)) {
       yield put(updateAgesOfUAVs(updates));
+    }
+
+    if (removals.length > 0) {
+      yield put(removeUAVsByIds(removals));
     }
   }
 }

@@ -55,7 +55,6 @@ const UAVsTabPresentation = ({
           min={1}
           max={3600}
           value={warnThreshold}
-          disabled={!autoRemove}
           onChange={onDurationFieldUpdated}
         />
       </FormControl>
@@ -70,7 +69,6 @@ const UAVsTabPresentation = ({
           min={1}
           max={3600}
           value={goneThreshold}
-          disabled={!autoRemove}
           onChange={onDurationFieldUpdated}
         />
       </FormControl>

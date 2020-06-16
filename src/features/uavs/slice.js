@@ -53,7 +53,7 @@ const { actions, reducer } = createSlice({
       clearOrderedCollection(state);
     },
 
-    removeUAVs(state, action) {
+    removeUAVsByIds(state, action) {
       deleteItemsByIds(state, action.payload);
     },
 
@@ -77,7 +77,7 @@ const { actions, reducer } = createSlice({
 export const {
   addUAVs,
   clearUAVList,
-  removeUAVs,
+  removeUAVsByIds,
   updateAgesOfUAVs,
   updateUAVs,
 } = actions;

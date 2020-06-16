@@ -18,6 +18,7 @@ export const UAVAge = {
   ACTIVE: 'active',
   INACTIVE: 'inactive',
   GONE: 'gone',
+  FORGOTTEN: 'forgotten',
 };
 
 /**
