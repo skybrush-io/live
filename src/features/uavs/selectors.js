@@ -83,7 +83,8 @@ export const getHomePositionByUavId = createCachedSelector(
   }
 )({
   keySelector: selectUAVId,
-  // TODO: use a FIFO or LRU cache if it becomes necessary
+  // TODO: use a FIFO or LRU cache if it becomes necessary.
+  // The quick-lru module from npm seems simple enough.
 });
 
 /**
@@ -110,7 +111,8 @@ export const getTakeoffHeadingByUavId = createCachedSelector(
   }
 )({
   keySelector: selectUAVId,
-  // TODO: use a FIFO or LRU cache if it becomes necessary
+  // TODO: use a FIFO or LRU cache if it becomes necessary.
+  // The quick-lru module from npm seems simple enough.
 });
 
 /**
@@ -131,7 +133,8 @@ export const getXYDistanceToHomePositionByUavId = createCachedSelector(
   }
 )({
   keySelector: selectUAVId,
-  // TODO: use a FIFO or LRU cache if it becomes necessary
+  // TODO: use a FIFO or LRU cache if it becomes necessary.
+  // The quick-lru module from npm seems simple enough.
 });
 
 /**
@@ -205,7 +208,8 @@ export const getDeviationFromTakeoffHeadingByUavId = createCachedSelector(
   }
 )({
   keySelector: selectUAVId,
-  // TODO: use a FIFO or LRU cache if it becomes necessary
+  // TODO: use a FIFO or LRU cache if it becomes necessary.
+  // The quick-lru module from npm seems simple enough.
 });
 
 /**
@@ -238,7 +242,8 @@ export const getLightColorByUavIdInCSSNotation = createCachedSelector(
   (uav) => convertRGB565ToCSSNotation((uav ? uav.light : 0) || 0)
 )({
   keySelector: selectUAVId,
-  // TODO: use a FIFO or LRU cache if it becomes necessary
+  // TODO: use a FIFO or LRU cache if it becomes necessary.
+  // The quick-lru module from npm seems simple enough.
 });
 
 /**
