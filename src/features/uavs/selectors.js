@@ -20,6 +20,7 @@ import {
   ErrorCode,
   Severity,
 } from '~/flockwave/errors';
+import { convertRGB565ToCSSNotation } from '~/flockwave/parsing';
 import { UAVAge } from '~/model/uav';
 
 /**
@@ -225,6 +226,20 @@ export const getDeviationsFromTakeoffHeadings = (state) => {
 
   return result;
 };
+
+/**
+ * Returns the color of the primary LED light of the UAV, in CSS notation.
+ *
+ * @param  {Object}  state  the state of the application
+ * @param  {string}  uavId  the ID of the UAV
+ */
+export const getLightColorByUavIdInCSSNotation = createCachedSelector(
+  getUAVById,
+  (uav) => convertRGB565ToCSSNotation((uav ? uav.light : 0) || 0)
+)({
+  keySelector: selectUAVId,
+  // TODO: use a FIFO or LRU cache if it becomes necessary
+});
 
 /**
  * Creates a selector that selects all UAV IDs that are in the mission mapping

@@ -13,7 +13,7 @@ import { ThemeProvider, useTheme } from '@material-ui/core/styles';
 import Colors from '~/components/colors';
 import useDarkMode from '~/hooks/useDarkMode';
 
-// eslint-disable-next-line import/no-webpack-loader-syntax, import/extensions
+// eslint-disable-next-line import/no-webpack-loader-syntax
 import darkModeExtraCSS from '!!raw-loader!~/../assets/css/dark-mode.css';
 
 /**
@@ -105,7 +105,7 @@ export const DarkModeExtraCSSProvider = () => {
       style.append(document.createTextNode(darkModeExtraCSS));
       head.append(style);
 
-      return () => head.removeChild(style);
+      return () => style.remove();
     }
   }, [isThemeDark]);
 

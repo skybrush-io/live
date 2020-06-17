@@ -12,6 +12,7 @@ import ActionHome from '@material-ui/icons/Home';
 import ActionPowerSettingsNew from '@material-ui/icons/PowerSettingsNew';
 import Message from '@material-ui/icons/Message';
 import Refresh from '@material-ui/icons/Refresh';
+import WbSunny from '@material-ui/icons/WbSunny';
 import Tooltip from '~/components/Tooltip';
 
 import {
@@ -45,6 +46,7 @@ const UAVOperationsButtonGroup = ({
   const isSelectionSingle = selectedUAVIds.length === 1;
 
   const {
+    flashLightOnSelectedUAVs,
     haltSelectedUAVs,
     landSelectedUAVs,
     resetSelectedUAVs,
@@ -83,12 +85,23 @@ const UAVOperationsButtonGroup = ({
         </IconButton>
       </Tooltip>
 
+      <Divider className={classes.divider} orientation='vertical' />
+
       <Tooltip content='Send message'>
         <IconButton
           disabled={!isSelectionSingle}
           onClick={selectUAVAndShowMessagesDialog}
         >
           <Message />
+        </IconButton>
+      </Tooltip>
+
+      <Tooltip content='Flash lights'>
+        <IconButton
+          disabled={isSelectionEmpty}
+          onClick={flashLightOnSelectedUAVs}
+        >
+          <WbSunny />
         </IconButton>
       </Tooltip>
 

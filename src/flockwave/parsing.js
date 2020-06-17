@@ -2,6 +2,7 @@
  * @file Utility functions to parse data out of Flockwave messages.
  */
 
+import color from 'color';
 import get from 'lodash-es/get';
 
 /**
@@ -16,6 +17,13 @@ export function convertRGB565ToHex(value) {
     (((green6 << 2) + (green6 >> 4)) << 8) |
     ((blue5 << 3) + (blue5 >> 2))
   );
+}
+
+/**
+ * Converts a color in RGB565 format to CSS notation.
+ */
+export function convertRGB565ToCSSNotation(value) {
+  return color(convertRGB565ToHex(value || 0)).string();
 }
 
 const MESSAGES_WITH_RECEIPTS = {

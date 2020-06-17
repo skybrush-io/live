@@ -16,7 +16,7 @@ import makeLogger from './logging';
 
 const logger = makeLogger('messaging');
 
-const processResponses = (commandName, responses) => {
+const processResponses = (commandName, responses, { silent } = {}) => {
   responses = values(responses);
 
   const errorCounts = countBy(responses, isError);
@@ -37,7 +37,7 @@ const processResponses = (commandName, responses) => {
     } else {
       message = `${commandName} failed`;
     }
-  } else {
+  } else if (!silent) {
     semantics = MessageSemantics.SUCCESS;
     if (numberOfSuccesses > 1) {
       message = `${commandName} sent for ${numberOfSuccesses} UAVs`;
@@ -56,22 +56,34 @@ const processResponses = (commandName, responses) => {
   }
 };
 
-const performMassOperation = ({ type, name, mapper = undefined }) => async (
-  uavs,
-  args
-) => {
+const performMassOperation = ({
+  type,
+  name,
+  mapper = undefined,
+  silent,
+}) => async (uavs, args) => {
   try {
     const responses = await messageHub.startAsyncOperation({
       type,
       ids: uavs,
       ...(mapper ? mapper(args) : args),
     });
-    processResponses(name, responses);
+    processResponses(name, responses, { silent });
   } catch (error) {
     console.error(error);
     logger.error(`${name}: ${String(error)}`);
   }
 };
+
+export const flashLightOnSelectedUAVs = performMassOperation({
+  type: 'UAV-SIGNAL',
+  name: 'Light signal command',
+  mapper: () => ({
+    signals: ['light'],
+    duration: 5000,
+  }),
+  silent: true,
+});
 
 export const takeoffUAVs = performMassOperation({
   type: 'UAV-TAKEOFF',
@@ -112,6 +124,10 @@ export const moveUAVs = performMassOperation({
 });
 
 export const createSelectionRelatedActions = (selectedUAVIds) => ({
+  flashLightOnSelectedUAVs: () => {
+    flashLightOnSelectedUAVs(selectedUAVIds);
+  },
+
   haltSelectedUAVs: () => {
     shutdownUAVs(selectedUAVIds);
   },

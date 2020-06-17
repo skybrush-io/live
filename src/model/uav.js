@@ -277,6 +277,7 @@ export default class UAV {
       gpsFix: { ...this.gpsFix },
       heading: this.heading,
       lastUpdated: this.lastUpdated,
+      light: this.light,
       mode: this.mode,
       position,
     };

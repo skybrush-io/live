@@ -1,7 +1,6 @@
 import get from 'lodash-es/get';
 import throttle from 'lodash-es/throttle';
 import ky from 'ky';
-import PProgress from 'p-progress';
 
 import { loadShowFromFile as processFile } from './processing';
 import {

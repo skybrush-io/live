@@ -10,11 +10,13 @@ import { makeStyles } from '@material-ui/core/styles';
 
 import BatteryIndicator from './BatteryIndicator';
 
+import ColoredLight from '~/components/ColoredLight';
 import StatusPill from '~/components/StatusPill';
 import StatusText from '~/components/StatusText';
 import {
   createSingleUAVStatusSummarySelector,
   getDeviationFromTakeoffHeadingByUavId,
+  getLightColorByUavIdInCSSNotation,
 } from '~/features/uavs/selectors';
 import {
   abbreviateFlightMode,
@@ -103,6 +105,7 @@ const useStyles = makeStyles(
  */
 const DroneStatusLine = ({
   batteryStatus,
+  color,
   coordinateFormatter,
   debugString,
   details,
@@ -119,13 +122,6 @@ const DroneStatusLine = ({
   textSemantics,
 }) => {
   const classes = useStyles();
-
-  /* TODO:
-   * yaw ("  0'")
-   * ...
-   * lamp color
-   */
-
   return (
     <div className={classes.root}>
       {padStart(label, 4)}
@@ -154,6 +150,7 @@ const DroneStatusLine = ({
             className={classes.batteryIndicator}
             {...batteryStatus}
           />
+          <ColoredLight inline color={color} />
           <StatusPill
             inline
             hollow
@@ -192,6 +189,7 @@ DroneStatusLine.propTypes = {
     votlage: PropTypes.number,
     percentage: PropTypes.number,
   }),
+  color: PropTypes.string,
   coordinateFormatter: PropTypes.func,
   debugString: PropTypes.string,
   details: PropTypes.string,
@@ -235,8 +233,12 @@ export default connect(
       const headingDeviation = uav
         ? getDeviationFromTakeoffHeadingByUavId(state, uavId)
         : 0;
+      const color = uav
+        ? getLightColorByUavIdInCSSNotation(state, uavId)
+        : 'black';
       return {
         batteryStatus: uav ? uav.battery : undefined,
+        color,
         coordinateFormatter: getPreferredCoordinateFormatter(state),
         debugString: uav ? uav.debugString : undefined,
         gpsFixType: uav ? uav.gpsFix.type : undefined,
