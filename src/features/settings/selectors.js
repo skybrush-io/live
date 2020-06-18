@@ -1,6 +1,27 @@
 import { createSelector } from '@reduxjs/toolkit';
 
 /**
+ * Returns the desired placement accuracy that the user wants to use to judge
+ * whether a drone is placed accurately at its start position, in meters.
+ * Note that the state stores it in millimeters so we need to convert.
+ *
+ * Also, we need to enforce a default value in case the state store of the user
+ * is old and it does not include a default value.
+ */
+export const getDesiredPlacementAccuracyInMeters = (state) =>
+  (state.settings.uavs.placementAccuracy || 1000) / 1000;
+
+/**
+ * Returns the desired accuracy of UAV headings that the user wants to use to
+ * judge whether a drone is placed facing the right direction before a mission.
+ *
+ * We need to enforce a default value in case the state store of the user
+ * is old and it does not include a default value.
+ */
+export const getDesiredTakeoffHeadingAccuracy = (state) =>
+  state.settings.uavs.takeoffHeadingAccuracy || 20;
+
+/**
  * Returns the "aging thresholds" for the UAVs that decide when a UAV should
  * be marked as inactive, gone or forgotten.
  */

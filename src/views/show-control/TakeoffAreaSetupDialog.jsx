@@ -31,8 +31,8 @@ import {
   revokeTakeoffAreaApproval,
 } from '~/features/show/slice';
 import {
-  createSelectorToGetUAVIdsTooFarFromHome,
-  createSelectorToGetMisalignedUAVIds,
+  getMisalignedUAVIds,
+  getMisplacedUAVIds,
   getMissingUAVIdsInMapping,
 } from '~/features/uavs/selectors';
 import AugmentMappingButton from '~/views/uavs/AugmentMappingButton';
@@ -203,24 +203,16 @@ TakeoffAreaSetupDialog.defaultProps = {
 
 export default connect(
   // mapStateToProps
-  () => {
-    const getMisplacedUAVIds = createSelectorToGetUAVIdsTooFarFromHome(
-      1 /* meter */
-    );
-    const getMisalignedUAVIds = createSelectorToGetMisalignedUAVIds(
-      20 /* degrees */
-    );
-    return (state) => ({
-      ...state.show.takeoffAreaSetupDialog,
-      approved: isTakeoffAreaApproved(state),
-      emptySlotIndices: getEmptyMappingSlotIndices(state),
-      hasNonemptyMappingSlot: hasNonemptyMappingSlot(state),
-      hasVirtualDrones: supportsVirtualDrones(state),
-      missingUAVIds: getMissingUAVIdsInMapping(state),
-      misplacedUAVIds: getMisplacedUAVIds(state),
-      misalignedUAVIds: getMisalignedUAVIds(state),
-    });
-  },
+  (state) => ({
+    ...state.show.takeoffAreaSetupDialog,
+    approved: isTakeoffAreaApproved(state),
+    emptySlotIndices: getEmptyMappingSlotIndices(state),
+    hasNonemptyMappingSlot: hasNonemptyMappingSlot(state),
+    hasVirtualDrones: supportsVirtualDrones(state),
+    missingUAVIds: getMissingUAVIdsInMapping(state),
+    misplacedUAVIds: getMisplacedUAVIds(state),
+    misalignedUAVIds: getMisalignedUAVIds(state),
+  }),
 
   // mapDispatchToProps
   (dispatch) => ({

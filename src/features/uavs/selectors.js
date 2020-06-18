@@ -14,6 +14,10 @@ import {
   getTakeoffHeadingsInMission,
 } from '~/features/mission/selectors';
 import {
+  getDesiredPlacementAccuracyInMeters,
+  getDesiredTakeoffHeadingAccuracy,
+} from '~/features/settings/selectors';
+import {
   abbreviateError,
   getSeverityOfErrorCode,
   getSeverityOfMostSevereErrorCode,
@@ -158,11 +162,13 @@ export const getDistancesFromHome = (state) => {
 
 /**
  * Creates a selector that selects all UAV IDs that are in the mission mapping
- * and that are farther than a given threshold from their designated home
- * positions.
+ * and that are farther from their designated home than the threshold specified
+ * by the user in the UAV settings.
  */
-export const createSelectorToGetUAVIdsTooFarFromHome = (threshold) =>
-  createSelector(getDistancesFromHome, (distances) =>
+export const getMisplacedUAVIds = createSelector(
+  getDistancesFromHome,
+  getDesiredPlacementAccuracyInMeters,
+  (distances, threshold) =>
     Object.entries(distances).reduce((acc, [uavId, distance]) => {
       if (distance > threshold) {
         acc.push(uavId);
@@ -170,7 +176,7 @@ export const createSelectorToGetUAVIdsTooFarFromHome = (threshold) =>
 
       return acc;
     }, [])
-  );
+);
 
 /**
  * Returns the farthest distance of an UAV from its home position, or undefined
@@ -248,11 +254,13 @@ export const getLightColorByUavIdInCSSNotation = createCachedSelector(
 
 /**
  * Creates a selector that selects all UAV IDs that are in the mission mapping
- * and that are farther than a given threshold from their designated home
- * positions.
+ * and whose headings differ from their designated takeoff headings by a threshold
+ * specified in the settings of the user.
  */
-export const createSelectorToGetMisalignedUAVIds = (threshold) =>
-  createSelector(getDeviationsFromTakeoffHeadings, (deviations) =>
+export const getMisalignedUAVIds = createSelector(
+  getDeviationsFromTakeoffHeadings,
+  getDesiredTakeoffHeadingAccuracy,
+  (deviations, threshold) =>
     Object.entries(deviations).reduce((acc, [uavId, deviation]) => {
       if (Math.abs(deviation) > threshold) {
         acc.push(uavId);
@@ -260,7 +268,7 @@ export const createSelectorToGetMisalignedUAVIds = (threshold) =>
 
       return acc;
     }, [])
-  );
+);
 
 /**
  * Returns an array containing all the UAV IDs that appear in the mission mapping

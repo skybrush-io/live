@@ -77,6 +77,9 @@ const { actions, reducer } = createSlice({
       // Number of seconds after which a UAV with no status updates is
       // removed from the UAV list
       forgetThreshold: 600,
+      // Desired placement accuracy in preflight checks, in millimeters,
+      // as an integer, to avoid rounding errors
+      placementAccuracy: 1000,
     },
   },
 
