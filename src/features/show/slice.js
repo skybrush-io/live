@@ -114,6 +114,8 @@ const { actions, reducer } = createSlice({
       state.preflight.manualChecksSignedOffAt = null;
       state.preflight.onboardChecksSignedOffAt = null;
       state.preflight.takeoffAreaApprovedAt = null;
+
+      state.upload.lastUploadResult = null;
     }),
 
     clearManualPreflightChecks: noPayload((state) => {
@@ -179,6 +181,10 @@ const { actions, reducer } = createSlice({
     loadingPromisePending(state) {
       state.loading = true;
       state.progress = null;
+
+      // This line ensures that the green light in front of the UploadButton
+      // turns off if the user starts loading a new show
+      state.upload.lastUploadResult = null;
     },
 
     loadingPromiseFulfilled(state, action) {
