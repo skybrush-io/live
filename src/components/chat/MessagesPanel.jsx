@@ -209,6 +209,7 @@ class MessagesPanelPresentation extends React.Component {
           flock={flock}
         />
         <TextField
+          autoFocus
           fullWidth
           inputRef={this._messageFieldRef}
           label='Message'
