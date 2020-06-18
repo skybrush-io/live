@@ -67,6 +67,7 @@ export default connect(
   // mapStateToProps
   (state) => ({
     dense: true,
+    disablePadding: true,
     features: getFeaturesInOrder(state),
   }),
   // mapDispatchToProps

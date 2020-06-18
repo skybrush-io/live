@@ -93,6 +93,7 @@ const LocationList = connect(
   // mapStateToProps
   (state) => ({
     dense: true,
+    disablePadding: true,
     savedLocations: getSavedLocationsInOrder(state),
   }),
   // mapDispatchToProps

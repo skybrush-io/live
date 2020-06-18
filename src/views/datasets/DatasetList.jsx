@@ -51,6 +51,7 @@ const DatasetList = connect(
   (state) => ({
     datasets: getDatasetsInOrder(state),
     dense: true,
+    disablePadding: true,
   }),
   // mapDispatchToProps
   undefined

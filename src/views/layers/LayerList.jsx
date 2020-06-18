@@ -86,6 +86,7 @@ const LayerList = connect(
   // mapStateToProps
   (state) => ({
     dense: true,
+    disablePadding: true,
     layers: getLayersInOrder(state),
   }),
   // mapDispatchToProps
