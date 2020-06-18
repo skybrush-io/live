@@ -123,7 +123,6 @@ const ClockDisplayList = connect(
   (state) => ({
     clocks: getClocksWithUpdateIntervalsInOrder(state),
     dense: true,
-    disablePadding: true,
   }),
   // mapDispatchToProps
   undefined
