@@ -67,6 +67,7 @@ const batteryIcons = [
 
 const batteryIconsByStatus = {
   Full: batteryIcons[10],
+  NearFull: batteryIcons[9],
   Ok: batteryIcons[8],
   Warning: batteryIcons[3],
   Error: batteryIcons[0],
