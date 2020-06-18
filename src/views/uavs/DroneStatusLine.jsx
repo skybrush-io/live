@@ -160,9 +160,9 @@ const DroneStatusLine = ({
             {abbreviateGPSFixType(gpsFixType)}
           </StatusPill>
           {position ? (
-            padEnd(coordinateFormatter([position.lon, position.lat]), 22)
+            padEnd(coordinateFormatter([position.lon, position.lat]), 24)
           ) : (
-            <span className={classes.muted}>{padEnd('no position', 22)}</span>
+            <span className={classes.muted}>{padEnd('no position', 24)}</span>
           )}
           {padStart(
             !isNil(position && position.amsl) ? Math.round(position.amsl) : '?',

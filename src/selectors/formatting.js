@@ -22,7 +22,7 @@ const cartesianFormatter = makeDecimalCoordinateFormatter({
 const polarFormatter = makePolarCoordinateFormatter({ digits: 2, unit: ' m' });
 
 const signedGeographicFormatter = makeDecimalCoordinateFormatter({
-  digits: 6,
+  digits: 7,
   reverse: true,
   separator: ' ',
   unit: '\u00B0',
@@ -30,7 +30,7 @@ const signedGeographicFormatter = makeDecimalCoordinateFormatter({
 
 const _formattersForCoordinateFormat = {
   [CoordinateFormat.DEGREES]: ([lon, lat]) =>
-    formatCoords(lon, lat, true).format('Xdd', { decimalPlaces: 6 }),
+    formatCoords(lon, lat, true).format('Xdd', { decimalPlaces: 7 }),
   [CoordinateFormat.DEGREES_MINUTES]: ([lon, lat]) =>
     formatCoords(lon, lat, true).format('XDDmm', { decimalPlaces: 4 }),
   [CoordinateFormat.DEGREES_MINUTES_SECONDS]: ([lon, lat]) =>
