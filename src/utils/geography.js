@@ -284,7 +284,7 @@ export const translateBy = curry((displacement, coordinates) => {
  * or a longitude-latitude pair as an array of two numbers.
  */
 export const formatCoordinate = makeDecimalCoordinateFormatter({
-  digits: 6,
+  digits: 7,
   reverse: true,
   unit: '\u00B0',
 });
