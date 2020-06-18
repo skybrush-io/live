@@ -60,7 +60,7 @@ const ShowControlPanelUpperSegment = ({ isAuthorized }) => {
         direction='left'
       >
         <Box className={clsx(classes.root, classes.scrollable)}>
-          <List dense disablePadding>
+          <List dense>
             <LoadShowFromFileButton />
             <Divider />
             <EnvironmentButton />
