@@ -11,10 +11,10 @@ import CloudDownload from '@material-ui/icons/CloudDownload';
 
 import FileListItem from './FileListItem';
 
+import Colors from '~/components/Colors';
 import ListItemTextWithProgress from '~/components/ListItemTextWithProgress';
 import StatusLight from '~/components/StatusLight';
 import { Status } from '~/components/semantics';
-
 import Tooltip from '~/components/Tooltip';
 import { loadShowFromFile } from '~/features/show/actions';
 import {
@@ -25,6 +25,7 @@ import {
   getShowDescription,
   getShowLoadingProgressPercentage,
   getShowTitle,
+  hasShowChangedExternallySinceLoaded,
   hasLoadedShowFile,
   isLoadingShowFile,
 } from '~/features/show/selectors';
@@ -40,6 +41,7 @@ const isFile = (item) => item && item.size > 0;
  * React component for the button that allows the user to open a show file.
  */
 const LoadShowFromFileButton = ({
+  changedSinceLoaded,
   description,
   hasLoadedShowFile,
   loading,
@@ -71,6 +73,10 @@ const LoadShowFromFileButton = ({
             value={progress}
             variant={!isNil(progress) ? 'determinate' : 'indeterminate'}
           />
+        ) : changedSinceLoaded ? (
+          <span style={{ color: Colors.warning }}>
+            Show changed, click to reload
+          </span>
         ) : hasLoadedShowFile ? (
           description
         ) : (
@@ -97,12 +103,14 @@ const LoadShowFromFileButton = ({
 );
 
 LoadShowFromFileButton.propTypes = {
+  changedSinceLoaded: PropTypes.bool,
   description: PropTypes.string,
   hasLoadedShowFile: PropTypes.bool,
   loading: PropTypes.bool,
   onClearLoadedShow: PropTypes.func,
   onLoadShowFromCloud: PropTypes.func,
   onShowFileSelected: PropTypes.func,
+  progress: PropTypes.number,
   status: PropTypes.oneOf(Object.values(Status)),
   title: PropTypes.string,
 };
@@ -110,6 +118,7 @@ LoadShowFromFileButton.propTypes = {
 export default connect(
   // mapStateToProps
   (state) => ({
+    changedSinceLoaded: hasShowChangedExternallySinceLoaded(state),
     description: getShowDescription(state),
     hasLoadedShowFile: hasLoadedShowFile(state),
     loading: isLoadingShowFile(state),

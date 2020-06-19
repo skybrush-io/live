@@ -22,6 +22,8 @@ const { actions, reducer } = createSlice({
     loading: false,
     progress: 0,
 
+    changedSinceLoaded: false,
+
     environment: {
       editing: false,
       outdoor: {
@@ -111,6 +113,8 @@ const { actions, reducer } = createSlice({
     clearLoadedShow: noPayload((state) => {
       state.data = null;
 
+      state.changedSinceLoaded = false;
+
       state.preflight.manualChecksSignedOffAt = null;
       state.preflight.onboardChecksSignedOffAt = null;
       state.preflight.takeoffAreaApprovedAt = null;
@@ -182,6 +186,10 @@ const { actions, reducer } = createSlice({
       state.loading = true;
       state.progress = null;
 
+      // This line ensures that the "show changed" warning goes away as soon as
+      // the user starts to reload the show
+      state.changedSinceLoaded = false;
+
       // This line ensures that the green light in front of the UploadButton
       // turns off if the user starts loading a new show
       state.upload.lastUploadResult = null;
@@ -191,11 +199,21 @@ const { actions, reducer } = createSlice({
       state.data = action.payload;
       state.loading = false;
       state.progress = null;
+
+      // Just in case the "show changed" warning was triggered while we tried
+      // to load it...
+      state.changedSinceLoaded = false;
     },
 
     loadingPromiseRejected(state) {
       state.loading = false;
       state.progress = null;
+
+      state.changedSinceLoaded = false;
+    },
+
+    notifyChangedSinceLoaded(state) {
+      state.changedSinceLoaded = true;
     },
 
     notifyUploadFinished: (state, action) => {
@@ -413,6 +431,7 @@ export const {
   dismissLastUploadResult,
   loadingProgress,
   loadingPromiseFulfilled,
+  notifyChangedSinceLoaded,
   notifyUploadFinished,
   notifyUploadOnUavCancelled,
   notifyUploadOnUavFailed,

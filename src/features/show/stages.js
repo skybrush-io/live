@@ -12,6 +12,7 @@ import {
   didStartConditionSyncFail,
   hasLoadedShowFile,
   hasScheduledStartTime,
+  hasShowChangedExternallySinceLoaded,
   hasShowOrigin,
   isLoadingShowFile,
   isShowAuthorizedToStart,
@@ -35,7 +36,9 @@ import {
 const stages = {
   selectShowFile: {
     evaluate: (state) =>
-      hasLoadedShowFile(state)
+      hasShowChangedExternallySinceLoaded(state)
+        ? Status.SKIPPED
+        : hasLoadedShowFile(state)
         ? Status.SUCCESS
         : isLoadingShowFile(state)
         ? Status.WAITING

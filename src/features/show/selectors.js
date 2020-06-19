@@ -52,6 +52,13 @@ export const didStartConditionSyncFail = (state) =>
 export const hasScheduledStartTime = (state) => !isNil(state.show.start.time);
 
 /**
+ * Returns whether the show has changed externally since the time it was
+ * loaded into the app.
+ */
+export const hasShowChangedExternallySinceLoaded = (state) =>
+  state.show.changedSinceLoaded;
+
+/**
  * Returns whether the show has received human authorization to start,
  * irrespectively of whether this setting has been synchronized to the server
  * or not.

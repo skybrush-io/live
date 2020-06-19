@@ -69,8 +69,8 @@ const reducer = handleActions(
       return updateSelection(state, [], action.payload);
     },
 
-    SELECT_ALL_UAV_FEATURES(state, action) {
-      return updateSelection([], findAllUAVFeatures(action.payload));
+    SELECT_ALL_UAV_FEATURES() {
+      return updateSelection([], findAllUAVFeatures());
     },
 
     SET_SELECTED_FEATURES(state, action) {
