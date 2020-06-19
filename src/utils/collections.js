@@ -355,11 +355,9 @@ export const reorder = (collection, newOrder) =>
  * Helper function that takes a single item and an ordered collection, and
  * attempts to replace the item in the collection based on its ID.
  *
- * If the incoming object has a valid ID, it is assumed that it is already
- * in the collection, but its representation will be replaced.
- *
- * If the incoming object has no ID yet, it will be added to the collection
- * in a way that maintains sortedness according to the given key.
+ * If the incoming object has no ID yet, or has an ID but is not in the
+ * collection, it will be added to the collection in a way that maintains
+ * sortedness according to the given key.
  *
  * @param  {Object}  item  the item to replace in the collection
  * @param  {Object}  collection  the ordered collection to update
@@ -368,7 +366,7 @@ export const reorder = (collection, newOrder) =>
  *         or the name of a single property that is used as a sorting key
  */
 export const replaceItemOrAddSorted = (collection, item, key = 'id') => {
-  if (hasValidId(item)) {
+  if (hasValidId(item) && collection.byId[item.id]) {
     collection.byId[item.id] = { ...item };
   } else {
     addItemSorted(collection, item, key);
@@ -389,7 +387,7 @@ export const replaceItemOrAddSorted = (collection, item, key = 'id') => {
  * @param  {Object}  collection  the ordered collection to update
  */
 export const replaceItemOrAddToFront = (collection, item) => {
-  if (hasValidId(item)) {
+  if (hasValidId(item) && collection.byId[item.id]) {
     collection.byId[item.id] = { ...item };
   } else {
     addItemToFront(collection, item);
