@@ -92,6 +92,7 @@ const useStyles = makeStyles(
     },
     batteryIndicator: {
       display: 'inline-block',
+      fontFamily: theme.typography.fontFamily,
       textAlign: 'left',
       margin: theme.spacing(0, 0.5),
       width: 48,
