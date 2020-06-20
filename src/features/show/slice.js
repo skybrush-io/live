@@ -22,6 +22,7 @@ const { actions, reducer } = createSlice({
     loading: false,
     progress: 0,
 
+    sourceUrl: null,
     changedSinceLoaded: false,
 
     environment: {
@@ -113,6 +114,7 @@ const { actions, reducer } = createSlice({
     clearLoadedShow: noPayload((state) => {
       state.data = null;
 
+      state.sourceUrl = null;
       state.changedSinceLoaded = false;
 
       state.preflight.manualChecksSignedOffAt = null;
@@ -196,7 +198,10 @@ const { actions, reducer } = createSlice({
     },
 
     loadingPromiseFulfilled(state, action) {
-      state.data = action.payload;
+      const { spec, url } = action.payload;
+
+      state.data = spec;
+      state.sourceUrl = url || null;
       state.loading = false;
       state.progress = null;
 
@@ -212,7 +217,7 @@ const { actions, reducer } = createSlice({
       state.changedSinceLoaded = false;
     },
 
-    notifyChangedSinceLoaded(state) {
+    notifyShowFileChangedSinceLoaded(state) {
       state.changedSinceLoaded = true;
     },
 
@@ -431,7 +436,7 @@ export const {
   dismissLastUploadResult,
   loadingProgress,
   loadingPromiseFulfilled,
-  notifyChangedSinceLoaded,
+  notifyShowFileChangedSinceLoaded,
   notifyUploadFinished,
   notifyUploadOnUavCancelled,
   notifyUploadOnUavFailed,

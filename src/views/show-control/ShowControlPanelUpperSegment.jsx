@@ -62,14 +62,20 @@ const ShowControlPanelUpperSegment = ({ isAuthorized }) => {
         <Box className={clsx(classes.root, classes.scrollable)}>
           <List dense>
             <LoadShowFromFileButton />
+
             <Divider />
+
             <EnvironmentButton />
             <TakeoffAreaButton />
             <UploadButton />
+
             <Divider />
+
             <OnboardPreflightChecksButton />
             <ManualPreflightChecksButton />
+
             <Divider />
+
             <StartTimeButton />
           </List>
         </Box>
@@ -100,6 +106,7 @@ ShowControlPanelUpperSegment.propTypes = {
 export default connect(
   // mapStateToProps
   (state) => ({
+    filename: null,
     isAuthorized: isShowAuthorizedToStartLocally(state),
   })
 )(ShowControlPanelUpperSegment);

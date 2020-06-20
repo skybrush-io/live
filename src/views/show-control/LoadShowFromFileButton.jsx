@@ -11,7 +11,8 @@ import CloudDownload from '@material-ui/icons/CloudDownload';
 
 import FileListItem from './FileListItem';
 
-import Colors from '~/components/Colors';
+import Colors from '~/components/colors';
+import FileWatcher from '~/components/FileWatcher';
 import ListItemTextWithProgress from '~/components/ListItemTextWithProgress';
 import StatusLight from '~/components/StatusLight';
 import { Status } from '~/components/semantics';
@@ -19,10 +20,12 @@ import Tooltip from '~/components/Tooltip';
 import { loadShowFromFile } from '~/features/show/actions';
 import {
   clearLoadedShow,
+  notifyShowFileChangedSinceLoaded,
   openLoadShowFromCloudDialog,
 } from '~/features/show/slice';
 import {
   getShowDescription,
+  getAbsolutePathOfShowFile,
   getShowLoadingProgressPercentage,
   getShowTitle,
   hasShowChangedExternallySinceLoaded,
@@ -43,10 +46,12 @@ const isFile = (item) => item && item.size > 0;
 const LoadShowFromFileButton = ({
   changedSinceLoaded,
   description,
+  filename,
   hasLoadedShowFile,
   loading,
   onClearLoadedShow,
   onLoadShowFromCloud,
+  onShowFileChangedExternally,
   onShowFileSelected,
   progress,
   status,
@@ -58,6 +63,7 @@ const LoadShowFromFileButton = ({
     accepts={isFile}
     onSelected={onShowFileSelected}
   >
+    <FileWatcher filename={filename} onChanged={onShowFileChangedExternally} />
     <StatusLight status={status} />
     <ListItemTextWithProgress
       primary={
@@ -105,10 +111,12 @@ const LoadShowFromFileButton = ({
 LoadShowFromFileButton.propTypes = {
   changedSinceLoaded: PropTypes.bool,
   description: PropTypes.string,
+  filename: PropTypes.string,
   hasLoadedShowFile: PropTypes.bool,
   loading: PropTypes.bool,
   onClearLoadedShow: PropTypes.func,
   onLoadShowFromCloud: PropTypes.func,
+  onShowFileChangedExternally: PropTypes.func,
   onShowFileSelected: PropTypes.func,
   progress: PropTypes.number,
   status: PropTypes.oneOf(Object.values(Status)),
@@ -120,6 +128,7 @@ export default connect(
   (state) => ({
     changedSinceLoaded: hasShowChangedExternallySinceLoaded(state),
     description: getShowDescription(state),
+    filename: getAbsolutePathOfShowFile(state),
     hasLoadedShowFile: hasLoadedShowFile(state),
     loading: isLoadingShowFile(state),
     progress: getShowLoadingProgressPercentage(state),
@@ -130,6 +139,7 @@ export default connect(
   {
     onClearLoadedShow: clearLoadedShow,
     onLoadShowFromCloud: openLoadShowFromCloudDialog,
+    onShowFileChangedExternally: notifyShowFileChangedSinceLoaded,
     onShowFileSelected: loadShowFromFile,
   }
 )(LoadShowFromFileButton);

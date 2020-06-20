@@ -47,6 +47,18 @@ export const didStartConditionSyncFail = (state) =>
   state.show.start.syncStatusWithServer === 'error';
 
 /**
+ * Returns the name of the file that the currently loaded show came from.
+ * Returns null if the currently loaded show comes from another source, the
+ * environment did not tell us the full path of the file, or there is no loaded
+ * show.
+ */
+export const getAbsolutePathOfShowFile = createSelector(
+  (state) => state.show.sourceUrl,
+  (url) =>
+    url && url.startsWith('file://') ? url.slice('file://'.length) : null
+);
+
+/**
  * Returns whether there is a scheduled start time for the drone show.
  */
 export const hasScheduledStartTime = (state) => !isNil(state.show.start.time);

@@ -12,13 +12,14 @@ const pify = require('pify');
 const { ipcRenderer: ipc } = require('electron-better-ipc');
 const unhandled = require('electron-unhandled');
 const SSDPClient = require('node-ssdp-lite');
+const watch = require('node-watch');
 const createStorageEngine = require('redux-persist-electron-storage');
 
 const localServer = require('./local-server');
 const setupIpc = require('./ipc');
 
 unhandled({
-  logger: (e) => console.error(e.stack),
+  logger: (error) => console.error(error.stack),
   // tippy.js seems to have a bug with the tooltips we use in the 3D view, and
   // this sometimes throws unhandled exceptions. We don't want these to
   // interfere with the user so we disable the unhandled exception dialog until
@@ -80,6 +81,10 @@ window.bridge = {
   getApplicationFolder: () => ipc.callMain('getApplicationFolder'),
   localServer,
   reverseDNSLookup,
+  watchFile: (filename, handler) => {
+    const watcher = watch(filename, handler);
+    return watcher.close;
+  },
 };
 
 // Set up IPC channels that we are going to listen to

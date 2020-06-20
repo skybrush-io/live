@@ -106,7 +106,9 @@ const createShowLoaderThunkFactory = (
       const promise = dispatch(
         actionFactory(arg, { dispatch, getState, onProgress })
       );
-      const { value: spec } = await promise;
+      const {
+        value: { spec },
+      } = await promise;
       processShowInJSONFormatAndDispatchActions(spec, dispatch);
     } catch (error) {
       dispatch(
@@ -129,7 +131,11 @@ const createShowLoaderThunkFactory = (
  * the show from.
  */
 export const loadShowFromFile = createShowLoaderThunkFactory(
-  (file) => processFile(file),
+  async (file) => {
+    const url = file && file.path ? `file://${file.path}` : undefined;
+    const spec = await processFile(file);
+    return { spec, url };
+  },
   {
     errorMessage: 'Failed to load show from the given file.',
   }
@@ -151,7 +157,12 @@ export const loadShowFromUrl = createShowLoaderThunkFactory(
         }
       },
     }).arrayBuffer();
-    return processFile(response);
+
+    const spec = await processFile(response);
+    return {
+      spec,
+      url,
+    };
   },
   {
     errorMessage: 'Failed to load show from the given URL.',
