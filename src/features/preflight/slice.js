@@ -61,6 +61,11 @@ const { actions, reducer } = createSlice({
           label: 'Precipitation within acceptable range',
           groupId: 'weather',
         },
+        'planetary-k-index': {
+          id: 'planetary-k-index',
+          label: 'No geomagnetic storms indicated by Kp-index',
+          groupId: 'weather',
+        },
         'permissions-drone-pilot-license': {
           id: 'permissions-drone-pilot-license',
           label: 'Drone pilot license is valid',
