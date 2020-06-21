@@ -8,6 +8,7 @@ import LinearProgress from '@material-ui/core/LinearProgress';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import Clear from '@material-ui/icons/Clear';
 import CloudDownload from '@material-ui/icons/CloudDownload';
+import Refresh from '@material-ui/icons/Refresh';
 
 import FileListItem from './FileListItem';
 
@@ -17,7 +18,10 @@ import ListItemTextWithProgress from '~/components/ListItemTextWithProgress';
 import StatusLight from '~/components/StatusLight';
 import { Status } from '~/components/semantics';
 import Tooltip from '~/components/Tooltip';
-import { loadShowFromFile } from '~/features/show/actions';
+import {
+  loadShowFromFile,
+  reloadCurrentShowFile,
+} from '~/features/show/actions';
 import {
   clearLoadedShow,
   notifyShowFileChangedSinceLoaded,
@@ -51,6 +55,7 @@ const LoadShowFromFileButton = ({
   loading,
   onClearLoadedShow,
   onLoadShowFromCloud,
+  onReloadShowFile,
   onShowFileChangedExternally,
   onShowFileSelected,
   progress,
@@ -81,7 +86,7 @@ const LoadShowFromFileButton = ({
           />
         ) : changedSinceLoaded ? (
           <span style={{ color: Colors.warning }}>
-            Show changed, click to reload
+            Show changed since it was loaded
           </span>
         ) : hasLoadedShowFile ? (
           description
@@ -91,7 +96,13 @@ const LoadShowFromFileButton = ({
       }
     />
     <ListItemSecondaryAction>
-      {hasLoadedShowFile ? (
+      {changedSinceLoaded ? (
+        <Tooltip content='Reload show'>
+          <IconButton edge='end' onClick={onReloadShowFile}>
+            <Refresh />
+          </IconButton>
+        </Tooltip>
+      ) : hasLoadedShowFile ? (
         <Tooltip content='Clear loaded show'>
           <IconButton edge='end' onClick={onClearLoadedShow}>
             <Clear />
@@ -139,6 +150,7 @@ export default connect(
   {
     onClearLoadedShow: clearLoadedShow,
     onLoadShowFromCloud: openLoadShowFromCloudDialog,
+    onReloadShowFile: reloadCurrentShowFile,
     onShowFileChangedExternally: notifyShowFileChangedSinceLoaded,
     onShowFileSelected: loadShowFromFile,
   }

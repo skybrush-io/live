@@ -4,6 +4,7 @@ import ky from 'ky';
 
 import { loadShowFromFile as processFile } from './processing';
 import {
+  getAbsolutePathOfShowFile,
   getFailedUploadItems,
   getFirstPointsOfTrajectoriesInWorldCoordinates,
   getLastPointsOfTrajectoriesInWorldCoordinates,
@@ -193,6 +194,26 @@ function processShowInJSONFormatAndDispatchActions(spec, dispatch) {
 
   // Revoke the approval of the takeoff area in case it was approved
   dispatch(revokeTakeoffAreaApproval());
+}
+
+/**
+ * Thunk that attempts to reload the currently loaded show file.
+ */
+export function reloadCurrentShowFile() {
+  return async (dispatch, getState) => {
+    const { getFileAsBlob } = window.bridge;
+
+    if (!getFileAsBlob) {
+      console.warn('reloadCurrentShowFile() works only in Electron');
+      return;
+    }
+
+    const filename = getAbsolutePathOfShowFile(getState());
+    if (filename) {
+      const blob = await getFileAsBlob(filename);
+      return dispatch(loadShowFromFile(blob));
+    }
+  };
 }
 
 /**

@@ -126,6 +126,7 @@
     "screenfull": "^5.0.2",
     "shell-quote": "^1.7.2",
     "shortid": "^2.2.15",
+    "stream-to-blob": "^2.0.1",
     "styled-components": "^4.4.1",
     "typeface-fira-sans": "0.0.75",
     "updeep": "^1.2.0",
