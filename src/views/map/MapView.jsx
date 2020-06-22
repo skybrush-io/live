@@ -104,8 +104,8 @@ const MapViewControlsPresentation = (props) => {
   const result = [
     <control.Zoom key='control.Zoom' />,
     <control.Attribution
-      collapsed
       key='control.Attribution'
+      collapsed
       collapseLabel='&laquo;'
     />,
   ];
@@ -310,6 +310,7 @@ class MapViewPresentation extends React.Component {
     dispatch: PropTypes.func.isRequired,
 
     center: PropTypes.arrayOf(PropTypes.number),
+    rotation: PropTypes.number,
     selection: PropTypes.arrayOf(PropTypes.string).isRequired,
     selectedTool: PropTypes.string,
     zoom: PropTypes.number,
@@ -382,7 +383,7 @@ class MapViewPresentation extends React.Component {
     const view = (
       <View
         center={mapViewCoordinateFromLonLat(center)}
-        rotation={-rotation * Math.PI / 180}
+        rotation={(-rotation * Math.PI) / 180}
         zoom={zoom}
         constrainRotation={false}
       />
@@ -646,8 +647,8 @@ class MapViewPresentation extends React.Component {
    */
   _disableDefaultContextMenu = () => {
     const { map } = this._map.current;
-    map.getViewport().addEventListener('contextmenu', (e) => {
-      e.preventDefault();
+    map.getViewport().addEventListener('contextmenu', (event) => {
+      event.preventDefault();
       return false;
     });
   };

@@ -1,8 +1,9 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 
+import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
-import withTheme from '@material-ui/core/styles/withTheme';
+import SelectAll from '@material-ui/icons/SelectAll';
 import LocationOn from '@material-ui/icons/LocationOn';
 import ShowChart from '@material-ui/icons/ShowChart';
 import CropSquare from '@material-ui/icons/CropSquare';
@@ -22,16 +23,20 @@ import { Tool } from './tools';
  *
  * @return {React.Element} the rendered component
  */
-const DrawingToolbarPresentation = ({
-  onToolSelected,
-  selectedTool,
-  theme,
-}) => {
+const DrawingToolbarPresentation = ({ onToolSelected, selectedTool }) => {
   const colorForTool = (tool) =>
     selectedTool === tool ? 'primary' : undefined;
 
   return (
     <div style={{ display: 'flex', flexFlow: 'column nowrap' }}>
+      <Tooltip content='Select'>
+        <IconButton onClick={partial(onToolSelected, Tool.SELECT)}>
+          <SelectAll color={colorForTool(Tool.SELECT)} />
+        </IconButton>
+      </Tooltip>
+
+      <Divider />
+
       <Tooltip content='Add marker'>
         <IconButton onClick={partial(onToolSelected, Tool.DRAW_POINT)}>
           <LocationOn color={colorForTool(Tool.DRAW_POINT)} />
@@ -74,7 +79,6 @@ const DrawingToolbarPresentation = ({
 DrawingToolbarPresentation.propTypes = {
   onToolSelected: PropTypes.func,
   selectedTool: PropTypes.string,
-  theme: PropTypes.object.isRequired,
 };
 
 /**
@@ -89,6 +93,6 @@ const DrawingToolbar = connect(
       dispatch(selectMapTool(tool));
     },
   })
-)(withTheme(DrawingToolbarPresentation));
+)(DrawingToolbarPresentation);
 
 export default DrawingToolbar;
