@@ -156,9 +156,9 @@ const UAVsTabPresentation = ({
             fullWidth
             name='placementAccuracy'
             label='Desired placement accuracy'
-            min={0.1}
+            min={0.5}
             max={20}
-            step={0.1}
+            step={0.5}
             value={placementAccuracy}
             onChange={onDistanceFieldUpdated}
           />
