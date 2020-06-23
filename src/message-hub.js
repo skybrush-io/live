@@ -7,7 +7,10 @@
 import MessageHub from './flockwave/messages';
 
 import { handleClockInformationMessage } from './model/clocks';
-import { handleConnectionInformationMessage } from './model/connections';
+import {
+  handleConnectionDeletionMessage,
+  handleConnectionInformationMessage,
+} from './model/connections';
 import { handleObjectDeletionMessage } from './model/objects';
 
 import { showNotification } from './features/snackbar/slice';
@@ -31,6 +34,8 @@ const messageHub = new MessageHub();
 
 messageHub.registerNotificationHandlers({
   'CLK-INF': (message) => handleClockInformationMessage(message.body, dispatch),
+  'CONN-DEL': (message) =>
+    handleConnectionDeletionMessage(message.body, dispatch),
   'CONN-INF': (message) =>
     handleConnectionInformationMessage(message.body, dispatch),
   'OBJ-DEL': (message) => handleObjectDeletionMessage(message.body, dispatch),

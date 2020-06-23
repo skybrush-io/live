@@ -6,7 +6,10 @@ import isUndefined from 'lodash-es/isUndefined';
 import mapValues from 'lodash-es/mapValues';
 import omitBy from 'lodash-es/omitBy';
 
-import { updateConnections } from '~/features/connections/slice';
+import {
+  removeConnectionsByIds,
+  updateConnections,
+} from '~/features/connections/slice';
 
 /**
  * Enum containing constants for the various connection states.
@@ -17,6 +20,17 @@ export const ConnectionState = {
   CONNECTED: 'connected',
   DISCONNECTING: 'disconnecting',
 };
+
+/**
+ * Handles a CONN-DEL message from a server and updates the state of the Redux
+ * store appropriately.
+ *
+ * @param  {Object} body  the body of the CONN-DEL message
+ * @param  {function} dispatch  the dispatch function of the Redux store
+ */
+export function handleConnectionDeletionMessage(body, dispatch) {
+  dispatch(removeConnectionsByIds(body.ids));
+}
 
 /**
  * Handles a CONN-INF message from a Skybrush server and updates the

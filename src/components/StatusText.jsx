@@ -74,10 +74,10 @@ const StatusText = ({ children, className, component, status }) => {
 };
 
 StatusText.propTypes = {
-  children: PropTypes.oneOfType(
+  children: PropTypes.oneOfType([
     PropTypes.node,
-    PropTypes.arrayOf(PropTypes.node)
-  ),
+    PropTypes.arrayOf(PropTypes.node),
+  ]),
   className: PropTypes.string,
   component: PropTypes.elementType,
   status: PropTypes.oneOf(Object.values(Status)),

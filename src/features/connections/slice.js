@@ -8,7 +8,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 import { ConnectionState } from '~/model/connections';
-import { clearOrderedCollection } from '~/utils/collections';
+import { clearOrderedCollection, deleteItemsByIds } from '~/utils/collections';
 
 const createDefaultItem = (id) => ({
   id,
@@ -62,6 +62,13 @@ const { actions, reducer } = createSlice({
     },
 
     /**
+     * Removes one or more connections by IDs from the connection list.
+     */
+    removeConnectionsByIds(state, action) {
+      deleteItemsByIds(state, action.payload);
+    },
+
+    /**
      * Updates the status of some connections, given a mapping from connection
      * IDs to their updated states.
      */
@@ -73,6 +80,10 @@ const { actions, reducer } = createSlice({
   },
 });
 
-export const { clearConnectionList, updateConnections } = actions;
+export const {
+  clearConnectionList,
+  removeConnectionsByIds,
+  updateConnections,
+} = actions;
 
 export default reducer;
