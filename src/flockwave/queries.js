@@ -4,6 +4,7 @@
  */
 
 import get from 'lodash-es/get';
+import sortBy from 'lodash-es/sortBy';
 import memoize from 'memoizee';
 
 import { extractResponseForId } from './parsing';
@@ -24,6 +25,46 @@ export async function getConfigurationOfExtension(hub, name) {
   return extractResponseForId(response, name, {
     error: `Failed to retrieve configuration for extension: ${name}`,
   });
+}
+
+/**
+ * Returns the list of RTK data sources.
+ */
+export async function getRTKPresets(hub) {
+  let response;
+
+  response = await hub.sendMessage({ type: 'X-RTK-LIST' });
+  if (response.body && response.body.type === 'X-RTK-LIST') {
+    const rtkSourceIds = get(response, 'body.ids') || [];
+    if (rtkSourceIds.length > 0) {
+      response = await hub.sendMessage({
+        type: 'X-RTK-INF',
+        ids: rtkSourceIds,
+      });
+
+      const presetsById = get(response, 'body.preset') || {};
+      for (const [presetId, preset] of Object.entries(presetsById)) {
+        preset.id = presetId;
+      }
+
+      return sortBy(Object.values(presetsById), ['title', 'id']);
+    }
+  } else {
+    return [];
+  }
+}
+
+/**
+ * Returns the currently selected RTK data source ID.
+ */
+export async function getSelectedRTKPresetId(hub) {
+  const response = await hub.sendMessage({ type: 'X-RTK-SOURCE' });
+
+  if (response.body && response.body.type === 'X-RTK-SOURCE') {
+    return get(response, 'body.id');
+  }
+
+  return null;
 }
 
 /**
@@ -84,6 +125,8 @@ export async function isExtensionLoaded(hub, name) {
 export class QueryHandler {
   _queries = {
     getConfigurationOfExtension,
+    getRTKPresets,
+    getSelectedRTKPresetId,
     getShowConfiguration,
     isExtensionLoaded,
     listExtensions,

@@ -44,6 +44,21 @@ export async function reloadExtension(hub, name) {
 }
 
 /**
+ * Sets the source of the RTK corrections that the server broadcasts to the
+ * connected drones.
+ */
+export async function setRTKCorrectionsSource(hub, presetId) {
+  const response = await hub.sendMessage({
+    type: 'X-RTK-SOURCE',
+    id: presetId,
+  });
+
+  if (response.body.type !== 'ACK-ACK') {
+    throw new Error('Failed to set new RTK correction source');
+  }
+}
+
+/**
  * Sets the configuration of the current drone show on the server.
  */
 export async function setShowConfiguration(hub, config) {
@@ -85,6 +100,7 @@ export class OperationExecutor {
   _operations = {
     configureExtension,
     reloadExtension,
+    setRTKCorrectionsSource,
     setShowConfiguration,
     uploadDroneShow,
   };

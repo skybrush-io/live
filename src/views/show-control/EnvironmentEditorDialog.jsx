@@ -5,11 +5,7 @@ import { connect } from 'react-redux';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
-import FormControl from '@material-ui/core/FormControl';
 import FormGroup from '@material-ui/core/FormGroup';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
 import Typography from '@material-ui/core/Typography';
 
 import {
@@ -23,6 +19,8 @@ import { COORDINATE_SYSTEM_TYPE } from '~/features/show/constants';
 import { closeEnvironmentEditorDialog } from '~/features/show/slice';
 import { showNotification } from '~/features/snackbar/slice';
 import { MessageSemantics } from '~/features/snackbar/types';
+
+import RTKCorrectionSourceSelector from './RTKCorrectionSourceSelector';
 
 const instructionsByType = {
   indoor:
@@ -78,15 +76,7 @@ const EnvironmentEditorDialog = ({
         <Button onClick={onCopyCoordinateSystemToMap}>Copy to map</Button>
       </Box>
 
-      <FormGroup>
-        <FormHeader>RTK corrections</FormHeader>
-        <FormControl style={{ minWidth: 90 }} variant='filled'>
-          <InputLabel htmlFor='rtk-corrections'>Type</InputLabel>
-          <Select disabled value='none' inputProps={{ id: 'rtk-corrections' }}>
-            <MenuItem value='none'>No RTK data source on server</MenuItem>
-          </Select>
-        </FormControl>
-      </FormGroup>
+      <RTKCorrectionSourceSelector />
     </Box>
   </Dialog>
 );
