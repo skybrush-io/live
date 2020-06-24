@@ -418,7 +418,7 @@ export const getUploadProgress = createSelector(
       numberItemsWaitingToStart +
       numberItemsFinished;
     if (total > 0) {
-      const number1 = numberFailedItems + numberItemsFinished;
+      const number1 = numberItemsFinished;
       const number2 = number1 + numberItemsInProgress;
       return [
         Math.round((100 * number1) / total),
@@ -434,3 +434,9 @@ export const getUploadProgress = createSelector(
  * Returns whether we are currently uploading show data to the drones.
  */
 export const isUploadInProgress = (state) => state.show.upload.running;
+
+/**
+ * Returns whether failed uploads should be retried automatically.
+ */
+export const shouldRetryFailedUploadsAutomatically = (state) =>
+  state.show.upload.autoRetry;

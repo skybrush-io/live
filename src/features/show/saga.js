@@ -7,6 +7,7 @@ import { channel } from 'redux-saga';
 import {
   call,
   cancelled,
+  delay,
   fork,
   join,
   put,
@@ -15,12 +16,14 @@ import {
   take,
 } from 'redux-saga/effects';
 
+import { retryFailedUploads } from './actions';
 import {
   getCommonShowSettings,
   getDroneSwarmSpecification,
   getNextDroneFromUploadQueue,
   getOutdoorShowCoordinateSystem,
   isShowAuthorizedToStartLocally,
+  shouldRetryFailedUploadsAutomatically,
 } from './selectors';
 import {
   cancelUpload,
@@ -131,25 +134,25 @@ function* runUploadWorker(chan, failed) {
       if (cancelled() && !outcome) {
         outcome = 'cancelled';
       }
+    }
 
-      switch (outcome) {
-        case 'success':
-          yield put(notifyUploadOnUavSucceeded(uavId));
-          break;
+    switch (outcome) {
+      case 'success':
+        yield put(notifyUploadOnUavSucceeded(uavId));
+        break;
 
-        case 'failure':
-          failed.push(uavId);
-          yield put(notifyUploadOnUavFailed(uavId));
-          break;
+      case 'failure':
+        failed.push(uavId);
+        yield put(notifyUploadOnUavFailed(uavId));
+        break;
 
-        case 'cancelled':
-          yield put(notifyUploadOnUavCancelled(uavId));
-          break;
+      case 'cancelled':
+        yield put(notifyUploadOnUavCancelled(uavId));
+        break;
 
-        default:
-          console.warm('Unknown outcome: ' + outcome);
-          break;
-      }
+      default:
+        console.warm('Unknown outcome: ' + outcome);
+        break;
     }
   }
 }
@@ -158,37 +161,58 @@ function* runUploadWorker(chan, failed) {
  * Saga that handles the uploading of the show to a set of drones.
  */
 function* showUploaderSaga({ numWorkers: numberWorkers = 8 } = {}) {
-  const failed = [];
-  const chan = yield call(channel);
-  const workers = [];
+  let finished = false;
+  let success = false;
 
-  // create a given number of worker tasks, depending on the max concurrency
-  // that we allow for the uploads
-  for (let i = 0; i < numberWorkers; i++) {
-    const worker = yield fork(runUploadWorker, chan, failed);
-    workers.push(worker);
-  }
+  while (!finished) {
+    const failed = [];
+    const chan = yield call(channel);
+    const workers = [];
 
-  // feed the workers with upload jobs
-  while (true) {
-    const uavId = yield select(getNextDroneFromUploadQueue);
-    if (isNil(uavId)) {
-      break;
+    // create a given number of worker tasks, depending on the max concurrency
+    // that we allow for the uploads
+    for (let i = 0; i < numberWorkers; i++) {
+      const worker = yield fork(runUploadWorker, chan, failed);
+      workers.push(worker);
     }
 
-    yield put(notifyUploadOnUavQueued(uavId));
-    yield put(chan, uavId);
+    // feed the workers with upload jobs
+    while (true) {
+      const uavId = yield select(getNextDroneFromUploadQueue);
+      if (isNil(uavId)) {
+        break;
+      }
+
+      yield put(notifyUploadOnUavQueued(uavId));
+      yield put(chan, uavId);
+    }
+
+    // send the stop signal to the workers
+    for (let i = 0; i < numberWorkers; i++) {
+      yield put(chan, STOP);
+    }
+
+    // wait for all workers to terminate
+    yield join(workers);
+
+    // shall we retry failed downloads?
+    const hasFailures = failed.length !== 0;
+    if (hasFailures) {
+      const shouldRetry = yield select(shouldRetryFailedUploadsAutomatically);
+      if (shouldRetry) {
+        yield delay(500);
+        yield put(retryFailedUploads());
+      } else {
+        finished = true;
+        success = false;
+      }
+    } else {
+      finished = true;
+      success = true;
+    }
   }
 
-  // send the stop signal to the workers
-  for (let i = 0; i < numberWorkers; i++) {
-    yield put(chan, STOP);
-  }
-
-  // wait for all workers to terminate
-  yield join(workers);
-
-  return failed.length === 0;
+  return success;
 }
 
 /**

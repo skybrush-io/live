@@ -56,6 +56,5 @@ export function handleConnectionInformationMessage(body, dispatch) {
       isUndefined
     )
   );
-  console.log('CONN-INF', JSON.stringify(states));
   dispatch(updateConnections(states));
 }

@@ -85,6 +85,7 @@ const { actions, reducer } = createSlice({
     },
 
     upload: {
+      autoRetry: false,
       failedItems: [],
       lastUploadResult: null,
       running: false,
@@ -392,6 +393,10 @@ const { actions, reducer } = createSlice({
       }
     },
 
+    setUploadAutoRetry(state, action) {
+      state.upload.autoRetry = Boolean(action.payload);
+    },
+
     setUploadTarget(state, action) {
       state.uploadDialog.uploadTarget = action.payload;
     },
@@ -461,6 +466,7 @@ export const {
   setStartMethod,
   setStartTime,
   setUAVIdsToStartAutomatically,
+  setUploadAutoRetry,
   setUploadTarget,
   signOffOnManualPreflightChecksAt,
   signOffOnOnboardPreflightChecksAt,

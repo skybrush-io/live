@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
+import Checkbox from '@material-ui/core/Checkbox';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -29,6 +30,7 @@ import { retryFailedUploads } from '~/features/show/actions';
 import {
   getItemsInUploadBacklog,
   getNumberOfDronesInShow,
+  shouldRetryFailedUploadsAutomatically,
 } from '~/features/show/selectors';
 import {
   cancelUpload,
@@ -36,6 +38,7 @@ import {
   closeUploadDialog,
   dismissLastUploadResult,
   prepareForNextUpload,
+  setUploadAutoRetry,
   setUploadTarget,
   startUpload,
 } from '~/features/show/slice';
@@ -113,6 +116,7 @@ const useStyles = makeStyles((theme) => ({
  * trajectories and light programs to the drones.
  */
 const UploadDialog = ({
+  autoRetry,
   canStartUpload,
   failedItems,
   itemsInProgress,
@@ -125,6 +129,7 @@ const UploadDialog = ({
   onDismissLastUploadResult,
   onRetryFailedUploads,
   onStartUpload,
+  onToggleAutoRetry,
   itemsInBacklog,
   itemsWaitingToStart,
   running,
@@ -185,7 +190,15 @@ const UploadDialog = ({
         <Box mt={1}>
           <UploadProgressBar />
         </Box>
-        <Fade in={showLastUploadResult}>
+        <Box mt={1}>
+          <FormControlLabel
+            control={
+              <Checkbox checked={autoRetry} onChange={onToggleAutoRetry} />
+            }
+            label='Retry failed uploads automatically'
+          />
+        </Box>
+        <Fade in={lastUploadResult && showLastUploadResult}>
           <UploadResultIndicator
             className={classes.uploadResultIndicator}
             result={lastUploadResult}
@@ -217,6 +230,7 @@ const UploadDialog = ({
 };
 
 UploadDialog.propTypes = {
+  autoRetry: PropTypes.bool,
   canStartUpload: PropTypes.bool,
   failedItems: PropTypes.arrayOf(PropTypes.string),
   itemsInProgress: PropTypes.arrayOf(PropTypes.string),
@@ -228,6 +242,7 @@ UploadDialog.propTypes = {
   onDismissLastUploadResult: PropTypes.func,
   onRetryFailedUploads: PropTypes.func,
   onStartUpload: PropTypes.func,
+  onToggleAutoRetry: PropTypes.func,
   open: PropTypes.bool,
   itemsInBacklog: PropTypes.arrayOf(PropTypes.string),
   itemsWaitingToStart: PropTypes.arrayOf(PropTypes.string),
@@ -252,6 +267,7 @@ export default connect(
   (state) => ({
     ...state.show.uploadDialog,
     ...state.show.upload,
+    autoRetry: shouldRetryFailedUploadsAutomatically(state),
     canStartUpload: getNumberOfDronesInShow(state) > 0,
     itemsInBacklog: getItemsInUploadBacklog(state),
     selectedUAVIds: getSelectedUAVIds(state),
@@ -287,6 +303,11 @@ export default connect(
       if (canStart) {
         dispatch(startUpload());
       }
+    },
+    onToggleAutoRetry: () => (dispatch, getState) => {
+      const state = getState();
+      const autoRetry = shouldRetryFailedUploadsAutomatically(state);
+      dispatch(setUploadAutoRetry(!autoRetry));
     },
   }
 )(UploadDialog);
