@@ -123,6 +123,14 @@ export const moveUAVs = performMassOperation({
   }),
 });
 
+export const turnMotorOnForUAVs = performMassOperation({
+  type: 'UAV-MOTOR',
+  name: 'Motor on command',
+  mapper: () => ({
+    start: true,
+  }),
+});
+
 export const createSelectionRelatedActions = (selectedUAVIds) => ({
   flashLightOnSelectedUAVs: () => {
     flashLightOnSelectedUAVs(selectedUAVIds);
@@ -149,6 +157,6 @@ export const createSelectionRelatedActions = (selectedUAVIds) => ({
   },
 
   turnMotorsOnForSelectedUAVs: () => {
-    console.warn('Not implemented yet');
+    turnMotorOnForUAVs(selectedUAVIds);
   },
 });
