@@ -33,7 +33,7 @@ const AuthorizationButton = ({
 }) => (
   <ListItem
     button
-    disabled={!isAuthorized && status === Status.OFF}
+    /* disabled={!isAuthorized && status === Status.OFF} */
     selected={isAuthorized}
     {...rest}
   >
