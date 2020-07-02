@@ -1,4 +1,19 @@
 /**
+ * Formats a duration as hours:minutes.
+ */
+export function formatDuration(duration) {
+  duration = Math.round(duration);
+
+  const minutes = Math.floor(duration / 60);
+  let seconds = String(Math.floor(duration) % 60);
+  if (seconds.length < 2) {
+    seconds = '0' + seconds;
+  }
+
+  return `${minutes}:${seconds}`;
+}
+
+/**
  * Formats a mission-specific ID in a consistent manner that is to be used
  * everywhere throughout the UI.
  */

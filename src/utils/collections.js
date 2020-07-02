@@ -56,6 +56,18 @@ const storeId = (idStore, id) => {
 };
 
 /**
+ * Custom error class that is thrown when we try to add an item to a collection
+ * and another item with the same ID already exists.
+ */
+class ItemExistsError extends Error {
+  constructor(id, message = 'An item with the same ID already exists') {
+    super(message);
+    this.name = 'ItemExistsError';
+    this.id = id;
+  }
+}
+
+/**
  * Ensures that the given item has an ID property.
  *
  * If the item has no ID property yet, but it has a name instead, an ID will
@@ -75,7 +87,7 @@ const ensureItemHasValidId = (collection, item) => {
 
     item.id = chooseUniqueIdFromName(item.name, collection);
   } else if (has(collection.byId, item.id)) {
-    throw new Error('An item with the same ID already exists');
+    throw new ItemExistsError(item.id);
   }
 };
 
@@ -123,6 +135,59 @@ export const addItemAt = (collection, item, index) => {
 
 /**
  * Helper function that receives an item to be added to a collection, and
+ * adds it to the collection at the given index, unless an item with the
+ * same ID already exists, in which case this function is a no-op.
+ *
+ * When the index is negative or zero, the item will be added at the front.
+ *
+ * When the item is larger than or equal to the length of the collection, the
+ * item will be added at the back.
+ *
+ * The item should already have an assigned `id` property. If there is no such
+ * property, or it is equal to the special "new item" value, a new ID will be
+ * generated based on the `name` property of the item. If there is no `name`
+ * property either, an error will be thrown.
+ *
+ * @param  {Object}   collection  the ordered collection to add the item to
+ * @param  {Object}   item   the item to add
+ * @param  {number}   index  the index to add the given item at
+ */
+export const addItemUnlessExistsAt = (collection, item, index) => {
+  try {
+    return addItemAt(collection, item, index);
+  } catch (error) {
+    if (error instanceof ItemExistsError) {
+      /* this is okay */
+    }
+  }
+};
+
+/**
+ * Returns the index where a given item should be inserted in a collection to
+ * keep the collection sorted by the given key.
+ *
+ * @param  {Object}   collection  the ordered collection to add the item to
+ * @param  {Object}   item  the item to add
+ * @param  {function|string} key   a function that can be called with a
+ *         single item and that returns a value that is used to compare items,
+ *         or the name of a single property that is used as a sorting key
+ * @return {number}   the insertion index
+ */
+function getInsertionIndexForSortedCollection(collection, item, key = 'id') {
+  if (key === 'id') {
+    /* shortcut for the common case */
+    return sortedIndex(collection.order, item.id);
+  }
+
+  const getter = typeof key === 'string' ? property(key) : key;
+  return sortedIndexBy(collection.order, item.id, (id) => {
+    const existingItem = collection.byId[id];
+    return existingItem === undefined ? getter(item) : getter(existingItem);
+  });
+}
+
+/**
+ * Helper function that receives an item to be added to a collection, and
  * adds it to the collection based on a sorting key function.
  *
  * It is assumed that the collection is already sorted based on the sorting
@@ -143,20 +208,32 @@ export const addItemAt = (collection, item, index) => {
  *         or the name of a single property that is used as a sorting key
  */
 export const addItemSorted = (collection, item, key = 'id') => {
-  let index;
-
-  if (key === 'id') {
-    /* shortcut for the common case */
-    index = sortedIndex(collection.order, item.id);
-  } else {
-    const getter = typeof key === 'string' ? property(key) : key;
-    index = sortedIndexBy(collection.order, item.id, (id) => {
-      const existingItem = collection.byId[id];
-      return existingItem === undefined ? getter(item) : getter(existingItem);
-    });
-  }
-
+  const index = getInsertionIndexForSortedCollection(collection, item, key);
   return addItemAt(collection, item, index);
+};
+
+/**
+ * Helper function that receives an item to be added to a collection, and
+ * adds it to the collection based on a sorting key function, unless an item
+ * is already in the collection, in which case this function is a no-op.
+ *
+ * It is assumed that the collection is already sorted based on the sorting
+ * key function.
+ *
+ * The item should already have an assigned `id` property. If there is no such
+ * property, or it is equal to the special "new item" value, a new ID will be
+ * generated based on the `name` property of the item. If there is no `name`
+ * property either, an error will be thrown.
+ *
+ * @param  {Object}   collection  the ordered collection to add the item to
+ * @param  {Object}   item  the item to add
+ * @param  {function|string} key   a function that can be called with a
+ *         single item and that returns a value that is used to compare items,
+ *         or the name of a single property that is used as a sorting key
+ */
+export const addItemSortedUnlessExists = (collection, item, key = 'id') => {
+  const index = getInsertionIndexForSortedCollection(collection, item, key);
+  return addItemUnlessExistsAt(collection, item, index);
 };
 
 /**

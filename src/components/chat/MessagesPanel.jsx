@@ -24,6 +24,7 @@ import {
   addInboundMessage,
   addOutboundMessageToSelectedUAV,
   addErrorMessageInMessagesDialog,
+  selectUAVInMessagesDialog,
 } from '~/actions/messages';
 import { formatCommandResponseAsHTML } from '~/flockwave/formatting';
 import { parseCommandFromString } from '~/flockwave/messages';
@@ -126,15 +127,42 @@ ChatAreaBackgroundHint.propTypes = {
 };
 
 /**
+ * Component that shows the UAV that the messaging panel is currently targeting
+ * with messages and that allows the user to change the selection.
+ */
+const MessageRecipientField = connect(
+  // mapStateToProps
+  (state) => ({
+    commitWhenInvalid: true,
+    initialValue: state.messages.selectedUAVId,
+    value: state.messages.selectedUAVId || '',
+  }),
+
+  // mapDispatchToProps
+  (dispatch) => ({
+    onValueChanged(value) {
+      dispatch(
+        selectUAVInMessagesDialog(value && value.length > 0 ? value : null)
+      );
+    },
+  }),
+
+  // mergeProps
+  null,
+
+  // options
+  { forwardRef: true }
+)(ActiveUAVsField);
+
+/**
  * Presentation component for the "Messages" panel, containing a text field
  * to type the messages into, and a target UAV selector.
  */
-class MessagesPanelPresentation extends React.Component {
+class MessagesPanel extends React.Component {
   static propTypes = {
     chatEntries: PropTypes.arrayOf(PropTypes.object),
     flock: PropTypes.instanceOf(Flock),
     onSend: PropTypes.func,
-    selectedUAVId: PropTypes.string,
     style: PropTypes.object,
     textFieldPlacement: PropTypes.oneOf(['bottom', 'top']),
   };
@@ -167,13 +195,7 @@ class MessagesPanelPresentation extends React.Component {
   }
 
   render() {
-    const {
-      chatEntries,
-      flock,
-      selectedUAVId,
-      style,
-      textFieldPlacement,
-    } = this.props;
+    const { chatEntries, flock, style, textFieldPlacement } = this.props;
     const chatComponents = flatMap(chatEntries, convertMessageToComponent);
     const contentStyle = {
       display: 'flex',
@@ -201,12 +223,10 @@ class MessagesPanelPresentation extends React.Component {
         pt={1}
         px={2}
       >
-        <ActiveUAVsField
-          commitWhenInvalid
-          initialValue={selectedUAVId}
+        <MessageRecipientField
+          flock={flock}
           inputRef={this._uavSelectorFieldRef}
           style={{ width: '8em', paddingRight: '1em' }}
-          flock={flock}
         />
         <TextField
           autoFocus
@@ -249,11 +269,10 @@ class MessagesPanelPresentation extends React.Component {
 /**
  * Messages panel container component to bind it to the Redux store.
  */
-const MessagesPanel = connect(
+export default connect(
   // mapStateToProps
   (state) => ({
     chatEntries: selectMessagesOfSelectedUAVInOrder(state),
-    selectedUAVId: state.messages.selectedUAVId,
   }),
 
   // mapDispatchToProps
@@ -296,6 +315,4 @@ const MessagesPanel = connect(
 
   // ref is needed because we want to access the scrollToBottom() method
   // from the outside
-)(MessagesPanelPresentation);
-
-export default MessagesPanel;
+)(MessagesPanel);

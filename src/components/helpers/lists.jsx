@@ -86,7 +86,7 @@ export function listOf(itemRenderer, options = {}) {
 
 /**
  * Creates a selection event handler factory that encapsulates the common
- * login for selection handling in lists.
+ * logic for selection handling in lists.
  *
  * This function takes two functions as inputs: one that returns the current
  * selection in a list, and another one that sets the selection in the list.

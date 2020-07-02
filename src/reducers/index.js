@@ -12,6 +12,7 @@ import docksReducer from '~/features/docks/slice';
 import lcdClockReducer from '~/features/lcd-clock/slice';
 import localServerReducer from '~/features/local-server/slice';
 import logReducer from '~/features/log/slice';
+import measurementReducer from '~/features/measurement/slice';
 import missionReducer from '~/features/mission/slice';
 import preflightReducer from '~/features/preflight/slice';
 import savedLocationsReducer from '~/features/saved-locations/slice';
@@ -40,6 +41,7 @@ const reducer = combineReducers({
   localServer: localServerReducer,
   log: logReducer,
   map: mapReducer,
+  measurement: measurementReducer,
   messages: messagesReducer,
   mission: missionReducer,
   preflight: preflightReducer,

@@ -14,6 +14,7 @@ import ConnectionStatusButton from './ConnectionStatusButton';
 import FullScreenButton from './FullScreenButton';
 import HelpButton from './HelpButton';
 import ServerConnectionSettingsButton from './ServerConnectionSettingsButton';
+import ToolboxButton from './ToolboxButton';
 
 import UAVStatusSummary from '../uavs/UAVStatusSummary';
 
@@ -83,6 +84,7 @@ const Header = ({ isSidebarOpen, sessionExpiresAt, toggleSidebar }) => (
       <ServerConnectionSettingsButton />
       <AuthenticationButton />
       <hr />
+      <ToolboxButton />
       <AppSettingsButton />
       {config.urls.help ? <HelpButton /> : null}
       {window.isElectron ? null : <FullScreenButton />}

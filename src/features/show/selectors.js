@@ -6,6 +6,7 @@ import maxBy from 'lodash-es/maxBy';
 
 import { createSelector } from '@reduxjs/toolkit';
 
+import { formatDuration } from '~/utils/formatting';
 import { FlatEarthCoordinateSystem } from '~/utils/geography';
 
 /**
@@ -275,15 +276,7 @@ export const getShowDuration = createSelector(
  */
 export const getShowDurationAsString = createSelector(
   getShowDuration,
-  (duration) => {
-    const minutes = Math.floor(duration / 60);
-    let seconds = String(Math.floor(duration) % 60);
-    if (seconds.length < 2) {
-      seconds = '0' + seconds;
-    }
-
-    return `${minutes}:${seconds}`;
-  }
+  formatDuration
 );
 
 /**

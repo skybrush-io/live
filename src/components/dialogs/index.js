@@ -1,5 +1,6 @@
 import AppSettingsDialog from './app-settings';
 import AuthenticationDialog from './AuthenticationDialog';
+import CoordinateAveragingDialog from './coordinate-averaging';
 import DeauthenticationDialog from './DeauthenticationDialog';
 import FeatureEditorDialog from './FeatureEditorDialog';
 import GlobalErrorDialog from './GlobalErrorDialog';
@@ -11,9 +12,10 @@ import ServerSettingsDialog from './ServerSettingsDialog';
 import SessionExpiryDialog from './SessionExpiryDialog';
 import SubscriptionDialog from './SubscriptionDialog';
 
-export default {
+const dialogs = {
   AppSettingsDialog,
   AuthenticationDialog,
+  CoordinateAveragingDialog,
   DeauthenticationDialog,
   FeatureEditorDialog,
   GlobalErrorDialog,
@@ -25,3 +27,5 @@ export default {
   SessionExpiryDialog,
   SubscriptionDialog,
 };
+
+export default dialogs;

@@ -104,6 +104,7 @@ const App = () => {
 
                 <dialogs.AppSettingsDialog />
                 <dialogs.AuthenticationDialog />
+                <dialogs.CoordinateAveragingDialog />
                 <dialogs.DeauthenticationDialog />
                 <dialogs.FeatureEditorDialog />
                 <dialogs.GlobalErrorDialog />

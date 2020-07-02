@@ -14,22 +14,11 @@ import { WorkbenchBuilder } from 'react-flexible-workbench';
 import BackgroundHint from './components/BackgroundHint';
 import MessagesPanel from './components/chat/MessagesPanel';
 import { saveWorkbenchState } from './features/workbench/slice';
-import { Flock } from './flock';
+import { injectFlockFromContext } from './flock';
 import store from './store';
 import views from './views';
 
 require('../assets/css/workbench.less');
-
-/**
- * Higher order component that propagates the flock passed in the context
- * as props into the wrapped component.
- */
-const injectFlockFromContext = (BaseComponent) =>
-  React.forwardRef((props, ref) => (
-    <Flock.Consumer>
-      {(flock) => <BaseComponent {...props} ref={ref} flock={flock} />}
-    </Flock.Consumer>
-  ));
 
 const Nothing = () => null;
 

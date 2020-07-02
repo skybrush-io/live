@@ -22,10 +22,11 @@ import {
   createFilter,
 } from 'redux-persist-transform-filter';
 
-import { loadingPromiseFulfilled } from '../features/show/slice';
-import { updateAgesOfUAVs, updateUAVs } from '../features/uavs/slice';
-import { saveWorkbenchState } from '../features/workbench/slice';
-import reducer from '../reducers';
+import { updateAveragingByIds } from '~/features/measurement/slice';
+import { loadingPromiseFulfilled } from '~/features/show/slice';
+import { updateAgesOfUAVs, updateUAVs } from '~/features/uavs/slice';
+import { saveWorkbenchState } from '~/features/workbench/slice';
+import reducer from '~/reducers';
 
 import { defaultStateReconciler, pristineReconciler } from './reconciler';
 
@@ -72,6 +73,10 @@ const persistConfig = {
       'savedLocationEditor',
       'serverSettings',
     ]),
+
+    // We do not wish to store the state of the measurements, only the state
+    // of the measurement dialogs
+    // createFilter('measurement', ['averagingDialog']),
 
     // We do not wish to save which preflight checks the user has ticked off
     createBlacklistFilter('preflight', ['checked']),
@@ -162,7 +167,11 @@ const store = configureStore({
     process.env.NODE_ENV === 'production'
       ? false
       : {
-          actionsBlacklist: [updateUAVs.type, updateAgesOfUAVs.type],
+          actionsBlacklist: [
+            updateAveragingByIds.type,
+            updateUAVs.type,
+            updateAgesOfUAVs.type,
+          ],
 
           // make sure that the show object that we load is not cached / tracked by
           // the Redux devtools

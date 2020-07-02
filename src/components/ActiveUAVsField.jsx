@@ -5,10 +5,10 @@
 
 import PropTypes from 'prop-types';
 import React from 'react';
-import { connect } from 'react-redux';
 
-import { selectUAVInMessagesDialog } from '../actions/messages';
-import Flock from '../model/flock';
+import { injectFlockFromContext } from '~/flock';
+import Flock from '~/model/flock';
+
 import { AutoComplete } from './AutoComplete';
 
 /**
@@ -97,7 +97,7 @@ export class UAVSelectorField extends React.Component {
  * such that the set of UAV IDs accepted by the field is always updated from
  * the flock when a new UAV appears or a UAV leaves the flock.
  */
-export class ActiveUAVsFieldPresentation extends React.Component {
+class ActiveUAVsField extends React.Component {
   static propTypes = {
     ...UAVSelectorField.propTypes,
 
@@ -193,21 +193,4 @@ export class ActiveUAVsFieldPresentation extends React.Component {
   }
 }
 
-/**
- * Smart component that binds an ActiveUAVsFieldPresentation component to
- * the Redux store.
- */
-const ActiveUAVsField = connect(
-  // stateToProps
-  (state) => ({
-    value: state.messages.selectedUAVId || '',
-  }),
-  // dispatchToProps
-  (dispatch) => ({
-    onValueChanged(value) {
-      dispatch(selectUAVInMessagesDialog(value && value.length > 0 ? value : null));
-    },
-  })
-)(ActiveUAVsFieldPresentation);
-
-export default ActiveUAVsField;
+export default injectFlockFromContext(ActiveUAVsField);

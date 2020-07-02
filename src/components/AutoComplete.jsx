@@ -34,6 +34,7 @@ export class AutoComplete extends React.Component {
     autoFocus: PropTypes.bool,
     commitWhenInvalid: PropTypes.bool,
     fetchSuggestions: PropTypes.func,
+    hideErrorMessage: PropTypes.bool,
     getSuggestionLabel: PropTypes.func,
     getSuggestionValue: PropTypes.func,
     highlightFirstSuggestion: PropTypes.bool,
@@ -44,6 +45,7 @@ export class AutoComplete extends React.Component {
       PropTypes.func,
       PropTypes.shape({ current: PropTypes.any }),
     ]),
+    onKeyDown: PropTypes.func,
     onValueCommitted: PropTypes.func,
     placeholder: PropTypes.string,
     style: PropTypes.object,
@@ -130,9 +132,8 @@ export class AutoComplete extends React.Component {
       method === 'down' ||
       method === 'up'
     ) {
-      const isFinalized = (method === 'enter' || method === 'click');
+      const isFinalized = method === 'enter' || method === 'click';
       const isValid = this.validate(newValue);
-      const shouldCommit = isFinalized && this.validate(newValue);
       if (isFinalized) {
         if (isValid) {
           this._commitValue(newValue);
@@ -163,13 +164,13 @@ export class AutoComplete extends React.Component {
     const label = getSuggestionLabel(suggestion);
     /* eslint-disable react/no-array-index-key */
     const fragments = highlightMatches
-      ? parse(label, match(label, query)).map((part, index) => (
+      ? parse(label, match(label, query)).map((part, index) =>
           part.highlight ? (
             <mark key={index}>{part.text}</mark>
           ) : (
             <span key={index}>{part.text}</span>
           )
-        ))
+        )
       : label;
     /* eslint-enable react/no-array-index-key */
 
@@ -206,10 +207,13 @@ export class AutoComplete extends React.Component {
     const {
       autoFocus,
       getSuggestionValue,
+      hideErrorMessage,
       highlightFirstSuggestion,
       label,
+      onKeyDown,
       placeholder,
       style,
+      ...rest
     } = this.props;
     const { error, suggestions, value } = this.state;
 
@@ -224,9 +228,10 @@ export class AutoComplete extends React.Component {
           value,
           error: Boolean(error),
           inputRef: this._assignInputRef,
-          label: error || label,
+          label: error && !hideErrorMessage ? error : label,
           onBlur: this._onBlur,
           onChange: this._onValueChanged,
+          onKeyDown,
         }}
         renderInputComponent={this._renderInput}
         renderSuggestion={this._renderSuggestion}
@@ -234,6 +239,7 @@ export class AutoComplete extends React.Component {
         suggestions={suggestions}
         onSuggestionsFetchRequested={this._onSuggestionsFetchRequested}
         onSuggestionsClearRequested={this._onSuggestionsClearRequested}
+        {...rest}
       />
     );
   }
