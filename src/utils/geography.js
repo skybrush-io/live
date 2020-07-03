@@ -15,6 +15,45 @@ import * as Projection from 'ol/proj';
 import { toDegrees, toRadians } from '~/utils/math';
 
 /**
+ * Returns the (initial) bearing when going from one point to another on a
+ * sphere along a great circle.
+ *
+ * The spherical coordinates must be specified in degrees, in longitude-latitude
+ * order.
+ *
+ * @param  {number[]}  first   the first point
+ * @param  {number[]}  second  the second point
+ * @return the bearing, in degrees, in the [0; 360) range.
+ */
+export function bearing(first, second) {
+  const lonDiff = toRadians(second[0] - first[0]);
+  const firstLatRadians = toRadians(first[1]);
+  const secondLatRadians = toRadians(second[1]);
+  const y = Math.sin(lonDiff) * Math.cos(secondLatRadians);
+  const x =
+    Math.cos(firstLatRadians) * Math.sin(secondLatRadians) -
+    Math.sin(firstLatRadians) * Math.cos(secondLatRadians) * Math.cos(lonDiff);
+  const theta = Math.atan2(y, x);
+  return ((theta * 180) / Math.PI + 360) % 360;
+}
+
+/**
+ * Returns the final earing when going from one point to another on a
+ * sphere along a great circle.
+ *
+ * The spherical coordinates must be specified in degrees, in longitude-latitude
+ * order.
+ *
+ * @param  {number[]}  first   the first point
+ * @param  {number[]}  second  the second point
+ * @return the bearing, in degrees, in the [0; 360) range.
+ */
+export function finalBearing(first, second) {
+  const angle = bearing(second, first);
+  return (angle + 180) % 360;
+}
+
+/**
  * Creates an OpenLayers geometry function used by the "draw" interaction
  * to draw a box whose sides are parallel to axes obtained by rotating the
  * principal axes with the given angle.

@@ -140,7 +140,11 @@ const MeasurementListItem = ({
 
   if (numSamples <= 0) {
     primaryText = 'Waiting for samples…';
-    secondaryText = 'No samples yet';
+    secondaryText = (
+      <div className={clsx(classes.dim, classes.secondaryContainer)}>
+        No samples yet
+      </div>
+    );
   } else {
     primaryText = (
       <div className={classes.primaryContainer}>
@@ -160,30 +164,22 @@ const MeasurementListItem = ({
       </div>
     );
 
-    if (numSamples === 1) {
-      secondaryText = 'Single sample';
-    } else {
-      secondaryText = (
-        <div className={classes.secondaryContainer}>
-          <div className={classes.latLonCoordinatesColumn}>
-            {formatStdDevInXYPlane(mean, sqDiff, numSamples)}
-            {'m '}
-            <span className={classes.dim}>std.dev. in XY</span>
-          </div>
-          <div className={clsx(classes.dim, classes.amslColumn)}>
-            {numSamples} samples
-          </div>
-          <div className={clsx(classes.dim, classes.aglColumn)}>
-            Duration:{' '}
-            {formatDurationOfSampling(
-              startedAt,
-              lastSampleAt,
-              extraSamplingTime
-            )}
-          </div>
+    secondaryText = (
+      <div className={classes.secondaryContainer}>
+        <div className={classes.latLonCoordinatesColumn}>
+          {formatStdDevInXYPlane(mean, sqDiff, numSamples)}
+          {'m '}
+          <span className={classes.dim}>std.dev. in XY</span>
         </div>
-      );
-    }
+        <div className={clsx(classes.dim, classes.amslColumn)}>
+          {numSamples} samples
+        </div>
+        <div className={clsx(classes.dim, classes.aglColumn)}>
+          Duration:{' '}
+          {formatDurationOfSampling(startedAt, lastSampleAt, extraSamplingTime)}
+        </div>
+      </div>
+    );
   }
 
   return (

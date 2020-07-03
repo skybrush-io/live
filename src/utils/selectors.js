@@ -13,5 +13,3 @@ export const createShallowSelector = createSelectorCreator(
   defaultMemoize,
   shallowEqual
 );
-
-console.log(createShallowSelector, shallowEqual);

@@ -39,11 +39,18 @@ export const getAveragingMeasurements = createSelector(
 );
 
 /**
+ * Selector that returns a mapping that maps UAV IDs to the corresponding
+ * averaging measurements.
+ */
+export const getAveragingMeasurementsById = (state) =>
+  state.measurement.averagingResults.byId;
+
+/**
  * Selector that returns the centroid of the averaged coordinates of the
  * given list of UAV IDs, or undefined if the list is empty.
  */
 export const getAveragedCentroidOfUAVsById = (state, uavIds) => {
-  const measurements = state.measurement.averagingResults.byId;
+  const measurements = getAveragingMeasurementsById(state);
   const lats = [];
   const lons = [];
 
@@ -88,7 +95,7 @@ export const hasActiveOrPausedAveragingMeasurements = createSelector(
  */
 export const hasActiveAveragingMeasurements = createSelector(
   getAllUAVIdsCurrentlyBeingAveragedEvenIfPaused,
-  (state) => state.measurement.averagingResults.byId,
+  getAveragingMeasurementsById,
   (uavIds, measurementsById) => {
     for (const uavId of uavIds) {
       if (

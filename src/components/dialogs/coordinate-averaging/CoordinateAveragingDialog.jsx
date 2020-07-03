@@ -7,6 +7,7 @@ import Dialog from '@material-ui/core/Dialog';
 
 import { closeAveragingDialog } from '~/features/measurement/slice';
 
+import BearingCalculator from './BearingCalculator';
 import CoordinateAveragingDialogToolbar from './CoordinateAveragingDialogToolbar';
 import MeasurementList from './MeasurementList';
 
@@ -34,6 +35,9 @@ const CoordinateAveragingDialog = ({ onClose, open }) => (
         <BackgroundHint text='Map component goes here' />
       </Box>
       */}
+    </Box>
+    <Box className='bottom-bar' textAlign='center' py={1}>
+      <BearingCalculator />
     </Box>
   </Dialog>
 );
