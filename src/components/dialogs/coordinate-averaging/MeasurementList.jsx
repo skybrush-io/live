@@ -6,8 +6,6 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 
-import Avatar from '@material-ui/core/Avatar';
-import Badge from '@material-ui/core/Badge';
 import IconButton from '@material-ui/core/IconButton';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
@@ -16,6 +14,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import { makeStyles } from '@material-ui/core/styles';
 
 import BackgroundHint from '~/components/BackgroundHint';
+import DroneAvatar from '~/views/uavs/DroneAvatar';
 import Tooltip from '~/components/Tooltip';
 import Colors from '~/components/colors';
 import { multiSelectableListOf } from '~/components/helpers/lists';
@@ -70,6 +69,10 @@ const useStyles = makeStyles(
   (theme) => ({
     root: {
       fontVariantNumeric: 'lining-nums tabular-nums',
+
+      '&>div:first-child>div:first-child': {
+        maxWidth: 44 /* used to ensure that the cross looks nice when not sampling */,
+      },
     },
 
     dim: {
@@ -186,18 +189,7 @@ const MeasurementListItem = ({
   return (
     <ListItem button {...rest} className={classes.root}>
       <ListItemAvatar>
-        <Badge
-          overlap='circle'
-          invisible={sampling}
-          badgeContent='■'
-          color='error'
-        >
-          <Avatar
-            className={clsx(classes.avatar, sampling && classes.sampling)}
-          >
-            {id}
-          </Avatar>
-        </Badge>
+        <DroneAvatar id={id} variant='minimal' crossed={!sampling} />
       </ListItemAvatar>
       <ListItemText
         disableTypography

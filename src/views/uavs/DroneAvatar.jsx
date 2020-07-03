@@ -134,7 +134,7 @@ const useStyles = makeStyles(
 /**
  * Avatar that represents a single drone.
  */
-const DroneAvatar = ({
+const DroneAvatarPresentation = ({
   batteryStatus,
   hint,
   crossed,
@@ -154,15 +154,12 @@ const DroneAvatar = ({
     status = Status.SUCCESS;
   }
 
+  const effectiveHint =
+    hint === undefined ? (label === undefined || label === id ? '' : id) : hint;
+
   return (
     <>
-      <div className={classes.hint}>
-        {hint === undefined
-          ? label === undefined || label === id
-            ? ''
-            : id
-          : hint}
-      </div>
+      {effectiveHint && <div className={classes.hint}>{effectiveHint}</div>}
       <div className={clsx(classes.avatarWrapper, crossed && 'crossed')}>
         <Avatar
           className={clsx(
@@ -190,9 +187,9 @@ const DroneAvatar = ({
   );
 };
 
-DroneAvatar.propTypes = {
+DroneAvatarPresentation.propTypes = {
   batteryStatus: PropTypes.shape({
-    votlage: PropTypes.number,
+    voltage: PropTypes.number,
     percentage: PropTypes.number,
   }),
   hint: PropTypes.string,
@@ -233,21 +230,40 @@ DroneAvatar.propTypes = {
   ]),
 };
 
-DroneAvatar.defaultProps = {
+DroneAvatarPresentation.defaultProps = {
   status: 'off',
   textSemantics: 'info',
 };
 
-export default connect(
+const DroneAvatar = connect(
   // mapStateToProps
   () => {
     const statusSummarySelector = createSingleUAVStatusSummarySelector();
     return (state, ownProps) => {
       const uav = state.uavs.byId[ownProps.id];
-      return {
-        batteryStatus: uav ? uav.battery : undefined,
+      const props = {
         ...statusSummarySelector(state, ownProps.id),
       };
+
+      if (ownProps.variant === 'full') {
+        props.batteryStatus = uav ? uav.battery : undefined;
+      } else {
+        delete props.text;
+        delete props.details;
+      }
+
+      return props;
     };
   }
-)(DroneAvatar);
+)(DroneAvatarPresentation);
+
+DroneAvatar.propTypes = {
+  id: PropTypes.string,
+  variant: PropTypes.oneOf(['full', 'minimal']),
+};
+
+DroneAvatar.defaultProps = {
+  variant: 'full',
+};
+
+export default DroneAvatar;

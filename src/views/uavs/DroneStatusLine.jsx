@@ -187,7 +187,7 @@ const DroneStatusLine = ({
 
 DroneStatusLine.propTypes = {
   batteryStatus: PropTypes.shape({
-    votlage: PropTypes.number,
+    voltage: PropTypes.number,
     percentage: PropTypes.number,
   }),
   color: PropTypes.string,
