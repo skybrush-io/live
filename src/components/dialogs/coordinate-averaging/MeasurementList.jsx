@@ -1,6 +1,7 @@
 import clsx from 'clsx';
 import identity from 'lodash-es/identity';
 import isNil from 'lodash-es/isNil';
+import { getDistance as haversineDistance } from 'ol/sphere';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
@@ -30,15 +31,40 @@ import ContentCopy from '~/icons/ContentCopy';
 import { getPreferredCoordinateFormatter } from '~/selectors/formatting';
 import { formatDuration } from '~/utils/formatting';
 
-const formatMeanAndStd = (mean, sqDiff, numberSamples) => {
-  if (sqDiff > 0 && numberSamples > 1) {
+const formatMeanAndStdDev = (mean, sqDiff, numberOfSamples) => {
+  if (sqDiff > 0 && numberOfSamples > 1) {
     return `${mean.toFixed(1)} ± ${Math.sqrt(
-      sqDiff / (numberSamples - 1)
+      sqDiff / (numberOfSamples - 1)
     ).toFixed(1)}`;
   }
 
   return mean.toFixed(1);
 };
+
+const formatStdDevInXYPlane = (mean, sqDiff, numberOfSamples) => {
+  if (numberOfSamples < 2) {
+    return '0';
+  }
+
+  const stdLat = Math.sqrt(sqDiff.lat / (numberOfSamples - 1));
+  const stdLon = Math.sqrt(sqDiff.lon / (numberOfSamples - 1));
+
+  const diff =
+    haversineDistance(
+      [mean.lon - stdLon, mean.lat - stdLat],
+      [mean.lon + stdLon, mean.lat + stdLat]
+    ) / 2;
+  return diff.toFixed(1);
+};
+
+const formatDurationOfSampling = (startedAt, lastSampleAt, extraSamplingTime) =>
+  formatDuration(
+    ((!isNil(lastSampleAt) && !isNil(startedAt)
+      ? lastSampleAt - startedAt
+      : 0) +
+      (extraSamplingTime || 0)) /
+      1000
+  );
 
 const useStyles = makeStyles(
   (theme) => ({
@@ -119,12 +145,12 @@ const MeasurementListItem = ({
           {effectiveFormatter(coords)}
         </div>
         <div className={classes.amslColumn}>
-          {formatMeanAndStd(mean.amsl, sqDiff.amsl, numSamples)}
+          {formatMeanAndStdDev(mean.amsl, sqDiff.amsl, numSamples)}
           {'m '}
           <span className={classes.dim}>AMSL</span>
         </div>
         <div className={classes.aglColumn}>
-          {formatMeanAndStd(mean.agl, sqDiff.agl, numSamples)}
+          {formatMeanAndStdDev(mean.agl, sqDiff.agl, numSamples)}
           {'m '}
           <span className={classes.dim}>AGL</span>
         </div>
@@ -137,19 +163,19 @@ const MeasurementListItem = ({
       secondaryText = (
         <div className={classes.secondaryContainer}>
           <div className={classes.latLonCoordinatesColumn}>
-            TODO <span className={classes.dim}>std.dev. in XY</span>
+            {formatStdDevInXYPlane(mean, sqDiff, numSamples)}
+            {'m '}
+            <span className={classes.dim}>std.dev. in XY</span>
           </div>
           <div className={clsx(classes.dim, classes.amslColumn)}>
             {numSamples} samples
           </div>
           <div className={clsx(classes.dim, classes.aglColumn)}>
             Duration:{' '}
-            {formatDuration(
-              ((!isNil(lastSampleAt) && !isNil(startedAt)
-                ? lastSampleAt - startedAt
-                : 0) +
-                (extraSamplingTime || 0)) /
-                1000
+            {formatDurationOfSampling(
+              startedAt,
+              lastSampleAt,
+              extraSamplingTime
             )}
           </div>
         </div>
