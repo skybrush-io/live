@@ -1,3 +1,4 @@
+import ListItemText from '@material-ui/core/ListItemText';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import BusinessCenter from '@material-ui/icons/BusinessCenter';
@@ -8,9 +9,16 @@ import { connect } from 'react-redux';
 
 import GenericHeaderButton from './GenericHeaderButton';
 
+import SidebarBadge from '../badges/SidebarBadge';
+
+import Colors from '~/components/colors';
+import { getActiveUAVIdsBeingAveraged } from '~/features/measurement/selectors';
 import { showAveragingDialog } from '~/features/measurement/slice';
 
-const ToolboxButtonPresentation = ({ showAveragingDialog }) => {
+const ToolboxButtonPresentation = ({
+  numberOfAveragingInProgress,
+  showAveragingDialog,
+}) => {
   const [anchorElement, setAnchorElement] = useState(null);
 
   const handleClick = (event) => {
@@ -26,6 +34,8 @@ const ToolboxButtonPresentation = ({ showAveragingDialog }) => {
     func();
   };
 
+  const needsBadge = numberOfAveragingInProgress > 0;
+
   return (
     <>
       <GenericHeaderButton
@@ -34,6 +44,7 @@ const ToolboxButtonPresentation = ({ showAveragingDialog }) => {
         tooltip='Toolbox'
         onClick={handleClick}
       >
+        <SidebarBadge color={Colors.warning} visible={needsBadge} />
         <BusinessCenter />
       </GenericHeaderButton>
       <Menu
@@ -43,7 +54,14 @@ const ToolboxButtonPresentation = ({ showAveragingDialog }) => {
         onClose={handleClose}
       >
         <MenuItem onClick={createClickListener(showAveragingDialog)}>
-          Coordinate averaging
+          <ListItemText
+            primary='Coordinate averaging'
+            secondary={
+              numberOfAveragingInProgress > 0
+                ? `${numberOfAveragingInProgress} in progress`
+                : undefined
+            }
+          />
         </MenuItem>
         <MenuItem disabled>Firmware update</MenuItem>
         <MenuItem disabled>RTK status</MenuItem>
@@ -56,11 +74,14 @@ const ToolboxButtonPresentation = ({ showAveragingDialog }) => {
 ToolboxButtonPresentation.propTypes = {
   ...GenericHeaderButton.propTypes,
   showAveragingDialog: PropTypes.func,
+  numberOfAveragingInProgress: PropTypes.number,
 };
 
 export default connect(
   // mapStateToProps
-  null,
+  (state) => ({
+    numberOfAveragingInProgress: getActiveUAVIdsBeingAveraged(state).length,
+  }),
   // mapDispatchToProps
   {
     showAveragingDialog,
