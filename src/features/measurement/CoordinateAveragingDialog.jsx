@@ -5,11 +5,10 @@ import { connect } from 'react-redux';
 import Box from '@material-ui/core/Box';
 import Dialog from '@material-ui/core/Dialog';
 
-import { closeAveragingDialog } from '~/features/measurement/slice';
-
 import BearingCalculator from './BearingCalculator';
 import CoordinateAveragingDialogToolbar from './CoordinateAveragingDialogToolbar';
 import MeasurementList from './MeasurementList';
+import { closeAveragingDialog } from './slice';
 
 /**
  * Presentation component for the dialog that allows the user to take a

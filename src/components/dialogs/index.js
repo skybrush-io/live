@@ -1,6 +1,5 @@
 import AppSettingsDialog from './app-settings';
 import AuthenticationDialog from './AuthenticationDialog';
-import CoordinateAveragingDialog from './coordinate-averaging';
 import DeauthenticationDialog from './DeauthenticationDialog';
 import FeatureEditorDialog from './FeatureEditorDialog';
 import GlobalErrorDialog from './GlobalErrorDialog';
@@ -15,7 +14,6 @@ import SubscriptionDialog from './SubscriptionDialog';
 const dialogs = {
   AppSettingsDialog,
   AuthenticationDialog,
-  CoordinateAveragingDialog,
   DeauthenticationDialog,
   FeatureEditorDialog,
   GlobalErrorDialog,

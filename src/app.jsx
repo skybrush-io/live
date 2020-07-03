@@ -16,6 +16,7 @@ import SplashScreen from './components/SplashScreen';
 
 import { ErrorHandler } from './error-handling';
 
+import CoordinateAveragingDialog from './features/measurement/CoordinateAveragingDialog';
 import Sidebar from './features/sidebar/Sidebar';
 import ToastNotificationManager from './features/snackbar/ToastNotificationManager';
 import Tour from './features/tour/Tour';
@@ -104,7 +105,6 @@ const App = () => {
 
                 <dialogs.AppSettingsDialog />
                 <dialogs.AuthenticationDialog />
-                <dialogs.CoordinateAveragingDialog />
                 <dialogs.DeauthenticationDialog />
                 <dialogs.FeatureEditorDialog />
                 <dialogs.GlobalErrorDialog />
@@ -114,6 +114,8 @@ const App = () => {
                 <dialogs.SavedLocationEditorDialog />
                 <dialogs.ServerSettingsDialog />
                 <dialogs.SessionExpiryDialog />
+
+                <CoordinateAveragingDialog />
 
                 <ToastProvider placement='top-center'>
                   <ToastNotificationManager />

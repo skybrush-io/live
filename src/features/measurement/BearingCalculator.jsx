@@ -6,12 +6,13 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 
+import { bearing, finalBearing } from '~/utils/geography';
+
 import {
   getAllUAVIdsCurrentlyBeingAveragedEvenIfPaused,
   getAveragingMeasurementsById,
   getSelectedUAVIdsForAveragingMeasurement,
-} from '~/features/measurement/selectors';
-import { bearing, finalBearing } from '~/utils/geography';
+} from './selectors';
 
 /**
  * Specialized selector that returns the IDs of the two UAVs that are selected
