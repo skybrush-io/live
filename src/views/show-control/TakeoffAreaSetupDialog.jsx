@@ -112,17 +112,60 @@ MisalignedDronesIndicator.propTypes = {
 };
 
 /**
+ * Component that shows all the indicators in the takeoff area setup dialog.
+ */
+const TakeoffAreaSetupDialogIndicatorsPresentation = ({
+  emptySlotIndices,
+  hasNonemptyMappingSlot,
+  misalignedUAVIds,
+  misplacedUAVIds,
+  missingUAVIds,
+}) => (
+  <>
+    <EmptySlotsIndicator indices={emptySlotIndices} />
+    <MissingDronesIndicator
+      uavIds={missingUAVIds}
+      hasNonemptyMappingSlot={hasNonemptyMappingSlot}
+    />
+    <MisplacedDronesIndicator
+      uavIds={misplacedUAVIds}
+      hasNonemptyMappingSlot={hasNonemptyMappingSlot}
+    />
+    <MisalignedDronesIndicator
+      uavIds={misalignedUAVIds}
+      hasNonemptyMappingSlot={hasNonemptyMappingSlot}
+    />
+  </>
+);
+
+TakeoffAreaSetupDialogIndicatorsPresentation.propTypes = {
+  emptySlotIndices: PropTypes.arrayOf(PropTypes.number),
+  hasNonemptyMappingSlot: PropTypes.bool,
+  misalignedUAVIds: PropTypes.arrayOf(PropTypes.string),
+  misplacedUAVIds: PropTypes.arrayOf(PropTypes.string),
+  missingUAVIds: PropTypes.arrayOf(PropTypes.string),
+};
+
+const TakeoffAreaSetupDialogIndicators = connect(
+  // mapStateToProps
+  (state) => ({
+    emptySlotIndices: getEmptyMappingSlotIndices(state),
+    hasNonemptyMappingSlot: hasNonemptyMappingSlot(state),
+    missingUAVIds: getMissingUAVIdsInMapping(state),
+    misplacedUAVIds: getMisplacedUAVIds(state),
+    misalignedUAVIds: getMisalignedUAVIds(state),
+  }),
+  // mapDispatchToProps
+  {}
+)(TakeoffAreaSetupDialogIndicatorsPresentation);
+
+/**
  * Presentation component for the dialog that allows the user to validate whether
  * all drones are properly placed in their takeoff positions.
  */
 const TakeoffAreaSetupDialog = ({
   approved,
-  emptySlotIndices,
-  hasNonemptyMappingSlot,
   hasVirtualDrones,
-  missingUAVIds,
-  misplacedUAVIds,
-  misalignedUAVIds,
   open,
   onAddVirtualDrones,
   onApprove,
@@ -147,20 +190,7 @@ const TakeoffAreaSetupDialog = ({
     </DialogToolbar>
 
     <DialogContent>
-      <EmptySlotsIndicator indices={emptySlotIndices} />
-      <MissingDronesIndicator
-        uavIds={missingUAVIds}
-        hasNonemptyMappingSlot={hasNonemptyMappingSlot}
-      />
-      <MisplacedDronesIndicator
-        uavIds={misplacedUAVIds}
-        hasNonemptyMappingSlot={hasNonemptyMappingSlot}
-      />
-      <MisalignedDronesIndicator
-        uavIds={misalignedUAVIds}
-        hasNonemptyMappingSlot={hasNonemptyMappingSlot}
-      />
-
+      <TakeoffAreaSetupDialogIndicators />
       <Box className='bottom-bar' textAlign='center' mt={2} pt={2}>
         <FormControlLabel
           control={
@@ -180,12 +210,7 @@ const TakeoffAreaSetupDialog = ({
 
 TakeoffAreaSetupDialog.propTypes = {
   approved: PropTypes.bool,
-  emptySlotIndices: PropTypes.arrayOf(PropTypes.number),
-  hasNonemptyMappingSlot: PropTypes.bool,
   hasVirtualDrones: PropTypes.bool,
-  missingUAVIds: PropTypes.arrayOf(PropTypes.string),
-  misplacedUAVIds: PropTypes.arrayOf(PropTypes.string),
-  misalignedUAVIds: PropTypes.arrayOf(PropTypes.string),
   onAddVirtualDrones: PropTypes.func,
   onApprove: PropTypes.func,
   onClose: PropTypes.func,
@@ -206,12 +231,7 @@ export default connect(
   (state) => ({
     ...state.show.takeoffAreaSetupDialog,
     approved: isTakeoffAreaApproved(state),
-    emptySlotIndices: getEmptyMappingSlotIndices(state),
-    hasNonemptyMappingSlot: hasNonemptyMappingSlot(state),
     hasVirtualDrones: supportsVirtualDrones(state),
-    missingUAVIds: getMissingUAVIdsInMapping(state),
-    misplacedUAVIds: getMisplacedUAVIds(state),
-    misalignedUAVIds: getMisalignedUAVIds(state),
   }),
 
   // mapDispatchToProps
