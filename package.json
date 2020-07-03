@@ -124,6 +124,7 @@
     "redux-thunk": "^2.3.0",
     "redux-watch": "^1.1.1",
     "screenfull": "^5.0.2",
+    "shallowequal": "^1.1.0",
     "shell-quote": "^1.7.2",
     "shortid": "^2.2.15",
     "stream-to-blob": "^2.0.1",

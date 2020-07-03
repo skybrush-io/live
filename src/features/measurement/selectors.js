@@ -1,3 +1,5 @@
+import isNil from 'lodash-es/isNil';
+import sum from 'lodash-es/sum';
 import { createSelector } from '@reduxjs/toolkit';
 
 import { selectOrdered } from '~/utils/collections';
@@ -35,6 +37,34 @@ export const getAveragingMeasurements = createSelector(
   (state) => state.measurement.averagingResults,
   selectOrdered
 );
+
+/**
+ * Selector that returns the centroid of the averaged coordinates of the
+ * given list of UAV IDs, or undefined if the list is empty.
+ */
+export const getAveragedCentroidOfUAVsById = (state, uavIds) => {
+  const measurements = state.measurement.averagingResults.byId;
+  const lats = [];
+  const lons = [];
+
+  for (const uavId of uavIds) {
+    const measurement = measurements[uavId];
+    if (
+      measurement &&
+      !isNil(measurement.mean.lat) &&
+      !isNil(measurement.mean.lon)
+    ) {
+      lats.push(measurement.mean.lat);
+      lons.push(measurement.mean.lon);
+    }
+  }
+
+  if (lats.length > 0) {
+    return [sum(lons) / lons.length, sum(lats) / lats.length];
+  }
+
+  return undefined;
+};
 
 /**
  * Selector that returns which UAVs are currently selected in the averaging

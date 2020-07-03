@@ -1,4 +1,5 @@
 import clsx from 'clsx';
+import identity from 'lodash-es/identity';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
@@ -13,6 +14,7 @@ import { Status } from '~/components/semantics';
 
 import { getSingleUAVStatusLevel } from '~/features/uavs/selectors';
 
+import { createShallowSelector } from '~/utils/selectors';
 import { Workbench } from '~/workbench';
 
 import UAVStatusMiniList from './UAVStatusMiniList';
@@ -25,7 +27,7 @@ import UAVStatusMiniList from './UAVStatusMiniList';
  * levels such as "rth" and "critical" are consolidated into "warning" and
  * "error", respectively.
  */
-const getStatusSummary = createSelector(
+const getStatusSummaryInner = createSelector(
   (state) => state.uavs.byId,
   (state) => state.uavs.order,
   (byId, order) => {
@@ -62,6 +64,12 @@ const getStatusSummary = createSelector(
     return result;
   }
 );
+
+/**
+ * Wrapper of `getStatusSummaryInner()` to prevent a re-rendering when the
+ * status summary result did not change.
+ */
+const getStatusSummary = createShallowSelector(getStatusSummaryInner, identity);
 
 /* ************************************************************************ */
 

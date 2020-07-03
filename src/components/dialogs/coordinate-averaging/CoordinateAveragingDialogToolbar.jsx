@@ -8,6 +8,7 @@ import Add from '@material-ui/icons/Add';
 import Check from '@material-ui/icons/Check';
 import Clear from '@material-ui/icons/Clear';
 import Pause from '@material-ui/icons/Pause';
+import Place from '@material-ui/icons/Place';
 import PlayArrow from '@material-ui/icons/PlayArrow';
 import Remove from '@material-ui/icons/Remove';
 import Replay from '@material-ui/icons/Replay';
@@ -23,6 +24,7 @@ import {
   pauseAveragingSelectedUAVs,
   resumeAveragingSelectedUAVs,
   restartAveragingSelectedUAVs,
+  setAveragedCentroidOfSelectedUAVsAsMapOrigin,
   stopAveragingSelectedUAVs,
 } from '~/features/measurement/actions';
 import {
@@ -51,6 +53,7 @@ const CoordinateAveragingDialogToolbar = ({
   onRemoveSelected,
   onRestartSelected,
   onResumeSelected,
+  onSetCentroidOfSelectionAsMapOrigin,
   onStartAddition,
   onUAVIdAdded,
 }) => {
@@ -118,10 +121,18 @@ const CoordinateAveragingDialogToolbar = ({
           <ToolbarDivider orientation='vertical' />
           <Tooltip content='Copy centroid'>
             <IconButton
-              disabled={!hasSelection}
+              disabled={!hasMeasurements}
               onClick={onCopyCentroidOfSelection}
             >
               <ContentCopy />
+            </IconButton>
+          </Tooltip>
+          <Tooltip content='Set centroid as map origin'>
+            <IconButton
+              disabled={!hasMeasurements}
+              onClick={onSetCentroidOfSelectionAsMapOrigin}
+            >
+              <Place />
             </IconButton>
           </Tooltip>
         </Box>
@@ -168,6 +179,7 @@ CoordinateAveragingDialogToolbar.propTypes = {
   onRemoveSelected: PropTypes.func,
   onResumeSelected: PropTypes.func,
   onRestartSelected: PropTypes.func,
+  onSetCentroidOfSelectionAsMapOrigin: PropTypes.func,
   onStartAddition: PropTypes.func,
   onUAVIdAdded: PropTypes.func,
 };
@@ -192,6 +204,7 @@ export default connect(
     onRemoveSelected: stopAveragingSelectedUAVs,
     onResumeSelected: resumeAveragingSelectedUAVs,
     onRestartSelected: restartAveragingSelectedUAVs,
+    onSetCentroidOfSelectionAsMapOrigin: setAveragedCentroidOfSelectedUAVsAsMapOrigin,
     onStartAddition: startAddingNewAveragingMeasurement,
     onUAVIdAdded: startAveragingUAVCoordinateById,
   }
