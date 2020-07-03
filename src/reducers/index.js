@@ -15,6 +15,7 @@ import logReducer from '~/features/log/slice';
 import measurementReducer from '~/features/measurement/slice';
 import missionReducer from '~/features/mission/slice';
 import preflightReducer from '~/features/preflight/slice';
+import rtkReducer from '~/features/rtk/slice';
 import savedLocationsReducer from '~/features/saved-locations/slice';
 import serversReducer from '~/features/servers/slice';
 import sessionReducer from '~/features/session/slice';
@@ -45,6 +46,7 @@ const reducer = combineReducers({
   messages: messagesReducer,
   mission: missionReducer,
   preflight: preflightReducer,
+  rtk: rtkReducer,
   savedLocations: savedLocationsReducer,
   servers: serversReducer,
   session: sessionReducer,
