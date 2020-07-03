@@ -132,14 +132,8 @@ const store = configureStore({
   reducer: persistReducer(persistConfig, reducer),
   middleware: [
     ...getDefaultMiddleware({
-      immutableCheck: {
-        // Checking the show specification takes a long time and it should not
-        // be necessary anyway; same for the workbench state
-        ignore: ['show.data', 'workbench'],
-        // ignore was renamed to ignoredPaths in newer versions of the middleware.
-        // Let's specify both to be on the safe side.
-        ignoredPaths: ['show.data', 'workbench'],
-      },
+      // Immutability checks slow things down too much
+      immutableCheck: false,
 
       serializableCheck: {
         /* redux-persist uses functions in actions and redux-promise-middleware
