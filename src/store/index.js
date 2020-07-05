@@ -23,6 +23,7 @@ import {
 } from 'redux-persist-transform-filter';
 
 import { updateAveragingByIds } from '~/features/measurement/slice';
+import { updateRTKStatistics } from '~/features/rtk/slice';
 import { loadingPromiseFulfilled } from '~/features/show/slice';
 import { updateAgesOfUAVs, updateUAVs } from '~/features/uavs/slice';
 import { saveWorkbenchState } from '~/features/workbench/slice';
@@ -54,7 +55,7 @@ const persistConfig = {
     'localServer',
     'log',
     'messages',
-    'rtk',
+    // 'rtk',
     'servers',
     'session',
     'snackbar',
@@ -163,9 +164,10 @@ const store = configureStore({
       ? false
       : {
           actionsBlacklist: [
-            updateAveragingByIds.type,
-            updateUAVs.type,
             updateAgesOfUAVs.type,
+            updateAveragingByIds.type,
+            updateRTKStatistics.type,
+            updateUAVs.type,
           ],
 
           // make sure that the show object that we load is not cached / tracked by

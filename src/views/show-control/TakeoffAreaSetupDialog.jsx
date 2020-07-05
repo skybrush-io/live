@@ -180,13 +180,14 @@ const TakeoffAreaSetupDialog = ({
       <Box flex={1} />
       {hasVirtualDrones && (
         <Button
+          color='inherit'
           startIcon={<VerticalAlignBottom />}
           onClick={onAddVirtualDrones}
         >
           Place virtual drones
         </Button>
       )}
-      <AugmentMappingButton />
+      <AugmentMappingButton color='inherit' />
     </DialogToolbar>
 
     <DialogContent>

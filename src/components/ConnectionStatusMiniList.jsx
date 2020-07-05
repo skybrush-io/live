@@ -17,9 +17,7 @@ import { listOf } from '~/components/helpers/lists';
 import TransparentList from '~/components/TransparentList';
 import { ConnectionState } from '~/model/connections';
 import { getConnectionsInOrder } from '~/selectors/ordered';
-
-const shortFormatter = (value, unit) =>
-  unit === 'month' ? `${value}mo` : `${value}${unit.charAt(0)}`;
+import { shortTimeAgoFormatter } from '~/utils/formatting';
 
 /**
  * Icons for the different connection states in the connection list.
@@ -53,7 +51,7 @@ const ConnectionStatusMiniListEntry = ({ id, name, state, stateChangedAt }) => (
     <Box display='flex' flexDirection='row' flexGrow={1}>
       <Box flexGrow={1}>{name}</Box>
       <Box color='text.secondary' ml={1}>
-        <TimeAgo formatter={shortFormatter} date={stateChangedAt} />
+        <TimeAgo formatter={shortTimeAgoFormatter} date={stateChangedAt} />
       </Box>
     </Box>
   </ListItem>

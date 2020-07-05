@@ -5,25 +5,71 @@
 
 import { createSlice } from '@reduxjs/toolkit';
 
+import { noPayload } from '~/utils/redux';
+
 const { actions, reducer } = createSlice({
   name: 'rtk',
 
   initialState: {
     stats: {
-      // Carrier-to-noise ratio for satellites for which we have RTK correction data
-      cnr: {},
-      // RTCM messages recently processed by the server and their bandwidth requirement
+      // Carrier-to-noise ratio for satellites for which we have RTK correction data.
+      // Keys are satellite identifiers; each associated value is the corresponding
+      // carrier-to-noise ratio and the timestamp. Each associated value looks
+      // like this:
+      //
+      // {
+      //   lastUpdatedAt:UNIX timestamp in milliseconds when this message was
+      //       observed the last time
+      //   cnr: carrier-to-noise ratio
+      // }
+      satellites: {},
+
+      // RTCM messages recently processed by the server and their bandwidth requirement.
+      // Keys are RTCM message identifiers; each associated value looks like this:
+      //
+      // {
+      //   lastUpdatedAt: UNIX timestamp in milliseconds when this message was
+      //       observed the last time
+      //   bitsPerSecond: number of bytes per second that this RTCM message used
+      //       from the total bandwidth
+      // }
       messages: {},
+    },
+
+    dialog: {
+      open: false,
     },
   },
 
   reducers: {
-    updateStatistics(state, action) {
-      state.stats = action.payload;
+    closeRTKSetupDialog: noPayload((state) => {
+      state.dialog.open = false;
+    }),
+
+    showRTKSetupDialog: noPayload((state) => {
+      state.dialog.open = true;
+    }),
+
+    updateRTKStatistics(state, action) {
+      const { messages, cnr } = action.payload;
+
+      state.stats.messages = messages;
+
+      if (state.stats.satellites === undefined) {
+        state.stats.satellites = {};
+      }
+
+      for (const [key, value] of Object.entries(cnr)) {
+        state.stats.satellites[key] = value;
+      }
     },
   },
 });
 
-export const { updateStatistics } = actions;
+export const {
+  closeRTKSetupDialog,
+  showRTKSetupDialog,
+  updateRTKStatistics,
+} = actions;
 
 export default reducer;

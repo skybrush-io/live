@@ -14,10 +14,12 @@ import SidebarBadge from '../badges/SidebarBadge';
 import Colors from '~/components/colors';
 import { getActiveUAVIdsBeingAveraged } from '~/features/measurement/selectors';
 import { showAveragingDialog } from '~/features/measurement/slice';
+import { showRTKSetupDialog } from '~/features/rtk/slice';
 
 const ToolboxButtonPresentation = ({
   numberOfAveragingInProgress,
   showAveragingDialog,
+  showRTKSetupDialog,
 }) => {
   const [anchorElement, setAnchorElement] = useState(null);
 
@@ -64,7 +66,9 @@ const ToolboxButtonPresentation = ({
           />
         </MenuItem>
         <MenuItem disabled>Firmware update</MenuItem>
-        <MenuItem disabled>RTK status</MenuItem>
+        <MenuItem onClick={createClickListener(showRTKSetupDialog)}>
+          RTK status
+        </MenuItem>
         <MenuItem disabled>Version check</MenuItem>
       </Menu>
     </>
@@ -73,8 +77,9 @@ const ToolboxButtonPresentation = ({
 
 ToolboxButtonPresentation.propTypes = {
   ...GenericHeaderButton.propTypes,
-  showAveragingDialog: PropTypes.func,
   numberOfAveragingInProgress: PropTypes.number,
+  showAveragingDialog: PropTypes.func,
+  showRTKSetupDialog: PropTypes.func,
 };
 
 export default connect(
@@ -85,5 +90,6 @@ export default connect(
   // mapDispatchToProps
   {
     showAveragingDialog,
+    showRTKSetupDialog,
   }
 )(ToolboxButtonPresentation);

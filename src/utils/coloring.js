@@ -2,7 +2,7 @@
  * @file Coloring-related utility functions and variables.
  */
 
-import Color from 'color';
+import createColor from 'color';
 
 /**
  * Helper function that makes a css string from a color object.
@@ -27,8 +27,8 @@ export const colorToString = (color) => {
  */
 export const parseColor = (color, defaultColor) => {
   try {
-    return Color(color);
-  } catch (error) {
-    return Color(defaultColor);
+    return createColor(color);
+  } catch {
+    return createColor(defaultColor);
   }
 };

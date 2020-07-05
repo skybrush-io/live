@@ -17,6 +17,7 @@ import SplashScreen from './components/SplashScreen';
 import { ErrorHandler } from './error-handling';
 
 import CoordinateAveragingDialog from './features/measurement/CoordinateAveragingDialog';
+import RTKSetupDialog from './features/rtk/RTKSetupDialog';
 import Sidebar from './features/sidebar/Sidebar';
 import ToastNotificationManager from './features/snackbar/ToastNotificationManager';
 import Tour from './features/tour/Tour';
@@ -116,6 +117,7 @@ const App = () => {
                 <dialogs.SessionExpiryDialog />
 
                 <CoordinateAveragingDialog />
+                <RTKSetupDialog />
 
                 <ToastProvider placement='top-center'>
                   <ToastNotificationManager />

@@ -93,28 +93,44 @@ const CoordinateAveragingDialogToolbar = ({
       <FadeAndSlide mountOnEnter unmountOnExit in={mode === 'normal'}>
         <Box position='absolute' display='flex'>
           <Tooltip content='Add new drone'>
-            <IconButton onClick={onStartAddition}>
+            <IconButton color='inherit' onClick={onStartAddition}>
               <Add />
             </IconButton>
           </Tooltip>
           <Tooltip content='Remove selected'>
-            <IconButton disabled={!hasSelection} onClick={onRemoveSelected}>
+            <IconButton
+              disabled={!hasSelection}
+              color='inherit'
+              onClick={onRemoveSelected}
+            >
               <Remove />
             </IconButton>
           </Tooltip>
           <ToolbarDivider orientation='vertical' />
           <Tooltip content='Pause measurement'>
-            <IconButton disabled={!hasMeasurements} onClick={onPauseSelected}>
+            <IconButton
+              disabled={!hasMeasurements}
+              color='inherit'
+              onClick={onPauseSelected}
+            >
               <Pause />
             </IconButton>
           </Tooltip>
           <Tooltip content='Resume measurement'>
-            <IconButton disabled={!hasMeasurements} onClick={onResumeSelected}>
+            <IconButton
+              disabled={!hasMeasurements}
+              color='inherit'
+              onClick={onResumeSelected}
+            >
               <PlayArrow />
             </IconButton>
           </Tooltip>
           <Tooltip content='Reset measurement'>
-            <IconButton disabled={!hasMeasurements} onClick={onRestartSelected}>
+            <IconButton
+              disabled={!hasMeasurements}
+              color='inherit'
+              onClick={onRestartSelected}
+            >
               <Replay />
             </IconButton>
           </Tooltip>
@@ -122,6 +138,7 @@ const CoordinateAveragingDialogToolbar = ({
           <Tooltip content='Copy centroid'>
             <IconButton
               disabled={!hasMeasurements}
+              color='inherit'
               onClick={onCopyCentroidOfSelection}
             >
               <ContentCopy />
@@ -130,6 +147,7 @@ const CoordinateAveragingDialogToolbar = ({
           <Tooltip content='Set centroid as map origin'>
             <IconButton
               disabled={!hasMeasurements}
+              color='inherit'
               onClick={onSetCentroidOfSelectionAsMapOrigin}
             >
               <Place />

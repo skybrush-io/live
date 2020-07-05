@@ -21,6 +21,8 @@ import darkModeExtraCSS from '!!raw-loader!~/../assets/css/dark-mode.css';
  */
 export const isDark = (theme) => theme.palette.type === 'dark';
 
+export const defaultFont = '"Fira Sans", "Helvetica", "Arial", sans-serif';
+
 export const monospacedFont =
   '"Proggy Vector", "Menlo", "Consolas", "DejaVu Sans Mono", "Courier New", "Courier", monospace';
 
@@ -45,13 +47,13 @@ const DarkModeAwareThemeProvider = ({ children, type }) => {
     },
 
     typography: {
-      fontFamily: '"Fira Sans", "Helvetica", "Arial", sans-serif',
+      fontFamily: defaultFont,
     },
 
     overrides: {
       MuiList: {
         root: {
-          background: isThemeDark ? '#444' : '#fff',
+          background: isThemeDark ? '#424242' : '#fff',
         },
       },
     },

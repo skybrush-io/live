@@ -51,3 +51,9 @@ export function formatIdsAndTruncateTrailingItems(
 
   return ids.join(separator);
 }
+
+/**
+ * Twitter-style short formatter for TimeAgo components/
+ */
+export const shortTimeAgoFormatter = (value, unit) =>
+  unit === 'month' ? `${value}mo` : `${value}${unit.charAt(0)}`;

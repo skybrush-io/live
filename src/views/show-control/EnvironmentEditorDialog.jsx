@@ -14,13 +14,12 @@ import {
 } from '~/actions/map-origin';
 import CoordinateSystemFields from '~/components/CoordinateSystemFields';
 import FormHeader from '~/components/dialogs/FormHeader';
+import RTKCorrectionSourceSelector from '~/features/rtk/RTKCorrectionSourceSelector';
 import { updateOutdoorShowSettings } from '~/features/show/actions';
 import { COORDINATE_SYSTEM_TYPE } from '~/features/show/constants';
 import { closeEnvironmentEditorDialog } from '~/features/show/slice';
 import { showNotification } from '~/features/snackbar/slice';
 import { MessageSemantics } from '~/features/snackbar/types';
-
-import RTKCorrectionSourceSelector from './RTKCorrectionSourceSelector';
 
 const instructionsByType = {
   indoor:

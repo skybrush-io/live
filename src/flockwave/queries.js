@@ -55,6 +55,21 @@ export async function getRTKPresets(hub) {
 }
 
 /**
+ * Returns the status of the RTK subsystem.
+ */
+export async function getRTKStatus(hub) {
+  const response = await hub.sendMessage({ type: 'X-RTK-STAT' });
+  if (response.body && response.body.type === 'X-RTK-STAT') {
+    return {
+      messages: response.body.messages,
+      cnr: response.body.cnr,
+    };
+  }
+
+  throw new Error('Unexpected response for RTK subsystem status query');
+}
+
+/**
  * Returns the currently selected RTK data source ID.
  */
 export async function getSelectedRTKPresetId(hub) {
@@ -126,6 +141,7 @@ export class QueryHandler {
   _queries = {
     getConfigurationOfExtension,
     getRTKPresets,
+    getRTKStatus,
     getSelectedRTKPresetId,
     getShowConfiguration,
     isExtensionLoaded,
