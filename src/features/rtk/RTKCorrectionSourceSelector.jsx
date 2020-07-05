@@ -1,4 +1,6 @@
+import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
+import { connect } from 'react-redux';
 import { useAsync, useAsyncFn } from 'react-use';
 
 import FormControl from '@material-ui/core/FormControl';
@@ -7,6 +9,7 @@ import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 
+import { resetRTKStatistics } from '~/features/rtk/slice';
 import messageHub from '~/message-hub';
 
 const NULL_ID = '__null__';
@@ -16,7 +19,7 @@ const nullPreset = {
   title: 'RTK disabled',
 };
 
-const RTKCorrectionSourceSelector = () => {
+const RTKCorrectionSourceSelector = ({ onSourceChanged }) => {
   const [selectedByUser, setSelectedByUser] = useState();
   const [selectionState, getSelectionFromServer] = useAsyncFn(async () =>
     messageHub.query.getSelectedRTKPresetId()
@@ -45,6 +48,10 @@ const RTKCorrectionSourceSelector = () => {
     // value. If changing the RTK source fails, it will be changed back in the
     // response handler triggered by the effect that we set up below.
     setSelectedByUser(event.target.value);
+
+    if (onSourceChanged) {
+      onSourceChanged();
+    }
   };
 
   // If we have the preset list, but we don't have the current selection yet,
@@ -132,4 +139,15 @@ const RTKCorrectionSourceSelector = () => {
   );
 };
 
-export default RTKCorrectionSourceSelector;
+RTKCorrectionSourceSelector.propTypes = {
+  onSourceChanged: PropTypes.func,
+};
+
+export default connect(
+  // mapStateToProps
+  () => ({}),
+  // mapDispatchToProps
+  {
+    onSourceChanged: resetRTKStatistics,
+  }
+)(RTKCorrectionSourceSelector);

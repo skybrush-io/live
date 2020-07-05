@@ -55,7 +55,7 @@ const persistConfig = {
     'localServer',
     'log',
     'messages',
-    // 'rtk',
+    'rtk',
     'servers',
     'session',
     'snackbar',

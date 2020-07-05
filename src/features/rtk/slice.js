@@ -50,6 +50,11 @@ const { actions, reducer } = createSlice({
       state.dialog.open = true;
     }),
 
+    resetRTKStatistics(state) {
+      state.stats.satellites = {};
+      state.stats.messages = {};
+    },
+
     updateRTKStatistics(state, action) {
       const { messages, cnr } = action.payload;
 
@@ -68,6 +73,7 @@ const { actions, reducer } = createSlice({
 
 export const {
   closeRTKSetupDialog,
+  resetRTKStatistics,
   showRTKSetupDialog,
   updateRTKStatistics,
 } = actions;
