@@ -26,6 +26,7 @@ import snackbarReducer from '~/features/snackbar/slice';
 import threeDReducer from '~/features/three-d/slice';
 import tourReducer from '~/features/tour/slice';
 import uavReducer from '~/features/uavs/slice';
+import versionCheckReducer from '~/features/version-check/slice';
 import workbenchReducer from '~/features/workbench/slice';
 
 /**
@@ -57,6 +58,7 @@ const reducer = combineReducers({
   threeD: threeDReducer,
   tour: tourReducer,
   uavs: uavReducer,
+  versionCheck: versionCheckReducer,
   workbench: workbenchReducer,
 });
 

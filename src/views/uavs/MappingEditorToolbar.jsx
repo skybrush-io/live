@@ -75,7 +75,9 @@ const MappingEditorToolbar = React.forwardRef(
         >
           <MenuItem
             disabled={!canAugmentMapping}
-            onClick={canAugmentMapping && closeMappingMenu(augmentMapping)}
+            onClick={
+              canAugmentMapping ? closeMappingMenu(augmentMapping) : null
+            }
           >
             Assign spares
           </MenuItem>

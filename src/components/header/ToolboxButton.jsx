@@ -15,11 +15,13 @@ import Colors from '~/components/colors';
 import { getActiveUAVIdsBeingAveraged } from '~/features/measurement/selectors';
 import { showAveragingDialog } from '~/features/measurement/slice';
 import { showRTKSetupDialog } from '~/features/rtk/slice';
+import { showVersionCheckDialog } from '~/features/version-check/slice';
 
 const ToolboxButtonPresentation = ({
   numberOfAveragingInProgress,
   showAveragingDialog,
   showRTKSetupDialog,
+  showVersionCheckDialog,
 }) => {
   const [anchorElement, setAnchorElement] = useState(null);
 
@@ -65,11 +67,17 @@ const ToolboxButtonPresentation = ({
             }
           />
         </MenuItem>
+        {/*
         <MenuItem disabled>Firmware update</MenuItem>
+        */}
         <MenuItem onClick={createClickListener(showRTKSetupDialog)}>
           RTK status
         </MenuItem>
-        <MenuItem disabled>Version check</MenuItem>
+        {/*
+        <MenuItem onClick={createClickListener(showVersionCheckDialog)}>
+          Version check
+        </MenuItem>
+        */}
       </Menu>
     </>
   );
@@ -91,5 +99,6 @@ export default connect(
   {
     showAveragingDialog,
     showRTKSetupDialog,
+    showVersionCheckDialog,
   }
 )(ToolboxButtonPresentation);

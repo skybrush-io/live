@@ -21,6 +21,7 @@ import RTKSetupDialog from './features/rtk/RTKSetupDialog';
 import Sidebar from './features/sidebar/Sidebar';
 import ToastNotificationManager from './features/snackbar/ToastNotificationManager';
 import Tour from './features/tour/Tour';
+import VersionCheckDialog from './features/version-check/VersionCheckDialog';
 
 import flock, { Flock } from './flock';
 import hotkeys from './hotkeys';
@@ -118,6 +119,7 @@ const App = () => {
 
                 <CoordinateAveragingDialog />
                 <RTKSetupDialog />
+                <VersionCheckDialog />
 
                 <ToastProvider placement='top-center'>
                   <ToastNotificationManager />
