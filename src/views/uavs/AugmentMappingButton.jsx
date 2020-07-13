@@ -13,7 +13,7 @@ import { canAugmentMappingAutomaticallyFromSpareDrones } from '~/features/missio
  */
 const AugmentMappingButton = (props) => (
   <Button startIcon={<Shuffle />} {...props}>
-    Update mapping
+    Assign spares to empty slots
   </Button>
 );
 
