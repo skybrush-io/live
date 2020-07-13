@@ -174,9 +174,11 @@ const TakeoffAreaSetupDialog = ({
 }) => (
   <Dialog fullWidth open={open} maxWidth='sm' onClose={onClose}>
     <DialogToolbar>
-      <Typography noWrap variant='subtitle1'>
-        Takeoff area setup
-      </Typography>
+      {!hasVirtualDrones && (
+        <Typography noWrap variant='subtitle1'>
+          Takeoff area setup
+        </Typography>
+      )}
       <Box flex={1} />
       {hasVirtualDrones && (
         <Button
