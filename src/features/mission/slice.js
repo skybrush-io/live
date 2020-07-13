@@ -111,7 +111,7 @@ const { actions, reducer } = createSlice({
     commitMappingEditorSessionAtCurrentSlot(state, action) {
       const { continuation, value } = action.payload;
       const validatedValue =
-        typeof value === 'string' && value.length > 0 ? value : null;
+        typeof value === 'string' && value.trim().length > 0 ? value : null;
       const index = state.mappingEditor.indexBeingEdited;
       const numberItems = state.mapping.length;
 
