@@ -13,6 +13,8 @@ import ActionPowerSettingsNew from '@material-ui/icons/PowerSettingsNew';
 import Message from '@material-ui/icons/Message';
 import Refresh from '@material-ui/icons/Refresh';
 import WbSunny from '@material-ui/icons/WbSunny';
+
+import Colors from '~/components/colors';
 import Tooltip from '~/components/Tooltip';
 
 import {
@@ -110,7 +112,7 @@ const UAVOperationsButtonGroup = ({
       <Tooltip content='Reboot'>
         <IconButton disabled={isSelectionEmpty} onClick={resetSelectedUAVs}>
           <Refresh
-            color={isSelectionEmpty ? undefined : 'secondary'}
+            htmlColor={isSelectionEmpty ? undefined : Colors.error}
             disabled={isSelectionEmpty}
           />
         </IconButton>
@@ -119,7 +121,7 @@ const UAVOperationsButtonGroup = ({
       <Tooltip content='Power off'>
         <IconButton disabled={isSelectionEmpty} onClick={haltSelectedUAVs}>
           <ActionPowerSettingsNew
-            color={isSelectionEmpty ? undefined : 'secondary'}
+            htmlColor={isSelectionEmpty ? undefined : Colors.error}
           />
         </IconButton>
       </Tooltip>

@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 
-import { blue, lightBlue, orange, red } from '@material-ui/core/colors';
+import { blue, lightBlue, orange, blueGrey } from '@material-ui/core/colors';
 import createMuiTheme from '@material-ui/core/styles/createMuiTheme';
 import { ThemeProvider, useTheme } from '@material-ui/core/styles';
 
@@ -39,7 +39,7 @@ const DarkModeAwareThemeProvider = ({ children, type }) => {
     palette: {
       type: isThemeDark ? 'dark' : 'light',
       primary: isThemeDark ? orange : blue,
-      secondary: isThemeDark ? lightBlue : red,
+      secondary: isThemeDark ? lightBlue : blueGrey,
 
       success: {
         main: Colors.success,
