@@ -27,6 +27,7 @@ const useStyles = makeStyles((theme) => ({
 const FileListItem = ({
   accepts,
   children,
+  extensions,
   id,
   inputId,
   multiple,
@@ -84,6 +85,11 @@ const FileListItem = ({
   return (
     <>
       <input
+        accept={
+          extensions
+            ? extensions.map((ext) => `.${ext.toLowerCase()}`)
+            : undefined
+        }
         className={classes.input}
         type='file'
         id={inputId}
@@ -102,6 +108,7 @@ const FileListItem = ({
 FileListItem.propTypes = {
   accepts: PropTypes.func,
   children: PropTypes.node,
+  extensions: PropTypes.arrayOf(PropTypes.string),
   id: PropTypes.string,
   inputId: PropTypes.string.isRequired,
   multiple: PropTypes.bool,

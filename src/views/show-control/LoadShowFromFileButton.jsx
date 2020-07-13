@@ -45,6 +45,11 @@ import { getSetupStageStatuses } from '~/features/show/stages';
 const isFile = (item) => item && item.size > 0;
 
 /**
+ * List of file extensions that we treat as show files.
+ */
+const EXTENSIONS = ['skyc'];
+
+/**
  * React component for the button that allows the user to open a show file.
  */
 const LoadShowFromFileButton = ({
@@ -66,6 +71,7 @@ const LoadShowFromFileButton = ({
     id='show-file-upload'
     inputId='show-file-upload-input'
     accepts={isFile}
+    extensions={EXTENSIONS}
     onSelected={onShowFileSelected}
   >
     <FileWatcher filename={filename} onChanged={onShowFileChangedExternally} />
@@ -127,6 +133,7 @@ LoadShowFromFileButton.propTypes = {
   loading: PropTypes.bool,
   onClearLoadedShow: PropTypes.func,
   onLoadShowFromCloud: PropTypes.func,
+  onReloadShowFile: PropTypes.func,
   onShowFileChangedExternally: PropTypes.func,
   onShowFileSelected: PropTypes.func,
   progress: PropTypes.number,
