@@ -86,9 +86,14 @@ export default connect(
   {
     clearMapping,
     startMappingEditorSession,
-    setUAVListLayout: (_event, value) =>
-      updateAppSettings('display', {
-        uavListLayout: value,
-      }),
+    setUAVListLayout: (_event, value) => (dispatch) => {
+      if (value) {
+        dispatch(
+          updateAppSettings('display', {
+            uavListLayout: value,
+          })
+        );
+      }
+    },
   }
 )(MappingButtonGroup);
