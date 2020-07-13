@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
+import Divider from '@material-ui/core/Divider';
 import FormGroup from '@material-ui/core/FormGroup';
 import Typography from '@material-ui/core/Typography';
 
@@ -70,9 +71,13 @@ const EnvironmentEditorDialog = ({
         )}
       </FormGroup>
 
-      <Box textAlign='right' pt={1}>
-        <Button onClick={onSetCoordinateSystemFromMap}>Set from map</Button>
-        <Button onClick={onCopyCoordinateSystemToMap}>Copy to map</Button>
+      <Box display='flex' justifyContent='space-evenly' py={1}>
+        <Button onClick={onSetCoordinateSystemFromMap}>
+          Copy map origin to show origin
+        </Button>
+        <Button onClick={onCopyCoordinateSystemToMap}>
+          Copy show origin to map origin
+        </Button>
       </Box>
 
       <RTKCorrectionSourceSelector />
