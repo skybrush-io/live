@@ -11,33 +11,26 @@ Steps to install
    a recent one, so you need to run the following from the command line:
 
    ```sh
-   curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
+   curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -
    sudo apt-get install -y nodejs
    ```
 
    If you are running Windows, you should probably download an installer from
    [here](https://nodejs.org/en/download/) that contains both.
 
-2. Install [Babel.js](http://babeljs.io/): `npm install -g babel-cli`.
-   <sup>[1](#global-install-footnote)</sup>
-   This will install the command line interface of Babel _globally_; we need that
-   because some JavaScript modules that we check out from Github need a global
-   installation of Babel.
-
-3. Install all the dependencies of `flockwave-web` by running `npm install`
+2. Install all the dependencies of `flockwave-web` by running `npm install`
    from a fresh checkout of the repository.
    _(Note for Windows: For some reason the `PATH` environment variable of
    `cmd` is not always the same as the one in `PowerShell`, so you may have
    to use the latter one or alternatively `git-shell` for the command above
    to run properly.)_
 
-4. Copy `.env.example` to `.env` and include your Bing Maps API key in it if
-   you want to support Bing Maps.
+3. Copy `.env.example` to `.env` and include your Bing Maps / Mapbox / Mapzen
+   API key in it if you want to support these map providers. (None of them
+   are required).
 
-5. Start a development web server with `npm start` inside `flockwave-web`, and
+4. Start a development web server with `npm start` inside `flockwave-web`, and
    navigate to http://localhost:8080 from your browser. Alternatively, run
    `npm run start:electron` to run Skybrush Live within its own desktop app
    window.
 
-<a name="global-install-footnote">1</a>: You may need to run this command with elevated rights to succesfully install a package globally.
-In case you would prefer to avoid using sudo for global installs: [https://docs.npmjs.com/getting-started/fixing-npm-permissions](https://docs.npmjs.com/getting-started/fixing-npm-permissions)
