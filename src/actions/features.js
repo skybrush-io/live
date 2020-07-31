@@ -9,6 +9,7 @@ import {
   RENAME_FEATURE,
   SET_FEATURE_COLOR,
   UPDATE_FEATURE_COORDINATES,
+  UPDATE_FEATURE_FILL,
   UPDATE_FEATURE_VISIBILITY,
 } from './types';
 
@@ -69,6 +70,18 @@ export const setFeatureColor = createAction(SET_FEATURE_COLOR, (id, color) => ({
 export const updateFeatureCoordinates = createAction(
   UPDATE_FEATURE_COORDINATES,
   (coordinates) => ({ coordinates })
+);
+
+/**
+ * Action factory that creates an action that updates the fill of a
+ * feature on the map.
+ *
+ * @param {string}  id    the ID of the feature to update
+ * @param {string}  filled  the new fill state of the feature
+ */
+export const updateFeatureFill = createAction(
+  UPDATE_FEATURE_FILL,
+  (id, filled) => ({ id, filled })
 );
 
 /**

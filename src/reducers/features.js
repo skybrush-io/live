@@ -153,6 +153,11 @@ const reducer = handleActions(
       return u.updateIn(getKey(id, 'color'), color, state);
     },
 
+    // SET_FEATURE_FILL(state, action) {
+    //   const { id, filled } = action.payload;
+    //   return u.updateIn(getKey(id, 'filled'), filled, state);
+    // },
+
     UPDATE_FEATURE_COORDINATES(state, action) {
       const { coordinates } = action.payload;
       const updates = mapValues(coordinates, (coordinate) => ({
@@ -165,6 +170,14 @@ const reducer = handleActions(
       const { id, visible } = action.payload;
       const updates = {
         [id]: { visible },
+      };
+      return u({ byId: u(updates) }, state);
+    },
+
+    UPDATE_FEATURE_FILL(state, action) {
+      const { id, filled } = action.payload;
+      const updates = {
+        [id]: { filled },
       };
       return u({ byId: u(updates) }, state);
     },

@@ -6,6 +6,7 @@ import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
 import Tab from '@material-ui/core/Tab';
 import TextField from '@material-ui/core/TextField';
@@ -16,6 +17,7 @@ import {
   removeFeature,
   renameFeature,
   setFeatureColor,
+  updateFeatureFill,
   updateFeatureVisibility,
 } from '~/actions/features';
 import {
@@ -29,6 +31,7 @@ const GeneralPropertiesFormPresentation = ({
   feature,
   onSetFeatureColor,
   onSetFeatureLabel,
+  onToggleFeatureFill,
   onToggleFeatureVisibility,
 }) => (
   <div>
@@ -49,10 +52,24 @@ const GeneralPropertiesFormPresentation = ({
         onChange={onToggleFeatureVisibility}
       />
     </div>
-    <div>
-      <CircleColorPicker
-        value={feature.color || primaryColor}
-        onChangeComplete={onSetFeatureColor}
+    <div style={{ display: 'flex', padding: '1em 0' }}>
+      <div style={{ flex: 'auto' }}>
+        <CircleColorPicker
+          value={feature.color || primaryColor}
+          onChangeComplete={onSetFeatureColor}
+        />
+      </div>
+      <FormControlLabel
+        style={{ margin: '0' }}
+        control={
+          <Switch
+            checked={feature.filled}
+            color='primary'
+            onChange={onToggleFeatureFill}
+          />
+        }
+        label='Fill'
+        labelPlacement='top'
       />
     </div>
   </div>
@@ -63,6 +80,7 @@ GeneralPropertiesFormPresentation.propTypes = {
   featureId: PropTypes.string.isRequired,
   onSetFeatureColor: PropTypes.func,
   onSetFeatureLabel: PropTypes.func,
+  onToggleFeatureFill: PropTypes.func,
   onToggleFeatureVisibility: PropTypes.func,
 };
 
@@ -76,6 +94,9 @@ const GeneralPropertiesForm = connect(
     },
     onSetFeatureLabel(event) {
       dispatch(renameFeature(featureId, event.target.value));
+    },
+    onToggleFeatureFill(event, checked) {
+      dispatch(updateFeatureFill(featureId, checked));
     },
     onToggleFeatureVisibility(event, checked) {
       dispatch(updateFeatureVisibility(featureId, checked));

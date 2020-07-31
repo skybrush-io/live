@@ -52,6 +52,7 @@ export function createFeatureFromOpenLayers(olFeature) {
     case 'Point':
       Object.assign(result, {
         type: FeatureType.POINTS,
+        filled: false,
         points: [lonLatFromMapViewCoordinate(coordinates)],
       });
       break;
@@ -60,6 +61,7 @@ export function createFeatureFromOpenLayers(olFeature) {
       const center = geometry.getCenter();
       Object.assign(result, {
         type: FeatureType.CIRCLE,
+        filled: true,
         points: [
           lonLatFromMapViewCoordinate(center),
           lonLatFromMapViewCoordinate([
@@ -74,6 +76,7 @@ export function createFeatureFromOpenLayers(olFeature) {
     case 'LineString':
       Object.assign(result, {
         type: FeatureType.LINE_STRING,
+        filled: false,
         points: coordinates.map(unary(lonLatFromMapViewCoordinate)),
       });
       break;
@@ -85,6 +88,7 @@ export function createFeatureFromOpenLayers(olFeature) {
 
       Object.assign(result, {
         type: FeatureType.POLYGON,
+        filled: true,
         points: coordinates[0]
           .map(unary(lonLatFromMapViewCoordinate))
           .slice(0, -1),

@@ -85,7 +85,7 @@ const labelStrokes = {
 
 // TODO: cache the style somewhere?
 const styleForFeature = (feature, selected = false) => {
-  const { color, label, labelStyle, type } = feature;
+  const { color, label, labelStyle, type, filled } = feature;
   const parsedColor = createColor(color || primaryColor);
   const styles = [];
   const radius = 6;
@@ -119,16 +119,19 @@ const styleForFeature = (feature, selected = false) => {
     // Fallthrough
 
     default:
-      styles.push(
-        new Style({
-          fill: fill(
-            parsedColor
-              .fade(selected ? 0.5 : 0.75)
-              .rgb()
-              .array()
-          ),
-        })
-      );
+      if (filled) {
+        styles.push(
+          new Style({
+            fill: fill(
+              parsedColor
+                .fade(selected ? 0.5 : 0.75)
+                .rgb()
+                .array()
+            ),
+          })
+        );
+      }
+
       if (selected) {
         styles.push(whiteThickOutlineStyle);
       }
