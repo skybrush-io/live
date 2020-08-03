@@ -75,7 +75,7 @@ export default connect(
     // TODO(ntamas): getFarthestDistanceFromHome() is recalculated all the time;
     // we need to fix this
     maxDistance:
-      getSetupStageStatuses(state).setupTakeoffArea === Status.NEXT
+      getSetupStageStatuses(state).setupTakeoffArea !== Status.OFF
         ? getFarthestDistanceFromHome(state)
         : undefined,
     status: getSetupStageStatuses(state).setupTakeoffArea,
