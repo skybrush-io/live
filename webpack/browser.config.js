@@ -3,12 +3,12 @@
 
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
-const merge = require('webpack-merge');
+const { merge } = require('webpack-merge');
 
 const baseConfig = require('./base.config.js');
 const { htmlMetaTags, projectRoot } = require('./helpers');
 
-module.exports = merge.smart(baseConfig, {
+module.exports = merge(baseConfig, {
   entry: {
     polyfill: ['@babel/polyfill', 'whatwg-fetch'],
     app: './src/index',

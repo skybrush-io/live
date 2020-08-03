@@ -1,9 +1,9 @@
-const merge = require('webpack-merge');
+const { merge } = require('webpack-merge');
 const baseConfig = require('./base.config.js');
 
 const plugins = [];
 
-module.exports = merge.smart(baseConfig, {
+module.exports = merge(baseConfig, {
   entry: ['@babel/polyfill', './launcher.js'],
   output: {
     filename: 'launcher.bundle.js',

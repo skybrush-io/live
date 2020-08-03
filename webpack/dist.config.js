@@ -3,7 +3,7 @@
 
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
-const merge = require('webpack-merge');
+const { merge } = require('webpack-merge');
 
 const baseConfig = require('./base.config.js');
 const { htmlMetaTags: baseHtmlMetaTags, outputDir, projectRoot } = require('./helpers');
@@ -12,7 +12,7 @@ const htmlMetaTags = { ...baseHtmlMetaTags };
 
 delete htmlMetaTags["Content-Security-Policy"];
 
-module.exports = merge.smart(baseConfig, {
+module.exports = merge(baseConfig, {
   entry: {
     polyfill: ['@babel/polyfill', 'whatwg-fetch'],
     app: './src/index',
