@@ -24,11 +24,22 @@ export const getFeaturesInOrder = createSelector(
 
 /**
  * Selector that calculates and caches the list of all the layers in the
- * state object, in exactly the same order as they should appear on the UI.
+ * state object, in exactly the same order as they should appear on the UI,
+ * bottom layer first.
  */
-export const getLayersInOrder = createSelector(
+export const getLayersInBottomFirstOrder = createSelector(
   (state) => state.map.layers,
   selectOrdered
+);
+
+/**
+ * Selector that calculates and caches the list of all the layers in the
+ * state object, in exactly the same order as they should appear on the UI,
+ * top layer first.
+ */
+export const getLayersInTopmostFirstOrder = createSelector(
+  getLayersInBottomFirstOrder,
+  layers => layers.slice().reverse()
 );
 
 /**
@@ -36,6 +47,6 @@ export const getLayersInOrder = createSelector(
  * state object, in exactly the same order as they should appear on the UI.
  */
 export const getVisibleLayersInOrder = createSelector(
-  getLayersInOrder,
+  getLayersInBottomFirstOrder,
   (layers) => layers.filter(isLayerVisible)
 );
