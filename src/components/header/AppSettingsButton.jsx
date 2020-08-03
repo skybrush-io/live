@@ -8,7 +8,7 @@ import GenericHeaderButton from './GenericHeaderButton';
 import { toggleAppSettingsDialog } from '~/actions/app-settings';
 
 const AppSettingsButtonPresentation = (props) => (
-  <GenericHeaderButton {...props} tooltip='Settings'>
+  <GenericHeaderButton {...props} tooltip='Preferences'>
     <SettingsIcon />
   </GenericHeaderButton>
 );
