@@ -94,7 +94,7 @@ class ContextMenuInteraction extends Interaction {
     });
 
     const defaultOptions = {
-      condition: Condition.rightClick,
+      condition: Condition.contextMenu,
       threshold: Number.POSITIVE_INFINITY,
     };
     options = Object.assign(defaultOptions, options);
