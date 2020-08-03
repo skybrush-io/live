@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 
 import * as Coordinate from 'ol/coordinate';
 import Point from 'ol/geom/Point';
+import { getPointResolution } from 'ol/proj';
 import { Circle, RegularShape, Style, Text } from 'ol/style';
 
 import { Feature, geom, layer as olLayer, source } from '@collmot/ol-react';
@@ -304,7 +305,7 @@ const HomePositionsVectorSource = ({
   if (showOrigin && origin) {
     const globalIdOfOrigin = originIdToGlobalId('');
     const tail = mapViewCoordinateFromLonLat(origin);
-    const armLength = 50; /* meters */
+    const armLength = 50 /* meters */ / getPointResolution("EPSG:3857", 1, tail);
     const headY = [0, coordinateSystemType === 'nwu' ? armLength : -armLength];
     const headX = [armLength, 0];
     Coordinate.rotate(headX, toRadians(90 - orientation));
