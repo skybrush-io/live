@@ -90,7 +90,7 @@ const LayerList = connect(
   }),
   // mapDispatchToProps
   (dispatch) => ({
-    onChange(event, layerId) {
+    onChange(_event, layerId) {
       dispatch(showLayersDialog(layerId));
     },
 

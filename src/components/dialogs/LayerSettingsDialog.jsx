@@ -324,19 +324,22 @@ const LayerSettingsDialog = connect(
     };
   },
   // mapDispatchToProps
-  (dispatch) => ({
-    onClose() {
+  {
+    onClose: () => (dispatch, getState) => {
+      const state = getState();
+      const { layerSettings } = state.dialogs;
+      const { selectedLayer: selectedLayerId } = layerSettings || {};
+      const selectedLayer = selectedLayerId ? state.map.layers.byId[selectedLayerId] : undefined;
+
+      if (selectedLayer && selectedLayer.type === LayerType.UNTYPED) {
+        dispatch(removeLayer(selectedLayerId));
+      }
+
       dispatch(closeLayersDialog());
     },
-
-    onMoveLayer(layerId, delta) {
-      dispatch(adjustLayerZIndex(layerId, delta));
-    },
-
-    onRemoveLayer(layerId) {
-      dispatch(removeLayer(layerId));
-    },
-  })
+    onMoveLayer: adjustLayerZIndex,
+    onRemoveLayer: removeLayer
+  }
 )(LayerSettingsDialogPresentation);
 
 export default LayerSettingsDialog;

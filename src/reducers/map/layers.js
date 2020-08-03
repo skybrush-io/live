@@ -41,6 +41,18 @@ const reducer = handleActions(
       let { name } = action.payload;
       const { type } = action.payload;
 
+      if (!type && !name) {
+        // This would be an untyped layer and we would be free to choose its
+        // name. This has to be handled in a special way: if there is already
+        // an untyped layer in the layer list, just return the ID of that.
+        for (const [layerId, layer] of Object.entries(state.byId)) {
+          if (!layer.type || layer.type === LayerType.UNTYPED) {
+            action.id = layerId;
+            return state;
+          }
+        }
+      }
+
       if (!name) {
         // Generate a sensible name if no name was given
         const existingNames = map(state.byId, (layer) => layer.label);

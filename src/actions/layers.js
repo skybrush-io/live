@@ -19,7 +19,7 @@ import {
 
 /**
  * Action factory that creates an action that adds a new (typed or untyped)
- * layer.
+ * layer with the given name and type.
  *
  * @param {string?} name  the name of the layer to add; when omitted, a
  *        name will be generated automatically
