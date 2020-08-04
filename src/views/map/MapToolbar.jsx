@@ -80,7 +80,7 @@ const MapToolbarPresentation = ({
 
       <MapToolbarSeparator />
 
-      <FitAllFeaturesButton duration={500} margin={64} />
+      <FitAllFeaturesButton duration={500} margin={32} />
     </div>
   );
 };

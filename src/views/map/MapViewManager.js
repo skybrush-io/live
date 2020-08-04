@@ -5,6 +5,7 @@
 
 import round from 'lodash-es/round';
 import { isEmpty } from 'ol/extent';
+import { fromExtent } from 'ol/geom/Polygon';
 
 import { toDegrees, toRadians } from '~/utils/math';
 
@@ -47,17 +48,25 @@ export default class MapViewManager {
    *
    * @param {Object} extent The extent to fit.
    * @param {number} options.duration The desired duration of the transition.
+   * @param {number} options.padding  The padding on each side of the bounding box
    */
   fitMapViewToExtent = (extent, options) => {
-    const { duration } = {
+    const { duration, padding } = {
       duration: 1000,
+      padding: 0,
       ...options,
     };
 
     if (isEmpty(extent)) {
       console.warn('Cannot fit empty extent');
     } else {
-      this.view.fit(extent, { duration });
+      this.view.fit(fromExtent(extent), {
+        duration,
+        padding:
+          typeof padding === 'number'
+            ? [padding, padding, padding, padding]
+            : padding,
+      });
     }
   };
 

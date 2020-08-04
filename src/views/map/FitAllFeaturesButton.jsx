@@ -25,9 +25,9 @@ import { showNotification } from '~/features/snackbar/slice';
 /**
  * React Component to adjust the view so that it fits all of the current features.
  *
- * @param {Object} props properties of the react component
+ * @param {Object} props properties of the React component
  * @property {number} margin amount of margin to leave between the features
- * and the border of the view
+ * and the border of the view (in pixels)
  * @property {number} duration the amount of time the transition should take (in ms)
  *
  * @emits {mapReferenceRequestSignal} requests map reference.
@@ -130,9 +130,9 @@ class FitAllFeaturesButton extends React.Component {
       Extent.createEmpty()
     );
 
-    const bufferedExtent = Extent.buffer(mergedExtent, this.props.margin);
-
-    mapViewToExtentSignal.dispatch(bufferedExtent);
+    mapViewToExtentSignal.dispatch(mergedExtent, {
+      padding: this.props.margin,
+    });
   }
 
   /**
