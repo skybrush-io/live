@@ -10,29 +10,55 @@ import Typography from '@material-ui/core/Typography';
 
 import { changeLayerType } from '~/actions/layers';
 import {
+  areMultipleInstancesAllowedForLayerType,
   LayerTypes,
   iconForLayerType,
   labelForLayerType,
 } from '~/model/layers';
+import { getLayersInBottomFirstOrder } from '~/selectors/ordered';
+
+// === Selector that finds all the layer types that can be added to the map now ===
+
+const selectLayerTypesThatCanBeAdded = (state) => {
+  const result = [];
+
+  const existingLayerTypes = getLayersInBottomFirstOrder(state).map(layer => layer.type);
+
+  for (const layerType of LayerTypes) {
+    if (
+      areMultipleInstancesAllowedForLayerType(layerType) ||
+      !existingLayerTypes.includes(layerType)
+    ) {
+      result.push(layerType);
+    }
+  }
+  
+  return result;
+};
 
 // === Settings for this particular layer type ===
 
 /* eslint-disable react/jsx-no-bind */
-const UntypedLayerSettingsPresentation = ({ onLayerTypeSelected }) => {
-  const items = LayerTypes.map((layerType) => (
-    <Grid key={layerType} item xs={8} sm={4}>
-      <Card
-        style={{ cursor: 'pointer', height: '100%', userSelect: 'none' }}
-        onClick={() => onLayerTypeSelected(layerType)}
-      >
-        <CardHeader
-          avatar={iconForLayerType(layerType)}
-          title={labelForLayerType(layerType)}
-          style={{ paddingLeft: 16, paddingRight: 16, height: '100%' }}
-        />
-      </Card>
-    </Grid>
-  ));
+const UntypedLayerSettingsPresentation = ({ enabledLayerTypes, layerTypes, onLayerTypeSelected }) => {
+  const items = layerTypes.map((layerType) => {
+    const enabled = enabledLayerTypes.includes(layerType);
+    return (
+      <Grid key={layerType} item xs={8} sm={4}>
+        <Card
+          style={{ cursor: enabled ? 'pointer' : 'auto', height: '100%', userSelect: 'none', opacity: enabled ? 1 : 0.54 }}
+          onClick={enabled ? () => onLayerTypeSelected(layerType) : null}
+          elevation={enabled ? 1 : 0}
+          variant={enabled ? 'outlined' : 'elevation'}
+        >
+          <CardHeader
+            avatar={iconForLayerType(layerType)}
+            title={labelForLayerType(layerType)}
+            style={{ paddingLeft: 16, paddingRight: 16, height: '100%' }}
+          />
+        </Card>
+      </Grid>
+    );
+  });
   return (
     <Box display='flex' flexDirection='column'>
       <Typography gutterBottom variant='subtitle1' component='p'>
@@ -42,7 +68,7 @@ const UntypedLayerSettingsPresentation = ({ onLayerTypeSelected }) => {
         container
         flex='1'
         alignItems='stretch'
-        justify='space-between'
+        justify='left'
         spacing={2}
       >
         {items}
@@ -56,12 +82,18 @@ UntypedLayerSettingsPresentation.propTypes = {
   layer: PropTypes.object,
   layerId: PropTypes.string,
 
+  layerTypes: PropTypes.arrayOf(PropTypes.string),
+  enabledLayerTypes: PropTypes.arrayOf(PropTypes.string),
+  
   onLayerTypeSelected: PropTypes.func,
 };
 
 export const UntypedLayerSettings = connect(
   // mapStateToProps
-  (state, ownProps) => ({}),
+  (state) => ({
+    layerTypes: LayerTypes,
+    enabledLayerTypes: selectLayerTypesThatCanBeAdded(state)
+  }),
   // mapDispatchToProps
   (dispatch, ownProps) => ({
     onLayerTypeSelected: (value) => {
@@ -72,17 +104,11 @@ export const UntypedLayerSettings = connect(
 
 // === The actual layer to be rendered ===
 
-class UntypedLayerPresentation extends React.Component {
-  render() {
-    return false;
-  }
-}
-
-UntypedLayerPresentation.propTypes = {};
+const UntypedLayerPresentation = () => null;
 
 export const UntypedLayer = connect(
   // mapStateToProps
-  (state, ownProps) => ({}),
+  null,
   // mapDispatchToProps
-  (dispatch, ownProps) => ({})
+  {}
 )(UntypedLayerPresentation);

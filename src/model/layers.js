@@ -106,6 +106,7 @@ const _propertiesForLayerTypes = {
       strokeWidth: 2,
       fillColor: { r: 170, g: 170, b: 225, alpha: 0.5 },
     },
+    multiple: true
   },
   [LayerType.HEATMAP]: {
     label: 'Heatmap',
@@ -155,6 +156,7 @@ const _propertiesForLayerTypes = {
       url: 'http://ows.mundialis.de/services/service',
       layers: 'TOPO-OSM-WMS',
     },
+    multiple: true
   },
   [LayerType.UAVS]: {
     label: 'UAVs',
@@ -198,6 +200,17 @@ export function createNewLayer(id, layerType, name, parameters) {
     visible: effectiveLayerType !== LayerType.UNTYPED,
     parameters: parameters || defaultParametersForLayerType(effectiveLayerType),
   };
+}
+
+/**
+ * Returns whether the given layer can be added to the map more than once.
+ *
+ * @param  {string} layerType the type of the layer; must be one of the
+ *         constants from the {@link LayerType} enum
+ * @return {boolean} whether the given layer can be added to the map more than once.
+ */
+export function areMultipleInstancesAllowedForLayerType(layerType) {
+  return _propertiesForLayerTypes[layerType].multiple;
 }
 
 /**
