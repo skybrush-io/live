@@ -1,16 +1,22 @@
 import createColor from 'color';
+import isEmpty from 'lodash-es/isEmpty';
 import unary from 'lodash-es/unary';
 import PropTypes from 'prop-types';
 import { Circle, Style, Text } from 'ol/style';
-import React from 'react';
+import React, { useCallback, useState } from 'react';
 import { connect } from 'react-redux';
 
 import { Feature, geom, interaction, layer, source } from '@collmot/ol-react';
 
 import { Tool } from '../tools';
 
-import { FeatureType, LabelStyle } from '~/model/features';
-import { featureIdToGlobalId } from '~/model/identifiers';
+import { updateFeatureCoordinates } from '~/actions/features';
+import {
+  createFeatureFromOpenLayers,
+  FeatureType,
+  LabelStyle,
+} from '~/model/features';
+import { featureIdToGlobalId, globalIdToFeatureId } from '~/model/identifiers';
 import { setLayerEditable, setLayerSelectable } from '~/model/layers';
 import { getFeaturesInOrder } from '~/selectors/ordered';
 import { getSelectedFeatureIds } from '~/selectors/selection';
@@ -183,31 +189,99 @@ function markAsSelectableAndEditable(layer) {
   }
 }
 
+function takeFeatureRevisionSnapshot(features) {
+  const result = {};
+  for (const feature of features) {
+    result[feature.getId()] = feature.getRevision();
+  }
+  return result;
+}
+
+function getFeaturesThatChanged(features, snapshot) {
+  const result = [];
+  const addedIds = [];
+  for (const feature of features) {
+    const id = feature.getId();
+    if (addedIds.includes(id)) {
+      // For some reason, some features appear twice in the features array
+      // in the onModifyEnd array in OpenLayers. Not sure if it is a bug in
+      // OpenLayers or on our side, but we need to be careful nevertheless.
+      continue;
+    }
+    if (snapshot[id] === undefined || snapshot[id] !== feature.getRevision()) {
+      result.push(feature);
+      addedIds.push(id);
+    }
+  }
+  return result;
+}
+
 const FeaturesLayerPresentation = ({
   features,
+  onFeatureModificationStarted,
   onFeaturesModified,
   selectedFeatureIds,
   selectedTool,
   zIndex,
-}) => (
-  <layer.Vector
-    ref={markAsSelectableAndEditable}
-    updateWhileAnimating
-    updateWhileInteracting
-    zIndex={zIndex}
-  >
-    <source.Vector>
-      {features
-        .filter((feature) => feature.visible)
-        .map((feature) =>
-          renderFeature(feature, selectedFeatureIds.includes(feature.id))
-        )}
-      {selectedTool === Tool.EDIT_FEATURE ? (
-        <interaction.Modify onModifyEnd={onFeaturesModified} />
-      ) : null}
-    </source.Vector>
-  </layer.Vector>
-);
+}) => {
+  // We actually do _not_ want the component to re-render when this variable
+  // changes because we only need it to keep track of something between an
+  // onModifyStart and an onModifyEnd event.
+  const featureSnapshot = useState({ snapshot: null })[0];
+
+  const onModifyStart = useCallback(
+    (event) => {
+      // Take a snapshot of all the features in the event so we can figure out
+      // later which ones were modified
+      featureSnapshot.value = takeFeatureRevisionSnapshot(
+        event.features.getArray()
+      );
+      if (onFeatureModificationStarted) {
+        onFeatureModificationStarted(event);
+      }
+    },
+    [onFeatureModificationStarted]
+  );
+
+  const onModifyEnd = useCallback(
+    (event) => {
+      if (onFeaturesModified) {
+        onFeaturesModified(
+          event,
+          getFeaturesThatChanged(
+            event.features.getArray(),
+            featureSnapshot.value
+          )
+        );
+      }
+      featureSnapshot.value = null;
+    },
+    [onFeaturesModified]
+  );
+
+  return (
+    <layer.Vector
+      ref={markAsSelectableAndEditable}
+      updateWhileAnimating
+      updateWhileInteracting
+      zIndex={zIndex}
+    >
+      <source.Vector>
+        {features
+          .filter((feature) => feature.visible)
+          .map((feature) =>
+            renderFeature(feature, selectedFeatureIds.includes(feature.id))
+          )}
+        {selectedTool === Tool.EDIT_FEATURE ? (
+          <interaction.Modify
+            onModifyStart={onModifyStart}
+            onModifyEnd={onModifyEnd}
+          />
+        ) : null}
+      </source.Vector>
+    </layer.Vector>
+  );
+};
 
 FeaturesLayerPresentation.propTypes = {
   selectedTool: PropTypes.string,
@@ -216,6 +290,7 @@ FeaturesLayerPresentation.propTypes = {
   features: PropTypes.arrayOf(PropTypes.object).isRequired,
   selectedFeatureIds: PropTypes.arrayOf(PropTypes.string).isRequired,
 
+  onFeatureModificationStarted: PropTypes.func,
   onFeaturesModified: PropTypes.func,
 };
 
@@ -226,12 +301,22 @@ export const FeaturesLayer = connect(
     selectedFeatureIds: getSelectedFeatureIds(state),
   }),
   // mapDispatchToProps
-  () => ({
-    onFeaturesModified: () => {
-      // Const { features } = event
-      /* TODO(ntamas): features contains all the features in the layer, not
-       * only the ones being modified. We need to figure out which ones were
-       * actually modified and sync them back to the state store */
+  (dispatch) => ({
+    onFeaturesModified: (_event, changedFeatures) => {
+      const updatedUserFeatures = {};
+      for (const feature of changedFeatures) {
+        const userFeatureId = globalIdToFeatureId(feature.getId());
+        if (userFeatureId) {
+          // Feature is a user-defined feature so update it in the Redux store
+          updatedUserFeatures[userFeatureId] = createFeatureFromOpenLayers(
+            feature
+          ).points;
+        }
+      }
+
+      if (!isEmpty(updatedUserFeatures)) {
+        dispatch(updateFeatureCoordinates(updatedUserFeatures));
+      }
     },
   })
 )(FeaturesLayerPresentation);
