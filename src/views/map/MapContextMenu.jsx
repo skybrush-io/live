@@ -11,6 +11,12 @@ import Divider from '@material-ui/core/Divider';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import MenuItem from '@material-ui/core/MenuItem';
 
+// border_outer vs border_clear
+// lock vs lock_open
+// center_focus vs center_focus_weak
+// check_circle_outline / done
+import BorderClear from '@material-ui/icons/BorderClear';
+import BorderOuter from '@material-ui/icons/BorderOuter';
 import ActionDelete from '@material-ui/icons/Delete';
 import Edit from '@material-ui/icons/Edit';
 import Flight from '@material-ui/icons/Flight';
@@ -37,11 +43,17 @@ import ContextMenu from '../../components/ContextMenu';
 import {
   getSelectedFeatureIds,
   getSelectedFeatureLabels,
+  getSelectedFeatureTypes,
   getSelectedUAVIds,
 } from '../../selectors/selection';
 import * as messaging from '../../utils/messaging';
 
 import { updateOutdoorShowSettings } from '~/features/show/actions';
+import {
+  clearGeofencePolygonId,
+  setGeofencePolygonId,
+} from '~/features/mission/slice';
+import { getGeofencePolygonId } from '~/features/mission/selectors';
 import { showNotification } from '~/features/snackbar/slice';
 
 /**
@@ -50,10 +62,12 @@ import { showNotification } from '~/features/snackbar/slice';
  */
 class MapContextMenu extends React.Component {
   static propTypes = {
+    clearGeofencePolygonId: PropTypes.func.isRequired,
     contextProvider: PropTypes.func,
     editFeature: PropTypes.func.isRequired,
     renameFeature: PropTypes.func.isRequired,
     removeFeaturesByIds: PropTypes.func.isRequired,
+    setGeofencePolygonId: PropTypes.func.isRequired,
     selectUAVInMessagesDialog: PropTypes.func.isRequired,
     setMapCoordinateSystemOrigin: PropTypes.func,
     setShowCoordinateSystemOrigin: PropTypes.func,
@@ -90,7 +104,12 @@ class MapContextMenu extends React.Component {
         ref={this._contextMenu}
         contextProvider={this.props.contextProvider}
       >
-        {({ selectedFeatureIds, selectedUAVIds }) => {
+        {({
+          selectedFeatureIds,
+          selectedFeatureTypes,
+          selectedUAVIds,
+          geofencePolygonId,
+        }) => {
           const result = [];
           const hasSelectedUAVs = selectedUAVIds && selectedUAVIds.length > 0;
           const hasSingleSelectedUAV =
@@ -218,6 +237,29 @@ class MapContextMenu extends React.Component {
                 Properties…
               </MenuItem>,
               <MenuItem
+                key='geofence'
+                dense
+                disabled={
+                  !selectedFeatureIds ||
+                  selectedFeatureIds.length !== 1 ||
+                  !['circle', 'polygon'].includes(selectedFeatureTypes[0])
+                }
+                onClick={
+                  selectedFeatureIds[0] === geofencePolygonId
+                    ? this._unsetSelectedFeatureAsGeofence
+                    : this._setSelectedFeatureAsGeofence
+                }
+              >
+                <ListItemIcon>
+                  {selectedFeatureIds[0] === geofencePolygonId ? (
+                    <BorderOuter />
+                  ) : (
+                    <BorderClear />
+                  )}
+                </ListItemIcon>
+                Use as geofence
+              </MenuItem>,
+              <MenuItem
                 key='remove'
                 dense
                 disabled={
@@ -304,8 +346,25 @@ class MapContextMenu extends React.Component {
     renameFeature(selectedFeatureIds[0], selectedFeatureLabels[0]);
   };
 
-  _removeSelectedFeatures = (event, context) => {
+  _unsetSelectedFeatureAsGeofence = (event, context) => {
+    const { clearGeofencePolygonId } = this.props;
+    clearGeofencePolygonId();
+  };
+
+  _setSelectedFeatureAsGeofence = (event, context) => {
+    const { setGeofencePolygonId } = this.props;
     const { selectedFeatureIds } = context;
+    setGeofencePolygonId(selectedFeatureIds[0]);
+    // this.props.setFeatureAsGeofence(selectedFeatureIds[0]);
+  };
+
+  _removeSelectedFeatures = (event, context) => {
+    const { selectedFeatureIds, geofencePolygonId } = context;
+
+    if (selectedFeatureIds.includes(geofencePolygonId)) {
+      this.props.clearGeofencePolygonId();
+    }
+
     this.props.removeFeaturesByIds(selectedFeatureIds);
   };
 
@@ -351,11 +410,21 @@ class MapContextMenu extends React.Component {
 const getContextProvider = createSelector(
   getSelectedFeatureIds,
   getSelectedFeatureLabels,
+  getSelectedFeatureTypes,
   getSelectedUAVIds,
-  (selectedFeatureIds, selectedFeatureLabels, selectedUAVIds) => (context) => ({
+  getGeofencePolygonId,
+  (
     selectedFeatureIds,
     selectedFeatureLabels,
+    selectedFeatureTypes,
     selectedUAVIds,
+    geofencePolygonId
+  ) => (context) => ({
+    selectedFeatureIds,
+    selectedFeatureLabels,
+    selectedFeatureTypes,
+    selectedUAVIds,
+    geofencePolygonId,
     ...context,
   })
 );
@@ -367,6 +436,9 @@ const MapContextMenuContainer = connect(
   }),
   // mapDispatchToProps
   (dispatch) => ({
+    clearGeofencePolygonId: () => {
+      dispatch(clearGeofencePolygonId());
+    },
     editFeature: (id) => {
       dispatch(showFeatureEditorDialog(id));
     },
@@ -384,6 +456,9 @@ const MapContextMenuContainer = connect(
     },
     selectUAVInMessagesDialog: (id) => {
       dispatch(selectUAVInMessagesDialog(id));
+    },
+    setGeofencePolygonId: (id) => {
+      dispatch(setGeofencePolygonId(id));
     },
     setMapCoordinateSystemOrigin: (coords) => {
       dispatch(setFlatEarthCoordinateSystemOrigin(coords));

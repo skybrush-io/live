@@ -2,6 +2,7 @@ import AppSettingsDialog from './app-settings';
 import AuthenticationDialog from './AuthenticationDialog';
 import DeauthenticationDialog from './DeauthenticationDialog';
 import FeatureEditorDialog from './FeatureEditorDialog';
+import GeofenceSettingsDialog from './GeofenceSettingsDialog';
 import GlobalErrorDialog from './GlobalErrorDialog';
 import LayerSettingsDialog from './LayerSettingsDialog';
 import MessagesDialog from './MessagesDialog';
@@ -16,6 +17,7 @@ const dialogs = {
   AuthenticationDialog,
   DeauthenticationDialog,
   FeatureEditorDialog,
+  GeofenceSettingsDialog,
   GlobalErrorDialog,
   LayerSettingsDialog,
   MessagesDialog,

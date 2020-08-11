@@ -22,7 +22,10 @@ import {
 
 import { Status } from '~/components/semantics';
 
-import { getEmptyMappingSlotIndices } from '~/features/mission/selectors';
+import {
+  getEmptyMappingSlotIndices,
+  getGeofenceStatus,
+} from '~/features/mission/selectors';
 import { areAllPreflightChecksTicked } from '~/features/preflight/selectors';
 import {
   areAllUAVsInMissionWithoutErrors,
@@ -59,6 +62,11 @@ const stages = {
           : Status.SKIPPED
         : Status.OFF,
     requires: ['setupEnvironment'],
+  },
+
+  setupGeofence: {
+    evaluate: getGeofenceStatus,
+    requires: ['selectShowFile', 'setupEnvironment'],
   },
 
   uploadShow: {
@@ -129,6 +137,7 @@ const stageOrder = [
   'selectShowFile',
   'setupEnvironment',
   'setupTakeoffArea',
+  'setupGeofence',
   'uploadShow',
   'waitForOnboardPreflightChecks',
   'performManualPreflightChecks',

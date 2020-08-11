@@ -10,6 +10,7 @@ import { createSlice } from '@reduxjs/toolkit';
 
 import { COORDINATE_SYSTEM_TYPE } from './constants';
 import { moveItemsBetweenQueues } from './utils';
+import { convexHull } from '~/utils/math';
 
 import { noPayload } from '~/utils/redux';
 
@@ -24,6 +25,8 @@ const { actions, reducer } = createSlice({
 
     sourceUrl: null,
     changedSinceLoaded: false,
+
+    geofenceCoordinates: [],
 
     environment: {
       editing: false,
@@ -324,6 +327,16 @@ const { actions, reducer } = createSlice({
       state.uploadDialog.showLastUploadResult = false;
     },
 
+    recalculateAutoGeofence: noPayload((state) => {
+      const allDroneCoordinates = [].concat(
+        ...state.data.swarm.drones.map((d) =>
+          d.settings.trajectory.points.map((p) => [p[1][0], p[1][1]])
+        )
+      );
+
+      state.geofenceCoordinates = convexHull(allDroneCoordinates);
+    }),
+
     revokeTakeoffAreaApproval: noPayload((state) => {
       state.preflight.takeoffAreaApprovedAt = null;
     }),
@@ -457,6 +470,7 @@ export const {
   openUploadDialog,
   prepareForNextUpload,
   _retryFailedUploads,
+  recalculateAutoGeofence,
   revokeTakeoffAreaApproval,
   setEnvironmentType,
   setOutdoorShowOrientation,

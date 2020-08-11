@@ -7,7 +7,8 @@ import { Fill, Stroke } from 'ol/style';
 export const primaryColor = '#2196f3'; // Blue[500] in Material-UI
 
 export const fill = (color) => new Fill({ color });
-export const stroke = (color, width = 1) => new Stroke({ color, width });
+export const stroke = (color, width = 1, lineDash = []) =>
+  new Stroke({ color, width, lineDash });
 
 export const thickOutline = (color) => stroke(color, 5);
 export const thinOutline = (color) => stroke(color, 2);
@@ -24,3 +25,5 @@ export const shadowThickOutline = thickOutline('rgba(0, 0, 0, 0.6)');
 export const whiteVeryThinOutline = veryThinOutline('white');
 export const whiteThinOutline = thinOutline('white');
 export const whiteThickOutline = thickOutline('white');
+
+export const dashedThickOutline = (color) => stroke(color, 5, [5, 10]);

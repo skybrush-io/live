@@ -298,6 +298,15 @@ export const getShowLoadingProgressPercentage = (state) => {
 };
 
 /**
+ * Returns the coordinates of the polygon that has been calculated as suggested
+ * automatic geofence for the currently loaded show.
+ */
+export const getGeofenceCoordinates = (state) => {
+  const result = get(state, 'show.geofenceCoordinates');
+  return Array.isArray(result) ? result : [];
+};
+
+/**
  * Returns the metadata of the show, if any.
  */
 export const getShowMetadata = createSelector(

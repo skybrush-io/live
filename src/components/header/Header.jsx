@@ -14,6 +14,7 @@ import ConnectionStatusButton from './ConnectionStatusButton';
 import FullScreenButton from './FullScreenButton';
 import HelpButton from './HelpButton';
 import ServerConnectionSettingsButton from './ServerConnectionSettingsButton';
+import GeofenceSettingsButton from './GeofenceSettingsButton';
 import ToolboxButton from './ToolboxButton';
 
 import UAVStatusSummary from '../uavs/UAVStatusSummary';
@@ -82,6 +83,7 @@ const Header = ({ isSidebarOpen, sessionExpiresAt, toggleSidebar }) => (
       <ConnectionStatusButton isAlwaysVisible />
       <hr />
       <ServerConnectionSettingsButton />
+      <GeofenceSettingsButton />
       <AuthenticationButton />
       <hr />
       <ToolboxButton />

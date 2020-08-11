@@ -30,7 +30,10 @@ import {
   thinOutline,
   whiteThickOutline,
   whiteThinOutline,
+  dashedThickOutline,
 } from '~/utils/styles';
+
+import { getGeofencePolygonId } from '~/features/mission/selectors';
 
 // === Settings for this particular layer type ===
 
@@ -90,7 +93,7 @@ const labelStrokes = {
 };
 
 // TODO: cache the style somewhere?
-const styleForFeature = (feature, selected = false) => {
+const styleForFeature = (feature, selected = false, geofence = false) => {
   const { color, label, labelStyle, type, filled } = feature;
   const parsedColor = createColor(color || primaryColor);
   const styles = [];
@@ -144,7 +147,9 @@ const styleForFeature = (feature, selected = false) => {
 
       styles.push(
         new Style({
-          stroke: thinOutline(parsedColor.rgb().array()),
+          stroke: (geofence ? dashedThickOutline : thinOutline)(
+            parsedColor.rgb().array()
+          ),
         })
       );
   }
@@ -167,13 +172,13 @@ const styleForFeature = (feature, selected = false) => {
   return styles;
 };
 
-const renderFeature = (feature, selected) => {
+const renderFeature = (feature, selected, geofence) => {
   const { id } = feature;
   return (
     <Feature
       key={id}
       id={featureIdToGlobalId(id)}
-      style={styleForFeature(feature, selected)}
+      style={styleForFeature(feature, selected, geofence)}
     >
       {geometryForFeature(feature)}
     </Feature>
@@ -194,6 +199,7 @@ function takeFeatureRevisionSnapshot(features) {
   for (const feature of features) {
     result[feature.getId()] = feature.getRevision();
   }
+
   return result;
 }
 
@@ -208,16 +214,19 @@ function getFeaturesThatChanged(features, snapshot) {
       // OpenLayers or on our side, but we need to be careful nevertheless.
       continue;
     }
+
     if (snapshot[id] === undefined || snapshot[id] !== feature.getRevision()) {
       result.push(feature);
       addedIds.push(id);
     }
   }
+
   return result;
 }
 
 const FeaturesLayerPresentation = ({
   features,
+  geofencePolygonId,
   onFeatureModificationStarted,
   onFeaturesModified,
   selectedFeatureIds,
@@ -254,6 +263,7 @@ const FeaturesLayerPresentation = ({
           )
         );
       }
+
       featureSnapshot.value = null;
     },
     [onFeaturesModified]
@@ -270,7 +280,11 @@ const FeaturesLayerPresentation = ({
         {features
           .filter((feature) => feature.visible)
           .map((feature) =>
-            renderFeature(feature, selectedFeatureIds.includes(feature.id))
+            renderFeature(
+              feature,
+              selectedFeatureIds.includes(feature.id),
+              feature.id === geofencePolygonId
+            )
           )}
         {selectedTool === Tool.EDIT_FEATURE ? (
           <interaction.Modify
@@ -289,6 +303,7 @@ FeaturesLayerPresentation.propTypes = {
 
   features: PropTypes.arrayOf(PropTypes.object).isRequired,
   selectedFeatureIds: PropTypes.arrayOf(PropTypes.string).isRequired,
+  geofencePolygonId: PropTypes.string,
 
   onFeatureModificationStarted: PropTypes.func,
   onFeaturesModified: PropTypes.func,
@@ -299,6 +314,7 @@ export const FeaturesLayer = connect(
   (state) => ({
     features: getFeaturesInOrder(state),
     selectedFeatureIds: getSelectedFeatureIds(state),
+    geofencePolygonId: getGeofencePolygonId(state),
   }),
   // mapDispatchToProps
   (dispatch) => ({

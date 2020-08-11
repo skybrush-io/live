@@ -12,6 +12,7 @@ import FadeAndSlide from '~/components/transitions/FadeAndSlide';
 import { isShowAuthorizedToStartLocally } from '~/features/show/selectors';
 
 import EnvironmentButton from './EnvironmentButton';
+import GeofenceButton from './GeofenceButton';
 import LargeControlButtonGroup from './LargeControlButtonGroup';
 import LoadShowFromFileButton from './LoadShowFromFileButton';
 import ManualPreflightChecksButton from './ManualPreflightChecksButton';
@@ -67,6 +68,7 @@ const ShowControlPanelUpperSegment = ({ isAuthorized }) => {
 
             <EnvironmentButton />
             <TakeoffAreaButton />
+            <GeofenceButton />
             <UploadButton />
 
             <Divider />

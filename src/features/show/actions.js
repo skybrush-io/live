@@ -1,4 +1,8 @@
+import { FeatureType } from '~/model/features';
+import { getFeaturesInOrder } from '~/selectors/ordered';
+import { getGeofenceCoordinates } from '~/features/show/selectors';
 import get from 'lodash-es/get';
+import { addFeature, removeFeatures } from '~/actions/features';
 import throttle from 'lodash-es/throttle';
 import ky from 'ky';
 
@@ -8,11 +12,14 @@ import {
   getFailedUploadItems,
   getFirstPointsOfTrajectoriesInWorldCoordinates,
   getLastPointsOfTrajectoriesInWorldCoordinates,
+  getOutdoorShowCoordinateSystem,
   getOutdoorShowOrientation,
+  getShowCoordinateSystemTransformationObject,
 } from './selectors';
 import {
   approveTakeoffAreaAt,
   loadingProgress,
+  recalculateAutoGeofence,
   revokeTakeoffAreaApproval,
   setEnvironmentType,
   setOutdoorShowOrigin,
@@ -27,10 +34,14 @@ import {
   updateLandingPositions,
   updateTakeoffHeadings,
   setMappingLength,
+  setGeofencePolygonId,
 } from '~/features/mission/slice';
 import { showNotification } from '~/features/snackbar/slice';
 import { MessageSemantics } from '~/features/snackbar/types';
 import { createAsyncAction } from '~/utils/redux';
+
+// import { FlatEarthCoordinateSystem } from '~/utils/geography';
+import { simplifyPolygon, scalePolygon, growPolygon } from '~/utils/math';
 
 /**
  * Thunk that approves the takeoff area arrangement with the current timestamp.
@@ -54,6 +65,81 @@ export const setupMissionFromShow = () => (dispatch, getState) => {
   dispatch(updateHomePositions(homePositions));
   dispatch(updateLandingPositions(landingPositions));
   dispatch(updateTakeoffHeadings(orientation));
+};
+
+export const removeGeofencePolygon = () => (dispatch, getState) => {
+  const state = getState();
+
+  const showFeatureIds = getFeaturesInOrder(state)
+    .filter((feature) => feature.owner === 'show')
+    .map((feature) => feature.id);
+
+  dispatch(removeFeatures(showFeatureIds));
+};
+
+export const addGeofencePolygon = () => (dispatch, getState) => {
+  const state = getState();
+
+  const { margin, simplify, maxVertexCount } = state.dialogs.geofenceSettings;
+
+  const coordinates = getGeofenceCoordinates(state);
+  if (coordinates.length === 0) {
+    dispatch(
+      showNotification({
+        message: `Automatically calculated geofence coordinates not found.
+          Maybe no show is loaded?`,
+        semantics: MessageSemantics.ERROR,
+        permanent: true,
+      })
+    );
+    return;
+  }
+
+  const showCoordinateSystem = getOutdoorShowCoordinateSystem(state);
+  if (
+    !showCoordinateSystem.origin ||
+    typeof showCoordinateSystem.origin !== 'object'
+  ) {
+    throw new Error('Outdoor coordinate system not set up yet');
+  }
+
+  const transformation = getShowCoordinateSystemTransformationObject(state);
+
+  // const transformation = new FlatEarthCoordinateSystem(
+  //   getOutdoorShowCoordinateSystem(state)
+  //   state.show.environment.outdoor.coordinateSystem
+  // );
+
+  const MarginType = {
+    GROW: 'grow',
+    SCALE: 'scale',
+  };
+
+  const marginType = MarginType.GROW;
+
+  const marginFunctions = {
+    grow: growPolygon,
+    scale: scalePolygon,
+  };
+
+  const points = marginFunctions[marginType](
+    simplify ? simplifyPolygon(coordinates, maxVertexCount) : coordinates,
+    margin
+  ).map((c) => transformation.toLonLat(c));
+
+  const geofencePolygon = {
+    type: FeatureType.POLYGON,
+    owner: 'show',
+    points,
+  };
+  const action = addFeature(geofencePolygon);
+  dispatch(action);
+  dispatch(setGeofencePolygonId(action.featureId));
+};
+
+export const updateGeofencePolygon = () => (dispatch) => {
+  dispatch(removeGeofencePolygon());
+  dispatch(addGeofencePolygon());
 };
 
 export const updateOutdoorShowSettings = ({
@@ -194,6 +280,9 @@ function processShowInJSONFormatAndDispatchActions(spec, dispatch) {
 
   // Revoke the approval of the takeoff area in case it was approved
   dispatch(revokeTakeoffAreaApproval());
+
+  // Recalculate the suggested geofence based on the new trajectories
+  dispatch(recalculateAutoGeofence());
 }
 
 /**

@@ -501,6 +501,7 @@ class MapViewPresentation extends React.Component {
   _onDrawEnded = (event) => {
     try {
       const feature = createFeatureFromOpenLayers(event.feature);
+      feature.owner = 'user';
       this.props.dispatch(addFeature(feature));
     } catch (error) {
       handleError(error);

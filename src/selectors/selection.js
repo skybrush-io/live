@@ -86,6 +86,23 @@ export const getSelectedFeatureLabels = createSelector(
 );
 
 /**
+ * Selector that retrieves the list of the types of the selected features
+ * from the state object.
+ *
+ * @param  {Object}  state  the state of the application
+ * @return {string[]}  the list of selected feature types
+ */
+export const getSelectedFeatureTypes = createSelector(
+  getSelectedFeatureIds,
+  (state) => state.features.byId,
+  (featureIds, features) =>
+    reject(
+      featureIds.map((featureId) => features[featureId]),
+      isNil
+    ).map((feature) => feature.type)
+);
+
+/**
  * Selector that retrieves the list of selected coordinate system origin IDs
  * from the state object.
  *

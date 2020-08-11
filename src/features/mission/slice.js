@@ -46,6 +46,10 @@ const { actions, reducer } = createSlice({
       // -1 if no slot is being edited
       indexBeingEdited: -1,
     },
+
+    // geofence: {
+    geofencePolygonId: undefined,
+    // },
   },
 
   reducers: {
@@ -72,6 +76,13 @@ const { actions, reducer } = createSlice({
      */
     cancelMappingEditorSessionAtCurrentSlot: noPayload((state) => {
       state.mappingEditor.indexBeingEdited = -1;
+    }),
+
+    /**
+     * Clears the id determining the polygon that is to be used as a geofence.
+     */
+    clearGeofencePolygonId: noPayload((state) => {
+      state.geofencePolygonId = undefined;
     }),
 
     /**
@@ -163,6 +174,13 @@ const { actions, reducer } = createSlice({
       }
 
       state.mapping = newMapping;
+    },
+
+    /**
+     * Sets the id determining the polygon that is to be used as a geofence.
+     */
+    setGeofencePolygonId(state, action) {
+      state.geofencePolygonId = action.payload;
     },
 
     /**
@@ -268,12 +286,14 @@ const { actions, reducer } = createSlice({
 export const {
   adjustMissionMapping,
   cancelMappingEditorSessionAtCurrentSlot,
+  clearGeofencePolygonId,
   clearMapping,
   clearMappingSlot,
   commitMappingEditorSessionAtCurrentSlot,
   finishMappingEditorSession,
   removeUAVsFromMapping,
   replaceMapping,
+  setGeofencePolygonId,
   setMappingLength,
   startMappingEditorSession,
   startMappingEditorSessionAtSlot,

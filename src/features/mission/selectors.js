@@ -5,6 +5,7 @@ import reject from 'lodash-es/reject';
 import { createSelector } from '@reduxjs/toolkit';
 
 import { getSelectedUAVIds } from '~/selectors/selection';
+import { Status } from '~/components/semantics';
 
 /**
  * Returns the current list of home positions in the mission.
@@ -158,5 +159,22 @@ export const selectionIntersectsMapping = createSelector(
     }
 
     return false;
+  }
+);
+
+/**
+ * Gets the id determining the polygon that is to be used as a geofence.
+ */
+export const getGeofencePolygonId = (state) => state.mission.geofencePolygonId;
+
+export const getGeofenceStatus = createSelector(
+  getGeofencePolygonId,
+  (state) => state.features.byId,
+  (geofencePolygonId, featuresById) => {
+    return geofencePolygonId === undefined
+      ? Status.OFF
+      : featuresById[geofencePolygonId].owner === 'show'
+      ? Status.SUCCESS
+      : Status.WARNING;
   }
 );

@@ -1,5 +1,6 @@
 import createColor from 'color';
 import { lightBlue, grey, green, yellow } from '@material-ui/core/colors';
+import { Status } from './semantics';
 
 export const Colors = {
   off: grey[700],
@@ -24,5 +25,19 @@ export const Colors = {
 Colors.seriousWarning = createColor(Colors.warning)
   .mix(createColor(Colors.error))
   .string();
+
+export const statusColorMap = new Map([
+  [Status.OFF, Colors.off],
+  [Status.ERROR, Colors.error],
+  [Status.INFO, Colors.info],
+  [Status.SUCCESS, Colors.success],
+  [Status.WARNING, Colors.warning],
+  [Status.CRITICAL, Colors.seriousWarning],
+]);
+
+const magenta = '#f0f'; // Magenta usually denotes something that is missing.
+
+export const colorForStatus = (status) =>
+  statusColorMap.has(status) ? statusColorMap.get(status) : magenta;
 
 export default Colors;

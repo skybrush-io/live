@@ -109,6 +109,7 @@ const App = () => {
                 <dialogs.AuthenticationDialog />
                 <dialogs.DeauthenticationDialog />
                 <dialogs.FeatureEditorDialog />
+                <dialogs.GeofenceSettingsDialog />
                 <dialogs.GlobalErrorDialog />
                 <dialogs.LayerSettingsDialog />
                 <dialogs.MessagesDialog flock={flock} />
