@@ -24,6 +24,7 @@ import {
   getOutdoorShowCoordinateSystem,
   isShowAuthorizedToStartLocally,
   shouldRetryFailedUploadsAutomatically,
+  getShowMetadata,
 } from './selectors';
 import {
   cancelUpload,
@@ -92,10 +93,17 @@ function createShowConfigurationForUav(state, uavId) {
     );
   }
 
+  const { id: missionId } = getShowMetadata(state);
+
   return {
     ...getCommonShowSettings(state),
     ...settings,
     coordinateSystem,
+    mission: {
+      id: missionId,
+      index: missionIndex,
+      displayName: `${missionId || 'drone-show'}/${missionIndex}`,
+    },
   };
 }
 
