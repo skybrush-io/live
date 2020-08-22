@@ -102,7 +102,7 @@ function createShowConfigurationForUav(state, uavId) {
     mission: {
       id: missionId,
       index: missionIndex,
-      displayName: `${missionId || 'drone-show'}/${missionIndex}`,
+      displayName: `${missionId || 'drone-show'} / ${missionIndex + 1}`,
     },
   };
 }
