@@ -435,7 +435,6 @@ class MapViewPresentation extends React.Component {
         <ShowContextMenu
           layers={isLayerSelectable}
           projection='EPSG:4326'
-          selectAction={this._onFeatureSelected}
           threshold={40}
         >
           {/* The context menu that appears on the map when the user right-clicks */}

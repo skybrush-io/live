@@ -39,47 +39,52 @@ class ContextMenuInteraction extends Interaction {
           return true;
         }
 
+        // Prevent the default action for this event
         mapBrowserEvent.originalEvent.preventDefault();
 
-        // Create the layer selector function if needed
-        if (!this._layerSelectorFunction) {
-          this._layerSelectorFunction = this._createLayerSelectorFunction(
-            this._layers
+        // If we have a selection action, extend the selection as needed if the
+        // user clicked near something
+        if (this._selectAction) {
+          // Create the layer selector function if needed
+          if (!this._layerSelectorFunction) {
+            this._layerSelectorFunction = this._createLayerSelectorFunction(
+              this._layers
+            );
+          }
+
+          // Find the feature that is closest to the selection, in each
+          // matching layer
+          const { coordinate, map } = mapBrowserEvent;
+          const distanceFunction = partial(
+            this._distanceOfEventFromFeature,
+            mapBrowserEvent
           );
-        }
-
-        // Find the feature that is closest to the selection, in each
-        // matching layer
-        const { coordinate, map } = mapBrowserEvent;
-        const distanceFunction = partial(
-          this._distanceOfEventFromFeature,
-          mapBrowserEvent
-        );
-        const relevantFeatures = map
-          .getLayers()
-          .getArray()
-          .filter(this._isLayerFeasible)
-          .filter(this._layerSelectorFunction)
-          .map((layer) => {
-            const source = layer.getSource();
-            return source
-              ? source.getClosestFeatureToCoordinate(coordinate)
+          const relevantFeatures = map
+            .getLayers()
+            .getArray()
+            .filter(this._isLayerFeasible)
+            .filter(this._layerSelectorFunction)
+            .map((layer) => {
+              const source = layer.getSource();
+              return source
+                ? source.getClosestFeatureToCoordinate(coordinate)
+                : undefined;
+            })
+            .filter(this._isFeatureFeasible);
+          const closestFeature =
+            relevantFeatures && relevantFeatures.length > 0
+              ? minBy(relevantFeatures, distanceFunction)
               : undefined;
-          })
-          .filter(this._isFeatureFeasible);
-        const closestFeature =
-          relevantFeatures && relevantFeatures.length > 0
-            ? minBy(relevantFeatures, distanceFunction)
-            : undefined;
 
-        if (closestFeature) {
-          // Get the actual distance of the feature
-          const distance = distanceFunction(closestFeature);
+          if (closestFeature) {
+            // Get the actual distance of the feature
+            const distance = distanceFunction(closestFeature);
 
-          // If the feature is close enough...
-          if (distance <= this._threshold && this._selectAction) {
-            // Now call the callback
-            this._selectAction('add', closestFeature, distance);
+            // If the feature is close enough...
+            if (distance <= this._threshold && this._selectAction) {
+              // Now call the callback
+              this._selectAction('add', closestFeature, distance);
+            }
           }
         }
 
