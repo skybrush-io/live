@@ -1,7 +1,8 @@
 import AppSettingsDialog from './app-settings';
+import FeatureEditorDialog from './feature-editor';
+
 import AuthenticationDialog from './AuthenticationDialog';
 import DeauthenticationDialog from './DeauthenticationDialog';
-import FeatureEditorDialog from './FeatureEditorDialog';
 import GeofenceSettingsDialog from './GeofenceSettingsDialog';
 import GlobalErrorDialog from './GlobalErrorDialog';
 import LayerSettingsDialog from './LayerSettingsDialog';

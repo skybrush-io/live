@@ -6,103 +6,17 @@ import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Switch from '@material-ui/core/Switch';
 import Tab from '@material-ui/core/Tab';
-import TextField from '@material-ui/core/TextField';
 
-import DialogTabs from './DialogTabs';
-
-import {
-  removeFeature,
-  renameFeature,
-  setFeatureColor,
-  updateFeatureFill,
-  updateFeatureVisibility,
-} from '~/actions/features';
+import { removeFeature } from '~/actions/features';
 import {
   closeFeatureEditorDialog,
   setFeatureEditorDialogTab,
 } from '~/actions/feature-editor';
-import CircleColorPicker from '~/components/CircleColorPicker';
-import { primaryColor } from '~/utils/styles';
+import DialogTabs from '~/components/dialogs/DialogTabs';
 
-const GeneralPropertiesFormPresentation = ({
-  feature,
-  onSetFeatureColor,
-  onSetFeatureLabel,
-  onToggleFeatureFill,
-  onToggleFeatureVisibility,
-}) => (
-  <div>
-    <div style={{ display: 'flex', padding: '1em 0' }}>
-      <div style={{ flex: 'auto' }}>
-        <TextField
-          autoFocus
-          fullWidth
-          label='Label'
-          value={feature.label || ''}
-          onChange={onSetFeatureLabel}
-        />
-      </div>
-      <Switch
-        checked={feature.visible}
-        color='primary'
-        style={{ flex: 'none' }}
-        onChange={onToggleFeatureVisibility}
-      />
-    </div>
-    <div style={{ display: 'flex', padding: '1em 0' }}>
-      <div style={{ flex: 'auto' }}>
-        <CircleColorPicker
-          value={feature.color || primaryColor}
-          onChangeComplete={onSetFeatureColor}
-        />
-      </div>
-      <FormControlLabel
-        style={{ margin: '0' }}
-        control={
-          <Switch
-            checked={feature.filled}
-            color='primary'
-            onChange={onToggleFeatureFill}
-          />
-        }
-        label='Fill'
-        labelPlacement='top'
-      />
-    </div>
-  </div>
-);
-
-GeneralPropertiesFormPresentation.propTypes = {
-  feature: PropTypes.object.isRequired,
-  featureId: PropTypes.string.isRequired,
-  onSetFeatureColor: PropTypes.func,
-  onSetFeatureLabel: PropTypes.func,
-  onToggleFeatureFill: PropTypes.func,
-  onToggleFeatureVisibility: PropTypes.func,
-};
-
-const GeneralPropertiesForm = connect(
-  // mapStateToProps
-  null,
-  // mapDispatchToProps
-  (dispatch, { featureId }) => ({
-    onSetFeatureColor(color) {
-      dispatch(setFeatureColor(featureId, color.hex));
-    },
-    onSetFeatureLabel(event) {
-      dispatch(renameFeature(featureId, event.target.value));
-    },
-    onToggleFeatureFill(event, checked) {
-      dispatch(updateFeatureFill(featureId, checked));
-    },
-    onToggleFeatureVisibility(event, checked) {
-      dispatch(updateFeatureVisibility(featureId, checked));
-    },
-  })
-)(GeneralPropertiesFormPresentation);
+import FeaturePointsForm from './FeaturePointsForm';
+import GeneralPropertiesForm from './GeneralPropertiesForm';
 
 const FeatureEditorDialogPresentation = (props) => {
   const {
@@ -136,7 +50,7 @@ const FeatureEditorDialogPresentation = (props) => {
       default:
         content = (
           <DialogContent>
-            <p>Not implemented yet</p>
+            <FeaturePointsForm feature={feature} featureId={featureId} />
           </DialogContent>
         );
     }
@@ -212,11 +126,11 @@ const FeatureEditorDialog = connect(
       dispatch(removeFeature(featureId));
       dispatch(closeFeatureEditorDialog());
     },
-    onTabSelected(event, value) {
+    onTabSelected(_event, value) {
       dispatch(setFeatureEditorDialogTab(value));
     },
   }),
-  // MergeProps
+  // mergeProps
   (stateProps, dispatchProps) => ({
     ...stateProps,
     ...dispatchProps,
