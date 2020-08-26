@@ -78,10 +78,14 @@ function run(argv) {
   );
 
   // Prevent the creation of additional windows or web views. Also prevent
-  // navigation.
+  // navigation and background throttling.
   app.on(
     'web-contents-created',
     (event, webContents) => {
+      // Disable background throttling of the app as we need accurate timers
+      // to keep the status of the drones up-to-date
+      webContents.setBackgroundThrottling(false);
+
       webContents.on('will-attach-webview', (event, webPreferences, params) => {
         // Disable Node.js integration
         webPreferences.nodeIntegration = false;
