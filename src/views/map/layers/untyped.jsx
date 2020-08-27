@@ -22,7 +22,9 @@ import { getLayersInBottomFirstOrder } from '~/selectors/ordered';
 const selectLayerTypesThatCanBeAdded = (state) => {
   const result = [];
 
-  const existingLayerTypes = getLayersInBottomFirstOrder(state).map(layer => layer.type);
+  const existingLayerTypes = getLayersInBottomFirstOrder(state).map(
+    (layer) => layer.type
+  );
 
   for (const layerType of LayerTypes) {
     if (
@@ -32,20 +34,29 @@ const selectLayerTypesThatCanBeAdded = (state) => {
       result.push(layerType);
     }
   }
-  
+
   return result;
 };
 
 // === Settings for this particular layer type ===
 
 /* eslint-disable react/jsx-no-bind */
-const UntypedLayerSettingsPresentation = ({ enabledLayerTypes, layerTypes, onLayerTypeSelected }) => {
+const UntypedLayerSettingsPresentation = ({
+  enabledLayerTypes,
+  layerTypes,
+  onLayerTypeSelected,
+}) => {
   const items = layerTypes.map((layerType) => {
     const enabled = enabledLayerTypes.includes(layerType);
     return (
       <Grid key={layerType} item xs={8} sm={4}>
         <Card
-          style={{ cursor: enabled ? 'pointer' : 'auto', height: '100%', userSelect: 'none', opacity: enabled ? 1 : 0.54 }}
+          style={{
+            cursor: enabled ? 'pointer' : 'auto',
+            height: '100%',
+            userSelect: 'none',
+            opacity: enabled ? 1 : 0.54,
+          }}
           onClick={enabled ? () => onLayerTypeSelected(layerType) : null}
           elevation={enabled ? 1 : 0}
           variant={enabled ? 'outlined' : 'elevation'}
@@ -68,7 +79,7 @@ const UntypedLayerSettingsPresentation = ({ enabledLayerTypes, layerTypes, onLay
         container
         flex='1'
         alignItems='stretch'
-        justify='left'
+        justify='flex-start'
         spacing={2}
       >
         {items}
@@ -84,7 +95,7 @@ UntypedLayerSettingsPresentation.propTypes = {
 
   layerTypes: PropTypes.arrayOf(PropTypes.string),
   enabledLayerTypes: PropTypes.arrayOf(PropTypes.string),
-  
+
   onLayerTypeSelected: PropTypes.func,
 };
 
@@ -92,7 +103,7 @@ export const UntypedLayerSettings = connect(
   // mapStateToProps
   (state) => ({
     layerTypes: LayerTypes,
-    enabledLayerTypes: selectLayerTypesThatCanBeAdded(state)
+    enabledLayerTypes: selectLayerTypesThatCanBeAdded(state),
   }),
   // mapDispatchToProps
   (dispatch, ownProps) => ({
