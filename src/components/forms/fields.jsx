@@ -117,3 +117,65 @@ TextField.propTypes = {
   input: PropTypes.any,
   meta: PropTypes.any,
 };
+
+export const AngleField = ({ max, min, size, step, ...rest }) => (
+  <TextField
+    InputProps={{
+      endAdornment: <InputAdornment position='end'>degrees</InputAdornment>,
+    }}
+    inputProps={{ max, min, size, step, type: 'number' }}
+    variant='filled'
+    {...rest}
+  />
+);
+
+AngleField.propTypes = {
+  max: PropTypes.number,
+  min: PropTypes.number,
+  onChange: PropTypes.func,
+  size: PropTypes.number,
+  step: PropTypes.number,
+  value: PropTypes.number,
+};
+
+export const DistanceField = ({ max, min, size, step, ...rest }) => (
+  <TextField
+    InputProps={{
+      endAdornment: <InputAdornment position='end'>m</InputAdornment>,
+    }}
+    inputProps={{ max, min, size, step, type: 'number' }}
+    variant='filled'
+    {...rest}
+  />
+);
+
+DistanceField.propTypes = {
+  max: PropTypes.number,
+  min: PropTypes.number,
+  onChange: PropTypes.func,
+  size: PropTypes.number,
+  step: PropTypes.number,
+  value: PropTypes.number,
+};
+
+export const DurationField = ({ max, min, size, ...rest }) => (
+  <TextField
+    InputProps={{
+      endAdornment: <InputAdornment position='end'>seconds</InputAdornment>,
+    }}
+    inputProps={{ max, min, size, type: 'number' }}
+    {...rest}
+  />
+);
+
+DurationField.propTypes = {
+  max: PropTypes.number,
+  min: PropTypes.number,
+  onChange: PropTypes.func,
+  size: PropTypes.number,
+  value: PropTypes.number,
+};
+
+DurationField.defaultProps = {
+  size: 4,
+};

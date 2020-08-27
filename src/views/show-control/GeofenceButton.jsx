@@ -15,10 +15,10 @@ const formatStatusText = (status) => {
   switch (status) {
     case Status.OFF:
     case Status.NEXT:
-      return 'Define a geofence to restrict the flight area';
+      return 'No geofence defined yet';
 
     case Status.SUCCESS:
-      return 'Automatically generated geofence assigned';
+      return 'Automatic geofence in use';
 
     case Status.WARNING:
       return 'Manual geofence in use';

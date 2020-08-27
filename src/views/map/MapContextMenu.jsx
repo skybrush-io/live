@@ -11,13 +11,8 @@ import Divider from '@material-ui/core/Divider';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import MenuItem from '@material-ui/core/MenuItem';
 
-// border_outer vs border_clear
-// lock vs lock_open
-// center_focus vs center_focus_weak
-// check_circle_outline / done
-import BorderClear from '@material-ui/icons/BorderClear';
-import BorderOuter from '@material-ui/icons/BorderOuter';
 import ActionDelete from '@material-ui/icons/Delete';
+import Done from '@material-ui/icons/Done';
 import Edit from '@material-ui/icons/Edit';
 import Flight from '@material-ui/icons/Flight';
 import FlightTakeoff from '@material-ui/icons/FlightTakeoff';
@@ -112,6 +107,8 @@ class MapContextMenu extends React.Component {
         }) => {
           const result = [];
           const hasSelectedUAVs = selectedUAVIds && selectedUAVIds.length > 0;
+          const hasSingleSelectedFeature =
+            selectedFeatureIds && selectedFeatureIds.length === 1;
           const hasSingleSelectedUAV =
             selectedUAVIds && selectedUAVIds.length === 1;
           const hasSelectedFeatures =
@@ -220,6 +217,30 @@ class MapContextMenu extends React.Component {
             );
           }
 
+          if (hasSingleSelectedFeature) {
+            const featureSuitableForGeofence = ['circle', 'polygon'].includes(
+              selectedFeatureTypes[0]
+            );
+            const isCurrentGeofence =
+              selectedFeatureIds[0] === geofencePolygonId;
+            result.push(
+              <Divider key='div5' />,
+              <MenuItem
+                key='geofence'
+                dense
+                disabled={!featureSuitableForGeofence}
+                onClick={
+                  isCurrentGeofence
+                    ? this._unsetSelectedFeatureAsGeofence
+                    : this._setSelectedFeatureAsGeofence
+                }
+              >
+                <ListItemIcon>{null}</ListItemIcon>
+                {isCurrentGeofence ? 'Clear geofence' : 'Use as geofence'}
+              </MenuItem>
+            );
+          }
+
           if (hasSelectedFeatures) {
             result.push(
               <Divider key='div4' />,
@@ -235,29 +256,6 @@ class MapContextMenu extends React.Component {
                   <Edit />
                 </ListItemIcon>
                 Properties…
-              </MenuItem>,
-              <MenuItem
-                key='geofence'
-                dense
-                disabled={
-                  !selectedFeatureIds ||
-                  selectedFeatureIds.length !== 1 ||
-                  !['circle', 'polygon'].includes(selectedFeatureTypes[0])
-                }
-                onClick={
-                  selectedFeatureIds[0] === geofencePolygonId
-                    ? this._unsetSelectedFeatureAsGeofence
-                    : this._setSelectedFeatureAsGeofence
-                }
-              >
-                <ListItemIcon>
-                  {selectedFeatureIds[0] === geofencePolygonId ? (
-                    <BorderOuter />
-                  ) : (
-                    <BorderClear />
-                  )}
-                </ListItemIcon>
-                Use as geofence
               </MenuItem>,
               <MenuItem
                 key='remove'

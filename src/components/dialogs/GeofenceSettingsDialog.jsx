@@ -8,6 +8,7 @@ import React from 'react';
 import { Form, Field } from 'react-final-form';
 import { connect } from 'react-redux';
 
+import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -16,6 +17,10 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Typography from '@material-ui/core/Typography';
 
 import DialogToolbar from '~/components/dialogs/DialogToolbar';
+// import FormHeader from '~/components/dialogs/FormHeader';
+import { DistanceField } from '~/components/forms/fields';
+import { hasActiveGeofencePolygon } from '~/features/mission/selectors';
+import { clearGeofencePolygonId } from '~/features/mission/slice';
 import { updateGeofencePolygon } from '~/features/show/actions';
 
 import {
@@ -24,6 +29,7 @@ import {
 } from '~/actions/geofence-settings';
 import { forceFormSubmission, Switch, TextField } from '~/components/forms';
 import { createValidator, integer, number, required } from '~/utils/validation';
+import { useCallback } from 'react';
 
 const validator = createValidator({
   margin: [required, number],
@@ -42,25 +48,27 @@ const GeofenceSettingsFormPresentation = ({
         onSubmit={handleSubmit}
         onKeyPress={onKeyPress}
       >
-        <Field
-          fullWidth
-          name='margin'
-          label='Margin'
-          margin='normal'
-          /* type='number' */
-          component={TextField}
-        />
+        <Box display='flex' flexDirection='row'>
+          <Field
+            fullWidth
+            name='margin'
+            label='Safety margin'
+            margin='normal'
+            component={DistanceField}
+          />
+          <Box p={1} />
+          <Field
+            fullWidth
+            name='maxVertexCount'
+            label='Maximum vertex count'
+            margin='normal'
+            disabled={!simplify}
+            component={TextField}
+          />
+        </Box>
         <FormControlLabel
           control={<Field name='simplify' type='checkbox' component={Switch} />}
           label='Simplify the polygon'
-        />
-        <Field
-          fullWidth
-          name='maxVertexCount'
-          label='Maximum vertex count'
-          margin='normal'
-          disabled={!simplify}
-          component={TextField}
         />
       </form>
     )}
@@ -88,48 +96,58 @@ const GeofenceSettingsForm = connect(
  * Presentation component for the dialog that shows the form that the user
  * can use to edit the geofence settings.
  */
-class GeofenceSettingsDialogPresentation extends React.Component {
-  static propTypes = {
-    forceFormSubmission: PropTypes.func,
-    onClose: PropTypes.func,
-    onSubmit: PropTypes.func,
-    open: PropTypes.bool.isRequired,
-  };
+const GeofenceSettingsDialogPresentation = ({
+  forceFormSubmission,
+  hasFence,
+  onClose,
+  onClearGeofence,
+  onSubmit,
+  open,
+}) => {
+  const handleKeyPress = useCallback(
+    (event) => {
+      if (event.nativeEvent.code === 'Enter') {
+        forceFormSubmission();
+      }
+    },
+    [forceFormSubmission]
+  );
 
-  _handleKeyPress = (event) => {
-    if (event.nativeEvent.code === 'Enter') {
-      this.props.forceFormSubmission();
-    }
-  };
+  return (
+    <Dialog fullWidth open={open} maxWidth='xs' onClose={onClose}>
+      <DialogToolbar>
+        <Typography noWrap variant='subtitle1'>
+          Geofence settings
+        </Typography>
+      </DialogToolbar>
+      <DialogContent key='contents'>
+        {/* <FormHeader>Automatic geofence</FormHeader> */}
+        <GeofenceSettingsForm onSubmit={onSubmit} onKeyPress={handleKeyPress} />
+      </DialogContent>
+      <DialogActions>
+        <Button
+          color='secondary'
+          disabled={!hasFence}
+          onClick={onClearGeofence}
+        >
+          Clear current fence
+        </Button>
+        <Button color='primary' onClick={forceFormSubmission}>
+          Apply
+        </Button>
+        <Button onClick={onClose}>Close</Button>
+      </DialogActions>
+    </Dialog>
+  );
+};
 
-  render() {
-    const { forceFormSubmission, onClose, onSubmit, open } = this.props;
-
-    return (
-      <Dialog fullWidth open={open} maxWidth='xs' onClose={onClose}>
-        <DialogToolbar>
-          <Typography noWrap variant='subtitle1'>
-            Automatic geofence settings
-          </Typography>
-        </DialogToolbar>
-        <DialogContent key='contents'>
-          <GeofenceSettingsForm
-            onSubmit={onSubmit}
-            onKeyPress={this._handleKeyPress}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button key='apply' color='primary' onClick={forceFormSubmission}>
-            Apply
-          </Button>
-          <Button key='cancel' onClick={onClose}>
-            Cancel
-          </Button>
-        </DialogActions>
-      </Dialog>
-    );
-  }
-}
+GeofenceSettingsDialogPresentation.propTypes = {
+  forceFormSubmission: PropTypes.func,
+  hasFence: PropTypes.bool,
+  onClose: PropTypes.func,
+  onSubmit: PropTypes.func,
+  open: PropTypes.bool.isRequired,
+};
 
 /**
  * Container of the dialog that shows the form that the user can use to
@@ -138,12 +156,16 @@ class GeofenceSettingsDialogPresentation extends React.Component {
 const GeofenceSettingsDialog = connect(
   // mapStateToProps
   (state) => ({
+    hasFence: hasActiveGeofencePolygon(state),
     open: state.dialogs.geofenceSettings.dialogVisible,
   }),
   // mapDispatchToProps
   (dispatch) => ({
     forceFormSubmission() {
       forceFormSubmission('geofenceSettings');
+    },
+    onClearGeofence() {
+      dispatch(clearGeofencePolygonId());
     },
     onClose() {
       dispatch(closeGeofenceSettingsDialog());

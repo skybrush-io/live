@@ -86,8 +86,7 @@ export const addGeofencePolygon = () => (dispatch, getState) => {
   if (coordinates.length === 0) {
     dispatch(
       showNotification({
-        message: `Automatically calculated geofence coordinates not found.
-          Maybe no show is loaded?`,
+        message: `Could not calculate geofence coordinates. Did you load a show file?`,
         semantics: MessageSemantics.ERROR,
         permanent: true,
       })

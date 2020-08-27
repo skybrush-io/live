@@ -163,15 +163,28 @@ export const selectionIntersectsMapping = createSelector(
 );
 
 /**
- * Gets the id determining the polygon that is to be used as a geofence.
+ * Gets the ID of the polygon that is to be used as a geofence.
  */
 export const getGeofencePolygonId = (state) => state.mission.geofencePolygonId;
 
-export const getGeofenceStatus = createSelector(
+/**
+ * Returns whether a geofence is currently set by the user (either automatically)
+ * or manually.
+ */
+export const hasActiveGeofencePolygon = createSelector(
   getGeofencePolygonId,
   (state) => state.features.byId,
-  (geofencePolygonId, featuresById) => {
-    return geofencePolygonId === undefined
+  (geofencePolygonId, featuresById) =>
+    geofencePolygonId !== undefined &&
+    featuresById[geofencePolygonId] !== undefined
+);
+
+export const getGeofenceStatus = createSelector(
+  hasActiveGeofencePolygon,
+  getGeofencePolygonId,
+  (state) => state.features.byId,
+  (hasActiveGeofencePolygon, geofencePolygonId, featuresById) => {
+    return !hasActiveGeofencePolygon
       ? Status.OFF
       : featuresById[geofencePolygonId].owner === 'show'
       ? Status.SUCCESS
