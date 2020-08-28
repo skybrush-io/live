@@ -14,6 +14,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 
 import { cancelLocationEditing } from '~/actions/saved-location-editor';
+import { getCurrentMapViewAsSavedLocation } from '~/features/saved-locations/selectors';
 import {
   deleteSavedLocation,
   updateSavedLocation,
@@ -106,16 +107,8 @@ const SavedLocationEditorForm = connect(
     const id = state.dialogs.savedLocationEditor.editedLocationId;
     const currentLocation =
       id === NEW_ITEM_ID
-        ? {
-            center: {
-              lon: state.map.view.position[0].toFixed(6),
-              lat: state.map.view.position[1].toFixed(6),
-            },
-            rotation: getMapViewRotationAngle(state),
-            zoom: Math.round(state.map.view.zoom),
-          }
+        ? getCurrentMapViewAsSavedLocation(state)
         : state.savedLocations.byId[id];
-
     return { initialValues: currentLocation };
   }
 )(SavedLocationEditorFormPresentation);

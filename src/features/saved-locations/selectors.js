@@ -1,5 +1,6 @@
 import { createSelector } from '@reduxjs/toolkit';
 
+import { getMapViewRotationAngle } from '~/selectors/map';
 import { selectOrdered } from '~/utils/collections';
 
 /**
@@ -10,4 +11,22 @@ import { selectOrdered } from '~/utils/collections';
 export const getSavedLocationsInOrder = createSelector(
   (state) => state.savedLocations,
   selectOrdered
+);
+
+/**
+ * Selector that returns a fake location that can be used in the
+ * saved location editor dialog when the user wants to save the current
+ * state of the map view as a new location.
+ */
+export const getCurrentMapViewAsSavedLocation = createSelector(
+  (state) => state.map.view,
+  (state) => getMapViewRotationAngle(state),
+  (view, rotation) => ({
+    center: {
+      lon: view.position[0].toFixed(6),
+      lat: view.position[1].toFixed(6),
+    },
+    rotation,
+    zoom: Math.round(view.zoom),
+  })
 );
