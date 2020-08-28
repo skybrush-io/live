@@ -60,18 +60,27 @@ export function fitCoordinatesIntoMapView(coordinates, options) {
  *         conventions.
  */
 export function scrollToMapLocation(coordinate, options) {
+  const { rotation, ...rest } = options;
   const signalOptions = {
     duration: 500,
-    ...options,
+    ...rest,
   };
 
   const coord = coordinateToLonLat(coordinate);
 
   if (Array.isArray(coord) && coord.length >= 2) {
-    mapViewToLocationSignal.dispatch(
-      { center: { lon: coord[0], lat: coord[1] } },
-      signalOptions
-    );
+    const signalArgs = {
+      center: {
+        lon: coord[0],
+        lat: coord[1],
+      },
+    };
+
+    if (Number.isFinite(rotation)) {
+      signalArgs.rotation = Number(rotation).toFixed(rotation, 1);
+    }
+
+    mapViewToLocationSignal.dispatch(signalArgs, signalOptions);
   }
 }
 

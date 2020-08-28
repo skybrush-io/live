@@ -294,13 +294,13 @@ export const makeSexagesimalCoordinateFormatter = (decimalPlaces = 3) => (
  * the app.
  *
  * The conventions are: the angle is always between 0 (inclusive) and 360
- * (exclusive), rounded to 2 decimal digits.
+ * (exclusive), rounded to 1 decimal digit.
  *
  * @param  {number|string} angle  the input angle
  * @return {string}  the normalized angle as a string to avoid rounding errors
  */
 export const normalizeAngle = (angle) =>
-  (((angle % 360) + 360) % 360).toFixed(2);
+  (((angle % 360) + 360) % 360).toFixed(1);
 
 export const translateBy = curry((displacement, coordinates) => {
   const dx = displacement[0];
