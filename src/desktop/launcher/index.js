@@ -12,9 +12,6 @@ if (!isProduction) {
   process.enablePromiseAPIs = true;
 }
 
-// Set allowRendererProcessReuse explicitly to avoid an Electron warning
-app.allowRendererProcessReuse = true;
-
 /**
  * Main entry point of the application.
  *
@@ -79,37 +76,34 @@ function run(argv) {
 
   // Prevent the creation of additional windows or web views. Also prevent
   // navigation and background throttling.
-  app.on(
-    'web-contents-created',
-    (event, webContents) => {
-      // Disable background throttling of the app as we need accurate timers
-      // to keep the status of the drones up-to-date
-      webContents.setBackgroundThrottling(false);
+  app.on('web-contents-created', (event, webContents) => {
+    // Disable background throttling of the app as we need accurate timers
+    // to keep the status of the drones up-to-date
+    webContents.setBackgroundThrottling(false);
 
-      webContents.on('will-attach-webview', (event, webPreferences, params) => {
-        // Disable Node.js integration
-        webPreferences.nodeIntegration = false;
+    webContents.on('will-attach-webview', (event, webPreferences, params) => {
+      // Disable Node.js integration
+      webPreferences.nodeIntegration = false;
 
-        // Prevent creating web views that point outside
-        if (
-          !params.src.startsWith('file://') &&
-          !params.src.startsWith('http://localhost') &&
-          !params.src.startsWith('https://localhost')
-        ) {
-          event.preventDefault();
-        }
-      });
-
-      webContents.on('will-navigate', (event) => {
+      // Prevent creating web views that point outside
+      if (
+        !params.src.startsWith('file://') &&
+        !params.src.startsWith('http://localhost') &&
+        !params.src.startsWith('https://localhost')
+      ) {
         event.preventDefault();
-      });
+      }
+    });
 
-      webContents.on('new-window', async (event, navigationUrl) => {
-        event.preventDefault();
-        await shell.openExternal(navigationUrl);
-      });
-    }
-  );
+    webContents.on('will-navigate', (event) => {
+      event.preventDefault();
+    });
+
+    webContents.on('new-window', async (event, navigationUrl) => {
+      event.preventDefault();
+      await shell.openExternal(navigationUrl);
+    });
+  });
 
   // Set up IPC handlers
   setupIpc();
