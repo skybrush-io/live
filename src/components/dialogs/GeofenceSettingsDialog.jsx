@@ -52,9 +52,9 @@ const GeofenceSettingsFormPresentation = ({
           <Field
             fullWidth
             name='margin'
-            label='Safety margin'
+            label='Safety margin (meters)'
             margin='normal'
-            component={DistanceField}
+            component={TextField}
           />
           <Box p={1} />
           <Field
