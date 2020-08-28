@@ -148,7 +148,10 @@ const store = configureStore({
 
         // Checking the action dispatched when a show was loaded successfully
         // takes a long time and it should not be necessary anyway
-        ignoredActions: [loadingPromiseFulfilled, saveWorkbenchState],
+        ignoredActions: [
+          String(loadingPromiseFulfilled),
+          String(saveWorkbenchState),
+        ],
 
         // Checking the show specification takes a long time and it should not
         // be necessary anyway; same for the workbench state
