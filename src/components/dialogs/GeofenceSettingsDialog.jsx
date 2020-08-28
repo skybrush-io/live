@@ -18,7 +18,7 @@ import Typography from '@material-ui/core/Typography';
 
 import DialogToolbar from '~/components/dialogs/DialogToolbar';
 // import FormHeader from '~/components/dialogs/FormHeader';
-import { DistanceField } from '~/components/forms/fields';
+import { DistanceField } from '~/components/forms';
 import { hasActiveGeofencePolygon } from '~/features/mission/selectors';
 import { clearGeofencePolygonId } from '~/features/mission/slice';
 import { updateGeofencePolygon } from '~/features/show/actions';

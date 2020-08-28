@@ -7,6 +7,7 @@ import React from 'react';
 import { Form, Field } from 'react-final-form';
 import { connect } from 'react-redux';
 
+import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -19,8 +20,7 @@ import {
   deleteSavedLocation,
   updateSavedLocation,
 } from '~/features/saved-locations/slice';
-import { getMapViewRotationAngle } from '~/selectors/map';
-import { forceFormSubmission, TextField } from '~/components/forms';
+import { AngleField, forceFormSubmission, TextField } from '~/components/forms';
 import { NEW_ITEM_ID } from '~/utils/collections';
 import {
   createValidator,
@@ -57,34 +57,40 @@ const SavedLocationEditorFormPresentation = ({
             component={TextField}
             label='Name'
           />
-          <Field
-            fullWidth
-            margin='normal'
-            name='center.lon'
-            component={TextField}
-            label='Longitude'
-          />
-          <Field
-            fullWidth
-            margin='normal'
-            name='center.lat'
-            component={TextField}
-            label='Latitude'
-          />
-          <Field
-            fullWidth
-            margin='normal'
-            name='rotation'
-            component={TextField}
-            label='Rotation'
-          />
-          <Field
-            fullWidth
-            margin='normal'
-            name='zoom'
-            component={TextField}
-            label='Zoom level'
-          />
+          <Box display='flex' flexDirection='row'>
+            <Field
+              fullWidth
+              margin='normal'
+              name='center.lat'
+              component={TextField}
+              label='Latitude'
+            />
+            <Box p={1} />
+            <Field
+              fullWidth
+              margin='normal'
+              name='center.lon'
+              component={TextField}
+              label='Longitude'
+            />
+          </Box>
+          <Box display='flex' flexDirection='row'>
+            <Field
+              fullWidth
+              margin='normal'
+              name='rotation'
+              component={AngleField}
+              label='Rotation'
+            />
+            <Box p={1} />
+            <Field
+              fullWidth
+              margin='normal'
+              name='zoom'
+              component={TextField}
+              label='Zoom level'
+            />
+          </Box>
         </div>
       </form>
     )}
