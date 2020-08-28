@@ -119,7 +119,7 @@ TextField.propTypes = {
 };
 
 export const AngleField = ({ max, min, size, step, ...rest }) => (
-  <TextField
+  <MaterialUITextField
     InputProps={{
       endAdornment: <InputAdornment position='end'>degrees</InputAdornment>,
     }}
@@ -139,7 +139,7 @@ AngleField.propTypes = {
 };
 
 export const DistanceField = ({ max, min, size, step, ...rest }) => (
-  <TextField
+  <MaterialUITextField
     InputProps={{
       endAdornment: <InputAdornment position='end'>m</InputAdornment>,
     }}
@@ -159,7 +159,7 @@ DistanceField.propTypes = {
 };
 
 export const DurationField = ({ max, min, size, ...rest }) => (
-  <TextField
+  <MaterialUITextField
     InputProps={{
       endAdornment: <InputAdornment position='end'>seconds</InputAdornment>,
     }}

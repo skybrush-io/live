@@ -14,11 +14,7 @@ import Typography from '@material-ui/core/Typography';
 import { useTheme } from '@material-ui/core/styles';
 
 import Header from '~/components/dialogs/FormHeader';
-import {
-  AngleField,
-  DistanceField,
-  DurationField,
-} from '~/components/forms/fields';
+import { AngleField, DistanceField, DurationField } from '~/components/forms';
 import { updateAppSettings } from '~/features/settings/slice';
 import {
   getDesiredPlacementAccuracyInMeters,
