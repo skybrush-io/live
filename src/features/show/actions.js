@@ -129,6 +129,8 @@ export const addGeofencePolygon = () => (dispatch, getState) => {
   const geofencePolygon = {
     type: FeatureType.POLYGON,
     owner: 'show',
+    label: 'Geofence',
+    color: '#ff0000',
     points,
   };
   const action = addFeature(geofencePolygon);
