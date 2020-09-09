@@ -328,6 +328,7 @@ const { actions, reducer } = createSlice({
     },
 
     recalculateAutoGeofence: noPayload((state) => {
+      /*
       const allDroneCoordinates = [].concat(
         ...state.data.swarm.drones.map((d) =>
           d.settings.trajectory.points.map((p) => [p[1][0], p[1][1]])
@@ -335,6 +336,7 @@ const { actions, reducer } = createSlice({
       );
 
       state.geofenceCoordinates = convexHull(allDroneCoordinates);
+      */
     }),
 
     revokeTakeoffAreaApproval: noPayload((state) => {
