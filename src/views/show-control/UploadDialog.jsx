@@ -145,12 +145,6 @@ const UploadDialog = ({
         <Typography noWrap variant='subtitle1'>
           Upload show data
         </Typography>
-        <Box flex={1} />
-        <FormControlLabel
-          control={<Switch checked size='small' />}
-          label='Auto geofence'
-          labelPlacement='start'
-        />
       </DialogToolbar>
 
       <DialogContent>
