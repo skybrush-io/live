@@ -99,6 +99,7 @@ const DisplayTabPresentation = (props) => (
         <Header>Flat Earth coordinate system</Header>
         <CoordinateSystemFields
           origin={props.origin}
+          originLabel='Map origin'
           orientation={props.orientation}
           type={props.coordinateSystemType}
           onOrientationChanged={props.onOrientationChanged}

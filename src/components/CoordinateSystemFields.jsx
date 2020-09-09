@@ -16,7 +16,9 @@ import RotationField from '~/components/RotationField';
  */
 const CoordinateSystemFields = ({
   orientation,
+  orientationLabel,
   origin,
+  originLabel,
   type,
   onOrientationChanged,
   onOriginChanged,
@@ -38,7 +40,7 @@ const CoordinateSystemFields = ({
     <Box p={1} />
     <CoordinateField
       fullWidth
-      label='Origin'
+      label={originLabel}
       value={origin}
       variant='filled'
       onChange={onOriginChanged}
@@ -46,7 +48,7 @@ const CoordinateSystemFields = ({
     <Box p={1} />
     <RotationField
       style={{ minWidth: 160 }}
-      label='Orientation (X+ axis)'
+      label={orientationLabel}
       value={orientation}
       variant='filled'
       onChange={onOrientationChanged}
@@ -59,8 +61,15 @@ CoordinateSystemFields.propTypes = {
   onOriginChanged: PropTypes.func,
   onTypeChanged: PropTypes.func,
   orientation: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+  orientationLabel: PropTypes.string,
   origin: PropTypes.arrayOf(PropTypes.number),
+  originLabel: PropTypes.string,
   type: PropTypes.string.isRequired,
+};
+
+CoordinateSystemFields.defaultProps = {
+  originLabel: 'Origin',
+  orientationLabel: 'Orientation (X+ axis)',
 };
 
 export default CoordinateSystemFields;

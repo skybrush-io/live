@@ -67,6 +67,7 @@ const EnvironmentEditorDialog = ({
             {...outdoor.coordinateSystem}
             onOriginChanged={onOriginChanged}
             onOrientationChanged={onOrientationChanged}
+            orientationLabel='Show origin'
           />
         )}
       </FormGroup>
