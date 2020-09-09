@@ -96,9 +96,10 @@ PasswordField.propTypes = {
  */
 export const TextField = ({ input, meta, ...rest }) => {
   const { name, onChange, value, ...restInput } = input || {};
-  const showError =
-    ((meta.submitError && !meta.dirtySinceLastSubmit) || meta.error) &&
-    meta.touched;
+  const showError = meta
+    ? ((meta.submitError && !meta.dirtySinceLastSubmit) || meta.error) &&
+      meta.touched
+    : false;
   return (
     <MaterialUITextField
       variant='filled'
