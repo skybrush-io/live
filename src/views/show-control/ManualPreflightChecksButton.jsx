@@ -31,10 +31,11 @@ const ManualPreflightChecksButton = ({
   ...rest
 }) => {
   return (
-    <ListItem button disabled={status === Status.OFF} {...rest}>
+    <ListItem button disabled={false && status === Status.OFF} {...rest}>
       <StatusLight status={status} />
       <ListItemText primary='Manual preflight checks' />
       {/* TODO: show how many checks were not ticked off by the user yet */}
+      {/*
       <ListItemSecondaryAction>
         <Switch
           checked={areChecksSignedOff}
@@ -42,6 +43,7 @@ const ManualPreflightChecksButton = ({
           onChange={areChecksSignedOff ? onRevoke : onApprove}
         />
       </ListItemSecondaryAction>
+      */}
     </ListItem>
   );
 };

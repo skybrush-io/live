@@ -35,6 +35,7 @@ const OnboardPreflightChecksButton = ({
       <StatusLight status={status} />
       <ListItemText primary='Onboard preflight checks' />
       {/* TODO: show how many drones have nonzero error codes */}
+      {/*
       <ListItemSecondaryAction>
         <Switch
           checked={areChecksSignedOff}
@@ -42,6 +43,7 @@ const OnboardPreflightChecksButton = ({
           onChange={areChecksSignedOff ? onRevoke : onApprove}
         />
       </ListItemSecondaryAction>
+      */}
     </ListItem>
   );
 };
