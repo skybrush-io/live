@@ -59,7 +59,7 @@ export default class MapViewManager {
 
     if (isEmpty(extent)) {
       console.warn('Cannot fit empty extent');
-    } else {
+    } else if (this.view) {
       this.view.fit(fromExtent(extent), {
         duration,
         padding:
@@ -67,6 +67,8 @@ export default class MapViewManager {
             ? [padding, padding, padding, padding]
             : padding,
       });
+    } else {
+      this._handleNoMapView();
     }
   };
 
@@ -100,7 +102,11 @@ export default class MapViewManager {
       animationParameters.zoom = zoom;
     }
 
-    this.view.animate(animationParameters);
+    if (this.view) {
+      this.view.animate(animationParameters);
+    } else {
+      this._handleNoMapView();
+    }
   };
 
   /**
@@ -190,4 +196,8 @@ export default class MapViewManager {
       (c) => c !== callback
     );
   };
+
+  _handleNoMapView() {
+    console.warn('No map view was mounted yet');
+  }
 }
