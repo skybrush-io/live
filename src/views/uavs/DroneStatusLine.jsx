@@ -94,6 +94,7 @@ const useStyles = makeStyles(
       display: 'inline-block',
       fontFamily: theme.typography.fontFamily,
       textAlign: 'left',
+      padding: theme.spacing(0, 0.75),
       margin: theme.spacing(0, 0.5),
       width: 48,
     },
