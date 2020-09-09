@@ -95,7 +95,7 @@ PasswordField.propTypes = {
  * @return {Object} the rendered Material UI text field component
  */
 export const TextField = ({ input, meta, ...rest }) => {
-  const { name, onChange, value, ...restInput } = input;
+  const { name, onChange, value, ...restInput } = input || {};
   const showError =
     ((meta.submitError && !meta.dirtySinceLastSubmit) || meta.error) &&
     meta.touched;
