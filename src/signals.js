@@ -77,7 +77,7 @@ export function scrollToMapLocation(coordinate, options) {
     };
 
     if (Number.isFinite(rotation)) {
-      signalArgs.rotation = Number(rotation).toFixed(rotation, 1);
+      signalArgs.rotation = Number(rotation).toFixed(1);
     }
 
     mapViewToLocationSignal.dispatch(signalArgs, signalOptions);
