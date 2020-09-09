@@ -8,13 +8,15 @@ import Divider from '@material-ui/core/Divider';
 import FormControl from '@material-ui/core/FormControl';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormGroup from '@material-ui/core/FormGroup';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import { useTheme } from '@material-ui/core/styles';
 
 import Header from '~/components/dialogs/FormHeader';
-import { AngleField, DistanceField, DurationField } from '~/components/forms';
+import {
+  SimpleAngleField,
+  SimpleDistanceField,
+  SimpleDurationField,
+} from '~/components/forms';
 import { updateAppSettings } from '~/features/settings/slice';
 import {
   getDesiredPlacementAccuracyInMeters,
@@ -41,7 +43,7 @@ const UAVsTabPresentation = ({
             label='Warn about drones not seen for at least'
             control={<Checkbox checked style={{ visibility: 'hidden' }} />}
           />
-          <DurationField
+          <SimpleDurationField
             name='warnThreshold'
             min={1}
             max={3600}
@@ -55,7 +57,7 @@ const UAVsTabPresentation = ({
             label='Mark drones as gone after'
             control={<Checkbox checked style={{ visibility: 'hidden' }} />}
           />
-          <DurationField
+          <SimpleDurationField
             name='goneThreshold'
             min={1}
             max={3600}
@@ -75,7 +77,7 @@ const UAVsTabPresentation = ({
               />
             }
           />
-          <DurationField
+          <SimpleDurationField
             name='forgetThreshold'
             min={1}
             max={3600}
@@ -91,7 +93,7 @@ const UAVsTabPresentation = ({
         <Header>Mission setup</Header>
 
         <Box display='flex' flexDirection='row' mb={1}>
-          <DistanceField
+          <SimpleDistanceField
             fullWidth
             name='placementAccuracy'
             label='Desired placement accuracy'
@@ -102,7 +104,7 @@ const UAVsTabPresentation = ({
             onChange={onDistanceFieldUpdated}
           />
           <Box width={theme.spacing(2)} />
-          <AngleField
+          <SimpleAngleField
             fullWidth
             name='takeoffHeadingAccuracy'
             label='Desired heading accuracy'

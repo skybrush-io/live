@@ -19,17 +19,22 @@ const defaultState = {
  */
 const reducer = handleActions(
   {
-    EDIT_SAVED_LOCATION: (state, action) =>
-      Object.assign({}, state, {
-        dialogVisible: true,
-        editedLocationId: action.payload.id,
-      }),
+    EDIT_SAVED_LOCATION: (state, action) => ({
+      ...state,
+      dialogVisible: true,
+      editedLocationId: action.payload.id,
+    }),
 
-    CANCEL_LOCATION_EDITING: (state, action) =>
-      Object.assign({}, state, {
-        dialogVisible: false,
-        editedLocationId: undefined,
-      }),
+    CANCEL_LOCATION_EDITING: (state) => ({
+      ...state,
+      dialogVisible: false,
+      editedLocationId: undefined,
+    }),
+
+    CLOSE_SAVED_LOCATION_EDITOR_DIALOG: (state) => ({
+      ...state,
+      dialogVisible: false,
+    }),
   },
   defaultState
 );

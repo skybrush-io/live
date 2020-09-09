@@ -49,6 +49,8 @@ export const SHOW_FEATURE_EDITOR_DIALOG = 'SHOW_FEATURE_EDITOR_DIALOG';
 // Saved location related actions
 export const EDIT_SAVED_LOCATION = 'EDIT_SAVED_LOCATION';
 export const CANCEL_LOCATION_EDITING = 'CANCEL_LOCATION_EDITING';
+export const CLOSE_SAVED_LOCATION_EDITOR_DIALOG =
+  'CLOSE_SAVED_LOCATION_EDITOR_DIALOG';
 
 // Actions related to the authentication / deauthentication dialogs
 export const SHOW_AUTHENTICATION_DIALOG = 'SHOW_AUTHENTICATION_DIALOG';

@@ -119,7 +119,14 @@ TextField.propTypes = {
   meta: PropTypes.any,
 };
 
-// This is designed to be used in conjunction with react-final-form
+/**
+ * Render function for `react-final-form` that binds a `<Field>` component
+ * to a Material UI `<TextField>`, configured to be suitable for entering
+ * angles.
+ *
+ * @param  {Object} props  props provided by `react-final-form`
+ * @return {Object} the rendered Material UI text field component
+ */
 export const AngleField = ({ max, min, size, step, ...rest }) => {
   const { inputProps, InputProps, ...restRest } = rest;
   return (
@@ -152,16 +159,54 @@ AngleField.propTypes = {
 
 // This is NOT designed to be used in conjunction with react-final-form; it is a
 // standalone controlled field based on Material UI
-export const DistanceField = ({ max, min, size, step, ...rest }) => (
+export const SimpleAngleField = ({ max, min, size, step, ...rest }) => (
   <MaterialUITextField
     InputProps={{
-      endAdornment: <InputAdornment position='end'>m</InputAdornment>,
+      endAdornment: <InputAdornment position='end'>degrees</InputAdornment>,
     }}
     inputProps={{ max, min, size, step, type: 'number' }}
     variant='filled'
     {...rest}
   />
 );
+
+SimpleAngleField.propTypes = {
+  max: PropTypes.number,
+  min: PropTypes.number,
+  onChange: PropTypes.func,
+  size: PropTypes.number,
+  step: PropTypes.number,
+  value: PropTypes.number,
+};
+
+SimpleAngleField.defaultProps = {
+  max: 360,
+  min: 0,
+  step: 0.1,
+};
+
+// This is NOT designed to be used in conjunction with react-final-form; it is a
+// standalone controlled field based on Material UI
+export const DistanceField = ({ max, min, size, step, ...rest }) => {
+  const { inputProps, InputProps, ...restRest } = rest;
+  return (
+    <TextField
+      InputProps={{
+        ...InputProps,
+        endAdornment: <InputAdornment position='end'>m</InputAdornment>,
+      }}
+      inputProps={{
+        ...inputProps,
+        max,
+        min,
+        size,
+        step,
+        type: 'number',
+      }}
+      {...restRest}
+    />
+  );
+};
 
 DistanceField.propTypes = {
   max: PropTypes.number,
@@ -174,15 +219,48 @@ DistanceField.propTypes = {
 
 // This is NOT designed to be used in conjunction with react-final-form; it is a
 // standalone controlled field based on Material UI
-export const DurationField = ({ max, min, size, ...rest }) => (
+export const SimpleDistanceField = ({ max, min, size, step, ...rest }) => (
   <MaterialUITextField
     InputProps={{
-      endAdornment: <InputAdornment position='end'>seconds</InputAdornment>,
+      endAdornment: <InputAdornment position='end'>m</InputAdornment>,
     }}
-    inputProps={{ max, min, size, type: 'number' }}
+    inputProps={{ max, min, size, step, type: 'number' }}
+    variant='filled'
     {...rest}
   />
 );
+
+SimpleDistanceField.propTypes = {
+  max: PropTypes.number,
+  min: PropTypes.number,
+  onChange: PropTypes.func,
+  size: PropTypes.number,
+  step: PropTypes.number,
+  value: PropTypes.number,
+};
+
+// This is NOT designed to be used in conjunction with react-final-form; it is a
+// standalone controlled field based on Material UI
+export const DurationField = ({ max, min, size, ...rest }) => {
+  const { inputProps, InputProps, ...restRest } = rest;
+  return (
+    <TextField
+      InputProps={{
+        ...InputProps,
+        endAdornment: <InputAdornment position='end'>seconds</InputAdornment>,
+      }}
+      inputProps={{
+        ...inputProps,
+        max,
+        min,
+        size,
+        step,
+        type: 'number',
+      }}
+      {...restRest}
+    />
+  );
+};
 
 DurationField.propTypes = {
   max: PropTypes.number,
@@ -193,5 +271,31 @@ DurationField.propTypes = {
 };
 
 DurationField.defaultProps = {
+  min: 0,
+  size: 4,
+};
+
+// This is NOT designed to be used in conjunction with react-final-form; it is a
+// standalone controlled field based on Material UI
+export const SimpleDurationField = ({ max, min, size, ...rest }) => (
+  <MaterialUITextField
+    InputProps={{
+      endAdornment: <InputAdornment position='end'>seconds</InputAdornment>,
+    }}
+    inputProps={{ max, min, size, type: 'number' }}
+    {...rest}
+  />
+);
+
+SimpleDurationField.propTypes = {
+  max: PropTypes.number,
+  min: PropTypes.number,
+  onChange: PropTypes.func,
+  size: PropTypes.number,
+  value: PropTypes.number,
+};
+
+SimpleDurationField.defaultProps = {
+  min: 0,
   size: 4,
 };
