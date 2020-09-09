@@ -118,16 +118,27 @@ TextField.propTypes = {
   meta: PropTypes.any,
 };
 
-export const AngleField = ({ max, min, size, step, ...rest }) => (
-  <MaterialUITextField
-    InputProps={{
-      endAdornment: <InputAdornment position='end'>degrees</InputAdornment>,
-    }}
-    inputProps={{ max, min, size, step, type: 'number' }}
-    variant='filled'
-    {...rest}
-  />
-);
+// This is designed to be used in conjunction with react-final-form
+export const AngleField = ({ max, min, size, step, ...rest }) => {
+  const { inputProps, InputProps, ...restRest } = rest;
+  return (
+    <TextField
+      InputProps={{
+        ...InputProps,
+        endAdornment: <InputAdornment position='end'>degrees</InputAdornment>,
+      }}
+      inputProps={{
+        ...inputProps,
+        max,
+        min,
+        size,
+        step,
+        type: 'number',
+      }}
+      {...restRest}
+    />
+  );
+};
 
 AngleField.propTypes = {
   max: PropTypes.number,
@@ -138,6 +149,8 @@ AngleField.propTypes = {
   value: PropTypes.number,
 };
 
+// This is NOT designed to be used in conjunction with react-final-form; it is a
+// standalone controlled field based on Material UI
 export const DistanceField = ({ max, min, size, step, ...rest }) => (
   <MaterialUITextField
     InputProps={{
@@ -158,6 +171,8 @@ DistanceField.propTypes = {
   value: PropTypes.number,
 };
 
+// This is NOT designed to be used in conjunction with react-final-form; it is a
+// standalone controlled field based on Material UI
 export const DurationField = ({ max, min, size, ...rest }) => (
   <MaterialUITextField
     InputProps={{
