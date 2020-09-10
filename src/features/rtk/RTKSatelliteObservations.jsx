@@ -8,13 +8,17 @@ import { useHarmonicIntervalFn, useUpdate } from 'react-use';
 import { createSelector } from '@reduxjs/toolkit';
 
 import Box from '@material-ui/core/Box';
+import Typography from '@material-ui/core/Typography';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 
 import Colors from '~/components/colors';
 import { defaultFont, isDark } from '~/theme';
 import { createGradientBackground } from '~/utils/charts';
 
-import { getDisplayedSatelliteCNRValues } from './selectors';
+import {
+  getAntennaInfoSummary,
+  getDisplayedSatelliteCNRValues,
+} from './selectors';
 
 /* ************************************************************************ */
 
@@ -173,7 +177,12 @@ const useStyles = makeStyles(
   { name: 'ChartContainer' }
 );
 
-const RTKSatelliteObservations = ({ height, inset, items }) => {
+const RTKSatelliteObservations = ({
+  antennaInfo,
+  chartHeight,
+  inset,
+  items,
+}) => {
   const classes = useStyles();
   const theme = useTheme();
   const update = useUpdate();
@@ -186,18 +195,38 @@ const RTKSatelliteObservations = ({ height, inset, items }) => {
   return (
     <Box
       className={clsx(classes.root, inset ? classes.inset : classes.nonInset)}
-      height={height}
     >
-      <Bar
-        data={createDataFromItems(items)}
-        options={isDark(theme) ? options.dark : options.light}
-      />
+      <Box height={chartHeight}>
+        <Bar
+          data={createDataFromItems(items)}
+          options={isDark(theme) ? options.dark : options.light}
+        />
+      </Box>
+      {antennaInfo && (
+        <Box display='flex' flexDirection='row'>
+          <Typography variant='body2' component='div' color='textSecondary'>
+            {antennaInfo.description}
+          </Typography>
+          <Box flex='1' />
+          <Typography
+            variant='body2'
+            component='div'
+            color={antennaInfo.position ? 'textPrimary' : 'textSecondary'}
+          >
+            {antennaInfo.position || 'Antenna position not known'}
+          </Typography>
+        </Box>
+      )}
     </Box>
   );
 };
 
 RTKSatelliteObservations.propTypes = {
-  height: PropTypes.number,
+  antennaInfo: PropTypes.shape({
+    description: PropTypes.string,
+    position: PropTypes.string,
+  }),
+  chartHeight: PropTypes.number,
   inset: PropTypes.bool,
   items: PropTypes.arrayOf(
     PropTypes.shape({
@@ -208,11 +237,12 @@ RTKSatelliteObservations.propTypes = {
 };
 
 RTKSatelliteObservations.defaultProps = {
-  height: 200,
+  chartHeight: 150,
 };
 
 export default connect(
   (state) => ({
+    antennaInfo: getAntennaInfoSummary(state),
     items: getDisplayedSatelliteCNRValues(state),
   }),
   () => ({})

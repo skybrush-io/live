@@ -61,6 +61,7 @@ export async function getRTKStatus(hub) {
   const response = await hub.sendMessage({ type: 'X-RTK-STAT' });
   if (response.body && response.body.type === 'X-RTK-STAT') {
     return {
+      antenna: response.body.antenna,
       messages: response.body.messages,
       cnr: response.body.cnr,
     };

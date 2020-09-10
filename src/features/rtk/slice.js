@@ -34,6 +34,15 @@ const { actions, reducer } = createSlice({
       //       from the total bandwidth
       // }
       messages: {},
+
+      // Information about the antenna position and description
+      antenna: {
+        descriptor: null,
+        height: null,
+        position: null, // should be [lon, lat]
+        serialNumber: null,
+        stationId: null,
+      },
     },
 
     dialog: {
@@ -51,13 +60,15 @@ const { actions, reducer } = createSlice({
     }),
 
     resetRTKStatistics(state) {
+      state.stats.antenna = {};
       state.stats.satellites = {};
       state.stats.messages = {};
     },
 
     updateRTKStatistics(state, action) {
-      const { messages, cnr } = action.payload;
+      const { antenna, messages, cnr } = action.payload;
 
+      state.stats.antenna = antenna;
       state.stats.messages = messages;
 
       if (state.stats.satellites === undefined) {

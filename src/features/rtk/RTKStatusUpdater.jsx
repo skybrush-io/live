@@ -1,4 +1,5 @@
 import delay from 'delay';
+import isNil from 'lodash-es/isNil';
 import mapValues from 'lodash-es/mapValues';
 import { useEffect } from 'react';
 import { connect } from 'react-redux';
@@ -51,11 +52,31 @@ export default connect(
   // mapDispatchToProps
   (dispatch) => ({
     onStatusChanged: (status) => {
-      const { messages = {}, cnr = {} } = status;
+      const { antenna = {}, messages = {}, cnr = {} } = status;
       const now = Date.now();
+
+      let position;
+      let height;
+
+      if (antenna.position) {
+        position = [antenna.position[1] / 1e7, antenna.position[0] / 1e7];
+        height =
+          antenna.position[2] !== undefined
+            ? antenna.position[2] / 1e3
+            : undefined;
+      }
 
       dispatch(
         updateRTKStatistics({
+          antenna: {
+            descriptor: String(antenna.descriptor || ''),
+            serialNumber: String(antenna.serialNumber || ''),
+            stationId: isNil(antenna.stationId)
+              ? undefined
+              : Number(antenna.stationId),
+            position,
+            height,
+          },
           messages: mapValues(messages, (messageStat) => ({
             lastUpdatedAt: now - messageStat[0],
             bitsPerSecond: messageStat[1],
