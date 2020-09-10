@@ -1,3 +1,4 @@
+import memoizeOne from 'memoize-one';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
@@ -5,7 +6,7 @@ import { connect } from 'react-redux';
 import * as Coordinate from 'ol/coordinate';
 import Point from 'ol/geom/Point';
 import { getPointResolution } from 'ol/proj';
-import { Circle, RegularShape, Style, Text } from 'ol/style';
+import { Circle, Icon, RegularShape, Style, Text } from 'ol/style';
 
 import { Feature, geom, layer as olLayer, source } from '@collmot/ol-react';
 
@@ -20,6 +21,10 @@ import {
   getGPSBasedLandingPositionsInMission,
 } from '~/features/mission/selectors';
 import {
+  getOutdoorShowOrientation,
+  getOutdoorShowOrigin,
+} from '~/features/show/selectors';
+import {
   globalIdToHomePositionId,
   globalIdToLandingPositionId,
   homePositionIdToGlobalId,
@@ -32,6 +37,7 @@ import { getSelectedOriginIds } from '~/selectors/selection';
 import { formatMissionId } from '~/utils/formatting';
 import { mapViewCoordinateFromLonLat } from '~/utils/geography';
 import { toRadians } from '~/utils/math';
+import CustomPropTypes from '~/utils/prop-types';
 import {
   blackVeryThinOutline,
   fill,
@@ -40,6 +46,9 @@ import {
   whiteThinOutline,
 } from '~/utils/styles';
 
+const missionOriginMarker = require('~/../assets/img/mission-origin-marker.svg')
+  .default;
+
 // === Settings for this particular layer type ===
 
 const HomePositionsLayerSettingsPresentation = ({
@@ -47,8 +56,12 @@ const HomePositionsLayerSettingsPresentation = ({
   setLayerParameter,
 }) => {
   const { parameters } = layer;
-  const { showOrigin, showHomePositions, showLandingPositions } =
-    parameters || {};
+  const {
+    showOrigin,
+    showHomePositions,
+    showLandingPositions,
+    showMissionOrigin,
+  } = parameters || {};
 
   const handleChange = (name) => (event) =>
     setLayerParameter(name, event.target.checked);
@@ -64,6 +77,16 @@ const HomePositionsLayerSettingsPresentation = ({
           />
         }
         label='Show map origin'
+      />
+      <FormControlLabel
+        control={
+          <Checkbox
+            checked={showMissionOrigin}
+            value='showMissionOrigin'
+            onChange={handleChange('showMissionOrigin')}
+          />
+        }
+        label='Show mission origin'
       />
       <FormControlLabel
         control={
@@ -229,15 +252,37 @@ const landingPositionStyle = (feature, resolution) => {
   return new Style(style);
 };
 
+/**
+ * Style for the marker representing the origin of the mission-specific
+ * coordinate system.
+ */
+const createMissionOriginStyle = memoizeOne(
+  (heading) =>
+    new Style({
+      image: new Icon({
+        src: missionOriginMarker,
+        rotateWithView: true,
+        rotation: toRadians(heading),
+        snapToPixel: false,
+      }),
+    })
+);
+
+const MAP_ORIGIN_ID = 'map';
+const MISSION_ORIGIN_ID = 'mission';
+
 const HomePositionsVectorSource = ({
   coordinateSystemType,
   homePositions,
   landingPositions,
+  missionOrientation,
+  missionOrigin,
   orientation,
   origin,
   selectedOriginIds,
   showHomePositions,
   showLandingPositions,
+  showMissionOrigin,
   showOrigin,
 }) => {
   const features = [];
@@ -276,7 +321,7 @@ const HomePositionsVectorSource = ({
     features.push(
       ...homePositions
         .map((homePosition, index) => {
-          const featureKey = `home..${index}`;
+          const featureKey = `home.${index}`;
 
           if (!homePosition) {
             return null;
@@ -303,9 +348,10 @@ const HomePositionsVectorSource = ({
   }
 
   if (showOrigin && origin) {
-    const globalIdOfOrigin = originIdToGlobalId('');
+    const globalIdOfOrigin = originIdToGlobalId(MAP_ORIGIN_ID);
     const tail = mapViewCoordinateFromLonLat(origin);
-    const armLength = 50 /* meters */ / getPointResolution("EPSG:3857", 1, tail);
+    const armLength =
+      50 /* meters */ / getPointResolution('EPSG:3857', 1, tail);
     const headY = [0, coordinateSystemType === 'nwu' ? armLength : -armLength];
     const headX = [armLength, 0];
     Coordinate.rotate(headX, toRadians(90 - orientation));
@@ -314,18 +360,32 @@ const HomePositionsVectorSource = ({
     Coordinate.add(headX, tail);
     features.push(
       <Feature
-        key='x'
+        key='mapOrigin.x'
         id={globalIdOfOrigin + '$x'}
-        style={originStyles(selectedOriginIds.includes(''), 'x')}
+        style={originStyles(selectedOriginIds.includes(MAP_ORIGIN_ID), 'x')}
       >
         <geom.LineString coordinates={[tail, headX]} />
       </Feature>,
       <Feature
-        key='y'
+        key='mapOrigin.y'
         id={globalIdOfOrigin}
-        style={originStyles(selectedOriginIds.includes(''), 'y')}
+        style={originStyles(selectedOriginIds.includes(MAP_ORIGIN_ID), 'y')}
       >
         <geom.LineString coordinates={[tail, headY]} />
+      </Feature>
+    );
+  }
+
+  if (showMissionOrigin && missionOrigin) {
+    const globalIdOfMissionOrigin = originIdToGlobalId(MISSION_ORIGIN_ID);
+    const missionOriginCoord = mapViewCoordinateFromLonLat(missionOrigin);
+    features.push(
+      <Feature
+        key='missionOrigin'
+        id={globalIdOfMissionOrigin}
+        style={createMissionOriginStyle(missionOrientation)}
+      >
+        <geom.Point coordinates={missionOriginCoord} />
       </Feature>
     );
   }
@@ -335,23 +395,16 @@ const HomePositionsVectorSource = ({
 
 HomePositionsVectorSource.propTypes = {
   coordinateSystemType: PropTypes.oneOf(['neu', 'nwu']),
-  homePositions: PropTypes.arrayOf(
-    PropTypes.shape({
-      lat: PropTypes.number.isRequired,
-      lon: PropTypes.number.isRequired,
-    })
-  ),
-  landingPositions: PropTypes.arrayOf(
-    PropTypes.shape({
-      lat: PropTypes.number.isRequired,
-      lon: PropTypes.number.isRequired,
-    })
-  ),
-  orientation: PropTypes.number,
+  homePositions: PropTypes.arrayOf(CustomPropTypes.coordinate),
+  landingPositions: PropTypes.arrayOf(CustomPropTypes.coordinate),
+  missionOrientation: CustomPropTypes.angle,
+  missionOrigin: PropTypes.arrayOf(PropTypes.number),
+  orientation: CustomPropTypes.angle,
   origin: PropTypes.arrayOf(PropTypes.number),
   selectedOriginIds: PropTypes.arrayOf(PropTypes.string),
   showHomePositions: PropTypes.bool,
   showLandingPositions: PropTypes.bool,
+  showMissionOrigin: PropTypes.bool,
   showOrigin: PropTypes.bool,
 };
 
@@ -369,6 +422,7 @@ const HomePositionsLayerPresentation = ({ layer, zIndex, ...rest }) => (
     <HomePositionsVectorSource
       showHomePositions={layer.parameters.showHomePositions}
       showLandingPositions={layer.parameters.showLandingPositions}
+      showMissionOrigin={layer.parameters.showMissionOrigin}
       showOrigin={layer.parameters.showOrigin}
       {...rest}
     />
@@ -386,6 +440,8 @@ export const HomePositionsLayer = connect(
     coordinateSystemType: state.map.origin.type,
     homePositions: getGPSBasedHomePositionsInMission(state),
     landingPositions: getGPSBasedLandingPositionsInMission(state),
+    missionOrigin: getOutdoorShowOrigin(state),
+    missionOrientation: getOutdoorShowOrientation(state),
     orientation: getMapOriginRotationAngle(state),
     origin: state.map.origin.position,
     selectedOriginIds: getSelectedOriginIds(state),

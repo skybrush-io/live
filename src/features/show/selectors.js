@@ -155,6 +155,14 @@ export const getShowToWorldCoordinateSystemTransformation = createSelector(
 );
 
 /**
+ * Selector that returns the origin of the show coordinate system.
+ */
+export const getOutdoorShowOrigin = createSelector(
+  getOutdoorShowCoordinateSystem,
+  (coordinateSystem) => coordinateSystem.origin
+);
+
+/**
  * Selector that returns the orientation of the positive X axis of the show
  * coordinate system, cast into a float.
  *

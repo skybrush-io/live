@@ -19,7 +19,7 @@ export const Colors = {
 
   landingMarker: '#3c3',
   originMarker: '#f44',
-  takeoffMarker: '#fc0',
+  takeoffMarker: '#fc0', // also used in mission-origin-marker.svg
 };
 
 Colors.seriousWarning = createColor(Colors.warning)

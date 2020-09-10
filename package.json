@@ -72,6 +72,7 @@
     "ky": "^0.23.0",
     "localforage": "^1.9.0",
     "lodash-es": "^4.17.15",
+    "memoize-one": "^5.1.1",
     "memoizee": "^0.4.14",
     "mini-signals": "^1.2.0",
     "moment": "^2.27.0",
