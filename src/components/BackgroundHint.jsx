@@ -31,12 +31,25 @@ const useStyles = makeStyles({
  *
  * @return {Object} the rendered component
  */
-const BackgroundHint = ({ header, text, ...rest }) => {
+const BackgroundHint = ({ header, icon, iconColor, text, ...rest }) => {
   const classes = useStyles();
+
+  const iconStyle = icon
+    ? {
+        fontSize: 48,
+      }
+    : undefined;
+
+  if (iconStyle && iconColor) {
+    iconStyle.color = iconColor;
+  }
 
   return (
     <Box color='text.secondary' className={classes.root} {...rest}>
       <div>
+        {icon && (
+          <Box pb={2}>{React.cloneElement(icon, { style: iconStyle })}</Box>
+        )}
         {header && (
           <Typography paragraph variant='h6'>
             {header}
@@ -50,6 +63,7 @@ const BackgroundHint = ({ header, text, ...rest }) => {
 
 BackgroundHint.propTypes = {
   header: PropTypes.string,
+  icon: PropTypes.node,
   text: PropTypes.string,
 };
 

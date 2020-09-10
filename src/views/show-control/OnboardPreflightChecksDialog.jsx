@@ -12,7 +12,9 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import Switch from '@material-ui/core/Switch';
 import Typography from '@material-ui/core/Typography';
+import CheckCircle from '@material-ui/icons/CheckCircle';
 
+import { Colors } from '~/components/colors';
 import BackgroundHint from '~/components/BackgroundHint';
 import StatusLight from '~/components/StatusLight';
 import DialogToolbar from '~/components/dialogs/DialogToolbar';
@@ -73,6 +75,8 @@ const PreflightCheckListPresentation = ({ items, showMissionIds, ...rest }) =>
     <BackgroundHint
       header='Onboard preflight checks passed.'
       text='None of the UAVs indicated an error.'
+      icon={<CheckCircle />}
+      iconColor={Colors.success}
     />
   );
 
