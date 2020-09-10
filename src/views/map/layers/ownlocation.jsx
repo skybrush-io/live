@@ -115,7 +115,6 @@ class OwnLocationVectorSource extends React.Component {
           projection='EPSG:3857'
           error={this._logError}
         />
-        ,
         <source.Vector key='source' ref={this._assignSourceRef} />
       </>
     );
