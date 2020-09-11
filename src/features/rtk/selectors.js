@@ -5,21 +5,32 @@ import { createSelector } from '@reduxjs/toolkit';
 import { getPreferredCoordinateFormatter } from '~/selectors/formatting';
 
 /**
+ * Returns the formatted antenna position, or undefined if we do not know the
+ * antenna position yet.
+ */
+export const getFormattedAntennaPosition = createSelector(
+  (state) => state.rtk.stats.antenna,
+  getPreferredCoordinateFormatter,
+  (antennaInfo, formatter) => {
+    const { position } = antennaInfo || {};
+    return position ? formatter(position) : undefined;
+  }
+);
+
+/**
  * Returhs a short summary of the antenna description and position, in the
  * format they should appear on the UI.
  */
 export const getAntennaInfoSummary = createSelector(
   (state) => state.rtk.stats.antenna,
-  getPreferredCoordinateFormatter,
-  (antennaInfo, formatter) => {
+  getFormattedAntennaPosition,
+  (antennaInfo, formattedPosition) => {
     if (!antennaInfo) {
       return { position: undefined, description: undefined };
     }
 
     const result = {
-      position: antennaInfo.position
-        ? formatter(antennaInfo.position)
-        : undefined,
+      position: formattedPosition,
     };
 
     if (typeof antennaInfo.height === 'number') {

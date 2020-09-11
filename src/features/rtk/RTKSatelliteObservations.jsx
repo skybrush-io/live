@@ -1,4 +1,5 @@
 import clsx from 'clsx';
+import copy from 'copy-to-clipboard';
 import isNil from 'lodash-es/isNil';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -8,16 +9,21 @@ import { useHarmonicIntervalFn, useUpdate } from 'react-use';
 import { createSelector } from '@reduxjs/toolkit';
 
 import Box from '@material-ui/core/Box';
+import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 
 import Colors from '~/components/colors';
+import Tooltip from '~/components/Tooltip';
+import { showNotification } from '~/features/snackbar/slice';
+import ContentCopy from '~/icons/ContentCopy';
 import { defaultFont, isDark } from '~/theme';
 import { createGradientBackground } from '~/utils/charts';
 
 import {
   getAntennaInfoSummary,
   getDisplayedSatelliteCNRValues,
+  getFormattedAntennaPosition,
 } from './selectors';
 
 /* ************************************************************************ */
@@ -182,10 +188,13 @@ const RTKSatelliteObservations = ({
   chartHeight,
   inset,
   items,
+  onCopyAntennaPositionToClipboard,
 }) => {
   const classes = useStyles();
   const theme = useTheme();
   const update = useUpdate();
+
+  const hasAntennaInfo = !!antennaInfo.position;
 
   // Update the component regularly because the chart depends on the time
   // elapsed since the last update so we need to keep it updated even if
@@ -203,7 +212,7 @@ const RTKSatelliteObservations = ({
         />
       </Box>
       {antennaInfo && (
-        <Box display='flex' flexDirection='row'>
+        <Box display='flex' flexDirection='row' alignItems='center'>
           <Typography variant='body2' component='div' color='textSecondary'>
             {antennaInfo.description}
           </Typography>
@@ -211,10 +220,20 @@ const RTKSatelliteObservations = ({
           <Typography
             variant='body2'
             component='div'
-            color={antennaInfo.position ? 'textPrimary' : 'textSecondary'}
+            color={hasAntennaInfo ? 'textPrimary' : 'textSecondary'}
           >
             {antennaInfo.position || 'Antenna position not known'}
           </Typography>
+          {onCopyAntennaPositionToClipboard && (
+            <Tooltip content='Copy to clipboard'>
+              <IconButton
+                disabled={!hasAntennaInfo}
+                onClick={onCopyAntennaPositionToClipboard}
+              >
+                <ContentCopy />
+              </IconButton>
+            </Tooltip>
+          )}
         </Box>
       )}
     </Box>
@@ -234,6 +253,7 @@ RTKSatelliteObservations.propTypes = {
       lastUpdatedAt: PropTypes.number,
     })
   ),
+  onCopyAntennaPositionToClipboard: PropTypes.func,
 };
 
 RTKSatelliteObservations.defaultProps = {
@@ -241,9 +261,16 @@ RTKSatelliteObservations.defaultProps = {
 };
 
 export default connect(
+  // mapStateToProps
   (state) => ({
     antennaInfo: getAntennaInfoSummary(state),
     items: getDisplayedSatelliteCNRValues(state),
   }),
-  () => ({})
+  // mapDispatchToProps
+  {
+    onCopyAntennaPositionToClipboard: () => (dispatch, getState) => {
+      copy(getFormattedAntennaPosition(getState()));
+      dispatch(showNotification('Coordinates copied to clipboard.'));
+    },
+  }
 )(RTKSatelliteObservations);
