@@ -6,7 +6,7 @@ import { connect } from 'react-redux';
 import ActiveUAVsLayerSource from '../sources/ActiveUAVsLayerSource';
 
 import { setLayerParameterById } from '~/actions/layers';
-import CircleColorPicker from '~/components/CircleColorPicker';
+import SwatchesColorPicker from '~/components/SwatchesColorPicker';
 import Header from '~/components/dialogs/FormHeader';
 import flock from '~/flock';
 import { getSelection } from '~/selectors/selection';
@@ -28,7 +28,7 @@ const UAVsLayerSettingsPresentation = ({ layer, setLayerParameter }) => {
   return (
     <>
       <Header>Label color</Header>
-      <CircleColorPicker
+      <SwatchesColorPicker
         color={labelColor || '#000000'}
         onChangeComplete={onColorChanged}
       />

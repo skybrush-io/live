@@ -12,7 +12,7 @@ import {
   updateFeatureFill,
   updateFeatureVisibility,
 } from '~/actions/features';
-import CircleColorPicker from '~/components/CircleColorPicker';
+import SwatchesColorPicker from '~/components/SwatchesColorPicker';
 import { primaryColor } from '~/utils/styles';
 
 const GeneralPropertiesForm = ({
@@ -29,6 +29,7 @@ const GeneralPropertiesForm = ({
           autoFocus
           fullWidth
           label='Label'
+          variant='filled'
           value={feature.label || ''}
           onChange={onSetFeatureLabel}
         />
@@ -42,7 +43,7 @@ const GeneralPropertiesForm = ({
     </div>
     <div style={{ display: 'flex', padding: '1em 0' }}>
       <div style={{ flex: 'auto' }}>
-        <CircleColorPicker
+        <SwatchesColorPicker
           value={feature.color || primaryColor}
           onChangeComplete={onSetFeatureColor}
         />

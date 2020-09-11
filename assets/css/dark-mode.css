@@ -38,7 +38,9 @@ body .lm_header .lm_tab.lm_active {
 }
 
 /* OpenLayers widget customizations */
-.ol-control button, .ol-control button:hover, .ol-control button:focus {
+.ol-control button,
+.ol-control button:hover,
+.ol-control button:focus {
   background-color: #444 !important;
   color: #fff !important;
 }
@@ -50,7 +52,10 @@ body .lm_header .lm_tab.lm_active {
   color: rgba(255, 255, 255, 0.7) !important;
   text-shadow: none;
 }
-.ol-attribution ul a, .ol-attribution ul a:hover, .ol-attribution ul a:active, .ol-attribution ul a:visited  {
+.ol-attribution ul a,
+.ol-attribution ul a:hover,
+.ol-attribution ul a:active,
+.ol-attribution ul a:visited {
   color: #fff !important;
   text-decoration: none;
 }
@@ -74,8 +79,14 @@ kbd {
   color: #ddd !important;
 }
 
-kbd:hover, kbd:hover * {
+kbd:hover,
+kbd:hover * {
   color: white !important;
+}
+
+/* Color picker customization */
+.swatches-picker > div:first-child > div:first-child {
+  background: #222 !important;
 }
 
 /* The rest comes directly from the dark mode stylesheet of react-flexible-workbench */
