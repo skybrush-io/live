@@ -106,7 +106,7 @@ const _propertiesForLayerTypes = {
       strokeWidth: 2,
       fillColor: { r: 170, g: 170, b: 225, alpha: 0.5 },
     },
-    multiple: true
+    multiple: true,
   },
   [LayerType.HEATMAP]: {
     label: 'Heatmap',
@@ -156,14 +156,12 @@ const _propertiesForLayerTypes = {
       url: 'http://ows.mundialis.de/services/service',
       layers: 'TOPO-OSM-WMS',
     },
-    multiple: true
+    multiple: true,
   },
   [LayerType.UAVS]: {
     label: 'UAVs',
     icon: <Flight />,
-    parameters: {
-      colorPredicates: {},
-    },
+    parameters: {},
   },
   [LayerType.UAV_TRACE]: {
     label: 'UAV trace',

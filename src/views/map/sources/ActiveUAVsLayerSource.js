@@ -20,37 +20,6 @@ import { setLayerSelectable } from '../../../model/layers';
 import { uavIdToGlobalId } from '../../../model/identifiers';
 
 /**
- * Function for assigning colors to UAV ids according to color predicates.
- *
- * @param {Object} colorPredicates Object containing the conditions under which
- *        a drone should be colored to a certain color.
- * @param {string} id The identifier of the drone.
- *
- * @return {string} The assigned color. (If no predicate matches then 'black'.)
- */
-const cachedGetColorById = (() => {
-  const predicateFunctionCache = {};
-
-  return (colorPredicates, id) =>
-    /* eslint no-new-func: "off" */
-    findKey(colorPredicates, (p) => {
-      if (!(p in predicateFunctionCache)) {
-        try {
-          predicateFunctionCache[p] = new Function('id', `return ${p}`);
-        } catch {
-          // Probably it is blocked by the browser()
-          console.warn(
-            'Cannot create new UAV color predicate; maybe blocked by CSP?'
-          );
-          predicateFunctionCache[p] = stubFalse;
-        }
-      }
-
-      return predicateFunctionCache[p](id);
-    }) || 'black';
-})();
-
-/**
  * OpenLayers vector layer source that contains all the active UAVs
  * currently known to the server.
  *
@@ -59,8 +28,8 @@ const cachedGetColorById = (() => {
  */
 class ActiveUAVsLayerSource extends React.Component {
   static propTypes = {
-    colorPredicates: PropTypes.objectOf(PropTypes.string).isRequired,
     flock: PropTypes.instanceOf(Flock),
+    labelColor: PropTypes.string,
     layer: PropTypes.instanceOf(Layer),
     projection: PropTypes.func,
     selection: PropTypes.arrayOf(PropTypes.string).isRequired,
@@ -86,9 +55,9 @@ class ActiveUAVsLayerSource extends React.Component {
       previousProps.selection,
       this.props.selection
     );
-    this._onColorsMaybeChanged(
-      previousProps.colorPredicates,
-      this.props.colorPredicates
+    this._onLabelColorMaybeChanged(
+      previousProps.labelColor,
+      this.props.labelColor
     );
     this._featureManager.projection = this.props.projection;
   }
@@ -200,20 +169,20 @@ class ActiveUAVsLayerSource extends React.Component {
   };
 
   /**
-   * Function that checks whether the color predicates have changed and updates
+   * Function that checks whether the label color have changed and updates
    * the features accordingly.
    *
-   * @param {Object} oldColorPredicates The old color predicates.
-   * @param {Object} newColorPredicates The new color predicates.
+   * @param {Object} oldLabelColor The old label color.
+   * @param {Object} newLabelColor The new label color.
    */
-  _onColorsMaybeChanged = (oldColorPredicates, newColorPredicates) => {
-    if (newColorPredicates === oldColorPredicates) {
+  _onLabelColorMaybeChanged = (oldLabelColor, newLabelColor) => {
+    if (oldLabelColor === newLabelColor) {
       return;
     }
 
     const features = this._featureManager.getFeatureArray();
     for (const feature of features) {
-      feature.color = cachedGetColorById(newColorPredicates, feature.uavId);
+      feature.labelColor = newLabelColor;
     }
   };
 
@@ -232,13 +201,11 @@ class ActiveUAVsLayerSource extends React.Component {
       ]);
 
       // Set or update the heading of the feature
-      if (typeof uav.heading !== 'undefined') {
+      if (uav.heading !== undefined) {
         feature.heading = uav.heading;
       }
 
-      if (feature.color === '') {
-        feature.color = cachedGetColorById(this.props.colorPredicates, uav.id);
-      }
+      feature.labelColor = this.props.labelColor;
     });
   };
 }

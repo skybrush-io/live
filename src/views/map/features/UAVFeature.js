@@ -3,7 +3,7 @@
  */
 
 import Feature from 'ol/Feature';
-import { Icon, Style, Text } from 'ol/style';
+import { Fill, Icon, Style, Text } from 'ol/style';
 
 import { toRadians } from '~/utils/math';
 
@@ -27,6 +27,7 @@ export default class UAVFeature extends Feature {
 
     this._selected = false;
     this._color = '';
+    this._labelColor = '';
     this._heading = 0;
     this.uavId = uavId;
     this._setupStyle();
@@ -101,6 +102,27 @@ export default class UAVFeature extends Feature {
   }
 
   /**
+   * Returns the current label color of the UAV.
+   */
+  get labelColor() {
+    return this._labelColor;
+  }
+
+  /**
+   * Sets the label color of the UAV.
+   *
+   * @param {string} value The new color to be used.
+   */
+  set labelColor(value) {
+    if (this._labelColor === value) {
+      return;
+    }
+
+    this._labelColor = value;
+    this._setupStyle();
+  }
+
+  /**
    * Sets up or updates the style of the feature.
    */
   _setupStyle() {
@@ -137,6 +159,12 @@ export default class UAVFeature extends Feature {
 
     const labelStyle = new Style({
       text: new Text({
+        fill: new Fill({
+          color:
+            this._labelColor && this._labelColor.length > 0
+              ? this._labelColor
+              : 'black',
+        }),
         font: '12px sans-serif',
         offsetY: 24,
         text: this.uavId || 'undefined',
