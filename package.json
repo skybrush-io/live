@@ -78,6 +78,7 @@
     "moment": "^2.27.0",
     "moment-duration-format": "^2.3.2",
     "mui-rff": "^2.4.2",
+    "natural-orderby": "^2.0.3",
     "node-ssdp-lite": "^0.2.0",
     "node-watch": "^0.6.4",
     "numbro": "^2.3.1",

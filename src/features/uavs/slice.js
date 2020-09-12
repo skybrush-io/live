@@ -12,6 +12,7 @@ import {
   clearOrderedCollection,
   deleteItemsByIds,
   replaceItemOrAddSorted,
+  useNaturalSort,
 } from '~/utils/collections';
 
 const { actions, reducer } = createSlice({
@@ -47,6 +48,7 @@ const { actions, reducer } = createSlice({
       for (const uav of Object.values(action.payload)) {
         addItemSorted(state, uav);
       }
+      useNaturalSort(state);
     },
 
     clearUAVList(state) {

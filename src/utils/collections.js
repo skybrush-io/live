@@ -6,6 +6,7 @@ import pull from 'lodash-es/pull';
 import sortedIndex from 'lodash-es/sortedIndex';
 import sortedIndexBy from 'lodash-es/sortedIndexBy';
 import reject from 'lodash-es/reject';
+import { orderBy } from 'natural-orderby';
 import u from 'updeep';
 
 import { chooseUniqueIdFromName } from './naming';
@@ -469,4 +470,12 @@ export const replaceItemOrAddToFront = (collection, item) => {
   } else {
     addItemToFront(collection, item);
   }
+};
+
+/**
+ * Helper function that takes an ordered collection and ensures that the items
+ * in the collection are sorted using natural sort based on their IDs.
+ */
+export const useNaturalSort = (collection) => {
+  collection.order = orderBy(collection.order);
 };
