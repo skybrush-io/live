@@ -1,5 +1,5 @@
 <svg width="10" height="80" version="1.1" xmlns="http://www.w3.org/2000/svg">
-  <polygon points="5,0 10,20 0,20" style="fill: #fc0; stroke: black; stroke-width: 1" />
-  <line x1="5" y1="20" x2="5" y2="80" style="stroke: black; stroke-width: 1" />
-  <circle cx="5" cy="40" r="5" stroke="black" stroke-width="1" fill="#fc0" />
+  <polygon points="5,0 10,10 0,10" style="fill: #fc0" />
+  <line x1="5" y1="10" x2="5" y2="40" style="stroke: #fc0; stroke-width: 2" />
+  <line x1="0" y1="40" x2="10" y2="40" style="stroke: #fc0; stroke-width: 2" />
 </svg>

@@ -183,12 +183,14 @@ const originStyles = (selected, axis) => [
       radius: 8,
       stroke: selected ? whiteThickOutline : whiteThinOutline,
     }),
+    /*
     text: new Text({
       font: '12px sans-serif',
       offsetY: 16,
       text: 'Origin',
       textAlign: 'center',
     }),
+    */
   }),
 
   // Arrow
