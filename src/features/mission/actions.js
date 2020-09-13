@@ -9,7 +9,7 @@ import {
   getGPSBasedHomePositionsInMission,
   getMissionMapping,
 } from './selectors';
-import { removeUAVsFromMapping, replaceMapping } from './slice';
+import { clearMapping, removeUAVsFromMapping, replaceMapping } from './slice';
 
 import {
   getOutdoorShowCoordinateSystem,
@@ -80,6 +80,15 @@ export const augmentMappingAutomaticallyFromSpareDrones = () => (
   }
 
   dispatch(replaceMapping(newMapping));
+};
+
+/**
+ * Thunk that recalculates the mapping completely by first clearing all items
+ * from the mission mapping and then calling the mapping augmentation action.
+ */
+export const recalculateMapping = () => (dispatch) => {
+  dispatch(clearMapping());
+  dispatch(augmentMappingAutomaticallyFromSpareDrones());
 };
 
 /**

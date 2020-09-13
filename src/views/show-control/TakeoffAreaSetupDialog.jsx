@@ -36,6 +36,7 @@ import {
   getMissingUAVIdsInMapping,
 } from '~/features/uavs/selectors';
 import AugmentMappingButton from '~/views/uavs/AugmentMappingButton';
+import RecalculateMappingButton from '~/views/uavs/RecalculateMappingButton';
 
 /**
  * Presentation component that shows how many mapping slots are empty at the
@@ -45,7 +46,7 @@ const EmptySlotsIndicator = ({ indices }) => (
   <DronePlaceholderList
     items={indices}
     title='Empty slots:'
-    successMessage='All slots in the mapping are filled.'
+    successMessage='All slots in the mission are filled.'
   />
 );
 
@@ -62,8 +63,8 @@ const MissingDronesIndicator = ({ hasNonemptyMappingSlot, uavIds }) => (
   <DronePlaceholderList
     items={uavIds}
     title='Missing:'
-    successMessage='All drones in the mapping are online.'
-    emptyMessage='There are no drones in the mapping.'
+    successMessage='All drones in the mission are online.'
+    emptyMessage='There are no drones in the mission.'
     preferEmptyMessage={!hasNonemptyMappingSlot}
   />
 );
@@ -82,7 +83,7 @@ const MisplacedDronesIndicator = ({ hasNonemptyMappingSlot, uavIds }) => (
     items={uavIds}
     title='Misplaced:'
     successMessage='All drones are placed at their takeoff positions.'
-    emptyMessage='There are no drones in the mapping.'
+    emptyMessage='There are no drones in the mission.'
     preferEmptyMessage={!hasNonemptyMappingSlot}
   />
 );
@@ -101,7 +102,7 @@ const MisalignedDronesIndicator = ({ hasNonemptyMappingSlot, uavIds }) => (
     items={uavIds}
     title='Misaligned:'
     successMessage='All drones are facing the correct direction.'
-    emptyMessage='There are no drones in the mapping.'
+    emptyMessage='There are no drones in the mission.'
     preferEmptyMessage={!hasNonemptyMappingSlot}
   />
 );
@@ -174,11 +175,9 @@ const TakeoffAreaSetupDialog = ({
 }) => (
   <Dialog fullWidth open={open} maxWidth='sm' onClose={onClose}>
     <DialogToolbar>
-      {!hasVirtualDrones && (
-        <Typography noWrap variant='subtitle1'>
-          Takeoff area setup
-        </Typography>
-      )}
+      <Typography noWrap variant='subtitle1'>
+        Takeoff area setup
+      </Typography>
       <Box flex={1} />
       {hasVirtualDrones && (
         <Button
@@ -189,12 +188,15 @@ const TakeoffAreaSetupDialog = ({
           Place virtual drones
         </Button>
       )}
-      <AugmentMappingButton color='inherit' />
     </DialogToolbar>
 
     <DialogContent>
       <TakeoffAreaSetupDialogIndicators />
-      <Box className='bottom-bar' textAlign='center' mt={2} pt={2}>
+      <Box py={2} display='flex' flexDirection='row' justifyContent='center'>
+        <RecalculateMappingButton />
+        <AugmentMappingButton />
+      </Box>
+      <Box className='bottom-bar' textAlign='center' pt={2}>
         <FormControlLabel
           control={
             <Switch
