@@ -1,5 +1,6 @@
 import partial from 'lodash-es/partial';
 import sortBy from 'lodash-es/sortBy';
+import { orderBy } from 'natural-orderby';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
@@ -49,7 +50,7 @@ const getListItems = createSelector(
     }
 
     for (const item of Object.values(items)) {
-      item.uavIds.sort();
+      item.uavIds = orderBy(item.uavIds);
     }
 
     return sortBy(items, ['status', 'label']);
