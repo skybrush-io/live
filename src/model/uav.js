@@ -56,6 +56,7 @@ export default class UAV {
     this.heading = undefined;
     this.lastUpdated = undefined;
     this.light = 0xffff; /* white in RGB565 */
+    this.localPosition = [undefined, undefined, undefined];
     this.mode = undefined;
   }
 
@@ -163,6 +164,7 @@ export default class UAV {
     const {
       timestamp,
       position,
+      positionXYZ,
       heading,
       mode,
       gps,
@@ -190,6 +192,14 @@ export default class UAV {
         this._position.agl = position[3] / 1e3;
       }
 
+      updated = true;
+    }
+
+    if (positionXYZ && Array.isArray(positionXYZ) && positionXYZ.length >= 3) {
+      // TODO(ntamas): transform units!
+      this.localPosition[0] = positionXYZ[0];
+      this.localPosition[1] = positionXYZ[1];
+      this.localPosition[2] = positionXYZ[2];
       updated = true;
     }
 
@@ -277,6 +287,9 @@ export default class UAV {
     /* Null Island is treated as "no position info" */
     const position =
       this._position.lat && this._position.lon ? { ...this._position } : null;
+    const localPosition = !isNil(this.localPosition[0])
+      ? [...this.localPosition]
+      : null;
     return {
       id: this._id,
       battery: { ...this.battery },
@@ -287,6 +300,7 @@ export default class UAV {
       lastUpdated: this.lastUpdated,
       light: this.light,
       mode: this.mode,
+      localPosition,
       position,
     };
   }

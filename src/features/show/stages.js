@@ -10,6 +10,7 @@ import {
   areOnboardPreflightChecksSignedOff,
   areStartConditionsSyncedWithServer,
   didStartConditionSyncFail,
+  getShowEnvironmentType,
   hasLoadedShowFile,
   hasScheduledStartTime,
   hasShowChangedExternallySinceLoaded,
@@ -65,7 +66,10 @@ const stages = {
   },
 
   setupGeofence: {
-    evaluate: getGeofenceStatus,
+    evaluate: (state) =>
+      getShowEnvironmentType(state) === 'outdoor'
+        ? getGeofenceStatus(state)
+        : Status.OFF,
     requires: ['selectShowFile', 'setupEnvironment'],
   },
 

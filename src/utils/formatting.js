@@ -1,4 +1,11 @@
 /**
+ * Formats a coordinate array as (X, Y, Z)
+ */
+export function formatCoordinateArray(coords) {
+  return `(${coords.map((coord) => coord.toFixed(2)).join(', ')})`;
+}
+
+/**
  * Formats a duration as hours:minutes.
  */
 export function formatDuration(duration) {

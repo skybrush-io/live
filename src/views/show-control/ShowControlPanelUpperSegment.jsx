@@ -9,7 +9,10 @@ import List from '@material-ui/core/List';
 import { makeStyles } from '@material-ui/core/styles';
 
 import FadeAndSlide from '~/components/transitions/FadeAndSlide';
-import { isShowAuthorizedToStartLocally } from '~/features/show/selectors';
+import {
+  getShowEnvironmentType,
+  isShowAuthorizedToStartLocally,
+} from '~/features/show/selectors';
 
 import EnvironmentButton from './EnvironmentButton';
 import GeofenceButton from './GeofenceButton';
@@ -49,7 +52,7 @@ const useStyles = makeStyles(
  * Panel that shows the widgets that are needed to load and configure a drone
  * show.
  */
-const ShowControlPanelUpperSegment = ({ isAuthorized }) => {
+const ShowControlPanelUpperSegment = ({ environmentType, isAuthorized }) => {
   const classes = useStyles();
 
   return (
@@ -68,7 +71,7 @@ const ShowControlPanelUpperSegment = ({ isAuthorized }) => {
 
             <EnvironmentButton />
             <TakeoffAreaButton />
-            <GeofenceButton />
+            {environmentType === 'outdoor' && <GeofenceButton />}
             <UploadButton />
 
             <Divider />
@@ -102,12 +105,14 @@ const ShowControlPanelUpperSegment = ({ isAuthorized }) => {
 };
 
 ShowControlPanelUpperSegment.propTypes = {
+  environmentType: PropTypes.oneOf(['indoor', 'outdoor']),
   isAuthorized: PropTypes.bool,
 };
 
 export default connect(
   // mapStateToProps
   (state) => ({
+    environmentType: getShowEnvironmentType(state),
     filename: null,
     isAuthorized: isShowAuthorizedToStartLocally(state),
   })

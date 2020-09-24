@@ -25,6 +25,7 @@ import {
 } from '~/model/enums';
 import { getPreferredCoordinateFormatter } from '~/selectors/formatting';
 import { monospacedFont } from '~/theme';
+import { formatCoordinateArray } from '~/utils/formatting';
 
 /**
  * Converts the absolute value of a heading deviation, in degrees, to the
@@ -60,6 +61,8 @@ const gpsFixTypeToStatus = (status) => {
 
   return 'error';
 };
+
+const localCoordinateFormatter = formatCoordinateArray;
 
 const useStyles = makeStyles(
   (theme) => ({
@@ -114,9 +117,10 @@ const DroneStatusLine = ({
   editing,
   heading,
   headingDeviation,
-  id,
   gpsFixType,
+  id,
   label,
+  localPosition,
   missing,
   mode,
   position,
@@ -161,7 +165,9 @@ const DroneStatusLine = ({
           >
             {abbreviateGPSFixType(gpsFixType)}
           </StatusPill>
-          {position ? (
+          {localPosition ? (
+            padEnd(localCoordinateFormatter(localPosition), 24)
+          ) : position ? (
             padEnd(coordinateFormatter([position.lon, position.lat]), 24)
           ) : (
             <span className={classes.muted}>{padEnd('no position', 24)}</span>
@@ -202,6 +208,7 @@ DroneStatusLine.propTypes = {
   headingDeviation: PropTypes.number,
   id: PropTypes.string,
   label: PropTypes.string,
+  localPosition: PropTypes.arrayOf(PropTypes.number),
   missing: PropTypes.bool,
   mode: PropTypes.string,
   position: PropTypes.shape({
@@ -247,6 +254,7 @@ export default connect(
         gpsFixType: uav ? uav.gpsFix.type : undefined,
         heading: uav ? uav.heading : undefined,
         headingDeviation,
+        localPosition: uav ? uav.localPosition : undefined,
         missing: !uav,
         mode: uav ? uav.mode : undefined,
         position: uav ? uav.position : undefined,

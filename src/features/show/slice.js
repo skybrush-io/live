@@ -37,6 +37,7 @@ const { actions, reducer } = createSlice({
           type: COORDINATE_SYSTEM_TYPE,
         },
       },
+      indoor: {},
       type: 'outdoor',
     },
 

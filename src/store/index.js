@@ -83,14 +83,9 @@ const persistConfig = {
     // We do not wish to save which preflight checks the user has ticked off
     createBlacklistFilter('preflight', ['checked']),
 
-    // it would be better to use a blacklist filter here that simply excludes
-    // 'data' and 'upload', but it makes a deep copy, which is very expensive
-    // if we have a show loaded in 'data'
-    createFilter('show', [
-      'environment',
-      'takeoffAreaSetupDialog',
-      'startTimeDialog',
-    ]),
+    // Most of the stuff in the 'show' slice is temporary as we unload the
+    // show when refreshing the page
+    createFilter('show', ['environment']),
 
     // We do not wish to save 3D view tooltips, camera pose or the scene ID
     createBlacklistFilter('threeD', ['camera', 'tooltip', 'sceneId']),

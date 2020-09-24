@@ -124,7 +124,7 @@ export const getDroneSwarmSpecification = (state) => {
  * show.
  */
 export const getOutdoorShowCoordinateSystem = (state) =>
-  state.show.environment.outdoor.coordinateSystem;
+  get(state, 'show.environment.outdoor.coordinateSystem');
 
 /**
  * Selector that returns an object that can be used to transform GPS coordinates
@@ -153,6 +153,11 @@ export const getShowToWorldCoordinateSystemTransformation = createSelector(
         }
       : undefined
 );
+
+/**
+ * Selector that returns the type of the show (indoor or outdoor).
+ */
+export const getShowEnvironmentType = (state) => state.show.environment.type;
 
 /**
  * Selector that returns the origin of the show coordinate system.

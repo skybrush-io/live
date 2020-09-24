@@ -59,29 +59,31 @@ const EnvironmentEditorDialog = ({
     <Box m={3}>
       <Instructions type={type} />
 
-      <FormGroup>
-        <FormHeader>Coordinate system of show</FormHeader>
-        {type === 'outdoor' && (
-          <CoordinateSystemFields
-            type={COORDINATE_SYSTEM_TYPE}
-            {...outdoor.coordinateSystem}
-            onOriginChanged={onOriginChanged}
-            onOrientationChanged={onOrientationChanged}
-            orientationLabel='Show origin'
-          />
-        )}
-      </FormGroup>
+      {type === 'outdoor' && (
+        <>
+          <FormGroup>
+            <FormHeader>Coordinate system of show</FormHeader>
+            <CoordinateSystemFields
+              type={COORDINATE_SYSTEM_TYPE}
+              {...outdoor.coordinateSystem}
+              onOriginChanged={onOriginChanged}
+              onOrientationChanged={onOrientationChanged}
+              orientationLabel='Show origin'
+            />
+          </FormGroup>
 
-      <Box display='flex' justifyContent='space-evenly' py={1}>
-        <Button onClick={onSetCoordinateSystemFromMap}>
-          Copy map origin to show origin
-        </Button>
-        <Button onClick={onCopyCoordinateSystemToMap}>
-          Copy show origin to map origin
-        </Button>
-      </Box>
+          <Box display='flex' justifyContent='space-evenly' py={1}>
+            <Button onClick={onSetCoordinateSystemFromMap}>
+              Copy map origin to show origin
+            </Button>
+            <Button onClick={onCopyCoordinateSystemToMap}>
+              Copy show origin to map origin
+            </Button>
+          </Box>
 
-      <RTKCorrectionSourceSelector />
+          <RTKCorrectionSourceSelector />
+        </>
+      )}
     </Box>
   </Dialog>
 );
