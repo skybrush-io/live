@@ -221,6 +221,7 @@ class MessagesPanel extends React.Component {
         display='flex'
         className='bottom-bar'
         pt={1}
+        pb={2}
         px={2}
       >
         <MessageRecipientField

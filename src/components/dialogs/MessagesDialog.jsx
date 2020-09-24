@@ -110,7 +110,7 @@ class MessagesDialogPresentation extends React.Component {
         <MessagesPanel
           ref={this._setMessagesPanel}
           textFieldsAtBottom
-          style={{ height: '50ex' }}
+          style={{ height: '50ex', marginBottom: -8 }}
           flock={flock}
         />
         <DialogActions>{actions}</DialogActions>
