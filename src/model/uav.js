@@ -237,6 +237,7 @@ export default class UAV {
     if (Array.isArray(battery)) {
       let newVoltageRaw;
       let newPercentage;
+      let newCharging;
 
       if (battery.length > 0) {
         newVoltageRaw = Number.parseInt(battery[0], 10);
@@ -244,6 +245,8 @@ export default class UAV {
           newPercentage = Number.parseInt(battery[1], 10);
         }
       }
+
+      newCharging = battery.length > 2 ? !!battery[2] : false;
 
       if (newPercentage !== battery.percentage) {
         this.battery.percentage = newPercentage;
@@ -253,6 +256,11 @@ export default class UAV {
       if (newVoltageRaw !== this._rawVoltage) {
         this._rawVoltage = battery.voltage;
         this.battery.voltage = newVoltageRaw / 10;
+        updated = true;
+      }
+
+      if (newCharging !== this.battery.charging) {
+        this.battery.charging = newCharging;
         updated = true;
       }
     }

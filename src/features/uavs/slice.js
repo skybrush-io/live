@@ -33,7 +33,8 @@ const { actions, reducer } = createSlice({
       //     errors: [],
       //     battery: {
       //         voltage: 10.4,
-      //         percentage: 41
+      //         percentage: 41,
+      //         charging: true
       //     },
       //     age: "active"   /* one of 'active', 'inactive', 'gone' */
       // }

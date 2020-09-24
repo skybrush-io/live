@@ -188,6 +188,7 @@ const DroneStatusLine = ({
 
 DroneStatusLine.propTypes = {
   batteryStatus: PropTypes.shape({
+    charging: PropTypes.bool,
     voltage: PropTypes.number,
     percentage: PropTypes.number,
   }),
