@@ -33,6 +33,7 @@ const MESSAGES_WITH_RECEIPTS = {
   'UAV-LAND': true,
   'UAV-RST': true,
   'UAV-RTH': true,
+  'UAV-SIGNAL': true,
   'UAV-TAKEOFF': true,
 };
 
