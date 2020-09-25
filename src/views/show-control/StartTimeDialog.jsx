@@ -145,7 +145,7 @@ const StartTimeForm = ({
             formControlProps={{ fullWidth: true, variant: 'filled' }}
           >
             <MenuItem value='rc'>
-              Start show with remote controller (safer)
+              Start show with remote controller only (safer)
             </MenuItem>
             <MenuItem value='auto'>Start show automatically</MenuItem>
           </Select>

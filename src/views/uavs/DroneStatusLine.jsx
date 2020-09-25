@@ -172,16 +172,22 @@ const DroneStatusLine = ({
           ) : (
             <span className={classes.muted}>{padEnd('no position', 24)}</span>
           )}
-          {padStart(
-            !isNil(position && position.amsl) ? Math.round(position.amsl) : '?',
-            3
-          ) +
+          {position ? (
+            padStart(
+              !isNil(position && position.amsl)
+                ? Math.round(position.amsl)
+                : '?',
+              3
+            ) +
             '/' +
             padStart(
               !isNil(position && position.agl) ? Math.round(position.agl) : '?',
               3
             ) +
-            'm'}
+            'm'
+          ) : (
+            <span className={classes.muted}>{'———/——— '}</span>
+          )}
           <StatusText status={headingDeviationToStatus(headingDeviation)}>
             {padStart(!isNil(heading) ? Math.round(heading) + '\u00B0' : '', 5)}
           </StatusText>
