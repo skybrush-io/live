@@ -15,6 +15,7 @@ import {
   getOutdoorShowCoordinateSystem,
   getOutdoorShowOrientation,
   getShowCoordinateSystemTransformationObject,
+  isUploadInProgress,
 } from './selectors';
 import {
   approveTakeoffAreaAt,
@@ -26,7 +27,8 @@ import {
   setOutdoorShowOrientation,
   signOffOnManualPreflightChecksAt,
   signOffOnOnboardPreflightChecksAt,
-  _retryFailedUploads,
+  startUpload,
+  _enqueueFailedUploads,
 } from './slice';
 
 import {
@@ -307,13 +309,16 @@ export function reloadCurrentShowFile() {
 }
 
 /**
- * Thunk that retrieves all failed upload items from the state and then
- * places all of them in the upload queue.
+ * Thunk that retrieves all failed upload items from the state, places all of
+ * them in the upload queue and then restarts the upload process if needed.
  */
 export function retryFailedUploads() {
   return (dispatch, getState) => {
     const failedItems = getFailedUploadItems(getState());
-    dispatch(_retryFailedUploads(failedItems));
+    dispatch(_enqueueFailedUploads(failedItems));
+    if (!isUploadInProgress(getState())) {
+      dispatch(startUpload());
+    }
   };
 }
 

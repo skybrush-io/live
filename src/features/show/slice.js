@@ -348,7 +348,7 @@ const { actions, reducer } = createSlice({
       state.environment.type = action.payload;
     },
 
-    _retryFailedUploads(state, action) {
+    _enqueueFailedUploads(state, action) {
       moveItemsBetweenQueues({
         source: 'failedItems',
         target: 'itemsWaitingToStart',
@@ -472,7 +472,7 @@ export const {
   openTakeoffAreaSetupDialog,
   openUploadDialog,
   prepareForNextUpload,
-  _retryFailedUploads,
+  _enqueueFailedUploads,
   recalculateAutoGeofence,
   revokeTakeoffAreaApproval,
   setEnvironmentType,
