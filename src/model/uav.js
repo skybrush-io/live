@@ -196,10 +196,9 @@ export default class UAV {
     }
 
     if (positionXYZ && Array.isArray(positionXYZ) && positionXYZ.length >= 3) {
-      // TODO(ntamas): transform units!
-      this.localPosition[0] = positionXYZ[0];
-      this.localPosition[1] = positionXYZ[1];
-      this.localPosition[2] = positionXYZ[2];
+      this.localPosition[0] = positionXYZ[0] / 1e3;
+      this.localPosition[1] = positionXYZ[1] / 1e3;
+      this.localPosition[2] = positionXYZ[2] / 1e3;
       updated = true;
     }
 
