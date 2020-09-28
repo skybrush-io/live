@@ -13,8 +13,8 @@ import { clearMapping, removeUAVsFromMapping, replaceMapping } from './slice';
 
 import {
   getOutdoorShowCoordinateSystem,
-  getOutdoorShowOrientation,
   getShowCoordinateSystemTransformationObject,
+  getShowOrientation,
 } from '~/features/show/selectors';
 import { showNotification } from '~/features/snackbar/slice';
 import { MessageSemantics } from '~/features/snackbar/types';
@@ -106,7 +106,7 @@ export const addVirtualDronesForMission = () => async (dispatch, getState) => {
   const showCoordinateSystemTransformation = getShowCoordinateSystemTransformationObject(
     state
   );
-  const orientation = getOutdoorShowOrientation(state);
+  const orientation = getShowOrientation(state);
 
   if (
     !showCoordinateSystem.origin ||
