@@ -13,7 +13,7 @@ import {
   getFirstPointsOfTrajectoriesInWorldCoordinates,
   getLastPointsOfTrajectoriesInWorldCoordinates,
   getOutdoorShowCoordinateSystem,
-  getOutdoorShowOrientation,
+  getShowOrientation,
   getShowCoordinateSystemTransformationObject,
   isUploadInProgress,
 } from './selectors';
@@ -62,7 +62,7 @@ export const setupMissionFromShow = () => (dispatch, getState) => {
   // TODO(ntamas): map these to GPS coordinates only if the show is outdoor
   const homePositions = getFirstPointsOfTrajectoriesInWorldCoordinates(state);
   const landingPositions = getLastPointsOfTrajectoriesInWorldCoordinates(state);
-  const orientation = getOutdoorShowOrientation(state);
+  const orientation = getShowOrientation(state);
 
   dispatch(updateHomePositions(homePositions));
   dispatch(updateLandingPositions(landingPositions));

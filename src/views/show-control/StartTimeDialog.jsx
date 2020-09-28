@@ -100,8 +100,8 @@ const StartTimeForm = ({
           <Box mt={2}>
             <Header>
               {originalStartTime
-                ? 'Set a new start time below'
-                : 'Set the start time of the show below'}
+                ? 'Set a new start time'
+                : 'Set the start time of the show'}
             </Header>
           </Box>
 
@@ -149,6 +149,10 @@ const StartTimeForm = ({
             </MenuItem>
             <MenuItem value='auto'>Start show automatically</MenuItem>
           </Select>
+
+          <Box mt={2}>
+            <Header>...or choose from one of the presets below</Header>
+          </Box>
         </DialogContent>
         <DialogActions>
           <Button disabled={!dirty} onClick={() => form.reset()}>

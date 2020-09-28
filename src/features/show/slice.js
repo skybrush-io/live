@@ -37,7 +37,11 @@ const { actions, reducer } = createSlice({
           type: COORDINATE_SYSTEM_TYPE,
         },
       },
-      indoor: {},
+      indoor: {
+        coordinateSystem: {
+          orientation: '0', // stored as a string to avoid rounding errors
+        },
+      },
       type: 'outdoor',
     },
 

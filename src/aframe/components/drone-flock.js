@@ -20,7 +20,7 @@ const { THREE } = AFrame;
 
 /**
  * Returns a function that can be called with two arguments; the first argument
- * must be a object having `lon`, `lat` and `agl` properties, while the second
+ * must be an object having `lon`, `lat` and `agl` properties, while the second
  * argument must be an existing `THREE.Vector3` vector. The function will update
  * the vector in-place to the coordinates in the 3D view corresponding to the
  * given GPS position.
@@ -53,6 +53,13 @@ AFrame.registerSystem('drone-flock', {
     );
 
     this._updatePositionFromGPSCoordinates = getter();
+    this._updatePositionFromLocalCoordinates = (coordinate, result) => {
+      if (coordinate !== null && coordinate !== undefined) {
+        result.x = coordinate[0];
+        result.y = coordinate[1];
+        result.z = coordinate[2];
+      }
+    };
   },
 
   createNewUAVEntity() {
@@ -85,7 +92,12 @@ AFrame.registerSystem('drone-flock', {
   },
 
   updateEntityFromUAV(entity, uav) {
-    if (this._updatePositionFromGPSCoordinates) {
+    if (uav.hasLocalPosition) {
+      this._updatePositionFromLocalCoordinates(
+        uav.localPosition,
+        entity.object3D.position
+      );
+    } else if (this._updatePositionFromGPSCoordinates) {
       this._updatePositionFromGPSCoordinates(uav, entity.object3D.position);
     }
 

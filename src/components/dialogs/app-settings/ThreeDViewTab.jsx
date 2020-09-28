@@ -12,20 +12,35 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 
 import Header from '~/components/dialogs/FormHeader';
+import {
+  getLightingConditionsForThreeDView,
+  getSceneryForThreeDView,
+} from '~/features/settings/selectors';
 import { updateAppSettings } from '~/features/settings/slice';
 
 const sceneries = [
   {
-    id: 'day',
-    label: 'Day',
+    id: 'auto',
+    label: 'Automatic',
   },
   {
-    id: 'night',
-    label: 'Night',
+    id: 'outdoor',
+    label: 'Outdoor',
   },
   {
     id: 'indoor',
     label: 'Indoor',
+  },
+];
+
+const lightingConditions = [
+  {
+    id: 'light',
+    label: 'Light',
+  },
+  {
+    id: 'dark',
+    label: 'Dark',
   },
 ];
 
@@ -58,6 +73,22 @@ const ThreeDViewTab = (props) => (
             onChange={props.onFieldChanged}
           >
             {sceneries.map((item) => (
+              <MenuItem key={item.id} value={item.id}>
+                {item.label}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+        <Box px={1} />
+        <FormControl fullWidth variant='filled'>
+          <InputLabel id='threed-lighting-label'>Lighting</InputLabel>
+          <Select
+            labelId='threed-lighting-label'
+            name='lighting'
+            value={props.lighting}
+            onChange={props.onFieldChanged}
+          >
+            {lightingConditions.map((item) => (
               <MenuItem key={item.id} value={item.id}>
                 {item.label}
               </MenuItem>
@@ -134,6 +165,7 @@ const ThreeDViewTab = (props) => (
 
 ThreeDViewTab.propTypes = {
   grid: PropTypes.string,
+  lighting: PropTypes.string,
   onCheckboxToggled: PropTypes.func,
   onFieldChanged: PropTypes.func,
   scenery: PropTypes.string,
@@ -147,6 +179,8 @@ export default connect(
   // mapStateToProps
   (state) => ({
     ...state.settings.threeD,
+    scenery: getSceneryForThreeDView(state),
+    lighting: getLightingConditionsForThreeDView(state),
   }),
   // mapDispatchToProps
   (dispatch) => ({

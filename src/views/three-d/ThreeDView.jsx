@@ -15,16 +15,39 @@ import Scenery from './Scenery';
 import AFrame from '~/aframe';
 import { objectToString } from '~/aframe/utils';
 import Colors from '~/components/colors';
+import {
+  getLightingConditionsForThreeDView,
+  getSceneryForThreeDView,
+} from '~/features/settings/selectors';
+import { getShowEnvironmentType } from '~/features/show/selectors';
 import { isMapCoordinateSystemLeftHanded } from '~/selectors/map';
 
 const images = {
   glow: require('~/../assets/img/sphere-glow-hollow.png').default,
 };
 
+/**
+ * Selector that returns the "effective' scenery to use in the 3D view,
+ * potentially based on whether the show is indoor or outdoor.
+ */
+const getEffectiveScenery = (state) => {
+  const scenery = getSceneryForThreeDView(state);
+  if (scenery === 'auto') {
+    if (getShowEnvironmentType(state) === 'indoor') {
+      return 'indoor';
+    } else {
+      return 'outdoor';
+    }
+  } else {
+    return scenery;
+  }
+};
+
 const ThreeDView = React.forwardRef((props, ref) => {
   const {
     grid,
     isCoordinateSystemLeftHanded,
+    lighting,
     navigation,
     sceneId,
     scenery,
@@ -37,7 +60,7 @@ const ThreeDView = React.forwardRef((props, ref) => {
   const extraCameraProps = {
     'altitude-control': objectToString({
       enabled: true,
-      min: 0.01
+      min: 0.01,
     }),
     'better-wasd-controls': objectToString({
       fly: navigation && navigation.mode === 'fly',
@@ -103,7 +126,7 @@ const ThreeDView = React.forwardRef((props, ref) => {
       </a-entity>
 
       {/* Move the floor slightly down to ensure that the coordinate axes are nicely visible */}
-      <Scenery scale={10} type={scenery} grid={grid} />
+      <Scenery scale={10} type={`${scenery}-${lighting}`} grid={grid} />
     </a-scene>
   );
 });
@@ -111,11 +134,12 @@ const ThreeDView = React.forwardRef((props, ref) => {
 ThreeDView.propTypes = {
   grid: PropTypes.string,
   isCoordinateSystemLeftHanded: PropTypes.bool,
+  lighting: PropTypes.oneOf(['dark', 'light']),
   navigation: PropTypes.shape({
     mode: PropTypes.oneOf(['walk', 'fly']),
     parameters: PropTypes.object,
   }),
-  scenery: PropTypes.string,
+  scenery: PropTypes.oneOf(['outdoor', 'indoor']),
   showAxes: PropTypes.bool,
   showHomePositions: PropTypes.bool,
   showLandingPositions: PropTypes.bool,
@@ -128,6 +152,8 @@ export default connect(
     isCoordinateSystemLeftHanded: isMapCoordinateSystemLeftHanded(state),
     ...state.settings.threeD,
     ...state.threeD,
+    scenery: getEffectiveScenery(state),
+    lighting: getLightingConditionsForThreeDView(state),
   }),
   // mapDispatchToProps
   {},

@@ -1,5 +1,7 @@
 import { createSelector } from '@reduxjs/toolkit';
 
+import { getShowEnvironmentType } from '~/features/show/selectors';
+
 /**
  * Returns the desired placement accuracy that the user wants to use to judge
  * whether a drone is placed accurately at its start position, in meters.
@@ -20,6 +22,42 @@ export const getDesiredPlacementAccuracyInMeters = (state) =>
  */
 export const getDesiredTakeoffHeadingAccuracy = (state) =>
   state.settings.uavs.takeoffHeadingAccuracy || 20;
+
+/**
+ * Returns the name of the lighting conditions preset for the 3D view.
+ */
+export const getLightingConditionsForThreeDView = (state) => {
+  const { scenery, lighting } = state.settings.threeD;
+
+  // Map legacy names to the new ones
+  if (scenery === 'day') {
+    return 'light';
+  } else if (scenery === 'night') {
+    return 'dark';
+  } else if (lighting === 'light') {
+    return 'light';
+  } else {
+    return 'dark';
+  }
+};
+
+/**
+ * Returns the name of the scenery preset for the 3D view.
+ */
+export const getSceneryForThreeDView = (state) => {
+  const result = state.settings.threeD.scenery;
+
+  // Map legacy names to the new ones
+  if (result === 'day' || result === 'night') {
+    return 'outdoor';
+  } else if (result === 'indoor') {
+    return 'indoor';
+  } else if (result === 'auto') {
+    return 'auto';
+  } else {
+    return 'outdoor';
+  }
+};
 
 /**
  * Returns the "aging thresholds" for the UAVs that decide when a UAV should

@@ -152,6 +152,13 @@ export default class UAV {
   }
 
   /**
+   * Returns whether the UAV has a known local position.
+   */
+  get hasLocalPosition() {
+    return !isNil(this.localPosition[0]);
+  }
+
+  /**
    * Handles the status information related to a single UAV from an UAV-INF
    * message.
    *

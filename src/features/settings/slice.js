@@ -31,7 +31,10 @@ const { actions, reducer } = createSlice({
 
     threeD: {
       // Scenery to use in the 3D view
-      scenery: 'night',
+      scenery: 'auto',
+
+      // Lighting conditions to use in the 3D view
+      lighting: 'dark',
 
       // Whether to show grid lines on the ground in 3D view. Values correspond
       // to the 'grid' setting of aframe-environment-component; currently we
@@ -98,6 +101,14 @@ const { actions, reducer } = createSlice({
       },
     },
 
+    toggleLightingConditionsInThreeDView: {
+      prepare: () => ({}), // this is to swallow event arguments
+      reducer(state) {
+        state.threeD.lighting =
+          state.threeD.lighting === 'dark' ? 'light' : 'dark';
+      },
+    },
+
     toggleMissionIds: {
       prepare: () => ({}), // this is to swallow event arguments
       reducer(state) {
@@ -123,6 +134,7 @@ const { actions, reducer } = createSlice({
 
 export const {
   replaceAppSettings,
+  toggleLightingConditionsInThreeDView,
   toggleMissionIds,
   updateAppSettings,
 } = actions;

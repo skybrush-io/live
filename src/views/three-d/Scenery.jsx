@@ -21,7 +21,7 @@ const grounds = {
 };
 
 const environments = {
-  day: {
+  ['outdoor-light']: {
     preset: 'default',
     fog: 0.2,
     gridColor: '#fff',
@@ -29,7 +29,7 @@ const environments = {
     skyColor: '#88c',
     ...grounds.default,
   },
-  night: {
+  ['outdoor-dark']: {
     preset: 'starry',
     fog: 0.2,
     gridColor: '#39d2f2',
@@ -37,12 +37,22 @@ const environments = {
     skyColor: '#88c',
     ...grounds.default,
   },
-  indoor: {
+  ['indoor-light']: {
+    preset: 'default',
+    fog: 0.2,
+    gridColor: '#fff',
+    skyType: 'gradient',
+    skyColor: '#eceff1',
+    horizonColor: '#fed',
+    ...grounds.indoor,
+  },
+  ['indoor-dark']: {
     preset: 'default',
     fog: 0.2,
     gridColor: '#888',
-    skyType: 'color',
-    skyColor: '#222',
+    skyType: 'gradient',
+    skyColor: '#000',
+    horizonColor: '#222',
     ...grounds.indoor,
   },
 };
@@ -55,7 +65,7 @@ const Scenery = ({ grid, scale, type }) => (
     {/* Move the floor slightly down to ensure that the coordinate axes are nicely visible */}
     <a-entity
       environment={objectToString({
-        ...environments[type],
+        ...(environments[type] || environments['outdoor-dark']),
         grid: typeof grid === 'string' ? grid : grid ? '1x1' : 'none',
       })}
     />
@@ -70,7 +80,7 @@ Scenery.propTypes = {
 
 Scenery.defaultProps = {
   scale: 1,
-  type: 'night',
+  type: 'outdoor-dark',
 };
 
 export default memo(Scenery);

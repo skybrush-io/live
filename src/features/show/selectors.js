@@ -120,6 +120,13 @@ export const getDroneSwarmSpecification = (state) => {
 };
 
 /**
+ * Selector that returns the definition of the coordinate system of an indoor
+ * show.
+ */
+export const getIndoorShowCoordinateSystem = (state) =>
+  get(state, 'show.environment.indoor.coordinateSystem');
+
+/**
  * Selector that returns the definition of the coordinate system of an outdoor
  * show.
  */
@@ -160,7 +167,21 @@ export const getShowToWorldCoordinateSystemTransformation = createSelector(
 export const getShowEnvironmentType = (state) => state.show.environment.type;
 
 /**
- * Selector that returns the origin of the show coordinate system.
+ * Selector that returns the orientation of the positive X axis of the
+ * indoor show coordinate system, cast into a float.
+ *
+ * This is needed because we store the orientation of the show coordinate
+ * system as a string by default to avoid rounding errors, but most components
+ * require a float instead.
+ */
+export const getIndoorShowOrientation = createSelector(
+  getIndoorShowCoordinateSystem,
+  (coordinateSystem) =>
+    coordinateSystem ? Number.parseFloat(coordinateSystem.orientation) : 0
+);
+
+/**
+ * Selector that returns the origin of the outdoor show coordinate system.
  */
 export const getOutdoorShowOrigin = createSelector(
   getOutdoorShowCoordinateSystem,
@@ -168,8 +189,8 @@ export const getOutdoorShowOrigin = createSelector(
 );
 
 /**
- * Selector that returns the orientation of the positive X axis of the show
- * coordinate system, cast into a float.
+ * Selector that returns the orientation of the positive X axis of the
+ * outdoor show coordinate system, cast into a float.
  *
  * This is needed because we store the orientation of the show coordinate
  * system as a string by default to avoid rounding errors, but most components
@@ -186,6 +207,18 @@ export const getOutdoorShowOrientation = createSelector(
 export const getNumberOfDronesInShow = createSelector(
   getDroneSwarmSpecification,
   (swarm) => swarm.length
+);
+
+/**
+ * Returns the orientation of the positive X axis of the show coordinate system,
+ * irrespectively of whether this is an indoor or an outdoor show.
+ */
+export const getShowOrientation = createSelector(
+  getShowEnvironmentType,
+  getIndoorShowOrientation,
+  getOutdoorShowOrientation,
+  (type, indoorOrientation, outdoorOrientation) =>
+    type === 'indoor' ? indoorOrientation : outdoorOrientation
 );
 
 /**
