@@ -159,8 +159,8 @@ export const scalePolygon = (coordinates, factor) => {
 };
 
 /**
- * Grow a polygon by extending its border by a specific width given through the
- * margin parameter.
+ * Grow a polygon by expanding its vertices from its center by a specific length
+ * given through the margin parameter.
  */
 export const growPolygon = (coordinates, margin) => {
   const center = getCenter(new Polygon([coordinates]).getExtent());
@@ -181,6 +181,23 @@ export const growPolygon = (coordinates, margin) => {
     return [
       center[0] + adjustedDifference[0],
       center[1] + adjustedDifference[1],
+    ];
+  });
+};
+
+/**
+ * Buffer a polygon by inserting a padding around it, so its new edge is at
+ * least as far from the old one, as given in the margin parameter.
+ */
+export const bufferPolygon = (coordinates, margin) => {
+  const center = getCenter(new Polygon([coordinates]).getExtent());
+
+  return coordinates.map((c) => {
+    const difference = [c[0] - center[0], c[1] - center[1]];
+
+    return [
+      c[0] + Math.sign(difference[0]) * margin,
+      c[1] + Math.sign(difference[1]) * margin,
     ];
   });
 };

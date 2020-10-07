@@ -2,7 +2,7 @@ import { FeatureType } from '~/model/features';
 import { getFeaturesInOrder } from '~/selectors/ordered';
 import { getGeofenceCoordinates } from '~/features/show/selectors';
 import get from 'lodash-es/get';
-import { addFeature, removeFeatures } from '~/actions/features';
+import { addFeature, removeFeature, removeFeatures } from '~/actions/features';
 import throttle from 'lodash-es/throttle';
 import ky from 'ky';
 
@@ -10,6 +10,7 @@ import { loadShowFromFile as processFile } from './processing';
 import {
   getAbsolutePathOfShowFile,
   getFailedUploadItems,
+
   getFirstPointsOfTrajectoriesInWorldCoordinates,
   getLastPointsOfTrajectoriesInWorldCoordinates,
   getOutdoorShowCoordinateSystem,
@@ -40,10 +41,16 @@ import {
 } from '~/features/mission/slice';
 import { showNotification } from '~/features/snackbar/slice';
 import { MessageSemantics } from '~/features/snackbar/types';
+import { getGeofencePolygonId } from '~/features/mission/selectors';
 import { createAsyncAction } from '~/utils/redux';
 
 // import { FlatEarthCoordinateSystem } from '~/utils/geography';
-import { simplifyPolygon, scalePolygon, growPolygon } from '~/utils/math';
+import {
+  simplifyPolygon,
+  scalePolygon,
+  growPolygon,
+  bufferPolygon,
+} from '~/utils/math';
 
 /**
  * Thunk that approves the takeoff area arrangement with the current timestamp.
@@ -70,6 +77,11 @@ export const setupMissionFromShow = () => (dispatch, getState) => {
 };
 
 export const removeGeofencePolygon = () => (dispatch, getState) => {
+  const state = getState();
+  dispatch(removeFeature(getGeofencePolygonId(state)));
+};
+
+export const removeShowFeatures = () => (dispatch, getState) => {
   const state = getState();
 
   const showFeatureIds = getFeaturesInOrder(state)
@@ -112,15 +124,17 @@ export const addGeofencePolygon = () => (dispatch, getState) => {
   // );
 
   const MarginType = {
+    BUFFER: 'buffer',
     GROW: 'grow',
     SCALE: 'scale',
   };
 
-  const marginType = MarginType.GROW;
+  const marginType = MarginType.BUFFER;
 
   const marginFunctions = {
-    grow: growPolygon,
-    scale: scalePolygon,
+    [MarginType.BUFFER]: bufferPolygon,
+    [MarginType.GROW]: growPolygon,
+    [MarginType.SCALE]: scalePolygon,
   };
 
   const points = marginFunctions[marginType](
