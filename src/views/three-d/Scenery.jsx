@@ -14,7 +14,7 @@ const grounds = {
   /* Checkerboard indoor texture */
   indoor: {
     ground: 'flat',
-    groundColor: '#444',
+    groundColor: '#333',
     groundColor2: '#666',
     groundTexture: 'checkerboard',
   },
