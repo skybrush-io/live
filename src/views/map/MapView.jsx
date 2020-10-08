@@ -213,11 +213,12 @@ const MapViewInteractions = withMap((props) => {
     interactions.push(
       /* SELECT mode |
           click --> Select nearest feature
+          Shift + Click --> Add nearest feature to selection
           PlatMod + Click --> Toggle nearest feature in selection
           Alt + Click --> Remove nearest feature from selection */
       <SelectNearestFeature
         key='SelectNearestFeature'
-        addCondition={Condition.never}
+        addCondition={Condition.shiftKeyOnly}
         layers={isLayerSelectable}
         removeCondition={Condition.altKeyOnly}
         toggleCondition={Condition.platformModifierKeyOnly}

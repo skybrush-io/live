@@ -102,29 +102,39 @@ class SelectNearestFeatureInteraction extends Interaction {
           this._distanceOfEventFromFeature,
           mapBrowserEvent
         );
-        const closestFeature = minBy(
-          map
-            .getLayers()
-            .getArray()
-            .filter(this._isLayerFeasible)
-            .filter(this._layerSelectorFunction)
-            .map((layer) => {
-              const source = layer.getSource();
-              return source
-                ? source.getClosestFeatureToCoordinate(
-                    coordinate,
-                    this._isFeatureFeasible
-                  )
-                : undefined;
-            })
-            .filter(this._isFeatureFeasible),
-          distanceFunction
-        );
+        const feasibleLayers = map
+          .getLayers()
+          .getArray()
+          .filter(this._isLayerFeasible)
+          .filter(this._layerSelectorFunction);
+        const closestFeatureOnEachFeasibleLayer = feasibleLayers
+          .map((layer) => {
+            const source = layer.getSource();
+            return source
+              ? source.getClosestFeatureToCoordinate(
+                  coordinate,
+                  this._isFeatureFeasible
+                )
+              : undefined;
+          })
+          .filter(this._isFeatureFeasible)
+          .reverse();
+
+        // In the closestFeatureOnEachFeasibleLayer array, the topmost layer
+        // is at the front. We need to iterate over it and stop at the first
+        // feature that is closer than the threshold.
+        let closestFeature = undefined;
+        let distance = undefined;
+        for (const feature of closestFeatureOnEachFeasibleLayer) {
+          // Get the actual distance of the feature (if we have one)
+          distance = distanceFunction(feature);
+          if (distance <= this._threshold) {
+            closestFeature = feature;
+            break;
+          }
+        }
 
         if (closestFeature !== undefined) {
-          // Get the actual distance of the feature (if we have one)
-          const distance = distanceFunction(closestFeature);
-
           // Decide whether we are setting, adding, removing or toggling the
           // selection
           const add = this._addCondition(mapBrowserEvent);
@@ -138,13 +148,12 @@ class SelectNearestFeatureInteraction extends Interaction {
             ? 'toggle'
             : 'set';
 
-          // If the feature is close enough...
-          if (distance <= this._threshold) {
-            // Now call the callback
-            this._select(mode, closestFeature, distance);
-          } else if (mode === 'set') {
-            this._select('clear', closestFeature, distance);
-          }
+          // Now call the callback
+          this._select(mode, closestFeature, distance);
+        } else {
+          // No feature is close enough. In 'set' mode, we need to clear the
+          // selection.
+          this._select('clear');
         }
 
         return Condition.pointerMove(mapBrowserEvent);
