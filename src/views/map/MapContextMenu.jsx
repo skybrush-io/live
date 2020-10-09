@@ -344,7 +344,7 @@ class MapContextMenu extends React.Component {
     renameFeature(selectedFeatureIds[0], selectedFeatureLabels[0]);
   };
 
-  _unsetSelectedFeatureAsGeofence = (event, context) => {
+  _unsetSelectedFeatureAsGeofence = (_event, _context) => {
     const { clearGeofencePolygonId } = this.props;
     clearGeofencePolygonId();
   };
@@ -357,12 +357,7 @@ class MapContextMenu extends React.Component {
   };
 
   _removeSelectedFeatures = (event, context) => {
-    const { selectedFeatureIds, geofencePolygonId } = context;
-
-    if (selectedFeatureIds.includes(geofencePolygonId)) {
-      this.props.clearGeofencePolygonId();
-    }
-
+    const { selectedFeatureIds } = context;
     this.props.removeFeaturesByIds(selectedFeatureIds);
   };
 

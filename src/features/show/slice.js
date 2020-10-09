@@ -27,6 +27,7 @@ const { actions, reducer } = createSlice({
     changedSinceLoaded: false,
 
     geofenceCoordinates: [],
+    maxHeight: undefined,
 
     environment: {
       editing: false,
@@ -333,15 +334,18 @@ const { actions, reducer } = createSlice({
     },
 
     recalculateAutoGeofence: noPayload((state) => {
-      /*
-      const allDroneCoordinates = [].concat(
-        ...state.data.swarm.drones.map((d) =>
-          d.settings.trajectory.points.map((p) => [p[1][0], p[1][1]])
-        )
+      const droneCoordinates = state?.data?.swarm?.drones?.map?.((d) =>
+        d.settings.trajectory.points.map((p) => [p[1][0], p[1][1], p[1][2]])
       );
 
-      state.geofenceCoordinates = convexHull(allDroneCoordinates);
-      */
+      if (droneCoordinates) {
+        const allDroneCoordinates = [].concat(...droneCoordinates);
+
+        state.maxHeight = Math.max(...allDroneCoordinates.map((c) => c[2]));
+        state.geofenceCoordinates = convexHull(
+          allDroneCoordinates.map((c) => [c[0], c[1]])
+        );
+      }
     }),
 
     revokeTakeoffAreaApproval: noPayload((state) => {

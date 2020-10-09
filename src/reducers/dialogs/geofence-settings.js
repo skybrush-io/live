@@ -13,7 +13,10 @@ import { MAX_GEOFENCE_VERTEX_COUNT } from '~/features/show/constants';
  */
 const defaultState = {
   dialogVisible: false,
-  margin: 20,
+
+  horizontalMargin: 20,
+  verticalMargin: 20,
+
   simplify: true,
   maxVertexCount: MAX_GEOFENCE_VERTEX_COUNT,
 };

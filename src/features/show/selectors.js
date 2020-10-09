@@ -344,6 +344,16 @@ export const getShowLoadingProgressPercentage = (state) => {
 };
 
 /**
+ * Returns the automatically calculated hight limit, by adding the declared
+ * vertical safety margin to the highest point of the show trajectories.
+ */
+export const getHeightLimit = (state) => {
+  const maxHeight = get(state, 'show.maxHeight') || 0;
+  const verticalMargin = get(state, 'dialogs.geofenceSettings.verticalMargin');
+  return maxHeight + verticalMargin;
+};
+
+/**
  * Returns the coordinates of the polygon that has been calculated as suggested
  * automatic geofence for the currently loaded show.
  */

@@ -94,7 +94,7 @@ export const removeShowFeatures = () => (dispatch, getState) => {
 export const addGeofencePolygon = () => (dispatch, getState) => {
   const state = getState();
 
-  const { margin, simplify, maxVertexCount } = state.dialogs.geofenceSettings;
+  const { horizontalMargin, simplify, maxVertexCount } = state.dialogs.geofenceSettings;
 
   const coordinates = getGeofenceCoordinates(state);
   if (coordinates.length === 0) {
@@ -139,7 +139,7 @@ export const addGeofencePolygon = () => (dispatch, getState) => {
 
   const points = marginFunctions[marginType](
     simplify ? simplifyPolygon(coordinates, maxVertexCount) : coordinates,
-    margin
+    horizontalMargin
   ).map((c) => transformation.toLonLat(c));
 
   const geofencePolygon = {

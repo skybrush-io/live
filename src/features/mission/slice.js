@@ -281,6 +281,15 @@ const { actions, reducer } = createSlice({
       }
     },
   },
+
+  extraReducers: {
+    REMOVE_FEATURES(state, action) {
+      const { ids } = action.payload;
+      if (ids.includes(state.geofencePolygonId)) {
+        state.geofencePolygonId = undefined;
+      }
+    },
+  },
 });
 
 export const {
