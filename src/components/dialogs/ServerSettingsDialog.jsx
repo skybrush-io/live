@@ -351,7 +351,12 @@ class ServerSettingsDialogPresentation extends React.Component {
     return (
       <Dialog fullWidth open={open} maxWidth='xs' onClose={onClose}>
         <DialogTabs value={selectedTab} onChange={onTabSelected}>
-          <Tab value='auto' label={!manualSetupAllowed ? 'Preconfigured server' : 'Autodetected'} />
+          <Tab
+            value='auto'
+            label={
+              !manualSetupAllowed ? 'Preconfigured server' : 'Autodetected'
+            }
+          />
           {manualSetupAllowed && <Tab value='manual' label='Manual' />}
         </DialogTabs>
         <ServerDetectionManager />
@@ -383,7 +388,7 @@ const ServerSettingsDialog = connect(
       dispatch(closeServerSettingsDialog());
     },
     onDisconnect() {
-      dispatch(closeServerSettingsDialog());
+      // dispatch(closeServerSettingsDialog());
       dispatch(disconnectFromServer());
     },
     onSubmit(data) {
