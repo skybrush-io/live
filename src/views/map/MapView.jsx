@@ -116,6 +116,7 @@ const MapViewControlsPresentation = (props) => {
         key='control.MousePosition'
         projection='EPSG:4326'
         coordinateFormat={props.formatCoordinate}
+        hideWhenOut
       />
     );
   }
