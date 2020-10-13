@@ -32,11 +32,11 @@ import {
 } from '~/actions/geofence-settings';
 import { forceFormSubmission, Switch, TextField } from '~/components/forms';
 
-import { createValidator, integer, number, required } from '~/utils/validation';
+import { createValidator, finite, integer, required } from '~/utils/validation';
 
 const validator = createValidator({
-  horizontalMargin: [required, number],
-  verticalMargin: [required, number],
+  horizontalMargin: [required, finite],
+  verticalMargin: [required, finite],
   maxVertexCount: [required, integer],
 });
 
