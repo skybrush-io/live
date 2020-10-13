@@ -180,7 +180,7 @@ const GeofenceSettingsDialogPresentation = ({
           Geofence settings
         </Typography>
       </DialogToolbar>
-      <DialogContent key='contents'>
+      <DialogContent>
         {/* <FormHeader>Automatic geofence</FormHeader> */}
         <GeofenceSettingsForm onSubmit={onSubmit} onKeyPress={handleKeyPress} />
       </DialogContent>
