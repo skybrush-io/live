@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
-import Divider from '@material-ui/core/Divider';
+import DialogContent from '@material-ui/core/DialogContent';
 import FormGroup from '@material-ui/core/FormGroup';
 import Typography from '@material-ui/core/Typography';
 
@@ -14,6 +14,7 @@ import {
   setFlatEarthCoordinateSystemOrientation,
 } from '~/actions/map-origin';
 import CoordinateSystemFields from '~/components/CoordinateSystemFields';
+import DialogToolbar from '~/components/dialogs/DialogToolbar';
 import FormHeader from '~/components/dialogs/FormHeader';
 import RTKCorrectionSourceSelector from '~/features/rtk/RTKCorrectionSourceSelector';
 import { updateOutdoorShowSettings } from '~/features/show/actions';
@@ -56,36 +57,43 @@ const EnvironmentEditorDialog = ({
   type,
 }) => (
   <Dialog fullWidth open={editing} maxWidth='sm' onClose={onClose}>
-    <Box m={3}>
-      <Instructions type={type} />
+    <DialogToolbar>
+      <Typography noWrap variant='subtitle1'>
+        Environment settings
+      </Typography>
+    </DialogToolbar>
+    <DialogContent>
+      <Box my={2}>
+        <Instructions type={type} />
 
-      {type === 'outdoor' && (
-        <>
-          <FormGroup>
-            <FormHeader>Coordinate system of show</FormHeader>
-            <CoordinateSystemFields
-              type={COORDINATE_SYSTEM_TYPE}
-              {...outdoor.coordinateSystem}
-              onOriginChanged={onOriginChanged}
-              onOrientationChanged={onOrientationChanged}
-              orientationLabel='Show orientation'
-              originLabel='Show origin'
-            />
-          </FormGroup>
+        {type === 'outdoor' && (
+          <>
+            <FormGroup>
+              <FormHeader>Coordinate system of show</FormHeader>
+              <CoordinateSystemFields
+                type={COORDINATE_SYSTEM_TYPE}
+                {...outdoor.coordinateSystem}
+                onOriginChanged={onOriginChanged}
+                onOrientationChanged={onOrientationChanged}
+                orientationLabel='Show orientation'
+                originLabel='Show origin'
+              />
+            </FormGroup>
 
-          <Box display='flex' justifyContent='space-evenly' py={1}>
-            <Button onClick={onSetCoordinateSystemFromMap}>
-              Copy map origin to show origin
-            </Button>
-            <Button onClick={onCopyCoordinateSystemToMap}>
-              Copy show origin to map origin
-            </Button>
-          </Box>
+            <Box display='flex' justifyContent='space-evenly' py={1}>
+              <Button onClick={onSetCoordinateSystemFromMap}>
+                Copy map origin to show origin
+              </Button>
+              <Button onClick={onCopyCoordinateSystemToMap}>
+                Copy show origin to map origin
+              </Button>
+            </Box>
 
-          <RTKCorrectionSourceSelector />
-        </>
-      )}
-    </Box>
+            <RTKCorrectionSourceSelector />
+          </>
+        )}
+      </Box>
+    </DialogContent>
   </Dialog>
 );
 
