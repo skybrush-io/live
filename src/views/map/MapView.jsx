@@ -41,6 +41,7 @@ import { getVisibleLayersInOrder } from '~/selectors/ordered';
 import { getExtendedCoordinateFormatter } from '~/selectors/formatting';
 import { getMapViewRotationAngle } from '~/selectors/map';
 import { getSelectedFeatureIds, getSelection } from '~/selectors/selection';
+import { hasFeature } from '~/utils/configuration';
 import {
   mapViewCoordinateFromLonLat,
   findFeaturesById,
@@ -147,22 +148,33 @@ const MapViewControls = connect(
  *
  * @returns {JSX.Node[]}  the toolbars on the map
  */
-const MapViewToolbars = () => [
-  <Widget
-    key='Widget.MapToolbar'
-    style={{ top: 8, left: 8 + 24 + 8 }}
-    showControls={false}
-  >
-    <MapToolbar />
-  </Widget>,
-  <Widget
-    key='Widget.DrawingToolbar'
-    style={{ top: 8 + 48 + 8, left: 8 }}
-    showControls={false}
-  >
-    <DrawingToolbar />
-  </Widget>,
-];
+const MapViewToolbars = () => {
+  const toolbars = [];
+
+  toolbars.push(
+    <Widget
+      key='Widget.MapToolbar'
+      style={{ top: 8, left: 8 + 24 + 8 }}
+      showControls={false}
+    >
+      <MapToolbar />
+    </Widget>
+  );
+
+  if (hasFeature('features')) {
+    toolbars.push(
+      <Widget
+        key='Widget.DrawingToolbar'
+        style={{ top: 8 + 48 + 8, left: 8 }}
+        showControls={false}
+      >
+        <DrawingToolbar />
+      </Widget>
+    );
+  }
+
+  return toolbars;
+};
 
 /* ********************************************************************** */
 

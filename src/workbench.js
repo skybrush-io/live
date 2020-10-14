@@ -16,11 +16,29 @@ import MessagesPanel from './components/chat/MessagesPanel';
 import { saveWorkbenchState } from './features/workbench/slice';
 import { injectFlockFromContext } from './flock';
 import store from './store';
+import { hasFeature } from './utils/configuration';
 import views from './views';
 
 require('../assets/css/workbench.less');
 
+/**
+ * Dummy component that renders nothing.
+ */
 const Nothing = () => null;
+
+/**
+ * Fallback component to use in the workbench in case of errors.
+ */
+const FallbackComponent = () => (
+  <BackgroundHint text='This component is not available' />
+);
+
+/**
+ * Helper function that returns the given value if and only if the given
+ * feature is present in the configuration.
+ */
+const onlyWithFeature = (featureName, component) =>
+  hasFeature(featureName) ? component : FallbackComponent;
 
 /**
  * Registry that maps component types to be used in the top-level
@@ -32,8 +50,8 @@ const Nothing = () => null;
 const componentRegistry = {
   'connection-list': views.ConnectionList,
   'dataset-list': views.DatasetList,
-  'dock-list': views.DockList,
-  'feature-list': views.FeatureList,
+  'dock-list': onlyWithFeature('docks', views.DockList),
+  'feature-list': onlyWithFeature('features', views.FeatureList),
   'ground-control-view': injectFlockFromContext(views.GroundControlView),
   'layer-list': views.LayerList,
   'lcd-clock-panel': views.LCDClockPanel,
@@ -42,17 +60,10 @@ const componentRegistry = {
   messages: injectFlockFromContext(MessagesPanel),
   placeholder: Nothing,
   'saved-location-list': views.SavedLocationList,
-  'show-control': views.ShowControlPanel,
-  'three-d-view': views.ThreeDTopLevelView,
+  'show-control': onlyWithFeature('showControl', views.ShowControlPanel),
+  'three-d-view': onlyWithFeature('threeDView', views.ThreeDTopLevelView),
   'uav-list': injectFlockFromContext(views.UAVList),
 };
-
-/**
- * Fallback component to use in the workbench in case of errors.
- */
-const FallbackComponent = () => (
-  <BackgroundHint text='This component is not available' />
-);
 
 function constructDefaultWorkbench(store) {
   const builder = new WorkbenchBuilder();
@@ -62,44 +73,45 @@ function constructDefaultWorkbench(store) {
     builder.registerComponent(key, componentRegistry[key]);
   }
 
+  // prettier-ignore
   const workbench = builder
     .makeColumns()
-    .makeStack()
-    .add('map')
-    .setTitle('Map')
-    .setId('map')
-    .add('uav-list')
-    .setTitle('UAVs')
-    .setId('uavs')
-    .add('three-d-view')
-    .setTitle('3D View')
-    .setId('threeDView')
-    .preventReorder()
-    .finish()
-    .makeRows()
-    .makeStack()
-    .add('lcd-clock-panel')
-    .setTitle('Clocks')
-    .setId('clocks')
-    .add('saved-location-list')
-    .setTitle('Locations')
-    .setId('locations')
-    .add('layer-list')
-    .setTitle('Layers')
-    .setId('layers')
-    .finish()
-    .setRelativeHeight(25)
-    .makeStack()
-    .add('show-control')
-    .setTitle('Show control')
-    .setId('show')
-    .add('messages')
-    .setTitle('Messages')
-    .setId('messages')
-    .finish()
-    .finish()
-    .setRelativeWidth(25)
-    .finish()
+      .makeStack()
+        .add('map')
+          .setTitle('Map')
+          .setId('map')
+        .add('uav-list')
+          .setTitle('UAVs')
+          .setId('uavs')
+        .add('three-d-view')
+          .setTitle('3D View')
+          .setId('threeDView')
+          .preventReorder()
+        .finish()
+      .makeRows()
+        .makeStack()
+          .add('lcd-clock-panel')
+            .setTitle('Clocks')
+            .setId('clocks')
+          .add('saved-location-list')
+            .setTitle('Locations')
+            .setId('locations')
+          .add('layer-list')
+            .setTitle('Layers')
+            .setId('layers')
+          .finish()
+          .setRelativeHeight(25)
+        .makeStack()
+          .add('show-control')
+            .setTitle('Show control')
+            .setId('show')
+          .add('messages')
+            .setTitle('Messages')
+            .setId('messages')
+          .finish()
+        .finish()
+        .setRelativeWidth(25)
+      .finish()
     .build();
 
   // Set a fallback component for cases when we cannot show a component

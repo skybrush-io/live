@@ -20,6 +20,7 @@ import ToolboxButton from './ToolboxButton';
 import UAVStatusSummary from '../uavs/UAVStatusSummary';
 
 import { toggleSidebar } from '~/features/sidebar/slice';
+import { hasFeature } from '~/utils/configuration';
 
 const style = {
   backgroundColor: '#333',
@@ -83,10 +84,10 @@ const Header = ({ isSidebarOpen, sessionExpiresAt, toggleSidebar }) => (
       <ConnectionStatusButton isAlwaysVisible />
       <hr />
       <ServerConnectionSettingsButton />
-      <GeofenceSettingsButton />
+      {hasFeature('geofence') && <GeofenceSettingsButton />}
       <AuthenticationButton />
       <hr />
-      <ToolboxButton />
+      {hasFeature('toolboxMenu') && <ToolboxButton />}
       <AppSettingsButton />
       {config.urls.help ? <HelpButton /> : null}
       {window.isElectron ? null : <FullScreenButton />}

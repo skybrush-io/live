@@ -19,7 +19,8 @@ import React from 'react';
 import { Module, ModuleTray, Workbench } from 'react-flexible-workbench';
 import { connect } from 'react-redux';
 
-import LogStatusBadge from '~/components/badges/LogStatusBadge';
+// import LogStatusBadge from '~/components/badges/LogStatusBadge';
+import { hasFeature } from '~/utils/configuration';
 
 const SIDEBAR_OPEN_WIDTH = 160;
 
@@ -67,20 +68,24 @@ const Sidebar = ({ isOpen, workbench }) => (
           label='Layers'
           component='layer-list'
         />
-        <Module
-          id='features'
-          icon={<ShowChart />}
-          label='Features'
-          component='feature-list'
-        />
+        {hasFeature('features') && (
+          <Module
+            id='features'
+            icon={<ShowChart />}
+            label='Features'
+            component='feature-list'
+          />
+        )}
         <hr />
         <Module id='uavs' icon={<Flight />} label='UAVs' component='uav-list' />
-        <Module
-          id='docks'
-          icon={<Gamepad />}
-          label='Docks'
-          component='dock-list'
-        />
+        {hasFeature('docks') && (
+          <Module
+            id='docks'
+            icon={<Gamepad />}
+            label='Docks'
+            component='dock-list'
+          />
+        )}
         <Module
           id='messages'
           icon={<Message />}
@@ -88,13 +93,17 @@ const Sidebar = ({ isOpen, workbench }) => (
           component='messages'
         />
         <hr />
-        <Module
-          id='show'
-          icon={<Grain />}
-          label='Show control'
-          component='show-control'
-        />
-        <hr />
+        {hasFeature('showControl') && (
+          <>
+            <Module
+              id='show'
+              icon={<Grain />}
+              label='Show control'
+              component='show-control'
+            />
+            <hr />
+          </>
+        )}
         <Module
           id='clocks'
           icon={<Alarm />}

@@ -1,3 +1,4 @@
+import config from 'config';
 import delay from 'delay';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import PropTypes from 'prop-types';
@@ -10,6 +11,7 @@ import { PersistGate } from 'redux-persist/es/integration/react';
 
 import dialogs from './components/dialogs';
 import Header from './components/header';
+import CornerRibbon from './components/CornerRibbon';
 import HotkeyHandler from './components/HotkeyHandler';
 import ServerConnectionManager from './components/ServerConnectionManager';
 import SplashScreen from './components/SplashScreen';
@@ -101,6 +103,9 @@ const App = () => {
                     <Sidebar workbench={workbench} />
                     <WorkbenchView workbench={workbench} />
                   </div>
+                  {config.ribbon && config.ribbon.label && (
+                    <CornerRibbon {...config.ribbon} />
+                  )}
                 </div>
 
                 <ServerConnectionManager />

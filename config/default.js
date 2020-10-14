@@ -5,6 +5,10 @@
 export default {
   ephemeral: false,
   examples: [],
+  features: {
+    /* any features not explicitly set to 'false' are considered to be allowed
+     * by default */
+  },
   server: {},
   session: {},
   tour: null,

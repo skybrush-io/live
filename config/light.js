@@ -10,6 +10,22 @@ export default {
   // No bundled examples
   examples: [],
 
+  // Hide some of the features
+  features: {
+    docks: false,
+    features: false, // okay, sorry for the naming, this is awkward :)
+    geofence: false,
+    showControl: false,
+    threeDView: false,
+    toolboxMenu: false,
+  },
+
+  // Ribbon in bottom left corner to indicate that this version is not for distribution
+  ribbon: {
+    label: 'Do not distribute',
+    position: 'bottomLeft',
+  },
+
   // Configure to connect to the MAVLink proxy server. Does not allow overriding
   // the hostname and port from the dialog.
   server: {
