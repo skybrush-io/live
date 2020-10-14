@@ -12,6 +12,9 @@ const ora = require('ora');
 const path = require('path');
 const pify = require('pify');
 const webpack = require('webpack');
+const { merge } = require('webpack-merge');
+
+const { useAppConfiguration } = require('../webpack/helpers');
 
 /** The root directory of the project */
 const projectRoot = path.resolve(__dirname, '..');
@@ -30,6 +33,11 @@ const options = require('yargs')
     describe: 'whether to build the application in production mode',
     type: 'boolean',
   })
+  .option('variant', {
+    default: 'normal',
+    describe:
+      'specifies the application variant to compile ("normal" or "light")',
+  })
   .help('h')
   .alias('h', 'help')
   .version(false).argv;
@@ -43,25 +51,35 @@ async function cleanDirs() {
   await emptyDir(outputDir);
 }
 
-async function createBundle(configName) {
+async function createBundle(part, variantName) {
+  const PARTS = ['main', 'preload', 'launcher'];
   process.env.DEPLOYMENT = '1';
   process.env.NODE_ENV = 'production';
 
-  const webpackConfig = require(path.resolve(
+  if (!PARTS.includes(part)) {
+    throw new Error('unknown part; must be one of ' + JSON.stringify(PARTS));
+  }
+
+  if (variantName === 'normal') {
+    variantName = undefined;
+  }
+
+  let webpackConfig = require(path.resolve(
     projectRoot,
     'webpack',
-    configName + '.config.js'
+    (part === 'main' ? 'electron' : part) + '.config.js'
   ));
 
   webpackConfig.context = projectRoot;
   webpackConfig.mode = options.production ? 'production' : 'development';
   webpackConfig.output = {
-    filename:
-      configName === 'electron'
-        ? '[name].bundle.js'
-        : configName + '.bundle.js',
+    filename: part === 'main' ? '[name].bundle.js' : part + '.bundle.js',
     path: buildDir,
   };
+
+  if (variantName) {
+    webpackConfig = merge(webpackConfig, useAppConfiguration(variantName));
+  }
 
   await ensureDir(buildDir);
   const stats = await pify(webpack)(webpackConfig);
@@ -157,8 +175,6 @@ async function cleanup() {
 async function main() {
   const appConfig = await loadAppConfig();
 
-  // OutputDir = path.resolve(outputDir, appConfig.version)
-
   const tasks = new Listr([
     {
       task: cleanDirs,
@@ -168,15 +184,17 @@ async function main() {
       task: () =>
         new Listr([
           {
-            task: () => createBundle('electron'),
-            title: 'Main application',
+            task: () => createBundle('main', options.variant),
+            title:
+              'Main application' +
+              (options.variant ? ` (${options.variant})` : ''),
           },
           {
-            task: () => createBundle('launcher'),
+            task: () => createBundle('launcher', options.variant),
             title: 'Launcher script',
           },
           {
-            task: () => createBundle('preload'),
+            task: () => createBundle('preload', options.variant),
             title: 'Preload script',
           },
         ]),

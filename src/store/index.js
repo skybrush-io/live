@@ -8,6 +8,7 @@ import {
   isPlain,
 } from '@reduxjs/toolkit';
 
+import config from 'config';
 import isPromise from 'is-promise';
 import localForage from 'localforage';
 import isError from 'lodash-es/isError';
@@ -98,7 +99,10 @@ const persistConfig = {
  * is important that the user starts from a clean configuration.
  */
 const url = new URL(window.location.href);
-if (url.searchParams && url.searchParams.get('pristine')) {
+const shouldStartWithPristineState =
+  (config && config.ephemeral) ||
+  (url.searchParams && url.searchParams.get('pristine'));
+if (shouldStartWithPristineState) {
   persistConfig.stateReconciler = pristineReconciler;
 }
 
