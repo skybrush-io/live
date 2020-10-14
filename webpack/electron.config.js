@@ -5,7 +5,7 @@ const { merge } = require('webpack-merge');
 const WebpackShellPlugin = require('webpack-shell-plugin');
 
 const baseConfig = require('./base.config.js');
-const { htmlMetaTags, projectRoot } = require('./helpers');
+const { htmlMetaTags, projectRoot, useAppConfiguration } = require('./helpers');
 
 const htmlWebPackPluginConfiguration = {
   meta: htmlMetaTags,
@@ -28,9 +28,15 @@ if (process.env.NODE_ENV !== 'production' && process.env.DEPLOYMENT !== '1') {
   );
 }
 
+/* Override the configuration module based on the environment variables if needed */
+const variantConfig = process.env.SKYBRUSH_VARIANT
+  ? useAppConfiguration(process.env.SKYBRUSH_VARIANT)
+  : {};
+
 module.exports = merge(baseConfig, {
   entry: {
     app: ['@babel/polyfill', './src/index'],
   },
   plugins,
+  ...variantConfig,
 });

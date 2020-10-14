@@ -12,9 +12,6 @@ const ora = require('ora');
 const path = require('path');
 const pify = require('pify');
 const webpack = require('webpack');
-const { merge } = require('webpack-merge');
-
-const { useAppConfiguration } = require('../webpack/helpers');
 
 /** The root directory of the project */
 const projectRoot = path.resolve(__dirname, '..');
@@ -56,6 +53,10 @@ async function createBundle(part, variantName) {
   process.env.DEPLOYMENT = '1';
   process.env.NODE_ENV = 'production';
 
+  if (variantName) {
+    process.env.SKYBRUSH_VARIANT = variantName;
+  }
+
   if (!PARTS.includes(part)) {
     throw new Error('unknown part; must be one of ' + JSON.stringify(PARTS));
   }
@@ -64,7 +65,7 @@ async function createBundle(part, variantName) {
     variantName = undefined;
   }
 
-  let webpackConfig = require(path.resolve(
+  const webpackConfig = require(path.resolve(
     projectRoot,
     'webpack',
     (part === 'main' ? 'electron' : part) + '.config.js'
@@ -77,9 +78,7 @@ async function createBundle(part, variantName) {
     path: buildDir,
   };
 
-  if (variantName) {
-    webpackConfig = merge(webpackConfig, useAppConfiguration(variantName));
-  }
+  console.log(JSON.stringify(webpackConfig, null, 2));
 
   await ensureDir(buildDir);
   const stats = await pify(webpack)(webpackConfig);

@@ -12,8 +12,7 @@
     "lint": "xo",
     "start": "rimraf build && webpack-dev-server --config webpack/browser.config.js --progress --colors",
     "start:electron": "webpack-dev-server --https --config webpack/electron.config.js --progress --colors",
-    "start:public": "webpack-dev-server --config webpack/browser.config.js --progress --colors --host 0.0.0.0",
-    "start:public:secure": "webpack-dev-server --https --config webpack/browser.config.js --progress --colors --host 0.0.0.0",
+    "start:electron:light": "cross-env SKYBRUSH_VARIANT=light webpack-dev-server --https --config webpack/electron.config.js --progress --colors",
     "test": "npm run lint"
   },
   "repository": {
