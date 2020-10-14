@@ -25,6 +25,8 @@ import {
   isShowAuthorizedToStartLocally,
   shouldRetryFailedUploadsAutomatically,
   getShowMetadata,
+  // getGeofenceCoordinates,
+  getHeightLimit,
 } from './selectors';
 import {
   cancelUpload,
@@ -47,6 +49,7 @@ import messageHub from '~/message-hub';
 import {
   getMissionMapping,
   getReverseMissionMapping,
+  getGeofencePolygonCoordinates,
 } from '~/features/mission/selectors';
 
 /**
@@ -74,6 +77,13 @@ function createShowConfigurationForUav(state, uavId) {
     throw new TypeError('Show coordinate system not specified');
   }
 
+  const fence = {
+    version: 1,
+    // polygon: getGeofenceCoordinates(state),
+    polygon: getGeofencePolygonCoordinates(state),
+    maxHeight: getHeightLimit(state),
+  };
+
   const drones = getDroneSwarmSpecification(state);
   if (!drones || !Array.isArray(drones)) {
     throw new Error('Invalid show configuration in state store');
@@ -99,6 +109,7 @@ function createShowConfigurationForUav(state, uavId) {
     ...getCommonShowSettings(state),
     ...settings,
     coordinateSystem,
+    fence,
     mission: {
       id: missionId,
       index: missionIndex,

@@ -218,7 +218,12 @@ class MapContextMenu extends React.Component {
           }
 
           if (hasSingleSelectedFeature) {
-            const featureSuitableForGeofence = ['circle', 'polygon'].includes(
+            const geofenceCompatibleFeatureTypes = [
+              /* 'circle', */
+              'polygon'
+            ]
+
+            const featureSuitableForGeofence = geofenceCompatibleFeatureTypes.includes(
               selectedFeatureTypes[0]
             );
             const isCurrentGeofence =

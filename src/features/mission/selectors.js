@@ -5,6 +5,7 @@ import reject from 'lodash-es/reject';
 import { createSelector } from '@reduxjs/toolkit';
 
 import { getSelectedUAVIds } from '~/selectors/selection';
+import { getShowCoordinateSystemTransformationObject } from '~/features/show/selectors';
 import { Status } from '~/components/semantics';
 
 /**
@@ -166,6 +167,19 @@ export const selectionIntersectsMapping = createSelector(
  * Gets the ID of the polygon that is to be used as a geofence.
  */
 export const getGeofencePolygonId = (state) => state.mission.geofencePolygonId;
+
+/**
+ * Gets the coordinates of the polygon that is to be used as a geofence.
+ */
+export const getGeofencePolygonCoordinates = createSelector(
+  getGeofencePolygonId,
+  (state) => state.features.byId,
+  getShowCoordinateSystemTransformationObject,
+  (geofencePolygonId, featuresById, showCoordinateSystemTransformationObject) =>
+    featuresById[geofencePolygonId].points.map((c) =>
+      showCoordinateSystemTransformationObject.fromLonLat(c)
+    )
+);
 
 /**
  * Returns whether a geofence is currently set by the user (either automatically)
