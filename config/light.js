@@ -30,9 +30,10 @@ export default {
   // the hostname and port from the dialog.
   server: {
     connectAutomatically: true,
+    preventAutodetection: true,
     preventManualSetup: true,
     hostName: 'proxy.skybrush.collmot.com',
-    port: 5555,
+    port: 443,
     isSecure: true,
   },
 

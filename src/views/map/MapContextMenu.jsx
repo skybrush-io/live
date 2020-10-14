@@ -51,18 +51,20 @@ import {
 import { getGeofencePolygonId } from '~/features/mission/selectors';
 import { showNotification } from '~/features/snackbar/slice';
 
+import { hasFeature } from '~/utils/configuration';
+
 /**
  * Context menu that shows the menu items that should appear when the
  * user right-clicks on the map.
  */
 class MapContextMenu extends React.Component {
   static propTypes = {
-    clearGeofencePolygonId: PropTypes.func.isRequired,
+    clearGeofencePolygonId: PropTypes.func,
     contextProvider: PropTypes.func,
-    editFeature: PropTypes.func.isRequired,
-    renameFeature: PropTypes.func.isRequired,
-    removeFeaturesByIds: PropTypes.func.isRequired,
-    setGeofencePolygonId: PropTypes.func.isRequired,
+    editFeature: PropTypes.func,
+    renameFeature: PropTypes.func,
+    removeFeaturesByIds: PropTypes.func,
+    setGeofencePolygonId: PropTypes.func,
     selectUAVInMessagesDialog: PropTypes.func.isRequired,
     setMapCoordinateSystemOrigin: PropTypes.func,
     setShowCoordinateSystemOrigin: PropTypes.func,
@@ -220,8 +222,8 @@ class MapContextMenu extends React.Component {
           if (hasSingleSelectedFeature) {
             const geofenceCompatibleFeatureTypes = [
               /* 'circle', */
-              'polygon'
-            ]
+              'polygon',
+            ];
 
             const featureSuitableForGeofence = geofenceCompatibleFeatureTypes.includes(
               selectedFeatureTypes[0]
@@ -321,7 +323,7 @@ class MapContextMenu extends React.Component {
   _editSelectedFeature = (event, context) => {
     const { editFeature } = this.props;
     const { selectedFeatureIds } = context;
-    if (selectedFeatureIds.length !== 1) {
+    if (!editFeature || selectedFeatureIds.length !== 1) {
       return;
     }
 
@@ -342,7 +344,7 @@ class MapContextMenu extends React.Component {
     const { renameFeature } = this.props;
     const { selectedFeatureIds, selectedFeatureLabels } = context;
 
-    if (selectedFeatureIds.length !== 1) {
+    if (!renameFeature || selectedFeatureIds.length !== 1) {
       return;
     }
 
@@ -351,27 +353,37 @@ class MapContextMenu extends React.Component {
 
   _unsetSelectedFeatureAsGeofence = (_event, _context) => {
     const { clearGeofencePolygonId } = this.props;
-    clearGeofencePolygonId();
+    if (clearGeofencePolygonId) {
+      clearGeofencePolygonId();
+    }
   };
 
   _setSelectedFeatureAsGeofence = (event, context) => {
     const { setGeofencePolygonId } = this.props;
     const { selectedFeatureIds } = context;
-    setGeofencePolygonId(selectedFeatureIds[0]);
+
+    if (setGeofencePolygonId) {
+      setGeofencePolygonId(selectedFeatureIds[0]);
+    }
+
     // this.props.setFeatureAsGeofence(selectedFeatureIds[0]);
   };
 
-  _removeSelectedFeatures = (event, context) => {
+  _removeSelectedFeatures = (_event, context) => {
     const { selectedFeatureIds } = context;
-    this.props.removeFeaturesByIds(selectedFeatureIds);
+    const { removeFeaturesByIds } = this.props;
+
+    if (removeFeaturesByIds) {
+      removeFeaturesByIds(selectedFeatureIds);
+    }
   };
 
-  _resetSelectedUAVs = (event, context) => {
+  _resetSelectedUAVs = (_event, context) => {
     const { selectedUAVIds } = context;
     messaging.resetUAVs(selectedUAVIds);
   };
 
-  _returnSelectedUAVs = (event, context) => {
+  _returnSelectedUAVs = (_event, context) => {
     const { selectedUAVIds } = context;
     messaging.returnToHomeUAVs(selectedUAVIds);
   };
@@ -405,6 +417,10 @@ class MapContextMenu extends React.Component {
   };
 }
 
+const hasFeatures = hasFeature('features');
+const hasGeofence = hasFeature('geofence');
+const hasShowControl = hasFeature('showControl');
+
 const getContextProvider = createSelector(
   getSelectedFeatureIds,
   getSelectedFeatureLabels,
@@ -434,38 +450,50 @@ const MapContextMenuContainer = connect(
   }),
   // mapDispatchToProps
   (dispatch) => ({
-    clearGeofencePolygonId: () => {
-      dispatch(clearGeofencePolygonId());
-    },
-    editFeature: (id) => {
-      dispatch(showFeatureEditorDialog(id));
-    },
-    removeFeaturesByIds: (ids) => {
-      dispatch(removeFeatures(ids));
-    },
-    renameFeature: (id, label) => {
-      dispatch(
-        showPromptDialog('Enter the new name of the feature', label)
-      ).then((newLabel) => {
-        if (newLabel) {
-          dispatch(renameFeature(id, newLabel));
+    clearGeofencePolygonId: hasGeofence
+      ? () => {
+          dispatch(clearGeofencePolygonId());
         }
-      });
-    },
+      : null,
+    editFeature: hasFeatures
+      ? (id) => {
+          dispatch(showFeatureEditorDialog(id));
+        }
+      : null,
+    removeFeaturesByIds: hasFeatures
+      ? (ids) => {
+          dispatch(removeFeatures(ids));
+        }
+      : null,
+    renameFeature: hasFeatures
+      ? (id, label) => {
+          dispatch(
+            showPromptDialog('Enter the new name of the feature', label)
+          ).then((newLabel) => {
+            if (newLabel) {
+              dispatch(renameFeature(id, newLabel));
+            }
+          });
+        }
+      : null,
     selectUAVInMessagesDialog: (id) => {
       dispatch(selectUAVInMessagesDialog(id));
     },
-    setGeofencePolygonId: (id) => {
-      dispatch(setGeofencePolygonId(id));
-    },
+    setGeofencePolygonId: hasGeofence
+      ? (id) => {
+          dispatch(setGeofencePolygonId(id));
+        }
+      : null,
     setMapCoordinateSystemOrigin: (coords) => {
       dispatch(setFlatEarthCoordinateSystemOrigin(coords));
     },
-    setShowCoordinateSystemOrigin: (coords) => {
-      dispatch(
-        updateOutdoorShowSettings({ origin: coords, setupMission: true })
-      );
-    },
+    setShowCoordinateSystemOrigin: hasShowControl
+      ? (coords) => {
+          dispatch(
+            updateOutdoorShowSettings({ origin: coords, setupMission: true })
+          );
+        }
+      : null,
     showErrorMessage: (message) => {
       dispatch(showNotification(message));
     },

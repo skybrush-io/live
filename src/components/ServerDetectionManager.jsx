@@ -1,5 +1,7 @@
+import config from 'config';
 import parseHeaders from 'http-headers';
 import { isLoopback, isV4Format, isV6Format } from 'ip';
+import get from 'lodash-es/get';
 import partial from 'lodash-es/partial';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -15,7 +17,9 @@ import {
 } from '~/features/servers/slice';
 
 export const isServerDetectionSupported =
-  window.bridge && window.bridge.createSSDPClient;
+  window.bridge &&
+  window.bridge.createSSDPClient &&
+  !get(config, 'server.preventAutodetection');
 
 /**
  * Presentation component that regularly fires SSDP discovery requests and
@@ -45,7 +49,14 @@ class ServerDetectionManagerPresentation extends React.Component {
 
     if (!isServerDetectionSupported) {
       if (onServerInferred) {
-        if (window.location.hostname === 'localhost') {
+        if (get(config, 'server.hostName')) {
+          // App is configured for a fixed host
+          onServerInferred({
+            hostName: config.server.hostName,
+            port: config.server.port || (config.server.isSecure ? 443 : 80),
+            protocol: config.server.isSecure ? 'sio+tls:' : 'sio:',
+          });
+        } else if (window.location.hostname === 'localhost') {
           // We are running in a local environment in the browser; the server
           // is most likely running on port 5000 as this is the default.
           onServerInferred({
