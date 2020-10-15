@@ -29,7 +29,6 @@ export const ConnectionState = {
  * @param  {function} dispatch  the dispatch function of the Redux store
  */
 export function handleConnectionDeletionMessage(body, dispatch) {
-  console.log('CONN-DEL', body.ids);
   dispatch(removeConnectionsByIds(body.ids));
 }
 

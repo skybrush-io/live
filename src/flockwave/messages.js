@@ -437,10 +437,17 @@ class AsyncOperationManager {
    *         contains the keys mentioned above
    * @param  {string}  objectId  the ID of the single object whose result we are
    *         interested in
+   * @param  {boolean} noThrow   when set to true, ensures that the function
+   *         does not throw an exception when the async response indicated an
+   *         error; returns the error object instead as if it was the result
    * @return {Promise} a promise that resolves to the result of the operation
    *         or errors out in case of execution errors and timeouts
    */
-  async handleMultiAsyncResponseForSingleId(response, objectId) {
+  async handleMultiAsyncResponseForSingleId(
+    response,
+    objectId,
+    { noThrow } = {}
+  ) {
     const { receipt, result } = extractResultOrReceiptFromMaybeAsyncResponse(
       response,
       objectId
@@ -455,6 +462,12 @@ class AsyncOperationManager {
       this._pendingOperations[receipt] = execution;
       try {
         return await execution.wait();
+      } catch (error) {
+        if (noThrow) {
+          return error;
+        } else {
+          throw error;
+        }
       } finally {
         delete this._pendingOperations[receipt];
       }
