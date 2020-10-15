@@ -7,6 +7,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 import { parse } from 'shell-quote';
+import { createSelector } from '@reduxjs/toolkit';
 
 import ReactSocket from '@collmot/react-socket';
 
@@ -36,17 +37,7 @@ import {
 } from '~/model/connections';
 import { handleClockInformationMessage } from '~/model/clocks';
 import { handleDockInformationMessage } from '~/model/docks';
-
-/**
- * Proposes a protocol to use (http or https) depending on the protocol of
- * the location of the current page.
- *
- * @return {string}  the proposed protocol to access the remote server
- */
-function proposeProtocol() {
-  const { protocol } = window.location;
-  return protocol === 'file:' ? 'http:' : protocol;
-}
+import { setFlatEarthCoordinateSystemOrientation } from '../actions/map-origin';
 
 /**
  * Component that launches a local Skybrush server instance when mounted.
@@ -59,9 +50,7 @@ class LocalServerExecutor extends React.Component {
     port: PropTypes.number,
   };
 
-  constructor(props) {
-    super(props);
-
+  constructor() {
     this._events = undefined;
     this._processIsRunning = false;
 
@@ -169,10 +158,8 @@ class ServerConnectionManagerPresentation extends React.Component {
   static propTypes = {
     active: PropTypes.bool,
     cliArguments: PropTypes.string,
-    hostName: PropTypes.string,
     needsLocalServer: PropTypes.bool,
     port: PropTypes.number,
-    protocol: PropTypes.string,
     onConnected: PropTypes.func,
     onConnecting: PropTypes.func,
     onConnectionError: PropTypes.func,
@@ -181,6 +168,7 @@ class ServerConnectionManagerPresentation extends React.Component {
     onLocalServerError: PropTypes.func,
     onLocalServerStarted: PropTypes.func,
     onMessage: PropTypes.func,
+    url: PropTypes.string,
   };
 
   _bindSocketToHub = (socket) => {
@@ -189,15 +177,15 @@ class ServerConnectionManagerPresentation extends React.Component {
       ? wrappedSocket.emit.bind(wrappedSocket)
       : undefined;
 
-    if (this.props.onConnecting) {
-      this.props.onConnecting();
+    if (this.props.onConnecting && socket) {
+      this.props.onConnecting(this.props.url);
     }
   };
 
   componentDidUpdate(previousProps) {
     const { active, onDisconnected } = this.props;
     if (previousProps.active && !active && onDisconnected) {
-      onDisconnected();
+      onDisconnected(previousProps.url);
     }
   }
 
@@ -205,10 +193,8 @@ class ServerConnectionManagerPresentation extends React.Component {
     const {
       active,
       cliArguments,
-      hostName,
       needsLocalServer,
       port,
-      protocol,
       onConnected,
       onConnecting,
       onConnectionError,
@@ -217,10 +203,8 @@ class ServerConnectionManagerPresentation extends React.Component {
       onLocalServerError,
       onLocalServerStarted,
       onMessage,
+      url,
     } = this.props;
-    const url = hostName
-      ? `${protocol || proposeProtocol()}//${hostName}:${port}`
-      : undefined;
 
     // The 'key' property of the wrapping <div> is set to the URL as well;
     // this is to force the socket component and the event objects to unmount
@@ -252,22 +236,22 @@ class ServerConnectionManagerPresentation extends React.Component {
         <ReactSocket.Listener
           socket='serverSocket'
           event='connect'
-          callback={onConnected}
+          callback={() => onConnected(url)}
         />
         <ReactSocket.Listener
           socket='serverSocket'
           event='connect_error'
-          callback={onConnectionError}
+          callback={() => onConnectionError(url)}
         />
         <ReactSocket.Listener
           socket='serverSocket'
           event='connect_timeout'
-          callback={onConnectionTimeout}
+          callback={() => onConnectionTimeout(url)}
         />
         <ReactSocket.Listener
           socket='serverSocket'
           event='disconnect'
-          callback={onDisconnected}
+          callback={(reason) => onDisconnected(url, reason)}
         />
         <ReactSocket.Listener
           socket='serverSocket'
@@ -277,12 +261,12 @@ class ServerConnectionManagerPresentation extends React.Component {
         <ReactSocket.Listener
           socket='serverSocket'
           event='reconnecting'
-          callback={onConnecting}
+          callback={() => onConnecting(url)}
         />
         <ReactSocket.Listener
           socket='serverSocket'
           event='reconnect_attempt'
-          callback={onConnecting}
+          callback={() => onConnecting(url)}
         />
       </div>
     ) : (
@@ -402,19 +386,33 @@ async function executeTasksAfterDisconnection(dispatch) {
   dispatch(clearStartTimeAndMethod());
 }
 
+/**
+ * Selector that returns a unique URL that fully identifies the server we are
+ * trying to connect to.
+ */
+const getServerUrl = createSelector(
+  (state) => state.dialogs.serverSettings.hostName,
+  (state) => state.dialogs.serverSettings.port,
+  (state) => state.dialogs.serverSettings.isSecure,
+  (hostName, port, isSecure) => {
+    const protocol = isSecure ? 'https:' : 'http:';
+    return hostName ? `${protocol}//${hostName}:${port}` : undefined;
+  }
+);
+
 const ServerConnectionManager = connect(
   // mapStateToProps
   (state) => ({
     active: state.dialogs.serverSettings.active && !state.session.isExpired,
     cliArguments: state.settings.localServer.cliArguments,
-    hostName: state.dialogs.serverSettings.hostName,
     needsLocalServer: shouldManageLocalServer(state),
     port: state.dialogs.serverSettings.port,
-    protocol: state.dialogs.serverSettings.isSecure ? 'https:' : 'http:',
+    url: getServerUrl(state),
   }),
   // mapDispatchToProps
   (dispatch) => ({
     onConnecting() {
+      console.trace('Setting to CONNECTING');
       dispatch(setCurrentServerConnectionState(ConnectionState.CONNECTING));
     },
 
@@ -447,7 +445,7 @@ const ServerConnectionManager = connect(
       );
     },
 
-    onDisconnected(reason) {
+    onDisconnected: (url, reason) => (dispatch, getState) => {
       // reason = io client disconnect -- okay
       // reason = io server disconnect -- okay
       // reason = undefined -- okay
@@ -480,8 +478,13 @@ const ServerConnectionManager = connect(
         reason === 'ping timeout' || reason === 'transport close';
       if (!willReconnect) {
         // Make sure that our side is notified that the connection mechanism
-        // is not active any more
-        dispatch(disconnectFromServer());
+        // is not active any more. This has to be done only if we are not
+        // disconnecting due to switching to another server, so we need to
+        // compare the URL we received in the event with the current URL that
+        // we are trying to connect to.
+        if (url === getServerUrl(getState())) {
+          dispatch(disconnectFromServer());
+        }
       }
 
       // Execute all the tasks that should be executed after disconnecting from

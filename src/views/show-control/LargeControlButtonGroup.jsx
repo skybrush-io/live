@@ -161,10 +161,5 @@ export default connect(
         dispatch(setSelectedUAVIds(getUAVIdsParticipatingInMission(state)));
       }
     },
-
-    onStartMotors: () => (dispatch, getState) => {
-      const uavIds = getSelectedUAVIds(getState());
-      console.log(uavIds);
-    },
   }
 )(LargeControlButtonGroup);
