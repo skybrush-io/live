@@ -6,11 +6,19 @@
  */
 
 const execa = require('execa');
-const { copy, emptyDir, ensureDir, readJson, remove } = require('fs-extra');
+const {
+  copy,
+  emptyDir,
+  ensureDir,
+  readJson,
+  remove,
+  writeJson,
+} = require('fs-extra');
 const Listr = require('listr');
 const ora = require('ora');
 const path = require('path');
 const pify = require('pify');
+const tmp = require('tmp-promise');
 const webpack = require('webpack');
 
 /** The root directory of the project */
@@ -39,8 +47,19 @@ const options = require('yargs')
   .alias('h', 'help')
   .version(false).argv;
 
-function loadAppConfig() {
-  return readJson(path.resolve(projectRoot, 'package.json'));
+async function loadAppConfig() {
+  const result = await readJson(path.resolve(projectRoot, 'package.json'));
+  const variantName = options.variant || 'default';
+  const esmRequire = require('esm')(module);
+  const variantConfig = esmRequire(
+    path.resolve(projectRoot, 'config', variantName)
+  ).default;
+
+  if (variantConfig && variantConfig.electronBuilder) {
+    result.electronBuilder = variantConfig.electronBuilder;
+  }
+
+  return result;
 }
 
 async function cleanDirs() {
@@ -77,8 +96,6 @@ async function createBundle(part, variantName) {
     filename: part === 'main' ? '[name].bundle.js' : part + '.bundle.js',
     path: buildDir,
   };
-
-  console.log(JSON.stringify(webpackConfig, null, 2));
 
   await ensureDir(buildDir);
   const stats = await pify(webpack)(webpackConfig);
@@ -148,16 +165,39 @@ async function invokeElectronBuilder(appConfig) {
   throw new Error('Cannot build with electron-builder on this platform');
 }
 
-async function invokeElectronBuilderForMacOS() {
-  await execa('electron-builder', ['-m'], electronBuilderSpawnOptions);
+async function invokeElectronBuilderForMacOS(appConfig) {
+  await invokeElectronBuilderWithArgs(['-m'], appConfig);
 }
 
-async function invokeElectronBuilderForLinux() {
-  await execa('electron-builder', ['-l'], electronBuilderSpawnOptions);
+async function invokeElectronBuilderForLinux(appConfig) {
+  await invokeElectronBuilderWithArgs(['-l'], appConfig);
 }
 
-async function invokeElectronBuilderForWindows() {
-  await execa('electron-builder', ['-w'], electronBuilderSpawnOptions);
+async function invokeElectronBuilderForWindows(appConfig) {
+  await invokeElectronBuilderWithArgs(['-w'], appConfig);
+}
+
+async function invokeElectronBuilderWithArgs(args, appConfig) {
+  const builderConfig = await readJson(
+    path.resolve(projectRoot, 'electron-builder.json')
+  );
+
+  if (appConfig && appConfig.electronBuilder) {
+    Object.assign(builderConfig, appConfig.electronBuilder);
+  }
+
+  await tmp.withDir(
+    async (o) => {
+      const builderConfigPath = path.resolve(o.path, 'electron-builder.json');
+      await writeJson(builderConfigPath, builderConfig, { spaces: 2 });
+      await execa(
+        'electron-builder',
+        [...args, '-c', builderConfigPath],
+        electronBuilderSpawnOptions
+      );
+    },
+    { unsafeCleanup: true }
+  );
 }
 
 async function cleanup() {
