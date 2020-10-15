@@ -412,7 +412,6 @@ const ServerConnectionManager = connect(
   // mapDispatchToProps
   (dispatch) => ({
     onConnecting() {
-      console.trace('Setting to CONNECTING');
       dispatch(setCurrentServerConnectionState(ConnectionState.CONNECTING));
     },
 
