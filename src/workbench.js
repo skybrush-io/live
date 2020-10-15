@@ -30,7 +30,7 @@ const Nothing = () => null;
  * Fallback component to use in the workbench in case of errors.
  */
 const FallbackComponent = () => (
-  <BackgroundHint text='This component is not available' />
+  <BackgroundHint text='This component is not available in this version' />
 );
 
 /**
