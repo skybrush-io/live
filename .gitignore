@@ -35,6 +35,7 @@ doc/api/
 # Stuff packed by webpack
 build/
 dist/
+dist-*/
 
 # Typescript type definitions
 typings/
