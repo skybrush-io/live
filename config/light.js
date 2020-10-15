@@ -40,9 +40,12 @@ export default {
   // No startup tour
   tour: null,
 
-  // Help lives here
-  // TODO(ntamas): write document, put it online
-  urls: {
-    help: 'https://doc.collmot.com/public/skybrush-live-doc/latest/index.html',
+  // No help component
+  urls: {},
+
+  // Electron-builder settings
+  electronBuilder: {
+    appId: 'com.collmot.skybrush.live-light',
+    productName: 'Skybrush Live Light',
   },
 };
