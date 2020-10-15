@@ -26,6 +26,7 @@ import { Status } from '~/components/semantics';
 import {
   getEmptyMappingSlotIndices,
   getGeofenceStatus,
+  hasNonemptyMappingSlot,
 } from '~/features/mission/selectors';
 import { areAllPreflightChecksTicked } from '~/features/preflight/selectors';
 import {
@@ -84,7 +85,7 @@ const stages = {
         ? Status.SUCCESS
         : Status.OFF;
     },
-    requires: ['selectShowFile', 'setupEnvironment'],
+    requires: ['selectShowFile', 'setupEnvironment', hasNonemptyMappingSlot],
   },
 
   waitForOnboardPreflightChecks: {
@@ -159,8 +160,10 @@ const isDone = (status) =>
 /**
  * Returns whether all dependencies in the given list are considered "done"
  */
-const allDone = (result, deps) =>
-  (deps || []).every((dep) => isDone(result[dep]));
+const allDone = (result, deps, state) =>
+  (deps || []).every((dep) =>
+    typeof dep === 'function' ? dep(state) : isDone(result[dep])
+  );
 
 /**
  * Returns an object mapping the name of each stage in the show setup process
@@ -174,7 +177,7 @@ export const getSetupStageStatuses = (state) => {
     const stage = stages[stageId];
     let status;
 
-    if (allDone(result, stage.requires)) {
+    if (allDone(result, stage.requires, state)) {
       // all dependencies are satisfied, so we can check its own state
       status = stage.evaluate(state);
 
@@ -187,7 +190,9 @@ export const getSetupStageStatuses = (state) => {
         // state has not been acted on by the user, but all its dependencies are
         // ready so we mark it as a potential candidate for the user to perform
         // next if all its 'suggests' dependencies are ready
-        status = allDone(result, stage.suggests) ? Status.NEXT : Status.OFF;
+        status = allDone(result, stage.suggests, state)
+          ? Status.NEXT
+          : Status.OFF;
       }
     } else {
       status = Status.OFF;
