@@ -39,9 +39,9 @@ const options = require('yargs')
     type: 'boolean',
   })
   .option('variant', {
-    default: 'normal',
+    default: 'default',
     describe:
-      'specifies the application variant to compile ("normal" or "light")',
+      'specifies the application variant to compile ("default" or "light")',
   })
   .help('h')
   .alias('h', 'help')
@@ -80,7 +80,7 @@ async function createBundle(part, variantName) {
     throw new Error('unknown part; must be one of ' + JSON.stringify(PARTS));
   }
 
-  if (variantName === 'normal') {
+  if (variantName === 'default') {
     variantName = undefined;
   }
 
