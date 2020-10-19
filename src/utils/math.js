@@ -1,13 +1,13 @@
-import zipWith from 'lodash-es/zipWith';
-import sortedUniqBy from 'lodash-es/sortedUniqBy';
-import range from 'lodash-es/range';
-import sum from 'lodash-es/sum';
 import multiply from 'lodash-es/multiply';
 import minBy from 'lodash-es/minBy';
-import sortBy from 'lodash-es/sortBy';
+import range from 'lodash-es/range';
+import sum from 'lodash-es/sum';
+import zipWith from 'lodash-es/zipWith';
 
 import Polygon from 'ol/geom/Polygon';
 import { getCenter } from 'ol/extent';
+
+import monotoneConvexHull2D from 'monotone-convex-hull-2d';
 
 /**
  * Returns the given number of degrees in radians.
@@ -109,41 +109,16 @@ export const toPolar = ({ x, y }) => ({
 // export const dotProduct3 = (a, b) => sum(zipWith(a, b, multiply));
 export const dotProduct = (a, b) => sum(zipWith(a, b, multiply));
 
+/**
+ * Returns the 2D convex hull of a set of coordinates.
+ */
 export const convexHull = (coordinates) => {
-  // Find the corner and convert the rest of the coordinates to a relative
-  // representation measured from there.
-  const [corner, ...rest] = sortBy(coordinates, ['1', '0']);
-  const relativeCoordinates = rest.map((c) => [
-    c[0] - corner[0],
-    c[1] - corner[1],
-  ]);
-
-  // Sort the coordinates based on slope and use negative distance as a
-  // tiebreaker. (Meaning, chose the furthest possible first.)
-  // After sorting, remove all the extra points that fall on one line, so only
-  // the furthest one remains from every group and all slopes are unique.
-  const [first, ...sortedCoordinates] = sortedUniqBy(
-    sortBy(relativeCoordinates, [
-      (c) => c[0] / c[1], // slope
-      (c) => -(c[0] ** 2 + c[1] ** 2), // negative distance
-    ]),
-    (c) => c[0] / c[1] // slope
+  const indices = monotoneConvexHull2D(coordinates);
+  return indices.map((index) =>
+    coordinates[index].length > 2
+      ? coordinates[index].slice(0, 2)
+      : coordinates[index]
   );
-
-  // Given a list of previous points and a potential next one check if the new
-  // point would result in a cavity, if so, remove the previous vertex and try
-  // again, else just prepend it to the list.
-  const appendPoint = ([b, a, ...hull], c) =>
-    (b[1] - a[1]) * (c[0] - b[0]) <= (c[1] - b[1]) * (b[0] - a[0])
-      ? appendPoint([a, ...hull], c)
-      : [c, b, a, ...hull];
-
-  // Append all the points starting from the corner [0, 0] and the first vertex.
-  // Map the coordinates back to their original positions by translating them
-  // using the original corner location.
-  return sortedCoordinates
-    .reduce(appendPoint, [first, [0, 0]]) // eslint-disable-line unicorn/no-reduce
-    .map((c) => [c[0] + corner[0], c[1] + corner[1]]);
 };
 
 /**

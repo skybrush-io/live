@@ -6,7 +6,7 @@
 import { handleActions } from 'redux-actions';
 import u from 'updeep';
 
-import { MAX_GEOFENCE_VERTEX_COUNT } from '~/features/show/constants';
+import { MAX_VERTEX_COUNT } from '~/features/geofence/constants';
 
 /**
  * The default settings for the part of the state object being defined here.
@@ -18,7 +18,7 @@ const defaultState = {
   verticalMargin: 10,
 
   simplify: true,
-  maxVertexCount: MAX_GEOFENCE_VERTEX_COUNT,
+  maxVertexCount: MAX_VERTEX_COUNT,
 };
 
 /**

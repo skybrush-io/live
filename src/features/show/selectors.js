@@ -13,6 +13,16 @@ import {
 } from '~/features/geofence/utils';
 import { formatDuration } from '~/utils/formatting';
 import { FlatEarthCoordinateSystem } from '~/utils/geography';
+import { convexHull } from '~/utils/math';
+
+import {
+  getConvexHullOfTrajectory,
+  getFirstPointOfTrajectory,
+  getLastPointOfTrajectory,
+  getMaximumHeightOfTrajectory,
+  getTrajectoryDuration,
+  isValidTrajectory,
+} from './trajectory';
 
 /**
  * Returns whether the manual preflight checks are signed off (i.e. approved)
@@ -97,15 +107,6 @@ export const isShowAuthorizedToStart = (state) =>
  */
 export const isTakeoffAreaApproved = (state) =>
   Boolean(state.show.preflight.takeoffAreaApprovedAt);
-
-/**
- * Returns whether a trajectory object "looks like" a valid trajectory.
- */
-export const isValidTrajectory = (trajectory) =>
-  typeof trajectory === 'object' &&
-  trajectory.version === 1 &&
-  typeof trajectory.points === 'object' &&
-  Array.isArray(trajectory.points);
 
 /**
  * Returns the common show settings that apply to all drones in the currently
@@ -238,31 +239,23 @@ const getTrajectories = createSelector(getDroneSwarmSpecification, (swarm) =>
 );
 
 /**
- * Returns the duration of a single drone trajectory.
+ * Returns an array holding the convex hulls of all the trajectories.
  */
-const getTrajectoryDuration = (trajectory) => {
-  if (!isValidTrajectory(trajectory)) {
-    return 0;
-  }
-
-  const { points, takeoffTime } = trajectory;
-
-  if (points.length > 0) {
-    const lastPoint = points[points.length - 1];
-    if (Array.isArray(lastPoint) && lastPoint.length > 1) {
-      return lastPoint[0] + (takeoffTime || 0);
-    }
-  } else {
-    return 0;
-  }
-};
+export const getConvexHullsOfTrajectories = createSelector(
+  getTrajectories,
+  (trajectories) => trajectories.map(getConvexHullOfTrajectory)
+);
 
 /**
- * Returns the first point of a single drone trajectory.
+ * Returns the coordinates of the convex hull of the currently loaded show.
  */
-const getFirstPointOfTrajectory = (trajectory) => {
-  return isValidTrajectory(trajectory) ? trajectory.points[0][1] : undefined;
-};
+export const getConvexHullOfShow = createSelector(
+  getConvexHullsOfTrajectories,
+  (convexHulls) => {
+    const allPoints = [].concat(...convexHulls);
+    return convexHull(allPoints);
+  }
+);
 
 /**
  * Returns an array holding the first points of all the trajectories.
@@ -282,15 +275,6 @@ export const getFirstPointsOfTrajectoriesInWorldCoordinates = createSelector(
   (points, transform) =>
     transform ? points.map(transform) : new Array(points.length).fill(undefined)
 );
-
-/**
- * Returns the last point of a single drone trajectory.
- */
-const getLastPointOfTrajectory = (trajectory) => {
-  return isValidTrajectory(trajectory)
-    ? trajectory.points[trajectory.points.length - 1][1]
-    : undefined;
-};
 
 /**
  * Returns an array holding the last points of all the trajectories.
@@ -350,16 +334,6 @@ export const getMaximumHorizontalDistanceFromTakeoffPositionInTrajectories = cre
       )
     ) || 0
 );
-
-/**
- * Returns the maximum height in a single trajectory. Returns 0 for empty
- * trajectories.
- */
-function getMaximumHeightOfTrajectory(trajectory) {
-  const { points = [] } = trajectory;
-  const highestPoint = maxBy(points, (point) => point[1][2]);
-  return highestPoint ? highestPoint[1][2] : 0;
-}
 
 /**
  * Returns the maximum height observed in any of the trajectories, in the
@@ -448,15 +422,6 @@ export const getUserDefinedHeightLimit = (state) => {
   // TODO(ntamas): this should be configurable by the user and not simply set
   // based on the proposal
   return getProposedHeightLimitBasedOnTrajectories(state);
-};
-
-/**
- * Returns the coordinates of the polygon that has been calculated as suggested
- * automatic geofence for the currently loaded show.
- */
-export const getGeofenceCoordinates = (state) => {
-  const result = get(state, 'show.geofenceCoordinates');
-  return Array.isArray(result) ? result : [];
 };
 
 /**

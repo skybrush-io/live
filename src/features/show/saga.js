@@ -25,7 +25,6 @@ import {
   isShowAuthorizedToStartLocally,
   shouldRetryFailedUploadsAutomatically,
   getShowMetadata,
-  // getGeofenceCoordinates,
   getUserDefinedDistanceLimit,
   getUserDefinedHeightLimit,
 } from './selectors';

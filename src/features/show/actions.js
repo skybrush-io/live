@@ -1,7 +1,8 @@
 import { FeatureType } from '~/model/features';
 import { getFeaturesInOrder } from '~/selectors/ordered';
-import { getGeofenceCoordinates } from '~/features/show/selectors';
+import { getConvexHullOfShow } from '~/features/show/selectors';
 import get from 'lodash-es/get';
+import identity from 'lodash-es/identity';
 import { addFeature, removeFeature, removeFeatures } from '~/actions/features';
 import throttle from 'lodash-es/throttle';
 import ky from 'ky';
@@ -10,7 +11,6 @@ import { loadShowFromFile as processFile } from './processing';
 import {
   getAbsolutePathOfShowFile,
   getFailedUploadItems,
-
   getFirstPointsOfTrajectoriesInWorldCoordinates,
   getLastPointsOfTrajectoriesInWorldCoordinates,
   getOutdoorShowCoordinateSystem,
@@ -21,7 +21,6 @@ import {
 import {
   approveTakeoffAreaAt,
   loadingProgress,
-  recalculateAutoGeofence,
   revokeTakeoffAreaApproval,
   setEnvironmentType,
   setOutdoorShowOrigin,
@@ -94,9 +93,13 @@ export const removeShowFeatures = () => (dispatch, getState) => {
 export const addGeofencePolygon = () => (dispatch, getState) => {
   const state = getState();
 
-  const { horizontalMargin, simplify, maxVertexCount } = state.dialogs.geofenceSettings;
+  const {
+    horizontalMargin,
+    simplify,
+    maxVertexCount,
+  } = state.dialogs.geofenceSettings;
 
-  const coordinates = getGeofenceCoordinates(state);
+  const coordinates = getConvexHullOfShow(state);
   if (coordinates.length === 0) {
     dispatch(
       showNotification({
@@ -127,6 +130,7 @@ export const addGeofencePolygon = () => (dispatch, getState) => {
     BUFFER: 'buffer',
     GROW: 'grow',
     SCALE: 'scale',
+    NONE: 'none',
   };
 
   const marginType = MarginType.BUFFER;
@@ -135,6 +139,7 @@ export const addGeofencePolygon = () => (dispatch, getState) => {
     [MarginType.BUFFER]: bufferPolygon,
     [MarginType.GROW]: growPolygon,
     [MarginType.SCALE]: scalePolygon,
+    [MarginType.NONE]: identity,
   };
 
   const points = marginFunctions[marginType](
@@ -297,9 +302,6 @@ function processShowInJSONFormatAndDispatchActions(spec, dispatch) {
 
   // Revoke the approval of the takeoff area in case it was approved
   dispatch(revokeTakeoffAreaApproval());
-
-  // Recalculate the suggested geofence based on the new trajectories
-  dispatch(recalculateAutoGeofence());
 }
 
 /**
