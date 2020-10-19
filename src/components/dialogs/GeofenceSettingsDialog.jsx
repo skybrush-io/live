@@ -21,6 +21,7 @@ import Typography from '@material-ui/core/Typography';
 
 import DialogToolbar from '~/components/dialogs/DialogToolbar';
 import FormHeader from '~/components/dialogs/FormHeader';
+import { proposeHeightLimit } from '~/features/geofence/utils';
 import { hasActiveGeofencePolygon } from '~/features/mission/selectors';
 import { clearGeofencePolygonId } from '~/features/mission/slice';
 import { updateGeofencePolygon } from '~/features/show/actions';
@@ -47,7 +48,7 @@ const calculator = createDecorator({
   field: 'verticalMargin',
   updates: {
     heightLimit: (verticalMargin, { maxHeight }) =>
-      maxHeight + Number(verticalMargin),
+      proposeHeightLimit(maxHeight, verticalMargin),
   },
 });
 

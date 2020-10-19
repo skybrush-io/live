@@ -7,6 +7,7 @@ import maxBy from 'lodash-es/maxBy';
 
 import { createSelector } from '@reduxjs/toolkit';
 
+import { proposeHeightLimit } from '~/features/geofence/utils';
 import { formatDuration } from '~/utils/formatting';
 import { FlatEarthCoordinateSystem } from '~/utils/geography';
 
@@ -332,11 +333,7 @@ export const getMaximumHeightInTrajectories = createSelector(
 export const getProposedHeightLimitBasedOnTrajectories = (state) => {
   const maxHeight = getMaximumHeightInTrajectories(state);
   const verticalMargin = get(state, 'dialogs.geofenceSettings.verticalMargin');
-
-  // Round up to nearest number divisible by 10 so we have a nice number that
-  // we can present on the UI. Always propose a minimum height limit of 30
-  // meters to allow for manual test flights if needed.
-  return Math.max(30, Math.ceil((maxHeight + verticalMargin) / 10) * 10);
+  return proposeHeightLimit(maxHeight, verticalMargin);
 };
 
 /**
