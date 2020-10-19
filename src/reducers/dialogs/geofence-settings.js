@@ -15,7 +15,7 @@ const defaultState = {
   dialogVisible: false,
 
   horizontalMargin: 20,
-  verticalMargin: 20,
+  verticalMargin: 10,
 
   simplify: true,
   maxVertexCount: MAX_GEOFENCE_VERTEX_COUNT,

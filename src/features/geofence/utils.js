@@ -16,8 +16,8 @@ const createLimitProposal = ({ rounding, minimum }) => (maxValue, margin) => {
  * in the mission and the given safety margin.
  */
 export const proposeDistanceLimit = createLimitProposal({
-  minimum: 50,
-  rounding: 50,
+  minimum: 30,
+  rounding: 10,
 });
 
 /**
