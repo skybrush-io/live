@@ -50,16 +50,25 @@ const calculator = createDecorator(
   {
     field: 'verticalMargin',
     updates: {
-      heightLimit: (verticalMargin, { maxHeight }) =>
-        proposeHeightLimit(maxHeight, verticalMargin),
+      heightLimit: (margin, { maxHeight }) => {
+        margin = Number.parseFloat(margin);
+        return proposeHeightLimit(
+          maxHeight,
+          Number.isFinite(margin) ? margin : 0
+        );
+      },
     },
   },
   {
     field: 'horizontalMargin',
     updates: {
-      // TODO(ntamas)
-      distanceLimit: (horizontalMargin, { maxDistance }) =>
-        proposeDistanceLimit(maxDistance, horizontalMargin),
+      distanceLimit: (margin, { maxDistance }) => {
+        margin = Number.parseFloat(margin);
+        return proposeDistanceLimit(
+          maxDistance,
+          Number.isFinite(margin) ? margin : 0
+        );
+      },
     },
   }
 );
