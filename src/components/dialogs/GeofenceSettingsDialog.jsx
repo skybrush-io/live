@@ -24,7 +24,10 @@ import FormHeader from '~/components/dialogs/FormHeader';
 import { hasActiveGeofencePolygon } from '~/features/mission/selectors';
 import { clearGeofencePolygonId } from '~/features/mission/slice';
 import { updateGeofencePolygon } from '~/features/show/actions';
-import { getHeightLimit } from '~/features/show/selectors';
+import {
+  getMaximumHeightInTrajectories,
+  getProposedHeightLimitBasedOnTrajectories,
+} from '~/features/show/selectors';
 
 import {
   closeGeofenceSettingsDialog,
@@ -146,8 +149,8 @@ const GeofenceSettingsForm = connect(
   (state) => ({
     initialValues: {
       ...state.dialogs.geofenceSettings,
-      maxHeight: state.show.maxHeight || 0,
-      heightLimit: getHeightLimit(state),
+      maxHeight: getMaximumHeightInTrajectories(state),
+      heightLimit: getProposedHeightLimitBasedOnTrajectories(state),
     },
   })
 )(GeofenceSettingsFormPresentation);

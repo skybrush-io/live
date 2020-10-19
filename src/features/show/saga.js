@@ -26,7 +26,7 @@ import {
   shouldRetryFailedUploadsAutomatically,
   getShowMetadata,
   // getGeofenceCoordinates,
-  getHeightLimit,
+  getUserDefinedHeightLimit,
 } from './selectors';
 import {
   cancelUpload,
@@ -79,9 +79,8 @@ function createShowConfigurationForUav(state, uavId) {
 
   const fence = {
     version: 1,
-    // polygon: getGeofenceCoordinates(state),
     polygon: getGeofencePolygonCoordinates(state),
-    maxHeight: getHeightLimit(state),
+    maxHeight: getUserDefinedHeightLimit(state),
   };
 
   const drones = getDroneSwarmSpecification(state);

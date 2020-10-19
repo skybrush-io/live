@@ -2,6 +2,7 @@ import formatISO9075 from 'date-fns/formatISO9075';
 import fromUnixTime from 'date-fns/fromUnixTime';
 import get from 'lodash-es/get';
 import isNil from 'lodash-es/isNil';
+import max from 'lodash-es/max';
 import maxBy from 'lodash-es/maxBy';
 
 import { createSelector } from '@reduxjs/toolkit';
@@ -307,6 +308,38 @@ export const getLastPointsOfTrajectoriesInWorldCoordinates = createSelector(
 );
 
 /**
+ * Returns the maximum height in a single trajectory.
+ */
+function getMaximumHeightOfTrajectory(trajectory) {
+  const { points = [] } = trajectory;
+  const highestPoint = maxBy(points, (point) => point[1][2]);
+  return highestPoint ? highestPoint[1][2] : 0;
+}
+
+/**
+ * Returns the maximum height observed in any of the trajectories, in the
+ * show coordinate system.
+ */
+export const getMaximumHeightInTrajectories = createSelector(
+  getTrajectories,
+  (trajectories) => max(trajectories.map(getMaximumHeightOfTrajectory)) || 0
+);
+
+/**
+ * Returns the automatically calculated height limit, by adding the declared
+ * vertical safety margin to the highest point of the show trajectories.
+ */
+export const getProposedHeightLimitBasedOnTrajectories = (state) => {
+  const maxHeight = getMaximumHeightInTrajectories(state);
+  const verticalMargin = get(state, 'dialogs.geofenceSettings.verticalMargin');
+
+  // Round up to nearest number divisible by 10 so we have a nice number that
+  // we can present on the UI. Always propose a minimum height limit of 30
+  // meters to allow for manual test flights if needed.
+  return Math.max(30, Math.ceil((maxHeight + verticalMargin) / 10) * 10);
+};
+
+/**
  * Returns the total duration of the show, in seconds.
  */
 export const getShowDuration = createSelector(
@@ -344,13 +377,13 @@ export const getShowLoadingProgressPercentage = (state) => {
 };
 
 /**
- * Returns the automatically calculated hight limit, by adding the declared
- * vertical safety margin to the highest point of the show trajectories.
+ * Returns the user-defined height limit, which should be above the automatically
+ * proposed height limit.
  */
-export const getHeightLimit = (state) => {
-  const maxHeight = get(state, 'show.maxHeight') || 0;
-  const verticalMargin = get(state, 'dialogs.geofenceSettings.verticalMargin');
-  return maxHeight + verticalMargin;
+export const getUserDefinedHeightLimit = (state) => {
+  // TODO(ntamas): this should be configurable by the user and not simply set
+  // based on the proposal
+  return getProposedHeightLimitBasedOnTrajectories(state);
 };
 
 /**
