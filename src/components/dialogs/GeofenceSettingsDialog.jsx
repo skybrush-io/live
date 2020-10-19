@@ -14,20 +14,22 @@ import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
-import Divider from '@material-ui/core/Divider';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import Typography from '@material-ui/core/Typography';
 
 import DialogToolbar from '~/components/dialogs/DialogToolbar';
 import FormHeader from '~/components/dialogs/FormHeader';
-import { proposeHeightLimit } from '~/features/geofence/utils';
+import {
+  proposeDistanceLimit,
+  proposeHeightLimit,
+} from '~/features/geofence/utils';
 import { hasActiveGeofencePolygon } from '~/features/mission/selectors';
 import { clearGeofencePolygonId } from '~/features/mission/slice';
 import { updateGeofencePolygon } from '~/features/show/actions';
 import {
+  getMaximumHorizontalDistanceFromTakeoffPositionInTrajectories,
   getMaximumHeightInTrajectories,
-  getProposedHeightLimitBasedOnTrajectories,
 } from '~/features/show/selectors';
 
 import {
@@ -44,13 +46,23 @@ const validator = createValidator({
   maxVertexCount: [required, integer],
 });
 
-const calculator = createDecorator({
-  field: 'verticalMargin',
-  updates: {
-    heightLimit: (verticalMargin, { maxHeight }) =>
-      proposeHeightLimit(maxHeight, verticalMargin),
+const calculator = createDecorator(
+  {
+    field: 'verticalMargin',
+    updates: {
+      heightLimit: (verticalMargin, { maxHeight }) =>
+        proposeHeightLimit(maxHeight, verticalMargin),
+    },
   },
-});
+  {
+    field: 'horizontalMargin',
+    updates: {
+      // TODO(ntamas)
+      distanceLimit: (horizontalMargin, { maxDistance }) =>
+        proposeDistanceLimit(maxDistance, horizontalMargin),
+    },
+  }
+);
 
 const GeofenceSettingsFormPresentation = ({
   initialValues,
@@ -95,23 +107,36 @@ const GeofenceSettingsFormPresentation = ({
               endAdornment: <InputAdornment position='end'>m</InputAdornment>,
             }}
           />
-          <Box p={1} />
+        </Box>
+        <FormHeader>Proposed limits for current mission</FormHeader>
+        <Box display='flex' flexDirection='row'>
           <Field
             fullWidth
             disabled
-            name='heightLimit'
-            label='Height limit'
-            /* defaultValue='0' */
+            name='distanceLimit'
+            label='Max distance'
             margin='normal'
             component={TextField}
             InputProps={{
               endAdornment: <InputAdornment position='end'>m</InputAdornment>,
             }}
-            variant='outlined'
+            variant='standard'
+          />
+          <Box p={1} />
+          <Field
+            fullWidth
+            disabled
+            name='heightLimit'
+            label='Max altitude'
+            margin='normal'
+            component={TextField}
+            InputProps={{
+              endAdornment: <InputAdornment position='end'>m</InputAdornment>,
+            }}
+            variant='standard'
           />
         </Box>
-        <Box p={1} />
-        <Divider />
+
         <FormHeader>Vertex count reduction</FormHeader>
         <Box display='flex' flexDirection='row'>
           <FormControlLabel
@@ -150,8 +175,10 @@ const GeofenceSettingsForm = connect(
   (state) => ({
     initialValues: {
       ...state.dialogs.geofenceSettings,
+      maxDistance: getMaximumHorizontalDistanceFromTakeoffPositionInTrajectories(
+        state
+      ),
       maxHeight: getMaximumHeightInTrajectories(state),
-      heightLimit: getProposedHeightLimitBasedOnTrajectories(state),
     },
   })
 )(GeofenceSettingsFormPresentation);

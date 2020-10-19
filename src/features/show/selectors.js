@@ -7,7 +7,10 @@ import maxBy from 'lodash-es/maxBy';
 
 import { createSelector } from '@reduxjs/toolkit';
 
-import { proposeHeightLimit } from '~/features/geofence/utils';
+import {
+  proposeDistanceLimit,
+  proposeHeightLimit,
+} from '~/features/geofence/utils';
 import { formatDuration } from '~/utils/formatting';
 import { FlatEarthCoordinateSystem } from '~/utils/geography';
 
@@ -309,7 +312,48 @@ export const getLastPointsOfTrajectoriesInWorldCoordinates = createSelector(
 );
 
 /**
- * Returns the maximum height in a single trajectory.
+ * Returns the maximum distance of any point in a trajectory from its starting
+ * point. Returns 0 for empty trajectories.
+ */
+function getMaximumHorizontalDistanceFromTakeoffPositionInTrajectory(
+  trajectory
+) {
+  const { points = [] } = trajectory;
+  if (points.length === 0) {
+    return 0;
+  }
+
+  // TODO(ntamas): calculate distances only for the convex hull of the trajectory!
+
+  const firstKeyframe = points[0];
+  const firstPoint = firstKeyframe[1];
+
+  const distanceToFirstPoint = (keyframe) => {
+    const point = keyframe[1];
+    return Math.hypot(point[0] - firstPoint[0], point[1] - firstPoint[1]);
+  };
+
+  const farthestPoint = maxBy(points, distanceToFirstPoint);
+  return farthestPoint ? distanceToFirstPoint(farthestPoint) : 0;
+}
+
+/**
+ * Returns the maximum distance of any point in any of the trajectories from the
+ * starting point of that trajectory.
+ */
+export const getMaximumHorizontalDistanceFromTakeoffPositionInTrajectories = createSelector(
+  getTrajectories,
+  (trajectories) =>
+    max(
+      trajectories.map(
+        getMaximumHorizontalDistanceFromTakeoffPositionInTrajectory
+      )
+    ) || 0
+);
+
+/**
+ * Returns the maximum height in a single trajectory. Returns 0 for empty
+ * trajectories.
  */
 function getMaximumHeightOfTrajectory(trajectory) {
   const { points = [] } = trajectory;
@@ -327,13 +371,26 @@ export const getMaximumHeightInTrajectories = createSelector(
 );
 
 /**
- * Returns the automatically calculated height limit, by adding the declared
+ * Returns the automatically calculated distance limit by adding the declared
+ * horizontal safety margin to the distances of the farthest points of the show
+ * trajectories from the takeoff positions.
+ */
+export const getProposedDistanceLimitBasedOnTrajectories = (state) => {
+  const maxHeight = getMaximumHorizontalDistanceFromTakeoffPositionInTrajectories(
+    state
+  );
+  const margin = get(state, 'dialogs.geofenceSettings.horizontalMargin');
+  return proposeDistanceLimit(maxHeight, margin);
+};
+
+/**
+ * Returns the automatically calculated height limit by adding the declared
  * vertical safety margin to the highest point of the show trajectories.
  */
 export const getProposedHeightLimitBasedOnTrajectories = (state) => {
   const maxHeight = getMaximumHeightInTrajectories(state);
-  const verticalMargin = get(state, 'dialogs.geofenceSettings.verticalMargin');
-  return proposeHeightLimit(maxHeight, verticalMargin);
+  const margin = get(state, 'dialogs.geofenceSettings.verticalMargin');
+  return proposeHeightLimit(maxHeight, margin);
 };
 
 /**
@@ -371,6 +428,16 @@ export const getShowDescription = createSelector(
 export const getShowLoadingProgressPercentage = (state) => {
   const { progress } = state.show;
   return typeof progress === 'number' ? progress * 100 : null;
+};
+
+/**
+ * Returns the user-defined distance limit, which should be above the automatically
+ * proposed distance limit.
+ */
+export const getUserDefinedDistanceLimit = (state) => {
+  // TODO(ntamas): this should be configurable by the user and not simply set
+  // based on the proposal
+  return getProposedDistanceLimitBasedOnTrajectories(state);
 };
 
 /**
