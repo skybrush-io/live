@@ -168,17 +168,12 @@ export const growPolygon = (coordinates, margin) => {
 export const bufferPolygon = (coordinates, margin) => {
   const offsetAlgorithm = new Offset();
   const linearRings = offsetAlgorithm.data(coordinates).offset(margin);
-  return linearRings[0];
-};
 
-/**
- * Calculates a normal vector and a constant that can be used to describe a line
- * with the equation n · [x, y] = c.
- */
-const getNormalAndConstant = (p, q) => {
-  const n = [p[1] - q[1], p[0] - q[0]];
-  const c = dotProduct(n, p);
-  return { n, c };
+  // for some reason, the linear ring sometimes becomes concave around the
+  // arcs at the corners. Since the polygon simplification algorithm that we
+  // use later to reduce the vertex count works with convex polygons only,
+  // we take the convex hull again
+  return convexHull(linearRings[0]);
 };
 
 /**
@@ -245,7 +240,7 @@ const turnAngle = (a, b, c) => {
 /**
  * Simplify a polygon given by its list of coordinates by continously removing
  * the vertices with the lowest surrounding turning rotations (equivalently, the
- * highest surrounding internal angles) and ajusting their neighbors until a
+ * highest surrounding internal angles) and adjusting their neighbors until a
  * desired limit is reached.
  */
 export const simplifyPolygonUntilLimit = (coordinates, limit) => {
