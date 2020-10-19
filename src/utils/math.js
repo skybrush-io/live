@@ -8,6 +8,7 @@ import Polygon from 'ol/geom/Polygon';
 import { getCenter } from 'ol/extent';
 
 import monotoneConvexHull2D from 'monotone-convex-hull-2d';
+import Offset from 'polygon-offset';
 
 /**
  * Returns the given number of degrees in radians.
@@ -165,16 +166,9 @@ export const growPolygon = (coordinates, margin) => {
  * least as far from the old one, as given in the margin parameter.
  */
 export const bufferPolygon = (coordinates, margin) => {
-  const center = getCenter(new Polygon([coordinates]).getExtent());
-
-  return coordinates.map((c) => {
-    const difference = [c[0] - center[0], c[1] - center[1]];
-
-    return [
-      c[0] + Math.sign(difference[0]) * margin,
-      c[1] + Math.sign(difference[1]) * margin,
-    ];
-  });
+  const offsetAlgorithm = new Offset();
+  const linearRings = offsetAlgorithm.data(coordinates).offset(margin);
+  return linearRings[0];
 };
 
 /**

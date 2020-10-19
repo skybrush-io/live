@@ -1,11 +1,29 @@
-import { FeatureType } from '~/model/features';
-import { getFeaturesInOrder } from '~/selectors/ordered';
-import { getConvexHullOfShow } from '~/features/show/selectors';
+import ky from 'ky';
 import get from 'lodash-es/get';
 import identity from 'lodash-es/identity';
-import { addFeature, removeFeature, removeFeatures } from '~/actions/features';
 import throttle from 'lodash-es/throttle';
-import ky from 'ky';
+
+import { addFeature, removeFeature, removeFeatures } from '~/actions/features';
+import { getGeofencePolygonId } from '~/features/mission/selectors';
+import {
+  updateHomePositions,
+  updateLandingPositions,
+  updateTakeoffHeadings,
+  setMappingLength,
+  setGeofencePolygonId,
+} from '~/features/mission/slice';
+import { getConvexHullOfShow } from '~/features/show/selectors';
+import { showNotification } from '~/features/snackbar/slice';
+import { MessageSemantics } from '~/features/snackbar/types';
+import { FeatureType } from '~/model/features';
+import { getFeaturesInOrder } from '~/selectors/ordered';
+import {
+  simplifyPolygon,
+  scalePolygon,
+  growPolygon,
+  bufferPolygon,
+} from '~/utils/math';
+import { createAsyncAction } from '~/utils/redux';
 
 import { loadShowFromFile as processFile } from './processing';
 import {
@@ -30,26 +48,6 @@ import {
   startUpload,
   _enqueueFailedUploads,
 } from './slice';
-
-import {
-  updateHomePositions,
-  updateLandingPositions,
-  updateTakeoffHeadings,
-  setMappingLength,
-  setGeofencePolygonId,
-} from '~/features/mission/slice';
-import { showNotification } from '~/features/snackbar/slice';
-import { MessageSemantics } from '~/features/snackbar/types';
-import { getGeofencePolygonId } from '~/features/mission/selectors';
-import { createAsyncAction } from '~/utils/redux';
-
-// import { FlatEarthCoordinateSystem } from '~/utils/geography';
-import {
-  simplifyPolygon,
-  scalePolygon,
-  growPolygon,
-  bufferPolygon,
-} from '~/utils/math';
 
 /**
  * Thunk that approves the takeoff area arrangement with the current timestamp.
@@ -142,17 +140,17 @@ export const addGeofencePolygon = () => (dispatch, getState) => {
     [MarginType.NONE]: identity,
   };
 
-  const points = marginFunctions[marginType](
-    simplify ? simplifyPolygon(coordinates, maxVertexCount) : coordinates,
-    horizontalMargin
-  ).map((c) => transformation.toLonLat(c));
+  const points = marginFunctions[marginType](coordinates, horizontalMargin);
+  const simplifiedPoints = simplify
+    ? simplifyPolygon(points, maxVertexCount)
+    : points;
 
   const geofencePolygon = {
     type: FeatureType.POLYGON,
     owner: 'show',
     label: 'Geofence',
     color: '#ff0000',
-    points,
+    points: simplifiedPoints.map((c) => transformation.toLonLat(c)),
   };
   const action = addFeature(geofencePolygon);
   dispatch(action);
