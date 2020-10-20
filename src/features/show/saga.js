@@ -77,11 +77,16 @@ function createShowConfigurationForUav(state, uavId) {
     throw new TypeError('Show coordinate system not specified');
   }
 
-  const fence = {
+  const geofence = {
     version: 1,
-    polygon: getGeofencePolygonCoordinates(state),
+    polygons: [
+      {
+        isInclusion: true,
+        points: getGeofencePolygonCoordinates(state),
+      },
+    ],
+    maxAltitude: getUserDefinedHeightLimit(state),
     maxDistance: getUserDefinedDistanceLimit(state),
-    maxHeight: getUserDefinedHeightLimit(state),
   };
 
   const drones = getDroneSwarmSpecification(state);
@@ -109,7 +114,7 @@ function createShowConfigurationForUav(state, uavId) {
     ...getCommonShowSettings(state),
     ...settings,
     coordinateSystem,
-    fence,
+    geofence,
     mission: {
       id: missionId,
       index: missionIndex,
