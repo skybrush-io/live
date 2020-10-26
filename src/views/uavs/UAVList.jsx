@@ -43,7 +43,7 @@ import {
   isShowingMissionIds,
 } from '~/features/settings/selectors';
 import { getSelectedUAVIds } from '~/selectors/selection';
-import { isDark } from '~/theme';
+import { isDark, monospacedFont } from '~/theme';
 import { formatMissionId } from '~/utils/formatting';
 
 import {
@@ -57,6 +57,23 @@ const useListStyles = makeStyles(
     appBar: {
       backgroundColor: isDark(theme) ? '#444' : theme.palette.background.paper,
       height: 48,
+    },
+
+    header: {
+      backdropFilter: 'blur(5px)',
+      background: isDark(theme)
+        ? 'rgba(36, 36, 36, 0.54)'
+        : 'rgba(255, 255, 255, 0.8)',
+      borderBottom: `1px solid ${theme.palette.divider}`,
+      fontFamily: monospacedFont,
+      fontSize: 'small',
+      lineHeight: '20px',
+      overflow: 'hidden',
+      padding: theme.spacing(0.5, 0),
+      position: 'sticky',
+      top: 0,
+      whiteSpace: 'pre',
+      zIndex: 10,
     },
 
     toolbar: {
@@ -264,6 +281,9 @@ UAVListSection.propTypes = {
   layout: PropTypes.oneOf(['grid', 'list']),
 };
 
+const HEADER_TEXT =
+  '  ID       Status    Mode  Battery   GPS  Position               AMSL/ AGL  Hdg Details';
+
 /**
  * Presentation component for showing the drone show configuration view.
  */
@@ -301,7 +321,7 @@ const UAVListPresentation = ({
   );
 
   const onStartEditing = useCallback(
-    (uavId, missionIndex) => () => onEditMappingSlot(missionIndex),
+    (_uavId, missionIndex) => () => onEditMappingSlot(missionIndex),
     [onEditMappingSlot]
   );
 
@@ -344,11 +364,14 @@ const UAVListPresentation = ({
         </FadeAndSlide>
       </AppBar>
       <Box flex={1} overflow='auto'>
+        {layout === 'list' && (
+          <div className={classes.header}>{HEADER_TEXT}</div>
+        )}
         <UAVListSection
           ids={mainUAVIds}
           itemFactory={itemFactory}
           itemFactoryOptions={itemFactoryOptions}
-          label='Assigned UAVs'
+          label={showMissionIds ? 'Assigned UAVs' : 'All UAVs'}
           layout={layout}
           value='mainUAVIds'
           onSelect={onSelectSection}
