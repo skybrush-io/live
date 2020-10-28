@@ -281,8 +281,12 @@ UAVListSection.propTypes = {
   layout: PropTypes.oneOf(['grid', 'list']),
 };
 
-const HEADER_TEXT =
-  '  ID       Status    Mode  Battery   GPS  Position               AMSL/ AGL  Hdg Details';
+const HEADER_TEXT = {
+  missionIds:
+    ' sID  ID   Status    Mode  Battery   GPS  Position               AMSL/ AGL  Hdg Details',
+  droneIds:
+    '  ID       Status    Mode  Battery   GPS  Position               AMSL/ AGL  Hdg Details',
+};
 
 /**
  * Presentation component for showing the drone show configuration view.
@@ -365,7 +369,9 @@ const UAVListPresentation = ({
       </AppBar>
       <Box flex={1} overflow='auto'>
         {layout === 'list' && (
-          <div className={classes.header}>{HEADER_TEXT}</div>
+          <div className={classes.header}>
+            {showMissionIds ? HEADER_TEXT.missionIds : HEADER_TEXT.droneIds}
+          </div>
         )}
         <UAVListSection
           ids={mainUAVIds}
