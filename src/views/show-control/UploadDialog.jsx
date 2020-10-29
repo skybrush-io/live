@@ -6,13 +6,11 @@ import { connect } from 'react-redux';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import Checkbox from '@material-ui/core/Checkbox';
-import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import Fade from '@material-ui/core/Fade';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import IconButton from '@material-ui/core/IconButton';
-import Switch from '@material-ui/core/Switch';
 import Tooltip from '~/components/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
@@ -25,6 +23,7 @@ import StartUploadButton from './StartUploadButton';
 import UploadProgressBar from './UploadProgressBar';
 
 import DialogToolbar from '~/components/dialogs/DialogToolbar';
+import DraggableDialog from '~/components/dialogs/DraggableDialog';
 import { getUAVIdsParticipatingInMission } from '~/features/mission/selectors';
 import { retryFailedUploads } from '~/features/show/actions';
 import {
@@ -140,13 +139,13 @@ const UploadDialog = ({
   const classes = useStyles();
 
   return (
-    <Dialog fullWidth open={open} maxWidth='sm' onClose={onClose}>
-      <DialogToolbar>
-        <Typography noWrap variant='subtitle1'>
-          Upload show data
-        </Typography>
-      </DialogToolbar>
-
+    <DraggableDialog
+      fullWidth
+      open={open}
+      maxWidth='sm'
+      onClose={onClose}
+      title='Upload show data'
+    >
       <DialogContent>
         <DronePlaceholderList
           title='Queued:'
@@ -219,7 +218,7 @@ const UploadDialog = ({
           />
         )}
       </DialogActions>
-    </Dialog>
+    </DraggableDialog>
   );
 };
 

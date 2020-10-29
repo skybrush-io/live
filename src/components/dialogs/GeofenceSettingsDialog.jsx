@@ -11,14 +11,12 @@ import { connect } from 'react-redux';
 
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import InputAdornment from '@material-ui/core/InputAdornment';
-import Typography from '@material-ui/core/Typography';
 
-import DialogToolbar from '~/components/dialogs/DialogToolbar';
+import DraggableDialog from '~/components/dialogs/DraggableDialog';
 import FormHeader from '~/components/dialogs/FormHeader';
 import {
   proposeDistanceLimit,
@@ -214,12 +212,13 @@ const GeofenceSettingsDialogPresentation = ({
   );
 
   return (
-    <Dialog fullWidth open={open} maxWidth='xs' onClose={onClose}>
-      <DialogToolbar>
-        <Typography noWrap variant='subtitle1'>
-          Geofence settings
-        </Typography>
-      </DialogToolbar>
+    <DraggableDialog
+      fullWidth
+      open={open}
+      maxWidth='xs'
+      onClose={onClose}
+      title='Geofence settings'
+    >
       <DialogContent>
         {/* <FormHeader>Automatic geofence</FormHeader> */}
         <GeofenceSettingsForm onSubmit={onSubmit} onKeyPress={handleKeyPress} />
@@ -237,7 +236,7 @@ const GeofenceSettingsDialogPresentation = ({
         </Button>
         <Button onClick={onClose}>Close</Button>
       </DialogActions>
-    </Dialog>
+    </DraggableDialog>
   );
 };
 

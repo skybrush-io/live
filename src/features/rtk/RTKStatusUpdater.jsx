@@ -4,6 +4,7 @@ import mapValues from 'lodash-es/mapValues';
 import { useEffect } from 'react';
 import { connect } from 'react-redux';
 
+import handleError from '~/error-handling';
 import { updateRTKStatistics } from '~/features/rtk/slice';
 import useMessageHub from '~/hooks/useMessageHub';
 
@@ -27,7 +28,7 @@ const RTKStatusUpdater = ({ onStatusChanged }) => {
           const status = await messageHub.query.getRTKStatus();
           onStatusChanged(status);
         } catch (error) {
-          console.error(error);
+          handleError(error, 'RTK status query');
         }
 
         // eslint-disable-next-line no-await-in-loop

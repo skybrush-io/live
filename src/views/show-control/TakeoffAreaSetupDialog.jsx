@@ -9,12 +9,11 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
-import Typography from '@material-ui/core/Typography';
 import VerticalAlignBottom from '@material-ui/icons/VerticalAlignBottom';
 
 import DronePlaceholderList from './DronePlaceholderList';
 
-import DialogToolbar from '~/components/dialogs/DialogToolbar';
+import DraggableDialog from '~/components/dialogs/DraggableDialog';
 import {
   addVirtualDronesForMission,
   augmentMappingAutomaticallyFromSpareDrones,
@@ -172,46 +171,48 @@ const TakeoffAreaSetupDialog = ({
   onApprove,
   onClose,
   onRevoke,
-}) => (
-  <Dialog fullWidth open={open} maxWidth='sm' onClose={onClose}>
-    <DialogToolbar>
-      <Typography noWrap variant='subtitle1'>
-        Takeoff area setup
-      </Typography>
-      <Box flex={1} />
-      {hasVirtualDrones && (
-        <Button
-          color='inherit'
-          startIcon={<VerticalAlignBottom />}
-          onClick={onAddVirtualDrones}
-        >
-          Place virtual drones
-        </Button>
-      )}
-    </DialogToolbar>
-
-    <DialogContent>
-      <TakeoffAreaSetupDialogIndicators />
-      <Box py={2} display='flex' flexDirection='row' justifyContent='center'>
-        <RecalculateMappingButton />
-        <AugmentMappingButton />
-      </Box>
-      <Box className='bottom-bar' textAlign='center' pt={2}>
-        <FormControlLabel
-          control={
-            <Switch
-              checked={approved}
-              value='approved'
-              onChange={approved ? onRevoke : onApprove}
-            />
-          }
-          label='Approve takeoff area arrangement'
-        />
-      </Box>
-    </DialogContent>
-    <DialogActions />
-  </Dialog>
-);
+}) => {
+  const titleComponents = hasVirtualDrones && (
+    <Button
+      color='inherit'
+      startIcon={<VerticalAlignBottom />}
+      onClick={onAddVirtualDrones}
+    >
+      Place virtual drones
+    </Button>
+  );
+  return (
+    <DraggableDialog
+      fullWidth
+      open={open}
+      maxWidth='sm'
+      onClose={onClose}
+      title='Takeoff area setup'
+      titleComponents={titleComponents}
+    >
+      <DialogContent>
+        <TakeoffAreaSetupDialogIndicators />
+        <Box py={2} display='flex' flexDirection='row' justifyContent='center'>
+          <RecalculateMappingButton />
+          <AugmentMappingButton />
+        </Box>
+        <Box className='bottom-bar' textAlign='center' pt={2}>
+          <FormControlLabel
+            control={
+              <Switch
+                checked={approved}
+                value='approved'
+                onChange={approved ? onRevoke : onApprove}
+              />
+            }
+            label='Approve takeoff area arrangement'
+          />
+        </Box>
+      </DialogContent>
+      <DialogActions />
+    </DraggableDialog>
+  );
+};
 
 TakeoffAreaSetupDialog.propTypes = {
   approved: PropTypes.bool,

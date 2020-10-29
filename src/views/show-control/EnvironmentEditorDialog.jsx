@@ -4,7 +4,6 @@ import { connect } from 'react-redux';
 
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
 import DialogContent from '@material-ui/core/DialogContent';
 import FormGroup from '@material-ui/core/FormGroup';
 import Typography from '@material-ui/core/Typography';
@@ -14,7 +13,7 @@ import {
   setFlatEarthCoordinateSystemOrientation,
 } from '~/actions/map-origin';
 import CoordinateSystemFields from '~/components/CoordinateSystemFields';
-import DialogToolbar from '~/components/dialogs/DialogToolbar';
+import DraggableDialog from '~/components/dialogs/DraggableDialog';
 import FormHeader from '~/components/dialogs/FormHeader';
 import RTKCorrectionSourceSelector from '~/features/rtk/RTKCorrectionSourceSelector';
 import { updateOutdoorShowSettings } from '~/features/show/actions';
@@ -56,12 +55,13 @@ const EnvironmentEditorDialog = ({
   outdoor,
   type,
 }) => (
-  <Dialog fullWidth open={editing} maxWidth='sm' onClose={onClose}>
-    <DialogToolbar>
-      <Typography noWrap variant='subtitle1'>
-        Environment settings
-      </Typography>
-    </DialogToolbar>
+  <DraggableDialog
+    fullWidth
+    open={editing}
+    maxWidth='sm'
+    onClose={onClose}
+    title='Environment settings'
+  >
     <DialogContent>
       <Box my={2}>
         <Instructions type={type} />
@@ -94,7 +94,7 @@ const EnvironmentEditorDialog = ({
         )}
       </Box>
     </DialogContent>
-  </Dialog>
+  </DraggableDialog>
 );
 
 EnvironmentEditorDialog.propTypes = {

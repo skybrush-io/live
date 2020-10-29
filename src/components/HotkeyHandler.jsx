@@ -10,16 +10,15 @@ import React from 'react';
 import u from 'updeep';
 
 import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
 
-import { isRunningOnMac, platformModifierKey } from '../utils/platform';
+import DraggableDialog from '~/components/dialogs/DraggableDialog';
+import { isRunningOnMac, platformModifierKey } from '~/utils/platform';
 
 /**
  * Formats the given hotkey definition string to make it suitable for
@@ -173,9 +172,11 @@ export default class HotkeyHandler extends React.Component {
 
     return (
       <div className={classString}>
-        <Dialog open={dialogVisible} onClose={this._hideDialog}>
-          <DialogTitle>Hotkeys</DialogTitle>
-
+        <DraggableDialog
+          title='Hotkeys'
+          open={dialogVisible}
+          onClose={this._hideDialog}
+        >
           <DialogContent>
             <Table size='small'>
               <TableBody>
@@ -194,7 +195,7 @@ export default class HotkeyHandler extends React.Component {
           </DialogContent>
 
           <DialogActions>{actions}</DialogActions>
-        </Dialog>
+        </DraggableDialog>
       </div>
     );
   }

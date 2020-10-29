@@ -3,7 +3,6 @@ import React from 'react';
 import { connect } from 'react-redux';
 
 import Box from '@material-ui/core/Box';
-import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -11,13 +10,12 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import Switch from '@material-ui/core/Switch';
-import Typography from '@material-ui/core/Typography';
 import CheckCircle from '@material-ui/icons/CheckCircle';
 
 import { Colors } from '~/components/colors';
 import BackgroundHint from '~/components/BackgroundHint';
 import StatusLight from '~/components/StatusLight';
-import DialogToolbar from '~/components/dialogs/DialogToolbar';
+import DraggableDialog from '~/components/dialogs/DraggableDialog';
 import { Status } from '~/components/semantics';
 
 import { isShowingMissionIds } from '~/features/settings/selectors';
@@ -114,12 +112,14 @@ const OnboardPreflightChecksDialog = ({
   signedOff,
 }) => {
   return (
-    <Dialog fullWidth open={open} maxWidth='xs' onClose={onClose}>
-      <DialogToolbar>
-        <Typography variant='subtitle1'>Onboard preflight checks</Typography>
-        <Box flex={1} />
-        <MappingToggleButton />
-      </DialogToolbar>
+    <DraggableDialog
+      fullWidth
+      open={open}
+      maxWidth='xs'
+      onClose={onClose}
+      title='Onboard preflight checks'
+      titleComponents={<MappingToggleButton />}
+    >
       <DialogContent
         style={{
           display: 'flex',
@@ -145,7 +145,7 @@ const OnboardPreflightChecksDialog = ({
         </Box>
       </DialogContent>
       <DialogActions />
-    </Dialog>
+    </DraggableDialog>
   );
 };
 

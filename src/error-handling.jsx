@@ -8,6 +8,8 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import RedBox from 'redbox-react';
 import isFunction from 'lodash-es/isFunction';
+
+import { MessageTimeout } from './flockwave/messages';
 import makeLogger from './utils/logging';
 
 const __PROD__ = process.env.NODE_ENV === 'production';
@@ -52,10 +54,22 @@ export function errorToString(err) {
 /**
  * Handles the given error object gracefully within the application.
  *
- * @param  {Error}  err  the error to handle
+ * @param  {Error}   err  the error to handle
+ * @param  {string}  operation  the operation we attempted to perform when the
+ *         error happened, if known
  */
-export function handleError(err) {
-  logger.error(errorToString(err));
+export function handleError(err, operation) {
+  if (err instanceof MessageTimeout) {
+    const message = operation ? `${operation} timed out` : errorToString(err);
+
+    logger.warn(message);
+    console.warn(message);
+  } else {
+    const message = errorToString(err);
+
+    logger.error(message);
+    console.error(message);
+  }
 }
 
 export default handleError;

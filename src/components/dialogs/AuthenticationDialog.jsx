@@ -3,11 +3,10 @@
  * the user needs to (or tries to) authenticate to the current server.
  */
 
+import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
 import { makeStyles } from '@material-ui/core/styles';
 
 import PropTypes from 'prop-types';
@@ -16,6 +15,7 @@ import { Form, Field } from 'react-final-form';
 import { connect } from 'react-redux';
 
 import { closeAuthenticationDialog } from '~/actions/servers';
+import DraggableDialog from '~/components/dialogs/DraggableDialog';
 import { PasswordField, TextField } from '~/components/forms';
 import { authenticateToServerWithBasicAuthentication } from '~/features/servers/actions';
 import {
@@ -55,35 +55,37 @@ const AuthenticationForm = ({
   const classes = useStyles();
 
   return (
-    <Form initialValues={initialValues} onSubmit={onSubmit}>
-      {({ handleSubmit }) => (
-        <form className={classes.root} onSubmit={handleSubmit}>
-          <DialogContent>
-            <Field
-              autoFocus
-              fullWidth
-              component={TextField}
-              name='username'
-              label='Username'
-              autoComplete='username'
-            />
-            <Field
-              fullWidth
-              component={PasswordField}
-              name='password'
-              label='Password'
-              autoComplete='current-password'
-            />
-          </DialogContent>
-          <DialogActions>
-            <Button disabled={isAuthenticating} color='primary' type='submit'>
-              {isAuthenticating ? 'Logging in…' : 'Log in'}
-            </Button>
-            <Button onClick={onCancel}>Cancel</Button>
-          </DialogActions>
-        </form>
-      )}
-    </Form>
+    <Box pt={4}>
+      <Form initialValues={initialValues} onSubmit={onSubmit}>
+        {({ handleSubmit }) => (
+          <form className={classes.root} onSubmit={handleSubmit}>
+            <DialogContent>
+              <Field
+                autoFocus
+                fullWidth
+                component={TextField}
+                name='username'
+                label='Username'
+                autoComplete='username'
+              />
+              <Field
+                fullWidth
+                component={PasswordField}
+                name='password'
+                label='Password'
+                autoComplete='current-password'
+              />
+            </DialogContent>
+            <DialogActions>
+              <Button disabled={isAuthenticating} color='primary' type='submit'>
+                {isAuthenticating ? 'Logging in…' : 'Log in'}
+              </Button>
+              <Button onClick={onCancel}>Cancel</Button>
+            </DialogActions>
+          </form>
+        )}
+      </Form>
+    </Box>
   );
 };
 
@@ -100,10 +102,9 @@ AuthenticationForm.propTypes = {
  * @returns  {Object}  the rendered component
  */
 const AuthenticationDialogPresentation = ({ open, title, ...rest }) => (
-  <Dialog maxWidth='xs' open={open}>
-    <DialogTitle>{title}</DialogTitle>
+  <DraggableDialog maxWidth='xs' open={open} title={title}>
     <AuthenticationForm {...rest} />
-  </Dialog>
+  </DraggableDialog>
 );
 
 AuthenticationDialogPresentation.propTypes = {

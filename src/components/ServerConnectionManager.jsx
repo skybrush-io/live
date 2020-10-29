@@ -37,7 +37,6 @@ import {
 } from '~/model/connections';
 import { handleClockInformationMessage } from '~/model/clocks';
 import { handleDockInformationMessage } from '~/model/docks';
-import { setFlatEarthCoordinateSystemOrientation } from '../actions/map-origin';
 
 /**
  * Component that launches a local Skybrush server instance when mounted.
