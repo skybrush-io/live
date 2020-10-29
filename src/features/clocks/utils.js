@@ -1,6 +1,8 @@
+import dateFnsFormatter from 'date-fns/format';
 import isFunction from 'lodash-es/isFunction';
 import isNil from 'lodash-es/isNil';
-import moment from 'moment';
+
+import { formatDurationHMS } from '~/utils/formatting';
 
 /**
  * Remapping of commonly used clock IDs in a Skybrush server to something
@@ -81,35 +83,29 @@ export function formatClockLabel(clock) {
 export function formatTicksOnClock(ticks, clock, options) {
   const { epoch, ticksPerSecond } = clock;
   const { format = clock.format } = options;
+  let seconds = ticks / ticksPerSecond;
 
   if (isNil(epoch) || Number.isNaN(epoch)) {
     if (clock.id === 'mtc') {
       // No epoch, so we just simply show a HH:MM:SS:FF SMPTE-style
       // timestamp. We (ab)use the millisecond part of the timestamp
       // to represent the number of frames
-      return moment
-        .utc(0)
-        .add(Math.floor(ticks / ticksPerSecond), 'second')
-        .add((ticks % ticksPerSecond) * 10, 'millisecond')
-        .format('HH:mm:ss:SS');
+      seconds = Math.floor(seconds) + (ticks % ticksPerSecond) / 100;
+      return formatDurationHMS(seconds, { padHours: true, precision: 2 });
     }
 
     if (ticksPerSecond <= 1) {
       // No epoch, so we just simply show a HH:MM:SS timestamp
-      return moment
-        .duration(ticks / ticksPerSecond, 'second')
-        .format('HH:mm:ss', { trim: false });
+      return formatDurationHMS(seconds, { padHours: true });
     }
 
     // No epoch, we show the timestamp up to 1/10th of seconds
-    return moment
-      .duration(ticks / ticksPerSecond, 'second')
-      .format('HH:mm:ss', { precision: 1, trim: false });
+    return formatDurationHMS(seconds, { padHours: true, precision: 1 });
   }
 
   // We have an epoch, so create a date and use the formatter
-  const date = moment.unix(epoch + ticks / ticksPerSecond);
-  return isFunction(format) ? format(date) : date.format(format);
+  const date = new Date((epoch + seconds) * 1000);
+  return isFunction(format) ? format(date) : dateFnsFormatter(date, format);
 }
 
 /**

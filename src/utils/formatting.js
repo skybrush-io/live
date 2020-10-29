@@ -6,7 +6,7 @@ export function formatCoordinateArray(coords) {
 }
 
 /**
- * Formats a duration as hours:minutes.
+ * Formats a duration as minutes:seconds.
  */
 export function formatDuration(duration) {
   duration = Math.round(duration);
@@ -18,6 +18,43 @@ export function formatDuration(duration) {
   }
 
   return `${minutes}:${seconds}`;
+}
+
+/**
+ * Formats a duration as hours:minutes:seconds.
+ */
+export function formatDurationHMS(duration, options) {
+  if (duration < 0) {
+    return '-' + formatDurationHMS(-duration, options);
+  }
+
+  const { padHours } = options;
+  let { precision = 0 } = options;
+
+  precision = Math.max(Math.floor(precision), 0);
+  if (precision > 0) {
+    const power = Math.pow(10, precision);
+    duration = Math.round(duration * power) / power;
+  }
+
+  let hours = String(Math.floor(duration / 3600));
+  if (padHours && hours.length < 2) {
+    hours = '0' + hours;
+  }
+  duration = duration % 3600;
+
+  let minutes = String(Math.floor(duration / 60));
+  if (minutes.length < 2) {
+    minutes = '0' + minutes;
+  }
+  duration = duration % 60;
+
+  let seconds = duration.toFixed(precision);
+  if (duration < 10) {
+    seconds = '0' + seconds;
+  }
+
+  return `${hours}:${minutes}:${seconds}`;
 }
 
 /**

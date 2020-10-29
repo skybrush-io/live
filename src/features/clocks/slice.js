@@ -40,7 +40,7 @@ const { actions, reducer } = createSlice({
       // No items are added by default. Here's how an example item should
       // look like:
       // {
-      //     format: 'YYYY-MM-DD HH:mm:ss Z',      /* optional */
+      //     format: 'yyyy-MM-dd HH:mm:ss xx',      /* optional */
       //     id: 'system',
       //     epoch: 'unix',                        /* optional */
       //     referenceTime: 0,                     /* optional */

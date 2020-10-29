@@ -96,7 +96,7 @@ ClockDisplayListEntry.propTypes = {
 };
 
 ClockDisplayListEntry.defaultProps = {
-  format: 'YYYY-MM-DD HH:mm:ss Z',
+  format: 'yyyy-MM-dd HH:mm:ss xx',
 };
 
 /**

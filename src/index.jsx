@@ -20,13 +20,6 @@ if (process.env.NODE_ENV === 'production') {
   disableReactDevTools();
 }
 
-// Configure Moment
-/* eslint-disable no-unused-vars */
-// TODO(ntamas): get rid of Moment, we are using date-fns mostly
-const moment = require('moment');
-const momentDurationFormatSetup = require('moment-duration-format');
-/* eslint-enable no-unused-vars */
-
 // Configure TimeAgo
 TimeAgo.addLocale(en);
 
