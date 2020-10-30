@@ -9,6 +9,7 @@ import isNil from 'lodash-es/isNil';
 import { createSlice } from '@reduxjs/toolkit';
 
 import { COORDINATE_SYSTEM_TYPE } from './constants';
+import { StartMethod } from './enums';
 import { moveItemsBetweenQueues } from './utils';
 
 import { noPayload } from '~/utils/redux';
@@ -69,7 +70,7 @@ const { actions, reducer } = createSlice({
 
       // whether the show is started automatically or manually with a remote
       // controller
-      method: 'rc',
+      method: StartMethod.RC,
 
       // the list of UAV IDs that the server will start automatically. This
       // value is read from the server only but is never written there; we will
@@ -140,7 +141,7 @@ const { actions, reducer } = createSlice({
 
     clearStartTimeAndMethod(state) {
       state.start.time = null;
-      state.start.method = 'rc';
+      state.start.method = StartMethod.RC;
     },
 
     clearUploadQueue: noPayload((state) => {
@@ -372,7 +373,7 @@ const { actions, reducer } = createSlice({
     },
 
     setStartMethod(state, action) {
-      if (action.payload === 'rc' || action.payload === 'auto') {
+      if (StartMethod._VALUES.includes(action.payload)) {
         state.start.method = action.payload;
       }
     },

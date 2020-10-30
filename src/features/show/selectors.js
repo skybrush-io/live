@@ -433,15 +433,26 @@ export const getShowMetadata = createSelector(
 );
 
 /**
+ * Returns the start method of the show.
+ */
+export const getShowStartMethod = (state) => state.show.start.method;
+
+/**
+ * Returns the start time of the show as a UNIX timestamp or undefined if the
+ * start time was not set yet.
+ */
+export const getShowStartTime = (state) => {
+  const { time } = state.show.start;
+  return isNil(time) || Number.isNaN(time) ? undefined : time;
+};
+
+/**
  * Returns the scheduled start time of the show as a string. Returns undefined
  * if no start time is set.
  */
 export const getShowStartTimeAsString = createSelector(
-  (state) => state.show.start.time,
-  (time) =>
-    isNil(time) || Number.isNaN(time)
-      ? undefined
-      : formatISO9075(fromUnixTime(time))
+  getShowStartTime,
+  (time) => (time ? formatISO9075(fromUnixTime(time)) : undefined)
 );
 
 /**

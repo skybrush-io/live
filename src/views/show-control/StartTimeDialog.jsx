@@ -29,6 +29,7 @@ import Alert from '@material-ui/lab/Alert';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 
 import Header from '~/components/dialogs/FormHeader';
+import { StartMethod } from '~/features/show/enums';
 import {
   closeStartTimeDialog,
   setStartMethod,
@@ -144,10 +145,12 @@ const StartTimeForm = ({
             label='Start signal'
             formControlProps={{ fullWidth: true, variant: 'filled' }}
           >
-            <MenuItem value='rc'>
+            <MenuItem value={StartMethod.RC}>
               Start show with remote controller only (safer)
             </MenuItem>
-            <MenuItem value='auto'>Start show automatically</MenuItem>
+            <MenuItem value={StartMethod.AUTO}>
+              Start show automatically
+            </MenuItem>
           </Select>
         </DialogContent>
         <DialogActions>
@@ -170,7 +173,7 @@ const StartTimeForm = ({
 StartTimeForm.propTypes = {
   alwaysAllowSubmission: PropTypes.bool,
   initialValues: PropTypes.shape({
-    method: PropTypes.oneOf(['rc', 'auto']),
+    method: PropTypes.oneOf(StartMethod._VALUES),
   }),
   onClearStartTime: PropTypes.func,
   onSubmit: PropTypes.func,
@@ -214,7 +217,7 @@ const StartTimeDialog = ({
 };
 
 StartTimeDialog.propTypes = {
-  method: PropTypes.oneOf(['rc', 'auto']),
+  method: PropTypes.oneOf(StartMethod._VALUES),
   onClearStartTime: PropTypes.func,
   onClose: PropTypes.func,
   onUpdateSettings: PropTypes.func,
@@ -223,7 +226,7 @@ StartTimeDialog.propTypes = {
 };
 
 StartTimeDialog.defaultProps = {
-  method: 'rc',
+  method: StartMethod.RC,
   open: false,
 };
 

@@ -3,8 +3,6 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { useHarmonicIntervalFn, useUpdate } from 'react-use';
 
-import LCDText from './LCDText';
-
 import { getClockById } from '~/features/clocks/selectors';
 import {
   formatTicksOnClock,
@@ -13,9 +11,10 @@ import {
   isClockSigned,
 } from '~/features/clocks/utils';
 
-const LCDClockDisplayLabel = ({
+const ClockDisplayLabel = ({
   clock,
   clockId,
+  emptyText,
   format,
   signed,
   updateInterval,
@@ -25,29 +24,24 @@ const LCDClockDisplayLabel = ({
   const ticks = clock ? getCurrentTickCountOnClock(clock) : undefined;
   let formattedTime =
     ticks === undefined
-      ? '--:--:--'
+      ? emptyText
       : formatTicksOnClock(ticks, clock, { format });
   const update = useUpdate();
-
-  if (signed && formattedTime.charAt(0) !== '-') {
-    // '!' is the all-off character in the 14-segment display font
-    formattedTime = '!' + formattedTime;
-  }
-
   useHarmonicIntervalFn(update, running ? updateInterval : null);
 
-  return <LCDText {...rest}>{formattedTime}</LCDText>;
+  return <span {...rest}>{formattedTime}</span>;
 };
 
-LCDClockDisplayLabel.propTypes = {
+ClockDisplayLabel.propTypes = {
   clock: PropTypes.object,
   clockId: PropTypes.string,
+  emptyText: PropTypes.string,
   format: PropTypes.string,
   signed: PropTypes.bool,
   updateInterval: PropTypes.number,
 };
 
-LCDClockDisplayLabel.defaultProps = {
+ClockDisplayLabel.defaultProps = {
   format: 'HH:mm:ss',
 };
 
@@ -61,4 +55,4 @@ export default connect(
   },
   // mapDispatchToProps
   {}
-)(LCDClockDisplayLabel);
+)(ClockDisplayLabel);
