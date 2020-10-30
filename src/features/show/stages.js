@@ -29,6 +29,7 @@ import {
   hasNonemptyMappingSlot,
 } from '~/features/mission/selectors';
 import { areAllPreflightChecksTicked } from '~/features/preflight/selectors';
+import { isConnected as isConnectedToServer } from '~/features/servers/selectors';
 import {
   areAllUAVsInMissionWithoutErrors,
   getMissingUAVIdsInMapping,
@@ -116,7 +117,9 @@ const stages = {
         ? hasScheduledStartTime(state)
           ? Status.SUCCESS
           : Status.OFF
-        : Status.WAITING,
+        : isConnectedToServer(state)
+        ? Status.WAITING
+        : Status.OFF,
     requires: ['selectShowFile'],
     suggests: ['waitForOnboardPreflightChecks', 'performManualPreflightChecks'],
   },
