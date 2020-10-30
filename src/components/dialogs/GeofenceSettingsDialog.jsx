@@ -36,12 +36,18 @@ import {
 } from '~/actions/geofence-settings';
 import { forceFormSubmission, Switch, TextField } from '~/components/forms';
 
-import { createValidator, finite, integer, required } from '~/utils/validation';
+import {
+  createValidator,
+  atLeast,
+  finite,
+  integer,
+  required,
+} from '~/utils/validation';
 
 const validator = createValidator({
-  horizontalMargin: [required, finite],
-  verticalMargin: [required, finite],
-  maxVertexCount: [required, integer],
+  horizontalMargin: [required, finite, atLeast(1)],
+  verticalMargin: [required, finite, atLeast(1)],
+  maxVertexCount: [required, integer, atLeast(3)],
 });
 
 const calculator = createDecorator(
