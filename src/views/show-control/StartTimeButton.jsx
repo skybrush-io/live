@@ -18,7 +18,7 @@ import { getSetupStageStatuses } from '~/features/show/stages';
  */
 const StartTimeButton = ({ formattedStartTime, onClick, status }) => {
   return (
-    <ListItem button disabled={status === Status.OFF} onClick={onClick}>
+    <ListItem button onClick={onClick}>
       <StatusLight status={status} />
       <ListItemText
         primary='Choose start time'
