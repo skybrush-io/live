@@ -20,10 +20,12 @@ import DateFnsUtils from '@date-io/date-fns';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
+import Divider from '@material-ui/core/Divider';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import FormGroup from '@material-ui/core/FormGroup';
 import MenuItem from '@material-ui/core/MenuItem';
+import Typography from '@material-ui/core/Typography';
 import AccessTime from '@material-ui/icons/AccessTime';
 import Alert from '@material-ui/lab/Alert';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
@@ -36,6 +38,8 @@ import {
   setStartTime,
   synchronizeShowSettings,
 } from '~/features/show/slice';
+
+import StartTimeSuggestions from './StartTimeSuggestions';
 
 function createDateTimeFromParts(date, time) {
   const result = startOfDay(date);
@@ -98,7 +102,7 @@ const StartTimeForm = ({
             </Box>
           </Alert>
 
-          <Box mt={2}>
+          <Box mt={2} mb={-1}>
             <Header>
               {originalStartTime
                 ? 'Set a new start time below'
@@ -137,6 +141,26 @@ const StartTimeForm = ({
               />
             </Box>
           </FormGroup>
+
+          <Box my={1} flexDirection='row' display='flex' alignItems='center'>
+            <Box mr={2}>
+              <Typography variant='body2' color='textSecondary'>
+                Suggestions:
+                {/* +30s, rounded up to next minute */
+                /* Current time, rounded up to next 5 / 10 / 15 / 30 / 60 minutes */}
+              </Typography>
+            </Box>
+
+            <StartTimeSuggestions
+              onChange={(timestamp) => {
+                form.batch(() => {
+                  const date = new Date(timestamp);
+                  form.change('date', date);
+                  form.change('time', date);
+                });
+              }}
+            />
+          </Box>
 
           <Select
             labelId='start-signal-label'
