@@ -14,7 +14,11 @@ import { getFarthestDistanceFromHome } from '~/features/uavs/selectors';
 
 const formatStatusText = (status, maxDistance) => {
   if (typeof maxDistance === 'number') {
-    return `Placement accuracy ≤ ${maxDistance.toFixed(2)} m`;
+    if (Number.isFinite(maxDistance)) {
+      return `Placement accuracy ≤ ${maxDistance.toFixed(2)} m`;
+    } else {
+      return 'No position yet for at least one drone';
+    }
   }
 
   switch (status) {

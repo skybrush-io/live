@@ -126,11 +126,15 @@ export const getXYDistanceToHomePositionByUavId = createCachedSelector(
   getHomePositionByUavId,
   getCurrentPositionByUavId,
   (homePosition, currentPosition) => {
-    if (!isNil(homePosition) && !isNil(currentPosition)) {
-      return haversineDistance(
-        [homePosition.lon, homePosition.lat],
-        [currentPosition.lon, currentPosition.lat]
-      );
+    if (!isNil(homePosition)) {
+      if (!isNil(currentPosition)) {
+        return haversineDistance(
+          [homePosition.lon, homePosition.lat],
+          [currentPosition.lon, currentPosition.lat]
+        );
+      } else {
+        return Number.POSITIVE_INFINITY;
+      }
     }
 
     return undefined;
@@ -150,7 +154,7 @@ export const getDistancesFromHome = (state) => {
   const result = {};
 
   for (const uavId of mapping) {
-    if (isNil(uavId)) {
+    if (isNil(uavId) || !getUAVById(state, uavId)) {
       result[uavId] = undefined;
     } else {
       result[uavId] = getXYDistanceToHomePositionByUavId(state, uavId);
@@ -162,8 +166,8 @@ export const getDistancesFromHome = (state) => {
 
 /**
  * Creates a selector that selects all UAV IDs that are in the mission mapping
- * and that are farther from their designated home than the threshold specified
- * by the user in the UAV settings.
+ * and that either have no position or are farther from their designated home
+ * than the threshold specified by the user in the UAV settings.
  */
 export const getMisplacedUAVIds = createSelector(
   getDistancesFromHome,
