@@ -61,7 +61,7 @@ const environments = {
  * Component that renders a basic scenery in which the drones will be placed.
  */
 const Scenery = ({ grid, scale, type }) => (
-  <a-entity position='0 -0.001 0' scale={`${scale} ${scale} ${scale}`}>
+  <a-entity position='0 -0.02 0' scale={`${scale} ${scale} ${scale}`}>
     {/* Move the floor slightly down to ensure that the coordinate axes are nicely visible */}
     <a-entity
       environment={objectToString({

@@ -125,7 +125,6 @@ const ThreeDView = React.forwardRef((props, ref) => {
         <a-drone-flock />
       </a-entity>
 
-      {/* Move the floor slightly down to ensure that the coordinate axes are nicely visible */}
       <Scenery scale={10} type={`${scenery}-${lighting}`} grid={grid} />
     </a-scene>
   );
