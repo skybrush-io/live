@@ -8,7 +8,10 @@ import Polygon from 'ol/geom/Polygon';
 import { getCenter } from 'ol/extent';
 
 import monotoneConvexHull2D from 'monotone-convex-hull-2d';
-import Offset from 'polygon-offset';
+import turfBuffer from '@turf/buffer';
+import * as TurfHelpers from '@turf/helpers';
+
+import { FlatEarthCoordinateSystem } from './geography';
 
 /**
  * Returns the given number of degrees in radians.
@@ -166,14 +169,29 @@ export const growPolygon = (coordinates, margin) => {
  * least as far from the old one, as given in the margin parameter.
  */
 export const bufferPolygon = (coordinates, margin) => {
-  const offsetAlgorithm = new Offset();
-  const linearRings = offsetAlgorithm.data(coordinates).offset(margin);
+  if (coordinates.length === 0) {
+    return [];
+  }
 
-  // for some reason, the linear ring sometimes becomes concave around the
-  // arcs at the corners. Since the polygon simplification algorithm that we
-  // use later to reduce the vertex count works with convex polygons only,
-  // we take the convex hull again
-  return convexHull(linearRings[0]);
+  const transform = new FlatEarthCoordinateSystem({
+    origin: [0, 0],
+  });
+
+  const geoCoordinates = coordinates.map((coordinate) =>
+    transform.toLonLat(coordinate)
+  );
+  geoCoordinates.push(geoCoordinates[0]);
+
+  const poly = TurfHelpers.polygon([geoCoordinates]);
+  const bufferedPoly = turfBuffer(
+    poly.geometry,
+    margin / 1000 /* Turf.js needs kilometers */
+  );
+
+  const outerLinearRing = bufferedPoly.geometry.coordinates[0].map(
+    (coordinate) => transform.fromLonLat(coordinate)
+  );
+  return convexHull(outerLinearRing);
 };
 
 /**
