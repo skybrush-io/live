@@ -5,6 +5,7 @@
  * to a given remote location using rsync
  */
 
+const { program } = require('commander');
 const execa = require('execa');
 const {
   copy,
@@ -30,22 +31,21 @@ const buildDir = path.resolve(projectRoot, 'build');
 /** The output directory where the release will be built */
 const outputDir = path.resolve(projectRoot, 'dist');
 
-const options = require('yargs')
-  .usage('$0 [options] <target>')
-  .option('p', {
-    alias: 'production',
-    default: false,
-    describe: 'whether to build the application in production mode',
-    type: 'boolean',
-  })
-  .option('variant', {
-    default: 'default',
-    describe:
-      'specifies the application variant to compile ("default" or "light")',
-  })
-  .help('h')
-  .alias('h', 'help')
-  .version(false).argv;
+program
+  .storeOptionsAsProperties(false)
+  .option(
+    '-p, --production',
+    'whether to build the application in production mode'
+  )
+  .option(
+    '-v, --variant',
+    'specifies the application variant to compile ("default" or "light")'
+  )
+  .parse(process.argv);
+
+const options = program.opts();
+
+options.variant = options.variant || 'default';
 
 async function loadAppConfig() {
   const result = await readJson(path.resolve(projectRoot, 'package.json'));

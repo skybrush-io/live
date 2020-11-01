@@ -37,6 +37,7 @@
     "@material-ui/lab": "^4.0.0-alpha.40",
     "@material-ui/pickers": "^3.2.10",
     "@reduxjs/toolkit": "^1.4.0",
+    "@skybrush/electron-app-framework": "^1.0.1",
     "@tippyjs/react": "^4.2.0",
     "@turf/buffer": "^5.1.5",
     "@turf/helpers": "^6.1.4",
@@ -143,8 +144,7 @@
     "use-resize-observer": "^6.1.0",
     "whatwg-fetch": "^3.4.1",
     "which": "^2.0.2",
-    "xo": "^0.34.1",
-    "yargs": "^16.1.0"
+    "xo": "^0.34.1"
   },
   "devDependencies": {
     "@babel/core": "^7.12.3",

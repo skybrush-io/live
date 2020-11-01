@@ -91,4 +91,4 @@ if (is.development) {
   });
 }
 
-module.exports = (app) => Menu.buildFromTemplate(template);
+module.exports = () => Menu.buildFromTemplate(template);

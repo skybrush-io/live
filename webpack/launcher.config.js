@@ -16,8 +16,5 @@ module.exports = merge(baseConfig, {
 
   plugins,
 
-  // Prevent warnings arising from the usage of require() in yargs
-  stats: { warnings: false },
-
   target: 'electron-main',
 });
