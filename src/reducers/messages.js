@@ -6,8 +6,8 @@
 import { handleActions } from 'redux-actions';
 import u from 'updeep';
 
-import { extendWith } from '../utils/operators';
-import { MessageType } from '../model/messages';
+import { MessageType } from '~/model/messages';
+import { extendWith } from '~/utils/operators';
 
 /**
  * Default content of the message history in the state object.
@@ -206,7 +206,7 @@ const reducer = handleActions(
       );
     },
 
-    CLEAR_MESSAGES_OF_SELECTED_UAV(state, action) {
+    CLEAR_MESSAGES_OF_SELECTED_UAV(state) {
       const { selectedUAVId } = state;
       const messageIdsForUAV = getMessageIdsForUAV(state, selectedUAVId);
       return u(
@@ -220,6 +220,21 @@ const reducer = handleActions(
 
     SELECT_UAV_IN_MESSAGES_DIALOG: (state, action) =>
       Object.assign({}, state, { selectedUAVId: action.payload || null }),
+
+    // Actions owner by other reducers that we also react to
+
+    /*
+    [SET_SELECTED_FEATURES]: (state, action) => {
+      if (Array.isArray(action.payload) && action.payload.length === 1) {
+        const uavId = globalIdToUavId(action.payload[0]);
+        if (uavId) {
+          return u({ selectedUAVId: uavId }, state);
+        }
+      }
+
+      return state;
+    },
+    */
   },
   defaultState
 );

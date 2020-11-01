@@ -1,9 +1,7 @@
-import hungarianAlgorithm from 'hungarian-on3';
-import identity from 'lodash-es/identity';
 import isNil from 'lodash-es/isNil';
-import property from 'lodash-es/property';
 import { getDistance as haversineDistance } from 'ol/sphere';
 
+import { findAssignmentInDistanceMatrix } from './matching';
 import {
   getEmptyMappingSlotIndices,
   getGPSBasedHomePositionsInMission,
@@ -24,33 +22,15 @@ import {
   getUnmappedUAVIds,
 } from '~/features/uavs/selectors';
 import messageHub from '~/message-hub';
-
-/**
- * Create a distance matrix between two arrays.
- */
-function calculateDistanceMatrix(sources, targets, { getter = null } = {}) {
-  if (!getter) {
-    getter = identity;
-  } else if (typeof getter === 'string') {
-    getter = property(getter);
-  }
-
-  const sourcePositions = sources.map(getter);
-  const targetPositions = targets.map(getter);
-
-  return sourcePositions.map((source) =>
-    targetPositions.map((target) => haversineDistance(source, target))
-  );
-}
+import { calculateDistanceMatrix } from '~/utils/math';
 
 /**
  * Thunk that fills the empty slots in the current mapping from the spare drones
  * that are not assigned to a mapping slot yet.
  */
-export const augmentMappingAutomaticallyFromSpareDrones = () => (
-  dispatch,
-  getState
-) => {
+export const augmentMappingAutomaticallyFromSpareDrones = ({
+  algorithm = 'greedy',
+} = {}) => (dispatch, getState) => {
   const state = getState();
 
   const emptySlots = getEmptyMappingSlotIndices(state);
@@ -71,8 +51,29 @@ export const augmentMappingAutomaticallyFromSpareDrones = () => (
   }));
 
   const getter = (item) => [item.position.lat, item.position.lon];
-  const distances = calculateDistanceMatrix(sources, targets, { getter });
-  const matching = hungarianAlgorithm(distances);
+
+  // Sources are the drones; targets are the takeoff positions.
+  //
+  // The apparently clever solution (Hungarian algorithm) is not that clever in
+  // practice; for instance, if all drones but one are aligned exactly and one
+  // drone is moved from its place at one end of a line to the _opposite_ end,
+  // slightly outside the line, the algorithm will propose to shift all drones
+  // in that line by one slot instead of saying that all the drones are in place
+  // except one.
+  //
+  // We use a greedy algorithm instead; we calculate all distance pairs, find
+  // the smallest distance, perform the assignment, exclude all distance pairs
+  // belonging to the chosen drone and takeoff position, and continue until
+  // we have no drones or no takeoff positions left.
+
+  const distances = calculateDistanceMatrix(sources, targets, {
+    distanceFunction: haversineDistance,
+    getter,
+  });
+  const matching = findAssignmentInDistanceMatrix(distances, {
+    algorithm: 'greedy',
+    threshold: 3 /* meters */,
+  });
 
   const newMapping = [...getMissionMapping(state)];
   for (const [sourceIndex, targetIndex] of matching) {

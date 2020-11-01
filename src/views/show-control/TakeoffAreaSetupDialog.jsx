@@ -4,7 +4,6 @@ import { connect } from 'react-redux';
 
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -14,10 +13,7 @@ import VerticalAlignBottom from '@material-ui/icons/VerticalAlignBottom';
 import DronePlaceholderList from './DronePlaceholderList';
 
 import DraggableDialog from '~/components/dialogs/DraggableDialog';
-import {
-  addVirtualDronesForMission,
-  augmentMappingAutomaticallyFromSpareDrones,
-} from '~/features/mission/actions';
+import { addVirtualDronesForMission } from '~/features/mission/actions';
 import {
   getEmptyMappingSlotIndices,
   hasNonemptyMappingSlot,
@@ -249,10 +245,6 @@ export default connect(
     onApprove() {
       dispatch(approveTakeoffArea());
       setTimeout(() => dispatch(closeTakeoffAreaSetupDialog()), 300);
-    },
-
-    onAutomap() {
-      dispatch(augmentMappingAutomaticallyFromSpareDrones());
     },
 
     onClose() {

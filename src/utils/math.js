@@ -1,5 +1,7 @@
+import identity from 'lodash-es/identity';
 import multiply from 'lodash-es/multiply';
 import minBy from 'lodash-es/minBy';
+import property from 'lodash-es/property';
 import range from 'lodash-es/range';
 import sum from 'lodash-es/sum';
 import zipWith from 'lodash-es/zipWith';
@@ -108,10 +110,67 @@ export const toPolar = ({ x, y }) => ({
   radius: Math.sqrt(x ** 2 + y ** 2),
 });
 
+/**
+ * Create a distance matrix between two arrays.
+ */
+export function calculateDistanceMatrix(
+  sources,
+  targets,
+  { distanceFunction, getter } = {}
+) {
+  if (!getter) {
+    getter = identity;
+  } else if (typeof getter === 'string') {
+    getter = property(getter);
+  }
+
+  if (!distanceFunction) {
+    distanceFunction = euclideanDistance;
+  }
+
+  const sourcePositions = sources.map(getter);
+  const targetPositions = targets.map(getter);
+
+  return sourcePositions.map((source) =>
+    targetPositions.map((target) => distanceFunction(source, target))
+  );
+}
+
 // export const dotProduct1 = ([x1, y1], [x2, y2]) => x1 * x2 + y1 * y2;
 // export const dotProduct2 = (a, b) => sum(zipWith(a, b, (a, b) => a * b));
 // export const dotProduct3 = (a, b) => sum(zipWith(a, b, multiply));
 export const dotProduct = (a, b) => sum(zipWith(a, b, multiply));
+
+/**
+ * Creates a distance function that calculates distances based on the given
+ * L-norm. L = 1 is the taxicab distance; L = 2 is the standard Euclidean
+ * norm; L = infinity is the maximum norm.
+ */
+export const createDistanceFunction = (norm = 2) => {
+  if (norm <= 0) {
+    throw new Error('norm must be positive');
+  }
+  if (norm === Number.POSITIVE_INFINITY) {
+    return maximumNormDistance;
+  } else {
+    return (a, b) =>
+      Math.pow(
+        sum(zipWith(a, b), (a, b) => Math.pow(Math.abs(a - b), norm)),
+        1 / norm
+      );
+  }
+};
+
+/**
+ * Euclidean distance function between two points.
+ */
+export const euclideanDistance = createDistanceFunction(2);
+
+/**
+ * Maximum norm based distance function between two points.
+ */
+export const maximumNormDistance = (a, b) =>
+  Math.max(zipWith(a, b, (a, b) => Math.abs(a - b)));
 
 /**
  * Returns the 2D convex hull of a set of coordinates.
