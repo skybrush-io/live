@@ -1,6 +1,3 @@
-import TimeAgo from 'javascript-time-ago';
-import en from 'javascript-time-ago/locale/en';
-
 import React from 'react';
 import { render } from 'react-dom';
 
@@ -19,9 +16,6 @@ import 'tippy.js/themes/light-border.css';
 if (process.env.NODE_ENV === 'production') {
   disableReactDevTools();
 }
-
-// Configure TimeAgo
-TimeAgo.addLocale(en);
 
 // Spin up the root saga after the state has been restored.
 waitUntilStateRestored().then(() => {
