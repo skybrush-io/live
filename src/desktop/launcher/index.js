@@ -1,19 +1,13 @@
 const { app, protocol } = require('electron');
 
 const {
-  defaultUnsafeUrlHandler,
   setupApp,
   setupCli,
+  usingWebpackDevServer,
 } = require('@skybrush/electron-app-framework');
 
 const setupIpc = require('./ipc');
 const createAppMenu = require('./app-menu');
-const { isProduction, willUseWebpackDevServer } = require('./utils');
-
-// Trace promisification API progress if we are not in production mode
-if (!isProduction) {
-  process.enablePromiseAPIs = true;
-}
 
 /**
  * Main entry point of the application.
@@ -23,16 +17,6 @@ if (!isProduction) {
 function run(argv) {
   setupApp({
     appMenu: createAppMenu,
-    isUnsafeUrlTrusted: (url) => {
-      if (
-        willUseWebpackDevServer &&
-        url.match(/^(https|wss):\/\/localhost:.*\//)
-      ) {
-        return true;
-      } else {
-        return defaultUnsafeUrlHandler(url);
-      }
-    },
     mainWindow: {
       debug: argv.debug,
       rootDir: __dirname,
@@ -44,7 +28,7 @@ function run(argv) {
   // servers (like our demo server) even if we are using https://, which is
   // the case for our local development setup. Note that this is irrelevant
   // if we are not using Webpack.
-  if (willUseWebpackDevServer) {
+  if (usingWebpackDevServer) {
     protocol.registerSchemesAsPrivileged([
       { scheme: 'ws', privileges: { standard: true, secure: true } },
     ]);
