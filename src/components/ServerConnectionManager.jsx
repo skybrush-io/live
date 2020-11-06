@@ -30,6 +30,7 @@ import {
 import { showNotification } from '~/features/snackbar/slice';
 import { MessageSemantics } from '~/features/snackbar/types';
 import handleError from '~/error-handling';
+import { estimateClockSkewAndRoundTripTime } from '~/flockwave/timesync';
 import messageHub from '~/message-hub';
 import {
   ConnectionState,
@@ -352,14 +353,12 @@ async function executeTasksAfterConnection(dispatch) {
     //
     // TODO(ntamas): later on, we should do this regularly. Take a look at the
     // clockskew package on npm and implement a saga that is similar.
-    response = await messageHub.sendMessage('SYS-TIME');
-    dispatch(
-      setClockSkewInMilliseconds(
-        response.body.timestamp && typeof response.body.timestamp === 'number'
-          ? response.body.timestamp - Date.now()
-          : null
-      )
-    );
+    const {
+      clockSkew,
+      roundTripTime,
+    } = await estimateClockSkewAndRoundTripTime(messageHub);
+
+    dispatch(setClockSkewInMilliseconds(clockSkew));
   } catch (error) {
     console.error(error);
     handleError(error);
