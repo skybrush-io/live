@@ -16,6 +16,7 @@ import { clearClockList } from '~/features/clocks/slice';
 import { clearConnectionList } from '~/features/connections/slice';
 import { clearDockList } from '~/features/docks/slice';
 import { shouldManageLocalServer } from '~/features/local-server/selectors';
+import { getServerUrl } from '~/features/servers/selectors';
 import {
   addServerFeature,
   clearTimeSyncStatistics,
@@ -383,20 +384,6 @@ async function executeTasksAfterDisconnection(dispatch) {
   dispatch(clearStartTimeAndMethod());
   dispatch(clearTimeSyncStatistics());
 }
-
-/**
- * Selector that returns a unique URL that fully identifies the server we are
- * trying to connect to.
- */
-const getServerUrl = createSelector(
-  (state) => state.dialogs.serverSettings.hostName,
-  (state) => state.dialogs.serverSettings.port,
-  (state) => state.dialogs.serverSettings.isSecure,
-  (hostName, port, isSecure) => {
-    const protocol = isSecure ? 'https:' : 'http:';
-    return hostName ? `${protocol}//${hostName}:${port}` : undefined;
-  }
-);
 
 const ServerConnectionManager = connect(
   // mapStateToProps

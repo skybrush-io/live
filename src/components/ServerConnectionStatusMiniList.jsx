@@ -13,11 +13,12 @@ import {
   getCurrentServerState,
   getClockSkewInMilliseconds,
   getRoundTripTimeInMilliseconds,
+  getServerHostname,
 } from '~/features/servers/selectors';
 import { ConnectionState } from '~/model/connections';
 
 const connectionStateToPrimaryText = {
-  [ConnectionState.CONNECTED]: 'Connected to server',
+  [ConnectionState.CONNECTED]: 'Connected',
   [ConnectionState.CONNECTING]: 'Connection in progress...',
   [ConnectionState.DISCONNECTED]: 'Disconnected from server',
   [ConnectionState.DISCONNECTING]: 'Disconnection in progress...',
@@ -47,6 +48,7 @@ const ServerConnectionStatusMiniList = ({
   clockSkew,
   connectionState,
   roundTripTime,
+  serverName,
 }) => {
   return (
     <MiniList>
@@ -54,6 +56,9 @@ const ServerConnectionStatusMiniList = ({
         iconPreset={connectionState}
         primaryText={
           connectionStateToPrimaryText[connectionState] || 'Unknown state'
+        }
+        secondaryText={
+          connectionState === ConnectionState.CONNECTED ? serverName : null
         }
       />
       <MiniListDivider />
@@ -89,6 +94,7 @@ export default connect(
     connectionState: getCurrentServerState(state).state,
     clockSkew: getClockSkewInMilliseconds(state),
     roundTripTime: getRoundTripTimeInMilliseconds(state),
+    serverName: getServerHostname(state),
   }),
   {}
 )(ServerConnectionStatusMiniList);

@@ -28,6 +28,36 @@ export const getRoundTripTimeInMilliseconds = (state) =>
   state.servers.current.timeSync.roundTripTime;
 
 /**
+ * Selector that returns the hostname of the server that the user is
+ * connected or or that the user is trying to connect to.
+ */
+export const getServerHostname = (state) =>
+  state.dialogs.serverSettings.hostName;
+
+/**
+ * Selector that returns the hostname and port of the server that the user is
+ * connected or or that the user is trying to connect to.
+ */
+export const getServerHostnameAndPort = createSelector(
+  (state) => state.dialogs.serverSettings,
+  ({ hostName, port }) => {
+    return hostName ? `${hostName}:${port}` : undefined;
+  }
+);
+
+/**
+ * Selector that returns a unique URL that fully identifies the server we are
+ * trying to connect to.
+ */
+export const getServerUrl = createSelector(
+  (state) => state.dialogs.serverSettings,
+  ({ hostName, port, isSecure }) => {
+    const protocol = isSecure ? 'https:' : 'http:';
+    return hostName ? `${protocol}//${hostName}:${port}` : undefined;
+  }
+);
+
+/**
  * Returns all the information that we know about the current Skybrush server.
  *
  * @param  {Object}  state  the state of the application
