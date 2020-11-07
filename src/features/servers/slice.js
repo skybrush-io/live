@@ -49,9 +49,12 @@ const { actions, reducer } = createSlice({
   initialState: {
     current: {
       authentication: INVALID,
-      clockSkew: null,
       features: {},
       state: ConnectionState.DISCONNECTED,
+      timeSync: {
+        clockSkew: null,
+        roundTripTime: null,
+      },
     },
     isAuthenticating: false,
     isScanning: false,
@@ -129,18 +132,21 @@ const { actions, reducer } = createSlice({
     },
 
     /**
-     * Clears the stored clock skew of the server.
-     */
-    clearClockSkew(state) {
-      state.current.clockSkew = null;
-    },
-
-    /**
      * Clears the list of features that we know are supported on the server that
      * we are connected to.
      */
     clearServerFeatures(state) {
       state.current.features = {};
+    },
+
+    /**
+     * Clears the time synchronization related statistics of the current server.
+     */
+    clearTimeSyncStatistics(state) {
+      state.current.timeSync = {
+        clockSkew: null,
+        roundTripTime: null,
+      };
     },
 
     /**
@@ -163,15 +169,23 @@ const { actions, reducer } = createSlice({
     },
 
     /**
-     * Action factory that sets the clock skew of the current server.
+     * Action factory that sets the time synchronization related statistics
+     * of the current server.
      *
-     * Positive numbers mean that the server is "ahead us", negative numbers
-     * mean that the server is "behind".
+     * The payload must have two keys: `clockSkew` and `roundTripTime`. For the
+     * clock skew, positive numbers mean that the server is "ahead us", negative
+     * numbers mean that the server is "behind".
      */
-    setClockSkewInMilliseconds(state, action) {
-      const skew = action.payload;
-      state.current.clockSkew =
-        typeof skew === 'number' && Number.isFinite(skew) ? skew : null;
+    setTimeSyncStatistics(state, action) {
+      const { clockSkew, roundTripTime } = action.payload;
+      state.current.timeSync.clockSkew =
+        typeof clockSkew === 'number' && Number.isFinite(clockSkew)
+          ? clockSkew
+          : null;
+      state.current.timeSync.roundTripTime =
+        typeof roundTripTime === 'number' && Number.isFinite(roundTripTime)
+          ? roundTripTime
+          : null;
     },
 
     /**
@@ -259,12 +273,12 @@ export const {
   authenticateToServerPromiseRejected,
   clearAuthenticatedUser,
   clearAuthenticationToken,
-  clearClockSkew,
   clearServerFeatures,
+  clearTimeSyncStatistics,
   removeAllDetectedServers,
   setAuthenticatedUser,
-  setClockSkewInMilliseconds,
   setCurrentServerConnectionState,
+  setTimeSyncStatistics,
   startScanning,
   stopScanning,
   updateCurrentServerAuthenticationSettings,

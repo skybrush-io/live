@@ -11,7 +11,7 @@ import ListItem from '@material-ui/core/ListItem';
 
 import BackgroundHint from '~/components/BackgroundHint';
 import StatusPill from '~/components/StatusPill';
-import TransparentList from '~/components/TransparentList';
+import MiniList from '~/components/mini-list/MiniList';
 import { listOf } from '~/components/helpers/lists';
 import { Status } from '~/components/semantics';
 
@@ -80,14 +80,12 @@ const UAVStatusMiniList = listOf(UAVStatusMiniListEntry, {
   backgroundHint: (
     <BackgroundHint text='There are no connected UAVs at the moment' />
   ),
-  listFactory: partial(React.createElement, TransparentList),
+  listFactory: partial(React.createElement, MiniList),
 });
 
 export default connect(
   (state) => ({
-    dense: true,
-    disablePadding: true,
     items: getListItems(state),
   }),
-  () => ({})
+  {}
 )(UAVStatusMiniList);

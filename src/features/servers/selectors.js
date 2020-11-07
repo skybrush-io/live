@@ -18,7 +18,14 @@ export const getAuthenticationToken = (state) =>
  *
  * Positive numbers mean that the server is "ahead" us.
  */
-export const getClockSkewInMilliseconds = (state) => state.servers.current.clockSkew;
+export const getClockSkewInMilliseconds = (state) =>
+  state.servers.current.timeSync.clockSkew;
+
+/**
+ * Returns the estimated round-trip time between us and the server, in milliseconds.
+ */
+export const getRoundTripTimeInMilliseconds = (state) =>
+  state.servers.current.timeSync.roundTripTime;
 
 /**
  * Returns all the information that we know about the current Skybrush server.
@@ -27,7 +34,7 @@ export const getClockSkewInMilliseconds = (state) => state.servers.current.clock
  * @return {Object} all the information that we know about the current Skybrush
  *     server, directly from the state object
  */
-const getCurrentServerState = (state) => state.servers.current;
+export const getCurrentServerState = (state) => state.servers.current;
 
 /**
  * Returns the list of features that we know are supported by the current

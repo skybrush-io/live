@@ -18,9 +18,9 @@ import { clearDockList } from '~/features/docks/slice';
 import { shouldManageLocalServer } from '~/features/local-server/selectors';
 import {
   addServerFeature,
-  clearClockSkew,
+  clearTimeSyncStatistics,
   clearServerFeatures,
-  setClockSkewInMilliseconds,
+  setTimeSyncStatistics,
   setCurrentServerConnectionState,
 } from '~/features/servers/slice';
 import {
@@ -51,6 +51,8 @@ class LocalServerExecutor extends React.Component {
   };
 
   constructor() {
+    super();
+
     this._events = undefined;
     this._processIsRunning = false;
 
@@ -353,12 +355,10 @@ async function executeTasksAfterConnection(dispatch) {
     //
     // TODO(ntamas): later on, we should do this regularly. Take a look at the
     // clockskew package on npm and implement a saga that is similar.
-    const {
-      clockSkew,
-      roundTripTime,
-    } = await estimateClockSkewAndRoundTripTime(messageHub);
-
-    dispatch(setClockSkewInMilliseconds(clockSkew));
+    const timesyncStats = await estimateClockSkewAndRoundTripTime(messageHub, {
+      method: 'threshold',
+    });
+    dispatch(setTimeSyncStatistics(timesyncStats));
   } catch (error) {
     console.error(error);
     handleError(error);
@@ -377,11 +377,11 @@ async function executeTasksAfterConnection(dispatch) {
  */
 async function executeTasksAfterDisconnection(dispatch) {
   dispatch(clearClockList());
-  dispatch(clearClockSkew());
   dispatch(clearConnectionList());
   dispatch(clearDockList());
   dispatch(clearServerFeatures());
   dispatch(clearStartTimeAndMethod());
+  dispatch(clearTimeSyncStatistics());
 }
 
 /**
