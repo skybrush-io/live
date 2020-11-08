@@ -11,7 +11,7 @@ import {
 import { MAX_ROUNDTRIP_TIME } from '~/features/servers/constants';
 import {
   getCurrentServerState,
-  getClockSkewInMilliseconds,
+  getRoundedClockSkewInMilliseconds,
   getRoundTripTimeInMilliseconds,
   getServerHostname,
 } from '~/features/servers/selectors';
@@ -49,50 +49,43 @@ const ServerConnectionStatusMiniList = ({
   connectionState,
   roundTripTime,
   serverName,
-}) => {
-  return (
-    <MiniList>
-      <MiniListItem
-        iconPreset={connectionState}
-        primaryText={
-          connectionStateToPrimaryText[connectionState] || 'Unknown state'
-        }
-        secondaryText={
-          connectionState === ConnectionState.CONNECTED ? serverName : null
-        }
-      />
-      {connectionState === ConnectionState.CONNECTED ? (
-        <>
-          <MiniListDivider />
-          {!isNil(clockSkew) &&
-          !isNil(roundTripTime) &&
-          roundTripTime <= MAX_ROUNDTRIP_TIME &&
-          Math.abs(clockSkew) <= roundTripTime / 2 ? (
-            <MiniListItem
-              iconPreset='success'
-              primaryText='Clocks synchronized'
-            />
-          ) : (
-            <MiniListItem
-              iconPreset={
-                Math.abs(clockSkew) > roundTripTime / 2 ? 'warning' : 'empty'
-              }
-              primaryText='Clock skew'
-              secondaryText={formatDurationInMsec(clockSkew)}
-            />
-          )}
+}) => (
+  <MiniList>
+    <MiniListItem
+      iconPreset={connectionState}
+      primaryText={
+        connectionStateToPrimaryText[connectionState] || 'Unknown state'
+      }
+      secondaryText={
+        connectionState === ConnectionState.CONNECTED ? serverName : null
+      }
+    />
+    {connectionState === ConnectionState.CONNECTED ? (
+      <>
+        <MiniListDivider />
+        {clockSkew === 0 ? (
+          <MiniListItem
+            iconPreset='success'
+            primaryText='Clocks synchronized'
+          />
+        ) : (
           <MiniListItem
             iconPreset={
-              roundTripTime > MAX_ROUNDTRIP_TIME ? 'warning' : 'empty'
+              Math.abs(clockSkew) > roundTripTime / 2 ? 'warning' : 'empty'
             }
-            primaryText='Round-trip time'
-            secondaryText={formatDurationInMsec(roundTripTime)}
+            primaryText='Clock skew'
+            secondaryText={formatDurationInMsec(clockSkew)}
           />
-        </>
-      ) : null}
-    </MiniList>
-  );
-};
+        )}
+        <MiniListItem
+          iconPreset={roundTripTime > MAX_ROUNDTRIP_TIME ? 'warning' : 'empty'}
+          primaryText='Round-trip time'
+          secondaryText={formatDurationInMsec(roundTripTime)}
+        />
+      </>
+    ) : null}
+  </MiniList>
+);
 
 ServerConnectionStatusMiniList.propTypes = {
   clockSkew: PropTypes.number,
@@ -104,7 +97,7 @@ ServerConnectionStatusMiniList.propTypes = {
 export default connect(
   (state) => ({
     connectionState: getCurrentServerState(state).state,
-    clockSkew: getClockSkewInMilliseconds(state),
+    clockSkew: getRoundedClockSkewInMilliseconds(state),
     roundTripTime: getRoundTripTimeInMilliseconds(state),
     serverName: getServerHostname(state),
   }),

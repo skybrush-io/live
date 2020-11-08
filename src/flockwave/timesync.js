@@ -37,6 +37,7 @@ export async function estimateClockSkewAndRoundTripTime(
       bestResult.roundTripTime > MAX_ROUNDTRIP_TIME
     ) {
       numberOfTriesLeft--;
+      // eslint-disable-next-line no-await-in-loop
       nextResult = await attempt();
       if (nextResult.roundTripTime < bestResult.roundTripTime) {
         bestResult = nextResult;

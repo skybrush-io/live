@@ -12,6 +12,7 @@ const clockIdToProps = {
   system: {
     label: 'Server clock',
     abbreviation: 'SRV',
+    affectedByClockSkew: true,
   },
 
   __local__: {
@@ -23,6 +24,7 @@ const clockIdToProps = {
     label: 'Mission clock',
     abbreviation: 'MSN',
     signed: true,
+    affectedByClockSkew: true,
   },
 
   mtc: {
@@ -34,6 +36,7 @@ const clockIdToProps = {
     label: 'Drone show clock',
     abbreviation: 'SHOW',
     signed: true,
+    affectedByClockSkew: true,
   },
 };
 
@@ -118,8 +121,22 @@ export function formatTicksOnClock(ticks, clock, options) {
  * @return {number} the number of ticks on the clock; possibly fractional
  */
 export function getCurrentTickCountOnClock(clock) {
+  return getTickCountOnClockAt(clock, Date.now());
+}
+
+/**
+ * Returns the (possibly fractional) tick count on the clock at the given UNIX
+ * timestamp.
+ *
+ * This function takes into account the time elapsed since the reference time
+ * of the clock and whether it is running or not.
+ *
+ * @param {object} clock  the clock object
+ * @return {number} the number of ticks on the clock; possibly fractional
+ */
+export function getTickCountOnClockAt(clock, timestamp) {
   const { referenceTime, running, ticks, ticksPerSecond } = clock;
-  const elapsed = running ? (Date.now() - referenceTime) / 1000 : 0;
+  const elapsed = running ? (timestamp - referenceTime) / 1000 : 0;
   return ticks + elapsed * ticksPerSecond;
 }
 
@@ -144,6 +161,15 @@ export function getPreferredUpdateIntervalOfClock(clock) {
   }
 
   return 1000;
+}
+
+/**
+ * Returns whether the given clock is affected by the clock skew between the
+ * server and the client.
+ */
+export function isClockAffectedByClockSkew(clock) {
+  const props = clock ? clockIdToProps[clock.id] : null;
+  return props ? props.affectedByClockSkew : false;
 }
 
 /**

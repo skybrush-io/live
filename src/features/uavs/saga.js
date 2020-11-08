@@ -10,7 +10,7 @@ import {
   updateUAVs,
 } from './slice';
 
-import { getClockSkewInMilliseconds } from '~/features/servers/selectors';
+import { getRoundedClockSkewInMilliseconds } from '~/features/servers/selectors';
 import { getUAVAgingThresholds } from '~/features/settings/selectors';
 import { UAVAge } from '~/model/uav';
 
@@ -212,7 +212,7 @@ function* uavAgingSaga() {
 
     const uavs = yield select((state) => state.uavs.byId);
     const uavIds = yield select((state) => state.uavs.order);
-    const clockSkew = (yield select(getClockSkewInMilliseconds)) || 0;
+    const clockSkew = (yield select(getRoundedClockSkewInMilliseconds)) || 0;
     const thresholds = yield select(getUAVAgingThresholds);
 
     const now = Date.now() + clockSkew;

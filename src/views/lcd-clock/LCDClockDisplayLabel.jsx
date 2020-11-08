@@ -1,3 +1,4 @@
+import isNil from 'lodash-es/isNil';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
@@ -8,21 +9,27 @@ import LCDText from './LCDText';
 import { getClockById } from '~/features/clocks/selectors';
 import {
   formatTicksOnClock,
-  getCurrentTickCountOnClock,
   getPreferredUpdateIntervalOfClock,
+  getTickCountOnClockAt,
+  isClockAffectedByClockSkew,
   isClockSigned,
 } from '~/features/clocks/utils';
+import { getRoundedClockSkewInMilliseconds } from '~/features/servers/selectors';
 
 const LCDClockDisplayLabel = ({
+  affectedByClockSkew,
   clock,
   clockId,
+  clockSkew,
   format,
   signed,
   updateInterval,
   ...rest
 }) => {
   const { running } = clock || {};
-  const ticks = clock ? getCurrentTickCountOnClock(clock) : undefined;
+  const timestamp =
+    Date.now() + (affectedByClockSkew && !isNil(clockSkew) ? clockSkew : 0);
+  const ticks = clock ? getTickCountOnClockAt(clock, timestamp) : undefined;
   let formattedTime =
     ticks === undefined
       ? '--:--:--'
@@ -40,8 +47,10 @@ const LCDClockDisplayLabel = ({
 };
 
 LCDClockDisplayLabel.propTypes = {
+  affectedByClockSkew: PropTypes.bool,
   clock: PropTypes.object,
   clockId: PropTypes.string,
+  clockSkew: PropTypes.number,
   format: PropTypes.string,
   signed: PropTypes.bool,
   updateInterval: PropTypes.number,
@@ -56,8 +65,10 @@ export default connect(
   (state, ownProps) => {
     const clock = getClockById(state, ownProps.clockId);
     const signed = isClockSigned(clock);
+    const affectedByClockSkew = isClockAffectedByClockSkew(clock);
     const updateInterval = getPreferredUpdateIntervalOfClock(clock);
-    return { clock, signed, updateInterval };
+    const clockSkew = getRoundedClockSkewInMilliseconds(state);
+    return { affectedByClockSkew, clock, clockSkew, signed, updateInterval };
   },
   // mapDispatchToProps
   {}

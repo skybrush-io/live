@@ -1,5 +1,7 @@
+import isNil from 'lodash-es/isNil';
 import { createSelector } from '@reduxjs/toolkit';
 
+import { MAX_ROUNDTRIP_TIME } from './constants';
 import { INVALID } from './slice';
 import { ConnectionState } from '~/model/connections';
 import { selectOrdered } from '~/utils/collections';
@@ -20,6 +22,23 @@ export const getAuthenticationToken = (state) =>
  */
 export const getClockSkewInMilliseconds = (state) =>
   state.servers.current.timeSync.clockSkew;
+
+/**
+ * Returns the estimated clock skew between us and the server, in milliseconds,
+ * if it is significant enough, otherwise return zero.
+ *
+ * Positive numbers mean that the server is "ahead" us.
+ */
+export const getRoundedClockSkewInMilliseconds = createSelector(
+  (state) => state.servers.current.timeSync,
+  ({ clockSkew, roundTripTime }) =>
+    !isNil(clockSkew) &&
+    !isNil(roundTripTime) &&
+    roundTripTime <= MAX_ROUNDTRIP_TIME &&
+    Math.abs(clockSkew) <= roundTripTime / 2
+      ? 0
+      : clockSkew
+);
 
 /**
  * Returns the estimated round-trip time between us and the server, in milliseconds.

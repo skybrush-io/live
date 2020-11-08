@@ -10,6 +10,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import PlayArrow from '@material-ui/icons/PlayArrow';
 import Stop from '@material-ui/icons/Stop';
 
+import isNil from 'lodash-es/isNil';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { useHarmonicIntervalFn, useUpdate } from 'react-use';
@@ -20,7 +21,7 @@ import { getClocksWithUpdateIntervalsInOrder } from '~/features/clocks/selectors
 import {
   formatClockLabel,
   formatTicksOnClock,
-  getCurrentTickCountOnClock,
+  getTickCountOnClockAt,
 } from '~/features/clocks/utils';
 
 /**
@@ -38,11 +39,18 @@ const avatars = [
 /**
  * Presentation component for showing the state of a single Skybrush clock.
  */
-const ClockDisplayListEntry = ({ clock, format }) => {
+const ClockDisplayListEntry = ({
+  affectedByClockSkew,
+  clock,
+  clockSkew,
+  format,
+}) => {
   const { running, updateInterval } = clock;
   const avatar = avatars[running ? 1 : 0];
   const label = formatClockLabel(clock);
-  const ticks = getCurrentTickCountOnClock(clock);
+  const timestamp =
+    Date.now() + (affectedByClockSkew && !isNil(clockSkew) ? clockSkew : 0);
+  const ticks = getTickCountOnClockAt(clock, timestamp);
   const formattedTime = formatTicksOnClock(ticks, clock, { format });
   const update = useUpdate();
 
@@ -57,6 +65,12 @@ const ClockDisplayListEntry = ({ clock, format }) => {
 };
 
 ClockDisplayListEntry.propTypes = {
+  /**
+   * Whether the clock is affected by the clock skew between the client and
+   * the server we are connected to.
+   */
+  affectedByClockSkew: PropTypes.bool,
+
   clock: PropTypes.shape({
     /** The epoch time of the clock, i.e. the number of seconds since the
      * UNIX epoch when the tick count of the clock was zero. If this is
@@ -91,11 +105,16 @@ ClockDisplayListEntry.propTypes = {
     updateInterval: PropTypes.number.isRequired,
   }),
 
+  /** The clock skew between ourselves and the server we are connected to, if known */
+  clockSkew: PropTypes.number,
+
   /** The format to use for displaying the clock value */
   format: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
 };
 
 ClockDisplayListEntry.defaultProps = {
+  affectedByClockSkew: false,
+  clockSkew: 0,
   format: 'yyyy-MM-dd HH:mm:ss xx',
 };
 
