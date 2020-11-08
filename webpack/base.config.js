@@ -30,8 +30,6 @@ module.exports = {
   },
 
   plugins: [
-    new webpack.NoEmitOnErrorsPlugin(),
-
     // The next module is needed for golden-layout to work nicely
     new webpack.ProvidePlugin({
       ReactDOM: 'react-dom',
