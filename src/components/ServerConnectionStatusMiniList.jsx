@@ -61,24 +61,35 @@ const ServerConnectionStatusMiniList = ({
           connectionState === ConnectionState.CONNECTED ? serverName : null
         }
       />
-      <MiniListDivider />
-      {!isNil(clockSkew) &&
-      !isNil(roundTripTime) &&
-      roundTripTime <= MAX_ROUNDTRIP_TIME &&
-      clockSkew <= roundTripTime / 2 ? (
-        <MiniListItem iconPreset='success' primaryText='Clocks synchronized' />
-      ) : (
-        <MiniListItem
-          iconPreset={clockSkew > roundTripTime / 2 ? 'warning' : 'empty'}
-          primaryText='Clock skew'
-          secondaryText={formatDurationInMsec(clockSkew)}
-        />
-      )}
-      <MiniListItem
-        iconPreset={roundTripTime > MAX_ROUNDTRIP_TIME ? 'warning' : 'empty'}
-        primaryText='Round-trip time'
-        secondaryText={formatDurationInMsec(roundTripTime)}
-      />
+      {connectionState === ConnectionState.CONNECTED ? (
+        <>
+          <MiniListDivider />
+          {!isNil(clockSkew) &&
+          !isNil(roundTripTime) &&
+          roundTripTime <= MAX_ROUNDTRIP_TIME &&
+          Math.abs(clockSkew) <= roundTripTime / 2 ? (
+            <MiniListItem
+              iconPreset='success'
+              primaryText='Clocks synchronized'
+            />
+          ) : (
+            <MiniListItem
+              iconPreset={
+                Math.abs(clockSkew) > roundTripTime / 2 ? 'warning' : 'empty'
+              }
+              primaryText='Clock skew'
+              secondaryText={formatDurationInMsec(clockSkew)}
+            />
+          )}
+          <MiniListItem
+            iconPreset={
+              roundTripTime > MAX_ROUNDTRIP_TIME ? 'warning' : 'empty'
+            }
+            primaryText='Round-trip time'
+            secondaryText={formatDurationInMsec(roundTripTime)}
+          />
+        </>
+      ) : null}
     </MiniList>
   );
 };
@@ -87,6 +98,7 @@ ServerConnectionStatusMiniList.propTypes = {
   clockSkew: PropTypes.number,
   connectionState: PropTypes.string,
   roundTripTime: PropTypes.number,
+  serverName: PropTypes.string,
 };
 
 export default connect(
