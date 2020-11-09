@@ -92,6 +92,10 @@ const useStyles = makeStyles(
       color: theme.palette.getContrastText(Colors.error),
     },
 
+    gone: {
+      opacity: 0.5,
+    },
+
     hint: {
       fontSize: '0.75rem',
       color: theme.palette.text.hint,
@@ -140,6 +144,7 @@ const DroneAvatarPresentation = ({
   crossed,
   details,
   editing,
+  gone,
   id,
   label,
   progress,
@@ -160,7 +165,13 @@ const DroneAvatarPresentation = ({
   return (
     <>
       {effectiveHint && <div className={classes.hint}>{effectiveHint}</div>}
-      <div className={clsx(classes.avatarWrapper, crossed && 'crossed')}>
+      <div
+        className={clsx(
+          classes.avatarWrapper,
+          crossed && 'crossed',
+          gone && classes.gone
+        )}
+      >
         <Avatar
           className={clsx(
             classes.avatar,
@@ -196,6 +207,7 @@ DroneAvatarPresentation.propTypes = {
   crossed: PropTypes.bool,
   details: PropTypes.string,
   editing: PropTypes.bool,
+  gone: PropTypes.bool,
   id: PropTypes.string,
   label: PropTypes.string,
   progress: PropTypes.number,

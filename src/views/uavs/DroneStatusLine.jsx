@@ -75,6 +75,9 @@ const useStyles = makeStyles(
       marginBottom: [-4, '!important'],
       whiteSpace: 'pre',
     },
+    gone: {
+      opacity: 0.5,
+    },
     muted: {
       color: theme.palette.text.disabled,
     },
@@ -117,6 +120,7 @@ const DroneStatusLine = ({
   editing,
   heading,
   headingDeviation,
+  gone,
   gpsFixType,
   id,
   label,
@@ -129,7 +133,7 @@ const DroneStatusLine = ({
 }) => {
   const classes = useStyles();
   return (
-    <div className={classes.root}>
+    <div className={clsx(classes.root, gone && classes.gone)}>
       {padStart(label, 4)}
       <span className={classes.muted}>
         {padStart(!editing && id !== label ? id : '', 4)}
@@ -211,6 +215,7 @@ DroneStatusLine.propTypes = {
   debugString: PropTypes.string,
   details: PropTypes.string,
   editing: PropTypes.bool,
+  gone: PropTypes.bool,
   gpsFixType: PropTypes.number,
   heading: PropTypes.number,
   headingDeviation: PropTypes.number,

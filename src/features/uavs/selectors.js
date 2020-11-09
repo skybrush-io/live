@@ -132,9 +132,9 @@ export const getXYDistanceToHomePositionByUavId = createCachedSelector(
           [homePosition.lon, homePosition.lat],
           [currentPosition.lon, currentPosition.lat]
         );
-      } else {
-        return Number.POSITIVE_INFINITY;
       }
+
+      return Number.POSITIVE_INFINITY;
     }
 
     return undefined;
@@ -492,7 +492,13 @@ export function getSingleUAVStatusSummary(uav) {
     status = getSingleUAVStatusLevel(uav);
   }
 
-  return { status, details: details || text, text, textSemantics };
+  return {
+    status,
+    details: details || text,
+    gone: uav ? uav.age === UAVAge.GONE || uav.age === UAVAge.INACTIVE : false,
+    text,
+    textSemantics,
+  };
 }
 
 export const createSingleUAVStatusSummarySelector = () =>
