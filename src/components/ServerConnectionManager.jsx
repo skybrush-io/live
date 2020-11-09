@@ -3,6 +3,7 @@
  * Skybrush server.
  */
 
+import isNil from 'lodash-es/isNil';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
@@ -11,16 +12,23 @@ import { parse } from 'shell-quote';
 import ReactSocket from '@collmot/react-socket';
 
 import { disconnectFromServer } from '~/actions/server-settings';
+import handleError from '~/error-handling';
 import { clearClockList } from '~/features/clocks/slice';
 import { clearConnectionList } from '~/features/connections/slice';
 import { clearDockList } from '~/features/docks/slice';
 import { shouldManageLocalServer } from '~/features/local-server/selectors';
-import { getServerUrl } from '~/features/servers/selectors';
+import { calculateAndStoreClockSkew } from '~/features/servers/actions';
+import {
+  getClockSkewInMilliseconds,
+  getServerUrl,
+  isClockSkewSignificant,
+  isTimeSyncWarningDialogVisible,
+} from '~/features/servers/selectors';
 import {
   addServerFeature,
   clearTimeSyncStatistics,
   clearServerFeatures,
-  setTimeSyncStatistics,
+  openTimeSyncWarningDialog,
   setCurrentServerConnectionState,
 } from '~/features/servers/slice';
 import {
@@ -29,8 +37,6 @@ import {
 } from '~/features/show/slice';
 import { showNotification } from '~/features/snackbar/slice';
 import { MessageSemantics } from '~/features/snackbar/types';
-import handleError from '~/error-handling';
-import { estimateClockSkewAndRoundTripTime } from '~/flockwave/timesync';
 import messageHub from '~/message-hub';
 import {
   ConnectionState,
@@ -38,6 +44,22 @@ import {
 } from '~/model/connections';
 import { handleClockInformationMessage } from '~/model/clocks';
 import { handleDockInformationMessage } from '~/model/docks';
+
+const formatClockSkew = (number) => {
+  if (isNil(number)) {
+    return 'an unknown amount';
+  }
+
+  if (Math.abs(number) < 1000) {
+    return `${number.toFixed(0)}ms`;
+  }
+
+  if (Math.abs(number) <= 30000) {
+    return `${(number / 1000).toFixed(1)}s`;
+  }
+
+  return 'more than 30s';
+};
 
 /**
  * Component that launches a local Skybrush server instance when mounted.
@@ -278,16 +300,14 @@ class ServerConnectionManagerPresentation extends React.Component {
 }
 
 /**
- * Helper function that executes all the tasks that should be executed after
+ * Thunk action that executes all the tasks that should be executed after
  * establishing a new connection to a server.
  *
  * TODO(ntamas): this should eventually be refactored such that we only
  * dispatch an event, and the slices in ~/features/.../slice can subscribe
  * to this event if they want to update themselves when the server connects
- *
- * @param {function} dispatch  the dispatcher function of the Redux store
  */
-async function executeTasksAfterConnection(dispatch) {
+async function executeTasksAfterConnection(dispatch, getState) {
   let response;
 
   try {
@@ -352,13 +372,33 @@ async function executeTasksAfterConnection(dispatch) {
     // overly high skew estimates when the browser loads the JS page and the
     // connection is established right at startup. (We get >500ms skew
     // frequently).
-    //
-    // TODO(ntamas): later on, we should do this regularly. Take a look at the
-    // clockskew package on npm and implement a saga that is similar.
-    const timesyncStats = await estimateClockSkewAndRoundTripTime(messageHub, {
-      method: 'threshold',
-    });
-    dispatch(setTimeSyncStatistics(timesyncStats));
+    await dispatch(
+      calculateAndStoreClockSkew(messageHub, { method: 'threshold' })
+    );
+
+    // If the clock skew is significant, show a warning message
+    if (
+      isClockSkewSignificant(getState()) &&
+      !isTimeSyncWarningDialogVisible(getState())
+    ) {
+      const clockSkew = getClockSkewInMilliseconds(getState());
+      const formattedClockSkew = formatClockSkew(Math.abs(clockSkew));
+      dispatch(
+        showNotification({
+          message: `Server clock is ${
+            clockSkew > 0 ? 'ahead' : 'behind'
+          } by ${formattedClockSkew}`,
+          buttons: [
+            {
+              label: 'Show details',
+              action: openTimeSyncWarningDialog(),
+            },
+          ],
+          semantics: MessageSemantics.WARNING,
+          permanent: true,
+        })
+      );
+    }
   } catch (error) {
     console.error(error);
     handleError(error);
@@ -366,7 +406,7 @@ async function executeTasksAfterConnection(dispatch) {
 }
 
 /**
- * Helper function that executes all the tasks that should be executed after
+ * Thunk action that executes all the tasks that should be executed after
  * disconnecting from a server.
  *
  * TODO(ntamas): this should eventually be refactored such that we only
@@ -411,7 +451,7 @@ const ServerConnectionManager = connect(
 
       // Execute all the tasks that should be executed after establishing a
       // connection to the server
-      executeTasksAfterConnection(dispatch);
+      dispatch(executeTasksAfterConnection);
     },
 
     onConnectionError() {
@@ -473,7 +513,7 @@ const ServerConnectionManager = connect(
 
         // Execute all the tasks that should be executed after disconnecting from
         // the server
-        executeTasksAfterDisconnection(dispatch);
+        dispatch(executeTasksAfterDisconnection);
       });
     },
 

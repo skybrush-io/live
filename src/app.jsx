@@ -122,6 +122,7 @@ const App = () => {
                 <dialogs.SavedLocationEditorDialog />
                 <dialogs.ServerSettingsDialog />
                 <dialogs.SessionExpiryDialog />
+                <dialogs.TimeSyncDialog />
 
                 <CoordinateAveragingDialog />
                 <RTKSetupDialog />

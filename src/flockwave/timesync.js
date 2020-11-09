@@ -1,4 +1,7 @@
+import delay from 'delay';
 import isNil from 'lodash-es/isNil';
+import sortBy from 'lodash-es/sortBy';
+import sumBy from 'lodash-es/sumBy';
 
 import { MAX_ROUNDTRIP_TIME } from '~/features/servers/constants';
 
@@ -47,10 +50,74 @@ export async function estimateClockSkewAndRoundTripTime(
     return bestResult;
   }
 
+  if (method === 'accurate') {
+    // Accurate method -- run the algorithm 10 times, throw away the two highest
+    // round-trip times (outliers), and take the reported RTT to be the average
+    // of the rest. For the clock skew, take the three attempts with the lowest
+    // RTT, calculate the corresponding clock skews and then take the average.
+    let tries = 10;
+    const results = [];
+    const attempt = () =>
+      estimateClockSkewAndRoundTripTime(messageHub, { method: 'single' });
+
+    while (tries > 0) {
+      const startedAt = performance.now();
+
+      tries--;
+
+      try {
+        // eslint-disable-next-line no-await-in-loop
+        const result = await attempt();
+        if (
+          result &&
+          !isNil(result.clockSkew) &&
+          !isNil(result.roundTripTime)
+        ) {
+          results.push(result);
+        }
+      } catch {
+        // Ignored intentionally.
+      }
+
+      const elapsed = performance.now() - startedAt;
+      const toWait = Math.max(500 - elapsed, 0);
+      if (tries > 0 && toWait > 0) {
+        // eslint-disable-next-line no-await-in-loop
+        await delay(toWait);
+      }
+    }
+
+    const sortedResults = sortBy(results, 'roundTripTime');
+    if (sortedResults.length === 0) {
+      throw new Error('Failed to calculate clock skew and round-trip time');
+    }
+
+    // Throw away the outliers
+    if (sortedResults.length > 5) {
+      sortedResults.splice(-2, 2);
+    } else if (sortedResults.length > 3) {
+      sortedResults.splice(-1, 1);
+    }
+
+    // Average the RTT
+    const roundTripTime =
+      sumBy(sortedResults, 'roundTripTime') / sortedResults.length;
+
+    // Calculate the clock skew from the lowest 3 RTTs
+    const clockSkew =
+      sumBy(sortedResults.slice(0, 3), 'clockSkew') /
+      Math.min(sortedResults.length, 3);
+
+    return {
+      roundTripTime,
+      clockSkew,
+    };
+  }
+
   // This is basically Cristian's algorithm below
-  const sentAt = window.performance.now();
+  const sentAt = performance.now();
   const response = await messageHub.sendMessage('SYS-TIME');
-  const receivedAt = window.performance.now();
+  const receivedAt = performance.now();
   const localClockAtArrival = Date.now();
   const roundTripTime = receivedAt - sentAt;
 
@@ -72,4 +139,31 @@ export async function estimateClockSkewAndRoundTripTime(
     : serverClockAtArrival - localClockAtArrival;
 
   return { clockSkew, roundTripTime };
+}
+
+/**
+ * Sends a message to the server that will adjust its clock by the currently
+ * calculated clock skew to match the local time.
+ */
+export async function adjustServerTimeToMatchLocalTime(messageHub, clockSkew) {
+  let response;
+
+  try {
+    response = await messageHub.sendMessage({
+      type: 'SYS-TIME',
+      adjustment: -clockSkew,
+    });
+  } catch {
+    response = undefined;
+  }
+
+  const { body } = response || {};
+
+  if (!body || body.type !== 'SYS-TIME') {
+    throw new Error(
+      body && body.type === 'ACK-NAK' && response.reason
+        ? `Failed to adjust server time: ${response.reason}`
+        : 'Failed to adjust server time'
+    );
+  }
 }

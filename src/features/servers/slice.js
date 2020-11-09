@@ -7,6 +7,7 @@ import { createSlice } from '@reduxjs/toolkit';
 
 import { ConnectionState } from '~/model/connections';
 import { getAuthenticationTokenFromUrl } from '~/utils/authentication';
+import { noPayload } from '~/utils/redux';
 
 /**
  * Part of the default state object that represents a connection where the
@@ -52,6 +53,9 @@ const { actions, reducer } = createSlice({
       features: {},
       state: ConnectionState.DISCONNECTED,
       timeSync: {
+        adjusting: false,
+        adjustmentResult: null,
+        calculating: false,
         clockSkew: null,
         roundTripTime: null,
       },
@@ -63,6 +67,10 @@ const { actions, reducer } = createSlice({
       order: [],
     },
     token: getAuthenticationTokenFromUrl(),
+
+    timeSyncDialog: {
+      open: false,
+    },
   },
 
   reducers: {
@@ -103,6 +111,33 @@ const { actions, reducer } = createSlice({
 
       const { name, data } = payload;
       state.current.features[name] = data;
+    },
+
+    /**
+     * Notifies the state store that we have started adjusting the time on the
+     * server.
+     */
+    adjustServerTimePromisePending(state) {
+      state.current.timeSync.adjusting = true;
+      state.current.timeSync.adjustmentResult = null;
+    },
+
+    /**
+     * Notifies the state store that we have finished adjusting the time on the
+     * server successfully.
+     */
+    adjustServerTimePromiseFulfilled(state) {
+      state.current.timeSync.adjusting = false;
+      state.current.timeSync.adjustmentResult = true;
+    },
+
+    /**
+     * Notifies the state store that we have finished adjusting the time on the
+     * server and the attempt failed.
+     */
+    adjustServerTimePromiseRejected(state) {
+      state.current.timeSync.adjusting = false;
+      state.current.timeSync.adjustmentResult = false;
     },
 
     authenticateToServerPromisePending(state) {
@@ -150,6 +185,54 @@ const { actions, reducer } = createSlice({
     },
 
     /**
+     * Notifies the state store that we have started calculating the clock skew
+     * between the client and the server.
+     */
+    calculateClockSkewPromisePending(state) {
+      state.current.timeSync.calculating = true;
+    },
+
+    /**
+     * Notifies the state store that we have finished calculating the clock skew
+     * between the client and the server and that we have a result.
+     */
+    calculateClockSkewPromiseFulfilled(state, action) {
+      state.current.timeSync.calculating = false;
+
+      const { clockSkew, roundTripTime } = action.payload;
+      state.current.timeSync.clockSkew =
+        typeof clockSkew === 'number' && Number.isFinite(clockSkew)
+          ? clockSkew
+          : null;
+      state.current.timeSync.roundTripTime =
+        typeof roundTripTime === 'number' && Number.isFinite(roundTripTime)
+          ? roundTripTime
+          : null;
+    },
+
+    /**
+     * Notifies the state store that we have finished calculating the clock skew
+     * between the client and the server and the process terminated with an error.
+     */
+    calculateClockSkewPromiseRejected(state) {
+      state.current.timeSync.calculating = false;
+    },
+
+    /**
+     * Closes the server-client time synchronization dialog.
+     */
+    closeTimeSyncWarningDialog: noPayload((state) => {
+      state.timeSyncDialog.open = false;
+    }),
+
+    /**
+     * Opens the server-client time synchronization dialog.
+     */
+    openTimeSyncWarningDialog: noPayload((state) => {
+      state.timeSyncDialog.open = true;
+    }),
+
+    /**
      * Action factory that creates an action that removes all the previously
      * detected servers from the server registry.
      */
@@ -166,26 +249,6 @@ const { actions, reducer } = createSlice({
      */
     setAuthenticatedUser(state, action) {
       state.current.authentication.user = action.payload || '';
-    },
-
-    /**
-     * Action factory that sets the time synchronization related statistics
-     * of the current server.
-     *
-     * The payload must have two keys: `clockSkew` and `roundTripTime`. For the
-     * clock skew, positive numbers mean that the server is "ahead us", negative
-     * numbers mean that the server is "behind".
-     */
-    setTimeSyncStatistics(state, action) {
-      const { clockSkew, roundTripTime } = action.payload;
-      state.current.timeSync.clockSkew =
-        typeof clockSkew === 'number' && Number.isFinite(clockSkew)
-          ? clockSkew
-          : null;
-      state.current.timeSync.roundTripTime =
-        typeof roundTripTime === 'number' && Number.isFinite(roundTripTime)
-          ? roundTripTime
-          : null;
     },
 
     /**
@@ -275,10 +338,11 @@ export const {
   clearAuthenticationToken,
   clearServerFeatures,
   clearTimeSyncStatistics,
+  closeTimeSyncWarningDialog,
+  openTimeSyncWarningDialog,
   removeAllDetectedServers,
   setAuthenticatedUser,
   setCurrentServerConnectionState,
-  setTimeSyncStatistics,
   startScanning,
   stopScanning,
   updateCurrentServerAuthenticationSettings,

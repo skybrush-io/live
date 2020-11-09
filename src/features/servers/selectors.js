@@ -1,7 +1,7 @@
 import isNil from 'lodash-es/isNil';
 import { createSelector } from '@reduxjs/toolkit';
 
-import { MAX_ROUNDTRIP_TIME } from './constants';
+import { CLOCK_SKEW_WARNING_THRESHOLD, MAX_ROUNDTRIP_TIME } from './constants';
 import { INVALID } from './slice';
 import { ConnectionState } from '~/model/connections';
 import { selectOrdered } from '~/utils/collections';
@@ -203,3 +203,35 @@ export const requiresAuthentication = createSelector(
   getAuthenticationSettings,
   (settings) => settings.required
 );
+
+/**
+ * Returns whether the server time is being adjusted at the moment.
+ */
+export const isAdjustingServerTime = (state) =>
+  state.servers.current.timeSync.adjusting;
+
+/**
+ * Returns whether the clock skew is being (re)calculated at the moment.
+ */
+export const isCalculatingClockSkew = (state) =>
+  state.servers.current.timeSync.calculating;
+
+/**
+ * Returns whether the current measured clock skew of the server can be deemed
+ * significant (in a sense that we should prompt the user to fix the clocks).
+ */
+export const isClockSkewSignificant = createSelector(
+  (state) => state.servers.current.timeSync,
+  ({ clockSkew, roundTripTime }) =>
+    !isNil(clockSkew) &&
+    !isNil(roundTripTime) &&
+    Math.abs(clockSkew) >
+      Math.max(roundTripTime / 2, CLOCK_SKEW_WARNING_THRESHOLD)
+);
+
+/**
+ * Returns whether the dialog box informing the user about the dangers of a
+ * clock skew is visible.
+ */
+export const isTimeSyncWarningDialogVisible = (state) =>
+  state.servers.timeSyncDialog.open;

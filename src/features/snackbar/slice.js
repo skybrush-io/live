@@ -12,6 +12,8 @@ const { actions, reducer } = createSlice({
 
   initialState: {
     notification: {
+      buttons: null,
+      header: '',
       message: '',
       permanent: false,
       semantics: MessageSemantics.DEFAULT,
@@ -28,14 +30,24 @@ const { actions, reducer } = createSlice({
 
       if (typeof action.payload === 'string') {
         newNotification = {
+          buttons: null,
+          header: '',
           message: String(action.payload),
           semantics: MessageSemantics.DEFAULT,
           permanent: false,
         };
       } else {
-        const { message, semantics, permanent } = action.payload;
+        const {
+          buttons,
+          header,
+          message,
+          semantics,
+          permanent,
+        } = action.payload;
 
         newNotification = {
+          buttons: Array.isArray(buttons) ? buttons : null,
+          header: header ? String(header) : '',
           message: String(message),
           semantics: String(semantics),
           permanent: Boolean(permanent),

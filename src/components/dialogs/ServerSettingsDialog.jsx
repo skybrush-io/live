@@ -11,12 +11,10 @@ import React from 'react';
 import { Form, Field } from 'react-final-form';
 import { connect } from 'react-redux';
 
-import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
-import Fade from '@material-ui/core/Fade';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import List from '@material-ui/core/List';
@@ -43,6 +41,7 @@ import {
   disconnectFromServer,
   setServerSettingsDialogTab,
 } from '~/actions/server-settings';
+import SmallProgressIndicator from '~/components/SmallProgressIndicator';
 import { forceFormSubmission, Switch, TextField } from '~/components/forms';
 import {
   getDetectedServersInOrder,
@@ -55,7 +54,6 @@ import {
   required,
 } from '~/utils/validation';
 
-// eslint-disable-next-line react/prop-types
 const iconForServerItem = ({ hostName, type }) =>
   type === 'inferred' ? (
     <SignalWifi0Bar />
@@ -90,22 +88,7 @@ const manualSetupAllowed =
   config && config.server && !config.server.preventManualSetup;
 
 const ConnectionInProgressIndicator = (props) => (
-  <Box
-    alignItems='center'
-    flex={1}
-    padding={1}
-    display='flex'
-    flexDirection='row'
-    {...props}
-  >
-    <Box pr={1}>
-      <CircularProgress color='secondary' size={16} />
-    </Box>
-    <Typography variant='body2' color='textSecondary'>
-      {' '}
-      Connecting…
-    </Typography>
-  </Box>
+  <SmallProgressIndicator label='Connecting...' {...props} />
 );
 
 const DetectedServersListPresentation = ({
@@ -272,9 +255,10 @@ class ServerSettingsDialogPresentation extends React.Component {
     const content = [];
 
     actions.push(
-      <Fade key='__connectionIndicator' in={isConnecting}>
-        <ConnectionInProgressIndicator />
-      </Fade>
+      <ConnectionInProgressIndicator
+        key='__connectionIndicator'
+        visible={isConnecting}
+      />
     );
 
     switch (selectedTab) {
@@ -305,6 +289,7 @@ class ServerSettingsDialogPresentation extends React.Component {
             </DialogContent>
           );
         }
+
         break;
 
       case 'manual':

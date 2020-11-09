@@ -4,6 +4,7 @@
  */
 
 import AlertWarning from '@material-ui/icons/Warning';
+import isPromise from 'is-promise';
 import PropTypes from 'prop-types';
 import React from 'react';
 import RedBox from 'redbox-react';
@@ -70,6 +71,25 @@ export function handleError(err, operation) {
     logger.error(message);
     console.error(message);
   }
+}
+
+/**
+ * Function decorator that takes a (possibly async) function and wraps it in a
+ * handler that handles any errors thrown by the function.
+ */
+export function wrapInErrorHandler(func, operation) {
+  return (...args) => {
+    let result;
+    try {
+      result = func(...args);
+    } catch (error) {
+      handleError(error, operation);
+    }
+
+    if (isPromise(result)) {
+      return result.catch((error) => handleError(error, operation));
+    }
+  };
 }
 
 export default handleError;

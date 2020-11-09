@@ -12,6 +12,7 @@ import SavedLocationEditorDialog from './SavedLocationEditorDialog';
 import ServerSettingsDialog from './ServerSettingsDialog';
 import SessionExpiryDialog from './SessionExpiryDialog';
 import SubscriptionDialog from './SubscriptionDialog';
+import TimeSyncDialog from './TimeSyncDialog';
 
 const dialogs = {
   AppSettingsDialog,
@@ -27,6 +28,7 @@ const dialogs = {
   ServerSettingsDialog,
   SessionExpiryDialog,
   SubscriptionDialog,
+  TimeSyncDialog,
 };
 
 export default dialogs;
