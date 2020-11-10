@@ -14,6 +14,7 @@
         "*.bundle.js",
         "index.html",
         "*.png",
+        "*.svg",
         "*.ttf",
         "*.woff",
         "*.woff2"
