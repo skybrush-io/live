@@ -51,10 +51,7 @@ const missionOriginMarker = require('~/../assets/img/mission-origin-marker.svg')
 
 // === Settings for this particular layer type ===
 
-const HomePositionsLayerSettingsPresentation = ({
-  layer,
-  setLayerParameter,
-}) => {
+const MissionInfoLayerSettingsPresentation = ({ layer, setLayerParameter }) => {
   const { parameters } = layer;
   const {
     showOrigin,
@@ -112,12 +109,12 @@ const HomePositionsLayerSettingsPresentation = ({
   );
 };
 
-HomePositionsLayerSettingsPresentation.propTypes = {
+MissionInfoLayerSettingsPresentation.propTypes = {
   layer: PropTypes.object,
   setLayerParameter: PropTypes.func,
 };
 
-export const HomePositionsLayerSettings = connect(
+export const MissionInfoLayerSettings = connect(
   // mapStateToProps
   () => ({
     homePositionsVisible: true,
@@ -130,7 +127,7 @@ export const HomePositionsLayerSettings = connect(
       dispatch(setLayerParameterById(ownProps.layerId, parameter, value));
     },
   })
-)(HomePositionsLayerSettingsPresentation);
+)(MissionInfoLayerSettingsPresentation);
 
 // === The actual layer to be rendered ===
 
@@ -414,7 +411,7 @@ HomePositionsVectorSource.defaultProps = {
   orientation: 0,
 };
 
-const HomePositionsLayerPresentation = ({ layer, zIndex, ...rest }) => (
+const MissionInfoLayerPresentation = ({ layer, zIndex, ...rest }) => (
   <olLayer.Vector
     ref={markAsSelectableAndEditable}
     updateWhileAnimating
@@ -431,12 +428,12 @@ const HomePositionsLayerPresentation = ({ layer, zIndex, ...rest }) => (
   </olLayer.Vector>
 );
 
-HomePositionsLayerPresentation.propTypes = {
+MissionInfoLayerPresentation.propTypes = {
   layer: PropTypes.object,
   zIndex: PropTypes.number,
 };
 
-export const HomePositionsLayer = connect(
+export const MissionInfoLayer = connect(
   // mapStateToProps
   (state) => ({
     coordinateSystemType: state.map.origin.type,
@@ -450,4 +447,4 @@ export const HomePositionsLayer = connect(
   }),
   // mapDispatchToProps
   () => ({})
-)(HomePositionsLayerPresentation);
+)(MissionInfoLayerPresentation);

@@ -12,7 +12,7 @@ import FileCloud from '@material-ui/icons/Cloud';
 import Flight from '@material-ui/icons/Flight';
 import Gamepad from '@material-ui/icons/Gamepad';
 import HelpOutline from '@material-ui/icons/HelpOutline';
-import Home from '@material-ui/icons/Home';
+import Info from '@material-ui/icons/Info';
 import Streetview from '@material-ui/icons/Streetview';
 import ImageGridOn from '@material-ui/icons/GridOn';
 import Map from '@material-ui/icons/Map';
@@ -30,7 +30,7 @@ export const LayerType = {
   GEOJSON: 'geojson',
   HEATMAP: 'heatmap',
   HEXGRID: 'hexgrid',
-  HOME: 'home',
+  MISSION_INFO: 'home', // don't rename this -- backwards compatibility
   OWN_LOCATION: 'ownLocation',
   TILE_SERVER: 'tileServer',
   UAVS: 'uavs',
@@ -48,7 +48,7 @@ export const LayerTypes = [
   LayerType.UAVS,
   LayerType.DOCKS,
   LayerType.UAV_TRACE,
-  LayerType.HOME,
+  LayerType.MISSION_INFO,
   LayerType.OWN_LOCATION,
   LayerType.GEOJSON,
   LayerType.HEATMAP,
@@ -135,9 +135,9 @@ const _propertiesForLayerTypes = {
       radius: 0.0005,
     },
   },
-  [LayerType.HOME]: {
-    label: 'Home position',
-    icon: <Home />,
+  [LayerType.MISSION_INFO]: {
+    label: 'Mission info',
+    icon: <Info />,
     parameters: {
       showOrigin: true,
       showHomePositions: true,

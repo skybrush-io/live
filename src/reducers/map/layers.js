@@ -25,7 +25,7 @@ const defaultState = {
   byId: {
     base: createNewLayer('base', LayerType.BASE, 'Base map'),
     features: createNewLayer('features', LayerType.FEATURES, 'Features'),
-    home: createNewLayer('home', LayerType.HOME, 'Home position'),
+    home: createNewLayer('home', LayerType.MISSION_INFO, 'Mission info'),
     uavs: createNewLayer('uavs', LayerType.UAVS, 'UAVs'),
   },
   // .order contains the order of the layers, from bottom to top

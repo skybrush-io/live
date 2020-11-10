@@ -6,7 +6,7 @@ import { FeaturesLayerSettings, FeaturesLayer } from './features';
 import { GeoJSONLayerSettings, GeoJSONLayer } from './geojson';
 import { HeatmapLayerSettings, HeatmapLayer } from './heatmap';
 import { HexGridLayerSettings, HexGridLayer } from './hexgrid';
-import { HomePositionsLayerSettings, HomePositionsLayer } from './home';
+import { MissionInfoLayerSettings, MissionInfoLayer } from './mission-info';
 import { OwnLocationLayerSettings, OwnLocationLayer } from './ownlocation';
 import { TileServerLayerSettings, TileServerLayer } from './tileserver';
 import { UAVsLayerSettings, UAVsLayer } from './uavs';
@@ -22,7 +22,7 @@ export const LayerSettings = {
   [LayerType.GEOJSON]: GeoJSONLayerSettings,
   [LayerType.HEATMAP]: HeatmapLayerSettings,
   [LayerType.HEXGRID]: HexGridLayerSettings,
-  [LayerType.HOME]: HomePositionsLayerSettings,
+  [LayerType.MISSION_INFO]: MissionInfoLayerSettings,
   [LayerType.OWN_LOCATION]: OwnLocationLayerSettings,
   [LayerType.TILE_SERVER]: TileServerLayerSettings,
   [LayerType.UAVS]: UAVsLayerSettings,
@@ -54,7 +54,7 @@ export const Layers = {
   [LayerType.GEOJSON]: GeoJSONLayer,
   [LayerType.HEATMAP]: HeatmapLayer,
   [LayerType.HEXGRID]: HexGridLayer,
-  [LayerType.HOME]: HomePositionsLayer,
+  [LayerType.MISSION_INFO]: MissionInfoLayer,
   [LayerType.OWN_LOCATION]: OwnLocationLayer,
   [LayerType.TILE_SERVER]: TileServerLayer,
   [LayerType.UAVS]: UAVsLayer,
