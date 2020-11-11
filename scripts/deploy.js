@@ -38,7 +38,7 @@ program
     'whether to build the application in production mode'
   )
   .option(
-    '-v, --variant',
+    '-v, --variant <value>',
     'specifies the application variant to compile ("default" or "light")'
   )
   .parse(process.argv);
