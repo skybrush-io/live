@@ -12,7 +12,6 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import MenuItem from '@material-ui/core/MenuItem';
 
 import ActionDelete from '@material-ui/icons/Delete';
-import Done from '@material-ui/icons/Done';
 import Edit from '@material-ui/icons/Edit';
 import Flight from '@material-ui/icons/Flight';
 import FlightTakeoff from '@material-ui/icons/FlightTakeoff';
