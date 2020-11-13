@@ -1,8 +1,9 @@
 export {
   AngleField,
+  CoordinateField,
   DistanceField,
-  DurationField,
   PasswordField,
+  Select,
   SimpleAngleField,
   SimpleDistanceField,
   SimpleDurationField,

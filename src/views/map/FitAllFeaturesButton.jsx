@@ -14,13 +14,13 @@ import Tooltip from '~/components/Tooltip';
 import DeviceGpsFixed from '@material-ui/icons/GpsFixed';
 import ActionAllOut from '@material-ui/icons/AllOut';
 
-import { mapViewCoordinateFromLonLat } from '../../utils/geography';
+import { showError } from '~/features/snackbar/actions';
 import {
   mapReferenceRequestSignal,
   fitAllFeaturesSignal,
   mapViewToExtentSignal,
-} from '../../signals';
-import { showNotification } from '~/features/snackbar/slice';
+} from '~/signals';
+import { mapViewCoordinateFromLonLat } from '~/utils/geography';
 
 /**
  * React Component to adjust the view so that it fits all of the current features.
@@ -112,11 +112,9 @@ class FitAllFeaturesButton extends React.Component {
         );
       } else {
         this.props.dispatch(
-          showNotification({
-            message:
-              'There are no features to fit into the view, and geolocation is not available',
-            semantics: 'error',
-          })
+          showError(
+            'There are no features to fit into the view, and geolocation is not available'
+          )
         );
       }
 

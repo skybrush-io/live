@@ -110,7 +110,7 @@ export const resetUAVs = performMassOperation({
   name: 'Reset command',
 });
 
-export const moveUAVs = performMassOperation({
+const moveUAVsLowLevel = performMassOperation({
   type: 'UAV-FLY',
   name: 'Fly to target command',
   mapper: ({ target }) => ({
@@ -122,6 +122,30 @@ export const moveUAVs = performMassOperation({
     ],
   }),
 });
+
+export const moveUAVs = (uavIds, { target, ...rest }) => {
+  if (isNil(target)) {
+    throw new Error('No target given in arguments');
+  }
+
+  const { lat, lon, amsl, agl } = target;
+
+  if (!isNil(amsl) && !isNil(agl)) {
+    throw new Error('only one of AMSL and AGL may be given');
+  }
+
+  const args = rest;
+
+  if (!isNil(amsl)) {
+    args.target = { lat, lon, amsl };
+  } else if (!isNil(agl)) {
+    args.target = { lat, lon, agl };
+  } else {
+    args.target = { lat, lon };
+  }
+
+  return moveUAVsLowLevel(uavIds, args);
+};
 
 export const turnMotorOnForUAVs = performMassOperation({
   type: 'UAV-MOTOR',

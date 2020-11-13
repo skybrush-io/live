@@ -10,9 +10,8 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
 import VerticalAlignBottom from '@material-ui/icons/VerticalAlignBottom';
 
-import DronePlaceholderList from './DronePlaceholderList';
-
 import DraggableDialog from '~/components/dialogs/DraggableDialog';
+import DronePlaceholderList from '~/components/uavs/DronePlaceholderList';
 import { addVirtualDronesForMission } from '~/features/mission/actions';
 import {
   getEmptyMappingSlotIndices,
@@ -182,9 +181,9 @@ const TakeoffAreaSetupDialog = ({
       fullWidth
       open={open}
       maxWidth='sm'
-      onClose={onClose}
       title='Takeoff area setup'
       titleComponents={titleComponents}
+      onClose={onClose}
     >
       <DialogContent>
         <TakeoffAreaSetupDialogIndicators />

@@ -6,12 +6,7 @@ import Clear from '@material-ui/icons/Clear';
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import { formatCoordinate, parseCoordinate } from '../utils/geography';
-
-const safelyFormatCoordinate = (coordinate) =>
-  coordinate !== undefined && coordinate !== null
-    ? formatCoordinate(coordinate)
-    : '';
+import { parseCoordinate, safelyFormatCoordinate } from '~/utils/geography';
 
 export default class CoordinateField extends React.Component {
   static propTypes = {

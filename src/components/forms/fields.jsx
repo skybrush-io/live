@@ -4,9 +4,48 @@ import MaterialUISwitch from '@material-ui/core/Switch';
 import MaterialUITextField from '@material-ui/core/TextField';
 import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
+
+import { Select as RFFSelect, TextField as RFFTextField } from 'mui-rff';
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useMemo } from 'react';
+import { Field } from 'react-final-form';
 import useToggle from 'react-use-toggle';
+
+import { formatCoordinate, parseCoordinate } from '~/utils/geography';
+
+/**
+ * Select component that can be placed in a `react-final-form` form and
+ * that fits the general application style.
+ */
+export const Select = ({ formControlProps, margin, ...rest }) => (
+  <RFFSelect
+    formControlProps={{
+      variant: 'filled',
+      margin,
+      ...formControlProps,
+    }}
+    {...rest}
+  />
+);
+
+Select.propTypes = {
+  ...RFFSelect.propTypes,
+  margin: PropTypes.oneOf(['normal', 'dense']),
+};
+
+Select.defaultProps = {
+  margin: 'dense',
+};
+
+/**
+ * Text field component that can be placed in a `react-final-form` form and
+ * that fits the general application style.
+ */
+export const TextField = (props) => (
+  <RFFTextField variant='filled' {...props} />
+);
+
+TextField.propTypes = RFFTextField.propTypes;
 
 /**
  * Render function for `react-final-form` that binds a `<Field>` component
@@ -43,7 +82,7 @@ const preventDefault = (event) => event.preventDefault();
  * @param  {Object} props  props provided by `react-final-form`
  * @return {Object} the rendered Material UI text field component
  */
-export const PasswordField = ({ input, meta, ...rest }) => {
+const PasswordFieldFormBinding = ({ input, meta, ...rest }) => {
   const [passwordIsMasked, togglePasswordMask] = useToggle(true);
 
   const { name, onChange, value, ...restInput } = input;
@@ -82,73 +121,37 @@ export const PasswordField = ({ input, meta, ...rest }) => {
   );
 };
 
-PasswordField.propTypes = {
+PasswordFieldFormBinding.propTypes = {
   input: PropTypes.any,
   meta: PropTypes.any,
 };
 
 /**
- * Render function for `react-final-form` that binds a `<Field>` component
- * to a Material UI `<TextField>`.
- *
- * @param  {Object} props  props provided by `react-final-form`
- * @return {Object} the rendered Material UI text field component
+ * Password field that can be placed in a `react-final-form` form.
  */
-export const TextField = ({ input, meta, ...rest }) => {
-  const { name, onChange, value, ...restInput } = input || {};
-  const showError = meta
-    ? ((meta.submitError && !meta.dirtySinceLastSubmit) || meta.error) &&
-      meta.touched
-    : false;
-  return (
-    <MaterialUITextField
-      variant='filled'
-      {...rest}
-      name={name}
-      helperText={showError ? meta.error || meta.submitError : undefined}
-      error={showError}
-      inputProps={restInput}
-      value={value}
-      onChange={onChange}
-    />
-  );
-};
+export const PasswordField = (props) => (
+  <Field component={PasswordFieldFormBinding} {...props} />
+);
 
-TextField.propTypes = {
-  input: PropTypes.any,
-  meta: PropTypes.any,
-};
+/* ************************************************************************* */
 
 /**
- * Render function for `react-final-form` that binds a `<Field>` component
- * to a Material UI `<TextField>`, configured to be suitable for entering
- * angles.
- *
- * @param  {Object} props  props provided by `react-final-form`
- * @return {Object} the rendered Material UI text field component
+ * Numeric field that can be placed in a `react-final-form` form and that accepts
+ * angles in the range [0; 360].
  */
-export const AngleField = ({ max, min, size, step, ...rest }) => {
-  const { inputProps, InputProps, ...restRest } = rest;
-  return (
-    <TextField
-      InputProps={{
-        ...InputProps,
-        endAdornment: <InputAdornment position='end'>degrees</InputAdornment>,
-      }}
-      inputProps={{
-        ...inputProps,
-        max,
-        min,
-        size,
-        step,
-        type: 'number',
-      }}
-      {...restRest}
-    />
-  );
-};
+export const AngleField = ({ InputProps, ...rest }) => (
+  <TextField
+    type='number'
+    InputProps={{
+      endAdornment: <InputAdornment position='end'>degrees</InputAdornment>,
+      ...InputProps,
+    }}
+    {...rest}
+  />
+);
 
 AngleField.propTypes = {
+  InputProps: PropTypes.object,
   max: PropTypes.number,
   min: PropTypes.number,
   onChange: PropTypes.func,
@@ -157,13 +160,16 @@ AngleField.propTypes = {
   value: PropTypes.number,
 };
 
+AngleField.defaultProps = {
+  max: 360,
+  min: 0,
+  step: 0.1,
+};
+
 // This is NOT designed to be used in conjunction with react-final-form; it is a
 // standalone controlled field based on Material UI
 export const SimpleAngleField = ({ max, min, size, step, ...rest }) => (
   <MaterialUITextField
-    InputProps={{
-      endAdornment: <InputAdornment position='end'>degrees</InputAdornment>,
-    }}
     inputProps={{ max, min, size, step, type: 'number' }}
     variant='filled'
     {...rest}
@@ -185,30 +191,61 @@ SimpleAngleField.defaultProps = {
   step: 0.1,
 };
 
-// This is NOT designed to be used in conjunction with react-final-form; it is a
-// standalone controlled field based on Material UI
-export const DistanceField = ({ max, min, size, step, ...rest }) => {
-  const { inputProps, InputProps, ...restRest } = rest;
-  return (
-    <TextField
-      InputProps={{
-        ...InputProps,
-        endAdornment: <InputAdornment position='end'>m</InputAdornment>,
-      }}
-      inputProps={{
-        ...inputProps,
-        max,
-        min,
-        size,
-        step,
-        type: 'number',
-      }}
-      {...restRest}
-    />
+/* ************************************************************************* */
+
+const createCoordinateFieldProps = (formatter) => ({
+  formatOnBlur: true,
+  format: (value) => {
+    const parsedValue =
+      Array.isArray(value) && value.length === 2
+        ? value
+        : parseCoordinate(value);
+    try {
+      const formattedValue = (formatter || formatCoordinate)(parsedValue);
+      return formattedValue || value;
+    } catch {
+      return value;
+    }
+  },
+  validate: (value) => {
+    const parsedValue = parseCoordinate(value);
+    if (!parsedValue) {
+      return 'Invalid coordinate';
+    }
+  },
+});
+
+export const CoordinateField = ({ formatter, ...props }) => {
+  const coordinateFieldProps = useMemo(
+    () => createCoordinateFieldProps(formatter),
+    [formatter]
   );
+  return <TextField fieldProps={coordinateFieldProps} {...props} />;
 };
 
+CoordinateField.propTypes = {
+  formatter: PropTypes.func,
+};
+
+/* ************************************************************************* */
+
+/**
+ * Numeric field that can be placed in a `react-final-form` form and that accepts
+ * distances.
+ */
+export const DistanceField = ({ InputProps, ...rest }) => (
+  <TextField
+    type='number'
+    InputProps={{
+      endAdornment: <InputAdornment position='end'>m</InputAdornment>,
+      ...InputProps,
+    }}
+    {...rest}
+  />
+);
+
 DistanceField.propTypes = {
+  InputProps: PropTypes.object,
   max: PropTypes.number,
   min: PropTypes.number,
   onChange: PropTypes.func,
@@ -237,42 +274,6 @@ SimpleDistanceField.propTypes = {
   size: PropTypes.number,
   step: PropTypes.number,
   value: PropTypes.number,
-};
-
-// This is NOT designed to be used in conjunction with react-final-form; it is a
-// standalone controlled field based on Material UI
-export const DurationField = ({ max, min, size, ...rest }) => {
-  const { inputProps, InputProps, ...restRest } = rest;
-  return (
-    <TextField
-      InputProps={{
-        ...InputProps,
-        endAdornment: <InputAdornment position='end'>seconds</InputAdornment>,
-      }}
-      inputProps={{
-        ...inputProps,
-        max,
-        min,
-        size,
-        step,
-        type: 'number',
-      }}
-      {...restRest}
-    />
-  );
-};
-
-DurationField.propTypes = {
-  max: PropTypes.number,
-  min: PropTypes.number,
-  onChange: PropTypes.func,
-  size: PropTypes.number,
-  value: PropTypes.number,
-};
-
-DurationField.defaultProps = {
-  min: 0,
-  size: 4,
 };
 
 // This is NOT designed to be used in conjunction with react-final-form; it is a

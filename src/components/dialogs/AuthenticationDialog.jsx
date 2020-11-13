@@ -9,14 +9,15 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import { makeStyles } from '@material-ui/core/styles';
 
+import { TextField } from 'mui-rff';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Form, Field } from 'react-final-form';
+import { Form } from 'react-final-form';
 import { connect } from 'react-redux';
 
 import { closeAuthenticationDialog } from '~/actions/servers';
 import DraggableDialog from '~/components/dialogs/DraggableDialog';
-import { PasswordField, TextField } from '~/components/forms';
+import { PasswordField } from '~/components/forms';
 import { authenticateToServerWithBasicAuthentication } from '~/features/servers/actions';
 import {
   isAuthenticating,
@@ -60,17 +61,16 @@ const AuthenticationForm = ({
         {({ handleSubmit }) => (
           <form className={classes.root} onSubmit={handleSubmit}>
             <DialogContent>
-              <Field
+              <TextField
                 autoFocus
                 fullWidth
-                component={TextField}
                 name='username'
                 label='Username'
                 autoComplete='username'
+                variant='filled'
               />
-              <Field
+              <PasswordField
                 fullWidth
-                component={PasswordField}
                 name='password'
                 label='Password'
                 autoComplete='current-password'

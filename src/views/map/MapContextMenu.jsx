@@ -3,6 +3,7 @@
  * currently selected UAVs.
  */
 
+import isNil from 'lodash-es/isNil';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
@@ -26,13 +27,12 @@ import Refresh from '@material-ui/icons/Refresh';
 import { createSelector } from '@reduxjs/toolkit';
 
 import { showFeatureEditorDialog } from '../../actions/feature-editor';
-import { renameFeature, removeFeatures } from '../../actions/features';
+import { removeFeatures } from '../../actions/features';
 import { setFlatEarthCoordinateSystemOrigin } from '../../actions/map-origin';
 import {
   selectUAVInMessagesDialog,
   showMessagesDialog,
 } from '../../actions/messages';
-import { showPromptDialog } from '../../actions/prompt';
 import ContextMenu from '../../components/ContextMenu';
 import {
   getSelectedFeatureIds,
@@ -48,7 +48,7 @@ import {
   setGeofencePolygonId,
 } from '~/features/mission/slice';
 import { getGeofencePolygonId } from '~/features/mission/selectors';
-import { showNotification } from '~/features/snackbar/slice';
+import { openFlyToTargetDialogWithCoordinate } from '~/features/uav-control/actions';
 
 import { hasFeature } from '~/utils/configuration';
 
@@ -61,20 +61,17 @@ class MapContextMenu extends React.Component {
     clearGeofencePolygonId: PropTypes.func,
     contextProvider: PropTypes.func,
     editFeature: PropTypes.func,
-    renameFeature: PropTypes.func,
     removeFeaturesByIds: PropTypes.func,
     setGeofencePolygonId: PropTypes.func,
     selectUAVInMessagesDialog: PropTypes.func.isRequired,
     setMapCoordinateSystemOrigin: PropTypes.func,
     setShowCoordinateSystemOrigin: PropTypes.func,
-    showErrorMessage: PropTypes.func.isRequired,
+    showFlyToTargetDialog: PropTypes.func,
     showMessagesDialog: PropTypes.func.isRequired,
-    showPromptDialog: PropTypes.func.isRequired,
   };
 
-  constructor(props) {
-    super(props);
-
+  constructor() {
+    super();
     this._contextMenu = React.createRef();
   }
 
@@ -285,41 +282,24 @@ class MapContextMenu extends React.Component {
     );
   }
 
-  _moveSelectedUAVsAtCurrentAltitude = (event, context) => {
+  _moveSelectedUAVsAtCurrentAltitude = (_event, context) => {
     const { coords, selectedUAVIds } = context;
-    this._moveUAVs(selectedUAVIds, coords);
+    messaging.moveUAVs(selectedUAVIds, {
+      target: {
+        lat: coords[1],
+        lon: coords[0],
+      },
+    });
   };
 
-  _moveSelectedUAVsAtGivenAltitude = async (event, context) => {
+  _moveSelectedUAVsAtGivenAltitude = async (_event, context) => {
     const coords = [...context.coords];
     const selectedUAVIds = [...context.selectedUAVIds];
-
-    const altitude = await this.props.showPromptDialog(
-      'Enter the target altitude'
-    );
-    if (altitude !== undefined) {
-      const altitudeAsNumber = Number.parseFloat(altitude);
-      if (Number.isNaN(altitudeAsNumber)) {
-        this.props.showErrorMessage('Invalid target altitude');
-      } else {
-        this._moveUAVs(selectedUAVIds, coords, altitudeAsNumber);
-      }
-    }
+    /* TODO(ntamas): use AGL of selected UAVs */
+    this.props.showFlyToTargetDialog({ coords, uavIds: selectedUAVIds });
   };
 
-  _moveUAVs = (uavIds, coords, agl) => {
-    if (coords && coords.length === 2) {
-      messaging.moveUAVs(uavIds, {
-        target: {
-          lat: coords[1],
-          lon: coords[0],
-          agl,
-        },
-      });
-    }
-  };
-
-  _editSelectedFeature = (event, context) => {
+  _editSelectedFeature = (_event, context) => {
     const { editFeature } = this.props;
     const { selectedFeatureIds } = context;
     if (!editFeature || selectedFeatureIds.length !== 1) {
@@ -329,25 +309,14 @@ class MapContextMenu extends React.Component {
     editFeature(selectedFeatureIds[0]);
   };
 
-  _takeoffSelectedUAVs = (event, context) => {
+  _takeoffSelectedUAVs = (_event, context) => {
     const { selectedUAVIds } = context;
     messaging.takeoffUAVs(selectedUAVIds);
   };
 
-  _landSelectedUAVs = (event, context) => {
+  _landSelectedUAVs = (_event, context) => {
     const { selectedUAVIds } = context;
     messaging.landUAVs(selectedUAVIds);
-  };
-
-  _renameSelectedFeature = (event, context) => {
-    const { renameFeature } = this.props;
-    const { selectedFeatureIds, selectedFeatureLabels } = context;
-
-    if (!renameFeature || selectedFeatureIds.length !== 1) {
-      return;
-    }
-
-    renameFeature(selectedFeatureIds[0], selectedFeatureLabels[0]);
   };
 
   _unsetSelectedFeatureAsGeofence = (_event, _context) => {
@@ -357,7 +326,7 @@ class MapContextMenu extends React.Component {
     }
   };
 
-  _setSelectedFeatureAsGeofence = (event, context) => {
+  _setSelectedFeatureAsGeofence = (_event, context) => {
     const { setGeofencePolygonId } = this.props;
     const { selectedFeatureIds } = context;
 
@@ -387,26 +356,26 @@ class MapContextMenu extends React.Component {
     messaging.returnToHomeUAVs(selectedUAVIds);
   };
 
-  _setMapCoordinateSystemOrigin = (event, context) => {
+  _setMapCoordinateSystemOrigin = (_event, context) => {
     const { coords } = context;
     if (coords) {
       this.props.setMapCoordinateSystemOrigin(coords);
     }
   };
 
-  _setShowCoordinateSystemOrigin = (event, context) => {
+  _setShowCoordinateSystemOrigin = (_event, context) => {
     const { coords } = context;
     if (coords) {
       this.props.setShowCoordinateSystemOrigin(coords);
     }
   };
 
-  _shutdownSelectedUAVs = (event, context) => {
+  _shutdownSelectedUAVs = (_event, context) => {
     const { selectedUAVIds } = context;
     messaging.shutdownUAVs(selectedUAVIds);
   };
 
-  _showMessagesDialog = (event, context) => {
+  _showMessagesDialog = (_event, context) => {
     const { selectedUAVIds } = context;
     if (selectedUAVIds.length === 1) {
       this.props.selectUAVInMessagesDialog(selectedUAVIds[0]);
@@ -448,61 +417,20 @@ const MapContextMenuContainer = connect(
     contextProvider: getContextProvider(state),
   }),
   // mapDispatchToProps
-  (dispatch) => ({
-    clearGeofencePolygonId: hasGeofence
-      ? () => {
-          dispatch(clearGeofencePolygonId());
-        }
-      : null,
-    editFeature: hasFeatures
-      ? (id) => {
-          dispatch(showFeatureEditorDialog(id));
-        }
-      : null,
-    removeFeaturesByIds: hasFeatures
-      ? (ids) => {
-          dispatch(removeFeatures(ids));
-        }
-      : null,
-    renameFeature: hasFeatures
-      ? (id, label) => {
-          dispatch(
-            showPromptDialog('Enter the new name of the feature', label)
-          ).then((newLabel) => {
-            if (newLabel) {
-              dispatch(renameFeature(id, newLabel));
-            }
-          });
-        }
-      : null,
-    selectUAVInMessagesDialog: (id) => {
-      dispatch(selectUAVInMessagesDialog(id));
-    },
-    setGeofencePolygonId: hasGeofence
-      ? (id) => {
-          dispatch(setGeofencePolygonId(id));
-        }
-      : null,
-    setMapCoordinateSystemOrigin: (coords) => {
-      dispatch(setFlatEarthCoordinateSystemOrigin(coords));
-    },
+  {
+    clearGeofencePolygonId: hasGeofence ? clearGeofencePolygonId : null,
+    editFeature: hasFeatures ? showFeatureEditorDialog : null,
+    removeFeaturesByIds: hasFeatures ? removeFeatures : null,
+    selectUAVInMessagesDialog,
+    setGeofencePolygonId: hasGeofence ? setGeofencePolygonId : null,
+    setMapCoordinateSystemOrigin: setFlatEarthCoordinateSystemOrigin,
     setShowCoordinateSystemOrigin: hasShowControl
-      ? (coords) => {
-          dispatch(
-            updateOutdoorShowSettings({ origin: coords, setupMission: true })
-          );
-        }
+      ? (coords) =>
+          updateOutdoorShowSettings({ origin: coords, setupMission: true })
       : null,
-    showErrorMessage: (message) => {
-      dispatch(showNotification(message));
-    },
-    showMessagesDialog: () => {
-      dispatch(showMessagesDialog());
-    },
-    showPromptDialog: (message, options) => {
-      return dispatch(showPromptDialog(message, options));
-    },
-  }),
+    showFlyToTargetDialog: openFlyToTargetDialogWithCoordinate,
+    showMessagesDialog,
+  },
   null,
   { forwardRef: true }
 )(MapContextMenu);

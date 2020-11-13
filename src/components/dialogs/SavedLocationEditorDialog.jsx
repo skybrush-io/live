@@ -2,17 +2,18 @@
  * @file Dialog that shows the editor for a saved location.
  */
 
+import { TextField } from 'mui-rff';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Form, Field } from 'react-final-form';
+import { Form } from 'react-final-form';
 import { connect } from 'react-redux';
 
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
+
+import DraggableDialog from './DraggableDialog';
 
 import { cancelLocationEditing } from '~/actions/saved-location-editor';
 import { getCurrentMapViewAsSavedLocation } from '~/features/saved-locations/selectors';
@@ -20,7 +21,7 @@ import {
   deleteSavedLocation,
   updateSavedLocation,
 } from '~/features/saved-locations/slice';
-import { AngleField, forceFormSubmission, TextField } from '~/components/forms';
+import { AngleField, forceFormSubmission } from '~/components/forms';
 import { NEW_ITEM_ID } from '~/utils/collections';
 import {
   createValidator,
@@ -49,46 +50,42 @@ const SavedLocationEditorFormPresentation = ({
     {({ handleSubmit }) => (
       <form id='SavedLocationEditor' onSubmit={handleSubmit}>
         <div onKeyPress={onKeyPress}>
-          <Field
+          <TextField
             autoFocus
             fullWidth
             margin='normal'
             name='name'
-            component={TextField}
             label='Name'
+            variant='filled'
           />
-          <Box display='flex' flexDirection='row'>
-            <Field
+          <Box display='flex' flexDirection='row' mt={1}>
+            <TextField
               fullWidth
-              margin='normal'
               name='center.lat'
-              component={TextField}
               label='Latitude'
+              variant='filled'
             />
             <Box p={1} />
-            <Field
+            <TextField
               fullWidth
-              margin='normal'
               name='center.lon'
-              component={TextField}
               label='Longitude'
+              variant='filled'
             />
           </Box>
-          <Box display='flex' flexDirection='row'>
-            <Field
+          <Box display='flex' flexDirection='row' mt={2}>
+            <AngleField
               fullWidth
-              margin='normal'
               name='rotation'
-              component={AngleField}
               label='Rotation'
+              variant='filled'
             />
             <Box p={1} />
-            <Field
+            <TextField
               fullWidth
-              margin='normal'
               name='zoom'
-              component={TextField}
               label='Zoom level'
+              variant='filled'
             />
           </Box>
         </div>
@@ -132,8 +129,8 @@ class SavedLocationEditorDialogPresentation extends React.Component {
     open: PropTypes.bool.isRequired,
   };
 
-  constructor(props) {
-    super(props);
+  constructor() {
+    super();
 
     this.currentLocation = {};
   }
@@ -142,8 +139,8 @@ class SavedLocationEditorDialogPresentation extends React.Component {
     forceFormSubmission('SavedLocationEditor');
   };
 
-  _handleKeyPress = (e) => {
-    if (e.nativeEvent.code === 'Enter') {
+  _handleKeyPress = (event) => {
+    if (event.nativeEvent.code === 'Enter') {
       this.handleSubmit();
     }
   };
@@ -181,8 +178,13 @@ class SavedLocationEditorDialogPresentation extends React.Component {
     }
 
     return (
-      <Dialog fullWidth open={open} maxWidth='sm' onClose={onClose}>
-        <DialogTitle>{title}</DialogTitle>
+      <DraggableDialog
+        fullWidth
+        title={title}
+        open={open}
+        maxWidth='xs'
+        onClose={onClose}
+      >
         <DialogContent>
           <SavedLocationEditorForm
             onSubmit={onSubmit}
@@ -190,7 +192,7 @@ class SavedLocationEditorDialogPresentation extends React.Component {
           />
         </DialogContent>
         <DialogActions>{actions}</DialogActions>
-      </Dialog>
+      </DraggableDialog>
     );
   }
 }

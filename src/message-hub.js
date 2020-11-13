@@ -13,7 +13,7 @@ import {
 } from './model/connections';
 import { handleObjectDeletionMessage } from './model/objects';
 
-import { showNotification } from './features/snackbar/slice';
+import { showError, showNotification } from './features/snackbar/actions';
 import { semanticsFromSeverity } from './features/snackbar/types';
 
 import flock from './flock';
@@ -41,12 +41,7 @@ messageHub.registerNotificationHandlers({
   'OBJ-DEL': (message) => handleObjectDeletionMessage(message.body, dispatch),
   'SYS-CLOSE': (message) => {
     if (message.body && message.body.reason) {
-      dispatch(
-        showNotification({
-          message: message.body.reason,
-          semantics: 'error',
-        })
-      );
+      dispatch(showError(message.body.reason));
     }
   },
   'SYS-MSG': (message) => {

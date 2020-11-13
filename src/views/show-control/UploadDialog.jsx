@@ -12,18 +12,16 @@ import Fade from '@material-ui/core/Fade';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '~/components/Tooltip';
-import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Clear from '@material-ui/icons/Clear';
 import Refresh from '@material-ui/icons/Refresh';
 import Alert from '@material-ui/lab/Alert';
 
-import DronePlaceholderList from './DronePlaceholderList';
 import StartUploadButton from './StartUploadButton';
 import UploadProgressBar from './UploadProgressBar';
 
-import DialogToolbar from '~/components/dialogs/DialogToolbar';
 import DraggableDialog from '~/components/dialogs/DraggableDialog';
+import DronePlaceholderList from '~/components/uavs/DronePlaceholderList';
 import { getUAVIdsParticipatingInMission } from '~/features/mission/selectors';
 import { retryFailedUploads } from '~/features/show/actions';
 import {
@@ -143,8 +141,8 @@ const UploadDialog = ({
       fullWidth
       open={open}
       maxWidth='sm'
-      onClose={onClose}
       title='Upload show data'
+      onClose={onClose}
     >
       <DialogContent>
         <DronePlaceholderList

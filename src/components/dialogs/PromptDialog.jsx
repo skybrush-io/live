@@ -10,13 +10,13 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 
+import { TextField } from 'mui-rff';
 import PropTypes from 'prop-types';
-import { Form, Field } from 'react-final-form';
+import { Form } from 'react-final-form';
 import React from 'react';
 import { connect } from 'react-redux';
 
-import { cancelPromptDialog, submitPromptDialog } from '../../actions/prompt';
-import { TextField } from '../forms';
+import { cancelPromptDialog, submitPromptDialog } from '~/actions/prompt';
 
 const PromptDialogForm = ({
   cancelButtonLabel,
@@ -32,14 +32,13 @@ const PromptDialogForm = ({
       <form onSubmit={handleSubmit}>
         <DialogContent>
           <DialogContentText>{message}</DialogContentText>
-          <Field
+          <TextField
             autoFocus
             fullWidth
-            component={TextField}
             name='value'
             margin='dense'
-            id='value'
             label={hintText}
+            variant='filled'
           />
         </DialogContent>
         <DialogActions>

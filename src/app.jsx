@@ -114,6 +114,7 @@ const App = () => {
                 <dialogs.AuthenticationDialog />
                 <dialogs.DeauthenticationDialog />
                 <dialogs.FeatureEditorDialog />
+                <dialogs.FlyToTargetDialog />
                 <dialogs.GeofenceSettingsDialog />
                 <dialogs.GlobalErrorDialog />
                 <dialogs.LayerSettingsDialog />

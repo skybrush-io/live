@@ -5,6 +5,7 @@
 import CoordinateParser from 'coordinate-parser';
 import formatCoords from 'formatcoords';
 import curry from 'lodash-es/curry';
+import isNil from 'lodash-es/isNil';
 import minBy from 'lodash-es/minBy';
 import * as Coordinate from 'ol/coordinate';
 import * as Extent from 'ol/extent';
@@ -327,6 +328,18 @@ export const formatCoordinate = makeDecimalCoordinateFormatter({
   reverse: true,
   unit: '\u00B0',
 });
+
+export const safelyFormatCoordinate = (coordinate) => {
+  if (isNil(coordinate)) {
+    return '';
+  }
+
+  try {
+    return formatCoordinate(coordinate);
+  } catch {
+    return '';
+  }
+};
 
 /**
  * Parses the given string as geographical coordinates and converts it into

@@ -5,7 +5,7 @@ import React from 'react';
 import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 
-import DronePlaceholder from '~/components/uavs/DronePlaceholder';
+import DronePlaceholder from './DronePlaceholder';
 import { formatMissionId } from '~/utils/formatting';
 
 /**
@@ -21,6 +21,7 @@ const DronePlaceholderList = ({
   preferEmptyMessage,
   successMessage,
   title,
+  ...rest
 }) => {
   const formattedAndSortedIds = orderBy(
     items
@@ -30,7 +31,7 @@ const DronePlaceholderList = ({
       )
   );
   return (
-    <Box mt={1}>
+    <Box mt={1} {...rest}>
       <Box
         display='flex'
         flexDirection='row'

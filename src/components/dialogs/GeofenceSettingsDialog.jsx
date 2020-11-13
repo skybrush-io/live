@@ -3,9 +3,10 @@
  * edit them.
  */
 
+import { Checkboxes, TextField } from 'mui-rff';
 import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
-import { Form, Field } from 'react-final-form';
+import { Form } from 'react-final-form';
 import createDecorator from 'final-form-calculate';
 import { connect } from 'react-redux';
 
@@ -13,7 +14,6 @@ import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
 import InputAdornment from '@material-ui/core/InputAdornment';
 
 import DraggableDialog from '~/components/dialogs/DraggableDialog';
@@ -34,7 +34,7 @@ import {
   closeGeofenceSettingsDialog,
   updateGeofenceSettings,
 } from '~/actions/geofence-settings';
-import { forceFormSubmission, Switch, TextField } from '~/components/forms';
+import { forceFormSubmission } from '~/components/forms';
 
 import {
   createValidator,
@@ -96,53 +96,46 @@ const GeofenceSettingsFormPresentation = ({
       >
         <FormHeader>Safety margins</FormHeader>
         <Box display='flex' flexDirection='row'>
-          <Field
-            fullWidth
+          <TextField
+            fullWidth={false}
             name='horizontalMargin'
             label='Horizontal'
-            margin='normal'
-            component={TextField}
             type='number'
-            /* helpertext='(in meters)' */
             InputProps={{
               endAdornment: <InputAdornment position='end'>m</InputAdornment>,
             }}
+            variant='filled'
           />
           <Box p={1} />
-          <Field
-            fullWidth
+          <TextField
+            fullWidth={false}
             name='verticalMargin'
             label='Vertical'
-            margin='normal'
-            component={TextField}
             type='number'
             InputProps={{
               endAdornment: <InputAdornment position='end'>m</InputAdornment>,
             }}
+            variant='filled'
           />
         </Box>
         <FormHeader>Proposed limits for current mission</FormHeader>
         <Box display='flex' flexDirection='row'>
-          <Field
-            fullWidth
+          <TextField
             disabled
+            fullWidth={false}
             name='distanceLimit'
             label='Max distance'
-            margin='normal'
-            component={TextField}
             InputProps={{
               endAdornment: <InputAdornment position='end'>m</InputAdornment>,
             }}
             variant='standard'
           />
           <Box p={1} />
-          <Field
-            fullWidth
+          <TextField
             disabled
+            fullWidth={false}
             name='heightLimit'
             label='Max altitude'
-            margin='normal'
-            component={TextField}
             InputProps={{
               endAdornment: <InputAdornment position='end'>m</InputAdornment>,
             }}
@@ -151,21 +144,18 @@ const GeofenceSettingsFormPresentation = ({
         </Box>
 
         <FormHeader>Vertex count reduction</FormHeader>
-        <Box display='flex' flexDirection='row'>
-          <FormControlLabel
-            control={
-              <Field name='simplify' type='checkbox' component={Switch} />
-            }
-            label='Simplify polygon'
-            style={{ width: '230px' }}
+        <Box display='flex' flexDirection='column'>
+          <Checkboxes
+            name='simplify'
+            data={{ label: 'Simplify\u00A0polygon' }}
           />
-          <Field
+          <TextField
+            fullWidth={false}
             name='maxVertexCount'
             label='Maximum vertex count'
-            margin='normal'
             disabled={!simplify}
-            component={TextField}
             type='number'
+            variant='filled'
           />
         </Box>
       </form>
@@ -222,8 +212,8 @@ const GeofenceSettingsDialogPresentation = ({
       fullWidth
       open={open}
       maxWidth='xs'
-      onClose={onClose}
       title='Geofence settings'
+      onClose={onClose}
     >
       <DialogContent>
         {/* <FormHeader>Automatic geofence</FormHeader> */}
@@ -249,6 +239,7 @@ const GeofenceSettingsDialogPresentation = ({
 GeofenceSettingsDialogPresentation.propTypes = {
   forceFormSubmission: PropTypes.func,
   hasFence: PropTypes.bool,
+  onClearGeofence: PropTypes.func,
   onClose: PropTypes.func,
   onSubmit: PropTypes.func,
   open: PropTypes.bool.isRequired,

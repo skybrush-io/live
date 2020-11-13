@@ -35,7 +35,7 @@ import {
   clearStartTimeAndMethod,
   synchronizeShowSettings,
 } from '~/features/show/slice';
-import { showNotification } from '~/features/snackbar/slice';
+import { showError, showNotification } from '~/features/snackbar/actions';
 import { MessageSemantics } from '~/features/snackbar/types';
 import messageHub from '~/message-hub';
 import {
@@ -460,12 +460,7 @@ const ServerConnectionManager = connect(
 
     onConnectionTimeout() {
       dispatch(setCurrentServerConnectionState(ConnectionState.DISCONNECTED));
-      dispatch(
-        showNotification({
-          message: 'Timeout while connecting to Skybrush server',
-          semantics: 'error',
-        })
-      );
+      dispatch(showError('Timeout while connecting to Skybrush server'));
     },
 
     onDisconnected: (url, reason) => {
@@ -482,19 +477,9 @@ const ServerConnectionManager = connect(
           // Server does not close the connection without sending a SYS-CLOSE
           // message so there is no need to show another
         } else if (reason === 'transport close') {
-          dispatch(
-            showNotification({
-              message: 'Skybrush server closed connection unexpectedly',
-              semantics: MessageSemantics.ERROR,
-            })
-          );
+          dispatch(showError('Skybrush server closed connection unexpectedly'));
         } else if (reason === 'ping timeout') {
-          dispatch(
-            showNotification({
-              message: 'Connection to Skybrush server lost',
-              semantics: MessageSemantics.ERROR,
-            })
-          );
+          dispatch(showError('Connection to Skybrush server lost'));
         }
 
         // Determine whether Socket.IO will try to reconnect on its own
@@ -522,12 +507,7 @@ const ServerConnectionManager = connect(
         ? 'Skybrush server died unexpectedly'
         : 'Failed to launch local Skybrush server';
       dispatch(setCurrentServerConnectionState(ConnectionState.DISCONNECTED));
-      dispatch(
-        showNotification({
-          message: message ? `${baseMessage}: ${message}` : baseMessage,
-          semantics: 'error',
-        })
-      );
+      dispatch(showError(message ? `${baseMessage}: ${message}` : baseMessage));
     },
 
     onLocalServerStarted() {

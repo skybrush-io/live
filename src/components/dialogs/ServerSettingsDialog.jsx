@@ -6,16 +6,16 @@
 import config from 'config';
 
 import partial from 'lodash-es/partial';
+import { Switches, TextField } from 'mui-rff';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Form, Field } from 'react-final-form';
+import { Form } from 'react-final-form';
 import { connect } from 'react-redux';
 
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -42,7 +42,7 @@ import {
   setServerSettingsDialogTab,
 } from '~/actions/server-settings';
 import SmallProgressIndicator from '~/components/SmallProgressIndicator';
-import { forceFormSubmission, Switch, TextField } from '~/components/forms';
+import { forceFormSubmission } from '~/components/forms';
 import {
   getDetectedServersInOrder,
   isConnecting,
@@ -159,24 +159,21 @@ const ServerSettingsFormPresentation = ({
   <Form initialValues={initialValues} validate={validator} onSubmit={onSubmit}>
     {({ handleSubmit }) => (
       <form id='serverSettings' onSubmit={handleSubmit} onKeyPress={onKeyPress}>
-        <Field
+        <TextField
           fullWidth
           name='hostName'
           label='Hostname'
+          variant='filled'
           margin='normal'
-          component={TextField}
         />
-        <Field
+        <TextField
           fullWidth
           name='port'
           label='Port'
+          variant='filled'
           margin='normal'
-          component={TextField}
         />
-        <FormControlLabel
-          control={<Field name='isSecure' type='checkbox' component={Switch} />}
-          label='Use secure connection'
-        />
+        <Switches name='isSecure' data={{ label: 'Use secure connection' }} />
       </form>
     )}
   </Form>

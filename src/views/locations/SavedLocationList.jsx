@@ -8,7 +8,7 @@ import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import ListItemText from '@material-ui/core/ListItemText';
 import Tooltip from '~/components/Tooltip';
 
-import ActionSettings from '@material-ui/icons/Settings';
+import Edit from '@material-ui/icons/Edit';
 
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -37,7 +37,7 @@ const LocationListEntry = (props) => {
   const actionButton = (
     <Tooltip content='Edit location'>
       <IconButton edge='end' onClick={editLocation}>
-        <ActionSettings />
+        <Edit />
       </IconButton>
     </Tooltip>
   );
@@ -61,15 +61,11 @@ LocationListEntry.propTypes = {
  * @param  {Object} props  the props of the list in which this item will be placed
  * @return {React.Node}  the rendered list item
  */
-const createNewItemEntry = (props) => {
-  /* eslint-disable react/prop-types */
-  return (
-    <ListItem key='__addNew__' button onClick={props.onNewItem}>
-      <ListItemText primary='Add new location' />
-    </ListItem>
-  );
-  /* eslint-enable react/prop-types */
-};
+const createNewItemEntry = (props) => (
+  <ListItem key='__addNew__' button onClick={props.onNewItem}>
+    <ListItemText primary='Add new location' />
+  </ListItem>
+);
 
 /**
  * Presentation component for the entire location list.

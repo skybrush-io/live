@@ -2,9 +2,10 @@
  * @file React component for the layer settings dialog.
  */
 
+import { TextField } from 'mui-rff';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Form, Field } from 'react-final-form';
+import { Form } from 'react-final-form';
 import { connect } from 'react-redux';
 
 import Box from '@material-ui/core/Box';
@@ -17,7 +18,7 @@ import Switch from '@material-ui/core/Switch';
 import ArrowDown from '@material-ui/icons/ArrowDropDown';
 import ArrowUp from '@material-ui/icons/ArrowDropUp';
 
-import { forceFormSubmission, TextField } from '../forms';
+import { forceFormSubmission } from '../forms';
 
 import {
   adjustLayerZIndex,
@@ -41,70 +42,53 @@ const validator = createValidator({
  * Form for the basic settings of a layer that is applicable to all layers
  * regardless of its type.
  */
-class BasicLayerSettingsFormPresentation extends React.Component {
-  static propTypes = {
-    initialValues: PropTypes.object,
-    layer: PropTypes.object,
-    validate: PropTypes.func,
+const BasicLayerSettingsFormPresentation = ({
+  initialValues,
+  layer,
+  onSubmit,
+  onToggleLayerVisibility,
+  validate,
+}) => (
+  <Form
+    validateOnBlur
+    initialValues={initialValues}
+    validate={validate}
+    onSubmit={onSubmit}
+  >
+    {({ handleSubmit }) => (
+      <form id='basicLayerSettings' onSubmit={handleSubmit}>
+        <Box display='flex' pb={2}>
+          <TextField
+            name='label'
+            variant='filled'
+            label='Layer name'
+            placeholder='New layer'
+            style={{ flex: 'auto' }}
+          />
+          <div>&nbsp;</div>
+          <Switch
+            checked={layer.visible}
+            color='primary'
+            disabled={layer.type === LayerType.UNTYPED}
+            style={{ flex: 'none' }}
+            onChange={onToggleLayerVisibility}
+          />
+        </Box>
+      </form>
+    )}
+  </Form>
+);
 
-    onSubmit: PropTypes.func,
-    onToggleLayerVisibility: PropTypes.func,
-  };
-
-  render() {
-    const {
-      initialValues,
-      layer,
-      onSubmit,
-      onToggleLayerVisibility,
-      validate,
-    } = this.props;
-
-    return (
-      <Form
-        validateOnBlur
-        initialValues={initialValues}
-        validate={validate}
-        onSubmit={onSubmit}
-      >
-        {({ handleSubmit }) => (
-          <form id='basicLayerSettings' onSubmit={handleSubmit}>
-            <Box display='flex' pb={2}>
-              <Field
-                name='label'
-                component={TextField}
-                variant='filled'
-                label='Layer name'
-                placeholder='New layer'
-                style={{ flex: 'auto' }}
-                onKeyDown={this._onKeyDown}
-              />
-              <div>&nbsp;</div>
-              <Switch
-                checked={layer.visible}
-                color='primary'
-                disabled={layer.type === LayerType.UNTYPED}
-                style={{ flex: 'none' }}
-                onChange={onToggleLayerVisibility}
-              />
-            </Box>
-          </form>
-        )}
-      </Form>
-    );
-  }
-
-  /**
-   * Function to accept the field's value when Enter is pressed.
-   *
-   * @param {Event} e the event fired from the TextField React component
-   */
-  _onKeyDown = (e) => {
-    if (e.key === 'Enter') {
-      e.target.blur();
-    }
-  };
-}
+BasicLayerSettingsFormPresentation.propTypes = {
+  layer: PropTypes.shape({
+    visible: PropTypes.bool,
+    type: PropTypes.string,
+  }),
+  initialValues: PropTypes.object,
+  validate: PropTypes.func,
+  onSubmit: PropTypes.func,
+  onToggleLayerVisibility: PropTypes.func,
+};
 
 /**
  * Container of the form that shows the fields that the user can use to
@@ -329,7 +313,9 @@ const LayerSettingsDialog = connect(
       const state = getState();
       const { layerSettings } = state.dialogs;
       const { selectedLayer: selectedLayerId } = layerSettings || {};
-      const selectedLayer = selectedLayerId ? state.map.layers.byId[selectedLayerId] : undefined;
+      const selectedLayer = selectedLayerId
+        ? state.map.layers.byId[selectedLayerId]
+        : undefined;
 
       if (selectedLayer && selectedLayer.type === LayerType.UNTYPED) {
         dispatch(removeLayer(selectedLayerId));
@@ -338,7 +324,7 @@ const LayerSettingsDialog = connect(
       dispatch(closeLayersDialog());
     },
     onMoveLayer: adjustLayerZIndex,
-    onRemoveLayer: removeLayer
+    onRemoveLayer: removeLayer,
   }
 )(LayerSettingsDialogPresentation);
 
