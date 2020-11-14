@@ -394,17 +394,18 @@ const MissionInfoVectorSource = ({
     Coordinate.rotate(headY, toRadians(90 - orientation));
     Coordinate.add(headY, tail);
     Coordinate.add(headX, tail);
+
     features.push(
       <Feature
         key='mapOrigin.x'
-        id={globalIdOfOrigin + '$x'}
+        id={globalIdOfOrigin}
         style={originStyles(selectedOriginIds.includes(MAP_ORIGIN_ID), 'x')}
       >
         <geom.LineString coordinates={[tail, headX]} />
       </Feature>,
       <Feature
         key='mapOrigin.y'
-        id={globalIdOfOrigin}
+        id={globalIdOfOrigin + '$y'}
         style={originStyles(selectedOriginIds.includes(MAP_ORIGIN_ID), 'y')}
       >
         <geom.LineString coordinates={[tail, headY]} />

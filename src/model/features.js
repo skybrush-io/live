@@ -12,7 +12,9 @@ import PanoramaFishEye from '@material-ui/icons/PanoramaFishEye';
 import StarBorder from '@material-ui/icons/StarBorder';
 import React from 'react';
 
-import { lonLatFromMapViewCoordinate } from '../utils/geography';
+import { lonLatFromMapViewCoordinate } from '~/utils/geography';
+
+import { isAreaId, isFeatureId, isOriginId } from './identifiers';
 
 /**
  * Enum containing constants for the various feature types that we support.
@@ -142,25 +144,14 @@ export function getIconOfFeatureType(type) {
  * Returns whether the given OpenLayers feature is transformable with a
  * standard transformation interaction.
  *
- * @param  {ol.Feature|null|undefined}  feature  the feature to test
+ * @param  {ol.Feature|null|undefined}  obj  the feature to test
  * @return {boolean} whether the feature is transformable
  */
-export function isFeatureTransformable(feature) {
-  if (isNil(feature)) {
+export function isFeatureTransformable(object) {
+  if (isNil(object)) {
     return false;
   }
 
-  const parts = feature.getId().split('$');
-  if (parts.length < 2) {
-    return false;
-  }
-
-  switch (parts[0]) {
-    case 'feature':
-    case 'home':
-      return true;
-
-    default:
-      return false;
-  }
+  const id = object.getId();
+  return isFeatureId(id) || isAreaId(id) || isOriginId(id);
 }

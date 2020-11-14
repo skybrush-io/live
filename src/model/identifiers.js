@@ -1,4 +1,4 @@
-import { appendTo, stripPrefix } from '../utils/operators';
+import { appendTo, hasPrefix, stripPrefix } from '~/utils/operators';
 
 export const areaIdToGlobalId = appendTo('area$');
 export const dockIdToGlobalId = appendTo('dock$');
@@ -15,3 +15,11 @@ export const globalIdToHomePositionId = stripPrefix('home$');
 export const globalIdToLandingPositionId = stripPrefix('land$');
 export const globalIdToOriginId = stripPrefix('origin$');
 export const globalIdToUavId = stripPrefix('uav$');
+
+export const isAreaId = hasPrefix('area$');
+export const isDockId = hasPrefix('dock$');
+export const isFeatureId = hasPrefix('feature$');
+export const isHomePositionId = hasPrefix('home$');
+export const isLandingPositionId = hasPrefix('land$');
+export const isOriginId = hasPrefix('origin$');
+export const isUavId = hasPrefix('uav$');

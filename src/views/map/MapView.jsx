@@ -115,9 +115,9 @@ const MapViewControlsPresentation = (props) => {
     result.push(
       <control.MousePosition
         key='control.MousePosition'
+        hideWhenOut
         projection='EPSG:4326'
         coordinateFormat={props.formatCoordinate}
-        hideWhenOut
       />
     );
   }
@@ -629,8 +629,8 @@ class MapViewPresentation extends React.Component {
         ).points;
       } else {
         const originFeatureId = globalIdToOriginId(globalId);
-        if (originFeatureId === '') {
-          // Feature is a coordinate system origin feature
+        if (originFeatureId === 'map') {
+          // Feature is the origin of the flat Earth coordinate system
           const featureObject = createFeatureFromOpenLayers(feature);
           const coords = feature.getGeometry().getCoordinates();
           dispatch(

@@ -29,6 +29,18 @@ export function extendWith(...items) {
 }
 
 /**
+ * Helper function that creates another function that returns whether a string
+ * starts with a prefix.
+ *
+ * @param  {string} prefix  the prefix to test
+ * @return {function} a function that will take a string and return whether it
+ *         starts with the given prefix
+ */
+export function hasPrefix(prefix) {
+  return (input) => typeof input === 'string' && input.startsWith(prefix);
+}
+
+/**
  * Helper function that creates a function that strips some prefix from its
  * first input argument. The function will return undefined if the input
  * argument does not start with the prefix.

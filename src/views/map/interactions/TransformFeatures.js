@@ -15,6 +15,7 @@ import { createOLInteractionComponent } from '@collmot/ol-react/lib/interaction'
 
 import Condition from '../conditions';
 
+import { isOriginId } from '~/model/identifiers';
 import { toRadians } from '~/utils/math';
 
 /**
@@ -74,6 +75,7 @@ export class TransformFeaturesInteraction extends PointerInteraction {
           event.map,
           features
         );
+
         if (!this.lastCoordinate_ && this.lastFeature_) {
           this.firstCoordinate_ = event.coordinate;
           this.lastCoordinate_ = event.coordinate;
@@ -87,7 +89,7 @@ export class TransformFeaturesInteraction extends PointerInteraction {
             const extent = Extent.createEmpty();
             features.forEach((feature) => {
               const geom = feature.getGeometry();
-              if (feature.getId().slice(0, 5) === 'home$') {
+              if (isOriginId(feature.getId())) {
                 Extent.extend(
                   extent,
                   Extent.boundingExtent([geom.getFirstCoordinate()])
