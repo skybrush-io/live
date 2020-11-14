@@ -93,7 +93,7 @@ const labelStrokes = {
 };
 
 // TODO: cache the style somewhere?
-const styleForFeature = (feature, selected = false, geofence = false) => {
+const styleForFeature = (feature, selected = false, isGeofence = false) => {
   const { color, label, labelStyle, type, filled } = feature;
   const parsedColor = createColor(color || primaryColor);
   const styles = [];
@@ -119,7 +119,9 @@ const styleForFeature = (feature, selected = false, geofence = false) => {
 
       styles.push(
         new Style({
-          stroke: thinOutline(parsedColor.rgb().array()),
+          stroke: (isGeofence ? dashedThickOutline : thinOutline)(
+            parsedColor.rgb().array()
+          ),
         })
       );
       break;
@@ -147,7 +149,7 @@ const styleForFeature = (feature, selected = false, geofence = false) => {
 
       styles.push(
         new Style({
-          stroke: (geofence ? dashedThickOutline : thinOutline)(
+          stroke: (isGeofence ? dashedThickOutline : thinOutline)(
             parsedColor.rgb().array()
           ),
         })
@@ -172,13 +174,13 @@ const styleForFeature = (feature, selected = false, geofence = false) => {
   return styles;
 };
 
-const renderFeature = (feature, selected, geofence) => {
+const renderFeature = (feature, selected, isGeofence) => {
   const { id } = feature;
   return (
     <Feature
       key={id}
       id={featureIdToGlobalId(id)}
-      style={styleForFeature(feature, selected, geofence)}
+      style={styleForFeature(feature, selected, isGeofence)}
     >
       {geometryForFeature(feature)}
     </Feature>

@@ -4,11 +4,13 @@ import { getDistance as haversineDistance } from 'ol/sphere';
 import { findAssignmentInDistanceMatrix } from './matching';
 import {
   getEmptyMappingSlotIndices,
+  getGeofencePolygonId,
   getGPSBasedHomePositionsInMission,
   getMissionMapping,
 } from './selectors';
 import { clearMapping, removeUAVsFromMapping, replaceMapping } from './slice';
 
+import { removeFeature } from '~/actions/features';
 import {
   getOutdoorShowCoordinateSystem,
   getShowCoordinateSystemTransformationObject,
@@ -71,7 +73,7 @@ export const augmentMappingAutomaticallyFromSpareDrones = ({
     getter,
   });
   const matching = findAssignmentInDistanceMatrix(distances, {
-    algorithm: 'greedy',
+    algorithm,
     threshold: 3 /* meters */,
   });
 
@@ -167,6 +169,13 @@ export const addVirtualDronesForMission = () => async (dispatch, getState) => {
       semantics: MessageSemantics.SUCCESS,
     })
   );
+};
+
+/**
+ * Thunk that removes the current geofence polygon.
+ */
+export const removeGeofencePolygon = () => (dispatch, getState) => {
+  dispatch(removeFeature(getGeofencePolygonId(getState())));
 };
 
 /**

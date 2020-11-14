@@ -3,9 +3,9 @@ import get from 'lodash-es/get';
 import identity from 'lodash-es/identity';
 import throttle from 'lodash-es/throttle';
 
-import { addFeature, removeFeature, removeFeatures } from '~/actions/features';
+import { addFeature, removeFeatures } from '~/actions/features';
 import { Colors } from '~/components/colors';
-import { getGeofencePolygonId } from '~/features/mission/selectors';
+import { removeGeofencePolygon } from '~/features/mission/actions';
 import {
   updateHomePositions,
   updateLandingPositions,
@@ -74,11 +74,6 @@ export const setupMissionFromShow = () => (dispatch, getState) => {
   dispatch(updateTakeoffHeadings(orientation));
 };
 
-export const removeGeofencePolygon = () => (dispatch, getState) => {
-  const state = getState();
-  dispatch(removeFeature(getGeofencePolygonId(state)));
-};
-
 export const removeShowFeatures = () => (dispatch, getState) => {
   const state = getState();
 
@@ -89,7 +84,10 @@ export const removeShowFeatures = () => (dispatch, getState) => {
   dispatch(removeFeatures(showFeatureIds));
 };
 
-export const addGeofencePolygon = () => (dispatch, getState) => {
+export const addGeofencePolygonBasedOnShowTrajectories = () => (
+  dispatch,
+  getState
+) => {
   const state = getState();
 
   const {
@@ -142,7 +140,10 @@ export const addGeofencePolygon = () => (dispatch, getState) => {
     : points;
 
   const geofencePolygon = {
-    type: FeatureType.POLYGON,
+    /* use a line string as the geofence, not a polygon -- if we use a polygon,
+     * it means that any click inside the geofence would be considered as a
+     * "hit" for the geofence feature */
+    type: FeatureType.LINE_STRING,
     owner: 'show',
     /* don't use a label; the geofence usually overlaps with the convex hull of
      * the show so it is confusing if the "Geofence" label appears in the middle
@@ -157,7 +158,7 @@ export const addGeofencePolygon = () => (dispatch, getState) => {
 
 export const updateGeofencePolygon = () => (dispatch) => {
   dispatch(removeGeofencePolygon());
-  dispatch(addGeofencePolygon());
+  dispatch(addGeofencePolygonBasedOnShowTrajectories());
 };
 
 export const updateOutdoorShowSettings = ({

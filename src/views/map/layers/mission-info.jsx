@@ -28,13 +28,14 @@ import {
 import {
   globalIdToHomePositionId,
   globalIdToLandingPositionId,
+  areaIdToGlobalId,
   homePositionIdToGlobalId,
   landingPositionIdToGlobalId,
   originIdToGlobalId,
 } from '~/model/identifiers';
 import { setLayerEditable, setLayerSelectable } from '~/model/layers';
 import { getMapOriginRotationAngle } from '~/selectors/map';
-import { getSelectedOriginIds } from '~/selectors/selection';
+import { getSelectedOriginIds, isSelected } from '~/selectors/selection';
 import { formatMissionId } from '~/utils/formatting';
 import { mapViewCoordinateFromLonLat } from '~/utils/geography';
 import { toRadians } from '~/utils/math';
@@ -44,7 +45,6 @@ import {
   fill,
   stroke,
   thinOutline,
-  thickOutline,
   whiteThickOutline,
   whiteThinOutline,
 } from '~/utils/styles';
@@ -284,18 +284,32 @@ const createMissionOriginStyle = memoizeOne(
 /**
  * Style for the convex hull of the mission.
  */
-const missionConvexHullStyle = new Style({
+const baseMissionConvexHullStyle = new Style({
   stroke: thinOutline(Colors.convexHull),
 });
+const missionConvexHullSelectionStyle = new Style({
+  stroke: whiteThickOutline,
+});
+const missionConvexHullStyles = [
+  [baseMissionConvexHullStyle],
+  [missionConvexHullSelectionStyle, baseMissionConvexHullStyle],
+];
 
 const MAP_ORIGIN_ID = 'map';
 const MISSION_ORIGIN_ID = 'mission';
-const CONVEX_HULL_ID = 'convexHull';
+const CONVEX_HULL_ID = areaIdToGlobalId('convexHull');
+
+/**
+ * Selector that takes the current state and returns whether the convex hull of
+ * the mission is selected.
+ */
+const isConvexHullSelected = isSelected(CONVEX_HULL_ID);
 
 const MissionInfoVectorSource = ({
   convexHull,
   coordinateSystemType,
   homePositions,
+  isConvexHullSelected,
   landingPositions,
   missionOrientation,
   missionOrigin,
@@ -413,7 +427,7 @@ const MissionInfoVectorSource = ({
   }
 
   if (convexHull) {
-    const globalIdOfMissionConvexHull = originIdToGlobalId(CONVEX_HULL_ID);
+    const globalIdOfMissionConvexHull = CONVEX_HULL_ID;
     const convexHullInMapCoordinates = convexHull.map((coord) =>
       mapViewCoordinateFromLonLat([coord.lon, coord.lat])
     );
@@ -427,9 +441,9 @@ const MissionInfoVectorSource = ({
       <Feature
         key='missionConvexHull'
         id={globalIdOfMissionConvexHull}
-        style={missionConvexHullStyle}
+        style={missionConvexHullStyles[isConvexHullSelected ? 1 : 0]}
       >
-        <geom.Polygon coordinates={convexHullInMapCoordinates} />
+        <geom.LineString coordinates={convexHullInMapCoordinates} />
       </Feature>
     );
   }
@@ -441,6 +455,7 @@ MissionInfoVectorSource.propTypes = {
   convexHull: PropTypes.arrayOf(CustomPropTypes.coordinate),
   coordinateSystemType: PropTypes.oneOf(['neu', 'nwu']),
   homePositions: PropTypes.arrayOf(CustomPropTypes.coordinate),
+  isConvexHullSelected: PropTypes.bool,
   landingPositions: PropTypes.arrayOf(CustomPropTypes.coordinate),
   missionOrientation: CustomPropTypes.angle,
   missionOrigin: PropTypes.arrayOf(PropTypes.number),
@@ -465,7 +480,6 @@ const MissionInfoLayerPresentation = ({ layer, zIndex, ...rest }) => (
     zIndex={zIndex}
   >
     <MissionInfoVectorSource
-      showConvexHull={layer.parameters.showConvexHull}
       showHomePositions={layer.parameters.showHomePositions}
       showLandingPositions={layer.parameters.showLandingPositions}
       showMissionOrigin={layer.parameters.showMissionOrigin}
@@ -486,6 +500,7 @@ export const MissionInfoLayer = connect(
     convexHull: getConvexHullOfShowInWorldCoordinates(state),
     coordinateSystemType: state.map.origin.type,
     homePositions: getGPSBasedHomePositionsInMission(state),
+    isConvexHullSelected: isConvexHullSelected(state),
     landingPositions: getGPSBasedLandingPositionsInMission(state),
     missionOrigin: getOutdoorShowOrigin(state),
     missionOrientation: getOutdoorShowOrientation(state),

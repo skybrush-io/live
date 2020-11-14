@@ -235,7 +235,7 @@ const MapViewInteractions = withMap((props) => {
         layers={isLayerSelectable}
         removeCondition={Condition.altKeyOnly}
         toggleCondition={Condition.platformModifierKeyOnly}
-        threshold={40}
+        threshold={10}
         onSelect={onSingleFeatureSelected}
       />,
 

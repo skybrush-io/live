@@ -24,6 +24,13 @@ import {
 export const getSelection = (state) => state.map.selection;
 
 /**
+ * Selector factory that creates a selector that returns true if and only if a
+ * feature with the given ID is selected.
+ */
+export const isSelected = (id) =>
+  createSelector(getSelection, (selection) => selection.includes(id));
+
+/**
  * Helper function that creates a selector that maps the current map selection
  * to a subset of the IDs based on a mapping function from global IDs.
  *

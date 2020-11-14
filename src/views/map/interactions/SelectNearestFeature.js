@@ -7,7 +7,6 @@
 import includes from 'lodash-es/includes';
 import isArray from 'lodash-es/isArray';
 import isFunction from 'lodash-es/isFunction';
-import minBy from 'lodash-es/minBy';
 import partial from 'lodash-es/partial';
 import stubFalse from 'lodash-es/stubFalse';
 import stubTrue from 'lodash-es/stubTrue';
@@ -123,8 +122,8 @@ class SelectNearestFeatureInteraction extends Interaction {
         // In the closestFeatureOnEachFeasibleLayer array, the topmost layer
         // is at the front. We need to iterate over it and stop at the first
         // feature that is closer than the threshold.
-        let closestFeature = undefined;
-        let distance = undefined;
+        let closestFeature;
+        let distance;
         for (const feature of closestFeatureOnEachFeasibleLayer) {
           // Get the actual distance of the feature (if we have one)
           distance = distanceFunction(feature);

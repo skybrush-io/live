@@ -177,7 +177,7 @@ const { actions, reducer } = createSlice({
     },
 
     /**
-     * Sets the id determining the polygon that is to be used as a geofence.
+     * Sets the ID determining the polygon that is to be used as a geofence.
      */
     setGeofencePolygonId(state, action) {
       state.geofencePolygonId = action.payload;
