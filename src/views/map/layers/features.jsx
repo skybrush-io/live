@@ -3,7 +3,7 @@ import isEmpty from 'lodash-es/isEmpty';
 import unary from 'lodash-es/unary';
 import PropTypes from 'prop-types';
 import { Circle, Style, Text } from 'ol/style';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useRef } from 'react';
 import { connect } from 'react-redux';
 
 import { Feature, geom, interaction, layer, source } from '@collmot/ol-react';
@@ -238,13 +238,13 @@ const FeaturesLayerPresentation = ({
   // We actually do _not_ want the component to re-render when this variable
   // changes because we only need it to keep track of something between an
   // onModifyStart and an onModifyEnd event.
-  const featureSnapshot = useState({ snapshot: null })[0];
+  const featureSnapshot = useRef(null);
 
   const onModifyStart = useCallback(
     (event) => {
       // Take a snapshot of all the features in the event so we can figure out
       // later which ones were modified
-      featureSnapshot.value = takeFeatureRevisionSnapshot(
+      featureSnapshot.current = takeFeatureRevisionSnapshot(
         event.features.getArray()
       );
       if (onFeatureModificationStarted) {
@@ -261,12 +261,12 @@ const FeaturesLayerPresentation = ({
           event,
           getFeaturesThatChanged(
             event.features.getArray(),
-            featureSnapshot.value
+            featureSnapshot.current
           )
         );
       }
 
-      featureSnapshot.value = null;
+      featureSnapshot.current = null;
     },
     [onFeaturesModified]
   );
