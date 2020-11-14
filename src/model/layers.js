@@ -139,6 +139,7 @@ const _propertiesForLayerTypes = {
     label: 'Mission info',
     icon: <Info />,
     parameters: {
+      showConvexHull: true,
       showOrigin: true,
       showHomePositions: true,
       showLandingPositions: false,

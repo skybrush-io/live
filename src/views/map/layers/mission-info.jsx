@@ -21,6 +21,7 @@ import {
   getGPSBasedLandingPositionsInMission,
 } from '~/features/mission/selectors';
 import {
+  getConvexHullOfShowInWorldCoordinates,
   getOutdoorShowOrientation,
   getOutdoorShowOrigin,
 } from '~/features/show/selectors';
@@ -42,6 +43,8 @@ import {
   blackVeryThinOutline,
   fill,
   stroke,
+  thinOutline,
+  thickOutline,
   whiteThickOutline,
   whiteThinOutline,
 } from '~/utils/styles';
@@ -54,6 +57,7 @@ const missionOriginMarker = require('~/../assets/img/mission-origin-marker.svg')
 const MissionInfoLayerSettingsPresentation = ({ layer, setLayerParameter }) => {
   const { parameters } = layer;
   const {
+    showConvexHull,
     showOrigin,
     showHomePositions,
     showLandingPositions,
@@ -104,6 +108,16 @@ const MissionInfoLayerSettingsPresentation = ({ layer, setLayerParameter }) => {
           />
         }
         label='Show landing positions'
+      />
+      <FormControlLabel
+        control={
+          <Checkbox
+            checked={showConvexHull}
+            value='showConvexHull'
+            onChange={handleChange('showConvexHull')}
+          />
+        }
+        label='Show convex hull of trajectories'
       />
     </FormGroup>
   );
@@ -267,10 +281,19 @@ const createMissionOriginStyle = memoizeOne(
     })
 );
 
+/**
+ * Style for the convex hull of the mission.
+ */
+const missionConvexHullStyle = new Style({
+  stroke: thinOutline(Colors.convexHull),
+});
+
 const MAP_ORIGIN_ID = 'map';
 const MISSION_ORIGIN_ID = 'mission';
+const CONVEX_HULL_ID = 'convexHull';
 
-const HomePositionsVectorSource = ({
+const MissionInfoVectorSource = ({
+  convexHull,
   coordinateSystemType,
   homePositions,
   landingPositions,
@@ -389,10 +412,33 @@ const HomePositionsVectorSource = ({
     );
   }
 
+  if (convexHull) {
+    const globalIdOfMissionConvexHull = originIdToGlobalId(CONVEX_HULL_ID);
+    const convexHullInMapCoordinates = convexHull.map((coord) =>
+      mapViewCoordinateFromLonLat([coord.lon, coord.lat])
+    );
+
+    // TODO(ntamas): create a closePolygon helper!
+    if (convexHullInMapCoordinates.length > 0) {
+      convexHullInMapCoordinates.push(convexHullInMapCoordinates[0]);
+    }
+
+    features.push(
+      <Feature
+        key='missionConvexHull'
+        id={globalIdOfMissionConvexHull}
+        style={missionConvexHullStyle}
+      >
+        <geom.Polygon coordinates={convexHullInMapCoordinates} />
+      </Feature>
+    );
+  }
+
   return <source.Vector>{features}</source.Vector>;
 };
 
-HomePositionsVectorSource.propTypes = {
+MissionInfoVectorSource.propTypes = {
+  convexHull: PropTypes.arrayOf(CustomPropTypes.coordinate),
   coordinateSystemType: PropTypes.oneOf(['neu', 'nwu']),
   homePositions: PropTypes.arrayOf(CustomPropTypes.coordinate),
   landingPositions: PropTypes.arrayOf(CustomPropTypes.coordinate),
@@ -407,7 +453,7 @@ HomePositionsVectorSource.propTypes = {
   showOrigin: PropTypes.bool,
 };
 
-HomePositionsVectorSource.defaultProps = {
+MissionInfoVectorSource.defaultProps = {
   orientation: 0,
 };
 
@@ -418,7 +464,8 @@ const MissionInfoLayerPresentation = ({ layer, zIndex, ...rest }) => (
     updateWhileInteracting
     zIndex={zIndex}
   >
-    <HomePositionsVectorSource
+    <MissionInfoVectorSource
+      showConvexHull={layer.parameters.showConvexHull}
       showHomePositions={layer.parameters.showHomePositions}
       showLandingPositions={layer.parameters.showLandingPositions}
       showMissionOrigin={layer.parameters.showMissionOrigin}
@@ -436,6 +483,7 @@ MissionInfoLayerPresentation.propTypes = {
 export const MissionInfoLayer = connect(
   // mapStateToProps
   (state) => ({
+    convexHull: getConvexHullOfShowInWorldCoordinates(state),
     coordinateSystemType: state.map.origin.type,
     homePositions: getGPSBasedHomePositionsInMission(state),
     landingPositions: getGPSBasedLandingPositionsInMission(state),

@@ -4,6 +4,7 @@ import identity from 'lodash-es/identity';
 import throttle from 'lodash-es/throttle';
 
 import { addFeature, removeFeature, removeFeatures } from '~/actions/features';
+import { Colors } from '~/components/colors';
 import { getGeofencePolygonId } from '~/features/mission/selectors';
 import {
   updateHomePositions,
@@ -119,11 +120,6 @@ export const addGeofencePolygon = () => (dispatch, getState) => {
 
   const transformation = getShowCoordinateSystemTransformationObject(state);
 
-  // const transformation = new FlatEarthCoordinateSystem(
-  //   getOutdoorShowCoordinateSystem(state)
-  //   state.show.environment.outdoor.coordinateSystem
-  // );
-
   const MarginType = {
     BUFFER: 'buffer',
     GROW: 'grow',
@@ -148,8 +144,10 @@ export const addGeofencePolygon = () => (dispatch, getState) => {
   const geofencePolygon = {
     type: FeatureType.POLYGON,
     owner: 'show',
-    label: 'Geofence',
-    color: '#ff0000',
+    /* don't use a label; the geofence usually overlaps with the convex hull of
+     * the show so it is confusing if the "Geofence" label appears in the middle
+     * of the convex hull */
+    color: Colors.geofence,
     points: simplifiedPoints.map((c) => transformation.toLonLat(c)),
   };
   const action = addFeature(geofencePolygon);

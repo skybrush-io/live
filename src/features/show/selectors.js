@@ -248,6 +248,9 @@ export const getConvexHullsOfTrajectories = createSelector(
 
 /**
  * Returns the coordinates of the convex hull of the currently loaded show.
+ * These are in the flat Earth coordinate system of the show so they are not
+ * usable directly on the map. Use `getConvexHullOfShowInWorldCoordinates()` if
+ * you need them as GPS coordinates.
  */
 export const getConvexHullOfShow = createSelector(
   getConvexHullsOfTrajectories,
@@ -255,6 +258,22 @@ export const getConvexHullOfShow = createSelector(
     const allPoints = [].concat(...convexHulls);
     return convexHull(allPoints);
   }
+);
+
+const transformPoints = (points, transform) =>
+  transform ? points.map(transform) : [];
+
+const transformPointsOrFillWithUndefined = (points, transform) =>
+  transform ? points.map(transform) : new Array(points.length).fill(undefined);
+
+/**
+ * Returns the coordinates of the convex hull of the currently loaded show, in
+ * world coordinates.
+ */
+export const getConvexHullOfShowInWorldCoordinates = createSelector(
+  getConvexHullOfShow,
+  getShowToWorldCoordinateSystemTransformation,
+  transformPoints
 );
 
 /**
@@ -269,11 +288,14 @@ export const getFirstPointsOfTrajectories = createSelector(
   (trajectories) => trajectories.map(getFirstPointOfTrajectory)
 );
 
+/**
+ * Returns an array holding the first points of all the trajectories, in
+ * world coordinates.
+ */
 export const getFirstPointsOfTrajectoriesInWorldCoordinates = createSelector(
   getFirstPointsOfTrajectories,
   getShowToWorldCoordinateSystemTransformation,
-  (points, transform) =>
-    transform ? points.map(transform) : new Array(points.length).fill(undefined)
+  transformPointsOrFillWithUndefined
 );
 
 /**
@@ -288,11 +310,14 @@ export const getLastPointsOfTrajectories = createSelector(
   (trajectories) => trajectories.map(getLastPointOfTrajectory)
 );
 
+/**
+ * Returns an array holding the last points of all the trajectories, in
+ * world coordinates.
+ */
 export const getLastPointsOfTrajectoriesInWorldCoordinates = createSelector(
   getLastPointsOfTrajectories,
   getShowToWorldCoordinateSystemTransformation,
-  (points, transform) =>
-    transform ? points.map(transform) : new Array(points.length).fill(undefined)
+  transformPointsOrFillWithUndefined
 );
 
 /**

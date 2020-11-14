@@ -17,9 +17,11 @@ export const Colors = {
     z: '#06f',
   },
 
+  geofence: '#f00',
   landingMarker: '#3c3',
   originMarker: '#f44',
   takeoffMarker: '#fc0', // also used in mission-origin-marker.svg
+  convexHull: '#fc0',
 };
 
 Colors.seriousWarning = createColor(Colors.warning)
