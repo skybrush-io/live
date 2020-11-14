@@ -17,6 +17,7 @@ module.exports = merge(baseConfig, {
   plugins: [
     // Create index.html on-the-fly
     new HtmlWebpackPlugin({
+      favicon: path.resolve(projectRoot, 'assets', 'icons', 'favicon.ico'),
       meta: htmlMetaTags,
       template: path.resolve(projectRoot, 'index.html'),
       title:
