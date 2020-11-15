@@ -31,10 +31,10 @@ import { handleError } from '~/error-handling';
 import mapViewManager from '~/mapViewManager';
 import {
   createFeatureFromOpenLayers,
-  handleFeatureUpdatesInOpenLayers,
   isFeatureTransformable,
 } from '~/model/features';
 import { getVisibleSelectableLayers, isLayerSelectable } from '~/model/layers';
+import { handleFeatureUpdatesInOpenLayers } from '~/model/mutations';
 import { getVisibleLayersInOrder } from '~/selectors/ordered';
 import { getExtendedCoordinateFormatter } from '~/selectors/formatting';
 import { getMapViewRotationAngle } from '~/selectors/map';
@@ -528,7 +528,7 @@ class MapViewPresentation extends React.Component {
    * @param  {ol.Feature[]}  event.features  the features that were modified
    */
   _onFeaturesModified = (event) => {
-    this._updateFeatures(event.features);
+    this._updateFeatures(event.features, { type: 'modify', event });
   };
 
   /**
@@ -540,7 +540,7 @@ class MapViewPresentation extends React.Component {
    * @param  {ol.Feature[]}  event.features  the features that were moved
    */
   _onFeaturesTransformed = (event) => {
-    this._updateFeatures(event.features);
+    this._updateFeatures(event.features, { type: 'transform', event });
   };
 
   /**
@@ -613,8 +613,8 @@ class MapViewPresentation extends React.Component {
    *
    * @param  {ol.Feature[]}  features  the features that are to be updated
    */
-  _updateFeatures(features) {
-    handleFeatureUpdatesInOpenLayers(features, this.props.dispatch);
+  _updateFeatures(features, options) {
+    handleFeatureUpdatesInOpenLayers(features, this.props.dispatch, options);
   }
 
   /**

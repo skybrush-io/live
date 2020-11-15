@@ -479,19 +479,20 @@ MissionInfoLayerPresentation.propTypes = {
 export const MissionInfoLayer = connect(
   // mapStateToProps
   (state, { layer }) => ({
-    convexHull:
-      layer?.parameters?.showConvexHull &&
-      getConvexHullOfShowInWorldCoordinates(state),
+    convexHull: layer?.parameters?.showConvexHull
+      ? getConvexHullOfShowInWorldCoordinates(state)
+      : undefined,
     coordinateSystemType: state.map.origin.type,
-    homePositions:
-      layer?.parameters?.showHomePositionsH &&
-      getGPSBasedHomePositionsInMission(state),
+    homePositions: layer?.parameters?.showHomePositions
+      ? getGPSBasedHomePositionsInMission(state)
+      : undefined,
     isConvexHullSelected: isConvexHullSelected(state),
-    landingPositions:
-      layer?.parameters?.showLandingPositions &&
-      getGPSBasedLandingPositionsInMission(state),
-    missionOrigin:
-      layer?.parameters?.showMissionOrigin && getOutdoorShowOrigin(state),
+    landingPositions: layer?.parameters?.showLandingPositions
+      ? getGPSBasedLandingPositionsInMission(state)
+      : undefined,
+    missionOrigin: layer?.parameters?.showMissionOrigin
+      ? getOutdoorShowOrigin(state)
+      : undefined,
     missionOrientation: getOutdoorShowOrientation(state),
     orientation: getMapOriginRotationAngle(state),
     origin: layer?.parameters?.showOrigin && state.map.origin.position,

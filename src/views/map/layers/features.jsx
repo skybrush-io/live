@@ -9,12 +9,9 @@ import { Feature, geom, interaction, layer, source } from '@collmot/ol-react';
 
 import { Tool } from '../tools';
 
-import {
-  handleFeatureUpdatesInOpenLayers,
-  FeatureType,
-  LabelStyle,
-} from '~/model/features';
+import { FeatureType, LabelStyle } from '~/model/features';
 import { featureIdToGlobalId } from '~/model/identifiers';
+import { handleFeatureUpdatesInOpenLayers } from '~/model/mutations';
 import { setLayerEditable, setLayerSelectable } from '~/model/layers';
 import { getFeaturesInOrder } from '~/selectors/ordered';
 import { getSelectedFeatureIds } from '~/selectors/selection';
@@ -316,8 +313,11 @@ export const FeaturesLayer = connect(
   }),
   // mapDispatchToProps
   (dispatch) => ({
-    onFeaturesModified: (_event, features) => {
-      handleFeatureUpdatesInOpenLayers(features, dispatch);
+    onFeaturesModified: (event, features) => {
+      handleFeatureUpdatesInOpenLayers(features, dispatch, {
+        type: 'modify',
+        event,
+      });
     },
   })
 )(FeaturesLayerPresentation);

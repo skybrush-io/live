@@ -104,6 +104,7 @@ export class TransformFeaturesInteraction extends PointerInteraction {
           this.dispatchEvent(
             new TransformFeaturesInteractionEvent(
               TransformEventType.TRANSFORM_START,
+              type,
               features,
               event.coordinate,
               [0, 0]
@@ -123,6 +124,7 @@ export class TransformFeaturesInteraction extends PointerInteraction {
           const deltaY = newCoordinate[1] - this.lastCoordinate_[1];
           const totalDelta = this.calculateTotalDelta_();
           const features = this.features_;
+          const { type } = this.transformation_;
 
           features.forEach((feature) => {
             const geom = feature.getGeometry();
@@ -135,6 +137,7 @@ export class TransformFeaturesInteraction extends PointerInteraction {
           this.dispatchEvent(
             new TransformFeaturesInteractionEvent(
               TransformEventType.TRANSFORMING,
+              type,
               features,
               newCoordinate,
               totalDelta
@@ -147,6 +150,7 @@ export class TransformFeaturesInteraction extends PointerInteraction {
         if (this.lastCoordinate_) {
           const features = this.features_;
           const totalDelta = this.calculateTotalDelta_();
+          const { type } = this.transformation_;
 
           this.firstCoordinate_ = null;
           this.lastCoordinate_ = null;
@@ -156,6 +160,7 @@ export class TransformFeaturesInteraction extends PointerInteraction {
           this.dispatchEvent(
             new TransformFeaturesInteractionEvent(
               TransformEventType.TRANSFORM_END,
+              type,
               features,
               event.coordinate,
               totalDelta
@@ -288,8 +293,9 @@ const TransformEventType = {
 };
 
 class TransformFeaturesInteractionEvent extends OLEvent {
-  constructor(type, features, coordinate, delta) {
+  constructor(type, subType, features, coordinate, delta) {
     super(type);
+    this.subType = subType;
     this.features = features;
     this.coordinate = coordinate;
     this.delta = delta;

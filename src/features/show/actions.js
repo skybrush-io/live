@@ -19,6 +19,10 @@ import { MessageSemantics } from '~/features/snackbar/types';
 import { FeatureType } from '~/model/features';
 import { getFeaturesInOrder } from '~/selectors/ordered';
 import {
+  lonLatFromMapViewCoordinate,
+  mapViewCoordinateFromLonLat,
+} from '~/utils/geography';
+import {
   simplifyPolygon,
   scalePolygon,
   growPolygon,
@@ -33,6 +37,7 @@ import {
   getFirstPointsOfTrajectoriesInWorldCoordinates,
   getLastPointsOfTrajectoriesInWorldCoordinates,
   getOutdoorShowCoordinateSystem,
+  getOutdoorShowOrigin,
   getShowOrientation,
   getShowCoordinateSystemTransformationObject,
   isUploadInProgress,
@@ -159,6 +164,27 @@ export const addGeofencePolygonBasedOnShowTrajectories = () => (
 export const updateGeofencePolygon = () => (dispatch) => {
   dispatch(removeGeofencePolygon());
   dispatch(addGeofencePolygonBasedOnShowTrajectories());
+};
+
+/**
+ * Moves the show origin relative to its current position such that the delta
+ * is expressed in map view coordinates.
+ */
+export const moveOutdoorShowOriginByMapCoordinateDelta = (delta) => (
+  dispatch,
+  getState
+) => {
+  const origin = getOutdoorShowOrigin(getState());
+  const originInMapView = mapViewCoordinateFromLonLat(origin);
+  const newOriginInMapView = [
+    originInMapView[0] + delta[0],
+    originInMapView[1] + delta[1],
+  ];
+  const newOrigin = lonLatFromMapViewCoordinate(newOriginInMapView);
+
+  dispatch(
+    updateOutdoorShowSettings({ origin: newOrigin, setupMission: true })
+  );
 };
 
 export const updateOutdoorShowSettings = ({

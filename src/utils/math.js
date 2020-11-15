@@ -111,6 +111,30 @@ export const toPolar = ({ x, y }) => ({
 });
 
 /**
+ * Returns the centroid of an array of points.
+ */
+export function getCentroid(points, dim = 2) {
+  const result = new Array(dim).fill(0);
+  const n = points && Array.isArray(points) ? points.length : 0;
+
+  if (n === 0) {
+    return undefined;
+  }
+
+  for (const point of points) {
+    for (let i = 0; i < dim; i++) {
+      result[i] += point[i] || 0;
+    }
+  }
+
+  for (let i = 0; i < dim; i++) {
+    result[i] /= n;
+  }
+
+  return result;
+}
+
+/**
  * Create a distance matrix between two arrays.
  */
 export function calculateDistanceMatrix(
