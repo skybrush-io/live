@@ -1,5 +1,4 @@
 import createColor from 'color';
-import isEmpty from 'lodash-es/isEmpty';
 import unary from 'lodash-es/unary';
 import PropTypes from 'prop-types';
 import { Circle, Style, Text } from 'ol/style';
@@ -10,13 +9,12 @@ import { Feature, geom, interaction, layer, source } from '@collmot/ol-react';
 
 import { Tool } from '../tools';
 
-import { updateFeatureCoordinates } from '~/actions/features';
 import {
-  createFeatureFromOpenLayers,
+  handleFeatureUpdatesInOpenLayers,
   FeatureType,
   LabelStyle,
 } from '~/model/features';
-import { featureIdToGlobalId, globalIdToFeatureId } from '~/model/identifiers';
+import { featureIdToGlobalId } from '~/model/identifiers';
 import { setLayerEditable, setLayerSelectable } from '~/model/layers';
 import { getFeaturesInOrder } from '~/selectors/ordered';
 import { getSelectedFeatureIds } from '~/selectors/selection';
@@ -24,6 +22,7 @@ import {
   mapViewCoordinateFromLonLat,
   euclideanDistance,
 } from '~/utils/geography';
+import { closePolygon } from '~/utils/math';
 import {
   fill,
   primaryColor,
@@ -75,10 +74,7 @@ const geometryForFeature = (feature) => {
     case FeatureType.POLYGON:
       // OpenLayers requires the last coordinate to be the same as the first
       // one when a polygon is drawn
-      if (coordinates.length > 0) {
-        coordinates.push(coordinates[0]);
-      }
-
+      closePolygon(coordinates);
       return <geom.Polygon coordinates={coordinates} />;
 
     default:
@@ -320,21 +316,8 @@ export const FeaturesLayer = connect(
   }),
   // mapDispatchToProps
   (dispatch) => ({
-    onFeaturesModified: (_event, changedFeatures) => {
-      const updatedUserFeatures = {};
-      for (const feature of changedFeatures) {
-        const userFeatureId = globalIdToFeatureId(feature.getId());
-        if (userFeatureId) {
-          // Feature is a user-defined feature so update it in the Redux store
-          updatedUserFeatures[userFeatureId] = createFeatureFromOpenLayers(
-            feature
-          ).points;
-        }
-      }
-
-      if (!isEmpty(updatedUserFeatures)) {
-        dispatch(updateFeatureCoordinates(updatedUserFeatures));
-      }
+    onFeaturesModified: (_event, features) => {
+      handleFeatureUpdatesInOpenLayers(features, dispatch);
     },
   })
 )(FeaturesLayerPresentation);

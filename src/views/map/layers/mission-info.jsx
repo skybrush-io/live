@@ -32,13 +32,16 @@ import {
   homePositionIdToGlobalId,
   landingPositionIdToGlobalId,
   originIdToGlobalId,
+  MAP_ORIGIN_ID,
+  MISSION_ORIGIN_ID,
+  CONVEX_HULL_AREA_ID,
 } from '~/model/identifiers';
 import { setLayerEditable, setLayerSelectable } from '~/model/layers';
 import { getMapOriginRotationAngle } from '~/selectors/map';
 import { getSelectedOriginIds, isSelected } from '~/selectors/selection';
 import { formatMissionId } from '~/utils/formatting';
 import { mapViewCoordinateFromLonLat } from '~/utils/geography';
-import { toRadians } from '~/utils/math';
+import { closePolygon, toRadians } from '~/utils/math';
 import CustomPropTypes from '~/utils/prop-types';
 import {
   blackVeryThinOutline,
@@ -295,15 +298,11 @@ const missionConvexHullStyles = [
   [missionConvexHullSelectionStyle, baseMissionConvexHullStyle],
 ];
 
-const MAP_ORIGIN_ID = 'map';
-const MISSION_ORIGIN_ID = 'mission';
-const CONVEX_HULL_ID = areaIdToGlobalId('convexHull');
-
 /**
  * Selector that takes the current state and returns whether the convex hull of
  * the mission is selected.
  */
-const isConvexHullSelected = isSelected(CONVEX_HULL_ID);
+const isConvexHullSelected = isSelected(areaIdToGlobalId(CONVEX_HULL_AREA_ID));
 
 const MissionInfoVectorSource = ({
   convexHull,
@@ -316,14 +315,10 @@ const MissionInfoVectorSource = ({
   orientation,
   origin,
   selectedOriginIds,
-  showHomePositions,
-  showLandingPositions,
-  showMissionOrigin,
-  showOrigin,
 }) => {
   const features = [];
 
-  if (showLandingPositions) {
+  if (Array.isArray(landingPositions)) {
     features.push(
       ...landingPositions
         .map((landingPosition, index) => {
@@ -353,7 +348,7 @@ const MissionInfoVectorSource = ({
     );
   }
 
-  if (showHomePositions) {
+  if (Array.isArray(homePositions)) {
     features.push(
       ...homePositions
         .map((homePosition, index) => {
@@ -383,7 +378,7 @@ const MissionInfoVectorSource = ({
     );
   }
 
-  if (showOrigin && origin) {
+  if (origin) {
     const globalIdOfOrigin = originIdToGlobalId(MAP_ORIGIN_ID);
     const tail = mapViewCoordinateFromLonLat(origin);
     const armLength =
@@ -413,7 +408,7 @@ const MissionInfoVectorSource = ({
     );
   }
 
-  if (showMissionOrigin && missionOrigin) {
+  if (missionOrigin) {
     const globalIdOfMissionOrigin = originIdToGlobalId(MISSION_ORIGIN_ID);
     const missionOriginCoord = mapViewCoordinateFromLonLat(missionOrigin);
     features.push(
@@ -428,15 +423,11 @@ const MissionInfoVectorSource = ({
   }
 
   if (convexHull) {
-    const globalIdOfMissionConvexHull = CONVEX_HULL_ID;
+    const globalIdOfMissionConvexHull = areaIdToGlobalId(CONVEX_HULL_AREA_ID);
     const convexHullInMapCoordinates = convexHull.map((coord) =>
       mapViewCoordinateFromLonLat([coord.lon, coord.lat])
     );
-
-    // TODO(ntamas): create a closePolygon helper!
-    if (convexHullInMapCoordinates.length > 0) {
-      convexHullInMapCoordinates.push(convexHullInMapCoordinates[0]);
-    }
+    closePolygon(convexHullInMapCoordinates);
 
     features.push(
       <Feature
@@ -463,10 +454,6 @@ MissionInfoVectorSource.propTypes = {
   orientation: CustomPropTypes.angle,
   origin: PropTypes.arrayOf(PropTypes.number),
   selectedOriginIds: PropTypes.arrayOf(PropTypes.string),
-  showHomePositions: PropTypes.bool,
-  showLandingPositions: PropTypes.bool,
-  showMissionOrigin: PropTypes.bool,
-  showOrigin: PropTypes.bool,
 };
 
 MissionInfoVectorSource.defaultProps = {
@@ -480,13 +467,7 @@ const MissionInfoLayerPresentation = ({ layer, zIndex, ...rest }) => (
     updateWhileInteracting
     zIndex={zIndex}
   >
-    <MissionInfoVectorSource
-      showHomePositions={layer.parameters.showHomePositions}
-      showLandingPositions={layer.parameters.showLandingPositions}
-      showMissionOrigin={layer.parameters.showMissionOrigin}
-      showOrigin={layer.parameters.showOrigin}
-      {...rest}
-    />
+    <MissionInfoVectorSource {...rest} />
   </olLayer.Vector>
 );
 
@@ -497,18 +478,25 @@ MissionInfoLayerPresentation.propTypes = {
 
 export const MissionInfoLayer = connect(
   // mapStateToProps
-  (state) => ({
-    convexHull: getConvexHullOfShowInWorldCoordinates(state),
+  (state, { layer }) => ({
+    convexHull:
+      layer?.parameters?.showConvexHull &&
+      getConvexHullOfShowInWorldCoordinates(state),
     coordinateSystemType: state.map.origin.type,
-    homePositions: getGPSBasedHomePositionsInMission(state),
+    homePositions:
+      layer?.parameters?.showHomePositionsH &&
+      getGPSBasedHomePositionsInMission(state),
     isConvexHullSelected: isConvexHullSelected(state),
-    landingPositions: getGPSBasedLandingPositionsInMission(state),
-    missionOrigin: getOutdoorShowOrigin(state),
+    landingPositions:
+      layer?.parameters?.showLandingPositions &&
+      getGPSBasedLandingPositionsInMission(state),
+    missionOrigin:
+      layer?.parameters?.showMissionOrigin && getOutdoorShowOrigin(state),
     missionOrientation: getOutdoorShowOrientation(state),
     orientation: getMapOriginRotationAngle(state),
-    origin: state.map.origin.position,
+    origin: layer?.parameters?.showOrigin && state.map.origin.position,
     selectedOriginIds: getSelectedOriginIds(state),
   }),
   // mapDispatchToProps
-  () => ({})
+  {}
 )(MissionInfoLayerPresentation);

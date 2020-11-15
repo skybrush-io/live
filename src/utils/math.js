@@ -150,15 +150,13 @@ export const createDistanceFunction = (norm = 2) => {
   if (norm <= 0) {
     throw new Error('norm must be positive');
   }
+
   if (norm === Number.POSITIVE_INFINITY) {
     return maximumNormDistance;
-  } else {
-    return (a, b) =>
-      Math.pow(
-        sum(zipWith(a, b), (a, b) => Math.pow(Math.abs(a - b), norm)),
-        1 / norm
-      );
   }
+
+  return (a, b) =>
+    sum(zipWith(a, b), (a, b) => Math.abs(a - b) ** norm) ** (1 / norm);
 };
 
 /**
@@ -171,6 +169,36 @@ export const euclideanDistance = createDistanceFunction(2);
  */
 export const maximumNormDistance = (a, b) =>
   Math.max(zipWith(a, b, (a, b) => Math.abs(a - b)));
+
+/**
+ * Takes a polygon (i.e. an array of [x, y] coordinate pairs) and ensures that
+ * it is closed in a way OpenLayers likes it, i.e. the last element is equal to
+ * the first.
+ */
+export function closePolygon(poly) {
+  if (!Array.isArray(poly) || poly.length < 2) {
+    return;
+  }
+
+  const firstPoint = poly[0];
+  const lastPoint = poly[poly.length - 1];
+  const dim = firstPoint.length;
+  let shouldClose = true;
+
+  if (dim === lastPoint.length) {
+    shouldClose = false;
+    for (let i = 0; i < dim; i++) {
+      if (firstPoint[i] !== lastPoint[i]) {
+        shouldClose = true;
+        break;
+      }
+    }
+  }
+
+  if (shouldClose) {
+    poly.push(firstPoint);
+  }
+}
 
 /**
  * Returns the 2D convex hull of a set of coordinates.
@@ -239,7 +267,7 @@ export const bufferPolygon = (coordinates, margin) => {
   const geoCoordinates = coordinates.map((coordinate) =>
     transform.toLonLat(coordinate)
   );
-  geoCoordinates.push(geoCoordinates[0]);
+  closePolygon(geoCoordinates);
 
   const poly = TurfHelpers.polygon([geoCoordinates]);
   const bufferedPoly = turfBuffer(

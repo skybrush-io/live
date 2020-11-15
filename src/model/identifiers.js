@@ -23,3 +23,7 @@ export const isHomePositionId = hasPrefix('home$');
 export const isLandingPositionId = hasPrefix('land$');
 export const isOriginId = hasPrefix('origin$');
 export const isUavId = hasPrefix('uav$');
+
+export const MAP_ORIGIN_ID = 'map';
+export const MISSION_ORIGIN_ID = 'mission';
+export const CONVEX_HULL_AREA_ID = 'convexHull';

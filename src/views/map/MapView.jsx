@@ -1,5 +1,4 @@
 import filter from 'lodash-es/filter';
-import isEmpty from 'lodash-es/isEmpty';
 import partial from 'lodash-es/partial';
 import { Map, View, control, interaction, withMap } from '@collmot/ol-react';
 import PropTypes from 'prop-types';
@@ -20,23 +19,22 @@ import MapReferenceRequestHandler from './MapReferenceRequestHandler';
 import MapToolbar from './MapToolbar';
 import { isDrawingTool, Tool, toolToDrawInteractionProps } from './tools';
 
-import { addFeature, updateFeatureCoordinates } from '~/actions/features';
+import { addFeature } from '~/actions/features';
 import {
   addFeaturesToSelection,
   setSelectedFeatures,
   removeFeaturesFromSelection,
   updateMapViewSettings,
 } from '~/actions/map';
-import { setFlatEarthCoordinateSystemOrigin } from '~/actions/map-origin';
 import Widget from '~/components/Widget';
 import { handleError } from '~/error-handling';
 import mapViewManager from '~/mapViewManager';
 import {
   createFeatureFromOpenLayers,
+  handleFeatureUpdatesInOpenLayers,
   isFeatureTransformable,
 } from '~/model/features';
 import { getVisibleSelectableLayers, isLayerSelectable } from '~/model/layers';
-import { globalIdToFeatureId, globalIdToOriginId } from '~/model/identifiers';
 import { getVisibleLayersInOrder } from '~/selectors/ordered';
 import { getExtendedCoordinateFormatter } from '~/selectors/formatting';
 import { getMapViewRotationAngle } from '~/selectors/map';
@@ -616,44 +614,7 @@ class MapViewPresentation extends React.Component {
    * @param  {ol.Feature[]}  features  the features that are to be updated
    */
   _updateFeatures(features) {
-    const updatedUserFeatures = {};
-    const { dispatch } = this.props;
-
-    features.forEach((feature) => {
-      const globalId = feature.getId();
-      const userFeatureId = globalIdToFeatureId(globalId);
-      if (userFeatureId) {
-        // Feature is a user-defined feature so update it in the Redux store
-        updatedUserFeatures[userFeatureId] = createFeatureFromOpenLayers(
-          feature
-        ).points;
-      } else {
-        const originFeatureId = globalIdToOriginId(globalId);
-        if (originFeatureId === 'map') {
-          // Feature is the origin of the flat Earth coordinate system
-          const featureObject = createFeatureFromOpenLayers(feature);
-          const coords = feature.getGeometry().getCoordinates();
-          dispatch(
-            setFlatEarthCoordinateSystemOrigin(
-              featureObject.points[0],
-              90 -
-                toDegrees(
-                  Math.atan2(
-                    // Don't use featureObject.points here because they are already
-                    // in lat-lon so they cannot be used to calculate an angle
-                    coords[1][1] - coords[0][1],
-                    coords[1][0] - coords[0][0]
-                  )
-                )
-            )
-          );
-        }
-      }
-    });
-
-    if (!isEmpty(updatedUserFeatures)) {
-      dispatch(updateFeatureCoordinates(updatedUserFeatures));
-    }
+    handleFeatureUpdatesInOpenLayers(features, this.props.dispatch);
   }
 
   /**
