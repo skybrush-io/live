@@ -11,7 +11,9 @@ import { connect } from 'react-redux';
 
 import Box from '@material-ui/core/Box';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import IconButton from '@material-ui/core/IconButton';
 import TextField from '@material-ui/core/TextField';
+import DeleteSweep from '@material-ui/icons/DeleteSweep';
 
 import ActiveUAVsField from '../ActiveUAVsField';
 import BackgroundHint from '../BackgroundHint';
@@ -24,6 +26,7 @@ import {
   addInboundMessage,
   addOutboundMessageToSelectedUAV,
   addErrorMessageInMessagesDialog,
+  clearMessagesOfSelectedUAV,
   selectUAVInMessagesDialog,
 } from '~/actions/messages';
 import { formatCommandResponseAsHTML } from '~/flockwave/formatting';
@@ -102,7 +105,11 @@ function convertMessageToComponent(message) {
 /**
  * Specialized background hint for the chat area.
  */
-const ChatAreaBackgroundHint = ({ hasSelectedUAV, textFieldPlacement }) =>
+const ChatAreaBackgroundHint = ({
+  hasSelectedUAV,
+  textFieldPlacement,
+  ...rest
+}) =>
   hasSelectedUAV ? (
     <BackgroundHint
       key='backgroundHint'
@@ -110,6 +117,7 @@ const ChatAreaBackgroundHint = ({ hasSelectedUAV, textFieldPlacement }) =>
       text={`Send a message to the selected UAV using the text box ${
         textFieldPlacement === 'bottom' ? 'below' : 'above'
       }`}
+      {...rest}
     />
   ) : (
     <BackgroundHint
@@ -118,6 +126,7 @@ const ChatAreaBackgroundHint = ({ hasSelectedUAV, textFieldPlacement }) =>
       text={`Enter the ID of a UAV to talk to in the ${
         textFieldPlacement === 'bottom' ? 'lower left' : 'upper left'
       } corner`}
+      {...rest}
     />
   );
 
@@ -162,6 +171,7 @@ class MessagesPanel extends React.Component {
   static propTypes = {
     chatEntries: PropTypes.arrayOf(PropTypes.object),
     flock: PropTypes.instanceOf(Flock),
+    onClearMessages: PropTypes.func,
     onSend: PropTypes.func,
     style: PropTypes.object,
     textFieldPlacement: PropTypes.oneOf(['bottom', 'top']),
@@ -171,8 +181,8 @@ class MessagesPanel extends React.Component {
     textFieldPlacement: 'bottom',
   };
 
-  constructor(props) {
-    super(props);
+  constructor() {
+    super();
 
     this._chatAreaRef = React.createRef();
     this._messageFieldRef = React.createRef();
@@ -195,7 +205,13 @@ class MessagesPanel extends React.Component {
   }
 
   render() {
-    const { chatEntries, flock, style, textFieldPlacement } = this.props;
+    const {
+      chatEntries,
+      flock,
+      onClearMessages,
+      style,
+      textFieldPlacement,
+    } = this.props;
     const chatComponents = flatMap(chatEntries, convertMessageToComponent);
     const contentStyle = {
       display: 'flex',
@@ -213,6 +229,7 @@ class MessagesPanel extends React.Component {
           key='chatAreaBackgroundHint'
           hasSelectedUAV={!isNil(chatEntries)}
           textFieldPlacement={textFieldPlacement}
+          p={1}
         />
       );
     const textFields = (
@@ -222,12 +239,12 @@ class MessagesPanel extends React.Component {
         className='bottom-bar'
         pt={1}
         pb={2}
-        px={2}
+        pl={2}
       >
         <MessageRecipientField
           flock={flock}
           inputRef={this._uavSelectorFieldRef}
-          style={{ width: '8em', paddingRight: '1em' }}
+          style={{ width: '7em', paddingRight: 8 }}
         />
         <TextField
           autoFocus
@@ -236,6 +253,13 @@ class MessagesPanel extends React.Component {
           label='Message'
           onKeyDown={this._textFieldKeyDownHandler}
         />
+        <IconButton
+          disabled={chatComponents.length === 0}
+          style={{ transform: 'translateY(8px)' }}
+          onClick={onClearMessages}
+        >
+          <DeleteSweep />
+        </IconButton>
       </Box>
     );
     const children =
@@ -278,6 +302,10 @@ export default connect(
 
   // mapDispatchToProps
   (dispatch) => ({
+    onClearMessages() {
+      dispatch(clearMessagesOfSelectedUAV());
+    },
+
     async onSend(message) {
       // Dispatch a Redux action. This will update the store but will not
       // send any actual message
