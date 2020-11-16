@@ -23,6 +23,9 @@ const formatStatusText = (status) => {
     case Status.WARNING:
       return 'Manual geofence in use';
 
+    case Status.ERROR:
+      return 'Show area lies outside the geofence';
+
     default:
       return '';
   }

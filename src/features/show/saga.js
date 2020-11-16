@@ -20,6 +20,7 @@ import { retryFailedUploads } from './actions';
 import {
   getCommonShowSettings,
   getDroneSwarmSpecification,
+  getGeofencePolygonInShowCoordinates,
   getNextDroneFromUploadQueue,
   getOutdoorShowCoordinateSystem,
   isShowAuthorizedToStartLocally,
@@ -49,7 +50,6 @@ import messageHub from '~/message-hub';
 import {
   getMissionMapping,
   getReverseMissionMapping,
-  getGeofencePolygonCoordinates,
 } from '~/features/mission/selectors';
 
 /**
@@ -82,7 +82,7 @@ function createShowConfigurationForUav(state, uavId) {
     polygons: [
       {
         isInclusion: true,
-        points: getGeofencePolygonCoordinates(state),
+        points: getGeofencePolygonInShowCoordinates(state),
       },
     ],
     maxAltitude: getUserDefinedHeightLimit(state),
@@ -249,11 +249,7 @@ function* showUploaderSagaWithCancellation() {
     cancelled: take(cancelUpload),
   });
 
-  if (cancelled) {
-    yield put(notifyUploadFinished({ cancelled }));
-  } else {
-    yield put(notifyUploadFinished({ success }));
-  }
+  yield put(notifyUploadFinished(cancelled ? { cancelled } : { success }));
 }
 
 /**
@@ -324,11 +320,7 @@ function* showSettingsSynchronizerSaga(action) {
     success = false;
   }
 
-  if (success) {
-    yield put(setShowSettingsSynchronizationStatus('synced'));
-  } else {
-    yield put(setShowSettingsSynchronizationStatus('error'));
-  }
+  yield put(setShowSettingsSynchronizationStatus(success ? 'synced' : 'error'));
 }
 
 const sagaCreator = (mapping) =>

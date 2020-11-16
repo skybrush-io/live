@@ -6,14 +6,17 @@ import max from 'lodash-es/max';
 import maxBy from 'lodash-es/maxBy';
 
 import { createSelector } from '@reduxjs/toolkit';
+import turfContains from '@turf/boolean-contains';
+import * as TurfHelpers from '@turf/helpers';
 
 import {
   proposeDistanceLimit,
   proposeHeightLimit,
 } from '~/features/geofence/utils';
+import { getGeofencePolygonInWorldCoordinates } from '~/features/mission/selectors';
 import { formatDuration } from '~/utils/formatting';
 import { FlatEarthCoordinateSystem } from '~/utils/geography';
-import { convexHull } from '~/utils/math';
+import { closePolygon, convexHull } from '~/utils/math';
 
 import {
   getConvexHullOfTrajectory,
@@ -299,6 +302,19 @@ export const getFirstPointsOfTrajectoriesInWorldCoordinates = createSelector(
 );
 
 /**
+ * Gets the coordinates of the polygon that is to be used as a geofence. These
+ * are in the flat Earth coordinate system of the show so they are not
+ * usable directly on the map. Use `getGeofencePolygonInWorldCoordinates()` if
+ * you need them as GPS coordinates.
+ */
+export const getGeofencePolygonInShowCoordinates = createSelector(
+  getGeofencePolygonInWorldCoordinates,
+  getShowCoordinateSystemTransformationObject,
+  (polygon, showCoordinateSystemTransformationObject) =>
+    polygon.map((c) => showCoordinateSystemTransformationObject.fromLonLat(c))
+);
+
+/**
  * Returns an array holding the last points of all the trajectories.
  * These are in the flat Earth coordinate system of the show so they are not
  * usable directly as landing positions. Use
@@ -505,6 +521,32 @@ export const hasShowOrigin = (state) =>
  * Returns whether we are currently loading a show file.
  */
 export const isLoadingShowFile = (state) => state.show.loading;
+
+/**
+ * Returns whether the convex hull of the show is fully contained inside the
+ * geofence polygon.
+ */
+export const isShowConvexHullInsideGeofence = createSelector(
+  getConvexHullOfShowInWorldCoordinates,
+  getGeofencePolygonInWorldCoordinates,
+  (convexHull, geofence) => {
+    if (convexHull) {
+      convexHull = convexHull.map((point) => [point.lon, point.lat]);
+      closePolygon(convexHull);
+    }
+
+    return geofence && convexHull
+      ? turfContains(
+          TurfHelpers.polygon([geofence]),
+          TurfHelpers.polygon([convexHull])
+        )
+      : false;
+  }
+);
+
+/* ************************************************************************** */
+/* Upload-related stuff */
+/* ************************************************************************** */
 
 /**
  * Returns the failed upload items from the uploader.

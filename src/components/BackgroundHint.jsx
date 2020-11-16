@@ -64,6 +64,7 @@ const BackgroundHint = ({ header, icon, iconColor, text, ...rest }) => {
 BackgroundHint.propTypes = {
   header: PropTypes.string,
   icon: PropTypes.node,
+  iconColor: PropTypes.string,
   text: PropTypes.string,
 };
 

@@ -39,6 +39,7 @@
     "@reduxjs/toolkit": "^1.4.0",
     "@skybrush/electron-app-framework": "^1.0.1",
     "@tippyjs/react": "^4.2.0",
+    "@turf/boolean-contains": "^6.0.1",
     "@turf/buffer": "^5.1.5",
     "@turf/helpers": "^6.1.4",
     "aframe": "^1.0.4",

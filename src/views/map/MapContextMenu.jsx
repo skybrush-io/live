@@ -3,7 +3,6 @@
  * currently selected UAVs.
  */
 
-import isNil from 'lodash-es/isNil';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
@@ -218,6 +217,7 @@ class MapContextMenu extends React.Component {
           if (hasSingleSelectedFeature) {
             const geofenceCompatibleFeatureTypes = [
               /* 'circle', */
+              'lineString',
               'polygon',
             ];
 

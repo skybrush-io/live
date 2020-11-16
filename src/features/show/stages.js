@@ -17,6 +17,7 @@ import {
   hasShowOrigin,
   isLoadingShowFile,
   isShowAuthorizedToStart,
+  isShowConvexHullInsideGeofence,
   isShowAuthorizedToStartLocally,
   isTakeoffAreaApproved,
 } from './selectors';
@@ -26,6 +27,7 @@ import { Status } from '~/components/semantics';
 import {
   getEmptyMappingSlotIndices,
   getGeofenceStatus,
+  hasActiveGeofencePolygon,
   hasNonemptyMappingSlot,
 } from '~/features/mission/selectors';
 import { areAllPreflightChecksTicked } from '~/features/preflight/selectors';
@@ -69,8 +71,11 @@ const stages = {
 
   setupGeofence: {
     evaluate: (state) =>
-      getShowEnvironmentType(state) === 'outdoor'
-        ? getGeofenceStatus(state)
+      getShowEnvironmentType(state) === 'outdoor' &&
+      hasActiveGeofencePolygon(state)
+        ? isShowConvexHullInsideGeofence(state)
+          ? getGeofenceStatus(state)
+          : Status.ERROR
         : Status.OFF,
     requires: ['selectShowFile', 'setupEnvironment'],
   },
