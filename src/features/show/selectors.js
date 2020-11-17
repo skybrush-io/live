@@ -306,12 +306,18 @@ export const getFirstPointsOfTrajectoriesInWorldCoordinates = createSelector(
  * are in the flat Earth coordinate system of the show so they are not
  * usable directly on the map. Use `getGeofencePolygonInWorldCoordinates()` if
  * you need them as GPS coordinates.
+ *
+ * Returns undefined if no geofence polygon is defined.
  */
 export const getGeofencePolygonInShowCoordinates = createSelector(
   getGeofencePolygonInWorldCoordinates,
   getShowCoordinateSystemTransformationObject,
   (polygon, showCoordinateSystemTransformationObject) =>
-    polygon.map((c) => showCoordinateSystemTransformationObject.fromLonLat(c))
+    Array.isArray(polygon)
+      ? polygon.map((c) =>
+          showCoordinateSystemTransformationObject.fromLonLat(c)
+        )
+      : undefined
 );
 
 /**

@@ -169,12 +169,12 @@ export const getGeofencePolygonId = (state) => state.mission.geofencePolygonId;
 
 /**
  * Gets the coordinates of the polygon that is to be used as a geofence, in
- * world coordinates.
+ * world coordinates, or undefined if no geofence polygon is defined.
  */
 export const getGeofencePolygonInWorldCoordinates = createSelector(
   getGeofencePolygonId,
   (state) => state.features.byId,
-  (geofencePolygonId, featuresById) => featuresById[geofencePolygonId].points
+  (geofencePolygonId, featuresById) => featuresById[geofencePolygonId]?.points
 );
 
 /**
