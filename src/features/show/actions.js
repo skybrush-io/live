@@ -1,6 +1,5 @@
 import ky from 'ky';
 import get from 'lodash-es/get';
-import identity from 'lodash-es/identity';
 import throttle from 'lodash-es/throttle';
 
 import { addFeature, removeFeatures } from '~/actions/features';
@@ -22,12 +21,7 @@ import {
   lonLatFromMapViewCoordinate,
   mapViewCoordinateFromLonLat,
 } from '~/utils/geography';
-import {
-  simplifyPolygon,
-  scalePolygon,
-  growPolygon,
-  bufferPolygon,
-} from '~/utils/math';
+import { simplifyPolygon, bufferPolygon } from '~/utils/math';
 import { createAsyncAction } from '~/utils/redux';
 
 import { loadShowFromFile as processFile } from './processing';
@@ -122,24 +116,7 @@ export const addGeofencePolygonBasedOnShowTrajectories = () => (
   }
 
   const transformation = getShowCoordinateSystemTransformationObject(state);
-
-  const MarginType = {
-    BUFFER: 'buffer',
-    GROW: 'grow',
-    SCALE: 'scale',
-    NONE: 'none',
-  };
-
-  const marginType = MarginType.BUFFER;
-
-  const marginFunctions = {
-    [MarginType.BUFFER]: bufferPolygon,
-    [MarginType.GROW]: growPolygon,
-    [MarginType.SCALE]: scalePolygon,
-    [MarginType.NONE]: identity,
-  };
-
-  const points = marginFunctions[marginType](coordinates, horizontalMargin);
+  const points = bufferPolygon(coordinates, horizontalMargin);
   const simplifiedPoints = simplify
     ? simplifyPolygon(points, maxVertexCount)
     : points;

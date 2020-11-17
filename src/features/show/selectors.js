@@ -7,7 +7,6 @@ import maxBy from 'lodash-es/maxBy';
 
 import { createSelector } from '@reduxjs/toolkit';
 import turfContains from '@turf/boolean-contains';
-import * as TurfHelpers from '@turf/helpers';
 
 import {
   proposeDistanceLimit,
@@ -16,7 +15,7 @@ import {
 import { getGeofencePolygonInWorldCoordinates } from '~/features/mission/selectors';
 import { formatDuration } from '~/utils/formatting';
 import { FlatEarthCoordinateSystem } from '~/utils/geography';
-import { closePolygon, convexHull } from '~/utils/math';
+import { convexHull, createGeometryFromPoints } from '~/utils/math';
 
 import {
   getConvexHullOfTrajectory,
@@ -538,15 +537,20 @@ export const isShowConvexHullInsideGeofence = createSelector(
   (convexHull, geofence) => {
     if (convexHull) {
       convexHull = convexHull.map((point) => [point.lon, point.lat]);
-      closePolygon(convexHull);
     }
 
-    return geofence && convexHull
-      ? turfContains(
-          TurfHelpers.polygon([geofence]),
-          TurfHelpers.polygon([convexHull])
-        )
-      : false;
+    if (
+      Array.isArray(geofence) &&
+      geofence.length > 0 &&
+      Array.isArray(convexHull) &&
+      convexHull.length > 0
+    ) {
+      geofence = createGeometryFromPoints(geofence);
+      convexHull = createGeometryFromPoints(convexHull);
+      return turfContains(geofence, convexHull);
+    }
+
+    return false;
   }
 );
 

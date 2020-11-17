@@ -6,9 +6,6 @@ import range from 'lodash-es/range';
 import sum from 'lodash-es/sum';
 import zipWith from 'lodash-es/zipWith';
 
-import Polygon from 'ol/geom/Polygon';
-import { getCenter } from 'ol/extent';
-
 import monotoneConvexHull2D from 'monotone-convex-hull-2d';
 import turfBuffer from '@turf/buffer';
 import * as TurfHelpers from '@turf/helpers';
@@ -237,43 +234,31 @@ export const convexHull = (coordinates) => {
 };
 
 /**
- * Given the coordinate list of a polygon, scale it by the given factor from its
- * center using the methods provided by OpenLayers.
+ * Creates an appropriate Turf.js geometry from the given list of coordinates.
+ *
+ * When no coordinates are provided, the result is undefined. When a single
+ * coordinate is provided, a point geometry is returned. When two coordinates
+ * are provided, a linestring geometry is returned with two points. When three
+ * or more coordinates are provided, the result will be a Turf.js polygon.
  */
-export const scalePolygon = (coordinates, factor) => {
-  const p = new Polygon([coordinates]);
+export function createGeometryFromPoints(coordinates) {
+  if (coordinates.length === 0) {
+    return undefined;
+  }
 
-  p.scale(factor);
+  if (coordinates.length === 1) {
+    return TurfHelpers.point(coordinates[0]).geometry;
+  }
 
-  return p.getCoordinates()[0];
-};
+  if (coordinates.length === 2) {
+    return TurfHelpers.lineString(coordinates).geometry;
+  }
 
-/**
- * Grow a polygon by expanding its vertices from its center by a specific length
- * given through the margin parameter.
- */
-export const growPolygon = (coordinates, margin) => {
-  const center = getCenter(new Polygon([coordinates]).getExtent());
+  const closedPoly = [...coordinates];
+  closePolygon(closedPoly);
 
-  return coordinates.map((c) => {
-    const difference = [c[0] - center[0], c[1] - center[1]];
-
-    const polar = {
-      angle: Math.atan2(difference[1], difference[0]),
-      radius: Math.sqrt(difference[0] ** 2 + difference[1] ** 2),
-    };
-
-    const adjustedDifference = [
-      Math.cos(polar.angle) * (polar.radius + margin),
-      Math.sin(polar.angle) * (polar.radius + margin),
-    ];
-
-    return [
-      center[0] + adjustedDifference[0],
-      center[1] + adjustedDifference[1],
-    ];
-  });
-};
+  return TurfHelpers.polygon([closedPoly]).geometry;
+}
 
 /**
  * Buffer a polygon by inserting a padding around it, so its new edge is at
@@ -291,11 +276,11 @@ export const bufferPolygon = (coordinates, margin) => {
   const geoCoordinates = coordinates.map((coordinate) =>
     transform.toLonLat(coordinate)
   );
-  closePolygon(geoCoordinates);
 
-  const poly = TurfHelpers.polygon([geoCoordinates]);
+  // Create a Turf.js geometry to buffer. Watch out for degenerate cases.
+  const geometry = createGeometryFromPoints(geoCoordinates);
   const bufferedPoly = turfBuffer(
-    poly.geometry,
+    geometry,
     margin / 1000 /* Turf.js needs kilometers */
   );
 
