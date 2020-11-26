@@ -40,3 +40,15 @@ export function noPayload(func) {
     reducer: func,
   };
 }
+
+/**
+ * Frozen empty array that can be returned from selectors to prevent
+ * recomputations in some cases.
+ */
+export const EMPTY_ARRAY = Object.freeze([]);
+
+/**
+ * Frozen empty object that can be returned from selectors to prevent
+ * recomputations in some cases.
+ */
+export const EMPTY_OBJECT = Object.freeze({});

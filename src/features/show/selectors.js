@@ -16,6 +16,7 @@ import { getGeofencePolygonInWorldCoordinates } from '~/features/mission/selecto
 import { formatDuration } from '~/utils/formatting';
 import { FlatEarthCoordinateSystem } from '~/utils/geography';
 import { convexHull, createGeometryFromPoints } from '~/utils/math';
+import { EMPTY_ARRAY, EMPTY_OBJECT } from '~/utils/redux';
 
 import {
   getConvexHullOfTrajectory,
@@ -116,7 +117,7 @@ export const isTakeoffAreaApproved = (state) =>
  */
 export const getCommonShowSettings = (state) => {
   const result = get(state, 'show.data.settings');
-  return typeof result === 'object' ? result : {};
+  return typeof result === 'object' ? result : EMPTY_OBJECT;
 };
 
 /**
@@ -124,7 +125,7 @@ export const getCommonShowSettings = (state) => {
  */
 export const getDroneSwarmSpecification = (state) => {
   const result = get(state, 'show.data.swarm.drones');
-  return Array.isArray(result) ? result : [];
+  return Array.isArray(result) ? result : EMPTY_ARRAY;
 };
 
 /**
