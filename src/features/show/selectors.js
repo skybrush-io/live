@@ -234,11 +234,13 @@ export const getShowOrientation = createSelector(
  * Returns an array containing all the trajectories. The array will contain
  * undefined for all the drones that have no fixed trajectories in the mission.
  */
-const getTrajectories = createSelector(getDroneSwarmSpecification, (swarm) =>
-  swarm.map((drone) => {
-    const trajectory = get(drone, 'settings.trajectory');
-    return isValidTrajectory(trajectory) ? trajectory : undefined;
-  })
+export const getTrajectories = createSelector(
+  getDroneSwarmSpecification,
+  (swarm) =>
+    swarm.map((drone) => {
+      const trajectory = get(drone, 'settings.trajectory');
+      return isValidTrajectory(trajectory) ? trajectory : undefined;
+    })
 );
 
 /**

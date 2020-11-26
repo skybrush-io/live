@@ -38,7 +38,12 @@ import {
 } from '~/model/identifiers';
 import { setLayerEditable, setLayerSelectable } from '~/model/layers';
 import { getMapOriginRotationAngle } from '~/selectors/map';
-import { getSelectedOriginIds, isSelected } from '~/selectors/selection';
+import {
+  getNumberOfSelectedUAVs,
+  getSelectedOriginIds,
+  getSelectedUAVIds,
+  isSelected,
+} from '~/selectors/selection';
 import { formatMissionId } from '~/utils/formatting';
 import { mapViewCoordinateFromLonLat } from '~/utils/geography';
 import { closePolygon, toRadians } from '~/utils/math';
@@ -51,6 +56,7 @@ import {
   whiteThickOutline,
   whiteThinOutline,
 } from '~/utils/styles';
+import UAVTrajectoryFeature from '~/views/map/features/UAVTrajectoryFeature';
 
 const missionOriginMarker = require('~/../assets/img/mission-origin-marker.svg')
   .default;
@@ -65,6 +71,7 @@ const MissionInfoLayerSettingsPresentation = ({ layer, setLayerParameter }) => {
     showHomePositions,
     showLandingPositions,
     showMissionOrigin,
+    showTrajectoriesOfSelection,
   } = parameters || {};
 
   const handleChange = (name) => (event) =>
@@ -121,6 +128,16 @@ const MissionInfoLayerSettingsPresentation = ({ layer, setLayerParameter }) => {
           />
         }
         label='Show convex hull of trajectories'
+      />
+      <FormControlLabel
+        control={
+          <Checkbox
+            checked={showTrajectoriesOfSelection}
+            value='showTrajectoriesOfSelection'
+            onChange={handleChange('showTrajectoriesOfSelection')}
+          />
+        }
+        label='Show trajectories of selected drones'
       />
     </FormGroup>
   );
@@ -315,6 +332,7 @@ const MissionInfoVectorSource = ({
   orientation,
   origin,
   selectedOriginIds,
+  uavIdsForTrajectories,
 }) => {
   const features = [];
 
@@ -440,6 +458,17 @@ const MissionInfoVectorSource = ({
     );
   }
 
+  if (
+    Array.isArray(uavIdsForTrajectories) &&
+    uavIdsForTrajectories.length > 0
+  ) {
+    for (const uavId of uavIdsForTrajectories) {
+      features.push(
+        <UAVTrajectoryFeature key={`trajectory.${uavId}`} uavId={uavId} />
+      );
+    }
+  }
+
   return <source.Vector>{features}</source.Vector>;
 };
 
@@ -454,6 +483,7 @@ MissionInfoVectorSource.propTypes = {
   orientation: CustomPropTypes.angle,
   origin: PropTypes.arrayOf(PropTypes.number),
   selectedOriginIds: PropTypes.arrayOf(PropTypes.string),
+  uavIdsForTrajectories: PropTypes.arrayOf(PropTypes.string),
 };
 
 MissionInfoVectorSource.defaultProps = {
@@ -497,6 +527,11 @@ export const MissionInfoLayer = connect(
     orientation: getMapOriginRotationAngle(state),
     origin: layer?.parameters?.showOrigin && state.map.origin.position,
     selectedOriginIds: getSelectedOriginIds(state),
+    uavIdsForTrajectories:
+      layer?.parameters?.showTrajectoriesOfSelection &&
+      getNumberOfSelectedUAVs(state) <= 5
+        ? getSelectedUAVIds(state)
+        : undefined,
   }),
   // mapDispatchToProps
   {}

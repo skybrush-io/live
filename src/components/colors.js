@@ -22,6 +22,7 @@ export const Colors = {
   originMarker: '#f44',
   takeoffMarker: '#fc0', // also used in mission-origin-marker.svg
   convexHull: '#fc0',
+  plannedTrajectory: '#08f',
 };
 
 Colors.seriousWarning = createColor(Colors.warning)

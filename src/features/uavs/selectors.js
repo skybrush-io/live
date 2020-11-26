@@ -18,6 +18,14 @@ import {
   getDesiredTakeoffHeadingAccuracy,
 } from '~/features/settings/selectors';
 import {
+  getShowToWorldCoordinateSystemTransformation,
+  getTrajectories,
+} from '~/features/show/selectors';
+import {
+  getPointsOfTrajectory,
+  isValidTrajectory,
+} from '~/features/show/trajectory';
+import {
   abbreviateError,
   getSeverityOfErrorCode,
   getSeverityOfMostSevereErrorCode,
@@ -112,6 +120,46 @@ export const getTakeoffHeadingByUavId = createCachedSelector(
     }
 
     return takeoffHeadings[index];
+  }
+)({
+  keySelector: selectUAVId,
+  // TODO: use a FIFO or LRU cache if it becomes necessary.
+  // The quick-lru module from npm seems simple enough.
+});
+
+/**
+ * Returns the trajectory of the UAV with the given ID, in world coordinates,
+ * given the current state.
+ *
+ * @param  {Object}  state  the state of the application
+ * @param  {string}  uavId  the ID of the UAV
+ */
+export const getTrajectoryPointsInWorldCoordinatesByUavId = createCachedSelector(
+  getReverseMissionMapping,
+  getTrajectories,
+  getShowToWorldCoordinateSystemTransformation,
+  selectUAVId,
+  (revMapping, trajectories, transform, uavId) => {
+    const index = revMapping[uavId];
+
+    if (transform === undefined) {
+      // No show coordinate system yet or the show is indoor
+      return undefined;
+    }
+
+    if (index === undefined) {
+      // UAV is not in the mission
+      return undefined;
+    }
+
+    const trajectory = trajectories[index];
+    if (isValidTrajectory(trajectory)) {
+      return getPointsOfTrajectory(trajectory, {
+        includeControlPoints: true,
+      }).map(transform);
+    }
+
+    return undefined;
   }
 )({
   keySelector: selectUAVId,
@@ -341,10 +389,9 @@ export const getErrorCodeSummaryForUAVsInMission = createSelector(
  * Returns whether none of the UAVs in the current mission have an error code.
  */
 export const areAllUAVsInMissionWithoutErrors = createSelector(
-  getReverseMissionMapping,
   getUAVIdsParticipatingInMission,
   (state) => state.uavs.byId,
-  (reverseMapping, uavIds, uavStatesById) => {
+  (uavIds, uavStatesById) => {
     for (const uavId of uavIds) {
       const uavState = uavStatesById[uavId];
       if (uavState && uavState.errors && uavState.errors.length > 0) {

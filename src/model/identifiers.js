@@ -6,6 +6,7 @@ export const featureIdToGlobalId = appendTo('feature$');
 export const homePositionIdToGlobalId = appendTo('home$');
 export const landingPositionIdToGlobalId = appendTo('land$');
 export const originIdToGlobalId = appendTo('origin$');
+export const plannedTrajectoryIdToGlobalId = appendTo('planned$');
 export const uavIdToGlobalId = appendTo('uav$');
 
 export const globalIdToAreaId = stripPrefix('area$');
@@ -14,6 +15,7 @@ export const globalIdToFeatureId = stripPrefix('feature$');
 export const globalIdToHomePositionId = stripPrefix('home$');
 export const globalIdToLandingPositionId = stripPrefix('land$');
 export const globalIdToOriginId = stripPrefix('origin$');
+export const globalIdToPlannedTrajectoryId = stripPrefix('planned$');
 export const globalIdToUavId = stripPrefix('uav$');
 
 export const isAreaId = hasPrefix('area$');
@@ -22,6 +24,7 @@ export const isFeatureId = hasPrefix('feature$');
 export const isHomePositionId = hasPrefix('home$');
 export const isLandingPositionId = hasPrefix('land$');
 export const isOriginId = hasPrefix('origin$');
+export const isPlannedTrajectoryId = hasPrefix('planned$');
 export const isUavId = hasPrefix('uav$');
 
 export const MAP_ORIGIN_ID = 'map';

@@ -37,12 +37,34 @@ export function getMaximumHeightOfTrajectory(trajectory) {
 }
 
 /**
- * Returns the raw points of a trajectory objects, without their timestamps
- * or control points.
+ * Returns the raw points of a trajectory objects, without their timestamps,
+ * but optionally including control points in the right order.
  */
-export function getPointsOfTrajectory(trajectory) {
+export function getPointsOfTrajectory(
+  trajectory,
+  { includeControlPoints = false } = {}
+) {
+  if (!isValidTrajectory(trajectory)) {
+    return [];
+  }
+
   const { points = [] } = trajectory;
-  return isValidTrajectory(trajectory) ? points.map((point) => point[1]) : [];
+
+  if (includeControlPoints) {
+    const result = [];
+
+    for (const item of points) {
+      if (item.length > 2 && Array.isArray(item[2])) {
+        result.push(...item[2]);
+      }
+
+      result.push(item[1]);
+    }
+
+    return result;
+  }
+
+  return points.map((point) => point[1]);
 }
 
 /**

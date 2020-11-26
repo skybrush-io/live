@@ -123,3 +123,11 @@ export const getSelectedOriginIds = selectionForSubset(globalIdToOriginId);
  * the state object.
  */
 export const getSelectedUAVIds = selectionForSubset(globalIdToUavId);
+
+/**
+ * Selector that calculates the number of selected UAVs.
+ */
+export const getNumberOfSelectedUAVs = (state) => {
+  const selection = getSelectedUAVIds(state);
+  return Array.isArray(selection) ? selection.length : 0;
+};

@@ -143,6 +143,7 @@ const _propertiesForLayerTypes = {
       showOrigin: true,
       showHomePositions: true,
       showLandingPositions: false,
+      showTrajectoriesOfSelection: true,
     },
   },
   [LayerType.OWN_LOCATION]: {
