@@ -4,10 +4,10 @@
 
 import has from 'lodash-es/has';
 import isObject from 'lodash-es/isObject';
+import { nanoid } from 'nanoid';
 import pDefer from 'p-defer';
 import pProps from 'p-props';
 import pTimeout from 'p-timeout';
-import shortid from 'shortid';
 
 import { createCommandRequest, createMessageWithType } from './builders';
 import { extractResultOrReceiptFromMaybeAsyncResponse } from './parsing';
@@ -20,7 +20,7 @@ import version from './version';
  *
  * @return {string} a new, random Flockwave message ID
  */
-const createMessageId = shortid.generate;
+const createMessageId = () => nanoid(8);
 
 /**
  * Takes an outbound message to send to a UAV as a single string, and
