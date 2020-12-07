@@ -30,6 +30,7 @@ import { updateAgesOfUAVs, updateUAVs } from '~/features/uavs/slice';
 import { saveWorkbenchState } from '~/features/workbench/slice';
 import reducer from '~/reducers';
 
+import migrations from './migrations';
 import { defaultStateReconciler, pristineReconciler } from './reconciler';
 
 /**
@@ -44,7 +45,8 @@ import { defaultStateReconciler, pristineReconciler } from './reconciler';
 const persistConfig = {
   key: 'flockwave-client',
   storage: window.bridge ? window.bridge.createStateStore() : localForage,
-  version: 1,
+  version: 2,
+  migrate: migrations,
   stateReconciler: defaultStateReconciler,
 
   // do not store the following slices of the state in the storage

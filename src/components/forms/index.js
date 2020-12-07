@@ -7,6 +7,8 @@ export {
   SimpleAngleField,
   SimpleDistanceField,
   SimpleDurationField,
+  SimpleNumericField,
+  SimpleVoltageField,
   Switch,
   TextField,
 } from './fields';

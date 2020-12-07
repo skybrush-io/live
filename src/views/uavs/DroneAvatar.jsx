@@ -14,7 +14,9 @@ import SecondaryStatusLight from './SecondaryStatusLight';
 import Colors from '~/components/colors';
 import { Status } from '~/components/semantics';
 import StatusPill from '~/components/StatusPill';
+import { getBatteryIndicatorSettings } from '~/features/settings/selectors';
 import { createSingleUAVStatusSummarySelector } from '~/features/uavs/selectors';
+import CustomPropTypes from '~/utils/prop-types';
 
 const useStyles = makeStyles(
   (theme) => ({
@@ -139,6 +141,7 @@ const useStyles = makeStyles(
  * Avatar that represents a single drone.
  */
 const DroneAvatarPresentation = ({
+  batterySettings,
   batteryStatus,
   hint,
   crossed,
@@ -193,13 +196,17 @@ const DroneAvatarPresentation = ({
       {(details || text) && (
         <StatusPill status={textSemantics}>{details || text}</StatusPill>
       )}
-      {batteryStatus && <BatteryIndicator {...batteryStatus} />}
+      {batteryStatus && (
+        <BatteryIndicator settings={batterySettings} {...batteryStatus} />
+      )}
     </>
   );
 };
 
 DroneAvatarPresentation.propTypes = {
+  batterySettings: CustomPropTypes.batterySettings,
   batteryStatus: PropTypes.shape({
+    cellCount: PropTypes.number,
     voltage: PropTypes.number,
     percentage: PropTypes.number,
   }),
@@ -254,6 +261,7 @@ const DroneAvatar = connect(
     return (state, ownProps) => {
       const uav = state.uavs.byId[ownProps.id];
       const props = {
+        batterySettings: getBatteryIndicatorSettings(state),
         ...statusSummarySelector(state, ownProps.id),
       };
 

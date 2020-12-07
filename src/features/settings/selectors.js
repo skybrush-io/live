@@ -1,6 +1,36 @@
 import { createSelector } from '@reduxjs/toolkit';
 
-import { getShowEnvironmentType } from '~/features/show/selectors';
+import {
+  DEFAULT_BATTERY_CELL_COUNT,
+  LIPO_CRITICAL_VOLTAGE_THRESHOLD,
+  LIPO_FULL_CHARGE_VOLTAGE,
+  LIPO_LOW_VOLTAGE_THRESHOLD,
+} from '~/model/constants';
+
+/**
+ * Returns an object that is suitable to be used for the `settings` prop of a
+ * BatteryIndicator component to describe what the various charge thresholds are
+ * and how many cells there are in a typical battery.
+ */
+export const getBatteryIndicatorSettings = createSelector(
+  (state) => state.settings.uavs,
+  ({
+    defaultBatteryCellCount = DEFAULT_BATTERY_CELL_COUNT,
+    fullChargeVoltage = LIPO_FULL_CHARGE_VOLTAGE,
+    lowVoltageThreshold = LIPO_LOW_VOLTAGE_THRESHOLD,
+    criticalVoltageThreshold = LIPO_CRITICAL_VOLTAGE_THRESHOLD,
+  } = {}) => ({
+    defaultCellCount: defaultBatteryCellCount,
+    voltageThresholds: {
+      full: fullChargeVoltage,
+      nearFull:
+        fullChargeVoltage - (fullChargeVoltage - lowVoltageThreshold) * 0.1,
+      ok: fullChargeVoltage - (fullChargeVoltage - lowVoltageThreshold) * 0.4,
+      warning: lowVoltageThreshold,
+      critical: criticalVoltageThreshold,
+    },
+  })
+);
 
 /**
  * Returns the desired placement accuracy that the user wants to use to judge
@@ -32,13 +62,17 @@ export const getLightingConditionsForThreeDView = (state) => {
   // Map legacy names to the new ones
   if (scenery === 'day') {
     return 'light';
-  } else if (scenery === 'night') {
-    return 'dark';
-  } else if (lighting === 'light') {
-    return 'light';
-  } else {
+  }
+
+  if (scenery === 'night') {
     return 'dark';
   }
+
+  if (lighting === 'light') {
+    return 'light';
+  }
+
+  return 'dark';
 };
 
 /**
@@ -50,13 +84,17 @@ export const getSceneryForThreeDView = (state) => {
   // Map legacy names to the new ones
   if (result === 'day' || result === 'night') {
     return 'outdoor';
-  } else if (result === 'indoor') {
-    return 'indoor';
-  } else if (result === 'auto') {
-    return 'auto';
-  } else {
-    return 'outdoor';
   }
+
+  if (result === 'indoor') {
+    return 'indoor';
+  }
+
+  if (result === 'auto') {
+    return 'auto';
+  }
+
+  return 'outdoor';
 };
 
 /**

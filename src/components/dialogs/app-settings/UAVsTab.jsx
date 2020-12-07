@@ -16,7 +16,10 @@ import {
   SimpleAngleField,
   SimpleDistanceField,
   SimpleDurationField,
+  SimpleNumericField,
+  SimpleVoltageField,
 } from '~/components/forms';
+import { updateUAVVoltageThreshold } from '~/features/settings/actions';
 import { updateAppSettings } from '~/features/settings/slice';
 import {
   getDesiredPlacementAccuracyInMeters,
@@ -25,11 +28,16 @@ import {
 
 const UAVsTabPresentation = ({
   autoRemove,
+  criticalVoltageThreshold,
+  defaultBatteryCellCount,
   forgetThreshold,
+  fullChargeVoltage,
   goneThreshold,
+  lowVoltageThreshold,
   onCheckboxToggled,
   onDistanceFieldUpdated,
   onIntegerFieldUpdated,
+  onVoltageFieldUpdated,
   placementAccuracy,
   takeoffHeadingAccuracy,
   warnThreshold,
@@ -48,6 +56,7 @@ const UAVsTabPresentation = ({
             min={1}
             max={3600}
             value={warnThreshold}
+            variant='standard'
             onChange={onIntegerFieldUpdated}
           />
         </FormControl>
@@ -62,6 +71,7 @@ const UAVsTabPresentation = ({
             min={1}
             max={3600}
             value={goneThreshold}
+            variant='standard'
             onChange={onIntegerFieldUpdated}
           />
         </FormControl>
@@ -83,10 +93,64 @@ const UAVsTabPresentation = ({
             max={3600}
             value={forgetThreshold}
             disabled={!autoRemove}
+            variant='standard'
             onChange={onIntegerFieldUpdated}
           />
         </FormControl>
       </FormGroup>
+
+      <Divider />
+
+      <Box my={2}>
+        <Header>Default battery settings</Header>
+
+        <Box display='flex' flexDirection='row' mb={1}>
+          <SimpleNumericField
+            fullWidth
+            label='Cell count'
+            name='defaultBatteryCellCount'
+            min={1}
+            max={24}
+            step={1}
+            value={defaultBatteryCellCount}
+            onChange={onIntegerFieldUpdated}
+          />
+          <Box width={theme.spacing(2)} />
+          <SimpleVoltageField
+            fullWidth
+            name='fullChargeVoltage'
+            label='Full charge'
+            min={0.1}
+            max={20}
+            step={0.1}
+            value={fullChargeVoltage}
+            onChange={onVoltageFieldUpdated}
+          />
+          <Box width={theme.spacing(2)} />
+          <SimpleVoltageField
+            fullWidth
+            name='lowVoltageThreshold'
+            label='Low threshold'
+            min={0.1}
+            max={20}
+            step={0.1}
+            value={lowVoltageThreshold}
+            onChange={onVoltageFieldUpdated}
+          />
+          <Box width={theme.spacing(2)} />
+          <SimpleVoltageField
+            fullWidth
+            name='criticalVoltageThreshold'
+            label='Critical threshold'
+            min={0.1}
+            max={20}
+            step={0.1}
+            value={criticalVoltageThreshold}
+            onChange={onVoltageFieldUpdated}
+          />
+        </Box>
+      </Box>
+
       <Divider />
 
       <Box my={2}>
@@ -127,11 +191,16 @@ const UAVsTabPresentation = ({
 
 UAVsTabPresentation.propTypes = {
   autoRemove: PropTypes.bool,
+  criticalVoltageThreshold: PropTypes.number,
+  defaultBatteryCellCount: PropTypes.number,
   forgetThreshold: PropTypes.number,
+  fullChargeVoltage: PropTypes.number,
   goneThreshold: PropTypes.number,
+  lowVoltageThreshold: PropTypes.number,
   onCheckboxToggled: PropTypes.func,
   onDistanceFieldUpdated: PropTypes.func,
   onIntegerFieldUpdated: PropTypes.func,
+  onVoltageFieldUpdated: PropTypes.func,
   placementAccuracy: PropTypes.number,
   takeoffHeadingAccuracy: PropTypes.number,
   warnThreshold: PropTypes.number,
@@ -176,6 +245,14 @@ export default connect(
             [event.target.name]: value,
           })
         );
+      }
+    },
+
+    onVoltageFieldUpdated(event) {
+      const value = Number.parseFloat(event.target.value);
+
+      if (value > 0 && Number.isFinite(value)) {
+        dispatch(updateUAVVoltageThreshold(event.target.name, value));
       }
     },
   })

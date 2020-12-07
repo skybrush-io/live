@@ -48,7 +48,10 @@ export default class UAV {
     this._rawHeading = undefined;
     this._rawVoltage = undefined;
 
-    this.battery = { voltage: undefined, percentage: undefined };
+    this.battery = {
+      voltage: undefined,
+      percentage: undefined,
+    };
     this.gpsFix = {
       type: GPSFixType.NO_GPS,
       numSatellites: undefined,
@@ -253,7 +256,6 @@ export default class UAV {
     if (Array.isArray(battery)) {
       let newVoltageRaw;
       let newPercentage;
-      let newCharging;
 
       if (battery.length > 0) {
         newVoltageRaw = Number.parseInt(battery[0], 10);
@@ -262,7 +264,7 @@ export default class UAV {
         }
       }
 
-      newCharging = battery.length > 2 ? !!battery[2] : false;
+      const newCharging = battery.length > 2 ? Boolean(battery[2]) : false;
 
       if (newPercentage !== battery.percentage) {
         this.battery.percentage = newPercentage;

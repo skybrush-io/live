@@ -6,6 +6,12 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 import { CoordinateFormat } from '~/model/settings';
+import {
+  DEFAULT_BATTERY_CELL_COUNT,
+  LIPO_FULL_CHARGE_VOLTAGE,
+  LIPO_LOW_VOLTAGE_THRESHOLD,
+  LIPO_CRITICAL_VOLTAGE_THRESHOLD,
+} from '~/model/constants';
 
 const { actions, reducer } = createSlice({
   name: 'settings',
@@ -83,6 +89,16 @@ const { actions, reducer } = createSlice({
       // Desired placement accuracy in preflight checks, in millimeters,
       // as an integer, to avoid rounding errors
       placementAccuracy: 1000,
+      // Battery-related properties
+      // Default battery cell count that the GCS assumes for drones that do not
+      // provide battery percentage estimates
+      defaultBatteryCellCount: DEFAULT_BATTERY_CELL_COUNT,
+      // Voltage of a fully charged battery cell, in volts
+      fullChargeVoltage: LIPO_FULL_CHARGE_VOLTAGE,
+      // Low battery warning threshold (per cell), in volts
+      lowVoltageThreshold: LIPO_LOW_VOLTAGE_THRESHOLD,
+      // Critical battery warning threshold (per cell), in volts
+      criticalVoltageThreshold: LIPO_CRITICAL_VOLTAGE_THRESHOLD,
     },
   },
 

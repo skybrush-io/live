@@ -166,31 +166,6 @@ AngleField.defaultProps = {
   step: 0.1,
 };
 
-// This is NOT designed to be used in conjunction with react-final-form; it is a
-// standalone controlled field based on Material UI
-export const SimpleAngleField = ({ max, min, size, step, ...rest }) => (
-  <MaterialUITextField
-    inputProps={{ max, min, size, step, type: 'number' }}
-    variant='filled'
-    {...rest}
-  />
-);
-
-SimpleAngleField.propTypes = {
-  max: PropTypes.number,
-  min: PropTypes.number,
-  onChange: PropTypes.func,
-  size: PropTypes.number,
-  step: PropTypes.number,
-  value: PropTypes.number,
-};
-
-SimpleAngleField.defaultProps = {
-  max: 360,
-  min: 0,
-  step: 0.1,
-};
-
 /* ************************************************************************* */
 
 const createCoordinateFieldProps = (formatter) => ({
@@ -254,49 +229,79 @@ DistanceField.propTypes = {
   value: PropTypes.number,
 };
 
-// This is NOT designed to be used in conjunction with react-final-form; it is a
-// standalone controlled field based on Material UI
-export const SimpleDistanceField = ({ max, min, size, step, ...rest }) => (
-  <MaterialUITextField
-    InputProps={{
-      endAdornment: <InputAdornment position='end'>m</InputAdornment>,
-    }}
-    inputProps={{ max, min, size, step, type: 'number' }}
-    variant='filled'
-    {...rest}
-  />
-);
+/* ************************************************************************* */
 
-SimpleDistanceField.propTypes = {
-  max: PropTypes.number,
-  min: PropTypes.number,
-  onChange: PropTypes.func,
-  size: PropTypes.number,
-  step: PropTypes.number,
-  value: PropTypes.number,
+const createNumericField = ({ defaultProps, displayName, unit } = {}) => {
+  const InputProps = unit
+    ? {
+        endAdornment: <InputAdornment position='end'>{unit}</InputAdornment>,
+      }
+    : null;
+
+  const result = ({ max, min, size, step, ...rest }) => (
+    <MaterialUITextField
+      InputProps={InputProps}
+      inputProps={{ max, min, size, step, type: 'number' }}
+      variant='filled'
+      {...rest}
+    />
+  );
+
+  result.propTypes = {
+    max: PropTypes.number,
+    min: PropTypes.number,
+    onChange: PropTypes.func,
+    size: PropTypes.number,
+    step: PropTypes.number,
+    value: PropTypes.number,
+  };
+
+  if (displayName) {
+    result.displayName = displayName;
+  }
+
+  if (defaultProps) {
+    result.defaultProps = defaultProps;
+  }
+
+  return result;
 };
 
-// This is NOT designed to be used in conjunction with react-final-form; it is a
-// standalone controlled field based on Material UI
-export const SimpleDurationField = ({ max, min, size, ...rest }) => (
-  <MaterialUITextField
-    InputProps={{
-      endAdornment: <InputAdornment position='end'>seconds</InputAdornment>,
-    }}
-    inputProps={{ max, min, size, type: 'number' }}
-    {...rest}
-  />
-);
+// These fields are NOT designed to be used in conjunction with react-final-form;
+// they are standalone controlled field based on Material UI
+export const SimpleAngleField = createNumericField({
+  displayName: 'SimpleAngleField',
+  defaultProps: {
+    max: 360,
+    min: 0,
+    step: 0.1,
+  },
+  unit: 'degrees',
+});
 
-SimpleDurationField.propTypes = {
-  max: PropTypes.number,
-  min: PropTypes.number,
-  onChange: PropTypes.func,
-  size: PropTypes.number,
-  value: PropTypes.number,
-};
+export const SimpleDistanceField = createNumericField({
+  displayName: 'SimpleDistanceField',
+  unit: 'm',
+});
 
-SimpleDurationField.defaultProps = {
-  min: 0,
-  size: 4,
-};
+export const SimpleDurationField = createNumericField({
+  displayName: 'SimpleDurationField',
+  unit: 'seconds',
+  defaultProps: {
+    min: 0,
+    size: 4,
+  },
+});
+
+export const SimpleNumericField = createNumericField({
+  displayName: 'SimpleNumericField',
+});
+
+export const SimpleVoltageField = createNumericField({
+  displayName: 'SimpleVoltageField',
+  unit: 'V',
+  defaultProps: {
+    min: 0,
+    size: 4,
+  },
+});

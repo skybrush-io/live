@@ -21,6 +21,7 @@ import BatteryCharging90Icon from '@material-ui/icons/BatteryCharging90';
 import BatteryChargingFullIcon from '@material-ui/icons/BatteryChargingFull';
 
 import Colors from '~/components/colors';
+import CustomPropTypes from '~/utils/prop-types';
 
 const useStyles = makeStyles(
   (theme) => ({
@@ -58,6 +59,8 @@ const iconStyle = {
   verticalAlign: 'bottom',
 };
 
+const unknownIconStyle = {};
+
 const batteryIcons = [
   <BatteryAlertIcon key='batteryIcon' fontSize='small' style={iconStyle} />,
   <BatteryAlertIcon key='batteryIcon' fontSize='small' style={iconStyle} />,
@@ -70,6 +73,9 @@ const batteryIcons = [
   <Battery80Icon key='batteryIcon' fontSize='small' style={iconStyle} />,
   <Battery90Icon key='batteryIcon' fontSize='small' style={iconStyle} />,
   <BatteryFullIcon key='batteryIcon' fontSize='small' style={iconStyle} />,
+  <span key='batteryIcon' style={unknownIconStyle}>
+    {' '}
+  </span>,
 ];
 
 const chargingBatteryIcons = [
@@ -128,6 +134,7 @@ const chargingBatteryIcons = [
     fontSize='small'
     style={iconStyle}
   />,
+  <span key='batteryIcon' style={unknownIconStyle} />,
 ];
 
 const batteryIconIndexByStatus = {
@@ -136,6 +143,7 @@ const batteryIconIndexByStatus = {
   Ok: 8,
   Warning: 3,
   Error: 0,
+  Unknown: 11,
 };
 
 const getBatteryIcon = (percentage, status, charging) => {
@@ -147,14 +155,6 @@ const getBatteryIcon = (percentage, status, charging) => {
   return iconSet[index];
 };
 
-const batteryIconsByStatus = {
-  Full: batteryIcons[10],
-  NearFull: batteryIcons[9],
-  Ok: batteryIcons[8],
-  Warning: batteryIcons[3],
-  Error: batteryIcons[0],
-};
-
 // Percentage thresholds for full, normal, low
 const percentageThresholds = {
   Full: 95,
@@ -163,19 +163,13 @@ const percentageThresholds = {
   Warning: 10,
 };
 
-// Thresholds for full, normal, low
-const voltageThresholdsPerCell = {
-  Full: 4.1,
-  NearFull: 3.9,
-  Ok: 3.7,
-  Warning: 3.5,
-};
-
 /**
  * Returns a suggested battery status level, given the voltage and charge
- * percentage of the battery.
+ * percentage of the battery, the number of cells in the battery, and a
+ * settings object that contains the voltage thresholds for the individual
+ * states, per cell.
  */
-function getBatteryStatus(voltage, percentage) {
+function getBatteryStatus(voltage, percentage, cellCount, settings) {
   if (percentage) {
     return percentage > percentageThresholds.Full
       ? 'Full'
@@ -188,15 +182,25 @@ function getBatteryStatus(voltage, percentage) {
       : 'Error';
   }
 
-  const numberCells = 3;
-  const voltagePerCell = voltage === undefined ? 0 : voltage / numberCells;
-  return voltagePerCell > voltageThresholdsPerCell.Full
+  if (!settings || !settings.voltageThresholds) {
+    return 'Unknown';
+  }
+
+  if (cellCount === undefined) {
+    cellCount = settings ? settings.defaultCellCount : 3;
+  }
+
+  const voltagePerCell =
+    voltage === undefined || cellCount < 1 ? 0 : voltage / cellCount;
+  const { voltageThresholds } = settings;
+
+  return voltagePerCell > voltageThresholds.nearFull
     ? 'Full'
-    : voltagePerCell > voltageThresholdsPerCell.NearFull
+    : voltagePerCell >= voltageThresholds.ok
     ? 'NearFull'
-    : voltagePerCell > voltageThresholdsPerCell.Ok
+    : voltagePerCell >= voltageThresholds.warning
     ? 'Ok'
-    : voltagePerCell > voltageThresholdsPerCell.Warning
+    : voltagePerCell >= voltageThresholds.critical
     ? 'Warning'
     : 'Error';
 }
@@ -204,9 +208,16 @@ function getBatteryStatus(voltage, percentage) {
 /**
  * Presentational component for a battery charge indicator.
  */
-const BatteryIndicator = ({ charging, className, percentage, voltage }) => {
+const BatteryIndicator = ({
+  charging,
+  className,
+  cellCount,
+  percentage,
+  settings,
+  voltage,
+}) => {
   const classes = useStyles();
-  const status = getBatteryStatus(voltage, percentage);
+  const status = getBatteryStatus(voltage, percentage, cellCount, settings);
   const rootClass = clsx(className, classes.root, classes[`battery${status}`]);
   const batteryIcon = getBatteryIcon(percentage, status, charging);
   return (
@@ -222,9 +233,11 @@ const BatteryIndicator = ({ charging, className, percentage, voltage }) => {
 };
 
 BatteryIndicator.propTypes = {
+  cellCount: PropTypes.number,
   className: PropTypes.string,
   charging: PropTypes.bool,
   percentage: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+  settings: CustomPropTypes.batterySettings,
   voltage: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
 };
 

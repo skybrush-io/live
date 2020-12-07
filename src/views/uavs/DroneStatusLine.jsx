@@ -13,6 +13,7 @@ import BatteryIndicator from './BatteryIndicator';
 import ColoredLight from '~/components/ColoredLight';
 import StatusPill from '~/components/StatusPill';
 import StatusText from '~/components/StatusText';
+import { getBatteryIndicatorSettings } from '~/features/settings/selectors';
 import {
   createSingleUAVStatusSummarySelector,
   getDeviationFromTakeoffHeadingByUavId,
@@ -26,6 +27,7 @@ import {
 import { getPreferredCoordinateFormatter } from '~/selectors/formatting';
 import { monospacedFont } from '~/theme';
 import { formatCoordinateArray } from '~/utils/formatting';
+import CustomPropTypes from '~/utils/prop-types';
 
 /**
  * Converts the absolute value of a heading deviation, in degrees, to the
@@ -112,6 +114,7 @@ const useStyles = makeStyles(
  * Status line in the drone list view that represents a single drone.
  */
 const DroneStatusLine = ({
+  batterySettings,
   batteryStatus,
   color,
   coordinateFormatter,
@@ -158,6 +161,7 @@ const DroneStatusLine = ({
           </StatusPill>
           <BatteryIndicator
             className={classes.batteryIndicator}
+            settings={batterySettings}
             {...batteryStatus}
           />
           <ColoredLight inline color={color} />
@@ -205,7 +209,9 @@ const DroneStatusLine = ({
 };
 
 DroneStatusLine.propTypes = {
+  batterySettings: CustomPropTypes.batterySettings,
   batteryStatus: PropTypes.shape({
+    cellCount: PropTypes.number,
     charging: PropTypes.bool,
     voltage: PropTypes.number,
     percentage: PropTypes.number,
@@ -260,6 +266,7 @@ export default connect(
         ? getLightColorByUavIdInCSSNotation(state, uavId)
         : 'black';
       return {
+        batterySettings: getBatteryIndicatorSettings(state),
         batteryStatus: uav ? uav.battery : undefined,
         color,
         coordinateFormatter: getPreferredCoordinateFormatter(state),
