@@ -465,9 +465,9 @@ class AsyncOperationManager {
       } catch (error) {
         if (noThrow) {
           return error;
-        } else {
-          throw error;
         }
+
+        throw error;
       } finally {
         delete this._pendingOperations[receipt];
       }
