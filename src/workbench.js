@@ -12,7 +12,6 @@ import React from 'react';
 import { WorkbenchBuilder } from 'react-flexible-workbench';
 
 import BackgroundHint from './components/BackgroundHint';
-import MessagesPanel from './components/chat/MessagesPanel';
 import { saveWorkbenchState } from './features/workbench/slice';
 import { injectFlockFromContext } from './flock';
 import store from './store';
@@ -57,7 +56,7 @@ const componentRegistry = {
   'lcd-clock-panel': views.LCDClockPanel,
   'log-panel': views.LogPanel,
   map: views.MapView,
-  messages: injectFlockFromContext(MessagesPanel),
+  messages: views.MessagesPanelView,
   placeholder: Nothing,
   'saved-location-list': views.SavedLocationList,
   'show-control': onlyWithFeature('showControl', views.ShowControlPanel),

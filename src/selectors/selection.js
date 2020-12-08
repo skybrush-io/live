@@ -125,6 +125,15 @@ export const getSelectedOriginIds = selectionForSubset(globalIdToOriginId);
 export const getSelectedUAVIds = selectionForSubset(globalIdToUavId);
 
 /**
+ * Selector that returns the ID of the selected UAV if there is exactly one UAV
+ * selected, or undefined otherwise.
+ */
+export const getSingleSelectedUAVId = createSelector(
+  getSelectedUAVIds,
+  (uavIds) => (uavIds.length === 1 ? uavIds[0] : undefined)
+);
+
+/**
  * Selector that calculates the number of selected UAVs.
  */
 export const getNumberOfSelectedUAVs = (state) => {

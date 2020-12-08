@@ -13,6 +13,7 @@ import LCDClockPanel from './lcd-clock';
 import SavedLocationList from './locations';
 import LogPanel from './log';
 import MapView from './map';
+import MessagesPanelView from './messages';
 import ShowControlPanel from './show-control';
 import UAVList from './uavs';
 import ThreeDTopLevelView from './three-d';
@@ -27,6 +28,7 @@ export default {
   LCDClockPanel,
   LogPanel,
   MapView,
+  MessagesPanelView,
   SavedLocationList,
   ShowControlPanel,
   UAVList,

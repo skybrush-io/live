@@ -10,6 +10,7 @@ import { orderBy } from 'natural-orderby';
 import u from 'updeep';
 
 import { chooseUniqueIdFromName } from './naming';
+import { EMPTY_ARRAY } from './redux';
 
 /**
  * Helper functions to deal with ordered collections.
@@ -412,6 +413,8 @@ export const selectLast = ({ byId, order }) =>
 export const selectOrdered = ({ byId, order }) =>
   order === undefined
     ? Object.values(byId)
+    : order.length === 0
+    ? EMPTY_ARRAY
     : reject(
         order.map((id) => byId[id]),
         isNil

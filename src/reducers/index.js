@@ -3,7 +3,6 @@ import { combineReducers } from 'redux';
 import dialogsReducer from './dialogs';
 import featuresReducer from './features';
 import mapReducer from './map';
-import messagesReducer from './messages';
 
 import clocksReducer from '~/features/clocks/slice';
 import connectionsReducer from '~/features/connections/slice';
@@ -13,6 +12,7 @@ import lcdClockReducer from '~/features/lcd-clock/slice';
 import localServerReducer from '~/features/local-server/slice';
 import logReducer from '~/features/log/slice';
 import measurementReducer from '~/features/measurement/slice';
+import messagesReducer from '~/features/messages/slice';
 import missionReducer from '~/features/mission/slice';
 import preflightReducer from '~/features/preflight/slice';
 import rtkReducer from '~/features/rtk/slice';

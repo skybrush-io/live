@@ -15,7 +15,6 @@ import deauthenticationReducer from './deauthentication';
 import errorHandlingReducer from './error-handling';
 import featureEditorReducer from './feature-editor';
 import layerSettingsReducer from './layer-settings';
-import messagesReducer from './messages';
 import promptReducer from './prompt';
 import serverSettingsReducer from './server-settings';
 
@@ -31,7 +30,6 @@ const reducer = combineReducers({
   featureEditor: featureEditorReducer,
   geofenceSettings: geofenceSettingsReducer,
   layerSettings: layerSettingsReducer,
-  messages: messagesReducer,
   prompt: promptReducer,
   savedLocationEditor: savedLocationEditorReducer,
   serverSettings: serverSettingsReducer,

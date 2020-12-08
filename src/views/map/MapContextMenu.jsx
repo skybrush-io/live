@@ -28,10 +28,7 @@ import { createSelector } from '@reduxjs/toolkit';
 import { showFeatureEditorDialog } from '~/actions/feature-editor';
 import { removeFeatures } from '~/actions/features';
 import { setFlatEarthCoordinateSystemOrigin } from '~/actions/map-origin';
-import {
-  selectUAVInMessagesDialog,
-  showMessagesDialog,
-} from '~/actions/messages';
+import { showMessagesDialog } from '~/features/messages/slice';
 
 import ContextMenu from '~/components/ContextMenu';
 
@@ -64,7 +61,6 @@ class MapContextMenu extends React.Component {
     editFeature: PropTypes.func,
     removeFeaturesByIds: PropTypes.func,
     setGeofencePolygonId: PropTypes.func,
-    selectUAVInMessagesDialog: PropTypes.func.isRequired,
     setMapCoordinateSystemOrigin: PropTypes.func,
     setShowCoordinateSystemOrigin: PropTypes.func,
     showFlyToTargetDialog: PropTypes.func,
@@ -158,7 +154,7 @@ class MapContextMenu extends React.Component {
                 key='message'
                 dense
                 disabled={!hasSingleSelectedUAV}
-                onClick={this._showMessagesDialog}
+                onClick={this.props.showMessagesDialog}
               >
                 <ListItemIcon>
                   <Message />
@@ -376,15 +372,6 @@ class MapContextMenu extends React.Component {
     const { selectedUAVIds } = context;
     messaging.shutdownUAVs(selectedUAVIds);
   };
-
-  _showMessagesDialog = (_event, context) => {
-    const { selectedUAVIds } = context;
-    if (selectedUAVIds.length === 1) {
-      this.props.selectUAVInMessagesDialog(selectedUAVIds[0]);
-    }
-
-    this.props.showMessagesDialog();
-  };
 }
 
 const hasFeatures = hasFeature('features');
@@ -423,7 +410,6 @@ const MapContextMenuContainer = connect(
     clearGeofencePolygonId: hasGeofence ? clearGeofencePolygonId : null,
     editFeature: hasFeatures ? showFeatureEditorDialog : null,
     removeFeaturesByIds: hasFeatures ? removeFeatures : null,
-    selectUAVInMessagesDialog,
     setGeofencePolygonId: hasGeofence ? setGeofencePolygonId : null,
     setMapCoordinateSystemOrigin: setFlatEarthCoordinateSystemOrigin,
     setShowCoordinateSystemOrigin: hasShowControl

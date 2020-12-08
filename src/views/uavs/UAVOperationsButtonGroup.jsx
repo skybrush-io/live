@@ -17,10 +17,7 @@ import WbSunny from '@material-ui/icons/WbSunny';
 import Colors from '~/components/colors';
 import Tooltip from '~/components/Tooltip';
 
-import {
-  selectUAVInMessagesDialog,
-  showMessagesDialog,
-} from '~/actions/messages';
+import { showMessagesDialog } from '~/features/messages/slice';
 import { createSelectionRelatedActions } from '~/utils/messaging';
 
 const useStyles = makeStyles(
@@ -37,11 +34,7 @@ const useStyles = makeStyles(
 /**
  * Main toolbar for controlling the UAVs.
  */
-const UAVOperationsButtonGroup = ({
-  selectedUAVIds,
-  selectUAVInMessagesDialog,
-  showMessagesDialog,
-}) => {
+const UAVOperationsButtonGroup = ({ selectedUAVIds, showMessagesDialog }) => {
   const classes = useStyles();
 
   const isSelectionEmpty = isEmpty(selectedUAVIds);
@@ -55,14 +48,6 @@ const UAVOperationsButtonGroup = ({
     returnToHomeSelectedUAVs,
     takeoffSelectedUAVs,
   } = createSelectionRelatedActions(selectedUAVIds);
-
-  const selectUAVAndShowMessagesDialog = () => {
-    if (isSelectionSingle) {
-      selectUAVInMessagesDialog(selectedUAVIds[0]);
-    }
-
-    showMessagesDialog();
-  };
 
   return (
     <>
@@ -90,10 +75,7 @@ const UAVOperationsButtonGroup = ({
       <Divider className={classes.divider} orientation='vertical' />
 
       <Tooltip content='Send message'>
-        <IconButton
-          disabled={!isSelectionSingle}
-          onClick={selectUAVAndShowMessagesDialog}
-        >
+        <IconButton disabled={!isSelectionSingle} onClick={showMessagesDialog}>
           <Message />
         </IconButton>
       </Tooltip>
@@ -130,7 +112,6 @@ const UAVOperationsButtonGroup = ({
 };
 
 UAVOperationsButtonGroup.propTypes = {
-  selectUAVInMessagesDialog: PropTypes.func,
   selectedUAVIds: PropTypes.arrayOf(PropTypes.string),
   showMessagesDialog: PropTypes.func,
 };
@@ -139,12 +120,5 @@ export default connect(
   // mapStateToProps
   null,
   // mapDispatchToProps
-  (dispatch) => ({
-    selectUAVInMessagesDialog(id) {
-      dispatch(selectUAVInMessagesDialog(id));
-    },
-    showMessagesDialog() {
-      dispatch(showMessagesDialog());
-    },
-  })
+  { showMessagesDialog }
 )(UAVOperationsButtonGroup);

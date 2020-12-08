@@ -15,8 +15,6 @@ export const fitAllFeaturesSignal = new Signal();
 export const mapViewToLocationSignal = new Signal();
 export const mapViewToExtentSignal = new Signal();
 
-export const focusMessagesDialogUAVSelectorFieldSignal = new Signal();
-
 /**
  * Converts an object that is either an array of at least length 2 or an object
  * with keys `lon` and `lat` to a longitude-latitude pair.
@@ -92,6 +90,4 @@ export default {
 
   mapViewToLocationSignal,
   mapViewToExtentSignal,
-
-  focusMessagesDialogUAVSelectorFieldSignal,
 };

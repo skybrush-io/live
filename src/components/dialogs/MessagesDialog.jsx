@@ -6,7 +6,6 @@
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
 import PropTypes from 'prop-types';
 import React from 'react';
 import EventListener, { withOptions } from 'react-event-listener';
@@ -14,79 +13,54 @@ import { connect } from 'react-redux';
 
 import { MessagesPanel } from '../chat';
 
-import {
-  closeMessagesDialog,
-  clearMessagesOfSelectedUAV,
-} from '~/actions/messages';
-import SignalListener from '~/components/SignalListener';
-import Flock from '~/model/flock';
-
-import { focusMessagesDialogUAVSelectorFieldSignal } from '~/signals';
+import { clearMessagesOfSelectedUAV } from '~/features/messages/actions';
+import { closeMessagesDialog } from '~/features/messages/slice';
+import { getSingleSelectedUAVId } from '~/selectors/selection';
 
 /**
  * Presentation component for the "Messages" dialog.
  */
-class MessagesDialogPresentation extends React.Component {
+class MessagesDialog extends React.Component {
   static propTypes = {
-    flock: PropTypes.instanceOf(Flock),
     isOpen: PropTypes.bool.isRequired,
     onClear: PropTypes.func,
     onClose: PropTypes.func,
     selectedUAVId: PropTypes.string,
   };
 
-  constructor(props) {
-    super(props);
-
+  constructor() {
+    super();
     this._messagesPanel = null;
-    this._setMessagesPanel = this._setMessagesPanel.bind(this);
-
-    this._focusUAVSelectorField = this._focusUAVSelectorField.bind(this);
-    this._handleKeyWhileOpen = this._handleKeyWhileOpen.bind(this);
-  }
-
-  /**
-   * Sets the focus on the UAV selector field if the messages panel is shown.
-   */
-  _focusUAVSelectorField() {
-    if (this._messagesPanel) {
-      this._messagesPanel.focusOnUAVSelectorField();
-    }
   }
 
   /**
    * Event handler for keypresses while the dialog is open to capture
    * specific hotkeys.
-   *
-   * @param {KeyboardEvent} e  the keypress event
    */
-  _handleKeyWhileOpen(e) {
-    if (e.key === '@') {
-      e.preventDefault();
-      focusMessagesDialogUAVSelectorFieldSignal.dispatch();
-    } else if (
+  _handleKeyWhileOpen = (event) => {
+    if (
       // The active element is not an input
       !['INPUT'].includes(document.activeElement.tagName) &&
       // And the key pressed was not anything special, just a single character
-      e.key.length === 1 &&
+      event.key.length === 1 &&
       // And the messages panel is mounted
       this._messagesPanel
     ) {
       this._messagesPanel.focusOnTextField();
     }
-  }
+  };
 
-  _setMessagesPanel(panel) {
+  _setMessagesPanel = (panel) => {
     this._messagesPanel = panel;
 
     if (this._messagesPanel) {
       // Message panel just got mounted so scroll to the bottom
       this._messagesPanel.scrollToBottom();
     }
-  }
+  };
 
   render() {
-    const { flock, isOpen, onClear, onClose, selectedUAVId } = this.props;
+    const { isOpen, onClear, onClose, selectedUAVId } = this.props;
 
     const actions = [
       <Button key='clear' disabled={!selectedUAVId} onClick={onClear}>
@@ -103,15 +77,11 @@ class MessagesDialogPresentation extends React.Component {
           target={document.body}
           onKeyDown={withOptions(this._handleKeyWhileOpen, { capture: true })}
         />
-        <SignalListener
-          target={focusMessagesDialogUAVSelectorFieldSignal}
-          onDispatched={this._focusUAVSelectorField}
-        />
         <MessagesPanel
           ref={this._setMessagesPanel}
-          textFieldsAtBottom
+          hideClearButton
           style={{ height: '50ex', marginBottom: -8 }}
-          flock={flock}
+          uavId={selectedUAVId}
         />
         <DialogActions>{actions}</DialogActions>
       </Dialog>
@@ -122,28 +92,16 @@ class MessagesDialogPresentation extends React.Component {
 /**
  * Messages dialog container component to bind it to the Redux store.
  */
-const MessagesDialog = connect(
+export default connect(
   // mapStateToProps
-  (state) => {
-    const { dialogVisible } = state.dialogs.messages;
-    const { messages } = state;
-    const { selectedUAVId } = messages;
-    return {
-      selectedUAVId,
-      isOpen: dialogVisible,
-    };
-  },
+  (state) => ({
+    selectedUAVId: getSingleSelectedUAVId(state),
+    isOpen: state.messages.dialogVisible,
+  }),
 
   // mapDispatchToProps
-  (dispatch) => ({
-    onClear() {
-      dispatch(clearMessagesOfSelectedUAV());
-    },
-
-    onClose() {
-      dispatch(closeMessagesDialog());
-    },
-  })
-)(MessagesDialogPresentation);
-
-export default MessagesDialog;
+  {
+    onClear: clearMessagesOfSelectedUAV,
+    onClose: closeMessagesDialog,
+  }
+)(MessagesDialog);

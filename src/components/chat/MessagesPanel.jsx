@@ -15,26 +15,23 @@ import IconButton from '@material-ui/core/IconButton';
 import TextField from '@material-ui/core/TextField';
 import DeleteSweep from '@material-ui/icons/DeleteSweep';
 
-import ActiveUAVsField from '../ActiveUAVsField';
 import BackgroundHint from '../BackgroundHint';
 
 import ChatArea from './ChatArea';
 import ChatBubble from './ChatBubble';
 import Marker from './Marker';
 
+import { createMessageListSelector } from '~/features/messages/selectors';
 import {
+  addErrorMessage,
   addInboundMessage,
-  addOutboundMessageToSelectedUAV,
-  addErrorMessageInMessagesDialog,
-  clearMessagesOfSelectedUAV,
-  selectUAVInMessagesDialog,
-} from '~/actions/messages';
+  addOutboundMessage,
+  clearMessagesOfUAVById,
+} from '~/features/messages/slice';
 import { formatCommandResponseAsHTML } from '~/flockwave/formatting';
 import { parseCommandFromString } from '~/flockwave/messages';
-import Flock from '~/model/flock';
 import { MessageType } from '~/model/messages';
 import messageHub from '~/message-hub';
-import { selectMessagesOfSelectedUAVInOrder } from '~/selectors/messages';
 
 /**
  * Converts a message object from the Redux store into React components
@@ -123,9 +120,7 @@ const ChatAreaBackgroundHint = ({
     <BackgroundHint
       key='backgroundHint'
       header='No UAV selected'
-      text={`Enter the ID of a UAV to talk to in the ${
-        textFieldPlacement === 'bottom' ? 'lower left' : 'upper left'
-      } corner`}
+      text='Select the UAV to send messages to'
       {...rest}
     />
   );
@@ -136,45 +131,18 @@ ChatAreaBackgroundHint.propTypes = {
 };
 
 /**
- * Component that shows the UAV that the messaging panel is currently targeting
- * with messages and that allows the user to change the selection.
- */
-const MessageRecipientField = connect(
-  // mapStateToProps
-  (state) => ({
-    commitWhenInvalid: true,
-    initialValue: state.messages.selectedUAVId,
-    value: state.messages.selectedUAVId || '',
-  }),
-
-  // mapDispatchToProps
-  (dispatch) => ({
-    onValueChanged(value) {
-      dispatch(
-        selectUAVInMessagesDialog(value && value.length > 0 ? value : null)
-      );
-    },
-  }),
-
-  // mergeProps
-  null,
-
-  // options
-  { forwardRef: true }
-)(ActiveUAVsField);
-
-/**
  * Presentation component for the "Messages" panel, containing a text field
  * to type the messages into, and a target UAV selector.
  */
 class MessagesPanel extends React.Component {
   static propTypes = {
     chatEntries: PropTypes.arrayOf(PropTypes.object),
-    flock: PropTypes.instanceOf(Flock),
+    hideClearButton: PropTypes.bool,
     onClearMessages: PropTypes.func,
     onSend: PropTypes.func,
     style: PropTypes.object,
     textFieldPlacement: PropTypes.oneOf(['bottom', 'top']),
+    uavId: PropTypes.string,
   };
 
   static defaultProps = {
@@ -207,11 +175,13 @@ class MessagesPanel extends React.Component {
   render() {
     const {
       chatEntries,
-      flock,
+      hideClearButton,
       onClearMessages,
       style,
       textFieldPlacement,
+      uavId,
     } = this.props;
+
     const chatComponents = flatMap(chatEntries, convertMessageToComponent);
     const contentStyle = {
       display: 'flex',
@@ -227,11 +197,12 @@ class MessagesPanel extends React.Component {
       ) : (
         <ChatAreaBackgroundHint
           key='chatAreaBackgroundHint'
-          hasSelectedUAV={!isNil(chatEntries)}
+          hasSelectedUAV={!isNil(uavId)}
           textFieldPlacement={textFieldPlacement}
           p={1}
         />
       );
+    const isClearButtonVisible = onClearMessages && !hideClearButton;
     const textFields = (
       <Box
         key='textFieldContainer'
@@ -240,12 +211,8 @@ class MessagesPanel extends React.Component {
         pt={1}
         pb={2}
         pl={2}
+        pr={isClearButtonVisible ? 0 : 2}
       >
-        <MessageRecipientField
-          flock={flock}
-          inputRef={this._uavSelectorFieldRef}
-          style={{ width: '7em', paddingRight: 8 }}
-        />
         <TextField
           autoFocus
           fullWidth
@@ -253,13 +220,15 @@ class MessagesPanel extends React.Component {
           label='Message'
           onKeyDown={this._textFieldKeyDownHandler}
         />
-        <IconButton
-          disabled={chatComponents.length === 0}
-          style={{ transform: 'translateY(8px)' }}
-          onClick={onClearMessages}
-        >
-          <DeleteSweep />
-        </IconButton>
+        {isClearButtonVisible && (
+          <IconButton
+            disabled={chatComponents.length === 0}
+            style={{ transform: 'translateY(8px)' }}
+            onClick={onClearMessages}
+          >
+            <DeleteSweep />
+          </IconButton>
+        )}
       </Box>
     );
     const children =
@@ -296,27 +265,36 @@ class MessagesPanel extends React.Component {
  */
 export default connect(
   // mapStateToProps
-  (state) => ({
-    chatEntries: selectMessagesOfSelectedUAVInOrder(state),
-  }),
+  () => {
+    const messageListSelector = createMessageListSelector();
+    return (state, ownProps) => ({
+      chatEntries: messageListSelector(state, ownProps.uavId),
+    });
+  },
 
   // mapDispatchToProps
-  (dispatch) => ({
+  (dispatch, ownProps) => ({
     onClearMessages() {
-      dispatch(clearMessagesOfSelectedUAV());
+      dispatch(clearMessagesOfUAVById(ownProps.uavId));
     },
 
     async onSend(message) {
+      const { uavId } = ownProps;
+
+      if (!uavId) {
+        return;
+      }
+
       // Dispatch a Redux action. This will update the store but will not
       // send any actual message
-      const action = addOutboundMessageToSelectedUAV(message);
+      const action = addOutboundMessage({ message, uavId });
       dispatch(action);
 
       // Parse the message and extract positional and keyword arguments
       const { command, args, kwds } = parseCommandFromString(message);
 
       // Now also send the message via the message hub
-      const { uavId, messageId } = action;
+      const { messageId } = action;
 
       try {
         const result = await messageHub.sendCommandRequest({
@@ -326,11 +304,17 @@ export default connect(
           kwds,
         });
         const formattedMessage = formatCommandResponseAsHTML(result);
-        dispatch(addInboundMessage(formattedMessage, messageId));
+        dispatch(
+          addInboundMessage({
+            message: formattedMessage,
+            uavId,
+            refs: messageId,
+          })
+        );
       } catch (error) {
         const errorMessage = error.userMessage || error.message;
         dispatch(
-          addErrorMessageInMessagesDialog(errorMessage, uavId, messageId)
+          addErrorMessage({ message: errorMessage, uavId, refs: messageId })
         );
       }
     },
