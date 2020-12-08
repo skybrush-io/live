@@ -7,7 +7,7 @@ import difference from 'lodash-es/difference';
 import isNil from 'lodash-es/isNil';
 import union from 'lodash-es/union';
 import PropTypes from 'prop-types';
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback } from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { connect } from 'react-redux';
@@ -16,7 +16,6 @@ import AppBar from '@material-ui/core/AppBar';
 import Box from '@material-ui/core/Box';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 
-import DroneAvatar from './DroneAvatar';
 import DroneListItem from './DroneListItem';
 import DroneStatusLine from './DroneStatusLine';
 import MappingEditorToolbar from './MappingEditorToolbar';
@@ -27,8 +26,9 @@ import UAVListSubheader from './UAVListSubheader';
 import UAVToolbar from './UAVToolbar';
 
 import { setSelectedUAVIds } from '~/actions/map';
-import { createSelectionHandlerFactory } from '~/components/helpers/lists';
+import { createSelectionHandlerThunk } from '~/components/helpers/lists';
 import FadeAndSlide from '~/components/transitions/FadeAndSlide';
+import DroneAvatar from '~/components/uavs/DroneAvatar';
 import DronePlaceholder from '~/components/uavs/DronePlaceholder';
 import {
   adjustMissionMapping,
@@ -42,6 +42,7 @@ import {
   getUAVListLayout,
   isShowingMissionIds,
 } from '~/features/settings/selectors';
+import { openUAVDetailsDialog } from '~/features/uavs/details';
 import { getSelectedUAVIds } from '~/selectors/selection';
 import { isDark, monospacedFont } from '~/theme';
 import { formatMissionId } from '~/utils/formatting';
@@ -140,7 +141,9 @@ const createGridItems = (
       missionIndex === mappingSlotBeingEdited;
     const selected = selectedUAVIds.includes(uavId);
     const listItemProps = {
-      onClick: onSelected ? onSelected(uavId, missionIndex) : undefined,
+      onClick: onSelected
+        ? (event) => onSelected(event, uavId, missionIndex)
+        : undefined,
       onDrop: onDropped ? onDropped(missionIndex) : undefined,
       editing: editingThisItem,
       selected,
@@ -226,7 +229,9 @@ const createListItems = (
       isInEditMode && missionIndex === mappingSlotBeingEdited;
     const selected = selectedUAVIds.includes(uavId);
     const listItemProps = {
-      onClick: onSelected ? onSelected(uavId, missionIndex) : undefined,
+      onClick: onSelected
+        ? (event) => onSelected(event, uavId, missionIndex)
+        : undefined,
       onDrop: onDropped ? onDropped(missionIndex) : undefined,
       editing: editingThisItem,
       selected: isInEditMode ? editingThisItem : selected,
@@ -297,7 +302,7 @@ const UAVListPresentation = ({
   mappingSlotBeingEdited,
   onEditMappingSlot,
   onMappingAdjusted,
-  onSelectionChanged,
+  onSelectItem,
   onSelectSection,
   selectedUAVIds,
   selectionInfo,
@@ -305,15 +310,6 @@ const UAVListPresentation = ({
   uavIds,
 }) => {
   const classes = useListStyles();
-
-  const onUpdateSelection = useMemo(
-    () =>
-      createSelectionHandlerFactory({
-        getSelection: () => selectedUAVIds,
-        setSelection: onSelectionChanged,
-      }),
-    [selectedUAVIds, onSelectionChanged]
-  );
 
   const onDropped = useCallback(
     (targetIndex) => (droppedUAVId) =>
@@ -325,7 +321,7 @@ const UAVListPresentation = ({
   );
 
   const onStartEditing = useCallback(
-    (_uavId, missionIndex) => () => onEditMappingSlot(missionIndex),
+    (_event, _uavId, missionIndex) => onEditMappingSlot(missionIndex),
     [onEditMappingSlot]
   );
 
@@ -338,7 +334,7 @@ const UAVListPresentation = ({
     isInEditMode: editingMapping,
     mappingSlotBeingEdited,
     onDropped: editingMapping && onDropped,
-    onSelected: editingMapping ? onStartEditing : onUpdateSelection,
+    onSelected: editingMapping ? onStartEditing : onSelectItem,
     selectedUAVIds,
     showMissionIds,
   };
@@ -418,7 +414,7 @@ UAVListPresentation.propTypes = {
   layout: PropTypes.oneOf(['list', 'grid']),
   onEditMappingSlot: PropTypes.func,
   onMappingAdjusted: PropTypes.func,
-  onSelectionChanged: PropTypes.func,
+  onSelectItem: PropTypes.func,
   onSelectSection: PropTypes.func,
   selectedUAVIds: PropTypes.array,
   selectionInfo: PropTypes.exact({
@@ -464,7 +460,11 @@ const UAVList = connect(
   {
     onEditMappingSlot: startMappingEditorSessionAtSlot,
     onMappingAdjusted: adjustMissionMapping,
-    onSelectionChanged: setSelectedUAVIds,
+    onSelectItem: createSelectionHandlerThunk({
+      activateItem: openUAVDetailsDialog,
+      getSelection: getSelectedUAVIds,
+      setSelection: setSelectedUAVIds,
+    }),
     onSelectSection: (event) => (dispatch, getState) => {
       const { value } = event.target;
       const displayedIdsAndLabels = getDisplayedIdList(getState())[value];

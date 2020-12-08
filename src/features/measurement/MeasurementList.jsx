@@ -17,10 +17,10 @@ import BackgroundHint from '~/components/BackgroundHint';
 import Tooltip from '~/components/Tooltip';
 import Colors from '~/components/colors';
 import { multiSelectableListOf } from '~/components/helpers/lists';
+import DroneAvatar from '~/components/uavs/DroneAvatar';
 import ContentCopy from '~/icons/ContentCopy';
 import { getPreferredCoordinateFormatter } from '~/selectors/formatting';
 import { formatDuration } from '~/utils/formatting';
-import DroneAvatar from '~/views/uavs/DroneAvatar';
 
 import { copyCentroidOfAveragedCoordinatesToClipboard } from './actions';
 import {

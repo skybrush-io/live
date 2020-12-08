@@ -8,15 +8,15 @@ import Avatar from '@material-ui/core/Avatar';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { makeStyles } from '@material-ui/core/styles';
 
-import BatteryIndicator from './BatteryIndicator';
-import SecondaryStatusLight from './SecondaryStatusLight';
-
 import Colors from '~/components/colors';
 import { Status } from '~/components/semantics';
 import StatusPill from '~/components/StatusPill';
 import { getBatteryIndicatorSettings } from '~/features/settings/selectors';
 import { createSingleUAVStatusSummarySelector } from '~/features/uavs/selectors';
 import CustomPropTypes from '~/utils/prop-types';
+
+import BatteryIndicator from './BatteryIndicator';
+import SecondaryStatusLight from './SecondaryStatusLight';
 
 const useStyles = makeStyles(
   (theme) => ({

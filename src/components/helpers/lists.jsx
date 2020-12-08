@@ -88,8 +88,10 @@ export function listOf(itemRenderer, options = {}) {
  * Creates a selection event handler factory that encapsulates the common
  * logic for selection handling in lists.
  *
- * This function takes two functions as inputs: one that returns the current
- * selection in a list, and another one that sets the selection in the list.
+ * This function takes three functions as inputs: one that returns the current
+ * selection in a list, another one that sets the selection in the list, and
+ * an optional third one that will be invoked when an item is activated by
+ * double-clicking on it.
  *
  * The result is an event handler _factory_ that can be called with a single
  * item ID and that returns an event handler that sets the selection to this
@@ -97,16 +99,92 @@ export function listOf(itemRenderer, options = {}) {
  * and that _toggles_ the item in the current selection when it receives an
  * event _with_ the Ctrl (Cmd) key being pressed.
  */
-export function createSelectionHandlerFactory({ getSelection, setSelection }) {
-  return setSelection
-    ? (id) => (event) => {
-        const newSelection =
-          eventHasPlatformModifierKey(event.nativeEvent) && getSelection
-            ? xor(getSelection(), [id])
-            : [id];
-        return setSelection(newSelection);
+export function createSelectionHandlerFactory({
+  activateItem,
+  getSelection,
+  setSelection,
+}) {
+  if (!setSelection && !activateItem) {
+    return () => undefined;
+  }
+
+  return (id) => (event) => {
+    const selection = getSelection ? getSelection() : [];
+
+    if (eventHasPlatformModifierKey(event.nativeEvent)) {
+      // Toggling the item
+      return setSelection(xor(selection, [id]));
+    }
+
+    if (
+      activateItem &&
+      selection &&
+      selection.length === 1 &&
+      selection[0] === id
+    ) {
+      // Item was already selected, let's activate it
+      return activateItem(id);
+    }
+
+    // Select the item
+    return setSelection([id]);
+  };
+}
+
+/**
+ * Creates a Redux thunk action that encapsulates the common logic for
+ * selection handling in lists. The thunk has to be associated to the "click"
+ * event handler of each item in the list, and it must be called with the
+ * click event as the first argument and a unique item ID as the second argument.
+ *
+ * The thunk action will catch clicks on the items and dispatch actions to set
+ * the selection accordingly when the items are clicked, or toggling the
+ * selection when the items are clicked with the Ctrl (Cmd) key being pressed.
+ * It also handles optional item activation with double-clicks.
+ */
+export function createSelectionHandlerThunk({
+  activateItem,
+  getSelection,
+  setSelection,
+}) {
+  if (!setSelection && !activateItem) {
+    return null;
+  }
+
+  return (event, id) => (dispatch, getState) => {
+    const state = getState();
+    const selection = getSelection ? getSelection(state) : [];
+    let action;
+
+    if (eventHasPlatformModifierKey(event.nativeEvent)) {
+      // Toggling the item
+      action = setSelection(xor(selection, [id]));
+    } else if (
+      activateItem &&
+      selection &&
+      selection.length === 1 &&
+      selection[0] === id
+    ) {
+      // Item was already selected, let's activate it if it is a double-click,
+      // otherwise let's just select it. We use the "detail" property of the
+      // event to decide; this works if we are attached to the onClick handler.
+      action = event.detail > 1 ? activateItem(id) : setSelection([id]);
+
+      if (event.detail > 1) {
+        // Double-clicking may have triggered a text selection on the UI. We
+        // are too late to prevent it because it happens on mouseDown, so let's
+        // just clear it.
+        window.getSelection().removeAllRanges();
       }
-    : () => undefined;
+    } else if (setSelection) {
+      // Select the item
+      action = setSelection([id]);
+    }
+
+    if (action) {
+      dispatch(action);
+    }
+  };
 }
 
 /**

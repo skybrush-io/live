@@ -25,21 +25,15 @@ import Refresh from '@material-ui/icons/Refresh';
 
 import { createSelector } from '@reduxjs/toolkit';
 
-import { showFeatureEditorDialog } from '../../actions/feature-editor';
-import { removeFeatures } from '../../actions/features';
-import { setFlatEarthCoordinateSystemOrigin } from '../../actions/map-origin';
+import { showFeatureEditorDialog } from '~/actions/feature-editor';
+import { removeFeatures } from '~/actions/features';
+import { setFlatEarthCoordinateSystemOrigin } from '~/actions/map-origin';
 import {
   selectUAVInMessagesDialog,
   showMessagesDialog,
-} from '../../actions/messages';
-import ContextMenu from '../../components/ContextMenu';
-import {
-  getSelectedFeatureIds,
-  getSelectedFeatureLabels,
-  getSelectedFeatureTypes,
-  getSelectedUAVIds,
-} from '../../selectors/selection';
-import * as messaging from '../../utils/messaging';
+} from '~/actions/messages';
+
+import ContextMenu from '~/components/ContextMenu';
 
 import { updateOutdoorShowSettings } from '~/features/show/actions';
 import {
@@ -49,7 +43,15 @@ import {
 import { getGeofencePolygonId } from '~/features/mission/selectors';
 import { openFlyToTargetDialogWithCoordinate } from '~/features/uav-control/actions';
 
+import {
+  getSelectedFeatureIds,
+  getSelectedFeatureLabels,
+  getSelectedFeatureTypes,
+  getSelectedUAVIds,
+} from '~/selectors/selection';
+
 import { hasFeature } from '~/utils/configuration';
+import * as messaging from '~/utils/messaging';
 
 /**
  * Context menu that shows the menu items that should appear when the

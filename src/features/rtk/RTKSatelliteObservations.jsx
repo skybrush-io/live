@@ -17,7 +17,7 @@ import Colors from '~/components/colors';
 import Tooltip from '~/components/Tooltip';
 import { showNotification } from '~/features/snackbar/slice';
 import ContentCopy from '~/icons/ContentCopy';
-import { defaultFont, isDark } from '~/theme';
+import { createSecondaryAreaStyle, defaultFont, isDark } from '~/theme';
 import { createGradientBackground } from '~/utils/charts';
 
 import {
@@ -158,10 +158,7 @@ const options = {
 const useStyles = makeStyles(
   (theme) => ({
     root: {
-      background: isDark(theme)
-        ? 'linear-gradient(160deg, #2c2c2c 0%, #1f1f1f 100%)'
-        : '#fafafa',
-      position: 'relative',
+      ...createSecondaryAreaStyle(theme),
     },
 
     inset: {
@@ -194,7 +191,7 @@ const RTKSatelliteObservations = ({
   const theme = useTheme();
   const update = useUpdate();
 
-  const hasAntennaInfo = !!antennaInfo.position;
+  const hasAntennaInfo = Boolean(antennaInfo.position);
 
   // Update the component regularly because the chart depends on the time
   // elapsed since the last update so we need to keep it updated even if

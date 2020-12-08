@@ -5,16 +5,18 @@
 
 import { combineReducers } from 'redux';
 
+import geofenceSettingsReducer from '~/features/geofence/slice';
+import savedLocationEditorReducer from '~/features/saved-locations/editor';
+import uavDetailsDialogReducer from '~/features/uavs/details';
+
 import appSettingsReducer from './app-settings';
 import authenticationReducer from './authentication';
 import deauthenticationReducer from './deauthentication';
 import errorHandlingReducer from './error-handling';
 import featureEditorReducer from './feature-editor';
-import geofenceSettingsReducer from './geofence-settings';
+import layerSettingsReducer from './layer-settings';
 import messagesReducer from './messages';
 import promptReducer from './prompt';
-import layerSettingsReducer from './layer-settings';
-import savedLocationEditorReducer from './saved-location-editor';
 import serverSettingsReducer from './server-settings';
 
 /**
@@ -33,6 +35,7 @@ const reducer = combineReducers({
   prompt: promptReducer,
   savedLocationEditor: savedLocationEditorReducer,
   serverSettings: serverSettingsReducer,
+  uavDetails: uavDetailsDialogReducer,
 });
 
 export default reducer;

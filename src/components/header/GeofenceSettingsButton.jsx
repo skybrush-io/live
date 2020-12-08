@@ -1,13 +1,12 @@
-import PlacesFence from '~/icons/PlacesFence';
-
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 
+import { showGeofenceSettingsDialog } from '~/features/geofence/slice';
+import PlacesFence from '~/icons/PlacesFence';
+
 import GeofenceStatusBadge from '../badges/GeofenceStatusBadge';
 import GenericHeaderButton from './GenericHeaderButton';
-
-import { showGeofenceSettingsDialog } from '~/actions/geofence-settings';
 
 const GeofenceSettingsButton = (props) => (
   <GenericHeaderButton {...props} tooltip='Geofence settings'>

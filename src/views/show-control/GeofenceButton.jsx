@@ -8,7 +8,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import StatusLight from '~/components/StatusLight';
 import { Status } from '~/components/semantics';
 
-import { showGeofenceSettingsDialog } from '~/actions/geofence-settings';
+import { showGeofenceSettingsDialog } from '~/features/geofence/slice';
 import { getSetupStageStatuses } from '~/features/show/stages';
 
 const formatStatusText = (status) => {

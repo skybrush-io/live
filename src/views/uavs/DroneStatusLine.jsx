@@ -8,11 +8,10 @@ import { connect } from 'react-redux';
 
 import { makeStyles } from '@material-ui/core/styles';
 
-import BatteryIndicator from './BatteryIndicator';
-
 import ColoredLight from '~/components/ColoredLight';
 import StatusPill from '~/components/StatusPill';
 import StatusText from '~/components/StatusText';
+import BatteryIndicator from '~/components/uavs/BatteryIndicator';
 import { getBatteryIndicatorSettings } from '~/features/settings/selectors';
 import {
   createSingleUAVStatusSummarySelector,

@@ -17,13 +17,6 @@ const useStyles = makeStyles(
       minWidth: theme.spacing(10),
       position: 'relative',
       transition: theme.transitions.create(['background-color', 'box-shadow']),
-
-      '&>div': {
-        marginBottom: theme.spacing(0.5),
-      },
-      '&>div:last-child': {
-        marginBottom: 0,
-      },
     },
 
     draggable: {

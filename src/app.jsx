@@ -19,10 +19,12 @@ import SplashScreen from './components/SplashScreen';
 import { ErrorHandler } from './error-handling';
 
 import CoordinateAveragingDialog from './features/measurement/CoordinateAveragingDialog';
+import SavedLocationEditorDialog from './features/saved-locations/SavedLocationEditorDialog';
 import RTKSetupDialog from './features/rtk/RTKSetupDialog';
 import Sidebar from './features/sidebar/Sidebar';
 import ToastNotificationManager from './features/snackbar/ToastNotificationManager';
 import Tour from './features/tour/Tour';
+import UAVDetailsDialog from './features/uavs/UAVDetailsDialog';
 import VersionCheckDialog from './features/version-check/VersionCheckDialog';
 
 import flock, { Flock } from './flock';
@@ -120,13 +122,14 @@ const App = () => {
                 <dialogs.LayerSettingsDialog />
                 <dialogs.MessagesDialog flock={flock} />
                 <dialogs.PromptDialog />
-                <dialogs.SavedLocationEditorDialog />
                 <dialogs.ServerSettingsDialog />
                 <dialogs.SessionExpiryDialog />
                 <dialogs.TimeSyncDialog />
 
                 <CoordinateAveragingDialog />
                 <RTKSetupDialog />
+                <SavedLocationEditorDialog />
+                <UAVDetailsDialog />
                 <VersionCheckDialog />
 
                 <ToastProvider placement='top-center'>

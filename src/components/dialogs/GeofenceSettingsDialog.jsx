@@ -18,6 +18,11 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 
 import DraggableDialog from '~/components/dialogs/DraggableDialog';
 import FormHeader from '~/components/dialogs/FormHeader';
+import { forceFormSubmission } from '~/components/forms';
+import {
+  closeGeofenceSettingsDialog,
+  updateGeofenceSettings,
+} from '~/features/geofence/slice';
 import {
   proposeDistanceLimit,
   proposeHeightLimit,
@@ -29,12 +34,6 @@ import {
   getMaximumHorizontalDistanceFromTakeoffPositionInTrajectories,
   getMaximumHeightInTrajectories,
 } from '~/features/show/selectors';
-
-import {
-  closeGeofenceSettingsDialog,
-  updateGeofenceSettings,
-} from '~/actions/geofence-settings';
-import { forceFormSubmission } from '~/components/forms';
 
 import {
   createValidator,

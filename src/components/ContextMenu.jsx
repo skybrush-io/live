@@ -81,14 +81,14 @@ export default class ContextMenu extends React.Component {
    *
    * @param {MouseEvent} e The event being fired.
    */
-  _preventDefault = (e) => {
+  _preventDefault = (event) => {
     if (this.state.opening) {
       this.setState({ opening: false, open: true });
     } else {
       this._handleClose();
     }
 
-    e.preventDefault();
+    event.preventDefault();
   };
 
   render() {

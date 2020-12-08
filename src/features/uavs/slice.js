@@ -49,6 +49,7 @@ const { actions, reducer } = createSlice({
       for (const uav of Object.values(action.payload)) {
         addItemSorted(state, uav);
       }
+
       useNaturalSort(state);
     },
 

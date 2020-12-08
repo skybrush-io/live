@@ -26,6 +26,7 @@ import CustomPropTypes from '~/utils/prop-types';
 const useStyles = makeStyles(
   (theme) => ({
     root: {
+      marginTop: theme.spacing(0.5),
       padding: '0 2px',
       textAlign: 'center',
       userSelect: 'none',
