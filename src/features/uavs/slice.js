@@ -29,6 +29,7 @@ const { actions, reducer } = createSlice({
       //     position: {
       //         lat: 47.4732476, lon: 19.0618718, amsl: undefined, agl: 0
       //     },
+      //     gpsFix: ['3D', 17],
       //     heading: 210,
       //     errors: [],
       //     battery: {
@@ -36,6 +37,7 @@ const { actions, reducer } = createSlice({
       //         percentage: 41,
       //         charging: true
       //     },
+      //     localPosition: [1, 2, 3],
       //     age: "active"   /* one of 'active', 'inactive', 'gone' */
       // }
     },

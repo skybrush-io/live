@@ -28,6 +28,29 @@ export async function getConfigurationOfExtension(hub, name) {
 }
 
 /**
+ * Returns the current preflight status of a single UAV.
+ */
+export async function getPreflightStatus(hub, uavId) {
+  if (!uavId || typeof uavId !== 'string') {
+    throw new Error('Expected non-empty UAV ID');
+  }
+
+  const response = await hub.sendMessage({
+    type: 'UAV-PREFLT',
+    ids: [uavId],
+  });
+  if (
+    response.body?.type === 'UAV-PREFLT' &&
+    response.body.result &&
+    response.body.result[uavId]
+  ) {
+    return response.body.result[uavId];
+  }
+
+  throw new Error('Unexpected response for preflight status query');
+}
+
+/**
  * Returns the list of RTK data sources.
  */
 export async function getRTKPresets(hub) {
@@ -141,6 +164,7 @@ export async function isExtensionLoaded(hub, name) {
 export class QueryHandler {
   _queries = {
     getConfigurationOfExtension,
+    getPreflightStatus,
     getRTKPresets,
     getRTKStatus,
     getSelectedRTKPresetId,

@@ -4,6 +4,9 @@
  * send messages to the connected Skybrush server.
  */
 
+import isEmpty from 'lodash-es/isEmpty';
+import { batch } from 'react-redux';
+
 import MessageHub from './flockwave/messages';
 
 import { handleClockInformationMessage } from './model/clocks';
@@ -13,6 +16,7 @@ import {
 } from './model/connections';
 import { handleObjectDeletionMessage } from './model/objects';
 
+import { addInboundMessage } from './features/messages/slice';
 import { showError, showNotification } from './features/snackbar/actions';
 import { semanticsFromSeverity } from './features/snackbar/types';
 
@@ -45,14 +49,34 @@ messageHub.registerNotificationHandlers({
     }
   },
   'SYS-MSG': (message) => {
-    if (message.body && message.body.message) {
-      const { severity } = message.body;
-      dispatch(
-        showNotification({
-          message: message.body.message,
-          semantics: semanticsFromSeverity(severity),
-        })
-      );
+    if (message.body && Array.isArray(message.body.items)) {
+      batch(() => {
+        for (const item of message.body.items) {
+          if (isEmpty(item.sender)) {
+            // This message came directly from the server so we show it as a
+            // notification
+            dispatch(
+              showNotification({
+                message: item.message,
+                semantics: semanticsFromSeverity(item.severity),
+              })
+            );
+          } else {
+            // This message probably came from a UAV so let's add it to the
+            // list of messages received from the UAV
+            // TODO(ntamas): process severity
+            dispatch(
+              addInboundMessage({
+                message: item.message,
+                uavId: item.sender,
+                severity: item.severity,
+              })
+            );
+          }
+        }
+      });
+      /*
+       */
     }
   },
   'UAV-INF': (message) =>

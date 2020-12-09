@@ -100,4 +100,8 @@ export function formatIdsAndTruncateTrailingItems(
  * Twitter-style short formatter for TimeAgo components/
  */
 export const shortTimeAgoFormatter = (value, unit) =>
-  unit === 'month' ? `${value}mo` : `${value}${unit.charAt(0)}`;
+  unit === 'month'
+    ? `${value}mo`
+    : unit === 'second' && value < 1
+    ? 'now'
+    : `${value}${unit.charAt(0)}`;

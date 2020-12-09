@@ -5,13 +5,10 @@
 
 import { createSlice } from '@reduxjs/toolkit';
 
+import { MessageType, Severity } from '~/model/messages';
 import { noPayload } from '~/utils/redux';
 
-import {
-  addErrorMessageHelper,
-  addInboundMessageHelper,
-  addOutboundMessageHelper,
-} from './utils';
+import { addMessage } from './utils';
 
 /**
  * The reducer function that handles actions related to message exchange
@@ -38,17 +35,62 @@ const { actions, reducer } = createSlice({
   reducers: {
     addErrorMessage(state, action) {
       const { message, uavId, refs } = action.payload;
-      addErrorMessageHelper(state, uavId, message, refs);
+
+      const messageId = addMessage(
+        state,
+        {
+          type: MessageType.ERROR,
+          date: Date.now(),
+          body: message,
+        },
+        uavId,
+        refs
+      );
+
+      action.messageId = messageId;
     },
 
     addInboundMessage(state, action) {
-      const { message, uavId, refs } = action.payload;
-      addInboundMessageHelper(state, uavId, message, refs);
+      const { uavId, message, refs, severity } = action.payload;
+
+      const messageId = addMessage(
+        state,
+        {
+          type: MessageType.INBOUND,
+          author: uavId,
+          date: Date.now(),
+          raw: true,
+          recipient: 'Operator',
+          severity,
+          body: message,
+        },
+        uavId,
+        refs
+      );
+
+      action.messageId = messageId;
     },
 
     addOutboundMessage(state, action) {
       const { message, uavId } = action.payload;
-      const messageId = addOutboundMessageHelper(state, uavId, message);
+      if (!uavId) {
+        console.warn('Cannot send message to null recipient');
+        return undefined;
+      }
+
+      const messageId = addMessage(
+        state,
+        {
+          type: MessageType.OUTBOUND,
+          author: 'Operator',
+          date: Date.now(),
+          responseId: null,
+          recipient: uavId,
+          body: message,
+        },
+        uavId
+      );
+
       action.messageId = messageId;
     },
 

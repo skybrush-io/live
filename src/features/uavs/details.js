@@ -13,7 +13,7 @@ const { actions, reducer } = createSlice({
   initialState: {
     open: false,
     selectedUAVId: undefined,
-    selectedTab: 'status',
+    selectedTab: 'preflight',
   },
 
   reducers: {
@@ -37,5 +37,11 @@ export const {
   closeUAVDetailsDialog,
   setSelectedTabInUAVDetailsDialog,
 } = actions;
+
+export const getSelectedUAVIdInUAVDetailsDialog = (state) =>
+  state.dialogs.uavDetails.selectedUAVId;
+
+export const getSelectedTabInUAVDetailsDialog = (state) =>
+  state.dialogs.uavDetails.selectedTab;
 
 export default reducer;

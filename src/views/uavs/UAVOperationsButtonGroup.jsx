@@ -6,10 +6,10 @@ import { connect } from 'react-redux';
 import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
 import { makeStyles } from '@material-ui/core/styles';
-import ActionFlightTakeoff from '@material-ui/icons/FlightTakeoff';
-import ActionFlightLand from '@material-ui/icons/FlightLand';
-import ActionHome from '@material-ui/icons/Home';
-import ActionPowerSettingsNew from '@material-ui/icons/PowerSettingsNew';
+import FlightTakeoff from '@material-ui/icons/FlightTakeoff';
+import FlightLand from '@material-ui/icons/FlightLand';
+import Home from '@material-ui/icons/Home';
+import PowerSettingsNew from '@material-ui/icons/PowerSettingsNew';
 import Message from '@material-ui/icons/Message';
 import Refresh from '@material-ui/icons/Refresh';
 import WbSunny from '@material-ui/icons/WbSunny';
@@ -53,13 +53,13 @@ const UAVOperationsButtonGroup = ({ selectedUAVIds, showMessagesDialog }) => {
     <>
       <Tooltip content='Takeoff'>
         <IconButton disabled={isSelectionEmpty} onClick={takeoffSelectedUAVs}>
-          <ActionFlightTakeoff />
+          <FlightTakeoff />
         </IconButton>
       </Tooltip>
 
       <Tooltip content='Land'>
         <IconButton disabled={isSelectionEmpty} onClick={landSelectedUAVs}>
-          <ActionFlightLand />
+          <FlightLand />
         </IconButton>
       </Tooltip>
 
@@ -68,7 +68,7 @@ const UAVOperationsButtonGroup = ({ selectedUAVIds, showMessagesDialog }) => {
           disabled={isSelectionEmpty}
           onClick={returnToHomeSelectedUAVs}
         >
-          <ActionHome />
+          <Home />
         </IconButton>
       </Tooltip>
 
@@ -102,7 +102,7 @@ const UAVOperationsButtonGroup = ({ selectedUAVIds, showMessagesDialog }) => {
 
       <Tooltip content='Power off'>
         <IconButton disabled={isSelectionEmpty} onClick={haltSelectedUAVs}>
-          <ActionPowerSettingsNew
+          <PowerSettingsNew
             htmlColor={isSelectionEmpty ? undefined : Colors.error}
           />
         </IconButton>

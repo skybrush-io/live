@@ -11,3 +11,14 @@ export const MessageType = {
   INBOUND: 'inbound',
   ERROR: 'error',
 };
+
+/**
+ * Enum containing log message severities from the Flockwave protocol.
+ */
+export const Severity = {
+  DEBUG: 'debug',
+  INFO: 'info',
+  WARNING: 'warning',
+  ERROR: 'error',
+  CRITICAL: 'critical',
+};

@@ -47,6 +47,7 @@ const useStyles = makeStyles(
     avatar: {
       border: '1px solid rgba(0, 0, 0, 0.3)',
       color: 'black',
+      margin: '0 auto',
     },
 
     'avatar-off': {

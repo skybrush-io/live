@@ -21,7 +21,7 @@ import {
 import {
   abbreviateFlightMode,
   abbreviateGPSFixType,
-  GPSFixType,
+  getSemanticsForGPSFixType,
 } from '~/model/enums';
 import { getPreferredCoordinateFormatter } from '~/selectors/formatting';
 import { monospacedFont } from '~/theme';
@@ -44,23 +44,6 @@ const headingDeviationToStatus = (deviation) => {
   }
 
   return undefined;
-};
-
-const gpsFixTypeToStatus = (status) => {
-  if (status === GPSFixType.FIX_3D) {
-    return 'warning';
-  }
-
-  if (
-    status === GPSFixType.DGPS ||
-    status === GPSFixType.RTK_FIXED ||
-    status === GPSFixType.RTK_FLOAT ||
-    status === GPSFixType.STATIC
-  ) {
-    return 'success';
-  }
-
-  return 'error';
 };
 
 const localCoordinateFormatter = formatCoordinateArray;
@@ -168,7 +151,7 @@ const DroneStatusLine = ({
             inline
             hollow
             className={clsx(classes.pill, classes.gpsPill)}
-            status={gpsFixTypeToStatus(gpsFixType)}
+            status={getSemanticsForGPSFixType(gpsFixType)}
           >
             {abbreviateGPSFixType(gpsFixType)}
           </StatusPill>

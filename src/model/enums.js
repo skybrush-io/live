@@ -1,3 +1,5 @@
+import { Status } from '~/components/semantics';
+
 /**
  * Enum representing the possible known flight modes of a UAV.
  */
@@ -13,6 +15,7 @@ export const FlightMode = {
   OTHER: 'other',
   POSITION_HOLD: 'pos',
   RTH: 'rth',
+  SHOW: 'show',
   STABILIZE: 'stab',
   UNKNOWN: 'unknown',
 };
@@ -26,54 +29,78 @@ export const FlightMode = {
 const _propertiesForFlightModes = {
   [FlightMode.ACRO]: {
     abbreviation: 'Acro',
+    label: 'Acrobatic',
     description: 'Acrobatic',
   },
   [FlightMode.ALTITUDE_HOLD]: {
     abbreviation: 'Alt',
+    label: 'Altitude hold',
     description: 'Altitude hold',
   },
   [FlightMode.CIRCLE]: {
     abbreviation: 'Circ',
+    label: 'Circling',
     description: 'Circling around point of interest',
   },
   [FlightMode.FOLLOW]: {
     abbreviation: 'Flw',
+    label: 'Following',
     description: 'Following another device',
+    status: Status.SUCCESS,
   },
   [FlightMode.GUIDED]: {
     abbreviation: 'Guid',
+    label: 'Guided',
     description: 'Guided by companion computer',
+    status: Status.SUCCESS,
   },
   [FlightMode.LAND]: {
     abbreviation: 'Land',
+    label: 'Landing',
     description: 'Autonomous landing',
+    status: Status.WARNING,
   },
   [FlightMode.LOITER]: {
     abbreviation: 'Loit',
+    label: 'Loiter',
     description: 'Posiiton hold with manual velocity control',
   },
   [FlightMode.MISSION]: {
     abbreviation: 'Wp',
+    label: 'Mission',
     description: 'Following pre-programmed mission',
+    status: Status.SUCCESS,
   },
   [FlightMode.OTHER]: {
     abbreviation: 'Othr',
+    label: 'Other',
     description: 'Other, unspecified flight mode',
   },
   [FlightMode.POSITION_HOLD]: {
     abbreviation: 'Pos',
+    label: 'Position hold',
     description: 'Position hold with manual attitude control',
   },
   [FlightMode.RTH]: {
     abbreviation: 'RTH',
+    label: 'Return to home',
     description: 'Autonomous return to home',
+    status: Status.RTH,
+  },
+  [FlightMode.SHOW]: {
+    abbreviation: 'Show',
+    label: 'Drone show',
+    description: 'Executing a drone show',
+    status: Status.SUCCESS,
   },
   [FlightMode.STABILIZE]: {
     abbreviation: 'Stab',
+    label: 'Stabilize',
     description: 'Roll and pitch stabilization',
   },
   [FlightMode.UNKNOWN]: {
     abbreviation: '----',
+    label: 'Unknown',
     description: 'Unknown flight mode',
   },
 };
@@ -97,6 +124,28 @@ export function describeFlightMode(mode) {
     _propertiesForFlightModes[FlightMode.UNKNOWN];
   return props.description;
 }
+
+/**
+ * Returns the label of the given flight mode.
+ */
+export function getFlightModeLabel(mode) {
+  const props =
+    _propertiesForFlightModes[mode] ||
+    _propertiesForFlightModes[FlightMode.UNKNOWN];
+  return props.label;
+}
+
+/**
+ * Returns the semantic status code of the given flight mode.
+ */
+export function getSemanticsForFlightMode(fixType) {
+  const props =
+    _propertiesForFlightModes[fixType] ||
+    _propertiesForFlightModes[GPSFixType.UNKNOWN];
+  return props.status;
+}
+
+/* ************************************************************************* */
 
 /**
  * Enum representing the possible known GPS fix types of a UAV.
@@ -123,34 +172,47 @@ const _propertiesForGPSFixTypes = {
   [GPSFixType.NO_GPS]: {
     abbreviation: '',
     description: 'No GPS connected',
+    status: Status.ERROR,
   },
   [GPSFixType.NO_FIX]: {
     abbreviation: '',
     description: 'No GPS fix obtained',
+    status: Status.ERROR,
   },
   [GPSFixType.FIX_2D]: {
     abbreviation: '2D',
     description: '2D GPS fix',
+    status: Status.WARNING,
   },
   [GPSFixType.FIX_3D]: {
     abbreviation: '3D',
     description: '3D GPS fix',
+    status: Status.WARNING,
   },
   [GPSFixType.DGPS]: {
     abbreviation: 'DGPS',
     description: '3D GPS fix with DGPS/SBAS',
+    status: Status.SUCCESS,
   },
   [GPSFixType.RTK_FLOAT]: {
     abbreviation: 'RTK',
     description: 'RTK float',
+    status: Status.SUCCESS,
   },
   [GPSFixType.RTK_FIXED]: {
     abbreviation: 'RTK+',
     description: 'RTK fixed',
+    status: Status.SUCCESS,
+  },
+  [GPSFixType.STATIC]: {
+    abbreviation: 'STA',
+    description: 'Static position',
+    status: Status.SUCCESS,
   },
   [GPSFixType.UNKNOWN]: {
     abbreviation: '----',
     description: 'Unknown GPS fix type',
+    status: Status.WARNING,
   },
 };
 
@@ -172,4 +234,109 @@ export function describeGPSFixType(fixType) {
     _propertiesForGPSFixTypes[fixType] ||
     _propertiesForGPSFixTypes[GPSFixType.UNKNOWN];
   return props.description;
+}
+
+/**
+ * Returns the semantic status code of the given GPS fix type.
+ */
+export function getSemanticsForGPSFixType(fixType) {
+  const props =
+    _propertiesForGPSFixTypes[fixType] ||
+    _propertiesForGPSFixTypes[GPSFixType.UNKNOWN];
+  return props.status;
+}
+
+/* ************************************************************************* */
+
+/**
+ * Enum representing the possible preflight check results on a UAV.
+ */
+export const PreflightCheckResult = {
+  OFF: 'off',
+  PASS: 'pass',
+  WARNING: 'warning',
+  RUNNING: 'running',
+  SOFT_FAILURE: 'softFailure',
+  FAILURE: 'failure',
+  ERROR: 'error',
+  UNKNOWN: 'unknown',
+};
+
+/**
+ * Object mapping preflight check result constants to their properties (human
+ * readable descriptions etc).
+ *
+ * Abbreviations are guaranteed to be at most 4 characters.
+ */
+const _propertiesForPreflightCheckResults = {
+  [PreflightCheckResult.OFF]: {
+    description: 'Disabled',
+    overallDescription: 'All preflight checks are disabled',
+    status: Status.OFF,
+  },
+  [PreflightCheckResult.PASS]: {
+    description: 'OK',
+    overallDescription: 'Preflight checks passed',
+    status: Status.SUCCESS,
+  },
+  [PreflightCheckResult.WARNING]: {
+    description: 'Needs attention',
+    overallDescription: 'Some preflight check items need attention',
+    status: Status.WARNING,
+  },
+  [PreflightCheckResult.RUNNING]: {
+    description: 'Check in progress...',
+    overallDescription: 'Preflight checks are in progress...',
+    status: Status.WAITING,
+  },
+  [PreflightCheckResult.SOFT_FAILURE]: {
+    description: 'Temporary failure',
+    overallDescription: 'Some preflight checks failed temporarily',
+    status: Status.ERROR,
+  },
+  [PreflightCheckResult.FAILURE]: {
+    description: 'Failed',
+    overallDescription: 'Preflight checks failed',
+    status: Status.ERROR,
+  },
+  [PreflightCheckResult.ERROR]: {
+    description: 'Error while executing test',
+    overallDescription: 'Error while executing preflight checks',
+    status: Status.CRITICAL,
+  },
+  [PreflightCheckResult.UNKNOWN]: {
+    description: 'Unknown test result',
+    overallDescription: 'Unknown preflight test result',
+    status: Status.OFF,
+  },
+};
+
+/**
+ * Returns the description of the given preflight check result.
+ */
+export function describePreflightCheckResult(result) {
+  const props =
+    _propertiesForPreflightCheckResults[result] ||
+    _propertiesForPreflightCheckResults[PreflightCheckResult.UNKNOWN];
+  return props.description;
+}
+
+/**
+ * Returns the description of the given preflight check result.
+ */
+export function describeOverallPreflightCheckResult(result) {
+  const props =
+    _propertiesForPreflightCheckResults[result] ||
+    _propertiesForPreflightCheckResults[PreflightCheckResult.UNKNOWN];
+  return props.overallDescription;
+}
+
+/**
+ * Returns the semantic status code of the given GPS fix type.
+ */
+export function getSemanticsForPreflightCheckResult(result) {
+  const props =
+    _propertiesForPreflightCheckResults[result] ||
+    _propertiesForPreflightCheckResults[PreflightCheckResult.UNKNOWN];
+  return props.status;
 }

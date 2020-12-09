@@ -1,5 +1,7 @@
 import PropTypes from 'prop-types';
 
+import { PreflightCheckResult } from '~/model/enums';
+
 export default {
   angle: PropTypes.number,
 
@@ -18,4 +20,6 @@ export default {
     lat: PropTypes.number.isRequired,
     lon: PropTypes.number.isRequired,
   }),
+
+  preflightCheckResult: PropTypes.oneOf(Object.values(PreflightCheckResult)),
 };

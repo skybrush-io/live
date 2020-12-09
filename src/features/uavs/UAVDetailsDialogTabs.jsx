@@ -6,7 +6,10 @@ import Tab from '@material-ui/core/Tab';
 
 import DialogTabs from '~/components/dialogs/DialogTabs';
 
-import { setSelectedTabInUAVDetailsDialog } from './details';
+import {
+  getSelectedTabInUAVDetailsDialog,
+  setSelectedTabInUAVDetailsDialog,
+} from './details';
 
 /**
  * Presentation component for the dialog that allows the user to inspect the
@@ -14,7 +17,7 @@ import { setSelectedTabInUAVDetailsDialog } from './details';
  */
 const UAVDetailsDialogTabs = ({ dragHandleId, ...rest }) => (
   <DialogTabs alignment='left' dragHandle={dragHandleId} {...rest}>
-    <Tab label='Status' value='status' />
+    <Tab label='Preflight' value='preflight' />
     <Tab label='Tests' value='tests' />
     <Tab label='Messages' value='messages' />
   </DialogTabs>
@@ -26,13 +29,13 @@ UAVDetailsDialogTabs.propTypes = {
 };
 
 UAVDetailsDialogTabs.defaultProps = {
-  value: 'status',
+  value: 'preflight',
 };
 
 export default connect(
   // mapStateToProps
   (state) => ({
-    value: state.dialogs.uavDetails.selectedTab,
+    value: getSelectedTabInUAVDetailsDialog(state),
   }),
 
   // mapDispatchToProps

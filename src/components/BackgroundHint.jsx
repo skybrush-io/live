@@ -31,7 +31,7 @@ const useStyles = makeStyles({
  *
  * @return {Object} the rendered component
  */
-const BackgroundHint = ({ header, icon, iconColor, text, ...rest }) => {
+const BackgroundHint = ({ button, header, icon, iconColor, text, ...rest }) => {
   const classes = useStyles();
 
   const iconStyle = icon
@@ -56,12 +56,14 @@ const BackgroundHint = ({ header, icon, iconColor, text, ...rest }) => {
           </Typography>
         )}
         <div>{text}</div>
+        {button && <Box pt={2}>{button}</Box>}
       </div>
     </Box>
   );
 };
 
 BackgroundHint.propTypes = {
+  button: PropTypes.node,
   header: PropTypes.string,
   icon: PropTypes.node,
   iconColor: PropTypes.string,
