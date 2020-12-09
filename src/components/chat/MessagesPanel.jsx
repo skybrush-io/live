@@ -30,7 +30,7 @@ import {
 } from '~/features/messages/slice';
 import { formatCommandResponseAsHTML } from '~/flockwave/formatting';
 import { parseCommandFromString } from '~/flockwave/messages';
-import { MessageType } from '~/model/messages';
+import { MessageType } from '~/model/enums';
 import messageHub from '~/message-hub';
 
 /**
@@ -53,6 +53,7 @@ function convertMessageToComponent(message) {
           raw={message.raw}
           date={message.date}
           body={message.body}
+          severity={message.severity}
           rightComponent={
             inProgress ? (
               <CircularProgress
@@ -76,6 +77,7 @@ function convertMessageToComponent(message) {
           raw={message.raw}
           date={message.date}
           body={message.body}
+          severity={message.severity}
         />,
       ];
 

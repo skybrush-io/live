@@ -10,7 +10,10 @@ import TimeAgo from 'react-timeago';
 import { blue, grey } from '@material-ui/core/colors';
 import { makeStyles } from '@material-ui/core/styles';
 
+import { colorForSeverity } from '~/components/colors';
+import { Severity } from '~/model/enums';
 import { isDark } from '~/theme';
+import CustomPropTypes from '~/utils/prop-types';
 
 const useStyles = makeStyles(
   (theme) => ({
@@ -49,6 +52,26 @@ const useStyles = makeStyles(
       '& .chat-meta': {
         textAlign: 'right',
       },
+
+      '&.severity-critical': {
+        borderLeft: `3px solid ${colorForSeverity(Severity.CRITICAL)}`,
+      },
+
+      '&.severity-debug': {
+        borderLeft: `3px solid ${colorForSeverity(Severity.DEBUG)}`,
+      },
+
+      '&.severity-error': {
+        borderLeft: `3px solid ${colorForSeverity(Severity.ERROR)}`,
+      },
+
+      '&.severity-info': {
+        borderLeft: `3px solid ${colorForSeverity(Severity.INFO)}`,
+      },
+
+      '&.severity-warning': {
+        borderLeft: `3px solid ${colorForSeverity(Severity.WARNING)}`,
+      },
     },
 
     meta: {
@@ -80,6 +103,7 @@ const ChatBubble = ({
   own,
   raw,
   rightComponent,
+  severity,
 }) => {
   const classes = useStyles();
   const dateComponent = date && (
@@ -95,7 +119,8 @@ const ChatBubble = ({
   );
   const bubbleClasses = clsx(
     classes.bubble,
-    own ? classes.ownBubble : classes.otherBubble
+    own ? classes.ownBubble : classes.otherBubble,
+    severity && `severity-${severity}`
   );
   const bubble = raw ? (
     // eslint-disable-next-line react/no-danger
@@ -131,6 +156,7 @@ ChatBubble.propTypes = {
     PropTypes.node,
     PropTypes.arrayOf(PropTypes.node),
   ]),
+  severity: CustomPropTypes.severity,
 };
 
 ChatBubble.defaultProps = {

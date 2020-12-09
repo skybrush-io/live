@@ -1,6 +1,26 @@
 import { Status } from '~/components/semantics';
 
 /**
+ * Enum containing constants for the various messages types.
+ */
+export const MessageType = {
+  OUTBOUND: 'outbound',
+  INBOUND: 'inbound',
+  ERROR: 'error',
+};
+
+/**
+ * Enum containing log message severities from the Flockwave protocol.
+ */
+export const Severity = {
+  DEBUG: 'debug',
+  INFO: 'info',
+  WARNING: 'warning',
+  ERROR: 'error',
+  CRITICAL: 'critical',
+};
+
+/**
  * Enum representing the possible known flight modes of a UAV.
  */
 export const FlightMode = {

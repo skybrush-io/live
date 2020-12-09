@@ -5,7 +5,7 @@
 
 import { createSlice } from '@reduxjs/toolkit';
 
-import { MessageType, Severity } from '~/model/messages';
+import { MessageType, Severity } from '~/model/enums';
 import { noPayload } from '~/utils/redux';
 
 import { addMessage } from './utils';

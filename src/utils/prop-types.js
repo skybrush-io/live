@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 
-import { PreflightCheckResult } from '~/model/enums';
+import { PreflightCheckResult, Severity } from '~/model/enums';
 
 export default {
   angle: PropTypes.number,
@@ -22,4 +22,6 @@ export default {
   }),
 
   preflightCheckResult: PropTypes.oneOf(Object.values(PreflightCheckResult)),
+
+  severity: PropTypes.oneOf(Object.values(Severity)),
 };
