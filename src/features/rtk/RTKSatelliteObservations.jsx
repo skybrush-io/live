@@ -24,7 +24,9 @@ import {
   getAntennaInfoSummary,
   getDisplayedSatelliteCNRValues,
   getFormattedAntennaPosition,
+  getSurveyStatus,
 } from './selectors';
+import SurveyStatusIndicator from './SurveyStatusIndicator';
 
 /* ************************************************************************ */
 
@@ -186,6 +188,7 @@ const RTKSatelliteObservations = ({
   inset,
   items,
   onCopyAntennaPositionToClipboard,
+  surveyInStatus,
 }) => {
   const classes = useStyles();
   const theme = useTheme();
@@ -210,6 +213,7 @@ const RTKSatelliteObservations = ({
       </Box>
       {antennaInfo && (
         <Box display='flex' flexDirection='row' alignItems='center'>
+          <SurveyStatusIndicator {...surveyInStatus} />
           <Typography variant='body2' component='div' color='textSecondary'>
             {antennaInfo.description}
           </Typography>
@@ -251,6 +255,7 @@ RTKSatelliteObservations.propTypes = {
     })
   ),
   onCopyAntennaPositionToClipboard: PropTypes.func,
+  surveyInStatus: PropTypes.object,
 };
 
 RTKSatelliteObservations.defaultProps = {
@@ -262,6 +267,7 @@ export default connect(
   (state) => ({
     antennaInfo: getAntennaInfoSummary(state),
     items: getDisplayedSatelliteCNRValues(state),
+    surveyInStatus: getSurveyStatus(state),
   }),
   // mapDispatchToProps
   {

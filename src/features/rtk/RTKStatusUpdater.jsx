@@ -53,7 +53,7 @@ export default connect(
   // mapDispatchToProps
   (dispatch) => ({
     onStatusChanged: (status) => {
-      const { antenna = {}, messages = {}, cnr = {} } = status;
+      const { antenna = {}, messages = {}, cnr = {}, survey = {} } = status;
       const now = Date.now();
 
       let position;
@@ -86,6 +86,7 @@ export default connect(
             lastUpdatedAt: now,
             cnr: cnrValue,
           })),
+          survey,
         })
       );
     },

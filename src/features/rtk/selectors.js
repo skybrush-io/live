@@ -83,3 +83,16 @@ export const getDisplayedSatelliteCNRValues = createSelector(
       'id'
     )
 );
+
+/**
+ * Returns an object summarizing the status of the survey procedure.
+ */
+export const getSurveyStatus = createSelector(
+  (state) => state.rtk.stats.survey,
+  ({ accuracy, flags } = {}) => ({
+    accuracy,
+    supported: Boolean(flags & 1),
+    active: Boolean(flags & 2),
+    valid: Boolean(flags & 4),
+  })
+);

@@ -3,6 +3,7 @@
  * selected RTK stream on the server.
  */
 
+import isNil from 'lodash-es/isNil';
 import { createSlice } from '@reduxjs/toolkit';
 
 import { noPayload } from '~/utils/redux';
@@ -43,6 +44,15 @@ const { actions, reducer } = createSlice({
         serialNumber: null,
         stationId: null,
       },
+
+      // Information about the status of the survey process
+      survey: {
+        // Achieved surveying accuracy, in meters
+        accuracy: null,
+        // Status flags; bit 0 = survey available, bit 1 = survey in progress,
+        // bit 2 = surveyed coordinate valid
+        flags: 0,
+      },
     },
 
     dialog: {
@@ -63,10 +73,11 @@ const { actions, reducer } = createSlice({
       state.stats.antenna = {};
       state.stats.satellites = {};
       state.stats.messages = {};
+      state.stats.survey = {};
     },
 
     updateRTKStatistics(state, action) {
-      const { antenna, messages, cnr } = action.payload;
+      const { antenna, messages, cnr, survey } = action.payload;
 
       state.stats.antenna = antenna;
       state.stats.messages = messages;
@@ -77,6 +88,18 @@ const { actions, reducer } = createSlice({
 
       for (const [key, value] of Object.entries(cnr)) {
         state.stats.satellites[key] = value;
+      }
+
+      if (state.stats.survey === undefined) {
+        state.stats.survey = {};
+      }
+
+      if (!isNil(survey.accuracy)) {
+        state.stats.survey.accuracy = survey.accuracy;
+      }
+
+      if (!isNil(survey.flags)) {
+        state.stats.survey.flags = survey.flags;
       }
     },
   },
