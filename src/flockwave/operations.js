@@ -73,6 +73,24 @@ export async function setShowConfiguration(hub, config) {
 }
 
 /**
+ * Asks the RTK framework on the server to start a new survey on the current
+ * RTK connection.
+ */
+export async function startRTKSurvey(hub, { accuracy, duration }) {
+  const response = await hub.sendMessage({
+    type: 'X-RTK-SURVEY',
+    settings: {
+      accuracy,
+      duration,
+    },
+  });
+
+  if (response.body.type !== 'ACK-ACK') {
+    throw new Error('Failed to start RTK survey on the server');
+  }
+}
+
+/**
  * Asks the server to upload a drone show specification to a given UAV.
  */
 export async function uploadDroneShow(hub, { uavId, data }) {
@@ -102,6 +120,7 @@ export class OperationExecutor {
     reloadExtension,
     setRTKCorrectionsSource,
     setShowConfiguration,
+    startRTKSurvey,
     uploadDroneShow,
   };
 

@@ -7,7 +7,7 @@ import Dialog from '@material-ui/core/Dialog';
 
 import RTKCorrectionSourceSelector from './RTKCorrectionSourceSelector';
 import RTKMessageStatistics from './RTKMessageStatistics';
-import RTKSatelliteObservations from './RTKSatelliteObservations';
+import RTKSetupDialogBottomPanel from './RTKSetupDialogBottomPanel';
 import RTKStatusUpdater from './RTKStatusUpdater';
 import { closeRTKSetupDialog } from './slice';
 
@@ -25,7 +25,7 @@ const RTKSetupDialog = ({ onClose, open }) => (
           <RTKMessageStatistics />
         </Box>
       </Box>
-      <RTKSatelliteObservations />
+      <RTKSetupDialogBottomPanel />
     </Box>
   </Dialog>
 );

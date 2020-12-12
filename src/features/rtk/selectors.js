@@ -96,3 +96,9 @@ export const getSurveyStatus = createSelector(
     valid: Boolean(flags & 4),
   })
 );
+
+/**
+ * Returns whether the survey settings panel should be visible.
+ */
+export const shouldShowSurveySettings = (state) =>
+  state.rtk.dialog.surveySettingsEditorVisible;

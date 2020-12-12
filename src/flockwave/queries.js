@@ -4,6 +4,7 @@
  */
 
 import get from 'lodash-es/get';
+import pick from 'lodash-es/pick';
 import sortBy from 'lodash-es/sortBy';
 import memoize from 'memoizee';
 
@@ -75,6 +76,18 @@ export async function getRTKPresets(hub) {
   } else {
     return [];
   }
+}
+
+/**
+ * Returns the RTK surveying settings from the server.
+ */
+export async function getRTKSurveySettings(hub) {
+  const response = await hub.sendMessage({ type: 'X-RTK-SURVEY' });
+  return response.body &&
+    response.body.type === 'X-RTK-SURVEY' &&
+    response.body.settings
+    ? pick(response.body.settings, ['accuracy', 'duration'])
+    : {};
 }
 
 /**
@@ -168,6 +181,7 @@ export class QueryHandler {
     getPreflightStatus,
     getRTKPresets,
     getRTKStatus,
+    getRTKSurveySettings,
     getSelectedRTKPresetId,
     getShowConfiguration,
     isExtensionLoaded,

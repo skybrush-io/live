@@ -12,11 +12,11 @@ function formatAccuracy(message, value) {
     return message;
   }
 
-  return (
-    message +
-    ', accuracy: ' +
-    (value >= 1 ? value.toFixed(2) + ' m' : (value * 100).toFixed(1) + ' cm')
-  );
+  return value > 10000
+    ? message + ', accuracy > 100m'
+    : message +
+        ', accuracy: ' +
+        (value >= 1 ? value.toFixed(2) + 'm' : (value * 100).toFixed(1) + 'cm');
 }
 
 const SurveyStatusIndicator = ({
@@ -30,7 +30,6 @@ const SurveyStatusIndicator = ({
     <Box
       alignItems='center'
       flex={1}
-      padding={1}
       display='flex'
       flexDirection='row'
       {...rest}
@@ -45,7 +44,7 @@ const SurveyStatusIndicator = ({
       <Box pl={1}>
         <Typography noWrap variant='body2' color='textSecondary'>
           {active
-            ? formatAccuracy('Survey in progress', accuracy)
+            ? formatAccuracy('Surveying', accuracy)
             : valid
             ? formatAccuracy('Survey successful', accuracy)
             : supported

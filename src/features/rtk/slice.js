@@ -57,12 +57,17 @@ const { actions, reducer } = createSlice({
 
     dialog: {
       open: false,
+      surveySettingsEditorVisible: false,
     },
   },
 
   reducers: {
     closeRTKSetupDialog: noPayload((state) => {
       state.dialog.open = false;
+    }),
+
+    closeSurveySettingsPanel: noPayload((state) => {
+      state.dialog.surveySettingsEditorVisible = false;
     }),
 
     showRTKSetupDialog: noPayload((state) => {
@@ -75,6 +80,11 @@ const { actions, reducer } = createSlice({
       state.stats.messages = {};
       state.stats.survey = {};
     },
+
+    toggleSurveySettingsPanel: noPayload((state) => {
+      state.dialog.surveySettingsEditorVisible = !state.dialog
+        .surveySettingsEditorVisible;
+    }),
 
     updateRTKStatistics(state, action) {
       const { antenna, messages, cnr, survey } = action.payload;
@@ -107,8 +117,10 @@ const { actions, reducer } = createSlice({
 
 export const {
   closeRTKSetupDialog,
+  closeSurveySettingsPanel,
   resetRTKStatistics,
   showRTKSetupDialog,
+  toggleSurveySettingsPanel,
   updateRTKStatistics,
 } = actions;
 

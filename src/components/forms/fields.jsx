@@ -208,11 +208,20 @@ CoordinateField.propTypes = {
  * Numeric field that can be placed in a `react-final-form` form and that accepts
  * distances.
  */
-export const DistanceField = ({ InputProps, ...rest }) => (
+export const DistanceField = ({
+  InputProps,
+  inputProps,
+  max,
+  min,
+  step,
+  unit,
+  ...rest
+}) => (
   <TextField
     type='number'
+    inputProps={{ max, min, step, ...inputProps }}
     InputProps={{
-      endAdornment: <InputAdornment position='end'>m</InputAdornment>,
+      endAdornment: <InputAdornment position='end'>{unit}</InputAdornment>,
       ...InputProps,
     }}
     {...rest}
@@ -221,12 +230,59 @@ export const DistanceField = ({ InputProps, ...rest }) => (
 
 DistanceField.propTypes = {
   InputProps: PropTypes.object,
+  inputProps: PropTypes.object,
   max: PropTypes.number,
   min: PropTypes.number,
   onChange: PropTypes.func,
-  size: PropTypes.number,
+  size: PropTypes.string,
+  step: PropTypes.number,
+  unit: PropTypes.string,
+  value: PropTypes.number,
+};
+
+DistanceField.defaultProps = {
+  min: 0,
+  unit: 'm',
+};
+
+/* ************************************************************************* */
+
+/**
+ * Numeric field that can be placed in a `react-final-form` form and that accepts
+ * durations in seconds.
+ */
+export const DurationField = ({
+  InputProps,
+  inputProps,
+  max,
+  min,
+  step,
+  ...rest
+}) => (
+  <TextField
+    type='number'
+    inputProps={{ max, min, step, ...inputProps }}
+    InputProps={{
+      endAdornment: <InputAdornment position='end'>s</InputAdornment>,
+      ...InputProps,
+    }}
+    {...rest}
+  />
+);
+
+DurationField.propTypes = {
+  InputProps: PropTypes.object,
+  inputProps: PropTypes.object,
+  max: PropTypes.number,
+  min: PropTypes.number,
+  onChange: PropTypes.func,
+  size: PropTypes.string,
   step: PropTypes.number,
   value: PropTypes.number,
+};
+
+DurationField.defaultProps = {
+  min: 0,
 };
 
 /* ************************************************************************* */

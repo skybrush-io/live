@@ -1,5 +1,3 @@
-import clsx from 'clsx';
-import copy from 'copy-to-clipboard';
 import isNil from 'lodash-es/isNil';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -9,24 +7,13 @@ import { useHarmonicIntervalFn, useUpdate } from 'react-use';
 import { createSelector } from '@reduxjs/toolkit';
 
 import Box from '@material-ui/core/Box';
-import IconButton from '@material-ui/core/IconButton';
-import Typography from '@material-ui/core/Typography';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { useTheme } from '@material-ui/core/styles';
 
 import Colors from '~/components/colors';
-import Tooltip from '~/components/Tooltip';
-import { showNotification } from '~/features/snackbar/slice';
-import ContentCopy from '~/icons/ContentCopy';
-import { createSecondaryAreaStyle, defaultFont, isDark } from '~/theme';
+import { defaultFont, isDark } from '~/theme';
 import { createGradientBackground } from '~/utils/charts';
 
-import {
-  getAntennaInfoSummary,
-  getDisplayedSatelliteCNRValues,
-  getFormattedAntennaPosition,
-  getSurveyStatus,
-} from './selectors';
-import SurveyStatusIndicator from './SurveyStatusIndicator';
+import { getDisplayedSatelliteCNRValues } from './selectors';
 
 /* ************************************************************************ */
 
@@ -157,44 +144,9 @@ const options = {
   light: createOptions(false),
 };
 
-const useStyles = makeStyles(
-  (theme) => ({
-    root: {
-      ...createSecondaryAreaStyle(theme),
-    },
-
-    inset: {
-      border: `1px solid ${
-        isDark(theme) ? 'rgba(0, 0, 0, 0.54)' : 'rgba(255, 255, 255, 0.54)'
-      }`,
-      boxShadow: '0 0 4px 2px inset rgba(0, 0, 0, 0.54)',
-      padding: theme.spacing(1),
-    },
-
-    nonInset: {
-      borderTop: `1px solid ${
-        isDark(theme) ? 'rgba(0, 0, 0, 0.54)' : 'rgba(255, 255, 255, 0.54)'
-      }`,
-      boxShadow: '0 2px 6px -2px inset rgba(0, 0, 0, 0.54)',
-      padding: theme.spacing(3),
-    },
-  }),
-  { name: 'ChartContainer' }
-);
-
-const RTKSatelliteObservations = ({
-  antennaInfo,
-  chartHeight,
-  inset,
-  items,
-  onCopyAntennaPositionToClipboard,
-  surveyInStatus,
-}) => {
-  const classes = useStyles();
+const RTKSatelliteObservations = ({ height, items }) => {
   const theme = useTheme();
   const update = useUpdate();
-
-  const hasAntennaInfo = Boolean(antennaInfo.position);
 
   // Update the component regularly because the chart depends on the time
   // elapsed since the last update so we need to keep it updated even if
@@ -202,78 +154,34 @@ const RTKSatelliteObservations = ({
   useHarmonicIntervalFn(update, 1000);
 
   return (
-    <Box
-      className={clsx(classes.root, inset ? classes.inset : classes.nonInset)}
-    >
-      <Box height={chartHeight}>
-        <Bar
-          data={createDataFromItems(items)}
-          options={isDark(theme) ? options.dark : options.light}
-        />
-      </Box>
-      {antennaInfo && (
-        <Box display='flex' flexDirection='row' alignItems='center'>
-          <SurveyStatusIndicator {...surveyInStatus} />
-          <Typography variant='body2' component='div' color='textSecondary'>
-            {antennaInfo.description}
-          </Typography>
-          <Box flex='1' />
-          <Typography
-            variant='body2'
-            component='div'
-            color={hasAntennaInfo ? 'textPrimary' : 'textSecondary'}
-          >
-            {antennaInfo.position || 'Antenna position not known'}
-          </Typography>
-          {onCopyAntennaPositionToClipboard && (
-            <Tooltip content='Copy to clipboard'>
-              <IconButton
-                disabled={!hasAntennaInfo}
-                onClick={onCopyAntennaPositionToClipboard}
-              >
-                <ContentCopy />
-              </IconButton>
-            </Tooltip>
-          )}
-        </Box>
-      )}
+    <Box height={height}>
+      <Bar
+        data={createDataFromItems(items)}
+        options={isDark(theme) ? options.dark : options.light}
+      />
     </Box>
   );
 };
 
 RTKSatelliteObservations.propTypes = {
-  antennaInfo: PropTypes.shape({
-    description: PropTypes.string,
-    position: PropTypes.string,
-  }),
-  chartHeight: PropTypes.number,
-  inset: PropTypes.bool,
+  height: PropTypes.number,
   items: PropTypes.arrayOf(
     PropTypes.shape({
       cnr: PropTypes.number,
       lastUpdatedAt: PropTypes.number,
     })
   ),
-  onCopyAntennaPositionToClipboard: PropTypes.func,
-  surveyInStatus: PropTypes.object,
 };
 
 RTKSatelliteObservations.defaultProps = {
-  chartHeight: 150,
+  height: 150,
 };
 
 export default connect(
   // mapStateToProps
   (state) => ({
-    antennaInfo: getAntennaInfoSummary(state),
     items: getDisplayedSatelliteCNRValues(state),
-    surveyInStatus: getSurveyStatus(state),
   }),
   // mapDispatchToProps
-  {
-    onCopyAntennaPositionToClipboard: () => (dispatch, getState) => {
-      copy(getFormattedAntennaPosition(getState()));
-      dispatch(showNotification('Coordinates copied to clipboard.'));
-    },
-  }
+  {}
 )(RTKSatelliteObservations);
