@@ -26,17 +26,22 @@ export const Severity = {
 export const FlightMode = {
   ACRO: 'acro',
   ALTITUDE_HOLD: 'alt',
+  AUTO: 'auto',
   CIRCLE: 'circle',
+  FLOW_HOLD: 'flow',
   FOLLOW: 'follow',
   GUIDED: 'guided',
   LAND: 'land',
   LOITER: 'loiter',
   MISSION: 'mission',
   OTHER: 'other',
+  PRECISION_LANDING: 'precland',
   POSITION_HOLD: 'pos',
   RTH: 'rth',
   SHOW: 'show',
+  SIMPLE: 'simple',
   STABILIZE: 'stab',
+  TAKEOFF: 'takeoff',
   UNKNOWN: 'unknown',
 };
 
@@ -57,10 +62,20 @@ const _propertiesForFlightModes = {
     label: 'Altitude hold',
     description: 'Altitude hold',
   },
+  [FlightMode.AUTO]: {
+    abbreviation: 'Auto',
+    label: 'Automatic',
+    description: 'Automatic',
+  },
   [FlightMode.CIRCLE]: {
     abbreviation: 'Circ',
     label: 'Circling',
     description: 'Circling around point of interest',
+  },
+  [FlightMode.FLOW_HOLD]: {
+    abbreviation: 'Flow',
+    label: 'Optical flow hold',
+    description: 'Optical flow hold',
   },
   [FlightMode.FOLLOW]: {
     abbreviation: 'Flw',
@@ -96,6 +111,11 @@ const _propertiesForFlightModes = {
     label: 'Other',
     description: 'Other, unspecified flight mode',
   },
+  [FlightMode.PRECISION_LANDING]: {
+    abbreviation: 'Plnd',
+    label: 'Precision landing',
+    description: 'Autonomous precision landing',
+  },
   [FlightMode.POSITION_HOLD]: {
     abbreviation: 'Pos',
     label: 'Position hold',
@@ -113,10 +133,20 @@ const _propertiesForFlightModes = {
     description: 'Executing a drone show',
     status: Status.SUCCESS,
   },
+  [FlightMode.SIMPLE]: {
+    abbreviation: 'Simp',
+    label: 'Simple',
+    description: 'Simplified aided flight mode',
+  },
   [FlightMode.STABILIZE]: {
     abbreviation: 'Stab',
     label: 'Stabilize',
     description: 'Roll and pitch stabilization',
+  },
+  [FlightMode.TAKEOFF]: {
+    abbreviation: 'Take',
+    label: 'Takeoff',
+    description: 'Autonomous takeoff',
   },
   [FlightMode.UNKNOWN]: {
     abbreviation: '----',
@@ -158,10 +188,10 @@ export function getFlightModeLabel(mode) {
 /**
  * Returns the semantic status code of the given flight mode.
  */
-export function getSemanticsForFlightMode(fixType) {
+export function getSemanticsForFlightMode(mode) {
   const props =
-    _propertiesForFlightModes[fixType] ||
-    _propertiesForFlightModes[GPSFixType.UNKNOWN];
+    _propertiesForFlightModes[mode] ||
+    _propertiesForFlightModes[FlightMode.UNKNOWN];
   return props.status;
 }
 
