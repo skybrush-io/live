@@ -112,6 +112,7 @@ const PreflightStatusPanel = ({ uavId }) => {
   if (state.value) {
     return (
       <PreflightStatusResults
+        message={state.value.message}
         result={state.value.result}
         items={state.value.items}
       />

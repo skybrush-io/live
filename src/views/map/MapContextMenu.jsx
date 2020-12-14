@@ -12,13 +12,13 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import MenuItem from '@material-ui/core/MenuItem';
 
 import ActionDelete from '@material-ui/icons/Delete';
+import Assignment from '@material-ui/icons/Assignment';
 import Edit from '@material-ui/icons/Edit';
 import Flight from '@material-ui/icons/Flight';
 import FlightTakeoff from '@material-ui/icons/FlightTakeoff';
 import FlightLand from '@material-ui/icons/FlightLand';
 import Grain from '@material-ui/icons/Grain';
 import Home from '@material-ui/icons/Home';
-import Message from '@material-ui/icons/Message';
 import ActionPowerSettingsNew from '@material-ui/icons/PowerSettingsNew';
 import PinDrop from '@material-ui/icons/PinDrop';
 import Refresh from '@material-ui/icons/Refresh';
@@ -28,17 +28,17 @@ import { createSelector } from '@reduxjs/toolkit';
 import { showFeatureEditorDialog } from '~/actions/feature-editor';
 import { removeFeatures } from '~/actions/features';
 import { setFlatEarthCoordinateSystemOrigin } from '~/actions/map-origin';
-import { showMessagesDialog } from '~/features/messages/slice';
 
 import ContextMenu from '~/components/ContextMenu';
 
-import { updateOutdoorShowSettings } from '~/features/show/actions';
 import {
   clearGeofencePolygonId,
   setGeofencePolygonId,
 } from '~/features/mission/slice';
 import { getGeofencePolygonId } from '~/features/mission/selectors';
+import { updateOutdoorShowSettings } from '~/features/show/actions';
 import { openFlyToTargetDialogWithCoordinate } from '~/features/uav-control/actions';
+import { openUAVDetailsDialog } from '~/features/uavs/details';
 
 import {
   getSelectedFeatureIds,
@@ -59,12 +59,12 @@ class MapContextMenu extends React.Component {
     clearGeofencePolygonId: PropTypes.func,
     contextProvider: PropTypes.func,
     editFeature: PropTypes.func,
+    openUAVDetailsDialog: PropTypes.func,
     removeFeaturesByIds: PropTypes.func,
     setGeofencePolygonId: PropTypes.func,
     setMapCoordinateSystemOrigin: PropTypes.func,
     setShowCoordinateSystemOrigin: PropTypes.func,
     showFlyToTargetDialog: PropTypes.func,
-    showMessagesDialog: PropTypes.func.isRequired,
   };
 
   constructor() {
@@ -154,12 +154,12 @@ class MapContextMenu extends React.Component {
                 key='message'
                 dense
                 disabled={!hasSingleSelectedUAV}
-                onClick={this.props.showMessagesDialog}
+                onClick={this._openDetailsDialogForSelectedUAVs}
               >
                 <ListItemIcon>
-                  <Message />
+                  <Assignment />
                 </ListItemIcon>
-                Messages
+                Properties...
               </MenuItem>,
               <Divider key='div2' />,
               <MenuItem key='reset' dense onClick={this._resetSelectedUAVs}>
@@ -335,6 +335,15 @@ class MapContextMenu extends React.Component {
     // this.props.setFeatureAsGeofence(selectedFeatureIds[0]);
   };
 
+  _openDetailsDialogForSelectedUAVs = (_event, context) => {
+    const { selectedUAVIds } = context;
+    const { openUAVDetailsDialog } = this.props;
+
+    if (openUAVDetailsDialog && selectedUAVIds.length > 0) {
+      openUAVDetailsDialog(selectedUAVIds[0]);
+    }
+  };
+
   _removeSelectedFeatures = (_event, context) => {
     const { selectedFeatureIds } = context;
     const { removeFeaturesByIds } = this.props;
@@ -409,6 +418,7 @@ const MapContextMenuContainer = connect(
   {
     clearGeofencePolygonId: hasGeofence ? clearGeofencePolygonId : null,
     editFeature: hasFeatures ? showFeatureEditorDialog : null,
+    openUAVDetailsDialog,
     removeFeaturesByIds: hasFeatures ? removeFeatures : null,
     setGeofencePolygonId: hasGeofence ? setGeofencePolygonId : null,
     setMapCoordinateSystemOrigin: setFlatEarthCoordinateSystemOrigin,
@@ -417,7 +427,6 @@ const MapContextMenuContainer = connect(
           updateOutdoorShowSettings({ origin: coords, setupMission: true })
       : null,
     showFlyToTargetDialog: openFlyToTargetDialogWithCoordinate,
-    showMessagesDialog,
   },
   null,
   { forwardRef: true }

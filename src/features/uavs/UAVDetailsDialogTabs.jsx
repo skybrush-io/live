@@ -18,7 +18,7 @@ import {
 const UAVDetailsDialogTabs = ({ dragHandleId, ...rest }) => (
   <DialogTabs alignment='left' dragHandle={dragHandleId} {...rest}>
     <Tab label='Preflight' value='preflight' />
-    <Tab label='Tests' value='tests' />
+    {/* <Tab label='Tests' value='tests' /> */}
     <Tab label='Messages' value='messages' />
   </DialogTabs>
 );

@@ -7,17 +7,17 @@ import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
 import { makeStyles } from '@material-ui/core/styles';
 import FlightTakeoff from '@material-ui/icons/FlightTakeoff';
+import Assignment from '@material-ui/icons/Assignment';
 import FlightLand from '@material-ui/icons/FlightLand';
 import Home from '@material-ui/icons/Home';
 import PowerSettingsNew from '@material-ui/icons/PowerSettingsNew';
-import Message from '@material-ui/icons/Message';
 import Refresh from '@material-ui/icons/Refresh';
 import WbSunny from '@material-ui/icons/WbSunny';
 
 import Colors from '~/components/colors';
 import Tooltip from '~/components/Tooltip';
 
-import { showMessagesDialog } from '~/features/messages/slice';
+import { openUAVDetailsDialog } from '~/features/uavs/details';
 import { createSelectionRelatedActions } from '~/utils/messaging';
 
 const useStyles = makeStyles(
@@ -34,7 +34,7 @@ const useStyles = makeStyles(
 /**
  * Main toolbar for controlling the UAVs.
  */
-const UAVOperationsButtonGroup = ({ selectedUAVIds, showMessagesDialog }) => {
+const UAVOperationsButtonGroup = ({ openUAVDetailsDialog, selectedUAVIds }) => {
   const classes = useStyles();
 
   const isSelectionEmpty = isEmpty(selectedUAVIds);
@@ -74,9 +74,12 @@ const UAVOperationsButtonGroup = ({ selectedUAVIds, showMessagesDialog }) => {
 
       <Divider className={classes.divider} orientation='vertical' />
 
-      <Tooltip content='Send message'>
-        <IconButton disabled={!isSelectionSingle} onClick={showMessagesDialog}>
-          <Message />
+      <Tooltip content='Show details'>
+        <IconButton
+          disabled={!isSelectionSingle}
+          onClick={() => openUAVDetailsDialog(selectedUAVIds[0])}
+        >
+          <Assignment />
         </IconButton>
       </Tooltip>
 
@@ -113,12 +116,12 @@ const UAVOperationsButtonGroup = ({ selectedUAVIds, showMessagesDialog }) => {
 
 UAVOperationsButtonGroup.propTypes = {
   selectedUAVIds: PropTypes.arrayOf(PropTypes.string),
-  showMessagesDialog: PropTypes.func,
+  openUAVDetailsDialog: PropTypes.func,
 };
 
 export default connect(
   // mapStateToProps
   null,
   // mapDispatchToProps
-  { showMessagesDialog }
+  { openUAVDetailsDialog }
 )(UAVOperationsButtonGroup);
