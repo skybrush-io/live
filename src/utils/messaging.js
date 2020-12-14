@@ -75,7 +75,7 @@ const performMassOperation = ({
   }
 };
 
-export const flashLightOnSelectedUAVs = performMassOperation({
+export const flashLightOnUAVs = performMassOperation({
   type: 'UAV-SIGNAL',
   name: 'Light signal command',
   mapper: () => ({
@@ -157,7 +157,7 @@ export const turnMotorOnForUAVs = performMassOperation({
 
 export const createSelectionRelatedActions = (selectedUAVIds) => ({
   flashLightOnSelectedUAVs: () => {
-    flashLightOnSelectedUAVs(selectedUAVIds);
+    flashLightOnUAVs(selectedUAVIds);
   },
 
   haltSelectedUAVs: () => {

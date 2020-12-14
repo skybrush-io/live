@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import MessagesPanel from '~/components/chat/MessagesPanel';
 
 import PreflightStatusPanel from './PreflightStatusPanel';
+import UAVTestsPanel from './UAVTestsPanel';
 
 import {
   getSelectedTabInUAVDetailsDialog,
@@ -18,6 +19,9 @@ const UAVDetailsDialogBody = ({ selectedTab, uavId }) => {
 
     case 'preflight':
       return <PreflightStatusPanel uavId={uavId} />;
+
+    case 'tests':
+      return <UAVTestsPanel uavId={uavId} />;
 
     default:
       return null;

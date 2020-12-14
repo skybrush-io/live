@@ -35,3 +35,5 @@ export function useFlock(
     };
   }, [flock, onUAVsAdded, onUAVsRemoved, onUAVsUpdated]);
 }
+
+export default useFlock;

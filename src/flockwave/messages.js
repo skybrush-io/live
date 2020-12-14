@@ -217,7 +217,7 @@ class PendingResponse {
 /**
  * Lightweight class that stores the information necessary to resolve or
  * fail the promise that we return when the user sends a command request
- * (CMD-REQ) via the message hub and we are waiting for the corresponding
+ * (OBJ-CMD) via the message hub and we are waiting for the corresponding
  * ASYNC-RESP or ASYNC-TIMEOUT message.
  */
 class PendingCommandExecution {
