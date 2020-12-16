@@ -21,13 +21,11 @@ const SurveySettingsEditor = ({ onClose, onSubmit, ...rest }) => {
     const settingsFromServer = await messageHub.query.getRTKSurveySettings();
     return settingsFromServer
       ? {
-          accuracy: Math.round(
-            settingsFromServer.accuracy * 100
-          ) /* [m] --> [cm] */,
+          accuracy: settingsFromServer.accuracy,
           duration: settingsFromServer.duration,
         }
       : {
-          accuracy: 200,
+          accuracy: 100,
           duration: 60,
         };
   }, []);
@@ -49,11 +47,11 @@ const SurveySettingsEditor = ({ onClose, onSubmit, ...rest }) => {
               <DistanceField
                 name='accuracy'
                 label='Desired accuracy'
-                min={1}
-                max={10000}
-                step={1}
+                min={0.01}
+                max={100}
+                step={0.01}
                 size='small'
-                unit='cm'
+                unit='m'
                 style={{ flex: 1 }}
               />
               <Box p={1} />
@@ -88,9 +86,8 @@ export default connect(
   {
     onClose: toggleSurveySettingsPanel,
     onSubmit: ({ accuracy, duration }) =>
-      /* accuracy has to be converted back to [m] from [cm] */
       startNewSurveyOnServer({
-        accuracy: accuracy / 100,
+        accuracy: Number(accuracy),
         duration: Number(duration),
       }),
   }
