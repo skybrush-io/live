@@ -74,7 +74,7 @@ const UAVOperationsButtonGroup = ({ openUAVDetailsDialog, selectedUAVIds }) => {
 
       <Divider className={classes.divider} orientation='vertical' />
 
-      <Tooltip content='Show details'>
+      <Tooltip content='Properties'>
         <IconButton
           disabled={!isSelectionSingle}
           onClick={() => openUAVDetailsDialog(selectedUAVIds[0])}
