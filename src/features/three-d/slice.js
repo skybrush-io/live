@@ -24,7 +24,7 @@ const { actions, reducer } = createSlice({
   },
 
   reducers: {
-    notifySceneRemoval(state, action) {
+    notifySceneRemoval(state) {
       // increase sceneInsrance by 1 -- this is used to force a re-mounting
       // of <a-scene>. This is needed because otherwise the 3D view would crash
       // when it is re-parented in the workbench, which could happen in

@@ -61,6 +61,9 @@ const { actions, reducer } = createSlice({
 
       // Whether to show statistics about the rendering in an overlay
       showStatistics: false,
+
+      // Whether to show the planned trajectories of the selected UAVs
+      showTrajectoriesOfSelection: true,
     },
 
     localServer: {

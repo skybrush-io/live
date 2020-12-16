@@ -39,9 +39,8 @@ import {
 import { setLayerEditable, setLayerSelectable } from '~/model/layers';
 import { getMapOriginRotationAngle } from '~/selectors/map';
 import {
-  getNumberOfSelectedUAVs,
   getSelectedOriginIds,
-  getSelectedUAVIds,
+  getSelectedUAVIdsForTrajectoryDisplay,
   isSelected,
 } from '~/selectors/selection';
 import { formatMissionId } from '~/utils/formatting';
@@ -527,11 +526,9 @@ export const MissionInfoLayer = connect(
     orientation: getMapOriginRotationAngle(state),
     origin: layer?.parameters?.showOrigin && state.map.origin.position,
     selectedOriginIds: getSelectedOriginIds(state),
-    uavIdsForTrajectories:
-      layer?.parameters?.showTrajectoriesOfSelection &&
-      getNumberOfSelectedUAVs(state) <= 5
-        ? getSelectedUAVIds(state)
-        : undefined,
+    uavIdsForTrajectories: layer?.parameters?.showTrajectoriesOfSelection
+      ? getSelectedUAVIdsForTrajectoryDisplay(state)
+      : undefined,
   }),
   // mapDispatchToProps
   {}

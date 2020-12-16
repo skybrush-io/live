@@ -129,6 +129,40 @@ export const getTakeoffHeadingByUavId = createCachedSelector(
 });
 
 /**
+ * Returns the trajectory of the UAV with the given ID, in show coordinates,
+ * given the current state.
+ *
+ * @param  {Object}  state  the state of the application
+ * @param  {string}  uavId  the ID of the UAV
+ */
+export const getTrajectoryPointsInShowCoordinatesByUavId = createCachedSelector(
+  getReverseMissionMapping,
+  getTrajectories,
+  selectUAVId,
+  (revMapping, trajectories, uavId) => {
+    const index = revMapping[uavId];
+
+    if (index === undefined) {
+      // UAV is not in the mission
+      return undefined;
+    }
+
+    const trajectory = trajectories[index];
+    if (isValidTrajectory(trajectory)) {
+      return getPointsOfTrajectory(trajectory, {
+        includeControlPoints: true,
+      });
+    }
+
+    return undefined;
+  }
+)({
+  keySelector: selectUAVId,
+  // TODO: use a FIFO or LRU cache if it becomes necessary.
+  // The quick-lru module from npm seems simple enough.
+});
+
+/**
  * Returns the trajectory of the UAV with the given ID, in world coordinates,
  * given the current state.
  *

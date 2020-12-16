@@ -13,6 +13,7 @@ import {
   globalIdToOriginId,
   globalIdToUavId,
 } from '~/model/identifiers';
+import { EMPTY_ARRAY } from '~/utils/redux';
 
 /**
  * Selector that retrieves the list of item IDs in the current selection
@@ -140,3 +141,10 @@ export const getNumberOfSelectedUAVs = (state) => {
   const selection = getSelectedUAVIds(state);
   return Array.isArray(selection) ? selection.length : 0;
 };
+
+/**
+ * Selector that returns at most five selected UAV IDs for sake of displaying
+ * their trajectories.
+ */
+export const getSelectedUAVIdsForTrajectoryDisplay = (state) =>
+  getNumberOfSelectedUAVs(state) <= 5 ? getSelectedUAVIds(state) : EMPTY_ARRAY;

@@ -202,6 +202,7 @@
     "rules": {
       "capitalized-comments": 0,
       "import/no-unassigned-import": 0,
+      "no-else-return": 0,
       "no-negated-condition": 0,
       "no-warning-comments": 0,
       "object-curly-spacing": [
@@ -212,7 +213,8 @@
       "react/jsx-no-duplicate-props": 0,
       "react/require-default-props": 0,
       "unicorn/filename-case": 0,
-      "unicorn/no-fn-reference-in-iterator": 0
+      "unicorn/no-fn-reference-in-iterator": 0,
+      "unicorn/prefer-ternary": 0
     }
   }
 }

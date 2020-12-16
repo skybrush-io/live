@@ -1,3 +1,5 @@
+import isNil from 'lodash-es/isNil';
+
 /**
  * Formats a coordinate array as (X, Y, Z)
  */
@@ -41,13 +43,15 @@ export function formatDurationHMS(duration, options) {
   if (padHours && hours.length < 2) {
     hours = '0' + hours;
   }
-  duration = duration % 3600;
+
+  duration %= 3600;
 
   let minutes = String(Math.floor(duration / 60));
   if (minutes.length < 2) {
     minutes = '0' + minutes;
   }
-  duration = duration % 60;
+
+  duration %= 60;
 
   let seconds = duration.toFixed(precision);
   if (duration < 10) {
@@ -105,3 +109,22 @@ export const shortTimeAgoFormatter = (value, unit) =>
     : unit === 'second' && value < 1
     ? 'now'
     : `${value}${unit.charAt(0)}`;
+
+/**
+ * Truncates a string with ellipses if it exceeds a certain length.
+ */
+export function truncate(value, maxLength, { ellipsis = '\u2026' } = {}) {
+  if (isNil(value)) {
+    return '';
+  }
+
+  if (typeof value !== 'string') {
+    value = String(value);
+  }
+
+  if (value.length > maxLength) {
+    value = value.slice(0, maxLength) + ellipsis;
+  }
+
+  return value;
+}

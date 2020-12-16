@@ -37,6 +37,7 @@ import {
   isLoadingShowFile,
 } from '~/features/show/selectors';
 import { getSetupStageStatuses } from '~/features/show/stages';
+import { truncate } from '~/utils/formatting';
 
 /**
  * Helper function to test whether a dropped file is a real file and not a
@@ -81,7 +82,7 @@ const LoadShowFromFileButton = ({
         loading
           ? 'Please wait, loading show file…'
           : hasLoadedShowFile
-          ? title
+          ? truncate(title, 60)
           : 'No show file loaded'
       }
       secondary={

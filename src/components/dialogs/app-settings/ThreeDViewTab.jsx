@@ -145,6 +145,17 @@ const ThreeDViewTab = (props) => (
           />
         }
       />
+
+      <FormControlLabel
+        label='Show trajectories of selected UAVs'
+        control={
+          <Checkbox
+            checked={props.showTrajectoriesOfSelection}
+            name='showTrajectoriesOfSelection'
+            onChange={props.onCheckboxToggled}
+          />
+        }
+      />
     </FormGroup>
 
     <FormGroup>
@@ -172,6 +183,7 @@ ThreeDViewTab.propTypes = {
   showAxes: PropTypes.bool,
   showHomePositions: PropTypes.bool,
   showLandingPositions: PropTypes.bool,
+  showTrajectoriesOfSelection: PropTypes.bool,
   showStatistics: PropTypes.bool,
 };
 

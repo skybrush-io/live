@@ -10,6 +10,7 @@ import CoordinateSystemAxes from './CoordinateSystemAxes';
 import HomePositionMarkers from './HomePositionMarkers';
 import LandingPositionMarkers from './LandingPositionMarkers';
 import Scenery from './Scenery';
+import SelectedTrajectories from './SelectedTrajectories';
 
 // eslint-disable-next-line no-unused-vars
 import AFrame from '~/aframe';
@@ -55,6 +56,7 @@ const ThreeDView = React.forwardRef((props, ref) => {
     showHomePositions,
     showLandingPositions,
     showStatistics,
+    showTrajectoriesOfSelection,
   } = props;
 
   const extraCameraProps = {
@@ -121,7 +123,7 @@ const ThreeDView = React.forwardRef((props, ref) => {
         )}
         {showHomePositions && <HomePositionMarkers />}
         {showLandingPositions && <LandingPositionMarkers />}
-
+        {showTrajectoriesOfSelection && <SelectedTrajectories />}
         <a-drone-flock />
       </a-entity>
 
@@ -138,11 +140,13 @@ ThreeDView.propTypes = {
     mode: PropTypes.oneOf(['walk', 'fly']),
     parameters: PropTypes.object,
   }),
+  sceneId: PropTypes.number,
   scenery: PropTypes.oneOf(['outdoor', 'indoor']),
   showAxes: PropTypes.bool,
   showHomePositions: PropTypes.bool,
   showLandingPositions: PropTypes.bool,
   showStatistics: PropTypes.bool,
+  showTrajectoriesOfSelection: PropTypes.bool,
 };
 
 export default connect(
