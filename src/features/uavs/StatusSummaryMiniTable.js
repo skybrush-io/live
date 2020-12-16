@@ -18,6 +18,7 @@ import { shortTimeAgoFormatter } from '~/utils/formatting';
 const useStyles = makeStyles((theme) => ({
   root: {
     fontSize: 'small',
+    width: '100%',
 
     '& .muted': {
       color: theme.palette.text.disabled,

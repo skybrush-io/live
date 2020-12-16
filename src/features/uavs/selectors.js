@@ -27,6 +27,7 @@ import {
 } from '~/features/show/trajectory';
 import {
   abbreviateError,
+  errorSeverityToSemantics,
   getSeverityOfErrorCode,
   getSeverityOfMostSevereErrorCode,
   ErrorCode,
@@ -403,28 +404,13 @@ export const areAllUAVsInMissionWithoutErrors = createSelector(
   }
 );
 
-function severityToSemantics(severity) {
-  switch (severity) {
-    case Severity.FATAL:
-      return 'critical';
-    case Severity.ERROR:
-      return 'error';
-    case Severity.WARNING:
-      return 'warning';
-    case Severity.INFO:
-      return 'info';
-    default:
-      return 'off';
-  }
-}
-
 export function getSingleUAVStatusLevel(uav) {
   let severity = -1;
 
   if (uav.errors && uav.errors.length > 0) {
     severity = getSeverityOfMostSevereErrorCode(uav.errors);
     if (severity >= Severity.WARNING) {
-      return severityToSemantics(severity);
+      return errorSeverityToSemantics(severity);
     }
   }
 
@@ -443,7 +429,7 @@ export function getSingleUAVStatusLevel(uav) {
   }
 
   if (severity >= Severity.INFO) {
-    return severityToSemantics(severity);
+    return errorSeverityToSemantics(severity);
   }
 
   return 'success';
@@ -506,7 +492,7 @@ export function getSingleUAVStatusSummary(uav) {
       // disarm is treated separately; it is always shown as an error
       textSemantics = 'error';
     } else {
-      textSemantics = severityToSemantics(severity);
+      textSemantics = errorSeverityToSemantics(severity);
     }
   } else if (uav.position && Math.abs(uav.position.agl) >= 0.3) {
     // UAV is in the air

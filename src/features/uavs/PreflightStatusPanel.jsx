@@ -14,6 +14,12 @@ import Header from '~/components/dialogs/FormHeader';
 import BackgroundHint from '~/components/BackgroundHint';
 import LargeProgressIndicator from '~/components/LargeProgressIndicator';
 import StatusLight from '~/components/StatusLight';
+import { getUAVById } from '~/features/uavs/selectors';
+import {
+  describeError,
+  errorCodeToSemantics,
+  ErrorCode,
+} from '~/flockwave/errors';
 import useMessageHub from '~/hooks/useMessageHub';
 import {
   describeOverallPreflightCheckResult,
@@ -22,6 +28,32 @@ import {
   PreflightCheckResult,
 } from '~/model/enums';
 import CustomPropTypes from '~/utils/prop-types';
+
+const ErrorList = ({ errorCodes }) => {
+  if (!errorCodes || errorCodes.length === 0) {
+    return null;
+  }
+
+  return (
+    <>
+      <List dense>
+        {errorCodes.map((code) => {
+          return code === ErrorCode.PREARM_CHECK_IN_PROGRESS ? null : (
+            <ListItem key={code}>
+              <StatusLight status={errorCodeToSemantics(code)} />
+              <ListItemText primary={describeError(code)} />
+            </ListItem>
+          );
+        })}
+      </List>
+      <Divider />
+    </>
+  );
+};
+
+ErrorList.propTypes = {
+  errorCodes: PropTypes.arrayOf(PropTypes.number),
+};
 
 const PreflightStatusResults = ({ message, result, items }) => {
   return (
@@ -77,7 +109,7 @@ PreflightStatusResults.propTypes = {
   result: CustomPropTypes.preflightCheckResult,
 };
 
-const PreflightStatusPanel = ({ uavId }) => {
+const PreflightStatusPanelLowerSegment = ({ uavId }) => {
   const messageHub = useMessageHub();
   const state = useAsyncRetry(
     () => (uavId ? messageHub.query.getPreflightStatus(uavId) : {}),
@@ -133,13 +165,29 @@ const PreflightStatusPanel = ({ uavId }) => {
   );
 };
 
+PreflightStatusPanelLowerSegment.propTypes = {
+  uavId: PropTypes.string,
+};
+
+const PreflightStatusPanel = ({ errorCodes, uavId }) => (
+  <>
+    <ErrorList errorCodes={errorCodes} />
+    <PreflightStatusPanelLowerSegment uavId={uavId} />
+  </>
+);
+
 PreflightStatusPanel.propTypes = {
+  errorCodes: PropTypes.arrayOf(PropTypes.number),
   uavId: PropTypes.string,
 };
 
 export default connect(
   // mapStateToProps
-  () => ({}),
+  (state, ownProps) => ({
+    errorCodes: ownProps.uavId
+      ? getUAVById(state, ownProps.uavId)?.errors
+      : null,
+  }),
   // mapDispatchToProps
   {}
 )(PreflightStatusPanel);

@@ -209,3 +209,22 @@ export function abbreviateError(code) {
 export function describeError(code) {
   return errorCodeToDescription[code] || `Error ${code}`;
 }
+
+export function errorCodeToSemantics(code) {
+  return errorSeverityToSemantics(getSeverityOfErrorCode(code));
+}
+
+export function errorSeverityToSemantics(severity) {
+  switch (severity) {
+    case Severity.FATAL:
+      return 'critical';
+    case Severity.ERROR:
+      return 'error';
+    case Severity.WARNING:
+      return 'warning';
+    case Severity.INFO:
+      return 'info';
+    default:
+      return 'off';
+  }
+}
