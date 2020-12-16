@@ -194,7 +194,11 @@ class ActiveUAVsLayerSource extends React.Component {
    * @param {UAV[]} uavs  the UAVs that should be refreshed
    */
   _onUAVsUpdated = (uavs) => {
-    uavs.forEach((uav) => {
+    for (const uav of uavs) {
+      if (uav.lon === 0 && uav.lat === 0) {
+        continue;
+      }
+
       const feature = this._featureManager.createOrUpdateFeatureById(uav.id, [
         uav.lon,
         uav.lat,
@@ -206,7 +210,7 @@ class ActiveUAVsLayerSource extends React.Component {
       }
 
       feature.labelColor = this.props.labelColor;
-    });
+    }
   };
 }
 
