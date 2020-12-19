@@ -3,8 +3,10 @@ import React from 'react';
 import { connect } from 'react-redux';
 
 import Box from '@material-ui/core/Box';
+import Toolbar from '@material-ui/core/Toolbar';
 
 import DroneAvatar from '~/components/uavs/DroneAvatar';
+import UAVOperationsButtonGroup from '~/components/uavs/UAVOperationsButtonGroup';
 
 import StatusSummaryMiniTable from './StatusSummaryMiniTable';
 
@@ -14,7 +16,9 @@ import StatusSummaryMiniTable from './StatusSummaryMiniTable';
 const UAVDetailsDialogSidebar = ({ uavId }) => (
   <Box p={2} minWidth={185}>
     <DroneAvatar id={uavId} />
-    <Box pt={2} />
+    <Toolbar disableGutters variant='dense'>
+      <UAVOperationsButtonGroup selectedUAVIds={[uavId]} size='small' />
+    </Toolbar>
     <StatusSummaryMiniTable uavId={uavId} />
   </Box>
 );

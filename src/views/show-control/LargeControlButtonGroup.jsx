@@ -21,7 +21,7 @@ import {
   getUAVIdsParticipatingInMission,
 } from '~/features/mission/selectors';
 import { getSelectedUAVIds } from '~/selectors/selection';
-import { createSelectionRelatedActions } from '~/utils/messaging';
+import { createMultipleUAVRelatedActions } from '~/utils/messaging';
 
 import ControlButton from './ControlButton';
 import StartMethodExplanation from './StartMethodExplanation';
@@ -65,7 +65,7 @@ const LargeControlButtonGroup = ({
     takeoffSelectedUAVs,
     turnMotorsOnForSelectedUAVs,
     */
-  } = createSelectionRelatedActions(selectedUAVIds);
+  } = createMultipleUAVRelatedActions(selectedUAVIds);
 
   return (
     <>

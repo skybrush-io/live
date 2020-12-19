@@ -58,14 +58,7 @@ const StatusSummaryMiniTable = ({
 }) => {
   const classes = useStyles();
   const { lat, lon, amsl, agl } = position || {};
-  const gpsFixType = gpsFix?.type;
-  const gpsFixLabel = gpsFixType ? (
-    <StatusText status={getSemanticsForGPSFixType(gpsFixType)}>
-      {abbreviateGPSFixType(gpsFixType)}
-    </StatusText>
-  ) : (
-    naText
-  );
+  const hasLocalPosition = localPosition && Array.isArray(localPosition);
   const flightModeLabel = mode ? (
     <StatusText status={getSemanticsForFlightMode(mode)}>
       {getFlightModeLabel(mode)}
@@ -73,21 +66,32 @@ const StatusSummaryMiniTable = ({
   ) : (
     naText
   );
+  const gpsFixType = gpsFix?.type;
+  const shouldShowGlobalPositionInfo = !hasLocalPosition || gpsFixType;
 
-  const rows = [
-    ['Mode', flightModeLabel],
-    'sep-1',
-    ['GPS fix', gpsFixLabel],
-    ['# sats', gpsFix?.numSatellites || naText],
-    'sep0',
-    ['Lat', formatNumberSafely(lat, 7, '°')],
-    ['Lon', formatNumberSafely(lon, 7, '°')],
-    ['AMSL', formatNumberSafely(amsl, 2, ' m')],
-    ['AGL', formatNumberSafely(agl, 2, ' m')],
-    'sep1',
-  ];
+  const rows = [['Mode', flightModeLabel], 'sep0'];
 
-  if (localPosition && Array.isArray(localPosition)) {
+  if (shouldShowGlobalPositionInfo) {
+    const gpsFixLabel = gpsFixType ? (
+      <StatusText status={getSemanticsForGPSFixType(gpsFixType)}>
+        {abbreviateGPSFixType(gpsFixType)}
+      </StatusText>
+    ) : (
+      naText
+    );
+    rows.push(
+      ['GPS fix', gpsFixLabel],
+      ['# sats', gpsFix?.numSatellites || naText],
+      'sep1',
+      ['Lat', formatNumberSafely(lat, 7, '°')],
+      ['Lon', formatNumberSafely(lon, 7, '°')],
+      ['AMSL', formatNumberSafely(amsl, 2, ' m')],
+      ['AGL', formatNumberSafely(agl, 2, ' m')],
+      'sep2'
+    );
+  }
+
+  if (hasLocalPosition) {
     rows.push(
       ['X', formatNumberSafely(localPosition[0], 2, ' m')],
       ['Y', formatNumberSafely(localPosition[1], 2, ' m')],
@@ -96,7 +100,7 @@ const StatusSummaryMiniTable = ({
   }
 
   rows.push(['Heading', formatNumberSafely(heading, 1, '°')]);
-  rows.push('sep2');
+  rows.push('sep3');
   rows.push([
     'Last seen',
     lastUpdated ? (

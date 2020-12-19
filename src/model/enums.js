@@ -179,10 +179,8 @@ export function describeFlightMode(mode) {
  * Returns the label of the given flight mode.
  */
 export function getFlightModeLabel(mode) {
-  const props =
-    _propertiesForFlightModes[mode] ||
-    _propertiesForFlightModes[FlightMode.UNKNOWN];
-  return props.label;
+  const props = _propertiesForFlightModes[mode];
+  return props ? props.label : String(mode).toUpperCase();
 }
 
 /**

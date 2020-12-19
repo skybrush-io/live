@@ -9,9 +9,9 @@ import ImageBlurCircular from '@material-ui/icons/BlurCircular';
 import ImageBlurOn from '@material-ui/icons/BlurOn';
 
 import Tooltip from '~/components/Tooltip';
+import UAVOperationsButtonGroup from '~/components/uavs/UAVOperationsButtonGroup';
 
 import MappingButtonGroup from './MappingButtonGroup';
-import UAVOperationsButtonGroup from './UAVOperationsButtonGroup';
 
 /**
  * Main toolbar for controlling the UAVs.

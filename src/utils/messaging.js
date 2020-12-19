@@ -155,7 +155,7 @@ export const turnMotorOnForUAVs = performMassOperation({
   }),
 });
 
-export const createSelectionRelatedActions = (selectedUAVIds) => ({
+export const createMultipleUAVRelatedActions = (selectedUAVIds) => ({
   flashLightOnSelectedUAVs: () => {
     flashLightOnUAVs(selectedUAVIds);
   },

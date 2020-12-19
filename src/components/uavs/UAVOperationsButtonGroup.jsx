@@ -18,7 +18,7 @@ import Colors from '~/components/colors';
 import Tooltip from '~/components/Tooltip';
 
 import { openUAVDetailsDialog } from '~/features/uavs/details';
-import { createSelectionRelatedActions } from '~/utils/messaging';
+import { createMultipleUAVRelatedActions } from '~/utils/messaging';
 
 const useStyles = makeStyles(
   (theme) => ({
@@ -34,7 +34,11 @@ const useStyles = makeStyles(
 /**
  * Main toolbar for controlling the UAVs.
  */
-const UAVOperationsButtonGroup = ({ openUAVDetailsDialog, selectedUAVIds }) => {
+const UAVOperationsButtonGroup = ({
+  openUAVDetailsDialog,
+  selectedUAVIds,
+  size,
+}) => {
   const classes = useStyles();
 
   const isSelectionEmpty = isEmpty(selectedUAVIds);
@@ -47,66 +51,93 @@ const UAVOperationsButtonGroup = ({ openUAVDetailsDialog, selectedUAVIds }) => {
     resetSelectedUAVs,
     returnToHomeSelectedUAVs,
     takeoffSelectedUAVs,
-  } = createSelectionRelatedActions(selectedUAVIds);
+  } = createMultipleUAVRelatedActions(selectedUAVIds);
+
+  const fontSize = size === 'small' ? 'small' : 'default';
 
   return (
     <>
       <Tooltip content='Takeoff'>
-        <IconButton disabled={isSelectionEmpty} onClick={takeoffSelectedUAVs}>
-          <FlightTakeoff />
+        <IconButton
+          disabled={isSelectionEmpty}
+          size={size}
+          onClick={takeoffSelectedUAVs}
+        >
+          <FlightTakeoff fontSize={fontSize} />
         </IconButton>
       </Tooltip>
 
       <Tooltip content='Land'>
-        <IconButton disabled={isSelectionEmpty} onClick={landSelectedUAVs}>
-          <FlightLand />
+        <IconButton
+          disabled={isSelectionEmpty}
+          size={size}
+          onClick={landSelectedUAVs}
+        >
+          <FlightLand fontSize={fontSize} />
         </IconButton>
       </Tooltip>
 
       <Tooltip content='Return to home'>
         <IconButton
           disabled={isSelectionEmpty}
+          size={size}
           onClick={returnToHomeSelectedUAVs}
         >
-          <Home />
+          <Home fontSize={fontSize} />
         </IconButton>
       </Tooltip>
 
-      <Divider className={classes.divider} orientation='vertical' />
+      {size !== 'small' && (
+        <Divider className={classes.divider} orientation='vertical' />
+      )}
 
-      <Tooltip content='Properties'>
-        <IconButton
-          disabled={!isSelectionSingle}
-          onClick={() => openUAVDetailsDialog(selectedUAVIds[0])}
-        >
-          <Assignment />
-        </IconButton>
-      </Tooltip>
+      {size !== 'small' && (
+        <Tooltip content='Properties'>
+          <IconButton
+            disabled={!isSelectionSingle}
+            size={size}
+            onClick={() => openUAVDetailsDialog(selectedUAVIds[0])}
+          >
+            <Assignment />
+          </IconButton>
+        </Tooltip>
+      )}
 
       <Tooltip content='Flash lights'>
         <IconButton
           disabled={isSelectionEmpty}
+          size={size}
           onClick={flashLightOnSelectedUAVs}
         >
-          <WbSunny />
+          <WbSunny fontSize={fontSize} />
         </IconButton>
       </Tooltip>
 
       <Divider className={classes.divider} orientation='vertical' />
 
       <Tooltip content='Reboot'>
-        <IconButton disabled={isSelectionEmpty} onClick={resetSelectedUAVs}>
+        <IconButton
+          disabled={isSelectionEmpty}
+          size={size}
+          onClick={resetSelectedUAVs}
+        >
           <Refresh
             htmlColor={isSelectionEmpty ? undefined : Colors.error}
             disabled={isSelectionEmpty}
+            fontSize={fontSize}
           />
         </IconButton>
       </Tooltip>
 
       <Tooltip content='Power off'>
-        <IconButton disabled={isSelectionEmpty} onClick={haltSelectedUAVs}>
+        <IconButton
+          disabled={isSelectionEmpty}
+          size={size}
+          onClick={haltSelectedUAVs}
+        >
           <PowerSettingsNew
             htmlColor={isSelectionEmpty ? undefined : Colors.error}
+            fontSize={fontSize}
           />
         </IconButton>
       </Tooltip>
@@ -115,8 +146,9 @@ const UAVOperationsButtonGroup = ({ openUAVDetailsDialog, selectedUAVIds }) => {
 };
 
 UAVOperationsButtonGroup.propTypes = {
-  selectedUAVIds: PropTypes.arrayOf(PropTypes.string),
   openUAVDetailsDialog: PropTypes.func,
+  selectedUAVIds: PropTypes.arrayOf(PropTypes.string),
+  size: PropTypes.oneOf(['small', 'medium']),
 };
 
 export default connect(
