@@ -20,9 +20,9 @@ export function formatCommandResponseAsHTML(response) {
 
   switch (type) {
     case 'plain':
-      return '<pre>' + escape(trimEnd(data)) + '</pre>';
+      return escape(trimEnd(data));
 
     default:
-      return '<pre>' + escape(JSON.stringify(response, null, 2)) + '</pre>';
+      return escape(JSON.stringify(response, null, 2));
   }
 }

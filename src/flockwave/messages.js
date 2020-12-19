@@ -87,6 +87,7 @@ export class MessageTimeout extends Error {
   constructor(messageId) {
     super(`Response to message ${messageId} timed out`);
     this.messageId = messageId;
+    this.userMessage = 'Response timed out';
   }
 }
 
