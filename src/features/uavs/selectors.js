@@ -64,6 +64,15 @@ export const getCurrentPositionByUavId = (state, uavId) => {
 };
 
 /**
+ * Returns the current local position of the UAV with the given ID, given the
+ * current state.
+ */
+export const getCurrentLocalPositionByUavId = (state, uavId) => {
+  const uav = getUAVById(state, uavId);
+  return uav ? uav.localPosition : undefined;
+};
+
+/**
  * Returns the current heading of the UAV with the given ID, given the current
  * state.
  */
