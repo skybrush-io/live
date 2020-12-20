@@ -249,7 +249,6 @@ export default connect(
         : 'black';
       return {
         batterySettings: getBatteryIndicatorSettings(state),
-        batteryStatus: uav ? uav.battery : undefined,
         color,
         coordinateFormatter: getPreferredCoordinateFormatter(state),
         debugString: uav ? uav.debugString : undefined,

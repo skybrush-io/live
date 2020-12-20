@@ -567,6 +567,7 @@ export function getSingleUAVStatusSummary(uav) {
     gone: uav ? uav.age === UAVAge.GONE || uav.age === UAVAge.INACTIVE : false,
     text,
     textSemantics,
+    batteryStatus: uav ? uav.battery : undefined,
   };
 }
 

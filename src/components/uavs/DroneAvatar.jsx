@@ -260,15 +260,13 @@ const DroneAvatar = connect(
   () => {
     const statusSummarySelector = createSingleUAVStatusSummarySelector();
     return (state, ownProps) => {
-      const uav = state.uavs.byId[ownProps.id];
       const props = {
         batterySettings: getBatteryIndicatorSettings(state),
         ...statusSummarySelector(state, ownProps.id),
       };
 
-      if (ownProps.variant === 'full') {
-        props.batteryStatus = uav ? uav.battery : undefined;
-      } else {
+      if (ownProps.variant !== 'full') {
+        delete props.batteryStatus;
         delete props.text;
         delete props.details;
       }

@@ -102,6 +102,8 @@ const { actions, reducer } = createSlice({
       lowVoltageThreshold: LIPO_LOW_VOLTAGE_THRESHOLD,
       // Critical battery warning threshold (per cell), in volts
       criticalVoltageThreshold: LIPO_CRITICAL_VOLTAGE_THRESHOLD,
+      // Whether to prefer percentages or voltages when showing the battery status
+      preferredBatteryDisplayStyle: 'voltage',
     },
   },
 

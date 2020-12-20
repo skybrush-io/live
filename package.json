@@ -203,6 +203,7 @@
       "capitalized-comments": 0,
       "import/no-unassigned-import": 0,
       "no-else-return": 0,
+      "no-lonely-if": 0,
       "no-negated-condition": 0,
       "no-warning-comments": 0,
       "object-curly-spacing": [

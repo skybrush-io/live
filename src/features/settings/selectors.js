@@ -19,8 +19,10 @@ export const getBatteryIndicatorSettings = createSelector(
     fullChargeVoltage = LIPO_FULL_CHARGE_VOLTAGE,
     lowVoltageThreshold = LIPO_LOW_VOLTAGE_THRESHOLD,
     criticalVoltageThreshold = LIPO_CRITICAL_VOLTAGE_THRESHOLD,
+    preferredBatteryDisplayStyle = 'voltage',
   } = {}) => ({
     defaultCellCount: defaultBatteryCellCount,
+    displayStyle: preferredBatteryDisplayStyle,
     voltageThresholds: {
       full: fullChargeVoltage,
       nearFull:
@@ -28,6 +30,7 @@ export const getBatteryIndicatorSettings = createSelector(
       ok: fullChargeVoltage - (fullChargeVoltage - lowVoltageThreshold) * 0.4,
       warning: lowVoltageThreshold,
       critical: criticalVoltageThreshold,
+      empty: Math.min(3.3, criticalVoltageThreshold),
     },
   })
 );

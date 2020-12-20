@@ -8,6 +8,9 @@ import Divider from '@material-ui/core/Divider';
 import FormControl from '@material-ui/core/FormControl';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormGroup from '@material-ui/core/FormGroup';
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
+import Select from '@material-ui/core/Select';
 import Typography from '@material-ui/core/Typography';
 import { useTheme } from '@material-ui/core/styles';
 
@@ -36,9 +39,11 @@ const UAVsTabPresentation = ({
   lowVoltageThreshold,
   onCheckboxToggled,
   onDistanceFieldUpdated,
+  onEnumFieldUpdated,
   onIntegerFieldUpdated,
   onVoltageFieldUpdated,
   placementAccuracy,
+  preferredBatteryDisplayStyle,
   takeoffHeadingAccuracy,
   warnThreshold,
 }) => {
@@ -149,6 +154,28 @@ const UAVsTabPresentation = ({
             onChange={onVoltageFieldUpdated}
           />
         </Box>
+
+        <Box display='flex' flexDirection='row' mb={1}>
+          <FormControl fullWidth variant='filled'>
+            <InputLabel id='uav-battery-display-style'>
+              Battery display style
+            </InputLabel>
+            <Select
+              labelId='uav-battery-display-style'
+              name='preferredBatteryDisplayStyle'
+              value={preferredBatteryDisplayStyle}
+              onChange={onEnumFieldUpdated}
+            >
+              <MenuItem value='voltage'>Prefer voltage</MenuItem>
+              <MenuItem value='percentage'>
+                Prefer percentage and show voltage if unknown
+              </MenuItem>
+              <MenuItem value='forcedPercentage'>
+                Prefer percentage and estimate it from voltage if needed
+              </MenuItem>
+            </Select>
+          </FormControl>
+        </Box>
       </Box>
 
       <Divider />
@@ -199,11 +226,21 @@ UAVsTabPresentation.propTypes = {
   lowVoltageThreshold: PropTypes.number,
   onCheckboxToggled: PropTypes.func,
   onDistanceFieldUpdated: PropTypes.func,
+  onEnumFieldUpdated: PropTypes.func,
   onIntegerFieldUpdated: PropTypes.func,
   onVoltageFieldUpdated: PropTypes.func,
   placementAccuracy: PropTypes.number,
+  preferredBatteryDisplayStyle: PropTypes.oneOf([
+    'voltage',
+    'percentage',
+    'forcedPercentage',
+  ]),
   takeoffHeadingAccuracy: PropTypes.number,
   warnThreshold: PropTypes.number,
+};
+
+UAVsTabPresentation.defaultProps = {
+  preferredBatteryDisplayStyle: 'voltage',
 };
 
 export default connect(
@@ -234,6 +271,14 @@ export default connect(
           })
         );
       }
+    },
+
+    onEnumFieldUpdated(event) {
+      dispatch(
+        updateAppSettings('uavs', {
+          [event.target.name]: event.target.value,
+        })
+      );
     },
 
     onIntegerFieldUpdated(event) {

@@ -22,6 +22,7 @@ import BatteryChargingFullIcon from '@material-ui/icons/BatteryChargingFull';
 
 import Colors from '~/components/colors';
 import CustomPropTypes from '~/utils/prop-types';
+import { isNil } from 'lodash-es';
 
 const useStyles = makeStyles(
   (theme) => ({
@@ -147,6 +148,36 @@ const batteryIconIndexByStatus = {
   Unknown: 11,
 };
 
+function getVoltagePerCell(voltage, cellCount, settings) {
+  if (cellCount === undefined) {
+    cellCount = settings ? settings.defaultCellCount : 3;
+  }
+
+  return voltage === undefined || cellCount < 1 ? 0 : voltage / cellCount;
+}
+
+/**
+ * Converts a battery voltage to a crude estimate of the percentage.
+ */
+const estimatePercentageFromVoltagePerCell = (
+  voltagePerCell,
+  { voltageThresholds } = {}
+) => {
+  if (!voltageThresholds) {
+    return undefined;
+  }
+
+  const { empty, full } = voltageThresholds;
+
+  if (voltagePerCell <= empty) {
+    return 0;
+  } else if (voltagePerCell >= full) {
+    return 100;
+  } else {
+    return Math.round(((voltagePerCell - empty) / (full - empty)) * 100);
+  }
+};
+
 const getBatteryIcon = (percentage, status, charging) => {
   const index =
     percentage === undefined
@@ -187,12 +218,7 @@ function getBatteryStatus(voltage, percentage, cellCount, settings) {
     return 'Unknown';
   }
 
-  if (cellCount === undefined) {
-    cellCount = settings ? settings.defaultCellCount : 3;
-  }
-
-  const voltagePerCell =
-    voltage === undefined || cellCount < 1 ? 0 : voltage / cellCount;
+  const voltagePerCell = getVoltagePerCell(voltage, cellCount, settings);
   const { voltageThresholds } = settings;
 
   return voltagePerCell > voltageThresholds.nearFull
@@ -204,6 +230,44 @@ function getBatteryStatus(voltage, percentage, cellCount, settings) {
     : voltagePerCell >= voltageThresholds.critical
     ? 'Warning'
     : 'Error';
+}
+
+/**
+ * Function that takes a drone object from the Redux store and derives the
+ * battery information that can be used in a `<BatteryIndicator>` component,
+ * taking into account the user's preference to see voltages versus percentages.
+ */
+function getBatteryLabel(voltage, percentage, cellCount, settings = {}) {
+  const { displayStyle = 'voltage' } = settings;
+
+  if (isNil(percentage)) {
+    if (isNil(voltage)) {
+      return '???';
+    } else if (displayStyle === 'forcedPercentage') {
+      // User wants percentage all the time so let's convert voltage to percentage
+      const voltagePerCell = getVoltagePerCell(voltage, cellCount, settings);
+      const estimatedPercentage = estimatePercentageFromVoltagePerCell(
+        voltagePerCell,
+        settings
+      );
+      if (isNil(estimatedPercentage)) {
+        return `${voltage}V`;
+      } else {
+        return `${estimatedPercentage}%`;
+      }
+    } else {
+      // No percentage info but we have voltage
+      return `${voltage}V`;
+    }
+  } else {
+    // We have percentage
+    if (displayStyle !== 'voltage' || isNil(voltage)) {
+      return `${percentage}%`;
+    } else {
+      // ...but the user prefers voltage and we have it, so show that one instead
+      return `${voltage}V`;
+    }
+  }
 }
 
 /**
@@ -221,14 +285,11 @@ const BatteryIndicator = ({
   const status = getBatteryStatus(voltage, percentage, cellCount, settings);
   const rootClass = clsx(className, classes.root, classes[`battery${status}`]);
   const batteryIcon = getBatteryIcon(percentage, status, charging);
+  const label = getBatteryLabel(voltage, percentage, cellCount, settings);
   return (
     <Box fontSize='small' className={rootClass}>
       {batteryIcon}
-      {percentage === undefined
-        ? voltage === undefined
-          ? '???'
-          : `${voltage}V`
-        : `${percentage}%`}
+      {label}
     </Box>
   );
 };
