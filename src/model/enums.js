@@ -340,7 +340,7 @@ const _propertiesForPreflightCheckResults = {
   [PreflightCheckResult.SOFT_FAILURE]: {
     description: 'Temporary failure',
     overallDescription: 'Some preflight checks failed temporarily',
-    status: Status.ERROR,
+    status: Status.WARNING,
   },
   [PreflightCheckResult.FAILURE]: {
     description: 'Failed',

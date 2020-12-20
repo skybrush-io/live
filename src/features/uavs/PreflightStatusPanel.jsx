@@ -30,21 +30,24 @@ import {
 import CustomPropTypes from '~/utils/prop-types';
 
 const ErrorList = ({ errorCodes }) => {
-  if (!errorCodes || errorCodes.length === 0) {
+  const relevantErrorCodes = (errorCodes || []).filter(
+    (code) =>
+      code !== ErrorCode.PREARM_CHECK_IN_PROGRESS &&
+      code !== ErrorCode.PREARM_CHECK_FAILURE
+  );
+  if (relevantErrorCodes.length === 0) {
     return null;
   }
 
   return (
     <>
       <List dense>
-        {errorCodes.map((code) => {
-          return code === ErrorCode.PREARM_CHECK_IN_PROGRESS ? null : (
-            <ListItem key={code}>
-              <StatusLight status={errorCodeToSemantics(code)} />
-              <ListItemText primary={describeError(code)} />
-            </ListItem>
-          );
-        })}
+        {relevantErrorCodes.map((code) => (
+          <ListItem key={code}>
+            <StatusLight status={errorCodeToSemantics(code)} />
+            <ListItemText primary={describeError(code)} />
+          </ListItem>
+        ))}
       </List>
       <Divider />
     </>
