@@ -3,7 +3,7 @@ import isNil from 'lodash-es/isNil';
 import isNumber from 'lodash-es/isNumber';
 import isString from 'lodash-es/isString';
 import reject from 'lodash-es/reject';
-import { channel } from 'redux-saga';
+import { buffers, channel } from 'redux-saga';
 import {
   call,
   cancelled,
@@ -46,11 +46,12 @@ import {
   synchronizeShowSettings,
 } from './slice';
 
-import messageHub from '~/message-hub';
 import {
   getMissionMapping,
   getReverseMissionMapping,
 } from '~/features/mission/selectors';
+import messageHub from '~/message-hub';
+import { putWithRetry } from '~/utils/sagas';
 
 /**
  * Special symbol used to make a worker task quit.
@@ -193,7 +194,7 @@ function* showUploaderSaga({ numWorkers: numberWorkers = 8 } = {}) {
 
   while (!finished) {
     const failed = [];
-    const chan = yield call(channel);
+    const chan = yield call(channel, buffers.fixed(1));
     const workers = [];
 
     // create a given number of worker tasks, depending on the max concurrency
@@ -211,12 +212,12 @@ function* showUploaderSaga({ numWorkers: numberWorkers = 8 } = {}) {
       }
 
       yield put(notifyUploadOnUavQueued(uavId));
-      yield put(chan, uavId);
+      yield putWithRetry(chan, uavId);
     }
 
     // send the stop signal to the workers
     for (let i = 0; i < numberWorkers; i++) {
-      yield put(chan, STOP);
+      yield putWithRetry(chan, STOP);
     }
 
     // wait for all workers to terminate
