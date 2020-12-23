@@ -3,7 +3,7 @@ import React from 'react';
 
 /**
  * Presentational component that renders a set of markers in the scene at the
- * given coordinates.
+ * given Three.JS coordinates.
  */
 const Markers = ({ coordinates, mixin }) =>
   coordinates.map((coordinate, index) => {

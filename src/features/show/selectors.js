@@ -1,6 +1,7 @@
 import formatISO9075 from 'date-fns/formatISO9075';
 import fromUnixTime from 'date-fns/fromUnixTime';
 import get from 'lodash-es/get';
+import identity from 'lodash-es/identity';
 import isNil from 'lodash-es/isNil';
 import max from 'lodash-es/max';
 import maxBy from 'lodash-es/maxBy';
@@ -129,6 +130,11 @@ export const getDroneSwarmSpecification = (state) => {
 };
 
 /**
+ * Selector that returns the type of the show (indoor or outdoor).
+ */
+export const getShowEnvironmentType = (state) => state.show.environment.type;
+
+/**
  * Selector that returns the definition of the coordinate system of an indoor
  * show.
  */
@@ -141,39 +147,6 @@ export const getIndoorShowCoordinateSystem = (state) =>
  */
 export const getOutdoorShowCoordinateSystem = (state) =>
   get(state, 'show.environment.outdoor.coordinateSystem');
-
-/**
- * Selector that returns an object that can be used to transform GPS coordinates
- * from/to the show coordinate system.
- */
-export const getShowCoordinateSystemTransformationObject = createSelector(
-  getOutdoorShowCoordinateSystem,
-  (coordinateSystem) =>
-    coordinateSystem.origin
-      ? new FlatEarthCoordinateSystem(coordinateSystem)
-      : undefined
-);
-
-/**
- * Selector that returns a function that can be invoked with show coordinate
- * XYZ triplets and that returns the corresponding world coordinates.
- */
-export const getShowToWorldCoordinateSystemTransformation = createSelector(
-  getShowCoordinateSystemTransformationObject,
-  (transform) =>
-    transform
-      ? (point) => {
-          const [x, y, z] = point;
-          const [lon, lat] = transform.toLonLat([x, y]);
-          return { lon, lat, amsl: undefined, agl: z };
-        }
-      : undefined
-);
-
-/**
- * Selector that returns the type of the show (indoor or outdoor).
- */
-export const getShowEnvironmentType = (state) => state.show.environment.type;
 
 /**
  * Selector that returns the orientation of the positive X axis of the
@@ -211,14 +184,6 @@ export const getOutdoorShowOrientation = createSelector(
 );
 
 /**
- * Returns the number of drones in the currently loaded show.
- */
-export const getNumberOfDronesInShow = createSelector(
-  getDroneSwarmSpecification,
-  (swarm) => swarm.length
-);
-
-/**
  * Returns the orientation of the positive X axis of the show coordinate system,
  * irrespectively of whether this is an indoor or an outdoor show.
  */
@@ -228,6 +193,50 @@ export const getShowOrientation = createSelector(
   getOutdoorShowOrientation,
   (type, indoorOrientation, outdoorOrientation) =>
     type === 'indoor' ? indoorOrientation : outdoorOrientation
+);
+
+/**
+ * Selector that returns an object that can be used to transform GPS coordinates
+ * from/to the show coordinate system.
+ */
+export const getOutdoorShowToWorldCoordinateSystemTransformationObject = createSelector(
+  getOutdoorShowCoordinateSystem,
+  (coordinateSystem) =>
+    coordinateSystem && coordinateSystem.origin
+      ? new FlatEarthCoordinateSystem(coordinateSystem)
+      : undefined
+);
+
+/**
+ * Selector that returns a function that can be invoked with show coordinate
+ * XYZ triplets and that returns the corresponding world coordinates.
+ */
+export const getOutdoorShowToWorldCoordinateSystemTransformation = createSelector(
+  getOutdoorShowToWorldCoordinateSystemTransformationObject,
+  (transform) =>
+    transform
+      ? (point) => {
+          const [x, y, z] = point;
+          const [lon, lat] = transform.toLonLat([x, y]);
+          return { lon, lat, amsl: undefined, agl: z };
+        }
+      : undefined
+);
+
+// TODO(ntamas): implement this for outdoor shows
+export const getShowToFlatEarthCoordinateSystemTransformation = createSelector(
+  getShowEnvironmentType,
+  (type) => {
+    return type === 'indoor' ? identity : undefined;
+  }
+);
+
+/**
+ * Returns the number of drones in the currently loaded show.
+ */
+export const getNumberOfDronesInShow = createSelector(
+  getDroneSwarmSpecification,
+  (swarm) => swarm.length
 );
 
 /**
@@ -277,7 +286,7 @@ const transformPointsOrFillWithUndefined = (points, transform) =>
  */
 export const getConvexHullOfShowInWorldCoordinates = createSelector(
   getConvexHullOfShow,
-  getShowToWorldCoordinateSystemTransformation,
+  getOutdoorShowToWorldCoordinateSystemTransformation,
   transformPoints
 );
 
@@ -299,7 +308,7 @@ export const getFirstPointsOfTrajectories = createSelector(
  */
 export const getFirstPointsOfTrajectoriesInWorldCoordinates = createSelector(
   getFirstPointsOfTrajectories,
-  getShowToWorldCoordinateSystemTransformation,
+  getOutdoorShowToWorldCoordinateSystemTransformation,
   transformPointsOrFillWithUndefined
 );
 
@@ -309,16 +318,15 @@ export const getFirstPointsOfTrajectoriesInWorldCoordinates = createSelector(
  * usable directly on the map. Use `getGeofencePolygonInWorldCoordinates()` if
  * you need them as GPS coordinates.
  *
- * Returns undefined if no geofence polygon is defined.
+ * Returns undefined if no geofence polygon is defined, the show is indoors
+ * or there is no show coordinate system defined yet.
  */
 export const getGeofencePolygonInShowCoordinates = createSelector(
   getGeofencePolygonInWorldCoordinates,
-  getShowCoordinateSystemTransformationObject,
-  (polygon, showCoordinateSystemTransformationObject) =>
-    Array.isArray(polygon)
-      ? polygon.map((c) =>
-          showCoordinateSystemTransformationObject.fromLonLat(c)
-        )
+  getOutdoorShowToWorldCoordinateSystemTransformationObject,
+  (polygon, transform) =>
+    Array.isArray(polygon) && transform && transform.fromLonLat
+      ? polygon.map((c) => transform.fromLonLat(c))
       : undefined
 );
 
@@ -340,7 +348,7 @@ export const getLastPointsOfTrajectories = createSelector(
  */
 export const getLastPointsOfTrajectoriesInWorldCoordinates = createSelector(
   getLastPointsOfTrajectories,
-  getShowToWorldCoordinateSystemTransformation,
+  getOutdoorShowToWorldCoordinateSystemTransformation,
   transformPointsOrFillWithUndefined
 );
 

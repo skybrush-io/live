@@ -30,10 +30,9 @@ import {
   getFailedUploadItems,
   getFirstPointsOfTrajectoriesInWorldCoordinates,
   getLastPointsOfTrajectoriesInWorldCoordinates,
-  getOutdoorShowCoordinateSystem,
   getOutdoorShowOrigin,
   getShowOrientation,
-  getShowCoordinateSystemTransformationObject,
+  getOutdoorShowToWorldCoordinateSystemTransformationObject,
   isUploadInProgress,
 } from './selectors';
 import {
@@ -107,15 +106,13 @@ export const addGeofencePolygonBasedOnShowTrajectories = () => (
     return;
   }
 
-  const showCoordinateSystem = getOutdoorShowCoordinateSystem(state);
-  if (
-    !showCoordinateSystem.origin ||
-    typeof showCoordinateSystem.origin !== 'object'
-  ) {
+  const transformation = getOutdoorShowToWorldCoordinateSystemTransformationObject(
+    state
+  );
+  if (!transformation) {
     throw new Error('Outdoor coordinate system not set up yet');
   }
 
-  const transformation = getShowCoordinateSystemTransformationObject(state);
   const points = bufferPolygon(coordinates, horizontalMargin);
   const simplifiedPoints = simplify
     ? simplifyPolygon(points, maxVertexCount)
@@ -295,6 +292,9 @@ function processShowInJSONFormatAndDispatchActions(spec, dispatch) {
   // TODO(ntamas): if the number of drones is different than the number of
   // drones in the previous file, it is probably a completely new show so
   // we should forget the show coordinate system completely
+  if (environment.type === 'indoor') {
+    dispatch(setOutdoorShowOrigin(null));
+  }
 
   // Update the takeoff and landing positions and the takeoff headings in the
   // mission from the loaded show settings

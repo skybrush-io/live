@@ -18,7 +18,8 @@ import {
   getDesiredTakeoffHeadingAccuracy,
 } from '~/features/settings/selectors';
 import {
-  getShowToWorldCoordinateSystemTransformation,
+  getShowToFlatEarthCoordinateSystemTransformation,
+  getOutdoorShowToWorldCoordinateSystemTransformation,
   getTrajectories,
 } from '~/features/show/selectors';
 import {
@@ -172,6 +173,46 @@ export const getTrajectoryPointsInShowCoordinatesByUavId = createCachedSelector(
 });
 
 /**
+ * Returns the trajectory of the UAV with the given ID, in flat Earth coordinates,
+ * given the current state.
+ *
+ * @param  {Object}  state  the state of the application
+ * @param  {string}  uavId  the ID of the UAV
+ */
+export const getTrajectoryPointsInFlatEarthCoordinatesByUavId = createCachedSelector(
+  getReverseMissionMapping,
+  getTrajectories,
+  getShowToFlatEarthCoordinateSystemTransformation,
+  selectUAVId,
+  (revMapping, trajectories, transform, uavId) => {
+    const index = revMapping[uavId];
+
+    if (transform === undefined) {
+      // No coordinate system specified
+      return undefined;
+    }
+
+    if (index === undefined) {
+      // UAV is not in the mission
+      return undefined;
+    }
+
+    const trajectory = trajectories[index];
+    if (isValidTrajectory(trajectory)) {
+      return getPointsOfTrajectory(trajectory, {
+        includeControlPoints: true,
+      }).map(transform);
+    }
+
+    return undefined;
+  }
+)({
+  keySelector: selectUAVId,
+  // TODO: use a FIFO or LRU cache if it becomes necessary.
+  // The quick-lru module from npm seems simple enough.
+});
+
+/**
  * Returns the trajectory of the UAV with the given ID, in world coordinates,
  * given the current state.
  *
@@ -181,7 +222,7 @@ export const getTrajectoryPointsInShowCoordinatesByUavId = createCachedSelector(
 export const getTrajectoryPointsInWorldCoordinatesByUavId = createCachedSelector(
   getReverseMissionMapping,
   getTrajectories,
-  getShowToWorldCoordinateSystemTransformation,
+  getOutdoorShowToWorldCoordinateSystemTransformation,
   selectUAVId,
   (revMapping, trajectories, transform, uavId) => {
     const index = revMapping[uavId];

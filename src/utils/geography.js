@@ -530,6 +530,9 @@ export class FlatEarthCoordinateSystem {
    * This function is designed in a way that it avoids object allocations at
    * all costs.
    *
+   * Note that this function also flips the Y axis if needed because Three.js
+   * is always right-handed.
+   *
    * @param {THREE.Vector3}  vec  the vector to update
    * @param {number}  lon  the longitude
    * @param {number}  lat  the latitude
@@ -539,7 +542,7 @@ export class FlatEarthCoordinateSystem {
     this._updateArrayFromLonLat(this._vec, lon, lat);
 
     vec.x = this._vec[0];
-    vec.y = this._vec[1];
+    vec.y = this._type === 'nwu' ? this._vec[1] : -this._vec[1];
     vec.z = agl;
   }
 

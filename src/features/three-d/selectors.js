@@ -17,18 +17,29 @@ export const getCameraPose = (state) => state.threeD.camera;
  * `lat` and `agl` properties and that returns the corresponding coordinate
  * in the coordinate system used by the 3D view.
  */
-export const getGPSToWorldTransformation = createSelector(
+const getGPSToThreeJSTransformation = createSelector(
   getFlatEarthCoordinateTransformer,
-  (transformation) => (coordinate) => {
-    if (isNil(coordinate)) {
-      return null;
-    }
+  (transformation) => {
+    const flipY = transformation.type !== 'nwu';
+    return (coordinate) => {
+      if (isNil(coordinate)) {
+        return null;
+      }
 
-    return transformation.fromLonLatAgl([
-      coordinate.lon,
-      coordinate.lat,
-      coordinate.agl,
-    ]);
+      const result = transformation.fromLonLatAgl([
+        coordinate.lon,
+        coordinate.lat,
+        coordinate.agl,
+      ]);
+
+      if (flipY) {
+        // Three.JS is always right-handed but our flat Earth coordinate system
+        // might be left-handed, so we have the opportunity to flip the Y axis.
+        result[1] = -result[1];
+      }
+
+      return result;
+    };
   }
 );
 
@@ -36,9 +47,9 @@ export const getGPSToWorldTransformation = createSelector(
  * Returns an array containing the home positions of each UAV in the current
  * mission, in the coordinate system used by the 3D view.
  */
-export const getFlatEarthHomePositionsInMission = createSelector(
+export const getHomePositionsInMissionForThreeDView = createSelector(
   getGPSBasedHomePositionsInMission,
-  getGPSToWorldTransformation,
+  getGPSToThreeJSTransformation,
   (homePositions, transformation) => homePositions.map(transformation)
 );
 
@@ -46,8 +57,8 @@ export const getFlatEarthHomePositionsInMission = createSelector(
  * Returns an array containing the landing positions of each UAV in the current
  * mission, in the coordinate system used by the 3D view.
  */
-export const getFlatEarthLandingPositionsInMission = createSelector(
+export const getLandingPositionsInMissionForThreeDView = createSelector(
   getGPSBasedLandingPositionsInMission,
-  getGPSToWorldTransformation,
-  (homePositions, transformation) => homePositions.map(transformation)
+  getGPSToThreeJSTransformation,
+  (landingPositions, transformation) => landingPositions.map(transformation)
 );
