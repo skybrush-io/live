@@ -7,13 +7,12 @@ import { connect } from 'react-redux';
 
 import { makeStyles } from '@material-ui/core/styles';
 
-import { closeSidebar, openSidebar } from '~/features/sidebar/slice';
 import { dismissTour } from '~/features/tour/slice';
 
 const useStyles = makeStyles(
   (theme) => ({
     root: {
-      color: '#222',
+      color: ['#222', '!important'],
     },
     button: {
       backgroundColor: '#007aff',
