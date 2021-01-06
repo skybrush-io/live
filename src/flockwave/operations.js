@@ -44,6 +44,16 @@ export async function reloadExtension(hub, name) {
 }
 
 /**
+ * Sends some debugging information to the server.
+ */
+export async function sendDebugMessage(hub, message) {
+  await hub.sendMessage({
+    type: 'X-DBG-RESP',
+    data: message,
+  });
+}
+
+/**
  * Sets the source of the RTK corrections that the server broadcasts to the
  * connected drones.
  */
@@ -118,6 +128,7 @@ export class OperationExecutor {
   _operations = {
     configureExtension,
     reloadExtension,
+    sendDebugMessage,
     setRTKCorrectionsSource,
     setShowConfiguration,
     startRTKSurvey,

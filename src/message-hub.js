@@ -83,7 +83,8 @@ messageHub.registerNotificationHandlers({
   },
   'UAV-INF': (message) =>
     flock.handleUAVInformationMessage(message.body, dispatch),
-  'X-DBG-REQ': (message) => handleDebugRequest(message.body),
+  'X-DBG-REQ': (message) =>
+    handleDebugRequest(message.body, messageHub.execute.sendDebugMessage),
 });
 
 export default messageHub;
