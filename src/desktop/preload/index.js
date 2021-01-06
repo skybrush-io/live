@@ -66,6 +66,7 @@ function createStateStore() {
 
 const readDir = pify(fs.readdir);
 const reverseDNSLookup = pify(dns.reverse);
+const stat = pify(fs.stat);
 
 // Inject isElectron into 'window' so we can easily detect that we are
 // running inside Electron
@@ -90,14 +91,30 @@ window.bridge = {
    *
    * @param  {string}  filename  the name of the file to load
    * @param  {string}  mimeType  the MIME type of the file, if known
+   * @param  {object}  options   options that can be used to read a slice of a
+   *         file if needed
    * @return a promise that resolves with the blob representing the file
    */
-  getFileAsBlob: async (filename, mimeType) => {
+  getFileAsBlob: async (filename, mimeType, options = {}) => {
     if (!path.isAbsolute(filename)) {
       throw new Error('getFileAsBlob() needs an absolute path');
     }
 
-    const blob = await streamToBlob(fs.createReadStream(filename), mimeType);
+    const { start, end } = options;
+    const streamOptions = {};
+
+    if (start !== undefined) {
+      streamOptions.start = start;
+    }
+
+    if (end !== undefined) {
+      streamOptions.end = end;
+    }
+
+    const blob = await streamToBlob(
+      fs.createReadStream(filename, streamOptions),
+      mimeType
+    );
 
     // We need an absolute path because we are trying to mimic Electron's
     // File object here, which contains the _full_, absolute path in the
@@ -111,6 +128,7 @@ window.bridge = {
   localServer,
   readDir,
   reverseDNSLookup,
+  stat,
 
   /**
    * Starts watching the file with the given name for changes and calls a
