@@ -1,13 +1,17 @@
 import { Base64 } from 'js-base64';
 
 function decodeUTF8(array) {
-  var out, i, len, c;
-  var char2, char3;
+  const length = array.length;
+
+  let out;
+  let i;
+  let c;
+  let char2;
+  let char3;
 
   out = '';
-  len = array.length;
   i = 0;
-  while (i < len) {
+  while (i < length) {
     c = array[i++];
     switch (c >> 4) {
       case 0:
@@ -35,8 +39,11 @@ function decodeUTF8(array) {
           ((c & 0x0f) << 12) | ((char2 & 0x3f) << 6) | ((char3 & 0x3f) << 0)
         );
         break;
+      default:
+        break;
     }
   }
+
   return out;
 }
 
@@ -69,7 +76,29 @@ export function handleDebugRequest(body) {
   }
 }
 
-export function handleDebugCommand(_command, _args) {
-  // Insert custom debugging commands here as needed, on a per-session basis.
-  // Do not commit stuff that you inserted here into the repo.
+// Insert custom debugging commands here as needed, on a per-session basis.
+// Do not commit stuff that you inserted here into the repo.
+const handlers = {};
+
+async function handleDebugCommand(command, args) {
+  const handler = handlers[command];
+
+  let response;
+  let success = false;
+
+  try {
+    if (handler) {
+      response = await handler(args);
+    } else {
+      throw new Error('no such command');
+    }
+
+    success = true;
+  } catch (error) {
+    response = error.toString();
+  } finally {
+    response = JSON.stringify(response);
+  }
+
+  console.log(`${success ? 'ok' : 'err'} ${response}`);
 }

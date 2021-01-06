@@ -64,6 +64,7 @@ function createStateStore() {
   });
 }
 
+const readDir = pify(fs.readdir);
 const reverseDNSLookup = pify(dns.reverse);
 
 // Inject isElectron into 'window' so we can easily detect that we are
@@ -85,7 +86,7 @@ window.bridge = {
   /**
    * Reads the file with the given name from the disk and returns a Blob object
    * that is compatible with Electron's File objects so they can be used
-   * interchangeable.
+   * interchangeably.
    *
    * @param  {string}  filename  the name of the file to load
    * @param  {string}  mimeType  the MIME type of the file, if known
@@ -108,6 +109,7 @@ window.bridge = {
   },
 
   localServer,
+  readDir,
   reverseDNSLookup,
 
   /**
