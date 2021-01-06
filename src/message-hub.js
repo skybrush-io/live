@@ -7,6 +7,8 @@
 import isEmpty from 'lodash-es/isEmpty';
 import { batch } from 'react-redux';
 
+import { handleDebugRequest } from './debugging';
+
 import MessageHub from './flockwave/messages';
 
 import { handleClockInformationMessage } from './model/clocks';
@@ -81,6 +83,7 @@ messageHub.registerNotificationHandlers({
   },
   'UAV-INF': (message) =>
     flock.handleUAVInformationMessage(message.body, dispatch),
+  'X-DBG-REQ': (message) => handleDebugRequest(message.body),
 });
 
 export default messageHub;
