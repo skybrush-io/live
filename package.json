@@ -36,7 +36,7 @@
     "@material-ui/lab": "^4.0.0-alpha.40",
     "@material-ui/pickers": "^3.2.10",
     "@reduxjs/toolkit": "^1.4.0",
-    "@skybrush/app-theme-material-ui": "^1.0.1",
+    "@skybrush/app-theme-material-ui": "^1.1.1",
     "@skybrush/electron-app-framework": "^1.0.1",
     "@tippyjs/react": "^4.2.0",
     "@turf/boolean-contains": "^6.0.1",
