@@ -89,7 +89,7 @@ function createZIPResolver(zip) {
     canRead: /^zip:/,
 
     async read(file) {
-      const url = new URL(file.url);
+      const url = new URL(decodeURI(file.url));
       if (url.protocol !== 'zip:') {
         throw new Error(`unsupported protocol: ${url.protocol}`);
       }
