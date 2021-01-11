@@ -1,4 +1,3 @@
-import isEmpty from 'lodash-es/isEmpty';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
@@ -15,12 +14,10 @@ import Home from '@material-ui/icons/Home';
 import FlightLand from '@material-ui/icons/FlightLand';
 // import Sync from '@material-ui/icons/Sync';
 
-import { clearSelection, setSelectedUAVIds } from '~/actions/map';
 import Colors from '~/components/colors';
 import {
   areFlightCommandsBroadcast,
   getPreferredCommunicationChannelIndex,
-  getUAVIdsParticipatingInMission,
 } from '~/features/mission/selectors';
 import { setCommandsAreBroadcast } from '~/features/mission/slice';
 import { getSelectedUAVIds } from '~/selectors/selection';

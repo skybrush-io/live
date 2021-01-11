@@ -12,6 +12,7 @@ import { isConnected } from '~/features/servers/selectors';
 
 const ConnectionStatusButtonPresentation = (props) => (
   <LazyTooltip
+    interactive
     content={<ConnectionStatusMiniList />}
     disabled={props.isDisabled}
   >

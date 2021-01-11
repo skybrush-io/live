@@ -64,7 +64,7 @@ const SessionExpiryBox = ({ expiresAt }) => {
  */
 const Header = ({ isSidebarOpen, sessionExpiresAt, toggleSidebar }) => (
   <div id='header' style={{ ...style, overflow: 'hidden' }}>
-    <div style={innerStyle}>
+    <div id='header-inner' style={innerStyle}>
       <Shapeshifter
         color='#999'
         style={{ cursor: 'pointer' }}
@@ -87,8 +87,6 @@ const Header = ({ isSidebarOpen, sessionExpiresAt, toggleSidebar }) => (
       <ServerConnectionSettingsButton />
       {hasFeature('geofence') && <GeofenceSettingsButton />}
       <AuthenticationButton />
-      <hr />
-      <CommunicationChannelSwitch />
       <hr />
       {hasFeature('toolboxMenu') && <ToolboxButton />}
       <AppSettingsButton />
