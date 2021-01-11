@@ -46,16 +46,21 @@ const ConnectionStatusMiniListAndButtons = ({
     {connections.map((item) => (
       <ConnectionStatusMiniListEntry key={item.id} {...item} />
     ))}
+    {connections.length === 0 && (
+      <MiniListItem primaryText='This server uses no connections.' />
+    )}
     <MiniListDivider />
     <FormControlLabel
       control={
         <Box pl={1}>
-          <Switch size='small' />
+          <Switch
+            size='small'
+            checked={useSecondaryChannel}
+            onChange={onSwitchSecondaryChannel}
+          />
         </Box>
       }
       label={<Typography variant='body2'>Use secondary channel</Typography>}
-      checked={useSecondaryChannel}
-      onChange={onSwitchSecondaryChannel}
     />
   </MiniList>
 );
