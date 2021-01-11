@@ -43,5 +43,5 @@ export default connect(
   },
   // Return empty object from mapDispatchToProps to avoid invalid prop warning
   // caused by react-badger not handling the automatically added dispatch prop.
-  () => ({})
+  {}
 )(SidebarBadge);

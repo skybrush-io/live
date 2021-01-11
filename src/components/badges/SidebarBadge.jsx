@@ -8,4 +8,6 @@ const badgeProps = {
 /**
  * Special variant of badges shown on the sidebar.
  */
-export default (props) => <Badge {...badgeProps} {...props} />;
+const SidebarBadge = (props) => <Badge {...badgeProps} {...props} />;
+
+export default SidebarBadge;

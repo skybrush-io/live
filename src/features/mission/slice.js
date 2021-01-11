@@ -47,6 +47,14 @@ const { actions, reducer } = createSlice({
       indexBeingEdited: -1,
     },
 
+    // Whether we prefer the primary or the secondary telemetry channel for
+    // communication
+    preferredChannelIndex: 0,
+
+    // whether we are allowed to broadcast commands from the large flight
+    // control panel to all UAVs
+    commandsAreBroadcast: false,
+
     // geofence: {
     geofencePolygonId: undefined,
     // },
@@ -177,6 +185,14 @@ const { actions, reducer } = createSlice({
     },
 
     /**
+     * Sets whether we are broadcasting all flight commands from the show control
+     * panel to all UAVs if possible.
+     */
+    setCommandsAreBroadcast(state, action) {
+      state.commandsAreBroadcast = Boolean(action.payload);
+    },
+
+    /**
      * Sets the ID determining the polygon that is to be used as a geofence.
      */
     setGeofencePolygonId(state, action) {
@@ -244,6 +260,14 @@ const { actions, reducer } = createSlice({
     },
 
     /**
+     * Toggles the preferred communication channel for outbound commands
+     * from priamry to secondary or vice versa
+     */
+    togglePreferredChannel(state) {
+      state.preferredChannelIndex = state.preferredChannelIndex ? 0 : 1;
+    },
+
+    /**
      * Updates the home positions of all the drones in the mission.
      */
     updateHomePositions(state, action) {
@@ -302,10 +326,12 @@ export const {
   finishMappingEditorSession,
   removeUAVsFromMapping,
   replaceMapping,
+  setCommandsAreBroadcast,
   setGeofencePolygonId,
   setMappingLength,
   startMappingEditorSession,
   startMappingEditorSessionAtSlot,
+  togglePreferredChannel,
   updateHomePositions,
   updateLandingPositions,
   updateTakeoffHeadings,

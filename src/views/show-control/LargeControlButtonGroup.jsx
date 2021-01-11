@@ -1,3 +1,4 @@
+import isEmpty from 'lodash-es/isEmpty';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
@@ -17,9 +18,11 @@ import FlightLand from '@material-ui/icons/FlightLand';
 import { clearSelection, setSelectedUAVIds } from '~/actions/map';
 import Colors from '~/components/colors';
 import {
-  areAllUAVsInMissionSelectedAndNothingElse,
+  areFlightCommandsBroadcast,
+  getPreferredCommunicationChannelIndex,
   getUAVIdsParticipatingInMission,
 } from '~/features/mission/selectors';
+import { setCommandsAreBroadcast } from '~/features/mission/slice';
 import { getSelectedUAVIds } from '~/selectors/selection';
 import { createMultipleUAVRelatedActions } from '~/utils/messaging';
 
@@ -51,12 +54,12 @@ const useStyles = makeStyles(
 );
 
 const LargeControlButtonGroup = ({
-  areAllUAVsInMissionSelectedAndNothingElse,
-  onChangeSelectionMode,
+  broadcast,
+  channel,
+  onChangeBroadcastMode,
   selectedUAVIds,
 }) => {
   const classes = useStyles();
-  const switchOn = areAllUAVsInMissionSelectedAndNothingElse;
   const {
     haltSelectedUAVs,
     landSelectedUAVs,
@@ -65,7 +68,10 @@ const LargeControlButtonGroup = ({
     takeoffSelectedUAVs,
     turnMotorsOnForSelectedUAVs,
     */
-  } = createMultipleUAVRelatedActions(selectedUAVIds);
+  } = createMultipleUAVRelatedActions(selectedUAVIds, {
+    broadcast,
+    channel,
+  });
 
   return (
     <>
@@ -75,21 +81,18 @@ const LargeControlButtonGroup = ({
         <Box flex='1' textAlign='right'>
           <Typography
             variant='body2'
-            color={!switchOn ? 'textPrimary' : 'textSecondary'}
+            color={!broadcast ? 'textPrimary' : 'textSecondary'}
           >
             Selection only
           </Typography>
         </Box>
-        <Switch
-          checked={areAllUAVsInMissionSelectedAndNothingElse}
-          onChange={onChangeSelectionMode}
-        />
+        <Switch checked={broadcast} onChange={onChangeBroadcastMode} />
         <Box flex='1'>
           <Typography
             variant='body2'
-            color={switchOn ? 'textPrimary' : 'textSecondary'}
+            color={broadcast ? 'textPrimary' : 'textSecondary'}
           >
-            All drones
+            Broadcast
           </Typography>
         </Box>
       </Box>
@@ -119,7 +122,7 @@ const LargeControlButtonGroup = ({
         icon={<Home fontSize='inherit' />}
         onClick={returnToHomeSelectedUAVs}
       >
-        RTH
+        {broadcast ? 'RTH all' : 'RTH'}
       </ControlButton>
       <Box display='flex' flexDirection='row' flex={1} mb={0.5}>
         <ControlButton
@@ -128,7 +131,7 @@ const LargeControlButtonGroup = ({
           icon={<FlightLand fontSize='inherit' />}
           onClick={landSelectedUAVs}
         >
-          Land
+          {broadcast ? 'Land all' : 'Land'}
         </ControlButton>
         <ControlButton
           className={classes.button}
@@ -136,7 +139,7 @@ const LargeControlButtonGroup = ({
           icon={<Clear fontSize='inherit' />}
           onClick={haltSelectedUAVs}
         >
-          Halt
+          {broadcast ? 'Halt all' : 'Halr'}
         </ControlButton>
       </Box>
     </>
@@ -144,30 +147,27 @@ const LargeControlButtonGroup = ({
 };
 
 LargeControlButtonGroup.propTypes = {
-  areAllUAVsInMissionSelectedAndNothingElse: PropTypes.bool,
+  broadcast: PropTypes.bool,
+  channel: PropTypes.number,
   selectedUAVIds: PropTypes.arrayOf(PropTypes.string),
-  onChangeSelectionMode: PropTypes.func,
+  onChangeBroadcastMode: PropTypes.func,
+};
+
+LargeControlButtonGroup.defaultProps = {
+  broadcast: false,
+  channel: 0,
 };
 
 export default connect(
   // mapStateToProps
   (state) => ({
-    areAllUAVsInMissionSelectedAndNothingElse: areAllUAVsInMissionSelectedAndNothingElse(
-      state
-    ),
+    broadcast: areFlightCommandsBroadcast(state),
+    channel: getPreferredCommunicationChannelIndex(state),
     selectedUAVIds: getSelectedUAVIds(state),
   }),
   // mapDispatchToProps
   {
-    onChangeSelectionMode: () => (dispatch, getState) => {
-      const state = getState();
-      const isSwitchOnNow = areAllUAVsInMissionSelectedAndNothingElse(state);
-
-      if (isSwitchOnNow) {
-        dispatch(clearSelection());
-      } else {
-        dispatch(setSelectedUAVIds(getUAVIdsParticipatingInMission(state)));
-      }
-    },
+    onChangeBroadcastMode: (event) =>
+      setCommandsAreBroadcast(Boolean(event.target.checked)),
   }
 )(LargeControlButtonGroup);

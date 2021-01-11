@@ -7,9 +7,9 @@ import isError from 'lodash-es/isError';
 import isNil from 'lodash-es/isNil';
 import values from 'lodash-es/values';
 
-import messageHub from '~/message-hub';
 import { showNotification } from '~/features/snackbar/slice';
 import { MessageSemantics } from '~/features/snackbar/types';
+import messageHub from '~/message-hub';
 import store from '~/store';
 
 import makeLogger from './logging';
@@ -62,6 +62,9 @@ const performMassOperation = ({
   mapper = undefined,
   silent,
 }) => async (uavs, args) => {
+  // Do not bail out early if uavs is empty because in the args there might be
+  // an option that intructs the server to do a broadcast to all UAVs.
+
   try {
     const responses = await messageHub.startAsyncOperation({
       type,
@@ -78,9 +81,10 @@ const performMassOperation = ({
 export const flashLightOnUAVs = performMassOperation({
   type: 'UAV-SIGNAL',
   name: 'Light signal command',
-  mapper: () => ({
+  mapper: (options) => ({
     signals: ['light'],
     duration: 5000,
+    ...options,
   }),
   silent: true,
 });
@@ -155,32 +159,50 @@ export const turnMotorOnForUAVs = performMassOperation({
   }),
 });
 
-export const createMultipleUAVRelatedActions = (selectedUAVIds) => ({
-  flashLightOnSelectedUAVs: () => {
-    flashLightOnUAVs(selectedUAVIds);
-  },
+export const createMultipleUAVRelatedActions = (
+  selectedUAVIds,
+  { broadcast = false, channel = 0 } = {}
+) => {
+  const options = {};
 
-  haltSelectedUAVs: () => {
-    shutdownUAVs(selectedUAVIds);
-  },
+  if (broadcast) {
+    options.transport = { broadcast: true };
+  }
 
-  landSelectedUAVs: () => {
-    landUAVs(selectedUAVIds);
-  },
+  if (typeof channel === 'number' && channel !== 0) {
+    options.transport = { ...options.transport, channel };
+  }
 
-  resetSelectedUAVs: () => {
-    resetUAVs(selectedUAVIds);
-  },
+  // If you modify the implementation here, make sure that the actions do
+  // something in the case when broadcast = true and selectedUAVIds is empty!
 
-  returnToHomeSelectedUAVs: () => {
-    returnToHomeUAVs(selectedUAVIds);
-  },
+  return {
+    flashLightOnSelectedUAVs: () => {
+      flashLightOnUAVs(selectedUAVIds, options);
+    },
 
-  takeoffSelectedUAVs: () => {
-    takeoffUAVs(selectedUAVIds);
-  },
+    haltSelectedUAVs: () => {
+      shutdownUAVs(selectedUAVIds, options);
+    },
 
-  turnMotorsOnForSelectedUAVs: () => {
-    turnMotorOnForUAVs(selectedUAVIds);
-  },
-});
+    landSelectedUAVs: () => {
+      landUAVs(selectedUAVIds, options);
+    },
+
+    resetSelectedUAVs: () => {
+      resetUAVs(selectedUAVIds, options);
+    },
+
+    returnToHomeSelectedUAVs: () => {
+      returnToHomeUAVs(selectedUAVIds, options);
+    },
+
+    takeoffSelectedUAVs: () => {
+      takeoffUAVs(selectedUAVIds, options);
+    },
+
+    turnMotorsOnForSelectedUAVs: () => {
+      turnMotorOnForUAVs(selectedUAVIds, options);
+    },
+  };
+};

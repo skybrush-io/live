@@ -10,6 +10,7 @@ import Box from '@material-ui/core/Box';
 
 import AppSettingsButton from './AppSettingsButton';
 import AuthenticationButton from './AuthenticationButton';
+import CommunicationChannelSwitch from './CommunicationChannelSwitch';
 import ConnectionStatusButton from './ConnectionStatusButton';
 import FullScreenButton from './FullScreenButton';
 import HelpButton from './HelpButton';
@@ -86,6 +87,8 @@ const Header = ({ isSidebarOpen, sessionExpiresAt, toggleSidebar }) => (
       <ServerConnectionSettingsButton />
       {hasFeature('geofence') && <GeofenceSettingsButton />}
       <AuthenticationButton />
+      <hr />
+      <CommunicationChannelSwitch />
       <hr />
       {hasFeature('toolboxMenu') && <ToolboxButton />}
       <AppSettingsButton />

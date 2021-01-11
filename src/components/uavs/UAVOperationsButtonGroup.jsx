@@ -17,6 +17,7 @@ import WbSunny from '@material-ui/icons/WbSunny';
 import Colors from '~/components/colors';
 import Tooltip from '~/components/Tooltip';
 
+import { getPreferredCommunicationChannelIndex } from '~/features/mission/selectors';
 import { openUAVDetailsDialog } from '~/features/uavs/details';
 import { createMultipleUAVRelatedActions } from '~/utils/messaging';
 
@@ -35,6 +36,7 @@ const useStyles = makeStyles(
  * Main toolbar for controlling the UAVs.
  */
 const UAVOperationsButtonGroup = ({
+  channel,
   openUAVDetailsDialog,
   selectedUAVIds,
   size,
@@ -51,7 +53,7 @@ const UAVOperationsButtonGroup = ({
     resetSelectedUAVs,
     returnToHomeSelectedUAVs,
     takeoffSelectedUAVs,
-  } = createMultipleUAVRelatedActions(selectedUAVIds);
+  } = createMultipleUAVRelatedActions(selectedUAVIds, { channel });
 
   const fontSize = size === 'small' ? 'small' : 'default';
 
@@ -146,14 +148,21 @@ const UAVOperationsButtonGroup = ({
 };
 
 UAVOperationsButtonGroup.propTypes = {
+  channel: PropTypes.number,
   openUAVDetailsDialog: PropTypes.func,
   selectedUAVIds: PropTypes.arrayOf(PropTypes.string),
   size: PropTypes.oneOf(['small', 'medium']),
 };
 
+UAVOperationsButtonGroup.defaultProps = {
+  channel: 0,
+};
+
 export default connect(
   // mapStateToProps
-  null,
+  (state) => ({
+    channel: getPreferredCommunicationChannelIndex(state),
+  }),
   // mapDispatchToProps
   { openUAVDetailsDialog }
 )(UAVOperationsButtonGroup);

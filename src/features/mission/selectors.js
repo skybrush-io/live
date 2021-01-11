@@ -104,6 +104,13 @@ export const hasNonemptyMappingSlot = createSelector(
 );
 
 /**
+ * Returns the index of the communication channel that is currently used to
+ * communicate with the UAVs.
+ */
+export const getPreferredCommunicationChannelIndex = (state) =>
+  state.mission.preferredChannelIndex;
+
+/**
  * Returns whether the current UAV selection includes _exactly_ those UAVs that
  * participate in the mission, and nothing else.
  */
@@ -121,6 +128,13 @@ export const areAllUAVsInMissionSelectedAndNothingElse = createSelector(
     );
   }
 );
+
+/**
+ * Returns whether we are broadcasting commands to the drones in the current
+ * show from the large flight control panel.
+ */
+export const areFlightCommandsBroadcast = (state) =>
+  state.mission.commandsAreBroadcast;
 
 /**
  * Returns whether it currently makes sense to enable the "augment mapping from

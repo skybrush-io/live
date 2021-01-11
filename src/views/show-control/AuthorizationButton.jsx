@@ -9,6 +9,7 @@ import Typography from '@material-ui/core/Typography';
 import { setSelectedUAVIds } from '~/actions/map';
 import { Status } from '~/components/semantics';
 import StatusLight from '~/components/StatusLight';
+import { setCommandsAreBroadcast } from '~/features/mission/slice';
 import {
   setShowAuthorization,
   synchronizeShowSettings,
@@ -85,6 +86,7 @@ export default connect(
       dispatch(setShowAuthorization(newAuthorizationState));
       dispatch(synchronizeShowSettings('toServer'));
       if (newAuthorizationState) {
+        dispatch(setCommandsAreBroadcast(state));
         dispatch(setSelectedUAVIds(getUAVIdsParticipatingInMission(state)));
       }
     },
