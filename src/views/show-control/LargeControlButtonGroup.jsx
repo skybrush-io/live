@@ -18,6 +18,7 @@ import Colors from '~/components/colors';
 import {
   areFlightCommandsBroadcast,
   getPreferredCommunicationChannelIndex,
+  getUAVIdsParticipatingInMission,
 } from '~/features/mission/selectors';
 import { setCommandsAreBroadcast } from '~/features/mission/slice';
 import { getSelectedUAVIds } from '~/selectors/selection';
@@ -51,6 +52,7 @@ const useStyles = makeStyles(
 );
 
 const LargeControlButtonGroup = ({
+  allUAVIdsInMission,
   broadcast,
   channel,
   onChangeBroadcastMode,
@@ -65,10 +67,13 @@ const LargeControlButtonGroup = ({
     takeoffSelectedUAVs,
     turnMotorsOnForSelectedUAVs,
     */
-  } = createMultipleUAVRelatedActions(selectedUAVIds, {
-    broadcast,
-    channel,
-  });
+  } = createMultipleUAVRelatedActions(
+    broadcast ? allUAVIdsInMission : selectedUAVIds,
+    {
+      broadcast,
+      channel,
+    }
+  );
 
   return (
     <>
@@ -144,6 +149,7 @@ const LargeControlButtonGroup = ({
 };
 
 LargeControlButtonGroup.propTypes = {
+  allUAVIdsInMission: PropTypes.arrayOf(PropTypes.string),
   broadcast: PropTypes.bool,
   channel: PropTypes.number,
   selectedUAVIds: PropTypes.arrayOf(PropTypes.string),
@@ -158,6 +164,7 @@ LargeControlButtonGroup.defaultProps = {
 export default connect(
   // mapStateToProps
   (state) => ({
+    allUAVIdsInMission: getUAVIdsParticipatingInMission(state),
     broadcast: areFlightCommandsBroadcast(state),
     channel: getPreferredCommunicationChannelIndex(state),
     selectedUAVIds: getSelectedUAVIds(state),
