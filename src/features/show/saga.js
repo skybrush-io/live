@@ -24,6 +24,7 @@ import {
   getNextDroneFromUploadQueue,
   getOutdoorShowCoordinateSystem,
   isShowAuthorizedToStartLocally,
+  isShowOutdoor,
   shouldRetryFailedUploadsAutomatically,
   getShowMetadata,
   getUserDefinedDistanceLimit,
@@ -72,8 +73,9 @@ function createShowConfigurationForUav(state, uavId) {
 
   const coordinateSystem = getOutdoorShowCoordinateSystem(state);
   if (
-    typeof coordinateSystem !== 'object' ||
-    !Array.isArray(coordinateSystem.origin)
+    isShowOutdoor(state) &&
+    (typeof coordinateSystem !== 'object' ||
+      !Array.isArray(coordinateSystem.origin))
   ) {
     throw new TypeError('Show coordinate system not specified');
   }

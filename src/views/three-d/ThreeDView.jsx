@@ -20,7 +20,7 @@ import {
   getLightingConditionsForThreeDView,
   getSceneryForThreeDView,
 } from '~/features/settings/selectors';
-import { getShowEnvironmentType } from '~/features/show/selectors';
+import { isShowIndoor } from '~/features/show/selectors';
 import { isMapCoordinateSystemLeftHanded } from '~/selectors/map';
 
 const images = {
@@ -34,7 +34,7 @@ const images = {
 const getEffectiveScenery = (state) => {
   const scenery = getSceneryForThreeDView(state);
   if (scenery === 'auto') {
-    if (getShowEnvironmentType(state) === 'indoor') {
+    if (isShowIndoor(state)) {
       return 'indoor';
     } else {
       return 'outdoor';

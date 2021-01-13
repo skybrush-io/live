@@ -134,6 +134,11 @@ export const getDroneSwarmSpecification = (state) => {
  */
 export const getShowEnvironmentType = (state) => state.show.environment.type;
 
+export const isShowIndoor = (state) =>
+  getShowEnvironmentType(state) === 'indoor';
+export const isShowOutdoor = (state) =>
+  getShowEnvironmentType(state) === 'outdoor';
+
 /**
  * Selector that returns the definition of the coordinate system of an indoor
  * show.
@@ -188,11 +193,11 @@ export const getOutdoorShowOrientation = createSelector(
  * irrespectively of whether this is an indoor or an outdoor show.
  */
 export const getShowOrientation = createSelector(
-  getShowEnvironmentType,
+  isShowIndoor,
   getIndoorShowOrientation,
   getOutdoorShowOrientation,
-  (type, indoorOrientation, outdoorOrientation) =>
-    type === 'indoor' ? indoorOrientation : outdoorOrientation
+  (indoor, indoorOrientation, outdoorOrientation) =>
+    indoor ? indoorOrientation : outdoorOrientation
 );
 
 /**
@@ -225,10 +230,8 @@ export const getOutdoorShowToWorldCoordinateSystemTransformation = createSelecto
 
 // TODO(ntamas): implement this for outdoor shows
 export const getShowToFlatEarthCoordinateSystemTransformation = createSelector(
-  getShowEnvironmentType,
-  (type) => {
-    return type === 'indoor' ? identity : undefined;
-  }
+  isShowIndoor,
+  (indoor) => (indoor ? identity : undefined)
 );
 
 /**

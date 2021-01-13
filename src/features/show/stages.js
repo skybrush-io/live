@@ -10,15 +10,16 @@ import {
   areOnboardPreflightChecksSignedOff,
   areStartConditionsSyncedWithServer,
   didStartConditionSyncFail,
-  getShowEnvironmentType,
   hasLoadedShowFile,
   hasScheduledStartTime,
   hasShowChangedExternallySinceLoaded,
   hasShowOrigin,
   isLoadingShowFile,
   isShowAuthorizedToStart,
-  isShowConvexHullInsideGeofence,
   isShowAuthorizedToStartLocally,
+  isShowConvexHullInsideGeofence,
+  isShowIndoor,
+  isShowOutdoor,
   isTakeoffAreaApproved,
 } from './selectors';
 
@@ -54,7 +55,8 @@ const stages = {
   },
 
   setupEnvironment: {
-    evaluate: (state) => hasLoadedShowFile(state) && hasShowOrigin(state),
+    evaluate: (state) =>
+      hasLoadedShowFile(state) && (hasShowOrigin(state) || isShowIndoor(state)),
     requires: ['selectShowFile'],
   },
 
@@ -71,8 +73,7 @@ const stages = {
 
   setupGeofence: {
     evaluate: (state) =>
-      getShowEnvironmentType(state) === 'outdoor' &&
-      hasActiveGeofencePolygon(state)
+      isShowOutdoor(state) && hasActiveGeofencePolygon(state)
         ? isShowConvexHullInsideGeofence(state)
           ? getGeofenceStatus(state)
           : Status.ERROR

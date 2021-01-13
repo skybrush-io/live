@@ -14,8 +14,8 @@ import { removeFeature } from '~/actions/features';
 import {
   getOutdoorShowCoordinateSystem,
   getOutdoorShowToWorldCoordinateSystemTransformationObject,
-  getShowEnvironmentType,
   getShowOrientation,
+  isShowOutdoor,
 } from '~/features/show/selectors';
 import { showNotification } from '~/features/snackbar/slice';
 import { MessageSemantics } from '~/features/snackbar/types';
@@ -105,7 +105,7 @@ export const recalculateMapping = () => (dispatch) => {
 export const addVirtualDronesForMission = () => async (dispatch, getState) => {
   const state = getState();
 
-  if (getShowEnvironmentType(state) !== 'outdoor') {
+  if (!isShowOutdoor(state)) {
     throw new Error('Virtual drones are supported for outdoor missions only');
   }
 
