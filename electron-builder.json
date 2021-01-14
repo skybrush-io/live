@@ -33,6 +33,12 @@
   },
 
   "win": {
-    "target": "portable"
+    "target": "nsis"
+  },
+
+  "nsis": {
+    "artifactName": "${productName} Setup ${version}.${ext}",
+	"oneClick": false,
+	"allowToChangeInstallationDirectory": true
   }
 }
