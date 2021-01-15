@@ -30,10 +30,7 @@ import VersionCheckDialog from './features/version-check/VersionCheckDialog';
 import flock, { Flock } from './flock';
 import hotkeys from './hotkeys';
 import store, { persistor } from './store';
-import ThemeProvider, {
-  DarkModeExtraCSSProvider,
-  ScrollbarCSSProvider,
-} from './theme';
+import ThemeProvider, { DarkModeExtraCSSProvider } from './theme';
 import workbench from './workbench';
 
 require('../assets/css/proggy-vector.css');
@@ -101,7 +98,6 @@ const App = () => {
 
                 <HotkeyHandler hotkeys={hotkeys} />
                 <DarkModeExtraCSSProvider />
-                <ScrollbarCSSProvider />
 
                 <div style={rootStyle}>
                   <Header workbench={workbench} />
