@@ -5,6 +5,7 @@ import {
   getGPSBasedHomePositionsInMission,
   getGPSBasedLandingPositionsInMission,
 } from '~/features/mission/selectors';
+import { isShowIndoor } from '~/features/show/selectors';
 import { getFlatEarthCoordinateTransformer } from '~/selectors/map';
 
 /**
@@ -62,3 +63,10 @@ export const getLandingPositionsInMissionForThreeDView = createSelector(
   getGPSToThreeJSTransformation,
   (landingPositions, transformation) => landingPositions.map(transformation)
 );
+
+/**
+ * Selector that returns the radius that should be used for the drones in the
+ * 3D view.
+ */
+export const getPreferredDroneRadius = (state) =>
+  isShowIndoor(state) ? 0.2 : 0.5;
