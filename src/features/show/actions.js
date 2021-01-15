@@ -2,6 +2,8 @@ import ky from 'ky';
 import get from 'lodash-es/get';
 import throttle from 'lodash-es/throttle';
 
+import { freeze } from '@reduxjs/toolkit';
+
 import { addFeature, removeFeatures } from '~/actions/features';
 import { Colors } from '~/components/colors';
 import { removeGeofencePolygon } from '~/features/mission/actions';
@@ -240,7 +242,9 @@ export const loadShowFromFile = createShowLoaderThunkFactory(
   async (file) => {
     const url = file && file.path ? `file://${file.path}` : undefined;
     const spec = await processFile(file);
-    return { spec, url };
+    // Pre-freeze the show data shallowly to give a hint to Redux Toolkit that
+    // the show content won't change
+    return { spec: freeze(spec), url };
   },
   {
     errorMessage: 'Failed to load show from the given file.',
@@ -265,8 +269,11 @@ export const loadShowFromUrl = createShowLoaderThunkFactory(
     }).arrayBuffer();
 
     const spec = await processFile(response);
+
+    // Pre-freeze the show data shallowly to give a hint to Redux Toolkit that
+    // the show content won't change
     return {
-      spec,
+      spec: freeze(spec),
       url,
     };
   },
