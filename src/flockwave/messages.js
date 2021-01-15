@@ -4,7 +4,7 @@
 
 import has from 'lodash-es/has';
 import isObject from 'lodash-es/isObject';
-import nanoid from 'nanoid';
+import { nanoid } from 'nanoid';
 import pDefer from 'p-defer';
 import pProps from 'p-props';
 import pTimeout from 'p-timeout';
