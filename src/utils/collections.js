@@ -283,6 +283,39 @@ export const clearOrderedCollection = (collection) => {
 };
 
 /**
+ * Creates a collection out of an array of items and a function that retrieves
+ * the ID from each item.
+ */
+export const createCollectionFromArray = (items, key = 'id') => {
+  let index = 0;
+  const result = {
+    byId: {},
+    order: [],
+  };
+
+  const getter = typeof key === 'string' ? property(key) : key;
+
+  for (const item of items) {
+    const id = getter(item);
+
+    if (isNil(id)) {
+      throw new Error(`Item at index ${index} has no key`);
+    }
+
+    if (result.byId[id] !== undefined) {
+      throw new Error(`Duplicate key: ${id}`);
+    }
+
+    result.byId[id] = item;
+    result.order.push(id);
+
+    index++;
+  }
+
+  return result;
+};
+
+/**
  * Creates a new item at the front of the given collection that can then
  * subsequently be edited by the user before it is finalized in the
  * collection.

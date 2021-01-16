@@ -66,3 +66,23 @@ export const areAllPreflightChecksTicked = createSelector(
   (state) => state.preflight.checked,
   (allItems, checkedItems) => allItems.length === checkedItems.length
 );
+
+/**
+ * Returns a formatted string containing all the preflight check headers and
+ * items, suitable to be used in an editor form.
+ */
+export const getFormattedHeadersAndItems = createSelector(
+  getHeadersAndItems,
+  (items) =>
+    items
+      .map((item) => {
+        const label = (item.label || '').trim();
+        return item.type === 'header'
+          ? `\n${label}:`
+          : label
+          ? `- ${label}`
+          : label;
+      })
+      .join('\n')
+      .trim()
+);

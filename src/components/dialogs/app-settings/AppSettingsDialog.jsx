@@ -9,6 +9,7 @@ import Tab from '@material-ui/core/Tab';
 import DialogTabs from '../DialogTabs';
 
 import DisplayTab from './DisplayTab';
+import PreflightTab from './PreflightTab';
 import ServerTab from './ServerTab';
 import ThreeDViewTab from './ThreeDViewTab';
 import UAVsTab from './UAVsTab';
@@ -22,8 +23,9 @@ import {
 
 const tabNameToComponent = {
   display: <DisplayTab />,
-  threeD: <ThreeDViewTab />,
+  preflight: <PreflightTab />,
   server: <ServerTab />,
+  threeD: <ThreeDViewTab />,
   uavs: <UAVsTab />,
 };
 
@@ -38,10 +40,11 @@ const AppSettingsDialogPresentation = ({
   selectedTab,
 }) => (
   <Dialog fullWidth open={open} maxWidth='sm' onClose={onClose}>
-    <DialogTabs value={selectedTab} onChange={onTabSelected}>
+    <DialogTabs alignment='center' value={selectedTab} onChange={onTabSelected}>
       <Tab value='display' label='Display' />
       <Tab value='threeD' label='3D View' />
       <Tab value='uavs' label='UAVs' />
+      <Tab value='preflight' label='Preflight' />
       {window.isElectron ? <Tab value='server' label='Server' /> : null}
     </DialogTabs>
     <DialogContent style={{ minHeight: 200 }}>

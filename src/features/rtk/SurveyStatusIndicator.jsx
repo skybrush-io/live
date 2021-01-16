@@ -3,9 +3,8 @@ import React from 'react';
 
 import Box from '@material-ui/core/Box';
 import Fade from '@material-ui/core/Fade';
-import Typography from '@material-ui/core/Typography';
 
-import StatusLight from '~/components/StatusLight';
+import LabeledStatusLight from '~/components/LabeledStatusLight';
 
 function formatAccuracy(message, value) {
   if (typeof value !== 'number' || value <= 0) {
@@ -34,24 +33,21 @@ const SurveyStatusIndicator = ({
       flexDirection='row'
       {...rest}
     >
-      <StatusLight
-        inline
+      <LabeledStatusLight
         size='small'
         status={
           valid ? 'success' : active ? 'next' : supported ? 'error' : 'off'
         }
-      />
-      <Box pl={1}>
-        <Typography noWrap variant='body2' color='textSecondary'>
-          {active
-            ? formatAccuracy('Surveying', accuracy)
-            : valid
-            ? formatAccuracy('Survey successful', accuracy)
-            : supported
-            ? 'Survey not started yet'
-            : 'No survey information'}
-        </Typography>
-      </Box>
+        color='textSecondary'
+      >
+        {active
+          ? formatAccuracy('Surveying', accuracy)
+          : valid
+          ? formatAccuracy('Survey successful', accuracy)
+          : supported
+          ? 'Survey not started yet'
+          : 'No survey information'}
+      </LabeledStatusLight>
     </Box>
   </Fade>
 );

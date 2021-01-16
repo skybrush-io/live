@@ -144,6 +144,29 @@ const { actions, reducer } = createSlice({
     },
 
     /**
+     * Sets the list of preflight checks and groups.
+     */
+    setPreflightCheckListItems(state, action) {
+      const { groups, items } = action.payload;
+
+      if (!groups.byId || !groups.order || !items.byId || !items.order) {
+        return;
+      }
+
+      state.items = {
+        byId: items.byId,
+        order: items.order,
+      };
+
+      state.groups = {
+        byId: groups.byId,
+        order: groups.order,
+      };
+
+      state.checked = [];
+    },
+
+    /**
      * Sets the checked status of a preflight check.
      */
     setPreflightCheckStatus(state, action) {
@@ -182,6 +205,7 @@ const { actions, reducer } = createSlice({
 export const {
   clearPreflightCheckGroups,
   clearPreflightCheckListItems,
+  setPreflightCheckListItems,
   setPreflightCheckStatus,
   togglePreflightCheckStatus,
 } = actions;
