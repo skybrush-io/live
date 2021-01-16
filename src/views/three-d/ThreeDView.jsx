@@ -9,6 +9,7 @@ import { connect } from 'react-redux';
 import CoordinateSystemAxes from './CoordinateSystemAxes';
 import HomePositionMarkers from './HomePositionMarkers';
 import LandingPositionMarkers from './LandingPositionMarkers';
+import Room from './Room';
 import Scenery from './Scenery';
 import SelectedTrajectories from './SelectedTrajectories';
 
@@ -125,6 +126,8 @@ const ThreeDView = React.forwardRef((props, ref) => {
         {showLandingPositions && <LandingPositionMarkers />}
         {showTrajectoriesOfSelection && <SelectedTrajectories />}
         <a-drone-flock />
+
+        <Room />
       </a-entity>
 
       <Scenery scale={10} type={`${scenery}-${lighting}`} grid={grid} />

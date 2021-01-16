@@ -21,7 +21,7 @@ const grounds = {
 };
 
 const environments = {
-  ['outdoor-light']: {
+  'outdoor-light': {
     preset: 'default',
     fog: 0.2,
     gridColor: '#fff',
@@ -29,7 +29,7 @@ const environments = {
     skyColor: '#88c',
     ...grounds.default,
   },
-  ['outdoor-dark']: {
+  'outdoor-dark': {
     preset: 'starry',
     fog: 0.2,
     gridColor: '#39d2f2',
@@ -37,7 +37,7 @@ const environments = {
     skyColor: '#88c',
     ...grounds.default,
   },
-  ['indoor-light']: {
+  'indoor-light': {
     preset: 'default',
     fog: 0.2,
     gridColor: '#fff',
@@ -46,7 +46,7 @@ const environments = {
     horizonColor: '#fed',
     ...grounds.indoor,
   },
-  ['indoor-dark']: {
+  'indoor-dark': {
     preset: 'default',
     fog: 0.2,
     gridColor: '#888',

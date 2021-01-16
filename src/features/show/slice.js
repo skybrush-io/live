@@ -5,10 +5,11 @@
 
 import { getUnixTime } from 'date-fns';
 import isNil from 'lodash-es/isNil';
+import set from 'lodash-es/set';
 
 import { createSlice } from '@reduxjs/toolkit';
 
-import { COORDINATE_SYSTEM_TYPE } from './constants';
+import { COORDINATE_SYSTEM_TYPE, DEFAULT_ROOM_SIZE } from './constants';
 import { StartMethod } from './enums';
 import { moveItemsBetweenQueues } from './utils';
 
@@ -38,6 +39,19 @@ const { actions, reducer } = createSlice({
       indoor: {
         coordinateSystem: {
           orientation: '0', // stored as a string to avoid rounding errors
+        },
+        room: {
+          visible: false,
+          firstCorner: [
+            -DEFAULT_ROOM_SIZE.width / 2,
+            -DEFAULT_ROOM_SIZE.depth / 2,
+            0,
+          ],
+          secondCorner: [
+            DEFAULT_ROOM_SIZE.width / 2,
+            DEFAULT_ROOM_SIZE.depth / 2,
+            DEFAULT_ROOM_SIZE.height,
+          ],
         },
       },
       type: 'outdoor',
@@ -358,6 +372,40 @@ const { actions, reducer } = createSlice({
         action.payload || null;
     },
 
+    setRoomCorners(state, action) {
+      const corners = action.payload;
+      if (!Array.isArray(corners) || corners.length < 2) {
+        return;
+      }
+
+      const firstCorner = corners[0];
+      const secondCorner = corners[1];
+
+      if (
+        !Array.isArray(firstCorner) ||
+        firstCorner.length < 3 ||
+        !Array.isArray(secondCorner) ||
+        secondCorner.length < 3
+      ) {
+        return;
+      }
+
+      set(
+        state,
+        'environment.indoor.room.firstCorner',
+        firstCorner.slice(0, 3)
+      );
+      set(
+        state,
+        'environment.indoor.room.secondCorner',
+        secondCorner.slice(0, 3)
+      );
+    },
+
+    setRoomVisibility(state, action) {
+      set(state, 'environment.indoor.room.visible', Boolean(action.payload));
+    },
+
     setShowAuthorization(state, action) {
       // We only accept 'true' for authorization to be on the safe side, not
       // just any truthy value
@@ -467,6 +515,8 @@ export const {
   setEnvironmentType,
   setOutdoorShowOrientation,
   setOutdoorShowOrigin,
+  setRoomCorners,
+  setRoomVisibility,
   setShowAuthorization,
   setShowSettingsSynchronizationStatus,
   setStartMethod,

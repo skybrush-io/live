@@ -33,6 +33,7 @@ import {
   getFirstPointsOfTrajectoriesInWorldCoordinates,
   getLastPointsOfTrajectoriesInWorldCoordinates,
   getOutdoorShowOrigin,
+  getRoomCorners,
   getShowOrientation,
   getOutdoorShowToWorldCoordinateSystemTransformationObject,
   isUploadInProgress,
@@ -44,6 +45,7 @@ import {
   setEnvironmentType,
   setOutdoorShowOrigin,
   setOutdoorShowOrientation,
+  setRoomCorners,
   signOffOnManualPreflightChecksAt,
   signOffOnOnboardPreflightChecksAt,
   startUpload,
@@ -359,4 +361,14 @@ export const signOffOnManualPreflightChecks = () => (dispatch) => {
  */
 export const signOffOnOnboardPreflightChecks = () => (dispatch) => {
   dispatch(signOffOnOnboardPreflightChecksAt(Date.now()));
+};
+
+export const setFirstCornerOfRoom = (newCorner) => (dispatch, getState) => {
+  const corners = getRoomCorners(getState());
+  dispatch(setRoomCorners([newCorner, corners[1]]));
+};
+
+export const setSecondCornerOfRoom = (newCorner) => (dispatch, getState) => {
+  const corners = getRoomCorners(getState());
+  dispatch(setRoomCorners([corners[0], newCorner]));
 };

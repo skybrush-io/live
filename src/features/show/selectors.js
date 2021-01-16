@@ -1,3 +1,5 @@
+/* eslint unicorn/no-array-callback-reference: 0 */
+
 import formatISO9075 from 'date-fns/formatISO9075';
 import fromUnixTime from 'date-fns/fromUnixTime';
 import get from 'lodash-es/get';
@@ -19,6 +21,7 @@ import { FlatEarthCoordinateSystem } from '~/utils/geography';
 import { convexHull, createGeometryFromPoints } from '~/utils/math';
 import { EMPTY_ARRAY, EMPTY_OBJECT } from '~/utils/redux';
 
+import { DEFAULT_ROOM_SIZE } from './constants';
 import {
   getConvexHullOfTrajectory,
   getFirstPointOfTrajectory,
@@ -134,8 +137,15 @@ export const getDroneSwarmSpecification = (state) => {
  */
 export const getShowEnvironmentType = (state) => state.show.environment.type;
 
+/**
+ * Selector that returns whether the show is indoor.
+ */
 export const isShowIndoor = (state) =>
   getShowEnvironmentType(state) === 'indoor';
+
+/**
+ * Selector that returns whether the show is outdoor.
+ */
 export const isShowOutdoor = (state) =>
   getShowEnvironmentType(state) === 'outdoor';
 
@@ -199,6 +209,32 @@ export const getShowOrientation = createSelector(
   (indoor, indoorOrientation, outdoorOrientation) =>
     indoor ? indoorOrientation : outdoorOrientation
 );
+
+/**
+ * Returns the width of the room that the indoor show is taking place.
+ */
+export const getRoomCorners = createSelector(
+  (state) => state.show.environment?.indoor?.room?.firstCorner,
+  (state) => state.show.environment?.indoor?.room?.secondCorner,
+  (firstCorner, secondCorner) => [
+    firstCorner || [
+      -DEFAULT_ROOM_SIZE.width / 2,
+      -DEFAULT_ROOM_SIZE.depth / 2,
+      0,
+    ],
+    secondCorner || [
+      DEFAULT_ROOM_SIZE.width / 2,
+      DEFAULT_ROOM_SIZE.depth / 2,
+      DEFAULT_ROOM_SIZE.height,
+    ],
+  ]
+);
+
+/**
+ * Returns whether the indoor room should be shown on the 3D view.
+ */
+export const isRoomVisible = (state) =>
+  isShowIndoor(state) && state.show.environment.indoor?.room?.visible;
 
 /**
  * Selector that returns an object that can be used to transform GPS coordinates
