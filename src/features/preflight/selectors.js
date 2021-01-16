@@ -86,3 +86,10 @@ export const getFormattedHeadersAndItems = createSelector(
       .join('\n')
       .trim()
 );
+
+/**
+ * Returns whether there is at least one manual preflight check that has to
+ * be ticked off by the user.
+ */
+export const hasManualPreflightChecks = (state) =>
+  state.preflight.items.order.length > 0;

@@ -8,6 +8,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import StatusLight from '~/components/StatusLight';
 import { Status } from '~/components/semantics';
 
+import { hasManualPreflightChecks } from '~/features/preflight/selectors';
 import { signOffOnManualPreflightChecks } from '~/features/show/actions';
 import { areManualPreflightChecksSignedOff } from '~/features/show/selectors';
 import {
@@ -23,12 +24,13 @@ import { getSetupStageStatuses } from '~/features/show/stages';
  */
 const ManualPreflightChecksButton = ({
   areChecksSignedOff,
+  hasManualChecks,
   onApprove,
   onRevoke,
   status,
   ...rest
 }) => {
-  return (
+  return hasManualChecks ? (
     <ListItem button disabled={status === Status.OFF} {...rest}>
       <StatusLight status={status} />
       <ListItemText primary='Manual preflight checks' />
@@ -43,11 +45,12 @@ const ManualPreflightChecksButton = ({
       </ListItemSecondaryAction>
       */}
     </ListItem>
-  );
+  ) : null;
 };
 
 ManualPreflightChecksButton.propTypes = {
   areChecksSignedOff: PropTypes.bool,
+  hasManualChecks: PropTypes.bool,
   onApprove: PropTypes.func,
   onClick: PropTypes.func,
   onRevoke: PropTypes.func,
@@ -60,6 +63,7 @@ export default connect(
   // mapStateToProps
   (state) => ({
     areChecksSignedOff: areManualPreflightChecksSignedOff(state),
+    hasManualChecks: hasManualPreflightChecks(state),
     status: getSetupStageStatuses(state).performManualPreflightChecks,
   }),
   // mapDispatchToProps

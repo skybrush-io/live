@@ -31,7 +31,10 @@ import {
   hasActiveGeofencePolygon,
   hasNonemptyMappingSlot,
 } from '~/features/mission/selectors';
-import { areAllPreflightChecksTicked } from '~/features/preflight/selectors';
+import {
+  areAllPreflightChecksTicked,
+  hasManualPreflightChecks,
+} from '~/features/preflight/selectors';
 import { isConnected as isConnectedToServer } from '~/features/servers/selectors';
 import {
   areAllUAVsInMissionWithoutErrors,
@@ -107,7 +110,8 @@ const stages = {
 
   performManualPreflightChecks: {
     evaluate: (state) =>
-      areManualPreflightChecksSignedOff(state)
+      areManualPreflightChecksSignedOff(state) ||
+      !hasManualPreflightChecks(state)
         ? areAllPreflightChecksTicked(state)
           ? Status.SUCCESS
           : Status.SKIPPED

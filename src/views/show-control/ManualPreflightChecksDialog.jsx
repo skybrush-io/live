@@ -37,7 +37,7 @@ const PreflightCheckListPresentation = ({
   onToggle,
   ...rest
 }) => (
-  <List dense disablePadding {...rest}>
+  <List dense disablePadding={items.length > 0} {...rest}>
     {items.map((item) => {
       if (item.type === 'header') {
         return (
@@ -67,6 +67,14 @@ const PreflightCheckListPresentation = ({
         </ListItem>
       );
     })}
+    {items.length === 0 && (
+      <ListItem>
+        <ListItemText
+          primary='There are no manual preflight check items.'
+          secondary='You can add them in the Settings dialog.'
+        />
+      </ListItem>
+    )}
   </List>
 );
 
