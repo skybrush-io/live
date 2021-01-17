@@ -83,13 +83,13 @@ export const getCurrentHeadingByUavId = (state, uavId) => {
 };
 
 /**
- * Returns the home position of the UAV with the given ID, given the current
- * state.
+ * Returns the GPS-based home position of the UAV with the given ID, given the
+ * current state.
  *
  * @param  {Object}  state  the state of the application
  * @param  {string}  uavId  the ID of the UAV
  */
-export const getHomePositionByUavId = createCachedSelector(
+export const getGPSBasedHomePositionByUavId = createCachedSelector(
   getReverseMissionMapping,
   getGPSBasedHomePositionsInMission,
   selectUAVId,
@@ -256,7 +256,7 @@ export const getTrajectoryPointsInWorldCoordinatesByUavId = createCachedSelector
  * Returns the distance of the UAV to its home position.
  */
 export const getXYDistanceToHomePositionByUavId = createCachedSelector(
-  getHomePositionByUavId,
+  getGPSBasedHomePositionByUavId,
   getCurrentGPSPositionByUavId,
   (homePosition, currentPosition) => {
     if (!isNil(homePosition)) {
