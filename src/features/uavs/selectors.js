@@ -59,7 +59,7 @@ export const getUAVById = (state, uavId) => state.uavs.byId[uavId];
  * Returns the current position of the UAV with the given ID, given the current
  * state.
  */
-export const getCurrentPositionByUavId = (state, uavId) => {
+export const getCurrentGPSPositionByUavId = (state, uavId) => {
   const uav = getUAVById(state, uavId);
   return uav ? uav.position : undefined;
 };
@@ -257,7 +257,7 @@ export const getTrajectoryPointsInWorldCoordinatesByUavId = createCachedSelector
  */
 export const getXYDistanceToHomePositionByUavId = createCachedSelector(
   getHomePositionByUavId,
-  getCurrentPositionByUavId,
+  getCurrentGPSPositionByUavId,
   (homePosition, currentPosition) => {
     if (!isNil(homePosition)) {
       if (!isNil(currentPosition)) {
@@ -306,7 +306,7 @@ export const getMisplacedUAVIds = createSelector(
   getDistancesFromHome,
   getDesiredPlacementAccuracyInMeters,
   (distances, threshold) =>
-    // eslint-disable-next-line unicorn/no-reduce
+    // eslint-disable-next-line unicorn/no-array-reduce
     Object.entries(distances).reduce((acc, [uavId, distance]) => {
       if (distance > threshold) {
         acc.push(uavId);
@@ -399,7 +399,7 @@ export const getMisalignedUAVIds = createSelector(
   getDeviationsFromTakeoffHeadings,
   getDesiredTakeoffHeadingAccuracy,
   (deviations, threshold) =>
-    // eslint-disable-next-line unicorn/no-reduce
+    // eslint-disable-next-line unicorn/no-array-reduce
     Object.entries(deviations).reduce((acc, [uavId, deviation]) => {
       if (Math.abs(deviation) > threshold) {
         acc.push(uavId);

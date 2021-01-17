@@ -61,6 +61,7 @@ export const getIndexOfMappingSlotBeingEdited = (state) =>
 export const getReverseMissionMapping = createSelector(
   getMissionMapping,
   (mapping) =>
+    // eslint-disable-next-line unicorn/no-array-reduce
     mapping.reduce((acc, uavId, index) => {
       if (!isNil(uavId)) {
         acc[uavId] = index;
@@ -100,6 +101,7 @@ export const getUAVIdsParticipatingInMission = createSelector(
  */
 export const hasNonemptyMappingSlot = createSelector(
   getMissionMapping,
+  // eslint-disable-next-line unicorn/no-array-callback-reference
   (mapping) => (mapping ? !mapping.every(isNil) : false)
 );
 

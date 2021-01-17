@@ -1,7 +1,7 @@
 import meanBy from 'lodash-es/meanBy';
 
 import { showError } from '~/features/snackbar/actions';
-import { getCurrentPositionByUavId } from '~/features/uavs/selectors';
+import { getCurrentGPSPositionByUavId } from '~/features/uavs/selectors';
 import { getPreferredCoordinateFormatter } from '~/selectors/formatting';
 import { getSelectedUAVIds } from '~/selectors/selection';
 import { parseCoordinate } from '~/utils/geography';
@@ -24,7 +24,7 @@ export const openFlyToTargetDialogWithCoordinate = ({ coords, uavIds }) => (
   getState
 ) => {
   const state = getState();
-  const getPosition = (uavId) => getCurrentPositionByUavId(state, uavId);
+  const getPosition = (uavId) => getCurrentGPSPositionByUavId(state, uavId);
   const uavIdsWithValidPositions = uavIds.filter(getPosition);
   const positions = uavIdsWithValidPositions.map(getPosition);
   const numberOfUAVsWithPositions = positions.length;
@@ -83,7 +83,7 @@ export const submitFlyToTargetDialog = (fields) => (dispatch, getState) => {
         // Okay, we need to send messages individually to the UAVs
         const baseTarget = { ...target };
         target = (uavId) => {
-          const currentPosition = getCurrentPositionByUavId(state, uavId);
+          const currentPosition = getCurrentGPSPositionByUavId(state, uavId);
 
           if (currentPosition && currentPosition.amsl) {
             return {

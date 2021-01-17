@@ -20,7 +20,7 @@ import {
 import { showNotification } from '~/features/snackbar/slice';
 import { MessageSemantics } from '~/features/snackbar/types';
 import {
-  getCurrentPositionByUavId,
+  getCurrentGPSPositionByUavId,
   getMissingUAVIdsInMapping,
   getUnmappedUAVIds,
 } from '~/features/uavs/selectors';
@@ -36,9 +36,9 @@ export const augmentMappingAutomaticallyFromSpareDrones = ({
 } = {}) => (dispatch, getState) => {
   const state = getState();
 
-  const emptySlots = getEmptyMappingSlotIndices(state);
   const homePositions = getGPSBasedHomePositionsInMission(state);
 
+  const emptySlots = getEmptyMappingSlotIndices(state);
   const slotsToFill = emptySlots.filter(
     (index) => !isNil(homePositions[index])
   );
@@ -50,10 +50,12 @@ export const augmentMappingAutomaticallyFromSpareDrones = ({
   const spareUAVIds = getUnmappedUAVIds(state);
   const sources = spareUAVIds.map((uavId) => ({
     uavId,
-    position: getCurrentPositionByUavId(state, uavId),
+    position: getCurrentGPSPositionByUavId(state, uavId),
   }));
 
   const getter = (item) => [item.position.lat, item.position.lon];
+  const distanceFunction = haversineDistance;
+  const threshold = 3; /* meters */
 
   // Sources are the drones; targets are the takeoff positions.
   //
@@ -69,13 +71,15 @@ export const augmentMappingAutomaticallyFromSpareDrones = ({
   // belonging to the chosen drone and takeoff position, and continue until
   // we have no drones or no takeoff positions left.
 
+  // sources, targets, distanceFunction, getter, threshold, algorithm
+
   const distances = calculateDistanceMatrix(sources, targets, {
-    distanceFunction: haversineDistance,
+    distanceFunction,
     getter,
   });
   const matching = findAssignmentInDistanceMatrix(distances, {
     algorithm,
-    threshold: 3 /* meters */,
+    threshold,
   });
 
   const newMapping = [...getMissionMapping(state)];
