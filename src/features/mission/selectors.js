@@ -4,8 +4,8 @@ import range from 'lodash-es/range';
 import reject from 'lodash-es/reject';
 import { createSelector } from '@reduxjs/toolkit';
 
-import { getSelectedUAVIds } from '~/selectors/selection';
 import { Status } from '~/components/semantics';
+import { getSelectedUAVIds } from '~/selectors/selection';
 
 /**
  * Returns the current list of home positions in the mission.

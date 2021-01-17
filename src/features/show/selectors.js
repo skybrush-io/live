@@ -18,7 +18,11 @@ import {
 import { getGeofencePolygonInWorldCoordinates } from '~/features/mission/selectors';
 import { formatDuration } from '~/utils/formatting';
 import { FlatEarthCoordinateSystem } from '~/utils/geography';
-import { convexHull, createGeometryFromPoints } from '~/utils/math';
+import {
+  convexHull,
+  createGeometryFromPoints,
+  euclideanDistance2D,
+} from '~/utils/math';
 import { EMPTY_ARRAY, EMPTY_OBJECT } from '~/utils/redux';
 
 import { DEFAULT_ROOM_SIZE } from './constants';
@@ -410,7 +414,7 @@ function getMaximumHorizontalDistanceFromTakeoffPositionInTrajectory(
 
   const distanceToFirstPoint = (keyframe) => {
     const point = keyframe[1];
-    return Math.hypot(point[0] - firstPoint[0], point[1] - firstPoint[1]);
+    return euclideanDistance2D(point, firstPoint);
   };
 
   const farthestPoint = maxBy(points, distanceToFirstPoint);

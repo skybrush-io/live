@@ -83,6 +83,14 @@ const persistConfig = {
     // of the measurement dialogs
     // createFilter('measurement', ['averagingDialog']),
 
+    // We do not wish to store home/landing positions and takeoff heading in
+    // the mission because they depend on the loaded show anyway
+    createBlacklistFilter('mission', [
+      'homePositions',
+      'landingPositions',
+      'takeoffHeadings',
+    ]),
+
     // We do not wish to save which preflight checks the user has ticked off
     createBlacklistFilter('preflight', ['checked']),
 

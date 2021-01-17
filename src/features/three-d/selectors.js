@@ -51,6 +51,7 @@ const getGPSToThreeJSTransformation = createSelector(
 export const getHomePositionsInMissionForThreeDView = createSelector(
   getGPSBasedHomePositionsInMission,
   getGPSToThreeJSTransformation,
+  // eslint-disable-next-line unicorn/no-array-callback-reference
   (homePositions, transformation) => homePositions.map(transformation)
 );
 
@@ -61,6 +62,7 @@ export const getHomePositionsInMissionForThreeDView = createSelector(
 export const getLandingPositionsInMissionForThreeDView = createSelector(
   getGPSBasedLandingPositionsInMission,
   getGPSToThreeJSTransformation,
+  // eslint-disable-next-line unicorn/no-array-callback-reference
   (landingPositions, transformation) => landingPositions.map(transformation)
 );
 

@@ -186,6 +186,12 @@ export const createDistanceFunction = (norm = 2) => {
 export const euclideanDistance = createDistanceFunction(2);
 
 /**
+ * Euclidean distance function between two points, restricted to two dimensions.
+ */
+export const euclideanDistance2D = (x, y) =>
+  Math.hypot(x[0] - y[0], x[1] - y[1]);
+
+/**
  * Maximum norm based distance function between two points.
  */
 export const maximumNormDistance = (a, b) =>

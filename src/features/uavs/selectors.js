@@ -18,9 +18,11 @@ import {
   getDesiredTakeoffHeadingAccuracy,
 } from '~/features/settings/selectors';
 import {
+  getFirstPointsOfTrajectories,
   getShowToFlatEarthCoordinateSystemTransformation,
   getOutdoorShowToWorldCoordinateSystemTransformation,
   getTrajectories,
+  isShowIndoor,
 } from '~/features/show/selectors';
 import {
   getPointsOfTrajectory,
@@ -36,6 +38,7 @@ import {
 } from '~/flockwave/errors';
 import { convertRGB565ToCSSNotation } from '~/flockwave/parsing';
 import { UAVAge } from '~/model/uav';
+import { euclideanDistance2D } from '~/utils/math';
 
 /**
  * Returns the list of UAV IDs that should be shown on the UI, in the
@@ -103,6 +106,33 @@ export const getGPSBasedHomePositionByUavId = createCachedSelector(
     }
 
     return homePositions[index];
+  }
+)({
+  keySelector: selectUAVId,
+  // TODO: use a FIFO or LRU cache if it becomes necessary.
+  // The quick-lru module from npm seems simple enough.
+});
+
+/**
+ * Returns the first point of the trajectory of the UAV with the given ID,
+ * given the current state.
+ *
+ * @param  {Object}  state  the state of the application
+ * @param  {string}  uavId  the ID of the UAV
+ */
+export const getFirstPointOfTrajectoryByUavId = createCachedSelector(
+  getReverseMissionMapping,
+  getFirstPointsOfTrajectories,
+  selectUAVId,
+  (revMapping, firstPoints, uavId) => {
+    const index = revMapping[uavId];
+
+    if (index === undefined) {
+      // UAV is not in the mission.
+      return undefined;
+    }
+
+    return firstPoints[index];
   }
 )({
   keySelector: selectUAVId,
@@ -253,18 +283,42 @@ export const getTrajectoryPointsInWorldCoordinatesByUavId = createCachedSelector
 });
 
 /**
- * Returns the distance of the UAV to its home position.
+ * Returns the distance of the UAV to its home position, in GPS coordinates.
  */
-export const getXYDistanceToHomePositionByUavId = createCachedSelector(
+export const getXYDistanceToGPSBasedHomePositionByUavId = createCachedSelector(
   getGPSBasedHomePositionByUavId,
   getCurrentGPSPositionByUavId,
-  (homePosition, currentPosition) => {
-    if (!isNil(homePosition)) {
-      if (!isNil(currentPosition)) {
+  (gpsHomePosition, currentGPSPosition) => {
+    if (!isNil(gpsHomePosition)) {
+      if (!isNil(currentGPSPosition)) {
         return haversineDistance(
-          [homePosition.lon, homePosition.lat],
-          [currentPosition.lon, currentPosition.lat]
+          [gpsHomePosition.lon, gpsHomePosition.lat],
+          [currentGPSPosition.lon, currentGPSPosition.lat]
         );
+      }
+
+      return Number.POSITIVE_INFINITY;
+    }
+
+    return undefined;
+  }
+)({
+  keySelector: selectUAVId,
+  // TODO: use a FIFO or LRU cache if it becomes necessary.
+  // The quick-lru module from npm seems simple enough.
+});
+
+/**
+ * Returns the distance of the UAV to the first point of its trajectory, in
+ * local coordinates.
+ */
+export const getXYDistanceToFirstPointOfTrajectoryByUavId = createCachedSelector(
+  getFirstPointOfTrajectoryByUavId,
+  getCurrentLocalPositionByUavId,
+  (firstPoint, currentLocalPosition) => {
+    if (!isNil(firstPoint)) {
+      if (!isNil(currentLocalPosition)) {
+        return euclideanDistance2D(firstPoint, currentLocalPosition);
       }
 
       return Number.POSITIVE_INFINITY;
@@ -286,11 +340,15 @@ export const getDistancesFromHome = (state) => {
   const mapping = getMissionMapping(state);
   const result = {};
 
+  const distanceGetter = isShowIndoor(state)
+    ? getXYDistanceToFirstPointOfTrajectoryByUavId
+    : getXYDistanceToGPSBasedHomePositionByUavId;
+
   for (const uavId of mapping) {
     if (isNil(uavId) || !getUAVById(state, uavId)) {
       result[uavId] = undefined;
     } else {
-      result[uavId] = getXYDistanceToHomePositionByUavId(state, uavId);
+      result[uavId] = distanceGetter(state, uavId);
     }
   }
 

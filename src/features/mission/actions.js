@@ -12,20 +12,23 @@ import { clearMapping, removeUAVsFromMapping, replaceMapping } from './slice';
 
 import { removeFeature } from '~/actions/features';
 import {
+  getFirstPointsOfTrajectories,
   getOutdoorShowCoordinateSystem,
   getOutdoorShowToWorldCoordinateSystemTransformationObject,
   getShowOrientation,
+  isShowIndoor,
   isShowOutdoor,
 } from '~/features/show/selectors';
 import { showNotification } from '~/features/snackbar/slice';
 import { MessageSemantics } from '~/features/snackbar/types';
 import {
   getCurrentGPSPositionByUavId,
+  getCurrentLocalPositionByUavId,
   getMissingUAVIdsInMapping,
   getUnmappedUAVIds,
 } from '~/features/uavs/selectors';
 import messageHub from '~/message-hub';
-import { calculateDistanceMatrix } from '~/utils/math';
+import { calculateDistanceMatrix, euclideanDistance2D } from '~/utils/math';
 
 /**
  * Thunk that fills the empty slots in the current mapping from the spare drones
@@ -35,8 +38,14 @@ export const augmentMappingAutomaticallyFromSpareDrones = ({
   algorithm = 'greedy',
 } = {}) => (dispatch, getState) => {
   const state = getState();
+  const isIndoor = isShowIndoor(state);
 
-  const homePositions = getGPSBasedHomePositionsInMission(state);
+  const homePositions = isIndoor
+    ? getFirstPointsOfTrajectories(state)
+    : getGPSBasedHomePositionsInMission(state);
+  const positionGetter = isIndoor
+    ? getCurrentLocalPositionByUavId
+    : getCurrentGPSPositionByUavId;
 
   const emptySlots = getEmptyMappingSlotIndices(state);
   const slotsToFill = emptySlots.filter(
@@ -50,12 +59,14 @@ export const augmentMappingAutomaticallyFromSpareDrones = ({
   const spareUAVIds = getUnmappedUAVIds(state);
   const sources = spareUAVIds.map((uavId) => ({
     uavId,
-    position: getCurrentGPSPositionByUavId(state, uavId),
+    position: positionGetter(state, uavId),
   }));
 
-  const getter = (item) => [item.position.lat, item.position.lon];
-  const distanceFunction = haversineDistance;
-  const threshold = 3; /* meters */
+  const getter = isIndoor
+    ? (item) => [item.position[0], item.position[1]]
+    : (item) => [item.position.lat, item.position.lon];
+  const distanceFunction = isIndoor ? euclideanDistance2D : haversineDistance;
+  const threshold = isIndoor ? 1 : 3; /* meters */
 
   // Sources are the drones; targets are the takeoff positions.
   //
@@ -71,12 +82,11 @@ export const augmentMappingAutomaticallyFromSpareDrones = ({
   // belonging to the chosen drone and takeoff position, and continue until
   // we have no drones or no takeoff positions left.
 
-  // sources, targets, distanceFunction, getter, threshold, algorithm
-
   const distances = calculateDistanceMatrix(sources, targets, {
     distanceFunction,
     getter,
   });
+
   const matching = findAssignmentInDistanceMatrix(distances, {
     algorithm,
     threshold,

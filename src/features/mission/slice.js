@@ -26,11 +26,12 @@ const { actions, reducer } = createSlice({
     mapping: [],
 
     // Stores the desired home position (starting point) of each drone
-    // in the mission. The array is indexed by mission-specific identifiers.
+    // in the mission, in GPS coordinates. The array is indexed by
+    // mission-specific identifiers.
     homePositions: [],
 
-    // Stores the desired landing position of each drone in the mission. The
-    // array is indexed by mission-specific identifiers.
+    // Stores the desired landing position of each drone in the mission, in
+    // GPS coordinates. The array is indexed by mission-specific identifiers.
     landingPositions: [],
 
     // Stores the takeoff headings of each drone in the missino. The array is
