@@ -3,52 +3,63 @@ import sortBy from 'lodash-es/sortBy';
 
 export function findAssignmentInDistanceMatrix(
   matrix,
-  { algorithm = 'greedy', ...params } = {}
+  { algorithm = 'greedy', ...parameters } = {}
 ) {
   switch (algorithm) {
     case 'hungarian':
       return hungarianAlgorithm(matrix);
 
     case 'greedy':
-      return greedyMatchingAlgorithm(matrix, params);
+      return greedyMatchingAlgorithm(matrix, parameters);
 
     default:
       throw new Error('unknown assignment algorithm: ' + algorithm);
   }
 }
 
-export function greedyMatchingAlgorithm(matrix, _params = {}) {
-  const numRows = matrix.length;
-  const numCols =
-    numRows > 0 ? Math.min(...matrix.map((row) => row.length)) : 0;
+export function greedyMatchingAlgorithm(matrix, parameters = {}) {
+  const numberOfRows = matrix.length;
+  const numberOfColumns =
+    numberOfRows > 0 ? Math.min(...matrix.map((row) => row.length)) : 0;
   const pairs = [];
   const result = [];
+  let { threshold } = parameters;
 
-  if (numRows === 0 || numCols === 0) {
+  if (numberOfRows === 0 || numberOfColumns === 0) {
     return [];
+  }
+
+  if (
+    typeof threshold !== 'number' ||
+    threshold <= 0 ||
+    Number.isNaN(threshold)
+  ) {
+    threshold = Number.POSITIVE_INFINITY;
   }
 
   matrix.forEach((row, rowIndex) => {
     row.forEach((item, colIndex) => {
-      pairs.push([rowIndex, colIndex, item]);
+      if (item <= threshold) {
+        pairs.push([rowIndex, colIndex, item]);
+      }
     });
   });
 
   const sortedPairs = sortBy(pairs, (item) => item[2]);
-  const isRowUsed = Array(numRows).fill(false);
-  const isColUsed = Array(numCols).fill(false);
-  let numRowsLeft = numRows;
-  let numColsLeft = numCols;
+  const isRowUsed = new Array(numberOfRows).fill(false);
+  const isColUsed = new Array(numberOfColumns).fill(false);
+  let numberOfRowsLeft = numberOfRows;
+  let numberOfColumnsLeft = numberOfColumns;
 
   for (const [rowIndex, colIndex, _] of sortedPairs) {
     if (!isRowUsed[rowIndex] && !isColUsed[colIndex]) {
       result.push([rowIndex, colIndex]);
       isRowUsed[rowIndex] = true;
       isColUsed[colIndex] = true;
-      numRowsLeft--;
-      numColsLeft--;
+      numberOfRowsLeft--;
+      numberOfColumnsLeft--;
 
-      if (!numRowsLeft || !numColsLeft) {
+      if (!numberOfRowsLeft || !numberOfColumnsLeft) {
         break;
       }
     }

@@ -64,7 +64,7 @@ export const augmentMappingAutomaticallyFromSpareDrones = ({
 
   const getter = isIndoor
     ? (item) => [item.position[0], item.position[1]]
-    : (item) => [item.position.lat, item.position.lon];
+    : (item) => [item.position.lon, item.position.lat];
   const distanceFunction = isIndoor ? euclideanDistance2D : haversineDistance;
   const threshold = isIndoor ? 1 : 3; /* meters */
 
