@@ -26,6 +26,7 @@ import {
 import { simplifyPolygon, bufferPolygon } from '~/utils/math';
 import { createAsyncAction } from '~/utils/redux';
 
+import { StartMethod } from './enums';
 import { loadShowFromFile as processFile } from './processing';
 import {
   getAbsolutePathOfShowFile,
@@ -46,6 +47,7 @@ import {
   setOutdoorShowOrigin,
   setOutdoorShowOrientation,
   setRoomCorners,
+  setStartMethod,
   signOffOnManualPreflightChecksAt,
   signOffOnOnboardPreflightChecksAt,
   startUpload,
@@ -311,6 +313,11 @@ function processShowInJSONFormatAndDispatchActions(spec, dispatch) {
 
   // Revoke the approval of the takeoff area in case it was approved
   dispatch(revokeTakeoffAreaApproval());
+
+  // For indoor shows we use automatic start by default, not using an RC
+  if (environment.type === 'indoor') {
+    dispatch(setStartMethod(StartMethod.AUTO));
+  }
 }
 
 /**
