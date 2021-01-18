@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
-import React, { useEffect } from 'react';
+import React, { memo, useEffect, useRef } from 'react';
 import { connect } from 'react-redux';
-import { useAsyncRetry } from 'react-use';
+import { useAsyncRetry, useUnmount } from 'react-use';
 
 import Button from '@material-ui/core/Button';
 import Divider from '@material-ui/core/Divider';
@@ -112,27 +112,32 @@ PreflightStatusResults.propTypes = {
   result: CustomPropTypes.preflightCheckResult,
 };
 
-const PreflightStatusPanelLowerSegment = ({ uavId }) => {
+const PreflightStatusPanelLowerSegment = memo(({ uavId }) => {
   const messageHub = useMessageHub();
   const state = useAsyncRetry(
     () => (uavId ? messageHub.query.getPreflightStatus(uavId) : {}),
     [messageHub, uavId]
   );
+  const scheduledRefresh = useRef();
 
   // Refresh the status every second
   useEffect(() => {
     const isResultReady =
-      uavId && !state.loading && !state.error && state.value;
-    let timeoutId;
-
-    if (isResultReady) {
-      timeoutId = setTimeout(() => {
+      uavId && !state.loading && !state.error && Boolean(state.value);
+    if (isResultReady && !scheduledRefresh.current) {
+      scheduledRefresh.current = setTimeout(() => {
+        scheduledRefresh.current = undefined;
         state.retry();
       }, 1000);
     }
-
-    return timeoutId !== undefined ? () => clearTimeout(timeoutId) : undefined;
   }, [state, uavId]);
+
+  // Cancel scheduled refreshes when unmounting
+  useUnmount(() => {
+    if (scheduledRefresh.current) {
+      clearTimeout(scheduledRefresh.current);
+    }
+  });
 
   if (state.error && !state.loading) {
     return (
@@ -166,7 +171,7 @@ const PreflightStatusPanelLowerSegment = ({ uavId }) => {
       button={<Button onClick={state.retry}>Try again</Button>}
     />
   );
-};
+});
 
 PreflightStatusPanelLowerSegment.propTypes = {
   uavId: PropTypes.string,
