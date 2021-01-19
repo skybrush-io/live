@@ -94,16 +94,15 @@ const Sidebar = ({ isOpen, workbench }) => (
         />
         <hr />
         {hasFeature('showControl') && (
-          <>
-            <Module
-              id='show'
-              icon={<Grain />}
-              label='Show control'
-              component='show-control'
-            />
-            <hr />
-          </>
+          <Module
+            id='show'
+            icon={<Grain />}
+            label='Show control'
+            component='show-control'
+          />
         )}
+        {/* Do not use a single React fragment here for the line below and the line above; it would confuse `react-flexible-workbench` */}
+        {hasFeature('showControl') && <hr />}
         <Module
           id='clocks'
           icon={<Alarm />}
