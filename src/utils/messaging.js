@@ -151,6 +151,14 @@ export const moveUAVs = (uavIds, { target, ...rest }) => {
   return moveUAVsLowLevel(uavIds, args);
 };
 
+export const turnMotorOffForUAVs = performMassOperation({
+  type: 'UAV-MOTOR',
+  name: 'Motor off command',
+  mapper: () => ({
+    start: false,
+  }),
+});
+
 export const turnMotorOnForUAVs = performMassOperation({
   type: 'UAV-MOTOR',
   name: 'Motor on command',
@@ -199,6 +207,10 @@ export const createMultipleUAVRelatedActions = (
 
     takeoffSelectedUAVs: () => {
       takeoffUAVs(selectedUAVIds, options);
+    },
+
+    turnMotorsOffForSelectedUAVs: () => {
+      turnMotorOffForUAVs(selectedUAVIds, options);
     },
 
     turnMotorsOnForSelectedUAVs: () => {

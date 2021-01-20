@@ -10,9 +10,9 @@ import { makeStyles } from '@material-ui/core/styles';
 
 import Clear from '@material-ui/icons/Clear';
 import Home from '@material-ui/icons/Home';
-// import FlightTakeoff from '@material-ui/icons/FlightTakeoff';
 import FlightLand from '@material-ui/icons/FlightLand';
-// import Sync from '@material-ui/icons/Sync';
+import PowerSettingsNew from '@material-ui/icons/PowerSettingsNew';
+import PlayArrow from '@material-ui/icons/PlayArrow';
 
 import Colors from '~/components/colors';
 import {
@@ -65,8 +65,9 @@ const LargeControlButtonGroup = ({
     returnToHomeSelectedUAVs,
     /*
     takeoffSelectedUAVs,
-    turnMotorsOnForSelectedUAVs,
     */
+    turnMotorsOffForSelectedUAVs,
+    turnMotorsOnForSelectedUAVs,
   } = createMultipleUAVRelatedActions(
     broadcast ? allUAVIdsInMission : selectedUAVIds,
     {
@@ -98,26 +99,24 @@ const LargeControlButtonGroup = ({
           </Typography>
         </Box>
       </Box>
-      {/*
       <Box display='flex' flexDirection='row' flex={1}>
         <ControlButton
           className={classes.button}
-          color={Colors.info}
-          icon={<Sync fontSize='inherit' />}
+          color={Colors.success}
+          icon={<PlayArrow fontSize='inherit' />}
           onClick={turnMotorsOnForSelectedUAVs}
         >
-          Motor on
+          {broadcast ? 'Arm all' : 'Arm'}
         </ControlButton>
         <ControlButton
           className={classes.button}
-          color={Colors.success}
-          icon={<FlightTakeoff fontSize='inherit' />}
-          onClick={takeoffSelectedUAVs}
+          color={Colors.info}
+          icon={<Clear fontSize='inherit' />}
+          onClick={turnMotorsOffForSelectedUAVs}
         >
-          Start
+          {broadcast ? 'Disarm all' : 'Disarm'}
         </ControlButton>
       </Box>
-      */}
       <ControlButton
         className={classes.button}
         color={Colors.warning}
@@ -138,10 +137,10 @@ const LargeControlButtonGroup = ({
         <ControlButton
           className={classes.button}
           color={Colors.error}
-          icon={<Clear fontSize='inherit' />}
+          icon={<PowerSettingsNew fontSize='inherit' />}
           onClick={haltSelectedUAVs}
         >
-          {broadcast ? 'Halt all' : 'Halr'}
+          {broadcast ? 'Halt all' : 'Halt'}
         </ControlButton>
       </Box>
     </>

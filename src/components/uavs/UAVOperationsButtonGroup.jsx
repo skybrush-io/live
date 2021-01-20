@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 
+import Clear from '@material-ui/icons/Clear';
 import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
 import { makeStyles } from '@material-ui/core/styles';
@@ -11,6 +12,7 @@ import Assignment from '@material-ui/icons/Assignment';
 import FlightLand from '@material-ui/icons/FlightLand';
 import Home from '@material-ui/icons/Home';
 import PowerSettingsNew from '@material-ui/icons/PowerSettingsNew';
+import PlayArrow from '@material-ui/icons/PlayArrow';
 import Refresh from '@material-ui/icons/Refresh';
 import WbSunny from '@material-ui/icons/WbSunny';
 
@@ -53,6 +55,8 @@ const UAVOperationsButtonGroup = ({
     resetSelectedUAVs,
     returnToHomeSelectedUAVs,
     takeoffSelectedUAVs,
+    turnMotorsOffForSelectedUAVs,
+    turnMotorsOnForSelectedUAVs,
   } = createMultipleUAVRelatedActions(selectedUAVIds, { channel });
 
   const fontSize = size === 'small' ? 'small' : 'default';
@@ -117,6 +121,34 @@ const UAVOperationsButtonGroup = ({
 
       <Divider className={classes.divider} orientation='vertical' />
 
+      <Tooltip content='Arm motors'>
+        <IconButton
+          disabled={isSelectionEmpty}
+          size={size}
+          onClick={turnMotorsOnForSelectedUAVs}
+        >
+          <PlayArrow
+            fontSize={fontSize}
+            htmlColor={isSelectionEmpty ? undefined : Colors.warning}
+          />
+        </IconButton>
+      </Tooltip>
+
+      <Tooltip content='Disarm motors'>
+        <IconButton
+          disabled={isSelectionEmpty}
+          size={size}
+          onClick={turnMotorsOffForSelectedUAVs}
+        >
+          <Clear
+            fontSize={fontSize}
+            htmlColor={isSelectionEmpty ? undefined : Colors.warning}
+          />
+        </IconButton>
+      </Tooltip>
+
+      <Divider className={classes.divider} orientation='vertical' />
+
       <Tooltip content='Reboot'>
         <IconButton
           disabled={isSelectionEmpty}
@@ -125,7 +157,6 @@ const UAVOperationsButtonGroup = ({
         >
           <Refresh
             htmlColor={isSelectionEmpty ? undefined : Colors.error}
-            disabled={isSelectionEmpty}
             fontSize={fontSize}
           />
         </IconButton>

@@ -87,7 +87,7 @@ export default connect(
       dispatch(synchronizeShowSettings('toServer'));
       if (newAuthorizationState) {
         dispatch(setCommandsAreBroadcast(state));
-        dispatch(setSelectedUAVIds(getUAVIdsParticipatingInMission(state)));
+        // dispatch(setSelectedUAVIds(getUAVIdsParticipatingInMission(state)));
       }
     },
   }
