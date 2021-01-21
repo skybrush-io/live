@@ -39,6 +39,7 @@ const useStyles = makeStyles(
  */
 const UAVOperationsButtonGroup = ({
   channel,
+  hideSeparators,
   openUAVDetailsDialog,
   selectedUAVIds,
   size,
@@ -60,13 +61,14 @@ const UAVOperationsButtonGroup = ({
   } = createMultipleUAVRelatedActions(selectedUAVIds, { channel });
 
   const fontSize = size === 'small' ? 'small' : 'default';
+  const iconSize = size;
 
   return (
     <>
       <Tooltip content='Takeoff'>
         <IconButton
           disabled={isSelectionEmpty}
-          size={size}
+          size={iconSize}
           onClick={takeoffSelectedUAVs}
         >
           <FlightTakeoff fontSize={fontSize} />
@@ -76,7 +78,7 @@ const UAVOperationsButtonGroup = ({
       <Tooltip content='Land'>
         <IconButton
           disabled={isSelectionEmpty}
-          size={size}
+          size={iconSize}
           onClick={landSelectedUAVs}
         >
           <FlightLand fontSize={fontSize} />
@@ -86,14 +88,14 @@ const UAVOperationsButtonGroup = ({
       <Tooltip content='Return to home'>
         <IconButton
           disabled={isSelectionEmpty}
-          size={size}
+          size={iconSize}
           onClick={returnToHomeSelectedUAVs}
         >
           <Home fontSize={fontSize} />
         </IconButton>
       </Tooltip>
 
-      {size !== 'small' && (
+      {!hideSeparators && (
         <Divider className={classes.divider} orientation='vertical' />
       )}
 
@@ -101,7 +103,7 @@ const UAVOperationsButtonGroup = ({
         <Tooltip content='Properties'>
           <IconButton
             disabled={!isSelectionSingle}
-            size={size}
+            size={iconSize}
             onClick={() => openUAVDetailsDialog(selectedUAVIds[0])}
           >
             <Assignment />
@@ -112,19 +114,21 @@ const UAVOperationsButtonGroup = ({
       <Tooltip content='Flash lights'>
         <IconButton
           disabled={isSelectionEmpty}
-          size={size}
+          size={iconSize}
           onClick={flashLightOnSelectedUAVs}
         >
           <WbSunny fontSize={fontSize} />
         </IconButton>
       </Tooltip>
 
-      <Divider className={classes.divider} orientation='vertical' />
+      {!hideSeparators && (
+        <Divider className={classes.divider} orientation='vertical' />
+      )}
 
       <Tooltip content='Arm motors'>
         <IconButton
           disabled={isSelectionEmpty}
-          size={size}
+          size={iconSize}
           onClick={turnMotorsOnForSelectedUAVs}
         >
           <PlayArrow
@@ -137,7 +141,7 @@ const UAVOperationsButtonGroup = ({
       <Tooltip content='Disarm motors'>
         <IconButton
           disabled={isSelectionEmpty}
-          size={size}
+          size={iconSize}
           onClick={turnMotorsOffForSelectedUAVs}
         >
           <Clear
@@ -147,12 +151,14 @@ const UAVOperationsButtonGroup = ({
         </IconButton>
       </Tooltip>
 
-      <Divider className={classes.divider} orientation='vertical' />
+      {!hideSeparators && (
+        <Divider className={classes.divider} orientation='vertical' />
+      )}
 
       <Tooltip content='Reboot'>
         <IconButton
           disabled={isSelectionEmpty}
-          size={size}
+          size={iconSize}
           onClick={resetSelectedUAVs}
         >
           <Refresh
@@ -165,7 +171,7 @@ const UAVOperationsButtonGroup = ({
       <Tooltip content='Power off'>
         <IconButton
           disabled={isSelectionEmpty}
-          size={size}
+          size={iconSize}
           onClick={haltSelectedUAVs}
         >
           <PowerSettingsNew
@@ -182,6 +188,7 @@ UAVOperationsButtonGroup.propTypes = {
   channel: PropTypes.number,
   openUAVDetailsDialog: PropTypes.func,
   selectedUAVIds: PropTypes.arrayOf(PropTypes.string),
+  hideSeparators: PropTypes.bool,
   size: PropTypes.oneOf(['small', 'medium']),
 };
 
