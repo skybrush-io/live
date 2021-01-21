@@ -6,7 +6,6 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import Typography from '@material-ui/core/Typography';
 
-import { setSelectedUAVIds } from '~/actions/map';
 import { Status } from '~/components/semantics';
 import StatusLight from '~/components/StatusLight';
 import { setCommandsAreBroadcast } from '~/features/mission/slice';
@@ -19,7 +18,6 @@ import {
   isShowAuthorizedToStartLocally,
 } from '~/features/show/selectors';
 import { getSetupStageStatuses } from '~/features/show/stages';
-import { getUAVIdsParticipatingInMission } from '~/features/mission/selectors';
 
 /**
  * Button that allows the user to express her explicit consent to starting the
