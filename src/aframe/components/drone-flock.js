@@ -10,13 +10,15 @@ import watch from 'redux-watch';
 
 import AFrame from '../aframe';
 
-import flock from '~/flock';
-import store from '~/store';
-
+import { setSelectedUAVIds } from '~/actions/map';
+import { createSelectionHandlerThunk } from '~/components/helpers/lists';
 import { getPreferredDroneRadius } from '~/features/three-d/selectors';
 import { hideTooltip, showTooltip } from '~/features/three-d/slice';
+import flock from '~/flock';
 import { convertRGB565ToHex } from '~/flockwave/parsing';
 import { getFlatEarthCoordinateTransformer } from '~/selectors/map';
+import { getSelectedUAVIds } from '~/selectors/selection';
+import store from '~/store';
 
 const { THREE } = AFrame;
 
@@ -48,7 +50,14 @@ const getUpdatePositionFromGPSCoordinatesFunction = createSelector(
 AFrame.registerSystem('drone-flock', {
   init() {
     this.droneRadiusChanged = new Signal();
+
     this._onDroneRadiusChanged = this._onDroneRadiusChanged.bind(this);
+    this._onSelectionChanged = this._onSelectionChanged.bind(this);
+
+    this._selectionThunk = createSelectionHandlerThunk({
+      getSelection: getSelectedUAVIds,
+      setSelection: setSelectedUAVIds,
+    });
 
     const updatePositionFromGPSCoordinatesFunctionGetter = () =>
       getUpdatePositionFromGPSCoordinatesFunction(store.getState());
@@ -62,6 +71,9 @@ AFrame.registerSystem('drone-flock', {
     const droneRadiusGetter = () => getPreferredDroneRadius(store.getState());
     store.subscribe(watch(droneRadiusGetter)(this._onDroneRadiusChanged));
     this._onDroneRadiusChanged(droneRadiusGetter());
+
+    const selectionGetter = () => getSelectedUAVIds(store.getState());
+    store.subscribe(watch(selectionGetter)(this._onSelectionChanged));
 
     this._updatePositionFromLocalCoordinates = (coordinate, result) => {
       if (coordinate !== null && coordinate !== undefined) {
@@ -156,6 +168,10 @@ AFrame.registerSystem('drone-flock', {
 
     this.droneRadiusChanged.dispatch();
   },
+
+  _onSelectionChanged(_newValue, _oldValue) {
+    // TODO(ntamas): Schedule an update of the entity selection state in the next tick
+  },
 });
 
 AFrame.registerComponent('drone-flock', {
@@ -219,6 +235,13 @@ AFrame.registerComponent('drone-flock', {
         });
         entity.addEventListener('mouseleave', () => {
           store.dispatch(hideTooltip());
+        });
+        entity.addEventListener('click', (event) => {
+          // TODO(ntamas): the click event we receive from A-Frame does not
+          // contain the information aobut whether the Ctrl/Cmd key is pressed.
+          // We need to subscribe to keydown/keyup events on our own to record
+          // this information and use it.
+          store.dispatch(this.system._selectionThunk(event, id));
         });
 
         this._uavIdToEntity[id] = entity;

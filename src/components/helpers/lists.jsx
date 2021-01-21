@@ -111,19 +111,22 @@ export function createSelectionHandlerFactory({
   return (id) => (event) => {
     const selection = getSelection ? getSelection() : [];
 
-    if (eventHasPlatformModifierKey(event.nativeEvent)) {
+    if (eventHasPlatformModifierKey(event.nativeEvent || event)) {
       // Toggling the item
       return setSelection(xor(selection, [id]));
     }
 
-    if (
-      activateItem &&
-      selection &&
-      selection.length === 1 &&
-      selection[0] === id
-    ) {
-      // Item was already selected, let's activate it
-      return activateItem(id);
+    // Cater for the common case when we are re-selecting an item; no need to
+    // dispatch an action again, but we need to fire activateItem if we have
+    // one
+    if (selection && selection.length === 1 && selection[0] === id) {
+      if (activateItem) {
+        // Item was already selected, let's activate it
+        return activateItem(id);
+      } else {
+        // Item was already selected, no need to dispatch an action
+        return;
+      }
     }
 
     // Select the item
@@ -156,29 +159,28 @@ export function createSelectionHandlerThunk({
     const selection = getSelection ? getSelection(state) : [];
     let action;
 
-    if (eventHasPlatformModifierKey(event.nativeEvent)) {
+    if (eventHasPlatformModifierKey(event.nativeEvent || event)) {
       // Toggling the item
       action = setSelection(xor(selection, [id]));
-    } else if (
-      activateItem &&
-      selection &&
-      selection.length === 1 &&
-      selection[0] === id
-    ) {
-      // Item was already selected, let's activate it if it is a double-click,
-      // otherwise let's just select it. We use the "detail" property of the
-      // event to decide; this works if we are attached to the onClick handler.
-      action = event.detail > 1 ? activateItem(id) : setSelection([id]);
+    } else {
+      const alreadySelected =
+        selection && selection.length === 1 && selection[0] === id;
 
-      if (event.detail > 1) {
-        // Double-clicking may have triggered a text selection on the UI. We
-        // are too late to prevent it because it happens on mouseDown, so let's
-        // just clear it.
-        window.getSelection().removeAllRanges();
+      if (activateItem && alreadySelected) {
+        // Item was already selected, let's activate it if it is a double-click,
+        // otherwise do nothing. We use the "detail" property of the
+        // event to decide; this works if we are attached to the onClick handler.
+        action = event.detail > 1 ? activateItem(id) : null;
+        if (event.detail > 1) {
+          // Double-clicking may have triggered a text selection on the UI. We
+          // are too late to prevent it because it happens on mouseDown, so let's
+          // just clear it.
+          window.getSelection().removeAllRanges();
+        }
+      } else if (setSelection && !alreadySelected) {
+        // Select the item if it was not selected already
+        action = setSelection([id]);
       }
-    } else if (setSelection) {
-      // Select the item
-      action = setSelection([id]);
     }
 
     if (action) {

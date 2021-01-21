@@ -91,7 +91,7 @@ export const setSelectedFeatures = createAction(SET_SELECTED_FEATURES);
  * @return {Object} an appropriately constructed action
  */
 export const setSelectedUAVIds = (ids) =>
-  setSelectedFeatures(ids.map(uavIdToGlobalId));
+  setSelectedFeatures(ids.map((id) => uavIdToGlobalId(id)));
 
 /**
  * Action factory that creates an action that updates the stored state of the
