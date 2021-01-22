@@ -46,12 +46,9 @@ const Room = ({ corners, visible }) => {
    * 'horizontally', and width goes 'into the screen' */
   return (
     <a-box
-      depth={sizes[2]}
-      height={sizes[0]}
-      width={sizes[1]}
       position={`${center[0]} ${center[1]} ${center[2]}`}
-      color='#fff'
-      material='side: back'
+      scale={`${sizes[0]} ${sizes[1]} ${sizes[2]}`}
+      material='color: #fff; side: back'
     />
   );
 };
