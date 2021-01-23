@@ -14,6 +14,7 @@ const SmallProgressIndicator = ({ label, visible, ...rest }) => (
       padding={1}
       display='flex'
       flexDirection='row'
+      overflow='hidden'
       {...rest}
     >
       <Box pr={1}>

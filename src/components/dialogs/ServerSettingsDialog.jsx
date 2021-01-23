@@ -45,6 +45,7 @@ import SmallProgressIndicator from '~/components/SmallProgressIndicator';
 import { forceFormSubmission } from '~/components/forms';
 import {
   getDetectedServersInOrder,
+  getServerHostname,
   isConnecting,
 } from '~/features/servers/selectors';
 import {
@@ -87,9 +88,16 @@ const secondaryTextForServerItem = (item) =>
 const manualSetupAllowed =
   config && config.server && !config.server.preventManualSetup;
 
-const ConnectionInProgressIndicator = (props) => (
-  <SmallProgressIndicator label='Connecting...' {...props} />
+const ConnectionInProgressIndicator = ({ hostName, ...rest }) => (
+  <SmallProgressIndicator
+    label={hostName ? `Connecting to ${hostName}...` : 'Connecting...'}
+    {...rest}
+  />
 );
+
+ConnectionInProgressIndicator.propTypes = {
+  hostName: PropTypes.string,
+};
 
 const DetectedServersListPresentation = ({
   isScanning,
@@ -204,6 +212,7 @@ class ServerSettingsDialogPresentation extends React.Component {
   static propTypes = {
     active: PropTypes.bool,
     forceFormSubmission: PropTypes.func,
+    hostName: PropTypes.string,
     isConnecting: PropTypes.bool,
     onClose: PropTypes.func,
     onDisconnect: PropTypes.func,
@@ -240,6 +249,7 @@ class ServerSettingsDialogPresentation extends React.Component {
     const {
       active,
       forceFormSubmission,
+      hostName,
       isConnecting,
       onClose,
       onDisconnect,
@@ -254,6 +264,7 @@ class ServerSettingsDialogPresentation extends React.Component {
     actions.push(
       <ConnectionInProgressIndicator
         key='__connectionIndicator'
+        hostName={hostName}
         visible={isConnecting}
       />
     );
@@ -357,6 +368,7 @@ const ServerSettingsDialog = connect(
   // mapStateToProps
   (state) => ({
     active: state.dialogs.serverSettings.active,
+    hostName: getServerHostname(state),
     isConnecting: isConnecting(state),
     open: state.dialogs.serverSettings.dialogVisible,
     selectedTab: state.dialogs.serverSettings.selectedTab,
