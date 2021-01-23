@@ -56,7 +56,7 @@ const componentRegistry = {
   'lcd-clock-panel': views.LCDClockPanel,
   'log-panel': views.LogPanel,
   map: views.MapView,
-  messages: views.MessagesPanelView,
+  messages: views.MessagesPanelView, // deprecated, kept there for compatibility
   placeholder: Nothing,
   'saved-location-list': views.SavedLocationList,
   'show-control': onlyWithFeature('showControl', views.ShowControlPanel),
@@ -104,9 +104,6 @@ function constructDefaultWorkbench(store) {
           .add('show-control')
             .setTitle('Show control')
             .setId('show')
-          .add('messages')
-            .setTitle('Messages')
-            .setId('messages')
           .finish()
         .finish()
         .setRelativeWidth(25)

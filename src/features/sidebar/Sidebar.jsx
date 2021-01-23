@@ -86,12 +86,6 @@ const Sidebar = ({ isOpen, workbench }) => (
             component='dock-list'
           />
         )}
-        <Module
-          id='messages'
-          icon={<Message />}
-          label='Messages'
-          component='messages'
-        />
         <hr />
         {hasFeature('showControl') && (
           <Module
