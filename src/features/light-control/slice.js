@@ -5,8 +5,6 @@
 
 import { createSlice } from '@reduxjs/toolkit';
 
-import { noPayload } from '~/utils/redux';
-
 const { actions, reducer } = createSlice({
   name: 'lightControl',
 
@@ -16,34 +14,30 @@ const { actions, reducer } = createSlice({
   },
 
   reducers: {
+    // Internal action; do not use directly unless you know what you are
+    // doing because chances are that you need a side effect that informs
+    // the server about the change.
     setColor(state, action) {
       if (typeof action.payload === 'string') {
         state.color = action.payload;
       }
     },
 
-    setColorAndActivate(state, action) {
-      if (typeof action.payload === 'string') {
-        state.color = action.payload;
-        state.active = true;
-      }
-    },
-
+    // Internal action; do not use directly unless you know what you are
+    // doing because chances are that you need a side effect that informs
+    // the server about the change.
     setLightControlActive(state, action) {
       state.active = Boolean(action.payload);
     },
-
-    toggleLightControlActive: noPayload((state) => {
-      state.active = !state.active;
-    }),
   },
 });
 
 export const {
+  // Internal actions; do not use directly unless you know what you are
+  // doing because chances are that you need a side effect that informs
+  // the server about the change.
   setColor,
-  setColorAndActivate,
   setLightControlActive,
-  toggleLightControlActive,
 } = actions;
 
 export default reducer;

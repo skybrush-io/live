@@ -19,7 +19,7 @@ const LightControlPanel = () => (
     id='tour-light-control'
     overflow='auto'
   >
-    <List dense disablePadding>
+    <List dense>
       <LightControlMainSwitch />
     </List>
     <Divider />

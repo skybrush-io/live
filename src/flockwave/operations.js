@@ -83,6 +83,21 @@ export async function setShowConfiguration(hub, config) {
 }
 
 /**
+ * Takes control of the LED lights of the drones managed by the server, or
+ * gives up control, depending on the submitted configuration object.
+ */
+export async function setShowLightConfiguration(hub, config) {
+  const response = await hub.sendMessage({
+    type: 'SHOW-SETLIGHTS',
+    configuration: config,
+  });
+
+  if (response.body.type !== 'ACK-ACK') {
+    throw new Error('Failed to set new light configuration on the server');
+  }
+}
+
+/**
  * Asks the RTK framework on the server to start a new survey on the current
  * RTK connection.
  */
@@ -131,6 +146,7 @@ export class OperationExecutor {
     sendDebugMessage,
     setRTKCorrectionsSource,
     setShowConfiguration,
+    setShowLightConfiguration,
     startRTKSurvey,
     uploadDroneShow,
   };

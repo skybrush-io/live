@@ -6,24 +6,35 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import Switch from '@material-ui/core/Switch';
 
+import { toggleLightControlActive } from '~/features/light-control/actions';
 import { isLightControlActive } from '~/features/light-control/selectors';
-import { toggleLightControlActive } from '~/features/light-control/slice';
+import { isConnected } from '~/features/servers/selectors';
 
 /**
  * Component that explains to the user how the drones will start after the
  * authorization has been given.
  */
-const LightControlMainSwitch = ({ active, onToggle }) => (
-  <ListItem button onClick={onToggle}>
-    <Switch checked={active} />
+const LightControlMainSwitch = ({ active, connected, onToggle }) => (
+  <ListItem
+    button
+    disabled={!connected}
+    onClick={connected ? onToggle : undefined}
+  >
+    <Switch checked={active && connected} />
     <ListItemText
       primary={
-        active ? 'Lights controlled from GCS' : 'Lights not controlled from GCS'
+        connected
+          ? active
+            ? 'Lights controlled from GCS'
+            : 'Lights not controlled from GCS'
+          : 'Not connected to server'
       }
       secondary={
-        active
-          ? 'Click to restore default light program'
-          : 'Click to take control'
+        connected
+          ? active
+            ? 'Click to restore default light program'
+            : 'Click to take control'
+          : 'Connect to a server to control lights'
       }
     />
   </ListItem>
@@ -31,6 +42,7 @@ const LightControlMainSwitch = ({ active, onToggle }) => (
 
 LightControlMainSwitch.propTypes = {
   active: PropTypes.bool,
+  connected: PropTypes.bool,
   onToggle: PropTypes.func,
 };
 
@@ -38,6 +50,7 @@ export default connect(
   // mapStateToProps
   (state) => ({
     active: isLightControlActive(state),
+    connected: isConnected(state),
   }),
   // mapDispatchToProps
   {

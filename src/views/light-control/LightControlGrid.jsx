@@ -7,8 +7,11 @@ import Box from '@material-ui/core/Box';
 import { makeStyles } from '@material-ui/core/styles';
 
 import ColoredButton from '~/components/ColoredButton';
+import {
+  setColorAndActivate,
+  setColorAndUpdateServerIfActive,
+} from '~/features/light-control/actions';
 import { getCurrentColorInLightControlPanel } from '~/features/light-control/selectors';
-import { setColor, setColorAndActivate } from '~/features/light-control/slice';
 
 const LightButton = ({ color, label, onClick, ...rest }) => (
   <ColoredButton
@@ -89,7 +92,7 @@ export default connect(
   }),
   // mapDispatchToProps
   {
-    onSetColor: setColor,
+    onSetColor: setColorAndUpdateServerIfActive,
     onSetColorAndActivate: setColorAndActivate,
   }
 )(LightControlGrid);
