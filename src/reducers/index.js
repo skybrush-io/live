@@ -10,6 +10,7 @@ import datasetsReducer from '~/features/datasets/slice';
 import docksReducer from '~/features/docks/slice';
 import lcdClockReducer from '~/features/lcd-clock/slice';
 import localServerReducer from '~/features/local-server/slice';
+import lightControlReducer from '~/features/light-control/slice';
 import logReducer from '~/features/log/slice';
 import measurementReducer from '~/features/measurement/slice';
 import messagesReducer from '~/features/messages/slice';
@@ -41,6 +42,7 @@ const reducer = combineReducers({
   docks: docksReducer,
   features: featuresReducer,
   lcdClock: lcdClockReducer,
+  lightControl: lightControlReducer,
   localServer: localServerReducer,
   log: logReducer,
   map: mapReducer,

@@ -57,6 +57,8 @@ const pickerProps = {
   height: 192,
 };
 
-export default (props) => (
+const SwatchesColorPicker = (props) => (
   <SwatchesPicker className='borderless' {...pickerProps} {...props} />
 );
+
+export default SwatchesColorPicker;

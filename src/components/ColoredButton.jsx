@@ -12,7 +12,7 @@ const useStyles = makeStyles(
       fontSize: '48px',
     },
 
-    root: ({ color }) => {
+    root: ({ color, dense }) => {
       const parsedColor = createColor(color);
       return {
         ...theme.typography.button,
@@ -24,7 +24,7 @@ const useStyles = makeStyles(
           ? 'rgba(0, 0, 0, 0.87)'
           : 'rgba(255, 255, 255, 0.87)',
         flexDirection: 'column',
-        padding: theme.spacing(1, 3),
+        padding: theme.spacing(1, dense ? 1 : 3),
         textDecoration: 'none',
         transition: theme.transitions.create(
           ['background-color', 'box-shadow'],
@@ -41,12 +41,19 @@ const useStyles = makeStyles(
     },
   }),
   {
-    name: 'ControlButton',
+    name: 'ColoredButton',
   }
 );
 
-const ControlButton = ({ children, className, color, icon, ...rest }) => {
-  const classes = useStyles({ color });
+const ColoredButton = ({
+  children,
+  className,
+  color,
+  dense,
+  icon,
+  ...rest
+}) => {
+  const classes = useStyles({ color, dense });
 
   return (
     <ButtonBase focusRipple className={clsx(className, classes.root)} {...rest}>
@@ -56,14 +63,15 @@ const ControlButton = ({ children, className, color, icon, ...rest }) => {
   );
 };
 
-ControlButton.propTypes = {
+ColoredButton.propTypes = {
   children: PropTypes.oneOfType([
     PropTypes.node,
     PropTypes.arrayOf(PropTypes.node),
   ]),
   className: PropTypes.string,
   color: PropTypes.string,
+  dense: PropTypes.bool,
   icon: PropTypes.node,
 };
 
-export default ControlButton;
+export default ColoredButton;

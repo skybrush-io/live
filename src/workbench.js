@@ -53,6 +53,7 @@ const componentRegistry = {
   'feature-list': onlyWithFeature('features', views.FeatureList),
   'ground-control-view': injectFlockFromContext(views.GroundControlView),
   'layer-list': views.LayerList,
+  'light-control': onlyWithFeature('showControl', views.LightControlPanel),
   'lcd-clock-panel': views.LCDClockPanel,
   'log-panel': views.LogPanel,
   map: views.MapView,
@@ -104,6 +105,9 @@ function constructDefaultWorkbench(store) {
           .add('show-control')
             .setTitle('Show control')
             .setId('show')
+          .add('light-control')
+            .setTitle('Light control')
+            .setId('lights')
           .finish()
         .finish()
         .setRelativeWidth(25)

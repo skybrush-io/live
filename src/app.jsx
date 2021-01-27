@@ -39,6 +39,7 @@ require('../assets/css/screen.less');
 require('../assets/css/tooltips.less');
 
 require('react-cover-page/themes/default.css');
+require('react-colorful/dist/index.css');
 
 require('typeface-fira-sans');
 

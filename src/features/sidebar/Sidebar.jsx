@@ -1,3 +1,5 @@
+/* global VERSION */
+
 import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 import Alarm from '@material-ui/icons/Alarm';
@@ -7,12 +9,12 @@ import Gamepad from '@material-ui/icons/Gamepad';
 import Grain from '@material-ui/icons/Grain';
 import Layers from '@material-ui/icons/Layers';
 import Map from '@material-ui/icons/Map';
-import Message from '@material-ui/icons/Message';
 import MyLocation from '@material-ui/icons/MyLocation';
 // import Notifications from '@material-ui/icons/Notifications';
 import ShowChart from '@material-ui/icons/ShowChart';
 // import Storage from '@material-ui/icons/Storage';
 import ThreeDRotation from '@material-ui/icons/ThreeDRotation';
+import WbSunny from '@material-ui/icons/WbSunny';
 
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -87,6 +89,7 @@ const Sidebar = ({ isOpen, workbench }) => (
           />
         )}
         <hr />
+        {/* Do not use a single React fragment here for the next section; it would confuse `react-flexible-workbench` */}
         {hasFeature('showControl') && (
           <Module
             id='show'
@@ -95,7 +98,14 @@ const Sidebar = ({ isOpen, workbench }) => (
             component='show-control'
           />
         )}
-        {/* Do not use a single React fragment here for the line below and the line above; it would confuse `react-flexible-workbench` */}
+        {hasFeature('showControl') && (
+          <Module
+            id='lights'
+            icon={<WbSunny />}
+            label='Light control'
+            component='light-control'
+          />
+        )}
         {hasFeature('showControl') && <hr />}
         <Module
           id='clocks'

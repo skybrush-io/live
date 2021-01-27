@@ -15,6 +15,7 @@ import PowerSettingsNew from '@material-ui/icons/PowerSettingsNew';
 import PlayArrow from '@material-ui/icons/PlayArrow';
 
 import Colors from '~/components/colors';
+import ColoredButton from '~/components/ColoredButton';
 import {
   areFlightCommandsBroadcast,
   getPreferredCommunicationChannelIndex,
@@ -24,7 +25,6 @@ import { setCommandsAreBroadcast } from '~/features/mission/slice';
 import { getSelectedUAVIds } from '~/selectors/selection';
 import { createMultipleUAVRelatedActions } from '~/utils/messaging';
 
-import ControlButton from './ControlButton';
 import StartMethodExplanation from './StartMethodExplanation';
 
 const useStyles = makeStyles(
@@ -100,48 +100,48 @@ const LargeControlButtonGroup = ({
         </Box>
       </Box>
       <Box display='flex' flexDirection='row' flex={1}>
-        <ControlButton
+        <ColoredButton
           className={classes.button}
           color={Colors.success}
           icon={<PlayArrow fontSize='inherit' />}
           onClick={turnMotorsOnForSelectedUAVs}
         >
           {broadcast ? 'Arm all' : 'Arm'}
-        </ControlButton>
-        <ControlButton
+        </ColoredButton>
+        <ColoredButton
           className={classes.button}
           color={Colors.info}
           icon={<Clear fontSize='inherit' />}
           onClick={turnMotorsOffForSelectedUAVs}
         >
           {broadcast ? 'Disarm all' : 'Disarm'}
-        </ControlButton>
+        </ColoredButton>
       </Box>
-      <ControlButton
+      <ColoredButton
         className={classes.button}
         color={Colors.warning}
         icon={<Home fontSize='inherit' />}
         onClick={returnToHomeSelectedUAVs}
       >
         {broadcast ? 'RTH all' : 'RTH'}
-      </ControlButton>
+      </ColoredButton>
       <Box display='flex' flexDirection='row' flex={1} mb={0.5}>
-        <ControlButton
+        <ColoredButton
           className={classes.button}
           color={Colors.seriousWarning}
           icon={<FlightLand fontSize='inherit' />}
           onClick={landSelectedUAVs}
         >
           {broadcast ? 'Land all' : 'Land'}
-        </ControlButton>
-        <ControlButton
+        </ColoredButton>
+        <ColoredButton
           className={classes.button}
           color={Colors.error}
           icon={<PowerSettingsNew fontSize='inherit' />}
           onClick={haltSelectedUAVs}
         >
           {broadcast ? 'Halt all' : 'Halt'}
-        </ControlButton>
+        </ColoredButton>
       </Box>
     </>
   );

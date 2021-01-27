@@ -9,7 +9,7 @@ import { createAction } from '@reduxjs/toolkit';
  * Creates an action factory with an async preparation function.
  *
  * The preparation function will be called with all the arguments that were
- * originallz passed to the action factory. It must then return a promise, which
+ * originally passed to the action factory. It must then return a promise, which
  * will be dispatched to Redux with the given action name. The Redux middleware
  * will take care of dispatching appropriate actions that notify the store about
  * the progress of the execution of the promise.

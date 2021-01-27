@@ -10,6 +10,7 @@ import DockList from './docks';
 import FeatureList from './features';
 import LayerList from './layers';
 import LCDClockPanel from './lcd-clock';
+import LightControlPanel from './light-control';
 import SavedLocationList from './locations';
 import LogPanel from './log';
 import MapView from './map';
@@ -18,7 +19,7 @@ import ShowControlPanel from './show-control';
 import UAVList from './uavs';
 import ThreeDTopLevelView from './three-d';
 
-export default {
+const views = {
   ClockDisplayList,
   ConnectionList,
   DatasetList,
@@ -26,6 +27,7 @@ export default {
   FeatureList,
   LayerList,
   LCDClockPanel,
+  LightControlPanel,
   LogPanel,
   MapView,
   MessagesPanelView,
@@ -34,3 +36,5 @@ export default {
   UAVList,
   ThreeDTopLevelView,
 };
+
+export default views;
