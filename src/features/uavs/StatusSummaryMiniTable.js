@@ -15,27 +15,32 @@ import {
 } from '~/model/enums';
 import { shortTimeAgoFormatter } from '~/utils/formatting';
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    fontSize: 'small',
-    width: '100%',
+const useStyles = makeStyles(
+  (theme) => ({
+    root: {
+      fontSize: 'small',
+      width: '100%',
 
-    '& .muted': {
-      color: theme.palette.text.disabled,
+      '& .muted': {
+        color: theme.palette.text.disabled,
+      },
     },
-  },
 
-  header: {
-    textTransform: 'uppercase',
-    color: theme.palette.text.secondary,
-  },
+    header: {
+      textTransform: 'uppercase',
+      color: theme.palette.text.secondary,
+    },
 
-  value: {
-    textAlign: 'right',
-  },
+    value: {
+      textAlign: 'right',
+    },
 
-  separator: {},
-}));
+    separator: {},
+  }),
+  {
+    name: 'StatusSummaryMiniTable',
+  }
+);
 
 const naText = <span className='muted'>—</span>;
 
@@ -47,6 +52,8 @@ const formatNumberSafely = (x, digits = 0, unit = '') =>
       ? `${x.toFixed(digits)}${unit}`
       : x.toFixed(digits)
     : x;
+
+// TODO(ntamas): refactor this in terms of components/mini-table!
 
 const StatusSummaryMiniTable = ({
   gpsFix,

@@ -18,6 +18,7 @@ import SplashScreen from './components/SplashScreen';
 
 import { ErrorHandler } from './error-handling';
 
+import DockDetailsDialog from './features/docks/DockDetailsDialog';
 import CoordinateAveragingDialog from './features/measurement/CoordinateAveragingDialog';
 import SavedLocationEditorDialog from './features/saved-locations/SavedLocationEditorDialog';
 import RTKSetupDialog from './features/rtk/RTKSetupDialog';
@@ -128,6 +129,7 @@ const App = () => {
                 <dialogs.TimeSyncDialog />
 
                 <CoordinateAveragingDialog />
+                <DockDetailsDialog />
                 <RTKSetupDialog />
                 <SavedLocationEditorDialog />
                 <UAVDetailsDialog />

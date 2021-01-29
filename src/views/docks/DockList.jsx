@@ -16,6 +16,7 @@ import { connect } from 'react-redux';
 
 import { setSelectedDockIds } from '~/actions/map';
 import { multiSelectableListOf } from '~/components/helpers/lists';
+import { openDockDetailsDialog } from '~/features/docks/details';
 import {
   getDocksInOrder,
   getSelectedDockIds,
@@ -92,12 +93,8 @@ export default connect(
     selectedIds: getSelectedDockIds(state),
   }),
   // mapDispatchToProps
-  (dispatch) => ({
-    onItemActivated: (dockId) => {
-      console.log(dockId);
-    },
-    onSelectionChanged: (dockIds) => {
-      dispatch(setSelectedDockIds(dockIds));
-    },
-  })
+  {
+    onItemActivated: openDockDetailsDialog,
+    onSelectionChanged: setSelectedDockIds,
+  }
 )(DockList);

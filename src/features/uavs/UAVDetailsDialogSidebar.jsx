@@ -9,6 +9,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import DroneAvatar from '~/components/uavs/DroneAvatar';
 import UAVOperationsButtonGroup from '~/components/uavs/UAVOperationsButtonGroup';
 
+import { getSelectedUAVIdInUAVDetailsDialog } from './details';
 import StatusSummaryMiniTable from './StatusSummaryMiniTable';
 
 const useStyles = makeStyles(
@@ -65,7 +66,7 @@ UAVDetailsDialogSidebar.propTypes = {
 export default connect(
   // mapStateToProps
   (state) => ({
-    uavId: state.dialogs.uavDetails.selectedUAVId,
+    uavId: getSelectedUAVIdInUAVDetailsDialog(state),
   }),
   // mapDispatchToProps
   {}

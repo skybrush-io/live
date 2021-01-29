@@ -21,16 +21,22 @@ const PaperComponent = (props) => (
   </Draggable>
 );
 
-const useStyles = makeStyles((theme) => ({
-  sidebar: {
-    ...createSecondaryAreaStyle(theme, { inset: 'right' }),
-  },
+const useStyles = makeStyles(
+  (theme) => ({
+    sidebar: {
+      ...createSecondaryAreaStyle(theme, { inset: 'right' }),
+      display: 'flex',
+    },
 
-  draggableTitle: {
-    flex: 1,
-    cursor: 'move',
-  },
-}));
+    draggableTitle: {
+      flex: 1,
+      cursor: 'move',
+    },
+  }),
+  {
+    name: 'DraggableDialog',
+  }
+);
 
 const DraggableDialog = ({
   children,
@@ -79,7 +85,7 @@ const DraggableDialog = ({
   return (
     <Dialog PaperComponent={PaperComponent} {...rest}>
       {sidebarComponents ? (
-        <Box display='flex' flexDirection='row'>
+        <Box display='flex' flexDirection='row' alignItems='stretch'>
           <Box className={classes.sidebar}>{sidebarComponents}</Box>
           <Box flex={1}>{dialogBody}</Box>
         </Box>
