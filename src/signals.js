@@ -57,7 +57,7 @@ export function fitCoordinatesIntoMapView(coordinates, options) {
  *         comes first and latitude comes second, according to OpenLayers
  *         conventions.
  */
-export function scrollToMapLocation(coordinate, options) {
+export function scrollToMapLocation(coordinate, options = {}) {
   const { rotation, ...rest } = options;
   const signalOptions = {
     duration: 500,

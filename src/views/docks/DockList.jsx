@@ -20,14 +20,14 @@ import {
   getDocksInOrder,
   getSelectedDockIds,
 } from '~/features/docks/selectors';
-import { fitCoordinatesIntoMapView, scrollToMapLocation } from '~/signals';
+import { scrollToMapLocation } from '~/signals';
 
 /**
  * Presentation component for the entire dock list.
  */
 const DockListPresentation = multiSelectableListOf(
   (dock, props, selected) => {
-    const rightIconButton = (
+    const rightIconButton = dock.position ? (
       <Tooltip content='Show on map'>
         <IconButton
           edge='end'
@@ -36,7 +36,7 @@ const DockListPresentation = multiSelectableListOf(
           <Search />
         </IconButton>
       </Tooltip>
-    );
+    ) : null;
 
     return (
       <ListItem
@@ -60,12 +60,18 @@ const DockListPresentation = multiSelectableListOf(
  * React component that shows the state of the known docks in a Skybrush
  * server.
  */
-const DockList = ({ onSelectionChanged, selectedIds, ...rest }) => (
+const DockList = ({
+  onItemActivated,
+  onSelectionChanged,
+  selectedIds,
+  ...rest
+}) => (
   <Box display='flex' flexDirection='column' height='100%'>
     <Box height='100%' overflow='auto'>
       <DockListPresentation
         dense
         value={selectedIds || []}
+        onActivate={onItemActivated}
         onChange={onSelectionChanged}
         {...rest}
       />
@@ -75,6 +81,7 @@ const DockList = ({ onSelectionChanged, selectedIds, ...rest }) => (
 
 DockList.propTypes = {
   selectedIds: PropTypes.arrayOf(PropTypes.string).isRequired,
+  onItemActivated: PropTypes.func,
   onSelectionChanged: PropTypes.func,
 };
 
@@ -86,7 +93,10 @@ export default connect(
   }),
   // mapDispatchToProps
   (dispatch) => ({
-    onSelectionChanged: (event, dockIds) => {
+    onItemActivated: (dockId) => {
+      console.log(dockId);
+    },
+    onSelectionChanged: (dockIds) => {
       dispatch(setSelectedDockIds(dockIds));
     },
   })

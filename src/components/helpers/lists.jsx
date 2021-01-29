@@ -337,6 +337,7 @@ export function multiSelectableListOf(itemRenderer, options = {}) {
   const MultiSelectableListView = React.forwardRef((props, ref) => {
     const items = dataProvider(props);
     const onItemSelected = createSelectionHandlerFactory({
+      activateItem: props.onActivate,
       getSelection: () => props.value,
       setSelection: props.onChange,
     });
@@ -362,6 +363,7 @@ export function multiSelectableListOf(itemRenderer, options = {}) {
   });
 
   MultiSelectableListView.propTypes = {
+    onActivate: PropTypes.func,
     onChange: PropTypes.func,
     value: PropTypes.arrayOf(PropTypes.any).isRequired,
   };

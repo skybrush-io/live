@@ -6,7 +6,9 @@ import omitBy from 'lodash-es/omitBy';
 import { setDockStateMultiple } from '~/features/docks/slice';
 
 const mapPosition = (positionFromServer) =>
-  positionFromServer
+  positionFromServer &&
+  Array.isArray(positionFromServer) &&
+  (positionFromServer[0] !== 0 || positionFromServer[1] !== 0)
     ? {
         lat: positionFromServer[0] / 1e7,
         lon: positionFromServer[1] / 1e7,
