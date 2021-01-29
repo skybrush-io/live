@@ -82,7 +82,7 @@ export function scrollToMapLocation(coordinate, options = {}) {
   }
 }
 
-export default {
+const signals = {
   mapReferenceRequestSignal,
 
   mapRotationResetSignal,
@@ -91,3 +91,5 @@ export default {
   mapViewToLocationSignal,
   mapViewToExtentSignal,
 };
+
+export default signals;
