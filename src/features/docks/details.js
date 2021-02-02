@@ -11,8 +11,8 @@ const { actions, reducer } = createSlice({
   name: 'dock-details',
 
   initialState: {
-    open: true,
-    selectedDockId: 'DOCK:9B6603',
+    open: false,
+    selectedDockId: undefined,
     selectedTab: 'sensors',
   },
 
