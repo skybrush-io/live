@@ -53,10 +53,10 @@ function* localServerExecutableDiscoverySaga(search) {
         delay(minDuration),
       ]);
 
-      const [serverPath, err] = result[0];
+      const [serverPath, error] = result[0];
 
-      if (err) {
-        yield put(notifyLocalServerExecutableSearchFailed(err));
+      if (error) {
+        yield put(notifyLocalServerExecutableSearchFailed(error));
       } else {
         yield put(notifyLocalServerExecutableSearchFinished(serverPath));
       }
