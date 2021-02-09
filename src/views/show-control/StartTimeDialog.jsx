@@ -20,7 +20,6 @@ import DateFnsUtils from '@date-io/date-fns';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
-import Divider from '@material-ui/core/Divider';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import FormGroup from '@material-ui/core/FormGroup';
@@ -146,8 +145,6 @@ const StartTimeForm = ({
             <Box mr={2}>
               <Typography variant='body2' color='textSecondary'>
                 Suggestions:
-                {/* +30s, rounded up to next minute */
-                /* Current time, rounded up to next 5 / 10 / 15 / 30 / 60 minutes */}
               </Typography>
             </Box>
 

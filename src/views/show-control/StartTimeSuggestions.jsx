@@ -3,6 +3,7 @@ import format from 'date-fns/format';
 import getMinutes from 'date-fns/getMinutes';
 import getSeconds from 'date-fns/getSeconds';
 import startOfMinute from 'date-fns/startOfMinute';
+import startOfSecond from 'date-fns/startOfSecond';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { useInterval, useUpdate } from 'react-use';
@@ -13,39 +14,69 @@ import { styled } from '@material-ui/core/styles';
 
 const BorderlessButton = styled(Button)({
   border: [0, '!important'],
+  textTransform: ['none', '!important'],
 });
+
+const createStartTimeSuggestions = () => {
+  const result = [
+    {
+      time: 30,
+      relative: true,
+    },
+    {
+      time: 60,
+      relative: true,
+    },
+    {
+      time: add(startOfMinute(add(Date.now(), { seconds: 30 })), {
+        minutes: 2,
+      }),
+    },
+  ];
+
+  for (const divisor of [5, 15, 30]) {
+    const lastStartTime = result[result.length - 1].time;
+    const lastMinutes = getMinutes(lastStartTime);
+    result.push({
+      time: add(lastStartTime, { minutes: divisor - (lastMinutes % divisor) }),
+    });
+  }
+
+  return result;
+};
 
 /**
  * Component that shows suggested start times for the drone swarm, based on the
  * current date/time.
  */
-const StartTimeSuggestions = ({ onChange, value, ...rest }) => {
+const StartTimeSuggestions = ({ onChange, ...rest }) => {
   const update = useUpdate();
-  const startTimes = [
-    add(startOfMinute(add(Date.now(), { seconds: 30 })), { minutes: 1 }),
-  ];
-  for (const divisor of [5, 10, 15, 30, 60]) {
-    const lastStartTime = startTimes[startTimes.length - 1];
-    const lastMinutes = getMinutes(lastStartTime);
-    startTimes.push(
-      add(lastStartTime, { minutes: divisor - (lastMinutes % divisor) })
-    );
-  }
+  const startTimes = createStartTimeSuggestions();
 
   /* re-render every 10 seconds */
   useInterval(update, 10000);
 
   return (
     <ButtonGroup variant='text' {...rest}>
-      {startTimes.map((time, index) => (
+      {startTimes.map(({ time, relative }, index) => (
+        /* eslint-disable react/no-array-index-key */
         <BorderlessButton
           key={`button${index}`}
-          onClick={() => onChange(time.valueOf())}
+          onClick={() =>
+            onChange(
+              relative
+                ? startOfSecond(add(Date.now(), { seconds: time }))
+                : time.valueOf()
+            )
+          }
         >
-          {getSeconds(time) === 0
+          {relative
+            ? `${time > 0 ? '+' : ''}${time}s`
+            : getSeconds(time) === 0
             ? format(time, 'HH:mm')
             : format(time, 'HH:mm:ss')}
         </BorderlessButton>
+        /* eslint-enable react/no-array-index-key */
       ))}
     </ButtonGroup>
   );
