@@ -60,7 +60,7 @@ const MiniTable = ({ items }) => {
 
 MiniTable.propTypes = {
   items: PropTypes.arrayOf(
-    PropTypes.oneOf(PropTypes.string, PropTypes.arrayOf(PropTypes.node))
+    PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.node)])
   ),
 };
 
