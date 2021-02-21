@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
-import AutoSizer from 'react-virtualized-auto-sizer';
+// import AutoSizer from 'react-virtualized-auto-sizer';
 
 import Dialog from '@material-ui/core/Dialog';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -15,9 +15,7 @@ import VersionCheckGrid from './VersionCheckGrid';
  */
 const VersionCheckDialog = ({ onClose, open }) => (
   <Dialog fullWidth open={open} maxWidth='sm' onClose={onClose}>
-    <AutoSizer disableHeight>
-      {({ width }) => <VersionCheckGrid height={160} width={width} />}
-    </AutoSizer>
+    <VersionCheckGrid height={160} width={400} />
   </Dialog>
 );
 
