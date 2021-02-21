@@ -69,6 +69,7 @@ OutdoorEnvironmentEditor.propTypes = {
 export default connect(
   // mapStateToProps
   (state) => ({
+    altitudeReference: state.show.environment.outdoor.altitudeReference,
     showCoordinateSystem: state.show.environment.outdoor.coordinateSystem,
     mapCoordinateSystem: state.map.origin,
   }),

@@ -4,6 +4,14 @@
 export const COORDINATE_SYSTEM_TYPE = 'nwu';
 
 /**
+ * Altitude reference types for drone shows.
+ */
+export const ALTITUDE_REFERENCE = {
+  AGL: 'agl',
+  AMSL: 'amsl',
+};
+
+/**
  * Default room size.
  */
 export const DEFAULT_ROOM_SIZE = {

@@ -9,7 +9,11 @@ import set from 'lodash-es/set';
 
 import { createSlice } from '@reduxjs/toolkit';
 
-import { COORDINATE_SYSTEM_TYPE, DEFAULT_ROOM_SIZE } from './constants';
+import {
+  ALTITUDE_REFERENCE,
+  COORDINATE_SYSTEM_TYPE,
+  DEFAULT_ROOM_SIZE,
+} from './constants';
 import { StartMethod } from './enums';
 import { moveItemsBetweenQueues } from './utils';
 
@@ -34,6 +38,10 @@ const { actions, reducer } = createSlice({
           orientation: '0', // stored as a string to avoid rounding errors
           origin: null,
           type: COORDINATE_SYSTEM_TYPE,
+        },
+        altitudeReference: {
+          type: ALTITUDE_REFERENCE.AGL,
+          value: 0,
         },
       },
       indoor: {
