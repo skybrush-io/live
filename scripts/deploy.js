@@ -32,7 +32,6 @@ const buildDir = path.resolve(projectRoot, 'build');
 const outputDir = path.resolve(projectRoot, 'dist');
 
 program
-  .storeOptionsAsProperties(false)
   .option(
     '-p, --production',
     'whether to build the application in production mode'
