@@ -9,6 +9,7 @@
 const dns = require('dns');
 const fs = require('fs');
 const { ipcRenderer: ipc } = require('electron-better-ipc');
+const ElectronStore = require('electron-store');
 const unhandled = require('electron-unhandled');
 const SSDPClient = require('node-ssdp-lite');
 const watch = require('node-watch');
@@ -62,6 +63,7 @@ function createStateStore() {
     // exception during startup, so let's prevent that for the time being
     clearInvalidConfig: true,
   });
+
   return createStorageEngine({
     electronStore,
     store: {

@@ -10,7 +10,7 @@ import { Geolocation, layer, source } from '@collmot/ol-react';
 import { toRadians } from '~/utils/math';
 import makeLogger from '~/utils/logging';
 
-const LocationIcon = require('~/../assets/img/location-32x32.png').default;
+import LocationIcon from '~/../assets/img/location-32x32.png';
 
 const logger = makeLogger('OwnLocationLayer');
 

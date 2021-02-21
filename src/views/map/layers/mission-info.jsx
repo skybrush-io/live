@@ -57,8 +57,7 @@ import {
 } from '~/utils/styles';
 import UAVTrajectoryFeature from '~/views/map/features/UAVTrajectoryFeature';
 
-const missionOriginMarker = require('~/../assets/img/mission-origin-marker.svg')
-  .default;
+import missionOriginMarker from '~/../assets/img/mission-origin-marker.svg';
 
 // === Settings for this particular layer type ===
 

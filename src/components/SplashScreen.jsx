@@ -2,7 +2,9 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { CoverPagePresentation as CoverPage } from 'react-cover-page';
 
-const logo = require('~/../assets/icons/splash.png').default;
+import logo from '~/../assets/icons/splash.png';
+
+console.log(logo);
 
 const SplashScreen = ({ visible }) => (
   <CoverPage

@@ -14,7 +14,7 @@ import { dockIdToGlobalId } from '~/model/identifiers';
 import { setLayerSelectable } from '~/model/layers';
 import { shadowVeryThinOutline, shadowThinOutline, fill } from '~/utils/styles';
 
-// const DockImage = require('~/../assets/img/dock-32x32.png').default;
+// import DockImage from '~/../assets/img/dock-32x32.png';
 
 // === Settings for this particular layer type ===
 

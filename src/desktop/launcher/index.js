@@ -1,4 +1,5 @@
 const { app, protocol } = require('electron');
+const ElectronStore = require('electron-store');
 
 const {
   setupApp,
@@ -15,6 +16,9 @@ const createAppMenu = require('./app-menu');
  * @param  {Object}  argv  the parsed command line arguments
  */
 function run(argv) {
+  // Allow the Electron state store to be created in the renderer process
+  ElectronStore.initRenderer();
+
   setupApp({
     appMenu: createAppMenu,
     mainWindow: {
