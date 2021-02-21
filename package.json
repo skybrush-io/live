@@ -210,6 +210,7 @@
       "capitalized-comments": 0,
       "import/extensions": 0,
       "import/no-unassigned-import": 0,
+      "node/file-extension-in-import": 0,
       "no-else-return": 0,
       "no-lonely-if": 0,
       "no-negated-condition": 0,
