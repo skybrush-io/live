@@ -7,6 +7,8 @@
 export function forceFormSubmission(formId) {
   const form = document.querySelector(`#${formId}`);
   if (form) {
-    form.dispatchEvent(new Event('submit', { cancelable: true }));
+    form.dispatchEvent(
+      new Event('submit', { bubbles: true, cancelable: true })
+    );
   }
 }
