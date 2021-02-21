@@ -57,7 +57,13 @@ function createSSDPClient(callback) {
  * @return {Object}  a Redux storage engine that can be used by redux-storage
  */
 function createStateStore() {
+  const electronStore = new ElectronStore({
+    // I'm not sure how graceful redux-storage is when the store throws an
+    // exception during startup, so let's prevent that for the time being
+    clearInvalidConfig: true,
+  });
   return createStorageEngine({
+    electronStore,
     store: {
       name: 'state',
     },
