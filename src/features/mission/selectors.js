@@ -101,7 +101,6 @@ export const getUAVIdsParticipatingInMission = createSelector(
  */
 export const hasNonemptyMappingSlot = createSelector(
   getMissionMapping,
-  // eslint-disable-next-line unicorn/no-array-callback-reference
   (mapping) => (mapping ? !mapping.every(isNil) : false)
 );
 
