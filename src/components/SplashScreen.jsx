@@ -4,8 +4,6 @@ import { CoverPagePresentation as CoverPage } from 'react-cover-page';
 
 import logo from '~/../assets/icons/splash.png';
 
-console.log(logo);
-
 const SplashScreen = ({ visible }) => (
   <CoverPage
     loading={visible}
