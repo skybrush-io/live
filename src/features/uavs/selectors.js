@@ -449,6 +449,17 @@ export const getLightColorByUavIdInCSSNotation = createCachedSelector(
 });
 
 /**
+ * Creates a selector that selects all UAVs that are currently considered as
+ * "active" (i.e. we have received status information from them in the last
+ * few seconds).
+ */
+export const getActiveUAVIds = (state) =>
+  getUAVIdList(state).filter((uavId) => {
+    const uav = getUAVById(state, uavId);
+    return uav && uav.age === UAVAge.ACTIVE;
+  });
+
+/**
  * Creates a selector that selects all UAV IDs that are in the mission mapping
  * and whose headings differ from their designated takeoff headings by a threshold
  * specified in the settings of the user.

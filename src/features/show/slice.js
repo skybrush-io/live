@@ -10,8 +10,8 @@ import set from 'lodash-es/set';
 import { createSlice } from '@reduxjs/toolkit';
 
 import {
-  ALTITUDE_REFERENCE,
   COORDINATE_SYSTEM_TYPE,
+  DEFAULT_ALTITUDE_REFERENCE,
   DEFAULT_ROOM_SIZE,
 } from './constants';
 import { StartMethod } from './enums';
@@ -40,8 +40,7 @@ const { actions, reducer } = createSlice({
           type: COORDINATE_SYSTEM_TYPE,
         },
         altitudeReference: {
-          type: ALTITUDE_REFERENCE.AGL,
-          value: 0,
+          ...DEFAULT_ALTITUDE_REFERENCE,
         },
       },
       indoor: {
@@ -369,6 +368,35 @@ const { actions, reducer } = createSlice({
       });
     },
 
+    setOutdoorShowAltitudeReferenceType(state, action) {
+      // This has to be done this way to cater for the csae when
+      // state.environment.outdoor.altitudeReference is undefined
+      const altitudeReference = {
+        value: DEFAULT_ALTITUDE_REFERENCE.value,
+        ...state.environment.outdoor.altitudeReference,
+        type: String(action.payload),
+      };
+      state.environment.outdoor.altitudeReference = altitudeReference;
+    },
+
+    setOutdoorShowAltitudeReferenceValue(state, action) {
+      const altitude = Number(action.payload);
+      if (
+        Number.isFinite(altitude) &&
+        altitude >= -10000 &&
+        altitude <= 10000
+      ) {
+        // This has to be done this way to cater for the csae when
+        // state.environment.outdoor.altitudeReference is undefined
+        const altitudeReference = {
+          type: DEFAULT_ALTITUDE_REFERENCE.type,
+          ...state.environment.outdoor.altitudeReference,
+          value: altitude,
+        };
+        state.environment.outdoor.altitudeReference = altitudeReference;
+      }
+    },
+
     setOutdoorShowOrientation(state, action) {
       state.environment.outdoor.coordinateSystem.orientation = String(
         action.payload
@@ -521,6 +549,8 @@ export const {
   _enqueueFailedUploads,
   revokeTakeoffAreaApproval,
   setEnvironmentType,
+  setOutdoorShowAltitudeReferenceType,
+  setOutdoorShowAltitudeReferenceValue,
   setOutdoorShowOrientation,
   setOutdoorShowOrigin,
   setRoomCorners,

@@ -25,7 +25,11 @@ import {
 } from '~/utils/math';
 import { EMPTY_ARRAY, EMPTY_OBJECT } from '~/utils/redux';
 
-import { DEFAULT_ROOM_SIZE } from './constants';
+import {
+  ALTITUDE_REFERENCE,
+  DEFAULT_ALTITUDE_REFERENCE,
+  DEFAULT_ROOM_SIZE,
+} from './constants';
 import {
   getConvexHullOfTrajectory,
   getFirstPointOfTrajectory,
@@ -152,6 +156,46 @@ export const isShowIndoor = (state) =>
  */
 export const isShowOutdoor = (state) =>
   getShowEnvironmentType(state) === 'outdoor';
+
+/**
+ * Selector that returns the part of the state object that is related to the
+ * altitude reference of the show.
+ */
+const getOutdoorAltitudeReference = (state) => {
+  const result = get(state, 'show.environment.outdoor.altitudeReference');
+  return result || DEFAULT_ALTITUDE_REFERENCE;
+};
+
+/**
+ * Selector that returns the mean sea level that the Z coordinates of the show
+ * should be referred to, or null if the show is controlled based on altitudes
+ * above ground level.
+ */
+export const getMeanSeaLevelReferenceOfShowCoordinatesOrNull = (state) => {
+  if (!isShowOutdoor(state)) {
+    return null;
+  }
+
+  const altitudeReference = getOutdoorAltitudeReference(state);
+  return altitudeReference &&
+    altitudeReference.type === ALTITUDE_REFERENCE.AMSL &&
+    typeof altitudeReference.value === 'number' &&
+    Number.isFinite(altitudeReference.value)
+    ? altitudeReference.value
+    : null;
+};
+
+/**
+ * Selector that returns whether the show is tied to a specific altitude above
+ * mean sea level.
+ *
+ * If this selector is true, it means that we can assign a fixed AMSL value to
+ * each show-specific Z coordinate by adding the show-specific Z coordinate to
+ * the AMSL reference. If this selector is false, it means that the show is
+ * controlled in AGL. Indoor shows are always controlled in AGL.
+ */
+export const isShowRelativeToMeanSeaLevel = (state) =>
+  !isNil(getMeanSeaLevelReferenceOfShowCoordinatesOrNull(state));
 
 /**
  * Selector that returns the definition of the coordinate system of an indoor

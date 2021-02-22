@@ -21,6 +21,7 @@ import {
   getCommonShowSettings,
   getDroneSwarmSpecification,
   getGeofencePolygonInShowCoordinates,
+  getMeanSeaLevelReferenceOfShowCoordinatesOrNull,
   getNextDroneFromUploadQueue,
   getOutdoorShowCoordinateSystem,
   isShowAuthorizedToStartLocally,
@@ -116,9 +117,12 @@ function createShowConfigurationForUav(state, uavId) {
 
   const { id: missionId } = getShowMetadata(state);
 
-  return {
+  const amslReference = getMeanSeaLevelReferenceOfShowCoordinatesOrNull(state);
+
+  const result = {
     ...getCommonShowSettings(state),
     ...settings,
+    amslReference,
     coordinateSystem,
     geofence,
     mission: {
@@ -127,6 +131,8 @@ function createShowConfigurationForUav(state, uavId) {
       displayName: `${missionId || 'drone-show'} / ${missionIndex + 1}`,
     },
   };
+
+  return result;
 }
 
 /**
@@ -226,7 +232,7 @@ function* showUploaderSaga({ numWorkers: numberWorkers = 8 } = {}) {
     yield join(workers);
 
     // shall we retry failed downloads?
-    const hasFailures = failed.length !== 0;
+    const hasFailures = failed.length > 0;
     if (hasFailures) {
       const shouldRetry = yield select(shouldRetryFailedUploadsAutomatically);
       if (shouldRetry) {

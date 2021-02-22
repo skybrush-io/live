@@ -12,6 +12,14 @@ export const ALTITUDE_REFERENCE = {
 };
 
 /**
+ * Default altitude reference object if it is not defined in the state yet.
+ */
+export const DEFAULT_ALTITUDE_REFERENCE = {
+  type: ALTITUDE_REFERENCE.AGL,
+  value: 0,
+};
+
+/**
  * Default room size.
  */
 export const DEFAULT_ROOM_SIZE = {
