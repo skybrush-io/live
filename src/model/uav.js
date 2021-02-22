@@ -300,6 +300,7 @@ export default class UAV {
       : null;
     return {
       id: this._id,
+      age: this.age,
       battery: { ...this.battery },
       debugString: this.debugString,
       errors: [...this._errors],
