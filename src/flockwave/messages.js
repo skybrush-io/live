@@ -329,8 +329,9 @@ class AsyncOperationManager {
    *        ASYNC-TIMEOUT message after having received a receipt in a response
    *        object instead of the actual result (indicating that the operation
    *        is being executed asynchronously on the server). The reference
-   *        server implementation waits for 30 seconds before declaring a
-   *        timeout so this should probably be larger.
+   *        server implementation waits for 90 seconds before declaring a
+   *        timeout, but the vast majority of cases should finish in less than
+   *        a minute. The timeout can be overridden on a per-command basis.
    */
   constructor(hub, timeout = 60) {
     this.timeout = timeout;
@@ -447,7 +448,7 @@ class AsyncOperationManager {
   async handleMultiAsyncResponseForSingleId(
     response,
     objectId,
-    { noThrow } = {}
+    { noThrow, timeout } = {}
   ) {
     const { receipt, result } = extractResultOrReceiptFromMaybeAsyncResponse(
       response,
@@ -456,7 +457,8 @@ class AsyncOperationManager {
 
     if (receipt) {
       const execution = new PendingCommandExecution(receipt, {
-        timeout: this.timeout,
+        timeout:
+          typeof timeout === 'number' && timeout > 0 ? timeout : this.timeout,
         onTimeout: this._onResponseTimedOut,
       });
 
@@ -755,16 +757,21 @@ export default class MessageHub {
    * @param  {Object}    kwds    mapping of keyword argument names to their
    *         values; these are also passed with the command. May be
    *         undefined.
+   * @param  {Object}    options additional options to forward to the
+   *         `handleMultiAsyncResponseForSingleId()` method of the
+   *         AsyncOperationManager. Typical keys to use are `timeout` and
+   *         `noThrow`.
    * @return {Promise} a promise that resolves to the response of the UAV
    *         to the command or errors out in case of execution errors and
    *         timeouts.
    */
-  async sendCommandRequest({ uavId, command, args, kwds }) {
+  async sendCommandRequest({ uavId, command, args, kwds }, options) {
     const request = createCommandRequest([uavId], command, args, kwds);
     const response = await this.sendMessage(request);
     return this._asyncOperationManager.handleMultiAsyncResponseForSingleId(
       response,
-      uavId
+      uavId,
+      options
     );
   }
 

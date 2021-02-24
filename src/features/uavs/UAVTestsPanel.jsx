@@ -14,19 +14,28 @@ import { useMessageHub } from '~/hooks';
 
 const tests = [
   {
+    component: 'compass',
+    label: 'Calibrate compass',
+    type: 'calib',
+    timeout: 90 /* compass calibration may take longer */,
+  },
+  {
     component: 'baro',
     label: 'Calibrate ground pressure',
     type: 'calib',
+    timeout: 10,
   },
   {
     component: 'gyro',
     label: 'Calibrate gyroscope',
     type: 'calib',
+    timeout: 10,
   },
   {
     component: 'level',
     label: 'Calibrate level position',
     type: 'calib',
+    timeout: 10,
   },
   {
     component: 'led',
@@ -40,16 +49,19 @@ const tests = [
   },
 ];
 
-const UAVTestButton = ({ component, label, type, uavId }) => {
+const UAVTestButton = ({ component, label, timeout, type, uavId }) => {
   const messageHub = useMessageHub();
 
   const [state, start] = useAsyncFn(async () => {
     // TODO(ntamas): use the proper UAV-TEST messages designated for this
-    await messageHub.sendCommandRequest({
-      uavId,
-      command: type === 'test' ? 'test' : 'calib',
-      args: [String(component)],
-    });
+    await messageHub.sendCommandRequest(
+      {
+        uavId,
+        command: type === 'test' ? 'test' : 'calib',
+        args: [String(component)],
+      },
+      { timeout }
+    );
     return true;
   }, [messageHub]);
 
@@ -57,10 +69,10 @@ const UAVTestButton = ({ component, label, type, uavId }) => {
     <ListItem button onClick={start}>
       <StatusLight
         status={
-          state.error
-            ? 'error'
-            : state.loading
+          state.loading
             ? 'next'
+            : state.error
+            ? 'error'
             : isNil(state.value)
             ? 'off'
             : state.value
@@ -80,6 +92,7 @@ UAVTestButton.propTypes = {
   component: PropTypes.string,
   label: PropTypes.string,
   uavId: PropTypes.string,
+  timeout: PropTypes.number,
   type: PropTypes.oneOf(['calib', 'test']),
 };
 
