@@ -18,7 +18,7 @@ import CustomPropTypes from '~/utils/prop-types';
 const useStyles = makeStyles(
   (theme) => ({
     root: {
-      margin: theme.spacing(0.5, 0),
+      margin: theme.spacing(0.25, 0, 0, 0),
       display: 'flex',
       alignItems: 'flex-start',
       width: '100%',
@@ -28,7 +28,7 @@ const useStyles = makeStyles(
       position: 'relative',
       borderRadius: 5,
       padding: theme.spacing(0.5, 1),
-      margin: theme.spacing(0.5, 0),
+      margin: theme.spacing(0.25, 0, 0, 0),
       minHeight: theme.spacing(1),
       overflowX: 'auto',
       '& pre': {
@@ -76,6 +76,7 @@ const useStyles = makeStyles(
 
     meta: {
       fontSize: 'smaller',
+      margin: theme.spacing(0.5, 0, 0, 0),
       textAlign: 'left',
 
       '& .author': {
@@ -104,9 +105,10 @@ const ChatBubble = ({
   raw,
   rightComponent,
   severity,
+  showMeta,
 }) => {
   const classes = useStyles();
-  const dateComponent = date && (
+  const dateComponent = date && showMeta && (
     <span className='date'>
       <TimeAgo date={date} />
     </span>
@@ -132,9 +134,11 @@ const ChatBubble = ({
     <div className={clsx(classes.root, own ? classes.own : classes.other)}>
       {leftComponentWrapper}
       <div style={{ flex: 1, maxWidth: '100%' }}>
-        <div className={classes.meta}>
-          <span className='author'>{author}</span> {dateComponent}
-        </div>
+        {showMeta && (
+          <div className={classes.meta}>
+            <span className='author'>{author}</span> {dateComponent}
+          </div>
+        )}
         {bubble}
       </div>
       {rightComponentWrapper}
@@ -157,13 +161,13 @@ ChatBubble.propTypes = {
     PropTypes.arrayOf(PropTypes.node),
   ]),
   severity: CustomPropTypes.severity,
+  showMeta: PropTypes.bool,
 };
 
 ChatBubble.defaultProps = {
   author: 'Anonymous',
   body: '',
   own: true,
-  raw: false,
 };
 
 export default ChatBubble;
