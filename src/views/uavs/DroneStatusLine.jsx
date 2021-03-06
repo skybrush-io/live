@@ -165,14 +165,14 @@ const DroneStatusLine = ({
           {position ? (
             padStart(
               !isNil(position && position.amsl)
-                ? Math.round(position.amsl)
+                ? position.amsl.toFixed(1)
                 : '?',
-              3
+              6
             ) +
-            '/' +
+            'm ' +
             padStart(
-              !isNil(position && position.agl) ? Math.round(position.agl) : '?',
-              3
+              !isNil(position && position.agl) ? position.agl.toFixed(1) : '?',
+              5
             ) +
             'm'
           ) : (
