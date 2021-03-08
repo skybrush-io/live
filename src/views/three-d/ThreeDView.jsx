@@ -24,8 +24,11 @@ import {
 import { isShowIndoor } from '~/features/show/selectors';
 import { isMapCoordinateSystemLeftHanded } from '~/selectors/map';
 
+import glowImage from '~/../assets/img/sphere-glow-hollow.png';
+
+
 const images = {
-  glow: require('~/../assets/img/sphere-glow-hollow.png').default,
+  glow: glowImage
 };
 
 /**
@@ -93,7 +96,6 @@ const ThreeDView = React.forwardRef((props, ref) => {
     >
       <a-assets>
         <img crossOrigin='anonymous' id='glow-texture' src={images.glow} />
-
         <a-mixin
           id='takeoff-marker'
           geometry='primitive: triangle; vertexA: 1 0 0; vertexB: -0.5 0.866 0; vertexC: -0.5 -0.866 0'
