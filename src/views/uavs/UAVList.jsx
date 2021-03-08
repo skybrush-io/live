@@ -288,9 +288,9 @@ UAVListSection.propTypes = {
 
 const HEADER_TEXT = {
   missionIds:
-    ' sID  ID   Status    Mode  Battery   GPS  Position                  AMSL    AGL  Hdg  Details',
+    ' sID  ID   Status    Mode  Battery   GPS  Position                   AMSL    AGL Hdg  Details',
   droneIds:
-    '  ID       Status    Mode  Battery   GPS  Position                  AMSL    AGL  Hdg  Details',
+    '  ID       Status    Mode  Battery   GPS  Position                   AMSL    AGL Hdg  Details',
 };
 
 /**
