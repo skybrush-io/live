@@ -21,10 +21,7 @@ const instructionsByMode = {
   walk: (
     <div style={noWrap}>
       <div style={divStyle}>
-        <kbd>W</kbd>
-        <kbd>A</kbd>
-        <kbd>S</kbd>
-        <kbd>D</kbd>
+        <kbd>Arrows</kbd>
         <span> Walk around </span>
         <kbd>E</kbd>
         <kbd>C</kbd>
@@ -40,11 +37,11 @@ const instructionsByMode = {
   fly: (
     <div style={noWrap}>
       <div style={divStyle}>
-        <kbd>W</kbd>
-        <kbd>S</kbd>
+        <kbd>{'\u2191'}</kbd>
+        <kbd>{'\u2193'}</kbd>
         <span> Fly forward / backward </span>
-        <kbd>A</kbd>
-        <kbd>D</kbd>
+        <kbd>{'\u2190'}</kbd>
+        <kbd>{'\u2192'}</kbd>
         <span> Strafe left / right </span>
         <kbd>E</kbd>
         <kbd>C</kbd>
