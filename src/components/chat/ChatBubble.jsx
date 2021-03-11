@@ -3,6 +3,7 @@
  */
 
 import clsx from 'clsx';
+import { Markup } from 'interweave';
 import PropTypes from 'prop-types';
 import React from 'react';
 import TimeAgo from 'react-timeago';
@@ -124,11 +125,10 @@ const ChatBubble = ({
     own ? classes.ownBubble : classes.otherBubble,
     severity && `severity-${severity}`
   );
-  const bubble = raw ? (
-    // eslint-disable-next-line react/no-danger
-    <div className={bubbleClasses} dangerouslySetInnerHTML={{ __html: body }} />
-  ) : (
-    <div className={bubbleClasses}>{body}</div>
+  const bubble = (
+    <div className={bubbleClasses}>
+      {raw ? <Markup content={body} /> : body}
+    </div>
   );
   return (
     <div className={clsx(classes.root, own ? classes.own : classes.other)}>

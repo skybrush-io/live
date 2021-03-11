@@ -87,7 +87,9 @@ const DraggableDialog = ({
       {sidebarComponents ? (
         <Box display='flex' flexDirection='row' alignItems='stretch'>
           <Box className={classes.sidebar}>{sidebarComponents}</Box>
-          <Box flex={1}>{dialogBody}</Box>
+          <Box flex={1} overflow='auto'>
+            {dialogBody}
+          </Box>
         </Box>
       ) : (
         dialogBody

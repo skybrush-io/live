@@ -28,6 +28,10 @@ export default class ChatArea extends React.Component {
     this._endNode = React.createRef();
   }
 
+  componentDidMount() {
+    this.scrollToBottom();
+  }
+
   componentDidUpdate(_previousProps, _previousState, snapshot) {
     if (snapshot && snapshot.shouldScrollToBottom) {
       this.scrollToBottom();

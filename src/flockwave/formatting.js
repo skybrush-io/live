@@ -13,7 +13,10 @@ import trimEnd from 'lodash-es/trimEnd';
  */
 export function formatCommandResponseAsHTML(response) {
   if (isString(response)) {
-    return formatCommandResponseAsHTML({ type: 'plain', data: response });
+    response = {
+      type: 'plain',
+      data: response,
+    };
   }
 
   const { type, data } = response;
@@ -21,6 +24,9 @@ export function formatCommandResponseAsHTML(response) {
   switch (type) {
     case 'plain':
       return escape(trimEnd(data));
+
+    case 'preformatted':
+      return '<pre>' + escape(trimEnd(data)) + '</pre>';
 
     default:
       return escape(JSON.stringify(response, null, 2));

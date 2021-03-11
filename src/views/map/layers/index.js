@@ -72,8 +72,8 @@ export const stateObjectToLayer = (layer, props) => {
   const CurrentLayer = Layers[layer.type];
   return (
     <CurrentLayer
-      {...props}
       key={`${layer.id}_rendered`}
+      {...props}
       layer={layer}
       layerId={layer.id}
     />
