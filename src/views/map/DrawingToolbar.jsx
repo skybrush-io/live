@@ -9,6 +9,7 @@ import ShowChart from '@material-ui/icons/ShowChart';
 import CropSquare from '@material-ui/icons/CropSquare';
 import PanoramaFishEye from '@material-ui/icons/PanoramaFishEye';
 import StarBorder from '@material-ui/icons/StarBorder';
+import ZoomIn from '@material-ui/icons/ZoomIn';
 import Tooltip from '~/components/Tooltip';
 
 import partial from 'lodash-es/partial';
@@ -32,6 +33,12 @@ const DrawingToolbarPresentation = ({ onToolSelected, selectedTool }) => {
       <Tooltip content='Select'>
         <IconButton onClick={partial(onToolSelected, Tool.SELECT)}>
           <SelectAll color={colorForTool(Tool.SELECT)} />
+        </IconButton>
+      </Tooltip>
+
+      <Tooltip content='Zoom'>
+        <IconButton onClick={partial(onToolSelected, Tool.ZOOM)}>
+          <ZoomIn color={colorForTool(Tool.ZOOM)} />
         </IconButton>
       </Tooltip>
 

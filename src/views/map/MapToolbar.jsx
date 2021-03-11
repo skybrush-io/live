@@ -1,21 +1,14 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import IconButton from '@material-ui/core/IconButton';
 import withTheme from '@material-ui/core/styles/withTheme';
-import ActionPanTool from '@material-ui/icons/PanTool';
-import ActionZoomIn from '@material-ui/icons/ZoomIn';
-import ContentSelectAll from '@material-ui/icons/SelectAll';
 
-import partial from 'lodash-es/partial';
 import { connect } from 'react-redux';
 
-import { selectMapTool } from '~/actions/map';
 import { getMapViewRotationAngle } from '~/selectors/map';
 
 import FitAllFeaturesButton from './FitAllFeaturesButton';
 import MapRotationTextBox from './MapRotationTextBox';
-import { Tool } from './tools';
 
 /**
  * Separator component for the toolbar
@@ -40,54 +33,27 @@ const MapToolbarSeparator = () => {
  *
  * @returns {React.Element} the rendered component
  */
-const MapToolbarPresentation = ({
-  initialRotation,
-  onToolSelected,
-  selectedTool,
-}) => {
-  const colorForTool = (tool) =>
-    selectedTool === tool ? 'primary' : undefined;
+const MapToolbarPresentation = ({ initialRotation }) => (
+  <div>
+    <MapRotationTextBox
+      initialRotation={initialRotation}
+      resetDuration={500}
+      fieldWidth='75px'
+      style={{
+        display: 'inline-block',
+        marginRight: '12px',
+        verticalAlign: 'top',
+      }}
+    />
 
-  return (
-    <div>
-      {/*
-      <IconButton
-        tooltip='Select'
-        onClick={partial(onToolSelected, Tool.SELECT)}
-      >
-        <ContentSelectAll color={colorForTool(Tool.SELECT)} />
-      </IconButton>
-      <IconButton tooltip='Pan' onClick={partial(onToolSelected, Tool.PAN)}>
-        <ActionPanTool color={colorForTool(Tool.PAN)} />
-      </IconButton>
-      <IconButton tooltip='Zoom' onClick={partial(onToolSelected, Tool.ZOOM)}>
-        <ActionZoomIn color={colorForTool(Tool.ZOOM)} />
-      </IconButton>
+    <MapToolbarSeparator />
 
-      <MapToolbarSeparator />
-      */}
-
-      <MapRotationTextBox
-        initialRotation={initialRotation}
-        resetDuration={500}
-        fieldWidth='75px'
-        style={{
-          display: 'inline-block',
-          marginRight: '12px',
-          verticalAlign: 'top',
-        }}
-      />
-
-      <MapToolbarSeparator />
-
-      <FitAllFeaturesButton duration={500} margin={32} />
-    </div>
-  );
-};
+    <FitAllFeaturesButton duration={500} margin={32} />
+  </div>
+);
 
 MapToolbarPresentation.propTypes = {
-  onToolSelected: PropTypes.func,
-  selectedTool: PropTypes.string,
+  initialRotation: PropTypes.number,
 };
 
 /**
@@ -100,11 +66,7 @@ const MapToolbar = connect(
     initialRotation: getMapViewRotationAngle(state),
   }),
   // mapDispatchToProps
-  (dispatch) => ({
-    onToolSelected(tool) {
-      dispatch(selectMapTool(tool));
-    },
-  })
+  null
 )(withTheme(MapToolbarPresentation));
 
 export default MapToolbar;
