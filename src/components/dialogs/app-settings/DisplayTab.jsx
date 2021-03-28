@@ -23,7 +23,7 @@ import { updateAppSettings } from '~/features/settings/slice';
 import { CoordinateFormat, describeCoordinateFormat } from '~/model/settings';
 import { getMapOriginRotationAngle } from '~/selectors/map';
 
-const exampleCoordinate = [19.061491, 47.474113]; /* ELTE */
+import ThemeSelector from '@skybrush/mui-components/lib/ThemeSelector';
 
 const coordinateFormatOrder = [
   CoordinateFormat.DEGREES,
@@ -37,21 +37,7 @@ const coordinateFormatOrder = [
 const DisplayTabPresentation = (props) => (
   <>
     <Box my={2}>
-      <FormControl fullWidth variant='filled'>
-        <InputLabel id='display-theme-label'>Theme</InputLabel>
-        <Select
-          labelId='display-theme-label'
-          name='theme'
-          value={props.theme}
-          onChange={props.onFieldChanged}
-        >
-          <MenuItem value='auto'>
-            Choose automatically based on OS settings
-          </MenuItem>
-          <MenuItem value='light'>Light mode</MenuItem>
-          <MenuItem value='dark'>Dark mode</MenuItem>
-        </Select>
-      </FormControl>
+      <ThemeSelector value={props.theme} onChange={props.onFieldChanged} />
     </Box>
 
     <Box my={2}>
