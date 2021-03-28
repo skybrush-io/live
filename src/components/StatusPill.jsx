@@ -3,9 +3,25 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 import { makeStyles } from '@material-ui/core/styles';
+import { colorForStatus, Status } from '@skybrush/app-theme-material-ui';
 
-import Colors from '~/components/colors';
-import { Status } from './semantics';
+const createStyleForStatus = (status, theme) => {
+  const color = colorForStatus(status);
+  return {
+    backgroundColor: colorForStatus(status),
+    color: theme.palette.getContrastText(color),
+  };
+};
+
+const createStyleForHollowStatus = (status) => {
+  const color = colorForStatus(status);
+  return { color };
+};
+
+const FLASH_STYLE = {
+  animation: '$flash 0.5s infinite',
+  animationDirection: 'alternate',
+};
 
 const useStyles = makeStyles(
   (theme) => ({
@@ -25,104 +41,59 @@ const useStyles = makeStyles(
       width: '100%',
     },
 
-    'status-info': {
-      backgroundColor: Colors.info,
-      color: theme.palette.getContrastText(Colors.info),
-    },
-
-    'status-waiting': {
-      backgroundColor: Colors.info,
-      color: theme.palette.getContrastText(Colors.info),
-    },
-
-    'status-next': {
-      backgroundColor: Colors.info,
-      color: theme.palette.getContrastText(Colors.info),
-    },
-
     'status-off': {
       backgroundColor: theme.palette.action.selected,
     },
 
-    'status-success': {
-      backgroundColor: Colors.success,
-      color: theme.palette.getContrastText(Colors.success),
-    },
-
-    'status-skipped': {
-      backgroundColor: Colors.warning,
-      color: theme.palette.getContrastText(Colors.warning),
-    },
-
+    'status-info': createStyleForStatus(Status.INFO, theme),
+    'status-waiting': createStyleForStatus(Status.WAITING, theme),
+    'status-next': createStyleForStatus(Status.NEXT, theme),
+    'status-success': createStyleForStatus(Status.SUCCESS, theme),
+    'status-skipped': createStyleForStatus(Status.SKIPPED, theme),
     'status-warning': {
-      backgroundColor: Colors.warning,
-      color: theme.palette.getContrastText(Colors.warning),
+      ...createStyleForStatus(Status.WARNING, theme),
       fontWeight: 'bold',
     },
-
     'status-rth': {
-      animation: '$flash 0.5s infinite',
-      animationDirection: 'alternate',
-      backgroundColor: Colors.warning,
-      color: theme.palette.getContrastText(Colors.warning),
+      ...createStyleForStatus(Status.RTH, theme),
+      ...FLASH_STYLE,
       fontWeight: 'bold',
     },
-
     'status-error': {
-      backgroundColor: Colors.error,
-      color: theme.palette.getContrastText(Colors.error),
+      ...createStyleForStatus(Status.ERROR, theme),
       fontWeight: 'bold',
     },
 
     'status-critical': {
-      animation: '$flash 0.5s infinite',
-      animationDirection: 'alternate',
-      backgroundColor: Colors.error,
-      color: theme.palette.getContrastText(Colors.error),
+      ...createStyleForStatus(Status.CRITICAL, theme),
+      ...FLASH_STYLE,
       fontWeight: 'bold',
     },
 
-    'status-hollow-info': {
-      color: Colors.info,
-    },
-
-    'status-hollow-waiting': {
-      color: Colors.info,
-    },
-
-    'status-hollow-next': {
-      color: Colors.info,
-    },
-
-    'status-hollow-success': {
-      color: Colors.success,
-    },
-
-    'status-hollow-skipped': {
-      color: Colors.warning,
-    },
-
+    'status-hollow-info': createStyleForHollowStatus(Status.INFO),
+    'status-hollow-waiting': createStyleForHollowStatus(Status.WAITING),
+    'status-hollow-next': createStyleForHollowStatus(Status.NEXT),
+    'status-hollow-success': createStyleForHollowStatus(Status.SUCCESS),
+    'status-hollow-skipped': createStyleForHollowStatus(Status.SKIPPED),
     'status-hollow-warning': {
-      color: Colors.warning,
+      ...createStyleForHollowStatus(Status.WARNING),
       fontWeight: 'bold',
     },
 
     'status-hollow-rth': {
-      animation: '$flash 0.5s infinite',
-      animationDirection: 'alternate',
-      color: Colors.warning,
+      ...createStyleForHollowStatus(Status.RTH),
+      ...FLASH_STYLE,
       fontWeight: 'bold',
     },
 
     'status-hollow-error': {
-      color: Colors.error,
+      ...createStyleForHollowStatus(Status.ERROR),
       fontWeight: 'bold',
     },
 
     'status-hollow-critical': {
-      animation: '$flash 0.5s infinite',
-      animationDirection: 'alternate',
-      color: Colors.error,
+      ...createStyleForHollowStatus(Status.CRITICAL),
+      ...FLASH_STYLE,
       fontWeight: 'bold',
     },
 
