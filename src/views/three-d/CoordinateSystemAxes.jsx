@@ -9,15 +9,15 @@ import Colors from '~/components/colors';
 const CoordinateSystemAxes = ({ leftHanded, lineWidth }) => (
   <>
     <a-entity
-      meshline={`lineWidth: ${lineWidth}; path: 0 0 0, 1 0 0; color: ${Colors.axisColors.x}`}
+      meshline={`lineWidth: ${lineWidth}; path: 0 0 0, 1 0 0; color: ${Colors.axes.x}`}
     />
     <a-entity
       meshline={`lineWidth: ${lineWidth}; path: 0 0 0, 0 ${
         leftHanded ? -1 : 1
-      } 0; color: ${Colors.axisColors.y}`}
+      } 0; color: ${Colors.axes.y}`}
     />
     <a-entity
-      meshline={`lineWidth: ${lineWidth}; path: 0 0 0, 0 0 1; color: ${Colors.axisColors.z}`}
+      meshline={`lineWidth: ${lineWidth}; path: 0 0 0, 0 0 1; color: ${Colors.axes.z}`}
     />
   </>
 );

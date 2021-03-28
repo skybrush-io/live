@@ -173,27 +173,27 @@ function markAsSelectableAndEditable(layer) {
 /**
  * Styling for stroke of the X axis of the coordinate system.
  */
-const redLine = stroke(Colors.axisColors.x, 2);
+const redLine = stroke(Colors.axes.x, 2);
 
 /**
  * Styling for the stroke of the Y axis of the coordinate system.
  */
-const greenLine = stroke(Colors.axisColors.y, 2);
+const greenLine = stroke(Colors.axes.y, 2);
 
 /**
  * Fill color to use for the origin marker.
  */
-const originMarkerFill = fill(Colors.originMarker);
+const originMarkerFill = fill(Colors.markers.origin);
 
 /**
  * Fill color to use for takeoff markers.
  */
-const takeoffMarkerFill = fill(Colors.takeoffMarker);
+const takeoffMarkerFill = fill(Colors.markers.takeoff);
 
 /**
  * Green fill color to use for landing markers.
  */
-const landingMarkerFill = fill(Colors.landingMarker);
+const landingMarkerFill = fill(Colors.markers.landing);
 
 /**
  * Styling function for the marker representing the origin of the map

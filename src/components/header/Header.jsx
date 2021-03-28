@@ -82,7 +82,7 @@ const Header = ({ isSidebarOpen, sessionExpiresAt, toggleSidebar }) => (
           <hr />
         </>
       )}
-      <ConnectionStatusButton isAlwaysVisible />
+      <ConnectionStatusButton />
       <hr />
       <ServerConnectionSettingsButton />
       {hasFeature('geofence') && <GeofenceSettingsButton />}

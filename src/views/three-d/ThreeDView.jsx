@@ -26,9 +26,8 @@ import { isMapCoordinateSystemLeftHanded } from '~/selectors/map';
 
 import glowImage from '~/../assets/img/sphere-glow-hollow.png';
 
-
 const images = {
-  glow: glowImage
+  glow: glowImage,
 };
 
 /**
@@ -99,12 +98,12 @@ const ThreeDView = React.forwardRef((props, ref) => {
         <a-mixin
           id='takeoff-marker'
           geometry='primitive: triangle; vertexA: 1 0 0; vertexB: -0.5 0.866 0; vertexC: -0.5 -0.866 0'
-          material={`color: ${Colors.takeoffMarker}; shader: flat; side: double`}
+          material={`color: ${Colors.markers.takeoff}; shader: flat; side: double`}
         />
         <a-mixin
           id='landing-marker'
           geometry='primitive: triangle; vertexA: -1 0 0; vertexB: 0.5 -0.866 0; vertexC: 0.5 0.866 0'
-          material={`color: ${Colors.landingMarker}; shader: flat; side: double`}
+          material={`color: ${Colors.markers.landing}; shader: flat; side: double`}
         />
       </a-assets>
 
