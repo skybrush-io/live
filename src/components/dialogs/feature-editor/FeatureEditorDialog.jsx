@@ -8,12 +8,13 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import Tab from '@material-ui/core/Tab';
 
+import DialogTabs from '@skybrush/mui-components/lib/DialogTabs';
+
 import { removeFeature } from '~/actions/features';
 import {
   closeFeatureEditorDialog,
   setFeatureEditorDialogTab,
 } from '~/actions/feature-editor';
-import DialogTabs from '~/components/dialogs/DialogTabs';
 
 import FeaturePointsForm from './FeaturePointsForm';
 import GeneralPropertiesForm from './GeneralPropertiesForm';
@@ -87,14 +88,12 @@ FeatureEditorDialogPresentation.propTypes = {
   featureId: PropTypes.string,
   onClose: PropTypes.func,
   onRemoveFeature: PropTypes.func,
-  onSubmit: PropTypes.func,
   onTabSelected: PropTypes.func,
   open: PropTypes.bool.isRequired,
   selectedTab: PropTypes.string,
 };
 
 FeatureEditorDialogPresentation.defaultProps = {
-  open: false,
   selectedTab: 'general',
 };
 

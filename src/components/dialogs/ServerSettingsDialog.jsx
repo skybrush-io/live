@@ -29,12 +29,12 @@ import EditIcon from '@material-ui/icons/Edit';
 import SignalWifi0Bar from '@material-ui/icons/SignalWifi0Bar';
 import WifiIcon from '@material-ui/icons/Wifi';
 
+import DialogTabs from '@skybrush/mui-components/lib/DialogTabs';
+
 import {
   ServerDetectionManager,
   isServerDetectionSupported,
 } from '../ServerDetectionManager';
-
-import DialogTabs from './DialogTabs';
 
 import {
   closeServerSettingsDialog,

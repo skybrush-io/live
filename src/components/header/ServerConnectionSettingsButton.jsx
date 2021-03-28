@@ -1,15 +1,14 @@
-import ConnectionIcon from '@material-ui/icons/Power';
-
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 
-import ServerConnectionStatusBadge from '../badges/ServerConnectionStatusBadge';
-import GenericHeaderButton from './GenericHeaderButton';
+import ConnectionIcon from '@material-ui/icons/Power';
+import GenericHeaderButton from '@skybrush/mui-components/lib/GenericHeaderButton';
 
 import { showServerSettingsDialog } from '~/actions/server-settings';
 import ServerConnectionStatusMiniList from '~/components/ServerConnectionStatusMiniList';
 import LazyTooltip from '~/components/LazyTooltip';
+import ServerConnectionStatusBadge from '~/components/badges/ServerConnectionStatusBadge';
 
 const ServerConnectionSettingsButton = (props) => (
   <LazyTooltip content={<ServerConnectionStatusMiniList />}>

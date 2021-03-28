@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 
 import Tab from '@material-ui/core/Tab';
 
-import DialogTabs from '~/components/dialogs/DialogTabs';
+import DialogTabs from '@skybrush/mui-components/lib/DialogTabs';
 
 import {
   getSelectedTabInDockDetailsDialog,

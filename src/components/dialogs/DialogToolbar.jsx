@@ -3,7 +3,7 @@ import React from 'react';
 
 import Toolbar from '@material-ui/core/Toolbar';
 
-import DialogAppBar from './DialogAppBar';
+import DialogAppBar from '@skybrush/mui-components/lib/DialogAppBar';
 
 /**
  * toolbar component styled appropriately to be suitable for presentation in the

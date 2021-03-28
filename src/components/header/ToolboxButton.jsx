@@ -1,16 +1,14 @@
-import ListItemText from '@material-ui/core/ListItemText';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
-import BusinessCenter from '@material-ui/icons/BusinessCenter';
-
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import { connect } from 'react-redux';
 
-import GenericHeaderButton from './GenericHeaderButton';
+import ListItemText from '@material-ui/core/ListItemText';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
+import BusinessCenter from '@material-ui/icons/BusinessCenter';
+import GenericHeaderButton from '@skybrush/mui-components/lib/GenericHeaderButton';
 
-import SidebarBadge from '../badges/SidebarBadge';
-
+import SidebarBadge from '~/components/badges/SidebarBadge';
 import Colors from '~/components/colors';
 import { getActiveUAVIdsBeingAveraged } from '~/features/measurement/selectors';
 import { showAveragingDialog } from '~/features/measurement/slice';
@@ -21,7 +19,6 @@ const ToolboxButtonPresentation = ({
   numberOfAveragingInProgress,
   showAveragingDialog,
   showRTKSetupDialog,
-  showVersionCheckDialog,
 }) => {
   const [anchorElement, setAnchorElement] = useState(null);
 

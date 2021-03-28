@@ -1,9 +1,9 @@
-import SettingsIcon from '@material-ui/icons/Settings';
-
 import React from 'react';
 import { connect } from 'react-redux';
 
-import GenericHeaderButton from './GenericHeaderButton';
+import SettingsIcon from '@material-ui/icons/Settings';
+
+import GenericHeaderButton from '@skybrush/mui-components/lib/GenericHeaderButton';
 
 import { toggleAppSettingsDialog } from '~/actions/app-settings';
 

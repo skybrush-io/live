@@ -11,7 +11,8 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import Tab from '@material-ui/core/Tab';
 
-import DialogTabs from '~/components/dialogs/DialogTabs';
+import DialogTabs from '@skybrush/mui-components/lib/DialogTabs';
+
 import { loadShowFromUrl } from '~/features/show/actions';
 import { closeLoadShowFromCloudDialog } from '~/features/show/slice';
 

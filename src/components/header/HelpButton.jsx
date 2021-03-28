@@ -2,8 +2,7 @@ import config from 'config';
 import React from 'react';
 
 import Help from '@material-ui/icons/HelpOutline';
-
-import GenericHeaderButton from './GenericHeaderButton';
+import GenericHeaderButton from '@skybrush/mui-components/lib/GenericHeaderButton';
 
 const showHelp = () => {
   if (config.urls.help) {

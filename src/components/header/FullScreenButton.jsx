@@ -1,4 +1,3 @@
-import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
 import { useEvent, useUpdate } from 'react-use';
@@ -6,8 +5,7 @@ import ScreenFull from 'screenfull';
 
 import NavigationFullscreen from '@material-ui/icons/Fullscreen';
 import NavigationFullscreenExit from '@material-ui/icons/FullscreenExit';
-
-import GenericHeaderButton from './GenericHeaderButton';
+import GenericHeaderButton from '@skybrush/mui-components/lib/GenericHeaderButton';
 
 const FullScreenButtonPresentation = ({ isFullscreen, ...rest }) => (
   <GenericHeaderButton

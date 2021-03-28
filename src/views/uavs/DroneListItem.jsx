@@ -63,7 +63,8 @@ const addDropIndicator = {
  */
 const DragDropArea = ({ children, id, onDrop, ...rest }) => {
   const [collectedDragProps, drag] = useDrag({
-    item: { id, type: 'uav' },
+    item: { id },
+    type: 'uav',
     collect: (monitor) => monitor.isDragging() && hideItem,
   });
 

@@ -6,7 +6,7 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogContent from '@material-ui/core/DialogContent';
 import Tab from '@material-ui/core/Tab';
 
-import DialogTabs from '../DialogTabs';
+import DialogTabs from '@skybrush/mui-components/lib/DialogTabs';
 
 import DisplayTab from './DisplayTab';
 import PreflightTab from './PreflightTab';
