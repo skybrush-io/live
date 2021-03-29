@@ -1,9 +1,7 @@
 import clsx from 'clsx';
-import * as color from 'color';
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import Avatar from '@material-ui/core/Avatar';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { makeStyles } from '@material-ui/core/styles';
 import { Colors, Status } from '@skybrush/app-theme-material-ui';
@@ -13,6 +11,7 @@ import StatusPill from '~/components/StatusPill';
 import CustomPropTypes from '~/utils/prop-types';
 
 import SecondaryStatusLight from './SecondaryStatusLight';
+import SemanticAvatar from './SemanticAvatar';
 
 const useStyles = makeStyles(
   (theme) => ({
@@ -40,57 +39,6 @@ const useStyles = makeStyles(
       },
     },
 
-    avatar: {
-      border: '1px solid rgba(0, 0, 0, 0.3)',
-      color: 'black',
-      margin: '0 auto',
-    },
-
-    'avatar-off': {
-      backgroundColor: Colors.off,
-      color: theme.palette.getContrastText(Colors.off),
-    },
-
-    'avatar-editing': {
-      backgroundColor: Colors.info,
-      color: theme.palette.getContrastText(Colors.info),
-      animation: '$pulse 0.5s infinite',
-      animationDirection: 'alternate',
-    },
-
-    'avatar-success': {
-      backgroundColor: Colors.success,
-      color: theme.palette.getContrastText(Colors.success),
-    },
-
-    'avatar-warning': {
-      backgroundColor: Colors.warning,
-      boxShadow: `0 0 8px 2px ${Colors.warning}`,
-      color: theme.palette.getContrastText(Colors.warning),
-    },
-
-    'avatar-rth': {
-      animation: '$flash 0.5s infinite',
-      animationDirection: 'alternate',
-      backgroundColor: Colors.warning,
-      boxShadow: `0 0 8px 2px ${Colors.warning}`,
-      color: theme.palette.getContrastText(Colors.warning),
-    },
-
-    'avatar-error': {
-      backgroundColor: Colors.error,
-      boxShadow: `0 0 8px 2px ${Colors.error}`,
-      color: theme.palette.getContrastText(Colors.error),
-    },
-
-    'avatar-critical': {
-      animation: '$flash 0.5s infinite',
-      animationDirection: 'alternate',
-      backgroundColor: Colors.error,
-      boxShadow: `0 0 8px 2px ${Colors.error}`,
-      color: theme.palette.getContrastText(Colors.error),
-    },
-
     gone: {
       opacity: 0.5,
     },
@@ -107,38 +55,20 @@ const useStyles = makeStyles(
       whiteSpace: 'nowrap',
     },
 
-    '@keyframes pulse': {
-      '0%': {
-        boxShadow: `0 0 8px 2px ${color(Colors.info).alpha(0)}`,
-      },
-      '100%': {
-        boxShadow: `0 0 8px 2px ${Colors.info}`,
-      },
-    },
-
-    '@keyframes flash': {
-      '0%, 49%': {
-        opacity: 0.2,
-      },
-      '50%, 100%': {
-        opacity: 1,
-      },
-    },
-
     progress: {
       position: 'absolute',
       top: -2,
       left: -2,
     },
   }),
-  { name: 'GenericAvatar' }
+  { name: 'ComplexAvatar' }
 );
 
 /**
  * Avatar that represents a single drone, docking station or some other object
  * in the system that has an ID.
  */
-const GenericAvatar = ({
+const ComplexAvatar = ({
   batterySettings,
   batteryStatus,
   hint,
@@ -173,14 +103,9 @@ const GenericAvatar = ({
           gone && classes.gone
         )}
       >
-        <Avatar
-          className={clsx(
-            classes.avatar,
-            classes[`avatar-${editing ? 'editing' : status}`]
-          )}
-        >
+        <SemanticAvatar status={editing ? Status.NEXT : status}>
           {label === undefined ? id : label}
-        </Avatar>
+        </SemanticAvatar>
         {progress > 0 && (
           <CircularProgress
             className={classes.progress}
@@ -201,7 +126,7 @@ const GenericAvatar = ({
   );
 };
 
-GenericAvatar.propTypes = {
+ComplexAvatar.propTypes = {
   batterySettings: CustomPropTypes.batterySettings,
   batteryStatus: PropTypes.shape({
     cellCount: PropTypes.number,
@@ -247,9 +172,9 @@ GenericAvatar.propTypes = {
   ]),
 };
 
-GenericAvatar.defaultProps = {
+ComplexAvatar.defaultProps = {
   status: 'off',
   textSemantics: 'info',
 };
 
-export default GenericAvatar;
+export default ComplexAvatar;

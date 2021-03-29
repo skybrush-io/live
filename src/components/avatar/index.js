@@ -1,3 +1,4 @@
-import GenericAvatar from './GenericAvatar';
+import ComplexAvatar from './ComplexAvatar';
+import SemanticAvatar from './SemanticAvatar';
 
-export { GenericAvatar };
+export { ComplexAvatar, SemanticAvatar };

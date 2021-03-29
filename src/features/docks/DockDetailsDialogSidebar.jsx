@@ -15,7 +15,7 @@ import NoMeetingRoom from '@material-ui/icons/NoMeetingRoom';
 import PowerSettingsNew from '@material-ui/icons/PowerSettingsNew';
 import Refresh from '@material-ui/icons/Refresh';
 
-import { GenericAvatar } from '~/components/avatar';
+import { ComplexAvatar } from '~/components/avatar';
 import Colors from '~/components/colors';
 import { MiniTable } from '~/components/mini-table';
 import StatusText from '~/components/StatusText';
@@ -70,7 +70,7 @@ const DockDetailsDialogSidebar = ({ dockId }) => {
     <Box className={classes.root}>
       <Box display='flex' flexDirection='row' alignItems='center'>
         <Box className={classes.avatar}>
-          <GenericAvatar label='OK' status='success' />
+          <ComplexAvatar label='OK' status='success' />
         </Box>
         <Box className={classes.summary}>
           <Typography variant='body1'>{dockId}</Typography>

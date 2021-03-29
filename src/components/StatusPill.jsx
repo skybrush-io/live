@@ -140,7 +140,7 @@ StatusPill.propTypes = {
 };
 
 StatusPill.defaultProps = {
-  status: 'info',
+  status: Status.INFO,
 };
 
 export default StatusPill;

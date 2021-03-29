@@ -1,12 +1,12 @@
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
-import { GenericAvatar } from '~/components/avatar';
+import { ComplexAvatar } from '~/components/avatar';
 import { getBatteryIndicatorSettings } from '~/features/settings/selectors';
 import { createSingleUAVStatusSummarySelector } from '~/features/uavs/selectors';
 
 /**
- * Connected component that takes a GenericAvatar and dresses it up to show the
+ * Connected component that takes a ComplexAvatar and dresses it up to show the
  * status of a single drone.
  */
 const DroneAvatar = connect(
@@ -28,7 +28,7 @@ const DroneAvatar = connect(
       return props;
     };
   }
-)(GenericAvatar);
+)(ComplexAvatar);
 
 DroneAvatar.propTypes = {
   id: PropTypes.string,
