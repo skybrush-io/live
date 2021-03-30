@@ -5,13 +5,13 @@ import React from 'react';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { makeStyles } from '@material-ui/core/styles';
 import { Colors, Status } from '@skybrush/app-theme-material-ui';
+import SemanticAvatar from '@skybrush/mui-components/lib/SemanticAvatar';
 
 import BatteryIndicator from '~/components/BatteryIndicator';
 import StatusPill from '~/components/StatusPill';
 import CustomPropTypes from '~/utils/prop-types';
 
 import SecondaryStatusLight from './SecondaryStatusLight';
-import SemanticAvatar from './SemanticAvatar';
 
 const useStyles = makeStyles(
   (theme) => ({

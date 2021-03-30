@@ -6,10 +6,10 @@ import { makeStyles } from '@material-ui/core/styles';
 import { colorForStatus, Status } from '@skybrush/app-theme-material-ui';
 
 const createStyleForStatus = (status, theme) => {
-  const color = colorForStatus(status);
+  const backgroundColor = colorForStatus(status);
   return {
-    backgroundColor: colorForStatus(status),
-    color: theme.palette.getContrastText(color),
+    backgroundColor,
+    color: theme.palette.getContrastText(backgroundColor),
   };
 };
 
