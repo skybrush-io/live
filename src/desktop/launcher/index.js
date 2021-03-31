@@ -52,6 +52,6 @@ function run(argv) {
 
 module.exports = (argv) => {
   const parser = setupCli();
-  parser.parse(argv || process.argv);
+  parser.parse();
   run(parser.opts());
 };
