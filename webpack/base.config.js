@@ -36,7 +36,8 @@ module.exports = {
       React: 'react',
     }),
 
-    // Resolve process.env in the code
+    // Resolve process.env in the code; the object below provides the default
+    // values
     new webpack.EnvironmentPlugin({
       NODE_ENV: 'development',
       DEPLOYMENT: '0'
@@ -49,7 +50,9 @@ module.exports = {
     }),
 
     // Add environment variables from .env
-    new Dotenv(),
+    new Dotenv({
+      ignoreStub: true, // needed because electron-is-dev uses "ELECTRON_IS_DEV in process.env", which is broken if process.env is stubbed
+    }),
 
     // Add VERSION and COMMITHASH file to output
     gitRevisionPlugin,
