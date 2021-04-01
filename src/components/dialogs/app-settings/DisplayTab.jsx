@@ -18,11 +18,11 @@ import {
   setFlatEarthCoordinateSystemOrigin,
 } from '~/actions/map-origin';
 import CoordinateSystemFields from '~/components/CoordinateSystemFields';
-import Header from '~/components/dialogs/FormHeader';
 import { updateAppSettings } from '~/features/settings/slice';
 import { CoordinateFormat, describeCoordinateFormat } from '~/model/settings';
 import { getMapOriginRotationAngle } from '~/selectors/map';
 
+import Header from '@skybrush/mui-components/lib/FormHeader';
 import ThemeSelector from '@skybrush/mui-components/lib/ThemeSelector';
 
 const coordinateFormatOrder = [

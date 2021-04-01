@@ -16,8 +16,9 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import InputAdornment from '@material-ui/core/InputAdornment';
 
+import FormHeader from '@skybrush/mui-components/lib/FormHeader';
+
 import DraggableDialog from '~/components/dialogs/DraggableDialog';
-import FormHeader from '~/components/dialogs/FormHeader';
 import { forceFormSubmission } from '~/components/forms';
 import {
   closeGeofenceSettingsDialog,

@@ -10,8 +10,9 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import Error from '@material-ui/icons/Error';
 
-import Header from '~/components/dialogs/FormHeader';
-import BackgroundHint from '~/components/BackgroundHint';
+import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
+import Header from '@skybrush/mui-components/lib/FormHeader';
+
 import LargeProgressIndicator from '~/components/LargeProgressIndicator';
 import StatusLight from '~/components/StatusLight';
 import { getUAVById } from '~/features/uavs/selectors';

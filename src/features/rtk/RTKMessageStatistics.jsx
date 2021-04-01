@@ -5,7 +5,8 @@ import TimeAgo from 'react-timeago';
 
 import Box from '@material-ui/core/Box';
 
-import BackgroundHint from '~/components/BackgroundHint';
+import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
+
 import { listOf } from '~/components/helpers/lists';
 import { shortTimeAgoFormatter } from '~/utils/formatting';
 

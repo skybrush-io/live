@@ -11,7 +11,8 @@ import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 
-import Header from '~/components/dialogs/FormHeader';
+import Header from '@skybrush/mui-components/lib/FormHeader';
+
 import {
   getLightingConditionsForThreeDView,
   getSceneryForThreeDView,

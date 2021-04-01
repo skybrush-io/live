@@ -12,8 +12,9 @@ import ListItemText from '@material-ui/core/ListItemText';
 import Switch from '@material-ui/core/Switch';
 import CheckCircle from '@material-ui/icons/CheckCircle';
 
+import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
+
 import { Colors } from '~/components/colors';
-import BackgroundHint from '~/components/BackgroundHint';
 import StatusLight from '~/components/StatusLight';
 import DraggableDialog from '~/components/dialogs/DraggableDialog';
 import { Status } from '~/components/semantics';

@@ -14,7 +14,8 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { isElement } from 'react-is';
 
-import BackgroundHint from '~/components/BackgroundHint';
+import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
+
 import { eventHasPlatformModifierKey } from '~/utils/platform';
 
 const createBackgroundHint = (backgroundHint, ref) => {

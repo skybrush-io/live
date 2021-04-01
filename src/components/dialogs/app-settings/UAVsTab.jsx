@@ -14,7 +14,8 @@ import Select from '@material-ui/core/Select';
 import Typography from '@material-ui/core/Typography';
 import { useTheme } from '@material-ui/core/styles';
 
-import Header from '~/components/dialogs/FormHeader';
+import Header from '@skybrush/mui-components/lib/FormHeader';
+
 import {
   SimpleAngleField,
   SimpleDistanceField,

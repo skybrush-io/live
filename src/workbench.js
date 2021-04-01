@@ -11,7 +11,8 @@ import debounce from 'lodash-es/debounce';
 import React from 'react';
 import { WorkbenchBuilder } from 'react-flexible-workbench';
 
-import BackgroundHint from './components/BackgroundHint';
+import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
+
 import { saveWorkbenchState } from './features/workbench/slice';
 import { injectFlockFromContext } from './flock';
 import store from './store';

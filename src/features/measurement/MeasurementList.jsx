@@ -13,7 +13,8 @@ import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import ListItemText from '@material-ui/core/ListItemText';
 import { makeStyles } from '@material-ui/core/styles';
 
-import BackgroundHint from '~/components/BackgroundHint';
+import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
+
 import Tooltip from '~/components/Tooltip';
 import Colors from '~/components/colors';
 import { multiSelectableListOf } from '~/components/helpers/lists';

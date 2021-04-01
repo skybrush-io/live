@@ -9,7 +9,8 @@ import { createSelector } from '@reduxjs/toolkit';
 import Box from '@material-ui/core/Box';
 import ListItem from '@material-ui/core/ListItem';
 
-import BackgroundHint from '~/components/BackgroundHint';
+import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
+
 import StatusPill from '~/components/StatusPill';
 import MiniList from '~/components/mini-list/MiniList';
 import { listOf } from '~/components/helpers/lists';

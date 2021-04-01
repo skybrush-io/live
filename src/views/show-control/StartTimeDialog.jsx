@@ -29,7 +29,8 @@ import AccessTime from '@material-ui/icons/AccessTime';
 import Alert from '@material-ui/lab/Alert';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 
-import Header from '~/components/dialogs/FormHeader';
+import Header from '@skybrush/mui-components/lib/FormHeader';
+
 import { StartMethod } from '~/features/show/enums';
 import {
   closeStartTimeDialog,

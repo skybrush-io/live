@@ -15,7 +15,7 @@ import IconButton from '@material-ui/core/IconButton';
 import TextField from '@material-ui/core/TextField';
 import DeleteSweep from '@material-ui/icons/DeleteSweep';
 
-import BackgroundHint from '../BackgroundHint';
+import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
 
 import ChatArea from './ChatArea';
 import ChatBubble from './ChatBubble';

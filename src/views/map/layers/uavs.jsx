@@ -3,11 +3,12 @@ import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
 import { connect } from 'react-redux';
 
+import Header from '@skybrush/mui-components/lib/FormHeader';
+
 import ActiveUAVsLayerSource from '../sources/ActiveUAVsLayerSource';
 
 import { setLayerParameterById } from '~/actions/layers';
 import SwatchesColorPicker from '~/components/SwatchesColorPicker';
-import Header from '~/components/dialogs/FormHeader';
 import flock from '~/flock';
 import { getSelection } from '~/selectors/selection';
 import { mapViewCoordinateFromLonLat } from '~/utils/geography';
