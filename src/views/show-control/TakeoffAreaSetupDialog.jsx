@@ -10,7 +10,8 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
 import VerticalAlignBottom from '@material-ui/icons/VerticalAlignBottom';
 
-import DraggableDialog from '~/components/dialogs/DraggableDialog';
+import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
+
 import DronePlaceholderList from '~/components/uavs/DronePlaceholderList';
 import { addVirtualDronesForMission } from '~/features/mission/actions';
 import {

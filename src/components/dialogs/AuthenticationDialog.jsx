@@ -3,20 +3,21 @@
  * the user needs to (or tries to) authenticate to the current server.
  */
 
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import { makeStyles } from '@material-ui/core/styles';
-
 import { TextField } from 'mui-rff';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { Form } from 'react-final-form';
 import { connect } from 'react-redux';
 
+import Box from '@material-ui/core/Box';
+import Button from '@material-ui/core/Button';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import { makeStyles } from '@material-ui/core/styles';
+
+import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
+
 import { closeAuthenticationDialog } from '~/actions/servers';
-import DraggableDialog from '~/components/dialogs/DraggableDialog';
 import { PasswordField } from '~/components/forms';
 import { authenticateToServerWithBasicAuthentication } from '~/features/servers/actions';
 import {

@@ -6,7 +6,8 @@ import Box from '@material-ui/core/Box';
 import DialogContent from '@material-ui/core/DialogContent';
 import Typography from '@material-ui/core/Typography';
 
-import DraggableDialog from '~/components/dialogs/DraggableDialog';
+import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
+
 import { getShowEnvironmentType } from '~/features/show/selectors';
 import { closeEnvironmentEditorDialog } from '~/features/show/slice';
 

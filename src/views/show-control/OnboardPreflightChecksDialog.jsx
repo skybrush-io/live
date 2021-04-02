@@ -13,10 +13,10 @@ import Switch from '@material-ui/core/Switch';
 import CheckCircle from '@material-ui/icons/CheckCircle';
 
 import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
+import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
 
 import { Colors } from '~/components/colors';
 import StatusLight from '~/components/StatusLight';
-import DraggableDialog from '~/components/dialogs/DraggableDialog';
 import { Status } from '~/components/semantics';
 
 import { isShowingMissionIds } from '~/features/settings/selectors';
@@ -117,9 +117,9 @@ const OnboardPreflightChecksDialog = ({
       fullWidth
       open={open}
       maxWidth='xs'
-      onClose={onClose}
       title='Onboard preflight checks'
       titleComponents={<MappingToggleButton />}
+      onClose={onClose}
     >
       <DialogContent
         style={{

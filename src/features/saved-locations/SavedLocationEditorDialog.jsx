@@ -13,8 +13,9 @@ import Button from '@material-ui/core/Button';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 
+import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
+
 import { cancelLocationEditing } from '~/actions/saved-location-editor';
-import DraggableDialog from '~/components/dialogs/DraggableDialog';
 import { AngleField, forceFormSubmission } from '~/components/forms';
 import { getCurrentMapViewAsSavedLocation } from '~/features/saved-locations/selectors';
 import {

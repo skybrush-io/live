@@ -3,18 +3,19 @@
  * the user needs to (or tries to) authenticate to the current server.
  */
 
+import PropTypes from 'prop-types';
+import React from 'react';
+import { batch, connect } from 'react-redux';
 import Button from '@material-ui/core/Button';
+
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import Typography from '@material-ui/core/Typography';
 
-import PropTypes from 'prop-types';
-import React from 'react';
-import { batch, connect } from 'react-redux';
+import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
 
 import { closeDeauthenticationDialog } from '~/actions/servers';
 import { disconnectFromServer } from '~/actions/server-settings';
-import DraggableDialog from '~/components/dialogs/DraggableDialog';
 import { getAuthenticatedUser } from '~/features/servers/selectors';
 import { clearAuthenticationToken } from '~/features/servers/slice';
 

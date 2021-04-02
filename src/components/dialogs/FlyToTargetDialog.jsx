@@ -3,16 +3,18 @@
  * for `window.prompt()`.
  */
 
+import PropTypes from 'prop-types';
+import { Form } from 'react-final-form';
+import React from 'react';
+import { connect } from 'react-redux';
+
 import Button from '@material-ui/core/Button';
 import Box from '@material-ui/core/Box';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import MenuItem from '@material-ui/core/MenuItem';
 
-import PropTypes from 'prop-types';
-import { Form } from 'react-final-form';
-import React from 'react';
-import { connect } from 'react-redux';
+import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
 
 import DronePlaceholderList from '~/components/uavs/DronePlaceholderList';
 import { submitFlyToTargetDialog } from '~/features/uav-control/actions';
@@ -21,8 +23,6 @@ import { getPreferredCoordinateFormatter } from '~/selectors/formatting';
 import { getSelectedUAVIds } from '~/selectors/selection';
 
 import { CoordinateField, DistanceField, Select } from '../forms';
-
-import DraggableDialog from './DraggableDialog';
 
 /**
  * Prop type that describes how the initial values should look like in the form.

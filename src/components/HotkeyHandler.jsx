@@ -17,7 +17,8 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
 
-import DraggableDialog from '~/components/dialogs/DraggableDialog';
+import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
+
 import { isRunningOnMac, platformModifierKey } from '~/utils/platform';
 
 /**

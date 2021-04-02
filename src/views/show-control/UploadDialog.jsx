@@ -17,10 +17,11 @@ import Clear from '@material-ui/icons/Clear';
 import Refresh from '@material-ui/icons/Refresh';
 import Alert from '@material-ui/lab/Alert';
 
+import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
+
 import StartUploadButton from './StartUploadButton';
 import UploadProgressBar from './UploadProgressBar';
 
-import DraggableDialog from '~/components/dialogs/DraggableDialog';
 import DronePlaceholderList from '~/components/uavs/DronePlaceholderList';
 import { getUAVIdsParticipatingInMission } from '~/features/mission/selectors';
 import { retryFailedUploads } from '~/features/show/actions';

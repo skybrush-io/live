@@ -13,10 +13,11 @@ import PlayArrow from '@material-ui/icons/PlayArrow';
 import Remove from '@material-ui/icons/Remove';
 import Replay from '@material-ui/icons/Replay';
 
+import DialogToolbar from '@skybrush/mui-components/lib/DialogToolbar';
+
 import ActiveUAVsField from '~/components/ActiveUAVsField';
 import ToolbarDivider from '~/components/ToolbarDivider';
 import Tooltip from '~/components/Tooltip';
-import DialogToolbar from '~/components/dialogs/DialogToolbar';
 import FadeAndSlide from '~/components/transitions/FadeAndSlide';
 
 import {

@@ -4,7 +4,8 @@ import { connect } from 'react-redux';
 
 import Box from '@material-ui/core/Box';
 
-import DraggableDialog from '~/components/dialogs/DraggableDialog';
+import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
+
 import {
   closeDockDetailsDialog,
   getSelectedTabInDockDetailsDialog,
