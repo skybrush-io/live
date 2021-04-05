@@ -5,7 +5,8 @@ import { connect } from 'react-redux';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 
-import StatusLight from '~/components/StatusLight';
+import StatusLight from '@skybrush/mui-components/lib/StatusLight';
+
 import { Status } from '~/components/semantics';
 
 import { hasManualPreflightChecks } from '~/features/preflight/selectors';

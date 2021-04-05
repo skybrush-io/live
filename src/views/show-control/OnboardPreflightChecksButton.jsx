@@ -3,11 +3,10 @@ import React from 'react';
 import { connect } from 'react-redux';
 
 import ListItem from '@material-ui/core/ListItem';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import ListItemText from '@material-ui/core/ListItemText';
-import Switch from '@material-ui/core/Switch';
 
-import StatusLight from '~/components/StatusLight';
+import StatusLight from '@skybrush/mui-components/lib/StatusLight';
+
 import { Status } from '~/components/semantics';
 
 import { signOffOnOnboardPreflightChecks } from '~/features/show/actions';

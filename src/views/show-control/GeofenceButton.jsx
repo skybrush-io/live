@@ -5,9 +5,9 @@ import { connect } from 'react-redux';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 
-import StatusLight from '~/components/StatusLight';
-import { Status } from '~/components/semantics';
+import StatusLight from '@skybrush/mui-components/lib/StatusLight';
 
+import { Status } from '~/components/semantics';
 import { showGeofenceSettingsDialog } from '~/features/geofence/slice';
 import { getSetupStageStatuses } from '~/features/show/stages';
 

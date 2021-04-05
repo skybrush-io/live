@@ -5,9 +5,9 @@ import { connect } from 'react-redux';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 
-import StatusLight from '~/components/StatusLight';
-import { Status } from '~/components/semantics';
+import StatusLight from '@skybrush/mui-components/lib/StatusLight';
 
+import { Status } from '~/components/semantics';
 import { openTakeoffAreaSetupDialog } from '~/features/show/slice';
 import { getSetupStageStatuses } from '~/features/show/stages';
 import { getFarthestDistanceFromHome } from '~/features/uavs/selectors';

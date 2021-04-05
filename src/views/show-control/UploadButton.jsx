@@ -4,10 +4,11 @@ import { connect } from 'react-redux';
 
 import ListItem from '@material-ui/core/ListItem';
 
+import StatusLight from '@skybrush/mui-components/lib/StatusLight';
+
 import UploadProgressBar from './UploadProgressBar';
 
 import ListItemTextWithProgress from '~/components/ListItemTextWithProgress';
-import StatusLight from '~/components/StatusLight';
 import { Status } from '~/components/semantics';
 
 import {

@@ -14,9 +14,9 @@ import CheckCircle from '@material-ui/icons/CheckCircle';
 
 import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
 import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
+import StatusLight from '@skybrush/mui-components/lib/StatusLight';
 
 import { Colors } from '~/components/colors';
-import StatusLight from '~/components/StatusLight';
 import { Status } from '~/components/semantics';
 
 import { isShowingMissionIds } from '~/features/settings/selectors';

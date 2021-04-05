@@ -10,12 +10,13 @@ import Clear from '@material-ui/icons/Clear';
 import CloudDownload from '@material-ui/icons/CloudDownload';
 import Refresh from '@material-ui/icons/Refresh';
 
+import StatusLight from '@skybrush/mui-components/lib/StatusLight';
+
 import FileListItem from './FileListItem';
 
 import Colors from '~/components/colors';
 import FileWatcher from '~/components/FileWatcher';
 import ListItemTextWithProgress from '~/components/ListItemTextWithProgress';
-import StatusLight from '~/components/StatusLight';
 import { Status } from '~/components/semantics';
 import Tooltip from '~/components/Tooltip';
 import {

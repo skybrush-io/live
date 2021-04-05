@@ -8,7 +8,8 @@ import { createSelector } from '@reduxjs/toolkit';
 import Box from '@material-ui/core/Box';
 import { makeStyles } from '@material-ui/core/styles';
 
-import StatusLight from '~/components/StatusLight';
+import StatusLight from '@skybrush/mui-components/lib/StatusLight';
+
 import LazyTooltip from '~/components/LazyTooltip';
 import { Status } from '~/components/semantics';
 

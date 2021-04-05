@@ -5,9 +5,9 @@ import { connect } from 'react-redux';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import Typography from '@material-ui/core/Typography';
+import StatusLight from '@skybrush/mui-components/lib/StatusLight';
 
 import { Status } from '~/components/semantics';
-import StatusLight from '~/components/StatusLight';
 import { setCommandsAreBroadcast } from '~/features/mission/slice';
 import {
   setShowAuthorization,

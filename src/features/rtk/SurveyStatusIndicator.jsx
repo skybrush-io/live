@@ -4,7 +4,7 @@ import React from 'react';
 import Box from '@material-ui/core/Box';
 import Fade from '@material-ui/core/Fade';
 
-import LabeledStatusLight from '~/components/LabeledStatusLight';
+import LabeledStatusLight from '@skybrush/mui-components/lib/LabeledStatusLight';
 
 function formatAccuracy(message, value) {
   if (typeof value !== 'number' || value <= 0) {
