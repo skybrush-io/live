@@ -6,8 +6,8 @@ import { useTheme } from '@material-ui/core/styles';
 import LooksTwo from '@material-ui/icons/LooksTwo';
 
 import GenericHeaderButton from '@skybrush/mui-components/lib/GenericHeaderButton';
+import SidebarBadge from '@skybrush/mui-components/lib/SidebarBadge';
 
-import SidebarBadge from '~/components/badges/SidebarBadge';
 import Colors from '~/components/colors';
 import { togglePreferredChannel } from '~/features/mission/slice';
 import { getPreferredCommunicationChannelIndex } from '~/features/mission/selectors';

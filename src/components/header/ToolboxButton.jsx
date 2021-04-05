@@ -6,9 +6,10 @@ import ListItemText from '@material-ui/core/ListItemText';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import BusinessCenter from '@material-ui/icons/BusinessCenter';
-import GenericHeaderButton from '@skybrush/mui-components/lib/GenericHeaderButton';
 
-import SidebarBadge from '~/components/badges/SidebarBadge';
+import GenericHeaderButton from '@skybrush/mui-components/lib/GenericHeaderButton';
+import SidebarBadge from '@skybrush/mui-components/lib/SidebarBadge';
+
 import Colors from '~/components/colors';
 import { getActiveUAVIdsBeingAveraged } from '~/features/measurement/selectors';
 import { showAveragingDialog } from '~/features/measurement/slice';
