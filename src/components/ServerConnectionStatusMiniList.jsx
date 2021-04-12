@@ -3,11 +3,10 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 
-import {
-  MiniList,
-  MiniListDivider,
-  MiniListItem,
-} from '~/components/mini-list';
+import MiniList from '@skybrush/mui-components/lib/MiniList';
+import MiniListDivider from '@skybrush/mui-components/lib/MiniListDivider';
+import MiniListItem from '@skybrush/mui-components/lib/MiniListItem';
+
 import { MAX_ROUNDTRIP_TIME } from '~/features/servers/constants';
 import {
   getCurrentServerState,

@@ -9,11 +9,10 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
 import Typography from '@material-ui/core/Typography';
 
-import {
-  MiniList,
-  MiniListDivider,
-  MiniListItem,
-} from '~/components/mini-list';
+import MiniList from '@skybrush/mui-components/lib/MiniList';
+import MiniListDivider from '@skybrush/mui-components/lib/MiniListDivider';
+import MiniListItem from '@skybrush/mui-components/lib/MiniListItem';
+
 import { togglePreferredChannel } from '~/features/mission/slice';
 import { getPreferredCommunicationChannelIndex } from '~/features/mission/selectors';
 import { getConnectionsInOrder } from '~/selectors/ordered';

@@ -3,9 +3,9 @@ import { connect } from 'react-redux';
 
 import SettingsEthernet from '@material-ui/icons/SettingsEthernet';
 import GenericHeaderButton from '@skybrush/mui-components/lib/GenericHeaderButton';
+import LazyTooltip from '@skybrush/mui-components/lib/LazyTooltip';
 
 import ConnectionStatusMiniList from '~/components/ConnectionStatusMiniList';
-import LazyTooltip from '~/components/LazyTooltip';
 import ConnectionStatusBadge from '~/components/badges/ConnectionStatusBadge';
 import { isConnected } from '~/features/servers/selectors';
 

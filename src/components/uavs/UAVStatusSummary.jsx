@@ -8,13 +8,11 @@ import { createSelector } from '@reduxjs/toolkit';
 import Box from '@material-ui/core/Box';
 import { makeStyles } from '@material-ui/core/styles';
 
+import LazyTooltip from '@skybrush/mui-components/lib/LazyTooltip';
 import StatusLight from '@skybrush/mui-components/lib/StatusLight';
 
-import LazyTooltip from '~/components/LazyTooltip';
 import { Status } from '~/components/semantics';
-
 import { getSingleUAVStatusLevel } from '~/features/uavs/selectors';
-
 import { createShallowSelector } from '~/utils/selectors';
 import { Workbench } from '~/workbench';
 
