@@ -4,9 +4,7 @@
  */
 
 import difference from 'lodash-es/difference';
-import findKey from 'lodash-es/findKey';
 import includes from 'lodash-es/includes';
-import stubFalse from 'lodash-es/stubFalse';
 import Layer from 'ol/layer/Layer';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -131,11 +129,17 @@ class ActiveUAVsLayerSource extends React.Component {
     if (oldFlock) {
       oldFlock.uavsUpdated.detach(this.eventBindings.uavsUpdated);
       delete this.eventBindings.uavsUpdated;
+
+      oldFlock.uavsRemoved.detach(this.eventBindings.uavsRemoved);
+      delete this.eventBindings.uavsRemoved;
     }
 
     if (newFlock) {
       this.eventBindings.uavsUpdated = newFlock.uavsUpdated.add(
         this._onUAVsUpdated
+      );
+      this.eventBindings.uavsRemoved = newFlock.uavsRemoved.add(
+        this._onUAVsRemoved
       );
     }
   };
@@ -154,18 +158,21 @@ class ActiveUAVsLayerSource extends React.Component {
 
     const { source } = this._sourceRef;
     const getFeatureById = source.getFeatureById.bind(source);
-    difference(newSelection, oldSelection)
+    let features;
+
+    features = difference(newSelection, oldSelection)
       .map(getFeatureById)
-      .filter(Boolean)
-      .forEach((feature) => {
-        feature.selected = true;
-      });
-    difference(oldSelection, newSelection)
+      .filter(Boolean);
+    for (const feature of features) {
+      feature.selected = true;
+    }
+
+    features = difference(oldSelection, newSelection)
       .map(getFeatureById)
-      .filter(Boolean)
-      .forEach((feature) => {
-        feature.selected = false;
-      });
+      .filter(Boolean);
+    for (const feature of features) {
+      feature.selected = false;
+    }
   };
 
   /**
@@ -183,6 +190,19 @@ class ActiveUAVsLayerSource extends React.Component {
     const features = this._featureManager.getFeatureArray();
     for (const feature of features) {
       feature.labelColor = newLabelColor;
+    }
+  };
+
+  /**
+   * Event handler that is called when some UAVs were removed from the flock and
+   * the layer should be re-drawn without these UAVs.
+   *
+   * @listens Flock#uavsRemoved
+   * @param {UAV[]} uavs  the UAVs that should be removed
+   */
+  _onUAVsRemoved = (uavs) => {
+    for (const uav of uavs) {
+      this._featureManager.removeFeatureById(uav.id);
     }
   };
 

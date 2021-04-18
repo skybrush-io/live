@@ -128,13 +128,13 @@ function subscribeToFlock(flock) {
     }
 
     function onUAVsRemoved(uavs) {
-      const removals = {};
+      const removals = [];
 
       // If there are any pending updates to the removed UAVs that we have not
       // dispatched yet, remove these updates from the pendingUpdates object.
       for (const uav of uavs) {
         if (uav.id !== undefined) {
-          removals[uav.id] = uav;
+          removals.push(uav);
           delete pendingUpdates[uav.id];
         }
       }
@@ -206,7 +206,7 @@ function* uavSyncSaga(flock) {
  * Saga that updates the age (status) of the UAVs based on the timestamp we
  * have received an update from them the last time.
  */
-function* uavAgingSaga() {
+function* uavAgingSaga(flock) {
   while (true) {
     yield delay(1000);
 
@@ -236,7 +236,10 @@ function* uavAgingSaga() {
     }
 
     if (removals.length > 0) {
-      yield put(removeUAVsByIds(removals));
+      /* Rmove the UAVs from the subscribed flock; the flock will then dispatch
+       * events, which will in turn make the uavSyncSaga invoke removeUAVsByIds
+       * as needed */
+      flock.removeUAVsByIds(removals);
     }
   }
 }
@@ -249,5 +252,5 @@ function* uavAgingSaga() {
  *        the Redux store
  */
 export default function* uavManagementSaga(flock) {
-  yield all([uavSyncSaga(flock), uavAgingSaga()]);
+  yield all([uavSyncSaga(flock), uavAgingSaga(flock)]);
 }

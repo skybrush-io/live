@@ -20,8 +20,8 @@ export default class Flock {
    * Creates a new flock with no UAVs in it.
    */
   constructor() {
-    this._uavs = [];
     this._uavsById = {};
+
     this.uavsAdded = new Signal();
     this.uavsUpdated = new Signal();
     this.uavsRemoved = new Signal();
@@ -83,6 +83,7 @@ export default class Flock {
    *
    * @param  {Object} body  the body of the UAV-INF message
    * @param  {function} dispatch  the dispatch function of the Redux store
+   * @fires  Flock#uavsAdded
    * @fires  Flock#uavsUpdated
    */
   handleUAVInformationMessage(body) {
@@ -121,6 +122,32 @@ export default class Flock {
 
     if (!isEmpty(updatedUAVs)) {
       this.uavsUpdated.dispatch(updatedUAVs);
+    }
+  }
+
+  /**
+   * Removes a UAV given its ID, and dispatches an appropriate event.
+   */
+  removeUAVById(id) {
+    this.removeUAVsByIds([id]);
+  }
+
+  /**
+   * Removes multiple UAVs given their IDs, and dispatches an appropriate event.
+   */
+  removeUAVsByIds(ids) {
+    const removedUAVs = [];
+
+    for (const id of ids) {
+      const uav = this._uavsById[id];
+      if (uav !== undefined) {
+        removedUAVs.push(uav);
+        delete this._uavsById[id];
+      }
+    }
+
+    if (!isEmpty(removedUAVs)) {
+      this.uavsRemoved.dispatch(removedUAVs);
     }
   }
 }
