@@ -93,12 +93,12 @@ class GeoJSONLayerSettingsPresentation extends React.Component {
     this.props.setLayerParameter('fillColor', value);
   };
 
-  _handleStrokeWidthChange = (e) => {
-    this.setState({ strokeWidth: e.target.value });
+  _handleStrokeWidthChange = (event) => {
+    this.setState({ strokeWidth: event.target.value });
   };
 
-  _handleDataChange = (e) => {
-    this.setState({ data: e.target.value });
+  _handleDataChange = (event) => {
+    this.setState({ data: event.target.value });
   };
 
   _handleClick = () => {
@@ -114,7 +114,7 @@ class GeoJSONLayerSettingsPresentation extends React.Component {
         message: 'GeoJSON imported successfully.',
         semantics: 'success',
       });
-    } catch (_) {
+    } catch {
       this.props.showMessage({
         message: 'Invalid GeoJSON data.',
         semantics: 'error',
@@ -125,7 +125,7 @@ class GeoJSONLayerSettingsPresentation extends React.Component {
 
 export const GeoJSONLayerSettings = connect(
   // mapStateToProps
-  () => ({}),
+  null,
   // mapDispatchToProps
   (dispatch, ownProps) => ({
     setLayerParameter: (parameter, value) => {
@@ -181,7 +181,7 @@ class GeoJSONVectorSource extends React.Component {
       return this.geojsonFormat.readFeatures(data, {
         featureProjection: 'EPSG:3857',
       });
-    } catch (_) {
+    } catch {
       console.error('Failed to parse GeoJSON data in layer');
       return [];
     }

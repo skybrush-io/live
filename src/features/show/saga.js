@@ -139,6 +139,8 @@ function createShowConfigurationForUav(state, uavId) {
  * Handles a single trajectory upload to a drone.
  */
 async function runSingleUpload(uavId, data) {
+  // No need for a timeout here; it utilizes the message hub, which has its
+  // own timeout for failed command executions (although it is quite long)
   await messageHub.execute.uploadDroneShow({ uavId, data });
 }
 

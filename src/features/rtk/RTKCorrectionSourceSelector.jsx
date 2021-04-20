@@ -145,7 +145,7 @@ RTKCorrectionSourceSelector.propTypes = {
 
 export default connect(
   // mapStateToProps
-  () => ({}),
+  null,
   // mapDispatchToProps
   {
     onSourceChanged: resetRTKStatistics,

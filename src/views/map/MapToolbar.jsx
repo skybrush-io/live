@@ -48,7 +48,9 @@ const MapToolbarPresentation = ({ initialRotation }) => (
 
     <MapToolbarSeparator />
 
-    <FitAllFeaturesButton duration={500} margin={32} />
+    {/* margin is calibrated such that the vertical drawing toolbar will not
+     * cover any of the drones */}
+    <FitAllFeaturesButton duration={500} margin={80} />
   </div>
 );
 

@@ -113,7 +113,7 @@ class TileServerLayerSettingsPresentation extends React.Component {
 
 export const TileServerLayerSettings = connect(
   // mapStateToProps
-  () => ({}),
+  null,
   // mapDispatchToProps
   (dispatch, ownProps) => ({
     changeTileServerType: (event) => {
@@ -181,9 +181,4 @@ class TileServerLayerPresentation extends React.Component {
   }
 }
 
-export const TileServerLayer = connect(
-  // mapStateToProps
-  () => ({}),
-  // mapDispatchToProps
-  () => ({})
-)(TileServerLayerPresentation);
+export const TileServerLayer = TileServerLayerPresentation;

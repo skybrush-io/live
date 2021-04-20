@@ -191,7 +191,7 @@ class ServerDetectionManagerPresentation extends React.Component {
 
 export const ServerDetectionManager = connect(
   // mapStateToProps
-  () => ({}),
+  null,
   // mapDispatchToProps
   (dispatch) => ({
     onScanningStarted() {

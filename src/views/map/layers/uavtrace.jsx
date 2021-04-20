@@ -90,7 +90,7 @@ class UAVTraceLayerSettingsPresentation extends React.Component {
 
 export const UAVTraceLayerSettings = connect(
   // mapStateToProps
-  () => ({}),
+  null,
   // mapDispatchToProps
   (dispatch, ownProps) => ({
     setLayerParameters: (parameters) => {
@@ -221,9 +221,4 @@ UAVTraceLayerPresentation.propTypes = {
   zIndex: PropTypes.number,
 };
 
-export const UAVTraceLayer = connect(
-  // mapStateToProps
-  () => ({}),
-  // mapDispatchToProps
-  () => ({})
-)(UAVTraceLayerPresentation);
+export const UAVTraceLayer = UAVTraceLayerPresentation;

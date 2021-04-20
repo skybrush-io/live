@@ -154,24 +154,25 @@ export const findFeaturesById = curry((map, featureIds) => {
   const features = [];
   features.length = featureIds.length;
 
-  map.getLayers().forEach((layer) => {
-    if (!layer.getVisible()) {
-      return;
+  for (const layer of map.getLayers().getArray()) {
+    const source =
+      layer.getVisible() && layer.getSource ? layer.getSource() : undefined;
+    if (!source) {
+      continue;
     }
 
-    const source = layer.getSource ? layer.getSource() : undefined;
-    if (source && source.getFeatureById) {
-      const n = features.length;
-      for (let i = 0; i < n; i++) {
-        if (!features[i]) {
-          const feature = source.getFeatureById(featureIds[i]);
-          if (feature) {
-            features[i] = feature;
-          }
+    const n = features.length;
+    for (let i = 0; i < n; i++) {
+      if (!features[i]) {
+        const feature = source.getFeatureById
+          ? source.getFeatureById(featureIds[i])
+          : undefined;
+        if (feature) {
+          features[i] = feature;
         }
       }
     }
-  });
+  }
 
   return features;
 });
@@ -289,6 +290,23 @@ export const makePolarCoordinateFormatter = (options) => {
 export const makeSexagesimalCoordinateFormatter = (decimalPlaces = 3) => (
   coordinate
 ) => formatCoords(coordinate, true).format('FFf', { decimalPlaces });
+
+/**
+ * Merges an array of OpenLayer extents and returns a single extent that contains
+ * all of them.
+ *
+ * @param  {ol.Extent[]} extents  the extents to merge
+ * @return {ol.Extent} the merged OpenLayers extent
+ */
+export function mergeExtents(extents) {
+  const result = Extent.createEmpty();
+
+  for (const extent of extents) {
+    Extent.extend(result, extent);
+  }
+
+  return result;
+}
 
 /**
  * Normalizes an angle given in degrees according to the conventions used in

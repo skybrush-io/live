@@ -46,7 +46,7 @@ UAVsLayerSettingsPresentation.propTypes = {
 
 export const UAVsLayerSettings = connect(
   // mapStateToProps
-  () => ({}),
+  null,
   // mapDispatchToProps
   (dispatch, ownProps) => ({
     setLayerParameter: (parameter, value) => {
@@ -86,5 +86,5 @@ export const UAVsLayer = connect(
     selection: getSelection(state),
   }),
   // mapDispatchToProps
-  () => ({})
+  {}
 )(UAVsLayerPresentation);

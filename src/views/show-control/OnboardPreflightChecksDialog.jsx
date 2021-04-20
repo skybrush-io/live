@@ -97,7 +97,7 @@ const PreflightCheckList = connect(
     showMissionIds: isShowingMissionIds(state),
   }),
   // mapDispatchToProps
-  () => ({})
+  {}
 )(PreflightCheckListPresentation);
 
 /**

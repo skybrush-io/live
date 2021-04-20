@@ -49,7 +49,7 @@ const RTKStatusUpdater = ({ onStatusChanged }) => {
 
 export default connect(
   // mapStateToProps
-  () => ({}),
+  null,
   // mapDispatchToProps
   (dispatch) => ({
     onStatusChanged: (status) => {

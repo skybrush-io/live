@@ -48,10 +48,12 @@ const RTKMessageStatistics = listOf(RTKMessageStatisticsListEntry, {
 });
 
 export default connect(
+  // mapStateToProps
   (state) => ({
     dense: true,
     disablePadding: true,
     items: getDisplayedListOfMessages(state),
   }),
-  () => ({})
+  // mapDispatchToProps
+  {}
 )(RTKMessageStatistics);

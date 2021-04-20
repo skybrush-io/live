@@ -107,7 +107,7 @@ class HexGridLayerSettingsPresentation extends React.Component {
 
 export const HexGridLayerSettings = connect(
   // mapStateToProps
-  () => ({}),
+  null,
   // mapDispatchToProps
   (dispatch, ownProps) => ({
     setLayerParameter: (parameter, value) => {
@@ -215,9 +215,4 @@ HexGridLayerPresentation.propTypes = {
   zIndex: PropTypes.number,
 };
 
-export const HexGridLayer = connect(
-  // mapStateToProps
-  () => ({}),
-  // mapDispatchToProps
-  () => ({})
-)(HexGridLayerPresentation);
+export const HexGridLayer = HexGridLayerPresentation;

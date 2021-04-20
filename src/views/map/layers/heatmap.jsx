@@ -243,15 +243,15 @@ class HeatmapLayerSettingsPresentation extends React.Component {
     this._refs.subscriptionDialog.current.showDialog();
   };
 
-  _handleHueChange = (e) => {
+  _handleHueChange = (event) => {
     this.setState({
-      [e.target.id]: toNumber(e.target.value),
+      [event.target.id]: toNumber(event.target.value),
     });
   };
 
-  _handleColoringFunctionChange = (e) => {
+  _handleColoringFunctionChange = (event) => {
     this.setState({
-      coloringFunction: e.target.value,
+      coloringFunction: event.target.value,
     });
   };
 
@@ -291,7 +291,7 @@ class HeatmapLayerSettingsPresentation extends React.Component {
 
 export const HeatmapLayerSettings = connect(
   // mapStateToProps
-  () => ({}),
+  null,
   // mapDispatchToProps
   (dispatch, ownProps) => ({
     setLayerParameter: (parameter, value) => {
@@ -623,7 +623,7 @@ class HeatmapLayerPresentation extends React.Component {
 
 export const HeatmapLayer = connect(
   // mapStateToProps
-  () => ({}),
+  null,
   // mapDispatchToProps
   (dispatch, ownProps) => ({
     setLayerParameter: (parameter, value) => {

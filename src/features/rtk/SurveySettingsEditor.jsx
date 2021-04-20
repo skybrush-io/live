@@ -81,7 +81,7 @@ SurveySettingsEditor.propTypes = {
 
 export default connect(
   // mapStateToProps
-  () => ({}),
+  null,
   // mapDispatchToProps
   {
     onClose: toggleSurveySettingsPanel,
