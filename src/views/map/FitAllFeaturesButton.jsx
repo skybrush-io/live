@@ -132,7 +132,8 @@ class FitAllFeaturesButton extends React.Component {
       // This only works on secure origins.
       if ('geolocation' in window.navigator) {
         window.navigator.geolocation.getCurrentPosition(
-          this._geolocationReceived
+          this._onGeolocationReceived,
+          this._onGeolocationError
         );
       } else {
         this.props.showError(
@@ -153,7 +154,7 @@ class FitAllFeaturesButton extends React.Component {
    *
    * @param {Object} position the position object provided by the geolocation service
    */
-  _geolocationReceived = (position) => {
+  _onGeolocationReceived = (position) => {
     if (!this.map) {
       return;
     }
@@ -168,6 +169,40 @@ class FitAllFeaturesButton extends React.Component {
       duration: this.props.duration,
       easing: easeOut,
     });
+  };
+
+  /**
+   * Event handler that is called when the geolocation service signalled an
+   * error.
+   *
+   * @param {Object} error the error object provided by the geolocation service
+   */
+  _onGeolocationError = (error) => {
+    const { showError } = this.props;
+
+    if (!showError) {
+      console.error(error.message);
+    } else {
+      let message;
+
+      switch (error.code) {
+        case 1:
+          message = 'Could not retrieve your location: permission denied';
+          break;
+        case 2:
+          message = 'Error while retrieveing your location; try again later';
+          break;
+        case 3:
+          message = 'Timeout while retrieving your locaiton; try again later';
+          break;
+        default:
+          message =
+            'An unexpected error happened while retrieving your location';
+          console.error(error.message);
+      }
+
+      showError(message);
+    }
   };
 }
 
