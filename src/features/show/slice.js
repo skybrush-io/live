@@ -152,6 +152,10 @@ const { actions, reducer } = createSlice({
       state.upload.lastUploadResult = null;
     }),
 
+    clearLastUploadResult: noPayload((state) => {
+      state.upload.lastUploadResult = null;
+    }),
+
     clearManualPreflightChecks: noPayload((state) => {
       state.preflight.manualChecksSignedOffAt = null;
     }),
@@ -386,7 +390,7 @@ const { actions, reducer } = createSlice({
         altitude >= -10000 &&
         altitude <= 10000
       ) {
-        // This has to be done this way to cater for the csae when
+        // This has to be done this way to cater for the case when
         // state.environment.outdoor.altitudeReference is undefined
         const altitudeReference = {
           type: DEFAULT_ALTITUDE_REFERENCE.type,
@@ -516,6 +520,7 @@ const { actions, reducer } = createSlice({
 export const {
   approveTakeoffAreaAt,
   cancelUpload,
+  clearLastUploadResult,
   clearLoadedShow,
   clearManualPreflightChecks,
   clearOnboardPreflightChecks,

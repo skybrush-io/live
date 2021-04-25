@@ -14,7 +14,6 @@ import {
   setMappingLength,
   setGeofencePolygonId,
 } from '~/features/mission/slice';
-import { getConvexHullOfShow } from '~/features/show/selectors';
 import { showNotification } from '~/features/snackbar/slice';
 import { MessageSemantics } from '~/features/snackbar/types';
 import { FeatureType } from '~/model/features';
@@ -30,6 +29,7 @@ import { StartMethod } from './enums';
 import { loadShowFromFile as processFile } from './processing';
 import {
   getAbsolutePathOfShowFile,
+  getConvexHullOfShow,
   getFailedUploadItems,
   getFirstPointsOfTrajectoriesInWorldCoordinates,
   getLastPointsOfTrajectoriesInWorldCoordinates,
@@ -41,6 +41,7 @@ import {
 } from './selectors';
 import {
   approveTakeoffAreaAt,
+  clearLastUploadResult,
   loadingProgress,
   revokeTakeoffAreaApproval,
   setEnvironmentType,
@@ -88,7 +89,7 @@ export const removeShowFeatures = () => (dispatch, getState) => {
   dispatch(removeFeatures(showFeatureIds));
 };
 
-export const addGeofencePolygonBasedOnShowTrajectories = () => (
+const addGeofencePolygonBasedOnShowTrajectories = () => (
   dispatch,
   getState
 ) => {
@@ -184,8 +185,12 @@ export const updateOutdoorShowSettings = ({
     changed = true;
   }
 
-  if (setupMission && changed) {
-    dispatch(setupMissionFromShow());
+  if (changed) {
+    dispatch(clearLastUploadResult());
+
+    if (setupMission) {
+      dispatch(setupMissionFromShow());
+    }
   }
 };
 
