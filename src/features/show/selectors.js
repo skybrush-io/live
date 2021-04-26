@@ -161,7 +161,7 @@ export const isShowOutdoor = (state) =>
  * Selector that returns the part of the state object that is related to the
  * altitude reference of the show.
  */
-const getOutdoorAltitudeReference = (state) => {
+export const getOutdoorShowAltitudeReference = (state) => {
   const result = get(state, 'show.environment.outdoor.altitudeReference');
   return result || DEFAULT_ALTITUDE_REFERENCE;
 };
@@ -176,7 +176,7 @@ export const getMeanSeaLevelReferenceOfShowCoordinatesOrNull = (state) => {
     return null;
   }
 
-  const altitudeReference = getOutdoorAltitudeReference(state);
+  const altitudeReference = getOutdoorShowAltitudeReference(state);
   return altitudeReference &&
     altitudeReference.type === ALTITUDE_REFERENCE.AMSL &&
     typeof altitudeReference.value === 'number' &&
@@ -365,7 +365,9 @@ const transformPoints = (points, transform) =>
   transform ? points.map(transform) : [];
 
 const transformPointsOrFillWithUndefined = (points, transform) =>
-  transform ? points.map(transform) : new Array(points.length).fill(undefined);
+  transform
+    ? points.map(transform)
+    : Array.from({ length: points.length }).fill(undefined);
 
 /**
  * Returns the coordinates of the convex hull of the currently loaded show, in

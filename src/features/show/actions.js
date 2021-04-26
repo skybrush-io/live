@@ -36,6 +36,7 @@ import {
   getOutdoorShowOrigin,
   getRoomCorners,
   getShowOrientation,
+  getOutdoorShowAltitudeReference,
   getOutdoorShowToWorldCoordinateSystemTransformationObject,
   isUploadInProgress,
 } from './selectors';
@@ -53,6 +54,7 @@ import {
   signOffOnOnboardPreflightChecksAt,
   startUpload,
   _enqueueFailedUploads,
+  _setOutdoorShowAltitudeReference,
 } from './slice';
 
 /**
@@ -383,4 +385,33 @@ export const setFirstCornerOfRoom = (newCorner) => (dispatch, getState) => {
 export const setSecondCornerOfRoom = (newCorner) => (dispatch, getState) => {
   const corners = getRoomCorners(getState());
   dispatch(setRoomCorners([corners[0], newCorner]));
+};
+
+export const setOutdoorShowAltitudeReferenceType = (type) => (
+  dispatch,
+  getState
+) => {
+  dispatch(
+    _setOutdoorShowAltitudeReference({
+      ...getOutdoorShowAltitudeReference(getState()),
+      type,
+    })
+  );
+  dispatch(clearLastUploadResult());
+};
+
+export const setOutdoorShowAltitudeReferenceValue = (value) => (
+  dispatch,
+  getState
+) => {
+  const altitude = Number(value);
+  if (Number.isFinite(altitude) && altitude >= -10000 && altitude <= 10000) {
+    dispatch(
+      _setOutdoorShowAltitudeReference({
+        ...getOutdoorShowAltitudeReference(getState()),
+        value: altitude,
+      })
+    );
+    dispatch(clearLastUploadResult());
+  }
 };

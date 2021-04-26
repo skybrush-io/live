@@ -20,15 +20,15 @@ import CoordinateSystemFields from '~/components/CoordinateSystemFields';
 import Tooltip from '~/components/Tooltip';
 import { SimpleDistanceField } from '~/components/forms/fields';
 import RTKCorrectionSourceSelector from '~/features/rtk/RTKCorrectionSourceSelector';
-import { updateOutdoorShowSettings } from '~/features/show/actions';
+import {
+  setOutdoorShowAltitudeReferenceType,
+  setOutdoorShowAltitudeReferenceValue,
+  updateOutdoorShowSettings,
+} from '~/features/show/actions';
 import {
   ALTITUDE_REFERENCE,
   COORDINATE_SYSTEM_TYPE,
 } from '~/features/show/constants';
-import {
-  setOutdoorShowAltitudeReferenceType,
-  setOutdoorShowAltitudeReferenceValue,
-} from '~/features/show/slice';
 import { showNotification } from '~/features/snackbar/slice';
 import { MessageSemantics } from '~/features/snackbar/types';
 import {

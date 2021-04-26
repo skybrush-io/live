@@ -372,32 +372,15 @@ const { actions, reducer } = createSlice({
       });
     },
 
-    setOutdoorShowAltitudeReferenceType(state, action) {
-      // This has to be done this way to cater for the csae when
-      // state.environment.outdoor.altitudeReference is undefined
-      const altitudeReference = {
-        value: DEFAULT_ALTITUDE_REFERENCE.value,
-        ...state.environment.outdoor.altitudeReference,
-        type: String(action.payload),
-      };
-      state.environment.outdoor.altitudeReference = altitudeReference;
-    },
+    _setOutdoorShowAltitudeReference(state, action) {
+      const { payload } = action;
 
-    setOutdoorShowAltitudeReferenceValue(state, action) {
-      const altitude = Number(action.payload);
       if (
-        Number.isFinite(altitude) &&
-        altitude >= -10000 &&
-        altitude <= 10000
+        typeof payload === 'object' &&
+        typeof payload.type !== undefined &&
+        typeof payload.value !== undefined
       ) {
-        // This has to be done this way to cater for the case when
-        // state.environment.outdoor.altitudeReference is undefined
-        const altitudeReference = {
-          type: DEFAULT_ALTITUDE_REFERENCE.type,
-          ...state.environment.outdoor.altitudeReference,
-          value: altitude,
-        };
-        state.environment.outdoor.altitudeReference = altitudeReference;
+        state.environment.outdoor.altitudeReference = payload;
       }
     },
 
@@ -554,8 +537,7 @@ export const {
   _enqueueFailedUploads,
   revokeTakeoffAreaApproval,
   setEnvironmentType,
-  setOutdoorShowAltitudeReferenceType,
-  setOutdoorShowAltitudeReferenceValue,
+  _setOutdoorShowAltitudeReference,
   setOutdoorShowOrientation,
   setOutdoorShowOrigin,
   setRoomCorners,
