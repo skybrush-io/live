@@ -50,12 +50,12 @@ function proposeAgeCode(
   const age = lastUpdatedAt ? now - lastUpdatedAt : 600000000;
 
   if (age > forgetThreshold) {
-    /* UAV was not seen for at least 10 minutes; remove it completely */
+    /* UAV was not seen for a very long time; remove it completely */
     return UAVAge.FORGOTTEN;
   }
 
   if (age > goneThreshold) {
-    /* UAV was not seen for at least a minute */
+    /* UAV was not seen for a while, mark it as "gone" */
     return UAVAge.GONE;
   }
 
