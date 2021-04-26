@@ -62,8 +62,12 @@ class FitAllFeaturesButton extends React.Component {
   }
 
   render() {
+    const { target } = this.props;
+
     return (
-      <Tooltip content='Fit all features'>
+      <Tooltip
+        content={target === 'drones' ? 'Fit all drones' : 'Fit all features'}
+      >
         <IconButton onClick={this._handleClick}>
           <ActionAllOut />
         </IconButton>
