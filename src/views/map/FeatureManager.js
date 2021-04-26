@@ -141,7 +141,7 @@ export default class FeatureManager {
     const feature = this.getFeatureById(id);
 
     if (feature && this._vectorSource) {
-      this._vectorSource.removeFeatureById(feature);
+      this._vectorSource.removeFeature(feature);
     }
 
     return feature;
