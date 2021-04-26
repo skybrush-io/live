@@ -48,17 +48,12 @@ class FitAllFeaturesButton extends React.Component {
 
   componentDidMount() {
     this._bindings.fitAllFeatures = fitAllFeaturesSignal.add(this._handleClick);
-    this._bindings.mapReferenceRequest = mapReferenceRequestSignal.dispatch(
-      this._onMapReferenceReceived
-    );
+    mapReferenceRequestSignal.dispatch(this._onMapReferenceReceived);
   }
 
   componentWillUnmount() {
     this._bindings.fitAllFeatures.detach();
     delete this._bindings.fitAllFeatures;
-
-    this._bindings.mapReferenceRequest.detach();
-    delete this._bindings.mapReferenceRequest;
   }
 
   render() {
