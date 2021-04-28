@@ -144,6 +144,8 @@ export default class FeatureManager {
       this._vectorSource.removeFeature(feature);
     }
 
+    delete this._featuresByObjectId[id];
+
     return feature;
   };
 
