@@ -74,8 +74,6 @@ export default class PopupColorPicker extends React.Component {
   _registerClickawayHandlerIfNeeded = () => {
     const needsHandler = this._isMounted && this.state.open;
 
-    console.log('needsHandler', needsHandler);
-
     if (needsHandler && !this._clickawayHandlerRegistered) {
       document.addEventListener('click', this._handleClickAway, true);
       this._clickawayHandlerRegistered = true;
