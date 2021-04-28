@@ -69,6 +69,7 @@ const useListStyles = makeStyles(
       fontFamily: monospacedFont,
       fontSize: 'small',
       lineHeight: '20px',
+      minWidth: 800,
       overflow: 'hidden',
       padding: theme.spacing(0.5, 0),
       position: 'sticky',
