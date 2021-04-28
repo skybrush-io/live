@@ -8,6 +8,7 @@ import { connect } from 'react-redux';
 
 import { layer as olLayer, source } from '@collmot/ol-react';
 
+import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 
@@ -39,40 +40,54 @@ class GeoJSONLayerSettingsPresentation extends React.Component {
     const { fillColor, strokeColor } = parameters;
 
     return (
-      <div>
-        <span>Stroke color: </span>
-        <PopupColorPicker
-          value={strokeColor}
-          onChange={this._handleStrokeColorChange}
-        />
+      <Box>
+        <Box
+          display='flex'
+          flexDirection='row'
+          alignItems='center'
+          justifyContent='space-between'
+        >
+          <Box>
+            <span>Stroke color: </span>
+            <PopupColorPicker
+              value={strokeColor}
+              onChange={this._handleStrokeColorChange}
+            />
+          </Box>
+          <Box>
+            <span>Fill color: </span>
+            <PopupColorPicker
+              value={fillColor}
+              onChange={this._handleFillColorChange}
+            />
+          </Box>
 
-        <span style={{ marginLeft: 25 }}>Fill color: </span>
-        <PopupColorPicker
-          value={fillColor}
-          onChange={this._handleFillColorChange}
-        />
+          <TextField
+            style={{ marginLeft: 2 }}
+            label='Stroke width'
+            type='number'
+            min='1'
+            max='100'
+            value={this.state.strokeWidth}
+            variant='filled'
+            onChange={this._handleStrokeWidthChange}
+          />
+        </Box>
 
-        <TextField
-          style={{ marginLeft: 25 }}
-          label='Stroke width:'
-          type='number'
-          min='1'
-          max='100'
-          value={this.state.strokeWidth}
-          onChange={this._handleStrokeWidthChange}
-        />
+        <Box pt={2}>
+          <TextField
+            multiline
+            fullWidth
+            label='GeoJSON data'
+            placeholder='GeoJSON'
+            rowsMax={10}
+            value={this.state.data}
+            variant='filled'
+            onChange={this._handleDataChange}
+          />
+        </Box>
 
-        <TextField
-          multiline
-          fullWidth
-          label='GeoJSON data:'
-          placeholder='GeoJSON'
-          rowsMax={10}
-          value={this.state.data}
-          onChange={this._handleDataChange}
-        />
-
-        <div style={{ textAlign: 'center', paddingTop: '1em' }}>
+        <Box textAlign='center' pt={2}>
           <Button
             variant='contained'
             color='primary'
@@ -80,8 +95,8 @@ class GeoJSONLayerSettingsPresentation extends React.Component {
           >
             Update layer
           </Button>
-        </div>
-      </div>
+        </Box>
+      </Box>
     );
   }
 

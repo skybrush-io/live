@@ -14,23 +14,26 @@ export default class PopupColorPicker extends React.Component {
     value: PropTypes.object,
   };
 
-  state = {
-    open: false,
-    color: this.props.value ||
-      this.props.defaultValue || { r: 255, g: 255, b: 255, alpha: 1 },
-  };
-
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
 
     this._clickawayHandlerRegistered = false;
     this._isMounted = false;
+    this._pickerContainerRef = React.createRef();
 
-    this._setPickerContainerRef = this._setPickerContainerRef.bind(this);
+    this.state = {
+      open: false,
+      color: props.value ||
+        props.defaultValue || { r: 255, g: 255, b: 255, alpha: 1 },
+    };
   }
 
   componentDidMount() {
     this._isMounted = true;
+    this._registerClickawayHandlerIfNeeded();
+  }
+
+  componentDidUpdate() {
     this._registerClickawayHandlerIfNeeded();
   }
 
@@ -39,13 +42,7 @@ export default class PopupColorPicker extends React.Component {
     this._registerClickawayHandlerIfNeeded();
   }
 
-  _setPickerContainerRef(ref) {
-    this._pickerContainer = ref;
-  }
-
   render() {
-    this._registerClickawayHandlerIfNeeded();
-
     const pickerStyle = {
       position: 'absolute',
       overflow: 'hidden',
@@ -57,7 +54,7 @@ export default class PopupColorPicker extends React.Component {
     const { color } = this.state;
 
     return (
-      <div ref={this._setPickerContainerRef} className='popup-color-picker'>
+      <div ref={this._pickerContainerRef} className='popup-color-picker'>
         <div
           className='popup-color-picker-button'
           style={{
@@ -76,6 +73,8 @@ export default class PopupColorPicker extends React.Component {
 
   _registerClickawayHandlerIfNeeded = () => {
     const needsHandler = this._isMounted && this.state.open;
+
+    console.log('needsHandler', needsHandler);
 
     if (needsHandler && !this._clickawayHandlerRegistered) {
       document.addEventListener('click', this._handleClickAway, true);
@@ -104,8 +103,8 @@ export default class PopupColorPicker extends React.Component {
 
   _handleClickAway = (event) => {
     if (
-      this._pickerContainer &&
-      !this._pickerContainer.contains(event.target)
+      this._pickerContainerRef.current &&
+      !this._pickerContainerRef.current.contains(event.target)
     ) {
       this._togglePicker();
       event.preventDefault();
