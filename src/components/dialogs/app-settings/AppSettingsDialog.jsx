@@ -45,7 +45,9 @@ const AppSettingsDialogPresentation = ({
       <Tab value='threeD' label='3D View' />
       <Tab value='uavs' label='UAVs' />
       <Tab value='preflight' label='Preflight' />
-      {window.isElectron ? <Tab value='server' label='Server' /> : null}
+      {window.bridge && window.bridge.isElectron ? (
+        <Tab value='server' label='Server' />
+      ) : null}
     </DialogTabs>
     <DialogContent style={{ minHeight: 200 }}>
       {tabNameToComponent[selectedTab]}

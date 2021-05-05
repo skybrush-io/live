@@ -3,6 +3,7 @@
  */
 
 import {
+  bindActionCreators,
   configureStore,
   getDefaultMiddleware,
   isPlain,
@@ -23,6 +24,7 @@ import {
   createFilter,
 } from 'redux-persist-transform-filter';
 
+import { showAppSettingsDialog } from '~/actions/app-settings';
 import { updateAveragingByIds } from '~/features/measurement/slice';
 import { updateRTKStatistics } from '~/features/rtk/slice';
 import { loadingPromiseFulfilled } from '~/features/show/slice';
@@ -222,9 +224,18 @@ export const clearStore = persistor.purge;
  */
 export const waitUntilStateRestored = () => stateLoaded.promise;
 
-// Send the store dispatcher function back to the preloader
+// Send some of the allowed actions back to the preloader, bound to the
+// store instance. The preloader may then call these actions but cannot dispatch
+// arbitrary actions to the store.
 if (window.bridge) {
-  window.bridge.dispatch = store.dispatch;
+  window.bridge.provideActions(
+    bindActionCreators(
+      {
+        showAppSettingsDialog,
+      },
+      store.dispatch
+    )
+  );
 }
 
 export default store;

@@ -10,7 +10,6 @@ import Box from '@material-ui/core/Box';
 
 import AppSettingsButton from './AppSettingsButton';
 import AuthenticationButton from './AuthenticationButton';
-import CommunicationChannelSwitch from './CommunicationChannelSwitch';
 import ConnectionStatusButton from './ConnectionStatusButton';
 import FullScreenButton from './FullScreenButton';
 import HelpButton from './HelpButton';
@@ -91,7 +90,7 @@ const Header = ({ isSidebarOpen, sessionExpiresAt, toggleSidebar }) => (
       {hasFeature('toolboxMenu') && <ToolboxButton />}
       <AppSettingsButton />
       {config.urls.help ? <HelpButton /> : null}
-      {window.isElectron ? null : <FullScreenButton />}
+      {window.bridge && window.bridge.isElectron ? null : <FullScreenButton />}
     </div>
   </div>
 );

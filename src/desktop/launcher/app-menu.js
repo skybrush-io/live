@@ -6,7 +6,7 @@ const {
   openUrlMenuItem,
 } = require('electron-util');
 
-const dispatch = require('./dispatcher');
+const { showAppSettingsDialog } = require('./dispatcher');
 
 const helpSubmenu = [
   openUrlMenuItem({
@@ -18,9 +18,7 @@ const helpSubmenu = [
 const preferencesItem = {
   label: 'Preferences…',
   accelerator: 'Command+,',
-  click() {
-    dispatch({ type: 'SHOW_APP_SETTINGS_DIALOG' });
-  },
+  click: () => showAppSettingsDialog(),
 };
 
 const macOsMenuTemplate = [
@@ -75,14 +73,14 @@ if (is.development) {
       { type: 'separator' },
       {
         label: 'Show App Data',
-        click() {
-          shell.openItem(app.getPath('userData'));
+        click: async () => {
+          await shell.openPath(app.getPath('userData'));
         },
       },
       {
         label: 'Delete App Data',
-        click() {
-          shell.moveItemToTrash(app.getPath('userData'));
+        click: async () => {
+          await shell.trashItem(app.getPath('userData'));
           app.relaunch();
           app.quit();
         },

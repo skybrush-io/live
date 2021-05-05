@@ -2,7 +2,7 @@ const { ipcMain: ipc } = require('electron-better-ipc');
 
 const { getMainWindow } = require('./main-window');
 
-const dispatch = async (action) => {
+const showAppSettingsDialog = async () => {
   const mainWindow = getMainWindow();
 
   if (mainWindow === undefined) {
@@ -10,7 +10,9 @@ const dispatch = async (action) => {
     return;
   }
 
-  await ipc.callRenderer(mainWindow, 'dispatch', action);
+  await ipc.callRenderer(mainWindow, 'showAppSettingsDialog');
 };
 
-module.exports = dispatch;
+module.exports = {
+  showAppSettingsDialog,
+};

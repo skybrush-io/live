@@ -148,7 +148,7 @@ class ServerDetectionManagerPresentation extends React.Component {
                 }
               })
               .catch((error) => {
-                window.bridge.console.warn(error);
+                console.warn(error);
               });
           }
         }

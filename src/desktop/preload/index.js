@@ -7,6 +7,7 @@
  */
 
 const dns = require('dns');
+const { contextBridge } = require('electron');
 const fs = require('fs');
 const { ipcRenderer: ipc } = require('electron-better-ipc');
 const ElectronStore = require('electron-store');
@@ -19,7 +20,7 @@ const createStorageEngine = require('redux-persist-electron-storage');
 const streamToBlob = require('stream-to-blob');
 
 const localServer = require('./local-server');
-const setupIpc = require('./ipc');
+const { receiveActionsFromRenderer, setupIpc } = require('./ipc');
 
 unhandled({
   logger: (error) => console.error(error.stack),
@@ -72,24 +73,19 @@ function createStateStore() {
   });
 }
 
-const readDir = pify(fs.readdir);
 const reverseDNSLookup = pify(dns.reverse);
-const stat = pify(fs.stat);
-
-// Inject isElectron into 'window' so we can easily detect that we are
-// running inside Electron
-window.isElectron = true;
 
 // Inject the bridge functions between the main and the renderer processes.
 // These are the only functions that the renderer processes may call to access
 // any functionality that requires Node.js -- they are not allowed to use
 // Node.js modules themselves
-window.bridge = {
+contextBridge.exposeInMainWorld('bridge', {
   createSSDPClient,
   createStateStore,
   dispatch: () => {
     throw new Error('no store dispatcher was set up yet');
   },
+  isElectron: true,
   getApplicationFolder: () => ipc.callMain('getApplicationFolder'),
 
   /**
@@ -134,9 +130,8 @@ window.bridge = {
   },
 
   localServer,
-  readDir,
+  provideActions: receiveActionsFromRenderer,
   reverseDNSLookup,
-  stat,
 
   /**
    * Starts watching the file with the given name for changes and calls a
@@ -153,7 +148,7 @@ window.bridge = {
     const watcher = watch(filename, handler);
     return watcher.close;
   },
-};
+});
 
 // Set up IPC channels that we are going to listen to
 setupIpc();
