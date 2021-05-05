@@ -1,6 +1,6 @@
 import Color from 'color';
 import PropTypes from 'prop-types';
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import { DndProvider, useDrop } from 'react-dnd';
 import { HTML5Backend, NativeTypes } from 'react-dnd-html5-backend';
 
@@ -37,6 +37,12 @@ const FileListItem = ({
 }) => {
   const classes = useStyles();
 
+  // This state variable will be used to force-clear the file input when the
+  // user selects a file, then attempts to select it again later. If we did not
+  // do this, the second selection would not succeed because no change event
+  // would be fired.
+  const [generation, setGeneration] = useState(0);
+
   const onHandleSelection = useCallback(
     (item) => {
       item =
@@ -53,8 +59,10 @@ const FileListItem = ({
       } else if (onSelectionFailed) {
         onSelectionFailed(item);
       }
+
+      setGeneration(generation + 1);
     },
-    [accepts, multiple, onSelected, onSelectionFailed]
+    [accepts, generation, multiple, onSelected, onSelectionFailed]
   );
 
   const [collectedProps, dropRef] = useDrop({
@@ -85,6 +93,7 @@ const FileListItem = ({
   return (
     <>
       <input
+        key={generation}
         accept={
           extensions
             ? extensions.map((ext) => `.${ext.toLowerCase()}`)
