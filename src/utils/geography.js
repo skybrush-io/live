@@ -13,7 +13,13 @@ import { MultiLineString, MultiPolygon, Polygon } from 'ol/geom';
 import GeometryCollection from 'ol/geom/GeometryCollection';
 import * as Projection from 'ol/proj';
 
-import { toDegrees, toRadians } from '~/utils/math';
+import { toDegrees, toRadians } from './math';
+import { isRunningOnMac } from './platform';
+
+// The angle sign spams lots of CoreText-related warnings in the console when
+// running under Electron on macOS, so we use the @ sign there as a replacement.
+// Windows and Linux seem to be okay with the angle sign;
+const ANGLE_SIGN = isRunningOnMac ? '@' : '\u2220';
 
 /**
  * Returns the (initial) bearing when going from one point to another on a
@@ -273,11 +279,15 @@ export const makePolarCoordinateFormatter = (options) => {
     ? (coordinate) =>
         Coordinate.format(
           coordinate,
-          '{x}' + unit + ' \u2220 {y}\u00B0',
+          '{x}' + unit + ' ' + ANGLE_SIGN + ' {y}\u00B0',
           digits
         )
     : (coordinate) =>
-        Coordinate.format(coordinate, '{x} \u2220 {y}\u00B0', digits);
+        Coordinate.format(
+          coordinate,
+          '{x} ' + ANGLE_SIGN + ' {y}\u00B0',
+          digits
+        );
 };
 
 /**
