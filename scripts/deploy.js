@@ -165,7 +165,7 @@ async function invokeElectronBuilder(appConfig) {
 }
 
 async function invokeElectronBuilderForMacOS(appConfig) {
-  await invokeElectronBuilderWithArgs(['-m'], appConfig);
+  await invokeElectronBuilderWithArgs(['-m', '--universal'], appConfig);
 }
 
 async function invokeElectronBuilderForLinux(appConfig) {
