@@ -41,7 +41,7 @@ const useStyles = makeStyles(
         isDark(theme) ? 'rgba(0, 0, 0, 0.54)' : 'rgba(255, 255, 255, 0.54)'
       }`,
       boxShadow: '0 2px 6px -2px inset rgba(0, 0, 0, 0.54)',
-      padding: theme.spacing(3),
+      padding: theme.spacing(2, 3),
     },
   }),
   { name: 'ChartContainer' }
@@ -111,7 +111,7 @@ RTKSetupDialogBottomPanel.propTypes = {
 };
 
 RTKSetupDialogBottomPanel.defaultProps = {
-  chartHeight: 150,
+  chartHeight: 160,
 };
 
 export default connect(

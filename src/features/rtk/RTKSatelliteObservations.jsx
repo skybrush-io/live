@@ -91,7 +91,7 @@ const createOptions = (isDark) => ({
 
       // specific to this chart
       callbacks: {
-        label: (ctx) => `${ctx.formattedValue} dB-Hz`,
+        label: (ctx) => ` ${ctx.formattedValue} dB-Hz`,
       },
     },
   },
@@ -177,7 +177,7 @@ RTKSatelliteObservations.propTypes = {
 };
 
 RTKSatelliteObservations.defaultProps = {
-  height: 150,
+  height: 160,
 };
 
 export default connect(
