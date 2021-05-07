@@ -80,63 +80,66 @@ const createDataFromItems = (items) => (canvas) => {
 };
 
 const createOptions = (isDark) => ({
-  legend: {
-    display: false,
+  plugins: {
+    legend: {
+      display: false,
+    },
+    tooltip: {
+      titleFont: { family: defaultFont },
+      bodyFont: { family: defaultFont },
+      footerFont: { family: defaultFont },
+
+      // specific to this chart
+      callbacks: {
+        label: (ctx) => `${ctx.formattedValue} dB-Hz`,
+      },
+    },
   },
 
   scales: {
-    xAxes: [
-      {
-        ticks: {
+    x: {
+      grid: {
+        display: false,
+      },
+      ticks: {
+        font: {
           // theme-specific
-          fontColor: isDark
-            ? 'rgba(255, 255, 255, 0.54)'
-            : 'rgba(0, 0, 0, 0.54)',
+          color: isDark ? 'rgba(255, 255, 255, 0.54)' : 'rgba(0, 0, 0, 0.54)',
           // all charts
-          fontFamily: defaultFont,
-          fontSize: 14,
+          family: defaultFont,
+          size: 14,
         },
       },
-    ],
+    },
 
-    yAxes: [
-      {
-        // dark theme only
-        gridLines: {
-          color: isDark ? 'rgba(255, 255, 255, 0.17)' : 'rgba(0, 0, 0, 0.17)',
-          zeroLineColor: isDark
-            ? 'rgba(255, 255, 255, 0.34)'
-            : 'rgba(0, 0, 0, 0.34)',
-        },
-        ticks: {
-          // all charts
-          fontFamily: defaultFont,
-          fontSize: 14,
-          // theme-specific
-          fontColor: isDark
-            ? 'rgba(255, 255, 255, 0.54)'
-            : 'rgba(0, 0, 0, 0.54)',
-          // specific to this chart
-          maxTicksLimit: 7,
-          suggestedMin: 0,
-          suggestedMax: 60,
-        },
+    y: {
+      // dark theme only
+      grid: {
+        borderColor: isDark
+          ? ({ index }) => `rgba(255, 255, 255, ${index ? 0.17 : 0.34})`
+          : ({ index }) => `rgba(0, 0, 0, ${index ? 0.17 : 0.34})`,
+        color: isDark
+          ? ({ index }) => `rgba(255, 255, 255, ${index ? 0.17 : 0.34})`
+          : ({ index }) => `rgba(0, 0, 0, ${index ? 0.17 : 0.34})`,
       },
-    ],
+      suggestedMin: 0,
+      suggestedMax: 60,
+      ticks: {
+        font: {
+          // theme-specific
+          color: isDark ? 'rgba(255, 255, 255, 0.54)' : 'rgba(0, 0, 0, 0.54)',
+          // all charts
+          family: defaultFont,
+          size: 14,
+        },
+        // specific to this chart
+        maxTicksLimit: 7,
+      },
+    },
   },
 
   // required for all charts
   maintainAspectRatio: false,
-  tooltips: {
-    titleFontFamily: defaultFont,
-    bodyFontFamily: defaultFont,
-    footerFontFamily: defaultFont,
-
-    // specific to this chart
-    callbacks: {
-      label: (tooltipItem) => `${tooltipItem.yLabel} dB-Hz`,
-    },
-  },
 });
 
 const options = {
