@@ -7,7 +7,7 @@ const path = require('path');
 const webpack = require('webpack');
 const Dotenv = require('dotenv-webpack');
 
-const GitRevisionPlugin = require('git-revision-webpack-plugin');
+const { GitRevisionPlugin } = require('git-revision-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 
 const { projectRoot } = require('./helpers');
