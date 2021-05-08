@@ -13,6 +13,10 @@ const { actions, reducer } = createSlice({
 
   initialState: {
     stats: {
+      // Timestamp when the statistics was updated the last time, as a UNIX
+      // timestamp
+      lastUpdatedAt: null,
+
       // Carrier-to-noise ratio for satellites for which we have RTK correction data.
       // Keys are satellite identifiers; each associated value is the corresponding
       // carrier-to-noise ratio and the timestamp. Each associated value looks
@@ -75,6 +79,7 @@ const { actions, reducer } = createSlice({
     }),
 
     resetRTKStatistics(state) {
+      state.stats.lastUpdatedAt = null;
       state.stats.antenna = {};
       state.stats.satellites = {};
       state.stats.messages = {};
@@ -87,18 +92,16 @@ const { actions, reducer } = createSlice({
     }),
 
     updateRTKStatistics(state, action) {
-      const { antenna, messages, cnr, survey } = action.payload;
+      const { antenna, lastUpdatedAt, messages, cnr, survey } = action.payload;
 
       state.stats.antenna = antenna;
+      state.stats.lastUpdatedAt = lastUpdatedAt;
       state.stats.messages = messages;
 
-      if (state.stats.satellites === undefined) {
-        state.stats.satellites = {};
-      }
-
-      for (const [key, value] of Object.entries(cnr)) {
-        state.stats.satellites[key] = value;
-      }
+      // Here we assume that a full CNR status update was sent by the server so
+      // if we don't see a satellite there, then it means that the satellite is
+      // gone
+      state.stats.satellites = cnr;
 
       if (state.stats.survey === undefined) {
         state.stats.survey = {};

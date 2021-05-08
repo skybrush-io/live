@@ -12,13 +12,14 @@ import AppSettingsButton from './AppSettingsButton';
 import AuthenticationButton from './AuthenticationButton';
 import ConnectionStatusButton from './ConnectionStatusButton';
 import FullScreenButton from './FullScreenButton';
+import GeofenceSettingsButton from './GeofenceSettingsButton';
 import HelpButton from './HelpButton';
 import ServerConnectionSettingsButton from './ServerConnectionSettingsButton';
-import GeofenceSettingsButton from './GeofenceSettingsButton';
 import ToolboxButton from './ToolboxButton';
 
 import UAVStatusSummary from '../uavs/UAVStatusSummary';
 
+import RTKStatusHeaderButton from '~/features/rtk/RTKStatusHeaderButton';
 import { toggleSidebar } from '~/features/sidebar/slice';
 import { hasFeature } from '~/utils/configuration';
 
@@ -78,6 +79,12 @@ const Header = ({ isSidebarOpen, sessionExpiresAt, toggleSidebar }) => (
       {sessionExpiresAt && (
         <>
           <SessionExpiryBox expiresAt={sessionExpiresAt} />
+          <hr />
+        </>
+      )}
+      {hasFeature('toolboxMenu') && (
+        <>
+          <RTKStatusHeaderButton />
           <hr />
         </>
       )}

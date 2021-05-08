@@ -33,9 +33,13 @@ export const getAntennaInfoSummary = createSelector(
       position: formattedPosition,
     };
 
+    // AMSL is not included because it is not in the same reference coordinate
+    // system as the altitudes from the drones so it could cause confusion
+    /*
     if (typeof antennaInfo.height === 'number') {
       result.position = `${result.position}, ${antennaInfo.height.toFixed(1)}m`;
     }
+    */
 
     const serialNumber = String(antennaInfo.serialNumber || '');
     if (serialNumber && serialNumber.length > 0) {
@@ -82,6 +86,39 @@ export const getDisplayedSatelliteCNRValues = createSelector(
       ),
       'id'
     )
+);
+
+/**
+ * Returns the IDs of the satellites for which we currently have a CNR value.
+ */
+export const getSatelliteIds = createSelector(
+  (state) => state.rtk.stats.satellites,
+  (satelliteInfos) => Object.keys(satelliteInfos || {})
+);
+
+/**
+ * Returns the number of satellites for which we currently have a CNR
+ * (carrier-to-noise ratio) information.
+ */
+export const getNumberOfSatellites = (state) => getSatelliteIds(state).length;
+
+/**
+ * Returns the number of satellites for which the carrier-to-noise ratio is
+ * above 40.
+ */
+export const getNumberOfGoodSatellites = createSelector(
+  (state) => state.rtk.stats.satellites,
+  (satelliteInfos) => {
+    let result = 0;
+
+    for (const { cnr } of Object.values(satelliteInfos || {})) {
+      if (cnr >= 40) {
+        result++;
+      }
+    }
+
+    return result;
+  }
 );
 
 /**

@@ -6,16 +6,19 @@ import Fade from '@material-ui/core/Fade';
 
 import LabeledStatusLight from '@skybrush/mui-components/lib/LabeledStatusLight';
 
+import { formatSurveyAccuracy } from './utils';
+
 function formatAccuracy(message, value) {
   if (typeof value !== 'number' || value <= 0) {
     return message;
   }
 
-  return value > 10000
-    ? message + ', accuracy > 100m'
-    : message +
-        ', accuracy: ' +
-        (value >= 1 ? value.toFixed(2) + 'm' : (value * 100).toFixed(1) + 'cm');
+  const formattedValue = formatSurveyAccuracy(value);
+  if (formattedValue && formattedValue.charAt(0) === '>') {
+    return `${message}, accuracy ${formattedValue}`;
+  } else {
+    return `${message}, accuracy: ${formattedValue}`;
+  }
 }
 
 const SurveyStatusIndicator = ({

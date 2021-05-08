@@ -8,6 +8,7 @@ import { connect } from 'react-redux';
 import SidebarBadge from '@skybrush/mui-components/lib/SidebarBadge';
 
 import Colors from '~/components/colors';
+import { getCurrentServerState } from '~/features/servers/selectors';
 import { ConnectionState } from '~/model/connections';
 
 const colorForState = {
@@ -24,7 +25,7 @@ const colorForState = {
 export default connect(
   // mapStateToProps
   (state) => ({
-    color: colorForState[state.servers.current.state],
+    color: colorForState[getCurrentServerState(state).state],
     visible: state.dialogs.serverSettings.active,
   }),
   // Return empty object from mapDispatchToProps to avoid invalid prop warning

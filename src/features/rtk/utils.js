@@ -1,3 +1,5 @@
+import PropTypes from 'prop-types';
+
 const descriptions = {
   'rtcm2/1': 'Differential GPS Corrections',
   'rtcm2/2': 'Delta Differential GPS Corrections',
@@ -105,3 +107,20 @@ export function describeMessageType(type) {
       : `Unknown message, type ${type}`)
   );
 }
+
+export function formatSurveyAccuracy(value, max = 100) {
+  return value > max * 100
+    ? `> ${max}m`
+    : value >= 1
+    ? value.toFixed(2) + 'm'
+    : (value * 100).toFixed(1) + 'cm';
+}
+
+export const RTKPropTypes = {
+  survey: PropTypes.shape({
+    accuracy: PropTypes.number,
+    active: PropTypes.bool,
+    supported: PropTypes.bool,
+    valid: PropTypes.bool,
+  }),
+};

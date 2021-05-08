@@ -1,6 +1,7 @@
 import delay from 'delay';
 import isNil from 'lodash-es/isNil';
 import mapValues from 'lodash-es/mapValues';
+import PropTypes from 'prop-types';
 import { useEffect } from 'react';
 import { connect } from 'react-redux';
 
@@ -12,7 +13,7 @@ import useMessageHub from '~/hooks/useMessageHub';
  * Component that renders nothing but constantly queries the server for the
  * current RTK status and dispatches actions to update the local store.
  */
-const RTKStatusUpdater = ({ onStatusChanged }) => {
+const RTKStatusUpdater = ({ onStatusChanged, period }) => {
   const messageHub = useMessageHub();
 
   useEffect(() => {
@@ -32,7 +33,7 @@ const RTKStatusUpdater = ({ onStatusChanged }) => {
         }
 
         // eslint-disable-next-line no-await-in-loop
-        await delay(1000);
+        await delay(period);
       }
     };
 
@@ -42,9 +43,18 @@ const RTKStatusUpdater = ({ onStatusChanged }) => {
       valueHolder.finished = true;
       valueHolder.promise = null;
     };
-  }, [messageHub, onStatusChanged]);
+  }, [messageHub, onStatusChanged, period]);
 
   return null;
+};
+
+RTKStatusUpdater.propTypes = {
+  onStatusChanged: PropTypes.func,
+  period: PropTypes.number,
+};
+
+RTKStatusUpdater.defaultProps = {
+  period: 1000,
 };
 
 export default connect(
@@ -87,6 +97,7 @@ export default connect(
             cnr: cnrValue,
           })),
           survey,
+          lastUpdatedAt: now,
         })
       );
     },
