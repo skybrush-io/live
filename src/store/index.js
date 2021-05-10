@@ -81,9 +81,9 @@ const persistConfig = {
       'serverSettings',
     ]),
 
-    // We do not wish to store the state of the measurements, only the state
-    // of the measurement dialogs
-    // createFilter('measurement', ['averagingDialog']),
+    // We do not wish to store the state of the license check, only whether the
+    // license info dialog is open
+    createFilter('licenseInfo', ['dialog']),
 
     // We do not wish to store home/landing positions and takeoff heading in
     // the mission because they depend on the loaded show anyway

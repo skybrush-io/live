@@ -29,6 +29,18 @@ export async function getConfigurationOfExtension(hub, name) {
 }
 
 /**
+ * Returns the current license object from the server.
+ */
+export async function getLicenseInformation(hub) {
+  const response = await hub.sendMessage({ type: 'LCN-INF' });
+  return response.body &&
+    response.body.type === 'LCN-INF' &&
+    typeof response.body.license === 'object'
+    ? response.body.license
+    : { id: '' };
+}
+
+/**
  * Returns the current preflight status of a single UAV.
  */
 export async function getPreflightStatus(hub, uavId) {
@@ -178,6 +190,7 @@ export async function isExtensionLoaded(hub, name) {
 export class QueryHandler {
   _queries = {
     getConfigurationOfExtension,
+    getLicenseInformation,
     getPreflightStatus,
     getRTKPresets,
     getRTKStatus,
