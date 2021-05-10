@@ -11,15 +11,17 @@ import GenericHeaderButton from '@skybrush/mui-components/lib/GenericHeaderButto
 import SidebarBadge from '@skybrush/mui-components/lib/SidebarBadge';
 
 import Colors from '~/components/colors';
+import { showLicenseInfoDialog } from '~/features/license-info/slice';
 import { getActiveUAVIdsBeingAveraged } from '~/features/measurement/selectors';
 import { showAveragingDialog } from '~/features/measurement/slice';
-import { showRTKSetupDialog } from '~/features/rtk/slice';
+import { isConnected } from '~/features/servers/selectors';
 import { showVersionCheckDialog } from '~/features/version-check/slice';
 
 const ToolboxButtonPresentation = ({
+  isConnectedToServer,
   numberOfAveragingInProgress,
   showAveragingDialog,
-  showRTKSetupDialog,
+  showLicenseInfoDialog,
 }) => {
   const [anchorElement, setAnchorElement] = useState(null);
 
@@ -68,8 +70,8 @@ const ToolboxButtonPresentation = ({
         {/*
         <MenuItem disabled>Firmware update</MenuItem>
         */}
-        <MenuItem onClick={createClickListener(showRTKSetupDialog)}>
-          RTK status
+        <MenuItem onClick={createClickListener(showLicenseInfoDialog)}>
+          <ListItemText primary='License info' />
         </MenuItem>
         {/*
         <MenuItem onClick={createClickListener(showVersionCheckDialog)}>
@@ -85,18 +87,19 @@ ToolboxButtonPresentation.propTypes = {
   ...GenericHeaderButton.propTypes,
   numberOfAveragingInProgress: PropTypes.number,
   showAveragingDialog: PropTypes.func,
-  showRTKSetupDialog: PropTypes.func,
+  showLicenseInfoDialog: PropTypes.func,
 };
 
 export default connect(
   // mapStateToProps
   (state) => ({
+    isConnectedToServer: isConnected(state),
     numberOfAveragingInProgress: getActiveUAVIdsBeingAveraged(state).length,
   }),
   // mapDispatchToProps
   {
     showAveragingDialog,
-    showRTKSetupDialog,
+    showLicenseInfoDialog,
     showVersionCheckDialog,
   }
 )(ToolboxButtonPresentation);
