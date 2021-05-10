@@ -201,7 +201,7 @@ async function invokeElectronBuilderWithArgs(args, appConfig) {
 
 async function cleanup() {
   await Promise.all(
-    ['linux-unpacked', 'mac', 'win-unpacked'].map((subdir) =>
+    ['linux-unpacked', 'mac', 'mac-universal', 'win-unpacked'].map((subdir) =>
       remove(path.resolve(outputDir, subdir))
     )
   );
