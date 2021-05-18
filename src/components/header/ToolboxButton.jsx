@@ -18,7 +18,6 @@ import { isConnected } from '~/features/servers/selectors';
 import { showVersionCheckDialog } from '~/features/version-check/slice';
 
 const ToolboxButtonPresentation = ({
-  isConnectedToServer,
   numberOfAveragingInProgress,
   showAveragingDialog,
   showLicenseInfoDialog,
