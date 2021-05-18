@@ -25,8 +25,8 @@ const useStyles = makeStyles(
       boxSizing: 'border-box',
       width: WIDTH,
       left: theme.spacing(1),
-      top: -7,
-      bottom: -12,
+      top: -5,
+      bottom: -6,
       zIndex: 1000,
 
       backgroundColor: 'rgba(0, 0, 0, 0.16)',

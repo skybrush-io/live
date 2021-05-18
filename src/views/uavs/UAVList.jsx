@@ -154,7 +154,7 @@ const createGridItems = (
       listItemProps.fill = true;
     }
 
-    // Derive the label of the grid item. The rules are:
+    // Derive the main (large) label of the grid item. The rules are:
     //
     // - if we have a proposed label, use that
     // - if we are not showing mission IDs, use the UAV ID
@@ -238,19 +238,25 @@ const createListItems = (
       selected: isInEditMode ? editingThisItem : selected,
     };
 
+    const isInMission = missionIndex !== undefined;
+    const formattedMissionIndex = isInMission
+      ? formatMissionId(missionIndex)
+      : '';
     const label =
       proposedLabel ||
-      (showMissionIds
-        ? missionIndex !== undefined
-          ? formatMissionId(missionIndex)
-          : uavId
-        : uavId);
+      (showMissionIds && isInMission ? formattedMissionIndex : uavId);
+    const secondaryLabel =
+      editingThisItem || (showMissionIds && !isInMission)
+        ? ''
+        : showMissionIds
+        ? uavId
+        : formattedMissionIndex;
     const key = uavId === undefined ? `placeholder-${label || 'null'}` : uavId;
 
     return (
       <DroneListItem key={key} stretch {...listItemProps}>
         {editingThisItem && <MappingSlotEditorForList />}
-        <DroneStatusLine id={uavId} editing={editingThisItem} label={label} />
+        <DroneStatusLine label={label} secondaryLabel={secondaryLabel} />
       </DroneListItem>
     );
   });
@@ -291,7 +297,7 @@ const HEADER_TEXT = {
   missionIds:
     ' sID  ID   Status    Mode  Battery   GPS  Position                  AMSL    AGL  Hdg  Details',
   droneIds:
-    '  ID       Status    Mode  Battery   GPS  Position                  AMSL    AGL  Hdg  Details',
+    '  ID sID   Status    Mode  Battery   GPS  Position                  AMSL    AGL  Hdg  Details',
 };
 
 /**
@@ -468,18 +474,19 @@ const UAVList = connect(
     }),
     onSelectSection: (event) => (dispatch, getState) => {
       const { value } = event.target;
-      const displayedIdsAndLabels = getDisplayedIdList(getState())[value];
-      const selectedUAVIds = getSelectedUAVIds(getState());
-      const selectionInfo = getSelectionInfo(getState())[value];
+      const state = getState();
+      const displayedIdsAndLabels = getDisplayedIdList(state)[value];
+      const selectedUAVIds = getSelectedUAVIds(state);
+      const selectionInfo = getSelectionInfo(state)[value];
 
       if (selectionInfo && displayedIdsAndLabels) {
-        const displayedIds = displayedIdsAndLabels.reduce((acc, idAndLabel) => {
+        const displayedIds = [];
+        for (const idAndLabel of displayedIdsAndLabels) {
           if (!isNil(idAndLabel[0])) {
-            acc.push(idAndLabel[0]);
+            displayedIds.push(idAndLabel[0]);
           }
+        }
 
-          return acc;
-        }, []);
         const newSelection = selectionInfo.checked
           ? difference(selectedUAVIds, displayedIds)
           : union(selectedUAVIds, displayedIds);

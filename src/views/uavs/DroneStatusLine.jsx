@@ -102,17 +102,16 @@ const DroneStatusLine = ({
   coordinateFormatter,
   debugString,
   details,
-  editing,
   heading,
   headingDeviation,
   gone,
   gpsFixType,
-  id,
   label,
   localPosition,
   missing,
   mode,
   position,
+  secondaryLabel,
   text,
   textSemantics,
 }) => {
@@ -120,9 +119,7 @@ const DroneStatusLine = ({
   return (
     <div className={clsx(classes.root, gone && classes.gone)}>
       {padStart(label, 4)}
-      <span className={classes.muted}>
-        {padStart(!editing && id !== label ? id : '', 4)}
-      </span>
+      <span className={classes.muted}>{padStart(secondaryLabel, 4)}</span>
       {(details || text) && (
         <StatusPill
           inline
@@ -207,7 +204,6 @@ DroneStatusLine.propTypes = {
   gpsFixType: PropTypes.number,
   heading: PropTypes.number,
   headingDeviation: PropTypes.number,
-  id: PropTypes.string,
   label: PropTypes.string,
   localPosition: PropTypes.arrayOf(PropTypes.number),
   missing: PropTypes.bool,
@@ -218,6 +214,7 @@ DroneStatusLine.propTypes = {
     amsl: PropTypes.number,
     agl: PropTypes.number,
   }),
+  secondaryLabel: PropTypes.string,
   text: PropTypes.string,
   textSemantics: PropTypes.oneOf([
     'off',

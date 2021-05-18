@@ -6,6 +6,7 @@ import Delete from '@material-ui/icons/Delete';
 
 import {
   getMissionMapping,
+  getReverseMissionMapping,
   isMappingEditable,
 } from '~/features/mission/selectors';
 import { isShowingMissionIds } from '~/features/settings/selectors';
@@ -36,7 +37,7 @@ const getDisplayListSortedByMissionId = createSelector(
     const extraSlots = [];
     const seenUAVIds = new Set();
 
-    mapping.forEach((uavId, index) => {
+    for (const [index, uavId] of mapping.entries()) {
       if (isNil(uavId)) {
         // No UAV assigned to this slot
         mainUAVIds.push([undefined, index]);
@@ -45,7 +46,7 @@ const getDisplayListSortedByMissionId = createSelector(
         mainUAVIds.push([uavId, index]);
         seenUAVIds.add(uavId);
       }
-    });
+    }
 
     for (const uavId of uavIds) {
       if (!seenUAVIds.has(uavId)) {
@@ -71,11 +72,15 @@ const getDisplayListSortedByMissionId = createSelector(
  * The main section of the view will be sorted based on the UAV IDs in the
  * state store. The "spare UAVs" section in the view will be empty.
  */
-const getDisplayListSortedByUavId = createSelector(getUAVIdList, (uavIds) => ({
-  mainUAVIds: uavIds.map((uavId) => [uavId, undefined]),
-  spareUAVIds: [],
-  extraSlots: [],
-}));
+const getDisplayListSortedByUavId = createSelector(
+  getUAVIdList,
+  getReverseMissionMapping,
+  (uavIds, reverseMapping) => ({
+    mainUAVIds: uavIds.map((uavId) => [uavId, reverseMapping[uavId]]),
+    spareUAVIds: [],
+    extraSlots: [],
+  })
+);
 
 /**
  * Selector that provides the list of UAV IDs to show in the UAV list.
