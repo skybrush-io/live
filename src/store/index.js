@@ -216,7 +216,7 @@ export const persistor = persistStore(store, null, stateLoaded.resolve);
  * Function that clears the contents of the store completely. It is strongly
  * advised to reload the app after this function was executed.
  */
-export const clearStore = persistor.purge;
+export const clearStore = async () => persistor.purge();
 
 /**
  * Async function that blocks execution until the state of the application has

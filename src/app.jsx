@@ -30,7 +30,7 @@ import UAVDetailsDialog from './features/uavs/UAVDetailsDialog';
 import VersionCheckDialog from './features/version-check/VersionCheckDialog';
 
 import flock, { Flock } from './flock';
-import hotkeys from './hotkeys';
+import AppHotkeys, { legacyHotkeys as hotkeys } from './hotkeys';
 import store, { persistor } from './store';
 import ThemeProvider, { DarkModeExtraCSSProvider } from './theme';
 import workbench from './workbench';
@@ -101,7 +101,7 @@ const App = () => {
                 <HotkeyHandler hotkeys={hotkeys} />
                 <DarkModeExtraCSSProvider />
 
-                <div style={rootStyle}>
+                <AppHotkeys style={rootStyle}>
                   <Header workbench={workbench} />
                   <div style={rootInnerStyle}>
                     <Sidebar workbench={workbench} />
@@ -110,7 +110,7 @@ const App = () => {
                   {config.ribbon && config.ribbon.label && (
                     <CornerRibbon {...config.ribbon} />
                   )}
-                </div>
+                </AppHotkeys>
 
                 <ServerConnectionManager />
 

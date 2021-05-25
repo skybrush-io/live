@@ -120,6 +120,7 @@
     "react-event-listener": "^0.6.6",
     "react-final-form": "^6.5.3",
     "react-flexible-workbench": "^5.4.1",
+    "react-hotkeys": "^2.0.0",
     "react-is": "^17.0.2",
     "react-redux": "^7.2.4",
     "react-shapeshifter": "^1.0.9",
