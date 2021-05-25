@@ -256,7 +256,11 @@ const createListItems = (
     return (
       <DroneListItem key={key} stretch {...listItemProps}>
         {editingThisItem && <MappingSlotEditorForList />}
-        <DroneStatusLine label={label} secondaryLabel={secondaryLabel} />
+        <DroneStatusLine
+          id={uavId}
+          label={label}
+          secondaryLabel={secondaryLabel}
+        />
       </DroneListItem>
     );
   });
