@@ -1,5 +1,8 @@
 import { isRunningOnMac } from '~/utils/platform';
 
+/** Special marker for hotkeys that are supposed to be hidden from the user */
+export const HIDDEN = '_hidden';
+
 const keyMap = {
   CLEAR_SELECTION: {
     name: 'Clear selection',
@@ -39,6 +42,7 @@ const keyMap = {
   SHOW_HOTKEY_DIALOG: {
     name: 'Show hotkeys',
     sequence: '?',
+    group: HIDDEN,
   },
 };
 
