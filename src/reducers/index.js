@@ -8,6 +8,7 @@ import clocksReducer from '~/features/clocks/slice';
 import connectionsReducer from '~/features/connections/slice';
 import datasetsReducer from '~/features/datasets/slice';
 import docksReducer from '~/features/docks/slice';
+import hotkeysReducer from '~/features/hotkeys/slice';
 import lcdClockReducer from '~/features/lcd-clock/slice';
 import localServerReducer from '~/features/local-server/slice';
 import licenseInfoReducer from '~/features/license-info/slice';
@@ -42,6 +43,7 @@ const reducer = combineReducers({
   dialogs: dialogsReducer,
   docks: docksReducer,
   features: featuresReducer,
+  hotkeys: hotkeysReducer,
   lcdClock: lcdClockReducer,
   licenseInfo: licenseInfoReducer,
   lightControl: lightControlReducer,

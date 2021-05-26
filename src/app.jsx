@@ -12,13 +12,14 @@ import { PersistGate } from 'redux-persist/es/integration/react';
 import dialogs from './components/dialogs';
 import Header from './components/header';
 import CornerRibbon from './components/CornerRibbon';
-import HotkeyHandler from './components/HotkeyHandler';
 import ServerConnectionManager from './components/ServerConnectionManager';
 import SplashScreen from './components/SplashScreen';
 
 import { ErrorHandler } from './error-handling';
 
 import DockDetailsDialog from './features/docks/DockDetailsDialog';
+import AppHotkeys from './features/hotkeys/AppHotkeys';
+import HotkeyDialog from './features/hotkeys/HotkeyDialog';
 import LicenseInfoDialog from './features/license-info/LicenseInfoDialog';
 import CoordinateAveragingDialog from './features/measurement/CoordinateAveragingDialog';
 import SavedLocationEditorDialog from './features/saved-locations/SavedLocationEditorDialog';
@@ -30,7 +31,6 @@ import UAVDetailsDialog from './features/uavs/UAVDetailsDialog';
 import VersionCheckDialog from './features/version-check/VersionCheckDialog';
 
 import flock, { Flock } from './flock';
-import AppHotkeys, { legacyHotkeys as hotkeys } from './hotkeys';
 import store, { persistor } from './store';
 import ThemeProvider, { DarkModeExtraCSSProvider } from './theme';
 import workbench from './workbench';
@@ -98,7 +98,6 @@ const App = () => {
               <>
                 <CssBaseline />
 
-                <HotkeyHandler hotkeys={hotkeys} />
                 <DarkModeExtraCSSProvider />
 
                 <AppHotkeys style={rootStyle}>
@@ -130,6 +129,7 @@ const App = () => {
 
                 <CoordinateAveragingDialog />
                 <DockDetailsDialog />
+                <HotkeyDialog />
                 <LicenseInfoDialog />
                 <RTKSetupDialog />
                 <SavedLocationEditorDialog />

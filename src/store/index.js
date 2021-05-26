@@ -216,7 +216,20 @@ export const persistor = persistStore(store, null, stateLoaded.resolve);
  * Function that clears the contents of the store completely. It is strongly
  * advised to reload the app after this function was executed.
  */
-export const clearStore = async () => persistor.purge();
+export async function clearStore() {
+  return persistor.purge();
+}
+
+/**
+ * Function that asks the user to confirm whether he wants to clear all stored
+ * settings and state information, then reloads the page.
+ */
+export async function clearStoreAfterConfirmation() {
+  if (window.confirm('Are you sure? All settings will be lost.')) {
+    await clearStore();
+    window.location.reload();
+  }
+}
 
 /**
  * Async function that blocks execution until the state of the application has
