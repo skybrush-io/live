@@ -10,7 +10,6 @@ import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
-import { withHotKeys } from 'react-hotkeys';
 import { connect } from 'react-redux';
 
 import AppBar from '@material-ui/core/AppBar';
@@ -31,7 +30,7 @@ import { createSelectionHandlerThunk } from '~/components/helpers/lists';
 import FadeAndSlide from '~/components/transitions/FadeAndSlide';
 import DroneAvatar from '~/components/uavs/DroneAvatar';
 import DronePlaceholder from '~/components/uavs/DronePlaceholder';
-import { createKeyboardNavigationKeyMap } from '~/features/hotkeys/keymap';
+import { useKeyboardNavigation } from '~/features/hotkeys/hooks';
 import { createKeyboardNavigationHandlers } from '~/features/hotkeys/navigation';
 import {
   adjustMissionMapping,
@@ -314,7 +313,7 @@ const HEADER_TEXT = {
  */
 const UAVListPresentation = ({
   editingMapping,
-  hotKeys,
+  keyboardNav,
   layout,
   mappingSlotBeingEdited,
   onEditMappingSlot,
@@ -327,6 +326,8 @@ const UAVListPresentation = ({
   uavIds,
 }) => {
   const classes = useListStyles();
+
+  useKeyboardNavigation(keyboardNav);
 
   const onDropped = useCallback(
     (targetIndex) => (droppedUAVId) =>
@@ -380,7 +381,7 @@ const UAVListPresentation = ({
           <MappingSlotEditorToolbar className={classes.toolbar} />
         </FadeAndSlide>
       </AppBar>
-      <Box flex={1} overflow='auto' {...hotKeys}>
+      <Box flex={1} overflow='auto'>
         {layout === 'list' && (
           <div className={classes.header}>
             {showMissionIds ? HEADER_TEXT.missionIds : HEADER_TEXT.droneIds}
@@ -427,7 +428,7 @@ const UAVListPresentation = ({
 
 UAVListPresentation.propTypes = {
   editingMapping: PropTypes.bool,
-  hotKeys: PropTypes.object,
+  keyboardNav: PropTypes.object,
   mappingSlotBeingEdited: PropTypes.number,
   layout: PropTypes.oneOf(['list', 'grid']),
   onEditMappingSlot: PropTypes.func,
@@ -476,13 +477,12 @@ const UAVList = connect(
   }),
   // mapDispatchToProps
   (dispatch) => ({
-    handlers: createKeyboardNavigationHandlers({
+    keyboardNav: createKeyboardNavigationHandlers({
       dispatch,
       getVisibleIds: getDisplayedIdList,
       getSelectedIds: getSelectedUAVIds,
       setSelectedIds: setSelectedUAVIds,
     }),
-    keyMap: createKeyboardNavigationKeyMap(),
 
     ...bindActionCreators(
       {
@@ -520,6 +520,6 @@ const UAVList = connect(
       dispatch
     ),
   })
-)(withHotKeys(UAVListPresentation));
+)(UAVListPresentation);
 
 export default UAVList;

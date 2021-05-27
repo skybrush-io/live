@@ -170,7 +170,7 @@ export const turnMotorOnForUAVs = performMassOperation({
 });
 
 export const createMultipleUAVRelatedActions = (
-  selectedUAVIds,
+  uavIds,
   { broadcast = false, channel = 0 } = {}
 ) => {
   const options = {};
@@ -184,39 +184,39 @@ export const createMultipleUAVRelatedActions = (
   }
 
   // If you modify the implementation here, make sure that the actions do
-  // something in the case when broadcast = true and selectedUAVIds is empty!
+  // something in the case when broadcast = true and uavIds is empty!
 
   return {
     flashLightOnSelectedUAVs: () => {
-      flashLightOnUAVs(selectedUAVIds, options);
+      flashLightOnUAVs(uavIds, options);
     },
 
     haltSelectedUAVs: () => {
-      shutdownUAVs(selectedUAVIds, options);
+      shutdownUAVs(uavIds, options);
     },
 
     landSelectedUAVs: () => {
-      landUAVs(selectedUAVIds, options);
+      landUAVs(uavIds, options);
     },
 
     resetSelectedUAVs: () => {
-      resetUAVs(selectedUAVIds, options);
+      resetUAVs(uavIds, options);
     },
 
     returnToHomeSelectedUAVs: () => {
-      returnToHomeUAVs(selectedUAVIds, options);
+      returnToHomeUAVs(uavIds, options);
     },
 
     takeoffSelectedUAVs: () => {
-      takeoffUAVs(selectedUAVIds, options);
+      takeoffUAVs(uavIds, options);
     },
 
     turnMotorsOffForSelectedUAVs: () => {
-      turnMotorOffForUAVs(selectedUAVIds, options);
+      turnMotorOffForUAVs(uavIds, options);
     },
 
     turnMotorsOnForSelectedUAVs: () => {
-      turnMotorOnForUAVs(selectedUAVIds, options);
+      turnMotorOnForUAVs(uavIds, options);
     },
   };
 };

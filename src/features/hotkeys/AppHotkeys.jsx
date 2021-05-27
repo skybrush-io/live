@@ -14,6 +14,7 @@ import { takeoffUAVs, landUAVs, returnToHomeUAVs } from '~/utils/messaging';
 
 import { copyCoordinates } from './actions';
 import keyMap from './keymap';
+import keyboardNavigationSignal from './signal';
 import { showHotkeyDialog } from './slice';
 import { callOnSelection } from './utils';
 
@@ -55,6 +56,9 @@ AppHotkeys.propTypes = {
   handlers: PropTypes.object,
 };
 
+const sendKeyboardNavigationSignal = (action) => (event) =>
+  keyboardNavigationSignal.dispatch(action, event);
+
 export default connect(
   // mapStateToProps
   null,
@@ -74,6 +78,10 @@ export default connect(
       // Plain callable functions bound to hotkeys
       {
         CLEAR_STORED_SETTINGS: clearStoreAfterConfirmation,
+        SELECT_FIRST: sendKeyboardNavigationSignal('SELECT_FIRST'),
+        SELECT_LAST: sendKeyboardNavigationSignal('SELECT_LAST'),
+        SELECT_NEXT: sendKeyboardNavigationSignal('SELECT_NEXT'),
+        SELECT_PREVIOUS: sendKeyboardNavigationSignal('SELECT_PREVIOUS'),
       },
       dispatch
     ),

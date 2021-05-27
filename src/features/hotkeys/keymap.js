@@ -24,6 +24,30 @@ const globalKeyMap = {
     sequence: 'mod+a',
   },
 
+  SELECT_FIRST: {
+    name: 'Select first drone',
+    sequence: 'home',
+    group: HIDDEN,
+  },
+
+  SELECT_LAST: {
+    name: 'Select last drone',
+    sequence: 'end',
+    group: HIDDEN,
+  },
+
+  SELECT_NEXT: {
+    name: 'Select next drone',
+    sequence: 'down',
+    group: HIDDEN,
+  },
+
+  SELECT_PREVIOUS: {
+    name: 'Select previous drone',
+    sequence: 'up',
+    group: HIDDEN,
+  },
+
   SEND_TAKEOFF_COMMAND: {
     name: 'Send takeoff command to selection',
     sequence: 'mod+alt+t',
@@ -61,34 +85,6 @@ function fixModifiersInKeyMap(keyMap) {
   }
 
   return keyMap;
-}
-
-export function createKeyboardNavigationKeyMap() {
-  return fixModifiersInKeyMap({
-    SELECT_FIRST: {
-      name: 'Select first drone',
-      sequence: 'home',
-      group: HIDDEN,
-    },
-
-    SELECT_LAST: {
-      name: 'Select last drone',
-      sequence: 'end',
-      group: HIDDEN,
-    },
-
-    SELECT_NEXT: {
-      name: 'Select next drone',
-      sequence: 'down',
-      group: HIDDEN,
-    },
-
-    SELECT_PREVIOUS: {
-      name: 'Select previous drone',
-      sequence: 'up',
-      group: HIDDEN,
-    },
-  });
 }
 
 fixModifiersInKeyMap(globalKeyMap);
