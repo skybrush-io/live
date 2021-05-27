@@ -76,7 +76,6 @@ const getDisplayListSortedByUavId = createSelector(
   getUAVIdList,
   getReverseMissionMapping,
   (uavIds, reverseMapping) => ({
-    allVisibleUAVIds: uavIds,
     mainUAVIds: uavIds.map((uavId) => [uavId, reverseMapping[uavId]]),
     spareUAVIds: [],
     extraSlots: [],

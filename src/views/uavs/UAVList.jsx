@@ -31,6 +31,7 @@ import { createSelectionHandlerThunk } from '~/components/helpers/lists';
 import FadeAndSlide from '~/components/transitions/FadeAndSlide';
 import DroneAvatar from '~/components/uavs/DroneAvatar';
 import DronePlaceholder from '~/components/uavs/DronePlaceholder';
+import { createKeyboardNavigationKeyMap } from '~/features/hotkeys/keymap';
 import { createKeyboardNavigationHandlers } from '~/features/hotkeys/navigation';
 import {
   adjustMissionMapping,
@@ -481,6 +482,8 @@ const UAVList = connect(
       getSelectedIds: getSelectedUAVIds,
       setSelectedIds: setSelectedUAVIds,
     }),
+    keyMap: createKeyboardNavigationKeyMap(),
+
     ...bindActionCreators(
       {
         onEditMappingSlot: startMappingEditorSessionAtSlot,

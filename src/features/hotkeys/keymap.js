@@ -3,7 +3,7 @@ import { isRunningOnMac } from '~/utils/platform';
 /** Special marker for hotkeys that are supposed to be hidden from the user */
 export const HIDDEN = '_hidden';
 
-const keyMap = {
+const globalKeyMap = {
   CLEAR_SELECTION: {
     name: 'Clear selection',
     sequence: 'esc',
@@ -22,30 +22,6 @@ const keyMap = {
   SELECT_ALL_DRONES: {
     name: 'Select all drones',
     sequence: 'mod+a',
-  },
-
-  SELECT_FIRST: {
-    name: 'Select first drone',
-    sequence: 'home',
-    group: HIDDEN,
-  },
-
-  SELECT_LAST: {
-    name: 'Select last drone',
-    sequence: 'end',
-    group: HIDDEN,
-  },
-
-  SELECT_NEXT: {
-    name: 'Select next drone',
-    sequence: 'down',
-    group: HIDDEN,
-  },
-
-  SELECT_PREVIOUS: {
-    name: 'Select previous drone',
-    sequence: 'up',
-    group: HIDDEN,
   },
 
   SEND_TAKEOFF_COMMAND: {
@@ -74,12 +50,47 @@ const keyMap = {
 // until react-hotkeys starts supporting the "mod" modifier from Mousetrap
 const platModKey = isRunningOnMac ? 'meta+' : 'ctrl+';
 const platformize = (key) => key.replace('mod+', platModKey);
-for (const definition of Object.values(keyMap)) {
-  if (definition.sequence) {
-    definition.sequence = platformize(definition.sequence);
-  } else if (Array.isArray(definition.sequences)) {
-    definition.sequences = definition.sequences.map(platformize);
+
+function fixModifiersInKeyMap(keyMap) {
+  for (const definition of Object.values(keyMap)) {
+    if (definition.sequence) {
+      definition.sequence = platformize(definition.sequence);
+    } else if (Array.isArray(definition.sequences)) {
+      definition.sequences = definition.sequences.map(platformize);
+    }
   }
+
+  return keyMap;
 }
 
-export default keyMap;
+export function createKeyboardNavigationKeyMap() {
+  return fixModifiersInKeyMap({
+    SELECT_FIRST: {
+      name: 'Select first drone',
+      sequence: 'home',
+      group: HIDDEN,
+    },
+
+    SELECT_LAST: {
+      name: 'Select last drone',
+      sequence: 'end',
+      group: HIDDEN,
+    },
+
+    SELECT_NEXT: {
+      name: 'Select next drone',
+      sequence: 'down',
+      group: HIDDEN,
+    },
+
+    SELECT_PREVIOUS: {
+      name: 'Select previous drone',
+      sequence: 'up',
+      group: HIDDEN,
+    },
+  });
+}
+
+fixModifiersInKeyMap(globalKeyMap);
+
+export default globalKeyMap;

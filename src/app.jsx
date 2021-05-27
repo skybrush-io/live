@@ -100,7 +100,9 @@ const App = () => {
 
                 <DarkModeExtraCSSProvider />
 
-                <AppHotkeys style={rootStyle}>
+                <AppHotkeys />
+
+                <div style={rootStyle}>
                   <Header workbench={workbench} />
                   <div style={rootInnerStyle}>
                     <Sidebar workbench={workbench} />
@@ -109,7 +111,7 @@ const App = () => {
                   {config.ribbon && config.ribbon.label && (
                     <CornerRibbon {...config.ribbon} />
                   )}
-                </AppHotkeys>
+                </div>
 
                 <ServerConnectionManager />
 

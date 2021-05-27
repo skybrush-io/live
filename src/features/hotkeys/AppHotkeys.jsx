@@ -4,8 +4,8 @@
 
 import mapValues from 'lodash-es/mapValues';
 import PropTypes from 'prop-types';
-import React, { useEffect, useRef } from 'react';
-import { configure as configureHotkeys, HotKeys } from 'react-hotkeys';
+import React from 'react';
+import { configure as configureHotkeys, GlobalHotKeys } from 'react-hotkeys';
 import { connect } from 'react-redux';
 
 import { selectAllUAVFeatures, clearSelection } from '~/actions/map';
@@ -29,21 +29,19 @@ configureHotkeys({
   // logLevel: 'debug',
 });
 
-const AppHotkeys = ({ children, handlers }) => {
-  const ref = useRef();
+// We use GlobalHotKeys here because the plain HotKeys component does not
+// play nicely with multiple React root components; hotkeys defined in one of
+// the root component may overwrite others when we try to retrieve the
+// application keymap from react-hotkeys. This is because react-hotkeys fails
+// to link the hotKeyParentId property of one <HotKeys> component to another
+// if they are in different React root components.
+//
+// Luckily it is not a problem if we use GlobalHotKeys "outside" the workbench
+// and normal <HotKeys> "inside" the workbench.
 
-  useEffect(() => {
-    if (ref.current) {
-      ref.current.focus();
-    }
-  }, [ref]);
-
-  return (
-    <HotKeys root keyMap={keyMap} handlers={handlers} innerRef={ref}>
-      {children}
-    </HotKeys>
-  );
-};
+const AppHotkeys = ({ handlers }) => (
+  <GlobalHotKeys keyMap={keyMap} handlers={handlers} />
+);
 
 const bindHotkeyHandlers = (reduxHandlers, nonReduxHandlers, dispatch) => ({
   ...nonReduxHandlers,
@@ -54,10 +52,6 @@ const bindHotkeyHandlers = (reduxHandlers, nonReduxHandlers, dispatch) => ({
 });
 
 AppHotkeys.propTypes = {
-  children: PropTypes.oneOfType([
-    PropTypes.node,
-    PropTypes.arrayOf(PropTypes.node),
-  ]),
   handlers: PropTypes.object,
 };
 
