@@ -44,12 +44,12 @@ export const ErrorHandler = __PROD__
  * @param {Object}  err  the error object to convert
  * @return {string} the error object converted into a string
  */
-export function errorToString(err) {
-  if (err.toString && isFunction(err.toString)) {
-    return err.toString();
+export function errorToString(error) {
+  if (error.toString && isFunction(error.toString)) {
+    return error.toString();
   }
 
-  return String(err);
+  return String(error);
 }
 
 /**
@@ -59,14 +59,14 @@ export function errorToString(err) {
  * @param  {string}  operation  the operation we attempted to perform when the
  *         error happened, if known
  */
-export function handleError(err, operation) {
-  if (err instanceof MessageTimeout) {
-    const message = operation ? `${operation} timed out` : errorToString(err);
+export function handleError(error, operation) {
+  if (error instanceof MessageTimeout) {
+    const message = operation ? `${operation} timed out` : errorToString(error);
 
     logger.warn(message);
     console.warn(message);
   } else {
-    const message = errorToString(err);
+    const message = errorToString(error);
 
     logger.error(message);
     console.error(message);

@@ -15,7 +15,7 @@ import { getSelectedUAVIds } from '~/selectors/selection';
 
 /**
  * Special marker that we can place into the list items returned from
- * getDisplayedIdList() to produce a slot where deleted UAVs can be dragged.
+ * getDisplayedIdListBySections() to produce a slot where deleted UAVs can be dragged.
  */
 export const deletionMarker = [undefined, undefined, <Delete key='__delete' />];
 
@@ -76,6 +76,7 @@ const getDisplayListSortedByUavId = createSelector(
   getUAVIdList,
   getReverseMissionMapping,
   (uavIds, reverseMapping) => ({
+    allVisibleUAVIds: uavIds,
     mainUAVIds: uavIds.map((uavId) => [uavId, reverseMapping[uavId]]),
     spareUAVIds: [],
     extraSlots: [],
@@ -83,12 +84,36 @@ const getDisplayListSortedByUavId = createSelector(
 );
 
 /**
- * Selector that provides the list of UAV IDs to show in the UAV list.
+ * Selector that provides the list of UAV IDs to show in the UAV list, sorted
+ * by sections.
  */
-export const getDisplayedIdList = (state) =>
+export const getDisplayedIdListBySections = (state) =>
   isShowingMissionIds(state)
     ? getDisplayListSortedByMissionId(state)
     : getDisplayListSortedByUavId(state);
+
+/**
+ * Selector that provides the list of UAV IDs to show in the UAV list, in the
+ * order they appear on the UI, but without sorting them into sections.
+ */
+export const getDisplayedIdList = createSelector(
+  getDisplayedIdListBySections,
+  ({ mainUAVIds, spareUAVIds }) => {
+    const result = [];
+
+    for (const item of mainUAVIds) {
+      if (!isNil(item[0])) {
+        result.push(item[0]);
+      }
+    }
+
+    for (const item of spareUAVIds) {
+      result.push(item[0]);
+    }
+
+    return result;
+  }
+);
 
 /**
  * Selector that takes the displayed list of UAV IDs sorted by sections,
@@ -100,7 +125,7 @@ export const getDisplayedIdList = (state) =>
  * component.
  */
 export const getSelectionInfo = createSelector(
-  getDisplayedIdList,
+  getDisplayedIdListBySections,
   getSelectedUAVIds,
   (displayedIdList, selectedIds) =>
     mapValues(displayedIdList, (idsAndLabels) => {

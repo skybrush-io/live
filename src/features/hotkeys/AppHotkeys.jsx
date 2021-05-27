@@ -4,7 +4,7 @@
 
 import mapValues from 'lodash-es/mapValues';
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { configure as configureHotkeys, HotKeys } from 'react-hotkeys';
 import { connect } from 'react-redux';
 
@@ -24,13 +24,26 @@ configureHotkeys({
   // event of the first key, and react-hotkeys would then be evaluating the
   // key combination only
   allowCombinationSubmatches: true,
+
+  // Uncomment the next line for debugging problems with hotkeys
+  // logLevel: 'debug',
 });
 
-const AppHotkeys = ({ children, handlers }) => (
-  <HotKeys root keyMap={keyMap} handlers={handlers}>
-    {children}
-  </HotKeys>
-);
+const AppHotkeys = ({ children, handlers }) => {
+  const ref = useRef();
+
+  useEffect(() => {
+    if (ref.current) {
+      ref.current.focus();
+    }
+  }, [ref]);
+
+  return (
+    <HotKeys root keyMap={keyMap} handlers={handlers} innerRef={ref}>
+      {children}
+    </HotKeys>
+  );
+};
 
 const bindHotkeyHandlers = (reduxHandlers, nonReduxHandlers, dispatch) => ({
   ...nonReduxHandlers,

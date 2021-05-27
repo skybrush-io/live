@@ -10,6 +10,7 @@ import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
+import { withHotKeys } from 'react-hotkeys';
 import { connect } from 'react-redux';
 
 import AppBar from '@material-ui/core/AppBar';
@@ -30,6 +31,7 @@ import { createSelectionHandlerThunk } from '~/components/helpers/lists';
 import FadeAndSlide from '~/components/transitions/FadeAndSlide';
 import DroneAvatar from '~/components/uavs/DroneAvatar';
 import DronePlaceholder from '~/components/uavs/DronePlaceholder';
+import { createKeyboardNavigationHandlers } from '~/features/hotkeys/navigation';
 import {
   adjustMissionMapping,
   startMappingEditorSessionAtSlot,
@@ -50,8 +52,10 @@ import { formatMissionId } from '~/utils/formatting';
 import {
   deletionMarker,
   getDisplayedIdList,
+  getDisplayedIdListBySections,
   getSelectionInfo,
 } from './selectors';
+import { bindActionCreators } from 'redux';
 
 const useListStyles = makeStyles(
   (theme) => ({
@@ -309,6 +313,7 @@ const HEADER_TEXT = {
  */
 const UAVListPresentation = ({
   editingMapping,
+  hotKeys,
   layout,
   mappingSlotBeingEdited,
   onEditMappingSlot,
@@ -374,7 +379,7 @@ const UAVListPresentation = ({
           <MappingSlotEditorToolbar className={classes.toolbar} />
         </FadeAndSlide>
       </AppBar>
-      <Box flex={1} overflow='auto'>
+      <Box flex={1} overflow='auto' {...hotKeys}>
         {layout === 'list' && (
           <div className={classes.header}>
             {showMissionIds ? HEADER_TEXT.missionIds : HEADER_TEXT.droneIds}
@@ -421,6 +426,7 @@ const UAVListPresentation = ({
 
 UAVListPresentation.propTypes = {
   editingMapping: PropTypes.bool,
+  hotKeys: PropTypes.object,
   mappingSlotBeingEdited: PropTypes.number,
   layout: PropTypes.oneOf(['list', 'grid']),
   onEditMappingSlot: PropTypes.func,
@@ -465,39 +471,52 @@ const UAVList = connect(
     selectedUAVIds: getSelectedUAVIds(state),
     selectionInfo: getSelectionInfo(state),
     showMissionIds: isShowingMissionIds(state),
-    uavIds: getDisplayedIdList(state),
+    uavIds: getDisplayedIdListBySections(state),
   }),
   // mapDispatchToProps
-  {
-    onEditMappingSlot: startMappingEditorSessionAtSlot,
-    onMappingAdjusted: adjustMissionMapping,
-    onSelectItem: createSelectionHandlerThunk({
-      activateItem: openUAVDetailsDialog,
-      getSelection: getSelectedUAVIds,
-      setSelection: setSelectedUAVIds,
+  (dispatch) => ({
+    handlers: createKeyboardNavigationHandlers({
+      dispatch,
+      getVisibleIds: getDisplayedIdList,
+      getSelectedIds: getSelectedUAVIds,
+      setSelectedIds: setSelectedUAVIds,
     }),
-    onSelectSection: (event) => (dispatch, getState) => {
-      const { value } = event.target;
-      const state = getState();
-      const displayedIdsAndLabels = getDisplayedIdList(state)[value];
-      const selectedUAVIds = getSelectedUAVIds(state);
-      const selectionInfo = getSelectionInfo(state)[value];
+    ...bindActionCreators(
+      {
+        onEditMappingSlot: startMappingEditorSessionAtSlot,
+        onMappingAdjusted: adjustMissionMapping,
+        onSelectItem: createSelectionHandlerThunk({
+          activateItem: openUAVDetailsDialog,
+          getSelection: getSelectedUAVIds,
+          setSelection: setSelectedUAVIds,
+        }),
+        onSelectSection: (event) => (dispatch, getState) => {
+          const { value } = event.target;
+          const state = getState();
+          const displayedIdsAndLabels = getDisplayedIdListBySections(state)[
+            value
+          ];
+          const selectedUAVIds = getSelectedUAVIds(state);
+          const selectionInfo = getSelectionInfo(state)[value];
 
-      if (selectionInfo && displayedIdsAndLabels) {
-        const displayedIds = [];
-        for (const idAndLabel of displayedIdsAndLabels) {
-          if (!isNil(idAndLabel[0])) {
-            displayedIds.push(idAndLabel[0]);
+          if (selectionInfo && displayedIdsAndLabels) {
+            const displayedIds = [];
+            for (const idAndLabel of displayedIdsAndLabels) {
+              if (!isNil(idAndLabel[0])) {
+                displayedIds.push(idAndLabel[0]);
+              }
+            }
+
+            const newSelection = selectionInfo.checked
+              ? difference(selectedUAVIds, displayedIds)
+              : union(selectedUAVIds, displayedIds);
+            dispatch(setSelectedUAVIds(newSelection));
           }
-        }
-
-        const newSelection = selectionInfo.checked
-          ? difference(selectedUAVIds, displayedIds)
-          : union(selectedUAVIds, displayedIds);
-        dispatch(setSelectedUAVIds(newSelection));
-      }
-    },
-  }
-)(UAVListPresentation);
+        },
+      },
+      dispatch
+    ),
+  })
+)(withHotKeys(UAVListPresentation));
 
 export default UAVList;
