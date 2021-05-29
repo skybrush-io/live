@@ -9,14 +9,13 @@ import { configure as configureHotkeys, GlobalHotKeys } from 'react-hotkeys';
 import { connect } from 'react-redux';
 
 import { selectAllUAVFeatures, clearSelection } from '~/actions/map';
+import { getUAVCommandTriggers } from '~/features/uavs/selectors';
 import { clearStoreAfterConfirmation } from '~/store';
-import { takeoffUAVs, landUAVs, returnToHomeUAVs } from '~/utils/messaging';
 
 import { copyCoordinates } from './actions';
 import keyMap from './keymap';
 import keyboardNavigationSignal from './signal';
 import { showHotkeyDialog } from './slice';
-import { callOnSelection } from './utils';
 
 configureHotkeys({
   // This is necessary to ensure that the appropriate handlers are triggered
@@ -59,6 +58,17 @@ AppHotkeys.propTypes = {
 const sendKeyboardNavigationSignal = (action) => (event) =>
   keyboardNavigationSignal.dispatch(action, event);
 
+const callUAVActionOnSelection = (actionName) => () => (dispatch, getState) => {
+  const actions = getUAVCommandTriggers(getState());
+  const action = actions[actionName];
+
+  if (action) {
+    action();
+  } else {
+    console.warn(`Attempted to perform unknown action: ${actionName}`);
+  }
+};
+
 export default connect(
   // mapStateToProps
   null,
@@ -70,9 +80,10 @@ export default connect(
         CLEAR_SELECTION: clearSelection,
         COPY_COORDINATES: copyCoordinates,
         SELECT_ALL_DRONES: selectAllUAVFeatures,
-        SEND_TAKEOFF_COMMAND: callOnSelection(takeoffUAVs),
-        SEND_LANDING_COMMAND: callOnSelection(landUAVs),
-        SEND_RTH_COMMAND: callOnSelection(returnToHomeUAVs),
+        SEND_FLASH_LIGHTS_COMMAND: callUAVActionOnSelection('flashLightOnUAVs'),
+        SEND_TAKEOFF_COMMAND: callUAVActionOnSelection('takeoffUAVs'),
+        SEND_LANDING_COMMAND: callUAVActionOnSelection('landUAVs'),
+        SEND_RTH_COMMAND: callUAVActionOnSelection('returnToHomeUAVs'),
         SHOW_HOTKEY_DIALOG: showHotkeyDialog,
       },
       // Plain callable functions bound to hotkeys

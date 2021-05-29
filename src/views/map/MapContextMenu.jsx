@@ -132,13 +132,13 @@ class MapContextMenu extends React.Component {
                 Fly here at altitude…
               </MenuItem>,
               <Divider key='div1' />,
-              <MenuItem key='takeoff' dense onClick={this._takeoffSelectedUAVs}>
+              <MenuItem key='takeoff' dense onClick={this._takeoffUAVs}>
                 <ListItemIcon>
                   <FlightTakeoff />
                 </ListItemIcon>
                 Takeoff
               </MenuItem>,
-              <MenuItem key='land' dense onClick={this._landSelectedUAVs}>
+              <MenuItem key='land' dense onClick={this._landUAVs}>
                 <ListItemIcon>
                   <FlightLand />
                 </ListItemIcon>
@@ -162,7 +162,7 @@ class MapContextMenu extends React.Component {
                 Properties...
               </MenuItem>,
               <Divider key='div2' />,
-              <MenuItem key='reset' dense onClick={this._resetSelectedUAVs}>
+              <MenuItem key='reset' dense onClick={this._resetUAVs}>
                 <ListItemIcon>
                   <Refresh color='secondary' />
                 </ListItemIcon>
@@ -307,12 +307,12 @@ class MapContextMenu extends React.Component {
     editFeature(selectedFeatureIds[0]);
   };
 
-  _takeoffSelectedUAVs = (_event, context) => {
+  _takeoffUAVs = (_event, context) => {
     const { selectedUAVIds } = context;
     messaging.takeoffUAVs(selectedUAVIds);
   };
 
-  _landSelectedUAVs = (_event, context) => {
+  _landUAVs = (_event, context) => {
     const { selectedUAVIds } = context;
     messaging.landUAVs(selectedUAVIds);
   };
@@ -353,7 +353,7 @@ class MapContextMenu extends React.Component {
     }
   };
 
-  _resetSelectedUAVs = (_event, context) => {
+  _resetUAVs = (_event, context) => {
     const { selectedUAVIds } = context;
     messaging.resetUAVs(selectedUAVIds);
   };

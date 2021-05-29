@@ -48,6 +48,11 @@ const globalKeyMap = {
     group: HIDDEN,
   },
 
+  SEND_FLASH_LIGHTS_COMMAND: {
+    name: 'Flash lights on selected UAVs',
+    sequence: 'w',
+  },
+
   SEND_TAKEOFF_COMMAND: {
     name: 'Send takeoff command to selection',
     sequence: 'mod+alt+t',

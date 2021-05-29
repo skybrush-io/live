@@ -187,35 +187,35 @@ export const createMultipleUAVRelatedActions = (
   // something in the case when broadcast = true and uavIds is empty!
 
   return {
-    flashLightOnSelectedUAVs: () => {
+    flashLightOnUAVs: () => {
       flashLightOnUAVs(uavIds, options);
     },
 
-    haltSelectedUAVs: () => {
+    haltUAVs: () => {
       shutdownUAVs(uavIds, options);
     },
 
-    landSelectedUAVs: () => {
+    landUAVs: () => {
       landUAVs(uavIds, options);
     },
 
-    resetSelectedUAVs: () => {
+    resetUAVs: () => {
       resetUAVs(uavIds, options);
     },
 
-    returnToHomeSelectedUAVs: () => {
+    returnToHomeUAVs: () => {
       returnToHomeUAVs(uavIds, options);
     },
 
-    takeoffSelectedUAVs: () => {
+    takeoffUAVs: () => {
       takeoffUAVs(uavIds, options);
     },
 
-    turnMotorsOffForSelectedUAVs: () => {
+    turnMotorsOffForUAVs: () => {
       turnMotorOffForUAVs(uavIds, options);
     },
 
-    turnMotorsOnForSelectedUAVs: () => {
+    turnMotorsOnForUAVs: () => {
       turnMotorOnForUAVs(uavIds, options);
     },
   };

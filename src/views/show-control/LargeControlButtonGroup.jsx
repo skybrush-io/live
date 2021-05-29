@@ -60,14 +60,14 @@ const LargeControlButtonGroup = ({
 }) => {
   const classes = useStyles();
   const {
-    haltSelectedUAVs,
-    landSelectedUAVs,
-    returnToHomeSelectedUAVs,
+    haltUAVs,
+    landUAVs,
+    returnToHomeUAVs,
     /*
-    takeoffSelectedUAVs,
+    takeoffUAVs,
     */
-    turnMotorsOffForSelectedUAVs,
-    turnMotorsOnForSelectedUAVs,
+    turnMotorsOffForUAVs,
+    turnMotorsOnForUAVs,
   } = createMultipleUAVRelatedActions(
     broadcast ? allUAVIdsInMission : selectedUAVIds,
     {
@@ -104,7 +104,7 @@ const LargeControlButtonGroup = ({
           className={classes.button}
           color={Colors.success}
           icon={<PlayArrow fontSize='inherit' />}
-          onClick={turnMotorsOnForSelectedUAVs}
+          onClick={turnMotorsOnForUAVs}
         >
           {broadcast ? 'Arm all' : 'Arm'}
         </ColoredButton>
@@ -112,7 +112,7 @@ const LargeControlButtonGroup = ({
           className={classes.button}
           color={Colors.info}
           icon={<Clear fontSize='inherit' />}
-          onClick={turnMotorsOffForSelectedUAVs}
+          onClick={turnMotorsOffForUAVs}
         >
           {broadcast ? 'Disarm all' : 'Disarm'}
         </ColoredButton>
@@ -121,7 +121,7 @@ const LargeControlButtonGroup = ({
         className={classes.button}
         color={Colors.warning}
         icon={<Home fontSize='inherit' />}
-        onClick={returnToHomeSelectedUAVs}
+        onClick={returnToHomeUAVs}
       >
         {broadcast ? 'RTH all' : 'RTH'}
       </ColoredButton>
@@ -130,7 +130,7 @@ const LargeControlButtonGroup = ({
           className={classes.button}
           color={Colors.seriousWarning}
           icon={<FlightLand fontSize='inherit' />}
-          onClick={landSelectedUAVs}
+          onClick={landUAVs}
         >
           {broadcast ? 'Land all' : 'Land'}
         </ColoredButton>
@@ -138,7 +138,7 @@ const LargeControlButtonGroup = ({
           className={classes.button}
           color={Colors.error}
           icon={<PowerSettingsNew fontSize='inherit' />}
-          onClick={haltSelectedUAVs}
+          onClick={haltUAVs}
         >
           {broadcast ? 'Halt all' : 'Halt'}
         </ColoredButton>

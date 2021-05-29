@@ -50,14 +50,14 @@ const UAVOperationsButtonGroup = ({
   const isSelectionSingle = selectedUAVIds.length === 1;
 
   const {
-    flashLightOnSelectedUAVs,
-    haltSelectedUAVs,
-    landSelectedUAVs,
-    resetSelectedUAVs,
-    returnToHomeSelectedUAVs,
-    takeoffSelectedUAVs,
-    turnMotorsOffForSelectedUAVs,
-    turnMotorsOnForSelectedUAVs,
+    flashLightOnUAVs,
+    haltUAVs,
+    landUAVs,
+    resetUAVs,
+    returnToHomeUAVs,
+    takeoffUAVs,
+    turnMotorsOffForUAVs,
+    turnMotorsOnForUAVs,
   } = createMultipleUAVRelatedActions(selectedUAVIds, { channel });
 
   const fontSize = size === 'small' ? 'small' : 'default';
@@ -69,7 +69,7 @@ const UAVOperationsButtonGroup = ({
         <IconButton
           disabled={isSelectionEmpty}
           size={iconSize}
-          onClick={takeoffSelectedUAVs}
+          onClick={takeoffUAVs}
         >
           <FlightTakeoff fontSize={fontSize} />
         </IconButton>
@@ -79,7 +79,7 @@ const UAVOperationsButtonGroup = ({
         <IconButton
           disabled={isSelectionEmpty}
           size={iconSize}
-          onClick={landSelectedUAVs}
+          onClick={landUAVs}
         >
           <FlightLand fontSize={fontSize} />
         </IconButton>
@@ -89,7 +89,7 @@ const UAVOperationsButtonGroup = ({
         <IconButton
           disabled={isSelectionEmpty}
           size={iconSize}
-          onClick={returnToHomeSelectedUAVs}
+          onClick={returnToHomeUAVs}
         >
           <Home fontSize={fontSize} />
         </IconButton>
@@ -115,7 +115,7 @@ const UAVOperationsButtonGroup = ({
         <IconButton
           disabled={isSelectionEmpty}
           size={iconSize}
-          onClick={flashLightOnSelectedUAVs}
+          onClick={flashLightOnUAVs}
         >
           <WbSunny fontSize={fontSize} />
         </IconButton>
@@ -129,7 +129,7 @@ const UAVOperationsButtonGroup = ({
         <IconButton
           disabled={isSelectionEmpty}
           size={iconSize}
-          onClick={turnMotorsOnForSelectedUAVs}
+          onClick={turnMotorsOnForUAVs}
         >
           <PlayArrow
             fontSize={fontSize}
@@ -142,7 +142,7 @@ const UAVOperationsButtonGroup = ({
         <IconButton
           disabled={isSelectionEmpty}
           size={iconSize}
-          onClick={turnMotorsOffForSelectedUAVs}
+          onClick={turnMotorsOffForUAVs}
         >
           <Clear
             fontSize={fontSize}
@@ -159,7 +159,7 @@ const UAVOperationsButtonGroup = ({
         <IconButton
           disabled={isSelectionEmpty}
           size={iconSize}
-          onClick={resetSelectedUAVs}
+          onClick={resetUAVs}
         >
           <Refresh
             htmlColor={isSelectionEmpty ? undefined : Colors.error}
@@ -172,7 +172,7 @@ const UAVOperationsButtonGroup = ({
         <IconButton
           disabled={isSelectionEmpty}
           size={iconSize}
-          onClick={haltSelectedUAVs}
+          onClick={haltUAVs}
         >
           <PowerSettingsNew
             htmlColor={isSelectionEmpty ? undefined : Colors.error}
