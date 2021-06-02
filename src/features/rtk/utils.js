@@ -108,12 +108,12 @@ export function describeMessageType(type) {
   );
 }
 
-export function formatSurveyAccuracy(value, max = 100) {
+export function formatSurveyAccuracy(value, { max = 100, short = false } = {}) {
   return value > max * 100
     ? `> ${max}m`
     : value >= 1
     ? value.toFixed(2) + 'm'
-    : (value * 100).toFixed(1) + 'cm';
+    : (value * 100).toFixed(short ? 0 : 1) + 'cm';
 }
 
 export const RTKPropTypes = {
