@@ -60,7 +60,7 @@ const useStyles = makeStyles(
       whiteSpace: 'pre',
     },
     gone: {
-      opacity: 0.5,
+      opacity: 0.7,
     },
     muted: {
       color: theme.palette.text.disabled,
