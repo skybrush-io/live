@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Basic keyboard navigation in the UAV list view.
+
+- The UAV list view now shows both the UAV ID and the mission (show) specific ID
+  of the UAV all the time.
+
+- The "flash lights" operation has been bound to the `W` hotkey for the selected
+  drone.
+
+### Fixed
+
+- Fixed word wrapping and alignment issues in the RTK header button.
+
+- Reloading a show from disk now works again.
+
 ## [1.21.0] - 2021-05-10
 
 This is the release that serves as a basis for changelog entries above. Refer
