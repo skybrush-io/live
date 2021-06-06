@@ -108,7 +108,7 @@ export function describeMessageType(type) {
   );
 }
 
-export function formatSurveyAccuracy(value, { max = 100, short = false } = {}) {
+export function formatSurveyAccuracy(value, { max = 20, short = false } = {}) {
   return value > max * 100
     ? `> ${max}m`
     : value >= 1

@@ -39,7 +39,7 @@
     "@reduxjs/toolkit": "^1.5.1",
     "@skybrush/app-theme-material-ui": "^1.2.3",
     "@skybrush/electron-app-framework": "^2.0.4",
-    "@skybrush/mui-components": "^1.8.0",
+    "@skybrush/mui-components": "^1.8.1",
     "@tippyjs/react": "^4.2.0",
     "@turf/boolean-contains": "^6.3.0",
     "@turf/buffer": "^6.3.0",
