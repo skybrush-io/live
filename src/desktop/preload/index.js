@@ -120,13 +120,19 @@ contextBridge.exposeInMainWorld('bridge', {
       mimeType
     );
 
-    // We need an absolute path because we are trying to mimic Electron's
-    // File object here, which contains the _full_, absolute path in the
-    // path attribute
-    blob.path = filename;
-    blob.name = path.basename(filename);
+    // We cannot send the blob through directly because it does not seem to
+    // work in Electron with context isolation, at least not in Electron 14
 
-    return blob;
+    return {
+      buffer: await blob.arrayBuffer(),
+      props: {
+        // We need an absolute path because we are trying to mimic Electron's
+        // File object here, which contains the _full_, absolute path in the
+        // path attribute
+        path: filename,
+        name: path.basename(filename),
+      },
+    };
   },
 
   localServer,

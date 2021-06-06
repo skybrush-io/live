@@ -9,6 +9,7 @@ import {
   areManualPreflightChecksSignedOff,
   areOnboardPreflightChecksSignedOff,
   areStartConditionsSyncedWithServer,
+  didLastLoadingAttemptFail,
   didStartConditionSyncFail,
   hasLoadedShowFile,
   hasScheduledStartTime,
@@ -50,6 +51,8 @@ const stages = {
     evaluate: (state) =>
       hasShowChangedExternallySinceLoaded(state)
         ? Status.SKIPPED
+        : didLastLoadingAttemptFail(state)
+        ? Status.ERROR
         : hasLoadedShowFile(state)
         ? Status.SUCCESS
         : isLoadingShowFile(state)

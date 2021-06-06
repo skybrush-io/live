@@ -46,6 +46,7 @@ import {
   loadingProgress,
   revokeTakeoffAreaApproval,
   setEnvironmentType,
+  setLastLoadingAttemptFailed,
   setOutdoorShowOrigin,
   setOutdoorShowOrientation,
   setRoomCorners,
@@ -91,58 +92,52 @@ export const removeShowFeatures = () => (dispatch, getState) => {
   dispatch(removeFeatures(showFeatureIds));
 };
 
-const addGeofencePolygonBasedOnShowTrajectories = () => (
-  dispatch,
-  getState
-) => {
-  const state = getState();
+const addGeofencePolygonBasedOnShowTrajectories =
+  () => (dispatch, getState) => {
+    const state = getState();
 
-  const {
-    horizontalMargin,
-    simplify,
-    maxVertexCount,
-  } = state.dialogs.geofenceSettings;
+    const { horizontalMargin, simplify, maxVertexCount } =
+      state.dialogs.geofenceSettings;
 
-  const coordinates = getConvexHullOfShow(state);
-  if (coordinates.length === 0) {
-    dispatch(
-      showNotification({
-        message: `Could not calculate geofence coordinates. Did you load a show file?`,
-        semantics: MessageSemantics.ERROR,
-        permanent: true,
-      })
-    );
-    return;
-  }
+    const coordinates = getConvexHullOfShow(state);
+    if (coordinates.length === 0) {
+      dispatch(
+        showNotification({
+          message: `Could not calculate geofence coordinates. Did you load a show file?`,
+          semantics: MessageSemantics.ERROR,
+          permanent: true,
+        })
+      );
+      return;
+    }
 
-  const transformation = getOutdoorShowToWorldCoordinateSystemTransformationObject(
-    state
-  );
-  if (!transformation) {
-    throw new Error('Outdoor coordinate system not set up yet');
-  }
+    const transformation =
+      getOutdoorShowToWorldCoordinateSystemTransformationObject(state);
+    if (!transformation) {
+      throw new Error('Outdoor coordinate system not set up yet');
+    }
 
-  const points = bufferPolygon(coordinates, horizontalMargin);
-  const simplifiedPoints = simplify
-    ? simplifyPolygon(points, maxVertexCount)
-    : points;
+    const points = bufferPolygon(coordinates, horizontalMargin);
+    const simplifiedPoints = simplify
+      ? simplifyPolygon(points, maxVertexCount)
+      : points;
 
-  const geofencePolygon = {
-    /* use a line string as the geofence, not a polygon -- if we use a polygon,
-     * it means that any click inside the geofence would be considered as a
-     * "hit" for the geofence feature */
-    type: FeatureType.LINE_STRING,
-    owner: 'show',
-    /* don't use a label; the geofence usually overlaps with the convex hull of
-     * the show so it is confusing if the "Geofence" label appears in the middle
-     * of the convex hull */
-    color: Colors.geofence,
-    points: simplifiedPoints.map((c) => transformation.toLonLat(c)),
+    const geofencePolygon = {
+      /* use a line string as the geofence, not a polygon -- if we use a polygon,
+       * it means that any click inside the geofence would be considered as a
+       * "hit" for the geofence feature */
+      type: FeatureType.LINE_STRING,
+      owner: 'show',
+      /* don't use a label; the geofence usually overlaps with the convex hull of
+       * the show so it is confusing if the "Geofence" label appears in the middle
+       * of the convex hull */
+      color: Colors.geofence,
+      points: simplifiedPoints.map((c) => transformation.toLonLat(c)),
+    };
+    const action = addFeature(geofencePolygon);
+    dispatch(action);
+    dispatch(setGeofencePolygonId(action.featureId));
   };
-  const action = addFeature(geofencePolygon);
-  dispatch(action);
-  dispatch(setGeofencePolygonId(action.featureId));
-};
 
 export const updateGeofencePolygon = () => (dispatch) => {
   dispatch(removeGeofencePolygon());
@@ -153,48 +148,44 @@ export const updateGeofencePolygon = () => (dispatch) => {
  * Moves the show origin relative to its current position such that the delta
  * is expressed in map view coordinates.
  */
-export const moveOutdoorShowOriginByMapCoordinateDelta = (delta) => (
-  dispatch,
-  getState
-) => {
-  const origin = getOutdoorShowOrigin(getState());
-  const originInMapView = mapViewCoordinateFromLonLat(origin);
-  const newOriginInMapView = [
-    originInMapView[0] + delta[0],
-    originInMapView[1] + delta[1],
-  ];
-  const newOrigin = lonLatFromMapViewCoordinate(newOriginInMapView);
+export const moveOutdoorShowOriginByMapCoordinateDelta =
+  (delta) => (dispatch, getState) => {
+    const origin = getOutdoorShowOrigin(getState());
+    const originInMapView = mapViewCoordinateFromLonLat(origin);
+    const newOriginInMapView = [
+      originInMapView[0] + delta[0],
+      originInMapView[1] + delta[1],
+    ];
+    const newOrigin = lonLatFromMapViewCoordinate(newOriginInMapView);
 
-  dispatch(
-    updateOutdoorShowSettings({ origin: newOrigin, setupMission: true })
-  );
-};
+    dispatch(
+      updateOutdoorShowSettings({ origin: newOrigin, setupMission: true })
+    );
+  };
 
-export const updateOutdoorShowSettings = ({
-  origin,
-  orientation,
-  setupMission,
-}) => (dispatch) => {
-  let changed = false;
+export const updateOutdoorShowSettings =
+  ({ origin, orientation, setupMission }) =>
+  (dispatch) => {
+    let changed = false;
 
-  if (origin) {
-    dispatch(setOutdoorShowOrigin(origin));
-    changed = true;
-  }
-
-  if (orientation) {
-    dispatch(setOutdoorShowOrientation(orientation));
-    changed = true;
-  }
-
-  if (changed) {
-    dispatch(clearLastUploadResult());
-
-    if (setupMission) {
-      dispatch(setupMissionFromShow());
+    if (origin) {
+      dispatch(setOutdoorShowOrigin(origin));
+      changed = true;
     }
-  }
-};
+
+    if (orientation) {
+      dispatch(setOutdoorShowOrientation(orientation));
+      changed = true;
+    }
+
+    if (changed) {
+      dispatch(clearLastUploadResult());
+
+      if (setupMission) {
+        dispatch(setupMissionFromShow());
+      }
+    }
+  };
 
 const createShowLoaderThunkFactory = (
   dataSourceToShowSpecification,
@@ -221,6 +212,9 @@ const createShowLoaderThunkFactory = (
         payload: progress,
       });
     }, 200);
+
+    dispatch(setLastLoadingAttemptFailed(false));
+
     try {
       const promise = dispatch(
         actionFactory(arg, { dispatch, getState, onProgress })
@@ -237,6 +231,7 @@ const createShowLoaderThunkFactory = (
           permanent: true,
         })
       );
+      dispatch(setLastLoadingAttemptFailed(true));
       console.error(error);
     }
   };
@@ -341,7 +336,9 @@ export function reloadCurrentShowFile() {
 
     const filename = getAbsolutePathOfShowFile(getState());
     if (filename) {
-      const blob = await getFileAsBlob(filename);
+      const { buffer, props } = await getFileAsBlob(filename);
+      const blob = new Blob([buffer]);
+      Object.assign(blob, props);
       return dispatch(loadShowFromFile(blob));
     }
   };
@@ -387,31 +384,27 @@ export const setSecondCornerOfRoom = (newCorner) => (dispatch, getState) => {
   dispatch(setRoomCorners([corners[0], newCorner]));
 };
 
-export const setOutdoorShowAltitudeReferenceType = (type) => (
-  dispatch,
-  getState
-) => {
-  dispatch(
-    _setOutdoorShowAltitudeReference({
-      ...getOutdoorShowAltitudeReference(getState()),
-      type,
-    })
-  );
-  dispatch(clearLastUploadResult());
-};
-
-export const setOutdoorShowAltitudeReferenceValue = (value) => (
-  dispatch,
-  getState
-) => {
-  const altitude = Number(value);
-  if (Number.isFinite(altitude) && altitude >= -10000 && altitude <= 10000) {
+export const setOutdoorShowAltitudeReferenceType =
+  (type) => (dispatch, getState) => {
     dispatch(
       _setOutdoorShowAltitudeReference({
         ...getOutdoorShowAltitudeReference(getState()),
-        value: altitude,
+        type,
       })
     );
     dispatch(clearLastUploadResult());
-  }
-};
+  };
+
+export const setOutdoorShowAltitudeReferenceValue =
+  (value) => (dispatch, getState) => {
+    const altitude = Number(value);
+    if (Number.isFinite(altitude) && altitude >= -10000 && altitude <= 10000) {
+      dispatch(
+        _setOutdoorShowAltitudeReference({
+          ...getOutdoorShowAltitudeReference(getState()),
+          value: altitude,
+        })
+      );
+      dispatch(clearLastUploadResult());
+    }
+  };
