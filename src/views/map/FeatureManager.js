@@ -130,6 +130,18 @@ export default class FeatureManager {
   };
 
   /**
+   * Removes all features from the feature manager (and the corresponding
+   * vector source).
+   */
+  removeAllFeatures = () => {
+    if (this._vectorSource) {
+      this._vectorSource.clear();
+    }
+
+    this._featuresByObjectId = {};
+  };
+
+  /**
    * Removes the feature corresponding to the object with the given ID.
    *
    * @param {string} id  the identifier for which the feature has to be

@@ -13,9 +13,9 @@ import { source, withLayer } from '@collmot/ol-react';
 import FeatureManager from '../FeatureManager';
 import UAVFeature from '../features/UAVFeature';
 
-import Flock from '../../../model/flock';
-import { setLayerSelectable } from '../../../model/layers';
-import { uavIdToGlobalId } from '../../../model/identifiers';
+import Flock from '~/model/flock';
+import { setLayerSelectable } from '~/model/layers';
+import { uavIdToGlobalId } from '~/model/identifiers';
 
 /**
  * OpenLayers vector layer source that contains all the active UAVs
@@ -132,6 +132,8 @@ class ActiveUAVsLayerSource extends React.Component {
 
       oldFlock.uavsRemoved.detach(this.eventBindings.uavsRemoved);
       delete this.eventBindings.uavsRemoved;
+
+      this._featureManager.removeAllFeatures();
     }
 
     if (newFlock) {
@@ -141,6 +143,9 @@ class ActiveUAVsLayerSource extends React.Component {
       this.eventBindings.uavsRemoved = newFlock.uavsRemoved.add(
         this._onUAVsRemoved
       );
+
+      // Pretend that all UAVs in the flock were updated now
+      this._onUAVsUpdated(newFlock.getAllUAVs());
     }
   };
 
