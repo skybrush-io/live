@@ -30,6 +30,7 @@ const { actions, reducer } = createSlice({
 
     sourceUrl: null,
     changedSinceLoaded: false,
+    lastLoadAttemptFailed: false,
 
     environment: {
       editing: false,
@@ -363,10 +364,11 @@ const { actions, reducer } = createSlice({
       state.environment.type = action.payload;
     },
 
-    _enqueueFailedUploads(state, action) {
-      moveItemsBetweenQueues({
-        source: 'failedItems',
-        target: 'itemsWaitingToStart',
+    setLastLoadingAttemptFailed(state, action) {
+      state.lastLoadAttemptFailed = Boolean(action.payload);
+    },
+
+    _enqueueFailedUploads: moveItemsBetweenQueues({
         state,
         action,
       });

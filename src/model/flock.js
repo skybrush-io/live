@@ -50,6 +50,15 @@ export default class Flock {
   }
 
   /**
+   * Returns all the UAVs in the flock, in an array, in the same order as
+   * returned by `getAllUAVIds()`.
+   */
+  getAllUAVs() {
+    const uavIds = this.getAllUAVIds();
+    return uavIds.map((uavId) => this._uavsById[uavId]);
+  }
+
+  /**
    * Returns the UAV with the given ID.
    *
    * @param {string}  id  the identifier of the UAV

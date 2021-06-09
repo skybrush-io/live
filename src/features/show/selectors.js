@@ -71,6 +71,12 @@ export const countUAVsTakingOffAutomatically = (state) => {
 };
 
 /**
+ * Returns whether the last attempt to load a show ended with a failure.
+ */
+export const didLastLoadingAttemptFail = (state) =>
+  state.show.lastLoadAttemptFailed;
+
+/**
  * Returns whether the synchronization of the start time and start method of the
  * show with the server failed when we attempted it the last time.
  */
