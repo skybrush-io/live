@@ -126,7 +126,6 @@ const { actions, reducer } = createSlice({
     uploadDialog: {
       open: false,
       showLastUploadResult: false,
-      uploadTarget: 'all',
     },
   },
 
@@ -137,7 +136,7 @@ const { actions, reducer } = createSlice({
 
     cancelUpload: noPayload(() => {
       // The action will stop the upload saga; nothing to do here.
-      // State will be update in notifyUploadFinished()
+      // State will be updated in notifyUploadFinished()
     }),
 
     clearLoadedShow: noPayload((state) => {
@@ -258,7 +257,7 @@ const { actions, reducer } = createSlice({
       const { success, cancelled } = action.payload;
 
       // Dispatched by the saga; should not be dispatched manually
-      // TODO(ntamas): move all items still in progress back to the queue
+      state.upload.itemsWaitingToStart = [];
       state.upload.itemsInProgress = [];
       state.upload.itemsQueued = [];
       state.upload.running = false;
@@ -270,50 +269,30 @@ const { actions, reducer } = createSlice({
       state.uploadDialog.showLastUploadResult = true;
     },
 
-    notifyUploadOnUavCancelled(state, action) {
-      moveItemsBetweenQueues({
-        source: 'itemsInProgress',
-        target: 'itemsWaitingToStart',
-        state,
-        action,
-      });
-    },
+    notifyUploadOnUavCancelled: moveItemsBetweenQueues({
+      source: 'itemsInProgress',
+      target: 'itemsWaitingToStart',
+    }),
 
-    notifyUploadOnUavFailed(state, action) {
-      moveItemsBetweenQueues({
-        source: 'itemsInProgress',
-        target: 'failedItems',
-        state,
-        action,
-      });
-    },
+    notifyUploadOnUavFailed: moveItemsBetweenQueues({
+      source: 'itemsInProgress',
+      target: 'failedItems',
+    }),
 
-    notifyUploadOnUavQueued(state, action) {
-      moveItemsBetweenQueues({
-        source: 'itemsWaitingToStart',
-        target: 'itemsQueued',
-        state,
-        action,
-      });
-    },
+    notifyUploadOnUavQueued: moveItemsBetweenQueues({
+      source: 'itemsWaitingToStart',
+      target: 'itemsQueued',
+    }),
 
-    notifyUploadOnUavStarted(state, action) {
-      moveItemsBetweenQueues({
-        source: 'itemsQueued',
-        target: 'itemsInProgress',
-        state,
-        action,
-      });
-    },
+    notifyUploadOnUavStarted: moveItemsBetweenQueues({
+      source: 'itemsQueued',
+      target: 'itemsInProgress',
+    }),
 
-    notifyUploadOnUavSucceeded(state, action) {
-      moveItemsBetweenQueues({
-        source: 'itemsInProgress',
-        target: 'itemsFinished',
-        state,
-        action,
-      });
-    },
+    notifyUploadOnUavSucceeded: moveItemsBetweenQueues({
+      source: 'itemsInProgress',
+      target: 'itemsFinished',
+    }),
 
     openEnvironmentEditorDialog: noPayload((state) => {
       state.environment.editing = true;
@@ -343,7 +322,6 @@ const { actions, reducer } = createSlice({
       state.upload.lastUploadResult = null;
       state.uploadDialog.showLastUploadResult = false;
       state.uploadDialog.open = true;
-      state.uploadDialog.uploadTarget = 'all';
     }),
 
     prepareForNextUpload(state, action) {
@@ -368,12 +346,13 @@ const { actions, reducer } = createSlice({
       state.lastLoadAttemptFailed = Boolean(action.payload);
     },
 
-    _enqueueFailedUploads(state, aciton) {
+    _enqueueFailedUploads(state, action) {
       moveItemsBetweenQueues({
         source: 'failedItems',
         target: 'itemsWaitingToStart',
-        state, action
-      }),
+        state,
+        action,
+      });
     },
 
     _setOutdoorShowAltitudeReference(state, action) {
@@ -478,10 +457,6 @@ const { actions, reducer } = createSlice({
       state.upload.autoRetry = Boolean(action.payload);
     },
 
-    setUploadTarget(state, action) {
-      state.uploadDialog.uploadTarget = action.payload;
-    },
-
     signOffOnManualPreflightChecksAt(state, action) {
       state.preflight.manualChecksSignedOffAt = action.payload;
     },
@@ -492,6 +467,7 @@ const { actions, reducer } = createSlice({
 
     startUpload(state) {
       state.upload.running = true;
+      state.uploadDialog.showLastUploadResult = false;
       // Nothing else to do, this action simply triggers a saga that will do the
       // hard work. The saga might be triggered a bit earlier than the previous
       // assignment, but we don't care.
@@ -553,7 +529,6 @@ export const {
   setStartTime,
   setUAVIdsToStartAutomatically,
   setUploadAutoRetry,
-  setUploadTarget,
   signOffOnManualPreflightChecksAt,
   signOffOnOnboardPreflightChecksAt,
   startUpload,
