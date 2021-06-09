@@ -368,10 +368,12 @@ const { actions, reducer } = createSlice({
       state.lastLoadAttemptFailed = Boolean(action.payload);
     },
 
-    _enqueueFailedUploads: moveItemsBetweenQueues({
-        state,
-        action,
-      });
+    _enqueueFailedUploads(state, aciton) {
+      moveItemsBetweenQueues({
+        source: 'failedItems',
+        target: 'itemsWaitingToStart',
+        state, action
+      }),
     },
 
     _setOutdoorShowAltitudeReference(state, action) {
@@ -539,6 +541,7 @@ export const {
   _enqueueFailedUploads,
   revokeTakeoffAreaApproval,
   setEnvironmentType,
+  setLastLoadingAttemptFailed,
   _setOutdoorShowAltitudeReference,
   setOutdoorShowOrientation,
   setOutdoorShowOrigin,
