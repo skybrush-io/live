@@ -56,27 +56,24 @@ const processResponses = (commandName, responses, { silent } = {}) => {
   }
 };
 
-const performMassOperation = ({
-  type,
-  name,
-  mapper = undefined,
-  silent,
-}) => async (uavs, args) => {
-  // Do not bail out early if uavs is empty because in the args there might be
-  // an option that intructs the server to do a broadcast to all UAVs.
+const performMassOperation =
+  ({ type, name, mapper = undefined, silent }) =>
+  async (uavs, args) => {
+    // Do not bail out early if uavs is empty because in the args there might be
+    // an option that intructs the server to do a broadcast to all UAVs.
 
-  try {
-    const responses = await messageHub.startAsyncOperation({
-      type,
-      ids: uavs,
-      ...(mapper ? mapper(args) : args),
-    });
-    processResponses(name, responses, { silent });
-  } catch (error) {
-    console.error(error);
-    logger.error(`${name}: ${String(error)}`);
-  }
-};
+    try {
+      const responses = await messageHub.startAsyncOperation({
+        type,
+        ids: uavs,
+        ...(mapper ? mapper(args) : args),
+      });
+      processResponses(name, responses, { silent });
+    } catch (error) {
+      console.error(error);
+      logger.error(`${name}: ${String(error)}`);
+    }
+  };
 
 export const flashLightOnUAVs = performMassOperation({
   type: 'UAV-SIGNAL',

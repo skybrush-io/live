@@ -70,6 +70,10 @@ const useStyles = makeStyles(
       fontWeight: 'bold',
     },
 
+    'status-hollow-off': {
+      color: theme.palette.text.secondary,
+    },
+
     'status-hollow-info': createStyleForHollowStatus(Status.INFO),
     'status-hollow-waiting': createStyleForHollowStatus(Status.WAITING),
     'status-hollow-next': createStyleForHollowStatus(Status.NEXT),
@@ -113,7 +117,14 @@ const useStyles = makeStyles(
  * Summary pill that can be placed below the drone avatar to show a single
  * line of additional textual information.
  */
-const StatusPill = ({ children, className, inline, hollow, status }) => {
+const StatusPill = ({
+  children,
+  className,
+  inline,
+  hollow,
+  status,
+  ...rest
+}) => {
   const classes = useStyles();
   return (
     <div
@@ -125,6 +136,7 @@ const StatusPill = ({ children, className, inline, hollow, status }) => {
           ? classes[`status-hollow-${status}`]
           : classes[`status-${status}`]
       )}
+      {...rest}
     >
       {children}
     </div>

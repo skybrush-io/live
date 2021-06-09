@@ -11,6 +11,7 @@ import maxBy from 'lodash-es/maxBy';
 import { createSelector } from '@reduxjs/toolkit';
 import turfContains from '@turf/boolean-contains';
 
+import { Status } from '~/components/semantics';
 import {
   proposeDistanceLimit,
   proposeHeightLimit,
@@ -294,29 +295,29 @@ export const isRoomVisible = (state) =>
  * Selector that returns an object that can be used to transform GPS coordinates
  * from/to the show coordinate system.
  */
-export const getOutdoorShowToWorldCoordinateSystemTransformationObject = createSelector(
-  getOutdoorShowCoordinateSystem,
-  (coordinateSystem) =>
+export const getOutdoorShowToWorldCoordinateSystemTransformationObject =
+  createSelector(getOutdoorShowCoordinateSystem, (coordinateSystem) =>
     coordinateSystem && coordinateSystem.origin
       ? new FlatEarthCoordinateSystem(coordinateSystem)
       : undefined
-);
+  );
 
 /**
  * Selector that returns a function that can be invoked with show coordinate
  * XYZ triplets and that returns the corresponding world coordinates.
  */
-export const getOutdoorShowToWorldCoordinateSystemTransformation = createSelector(
-  getOutdoorShowToWorldCoordinateSystemTransformationObject,
-  (transform) =>
-    transform
-      ? (point) => {
-          const [x, y, z] = point;
-          const [lon, lat] = transform.toLonLat([x, y]);
-          return { lon, lat, amsl: undefined, agl: z };
-        }
-      : undefined
-);
+export const getOutdoorShowToWorldCoordinateSystemTransformation =
+  createSelector(
+    getOutdoorShowToWorldCoordinateSystemTransformationObject,
+    (transform) =>
+      transform
+        ? (point) => {
+            const [x, y, z] = point;
+            const [lon, lat] = transform.toLonLat([x, y]);
+            return { lon, lat, amsl: undefined, agl: z };
+          }
+        : undefined
+  );
 
 // TODO(ntamas): implement this for outdoor shows
 export const getShowToFlatEarthCoordinateSystemTransformation = createSelector(
@@ -477,15 +478,16 @@ function getMaximumHorizontalDistanceFromTakeoffPositionInTrajectory(
  * Returns the maximum distance of any point in any of the trajectories from the
  * starting point of that trajectory.
  */
-export const getMaximumHorizontalDistanceFromTakeoffPositionInTrajectories = createSelector(
-  getTrajectories,
-  (trajectories) =>
-    max(
-      trajectories.map(
-        getMaximumHorizontalDistanceFromTakeoffPositionInTrajectory
-      )
-    ) || 0
-);
+export const getMaximumHorizontalDistanceFromTakeoffPositionInTrajectories =
+  createSelector(
+    getTrajectories,
+    (trajectories) =>
+      max(
+        trajectories.map(
+          getMaximumHorizontalDistanceFromTakeoffPositionInTrajectory
+        )
+      ) || 0
+  );
 
 /**
  * Returns the maximum height observed in any of the trajectories, in the
@@ -502,9 +504,8 @@ export const getMaximumHeightInTrajectories = createSelector(
  * trajectories from the takeoff positions.
  */
 export const getProposedDistanceLimitBasedOnTrajectories = (state) => {
-  const maxHeight = getMaximumHorizontalDistanceFromTakeoffPositionInTrajectories(
-    state
-  );
+  const maxHeight =
+    getMaximumHorizontalDistanceFromTakeoffPositionInTrajectories(state);
   const margin = get(state, 'dialogs.geofenceSettings.horizontalMargin');
   return proposeDistanceLimit(maxHeight, margin);
 };
@@ -694,13 +695,41 @@ export const getNextDroneFromUploadQueue = (state) => {
 };
 
 /**
- * Returns a summary of the progress of the upload process in the form of
- * two numbers. The first is a percentage of items for which the upload has
- * either finished successfully or has failed. The second is a percentage of
- * items for which the upload has finished successfully, is in progress or
- * has failed.
+ * Returns an object that counts how many drones are currently in the
+ * "waiting", "in progress", "failed" and "successful" stages of the upload.
  */
-export const getUploadProgress = createSelector(
+export const getUploadStatusCodeCounters = createSelector(
+  (state) => state.show.upload,
+  ({
+    failedItems,
+    itemsFinished,
+    itemsInProgress,
+    itemsQueued,
+    itemsWaitingToStart,
+  }) => ({
+    failed: Array.isArray(failedItems) ? failedItems.length : 0,
+    finished: Array.isArray(itemsFinished) ? itemsFinished.length : 0,
+    inProgress: Array.isArray(itemsInProgress) ? itemsInProgress.length : 0,
+    waiting:
+      (Array.isArray(itemsQueued) ? itemsQueued.length : 0) +
+      (Array.isArray(itemsWaitingToStart) ? itemsWaitingToStart.length : 0),
+  })
+);
+
+/**
+ * Returns a mapping from UAV IDs to their corresponding upload status codes
+ * according to the following encoding:
+ *
+ * - Failed uploads --> Status.ERROR
+ * - Upload in progress --> Status.WARNING
+ * - Enqueued to a worker --> Status.NEXT
+ * - Waiting to start --> Status.INFO
+ * - Finished --> Status.SUCCESS
+ *
+ * UAV IDs not found in the returned mapping are not participating in the
+ * current upload; they should be treated as Status.OFF
+ */
+export const getUploadStatusCodeMapping = createSelector(
   (state) => state.show.upload,
   ({
     failedItems,
@@ -709,38 +738,51 @@ export const getUploadProgress = createSelector(
     itemsQueued,
     itemsWaitingToStart,
   }) => {
-    const numberFailedItems = Array.isArray(failedItems)
-      ? failedItems.length
-      : 0;
-    const numberItemsFinished = Array.isArray(itemsFinished)
-      ? itemsFinished.length
-      : 0;
-    const numberItemsInProgress = Array.isArray(itemsInProgress)
-      ? itemsInProgress.length
-      : 0;
-    const numberItemsQueued = Array.isArray(itemsQueued)
-      ? itemsQueued.length
-      : 0;
-    const numberItemsWaitingToStart = Array.isArray(itemsWaitingToStart)
-      ? itemsWaitingToStart.length
-      : 0;
+    const result = {};
 
-    const total =
-      numberFailedItems +
-      numberItemsInProgress +
-      numberItemsQueued +
-      numberItemsWaitingToStart +
-      numberItemsFinished;
-    if (total > 0) {
-      const number1 = numberItemsFinished;
-      const number2 = number1 + numberItemsInProgress;
-      return [
-        Math.round((100 * number1) / total),
-        Math.round((100 * number2) / total),
-      ];
+    for (const uavId of itemsWaitingToStart) {
+      result[uavId] = Status.WAITING;
     }
 
-    return [0, 0];
+    for (const uavId of itemsQueued) {
+      result[uavId] = Status.NEXT;
+    }
+
+    for (const uavId of itemsInProgress) {
+      result[uavId] = Status.WARNING;
+    }
+
+    for (const uavId of itemsFinished) {
+      result[uavId] = Status.SUCCESS;
+    }
+
+    for (const uavId of failedItems) {
+      result[uavId] = Status.ERROR;
+    }
+
+    return result;
+  }
+);
+
+/**
+ * Returns a summary of the progress of the upload process in the form of
+ * two numbers. The first is a percentage of items for which the upload has
+ * either finished successfully or has failed. The second is a percentage of
+ * items for which the upload has finished successfully, is in progress or
+ * has failed.
+ */
+export const getUploadProgress = createSelector(
+  getUploadStatusCodeCounters,
+  ({ failed, finished, inProgress, waiting }) => {
+    const total = failed + finished + inProgress + waiting;
+    if (total > 0) {
+      return [
+        Math.round((100 * finished) / total),
+        Math.round((100 * (finished + inProgress)) / total),
+      ];
+    } else {
+      return [0, 0];
+    }
   }
 );
 

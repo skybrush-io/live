@@ -35,7 +35,7 @@ export function formatDurationHMS(duration, options) {
 
   precision = Math.max(Math.floor(precision), 0);
   if (precision > 0) {
-    const power = Math.pow(10, precision);
+    const power = 10 ** precision;
     duration = Math.round(duration * power) / power;
   }
 
@@ -64,9 +64,29 @@ export function formatDurationHMS(duration, options) {
 /**
  * Formats a mission-specific ID in a consistent manner that is to be used
  * everywhere throughout the UI.
+ *
+ * Indices as input arguments are zero-based, but they are formatted as 1-based
+ * on the UI.
  */
 export function formatMissionId(index) {
   return `s${index + 1}`;
+}
+
+/**
+ * Formats a mission-specific ID range in a consistent manner that is to be used
+ * everywhere throughout the UI.
+ *
+ * Indices as input arguments are zero-based, but they are formatted as 1-based
+ * on the UI. The start index is inclusive and the end index is exclusive.
+ */
+export function formatMissionIdRange(start, end) {
+  if (end <= start) {
+    return '';
+  } else if (end === start + 1) {
+    return formatMissionId(start);
+  } else {
+    return `${formatMissionId(start)}\u2013${end}`;
+  }
 }
 
 /**
