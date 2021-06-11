@@ -34,71 +34,71 @@ import { calculateDistanceMatrix, euclideanDistance2D } from '~/utils/math';
  * Thunk that fills the empty slots in the current mapping from the spare drones
  * that are not assigned to a mapping slot yet.
  */
-export const augmentMappingAutomaticallyFromSpareDrones = ({
-  algorithm = 'greedy',
-} = {}) => (dispatch, getState) => {
-  const state = getState();
-  const isIndoor = isShowIndoor(state);
+export const augmentMappingAutomaticallyFromSpareDrones =
+  ({ algorithm = 'greedy' } = {}) =>
+  (dispatch, getState) => {
+    const state = getState();
+    const isIndoor = isShowIndoor(state);
 
-  const homePositions = isIndoor
-    ? getFirstPointsOfTrajectories(state)
-    : getGPSBasedHomePositionsInMission(state);
-  const positionGetter = isIndoor
-    ? getCurrentLocalPositionByUavId
-    : getCurrentGPSPositionByUavId;
+    const homePositions = isIndoor
+      ? getFirstPointsOfTrajectories(state)
+      : getGPSBasedHomePositionsInMission(state);
+    const positionGetter = isIndoor
+      ? getCurrentLocalPositionByUavId
+      : getCurrentGPSPositionByUavId;
 
-  const emptySlots = getEmptyMappingSlotIndices(state);
-  const slotsToFill = emptySlots.filter(
-    (index) => !isNil(homePositions[index])
-  );
-  const targets = slotsToFill.map((index) => ({
-    index,
-    position: homePositions[index],
-  }));
+    const emptySlots = getEmptyMappingSlotIndices(state);
+    const slotsToFill = emptySlots.filter(
+      (index) => !isNil(homePositions[index])
+    );
+    const targets = slotsToFill.map((index) => ({
+      index,
+      position: homePositions[index],
+    }));
 
-  const spareUAVIds = getUnmappedUAVIds(state);
-  const sources = spareUAVIds.map((uavId) => ({
-    uavId,
-    position: positionGetter(state, uavId),
-  }));
+    const spareUAVIds = getUnmappedUAVIds(state);
+    const sources = spareUAVIds.map((uavId) => ({
+      uavId,
+      position: positionGetter(state, uavId),
+    }));
 
-  const getter = isIndoor
-    ? (item) => [item.position[0], item.position[1]]
-    : (item) => [item.position.lon, item.position.lat];
-  const distanceFunction = isIndoor ? euclideanDistance2D : haversineDistance;
-  const threshold = isIndoor ? 1 : 3; /* meters */
+    const getter = isIndoor
+      ? (item) => [item.position[0], item.position[1]]
+      : (item) => [item.position.lon, item.position.lat];
+    const distanceFunction = isIndoor ? euclideanDistance2D : haversineDistance;
+    const threshold = isIndoor ? 1 : 3; /* meters */
 
-  // Sources are the drones; targets are the takeoff positions.
-  //
-  // The apparently clever solution (Hungarian algorithm) is not that clever in
-  // practice; for instance, if all drones but one are aligned exactly and one
-  // drone is moved from its place at one end of a line to the _opposite_ end,
-  // slightly outside the line, the algorithm will propose to shift all drones
-  // in that line by one slot instead of saying that all the drones are in place
-  // except one.
-  //
-  // We use a greedy algorithm instead; we calculate all distance pairs, find
-  // the smallest distance, perform the assignment, exclude all distance pairs
-  // belonging to the chosen drone and takeoff position, and continue until
-  // we have no drones or no takeoff positions left.
+    // Sources are the drones; targets are the takeoff positions.
+    //
+    // The apparently clever solution (Hungarian algorithm) is not that clever in
+    // practice; for instance, if all drones but one are aligned exactly and one
+    // drone is moved from its place at one end of a line to the _opposite_ end,
+    // slightly outside the line, the algorithm will propose to shift all drones
+    // in that line by one slot instead of saying that all the drones are in place
+    // except one.
+    //
+    // We use a greedy algorithm instead; we calculate all distance pairs, find
+    // the smallest distance, perform the assignment, exclude all distance pairs
+    // belonging to the chosen drone and takeoff position, and continue until
+    // we have no drones or no takeoff positions left.
 
-  const distances = calculateDistanceMatrix(sources, targets, {
-    distanceFunction,
-    getter,
-  });
+    const distances = calculateDistanceMatrix(sources, targets, {
+      distanceFunction,
+      getter,
+    });
 
-  const matching = findAssignmentInDistanceMatrix(distances, {
-    algorithm,
-    threshold,
-  });
+    const matching = findAssignmentInDistanceMatrix(distances, {
+      algorithm,
+      threshold,
+    });
 
-  const newMapping = [...getMissionMapping(state)];
-  for (const [sourceIndex, targetIndex] of matching) {
-    newMapping[targets[targetIndex].index] = sources[sourceIndex].uavId;
-  }
+    const newMapping = [...getMissionMapping(state)];
+    for (const [sourceIndex, targetIndex] of matching) {
+      newMapping[targets[targetIndex].index] = sources[sourceIndex].uavId;
+    }
 
-  dispatch(replaceMapping(newMapping));
-};
+    dispatch(replaceMapping(newMapping));
+  };
 
 /**
  * Thunk that recalculates the mapping completely by first clearing all items
@@ -125,9 +125,8 @@ export const addVirtualDronesForMission = () => async (dispatch, getState) => {
 
   // Get the coordinate system of the show
   const showCoordinateSystem = getOutdoorShowCoordinateSystem(state);
-  const showCoordinateSystemTransformation = getOutdoorShowToWorldCoordinateSystemTransformationObject(
-    state
-  );
+  const showCoordinateSystemTransformation =
+    getOutdoorShowToWorldCoordinateSystemTransformationObject(state);
   const orientation = getShowOrientation(state);
 
   if (
@@ -140,9 +139,8 @@ export const addVirtualDronesForMission = () => async (dispatch, getState) => {
   // Get the home coordinates of the drones from the current mission. The
   // configured origin and orientation of the virtual_uavs extension on the
   // server side does not matter as we will be sending explicit home coordinates.
-  const homeCoordinates = getGPSBasedHomePositionsInMission(state).filter(
-    Boolean
-  );
+  const homeCoordinates =
+    getGPSBasedHomePositionsInMission(state).filter(Boolean);
   const numberDrones = homeCoordinates.length;
   const numberDigits = String(numberDrones).length;
 
