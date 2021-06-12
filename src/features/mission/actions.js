@@ -51,16 +51,24 @@ export const augmentMappingAutomaticallyFromSpareDrones =
     const slotsToFill = emptySlots.filter(
       (index) => !isNil(homePositions[index])
     );
-    const targets = slotsToFill.map((index) => ({
-      index,
-      position: homePositions[index],
-    }));
+    const targets = slotsToFill
+      .map((index) => ({
+        index,
+        position: homePositions[index],
+      }))
+      .filter(({ position }) =>
+        isIndoor ? Array.isArray(position) : !isNil(position)
+      );
 
     const spareUAVIds = getUnmappedUAVIds(state);
-    const sources = spareUAVIds.map((uavId) => ({
-      uavId,
-      position: positionGetter(state, uavId),
-    }));
+    const sources = spareUAVIds
+      .map((uavId) => ({
+        uavId,
+        position: positionGetter(state, uavId),
+      }))
+      .filter(({ position }) =>
+        isIndoor ? Array.isArray(position) : !isNil(position)
+      );
 
     const getter = isIndoor
       ? (item) => [item.position[0], item.position[1]]
