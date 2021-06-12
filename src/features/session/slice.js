@@ -22,7 +22,7 @@ const updateExpiry = (state, expiry) => {
   if (state.expiresAt <= Date.now()) {
     state.isExpired = true;
   }
-}
+};
 
 const { actions, reducer } = createSlice({
   name: 'session',

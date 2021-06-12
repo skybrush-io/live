@@ -496,9 +496,8 @@ const UAVList = connect(
         onSelectSection: (event) => (dispatch, getState) => {
           const { value } = event.target;
           const state = getState();
-          const displayedIdsAndLabels = getDisplayedIdListBySections(state)[
-            value
-          ];
+          const displayedIdsAndLabels =
+            getDisplayedIdListBySections(state)[value];
           const selectedUAVIds = getSelectedUAVIds(state);
           const selectionInfo = getSelectionInfo(state)[value];
 

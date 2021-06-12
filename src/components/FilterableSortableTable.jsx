@@ -234,9 +234,8 @@ class FilterableSortableTable extends React.Component {
    */
   _makeListChangeHandler(item) {
     return () => {
-      const { filterProperties } = this._columns[
-        this.state.filterPopoverTargetColumnId
-      ];
+      const { filterProperties } =
+        this._columns[this.state.filterPopoverTargetColumnId];
 
       filterProperties.map.set(
         item.value,

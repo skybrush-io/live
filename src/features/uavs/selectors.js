@@ -212,38 +212,39 @@ export const getTrajectoryPointsInShowCoordinatesByUavId = createCachedSelector(
  * @param  {Object}  state  the state of the application
  * @param  {string}  uavId  the ID of the UAV
  */
-export const getTrajectoryPointsInFlatEarthCoordinatesByUavId = createCachedSelector(
-  getReverseMissionMapping,
-  getTrajectories,
-  getShowToFlatEarthCoordinateSystemTransformation,
-  selectUAVId,
-  (revMapping, trajectories, transform, uavId) => {
-    const index = revMapping[uavId];
+export const getTrajectoryPointsInFlatEarthCoordinatesByUavId =
+  createCachedSelector(
+    getReverseMissionMapping,
+    getTrajectories,
+    getShowToFlatEarthCoordinateSystemTransformation,
+    selectUAVId,
+    (revMapping, trajectories, transform, uavId) => {
+      const index = revMapping[uavId];
 
-    if (transform === undefined) {
-      // No coordinate system specified
+      if (transform === undefined) {
+        // No coordinate system specified
+        return undefined;
+      }
+
+      if (index === undefined) {
+        // UAV is not in the mission
+        return undefined;
+      }
+
+      const trajectory = trajectories[index];
+      if (isValidTrajectory(trajectory)) {
+        return getPointsOfTrajectory(trajectory, {
+          includeControlPoints: true,
+        }).map(transform);
+      }
+
       return undefined;
     }
-
-    if (index === undefined) {
-      // UAV is not in the mission
-      return undefined;
-    }
-
-    const trajectory = trajectories[index];
-    if (isValidTrajectory(trajectory)) {
-      return getPointsOfTrajectory(trajectory, {
-        includeControlPoints: true,
-      }).map(transform);
-    }
-
-    return undefined;
-  }
-)({
-  keySelector: selectUAVId,
-  // TODO: use a FIFO or LRU cache if it becomes necessary.
-  // The quick-lru module from npm seems simple enough.
-});
+  )({
+    keySelector: selectUAVId,
+    // TODO: use a FIFO or LRU cache if it becomes necessary.
+    // The quick-lru module from npm seems simple enough.
+  });
 
 /**
  * Returns the trajectory of the UAV with the given ID, in world coordinates,
@@ -252,38 +253,39 @@ export const getTrajectoryPointsInFlatEarthCoordinatesByUavId = createCachedSele
  * @param  {Object}  state  the state of the application
  * @param  {string}  uavId  the ID of the UAV
  */
-export const getTrajectoryPointsInWorldCoordinatesByUavId = createCachedSelector(
-  getReverseMissionMapping,
-  getTrajectories,
-  getOutdoorShowToWorldCoordinateSystemTransformation,
-  selectUAVId,
-  (revMapping, trajectories, transform, uavId) => {
-    const index = revMapping[uavId];
+export const getTrajectoryPointsInWorldCoordinatesByUavId =
+  createCachedSelector(
+    getReverseMissionMapping,
+    getTrajectories,
+    getOutdoorShowToWorldCoordinateSystemTransformation,
+    selectUAVId,
+    (revMapping, trajectories, transform, uavId) => {
+      const index = revMapping[uavId];
 
-    if (transform === undefined) {
-      // No show coordinate system yet or the show is indoor
+      if (transform === undefined) {
+        // No show coordinate system yet or the show is indoor
+        return undefined;
+      }
+
+      if (index === undefined) {
+        // UAV is not in the mission
+        return undefined;
+      }
+
+      const trajectory = trajectories[index];
+      if (isValidTrajectory(trajectory)) {
+        return getPointsOfTrajectory(trajectory, {
+          includeControlPoints: true,
+        }).map(transform);
+      }
+
       return undefined;
     }
-
-    if (index === undefined) {
-      // UAV is not in the mission
-      return undefined;
-    }
-
-    const trajectory = trajectories[index];
-    if (isValidTrajectory(trajectory)) {
-      return getPointsOfTrajectory(trajectory, {
-        includeControlPoints: true,
-      }).map(transform);
-    }
-
-    return undefined;
-  }
-)({
-  keySelector: selectUAVId,
-  // TODO: use a FIFO or LRU cache if it becomes necessary.
-  // The quick-lru module from npm seems simple enough.
-});
+  )({
+    keySelector: selectUAVId,
+    // TODO: use a FIFO or LRU cache if it becomes necessary.
+    // The quick-lru module from npm seems simple enough.
+  });
 
 /**
  * Returns the distance of the UAV to its home position, in GPS coordinates.
@@ -315,25 +317,26 @@ export const getXYDistanceToGPSBasedHomePositionByUavId = createCachedSelector(
  * Returns the distance of the UAV to the first point of its trajectory, in
  * local coordinates.
  */
-export const getXYDistanceToFirstPointOfTrajectoryByUavId = createCachedSelector(
-  getFirstPointOfTrajectoryByUavId,
-  getCurrentLocalPositionByUavId,
-  (firstPoint, currentLocalPosition) => {
-    if (!isNil(firstPoint)) {
-      if (!isNil(currentLocalPosition)) {
-        return euclideanDistance2D(firstPoint, currentLocalPosition);
+export const getXYDistanceToFirstPointOfTrajectoryByUavId =
+  createCachedSelector(
+    getFirstPointOfTrajectoryByUavId,
+    getCurrentLocalPositionByUavId,
+    (firstPoint, currentLocalPosition) => {
+      if (!isNil(firstPoint)) {
+        if (!isNil(currentLocalPosition)) {
+          return euclideanDistance2D(firstPoint, currentLocalPosition);
+        }
+
+        return Number.POSITIVE_INFINITY;
       }
 
-      return Number.POSITIVE_INFINITY;
+      return undefined;
     }
-
-    return undefined;
-  }
-)({
-  keySelector: selectUAVId,
-  // TODO: use a FIFO or LRU cache if it becomes necessary.
-  // The quick-lru module from npm seems simple enough.
-});
+  )({
+    keySelector: selectUAVId,
+    // TODO: use a FIFO or LRU cache if it becomes necessary.
+    // The quick-lru module from npm seems simple enough.
+  });
 
 /**
  * Returns the distances of the UAVs from their home positions, restricted to the

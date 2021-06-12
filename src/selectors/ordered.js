@@ -39,7 +39,7 @@ export const getLayersInBottomFirstOrder = createSelector(
  */
 export const getLayersInTopmostFirstOrder = createSelector(
   getLayersInBottomFirstOrder,
-  layers => layers.slice().reverse()
+  (layers) => layers.slice().reverse()
 );
 
 /**

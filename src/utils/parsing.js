@@ -11,7 +11,7 @@ import isString from 'lodash-es/isString';
  * of seconds) relative to the UNIX epoch.
  */
 const knownEpochs = {
-  unix: 0
+  unix: 0,
 };
 
 /**

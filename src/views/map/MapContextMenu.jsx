@@ -219,9 +219,8 @@ class MapContextMenu extends React.Component {
               'polygon',
             ];
 
-            const featureSuitableForGeofence = geofenceCompatibleFeatureTypes.includes(
-              selectedFeatureTypes[0]
-            );
+            const featureSuitableForGeofence =
+              geofenceCompatibleFeatureTypes.includes(selectedFeatureTypes[0]);
             const isCurrentGeofence =
               selectedFeatureIds[0] === geofencePolygonId;
             result.push(
@@ -394,19 +393,20 @@ const getContextProvider = createSelector(
   getSelectedUAVIds,
   getGeofencePolygonId,
   (
-    selectedFeatureIds,
-    selectedFeatureLabels,
-    selectedFeatureTypes,
-    selectedUAVIds,
-    geofencePolygonId
-  ) => (context) => ({
-    selectedFeatureIds,
-    selectedFeatureLabels,
-    selectedFeatureTypes,
-    selectedUAVIds,
-    geofencePolygonId,
-    ...context,
-  })
+      selectedFeatureIds,
+      selectedFeatureLabels,
+      selectedFeatureTypes,
+      selectedUAVIds,
+      geofencePolygonId
+    ) =>
+    (context) => ({
+      selectedFeatureIds,
+      selectedFeatureLabels,
+      selectedFeatureTypes,
+      selectedUAVIds,
+      geofencePolygonId,
+      ...context,
+    })
 );
 
 const MapContextMenuContainer = connect(

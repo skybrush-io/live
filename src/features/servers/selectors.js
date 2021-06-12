@@ -191,9 +191,8 @@ const makeSupportsFeatureSelector = (name) =>
 /**
  * Returns whehther the server we are connected to supports virtual drones.
  */
-export const supportsVirtualDrones = makeSupportsFeatureSelector(
-  'virtual_uavs'
-);
+export const supportsVirtualDrones =
+  makeSupportsFeatureSelector('virtual_uavs');
 
 /**
  * Returns whether the server requires the user to authenticate before

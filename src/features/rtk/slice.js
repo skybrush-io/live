@@ -87,8 +87,8 @@ const { actions, reducer } = createSlice({
     },
 
     toggleSurveySettingsPanel: noPayload((state) => {
-      state.dialog.surveySettingsEditorVisible = !state.dialog
-        .surveySettingsEditorVisible;
+      state.dialog.surveySettingsEditorVisible =
+        !state.dialog.surveySettingsEditorVisible;
     }),
 
     updateRTKStatistics(state, action) {

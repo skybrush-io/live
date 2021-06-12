@@ -550,14 +550,8 @@ class HeatmapLayerPresentation extends React.Component {
   }
 
   _colorForValue(value) {
-    const {
-      threshold,
-      coloringFunction,
-      minValue,
-      maxValue,
-      minHue,
-      maxHue,
-    } = this.props.layer.parameters;
+    const { threshold, coloringFunction, minValue, maxValue, minHue, maxHue } =
+      this.props.layer.parameters;
 
     const processValue = heatmapColoringFunctions[coloringFunction].function;
 

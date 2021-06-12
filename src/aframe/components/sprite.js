@@ -6,12 +6,8 @@
 
 import AFrame from '../aframe';
 
-const {
-  AdditiveBlending,
-  NormalBlending,
-  Sprite,
-  SpriteMaterial,
-} = AFrame.THREE;
+const { AdditiveBlending, NormalBlending, Sprite, SpriteMaterial } =
+  AFrame.THREE;
 
 AFrame.registerComponent('sprite', {
   schema: {

@@ -920,13 +920,12 @@ export default class MessageHub {
 
       for (const idWithReceipt of Object.keys(receipt || [])) {
         try {
-          results[
-            idWithReceipt
-          ] = this._asyncOperationManager.handleMultiAsyncResponseForSingleId(
-            response,
-            idWithReceipt,
-            { noThrow: true }
-          );
+          results[idWithReceipt] =
+            this._asyncOperationManager.handleMultiAsyncResponseForSingleId(
+              response,
+              idWithReceipt,
+              { noThrow: true }
+            );
         } catch (error) {
           results[idWithReceipt] = error;
         }

@@ -223,7 +223,8 @@ export default connect(
     onRemoveSelected: stopAveragingSelectedUAVs,
     onResumeSelected: resumeAveragingSelectedUAVs,
     onRestartSelected: restartAveragingSelectedUAVs,
-    onSetCentroidOfSelectionAsMapOrigin: setAveragedCentroidOfSelectedUAVsAsMapOrigin,
+    onSetCentroidOfSelectionAsMapOrigin:
+      setAveragedCentroidOfSelectedUAVsAsMapOrigin,
     onStartAddition: startAddingNewAveragingMeasurement,
     onUAVIdAdded: startAveragingUAVCoordinateById,
   }

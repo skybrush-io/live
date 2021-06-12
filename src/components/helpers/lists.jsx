@@ -60,12 +60,8 @@ const createBackgroundHint = (backgroundHint, ref) => {
  * @return {React.Component}  the constructed React component
  */
 export function listOf(itemRenderer, options = {}) {
-  const {
-    backgroundHint,
-    dataProvider,
-    listFactory,
-    postprocess,
-  } = validateOptions(options);
+  const { backgroundHint, dataProvider, listFactory, postprocess } =
+    validateOptions(options);
   itemRenderer = validateItemRenderer(itemRenderer);
 
   // A separate variable is needed here to make ESLint happy
@@ -233,12 +229,8 @@ export function createSelectionHandlerThunk({
  * @return {React.Component}  the constructed React component
  */
 export function selectableListOf(itemRenderer, options = {}) {
-  const {
-    backgroundHint,
-    dataProvider,
-    listFactory,
-    postprocess,
-  } = validateOptions(options);
+  const { backgroundHint, dataProvider, listFactory, postprocess } =
+    validateOptions(options);
   itemRenderer = validateItemRenderer(itemRenderer);
 
   // A separate variable is needed here to make ESLint happy
@@ -326,12 +318,8 @@ export function selectableListOf(itemRenderer, options = {}) {
  * @return {React.Component}  the constructed React component
  */
 export function multiSelectableListOf(itemRenderer, options = {}) {
-  const {
-    backgroundHint,
-    dataProvider,
-    listFactory,
-    postprocess,
-  } = validateOptions(options);
+  const { backgroundHint, dataProvider, listFactory, postprocess } =
+    validateOptions(options);
   itemRenderer = validateItemRenderer(itemRenderer);
 
   // A separate variable is needed here to make ESLint happy

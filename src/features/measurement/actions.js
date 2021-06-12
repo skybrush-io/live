@@ -24,25 +24,25 @@ import { getPreferredCoordinateFormatter } from '~/selectors/formatting';
  * consisting of UAV IDs to another action factory that takes no arguments
  * and always acts on the current selection.
  */
-const applyToSelection = (actionFactory, { whenEmpty = 'nop' } = {}) => () => (
-  dispatch,
-  getState
-) => {
-  const state = getState();
+const applyToSelection =
+  (actionFactory, { whenEmpty = 'nop' } = {}) =>
+  () =>
+  (dispatch, getState) => {
+    const state = getState();
 
-  let selectedUAVIds = getSelectedUAVIdsForAveragingMeasurement(state);
+    let selectedUAVIds = getSelectedUAVIdsForAveragingMeasurement(state);
 
-  if (
-    (!selectedUAVIds || selectedUAVIds.length === 0) &&
-    whenEmpty === 'useAll'
-  ) {
-    selectedUAVIds = getAllUAVIdsCurrentlyBeingAveragedEvenIfPaused(state);
-  }
+    if (
+      (!selectedUAVIds || selectedUAVIds.length === 0) &&
+      whenEmpty === 'useAll'
+    ) {
+      selectedUAVIds = getAllUAVIdsCurrentlyBeingAveragedEvenIfPaused(state);
+    }
 
-  if (selectedUAVIds && selectedUAVIds.length > 0) {
-    dispatch(actionFactory(selectedUAVIds));
-  }
-};
+    if (selectedUAVIds && selectedUAVIds.length > 0) {
+      dispatch(actionFactory(selectedUAVIds));
+    }
+  };
 
 /**
  * Pauses averaging for all the UAVs that are currently selected, but keeps the
@@ -117,27 +117,25 @@ export const addNewSamplesToAveraging = (samples) => (dispatch, getState) => {
  * Copies the coordinates of the centroid of a given set of UAV IDs to the
  * clipboard.
  */
-export const copyCentroidOfAveragedCoordinatesToClipboard = (uavIds) => (
-  dispatch,
-  getState
-) => {
-  const state = getState();
-  const centroid = getAveragedCentroidOfUAVsById(state, uavIds);
+export const copyCentroidOfAveragedCoordinatesToClipboard =
+  (uavIds) => (dispatch, getState) => {
+    const state = getState();
+    const centroid = getAveragedCentroidOfUAVsById(state, uavIds);
 
-  if (centroid) {
-    const formatter = getPreferredCoordinateFormatter(state);
-    const formattedCoords = formatter(centroid);
-    copy(formattedCoords);
+    if (centroid) {
+      const formatter = getPreferredCoordinateFormatter(state);
+      const formattedCoords = formatter(centroid);
+      copy(formattedCoords);
 
-    if (uavIds.length === 1) {
-      dispatch(showNotification('Coordinates copied to clipboard.'));
-    } else {
-      dispatch(
-        showNotification('Coordinates of centroid copied to clipboard.')
-      );
+      if (uavIds.length === 1) {
+        dispatch(showNotification('Coordinates copied to clipboard.'));
+      } else {
+        dispatch(
+          showNotification('Coordinates of centroid copied to clipboard.')
+        );
+      }
     }
-  }
-};
+  };
 
 export const copyAveragedCentroidOfSelectedUAVsToClipboard = applyToSelection(
   copyCentroidOfAveragedCoordinatesToClipboard,
@@ -147,25 +145,23 @@ export const copyAveragedCentroidOfSelectedUAVsToClipboard = applyToSelection(
 /**
  * Sets the map origin to the centroid of the given set of UAV IDs.
  */
-export const setCentroidOfAveragedCoordinatesAsMapOrigin = (uavIds) => (
-  dispatch,
-  getState
-) => {
-  const centroid = getAveragedCentroidOfUAVsById(getState(), uavIds);
+export const setCentroidOfAveragedCoordinatesAsMapOrigin =
+  (uavIds) => (dispatch, getState) => {
+    const centroid = getAveragedCentroidOfUAVsById(getState(), uavIds);
 
-  if (centroid) {
-    dispatch(setFlatEarthCoordinateSystemOrigin(centroid));
-    if (uavIds.length === 1) {
-      dispatch(
-        showNotification(
-          'Map origin set to the coordinates of the selected UAV.'
-        )
-      );
-    } else {
-      dispatch(showNotification('Map origin set to centroid of selection.'));
+    if (centroid) {
+      dispatch(setFlatEarthCoordinateSystemOrigin(centroid));
+      if (uavIds.length === 1) {
+        dispatch(
+          showNotification(
+            'Map origin set to the coordinates of the selected UAV.'
+          )
+        );
+      } else {
+        dispatch(showNotification('Map origin set to centroid of selection.'));
+      }
     }
-  }
-};
+  };
 
 export const setAveragedCentroidOfSelectedUAVsAsMapOrigin = applyToSelection(
   setCentroidOfAveragedCoordinatesAsMapOrigin,

@@ -19,39 +19,38 @@ const hasAMSL = (pos) =>
  * drones if more than one drone is selected, or to the AGL of the drone if a
  * single drone is selected.
  */
-export const openFlyToTargetDialogWithCoordinate = ({ coords, uavIds }) => (
-  dispatch,
-  getState
-) => {
-  const state = getState();
-  const getPosition = (uavId) => getCurrentGPSPositionByUavId(state, uavId);
-  const uavIdsWithValidPositions = uavIds.filter(getPosition);
-  const positions = uavIdsWithValidPositions.map(getPosition);
-  const numberOfUAVsWithPositions = positions.length;
+export const openFlyToTargetDialogWithCoordinate =
+  ({ coords, uavIds }) =>
+  (dispatch, getState) => {
+    const state = getState();
+    const getPosition = (uavId) => getCurrentGPSPositionByUavId(state, uavId);
+    const uavIdsWithValidPositions = uavIds.filter(getPosition);
+    const positions = uavIdsWithValidPositions.map(getPosition);
+    const numberOfUAVsWithPositions = positions.length;
 
-  if (numberOfUAVsWithPositions <= 0) {
-    return;
-  }
+    if (numberOfUAVsWithPositions <= 0) {
+      return;
+    }
 
-  // altitude = NaN may happen if numberOfUAVs > 1 and the drones have no AMSLs
-  const altitude =
-    numberOfUAVsWithPositions === 1
-      ? positions[0].agl
-      : meanBy(positions.filter(hasAMSL), 'amsl');
-  const finiteAltitude = Number.isFinite(altitude) ? altitude : 0;
-  const mode =
-    numberOfUAVsWithPositions === 1 && finiteAltitude ? 'agl' : 'amsl';
+    // altitude = NaN may happen if numberOfUAVs > 1 and the drones have no AMSLs
+    const altitude =
+      numberOfUAVsWithPositions === 1
+        ? positions[0].agl
+        : meanBy(positions.filter(hasAMSL), 'amsl');
+    const finiteAltitude = Number.isFinite(altitude) ? altitude : 0;
+    const mode =
+      numberOfUAVsWithPositions === 1 && finiteAltitude ? 'agl' : 'amsl';
 
-  const formatter = getPreferredCoordinateFormatter(state);
+    const formatter = getPreferredCoordinateFormatter(state);
 
-  dispatch(
-    openFlyToTargetDialog({
-      coords: formatter(coords),
-      mode,
-      altitude: Number(finiteAltitude.toFixed(1)),
-    })
-  );
-};
+    dispatch(
+      openFlyToTargetDialog({
+        coords: formatter(coords),
+        mode,
+        altitude: Number(finiteAltitude.toFixed(1)),
+      })
+    );
+  };
 
 /**
  * Thunk action factory that takes the fields of the completed form in the

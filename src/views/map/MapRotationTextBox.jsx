@@ -53,9 +53,8 @@ export default class MapRotationTextBox extends React.Component {
     super(props);
 
     this._onMapReferenceReceived = this._onMapReferenceReceived.bind(this);
-    this._updateRotationFromMapView = this._updateRotationFromMapView.bind(
-      this
-    );
+    this._updateRotationFromMapView =
+      this._updateRotationFromMapView.bind(this);
     this._onFocus = this._onFocus.bind(this);
     this._onBlur = this._onBlur.bind(this);
     this._onChange = this._onChange.bind(this);

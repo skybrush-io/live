@@ -178,9 +178,8 @@ const GeofenceSettingsForm = connect(
   (state) => ({
     initialValues: {
       ...state.dialogs.geofenceSettings,
-      maxDistance: getMaximumHorizontalDistanceFromTakeoffPositionInTrajectories(
-        state
-      ),
+      maxDistance:
+        getMaximumHorizontalDistanceFromTakeoffPositionInTrajectories(state),
       maxHeight: getMaximumHeightInTrajectories(state),
     },
   })

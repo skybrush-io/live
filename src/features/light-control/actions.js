@@ -24,18 +24,16 @@ export const setColorAndActivate = (color) => (dispatch, getState) => {
  * Thunk that sets the current color of the light control module, and sends an
  * appropriate message to the server as a side effect if the module is active.
  */
-export const setColorAndUpdateServerIfActive = (color) => (
-  dispatch,
-  getState
-) => {
-  const isActive = isLightControlActive(getState());
+export const setColorAndUpdateServerIfActive =
+  (color) => (dispatch, getState) => {
+    const isActive = isLightControlActive(getState());
 
-  dispatch(setColor(color));
+    dispatch(setColor(color));
 
-  if (isActive) {
-    submitShowLightConfigurationToServer(dispatch, getState);
-  }
-};
+    if (isActive) {
+      submitShowLightConfigurationToServer(dispatch, getState);
+    }
+  };
 
 /**
  * Thunk that toggles whether the light control module is currently active,

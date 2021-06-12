@@ -69,51 +69,49 @@ export function finalBearing(first, second) {
  *         a function that returns the angle when invoked
  * @return {ol.DrawGeometryFunctionType}  the geometry function
  */
-export const createRotatedBoxGeometryFunction = (angle) => (
-  coordinates,
-  optGeometry
-) => {
-  if (coordinates.length !== 2) {
-    throw new Error('must be called with two points only');
-  }
+export const createRotatedBoxGeometryFunction =
+  (angle) => (coordinates, optGeometry) => {
+    if (coordinates.length !== 2) {
+      throw new Error('must be called with two points only');
+    }
 
-  // Get the effective angle
-  const effectiveAngle = typeof angle === 'number' ? angle : angle();
+    // Get the effective angle
+    const effectiveAngle = typeof angle === 'number' ? angle : angle();
 
-  // Translate the rectangle spanned by the two coordinates
-  // such that its center is at the origin, then undo the rotation
-  // of the map
-  const [a, b] = coordinates;
-  const mid = [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2];
-  const newA = Coordinate.rotate(
-    [a[0] - mid[0], a[1] - mid[1]],
-    effectiveAngle
-  );
-  const newB = Coordinate.rotate(
-    [b[0] - mid[0], b[1] - mid[1]],
-    effectiveAngle
-  );
+    // Translate the rectangle spanned by the two coordinates
+    // such that its center is at the origin, then undo the rotation
+    // of the map
+    const [a, b] = coordinates;
+    const mid = [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2];
+    const newA = Coordinate.rotate(
+      [a[0] - mid[0], a[1] - mid[1]],
+      effectiveAngle
+    );
+    const newB = Coordinate.rotate(
+      [b[0] - mid[0], b[1] - mid[1]],
+      effectiveAngle
+    );
 
-  // Get the extents of the rectangle, get the four
-  // corners and then rotate and translate them back
-  const extent = Extent.boundingExtent([newA, newB]);
-  const newCoordinates = [
-    Extent.getBottomLeft(extent),
-    Extent.getBottomRight(extent),
-    Extent.getTopRight(extent),
-    Extent.getTopLeft(extent),
-    Extent.getBottomLeft(extent),
-  ].map((coordinate) =>
-    Coordinate.add(Coordinate.rotate(coordinate, -effectiveAngle), mid)
-  );
+    // Get the extents of the rectangle, get the four
+    // corners and then rotate and translate them back
+    const extent = Extent.boundingExtent([newA, newB]);
+    const newCoordinates = [
+      Extent.getBottomLeft(extent),
+      Extent.getBottomRight(extent),
+      Extent.getTopRight(extent),
+      Extent.getTopLeft(extent),
+      Extent.getBottomLeft(extent),
+    ].map((coordinate) =>
+      Coordinate.add(Coordinate.rotate(coordinate, -effectiveAngle), mid)
+    );
 
-  if (optGeometry) {
-    optGeometry.setCoordinates([newCoordinates]);
-    return optGeometry;
-  }
+    if (optGeometry) {
+      optGeometry.setCoordinates([newCoordinates]);
+      return optGeometry;
+    }
 
-  return new Polygon([newCoordinates]);
-};
+    return new Polygon([newCoordinates]);
+  };
 
 /**
  * Calculates the Euclidean distance between two OpenLayers coordinates.
@@ -297,9 +295,10 @@ export const makePolarCoordinateFormatter = (options) => {
  * @param {number} decimalPlaces  the number of decimal places to show
  * @return {function} the constructed function
  */
-export const makeSexagesimalCoordinateFormatter = (decimalPlaces = 3) => (
-  coordinate
-) => formatCoords(coordinate, true).format('FFf', { decimalPlaces });
+export const makeSexagesimalCoordinateFormatter =
+  (decimalPlaces = 3) =>
+  (coordinate) =>
+    formatCoords(coordinate, true).format('FFf', { decimalPlaces });
 
 /**
  * Merges an array of OpenLayer extents and returns a single extent that contains

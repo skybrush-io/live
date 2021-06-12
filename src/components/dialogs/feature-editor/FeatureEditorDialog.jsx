@@ -104,11 +104,8 @@ FeatureEditorDialogPresentation.defaultProps = {
 const FeatureEditorDialog = connect(
   // mapStateToProps
   (state) => {
-    const {
-      dialogVisible,
-      featureId,
-      selectedTab,
-    } = state.dialogs.featureEditor;
+    const { dialogVisible, featureId, selectedTab } =
+      state.dialogs.featureEditor;
     return {
       featureId,
       selectedTab,

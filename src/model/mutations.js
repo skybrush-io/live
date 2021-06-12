@@ -44,9 +44,8 @@ export function handleFeatureUpdatesInOpenLayers(
     const userFeatureId = globalIdToFeatureId(globalId);
     if (userFeatureId) {
       // Feature is a user-defined feature so update it in the Redux store
-      updatedUserFeatures[userFeatureId] = createFeatureFromOpenLayers(
-        feature
-      ).points;
+      updatedUserFeatures[userFeatureId] =
+        createFeatureFromOpenLayers(feature).points;
 
       continue;
     }

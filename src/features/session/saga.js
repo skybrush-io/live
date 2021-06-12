@@ -4,7 +4,11 @@ import { delay, put, select } from 'redux-saga/effects';
 import { disconnectFromServer } from '~/actions/server-settings';
 import { getAuthenticationTokenFromUrl } from '~/utils/authentication';
 
-import { ensureSessionExpiresNoLaterThan, ensureSessionIsNotLongerThan, expireSession } from './slice';
+import {
+  ensureSessionExpiresNoLaterThan,
+  ensureSessionIsNotLongerThan,
+  expireSession,
+} from './slice';
 
 /**
  * Saga that handles the termination of the current session when the session
@@ -18,7 +22,7 @@ export default function* sessionManagementSaga({ maxLengthInSeconds }) {
     // date of the token and don't let the session be longer than this.
     try {
       const decodedToken = decode(token);
-      if (decodedToken && typeof decodedToken.exp === "number") {
+      if (decodedToken && typeof decodedToken.exp === 'number') {
         yield put(ensureSessionExpiresNoLaterThan(decodedToken.exp * 1000));
       }
     } catch (err) {
@@ -32,7 +36,7 @@ export default function* sessionManagementSaga({ maxLengthInSeconds }) {
     yield put(ensureSessionIsNotLongerThan(maxLengthInSeconds));
   }
 
-  const expiresAt = yield select(state => state.session.expiresAt);
+  const expiresAt = yield select((state) => state.session.expiresAt);
   if (expiresAt && typeof expiresAt === 'number' && expiresAt >= 0) {
     const msLeft = expiresAt - new Date().getTime();
     if (msLeft > 0) {

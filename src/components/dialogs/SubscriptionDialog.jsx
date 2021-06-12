@@ -292,12 +292,8 @@ export default class SubscriptionDialog extends React.Component {
    * that have the selected channel available.)
    */
   _handleClick = () => {
-    const {
-      available,
-      selectedChannel,
-      selectedDevice,
-      selectedUAV,
-    } = this.state;
+    const { available, selectedChannel, selectedDevice, selectedUAV } =
+      this.state;
 
     if (this.state.selectedUAV === 'All') {
       const paths = [];

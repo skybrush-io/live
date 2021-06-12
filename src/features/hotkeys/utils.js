@@ -12,9 +12,9 @@ import { getSelectedUAVIds } from '~/selectors/selection';
  *          thunk action that will dispatch the original action with the current
  *          UAV selection
  */
-export const callOnSelection = (actionFactory, ...args) => () => (
-  dispatch,
-  getState
-) => {
-  dispatch(actionFactory(getSelectedUAVIds(getState()), ...args));
-};
+export const callOnSelection =
+  (actionFactory, ...args) =>
+  () =>
+  (dispatch, getState) => {
+    dispatch(actionFactory(getSelectedUAVIds(getState()), ...args));
+  };

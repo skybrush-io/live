@@ -17,8 +17,9 @@ function initializeSession(reconciler) {
         ...result,
         session: {
           ...result.session,
-          expiresAt: new Date().getTime() + config.session.maxLengthInSeconds * 1000
-        }
+          expiresAt:
+            new Date().getTime() + config.session.maxLengthInSeconds * 1000,
+        },
       };
     }
 

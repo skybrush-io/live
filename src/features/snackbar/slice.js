@@ -37,13 +37,8 @@ const { actions, reducer } = createSlice({
           permanent: false,
         };
       } else {
-        const {
-          buttons,
-          header,
-          message,
-          semantics,
-          permanent,
-        } = action.payload;
+        const { buttons, header, message, semantics, permanent } =
+          action.payload;
 
         newNotification = {
           buttons: Array.isArray(buttons) ? buttons : null,

@@ -66,7 +66,8 @@ AFrame.registerSystem('drone-flock', {
         this._updatePositionFromGPSCoordinates = newValue;
       })
     );
-    this._updatePositionFromGPSCoordinates = updatePositionFromGPSCoordinatesFunctionGetter();
+    this._updatePositionFromGPSCoordinates =
+      updatePositionFromGPSCoordinatesFunctionGetter();
 
     const droneRadiusGetter = () => getPreferredDroneRadius(store.getState());
     store.subscribe(watch(droneRadiusGetter)(this._onDroneRadiusChanged));

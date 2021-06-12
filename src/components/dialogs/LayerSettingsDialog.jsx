@@ -218,12 +218,8 @@ class LayerSettingsDialogPresentation extends React.Component {
   };
 
   render() {
-    const {
-      canMoveUp,
-      canMoveDown,
-      dialogVisible,
-      selectedLayerId,
-    } = this.props;
+    const { canMoveUp, canMoveDown, dialogVisible, selectedLayerId } =
+      this.props;
     const { onClose } = this.props;
     const actions = [];
 

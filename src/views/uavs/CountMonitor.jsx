@@ -58,8 +58,9 @@ class CountMonitor extends React.Component {
     const now = Date.now();
 
     const errorCount = uavs.filter((u) => typeof u.error !== 'undefined').size;
-    const lostCount = uavs.filter((u) => now - u.lastUpdated > lostTimeout)
-      .size;
+    const lostCount = uavs.filter(
+      (u) => now - u.lastUpdated > lostTimeout
+    ).size;
     const awayCount =
       uavs.filter((u) => now - u.lastUpdated > awayTimeout).size - lostCount;
 

@@ -15,8 +15,8 @@ const CLAMP_VELOCITY = 0.001;
 const MAX_DELTA = 0.2;
 const KEYS = new Set(['KeyE', 'KeyC']);
 const KEYCODE_TO_CODE = {
-  '67': 'KeyC',
-  '69': 'KeyE',
+  67: 'KeyC',
+  69: 'KeyE',
 };
 
 const { THREE } = AFrame;
@@ -62,7 +62,7 @@ AFrame.registerComponent('altitude-control', {
     const { position } = this.el.object3D;
 
     position.add(this.getMovementVector(delta));
-    
+
     if (!isNaN(this.data.min)) {
       if (position.y < this.data.min) {
         position.y = this.data.min;

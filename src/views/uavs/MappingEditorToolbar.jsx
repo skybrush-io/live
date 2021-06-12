@@ -42,11 +42,8 @@ const MappingEditorToolbar = React.forwardRef(
     },
     ref
   ) => {
-    const [
-      menuAnchorElement,
-      openMappingMenu,
-      closeMappingMenu,
-    ] = useDropdown();
+    const [menuAnchorElement, openMappingMenu, closeMappingMenu] =
+      useDropdown();
 
     return (
       <Toolbar ref={ref} disableGutters variant='dense' {...rest}>

@@ -25,7 +25,7 @@ const SessionExpiryDialog = ({ onClose, open }) => (
       <Button onClick={onClose} fullWidth>
         Click here to return to your Skybrush account
       </Button>
-      <DialogContentText>{' '}</DialogContentText>
+      <DialogContentText> </DialogContentText>
     </DialogContent>
   </Dialog>
 );
@@ -45,6 +45,6 @@ export default connect(
   () => ({
     onClose() {
       window.location.replace(config.urls.exit || 'https://skybrush.io');
-    }
+    },
   })
 )(SessionExpiryDialog);

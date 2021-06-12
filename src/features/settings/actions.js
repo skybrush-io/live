@@ -3,11 +3,8 @@ import { updateAppSettings } from './slice';
 export function updateUAVVoltageThreshold(name, value) {
   return (dispatch, getState) => {
     const state = getState();
-    let {
-      fullChargeVoltage,
-      lowVoltageThreshold,
-      criticalVoltageThreshold,
-    } = state.settings.uavs;
+    let { fullChargeVoltage, lowVoltageThreshold, criticalVoltageThreshold } =
+      state.settings.uavs;
 
     if (name === 'criticalVoltageThreshold') {
       criticalVoltageThreshold = value;

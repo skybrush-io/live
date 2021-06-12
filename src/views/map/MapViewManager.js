@@ -140,9 +140,9 @@ export default class MapViewManager {
    */
   _onViewPropertyChanged = (e) => {
     if (e.key === 'center') {
-      const center = lonLatFromMapViewCoordinate(
-        this.view.getCenter()
-      ).map((c) => round(c, 6));
+      const center = lonLatFromMapViewCoordinate(this.view.getCenter()).map(
+        (c) => round(c, 6)
+      );
       this.callbacks.center.forEach((c) =>
         c({ lon: center[0], lat: center[1] })
       );
