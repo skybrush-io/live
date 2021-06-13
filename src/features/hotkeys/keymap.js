@@ -31,12 +31,6 @@ const globalKeyMap = {
     group: HIDDEN,
   },
 
-  SELECT_PREVIOUS: {
-    name: 'Select previous drone',
-    sequence: 'up',
-    group: HIDDEN,
-  },
-
   SELECT_ALL_DRONES: {
     name: 'Select all drones',
     sequence: 'mod+a',
