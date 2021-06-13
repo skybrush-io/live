@@ -15,7 +15,7 @@ import {
   DEFAULT_ROOM_SIZE,
 } from './constants';
 import { StartMethod } from './enums';
-import { moveItemsBetweenQueues } from './utils';
+import { ensureItemsInQueue, moveItemsBetweenQueues } from './utils';
 
 import { noPayload } from '~/utils/redux';
 
@@ -114,13 +114,16 @@ const { actions, reducer } = createSlice({
 
     upload: {
       autoRetry: false,
-      failedItems: [],
       lastUploadResult: null,
       running: false,
       itemsInProgress: [],
       itemsWaitingToStart: [],
       itemsQueued: [],
       itemsFinished: [],
+      failedItems: [],
+
+      // If you add a new queue above, make sure that the ALL_QUEUES array
+      // is updated in features/show/utils.js
     },
 
     uploadDialog: {
@@ -334,6 +337,16 @@ const { actions, reducer } = createSlice({
       state.uploadDialog.showLastUploadResult = false;
     },
 
+    putUavInWaitingQueue: ensureItemsInQueue({
+      target: 'itemsWaitingToStart',
+      doNotMoveWhenIn: ['itemsQueued', 'itemsInProgress'],
+    }),
+
+    removeUavFromWaitingQueue: ensureItemsInQueue({
+      target: undefined,
+      doNotMoveWhenIn: ['itemsQueued', 'itemsInProgress'],
+    }),
+
     revokeTakeoffAreaApproval: noPayload((state) => {
       state.preflight.takeoffAreaApprovedAt = null;
     }),
@@ -493,6 +506,7 @@ export const {
   closeTakeoffAreaSetupDialog,
   closeUploadDialog,
   dismissLastUploadResult,
+  _enqueueFailedUploads,
   loadingProgress,
   loadingPromiseFulfilled,
   notifyShowFileChangedSinceLoaded,
@@ -510,7 +524,8 @@ export const {
   openTakeoffAreaSetupDialog,
   openUploadDialog,
   prepareForNextUpload,
-  _enqueueFailedUploads,
+  putUavInWaitingQueue,
+  removeUavFromWaitingQueue,
   revokeTakeoffAreaApproval,
   setEnvironmentType,
   setLastLoadingAttemptFailed,

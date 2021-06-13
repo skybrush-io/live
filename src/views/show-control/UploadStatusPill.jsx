@@ -9,8 +9,8 @@ import { makeStyles } from '@material-ui/core/styles';
 
 import { Status } from '~/components/semantics';
 import StatusPill from '~/components/StatusPill';
+import { toggleUavInWaitingQueue } from '~/features/show/actions';
 import { getUploadStatusCodeMapping } from '~/features/show/selectors';
-import { toggleUAVIdsInSelection } from '~/features/uavs/actions';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -63,6 +63,6 @@ export default connect(
   (_state, { uavId }) => makeUploadStatusSelectorForUavId(uavId),
   // mapDispatchToProps
   {
-    onClick: toggleUAVIdsInSelection,
+    onClick: toggleUavInWaitingQueue,
   }
 )(UploadStatusPill);

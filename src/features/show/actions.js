@@ -38,12 +38,15 @@ import {
   getShowOrientation,
   getOutdoorShowAltitudeReference,
   getOutdoorShowToWorldCoordinateSystemTransformationObject,
+  isItemInUploadBacklog,
   isUploadInProgress,
 } from './selectors';
 import {
   approveTakeoffAreaAt,
   clearLastUploadResult,
   loadingProgress,
+  putUavInWaitingQueue,
+  removeUavFromWaitingQueue,
   revokeTakeoffAreaApproval,
   setEnvironmentType,
   setLastLoadingAttemptFailed,
@@ -354,6 +357,21 @@ export function retryFailedUploads() {
     dispatch(_enqueueFailedUploads(failedItems));
     if (!isUploadInProgress(getState())) {
       dispatch(startUpload());
+    }
+  };
+}
+
+/**
+ * Toggles a single UAV into our out of the upload queue, assuming that it is
+ * in a state where such modification is allowed.
+ */
+export function toggleUavInWaitingQueue(uavId) {
+  return (dispatch, getState) => {
+    const state = getState();
+    if (isItemInUploadBacklog(state, uavId)) {
+      dispatch(removeUavFromWaitingQueue(uavId));
+    } else {
+      dispatch(putUavInWaitingQueue(uavId));
     }
   };
 }

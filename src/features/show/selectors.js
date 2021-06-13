@@ -682,6 +682,15 @@ export const getItemsInUploadBacklog = createSelector(
 );
 
 /**
+ * Returns whether the UAV with the given ID is in the upload backlog at the
+ * moment.
+ */
+export function isItemInUploadBacklog(state, uavId) {
+  const { itemsQueued, itemsWaitingToStart } = state.show.upload;
+  return itemsWaitingToStart.includes(uavId) || itemsQueued.includes(uavId);
+}
+
+/**
  * Returns the ID of the next drone from the upload queue during an upload
  * process, or undefined if the queue is empty.
  */
