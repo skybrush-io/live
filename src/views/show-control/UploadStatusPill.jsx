@@ -15,7 +15,6 @@ import { getUploadStatusCodeMapping } from '~/features/show/selectors';
 const useStyles = makeStyles((theme) => ({
   root: {
     padding: theme.spacing(0.5),
-    cursor: 'pointer',
   },
 
   hover: {
@@ -23,6 +22,7 @@ const useStyles = makeStyles((theme) => ({
   },
 
   selectable: {
+    cursor: 'pointer',
     '&:hover': {
       backgroundColor: theme.palette.action.hover,
     },

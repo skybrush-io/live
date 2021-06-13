@@ -33,8 +33,6 @@ export const ensureItemsInQueue = ({ target, doNotMoveWhenIn } = {}) => {
     const uavIds = arrify(action.payload);
     const targetQueue = target ? state.upload[target] : undefined;
 
-    console.log(allOtherQueues);
-
     for (const queueName of allOtherQueues) {
       const queue = state.upload[queueName];
       pull(queue, ...uavIds);
