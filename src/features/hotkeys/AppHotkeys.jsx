@@ -89,6 +89,8 @@ export default connect(
       // Plain callable functions bound to hotkeys
       {
         CLEAR_STORED_SETTINGS: clearStoreAfterConfirmation,
+        PAGE_DOWN: sendKeyboardNavigationSignal('PAGE_DOWN'),
+        PAGE_UP: sendKeyboardNavigationSignal('PAGE_UP'),
         SELECT_FIRST: sendKeyboardNavigationSignal('SELECT_FIRST'),
         SELECT_LAST: sendKeyboardNavigationSignal('SELECT_LAST'),
         SELECT_NEXT: sendKeyboardNavigationSignal('SELECT_NEXT'),

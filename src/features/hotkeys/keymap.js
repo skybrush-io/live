@@ -19,6 +19,24 @@ const globalKeyMap = {
     sequence: 'mod+shift+c',
   },
 
+  PAGE_DOWN: {
+    name: 'Page down',
+    sequence: 'pagedown',
+    group: HIDDEN,
+  },
+
+  PAGE_UP: {
+    name: 'Page up',
+    sequence: 'pageup',
+    group: HIDDEN,
+  },
+
+  SELECT_PREVIOUS: {
+    name: 'Select previous drone',
+    sequence: 'up',
+    group: HIDDEN,
+  },
+
   SELECT_ALL_DRONES: {
     name: 'Select all drones',
     sequence: 'mod+a',

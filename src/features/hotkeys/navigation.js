@@ -72,6 +72,8 @@ export function createKeyboardNavigationHandlers({
 
   return bindActionCreators(
     {
+      PAGE_DOWN: adjustSelectionByDelta(10),
+      PAGE_UP: adjustSelectionByDelta(-10),
       SELECT_FIRST: adjustSelectionByDelta(Number.NEGATIVE_INFINITY),
       SELECT_LAST: adjustSelectionByDelta(Number.POSITIVE_INFINITY),
       SELECT_NEXT: adjustSelectionByDelta(1),
