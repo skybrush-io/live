@@ -16,7 +16,6 @@ import {
   take,
 } from 'redux-saga/effects';
 
-import { retryFailedUploads } from './actions';
 import {
   getCommonShowSettings,
   getDroneSwarmSpecification,
@@ -24,6 +23,7 @@ import {
   getMeanSeaLevelReferenceOfShowCoordinatesOrNull,
   getNextDroneFromUploadQueue,
   getOutdoorShowCoordinateSystem,
+  getUploadItemsBeingProcessed,
   isShowAuthorizedToStartLocally,
   isShowOutdoor,
   shouldRetryFailedUploadsAutomatically,
@@ -33,6 +33,7 @@ import {
 } from './selectors';
 import {
   cancelUpload,
+  _enqueueFailedUploads,
   notifyUploadOnUavCancelled,
   notifyUploadOnUavFailed,
   notifyUploadOnUavQueued,
@@ -189,7 +190,7 @@ function* runUploadWorker(chan, failed) {
         break;
 
       default:
-        console.warm('Unknown outcome: ' + outcome);
+        console.warn('Unknown outcome: ' + outcome);
         break;
     }
   }
@@ -199,56 +200,67 @@ function* runUploadWorker(chan, failed) {
  * Saga that handles the uploading of the show to a set of drones.
  */
 function* showUploaderSaga({ numWorkers: numberWorkers = 8 } = {}) {
+  const chan = yield call(channel, buffers.fixed(1));
+  const failed = [];
+  const workers = [];
+
   let finished = false;
   let success = false;
 
+  // create a given number of worker tasks, depending on the max concurrency
+  // that we allow for the uploads
+  for (let i = 0; i < numberWorkers; i++) {
+    const worker = yield fork(runUploadWorker, chan, failed);
+    workers.push(worker);
+  }
+
+  // feed the workers with upload jobs
   while (!finished) {
-    const failed = [];
-    const chan = yield call(channel, buffers.fixed(1));
-    const workers = [];
+    const uavId = yield select(getNextDroneFromUploadQueue);
 
-    // create a given number of worker tasks, depending on the max concurrency
-    // that we allow for the uploads
-    for (let i = 0; i < numberWorkers; i++) {
-      const worker = yield fork(runUploadWorker, chan, failed);
-      workers.push(worker);
-    }
-
-    // feed the workers with upload jobs
-    while (true) {
-      const uavId = yield select(getNextDroneFromUploadQueue);
-      if (isNil(uavId)) {
-        break;
-      }
-
+    // First we check whether there is any job in the upload queue that we
+    // can start straight away
+    if (!isNil(uavId)) {
       yield put(notifyUploadOnUavQueued(uavId));
       yield putWithRetry(chan, uavId);
-    }
-
-    // send the stop signal to the workers
-    for (let i = 0; i < numberWorkers; i++) {
-      yield putWithRetry(chan, STOP);
-    }
-
-    // wait for all workers to terminate
-    yield join(workers);
-
-    // shall we retry failed downloads?
-    const hasFailures = failed.length > 0;
-    if (hasFailures) {
-      const shouldRetry = yield select(shouldRetryFailedUploadsAutomatically);
-      if (shouldRetry) {
-        yield delay(500);
-        yield put(retryFailedUploads());
-      } else {
-        finished = true;
-        success = false;
-      }
     } else {
-      finished = true;
-      success = true;
+      // No job in the upload queue. If there are jobs that failed _in this
+      // session_ and the user wants to retry failed jobs automatically, it
+      // is time to put them
+      // back in the queue.
+      const shouldRetry = yield select(shouldRetryFailedUploadsAutomatically);
+      if (shouldRetry && failed.length > 0) {
+        const toEnqueue = [...failed];
+        failed.length = 0;
+
+        // Do not call retryFailedUploads() here because that would retry
+        // _all_ failed uploads, even the ones that failed in a previous
+        // session
+        yield put(_enqueueFailedUploads(toEnqueue));
+      } else {
+        // No failed jobs or we don't want to restart them automatically.
+        // Let's check whether there are any jobs still in progress; we need
+        // to wait for them to complete because the user may still check
+        // the "Retry failed uploads" checkbox any time.
+        const itemsBeingProcessed = yield select(getUploadItemsBeingProcessed);
+        if (itemsBeingProcessed.length > 0) {
+          // Wait a bit; there's no point in busy waiting.
+          yield delay(500);
+        } else {
+          finished = true;
+          success = failed.length === 0;
+        }
+      }
     }
   }
+
+  // send the stop signal to the workers
+  for (let i = 0; i < numberWorkers; i++) {
+    yield putWithRetry(chan, STOP);
+  }
+
+  // wait for all workers to terminate
+  yield join(workers);
 
   return success;
 }

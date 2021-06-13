@@ -671,6 +671,17 @@ export const isShowConvexHullInsideGeofence = createSelector(
 export const getFailedUploadItems = (state) => state.show.upload.failedItems;
 
 /**
+ * Returns the upload items that are either already sent to a worker or that
+ * are being processed by a worker. These items are the ones where the user
+ * cannot intervene with the upload process.
+ */
+export const getUploadItemsBeingProcessed = createSelector(
+  (state) => state.show.upload.itemsQueued,
+  (state) => state.show.upload.itemsInProgress,
+  (queued, waiting) => [...queued, ...waiting]
+);
+
+/**
  * Returns the upload items that are currently in the backlog of the uploader:
  * the ones that are waiting to be started and the ones that have been queued
  * inside the uploader saga but have not been taken up by a worker yet.
