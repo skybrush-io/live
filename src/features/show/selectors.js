@@ -682,6 +682,12 @@ export const getItemsInUploadBacklog = createSelector(
 );
 
 /**
+ * Returns the successful upload items from the uploader.
+ */
+export const getSuccessfulUploadItems = (state) =>
+  state.show.upload.itemsFinished;
+
+/**
  * Returns whether the UAV with the given ID is in the upload backlog at the
  * moment.
  */

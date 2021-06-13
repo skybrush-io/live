@@ -36,6 +36,7 @@ import {
   getOutdoorShowOrigin,
   getRoomCorners,
   getShowOrientation,
+  getSuccessfulUploadItems,
   getOutdoorShowAltitudeReference,
   getOutdoorShowToWorldCoordinateSystemTransformationObject,
   isItemInUploadBacklog,
@@ -58,6 +59,7 @@ import {
   signOffOnOnboardPreflightChecksAt,
   startUpload,
   _enqueueFailedUploads,
+  _enqueueSuccessfulUploads,
   _setOutdoorShowAltitudeReference,
 } from './slice';
 
@@ -343,6 +345,20 @@ export function reloadCurrentShowFile() {
       const blob = new Blob([buffer]);
       Object.assign(blob, props);
       return dispatch(loadShowFromFile(blob));
+    }
+  };
+}
+
+/**
+ * Thunk that restarts the upload process on all UAVs that are currently
+ * marked as successful.
+ */
+export function restartSuccessfulUploads() {
+  return (dispatch, getState) => {
+    const successfulItems = getSuccessfulUploadItems(getState());
+    dispatch(_enqueueSuccessfulUploads(successfulItems));
+    if (!isUploadInProgress(getState())) {
+      dispatch(startUpload());
     }
   };
 }

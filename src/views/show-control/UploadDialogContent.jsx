@@ -15,7 +15,6 @@ import Clear from '@material-ui/icons/Clear';
 
 import { Status } from '~/components/semantics';
 import { getUAVIdsParticipatingInMission } from '~/features/mission/selectors';
-import { retryFailedUploads } from '~/features/show/actions';
 import {
   getItemsInUploadBacklog,
   getNumberOfDronesInShow,
@@ -24,7 +23,6 @@ import {
 } from '~/features/show/selectors';
 import {
   cancelUpload,
-  clearUploadQueue,
   closeUploadDialog,
   dismissLastUploadResult,
   prepareForNextUpload,
@@ -104,9 +102,7 @@ const UploadDialogContent = ({
   canStartUpload,
   lastUploadResult,
   onCancelUpload,
-  onClearUploadQueue,
   onDismissLastUploadResult,
-  onRetryFailedUploads,
   onStartUpload,
   onToggleAutoRetry,
   running,
@@ -119,7 +115,7 @@ const UploadDialogContent = ({
       <DialogContent>
         <UploadStatusLights />
         <UploadStatusLegend />
-        <Box mt={2}>
+        <Box mt={1}>
           <UploadProgressBar />
         </Box>
         <Box mt={1}>
@@ -167,9 +163,7 @@ UploadDialogContent.propTypes = {
   canStartUpload: PropTypes.bool,
   lastUploadResult: PropTypes.oneOf(['success', 'error', 'cancelled']),
   onCancelUpload: PropTypes.func,
-  onClearUploadQueue: PropTypes.func,
   onDismissLastUploadResult: PropTypes.func,
-  onRetryFailedUploads: PropTypes.func,
   onStartUpload: PropTypes.func,
   onToggleAutoRetry: PropTypes.func,
   running: PropTypes.bool,
@@ -197,10 +191,8 @@ export default connect(
   // mapDispatchToProps
   {
     onCancelUpload: cancelUpload,
-    onClearUploadQueue: clearUploadQueue,
     onClose: closeUploadDialog,
     onDismissLastUploadResult: dismissLastUploadResult,
-    onRetryFailedUploads: retryFailedUploads,
     onStartUpload: () => (dispatch, getState) => {
       const state = getState();
       const backlog = getItemsInUploadBacklog(state);

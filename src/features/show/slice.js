@@ -364,6 +364,11 @@ const { actions, reducer } = createSlice({
       target: 'itemsWaitingToStart',
     }),
 
+    _enqueueSuccessfulUploads: moveItemsBetweenQueues({
+      source: 'itemsFinished',
+      target: 'itemsWaitingToStart',
+    }),
+
     _setOutdoorShowAltitudeReference(state, action) {
       const { payload } = action;
 
@@ -507,6 +512,7 @@ export const {
   closeUploadDialog,
   dismissLastUploadResult,
   _enqueueFailedUploads,
+  _enqueueSuccessfulUploads,
   loadingProgress,
   loadingPromiseFulfilled,
   notifyShowFileChangedSinceLoaded,
