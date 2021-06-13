@@ -6,6 +6,7 @@ import {
   LIPO_FULL_CHARGE_VOLTAGE,
   LIPO_LOW_VOLTAGE_THRESHOLD,
 } from '~/model/constants';
+import { BatteryDisplayStyle } from '~/model/settings';
 
 /**
  * Returns an object that is suitable to be used for the `settings` prop of a
@@ -19,7 +20,7 @@ export const getBatteryIndicatorSettings = createSelector(
     fullChargeVoltage = LIPO_FULL_CHARGE_VOLTAGE,
     lowVoltageThreshold = LIPO_LOW_VOLTAGE_THRESHOLD,
     criticalVoltageThreshold = LIPO_CRITICAL_VOLTAGE_THRESHOLD,
-    preferredBatteryDisplayStyle = 'voltage',
+    preferredBatteryDisplayStyle = BatteryDisplayStyle.VOLTAGE,
   } = {}) => ({
     defaultCellCount: defaultBatteryCellCount,
     displayStyle: preferredBatteryDisplayStyle,

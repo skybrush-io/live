@@ -21,6 +21,7 @@ import BatteryCharging90Icon from '@material-ui/icons/BatteryCharging90';
 import BatteryChargingFullIcon from '@material-ui/icons/BatteryChargingFull';
 
 import Colors from '~/components/colors';
+import { BatteryDisplayStyle } from '~/model/settings';
 import CustomPropTypes from '~/utils/prop-types';
 import { isNil } from 'lodash-es';
 
@@ -238,12 +239,12 @@ function getBatteryStatus(voltage, percentage, cellCount, settings) {
  * taking into account the user's preference to see voltages versus percentages.
  */
 function getBatteryLabel(voltage, percentage, cellCount, settings = {}) {
-  const { displayStyle = 'voltage' } = settings;
+  const { displayStyle = BatteryDisplayStyle.VOLTAGE } = settings;
 
   if (isNil(percentage)) {
     if (isNil(voltage)) {
       return '???';
-    } else if (displayStyle === 'forcedPercentage') {
+    } else if (displayStyle === BatteryDisplayStyle.FORCED_PERCENTAGE) {
       // User wants percentage all the time so let's convert voltage to percentage
       const voltagePerCell = getVoltagePerCell(voltage, cellCount, settings);
       const estimatedPercentage = estimatePercentageFromVoltagePerCell(
@@ -261,7 +262,7 @@ function getBatteryLabel(voltage, percentage, cellCount, settings = {}) {
     }
   } else {
     // We have percentage
-    if (displayStyle !== 'voltage' || isNil(voltage)) {
+    if (displayStyle !== BatteryDisplayStyle.VOLTAGE || isNil(voltage)) {
       return `${percentage}%`;
     } else {
       // ...but the user prefers voltage and we have it, so show that one instead
@@ -281,11 +282,12 @@ const BatteryIndicator = ({
   settings,
   voltage,
 }) => {
-  const classes = useStyles();
   const status = getBatteryStatus(voltage, percentage, cellCount, settings);
-  const rootClass = clsx(className, classes.root, classes[`battery${status}`]);
-  const batteryIcon = getBatteryIcon(percentage, status, charging);
   const label = getBatteryLabel(voltage, percentage, cellCount, settings);
+  const batteryIcon = getBatteryIcon(percentage, status, charging);
+
+  const classes = useStyles();
+  const rootClass = clsx(className, classes.root, classes[`battery${status}`]);
   return (
     <Box fontSize='small' className={rootClass}>
       {batteryIcon}

@@ -29,6 +29,16 @@ import {
   getDesiredPlacementAccuracyInMeters,
   getDesiredTakeoffHeadingAccuracy,
 } from '~/features/settings/selectors';
+import {
+  BatteryDisplayStyle,
+  describeBatteryDisplayStyle,
+} from '~/model/settings';
+
+const batteryDisplayStyleOrder = [
+  BatteryDisplayStyle.VOLTAGE,
+  BatteryDisplayStyle.PERCENTAGE,
+  BatteryDisplayStyle.FORCED_PERCENTAGE,
+];
 
 const UAVsTabPresentation = ({
   autoRemove,
@@ -167,13 +177,11 @@ const UAVsTabPresentation = ({
               value={preferredBatteryDisplayStyle}
               onChange={onEnumFieldUpdated}
             >
-              <MenuItem value='voltage'>Prefer voltage</MenuItem>
-              <MenuItem value='percentage'>
-                Prefer percentage and show voltage if unknown
-              </MenuItem>
-              <MenuItem value='forcedPercentage'>
-                Prefer percentage and estimate it from voltage if needed
-              </MenuItem>
+              {batteryDisplayStyleOrder.map((value) => (
+                <MenuItem key={value} value={value}>
+                  {describeBatteryDisplayStyle(value)}
+                </MenuItem>
+              ))}
             </Select>
           </FormControl>
         </Box>
@@ -231,17 +239,13 @@ UAVsTabPresentation.propTypes = {
   onIntegerFieldUpdated: PropTypes.func,
   onVoltageFieldUpdated: PropTypes.func,
   placementAccuracy: PropTypes.number,
-  preferredBatteryDisplayStyle: PropTypes.oneOf([
-    'voltage',
-    'percentage',
-    'forcedPercentage',
-  ]),
+  preferredBatteryDisplayStyle: PropTypes.oneOf(batteryDisplayStyleOrder),
   takeoffHeadingAccuracy: PropTypes.number,
   warnThreshold: PropTypes.number,
 };
 
 UAVsTabPresentation.defaultProps = {
-  preferredBatteryDisplayStyle: 'voltage',
+  preferredBatteryDisplayStyle: BatteryDisplayStyle.VOLTAGE,
 };
 
 export default connect(

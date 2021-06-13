@@ -5,13 +5,13 @@
 
 import { createSlice } from '@reduxjs/toolkit';
 
-import { CoordinateFormat } from '~/model/settings';
 import {
   DEFAULT_BATTERY_CELL_COUNT,
   LIPO_FULL_CHARGE_VOLTAGE,
   LIPO_LOW_VOLTAGE_THRESHOLD,
   LIPO_CRITICAL_VOLTAGE_THRESHOLD,
 } from '~/model/constants';
+import { BatteryDisplayStyle, CoordinateFormat } from '~/model/settings';
 
 const { actions, reducer } = createSlice({
   name: 'settings',
@@ -103,7 +103,7 @@ const { actions, reducer } = createSlice({
       // Critical battery warning threshold (per cell), in volts
       criticalVoltageThreshold: LIPO_CRITICAL_VOLTAGE_THRESHOLD,
       // Whether to prefer percentages or voltages when showing the battery status
-      preferredBatteryDisplayStyle: 'voltage',
+      preferredBatteryDisplayStyle: BatteryDisplayStyle.VOLTAGE,
     },
   },
 

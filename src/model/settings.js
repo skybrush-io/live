@@ -23,3 +23,20 @@ const _coordinateFormatDescriptions = {
 
 export const describeCoordinateFormat = (format) =>
   _coordinateFormatDescriptions[format] || 'Unknown format';
+
+export const BatteryDisplayStyle = {
+  VOLTAGE: 'voltage',
+  PERCENTAGE: 'percentage',
+  FORCED_PERCENTAGE: 'forcedPercentage',
+};
+
+const _batteryDisplayStyleDescriptions = {
+  [BatteryDisplayStyle.VOLTAGE]: 'Prefer voltage',
+  [BatteryDisplayStyle.PERCENTAGE]:
+    'Prefer percentage and show voltage if unknown',
+  [BatteryDisplayStyle.FORCED_PERCENTAGE]:
+    'Prefer percentage and estimate it from voltage if needed',
+};
+
+export const describeBatteryDisplayStyle = (style) =>
+  _batteryDisplayStyleDescriptions[style] || 'Unknown style';
