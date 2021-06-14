@@ -21,6 +21,7 @@ import UAVStatusSummary from '../uavs/UAVStatusSummary';
 
 import RTKStatusHeaderButton from '~/features/rtk/RTKStatusHeaderButton';
 import { toggleSidebar } from '~/features/sidebar/slice';
+import BatteryStatusHeaderButton from '~/features/uavs/BatteryStatusHeaderButton';
 import { hasFeature } from '~/utils/configuration';
 
 const style = {
@@ -82,6 +83,8 @@ const Header = ({ isSidebarOpen, sessionExpiresAt, toggleSidebar }) => (
           <hr />
         </>
       )}
+      <BatteryStatusHeaderButton />
+      <hr />
       {hasFeature('toolboxMenu') && (
         <>
           <RTKStatusHeaderButton />

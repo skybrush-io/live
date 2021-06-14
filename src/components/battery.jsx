@@ -16,6 +16,9 @@ import BatteryCharging60Icon from '@material-ui/icons/BatteryCharging60';
 import BatteryCharging80Icon from '@material-ui/icons/BatteryCharging80';
 import BatteryCharging90Icon from '@material-ui/icons/BatteryCharging90';
 import BatteryChargingFullIcon from '@material-ui/icons/BatteryChargingFull';
+import BatteryUnknownIcon from '@material-ui/icons/BatteryUnknown';
+
+import { Status } from '@skybrush/app-theme-material-ui';
 
 import { BatterySettings, BatteryStatus } from '~/model/battery';
 import { BatteryDisplayStyle } from '~/model/settings';
@@ -52,6 +55,21 @@ const batteryIcons = [
   <span key='batteryIcon' style={unknownIconStyle}>
     {' '}
   </span>,
+];
+
+const largeBatteryIcons = [
+  <BatteryAlertIcon key='batteryIcon' />,
+  <BatteryAlertIcon key='batteryIcon' />,
+  <Battery20Icon key='batteryIcon' />,
+  <Battery30Icon key='batteryIcon' />,
+  <Battery50Icon key='batteryIcon' />,
+  <Battery50Icon key='batteryIcon' />,
+  <Battery60Icon key='batteryIcon' />,
+  <Battery80Icon key='batteryIcon' />,
+  <Battery80Icon key='batteryIcon' />,
+  <Battery90Icon key='batteryIcon' />,
+  <BatteryFullIcon key='batteryIcon' />,
+  <BatteryUnknownIcon key='batteryIcon' />,
 ];
 
 const chargingBatteryIcons = [
@@ -113,6 +131,24 @@ const chargingBatteryIcons = [
   <span key='batteryIcon' style={unknownIconStyle} />,
 ];
 
+const largeChargingBatteryIcons = [
+  <BatteryCharging20Icon key='batteryIcon' />,
+  <BatteryCharging20Icon key='batteryIcon' />,
+  <BatteryCharging20Icon key='batteryIcon' />,
+  <BatteryCharging30Icon key='batteryIcon' />,
+  <BatteryCharging50Icon key='batteryIcon' />,
+  <BatteryCharging50Icon key='batteryIcon' />,
+  <BatteryCharging60Icon key='batteryIcon' />,
+  <BatteryCharging80Icon key='batteryIcon' />,
+  <BatteryCharging80Icon key='batteryIcon' />,
+  <BatteryCharging90Icon key='batteryIcon' />,
+  <BatteryChargingFullIcon key='batteryIcon' />,
+  <BatteryUnknownIcon key='batteryIcon' />,
+];
+
+const safeToFixed = (number, digits) =>
+  typeof number === 'number' ? number.toFixed(digits) : String(number);
+
 /**
  * Formatter that takes what we know about a battery (i.e. what its voltage is,
  * what its charge percentage is, and whether it's charging), and returns a
@@ -150,21 +186,21 @@ export class BatteryFormatter {
         const estimatedPercentage =
           this._settings.estimatePercentageFromVoltage(voltage, cellCount);
         if (isNil(estimatedPercentage)) {
-          return `${voltage}V`;
+          return `${safeToFixed(voltage, 1)}V`;
         } else {
-          return `${estimatedPercentage}%`;
+          return `${safeToFixed(estimatedPercentage, 0)}%`;
         }
       } else {
         // No percentage info but we have voltage
-        return `${voltage}V`;
+        return `${safeToFixed(voltage, 1)}V`;
       }
     } else {
       // We have percentage
       if (this._style !== BatteryDisplayStyle.VOLTAGE || isNil(voltage)) {
-        return `${percentage}%`;
+        return `${safeToFixed(percentage, 0)}%`;
       } else {
         // ...but the user prefers voltage and we have it, so show that one instead
-        return `${voltage}V`;
+        return `${safeToFixed(voltage, 1)}V`;
       }
     }
   };
@@ -173,6 +209,20 @@ export class BatteryFormatter {
     this._settings
       ? this._settings.getBatteryStatus(voltage, percentage, cellCount)
       : BatteryStatus.UNKNOWN;
+
+  getLargeBatteryIcon = (percentage, status, charging) => {
+    const index =
+      percentage === undefined
+        ? batteryIconIndexByStatus[status]
+        : Math.round(Math.min(Math.max(percentage, 0), 100) / 10);
+    const iconSet = charging ? largeChargingBatteryIcons : largeBatteryIcons;
+    return iconSet[index];
+  };
+
+  getSemanticBatteryStatus = (voltage, percentage, cellCount) =>
+    this._settings
+      ? this._settings.getSemanticBatteryStatus(voltage, percentage, cellCount)
+      : Status.OFF;
 }
 
 export const DEFAULT_BATTERY_FORMATTER = new BatteryFormatter();

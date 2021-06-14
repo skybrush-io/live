@@ -5,6 +5,8 @@ import {
   LIPO_CRITICAL_VOLTAGE_THRESHOLD,
 } from './constants';
 
+import { Status } from '@skybrush/app-theme-material-ui';
+
 export const BatteryStatus = {
   FULL: 'Full',
   NEAR_FULL: 'NearFull',
@@ -12,6 +14,15 @@ export const BatteryStatus = {
   WARNING: 'Warning',
   ERROR: 'Error',
   UNKNOWN: 'Unknown',
+};
+
+const batteryToSemanticStatus = {
+  [BatteryStatus.FULL]: Status.OFF,
+  [BatteryStatus.NEAR_FULL]: Status.OFF,
+  [BatteryStatus.OK]: Status.OFF,
+  [BatteryStatus.WARNING]: Status.WARNING,
+  [BatteryStatus.ERROR]: Status.ERROR,
+  [BatteryStatus.UNKNOWN]: Status.OFF,
 };
 
 // Percentage thresholds for full, nearly full, normal and low battery levels
@@ -115,6 +126,17 @@ export class BatterySettings {
   estimatePercentageFromVoltage = (voltage, cellCount) => {
     const voltagePerCell = this.getVoltagePerCell(voltage, cellCount);
     return this.estimatePercentageFromVoltagePerCell(voltagePerCell);
+  };
+
+  /**
+   * Returns a suggested semantic status level corresponding to the state of the
+   * battery. This can be used for components that accept a generic semantic
+   * status level only. Use `getBatteryStatus()` for components that can
+   * interpret a battery status level directly.
+   */
+  getSemanticBatteryStatus = (voltage, percentage, cellCount) => {
+    const status = this.getBatteryStatus(voltage, percentage, cellCount);
+    return batteryToSemanticStatus[status] || Status.OFF;
   };
 
   /**

@@ -10,7 +10,7 @@ import {
 } from '~/model/constants';
 import { BatteryDisplayStyle } from '~/model/settings';
 
-const _getBatterySettings = createSelector(
+export const getBatterySettings = createSelector(
   (state) => state.settings.uavs,
   ({
     defaultBatteryCellCount = DEFAULT_BATTERY_CELL_COUNT,
@@ -30,7 +30,7 @@ const _getBatterySettings = createSelector(
 );
 
 export const getBatteryFormatter = createSelector(
-  _getBatterySettings,
+  getBatterySettings,
   (state) => state.settings.uavs,
   (
     settings,
