@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import { ComplexAvatar } from '~/components/avatar';
-import { getBatteryIndicatorSettings } from '~/features/settings/selectors';
+import { getBatteryFormatter } from '~/features/settings/selectors';
 import { createSingleUAVStatusSummarySelector } from '~/features/uavs/selectors';
 
 /**
@@ -15,7 +15,7 @@ const DroneAvatar = connect(
     const statusSummarySelector = createSingleUAVStatusSummarySelector();
     return (state, ownProps) => {
       const props = {
-        batterySettings: getBatteryIndicatorSettings(state),
+        batteryFormatter: getBatteryFormatter(state),
         ...statusSummarySelector(state, ownProps.id),
       };
 

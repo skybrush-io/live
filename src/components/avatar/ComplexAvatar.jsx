@@ -7,9 +7,9 @@ import { makeStyles } from '@material-ui/core/styles';
 import { Colors, Status } from '@skybrush/app-theme-material-ui';
 import SemanticAvatar from '@skybrush/mui-components/lib/SemanticAvatar';
 
+import { BatteryFormatter } from '~/components/battery';
 import BatteryIndicator from '~/components/BatteryIndicator';
 import StatusPill from '~/components/StatusPill';
-import CustomPropTypes from '~/utils/prop-types';
 
 import SecondaryStatusLight from './SecondaryStatusLight';
 
@@ -69,7 +69,7 @@ const useStyles = makeStyles(
  * in the system that has an ID.
  */
 const ComplexAvatar = ({
-  batterySettings,
+  batteryFormatter,
   batteryStatus,
   hint,
   crossed,
@@ -120,14 +120,14 @@ const ComplexAvatar = ({
         <StatusPill status={textSemantics}>{details || text}</StatusPill>
       )}
       {batteryStatus && (
-        <BatteryIndicator settings={batterySettings} {...batteryStatus} />
+        <BatteryIndicator formatter={batteryFormatter} {...batteryStatus} />
       )}
     </>
   );
 };
 
 ComplexAvatar.propTypes = {
-  batterySettings: CustomPropTypes.batterySettings,
+  batteryFormatter: PropTypes.instanceOf(BatteryFormatter),
   batteryStatus: PropTypes.shape({
     cellCount: PropTypes.number,
     voltage: PropTypes.number,

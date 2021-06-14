@@ -1,5 +1,7 @@
 import { createSelector } from '@reduxjs/toolkit';
 
+import { BatteryFormatter } from '~/components/battery';
+import { BatterySettings } from '~/model/battery';
 import {
   DEFAULT_BATTERY_CELL_COUNT,
   LIPO_CRITICAL_VOLTAGE_THRESHOLD,
@@ -8,32 +10,32 @@ import {
 } from '~/model/constants';
 import { BatteryDisplayStyle } from '~/model/settings';
 
-/**
- * Returns an object that is suitable to be used for the `settings` prop of a
- * BatteryIndicator component to describe what the various charge thresholds are
- * and how many cells there are in a typical battery.
- */
-export const getBatteryIndicatorSettings = createSelector(
+const _getBatterySettings = createSelector(
   (state) => state.settings.uavs,
   ({
     defaultBatteryCellCount = DEFAULT_BATTERY_CELL_COUNT,
     fullChargeVoltage = LIPO_FULL_CHARGE_VOLTAGE,
     lowVoltageThreshold = LIPO_LOW_VOLTAGE_THRESHOLD,
     criticalVoltageThreshold = LIPO_CRITICAL_VOLTAGE_THRESHOLD,
-    preferredBatteryDisplayStyle = BatteryDisplayStyle.VOLTAGE,
-  } = {}) => ({
-    defaultCellCount: defaultBatteryCellCount,
-    displayStyle: preferredBatteryDisplayStyle,
-    voltageThresholds: {
-      full: fullChargeVoltage,
-      nearFull:
-        fullChargeVoltage - (fullChargeVoltage - lowVoltageThreshold) * 0.1,
-      ok: fullChargeVoltage - (fullChargeVoltage - lowVoltageThreshold) * 0.4,
-      warning: lowVoltageThreshold,
-      critical: criticalVoltageThreshold,
-      empty: Math.min(3.3, criticalVoltageThreshold),
-    },
-  })
+  } = {}) =>
+    new BatterySettings({
+      defaultBatteryCellCount,
+      voltageThresholds: {
+        full: fullChargeVoltage,
+        low: lowVoltageThreshold,
+        critical: criticalVoltageThreshold,
+        empty: 3.3,
+      },
+    })
+);
+
+export const getBatteryFormatter = createSelector(
+  _getBatterySettings,
+  (state) => state.settings.uavs,
+  (
+    settings,
+    { preferredBatteryDisplayStyle = BatteryDisplayStyle.VOLTAGE } = {}
+  ) => new BatteryFormatter({ settings, style: preferredBatteryDisplayStyle })
 );
 
 /**

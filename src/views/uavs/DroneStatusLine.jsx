@@ -8,11 +8,12 @@ import { connect } from 'react-redux';
 
 import { makeStyles } from '@material-ui/core/styles';
 
+import { BatteryFormatter } from '~/components/battery';
 import BatteryIndicator from '~/components/BatteryIndicator';
 import ColoredLight from '~/components/ColoredLight';
 import StatusPill from '~/components/StatusPill';
 import StatusText from '~/components/StatusText';
-import { getBatteryIndicatorSettings } from '~/features/settings/selectors';
+import { getBatteryFormatter } from '~/features/settings/selectors';
 import {
   createSingleUAVStatusSummarySelector,
   getDeviationFromTakeoffHeadingByUavId,
@@ -26,7 +27,6 @@ import {
 import { getPreferredCoordinateFormatter } from '~/selectors/formatting';
 import { monospacedFont } from '~/theme';
 import { formatCoordinateArray } from '~/utils/formatting';
-import CustomPropTypes from '~/utils/prop-types';
 
 /**
  * Converts the absolute value of a heading deviation, in degrees, to the
@@ -96,7 +96,7 @@ const useStyles = makeStyles(
  * Status line in the drone list view that represents a single drone.
  */
 const DroneStatusLine = ({
-  batterySettings,
+  batteryFormatter,
   batteryStatus,
   color,
   coordinateFormatter,
@@ -140,7 +140,7 @@ const DroneStatusLine = ({
           </StatusPill>
           <BatteryIndicator
             className={classes.batteryIndicator}
-            settings={batterySettings}
+            formatter={batteryFormatter}
             {...batteryStatus}
           />
           <ColoredLight inline color={color} />
@@ -188,7 +188,7 @@ const DroneStatusLine = ({
 };
 
 DroneStatusLine.propTypes = {
-  batterySettings: CustomPropTypes.batterySettings,
+  batteryFormatter: PropTypes.instanceOf(BatteryFormatter),
   batteryStatus: PropTypes.shape({
     cellCount: PropTypes.number,
     charging: PropTypes.bool,
@@ -245,7 +245,7 @@ export default connect(
         ? getLightColorByUavIdInCSSNotation(state, uavId)
         : 'black';
       return {
-        batterySettings: getBatteryIndicatorSettings(state),
+        batteryFormatter: getBatteryFormatter(state),
         color,
         coordinateFormatter: getPreferredCoordinateFormatter(state),
         debugString: uav ? uav.debugString : undefined,
