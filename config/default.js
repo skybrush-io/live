@@ -11,6 +11,7 @@ export default {
   },
   server: {
     connectAutomatically: true,
+    port: 5000,
   },
   session: {},
   tour: null,
