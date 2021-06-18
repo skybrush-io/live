@@ -25,6 +25,10 @@ configureHotkeys({
   // key combination only
   allowCombinationSubmatches: true,
 
+  // Make sure that repeated key-down events are triggered when the user holds
+  // down the arrow keys for a longer period
+  ignoreRepeatedEventsWhenKeyHeldDown: false,
+
   // Uncomment the next line for debugging problems with hotkeys
   // logLevel: 'debug',
 });

@@ -16,7 +16,11 @@ const useStyles = makeStyles(
       flexDirection: 'column',
       minWidth: theme.spacing(10),
       position: 'relative',
-      transition: theme.transitions.create(['background-color', 'box-shadow']),
+
+      // Transitions disabled because it makes hard to follow which item is
+      // selected when the user is holding down a keyboard navigation key
+      // continuously.
+      // transition: theme.transitions.create(['background-color', 'box-shadow']),
     },
 
     draggable: {
