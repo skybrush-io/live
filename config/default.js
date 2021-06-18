@@ -9,7 +9,9 @@ export default {
     /* any features not explicitly set to 'false' are considered to be allowed
      * by default */
   },
-  server: {},
+  server: {
+    connectAutomatically: true,
+  },
   session: {},
   tour: null,
   urls: {

@@ -1,3 +1,5 @@
+import React from 'react';
+
 /**
  * @file Application configuration at startup, suitable for the web app demo deployment.
  */
@@ -22,7 +24,7 @@ export default {
 
   // Session setup
   session: {
-    maxLengthInSeconds: 3600
+    maxLengthInSeconds: 3600,
   },
 
   // Tour setup customized to suit the default screen of the web app
@@ -81,14 +83,14 @@ export default {
         selector: '#show-file-upload',
         content: (
           <>
-            <b>Now, let's get down to business!</b>
+            <b>Now, let&apos;s get down to business!</b>
             <p>
               This button lets you open a drone show in Skybrush (
               <code>.skyc</code>) format from your hard drive.
             </p>
             <p>
               If you do not have a compiled drone show file yet, you can use the
-              "cloud" button instead to load one of our example shows.
+              &quot;cloud&quot; button instead to load one of our example shows.
             </p>
           </>
         ),
@@ -125,6 +127,6 @@ export default {
 
   urls: {
     exit: 'https://account.skybrush.io',
-    help: 'https://doc.collmot.com/public/skybrush-live-doc/latest/index.html'
+    help: 'https://doc.collmot.com/public/skybrush-live-doc/latest/index.html',
   },
 };
