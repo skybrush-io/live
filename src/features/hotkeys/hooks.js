@@ -2,7 +2,7 @@ import { useCallback } from 'react';
 
 import useSignal from '~/hooks/useSignal';
 
-import hotkeySignal from './signal';
+import keyboardNavigationSignal from './signal';
 
 export function useKeyboardNavigation(handlers) {
   const signalHandler = useCallback(
@@ -15,5 +15,5 @@ export function useKeyboardNavigation(handlers) {
     [handlers]
   );
 
-  useSignal(hotkeySignal, signalHandler);
+  useSignal(keyboardNavigationSignal, signalHandler);
 }

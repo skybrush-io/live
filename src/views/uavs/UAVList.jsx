@@ -8,6 +8,7 @@ import isNil from 'lodash-es/isNil';
 import union from 'lodash-es/union';
 import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
+import { bindActionCreators } from 'redux';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { connect } from 'react-redux';
@@ -55,7 +56,6 @@ import {
   getDisplayedIdListBySections,
   getSelectionInfo,
 } from './selectors';
-import { bindActionCreators } from 'redux';
 
 const useListStyles = makeStyles(
   (theme) => ({
@@ -479,6 +479,7 @@ const UAVList = connect(
   (dispatch) => ({
     keyboardNav: createKeyboardNavigationHandlers({
       dispatch,
+      activateId: openUAVDetailsDialog,
       getVisibleIds: getDisplayedIdList,
       getSelectedIds: getSelectedUAVIds,
       setSelectedIds: setSelectedUAVIds,

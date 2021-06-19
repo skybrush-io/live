@@ -4,6 +4,11 @@ import { isRunningOnMac } from '~/utils/platform';
 export const HIDDEN = '_hidden';
 
 const globalKeyMap = {
+  ACTIVATE_SELECTION: {
+    name: 'Show properties dialog for selection',
+    sequence: 'enter',
+  },
+
   CLEAR_SELECTION: {
     name: 'Clear selection',
     sequence: 'esc',

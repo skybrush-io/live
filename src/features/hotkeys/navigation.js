@@ -6,6 +6,14 @@ import { bindActionCreators } from '@reduxjs/toolkit';
  * for managing the selection in a list-like view.
  *
  * @param {func} dispatch  the Redux action dispatcher function
+ * @param {func} activateId Redux action factory that creates an action
+ *        that handles the event when the user attempts to activate a _single_
+ *        selected item. The factory is called with the ID of the selected item.
+ *        When multiple items are selected, the _last_ item is activated.
+ * @param {func} activateIds Redux action factory that creates an action
+ *        that handles the event when the user attempts to activate the currently
+ *        selected items. The factory is called with the currently selected IDs in
+ *        an _array_.
  * @param {func} getVisibleIds  Redux selector that returns the array of IDs
  *        currently visible in the list, in the same order as they are displayed
  * @param {func} getSelectedIds Redux selector that returns the array of IDs
@@ -16,10 +24,27 @@ import { bindActionCreators } from '@reduxjs/toolkit';
  */
 export function createKeyboardNavigationHandlers({
   dispatch,
+  activateId,
+  activateIds,
   getVisibleIds,
   getSelectedIds,
   setSelectedIds,
 }) {
+  const activateSelection =
+    activateId || activateIds
+      ? () => (dispatch, getState) => {
+          const state = getState();
+          const selectedIds = getSelectedIds(state);
+          if (selectedIds && selectedIds.length > 0) {
+            if (activateIds) {
+              dispatch(activateIds(selectedIds));
+            } else {
+              dispatch(activateId(selectedIds[selectedIds.length - 1]));
+            }
+          }
+        }
+      : undefined;
+
   const adjustSelectionByDelta = (delta) => (event) => (dispatch, getState) => {
     // We need to prevent the browser from adjusting the selection of the _text_
     // of the webpage when the Shift key is held down
@@ -72,6 +97,7 @@ export function createKeyboardNavigationHandlers({
 
   return bindActionCreators(
     {
+      ACTIVATE_SELECTION: activateSelection,
       PAGE_DOWN: adjustSelectionByDelta(10),
       PAGE_UP: adjustSelectionByDelta(-10),
       SELECT_FIRST: adjustSelectionByDelta(Number.NEGATIVE_INFINITY),
