@@ -17,6 +17,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The "flash lights" operation has been bound to the `W` hotkey for the selected
   drone.
 
+- Added indicators in the header for showing the accuracy of the RTK survey
+  (when reported by the base station) and the number of satellites for which
+  RTK correction data is sent to the drones.
+
+- Added a battery status indicator to the header that shows the average and the
+  minimum battery voltage of the set of tracked drones.
+
 ### Fixed
 
 - Fixed word wrapping and alignment issues in the RTK header button.
