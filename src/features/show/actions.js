@@ -4,8 +4,12 @@ import throttle from 'lodash-es/throttle';
 
 import { freeze } from '@reduxjs/toolkit';
 
-import { addFeature, removeFeatures } from '~/actions/features';
 import { Colors } from '~/components/colors';
+import {
+  addFeatureById,
+  removeFeaturesByIds,
+} from '~/features/map-features/slice';
+import { getProposedIdForNewFeature } from '~/features/map-features/selectors';
 import { removeGeofencePolygon } from '~/features/mission/actions';
 import {
   updateHomePositions,
@@ -94,7 +98,7 @@ export const removeShowFeatures = () => (dispatch, getState) => {
     .filter((feature) => feature.owner === 'show')
     .map((feature) => feature.id);
 
-  dispatch(removeFeatures(showFeatureIds));
+  dispatch(removeFeaturesByIds(showFeatureIds));
 };
 
 const addGeofencePolygonBasedOnShowTrajectories =
@@ -139,9 +143,14 @@ const addGeofencePolygonBasedOnShowTrajectories =
       color: Colors.geofence,
       points: simplifiedPoints.map((c) => transformation.toLonLat(c)),
     };
-    const action = addFeature(geofencePolygon);
-    dispatch(action);
-    dispatch(setGeofencePolygonId(action.featureId));
+    const geofencePolygonId = getProposedIdForNewFeature(
+      state,
+      geofencePolygon
+    );
+    dispatch(
+      addFeatureById({ feature: geofencePolygon, id: geofencePolygonId })
+    );
+    dispatch(setGeofencePolygonId(geofencePolygonId));
   };
 
 export const updateGeofencePolygon = () => (dispatch) => {

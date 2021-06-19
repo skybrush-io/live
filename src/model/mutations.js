@@ -1,7 +1,7 @@
 import isEmpty from 'lodash-es/isEmpty';
 
-import { updateFeatureCoordinates } from '~/actions/features';
 import { setFlatEarthCoordinateSystemOrigin } from '~/actions/map-origin';
+import { updateFeatureCoordinatesByIds } from '~/features/map-features/slice';
 import { moveOutdoorShowOriginByMapCoordinateDelta } from '~/features/show/actions';
 import { toDegrees } from '~/utils/math';
 
@@ -81,19 +81,17 @@ export function handleFeatureUpdatesInOpenLayers(
 
     // Is this feature an area such as the convex hull of the show?
     const areaId = globalIdToAreaId(globalId);
-    if (areaId) {
-      if (
-        areaId === CONVEX_HULL_AREA_ID &&
-        type === 'transform' &&
-        event.subType === 'move' &&
-        event.delta
-      ) {
-        dispatch(moveOutdoorShowOriginByMapCoordinateDelta(event.delta));
-      }
+    if (
+      areaId === CONVEX_HULL_AREA_ID &&
+      type === 'transform' &&
+      event.subType === 'move' &&
+      event.delta
+    ) {
+      dispatch(moveOutdoorShowOriginByMapCoordinateDelta(event.delta));
     }
   }
 
   if (!isEmpty(updatedUserFeatures)) {
-    dispatch(updateFeatureCoordinates(updatedUserFeatures));
+    dispatch(updateFeatureCoordinatesByIds(updatedUserFeatures));
   }
 }

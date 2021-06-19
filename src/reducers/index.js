@@ -1,7 +1,6 @@
 import { combineReducers } from 'redux';
 
 import dialogsReducer from './dialogs';
-import featuresReducer from './features';
 import mapReducer from './map';
 
 import clocksReducer from '~/features/clocks/slice';
@@ -14,6 +13,7 @@ import localServerReducer from '~/features/local-server/slice';
 import licenseInfoReducer from '~/features/license-info/slice';
 import lightControlReducer from '~/features/light-control/slice';
 import logReducer from '~/features/log/slice';
+import featuresReducer from '~/features/map-features/slice';
 import measurementReducer from '~/features/measurement/slice';
 import messagesReducer from '~/features/messages/slice';
 import missionReducer from '~/features/mission/slice';

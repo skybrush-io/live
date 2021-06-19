@@ -6,13 +6,13 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
 import TextField from '@material-ui/core/TextField';
 
+import SwatchesColorPicker from '~/components/SwatchesColorPicker';
 import {
   renameFeature,
   setFeatureColor,
   updateFeatureFill,
   updateFeatureVisibility,
-} from '~/actions/features';
-import SwatchesColorPicker from '~/components/SwatchesColorPicker';
+} from '~/features/map-features/slice';
 import { primaryColor } from '~/utils/styles';
 
 const GeneralPropertiesForm = ({
@@ -66,7 +66,6 @@ const GeneralPropertiesForm = ({
 
 GeneralPropertiesForm.propTypes = {
   feature: PropTypes.object.isRequired,
-  featureId: PropTypes.string.isRequired,
   onSetFeatureColor: PropTypes.func,
   onSetFeatureLabel: PropTypes.func,
   onToggleFeatureFill: PropTypes.func,
@@ -79,16 +78,16 @@ export default connect(
   // mapDispatchToProps
   (dispatch, { featureId }) => ({
     onSetFeatureColor(color) {
-      dispatch(setFeatureColor(featureId, color.hex));
+      dispatch(setFeatureColor({ id: featureId, color: color.hex }));
     },
     onSetFeatureLabel(event) {
-      dispatch(renameFeature(featureId, event.target.value));
+      dispatch(renameFeature({ id: featureId, name: event.target.value }));
     },
     onToggleFeatureFill(_event, checked) {
-      dispatch(updateFeatureFill(featureId, checked));
+      dispatch(updateFeatureFill({ id: featureId, filled: checked }));
     },
     onToggleFeatureVisibility(_event, checked) {
-      dispatch(updateFeatureVisibility(featureId, checked));
+      dispatch(updateFeatureVisibility({ id: featureId, visible: checked }));
     },
   })
 )(GeneralPropertiesForm);

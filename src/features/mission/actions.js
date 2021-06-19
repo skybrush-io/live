@@ -10,7 +10,7 @@ import {
 } from './selectors';
 import { clearMapping, removeUAVsFromMapping, replaceMapping } from './slice';
 
-import { removeFeature } from '~/actions/features';
+import { removeFeaturesByIds } from '~/features/map-features/slice';
 import {
   getFirstPointsOfTrajectories,
   getOutdoorShowCoordinateSystem,
@@ -200,7 +200,7 @@ export const addVirtualDronesForMission = () => async (dispatch, getState) => {
  * Thunk that removes the current geofence polygon.
  */
 export const removeGeofencePolygon = () => (dispatch, getState) => {
-  dispatch(removeFeature(getGeofencePolygonId(getState())));
+  dispatch(removeFeaturesByIds([getGeofencePolygonId(getState())]));
 };
 
 /**

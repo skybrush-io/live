@@ -10,11 +10,11 @@ import Tab from '@material-ui/core/Tab';
 
 import DialogTabs from '@skybrush/mui-components/lib/DialogTabs';
 
-import { removeFeature } from '~/actions/features';
 import {
   closeFeatureEditorDialog,
   setFeatureEditorDialogTab,
 } from '~/actions/feature-editor';
+import { removeFeaturesByIds } from '~/features/map-features/slice';
 
 import FeaturePointsForm from './FeaturePointsForm';
 import GeneralPropertiesForm from './GeneralPropertiesForm';
@@ -75,7 +75,7 @@ const FeatureEditorDialogPresentation = (props) => {
     <Dialog fullWidth open={open} maxWidth='sm' onClose={onClose}>
       <DialogTabs value={selectedTab} onChange={onTabSelected}>
         <Tab value='general' label='General' />
-        <Tab value='points' label='Points' />
+        {/* <Tab value='points' label='Points' /> */}
       </DialogTabs>
       {content}
       <DialogActions>{actions}</DialogActions>
@@ -119,7 +119,7 @@ const FeatureEditorDialog = connect(
       dispatch(closeFeatureEditorDialog());
     },
     onRemoveFeature(featureId) {
-      dispatch(removeFeature(featureId));
+      dispatch(removeFeaturesByIds([featureId]));
       dispatch(closeFeatureEditorDialog());
     },
     onTabSelected(_event, value) {

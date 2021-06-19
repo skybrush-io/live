@@ -12,6 +12,7 @@ import { createSlice } from '@reduxjs/toolkit';
 
 import { copyAndEnsureLengthEquals, getNewEditIndex } from './utils';
 
+import { removeFeaturesByIds } from '~/features/map-features/slice';
 import { noPayload } from '~/utils/redux';
 
 const { actions, reducer } = createSlice({
@@ -98,8 +99,8 @@ const { actions, reducer } = createSlice({
      * Clears the entire mission mapping.
      */
     clearMapping(state) {
-      const numberItems = state.mapping.length;
-      state.mapping = new Array(numberItems).fill(null);
+      const numberOfItems = state.mapping.length;
+      state.mapping = Array.from({ length: numberOfItems }).fill(null);
     },
 
     /**
@@ -224,10 +225,12 @@ const { actions, reducer } = createSlice({
         state.homePositions.splice(desiredLength);
       } else if (desiredLength > currentLength) {
         state.mapping.push(
-          ...new Array(desiredLength - currentLength).fill(null)
+          ...Array.from({ length: desiredLength - currentLength }).fill(null)
         );
         state.homePositions.push(
-          ...new Array(desiredLength - state.homePositions.length).fill(null)
+          ...Array.from({
+            length: desiredLength - state.homePositions.length,
+          }).fill(null)
         );
       }
     },
@@ -300,16 +303,16 @@ const { actions, reducer } = createSlice({
           action.payload
         );
       } else {
-        state.takeoffHeadings = new Array(state.mapping.length).fill(
-          action.payload
-        );
+        state.takeoffHeadings = Array.from({
+          length: state.mapping.length,
+        }).fill(action.payload);
       }
     },
   },
 
   extraReducers: {
-    REMOVE_FEATURES(state, action) {
-      const { ids } = action.payload;
+    [removeFeaturesByIds]: (state, action) => {
+      const ids = action.payload;
       if (ids.includes(state.geofencePolygonId)) {
         state.geofencePolygonId = undefined;
       }

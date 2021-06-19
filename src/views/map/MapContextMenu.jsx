@@ -26,11 +26,11 @@ import Refresh from '@material-ui/icons/Refresh';
 import { createSelector } from '@reduxjs/toolkit';
 
 import { showFeatureEditorDialog } from '~/actions/feature-editor';
-import { removeFeatures } from '~/actions/features';
 import { setFlatEarthCoordinateSystemOrigin } from '~/actions/map-origin';
 
 import ContextMenu from '~/components/ContextMenu';
 
+import { removeFeaturesByIds } from '~/features/map-features/slice';
 import {
   clearGeofencePolygonId,
   setGeofencePolygonId,
@@ -419,7 +419,7 @@ const MapContextMenuContainer = connect(
     clearGeofencePolygonId: hasGeofence ? clearGeofencePolygonId : null,
     editFeature: hasFeatures ? showFeatureEditorDialog : null,
     openUAVDetailsDialog,
-    removeFeaturesByIds: hasFeatures ? removeFeatures : null,
+    removeFeaturesByIds: hasFeatures ? removeFeaturesByIds : null,
     setGeofencePolygonId: hasGeofence ? setGeofencePolygonId : null,
     setMapCoordinateSystemOrigin: setFlatEarthCoordinateSystemOrigin,
     setShowCoordinateSystemOrigin: hasShowControl

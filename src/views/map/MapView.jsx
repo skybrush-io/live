@@ -19,7 +19,6 @@ import MapReferenceRequestHandler from './MapReferenceRequestHandler';
 import MapToolbar from './MapToolbar';
 import { isDrawingTool, Tool, toolToDrawInteractionProps } from './tools';
 
-import { addFeature } from '~/actions/features';
 import {
   addFeaturesToSelection,
   setSelectedFeatures,
@@ -28,6 +27,7 @@ import {
 } from '~/actions/map';
 import Widget from '~/components/Widget';
 import { handleError } from '~/error-handling';
+import { addFeature } from '~/features/map-features/actions';
 import mapViewManager from '~/mapViewManager';
 import {
   createFeatureFromOpenLayers,
@@ -486,12 +486,12 @@ class MapViewPresentation extends React.Component {
     const features = [];
     const { map } = this._map.current;
 
-    getVisibleSelectableLayers(map).forEach((layer) => {
+    for (const layer of getVisibleSelectableLayers(map)) {
       const source = layer.getSource();
       source.forEachFeatureIntersectingExtent(extent, (feature) => {
         features.push(feature);
       });
-    });
+    }
 
     this._onFeaturesSelected(mode, features);
   };
