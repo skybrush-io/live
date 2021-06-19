@@ -540,7 +540,9 @@ class MapViewPresentation extends React.Component {
    * @param  {ol.Feature[]}  event.features  the features that were moved
    */
   _onFeaturesTransformed = (event) => {
-    this._updateFeatures(event.features, { type: 'transform', event });
+    if (event.hasMoved) {
+      this._updateFeatures(event.features, { type: 'transform', event });
+    }
   };
 
   /**

@@ -87,7 +87,7 @@ export class TransformFeaturesInteraction extends PointerInteraction {
 
           if (type === 'rotate') {
             const extent = Extent.createEmpty();
-            features.forEach((feature) => {
+            for (const feature of features) {
               const geom = feature.getGeometry();
               if (isOriginId(feature.getId())) {
                 Extent.extend(
@@ -97,7 +97,8 @@ export class TransformFeaturesInteraction extends PointerInteraction {
               } else {
                 Extent.extend(extent, geom.getExtent());
               }
-            });
+            }
+
             this.transformation_.center = Extent.getCenter(extent);
           }
 
@@ -126,11 +127,11 @@ export class TransformFeaturesInteraction extends PointerInteraction {
           const features = this.features_;
           const { type } = this.transformation_;
 
-          features.forEach((feature) => {
+          for (const feature of features) {
             const geom = feature.getGeometry();
             this.transformation_.handler(geom, deltaX, deltaY, totalDelta);
             feature.setGeometry(geom);
-          });
+          }
 
           this.lastCoordinate_ = newCoordinate;
 
@@ -236,12 +237,15 @@ export class TransformFeaturesInteraction extends PointerInteraction {
    * @return {string}  the type of the transformation to perform
    */
   decideTypeFromEvent_(event) {
-    if (this.moveCondition_(event)) {
-      return 'move';
-    }
+    if (event?.button === 0 || event?.originalEvent?.button === 0) {
+      // Allow only left mouse clicks
+      if (this.moveCondition_(event)) {
+        return 'move';
+      }
 
-    if (this.rotateCondition_(event)) {
-      return 'rotate';
+      if (this.rotateCondition_(event)) {
+        return 'rotate';
+      }
     }
 
     return undefined;
@@ -299,6 +303,14 @@ class TransformFeaturesInteractionEvent extends OLEvent {
     this.features = features;
     this.coordinate = coordinate;
     this.delta = delta;
+  }
+
+  get hasMoved() {
+    return (
+      this.delta &&
+      Array.isArray(this.delta) &&
+      (this.delta[0] !== 0 || this.delta[1] !== 0)
+    );
   }
 }
 
