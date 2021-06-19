@@ -7,8 +7,9 @@ import difference from 'lodash-es/difference';
 import uniq from 'lodash-es/uniq';
 import { handleActions } from 'redux-actions';
 
+import { removeFeaturesByIds } from '~/features/map-features/slice';
 import flock from '~/flock';
-import { uavIdToGlobalId } from '~/model/identifiers';
+import { featureIdToGlobalId, uavIdToGlobalId } from '~/model/identifiers';
 
 /**
  * The default state of the selection.
@@ -75,6 +76,14 @@ const reducer = handleActions(
 
     SET_SELECTED_FEATURES(state, action) {
       return updateSelection([], action.payload);
+    },
+
+    [removeFeaturesByIds]: (state, action) => {
+      return updateSelection(
+        state,
+        [],
+        action.payload.map(featureIdToGlobalId).filter(Boolean)
+      );
     },
   },
   defaultState
