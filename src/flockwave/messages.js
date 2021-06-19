@@ -88,6 +88,8 @@ export class MessageTimeout extends Error {
     super(`Response to message ${messageId} timed out`);
     this.messageId = messageId;
     this.userMessage = 'Response timed out';
+    this.hideStackTrace = true;
+    this.isTimeout = true;
   }
 }
 
@@ -102,6 +104,7 @@ export class CommandExecutionTimeout extends Error {
     this.receipt = receipt;
     this.message = `Response to command ${receipt} timed out`;
     this.userMessage = 'Response timed out';
+    this.hideStackTrace = true;
   }
 }
 
@@ -114,6 +117,7 @@ export class ServerSideCommandExecutionTimeout extends CommandExecutionTimeout {
     super(receipt);
     this.message += ' (no response from target)';
     this.userMessage += ' (no response from target)';
+    this.hideStackTrace = true;
   }
 }
 
@@ -126,6 +130,7 @@ export class ClientSideCommandExecutionTimeout extends CommandExecutionTimeout {
     super(receipt);
     this.message += ' (no response from server)';
     this.userMessage += ' (no response from server)';
+    this.hideStackTrace = true;
   }
 }
 
