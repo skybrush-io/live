@@ -10,7 +10,6 @@ import React from 'react';
 import RedBox from 'redbox-react';
 import isFunction from 'lodash-es/isFunction';
 
-import { MessageTimeout } from './flockwave/messages';
 import makeLogger from './utils/logging';
 
 const __PROD__ = process.env.NODE_ENV === 'production';
@@ -60,8 +59,11 @@ export function errorToString(error) {
  *         error happened, if known
  */
 export function handleError(error, operation) {
-  if (error instanceof MessageTimeout) {
-    const message = operation ? `${operation} timed out` : errorToString(error);
+  if (error && (error.isTimeout || error.hideStackTrace)) {
+    const message =
+      error.isTimeout && operation
+        ? `${operation} timed out`
+        : errorToString(error);
 
     logger.warn(message);
     console.warn(message);
