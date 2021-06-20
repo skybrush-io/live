@@ -40,7 +40,7 @@ module.exports = {
     // values
     new webpack.EnvironmentPlugin({
       NODE_ENV: 'development',
-      DEPLOYMENT: '0'
+      DEPLOYMENT: '0',
     }),
 
     // Resolve the git version number and commit hash in the code
@@ -65,13 +65,13 @@ module.exports = {
     },
     extensions: ['.webpack.js', '.web.js', '.js', '.jsx', '.json'],
     fallback: {
-      "crypto": require.resolve("crypto-browserify"),
-      "http": require.resolve("stream-http"),
-      "https": require.resolve("https-browserify"),
-      "os": require.resolve("os-browserify/browser"),
-      "stream": require.resolve("stream-browserify"),
-      "vm": require.resolve("vm-browserify"),
-    }
+      crypto: require.resolve('crypto-browserify'),
+      http: require.resolve('stream-http'),
+      https: require.resolve('https-browserify'),
+      os: require.resolve('os-browserify/browser'),
+      stream: require.resolve('stream-browserify'),
+      vm: require.resolve('vm-browserify'),
+    },
   },
   module: {
     rules: [

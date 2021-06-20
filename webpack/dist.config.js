@@ -19,7 +19,9 @@ const htmlMetaTags = { ...baseHtmlMetaTags };
 delete htmlMetaTags['Content-Security-Policy'];
 
 module.exports = merge(baseConfig, {
+  /* eslint-disable react-hooks/rules-of-hooks */
   ...useAppConfiguration('webapp-demo'),
+  /* eslint-enable react-hooks/rules-of-hooks */
 
   entry: {
     polyfill: ['@babel/polyfill', 'whatwg-fetch'],
@@ -36,7 +38,7 @@ module.exports = merge(baseConfig, {
     // 1.1.0
     new webpack.ProvidePlugin({
       Buffer: ['buffer', 'Buffer'],
-      process: 'process/browser'
+      process: 'process/browser',
     }),
 
     // Create index.html on-the-fly

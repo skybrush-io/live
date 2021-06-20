@@ -19,7 +19,7 @@ const plugins = [
   // 1.1.0
   new webpack.ProvidePlugin({
     Buffer: ['buffer', 'Buffer'],
-    process: 'process/browser'
+    process: 'process/browser',
   }),
 
   // Create index.html on-the-fly
@@ -35,7 +35,7 @@ if (process.env.NODE_ENV !== 'production' && process.env.DEPLOYMENT !== '1') {
         blocking: false,
         dev: true,
         parallel: true,
-      }
+      },
     })
   );
 }
