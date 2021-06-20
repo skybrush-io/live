@@ -59,7 +59,7 @@ export default connect(
   (state) => state.tour,
   // mapDispatchToProps
   (dispatch) => {
-    const steps = config.tour ? config.tour.steps : [];
+    const steps = config?.tour?.steps || [];
     return {
       onClose() {
         dispatch(dismissTour());

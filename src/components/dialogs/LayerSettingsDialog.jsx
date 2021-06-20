@@ -26,13 +26,10 @@ import {
   renameLayer,
   toggleLayerVisibility,
   removeLayer,
-} from '../../actions/layers';
-import { LayerType } from '../../model/layers';
+} from '~/actions/layers';
+import { LayerType } from '~/model/layers';
 import { createValidator, required } from '../../utils/validation';
-import {
-  LayerSettings,
-  stateObjectToLayerSettings,
-} from '../../views/map/layers';
+import { LayerSettings, stateObjectToLayerSettings } from '~/views/map/layers';
 
 const validator = createValidator({
   label: required,

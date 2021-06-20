@@ -1,5 +1,4 @@
 import config from 'config';
-import CssBaseline from '@material-ui/core/CssBaseline';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
@@ -7,6 +6,9 @@ import { WorkbenchView } from 'react-flexible-workbench';
 import { Provider as StoreProvider } from 'react-redux';
 import { ToastProvider } from 'react-toast-notifications';
 import { PersistGate } from 'redux-persist/es/integration/react';
+
+import loadable from '@loadable/component';
+import CssBaseline from '@material-ui/core/CssBaseline';
 
 import dialogs from './components/dialogs';
 import Header from './components/header';
@@ -22,7 +24,6 @@ import SavedLocationEditorDialog from './features/saved-locations/SavedLocationE
 import RTKSetupDialog from './features/rtk/RTKSetupDialog';
 import Sidebar from './features/sidebar/Sidebar';
 import ToastNotificationManager from './features/snackbar/ToastNotificationManager';
-import Tour from './features/tour/Tour';
 import UAVDetailsDialog from './features/uavs/UAVDetailsDialog';
 import VersionCheckDialog from './features/version-check/VersionCheckDialog';
 
@@ -44,6 +45,10 @@ require('../assets/css/proggy-vector.css');
 require('../assets/css/kbd.css');
 require('../assets/css/screen.less');
 require('../assets/css/tooltips.less');
+
+const Tour = loadable(() =>
+  import(/* webpackChunkName: 'tour' */ './features/tour/Tour')
+);
 
 const rootStyle = {
   display: 'flex',
@@ -132,7 +137,7 @@ const App = ({ onFirstRender }) => (
         <ToastNotificationManager />
       </ToastProvider>
 
-      <Tour />
+      {config.tour && <Tour />}
     </>
   </PersistGate>
 );

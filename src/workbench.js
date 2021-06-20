@@ -11,6 +11,7 @@ import debounce from 'lodash-es/debounce';
 import React from 'react';
 import { WorkbenchBuilder } from 'react-flexible-workbench';
 
+import loadable from '@loadable/component';
 import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
 
 import { saveWorkbenchState } from './features/workbench/slice';
@@ -18,6 +19,10 @@ import { injectFlockFromContext } from './flock';
 import store from './store';
 import { hasFeature } from './utils/configuration';
 import views from './views';
+
+const MapView = loadable(() =>
+  import(/* webpackChunkName: "map" */ './views/map/MapView')
+);
 
 require('../assets/css/workbench.less');
 
@@ -57,7 +62,7 @@ const componentRegistry = {
   'light-control': onlyWithFeature('showControl', views.LightControlPanel),
   'lcd-clock-panel': views.LCDClockPanel,
   'log-panel': views.LogPanel,
-  map: views.MapView,
+  map: MapView,
   messages: views.MessagesPanelView, // deprecated, kept there for compatibility
   placeholder: Nothing,
   'saved-location-list': views.SavedLocationList,

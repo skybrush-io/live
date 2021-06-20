@@ -13,11 +13,12 @@ import LCDClockPanel from './lcd-clock';
 import LightControlPanel from './light-control';
 import SavedLocationList from './locations';
 import LogPanel from './log';
-import MapView from './map';
 import MessagesPanelView from './messages';
 import ShowControlPanel from './show-control';
 import UAVList from './uavs';
 import ThreeDTopLevelView from './three-d';
+
+/* MapView not included as it is loaded lazily */
 
 const views = {
   ClockDisplayList,
@@ -29,7 +30,6 @@ const views = {
   LCDClockPanel,
   LightControlPanel,
   LogPanel,
-  MapView,
   MessagesPanelView,
   SavedLocationList,
   ShowControlPanel,
