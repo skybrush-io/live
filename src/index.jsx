@@ -1,27 +1,15 @@
+import { disableReactDevTools } from '@fvilers/disable-react-devtools';
 import React from 'react';
 import { render } from 'react-dom';
+import 'typeface-fira-sans';
 
-import { disableReactDevTools } from '@fvilers/disable-react-devtools';
-
-import Application from './app';
-import rootSaga from './sagas';
-import { sagaMiddleware, waitUntilStateRestored } from './store';
-
-/* eslint-disable import/no-extraneous-dependencies */
-import 'tippy.js/dist/tippy.css';
-import 'tippy.js/themes/light-border.css';
-/* eslint-enable import/no-extraneous-dependencies */
+import AppWithSplashScreen from './splash';
 
 // Disable React dev tools in production
 if (process.env.NODE_ENV === 'production') {
   disableReactDevTools();
 }
 
-// Spin up the root saga after the state has been restored.
-waitUntilStateRestored().then(() => {
-  sagaMiddleware.run(rootSaga);
-});
-
 // Render the application
 const root = document.querySelector('#root');
-render(<Application />, root);
+render(<AppWithSplashScreen />, root);

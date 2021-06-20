@@ -7,6 +7,7 @@ import React, { useRef } from 'react';
 import { connect } from 'react-redux';
 import useResizeObserver from 'use-resize-observer';
 
+import loadable from '@loadable/component';
 import AppBar from '@material-ui/core/AppBar';
 import Box from '@material-ui/core/Box';
 import IconButton from '@material-ui/core/IconButton';
@@ -20,7 +21,6 @@ import NavigationButtonGroup from './NavigationButtonGroup';
 import NavigationInstructions from './NavigationInstructions';
 import Overlay from './Overlay';
 import SelectionTooltip from './SelectionTooltip';
-import ThreeDView from './ThreeDView';
 
 import {
   setAppSettingsDialogTab,
@@ -33,6 +33,10 @@ import { toggleLightingConditionsInThreeDView } from '~/features/settings/slice'
 import { setNavigationMode } from '~/features/three-d/slice';
 import { isMapCoordinateSystemSpecified } from '~/selectors/map';
 import { isDark } from '~/theme';
+
+const ThreeDView = loadable(() =>
+  import(/* webpackChunkName: "three-d" */ './ThreeDView')
+);
 
 const useStyles = makeStyles(
   (theme) => ({
@@ -82,8 +86,8 @@ const ThreeDTopLevelView = ({
           <ToolbarDivider orientation='vertical' />
           <NavigationInstructions mode={navigation.mode} />
           <DarkModeSwitch
-            onChange={onToggleLightingConditions}
             value={lighting === 'dark'}
+            onChange={onToggleLightingConditions}
           />
         </Toolbar>
       </AppBar>
@@ -120,12 +124,14 @@ const ThreeDTopLevelView = ({
 
 ThreeDTopLevelView.propTypes = {
   hasMapCoordinateSystem: PropTypes.bool,
+  lighting: PropTypes.string,
   navigation: PropTypes.shape({
     mode: PropTypes.string,
     parameters: PropTypes.object,
   }),
   onSetNavigationMode: PropTypes.func,
   onShowSettings: PropTypes.func,
+  onToggleLightingConditions: PropTypes.func,
 };
 
 export default connect(

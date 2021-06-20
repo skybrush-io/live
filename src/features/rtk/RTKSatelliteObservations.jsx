@@ -1,7 +1,7 @@
+import loadable from '@loadable/component';
 import isNil from 'lodash-es/isNil';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Bar } from 'react-chartjs-2';
 import { connect } from 'react-redux';
 import { useHarmonicIntervalFn, useUpdate } from 'react-use';
 import { createSelector } from '@reduxjs/toolkit';
@@ -16,6 +16,13 @@ import { createGradientBackground } from '~/utils/charts';
 import { getDisplayedSatelliteCNRValues } from './selectors';
 
 /* ************************************************************************ */
+
+const Bar = loadable(
+  () => import(/* webpackChunkName: "charts" */ 'react-chartjs-2'),
+  {
+    resolveComponent: ({ Bar }) => Bar,
+  }
+);
 
 const cnrBoundaries = [30, 40];
 

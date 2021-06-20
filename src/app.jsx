@@ -1,8 +1,7 @@
 import config from 'config';
-import delay from 'delay';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import PropTypes from 'prop-types';
-import React, { useState } from 'react';
+import React from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { WorkbenchView } from 'react-flexible-workbench';
 import { Provider as StoreProvider } from 'react-redux';
@@ -13,9 +12,6 @@ import dialogs from './components/dialogs';
 import Header from './components/header';
 import CornerRibbon from './components/CornerRibbon';
 import ServerConnectionManager from './components/ServerConnectionManager';
-import SplashScreen from './components/SplashScreen';
-
-import { ErrorHandler } from './error-handling';
 
 import DockDetailsDialog from './features/docks/DockDetailsDialog';
 import AppHotkeys from './features/hotkeys/AppHotkeys';
@@ -30,19 +26,24 @@ import Tour from './features/tour/Tour';
 import UAVDetailsDialog from './features/uavs/UAVDetailsDialog';
 import VersionCheckDialog from './features/version-check/VersionCheckDialog';
 
+import { ErrorHandler } from './error-handling';
 import flock, { Flock } from './flock';
-import store, { persistor } from './store';
+import rootSaga from './sagas';
+import store, {
+  persistor,
+  sagaMiddleware,
+  waitUntilStateRestored,
+} from './store';
 import ThemeProvider, { DarkModeExtraCSSProvider } from './theme';
 import workbench from './workbench';
+
+import 'tippy.js/dist/tippy.css';
+import 'tippy.js/themes/light-border.css';
 
 require('../assets/css/proggy-vector.css');
 require('../assets/css/kbd.css');
 require('../assets/css/screen.less');
 require('../assets/css/tooltips.less');
-
-require('react-cover-page/themes/default.css');
-
-require('typeface-fira-sans');
 
 const rootStyle = {
   display: 'flex',
@@ -62,94 +63,82 @@ const rootInnerStyle = {
  * Helper function that restores the state of the workbench when it was loaded
  * back from the local storage during startup.
  */
-const restoreWorkbench = (setShowSplashScreen) => async () => {
+const restoreWorkbench = (whenDone) => async () => {
   const state = store.getState();
 
   if (state && state.workbench && state.workbench.state) {
     workbench.restoreState(state.workbench.state);
   }
 
-  setShowSplashScreen(false);
-  await delay(1000); // transition for the splash screen is ~300 msec
+  if (whenDone) {
+    whenDone();
+  }
 };
 
-const App = () => {
-  const [showSplashScreen, setShowSplashScreen] = useState(true);
+// Spin up the root saga after the state has been restored.
+waitUntilStateRestored().then(() => {
+  sagaMiddleware.run(rootSaga);
+});
 
-  // The loading sequence is as follows.
-  //
-  // First we start from showSplashScreen = true and loaded = false.
-  // redux-persist starts restoring the state, and sets
-  // showSplashScreen to false when the state is loaded. However, since
-  // restoreWorkbench() includes an artificial delay, loaded does not
-  // become true for an additional one second so we have time to make
-  // the splash screen disappear before we unmount it.
+const App = ({ onFirstRender }) => (
+  <PersistGate
+    persistor={persistor}
+    onBeforeLift={restoreWorkbench(onFirstRender)}
+  >
+    <>
+      <CssBaseline />
 
-  return (
-    <PersistGate
-      persistor={persistor}
-      onBeforeLift={restoreWorkbench(setShowSplashScreen)}
-    >
-      {(loaded) => {
-        return (
-          <>
-            {!loaded && <SplashScreen visible={showSplashScreen} />}
-            {!showSplashScreen && (
-              <>
-                <CssBaseline />
+      <DarkModeExtraCSSProvider />
 
-                <DarkModeExtraCSSProvider />
+      <AppHotkeys />
 
-                <AppHotkeys />
+      <div style={rootStyle}>
+        <Header workbench={workbench} />
+        <div style={rootInnerStyle}>
+          <Sidebar workbench={workbench} />
+          <WorkbenchView workbench={workbench} />
+        </div>
+        {config.ribbon && config.ribbon.label && (
+          <CornerRibbon {...config.ribbon} />
+        )}
+      </div>
 
-                <div style={rootStyle}>
-                  <Header workbench={workbench} />
-                  <div style={rootInnerStyle}>
-                    <Sidebar workbench={workbench} />
-                    <WorkbenchView workbench={workbench} />
-                  </div>
-                  {config.ribbon && config.ribbon.label && (
-                    <CornerRibbon {...config.ribbon} />
-                  )}
-                </div>
+      <ServerConnectionManager />
 
-                <ServerConnectionManager />
+      <dialogs.AppSettingsDialog />
+      <dialogs.AuthenticationDialog />
+      <dialogs.DeauthenticationDialog />
+      <dialogs.FeatureEditorDialog />
+      <dialogs.FlyToTargetDialog />
+      <dialogs.GeofenceSettingsDialog />
+      <dialogs.GlobalErrorDialog />
+      <dialogs.LayerSettingsDialog />
+      <dialogs.MessagesDialog flock={flock} />
+      <dialogs.PromptDialog />
+      <dialogs.ServerSettingsDialog />
+      <dialogs.SessionExpiryDialog />
+      <dialogs.TimeSyncDialog />
 
-                <dialogs.AppSettingsDialog />
-                <dialogs.AuthenticationDialog />
-                <dialogs.DeauthenticationDialog />
-                <dialogs.FeatureEditorDialog />
-                <dialogs.FlyToTargetDialog />
-                <dialogs.GeofenceSettingsDialog />
-                <dialogs.GlobalErrorDialog />
-                <dialogs.LayerSettingsDialog />
-                <dialogs.MessagesDialog flock={flock} />
-                <dialogs.PromptDialog />
-                <dialogs.ServerSettingsDialog />
-                <dialogs.SessionExpiryDialog />
-                <dialogs.TimeSyncDialog />
+      <CoordinateAveragingDialog />
+      <DockDetailsDialog />
+      <HotkeyDialog />
+      <LicenseInfoDialog />
+      <RTKSetupDialog />
+      <SavedLocationEditorDialog />
+      <UAVDetailsDialog />
+      <VersionCheckDialog />
 
-                <CoordinateAveragingDialog />
-                <DockDetailsDialog />
-                <HotkeyDialog />
-                <LicenseInfoDialog />
-                <RTKSetupDialog />
-                <SavedLocationEditorDialog />
-                <UAVDetailsDialog />
-                <VersionCheckDialog />
+      <ToastProvider placement='top-center'>
+        <ToastNotificationManager />
+      </ToastProvider>
 
-                <ToastProvider placement='top-center'>
-                  <ToastNotificationManager />
-                </ToastProvider>
+      <Tour />
+    </>
+  </PersistGate>
+);
 
-                <Tour />
-              </>
-            )}
-          </>
-        );
-      }}
-    </PersistGate>
-  );
+App.propTypes = {
+  onFirstRender: PropTypes.func,
 };
 
 /**

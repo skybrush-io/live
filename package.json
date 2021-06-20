@@ -13,6 +13,8 @@
     "start": "rimraf build && webpack serve --config webpack/browser.config.js --progress",
     "start:electron": "webpack serve --https --config webpack/electron.config.js --progress",
     "start:electron:light": "cross-env SKYBRUSH_VARIANT=light webpack serve --https --config webpack/electron.config.js --progress",
+    "stats": "rimraf build && webpack --json --progress --config webpack/dist.config.js >stats.json",
+    "stats:prod": "rimraf build && cross-env NODE_ENV=production webpack --json --mode=production --progress --config webpack/dist.config.js >stats.prod.json",
     "test": "npm run lint"
   },
   "repository": {
@@ -32,6 +34,7 @@
     "@date-io/core": "^1.3.13",
     "@date-io/date-fns": "^1.3.13",
     "@fvilers/disable-react-devtools": "^1.2.1",
+    "@loadable/component": "^5.15.0",
     "@material-ui/core": "^4.11.4",
     "@material-ui/icons": "^4.11.2",
     "@material-ui/lab": "^4.0.0-alpha.57",
