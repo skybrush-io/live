@@ -24,6 +24,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added a battery status indicator to the header that shows the average and the
   minimum battery voltage of the set of tracked drones.
 
+### Changed
+
+- The menu bar is now hidden on Windows and Linux.
+
 ### Fixed
 
 - Fixed word wrapping and alignment issues in the RTK header button.

@@ -24,6 +24,10 @@ function run(argv) {
     mainWindow: {
       debug: argv.debug,
       rootDir: __dirname,
+      showMenuBar: false,
+      webPreferences: {
+        backgroundThrottling: false,
+      },
     },
   });
 
