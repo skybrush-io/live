@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 
 import Button from '@material-ui/core/Button';
@@ -8,10 +9,14 @@ import CloudUpload from '@material-ui/icons/CloudUpload';
  * upload for the drones in the backlog (if any) or for all the drones in the
  * current mission.
  */
-const StartUploadButton = (props) => (
-  <Button startIcon={<CloudUpload />} {...props}>
-    Start
+const StartUploadButton = ({ hasQueuedItems, ...rest }) => (
+  <Button startIcon={<CloudUpload />} {...rest}>
+    {hasQueuedItems ? 'Start selected' : 'Start'}
   </Button>
 );
+
+StartUploadButton.propTypes = {
+  hasQueuedItems: PropTypes.bool,
+};
 
 export default StartUploadButton;

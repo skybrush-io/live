@@ -18,6 +18,7 @@ import { getUAVIdsParticipatingInMission } from '~/features/mission/selectors';
 import {
   getItemsInUploadBacklog,
   getNumberOfDronesInShow,
+  hasQueuedItems,
   isUploadInProgress,
   shouldRetryFailedUploadsAutomatically,
 } from '~/features/show/selectors';
@@ -100,6 +101,7 @@ const useStyles = makeStyles((theme) => ({
 const UploadDialogContent = ({
   autoRetry,
   canStartUpload,
+  hasQueuedItems,
   lastUploadResult,
   onCancelUpload,
   onDismissLastUploadResult,
@@ -150,6 +152,7 @@ const UploadDialogContent = ({
         ) : (
           <StartUploadButton
             disabled={!canStartUpload}
+            hasQueuedItems={hasQueuedItems}
             onClick={onStartUpload}
           />
         )}
@@ -184,6 +187,7 @@ export default connect(
     ...state.show.uploadDialog,
     autoRetry: shouldRetryFailedUploadsAutomatically(state),
     canStartUpload: getNumberOfDronesInShow(state) > 0,
+    hasQueuedItems: hasQueuedItems(state),
     lastUploadResult: state.show.upload.lastUploadResult,
     running: isUploadInProgress(state),
   }),

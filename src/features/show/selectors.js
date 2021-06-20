@@ -813,6 +813,12 @@ export const getUploadProgress = createSelector(
 );
 
 /**
+ * Returns whether there is at least one queued item in the backlog.
+ */
+export const hasQueuedItems = (state) =>
+  getItemsInUploadBacklog(state).length > 0;
+
+/**
  * Returns whether we are currently uploading show data to the drones.
  */
 export const isUploadInProgress = (state) => state.show.upload.running;
