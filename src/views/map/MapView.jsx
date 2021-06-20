@@ -420,7 +420,7 @@ class MapViewPresentation extends React.Component {
       <Map
         ref={this._map}
         loadTilesWhileInteracting
-        id='tour-map'
+        id='main-map-view'
         view={view}
         useDefaultControls={false}
         className={toolClasses[selectedTool]}

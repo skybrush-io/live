@@ -48,7 +48,7 @@ export default {
         ),
       },
       {
-        selector: '#tour-map',
+        selector: '#main-map-view',
         content: (
           <>
             <b>This is the map view of Skybrush Live.</b>
