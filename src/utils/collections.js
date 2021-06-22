@@ -512,6 +512,6 @@ export const replaceItemOrAddToFront = (collection, item) => {
  * Helper function that takes an ordered collection and ensures that the items
  * in the collection are sorted using natural sort based on their IDs.
  */
-export const useNaturalSort = (collection) => {
+export const ensureNaturalSortOrder = (collection) => {
   collection.order = orderBy(collection.order);
 };
