@@ -36,6 +36,11 @@ const globalKeyMap = {
     group: HIDDEN,
   },
 
+  REMOVE_SELECTION: {
+    name: 'Remove selected drones',
+    sequence: 'del',
+  },
+
   SELECT_ALL_DRONES: {
     name: 'Select all drones',
     sequence: 'mod+a',

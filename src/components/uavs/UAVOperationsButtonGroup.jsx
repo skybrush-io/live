@@ -3,10 +3,12 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 
-import Clear from '@material-ui/icons/Clear';
 import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
 import { makeStyles } from '@material-ui/core/styles';
+
+import Clear from '@material-ui/icons/Clear';
+import Delete from '@material-ui/icons/Delete';
 import FlightTakeoff from '@material-ui/icons/FlightTakeoff';
 import Assignment from '@material-ui/icons/Assignment';
 import FlightLand from '@material-ui/icons/FlightLand';
@@ -20,7 +22,9 @@ import Colors from '~/components/colors';
 import Tooltip from '~/components/Tooltip';
 
 import { getPreferredCommunicationChannelIndex } from '~/features/mission/selectors';
+import { removeUAVsMarkedAsGone } from '~/features/uavs/actions';
 import { openUAVDetailsDialog } from '~/features/uavs/details';
+import { removeUAVsByIds } from '~/features/uavs/slice';
 import { createMultipleUAVRelatedActions } from '~/utils/messaging';
 
 const useStyles = makeStyles(
@@ -41,6 +45,8 @@ const UAVOperationsButtonGroup = ({
   channel,
   hideSeparators,
   openUAVDetailsDialog,
+  removeUAVsByIds,
+  removeUAVsMarkedAsGone,
   selectedUAVIds,
   size,
 }) => {
@@ -180,6 +186,33 @@ const UAVOperationsButtonGroup = ({
           />
         </IconButton>
       </Tooltip>
+
+      {size !== 'small' && (
+        <>
+          {!hideSeparators && (
+            <Divider className={classes.divider} orientation='vertical' />
+          )}
+
+          <Tooltip
+            content={
+              isSelectionEmpty
+                ? 'Remove items marked as gone'
+                : 'Remove from list'
+            }
+          >
+            <IconButton
+              size={iconSize}
+              onClick={() =>
+                isSelectionEmpty
+                  ? removeUAVsMarkedAsGone()
+                  : removeUAVsByIds(selectedUAVIds)
+              }
+            >
+              <Delete />
+            </IconButton>
+          </Tooltip>
+        </>
+      )}
     </>
   );
 };
@@ -187,6 +220,8 @@ const UAVOperationsButtonGroup = ({
 UAVOperationsButtonGroup.propTypes = {
   channel: PropTypes.number,
   openUAVDetailsDialog: PropTypes.func,
+  removeUAVsByIds: PropTypes.func,
+  removeUAVsMarkedAsGone: PropTypes.func,
   selectedUAVIds: PropTypes.arrayOf(PropTypes.string),
   hideSeparators: PropTypes.bool,
   size: PropTypes.oneOf(['small', 'medium']),
@@ -202,5 +237,5 @@ export default connect(
     channel: getPreferredCommunicationChannelIndex(state),
   }),
   // mapDispatchToProps
-  { openUAVDetailsDialog }
+  { openUAVDetailsDialog, removeUAVsMarkedAsGone, removeUAVsByIds }
 )(UAVOperationsButtonGroup);

@@ -24,6 +24,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added a battery status indicator to the header that shows the average and the
   minimum battery voltage of the set of tracked drones.
 
+- Inactive UAVs for which no status information has been received for a while
+  can now be removed from the UAVs list by pressing the "Remove" button on the
+  UAV toolbar. Pressing the button when nothing is selected will remove all
+  UAVs marked as "gone" from the UAV list.
+
 ### Changed
 
 - The menu bar is now hidden on Windows and Linux.

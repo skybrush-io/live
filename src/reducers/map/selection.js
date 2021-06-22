@@ -85,6 +85,11 @@ const reducer = handleActions(
         action.payload.map(featureIdToGlobalId).filter(Boolean)
       );
     },
+
+    /* there is no need to react to removeUAVsByIds here; the system is totally
+     * tolerant to the even when the ID of a UAV that does not exist is in the
+     * selection; for instance, this is how we can select the slot of an assigned
+     * UAV in the UAV list when the UAV itself is not turned on yet */
   },
   defaultState
 );

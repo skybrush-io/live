@@ -455,19 +455,24 @@ export const getLightColorByUavIdInCSSNotation = createCachedSelector(
 });
 
 /**
- * Creates a selector that selects all UAVs that are currently considered as
- * "active" (i.e. we have received status information from them in the last
- * few seconds).
+ * Selector factory that returns a selector that selects all UAVs whose `age`
+ * property is equal to the given value.
  */
-export const getActiveUAVIds = (state) =>
+const getUAVIdsByAge = (age) => (state) =>
   getUAVIdList(state).filter((uavId) => {
     const uav = getUAVById(state, uavId);
-    return uav && uav.age === UAVAge.ACTIVE;
+    return uav && uav.age === age;
   });
 
 /**
- * Creates a selector that selects all UAV IDs that are in the mission mapping
- * and whose headings differ from their designated takeoff headings by a threshold
+ * Selector that selects all UAVs that are currently considered as "active"
+ * (i.e. we have received status information from them in the last few seconds).
+ */
+export const getActiveUAVIds = getUAVIdsByAge(UAVAge.ACTIVE);
+
+/**
+ * Selector that selects all UAV IDs that are in the mission mapping and whose
+ * headings differ from their designated takeoff headings by a threshold
  * specified in the settings of the user.
  */
 export const getMisalignedUAVIds = createSelector(
@@ -494,6 +499,13 @@ export const getMissingUAVIdsInMapping = createSelector(
   (mapping, uavsById) =>
     mapping.filter((uavId) => !isNil(uavId) && isNil(uavsById[uavId]))
 );
+
+/**
+ * Returns the IDs of all UAVs that are currently considered as "gone" (i.e. we
+ * have not received status information from them in the last minute or so,
+ * depending on the interval configured by the user).
+ */
+export const getUAVIdsMarkedAsGone = getUAVIdsByAge(UAVAge.GONE);
 
 /**
  * Returns the list of UAV IDs that the server knows about but that do not

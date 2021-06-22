@@ -9,6 +9,7 @@ import { configure as configureHotkeys, GlobalHotKeys } from 'react-hotkeys';
 import { connect } from 'react-redux';
 
 import { selectAllUAVFeatures, clearSelection } from '~/actions/map';
+import { removeSelectedUAVs } from '~/features/uavs/actions';
 import { getUAVCommandTriggers } from '~/features/uavs/selectors';
 import { clearStoreAfterConfirmation } from '~/store';
 
@@ -83,6 +84,7 @@ export default connect(
       {
         CLEAR_SELECTION: clearSelection,
         COPY_COORDINATES: copyCoordinates,
+        REMOVE_SELECTION: removeSelectedUAVs,
         SELECT_ALL_DRONES: selectAllUAVFeatures,
         SEND_FLASH_LIGHTS_COMMAND: callUAVActionOnSelection('flashLightOnUAVs'),
         SEND_TAKEOFF_COMMAND: callUAVActionOnSelection('takeoffUAVs'),

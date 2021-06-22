@@ -50,7 +50,8 @@ function formatKeySequence(definition) {
       .replace(/^cmd$/, '\u2318')
       .replace(/^meta$/, '\u2318')
       .replace(/^alt$/, isRunningOnMac ? '\u2325' : 'Alt')
-      .replace(/^shift/, '\u21E7');
+      .replace(/^shift/, '\u21E7')
+      .replace(/^del$/, isRunningOnMac ? '\u2326' : 'Delete');
     return (
       <kbd key={key}>
         {formattedKey.charAt(0).toUpperCase() + formattedKey.slice(1)}
