@@ -20,7 +20,11 @@ const createStorageEngine = require('redux-persist-electron-storage');
 const streamToBlob = require('stream-to-blob');
 
 const localServer = require('./local-server');
-const { receiveActionsFromRenderer, setupIpc } = require('./ipc');
+const {
+  receiveActionsFromRenderer,
+  receiveSubscriptionsFromRenderer,
+  setupIpc,
+} = require('./ipc');
 
 unhandled({
   logger: (error) => console.error(error.stack),
@@ -137,6 +141,7 @@ contextBridge.exposeInMainWorld('bridge', {
 
   localServer,
   provideActions: receiveActionsFromRenderer,
+  provideSubscriptions: receiveSubscriptionsFromRenderer,
   reverseDNSLookup,
 
   /**

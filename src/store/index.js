@@ -26,6 +26,7 @@ import {
 
 import { showAppSettingsDialog } from '~/actions/app-settings';
 import { updateAveragingByIds } from '~/features/measurement/slice';
+import { shouldPreventSleepMode } from '~/features/power-saving/selectors';
 import { updateRTKStatistics } from '~/features/rtk/slice';
 import { loadingPromiseFulfilled } from '~/features/show/slice';
 import { updateAgesOfUAVs, updateUAVs } from '~/features/uavs/slice';
@@ -34,6 +35,7 @@ import reducer from '~/reducers';
 
 import migrations from './migrations';
 import { defaultStateReconciler, pristineReconciler } from './reconciler';
+import { bindSelectors } from './subscriptions';
 
 /**
  * Configuration of `redux-persist` to store the application state.
@@ -247,6 +249,17 @@ if (window.bridge) {
         showAppSettingsDialog,
       },
       store.dispatch
+    )
+  );
+
+  // Also provide a method for the preloader to subscribe to the changes of
+  // certain selectors
+  window.bridge.provideSubscriptions(
+    bindSelectors(
+      {
+        shouldPreventSleepMode,
+      },
+      store
     )
   );
 }

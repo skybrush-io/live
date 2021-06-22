@@ -56,8 +56,10 @@ function getPathsRelatedToAppLocation() {
     if (endsWith(appFolder, '.app/Contents/MacOS')) {
       // This is an .app bundle so let's search the Resources folder within
       // the bundle as well as the folder containing the app bundle itself
-      folders.push(path.resolve(path.dirname(appFolder), 'Resources'));
-      folders.push(path.dirname(appFolder.slice(0, -15)));
+      folders.push(
+        path.resolve(path.dirname(appFolder), 'Resources'),
+        path.dirname(appFolder.slice(0, -15))
+      );
     } else {
       // Probably not an .app bundle so let's just assume that the server
       // might be in the same folder

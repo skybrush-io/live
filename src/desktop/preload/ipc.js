@@ -1,4 +1,5 @@
 const { ipcRenderer: ipc } = require('electron-better-ipc');
+const { receiveSubscriptionsFromRenderer } = require('./subscriptions');
 
 const actionsFromRenderer = {};
 
@@ -23,5 +24,6 @@ const setupIpc = () => {
 
 module.exports = {
   receiveActionsFromRenderer,
+  receiveSubscriptionsFromRenderer,
   setupIpc,
 };
