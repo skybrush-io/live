@@ -33,6 +33,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - The menu bar is now hidden on Windows and Linux.
 
+- Skybrush Live prevents the system from going to sleep automatically when it is
+  connected to a server.
+
 ### Fixed
 
 - Fixed word wrapping and alignment issues in the RTK header button.
