@@ -77,8 +77,6 @@ messageHub.registerNotificationHandlers({
           }
         }
       });
-      /*
-       */
     }
   },
   'UAV-INF': (message) =>

@@ -118,18 +118,21 @@ export async function startRTKSurvey(hub, { accuracy, duration }) {
 /**
  * Asks the server to upload a drone show specification to a given UAV.
  */
-export async function uploadDroneShow(hub, { uavId, data }) {
+export async function uploadDroneShow(hub, { uavId, data }, options) {
   // HACK HACK HACK we are (ab)using the command execution mechanism. This is
   // probably okay as a temporary solution, but we might need a better solution
   // in the long term.
   try {
-    await hub.sendCommandRequest({
-      uavId,
-      command: '__show_upload',
-      kwds: {
-        show: data,
+    await hub.sendCommandRequest(
+      {
+        uavId,
+        command: '__show_upload',
+        kwds: {
+          show: data,
+        },
       },
-    });
+      options
+    );
   } catch {
     throw new Error(`Failed to upload show data to UAV ${uavId}`);
   }

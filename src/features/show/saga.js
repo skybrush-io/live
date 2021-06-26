@@ -3,7 +3,7 @@ import isNil from 'lodash-es/isNil';
 import isNumber from 'lodash-es/isNumber';
 import isString from 'lodash-es/isString';
 import reject from 'lodash-es/reject';
-import { buffers, channel } from 'redux-saga';
+import { buffers, CANCEL, channel } from 'redux-saga';
 import {
   call,
   cancelled,
@@ -137,12 +137,20 @@ function createShowConfigurationForUav(state, uavId) {
 }
 
 /**
- * Handles a single trajectory upload to a drone.
+ * Handles a single trajectory upload to a drone. Returns a promise that resolves
+ * when the trajectory is uploaded. The promise is extended with a cancellation
+ * callback for Redux-saga.
  */
-async function runSingleUpload(uavId, data) {
+function runSingleUpload(uavId, data) {
   // No need for a timeout here; it utilizes the message hub, which has its
   // own timeout for failed command executions (although it is quite long)
-  await messageHub.execute.uploadDroneShow({ uavId, data });
+  const cancelToken = messageHub.createCancelToken();
+  const promise = messageHub.execute.uploadDroneShow(
+    { uavId, data },
+    { cancelToken }
+  );
+  promise[CANCEL] = () => cancelToken.cancel({ allowFailure: true });
+  return promise;
 }
 
 /**
@@ -170,7 +178,7 @@ function* runUploadWorker(chan, failed) {
       console.error(error);
       outcome = 'failure';
     } finally {
-      if (cancelled() && !outcome) {
+      if (yield cancelled() && !outcome) {
         outcome = 'cancelled';
       }
     }

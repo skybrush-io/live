@@ -164,6 +164,7 @@ const UploadDialogContent = ({
 UploadDialogContent.propTypes = {
   autoRetry: PropTypes.bool,
   canStartUpload: PropTypes.bool,
+  hasQueuedItems: PropTypes.bool,
   lastUploadResult: PropTypes.oneOf(['success', 'error', 'cancelled']),
   onCancelUpload: PropTypes.func,
   onDismissLastUploadResult: PropTypes.func,

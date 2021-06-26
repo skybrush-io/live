@@ -38,25 +38,39 @@ const MESSAGES_WITH_RECEIPTS = {
 };
 
 /**
- * Extracts the receipt corresponding to the given UAV from an OBJ-CMD
- * response from the server. Throws an error if the message represents a
+ * Helper function that throws an error if the received message was an
+ * ACK-NAK message or a message without a type, and returns the message intact otherwise.
+ */
+export function ensureNotNAK(message) {
+  const { body } = message || {};
+  const { type } = body || {};
+
+  if (!type) {
+    throw new Error('Received message has no type');
+  } else if (type === 'ACK-NAK') {
+    throw new Error(body.reason || 'ACK-NAK received; no reason given');
+  }
+
+  return message;
+}
+
+/**
+ * Extracts the receipt corresponding to the given object from a multi-object
+ * async response from the server. Throws an error if the message represents a
  * failure and no receipt is available.
  *
- * @param  {Object} message the Skybrush message to parse
- * @param  {string} uavId   the ID of the UAV whose receipt we wish to
+ * @param  {Object} message   the Skybrush message to parse
+ * @param  {string} objectId  the ID of the object whose receipt we wish to
  *         extract from the message
- * @return {string} the receipt corresponding to the UAV
- * @throws Error  if the receipt cannot be extracted; the message of the
+ * @return {object} the receipt or result corresponding to the UAV
+ * @throws Error  if the receipt or result cannot be extracted; the message of the
  *         error provides a human-readable reason
  */
 export function extractResultOrReceiptFromMaybeAsyncResponse(message, uavId) {
-  const { body } = message;
+  const { body } = ensureNotNAK(message);
   const { type } = body;
 
-  if (type === 'ACK-NAK') {
-    // Server rejected to execute the command
-    throw new Error(body.reason || 'ACK-NAK received; no reason given');
-  } else if (MESSAGES_WITH_RECEIPTS[type]) {
+  if (MESSAGES_WITH_RECEIPTS[type]) {
     // We may still have a rejection here
     const { error, receipt, result } = body;
     if (error && error[uavId] !== undefined) {

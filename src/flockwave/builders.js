@@ -1,3 +1,5 @@
+import arrify from 'arrify';
+
 /**
  * @file Builder functions for commonly used Flockwave messages.
  *
@@ -14,6 +16,18 @@
  * @return {Object}  the message
  */
 export const createMessageWithType = (type) => ({ type });
+
+/**
+ * Creates an ASYNC-CANCEL (cancellation request) message.
+ *
+ * @param  {string|string[]}  receiptIds  ID of the asynchronous operation receipts that
+ *         should be cancelled
+ */
+export function createCancellationRequest(receiptIds) {
+  const result = createMessageWithType('ASYNC-CANCEL');
+  result.ids = arrify(receiptIds);
+  return result;
+}
 
 /**
  * Creates an OBJ-CMD (command request) message

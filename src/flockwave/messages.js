@@ -9,8 +9,15 @@ import pDefer from 'p-defer';
 import pProps from 'p-props';
 import pTimeout from 'p-timeout';
 
-import { createCommandRequest, createMessageWithType } from './builders';
-import { extractResultOrReceiptFromMaybeAsyncResponse } from './parsing';
+import {
+  createCancellationRequest,
+  createCommandRequest,
+  createMessageWithType,
+} from './builders';
+import {
+  ensureNotNAK,
+  extractResultOrReceiptFromMaybeAsyncResponse,
+} from './parsing';
 import { OperationExecutor } from './operations';
 import { QueryHandler } from './queries';
 import version from './version';
@@ -132,6 +139,87 @@ export class ClientSideCommandExecutionTimeout extends CommandExecutionTimeout {
     this.userMessage += ' (no response from server)';
     this.hideStackTrace = true;
   }
+}
+
+/**
+ * Error class thrown by cancel tokens when it fails to cancel the associated
+ * operation on the server.
+ */
+export class CancellationFailedError extends Error {
+  constructor(receipt, message) {
+    super(message || `Cancellation of operation ${receipt} failed`);
+    this.receipt = receipt;
+  }
+}
+
+/**
+ * Cancel token that can be used to ask the server to cancel the execution of
+ * a previously submitted asynchronous operation.
+ */
+class CancelToken {
+  constructor(hub) {
+    this._hub = hub;
+    this._receipt = undefined;
+  }
+
+  /**
+   * Activates the cancel token by assigning a receipt ID to it.
+   *
+   * Typically you don't need to call this method; the message hub will activate
+   * the token if you submit one along with a command request and the command is
+   * executed on the server asynchronously.
+   *
+   * @param {string} receipt  the receipt ID of the asynchronous operation
+   */
+  _activate(hub, receipt) {
+    if (this._hub !== hub) {
+      throw new Error('Cancel token is owned by a different hub');
+    }
+
+    if (!receipt) {
+      throw new Error('Receipt ID must not be empty');
+    }
+
+    if (this._receipt) {
+      throw new Error('This token is already activated');
+    }
+
+    this._receipt = receipt;
+  }
+
+  /**
+   * Dispatches a message via the message hub of this cancel token that will
+   * cancel the operation associated to this cancel token.
+   */
+  cancel = async ({ allowFailure } = {}) => {
+    if (!this._hub) {
+      throw new Error('This token is not activated yet');
+    }
+
+    if (!this._receipt) {
+      throw new Error('This token has already been used');
+    }
+
+    const receipt = this._receipt;
+    let failedReceipts;
+
+    try {
+      failedReceipts = await this._hub._sendCancellationRequest([receipt]);
+    } catch (error) {
+      failedReceipts = [receipt];
+      if (!allowFailure) {
+        console.error(error);
+      }
+    }
+
+    if (
+      !allowFailure &&
+      failedReceipts &&
+      Object.keys(failedReceipts).length > 0
+    ) {
+      throw new CancellationFailedError(receipt);
+    }
+  };
 }
 
 /**
@@ -344,10 +432,6 @@ class AsyncOperationManager {
     this._hub = undefined;
     this._pendingOperations = {};
 
-    this._onResponseReceived = this._onResponseReceived.bind(this);
-    this._onResponseTimedOut = this._onResponseTimedOut.bind(this);
-    this._onTimeoutReceived = this._onTimeoutReceived.bind(this);
-
     this._attachToHub(hub);
   }
 
@@ -444,16 +528,24 @@ class AsyncOperationManager {
    *         contains the keys mentioned above
    * @param  {string}  objectId  the ID of the single object whose result we are
    *         interested in
+   * @param  {CancelToken} cancelToken  when specified, and the response contains
+   *         a receipt ID, the cancel token will be activated with this receipt
+   *         ID such that calling its `cancel()` method later on will send
+   *         a request to cancel the asynchronous operation corresponding to the
+   *         given receipt ID.
    * @param  {boolean} noThrow   when set to true, ensures that the function
    *         does not throw an exception when the async response indicated an
    *         error; returns the error object instead as if it was the result
+   * @param  {number?} timeout   when specified and positive, the number of
+   *         seconds to wait for a response. When omitted or negative, uses the
+   *         default timeout from the async operation manager object
    * @return {Promise} a promise that resolves to the result of the operation
    *         or errors out in case of execution errors and timeouts
    */
   async handleMultiAsyncResponseForSingleId(
     response,
     objectId,
-    { noThrow, timeout } = {}
+    { cancelToken, noThrow, timeout } = {}
   ) {
     const { receipt, result } = extractResultOrReceiptFromMaybeAsyncResponse(
       response,
@@ -466,6 +558,10 @@ class AsyncOperationManager {
           typeof timeout === 'number' && timeout > 0 ? timeout : this.timeout,
         onTimeout: this._onResponseTimedOut,
       });
+
+      if (cancelToken) {
+        cancelToken._activate(this._hub, receipt);
+      }
 
       this._pendingOperations[receipt] = execution;
       try {
@@ -490,7 +586,7 @@ class AsyncOperationManager {
    *
    * @param {string} message  the message sent by the server
    */
-  _onResponseReceived(message) {
+  _onResponseReceived = (message) => {
     const { id, error, result } = message.body;
     const pendingOperation = this._pendingOperations[id];
     if (pendingOperation) {
@@ -506,7 +602,7 @@ class AsyncOperationManager {
     } else {
       console.warn(`Stale command response received for receipt=${id}`);
     }
-  }
+  };
 
   /**
    * Handler called when the server failed to respond with an ASYNC-RESP
@@ -515,9 +611,9 @@ class AsyncOperationManager {
    * @param {string} receipt  the receipt ID for which the server failed
    *        to respond
    */
-  _onResponseTimedOut(receipt) {
+  _onResponseTimedOut = (receipt) => {
     console.warn(`Response to operation with receipt=${receipt} timed out`);
-  }
+  };
 
   /**
    * Handler called when the server signals a timeout for an asynchronous
@@ -525,7 +621,7 @@ class AsyncOperationManager {
    *
    * @param {string} message  the message sent by the server
    */
-  _onTimeoutReceived(message) {
+  _onTimeoutReceived = (message) => {
     const { ids } = message.body;
     for (const id of ids) {
       const pendingOperation = this._pendingOperations[id];
@@ -535,7 +631,7 @@ class AsyncOperationManager {
         console.warn(`Stale timeout notification received for receipt=${id}`);
       }
     }
-  }
+  };
 }
 
 /**
@@ -635,6 +731,15 @@ export default class MessageHub {
         pendingResponse.reject(new EmitterChangedError());
       }
     }
+  }
+
+  /**
+   * Creates a new cancel token bound to the message hub that can be used to
+   * cancel asynchronous operations that were dispatched through this message
+   * hub to the server.
+   */
+  createCancelToken() {
+    return new CancelToken(this);
   }
 
   /**
@@ -739,7 +844,7 @@ export default class MessageHub {
   /**
    * Sends a Flockwave command request (OBJ-CMD) with the given body and
    * positional and keyword arguments and returns a promise that resolves
-   * when one of the following events happen:
+   * or rejects when one of the following events happen:
    *
    * <ul>
    * <li>The server signals an execution failure in a direct OBJ-CMD
@@ -753,6 +858,9 @@ export default class MessageHub {
    * human-readable message.</li>
    * <li>Any of the above, but in a separate notification delivered asynchronously
    * with ASYNC-RESP (for responses and errors) or ASYNC-TIMEOUT (for timeouts).</li>
+   * <li>A cancellation is delivered to the server in an ASYNC-CANCEL request
+   * and the server acknowledges the cancellation in the corresponding
+   * ASYNC-CANCEL response.</li>
    * </ul>
    *
    * @param  {string}    uavId   ID of the UAV to send the request to
@@ -764,8 +872,8 @@ export default class MessageHub {
    *         undefined.
    * @param  {Object}    options additional options to forward to the
    *         `handleMultiAsyncResponseForSingleId()` method of the
-   *         AsyncOperationManager. Typical keys to use are `timeout` and
-   *         `noThrow`.
+   *         AsyncOperationManager. Typical keys to use are `cancelToken`,
+   *         `timeout` and `noThrow`.
    * @return {Promise} a promise that resolves to the response of the UAV
    *         to the command or errors out in case of execution errors and
    *         timeouts.
@@ -937,6 +1045,33 @@ export default class MessageHub {
       }
 
       return pProps(results);
+    }
+  }
+
+  /**
+   * Sends a Flockwave ASYNC-CANCEL request to cancel the execution of the
+   * asynchronous operations with the given receipt IDs.
+   *
+   * @param  {string[]}  receipts  the receipt IDs of the asynchronous
+   *         operations to cancel
+   * @return {Promise}  a promise that resolves to an object mapping receipt
+   *         IDs to error messages, for all receipt IDs that were _not_
+   *         cancelled successfully
+   */
+  async _sendCancellationRequest(receipts) {
+    const request = createCancellationRequest(receipts);
+    const response = await this.sendMessage(request);
+    const { body } = ensureNotNAK(response);
+    const { success, error } = body;
+
+    for (const receipt of success) {
+      console.log(`Cancelled successfully for ${receipt}`);
+    }
+
+    if (error && Object.keys(error).length > 0) {
+      return error;
+    } else {
+      return {};
     }
   }
 }
