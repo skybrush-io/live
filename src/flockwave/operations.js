@@ -131,7 +131,10 @@ export async function uploadDroneShow(hub, { uavId, data }, options) {
           show: data,
         },
       },
-      options
+      {
+        timeout: 300 /* five minutes, should be longer than the timeout on the server */,
+        ...options,
+      }
     );
   } catch {
     throw new Error(`Failed to upload show data to UAV ${uavId}`);
