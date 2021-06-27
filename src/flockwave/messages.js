@@ -399,11 +399,13 @@ class PendingCommandExecution {
    * response from the server any more.
    */
   _onTimeout = () => {
-    this.reject(new ClientSideCommandExecutionTimeout(this.receipt));
-
+    /* Call the callback first and then reject because the callback
+     * might enqueue a cancellation request first to the server */
     if (this._timeoutCallback) {
       this._timeoutCallback(this.receipt);
     }
+
+    this.reject(new ClientSideCommandExecutionTimeout(this.receipt));
   };
 }
 
@@ -608,11 +610,21 @@ class AsyncOperationManager {
    * Handler called when the server failed to respond with an ASYNC-RESP
    * or ASYNC-TIMEOUT notification in time.
    *
+   * Sends a message to the server to cancel the operation, just in case the
+   * server is busy chasing its own tail when it shouldn't.
+   *
    * @param {string} receipt  the receipt ID for which the server failed
    *        to respond
    */
-  _onResponseTimedOut = (receipt) => {
+  _onResponseTimedOut = async (receipt) => {
     console.warn(`Response to operation with receipt=${receipt} timed out`);
+    try {
+      await this._hub._sendCancellationRequest([receipt]);
+    } catch {
+      console.warn(
+        `Failed to cancel receipt=${receipt} on server after a client-side timeout`
+      );
+    }
   };
 
   /**
@@ -1062,11 +1074,7 @@ export default class MessageHub {
     const request = createCancellationRequest(receipts);
     const response = await this.sendMessage(request);
     const { body } = ensureNotNAK(response);
-    const { success, error } = body;
-
-    for (const receipt of success) {
-      console.log(`Cancelled successfully for ${receipt}`);
-    }
+    const { error } = body;
 
     if (error && Object.keys(error).length > 0) {
       return error;
