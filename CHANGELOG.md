@@ -31,6 +31,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Redesigned user interface for the upload dialog, with more detailed status
+  information and the ability to (re)start the upload process on any of the
+  drones simply by clicking on its indicator in the dialog.
+
 - The menu bar is now hidden on Windows and Linux.
 
 - Skybrush Live prevents the system from going to sleep automatically when it is
