@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
+import { createSelector } from '@reduxjs/toolkit';
 
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -8,29 +9,58 @@ import ListItemText from '@material-ui/core/ListItemText';
 import StatusLight from '@skybrush/mui-components/lib/StatusLight';
 
 import { Status } from '~/components/semantics';
+import { ALTITUDE_REFERENCE } from '~/features/show/constants';
+import {
+  getOutdoorShowAltitudeReference,
+  getShowEnvironmentType,
+} from '~/features/show/selectors';
 import { openEnvironmentEditorDialog } from '~/features/show/slice';
 import { getSetupStageStatuses } from '~/features/show/stages';
 
 /**
- * Converts an environment type to a human-readable string.
+ * Specialized selector to format the secondary text on the button.
  */
-function environmentTypeToString(type) {
-  switch (type) {
-    case 'indoor':
-      return 'Indoor';
-    case 'outdoor':
-      return 'Outdoor';
-    default:
-      return 'Unknown';
+const getEnvironmentDescription = createSelector(
+  getShowEnvironmentType,
+  getOutdoorShowAltitudeReference,
+  (environmentType, outdoorAltitudeReference) => {
+    switch (environmentType) {
+      case 'indoor':
+        return 'Indoor';
+
+      case 'outdoor': {
+        const { type, value } = outdoorAltitudeReference;
+        if (type === ALTITUDE_REFERENCE.AMSL) {
+          if (Number.isFinite(value)) {
+            return `Outdoor, relative to ${value.toFixed(1)}m AMSL`;
+          } else {
+            return 'Outdoor, invalid altitude reference';
+          }
+        } else if (type === ALTITUDE_REFERENCE.AGL) {
+          // value should be ignored in this case
+          return `Outdoor, relative to ground`;
+        } else {
+          return 'Outdoor, unknown altitude reference';
+        }
+      }
+
+      default:
+        return 'Unknown';
+    }
   }
-}
+);
 
 /**
  * Component that shows a button that allows the user to change the type of the
  * show environment and to customize the origin of the show (for outdoor shows)
  * or the size of the stage (for indoor shows).
  */
-const EnvironmentButton = ({ onEditEnvironment, status, type, ...rest }) => (
+const EnvironmentButton = ({
+  onEditEnvironment,
+  secondaryText,
+  status,
+  ...rest
+}) => (
   <ListItem
     button
     disabled={status === Status.OFF}
@@ -38,28 +68,21 @@ const EnvironmentButton = ({ onEditEnvironment, status, type, ...rest }) => (
     {...rest}
   >
     <StatusLight status={status} />
-    <ListItemText
-      primary='Setup environment'
-      secondary={environmentTypeToString(type)}
-    />
+    <ListItemText primary='Setup environment' secondary={secondaryText} />
   </ListItem>
 );
 
 EnvironmentButton.propTypes = {
   onEditEnvironment: PropTypes.func,
+  secondaryText: PropTypes.string,
   status: PropTypes.oneOf(Object.values(Status)),
-  type: PropTypes.string,
-};
-
-EnvironmentButton.defaultProps = {
-  type: 'outdoor',
 };
 
 export default connect(
   // mapStateToProps
   (state) => ({
     status: getSetupStageStatuses(state).setupEnvironment,
-    type: state.show.environment.type,
+    secondaryText: getEnvironmentDescription(state),
   }),
   // mapDispatchToProps
   {
