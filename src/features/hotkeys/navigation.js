@@ -1,3 +1,4 @@
+import isNil from 'lodash-es/isNil';
 import { bindActionCreators } from '@reduxjs/toolkit';
 
 /**
@@ -21,6 +22,13 @@ import { bindActionCreators } from '@reduxjs/toolkit';
  * @param {func} setSelectedIds Redux action factory that creates an action that
  *        updates the currently selected IDs in the list when dispatched to the
  *        store
+ * @param {func} setFocusToId Plain function that is called when an item with the given
+ *        ID is about to be selected. It can be used to trigger a side-effect
+ *        that scrolls a view to make the item visible. When it returns a string,
+ *        it is interpreted as a CSS selector, and the first element matching
+ *        the selector will be scrolled into view. Otherwise, the return value
+ *        is ignored, but you can still perform any side effect inside the
+ *        handler.
  */
 export function createKeyboardNavigationHandlers({
   dispatch,
@@ -28,6 +36,7 @@ export function createKeyboardNavigationHandlers({
   activateIds,
   getVisibleIds,
   getSelectedIds,
+  setFocusToId,
   setSelectedIds,
 }) {
   const activateSelection =
@@ -89,6 +98,23 @@ export function createKeyboardNavigationHandlers({
         ? null
         : [...selectedIds, newSelectedId]
       : [newSelectedId];
+
+    // If we have a focus callback, call it so we can scroll to the newly
+    // selected item
+    if (setFocusToId && !isNil(newSelectedId)) {
+      const result = setFocusToId(newSelectedId);
+      if (typeof result === 'string') {
+        const element = document.querySelector(result);
+        console.log(element);
+        if (element) {
+          element.scrollIntoView({
+            behavior: 'auto',
+            block: 'nearest',
+            inline: 'nearest',
+          });
+        }
+      }
+    }
 
     if (newSelection !== null) {
       dispatch(setSelectedIds(newSelection));

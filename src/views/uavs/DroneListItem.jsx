@@ -7,6 +7,8 @@ import { makeStyles } from '@material-ui/core/styles';
 
 import Colors from '~/components/colors';
 
+import { uavIdToDOMNodeId } from './utils';
+
 const useStyles = makeStyles(
   (theme) => ({
     root: {
@@ -16,6 +18,9 @@ const useStyles = makeStyles(
       flexDirection: 'column',
       minWidth: theme.spacing(10),
       position: 'relative',
+
+      scrollMarginTop:
+        '3em' /* to account for the hovering header in the list view */,
 
       // Transitions disabled because it makes hard to follow which item is
       // selected when the user is holding down a keyboard navigation key
@@ -89,7 +94,13 @@ const DragDropArea = ({ children, id, onDrop, ...rest }) => {
   );
 
   return (
-    <div ref={ref} {...rest} {...collectedDragProps} {...collectedDropProps}>
+    <div
+      ref={ref}
+      id={uavIdToDOMNodeId(id)}
+      {...rest}
+      {...collectedDragProps}
+      {...collectedDropProps}
+    >
       {children}
     </div>
   );
@@ -130,7 +141,11 @@ const DroneListItem = ({
       {children}
     </DragDropArea>
   ) : (
-    <div className={mergedClassNames} onClick={onClick}>
+    <div
+      id={uavIdToDOMNodeId(uavId)}
+      className={mergedClassNames}
+      onClick={onClick}
+    >
       {children}
     </div>
   );

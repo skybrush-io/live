@@ -56,6 +56,7 @@ import {
   getDisplayedIdListBySections,
   getSelectionInfo,
 } from './selectors';
+import { uavIdToDOMNodeId } from './utils';
 
 const useListStyles = makeStyles(
   (theme) => ({
@@ -258,7 +259,7 @@ const createListItems = (
     const key = uavId === undefined ? `placeholder-${label || 'null'}` : uavId;
 
     return (
-      <DroneListItem key={key} stretch {...listItemProps}>
+      <DroneListItem key={key} stretch uavId={uavId} {...listItemProps}>
         {editingThisItem && <MappingSlotEditorForList />}
         <DroneStatusLine
           id={uavId}
@@ -483,6 +484,7 @@ const UAVList = connect(
       getVisibleIds: getDisplayedIdList,
       getSelectedIds: getSelectedUAVIds,
       setSelectedIds: setSelectedUAVIds,
+      setFocusToId: (id) => `#${uavIdToDOMNodeId(id)}`,
     }),
 
     ...bindActionCreators(
