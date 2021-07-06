@@ -58,6 +58,10 @@ const SessionExpiryBox = ({ expiresAt }) => {
   );
 };
 
+SessionExpiryBox.propTypes = {
+  expiresAt: PropTypes.number,
+};
+
 /**
  * Presentation component for the header at the top edge of the main
  * window.
