@@ -14,6 +14,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The UAV list view now shows both the UAV ID and the mission (show) specific ID
   of the UAV all the time.
 
+- The "Setup environment" button in the "Show control" panel now indicates whether
+  an outdoor show will be flown based on AMSL or AGL altitudes.
+
 - The "flash lights" operation has been bound to the `W` hotkey for the selected
   drone.
 
@@ -23,6 +26,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Added a battery status indicator to the header that shows the average and the
   minimum battery voltage of the set of tracked drones.
+
+- Added an altitude summary indicator to the header that shows the maximum and
+  the minimum altitude of the set of tracked drones. This is useful to check
+  whether the altitudes are consistent before takeoff.
 
 - Inactive UAVs for which no status information has been received for a while
   can now be removed from the UAVs list by pressing the "Remove" button on the
