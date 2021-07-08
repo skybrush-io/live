@@ -1,4 +1,6 @@
 import isEmpty from 'lodash-es/isEmpty';
+import isNil from 'lodash-es/isNil';
+import reject from 'lodash-es/reject';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
@@ -14,7 +16,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Clear from '@material-ui/icons/Clear';
 
 import { Status } from '~/components/semantics';
-import { getUAVIdsParticipatingInMission } from '~/features/mission/selectors';
+import { getMissionMapping } from '~/features/mission/selectors';
 import {
   getItemsInUploadBacklog,
   getNumberOfDronesInShow,
@@ -207,8 +209,13 @@ export default connect(
         // If there are no items currently in the upload backlog, start the
         // upload for all the UAVs in the mission, clearing the previous
         // "failed" and "successful" markers as well. (This is what
-        // prepareForNextUpload() does).
-        const uavIds = getUAVIdsParticipatingInMission(state);
+        // prepareForNextUpload() does). getUAVIdsParticipatingInMission()
+        // would return the UAVs sorted by ascending ID, but we need them in
+        // ascending mission index instead because this would mean that UAVs
+        // with a lower mission index (i.e. probably closer to the GCS) get
+        // uploaded first.
+        const mapping = getMissionMapping(state);
+        const uavIds = reject(mapping, isNil);
         if (uavIds && uavIds.length > 0) {
           canStart = true;
           dispatch(prepareForNextUpload(uavIds));
