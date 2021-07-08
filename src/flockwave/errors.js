@@ -161,6 +161,7 @@ const errorCodeToDescription = {
   6: 'Drone is landing',
   7: 'Drone has landed successfully',
   8: 'Motors are running while on ground',
+  63: 'Drone is returning home',
   64: 'Low disk space',
   65: 'RC lost',
   66: 'Battery low',
