@@ -36,6 +36,7 @@ export const ErrorCode = Object.freeze({
   TIMESYNC_ERROR: 67,
   FAR_FROM_TAKEOFF_POSITION: 68,
   INVALID_MISSION_CONFIGURATION: 69,
+  RADIO_MISSING: 70,
 
   // Errors
   AUTOPILOT_COMM_TIMEOUT: 128,
@@ -110,6 +111,7 @@ const errorCodeToAbbreviation = {
   67: 'timesync',
   68: 'tkoffpos',
   69: 'mission',
+  70: 'no radio',
   128: 'comm t/o',
   129: 'ack t/o',
   130: 'proto',
@@ -165,6 +167,7 @@ const errorCodeToDescription = {
   67: 'Timesync error',
   68: 'Drone is not at its designated takeoff position',
   69: 'Mission configuration error or mission out of geofence',
+  70: 'Radio channel offline',
   128: 'Autopilot communication timeout',
   129: 'Autopilot acknowledgment timeout',
   130: 'Autopilot communication protocol error',
