@@ -51,6 +51,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Fixed word wrapping and alignment issues in the RTK header button.
 
+- The popup that appears when hovering over the UAV status summary lights in the
+  header now distinguishes properly between low battery (yellow LOWBAT) and
+  critically low battery (red LOWBAT) conditions.
+
 - When the map view becomes visible, the drones for which we have received a
   telemetry update earlier are added to the map immediately, without waiting for
   the next telemetry update.

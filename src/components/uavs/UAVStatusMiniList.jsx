@@ -36,16 +36,16 @@ const getListItems = createSelector(
       const uav = byId[uavId];
       if (uav) {
         const { text, textSemantics } = getSingleUAVStatusSummary(uav);
-
-        if (items[text] === undefined) {
-          items[text] = {
+        const key = `${textSemantics}:${text}`;
+        if (items[key] === undefined) {
+          items[key] = {
             id: text,
             label: text,
             status: textSemantics,
             uavIds: [uavId],
           };
         } else {
-          items[text].uavIds.push(uavId);
+          items[key].uavIds.push(uavId);
         }
       }
     }
@@ -54,7 +54,7 @@ const getListItems = createSelector(
       item.uavIds = orderBy(item.uavIds);
     }
 
-    return sortBy(items, ['status', 'label']);
+    return sortBy(items, 'label');
   }
 );
 
