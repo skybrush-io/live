@@ -25,7 +25,6 @@ const SessionExpiryDialog = ({ onClose, open }) => (
       <Button fullWidth onClick={onClose}>
         Click here to return to your Skybrush account
       </Button>
-      <DialogContentText> </DialogContentText>
     </DialogContent>
   </Dialog>
 );
