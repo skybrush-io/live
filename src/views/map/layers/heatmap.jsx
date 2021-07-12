@@ -31,7 +31,7 @@ import {
   lonLatFromMapViewCoordinate,
 } from '~/utils/geography';
 
-const formatNumber = (x) => numbro(x).format('0.000');
+const formatNumber = (x) => numbro(x).format({ mantissa: 3 });
 
 const heatmapColoringFunctions = {
   linear: {

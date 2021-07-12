@@ -66,7 +66,7 @@ const UAVOperationsButtonGroup = ({
     turnMotorsOnForUAVs,
   } = createMultipleUAVRelatedActions(selectedUAVIds, { channel });
 
-  const fontSize = size === 'small' ? 'small' : 'default';
+  const fontSize = size === 'small' ? 'small' : 'medium';
   const iconSize = size;
 
   return (
