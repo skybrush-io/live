@@ -5,9 +5,11 @@ import MaterialUITextField from '@material-ui/core/TextField';
 import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
 
+import isNil from 'lodash-es/isNil';
 import { Select as RFFSelect, TextField as RFFTextField } from 'mui-rff';
+import numbro from 'numbro';
 import PropTypes from 'prop-types';
-import React, { useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Field } from 'react-final-form';
 import useToggle from 'react-use-toggle';
 
@@ -287,25 +289,117 @@ DurationField.defaultProps = {
 
 /* ************************************************************************* */
 
-const createNumericField = ({ defaultProps, displayName, unit } = {}) => {
+const createNumericField = ({
+  defaultProps,
+  displayName,
+  formatOptions,
+  unit,
+} = {}) => {
   const InputProps = unit
     ? {
         endAdornment: <InputAdornment position='end'>{unit}</InputAdornment>,
       }
     : null;
 
-  const result = ({ max, min, size, step, ...rest }) => (
-    <MaterialUITextField
-      InputProps={InputProps}
-      inputProps={{ max, min, size, step, type: 'number' }}
-      variant='filled'
-      {...rest}
-    />
-  );
+  formatOptions = {
+    mantissa: 3,
+    trimMantissa: true,
+    ...formatOptions,
+  };
 
-  result.propTypes = {
+  const formatter = (value) => numbro(value).format(formatOptions);
+  const parser = (displayedValue, { max, min, step } = {}) => {
+    if (!displayedValue) {
+      return 0;
+    } else {
+      let result = Number.parseFloat(displayedValue);
+      if (Number.isNaN(result) || !Number.isFinite(result)) {
+        result = 0;
+      }
+
+      if (!isNil(step)) {
+        const refValue = isNil(min) ? 0 : min;
+        result = Math.round((result - refValue) / step) * step + refValue;
+      }
+
+      if (!isNil(max) && result > max) {
+        result = max;
+      }
+
+      if (!isNil(min) && result < min) {
+        result = min;
+      }
+
+      return result;
+    }
+  };
+
+  /* We do not use type: 'number' because it has severe usability problems; see,
+   * e.g., the following URL for a summary:
+   *
+   * https://technology.blog.gov.uk/2020/02/24/why-the-gov-uk-design-system-team-changed-the-input-type-for-numbers/
+   */
+  const NumericField = ({
+    max,
+    min,
+    size,
+    step,
+    value,
+    onChange,
+    onBlur,
+    ...rest
+  }) => {
+    const [displayedValue, setDisplayedValue] = useState(() =>
+      formatter(value)
+    );
+
+    useEffect(() => {
+      setDisplayedValue(formatter(value));
+    }, [value]);
+
+    const blurHandler = useCallback(
+      (event, ...args) => {
+        const parsedValue = parser(event.target.value, { max, min, step });
+        if (parsedValue !== value && onChange) {
+          onChange(event, ...args);
+          setDisplayedValue(formatter(parsedValue));
+        } else {
+          setDisplayedValue(formatter(value));
+        }
+
+        if (onBlur) {
+          onBlur(...args);
+        }
+      },
+      [max, min, step, value, onBlur, onChange]
+    );
+
+    const changeHandler = useCallback((event) => {
+      setDisplayedValue(event.target.value);
+    }, []);
+
+    return (
+      <MaterialUITextField
+        InputProps={InputProps}
+        inputProps={{
+          size,
+          type: 'text',
+          inputMode: 'decimal',
+          pattern: '[-0-9+.,]*',
+        }}
+        variant='filled'
+        value={displayedValue}
+        onBlur={blurHandler}
+        onChange={changeHandler}
+        {...rest}
+      />
+    );
+  };
+
+  NumericField.propTypes = {
     max: PropTypes.number,
     min: PropTypes.number,
+    onBlur: PropTypes.func,
     onChange: PropTypes.func,
     size: PropTypes.number,
     step: PropTypes.number,
@@ -313,14 +407,14 @@ const createNumericField = ({ defaultProps, displayName, unit } = {}) => {
   };
 
   if (displayName) {
-    result.displayName = displayName;
+    NumericField.displayName = displayName;
   }
 
   if (defaultProps) {
-    result.defaultProps = defaultProps;
+    NumericField.defaultProps = defaultProps;
   }
 
-  return result;
+  return NumericField;
 };
 
 // These fields are NOT designed to be used in conjunction with react-final-form;
