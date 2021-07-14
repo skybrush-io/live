@@ -6,6 +6,7 @@ import config from 'config';
 
 import { all } from 'redux-saga/effects';
 
+import hotkeySaga from '~/features/hotkeys/saga';
 import localServerSaga from '~/features/local-server/saga';
 import measurementSaga from '~/features/measurement/saga';
 import serversSaga from '~/features/servers/saga';
@@ -23,11 +24,11 @@ import onboardingSaga from './onboarding';
 export default function* rootSaga() {
   const { localServer } = (window ? window.bridge : null) || {};
   const sagas = [
+    hotkeySaga(),
     measurementSaga(),
     onboardingSaga(),
     serversSaga(),
     showSaga(),
-    tourSaga(),
     uavManagementSaga(flock),
   ];
 
@@ -37,6 +38,10 @@ export default function* rootSaga() {
 
   if (config && config.session) {
     sagas.push(sessionSaga(config.session));
+  }
+
+  if (config && config.tour) {
+    sagas.push(tourSaga());
   }
 
   yield all(sagas);

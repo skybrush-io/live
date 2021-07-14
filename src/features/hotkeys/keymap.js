@@ -100,7 +100,27 @@ const globalKeyMap = {
     name: 'Toggle sorting UAVs by mission IDs',
     sequence: 'mod+s',
   },
+
+  TYPE_S: {
+    name: 'Prepend S to the pending UAV ID',
+    sequence: 's',
+    group: HIDDEN,
+  },
+
+  DELETE_LAST_CHARACTER: {
+    name: 'Delete last character of pending UAV ID',
+    sequence: 'backspace',
+    group: HIDDEN,
+  },
 };
+
+for (const number of [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]) {
+  globalKeyMap[`TYPE_${number}`] = {
+    name: `Append ${number} to the pending UAV ID`,
+    sequence: String(number),
+    group: HIDDEN,
+  };
+}
 
 // We need to replace "mod" with "meta" on macOS and "ctrl" everywhere else
 // until react-hotkeys starts supporting the "mod" modifier from Mousetrap

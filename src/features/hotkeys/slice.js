@@ -11,9 +11,18 @@ const { actions, reducer } = createSlice({
 
   initialState: {
     dialogVisible: false,
+    pendingUAVId: '',
   },
 
   reducers: {
+    setPendingUAVId: (state, action) => {
+      state.pendingUAVId = action.payload;
+    },
+
+    startPendingUAVIdTimeout: () => {
+      /* nothing to do here, the saga will take care of it */
+    },
+
     showHotkeyDialog: noPayload((state) => {
       state.dialogVisible = true;
     }),
@@ -24,6 +33,11 @@ const { actions, reducer } = createSlice({
   },
 });
 
-export const { closeHotkeyDialog, showHotkeyDialog } = actions;
+export const {
+  closeHotkeyDialog,
+  showHotkeyDialog,
+  setPendingUAVId,
+  startPendingUAVIdTimeout,
+} = actions;
 
 export default reducer;

@@ -18,6 +18,7 @@ import ServerConnectionManager from './components/ServerConnectionManager';
 import DockDetailsDialog from './features/docks/DockDetailsDialog';
 import AppHotkeys from './features/hotkeys/AppHotkeys';
 import HotkeyDialog from './features/hotkeys/HotkeyDialog';
+import PendingUAVIdOverlay from './features/hotkeys/PendingUAVIdOverlay';
 import LicenseInfoDialog from './features/license-info/LicenseInfoDialog';
 import CoordinateAveragingDialog from './features/measurement/CoordinateAveragingDialog';
 import SavedLocationEditorDialog from './features/saved-locations/SavedLocationEditorDialog';
@@ -106,6 +107,7 @@ const App = ({ onFirstRender }) => (
         {config.ribbon && config.ribbon.label && (
           <CornerRibbon {...config.ribbon} />
         )}
+        <PendingUAVIdOverlay />
       </div>
 
       <ServerConnectionManager />

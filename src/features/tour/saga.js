@@ -7,7 +7,7 @@ import { startTour } from '~/features/tour/slice';
  * Compound saga related to the management of the guided tour that appears when
  * the user starts Skybrush for the first time.
  */
-export default function* tourManagementSaga(flock) {
+export default function* tourManagementSaga() {
   // Wait 3 seconds before we kick in
   yield delay(3000);
 

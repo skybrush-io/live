@@ -8,13 +8,18 @@ import React from 'react';
 import { configure as configureHotkeys, GlobalHotKeys } from 'react-hotkeys';
 import { connect } from 'react-redux';
 
-import { selectAllUAVFeatures, clearSelection } from '~/actions/map';
+import { selectAllUAVFeatures } from '~/actions/map';
 import { toggleMissionIds } from '~/features/settings/slice';
 import { removeSelectedUAVs } from '~/features/uavs/actions';
 import { getUAVCommandTriggers } from '~/features/uavs/selectors';
 import { clearStoreAfterConfirmation } from '~/store';
 
-import { copyCoordinates } from './actions';
+import {
+  appendToPendingUAVId,
+  clearSelectionOrPendingUAVId,
+  copyCoordinates,
+  deleteLastCharacterOfPendingUAVId,
+} from './actions';
 import keyMap from './keymap';
 import keyboardNavigationSignal from './signal';
 import { showHotkeyDialog } from './slice';
@@ -83,8 +88,9 @@ export default connect(
     handlers: bindHotkeyHandlers(
       // Redux actions bound to hotkeys
       {
-        CLEAR_SELECTION: clearSelection,
+        CLEAR_SELECTION: clearSelectionOrPendingUAVId,
         COPY_COORDINATES: copyCoordinates,
+        DELETE_LAST_CHARACTER: deleteLastCharacterOfPendingUAVId,
         REMOVE_SELECTION: removeSelectedUAVs,
         SELECT_ALL_DRONES: selectAllUAVFeatures,
         SEND_FLASH_LIGHTS_COMMAND: callUAVActionOnSelection('flashLightOnUAVs'),
@@ -93,6 +99,17 @@ export default connect(
         SEND_RTH_COMMAND: callUAVActionOnSelection('returnToHomeUAVs'),
         SHOW_HOTKEY_DIALOG: showHotkeyDialog,
         TOGGLE_SORT_BY_MISSION_ID: toggleMissionIds,
+        TYPE_0: () => appendToPendingUAVId(0),
+        TYPE_1: () => appendToPendingUAVId(1),
+        TYPE_2: () => appendToPendingUAVId(2),
+        TYPE_3: () => appendToPendingUAVId(3),
+        TYPE_4: () => appendToPendingUAVId(4),
+        TYPE_5: () => appendToPendingUAVId(5),
+        TYPE_6: () => appendToPendingUAVId(6),
+        TYPE_7: () => appendToPendingUAVId(7),
+        TYPE_8: () => appendToPendingUAVId(8),
+        TYPE_9: () => appendToPendingUAVId(9),
+        TYPE_S: () => appendToPendingUAVId('s'),
       },
       // Plain callable functions bound to hotkeys
       {
