@@ -95,6 +95,11 @@ const globalKeyMap = {
     sequence: '?',
     group: HIDDEN,
   },
+
+  TOGGLE_SORT_BY_MISSION_ID: {
+    name: 'Toggle sorting UAVs by mission IDs',
+    sequence: 'mod+s',
+  },
 };
 
 // We need to replace "mod" with "meta" on macOS and "ctrl" everywhere else

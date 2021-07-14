@@ -4,7 +4,6 @@ import { TransitionGroup } from 'react-transition-group';
 import { connect } from 'react-redux';
 
 import IconButton from '@material-ui/core/IconButton';
-import Zoom from '@material-ui/core/Zoom';
 import Edit from '@material-ui/icons/Edit';
 import ViewList from '@material-ui/icons/ViewList';
 import ViewModule from '@material-ui/icons/ViewModule';
@@ -39,18 +38,14 @@ const MappingButtonGroup = ({
   startMappingEditorSession,
 }) => (
   <>
-    <TransitionGroup>
-      {showMissionIds && (
-        <Zoom key='editMapping'>
-          <IconButton
-            disabled={mappingEditable || !showMissionIds}
-            onClick={startMappingEditorSession}
-          >
-            <Edit />
-          </IconButton>
-        </Zoom>
-      )}
-    </TransitionGroup>
+    {showMissionIds && (
+      <IconButton
+        disabled={mappingEditable || !showMissionIds}
+        onClick={startMappingEditorSession}
+      >
+        <Edit />
+      </IconButton>
+    )}
 
     <MappingToggleButton />
 

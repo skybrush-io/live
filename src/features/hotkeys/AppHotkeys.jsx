@@ -9,6 +9,7 @@ import { configure as configureHotkeys, GlobalHotKeys } from 'react-hotkeys';
 import { connect } from 'react-redux';
 
 import { selectAllUAVFeatures, clearSelection } from '~/actions/map';
+import { toggleMissionIds } from '~/features/settings/slice';
 import { removeSelectedUAVs } from '~/features/uavs/actions';
 import { getUAVCommandTriggers } from '~/features/uavs/selectors';
 import { clearStoreAfterConfirmation } from '~/store';
@@ -91,6 +92,7 @@ export default connect(
         SEND_LANDING_COMMAND: callUAVActionOnSelection('landUAVs'),
         SEND_RTH_COMMAND: callUAVActionOnSelection('returnToHomeUAVs'),
         SHOW_HOTKEY_DIALOG: showHotkeyDialog,
+        TOGGLE_SORT_BY_MISSION_ID: toggleMissionIds,
       },
       // Plain callable functions bound to hotkeys
       {
