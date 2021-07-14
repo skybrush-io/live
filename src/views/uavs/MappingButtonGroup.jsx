@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { TransitionGroup } from 'react-transition-group';
 import { connect } from 'react-redux';
 
 import IconButton from '@material-ui/core/IconButton';
