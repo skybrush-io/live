@@ -105,7 +105,6 @@ export function createKeyboardNavigationHandlers({
       const result = setFocusToId(newSelectedId);
       if (typeof result === 'string') {
         const element = document.querySelector(result);
-        console.log(element);
         if (element) {
           element.scrollIntoView({
             behavior: 'auto',

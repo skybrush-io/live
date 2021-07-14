@@ -15,13 +15,14 @@ import { getUAVCommandTriggers } from '~/features/uavs/selectors';
 import { clearStoreAfterConfirmation } from '~/store';
 
 import {
+  activateSelection,
   appendToPendingUAVId,
   clearSelectionOrPendingUAVId,
   copyCoordinates,
   deleteLastCharacterOfPendingUAVId,
 } from './actions';
 import keyMap from './keymap';
-import keyboardNavigationSignal from './signal';
+import { sendKeyboardNavigationSignal } from './signal';
 import { showHotkeyDialog } from './slice';
 
 configureHotkeys({
@@ -66,9 +67,6 @@ AppHotkeys.propTypes = {
   handlers: PropTypes.object,
 };
 
-const sendKeyboardNavigationSignal = (action) => (event) =>
-  keyboardNavigationSignal.dispatch(action, event);
-
 const callUAVActionOnSelection = (actionName) => () => (dispatch, getState) => {
   const actions = getUAVCommandTriggers(getState());
   const action = actions[actionName];
@@ -88,6 +86,7 @@ export default connect(
     handlers: bindHotkeyHandlers(
       // Redux actions bound to hotkeys
       {
+        ACTIVATE_SELECTION: activateSelection,
         CLEAR_SELECTION: clearSelectionOrPendingUAVId,
         COPY_COORDINATES: copyCoordinates,
         DELETE_LAST_CHARACTER: deleteLastCharacterOfPendingUAVId,
@@ -113,7 +112,6 @@ export default connect(
       },
       // Plain callable functions bound to hotkeys
       {
-        ACTIVATE_SELECTION: sendKeyboardNavigationSignal('ACTIVATE_SELECTION'),
         CLEAR_STORED_SETTINGS: clearStoreAfterConfirmation,
         PAGE_DOWN: sendKeyboardNavigationSignal('PAGE_DOWN'),
         PAGE_UP: sendKeyboardNavigationSignal('PAGE_UP'),

@@ -1,9 +1,69 @@
-import { clearSelection } from '~/actions/map';
+import isNil from 'lodash-es/isNil';
+
+import { clearSelection, setSelectedUAVIds } from '~/actions/map';
+import { getMissionMapping } from '~/features/mission/selectors';
 import { showNotification } from '~/features/snackbar/slice';
+import { getUAVById } from '~/features/uavs/selectors';
 import { copyDisplayedCoordinatesToClipboard } from '~/views/map/utils';
 
 import { getPendingUAVId, isPendingUAVIdOverlayVisible } from './selectors';
+import { sendKeyboardNavigationSignal } from './signal';
 import { setPendingUAVId, startPendingUAVIdTimeout } from './slice';
+
+/* Prefixes to try in front of a UAV ID in case the "real" UAV ID has leading
+ * zeros */
+const LEADING_ZEROS = ['', '0', '00', '000', '0000'];
+
+function handleAndClearPendingUAVId(dispatch, getState) {
+  const state = getState();
+  const pendingUAVId = getPendingUAVId(state);
+
+  if (
+    pendingUAVId &&
+    typeof pendingUAVId === 'string' &&
+    pendingUAVId.length > 0
+  ) {
+    const newSelection = [];
+
+    if (pendingUAVId.charAt(0) === 's') {
+      const mapping = getMissionMapping(state);
+      const index = Number(pendingUAVId.slice(1));
+      if (Number.isFinite(index)) {
+        const uavId = mapping[index - 1];
+        const uav = isNil(uavId) ? null : getUAVById(state, uavId);
+        if (!isNil(uav)) {
+          newSelection.push(uavId);
+        }
+      }
+    } else {
+      const allNumeric = /^\d+$/.test(pendingUAVId);
+      const prefixes = allNumeric ? LEADING_ZEROS : [''];
+      for (const prefix of prefixes) {
+        const uavId = prefix + pendingUAVId;
+        const uav = getUAVById(state, uavId);
+        if (uav) {
+          newSelection.push(uavId);
+          break;
+        }
+      }
+    }
+
+    dispatch(setSelectedUAVIds(newSelection));
+    dispatch(clearPendingUAVId());
+
+    return newSelection.length > 0;
+  } else {
+    return false;
+  }
+}
+
+export function activateSelection() {
+  return (dispatch, getState) => {
+    if (!handleAndClearPendingUAVId(dispatch, getState)) {
+      sendKeyboardNavigationSignal('ACTIVATE_SELECTION')();
+    }
+  };
+}
 
 /**
  * Appends a new character to the end of the pending UAV ID string that allows
