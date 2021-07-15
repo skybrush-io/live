@@ -5,6 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- `Ctrl-S` (or `Cmd-S` on macOS) can now be used to toggle whether the UAV
+  list should be sorted by IDs or mission IDs.
+
+- UAVs can now be selected by typing its ID or mission ID and then pressing
+  Enter.
+
+- UAV lights can now be flashed by typing the ID or mission ID of the UAV and
+  then pressing `W`.
+
+### Fixed
+
+- Altitude summary indicator now works for indoor UAVs as well. Note that it is
+  not possible to mix indoor with outdoor UAVs; the altitude indicator will
+  still show AMSL if there is at least one UAV that provides an AMSL altitude.
+
 ## [1.22.0] - 2021-07-12
 
 ### Added
