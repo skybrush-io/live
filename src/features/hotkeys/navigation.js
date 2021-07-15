@@ -1,6 +1,8 @@
 import isNil from 'lodash-es/isNil';
 import { bindActionCreators } from '@reduxjs/toolkit';
 
+import { scrollIntoView } from '~/utils/navigation';
+
 /**
  * Creates a hotkey handler map that maps keyboard navigation related hotkey
  * action names to the corresponding handler functions in a way that is suitable
@@ -104,14 +106,7 @@ export function createKeyboardNavigationHandlers({
     if (setFocusToId && !isNil(newSelectedId)) {
       const result = setFocusToId(newSelectedId);
       if (typeof result === 'string') {
-        const element = document.querySelector(result);
-        if (element) {
-          element.scrollIntoView({
-            behavior: 'auto',
-            block: 'nearest',
-            inline: 'nearest',
-          });
-        }
+        scrollIntoView(result);
       }
     }
 

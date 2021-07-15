@@ -4,6 +4,7 @@ import { clearSelection, setSelectedUAVIds } from '~/actions/map';
 import { getMissionMapping } from '~/features/mission/selectors';
 import { showNotification } from '~/features/snackbar/slice';
 import { getUAVById } from '~/features/uavs/selectors';
+import { scrollUAVListItemIntoView } from '~/utils/navigation';
 import { copyDisplayedCoordinatesToClipboard } from '~/views/map/utils';
 
 import { getPendingUAVId, isPendingUAVIdOverlayVisible } from './selectors';
@@ -24,14 +25,13 @@ function handleAndClearPendingUAVId(dispatch, getState) {
     pendingUAVId.length > 0
   ) {
     const newSelection = [];
+    const mapping = getMissionMapping(state);
 
     if (pendingUAVId.charAt(0) === 's') {
-      const mapping = getMissionMapping(state);
       const index = Number(pendingUAVId.slice(1));
       if (Number.isFinite(index)) {
         const uavId = mapping[index - 1];
-        const uav = isNil(uavId) ? null : getUAVById(state, uavId);
-        if (!isNil(uav)) {
+        if (!isNil(uavId)) {
           newSelection.push(uavId);
         }
       }
@@ -41,7 +41,11 @@ function handleAndClearPendingUAVId(dispatch, getState) {
       for (const prefix of prefixes) {
         const uavId = prefix + pendingUAVId;
         const uav = getUAVById(state, uavId);
-        if (uav) {
+
+        /* we consider the UAV ID as found if we either have a UAV with status
+         * information that corresponds to this ID, or if the UAV ID is in the
+         * mission mapping */
+        if (uav || mapping.includes(uavId)) {
           newSelection.push(uavId);
           break;
         }
@@ -51,10 +55,16 @@ function handleAndClearPendingUAVId(dispatch, getState) {
     dispatch(setSelectedUAVIds(newSelection));
     dispatch(clearPendingUAVId());
 
-    return newSelection.length > 0;
-  } else {
-    return false;
+    if (newSelection.length > 0) {
+      scrollUAVListItemIntoView(newSelection[0]);
+    }
+
+    /* selection was handled, caller might want to skip its own default action */
+    return true;
   }
+
+  /* nothing was selected, caller can proceed with its own default action */
+  return false;
 }
 
 export function activateSelection() {
