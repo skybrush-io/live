@@ -15,11 +15,12 @@ import { getUAVCommandTriggers } from '~/features/uavs/selectors';
 import { clearStoreAfterConfirmation } from '~/store';
 
 import {
-  activateSelection,
   appendToPendingUAVId,
   clearSelectionOrPendingUAVId,
   copyCoordinates,
   deleteLastCharacterOfPendingUAVId,
+  handlePendingUAVIdThenCall,
+  handlePendingUAVIdThenDispatch,
 } from './actions';
 import keyMap from './keymap';
 import { sendKeyboardNavigationSignal } from './signal';
@@ -86,13 +87,18 @@ export default connect(
     handlers: bindHotkeyHandlers(
       // Redux actions bound to hotkeys
       {
-        ACTIVATE_SELECTION: activateSelection,
+        ACTIVATE_SELECTION: handlePendingUAVIdThenCall(
+          sendKeyboardNavigationSignal('ACTIVATE_SELECTION'),
+          { executeOnlyWithoutPendingUAVId: true }
+        ),
         CLEAR_SELECTION: clearSelectionOrPendingUAVId,
         COPY_COORDINATES: copyCoordinates,
         DELETE_LAST_CHARACTER: deleteLastCharacterOfPendingUAVId,
-        REMOVE_SELECTION: removeSelectedUAVs,
+        REMOVE_SELECTION: handlePendingUAVIdThenDispatch(removeSelectedUAVs),
         SELECT_ALL_DRONES: selectAllUAVFeatures,
-        SEND_FLASH_LIGHTS_COMMAND: callUAVActionOnSelection('flashLightOnUAVs'),
+        SEND_FLASH_LIGHTS_COMMAND: handlePendingUAVIdThenDispatch(
+          callUAVActionOnSelection('flashLightOnUAVs')
+        ),
         SEND_TAKEOFF_COMMAND: callUAVActionOnSelection('takeoffUAVs'),
         SEND_LANDING_COMMAND: callUAVActionOnSelection('landUAVs'),
         SEND_RTH_COMMAND: callUAVActionOnSelection('returnToHomeUAVs'),

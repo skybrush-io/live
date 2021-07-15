@@ -67,12 +67,52 @@ function handleAndClearPendingUAVId(dispatch, getState) {
   return false;
 }
 
-export function activateSelection() {
-  return (dispatch, getState) => {
-    if (!handleAndClearPendingUAVId(dispatch, getState)) {
-      sendKeyboardNavigationSignal('ACTIVATE_SELECTION')();
-    }
-  };
+/**
+ * Helper function that takes an arbitrary function and returns a Redux action
+ * factory that creates an action that will 1) first check whether the user has
+ * a pending UAV ID typed in via the keyboard, and if so, selects the UAV, and
+ * then 2) calls the given function with its original arguments
+ *
+ * @param {function}  func  the function to call
+ * @param {bool} executeOnlyWithoutPendingUAVId  whether the function must be
+ *        called _only_ if there was no pending UAV
+ */
+export function handlePendingUAVIdThenCall(
+  func,
+  { executeOnlyWithoutPendingUAVId } = {}
+) {
+  return (...args) =>
+    (dispatch, getState) => {
+      const hadPendingUAVId = handleAndClearPendingUAVId(dispatch, getState);
+      if (hadPendingUAVId && !executeOnlyWithoutPendingUAVId) {
+        return func(...args);
+      }
+    };
+}
+
+/**
+ * Helper function that takes a Redux action factory and returns another action
+ * factory that creates an action that will 1) first check whether the user has
+ * a pending UAV ID typed in via the keyboard, and if so, selects the UAV, and
+ * then 2) dispatches the action returned by the original factory with its
+ * original arguments
+ *
+ * @param {function}  actionFactory  the action factory to wrap
+ * @param {bool} executeOnlyWithoutPendingUAVId  whether the function must be
+ *        called _only_ if there was no pending UAV
+ */
+export function handlePendingUAVIdThenDispatch(
+  actionFactory,
+  { executeOnlyWithoutPendingUAVId } = {}
+) {
+  return (...args) =>
+    (dispatch, getState) => {
+      const hadPendingUAVId = handleAndClearPendingUAVId(dispatch, getState);
+      if (hadPendingUAVId && !executeOnlyWithoutPendingUAVId) {
+        const action = actionFactory(...args);
+        return dispatch(action);
+      }
+    };
 }
 
 /**
