@@ -8,7 +8,6 @@ import { scrollUAVListItemIntoView } from '~/utils/navigation';
 import { copyDisplayedCoordinatesToClipboard } from '~/views/map/utils';
 
 import { getPendingUAVId, isPendingUAVIdOverlayVisible } from './selectors';
-import { sendKeyboardNavigationSignal } from './signal';
 import { setPendingUAVId, startPendingUAVIdTimeout } from './slice';
 
 /* Prefixes to try in front of a UAV ID in case the "real" UAV ID has leading
