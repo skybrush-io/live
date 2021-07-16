@@ -83,7 +83,7 @@ export function handlePendingUAVIdThenCall(
   return (...args) =>
     (dispatch, getState) => {
       const hadPendingUAVId = handleAndClearPendingUAVId(dispatch, getState);
-      if (hadPendingUAVId && !executeOnlyWithoutPendingUAVId) {
+      if (!hadPendingUAVId || !executeOnlyWithoutPendingUAVId) {
         return func(...args);
       }
     };
@@ -107,7 +107,7 @@ export function handlePendingUAVIdThenDispatch(
   return (...args) =>
     (dispatch, getState) => {
       const hadPendingUAVId = handleAndClearPendingUAVId(dispatch, getState);
-      if (hadPendingUAVId && !executeOnlyWithoutPendingUAVId) {
+      if (!hadPendingUAVId || !executeOnlyWithoutPendingUAVId) {
         const action = actionFactory(...args);
         return dispatch(action);
       }
