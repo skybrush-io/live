@@ -38,6 +38,31 @@ export const getTakeoffHeadingsInMission = (state) =>
 export const getMissionMapping = (state) => state.mission.mapping;
 
 /**
+ * Returns the contents of a file that would encode the current mission mapping
+ * as a string.
+ *
+ * This is not a pure selector as it encodes the current time in the file.
+ */
+export const getMissionMappingFileContents = (state) => {
+  const mapping = getMissionMapping(state);
+  const length = mapping && Array.isArray(mapping) ? mapping.length : 0;
+  const lines = [];
+
+  lines.push(
+    `# Mapping file generated at ${new Date().toISOString()}`,
+    '#',
+    '# showID droneID'
+  );
+
+  for (let i = 0; i < length; i++) {
+    lines.push(`${i + 1}${isNil(mapping[i]) ? '' : ` ${String(mapping[i])}`}`);
+  }
+
+  lines.push('');
+  return lines.join('\n');
+};
+
+/**
  * Returns a list containing the indices of all the empty mapping slots (i.e.
  * slots that have no assigned drone yet).
  */

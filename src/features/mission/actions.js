@@ -7,6 +7,7 @@ import {
   getGeofencePolygonId,
   getGPSBasedHomePositionsInMission,
   getMissionMapping,
+  getMissionMappingFileContents,
 } from './selectors';
 import { clearMapping, removeUAVsFromMapping, replaceMapping } from './slice';
 
@@ -19,6 +20,7 @@ import {
   isShowIndoor,
   isShowOutdoor,
 } from '~/features/show/selectors';
+import { showError } from '~/features/snackbar/actions';
 import { showNotification } from '~/features/snackbar/slice';
 import { MessageSemantics } from '~/features/snackbar/types';
 import {
@@ -28,6 +30,7 @@ import {
   getUnmappedUAVIds,
 } from '~/features/uavs/selectors';
 import messageHub from '~/message-hub';
+import { writeTextToFile } from '~/utils/filesystem';
 import { calculateDistanceMatrix, euclideanDistance2D } from '~/utils/math';
 
 /**
@@ -194,6 +197,25 @@ export const addVirtualDronesForMission = () => async (dispatch, getState) => {
       semantics: MessageSemantics.SUCCESS,
     })
   );
+};
+
+/**
+ * Thunk that exports the current mapping to a file.
+ */
+export const exportMapping = () => async (dispatch, getState) => {
+  const contents = getMissionMappingFileContents(getState());
+  try {
+    await writeTextToFile(contents, 'mapping.txt', {
+      title: 'Export mapping',
+      properties: {
+        createDirectory: true,
+        showOverwriteConfirmation: true,
+        dontAddToRecent: true,
+      },
+    });
+  } catch (error) {
+    dispatch(showError(`Error while exporting mapping: ${String(error)}`));
+  }
 };
 
 /**

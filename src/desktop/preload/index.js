@@ -159,6 +159,14 @@ contextBridge.exposeInMainWorld('bridge', {
     const watcher = watch(filename, handler);
     return watcher.close;
   },
+
+  writeBufferToFile: async (buffer, preferredFilename, options) => {
+    return ipc.callMain('writeBufferToFile', {
+      buffer,
+      preferredFilename,
+      options,
+    });
+  },
 });
 
 // Set up IPC channels that we are going to listen to
