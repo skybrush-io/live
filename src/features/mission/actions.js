@@ -30,7 +30,7 @@ import {
   getUnmappedUAVIds,
 } from '~/features/uavs/selectors';
 import messageHub from '~/message-hub';
-import { writeTextToFile } from '~/utils/filesystem';
+import { readTextFromFile, writeTextToFile } from '~/utils/filesystem';
 import { calculateDistanceMatrix, euclideanDistance2D } from '~/utils/math';
 
 /**
@@ -207,14 +207,59 @@ export const exportMapping = () => async (dispatch, getState) => {
   try {
     await writeTextToFile(contents, 'mapping.txt', {
       title: 'Export mapping',
-      properties: {
-        createDirectory: true,
-        showOverwriteConfirmation: true,
-        dontAddToRecent: true,
-      },
+      properties: [
+        'createDirectory',
+        'showOverwriteConfirmation',
+        'dontAddToRecent',
+      ],
     });
   } catch (error) {
     dispatch(showError(`Error while exporting mapping: ${String(error)}`));
+  }
+};
+
+/**
+ * Thunk that imports a mapping from a file.
+ */
+export const importMapping = () => async (dispatch, getState) => {
+  try {
+    const contents = await readTextFromFile({
+      title: 'Import mapping',
+      properties: ['openFile', 'dontAddToRecent'],
+    });
+    const mapping = getMissionMapping(getState()).concat();
+    const lines = contents.split('\n');
+    let lineNumber = 0;
+
+    for (let line of lines) {
+      line = line.trim();
+      lineNumber++;
+
+      if (line.length === 0 || line.startsWith('#')) {
+        continue;
+      }
+
+      const match = line.match(/^(?<index>\d+)(\s+(?<uavId>.*))?$/);
+      if (!match) {
+        throw new Error(`Malformed line ${lineNumber} in mapping file`);
+      }
+
+      const { uavId } = match.groups;
+      const index = Number.parseInt(match.groups.index, 10);
+      if (!Number.isInteger(index) || index <= 0) {
+        throw new Error(
+          `Invalid mission index in line ${lineNumber} of mapping file`
+        );
+      }
+
+      if (index <= mapping.length) {
+        mapping[index - 1] = uavId && uavId.length > 0 ? uavId : null;
+      }
+    }
+
+    dispatch(replaceMapping(mapping));
+  } catch (error) {
+    dispatch(showError(`Error while importing mapping: ${String(error)}`));
   }
 };
 

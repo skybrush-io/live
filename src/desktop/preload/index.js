@@ -145,6 +145,15 @@ contextBridge.exposeInMainWorld('bridge', {
   reverseDNSLookup,
 
   /**
+   * Reads the contents of a file picked by the user to a buffer.
+   *
+   * @param {object} options additional options that are passed on to Electron's
+   *        <code>showOpenDialog()</code> function
+   */
+  readBufferFromFile: async (options) =>
+    ipc.callMain('readBufferFromFile', options),
+
+  /**
    * Starts watching the file with the given name for changes and calls a
    * handler whenever the file changed. The first argument of the handler is
    * <code>update</code> or <code>delete</code>, depending on what happened
@@ -160,13 +169,22 @@ contextBridge.exposeInMainWorld('bridge', {
     return watcher.close;
   },
 
-  writeBufferToFile: async (buffer, preferredFilename, options) => {
-    return ipc.callMain('writeBufferToFile', {
+  /**
+   * Writes the given array buffer to a file, prompting the user for the name
+   * of the file to save it to.
+   *
+   * @param {object} buffer  the buffer containing the data to save to a file
+   * @param {string} preferredFilename  preferred filename that will be offered
+   *        to the user as a default
+   * @param {object} options additional options that are passed on to Electron's
+   *        <code>showSaveDialog()</code> function
+   */
+  writeBufferToFile: async (buffer, preferredFilename, options) =>
+    ipc.callMain('writeBufferToFile', {
       buffer,
       preferredFilename,
       options,
-    });
-  },
+    }),
 });
 
 // Set up IPC channels that we are going to listen to

@@ -16,6 +16,7 @@ import OpenWith from '@material-ui/icons/OpenWith';
 import {
   augmentMappingAutomaticallyFromSpareDrones,
   exportMapping,
+  importMapping,
   removeMissingUAVsFromMapping,
 } from '~/features/mission/actions';
 import { canAugmentMappingAutomaticallyFromSpareDrones } from '~/features/mission/selectors';
@@ -39,6 +40,8 @@ const MappingEditorToolbar = React.forwardRef(
       clearMapping,
       exportMapping,
       finishMappingEditorSession,
+      importAllowed,
+      importMapping,
       removeMissingUAVsFromMapping,
       ...rest
     },
@@ -81,7 +84,11 @@ const MappingEditorToolbar = React.forwardRef(
             Assign spares
           </MenuItem>
           <Divider />
-          <MenuItem disabled>Import mapping…</MenuItem>
+          {importAllowed && (
+            <MenuItem onClick={closeMappingMenu(importMapping)}>
+              Import mapping…
+            </MenuItem>
+          )}
           <MenuItem onClick={closeMappingMenu(exportMapping)}>
             Export mapping…
           </MenuItem>
@@ -102,6 +109,8 @@ MappingEditorToolbar.propTypes = {
   clearMapping: PropTypes.func,
   exportMapping: PropTypes.func,
   finishMappingEditorSession: PropTypes.func,
+  importMapping: PropTypes.func,
+  importAllowed: PropTypes.bool,
   removeMissingUAVsFromMapping: PropTypes.func,
   selectedUAVIds: PropTypes.array,
 };
@@ -110,12 +119,14 @@ export default connect(
   // mapStateToProps
   (state) => ({
     canAugmentMapping: canAugmentMappingAutomaticallyFromSpareDrones(state),
+    importAllowed: Boolean(window.bridge && window.bridge.readBufferFromFile),
   }),
   // mapDispatchToProps
   {
     augmentMapping: augmentMappingAutomaticallyFromSpareDrones,
     clearMapping,
     exportMapping,
+    importMapping,
     finishMappingEditorSession,
     removeMissingUAVsFromMapping,
   },

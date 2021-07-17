@@ -18,6 +18,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - UAV lights can now be flashed by typing the ID or mission ID of the UAV and
   then pressing `W`.
 
+- The mapping from mission IDs to UAV IDs can now be exported into a simple text
+  file and it can also be read back later.
+
 ### Fixed
 
 - Altitude summary indicator now works for indoor UAVs as well. Note that it is
