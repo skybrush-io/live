@@ -6,8 +6,9 @@ import IconButton from '@material-ui/core/IconButton';
 import Edit from '@material-ui/icons/Edit';
 import ViewList from '@material-ui/icons/ViewList';
 import ViewModule from '@material-ui/icons/ViewModule';
-
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
+
+import Tooltip from '@skybrush/mui-components/lib/Tooltip';
 
 import MappingToggleButton from './MappingToggleButton';
 
@@ -38,12 +39,14 @@ const MappingButtonGroup = ({
 }) => (
   <>
     {showMissionIds && (
-      <IconButton
-        disabled={mappingEditable || !showMissionIds}
-        onClick={startMappingEditorSession}
-      >
-        <Edit />
-      </IconButton>
+      <Tooltip content='Edit mapping'>
+        <IconButton
+          disabled={mappingEditable || !showMissionIds}
+          onClick={startMappingEditorSession}
+        >
+          <Edit />
+        </IconButton>
+      </Tooltip>
     )}
 
     <MappingToggleButton />
