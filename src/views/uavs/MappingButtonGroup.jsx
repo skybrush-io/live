@@ -21,9 +21,11 @@ import {
 } from '~/features/mission/slice';
 import {
   getUAVListLayout,
+  isShowingEmptyMissionSlots,
   isShowingMissionIds,
 } from '~/features/settings/selectors';
 import { updateAppSettings } from '~/features/settings/slice';
+import MissingSlot from '~/icons/MissingSlot';
 
 /**
  * Button on the UAV toolbar that allows the user to toggle whether the mission
@@ -33,7 +35,9 @@ import { updateAppSettings } from '~/features/settings/slice';
 const MappingButtonGroup = ({
   layout,
   mappingEditable,
+  onToggleShowingEmptyMissionSlots,
   setUAVListLayout,
+  showEmptyMissionSlots,
   showMissionIds,
   startMappingEditorSession,
 }) => (
@@ -51,6 +55,22 @@ const MappingButtonGroup = ({
 
     <MappingToggleButton />
 
+    <Tooltip
+      content={
+        isShowingEmptyMissionSlots
+          ? 'Hide empty mission slots'
+          : 'Show empty mission slots'
+      }
+    >
+      <ToggleButton
+        disabled={!showMissionIds}
+        selected={showEmptyMissionSlots}
+        onClick={onToggleShowingEmptyMissionSlots}
+      >
+        <MissingSlot />
+      </ToggleButton>
+    </Tooltip>
+
     <ToolbarDivider orientation='vertical' />
 
     <ToggleButtonGroup exclusive value={layout} onChange={setUAVListLayout}>
@@ -67,7 +87,9 @@ const MappingButtonGroup = ({
 MappingButtonGroup.propTypes = {
   layout: PropTypes.oneOf(['grid', 'list']),
   mappingEditable: PropTypes.bool,
+  onToggleShowingEmptyMissionSlots: PropTypes.func,
   setUAVListLayout: PropTypes.func,
+  showEmptyMissionSlots: PropTypes.bool,
   showMissionIds: PropTypes.bool,
   startMappingEditorSession: PropTypes.func,
 };
@@ -77,11 +99,20 @@ export default connect(
   (state) => ({
     layout: getUAVListLayout(state),
     mappingEditable: isMappingEditable(state),
+    showEmptyMissionSlots: isShowingEmptyMissionSlots(state),
     showMissionIds: isShowingMissionIds(state),
   }),
   // mapDispatchToProps
   {
     clearMapping,
+    onToggleShowingEmptyMissionSlots: () => (dispatch, getState) => {
+      const isShowing = isShowingEmptyMissionSlots(getState());
+      dispatch(
+        updateAppSettings('display', {
+          hideEmptyMissionSlots: isShowing,
+        })
+      );
+    },
     startMappingEditorSession,
     setUAVListLayout: (_event, value) => (dispatch) => {
       if (value) {

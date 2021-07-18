@@ -9,7 +9,10 @@ import {
   getReverseMissionMapping,
   isMappingEditable,
 } from '~/features/mission/selectors';
-import { isShowingMissionIds } from '~/features/settings/selectors';
+import {
+  isShowingEmptyMissionSlots,
+  isShowingMissionIds,
+} from '~/features/settings/selectors';
 import { getUAVIdList } from '~/features/uavs/selectors';
 import { getSelectedUAVIds } from '~/selectors/selection';
 
@@ -31,7 +34,8 @@ const getDisplayListSortedByMissionId = createSelector(
   getMissionMapping,
   isMappingEditable,
   getUAVIdList,
-  (mapping, editable, uavIds) => {
+  isShowingEmptyMissionSlots,
+  (mapping, editable, uavIds, showEmpty) => {
     const mainUAVIds = [];
     const spareUAVIds = [];
     const extraSlots = [];
@@ -40,7 +44,9 @@ const getDisplayListSortedByMissionId = createSelector(
     for (const [index, uavId] of mapping.entries()) {
       if (isNil(uavId)) {
         // No UAV assigned to this slot
-        mainUAVIds.push([undefined, index]);
+        if (showEmpty || editable) {
+          mainUAVIds.push([undefined, index]);
+        }
       } else {
         // Some UAV is assigned to this slot
         mainUAVIds.push([uavId, index]);

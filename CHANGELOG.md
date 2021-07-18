@@ -25,6 +25,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   header widget from AMSL to AGL or local Z coordinate by clicking on the
   widget itself.
 
+- When testing a large show with only a few drones, you can now choose to hide
+  the empty (unassigned) slots from the UAV list to make the list shorter.
+
 ### Fixed
 
 - Altitude summary indicator now works for indoor UAVs as well. Note that it is

@@ -129,6 +129,12 @@ export const getUAVAgingThresholds = createSelector(
 export const getUAVListLayout = (state) => state.settings.display.uavListLayout;
 
 /**
+ * Returns whether we are currently showing empty mission slots in the UAV list.
+ */
+export const isShowingEmptyMissionSlots = (state) =>
+  !state.settings.display?.hideEmptyMissionSlots;
+
+/**
  * Returns whether we are currently showing mission IDs on the screen
  * where possible.
  */
