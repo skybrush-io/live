@@ -8,7 +8,10 @@ import {
   LIPO_FULL_CHARGE_VOLTAGE,
   LIPO_LOW_VOLTAGE_THRESHOLD,
 } from '~/model/constants';
-import { BatteryDisplayStyle } from '~/model/settings';
+import { AltitudeSummaryType, BatteryDisplayStyle } from '~/model/settings';
+
+export const getAltitudeSummaryType = (state) =>
+  state.settings.display?.altitudeSummaryType || AltitudeSummaryType.AMSL;
 
 export const getBatterySettings = createSelector(
   (state) => state.settings.uavs,

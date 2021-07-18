@@ -11,7 +11,11 @@ import {
   LIPO_LOW_VOLTAGE_THRESHOLD,
   LIPO_CRITICAL_VOLTAGE_THRESHOLD,
 } from '~/model/constants';
-import { BatteryDisplayStyle, CoordinateFormat } from '~/model/settings';
+import {
+  AltitudeSummaryType,
+  BatteryDisplayStyle,
+  CoordinateFormat,
+} from '~/model/settings';
 
 const { actions, reducer } = createSlice({
   name: 'settings',
@@ -21,6 +25,8 @@ const { actions, reducer } = createSlice({
   // is the actual settings.
   initialState: {
     display: {
+      // Altitude summary type
+      altitudeSummaryType: AltitudeSummaryType.AMSL,
       // Display format of coordinates
       coordinateFormat: CoordinateFormat.SIGNED_DEGREES,
       // Whether to show mission IDs or drone IDs in the UAV list

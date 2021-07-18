@@ -3,9 +3,25 @@ import PropTypes from 'prop-types';
 import { useStore } from 'react-redux';
 import { useInterval } from 'react-use';
 
+import { AltitudeSummaryType } from '~/model/settings';
+
 import { getActiveUAVIds, getUAVById } from './selectors';
 
-const AltitudeSummaryUpdater = ({ onSetStatus }) => {
+/**
+ * Mapping from altitude summary types to functions that take a UAV object and
+ * return an altitude according to the selected summary type (AMSL, AGL or local).
+ */
+const altitudeGetters = {
+  [AltitudeSummaryType.AMSL]: (uav) => uav?.position?.amsl,
+  [AltitudeSummaryType.AGL]: (uav) => uav?.position?.agl,
+  [AltitudeSummaryType.XYZ]: (uav) => {
+    const pos = uav?.localPosition;
+    return Array.isArray(pos) ? pos[2] : null;
+  },
+  dummy: () => null,
+};
+
+const AltitudeSummaryUpdater = ({ onSetStatus, type }) => {
   const store = useStore();
 
   useInterval(() => {
@@ -14,43 +30,25 @@ const AltitudeSummaryUpdater = ({ onSetStatus }) => {
     }
 
     const state = store.getState();
-    let minAltitudeAGL = Number.POSITIVE_INFINITY;
-    let maxAltitudeAGL = Number.NEGATIVE_INFINITY;
-    let minAltitudeAMSL = Number.POSITIVE_INFINITY;
-    let maxAltitudeAMSL = Number.NEGATIVE_INFINITY;
-    let minZ = Number.POSITIVE_INFINITY;
-    let maxZ = Number.NEGATIVE_INFINITY;
+    const getter = altitudeGetters[type] || altitudeGetters.dummy;
+
+    let minAltitude = Number.POSITIVE_INFINITY;
+    let maxAltitude = Number.NEGATIVE_INFINITY;
 
     for (const uavId of getActiveUAVIds(state)) {
       const uav = getUAVById(state, uavId);
-      const position = uav?.position;
-      if (position) {
-        if (!isNil(position.amsl)) {
-          minAltitudeAMSL = Math.min(minAltitudeAMSL, position.amsl);
-          maxAltitudeAMSL = Math.max(maxAltitudeAMSL, position.amsl);
-        }
+      const altitude = getter(uav);
 
-        if (!isNil(position.agl)) {
-          minAltitudeAGL = Math.min(minAltitudeAGL, position.agl);
-          maxAltitudeAGL = Math.max(maxAltitudeAGL, position.agl);
-        }
-      }
+      console.log(uav);
 
-      const positionXYZ = uav?.positionXYZ;
-      if (positionXYZ && !isNil(positionXYZ[2])) {
-        minZ = Math.min(minZ, positionXYZ[2]);
-        maxZ = Math.max(maxZ, positionXYZ[2]);
+      if (!isNil(altitude)) {
+        minAltitude = Math.min(minAltitude, altitude);
+        maxAltitude = Math.max(maxAltitude, altitude);
       }
     }
 
-    // If we have at least one AMSL, show AMSL; otherwise fall back to AGL,
-    // then to local coordinates (for indoor shows)
-    if (Number.isFinite(minAltitudeAMSL)) {
-      onSetStatus({ min: minAltitudeAMSL, max: maxAltitudeAMSL });
-    } else if (Number.isFinite(minAltitudeAGL)) {
-      onSetStatus({ min: minAltitudeAGL, max: maxAltitudeAGL });
-    } else if (Number.isFinite(minZ)) {
-      onSetStatus({ min: minZ, max: maxZ });
+    if (Number.isFinite(minAltitude)) {
+      onSetStatus({ min: minAltitude, max: maxAltitude });
     } else {
       onSetStatus({ min: null, max: null });
     }
@@ -61,6 +59,7 @@ const AltitudeSummaryUpdater = ({ onSetStatus }) => {
 
 AltitudeSummaryUpdater.propTypes = {
   onSetStatus: PropTypes.func,
+  type: PropTypes.oneOf(Object.values(AltitudeSummaryType)),
 };
 
 export default AltitudeSummaryUpdater;

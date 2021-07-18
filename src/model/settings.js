@@ -2,6 +2,29 @@
  * @file Model objects and classes related to the settings of the app.
  */
 
+export const AltitudeSummaryType = {
+  AMSL: 'amsl',
+  AGL: 'agl',
+  XYZ: 'xyz',
+};
+
+const _altitudeSummaryTypeDescriptions = {
+  [AltitudeSummaryType.AMSL]: 'Altitude above mean sea level',
+  [AltitudeSummaryType.AGL]: 'Altitude above ground level',
+  [AltitudeSummaryType.XYZ]: 'Altitude in local coordinate system',
+};
+
+const _altitudeSummaryTypeShortDescriptions = {
+  [AltitudeSummaryType.AMSL]: 'AMSL',
+  [AltitudeSummaryType.AGL]: 'AGL',
+  [AltitudeSummaryType.XYZ]: 'Z coordinate',
+};
+
+export const describeAltitudeSummaryType = (type, { short } = {}) =>
+  (short
+    ? _altitudeSummaryTypeShortDescriptions
+    : _altitudeSummaryTypeDescriptions)[type] || 'Unknown altitude type';
+
 export const CoordinateFormat = {
   DEGREES: 'd',
   DEGREES_MINUTES: 'dm',
