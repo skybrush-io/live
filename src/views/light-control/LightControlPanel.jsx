@@ -17,7 +17,7 @@ const LightControlPanel = () => (
     flexDirection='column'
     height='100%'
     id='tour-light-control'
-    overflow='auto'
+    overflow='hidden'
   >
     <List dense>
       <LightControlMainSwitch />

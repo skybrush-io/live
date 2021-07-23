@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- Added a color input text field (in hex notation) under the color picker in the
+  Light control panel.
+
+### Changed
+
+- The default filename for an exported mapping file now includes the show filename
+  and the time when it was saved.
+
 ## [1.23.0] - 2021-07-19
 
 ### Added
