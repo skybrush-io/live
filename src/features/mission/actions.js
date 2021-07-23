@@ -19,6 +19,7 @@ import {
   getShowOrientation,
   isShowIndoor,
   isShowOutdoor,
+  proposeMappingFileName,
 } from '~/features/show/selectors';
 import { showError } from '~/features/snackbar/actions';
 import { showNotification } from '~/features/snackbar/slice';
@@ -204,8 +205,9 @@ export const addVirtualDronesForMission = () => async (dispatch, getState) => {
  */
 export const exportMapping = () => async (dispatch, getState) => {
   const contents = getMissionMappingFileContents(getState());
+  const proposedMappingFileName = proposeMappingFileName(getState());
   try {
-    await writeTextToFile(contents, 'mapping.txt', {
+    await writeTextToFile(contents, proposedMappingFileName, {
       title: 'Export mapping',
       properties: [
         'createDirectory',

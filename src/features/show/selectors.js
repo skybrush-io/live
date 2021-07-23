@@ -1,5 +1,6 @@
 /* eslint unicorn/no-array-callback-reference: 0 */
 
+import formatDate from 'date-fns/format';
 import formatISO9075 from 'date-fns/formatISO9075';
 import fromUnixTime from 'date-fns/fromUnixTime';
 import get from 'lodash-es/get';
@@ -828,3 +829,26 @@ export const isUploadInProgress = (state) => state.show.upload.running;
  */
 export const shouldRetryFailedUploadsAutomatically = (state) =>
   state.show.upload.autoRetry;
+
+/**
+ * Proposes a name for a mapping file of the current show. Not a pure selector
+ * as the filename contains the current date and time.
+ */
+export function proposeMappingFileName(state) {
+  // ISO format cannot be used because colons are usually not allowed in
+  // filenames
+  const date = formatDate(new Date(), 'yyyy-MM-dd_HH-mm-ss');
+  const path = getAbsolutePathOfShowFile(state);
+  const lastSlashIndex = path ? path.lastIndexOf('/') : -1;
+  const filename =
+    path && lastSlashIndex >= 0 ? path.slice(lastSlashIndex + 1) : path;
+  const lastDotIndex = filename ? filename.lastIndexOf('.') : -1;
+  const basename =
+    filename && lastDotIndex > 0 ? filename.slice(0, lastDotIndex) : filename;
+
+  if (basename && basename.length > 0) {
+    return `${basename}_mapping_${date}.txt`;
+  } else {
+    return `mapping_${date}.txt`;
+  }
+}

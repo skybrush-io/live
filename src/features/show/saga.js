@@ -144,6 +144,7 @@ function createShowConfigurationForUav(state, uavId) {
 function runSingleUpload(uavId, data) {
   // No need for a timeout here; it utilizes the message hub, which has its
   // own timeout for failed command executions (although it is quite long)
+  console.log('Running single upload for', uavId);
   const cancelToken = messageHub.createCancelToken();
   const promise = messageHub.execute.uploadDroneShow(
     { uavId, data },
@@ -173,12 +174,16 @@ function* runUploadWorker(chan, failed) {
       yield put(notifyUploadOnUavStarted(uavId));
       const data = yield select(createShowConfigurationForUav, uavId);
       yield call(runSingleUpload, uavId, data);
+      console.log('Upload for UAV', uavId, 'finished');
       outcome = 'success';
     } catch (error) {
+      console.log('Upload for UAV', uavId, 'failed');
       console.error(error);
       outcome = 'failure';
     } finally {
+      console.log('Upload for UAV', uavId, 'maybe cancelled?');
       if (yield cancelled() && !outcome) {
+        console.log('Yes, cancelled!');
         outcome = 'cancelled';
       }
     }
