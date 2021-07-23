@@ -63,6 +63,7 @@ const MappingButtonGroup = ({
       }
     >
       <ToggleButton
+        value='showMissing'
         disabled={!showMissionIds}
         selected={showEmptyMissionSlots}
         onClick={onToggleShowingEmptyMissionSlots}
