@@ -39,8 +39,6 @@ const AltitudeSummaryUpdater = ({ onSetStatus, type }) => {
       const uav = getUAVById(state, uavId);
       const altitude = getter(uav);
 
-      console.log(uav);
-
       if (!isNil(altitude)) {
         minAltitude = Math.min(minAltitude, altitude);
         maxAltitude = Math.max(maxAltitude, altitude);
