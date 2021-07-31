@@ -13,7 +13,7 @@ const { actions, reducer } = createSlice({
   initialState: {
     open: false,
     selectedDockId: undefined,
-    selectedTab: 'sensors',
+    selectedTab: 'status',
   },
 
   reducers: {

@@ -17,9 +17,9 @@ import {
  */
 const DockDetailsDialogTabs = ({ dragHandleId, ...rest }) => (
   <DialogTabs alignment='left' dragHandle={dragHandleId} {...rest}>
-    <Tab label='Landing pads' value='landingPads' />
-    <Tab label='Sensors' value='sensors' />
+    <Tab label='Status' value='status' />
     <Tab label='Schedule' value='schedule' />
+    <Tab label='Storage' value='storage' />
     <Tab label='Live cam' value='liveCam' />
   </DialogTabs>
 );
@@ -30,7 +30,7 @@ DockDetailsDialogTabs.propTypes = {
 };
 
 DockDetailsDialogTabs.defaultProps = {
-  value: 'landingPads',
+  value: 'status',
 };
 
 export default connect(

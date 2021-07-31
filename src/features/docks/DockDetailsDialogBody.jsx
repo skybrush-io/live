@@ -2,9 +2,14 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 
+import IconButton from '@material-ui/core/IconButton';
+import Divider from '@material-ui/core/Divider';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import ListItemText from '@material-ui/core/ListItemText';
+import ListSubheader from '@material-ui/core/ListSubheader';
+import Sync from '@material-ui/icons/Sync';
 
 import StatusLight from '@skybrush/mui-components/lib/StatusLight';
 
@@ -15,38 +20,113 @@ import {
 
 const DockDetailsDialogBody = ({ selectedTab, dockId }) => {
   switch (selectedTab) {
-    case 'sensors':
+    case 'status':
       return (
         <List>
           <ListItem button>
-            <StatusLight status='warning' />
-            <ListItemText primary='Door sensor (left side) open' />
+            <StatusLight status='success' />
+            <ListItemText primary='Door closed' />
           </ListItem>
           <ListItem button>
-            <StatusLight status='warning' />
-            <ListItemText primary='Door sensor (right side) open' />
+            <StatusLight status='success' />
+            <ListItemText primary='Tilt angle: 0.7°' />
           </ListItem>
-          <ListItem button>
-            <StatusLight status='warning' />
-            <ListItemText primary='Door sensor (back) open' />
-          </ListItem>
+
+          <ListSubheader>Landing pad 1</ListSubheader>
           <ListItem button>
             <StatusLight status='success' />
             <ListItemText primary='Landing pad is at the bottom' />
           </ListItem>
           <ListItem button>
             <StatusLight status='success' />
-            <ListItemText primary='Tweezer (left side) touching drone leg' />
+            <ListItemText primary='Tweezers touching drone leg (left, right)' />
           </ListItem>
           <ListItem button>
-            <StatusLight status='success' />
-            <ListItemText primary='Tweezer (right side) touching drone leg' />
-          </ListItem>
-          <ListItem button>
-            <StatusLight status='warning' />
-            <ListItemText primary='Tilt angle: 2.6°' />
+            <StatusLight status='info' />
+            <ListItemText
+              primary='Drone is charging'
+              secondary={'11.6V \u2022 Time until full: 17m 12s'}
+            />
           </ListItem>
         </List>
+      );
+
+    case 'schedule':
+      return (
+        <List dense>
+          <ListSubheader>Upcoming missions</ListSubheader>
+          <ListItem>
+            <StatusLight status='next' size='small' />
+            <ListItemText
+              primary='Takeoff + landing test'
+              secondary='Scheduled: 2021-07-26 18:10 UTC'
+            />
+          </ListItem>
+          <ListItem>
+            <StatusLight status='off' size='small' />
+            <ListItemText
+              primary='Takeoff + landing test'
+              secondary='Scheduled: 2021-07-26 19:10 UTC'
+            />
+          </ListItem>
+          <ListSubheader>Past missions</ListSubheader>
+          <ListItem>
+            <StatusLight status='success' size='small' />
+            <ListItemText
+              primary='Takeoff + landing test'
+              secondary={'2021-07-26 17:10 UTC \u2022 0m 57s'}
+            />
+          </ListItem>
+          <ListItem>
+            <StatusLight status='success' size='small' />
+            <ListItemText
+              primary='Takeoff + landing test'
+              secondary={'2021-07-26 16:10 UTC \u2022 0m 57s'}
+            />
+          </ListItem>
+          <ListItem>
+            <StatusLight status='error' size='small' />
+            <ListItemText
+              primary='Takeoff + landing test'
+              secondary={'2021-07-26 15:10 UTC \u2022 Prearm checks failed'}
+            />
+          </ListItem>
+        </List>
+      );
+
+    case 'storage':
+      return (
+        <>
+          <List>
+            <ListItem>
+              <StatusLight status='success' />
+              <ListItemText
+                primary={'/dev/mmcblk0p1 \u2022 System'}
+                secondary={'4.0 GB used \u2022 9.8 GB free \u2022 29%'}
+              />
+            </ListItem>
+            <ListItem>
+              <StatusLight status='success' />
+              <ListItemText
+                primary={'/dev/mmcblk0p5 \u2022 Data storage'}
+                secondary={'0.5 GB used \u2022 63.1 GB free \u2022 0.8%'}
+              />
+              <ListItemSecondaryAction>
+                <IconButton>
+                  <Sync />
+                </IconButton>
+              </ListItemSecondaryAction>
+            </ListItem>
+            <Divider />
+          </List>
+          <List>
+            <ListSubheader>Synchronization log</ListSubheader>
+            <ListItem>
+              <StatusLight status='info' />
+              <ListItemText primary='Click on a sync button to start' />
+            </ListItem>
+          </List>
+        </>
       );
 
     case 'liveCam':
@@ -76,19 +156,14 @@ const DockDetailsDialogBody = ({ selectedTab, dockId }) => {
 };
 
 DockDetailsDialogBody.propTypes = {
-  selectedTab: PropTypes.oneOf([
-    'landingPads',
-    'sensors',
-    'schedule',
-    'liveCam',
-  ]),
-  uavId: PropTypes.string,
+  dockId: PropTypes.string,
+  selectedTab: PropTypes.oneOf(['status', 'schedule', 'liveCam']),
 };
 
 export default connect(
   // mapStateToProps
   (state) => ({
+    dockId: getSelectedDockIdInDockDetailsDialog(state),
     selectedTab: getSelectedTabInDockDetailsDialog(state),
-    uavId: getSelectedDockIdInDockDetailsDialog(state),
   })
 )(DockDetailsDialogBody);

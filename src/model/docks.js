@@ -39,5 +39,7 @@ export function handleDockInformationMessage(body, dispatch) {
     )
   );
 
+  console.log(states);
+
   dispatch(setDockStateMultiple(states));
 }

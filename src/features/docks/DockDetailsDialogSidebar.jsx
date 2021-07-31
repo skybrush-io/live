@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
+import { useToggle } from 'react-use';
 
 import Box from '@material-ui/core/Box';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -65,6 +66,7 @@ const useStyles = makeStyles(
  * Sidebar of the UAV details dialog.
  */
 const DockDetailsDialogSidebar = ({ dockId }) => {
+  const [modeIsAuto, toggleMode] = useToggle(false);
   const classes = useStyles();
   return (
     <Box className={classes.root}>
@@ -74,7 +76,15 @@ const DockDetailsDialogSidebar = ({ dockId }) => {
         </Box>
         <Box className={classes.summary}>
           <Typography variant='body1'>{dockId}</Typography>
-          <StatusText status='warning'>Manual mode</StatusText>
+          {modeIsAuto ? (
+            <StatusText key='status' status='success'>
+              Automatic mode
+            </StatusText>
+          ) : (
+            <StatusText key='status' status='warning'>
+              Manual mode
+            </StatusText>
+          )}
         </Box>
       </Box>
       <Toolbar disableGutters variant='dense' className={classes.toolbar}>
@@ -105,11 +115,11 @@ const DockDetailsDialogSidebar = ({ dockId }) => {
         items={[
           ['Location', 'ELTE kert'],
           'sep1',
-          ['Latitude', 47.473561],
-          ['Longitude', 19.062064],
+          ['Latitude', 47.474223],
+          ['Longitude', 19.06188],
           'sep2',
-          ['Door', <StatusText status='warning'>open</StatusText>],
-          ['Temperature', '24.7 °C'],
+          ['Door', <StatusText status='success'>closed</StatusText>],
+          ['Temperature', '31.3 °C'],
           'sep3',
           ['Landing pad 1', <StatusText status='next'>charging</StatusText>],
         ]}
@@ -119,6 +129,8 @@ const DockDetailsDialogSidebar = ({ dockId }) => {
         control={<Switch color='primary' />}
         label='Automatic mode'
         style={{ margin: '0 !important' }}
+        checked={modeIsAuto}
+        onChange={() => toggleMode()}
       />
     </Box>
   );
