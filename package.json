@@ -158,6 +158,7 @@
     "updeep": "^1.2.0",
     "url": "^0.11.0",
     "use-resize-observer": "^7.0.1",
+    "util": "^0.12.4",
     "vm-browserify": "^1.1.2",
     "whatwg-fetch": "^3.6.2",
     "which": "^2.0.2"
@@ -220,6 +221,7 @@
       "capitalized-comments": 0,
       "import/extensions": 0,
       "import/no-unassigned-import": 0,
+      "import/order": 0,
       "node/file-extension-in-import": 0,
       "no-else-return": 0,
       "no-lonely-if": 0,
