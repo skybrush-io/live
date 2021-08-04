@@ -26,6 +26,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - When viewing an indoor show, a single square on the floor texture now represents
   1 meter instead of 20 meters.
 
+- Drones marked as "gone" in the UAV list are now considered "missing" in the
+  "Setup takeoff area" dialog. Before this fix, only drones that were never seen
+  or were explicitly removed from Skybrush Live were considered missing.
+
 ## [1.23.0] - 2021-07-19
 
 ### Added

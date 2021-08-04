@@ -497,7 +497,14 @@ export const getMissingUAVIdsInMapping = createSelector(
   getMissionMapping,
   (state) => state.uavs.byId,
   (mapping, uavsById) =>
-    mapping.filter((uavId) => !isNil(uavId) && isNil(uavsById[uavId]))
+    mapping.filter((uavId) => {
+      if (isNil(uavId)) {
+        return false;
+      }
+
+      const age = uavsById[uavId]?.age;
+      return isNil(age) || age === 'gone';
+    })
 );
 
 /**
