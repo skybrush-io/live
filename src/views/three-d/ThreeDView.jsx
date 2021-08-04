@@ -135,7 +135,7 @@ const ThreeDView = React.forwardRef((props, ref) => {
         <Room />
       </a-entity>
 
-      <Scenery scale={10} type={`${scenery}-${lighting}`} grid={grid} />
+      <Scenery type={`${scenery}-${lighting}`} grid={grid} />
     </a-scene>
   );
 });

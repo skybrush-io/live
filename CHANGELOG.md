@@ -23,6 +23,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Keyboard navigation no longer interferes with the controls of the 3D view.
 
+- When viewing an indoor show, a single square on the floor texture now represents
+  1 meter instead of 20 meters.
+
 ## [1.23.0] - 2021-07-19
 
 ### Added
