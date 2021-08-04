@@ -26,6 +26,8 @@ const instructionsByMode = {
         <kbd>E</kbd>
         <kbd>C</kbd>
         <span> Altitude </span>
+        <kbd>Shift</kbd>
+        <span> Run </span>
       </div>
       <IconButton disabled>
         <Mouse />

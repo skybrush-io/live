@@ -12,10 +12,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added a color input text field (in hex notation) under the color picker in the
   Light control panel.
 
+- You can now move faster in the 3D view by pressing Shift.
+
 ### Changed
 
 - The default filename for an exported mapping file now includes the show filename
   and the time when it was saved.
+
+### Fixed
+
+- Keyboard navigation no longer interferes with the controls of the 3D view.
 
 ## [1.23.0] - 2021-07-19
 

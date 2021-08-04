@@ -4,6 +4,7 @@
 
 import PropTypes from 'prop-types';
 import React, { useRef } from 'react';
+import { IgnoreKeys } from 'react-hotkeys';
 import { connect } from 'react-redux';
 import useResizeObserver from 'use-resize-observer';
 
@@ -75,50 +76,52 @@ const ThreeDTopLevelView = ({
   });
 
   return (
-    <Box display='flex' flexDirection='column' height='100%'>
-      <AppBar color='default' position='static' className={classes.appBar}>
-        <Toolbar disableGutters variant='dense' className={classes.toolbar}>
-          <NavigationButtonGroup
-            mode={navigation.mode}
-            parameters={navigation.parameters}
-            onChange={onSetNavigationMode}
-          />
-          <ToolbarDivider orientation='vertical' />
-          <NavigationInstructions mode={navigation.mode} />
-          <DarkModeSwitch
-            value={lighting === 'dark'}
-            onChange={onToggleLightingConditions}
-          />
-        </Toolbar>
-      </AppBar>
-      <Box ref={ref} position='relative' flex={1}>
-        <SelectionTooltip>
-          <ThreeDView ref={threeDViewRef} />
-        </SelectionTooltip>
-        {!hasMapCoordinateSystem && (
-          <Overlay left={8} right={8} top={8}>
-            <Alert
-              severity='warning'
-              action={
-                <IconButton
-                  color='inherit'
-                  size='small'
-                  onClick={onShowSettings}
-                >
-                  <Settings />
-                </IconButton>
-              }
-            >
-              <AlertTitle>No map coordinate system specified</AlertTitle>
-              <div>
-                Drones will become visible when a coordinate system is specified
-                in the <strong>Settings</strong> dialog.
-              </div>
-            </Alert>
-          </Overlay>
-        )}
+    <IgnoreKeys>
+      <Box display='flex' flexDirection='column' height='100%'>
+        <AppBar color='default' position='static' className={classes.appBar}>
+          <Toolbar disableGutters variant='dense' className={classes.toolbar}>
+            <NavigationButtonGroup
+              mode={navigation.mode}
+              parameters={navigation.parameters}
+              onChange={onSetNavigationMode}
+            />
+            <ToolbarDivider orientation='vertical' />
+            <NavigationInstructions mode={navigation.mode} />
+            <DarkModeSwitch
+              value={lighting === 'dark'}
+              onChange={onToggleLightingConditions}
+            />
+          </Toolbar>
+        </AppBar>
+        <Box ref={ref} position='relative' flex={1}>
+          <SelectionTooltip>
+            <ThreeDView ref={threeDViewRef} />
+          </SelectionTooltip>
+          {!hasMapCoordinateSystem && (
+            <Overlay left={8} right={8} top={8}>
+              <Alert
+                severity='warning'
+                action={
+                  <IconButton
+                    color='inherit'
+                    size='small'
+                    onClick={onShowSettings}
+                  >
+                    <Settings />
+                  </IconButton>
+                }
+              >
+                <AlertTitle>No map coordinate system specified</AlertTitle>
+                <div>
+                  Drones will become visible when a coordinate system is
+                  specified in the <strong>Settings</strong> dialog.
+                </div>
+              </Alert>
+            </Overlay>
+          )}
+        </Box>
       </Box>
-    </Box>
+    </IgnoreKeys>
   );
 };
 

@@ -64,10 +64,12 @@ const ThreeDView = React.forwardRef((props, ref) => {
 
   const extraCameraProps = {
     'altitude-control': objectToString({
+      embedded: true,
       enabled: true,
       min: 0.01,
     }),
     'better-wasd-controls': objectToString({
+      embedded: true,
       fly: navigation && navigation.mode === 'fly',
     }),
     'wasd-controls': objectToString({
@@ -91,6 +93,8 @@ const ThreeDView = React.forwardRef((props, ref) => {
       renderer='antialias: false'
       vr-mode-ui='enabled: false'
       device-orientation-permission-ui='enabled: false'
+      tabIndex={-1}
+      class='react-hotkeys-ignore'
       {...extraSceneProps}
     >
       <a-assets>
