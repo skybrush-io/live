@@ -313,6 +313,10 @@ export const getOutdoorShowToWorldCoordinateSystemTransformation =
     (transform) =>
       transform
         ? (point) => {
+            if (isNil(point)) {
+              return undefined;
+            }
+
             const [x, y, z] = point;
             const [lon, lat] = transform.toLonLat([x, y]);
             return { lon, lat, amsl: undefined, agl: z };
@@ -456,6 +460,10 @@ export const getLastPointsOfTrajectoriesInWorldCoordinates = createSelector(
 function getMaximumHorizontalDistanceFromTakeoffPositionInTrajectory(
   trajectory
 ) {
+  if (!isValidTrajectory(trajectory)) {
+    return 0;
+  }
+
   const { points = [] } = trajectory;
   if (points.length === 0) {
     return 0;

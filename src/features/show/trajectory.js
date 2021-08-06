@@ -31,6 +31,10 @@ export function getLastPointOfTrajectory(trajectory) {
  * trajectories.
  */
 export function getMaximumHeightOfTrajectory(trajectory) {
+  if (!isValidTrajectory(trajectory)) {
+    return undefined;
+  }
+
   const { points = [] } = trajectory;
   const highestPoint = maxBy(points, (point) => point[1][2]);
   return highestPoint ? highestPoint[1][2] : 0;
@@ -94,4 +98,5 @@ export const isValidTrajectory = (trajectory) =>
   typeof trajectory === 'object' &&
   trajectory.version === 1 &&
   typeof trajectory.points === 'object' &&
-  Array.isArray(trajectory.points);
+  Array.isArray(trajectory.points) &&
+  trajectory.points.length > 0;
