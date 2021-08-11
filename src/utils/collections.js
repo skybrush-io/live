@@ -87,7 +87,7 @@ const ensureItemHasValidId = (collection, item) => {
       throw new Error('New item needs either an ID or a name');
     }
 
-    item.id = chooseUniqueIdFromName(item.name, collection);
+    item.id = chooseUniqueIdFromName(item.name, Object.keys(collection.byId));
   } else if (has(collection.byId, item.id)) {
     throw new ItemExistsError(item.id);
   }

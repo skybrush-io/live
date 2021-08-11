@@ -30,6 +30,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   "Setup takeoff area" dialog. Before this fix, only drones that were never seen
   or were explicitly removed from Skybrush Live were considered missing.
 
+- Fixed a bug that prevented the system from recording two saved locations with
+  the same name.
+
 ## [1.23.0] - 2021-07-19
 
 ### Added
