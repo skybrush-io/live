@@ -68,7 +68,9 @@ const RTKStatusHeaderButton = ({
     <LazyTooltip content={<RTKStatusMiniList />}>
       <GenericHeaderButton
         disabled={!isConnected}
-        label={isConnected ? (numSatellites > 0 ? numSatellites : '—') : '—'}
+        label={
+          isConnected ? (numSatellites > 0 ? String(numSatellites) : '—') : '—'
+        }
         secondaryLabel={
           surveyStatus.supported
             ? formatSurveyAccuracy(surveyStatus.accuracy, {

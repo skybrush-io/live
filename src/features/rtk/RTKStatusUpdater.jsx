@@ -67,6 +67,7 @@ export default connect(
       const now = Date.now();
 
       let position;
+      let positionECEF;
       let height;
 
       if (antenna.position) {
@@ -75,6 +76,12 @@ export default connect(
           antenna.position[2] !== undefined
             ? antenna.position[2] / 1e3
             : undefined;
+      }
+
+      if (antenna.positionECEF) {
+        positionECEF = Array.isArray(antenna.positionECEF)
+          ? antenna.positionECEF.slice(0, 3).map((x) => Math.round(x))
+          : undefined;
       }
 
       dispatch(
@@ -86,6 +93,7 @@ export default connect(
               ? undefined
               : Number(antenna.stationId),
             position,
+            positionECEF,
             height,
           },
           messages: mapValues(messages, (messageStat) => ({

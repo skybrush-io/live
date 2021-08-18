@@ -90,6 +90,7 @@ const RTKStatusMiniList = ({ satelliteIds, surveyStatus }) => {
         (code) =>
           counts[code] && (
             <MiniListItem
+              key={code}
               primaryText={`\u00A0${gnssSystems[code].flag}\u00A0\u00A0\u00A0${gnssSystems[code].name}`}
               secondaryText={counts[code]}
             />

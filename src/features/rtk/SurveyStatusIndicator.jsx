@@ -14,10 +14,18 @@ function formatAccuracy(message, value) {
   }
 
   const formattedValue = formatSurveyAccuracy(value);
-  if (formattedValue && formattedValue.charAt(0) === '>') {
-    return `${message}, accuracy ${formattedValue}`;
+  if (!message || message.length === 0) {
+    if (formattedValue && formattedValue.charAt(0) === '>') {
+      return `Accuracy ${formattedValue}`;
+    } else {
+      return `Accuracy: ${formattedValue}`;
+    }
   } else {
-    return `${message}, accuracy: ${formattedValue}`;
+    if (formattedValue && formattedValue.charAt(0) === '>') {
+      return `${message}, accuracy ${formattedValue}`;
+    } else {
+      return `${message}, accuracy: ${formattedValue}`;
+    }
   }
 }
 
@@ -46,7 +54,7 @@ const SurveyStatusIndicator = ({
         {active
           ? formatAccuracy('Surveying', accuracy)
           : valid
-          ? formatAccuracy('Survey successful', accuracy)
+          ? formatAccuracy('', accuracy)
           : supported
           ? 'Survey not started yet'
           : 'No survey information'}

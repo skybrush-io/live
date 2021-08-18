@@ -45,6 +45,7 @@ const { actions, reducer } = createSlice({
         descriptor: null,
         height: null,
         position: null, // should be [lon, lat]
+        positionECEF: null, // should be [x, y, z] integers, in mm
         serialNumber: null,
         stationId: null,
       },
@@ -61,6 +62,7 @@ const { actions, reducer } = createSlice({
 
     dialog: {
       open: false,
+      antennaPositionFormat: 'lonLat',
       surveySettingsEditorVisible: false,
     },
   },
@@ -84,6 +86,10 @@ const { actions, reducer } = createSlice({
       state.stats.satellites = {};
       state.stats.messages = {};
       state.stats.survey = {};
+    },
+
+    setAntennaPositionFormat(state, action) {
+      state.dialog.antennaPositionFormat = String(action.payload);
     },
 
     toggleSurveySettingsPanel: noPayload((state) => {
@@ -122,6 +128,7 @@ export const {
   closeRTKSetupDialog,
   closeSurveySettingsPanel,
   resetRTKStatistics,
+  setAntennaPositionFormat,
   showRTKSetupDialog,
   toggleSurveySettingsPanel,
   updateRTKStatistics,

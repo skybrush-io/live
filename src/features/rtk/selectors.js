@@ -5,15 +5,31 @@ import { createSelector } from '@reduxjs/toolkit';
 import { getPreferredCoordinateFormatter } from '~/selectors/formatting';
 
 /**
+ * Returns whether the antenna position should be shown in ECEF coordinates.
+ */
+export const isShowingAntennaPositionInECEF = (state) =>
+  state.rtk.dialog.antennaPositionFormat === 'ecef';
+
+/**
  * Returns the formatted antenna position, or undefined if we do not know the
  * antenna position yet.
  */
 export const getFormattedAntennaPosition = createSelector(
   (state) => state.rtk.stats.antenna,
   getPreferredCoordinateFormatter,
-  (antennaInfo, formatter) => {
-    const { position } = antennaInfo || {};
-    return position ? formatter(position) : undefined;
+  isShowingAntennaPositionInECEF,
+  (antennaInfo, formatter, isECEF) => {
+    if (isECEF) {
+      const { positionECEF } = antennaInfo || {};
+      return positionECEF && Array.isArray(positionECEF)
+        ? `[${(positionECEF[0] / 1e3).toFixed(3)}, ${(
+            positionECEF[1] / 1e3
+          ).toFixed(3)}, ${(positionECEF[2] / 1e3).toFixed(3)}]`
+        : undefined;
+    } else {
+      const { position } = antennaInfo || {};
+      return position ? formatter(position) : undefined;
+    }
   }
 );
 
