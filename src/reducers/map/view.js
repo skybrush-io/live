@@ -11,40 +11,36 @@
  * is mounted for the first time, it is initialized from the state of the store.
  */
 
-import { handleActions } from 'redux-actions';
-import u from 'updeep';
+import { createSlice } from '@reduxjs/toolkit';
 
 import { normalizeAngle } from '~/utils/geography';
 
-/**
- * The state of the origin (home position) and the global flat Earth coordinate
- * system of the map.
- *
- * The flat Earth coordinate system is at the given position and its zero
- * degree heading points towards the heading given in the `angle` property.
- */
-const defaultState = {
-  position: [18.915125, 47.486305], // Sensible default: Farkashegy Airfield
-  angle: '0',
-  zoom: 17,
-};
+const { actions, reducer } = createSlice({
+  name: 'map/view',
 
-/**
- * The reducer function that handles actions related to the tool selection.
- */
-const reducer = handleActions(
-  {
-    UPDATE_MAP_VIEW_SETTINGS: (state, action) =>
-      u(
-        {
-          position: action.payload.position,
-          angle: normalizeAngle(action.payload.angle),
-          zoom: Math.max(Math.min(action.payload.zoom, 20), 0),
-        },
-        state
-      ),
+  /**
+   * The state of the origin (home position) and the global flat Earth coordinate
+   * system of the map.
+   *
+   * The flat Earth coordinate system is at the given position and its zero
+   * degree heading points towards the heading given in the `angle` property.
+   */
+  initialState: {
+    position: [18.915125, 47.486305], // Sensible default: Farkashegy Airfield
+    angle: '0',
+    zoom: 17,
   },
-  defaultState
-);
+
+  reducers: {
+    updateMapViewSettings(state, action) {
+      const { angle, position, zoom } = action.payload;
+      state.position = position;
+      state.angle = normalizeAngle(angle);
+      state.zoom = Math.max(Math.min(zoom, 20), 0);
+    },
+  },
+});
+
+export const { updateMapViewSettings } = actions;
 
 export default reducer;

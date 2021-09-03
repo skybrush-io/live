@@ -11,7 +11,6 @@ import {
   SET_SELECTED_FEATURES,
   REMOVE_FEATURES_FROM_SELECTION,
   SELECT_MAP_SOURCE,
-  UPDATE_MAP_VIEW_SETTINGS,
 } from './types';
 
 import { dockIdToGlobalId, uavIdToGlobalId } from '~/model/identifiers';
@@ -92,14 +91,3 @@ export const setSelectedFeatures = createAction(SET_SELECTED_FEATURES);
  */
 export const setSelectedUAVIds = (ids) =>
   setSelectedFeatures(ids.map((id) => uavIdToGlobalId(id)));
-
-/**
- * Action factory that creates an action that updates the stored state of the
- * current map view.
- *
- * @param {object} state  the new state. It must have at most three keys:
- *     'position' (storing a coordinate in lon-lat format), 'angle'
- *     (storing the rotation of the map) and 'zoom' (storing the zoom level).
- *     The angle and the zoom level will be normalized by the reducer.
- */
-export const updateMapViewSettings = createAction(UPDATE_MAP_VIEW_SETTINGS);

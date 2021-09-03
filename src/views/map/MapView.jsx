@@ -23,7 +23,6 @@ import {
   addFeaturesToSelection,
   setSelectedFeatures,
   removeFeaturesFromSelection,
-  updateMapViewSettings,
 } from '~/actions/map';
 import Widget from '~/components/Widget';
 import { handleError } from '~/error-handling';
@@ -35,6 +34,7 @@ import {
 } from '~/model/features';
 import { getVisibleSelectableLayers, isLayerSelectable } from '~/model/layers';
 import { handleFeatureUpdatesInOpenLayers } from '~/model/mutations';
+import { updateMapViewSettings } from '~/reducers/map/view';
 import { getVisibleLayersInOrder } from '~/selectors/ordered';
 import { getExtendedCoordinateFormatter } from '~/selectors/formatting';
 import { getMapViewRotationAngle } from '~/selectors/map';

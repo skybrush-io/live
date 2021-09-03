@@ -238,6 +238,7 @@
       "unicorn/filename-case": 0,
       "unicorn/no-array-callback-reference": 0,
       "unicorn/no-fn-reference-in-iterator": 0,
+      "unicorn/numeric-separators-style": 0,
       "unicorn/prefer-ternary": 0
     }
   }
