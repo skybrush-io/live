@@ -24,6 +24,11 @@ export const getFlatEarthCoordinateTransformer = createSelector(
 );
 
 /**
+ * Selector that returns the center position of the map view in lon-lat format.
+ */
+export const getMapViewCenterPosition = (state) => state.map.view.position;
+
+/**
  * Selector that returns the rotation angle of the map view, cast into a
  * float.
  *

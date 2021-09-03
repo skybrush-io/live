@@ -6,11 +6,12 @@ import startOfMinute from 'date-fns/startOfMinute';
 import startOfSecond from 'date-fns/startOfSecond';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { useInterval, useUpdate } from 'react-use';
 
 import Button from '@material-ui/core/Button';
 import ButtonGroup from '@material-ui/core/ButtonGroup';
 import { styled } from '@material-ui/core/styles';
+
+import { usePeriodicRefresh } from '~/hooks';
 
 const BorderlessButton = styled(Button)({
   border: [0, '!important'],
@@ -50,11 +51,10 @@ const createStartTimeSuggestions = () => {
  * current date/time.
  */
 const StartTimeSuggestions = ({ onChange, ...rest }) => {
-  const update = useUpdate();
   const startTimes = createStartTimeSuggestions();
 
   /* re-render every 10 seconds */
-  useInterval(update, 10000);
+  usePeriodicRefresh(10000);
 
   return (
     <ButtonGroup variant='text' {...rest}>

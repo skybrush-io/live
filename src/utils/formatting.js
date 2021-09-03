@@ -121,7 +121,7 @@ export function formatIdsAndTruncateTrailingItems(
 }
 
 /**
- * Twitter-style short formatter for TimeAgo components/
+ * Twitter-style short formatter for TimeAgo components
  */
 export const shortTimeAgoFormatter = (value, unit) =>
   unit === 'month'
@@ -129,6 +129,15 @@ export const shortTimeAgoFormatter = (value, unit) =>
     : unit === 'second' && value < 1
     ? 'now'
     : `${value}${unit.charAt(0)}`;
+
+/**
+ * Twitter-style short formatter for TimeAgo components that is suitable for
+ * both past and future timestamps.
+ */
+export const shortRelativeTimeFormatter = (value, unit, suffix) => {
+  const base = shortTimeAgoFormatter(value, unit, suffix);
+  return suffix === 'ago' ? `${base} ago` : `in ${base}`;
+};
 
 /**
  * Truncates a string with ellipses if it exceeds a certain length.

@@ -3,7 +3,7 @@
  * show being executed.
  */
 
-import { getUnixTime } from 'date-fns';
+import getUnixTime from 'date-fns/getUnixTime';
 import isNil from 'lodash-es/isNil';
 import set from 'lodash-es/set';
 

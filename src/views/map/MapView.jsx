@@ -37,7 +37,10 @@ import { handleFeatureUpdatesInOpenLayers } from '~/model/mutations';
 import { updateMapViewSettings } from '~/reducers/map/view';
 import { getVisibleLayersInOrder } from '~/selectors/ordered';
 import { getExtendedCoordinateFormatter } from '~/selectors/formatting';
-import { getMapViewRotationAngle } from '~/selectors/map';
+import {
+  getMapViewCenterPosition,
+  getMapViewRotationAngle,
+} from '~/selectors/map';
 import { getSelectedFeatureIds, getSelection } from '~/selectors/selection';
 import { hasFeature } from '~/utils/configuration';
 import {
@@ -47,7 +50,7 @@ import {
 } from '~/utils/geography';
 import { toDegrees } from '~/utils/math';
 
-require('ol/ol.css');
+import 'ol/ol.css';
 
 /* ********************************************************************** */
 
@@ -648,7 +651,7 @@ class MapViewPresentation extends React.Component {
 const MapView = connect(
   // mapStateToProps
   (state) => ({
-    center: state.map.view.position,
+    center: getMapViewCenterPosition(state),
     rotation: getMapViewRotationAngle(state),
     zoom: state.map.view.zoom,
 
