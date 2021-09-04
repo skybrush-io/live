@@ -138,7 +138,7 @@ class ServerDetectionManagerPresentation extends React.Component {
         if (key && wasAdded && (isV4Format(hostname) || isV6Format(hostname))) {
           const resolveTo = partial(this.props.onServerHostnameResolved, key);
           if (isLoopback(hostname)) {
-            resolveTo('This computer');
+            resolveTo('localhost');
           } else if (window.bridge) {
             window.bridge
               .reverseDNSLookup(hostname)
