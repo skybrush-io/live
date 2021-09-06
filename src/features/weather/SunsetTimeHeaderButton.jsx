@@ -30,7 +30,8 @@ const SunsetTimeHeaderButton = ({ sunrise, sunset }) => {
   let shouldShowSunset =
     !sunrise ||
     (sunset &&
-      differenceInMinutes(now, sunrise) > differenceInMinutes(sunset, now));
+      Math.abs(differenceInMinutes(sunrise, now)) >
+        Math.abs(differenceInMinutes(sunset, now)));
   if (negate) {
     shouldShowSunset = !shouldShowSunset;
   }
