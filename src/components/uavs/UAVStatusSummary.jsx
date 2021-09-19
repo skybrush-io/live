@@ -12,6 +12,8 @@ import LazyTooltip from '@skybrush/mui-components/lib/LazyTooltip';
 import StatusLight from '@skybrush/mui-components/lib/StatusLight';
 
 import { Status } from '~/components/semantics';
+import { showNotification } from '~/features/snackbar/actions';
+import { MessageSemantics } from '~/features/snackbar/types';
 import { getSingleUAVStatusLevel } from '~/features/uavs/selectors';
 import { createShallowSelector } from '~/utils/selectors';
 import { Workbench } from '~/workbench';
@@ -106,7 +108,7 @@ const UAVStatusSummary = ({ counts, ...rest }) => {
   const classes = useStyles();
 
   return (
-    <LazyTooltip content={<UAVStatusMiniList />}>
+    <LazyTooltip interactive content={<UAVStatusMiniList />}>
       <Box className={clsx(classes.root, 'wb-module')} {...rest}>
         <div className={classes.inner}>
           {statusOrder.map((statusCode, index) => (
@@ -135,25 +137,34 @@ UAVStatusSummary.propTypes = {
   counts: PropTypes.arrayOf(PropTypes.number),
 };
 
+const showUAVsList = (workbench, dispatch) => () => {
+  if (!workbench) {
+    return;
+  }
+
+  if (!workbench.bringToFront('uavs')) {
+    dispatch(
+      showNotification({
+        message: 'UAVs panel is not added to the workbench yet',
+        semantics: MessageSemantics.WARNING,
+      })
+    );
+  }
+};
+
 const ConnectedUAVStatusSummary = connect(
   // mapStateToProps
   (state) => ({
     counts: getStatusSummary(state),
   }),
   // mapDispatchToProps
-  {}
+  (dispatch, ownProps) => ({
+    onClick: showUAVsList(ownProps.workbench, dispatch),
+  })
 )(UAVStatusSummary);
-
-const onClick = (workbench) => {
-  if (!workbench.bringToFront('uavs')) {
-    /* TODO(ntamas) */
-  }
-};
 
 export default () => (
   <Workbench.Consumer>
-    {(workbench) => (
-      <ConnectedUAVStatusSummary onClick={() => onClick(workbench)} />
-    )}
+    {(workbench) => <ConnectedUAVStatusSummary workbench={workbench} />}
   </Workbench.Consumer>
 );

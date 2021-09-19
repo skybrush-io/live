@@ -1,5 +1,6 @@
 import partial from 'lodash-es/partial';
 import sortBy from 'lodash-es/sortBy';
+import unary from 'lodash-es/unary';
 import { orderBy } from 'natural-orderby';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -12,6 +13,7 @@ import ListItem from '@material-ui/core/ListItem';
 import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
 import MiniList from '@skybrush/mui-components/lib/MiniList';
 
+import { setSelectedUAVIds } from '~/actions/map';
 import StatusPill from '~/components/StatusPill';
 import { listOf } from '~/components/helpers/lists';
 import { Status } from '~/components/semantics';
@@ -39,7 +41,7 @@ const getListItems = createSelector(
         const key = `${textSemantics}:${text}`;
         if (items[key] === undefined) {
           items[key] = {
-            id: text,
+            id: key,
             label: text,
             status: textSemantics,
             uavIds: [uavId],
@@ -60,8 +62,8 @@ const getListItems = createSelector(
 
 /* ************************************************************************ */
 
-const UAVStatusMiniListEntry = ({ id, label, status, uavIds }) => (
-  <ListItem key={id} disableGutters>
+const UAVStatusMiniListEntry = ({ id, label, onClick, status, uavIds }) => (
+  <ListItem key={id} button disableGutters onClick={onClick}>
     <Box width={80} mr={1}>
       <StatusPill status={status}>{label}</StatusPill>
     </Box>
@@ -72,21 +74,40 @@ const UAVStatusMiniListEntry = ({ id, label, status, uavIds }) => (
 UAVStatusMiniListEntry.propTypes = {
   id: PropTypes.string,
   label: PropTypes.string,
+  onClick: PropTypes.func,
   status: PropTypes.oneOf(Object.values(Status)),
   uavIds: PropTypes.arrayOf(PropTypes.string),
 };
 
-const UAVStatusMiniList = listOf(UAVStatusMiniListEntry, {
-  dataProvider: 'items',
-  backgroundHint: (
-    <BackgroundHint text='There are no connected UAVs at the moment' />
+const UAVStatusMiniList = listOf(
+  (item, props) => (
+    <UAVStatusMiniListEntry
+      {...item}
+      onClick={
+        props.onClick
+          ? (event) => {
+              event.preventDefault();
+              event.stopPropagation();
+              props.onClick(item?.uavIds, event);
+            }
+          : null
+      }
+    />
   ),
-  listFactory: partial(React.createElement, MiniList),
-});
+  {
+    dataProvider: 'items',
+    backgroundHint: (
+      <BackgroundHint text='There are no connected UAVs at the moment' />
+    ),
+    listFactory: partial(React.createElement, MiniList),
+  }
+);
 
 export default connect(
   (state) => ({
     items: getListItems(state),
   }),
-  {}
+  {
+    onClick: unary(setSelectedUAVIds),
+  }
 )(UAVStatusMiniList);
