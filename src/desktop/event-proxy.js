@@ -5,13 +5,13 @@
 
 const EventEmitter = require('events');
 const betterIpc = require('electron-better-ipc');
-const { is } = require('electron-util');
 
 const makeEventProxyChannelName = (channel) => `__eventProxy[${channel}]`;
 
-const ipc = is.main ? betterIpc.ipcMain : betterIpc.ipcRenderer;
+const isMain = process.type === 'browser'
+const ipc = isMain ? betterIpc.ipcMain : betterIpc.ipcRenderer;
 
-const makeEventProxy = is.main
+const makeEventProxy = isMain
   ? (channel) => {
       const emitter = new EventEmitter();
       const realChannel = makeEventProxyChannelName(channel);

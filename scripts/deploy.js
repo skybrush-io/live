@@ -16,7 +16,6 @@ const {
   writeJson,
 } = require('fs-extra');
 const Listr = require('listr');
-const ora = require('ora');
 const path = require('path');
 const pify = require('pify');
 const tmp = require('tmp-promise');
@@ -212,6 +211,7 @@ async function cleanup() {
  */
 async function main() {
   const appConfig = await loadAppConfig();
+  const ora = await import('ora');
 
   const tasks = new Listr([
     {

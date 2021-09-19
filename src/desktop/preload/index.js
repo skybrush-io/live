@@ -11,7 +11,6 @@ const { contextBridge } = require('electron');
 const fs = require('fs');
 const { ipcRenderer: ipc } = require('electron-better-ipc');
 const ElectronStore = require('electron-store');
-const unhandled = require('electron-unhandled');
 const SSDPClient = require('node-ssdp-lite');
 const watch = require('node-watch');
 const path = require('path');
@@ -25,15 +24,6 @@ const {
   receiveSubscriptionsFromRenderer,
   setupIpc,
 } = require('./ipc');
-
-unhandled({
-  logger: (error) => console.error(error.stack),
-  // tippy.js seems to have a bug with the tooltips we use in the 3D view, and
-  // this sometimes throws unhandled exceptions. We don't want these to
-  // interfere with the user so we disable the unhandled exception dialog until
-  // the bug is fixed in tippy.js
-  showDialog: false,
-});
 
 /**
  * Creates a new SSDP client object and registers the given function to be

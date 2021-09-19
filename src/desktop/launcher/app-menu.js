@@ -63,7 +63,7 @@ if (!is.macos) {
 
 const template = is.macos ? macOsMenuTemplate : linuxWindowsMenuTemplate;
 
-if (is.development) {
+if (!app.isPackaged) {
   template.push({
     label: 'Debug',
     submenu: [

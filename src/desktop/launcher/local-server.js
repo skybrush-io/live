@@ -141,8 +141,9 @@ const launch = async (options) => {
 const search = async (paths) => {
   // Do _not_ use the async version of which here. It does not have a nothrow
   // option, and when it throws an exception, it will be caught by
-  // electron-unhandled, which will throw a dialog box in the user's face in
-  // production mode even though we nicely handle the exception later.
+  // Electron's unhandled exception handler, which might throw a dialog box in
+  // the user's face in production mode even though we nicely handle the
+  // exception later.
 
   const result = which.sync('flockwaved', {
     nothrow: true,
