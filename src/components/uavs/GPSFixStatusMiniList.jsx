@@ -6,20 +6,22 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { createSelector } from '@reduxjs/toolkit';
 
-import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
 import MiniList from '@skybrush/mui-components/lib/MiniList';
+import MiniListDivider from '@skybrush/mui-components/lib/MiniListDivider';
 
 import { setSelectedUAVIds } from '~/actions/map';
 import { listOf } from '~/components/helpers/lists';
 import { statusToPriority } from '~/components/semantics';
 
-import { getSingleUAVStatusSummary } from '~/features/uavs/selectors';
+import { abbreviateGPSFixType, getSemanticsForGPSFixType } from '~/model/enums';
 
 import UAVStatusMiniListEntry from './UAVStatusMiniListEntry';
 
+/* ************************************************************************ */
+
 /**
  * Component-specific selector that creates the list of entries to show in the
- * UAV status mini list.
+ * GPS fix status mini list.
  */
 const getListItems = createSelector(
   (state) => state.uavs.byId,
@@ -29,15 +31,16 @@ const getListItems = createSelector(
 
     for (const uavId of order) {
       const uav = byId[uavId];
-      if (uav) {
-        const { text, textSemantics } = getSingleUAVStatusSummary(uav);
-        const key = `${textSemantics}:${text}`;
+      if (uav && uav.gpsFix) {
+        const gpsFixType = uav.gpsFix.type;
+        const key = gpsFixType;
         if (items[key] === undefined) {
+          const status = getSemanticsForGPSFixType(gpsFixType);
           items[key] = {
             id: key,
-            label: text,
-            priority: -statusToPriority(textSemantics),
-            status: textSemantics,
+            label: abbreviateGPSFixType(gpsFixType),
+            priority: -statusToPriority(status),
+            status,
             uavIds: [uavId],
           };
         } else {
@@ -50,31 +53,36 @@ const getListItems = createSelector(
       item.uavIds = orderBy(item.uavIds);
     }
 
-    return sortBy(items, ['priority', 'label']);
+    if (items.length > 0) {
+      return [null, ...sortBy(items, ['priority', 'label'])];
+    } else {
+      return [];
+    }
   }
 );
 
-const UAVStatusMiniList = listOf(
-  (item, props) => (
-    <UAVStatusMiniListEntry
-      key={item.id}
-      {...item}
-      onClick={
-        props.onClick
-          ? (event) => {
-              event.preventDefault();
-              event.stopPropagation();
-              props.onClick(item?.uavIds, event);
-            }
-          : null
-      }
-    />
-  ),
+const GPSFixStatusMiniList = listOf(
+  (item, props) =>
+    item ? (
+      <UAVStatusMiniListEntry
+        key={item.id}
+        {...item}
+        pillWidth={48}
+        onClick={
+          props.onClick
+            ? (event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                props.onClick(item?.uavIds, event);
+              }
+            : null
+        }
+      />
+    ) : (
+      <MiniListDivider />
+    ),
   {
     dataProvider: 'items',
-    backgroundHint: (
-      <BackgroundHint text='There are no connected UAVs at the moment' />
-    ),
     listFactory: partial(React.createElement, MiniList),
   }
 );
@@ -86,4 +94,4 @@ export default connect(
   {
     onClick: unary(setSelectedUAVIds),
   }
-)(UAVStatusMiniList);
+)(GPSFixStatusMiniList);

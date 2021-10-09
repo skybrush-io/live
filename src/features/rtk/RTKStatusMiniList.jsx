@@ -6,6 +6,8 @@ import MiniList from '@skybrush/mui-components/lib/MiniList';
 import MiniListDivider from '@skybrush/mui-components/lib/MiniListDivider';
 import MiniListItem from '@skybrush/mui-components/lib/MiniListItem';
 
+import GPSFixStatusMiniList from '~/components/uavs/GPSFixStatusMiniList';
+
 import { getSatelliteIds, getSurveyStatus } from './selectors';
 import { formatSurveyAccuracy, RTKPropTypes } from './utils';
 
@@ -96,6 +98,7 @@ const RTKStatusMiniList = ({ satelliteIds, surveyStatus }) => {
             />
           )
       )}
+      <GPSFixStatusMiniList />
     </MiniList>
   );
 };
