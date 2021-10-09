@@ -14,9 +14,9 @@ import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
 import MiniList from '@skybrush/mui-components/lib/MiniList';
 
 import { setSelectedUAVIds } from '~/actions/map';
-import StatusPill from '~/components/StatusPill';
 import { listOf } from '~/components/helpers/lists';
-import { Status } from '~/components/semantics';
+import { Status, statusToPriority } from '~/components/semantics';
+import StatusPill from '~/components/StatusPill';
 
 import { getSingleUAVStatusSummary } from '~/features/uavs/selectors';
 
@@ -43,6 +43,7 @@ const getListItems = createSelector(
           items[key] = {
             id: key,
             label: text,
+            priority: -statusToPriority(textSemantics),
             status: textSemantics,
             uavIds: [uavId],
           };
@@ -56,7 +57,7 @@ const getListItems = createSelector(
       item.uavIds = orderBy(item.uavIds);
     }
 
-    return sortBy(items, 'label');
+    return sortBy(items, ['priority', 'label']);
   }
 );
 
