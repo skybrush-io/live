@@ -86,6 +86,7 @@ UAVStatusMiniListEntry.propTypes = {
 const UAVStatusMiniList = listOf(
   (item, props) => (
     <UAVStatusMiniListEntry
+      key={item.id}
       {...item}
       onClick={
         props.onClick
