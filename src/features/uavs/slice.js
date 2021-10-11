@@ -59,7 +59,12 @@ const { actions, reducer } = createSlice({
       clearOrderedCollection(state);
     },
 
-    removeUAVsByIds(state, action) {
+    _removeUAVsByIds(state, action) {
+      // Do not call this reducer directly from anywhere except in reaction to
+      // events dispatched from the global flock object. This is to ensure that
+      // there is only a single source of truth for the list of UAVs; calling
+      // this reducer directly would result in some UAVs being present in the
+      // flock but not here
       deleteItemsByIds(state, action.payload);
     },
 
@@ -83,9 +88,9 @@ const { actions, reducer } = createSlice({
 export const {
   addUAVs,
   clearUAVList,
-  removeUAVsByIds,
   updateAgesOfUAVs,
   updateUAVs,
+  _removeUAVsByIds,
 } = actions;
 
 export default reducer;

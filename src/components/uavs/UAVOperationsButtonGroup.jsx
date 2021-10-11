@@ -22,9 +22,11 @@ import Colors from '~/components/colors';
 import Tooltip from '~/components/Tooltip';
 
 import { getPreferredCommunicationChannelIndex } from '~/features/mission/selectors';
-import { removeUAVsMarkedAsGone } from '~/features/uavs/actions';
+import {
+  requestRemovalOfUAVsByIds,
+  requestRemovalOfUAVsMarkedAsGone,
+} from '~/features/uavs/actions';
 import { openUAVDetailsDialog } from '~/features/uavs/details';
-import { removeUAVsByIds } from '~/features/uavs/slice';
 import { createMultipleUAVRelatedActions } from '~/utils/messaging';
 
 const useStyles = makeStyles(
@@ -45,8 +47,8 @@ const UAVOperationsButtonGroup = ({
   channel,
   hideSeparators,
   openUAVDetailsDialog,
-  removeUAVsByIds,
-  removeUAVsMarkedAsGone,
+  requestRemovalOfUAVsByIds,
+  requestRemovalOfUAVsMarkedAsGone,
   selectedUAVIds,
   size,
 }) => {
@@ -204,8 +206,8 @@ const UAVOperationsButtonGroup = ({
               size={iconSize}
               onClick={() =>
                 isSelectionEmpty
-                  ? removeUAVsMarkedAsGone()
-                  : removeUAVsByIds(selectedUAVIds)
+                  ? requestRemovalOfUAVsMarkedAsGone()
+                  : requestRemovalOfUAVsByIds(selectedUAVIds)
               }
             >
               <Delete />
@@ -220,8 +222,8 @@ const UAVOperationsButtonGroup = ({
 UAVOperationsButtonGroup.propTypes = {
   channel: PropTypes.number,
   openUAVDetailsDialog: PropTypes.func,
-  removeUAVsByIds: PropTypes.func,
-  removeUAVsMarkedAsGone: PropTypes.func,
+  requestRemovalOfUAVsByIds: PropTypes.func,
+  requestRemovalOfUAVsMarkedAsGone: PropTypes.func,
   selectedUAVIds: PropTypes.arrayOf(PropTypes.string),
   hideSeparators: PropTypes.bool,
   size: PropTypes.oneOf(['small', 'medium']),
@@ -237,5 +239,11 @@ export default connect(
     channel: getPreferredCommunicationChannelIndex(state),
   }),
   // mapDispatchToProps
-  { openUAVDetailsDialog, removeUAVsMarkedAsGone, removeUAVsByIds }
+  /* TODO(ntamas): ask the flock object to remove the UAVs instead of removing them
+   * from the store directly */
+  {
+    openUAVDetailsDialog,
+    requestRemovalOfUAVsMarkedAsGone,
+    requestRemovalOfUAVsByIds,
+  }
 )(UAVOperationsButtonGroup);

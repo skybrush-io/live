@@ -5,9 +5,9 @@ import { all, call, delay, put, select, take } from 'redux-saga/effects';
 
 import {
   addUAVs,
-  removeUAVsByIds,
   updateAgesOfUAVs,
   updateUAVs,
+  _removeUAVsByIds,
 } from './slice';
 
 import { getRoundedClockSkewInMilliseconds } from '~/features/servers/selectors';
@@ -189,7 +189,7 @@ function* uavSyncSaga(flock) {
         break;
 
       case 'removed':
-        yield put(removeUAVsByIds(args[0].map((uav) => uav.id)));
+        yield put(_removeUAVsByIds(args[0].map((uav) => uav.id)));
         break;
 
       case 'updated':

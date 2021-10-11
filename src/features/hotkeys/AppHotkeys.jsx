@@ -10,7 +10,7 @@ import { connect } from 'react-redux';
 
 import { selectAllUAVFeatures } from '~/actions/map';
 import { toggleMissionIds } from '~/features/settings/slice';
-import { removeSelectedUAVs } from '~/features/uavs/actions';
+import { requestRemovalOfSelectedUAVs } from '~/features/uavs/actions';
 import { getUAVCommandTriggers } from '~/features/uavs/selectors';
 import { clearStoreAfterConfirmation } from '~/store';
 
@@ -94,7 +94,9 @@ export default connect(
         CLEAR_SELECTION: clearSelectionOrPendingUAVId,
         COPY_COORDINATES: copyCoordinates,
         DELETE_LAST_CHARACTER: deleteLastCharacterOfPendingUAVId,
-        REMOVE_SELECTION: handlePendingUAVIdThenDispatch(removeSelectedUAVs),
+        REMOVE_SELECTION: handlePendingUAVIdThenDispatch(
+          requestRemovalOfSelectedUAVs
+        ),
         SELECT_ALL_DRONES: selectAllUAVFeatures,
         SEND_FLASH_LIGHTS_COMMAND: handlePendingUAVIdThenDispatch(
           callUAVActionOnSelection('flashLightOnUAVs')
