@@ -3,7 +3,6 @@
  */
 
 import CoordinateParser from 'coordinate-parser';
-import formatCoords from 'formatcoords';
 import curry from 'lodash-es/curry';
 import isNil from 'lodash-es/isNil';
 import minBy from 'lodash-es/minBy';
@@ -287,18 +286,6 @@ export const makePolarCoordinateFormatter = (options) => {
           digits
         );
 };
-
-/**
- * Creates a function that formats an OpenLayers coordinate into the
- * sexagesimal latitude-longitude representation.
- *
- * @param {number} decimalPlaces  the number of decimal places to show
- * @return {function} the constructed function
- */
-export const makeSexagesimalCoordinateFormatter =
-  (decimalPlaces = 3) =>
-  (coordinate) =>
-    formatCoords(coordinate, true).format('FFf', { decimalPlaces });
 
 /**
  * Merges an array of OpenLayer extents and returns a single extent that contains
