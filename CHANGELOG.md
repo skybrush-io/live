@@ -5,6 +5,30 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- Clicking on a row in the popover of the UAV status summary header widget now
+  selects all UAVs corresponding to the given row.
+
+- Each row of the UAV status summary header widget now shows a counter with the
+  exact number of UAVs corresponding to that row.
+
+- The RTK status widget now shows a summary describing how many UAVs are in a
+  given GPS fix state; this can be used to validate whether all UAVs are
+  receiving RTK corrections.
+
+### Changed
+
+- UAV status summary header widget is now sorted by the severity of the items,
+  in decreasing order.
+
+### Fixed
+
+- Removing a UAV with the trashcan icon from the UAV list now also removes it
+  from the map.
+
 ## [1.24.3] - 2021-09-03
 
 ### Added
