@@ -1,3 +1,4 @@
+import isEmpty from 'lodash-es/isEmpty';
 import partial from 'lodash-es/partial';
 import sortBy from 'lodash-es/sortBy';
 import unary from 'lodash-es/unary';
@@ -38,7 +39,7 @@ const getListItems = createSelector(
           const status = getSemanticsForGPSFixType(gpsFixType);
           items[key] = {
             id: key,
-            label: abbreviateGPSFixType(gpsFixType),
+            label: abbreviateGPSFixType(gpsFixType) || '\u2014', // em dash
             priority: -statusToPriority(status),
             status,
             uavIds: [uavId],
@@ -53,10 +54,10 @@ const getListItems = createSelector(
       item.uavIds = orderBy(item.uavIds);
     }
 
-    if (items.length > 0) {
-      return [null, ...sortBy(items, ['priority', 'label'])];
-    } else {
+    if (isEmpty(items)) {
       return [];
+    } else {
+      return [null, ...sortBy(items, ['priority', 'label'])];
     }
   }
 );
