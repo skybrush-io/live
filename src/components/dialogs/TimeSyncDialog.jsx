@@ -201,8 +201,8 @@ const TimeSyncDialog = ({
             : 'Calculating clock skew...'
         }
         visible={isAdjustingServerTime || isCalculatingClockSkew}
+        flex={1}
       />
-      <Box flex={1} />
       <Button
         disabled={
           isNil(clockSkew) || isCalculatingClockSkew || !isClockSkewSignificant
