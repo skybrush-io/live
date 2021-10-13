@@ -133,26 +133,28 @@ class SelectNearestFeatureInteraction extends Interaction {
           }
         }
 
-        if (closestFeature !== undefined) {
-          // Decide whether we are setting, adding, removing or toggling the
-          // selection
-          const add = this._addCondition(mapBrowserEvent);
-          const remove = this._removeCondition(mapBrowserEvent);
-          const toggle = this._toggleCondition(mapBrowserEvent);
-          const mode = add
-            ? 'add'
-            : remove
-            ? 'remove'
-            : toggle
-            ? 'toggle'
-            : 'set';
+        // Decide whether we are setting, adding, removing or toggling the
+        // selection
+        const add = this._addCondition(mapBrowserEvent);
+        const remove = this._removeCondition(mapBrowserEvent);
+        const toggle = this._toggleCondition(mapBrowserEvent);
+        const mode = add
+          ? 'add'
+          : remove
+          ? 'remove'
+          : toggle
+          ? 'toggle'
+          : 'set';
 
+        if (closestFeature !== undefined) {
           // Now call the callback
           this._select(mode, closestFeature, distance);
         } else {
           // No feature is close enough. In 'set' mode, we need to clear the
           // selection.
-          this._select('clear');
+          if (mode === 'set') {
+            this._select('clear');
+          }
         }
 
         return Condition.pointerMove(mapBrowserEvent);
