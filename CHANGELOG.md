@@ -29,6 +29,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Removing a UAV with the trashcan icon from the UAV list now also removes it
   from the map.
 
+- Fixed a bug in the UAV selection using drag boxes when the map view was rotated.
+
 ## [1.24.3] - 2021-09-03
 
 ### Added
