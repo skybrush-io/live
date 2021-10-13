@@ -1,6 +1,7 @@
 import filter from 'lodash-es/filter';
 import partial from 'lodash-es/partial';
 import { Map, View, control, interaction, withMap } from '@collmot/ol-react';
+import GeometryType from 'ol/geom/GeometryType';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
@@ -485,14 +486,22 @@ class MapViewPresentation extends React.Component {
    *         the drag-box interaction
    */
   _onBoxDragEnded = (mode, event) => {
-    const extent = event.target.getGeometry().getExtent();
+    const geometry = event.target.getGeometry();
+    const extent = geometry.getExtent();
     const features = [];
     const { map } = this._map.current;
 
     for (const layer of getVisibleSelectableLayers(map)) {
       const source = layer.getSource();
       source.forEachFeatureIntersectingExtent(extent, (feature) => {
-        features.push(feature);
+        const featureGeometry = feature.getGeometry();
+        console.log(featureGeometry.getType(), GeometryType.POINT);
+        if (
+          featureGeometry.getType() === GeometryType.POINT &&
+          geometry.intersectsCoordinate(featureGeometry.getCoordinates())
+        ) {
+          features.push(feature);
+        }
       });
     }
 
