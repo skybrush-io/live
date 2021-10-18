@@ -24,6 +24,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - UAV status summary header widget is now sorted by the severity of the items,
   in decreasing order.
 
+- Distances in the hover tooltip of the map are now shown in kilometers, meters
+  or centimeters, depending on their magnitude.
+
 ### Fixed
 
 - Removing a UAV with the trashcan icon from the UAV list now also removes it
