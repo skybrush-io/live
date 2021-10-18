@@ -15,11 +15,21 @@ import {
 
 import { getFlatEarthCoordinateTransformer } from './map';
 
+const DISTANCE_UNITS = [
+  [1000, ' km'],
+  [1, ' m'],
+  [0.01, ' cm'],
+];
+
 const cartesianFormatter = makeDecimalCoordinateFormatter({
   digits: 2,
-  unit: ' m',
+  unit: DISTANCE_UNITS,
 });
-const polarFormatter = makePolarCoordinateFormatter({ digits: 2, unit: ' m' });
+
+const polarFormatter = makePolarCoordinateFormatter({
+  digits: 2,
+  unit: DISTANCE_UNITS,
+});
 
 const signedGeographicFormatter = makeDecimalCoordinateFormatter({
   digits: 7,

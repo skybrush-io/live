@@ -103,32 +103,32 @@ const MapViewLayers = connect(
 
 /* ********************************************************************** */
 
-const MapViewControlsPresentation = (props) => {
-  const result = [
-    <control.Zoom key='control.Zoom' />,
-    <control.Attribution
-      key='control.Attribution'
-      collapsed
-      collapseLabel='&laquo;'
-    />,
-  ];
-
-  if (props.showMouseCoordinates) {
-    result.push(
+const MapViewControlsPresentation = ({
+  formatCoordinate,
+  showMouseCoordinates,
+  showScaleLine,
+}) => (
+  <>
+    <control.Zoom />
+    <control.Attribution collapsed collapseLabel='&laquo;' />
+    {showMouseCoordinates && (
       <control.MousePosition
         key='control.MousePosition'
         hideWhenOut
         projection='EPSG:4326'
-        coordinateFormat={props.formatCoordinate}
+        coordinateFormat={formatCoordinate}
       />
-    );
-  }
+    )}
+    {showScaleLine && (
+      <control.ScaleLine key='control.ScaleLine' minWidth={128} />
+    )}
+  </>
+);
 
-  if (props.showScaleLine) {
-    result.push(<control.ScaleLine key='control.ScaleLine' minWidth={128} />);
-  }
-
-  return result;
+MapViewControlsPresentation.propTypes = {
+  formatCoordinate: PropTypes.func,
+  showMouseCoordinates: PropTypes.bool,
+  showScaleLine: PropTypes.bool,
 };
 
 /**
