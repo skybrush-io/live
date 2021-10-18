@@ -2,6 +2,7 @@
  * @file Action factories related to the map in the main app window.
  */
 
+import isNil from 'lodash-es/isNil';
 import { createAction } from 'redux-actions';
 import {
   SELECT_MAP_TOOL,
@@ -90,4 +91,6 @@ export const setSelectedFeatures = createAction(SET_SELECTED_FEATURES);
  * @return {Object} an appropriately constructed action
  */
 export const setSelectedUAVIds = (ids) =>
-  setSelectedFeatures(ids.map((id) => uavIdToGlobalId(id)));
+  setSelectedFeatures(
+    ids.filter((id) => !isNil(id)).map((id) => uavIdToGlobalId(id))
+  );
