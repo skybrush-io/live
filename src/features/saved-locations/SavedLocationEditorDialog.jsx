@@ -48,46 +48,65 @@ const SavedLocationEditorFormPresentation = ({
 }) => (
   <Form initialValues={initialValues} validate={validator} onSubmit={onSubmit}>
     {({ handleSubmit }) => (
-      <form id='SavedLocationEditor' onSubmit={handleSubmit}>
+      <form
+        id='SavedLocationEditor'
+        onSubmit={handleSubmit}
+        style={{ marginTop: 8, marginBottom: 0 }}
+      >
         <div onKeyPress={onKeyPress}>
           <TextField
             autoFocus
             fullWidth
-            margin='normal'
+            margin='dense'
             name='name'
             label='Name'
             variant='filled'
           />
-          <Box display='flex' flexDirection='row' mt={1}>
+          <Box display='flex' flexDirection='row'>
             <TextField
               fullWidth
+              margin='dense'
               name='center.lat'
               label='Latitude'
               variant='filled'
             />
-            <Box p={1} />
+            <Box p={0.75} />
             <TextField
               fullWidth
+              margin='dense'
               name='center.lon'
               label='Longitude'
               variant='filled'
             />
           </Box>
-          <Box display='flex' flexDirection='row' mt={2}>
+          <Box display='flex' flexDirection='row'>
             <AngleField
               fullWidth
+              margin='dense'
               name='rotation'
               label='Rotation'
               variant='filled'
             />
-            <Box p={1} />
+            <Box p={0.75} />
             <TextField
               fullWidth
+              margin='dense'
               name='zoom'
               label='Zoom level'
               variant='filled'
             />
           </Box>
+          <TextField
+            autoFocus
+            fullWidth
+            multiline
+            margin='dense'
+            name='notes'
+            label='Notes'
+            variant='filled'
+            minRows={3}
+            maxRows={3}
+          />
         </div>
       </form>
     )}
