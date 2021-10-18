@@ -65,7 +65,7 @@ const RTKStatusHeaderButton = ({
   }
 
   return (
-    <LazyTooltip content={<RTKStatusMiniList />}>
+    <LazyTooltip interactive content={<RTKStatusMiniList />}>
       <GenericHeaderButton
         disabled={!isConnected}
         label={
