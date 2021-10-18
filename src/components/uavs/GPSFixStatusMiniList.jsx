@@ -34,7 +34,7 @@ const getListItems = createSelector(
       const uav = byId[uavId];
       if (uav && uav.gpsFix) {
         const gpsFixType = uav.gpsFix.type;
-        const key = gpsFixType;
+        const key = String(gpsFixType);
         if (items[key] === undefined) {
           const status = getSemanticsForGPSFixType(gpsFixType);
           items[key] = {
@@ -80,7 +80,7 @@ const GPSFixStatusMiniList = listOf(
         }
       />
     ) : (
-      <MiniListDivider />
+      <MiniListDivider key='__divider' />
     ),
   {
     dataProvider: 'items',
