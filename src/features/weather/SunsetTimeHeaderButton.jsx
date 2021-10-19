@@ -15,7 +15,7 @@ import Sunset from '~/icons/Sunset';
 import { shortRelativeTimeFormatter } from '~/utils/formatting';
 
 import { getSunriseSunsetTimesForMapViewCenterPosition } from './selectors';
-import SunsetDetailsMiniList from './SunsetDetailsMiniList';
+import WeatherDetailsMiniList from './WeatherDetailsMiniList';
 
 const buttonStyle = {
   justifyContent: 'space-between',
@@ -42,7 +42,7 @@ const SunsetTimeHeaderButton = ({ sunrise, sunset }) => {
   usePeriodicRefresh(30000);
 
   return (
-    <LazyTooltip content={<SunsetDetailsMiniList />}>
+    <LazyTooltip content={<WeatherDetailsMiniList />}>
       <GenericHeaderButton
         label={referenceTime ? format(referenceTime, 'H:mm') : '—'}
         secondaryLabel={
