@@ -29,6 +29,7 @@ const { actions, reducer } = createSlice({
         },
         rotation: 59,
         zoom: 17,
+        notes: '',
       },
       elte: {
         id: 'elte',
@@ -39,6 +40,7 @@ const { actions, reducer } = createSlice({
         },
         rotation: 0,
         zoom: 17,
+        notes: '',
       },
     },
 

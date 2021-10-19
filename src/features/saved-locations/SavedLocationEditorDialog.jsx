@@ -50,8 +50,8 @@ const SavedLocationEditorFormPresentation = ({
     {({ handleSubmit }) => (
       <form
         id='SavedLocationEditor'
-        onSubmit={handleSubmit}
         style={{ marginTop: 8, marginBottom: 0 }}
+        onSubmit={handleSubmit}
       >
         <div onKeyPress={onKeyPress}>
           <TextField
