@@ -3,6 +3,15 @@ import { bindActionCreators } from '@reduxjs/toolkit';
 
 import { scrollIntoView } from '~/utils/navigation';
 
+export const Direction = {
+  UP: 'up',
+  DOWN: 'down',
+  LEFT: 'left',
+  RIGHT: 'right',
+  PREVIOUS_PAGE: 'previousPage',
+  NEXT_PAGE: 'nextPage',
+};
+
 /**
  * Creates a hotkey handler map that maps keyboard navigation related hotkey
  * action names to the corresponding handler functions in a way that is suitable
@@ -36,6 +45,7 @@ export function createKeyboardNavigationHandlers({
   dispatch,
   activateId,
   activateIds,
+  getNavigationDeltaInDirection,
   getVisibleIds,
   getSelectedIds,
   setFocusToId,
@@ -56,11 +66,12 @@ export function createKeyboardNavigationHandlers({
         }
       : undefined;
 
-  const adjustSelectionByDelta = (delta) => (event) => (dispatch, getState) => {
-    // We need to prevent the browser from adjusting the selection of the _text_
-    // of the webpage when the Shift key is held down
-    event.preventDefault();
-
+  const dispatchActionForAdjustingSelectionByDelta = (
+    event,
+    delta,
+    dispatch,
+    getState
+  ) => {
     const state = getState();
     const visibleIds = getVisibleIds(state);
 
@@ -115,15 +126,50 @@ export function createKeyboardNavigationHandlers({
     }
   };
 
+  const adjustSelectionByDelta = (delta) => (event) => (dispatch, getState) => {
+    const action = dispatchActionForAdjustingSelectionByDelta(
+      event,
+      delta,
+      dispatch,
+      getState
+    );
+    if (action) {
+      dispatch(action);
+    }
+  };
+
+  const adjustSelectionInDirection =
+    (direction) => (event) => (dispatch, getState) => {
+      // We need to prevent the browser from adjusting the selection of the _text_
+      // of the webpage when the Shift key is held down
+      event.preventDefault();
+
+      const state = getState();
+      const delta = getNavigationDeltaInDirection(state, direction);
+      if (delta !== 0) {
+        const action = dispatchActionForAdjustingSelectionByDelta(
+          event,
+          delta,
+          dispatch,
+          getState
+        );
+        if (action) {
+          dispatch(action);
+        }
+      }
+    };
+
   return bindActionCreators(
     {
       ACTIVATE_SELECTION: activateSelection,
-      PAGE_DOWN: adjustSelectionByDelta(10),
-      PAGE_UP: adjustSelectionByDelta(-10),
+      PAGE_DOWN: adjustSelectionInDirection(Direction.NEXT_PAGE),
+      PAGE_UP: adjustSelectionInDirection(Direction.PREVIOUS_PAGE),
       SELECT_FIRST: adjustSelectionByDelta(Number.NEGATIVE_INFINITY),
       SELECT_LAST: adjustSelectionByDelta(Number.POSITIVE_INFINITY),
-      SELECT_NEXT: adjustSelectionByDelta(1),
-      SELECT_PREVIOUS: adjustSelectionByDelta(-1),
+      SELECT_DOWN: adjustSelectionInDirection(Direction.DOWN),
+      SELECT_UP: adjustSelectionInDirection(Direction.UP),
+      SELECT_LEFT: adjustSelectionInDirection(Direction.LEFT),
+      SELECT_RIGHT: adjustSelectionInDirection(Direction.RIGHT),
     },
     dispatch
   );

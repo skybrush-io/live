@@ -125,8 +125,10 @@ export default connect(
         PAGE_UP: sendKeyboardNavigationSignal('PAGE_UP'),
         SELECT_FIRST: sendKeyboardNavigationSignal('SELECT_FIRST'),
         SELECT_LAST: sendKeyboardNavigationSignal('SELECT_LAST'),
-        SELECT_NEXT: sendKeyboardNavigationSignal('SELECT_NEXT'),
-        SELECT_PREVIOUS: sendKeyboardNavigationSignal('SELECT_PREVIOUS'),
+        SELECT_DOWN: sendKeyboardNavigationSignal('SELECT_DOWN'),
+        SELECT_UP: sendKeyboardNavigationSignal('SELECT_UP'),
+        SELECT_LEFT: sendKeyboardNavigationSignal('SELECT_LEFT'),
+        SELECT_RIGHT: sendKeyboardNavigationSignal('SELECT_RIGHT'),
       },
       dispatch
     ),

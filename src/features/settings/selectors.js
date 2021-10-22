@@ -129,6 +129,12 @@ export const getUAVAgingThresholds = createSelector(
 export const getUAVListLayout = (state) => state.settings.display.uavListLayout;
 
 /**
+ * Returns the current primary orientation of the list or grid showing the UAVs.
+ */
+export const getUAVListOrientation = (state) =>
+  getUAVListLayout(state) === 'grid' ? 'horizontal' : 'vertical';
+
+/**
  * Returns whether we are currently showing empty mission slots in the UAV list.
  */
 export const isShowingEmptyMissionSlots = (state) =>

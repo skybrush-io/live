@@ -6,6 +6,7 @@
 import difference from 'lodash-es/difference';
 import isNil from 'lodash-es/isNil';
 import union from 'lodash-es/union';
+import { nanoid } from 'nanoid';
 import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
 import { bindActionCreators } from 'redux';
@@ -32,7 +33,10 @@ import FadeAndSlide from '~/components/transitions/FadeAndSlide';
 import DroneAvatar from '~/components/uavs/DroneAvatar';
 import DronePlaceholder from '~/components/uavs/DronePlaceholder';
 import { useKeyboardNavigation } from '~/features/hotkeys/hooks';
-import { createKeyboardNavigationHandlers } from '~/features/hotkeys/navigation';
+import {
+  createKeyboardNavigationHandlers,
+  Direction,
+} from '~/features/hotkeys/navigation';
 import {
   adjustMissionMapping,
   startMappingEditorSessionAtSlot,
@@ -43,6 +47,7 @@ import {
 } from '~/features/mission/selectors';
 import {
   getUAVListLayout,
+  getUAVListOrientation,
   isShowingMissionIds,
 } from '~/features/settings/selectors';
 import { openUAVDetailsDialog } from '~/features/uavs/details';
@@ -313,6 +318,7 @@ const HEADER_TEXT = {
  * Presentation component for showing the drone show configuration view.
  */
 const UAVListPresentation = ({
+  containerDOMNodeId,
   editingMapping,
   keyboardNav,
   layout,
@@ -382,7 +388,10 @@ const UAVListPresentation = ({
           <MappingSlotEditorToolbar className={classes.toolbar} />
         </FadeAndSlide>
       </AppBar>
-      <Box flex={1} overflow='auto'>
+      <Box flex={1} overflow='auto' id={containerDOMNodeId}>
+        {/* We assume that each grid item is a <div> in the <Box> when we
+         * calculate how many columns there are in the grid. Revise the
+         * layout functions in connect() if this is not the case any more */}
         {layout === 'list' && (
           <div className={classes.header}>
             {showMissionIds ? HEADER_TEXT.missionIds : HEADER_TEXT.droneIds}
@@ -428,6 +437,7 @@ const UAVListPresentation = ({
 };
 
 UAVListPresentation.propTypes = {
+  containerDOMNodeId: PropTypes.string,
   editingMapping: PropTypes.bool,
   keyboardNav: PropTypes.object,
   mappingSlotBeingEdited: PropTypes.number,
@@ -477,51 +487,112 @@ const UAVList = connect(
     uavIds: getDisplayedIdListBySections(state),
   }),
   // mapDispatchToProps
-  (dispatch) => ({
-    keyboardNav: createKeyboardNavigationHandlers({
-      dispatch,
-      activateId: openUAVDetailsDialog,
-      getVisibleIds: getDisplayedIdList,
-      getSelectedIds: getSelectedUAVIds,
-      setSelectedIds: setSelectedUAVIds,
-      setFocusToId: (id) => `#${uavIdToDOMNodeId(id)}`,
-    }),
+  () => {
+    const containerDOMNodeId = `__keyboardNav-${nanoid()}`;
 
-    ...bindActionCreators(
-      {
-        onEditMappingSlot: startMappingEditorSessionAtSlot,
-        onMappingAdjusted: adjustMissionMapping,
-        onSelectItem: createSelectionHandlerThunk({
-          activateItem: openUAVDetailsDialog,
-          getSelection: getSelectedUAVIds,
-          setSelection: setSelectedUAVIds,
-        }),
-        onSelectSection: (event) => (dispatch, getState) => {
-          const { value } = event.target;
-          const state = getState();
-          const displayedIdsAndLabels =
-            getDisplayedIdListBySections(state)[value];
-          const selectedUAVIds = getSelectedUAVIds(state);
-          const selectionInfo = getSelectionInfo(state)[value];
+    const getColumnCount = () => {
+      const containerDOMNode = document.querySelector(`#${containerDOMNodeId}`);
 
-          if (selectionInfo && displayedIdsAndLabels) {
-            const displayedIds = [];
-            for (const idAndLabel of displayedIdsAndLabels) {
-              if (!isNil(idAndLabel[0])) {
-                displayedIds.push(idAndLabel[0]);
+      // Assumption: the width of the container divided by 80 is an estimate of
+      // how many columns there are in the grid.
+      const { width: containerWidth } =
+        containerDOMNode?.getBoundingClientRect() || {};
+      if (typeof containerWidth === 'number' && containerWidth > 0) {
+        return Math.max(1, Math.floor(containerWidth / 80));
+      } else {
+        return 1;
+      }
+    };
+
+    const getNavigationDeltaInDirection = (state, direction) => {
+      const orientation = getUAVListOrientation(state);
+
+      if (orientation === 'vertical') {
+        // Vertical layout. Horizontal navigation is disallowed and we always
+        // step by 1 vertically.
+        switch (direction) {
+          case Direction.DOWN:
+            return 1;
+          case Direction.UP:
+            return -1;
+          case Direction.NEXT_PAGE:
+            return 10;
+          case Direction.PREVIOUS_PAGE:
+            return -10;
+          default:
+            return 0;
+        }
+      } else {
+        // Horizontal layout. We always step by 1 horizontally. In vertical
+        // direction we need to figure out how many columns there are.
+        switch (direction) {
+          case Direction.LEFT:
+            return -1;
+          case Direction.RIGHT:
+            return 1;
+          case Direction.UP:
+          case Direction.PREVIOUS_PAGE:
+            return -getColumnCount();
+          case Direction.DOWN:
+          case Direction.NEXT_PAGE:
+            return getColumnCount();
+
+          default:
+            return 0;
+        }
+      }
+    };
+
+    return (dispatch) => ({
+      containerDOMNodeId,
+
+      keyboardNav: createKeyboardNavigationHandlers({
+        dispatch,
+        activateId: openUAVDetailsDialog,
+        getNavigationDeltaInDirection,
+        getVisibleIds: getDisplayedIdList,
+        getSelectedIds: getSelectedUAVIds,
+        getLayout: getUAVListOrientation,
+        setSelectedIds: setSelectedUAVIds,
+        setFocusToId: (id) => `#${uavIdToDOMNodeId(id)}`,
+      }),
+
+      ...bindActionCreators(
+        {
+          onEditMappingSlot: startMappingEditorSessionAtSlot,
+          onMappingAdjusted: adjustMissionMapping,
+          onSelectItem: createSelectionHandlerThunk({
+            activateItem: openUAVDetailsDialog,
+            getSelection: getSelectedUAVIds,
+            setSelection: setSelectedUAVIds,
+          }),
+          onSelectSection: (event) => (dispatch, getState) => {
+            const { value } = event.target;
+            const state = getState();
+            const displayedIdsAndLabels =
+              getDisplayedIdListBySections(state)[value];
+            const selectedUAVIds = getSelectedUAVIds(state);
+            const selectionInfo = getSelectionInfo(state)[value];
+
+            if (selectionInfo && displayedIdsAndLabels) {
+              const displayedIds = [];
+              for (const idAndLabel of displayedIdsAndLabels) {
+                if (!isNil(idAndLabel[0])) {
+                  displayedIds.push(idAndLabel[0]);
+                }
               }
-            }
 
-            const newSelection = selectionInfo.checked
-              ? difference(selectedUAVIds, displayedIds)
-              : union(selectedUAVIds, displayedIds);
-            dispatch(setSelectedUAVIds(newSelection));
-          }
+              const newSelection = selectionInfo.checked
+                ? difference(selectedUAVIds, displayedIds)
+                : union(selectedUAVIds, displayedIds);
+              dispatch(setSelectedUAVIds(newSelection));
+            }
+          },
         },
-      },
-      dispatch
-    ),
-  })
+        dispatch
+      ),
+    });
+  }
 )(UAVListPresentation);
 
 export default UAVList;

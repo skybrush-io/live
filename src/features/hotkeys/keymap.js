@@ -58,15 +58,27 @@ const globalKeyMap = {
     group: HIDDEN,
   },
 
-  SELECT_NEXT: {
-    name: 'Select next drone',
+  SELECT_DOWN: {
+    name: 'Select next drone (vertically)',
     sequence: 'down',
     group: HIDDEN,
   },
 
-  SELECT_PREVIOUS: {
-    name: 'Select previous drone',
+  SELECT_UP: {
+    name: 'Select previous drone (vertically)',
     sequence: 'up',
+    group: HIDDEN,
+  },
+
+  SELECT_LEFT: {
+    name: 'Select previous drone (horizontally)',
+    sequence: 'left',
+    group: HIDDEN,
+  },
+
+  SELECT_RIGHT: {
+    name: 'Select next drone (horizontally)',
+    sequence: 'right',
     group: HIDDEN,
   },
 
