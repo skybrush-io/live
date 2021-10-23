@@ -37,6 +37,7 @@ import {
 } from '~/features/show/slice';
 import { showError, showNotification } from '~/features/snackbar/actions';
 import { MessageSemantics } from '~/features/snackbar/types';
+import { clearWeatherData } from '~/features/weather/slice';
 import messageHub from '~/message-hub';
 import {
   ConnectionState,
@@ -422,6 +423,7 @@ async function executeTasksAfterDisconnection(dispatch) {
   dispatch(clearServerFeatures());
   dispatch(clearStartTimeAndMethod());
   dispatch(clearTimeSyncStatistics());
+  dispatch(clearWeatherData());
 }
 
 const ServerConnectionManager = connect(

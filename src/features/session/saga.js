@@ -38,7 +38,7 @@ export default function* sessionManagementSaga({ maxLengthInSeconds }) {
 
   const expiresAt = yield select((state) => state.session.expiresAt);
   if (expiresAt && typeof expiresAt === 'number' && expiresAt >= 0) {
-    const msLeft = expiresAt - new Date().getTime();
+    const msLeft = expiresAt - Date.now();
     if (msLeft > 0) {
       yield delay(msLeft);
     }

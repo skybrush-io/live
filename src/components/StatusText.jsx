@@ -4,8 +4,7 @@ import React from 'react';
 
 import { makeStyles } from '@material-ui/core/styles';
 
-import Colors from '~/components/colors';
-import { Status } from './semantics';
+import { Colors, Status } from '@skybrush/app-theme-material-ui';
 
 const useStyles = makeStyles({
   'status-info': {

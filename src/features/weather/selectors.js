@@ -10,7 +10,7 @@ const getRoundedMapViewCenterPosition = createSelector(
   getMapViewCenterPosition,
   (position) =>
     Array.isArray(position) && position.length >= 2
-      ? [Number(position[0].toFixed(1)), Number(position[1].toFixed(1))]
+      ? [Number(position[0].toFixed(2)), Number(position[1].toFixed(2))]
       : null
 );
 
@@ -35,3 +35,11 @@ export const getSunriseSunsetTimesForMapViewCenterPosition =
 
     return result;
   });
+
+export function isWeatherDataLoading(state) {
+  return state.weather.loading;
+}
+
+export function getWeatherDataLastUpdateTimestamp(state) {
+  return state.weather.lastUpdatedAt;
+}

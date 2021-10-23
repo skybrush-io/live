@@ -14,6 +14,7 @@ import showSaga from '~/features/show/saga';
 import sessionSaga from '~/features/session/saga';
 import tourSaga from '~/features/tour/saga';
 import uavManagementSaga from '~/features/uavs/saga';
+import weatherSaga from '~/features/weather/saga';
 import flock from '~/flock';
 
 import onboardingSaga from './onboarding';
@@ -30,6 +31,7 @@ export default function* rootSaga() {
     serversSaga(),
     showSaga(),
     uavManagementSaga(flock),
+    weatherSaga(),
   ];
 
   if (localServer && localServer.search) {

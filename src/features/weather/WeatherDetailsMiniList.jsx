@@ -4,12 +4,37 @@ import isNil from 'lodash-es/isNil';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
+import TimeAgo from 'react-timeago';
 
+import { colorForSeverity } from '~/components/colors';
+import SmallProgressIndicator from '~/components/SmallProgressIndicator';
+import StatusText from '~/components/StatusText';
+import { Severity } from '~/model/enums';
+import {
+  formatNumberSafely,
+  shortRelativeTimeFormatter,
+} from '~/utils/formatting';
+
+import { Status } from '@skybrush/app-theme-material-ui';
 import MiniList from '@skybrush/mui-components/lib/MiniList';
 import MiniListItem from '@skybrush/mui-components/lib/MiniListItem';
 import MiniListDivider from '@skybrush/mui-components/lib/MiniListDivider';
 
 import { getSunriseSunsetTimesForMapViewCenterPosition } from './selectors';
+
+const EM_DASH = '\u2014';
+
+function statusForKpIndex(kpIndex) {
+  if (typeof kpIndex === 'number') {
+    if (kpIndex >= 5) {
+      return Status.ERROR;
+    } else if (kpIndex >= 4) {
+      return Status.WARNING;
+    } else {
+      return null;
+    }
+  }
+}
 
 function safelyFormat(time, formatString) {
   try {
@@ -37,6 +62,10 @@ const listStyle = {
 };
 
 const WeatherDetailsMiniList = ({
+  data,
+  error,
+  lastUpdatedAt,
+  loading,
   sunrise,
   sunriseEnd,
   sunset,
@@ -101,13 +130,69 @@ const WeatherDetailsMiniList = ({
   }
 
   if (items.length > 0) {
+    items.push(<MiniListDivider key='sep2' />);
+  }
+
+  const { kpIndex } = data || {};
+  if (!isNil(kpIndex)) {
+    items.push(
+      <MiniListItem
+        key='kpIndex'
+        primaryText='Kp index'
+        secondaryText={
+          <StatusText status={statusForKpIndex(kpIndex)}>
+            {formatNumberSafely(kpIndex, 1)}
+          </StatusText>
+        }
+      />
+    );
+  }
+
+  if (loading) {
+    items.push(
+      <SmallProgressIndicator
+        key='loadingIndicator'
+        label='Refreshing...'
+        padding={0.5}
+      />
+    );
+  } else {
+    items.push(
+      <MiniListItem
+        key='lastUpdatedAt'
+        primaryText='Last update'
+        secondaryText={
+          error ? (
+            <span
+              style={{
+                color: colorForSeverity(Severity.ERROR),
+                fontWeight: 'bold',
+              }}
+            >
+              failed
+            </span>
+          ) : lastUpdatedAt ? (
+            <TimeAgo
+              formatter={shortRelativeTimeFormatter}
+              date={lastUpdatedAt}
+            />
+          ) : (
+            EM_DASH
+          )
+        }
+      />
+    );
+  }
+
+  if (items.length > 0) {
     return <MiniList style={listStyle}>{items}</MiniList>;
   } else {
-    return 'No sunrise or sunset on the current day';
+    return 'No weather information on this day';
   }
 };
 
 WeatherDetailsMiniList.propTypes = {
+  error: PropTypes.any,
   sunrise: PropTypes.instanceOf(Date),
   sunriseEnd: PropTypes.instanceOf(Date),
   sunsetStart: PropTypes.instanceOf(Date),
@@ -124,6 +209,7 @@ export default connect(
     timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
     /* eslint-enable: new-cap */
     utcOffset: new Date().getTimezoneOffset(),
+    ...state.weather,
   }),
   // mapDispatchToProps
   {}

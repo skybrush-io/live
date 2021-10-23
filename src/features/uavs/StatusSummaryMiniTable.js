@@ -1,4 +1,3 @@
-import isNil from 'lodash-es/isNil';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
@@ -13,7 +12,7 @@ import {
   getSemanticsForFlightMode,
   getSemanticsForGPSFixType,
 } from '~/model/enums';
-import { shortTimeAgoFormatter } from '~/utils/formatting';
+import { formatNumberSafely, shortTimeAgoFormatter } from '~/utils/formatting';
 
 const useStyles = makeStyles(
   (theme) => ({
@@ -43,15 +42,6 @@ const useStyles = makeStyles(
 );
 
 const naText = <span className='muted'>—</span>;
-
-const formatNumberSafely = (x, digits = 0, unit = '') =>
-  isNil(x)
-    ? naText
-    : typeof x === 'number'
-    ? unit
-      ? `${x.toFixed(digits)}${unit}`
-      : x.toFixed(digits)
-    : x;
 
 // TODO(ntamas): refactor this in terms of components/mini-table!
 
@@ -90,25 +80,23 @@ const StatusSummaryMiniTable = ({
       ['GPS fix', gpsFixLabel],
       ['# sats', gpsFix?.numSatellites || naText],
       'sep1',
-      ['Lat', formatNumberSafely(lat, 7, '°')],
-      ['Lon', formatNumberSafely(lon, 7, '°')],
-      ['AMSL', formatNumberSafely(amsl, 2, ' m')],
-      ['AGL', formatNumberSafely(agl, 2, ' m')],
+      ['Lat', formatNumberSafely(lat, 7, '°', naText)],
+      ['Lon', formatNumberSafely(lon, 7, '°', naText)],
+      ['AMSL', formatNumberSafely(amsl, 2, ' m'), naText],
+      ['AGL', formatNumberSafely(agl, 2, ' m', naText)],
       'sep2'
     );
   }
 
   if (hasLocalPosition) {
     rows.push(
-      ['X', formatNumberSafely(localPosition[0], 2, ' m')],
-      ['Y', formatNumberSafely(localPosition[1], 2, ' m')],
-      ['Z', formatNumberSafely(localPosition[2], 2, ' m')]
+      ['X', formatNumberSafely(localPosition[0], 2, ' m', naText)],
+      ['Y', formatNumberSafely(localPosition[1], 2, ' m', naText)],
+      ['Z', formatNumberSafely(localPosition[2], 2, ' m', naText)]
     );
   }
 
-  rows.push(['Heading', formatNumberSafely(heading, 1, '°')]);
-  rows.push('sep3');
-  rows.push([
+  rows.push(['Heading', formatNumberSafely(heading, 1, '°', naText)], 'sep3', [
     'Last seen',
     lastUpdated ? (
       <TimeAgo formatter={shortTimeAgoFormatter} date={lastUpdated} />

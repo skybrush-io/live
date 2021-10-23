@@ -146,6 +146,28 @@ export async function getShowConfiguration(hub) {
 }
 
 /**
+ * Returns the weather information at the given location from the server.
+ *
+ * @param position  the location to query, as a lon-lat pair
+ */
+export async function getWeatherInformation(hub, position) {
+  if (!Array.isArray(position) || position.length < 2) {
+    throw new Error('Invalid position');
+  }
+
+  const response = await hub.sendMessage({
+    type: 'WTH-AT',
+    position: [Math.round(position[0] * 1e7), Math.round(position[1] * 1e7)],
+  });
+
+  if (response.body && response.body.type === 'WTH-AT') {
+    return response.body.weather;
+  }
+
+  throw new Error('Unexpected response for weather query');
+}
+
+/**
  * Returns the list of loaded extensions and the list of extensions known to
  * the server, in an object with keys named `loaded` and `available`.
  *
@@ -197,6 +219,7 @@ export class QueryHandler {
     getRTKSurveySettings,
     getSelectedRTKPresetId,
     getShowConfiguration,
+    getWeatherInformation,
     isExtensionLoaded,
     listExtensions,
   };

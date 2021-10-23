@@ -1,8 +1,7 @@
 import { Colors as ColorsBase } from '@skybrush/app-theme-material-ui';
+import { Severity } from '~/model/enums';
 
 export { colorForStatus } from '@skybrush/app-theme-material-ui';
-
-import { Severity } from '~/model/enums';
 
 export const Colors = {
   ...ColorsBase,

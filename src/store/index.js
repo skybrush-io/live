@@ -67,6 +67,7 @@ const persistConfig = {
     'session',
     'snackbar',
     'uavs',
+    'weather',
   ],
 
   // do not save more frequently than once every second
@@ -153,7 +154,7 @@ const store = configureStore({
 
       serializableCheck: {
         /* redux-persist uses functions in actions and redux-promise-middleware
-         * uses errors. This setting  silences a warning about them */
+         * uses errors. This setting silences a warning about them */
         isSerializable: (value) =>
           isPlain(value) ||
           isFunction(value) ||

@@ -121,6 +121,24 @@ export function formatIdsAndTruncateTrailingItems(
 }
 
 /**
+ * Formats a number in a null-safe manner, replacing nil and NaN with an
+ * appropriate text.
+ *
+ * @param {number} x  the number to format
+ * @param {number} digits  the number of decimal digits to keep
+ * @param {string} unit    optional suffix to append after the number
+ * @param {string} naText  text to return when the input is nil or NaN
+ */
+export const formatNumberSafely = (x, digits = 0, unit = '', naText = '—') =>
+  isNil(x) || Number.isNaN(x)
+    ? naText
+    : typeof x === 'number'
+    ? unit
+      ? `${x.toFixed(digits)}${unit}`
+      : x.toFixed(digits)
+    : x;
+
+/**
  * Twitter-style short formatter for TimeAgo components
  */
 export const shortTimeAgoFormatter = (value, unit) =>
@@ -136,7 +154,11 @@ export const shortTimeAgoFormatter = (value, unit) =>
  */
 export const shortRelativeTimeFormatter = (value, unit, suffix) => {
   const base = shortTimeAgoFormatter(value, unit, suffix);
-  return suffix === 'ago' ? `${base} ago` : `in ${base}`;
+  return base === 'now'
+    ? base
+    : suffix === 'ago'
+    ? `${base} ago`
+    : `in ${base}`;
 };
 
 /**
