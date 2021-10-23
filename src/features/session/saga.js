@@ -25,7 +25,7 @@ export default function* sessionManagementSaga({ maxLengthInSeconds }) {
       if (decodedToken && typeof decodedToken.exp === 'number') {
         yield put(ensureSessionExpiresNoLaterThan(decodedToken.exp * 1000));
       }
-    } catch (err) {
+    } catch {
       // Probably not a JWT token
     }
   }
