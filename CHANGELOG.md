@@ -19,6 +19,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   given GPS fix state; this can be used to validate whether all UAVs are
   receiving RTK corrections.
 
+- The weather info widget now shows the current planetary K index estimate if
+  the server provides this information.
+
 ### Changed
 
 - UAV status summary header widget is now sorted by the severity of the items,
