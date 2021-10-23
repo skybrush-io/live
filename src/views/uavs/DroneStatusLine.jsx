@@ -8,11 +8,12 @@ import { connect } from 'react-redux';
 
 import { makeStyles } from '@material-ui/core/styles';
 
+import StatusText from '@skybrush/mui-components/lib/StatusText';
+
 import { BatteryFormatter } from '~/components/battery';
 import BatteryIndicator from '~/components/BatteryIndicator';
 import ColoredLight from '~/components/ColoredLight';
 import StatusPill from '~/components/StatusPill';
-import StatusText from '~/components/StatusText';
 import { getBatteryFormatter } from '~/features/settings/selectors';
 import {
   createSingleUAVStatusSummarySelector,

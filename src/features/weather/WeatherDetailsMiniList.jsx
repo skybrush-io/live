@@ -7,8 +7,6 @@ import { connect } from 'react-redux';
 import TimeAgo from 'react-timeago';
 
 import { colorForSeverity } from '~/components/colors';
-import SmallProgressIndicator from '~/components/SmallProgressIndicator';
-import StatusText from '~/components/StatusText';
 import { Severity } from '~/model/enums';
 import {
   formatNumberSafely,
@@ -19,6 +17,8 @@ import { Status } from '@skybrush/app-theme-material-ui';
 import MiniList from '@skybrush/mui-components/lib/MiniList';
 import MiniListItem from '@skybrush/mui-components/lib/MiniListItem';
 import MiniListDivider from '@skybrush/mui-components/lib/MiniListDivider';
+import SmallProgressIndicator from '@skybrush/mui-components/lib/SmallProgressIndicator';
+import StatusText from '@skybrush/mui-components/lib/StatusText';
 
 import { getSunriseSunsetTimesForMapViewCenterPosition } from './selectors';
 

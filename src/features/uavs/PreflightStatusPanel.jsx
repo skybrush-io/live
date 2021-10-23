@@ -12,9 +12,9 @@ import Error from '@material-ui/icons/Error';
 
 import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
 import Header from '@skybrush/mui-components/lib/FormHeader';
+import LargeProgressIndicator from '@skybrush/mui-components/lib/LargeProgressIndicator';
 import StatusLight from '@skybrush/mui-components/lib/StatusLight';
 
-import LargeProgressIndicator from '~/components/LargeProgressIndicator';
 import { getUAVById } from '~/features/uavs/selectors';
 import {
   describeError,

@@ -5,7 +5,8 @@ import TimeAgo from 'react-timeago';
 
 import { makeStyles } from '@material-ui/core/styles';
 
-import StatusText from '~/components/StatusText';
+import StatusText from '@skybrush/mui-components/lib/StatusText';
+
 import {
   abbreviateGPSFixType,
   getFlightModeLabel,

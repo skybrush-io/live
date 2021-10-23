@@ -14,8 +14,8 @@ import Person from '@material-ui/icons/Person';
 import Security from '@material-ui/icons/Security';
 
 import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
+import LargeProgressIndicator from '@skybrush/mui-components/lib/LargeProgressIndicator';
 
-import LargeProgressIndicator from '~/components/LargeProgressIndicator';
 import useMessageHub from '~/hooks/useMessageHub';
 import { Divider } from '@material-ui/core';
 

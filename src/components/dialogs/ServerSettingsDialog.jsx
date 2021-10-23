@@ -30,6 +30,7 @@ import SignalWifi0Bar from '@material-ui/icons/SignalWifi0Bar';
 import WifiIcon from '@material-ui/icons/Wifi';
 
 import DialogTabs from '@skybrush/mui-components/lib/DialogTabs';
+import SmallProgressIndicator from '@skybrush/mui-components/lib/SmallProgressIndicator';
 
 import {
   ServerDetectionManager,
@@ -41,7 +42,6 @@ import {
   disconnectFromServer,
   setServerSettingsDialogTab,
 } from '~/actions/server-settings';
-import SmallProgressIndicator from '~/components/SmallProgressIndicator';
 import { forceFormSubmission } from '~/components/forms';
 import {
   getDetectedServersInOrder,

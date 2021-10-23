@@ -14,9 +14,9 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 
 import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
+import SmallProgressIndicator from '@skybrush/mui-components/lib/SmallProgressIndicator';
 
 import AutoUpdatingTimestamp from '~/components/AutoUpdatingTimestamp';
-import SmallProgressIndicator from '~/components/SmallProgressIndicator';
 import Colors from '~/components/colors';
 import {
   adjustServerTimeToMatchLocalTime,

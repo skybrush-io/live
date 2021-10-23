@@ -16,10 +16,11 @@ import NoMeetingRoom from '@material-ui/icons/NoMeetingRoom';
 import PowerSettingsNew from '@material-ui/icons/PowerSettingsNew';
 import Refresh from '@material-ui/icons/Refresh';
 
+import StatusText from '@skybrush/mui-components/lib/StatusText';
+
 import { ComplexAvatar } from '~/components/avatar';
 import Colors from '~/components/colors';
 import { MiniTable } from '~/components/mini-table';
-import StatusText from '~/components/StatusText';
 import Tooltip from '~/components/Tooltip';
 
 import { getSelectedDockIdInDockDetailsDialog } from './details';
