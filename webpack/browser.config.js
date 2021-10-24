@@ -11,7 +11,7 @@ const { htmlMetaTags, projectRoot } = require('./helpers');
 
 module.exports = merge(baseConfig, {
   entry: {
-    polyfill: ['@babel/polyfill', 'whatwg-fetch'],
+    polyfill: ['whatwg-fetch'],
     app: './src/index',
   },
 

@@ -47,7 +47,7 @@ const variantConfig = process.env.SKYBRUSH_VARIANT
 
 module.exports = merge(baseConfig, {
   entry: {
-    app: ['@babel/polyfill', 'process/browser', './src/index'],
+    app: ['process/browser', './src/index'],
   },
   plugins,
   ...variantConfig,
