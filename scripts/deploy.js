@@ -5,6 +5,8 @@
  * to a given remote location using rsync
  */
 
+const process = require('process');
+
 const { program } = require('commander');
 const execa = require('execa');
 const {

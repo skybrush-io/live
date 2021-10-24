@@ -180,6 +180,8 @@
     "eslint": "^7.32.0",
     "eslint-config-xo": "^0.39.0",
     "eslint-config-xo-react": "^0.25.0",
+    "eslint-plugin-import": "^2.25.2",
+    "eslint-plugin-promise": "^5.1.1",
     "eslint-plugin-react": "^7.26.1",
     "eslint-plugin-react-hooks": "^4.2.0",
     "esm": "^3.2.25",
@@ -225,6 +227,7 @@
       "import/no-unassigned-import": 0,
       "import/order": 0,
       "node/file-extension-in-import": 0,
+      "no-bitwise": 0,
       "no-else-return": 0,
       "no-lonely-if": 0,
       "no-negated-condition": 0,
@@ -240,6 +243,7 @@
       "unicorn/no-array-callback-reference": 0,
       "unicorn/no-fn-reference-in-iterator": 0,
       "unicorn/numeric-separators-style": 0,
+      "unicorn/prefer-module": 0,
       "unicorn/prefer-ternary": 0
     }
   }

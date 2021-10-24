@@ -36,7 +36,7 @@ function decodeUTF8(array) {
         char2 = array[i++];
         char3 = array[i++];
         out += String.fromCharCode(
-          ((c & 0x0f) << 12) | ((char2 & 0x3f) << 6) | ((char3 & 0x3f) << 0)
+          ((c & 0x0f) << 12) | ((char2 & 0x3f) << 6) | (char3 & 0x3f)
         );
         break;
       default:
@@ -47,10 +47,10 @@ function decodeUTF8(array) {
   return out;
 }
 
-function encodeUTF8(str) {
+function encodeUTF8(string_) {
   const utf8 = [];
-  for (let i = 0; i < str.length; i++) {
-    let charcode = str.charCodeAt(i);
+  for (let i = 0; i < string_.length; i++) {
+    let charcode = string_.charCodeAt(i);
     if (charcode < 0x80) utf8.push(charcode);
     else if (charcode < 0x800) {
       utf8.push(0xc0 | (charcode >> 6), 0x80 | (charcode & 0x3f));
@@ -68,7 +68,8 @@ function encodeUTF8(str) {
       // subtracting 0x10000 and splitting the
       // 20 bits of 0x0-0xFFFFF into two halves
       charcode =
-        0x10000 + (((charcode & 0x3ff) << 10) | (str.charCodeAt(i) & 0x3ff));
+        0x10000 +
+        (((charcode & 0x3ff) << 10) | (string_.charCodeAt(i) & 0x3ff));
       utf8.push(
         0xf0 | (charcode >> 18),
         0x80 | ((charcode >> 12) & 0x3f),
