@@ -3,6 +3,7 @@ import { combineReducers } from 'redux';
 import dialogsReducer from './dialogs';
 import mapReducer from './map';
 
+import alertReducer from '~/features/alert/slice';
 import clocksReducer from '~/features/clocks/slice';
 import connectionsReducer from '~/features/connections/slice';
 import datasetsReducer from '~/features/datasets/slice';
@@ -38,6 +39,7 @@ import workbenchReducer from '~/features/workbench/slice';
  * The global reducer of the application.
  */
 const reducer = combineReducers({
+  alert: alertReducer,
   clocks: clocksReducer,
   connections: connectionsReducer,
   datasets: datasetsReducer,

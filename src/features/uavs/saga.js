@@ -1,4 +1,7 @@
+/* eslint-disable complexity, max-depth */
+
 import isEmpty from 'lodash-es/isEmpty';
+import isNil from 'lodash-es/isNil';
 import mapValues from 'lodash-es/mapValues';
 import { eventChannel } from 'redux-saga';
 import { all, call, delay, put, select, take } from 'redux-saga/effects';
@@ -10,6 +13,7 @@ import {
   _removeUAVsByIds,
 } from './slice';
 
+import { dismissAlerts, triggerAlert } from '~/features/alert/slice';
 import { getRoundedClockSkewInMilliseconds } from '~/features/servers/selectors';
 import { getUAVAgingThresholds } from '~/features/settings/selectors';
 import { UAVAge } from '~/model/uav';
@@ -178,26 +182,98 @@ function subscribeToFlock(flock) {
  *        the Redux store
  */
 function* uavSyncSaga(flock) {
+  // Mapping that maps UAV IDs to the maximum of error codes seen for that UAV.
+  // Triggers an alert if a new UAV appears or if the maximum changes for a UAV.
+  const uavToMostSevereError = new Map();
+  let hasErrors = false;
+  let shouldTriggerAlert;
+  let uavs;
+  let uavIds;
   const chan = yield call(subscribeToFlock, flock);
 
   while (true) {
     const [command, ...args] = yield take(chan);
 
+    uavs = null;
+    uavIds = null;
+    hasErrors = uavToMostSevereError.size > 0;
+    shouldTriggerAlert = false;
+
     switch (command) {
       case 'added':
-        yield put(addUAVs(convertUAVsToRedux(args[0])));
+        uavs = convertUAVsToRedux(args[0]);
+        yield put(addUAVs(uavs));
         break;
 
       case 'removed':
-        yield put(_removeUAVsByIds(args[0].map((uav) => uav.id)));
+        uavIds = args[0].map((uav) => uav.id);
+        yield put(_removeUAVsByIds(uavIds));
+
+        if (hasErrors) {
+          for (const uavId of uavIds) {
+            uavToMostSevereError.delete(uavId);
+          }
+        }
+
         break;
 
       case 'updated':
-        yield put(updateUAVs(convertUAVsToRedux(args[0])));
+        uavs = convertUAVsToRedux(args[0]);
+        yield put(updateUAVs(uavs));
         break;
 
       default:
         console.warn(`Unknown command in UAV sync saga: ${command}`);
+    }
+
+    // If we updated some UAVs, check their most severe error codes
+    if (uavs) {
+      // In 99% of the cases the uavToMostSevereError map is empty so we provide
+      // an optimized branch for this case that does not deal with removals
+      if (!hasErrors) {
+        for (const [uavId, uav] of Object.entries(uavs)) {
+          const maxErrorCode =
+            uav.errors.length > 0 ? Math.max(...uav.errors) : 0;
+
+          // Error code denotes a genuine error if its least significant byte is
+          // >= 128
+          if ((maxErrorCode & 0xff) >= 128) {
+            uavToMostSevereError.set(uavId, maxErrorCode);
+            shouldTriggerAlert = true;
+            hasErrors = true;
+          }
+        }
+      } else {
+        // TODO(ntamas): finish this branch!
+        for (const [uavId, uav] of Object.entries(uavs)) {
+          const maxErrorCode =
+            uav.errors.length > 0 ? Math.max(...uav.errors) : 0;
+
+          // Error code denotes a genuine error if its least significant byte is
+          // >= 128
+          if ((maxErrorCode & 0xff) >= 128) {
+            const previousErrorCode = uavToMostSevereError.get(uavId);
+            if (isNil(previousErrorCode) || previousErrorCode < maxErrorCode) {
+              uavToMostSevereError.set(uavId, maxErrorCode);
+              shouldTriggerAlert = true;
+            }
+          } else {
+            if (uavToMostSevereError.has(uavId)) {
+              uavToMostSevereError.delete(uavId);
+            }
+          }
+        }
+      }
+    }
+
+    if (hasErrors && uavToMostSevereError.size <= 0) {
+      // We had some errors but they were resolved so we can dismiss the alerts
+      yield put(dismissAlerts());
+    }
+
+    if (shouldTriggerAlert) {
+      // Some alerts were newly triggered
+      yield put(triggerAlert());
     }
   }
 }

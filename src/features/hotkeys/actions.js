@@ -1,6 +1,8 @@
 import isNil from 'lodash-es/isNil';
 
 import { clearSelection, setSelectedUAVIds } from '~/actions/map';
+import { dismissAlerts } from '~/features/alert/slice';
+import { hasPendingAudibleAlerts } from '~/features/alert/selectors';
 import { getMissionMapping } from '~/features/mission/selectors';
 import { showNotification } from '~/features/snackbar/slice';
 import { getUAVById } from '~/features/uavs/selectors';
@@ -156,11 +158,19 @@ export function clearPendingUAVId() {
   return setPendingUAVId('');
 }
 
+/**
+ * Action factory that is bound to the Esc key; clears the pending UAV ID
+ * overlay if it is visible; otherwise it dismisses the current audible alert
+ * if there are any and the alerts are audible; otherwise it clears the
+ * selection.
+ */
 export function clearSelectionOrPendingUAVId() {
   return (dispatch, getState) => {
-    const hasPendingUAVId = isPendingUAVIdOverlayVisible(getState());
-    if (hasPendingUAVId) {
+    const state = getState();
+    if (isPendingUAVIdOverlayVisible(state)) {
       dispatch(clearPendingUAVId());
+    } else if (hasPendingAudibleAlerts(state)) {
+      dispatch(dismissAlerts());
     } else {
       dispatch(clearSelection());
     }

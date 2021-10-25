@@ -8,6 +8,7 @@ import TimeAgo from 'react-timeago';
 
 import Box from '@material-ui/core/Box';
 
+import AlertButton from './AlertButton';
 import AppSettingsButton from './AppSettingsButton';
 import AuthenticationButton from './AuthenticationButton';
 import ConnectionStatusButton from './ConnectionStatusButton';
@@ -103,6 +104,7 @@ const Header = ({ isSidebarOpen, sessionExpiresAt, toggleSidebar }) => (
       <hr />
       {hasFeature('toolboxMenu') && <ToolboxButton />}
       <AppSettingsButton />
+      <AlertButton />
       {config.urls.help ? <HelpButton /> : null}
       {window.bridge && window.bridge.isElectron ? null : <FullScreenButton />}
     </div>

@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- The header now includes a button for audible notifications when a UAV goes
+  into an error state. Clicking on the button while the alert is active will
+  dismiss the alert; clicking it again will disable the audible notification.
+
 - Clicking on a row in the popover of the UAV status summary header widget now
   selects all UAVs corresponding to the given row.
 
