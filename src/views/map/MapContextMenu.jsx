@@ -19,6 +19,7 @@ import FlightTakeoff from '@material-ui/icons/FlightTakeoff';
 import FlightLand from '@material-ui/icons/FlightLand';
 import Grain from '@material-ui/icons/Grain';
 import Home from '@material-ui/icons/Home';
+import PositionHold from '@material-ui/icons/Flag';
 import ActionPowerSettingsNew from '@material-ui/icons/PowerSettingsNew';
 import PinDrop from '@material-ui/icons/PinDrop';
 import Refresh from '@material-ui/icons/Refresh';
@@ -132,17 +133,21 @@ class MapContextMenu extends React.Component {
                 Fly here at altitude…
               </MenuItem>,
               <Divider key='div1' />,
-              <MenuItem key='takeoff' dense onClick={this._takeoffUAVs}>
+              <MenuItem key='takeoff' dense onClick={this._takeoffSelectedUAVs}>
                 <ListItemIcon>
                   <FlightTakeoff />
                 </ListItemIcon>
                 Takeoff
               </MenuItem>,
-              <MenuItem key='land' dense onClick={this._landUAVs}>
+              <MenuItem
+                key='poshold'
+                dense
+                onClick={this._positionHoldSelectedUAVs}
+              >
                 <ListItemIcon>
-                  <FlightLand />
+                  <PositionHold />
                 </ListItemIcon>
-                Land
+                Position hold
               </MenuItem>,
               <MenuItem key='home' dense onClick={this._returnSelectedUAVs}>
                 <ListItemIcon>
@@ -150,6 +155,13 @@ class MapContextMenu extends React.Component {
                 </ListItemIcon>
                 Return to home
               </MenuItem>,
+              <MenuItem key='land' dense onClick={this._landSelectedUAVs}>
+                <ListItemIcon>
+                  <FlightLand />
+                </ListItemIcon>
+                Land
+              </MenuItem>,
+              <Divider key='div2' />,
               <MenuItem
                 key='message'
                 dense
@@ -161,7 +173,7 @@ class MapContextMenu extends React.Component {
                 </ListItemIcon>
                 Properties...
               </MenuItem>,
-              <Divider key='div2' />,
+              <Divider key='div3' />,
               <MenuItem key='reset' dense onClick={this._resetUAVs}>
                 <ListItemIcon>
                   <Refresh color='secondary' />
@@ -178,7 +190,7 @@ class MapContextMenu extends React.Component {
                 </ListItemIcon>
                 Halt
               </MenuItem>,
-              <Divider key='div3' />
+              <Divider key='div4' />
             );
           }
 
@@ -243,7 +255,7 @@ class MapContextMenu extends React.Component {
 
           if (hasSelectedFeatures) {
             result.push(
-              <Divider key='div4' />,
+              <Divider key='div5' />,
               <MenuItem
                 key='setProperties'
                 dense
@@ -306,14 +318,19 @@ class MapContextMenu extends React.Component {
     editFeature(selectedFeatureIds[0]);
   };
 
-  _takeoffUAVs = (_event, context) => {
+  _takeoffSelectedUAVs = (_event, context) => {
     const { selectedUAVIds } = context;
     messaging.takeoffUAVs(selectedUAVIds);
   };
 
-  _landUAVs = (_event, context) => {
+  _landSelectedUAVs = (_event, context) => {
     const { selectedUAVIds } = context;
     messaging.landUAVs(selectedUAVIds);
+  };
+
+  _positionHoldSelectedUAVs = (_event, context) => {
+    const { selectedUAVIds } = context;
+    messaging.positionHoldUAVs(selectedUAVIds);
   };
 
   _unsetSelectedFeatureAsGeofence = (_event, _context) => {

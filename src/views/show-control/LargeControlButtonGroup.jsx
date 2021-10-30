@@ -11,6 +11,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Clear from '@material-ui/icons/Clear';
 import Home from '@material-ui/icons/Home';
 import FlightLand from '@material-ui/icons/FlightLand';
+import PositionHold from '@material-ui/icons/Flag';
 import PowerSettingsNew from '@material-ui/icons/PowerSettingsNew';
 import PlayArrow from '@material-ui/icons/PlayArrow';
 
@@ -62,6 +63,7 @@ const LargeControlButtonGroup = ({
   const {
     haltUAVs,
     landUAVs,
+    positionHoldUAVs,
     returnToHomeUAVs,
     /*
     takeoffUAVs,
@@ -117,14 +119,24 @@ const LargeControlButtonGroup = ({
           {broadcast ? 'Disarm all' : 'Disarm'}
         </ColoredButton>
       </Box>
-      <ColoredButton
-        className={classes.button}
-        color={Colors.warning}
-        icon={<Home fontSize='inherit' />}
-        onClick={returnToHomeUAVs}
-      >
-        {broadcast ? 'RTH all' : 'RTH'}
-      </ColoredButton>
+      <Box display='flex' flexDirection='row' flex={1}>
+        <ColoredButton
+          className={classes.button}
+          color={Colors.warning}
+          icon={<PositionHold fontSize='inherit' />}
+          onClick={positionHoldUAVs}
+        >
+          {broadcast ? 'Hold all' : 'Hold'}
+        </ColoredButton>
+        <ColoredButton
+          className={classes.button}
+          color={Colors.warning}
+          icon={<Home fontSize='inherit' />}
+          onClick={returnToHomeUAVs}
+        >
+          {broadcast ? 'RTH all' : 'RTH'}
+        </ColoredButton>
+      </Box>
       <Box display='flex' flexDirection='row' flex={1} mb={0.5}>
         <ColoredButton
           className={classes.button}

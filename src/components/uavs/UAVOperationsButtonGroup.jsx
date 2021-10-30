@@ -13,6 +13,7 @@ import FlightTakeoff from '@material-ui/icons/FlightTakeoff';
 import Assignment from '@material-ui/icons/Assignment';
 import FlightLand from '@material-ui/icons/FlightLand';
 import Home from '@material-ui/icons/Home';
+import PositionHold from '@material-ui/icons/Flag';
 import PowerSettingsNew from '@material-ui/icons/PowerSettingsNew';
 import PlayArrow from '@material-ui/icons/PlayArrow';
 import Refresh from '@material-ui/icons/Refresh';
@@ -61,6 +62,7 @@ const UAVOperationsButtonGroup = ({
     flashLightOnUAVs,
     haltUAVs,
     landUAVs,
+    positionHoldUAVs,
     resetUAVs,
     returnToHomeUAVs,
     takeoffUAVs,
@@ -83,13 +85,13 @@ const UAVOperationsButtonGroup = ({
         </IconButton>
       </Tooltip>
 
-      <Tooltip content='Land'>
+      <Tooltip content='Position hold'>
         <IconButton
           disabled={isSelectionEmpty}
           size={iconSize}
-          onClick={landUAVs}
+          onClick={positionHoldUAVs}
         >
-          <FlightLand fontSize={fontSize} />
+          <PositionHold fontSize={fontSize} />
         </IconButton>
       </Tooltip>
 
@@ -100,6 +102,16 @@ const UAVOperationsButtonGroup = ({
           onClick={returnToHomeUAVs}
         >
           <Home fontSize={fontSize} />
+        </IconButton>
+      </Tooltip>
+
+      <Tooltip content='Land'>
+        <IconButton
+          disabled={isSelectionEmpty}
+          size={iconSize}
+          onClick={landUAVs}
+        >
+          <FlightLand fontSize={fontSize} />
         </IconButton>
       </Tooltip>
 

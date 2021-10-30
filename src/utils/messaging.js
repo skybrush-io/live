@@ -96,6 +96,11 @@ export const landUAVs = performMassOperation({
   name: 'Landing command',
 });
 
+export const positionHoldUAVs = performMassOperation({
+  type: 'UAV-HOVER',
+  name: 'Position hold command',
+});
+
 export const returnToHomeUAVs = performMassOperation({
   type: 'UAV-RTH',
   name: 'Return to home command',
@@ -194,6 +199,10 @@ export const createMultipleUAVRelatedActions = (
 
     landUAVs: () => {
       landUAVs(uavIds, options);
+    },
+
+    positionHoldUAVs: () => {
+      positionHoldUAVs(uavIds, options);
     },
 
     resetUAVs: () => {

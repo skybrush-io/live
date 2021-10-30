@@ -103,6 +103,8 @@ export default connect(
         ),
         SEND_TAKEOFF_COMMAND: callUAVActionOnSelection('takeoffUAVs'),
         SEND_LANDING_COMMAND: callUAVActionOnSelection('landUAVs'),
+        SEND_POSITION_HOLD_COMMAND:
+          callUAVActionOnSelection('positionHoldUAVs'),
         SEND_RTH_COMMAND: callUAVActionOnSelection('returnToHomeUAVs'),
         SHOW_HOTKEY_DIALOG: showHotkeyDialog,
         TOGGLE_SORT_BY_MISSION_ID: toggleMissionIds,

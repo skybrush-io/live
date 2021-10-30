@@ -28,13 +28,16 @@ export function convertRGB565ToCSSNotation(value) {
 
 const MESSAGES_WITH_RECEIPTS = {
   'OBJ-CMD': true,
+  'UAV-CALIB': true,
   'UAV-FLY': true,
   'UAV-HALT': true,
+  'UAV-HOVER': true,
   'UAV-LAND': true,
   'UAV-RST': true,
   'UAV-RTH': true,
   'UAV-SIGNAL': true,
   'UAV-TAKEOFF': true,
+  'UAV-TEST': true,
 };
 
 /**

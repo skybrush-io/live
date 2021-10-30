@@ -97,6 +97,11 @@ const globalKeyMap = {
     sequence: 'mod+alt+l',
   },
 
+  SEND_POSITION_HOLD_COMMAND: {
+    name: 'Send position hold command to selection',
+    sequence: 'mod+alt+p',
+  },
+
   SEND_RTH_COMMAND: {
     name: 'Send return to home command to selection',
     sequence: 'mod+alt+r',
