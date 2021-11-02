@@ -11,8 +11,8 @@ const makeEventProxy = require('../event-proxy');
 const events = makeEventProxy('localServer');
 
 /**
- * Asks the main process to launch the local Skybrush server executable with
- * the given arguments.
+ * Asks the main process to ensure that a local Skybrush server executable is
+ * running with the given arguments.
  *
  * @param {Object}   opts         options to tweak how the server is launched
  * @param {string[]} opts.args    additional arguments to pass to the server
@@ -23,7 +23,7 @@ const events = makeEventProxy('localServer');
  * @return {Promise<EventEmitter>}  a promise that resolves when the server process
  *         was launched successfully
  */
-const launch = async (options) => {
+const ensureRunning = async (options) => {
   const { callbacks = {}, ...rest } = options;
 
   for (const [eventName, handler] of Object.entries(callbacks)) {
@@ -36,7 +36,7 @@ const launch = async (options) => {
     }
   };
 
-  await ipc.callMain('localServer.launch', rest);
+  await ipc.callMain('localServer.ensureRunning', rest);
 
   return disposer;
 };
@@ -69,8 +69,7 @@ const terminate = () => {
 };
 
 module.exports = {
-  events,
-  launch,
+  ensureRunning,
   search,
   terminate,
 };

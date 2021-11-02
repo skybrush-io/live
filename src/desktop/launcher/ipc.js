@@ -7,7 +7,7 @@ const powerSaving = require('./power-saving');
 
 module.exports = () => {
   ipc.answerRenderer('getApplicationFolder', getApplicationFolder);
-  ipc.answerRenderer('localServer.launch', localServer.launch);
+  ipc.answerRenderer('localServer.ensureRunning', localServer.ensureRunning);
   ipc.answerRenderer('localServer.search', localServer.search);
   ipc.answerRenderer('localServer.terminate', localServer.terminate);
   ipc.answerRenderer('readBufferFromFile', readBufferFromFile);

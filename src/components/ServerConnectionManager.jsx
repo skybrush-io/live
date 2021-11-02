@@ -86,7 +86,7 @@ class LocalServerExecutor extends React.Component {
   componentDidMount() {
     const { localServer } = window.bridge;
     localServer
-      .launch({
+      .ensureRunning({
         args: parse(this.props.args),
         port: this.props.port,
         callbacks: {

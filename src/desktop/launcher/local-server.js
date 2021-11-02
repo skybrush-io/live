@@ -30,10 +30,17 @@ let localServerPath;
 let localServerPathDeferred = pDefer();
 
 /**
- * The process representing the laucnhed Skybrush server instance on this
- * machine.
+ * The process representing the launched Skybrush server instance on this
+ * machine. We only support one Skybrush server instance per Skybrush Live
+ * process.
  */
 let localServerProcess;
+
+/**
+ * Executable path and arguments for the server process that is currently
+ * running, or null if no process is running now.
+ */
+let localServerProcessArgs;
 
 const endsWith = (string, target) =>
   string.slice(string.length - target.length) === target;
@@ -77,22 +84,17 @@ function getPathsRelatedToAppLocation() {
 const pathsRelatedToAppLocation = Object.freeze(getPathsRelatedToAppLocation());
 
 /**
- * Launches the local Skybrush server executable with the given arguments.
+ * Derives the list of arguments to pass to the server, given the options that
+ * the user passed to `ensureStarted()`.
  *
- * @param {Object}   opts         options to tweak how the server is launched
- * @param {string[]} opts.args    additional arguments to pass to the server
+ * @param {Object}   options         options to tweak how the server is launched
+ * @param {string[]} options.args    additional arguments to pass to the server
  *        when launching
- * @param {number}   opts.port    the port to launch the server on
- * @param {number}   opts.timeout number of milliseconds to wait for the
- *        server detection to complete and the server to launch
+ * @param {number}   options.port    the port to launch the server on
+ * @return a tuple consisting of the path and the arguments of the server to launch
  */
-const launch = async (options) => {
-  if (localServerProcess) {
-    // Terminate the previous instance
-    await terminate();
-  }
-
-  const { args, port, timeout } = {
+const deriveServerPathAndArgumentsFromOptions = async (options) => {
+  const { args, timeout } = {
     args: '',
     timeout: 5000,
     ...options,
@@ -108,13 +110,59 @@ const launch = async (options) => {
   }
 
   // TODO(ntamas): respect the port setting provided by the user
-  const realArgs = ['--log-style', 'json', ...args];
+  return [localServerPath, ['--log-style', 'json', ...args]];
+};
 
-  console.log('Launching local server instance on port', port);
-  console.log(localServerPath, realArgs, path.dirname(localServerPath));
+/**
+ * Ensures that a Skybrush server executable with the given arguments is up and
+ * running. Re-uses an already running instance if needed.
+ */
+const ensureRunning = async (options) => {
+  const [serverPath, realArgs] = await deriveServerPathAndArgumentsFromOptions(
+    options
+  );
+  const value = [serverPath, ...realArgs];
 
-  localServerProcess = spawn(localServerPath, realArgs, {
-    cwd: path.dirname(localServerPath),
+  if (
+    localServerProcess &&
+    JSON.stringify(value) === JSON.stringify(localServerProcessArgs)
+  ) {
+    // Existing server process can be re-used
+    console.log('Re-using already running server instance');
+  } else {
+    // New server process needs to ba launched. This will also terminate any
+    // previously running server process.
+    const { port } = options;
+    console.log('Launching local server instance on port', port);
+    await launch(options);
+  }
+};
+
+/**
+ * Launches the local Skybrush server executable with the given arguments.
+ *
+ * @param {Object}   options         options to tweak how the server is launched
+ * @param {string[]} options.args    additional arguments to pass to the server
+ *        when launching
+ * @param {number}   options.port    the port to launch the server on
+ * @param {number}   options.timeout number of milliseconds to wait for the
+ *        server detection to complete and the server to launch
+ */
+const launch = async (options) => {
+  if (localServerProcess) {
+    // Terminate the previous instance
+    await terminate();
+  }
+
+  const [serverPath, realArgs] = await deriveServerPathAndArgumentsFromOptions(
+    options
+  );
+
+  // TODO(ntamas): check if realArgs is the same as the arguments used for the
+  // already running server instance (if any)
+
+  localServerProcess = spawn(serverPath, realArgs, {
+    cwd: path.dirname(serverPath),
     shell: true /* on Windows we might use batch files for launching, and those need a shell */,
 
     // stdin of child is closed; stderr is piped to us so we can parse the
@@ -122,21 +170,26 @@ const launch = async (options) => {
     // something there, although it shouldn't.
     stdio: ['ignore', 'inherit', 'pipe'],
   });
+  localServerProcessArgs = [serverPath, ...realArgs];
 
   localServerProcess.on('error', (reason) => {
     console.log('Local server process error, reason =', reason);
     events.emit('emit', 'error', reason);
     localServerProcess = undefined;
+    localServerProcessArgs = undefined;
   });
   localServerProcess.on('exit', (code, signal) => {
     console.log(
-      'Local server process exited with code',
-      code,
-      'signal',
-      signal
+      'Local server process exited',
+      code === null
+        ? `with signal ${signal}`
+        : code === 0
+        ? ''
+        : `with code ${code}`
     );
     events.emit('emit', 'exit', code, signal);
     localServerProcess = undefined;
+    localServerProcessArgs = undefined;
   });
 
   // Parse newline-delimited JSON log messages from stderr
@@ -189,19 +242,38 @@ const search = async (paths) => {
  * Terminate the local server instance that the main process is currently
  * managing.
  */
-const terminate = () => {
+const terminate = async (options) => {
+  const { timeout } = { timeout: 5000, ...options };
+
   if (localServerProcess) {
     console.log('Terminating local server process');
 
-    localServerProcess.removeAllListeners();
+    const exitDeferred = pDefer();
+    localServerProcess.on('exit', () => {
+      exitDeferred.resolve();
+    });
+
+    // Wait for kill() to actually terminate the process
     localServerProcess.kill();
+    await pTimeout(exitDeferred.promise, timeout);
+
+    localServerProcess.removeAllListeners();
+
+    if (localServerProcess.exitCode === null) {
+      // Process still running, terminate forcefully
+      console.warn(
+        'Local server process failed to exit in time, terminating forcefully...'
+      );
+      localServerProcess.kill('SIGKILL');
+    }
+
     localServerProcess = undefined;
+    localServerProcessArgs = undefined;
   }
 };
 
 module.exports = {
-  events,
-  launch,
+  ensureRunning,
   search,
   terminate,
 };
