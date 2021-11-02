@@ -1,7 +1,9 @@
 const { spawn } = require('child_process');
+const ndjson = require('ndjson');
 const path = require('path');
 const pDefer = require('p-defer');
 const pTimeout = require('p-timeout');
+const process = require('process');
 const which = require('which');
 
 const makeEventProxy = require('../event-proxy');
@@ -91,7 +93,6 @@ const launch = async (options) => {
   }
 
   const { args, port, timeout } = {
-    port: 5000,
     args: '',
     timeout: 5000,
     ...options,
@@ -106,20 +107,41 @@ const launch = async (options) => {
     throw new Error('local Skybrush server not found');
   }
 
-  const realArgs = ['-h', '127.0.0.1', '-p', port, ...args];
+  // TODO(ntamas): respect the port setting provided by the user
+  const realArgs = ['--log-style', 'json', ...args];
+
+  console.log('Launching local server instance on port', port);
+  console.log(localServerPath, realArgs, path.dirname(localServerPath));
 
   localServerProcess = spawn(localServerPath, realArgs, {
     cwd: path.dirname(localServerPath),
-    stdio: 'ignore',
+    shell: true /* on Windows we might use batch files for launching, and those need a shell */,
+
+    // stdin of child is closed; stderr is piped to us so we can parse the
+    // log messags. stdout is piped to our own stdout in case the server prints
+    // something there, although it shouldn't.
+    stdio: ['ignore', 'inherit', 'pipe'],
   });
 
   localServerProcess.on('error', (reason) => {
+    console.log('Local server process error, reason =', reason);
     events.emit('emit', 'error', reason);
     localServerProcess = undefined;
   });
   localServerProcess.on('exit', (code, signal) => {
+    console.log(
+      'Local server process exited with code',
+      code,
+      'signal',
+      signal
+    );
     events.emit('emit', 'exit', code, signal);
     localServerProcess = undefined;
+  });
+
+  // Parse newline-delimited JSON log messages from stderr
+  localServerProcess.stderr.pipe(ndjson.parse()).on('data', (item) => {
+    console.log(item);
   });
 };
 
@@ -145,7 +167,7 @@ const search = async (paths) => {
   // the user's face in production mode even though we nicely handle the
   // exception later.
 
-  const result = which.sync('flockwaved', {
+  const result = which.sync('skybrushd', {
     nothrow: true,
     path: [
       ...paths,
@@ -169,6 +191,8 @@ const search = async (paths) => {
  */
 const terminate = () => {
   if (localServerProcess) {
+    console.log('Terminating local server process');
+
     localServerProcess.removeAllListeners();
     localServerProcess.kill();
     localServerProcess = undefined;

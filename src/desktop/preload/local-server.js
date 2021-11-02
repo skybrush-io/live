@@ -24,8 +24,21 @@ const events = makeEventProxy('localServer');
  *         was launched successfully
  */
 const launch = async (options) => {
-  await ipc.callMain('localServer.launch', options);
-  return events;
+  const { callbacks = {}, ...rest } = options;
+
+  for (const [eventName, handler] of Object.entries(callbacks)) {
+    events.on(eventName, handler);
+  }
+
+  const disposer = () => {
+    for (const [eventName, handler] of Object.entries(callbacks)) {
+      events.removeListener(eventName, handler);
+    }
+  };
+
+  await ipc.callMain('localServer.launch', rest);
+
+  return disposer;
 };
 
 /**

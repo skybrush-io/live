@@ -76,7 +76,7 @@ class LocalServerExecutor extends React.Component {
   constructor() {
     super();
 
-    this._events = undefined;
+    this._disposer = undefined;
     this._processIsRunning = false;
 
     this._onProcessExited = this._onProcessExited.bind(this);
@@ -89,11 +89,15 @@ class LocalServerExecutor extends React.Component {
       .launch({
         args: parse(this.props.args),
         port: this.props.port,
+        callbacks: {
+          error: this._onProcessStartFailed,
+          exit: this._onProcessExited,
+        },
       })
-      .then((events) => {
+      .then((disposer) => {
         this._processIsRunning = true;
 
-        this._attachProcessEventHandlersTo(events);
+        this._setDisposer(disposer);
 
         if (this.props.onStarted) {
           this.props.onStarted();
@@ -114,7 +118,7 @@ class LocalServerExecutor extends React.Component {
   }
 
   componentWillUnmount() {
-    this._detachProcessEventHandlers();
+    this._setDisposer(null);
 
     const { localServer } = window.bridge;
     this._processIsRunning = false;
@@ -125,26 +129,16 @@ class LocalServerExecutor extends React.Component {
     return null;
   }
 
-  _attachProcessEventHandlersTo(events) {
-    if (this._events === events) {
+  _setDisposer(disposer) {
+    if (this._disposer === disposer) {
       return;
     }
 
-    if (this._events) {
-      this._events.removeListener('exit', this._onProcessExited);
-      this._events.removeListener('error', this._onProcessStartFailed);
+    if (this._disposer) {
+      this._disposer();
     }
 
-    this._events = events;
-
-    if (this._events) {
-      this._events.on('exit', this._onProcessExited);
-      this._events.on('error', this._onProcessStartFailed);
-    }
-  }
-
-  _detachProcessEventHandlers() {
-    this._attachProcessEventHandlersTo(undefined);
+    this._disposer = disposer;
   }
 
   _onProcessExited(code, signal) {
