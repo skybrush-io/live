@@ -525,14 +525,22 @@ const ServerConnectionManager = connect(
       dispatch(setCurrentServerConnectionState(ConnectionState.CONNECTING));
     },
 
-    onLogMessageReceivedFromLocalServer({ levelname, name, message }) {
-      dispatch(
-        addLogItem({
-          level: logLevelForLogLevelName(levelname),
-          module: name,
-          message,
-        })
-      );
+    onLogMessageReceivedFromLocalServer({ id, levelname, name, message }) {
+      name = typeof name === 'string' ? name : '';
+
+      const lastDot = name.lastIndexOf('.');
+      const module = lastDot >= 0 ? name.slice(lastDot + 1) : name;
+      const item = {
+        level: logLevelForLogLevelName(levelname),
+        module,
+        message,
+      };
+
+      if (!isNil(id)) {
+        item.auxiliaryId = id;
+      }
+
+      dispatch(addLogItem(item));
     },
 
     onMessage(data) {

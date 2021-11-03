@@ -17,13 +17,14 @@ const { actions, reducer } = createSlice({
 
   reducers: {
     addLogItem(state, action) {
-      const { message, module, level, timestamp } = action.payload;
+      const { auxiliaryId, message, module, level, timestamp } = action.payload;
       const newItem = {
         id: state.nextId,
         timestamp: isNil(timestamp) ? Date.now() : timestamp,
         message: message || '',
         module: module || '',
         level: level || 0,
+        auxiliaryId: auxiliaryId || '',
       };
 
       state.items.push(newItem);
