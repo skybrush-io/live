@@ -10,7 +10,7 @@ import Grain from '@material-ui/icons/Grain';
 import Layers from '@material-ui/icons/Layers';
 import Map from '@material-ui/icons/Map';
 import MyLocation from '@material-ui/icons/MyLocation';
-// import Notifications from '@material-ui/icons/Notifications';
+import FormatListBulleted from '@material-ui/icons/FormatListBulleted';
 import ShowChart from '@material-ui/icons/ShowChart';
 // import Storage from '@material-ui/icons/Storage';
 import ThreeDRotation from '@material-ui/icons/ThreeDRotation';
@@ -21,7 +21,7 @@ import React from 'react';
 import { Module, ModuleTray, Workbench } from 'react-flexible-workbench';
 import { connect } from 'react-redux';
 
-// import LogStatusBadge from '~/components/badges/LogStatusBadge';
+import LogStatusBadge from '~/components/badges/LogStatusBadge';
 import { hasFeature } from '~/utils/configuration';
 
 const SIDEBAR_OPEN_WIDTH = 160;
@@ -127,16 +127,14 @@ const Sidebar = ({ isOpen, workbench }) => (
           label='Locations'
           component='saved-location-list'
         />
-        {/*
         <hr />
         <Module
           id='log'
           badge={<LogStatusBadge />}
-          icon={<Notifications />}
+          icon={<FormatListBulleted />}
           label='Event log'
           component='log-panel'
         />
-        */}
       </ModuleTray>
     </div>
     {isOpen && (

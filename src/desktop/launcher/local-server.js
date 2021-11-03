@@ -194,7 +194,7 @@ const launch = async (options) => {
 
   // Parse newline-delimited JSON log messages from stderr
   localServerProcess.stderr.pipe(ndjson.parse()).on('data', (item) => {
-    console.log(item);
+    events.emit('emit', 'log', item);
   });
 };
 
@@ -246,25 +246,26 @@ const terminate = async (options) => {
   const { timeout } = { timeout: 5000, ...options };
 
   if (localServerProcess) {
+    const proc = localServerProcess;
     console.log('Terminating local server process');
 
     const exitDeferred = pDefer();
-    localServerProcess.on('exit', () => {
+    proc.on('exit', () => {
       exitDeferred.resolve();
     });
 
     // Wait for kill() to actually terminate the process
-    localServerProcess.kill();
+    proc.kill();
     await pTimeout(exitDeferred.promise, timeout);
 
-    localServerProcess.removeAllListeners();
+    proc.removeAllListeners();
 
-    if (localServerProcess.exitCode === null) {
+    if (proc.exitCode === null) {
       // Process still running, terminate forcefully
       console.warn(
         'Local server process failed to exit in time, terminating forcefully...'
       );
-      localServerProcess.kill('SIGKILL');
+      proc.kill('SIGKILL');
     }
 
     localServerProcess = undefined;

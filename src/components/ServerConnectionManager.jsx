@@ -17,6 +17,7 @@ import { clearClockList } from '~/features/clocks/slice';
 import { clearConnectionList } from '~/features/connections/slice';
 import { clearDockList } from '~/features/docks/slice';
 import { shouldManageLocalServer } from '~/features/local-server/selectors';
+import { addLogItem } from '~/features/log/slice';
 import { calculateAndStoreClockSkew } from '~/features/servers/actions';
 import {
   getClockSkewInMilliseconds,
@@ -45,6 +46,7 @@ import {
 } from '~/model/connections';
 import { handleClockInformationMessage } from '~/model/clocks';
 import { handleDockInformationMessage } from '~/model/docks';
+import { logLevelForLogLevelName } from '~/utils/logging';
 
 const formatClockSkew = (number) => {
   if (isNil(number)) {
@@ -69,6 +71,7 @@ class LocalServerExecutor extends React.Component {
   static propTypes = {
     args: PropTypes.string,
     onError: PropTypes.func,
+    onLogMessage: PropTypes.func,
     onStarted: PropTypes.func,
     port: PropTypes.number,
   };
@@ -79,6 +82,7 @@ class LocalServerExecutor extends React.Component {
     this._disposer = undefined;
     this._processIsRunning = false;
 
+    this._onLogMessageReceived = this._onLogMessageReceived.bind(this);
     this._onProcessExited = this._onProcessExited.bind(this);
     this._onProcessStartFailed = this._onProcessStartFailed.bind(this);
   }
@@ -92,6 +96,7 @@ class LocalServerExecutor extends React.Component {
         callbacks: {
           error: this._onProcessStartFailed,
           exit: this._onProcessExited,
+          log: this._onLogMessageReceived,
         },
       })
       .then((disposer) => {
@@ -141,6 +146,13 @@ class LocalServerExecutor extends React.Component {
     this._disposer = disposer;
   }
 
+  _onLogMessageReceived(message) {
+    const { onLogMessage } = this.props;
+    if (onLogMessage) {
+      onLogMessage(message);
+    }
+  }
+
   _onProcessExited(code, signal) {
     // Process died unexpectedly
     if (this.props.onError) {
@@ -186,6 +198,7 @@ class ServerConnectionManagerPresentation extends React.Component {
     onDisconnected: PropTypes.func,
     onLocalServerError: PropTypes.func,
     onLocalServerStarted: PropTypes.func,
+    onLogMessageReceivedFromLocalServer: PropTypes.func,
     onMessage: PropTypes.func,
     url: PropTypes.string,
   };
@@ -221,6 +234,7 @@ class ServerConnectionManagerPresentation extends React.Component {
       onDisconnected,
       onLocalServerError,
       onLocalServerStarted,
+      onLogMessageReceivedFromLocalServer,
       onMessage,
       url,
     } = this.props;
@@ -241,6 +255,7 @@ class ServerConnectionManagerPresentation extends React.Component {
             args={cliArguments}
             port={port}
             onError={onLocalServerError}
+            onLogMessage={onLogMessageReceivedFromLocalServer}
             onStarted={onLocalServerStarted}
           />
         ) : null}
@@ -508,6 +523,16 @@ const ServerConnectionManager = connect(
 
     onLocalServerStarted() {
       dispatch(setCurrentServerConnectionState(ConnectionState.CONNECTING));
+    },
+
+    onLogMessageReceivedFromLocalServer({ levelname, name, message }) {
+      dispatch(
+        addLogItem({
+          level: logLevelForLogLevelName(levelname),
+          module: name,
+          message,
+        })
+      );
     },
 
     onMessage(data) {

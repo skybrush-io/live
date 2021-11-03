@@ -2,6 +2,7 @@
  * @file Slice of the state object that handles the contents of the log window.
  */
 
+import isNil from 'lodash-es/isNil';
 import { createSlice } from '@reduxjs/toolkit';
 
 const { actions, reducer } = createSlice({
@@ -16,10 +17,10 @@ const { actions, reducer } = createSlice({
 
   reducers: {
     addLogItem(state, action) {
-      const { message, module, level } = action.payload;
+      const { message, module, level, timestamp } = action.payload;
       const newItem = {
         id: state.nextId,
-        timestamp: Date.now(),
+        timestamp: isNil(timestamp) ? Date.now() : timestamp,
         message: message || '',
         module: module || '',
         level: level || 0,

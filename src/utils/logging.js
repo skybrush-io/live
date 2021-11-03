@@ -2,8 +2,10 @@
  * @file Utility file providing a better interface for logging related actions.
  */
 
-import store from '../store';
+import Colors, { colorForSeverity } from '~/components/colors';
 import { addLogItem } from '~/features/log/slice';
+import { Severity } from '~/model/enums';
+import store from '~/store';
 
 export const LogLevel = {
   DEBUG: 0,
@@ -13,28 +15,44 @@ export const LogLevel = {
   FATAL: 40,
 };
 
+const colorMap = {
+  [LogLevel.DEBUG]: Colors.off,
+  [LogLevel.INFO]: colorForSeverity(Severity.INFO),
+  [LogLevel.WARNING]: colorForSeverity(Severity.WARNING),
+  [LogLevel.ERROR]: colorForSeverity(Severity.ERROR),
+  [LogLevel.FATAL]: colorForSeverity(Severity.FATAL),
+};
+
 export function colorForLogLevel(level) {
   if (level <= LogLevel.DEBUG) {
-    return '#666';
+    return colorMap[LogLevel.DEBUG];
   }
 
   if (level <= LogLevel.INFO) {
-    return '#08f';
+    return colorMap[LogLevel.INFO];
   }
 
   if (level <= LogLevel.WARNING) {
-    return '#fb0';
+    return colorMap[LogLevel.WARNING];
   }
 
   if (level <= LogLevel.ERROR) {
-    return '#f60';
+    return colorMap[LogLevel.ERROR];
   }
 
   if (level <= LogLevel.FATAL) {
-    return '#a00';
+    return colorMap[LogLevel.FATAL];
   }
 
-  return '#000';
+  return Colors.off;
+}
+
+export function logLevelForLogLevelName(name) {
+  if (name === 'CRITICAL') {
+    name = 'FATAL';
+  }
+
+  return LogLevel[name] || 'DEBUG';
 }
 
 function Logger(module) {
@@ -56,4 +74,6 @@ function Logger(module) {
   this.assert = assert_.bind(this);
 }
 
-export default (module) => new Logger(String(module || ''));
+const makeLogger = (module) => new Logger(String(module || ''));
+
+export default makeLogger;

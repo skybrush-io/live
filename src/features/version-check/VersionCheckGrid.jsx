@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
 import { connect } from 'react-redux';
-import { VariableSizeGrid as Grid } from 'react-window';
+// import { VariableSizeGrid as Grid } from 'react-window';
 
 const getRowHeight = () => 20;
 
@@ -12,7 +12,8 @@ const VersionCheckGridCell = ({ columnIndex, rowIndex, style }) => (
 const VersionCheckGrid = ({ components, height, width }) => {
   const getColumnWidth = useCallback((index) => (index === 0 ? 64 : 192), []);
 
-  return (
+  return null;
+  /*
     <Grid
       columnCount={components.length + 1}
       columnWidth={getColumnWidth}
@@ -24,6 +25,7 @@ const VersionCheckGrid = ({ components, height, width }) => {
       {VersionCheckGridCell}
     </Grid>
   );
+  */
 };
 
 VersionCheckGrid.propTypes = {

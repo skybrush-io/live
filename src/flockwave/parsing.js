@@ -28,6 +28,8 @@ export function convertRGB565ToCSSNotation(value) {
 
 const MESSAGES_WITH_RECEIPTS = {
   'OBJ-CMD': true,
+  'PRM-GET': true,
+  'PRM-SET': true,
   'UAV-CALIB': true,
   'UAV-FLY': true,
   'UAV-HALT': true,
