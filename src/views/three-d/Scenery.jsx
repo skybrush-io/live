@@ -9,7 +9,10 @@ const grounds = {
     groundColor: '#8eb971',
     groundColor2: '#507a32',
     groundTexture: 'walkernoise',
-    groundYScale: 9,
+    groundYScale: 24,
+    /* make the "play area" larger so we have more space to fly around without
+     * bumping into hills */
+    playArea: 1.6,
   },
   /* Checkerboard indoor texture */
   indoor: {
