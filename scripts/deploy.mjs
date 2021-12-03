@@ -5,23 +5,26 @@
  * to a given remote location using rsync
  */
 
-const process = require('process');
+import { createRequire } from 'node:module';
+import path from 'node:path';
+import process from 'node:process';
+import { fileURLToPath } from 'node:url';
 
-const { program } = require('commander');
-const execa = require('execa');
-const {
-  copy,
-  emptyDir,
-  ensureDir,
-  readJson,
-  remove,
-  writeJson,
-} = require('fs-extra');
-const Listr = require('listr');
-const path = require('path');
-const pify = require('pify');
-const tmp = require('tmp-promise');
-const webpack = require('webpack');
+import { program } from 'commander';
+import { execa } from 'execa';
+import fsExtra from 'fs-extra';
+
+import Listr from 'listr';
+import pify from 'pify';
+import tmp from 'tmp-promise';
+import webpack from 'webpack';
+
+const { copy, emptyDir, ensureDir, readJson, remove, writeJson } = fsExtra;
+
+/** Compatibility variables */
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const require = createRequire(import.meta.url);
 
 /** The root directory of the project */
 const projectRoot = path.resolve(__dirname, '..');
@@ -50,10 +53,9 @@ options.variant = options.variant || 'default';
 async function loadAppConfig() {
   const result = await readJson(path.resolve(projectRoot, 'package.json'));
   const variantName = options.variant || 'default';
-  const esmRequire = require('esm')(module);
-  const variantConfig = esmRequire(
-    path.resolve(projectRoot, 'config', variantName)
-  ).default;
+  const { default: variantConfig } = await import(
+    path.resolve(projectRoot, 'config', variantName + ".mjs")
+  );
 
   if (variantConfig && variantConfig.electronBuilder) {
     result.electronBuilder = variantConfig.electronBuilder;
@@ -213,7 +215,7 @@ async function cleanup() {
  */
 async function main() {
   const appConfig = await loadAppConfig();
-  const ora = await import('ora');
+  const { default: ora } = await import('ora');
 
   const tasks = new Listr([
     {

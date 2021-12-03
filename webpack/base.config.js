@@ -63,7 +63,7 @@ module.exports = {
       config: path.resolve(projectRoot, 'config', 'default'),
       'layout-bmfont-text': '@collmot/layout-bmfont-text',
     },
-    extensions: ['.webpack.js', '.web.js', '.js', '.jsx', '.json'],
+    extensions: ['.webpack.js', '.web.js', '.mjs', '.js', '.jsx', '.json'],
     fallback: {
       crypto: require.resolve('crypto-browserify'),
       http: require.resolve('stream-http'),
