@@ -1,7 +1,7 @@
 import loadable from '@loadable/component';
 import isNil from 'lodash-es/isNil';
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { connect } from 'react-redux';
 import { useHarmonicIntervalFn, useUpdate } from 'react-use';
 import { createSelector } from '@reduxjs/toolkit';
@@ -11,16 +11,16 @@ import { useTheme } from '@material-ui/core/styles';
 
 import Colors from '~/components/colors';
 import { defaultFont, isDark } from '~/theme';
-import { createGradientBackground } from '~/utils/charts';
+import { createGradientBackground, NO_DATA } from '~/utils/charts';
 
 import { getDisplayedSatelliteCNRValues } from './selectors';
 
 /* ************************************************************************ */
 
-const Bar = loadable(
-  () => import(/* webpackChunkName: "charts" */ 'react-chartjs-2'),
+const BarChart = loadable(
+  () => import(/* webpackChunkName: "charts" */ './BarChart'),
   {
-    resolveComponent: ({ Bar }) => Bar,
+    resolveComponent: ({ default: Bar }) => Bar,
   }
 );
 
@@ -29,8 +29,8 @@ const cnrBoundaries = [30, 40];
 const colors = ['#444', Colors.error, Colors.warning, Colors.success];
 
 const createGradientFills = createSelector(
-  (canvas) => canvas,
-  (canvas) => colors.map((color) => createGradientBackground({ canvas, color }))
+  (ctx) => ctx,
+  (ctx) => colors.map((color) => createGradientBackground({ ctx, color }))
 );
 
 const styleForCNR = (cnr) => {
@@ -51,8 +51,8 @@ const styleForCNR = (cnr) => {
 
 /* ************************************************************************ */
 
-const createDataFromItems = (items) => (canvas) => {
-  const gradients = createGradientFills(canvas);
+const createDataFromItemsAndDrawingContext = (items, ctx) => {
+  const gradients = createGradientFills(ctx);
   const now = Date.now();
   const processedItems = items
     .map((item) => {
@@ -157,16 +157,31 @@ const options = {
 const RTKSatelliteObservations = ({ height, items }) => {
   const theme = useTheme();
   const update = useUpdate();
+  const chartRef = useRef(null);
+  const [chartData, setChartData] = useState(NO_DATA);
 
   // Update the component regularly because the chart depends on the time
   // elapsed since the last update so we need to keep it updated even if
   // we don't receive any new data from the server
   useHarmonicIntervalFn(update, 1000);
 
+  // Construct the chart data when the component is mounted and every time
+  // the items change
+  useEffect(() => {
+    const chart = chartRef.current;
+
+    if (chart) {
+      setChartData(
+        items ? createDataFromItemsAndDrawingContext(items, chart.ctx) : NO_DATA
+      );
+    }
+  }, [chartRef.current, items]);
+
   return (
     <Box height={height}>
-      <Bar
-        data={createDataFromItems(items)}
+      <BarChart
+        ref={chartRef}
+        data={chartData}
         options={isDark(theme) ? options.dark : options.light}
       />
     </Box>

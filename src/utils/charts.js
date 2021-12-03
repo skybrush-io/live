@@ -1,6 +1,13 @@
 import createColor from 'color';
 
 /**
+ * Constant to use when there are no datasets in a chart.
+ */
+export const NO_DATA = Object.freeze({
+  datasets: Object.freeze([]),
+});
+
+/**
  * Creates a standard style for a single bar chart data series in a Chart.js
  * chart.
  */
@@ -19,7 +26,7 @@ export function createBarChartStyle({ canvas, color }) {
  * @param  {number}  alpha   the alpha component of the color
  * @param  {string}  color   the color; you may use an array here if you need
  *         multiple gradients
- * @param  {object}  canvas  the canvas on which the gradient will be drawn
+ * @param  {object}  ctx     the drawing context on which the gradient will be drawn
  * @param  {number}  height  the height of the gradient
  * @param  {boolean} reverse whether the gradient should go from top to bottom
  *         (false) or bottom to top (true)
@@ -29,6 +36,7 @@ export function createGradientBackground({
   alpha = 0.8,
   color,
   canvas,
+  ctx,
   height = 170,
   reverse,
 }) {
@@ -36,7 +44,12 @@ export function createGradientBackground({
     return color.map((c) => createGradientBackground({ ...options, color: c }));
   }
 
-  const ctx = canvas.getContext('2d');
+  // For legacy react-chartjs-2 version 3.x when we passed the canvas and not
+  // the context
+  if (!ctx) {
+    ctx = canvas.getContext('2d');
+  }
+
   const gradientFill = ctx.createLinearGradient(0, height, 0, 50);
   gradientFill.addColorStop(
     0,
