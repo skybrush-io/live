@@ -49,6 +49,7 @@ const getEffectiveScenery = (state) => {
 
 const ThreeDView = React.forwardRef((props, ref) => {
   const {
+    cameraRef,
     grid,
     isCoordinateSystemLeftHanded,
     lighting,
@@ -143,6 +144,7 @@ const ThreeDView = React.forwardRef((props, ref) => {
 });
 
 ThreeDView.propTypes = {
+  cameraRef: PropTypes.any,
   grid: PropTypes.string,
   isCoordinateSystemLeftHanded: PropTypes.bool,
   lighting: PropTypes.oneOf(['dark', 'light']),
