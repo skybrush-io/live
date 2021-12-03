@@ -129,7 +129,14 @@ const OnboardPreflightChecksDialog = ({
           paddingRight: '1em',
         }}
       >
-        <Box flex={1} overflow='auto' minHeight={240}>
+        <Box
+          display='flex'
+          flexDirection='column'
+          justifyContent='center'
+          flex={1}
+          overflow='auto'
+          minHeight={240}
+        >
           <PreflightCheckList />
         </Box>
         <Box className='bottom-bar' textAlign='center' pt={2}>
