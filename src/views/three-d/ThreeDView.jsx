@@ -68,7 +68,7 @@ const ThreeDView = React.forwardRef((props, ref) => {
       acceptsKeyboardEvent: 'notEditable',
       embedded: true,
       fly: navigation && navigation.mode === 'fly',
-      minAltitude: 0.2,
+      minAltitude: 0.5,
       reverseMouseDrag: true,
     }),
     'look-controls': objectToString({
@@ -127,7 +127,11 @@ const ThreeDView = React.forwardRef((props, ref) => {
 
       <a-entity rotation='-90 0 90'>
         {showAxes && (
-          <CoordinateSystemAxes leftHanded={isCoordinateSystemLeftHanded} />
+          <CoordinateSystemAxes
+            leftHanded={isCoordinateSystemLeftHanded}
+            length={10}
+            lineWidth={10}
+          />
         )}
         {showHomePositions && <HomePositionMarkers />}
         {showLandingPositions && <LandingPositionMarkers />}
