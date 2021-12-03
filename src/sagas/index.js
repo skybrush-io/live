@@ -12,6 +12,7 @@ import measurementSaga from '~/features/measurement/saga';
 import serversSaga from '~/features/servers/saga';
 import showSaga from '~/features/show/saga';
 import sessionSaga from '~/features/session/saga';
+import threeDViewSaga from '~/features/three-d/saga';
 import tourSaga from '~/features/tour/saga';
 import uavManagementSaga from '~/features/uavs/saga';
 import weatherSaga from '~/features/weather/saga';
@@ -31,6 +32,7 @@ export default function* rootSaga() {
     serversSaga(),
     showSaga(),
     uavManagementSaga(flock),
+    threeDViewSaga(),
     weatherSaga(),
   ];
 

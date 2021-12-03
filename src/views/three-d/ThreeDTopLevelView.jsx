@@ -31,6 +31,7 @@ import DarkModeSwitch from '~/components/DarkModeSwitch';
 import ToolbarDivider from '~/components/ToolbarDivider';
 import { getLightingConditionsForThreeDView } from '~/features/settings/selectors';
 import { toggleLightingConditionsInThreeDView } from '~/features/settings/slice';
+import { resetZoom, rotateViewToDrones } from '~/features/three-d/actions';
 import { setNavigationMode } from '~/features/three-d/slice';
 import { isMapCoordinateSystemSpecified } from '~/selectors/map';
 import { isDark } from '~/theme';
@@ -60,6 +61,8 @@ const ThreeDTopLevelView = ({
   hasMapCoordinateSystem,
   lighting,
   navigation,
+  onResetZoom,
+  onRotateCameraTowardsDrones,
   onSetNavigationMode,
   onShowSettings,
   onToggleLightingConditions,
@@ -84,6 +87,8 @@ const ThreeDTopLevelView = ({
               mode={navigation.mode}
               parameters={navigation.parameters}
               onChange={onSetNavigationMode}
+              onResetZoom={onResetZoom}
+              onRotateCameraTowardsDrones={onRotateCameraTowardsDrones}
             />
             <ToolbarDivider orientation='vertical' />
             <NavigationInstructions mode={navigation.mode} />
@@ -132,6 +137,8 @@ ThreeDTopLevelView.propTypes = {
     mode: PropTypes.string,
     parameters: PropTypes.object,
   }),
+  onResetZoom: PropTypes.func,
+  onRotateCameraTowardsDrones: PropTypes.func,
   onSetNavigationMode: PropTypes.func,
   onShowSettings: PropTypes.func,
   onToggleLightingConditions: PropTypes.func,
@@ -146,6 +153,8 @@ export default connect(
   }),
   // mapDispatchToProps
   {
+    onResetZoom: resetZoom,
+    onRotateCameraTowardsDrones: rotateViewToDrones,
     onSetNavigationMode: setNavigationMode,
 
     onShowSettings: () => (dispatch) => {

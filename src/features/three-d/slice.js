@@ -35,6 +35,16 @@ const { actions, reducer } = createSlice({
       state.sceneId++;
     },
 
+    resetZoom() {
+      // Resets the zoom level of the 3D view.
+      // Nothing to do here, the saga will handle this action.
+    },
+
+    rotateViewTowards() {
+      // Rotates the 3D view towards the target given in the action payload.
+      // Nothing to do here, the saga will handle this action.
+    },
+
     setCameraPose(state, action) {
       const { position, rotation } = action.payload;
       state.camera.position = position;
@@ -70,6 +80,8 @@ const { actions, reducer } = createSlice({
 export const {
   hideTooltip,
   notifySceneRemoval,
+  resetZoom,
+  rotateViewTowards,
   setCameraPose,
   setNavigationMode,
   showTooltip,

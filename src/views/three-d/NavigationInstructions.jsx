@@ -44,7 +44,7 @@ const instructionsByMode = {
         <span> Fly forward / backward </span>
         <kbd>{'\u2190'}</kbd>
         <kbd>{'\u2192'}</kbd>
-        <span> Strafe left / right </span>
+        <span> Move sideways </span>
         <kbd>E</kbd>
         <kbd>C</kbd>
         <span> Altitude </span>
