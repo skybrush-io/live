@@ -26,13 +26,21 @@ const ProductionErrorHandler = ({ resetErrorBoundary }) => (
     <div>An unexpected error happened. Sorry for the inconvenience.</div>
     <div className='email-link'>Please send us an email to let us know.</div>
     <div className='button-bar'>
-      <button onClick={reloadApp}>Reload app</button>
+      <button type='button' onClick={reloadApp}>
+        Reload app
+      </button>
       {resetErrorBoundary && (
-        <button onClick={resetErrorBoundary}>Reset to factory defaults</button>
+        <button type='button' onClick={resetErrorBoundary}>
+          Reset to factory defaults
+        </button>
       )}
     </div>
   </div>
 );
+
+ProductionErrorHandler.propTypes = {
+  resetErrorBoundary: PropTypes.func,
+};
 
 /*
 const StackTraceErrorHandler = ({ error }) => (
