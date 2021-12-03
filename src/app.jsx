@@ -32,6 +32,7 @@ import { ErrorHandler } from './error-handling';
 import flock, { Flock } from './flock';
 import rootSaga from './sagas';
 import store, {
+  clearStoreAfterConfirmation,
   persistor,
   sagaMiddleware,
   waitUntilStateRestored,
@@ -121,7 +122,6 @@ const App = ({ onFirstRender }) => (
       <dialogs.GeofenceSettingsDialog />
       <dialogs.GlobalErrorDialog />
       <dialogs.LayerSettingsDialog />
-      <dialogs.MessagesDialog flock={flock} />
       <dialogs.PromptDialog />
       <dialogs.ServerSettingsDialog />
       <dialogs.SessionExpiryDialog />
@@ -173,14 +173,20 @@ const enhancer = (Component) =>
     render() {
       if (this.props.glDragging) {
         return (
-          <ErrorBoundary FallbackComponent={ErrorHandler}>
+          <ErrorBoundary
+            FallbackComponent={ErrorHandler}
+            onReset={clearStoreAfterConfirmation}
+          >
             <DragProxy />
           </ErrorBoundary>
         );
       }
 
       return (
-        <ErrorBoundary FallbackComponent={ErrorHandler}>
+        <ErrorBoundary
+          FallbackComponent={ErrorHandler}
+          onReset={clearStoreAfterConfirmation}
+        >
           <StoreProvider store={store}>
             <ThemeProvider>
               <Flock.Provider value={flock}>

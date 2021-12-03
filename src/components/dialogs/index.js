@@ -7,7 +7,6 @@ import FlyToTargetDialog from './FlyToTargetDialog';
 import GeofenceSettingsDialog from './GeofenceSettingsDialog';
 import GlobalErrorDialog from './GlobalErrorDialog';
 import LayerSettingsDialog from './LayerSettingsDialog';
-import MessagesDialog from './MessagesDialog';
 import PromptDialog from './PromptDialog';
 import ServerSettingsDialog from './ServerSettingsDialog';
 import SessionExpiryDialog from './SessionExpiryDialog';
@@ -23,7 +22,6 @@ const dialogs = {
   GeofenceSettingsDialog,
   GlobalErrorDialog,
   LayerSettingsDialog,
-  MessagesDialog,
   PromptDialog,
   ServerSettingsDialog,
   SessionExpiryDialog,

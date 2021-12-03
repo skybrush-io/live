@@ -28,8 +28,6 @@ const { actions, reducer } = createSlice({
     },
     // Stores the next message ID that will be used
     nextMessageId: 1,
-    // Stores whether the Messages dialog is open
-    dialogVisible: false,
   },
 
   reducers: {
@@ -104,14 +102,6 @@ const { actions, reducer } = createSlice({
 
       delete state.uavIdsToMessageIds[uavId];
     },
-
-    showMessagesDialog: noPayload((state) => {
-      state.dialogVisible = true;
-    }),
-
-    closeMessagesDialog: noPayload((state) => {
-      state.dialogVisible = false;
-    }),
   },
 });
 
@@ -120,8 +110,6 @@ export const {
   addOutboundMessage,
   addErrorMessage,
   clearMessagesOfUAVById,
-  closeMessagesDialog,
-  showMessagesDialog,
 } = actions;
 
 export default reducer;

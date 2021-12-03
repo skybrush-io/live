@@ -11,7 +11,7 @@ import numbro from 'numbro';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Field } from 'react-final-form';
-import useToggle from 'react-use-toggle';
+import { useToggle } from 'react-use';
 
 import { formatCoordinate, parseCoordinate } from '~/utils/geography';
 
