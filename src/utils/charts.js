@@ -23,23 +23,19 @@ export function createBarChartStyle({ canvas, color }) {
  * Creates a gradient fill that could be used in a Chart.js background in a bar or
  * line chart.
  *
- * @param  {number}  alpha   the alpha component of the color
- * @param  {string}  color   the color; you may use an array here if you need
+ * @param  {number}  options.alpha   the alpha component of the color
+ * @param  {string}  options.color   the color; you may use an array here if you need
  *         multiple gradients
- * @param  {object}  ctx     the drawing context on which the gradient will be drawn
- * @param  {number}  height  the height of the gradient
- * @param  {boolean} reverse whether the gradient should go from top to bottom
+ * @param  {object}  options.ctx     the drawing context on which the gradient will be drawn
+ * @param  {number}  options.height  the height of the gradient
+ * @param  {boolean} options.reverse whether the gradient should go from top to bottom
  *         (false) or bottom to top (true)
  * @return {CanvasGradient}  the constructed gradient fill
  */
-export function createGradientBackground({
-  alpha = 0.8,
-  color,
-  canvas,
-  ctx,
-  height = 170,
-  reverse,
-}) {
+export function createGradientBackground(options = {}) {
+  const { alpha = 0.8, color, canvas, height = 170, reverse } = options;
+  let { ctx } = options;
+
   if (Array.isArray(color)) {
     return color.map((c) => createGradientBackground({ ...options, color: c }));
   }
