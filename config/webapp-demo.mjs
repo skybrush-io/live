@@ -1,16 +1,17 @@
 import React from 'react';
+import demoShowUrl from '~/../assets/shows/demo.skyc';
 
 /**
  * @file Application configuration at startup, suitable for the web app demo deployment.
  */
 
-export default {
+const config = {
   // We bundle an example show with the webapp demo but not with the "real" one
   examples: [
     {
-      id: 'example-40',
-      title: 'Example show with 40 drones',
-      url: require('~/../assets/shows/demo.skyc').default,
+      id: 'example-20',
+      title: 'Example show with 20 drones',
+      url: demoShowUrl,
     },
   ],
 
@@ -36,7 +37,7 @@ export default {
           <>
             <b>Welcome to Skybrush Live!</b>
             <p>
-              This online demo allows you to command a simulated fleet of 40
+              This online demo allows you to command a simulated fleet of 20
               drones to perform a drone light show, just like you would do it
               with the full version of the application.
             </p>
@@ -130,3 +131,5 @@ export default {
     help: 'https://doc.collmot.com/public/skybrush-live-doc/latest/index.html',
   },
 };
+
+export default config;

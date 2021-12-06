@@ -2,7 +2,7 @@
  * @file Default application configuration at startup.
  */
 
-export default {
+const config = {
   ephemeral: false,
   examples: [],
   features: {
@@ -19,3 +19,5 @@ export default {
     help: 'https://doc.collmot.com/public/skybrush-live-doc/latest/index.html',
   },
 };
+
+export default config;

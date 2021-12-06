@@ -84,12 +84,6 @@ const Header = ({ isSidebarOpen, sessionExpiresAt, toggleSidebar }) => (
       </Box>
       <UAVStatusSummary />
       <hr />
-      {sessionExpiresAt && (
-        <>
-          <SessionExpiryBox expiresAt={sessionExpiresAt} />
-          <hr />
-        </>
-      )}
       <AltitudeSummaryHeaderButton />
       <BatteryStatusHeaderButton />
       {hasFeature('toolboxMenu') && <RTKStatusHeaderButton />}
@@ -107,6 +101,12 @@ const Header = ({ isSidebarOpen, sessionExpiresAt, toggleSidebar }) => (
       <AlertButton />
       {config.urls.help ? <HelpButton /> : null}
       {window.bridge && window.bridge.isElectron ? null : <FullScreenButton />}
+      {sessionExpiresAt && (
+        <>
+          <SessionExpiryBox expiresAt={sessionExpiresAt} />
+          <hr />
+        </>
+      )}
     </div>
   </div>
 );

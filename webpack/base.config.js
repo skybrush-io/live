@@ -81,7 +81,7 @@ module.exports = {
         use: [{ loader: 'style-loader' }, { loader: 'css-loader' }],
       },
       {
-        test: /\.jsx?$/,
+        test: /\.m?jsx?$/,
         use: [{ loader: 'babel-loader' }],
         include: [
           path.join(projectRoot, 'config'),

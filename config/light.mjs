@@ -3,7 +3,7 @@
  * manufacturers for testing without revealing too much about the app itself.
  */
 
-export default {
+const config = {
   // State is ephemeral; we do not load it back from the disk when the app starts
   ephemeral: true,
 
@@ -49,3 +49,5 @@ export default {
     productName: 'Skybrush Live Light',
   },
 };
+
+export default config;
