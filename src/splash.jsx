@@ -11,6 +11,14 @@ import SplashScreen from './components/SplashScreen';
 const createAppComponent = ({ whenLoaded }) =>
   React.lazy(async () => {
     const App = await import(/* webpackChunkName: "workbench" */ './app');
+
+    if (process.env.NODE_ENV !== 'production') {
+      const { startReportingRuntimeErrors } = await import(
+        /* webpackChunkName: "error-overlay" */ 'react-error-overlay'
+      );
+      startReportingRuntimeErrors({ onError: () => {} });
+    }
+
     if (whenLoaded) {
       whenLoaded();
     }

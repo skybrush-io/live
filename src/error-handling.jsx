@@ -3,21 +3,24 @@
  * components that tie nicely into the main application.
  */
 
-import AlertWarning from '@material-ui/icons/Warning';
 import isPromise from 'is-promise';
+import isFunction from 'lodash-es/isFunction';
 import PropTypes from 'prop-types';
 import React from 'react';
-import isFunction from 'lodash-es/isFunction';
+
+import AlertWarning from '@material-ui/icons/Warning';
 
 import makeLogger from './utils/logging';
 
-const __PROD__ = process.env.NODE_ENV === 'production';
 const logger = makeLogger('error');
 
 const reloadApp = () => {
   window.location.reload();
 };
 
+/**
+ * Error handler component that can safely be used in production mode.
+ */
 const ProductionErrorHandler = ({ resetErrorBoundary }) => (
   <div className='error-panel'>
     <div className='error-icon'>
@@ -42,18 +45,7 @@ ProductionErrorHandler.propTypes = {
   resetErrorBoundary: PropTypes.func,
 };
 
-/*
-const StackTraceErrorHandler = ({ error }) => (
-  <RedBox error={error} editorScheme='atm' />
-);
-StackTraceErrorHandler.propTypes = {
-  error: PropTypes.any.isRequired,
-};
-*/
-
-export const ErrorHandler = __PROD__
-  ? ProductionErrorHandler
-  : ProductionErrorHandler;
+export const ErrorHandler = ProductionErrorHandler;
 
 /**
  * Converts an arbitrary error object into a string if it is not a string
