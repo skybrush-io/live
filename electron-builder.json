@@ -24,16 +24,23 @@
 
   "linux": {
     "category": "Utility",
-    "target": "AppImage"
+    "target": {
+      "target": "AppImage",
+      "arch": "x64"
+    }
   },
 
   "mac": {
     "category": "public.app-category.utilities",
-    "target": "dmg"
+    "target": "dmg",
+    "darkModeSupport": true
   },
 
   "win": {
-    "target": "nsis"
+    "target": {
+      "target": "nsis",
+      "arch": "x64"
+    }
   },
 
   "nsis": {
