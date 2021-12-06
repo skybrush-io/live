@@ -78,10 +78,37 @@ function getPathsRelatedToAppLocation() {
     folders.push(appFolder);
   }
 
+  // On Windows, we also look for the server one level higher for a folder
+  // named "Skybrush Server". This allows us to find it when the server and
+  // Live are installed in two folders in C:\Program Files, next to each
+  // other. We also add "Program Files" and "Program Files (x86)" explicitly,
+  // and also search in "%LOCALAPPDATA%\Programs"
+  if (process.platform === 'win32') {
+    const SERVER_FOLDER_NAME = 'Skybrush Server';
+    const rootFolders = [
+      path.dirname(appFolder),
+      process.env.PROGRAMFILES,
+      process.env['PROGRAMFILES(X86)'],
+      process.env.LOCALAPPDATA
+        ? path.resolve(process.env.LOCALAPPDATA, 'Programs')
+        : null,
+    ];
+
+    for (const folder of rootFolders) {
+      if (typeof folder === 'string' && folder.length > 0) {
+        folders.push(path.resolve(folder, SERVER_FOLDER_NAME));
+      }
+    }
+  }
+
   return folders;
 }
 
-const pathsRelatedToAppLocation = Object.freeze(getPathsRelatedToAppLocation());
+const pathsRelatedToAppLocation = Object.freeze(
+  getPathsRelatedToAppLocation().filter(
+    (x) => typeof x === 'string' && x.length > 0
+  )
+);
 
 /**
  * Derives the list of arguments to pass to the server, given the options that
@@ -179,6 +206,7 @@ const launch = async (options) => {
     localServerProcessArgs = undefined;
   });
   localServerProcess.on('exit', (code, signal) => {
+    localServerProcess.hasTerminatedSuccessfully = true;
     console.log(
       'Local server process exited',
       code === null
@@ -193,9 +221,20 @@ const launch = async (options) => {
   });
 
   // Parse newline-delimited JSON log messages from stderr
-  localServerProcess.stderr.pipe(ndjson.parse()).on('data', (item) => {
-    events.emit('emit', 'log', item);
-  });
+  localServerProcess.stderr
+    .pipe(ndjson.parse())
+    .on('data', (item) => {
+      events.emit('emit', 'log', item);
+    })
+    .on('error', (error) => {
+      // Invalid line received, emit a log item formatted as an error
+      events.emit('emit', 'log', {
+        levelname: 'ERROR',
+        message:
+          'Error while parsing server process output: ' +
+          (error.message || String(error)),
+      });
+    });
 };
 
 /**
@@ -219,7 +258,9 @@ const search = async (paths) => {
   // Electron's unhandled exception handler, which might throw a dialog box in
   // the user's face in production mode even though we nicely handle the
   // exception later.
-
+  //
+  // Note that which.sync() searches for EXE, CMD, BAT and COM on Windows, in
+  // this order, so we don't need to specify the extension explicitly.
   const result = which.sync('skybrushd', {
     nothrow: true,
     path: [
@@ -260,7 +301,7 @@ const terminate = async (options) => {
 
     proc.removeAllListeners();
 
-    if (proc.exitCode === null) {
+    if (proc.exitCode === null && !proc.hasTerminatedSuccessfully) {
       // Process still running, terminate forcefully
       console.warn(
         'Local server process failed to exit in time, terminating forcefully...'
