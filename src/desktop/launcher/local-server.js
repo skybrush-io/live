@@ -42,6 +42,22 @@ let localServerProcess;
  */
 let localServerProcessArgs;
 
+/**
+ * Stores whether we are running on Windows.
+ */
+const isWindows = process.platform === 'win32';
+
+/**
+ * Stores whether we are running on macOS.
+ */
+const isMac = process.platform === 'darwin';
+
+/**
+ * Status code that Windows batch files return when they were terminated
+ * with Ctrl-C.
+ */
+const STATUS_CONTROL_C_EXIT = 0xc000013a;
+
 const endsWith = (string, target) =>
   string.slice(string.length - target.length) === target;
 
@@ -61,7 +77,7 @@ function getPathsRelatedToAppLocation() {
   const appFolder = getApplicationFolder();
   const folders = [];
 
-  if (process.platform === 'darwin') {
+  if (isMac) {
     if (endsWith(appFolder, '.app/Contents/MacOS')) {
       // This is an .app bundle so let's search the Resources folder within
       // the bundle as well as the folder containing the app bundle itself
@@ -83,7 +99,7 @@ function getPathsRelatedToAppLocation() {
   // Live are installed in two folders in C:\Program Files, next to each
   // other. We also add "Program Files" and "Program Files (x86)" explicitly,
   // and also search in "%LOCALAPPDATA%\Programs"
-  if (process.platform === 'win32') {
+  if (isWindows) {
     const SERVER_FOLDER_NAME = 'Skybrush Server';
     const rootFolders = [
       path.dirname(appFolder),
@@ -193,7 +209,7 @@ const launch = async (options) => {
     shell: true /* on Windows we might use batch files for launching, and those need a shell */,
 
     // stdin of child is closed; stderr is piped to us so we can parse the
-    // log messags. stdout is piped to our own stdout in case the server prints
+    // log messages. stdout is piped to our own stdout in case the server prints
     // something there, although it shouldn't.
     stdio: ['ignore', 'inherit', 'pipe'],
   });
@@ -211,7 +227,7 @@ const launch = async (options) => {
       'Local server process exited',
       code === null
         ? `with signal ${signal}`
-        : code === 0
+        : code === 0 || (isWindows && code === STATUS_CONTROL_C_EXIT)
         ? ''
         : `with code ${code}`
     );
@@ -220,14 +236,22 @@ const launch = async (options) => {
     localServerProcessArgs = undefined;
   });
 
-  // Parse newline-delimited JSON log messages from stderr
+  // Parse newline-delimited JSON log messages from stderr. We use
+  // { strict: false }, which does _not_ return error events for malformed
+  // lines. Unfortunately the only other option is the default (strict: true),
+  // which emits an error event, but then the stream is required to close
+  // because no other events may be emitted after an 'error'. So, in order not
+  // to terminate the server process when some module accidentally prints to
+  // stderr, the safer option is strict: false.
   localServerProcess.stderr
-    .pipe(ndjson.parse())
+    .pipe(ndjson.parse({ strict: false }))
     .on('data', (item) => {
       events.emit('emit', 'log', item);
     })
     .on('error', (error) => {
-      // Invalid line received, emit a log item formatted as an error
+      // Invalid line received, emit a log item formatted as an error. This
+      // should not happen if we set { strict: false } but let's be on the
+      // safe side.
       events.emit('emit', 'log', {
         levelname: 'ERROR',
         message:
