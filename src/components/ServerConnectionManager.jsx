@@ -101,7 +101,6 @@ class LocalServerExecutor extends React.Component {
       })
       .then((disposer) => {
         this._processIsRunning = true;
-
         this._setDisposer(disposer);
 
         if (this.props.onStarted) {
@@ -124,9 +123,9 @@ class LocalServerExecutor extends React.Component {
 
   componentWillUnmount() {
     this._setDisposer(null);
+    this._processIsRunning = false;
 
     const { localServer } = window.bridge;
-    this._processIsRunning = false;
     localServer.terminate();
   }
 
@@ -162,8 +161,7 @@ class LocalServerExecutor extends React.Component {
       );
     }
 
-    this._detachProcessEventHandlers();
-
+    this._setDisposer(null);
     this._processIsRunning = false;
   }
 
@@ -172,8 +170,7 @@ class LocalServerExecutor extends React.Component {
       this.props.onError(reason.message, reason);
     }
 
-    this._detachProcessEventHandlers();
-
+    this._setDisposer(null);
     this._processIsRunning = false;
   }
 }
