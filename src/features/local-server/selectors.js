@@ -2,6 +2,8 @@ import { createSelector } from '@reduxjs/toolkit';
 
 import { isLocalHost } from '~/utils/networking';
 
+const EMPTY_ARRAY = [];
+
 /**
  * Returns the list of directories in which a local Skybrush server instance
  * will be searched, besides the standard system path.
@@ -9,8 +11,10 @@ import { isLocalHost } from '~/utils/networking';
  * @param  {Object}  state  the state of the application
  * @return {string[]}  the list of directories to add to the system path
  */
-export const getLocalServerSearchPath = (state) =>
-  state.settings.localServer.searchPath;
+export const getLocalServerSearchPath = (state) => {
+  const result = state.settings.localServer.searchPath;
+  return Array.isArray(result) ? result : EMPTY_ARRAY;
+};
 
 /**
  * Returns the full path to the executable of a local Skybrush server.

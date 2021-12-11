@@ -1,4 +1,5 @@
 const { spawn } = require('child_process');
+const { dialog } = require('electron');
 const ndjson = require('ndjson');
 const path = require('path');
 const pDefer = require('p-defer');
@@ -7,6 +8,8 @@ const process = require('process');
 const which = require('which');
 
 const makeEventProxy = require('../event-proxy');
+const { isMac, isWindows } = require('../platform');
+
 const getApplicationFolder = require('./app-folder');
 
 /**
@@ -41,16 +44,6 @@ let localServerProcess;
  * running, or null if no process is running now.
  */
 let localServerProcessArgs;
-
-/**
- * Stores whether we are running on Windows.
- */
-const isWindows = process.platform === 'win32';
-
-/**
- * Stores whether we are running on macOS.
- */
-const isMac = process.platform === 'darwin';
 
 /**
  * Status code that Windows batch files return when they were terminated
@@ -201,18 +194,29 @@ const launch = async (options) => {
     options
   );
 
-  // TODO(ntamas): check if realArgs is the same as the arguments used for the
-  // already running server instance (if any)
+  /* on Windows we might use batch files for launching, and those need a shell */
+  const needsShell =
+    isWindows &&
+    ['.com', '.bat'].includes(path.extname(serverPath).toLowerCase());
 
-  localServerProcess = spawn(serverPath, realArgs, {
-    cwd: path.dirname(serverPath),
-    shell: true /* on Windows we might use batch files for launching, and those need a shell */,
+  localServerProcess = spawn(
+    // Windows quirk: if we need a shell, we need to quote the full path in case
+    // it includes a space
+    isWindows && needsShell ? `"${serverPath}"` : serverPath,
+    realArgs,
+    {
+      cwd: path.dirname(serverPath),
+      shell: needsShell,
 
-    // stdin of child is closed; stderr is piped to us so we can parse the
-    // log messages. stdout is piped to our own stdout in case the server prints
-    // something there, although it shouldn't.
-    stdio: ['ignore', 'inherit', 'pipe'],
-  });
+      // stdin of child is closed; stderr is piped to us so we can parse the
+      // log messages. stdout is piped to our own stdout in case the server prints
+      // something there, although it shouldn't.
+      stdio: ['ignore', 'inherit', 'pipe'],
+
+      // hide the subprocess window
+      windowsHide: true,
+    }
+  );
   localServerProcessArgs = [serverPath, ...realArgs];
 
   localServerProcess.on('error', (reason) => {
@@ -223,11 +227,17 @@ const launch = async (options) => {
   });
   localServerProcess.on('exit', (code, signal) => {
     localServerProcess.hasTerminatedSuccessfully = true;
+
+    // Remap Ctrl-C exit code to zero on Windows
+    if (isWindows && code === STATUS_CONTROL_C_EXIT) {
+      code = 0;
+    }
+
     console.log(
       'Local server process exited',
       code === null
         ? `with signal ${signal}`
-        : code === 0 || (isWindows && code === STATUS_CONTROL_C_EXIT)
+        : code === 0
         ? ''
         : `with code ${code}`
     );
@@ -304,6 +314,28 @@ const search = async (paths) => {
 };
 
 /**
+ * Shows a dialog that allows the user to select a single directory that will be
+ * scanned for the server executable.
+ */
+const selectPath = async (defaultPath, browserWindow) => {
+  const options = {
+    title: 'Select directory containing Skybrush Server',
+    properties: ['openDirectory'],
+  };
+
+  if (typeof defaultPath === 'string') {
+    options.defaultPath = defaultPath;
+  }
+
+  const { canceled, filePaths } = await dialog.showOpenDialog(
+    browserWindow,
+    options
+  );
+
+  return canceled ? null : filePaths[0];
+};
+
+/**
  * Terminate the local server instance that the main process is currently
  * managing.
  */
@@ -341,5 +373,6 @@ const terminate = async (options) => {
 module.exports = {
   ensureRunning,
   search,
+  selectPath,
   terminate,
 };

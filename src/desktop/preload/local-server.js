@@ -53,9 +53,14 @@ const ensureRunning = async (options) => {
  * @return {Promise<string>}  a promise that resolves to the full path of the
  *         server executable if found and `null` if it is not found
  */
-const search = (paths) => {
-  return ipc.callMain('localServer.search', paths);
-};
+const search = (paths) => ipc.callMain('localServer.search', paths);
+
+/**
+ * Asks the main process to show a dialog that allows the user to select a
+ * single directory that will be scanned for the server executable.
+ */
+const selectPath = (defaultPath) =>
+  ipc.callMain('localServer.selectPath', defaultPath);
 
 /**
  * Asks the main process to terminate the local server instance that it is
@@ -64,12 +69,11 @@ const search = (paths) => {
  * @return {Promise<void>}  a promise that resolves when the termination
  *         signal was sent to the server successfully
  */
-const terminate = () => {
-  return ipc.callMain('localServer.terminate');
-};
+const terminate = () => ipc.callMain('localServer.terminate');
 
 module.exports = {
   ensureRunning,
   search,
+  selectPath,
   terminate,
 };

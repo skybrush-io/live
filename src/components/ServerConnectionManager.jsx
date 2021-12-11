@@ -479,15 +479,29 @@ const ServerConnectionManager = connect(
         // reason = ping timeout -- will reconnect
         dispatch(setCurrentServerConnectionState(ConnectionState.DISCONNECTED));
 
-        if (reason === 'io client disconnect') {
-          dispatch(showNotification('Disconnected from Skybrush server'));
-        } else if (reason === 'io server disconnect') {
-          // Server does not close the connection without sending a SYS-CLOSE
-          // message so there is no need to show another
-        } else if (reason === 'transport close') {
-          dispatch(showError('Skybrush server closed connection unexpectedly'));
-        } else if (reason === 'ping timeout') {
-          dispatch(showError('Connection to Skybrush server lost'));
+        switch (reason) {
+          case 'io client disconnect':
+            dispatch(showNotification('Disconnected from Skybrush server'));
+            break;
+
+          case 'io server disconnect':
+            // Server does not close the connection without sending a SYS-CLOSE
+            // message so there is no need to show another
+            break;
+
+          case 'transport close':
+            dispatch(
+              showError('Skybrush server closed connection unexpectedly')
+            );
+            break;
+
+          case 'ping timeout':
+            dispatch(showError('Connection to Skybrush server lost'));
+            break;
+
+          default:
+            // Nothing to do
+            break;
         }
 
         // Determine whether Socket.IO will try to reconnect on its own
@@ -499,7 +513,8 @@ const ServerConnectionManager = connect(
           // disconnecting due to switching to another server, so we need to
           // compare the URL we received in the event with the current URL that
           // we are trying to connect to.
-          if (url === getServerUrl(getState())) {
+          const isSwichingServers = url !== getServerUrl(getState());
+          if (!isSwichingServers) {
             dispatch(disconnectFromServer());
           }
         }

@@ -9,6 +9,7 @@ module.exports = () => {
   ipc.answerRenderer('getApplicationFolder', getApplicationFolder);
   ipc.answerRenderer('localServer.ensureRunning', localServer.ensureRunning);
   ipc.answerRenderer('localServer.search', localServer.search);
+  ipc.answerRenderer('localServer.selectPath', localServer.selectPath);
   ipc.answerRenderer('localServer.terminate', localServer.terminate);
   ipc.answerRenderer('readBufferFromFile', readBufferFromFile);
   ipc.answerRenderer('writeBufferToFile', writeBufferToFile);
