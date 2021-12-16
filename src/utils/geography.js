@@ -12,6 +12,7 @@ import { MultiLineString, MultiPolygon, Polygon } from 'ol/geom';
 import GeometryCollection from 'ol/geom/GeometryCollection';
 import * as Projection from 'ol/proj';
 
+import { formatNumberAndUnit } from './formatting';
 import { toDegrees, toRadians } from './math';
 import { isRunningOnMac } from './platform';
 
@@ -224,31 +225,6 @@ export const getExactClosestPointOf = (geometry, coordinate) => {
 
   // For anything else, just fall back to getClosestPoint()
   return geometry.getClosestPoint(coordinate);
-};
-
-/**
- * Helper function that formats a number with a fixed number of decimal digits
- * and an optional unit.
- *
- * @param {number}  number  the number to format
- * @param {string|Object} unit  the unit to show after the digits. May also be
- *        an array consisting of pairs of a multiplier and the corresponding
- *        unit (e.g., [[1000, 'km'], [1, 'm'], [0.01, 'cm']])
- * @param {number?} digits  the number of decimal digits to use; defaults to zero
- */
-export const formatNumberAndUnit = (number, unit = '', digits = 0) => {
-  if (Array.isArray(unit) && unit.length > 0) {
-    for (const [mul, u] of unit) {
-      if (Math.abs(number) >= mul) {
-        return (number / mul).toFixed(digits) + u;
-      }
-    }
-
-    const [mul, u] = unit[unit.length - 1];
-    return (number / mul).toFixed(digits) + u;
-  } else {
-    return number.toFixed(digits) + unit;
-  }
 };
 
 /**

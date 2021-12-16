@@ -21,7 +21,7 @@ import { multiSelectableListOf } from '~/components/helpers/lists';
 import DroneAvatar from '~/components/uavs/DroneAvatar';
 import ContentCopy from '~/icons/ContentCopy';
 import { getPreferredCoordinateFormatter } from '~/selectors/formatting';
-import { formatDuration } from '~/utils/formatting';
+import { formatDistance, formatDuration } from '~/utils/formatting';
 
 import { copyCentroidOfAveragedCoordinatesToClipboard } from './actions';
 import {
@@ -53,7 +53,7 @@ const formatStdDevInXYPlane = (mean, sqDiff, numberOfSamples) => {
       [mean.lon - stdLon, mean.lat - stdLat],
       [mean.lon + stdLon, mean.lat + stdLat]
     ) / 2;
-  return diff.toFixed(1);
+  return formatDistance(diff, 1);
 };
 
 const formatDurationOfSampling = (startedAt, lastSampleAt, extraSamplingTime) =>
@@ -167,8 +167,7 @@ const MeasurementListItem = ({
     secondaryText = (
       <div className={classes.secondaryContainer}>
         <div className={classes.latLonCoordinatesColumn}>
-          {formatStdDevInXYPlane(mean, sqDiff, numSamples)}
-          {'m '}
+          {formatStdDevInXYPlane(mean, sqDiff, numSamples)}{' '}
           <span className={classes.dim}>std.dev. in XY</span>
         </div>
         <div className={clsx(classes.dim, classes.amslColumn)}>

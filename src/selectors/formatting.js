@@ -7,6 +7,7 @@ import formatCoords from 'formatcoords';
 import { createSelector } from '@reduxjs/toolkit';
 
 import { CoordinateFormat } from '~/model/settings';
+import { DISTANCE_UNITS } from '~/utils/formatting';
 import {
   makeDecimalCoordinateFormatter,
   makePolarCoordinateFormatter,
@@ -14,12 +15,6 @@ import {
 } from '~/utils/geography';
 
 import { getFlatEarthCoordinateTransformer } from './map';
-
-const DISTANCE_UNITS = [
-  [1000, ' km'],
-  [1, ' m'],
-  [0.01, ' cm'],
-];
 
 const cartesianFormatter = makeDecimalCoordinateFormatter({
   digits: 2,

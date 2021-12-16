@@ -6,6 +6,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 
+import { formatDistance } from '~/utils/formatting';
 import { bearing, finalBearing } from '~/utils/geography';
 
 import {
@@ -70,7 +71,7 @@ const BearingCalculator = ({
           {selectedUAVIdPair[0]} → {selectedUAVIdPair[1]}:{' '}
         </Typography>
         <Typography variant='body2' component='span'>
-          {haversineDistance(coordinates[0], coordinates[1]).toFixed(2)}m
+          {formatDistance(haversineDistance(coordinates[0], coordinates[1]))}
         </Typography>
         {bearing1 === bearing2 ? (
           <>

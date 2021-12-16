@@ -11,11 +11,12 @@ import { Status } from '~/components/semantics';
 import { openTakeoffAreaSetupDialog } from '~/features/show/slice';
 import { getSetupStageStatuses } from '~/features/show/stages';
 import { getFarthestDistanceFromHome } from '~/features/uavs/selectors';
+import { formatDistance } from '~/utils/formatting';
 
 const formatStatusText = (status, maxDistance) => {
   if (typeof maxDistance === 'number') {
     if (Number.isFinite(maxDistance)) {
-      return `Placement accuracy ≤ ${maxDistance.toFixed(2)} m`;
+      return `Placement accuracy ≤ ${formatDistance(maxDistance)}`;
     } else {
       return 'No position yet for at least one drone';
     }
