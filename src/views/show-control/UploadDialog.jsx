@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 
 import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
 
+import { getUploadDialogState } from '~/features/show/selectors';
 import { closeUploadDialog } from '~/features/show/slice';
 
 import UploadDialogContent from './UploadDialogContent';
@@ -31,15 +32,9 @@ UploadDialog.defaultProps = {
   open: false,
 };
 
-// TODO(ntamas): most selectors should return a combination of show and
-// drone IDs
-
 export default connect(
   // mapStateToProps
-  (state) => ({
-    ...state.show.uploadDialog,
-    // open: true,
-  }),
+  getUploadDialogState,
 
   // mapDispatchToProps
   {

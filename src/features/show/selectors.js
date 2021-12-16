@@ -680,6 +680,13 @@ export const isShowConvexHullInsideGeofence = createSelector(
 export const getFailedUploadItems = (state) => state.show.upload.failedItems;
 
 /**
+ * Returns the result of the last upload attempt: success, error or cancelled
+ * (as a string).
+ */
+export const getLastUploadResult = (state) =>
+  state.show.upload.lastUploadResult;
+
+/**
  * Returns the upload items that are either already sent to a worker or that
  * are being processed by a worker. These items are the ones where the user
  * cannot intervene with the upload process.
@@ -728,6 +735,11 @@ export const getNextDroneFromUploadQueue = (state) => {
 
   return undefined;
 };
+
+/**
+ * Returns the state object of the upload dialog.
+ */
+export const getUploadDialogState = (state) => state.show.uploadDialog;
 
 /**
  * Returns an object that counts how many drones are currently in the

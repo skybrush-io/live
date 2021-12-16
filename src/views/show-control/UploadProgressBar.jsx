@@ -5,7 +5,10 @@ import { useThrottle } from 'react-use';
 
 import LinearProgress from '@material-ui/core/LinearProgress';
 
-import { getUploadProgress } from '~/features/show/selectors';
+import {
+  getUploadProgress,
+  isUploadInProgress,
+} from '~/features/show/selectors';
 
 /**
  * Linear progress bar that shows the state of the current upload.
@@ -33,7 +36,7 @@ export default connect(
   // mapStateToProps
   (state) => ({
     progress: getUploadProgress(state),
-    running: state.show.upload.running,
+    running: isUploadInProgress(state),
   }),
   // mapDispatchToProps
   null

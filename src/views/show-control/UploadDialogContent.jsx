@@ -19,7 +19,9 @@ import { Status } from '~/components/semantics';
 import { getMissionMapping } from '~/features/mission/selectors';
 import {
   getItemsInUploadBacklog,
+  getLastUploadResult,
   getNumberOfDronesInShow,
+  getUploadDialogState,
   hasQueuedItems,
   isUploadInProgress,
   shouldRetryFailedUploadsAutomatically,
@@ -187,11 +189,11 @@ UploadDialogContent.defaultProps = {
 export default connect(
   // mapStateToProps
   (state) => ({
-    ...state.show.uploadDialog,
+    ...getUploadDialogState(state),
     autoRetry: shouldRetryFailedUploadsAutomatically(state),
     canStartUpload: getNumberOfDronesInShow(state) > 0,
     hasQueuedItems: hasQueuedItems(state),
-    lastUploadResult: state.show.upload.lastUploadResult,
+    lastUploadResult: getLastUploadResult(state),
     running: isUploadInProgress(state),
   }),
 

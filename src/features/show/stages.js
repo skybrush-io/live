@@ -11,6 +11,7 @@ import {
   areStartConditionsSyncedWithServer,
   didLastLoadingAttemptFail,
   didStartConditionSyncFail,
+  getLastUploadResult,
   hasLoadedShowFile,
   hasScheduledStartTime,
   hasShowChangedExternallySinceLoaded,
@@ -89,7 +90,7 @@ const stages = {
 
   uploadShow: {
     evaluate: (state) => {
-      const { lastUploadResult: result } = state.show.upload;
+      const result = getLastUploadResult(state);
       return result === 'error'
         ? Status.ERROR
         : result === 'cancelled'
