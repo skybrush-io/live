@@ -35,6 +35,7 @@ const MESSAGES_WITH_RECEIPTS = {
   'UAV-HALT': true,
   'UAV-HOVER': true,
   'UAV-LAND': true,
+  'UAV-MOTOR': true,
   'UAV-RST': true,
   'UAV-RTH': true,
   'UAV-SIGNAL': true,
