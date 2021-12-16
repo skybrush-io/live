@@ -1,3 +1,5 @@
+import { yellow } from '@material-ui/core/colors';
+
 import { Colors as ColorsBase } from '@skybrush/app-theme-material-ui';
 import { Severity } from '~/model/enums';
 
@@ -9,6 +11,8 @@ export const Colors = {
   geofence: '#f00',
   convexHull: '#fc0',
   plannedTrajectory: '#08f',
+
+  positionHold: yellow.A400,
 };
 
 export const severityColorMap = new Map([

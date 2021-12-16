@@ -122,7 +122,7 @@ const LargeControlButtonGroup = ({
       <Box display='flex' flexDirection='row' flex={1}>
         <ColoredButton
           className={classes.button}
-          color={Colors.warning}
+          color={Colors.positionHold}
           icon={<PositionHold fontSize='inherit' />}
           onClick={positionHoldUAVs}
         >
