@@ -12,6 +12,7 @@ const config = {
 
   // Hide some of the features
   features: {
+    beacons: false,
     docks: false,
     features: false, // okay, sorry for the naming, this is awkward :)
     geofence: false,

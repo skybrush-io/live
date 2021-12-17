@@ -53,6 +53,7 @@ const onlyWithFeature = (featureName, component) =>
  * components to have props, use a wrapper HOC.
  */
 const componentRegistry = {
+  'beacon-list': onlyWithFeature('beacons', views.BeaconList),
   'connection-list': views.ConnectionList,
   'dataset-list': views.DatasetList,
   'dock-list': onlyWithFeature('docks', views.DockList),

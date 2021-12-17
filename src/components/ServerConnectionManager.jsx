@@ -13,6 +13,7 @@ import ReactSocket from '@collmot/react-socket';
 
 import { disconnectFromServer } from '~/actions/server-settings';
 import handleError from '~/error-handling';
+import { clearBeaconList } from '~/features/beacons/slice';
 import { clearClockList } from '~/features/clocks/slice';
 import { clearConnectionList } from '~/features/connections/slice';
 import { clearDockList } from '~/features/docks/slice';
@@ -44,6 +45,7 @@ import {
   ConnectionState,
   handleConnectionInformationMessage,
 } from '~/model/connections';
+import { handleBeaconInformationMessage } from '~/model/beacons';
 import { handleClockInformationMessage } from '~/model/clocks';
 import { handleDockInformationMessage } from '~/model/docks';
 import { logLevelForLogLevelName } from '~/utils/logging';
@@ -351,11 +353,29 @@ async function executeTasksAfterConnection(dispatch, getState) {
 
     // For each dock ID that we have received, get its status
     // via a DOCK-INF message
+    if (dockIds.length > 0) {
+      response = await messageHub.sendMessage({
+        type: 'DOCK-INF',
+        ids: dockIds,
+      });
+      handleDockInformationMessage(response.body, dispatch);
+    }
+
+    // Send an OBJ-LIST message to the server to get an up-to-date
+    // list of beacons
     response = await messageHub.sendMessage({
-      type: 'DOCK-INF',
-      ids: dockIds,
+      type: 'OBJ-LIST',
+      filter: ['beacon'],
     });
-    handleDockInformationMessage(response.body, dispatch);
+    const beaconIds = response.body.ids || [];
+
+    // For each beacon ID that we have received, get its status
+    // via a BCN-INF message
+    response = await messageHub.sendMessage({
+      type: 'BCN-INF',
+      ids: beaconIds,
+    });
+    handleBeaconInformationMessage(response.body, dispatch);
 
     // Check if the server supports virtual drones
     const supportsVirtualDrones = await messageHub.query.isExtensionLoaded(
@@ -423,6 +443,7 @@ async function executeTasksAfterConnection(dispatch, getState) {
  * @param {function} dispatch  the dispatcher function of the Redux store
  */
 async function executeTasksAfterDisconnection(dispatch) {
+  dispatch(clearBeaconList());
   dispatch(clearClockList());
   dispatch(clearConnectionList());
   dispatch(clearDockList());

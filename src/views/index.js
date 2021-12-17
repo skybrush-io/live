@@ -3,6 +3,7 @@
  * other files in this folder.
  */
 
+import BeaconList from './beacons';
 import ClockDisplayList from './clocks';
 import ConnectionList from './connections';
 import DatasetList from './datasets';
@@ -21,6 +22,7 @@ import ThreeDTopLevelView from './three-d';
 /* MapView not included as it is loaded lazily */
 
 const views = {
+  BeaconList,
   ClockDisplayList,
   ConnectionList,
   DatasetList,

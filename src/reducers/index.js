@@ -4,6 +4,7 @@ import dialogsReducer from './dialogs';
 import mapReducer from './map';
 
 import alertReducer from '~/features/alert/slice';
+import beaconsReducer from '~/features/beacons/slice';
 import clocksReducer from '~/features/clocks/slice';
 import connectionsReducer from '~/features/connections/slice';
 import datasetsReducer from '~/features/datasets/slice';
@@ -40,6 +41,7 @@ import workbenchReducer from '~/features/workbench/slice';
  */
 const reducer = combineReducers({
   alert: alertReducer,
+  beacons: beaconsReducer,
   clocks: clocksReducer,
   connections: connectionsReducer,
   datasets: datasetsReducer,

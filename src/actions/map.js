@@ -14,7 +14,11 @@ import {
   SELECT_MAP_SOURCE,
 } from './types';
 
-import { dockIdToGlobalId, uavIdToGlobalId } from '~/model/identifiers';
+import {
+  beaconIdToGlobalId,
+  dockIdToGlobalId,
+  uavIdToGlobalId,
+} from '~/model/identifiers';
 
 /**
  * Action factory that creates an action that selects a given source in the
@@ -59,6 +63,18 @@ export const clearSelection = createAction(CLEAR_SELECTION);
 export const removeFeaturesFromSelection = createAction(
   REMOVE_FEATURES_FROM_SELECTION
 );
+
+/**
+ * Action factory that creates an action that sets the set of selected
+ * beacon IDs in the map.
+ *
+ * @param {Array.<string>} ids  the IDs of the selected beacons.
+ *        Any beacon whose ID is not in this set will be deselected,
+ *        and so will be any feature that is not a beacon.
+ * @return {Object} an appropriately constructed action
+ */
+export const setSelectedBeaconIds = (ids) =>
+  setSelectedFeatures(ids.map(beaconIdToGlobalId));
 
 /**
  * Action factory that creates an action that sets the set of selected

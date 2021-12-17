@@ -56,6 +56,7 @@ const persistConfig = {
   // do not store the following slices of the state in the storage
   blacklist: [
     'alert',
+    'beacons',
     'clocks',
     'connections',
     'datasets',

@@ -11,6 +11,7 @@ import Layers from '@material-ui/icons/Layers';
 import Map from '@material-ui/icons/Map';
 import MyLocation from '@material-ui/icons/MyLocation';
 import FormatListBulleted from '@material-ui/icons/FormatListBulleted';
+import Antenna from '@material-ui/icons/SettingsInputAntenna';
 import ShowChart from '@material-ui/icons/ShowChart';
 // import Storage from '@material-ui/icons/Storage';
 import ThreeDRotation from '@material-ui/icons/ThreeDRotation';
@@ -80,6 +81,14 @@ const Sidebar = ({ isOpen, workbench }) => (
         )}
         <hr />
         <Module id='uavs' icon={<Flight />} label='UAVs' component='uav-list' />
+        {hasFeature('beacons') && (
+          <Module
+            id='beacons'
+            icon={<Antenna />}
+            label='Beacons'
+            component='beacon-list'
+          />
+        )}
         {hasFeature('docks') && (
           <Module
             id='docks'

@@ -11,7 +11,9 @@ import { handleDebugRequest } from './debugging';
 
 import MessageHub from './flockwave/messages';
 
+import { handleBeaconInformationMessage } from './model/beacons';
 import { handleClockInformationMessage } from './model/clocks';
+import { handleDockInformationMessage } from './model/docks';
 import {
   handleConnectionDeletionMessage,
   handleConnectionInformationMessage,
@@ -39,11 +41,14 @@ const { dispatch } = store;
 const messageHub = new MessageHub();
 
 messageHub.registerNotificationHandlers({
+  'BCN-INF': (message) =>
+    handleBeaconInformationMessage(message.body, dispatch),
   'CLK-INF': (message) => handleClockInformationMessage(message.body, dispatch),
   'CONN-DEL': (message) =>
     handleConnectionDeletionMessage(message.body, dispatch),
   'CONN-INF': (message) =>
     handleConnectionInformationMessage(message.body, dispatch),
+  'DOCK-INF': (message) => handleDockInformationMessage(message.body, dispatch),
   'OBJ-DEL': (message) => handleObjectDeletionMessage(message.body, dispatch),
   'SYS-CLOSE': (message) => {
     if (message.body && message.body.reason) {
