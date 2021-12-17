@@ -179,6 +179,8 @@ AFrame.registerComponent('drone-flock', {
   schema: {},
 
   init() {
+    this.getEntityForUAVById = this.getEntityForUAVById.bind(this);
+
     this._onUAVsAdded = this._onUAVsAdded.bind(this);
     this._onUAVsRemoved = this._onUAVsRemoved.bind(this);
     this._onUAVsUpdated = this._onUAVsUpdated.bind(this);
@@ -214,6 +216,10 @@ AFrame.registerComponent('drone-flock', {
 
       this._pendingUAVsToAdd = undefined;
     }
+  },
+
+  getEntityForUAVById(id) {
+    return this._uavIdToEntity[id];
   },
 
   _ensureUAVEntityExists(uav) {

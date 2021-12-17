@@ -1,11 +1,9 @@
-import React from 'react';
 import { take } from 'redux-saga/effects';
 
 import { skybrushToThreeJsPosition } from '@skybrush/aframe-components/lib/spatial';
 
+import { cameraRef, getSceneDOMNode } from './refs';
 import { resetZoom, rotateViewTowards } from './slice';
-
-export const cameraRef = React.createRef();
 
 /**
  * Saga that listens for camera-related actions dispatched from the store and
@@ -23,10 +21,12 @@ export default function* cameraAnimatorSaga() {
       switch (action.type) {
         case RESET_ZOOM:
           controller.resetZoom();
+          setFocusOnScene();
           break;
 
         case ROTATE_VIEW_TOWARDS:
           handleViewRotationTowards(controller, action.payload);
+          setFocusOnScene();
           break;
 
         default:
@@ -52,4 +52,14 @@ function getCameraController() {
 function handleViewRotationTowards(controller, point) {
   const target = { lookAt: skybrushToThreeJsPosition(point) };
   controller.startTransitionTo(target);
+}
+
+/**
+ * Sets the focus to the scene containing the camera that the saga is controlling.
+ */
+function setFocusOnScene() {
+  const scene = getSceneDOMNode();
+  if (scene && scene.focus) {
+    scene.focus();
+  }
 }

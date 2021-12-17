@@ -32,6 +32,7 @@ import ToolbarDivider from '~/components/ToolbarDivider';
 import { getLightingConditionsForThreeDView } from '~/features/settings/selectors';
 import { toggleLightingConditionsInThreeDView } from '~/features/settings/slice';
 import { resetZoom, rotateViewToDrones } from '~/features/three-d/actions';
+import { cameraRef } from '~/features/three-d/refs';
 import { setNavigationMode } from '~/features/three-d/slice';
 import { isMapCoordinateSystemSpecified } from '~/selectors/map';
 import { isDark } from '~/theme';
@@ -100,7 +101,7 @@ const ThreeDTopLevelView = ({
         </AppBar>
         <Box ref={ref} position='relative' flex={1}>
           <SelectionTooltip>
-            <ThreeDView ref={threeDViewRef} />
+            <ThreeDView ref={threeDViewRef} cameraRef={cameraRef} />
           </SelectionTooltip>
           {!hasMapCoordinateSystem && (
             <Overlay left={8} right={8} top={8}>
