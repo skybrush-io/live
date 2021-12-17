@@ -19,6 +19,7 @@ import { setSelectedBeaconIds } from '~/actions/map';
 import { multiSelectableListOf } from '~/components/helpers/lists';
 import Tooltip from '~/components/Tooltip';
 import {
+  getBeaconDisplayName,
   getBeaconsInOrder,
   getSelectedBeaconIds,
 } from '~/features/beacons/selectors';
@@ -48,7 +49,7 @@ const BeaconListPresentation = multiSelectableListOf(
         onClick={props.onItemSelected}
       >
         <StatusLight status={beacon.active ? 'success' : 'error'} />
-        <ListItemText primary={beacon.id} />
+        <ListItemText primary={getBeaconDisplayName(beacon)} />
         <ListItemSecondaryAction>{rightIconButton}</ListItemSecondaryAction>
       </ListItem>
     );

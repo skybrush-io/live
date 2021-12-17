@@ -27,7 +27,7 @@ import { semanticsFromSeverity } from './features/snackbar/types';
 import flock from './flock';
 import store from './store';
 
-const { dispatch } = store;
+const { dispatch, getState } = store;
 
 /**
  * The single application-wide message hub that other objects can use to
@@ -42,7 +42,7 @@ const messageHub = new MessageHub();
 
 messageHub.registerNotificationHandlers({
   'BCN-INF': (message) =>
-    handleBeaconInformationMessage(message.body, dispatch),
+    handleBeaconInformationMessage(message.body, dispatch, getState),
   'CLK-INF': (message) => handleClockInformationMessage(message.body, dispatch),
   'CONN-DEL': (message) =>
     handleConnectionDeletionMessage(message.body, dispatch),

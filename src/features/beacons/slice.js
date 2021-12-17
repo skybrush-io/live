@@ -43,7 +43,8 @@ const { actions, reducer } = createSlice({
       //   id: 'BCN:GPS',
       //   position: ...,
       //   heading: 147,
-      //   active: true
+      //   active: true,
+      //   name: 'GPS beacon'
       // }
     },
     order: [],

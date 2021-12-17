@@ -12,6 +12,36 @@ import { extractResponseForId } from './parsing';
 import { validateExtensionName } from './validation';
 
 /**
+ * Returns the basic properties of the beacons with the given IDs.
+ */
+export async function getBasicBeaconProperties(hub, ids) {
+  let isSingle = false;
+
+  if (typeof ids === 'string') {
+    ids = [ids];
+    isSingle = true;
+  }
+
+  if (!Array.isArray(ids) || ids.some((id) => typeof id !== 'string')) {
+    throw new Error('Invalid ID array:' + JSON.stringify(ids));
+  }
+
+  const response = await hub.sendMessage({
+    type: 'BCN-PROPS',
+    ids,
+  });
+
+  if (isSingle) {
+    return extractResponseForId(response, ids[0], {
+      key: 'result',
+      error: `Failed to retrieve basic properties of beacon: ${ids[0]}`,
+    });
+  } else {
+    return response.body.result;
+  }
+}
+
+/**
  * Returns the current configuration object of the server extension with the
  * given name.
  */
@@ -211,6 +241,7 @@ export async function isExtensionLoaded(hub, name) {
  */
 export class QueryHandler {
   _queries = {
+    getBasicBeaconProperties,
     getConfigurationOfExtension,
     getLicenseInformation,
     getPreflightStatus,

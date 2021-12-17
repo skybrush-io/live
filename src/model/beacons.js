@@ -23,7 +23,7 @@ export const mapHeading = (headingFromServer) =>
     : null;
 
 /**
- * Handles a DOCK-INF message from a Skybrush server and updates the
+ * Handles a BCN-INF message from a Skybrush server and updates the
  * state of the Redux store appropriately.
  *
  * @param  {Object} body  the body of the DOCK-INF message
@@ -41,6 +41,31 @@ export function handleBeaconInformationMessage(body, dispatch) {
         position: mapPosition(position),
         heading: mapHeading(heading),
         active,
+      },
+      isUndefined
+    )
+  );
+
+  dispatch(setBeaconStateMultiple(states));
+}
+
+/**
+ * Handles a BCN-PROPS message from a Skybrush server and updates the
+ * state of the Redux store appropriately.
+ *
+ * @param  {Object} body  the body of the DOCK-INF message
+ * @param  {function} dispatch  the dispatch function of the Redux store
+ */
+export function handleBeaconPropertiesMessage(body, dispatch) {
+  // Map the status objects from the server into the format expected
+  // by our Redux actions. Omit keys for which the values are not
+  // provided by the server.
+
+  const states = mapValues(body.result, ({ id, name }) =>
+    omitBy(
+      {
+        id,
+        name,
       },
       isUndefined
     )

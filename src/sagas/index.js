@@ -6,6 +6,7 @@ import config from 'config';
 
 import { all } from 'redux-saga/effects';
 
+import beaconSaga from '~/features/beacons/saga';
 import hotkeySaga from '~/features/hotkeys/saga';
 import localServerSaga from '~/features/local-server/saga';
 import measurementSaga from '~/features/measurement/saga';
@@ -17,6 +18,7 @@ import tourSaga from '~/features/tour/saga';
 import uavManagementSaga from '~/features/uavs/saga';
 import weatherSaga from '~/features/weather/saga';
 import flock from '~/flock';
+import { hasFeature } from '~/utils/configuration';
 
 import onboardingSaga from './onboarding';
 
@@ -38,6 +40,10 @@ export default function* rootSaga() {
 
   if (localServer && localServer.search) {
     sagas.push(localServerSaga(localServer.search));
+  }
+
+  if (hasFeature('beacons')) {
+    sagas.push(beaconSaga());
   }
 
   if (config && config.session) {

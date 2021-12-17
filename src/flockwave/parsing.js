@@ -115,7 +115,8 @@ export function extractResponseForId(message, id, options = {}) {
     }
   }
 
-  const results = get(message, 'body.status');
+  const { key = 'status' } = options;
+  const results = get(message, 'body.' + key);
   if (typeof results === 'object' && typeof results[id] !== 'undefined') {
     return results[id];
   }

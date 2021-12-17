@@ -45,7 +45,10 @@ import {
   ConnectionState,
   handleConnectionInformationMessage,
 } from '~/model/connections';
-import { handleBeaconInformationMessage } from '~/model/beacons';
+import {
+  handleBeaconInformationMessage,
+  handleBeaconPropertiesMessage,
+} from '~/model/beacons';
 import { handleClockInformationMessage } from '~/model/clocks';
 import { handleDockInformationMessage } from '~/model/docks';
 import { logLevelForLogLevelName } from '~/utils/logging';
@@ -370,12 +373,21 @@ async function executeTasksAfterConnection(dispatch, getState) {
     const beaconIds = response.body.ids || [];
 
     // For each beacon ID that we have received, get its status
-    // via a BCN-INF message
-    response = await messageHub.sendMessage({
-      type: 'BCN-INF',
-      ids: beaconIds,
-    });
-    handleBeaconInformationMessage(response.body, dispatch);
+    // via a BCN-INF message and its basic properties via a BCN-PROPS
+    // message
+    if (beaconIds.length > 0) {
+      response = await messageHub.sendMessage({
+        type: 'BCN-INF',
+        ids: beaconIds,
+      });
+      handleBeaconInformationMessage(response.body, dispatch);
+
+      response = await messageHub.sendMessage({
+        type: 'BCN-PROPS',
+        ids: beaconIds,
+      });
+      handleBeaconPropertiesMessage(response.body, dispatch);
+    }
 
     // Check if the server supports virtual drones
     const supportsVirtualDrones = await messageHub.query.isExtensionLoaded(
