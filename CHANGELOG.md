@@ -26,6 +26,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The weather info widget now shows the current planetary K index estimate if
   the server provides this information.
 
+- Added a button in the toolbar of the 3D view that rotates the camera towards
+  the center of the drone swarm.
+
 ### Changed
 
 - UAV status summary header widget is now sorted by the severity of the items,
