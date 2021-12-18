@@ -24,12 +24,13 @@ const defaultState = {
   // .byId contains all the layers in the map, in no particular order
   byId: {
     base: createNewLayer('base', LayerType.BASE, 'Base map'),
+    beacons: createNewLayer('beacons', LayerType.BEACONS, 'Beacons'),
     features: createNewLayer('features', LayerType.FEATURES, 'Features'),
     home: createNewLayer('home', LayerType.MISSION_INFO, 'Mission info'),
     uavs: createNewLayer('uavs', LayerType.UAVS, 'UAVs'),
   },
   // .order contains the order of the layers, from bottom to top
-  order: ['base', 'features', 'home', 'uavs'],
+  order: ['base', 'beacons', 'features', 'home', 'uavs'],
 };
 
 /**

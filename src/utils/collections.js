@@ -400,6 +400,26 @@ export const deleteItemsByIds = (collection, idsToRemove) => {
 };
 
 /**
+ * Helper function that receives multiple item IDs and an ordered collection,
+ * removes the items with the given IDs from the ordered collection.
+ *
+ * This function anticipates the case that none of the IDs are actually in the
+ * collection, so it first iterates over the IDs and checks whether any of the
+ * IDs are in the collection. If it finds no match, it returns without touching
+ * the collection.
+ *
+ * @param  {Object}    collection  the ordered collection to modify
+ * @param  {string[]}  idsToRemove  the item IDs to remove
+ */
+export const maybeDeleteItemsByIds = (collection, idsToRemove) => {
+  for (const id of idsToRemove) {
+    if (collection.byId[id] !== undefined) {
+      return deleteItemsByIds(collection, idsToRemove);
+    }
+  }
+};
+
+/**
  * Creates a key string that can be used in a call to <code>u.updateIn</code>
  * to update some properties of an item in an ordered collection.
  *

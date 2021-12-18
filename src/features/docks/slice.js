@@ -6,7 +6,11 @@
 import has from 'lodash-es/has';
 import { createSlice } from '@reduxjs/toolkit';
 
-import { clearOrderedCollection } from '~/utils/collections';
+import { notifyObjectsDeletedOnServer } from '~/actions/objects';
+import {
+  clearOrderedCollection,
+  maybeDeleteItemsByIds,
+} from '~/utils/collections';
 
 /**
  * Function that updates the state of a dock with the given ID in
@@ -70,6 +74,12 @@ const { actions, reducer } = createSlice({
       for (const id of Object.keys(payload)) {
         updateStateOfDock(state, id, payload[id]);
       }
+    },
+  },
+
+  extraReducers: {
+    [notifyObjectsDeletedOnServer]: (state, action) => {
+      maybeDeleteItemsByIds(state, action.payload);
     },
   },
 });

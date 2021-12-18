@@ -17,9 +17,7 @@ import {
 import { mapViewCoordinateFromLonLat } from '~/utils/geography';
 import { beaconIdToGlobalId } from '~/model/identifiers';
 import { setLayerSelectable } from '~/model/layers';
-import { shadowVeryThinOutline, shadowThinOutline, fill } from '~/utils/styles';
-
-// import DockImage from '~/../assets/img/dock-32x32.png';
+import { shadowVeryThinOutline, fill } from '~/utils/styles';
 
 // === Settings for this particular layer type ===
 
