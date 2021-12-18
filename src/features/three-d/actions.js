@@ -2,10 +2,10 @@ import AFrame from '~/aframe/aframe';
 import { showError } from '~/features/snackbar/actions';
 import { getActiveUAVIds } from '~/features/uavs/selectors';
 
-export { resetZoom } from './slice';
-
 import { getDroneFlockDOMNode } from './refs';
 import { rotateViewTowards } from './slice';
+
+export { resetZoom } from './slice';
 
 const { THREE } = AFrame;
 

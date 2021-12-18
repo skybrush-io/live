@@ -20,11 +20,14 @@ import MyLocation from '@material-ui/icons/MyLocation';
 import Timeline from '@material-ui/icons/Timeline';
 import TrackChanges from '@material-ui/icons/TrackChanges';
 
+import Antenna from '~/icons/Antenna';
+
 /**
  * Enum containing constants for the various layer types that we support.
  */
 export const LayerType = {
   BASE: 'base',
+  BEACONS: 'beacons',
   DOCKS: 'docks',
   FEATURES: 'features',
   GEOJSON: 'geojson',
@@ -46,6 +49,7 @@ export const LayerTypes = [
   LayerType.TILE_SERVER,
   LayerType.FEATURES,
   LayerType.UAVS,
+  LayerType.BEACONS,
   LayerType.DOCKS,
   LayerType.UAV_TRACE,
   LayerType.MISSION_INFO,
@@ -86,6 +90,11 @@ const _propertiesForLayerTypes = {
     parameters: {
       source: 'osm',
     },
+  },
+  [LayerType.BEACONS]: {
+    label: 'Beacons',
+    icon: <Antenna />,
+    parameters: {},
   },
   [LayerType.DOCKS]: {
     label: 'Docking stations',

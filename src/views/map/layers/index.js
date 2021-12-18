@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { BaseLayerSettings, BaseLayer } from './base';
+import { BeaconsLayerSettings, BeaconsLayer } from './beacons';
 import { DocksLayerSettings, DocksLayer } from './docks';
 import { FeaturesLayerSettings, FeaturesLayer } from './features';
 import { GeoJSONLayerSettings, GeoJSONLayer } from './geojson';
@@ -17,6 +18,7 @@ import { LayerType } from '~/model/layers';
 
 export const LayerSettings = {
   [LayerType.BASE]: BaseLayerSettings,
+  [LayerType.BEACONS]: BeaconsLayerSettings,
   [LayerType.DOCKS]: DocksLayerSettings,
   [LayerType.FEATURES]: FeaturesLayerSettings,
   [LayerType.GEOJSON]: GeoJSONLayerSettings,
@@ -49,6 +51,7 @@ export const stateObjectToLayerSettings = (layer, layerId) => {
 
 export const Layers = {
   [LayerType.BASE]: BaseLayer,
+  [LayerType.BEACONS]: BeaconsLayer,
   [LayerType.DOCKS]: DocksLayer,
   [LayerType.FEATURES]: FeaturesLayer,
   [LayerType.GEOJSON]: GeoJSONLayer,

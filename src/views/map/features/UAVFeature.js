@@ -8,7 +8,7 @@ import { Fill, Icon, Style, Text } from 'ol/style';
 import { toRadians } from '~/utils/math';
 
 import DroneImage from '~/../assets/img/drone-x-black-32x32.png';
-import SelectionGlow from '~/../assets/img/selection-glow.png';
+import SelectionGlow from '~/../assets/img/drone-selection-glow.png';
 
 /**
  * Feature that represents an UAV on an OpenLayers map.

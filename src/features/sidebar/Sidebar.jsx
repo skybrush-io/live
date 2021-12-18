@@ -11,7 +11,6 @@ import Layers from '@material-ui/icons/Layers';
 import Map from '@material-ui/icons/Map';
 import MyLocation from '@material-ui/icons/MyLocation';
 import FormatListBulleted from '@material-ui/icons/FormatListBulleted';
-import Antenna from '@material-ui/icons/SettingsInputAntenna';
 import ShowChart from '@material-ui/icons/ShowChart';
 // import Storage from '@material-ui/icons/Storage';
 import ThreeDRotation from '@material-ui/icons/ThreeDRotation';
@@ -23,6 +22,7 @@ import { Module, ModuleTray, Workbench } from 'react-flexible-workbench';
 import { connect } from 'react-redux';
 
 import LogStatusBadge from '~/components/badges/LogStatusBadge';
+import Antenna from '~/icons/Antenna';
 import { hasFeature } from '~/utils/configuration';
 
 const SIDEBAR_OPEN_WIDTH = 160;
