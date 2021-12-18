@@ -42,11 +42,10 @@ const reducer = handleActions(
         state
       ),
 
-    CLOSE_LAYERS_DIALOG: (state, action) =>
+    CLOSE_LAYERS_DIALOG: (state) =>
       u(
         {
           dialogVisible: false,
-          selectedLayer: undefined,
         },
         state
       ),

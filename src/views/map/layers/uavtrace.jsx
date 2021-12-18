@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 
-import { source } from '@collmot/ol-react';
+import { layer as olLayer, source } from '@collmot/ol-react';
 
 import TextField from '@material-ui/core/TextField';
 
@@ -71,7 +71,7 @@ class UAVTraceLayerSettingsPresentation extends React.Component {
 
   _onTrailLengthChanged = (event) => {
     const value = toNumber(event.target.value);
-    if (value > 0 && isFinite(value)) {
+    if (value > 0 && Number.isFinite(value)) {
       this.props.setLayerParameters({
         trailLength: value,
       });
@@ -205,15 +205,13 @@ class UAVTraceVectorSource extends React.Component {
 }
 
 const UAVTraceLayerPresentation = ({ layer, zIndex }) => (
-  <div>
-    <layer.Vector updateWhileAnimating updateWhileInteracting zIndex={zIndex}>
-      <UAVTraceVectorSource
-        trailLength={layer.parameters.trailLength}
-        trailColor={colorToString(layer.parameters.trailColor)}
-        trailWidth={layer.parameters.trailWidth}
-      />
-    </layer.Vector>
-  </div>
+  <olLayer.Vector updateWhileAnimating updateWhileInteracting zIndex={zIndex}>
+    <UAVTraceVectorSource
+      trailLength={layer.parameters.trailLength}
+      trailColor={colorToString(layer.parameters.trailColor)}
+      trailWidth={layer.parameters.trailWidth}
+    />
+  </olLayer.Vector>
 );
 
 UAVTraceLayerPresentation.propTypes = {

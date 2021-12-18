@@ -18,6 +18,8 @@ import Switch from '@material-ui/core/Switch';
 import ArrowDown from '@material-ui/icons/ArrowDropDown';
 import ArrowUp from '@material-ui/icons/ArrowDropUp';
 
+import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
+
 import { forceFormSubmission } from '../forms';
 
 import {
@@ -146,9 +148,13 @@ class LayerSettingsContainerPresentation extends React.Component {
   createChildrenForLayer(layer, layerId) {
     if (layer.type in LayerSettings) {
       return stateObjectToLayerSettings(layer, layerId);
+    } else {
+      return [
+        <div key='_hint' style={{ position: 'relative', height: 48 }}>
+          <BackgroundHint text='This layer has no additional settings.' />
+        </div>,
+      ];
     }
-
-    return [];
   }
 
   render() {
@@ -158,8 +164,14 @@ class LayerSettingsContainerPresentation extends React.Component {
       // No layer is selected; let's show a hint that the user should
       // select a layer
       return (
-        <div style={{ textAlign: 'center', marginTop: '2em' }}>
-          Please select a layer from the layer list.
+        <div
+          key='_hint'
+          style={{ position: 'relative', height: 48, marginTop: '2em' }}
+        >
+          <BackgroundHint
+            text='Please select a layer from the layer list.'
+            style={{ marginTop: '2em' }}
+          />
         </div>
       );
     }
@@ -193,7 +205,9 @@ const LayerSettingsContainer = connect(
   // mapStateToProps
   (state, ownProps) => ({
     layer: state.map.layers.byId[ownProps.layerId],
-  })
+  }),
+  // mapDispatchToProps
+  {}
 )(LayerSettingsContainerPresentation);
 
 /* ********************************************************************* */

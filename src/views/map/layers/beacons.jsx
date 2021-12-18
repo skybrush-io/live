@@ -19,10 +19,6 @@ import { beaconIdToGlobalId } from '~/model/identifiers';
 import { setLayerSelectable } from '~/model/layers';
 import { shadowVeryThinOutline, fill } from '~/utils/styles';
 
-// === Settings for this particular layer type ===
-
-export const BeaconsLayerSettings = () => false;
-
 // === Helper functions ===
 
 const beaconIconStyle = new Style({

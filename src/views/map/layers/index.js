@@ -1,14 +1,14 @@
 import React from 'react';
 
 import { BaseLayerSettings, BaseLayer } from './base';
-import { BeaconsLayerSettings, BeaconsLayer } from './beacons';
-import { DocksLayerSettings, DocksLayer } from './docks';
-import { FeaturesLayerSettings, FeaturesLayer } from './features';
+import { BeaconsLayer } from './beacons';
+import { DocksLayer } from './docks';
+import { FeaturesLayer } from './features';
 import { GeoJSONLayerSettings, GeoJSONLayer } from './geojson';
 import { HeatmapLayerSettings, HeatmapLayer } from './heatmap';
 import { HexGridLayerSettings, HexGridLayer } from './hexgrid';
 import { MissionInfoLayerSettings, MissionInfoLayer } from './mission-info';
-import { OwnLocationLayerSettings, OwnLocationLayer } from './ownlocation';
+import { OwnLocationLayer } from './ownlocation';
 import { TileServerLayerSettings, TileServerLayer } from './tileserver';
 import { UAVsLayerSettings, UAVsLayer } from './uavs';
 import { UAVTraceLayerSettings, UAVTraceLayer } from './uavtrace';
@@ -18,14 +18,10 @@ import { LayerType } from '~/model/layers';
 
 export const LayerSettings = {
   [LayerType.BASE]: BaseLayerSettings,
-  [LayerType.BEACONS]: BeaconsLayerSettings,
-  [LayerType.DOCKS]: DocksLayerSettings,
-  [LayerType.FEATURES]: FeaturesLayerSettings,
   [LayerType.GEOJSON]: GeoJSONLayerSettings,
   [LayerType.HEATMAP]: HeatmapLayerSettings,
   [LayerType.HEXGRID]: HexGridLayerSettings,
   [LayerType.MISSION_INFO]: MissionInfoLayerSettings,
-  [LayerType.OWN_LOCATION]: OwnLocationLayerSettings,
   [LayerType.TILE_SERVER]: TileServerLayerSettings,
   [LayerType.UAVS]: UAVsLayerSettings,
   [LayerType.UAV_TRACE]: UAVTraceLayerSettings,

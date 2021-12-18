@@ -5,7 +5,6 @@ import Feature from 'ol/Feature';
 import Polygon from 'ol/geom/Polygon';
 import { toRadians } from 'ol/math';
 import { Fill, Style } from 'ol/style';
-import { source } from '@collmot/ol-react';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
@@ -13,9 +12,10 @@ import { connect } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 
-import { setLayerParameterById } from '../../../actions/layers';
+import { layer as olLayer, source } from '@collmot/ol-react';
 
-import { mapViewCoordinateFromLonLat } from '../../../utils/geography';
+import { setLayerParameterById } from '~/actions/layers';
+import { mapViewCoordinateFromLonLat } from '~/utils/geography';
 
 /**
  * Helper function that creates an OpenLayers fill style object from a color.
@@ -197,9 +197,9 @@ const HexGridLayerPresentation = ({ layer, zIndex }) => {
   const { center, size, radius } = layer.parameters;
   return (
     <div>
-      <layer.Vector zIndex={zIndex}>
+      <olLayer.Vector zIndex={zIndex}>
         <HexGridVectorSource center={center} size={size} radius={radius} />
-      </layer.Vector>
+      </olLayer.Vector>
 
       <div id='heatmapScale'>
         <span>100%</span>

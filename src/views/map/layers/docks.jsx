@@ -16,10 +16,6 @@ import { shadowVeryThinOutline, shadowThinOutline, fill } from '~/utils/styles';
 
 // import DockImage from '~/../assets/img/dock-32x32.png';
 
-// === Settings for this particular layer type ===
-
-export const DocksLayerSettings = () => false;
-
 // === Helper functions ===
 
 const createDockStyle = (label, selected) => [

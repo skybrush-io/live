@@ -14,10 +14,6 @@ import LocationIcon from '~/../assets/img/location-32x32.png';
 
 const logger = makeLogger('OwnLocationLayer');
 
-// === Settings for this particular layer type ===
-
-export const OwnLocationLayerSettings = () => false;
-
 // === The actual layer to be rendered ===
 
 class OwnLocationVectorSource extends React.Component {

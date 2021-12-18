@@ -39,8 +39,6 @@ const UAVsLayerSettingsPresentation = ({ layer, setLayerParameter }) => {
 
 UAVsLayerSettingsPresentation.propTypes = {
   layer: PropTypes.object,
-  layerId: PropTypes.string,
-
   setLayerParameter: PropTypes.func,
 };
 

@@ -31,17 +31,6 @@ import {
 
 import { getGeofencePolygonId } from '~/features/mission/selectors';
 
-// === Settings for this particular layer type ===
-
-const FeaturesLayerSettingsPresentation = () => null;
-
-export const FeaturesLayerSettings = connect(
-  // mapStateToProps
-  null,
-  // mapDispatchToProps
-  null
-)(FeaturesLayerSettingsPresentation);
-
 // === Helper functions ===
 
 const geometryForFeature = (feature) => {
