@@ -91,7 +91,7 @@ const ThreeDView = React.forwardRef((props, ref) => {
       deallocate
       embedded='true'
       keyboard-shortcuts='enterVR: false'
-      loading-screen='backgroundColor: #444; dotsColor: #888'
+      loading-screen='backgroundColor: #424242; dotsColor: #888'
       renderer='antialias: false'
       vr-mode-ui='enabled: false'
       device-orientation-permission-ui='enabled: false'

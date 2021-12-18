@@ -2,7 +2,7 @@
 
 /* Adjust error panel for dark mode */
 .error-panel {
-  background: #444 !important;
+  background: #424242 !important;
   color: white;
 }
 
@@ -11,7 +11,7 @@
   background: #333;
 }
 body .lm_content {
-  background-color: #444;
+  background-color: #424242;
   border: 1px solid #777;
 }
 
@@ -24,13 +24,13 @@ body .lm_header .lm_tab:hover {
   color: white;
 }
 body .lm_header .lm_tab.lm_active {
-  background-color: #444;
+  background-color: #424242;
   color: white;
 }
 
 /* Change the color of splitters */
 .lm_splitter {
-  background: #444;
+  background: #424242;
 }
 .lm_splitter:hover,
 .lm_splitter.lm_dragging {
@@ -41,7 +41,7 @@ body .lm_header .lm_tab.lm_active {
 .ol-control button,
 .ol-control button:hover,
 .ol-control button:focus {
-  background-color: #444 !important;
+  background-color: #424242 !important;
   color: #fff !important;
 }
 .ol-attribution {
@@ -60,12 +60,12 @@ body .lm_header .lm_tab.lm_active {
   text-decoration: none;
 }
 .ol-mouse-position {
-  background-color: #444 !important;
+  background-color: #424242 !important;
   color: #fff !important;
 }
 .ol-scale-line {
-  background-color: #444 !important;
-  border-color: #444 !important;
+  background-color: #424242 !important;
+  border-color: #424242 !important;
 }
 .ol-scale-line-inner {
   border-color: #fff !important;

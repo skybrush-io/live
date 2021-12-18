@@ -26,7 +26,7 @@ const BarChart = loadable(
 
 const cnrBoundaries = [30, 40];
 
-const colors = ['#444', Colors.error, Colors.warning, Colors.success];
+const colors = ['#424242', Colors.error, Colors.warning, Colors.success];
 
 const createGradientFills = createSelector(
   (ctx) => ctx,

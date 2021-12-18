@@ -66,7 +66,9 @@ import { uavIdToDOMNodeId } from './utils';
 const useListStyles = makeStyles(
   (theme) => ({
     appBar: {
-      backgroundColor: isDark(theme) ? '#444' : theme.palette.background.paper,
+      backgroundColor: isDark(theme)
+        ? '#424242'
+        : theme.palette.background.paper,
       height: 48,
     },
 
