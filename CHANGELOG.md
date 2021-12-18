@@ -29,6 +29,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added a button in the toolbar of the 3D view that rotates the camera towards
   the center of the drone swarm.
 
+- Added a new Beacons panel and a Beacons layer to the map view; this layer
+  can show the beacons or points of interests configured in the server. For
+  Skybrush server 1.27.0 and later, this layer will also show the position of
+  the RTK base station if a base station was selected in Live.
+
 ### Changed
 
 - UAV status summary header widget is now sorted by the severity of the items,
