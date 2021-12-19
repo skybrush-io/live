@@ -24,7 +24,7 @@ import RTKStatusHeaderButton from '~/features/rtk/RTKStatusHeaderButton';
 import { toggleSidebar } from '~/features/sidebar/slice';
 import AltitudeSummaryHeaderButton from '~/features/uavs/AltitudeSummaryHeaderButton';
 import BatteryStatusHeaderButton from '~/features/uavs/BatteryStatusHeaderButton';
-import SunsetTimeHeaderButton from '~/features/weather/SunsetTimeHeaderButton';
+import WeatherHeaderButton from '~/features/weather/WeatherHeaderButton';
 import { hasFeature } from '~/utils/configuration';
 
 const style = {
@@ -88,7 +88,7 @@ const Header = ({ isSidebarOpen, sessionExpiresAt, toggleSidebar }) => (
       <BatteryStatusHeaderButton />
       {hasFeature('toolboxMenu') && <RTKStatusHeaderButton />}
       <hr />
-      <SunsetTimeHeaderButton />
+      <WeatherHeaderButton />
       <hr />
       <ConnectionStatusButton />
       <hr />

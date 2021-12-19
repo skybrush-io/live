@@ -23,7 +23,7 @@ const buttonStyle = {
   width: 90,
 };
 
-const SunsetTimeHeaderButton = ({ sunrise, sunset }) => {
+const WeatherHeaderButton = ({ sunrise, sunset }) => {
   /* Show sunset time if we are closer to the sunset than to the sunrise */
   const now = new Date();
   const [negate, toggleNegate] = useToggle();
@@ -62,7 +62,7 @@ const SunsetTimeHeaderButton = ({ sunrise, sunset }) => {
   );
 };
 
-SunsetTimeHeaderButton.propTypes = {
+WeatherHeaderButton.propTypes = {
   sunrise: PropTypes.instanceOf(Date),
   sunset: PropTypes.instanceOf(Date),
 };
@@ -72,4 +72,4 @@ export default connect(
   getSunriseSunsetTimesForMapViewCenterPosition,
   // mapDispatchToProps
   {}
-)(SunsetTimeHeaderButton);
+)(WeatherHeaderButton);
