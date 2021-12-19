@@ -6,16 +6,23 @@ import { connect } from 'react-redux';
 import TimeAgo from 'react-timeago';
 import { useToggle } from 'react-use';
 
+import { colorForStatus, Status } from '@skybrush/app-theme-material-ui';
 import GenericHeaderButton from '@skybrush/mui-components/lib/GenericHeaderButton';
 import LazyTooltip from '@skybrush/mui-components/lib/LazyTooltip';
+import SidebarBadge from '@skybrush/mui-components/lib/SidebarBadge';
 
 import { usePeriodicRefresh } from '~/hooks';
 import Sunrise from '~/icons/Sunrise';
 import Sunset from '~/icons/Sunset';
 import { shortRelativeTimeFormatter } from '~/utils/formatting';
 
-import { getSunriseSunsetTimesForMapViewCenterPosition } from './selectors';
+import {
+  getSunriseSunsetTimesForMapViewCenterPosition,
+  getWeatherBadgeStatus,
+} from './selectors';
 import WeatherDetailsMiniList from './WeatherDetailsMiniList';
+
+const BADGE_OFFSET = [24, 8];
 
 const buttonStyle = {
   justifyContent: 'space-between',
@@ -23,7 +30,7 @@ const buttonStyle = {
   width: 90,
 };
 
-const WeatherHeaderButton = ({ sunrise, sunset }) => {
+const WeatherHeaderButton = ({ badgeStatus, sunrise, sunset }) => {
   /* Show sunset time if we are closer to the sunset than to the sunrise */
   const now = new Date();
   const [negate, toggleNegate] = useToggle();
@@ -57,19 +64,29 @@ const WeatherHeaderButton = ({ sunrise, sunset }) => {
         onClick={() => toggleNegate()}
       >
         {shouldShowSunset ? <Sunset /> : <Sunrise />}
+        <SidebarBadge
+          anchor='topLeft'
+          color={badgeStatus ? colorForStatus(badgeStatus) : null}
+          offset={BADGE_OFFSET}
+          visible={Boolean(badgeStatus)}
+        />
       </GenericHeaderButton>
     </LazyTooltip>
   );
 };
 
 WeatherHeaderButton.propTypes = {
+  badgeStatus: PropTypes.oneOf(Object.keys(Status)),
   sunrise: PropTypes.instanceOf(Date),
   sunset: PropTypes.instanceOf(Date),
 };
 
 export default connect(
   // mapStateToProps
-  getSunriseSunsetTimesForMapViewCenterPosition,
+  (state) => ({
+    ...getSunriseSunsetTimesForMapViewCenterPosition(state),
+    badgeStatus: getWeatherBadgeStatus(state),
+  }),
   // mapDispatchToProps
   {}
 )(WeatherHeaderButton);

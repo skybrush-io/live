@@ -3,6 +3,8 @@ import isAfter from 'date-fns/isAfter';
 import { createSelector } from 'reselect';
 import SunCalc from 'suncalc';
 
+import { Status } from '@skybrush/app-theme-material-ui';
+
 import { getMapViewCenterPosition } from '~/selectors/map';
 import { createShallowSelector } from '~/utils/selectors';
 
@@ -36,10 +38,26 @@ export const getSunriseSunsetTimesForMapViewCenterPosition =
     return result;
   });
 
+export function getStatusForKpIndex(kpIndex) {
+  if (typeof kpIndex === 'number') {
+    if (kpIndex >= 5) {
+      return Status.ERROR;
+    } else if (kpIndex >= 4) {
+      return Status.WARNING;
+    } else {
+      return null;
+    }
+  }
+}
+
 export function isWeatherDataLoading(state) {
   return state.weather.loading;
 }
 
 export function getWeatherDataLastUpdateTimestamp(state) {
   return state.weather.lastUpdatedAt;
+}
+
+export function getWeatherBadgeStatus(state) {
+  return getStatusForKpIndex(state.weather.data?.kpIndex);
 }

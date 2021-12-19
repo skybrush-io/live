@@ -13,28 +13,18 @@ import {
   shortRelativeTimeFormatter,
 } from '~/utils/formatting';
 
-import { Status } from '@skybrush/app-theme-material-ui';
 import MiniList from '@skybrush/mui-components/lib/MiniList';
 import MiniListItem from '@skybrush/mui-components/lib/MiniListItem';
 import MiniListDivider from '@skybrush/mui-components/lib/MiniListDivider';
 import SmallProgressIndicator from '@skybrush/mui-components/lib/SmallProgressIndicator';
 import StatusText from '@skybrush/mui-components/lib/StatusText';
 
-import { getSunriseSunsetTimesForMapViewCenterPosition } from './selectors';
+import {
+  getSunriseSunsetTimesForMapViewCenterPosition,
+  getStatusForKpIndex,
+} from './selectors';
 
 const EM_DASH = '\u2014';
-
-function statusForKpIndex(kpIndex) {
-  if (typeof kpIndex === 'number') {
-    if (kpIndex >= 5) {
-      return Status.ERROR;
-    } else if (kpIndex >= 4) {
-      return Status.WARNING;
-    } else {
-      return null;
-    }
-  }
-}
 
 function safelyFormat(time, formatString) {
   try {
@@ -140,7 +130,7 @@ const WeatherDetailsMiniList = ({
         key='kpIndex'
         primaryText='Kp index'
         secondaryText={
-          <StatusText status={statusForKpIndex(kpIndex)}>
+          <StatusText status={getStatusForKpIndex(kpIndex)}>
             {formatNumberSafely(kpIndex, 1)}
           </StatusText>
         }
