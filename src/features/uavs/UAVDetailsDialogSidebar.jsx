@@ -26,6 +26,7 @@ const useStyles = makeStyles(
       display: 'flex',
       flexDirection: 'row',
       flexWrap: 'wrap',
+      justifyContent: 'center',
       maxWidth: 144 /* 20px for the icon, 8px for the padding around the icons, four icons per row */,
       '& > button': {
         padding: 8,

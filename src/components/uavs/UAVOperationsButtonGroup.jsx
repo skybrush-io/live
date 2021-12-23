@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 
+import Button from '@material-ui/core/Button';
 import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
 import { makeStyles } from '@material-ui/core/styles';
@@ -73,6 +74,28 @@ const UAVOperationsButtonGroup = ({
   const fontSize = size === 'small' ? 'small' : 'medium';
   const iconSize = size;
 
+  const flashLightsButton =
+    size === 'small' ? (
+      <Button
+        startIcon={<WbSunny />}
+        disabled={isSelectionEmpty}
+        size={iconSize}
+        onClick={flashLightOnUAVs}
+      >
+        Flash lights
+      </Button>
+    ) : (
+      <Tooltip content='Flash lights'>
+        <IconButton
+          disabled={isSelectionEmpty}
+          size={iconSize}
+          onClick={flashLightOnUAVs}
+        >
+          <WbSunny fontSize={fontSize} />
+        </IconButton>
+      </Tooltip>
+    );
+
   return (
     <>
       <Tooltip content='Takeoff'>
@@ -120,26 +143,19 @@ const UAVOperationsButtonGroup = ({
       )}
 
       {size !== 'small' && (
-        <Tooltip content='Properties'>
-          <IconButton
-            disabled={!isSelectionSingle}
-            size={iconSize}
-            onClick={() => openUAVDetailsDialog(selectedUAVIds[0])}
-          >
-            <Assignment />
-          </IconButton>
-        </Tooltip>
+        <>
+          <Tooltip content='Properties'>
+            <IconButton
+              disabled={!isSelectionSingle}
+              size={iconSize}
+              onClick={() => openUAVDetailsDialog(selectedUAVIds[0])}
+            >
+              <Assignment />
+            </IconButton>
+          </Tooltip>
+          {flashLightsButton}
+        </>
       )}
-
-      <Tooltip content='Flash lights'>
-        <IconButton
-          disabled={isSelectionEmpty}
-          size={iconSize}
-          onClick={flashLightOnUAVs}
-        >
-          <WbSunny fontSize={fontSize} />
-        </IconButton>
-      </Tooltip>
 
       {!hideSeparators && (
         <Divider className={classes.divider} orientation='vertical' />
@@ -227,6 +243,8 @@ const UAVOperationsButtonGroup = ({
           </Tooltip>
         </>
       )}
+
+      {size === 'small' && flashLightsButton}
     </>
   );
 };
