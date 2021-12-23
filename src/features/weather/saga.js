@@ -2,6 +2,8 @@ import { delay, put, putResolve, race, select, take } from 'redux-saga/effects';
 
 import { isConnected } from '~/features/servers/selectors';
 import { setCurrentServerConnectionState } from '~/features/servers/slice';
+import { updateMapViewSettings } from '~/reducers/map/view';
+import { getMapViewCenterPosition } from '~/selectors/map';
 
 import { updateWeatherData } from './actions';
 import { getWeatherDataLastUpdateTimestamp } from './selectors';
@@ -22,7 +24,8 @@ export default function* weatherSaga() {
       successful = false;
       try {
         yield put(setLastUpdateAttemptTimestamp(Date.now()));
-        yield putResolve(updateWeatherData([19, 47]));
+        const center = yield select(getMapViewCenterPosition);
+        yield putResolve(updateWeatherData(center));
         successful = true;
       } catch {
         /* do nothing, it was handled already by an error action in redux-promise-middleware */
@@ -48,6 +51,8 @@ export default function* weatherSaga() {
       action: take([
         // Trigger an update if the state of the server connection changes
         setCurrentServerConnectionState.type,
+        // Also trigger an update if the user scrolls to a new position
+        updateMapViewSettings.type,
       ]),
       refresh: delay(Math.max(timeUntilNextRefresh, MINUTES)),
     });

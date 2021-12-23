@@ -20,6 +20,7 @@ import SmallProgressIndicator from '@skybrush/mui-components/lib/SmallProgressIn
 import StatusText from '@skybrush/mui-components/lib/StatusText';
 
 import {
+  getDeclinationFromMagneticVector,
   getSunriseSunsetTimesForMapViewCenterPosition,
   getStatusForKpIndex,
 } from './selectors';
@@ -123,7 +124,8 @@ const WeatherDetailsMiniList = ({
     items.push(<MiniListDivider key='sep2' />);
   }
 
-  const { kpIndex } = data || {};
+  const { kpIndex, magneticVector } = data || {};
+  const declination = getDeclinationFromMagneticVector(magneticVector);
   if (!isNil(kpIndex)) {
     items.push(
       <MiniListItem
@@ -133,6 +135,24 @@ const WeatherDetailsMiniList = ({
           <StatusText status={getStatusForKpIndex(kpIndex)}>
             {formatNumberSafely(kpIndex, 1)}
           </StatusText>
+        }
+      />
+    );
+  }
+
+  if (!isNil(declination)) {
+    items.push(
+      <MiniListItem
+        key='declination'
+        primaryText='Compass declination'
+        secondaryText={
+          !isNil(declination)
+            ? formatNumberSafely(Math.abs(declination), 2, '\u00B0') +
+              ' ' +
+              (declination >= 0 ? 'E' : 'W')
+            : /* formats null nicely with a dash: */ formatNumberSafely(
+                declination
+              )
         }
       />
     );

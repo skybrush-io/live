@@ -6,6 +6,7 @@ import SunCalc from 'suncalc';
 import { Status } from '@skybrush/app-theme-material-ui';
 
 import { getMapViewCenterPosition } from '~/selectors/map';
+import { toDegrees } from '~/utils/math';
 import { createShallowSelector } from '~/utils/selectors';
 
 const getRoundedMapViewCenterPosition = createSelector(
@@ -37,6 +38,14 @@ export const getSunriseSunsetTimesForMapViewCenterPosition =
 
     return result;
   });
+
+export function getDeclinationFromMagneticVector(magneticVector) {
+  if (!Array.isArray(magneticVector) || magneticVector.length !== 3) {
+    return null;
+  } else {
+    return toDegrees(Math.atan2(magneticVector[1], magneticVector[0]));
+  }
+}
 
 export function getStatusForKpIndex(kpIndex) {
   if (typeof kpIndex === 'number') {

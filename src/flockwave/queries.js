@@ -187,7 +187,7 @@ export async function getWeatherInformation(hub, position) {
 
   const response = await hub.sendMessage({
     type: 'WTH-AT',
-    position: [Math.round(position[0] * 1e7), Math.round(position[1] * 1e7)],
+    position: [Math.round(position[1] * 1e7), Math.round(position[0] * 1e7)],
   });
 
   if (response.body && response.body.type === 'WTH-AT') {

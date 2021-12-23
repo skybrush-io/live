@@ -27,6 +27,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   the server provides this information. The widget also shows a warning badge
   if the planetary K index is high.
 
+- The weather info widget also shows the magnetic declination according to the
+  IGRF13 model at the location where the map is focused at.
+
 - Added a button in the toolbar of the 3D view that rotates the camera towards
   the center of the drone swarm.
 
