@@ -16,6 +16,7 @@ import {
   BatteryDisplayStyle,
   CoordinateFormat,
 } from '~/model/settings';
+import { UAVSortKey } from '~/model/sorting';
 
 const { actions, reducer } = createSlice({
   name: 'settings',
@@ -39,8 +40,18 @@ const { actions, reducer } = createSlice({
       showScaleLine: true,
       // Which UI theme to use (choose from OS, use light mode or use dark mode)
       theme: 'auto',
+      // Filters applied to the UAV list
+      uavListFilters: [
+        /* Each item in this array is currently a string from the UAVFilter
+         * enum */
+      ],
       // Layout of the UAV list: grid or list
       uavListLayout: 'grid',
+      // Sort preference of the UAV list
+      uavListSortPreference: {
+        key: UAVSortKey.DEFAULT,
+        reverse: false,
+      },
     },
 
     threeD: {

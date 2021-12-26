@@ -13,7 +13,10 @@ import MiniListDivider from '@skybrush/mui-components/lib/MiniListDivider';
 import { setSelectedUAVIds } from '~/actions/map';
 import { listOf } from '~/components/helpers/lists';
 import { statusToPriority } from '~/components/semantics';
-
+import {
+  getUAVIdToStateMapping,
+  getUAVIdList,
+} from '~/features/uavs/selectors';
 import { abbreviateGPSFixType, getSemanticsForGPSFixType } from '~/model/enums';
 
 import UAVStatusMiniListEntry from './UAVStatusMiniListEntry';
@@ -25,8 +28,8 @@ import UAVStatusMiniListEntry from './UAVStatusMiniListEntry';
  * GPS fix status mini list.
  */
 const getListItems = createSelector(
-  (state) => state.uavs.byId,
-  (state) => state.uavs.order,
+  getUAVIdToStateMapping,
+  getUAVIdList,
   (byId, order) => {
     const items = {};
 

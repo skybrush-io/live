@@ -57,6 +57,11 @@ export const getUAVIdList = (state) => state.uavs.order;
 const selectUAVId = (_state, uavId) => uavId;
 
 /**
+ * Returns all the UAVs in a mapping.
+ */
+export const getUAVIdToStateMapping = (state) => state.uavs.byId;
+
+/**
  * Returns the UAV with the given ID, given the current state.
  */
 export const getUAVById = (state, uavId) => state.uavs.byId[uavId];
@@ -495,7 +500,7 @@ export const getMisalignedUAVIds = createSelector(
  */
 export const getMissingUAVIdsInMapping = createSelector(
   getMissionMapping,
-  (state) => state.uavs.byId,
+  getUAVIdToStateMapping,
   (mapping, uavsById) =>
     mapping.filter((uavId) => {
       if (isNil(uavId)) {
@@ -541,7 +546,7 @@ export const getUnmappedUAVIds = createSelector(
 export const getErrorCodeSummaryForUAVsInMission = createSelector(
   getReverseMissionMapping,
   getUAVIdsParticipatingInMission,
-  (state) => state.uavs.byId,
+  getUAVIdToStateMapping,
   (reverseMapping, uavIds, uavStatesById) => {
     const result = [];
 
@@ -569,7 +574,7 @@ export const getErrorCodeSummaryForUAVsInMission = createSelector(
  */
 export const areAllUAVsInMissionWithoutErrors = createSelector(
   getUAVIdsParticipatingInMission,
-  (state) => state.uavs.byId,
+  getUAVIdToStateMapping,
   (uavIds, uavStatesById) => {
     for (const uavId of uavIds) {
       const uavState = uavStatesById[uavId];

@@ -85,6 +85,7 @@
     "ky": "^0.28.7",
     "localforage": "^1.10.0",
     "lodash-es": "^4.17.21",
+    "material-ui-popup-state": "^1.9.3",
     "memoize-one": "^6.0.0",
     "memoizee": "^0.4.15",
     "mini-signals": "^1.2.0",
@@ -239,7 +240,8 @@
       "unicorn/no-fn-reference-in-iterator": 0,
       "unicorn/numeric-separators-style": 0,
       "unicorn/prefer-module": 0,
-      "unicorn/prefer-ternary": 0
+      "unicorn/prefer-ternary": 0,
+      "unicorn/prevent-abbreviations": 0
     }
   }
 }

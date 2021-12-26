@@ -15,6 +15,8 @@ import {
 } from '~/model/enums';
 import { formatNumberSafely, shortTimeAgoFormatter } from '~/utils/formatting';
 
+import { getUAVById } from './selectors';
+
 const useStyles = makeStyles(
   (theme) => ({
     root: {
@@ -145,9 +147,7 @@ StatusSummaryMiniTable.propTypes = {
 
 export default connect(
   // mapStateToProps
-  (state, ownProps) => ({
-    ...state.uavs.byId[ownProps.uavId],
-  }),
+  (state, ownProps) => getUAVById(state, ownProps.uavId),
 
   // mapDispatchToProps
   {}

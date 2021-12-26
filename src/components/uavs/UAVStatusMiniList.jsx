@@ -12,8 +12,11 @@ import MiniList from '@skybrush/mui-components/lib/MiniList';
 import { setSelectedUAVIds } from '~/actions/map';
 import { listOf } from '~/components/helpers/lists';
 import { statusToPriority } from '~/components/semantics';
-
-import { getSingleUAVStatusSummary } from '~/features/uavs/selectors';
+import {
+  getUAVIdToStateMapping,
+  getUAVIdList,
+  getSingleUAVStatusSummary,
+} from '~/features/uavs/selectors';
 
 import UAVStatusMiniListEntry from './UAVStatusMiniListEntry';
 
@@ -22,8 +25,8 @@ import UAVStatusMiniListEntry from './UAVStatusMiniListEntry';
  * UAV status mini list.
  */
 const getListItems = createSelector(
-  (state) => state.uavs.byId,
-  (state) => state.uavs.order,
+  getUAVIdToStateMapping,
+  getUAVIdList,
   (byId, order) => {
     const items = {};
 

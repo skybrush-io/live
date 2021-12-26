@@ -14,7 +14,11 @@ import StatusLight from '@skybrush/mui-components/lib/StatusLight';
 import { Status } from '~/components/semantics';
 import { showNotification } from '~/features/snackbar/actions';
 import { MessageSemantics } from '~/features/snackbar/types';
-import { getSingleUAVStatusLevel } from '~/features/uavs/selectors';
+import {
+  getUAVIdToStateMapping,
+  getUAVIdList,
+  getSingleUAVStatusLevel,
+} from '~/features/uavs/selectors';
 import { createShallowSelector } from '~/utils/selectors';
 import { Workbench } from '~/workbench';
 
@@ -29,8 +33,8 @@ import UAVStatusMiniList from './UAVStatusMiniList';
  * "error", respectively.
  */
 const getStatusSummaryInner = createSelector(
-  (state) => state.uavs.byId,
-  (state) => state.uavs.order,
+  getUAVIdToStateMapping,
+  getUAVIdList,
   (byId, order) => {
     const result = [0, 0, 0, 0];
 

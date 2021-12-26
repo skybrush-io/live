@@ -9,6 +9,7 @@ import {
   LIPO_LOW_VOLTAGE_THRESHOLD,
 } from '~/model/constants';
 import { AltitudeSummaryType, BatteryDisplayStyle } from '~/model/settings';
+import { UAVSortKey } from '~/model/sorting';
 
 export const getAltitudeSummaryType = (state) =>
   state.settings.display?.altitudeSummaryType || AltitudeSummaryType.AMSL;
@@ -123,6 +124,17 @@ export const getUAVAgingThresholds = createSelector(
   })
 );
 
+const DEFAULT_FILTER = [];
+const DEFAULT_SORT = { key: UAVSortKey.DEFAULT, reverse: false };
+
+/**
+ * Returns the array of filters to apply for the list showing the UAVs.
+ */
+export const getUAVListFilters = (state) => {
+  const result = state.settings.display?.uavListFilters;
+  return result || DEFAULT_FILTER;
+};
+
 /**
  * Returns the current layout of the list showing the UAVs.
  */
@@ -133,6 +145,20 @@ export const getUAVListLayout = (state) => state.settings.display.uavListLayout;
  */
 export const getUAVListOrientation = (state) =>
   getUAVListLayout(state) === 'grid' ? 'horizontal' : 'vertical';
+
+/**
+ * Returns the preferred sort order of the list showing the UAVs. This is the
+ * _secondary_ sorting preference; the primary is whether to sort the UAVs by
+ * UAV ID or mission ID first.
+ *
+ * The returned value is an object with two keys: <code>key</code>, which is
+ * a value from the UAVSortKey enum, and <code>reverse</code>, which is
+ * true if the UAVs are to be sorted in reverse order.
+ */
+export function getUAVListSortPreference(state) {
+  const result = state.settings.display?.uavListSortPreference;
+  return result || DEFAULT_SORT;
+}
 
 /**
  * Returns whether we are currently showing empty mission slots in the UAV list.

@@ -15,7 +15,6 @@ import Header from '@skybrush/mui-components/lib/FormHeader';
 import LargeProgressIndicator from '@skybrush/mui-components/lib/LargeProgressIndicator';
 import StatusLight from '@skybrush/mui-components/lib/StatusLight';
 
-import { getUAVById } from '~/features/uavs/selectors';
 import {
   describeError,
   errorCodeToSemantics,
@@ -29,6 +28,8 @@ import {
   PreflightCheckResult,
 } from '~/model/enums';
 import CustomPropTypes from '~/utils/prop-types';
+
+import { getUAVById } from './selectors';
 
 const ErrorList = ({ errorCodes }) => {
   const relevantErrorCodes = (errorCodes || []).filter(

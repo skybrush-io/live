@@ -24,6 +24,7 @@ import MappingEditorToolbar from './MappingEditorToolbar';
 import MappingSlotEditorForGrid from './MappingSlotEditorForGrid';
 import MappingSlotEditorForList from './MappingSlotEditorForList';
 import MappingSlotEditorToolbar from './MappingSlotEditorToolbar';
+import SortAndFilterHeader from './SortAndFilterHeader';
 import UAVListSubheader from './UAVListSubheader';
 import UAVToolbar from './UAVToolbar';
 
@@ -52,7 +53,7 @@ import {
 } from '~/features/settings/selectors';
 import { openUAVDetailsDialog } from '~/features/uavs/details';
 import { getSelectedUAVIds } from '~/selectors/selection';
-import { isDark, monospacedFont } from '~/theme';
+import { isDark } from '~/theme';
 import { formatMissionId } from '~/utils/formatting';
 
 import {
@@ -70,24 +71,6 @@ const useListStyles = makeStyles(
         ? '#424242'
         : theme.palette.background.paper,
       height: 48,
-    },
-
-    header: {
-      backdropFilter: 'blur(5px)',
-      background: isDark(theme)
-        ? 'rgba(36, 36, 36, 0.54)'
-        : 'rgba(255, 255, 255, 0.8)',
-      borderBottom: `1px solid ${theme.palette.divider}`,
-      fontFamily: monospacedFont,
-      fontSize: 'small',
-      lineHeight: '20px',
-      minWidth: 800,
-      overflow: 'hidden',
-      padding: theme.spacing(0.5, 0),
-      position: 'sticky',
-      top: 0,
-      whiteSpace: 'pre',
-      zIndex: 10,
     },
 
     toolbar: {
@@ -309,13 +292,6 @@ UAVListSection.propTypes = {
   layout: PropTypes.oneOf(['grid', 'list']),
 };
 
-const HEADER_TEXT = {
-  missionIds:
-    ' sID  ID   Status    Mode  Battery   GPS  Position                  AMSL    AGL  Hdg  Details',
-  droneIds:
-    '  ID sID   Status    Mode  Battery   GPS  Position                  AMSL    AGL  Hdg  Details',
-};
-
 /**
  * Presentation component for showing the drone show configuration view.
  */
@@ -394,11 +370,7 @@ const UAVListPresentation = ({
         {/* We assume that each grid item is a <div> in the <Box> when we
          * calculate how many columns there are in the grid. Revise the
          * layout functions in connect() if this is not the case any more */}
-        {layout === 'list' && (
-          <div className={classes.header}>
-            {showMissionIds ? HEADER_TEXT.missionIds : HEADER_TEXT.droneIds}
-          </div>
-        )}
+        <SortAndFilterHeader layout={layout} />
         <UAVListSection
           ids={mainUAVIds}
           itemFactory={itemFactory}

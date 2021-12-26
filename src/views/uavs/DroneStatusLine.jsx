@@ -19,6 +19,7 @@ import {
   createSingleUAVStatusSummarySelector,
   getDeviationFromTakeoffHeadingByUavId,
   getLightColorByUavIdInCSSNotation,
+  getUAVById,
 } from '~/features/uavs/selectors';
 import {
   abbreviateFlightMode,
@@ -238,7 +239,7 @@ export default connect(
     const statusSummarySelector = createSingleUAVStatusSummarySelector();
     return (state, ownProps) => {
       const uavId = ownProps.id;
-      const uav = state.uavs.byId[uavId];
+      const uav = getUAVById(state, uavId);
       const headingDeviation = uav
         ? getDeviationFromTakeoffHeadingByUavId(state, uavId)
         : 0;
