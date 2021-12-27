@@ -17,6 +17,7 @@ import {
 import { dismissAlerts, triggerAlert } from '~/features/alert/slice';
 import { getRoundedClockSkewInMilliseconds } from '~/features/servers/selectors';
 import { getUAVAgingThresholds } from '~/features/settings/selectors';
+import { isErrorCodeOrMoreSevere } from '~/model/status-codes';
 import { UAVAge } from '~/model/uav';
 
 /**
@@ -235,10 +236,7 @@ function* uavSyncSaga(flock) {
         for (const [uavId, uav] of Object.entries(uavs)) {
           const maxErrorCode =
             uav.errors.length > 0 ? Math.max(...uav.errors) : 0;
-
-          // Error code denotes a genuine error if its least significant byte is
-          // >= 128
-          if ((maxErrorCode & 0xff) >= 128) {
+          if (isErrorCodeOrMoreSevere(maxErrorCode)) {
             uavToMostSevereError.set(uavId, maxErrorCode);
             shouldTriggerAlert = true;
             hasErrors = true;
@@ -249,10 +247,7 @@ function* uavSyncSaga(flock) {
         for (const [uavId, uav] of Object.entries(uavs)) {
           const maxErrorCode =
             uav.errors.length > 0 ? Math.max(...uav.errors) : 0;
-
-          // Error code denotes a genuine error if its least significant byte is
-          // >= 128
-          if ((maxErrorCode & 0xff) >= 128) {
+          if (isErrorCodeOrMoreSevere(maxErrorCode)) {
             const previousErrorCode = uavToMostSevereError.get(uavId);
             if (isNil(previousErrorCode) || previousErrorCode < maxErrorCode) {
               uavToMostSevereError.set(uavId, maxErrorCode);

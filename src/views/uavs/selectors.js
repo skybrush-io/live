@@ -10,20 +10,19 @@ import {
   isMappingEditable,
 } from '~/features/mission/selectors';
 import {
+  getUAVListFilters,
+  getUAVListSortPreference,
   isShowingEmptyMissionSlots,
   isShowingMissionIds,
 } from '~/features/settings/selectors';
-import { getUAVIdList } from '~/features/uavs/selectors';
+import {
+  getUAVIdList,
+  getUAVIdToStateMapping,
+} from '~/features/uavs/selectors';
 import { UAVSortKey } from '~/model/sorting';
 import { getSelectedUAVIds } from '~/selectors/selection';
 
-import {
-  applySecondarySortPreference,
-  getSecondarySortPreference,
-} from './sorting';
-import { getUAVIdToStateMapping } from '../../features/uavs/selectors';
-
-export { getSecondarySortPreference } from './sorting';
+import { applyFiltersAndSortDisplayedUAVIdList } from './sorting';
 
 /**
  * Special marker that we can place into the list items returned from
@@ -38,8 +37,12 @@ export const deletionMarker = [undefined, undefined, <Delete key='__delete' />];
  * The main section of the view will be sorted based on the mission-specific
  * indices. The "spare UAVs" section in the view will include all the UAVs
  * that are not currently assigned to the mission.
+ *
+ * The list returned from this selector is the "unprocessed" list, i.e. the
+ * one before applying any filters or sorting criteria. See below for more
+ * functions that perform the sorting and filtering.
  */
-const getDisplayedIdListSortedByMissionId = createSelector(
+const getUnprocessedDisplayedIdListSortedByMissionId = createSelector(
   getMissionMapping,
   isMappingEditable,
   getUAVIdList,
@@ -86,8 +89,12 @@ const getDisplayedIdListSortedByMissionId = createSelector(
  *
  * The main section of the view will be sorted based on the UAV IDs in the
  * state store. The "spare UAVs" section in the view will be empty.
+ *
+ * The list returned from this selector is the "unprocessed" list, i.e. the
+ * one before applying any filters or sorting criteria. See below for more
+ * functions that perform the sorting and filtering.
  */
-const getDisplayedIdListSortedByUavId = createSelector(
+const getUnprocessedDisplayedIdListSortedByUavId = createSelector(
   getUAVIdList,
   getReverseMissionMapping,
   (uavIds, reverseMapping) => ({
@@ -97,34 +104,39 @@ const getDisplayedIdListSortedByUavId = createSelector(
   })
 );
 
-export const getUnsortedDisplayedIdListBySections = (state) =>
+const getUnprocessedDisplayedIdListBySections = (state) =>
   isShowingMissionIds(state)
-    ? getDisplayedIdListSortedByMissionId(state)
-    : getDisplayedIdListSortedByUavId(state);
+    ? getUnprocessedDisplayedIdListSortedByMissionId(state)
+    : getUnprocessedDisplayedIdListSortedByUavId(state);
 
 /**
  * Helper function for getDisplayedIdListBySections(); see an explanation there.
  */
-const getUAVIdToStateMappingForSort = (state) => {
-  const { key } = getSecondarySortPreference(state);
-  return key === UAVSortKey.DEFAULT ? null : getUAVIdToStateMapping(state);
+const getUAVIdToStateMappingForSortAndFilter = (state) => {
+  const { key } = getUAVListSortPreference(state);
+  const filters = getUAVListFilters(state);
+  return key === UAVSortKey.DEFAULT && filters.length === 0
+    ? null
+    : getUAVIdToStateMapping(state);
 };
 
 /**
  * Selector that provides the list of UAV IDs to show in the UAV list, sorted
  * by sections.
  *
- * Note the weird helper selector: getUAVIdToStateMappingForSort() returns the
- * UAV ID to state mapping only if it would be needed for the current sort option,
- * otherwise it returns null. This prevents this selector from being invalidated
- * if the UAVs change but the ID list stays the same _when_ we are not sorting
- * based on UAV properties.
+ * Note the weird helper selector: getUAVIdToStateMappingForSortAndFilter() returns the
+ * UAV ID to state mapping only if it would be needed for the current sort option
+ * or for the currently active filter(s), otherwise it returns null. This
+ * prevents this selector from being invalidated if the UAVs change but the ID
+ * list stays the same _when_ we are not sorting or filtering based on UAV
+ * properties.
  */
 export const getDisplayedIdListBySections = createSelector(
-  getSecondarySortPreference,
-  getUnsortedDisplayedIdListBySections,
-  getUAVIdToStateMappingForSort,
-  applySecondarySortPreference
+  getUAVListFilters,
+  getUAVListSortPreference,
+  getUnprocessedDisplayedIdListBySections,
+  getUAVIdToStateMappingForSortAndFilter,
+  applyFiltersAndSortDisplayedUAVIdList
 );
 
 /**
