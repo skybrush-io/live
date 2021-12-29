@@ -38,6 +38,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Skybrush server 1.27.0 and later, this layer will also show the position of
   the RTK base station if a base station was selected in Live.
 
+- UAV lists are now sortable and filterable based on various criteria.
+
 ### Changed
 
 - UAV status summary header widget is now sorted by the severity of the items,
