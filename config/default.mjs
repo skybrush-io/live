@@ -11,6 +11,7 @@ const config = {
   },
   server: {
     connectAutomatically: true,
+    hostName: 'localhost',
     port: 5000,
   },
   session: {},

@@ -88,8 +88,10 @@ const { actions, reducer } = createSlice({
     localServer: {
       // Additional command line arguments to pass to the server
       cliArguments: '',
-      // Whether a local server has to be launched upon startup
-      enabled: true,
+      // Whether a local server has to be launched upon startup. This is
+      // disabled until we have a reliable and tested way to launch the
+      // server on all platforms.
+      enabled: false,
       // Search path of the server
       searchPath: [],
     },

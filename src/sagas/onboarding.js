@@ -3,15 +3,14 @@ import { put, select } from 'redux-saga/effects';
 
 import config from 'config';
 import { updateServerSettings } from '~/actions/server-settings';
+import { getServerHostname } from '~/features/servers/selectors';
 
 /**
  * Helper saga that configures the default server and port when the appllication
  * starts up for the first time.
  */
 export default function* onboardingSaga() {
-  const currentHostName = yield select(
-    (state) => state.dialogs.serverSettings.hostName
-  );
+  const currentHostName = yield select(getServerHostname);
 
   if (isNil(currentHostName)) {
     let { connectAutomatically, hostName, isSecure, port } = config.server;
