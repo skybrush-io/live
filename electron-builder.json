@@ -13,6 +13,7 @@
       "filter": [
         "*.bundle.js",
         "index.html",
+        "*.mp3",
         "*.png",
         "*.svg",
         "*.ttf",
