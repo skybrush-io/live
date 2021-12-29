@@ -25,7 +25,7 @@ import LogStatusBadge from '~/components/badges/LogStatusBadge';
 import Antenna from '~/icons/Antenna';
 import { hasFeature } from '~/utils/configuration';
 
-const SIDEBAR_OPEN_WIDTH = 160;
+const SIDEBAR_OPEN_WIDTH = 180; /* 160px is enough for most platforms, but apparently Windows needs 180px because of the scrollbar */
 
 const style = {
   backgroundColor: '#333',
