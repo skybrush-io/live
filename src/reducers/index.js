@@ -31,6 +31,7 @@ import snackbarReducer from '~/features/snackbar/slice';
 import threeDReducer from '~/features/three-d/slice';
 import tourReducer from '~/features/tour/slice';
 import uavReducer from '~/features/uavs/slice';
+import uploadReducer from '~/features/upload/slice';
 import uavControlReducer from '~/features/uav-control/slice';
 import versionCheckReducer from '~/features/version-check/slice';
 import weatherReducer from '~/features/weather/slice';
@@ -71,6 +72,7 @@ const reducer = combineReducers({
   tour: tourReducer,
   uavs: uavReducer,
   uavControl: uavControlReducer,
+  upload: uploadReducer,
   versionCheck: versionCheckReducer,
   weather: weatherReducer,
   workbench: workbenchReducer,

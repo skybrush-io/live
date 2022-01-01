@@ -12,12 +12,14 @@ import maxBy from 'lodash-es/maxBy';
 import { createSelector } from '@reduxjs/toolkit';
 import turfContains from '@turf/boolean-contains';
 
-import { Status } from '~/components/semantics';
 import {
   proposeDistanceLimit,
   proposeHeightLimit,
 } from '~/features/geofence/utils';
-import { getGeofencePolygonInWorldCoordinates } from '~/features/mission/selectors';
+import {
+  getGeofencePolygonInWorldCoordinates,
+  getReverseMissionMapping,
+} from '~/features/mission/selectors';
 import { formatDuration } from '~/utils/formatting';
 import { FlatEarthCoordinateSystem } from '~/utils/geography';
 import {
@@ -670,185 +672,80 @@ export const isShowConvexHullInsideGeofence = createSelector(
   }
 );
 
-/* ************************************************************************** */
-/* Upload-related stuff */
-/* ************************************************************************** */
-
 /**
- * Returns the failed upload items from the uploader.
+ * Selector that constructs the show description to be uploaded to a
+ * drone with the given ID.
  */
-export const getFailedUploadItems = (state) => state.show.upload.failedItems;
+export function createShowConfigurationForUav(state, uavId) {
+  const reverseMapping = getReverseMissionMapping(state);
+  const missionIndex = reverseMapping ? reverseMapping[uavId] : undefined;
 
-/**
- * Returns the result of the last upload attempt: success, error or cancelled
- * (as a string).
- */
-export const getLastUploadResult = (state) =>
-  state.show.upload.lastUploadResult;
+  if (isNil(missionIndex)) {
+    throw new Error(`UAV ${uavId} is not in the current mission`);
+  }
 
-/**
- * Returns the upload items that are either already sent to a worker or that
- * are being processed by a worker. These items are the ones where the user
- * cannot intervene with the upload process.
- */
-export const getUploadItemsBeingProcessed = createSelector(
-  (state) => state.show.upload.itemsQueued,
-  (state) => state.show.upload.itemsInProgress,
-  (queued, waiting) => [...queued, ...waiting]
-);
+  const coordinateSystem = getOutdoorShowCoordinateSystem(state);
+  if (
+    isShowOutdoor(state) &&
+    (typeof coordinateSystem !== 'object' ||
+      !Array.isArray(coordinateSystem.origin))
+  ) {
+    throw new TypeError('Show coordinate system not specified');
+  }
 
-/**
- * Returns the upload items that are currently in the backlog of the uploader:
- * the ones that are waiting to be started and the ones that have been queued
- * inside the uploader saga but have not been taken up by a worker yet.
- */
-export const getItemsInUploadBacklog = createSelector(
-  (state) => state.show.upload.itemsQueued,
-  (state) => state.show.upload.itemsWaitingToStart,
-  (queued, waiting) => [...queued, ...waiting]
-);
+  const geofencePolygon = getGeofencePolygonInShowCoordinates(state);
+  const geofence = {
+    version: 1,
+    polygons: geofencePolygon
+      ? [
+          {
+            isInclusion: true,
+            points: geofencePolygon,
+          },
+        ]
+      : [],
+    maxAltitude: getUserDefinedHeightLimit(state),
+    maxDistance: getUserDefinedDistanceLimit(state),
+  };
 
-/**
- * Returns the successful upload items from the uploader.
- */
-export const getSuccessfulUploadItems = (state) =>
-  state.show.upload.itemsFinished;
+  const drones = getDroneSwarmSpecification(state);
+  if (!drones || !Array.isArray(drones)) {
+    throw new Error('Invalid show configuration in state store');
+  }
 
-/**
- * Returns whether the UAV with the given ID is in the upload backlog at the
- * moment.
- */
-export function isItemInUploadBacklog(state, uavId) {
-  const { itemsQueued, itemsWaitingToStart } = state.show.upload;
-  return itemsWaitingToStart.includes(uavId) || itemsQueued.includes(uavId);
+  const droneSpec = drones[missionIndex];
+  if (!droneSpec || typeof droneSpec !== 'object') {
+    throw new Error(
+      `No specification for UAV ${uavId} (index ${missionIndex})`
+    );
+  }
+
+  const { settings } = droneSpec;
+  if (typeof settings !== 'object') {
+    throw new TypeError(
+      `Invalid show configuration for UAV ${uavId} (index ${missionIndex}) in state store`
+    );
+  }
+
+  const { id: missionId } = getShowMetadata(state);
+
+  const amslReference = getMeanSeaLevelReferenceOfShowCoordinatesOrNull(state);
+
+  const result = {
+    ...getCommonShowSettings(state),
+    ...settings,
+    amslReference,
+    coordinateSystem,
+    geofence,
+    mission: {
+      id: missionId,
+      index: missionIndex,
+      displayName: `${missionId || 'drone-show'} / ${missionIndex + 1}`,
+    },
+  };
+
+  return result;
 }
-
-/**
- * Returns the ID of the next drone from the upload queue during an upload
- * process, or undefined if the queue is empty.
- */
-export const getNextDroneFromUploadQueue = (state) => {
-  const { itemsWaitingToStart } = state.show.upload;
-  if (itemsWaitingToStart && itemsWaitingToStart.length > 0) {
-    return itemsWaitingToStart[0];
-  }
-
-  return undefined;
-};
-
-/**
- * Returns the state object of the upload dialog.
- */
-export const getUploadDialogState = (state) => state.show.uploadDialog;
-
-/**
- * Returns an object that counts how many drones are currently in the
- * "waiting", "in progress", "failed" and "successful" stages of the upload.
- */
-export const getUploadStatusCodeCounters = createSelector(
-  (state) => state.show.upload,
-  ({
-    failedItems,
-    itemsFinished,
-    itemsInProgress,
-    itemsQueued,
-    itemsWaitingToStart,
-  }) => ({
-    failed: Array.isArray(failedItems) ? failedItems.length : 0,
-    finished: Array.isArray(itemsFinished) ? itemsFinished.length : 0,
-    inProgress: Array.isArray(itemsInProgress) ? itemsInProgress.length : 0,
-    waiting:
-      (Array.isArray(itemsQueued) ? itemsQueued.length : 0) +
-      (Array.isArray(itemsWaitingToStart) ? itemsWaitingToStart.length : 0),
-  })
-);
-
-/**
- * Returns a mapping from UAV IDs to their corresponding upload status codes
- * according to the following encoding:
- *
- * - Failed uploads --> Status.ERROR
- * - Upload in progress --> Status.WARNING
- * - Enqueued to a worker --> Status.NEXT
- * - Waiting to start --> Status.INFO
- * - Finished --> Status.SUCCESS
- *
- * UAV IDs not found in the returned mapping are not participating in the
- * current upload; they should be treated as Status.OFF
- */
-export const getUploadStatusCodeMapping = createSelector(
-  (state) => state.show.upload,
-  ({
-    failedItems,
-    itemsFinished,
-    itemsInProgress,
-    itemsQueued,
-    itemsWaitingToStart,
-  }) => {
-    const result = {};
-
-    for (const uavId of itemsWaitingToStart) {
-      result[uavId] = Status.WAITING;
-    }
-
-    for (const uavId of itemsQueued) {
-      result[uavId] = Status.NEXT;
-    }
-
-    for (const uavId of itemsInProgress) {
-      result[uavId] = Status.WARNING;
-    }
-
-    for (const uavId of itemsFinished) {
-      result[uavId] = Status.SUCCESS;
-    }
-
-    for (const uavId of failedItems) {
-      result[uavId] = Status.ERROR;
-    }
-
-    return result;
-  }
-);
-
-/**
- * Returns a summary of the progress of the upload process in the form of
- * two numbers. The first is a percentage of items for which the upload has
- * either finished successfully or has failed. The second is a percentage of
- * items for which the upload has finished successfully, is in progress or
- * has failed.
- */
-export const getUploadProgress = createSelector(
-  getUploadStatusCodeCounters,
-  ({ failed, finished, inProgress, waiting }) => {
-    const total = failed + finished + inProgress + waiting;
-    if (total > 0) {
-      return [
-        Math.round((100 * finished) / total),
-        Math.round((100 * (finished + inProgress)) / total),
-      ];
-    } else {
-      return [0, 0];
-    }
-  }
-);
-
-/**
- * Returns whether there is at least one queued item in the backlog.
- */
-export const hasQueuedItems = (state) =>
-  getItemsInUploadBacklog(state).length > 0;
-
-/**
- * Returns whether we are currently uploading show data to the drones.
- */
-export const isUploadInProgress = (state) => state.show.upload.running;
-
-/**
- * Returns whether failed uploads should be retried automatically.
- */
-export const shouldRetryFailedUploadsAutomatically = (state) =>
-  state.show.upload.autoRetry;
 
 /**
  * Proposes a name for a mapping file of the current show. Not a pure selector

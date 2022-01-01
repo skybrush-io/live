@@ -15,7 +15,6 @@ import {
   DEFAULT_ROOM_SIZE,
 } from './constants';
 import { StartMethod } from './enums';
-import { ensureItemsInQueue, moveItemsBetweenQueues } from './utils';
 
 import { noPayload } from '~/utils/redux';
 
@@ -111,36 +110,12 @@ const { actions, reducer } = createSlice({
     takeoffAreaSetupDialog: {
       open: false,
     },
-
-    upload: {
-      autoRetry: false,
-      lastUploadResult: null,
-      running: false,
-      itemsInProgress: [],
-      itemsWaitingToStart: [],
-      itemsQueued: [],
-      itemsFinished: [],
-      failedItems: [],
-
-      // If you add a new queue above, make sure that the ALL_QUEUES array
-      // is updated in features/show/utils.js
-    },
-
-    uploadDialog: {
-      open: false,
-      showLastUploadResult: false,
-    },
   },
 
   reducers: {
     approveTakeoffAreaAt(state, action) {
       state.preflight.takeoffAreaApprovedAt = action.payload;
     },
-
-    cancelUpload: noPayload(() => {
-      // The action will stop the upload saga; nothing to do here.
-      // State will be updated in notifyUploadFinished()
-    }),
 
     clearLoadedShow: noPayload((state) => {
       state.data = null;
@@ -152,11 +127,7 @@ const { actions, reducer } = createSlice({
       state.preflight.onboardChecksSignedOffAt = null;
       state.preflight.takeoffAreaApprovedAt = null;
 
-      state.upload.lastUploadResult = null;
-    }),
-
-    clearLastUploadResult: noPayload((state) => {
-      state.upload.lastUploadResult = null;
+      // TODO(ntamas): clear the last upload result in the upload feature
     }),
 
     clearManualPreflightChecks: noPayload((state) => {
@@ -171,10 +142,6 @@ const { actions, reducer } = createSlice({
       state.start.time = null;
       state.start.method = StartMethod.RC;
     },
-
-    clearUploadQueue: noPayload((state) => {
-      state.upload.itemsWaitingToStart = [];
-    }),
 
     closeEnvironmentEditorDialog: noPayload((state) => {
       state.environment.editing = false;
@@ -200,14 +167,6 @@ const { actions, reducer } = createSlice({
       state.takeoffAreaSetupDialog.open = false;
     }),
 
-    closeUploadDialog: noPayload((state) => {
-      state.uploadDialog.open = false;
-    }),
-
-    dismissLastUploadResult: noPayload((state) => {
-      state.uploadDialog.showLastUploadResult = false;
-    }),
-
     loadingProgress(state, action) {
       if (state.loading) {
         const value = Number(action.payload);
@@ -227,9 +186,9 @@ const { actions, reducer } = createSlice({
       // the user starts to reload the show
       state.changedSinceLoaded = false;
 
-      // This line ensures that the green light in front of the UploadButton
-      // turns off if the user starts loading a new show
-      state.upload.lastUploadResult = null;
+      // TODO(ntamas): turn off the green light in front of the UploadButton
+      // if the user starts loading a new show
+      // state.upload.lastUploadResult = null;
     },
 
     loadingPromiseFulfilled(state, action) {
@@ -256,47 +215,6 @@ const { actions, reducer } = createSlice({
       state.changedSinceLoaded = true;
     },
 
-    notifyUploadFinished: (state, action) => {
-      const { success, cancelled } = action.payload;
-
-      // Dispatched by the saga; should not be dispatched manually
-      state.upload.itemsWaitingToStart = [];
-      state.upload.itemsInProgress = [];
-      state.upload.itemsQueued = [];
-      state.upload.running = false;
-      state.upload.lastUploadResult = cancelled
-        ? 'cancelled'
-        : success
-        ? 'success'
-        : 'error';
-      state.uploadDialog.showLastUploadResult = true;
-    },
-
-    notifyUploadOnUavCancelled: moveItemsBetweenQueues({
-      source: 'itemsInProgress',
-      target: 'itemsWaitingToStart',
-    }),
-
-    notifyUploadOnUavFailed: moveItemsBetweenQueues({
-      source: 'itemsInProgress',
-      target: 'failedItems',
-    }),
-
-    notifyUploadOnUavQueued: moveItemsBetweenQueues({
-      source: 'itemsWaitingToStart',
-      target: 'itemsQueued',
-    }),
-
-    notifyUploadOnUavStarted: moveItemsBetweenQueues({
-      source: 'itemsQueued',
-      target: 'itemsInProgress',
-    }),
-
-    notifyUploadOnUavSucceeded: moveItemsBetweenQueues({
-      source: 'itemsInProgress',
-      target: 'itemsFinished',
-    }),
-
     openEnvironmentEditorDialog: noPayload((state) => {
       state.environment.editing = true;
     }),
@@ -321,32 +239,6 @@ const { actions, reducer } = createSlice({
       state.takeoffAreaSetupDialog.open = true;
     }),
 
-    openUploadDialog: noPayload((state) => {
-      state.upload.lastUploadResult = null;
-      state.uploadDialog.showLastUploadResult = false;
-      state.uploadDialog.open = true;
-    }),
-
-    prepareForNextUpload(state, action) {
-      const { payload } = action;
-
-      state.upload.failedItems = [];
-      state.upload.itemsFinished = [];
-      state.upload.itemsQueued = [];
-      state.upload.itemsWaitingToStart = [...payload];
-      state.uploadDialog.showLastUploadResult = false;
-    },
-
-    putUavInWaitingQueue: ensureItemsInQueue({
-      target: 'itemsWaitingToStart',
-      doNotMoveWhenIn: ['itemsQueued', 'itemsInProgress'],
-    }),
-
-    removeUavFromWaitingQueue: ensureItemsInQueue({
-      target: undefined,
-      doNotMoveWhenIn: ['itemsQueued', 'itemsInProgress'],
-    }),
-
     revokeTakeoffAreaApproval: noPayload((state) => {
       state.preflight.takeoffAreaApprovedAt = null;
     }),
@@ -358,16 +250,6 @@ const { actions, reducer } = createSlice({
     setLastLoadingAttemptFailed(state, action) {
       state.lastLoadAttemptFailed = Boolean(action.payload);
     },
-
-    _enqueueFailedUploads: moveItemsBetweenQueues({
-      source: 'failedItems',
-      target: 'itemsWaitingToStart',
-    }),
-
-    _enqueueSuccessfulUploads: moveItemsBetweenQueues({
-      source: 'itemsFinished',
-      target: 'itemsWaitingToStart',
-    }),
 
     _setOutdoorShowAltitudeReference(state, action) {
       const { payload } = action;
@@ -467,24 +349,12 @@ const { actions, reducer } = createSlice({
       }
     },
 
-    setUploadAutoRetry(state, action) {
-      state.upload.autoRetry = Boolean(action.payload);
-    },
-
     signOffOnManualPreflightChecksAt(state, action) {
       state.preflight.manualChecksSignedOffAt = action.payload;
     },
 
     signOffOnOnboardPreflightChecksAt(state, action) {
       state.preflight.onboardChecksSignedOffAt = action.payload;
-    },
-
-    startUpload(state) {
-      state.upload.running = true;
-      state.uploadDialog.showLastUploadResult = false;
-      // Nothing else to do, this action simply triggers a saga that will do the
-      // hard work. The saga might be triggered a bit earlier than the previous
-      // assignment, but we don't care.
     },
 
     synchronizeShowSettings() {
@@ -496,42 +366,25 @@ const { actions, reducer } = createSlice({
 
 export const {
   approveTakeoffAreaAt,
-  cancelUpload,
-  clearLastUploadResult,
   clearLoadedShow,
   clearManualPreflightChecks,
   clearOnboardPreflightChecks,
   clearStartTimeAndMethod,
-  clearUploadQueue,
   closeEnvironmentEditorDialog,
   closeLoadShowFromCloudDialog,
   closeManualPreflightChecksDialog,
   closeOnboardPreflightChecksDialog,
   closeStartTimeDialog,
   closeTakeoffAreaSetupDialog,
-  closeUploadDialog,
-  dismissLastUploadResult,
-  _enqueueFailedUploads,
-  _enqueueSuccessfulUploads,
   loadingProgress,
   loadingPromiseFulfilled,
   notifyShowFileChangedSinceLoaded,
-  notifyUploadFinished,
-  notifyUploadOnUavCancelled,
-  notifyUploadOnUavFailed,
-  notifyUploadOnUavQueued,
-  notifyUploadOnUavStarted,
-  notifyUploadOnUavSucceeded,
   openEnvironmentEditorDialog,
   openLoadShowFromCloudDialog,
   openManualPreflightChecksDialog,
   openOnboardPreflightChecksDialog,
   openStartTimeDialog,
   openTakeoffAreaSetupDialog,
-  openUploadDialog,
-  prepareForNextUpload,
-  putUavInWaitingQueue,
-  removeUavFromWaitingQueue,
   revokeTakeoffAreaApproval,
   setEnvironmentType,
   setLastLoadingAttemptFailed,
@@ -545,14 +398,9 @@ export const {
   setStartMethod,
   setStartTime,
   setUAVIdsToStartAutomatically,
-  setUploadAutoRetry,
   signOffOnManualPreflightChecksAt,
   signOffOnOnboardPreflightChecksAt,
-  startUpload,
   synchronizeShowSettings,
-  uploadingPromisePending,
-  uploadingPromiseFulfilled,
-  uploadingPromiseRejected,
 } = actions;
 
 export default reducer;

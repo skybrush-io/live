@@ -11,12 +11,12 @@ import UploadProgressBar from './UploadProgressBar';
 import ListItemTextWithProgress from '~/components/ListItemTextWithProgress';
 import { Status } from '~/components/semantics';
 
+import { getSetupStageStatuses } from '~/features/show/stages';
 import {
   getUploadProgress,
   isUploadInProgress,
-} from '~/features/show/selectors';
-import { openUploadDialog } from '~/features/show/slice';
-import { getSetupStageStatuses } from '~/features/show/stages';
+} from '~/features/upload/selectors';
+import { openUploadDialog } from '~/features/upload/slice';
 
 /**
  * React component for the button that allows the user to start or stop the

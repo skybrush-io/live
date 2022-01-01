@@ -16,6 +16,7 @@ import sessionSaga from '~/features/session/saga';
 import threeDViewSaga from '~/features/three-d/saga';
 import tourSaga from '~/features/tour/saga';
 import uavManagementSaga from '~/features/uavs/saga';
+import uploadSaga from '~/features/upload/saga';
 import weatherSaga from '~/features/weather/saga';
 import flock from '~/flock';
 import { hasFeature } from '~/utils/configuration';
@@ -33,8 +34,9 @@ export default function* rootSaga() {
     onboardingSaga(),
     serversSaga(),
     showSaga(),
-    uavManagementSaga(flock),
     threeDViewSaga(),
+    uavManagementSaga(flock),
+    uploadSaga(),
     weatherSaga(),
   ];
 

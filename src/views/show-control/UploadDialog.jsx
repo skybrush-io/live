@@ -4,8 +4,8 @@ import { connect } from 'react-redux';
 
 import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
 
-import { getUploadDialogState } from '~/features/show/selectors';
-import { closeUploadDialog } from '~/features/show/slice';
+import { getUploadDialogState } from '~/features/upload/selectors';
+import { closeUploadDialog } from '~/features/upload/slice';
 
 import UploadDialogContent from './UploadDialogContent';
 

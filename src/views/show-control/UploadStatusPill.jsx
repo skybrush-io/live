@@ -9,8 +9,8 @@ import { makeStyles } from '@material-ui/core/styles';
 
 import { Status } from '~/components/semantics';
 import StatusPill from '~/components/StatusPill';
-import { toggleUavInWaitingQueue } from '~/features/show/actions';
-import { getUploadStatusCodeMapping } from '~/features/show/selectors';
+import { toggleUavInWaitingQueue } from '~/features/upload/actions';
+import { getUploadStatusCodeMapping } from '~/features/upload/selectors';
 
 const useStyles = makeStyles((theme) => ({
   root: {

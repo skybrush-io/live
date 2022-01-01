@@ -8,9 +8,9 @@ import { Status } from '~/components/semantics';
 import {
   restartSuccessfulUploads,
   retryFailedUploads,
-} from '~/features/show/actions';
-import { getUploadStatusCodeCounters } from '~/features/show/selectors';
-import { clearUploadQueue } from '~/features/show/slice';
+} from '~/features/upload/actions';
+import { getUploadStatusCodeCounters } from '~/features/upload/selectors';
+import { clearUploadQueue } from '~/features/upload/slice';
 
 import UploadStatusLegendButton from './UploadStatusLegendButton';
 

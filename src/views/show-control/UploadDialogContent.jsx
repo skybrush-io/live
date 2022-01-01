@@ -17,15 +17,15 @@ import Clear from '@material-ui/icons/Clear';
 
 import { Status } from '~/components/semantics';
 import { getMissionMapping } from '~/features/mission/selectors';
+import { getNumberOfDronesInShow } from '~/features/show/selectors';
 import {
   getItemsInUploadBacklog,
   getLastUploadResult,
-  getNumberOfDronesInShow,
   getUploadDialogState,
   hasQueuedItems,
   isUploadInProgress,
   shouldRetryFailedUploadsAutomatically,
-} from '~/features/show/selectors';
+} from '~/features/upload/selectors';
 import {
   cancelUpload,
   closeUploadDialog,
@@ -33,7 +33,7 @@ import {
   prepareForNextUpload,
   setUploadAutoRetry,
   startUpload,
-} from '~/features/show/slice';
+} from '~/features/upload/slice';
 
 import StartUploadButton from './StartUploadButton';
 import UploadProgressBar from './UploadProgressBar';

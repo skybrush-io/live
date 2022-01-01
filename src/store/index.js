@@ -69,6 +69,7 @@ const persistConfig = {
     'session',
     'snackbar',
     'uavs',
+    'upload',
     'weather',
   ],
 

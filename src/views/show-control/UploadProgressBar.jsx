@@ -8,7 +8,7 @@ import LinearProgress from '@material-ui/core/LinearProgress';
 import {
   getUploadProgress,
   isUploadInProgress,
-} from '~/features/show/selectors';
+} from '~/features/upload/selectors';
 
 /**
  * Linear progress bar that shows the state of the current upload.

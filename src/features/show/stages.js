@@ -11,7 +11,6 @@ import {
   areStartConditionsSyncedWithServer,
   didLastLoadingAttemptFail,
   didStartConditionSyncFail,
-  getLastUploadResult,
   hasLoadedShowFile,
   hasScheduledStartTime,
   hasShowChangedExternallySinceLoaded,
@@ -42,6 +41,7 @@ import {
   areAllUAVsInMissionWithoutErrors,
   getMissingUAVIdsInMapping,
 } from '~/features/uavs/selectors';
+import { getLastUploadResult } from '~/features/upload/selectors';
 
 /**
  * Definitions of the stages that one needs to pass through in order to launch

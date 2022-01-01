@@ -31,10 +31,10 @@ export const ensureItemsInQueue = ({ target, doNotMoveWhenIn } = {}) => {
 
   return (state, action) => {
     const uavIds = arrify(action.payload);
-    const targetQueue = target ? state.upload[target] : undefined;
+    const targetQueue = target ? state.queues[target] : undefined;
 
     for (const queueName of allOtherQueues) {
-      const queue = state.upload[queueName];
+      const queue = state.queues[queueName];
       pull(queue, ...uavIds);
     }
 
@@ -55,10 +55,10 @@ export const ensureItemsInQueue = ({ target, doNotMoveWhenIn } = {}) => {
  * It is assumed that the payload of the action will be the ID of the UAV that
  * is to be moved between queues, or an array of such IDs.
  *
- * @param {string} source  name of the source array (queue) in `state.upload`
+ * @param {string} source  name of the source array (queue) in `state.queues`
  *        to remove the item from. The action becomes a no-op for a particular
  *        item if it is not in the specified source queue.
- * @param {string} target  name of the target array (queue) in `state.upload`
+ * @param {string} target  name of the target array (queue) in `state.queues`
  *        to add the item to; `undefined` means not to add the item to a new
  *        queue
  */
@@ -66,8 +66,8 @@ export const moveItemsBetweenQueues =
   ({ source, target }) =>
   (state, action) => {
     const uavIds = arrify(action.payload);
-    const sourceQueue = state.upload[source];
-    const targetQueue = target ? state.upload[target] : undefined;
+    const sourceQueue = state.queues[source];
+    const targetQueue = target ? state.queues[target] : undefined;
 
     for (const uavId of uavIds) {
       const index = sourceQueue.indexOf(uavId);
