@@ -181,6 +181,7 @@ const store = configureStore({
     sagaMiddleware,
   ],
   devTools:
+    // eslint-disable-next-line node/prefer-global/process
     process.env.NODE_ENV === 'production'
       ? false
       : {
@@ -231,6 +232,7 @@ export async function clearStore() {
  * settings and state information, then reloads the page.
  */
 export async function clearStoreAfterConfirmation() {
+  // eslint-disable-next-line no-alert
   if (window.confirm('Are you sure? All settings will be lost.')) {
     await clearStore();
     window.location.reload();

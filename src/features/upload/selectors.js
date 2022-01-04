@@ -5,6 +5,17 @@ import { createSelector } from '@reduxjs/toolkit';
 import { Status } from '~/components/semantics';
 
 /**
+ * Returns the current upload job. The returned object is guaranteed to have
+ * two keys: <code>type</code> for the type of the job and <code>payload</code>
+ * for its parameters. The type is <code>null</code> if no job has been set up
+ * yet.
+ */
+export const getCurrentUploadJob = createSelector(
+  (state) => state.upload.currentJob,
+  ({ type, payload }) => ({ type: type || null, payload })
+);
+
+/**
  * Returns the failed upload items from the uploader.
  */
 export const getFailedUploadItems = (state) => state.upload.failedItems;
@@ -42,6 +53,17 @@ export const getItemsInUploadBacklog = createSelector(
  */
 export const getSuccessfulUploadItems = (state) =>
   state.upload.queues.itemsFinished;
+
+/**
+ * Returns whether there is at least one item in the backlog of the uploader,
+ * i.e. there is at least one item that is either waiting to be started or
+ * that has been queued inside the uploader saga but has not been taken up
+ * by a worker yet.
+ */
+export function areItemsInUploadBacklog(state) {
+  const { itemsQueued, itemsWaitingToStart } = state.upload.queues;
+  return itemsQueued.length > 0 || itemsWaitingToStart.length > 0;
+}
 
 /**
  * Returns whether the UAV with the given ID is in the upload backlog at the
@@ -171,7 +193,7 @@ export const hasQueuedItems = (state) =>
 /**
  * Returns whether we are currently uploading show data to the drones.
  */
-export const isUploadInProgress = (state) => state.upload.running;
+export const isUploadInProgress = (state) => state.upload.currentJob.running;
 
 /**
  * Returns whether failed uploads should be retried automatically.

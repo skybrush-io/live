@@ -127,7 +127,8 @@ const { actions, reducer } = createSlice({
       state.preflight.onboardChecksSignedOffAt = null;
       state.preflight.takeoffAreaApprovedAt = null;
 
-      // TODO(ntamas): clear the last upload result in the upload feature
+      // Last upload result cleared in the upload feature as it also handles
+      // this action
     }),
 
     clearManualPreflightChecks: noPayload((state) => {
@@ -185,10 +186,6 @@ const { actions, reducer } = createSlice({
       // This line ensures that the "show changed" warning goes away as soon as
       // the user starts to reload the show
       state.changedSinceLoaded = false;
-
-      // TODO(ntamas): turn off the green light in front of the UploadButton
-      // if the user starts loading a new show
-      // state.upload.lastUploadResult = null;
     },
 
     loadingPromiseFulfilled(state, action) {

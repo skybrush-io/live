@@ -219,6 +219,7 @@ const createShowLoaderThunkFactory = (
     }, 200);
 
     dispatch(setLastLoadingAttemptFailed(false));
+    dispatch(clearLastUploadResult());
 
     try {
       const promise = dispatch(

@@ -1,6 +1,3 @@
-import isEmpty from 'lodash-es/isEmpty';
-import isNil from 'lodash-es/isNil';
-import reject from 'lodash-es/reject';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
@@ -16,10 +13,9 @@ import { makeStyles } from '@material-ui/core/styles';
 import Clear from '@material-ui/icons/Clear';
 
 import { Status } from '~/components/semantics';
-import { getMissionMapping } from '~/features/mission/selectors';
+import { getUAVIdsParticipatingInMissionSortedByMissionIndex } from '~/features/mission/selectors';
 import { getNumberOfDronesInShow } from '~/features/show/selectors';
 import {
-  getItemsInUploadBacklog,
   getLastUploadResult,
   getUploadDialogState,
   hasQueuedItems,
@@ -30,7 +26,7 @@ import {
   cancelUpload,
   closeUploadDialog,
   dismissLastUploadResult,
-  prepareForNextUpload,
+  setupNextUploadJob,
   setUploadAutoRetry,
   startUpload,
 } from '~/features/upload/slice';
@@ -40,6 +36,7 @@ import UploadProgressBar from './UploadProgressBar';
 import UploadStatusLegend from './UploadStatusLegend';
 import UploadStatusLights from './UploadStatusLights';
 import LabeledStatusLight from '@skybrush/mui-components/lib/LabeledStatusLight';
+import { areItemsInUploadBacklog } from '../../features/upload/selectors';
 
 /**
  * Helper componeht that shows an alert summarizing the result of the last
@@ -204,32 +201,26 @@ export default connect(
     onDismissLastUploadResult: dismissLastUploadResult,
     onStartUpload: () => (dispatch, getState) => {
       const state = getState();
-      const backlog = getItemsInUploadBacklog(state);
-      let canStart = false;
 
-      if (isEmpty(backlog)) {
+      if (!areItemsInUploadBacklog(state)) {
         // If there are no items currently in the upload backlog, start the
         // upload for all the UAVs in the mission, clearing the previous
         // "failed" and "successful" markers as well. (This is what
-        // prepareForNextUpload() does). getUAVIdsParticipatingInMission()
-        // would return the UAVs sorted by ascending ID, but we need them in
-        // ascending mission index instead because this would mean that UAVs
+        // setupNextUploadJob() does). We need the UAV IDs in ascending
+        // mission index instead because this would mean that UAVs
         // with a lower mission index (i.e. probably closer to the GCS) get
         // uploaded first.
-        const mapping = getMissionMapping(state);
-        const uavIds = reject(mapping, isNil);
-        if (uavIds && uavIds.length > 0) {
-          canStart = true;
-          dispatch(prepareForNextUpload(uavIds));
+        const targets =
+          getUAVIdsParticipatingInMissionSortedByMissionIndex(state);
+        if (targets && targets.length > 0) {
+          dispatch(setupNextUploadJob({ targets, type: 'show-upload' }));
         }
-      } else {
-        // There are some items in the upload backlog so we don't add new
-        // ones, just resume the ones that are in the backlog. We also keep
-        // the "failed" and "successful" states of UAVs.
-        canStart = true;
       }
 
-      if (canStart) {
+      // Start the upload if there are some items in the upload backlog.
+      // Note that we need to query the state again in case we have added new
+      // items to the queues above.
+      if (areItemsInUploadBacklog(getState())) {
         dispatch(startUpload());
       }
     },

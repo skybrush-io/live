@@ -107,7 +107,7 @@ export const getUAVIdForMappingSlotBeingEdited = createSelector(
 
 /**
  * Returns a list of all the UAV IDs that participate in the mission, without
- * the null entries, sorted in ascending order.
+ * the null entries, sorted in ascending order by the UAV IDs.
  *
  * Note that this also includes the IDs of UAVs that are currently not seen
  * by the server but are nevertheless in the mapping.
@@ -120,6 +120,18 @@ export const getUAVIdsParticipatingInMission = createSelector(
     return result;
   }
 );
+
+/**
+ * Returns a list of all the UAV IDs that participate in the mission, without
+ * the null entries, sorted in ascending order by their mission indices.
+ * (In other words, UAV IDs that correspond to earlier slots in the mission
+ * mapping are returned first).
+ *
+ * Note that this also includes the IDs of UAVs that are currently not seen
+ * by the server but are nevertheless in the mapping.
+ */
+export const getUAVIdsParticipatingInMissionSortedByMissionIndex = (state) =>
+  reject(getMissionMapping(state), isNil);
 
 /**
  * Returns whether there is at least one non-empty mapping slot in the mapping.
