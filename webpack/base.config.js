@@ -1,18 +1,18 @@
 // Use strict mode so we can have block-scoped declarations
 'use strict';
 
-// Don't use let in the line below because older Node.js versions on Linux
-// will not like it
 const path = require('path');
+const process = require('process');
 const webpack = require('webpack');
 const Dotenv = require('dotenv-webpack');
 
 const { GitRevisionPlugin } = require('git-revision-webpack-plugin');
+const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 
 const { projectRoot } = require('./helpers');
 
-const enableSourceMap = process.env.NODE_ENV !== 'production';
+const isDevelopment = process.env.NODE_ENV !== 'production';
 
 const gitRevisionPlugin = new GitRevisionPlugin();
 
@@ -23,7 +23,7 @@ module.exports = {
     filename: '[name].bundle.js',
   },
 
-  devtool: enableSourceMap ? 'cheap-module-source-map' : undefined,
+  devtool: isDevelopment ? 'cheap-module-source-map' : undefined,
 
   devServer: {
     hot: true,
@@ -56,7 +56,11 @@ module.exports = {
 
     // Add VERSION and COMMITHASH file to output
     gitRevisionPlugin,
-  ],
+
+    // Enable hot reload support in dev mode
+    isDevelopment && new ReactRefreshWebpackPlugin(),
+  ].filter(Boolean),
+
   resolve: {
     alias: {
       '~': path.resolve(projectRoot, 'src'),
@@ -82,7 +86,16 @@ module.exports = {
       },
       {
         test: /\.m?jsx?$/,
-        use: [{ loader: 'babel-loader' }],
+        use: [
+          {
+            loader: 'babel-loader',
+            options: {
+              plugins: [
+                isDevelopment && require.resolve('react-refresh/babel'),
+              ].filter(Boolean),
+            },
+          },
+        ],
         include: [
           path.join(projectRoot, 'config'),
           path.join(projectRoot, 'src'),
@@ -138,6 +151,7 @@ module.exports = {
         },
       }),
     ],
+    runtimeChunk: 'single', // hot module reloading needs this
   },
 
   /* No need for bundle size warnings */
