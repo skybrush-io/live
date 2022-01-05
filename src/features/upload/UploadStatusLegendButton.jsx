@@ -30,6 +30,7 @@ const useStyles = makeStyles(
     selectable: {
       '&:hover': {
         backgroundColor: theme.palette.action.hover,
+        borderRadius: theme.spacing(0.5),
       },
     },
   }),

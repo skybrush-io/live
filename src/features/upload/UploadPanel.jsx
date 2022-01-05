@@ -15,11 +15,7 @@ import Clear from '@material-ui/icons/Clear';
 import LabeledStatusLight from '@skybrush/mui-components/lib/LabeledStatusLight';
 
 import { Status } from '~/components/semantics';
-import { getUAVIdsParticipatingInMissionSortedByMissionIndex } from '~/features/mission/selectors';
-import { getNumberOfDronesInShow } from '~/features/show/selectors';
 import {
-  areItemsInUploadBacklog,
-  getItemsInUploadBacklog,
   getLastUploadResult,
   getUploadDialogState,
   hasQueuedItems,
@@ -30,9 +26,7 @@ import {
   cancelUpload,
   closeUploadDialog,
   dismissLastUploadResult,
-  setupNextUploadJob,
   setUploadAutoRetry,
-  startUpload,
 } from '~/features/upload/slice';
 import StartUploadButton from '~/features/upload/StartUploadButton';
 import UploadProgressBar from '~/features/upload/UploadProgressBar';
@@ -97,12 +91,11 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 /**
- * Presentation component for the dialog that allows the user to upload the
- * trajectories and light programs to the drones.
+ * Presentation component for the main panel that allows the user to monitor the
+ * status of an upload job.
  */
-const UploadDialogContent = ({
+const UploadPanel = ({
   autoRetry,
-  canStartUpload,
   hasQueuedItems,
   lastUploadResult,
   onCancelUpload,
@@ -153,7 +146,7 @@ const UploadDialogContent = ({
           </Button>
         ) : (
           <StartUploadButton
-            disabled={!canStartUpload}
+            disabled={!onStartUpload}
             hasQueuedItems={hasQueuedItems}
             onClick={onStartUpload}
           />
@@ -163,9 +156,8 @@ const UploadDialogContent = ({
   );
 };
 
-UploadDialogContent.propTypes = {
+UploadPanel.propTypes = {
   autoRetry: PropTypes.bool,
-  canStartUpload: PropTypes.bool,
   hasQueuedItems: PropTypes.bool,
   lastUploadResult: PropTypes.oneOf(['success', 'error', 'cancelled']),
   onCancelUpload: PropTypes.func,
@@ -176,7 +168,7 @@ UploadDialogContent.propTypes = {
   showLastUploadResult: PropTypes.bool,
 };
 
-UploadDialogContent.defaultProps = {
+UploadPanel.defaultProps = {
   running: false,
   showLastUploadResult: false,
 };
@@ -189,7 +181,6 @@ export default connect(
   (state) => ({
     ...getUploadDialogState(state),
     autoRetry: shouldRetryFailedUploadsAutomatically(state),
-    canStartUpload: getNumberOfDronesInShow(state) > 0,
     hasQueuedItems: hasQueuedItems(state),
     lastUploadResult: getLastUploadResult(state),
     running: isUploadInProgress(state),
@@ -200,34 +191,10 @@ export default connect(
     onCancelUpload: cancelUpload,
     onClose: closeUploadDialog,
     onDismissLastUploadResult: dismissLastUploadResult,
-    onStartUpload: () => (dispatch, getState) => {
-      const state = getState();
-      let targets;
-
-      if (!areItemsInUploadBacklog(state)) {
-        // If there are no items currently in the upload backlog, start the
-        // upload for all the UAVs in the mission, clearing the previous
-        // "failed" and "successful" markers as well. (This is what
-        // setupNextUploadJob() does). We need the UAV IDs in ascending
-        // mission index instead because this would mean that UAVs
-        // with a lower mission index (i.e. probably closer to the GCS) get
-        // uploaded first.
-        targets = getUAVIdsParticipatingInMissionSortedByMissionIndex(state);
-      } else {
-        // There are some items in the backlog so these are the upload targets.
-        targets = getItemsInUploadBacklog(state);
-      }
-
-      // Set up the next upload job and start it
-      if (targets && targets.length > 0) {
-        dispatch(setupNextUploadJob({ targets, type: 'show-upload' }));
-        dispatch(startUpload());
-      }
-    },
     onToggleAutoRetry: () => (dispatch, getState) => {
       const state = getState();
       const autoRetry = shouldRetryFailedUploadsAutomatically(state);
       dispatch(setUploadAutoRetry(!autoRetry));
     },
   }
-)(UploadDialogContent);
+)(UploadPanel);

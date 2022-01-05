@@ -1,5 +1,7 @@
 import {
+  areItemsInUploadBacklog,
   getFailedUploadItems,
+  getItemsInUploadBacklog,
   getSuccessfulUploadItems,
   isItemInUploadBacklog,
   isUploadInProgress,
@@ -7,6 +9,7 @@ import {
 import {
   putUavInWaitingQueue,
   removeUavFromWaitingQueue,
+  setupNextUploadJob,
   startUpload,
   _enqueueFailedUploads,
   _enqueueSuccessfulUploads,
@@ -51,6 +54,31 @@ export function toggleUavInWaitingQueue(uavId) {
       dispatch(removeUavFromWaitingQueue(uavId));
     } else {
       dispatch(putUavInWaitingQueue(uavId));
+    }
+  };
+}
+
+/**
+ * Function that starts an upload job with the given type, using a selector
+ * function to derive the set of UAV IDs to put in the upload queue when there
+ * are no items in the queue yet. If there are any items in the backlog when the
+ * action is invoked, the selector is ignored and the items in the backlog will
+ * be processed instead.
+ */
+export function startUploadWithUavIdsFromSelector(selector) {
+  return (dispatch, getState) => {
+    const state = getState();
+    const targets = areItemsInUploadBacklog(state)
+      ? getItemsInUploadBacklog(state)
+      : selector
+      ? selector(state)
+      : null;
+
+    // Set up the next upload job and start it if at least one target was
+    // selected
+    if (targets && targets.length > 0) {
+      dispatch(setupNextUploadJob({ targets, type: 'show-upload' }));
+      dispatch(startUpload());
     }
   };
 }
