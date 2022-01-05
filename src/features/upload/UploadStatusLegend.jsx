@@ -5,13 +5,10 @@ import { connect } from 'react-redux';
 import Box from '@material-ui/core/Box';
 
 import { Status } from '~/components/semantics';
-import {
-  restartSuccessfulUploads,
-  retryFailedUploads,
-} from '~/features/upload/actions';
-import { getUploadStatusCodeCounters } from '~/features/upload/selectors';
-import { clearUploadQueue } from '~/features/upload/slice';
 
+import { restartSuccessfulUploads, retryFailedUploads } from './actions';
+import { getUploadStatusCodeCounters } from './selectors';
+import { clearUploadQueue } from './slice';
 import UploadStatusLegendButton from './UploadStatusLegendButton';
 
 const UploadStatusLegend = ({
@@ -39,7 +36,7 @@ const UploadStatusLegend = ({
     <UploadStatusLegendButton
       counter={finished}
       label='successful'
-      tooltip='Restart successful uploads'
+      tooltip='Restart successful items'
       status={Status.SUCCESS}
       onClick={onRestartSuccessfulUploads}
     />
@@ -47,7 +44,7 @@ const UploadStatusLegend = ({
       counter={failed}
       label='failed'
       status={Status.ERROR}
-      tooltip='Retry failed uploads'
+      tooltip='Retry failed items'
       onClick={onRetryFailedUploads}
     />
   </Box>

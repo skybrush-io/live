@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 import Button from '@material-ui/core/Button';
-import CloudUpload from '@material-ui/icons/CloudUpload';
+import PlayArrow from '@material-ui/icons/PlayArrow';
 
 /**
  * Presentation component for the button that allows the user to start the
@@ -10,7 +10,7 @@ import CloudUpload from '@material-ui/icons/CloudUpload';
  * current mission.
  */
 const StartUploadButton = ({ hasQueuedItems, ...rest }) => (
-  <Button startIcon={<CloudUpload />} {...rest}>
+  <Button startIcon={<PlayArrow />} {...rest}>
     {hasQueuedItems ? 'Start selected' : 'Start'}
   </Button>
 );

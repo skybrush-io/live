@@ -1,19 +1,18 @@
-import PropTypes from 'prop-types';
 import React from 'react';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { useThrottle } from 'react-use';
 
 import LinearProgress from '@material-ui/core/LinearProgress';
 
-import {
-  getUploadProgress,
-  isUploadInProgress,
-} from '~/features/upload/selectors';
+import { getUploadProgress, isUploadInProgress } from './selectors';
 
 /**
  * Linear progress bar that shows the state of the current upload.
  */
-const UploadProgressBar = ({ progress, running }) => {
+const UploadProgressBar = () => {
+  const progress = useSelector(getUploadProgress);
+  const running = useSelector(isUploadInProgress);
+
   // Progress values are throttled because LinearProgress seems to be having
   // problems with updates being posted too frequently
   const [value, valueBuffer] = useThrottle(progress, 500);
@@ -27,17 +26,4 @@ const UploadProgressBar = ({ progress, running }) => {
   );
 };
 
-UploadProgressBar.propTypes = {
-  progress: PropTypes.arrayOf(PropTypes.number),
-  running: PropTypes.bool,
-};
-
-export default connect(
-  // mapStateToProps
-  (state) => ({
-    progress: getUploadProgress(state),
-    running: isUploadInProgress(state),
-  }),
-  // mapDispatchToProps
-  null
-)(UploadProgressBar);
+export default UploadProgressBar;

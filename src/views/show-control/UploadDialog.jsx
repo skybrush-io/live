@@ -1,6 +1,5 @@
-import PropTypes from 'prop-types';
 import React from 'react';
-import { connect } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
 
@@ -9,35 +8,22 @@ import { closeUploadDialog } from '~/features/upload/slice';
 
 import UploadDialogContent from './UploadDialogContent';
 
-const UploadDialog = ({ open, onClose }) => {
+const UploadDialog = () => {
+  const { open = false } = useSelector(getUploadDialogState);
+  const dispatch = useDispatch();
   return (
     <DraggableDialog
       fullWidth
       open={open}
       maxWidth='sm'
       title='Upload show data'
-      onClose={onClose}
+      onClose={() => {
+        dispatch(closeUploadDialog());
+      }}
     >
       <UploadDialogContent />
     </DraggableDialog>
   );
 };
 
-UploadDialog.propTypes = {
-  onClose: PropTypes.func,
-  open: PropTypes.bool,
-};
-
-UploadDialog.defaultProps = {
-  open: false,
-};
-
-export default connect(
-  // mapStateToProps
-  getUploadDialogState,
-
-  // mapDispatchToProps
-  {
-    onClose: closeUploadDialog,
-  }
-)(UploadDialog);
+export default UploadDialog;

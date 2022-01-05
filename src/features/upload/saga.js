@@ -232,10 +232,16 @@ const JOB_TYPE_TO_SPEC_MAP = {
  */
 function* uploaderSagaWithCancellation() {
   const job = yield select(getCurrentUploadJob);
+  if (!job.type) {
+    console.warn('No job type was specified for upload job, skipping');
+    return;
+  }
+
   const spec = JOB_TYPE_TO_SPEC_MAP[job.type];
 
   if (!spec) {
     // Unknown job type
+    console.warn(`Unknown job type: ${job.type}, skipping`);
     return;
   }
 

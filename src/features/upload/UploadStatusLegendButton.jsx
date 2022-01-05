@@ -6,8 +6,7 @@ import ButtonBase from '@material-ui/core/ButtonBase';
 import { makeStyles } from '@material-ui/core/styles';
 
 import StatusLight from '@skybrush/mui-components/lib/StatusLight';
-
-import Tooltip from '~/components/Tooltip';
+import Tooltip from '@skybrush/mui-components/lib/Tooltip';
 
 const useStyles = makeStyles(
   (theme) => ({

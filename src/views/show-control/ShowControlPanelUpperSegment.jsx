@@ -20,9 +20,9 @@ import LargeControlButtonGroup from './LargeControlButtonGroup';
 import LoadShowFromFileButton from './LoadShowFromFileButton';
 import ManualPreflightChecksButton from './ManualPreflightChecksButton';
 import OnboardPreflightChecksButton from './OnboardPreflightChecksButton';
+import ShowUploadDialogButton from './ShowUploadDialogButton';
 import StartTimeButton from './StartTimeButton';
 import TakeoffAreaButton from './TakeoffAreaButton';
-import UploadButton from './UploadButton';
 
 const useStyles = makeStyles(
   (theme) => ({
@@ -72,7 +72,7 @@ const ShowControlPanelUpperSegment = ({ environmentType, isAuthorized }) => {
             <EnvironmentButton />
             <TakeoffAreaButton />
             {environmentType === 'outdoor' && <GeofenceButton />}
-            <UploadButton />
+            <ShowUploadDialogButton />
 
             <Divider />
 

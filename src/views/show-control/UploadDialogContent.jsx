@@ -12,10 +12,14 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { makeStyles } from '@material-ui/core/styles';
 import Clear from '@material-ui/icons/Clear';
 
+import LabeledStatusLight from '@skybrush/mui-components/lib/LabeledStatusLight';
+
 import { Status } from '~/components/semantics';
 import { getUAVIdsParticipatingInMissionSortedByMissionIndex } from '~/features/mission/selectors';
 import { getNumberOfDronesInShow } from '~/features/show/selectors';
 import {
+  areItemsInUploadBacklog,
+  getItemsInUploadBacklog,
   getLastUploadResult,
   getUploadDialogState,
   hasQueuedItems,
@@ -30,13 +34,10 @@ import {
   setUploadAutoRetry,
   startUpload,
 } from '~/features/upload/slice';
-
-import StartUploadButton from './StartUploadButton';
-import UploadProgressBar from './UploadProgressBar';
-import UploadStatusLegend from './UploadStatusLegend';
-import UploadStatusLights from './UploadStatusLights';
-import LabeledStatusLight from '@skybrush/mui-components/lib/LabeledStatusLight';
-import { areItemsInUploadBacklog } from '../../features/upload/selectors';
+import StartUploadButton from '~/features/upload/StartUploadButton';
+import UploadProgressBar from '~/features/upload/UploadProgressBar';
+import UploadStatusLegend from '~/features/upload/UploadStatusLegend';
+import UploadStatusLights from '~/features/upload/UploadStatusLights';
 
 /**
  * Helper componeht that shows an alert summarizing the result of the last
@@ -126,7 +127,7 @@ const UploadDialogContent = ({
             control={
               <Checkbox checked={autoRetry} onChange={onToggleAutoRetry} />
             }
-            label='Retry failed uploads automatically'
+            label='Retry failed attempts automatically'
           />
         </Box>
       </DialogContent>
@@ -201,6 +202,7 @@ export default connect(
     onDismissLastUploadResult: dismissLastUploadResult,
     onStartUpload: () => (dispatch, getState) => {
       const state = getState();
+      let targets;
 
       if (!areItemsInUploadBacklog(state)) {
         // If there are no items currently in the upload backlog, start the
@@ -210,17 +212,15 @@ export default connect(
         // mission index instead because this would mean that UAVs
         // with a lower mission index (i.e. probably closer to the GCS) get
         // uploaded first.
-        const targets =
-          getUAVIdsParticipatingInMissionSortedByMissionIndex(state);
-        if (targets && targets.length > 0) {
-          dispatch(setupNextUploadJob({ targets, type: 'show-upload' }));
-        }
+        targets = getUAVIdsParticipatingInMissionSortedByMissionIndex(state);
+      } else {
+        // There are some items in the backlog so these are the upload targets.
+        targets = getItemsInUploadBacklog(state);
       }
 
-      // Start the upload if there are some items in the upload backlog.
-      // Note that we need to query the state again in case we have added new
-      // items to the queues above.
-      if (areItemsInUploadBacklog(getState())) {
+      // Set up the next upload job and start it
+      if (targets && targets.length > 0) {
+        dispatch(setupNextUploadJob({ targets, type: 'show-upload' }));
         dispatch(startUpload());
       }
     },

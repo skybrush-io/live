@@ -6,23 +6,21 @@ import ListItem from '@material-ui/core/ListItem';
 
 import StatusLight from '@skybrush/mui-components/lib/StatusLight';
 
-import UploadProgressBar from './UploadProgressBar';
-
 import ListItemTextWithProgress from '~/components/ListItemTextWithProgress';
 import { Status } from '~/components/semantics';
-
 import { getSetupStageStatuses } from '~/features/show/stages';
 import {
   getUploadProgress,
   isUploadInProgress,
 } from '~/features/upload/selectors';
 import { openUploadDialog } from '~/features/upload/slice';
+import UploadProgressBar from '~/features/upload/UploadProgressBar';
 
 /**
  * React component for the button that allows the user to start or stop the
  * upload process of the current show to the drones.
  */
-const UploadButton = ({ loading, status, ...rest }) => (
+const ShowUploadDialogButton = ({ loading, status, ...rest }) => (
   <ListItem button disabled={status === Status.OFF} {...rest}>
     <StatusLight status={status} />
     <ListItemTextWithProgress
@@ -40,7 +38,7 @@ const UploadButton = ({ loading, status, ...rest }) => (
   </ListItem>
 );
 
-UploadButton.propTypes = {
+ShowUploadDialogButton.propTypes = {
   loading: PropTypes.bool,
   onClick: PropTypes.func,
   status: PropTypes.oneOf(Object.values(Status)),
@@ -57,4 +55,4 @@ export default connect(
   {
     onClick: openUploadDialog,
   }
-)(UploadButton);
+)(ShowUploadDialogButton);

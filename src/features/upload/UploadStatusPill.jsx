@@ -9,8 +9,9 @@ import { makeStyles } from '@material-ui/core/styles';
 
 import { Status } from '~/components/semantics';
 import StatusPill from '~/components/StatusPill';
-import { toggleUavInWaitingQueue } from '~/features/upload/actions';
-import { getUploadStatusCodeMapping } from '~/features/upload/selectors';
+
+import { toggleUavInWaitingQueue } from './actions';
+import { getUploadStatusCodeMapping } from './selectors';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -29,8 +30,15 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+/**
+ * Dummy status selector for slots that do not have a corresponding UAV.
+ */
 const uploadStatusSelectorForNil = () => ({ hollow: true, status: Status.OFF });
 
+/**
+ * Selector factory that takes a UAV ID and returns a selector instance that
+ * takes the Redux store and returns the upload status code of the given UAV.
+ */
 const makeUploadStatusSelectorForUavId = (uavId) =>
   isNil(uavId)
     ? uploadStatusSelectorForNil
