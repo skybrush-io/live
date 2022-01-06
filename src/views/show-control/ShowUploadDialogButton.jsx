@@ -24,9 +24,7 @@ const ShowUploadDialogButton = ({ loading, status, ...rest }) => (
   <ListItem button disabled={status === Status.OFF} {...rest}>
     <StatusLight status={status} />
     <ListItemTextWithProgress
-      primary={
-        loading ? 'Please wait, uploading show data…' : 'Upload show data'
-      }
+      primary={loading ? 'Please wait, uploading…' : 'Upload show data'}
       secondary={
         loading ? (
           <UploadProgressBar />

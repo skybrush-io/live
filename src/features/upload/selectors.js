@@ -1,5 +1,6 @@
 /* eslint unicorn/no-array-callback-reference: 0 */
 
+import isNil from 'lodash-es/isNil';
 import { createSelector } from '@reduxjs/toolkit';
 
 import { Status } from '~/components/semantics';
@@ -13,6 +14,15 @@ import { Status } from '~/components/semantics';
 export const getCurrentUploadJob = createSelector(
   (state) => state.upload.currentJob,
   ({ type, payload }) => ({ type: type || null, payload })
+);
+
+/**
+ * Returns the type of the current upload job _if and only if_ a job is running
+ * now, or <code>null</code> if no job has been set up yet or no job is running.
+ */
+export const getRunningUploadJobType = createSelector(
+  (state) => state.upload.currentJob,
+  ({ type, running }) => (!isNil(type) && running ? type : null)
 );
 
 /**

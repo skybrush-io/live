@@ -3,6 +3,7 @@
  * show being executed.
  */
 
+import isNil from 'lodash-es/isNil';
 import { createSlice } from '@reduxjs/toolkit';
 
 import { ensureItemsInQueue, moveItemsBetweenQueues } from './utils';
@@ -99,7 +100,7 @@ const { actions, reducer } = createSlice({
 
     setupNextUploadJob(state, action) {
       const { payload } = action;
-      const { type, targets } = payload;
+      const { type, payload: jobPayload, targets } = payload;
 
       /* Do not do anything if a job is currently running */
       if (state.currentJob.running) {
@@ -107,6 +108,7 @@ const { actions, reducer } = createSlice({
       }
 
       state.currentJob.type = type;
+      state.currentJob.jobPayload = isNil(jobPayload) ? null : jobPayload;
 
       state.queues.failedItems = [];
       state.queues.itemsFinished = [];

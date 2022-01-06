@@ -65,7 +65,10 @@ export function toggleUavInWaitingQueue(uavId) {
  * action is invoked, the selector is ignored and the items in the backlog will
  * be processed instead.
  */
-export function startUploadWithUavIdsFromSelector(selector) {
+export function startUploadJobWithUavIdsFromSelector(
+  { type, payload },
+  selector
+) {
   return (dispatch, getState) => {
     const state = getState();
     const targets = areItemsInUploadBacklog(state)
@@ -77,7 +80,7 @@ export function startUploadWithUavIdsFromSelector(selector) {
     // Set up the next upload job and start it if at least one target was
     // selected
     if (targets && targets.length > 0) {
-      dispatch(setupNextUploadJob({ targets, type: 'show-upload' }));
+      dispatch(setupNextUploadJob({ targets, type, payload }));
       dispatch(startUpload());
     }
   };
