@@ -3,6 +3,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 
 import Mapping from '@material-ui/icons/FormatLineSpacing';
+
 import Tooltip from '@skybrush/mui-components/lib/Tooltip';
 
 import ToggleButton from '~/components/ToggleButton';

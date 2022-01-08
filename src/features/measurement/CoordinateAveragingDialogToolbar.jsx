@@ -17,7 +17,7 @@ import DialogToolbar from '@skybrush/mui-components/lib/DialogToolbar';
 
 import ActiveUAVsField from '~/components/ActiveUAVsField';
 import ToolbarDivider from '~/components/ToolbarDivider';
-import Tooltip from '~/components/Tooltip';
+import Tooltip from '@skybrush/mui-components/lib/Tooltip';
 import FadeAndSlide from '~/components/transitions/FadeAndSlide';
 
 import {

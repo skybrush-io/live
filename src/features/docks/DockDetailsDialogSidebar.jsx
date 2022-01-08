@@ -17,11 +17,11 @@ import PowerSettingsNew from '@material-ui/icons/PowerSettingsNew';
 import Refresh from '@material-ui/icons/Refresh';
 
 import StatusText from '@skybrush/mui-components/lib/StatusText';
+import Tooltip from '@skybrush/mui-components/lib/Tooltip';
 
 import { ComplexAvatar } from '~/components/avatar';
 import Colors from '~/components/colors';
 import { MiniTable } from '~/components/mini-table';
-import Tooltip from '~/components/Tooltip';
 
 import { getSelectedDockIdInDockDetailsDialog } from './details';
 

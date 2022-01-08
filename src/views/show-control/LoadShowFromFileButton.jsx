@@ -11,6 +11,7 @@ import CloudDownload from '@material-ui/icons/CloudDownload';
 import Refresh from '@material-ui/icons/Refresh';
 
 import StatusLight from '@skybrush/mui-components/lib/StatusLight';
+import Tooltip from '@skybrush/mui-components/lib/Tooltip';
 
 import FileListItem from './FileListItem';
 
@@ -18,7 +19,6 @@ import Colors from '~/components/colors';
 import FileWatcher from '~/components/FileWatcher';
 import ListItemTextWithProgress from '~/components/ListItemTextWithProgress';
 import { Status } from '~/components/semantics';
-import Tooltip from '~/components/Tooltip';
 import {
   loadShowFromFile,
   reloadCurrentShowFile,

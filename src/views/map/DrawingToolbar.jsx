@@ -10,7 +10,7 @@ import CropSquare from '@material-ui/icons/CropSquare';
 import PanoramaFishEye from '@material-ui/icons/PanoramaFishEye';
 import StarBorder from '@material-ui/icons/StarBorder';
 import ZoomIn from '@material-ui/icons/ZoomIn';
-import Tooltip from '~/components/Tooltip';
+import Tooltip from '@skybrush/mui-components/lib/Tooltip';
 
 import partial from 'lodash-es/partial';
 import { connect } from 'react-redux';

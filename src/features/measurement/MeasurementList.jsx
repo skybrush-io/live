@@ -14,8 +14,8 @@ import ListItemText from '@material-ui/core/ListItemText';
 import { makeStyles } from '@material-ui/core/styles';
 
 import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
+import Tooltip from '@skybrush/mui-components/lib/Tooltip';
 
-import Tooltip from '~/components/Tooltip';
 import Colors from '~/components/colors';
 import { multiSelectableListOf } from '~/components/helpers/lists';
 import DroneAvatar from '~/components/uavs/DroneAvatar';

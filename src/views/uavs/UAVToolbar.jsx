@@ -8,7 +8,8 @@ import Toolbar from '@material-ui/core/Toolbar';
 import ImageBlurCircular from '@material-ui/icons/BlurCircular';
 import ImageBlurOn from '@material-ui/icons/BlurOn';
 
-import Tooltip from '~/components/Tooltip';
+import Tooltip from '@skybrush/mui-components/lib/Tooltip';
+
 import UAVOperationsButtonGroup from '~/components/uavs/UAVOperationsButtonGroup';
 
 import MappingButtonGroup from './MappingButtonGroup';

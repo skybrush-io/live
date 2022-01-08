@@ -6,9 +6,9 @@ import IconButton from '@material-ui/core/IconButton';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import ListItemText from '@material-ui/core/ListItemText';
-import Tooltip from '~/components/Tooltip';
-
 import Edit from '@material-ui/icons/Edit';
+
+import Tooltip from '@skybrush/mui-components/lib/Tooltip';
 
 import PropTypes from 'prop-types';
 import React from 'react';

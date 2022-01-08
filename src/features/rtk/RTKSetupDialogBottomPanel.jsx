@@ -8,8 +8,9 @@ import IconButton from '@material-ui/core/IconButton';
 import { makeStyles } from '@material-ui/core/styles';
 import Place from '@material-ui/icons/Place';
 
+import Tooltip from '@skybrush/mui-components/lib/Tooltip';
+
 import FadeAndSlide from '~/components/transitions/FadeAndSlide';
-import Tooltip from '~/components/Tooltip';
 import { createSecondaryAreaStyle, isDark } from '~/theme';
 
 import { getSurveyStatus, shouldShowSurveySettings } from './selectors';

@@ -17,7 +17,7 @@ import {
   setFlatEarthCoordinateSystemOrientation,
 } from '~/actions/map-origin';
 import CoordinateSystemFields from '~/components/CoordinateSystemFields';
-import Tooltip from '~/components/Tooltip';
+import Tooltip from '@skybrush/mui-components/lib/Tooltip';
 import { SimpleDistanceField } from '~/components/forms/fields';
 import RTKCorrectionSourceSelector from '~/features/rtk/RTKCorrectionSourceSelector';
 import {

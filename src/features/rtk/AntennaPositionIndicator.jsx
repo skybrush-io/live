@@ -5,7 +5,8 @@ import { connect } from 'react-redux';
 import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 
-import Tooltip from '~/components/Tooltip';
+import Tooltip from '@skybrush/mui-components/lib/Tooltip';
+
 import ContentCopy from '~/icons/ContentCopy';
 
 import {

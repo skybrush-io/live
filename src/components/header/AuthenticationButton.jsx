@@ -1,12 +1,13 @@
-import PersonIcon from '@material-ui/icons/Person';
-
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 
+import PersonIcon from '@material-ui/icons/Person';
+
+import Tooltip from '@skybrush/mui-components/lib/Tooltip';
+
 import AuthenticationStatusBadge from '../badges/AuthenticationStatusBadge';
-import Tooltip from '../Tooltip';
 
 import {
   showAuthenticationDialog,
