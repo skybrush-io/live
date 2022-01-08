@@ -12,8 +12,8 @@ import RTKStatusUpdater from './RTKStatusUpdater';
 import { closeRTKSetupDialog } from './slice';
 
 /**
- * Presentation component for the dialog that allows the user to take a
- * long-running average of the coordinates of one or more UAVs.
+ * Presentation component for the dialog that allows the user to set up and
+ * monitor the RTK correction source for the UAVs.
  */
 const RTKSetupDialog = ({ onClose, open }) => (
   <Dialog fullWidth open={open} maxWidth='sm' onClose={onClose}>

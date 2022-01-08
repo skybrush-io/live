@@ -128,6 +128,7 @@
     "react-is": "^17.0.2",
     "react-redux": "^7.2.6",
     "react-shapeshifter": "^1.0.11",
+    "react-spring": "^9.4.1",
     "react-timeago": "^6.2.1",
     "react-toast-notifications": "^2.5.1",
     "react-transition-group": "^4.4.2",

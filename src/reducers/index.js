@@ -19,6 +19,7 @@ import featuresReducer from '~/features/map-features/slice';
 import measurementReducer from '~/features/measurement/slice';
 import messagesReducer from '~/features/messages/slice';
 import missionReducer from '~/features/mission/slice';
+import parametersReducer from '~/features/parameters/slice';
 import preflightReducer from '~/features/preflight/slice';
 import rtkReducer from '~/features/rtk/slice';
 import savedLocationsReducer from '~/features/saved-locations/slice';
@@ -59,6 +60,7 @@ const reducer = combineReducers({
   measurement: measurementReducer,
   messages: messagesReducer,
   mission: missionReducer,
+  parameters: parametersReducer,
   preflight: preflightReducer,
   rtk: rtkReducer,
   savedLocations: savedLocationsReducer,

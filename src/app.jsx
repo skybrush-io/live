@@ -21,6 +21,7 @@ import HotkeyDialog from './features/hotkeys/HotkeyDialog';
 import PendingUAVIdOverlay from './features/hotkeys/PendingUAVIdOverlay';
 import LicenseInfoDialog from './features/license-info/LicenseInfoDialog';
 import CoordinateAveragingDialog from './features/measurement/CoordinateAveragingDialog';
+import ParameterUploadSetupDialog from './features/parameters/ParameterUploadSetupDialog';
 import SavedLocationEditorDialog from './features/saved-locations/SavedLocationEditorDialog';
 import RTKSetupDialog from './features/rtk/RTKSetupDialog';
 import Sidebar from './features/sidebar/Sidebar';
@@ -131,6 +132,7 @@ const App = ({ onFirstRender }) => (
       <DockDetailsDialog />
       <HotkeyDialog />
       <LicenseInfoDialog />
+      <ParameterUploadSetupDialog />
       <RTKSetupDialog />
       <SavedLocationEditorDialog />
       <UAVDetailsDialog />
