@@ -16,10 +16,7 @@ import {
   proposeDistanceLimit,
   proposeHeightLimit,
 } from '~/features/geofence/utils';
-import {
-  getGeofencePolygonInWorldCoordinates,
-  getReverseMissionMapping,
-} from '~/features/mission/selectors';
+import { getGeofencePolygonInWorldCoordinates } from '~/features/mission/selectors';
 import { formatDuration } from '~/utils/formatting';
 import { FlatEarthCoordinateSystem } from '~/utils/geography';
 import {
@@ -671,81 +668,6 @@ export const isShowConvexHullInsideGeofence = createSelector(
     return false;
   }
 );
-
-/**
- * Selector that constructs the show description to be uploaded to a
- * drone with the given ID.
- */
-export function createShowConfigurationForUav(state, uavId) {
-  const reverseMapping = getReverseMissionMapping(state);
-  const missionIndex = reverseMapping ? reverseMapping[uavId] : undefined;
-
-  if (isNil(missionIndex)) {
-    throw new Error(`UAV ${uavId} is not in the current mission`);
-  }
-
-  const coordinateSystem = getOutdoorShowCoordinateSystem(state);
-  if (
-    isShowOutdoor(state) &&
-    (typeof coordinateSystem !== 'object' ||
-      !Array.isArray(coordinateSystem.origin))
-  ) {
-    throw new TypeError('Show coordinate system not specified');
-  }
-
-  const geofencePolygon = getGeofencePolygonInShowCoordinates(state);
-  const geofence = {
-    version: 1,
-    polygons: geofencePolygon
-      ? [
-          {
-            isInclusion: true,
-            points: geofencePolygon,
-          },
-        ]
-      : [],
-    maxAltitude: getUserDefinedHeightLimit(state),
-    maxDistance: getUserDefinedDistanceLimit(state),
-  };
-
-  const drones = getDroneSwarmSpecification(state);
-  if (!drones || !Array.isArray(drones)) {
-    throw new Error('Invalid show configuration in state store');
-  }
-
-  const droneSpec = drones[missionIndex];
-  if (!droneSpec || typeof droneSpec !== 'object') {
-    throw new Error(
-      `No specification for UAV ${uavId} (index ${missionIndex})`
-    );
-  }
-
-  const { settings } = droneSpec;
-  if (typeof settings !== 'object') {
-    throw new TypeError(
-      `Invalid show configuration for UAV ${uavId} (index ${missionIndex}) in state store`
-    );
-  }
-
-  const { id: missionId } = getShowMetadata(state);
-
-  const amslReference = getMeanSeaLevelReferenceOfShowCoordinatesOrNull(state);
-
-  const result = {
-    ...getCommonShowSettings(state),
-    ...settings,
-    amslReference,
-    coordinateSystem,
-    geofence,
-    mission: {
-      id: missionId,
-      index: missionIndex,
-      displayName: `${missionId || 'drone-show'} / ${missionIndex + 1}`,
-    },
-  };
-
-  return result;
-}
 
 /**
  * Proposes a name for a mapping file of the current show. Not a pure selector

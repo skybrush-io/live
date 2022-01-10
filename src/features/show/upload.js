@@ -1,9 +1,96 @@
+import isNil from 'lodash-es/isNil';
 import { CANCEL } from 'redux-saga';
 
+import { getReverseMissionMapping } from '~/features/mission/selectors';
 import messageHub from '~/message-hub';
 
 import { JOB_TYPE } from './constants';
-import { createShowConfigurationForUav } from './selectors';
+import {
+  getCommonShowSettings,
+  getDroneSwarmSpecification,
+  getGeofencePolygonInShowCoordinates,
+  getMeanSeaLevelReferenceOfShowCoordinatesOrNull,
+  getOutdoorShowCoordinateSystem,
+  getShowMetadata,
+  getUserDefinedDistanceLimit,
+  getUserDefinedHeightLimit,
+  isShowOutdoor,
+} from './selectors';
+
+/**
+ * Selector that constructs the show description to be uploaded to a
+ * drone with the given ID.
+ */
+export function createShowConfigurationForUav(state, uavId) {
+  const reverseMapping = getReverseMissionMapping(state);
+  const missionIndex = reverseMapping ? reverseMapping[uavId] : undefined;
+
+  if (isNil(missionIndex)) {
+    throw new Error(`UAV ${uavId} is not in the current mission`);
+  }
+
+  const coordinateSystem = getOutdoorShowCoordinateSystem(state);
+  if (
+    isShowOutdoor(state) &&
+    (typeof coordinateSystem !== 'object' ||
+      !Array.isArray(coordinateSystem.origin))
+  ) {
+    throw new TypeError('Show coordinate system not specified');
+  }
+
+  const geofencePolygon = getGeofencePolygonInShowCoordinates(state);
+  const geofence = {
+    version: 1,
+    polygons: geofencePolygon
+      ? [
+          {
+            isInclusion: true,
+            points: geofencePolygon,
+          },
+        ]
+      : [],
+    maxAltitude: getUserDefinedHeightLimit(state),
+    maxDistance: getUserDefinedDistanceLimit(state),
+  };
+
+  const drones = getDroneSwarmSpecification(state);
+  if (!drones || !Array.isArray(drones)) {
+    throw new Error('Invalid show configuration in state store');
+  }
+
+  const droneSpec = drones[missionIndex];
+  if (!droneSpec || typeof droneSpec !== 'object') {
+    throw new Error(
+      `No specification for UAV ${uavId} (index ${missionIndex})`
+    );
+  }
+
+  const { settings } = droneSpec;
+  if (typeof settings !== 'object') {
+    throw new TypeError(
+      `Invalid show configuration for UAV ${uavId} (index ${missionIndex}) in state store`
+    );
+  }
+
+  const { id: missionId } = getShowMetadata(state);
+
+  const amslReference = getMeanSeaLevelReferenceOfShowCoordinatesOrNull(state);
+
+  const result = {
+    ...getCommonShowSettings(state),
+    ...settings,
+    amslReference,
+    coordinateSystem,
+    geofence,
+    mission: {
+      id: missionId,
+      index: missionIndex,
+      displayName: `${missionId || 'drone-show'} / ${missionIndex + 1}`,
+    },
+  };
+
+  return result;
+}
 
 /**
  * Handles a single trajectory upload to a drone. Returns a promise that resolves
