@@ -76,7 +76,7 @@ const WeatherHeaderButton = ({ badgeStatus, sunrise, sunset }) => {
 };
 
 WeatherHeaderButton.propTypes = {
-  badgeStatus: PropTypes.oneOf(Object.keys(Status)),
+  badgeStatus: PropTypes.oneOf(Object.values(Status)),
   sunrise: PropTypes.instanceOf(Date),
   sunset: PropTypes.instanceOf(Date),
 };
