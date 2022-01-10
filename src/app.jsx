@@ -27,6 +27,7 @@ import RTKSetupDialog from './features/rtk/RTKSetupDialog';
 import Sidebar from './features/sidebar/Sidebar';
 import ToastNotificationManager from './features/snackbar/ToastNotificationManager';
 import UAVDetailsDialog from './features/uavs/UAVDetailsDialog';
+import UploadDialog from './features/upload/UploadDialog';
 import VersionCheckDialog from './features/version-check/VersionCheckDialog';
 
 import { ErrorHandler } from './error-handling';
@@ -136,6 +137,7 @@ const App = ({ onFirstRender }) => (
       <RTKSetupDialog />
       <SavedLocationEditorDialog />
       <UAVDetailsDialog />
+      <UploadDialog />
       <VersionCheckDialog />
 
       <ToastProvider placement='top-center'>

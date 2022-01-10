@@ -11,7 +11,6 @@ import OnboardPreflightChecksDialog from './OnboardPreflightChecksDialog';
 import ShowControlPanelUpperSegment from './ShowControlPanelUpperSegment';
 import StartTimeDialog from './StartTimeDialog';
 import TakeoffAreaSetupDialog from './TakeoffAreaSetupDialog';
-import UploadDialog from './UploadDialog';
 
 /**
  * Panel that shows the widgets that are needed to load and configure a drone
@@ -36,7 +35,6 @@ const ShowControlPanel = () => (
     <EnvironmentEditorDialog />
     <StartTimeDialog />
     <TakeoffAreaSetupDialog />
-    <UploadDialog />
     <OnboardPreflightChecksDialog />
     <ManualPreflightChecksDialog />
   </Box>
