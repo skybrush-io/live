@@ -19,6 +19,7 @@ const { actions, reducer } = createSlice({
       byId: {},
       order: [],
     },
+    rebootAfterUpload: false,
     dialog: {
       open: false,
     },
@@ -40,6 +41,10 @@ const { actions, reducer } = createSlice({
       if (payload && typeof payload === 'string') {
         deleteItemById(manifest, payload);
       }
+    },
+
+    setRebootAfterUpload(state, action) {
+      state.rebootAfterUpload = Boolean(action.payload);
     },
 
     showParameterUploadSetupDialog: noPayload((state) => {
@@ -68,6 +73,7 @@ export const {
   clearManifest,
   closeParameterUploadSetupDialog,
   removeParameterFromManifest,
+  setRebootAfterUpload,
   showParameterUploadSetupDialog,
   updateParametersInManifest,
 } = actions;

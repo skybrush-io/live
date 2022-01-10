@@ -16,9 +16,11 @@ import { getActiveUAVIdsBeingAveraged } from '~/features/measurement/selectors';
 import { showAveragingDialog } from '~/features/measurement/slice';
 import { showParameterUploadSetupDialog } from '~/features/parameters/slice';
 import { isConnected } from '~/features/servers/selectors';
+import { isUploadInProgress } from '~/features/upload/selectors';
 import { showVersionCheckDialog } from '~/features/version-check/slice';
 
 const ToolboxButtonPresentation = ({
+  isUploadInProgress,
   numberOfAveragingInProgress,
   showAveragingDialog,
   showLicenseInfoDialog,
@@ -72,7 +74,10 @@ const ToolboxButtonPresentation = ({
         <MenuItem disabled>Firmware update</MenuItem>
         */}
         <MenuItem onClick={createClickListener(showParameterUploadSetupDialog)}>
-          Parameter upload
+          <ListItemText
+            primary='Parameter upload'
+            secondary={isUploadInProgress ? 'Upload in progress' : undefined}
+          />
         </MenuItem>
         <MenuItem onClick={createClickListener(showLicenseInfoDialog)}>
           <ListItemText primary='License info' />
@@ -89,6 +94,7 @@ const ToolboxButtonPresentation = ({
 
 ToolboxButtonPresentation.propTypes = {
   ...GenericHeaderButton.propTypes,
+  isUploadInProgress: PropTypes.bool,
   numberOfAveragingInProgress: PropTypes.number,
   showAveragingDialog: PropTypes.func,
   showParameterUploadSetupDialog: PropTypes.func,
@@ -99,6 +105,7 @@ export default connect(
   // mapStateToProps
   (state) => ({
     isConnectedToServer: isConnected(state),
+    isUploadInProgress: isUploadInProgress(state),
     numberOfAveragingInProgress: getActiveUAVIdsBeingAveraged(state).length,
   }),
   // mapDispatchToProps

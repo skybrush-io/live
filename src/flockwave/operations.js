@@ -3,8 +3,11 @@
  * promises.
  */
 
+import { createParameterSettingRequest } from './builders';
 import { extractResponseForId } from './parsing';
-import { validateExtensionName } from './validation';
+import { validateExtensionName, validateObjectId } from './validation';
+
+import { errorToString } from '~/error-handling';
 
 /**
  * Asks the server to set a new configuration object for the extension with the
@@ -44,6 +47,18 @@ export async function reloadExtension(hub, name) {
 }
 
 /**
+ * Asks the server to reset the UAV with the given ID.
+ */
+export async function resetUAV(hub, uavId) {
+  try {
+    await hub.startAsyncOperationForSingleId(uavId, { type: 'UAV-RST' });
+  } catch (error) {
+    const errorString = errorToString(error);
+    throw new Error(`Failed to reset UAV ${uavId}: ${errorString}`);
+  }
+}
+
+/**
  * Sends some debugging information to the server.
  */
 export async function sendDebugMessage(hub, message) {
@@ -51,6 +66,21 @@ export async function sendDebugMessage(hub, message) {
     type: 'X-DBG-RESP',
     data: message,
   });
+}
+
+/**
+ * Sets the value of a parameter on a single UAV.
+ */
+export async function setParameter(hub, { uavId, name, value }) {
+  const command = createParameterSettingRequest(uavId, name, value);
+  try {
+    await hub.startAsyncOperationForSingleId(uavId, command);
+  } catch (error) {
+    const errorString = errorToString(error);
+    throw new Error(
+      `Failed to set parameter ${name} on UAV ${uavId}: ${errorString}`
+    );
+  }
 }
 
 /**
@@ -119,6 +149,8 @@ export async function startRTKSurvey(hub, { accuracy, duration }) {
  * Asks the server to upload a drone show specification to a given UAV.
  */
 export async function uploadDroneShow(hub, { uavId, data }, options) {
+  validateObjectId(uavId);
+
   // HACK HACK HACK we are (ab)using the command execution mechanism. This is
   // probably okay as a temporary solution, but we might need a better solution
   // in the long term.
@@ -149,7 +181,9 @@ export class OperationExecutor {
   _operations = {
     configureExtension,
     reloadExtension,
+    resetUAV,
     sendDebugMessage,
+    setParameter,
     setRTKCorrectionsSource,
     setShowConfiguration,
     setShowLightConfiguration,

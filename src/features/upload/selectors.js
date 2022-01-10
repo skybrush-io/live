@@ -105,10 +105,10 @@ export const getNextDroneFromUploadQueue = (state) => {
 export const getUploadDialogState = (state) => state.upload.dialog;
 
 /**
- * Returns the type of the selected job in the upload dialog.
+ * Returns the selected job in the upload dialog.
  */
-export const getSelectedJobTypeInUploadDialog = (state) =>
-  getUploadDialogState(state)?.selectedJobType;
+export const getSelectedJobInUploadDialog = (state) =>
+  getUploadDialogState(state)?.selectedJob ?? {};
 
 /**
  * Returns an object that counts how many drones are currently in the

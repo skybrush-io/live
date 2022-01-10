@@ -14,3 +14,15 @@ export function validateExtensionName(name) {
     throw new Error(`Invalid extension name: ${name}`);
   }
 }
+
+/**
+ * Checks whether the given string can be a valid object ID on a
+ * Flockwave server.
+ *
+ * Raises an exception if the given name is not a valid object ID.
+ */
+export function validateObjectId(name) {
+  if (typeof name !== 'string' || name.length === 0) {
+    throw new Error(`Invalid object ID: ${name}`);
+  }
+}

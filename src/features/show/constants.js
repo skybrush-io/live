@@ -34,6 +34,13 @@ export const DEFAULT_ROOM_SIZE = {
 export const JOB_TYPE = 'showUpload';
 
 /**
+ * Singleton job that represents the uploading of the current show to the drones.
+ */
+export const SHOW_UPLOAD_JOB = Object.freeze({
+  type: JOB_TYPE,
+});
+
+/**
  * Maximum number of drones that we support in a single show.
  */
 export const MAX_DRONE_COUNT = 1000;

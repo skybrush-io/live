@@ -6,15 +6,16 @@ import Box from '@material-ui/core/Box';
 
 import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
 
-import { startUploadJobFromUploadDialog } from '~/features/upload/actions';
-import { getDialogTitleForJobType } from '~/features/upload/jobs';
+import { startUploadJobFromUploadDialog } from './actions';
+import { getDialogTitleForJobType } from './jobs';
 import {
   getRunningUploadJobType,
+  getSelectedJobInUploadDialog,
   getUploadDialogState,
-} from '~/features/upload/selectors';
-import { closeUploadDialog } from '~/features/upload/slice';
-import AnotherJobTypeRunningHint from '~/features/upload/AnotherJobTypeRunningHint';
-import UploadPanel from '~/features/upload/UploadPanel';
+} from './selectors';
+import { closeUploadDialog } from './slice';
+import AnotherJobTypeRunningHint from './AnotherJobTypeRunningHint';
+import UploadPanel from './UploadPanel';
 
 const UploadDialog = ({
   canStartUpload,
@@ -63,6 +64,7 @@ export default connect(
     ...getUploadDialogState(state),
     canStartUpload: true,
     runningJobType: getRunningUploadJobType(state),
+    selectedJobType: getSelectedJobInUploadDialog(state)?.type,
   }),
   // mapDispatchToProps
   {

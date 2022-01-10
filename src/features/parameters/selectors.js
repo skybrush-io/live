@@ -2,6 +2,9 @@ import { createSelector } from '@reduxjs/toolkit';
 
 import { selectOrdered } from '~/utils/collections';
 
+export const shouldRebootAfterParameterUpload = (state) =>
+  Boolean(state.parameters.rebootAfterUpload);
+
 /**
  * Returns whether the current parameter manifest is empty.
  */
@@ -24,4 +27,20 @@ export function isParameterUploadSetupDialogOpen(state) {
 export const getParameterManifest = createSelector(
   (state) => state.parameters.manifest,
   selectOrdered
+);
+
+/**
+ * Selector that calculates the payload of the parameter upload job, given the
+ * current parameter manifest.
+ */
+export const getParameterUploadJobPayloadFromManifest = createSelector(
+  getParameterManifest,
+  shouldRebootAfterParameterUpload,
+  (manifest, shouldReboot) => {
+    const items = manifest
+      .map(({ name, value }) => ({ name, value }))
+      .filter(({ name }) => typeof name === 'string' && name.length > 0);
+    const meta = { shouldReboot };
+    return { items, meta };
+  }
 );

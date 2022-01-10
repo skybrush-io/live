@@ -4,7 +4,7 @@ import {
   areItemsInUploadBacklog,
   getFailedUploadItems,
   getItemsInUploadBacklog,
-  getSelectedJobTypeInUploadDialog,
+  getSelectedJobInUploadDialog,
   getSuccessfulUploadItems,
   isItemInUploadBacklog,
   isUploadInProgress,
@@ -73,10 +73,9 @@ export function startUploadJobFromUploadDialog() {
     // Process the state, extract the type of the job that the user selected,
     // and create the payload depending on the job type and the current state
     const state = getState();
-    const type = getSelectedJobTypeInUploadDialog(state);
+    const { type, payload } = getSelectedJobInUploadDialog(state);
 
     let selector;
-    let payload;
 
     switch (type) {
       default:

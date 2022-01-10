@@ -1,13 +1,16 @@
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import Box from '@material-ui/core/Box';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Switch from '@material-ui/core/Switch';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 
 import { formatParameters, parseParameters } from './formatting';
-import { updateParametersInManifest } from './slice';
+import { shouldRebootAfterParameterUpload } from './selectors';
+import { setRebootAfterUpload, updateParametersInManifest } from './slice';
 
 const ParametersTextField = ({ onChange }) => {
   const [parameterString, setParameterString] = useState('');
@@ -79,23 +82,41 @@ ParametersTextField.propTypes = {
 };
 
 const ParameterUploadMainPanel = () => {
+  const shouldReboot = useSelector(shouldRebootAfterParameterUpload);
   const dispatch = useDispatch();
 
-  const handleChange = ({ value, valid, commit }) => {
+  const handleManifestChange = ({ value, valid, commit }) => {
     if (valid && commit && value.length > 0) {
       dispatch(updateParametersInManifest(value));
     }
   };
 
+  const handleRebootStateChange = (value, checked) => {
+    dispatch(setRebootAfterUpload(checked));
+  };
+
   return (
     <Box pt={1}>
-      <ParametersTextField onChange={handleChange} />
+      <ParametersTextField onChange={handleManifestChange} />
       <Box pt={1}>
         <Typography variant='body1'>
           Press <kbd>{'\u21E7'}</kbd> + <kbd>Enter</kbd> to add the parameter to
           the manifest. Click on a parameter in the sidebar to remove it from
           the manifest.
         </Typography>
+      </Box>
+      <Box pt={1}>
+        <FormControlLabel
+          style={{ margin: '0' }}
+          control={
+            <Switch
+              checked={shouldReboot}
+              color='primary'
+              onChange={handleRebootStateChange}
+            />
+          }
+          label='Reboot after upload'
+        />
       </Box>
     </Box>
   );

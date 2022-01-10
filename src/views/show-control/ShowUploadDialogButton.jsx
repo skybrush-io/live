@@ -8,13 +8,13 @@ import StatusLight from '@skybrush/mui-components/lib/StatusLight';
 
 import ListItemTextWithProgress from '~/components/ListItemTextWithProgress';
 import { Status } from '~/components/semantics';
-import { JOB_TYPE as SHOW_UPLOAD_JOB_TYPE } from '~/features/show/constants';
+import { SHOW_UPLOAD_JOB } from '~/features/show/constants';
 import { getSetupStageStatuses } from '~/features/show/stages';
 import {
   getUploadProgress,
   isUploadInProgress,
 } from '~/features/upload/selectors';
-import { openUploadDialogWithTaskType } from '~/features/upload/slice';
+import { openUploadDialogForJob } from '~/features/upload/slice';
 import UploadProgressBar from '~/features/upload/UploadProgressBar';
 
 /**
@@ -52,6 +52,6 @@ export default connect(
   }),
   // mapDispatchToProps
   {
-    onClick: () => openUploadDialogWithTaskType(SHOW_UPLOAD_JOB_TYPE),
+    onClick: () => openUploadDialogForJob(SHOW_UPLOAD_JOB),
   }
 )(ShowUploadDialogButton);

@@ -20,6 +20,7 @@ import {
 } from './parsing';
 import { OperationExecutor } from './operations';
 import { QueryHandler } from './queries';
+import { validateObjectId } from './validation';
 import version from './version';
 
 /**
@@ -978,6 +979,49 @@ export default class MessageHub {
 
     const response = await this.sendMessage(message);
     return this._processMultiAsyncOperationResponse(response, expectedType);
+  }
+
+  /**
+   * Sends a message to the server whose target is a single object ID and whose
+   * expected response is a standard multi-object async response with keys named
+   * `result`, `error` and `receipt`. (The response to many messages in the protocol specification
+   * follow this template). Returns a promise that resolves when the spawned
+   * async operation on the server has resolved to its result or has terminated
+   * with an error or a tiemout.
+   *
+   * The promise resolves to the result if the operation was successful, or
+   * rejects if the operation returned an error.
+   */
+  async startAsyncOperationForSingleId(id, message) {
+    const { ids, type: expectedType } = message;
+    if (!expectedType) {
+      throw new Error('Message must have a type');
+    }
+
+    if (ids && !Array.isArray(ids)) {
+      throw new Error('Message must not have an ids key');
+    }
+
+    validateObjectId(id);
+
+    message.ids = [id];
+
+    const response = await this.sendMessage(message);
+    const parsedResponse = await this._processMultiAsyncOperationResponse(
+      response,
+      expectedType
+    );
+
+    if (Object.prototype.hasOwnProperty.call(parsedResponse, id)) {
+      const responseForSingleId = parsedResponse[id];
+      if (responseForSingleId instanceof Error) {
+        throw responseForSingleId;
+      } else {
+        return responseForSingleId;
+      }
+    } else {
+      throw new Error(`Server did not return a response for ID ${id}`);
+    }
   }
 
   /**

@@ -56,3 +56,19 @@ export function createCommandRequest(uavIds, command, args, kwds) {
 
   return result;
 }
+
+/**
+ * Creates a PRM-SET (parameter setting request) message
+ *
+ * @param  {Object[]}  uavIds  IDs of the UAVs to send the request to
+ * @param  {string}    name    the name of the parameter to set
+ * @param  {Object}    value   the value of the parameter to set
+ * @return {Object}  the message
+ */
+export function createParameterSettingRequest(uavIds, name, value) {
+  const result = createMessageWithType('PRM-SET');
+  result.ids = arrify(uavIds);
+  result.name = String(name);
+  result.value = value;
+  return result;
+}

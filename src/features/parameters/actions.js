@@ -1,14 +1,16 @@
 import delay from 'delay';
 
-import { openUploadDialogWithTaskType } from '~/features/upload/slice';
+import { openUploadDialogForJob } from '~/features/upload/slice';
 
 import { JOB_TYPE } from './constants';
+import { getParameterUploadJobPayloadFromManifest } from './selectors';
 import { closeParameterUploadSetupDialog } from './slice';
 
 export function proceedToUpload() {
-  return async (dispatch) => {
+  return async (dispatch, getState) => {
+    const payload = getParameterUploadJobPayloadFromManifest(getState());
     dispatch(closeParameterUploadSetupDialog());
     await delay(150);
-    dispatch(openUploadDialogWithTaskType(JOB_TYPE));
+    dispatch(openUploadDialogForJob({ type: JOB_TYPE, payload }));
   };
 }

@@ -8,7 +8,7 @@ import { createSlice } from '@reduxjs/toolkit';
 
 import { ensureItemsInQueue, moveItemsBetweenQueues } from './utils';
 
-import { JOB_TYPE as SHOW_UPLOAD_JOB_TYPE } from '~/features/show/constants';
+import { SHOW_UPLOAD_JOB } from '~/features/show/constants';
 import { clearLoadedShow } from '~/features/show/slice';
 import { deleteItemById, replaceItemOrAddToFront } from '~/utils/collections';
 import { noPayload } from '~/utils/redux';
@@ -79,7 +79,10 @@ const { actions, reducer } = createSlice({
     dialog: {
       open: false,
       showLastUploadResult: false,
-      selectedJobType: null,
+      selectedJob: {
+        type: null,
+        payload: null,
+      },
     },
   },
 
@@ -207,9 +210,9 @@ const { actions, reducer } = createSlice({
       target: 'itemsFinished',
     }),
 
-    openUploadDialogWithTaskType(state, action) {
+    openUploadDialogForJob(state, action) {
       const { payload } = action;
-      const newJobType = String(payload);
+      const { type: newJobType, payload: newJobPayload } = payload || {};
 
       // Do not do anything without a job type
       if (!newJobType) {
@@ -220,12 +223,15 @@ const { actions, reducer } = createSlice({
       // queues
       if (
         !state.currentJob.running &&
-        state.dialog.selectedJobType !== newJobType
+        state.dialog.selectedJob?.type !== newJobType
       ) {
         clearQueues(state);
       }
 
-      state.dialog.selectedJobType = newJobType;
+      state.dialog.selectedJob = {
+        type: newJobType,
+        payload: newJobPayload || null,
+      };
       state.dialog.showLastUploadResult = false;
       state.dialog.open = true;
     },
@@ -245,7 +251,7 @@ const { actions, reducer } = createSlice({
 
   extraReducers: {
     [clearLoadedShow]: (state) => {
-      clearLastUploadResultForJobTypeHelper(state, SHOW_UPLOAD_JOB_TYPE);
+      clearLastUploadResultForJobTypeHelper(state, SHOW_UPLOAD_JOB.type);
     },
   },
 });
@@ -265,7 +271,7 @@ export const {
   _notifyUploadOnUavQueued,
   _notifyUploadOnUavStarted,
   _notifyUploadOnUavSucceeded,
-  openUploadDialogWithTaskType,
+  openUploadDialogForJob,
   setupNextUploadJob,
   putUavInWaitingQueue,
   removeUavFromWaitingQueue,
