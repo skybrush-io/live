@@ -80,7 +80,7 @@ export function startUploadJobFromUploadDialog() {
 
     switch (type) {
       default:
-        selector = getUAVIdsParticipatingInMissionSortedByMissionIndex(state);
+        selector = getUAVIdsParticipatingInMissionSortedByMissionIndex;
         break;
     }
 
