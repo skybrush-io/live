@@ -14,6 +14,7 @@ import PlayArrow from '@material-ui/icons/PlayArrow';
 import MiniList from '@skybrush/mui-components/lib/MiniList';
 import Tooltip from '@skybrush/mui-components/lib/Tooltip';
 
+import { proceedToUpload } from './actions';
 import { getParameterManifest, isManifestEmpty } from './selectors';
 import { clearManifest, removeParameterFromManifest } from './slice';
 
@@ -146,5 +147,6 @@ export default connect(
   {
     onRemoveAllItems: clearManifest,
     onRemoveItem: removeParameterFromManifest,
+    onStart: proceedToUpload,
   }
 )(ParameterListSidebar);

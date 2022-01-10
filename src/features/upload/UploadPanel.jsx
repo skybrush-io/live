@@ -16,7 +16,7 @@ import LabeledStatusLight from '@skybrush/mui-components/lib/LabeledStatusLight'
 
 import { Status } from '~/components/semantics';
 import {
-  getLastUploadResult,
+  getLastUploadResultByJobType,
   getUploadDialogState,
   hasQueuedItems,
   isUploadInProgress,
@@ -173,16 +173,13 @@ UploadPanel.defaultProps = {
   showLastUploadResult: false,
 };
 
-// TODO(ntamas): most selectors should return a combination of show and
-// drone IDs
-
 export default connect(
   // mapStateToProps
-  (state) => ({
+  (state, ownProps) => ({
     ...getUploadDialogState(state),
     autoRetry: shouldRetryFailedUploadsAutomatically(state),
     hasQueuedItems: hasQueuedItems(state),
-    lastUploadResult: getLastUploadResult(state),
+    lastUploadResult: getLastUploadResultByJobType(state, ownProps.jobType),
     running: isUploadInProgress(state),
   }),
 

@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
+import { makeStyles } from '@material-ui/core/styles';
 
 import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
 
@@ -12,8 +13,6 @@ import ParameterListSidebar from './ParameterListSidebar';
 import ParameterUploadMainPanel from './ParameterUploadMainPanel';
 import { isParameterUploadSetupDialogOpen } from './selectors';
 import { closeParameterUploadSetupDialog } from './slice';
-
-import { makeStyles } from '@material-ui/core/styles';
 
 /* Ugly hack to move the sidebar to the right */
 const useStyles = makeStyles(
@@ -60,7 +59,6 @@ const ParameterUploadSetupDialog = ({ onClose, open }) => {
 ParameterUploadSetupDialog.propTypes = {
   open: PropTypes.bool,
   onClose: PropTypes.func,
-  onStart: PropTypes.func,
 };
 
 export default connect(

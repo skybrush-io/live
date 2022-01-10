@@ -1,7 +1,10 @@
+import { getUAVIdsParticipatingInMissionSortedByMissionIndex } from '~/features/mission/selectors';
+
 import {
   areItemsInUploadBacklog,
   getFailedUploadItems,
   getItemsInUploadBacklog,
+  getSelectedJobTypeInUploadDialog,
   getSuccessfulUploadItems,
   isItemInUploadBacklog,
   isUploadInProgress,
@@ -65,12 +68,22 @@ export function toggleUavInWaitingQueue(uavId) {
  * action is invoked, the selector is ignored and the items in the backlog will
  * be processed instead.
  */
-export function startUploadJobWithUavIdsFromSelector(
-  { type, payload },
-  selector
-) {
+export function startUploadJobFromUploadDialog() {
   return (dispatch, getState) => {
+    // Process the state, extract the type of the job that the user selected,
+    // and create the payload depending on the job type and the current state
     const state = getState();
+    const type = getSelectedJobTypeInUploadDialog(state);
+
+    let selector;
+    let payload;
+
+    switch (type) {
+      default:
+        selector = getUAVIdsParticipatingInMissionSortedByMissionIndex(state);
+        break;
+    }
+
     const targets = areItemsInUploadBacklog(state)
       ? getItemsInUploadBacklog(state)
       : selector

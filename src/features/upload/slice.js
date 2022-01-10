@@ -6,13 +6,23 @@
 import isNil from 'lodash-es/isNil';
 import { createSlice } from '@reduxjs/toolkit';
 
+import { JobType } from './jobs';
 import { ensureItemsInQueue, moveItemsBetweenQueues } from './utils';
 
 import { clearLoadedShow } from '~/features/show/slice';
+import { deleteItemById, replaceItemOrAddToFront } from '~/utils/collections';
 import { noPayload } from '~/utils/redux';
 
-function clearLastUploadResultHelper(state) {
-  state.lastUploadResult = null;
+function clearLastUploadResultForJobTypeHelper(state, jobType) {
+  deleteItemById(state.history, jobType);
+}
+
+function clearQueues(state) {
+  state.queues.failedItems = [];
+  state.queues.itemsFinished = [];
+  state.queues.itemsQueued = [];
+  state.queues.itemsWaitingToStart = [];
+  state.dialog.showLastUploadResult = false;
 }
 
 const { actions, reducer } = createSlice({
@@ -20,7 +30,6 @@ const { actions, reducer } = createSlice({
 
   initialState: {
     autoRetry: false,
-    lastUploadResult: null,
 
     currentJob: {
       // Type of current job being executed by the uploader. Value is kept after
@@ -70,11 +79,17 @@ const { actions, reducer } = createSlice({
     dialog: {
       open: false,
       showLastUploadResult: false,
+      selectedJobType: null,
     },
   },
 
   reducers: {
-    clearLastUploadResult: noPayload(clearLastUploadResultHelper),
+    clearLastUploadResultForJobType: (state, action) => {
+      const { payload: jobType } = action;
+      if (jobType) {
+        clearLastUploadResultForJobTypeHelper(state, jobType);
+      }
+    },
 
     clearUploadQueue: noPayload((state) => {
       state.queues.itemsWaitingToStart = [];
@@ -108,14 +123,11 @@ const { actions, reducer } = createSlice({
       }
 
       state.currentJob.type = type;
-      state.currentJob.jobPayload = isNil(jobPayload) ? null : jobPayload;
+      state.currentJob.payload = isNil(jobPayload) ? null : jobPayload;
 
-      state.queues.failedItems = [];
-      state.queues.itemsFinished = [];
-      state.queues.itemsQueued = [];
+      clearQueues(state);
+
       state.queues.itemsWaitingToStart = [...targets];
-
-      state.dialog.showLastUploadResult = false;
     },
 
     setUploadAutoRetry(state, action) {
@@ -148,11 +160,15 @@ const { actions, reducer } = createSlice({
       state.currentJob.running = false;
 
       // Store the upload result in the history
-      state.lastUploadResult = cancelled
-        ? 'cancelled'
-        : success
-        ? 'success'
-        : 'error';
+      const result = cancelled ? 'cancelled' : success ? 'success' : 'error';
+      if (state.currentJob.type) {
+        const historyItem = {
+          id: state.currentJob.type,
+          payload: state.currentJob.payload,
+          result,
+        };
+        replaceItemOrAddToFront(state.history, historyItem);
+      }
 
       // Trigger the dialog box to show the result
       state.dialog.showLastUploadResult = true;
@@ -191,11 +207,28 @@ const { actions, reducer } = createSlice({
       target: 'itemsFinished',
     }),
 
-    openUploadDialog: noPayload((state) => {
-      clearLastUploadResultHelper(state);
+    openUploadDialogWithTaskType(state, action) {
+      const { payload } = action;
+      const newJobType = String(payload);
+
+      // Do not do anything without a job type
+      if (!newJobType) {
+        return;
+      }
+
+      // If the job type changed and no upload task is running, clear the
+      // queues
+      if (
+        !state.currentJob.running &&
+        state.dialog.selectedJobType !== newJobType
+      ) {
+        clearQueues(state);
+      }
+
+      state.dialog.selectedJobType = newJobType;
       state.dialog.showLastUploadResult = false;
       state.dialog.open = true;
-    }),
+    },
 
     // Trigger actions for the upload saga
 
@@ -211,13 +244,15 @@ const { actions, reducer } = createSlice({
   },
 
   extraReducers: {
-    [clearLoadedShow]: clearLastUploadResultHelper,
+    [clearLoadedShow]: (state) => {
+      clearLastUploadResultForJobTypeHelper(state, JobType.SHOW_UPLOAD);
+    },
   },
 });
 
 export const {
   cancelUpload,
-  clearLastUploadResult,
+  clearLastUploadResultForJobType,
   clearUploadQueue,
   closeUploadDialog,
   dismissLastUploadResult,
@@ -230,7 +265,7 @@ export const {
   _notifyUploadOnUavQueued,
   _notifyUploadOnUavStarted,
   _notifyUploadOnUavSucceeded,
-  openUploadDialog,
+  openUploadDialogWithTaskType,
   setupNextUploadJob,
   putUavInWaitingQueue,
   removeUavFromWaitingQueue,

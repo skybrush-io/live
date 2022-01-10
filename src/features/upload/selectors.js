@@ -28,13 +28,15 @@ export const getRunningUploadJobType = createSelector(
 /**
  * Returns the failed upload items from the uploader.
  */
-export const getFailedUploadItems = (state) => state.upload.failedItems;
+export const getFailedUploadItems = (state) => state.upload.queues.failedItems;
 
 /**
- * Returns the result of the last upload attempt: success, error or cancelled
- * (as a string).
+ * Returns the result of the last job with the given types: success, error or cancelled
+ * (as a string), or null if there was no job with the given type yet. Also
+ * returns null if the job type is null.
  */
-export const getLastUploadResult = (state) => state.upload.lastUploadResult;
+export const getLastUploadResultByJobType = (state, type) =>
+  type ? state.upload.history.byId[type]?.result : null;
 
 /**
  * Returns the upload items that are either already sent to a worker or that
@@ -101,6 +103,12 @@ export const getNextDroneFromUploadQueue = (state) => {
  * Returns the state object of the upload dialog.
  */
 export const getUploadDialogState = (state) => state.upload.dialog;
+
+/**
+ * Returns the type of the selected job in the upload dialog.
+ */
+export const getSelectedJobTypeInUploadDialog = (state) =>
+  getUploadDialogState(state)?.selectedJobType;
 
 /**
  * Returns an object that counts how many drones are currently in the

@@ -12,6 +12,7 @@ import {
   take,
 } from 'redux-saga/effects';
 
+import { JobType } from './jobs';
 import {
   getCurrentUploadJob,
   getNextDroneFromUploadQueue,
@@ -220,7 +221,7 @@ function* forkingWorkerManagementSaga(spec, job, { workerCount = 8 } = {}) {
  *   data object depends solely on the type of the job being executed.
  */
 const JOB_TYPE_TO_SPEC_MAP = {
-  'show-upload': {
+  [JobType.SHOW_UPLOAD]: {
     executor: runSingleShowUpload,
     selector: createShowConfigurationForUav,
   },

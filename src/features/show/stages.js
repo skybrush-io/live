@@ -41,7 +41,8 @@ import {
   areAllUAVsInMissionWithoutErrors,
   getMissingUAVIdsInMapping,
 } from '~/features/uavs/selectors';
-import { getLastUploadResult } from '~/features/upload/selectors';
+import { JobType } from '~/features/upload/jobs';
+import { getLastUploadResultByJobType } from '~/features/upload/selectors';
 
 /**
  * Definitions of the stages that one needs to pass through in order to launch
@@ -90,7 +91,7 @@ const stages = {
 
   uploadShow: {
     evaluate: (state) => {
-      const result = getLastUploadResult(state);
+      const result = getLastUploadResultByJobType(state, JobType.SHOW_UPLOAD);
       return result === 'error'
         ? Status.ERROR
         : result === 'cancelled'

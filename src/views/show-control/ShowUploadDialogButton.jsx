@@ -13,7 +13,8 @@ import {
   getUploadProgress,
   isUploadInProgress,
 } from '~/features/upload/selectors';
-import { openUploadDialog } from '~/features/upload/slice';
+import { openUploadDialogWithTaskType } from '~/features/upload/slice';
+import { JobType } from '~/features/upload/jobs';
 import UploadProgressBar from '~/features/upload/UploadProgressBar';
 
 /**
@@ -51,6 +52,6 @@ export default connect(
   }),
   // mapDispatchToProps
   {
-    onClick: openUploadDialog,
+    onClick: () => openUploadDialogWithTaskType(JobType.SHOW_UPLOAD),
   }
 )(ShowUploadDialogButton);

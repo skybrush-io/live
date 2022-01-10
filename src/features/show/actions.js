@@ -20,7 +20,8 @@ import {
 } from '~/features/mission/slice';
 import { showNotification } from '~/features/snackbar/slice';
 import { MessageSemantics } from '~/features/snackbar/types';
-import { clearLastUploadResult } from '~/features/upload/slice';
+import { JobType } from '~/features/upload/jobs';
+import { clearLastUploadResultForJobType } from '~/features/upload/slice';
 import { FeatureType } from '~/model/features';
 import { getFeaturesInOrder } from '~/selectors/ordered';
 import {
@@ -64,6 +65,13 @@ import {
 export const approveTakeoffArea = () => (dispatch) => {
   dispatch(approveTakeoffAreaAt(Date.now()));
 };
+
+/**
+ * Returns an action that clears the last show upload result from the upload
+ * history.
+ */
+export const clearLastUploadResult = () =>
+  clearLastUploadResultForJobType(JobType.SHOW_UPLOAD);
 
 /**
  * Updates the takeoff and landing positions and the takeoff headings in the
