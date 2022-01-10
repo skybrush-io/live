@@ -6,9 +6,9 @@
 import isNil from 'lodash-es/isNil';
 import { createSlice } from '@reduxjs/toolkit';
 
-import { JobType } from './jobs';
 import { ensureItemsInQueue, moveItemsBetweenQueues } from './utils';
 
+import { JOB_TYPE as SHOW_UPLOAD_JOB_TYPE } from '~/features/show/constants';
 import { clearLoadedShow } from '~/features/show/slice';
 import { deleteItemById, replaceItemOrAddToFront } from '~/utils/collections';
 import { noPayload } from '~/utils/redux';
@@ -245,7 +245,7 @@ const { actions, reducer } = createSlice({
 
   extraReducers: {
     [clearLoadedShow]: (state) => {
-      clearLastUploadResultForJobTypeHelper(state, JobType.SHOW_UPLOAD);
+      clearLastUploadResultForJobTypeHelper(state, SHOW_UPLOAD_JOB_TYPE);
     },
   },
 });

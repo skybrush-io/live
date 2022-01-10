@@ -1,5 +1,5 @@
 import isNil from 'lodash-es/isNil';
-import { buffers, CANCEL, channel } from 'redux-saga';
+import { buffers, channel } from 'redux-saga';
 import {
   call,
   cancelled,
@@ -12,7 +12,7 @@ import {
   take,
 } from 'redux-saga/effects';
 
-import { JobType } from './jobs';
+import { getJobSpecificationFromType } from './jobs';
 import {
   getCurrentUploadJob,
   getNextDroneFromUploadQueue,
@@ -33,34 +33,12 @@ import {
 } from './slice';
 
 import { handleError } from '~/error-handling';
-import { createShowConfigurationForUav } from '~/features/show/selectors';
-import messageHub from '~/message-hub';
 import { createActionListenerSaga, putWithRetry } from '~/utils/sagas';
 
 /**
  * Special symbol used to make a worker task quit.
  */
 const STOP = Symbol('STOP');
-
-/**
- * Handles a single trajectory upload to a drone. Returns a promise that resolves
- * when the trajectory is uploaded. The promise is extended with a cancellation
- * callback for Redux-saga.
- *
- * @param uavId    the ID of the UAV to upload the show trajectory to
- * @param data     the show specification, as selected from the state store
- */
-async function runSingleShowUpload({ uavId, data }) {
-  // No need for a timeout here; it utilizes the message hub, which has its
-  // own timeout for failed command executions (although it is quite long)
-  const cancelToken = messageHub.createCancelToken();
-  const promise = messageHub.execute.uploadDroneShow(
-    { uavId, data },
-    { cancelToken }
-  );
-  promise[CANCEL] = () => cancelToken.cancel({ allowFailure: true });
-  return promise;
-}
 
 /**
  * Saga that runs a single upload worker.
@@ -196,38 +174,6 @@ function* forkingWorkerManagementSaga(spec, job, { workerCount = 8 } = {}) {
 }
 
 /**
- * Mapping from known job types to the sagas that handle them.
- *
- * Each entry in this map consists of:
- *
- * - `workerManager`: a saga that should be responsible for the top-level
- *   scheduling of the tasks in the job, related to the individual UAVs.
- *   The saga takes two parameters: the specification from this map and the
- *   current job (consisting of a type and a payload). The executor defaults
- *   to `forkingWorkerManagementSaga`.
- * - `selector`: a Redux selector that is called before executing the job for a
- *   single UAV. The selector is called with the Redux state and the ID of the
- *   UAV that the job is targeting, and it can return an arbitrary object that
- *   will be forwarded to the executor (see below in the `executor` for more
- *   details).
- * - `executor`: an asynchronous function that executes the job for a single
- *   UAV (e.g., uploads a drone show specification to a single UAV). This
- *   function runs in the context of a worker saga, which is blocked until the
- *   promise returned from the executor resolves or rejects. The function will
- *   be called with an object having three keys: `uavId` is the ID of the UAV
- *   that is targeted by the job, `payload` is the payload of the original job
- *   specification, and `data` is the state slice that was extracted by the
- *   selector associated to the job type. The semantics of the payload and the
- *   data object depends solely on the type of the job being executed.
- */
-const JOB_TYPE_TO_SPEC_MAP = {
-  [JobType.SHOW_UPLOAD]: {
-    executor: runSingleShowUpload,
-    selector: createShowConfigurationForUav,
-  },
-};
-
-/**
  * Saga that starts an upload saga and waits for either the upload saga to
  * finish, or a cancellation action.
  */
@@ -238,8 +184,7 @@ function* uploaderSagaWithCancellation() {
     return;
   }
 
-  const spec = JOB_TYPE_TO_SPEC_MAP[job.type];
-
+  const spec = getJobSpecificationFromType(job.type);
   if (!spec) {
     // Unknown job type
     console.warn(`Unknown job type: ${job.type}, skipping`);

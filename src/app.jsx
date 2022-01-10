@@ -40,6 +40,7 @@ import store, {
   waitUntilStateRestored,
 } from './store';
 import ThemeProvider, { DarkModeExtraCSSProvider } from './theme';
+import registerUploadJobTypes from './upload-jobs';
 import workbench from './workbench';
 
 import 'tippy.js/dist/tippy.css';
@@ -87,6 +88,7 @@ const restoreWorkbench = (whenDone) => async () => {
 
 // Spin up the root saga after the state has been restored.
 waitUntilStateRestored().then(() => {
+  registerUploadJobTypes();
   sagaMiddleware.run(rootSaga);
 });
 

@@ -5,6 +5,7 @@
 
 import isEmpty from 'lodash-es/isEmpty';
 
+import { JOB_TYPE } from './constants';
 import {
   areManualPreflightChecksSignedOff,
   areOnboardPreflightChecksSignedOff,
@@ -41,7 +42,6 @@ import {
   areAllUAVsInMissionWithoutErrors,
   getMissingUAVIdsInMapping,
 } from '~/features/uavs/selectors';
-import { JobType } from '~/features/upload/jobs';
 import { getLastUploadResultByJobType } from '~/features/upload/selectors';
 
 /**
@@ -91,7 +91,7 @@ const stages = {
 
   uploadShow: {
     evaluate: (state) => {
-      const result = getLastUploadResultByJobType(state, JobType.SHOW_UPLOAD);
+      const result = getLastUploadResultByJobType(state, JOB_TYPE);
       return result === 'error'
         ? Status.ERROR
         : result === 'cancelled'
