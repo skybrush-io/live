@@ -15,7 +15,7 @@ const AnotherJobTypeRunningHint = () => {
     <BackgroundHint
       icon={<LocalShipping />}
       header='Another task is in progress'
-      text='Wait for the other task to finish or cancel it to upload show data'
+      text='Wait for the other task to finish or cancel it to start a new upload'
       button={
         <Button
           onClick={() => {
