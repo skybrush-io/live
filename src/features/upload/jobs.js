@@ -1,3 +1,8 @@
+export const JobScope = {
+  ALL: 'all',
+  MISSION: 'mission',
+};
+
 /**
  * Mapping from known job types to the async functions that handle them.
  *
@@ -5,6 +10,11 @@
  *
  * - `type`: the type of the job, i.e. a unique string identifier
  * - `title`: the title of the job, used in dialog boxes
+ * - `scope`: the scope of the job, i.e. the set of UAVs that the job can
+ *   operate on. Must be one of `mission` (UAVs that are in the current mission
+ *   mapping) or `all` (all UAVs, irrespectively of whether they are mapped in
+ *   the current mission or not). The default is `all`. Use the `JobScope`
+ *   enum when referring to these strings from code.
  * - `selector`: a Redux selector that is called before executing the job for a
  *   single UAV. The selector is called with the Redux state and the ID of the
  *   UAV that the job is targeting, and it can return an arbitrary object that
@@ -40,7 +50,7 @@ const JOB_TYPE_TO_SPEC_MAP = {};
  * Returns the job specification object corresponding to the given job type,
  * or null if there is no such job type.
  */
-export function getJobSpecificationFromType(type) {
+export function getSpecificationForJobType(type) {
   return JOB_TYPE_TO_SPEC_MAP[type] ?? null;
 }
 
@@ -48,7 +58,14 @@ export function getJobSpecificationFromType(type) {
  * Returns the title to show for jobs of a given type in dialog boxes.
  */
 export function getDialogTitleForJobType(type) {
-  return getJobSpecificationFromType(type)?.title ?? 'Upload data';
+  return getSpecificationForJobType(type)?.title ?? 'Upload data';
+}
+
+/**
+ * Returns the scope of an upload job with the given type.
+ */
+export function getScopeForJobType(type) {
+  return getSpecificationForJobType(type)?.scope ?? JobScope.ALL;
 }
 
 /**

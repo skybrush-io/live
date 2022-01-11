@@ -7,7 +7,11 @@ import { connect } from 'react-redux';
 import Box from '@material-ui/core/Box';
 import { makeStyles } from '@material-ui/core/styles';
 
+import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
+
 import { getMissionMapping } from '~/features/mission/selectors';
+import { getUAVIdList } from '~/features/uavs/selectors';
+import { isSelectedJobInUploadDialogScopedToMission } from '~/features/upload/selectors';
 import { formatMissionIdRange } from '~/utils/formatting';
 
 import { toggleUavsInWaitingQueue } from './actions';
@@ -30,13 +34,26 @@ const useStyles = makeStyles((theme) => ({
       overflow: 'hidden',
     },
   },
+
+  empty: {
+    padding: theme.spacing(1, 0),
+    height: 64,
+  },
 }));
 
 /**
  * Default formatter used to create the row headings when the user specified
  * no formatter.
  */
-const defaultRowHeaderFormatter = (start, end) => `${start}-${end}`;
+const defaultRowHeaderFormatter = (_start, _end, items) => {
+  if (items.length === 0) {
+    return EM_DASH;
+  } else if (items.length === 1) {
+    return items[0];
+  } else {
+    return `${String(items[0])}-${String(items[items.length - 1])}`;
+  }
+};
 
 /**
  * Given a list of IDs to show in the upload status light grid, returns an
@@ -54,7 +71,8 @@ const createRowsFromIds = (
     const labels = items.map(itemFormatter);
     const header = `${rowHeaderFormatter(
       index,
-      index + items.length
+      index + items.length,
+      items
     )} ${RIGHT_TRIANGLE}`;
     rows.push({ header, items, labels });
   }
@@ -80,6 +98,14 @@ const UploadStatusLights = ({
       }),
     [ids, columnCount, itemFormatter, rowHeaderFormatter]
   );
+
+  if (rows.length === 0) {
+    return (
+      <Box className={classes.empty}>
+        <BackgroundHint text='There are no available UAVs to upload to.' />
+      </Box>
+    );
+  }
 
   return (
     <Box className={classes.root}>
@@ -118,10 +144,15 @@ UploadStatusLights.propTypes = {
 
 export default connect(
   // mapStateToProps
-  (state) => ({
-    ids: getMissionMapping(state),
-    rowHeaderFormatter: formatMissionIdRange,
-  }),
+  (state) => {
+    const scopedToMission = isSelectedJobInUploadDialogScopedToMission(state);
+    return {
+      ids: scopedToMission ? getMissionMapping(state) : getUAVIdList(state),
+      rowHeaderFormatter: scopedToMission
+        ? formatMissionIdRange
+        : defaultRowHeaderFormatter,
+    };
+  },
   // mapDispatchToProps
   {
     onHeaderClick: toggleUavsInWaitingQueue,

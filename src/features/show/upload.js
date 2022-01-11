@@ -2,6 +2,7 @@ import isNil from 'lodash-es/isNil';
 import { CANCEL } from 'redux-saga';
 
 import { getReverseMissionMapping } from '~/features/mission/selectors';
+import { JobScope } from '~/features/upload/jobs';
 import messageHub from '~/message-hub';
 
 import { JOB_TYPE } from './constants';
@@ -115,6 +116,7 @@ async function runSingleShowUpload({ uavId, data }) {
 const spec = {
   executor: runSingleShowUpload,
   selector: createShowConfigurationForUav,
+  scope: JobScope.MISSION,
   title: 'Upload show data',
   type: JOB_TYPE,
 };

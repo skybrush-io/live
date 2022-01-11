@@ -1,5 +1,7 @@
 import isNil from 'lodash-es/isNil';
 import { getUAVIdsParticipatingInMissionSortedByMissionIndex } from '~/features/mission/selectors';
+import { getUAVIdList } from '~/features/uavs/selectors';
+import { getScopeForJobType, JobScope } from './jobs';
 
 import {
   areItemsInUploadBacklog,
@@ -109,12 +111,17 @@ export function startUploadJobFromUploadDialog() {
     // and create the payload depending on the job type and the current state
     const state = getState();
     const { type, payload } = getSelectedJobInUploadDialog(state);
-
+    const scope = getScopeForJobType(type);
     let selector;
 
-    switch (type) {
-      default:
+    switch (scope) {
+      case JobScope.MISSION:
         selector = getUAVIdsParticipatingInMissionSortedByMissionIndex;
+        break;
+
+      case JobScope.ALL:
+      default:
+        selector = getUAVIdList;
         break;
     }
 

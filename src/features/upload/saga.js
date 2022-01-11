@@ -12,7 +12,7 @@ import {
   take,
 } from 'redux-saga/effects';
 
-import { getJobSpecificationFromType } from './jobs';
+import { getSpecificationForJobType } from './jobs';
 import {
   getCurrentUploadJob,
   getNextDroneFromUploadQueue,
@@ -184,7 +184,7 @@ function* uploaderSagaWithCancellation() {
     return;
   }
 
-  const spec = getJobSpecificationFromType(job.type);
+  const spec = getSpecificationForJobType(job.type);
   if (!spec) {
     // Unknown job type
     console.warn(`Unknown job type: ${job.type}, skipping`);

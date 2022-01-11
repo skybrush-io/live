@@ -4,6 +4,7 @@ import isNil from 'lodash-es/isNil';
 import { createSelector } from '@reduxjs/toolkit';
 
 import { Status } from '~/components/semantics';
+import { getScopeForJobType, JobScope } from './jobs';
 
 /**
  * Returns the current upload job. The returned object is guaranteed to have
@@ -109,6 +110,15 @@ export const getUploadDialogState = (state) => state.upload.dialog;
  */
 export const getSelectedJobInUploadDialog = (state) =>
   getUploadDialogState(state)?.selectedJob ?? {};
+
+/**
+ * Returns whether the currently _selected_ upload job in the upload dialog
+ * is scoped to the UAVs in the current mission.
+ */
+export const isSelectedJobInUploadDialogScopedToMission = createSelector(
+  getSelectedJobInUploadDialog,
+  ({ type }) => getScopeForJobType(type) === JobScope.MISSION
+);
 
 /**
  * Returns an object that counts how many drones are currently in the
