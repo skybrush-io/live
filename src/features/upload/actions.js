@@ -1,3 +1,4 @@
+import isNil from 'lodash-es/isNil';
 import { getUAVIdsParticipatingInMissionSortedByMissionIndex } from '~/features/mission/selectors';
 
 import {
@@ -10,8 +11,8 @@ import {
   isUploadInProgress,
 } from './selectors';
 import {
-  putUavInWaitingQueue,
-  removeUavFromWaitingQueue,
+  putUavsInWaitingQueue,
+  removeUavsFromWaitingQueue,
   setupNextUploadJob,
   startUpload,
   _enqueueFailedUploads,
@@ -51,12 +52,46 @@ export function retryFailedUploads() {
  * in a state where such modification is allowed.
  */
 export function toggleUavInWaitingQueue(uavId) {
+  return toggleUavsInWaitingQueue([uavId]);
+}
+
+/**
+ * Toggles multiple UAVs into our out of the upload queue, assuming that the
+ * UAVs are in a state where such modification is allowed. The operation
+ * performed by this thunk is _consistent_ in a sense that it applies the
+ * _same_ operation to _all_ of the UAVs in the given array that are allowed
+ * to be modified.
+ *
+ * For instance, if the given UAV IDs contain a mixture of UAVs that are
+ * 1) in the waiting queue, 2) not in any of the queues and 3) are being
+ * processed, then the function will _not_ touch any of the UAVs that are
+ * being processed (because it is not allowed), and it will put the UAVs
+ * _not_ in any of the queues to the _waiting_ queue as that group takes
+ * priority. It will remove UAVs from the waiting queue _only_ if the list of
+ * UAV IDs contain either UAVs that are all in the waiting queue, or a mixture
+ * of UAVs that are either in the waiting queue or are being processed.
+ */
+export function toggleUavsInWaitingQueue(uavIds) {
   return (dispatch, getState) => {
     const state = getState();
-    if (isItemInUploadBacklog(state, uavId)) {
-      dispatch(removeUavFromWaitingQueue(uavId));
-    } else {
-      dispatch(putUavInWaitingQueue(uavId));
+    const toRemove = [];
+    const toAdd = [];
+
+    for (const uavId of uavIds) {
+      if (!isNil(uavId)) {
+        if (isItemInUploadBacklog(state, uavId)) {
+          toRemove.push(uavId);
+        } else {
+          toAdd.push(uavId);
+        }
+      }
+    }
+
+    if (toAdd.length > 0) {
+      /* Adding these items and not touching any of those that should be removed */
+      dispatch(putUavsInWaitingQueue(toAdd));
+    } else if (toRemove.length > 0) {
+      dispatch(removeUavsFromWaitingQueue(toRemove));
     }
   };
 }

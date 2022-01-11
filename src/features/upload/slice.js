@@ -106,12 +106,12 @@ const { actions, reducer } = createSlice({
       state.dialog.showLastUploadResult = false;
     }),
 
-    putUavInWaitingQueue: ensureItemsInQueue({
+    putUavsInWaitingQueue: ensureItemsInQueue({
       target: 'itemsWaitingToStart',
       doNotMoveWhenIn: ['itemsQueued', 'itemsInProgress'],
     }),
 
-    removeUavFromWaitingQueue: ensureItemsInQueue({
+    removeUavsFromWaitingQueue: ensureItemsInQueue({
       target: undefined,
       doNotMoveWhenIn: ['itemsQueued', 'itemsInProgress'],
     }),
@@ -282,8 +282,8 @@ export const {
   openUploadDialogForJob,
   openUploadDialogKeepingCurrentJob,
   setupNextUploadJob,
-  putUavInWaitingQueue,
-  removeUavFromWaitingQueue,
+  putUavsInWaitingQueue,
+  removeUavsFromWaitingQueue,
   setUploadAutoRetry,
   startUpload,
 } = actions;
