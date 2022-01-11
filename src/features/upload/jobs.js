@@ -41,7 +41,7 @@ const JOB_TYPE_TO_SPEC_MAP = {};
  * or null if there is no such job type.
  */
 export function getJobSpecificationFromType(type) {
-  return JOB_TYPE_TO_SPEC_MAP[type] || null;
+  return JOB_TYPE_TO_SPEC_MAP[type] ?? null;
 }
 
 /**
@@ -56,6 +56,8 @@ export function getDialogTitleForJobType(type) {
  *
  * See the documentation of `JOB_TYPE_TO_SPEC_MAP` for more information about
  * the specification.
+ *
+ * @returns a disposer function that can be called to unregister the job type
  */
 export function registerUploadJobType(spec) {
   const type = spec?.type;
@@ -64,7 +66,8 @@ export function registerUploadJobType(spec) {
     throw new Error('Job specification does not have a type');
   }
 
-  if (JOB_TYPE_TO_SPEC_MAP[type]) {
+  const existingSpec = JOB_TYPE_TO_SPEC_MAP[type];
+  if (existingSpec) {
     throw new Error(`Upload job type ${type} is already registered`);
   }
 
@@ -73,4 +76,8 @@ export function registerUploadJobType(spec) {
   }
 
   JOB_TYPE_TO_SPEC_MAP[type] = spec;
+
+  return () => {
+    delete JOB_TYPE_TO_SPEC_MAP[type];
+  };
 }

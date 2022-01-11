@@ -4,9 +4,15 @@ import { registerUploadJobType } from '~/features/upload/jobs';
 
 function registerUploadJobTypes() {
   const specs = [parameterUploadJobSpecification, showUploadJobSpecification];
-  for (const spec of specs) {
-    registerUploadJobType(spec);
-  }
+  const disposers = specs.map((spec) => registerUploadJobType(spec));
+
+  disposers.reverse();
+
+  return () => {
+    for (const disposer of disposers) {
+      disposer();
+    }
+  };
 }
 
 export default registerUploadJobTypes;
