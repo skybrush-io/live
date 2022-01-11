@@ -210,6 +210,14 @@ const { actions, reducer } = createSlice({
       target: 'itemsFinished',
     }),
 
+    openUploadDialogKeepingCurrentJob(state) {
+      // This action is allowed only if the upload dialog already has a job
+      // type
+      if (state.dialog.selectedJob?.type) {
+        state.dialog.open = true;
+      }
+    },
+
     openUploadDialogForJob(state, action) {
       const { payload } = action;
       const { type: newJobType, payload: newJobPayload } = payload || {};
@@ -272,6 +280,7 @@ export const {
   _notifyUploadOnUavStarted,
   _notifyUploadOnUavSucceeded,
   openUploadDialogForJob,
+  openUploadDialogKeepingCurrentJob,
   setupNextUploadJob,
   putUavInWaitingQueue,
   removeUavFromWaitingQueue,

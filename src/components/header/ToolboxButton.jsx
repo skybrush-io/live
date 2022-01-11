@@ -14,7 +14,7 @@ import Colors from '~/components/colors';
 import { showLicenseInfoDialog } from '~/features/license-info/slice';
 import { getActiveUAVIdsBeingAveraged } from '~/features/measurement/selectors';
 import { showAveragingDialog } from '~/features/measurement/slice';
-import { showParameterUploadSetupDialog } from '~/features/parameters/slice';
+import { showParameterUploadDialog } from '~/features/parameters/actions';
 import { isConnected } from '~/features/servers/selectors';
 import { isUploadInProgress } from '~/features/upload/selectors';
 import { showVersionCheckDialog } from '~/features/version-check/slice';
@@ -24,7 +24,7 @@ const ToolboxButtonPresentation = ({
   numberOfAveragingInProgress,
   showAveragingDialog,
   showLicenseInfoDialog,
-  showParameterUploadSetupDialog,
+  showParameterUploadDialog,
 }) => {
   const [anchorElement, setAnchorElement] = useState(null);
 
@@ -73,7 +73,7 @@ const ToolboxButtonPresentation = ({
         {/*
         <MenuItem disabled>Firmware update</MenuItem>
         */}
-        <MenuItem onClick={createClickListener(showParameterUploadSetupDialog)}>
+        <MenuItem onClick={createClickListener(showParameterUploadDialog)}>
           <ListItemText
             primary='Parameter upload'
             secondary={isUploadInProgress ? 'Upload in progress' : undefined}
@@ -97,7 +97,7 @@ ToolboxButtonPresentation.propTypes = {
   isUploadInProgress: PropTypes.bool,
   numberOfAveragingInProgress: PropTypes.number,
   showAveragingDialog: PropTypes.func,
-  showParameterUploadSetupDialog: PropTypes.func,
+  showParameterUploadDialog: PropTypes.func,
   showLicenseInfoDialog: PropTypes.func,
 };
 
@@ -112,7 +112,7 @@ export default connect(
   {
     showAveragingDialog,
     showLicenseInfoDialog,
-    showParameterUploadSetupDialog,
+    showParameterUploadDialog,
     showVersionCheckDialog,
   }
 )(ToolboxButtonPresentation);
