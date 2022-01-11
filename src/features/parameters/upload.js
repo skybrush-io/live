@@ -1,3 +1,5 @@
+import { call } from 'redux-saga/effects';
+
 import messageHub from '~/message-hub';
 
 import { JOB_TYPE } from './constants';
@@ -10,7 +12,7 @@ import { JOB_TYPE } from './constants';
  * @param uavId    the ID of the UAV to upload the parameters to
  * @param payload  the parameters to upload
  */
-async function runSingleParameterUpload({ uavId, payload }) {
+function* runSingleParameterUpload({ uavId, payload }) {
   const { items, meta } = payload ?? {};
 
   if (!Array.isArray(items) || items.length === 0) {
@@ -20,9 +22,7 @@ async function runSingleParameterUpload({ uavId, payload }) {
   for (const { name, value } of items) {
     // No need for a timeout here; it utilizes the message hub, which has its
     // own timeout for failed command executions (although it is quite long)
-
-    // eslint-disable-next-line no-await-in-loop
-    await messageHub.execute.setParameter({
+    yield call(messageHub.execute.setParameter, {
       uavId,
       name,
       value,
@@ -31,7 +31,7 @@ async function runSingleParameterUpload({ uavId, payload }) {
 
   const { shouldReboot } = meta ?? {};
   if (shouldReboot) {
-    await messageHub.execute.resetUAV(uavId);
+    yield call(messageHub.execute.resetUAV, uavId);
   }
 }
 
