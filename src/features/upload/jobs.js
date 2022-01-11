@@ -10,8 +10,8 @@
  *   UAV that the job is targeting, and it can return an arbitrary object that
  *   will be forwarded to the executor (see below in the `executor` for more
  *   details).
- * - `executor`: an asynchronous function that executes the job for a single
- *   UAV (e.g., uploads a drone show specification to a single UAV). This
+ * - `executor`: an asynchronous function or saga that executes the job for a
+ *   single UAV (e.g., uploads a drone show specification to a single UAV). This
  *   function runs in the context of a worker saga, which is blocked until the
  *   promise returned from the executor resolves or rejects. The function will
  *   be called with an object having three keys: `uavId` is the ID of the UAV
@@ -19,6 +19,9 @@
  *   specification, and `data` is the state slice that was extracted by the
  *   selector associated to the job type. The semantics of the payload and the
  *   data object depends solely on the type of the job being executed.
+ *
+ * It is recommended to use an executor _saga_ or to make the executor return a
+ * _cancellable_ promise to facilitate the cancellation of uploads.
  *
  * Additionally, each entry may contain:
  *
