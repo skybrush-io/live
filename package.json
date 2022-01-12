@@ -11,8 +11,8 @@
     "lint": "xo",
     "postinstall": "patch-package",
     "start": "rimraf build && webpack serve --config webpack/browser.config.js --progress",
-    "start:electron": "webpack serve --https --config webpack/electron.config.js --progress",
-    "start:electron:light": "cross-env SKYBRUSH_VARIANT=light webpack serve --https --config webpack/electron.config.js --progress",
+    "start:electron": "webpack serve --server-type https --config webpack/electron.config.js --progress",
+    "start:electron:light": "cross-env SKYBRUSH_VARIANT=light webpack serve --server-type https --config webpack/electron.config.js --progress",
     "stats": "rimraf build && webpack --json --progress --config webpack/dist.config.js >stats.json",
     "stats:prod": "rimraf build && cross-env NODE_ENV=production webpack --json --mode=production --progress --config webpack/dist.config.js >stats.prod.json",
     "test": "npm run lint"
