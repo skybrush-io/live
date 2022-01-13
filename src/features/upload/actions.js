@@ -1,3 +1,4 @@
+import delay from 'delay';
 import isNil from 'lodash-es/isNil';
 import { getUAVIdsParticipatingInMissionSortedByMissionIndex } from '~/features/mission/selectors';
 import { getUAVIdList } from '~/features/uavs/selectors';
@@ -9,10 +10,12 @@ import {
   getItemsInUploadBacklog,
   getSelectedJobInUploadDialog,
   getSuccessfulUploadItems,
+  getUploadDialogState,
   isItemInUploadBacklog,
   isUploadInProgress,
 } from './selectors';
 import {
+  closeUploadDialog,
   putUavsInWaitingQueue,
   removeUavsFromWaitingQueue,
   setupNextUploadJob,
@@ -20,6 +23,21 @@ import {
   _enqueueFailedUploads,
   _enqueueSuccessfulUploads,
 } from './slice';
+
+/**
+ * Thunk that closes the upload dialog and performs the "back" action currently
+ * associated to the dialog.
+ */
+export function closeUploadDialogAndStepBack() {
+  return async (dispatch, getState) => {
+    const { backAction } = getUploadDialogState(getState());
+    dispatch(closeUploadDialog());
+    await delay(150);
+    if (backAction) {
+      dispatch(backAction);
+    }
+  };
+}
 
 /**
  * Thunk that restarts the upload process on all UAVs that are currently

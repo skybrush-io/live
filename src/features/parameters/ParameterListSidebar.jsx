@@ -9,7 +9,7 @@ import IconButton from '@material-ui/core/IconButton';
 import ListItem from '@material-ui/core/ListItem';
 import { makeStyles } from '@material-ui/core/styles';
 import Delete from '@material-ui/icons/Delete';
-import PlayArrow from '@material-ui/icons/PlayArrow';
+import NavigateNext from '@material-ui/icons/NavigateNext';
 
 import MiniList from '@skybrush/mui-components/lib/MiniList';
 import Tooltip from '@skybrush/mui-components/lib/Tooltip';
@@ -114,10 +114,10 @@ const ParameterListSidebar = ({
         <Button
           fullWidth
           disabled={!canUpload}
-          startIcon={<PlayArrow />}
+          endIcon={<NavigateNext />}
           onClick={onStart}
         >
-          Start upload
+          Next step
         </Button>
       </Box>
     </Box>

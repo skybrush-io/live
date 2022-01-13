@@ -9,8 +9,10 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import Fade from '@material-ui/core/Fade';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
+import IconButton from '@material-ui/core/IconButton';
 import { makeStyles } from '@material-ui/core/styles';
 import Clear from '@material-ui/icons/Clear';
+import NavigateBack from '@material-ui/icons/NavigateBefore';
 
 import LabeledStatusLight from '@skybrush/mui-components/lib/LabeledStatusLight';
 
@@ -101,6 +103,7 @@ const UploadPanel = ({
   onCancelUpload,
   onDismissLastUploadResult,
   onStartUpload,
+  onStepBack,
   onToggleAutoRetry,
   running,
   showLastUploadResult,
@@ -125,6 +128,11 @@ const UploadPanel = ({
         </Box>
       </DialogContent>
       <DialogActions className={classes.actions}>
+        {onStepBack && (
+          <IconButton size='small' edge='start' onClick={onStepBack}>
+            <NavigateBack />
+          </IconButton>
+        )}
         <Fade in={lastUploadResult && showLastUploadResult}>
           <Box
             className={classes.uploadResultIndicator}
@@ -163,6 +171,7 @@ UploadPanel.propTypes = {
   onCancelUpload: PropTypes.func,
   onDismissLastUploadResult: PropTypes.func,
   onStartUpload: PropTypes.func,
+  onStepBack: PropTypes.func,
   onToggleAutoRetry: PropTypes.func,
   running: PropTypes.bool,
   showLastUploadResult: PropTypes.bool,

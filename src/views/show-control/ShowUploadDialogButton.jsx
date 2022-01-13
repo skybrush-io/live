@@ -52,6 +52,6 @@ export default connect(
   }),
   // mapDispatchToProps
   {
-    onClick: () => openUploadDialogForJob(SHOW_UPLOAD_JOB),
+    onClick: () => openUploadDialogForJob({ job: SHOW_UPLOAD_JOB }),
   }
 )(ShowUploadDialogButton);

@@ -83,6 +83,7 @@ const { actions, reducer } = createSlice({
         type: null,
         payload: null,
       },
+      backAction: null,
     },
   },
 
@@ -210,17 +211,23 @@ const { actions, reducer } = createSlice({
       target: 'itemsFinished',
     }),
 
-    openUploadDialogKeepingCurrentJob(state) {
+    openUploadDialogKeepingCurrentJob(state, action) {
+      const { payload: options } = action;
+      const { backAction } = options ?? {};
+
       // This action is allowed only if the upload dialog already has a job
       // type
       if (state.dialog.selectedJob?.type) {
         state.dialog.open = true;
+        state.dialog.backAction = backAction ?? null;
       }
     },
 
     openUploadDialogForJob(state, action) {
       const { payload } = action;
-      const { type: newJobType, payload: newJobPayload } = payload || {};
+      const { job, options } = payload ?? {};
+      const { type: newJobType, payload: newJobPayload } = job ?? {};
+      const { backAction } = options ?? {};
 
       // Do not do anything without a job type
       if (!newJobType) {
@@ -236,6 +243,7 @@ const { actions, reducer } = createSlice({
         clearQueues(state);
       }
 
+      state.dialog.backAction = backAction ?? null;
       state.dialog.selectedJob = {
         type: newJobType,
         payload: newJobPayload || null,

@@ -18,7 +18,12 @@ export function proceedToUpload() {
     const payload = getParameterUploadJobPayloadFromManifest(getState());
     dispatch(closeParameterUploadSetupDialog());
     await delay(150);
-    dispatch(openUploadDialogForJob({ type: JOB_TYPE, payload }));
+    dispatch(
+      openUploadDialogForJob({
+        job: { type: JOB_TYPE, payload },
+        options: { backAction: showParameterUploadSetupDialog() },
+      })
+    );
   };
 }
 
@@ -31,7 +36,11 @@ export function showParameterUploadDialog() {
     const isUploadingParameters =
       getRunningUploadJobType(getState()) === JOB_TYPE;
     if (isUploadingParameters) {
-      dispatch(openUploadDialogKeepingCurrentJob());
+      dispatch(
+        openUploadDialogKeepingCurrentJob({
+          backAction: showParameterUploadSetupDialog(),
+        })
+      );
     } else {
       dispatch(showParameterUploadSetupDialog());
     }
