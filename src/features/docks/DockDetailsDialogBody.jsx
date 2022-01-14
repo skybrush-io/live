@@ -157,7 +157,7 @@ const DockDetailsDialogBody = ({ selectedTab, dockId }) => {
 
 DockDetailsDialogBody.propTypes = {
   dockId: PropTypes.string,
-  selectedTab: PropTypes.oneOf(['status', 'schedule', 'liveCam']),
+  selectedTab: PropTypes.oneOf(['status', 'schedule', 'storage', 'liveCam']),
 };
 
 export default connect(
