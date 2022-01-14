@@ -22,9 +22,11 @@ export function parseParameters(parameterString) {
       continue;
     }
 
-    const eqIndex = line.indexOf('=');
+    const eqIndex = line.replace(',', '=').indexOf('=');
     if (eqIndex < 0) {
-      throw new Error(`Line ${lineNumber} does not contain an equals sign (=)`);
+      throw new Error(
+        `Line ${lineNumber} does not contain an equals sign (=) or a comma.`
+      );
     }
 
     const name = line.slice(0, eqIndex).trim();
