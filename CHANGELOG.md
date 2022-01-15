@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Parameters can now be uploaded to multiple drones at the same time with a
+  dedicated parameter upload dialog.
+
+- Added filter that shows inactive drones only.
+
+## [1.25.0] - 2021-12-29
+
+### Added
+
 - The header now includes a button for audible notifications when a UAV goes
   into an error state. Clicking on the button while the alert is active will
   dismiss the alert; clicking it again will disable the audible notification.
