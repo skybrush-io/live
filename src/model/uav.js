@@ -82,18 +82,16 @@ export default class UAV {
    * (not as a string).
    */
   get debug() {
-    if (this._debugAsByteArray === undefined) {
-      if (this._debug !== undefined) {
-        try {
-          const data = Base64.atob(this._debug);
-          const n = data.length;
-          this._debugAsByteArray = new Uint8Array(new ArrayBuffer(n));
-          for (let i = 0; i < n; i++) {
-            this._debugAsByteArray[i] = data.charCodeAt(i);
-          }
-        } catch {
-          this._debugAsByteArray = new Uint8Array();
+    if (this._debugAsByteArray === undefined && this._debug !== undefined) {
+      try {
+        const data = Base64.atob(this._debug);
+        const n = data.length;
+        this._debugAsByteArray = new Uint8Array(new ArrayBuffer(n));
+        for (let i = 0; i < n; i++) {
+          this._debugAsByteArray[i] = data.charCodeAt(i);
         }
+      } catch {
+        this._debugAsByteArray = new Uint8Array();
       }
     }
 
@@ -105,17 +103,15 @@ export default class UAV {
    * non-printable characters with a dot.
    */
   get debugString() {
-    if (this._debugString === undefined) {
-      if (this._debug !== undefined) {
-        const array = this.debug;
-        this._debugString = range(array.length)
-          .map((index) =>
-            array[index] >= 32 && array[index] < 128
-              ? String.fromCharCode(array[index])
-              : '.'
-          )
-          .join('');
-      }
+    if (this._debugString === undefined && this._debug !== undefined) {
+      const array = this.debug;
+      this._debugString = range(array.length)
+        .map((index) =>
+          array[index] >= 32 && array[index] < 128
+            ? String.fromCharCode(array[index])
+            : '.'
+        )
+        .join('');
     }
 
     return this._debugString;

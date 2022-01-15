@@ -31,7 +31,12 @@ import {
   getUAVListSortPreference,
   isShowingMissionIds,
 } from '~/features/settings/selectors';
-import { UAVFilter, UAVFilters, labelsForUAVFilter } from '~/model/filtering';
+import {
+  UAVFilter,
+  UAVFilters,
+  labelsForUAVFilter,
+  shortLabelsForUAVFilter,
+} from '~/model/filtering';
 import { UAVSortKey, UAVSortKeys, labelsForUAVSortKey } from '~/model/sorting';
 import { isDark, monospacedFont } from '~/theme';
 
@@ -135,6 +140,7 @@ const getFilterChipClass = (filters, classes) => {
   if (isFilterActive) {
     switch (filters[0]) {
       case UAVFilter.WITH_WARNINGS:
+      case UAVFilter.INACTIVE_ONLY:
         return classes.warning;
 
       case UAVFilter.WITH_ERRORS:
@@ -281,7 +287,7 @@ const SortAndFilterHeader = ({
             isFilterActive
               ? filters.length > 1
                 ? 'Composite'
-                : labelsForUAVFilter[filters[0]]
+                : shortLabelsForUAVFilter[filters[0]]
               : 'Filter'
           }
           size='small'
