@@ -71,7 +71,10 @@ function* localServerExecutableDiscoverySaga(search) {
       startLocalServerExecutableSearch.type,
     ]);
 
-    if (action.type === replaceAppSettings.type) {
+    if (
+      action.type === replaceAppSettings.type ||
+      action.type === updateAppSettings.type
+    ) {
       // Wait a bit more, effectively throttling multiple signals into one
       // action
       yield delay(1000);

@@ -5,6 +5,8 @@
 
 import { createSlice } from '@reduxjs/toolkit';
 
+import { noPayload } from '~/utils/redux';
+
 const { actions, reducer } = createSlice({
   name: 'localServer',
 
@@ -36,13 +38,13 @@ const { actions, reducer } = createSlice({
       state.pathScan.error = action.payload;
     },
 
-    startLocalServerExecutableSearch(state) {
+    startLocalServerExecutableSearch: noPayload((state) => {
       // Clearing both the result and the error of the pathScan part of
       // the state object will trigger the appropriate Redux saga to
       // start the scanning again
       state.pathScan.result = undefined;
       state.pathScan.error = undefined;
-    },
+    }),
   },
 });
 

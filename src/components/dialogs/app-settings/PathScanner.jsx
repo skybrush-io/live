@@ -116,9 +116,7 @@ export default connect(
     ...state.localServer.pathScan,
   }),
   // mapDispatchToProps
-  (dispatch) => ({
-    onRequestReload: () => {
-      dispatch(startLocalServerExecutableSearch());
-    },
-  })
+  {
+    onRequestReload: startLocalServerExecutableSearch,
+  }
 )(PathScannerPresentation);
