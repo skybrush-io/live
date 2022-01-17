@@ -1,3 +1,4 @@
+import clsx from 'clsx';
 import createColor from 'color';
 import PropTypes from 'prop-types';
 import React, { useCallback, useRef } from 'react';
@@ -37,7 +38,12 @@ import {
   labelsForUAVFilter,
   shortLabelsForUAVFilter,
 } from '~/model/filtering';
-import { UAVSortKey, UAVSortKeys, labelsForUAVSortKey } from '~/model/sorting';
+import {
+  UAVSortKey,
+  UAVSortKeys,
+  labelsForUAVSortKey,
+  shortLabelsForUAVSortKey,
+} from '~/model/sorting';
 import { isDark, monospacedFont } from '~/theme';
 
 const createChipStyle = (color, theme) => {
@@ -69,7 +75,7 @@ const createChipStyle = (color, theme) => {
   return result;
 };
 
-const HEIGHT = 32;
+const HEIGHT = 38;
 
 const useStyles = makeStyles(
   (theme) => ({
@@ -81,18 +87,17 @@ const useStyles = makeStyles(
       borderBottom: `1px solid ${theme.palette.divider}`,
       minWidth: 800,
       overflow: 'hidden',
-      padding: theme.spacing(0.5, 0),
       position: 'sticky',
       top: 0,
       zIndex: 10,
-      minHeight: HEIGHT + theme.spacing(0.5) + 1 /* 1px for the border */,
+      minHeight: HEIGHT + 1 /* 1px for the border */,
     },
 
     widgets: {
       display: 'flex',
-      padding: theme.spacing(0.5),
       position: 'absolute',
-      right: 0,
+      right: theme.spacing(0.5),
+      top: theme.spacing(1),
       margin: 'auto',
       zIndex: 20,
 
@@ -102,14 +107,42 @@ const useStyles = makeStyles(
     },
 
     headerLine: {
+      alignItems: 'stretch',
       cursor: 'default',
+      display: 'flex',
+      flexWrap: 'nowrap',
       fontFamily: monospacedFont,
       fontSize: 'small',
-      lineHeight: HEIGHT + 'px',
+      height: HEIGHT,
+      overflow: 'hidden',
       userSelect: 'none',
       whiteSpace: 'pre',
       width: '100%',
       zIndex: 10,
+    },
+
+    headerLineItem: {
+      lineHeight: HEIGHT + 'px',
+      padding: theme.spacing(0, 0.5),
+
+      '&:last-child': {
+        flex: 1,
+      },
+    },
+
+    sortable: {
+      cursor: 'pointer',
+      '&:hover': {
+        backgroundColor: theme.palette.action.hover,
+      },
+      transition: theme.transitions.create(['background-color'], {
+        duration: theme.transitions.duration.short,
+      }),
+    },
+
+    sortActive: {
+      textDecoration: 'underline',
+      textUnderlineOffset: '4px',
     },
 
     success: createChipStyle(Colors.success, theme),
@@ -124,11 +157,117 @@ const useStyles = makeStyles(
   }
 );
 
-const HEADER_TEXT = {
-  missionIds:
-    ' sID  ID   Status    Mode  Battery   GPS  Position                  AMSL    AGL  Hdg  Details',
-  droneIds:
-    '  ID sID   Status    Mode  Battery   GPS  Position                  AMSL    AGL  Hdg  Details',
+const COMMON_HEADER_TEXT_PARTS = Object.freeze([
+  {
+    label: 'Status',
+    sortKey: UAVSortKey.STATUS,
+    style: {
+      textAlign: 'center',
+      width: 78,
+    },
+  },
+  {
+    label: 'Mode',
+    sortKey: UAVSortKey.FLIGHT_MODE,
+    style: {
+      textAlign: 'center',
+      width: 62,
+    },
+  },
+  {
+    label: 'Battery',
+    sortKey: UAVSortKey.BATTERY,
+    style: {
+      textAlign: 'right',
+      width: 62,
+    },
+  },
+  {
+    label: 'GPS',
+    sortKey: UAVSortKey.GPS_FIX,
+    style: {
+      textAlign: 'center',
+      width: 50,
+    },
+  },
+  {
+    label: 'Position',
+    style: {
+      textAlign: 'left',
+      width: 194,
+    },
+  },
+  {
+    label: 'AMSL',
+    sortKey: UAVSortKey.ALTITUDE_MSL,
+    style: {
+      textAlign: 'right',
+      width: 56,
+    },
+  },
+  {
+    label: 'AGL',
+    sortKey: UAVSortKey.ALTITUDE_GROUND,
+    style: {
+      textAlign: 'right',
+      width: 56,
+    },
+  },
+  {
+    label: 'Hdg',
+    sortKey: UAVSortKey.HEADING,
+    style: {
+      textAlign: 'center',
+      width: 40,
+    },
+  },
+  {
+    label: 'Details',
+    style: {
+      textAlign: 'left',
+    },
+  },
+]);
+
+const HEADER_TEXT_PARTS = {
+  missionIds: [
+    {
+      label: 'sID',
+      sortKey: UAVSortKey.DEFAULT,
+      style: {
+        textAlign: 'right',
+        width: 40,
+      },
+    },
+    {
+      label: 'ID',
+      sortKey: UAVSortKey.DEFAULT,
+      style: {
+        textAlign: 'right',
+        width: 32,
+      },
+    },
+    ...COMMON_HEADER_TEXT_PARTS,
+  ],
+  droneIds: [
+    {
+      label: 'ID',
+      sortKey: UAVSortKey.DEFAULT,
+      style: {
+        textAlign: 'right',
+        width: 40,
+      },
+    },
+    {
+      label: 'sID',
+      sortKey: UAVSortKey.DEFAULT,
+      style: {
+        textAlign: 'right',
+        width: 32,
+      },
+    },
+    ...COMMON_HEADER_TEXT_PARTS,
+  ],
 };
 
 const checkStyle = { fontSize: 'inherit', marginLeft: 8 };
@@ -187,6 +326,32 @@ function bindChip({ state, ref, action, popupTrigger = 'chip' }) {
   return result;
 }
 
+function formatHeaderParts(parts, sortBy, classes, onClick) {
+  if (typeof parts === 'string') {
+    // Whole header is a single item
+    return parts;
+  } else if (Array.isArray(parts)) {
+    return parts.map(({ label, sortKey, style }) => (
+      <div
+        key={label}
+        className={clsx(
+          classes.headerLineItem,
+          sortKey && classes.sortable,
+          sortBy.key === sortKey &&
+            sortKey !== UAVSortKey.DEFAULT &&
+            classes.sortActive
+        )}
+        style={style}
+        onClick={sortKey ? () => onClick(sortKey) : null}
+      >
+        {label}
+      </div>
+    ));
+  } else {
+    return '';
+  }
+}
+
 const SortAndFilterHeader = ({
   filters,
   layout,
@@ -238,6 +403,22 @@ const SortAndFilterHeader = ({
     },
     [onSetSortBy, sortPopupState]
   );
+  const onSetSortKeyOrToggleSortDirection = useCallback(
+    (value) => {
+      value = String(value);
+
+      if (sortBy.key === value) {
+        if (onToggleSortDirection) {
+          onToggleSortDirection();
+        }
+      } else {
+        if (onSetSortBy) {
+          onSetSortBy({ key: String(value) });
+        }
+      }
+    },
+    [onSetSortBy, onToggleSortDirection, sortBy]
+  );
 
   const isSortActive = sortBy.key !== UAVSortKey.DEFAULT;
   const isFilterActive = Array.isArray(filters) && filters.length > 0;
@@ -249,7 +430,7 @@ const SortAndFilterHeader = ({
           ref={sortChipRef}
           className={isSortActive ? classes.chipActive : classes.chip}
           variant='outlined'
-          label={labelsForUAVSortKey[sortBy.key] || 'Default'}
+          label={shortLabelsForUAVSortKey[sortBy.key] || 'Default'}
           size='small'
           deleteIcon={sortBy?.reverse ? <SortDescending /> : <SortAscending />}
           {...bindChip({
@@ -319,7 +500,14 @@ const SortAndFilterHeader = ({
       </div>
       <FadeAndSlide in={layout === 'list'}>
         <div className={classes.headerLine}>
-          {showMissionIds ? HEADER_TEXT.missionIds : HEADER_TEXT.droneIds}
+          {formatHeaderParts(
+            showMissionIds
+              ? HEADER_TEXT_PARTS.missionIds
+              : HEADER_TEXT_PARTS.droneIds,
+            sortBy,
+            classes,
+            onSetSortKeyOrToggleSortDirection
+          )}
         </div>
       </FadeAndSlide>
     </div>

@@ -48,6 +48,20 @@ export const labelsForUAVSortKey = {
 };
 
 /**
+ * Human-readable short labels that should be used on the UI to represent a UAV filter preset.
+ */
+export const shortLabelsForUAVSortKey = {
+  [UAVSortKey.DEFAULT]: 'Default',
+  [UAVSortKey.STATUS]: 'Status',
+  [UAVSortKey.FLIGHT_MODE]: 'Mode',
+  [UAVSortKey.BATTERY]: 'Battery',
+  [UAVSortKey.GPS_FIX]: 'GPS fix',
+  [UAVSortKey.ALTITUDE_MSL]: 'AMSL',
+  [UAVSortKey.ALTITUDE_GROUND]: 'AGL',
+  [UAVSortKey.HEADING]: 'Heading',
+};
+
+/**
  * Given a UAV sort key from the UAVSortKey enum, returns a function that
  * can be invoked with a single UAV object from the Redux state store and that
  * returns a key that can be used for sorting UAVs according to the criteria
