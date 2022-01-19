@@ -14,6 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Added filter that shows inactive drones only.
 
+- The UAV list view can now also be sorted by clicking on the column headers.
+
 ## [1.25.0] - 2021-12-29
 
 ### Added
