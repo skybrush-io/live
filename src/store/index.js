@@ -185,7 +185,7 @@ const store = configureStore({
     process.env.NODE_ENV === 'production'
       ? false
       : {
-          actionsBlacklist: [
+          actionsDenyList: [
             updateAgesOfUAVs.type,
             updateAveragingByIds.type,
             updateRTKStatistics.type,
