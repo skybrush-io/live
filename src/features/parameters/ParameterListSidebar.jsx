@@ -9,12 +9,15 @@ import IconButton from '@material-ui/core/IconButton';
 import ListItem from '@material-ui/core/ListItem';
 import { makeStyles } from '@material-ui/core/styles';
 import Delete from '@material-ui/icons/Delete';
+import FolderOpen from '@material-ui/icons/FolderOpen';
 import NavigateNext from '@material-ui/icons/NavigateNext';
 
 import MiniList from '@skybrush/mui-components/lib/MiniList';
 import Tooltip from '@skybrush/mui-components/lib/Tooltip';
 
-import { proceedToUpload } from './actions';
+import FileButton from '~/components/FileButton';
+
+import { importParametersFromFile, proceedToUpload } from './actions';
 import { getParameterManifest, isManifestEmpty } from './selectors';
 import { clearManifest, removeParameterFromManifest } from './slice';
 
@@ -23,7 +26,7 @@ const useStyles = makeStyles(
     root: {
       display: 'flex',
       flexDirection: 'column',
-      minWidth: 185,
+      minWidth: 240,
     },
 
     header: {
@@ -41,9 +44,12 @@ const useStyles = makeStyles(
     list: {
       position: 'relative',
       flex: 1,
+      overflow: 'auto',
     },
 
     footer: {
+      display: 'flex',
+      flexDirection: 'row',
       padding: theme.spacing(1),
       textAlign: 'center',
     },
@@ -59,6 +65,7 @@ const useStyles = makeStyles(
 const ParameterListSidebar = ({
   canUpload,
   manifest,
+  onImportItems,
   onRemoveItem,
   onRemoveAllItems,
   onStart,
@@ -111,6 +118,9 @@ const ParameterListSidebar = ({
         ))}
       </MiniList>
       <Box className={classes.footer}>
+        <FileButton startIcon={<FolderOpen />} onSelected={onImportItems}>
+          Import...
+        </FileButton>
         <Button
           fullWidth
           disabled={!canUpload}
@@ -132,6 +142,7 @@ ParameterListSidebar.propTypes = {
       value: PropTypes.string,
     })
   ),
+  onImportItems: PropTypes.func,
   onRemoveAllItems: PropTypes.func,
   onRemoveItem: PropTypes.func,
   onStart: PropTypes.func,
@@ -145,6 +156,7 @@ export default connect(
   }),
   // mapDispatchToProps
   {
+    onImportItems: importParametersFromFile,
     onRemoveAllItems: clearManifest,
     onRemoveItem: removeParameterFromManifest,
     onStart: proceedToUpload,

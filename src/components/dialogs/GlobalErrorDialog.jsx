@@ -21,23 +21,17 @@ import { closeErrorDialog } from '../../actions/error-handling';
  *
  * @returns  {Object}  the rendered component
  */
-const GlobalErrorDialogPresentation = ({ open, message, onClose }) => {
-  const actions = [
-    <Button key='close' onClick={onClose}>
-      Close
-    </Button>,
-  ];
-
-  return (
-    <Dialog open={open} actions={actions}>
-      <DialogTitle>An error happened</DialogTitle>
-      <DialogContent>
-        <DialogContentText>{message}</DialogContentText>
-      </DialogContent>
-      <DialogActions>{actions}</DialogActions>
-    </Dialog>
-  );
-};
+const GlobalErrorDialogPresentation = ({ open, message, onClose }) => (
+  <Dialog open={open}>
+    <DialogTitle>An error happened</DialogTitle>
+    <DialogContent>
+      <DialogContentText>{message}</DialogContentText>
+    </DialogContent>
+    <DialogActions>
+      <Button onClick={onClose}>Close</Button>
+    </DialogActions>
+  </Dialog>
+);
 
 GlobalErrorDialogPresentation.propTypes = {
   message: PropTypes.string,
@@ -52,11 +46,9 @@ const GlobalErrorDialog = connect(
   // mapStateToProps
   (state) => state.dialogs.error,
   // mapDispatchToProps
-  (dispatch) => ({
-    onClose() {
-      dispatch(closeErrorDialog());
-    },
-  })
+  {
+    onClose: closeErrorDialog,
+  }
 )(GlobalErrorDialogPresentation);
 
 export default GlobalErrorDialog;

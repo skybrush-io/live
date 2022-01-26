@@ -41,7 +41,7 @@ const ParameterUploadSetupDialog = ({ onClose, open }) => {
       fullWidth
       className={classes.root}
       open={open}
-      maxWidth='sm'
+      maxWidth='md'
       sidebarComponents={<ParameterListSidebar />}
       title='Upload parameters'
       onClose={onClose}

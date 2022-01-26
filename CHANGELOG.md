@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Parameters can now be imported from a Mission Planner compatible parameters
+  file in the parameter upload dialog.
+
+## [1.26.0] - 2021-01-19
+
+### Added
+
 - Parameters can now be uploaded to multiple drones at the same time with a
   dedicated parameter upload dialog.
 

@@ -22,6 +22,11 @@ export function parseParameters(parameterString) {
       continue;
     }
 
+    if (line.startsWith('#') || line.startsWith('//')) {
+      // Line is a comment line, skip it
+      continue;
+    }
+
     const eqIndex = line.replace(',', '=').indexOf('=');
     if (eqIndex < 0) {
       throw new Error(
