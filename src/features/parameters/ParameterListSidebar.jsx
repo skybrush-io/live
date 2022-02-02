@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
-import { animated, useTransition } from 'react-spring';
+import { animated, useTransition } from '@react-spring/web';
 
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
