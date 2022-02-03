@@ -8,11 +8,6 @@ export const DISCONNECT_FROM_SERVER = 'DISCONNECT_FROM_SERVER';
 // Map-related actions
 export const SELECT_MAP_SOURCE = 'SELECT_MAP_SOURCE';
 
-// Map origin-related actions
-export const CLEAR_ORIGIN = 'CLEAR_ORIGIN';
-export const SET_AXIS_TYPE = 'SET_AXIS_TYPE';
-export const SET_ORIGIN = 'SET_ORIGIN';
-
 // Layer-related actions
 export const ADD_LAYER = 'ADD_LAYER';
 export const ADJUST_LAYER_Z_INDEX = 'ADJUST_LAYER_Z_INDEX';

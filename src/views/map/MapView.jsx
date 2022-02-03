@@ -220,12 +220,11 @@ const MapViewInteractions = withMap((props) => {
       condition={Condition.altShiftKeyAndMiddleMouseButton}
     />,
     /* Custom "interaction" that is responsible for managing the tooltip that
-     * shows the properties of the nearest UAV. Threshold is larger as UAV icons
-     * have their own size but the distance is measured to the center */
+     * shows the properties of the nearest UAV. */
     <TrackNearestFeature
       key='TrackNearestFeature'
       layers={canLayerTriggerTooltip}
-      threshold={32}
+      hitTolerance={4}
       onNearestFeatureChanged={onNearestFeatureChanged}
     />
   );

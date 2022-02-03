@@ -7,7 +7,6 @@
 import * as Condition from 'ol/events/condition';
 import Interaction from 'ol/interaction/Interaction';
 import Layer from 'ol/layer/Layer';
-import VectorLayer from 'ol/layer/Vector';
 import PropTypes from 'prop-types';
 
 import { createOLInteractionComponent } from '@collmot/ol-react/lib/interaction';
@@ -31,10 +30,10 @@ class TrackNearestFeatureInteraction extends Interaction {
    *        options.layers  the layers on which the interaction will operate, or
    *        a function that returns true for the layers that the interaction
    *        should operate on. Layers that are hidden will always be ignored.
-   * @param {number|undefined} options.threshold  the distance threshold;
+   * @param {number|undefined} options.hitTolerance  the distance threshold;
    *        the selection callback will be called only when the distance
-   *        between the pixel of the map browser event and the closest feature
-   *        is not larger than this value. The default is infinity.
+   *        between the pixel of the map browser event and the pixel of the
+   *        feature is not larger than this value. The default is zero.
    */
   constructor(options = {}) {
     super({
@@ -57,7 +56,11 @@ class TrackNearestFeatureInteraction extends Interaction {
           const { map, pixel } = mapBrowserEvent;
           const trackedFeature = map.forEachFeatureAtPixel(
             pixel,
-            (feature) => feature
+            (feature) => feature,
+            {
+              layerFilter: this._layerSelectorFunction,
+              hitTolerance: this._hitTolerance,
+            }
           );
 
           // TODO(ntamas): maybe try to be stateful and stick to the previously
@@ -76,12 +79,12 @@ class TrackNearestFeatureInteraction extends Interaction {
     });
 
     const defaultOptions = {
-      threshold: Number.POSITIVE_INFINITY,
+      hitTolerance: 0,
     };
     options = Object.assign(defaultOptions, options);
 
     this._nearestFeatureChanged = options.onNearestFeatureChanged;
-    this._threshold = options.threshold;
+    this._hitTolerance = options.hitTolerance;
     this.setLayers(options.layers);
   }
 
@@ -93,18 +96,6 @@ class TrackNearestFeatureInteraction extends Interaction {
    */
   getLayers() {
     return this._layers;
-  }
-
-  /**
-   * Returns whether a given layer is visible and has an associated vector
-   * source.
-   *
-   * @param {ol.layer.Layer} layer  the layer to test
-   * @return {boolean} whether the layer is visible and has an associated
-   *         vector source
-   */
-  _isLayerFeasible(layer) {
-    return layer && layer.getVisible() && layer instanceof VectorLayer;
   }
 
   /**
@@ -135,10 +126,10 @@ export default createOLInteractionComponent(
   (props) => new TrackNearestFeatureInteraction(props),
   {
     propTypes: {
+      hitTolerance: PropTypes.number,
       layers: PropTypes.oneOfType([PropTypes.func, PropTypes.arrayOf(Layer)]),
       onNearestFeatureChanged: PropTypes.func,
-      threshold: PropTypes.number,
     },
-    fragileProps: ['layers', 'threshold'],
+    fragileProps: ['layers', 'hitTolerance'],
   }
 );

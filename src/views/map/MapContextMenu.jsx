@@ -27,7 +27,7 @@ import Refresh from '@material-ui/icons/Refresh';
 import { createSelector } from '@reduxjs/toolkit';
 
 import { showFeatureEditorDialog } from '~/actions/feature-editor';
-import { setFlatEarthCoordinateSystemOrigin } from '~/actions/map-origin';
+import { setFlatEarthCoordinateSystemOrigin } from '~/reducers/map/origin';
 
 import ContextMenu from '~/components/ContextMenu';
 

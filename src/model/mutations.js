@@ -1,8 +1,8 @@
 import isEmpty from 'lodash-es/isEmpty';
 
-import { setFlatEarthCoordinateSystemOrigin } from '~/actions/map-origin';
 import { updateFeatureCoordinatesByIds } from '~/features/map-features/slice';
 import { moveOutdoorShowOriginByMapCoordinateDelta } from '~/features/show/actions';
+import { updateFlatEarthCoordinateSystem } from '~/reducers/map/origin';
 import { toDegrees } from '~/utils/math';
 
 import { createFeatureFromOpenLayers } from './features';
@@ -53,24 +53,31 @@ export function handleFeatureUpdatesInOpenLayers(
     // Does this feature represent the origin of a coordinate system?
     const originFeatureId = globalIdToOriginId(globalId);
     if (originFeatureId) {
-      if (originFeatureId === MAP_ORIGIN_ID) {
+      if (
+        originFeatureId === MAP_ORIGIN_ID ||
+        originFeatureId === MAP_ORIGIN_ID + '$y'
+      ) {
         // Feature is the origin of the flat Earth coordinate system
         const featureObject = createFeatureFromOpenLayers(feature);
+        const isYAxis = originFeatureId === MAP_ORIGIN_ID + '$y';
         const coords = feature.getGeometry().getCoordinates();
-        dispatch(
-          setFlatEarthCoordinateSystemOrigin(
-            featureObject.points[0],
-            90 -
-              toDegrees(
-                Math.atan2(
-                  // Don't use featureObject.points here because they are already
-                  // in lat-lon so they cannot be used to calculate an angle
-                  coords[1][1] - coords[0][1],
-                  coords[1][0] - coords[0][0]
-                )
-              )
-          )
-        );
+        const position = featureObject.points[0];
+        let angle =
+          90 -
+          toDegrees(
+            Math.atan2(
+              // Don't use featureObject.points here because they are already
+              // in lat-lon so they cannot be used to calculate an angle
+              coords[1][1] - coords[0][1],
+              coords[1][0] - coords[0][0]
+            )
+          );
+
+        if (isYAxis) {
+          angle += 90;
+        }
+
+        dispatch(updateFlatEarthCoordinateSystem({ position, angle }));
       } else {
         // Some other origin (e.g., show origin). We don't handle it yet,
         // maybe later?

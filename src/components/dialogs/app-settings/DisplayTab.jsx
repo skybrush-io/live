@@ -11,15 +11,14 @@ import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 
-import {
-  clearOrigin,
-  setFlatEarthCoordinateSystemOrientation,
-  setFlatEarthCoordinateSystemType,
-  setFlatEarthCoordinateSystemOrigin,
-} from '~/actions/map-origin';
 import CoordinateSystemFields from '~/components/CoordinateSystemFields';
 import { updateAppSettings } from '~/features/settings/slice';
 import { CoordinateFormat, describeCoordinateFormat } from '~/model/settings';
+import {
+  setFlatEarthCoordinateSystemOrientation,
+  setFlatEarthCoordinateSystemType,
+  setFlatEarthCoordinateSystemOrigin,
+} from '~/reducers/map/origin';
 import { getMapOriginRotationAngle } from '~/selectors/map';
 
 import Header from '@skybrush/mui-components/lib/FormHeader';
@@ -143,9 +142,7 @@ export default connect(
     },
 
     onOriginChanged(value) {
-      dispatch(
-        value ? setFlatEarthCoordinateSystemOrigin(value) : clearOrigin()
-      );
+      dispatch(setFlatEarthCoordinateSystemOrigin(value));
     },
 
     onOrientationChanged(value) {

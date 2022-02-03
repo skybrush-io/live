@@ -1,11 +1,9 @@
-import intersection from 'lodash-es/intersection';
 import isNil from 'lodash-es/isNil';
 import range from 'lodash-es/range';
 import reject from 'lodash-es/reject';
 import { createSelector } from '@reduxjs/toolkit';
 
 import { Status } from '~/components/semantics';
-import { getSelectedUAVIds } from '~/features/uavs/selectors';
 
 /**
  * Returns the current list of home positions in the mission.
@@ -149,25 +147,6 @@ export const getPreferredCommunicationChannelIndex = (state) =>
   state.mission.preferredChannelIndex;
 
 /**
- * Returns whether the current UAV selection includes _exactly_ those UAVs that
- * participate in the mission, and nothing else.
- */
-export const areAllUAVsInMissionSelectedAndNothingElse = createSelector(
-  getSelectedUAVIds,
-  getUAVIdsParticipatingInMission,
-  (selectedUAVIds, missionUAVIds) => {
-    if (selectedUAVIds.length !== missionUAVIds.length) {
-      return false;
-    }
-
-    return (
-      intersection(selectedUAVIds, missionUAVIds).length ===
-      selectedUAVIds.length
-    );
-  }
-);
-
-/**
  * Returns whether we are broadcasting commands to the drones in the current
  * show from the large flight control panel.
  */
@@ -195,24 +174,6 @@ export const canAugmentMappingAutomaticallyFromSpareDrones = createSelector(
  * Returns whether the current mapping is editable at the moment.
  */
 export const isMappingEditable = (state) => state.mission.mappingEditor.enabled;
-
-/**
- * Returns whether the current selection has at least one drone that appears in
- * the mission mapping.
- */
-export const selectionIntersectsMapping = createSelector(
-  getMissionMapping,
-  getSelectedUAVIds,
-  (mapping, selectedUAVIds) => {
-    for (const uavId of selectedUAVIds) {
-      if (uavId !== undefined && mapping.includes(uavId)) {
-        return true;
-      }
-    }
-
-    return false;
-  }
-);
 
 /**
  * Gets the ID of the polygon that is to be used as a geofence.

@@ -2,8 +2,7 @@
  * @file Reducer function for handling the position of the origin on the map.
  */
 
-import { handleActions } from 'redux-actions';
-import u from 'updeep';
+import { createSlice } from '@reduxjs/toolkit';
 
 /**
  * The state of the origin (home position) and the global flat Earth coordinate
@@ -12,7 +11,7 @@ import u from 'updeep';
  * The flat Earth coordinate system is at the given position and its zero
  * degree heading points towards the heading given in the `angle` property.
  */
-const defaultState = {
+const initialState = {
   position: [18.915125, 47.486305], // Sensible default: Farkashegy Airfield
   angle: '59',
   type: 'nwu',
@@ -21,35 +20,39 @@ const defaultState = {
 /**
  * The reducer function that handles actions related to the tool selection.
  */
-const reducer = handleActions(
-  {
-    CLEAR_ORIGIN: (state) => u({ position: u.constant(null) }, state),
-
-    SET_ORIGIN: (state, action) => {
+const { reducer, actions } = createSlice({
+  name: 'map/origin',
+  initialState,
+  reducers: {
+    updateFlatEarthCoordinateSystem(state, action) {
       const { angle, position, type } = action.payload;
-      const updates = {};
       if ('position' in action.payload) {
-        updates.position = u.constant(position);
+        state.position = position;
       }
 
       if (angle !== undefined) {
-        updates.angle = angle;
+        state.angle = angle;
       }
 
       if (type !== undefined) {
-        updates.type = type;
+        state.type = type;
       }
-
-      return u(updates, state);
-    },
-
-    SET_AXIS_TYPE: (state, action) => {
-      const { type } = action.payload;
-      const updates = { type };
-      return u(updates, state);
     },
   },
-  defaultState
-);
+});
+
+export const { updateFlatEarthCoordinateSystem } = actions;
+
+export function setFlatEarthCoordinateSystemOrigin(position) {
+  return updateFlatEarthCoordinateSystem({ position });
+}
+
+export function setFlatEarthCoordinateSystemOrientation(angle) {
+  return updateFlatEarthCoordinateSystem({ angle });
+}
+
+export function setFlatEarthCoordinateSystemType(type) {
+  return updateFlatEarthCoordinateSystem({ type });
+}
 
 export default reducer;

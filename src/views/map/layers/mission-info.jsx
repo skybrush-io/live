@@ -398,6 +398,9 @@ const MissionInfoVectorSource = ({
       50 /* meters */ / getPointResolution('EPSG:3857', 1, tail);
     const headY = [0, coordinateSystemType === 'nwu' ? armLength : -armLength];
     const headX = [armLength, 0];
+    const selected =
+      selectedOriginIds.includes(MAP_ORIGIN_ID) ||
+      selectedOriginIds.includes(MAP_ORIGIN_ID + '$y');
     Coordinate.rotate(headX, toRadians(90 - orientation));
     Coordinate.rotate(headY, toRadians(90 - orientation));
     Coordinate.add(headY, tail);
@@ -407,14 +410,14 @@ const MissionInfoVectorSource = ({
       <Feature
         key='mapOrigin.x'
         id={globalIdOfOrigin}
-        style={originStyles(selectedOriginIds.includes(MAP_ORIGIN_ID), 'x')}
+        style={originStyles(selected, 'x')}
       >
         <geom.LineString coordinates={[tail, headX]} />
       </Feature>,
       <Feature
         key='mapOrigin.y'
         id={globalIdOfOrigin + '$y'}
-        style={originStyles(selectedOriginIds.includes(MAP_ORIGIN_ID), 'y')}
+        style={originStyles(selected, 'y')}
       >
         <geom.LineString coordinates={[tail, headY]} />
       </Feature>

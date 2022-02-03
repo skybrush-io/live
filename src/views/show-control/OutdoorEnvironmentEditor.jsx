@@ -12,10 +12,6 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import VerticalAlignCenter from '@material-ui/icons/VerticalAlignCenter';
 
-import {
-  setFlatEarthCoordinateSystemOrigin,
-  setFlatEarthCoordinateSystemOrientation,
-} from '~/actions/map-origin';
 import CoordinateSystemFields from '~/components/CoordinateSystemFields';
 import Tooltip from '@skybrush/mui-components/lib/Tooltip';
 import { SimpleDistanceField } from '~/components/forms/fields';
@@ -35,6 +31,7 @@ import {
   getActiveUAVIds,
   getCurrentGPSPositionByUavId,
 } from '~/features/uavs/selectors';
+import { updateFlatEarthCoordinateSystem } from '~/reducers/map/origin';
 
 /**
  * Presentation component for the form that allows the user to edit the
@@ -162,11 +159,11 @@ export default connect(
     },
 
     onCopyCoordinateSystemToMap(showCoordinateSystem) {
-      dispatch(setFlatEarthCoordinateSystemOrigin(showCoordinateSystem.origin));
       dispatch(
-        setFlatEarthCoordinateSystemOrientation(
-          showCoordinateSystem.orientation
-        )
+        updateFlatEarthCoordinateSystem({
+          position: showCoordinateSystem.origin,
+          angle: showCoordinateSystem.orientation,
+        })
       );
       dispatch(
         showNotification({

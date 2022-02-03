@@ -14,7 +14,7 @@ import {
   updateAveragingByIds,
 } from './slice';
 
-import { setFlatEarthCoordinateSystemOrigin } from '~/actions/map-origin';
+import { setFlatEarthCoordinateSystemOrigin } from '~/reducers/map/origin';
 
 import { showNotification } from '~/features/snackbar/slice';
 import { getPreferredCoordinateFormatter } from '~/selectors/formatting';
