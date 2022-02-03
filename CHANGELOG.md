@@ -12,6 +12,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Parameters can now be imported from a Mission Planner compatible parameters
   file in the parameter upload dialog.
 
+### Fixed
+
+- Fixed a bug that sometimes prevented the map origin from being moved by
+  dragging it on the map (only when the Y axis was dragged).
+
 ## [1.26.0] - 2021-01-19
 
 ### Added
