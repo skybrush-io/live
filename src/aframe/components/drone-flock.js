@@ -13,10 +13,11 @@ import AFrame from '../aframe';
 import { createSelectionHandlerThunk } from '~/components/helpers/lists';
 import { setSelectedUAVIds } from '~/features/uavs/actions';
 import { getSelectedUAVIds } from '~/features/uavs/selectors';
+import { setFeatureIdForTooltip } from '~/features/session/slice';
 import { getPreferredDroneRadius } from '~/features/three-d/selectors';
-import { hideTooltip, showTooltip } from '~/features/three-d/slice';
 import flock from '~/flock';
 import { convertRGB565ToHex } from '~/flockwave/parsing';
+import { uavIdToGlobalId } from '~/model/identifiers';
 import { getFlatEarthCoordinateTransformer } from '~/selectors/map';
 import store from '~/store';
 
@@ -238,14 +239,14 @@ AFrame.registerComponent('drone-flock', {
 
         entity.className = 'three-d-clickable';
         entity.addEventListener('mouseenter', () => {
-          store.dispatch(showTooltip(id));
+          store.dispatch(setFeatureIdForTooltip(uavIdToGlobalId(id)));
         });
         entity.addEventListener('mouseleave', () => {
-          store.dispatch(hideTooltip());
+          store.dispatch(setFeatureIdForTooltip(null));
         });
         entity.addEventListener('click', (event) => {
           // TODO(ntamas): the click event we receive from A-Frame does not
-          // contain the information aobut whether the Ctrl/Cmd key is pressed.
+          // contain the information about whether the Ctrl/Cmd key is pressed.
           // We need to subscribe to keydown/keyup events on our own to record
           // this information and use it.
           store.dispatch(this.system._selectionThunk(event, id));

@@ -21,7 +21,6 @@ import AlertTitle from '@material-ui/lab/AlertTitle';
 import NavigationButtonGroup from './NavigationButtonGroup';
 import NavigationInstructions from './NavigationInstructions';
 import Overlay from './Overlay';
-import SelectionTooltip from './SelectionTooltip';
 
 import {
   setAppSettingsDialogTab,
@@ -29,6 +28,7 @@ import {
 } from '~/actions/app-settings';
 import DarkModeSwitch from '~/components/DarkModeSwitch';
 import ToolbarDivider from '~/components/ToolbarDivider';
+import NearestItemTooltip from '~/features/session/NearestItemTooltip';
 import { getLightingConditionsForThreeDView } from '~/features/settings/selectors';
 import { toggleLightingConditionsInThreeDView } from '~/features/settings/slice';
 import { resetZoom, rotateViewToDrones } from '~/features/three-d/actions';
@@ -102,9 +102,9 @@ const ThreeDTopLevelView = ({
           </Toolbar>
         </AppBar>
         <Box ref={ref} position='relative' flex={1}>
-          <SelectionTooltip>
+          <NearestItemTooltip>
             <ThreeDView ref={threeDViewRef} cameraRef={cameraRef} />
-          </SelectionTooltip>
+          </NearestItemTooltip>
           {!hasMapCoordinateSystem && (
             <Overlay left={8} right={8} top={8}>
               <Alert

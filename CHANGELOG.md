@@ -12,6 +12,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Parameters can now be imported from a Mission Planner compatible parameters
   file in the parameter upload dialog.
 
+- The map and the 3D views now show a tooltip with the most important information
+  about the status of a UAV when hovering over one of them.
+
 ### Fixed
 
 - Fixed a bug that sometimes prevented the map origin from being moved by
