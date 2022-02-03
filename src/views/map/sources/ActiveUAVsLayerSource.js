@@ -14,7 +14,7 @@ import FeatureManager from '../FeatureManager';
 import UAVFeature from '../features/UAVFeature';
 
 import Flock from '~/model/flock';
-import { setLayerSelectable } from '~/model/layers';
+import { setLayerSelectable, setLayerTriggersTooltip } from '~/model/layers';
 import { uavIdToGlobalId } from '~/model/identifiers';
 
 /**
@@ -63,6 +63,7 @@ class ActiveUAVsLayerSource extends React.Component {
   componentDidMount() {
     if (this.props.layer) {
       setLayerSelectable(this.props.layer);
+      setLayerTriggersTooltip(this.props.layer);
     }
 
     this._onFlockMaybeChanged(undefined, this.props.flock);

@@ -278,6 +278,18 @@ export function iconForLayerType(layerType) {
 }
 
 /**
+ * Returns true if the features of the given layer may trigger a tooltip to
+ * be displayed if the feature is close to the mouse cursor.
+ *
+ * @param {ol.Layer} layer  the layer to test
+ * @return {boolean} whether the given layer contains features that may be
+ *     selected by the user
+ */
+export function canLayerTriggerTooltip(layer) {
+  return layer && layer.getVisible() && layer.get('triggersTooltip');
+}
+
+/**
  * Returns true if the given layer contains features that may be edited
  * by the user.
  *
@@ -342,4 +354,16 @@ export function setLayerEditable(layer, editable = true) {
  */
 export function setLayerSelectable(layer, selectable = true) {
   layer.set('selectable', selectable);
+}
+
+/**
+ * Sets whether the features on the given layer close to the mouse cursor will
+ * trigger a tooltip or not.
+ *
+ * @param  {ol.Layer}  layer  the layer to update
+ * @param  {boolean}   selectable  whether the features of the layer should
+ *         trigger a tooltip
+ */
+export function setLayerTriggersTooltip(layer, triggers = true) {
+  layer.set('triggersTooltip', triggers);
 }
