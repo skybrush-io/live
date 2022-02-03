@@ -15,6 +15,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The map and the 3D views now show a tooltip with the most important information
   about the status of a UAV when hovering over one of them.
 
+- UAVs on the map view now show a yellow or red dot if they are in a warning or
+  error state.
+
 ### Fixed
 
 - Fixed a bug that sometimes prevented the map origin from being moved by

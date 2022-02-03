@@ -8,7 +8,18 @@ import { Fill, Icon, Style, Text } from 'ol/style';
 import { toRadians } from '~/utils/math';
 
 import DroneImage from '~/../assets/img/drone-x-black-32x32.png';
+import DroneImageInfo from '~/../assets/img/drone-x-black-info-32x32.png';
+import DroneImageWarning from '~/../assets/img/drone-x-black-warning-32x32.png';
+import DroneImageError from '~/../assets/img/drone-x-black-error-32x32.png';
 import SelectionGlow from '~/../assets/img/drone-selection-glow.png';
+import { Severity } from '~/model/enums';
+
+const droneImages = {
+  [Severity.INFO]: DroneImageInfo,
+  [Severity.WARNING]: DroneImageWarning,
+  [Severity.ERROR]: DroneImageError,
+  [Severity.CRITICAL]: DroneImageError,
+};
 
 /**
  * Feature that represents an UAV on an OpenLayers map.
@@ -29,6 +40,8 @@ export default class UAVFeature extends Feature {
     this._color = '';
     this._labelColor = '';
     this._heading = 0;
+    this._status = null;
+
     this.uavId = uavId;
     this._setupStyle();
   }
@@ -123,6 +136,26 @@ export default class UAVFeature extends Feature {
   }
 
   /**
+   * Returns the current status level of the UAV.
+   */
+  get status() {
+    return this._status;
+  }
+
+  /**
+   * Sets the current status level of the UAV. This is used to determine the
+   * color of the "dot" on the UAV image.
+   */
+  set status(value) {
+    if (this._status === value) {
+      return;
+    }
+
+    this._status = value;
+    this._setupStyle();
+  }
+
+  /**
    * Sets up or updates the style of the feature.
    */
   _setupStyle() {
@@ -133,7 +166,7 @@ export default class UAVFeature extends Feature {
       rotateWithView: true,
       rotation: this._headingToRotation(),
       snapToPixel: false,
-      src: DroneImage,
+      src: droneImages[this._status] || DroneImage,
     });
     this._iconImage = iconImage;
 

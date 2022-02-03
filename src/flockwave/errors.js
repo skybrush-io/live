@@ -2,6 +2,8 @@
  * @file Functions related to the handling of Flockwave error codes.
  */
 
+import { Severity as ModelSeverity } from '~/model/enums';
+
 /**
  * Enum describing the supported error severity classes.
  */
@@ -230,13 +232,13 @@ export function errorCodeToSemantics(code) {
 export function errorSeverityToSemantics(severity) {
   switch (severity) {
     case Severity.FATAL:
-      return 'critical';
+      return ModelSeverity.CRITICAL;
     case Severity.ERROR:
-      return 'error';
+      return ModelSeverity.ERROR;
     case Severity.WARNING:
-      return 'warning';
+      return ModelSeverity.WARNING;
     case Severity.INFO:
-      return 'info';
+      return ModelSeverity.INFO;
     default:
       return 'off';
   }

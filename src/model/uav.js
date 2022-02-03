@@ -39,6 +39,7 @@ export default class UAV {
 
     this._id = id;
     this._errors = [];
+    this._mostSevereError = 0;
     this._position = {
       lat: undefined,
       lon: undefined,
@@ -88,7 +89,7 @@ export default class UAV {
         const n = data.length;
         this._debugAsByteArray = new Uint8Array(new ArrayBuffer(n));
         for (let i = 0; i < n; i++) {
-          this._debugAsByteArray[i] = data.charCodeAt(i);
+          this._debugAsByteArray[i] = data.codePointAt(i);
         }
       } catch {
         this._debugAsByteArray = new Uint8Array();
@@ -108,7 +109,7 @@ export default class UAV {
       this._debugString = range(array.length)
         .map((index) =>
           array[index] >= 32 && array[index] < 128
-            ? String.fromCharCode(array[index])
+            ? String.fromCodePoint(array[index])
             : '.'
         )
         .join('');
@@ -148,6 +149,14 @@ export default class UAV {
    */
   get lon() {
     return this._position.lon;
+  }
+
+  /**
+   * Returns the most severe error code from the list of error codes sent by the
+   * UAV, or zero if there are no errors.
+   */
+  get mostSevereError() {
+    return this._mostSevereError;
   }
 
   /**
@@ -246,6 +255,7 @@ export default class UAV {
 
     if (!isEqual(this._errors, errorList)) {
       this._errors.splice(0, this._errors.length, ...errorList);
+      this._mostSevereError = Math.max(0, ...this._errors);
       updated = true;
     }
 
