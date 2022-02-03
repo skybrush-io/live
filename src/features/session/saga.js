@@ -14,7 +14,7 @@ import {
  * Saga that handles the termination of the current session when the session
  * expires.
  */
-export default function* sessionManagementSaga({ maxLengthInSeconds }) {
+export default function* sessionExpiryManagementSaga({ maxLengthInSeconds }) {
   const token = getAuthenticationTokenFromUrl();
 
   if (token) {

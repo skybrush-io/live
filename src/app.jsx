@@ -41,6 +41,7 @@ import store, {
 } from './store';
 import ThemeProvider, { DarkModeExtraCSSProvider } from './theme';
 import registerUploadJobTypes from './upload-jobs';
+import { hasTimeLimitedSession } from './utils/configuration';
 import workbench from './workbench';
 
 import 'tippy.js/dist/tippy.css';
@@ -128,7 +129,7 @@ const App = ({ onFirstRender }) => (
       <dialogs.LayerSettingsDialog />
       <dialogs.PromptDialog />
       <dialogs.ServerSettingsDialog />
-      <dialogs.SessionExpiryDialog />
+      {hasTimeLimitedSession && <dialogs.SessionExpiryDialog />}
       <dialogs.TimeSyncDialog />
 
       <CoordinateAveragingDialog />

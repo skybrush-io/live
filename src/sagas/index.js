@@ -19,7 +19,7 @@ import uavManagementSaga from '~/features/uavs/saga';
 import uploadSaga from '~/features/upload/saga';
 import weatherSaga from '~/features/weather/saga';
 import flock from '~/flock';
-import { hasFeature } from '~/utils/configuration';
+import { hasFeature, hasTimeLimitedSession } from '~/utils/configuration';
 
 import onboardingSaga from './onboarding';
 
@@ -48,7 +48,7 @@ export default function* rootSaga() {
     sagas.push(beaconSaga());
   }
 
-  if (config && config.session) {
+  if (hasTimeLimitedSession) {
     sagas.push(sessionSaga(config.session));
   }
 
