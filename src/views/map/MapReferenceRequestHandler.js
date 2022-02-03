@@ -9,13 +9,17 @@ import React from 'react';
 
 import { withMap } from '@collmot/ol-react';
 
-import { mapReferenceRequestSignal } from '../../signals';
+import { mapReferenceRequestSignal } from '~/signals';
 
 /**
  * React Component for sending reference of the map object to
  * other components that request it through mini-signals.
  */
 class MapReferenceRequestHandler extends React.Component {
+  static propTypes = {
+    map: PropTypes.instanceOf(Map),
+  };
+
   /**
    * Constructor that adds signal handler.
    *
@@ -42,9 +46,5 @@ class MapReferenceRequestHandler extends React.Component {
     callback(this.props.map);
   }
 }
-
-MapReferenceRequestHandler.propTypes = {
-  map: PropTypes.instanceOf(Map),
-};
 
 export default withMap(MapReferenceRequestHandler);
