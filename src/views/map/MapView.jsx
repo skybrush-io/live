@@ -5,8 +5,6 @@ import GeometryType from 'ol/geom/GeometryType';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
-import { followCursor } from 'tippy.js';
-import Tippy from '@tippyjs/react';
 
 import Condition from './conditions';
 import {
@@ -26,6 +24,8 @@ import { isDrawingTool, Tool, toolToDrawInteractionProps } from './tools';
 import Widget from '~/components/Widget';
 import { handleError } from '~/error-handling';
 import { addFeature } from '~/features/map-features/actions';
+import NearestItemTooltip from '~/features/session/NearestItemTooltip';
+import { setFeatureIdForTooltip } from '~/features/session/slice';
 import mapViewManager from '~/mapViewManager';
 import {
   createFeatureFromOpenLayers,
@@ -335,7 +335,10 @@ MapViewInteractions.propTypes = {
 
 /* ********************************************************************** */
 
-const TOOLTIP_PLUGINS = [followCursor];
+const MAP_STYLE = {
+  // Vector tile based maps assume that there is a light background
+  background: '#f8f4f0',
+};
 
 const toolClasses = {
   [Tool.SELECT]: 'tool-select',
@@ -437,10 +440,11 @@ class MapViewPresentation extends React.Component {
       />
     );
 
-    // Note that we use a background color. This is intenitonal -- vector tile
-    // based maps assume that there is a light background.
+    // Note that we use a <span> to wrap the map; this is because Tippy.js
+    // tooltips need a ref to a DOM node, but attaching a ref to the Map will
+    // give access to the underlying OpenLayers Map object instead.
     return (
-      <Tippy followCursor content='Hello' plugins={TOOLTIP_PLUGINS}>
+      <NearestItemTooltip>
         <span tabIndex={0}>
           <Map
             ref={this._map}
@@ -449,7 +453,7 @@ class MapViewPresentation extends React.Component {
             view={view}
             useDefaultControls={false}
             className={toolClasses[selectedTool]}
-            style={{ background: '#f8f4f0' }}
+            style={MAP_STYLE}
             onMoveEnd={this._onMapMoved}
           >
             <MapReferenceRequestHandler />
@@ -476,13 +480,14 @@ class MapViewPresentation extends React.Component {
               layers={isLayerSelectable}
               projection='EPSG:4326'
               threshold={40}
+              onOpening={this._hideNearestFeatureTooltip}
             >
               {/* The context menu that appears on the map when the user right-clicks */}
               <MapContextMenu />
             </ShowContextMenu>
           </Map>
         </span>
-      </Tippy>
+      </NearestItemTooltip>
     );
   }
 
@@ -653,7 +658,13 @@ class MapViewPresentation extends React.Component {
   };
 
   _onNearestFeatureChanged = (feature) => {
-    console.log(feature);
+    this.props.dispatch(
+      setFeatureIdForTooltip(feature ? feature.getId() : null)
+    );
+  };
+
+  _hideNearestFeatureTooltip = () => {
+    this.props.dispatch(setFeatureIdForTooltip(null));
   };
 
   /**

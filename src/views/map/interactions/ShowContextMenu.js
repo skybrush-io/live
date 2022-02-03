@@ -249,6 +249,7 @@ class ShowContextMenu extends React.Component {
     children: PropTypes.element,
     layers: OLPropTypes.LayerFilter,
     map: PropTypes.instanceOf(Map),
+    onOpening: PropTypes.func,
     projection: PropTypes.string,
     select: PropTypes.func,
     contextMenu: PropTypes.func,
@@ -288,6 +289,11 @@ class ShowContextMenu extends React.Component {
         left: event.originalEvent.pageX,
         top: event.originalEvent.pageY,
       };
+
+      if (this.props.onOpening) {
+        this.props.onOpening(event, coords);
+      }
+
       open(position, { coords });
     }
   };

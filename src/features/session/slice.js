@@ -1,6 +1,8 @@
 /**
  * @file Slice of the state object that handles the state of the user's session.
- * This slice is used to implement time-limited sessions in the web demo.
+ * This slice is used to store ephemeral data that should not be persisted
+ * between app restarts and also to implement time-limited sessions in the web
+ * demo.
  */
 
 import { createSlice } from '@reduxjs/toolkit';
@@ -28,7 +30,14 @@ const { actions, reducer } = createSlice({
   name: 'session',
 
   initialState: {
+    // Expiry date/time of the current session
     expiresAt: null,
+
+    // ID of the feature that is (or was) closest to the mouse cursor on the
+    // map view
+    featureIdForTooltip: null,
+
+    // Stores whether the current session has expired
     isExpired: false,
   },
 
@@ -52,6 +61,10 @@ const { actions, reducer } = createSlice({
     expireSession(state) {
       updateExpiry(state, Date.now());
     },
+
+    setFeatureIdForTooltip(state, action) {
+      state.featureIdForTooltip = action.payload || null;
+    },
   },
 });
 
@@ -59,6 +72,7 @@ export const {
   ensureSessionExpiresNoLaterThan,
   ensureSessionIsNotLongerThan,
   expireSession,
+  setFeatureIdForTooltip,
 } = actions;
 
 export default reducer;
