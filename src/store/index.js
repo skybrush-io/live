@@ -2,12 +2,7 @@
  * @file The master store for the application state.
  */
 
-import {
-  bindActionCreators,
-  configureStore,
-  getDefaultMiddleware,
-  isPlain,
-} from '@reduxjs/toolkit';
+import { bindActionCreators, configureStore, isPlain } from '@reduxjs/toolkit';
 
 import config from 'config';
 import isPromise from 'is-promise';
@@ -150,8 +145,8 @@ export const sagaMiddleware = createSagaMiddleware();
  */
 const store = configureStore({
   reducer: persistReducer(persistConfig, reducer),
-  middleware: [
-    ...getDefaultMiddleware({
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
       // Immutability checks slow things down too much
       immutableCheck: false,
 
@@ -175,17 +170,13 @@ const store = configureStore({
         // be necessary anyway; same for the workbench state
         ignoredPaths: ['show.data', 'workbench'],
       },
-    }),
-    debouncer,
-    promiseMiddleware,
-    sagaMiddleware,
-  ],
+    }).concat(debouncer, promiseMiddleware, sagaMiddleware),
   devTools:
     // eslint-disable-next-line node/prefer-global/process
     process.env.NODE_ENV === 'production'
       ? false
       : {
-          actionsDenyList: [
+          actionsDenylist: [
             updateAgesOfUAVs.type,
             updateAveragingByIds.type,
             updateRTKStatistics.type,
