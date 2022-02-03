@@ -91,7 +91,7 @@ const reducer = handleActions(
       const newIndex =
         index < 0 ? -1 : Math.max(0, Math.min(index + delta, order.length - 1));
       if (index >= 0 && newIndex >= 0) {
-        const newOrder = [].concat(order);
+        const newOrder = order.flat();
         newOrder.splice(index, 1);
         newOrder.splice(newIndex, 0, id);
         return u({ order: newOrder }, state);
