@@ -24,29 +24,33 @@ NearestItemTooltipContent.propTypes = {
   featureId: PropTypes.string,
 };
 
-const NearestItemTooltip = (props) => (
-  <Tooltip
-    followCursor
-    ignoreAttributes
-    duration={0}
-    placement='right'
-    plugins={PLUGINS}
-    {...props}
-  />
-);
+const NearestItemTooltip = ({ featureId, ...rest }) => {
+  const visible = supportsTooltip(featureId);
+  return (
+    <Tooltip
+      followCursor
+      ignoreAttributes
+      duration={0}
+      placement='right'
+      plugins={PLUGINS}
+      visible={visible}
+      content={
+        visible ? <NearestItemTooltipContent featureId={featureId} /> : null
+      }
+      {...rest}
+    />
+  );
+};
+
+NearestItemTooltip.propTypes = {
+  featureId: PropTypes.string,
+};
 
 export default connect(
   // mapStateToProps
-  (state) => {
-    const nearestFeatureId = getNearestFeatureIdForTooltip(state);
-    const visible = supportsTooltip(nearestFeatureId);
-    return {
-      content: visible ? (
-        <NearestItemTooltipContent featureId={nearestFeatureId} />
-      ) : null,
-      visible: Boolean(nearestFeatureId),
-    };
-  },
+  (state) => ({
+    featureId: getNearestFeatureIdForTooltip(state),
+  }),
   // mapDispatchToProps
   {}
 )(NearestItemTooltip);
