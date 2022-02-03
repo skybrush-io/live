@@ -5,7 +5,7 @@ import reject from 'lodash-es/reject';
 import { createSelector } from '@reduxjs/toolkit';
 
 import { Status } from '~/components/semantics';
-import { getSelectedUAVIds } from '~/selectors/selection';
+import { getSelectedUAVIds } from '~/features/uavs/selectors';
 
 /**
  * Returns the current list of home positions in the mission.

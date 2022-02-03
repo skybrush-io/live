@@ -9,9 +9,9 @@ import { createSelector } from '@reduxjs/toolkit';
 import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
 import MiniList from '@skybrush/mui-components/lib/MiniList';
 
-import { setSelectedUAVIds } from '~/actions/map';
 import { listOf } from '~/components/helpers/lists';
 import { statusToPriority } from '~/components/semantics';
+import { setSelectedUAVIds } from '~/features/uavs/actions';
 import {
   getUAVIdToStateMapping,
   getUAVIdList,

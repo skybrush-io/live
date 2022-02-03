@@ -18,9 +18,9 @@ import {
 import {
   getUAVIdList,
   getUAVIdToStateMapping,
+  getSelectedUAVIds,
 } from '~/features/uavs/selectors';
 import { UAVSortKey } from '~/model/sorting';
-import { getSelectedUAVIds } from '~/selectors/selection';
 
 import { applyFiltersAndSortDisplayedUAVIdList } from './sorting';
 

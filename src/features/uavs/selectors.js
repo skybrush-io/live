@@ -38,9 +38,11 @@ import {
   Severity,
 } from '~/flockwave/errors';
 import { convertRGB565ToCSSNotation } from '~/flockwave/parsing';
+import { globalIdToUavId } from '~/model/identifiers';
 import { UAVAge } from '~/model/uav';
-import { getSelectedUAVIds } from '~/selectors/selection';
+import { selectionForSubset } from '~/selectors/selection';
 import { euclideanDistance2D } from '~/utils/math';
+import { EMPTY_ARRAY } from '~/utils/redux';
 import { createMultipleUAVRelatedActions } from '~/utils/messaging';
 
 /**
@@ -511,6 +513,36 @@ export const getMissingUAVIdsInMapping = createSelector(
       return isNil(age) || age === 'gone';
     })
 );
+
+/**
+ * Selector that calculates and caches the list of selected UAV IDs from
+ * the state object.
+ */
+export const getSelectedUAVIds = selectionForSubset(globalIdToUavId);
+
+/**
+ * Selector that returns the ID of the selected UAV if there is exactly one UAV
+ * selected, or undefined otherwise.
+ */
+export const getSingleSelectedUAVId = createSelector(
+  getSelectedUAVIds,
+  (uavIds) => (uavIds.length === 1 ? uavIds[0] : undefined)
+);
+
+/**
+ * Selector that calculates the number of selected UAVs.
+ */
+export const getNumberOfSelectedUAVs = (state) => {
+  const selection = getSelectedUAVIds(state);
+  return Array.isArray(selection) ? selection.length : 0;
+};
+
+/**
+ * Selector that returns at most five selected UAV IDs for sake of displaying
+ * their trajectories.
+ */
+export const getSelectedUAVIdsForTrajectoryDisplay = (state) =>
+  getNumberOfSelectedUAVs(state) <= 5 ? getSelectedUAVIds(state) : EMPTY_ARRAY;
 
 /**
  * Returns the IDs of all UAVs that are currently considered as "gone" (i.e. we

@@ -1,9 +1,11 @@
 import meanBy from 'lodash-es/meanBy';
 
 import { showError } from '~/features/snackbar/actions';
-import { getCurrentGPSPositionByUavId } from '~/features/uavs/selectors';
+import {
+  getCurrentGPSPositionByUavId,
+  getSelectedUAVIds,
+} from '~/features/uavs/selectors';
 import { getPreferredCoordinateFormatter } from '~/selectors/formatting';
-import { getSelectedUAVIds } from '~/selectors/selection';
 import { parseCoordinate } from '~/utils/geography';
 import { moveUAVs } from '~/utils/messaging';
 

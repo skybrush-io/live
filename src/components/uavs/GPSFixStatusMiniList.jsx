@@ -10,9 +10,9 @@ import { createSelector } from '@reduxjs/toolkit';
 import MiniList from '@skybrush/mui-components/lib/MiniList';
 import MiniListDivider from '@skybrush/mui-components/lib/MiniListDivider';
 
-import { setSelectedUAVIds } from '~/actions/map';
 import { listOf } from '~/components/helpers/lists';
 import { statusToPriority } from '~/components/semantics';
+import { setSelectedUAVIds } from '~/features/uavs/actions';
 import {
   getUAVIdToStateMapping,
   getUAVIdList,

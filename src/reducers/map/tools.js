@@ -2,27 +2,28 @@
  * @file Reducer function for handling the selected tool on the map.
  */
 
-import { handleActions } from 'redux-actions';
+import { createSlice } from '@reduxjs/toolkit';
 
 /**
  * The default selected tool.
  */
-const defaultState = {
+const initialState = {
   selectedTool: 'select',
 };
 
 /**
  * The reducer function that handles actions related to the tool selection.
  */
-const reducer = handleActions(
-  {
-    SELECT_MAP_TOOL(state, action) {
-      return Object.assign({}, state, {
-        selectedTool: action.payload,
-      });
+const { reducer, actions } = createSlice({
+  name: 'map/tools',
+  initialState,
+  reducers: {
+    setSelectedTool(state, action) {
+      state.selectedTool = action.payload;
     },
   },
-  defaultState
-);
+});
+
+export const { setSelectedTool } = actions;
 
 export default reducer;

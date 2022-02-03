@@ -28,7 +28,6 @@ import SortAndFilterHeader from './SortAndFilterHeader';
 import UAVListSubheader from './UAVListSubheader';
 import UAVToolbar from './UAVToolbar';
 
-import { setSelectedUAVIds } from '~/actions/map';
 import { createSelectionHandlerThunk } from '~/components/helpers/lists';
 import FadeAndSlide from '~/components/transitions/FadeAndSlide';
 import DroneAvatar from '~/components/uavs/DroneAvatar';
@@ -51,8 +50,9 @@ import {
   getUAVListOrientation,
   isShowingMissionIds,
 } from '~/features/settings/selectors';
+import { setSelectedUAVIds } from '~/features/uavs/actions';
 import { openUAVDetailsDialog } from '~/features/uavs/details';
-import { getSelectedUAVIds } from '~/selectors/selection';
+import { getSelectedUAVIds } from '~/features/uavs/selectors';
 import { isDark } from '~/theme';
 import { formatMissionId } from '~/utils/formatting';
 

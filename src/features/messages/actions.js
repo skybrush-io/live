@@ -1,4 +1,4 @@
-import { getSingleSelectedUAVId } from '~/selectors/selection';
+import { getSingleSelectedUAVId } from '~/features/uavs/selectors';
 
 import { clearMessagesOfUAVById } from './slice';
 

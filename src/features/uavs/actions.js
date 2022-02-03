@@ -1,10 +1,11 @@
+import isNil from 'lodash-es/isNil';
 import xor from 'lodash-es/xor';
 
-import { setSelectedUAVIds } from '~/actions/map';
 import flock from '~/flock';
-import { getSelectedUAVIds } from '~/selectors/selection';
+import { uavIdToGlobalId } from '~/model/identifiers';
+import { setSelectedFeatures } from '~/reducers/map/selection';
 
-import { getUAVIdsMarkedAsGone } from './selectors';
+import { getSelectedUAVIds, getUAVIdsMarkedAsGone } from './selectors';
 
 /**
  * Action factory that returns a thunk that requests the global flock object
@@ -39,6 +40,20 @@ export const requestRemovalOfSelectedUAVs = () => (dispatch, getState) => {
     dispatch(requestRemovalOfUAVsByIds(selection));
   }
 };
+
+/**
+ * Action factory that creates an action that sets the set of selected
+ * UAV IDs in the map.
+ *
+ * @param {Array.<string>} ids  the IDs of the selected UAVs. Any UAV
+ *        whose ID is not in this set will be deselected, and so will be
+ *        any feature that is not an UAV.
+ * @return {Object} an appropriately constructed action
+ */
+export const setSelectedUAVIds = (ids) =>
+  setSelectedFeatures(
+    ids.filter((id) => !isNil(id)).map((id) => uavIdToGlobalId(id))
+  );
 
 /**
  * Action factory that returns a thunk that toggles the selection of one or more

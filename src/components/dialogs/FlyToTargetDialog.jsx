@@ -19,8 +19,8 @@ import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
 import DronePlaceholderList from '~/components/uavs/DronePlaceholderList';
 import { submitFlyToTargetDialog } from '~/features/uav-control/actions';
 import { closeFlyToTargetDialog } from '~/features/uav-control/slice';
+import { getSelectedUAVIds } from '~/features/uavs/selectors';
 import { getPreferredCoordinateFormatter } from '~/selectors/formatting';
-import { getSelectedUAVIds } from '~/selectors/selection';
 
 import { CoordinateField, DistanceField, Select } from '../forms';
 

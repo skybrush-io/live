@@ -1,4 +1,4 @@
-import { getSelectedUAVIds } from '~/selectors/selection';
+import { getSelectedUAVIds } from '~/features/uavs/selectors';
 
 /**
  * Helper function that takes a Redux action factory that takes a list of UAV

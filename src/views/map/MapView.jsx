@@ -5,11 +5,14 @@ import GeometryType from 'ol/geom/GeometryType';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
+import { followCursor } from 'tippy.js';
+import Tippy from '@tippyjs/react';
 
 import Condition from './conditions';
 import {
   SelectNearestFeature,
   ShowContextMenu,
+  TrackNearestFeature,
   TransformFeatures,
 } from './interactions';
 import { Layers, stateObjectToLayer } from './layers';
@@ -20,11 +23,6 @@ import MapReferenceRequestHandler from './MapReferenceRequestHandler';
 import MapToolbar from './MapToolbar';
 import { isDrawingTool, Tool, toolToDrawInteractionProps } from './tools';
 
-import {
-  addFeaturesToSelection,
-  setSelectedFeatures,
-  removeFeaturesFromSelection,
-} from '~/actions/map';
 import Widget from '~/components/Widget';
 import { handleError } from '~/error-handling';
 import { addFeature } from '~/features/map-features/actions';
@@ -33,9 +31,18 @@ import {
   createFeatureFromOpenLayers,
   isFeatureTransformable,
 } from '~/model/features';
-import { getVisibleSelectableLayers, isLayerSelectable } from '~/model/layers';
+import {
+  canLayerTriggerTooltip,
+  getVisibleSelectableLayers,
+  isLayerSelectable,
+} from '~/model/layers';
 import { handleFeatureUpdatesInOpenLayers } from '~/model/mutations';
 import { updateMapViewSettings } from '~/reducers/map/view';
+import {
+  addFeaturesToSelection,
+  setSelectedFeatures,
+  removeFeaturesFromSelection,
+} from '~/reducers/map/selection';
 import { getVisibleLayersInOrder } from '~/selectors/ordered';
 import { getExtendedCoordinateFormatter } from '~/selectors/formatting';
 import {
@@ -191,6 +198,7 @@ const MapViewInteractions = withMap((props) => {
     onDrawEnded,
     onAddFeaturesToSelection,
     onFeaturesTransformed,
+    onNearestFeatureChanged,
     onRemoveFeaturesFromSelection,
     onSetSelectedFeatures,
     onSingleFeatureSelected,
@@ -210,6 +218,15 @@ const MapViewInteractions = withMap((props) => {
     <interaction.DragRotateAndZoom
       key='DragRotateAndZoom'
       condition={Condition.altShiftKeyAndMiddleMouseButton}
+    />,
+    /* Custom "interaction" that is responsible for managing the tooltip that
+     * shows the properties of the nearest UAV. Threshold is larger as UAV icons
+     * have their own size but the distance is measured to the center */
+    <TrackNearestFeature
+      key='TrackNearestFeature'
+      layers={canLayerTriggerTooltip}
+      threshold={32}
+      onNearestFeatureChanged={onNearestFeatureChanged}
     />
   );
 
@@ -237,7 +254,7 @@ const MapViewInteractions = withMap((props) => {
         layers={isLayerSelectable}
         removeCondition={Condition.altKeyOnly}
         toggleCondition={Condition.platformModifierKeyOnly}
-        threshold={10}
+        threshold={16}
         onSelect={onSingleFeatureSelected}
       />,
 
@@ -311,12 +328,27 @@ MapViewInteractions.propTypes = {
   onAddFeaturesToSelection: PropTypes.func,
   onDrawEnded: PropTypes.func,
   onFeaturesTransformed: PropTypes.func,
+  onNearestFeatureChanged: PropTypes.func,
   onRemoveFeaturesFromSelection: PropTypes.func,
   onSetSelectedFeatures: PropTypes.func,
   onSingleFeatureSelected: PropTypes.func,
 };
 
 /* ********************************************************************** */
+
+const TOOLTIP_PLUGINS = [followCursor];
+
+const toolClasses = {
+  [Tool.SELECT]: 'tool-select',
+  [Tool.ZOOM]: 'tool-zoom',
+  [Tool.PAN]: 'tool-pan',
+  [Tool.DRAW_POINT]: 'tool-draw tool-draw-point',
+  [Tool.DRAW_CIRCLE]: 'tool-draw tool-draw-circle',
+  [Tool.DRAW_RECTANGLE]: 'tool-draw tool-draw-rectangle',
+  [Tool.DRAW_PATH]: 'tool-draw tool-draw-path',
+  [Tool.DRAW_POLYGON]: 'tool-draw tool-draw-polygon',
+  [Tool.EDIT_FEATURE]: 'tool-edit tool-edit-feature',
+};
 
 /**
  * React component for the map of the main window.
@@ -350,6 +382,7 @@ class MapViewPresentation extends React.Component {
     this._onSetSelectedFeatures = partial(this._onBoxDragEnded, 'set');
 
     this._map = React.createRef();
+    this._mapInnerDiv = React.createRef();
   }
 
   componentDidMount() {
@@ -405,58 +438,52 @@ class MapViewPresentation extends React.Component {
       />
     );
 
-    const toolClasses = {
-      [Tool.SELECT]: 'tool-select',
-      [Tool.ZOOM]: 'tool-zoom',
-      [Tool.PAN]: 'tool-pan',
-      [Tool.DRAW_POINT]: 'tool-draw tool-draw-point',
-      [Tool.DRAW_CIRCLE]: 'tool-draw tool-draw-circle',
-      [Tool.DRAW_RECTANGLE]: 'tool-draw tool-draw-rectangle',
-      [Tool.DRAW_PATH]: 'tool-draw tool-draw-path',
-      [Tool.DRAW_POLYGON]: 'tool-draw tool-draw-polygon',
-      [Tool.EDIT_FEATURE]: 'tool-edit tool-edit-feature',
-    };
-
     // Note that we use a background color. This is intenitonal -- vector tile
     // based maps assume that there is a light background.
-
     return (
-      <Map
-        ref={this._map}
-        loadTilesWhileInteracting
-        id='main-map-view'
-        view={view}
-        useDefaultControls={false}
-        className={toolClasses[selectedTool]}
-        style={{ background: '#f8f4f0' }}
-        onMoveEnd={this._onMapMoved}
-      >
-        <MapReferenceRequestHandler />
+      <Tippy followCursor content='Hello' plugins={TOOLTIP_PLUGINS}>
+        <span tabIndex={0}>
+          <Map
+            ref={this._map}
+            loadTilesWhileInteracting
+            id='main-map-view'
+            view={view}
+            useDefaultControls={false}
+            className={toolClasses[selectedTool]}
+            style={{ background: '#f8f4f0' }}
+            onMoveEnd={this._onMapMoved}
+          >
+            <MapReferenceRequestHandler />
 
-        <MapViewToolbars />
-        <MapViewLayers onFeaturesModified={this._onFeaturesModified} />
-        <MapViewControls />
-        <MapViewInteractions
-          selectedTool={selectedTool}
-          selectedFeaturesProvider={this._getSelectedTransformableFeatures}
-          onAddFeaturesToSelection={this._onAddFeaturesToSelection}
-          onDrawEnded={this._onDrawEnded}
-          onFeaturesTransformed={this._onFeaturesTransformed}
-          onRemoveFeaturesFromSelection={this._onRemoveFeaturesFromSelection}
-          onSetSelectedFeatures={this._onSetSelectedFeatures}
-          onSingleFeatureSelected={this._onFeatureSelected}
-        />
+            <MapViewToolbars />
+            <MapViewLayers onFeaturesModified={this._onFeaturesModified} />
+            <MapViewControls />
+            <MapViewInteractions
+              selectedTool={selectedTool}
+              selectedFeaturesProvider={this._getSelectedTransformableFeatures}
+              onAddFeaturesToSelection={this._onAddFeaturesToSelection}
+              onDrawEnded={this._onDrawEnded}
+              onFeaturesTransformed={this._onFeaturesTransformed}
+              onNearestFeatureChanged={this._onNearestFeatureChanged}
+              onRemoveFeaturesFromSelection={
+                this._onRemoveFeaturesFromSelection
+              }
+              onSetSelectedFeatures={this._onSetSelectedFeatures}
+              onSingleFeatureSelected={this._onFeatureSelected}
+            />
 
-        {/* OpenLayers interaction that triggers a context menu */}
-        <ShowContextMenu
-          layers={isLayerSelectable}
-          projection='EPSG:4326'
-          threshold={40}
-        >
-          {/* The context menu that appears on the map when the user right-clicks */}
-          <MapContextMenu />
-        </ShowContextMenu>
-      </Map>
+            {/* OpenLayers interaction that triggers a context menu */}
+            <ShowContextMenu
+              layers={isLayerSelectable}
+              projection='EPSG:4326'
+              threshold={40}
+            >
+              {/* The context menu that appears on the map when the user right-clicks */}
+              <MapContextMenu />
+            </ShowContextMenu>
+          </Map>
+        </span>
+      </Tippy>
     );
   }
 
@@ -603,6 +630,10 @@ class MapViewPresentation extends React.Component {
     }
   };
 
+  /**
+   * Event handler that is called when the user moves the map view. Synchronizes
+   * the state of the map view back to the state store.
+   */
   _onMapMoved = () => {
     const { map } = this._map.current;
     const view = map ? map.getView() : undefined;
@@ -620,6 +651,10 @@ class MapViewPresentation extends React.Component {
         })
       );
     }
+  };
+
+  _onNearestFeatureChanged = (feature) => {
+    console.log(feature);
   };
 
   /**

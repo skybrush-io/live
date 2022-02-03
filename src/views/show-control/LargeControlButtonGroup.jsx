@@ -23,7 +23,7 @@ import {
   getUAVIdsParticipatingInMission,
 } from '~/features/mission/selectors';
 import { setCommandsAreBroadcast } from '~/features/mission/slice';
-import { getSelectedUAVIds } from '~/selectors/selection';
+import { getSelectedUAVIds } from '~/features/uavs/selectors';
 import { createMultipleUAVRelatedActions } from '~/utils/messaging';
 
 import StartMethodExplanation from './StartMethodExplanation';

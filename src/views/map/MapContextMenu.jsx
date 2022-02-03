@@ -40,12 +40,12 @@ import { getGeofencePolygonId } from '~/features/mission/selectors';
 import { updateOutdoorShowSettings } from '~/features/show/actions';
 import { openFlyToTargetDialogWithCoordinate } from '~/features/uav-control/actions';
 import { openUAVDetailsDialog } from '~/features/uavs/details';
+import { getSelectedUAVIds } from '~/features/uavs/selectors';
 
 import {
   getSelectedFeatureIds,
   getSelectedFeatureLabels,
   getSelectedFeatureTypes,
-  getSelectedUAVIds,
 } from '~/selectors/selection';
 
 import { hasFeature } from '~/utils/configuration';

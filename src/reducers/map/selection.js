@@ -5,16 +5,12 @@
 
 import difference from 'lodash-es/difference';
 import uniq from 'lodash-es/uniq';
-import { handleActions } from 'redux-actions';
+
+import { createSlice } from '@reduxjs/toolkit';
 
 import { removeFeaturesByIds } from '~/features/map-features/slice';
 import flock from '~/flock';
 import { featureIdToGlobalId, uavIdToGlobalId } from '~/model/identifiers';
-
-/**
- * The default state of the selection.
- */
-const defaultState = [];
 
 /**
  * Finds all the UAV features on the map.
@@ -52,32 +48,33 @@ function updateSelection(current, add, remove) {
   return result;
 }
 
-/**
- * The reducer function that handles actions related to the selection on the
- * map.
- */
-const reducer = handleActions(
-  {
-    ADD_FEATURES_TO_SELECTION(state, action) {
+const { actions, reducer } = createSlice({
+  name: 'map/selection',
+  initialState: [],
+
+  reducers: {
+    addFeaturesToSelection(state, action) {
       return updateSelection(state, action.payload);
     },
 
-    CLEAR_SELECTION() {
-      return updateSelection([]);
+    clearSelection(state) {
+      state.length = 0;
     },
 
-    REMOVE_FEATURES_FROM_SELECTION(state, action) {
+    removeFeaturesFromSelection(state, action) {
       return updateSelection(state, [], action.payload);
     },
 
-    SELECT_ALL_UAV_FEATURES() {
+    selectAllUAVFeatures() {
       return updateSelection([], findAllUAVFeatures());
     },
 
-    SET_SELECTED_FEATURES(state, action) {
+    setSelectedFeatures(_state, action) {
       return updateSelection([], action.payload);
     },
+  },
 
+  extraReducers: {
     [removeFeaturesByIds]: (state, action) => {
       return updateSelection(
         state,
@@ -85,13 +82,15 @@ const reducer = handleActions(
         action.payload.map(featureIdToGlobalId).filter(Boolean)
       );
     },
-
-    /* there is no need to react to _removeUAVsByIds here; the system is totally
-     * tolerant to the even when the ID of a UAV that does not exist is in the
-     * selection; for instance, this is how we can select the slot of an assigned
-     * UAV in the UAV list when the UAV itself is not turned on yet */
   },
-  defaultState
-);
+});
+
+export const {
+  addFeaturesToSelection,
+  clearSelection,
+  removeFeaturesFromSelection,
+  selectAllUAVFeatures,
+  setSelectedFeatures,
+} = actions;
 
 export default reducer;

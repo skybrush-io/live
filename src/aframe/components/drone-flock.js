@@ -10,14 +10,14 @@ import watch from 'redux-watch';
 
 import AFrame from '../aframe';
 
-import { setSelectedUAVIds } from '~/actions/map';
 import { createSelectionHandlerThunk } from '~/components/helpers/lists';
+import { setSelectedUAVIds } from '~/features/uavs/actions';
+import { getSelectedUAVIds } from '~/features/uavs/selectors';
 import { getPreferredDroneRadius } from '~/features/three-d/selectors';
 import { hideTooltip, showTooltip } from '~/features/three-d/slice';
 import flock from '~/flock';
 import { convertRGB565ToHex } from '~/flockwave/parsing';
 import { getFlatEarthCoordinateTransformer } from '~/selectors/map';
-import { getSelectedUAVIds } from '~/selectors/selection';
 import store from '~/store';
 
 const { THREE } = AFrame;

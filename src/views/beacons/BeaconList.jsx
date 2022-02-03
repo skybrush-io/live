@@ -16,8 +16,8 @@ import Search from '@material-ui/icons/Search';
 import StatusLight from '@skybrush/mui-components/lib/StatusLight';
 import Tooltip from '@skybrush/mui-components/lib/Tooltip';
 
-import { setSelectedBeaconIds } from '~/actions/map';
 import { multiSelectableListOf } from '~/components/helpers/lists';
+import { setSelectedBeaconIds } from '~/features/beacons/actions';
 import {
   getBeaconDisplayName,
   getBeaconsInOrder,

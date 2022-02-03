@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 
-import { getSelectedUAVIdsForTrajectoryDisplay } from '~/selectors/selection';
+import { getSelectedUAVIdsForTrajectoryDisplay } from '~/features/uavs/selectors';
 
 import UAVTrajectory from './UAVTrajectory';
 

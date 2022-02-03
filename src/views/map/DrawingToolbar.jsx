@@ -15,8 +15,9 @@ import Tooltip from '@skybrush/mui-components/lib/Tooltip';
 import partial from 'lodash-es/partial';
 import { connect } from 'react-redux';
 
-import { selectMapTool } from '../../actions/map';
-import EditFeature from '../../icons/EditFeature';
+import EditFeature from '~/icons/EditFeature';
+import { setSelectedTool } from '~/reducers/map/tools';
+
 import { Tool } from './tools';
 
 /**
@@ -95,11 +96,9 @@ const DrawingToolbar = connect(
   // mapStateToProps
   (state) => ({ ...state.map.tools }),
   // mapDispatchToProps
-  (dispatch) => ({
-    onToolSelected(tool) {
-      dispatch(selectMapTool(tool));
-    },
-  })
+  {
+    onToolSelected: setSelectedTool,
+  }
 )(DrawingToolbarPresentation);
 
 export default DrawingToolbar;

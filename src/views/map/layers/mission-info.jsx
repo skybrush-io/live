@@ -25,6 +25,7 @@ import {
   getOutdoorShowOrientation,
   getOutdoorShowOrigin,
 } from '~/features/show/selectors';
+import { getSelectedUAVIdsForTrajectoryDisplay } from '~/features/uavs/selectors';
 import {
   globalIdToHomePositionId,
   globalIdToLandingPositionId,
@@ -38,11 +39,7 @@ import {
 } from '~/model/identifiers';
 import { setLayerEditable, setLayerSelectable } from '~/model/layers';
 import { getMapOriginRotationAngle } from '~/selectors/map';
-import {
-  getSelectedOriginIds,
-  getSelectedUAVIdsForTrajectoryDisplay,
-  isSelected,
-} from '~/selectors/selection';
+import { getSelectedOriginIds, isSelected } from '~/selectors/selection';
 import { formatMissionId } from '~/utils/formatting';
 import { mapViewCoordinateFromLonLat } from '~/utils/geography';
 import { closePolygon, toRadians } from '~/utils/math';

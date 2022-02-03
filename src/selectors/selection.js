@@ -8,12 +8,7 @@ import reject from 'lodash-es/reject';
 import Collection from 'ol/Collection';
 import { createSelector } from '@reduxjs/toolkit';
 
-import {
-  globalIdToFeatureId,
-  globalIdToOriginId,
-  globalIdToUavId,
-} from '~/model/identifiers';
-import { EMPTY_ARRAY } from '~/utils/redux';
+import { globalIdToFeatureId, globalIdToOriginId } from '~/model/identifiers';
 
 /**
  * Selector that retrieves the list of item IDs in the current selection
@@ -118,33 +113,3 @@ export const getSelectedFeatureTypes = createSelector(
  * @return {string[]}  the list of selected feature IDs
  */
 export const getSelectedOriginIds = selectionForSubset(globalIdToOriginId);
-
-/**
- * Selector that calculates and caches the list of selected UAV IDs from
- * the state object.
- */
-export const getSelectedUAVIds = selectionForSubset(globalIdToUavId);
-
-/**
- * Selector that returns the ID of the selected UAV if there is exactly one UAV
- * selected, or undefined otherwise.
- */
-export const getSingleSelectedUAVId = createSelector(
-  getSelectedUAVIds,
-  (uavIds) => (uavIds.length === 1 ? uavIds[0] : undefined)
-);
-
-/**
- * Selector that calculates the number of selected UAVs.
- */
-export const getNumberOfSelectedUAVs = (state) => {
-  const selection = getSelectedUAVIds(state);
-  return Array.isArray(selection) ? selection.length : 0;
-};
-
-/**
- * Selector that returns at most five selected UAV IDs for sake of displaying
- * their trajectories.
- */
-export const getSelectedUAVIdsForTrajectoryDisplay = (state) =>
-  getNumberOfSelectedUAVs(state) <= 5 ? getSelectedUAVIds(state) : EMPTY_ARRAY;

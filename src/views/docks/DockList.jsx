@@ -14,8 +14,8 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 
-import { setSelectedDockIds } from '~/actions/map';
 import { multiSelectableListOf } from '~/components/helpers/lists';
+import { setSelectedDockIds } from '~/features/docks/actions';
 import { openDockDetailsDialog } from '~/features/docks/details';
 import {
   getDocksInOrder,
