@@ -4,12 +4,7 @@
  * along with a convenient React component wrapper.
  */
 
-import includes from 'lodash-es/includes';
-import isArray from 'lodash-es/isArray';
-import isFunction from 'lodash-es/isFunction';
 import partial from 'lodash-es/partial';
-import stubFalse from 'lodash-es/stubFalse';
-import stubTrue from 'lodash-es/stubTrue';
 
 import * as Condition from 'ol/events/condition';
 import Interaction from 'ol/interaction/Interaction';
@@ -19,10 +14,9 @@ import PropTypes from 'prop-types';
 
 import { createOLInteractionComponent } from '@collmot/ol-react/lib/interaction';
 
-import {
-  euclideanDistance,
-  getExactClosestPointOf,
-} from '../../../utils/geography';
+import { euclideanDistance, getExactClosestPointOf } from '~/utils/geography';
+
+import { createLayerSelectorFunction } from './utils';
 
 /**
  * OpenLayers interaction that selects the point feature of a layer that is
@@ -89,7 +83,7 @@ class SelectNearestFeatureInteraction extends Interaction {
 
         // Create the layer selector function if needed
         if (!this._layerSelectorFunction) {
-          this._layerSelectorFunction = this._createLayerSelectorFunction(
+          this._layerSelectorFunction = createLayerSelectorFunction(
             this._layers
           );
         }
@@ -177,32 +171,6 @@ class SelectNearestFeatureInteraction extends Interaction {
     this._select = options.onSelect;
     this._threshold = options.threshold;
     this.setLayers(options.layers);
-  }
-
-  /**
-   * Constructs a layer selector function from the given object.
-   *
-   * @param {Array<ol.layer.Layer>|function(layer: ol.layer.Layer):boolean|undefined} layers
-   *        the layer selector object; either an array of layers that should
-   *        be included in the selection or a function that returns true
-   *        for layers that should be included in the selection
-   * @return {function(layer: ol.layer.Layer):boolean} an appropriate layer
-   *         selector function
-   */
-  _createLayerSelectorFunction(layers) {
-    if (layers) {
-      if (isFunction(layers)) {
-        return layers;
-      }
-
-      if (isArray(layers)) {
-        return (layer) => includes(layers, layer);
-      }
-
-      return stubFalse;
-    }
-
-    return stubTrue;
   }
 
   /**
