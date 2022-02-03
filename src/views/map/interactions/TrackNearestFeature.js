@@ -4,6 +4,7 @@
  * the nearest feature changes.
  */
 
+import isNil from 'lodash-es/isNil';
 import * as Condition from 'ol/events/condition';
 import Interaction from 'ol/interaction/Interaction';
 import Layer from 'ol/layer/Layer';
@@ -39,6 +40,7 @@ class TrackNearestFeatureInteraction extends Interaction {
     super({
       handleEvent: (() => {
         let lastFeature;
+        let hideTimeout;
 
         return (mapBrowserEvent) => {
           // Bail out if this is not a mouse move event
@@ -69,7 +71,19 @@ class TrackNearestFeatureInteraction extends Interaction {
           if (trackedFeature !== lastFeature) {
             lastFeature = trackedFeature;
             if (this._nearestFeatureChanged) {
-              this._nearestFeatureChanged(trackedFeature);
+              if (isNil(trackedFeature)) {
+                hideTimeout = setTimeout(
+                  () => this._nearestFeatureChanged(null),
+                  100
+                );
+              } else {
+                if (hideTimeout) {
+                  clearTimeout(hideTimeout);
+                  hideTimeout = null;
+                }
+
+                this._nearestFeatureChanged(trackedFeature);
+              }
             }
           }
 
