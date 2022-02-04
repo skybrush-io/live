@@ -20,6 +20,9 @@ import { createLayerSelectorFunction } from './utils';
  * the nearest feature changes.
  */
 class TrackNearestFeatureInteraction extends Interaction {
+  _lastFeature = null;
+  _hideTimeout = null;
+
   /**
    * Constructor.
    *
@@ -38,58 +41,38 @@ class TrackNearestFeatureInteraction extends Interaction {
    */
   constructor(options = {}) {
     super({
-      handleEvent: (() => {
-        let lastFeature;
-        let hideTimeout;
-
-        return (mapBrowserEvent) => {
-          // Bail out if this is not a mouse move event
-          if (!Condition.pointerMove(mapBrowserEvent)) {
-            return true;
-          }
-
-          // Create the layer selector function if needed
-          if (!this._layerSelectorFunction) {
-            this._layerSelectorFunction = createLayerSelectorFunction(
-              this._layers
-            );
-          }
-
-          const { map, pixel } = mapBrowserEvent;
-          const trackedFeature = map.forEachFeatureAtPixel(
-            pixel,
-            (feature) => feature,
-            {
-              layerFilter: this._layerSelectorFunction,
-              hitTolerance: this._hitTolerance,
-            }
-          );
-
-          // TODO(ntamas): maybe try to be stateful and stick to the previously
-          // selected feature if it is still "within range"?
-
-          if (trackedFeature !== lastFeature) {
-            lastFeature = trackedFeature;
-            if (this._nearestFeatureChanged) {
-              if (isNil(trackedFeature)) {
-                hideTimeout = setTimeout(
-                  () => this._nearestFeatureChanged(null),
-                  100
-                );
-              } else {
-                if (hideTimeout) {
-                  clearTimeout(hideTimeout);
-                  hideTimeout = null;
-                }
-
-                this._nearestFeatureChanged(trackedFeature);
-              }
-            }
-          }
-
+      handleEvent: (mapBrowserEvent) => {
+        // Bail out if this is not a mouse move event
+        if (!Condition.pointerMove(mapBrowserEvent)) {
           return true;
-        };
-      })(),
+        }
+
+        // Create the layer selector function if needed
+        if (!this._layerSelectorFunction) {
+          this._layerSelectorFunction = createLayerSelectorFunction(
+            this._layers
+          );
+        }
+
+        const { map, pixel } = mapBrowserEvent;
+        const trackedFeature = map.forEachFeatureAtPixel(
+          pixel,
+          (feature) => feature,
+          {
+            layerFilter: this._layerSelectorFunction,
+            hitTolerance: this._hitTolerance,
+          }
+        );
+
+        // TODO(ntamas): maybe try to be stateful and stick to the previously
+        // selected feature if it is still "within range"?
+
+        if (trackedFeature !== this._lastFeature) {
+          this._setTrackedFeature(trackedFeature);
+        }
+
+        return true;
+      },
     });
 
     const defaultOptions = {
@@ -129,6 +112,66 @@ class TrackNearestFeatureInteraction extends Interaction {
     this._layers = value;
     this._layerSelectorFunction = undefined;
   }
+
+  setMap(value) {
+    let map = this.getMap();
+
+    if (map) {
+      const viewport = map.getViewport();
+      if (viewport) {
+        viewport.removeEventListener('pointerout', this._onPointerOut);
+      }
+    }
+
+    super.setMap(value);
+
+    map = this.getMap();
+    if (map) {
+      const viewport = map.getViewport();
+      if (viewport) {
+        viewport.addEventListener('pointerout', this._onPointerOut);
+      }
+    }
+  }
+
+  /**
+   * Event handler that is called when the mouse cursor leaves the map.
+   */
+  _onPointerOut = () => {
+    this._setTrackedFeature(null);
+  };
+
+  /**
+   * Sets the feature currently tracked by the interaction to the given feature,
+   * calling the callbacks as necessary.
+   *
+   * When setting the feature to null, the event is delayed by 100 msec to ensure
+   * that there is no "blinking" when the mouse is dragged from one feature to
+   * another with a gap of a few pixels between them.
+   */
+  _setTrackedFeature = (feature) => {
+    if (feature === this._lastFeature) {
+      return;
+    }
+
+    this._lastFeature = feature;
+
+    if (this._nearestFeatureChanged) {
+      if (isNil(feature)) {
+        this._hideTimeout = setTimeout(
+          () => this._nearestFeatureChanged(null),
+          100
+        );
+      } else {
+        if (this._hideTimeout) {
+          clearTimeout(this._hideTimeout);
+          this._hideTimeout = null;
+        }
+
+        this._nearestFeatureChanged(feature);
+      }
+    }
+  };
 }
 
 /**
