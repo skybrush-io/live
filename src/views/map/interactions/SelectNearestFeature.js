@@ -59,8 +59,10 @@ class SelectNearestFeatureInteraction extends Interaction {
   constructor(options = {}) {
     super({
       handleEvent: (mapBrowserEvent) => {
-        // Bail out if this is not a click
-        if (!Condition.click(mapBrowserEvent)) {
+        // Bail out if this is not a click or double-click, and let the event
+        // propagate to other interactions
+        const isDoubleClick = Condition.doubleClick(mapBrowserEvent);
+        if (!Condition.click(mapBrowserEvent) && !isDoubleClick) {
           return true;
         }
 
@@ -78,7 +80,7 @@ class SelectNearestFeatureInteraction extends Interaction {
 
         // Short-circuit if the user has not specified a callback
         if (!this._select) {
-          return Condition.pointerMove(mapBrowserEvent);
+          return true;
         }
 
         // Create the layer selector function if needed
@@ -127,36 +129,40 @@ class SelectNearestFeatureInteraction extends Interaction {
           }
         }
 
-        // Decide whether we are setting, adding, removing or toggling the
-        // selection
-        const add = this._addCondition(mapBrowserEvent);
-        const remove = this._removeCondition(mapBrowserEvent);
-        const toggle = this._toggleCondition(mapBrowserEvent);
-        const mode = add
+        // Decide whether we are setting, adding, removing, toggling or activating
+        // the selection
+        const mode = this._activateCondition(mapBrowserEvent)
+          ? 'activate'
+          : this._addCondition(mapBrowserEvent)
           ? 'add'
-          : remove
+          : this._removeCondition(mapBrowserEvent)
           ? 'remove'
-          : toggle
+          : this._toggleCondition(mapBrowserEvent)
           ? 'toggle'
           : 'set';
 
         if (closestFeature !== undefined) {
           // Now call the callback
           this._select(mode, closestFeature, distance);
+
+          // ...then prevent any further interactions in the interaction chain
+          return false;
         } else {
           // No feature is close enough. In 'set' mode, we need to clear the
           // selection.
           if (mode === 'set') {
             this._select('clear');
           }
-        }
 
-        return Condition.pointerMove(mapBrowserEvent);
+          // ...but let the event pass through to other interactions
+          return true;
+        }
       },
     });
 
     const defaultOptions = {
       condition: Condition.primaryAction,
+      activateCondition: Condition.never,
       addCondition: Condition.never,
       removeCondition: Condition.never,
       toggleCondition: Condition.never,
@@ -165,6 +171,7 @@ class SelectNearestFeatureInteraction extends Interaction {
     options = Object.assign(defaultOptions, options);
 
     this._condition = options.condition;
+    this._activateCondition = options.activateCondition;
     this._addCondition = options.addCondition;
     this._removeCondition = options.removeCondition;
     this._toggleCondition = options.toggleCondition;
@@ -247,6 +254,7 @@ export default createOLInteractionComponent(
   (props) => new SelectNearestFeatureInteraction(props),
   {
     propTypes: {
+      activateCondition: PropTypes.func,
       addCondition: PropTypes.func,
       layers: PropTypes.oneOfType([PropTypes.func, PropTypes.arrayOf(Layer)]),
       removeCondition: PropTypes.func,
@@ -255,6 +263,7 @@ export default createOLInteractionComponent(
       toggleCondition: PropTypes.func,
     },
     fragileProps: [
+      'activateCondition',
       'addCondition',
       'layers',
       'removeCondition',

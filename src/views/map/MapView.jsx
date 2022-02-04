@@ -23,7 +23,10 @@ import { isDrawingTool, Tool, toolToDrawInteractionProps } from './tools';
 
 import Widget from '~/components/Widget';
 import { handleError } from '~/error-handling';
-import { addFeature } from '~/features/map-features/actions';
+import {
+  addFeature,
+  showDetailsForFeatureInTooltipOrGivenFeature,
+} from '~/features/map-features/actions';
 import NearestItemTooltip from '~/features/session/NearestItemTooltip';
 import { setFeatureIdForTooltip } from '~/features/session/slice';
 import mapViewManager from '~/mapViewManager';
@@ -249,6 +252,7 @@ const MapViewInteractions = withMap((props) => {
           Alt + Click --> Remove nearest feature from selection */
       <SelectNearestFeature
         key='SelectNearestFeature'
+        activateCondition={Condition.doubleClick}
         addCondition={Condition.shiftKeyOnly}
         layers={isLayerSelectable}
         removeCondition={Condition.altKeyOnly}
@@ -563,6 +567,17 @@ class MapViewPresentation extends React.Component {
   };
 
   /**
+   * Event handler that is called when the user activates a feature by
+   * double-clicking on it.
+   */
+  _onFeatureActivated = (feature) => {
+    // Okay, so this was a double-click. If we have a tooltip being shown on
+    // the map, show the details dialog of the feature whose tooltip we are
+    // showing; otherwise show the details dialog the given feature.
+    this.props.dispatch(showDetailsForFeatureInTooltipOrGivenFeature(feature));
+  };
+
+  /**
    * Event handler that is called when some features were modified on the
    * map after adding / moving / removing its constituent vertices.
    *
@@ -602,12 +617,22 @@ class MapViewPresentation extends React.Component {
       return;
     }
 
-    if (mode === 'toggle') {
-      const { selection } = this.props;
-      mode = selection.includes(id) ? 'remove' : 'add';
-    } else if (mode === 'clear') {
-      mode = 'set';
-      feature = undefined;
+    switch (mode) {
+      case 'activate':
+        this._onFeatureActivated(feature);
+        break;
+
+      case 'toggle':
+        mode = this.props.selection.includes(id) ? 'remove' : 'add';
+        break;
+
+      case 'clear':
+        mode = 'set';
+        feature = undefined;
+        break;
+
+      default:
+        break;
     }
 
     this._onFeaturesSelected(mode, feature ? [feature] : []);
