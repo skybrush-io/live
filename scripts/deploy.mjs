@@ -14,7 +14,7 @@ import { program } from 'commander';
 import { execa } from 'execa';
 import fsExtra from 'fs-extra';
 
-import Listr from 'listr';
+import { Listr } from 'listr2';
 import pify from 'pify';
 import tmp from 'tmp-promise';
 import webpack from 'webpack';
