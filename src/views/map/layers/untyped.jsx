@@ -40,7 +40,6 @@ const selectLayerTypesThatCanBeAdded = (state) => {
 
 // === Settings for this particular layer type ===
 
-/* eslint-disable react/jsx-no-bind */
 const UntypedLayerSettingsPresentation = ({
   enabledLayerTypes,
   layerTypes,
@@ -57,9 +56,9 @@ const UntypedLayerSettingsPresentation = ({
             userSelect: 'none',
             opacity: enabled ? 1 : 0.54,
           }}
-          onClick={enabled ? () => onLayerTypeSelected(layerType) : null}
           elevation={enabled ? 1 : 0}
           variant={enabled ? 'outlined' : 'elevation'}
+          onClick={enabled ? () => onLayerTypeSelected(layerType) : null}
         >
           <CardHeader
             avatar={iconForLayerType(layerType)}
@@ -79,7 +78,7 @@ const UntypedLayerSettingsPresentation = ({
         container
         flex='1'
         alignItems='stretch'
-        justify='flex-start'
+        justifyContent='flex-start'
         spacing={2}
       >
         {items}
@@ -87,7 +86,6 @@ const UntypedLayerSettingsPresentation = ({
     </Box>
   );
 };
-/* eslint-enable react/jsx-no-bind */
 
 UntypedLayerSettingsPresentation.propTypes = {
   layer: PropTypes.object,
@@ -107,7 +105,7 @@ export const UntypedLayerSettings = connect(
   }),
   // mapDispatchToProps
   (dispatch, ownProps) => ({
-    onLayerTypeSelected: (value) => {
+    onLayerTypeSelected(value) {
       dispatch(changeLayerType(ownProps.layerId, value));
     },
   })

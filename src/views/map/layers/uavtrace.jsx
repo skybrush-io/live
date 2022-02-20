@@ -1,7 +1,6 @@
 import toNumber from 'lodash-es/toNumber';
 import Feature from 'ol/Feature';
 import LineString from 'ol/geom/LineString';
-import { Stroke, Style } from 'ol/style';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
@@ -15,7 +14,7 @@ import SwatchesColorPicker from '~/components/SwatchesColorPicker';
 import flock from '~/flock';
 import { mapViewCoordinateFromLonLat } from '~/utils/geography';
 import { colorToString } from '~/utils/coloring';
-import { primaryColor } from '~/utils/styles';
+import { primaryColor, stroke } from '~/utils/styles';
 
 // === Settings for this particular layer type ===
 
@@ -93,26 +92,13 @@ export const UAVTraceLayerSettings = connect(
   null,
   // mapDispatchToProps
   (dispatch, ownProps) => ({
-    setLayerParameters: (parameters) => {
+    setLayerParameters(parameters) {
       dispatch(setLayerParametersById(ownProps.layerId, parameters));
     },
   })
 )(UAVTraceLayerSettingsPresentation);
 
 // === The actual layer to be rendered ===
-
-/**
- * Helper function that creates an OpenLayers stroke style object from a color
- * and a given width.
- *
- * @param {Object} color the color of the stroke line
- * @param {number} width the width of the stroke line
- * @return {Object} the OpenLayers style object
- */
-const makeStrokeStyle = (color, width) =>
-  new Style({
-    stroke: new Stroke({ color, width }),
-  });
 
 class UAVTraceVectorSource extends React.Component {
   static propTypes = {
@@ -176,9 +162,7 @@ class UAVTraceVectorSource extends React.Component {
   };
 
   _registerNewFeature = (feature) => {
-    feature.setStyle(
-      makeStrokeStyle(this.props.trailColor, this.props.trailWidth)
-    );
+    feature.setStyle(stroke(this.props.trailColor, this.props.trailWidth));
 
     this.features.push(feature);
     if (this._sourceRef) {
@@ -192,9 +176,7 @@ class UAVTraceVectorSource extends React.Component {
 
       // Update the styles of all the features
       for (const feature of features) {
-        feature.setStyle(
-          makeStrokeStyle(this.props.trailColor, this.props.trailWidth)
-        );
+        feature.setStyle(stroke(this.props.trailColor, this.props.trailWidth));
       }
     }
   }
