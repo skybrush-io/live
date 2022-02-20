@@ -120,7 +120,7 @@ const MapViewControlsPresentation = ({
 }) => (
   <>
     <control.Zoom />
-    <control.Attribution collapsed collapseLabel='&laquo;' />
+    <control.Attribution collapsed collapsible collapseLabel='&laquo;' />
     {showMouseCoordinates && (
       <control.MousePosition
         key='control.MousePosition'
