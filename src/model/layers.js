@@ -11,10 +11,10 @@ import FileAttachment from '@material-ui/icons/Attachment';
 import FileCloud from '@material-ui/icons/Cloud';
 import Flight from '@material-ui/icons/Flight';
 import Gamepad from '@material-ui/icons/Gamepad';
+import Grid from '@material-ui/icons/GridOn';
 import HelpOutline from '@material-ui/icons/HelpOutline';
 import Info from '@material-ui/icons/Info';
 import Streetview from '@material-ui/icons/Streetview';
-import ImageGridOn from '@material-ui/icons/GridOn';
 import Map from '@material-ui/icons/Map';
 import MyLocation from '@material-ui/icons/MyLocation';
 import Timeline from '@material-ui/icons/Timeline';
@@ -31,6 +31,7 @@ export const LayerType = {
   DOCKS: 'docks',
   FEATURES: 'features',
   GEOJSON: 'geojson',
+  GRATICULE: 'graticule',
   HEATMAP: 'heatmap',
   HEXGRID: 'hexgrid',
   MISSION_INFO: 'home', // don't rename this -- backwards compatibility
@@ -47,6 +48,7 @@ export const LayerType = {
 export const LayerTypes = [
   LayerType.BASE,
   LayerType.TILE_SERVER,
+  LayerType.GRATICULE,
   LayerType.FEATURES,
   LayerType.UAVS,
   LayerType.BEACONS,
@@ -117,6 +119,14 @@ const _propertiesForLayerTypes = {
     },
     multiple: true,
   },
+  [LayerType.GRATICULE]: {
+    label: 'Graticule',
+    icon: <Grid />,
+    parameters: {
+      strokeColor: { r: 0, g: 0, b: 0, alpha: 0.2 },
+      strokeWidth: 1,
+    },
+  },
   [LayerType.HEATMAP]: {
     label: 'Heatmap',
     icon: <TrackChanges />,
@@ -137,7 +147,7 @@ const _propertiesForLayerTypes = {
   },
   [LayerType.HEXGRID]: {
     label: 'Hex grid layer',
-    icon: <ImageGridOn />,
+    icon: <Grid />,
     parameters: {
       center: [19.061951, 47.47334],
       size: 8,

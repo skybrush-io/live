@@ -16,6 +16,8 @@ import {
 
 import { getFlatEarthCoordinateTransformer } from './map';
 
+const trailingZeroRegExp = /\.?0+([°′″'"]?)$/;
+
 const cartesianFormatter = makeDecimalCoordinateFormatter({
   digits: 2,
   unit: DISTANCE_UNITS,
@@ -47,6 +49,70 @@ const _formattersForCoordinateFormat = {
     formatCoords(lon, lat, true).format('-DDMMss', { decimalPlaces: 3 }),
 };
 
+const _formattersForLongitudeOnlyFormat = {
+  [CoordinateFormat.DEGREES]: (lon) =>
+    formatCoords(lon, 0, true)
+      .format('Xdd', { decimalPlaces: 7, latLonSeparator: '|' })
+      .split('|')[1]
+      .replace(trailingZeroRegExp, '$1'),
+  [CoordinateFormat.DEGREES_MINUTES]: (lon) =>
+    formatCoords(lon, 0, true)
+      .format('XDDmm', { decimalPlaces: 4, latLonSeparator: '|' })
+      .split('|')[1]
+      .replace(trailingZeroRegExp, '$1'),
+  [CoordinateFormat.DEGREES_MINUTES_SECONDS]: (lon) =>
+    formatCoords(lon, 0, true)
+      .format('XDDMMss', { decimalPlaces: 3, latLonSeparator: '|' })
+      .split('|')[1]
+      .replace(trailingZeroRegExp, '$1'),
+  [CoordinateFormat.SIGNED_DEGREES]: (lon) =>
+    signedGeographicFormatter([lon, 0])
+      .split(' ')[1]
+      .replace(trailingZeroRegExp, '$1'),
+  [CoordinateFormat.SIGNED_DEGREES_MINUTES]: (lon) =>
+    formatCoords(lon, 0, true)
+      .format('-DDmm', { decimalPlaces: 4, latLonSeparator: '|' })
+      .split('|')[1]
+      .replace(trailingZeroRegExp, '$1'),
+  [CoordinateFormat.SIGNED_DEGREES_MINUTES_SECONDS]: (lon) =>
+    formatCoords(lon, 0, true)
+      .format('-DDMMss', { decimalPlaces: 3, latLonSeparator: '|' })
+      .split('|')[1]
+      .replace(trailingZeroRegExp, '$1'),
+};
+
+const _formattersForLatitudeOnlyFormat = {
+  [CoordinateFormat.DEGREES]: (lat) =>
+    formatCoords(0, lat, true)
+      .format('Xdd', { decimalPlaces: 7, latLonSeparator: '|' })
+      .split('|')[0]
+      .replace(trailingZeroRegExp, '$1'),
+  [CoordinateFormat.DEGREES_MINUTES]: (lat) =>
+    formatCoords(0, lat, true)
+      .format('XDDmm', { decimalPlaces: 4, latLonSeparator: '|' })
+      .split('|')[0]
+      .replace(trailingZeroRegExp, '$1'),
+  [CoordinateFormat.DEGREES_MINUTES_SECONDS]: (lat) =>
+    formatCoords(0, lat, true)
+      .format('XDDMMss', { decimalPlaces: 3, latLonSeparator: '|' })
+      .split('|')[0]
+      .replace(trailingZeroRegExp, '$1'),
+  [CoordinateFormat.SIGNED_DEGREES]: (lat) =>
+    signedGeographicFormatter([0, lat])
+      .split('|')[0]
+      .replace(trailingZeroRegExp, '$1'),
+  [CoordinateFormat.SIGNED_DEGREES_MINUTES]: (lat) =>
+    formatCoords(0, lat, true)
+      .format('-DDmm', { decimalPlaces: 4, latLonSeparator: '|' })
+      .split('|')[0]
+      .replace(trailingZeroRegExp, '$1'),
+  [CoordinateFormat.SIGNED_DEGREES_MINUTES_SECONDS]: (lat) =>
+    formatCoords(0, lat, true)
+      .format('-DDMMss', { decimalPlaces: 3, latLonSeparator: '|' })
+      .split('|')[0]
+      .replace(trailingZeroRegExp, '$1'),
+};
+
 /**
  * Returns the preferred formatter function for the coordinate format
  * specified in the argument.
@@ -57,13 +123,53 @@ export const getFormatterForCoordinateFormat = (coordinateFormat) =>
   _formattersForCoordinateFormat[coordinateFormat] || signedGeographicFormatter;
 
 /**
- * Selector that returns a function that can be called with longitude-latitde
+ * Returns the preferred latitude formatter function for the coordinate format
+ * specified in the argument.
+ *
+ * The coordinate format must be a member of the CoordinateFormat enum.
+ */
+export const getLatitudeFormatterForCoordinateFormat = (coordinateFormat) =>
+  _formattersForLatitudeOnlyFormat[coordinateFormat] ||
+  _formattersForLatitudeOnlyFormat[CoordinateFormat.SIGNED_DEGREES];
+
+/**
+ * Returns the preferred longitude formatter function for the coordinate format
+ * specified in the argument.
+ *
+ * The coordinate format must be a member of the CoordinateFormat enum.
+ */
+export const getLongitudeFormatterForCoordinateFormat = (coordinateFormat) =>
+  _formattersForLongitudeOnlyFormat[coordinateFormat] ||
+  _formattersForLongitudeOnlyFormat[CoordinateFormat.SIGNED_DEGREES];
+
+/**
+ * Selector that returns a function that can be called with longitude-latitude
  * pairs and that returns a nicely formatted representation according to the
  * preferred format of the user.
  */
 export const getPreferredCoordinateFormatter = createSelector(
   (state) => state.settings.display.coordinateFormat,
   getFormatterForCoordinateFormat
+);
+
+/**
+ * Selector that returns a function that can be called with a latitude
+ * and that returns a nicely formatted representation according to the
+ * preferred format of the user.
+ */
+export const getPreferredLatitudeCoordinateFormatter = createSelector(
+  (state) => state.settings.display.coordinateFormat,
+  getLatitudeFormatterForCoordinateFormat
+);
+
+/**
+ * Selector that returns a function that can be called with a longitude
+ * and that returns a nicely formatted representation according to the
+ * preferred format of the user.
+ */
+export const getPreferredLongitudeCoordinateFormatter = createSelector(
+  (state) => state.settings.display.coordinateFormat,
+  getLongitudeFormatterForCoordinateFormat
 );
 
 /**
