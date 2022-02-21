@@ -12,9 +12,7 @@ import {
   getPreferredLongitudeCoordinateFormatter,
 } from '~/selectors/formatting';
 
-// === Settings for this particular layer type ===
-
-export const GraticuleLayerSettings = () => null;
+// TODO(ntamas): implement support for setting the stroke width and color
 
 // === The actual layer to be rendered ===
 

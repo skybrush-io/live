@@ -5,7 +5,7 @@ import { BeaconsLayer } from './beacons';
 import { DocksLayer } from './docks';
 import { FeaturesLayer } from './features';
 import { GeoJSONLayerSettings, GeoJSONLayer } from './geojson';
-import { GraticuleLayerSettings, GraticuleLayer } from './graticule';
+import { GraticuleLayer } from './graticule';
 import { HeatmapLayerSettings, HeatmapLayer } from './heatmap';
 import { HexGridLayerSettings, HexGridLayer } from './hexgrid';
 import { MissionInfoLayerSettings, MissionInfoLayer } from './mission-info';
@@ -20,7 +20,6 @@ import { LayerType } from '~/model/layers';
 export const LayerSettings = {
   [LayerType.BASE]: BaseLayerSettings,
   [LayerType.GEOJSON]: GeoJSONLayerSettings,
-  [LayerType.GRATICULE]: GraticuleLayerSettings,
   [LayerType.HEATMAP]: HeatmapLayerSettings,
   [LayerType.HEXGRID]: HexGridLayerSettings,
   [LayerType.MISSION_INFO]: MissionInfoLayerSettings,
