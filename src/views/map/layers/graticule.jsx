@@ -7,6 +7,7 @@ import { useSelector } from 'react-redux';
 
 import { layer as OLLayer } from '@collmot/ol-react';
 
+import useDarkMode from '~/hooks/useDarkMode';
 import {
   getPreferredLatitudeCoordinateFormatter,
   getPreferredLongitudeCoordinateFormatter,
@@ -16,40 +17,53 @@ import {
 
 // === The actual layer to be rendered ===
 
-const lonLabelStyle = new Text({
-  font: "14px 'Fira Sans',Calibri,sans-serif",
-  textBaseline: 'bottom',
-  fill: new Fill({
-    color: 'rgba(0,0,0,1)',
-  }),
-  stroke: new Stroke({
-    color: 'rgba(255,255,255,1)',
-    width: 3,
-  }),
-});
+const createLonLabelStyle = (isDark = false) =>
+  new Text({
+    font: "14px 'Fira Sans',Calibri,sans-serif",
+    textBaseline: 'bottom',
+    fill: new Fill({
+      color: isDark ? 'rgba(255, 255, 255, 1)' : 'rgba(0,0,0,1)',
+    }),
+    stroke: new Stroke({
+      color: isDark ? 'rgba(0, 0, 0, 1)' : 'rgba(255,255,255,1)',
+      width: 3,
+    }),
+  });
 
-const latLabelStyle = new Text({
-  font: "14px 'Fira Sans',Calibri,sans-serif",
-  textAlign: 'end',
-  fill: new Fill({
-    color: 'rgba(0,0,0,1)',
-  }),
-  stroke: new Stroke({
-    color: 'rgba(255,255,255,1)',
-    width: 3,
-  }),
-});
+const createLatLabelStyle = (isDark = false) =>
+  new Text({
+    font: "14px 'Fira Sans',Calibri,sans-serif",
+    textAlign: 'end',
+    fill: new Fill({
+      color: isDark ? 'rgba(255, 255, 255, 1)' : 'rgba(0,0,0,1)',
+    }),
+    stroke: new Stroke({
+      color: isDark ? 'rgba(0, 0, 0, 1)' : 'rgba(255,255,255,1)',
+      width: 3,
+    }),
+  });
+
+const lonLabelStyles = {
+  light: createLonLabelStyle(),
+  dark: createLonLabelStyle(true),
+};
+
+const latLabelStyles = {
+  light: createLatLabelStyle(),
+  dark: createLatLabelStyle(true),
+};
 
 export const GraticuleLayer = ({ layer, zIndex }) => {
+  const isDark = useDarkMode();
   const latFormatter = useSelector(getPreferredLatitudeCoordinateFormatter);
   const lonFormatter = useSelector(getPreferredLongitudeCoordinateFormatter);
   return (
     <OLLayer.Graticule
       showLabels
       latLabelFormatter={latFormatter}
-      latLabelStyle={latLabelStyle}
+      latLabelStyle={latLabelStyles[isDark ? 'dark' : 'light']}
       lonLabelFormatter={lonFormatter}
-      lonLabelStyle={lonLabelStyle}
+      lonLabelStyle={lonLabelStyles[isDark ? 'dark' : 'light']}
       zIndex={zIndex}
     />
   );
