@@ -1,0 +1,25 @@
+diff --git a/node_modules/ol/layer/Graticule.js b/node_modules/ol/layer/Graticule.js
+index 76a34f9..c41137a 100644
+--- a/node_modules/ol/layer/Graticule.js
++++ b/node_modules/ol/layer/Graticule.js
+@@ -589,16 +589,14 @@ var Graticule = /** @class */ (function (_super) {
+      */
+     Graticule.prototype.drawLabels_ = function (event) {
+         var rotation = event.frameState.viewState.rotation;
++        var resolution = event.frameState.viewState.resolution;
++        var size = event.frameState.size;
+         var extent = event.frameState.extent;
+         var rotationCenter = getCenter(extent);
+         var rotationExtent = extent;
+         if (rotation) {
+-            var width = getWidth(extent);
+-            var height = getHeight(extent);
+-            var cr = Math.abs(Math.cos(rotation));
+-            var sr = Math.abs(Math.sin(rotation));
+-            var unrotatedWidth = (sr * height - cr * width) / (sr * sr - cr * cr);
+-            var unrotatedHeight = (sr * width - cr * height) / (sr * sr - cr * cr);
++            var unrotatedWidth = size[0] * resolution;
++            var unrotatedHeight = size[1] * resolution;
+             rotationExtent = [
+                 rotationCenter[0] - unrotatedWidth / 2,
+                 rotationCenter[1] - unrotatedHeight / 2,
