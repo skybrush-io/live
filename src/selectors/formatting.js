@@ -99,7 +99,8 @@ const _formattersForLatitudeOnlyFormat = {
       .replace(trailingZeroRegExp, '$1'),
   [CoordinateFormat.SIGNED_DEGREES]: (lat) =>
     signedGeographicFormatter([0, lat])
-      .split('|')[0]
+      .split(' ')[0]
+      .trim()
       .replace(trailingZeroRegExp, '$1'),
   [CoordinateFormat.SIGNED_DEGREES_MINUTES]: (lat) =>
     formatCoords(0, lat, true)
