@@ -10,6 +10,8 @@ const {
 const setupIpc = require('./ipc');
 const createAppMenu = require('./app-menu');
 
+const packageJson = require('../../../package.json');
+
 /**
  * Main entry point of the application.
  *
@@ -45,6 +47,13 @@ function run(argv) {
   // Prevent the creation of additional windows or web views. Also prevent
   // navigation and background throttling.
   app.on('web-contents-created', (_event, webContents) => {
+    // Set the user agent of the application so we don't get blocked on
+    // the OpenStreetMap tile server
+    const { productName, version } = packageJson;
+    if (productName && version) {
+      webContents.setUserAgent(`${productName} ${version}`);
+    }
+
     // Disable background throttling of the app as we need accurate timers
     // to keep the status of the drones up-to-date
     webContents.setBackgroundThrottling(false);
