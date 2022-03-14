@@ -52,6 +52,7 @@ module.exports = {
     // Add environment variables from .env
     new Dotenv({
       ignoreStub: true, // needed because electron-is-dev uses "ELECTRON_IS_DEV in process.env", which is broken if process.env is stubbed
+      silent: true, // suppress warnings if there is no .env file
     }),
 
     // Add VERSION and COMMITHASH file to output
