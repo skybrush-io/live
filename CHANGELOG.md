@@ -18,6 +18,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - UAVs on the map view now show a yellow or red dot if they are in a warning or
   error state.
 
+- Double-clicking on a UAV now opens the UAV details dialog.
+
+- Added a new graticule layer type that shows a latitude-longitude grid on top
+  of the map. The new layer is added automatically after a fresh install; for
+  existing installations, you need to add it manually in the Layers panel.
+  Typically, the graticule layer should be placed above the base map layer but
+  below everything else.
+
 ### Fixed
 
 - Fixed a bug that sometimes prevented the map origin from being moved by
