@@ -178,7 +178,9 @@ const LayerSource = ({ type }) => {
       );
 
     case Source.OSM:
-      return <source.OSM />;
+      return (
+        <source.OSM url='https://{a-c}.tile.skybrush.io/osm/{z}/{x}/{y}.png' />
+      );
 
     case Source.STAMEN.TERRAIN:
       return (
