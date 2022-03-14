@@ -2,17 +2,17 @@
 'use strict';
 
 const path = require('path');
-const process = require('process');
 const webpack = require('webpack');
 const Dotenv = require('dotenv-webpack');
 
 const { GitRevisionPlugin } = require('git-revision-webpack-plugin');
-const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 
-const { projectRoot } = require('./helpers');
-
-const isDevelopment = process.env.NODE_ENV !== 'production';
+const {
+  isDevelopment,
+  projectRoot,
+  useHotModuleReloading,
+} = require('./helpers');
 
 const gitRevisionPlugin = new GitRevisionPlugin();
 
@@ -57,9 +57,6 @@ module.exports = {
 
     // Add VERSION and COMMITHASH file to output
     gitRevisionPlugin,
-
-    // Enable hot reload support in dev mode
-    isDevelopment && new ReactRefreshWebpackPlugin(),
   ].filter(Boolean),
 
   resolve: {
@@ -92,7 +89,7 @@ module.exports = {
             loader: 'babel-loader',
             options: {
               plugins: [
-                isDevelopment && require.resolve('react-refresh/babel'),
+                useHotModuleReloading && require.resolve('react-refresh/babel'),
               ].filter(Boolean),
             },
           },
@@ -152,7 +149,6 @@ module.exports = {
         },
       }),
     ],
-    runtimeChunk: 'single', // hot module reloading needs this
   },
 
   /* No need for bundle size warnings */

@@ -2,12 +2,18 @@ const path = require('path');
 const process = require('process');
 
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 const webpack = require('webpack');
 const { merge } = require('webpack-merge');
 const WebpackShellPluginNext = require('webpack-shell-plugin-next');
 
 const baseConfig = require('./base.config.js');
-const { htmlMetaTags, projectRoot, useAppConfiguration } = require('./helpers');
+const {
+  htmlMetaTags,
+  projectRoot,
+  useAppConfiguration,
+  useHotModuleReloading,
+} = require('./helpers');
 
 const htmlWebPackPluginConfiguration = {
   meta: htmlMetaTags,
@@ -15,6 +21,7 @@ const htmlWebPackPluginConfiguration = {
   title: 'Skybrush Live',
 };
 
+const optimization = {};
 const plugins = [
   // process and Buffer polyfills are needed for AFrame to work nicely as of
   // 1.1.0
@@ -28,7 +35,7 @@ const plugins = [
 ];
 
 /* In dev mode, also run Electron and let it load the live bundle */
-if (process.env.NODE_ENV !== 'production' && process.env.DEPLOYMENT !== '1') {
+if (useHotModuleReloading) {
   plugins.push(
     new WebpackShellPluginNext({
       onBuildEnd: {
@@ -37,8 +44,13 @@ if (process.env.NODE_ENV !== 'production' && process.env.DEPLOYMENT !== '1') {
         dev: true,
         parallel: true,
       },
-    })
+    }),
+
+    // Enable hot reload support in dev mode
+    new ReactRefreshWebpackPlugin()
   );
+
+  optimization.runtimeChunk = 'single'; // hot module reloading needs this
 }
 
 /* Override the configuration module based on the environment variables if needed */
@@ -50,6 +62,7 @@ module.exports = merge(baseConfig, {
   entry: {
     app: ['process/browser', './src/index'],
   },
+  optimization,
   plugins,
   ...variantConfig,
 });

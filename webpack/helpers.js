@@ -1,6 +1,11 @@
 const path = require('path');
+const process = require('process');
+
 const projectRoot = path.resolve(__dirname, '..');
 const outputDir = path.resolve(projectRoot, 'build');
+
+const isDevelopment = process.env.NODE_ENV !== 'production';
+const useHotModuleReloading = isDevelopment && process.env.DEPLOYMENT !== '1';
 
 const htmlMetaTags = {
   charset: 'utf-8',
@@ -24,7 +29,9 @@ const useAppConfiguration = (name = 'default') => ({
 
 module.exports = {
   htmlMetaTags,
+  isDevelopment,
   projectRoot,
   outputDir,
   useAppConfiguration,
+  useHotModuleReloading,
 };
