@@ -52,7 +52,9 @@ export const requestRemovalOfSelectedUAVs = () => (dispatch, getState) => {
  */
 export const setSelectedUAVIds = (ids) =>
   setSelectedFeatures(
-    ids.filter((id) => !isNil(id)).map((id) => uavIdToGlobalId(id))
+    (Array.isArray(ids) ? ids : [])
+      .filter((id) => !isNil(id))
+      .map((id) => uavIdToGlobalId(id))
   );
 
 /**
