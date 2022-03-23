@@ -67,10 +67,13 @@ class ActiveUAVsLayerSource extends React.Component {
       setLayerTriggersTooltip(this.props.layer);
     }
 
+    // Make sure that the projection is updated first, otherwise the UAVs will
+    // be placed incorrectly for a split second (and UAVs that receive no
+    // further updates will be misplaced permanently)
+    this._featureManager.projection = this.props.projection;
+
     this._onFlockMaybeChanged(undefined, this.props.flock);
     this._onSelectionMaybeChanged(undefined, this.props.selection);
-
-    this._featureManager.projection = this.props.projection;
   }
 
   componentWillUnmount() {
