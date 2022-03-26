@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- The light control panel now contains buttons for setting the LED lights of
+  the drones to 25% or 50% of full brightness.
+
 ### Fixed
 
 - Fixed a crash that happened when adding a UAV trace layer to the map.

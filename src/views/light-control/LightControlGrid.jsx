@@ -96,14 +96,24 @@ const LightControlGrid = ({ color, onSetColor, onSetColorAndActivate }) => {
       <Box className={classes.grid}>
         <LightButton
           color='#000000'
-          label='All lights off'
-          style={{ gridColumn: '1 / span 3' }}
+          label='All off'
+          style={{ gridColumn: '1 / span 2' }}
+          onClick={onSetColorAndActivate}
+        />
+        <LightButton
+          color='#404040'
+          label='25%'
+          onClick={onSetColorAndActivate}
+        />
+        <LightButton
+          color='#808080'
+          label='50%'
           onClick={onSetColorAndActivate}
         />
         <LightButton
           color='#ffffff'
-          label='All lights on'
-          style={{ gridColumn: '4 / span 3' }}
+          label='All on'
+          style={{ gridColumn: '5 / span 3' }}
           onClick={onSetColorAndActivate}
         />
         <LightButton color='#ff0000' onClick={onSetColorAndActivate} />
