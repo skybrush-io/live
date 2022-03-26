@@ -11,6 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Fixed a crash that happened when adding a UAV trace layer to the map.
 
+- The state of the "Retry failed uploads" checkbox is now saved properly again
+  when the application exits.
+
 ## [1.27.2] - 2021-03-23
 
 ### Fixed

@@ -227,4 +227,4 @@ export const isUploadInProgress = (state) => state.upload.currentJob.running;
  * Returns whether failed uploads should be retried automatically.
  */
 export const shouldRetryFailedUploadsAutomatically = (state) =>
-  state.upload.autoRetry;
+  Boolean(state.upload.settings?.autoRetry);

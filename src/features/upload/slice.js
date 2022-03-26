@@ -29,8 +29,6 @@ const { actions, reducer } = createSlice({
   name: 'upload',
 
   initialState: {
-    autoRetry: false,
-
     currentJob: {
       // Type of current job being executed by the uploader. Value is kept after
       // the job finishes so we can restart it if needed.
@@ -85,6 +83,12 @@ const { actions, reducer } = createSlice({
       },
       backAction: null,
     },
+
+    // Persistent part of the slice
+    settings: {
+      // Whether failed upload jobs should be automatically retried
+      autoRetry: false,
+    },
   },
 
   reducers: {
@@ -135,7 +139,7 @@ const { actions, reducer } = createSlice({
     },
 
     setUploadAutoRetry(state, action) {
-      state.autoRetry = Boolean(action.payload);
+      state.settings.autoRetry = Boolean(action.payload);
     },
 
     // Private actions that should be dispatched only from the uploader saga

@@ -227,6 +227,7 @@
         "always"
       ],
       "react/boolean-prop-naming": 0,
+      "react/function-component-definition": 0,
       "react/jsx-no-duplicate-props": 0,
       "react/require-default-props": 0,
       "unicorn/filename-case": 0,

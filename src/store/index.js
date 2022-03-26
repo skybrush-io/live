@@ -64,15 +64,14 @@ const persistConfig = {
     'session',
     'snackbar',
     'uavs',
-    'upload',
     'weather',
   ],
 
   // do not save more frequently than once every second
   throttle: 1000 /* msec */,
 
-  // store the state of only the given dialogs
   transforms: [
+    // store the state of only the given dialogs
     createFilter('dialogs', [
       'appSettings',
       'featureEditor',
@@ -100,6 +99,9 @@ const persistConfig = {
     // Most of the stuff in the 'show' slice is temporary as we unload the
     // show when refreshing the page
     createFilter('show', ['environment']),
+
+    // Store only the persistent settings of the upload procedure
+    createFilter('upload', ['settings']),
 
     // We do not wish to save 3D view tooltips, camera pose or the scene ID
     createBlacklistFilter('threeD', ['camera', 'tooltip', 'sceneId']),
