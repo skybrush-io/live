@@ -22,8 +22,11 @@ import { Module, ModuleTray, Workbench } from 'react-flexible-workbench';
 import { connect } from 'react-redux';
 
 import LogStatusBadge from '~/components/badges/LogStatusBadge';
+import { areExperimentalFeaturesEnabled } from '~/features/settings/selectors';
 import Antenna from '~/icons/Antenna';
 import { hasFeature } from '~/utils/configuration';
+
+import { isSidebarOpen } from './selectors';
 
 const SIDEBAR_OPEN_WIDTH = 180; /* 160px is enough for most platforms, but apparently Windows needs 180px because of the scrollbar */
 
@@ -50,7 +53,7 @@ const innerStyle = {
  *
  * @returns  {Object}  the rendered sidebar component
  */
-const Sidebar = ({ isOpen, workbench }) => (
+const Sidebar = ({ experimentalFeaturesEnabled, isOpen, workbench }) => (
   <div
     id='sidebar'
     style={{ ...style, width: isOpen ? SIDEBAR_OPEN_WIDTH : 48 }}
@@ -89,7 +92,7 @@ const Sidebar = ({ isOpen, workbench }) => (
             component='beacon-list'
           />
         )}
-        {hasFeature('docks') && (
+        {hasFeature('docks') && experimentalFeaturesEnabled && (
           <Module
             id='docks'
             icon={<Gamepad />}
@@ -161,7 +164,8 @@ const Sidebar = ({ isOpen, workbench }) => (
 );
 
 Sidebar.propTypes = {
-  isOpen: PropTypes.bool.isRequired,
+  experimentalFeaturesEnabled: PropTypes.bool,
+  isOpen: PropTypes.bool,
   workbench: PropTypes.instanceOf(Workbench).isRequired,
 };
 
@@ -171,7 +175,8 @@ Sidebar.propTypes = {
 export default connect(
   // mapStateToProps
   (state, { workbench }) => ({
-    isOpen: state.sidebar.open,
+    experimentalFeaturesEnabled: areExperimentalFeaturesEnabled(state),
+    isOpen: isSidebarOpen(state),
     workbench,
   })
 )(Sidebar);

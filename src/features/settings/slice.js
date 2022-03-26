@@ -30,6 +30,8 @@ const { actions, reducer } = createSlice({
       altitudeSummaryType: AltitudeSummaryType.AMSL,
       // Display format of coordinates
       coordinateFormat: CoordinateFormat.SIGNED_DEGREES,
+      // Whether to allow the user to see experimental features
+      experimentalFeaturesEnabled: false,
       // Whether to hide empty mission slots in the UAV list (unless editing)
       hideEmptyMissionSlots: false,
       // Whether to show mission IDs or drone IDs in the UAV list

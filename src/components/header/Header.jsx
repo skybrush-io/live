@@ -21,7 +21,8 @@ import ToolboxButton from './ToolboxButton';
 import UAVStatusSummary from '../uavs/UAVStatusSummary';
 
 import RTKStatusHeaderButton from '~/features/rtk/RTKStatusHeaderButton';
-import { toggleSidebar } from '~/features/sidebar/slice';
+import { toggleSidebar } from '~/features/sidebar/actions';
+import { isSidebarOpen } from '~/features/sidebar/selectors';
 import AltitudeSummaryHeaderButton from '~/features/uavs/AltitudeSummaryHeaderButton';
 import BatteryStatusHeaderButton from '~/features/uavs/BatteryStatusHeaderButton';
 import WeatherHeaderButton from '~/features/weather/WeatherHeaderButton';
@@ -119,10 +120,9 @@ Header.propTypes = {
 
 export default connect(
   // mapStateToProps
-  (state, { workbench }) => ({
+  (state) => ({
     sessionExpiresAt: state.session.expiresAt,
-    isSidebarOpen: state.sidebar.open,
-    workbench,
+    isSidebarOpen: isSidebarOpen(state),
   }),
   // mapDispatchToProps
   { toggleSidebar }

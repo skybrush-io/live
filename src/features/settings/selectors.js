@@ -171,4 +171,11 @@ export const isShowingEmptyMissionSlots = (state) =>
  * where possible.
  */
 export const isShowingMissionIds = (state) =>
-  state.settings.display.showMissionIds;
+  state.settings.display?.showMissionIds;
+
+/**
+ * Returns whether the user is allowed to see experimental features that are
+ * not ready for production use yet.
+ */
+export const areExperimentalFeaturesEnabled = (state) =>
+  state.settings.display?.experimentalFeaturesEnabled;

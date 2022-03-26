@@ -92,6 +92,20 @@ const DisplayTabPresentation = (props) => (
           onTypeChanged={props.onCoordinateSystemTypeChanged}
         />
       </FormGroup>
+
+      <FormGroup>
+        <Header>Miscellaneous</Header>
+        <FormControlLabel
+          label='Enable experimental features (advanced)'
+          control={
+            <Checkbox
+              checked={props.experimentalFeaturesEnabled}
+              name='experimentalFeaturesEnabled'
+              onChange={props.onCheckboxToggled}
+            />
+          }
+        />
+      </FormGroup>
     </Box>
   </>
 );
@@ -99,6 +113,7 @@ const DisplayTabPresentation = (props) => (
 DisplayTabPresentation.propTypes = {
   coordinateFormat: PropTypes.oneOf(coordinateFormatOrder),
   coordinateSystemType: PropTypes.oneOf(['neu', 'nwu']),
+  experimentalFeaturesEnabled: PropTypes.bool,
   origin: PropTypes.arrayOf(PropTypes.number),
   onCheckboxToggled: PropTypes.func,
   onCoordinateSystemTypeChanged: PropTypes.func,

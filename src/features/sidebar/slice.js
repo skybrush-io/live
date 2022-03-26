@@ -5,8 +5,6 @@
 
 import { createSlice } from '@reduxjs/toolkit';
 
-import { noPayload } from '~/utils/redux';
-
 const { actions, reducer } = createSlice({
   name: 'sidebar',
 
@@ -15,20 +13,12 @@ const { actions, reducer } = createSlice({
   },
 
   reducers: {
-    closeSidebar(state) {
-      state.open = false;
+    setSidebarOpen(state, action) {
+      state.open = Boolean(action.payload);
     },
-
-    openSidebar(state) {
-      state.open = true;
-    },
-
-    toggleSidebar: noPayload((state) => {
-      state.open = !state.open;
-    }),
   },
 });
 
-export const { closeSidebar, openSidebar, toggleSidebar } = actions;
+export const { setSidebarOpen } = actions;
 
 export default reducer;
