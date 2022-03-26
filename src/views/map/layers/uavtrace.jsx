@@ -1,6 +1,7 @@
 import toNumber from 'lodash-es/toNumber';
 import Feature from 'ol/Feature';
 import LineString from 'ol/geom/LineString';
+import Style from 'ol/style/Style';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
@@ -162,12 +163,19 @@ class UAVTraceVectorSource extends React.Component {
   };
 
   _registerNewFeature = (feature) => {
-    feature.setStyle(stroke(this.props.trailColor, this.props.trailWidth));
-
+    this._updateFeatureStyle(feature);
     this.features.push(feature);
     if (this._sourceRef) {
       this._sourceRef.source.addFeature(feature);
     }
+  };
+
+  _updateFeatureStyle = (feature) => {
+    feature.setStyle(
+      new Style({
+        stroke: stroke(this.props.trailColor, this.props.trailWidth),
+      })
+    );
   };
 
   componentDidUpdate() {
@@ -176,7 +184,7 @@ class UAVTraceVectorSource extends React.Component {
 
       // Update the styles of all the features
       for (const feature of features) {
-        feature.setStyle(stroke(this.props.trailColor, this.props.trailWidth));
+        this._updateFeatureStyle(feature);
       }
     }
   }
@@ -190,7 +198,7 @@ const UAVTraceLayerPresentation = ({ layer, zIndex }) => (
   <olLayer.Vector updateWhileAnimating updateWhileInteracting zIndex={zIndex}>
     <UAVTraceVectorSource
       trailLength={layer.parameters.trailLength}
-      trailColor={colorToString(layer.parameters.trailColor)}
+      trailColor={layer.parameters.trailColor}
       trailWidth={layer.parameters.trailWidth}
     />
   </olLayer.Vector>
