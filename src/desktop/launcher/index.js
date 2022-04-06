@@ -9,6 +9,7 @@ const {
 
 const setupIpc = require('./ipc');
 const createAppMenu = require('./app-menu');
+const localServer = require('./local-server');
 
 const packageJson = require('../../../package.json');
 
@@ -57,6 +58,14 @@ function run(argv) {
     // Disable background throttling of the app as we need accurate timers
     // to keep the status of the drones up-to-date
     webContents.setBackgroundThrottling(false);
+  });
+
+  // Stop any locally spawned server processes when the app quits
+  app.on('will-quit', async () => {
+    // Note that this is _not_ called on Windows when the user shuts down,
+    // reboots or logs out, but it's okay because in that case the server process
+    // will be stopped by Windows itself
+    await localServer.terminate();
   });
 
   // Set up IPC handlers

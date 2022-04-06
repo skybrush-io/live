@@ -19,6 +19,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The state of the "Retry failed uploads" checkbox is now saved properly again
   when the application exits.
 
+- Fixed the termination of the server process on macOS when the server is
+  launched automatically by Skybrush Live.
+
 ## [1.27.2] - 2021-03-23
 
 ### Fixed
