@@ -12,6 +12,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The light control panel now contains buttons for setting the LED lights of
   the drones to 25% or 50% of full brightness.
 
+- Added handling of new warning code in server that is emitted when a UAV is
+  outside the geofence while on the ground.
+
 ### Fixed
 
 - Fixed a crash that happened when adding a UAV trace layer to the map.
