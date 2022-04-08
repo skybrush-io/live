@@ -68,6 +68,10 @@ export const shortLabelsForUAVSortKey = {
  * described by the UAVSortKey enum instance. Returns undefined for the default
  * sort key as it indicates that the UAVs should be left in whatever order they
  * are passed in to a sorting function.
+ *
+ * The functions returned by this function must be prepared to handle the case
+ * of uav === undefined or uav === null; this happens when the UAV list to sort
+ * has some "empty" slots that correspond to unfilled mission slots.
  */
 export const getKeyFunctionForUAVSortKey = memoize((key) => {
   switch (key) {
