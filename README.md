@@ -1,4 +1,4 @@
-skybrush-live
+Skybrush Live
 =============
 
 This is the official desktop and web frontend for the Skybrush server.
