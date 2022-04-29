@@ -188,7 +188,7 @@ class MapContextMenu extends React.Component {
                 <ListItemIcon>
                   <ActionPowerSettingsNew color='secondary' />
                 </ListItemIcon>
-                Halt
+                Power off
               </MenuItem>,
               <Divider key='div4' />
             );
