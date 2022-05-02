@@ -5,7 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [2.0.0] - 2022-05-02
+
+The source code of Skybrush Live is now licensed under the GNU General Public
+License, version 3 or later. You can find the source code on our Github account
+at https://github.com/skybrush-io
+
+The version number was bumped to 2.0.0 to clearly indicate which versions are
+licensed under the GNU GPLv3. There are no breaking changes in this version.
 
 ### Added
 
@@ -14,6 +21,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Added handling of new warning code in server that is emitted when a UAV is
   outside the geofence while on the ground.
+
+### Changed
+
+- The application is now licensed as GNU GPL v3 or later.
 
 ### Fixed
 
