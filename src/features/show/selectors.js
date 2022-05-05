@@ -553,7 +553,9 @@ export const getShowDurationAsString = createSelector(
 export const getShowDescription = createSelector(
   getNumberOfDronesInShow,
   getShowDurationAsString,
-  (numberDrones, duration) => `${numberDrones} drones, ${duration}`
+  getMaximumHorizontalDistanceFromTakeoffPositionInTrajectories,
+  (numberDrones, duration, maxHeight) =>
+    `${numberDrones} drones, ${duration}, max AGL ${maxHeight.toFixed(1)}m`
 );
 
 /**
