@@ -512,10 +512,10 @@ export const getMaximumHeightInTrajectories = createSelector(
  * trajectories from the takeoff positions.
  */
 export const getProposedDistanceLimitBasedOnTrajectories = (state) => {
-  const maxHeight =
+  const maxDistance =
     getMaximumHorizontalDistanceFromTakeoffPositionInTrajectories(state);
   const margin = get(state, 'dialogs.geofenceSettings.horizontalMargin');
-  return proposeDistanceLimit(maxHeight, margin);
+  return proposeDistanceLimit(maxDistance, margin);
 };
 
 /**
@@ -553,7 +553,9 @@ export const getShowDurationAsString = createSelector(
 export const getShowDescription = createSelector(
   getNumberOfDronesInShow,
   getShowDurationAsString,
-  (numberDrones, duration) => `${numberDrones} drones, ${duration}`
+  getMaximumHeightInTrajectories,
+  (numberDrones, duration, maxHeight) =>
+    `${numberDrones} drones, ${duration}, max AGL ${maxHeight.toFixed(1)}m`
 );
 
 /**
