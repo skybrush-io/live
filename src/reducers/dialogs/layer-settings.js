@@ -1,56 +1,40 @@
 /**
- * @file Reducer function for handling the part of the state object that
- * stores the state of the layers dialog.
+ * @file Reducer for handling the part of the state object that stores the
+ * state of the layers dialog.
  */
 
-import { handleActions } from 'redux-actions';
-import u from 'updeep';
+import { createSlice } from '@reduxjs/toolkit';
+import { noPayload } from '~/utils/redux';
 
-/**
- * The default settings for the part of the state object being defined here.
- */
-const defaultState = {
-  dialogVisible: false,
-  selectedLayer: undefined,
-};
+const { actions, reducer } = createSlice({
+  name: 'layer-settings',
 
-/**
- * The reducer function that handles actions related to the layers dialog.
- */
-const reducer = handleActions(
-  {
-    REMOVE_LAYER(state, action) {
-      if (state.selectedLayer === action.payload) {
-        return u(
-          {
-            dialogVisible: false,
-            selectedLayer: undefined,
-          },
-          state
-        );
-      }
+  initialState: {
+    dialogVisible: false,
+    selectedLayer: undefined,
+  },
 
-      return state;
+  reducers: {
+    showLayerSettingsDialog(state, { payload: layerId }) {
+      state.dialogVisible = true;
+      state.selectedLayer = layerId;
     },
 
-    SHOW_LAYERS_DIALOG: (state, action) =>
-      u(
-        {
-          dialogVisible: true,
-          selectedLayer: action.payload.layerId,
-        },
-        state
-      ),
-
-    CLOSE_LAYERS_DIALOG: (state) =>
-      u(
-        {
-          dialogVisible: false,
-        },
-        state
-      ),
+    closeLayerSettingsDialog: noPayload((state) => {
+      state.dialogVisible = false;
+    }),
   },
-  defaultState
-);
+
+  extraReducers: {
+    REMOVE_LAYER(state, action) {
+      if (state.selectedLayer === action.payload) {
+        state.dialogVisible = false;
+        state.selectedLayer = undefined;
+      }
+    },
+  },
+});
+
+export const { showLayerSettingsDialog, closeLayerSettingsDialog } = actions;
 
 export default reducer;

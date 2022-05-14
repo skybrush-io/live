@@ -5,8 +5,6 @@
 
 import { createAction } from 'redux-actions';
 import {
-  SHOW_LAYERS_DIALOG,
-  CLOSE_LAYERS_DIALOG,
   TOGGLE_LAYER_VISIBILITY,
   RENAME_LAYER,
   REMOVE_LAYER,
@@ -57,11 +55,6 @@ export const changeLayerType = createAction(CHANGE_LAYER_TYPE, (id, type) => ({
 }));
 
 /**
- * Action factory that creates an action that will close the layers dialog.
- */
-export const closeLayersDialog = createAction(CLOSE_LAYERS_DIALOG);
-
-/**
  * Action factory that creates an action that removes a layer.
  */
 export const removeLayer = createAction(REMOVE_LAYER);
@@ -99,13 +92,6 @@ export const setLayerParametersById = createAction(
   SET_LAYER_PARAMETERS_BY_ID,
   (layerId, parameters) => ({ layerId, parameters })
 );
-
-/**
- * Action factory that creates an action that will show the layers dialog.
- */
-export const showLayersDialog = createAction(SHOW_LAYERS_DIALOG, (layerId) => ({
-  layerId,
-}));
 
 /**
  * Action factory that creates an action that toggles the visibility of a

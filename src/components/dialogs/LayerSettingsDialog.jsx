@@ -23,8 +23,10 @@ import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
 import { forceFormSubmission } from '../forms';
 
 import {
+  closeLayerSettingsDialog,
+} from '~/reducers/dialogs/layer-settings.js';
+import {
   adjustLayerZIndex,
-  closeLayersDialog,
   renameLayer,
   toggleLayerVisibility,
   removeLayer,
@@ -328,7 +330,7 @@ const LayerSettingsDialog = connect(
         dispatch(removeLayer(selectedLayerId));
       }
 
-      dispatch(closeLayersDialog());
+      dispatch(closeLayerSettingsDialog());
     },
     onMoveLayer: adjustLayerZIndex,
     onRemoveLayer: removeLayer,

@@ -11,7 +11,10 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import AddCircleOutline from '@material-ui/icons/AddCircleOutline';
 
-import { addLayer, showLayersDialog } from '~/actions/layers';
+import {
+  showLayerSettingsDialog,
+} from '~/reducers/dialogs/layer-settings.js';
+import { addLayer } from '~/actions/layers';
 import { selectableListOf } from '~/components/helpers/lists';
 import { labelForLayerType, iconForLayerType } from '~/model/layers';
 import { getLayersInTopmostFirstOrder } from '~/selectors/ordered';
@@ -91,14 +94,14 @@ const LayerList = connect(
   // mapDispatchToProps
   (dispatch) => ({
     onChange(_event, layerId) {
-      dispatch(showLayersDialog(layerId));
+      dispatch(showLayerSettingsDialog(layerId));
     },
 
     onNewItem() {
       const action = addLayer();
       dispatch(action);
       if (action.id) {
-        dispatch(showLayersDialog(action.id));
+        dispatch(showLayerSettingsDialog(action.id));
       }
     },
   })
