@@ -61,10 +61,10 @@ const LargeControlButtonGroup = ({
 }) => {
   const classes = useStyles();
   const {
-    haltUAVs,
     landUAVs,
     positionHoldUAVs,
     returnToHomeUAVs,
+    shutdownUAVs,
     /*
     takeoffUAVs,
     */
@@ -150,9 +150,9 @@ const LargeControlButtonGroup = ({
           className={classes.button}
           color={Colors.error}
           icon={<PowerSettingsNew fontSize='inherit' />}
-          onClick={haltUAVs}
+          onClick={shutdownUAVs}
         >
-          {broadcast ? 'Halt all' : 'Halt'}
+          {broadcast ? 'Shutdown all' : 'Shutdown'}
         </ColoredButton>
       </Box>
     </>

@@ -62,11 +62,11 @@ const UAVOperationsButtonGroup = ({
 
   const {
     flashLightOnUAVs,
-    haltUAVs,
     landUAVs,
     positionHoldUAVs,
     resetUAVs,
     returnToHomeUAVs,
+    shutdownUAVs,
     takeoffUAVs,
     turnMotorsOffForUAVs,
     turnMotorsOnForUAVs,
@@ -209,7 +209,7 @@ const UAVOperationsButtonGroup = ({
         <IconButton
           disabled={isSelectionEmpty}
           size={iconSize}
-          onClick={haltUAVs}
+          onClick={shutdownUAVs}
         >
           <PowerSettingsNew
             htmlColor={isSelectionEmpty ? undefined : Colors.error}

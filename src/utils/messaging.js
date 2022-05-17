@@ -193,7 +193,7 @@ export const createMultipleUAVRelatedActions = (
       flashLightOnUAVs(uavIds, options);
     },
 
-    haltUAVs: () => {
+    shutdownUAVs: () => {
       shutdownUAVs(uavIds, options);
     },
 
