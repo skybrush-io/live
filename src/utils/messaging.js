@@ -116,6 +116,16 @@ export const resetUAVs = performMassOperation({
   name: 'Reset command',
 });
 
+export const sleepUAVs = performMassOperation({
+  type: 'UAV-SLEEP',
+  name: 'Low-power mode command',
+});
+
+export const wakeUpUAVs = performMassOperation({
+  type: 'UAV-WAKEUP',
+  name: 'Resume from low-power mode command',
+});
+
 const moveUAVsLowLevel = performMassOperation({
   type: 'UAV-FLY',
   name: 'Fly to target command',
@@ -189,40 +199,48 @@ export const createMultipleUAVRelatedActions = (
   // something in the case when broadcast = true and uavIds is empty!
 
   return {
-    flashLightOnUAVs: () => {
+    flashLightOnUAVs() {
       flashLightOnUAVs(uavIds, options);
     },
 
-    shutdownUAVs: () => {
+    shutdownUAVs() {
       shutdownUAVs(uavIds, options);
     },
 
-    landUAVs: () => {
+    landUAVs() {
       landUAVs(uavIds, options);
     },
 
-    positionHoldUAVs: () => {
+    positionHoldUAVs() {
       positionHoldUAVs(uavIds, options);
     },
 
-    resetUAVs: () => {
+    resetUAVs() {
       resetUAVs(uavIds, options);
     },
 
-    returnToHomeUAVs: () => {
+    returnToHomeUAVs() {
       returnToHomeUAVs(uavIds, options);
     },
 
-    takeoffUAVs: () => {
+    sleepUAVs() {
+      sleepUAVs(uavIds, options);
+    },
+
+    takeoffUAVs() {
       takeoffUAVs(uavIds, options);
     },
 
-    turnMotorsOffForUAVs: () => {
+    turnMotorsOffForUAVs() {
       turnMotorOffForUAVs(uavIds, options);
     },
 
-    turnMotorsOnForUAVs: () => {
+    turnMotorsOnForUAVs() {
       turnMotorOnForUAVs(uavIds, options);
+    },
+
+    wakeUpUAVs() {
+      wakeUpUAVs(uavIds, options);
     },
   };
 };

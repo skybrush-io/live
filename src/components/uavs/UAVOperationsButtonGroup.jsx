@@ -15,6 +15,7 @@ import Assignment from '@material-ui/icons/Assignment';
 import FlightLand from '@material-ui/icons/FlightLand';
 import Home from '@material-ui/icons/Home';
 import PositionHold from '@material-ui/icons/Flag';
+import Moon from '@material-ui/icons/NightsStay';
 import PowerSettingsNew from '@material-ui/icons/PowerSettingsNew';
 import PlayArrow from '@material-ui/icons/PlayArrow';
 import Refresh from '@material-ui/icons/Refresh';
@@ -23,6 +24,7 @@ import WbSunny from '@material-ui/icons/WbSunny';
 import Tooltip from '@skybrush/mui-components/lib/Tooltip';
 
 import Colors from '~/components/colors';
+import Bolt from '~/icons/Bolt';
 
 import { getPreferredCommunicationChannelIndex } from '~/features/mission/selectors';
 import {
@@ -67,9 +69,11 @@ const UAVOperationsButtonGroup = ({
     resetUAVs,
     returnToHomeUAVs,
     shutdownUAVs,
+    sleepUAVs,
     takeoffUAVs,
     turnMotorsOffForUAVs,
     turnMotorsOnForUAVs,
+    wakeUpUAVs,
   } = createMultipleUAVRelatedActions(selectedUAVIds, { channel });
 
   const fontSize = size === 'small' ? 'small' : 'medium';
@@ -191,6 +195,32 @@ const UAVOperationsButtonGroup = ({
       {!hideSeparators && (
         <Divider className={classes.divider} orientation='vertical' />
       )}
+
+      <Tooltip content='Power on'>
+        <IconButton
+          disabled={isSelectionEmpty}
+          size={iconSize}
+          onClick={wakeUpUAVs}
+        >
+          <Bolt
+            htmlColor={isSelectionEmpty ? undefined : Colors.success}
+            fontSize={fontSize}
+          />
+        </IconButton>
+      </Tooltip>
+
+      <Tooltip content='Sleep'>
+        <IconButton
+          disabled={isSelectionEmpty}
+          size={iconSize}
+          onClick={sleepUAVs}
+        >
+          <Moon
+            htmlColor={isSelectionEmpty ? undefined : Colors.warning}
+            fontSize={fontSize}
+          />
+        </IconButton>
+      </Tooltip>
 
       <Tooltip content='Reboot'>
         <IconButton

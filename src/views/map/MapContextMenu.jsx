@@ -19,6 +19,7 @@ import FlightTakeoff from '@material-ui/icons/FlightTakeoff';
 import FlightLand from '@material-ui/icons/FlightLand';
 import Grain from '@material-ui/icons/Grain';
 import Home from '@material-ui/icons/Home';
+import Moon from '@material-ui/icons/NightsStay';
 import PositionHold from '@material-ui/icons/Flag';
 import ActionPowerSettingsNew from '@material-ui/icons/PowerSettingsNew';
 import PinDrop from '@material-ui/icons/PinDrop';
@@ -30,6 +31,7 @@ import { showFeatureEditorDialog } from '~/actions/feature-editor';
 import { setFlatEarthCoordinateSystemOrigin } from '~/reducers/map/origin';
 
 import ContextMenu from '~/components/ContextMenu';
+import Bolt from '~/icons/Bolt';
 
 import { removeFeaturesByIds } from '~/features/map-features/slice';
 import {
@@ -174,6 +176,18 @@ class MapContextMenu extends React.Component {
                 Properties...
               </MenuItem>,
               <Divider key='div3' />,
+              <MenuItem key='wakeUp' dense onClick={this._wakeUpSelectedUAVs}>
+                <ListItemIcon>
+                  <Bolt />
+                </ListItemIcon>
+                Power on
+              </MenuItem>,
+              <MenuItem key='sleep' dense onClick={this._sleepSelectedUAVs}>
+                <ListItemIcon>
+                  <Moon />
+                </ListItemIcon>
+                Sleep
+              </MenuItem>,
               <MenuItem key='reset' dense onClick={this._resetUAVs}>
                 <ListItemIcon>
                   <Refresh color='secondary' />
@@ -393,9 +407,19 @@ class MapContextMenu extends React.Component {
     }
   };
 
+  _sleepSelectedUAVs = (_event, context) => {
+    const { selectedUAVIds } = context;
+    messaging.sleepUAVs(selectedUAVIds);
+  };
+
   _shutdownSelectedUAVs = (_event, context) => {
     const { selectedUAVIds } = context;
     messaging.shutdownUAVs(selectedUAVIds);
+  };
+
+  _wakeUpSelectedUAVs = (_event, context) => {
+    const { selectedUAVIds } = context;
+    messaging.wakeUpUAVs(selectedUAVIds);
   };
 }
 
