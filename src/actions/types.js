@@ -5,19 +5,6 @@
 // Connection-related actions for the server itself
 export const DISCONNECT_FROM_SERVER = 'DISCONNECT_FROM_SERVER';
 
-// Map-related actions
-export const SELECT_MAP_SOURCE = 'SELECT_MAP_SOURCE';
-
-// Layer-related actions
-export const ADD_LAYER = 'ADD_LAYER';
-export const ADJUST_LAYER_Z_INDEX = 'ADJUST_LAYER_Z_INDEX';
-export const CHANGE_LAYER_TYPE = 'CHANGE_LAYER_TYPE';
-export const REMOVE_LAYER = 'REMOVE_LAYER';
-export const RENAME_LAYER = 'RENAME_LAYER';
-export const SET_LAYER_PARAMETER_BY_ID = 'SET_LAYER_PARAMETER_BY_ID';
-export const SET_LAYER_PARAMETERS_BY_ID = 'SET_LAYER_PARAMETERS_BY_ID';
-export const TOGGLE_LAYER_VISIBILITY = 'TOGGLE_LAYER_VISIBILITY';
-
 // Feature editor dialog related actions
 export const CLOSE_FEATURE_EDITOR_DIALOG = 'CLOSE_FEATURE_EDITOR_DIALOG';
 export const SET_FEATURE_EDITOR_DIALOG_TAB = 'SET_FEATURE_EDITOR_DIALOG_TAB';

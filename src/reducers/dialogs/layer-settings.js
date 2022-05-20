@@ -6,6 +6,8 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { noPayload } from '~/utils/redux';
 
+import { removeLayer } from '~/actions/layers';
+
 const { actions, reducer } = createSlice({
   name: 'layer-settings',
 
@@ -26,7 +28,7 @@ const { actions, reducer } = createSlice({
   },
 
   extraReducers: {
-    REMOVE_LAYER(state, action) {
+    [removeLayer](state, action) {
       if (state.selectedLayer === action.payload) {
         state.dialogVisible = false;
         state.selectedLayer = undefined;

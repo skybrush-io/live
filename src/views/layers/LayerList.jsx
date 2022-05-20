@@ -11,9 +11,7 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import AddCircleOutline from '@material-ui/icons/AddCircleOutline';
 
-import {
-  showLayerSettingsDialog,
-} from '~/reducers/dialogs/layer-settings.js';
+import { showLayerSettingsDialog } from '~/reducers/dialogs/layer-settings.js';
 import { addLayer } from '~/actions/layers';
 import { selectableListOf } from '~/components/helpers/lists';
 import { labelForLayerType, iconForLayerType } from '~/model/layers';

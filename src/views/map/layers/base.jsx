@@ -10,7 +10,7 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 
-import { selectMapSource } from '~/actions/map';
+import { selectMapSource } from '~/actions/layers';
 import { isMapCachingEnabled } from '~/features/map-caching/selectors';
 import { getServerUrl, supportsMapCaching } from '~/features/servers/selectors';
 import { getAPIKeys } from '~/features/settings/selectors';
