@@ -573,7 +573,7 @@ class MapViewPresentation extends React.Component {
   _onFeatureActivated = (feature) => {
     // Okay, so this was a double-click. If we have a tooltip being shown on
     // the map, show the details dialog of the feature whose tooltip we are
-    // showing; otherwise show the details dialog the given feature.
+    // showing; otherwise show the details dialog of the given feature.
     this.props.dispatch(showDetailsForFeatureInTooltipOrGivenFeature(feature));
   };
 
