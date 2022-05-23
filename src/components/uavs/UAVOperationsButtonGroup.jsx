@@ -37,6 +37,7 @@ import { createMultipleUAVRelatedActions } from '~/utils/messaging';
  * Main toolbar for controlling the UAVs.
  */
 const UAVOperationsButtonGroup = ({
+  broadcast,
   channel,
   hideSeparators,
   openUAVDetailsDialog,
@@ -47,7 +48,7 @@ const UAVOperationsButtonGroup = ({
   startSeparator,
 }) => {
   const isSelectionEmpty = isEmpty(selectedUAVIds);
-  const isSelectionSingle = selectedUAVIds.length === 1;
+  const isSelectionSingle = selectedUAVIds.length === 1 && !broadcast;
 
   const {
     flashLightOnUAVs,
@@ -61,7 +62,7 @@ const UAVOperationsButtonGroup = ({
     turnMotorsOffForUAVs,
     turnMotorsOnForUAVs,
     wakeUpUAVs,
-  } = createMultipleUAVRelatedActions(selectedUAVIds, { channel });
+  } = createMultipleUAVRelatedActions(selectedUAVIds, { broadcast, channel });
 
   const fontSize = size === 'small' ? 'small' : 'medium';
   const iconSize = size;
@@ -264,6 +265,7 @@ const UAVOperationsButtonGroup = ({
 };
 
 UAVOperationsButtonGroup.propTypes = {
+  broadcast: PropTypes.bool,
   channel: PropTypes.number,
   openUAVDetailsDialog: PropTypes.func,
   requestRemovalOfUAVsByIds: PropTypes.func,
