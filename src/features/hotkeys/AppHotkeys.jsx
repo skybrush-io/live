@@ -8,11 +8,13 @@ import React from 'react';
 import { configure as configureHotkeys, GlobalHotKeys } from 'react-hotkeys';
 import { connect } from 'react-redux';
 
+import { getPreferredCommunicationChannelIndex } from '~/features/mission/selectors';
 import { toggleMissionIds } from '~/features/settings/slice';
 import { requestRemovalOfSelectedUAVs } from '~/features/uavs/actions';
-import { getUAVCommandTriggers } from '~/features/uavs/selectors';
+import { getSelectedUAVIds } from '~/features/uavs/selectors';
 import { selectAllUAVFeatures } from '~/reducers/map/selection';
 import { clearStoreAfterConfirmation } from '~/store';
+import { createUAVOperationThunks } from '~/utils/messaging';
 
 import {
   appendToPendingUAVId,
@@ -68,14 +70,25 @@ AppHotkeys.propTypes = {
   handlers: PropTypes.object,
 };
 
-const callUAVActionOnSelection = (actionName) => () => (dispatch, getState) => {
-  const actions = getUAVCommandTriggers(getState());
-  const action = actions[actionName];
+/**
+ * Object that maps common UAV operation names (`shutdown`, `takeOff` etc) to
+ * action thunks that execute the given UAV operation on the current selection.
+ */
+const uavOperationThunks = createUAVOperationThunks({
+  getTargetedUAVIds: getSelectedUAVIds,
+  getTransportOptions(state) {
+    const channel = getPreferredCommunicationChannelIndex(state);
+    return { channel: channel || 0 };
+  },
+});
 
-  if (action) {
-    action();
+const callUAVActionOnSelection = (actionName) => () => {
+  const func = uavOperationThunks[actionName];
+  if (func && typeof func === 'function') {
+    return func();
   } else {
     console.warn(`Attempted to perform unknown action: ${actionName}`);
+    return () => {};
   }
 };
 
@@ -99,13 +112,12 @@ export default connect(
         ),
         SELECT_ALL_DRONES: selectAllUAVFeatures,
         SEND_FLASH_LIGHTS_COMMAND: handlePendingUAVIdThenDispatch(
-          callUAVActionOnSelection('flashLightOnUAVs')
+          callUAVActionOnSelection('flashLight')
         ),
-        SEND_TAKEOFF_COMMAND: callUAVActionOnSelection('takeoffUAVs'),
-        SEND_LANDING_COMMAND: callUAVActionOnSelection('landUAVs'),
-        SEND_POSITION_HOLD_COMMAND:
-          callUAVActionOnSelection('positionHoldUAVs'),
-        SEND_RTH_COMMAND: callUAVActionOnSelection('returnToHomeUAVs'),
+        SEND_TAKEOFF_COMMAND: callUAVActionOnSelection('takeOff'),
+        SEND_LANDING_COMMAND: callUAVActionOnSelection('land'),
+        SEND_POSITION_HOLD_COMMAND: callUAVActionOnSelection('holdPosition'),
+        SEND_RTH_COMMAND: callUAVActionOnSelection('returnToHome'),
         SHOW_HOTKEY_DIALOG: showHotkeyDialog,
         TOGGLE_SORT_BY_MISSION_ID: toggleMissionIds,
         TYPE_0: () => appendToPendingUAVId(0),

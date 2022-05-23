@@ -9,7 +9,6 @@ import { createSelector } from '@reduxjs/toolkit';
 import {
   getGPSBasedHomePositionsInMission,
   getMissionMapping,
-  getPreferredCommunicationChannelIndex,
   getReverseMissionMapping,
   getUAVIdsParticipatingInMission,
   getTakeoffHeadingsInMission,
@@ -43,7 +42,6 @@ import { UAVAge } from '~/model/uav';
 import { selectionForSubset } from '~/selectors/selection';
 import { euclideanDistance2D } from '~/utils/math';
 import { EMPTY_ARRAY } from '~/utils/redux';
-import { createMultipleUAVRelatedActions } from '~/utils/messaging';
 
 /**
  * Returns the list of UAV IDs that should be shown on the UI, in the
@@ -754,17 +752,3 @@ export function getSingleUAVStatusSummary(uav) {
 
 export const createSingleUAVStatusSummarySelector = () =>
   createSelector(getUAVById, getSingleUAVStatusSummary);
-
-/**
- * Selector that returns an object containing functions to send common commands
- * (takeoff, land, RTH, flash etc) to the currently selected set of drones,
- * with the currently selected communication channel.
- */
-export const getUAVCommandTriggers = createSelector(
-  getSelectedUAVIds,
-  getPreferredCommunicationChannelIndex,
-  (uavIds, channel) => {
-    /* TODO(ntamas): handle broadcast somehow? */
-    return createMultipleUAVRelatedActions(uavIds, { channel: channel || 0 });
-  }
-);

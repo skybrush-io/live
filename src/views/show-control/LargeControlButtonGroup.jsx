@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
+import { bindActionCreators } from '@reduxjs/toolkit';
 
 import Box from '@material-ui/core/Box';
 import Divider from '@material-ui/core/Divider';
@@ -24,7 +25,7 @@ import {
 } from '~/features/mission/selectors';
 import { setCommandsAreBroadcast } from '~/features/mission/slice';
 import { getSelectedUAVIds } from '~/features/uavs/selectors';
-import { createMultipleUAVRelatedActions } from '~/utils/messaging';
+import { createUAVOperationThunks } from '~/utils/messaging';
 
 import StartMethodExplanation from './StartMethodExplanation';
 
@@ -48,36 +49,16 @@ const useStyles = makeStyles(
     },
   }),
   {
-    name: 'ShowControlPanelUpperSegment',
+    name: 'LargeControlButtonGroup',
   }
 );
 
 const LargeControlButtonGroup = ({
-  allUAVIdsInMission,
   broadcast,
-  channel,
   onChangeBroadcastMode,
-  selectedUAVIds,
+  uavActions,
 }) => {
   const classes = useStyles();
-  const {
-    landUAVs,
-    positionHoldUAVs,
-    returnToHomeUAVs,
-    shutdownUAVs,
-    /*
-    takeoffUAVs,
-    */
-    turnMotorsOffForUAVs,
-    turnMotorsOnForUAVs,
-  } = createMultipleUAVRelatedActions(
-    broadcast ? allUAVIdsInMission : selectedUAVIds,
-    {
-      broadcast,
-      channel,
-    }
-  );
-
   return (
     <>
       <StartMethodExplanation />
@@ -106,7 +87,7 @@ const LargeControlButtonGroup = ({
           className={classes.button}
           color={Colors.success}
           icon={<PlayArrow fontSize='inherit' />}
-          onClick={turnMotorsOnForUAVs}
+          onClick={uavActions.turnMotorsOn}
         >
           {broadcast ? 'Arm all' : 'Arm'}
         </ColoredButton>
@@ -114,7 +95,7 @@ const LargeControlButtonGroup = ({
           className={classes.button}
           color={Colors.info}
           icon={<Clear fontSize='inherit' />}
-          onClick={turnMotorsOffForUAVs}
+          onClick={uavActions.turnMotorsOff}
         >
           {broadcast ? 'Disarm all' : 'Disarm'}
         </ColoredButton>
@@ -124,7 +105,7 @@ const LargeControlButtonGroup = ({
           className={classes.button}
           color={Colors.positionHold}
           icon={<PositionHold fontSize='inherit' />}
-          onClick={positionHoldUAVs}
+          onClick={uavActions.holdPosition}
         >
           {broadcast ? 'Hold all' : 'Hold'}
         </ColoredButton>
@@ -132,7 +113,7 @@ const LargeControlButtonGroup = ({
           className={classes.button}
           color={Colors.warning}
           icon={<Home fontSize='inherit' />}
-          onClick={returnToHomeUAVs}
+          onClick={uavActions.returnToHome}
         >
           {broadcast ? 'RTH all' : 'RTH'}
         </ColoredButton>
@@ -142,7 +123,7 @@ const LargeControlButtonGroup = ({
           className={classes.button}
           color={Colors.seriousWarning}
           icon={<FlightLand fontSize='inherit' />}
-          onClick={landUAVs}
+          onClick={uavActions.land}
         >
           {broadcast ? 'Land all' : 'Land'}
         </ColoredButton>
@@ -150,7 +131,7 @@ const LargeControlButtonGroup = ({
           className={classes.button}
           color={Colors.error}
           icon={<PowerSettingsNew fontSize='inherit' />}
-          onClick={shutdownUAVs}
+          onClick={uavActions.shutdown}
         >
           {broadcast ? 'Shutdown all' : 'Shutdown'}
         </ColoredButton>
@@ -160,16 +141,9 @@ const LargeControlButtonGroup = ({
 };
 
 LargeControlButtonGroup.propTypes = {
-  allUAVIdsInMission: PropTypes.arrayOf(PropTypes.string),
   broadcast: PropTypes.bool,
-  channel: PropTypes.number,
-  selectedUAVIds: PropTypes.arrayOf(PropTypes.string),
   onChangeBroadcastMode: PropTypes.func,
-};
-
-LargeControlButtonGroup.defaultProps = {
-  broadcast: false,
-  channel: 0,
+  uavActions: PropTypes.objectOf(PropTypes.func),
 };
 
 export default connect(
@@ -181,8 +155,34 @@ export default connect(
     selectedUAVIds: getSelectedUAVIds(state),
   }),
   // mapDispatchToProps
-  {
+  (dispatch) => ({
     onChangeBroadcastMode: (event) =>
-      setCommandsAreBroadcast(Boolean(event.target.checked)),
-  }
+      dispatch(setCommandsAreBroadcast(Boolean(event.target.checked))),
+
+    uavActions: bindActionCreators(
+      createUAVOperationThunks({
+        /* In this panel, the targeted UAV IDs depend on whether the panel is
+         * in broadcast mode. In broadcast mode, we send a message targeted at
+         * all UAVs that are in the mission, allowing the server to broadcast
+         * if that's easier. In selection mode, we target the current UAV
+         * selection. */
+        getTargetedUAVIds(state) {
+          const broadcast = areFlightCommandsBroadcast(state);
+          return broadcast
+            ? getUAVIdsParticipatingInMission(state)
+            : getSelectedUAVIds(state);
+        },
+
+        /* Transport options depend on whether we are preferring the secondary
+         * comms channel and whether the panel is in broadcast mode */
+        getTransportOptions(state) {
+          return {
+            channel: getPreferredCommunicationChannelIndex(state),
+            broadcast: areFlightCommandsBroadcast(state),
+          };
+        },
+      }),
+      dispatch
+    ),
+  })
 )(LargeControlButtonGroup);

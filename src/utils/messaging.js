@@ -5,6 +5,7 @@
 import countBy from 'lodash-es/countBy';
 import isError from 'lodash-es/isError';
 import isNil from 'lodash-es/isNil';
+import mapValues from 'lodash-es/mapValues';
 import values from 'lodash-es/values';
 
 import { showNotification } from '~/features/snackbar/slice';
@@ -163,7 +164,7 @@ export const moveUAVs = (uavIds, { target, ...rest }) => {
   return moveUAVsLowLevel(uavIds, args);
 };
 
-export const turnMotorOffForUAVs = performMassOperation({
+export const turnMotorsOffForUAVs = performMassOperation({
   type: 'UAV-MOTOR',
   name: 'Motor off command',
   mapper: (options) => ({
@@ -172,7 +173,7 @@ export const turnMotorOffForUAVs = performMassOperation({
   }),
 });
 
-export const turnMotorOnForUAVs = performMassOperation({
+export const turnMotorsOnForUAVs = performMassOperation({
   type: 'UAV-MOTOR',
   name: 'Motor on command',
   mapper: (options) => ({
@@ -181,66 +182,58 @@ export const turnMotorOnForUAVs = performMassOperation({
   }),
 });
 
-export const createMultipleUAVRelatedActions = (
-  uavIds,
-  { broadcast = false, channel = 0 } = {}
-) => {
-  const options = {};
-
-  if (broadcast) {
-    options.transport = { broadcast: true };
-  }
-
-  if (typeof channel === 'number' && channel !== 0) {
-    options.transport = { ...options.transport, channel };
-  }
-
-  // If you modify the implementation here, make sure that the actions do
-  // something in the case when broadcast = true and uavIds is empty!
-
-  return {
-    flashLightOnUAVs() {
-      flashLightOnUAVs(uavIds, options);
-    },
-
-    shutdownUAVs() {
-      shutdownUAVs(uavIds, options);
-    },
-
-    landUAVs() {
-      landUAVs(uavIds, options);
-    },
-
-    positionHoldUAVs() {
-      positionHoldUAVs(uavIds, options);
-    },
-
-    resetUAVs() {
-      resetUAVs(uavIds, options);
-    },
-
-    returnToHomeUAVs() {
-      returnToHomeUAVs(uavIds, options);
-    },
-
-    sleepUAVs() {
-      sleepUAVs(uavIds, options);
-    },
-
-    takeoffUAVs() {
-      takeoffUAVs(uavIds, options);
-    },
-
-    turnMotorsOffForUAVs() {
-      turnMotorOffForUAVs(uavIds, options);
-    },
-
-    turnMotorsOnForUAVs() {
-      turnMotorOnForUAVs(uavIds, options);
-    },
-
-    wakeUpUAVs() {
-      wakeUpUAVs(uavIds, options);
-    },
-  };
+// moveUAVs() not in this map because it requires extra args
+const OPERATION_MAP = {
+  flashLight: flashLightOnUAVs,
+  shutdown: shutdownUAVs,
+  land: landUAVs,
+  holdPosition: positionHoldUAVs,
+  reset: resetUAVs,
+  returnToHome: returnToHomeUAVs,
+  sleep: sleepUAVs,
+  takeOff: takeoffUAVs,
+  turnMotorsOff: turnMotorsOffForUAVs,
+  turnMotorsOn: turnMotorsOnForUAVs,
+  wakeUp: wakeUpUAVs,
 };
+
+/**
+ * Creates Redux thunks that can be used to dispatch commands to UAVs.
+ *
+ * @param {func} getTargetedUAVIds  a selector that is invoked with the current
+ *        Redux state and that must return the list of UAV IDs that the command
+ *        will be targeted to
+ * @param {func?} getTransportOptions  an optional selector that is invoked with
+ *        the current Redux state and that must return a transport options object
+ *        with keys `channel` and `broadcast` to describe how the commands should
+ *        be sent to the UAVs (on which channel and whether to be sent in
+ *        broadcast mode)
+ * @returns  an object mapping UAV operation names from the `OPERATION_MAP`
+ *           keys to the corresponding Redux thunks that can be dispatched
+ */
+export function createUAVOperationThunks({
+  getTargetedUAVIds,
+  getTransportOptions,
+} = {}) {
+  if (typeof getTargetedUAVIds !== 'function') {
+    throw new TypeError('getTargetedUAVIds() must be a function');
+  }
+
+  return mapValues(OPERATION_MAP, (func) => () => (_dispatch, getState) => {
+    const state = getState();
+    const uavIds = getTargetedUAVIds(state);
+    const options = {};
+
+    if (getTransportOptions) {
+      options.transport = getTransportOptions(state);
+
+      if (options?.transport?.channel === 0) {
+        // Work around a bug in older versions of Skybrush Server (2.1.0 and
+        // before) where virtual UAVs did not accept a channel index
+        delete options.transport.channel;
+      }
+    }
+
+    func(uavIds, options);
+  });
+}

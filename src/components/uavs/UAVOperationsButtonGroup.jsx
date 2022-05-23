@@ -25,20 +25,23 @@ import Colors from '~/components/colors';
 import ToolbarDivider from '~/components/ToolbarDivider';
 import Bolt from '~/icons/Bolt';
 
-import { getPreferredCommunicationChannelIndex } from '~/features/mission/selectors';
 import {
   requestRemovalOfUAVsByIds,
   requestRemovalOfUAVsMarkedAsGone,
 } from '~/features/uavs/actions';
 import { openUAVDetailsDialog } from '~/features/uavs/details';
-import { createMultipleUAVRelatedActions } from '~/utils/messaging';
+import { getUAVIdList } from '~/features/uavs/selectors';
+import { createUAVOperationThunks } from '~/utils/messaging';
+import { bindActionCreators } from 'redux';
+import { getPreferredCommunicationChannelIndex } from '~/features/mission/selectors';
 
 /**
  * Main toolbar for controlling the UAVs.
  */
+// eslint-disable-next-line complexity
 const UAVOperationsButtonGroup = ({
   broadcast,
-  channel,
+  dispatch,
   hideSeparators,
   openUAVDetailsDialog,
   requestRemovalOfUAVsByIds,
@@ -47,22 +50,36 @@ const UAVOperationsButtonGroup = ({
   size,
   startSeparator,
 }) => {
-  const isSelectionEmpty = isEmpty(selectedUAVIds);
+  const isSelectionEmpty = isEmpty(selectedUAVIds) && !broadcast;
   const isSelectionSingle = selectedUAVIds.length === 1 && !broadcast;
 
   const {
-    flashLightOnUAVs,
-    landUAVs,
-    positionHoldUAVs,
-    resetUAVs,
-    returnToHomeUAVs,
-    shutdownUAVs,
-    sleepUAVs,
-    takeoffUAVs,
-    turnMotorsOffForUAVs,
-    turnMotorsOnForUAVs,
-    wakeUpUAVs,
-  } = createMultipleUAVRelatedActions(selectedUAVIds, { broadcast, channel });
+    flashLight,
+    holdPosition,
+    land,
+    reset,
+    returnToHome,
+    shutdown,
+    sleep,
+    takeOff,
+    turnMotorsOff,
+    turnMotorsOn,
+    wakeUp,
+  } = bindActionCreators(
+    createUAVOperationThunks({
+      getTargetedUAVIds(state) {
+        return broadcast ? getUAVIdList(state) : selectedUAVIds;
+      },
+
+      getTransportOptions(state) {
+        return {
+          broadcast,
+          channel: getPreferredCommunicationChannelIndex(state),
+        };
+      },
+    }),
+    dispatch
+  );
 
   const fontSize = size === 'small' ? 'small' : 'medium';
   const iconSize = size;
@@ -73,7 +90,7 @@ const UAVOperationsButtonGroup = ({
         startIcon={<WbSunny />}
         disabled={isSelectionEmpty}
         size={iconSize}
-        onClick={flashLightOnUAVs}
+        onClick={flashLight}
       >
         Flash lights
       </Button>
@@ -82,7 +99,7 @@ const UAVOperationsButtonGroup = ({
         <IconButton
           disabled={isSelectionEmpty}
           size={iconSize}
-          onClick={flashLightOnUAVs}
+          onClick={flashLight}
         >
           <WbSunny fontSize={fontSize} />
         </IconButton>
@@ -99,7 +116,7 @@ const UAVOperationsButtonGroup = ({
         <IconButton
           disabled={isSelectionEmpty}
           size={iconSize}
-          onClick={takeoffUAVs}
+          onClick={takeOff}
         >
           <FlightTakeoff fontSize={fontSize} />
         </IconButton>
@@ -109,7 +126,7 @@ const UAVOperationsButtonGroup = ({
         <IconButton
           disabled={isSelectionEmpty}
           size={iconSize}
-          onClick={positionHoldUAVs}
+          onClick={holdPosition}
         >
           <PositionHold fontSize={fontSize} />
         </IconButton>
@@ -119,18 +136,14 @@ const UAVOperationsButtonGroup = ({
         <IconButton
           disabled={isSelectionEmpty}
           size={iconSize}
-          onClick={returnToHomeUAVs}
+          onClick={returnToHome}
         >
           <Home fontSize={fontSize} />
         </IconButton>
       </Tooltip>
 
       <Tooltip content='Land'>
-        <IconButton
-          disabled={isSelectionEmpty}
-          size={iconSize}
-          onClick={landUAVs}
-        >
+        <IconButton disabled={isSelectionEmpty} size={iconSize} onClick={land}>
           <FlightLand fontSize={fontSize} />
         </IconButton>
       </Tooltip>
@@ -158,7 +171,7 @@ const UAVOperationsButtonGroup = ({
         <IconButton
           disabled={isSelectionEmpty}
           size={iconSize}
-          onClick={turnMotorsOnForUAVs}
+          onClick={turnMotorsOn}
         >
           <PlayArrow
             fontSize={fontSize}
@@ -171,7 +184,7 @@ const UAVOperationsButtonGroup = ({
         <IconButton
           disabled={isSelectionEmpty}
           size={iconSize}
-          onClick={turnMotorsOffForUAVs}
+          onClick={turnMotorsOff}
         >
           <Clear
             fontSize={fontSize}
@@ -188,7 +201,7 @@ const UAVOperationsButtonGroup = ({
         <IconButton
           disabled={isSelectionEmpty}
           size={iconSize}
-          onClick={wakeUpUAVs}
+          onClick={wakeUp}
         >
           <Bolt
             htmlColor={isSelectionEmpty ? undefined : Colors.success}
@@ -198,11 +211,7 @@ const UAVOperationsButtonGroup = ({
       </Tooltip>
 
       <Tooltip content='Sleep'>
-        <IconButton
-          disabled={isSelectionEmpty}
-          size={iconSize}
-          onClick={sleepUAVs}
-        >
+        <IconButton disabled={isSelectionEmpty} size={iconSize} onClick={sleep}>
           <Moon
             htmlColor={isSelectionEmpty ? undefined : Colors.warning}
             fontSize={fontSize}
@@ -211,11 +220,7 @@ const UAVOperationsButtonGroup = ({
       </Tooltip>
 
       <Tooltip content='Reboot'>
-        <IconButton
-          disabled={isSelectionEmpty}
-          size={iconSize}
-          onClick={resetUAVs}
-        >
+        <IconButton disabled={isSelectionEmpty} size={iconSize} onClick={reset}>
           <Refresh
             htmlColor={isSelectionEmpty ? undefined : Colors.error}
             fontSize={fontSize}
@@ -227,7 +232,7 @@ const UAVOperationsButtonGroup = ({
         <IconButton
           disabled={isSelectionEmpty}
           size={iconSize}
-          onClick={shutdownUAVs}
+          onClick={shutdown}
         >
           <PowerSettingsNew
             htmlColor={isSelectionEmpty ? undefined : Colors.error}
@@ -266,7 +271,7 @@ const UAVOperationsButtonGroup = ({
 
 UAVOperationsButtonGroup.propTypes = {
   broadcast: PropTypes.bool,
-  channel: PropTypes.number,
+  dispatch: PropTypes.func,
   openUAVDetailsDialog: PropTypes.func,
   requestRemovalOfUAVsByIds: PropTypes.func,
   requestRemovalOfUAVsMarkedAsGone: PropTypes.func,
@@ -276,21 +281,19 @@ UAVOperationsButtonGroup.propTypes = {
   startSeparator: PropTypes.bool,
 };
 
-UAVOperationsButtonGroup.defaultProps = {
-  channel: 0,
-};
-
 export default connect(
   // mapStateToProps
-  (state) => ({
-    channel: getPreferredCommunicationChannelIndex(state),
-  }),
+  () => ({}),
   // mapDispatchToProps
-  /* TODO(ntamas): ask the flock object to remove the UAVs instead of removing them
-   * from the store directly */
-  {
-    openUAVDetailsDialog,
-    requestRemovalOfUAVsMarkedAsGone,
-    requestRemovalOfUAVsByIds,
-  }
+  (dispatch) => ({
+    ...bindActionCreators(
+      {
+        openUAVDetailsDialog,
+        requestRemovalOfUAVsMarkedAsGone,
+        requestRemovalOfUAVsByIds,
+      },
+      dispatch
+    ),
+    dispatch,
+  })
 )(UAVOperationsButtonGroup);
