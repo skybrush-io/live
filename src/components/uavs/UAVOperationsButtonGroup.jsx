@@ -4,9 +4,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 
 import Button from '@material-ui/core/Button';
-import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
-import { makeStyles } from '@material-ui/core/styles';
 
 import Clear from '@material-ui/icons/Clear';
 import Delete from '@material-ui/icons/Delete';
@@ -24,6 +22,7 @@ import WbSunny from '@material-ui/icons/WbSunny';
 import Tooltip from '@skybrush/mui-components/lib/Tooltip';
 
 import Colors from '~/components/colors';
+import ToolbarDivider from '~/components/ToolbarDivider';
 import Bolt from '~/icons/Bolt';
 
 import { getPreferredCommunicationChannelIndex } from '~/features/mission/selectors';
@@ -33,17 +32,6 @@ import {
 } from '~/features/uavs/actions';
 import { openUAVDetailsDialog } from '~/features/uavs/details';
 import { createMultipleUAVRelatedActions } from '~/utils/messaging';
-
-const useStyles = makeStyles(
-  (theme) => ({
-    divider: {
-      alignSelf: 'stretch',
-      height: 'auto',
-      margin: theme.spacing(1, 0.5),
-    },
-  }),
-  { name: 'UAVOperationsButtonGroup' }
-);
 
 /**
  * Main toolbar for controlling the UAVs.
@@ -56,9 +44,8 @@ const UAVOperationsButtonGroup = ({
   requestRemovalOfUAVsMarkedAsGone,
   selectedUAVIds,
   size,
+  startSeparator,
 }) => {
-  const classes = useStyles();
-
   const isSelectionEmpty = isEmpty(selectedUAVIds);
   const isSelectionSingle = selectedUAVIds.length === 1;
 
@@ -103,6 +90,10 @@ const UAVOperationsButtonGroup = ({
 
   return (
     <>
+      {!hideSeparators && startSeparator && (
+        <ToolbarDivider orientation='vertical' />
+      )}
+
       <Tooltip content='Takeoff'>
         <IconButton
           disabled={isSelectionEmpty}
@@ -143,9 +134,7 @@ const UAVOperationsButtonGroup = ({
         </IconButton>
       </Tooltip>
 
-      {!hideSeparators && (
-        <Divider className={classes.divider} orientation='vertical' />
-      )}
+      {!hideSeparators && <ToolbarDivider orientation='vertical' />}
 
       {size !== 'small' && (
         <>
@@ -162,9 +151,7 @@ const UAVOperationsButtonGroup = ({
         </>
       )}
 
-      {!hideSeparators && (
-        <Divider className={classes.divider} orientation='vertical' />
-      )}
+      {!hideSeparators && <ToolbarDivider orientation='vertical' />}
 
       <Tooltip content='Arm motors'>
         <IconButton
@@ -192,9 +179,9 @@ const UAVOperationsButtonGroup = ({
         </IconButton>
       </Tooltip>
 
-      {!hideSeparators && (
-        <Divider className={classes.divider} orientation='vertical' />
-      )}
+      {size === 'small' && flashLightsButton}
+
+      {!hideSeparators && <ToolbarDivider orientation='vertical' />}
 
       <Tooltip content='Power on'>
         <IconButton
@@ -250,9 +237,7 @@ const UAVOperationsButtonGroup = ({
 
       {size !== 'small' && (
         <>
-          {!hideSeparators && (
-            <Divider className={classes.divider} orientation='vertical' />
-          )}
+          {!hideSeparators && <ToolbarDivider orientation='vertical' />}
 
           <Tooltip
             content={
@@ -274,8 +259,6 @@ const UAVOperationsButtonGroup = ({
           </Tooltip>
         </>
       )}
-
-      {size === 'small' && flashLightsButton}
     </>
   );
 };
@@ -288,6 +271,7 @@ UAVOperationsButtonGroup.propTypes = {
   selectedUAVIds: PropTypes.arrayOf(PropTypes.string),
   hideSeparators: PropTypes.bool,
   size: PropTypes.oneOf(['small', 'medium']),
+  startSeparator: PropTypes.bool,
 };
 
 UAVOperationsButtonGroup.defaultProps = {

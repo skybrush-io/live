@@ -85,7 +85,7 @@ const StatusSummaryMiniTable = ({
       'sep1',
       ['Lat', formatNumberSafely(lat, 7, '°', naText)],
       ['Lon', formatNumberSafely(lon, 7, '°', naText)],
-      ['AMSL', formatNumberSafely(amsl, 2, ' m'), naText],
+      ['AMSL', formatNumberSafely(amsl, 2, ' m', naText)],
       ['AGL', formatNumberSafely(agl, 2, ' m', naText)],
       'sep2'
     );
