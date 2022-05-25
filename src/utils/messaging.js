@@ -227,7 +227,7 @@ export function createUAVOperationThunks({
     if (getTransportOptions) {
       options.transport = getTransportOptions(state);
 
-      if (options?.transport?.channel === 0) {
+      if (options.transport?.channel === 0) {
         // Work around a bug in older versions of Skybrush Server (2.1.0 and
         // before) where virtual UAVs did not accept a channel index
         delete options.transport.channel;

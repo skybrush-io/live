@@ -30,10 +30,10 @@ import {
   requestRemovalOfUAVsMarkedAsGone,
 } from '~/features/uavs/actions';
 import { openUAVDetailsDialog } from '~/features/uavs/details';
-import { getUAVIdList } from '~/features/uavs/selectors';
 import { createUAVOperationThunks } from '~/utils/messaging';
 import { bindActionCreators } from 'redux';
 import { getPreferredCommunicationChannelIndex } from '~/features/mission/selectors';
+import { getUAVIdList } from '~/features/uavs/selectors';
 
 /**
  * Main toolbar for controlling the UAVs.
@@ -72,10 +72,16 @@ const UAVOperationsButtonGroup = ({
       },
 
       getTransportOptions(state) {
-        return {
-          broadcast,
+        const result = {
           channel: getPreferredCommunicationChannelIndex(state),
         };
+
+        if (broadcast) {
+          result.broadcast = true;
+          result.ignoreIds = true;
+        }
+
+        return result;
       },
     }),
     dispatch
