@@ -1,5 +1,5 @@
 /**
- * @file Reducer for handling the part of the state object that stores the
+ * @file Redux slice handling the part of the state object that stores the
  * state of the layers dialog.
  */
 
