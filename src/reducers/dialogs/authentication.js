@@ -1,42 +1,55 @@
 /**
- * @file Reducer function for handling the part of the state object that
+ * @file Redux slice for handling the part of the state object that
  * stores the state of the authentication dialog.
  */
 
-import { handleActions } from 'redux-actions';
-import u from 'updeep';
+import { createSlice } from '@reduxjs/toolkit';
 
 /**
- * The default state for the authentication dialog.
+ * The reducer that handles actions related to the authentication dialog.
  */
-const defaultState = {
-  lastError: undefined,
-  open: false,
-};
+const { actions, reducer } = createSlice({
+  name: 'authentication',
 
-/**
- * The reducer function that handles actions related to the authentication
- * dialog.
- */
-const reducer = handleActions(
-  {
-    SHOW_AUTHENTICATION_DIALOG: (state) =>
-      u({ lastError: undefined, open: true }, state),
+  /**
+   * The default state for the authentication dialog.
+   */
+  initialState: {
+    lastError: undefined,
+    open: false,
+  },
 
-    CLOSE_AUTHENTICATION_DIALOG: (state) =>
-      u({ lastError: undefined, open: false }, state),
+  reducers: {
+    authenticateToServerFulfilled(state, { payload }) {
+      if (payload.result) {
+        state.lastError = undefined;
+        state.open = false;
+      } else {
+        state.lastError = payload.reason || 'Unexpected failure';
+      }
+    },
 
-    AUTHENTICATE_TO_SERVER_PENDING: (state) =>
-      u({ lastError: undefined }, state),
+    authenticateToServerPending(state) {
+      state.lastError = undefined;
+    },
 
-    AUTHENTICATE_TO_SERVER_FULFILLED: (state, action) => {
-      const { payload } = action;
-      return payload.result
-        ? u({ lastError: undefined, open: false }, state)
-        : u({ lastError: payload.reason || 'Unexpected failure' }, state);
+    /**
+     * Action that closes the authentication dialog and cancels the current
+     * authentication attempt.
+     */
+    closeAuthenticationDialog(state) {
+      state.lastError = undefined;
+      state.open = false;
+    },
+
+    /**
+     * Action that opens the authentication dialog.
+     */
+    showAuthenticationDialog(state) {
+      state.lastError = undefined;
+      state.open = true;
     },
   },
-  defaultState
-);
+});
 
-export default reducer;
+export { reducer as default, actions };

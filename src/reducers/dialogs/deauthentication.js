@@ -1,29 +1,38 @@
 /**
- * @file Reducer function for handling the part of the state object that
+ * @file Redux slice for handling the part of the state object that
  * stores the state of the deauthentication dialog.
  */
 
-import { handleActions } from 'redux-actions';
-import u from 'updeep';
+import { createSlice } from '@reduxjs/toolkit';
 
 /**
- * The default state for the deauthentication dialog.
+ * The reducer that handles actions related to the deauthentication dialog.
  */
-const defaultState = {
-  open: false,
-};
+const { actions, reducer } = createSlice({
+  name: 'deauthentication',
 
-/**
- * The reducer function that handles actions related to the deauthentication
- * dialog.
- */
-const reducer = handleActions(
-  {
-    SHOW_DEAUTHENTICATION_DIALOG: (state) => u({ open: true }, state),
-
-    CLOSE_DEAUTHENTICATION_DIALOG: (state) => u({ open: false }, state),
+  /**
+   * The default state for the deauthentication dialog.
+   */
+  initialState: {
+    open: false,
   },
-  defaultState
-);
 
-export default reducer;
+  reducers: {
+    /**
+     * Action that closes the deauthentication dialog.
+     */
+    closeDeauthenticationDialog(state) {
+      state.open = false;
+    },
+
+    /**
+     * Action that opens the deauthentication dialog.
+     */
+    showDeauthenticationDialog(state) {
+      state.open = true;
+    },
+  },
+});
+
+export { reducer as default, actions };
