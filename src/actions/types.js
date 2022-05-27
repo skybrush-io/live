@@ -2,11 +2,6 @@
  * @file Central repository of action type constants used in the app.
  */
 
-// Feature editor dialog related actions
-export const CLOSE_FEATURE_EDITOR_DIALOG = 'CLOSE_FEATURE_EDITOR_DIALOG';
-export const SET_FEATURE_EDITOR_DIALOG_TAB = 'SET_FEATURE_EDITOR_DIALOG_TAB';
-export const SHOW_FEATURE_EDITOR_DIALOG = 'SHOW_FEATURE_EDITOR_DIALOG';
-
 // Saved location related actions
 export const EDIT_SAVED_LOCATION = 'EDIT_SAVED_LOCATION';
 export const CANCEL_LOCATION_EDITING = 'CANCEL_LOCATION_EDITING';

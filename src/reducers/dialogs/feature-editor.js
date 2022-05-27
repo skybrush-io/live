@@ -1,41 +1,38 @@
 /**
- * @file Reducer function for handling the part of the state object that
+ * @file Redux slice for handling the part of the state object that
  * stores the state of the feature editor dialog.
  */
 
-import { handleActions } from 'redux-actions';
-import u from 'updeep';
+import { createSlice } from '@reduxjs/toolkit';
 
 /**
- * The default settings for the part of the state object being defined here.
+ * The reducer that handles actions related to the server settings.
  */
-const defaultState = {
-  dialogVisible: false,
-  selectedTab: 'general',
-};
+const { reducer, actions } = createSlice({
+  name: 'feature-editor',
 
-/**
- * The reducer function that handles actions related to the server
- * settings.
- */
-const reducer = handleActions(
-  {
-    SHOW_FEATURE_EDITOR_DIALOG: (state, action) =>
-      u(
-        {
-          dialogVisible: true,
-          featureId: action.payload,
-        },
-        state
-      ),
-
-    CLOSE_FEATURE_EDITOR_DIALOG: (state, action) =>
-      u({ ...action.payload, dialogVisible: false }, state),
-
-    SET_FEATURE_EDITOR_DIALOG_TAB: (state, action) =>
-      u({ selectedTab: action.payload }, state),
+  /**
+   * The default settings for the part of the state object being defined here.
+   */
+  initialState: {
+    dialogVisible: false,
+    selectedTab: 'general',
   },
-  defaultState
-);
 
-export default reducer;
+  reducers: {
+    closeFeatureEditorDialog(state, action) {
+      Object.assign(state, action.payload, { dialogVisible: false });
+    },
+
+    showFeatureEditorDialog(state, action) {
+      state.dialogVisible = true;
+      state.featureId = action.payload;
+    },
+
+    setFeatureEditorDialogTab(state, action) {
+      state.selectedTab = action.payload;
+    },
+  },
+});
+
+export { reducer as default, actions };
