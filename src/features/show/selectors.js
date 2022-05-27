@@ -366,10 +366,7 @@ export const getConvexHullsOfTrajectories = createSelector(
  */
 export const getConvexHullOfShow = createSelector(
   getConvexHullsOfTrajectories,
-  (convexHulls) => {
-    const allPoints = [].concat(...convexHulls);
-    return convexHull(allPoints);
-  }
+  (convexHulls) => convexHull(convexHulls.flat())
 );
 
 const transformPoints = (points, transform) =>

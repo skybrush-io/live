@@ -3,7 +3,7 @@
  * edit them.
  */
 
-import { Checkboxes, TextField } from 'mui-rff';
+import { Checkboxes, Select, TextField } from 'mui-rff';
 import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
 import { Form } from 'react-final-form';
@@ -15,11 +15,16 @@ import Button from '@material-ui/core/Button';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import InputAdornment from '@material-ui/core/InputAdornment';
+import MenuItem from '@material-ui/core/MenuItem';
 
 import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
 import FormHeader from '@skybrush/mui-components/lib/FormHeader';
 
 import { forceFormSubmission } from '~/components/forms';
+import {
+  describeGeofenceAction,
+  GeofenceAction,
+} from '~/features/geofence/model';
 import {
   closeGeofenceSettingsDialog,
   updateGeofenceSettings,
@@ -28,8 +33,14 @@ import {
   proposeDistanceLimit,
   proposeHeightLimit,
 } from '~/features/geofence/utils';
-import { hasActiveGeofencePolygon } from '~/features/mission/selectors';
-import { clearGeofencePolygonId } from '~/features/mission/slice';
+import {
+  getGeofenceAction,
+  hasActiveGeofencePolygon,
+} from '~/features/mission/selectors';
+import {
+  clearGeofencePolygonId,
+  setGeofenceAction,
+} from '~/features/mission/slice';
 import { updateGeofencePolygon } from '~/features/show/actions';
 import {
   getMaximumHorizontalDistanceFromTakeoffPositionInTrajectories,
@@ -43,6 +54,7 @@ import {
   integer,
   required,
 } from '~/utils/validation';
+import { FormHelperText } from '@material-ui/core';
 
 const validator = createValidator({
   horizontalMargin: [required, finite, atLeast(1)],
@@ -54,7 +66,7 @@ const calculator = createDecorator(
   {
     field: 'verticalMargin',
     updates: {
-      heightLimit: (margin, { maxHeight }) => {
+      heightLimit(margin, { maxHeight }) {
         margin = Number.parseFloat(margin);
         return proposeHeightLimit(
           maxHeight,
@@ -66,7 +78,7 @@ const calculator = createDecorator(
   {
     field: 'horizontalMargin',
     updates: {
-      distanceLimit: (margin, { maxDistance }) => {
+      distanceLimit(margin, { maxDistance }) {
         margin = Number.parseFloat(margin);
         return proposeDistanceLimit(
           maxDistance,
@@ -76,6 +88,13 @@ const calculator = createDecorator(
     },
   }
 );
+
+const SUPPORTED_GEOFENCE_ACTIONS = [
+  GeofenceAction.KEEP_CURRENT,
+  GeofenceAction.REPORT,
+  GeofenceAction.RETURN,
+  GeofenceAction.LAND,
+];
 
 const GeofenceSettingsFormPresentation = ({
   initialValues,
@@ -94,6 +113,21 @@ const GeofenceSettingsFormPresentation = ({
         onSubmit={handleSubmit}
         onKeyPress={onKeyPress}
       >
+        <FormHeader>Fence action</FormHeader>
+        <Box display='flex' flexDirection='column'>
+          <Select name='action' label='Primary fence action' variant='filled'>
+            {SUPPORTED_GEOFENCE_ACTIONS.map((action) => (
+              <MenuItem key={action} value={action}>
+                {describeGeofenceAction(action)}
+              </MenuItem>
+            ))}
+          </Select>
+          <FormHelperText>
+            Support for these options depends on the drones themselves; not all
+            options are supported by all drones.
+          </FormHelperText>
+        </Box>
+
         <FormHeader>Safety margins</FormHeader>
         <Box display='flex' flexDirection='row'>
           <TextField
@@ -181,6 +215,7 @@ const GeofenceSettingsForm = connect(
       maxDistance:
         getMaximumHorizontalDistanceFromTakeoffPositionInTrajectories(state),
       maxHeight: getMaximumHeightInTrajectories(state),
+      action: getGeofenceAction(state),
     },
   })
 )(GeofenceSettingsFormPresentation);
@@ -274,6 +309,7 @@ const GeofenceSettingsDialog = connect(
           maxVertexCount: Number(data.maxVertexCount),
         })
       );
+      dispatch(setGeofenceAction(data.action));
       dispatch(closeGeofenceSettingsDialog());
       dispatch(updateGeofencePolygon());
     },

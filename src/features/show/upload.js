@@ -1,7 +1,14 @@
 import isNil from 'lodash-es/isNil';
 import { CANCEL } from 'redux-saga';
 
-import { getReverseMissionMapping } from '~/features/mission/selectors';
+import {
+  GeofenceAction,
+  isValidGeofenceAction,
+} from '~/features/geofence/model';
+import {
+  getGeofenceAction,
+  getReverseMissionMapping,
+} from '~/features/mission/selectors';
 import { JobScope } from '~/features/upload/jobs';
 import messageHub from '~/message-hub';
 
@@ -39,6 +46,7 @@ export function createShowConfigurationForUav(state, uavId) {
     throw new TypeError('Show coordinate system not specified');
   }
 
+  const geofenceAction = getGeofenceAction(state);
   const geofencePolygon = getGeofencePolygonInShowCoordinates(state);
   const geofence = {
     version: 1,
@@ -53,6 +61,14 @@ export function createShowConfigurationForUav(state, uavId) {
     maxAltitude: getUserDefinedHeightLimit(state),
     maxDistance: getUserDefinedDistanceLimit(state),
   };
+
+  if (geofenceAction !== GeofenceAction.KEEP_CURRENT) {
+    if (isValidGeofenceAction(geofenceAction)) {
+      geofence.action = geofenceAction;
+    } else {
+      throw new Error('Invalid geofence action: ' + String(geofenceAction));
+    }
+  }
 
   const drones = getDroneSwarmSpecification(state);
   if (!drones || !Array.isArray(drones)) {

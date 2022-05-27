@@ -12,6 +12,7 @@ import { createSlice } from '@reduxjs/toolkit';
 
 import { copyAndEnsureLengthEquals, getNewEditIndex } from './utils';
 
+import { GeofenceAction } from '~/features/geofence/model';
 import { removeFeaturesByIds } from '~/features/map-features/slice';
 import { noPayload } from '~/utils/redux';
 
@@ -57,9 +58,11 @@ const { actions, reducer } = createSlice({
     // control panel to all UAVs
     commandsAreBroadcast: false,
 
-    // geofence: {
+    // ID of the polygon that holds the current geofence
     geofencePolygonId: undefined,
-    // },
+
+    // action to perform when the geofence is breached
+    geofenceAction: GeofenceAction.RETURN,
   },
 
   reducers: {
@@ -192,6 +195,13 @@ const { actions, reducer } = createSlice({
      */
     setCommandsAreBroadcast(state, action) {
       state.commandsAreBroadcast = Boolean(action.payload);
+    },
+
+    /**
+     * Sets the action to perform when the geofence is breached.
+     */
+    setGeofenceAction(state, action) {
+      state.geofenceAction = action.payload;
     },
 
     /**
@@ -331,6 +341,7 @@ export const {
   removeUAVsFromMapping,
   replaceMapping,
   setCommandsAreBroadcast,
+  setGeofenceAction,
   setGeofencePolygonId,
   setMappingLength,
   startMappingEditorSession,

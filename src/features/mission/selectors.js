@@ -4,6 +4,7 @@ import reject from 'lodash-es/reject';
 import { createSelector } from '@reduxjs/toolkit';
 
 import { Status } from '~/components/semantics';
+import { GeofenceAction } from '~/features/geofence/model';
 
 /**
  * Returns the current list of home positions in the mission.
@@ -174,6 +175,12 @@ export const canAugmentMappingAutomaticallyFromSpareDrones = createSelector(
  * Returns whether the current mapping is editable at the moment.
  */
 export const isMappingEditable = (state) => state.mission.mappingEditor.enabled;
+
+/**
+ * Gets the action to perform when the geofence is breached.
+ */
+export const getGeofenceAction = (state) =>
+  state.mission.geofenceAction || GeofenceAction.KEEP_CURRENT;
 
 /**
  * Gets the ID of the polygon that is to be used as a geofence.
