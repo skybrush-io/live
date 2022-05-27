@@ -1,36 +1,55 @@
 /**
- * @file Reducer function for handling the part of the state object that
+ * @file Redux slice for handling the part of the state object that
  * stores the state of the dialog that allows the user to edit the
  * app settings.
  */
 
-import { handleActions } from 'redux-actions';
-import u from 'updeep';
+import { createSlice } from '@reduxjs/toolkit';
+import { noPayload } from '~/utils/redux';
 
 /**
- * The default state for the app settings dialog.
+ * The reducer that handles actions related to the app settings dialog.
  */
-const defaultState = {
-  open: false,
-  selectedTab: 'display',
-};
+const { reducer, actions } = createSlice({
+  name: 'app-settings',
 
-/**
- * The reducer function that handles actions related to the app
- * settings dialog.
- */
-const reducer = handleActions(
-  {
-    SHOW_APP_SETTINGS_DIALOG: (state) => u({ open: true }, state),
-
-    TOGGLE_APP_SETTINGS_DIALOG: (state) => u({ open: !state.open }, state),
-
-    CLOSE_APP_SETTINGS_DIALOG: (state) => u({ open: false }, state),
-
-    SET_APP_SETTINGS_DIALOG_TAB: (state, action) =>
-      u({ selectedTab: action.payload }, state),
+  /**
+   * The default state for the app settings dialog.
+   */
+  initialState: {
+    open: false,
+    selectedTab: 'display',
   },
-  defaultState
-);
 
-export default reducer;
+  reducers: {
+    /**
+     * Action that will close the app settings dialog.
+     */
+    closeAppSettingsDialog(state) {
+      state.open = false;
+    },
+
+    /**
+     * Action that will set the selected tab in the app settings dialog.
+     */
+    setAppSettingsDialogTab(state, action) {
+      state.selectedTab = action.payload;
+    },
+
+    /**
+     * Action that shows the app settings dialog.
+     */
+    showAppSettingsDialog: noPayload((state) => {
+      state.open = true;
+    }),
+
+    /**
+     * Action that toggles the visibility of the app settings dialog.
+     */
+    toggleAppSettingsDialog: noPayload((state) => {
+      state.open = !state.open;
+    }),
+  },
+});
+
+export { reducer as default, actions };
