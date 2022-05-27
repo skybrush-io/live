@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added buttons in the UAV toolbar for remote power-on and sleep commands for
+  UAVs that support it. Contact us if you would like to add support for your
+  drone.
+
+- Added a broadcast switch to the UAV toolbar. Toggling the switch will
+  broadcast commands to all UAVs for the next five seconds before returning to
+  normal mode. This is useful for waking up an entire drone swarm with
+  broadcast power-on commands.
+
 - The preferred geofence action can now be configured in the "Setup geofence"
   dialog box.
 
