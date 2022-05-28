@@ -1,38 +1,52 @@
 /**
- * @file Reducer function for handling the part of the state object that
+ * @file Redux slice for handling the part of the state object that
  * corresponds to the global error dialog.
  */
 
-import { handleActions } from 'redux-actions';
+import { createSlice } from '@reduxjs/toolkit';
+import { noPayload } from '~/utils/redux';
+
+import { errorToString } from '~/error-handling';
 
 /**
- * Default content of the part of the state object that corresponds to the
- * error dialog.
- */
-const defaultState = {
-  open: false,
-};
-
-/**
- * The reducer function that handles actions related to error messages and
+ * The reducer that handles actions related to error messages and
  * the global error dialog.
  */
-const reducer = handleActions(
-  {
-    CLOSE_ERROR_DIALOG: (state, action) => {
-      return Object.assign({}, state, {
-        open: false,
-      });
-    },
+const { reducer, actions } = createSlice({
+  name: 'error-handling',
 
-    SHOW_ERROR_MESSAGE: (state, action) => {
-      return Object.assign({}, state, {
-        message: action.payload,
-        open: true,
-      });
+  /**
+   * Default content of the part of the state object that corresponds to the
+   * error dialog.
+   */
+  initialState: {
+    open: false,
+  },
+
+  reducers: {
+    /**
+     * Action that will hide the global error dialog if it is open.
+     */
+    closeErrorDialog: noPayload((state) => {
+      state.open = false;
+    }),
+
+    /**
+     * Action that will show the given error message in the global error dialog.
+     */
+    showErrorMessage: {
+      prepare: (message, error) => ({
+        payload:
+          error instanceof Error
+            ? `${message}: ` + errorToString(error)
+            : message,
+      }),
+      reducer(state, action) {
+        state.open = true;
+        state.message = action.payload;
+      },
     },
   },
-  defaultState
-);
+});
 
-export default reducer;
+export { reducer as default, actions };
