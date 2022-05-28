@@ -4,27 +4,12 @@
  */
 
 import delay from 'delay';
-import { createAction } from 'redux-actions';
-import {
-  EDIT_SAVED_LOCATION,
-  CANCEL_LOCATION_EDITING,
-  CLOSE_SAVED_LOCATION_EDITOR_DIALOG,
-} from './types';
 
-/**
- * Action factory that creates an action that will open the saved location
- * editor dialog and set the identifier of the currently edited location.
- *
- * @param {number} id  the identifier of the saved location to edit
- */
-export const editSavedLocation = createAction(EDIT_SAVED_LOCATION, (id) => ({
-  id,
-}));
+import { actions } from '../features/saved-locations/editor.js';
 
-const cancelLocationEditingInner = createAction(CANCEL_LOCATION_EDITING);
-const closeSavedLocationEditorDialogInner = createAction(
-  CLOSE_SAVED_LOCATION_EDITOR_DIALOG
-);
+export const { editSavedLocation } = actions;
+
+const { _cancelLocationEditing, _closeSavedLocationEditorDialog } = actions;
 
 /**
  * Action factory that creates an action that cancels the saved location editor
@@ -33,7 +18,7 @@ const closeSavedLocationEditorDialogInner = createAction(
 export const cancelLocationEditing = () => async (dispatch) => {
   // This trickery is needed so we don't have "undefined" values briefly in the
   // saved location editor dialog when it is animated out of view
-  dispatch(closeSavedLocationEditorDialogInner());
+  dispatch(_closeSavedLocationEditorDialog());
   await delay(1000);
-  dispatch(cancelLocationEditingInner());
+  dispatch(_cancelLocationEditing());
 };

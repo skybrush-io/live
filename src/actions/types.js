@@ -2,12 +2,6 @@
  * @file Central repository of action type constants used in the app.
  */
 
-// Saved location related actions
-export const EDIT_SAVED_LOCATION = 'EDIT_SAVED_LOCATION';
-export const CANCEL_LOCATION_EDITING = 'CANCEL_LOCATION_EDITING';
-export const CLOSE_SAVED_LOCATION_EDITOR_DIALOG =
-  'CLOSE_SAVED_LOCATION_EDITOR_DIALOG';
-
 // Actions related to the "Messages" dialog
 export const CLOSE_MESSAGES_DIALOG = 'CLOSE_MESSAGES_DIALOG';
 export const SHOW_MESSAGES_DIALOG = 'SHOW_MESSAGES_DIALOG';
