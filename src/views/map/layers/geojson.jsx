@@ -80,7 +80,7 @@ class GeoJSONLayerSettingsPresentation extends React.Component {
             fullWidth
             label='GeoJSON data'
             placeholder='GeoJSON'
-            rowsMax={10}
+            maxRows={10}
             value={this.state.data}
             variant='filled'
             onChange={this._handleDataChange}

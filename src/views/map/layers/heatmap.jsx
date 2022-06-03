@@ -106,7 +106,7 @@ class HeatmapLayerSettingsPresentation extends React.Component {
         />
 
         <Button
-          variant='raised'
+          variant='contained'
           style={{ marginBottom: '10px' }}
           onClick={this._showSubscriptionDialog}
         >
