@@ -196,7 +196,6 @@ export const getAPIKeys = createSelector(
         String(value || DefaultAPIKeys[key]) || '';
     }
 
-    console.log(result);
     return result;
   }
 );
