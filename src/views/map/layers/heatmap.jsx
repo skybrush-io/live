@@ -22,7 +22,7 @@ import Switch from '@material-ui/core/Switch';
 import Select from '@material-ui/core/Select';
 import TextField from '@material-ui/core/TextField';
 
-import { setLayerParameterById } from '~/actions/layers';
+import { setLayerParametersById } from '~/actions/layers';
 import SubscriptionDialog from '~/components/dialogs/SubscriptionDialog';
 import messageHub from '~/message-hub';
 import HashedMap from '~/utils/hashedmap';
@@ -52,6 +52,7 @@ class HeatmapLayerSettingsPresentation extends React.Component {
     layerId: PropTypes.string,
 
     setLayerParameter: PropTypes.func,
+    setLayerParameters: PropTypes.func,
   };
 
   constructor(props) {
@@ -77,11 +78,11 @@ class HeatmapLayerSettingsPresentation extends React.Component {
     );
 
     this._setAutoScale = (event, checked) => {
-      this.props.setLayerParameter('autoScale', checked);
+      this.props.setLayerParameters({ autoScale: checked });
     };
 
     this._setSnapToGrid = (event, checked) => {
-      this.props.setLayerParameter('snapToGrid', checked);
+      this.props.setLayerParameters({ snapToGrid: checked });
     };
   }
 
@@ -256,7 +257,7 @@ class HeatmapLayerSettingsPresentation extends React.Component {
   };
 
   _handleClick = () => {
-    const layerParameters = {
+    this.props.setLayerParameters({
       threshold: toNumber(this._refs.threshold.current.value),
       coloringFunction: this.state.coloringFunction,
       minValue: toNumber(this._refs.minValue.current.value),
@@ -264,28 +265,17 @@ class HeatmapLayerSettingsPresentation extends React.Component {
       minHue: this.state.minHue,
       maxHue: this.state.maxHue,
       minDistance: toNumber(this._refs.minDistance.current.value),
-    };
-
-    for (const layerParameter in layerParameters) {
-      if (
-        Object.prototype.hasOwnProperty.call(layerParameters, layerParameter)
-      ) {
-        this.props.setLayerParameter(
-          layerParameter,
-          layerParameters[layerParameter]
-        );
-      }
-    }
+    });
   };
 
   _clearData = () => {
     window.localStorage.removeItem(`${this.props.layerId}_data`);
 
     this._refs.minValue.current.value = 0;
-    this.props.setLayerParameter('minValue', 0);
+    this.props.setLayerParameters({ minValue: 0 });
 
     this._refs.maxValue.current.value = 0;
-    this.props.setLayerParameter('maxValue', 0);
+    this.props.setLayerParameters({ maxValue: 0 });
   };
 }
 
@@ -294,8 +284,13 @@ export const HeatmapLayerSettings = connect(
   null,
   // mapDispatchToProps
   (dispatch, ownProps) => ({
-    setLayerParameter: (parameter, value) => {
-      dispatch(setLayerParameterById(ownProps.layerId, parameter, value));
+    setLayerParameters(parameters) {
+      dispatch(setLayerParametersById(ownProps.layerId, parameters));
+    },
+    setLayerParameter(parameter, value) {
+      dispatch(
+        setLayerParametersById(ownProps.layerId, { [parameter]: value })
+      );
     },
   })
 )(HeatmapLayerSettingsPresentation);
@@ -331,7 +326,7 @@ class HeatmapVectorSource extends React.Component {
     storageKey: PropTypes.string,
     parameters: PropTypes.object,
 
-    setLayerParameter: PropTypes.func,
+    setLayerParameters: PropTypes.func,
   };
 
   constructor(props) {
@@ -497,11 +492,11 @@ class HeatmapVectorSource extends React.Component {
               (this.props.parameters.minValue === 0 &&
                 this.props.parameters.maxValue === 0))
           ) {
-            this.props.setLayerParameter('minValue', data.value);
+            this.props.setLayerParameters({ minValue: data.value });
           }
 
           if (data.value > this.props.parameters.maxValue) {
-            this.props.setLayerParameter('maxValue', data.value);
+            this.props.setLayerParameters({ maxValue: data.value });
           }
         }
       }
@@ -539,7 +534,7 @@ class HeatmapLayerPresentation extends React.Component {
     layerId: PropTypes.string,
     zIndex: PropTypes.number,
 
-    setLayerParameter: PropTypes.func,
+    setLayerParameters: PropTypes.func,
   };
 
   constructor(props) {
@@ -590,7 +585,7 @@ class HeatmapLayerPresentation extends React.Component {
           <HeatmapVectorSource
             storageKey={`${this.props.layerId}_data`}
             parameters={this.props.layer.parameters}
-            setLayerParameter={this.props.setLayerParameter}
+            setLayerParameters={this.props.setLayerParameters}
           />
         </layer.Vector>
 
@@ -620,8 +615,8 @@ export const HeatmapLayer = connect(
   null,
   // mapDispatchToProps
   (dispatch, ownProps) => ({
-    setLayerParameter: (parameter, value) => {
-      dispatch(setLayerParameterById(ownProps.layerId, parameter, value));
+    setLayerParameters(parameters) {
+      dispatch(setLayerParametersById(ownProps.layerId, parameters));
     },
   })
 )(HeatmapLayerPresentation);

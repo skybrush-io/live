@@ -12,7 +12,7 @@ import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 
-import { setLayerParameterById } from '~/actions/layers';
+import { setLayerParametersById } from '~/actions/layers';
 import PopupColorPicker from '~/components/PopupColorPicker';
 import { showNotification } from '~/features/snackbar/slice';
 import { parseColor } from '~/utils/coloring';
@@ -25,7 +25,7 @@ class GeoJSONLayerSettingsPresentation extends React.Component {
   static propTypes = {
     layer: PropTypes.object,
 
-    setLayerParameter: PropTypes.func,
+    setLayerParameters: PropTypes.func,
     showMessage: PropTypes.func,
   };
 
@@ -101,11 +101,11 @@ class GeoJSONLayerSettingsPresentation extends React.Component {
   }
 
   _handleStrokeColorChange = (value) => {
-    this.props.setLayerParameter('strokeColor', value);
+    this.props.setLayerParameters({ strokeColor: value });
   };
 
   _handleFillColorChange = (value) => {
-    this.props.setLayerParameter('fillColor', value);
+    this.props.setLayerParameters({ fillColor: value });
   };
 
   _handleStrokeWidthChange = (event) => {
@@ -117,14 +117,13 @@ class GeoJSONLayerSettingsPresentation extends React.Component {
   };
 
   _handleClick = () => {
-    this.props.setLayerParameter(
-      'strokeWidth',
-      toNumber(this.state.strokeWidth)
-    );
+    this.props.setLayerParameters({
+      strokeWidth: toNumber(this.state.strokeWidth),
+    });
 
     try {
       const parsedData = JSON.parse(this.state.data);
-      this.props.setLayerParameter('data', parsedData);
+      this.props.setLayerParameters({ data: parsedData });
       this.props.showMessage({
         message: 'GeoJSON imported successfully.',
         semantics: 'success',
@@ -143,8 +142,8 @@ export const GeoJSONLayerSettings = connect(
   null,
   // mapDispatchToProps
   (dispatch, ownProps) => ({
-    setLayerParameter: (parameter, value) => {
-      dispatch(setLayerParameterById(ownProps.layerId, parameter, value));
+    setLayerParameters(parameters) {
+      dispatch(setLayerParametersById(ownProps.layerId, parameters));
     },
     showMessage: (message) => {
       dispatch(showNotification(message));

@@ -14,7 +14,7 @@ import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormGroup from '@material-ui/core/FormGroup';
 
-import { setLayerParameterById } from '~/actions/layers';
+import { setLayerParametersById } from '~/actions/layers';
 import Colors from '~/components/colors';
 import {
   getGPSBasedHomePositionsInMission,
@@ -58,7 +58,10 @@ import missionOriginMarker from '~/../assets/img/mission-origin-marker.svg';
 
 // === Settings for this particular layer type ===
 
-const MissionInfoLayerSettingsPresentation = ({ layer, setLayerParameter }) => {
+const MissionInfoLayerSettingsPresentation = ({
+  layer,
+  setLayerParameters,
+}) => {
   const { parameters } = layer;
   const {
     showConvexHull,
@@ -70,7 +73,7 @@ const MissionInfoLayerSettingsPresentation = ({ layer, setLayerParameter }) => {
   } = parameters || {};
 
   const handleChange = (name) => (event) =>
-    setLayerParameter(name, event.target.checked);
+    setLayerParameters({ [name]: event.target.checked });
 
   return (
     <FormGroup>
@@ -140,7 +143,7 @@ const MissionInfoLayerSettingsPresentation = ({ layer, setLayerParameter }) => {
 
 MissionInfoLayerSettingsPresentation.propTypes = {
   layer: PropTypes.object,
-  setLayerParameter: PropTypes.func,
+  setLayerParameters: PropTypes.func,
 };
 
 export const MissionInfoLayerSettings = connect(
@@ -152,8 +155,8 @@ export const MissionInfoLayerSettings = connect(
   }),
   // mapDispatchToProps
   (dispatch, ownProps) => ({
-    setLayerParameter: (parameter, value) => {
-      dispatch(setLayerParameterById(ownProps.layerId, parameter, value));
+    setLayerParameters(parameters) {
+      dispatch(setLayerParametersById(ownProps.layerId, parameters));
     },
   })
 )(MissionInfoLayerSettingsPresentation);

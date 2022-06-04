@@ -14,7 +14,7 @@ import TextField from '@material-ui/core/TextField';
 
 import { layer as olLayer, source } from '@collmot/ol-react';
 
-import { setLayerParameterById } from '~/actions/layers';
+import { setLayerParametersById } from '~/actions/layers';
 import { mapViewCoordinateFromLonLat } from '~/utils/geography';
 
 /**
@@ -34,7 +34,7 @@ class HexGridLayerSettingsPresentation extends React.Component {
   static propTypes = {
     layer: PropTypes.object,
 
-    setLayerParameter: PropTypes.func,
+    setLayerParameters: PropTypes.func,
   };
 
   constructor(props) {
@@ -90,18 +90,11 @@ class HexGridLayerSettingsPresentation extends React.Component {
   };
 
   _handleClick = () => {
-    const layerParameters = {
+    this.props.setLayerParameters({
       center: this._inputFields.center.value.split(',').map(toNumber),
       size: toNumber(this._inputFields.size.value),
       radius: toNumber(this._inputFields.radius.value),
-    };
-
-    for (const layerParameter of Object.keys(layerParameters)) {
-      this.props.setLayerParameter(
-        layerParameter,
-        layerParameters[layerParameter]
-      );
-    }
+    });
   };
 }
 
@@ -110,8 +103,8 @@ export const HexGridLayerSettings = connect(
   null,
   // mapDispatchToProps
   (dispatch, ownProps) => ({
-    setLayerParameter: (parameter, value) => {
-      dispatch(setLayerParameterById(ownProps.layerId, parameter, value));
+    setLayerParameters(parameters) {
+      dispatch(setLayerParametersById(ownProps.layerId, parameters));
     },
   })
 )(HexGridLayerSettingsPresentation);
