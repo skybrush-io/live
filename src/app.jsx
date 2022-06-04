@@ -20,6 +20,7 @@ import AppHotkeys from './features/hotkeys/AppHotkeys';
 import HotkeyDialog from './features/hotkeys/HotkeyDialog';
 import PendingUAVIdOverlay from './features/hotkeys/PendingUAVIdOverlay';
 import LicenseInfoDialog from './features/license-info/LicenseInfoDialog';
+import MapCachingDialog from './features/map-caching/MapCachingDialog';
 import CoordinateAveragingDialog from './features/measurement/CoordinateAveragingDialog';
 import ParameterUploadSetupDialog from './features/parameters/ParameterUploadSetupDialog';
 import SavedLocationEditorDialog from './features/saved-locations/SavedLocationEditorDialog';
@@ -136,6 +137,7 @@ const App = ({ onFirstRender }) => (
       <DockDetailsDialog />
       <HotkeyDialog />
       <LicenseInfoDialog />
+      <MapCachingDialog />
       <ParameterUploadSetupDialog />
       <RTKSetupDialog />
       <SavedLocationEditorDialog />

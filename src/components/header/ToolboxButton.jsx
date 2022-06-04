@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { connect } from 'react-redux';
 
 import ListItemText from '@material-ui/core/ListItemText';
+import Divider from '@material-ui/core/Divider';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import BusinessCenter from '@material-ui/icons/BusinessCenter';
@@ -12,10 +13,10 @@ import SidebarBadge from '@skybrush/mui-components/lib/SidebarBadge';
 
 import Colors from '~/components/colors';
 import { showLicenseInfoDialog } from '~/features/license-info/slice';
+import { showMapCachingDialog } from '~/features/map-caching/slice';
 import { getActiveUAVIdsBeingAveraged } from '~/features/measurement/selectors';
 import { showAveragingDialog } from '~/features/measurement/slice';
 import { showParameterUploadDialog } from '~/features/parameters/actions';
-import { isConnected } from '~/features/servers/selectors';
 import { isUploadInProgress } from '~/features/upload/selectors';
 import { showVersionCheckDialog } from '~/features/version-check/slice';
 
@@ -24,6 +25,7 @@ const ToolboxButtonPresentation = ({
   numberOfAveragingInProgress,
   showAveragingDialog,
   showLicenseInfoDialog,
+  showMapCachingDialog,
   showParameterUploadDialog,
 }) => {
   const [anchorElement, setAnchorElement] = useState(null);
@@ -73,12 +75,16 @@ const ToolboxButtonPresentation = ({
         {/*
         <MenuItem disabled>Firmware update</MenuItem>
         */}
+        <MenuItem onClick={createClickListener(showMapCachingDialog)}>
+          <ListItemText primary='Offline maps' />
+        </MenuItem>
         <MenuItem onClick={createClickListener(showParameterUploadDialog)}>
           <ListItemText
             primary='Parameter upload'
             secondary={isUploadInProgress ? 'Upload in progress' : undefined}
           />
         </MenuItem>
+        <Divider />
         <MenuItem onClick={createClickListener(showLicenseInfoDialog)}>
           <ListItemText primary='License info' />
         </MenuItem>
@@ -97,6 +103,7 @@ ToolboxButtonPresentation.propTypes = {
   isUploadInProgress: PropTypes.bool,
   numberOfAveragingInProgress: PropTypes.number,
   showAveragingDialog: PropTypes.func,
+  showMapCachingDialog: PropTypes.func,
   showParameterUploadDialog: PropTypes.func,
   showLicenseInfoDialog: PropTypes.func,
 };
@@ -104,7 +111,6 @@ ToolboxButtonPresentation.propTypes = {
 export default connect(
   // mapStateToProps
   (state) => ({
-    isConnectedToServer: isConnected(state),
     isUploadInProgress: isUploadInProgress(state),
     numberOfAveragingInProgress: getActiveUAVIdsBeingAveraged(state).length,
   }),
@@ -112,6 +118,7 @@ export default connect(
   {
     showAveragingDialog,
     showLicenseInfoDialog,
+    showMapCachingDialog,
     showParameterUploadDialog,
     showVersionCheckDialog,
   }

@@ -1,14 +1,19 @@
-import { layer as olLayer, source } from '@collmot/ol-react';
 import MVTFormat from 'ol/format/MVT';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
+import { createSelector } from '@reduxjs/toolkit';
+
+import { layer as olLayer, source } from '@collmot/ol-react';
 
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 
 import { selectMapSource } from '~/actions/map';
+import { isMapCachingEnabled } from '~/features/map-caching/selectors';
+import { getServerUrl, supportsMapCaching } from '~/features/servers/selectors';
+import { getAPIKeys } from '~/features/settings/selectors';
 import {
   Source,
   Sources,
@@ -95,10 +100,11 @@ LayerType.propTypes = {
   zIndex: PropTypes.number,
 };
 
-const createMapTilerSource = (name, tileSize, apiKey) => (
+const createMapTilerSource = (name, { tileLoadFunction, tileSize, apiKey }) => (
   <source.TileJSON
     crossOrigin='anonymous'
     tileSize={tileSize}
+    tileLoadFunction={tileLoadFunction}
     url={`https://api.maptiler.com/${name}/tiles.json?key=${apiKey}`}
   />
 );
@@ -113,7 +119,7 @@ const createMapTilerVectorSource = (apiKey) => (
 );
 */
 
-const LayerSource = ({ apiKeys, type }) => {
+const LayerSourcePresentation = ({ apiKeys, tileLoadFunction, type }) => {
   const attributions = attributionsForSource(type);
 
   switch (type) {
@@ -122,6 +128,7 @@ const LayerSource = ({ apiKeys, type }) => {
         <source.XYZ
           attributions={attributions}
           tileSize={512}
+          tileLoadFunction={tileLoadFunction}
           url={`https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/512/{z}/{x}/{y}@2x?access_token=${apiKeys.MAPBOX}`}
         />
       );
@@ -131,6 +138,7 @@ const LayerSource = ({ apiKeys, type }) => {
         <source.XYZ
           attributions={attributions}
           tileSize={512}
+          tileLoadFunction={tileLoadFunction}
           url={`https://api.mapbox.com/v4/mapbox.satellite/{z}/{x}/{y}@2x.jpg90?access_token=${apiKeys.MAPBOX}`}
         />
       );
@@ -142,6 +150,7 @@ const LayerSource = ({ apiKeys, type }) => {
         <source.VectorTile
           attributions={attributions}
           format={mvtFormat}
+          tileLoadFunction={tileLoadFunction}
           url={`https://{a-d}.tiles.mapbox.com/v4/mapbox.mapbox-streets-v8/{z}/{x}/{y}.vector.pbf?access_token=${apiKeys.MAPBOX}`}
         />
       );
@@ -149,20 +158,36 @@ const LayerSource = ({ apiKeys, type }) => {
     case Source.MAPTILER.BASIC:
       // TODO(ntamas): this would probably look better in vector format; we need
       // a proper styling function for it
-      return createMapTilerSource('maps/basic', 512, apiKeys.MAPTILER);
+      return createMapTilerSource('maps/basic', {
+        tileSize: 512,
+        apiKey: apiKeys.MAPTILER,
+        tileLoadFunction,
+      });
 
     case Source.MAPTILER.HYBRID:
       // TODO(ntamas): this would probably look better in vector format; we need
       // a proper styling function for it
-      return createMapTilerSource('maps/hybrid', 512, apiKeys.MAPTILER);
+      return createMapTilerSource('maps/hybrid', {
+        tileSize: 512,
+        apiKey: apiKeys.MAPTILER,
+        tileLoadFunction,
+      });
 
     case Source.MAPTILER.SATELLITE:
-      return createMapTilerSource('tiles/satellite', 256, apiKeys.MAPTILER);
+      return createMapTilerSource('tiles/satellite', {
+        tileSize: 256,
+        apiKey: apiKeys.MAPTILER,
+        tileLoadFunction,
+      });
 
     case Source.MAPTILER.STREETS:
       // TODO(ntamas): this would probably look better in vector format; we need
       // a proper styling function for it
-      return createMapTilerSource('maps/streets', 512, apiKeys.MAPTILER);
+      return createMapTilerSource('maps/streets', {
+        tileSize: 512,
+        apiKey: apiKeys.MAPTILER,
+        tileLoadFunction,
+      });
 
     case Source.NEXTZEN:
       // TODO(ntamas): this is not quite ready; the Mapbox styling function does
@@ -172,19 +197,24 @@ const LayerSource = ({ apiKeys, type }) => {
           attributions={attributions}
           format={mvtFormat}
           maxZoom={16}
+          tileLoadFunction={tileLoadFunction}
           url={`https://tile.nextzen.org/tilezen/vector/v1/512/all/{z}/{x}/{y}.mvt?api_key=${apiKeys.NEXTZEN}`}
         />
       );
 
     case Source.OSM:
       return (
-        <source.OSM url='https://{a-c}.tile.skybrush.io/osm/{z}/{x}/{y}.png' />
+        <source.OSM
+          tileLoadFunction={tileLoadFunction}
+          url='https://{a-c}.tile.skybrush.io/osm/{z}/{x}/{y}.png'
+        />
       );
 
     case Source.STAMEN.TERRAIN:
       return (
         <source.XYZ
           attributions={attributions}
+          tileLoadFunction={tileLoadFunction}
           url='https://stamen-tiles-{a-d}.a.ssl.fastly.net/terrain/{z}/{x}/{y}.jpg'
         />
       );
@@ -193,6 +223,7 @@ const LayerSource = ({ apiKeys, type }) => {
       return (
         <source.XYZ
           attributions={attributions}
+          tileLoadFunction={tileLoadFunction}
           url='https://stamen-tiles-{a-d}.a.ssl.fastly.net/toner/{z}/{x}/{y}.png'
         />
       );
@@ -201,18 +232,25 @@ const LayerSource = ({ apiKeys, type }) => {
       return (
         <source.XYZ
           attributions={attributions}
+          tileLoadFunction={tileLoadFunction}
           url='https://stamen-tiles-{a-d}.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.jpg'
         />
       );
 
     case Source.GOOGLE_MAPS.DEFAULT:
       return (
-        <source.XYZ url='https://mt1.google.com/vt/lyrs=r&x={x}&y={y}&z={z}' />
+        <source.XYZ
+          tileLoadFunction={tileLoadFunction}
+          url='https://mt1.google.com/vt/lyrs=r&x={x}&y={y}&z={z}'
+        />
       );
 
     case Source.GOOGLE_MAPS.SATELLITE:
       return (
-        <source.XYZ url='https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}' />
+        <source.XYZ
+          tileLoadFunction={tileLoadFunction}
+          url='https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}'
+        />
       );
 
     case Source.BING_MAPS.AERIAL_WITH_LABELS:
@@ -232,19 +270,64 @@ const LayerSource = ({ apiKeys, type }) => {
   }
 };
 
-LayerSource.propTypes = {
-  type: PropTypes.string,
+LayerSourcePresentation.propTypes = {
   apiKeys: PropTypes.object,
+  tileLoadFunction: PropTypes.func,
+  type: PropTypes.string,
 };
 
-export const BaseLayer = ({ apiKeys, layer, zIndex }) => (
+/**
+ * Default tile loader function that loads a tile from the given URL and assigns
+ * it to the given image tile.
+ */
+function loadTile(imageTile, url) {
+  imageTile.getImage().src = url;
+}
+
+/**
+ * Function that takes the URL of the server, and returns another function that
+ * loads tiles into an OpenLayers layer in a way that passes through the
+ * server caches.
+ */
+function getCachedTileLoader(serverUrl) {
+  return (imageTile, url) => {
+    const cachedUrl = `${serverUrl}/map-cache/_?url=` + encodeURIComponent(url);
+    loadTile(imageTile, cachedUrl);
+  };
+}
+
+/**
+ * Selector that returns a function that takes an image tile and a URL and loads
+ * the tile at the given URL to the given image tile, optionally piping it
+ * through the map cache of the server.
+ */
+const getMapTileLoaderFunction = createSelector(
+  isMapCachingEnabled,
+  supportsMapCaching,
+  getServerUrl,
+  (cachingEnabled, cachingSupported, serverUrl) =>
+    cachingEnabled && cachingSupported
+      ? getCachedTileLoader(serverUrl)
+      : loadTile
+);
+
+const LayerSource = connect(
+  // mapStateToProps
+  (state) => ({
+    apiKeys: getAPIKeys(state),
+    tileLoadFunction: getMapTileLoaderFunction(state),
+  }),
+  // mapDispatchToProps
+  {}
+)(LayerSourcePresentation);
+
+export const BaseLayer = ({ layer, zIndex }) => (
   <LayerType type={layer.parameters.source} zIndex={zIndex}>
-    <LayerSource type={layer.parameters.source} apiKeys={apiKeys} />
+    <LayerSource type={layer.parameters.source} />
   </LayerType>
 );
 
 BaseLayer.propTypes = {
-  apiKeys: PropTypes.object,
   layer: PropTypes.object,
   zIndex: PropTypes.number,
 };

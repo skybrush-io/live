@@ -16,6 +16,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   are advised to register your own API key to ensure access to map tiles from
   these providers.
 
+- Skybrush Server users with the offline maps extension can now benefit from
+  server-side cached map tiles, which are extremely useful when you are running
+  field tests without Internet access. All it takes is to load the map of the
+  test area from Skybrush Live with the cache enabled and zooming in and out a
+  bit to cover all zoom levels; the server will then remember the downloaded
+  tiles and serve them to you even if you have no Internet access. Note that
+  the server-side caching is not available in the community edition of the
+  server; you will need one of the premium editions.
+
 ## [2.1.0] - 2022-05-27
 
 ### Added
