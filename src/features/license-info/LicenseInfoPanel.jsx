@@ -62,15 +62,17 @@ const LicenseInfoPanelPresentation = ({
           <ListItemText primary='Name of license holder' secondary={licensee} />
         </ListItem>
       )}
-      <ListItem disableGutters>
-        <ListItemIcon>
-          <Event />
-        </ListItemIcon>
-        <ListItemText
-          primary='Expiry date'
-          secondary={expiryDate || 'This license never expires'}
-        />
-      </ListItem>
+      {id && (
+        <ListItem disableGutters>
+          <ListItemIcon>
+            <Event />
+          </ListItemIcon>
+          <ListItemText
+            primary='Expiry date'
+            secondary={expiryDate || 'This license never expires'}
+          />
+        </ListItem>
+      )}
       {restrictionItems.length > 0 && <Divider />}
       {restrictionItems}
     </List>
