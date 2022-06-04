@@ -27,7 +27,7 @@ import {
   isTimeSyncWarningDialogVisible,
 } from '~/features/servers/selectors';
 import {
-  addServerFeature,
+  addServerFeatures,
   clearTimeSyncStatistics,
   clearServerFeatures,
   openTimeSyncWarningDialog,
@@ -389,12 +389,18 @@ async function executeTasksAfterConnection(dispatch, getState) {
       handleBeaconPropertiesMessage(response.body, dispatch);
     }
 
-    // Check if the server supports virtual drones
-    const supportsVirtualDrones = await messageHub.query.isExtensionLoaded(
-      'virtual_uavs'
-    );
-    if (supportsVirtualDrones) {
-      dispatch(addServerFeature('virtual_uavs'));
+    // Check whether the server supports virtual drones and map caching
+    const features = [];
+    for (const feature of ['virtual_uavs', 'map_cache']) {
+      // eslint-disable-next-line no-await-in-loop
+      const supported = await messageHub.query.isExtensionLoaded(feature);
+      if (supported) {
+        features.push(feature);
+      }
+    }
+
+    if (features.length > 0) {
+      dispatch(addServerFeatures(features));
     }
 
     // Check if the server supports drone show execution, and if so,

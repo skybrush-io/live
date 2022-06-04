@@ -138,7 +138,7 @@ const { actions, reducer } = createSlice({
         payload: { category, updates },
       }),
 
-      reducer: (state, action) => {
+      reducer(state, action) {
         const { category, updates } = action.payload;
 
         if (state[category] !== undefined) {
@@ -167,7 +167,7 @@ const { actions, reducer } = createSlice({
         payload: { category, updates },
       }),
 
-      reducer: (state, action) => {
+      reducer(state, action) {
         const { category, updates } = action.payload;
 
         if (state[category] !== undefined) {

@@ -100,17 +100,23 @@ const { actions, reducer } = createSlice({
     },
 
     /**
-     * Adds a new feature to the list of features supported by the server.
+     * Adds one or more new features to the list of features supported by the server.
      */
-    addServerFeature(state, action) {
+    addServerFeatures(state, action) {
       let { payload } = action;
 
-      if (typeof payload !== 'object') {
-        payload = { name: String(payload), data: true };
+      if (!Array.isArray(payload)) {
+        payload = [payload];
       }
 
-      const { name, data } = payload;
-      state.current.features[name] = data;
+      for (let item of payload) {
+        if (typeof item !== 'object') {
+          item = { name: String(item), data: true };
+        }
+
+        const { name, data } = item;
+        state.current.features[name] = data;
+      }
     },
 
     /**
@@ -330,7 +336,7 @@ const { actions, reducer } = createSlice({
 export const {
   addDetectedServer,
   addInferredServer,
-  addServerFeature,
+  addServerFeatures,
   authenticateToServerPromiseFulfilled,
   authenticateToServerPromisePending,
   authenticateToServerPromiseRejected,

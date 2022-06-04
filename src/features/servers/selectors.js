@@ -189,10 +189,15 @@ const makeSupportsFeatureSelector = (name) =>
   );
 
 /**
- * Returns whehther the server we are connected to supports virtual drones.
+ * Returns whether the server we are connected to supports virtual drones.
  */
 export const supportsVirtualDrones =
   makeSupportsFeatureSelector('virtual_uavs');
+
+/**
+ * Returns whether the server we are connected to supports offline map caching.
+ */
+export const supportsMapCaching = makeSupportsFeatureSelector('map_cache');
 
 /**
  * Returns whether the server requires the user to authenticate before
