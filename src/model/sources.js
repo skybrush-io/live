@@ -43,6 +43,8 @@ export const Source = {
  */
 export const Sources = [Source.OSM, Source.STAMEN.TERRAIN];
 
+// We add Mapbox, Maptiler, Bing Maps and Google Maps map sources only if we
+// have at least a default API key for them. This might change in the future.
 if (APIKeys.MAPBOX) {
   Sources.push(Source.MAPBOX.STATIC, Source.MAPBOX.SATELLITE);
   // MAPBOX.VECTOR does not look great with OpenLayers -- we would need the
@@ -59,14 +61,18 @@ if (APIKeys.MAPTILER) {
 
 /* Nextzen tiles do not look nice because we don't have a styling function for it */
 
-/* Google and Bing Maps cannot be used in commercial apps without licensing */
+/* Google and Bing Maps cannot be used in commercial apps without licensing so
+ * this branch is currently disabled */
 
-if (APIKeys.BING) {
-  Sources.push(Source.BING_MAPS.AERIAL_WITH_LABELS, Source.BING_MAPS.ROAD);
-}
+// eslint-disable-next-line no-constant-condition
+if (false) {
+  if (APIKeys.BING) {
+    Sources.push(Source.BING_MAPS.AERIAL_WITH_LABELS, Source.BING_MAPS.ROAD);
+  }
 
-if (APIKeys.GOOGLE) {
-  Sources.push(Source.GOOGLE_MAPS.DEFAULT, Source.GOOGLE_MAPS.SATELLITE);
+  if (APIKeys.GOOGLE) {
+    Sources.push(Source.GOOGLE_MAPS.DEFAULT, Source.GOOGLE_MAPS.SATELLITE);
+  }
 }
 
 const attributions = {

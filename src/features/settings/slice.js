@@ -128,6 +128,8 @@ const { actions, reducer } = createSlice({
       // Whether to prefer percentages or voltages when showing the battery status
       preferredBatteryDisplayStyle: BatteryDisplayStyle.VOLTAGE,
     },
+
+    apiKeys: {},
   },
 
   reducers: {

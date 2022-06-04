@@ -9,7 +9,6 @@ import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 
 import { selectMapSource } from '~/actions/map';
-import APIKeys from '~/api-keys';
 import {
   Source,
   Sources,
@@ -52,7 +51,7 @@ export const BaseLayerSettings = connect(
   null,
   // mapDispatchToProps
   (dispatch, ownProps) => ({
-    onLayerSourceChanged: (event, value) => {
+    onLayerSourceChanged(_event, value) {
       dispatch(selectMapSource({ layerId: ownProps.layerId, source: value }));
     },
   })
@@ -96,25 +95,25 @@ LayerType.propTypes = {
   zIndex: PropTypes.number,
 };
 
-const createMapTilerSource = (name, tileSize = 256) => (
+const createMapTilerSource = (name, tileSize, apiKey) => (
   <source.TileJSON
     crossOrigin='anonymous'
     tileSize={tileSize}
-    url={`https://api.maptiler.com/${name}/tiles.json?key=${APIKeys.MAPTILER}`}
+    url={`https://api.maptiler.com/${name}/tiles.json?key=${apiKey}`}
   />
 );
 
 /*
-const createMapTilerVectorSource = () => (
+const createMapTilerVectorSource = (apiKey) => (
   <source.VectorTile
     crossOrigin="anonymous"
     format={mvtFormat}
-    url={`https://api.maptiler.com/tiles/v3/{z}/{x}/{y}.pbf?key=${APIKeys.MAPTILER}`}
+    url={`https://api.maptiler.com/tiles/v3/{z}/{x}/{y}.pbf?key=${apiKey}`}
   />
 );
 */
 
-const LayerSource = ({ type }) => {
+const LayerSource = ({ apiKeys, type }) => {
   const attributions = attributionsForSource(type);
 
   switch (type) {
@@ -123,7 +122,7 @@ const LayerSource = ({ type }) => {
         <source.XYZ
           attributions={attributions}
           tileSize={512}
-          url={`https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/512/{z}/{x}/{y}@2x?access_token=${APIKeys.MAPBOX}`}
+          url={`https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/512/{z}/{x}/{y}@2x?access_token=${apiKeys.MAPBOX}`}
         />
       );
 
@@ -132,7 +131,7 @@ const LayerSource = ({ type }) => {
         <source.XYZ
           attributions={attributions}
           tileSize={512}
-          url={`https://api.mapbox.com/v4/mapbox.satellite/{z}/{x}/{y}@2x.jpg90?access_token=${APIKeys.MAPBOX}`}
+          url={`https://api.mapbox.com/v4/mapbox.satellite/{z}/{x}/{y}@2x.jpg90?access_token=${apiKeys.MAPBOX}`}
         />
       );
 
@@ -143,27 +142,27 @@ const LayerSource = ({ type }) => {
         <source.VectorTile
           attributions={attributions}
           format={mvtFormat}
-          url={`https://{a-d}.tiles.mapbox.com/v4/mapbox.mapbox-streets-v8/{z}/{x}/{y}.vector.pbf?access_token=${APIKeys.MAPBOX}`}
+          url={`https://{a-d}.tiles.mapbox.com/v4/mapbox.mapbox-streets-v8/{z}/{x}/{y}.vector.pbf?access_token=${apiKeys.MAPBOX}`}
         />
       );
 
     case Source.MAPTILER.BASIC:
       // TODO(ntamas): this would probably look better in vector format; we need
       // a proper styling function for it
-      return createMapTilerSource('maps/basic', 512);
+      return createMapTilerSource('maps/basic', 512, apiKeys.MAPTILER);
 
     case Source.MAPTILER.HYBRID:
       // TODO(ntamas): this would probably look better in vector format; we need
       // a proper styling function for it
-      return createMapTilerSource('maps/hybrid', 512);
+      return createMapTilerSource('maps/hybrid', 512, apiKeys.MAPTILER);
 
     case Source.MAPTILER.SATELLITE:
-      return createMapTilerSource('tiles/satellite', 256);
+      return createMapTilerSource('tiles/satellite', 256, apiKeys.MAPTILER);
 
     case Source.MAPTILER.STREETS:
       // TODO(ntamas): this would probably look better in vector format; we need
       // a proper styling function for it
-      return createMapTilerSource('maps/streets', 512);
+      return createMapTilerSource('maps/streets', 512, apiKeys.MAPTILER);
 
     case Source.NEXTZEN:
       // TODO(ntamas): this is not quite ready; the Mapbox styling function does
@@ -173,7 +172,7 @@ const LayerSource = ({ type }) => {
           attributions={attributions}
           format={mvtFormat}
           maxZoom={16}
-          url={`https://tile.nextzen.org/tilezen/vector/v1/512/all/{z}/{x}/{y}.mvt?api_key=${APIKeys.NEXTZEN}`}
+          url={`https://tile.nextzen.org/tilezen/vector/v1/512/all/{z}/{x}/{y}.mvt?api_key=${apiKeys.NEXTZEN}`}
         />
       );
 
@@ -219,14 +218,14 @@ const LayerSource = ({ type }) => {
     case Source.BING_MAPS.AERIAL_WITH_LABELS:
       return (
         <source.BingMaps
-          apiKey={APIKeys.BING}
+          apiKey={apiKeys.BING}
           imagerySet='AerialWithLabels'
           maxZoom={19}
         />
       );
 
     case Source.BING_MAPS.ROAD:
-      return <source.BingMaps apiKey={APIKeys.BING} imagerySet='Road' />;
+      return <source.BingMaps apiKey={apiKeys.BING} imagerySet='Road' />;
 
     default:
       return null;
@@ -235,15 +234,17 @@ const LayerSource = ({ type }) => {
 
 LayerSource.propTypes = {
   type: PropTypes.string,
+  apiKeys: PropTypes.object,
 };
 
-export const BaseLayer = ({ layer, zIndex }) => (
+export const BaseLayer = ({ apiKeys, layer, zIndex }) => (
   <LayerType type={layer.parameters.source} zIndex={zIndex}>
-    <LayerSource type={layer.parameters.source} />
+    <LayerSource type={layer.parameters.source} apiKeys={apiKeys} />
   </LayerType>
 );
 
 BaseLayer.propTypes = {
+  apiKeys: PropTypes.object,
   layer: PropTypes.object,
   zIndex: PropTypes.number,
 };

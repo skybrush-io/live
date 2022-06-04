@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- You can now provide your own API keys to access Mapbox and Maptiler tile
+  services. In the absence of an API key, Skybrush Live falls back to using an
+  API key that is shared between all users of Skybrush Live. No guarantees are
+  made regarding the availability of map tiles with the shared API keys, so you
+  are advised to register your own API key to ensure access to map tiles from
+  these providers.
+
 ## [2.1.0] - 2022-05-27
 
 ### Added

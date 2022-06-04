@@ -5,13 +5,11 @@ import { Form } from 'react-final-form';
 import { connect } from 'react-redux';
 
 import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
+import Typography from '@material-ui/core/Typography';
 
-import LabeledStatusLight from '@skybrush/mui-components/lib/LabeledStatusLight';
-
+import FormSubmissionButtonRow from '~/components/forms/FormSubmissionButtonRow';
 import { updateManualPreflightCheckItemsFromString } from '~/features/preflight/actions';
 import { getFormattedHeadersAndItems } from '~/features/preflight/selectors';
-import { Typography } from '@material-ui/core';
 
 const PreflightTabPresentation = ({ items, onSubmit }) => (
   <Form initialValues={{ items }} onSubmit={onSubmit}>
@@ -31,19 +29,12 @@ const PreflightTabPresentation = ({ items, onSubmit }) => (
             helperText='Lines ending with a colon (:) become headings.'
           />
         </Box>
-        <Box display='flex' flexDirection='row'>
-          <LabeledStatusLight status={dirty ? 'warning' : 'success'}>
-            {dirty
-              ? 'Preflight check items changed; do not forget to save.'
-              : 'Preflight check items saved.'}
-          </LabeledStatusLight>
-          <Button disabled={!dirty} onClick={() => form.reset()}>
-            Reset
-          </Button>
-          <Button color='primary' disabled={!dirty} onClick={handleSubmit}>
-            Save
-          </Button>
-        </Box>
+        <FormSubmissionButtonRow
+          label='Preflight check items'
+          dirty={dirty}
+          form={form}
+          onSubmit={handleSubmit}
+        />
       </Box>
     )}
   </Form>

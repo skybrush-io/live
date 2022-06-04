@@ -1,5 +1,6 @@
 import { createSelector } from '@reduxjs/toolkit';
 
+import DefaultAPIKeys from '~/api-keys';
 import { BatteryFormatter } from '~/components/battery';
 import { BatterySettings } from '~/model/battery';
 import {
@@ -179,3 +180,23 @@ export const isShowingMissionIds = (state) =>
  */
 export const areExperimentalFeaturesEnabled = (state) =>
   state.settings.display?.experimentalFeaturesEnabled;
+
+/**
+ * Returns an object mapping service identifiers to their API keys.
+ */
+export const getAPIKeys = createSelector(
+  (state) => state.settings.apiKeys,
+  (apiKeys) => {
+    const result = {};
+    for (const [key, value] of Object.entries({
+      ...DefaultAPIKeys,
+      ...apiKeys,
+    })) {
+      result[String(key).toUpperCase()] =
+        String(value || DefaultAPIKeys[key]) || '';
+    }
+
+    console.log(result);
+    return result;
+  }
+);

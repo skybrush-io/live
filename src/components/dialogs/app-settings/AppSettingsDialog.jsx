@@ -8,6 +8,7 @@ import Tab from '@material-ui/core/Tab';
 
 import DialogTabs from '@skybrush/mui-components/lib/DialogTabs';
 
+import APIKeysTab from './APIKeysTab';
 import DisplayTab from './DisplayTab';
 import PreflightTab from './PreflightTab';
 import ServerTab from './ServerTab';
@@ -22,6 +23,7 @@ import {
 /* ===================================================================== */
 
 const tabNameToComponent = {
+  apiKeys: <APIKeysTab />,
   display: <DisplayTab />,
   preflight: <PreflightTab />,
   server: <ServerTab />,
@@ -48,6 +50,7 @@ const AppSettingsDialogPresentation = ({
       {window.bridge && window.bridge.isElectron ? (
         <Tab value='server' label='Server' />
       ) : null}
+      <Tab value='apiKeys' label='API keys' />
     </DialogTabs>
     <DialogContent style={{ minHeight: 200 }}>
       {tabNameToComponent[selectedTab]}

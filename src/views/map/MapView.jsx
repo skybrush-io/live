@@ -27,6 +27,7 @@ import {
   addFeature,
   showDetailsForFeatureInTooltipOrGivenFeature,
 } from '~/features/map-features/actions';
+import { getAPIKeys } from '~/features/settings/selectors';
 import NearestItemTooltip from '~/features/session/NearestItemTooltip';
 import { setFeatureIdForTooltip } from '~/features/session/slice';
 import mapViewManager from '~/mapViewManager';
@@ -71,6 +72,7 @@ import 'ol/ol.css';
  * @returns {JSX.Node[]}  the layers of the map
  */
 const MapViewLayersPresentation = ({
+  apiKeys,
   layers,
   onFeaturesModified,
   selectedTool,
@@ -82,6 +84,7 @@ const MapViewLayersPresentation = ({
     if (layer.type in Layers) {
       renderedLayers.push(
         stateObjectToLayer(layer, {
+          apiKeys,
           onFeaturesModified,
           selectedTool,
           zIndex,
@@ -95,6 +98,7 @@ const MapViewLayersPresentation = ({
 };
 
 MapViewLayersPresentation.propTypes = {
+  apiKeys: PropTypes.object,
   layers: PropTypes.arrayOf(PropTypes.object),
   onFeaturesModified: PropTypes.func,
   selectedTool: PropTypes.string.isRequired,
@@ -106,6 +110,7 @@ MapViewLayersPresentation.propTypes = {
 const MapViewLayers = connect(
   // mapStateToProps
   (state) => ({
+    apiKeys: getAPIKeys(state),
     layers: getVisibleLayersInOrder(state),
     selectedTool: state.map.tools.selectedTool,
   })
