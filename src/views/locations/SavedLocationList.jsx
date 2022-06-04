@@ -32,7 +32,10 @@ const LocationListEntry = (props) => {
 
   const editLocation = () => onEditItem(id);
   const scrollToLocation = () =>
-    scrollToMapLocation(location.center, { rotation: location.rotation });
+    scrollToMapLocation(location.center, {
+      rotation: location.rotation,
+      zoom: location.zoom,
+    });
 
   const actionButton = (
     <Tooltip content='Edit location'>

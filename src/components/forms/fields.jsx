@@ -141,13 +141,14 @@ export const PasswordField = (props) => (
  * Numeric field that can be placed in a `react-final-form` form and that accepts
  * angles in the range [0; 360].
  */
-export const AngleField = ({ InputProps, ...rest }) => (
+export const AngleField = ({ InputProps, max, min, step, ...rest }) => (
   <TextField
     type='number'
     InputProps={{
       endAdornment: <InputAdornment position='end'>degrees</InputAdornment>,
       ...InputProps,
     }}
+    inputProps={{ max, min, step }}
     {...rest}
   />
 );

@@ -58,7 +58,7 @@ export function fitCoordinatesIntoMapView(coordinates, options) {
  *         conventions.
  */
 export function scrollToMapLocation(coordinate, options = {}) {
-  const { rotation, ...rest } = options;
+  const { rotation, zoom, ...rest } = options;
   const signalOptions = {
     duration: 500,
     ...rest,
@@ -76,6 +76,10 @@ export function scrollToMapLocation(coordinate, options = {}) {
 
     if (Number.isFinite(rotation)) {
       signalArgs.rotation = Number(rotation).toFixed(1);
+    }
+
+    if (Number.isFinite(zoom)) {
+      signalArgs.zoom = Number(zoom).toFixed(1);
     }
 
     mapViewToLocationSignal.dispatch(signalArgs, signalOptions);

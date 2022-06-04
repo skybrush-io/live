@@ -90,6 +90,8 @@ const SavedLocationEditorFormPresentation = ({
             <Box p={0.75} />
             <TextField
               fullWidth
+              type='number'
+              inputProps={{ min: 1, max: 30 }}
               margin='dense'
               name='zoom'
               label='Zoom level'
