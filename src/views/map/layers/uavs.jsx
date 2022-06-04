@@ -7,7 +7,7 @@ import Header from '@skybrush/mui-components/lib/FormHeader';
 
 import ActiveUAVsLayerSource from '../sources/ActiveUAVsLayerSource';
 
-import { setLayerParameterById } from '~/actions/layers';
+import { setLayerParametersById } from '~/actions/layers';
 import SwatchesColorPicker from '~/components/SwatchesColorPicker';
 import flock from '~/flock';
 import { getSelection } from '~/selectors/selection';
@@ -15,15 +15,15 @@ import { mapViewCoordinateFromLonLat } from '~/utils/geography';
 
 // === Settings for this particular layer type ===
 
-const UAVsLayerSettingsPresentation = ({ layer, setLayerParameter }) => {
+const UAVsLayerSettingsPresentation = ({ layer, setLayerParameters }) => {
   const { parameters } = layer;
   const { labelColor } = parameters || {};
 
   const onColorChanged = useCallback(
     (color) => {
-      setLayerParameter('labelColor', color.hex);
+      setLayerParameters({ labelColor: color.hex });
     },
-    [setLayerParameter]
+    [setLayerParameters]
   );
 
   return (
@@ -39,7 +39,7 @@ const UAVsLayerSettingsPresentation = ({ layer, setLayerParameter }) => {
 
 UAVsLayerSettingsPresentation.propTypes = {
   layer: PropTypes.object,
-  setLayerParameter: PropTypes.func,
+  setLayerParameters: PropTypes.func,
 };
 
 export const UAVsLayerSettings = connect(
@@ -47,8 +47,8 @@ export const UAVsLayerSettings = connect(
   null,
   // mapDispatchToProps
   (dispatch, ownProps) => ({
-    setLayerParameter: (parameter, value) => {
-      dispatch(setLayerParameterById(ownProps.layerId, parameter, value));
+    setLayerParameters(parameters) {
+      dispatch(setLayerParametersById(ownProps.layerId, parameters));
     },
   })
 )(UAVsLayerSettingsPresentation);
