@@ -100,25 +100,6 @@ LayerType.propTypes = {
   zIndex: PropTypes.number,
 };
 
-const createMapTilerSource = (name, { tileLoadFunction, tileSize, apiKey }) => (
-  <source.TileJSON
-    crossOrigin='anonymous'
-    tileSize={tileSize}
-    tileLoadFunction={tileLoadFunction}
-    url={`https://api.maptiler.com/${name}/tiles.json?key=${apiKey}`}
-  />
-);
-
-/*
-const createMapTilerVectorSource = (apiKey) => (
-  <source.VectorTile
-    crossOrigin="anonymous"
-    format={mvtFormat}
-    url={`https://api.maptiler.com/tiles/v3/{z}/{x}/{y}.pbf?key=${apiKey}`}
-  />
-);
-*/
-
 const LayerSourcePresentation = ({ apiKeys, tileLoadFunction, type }) => {
   const attributions = attributionsForSource(type);
 
@@ -127,6 +108,7 @@ const LayerSourcePresentation = ({ apiKeys, tileLoadFunction, type }) => {
       return (
         <source.XYZ
           attributions={attributions}
+          tilePixelRatio={2}
           tileSize={512}
           tileLoadFunction={tileLoadFunction}
           url={`https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/512/{z}/{x}/{y}@2x?access_token=${apiKeys.MAPBOX}`}
@@ -137,6 +119,7 @@ const LayerSourcePresentation = ({ apiKeys, tileLoadFunction, type }) => {
       return (
         <source.XYZ
           attributions={attributions}
+          tilePixelRatio={2}
           tileSize={512}
           tileLoadFunction={tileLoadFunction}
           url={`https://api.mapbox.com/v4/mapbox.satellite/{z}/{x}/{y}@2x.jpg90?access_token=${apiKeys.MAPBOX}`}
@@ -156,38 +139,44 @@ const LayerSourcePresentation = ({ apiKeys, tileLoadFunction, type }) => {
       );
 
     case Source.MAPTILER.BASIC:
-      // TODO(ntamas): this would probably look better in vector format; we need
-      // a proper styling function for it
-      return createMapTilerSource('maps/basic', {
-        tileSize: 512,
-        apiKey: apiKeys.MAPTILER,
-        tileLoadFunction,
-      });
+      return (
+        <source.XYZ
+          tileLoadFunction={tileLoadFunction}
+          tilePixelRatio={2}
+          tileSize={512}
+          url={`https://api.maptiler.com/maps/basic/{z}/{x}/{y}@2x.png?key=${apiKeys.MAPTILER}`}
+        />
+      );
 
     case Source.MAPTILER.HYBRID:
-      // TODO(ntamas): this would probably look better in vector format; we need
-      // a proper styling function for it
-      return createMapTilerSource('maps/hybrid', {
-        tileSize: 512,
-        apiKey: apiKeys.MAPTILER,
-        tileLoadFunction,
-      });
+      return (
+        <source.XYZ
+          tileLoadFunction={tileLoadFunction}
+          tilePixelRatio={2}
+          tileSize={512}
+          url={`https://api.maptiler.com/maps/hybrid/{z}/{x}/{y}@2x.jpg?key=${apiKeys.MAPTILER}`}
+        />
+      );
 
     case Source.MAPTILER.SATELLITE:
-      return createMapTilerSource('tiles/satellite', {
-        tileSize: 256,
-        apiKey: apiKeys.MAPTILER,
-        tileLoadFunction,
-      });
+      // This tile source does not seem to have a @2x version
+      return (
+        <source.XYZ
+          tileLoadFunction={tileLoadFunction}
+          tileSize={512}
+          url={`https://api.maptiler.com/tiles/satellite-v2/{z}/{x}/{y}.jpg?key=${apiKeys.MAPTILER}`}
+        />
+      );
 
     case Source.MAPTILER.STREETS:
-      // TODO(ntamas): this would probably look better in vector format; we need
-      // a proper styling function for it
-      return createMapTilerSource('maps/streets', {
-        tileSize: 512,
-        apiKey: apiKeys.MAPTILER,
-        tileLoadFunction,
-      });
+      return (
+        <source.XYZ
+          tileLoadFunction={tileLoadFunction}
+          tilePixelRatio={2}
+          tileSize={512}
+          url={`https://api.maptiler.com/maps/streets/{z}/{x}/{y}@2x.png?key=${apiKeys.MAPTILER}`}
+        />
+      );
 
     case Source.NEXTZEN:
       // TODO(ntamas): this is not quite ready; the Mapbox styling function does
@@ -215,7 +204,7 @@ const LayerSourcePresentation = ({ apiKeys, tileLoadFunction, type }) => {
         <source.XYZ
           attributions={attributions}
           tileLoadFunction={tileLoadFunction}
-          url='https://stamen-tiles-{a-d}.a.ssl.fastly.net/terrain/{z}/{x}/{y}.jpg'
+          url='https://stamen-tiles.a.ssl.fastly.net/terrain/{z}/{x}/{y}.jpg'
         />
       );
 
@@ -224,7 +213,7 @@ const LayerSourcePresentation = ({ apiKeys, tileLoadFunction, type }) => {
         <source.XYZ
           attributions={attributions}
           tileLoadFunction={tileLoadFunction}
-          url='https://stamen-tiles-{a-d}.a.ssl.fastly.net/toner/{z}/{x}/{y}.png'
+          url='https://stamen-tiles.a.ssl.fastly.net/toner/{z}/{x}/{y}.png'
         />
       );
 
@@ -233,7 +222,7 @@ const LayerSourcePresentation = ({ apiKeys, tileLoadFunction, type }) => {
         <source.XYZ
           attributions={attributions}
           tileLoadFunction={tileLoadFunction}
-          url='https://stamen-tiles-{a-d}.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.jpg'
+          url='https://stamen-tiles.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.jpg'
         />
       );
 

@@ -87,7 +87,7 @@ const attributions = {
       'OpenStreetMap contributors</a>',
   ],
   nextzen:
-    'Map data &copy; OpenStreetMap contributors, Who’s On First, ' +
+    "Map data &copy; OpenStreetMap contributors, Who's On First, " +
     'Natural Earth, and openstreetmapdata.com',
   stamen: [
     'Map tiles by <a href="https://stamen.com/" target="_blank">Stamen ' +
