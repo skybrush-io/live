@@ -16,7 +16,7 @@ import { createOLInteractionComponent } from '@collmot/ol-react/lib/interaction'
 import Condition from '../conditions';
 
 import { isOriginId } from '~/model/identifiers';
-import { toRadians } from '~/utils/math';
+import { toDegrees, toRadians } from '~/utils/math';
 
 /**
  * Enum containing the supported transformation types.
@@ -38,7 +38,26 @@ const transformationTypeToHandler = {
   },
 
   rotate(geom, deltaX, deltaY, totalDelta) {
-    const angle = toRadians(totalDelta[1] - totalDelta[0]);
+    // Rotation gesture is handled by assuming that this.pivot was moved by
+    // (deltaX, deltaY) to P = (this.pivot + totalDelta). We calculate the angle
+    // of the rotation around this.center that would make this.center,
+    // this.pivot and P collinear.
+
+    const centerToPivot = [
+      this.pivot[0] - this.center[0],
+      this.pivot[1] - this.center[1],
+    ];
+    const centerToTarget = [
+      centerToPivot[0] + totalDelta[0],
+      centerToPivot[1] + totalDelta[1],
+    ];
+    const centerToPivotAngle = Math.atan2(centerToPivot[1], centerToPivot[0]);
+    const centerToTargetAngle = Math.atan2(
+      centerToTarget[1],
+      centerToTarget[0]
+    );
+    const angle = centerToTargetAngle - centerToPivotAngle;
+
     const angleDelta = angle - (this.lastAngle || 0);
     geom.rotate(angleDelta, this.center);
     this.lastAngle = angle;
