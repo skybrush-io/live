@@ -16,7 +16,6 @@ import { createOLInteractionComponent } from '@collmot/ol-react/lib/interaction'
 import Condition from '../conditions';
 
 import { isOriginId } from '~/model/identifiers';
-import { toDegrees, toRadians } from '~/utils/math';
 
 /**
  * Enum containing the supported transformation types.
