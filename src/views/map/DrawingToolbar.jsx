@@ -31,13 +31,13 @@ const DrawingToolbarPresentation = ({ onToolSelected, selectedTool }) => {
 
   return (
     <div style={{ display: 'flex', flexFlow: 'column nowrap' }}>
-      <Tooltip content='Select'>
+      <Tooltip content='Select' placement='right'>
         <IconButton onClick={partial(onToolSelected, Tool.SELECT)}>
           <SelectAll color={colorForTool(Tool.SELECT)} />
         </IconButton>
       </Tooltip>
 
-      <Tooltip content='Zoom'>
+      <Tooltip content='Zoom' placement='right'>
         <IconButton onClick={partial(onToolSelected, Tool.ZOOM)}>
           <ZoomIn color={colorForTool(Tool.ZOOM)} />
         </IconButton>
@@ -45,37 +45,37 @@ const DrawingToolbarPresentation = ({ onToolSelected, selectedTool }) => {
 
       <Divider />
 
-      <Tooltip content='Add marker'>
+      <Tooltip content='Add marker' placement='right'>
         <IconButton onClick={partial(onToolSelected, Tool.DRAW_POINT)}>
           <LocationOn color={colorForTool(Tool.DRAW_POINT)} />
         </IconButton>
       </Tooltip>
 
-      <Tooltip content='Draw path'>
+      <Tooltip content='Draw path' placement='right'>
         <IconButton onClick={partial(onToolSelected, Tool.DRAW_PATH)}>
           <ShowChart color={colorForTool(Tool.DRAW_PATH)} />
         </IconButton>
       </Tooltip>
 
-      <Tooltip content='Draw circle'>
+      <Tooltip content='Draw circle' placement='right'>
         <IconButton onClick={partial(onToolSelected, Tool.DRAW_CIRCLE)}>
           <PanoramaFishEye color={colorForTool(Tool.DRAW_CIRCLE)} />
         </IconButton>
       </Tooltip>
 
-      <Tooltip content='Draw rectangle'>
+      <Tooltip content='Draw rectangle' placement='right'>
         <IconButton onClick={partial(onToolSelected, Tool.DRAW_RECTANGLE)}>
           <CropSquare color={colorForTool(Tool.DRAW_RECTANGLE)} />
         </IconButton>
       </Tooltip>
 
-      <Tooltip content='Draw polygon'>
+      <Tooltip content='Draw polygon' placement='right'>
         <IconButton onClick={partial(onToolSelected, Tool.DRAW_POLYGON)}>
           <StarBorder color={colorForTool(Tool.DRAW_POLYGON)} />
         </IconButton>
       </Tooltip>
 
-      <Tooltip content='Edit feature'>
+      <Tooltip content='Edit feature' placement='right'>
         <IconButton onClick={partial(onToolSelected, Tool.EDIT_FEATURE)}>
           <EditFeature color={colorForTool(Tool.EDIT_FEATURE)} />
         </IconButton>
