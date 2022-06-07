@@ -43,6 +43,7 @@ import {
   getShowOrientation,
   getOutdoorShowAltitudeReference,
   getOutdoorShowToWorldCoordinateSystemTransformationObject,
+  getOutdoorShowOrientation,
 } from './selectors';
 import {
   approveTakeoffAreaAt,
@@ -176,6 +177,25 @@ export const moveOutdoorShowOriginByMapCoordinateDelta =
     );
   };
 
+/**
+ * Rotates the show origin by the given angle in degrees, snapping to one
+ * decimal digit.
+ */
+export const rotateOutdoorShowOrientationByAngle =
+  (delta) => (dispatch, getState) => {
+    const orientation = getOutdoorShowOrientation(getState());
+    const newOrientation = orientation + delta;
+
+    if (Number.isFinite(newOrientation)) {
+      dispatch(
+        updateOutdoorShowSettings({
+          orientation: newOrientation.toFixed(1),
+          setupMission: true,
+        })
+      );
+    }
+  };
+
 export const updateOutdoorShowSettings =
   ({ origin, orientation, setupMission }) =>
   (dispatch) => {
@@ -281,7 +301,7 @@ export const loadShowFromFile = createShowLoaderThunkFactory(
 export const loadShowFromUrl = createShowLoaderThunkFactory(
   async (url, { onProgress }) => {
     const response = await ky(url, {
-      onDownloadProgress: (info) => {
+      onDownloadProgress(info) {
         if (info.totalBytes > 0) {
           onProgress(info.percent);
         }

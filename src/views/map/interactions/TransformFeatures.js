@@ -38,7 +38,7 @@ const transformationTypeToHandler = {
   },
 
   rotate(geom, deltaX, deltaY, totalDelta) {
-    const angle = toRadians(totalDelta[1]);
+    const angle = toRadians(totalDelta[1] - totalDelta[0]);
     const angleDelta = angle - (this.lastAngle || 0);
     geom.rotate(angleDelta, this.center);
     this.lastAngle = angle;
@@ -100,7 +100,10 @@ export class TransformFeaturesInteraction extends PointerInteraction {
             }
 
             this.transformation_.center = Extent.getCenter(extent);
+            this.transformation_.pivot = event.coordinate;
           }
+
+          this.transformation_.lastAngle = 0;
 
           this.dispatchEvent(
             new TransformFeaturesInteractionEvent(
@@ -108,7 +111,8 @@ export class TransformFeaturesInteraction extends PointerInteraction {
               type,
               features,
               event.coordinate,
-              [0, 0]
+              [0, 0],
+              0
             )
           );
 
@@ -141,7 +145,8 @@ export class TransformFeaturesInteraction extends PointerInteraction {
               type,
               features,
               newCoordinate,
-              totalDelta
+              totalDelta,
+              this.transformation_.lastAngle
             )
           );
         }
@@ -151,7 +156,7 @@ export class TransformFeaturesInteraction extends PointerInteraction {
         if (this.lastCoordinate_) {
           const features = this.features_;
           const totalDelta = this.calculateTotalDelta_();
-          const { type } = this.transformation_;
+          const { lastAngle, type } = this.transformation_;
 
           this.firstCoordinate_ = null;
           this.lastCoordinate_ = null;
@@ -164,7 +169,8 @@ export class TransformFeaturesInteraction extends PointerInteraction {
               type,
               features,
               event.coordinate,
-              totalDelta
+              totalDelta,
+              lastAngle
             )
           );
 
@@ -297,19 +303,21 @@ const TransformEventType = {
 };
 
 class TransformFeaturesInteractionEvent extends OLEvent {
-  constructor(type, subType, features, coordinate, delta) {
+  constructor(type, subType, features, coordinate, delta, angleDelta = 0) {
     super(type);
     this.subType = subType;
     this.features = features;
     this.coordinate = coordinate;
     this.delta = delta;
+    this.angleDelta = angleDelta;
   }
 
   get hasMoved() {
     return (
-      this.delta &&
-      Array.isArray(this.delta) &&
-      (this.delta[0] !== 0 || this.delta[1] !== 0)
+      (this.delta &&
+        Array.isArray(this.delta) &&
+        (this.delta[0] !== 0 || this.delta[1] !== 0)) ||
+      (this.angleDelta && this.angleDelta !== 0)
     );
   }
 }

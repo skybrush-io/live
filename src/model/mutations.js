@@ -1,7 +1,10 @@
 import isEmpty from 'lodash-es/isEmpty';
 
 import { updateFeatureCoordinatesByIds } from '~/features/map-features/slice';
-import { moveOutdoorShowOriginByMapCoordinateDelta } from '~/features/show/actions';
+import {
+  moveOutdoorShowOriginByMapCoordinateDelta,
+  rotateOutdoorShowOrientationByAngle,
+} from '~/features/show/actions';
 import { updateFlatEarthCoordinateSystem } from '~/reducers/map/origin';
 import { toDegrees } from '~/utils/math';
 
@@ -88,13 +91,20 @@ export function handleFeatureUpdatesInOpenLayers(
 
     // Is this feature an area such as the convex hull of the show?
     const areaId = globalIdToAreaId(globalId);
-    if (
-      areaId === CONVEX_HULL_AREA_ID &&
-      type === 'transform' &&
-      event.subType === 'move' &&
-      event.delta
-    ) {
-      dispatch(moveOutdoorShowOriginByMapCoordinateDelta(event.delta));
+    if (areaId === CONVEX_HULL_AREA_ID) {
+      if (type === 'transform') {
+        if (event.subType === 'move' && event.delta) {
+          dispatch(moveOutdoorShowOriginByMapCoordinateDelta(event.delta));
+        } else if (event.subType === 'rotate' && event.angleDelta) {
+          dispatch(
+            rotateOutdoorShowOrientationByAngle(toDegrees(-event.angleDelta))
+          );
+        }
+      } else {
+        console.warn(
+          'This transformation is not handled for the convex hull yet'
+        );
+      }
     }
   }
 

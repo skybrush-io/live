@@ -530,7 +530,6 @@ class MapViewPresentation extends React.Component {
       const source = layer.getSource();
       source.forEachFeatureIntersectingExtent(extent, (feature) => {
         const featureGeometry = feature.getGeometry();
-        console.log(featureGeometry.getType(), GeometryType.POINT);
         if (
           featureGeometry.getType() === GeometryType.POINT &&
           geometry.intersectsCoordinate(featureGeometry.getCoordinates())

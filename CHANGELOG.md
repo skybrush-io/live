@@ -25,6 +25,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   the server-side caching is not available in the community edition of the
   server; you will need one of the premium editions.
 
+### Fixed
+
+- The orientation of the show can now be adjusted by rotating the convex hull of
+  the show on the map view. Before this fix, moving the convex hull worked but
+  it was unresponsive to rotations.
+
 ## [2.1.0] - 2022-05-27
 
 ### Added
