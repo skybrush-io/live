@@ -12,6 +12,7 @@ import Event from '@material-ui/icons/Event';
 import Lock from '@material-ui/icons/Lock';
 import Person from '@material-ui/icons/Person';
 import Security from '@material-ui/icons/Security';
+import Star from '@material-ui/icons/Star';
 
 import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
 import LargeProgressIndicator from '@skybrush/mui-components/lib/LargeProgressIndicator';
@@ -21,16 +22,37 @@ import { Divider } from '@material-ui/core';
 
 const LicenseInfoPanelPresentation = ({
   expiryDate,
+  features,
   id,
   licensee,
   restrictions,
 }) => {
+  const featureItems = [];
   const restrictionItems = [];
+
+  if (Array.isArray(features)) {
+    for (const feature of features) {
+      featureItems.push(
+        <ListItem key={`${feature.type}_${feature.label}`} disableGutters>
+          <ListItemIcon>
+            <Star />
+          </ListItemIcon>
+          <ListItemText
+            primary={feature.label}
+            secondary={feature.secondaryLabel}
+          />
+        </ListItem>
+      );
+    }
+  }
 
   if (Array.isArray(restrictions)) {
     for (const restriction of restrictions) {
       restrictionItems.push(
-        <ListItem disableGutters>
+        <ListItem
+          key={`${restriction.type}_${restriction.label}`}
+          disableGutters
+        >
           <ListItemIcon>
             <Lock />
           </ListItemIcon>
@@ -73,6 +95,8 @@ const LicenseInfoPanelPresentation = ({
           />
         </ListItem>
       )}
+      {featureItems.length > 0 && <Divider />}
+      {featureItems}
       {restrictionItems.length > 0 && <Divider />}
       {restrictionItems}
     </List>
@@ -83,6 +107,13 @@ LicenseInfoPanelPresentation.propTypes = {
   id: PropTypes.string,
   licensee: PropTypes.string,
   expiryDate: PropTypes.string,
+  features: PropTypes.arrayOf(
+    PropTypes.shape({
+      type: PropTypes.string,
+      label: PropTypes.string,
+      secondaryLabel: PropTypes.string,
+    })
+  ),
   restrictions: PropTypes.arrayOf(
     PropTypes.shape({
       type: PropTypes.string,
