@@ -12,7 +12,7 @@ import Event from '@material-ui/icons/Event';
 import Lock from '@material-ui/icons/Lock';
 import Person from '@material-ui/icons/Person';
 import Security from '@material-ui/icons/Security';
-import Star from '@material-ui/icons/Star';
+import Gift from '@material-ui/icons/CardGiftcard';
 
 import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
 import LargeProgressIndicator from '@skybrush/mui-components/lib/LargeProgressIndicator';
@@ -35,7 +35,7 @@ const LicenseInfoPanelPresentation = ({
       featureItems.push(
         <ListItem key={`${feature.type}_${feature.label}`} disableGutters>
           <ListItemIcon>
-            <Star />
+            <Gift />
           </ListItemIcon>
           <ListItemText
             primary={feature.label}

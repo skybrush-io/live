@@ -17,10 +17,12 @@ import { showMapCachingDialog } from '~/features/map-caching/slice';
 import { getActiveUAVIdsBeingAveraged } from '~/features/measurement/selectors';
 import { showAveragingDialog } from '~/features/measurement/slice';
 import { showParameterUploadDialog } from '~/features/parameters/actions';
+import { isConnected } from '~/features/servers/selectors';
 import { isUploadInProgress } from '~/features/upload/selectors';
 import { showVersionCheckDialog } from '~/features/version-check/slice';
 
 const ToolboxButtonPresentation = ({
+  isConnected,
   isUploadInProgress,
   numberOfAveragingInProgress,
   showAveragingDialog,
@@ -85,7 +87,10 @@ const ToolboxButtonPresentation = ({
           />
         </MenuItem>
         <Divider />
-        <MenuItem onClick={createClickListener(showLicenseInfoDialog)}>
+        <MenuItem
+          disabled={!isConnected}
+          onClick={createClickListener(showLicenseInfoDialog)}
+        >
           <ListItemText primary='License info' />
         </MenuItem>
         {/*
@@ -100,6 +105,7 @@ const ToolboxButtonPresentation = ({
 
 ToolboxButtonPresentation.propTypes = {
   ...GenericHeaderButton.propTypes,
+  isConnected: PropTypes.bool,
   isUploadInProgress: PropTypes.bool,
   numberOfAveragingInProgress: PropTypes.number,
   showAveragingDialog: PropTypes.func,
@@ -111,6 +117,7 @@ ToolboxButtonPresentation.propTypes = {
 export default connect(
   // mapStateToProps
   (state) => ({
+    isConnected: isConnected(state),
     isUploadInProgress: isUploadInProgress(state),
     numberOfAveragingInProgress: getActiveUAVIdsBeingAveraged(state).length,
   }),
