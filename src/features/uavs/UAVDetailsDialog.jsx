@@ -30,7 +30,7 @@ const UAVDetailsDialog = ({ onClose, open }) => (
     )}
     onClose={onClose}
   >
-    <Box position='relative' height={400} overflow='auto'>
+    <Box position='relative' height={448} overflow='auto'>
       <UAVDetailsDialogBody />
     </Box>
   </DraggableDialog>

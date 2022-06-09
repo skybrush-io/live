@@ -62,15 +62,15 @@ const CoordinateAveragingDialogToolbar = ({
 
   const onKeyDown = useCallback(
     (event) => {
-      if (event.keyCode === 27) {
-        // When Escape is presseed, cancel the editing mode
+      if (event.key === 'Escape') {
+        // When Escape is pressed, cancel the editing mode
         event.preventDefault();
         event.stopPropagation();
         onFinishAddition();
         return false;
       }
 
-      if (event.keyCode === 13) {
+      if (event.key === 'Enter') {
         // When Enter is pressed, commit the new value
         event.preventDefault();
         event.stopPropagation();

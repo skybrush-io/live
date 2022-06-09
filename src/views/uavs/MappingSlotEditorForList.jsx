@@ -100,7 +100,7 @@ const MappingSlotEditorForList = ({
       return false;
     }
 
-    if (event.keyCode === 27) {
+    if (event.key === 'Escape') {
       cancelMappingEditorSessionAtCurrentSlot();
     }
   };

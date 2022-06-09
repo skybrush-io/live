@@ -209,8 +209,8 @@ class MessagesPanel extends React.Component {
       <Box
         key='textFieldContainer'
         display='flex'
+        alignItems='baseline'
         className='bottom-bar'
-        pt={1}
         pb={2}
         pl={2}
         pr={isClearButtonVisible ? 0 : 2}
@@ -219,7 +219,6 @@ class MessagesPanel extends React.Component {
           autoFocus
           fullWidth
           inputRef={this._messageFieldRef}
-          label='Message'
           onKeyDown={this._textFieldKeyDownHandler}
         />
         {isClearButtonVisible && (
@@ -254,7 +253,7 @@ class MessagesPanel extends React.Component {
    * @return {undefined}
    */
   _textFieldKeyDownHandler(event) {
-    if (event.keyCode === 13) {
+    if (event.key === 'Enter') {
       this.props.onSend(event.target.value);
       event.target.value = '';
       this.scrollToBottom();
