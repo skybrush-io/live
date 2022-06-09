@@ -128,7 +128,7 @@ const CoordinateAveragingDialogToolbar = ({
           </Tooltip>
           <Tooltip content='Reset measurement'>
             <IconButton
-              disabled={!hasMeasurements}
+              disabled={!hasMeasurements || !hasSelection}
               color='inherit'
               onClick={onRestartSelected}
             >
