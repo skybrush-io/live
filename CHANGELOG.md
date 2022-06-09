@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- The Messages panel in the UAV details dialog now shows timestamps for
+  incoming messages. In order not to clutter the display, timestamps are shown
+  only for the first entry and any entry where the minute of the timestamp is
+  different from the previous one.
+
 - You can now provide your own API keys to access Mapbox and Maptiler tile
   services. In the absence of an API key, Skybrush Live falls back to using an
   API key that is shared between all users of Skybrush Live. No guarantees are

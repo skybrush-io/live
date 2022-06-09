@@ -6,7 +6,6 @@ import clsx from 'clsx';
 import { Markup } from 'interweave';
 import PropTypes from 'prop-types';
 import React from 'react';
-import TimeAgo from 'react-timeago';
 
 import { blue, grey } from '@material-ui/core/colors';
 import { makeStyles } from '@material-ui/core/styles';
@@ -87,6 +86,7 @@ const useStyles = makeStyles(
 
       '& .date': {
         color: theme.palette.text.hint,
+        float: 'right',
       },
     },
   }),
@@ -110,9 +110,7 @@ const ChatBubble = ({
 }) => {
   const classes = useStyles();
   const dateComponent = date && showMeta && (
-    <span className='date'>
-      <TimeAgo date={date} />
-    </span>
+    <span className='date'>{date}</span>
   );
   const leftComponentWrapper = leftComponent && (
     <div style={{ flex: 0 }}>{leftComponent}</div>
@@ -149,7 +147,7 @@ const ChatBubble = ({
 ChatBubble.propTypes = {
   author: PropTypes.string,
   body: PropTypes.string,
-  date: PropTypes.number,
+  date: PropTypes.string,
   own: PropTypes.bool,
   raw: PropTypes.bool,
   leftComponent: PropTypes.oneOfType([

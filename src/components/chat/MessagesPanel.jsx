@@ -3,7 +3,7 @@
  * to the UAVs.
  */
 
-import flatMap from 'lodash-es/flatMap';
+import formatDate from 'date-fns/format';
 import isNil from 'lodash-es/isNil';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -33,6 +33,8 @@ import { parseCommandFromString } from '~/flockwave/messages';
 import { MessageType } from '~/model/enums';
 import messageHub from '~/message-hub';
 
+const dateFormatter = (x) => formatDate(x, 'H:mm');
+
 /**
  * Converts a message object from the Redux store into React components
  * that can render it nicely.
@@ -40,18 +42,34 @@ import messageHub from '~/message-hub';
  * @param {Object} message  the message to convert
  * @return {React.Component[]}  the React components that render the message
  */
-function convertMessageToComponent(message) {
+function convertMessageToComponent(message, state = {}) {
   const keyBase = `message${message.id}`;
   const inProgress = !message.responseId;
+  const dateIsNumber = typeof message?.date === 'number';
+  const formattedDate = dateIsNumber ? dateFormatter(message.date) : '';
+  const author = message?.author;
+  const isCloseToPreviousEntry =
+    dateIsNumber && Math.abs(state.date - message.date) < 500;
+  const showMeta =
+    state.author !== author ||
+    (state.formattedDate !== formattedDate && !isCloseToPreviousEntry);
+
+  state.author = author;
+  state.date = message?.date;
+  if (!isCloseToPreviousEntry) {
+    state.formattedDate = formattedDate;
+  }
+
   switch (message.type) {
     case MessageType.OUTBOUND:
       return [
         <ChatBubble
           key={keyBase}
           own
-          author={message.author}
+          showMeta={showMeta}
+          author={author}
           raw={message.raw}
-          date={message.date}
+          date={formattedDate}
           body={message.body}
           severity={message.severity}
           rightComponent={
@@ -72,10 +90,11 @@ function convertMessageToComponent(message) {
       return [
         <ChatBubble
           key={keyBase}
-          author={message.author}
+          showMeta={showMeta}
+          author={author}
           own={false}
           raw={message.raw}
-          date={message.date}
+          date={formattedDate}
           body={message.body}
           severity={message.severity}
         />,
@@ -184,7 +203,10 @@ class MessagesPanel extends React.Component {
       uavId,
     } = this.props;
 
-    const chatComponents = flatMap(chatEntries, convertMessageToComponent);
+    const formatterState = {};
+    const chatComponents = chatEntries.map((entry) =>
+      convertMessageToComponent(entry, formatterState)
+    );
     const contentStyle = {
       display: 'flex',
       flexDirection: 'column',
