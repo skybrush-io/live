@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [2.2.0] - 2022-06-09
 
 ### Added
 
@@ -33,8 +33,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - The orientation of the show can now be adjusted by rotating the convex hull of
-  the show on the map view. Before this fix, moving the convex hull worked but
-  it was unresponsive to rotations.
+  the show on the map view. To rotate the convex hull, select it, hold down the
+  Alt key (Option on macOS), press the mouse button and drag the mouse.
+  Before this fix, moving the convex hull worked but it was unresponsive to
+  rotations. The rotation gesture is also more intuitive now.
 
 ## [2.1.0] - 2022-05-27
 
