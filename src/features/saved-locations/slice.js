@@ -70,11 +70,4 @@ const { actions, reducer } = createSlice({
   },
 });
 
-export const {
-  addSavedLocation,
-  createNewSavedLocation,
-  deleteSavedLocation,
-  updateSavedLocation,
-} = actions;
-
-export default reducer;
+export { reducer as default, actions };

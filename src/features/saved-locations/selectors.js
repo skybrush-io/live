@@ -30,3 +30,15 @@ export const getCurrentMapViewAsSavedLocation = createSelector(
     zoom: Math.round(view.zoom),
   })
 );
+
+/**
+ * Selector that returns the id of the saved location currently being edited.
+ */
+export const getEditedLocationId = (state) =>
+  state.savedLocationEditor.editedLocationId;
+
+/**
+ * Selector that determines whether the saved location editor dialog is open.
+ */
+export const getEditorDialogVisibility = (state) =>
+  state.savedLocationEditor.dialogVisible;

@@ -14,9 +14,11 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 
-import { editSavedLocation } from '~/actions/saved-location-editor';
+import {
+  createNewSavedLocation,
+  editSavedLocation,
+} from '~/features/saved-locations/actions';
 import { listOf } from '~/components/helpers/lists';
-import { createNewSavedLocation } from '~/features/saved-locations/slice';
 import { getSavedLocationsInOrder } from '~/features/saved-locations/selectors';
 import { scrollToMapLocation } from '~/signals';
 

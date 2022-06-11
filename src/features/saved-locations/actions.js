@@ -5,11 +5,20 @@
 
 import delay from 'delay';
 
-import { actions } from '../features/saved-locations/editor.js';
+import { actions } from './slice';
+import { actions as editorActions } from './editor';
 
-export const { editSavedLocation } = actions;
+export const {
+  addSavedLocation,
+  createNewSavedLocation,
+  deleteSavedLocation,
+  updateSavedLocation,
+} = actions;
 
-const { _cancelLocationEditing, _closeSavedLocationEditorDialog } = actions;
+export const { editSavedLocation } = editorActions;
+
+const { _cancelLocationEditing, _closeSavedLocationEditorDialog } =
+  editorActions;
 
 /**
  * Action factory that creates an action that cancels the saved location editor

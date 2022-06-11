@@ -7,7 +7,6 @@ import { combineReducers } from 'redux';
 
 import dockDetailsDialogReducer from '~/features/docks/details';
 import geofenceSettingsReducer from '~/features/geofence/slice';
-import savedLocationEditorReducer from '~/features/saved-locations/editor';
 import uavDetailsDialogReducer from '~/features/uavs/details';
 
 import appSettingsReducer from './app-settings';
@@ -33,7 +32,6 @@ const reducer = combineReducers({
   geofenceSettings: geofenceSettingsReducer,
   layerSettings: layerSettingsReducer,
   prompt: promptReducer,
-  savedLocationEditor: savedLocationEditorReducer,
   serverSettings: serverSettingsReducer,
   uavDetails: uavDetailsDialogReducer,
 });
