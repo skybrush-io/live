@@ -13,7 +13,6 @@ import appSettingsReducer from './app-settings';
 import authenticationReducer from './authentication';
 import deauthenticationReducer from './deauthentication';
 import errorHandlingReducer from './error-handling';
-import featureEditorReducer from './feature-editor';
 import layerSettingsReducer from './layer-settings';
 import promptReducer from './prompt';
 import serverSettingsReducer from './server-settings';
@@ -28,7 +27,6 @@ const reducer = combineReducers({
   deauthentication: deauthenticationReducer,
   dockDetails: dockDetailsDialogReducer,
   error: errorHandlingReducer,
-  featureEditor: featureEditorReducer,
   geofenceSettings: geofenceSettingsReducer,
   layerSettings: layerSettingsReducer,
   prompt: promptReducer,

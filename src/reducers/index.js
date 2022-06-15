@@ -17,6 +17,7 @@ import lightControlReducer from '~/features/light-control/slice';
 import logReducer from '~/features/log/slice';
 import mapCachingReducer from '~/features/map-caching/slice';
 import featuresReducer from '~/features/map-features/slice';
+import featureEditorReducer from '~/features/map-features/editor';
 import measurementReducer from '~/features/measurement/slice';
 import messagesReducer from '~/features/messages/slice';
 import missionReducer from '~/features/mission/slice';
@@ -52,6 +53,7 @@ const reducer = combineReducers({
   dialogs: dialogsReducer,
   docks: docksReducer,
   features: featuresReducer,
+  featureEditor: featureEditorReducer,
   hotkeys: hotkeysReducer,
   lcdClock: lcdClockReducer,
   licenseInfo: licenseInfoReducer,

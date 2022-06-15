@@ -6,6 +6,14 @@ import { globalIdToUavId, isDockId, isUavId } from '~/model/identifiers';
 import { getProposedIdForNewFeature } from './selectors';
 import { addFeatureById } from './slice';
 
+import { actions as editorActions } from './editor';
+
+export const {
+  closeFeatureEditorDialog,
+  setFeatureEditorDialogTab,
+  showFeatureEditorDialog,
+} = editorActions;
+
 export const addFeature = (feature) => addFeatureWithName(feature, null);
 
 export const addFeatureWithName = (feature, name) => (dispatch, getState) => {
