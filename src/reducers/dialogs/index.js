@@ -5,13 +5,13 @@
 
 import { combineReducers } from 'redux';
 
+import appSettingsReducer from '~/features/settings/dialog';
 import dockDetailsDialogReducer from '~/features/docks/details';
 import featureEditorReducer from '~/features/map-features/editor';
 import geofenceSettingsReducer from '~/features/geofence/slice';
 import savedLocationEditorReducer from '~/features/saved-locations/editor';
 import uavDetailsDialogReducer from '~/features/uavs/details';
 
-import appSettingsReducer from './app-settings';
 import authenticationReducer from './authentication';
 import deauthenticationReducer from './deauthentication';
 import errorHandlingReducer from './error-handling';

@@ -25,7 +25,7 @@ import Overlay from './Overlay';
 import {
   setAppSettingsDialogTab,
   showAppSettingsDialog,
-} from '~/actions/app-settings';
+} from '~/features/settings/actions';
 import DarkModeSwitch from '~/components/DarkModeSwitch';
 import ToolbarDivider from '~/components/ToolbarDivider';
 import NearestItemTooltip from '~/features/session/NearestItemTooltip';

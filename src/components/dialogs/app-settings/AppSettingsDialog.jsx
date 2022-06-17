@@ -18,7 +18,7 @@ import UAVsTab from './UAVsTab';
 import {
   closeAppSettingsDialog,
   setAppSettingsDialogTab,
-} from '~/actions/app-settings';
+} from '~/features/settings/actions';
 
 /* ===================================================================== */
 
