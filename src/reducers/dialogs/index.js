@@ -12,12 +12,12 @@ import dockDetailsDialogReducer from '~/features/docks/details';
 import featureEditorReducer from '~/features/map-features/editor';
 import geofenceSettingsReducer from '~/features/geofence/slice';
 import layerSettingsReducer from '~/features/map/layer-settings-dialog';
+import promptReducer from '~/features/prompt/slice';
 import savedLocationEditorReducer from '~/features/saved-locations/editor';
 import serverSettingsReducer from '~/features/servers/server-settings-dialog';
 import uavDetailsDialogReducer from '~/features/uavs/details';
 
 import errorHandlingReducer from './error-handling';
-import promptReducer from './prompt';
 
 /**
  * The reducer function that is responsible for handling all dialog-related

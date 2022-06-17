@@ -2,7 +2,7 @@
  * @file Action factories related to the global prompt dialog.
  */
 
-import { actions } from '../reducers/dialogs/prompt';
+import { actions } from './slice';
 
 const { _cancelPromptDialog, _showPromptDialog, _submitPromptDialog } = actions;
 
