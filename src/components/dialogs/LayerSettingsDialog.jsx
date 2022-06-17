@@ -30,7 +30,7 @@ import {
   renameLayer,
   toggleLayerVisibility,
   removeLayer,
-} from '~/actions/layers';
+} from '~/features/map/layers';
 import { LayerType } from '~/model/layers';
 import { createValidator, required } from '../../utils/validation';
 import { LayerSettings, stateObjectToLayerSettings } from '~/views/map/layers';

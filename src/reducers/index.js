@@ -1,7 +1,6 @@
 import { combineReducers } from 'redux';
 
 import dialogsReducer from './dialogs';
-import mapReducer from './map';
 
 import alertReducer from '~/features/alert/slice';
 import beaconsReducer from '~/features/beacons/slice';
@@ -17,6 +16,7 @@ import lightControlReducer from '~/features/light-control/slice';
 import logReducer from '~/features/log/slice';
 import mapCachingReducer from '~/features/map-caching/slice';
 import featuresReducer from '~/features/map-features/slice';
+import mapReducer from '~/features/map/slice';
 import measurementReducer from '~/features/measurement/slice';
 import messagesReducer from '~/features/messages/slice';
 import missionReducer from '~/features/mission/slice';

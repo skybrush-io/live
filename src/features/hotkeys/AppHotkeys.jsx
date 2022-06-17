@@ -12,7 +12,7 @@ import { getPreferredCommunicationChannelIndex } from '~/features/mission/select
 import { toggleMissionIds } from '~/features/settings/slice';
 import { requestRemovalOfSelectedUAVs } from '~/features/uavs/actions';
 import { getSelectedUAVIds } from '~/features/uavs/selectors';
-import { selectAllUAVFeatures } from '~/reducers/map/selection';
+import { selectAllUAVFeatures } from '~/features/map/selection';
 import { clearStoreAfterConfirmation } from '~/store';
 import { createUAVOperationThunks } from '~/utils/messaging';
 

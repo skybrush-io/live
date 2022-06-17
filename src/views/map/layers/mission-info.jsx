@@ -14,7 +14,7 @@ import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormGroup from '@material-ui/core/FormGroup';
 
-import { setLayerParametersById } from '~/actions/layers';
+import { setLayerParametersById } from '~/features/map/layers';
 import Colors from '~/components/colors';
 import {
   getGPSBasedHomePositionsInMission,

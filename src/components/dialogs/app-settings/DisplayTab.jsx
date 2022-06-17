@@ -18,7 +18,7 @@ import {
   setFlatEarthCoordinateSystemOrientation,
   setFlatEarthCoordinateSystemType,
   setFlatEarthCoordinateSystemOrigin,
-} from '~/reducers/map/origin';
+} from '~/features/map/origin';
 import { getMapOriginRotationAngle } from '~/selectors/map';
 
 import Header from '@skybrush/mui-components/lib/FormHeader';

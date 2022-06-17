@@ -6,7 +6,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { noPayload } from '~/utils/redux';
 
-import { removeLayer } from '~/actions/layers';
+import { removeLayer } from '~/features/map/layers';
 
 const { actions, reducer } = createSlice({
   name: 'layer-settings',

@@ -3,7 +3,7 @@ import xor from 'lodash-es/xor';
 
 import flock from '~/flock';
 import { uavIdToGlobalId } from '~/model/identifiers';
-import { setSelectedFeatures } from '~/reducers/map/selection';
+import { setSelectedFeatures } from '~/features/map/selection';
 
 import { getSelectedUAVIds, getUAVIdsMarkedAsGone } from './selectors';
 

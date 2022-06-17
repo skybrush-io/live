@@ -6,7 +6,7 @@ import { getMissionMapping } from '~/features/mission/selectors';
 import { showNotification } from '~/features/snackbar/slice';
 import { setSelectedUAVIds } from '~/features/uavs/actions';
 import { getUAVById } from '~/features/uavs/selectors';
-import { clearSelection } from '~/reducers/map/selection';
+import { clearSelection } from '~/features/map/selection';
 import { scrollUAVListItemIntoView } from '~/utils/navigation';
 import { copyDisplayedCoordinatesToClipboard } from '~/views/map/utils';
 

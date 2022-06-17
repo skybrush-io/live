@@ -11,8 +11,8 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import TextField from '@material-ui/core/TextField';
 
-import { setLayerParametersById } from '../../../actions/layers';
-import { TileServerType, TileServerTypes } from '../../../model/layers';
+import { setLayerParametersById } from '~/features/map/layers';
+import { TileServerType, TileServerTypes } from '~/model/layers';
 import { showNotification } from '~/features/snackbar/slice';
 
 // === Settings for this particular layer type ===

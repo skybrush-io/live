@@ -1,5 +1,5 @@
 import { dockIdToGlobalId } from '~/model/identifiers';
-import { setSelectedFeatures } from '~/reducers/map/selection';
+import { setSelectedFeatures } from '~/features/map/selection';
 
 /**
  * Action factory that creates an action that sets the set of selected

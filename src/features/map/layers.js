@@ -229,4 +229,16 @@ const { reducer, actions } = createSlice({
   },
 });
 
-export { reducer as default, actions };
+export const {
+  addLayer,
+  adjustLayerZIndex,
+  changeLayerType,
+  removeLayer,
+  renameLayer,
+  selectMapSource,
+  setLayerParameterById,
+  setLayerParametersById,
+  toggleLayerVisibility,
+} = actions;
+
+export default reducer;

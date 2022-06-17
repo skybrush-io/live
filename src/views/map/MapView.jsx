@@ -40,12 +40,12 @@ import {
   isLayerSelectable,
 } from '~/model/layers';
 import { handleFeatureUpdatesInOpenLayers } from '~/model/mutations';
-import { updateMapViewSettings } from '~/reducers/map/view';
+import { updateMapViewSettings } from '~/features/map/view';
 import {
   addFeaturesToSelection,
   setSelectedFeatures,
   removeFeaturesFromSelection,
-} from '~/reducers/map/selection';
+} from '~/features/map/selection';
 import { getVisibleLayersInOrder } from '~/selectors/ordered';
 import { getExtendedCoordinateFormatter } from '~/selectors/formatting';
 import {

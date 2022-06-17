@@ -7,7 +7,7 @@ import Header from '@skybrush/mui-components/lib/FormHeader';
 
 import ActiveUAVsLayerSource from '../sources/ActiveUAVsLayerSource';
 
-import { setLayerParametersById } from '~/actions/layers';
+import { setLayerParametersById } from '~/features/map/layers';
 import SwatchesColorPicker from '~/components/SwatchesColorPicker';
 import flock from '~/flock';
 import { getSelection } from '~/selectors/selection';

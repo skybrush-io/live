@@ -31,7 +31,7 @@ import {
   getActiveUAVIds,
   getCurrentGPSPositionByUavId,
 } from '~/features/uavs/selectors';
-import { updateFlatEarthCoordinateSystem } from '~/reducers/map/origin';
+import { updateFlatEarthCoordinateSystem } from '~/features/map/origin';
 
 /**
  * Presentation component for the form that allows the user to edit the

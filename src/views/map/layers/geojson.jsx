@@ -12,7 +12,7 @@ import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 
-import { setLayerParametersById } from '~/actions/layers';
+import { setLayerParametersById } from '~/features/map/layers';
 import PopupColorPicker from '~/components/PopupColorPicker';
 import { showNotification } from '~/features/snackbar/slice';
 import { parseColor } from '~/utils/coloring';

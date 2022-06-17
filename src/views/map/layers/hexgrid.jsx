@@ -14,7 +14,7 @@ import TextField from '@material-ui/core/TextField';
 
 import { layer as olLayer, source } from '@collmot/ol-react';
 
-import { setLayerParametersById } from '~/actions/layers';
+import { setLayerParametersById } from '~/features/map/layers';
 import { mapViewCoordinateFromLonLat } from '~/utils/geography';
 
 /**
