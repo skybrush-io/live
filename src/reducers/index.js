@@ -17,7 +17,6 @@ import lightControlReducer from '~/features/light-control/slice';
 import logReducer from '~/features/log/slice';
 import mapCachingReducer from '~/features/map-caching/slice';
 import featuresReducer from '~/features/map-features/slice';
-import featureEditorReducer from '~/features/map-features/editor';
 import measurementReducer from '~/features/measurement/slice';
 import messagesReducer from '~/features/messages/slice';
 import missionReducer from '~/features/mission/slice';
@@ -25,7 +24,6 @@ import parametersReducer from '~/features/parameters/slice';
 import preflightReducer from '~/features/preflight/slice';
 import rtkReducer from '~/features/rtk/slice';
 import savedLocationsReducer from '~/features/saved-locations/slice';
-import savedLocationEditorReducer from '~/features/saved-locations/editor';
 import serversReducer from '~/features/servers/slice';
 import sessionReducer from '~/features/session/slice';
 import settingsReducer from '~/features/settings/slice';
@@ -53,7 +51,6 @@ const reducer = combineReducers({
   dialogs: dialogsReducer,
   docks: docksReducer,
   features: featuresReducer,
-  featureEditor: featureEditorReducer,
   hotkeys: hotkeysReducer,
   lcdClock: lcdClockReducer,
   licenseInfo: licenseInfoReducer,
@@ -69,7 +66,6 @@ const reducer = combineReducers({
   preflight: preflightReducer,
   rtk: rtkReducer,
   savedLocations: savedLocationsReducer,
-  savedLocationEditor: savedLocationEditorReducer,
   servers: serversReducer,
   session: sessionReducer,
   settings: settingsReducer,
