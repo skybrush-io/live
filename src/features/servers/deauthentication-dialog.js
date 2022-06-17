@@ -9,7 +9,7 @@ import { createSlice } from '@reduxjs/toolkit';
  * The reducer that handles actions related to the deauthentication dialog.
  */
 const { actions, reducer } = createSlice({
-  name: 'deauthentication',
+  name: 'deauthentication-dialog',
 
   /**
    * The default state for the deauthentication dialog.

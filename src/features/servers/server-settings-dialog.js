@@ -10,7 +10,7 @@ import { noPayload } from '~/utils/redux';
  * The reducer that handles actions related to the server settings.
  */
 const { reducer, actions } = createSlice({
-  name: 'server-settings',
+  name: 'server-settings-dialog',
 
   /**
    * The default settings for the part of the state object being defined here.

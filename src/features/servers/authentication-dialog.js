@@ -9,7 +9,7 @@ import { createSlice } from '@reduxjs/toolkit';
  * The reducer that handles actions related to the authentication dialog.
  */
 const { actions, reducer } = createSlice({
-  name: 'authentication',
+  name: 'authentication-dialog',
 
   /**
    * The default state for the authentication dialog.

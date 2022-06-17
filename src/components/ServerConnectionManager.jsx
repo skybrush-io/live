@@ -11,7 +11,7 @@ import { parse } from 'shell-quote';
 
 import ReactSocket from '@collmot/react-socket';
 
-import { disconnectFromServer } from '~/actions/server-settings';
+import { disconnectFromServer } from '~/features/servers/actions';
 import handleError from '~/error-handling';
 import { clearBeaconList } from '~/features/beacons/slice';
 import { clearClockList } from '~/features/clocks/slice';

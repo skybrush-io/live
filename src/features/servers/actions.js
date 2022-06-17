@@ -11,6 +11,24 @@ import { createAsyncAction } from '~/utils/redux';
 
 import { getClockSkewInMilliseconds } from './selectors';
 
+import { actions as serverSettingsDialogActions } from './server-settings-dialog';
+import { actions as authenticationDialogActions } from './authentication-dialog';
+import { actions as deauthenticationDialogActions } from './deauthentication-dialog';
+
+export const {
+  closeServerSettingsDialog,
+  disconnectFromServer,
+  setServerSettingsDialogTab,
+  showServerSettingsDialog,
+  updateServerSettings,
+} = serverSettingsDialogActions;
+
+export const { closeAuthenticationDialog, showAuthenticationDialog } =
+  authenticationDialogActions;
+
+export const { closeDeauthenticationDialog, showDeauthenticationDialog } =
+  deauthenticationDialogActions;
+
 /**
  * Action factory that creates an action that starts an authentication attempt.
  *

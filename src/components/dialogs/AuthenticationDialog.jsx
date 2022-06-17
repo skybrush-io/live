@@ -17,9 +17,11 @@ import { makeStyles } from '@material-ui/core/styles';
 
 import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
 
-import { closeAuthenticationDialog } from '~/actions/servers';
 import { PasswordField } from '~/components/forms';
-import { authenticateToServerWithBasicAuthentication } from '~/features/servers/actions';
+import {
+  authenticateToServerWithBasicAuthentication,
+  closeAuthenticationDialog,
+} from '~/features/servers/actions';
 import {
   isAuthenticating,
   requiresAuthentication,

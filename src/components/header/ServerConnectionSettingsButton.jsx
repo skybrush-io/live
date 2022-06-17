@@ -6,7 +6,7 @@ import ConnectionIcon from '@material-ui/icons/Power';
 import GenericHeaderButton from '@skybrush/mui-components/lib/GenericHeaderButton';
 import LazyTooltip from '@skybrush/mui-components/lib/LazyTooltip';
 
-import { showServerSettingsDialog } from '~/actions/server-settings';
+import { showServerSettingsDialog } from '~/features/servers/actions';
 import ServerConnectionStatusMiniList from '~/components/ServerConnectionStatusMiniList';
 import ServerConnectionStatusBadge from '~/components/badges/ServerConnectionStatusBadge';
 

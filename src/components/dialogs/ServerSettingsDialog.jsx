@@ -41,7 +41,7 @@ import {
   closeServerSettingsDialog,
   disconnectFromServer,
   setServerSettingsDialogTab,
-} from '~/actions/server-settings';
+} from '~/features/servers/actions';
 import { forceFormSubmission } from '~/components/forms';
 import {
   getDetectedServersInOrder,

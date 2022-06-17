@@ -14,8 +14,10 @@ import Typography from '@material-ui/core/Typography';
 
 import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
 
-import { closeDeauthenticationDialog } from '~/actions/servers';
-import { disconnectFromServer } from '~/actions/server-settings';
+import {
+  closeDeauthenticationDialog,
+  disconnectFromServer,
+} from '~/features/servers/actions';
 import { getAuthenticatedUser } from '~/features/servers/selectors';
 import { clearAuthenticationToken } from '~/features/servers/slice';
 
