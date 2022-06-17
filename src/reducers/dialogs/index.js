@@ -11,12 +11,12 @@ import deauthenticationReducer from '~/features/servers/deauthentication-dialog'
 import dockDetailsDialogReducer from '~/features/docks/details';
 import featureEditorReducer from '~/features/map-features/editor';
 import geofenceSettingsReducer from '~/features/geofence/slice';
+import layerSettingsReducer from '~/features/map/layer-settings-dialog';
 import savedLocationEditorReducer from '~/features/saved-locations/editor';
 import serverSettingsReducer from '~/features/servers/server-settings-dialog';
 import uavDetailsDialogReducer from '~/features/uavs/details';
 
 import errorHandlingReducer from './error-handling';
-import layerSettingsReducer from './layer-settings';
 import promptReducer from './prompt';
 
 /**

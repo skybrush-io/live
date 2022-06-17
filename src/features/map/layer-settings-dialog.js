@@ -9,7 +9,7 @@ import { noPayload } from '~/utils/redux';
 import { removeLayer } from '~/features/map/layers';
 
 const { actions, reducer } = createSlice({
-  name: 'layer-settings',
+  name: 'layer-settings-dialog',
 
   initialState: {
     dialogVisible: false,

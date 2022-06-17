@@ -24,7 +24,7 @@ import { forceFormSubmission } from '../forms';
 
 import {
   closeLayerSettingsDialog,
-} from '~/reducers/dialogs/layer-settings.js';
+} from '~/features/map/layer-settings-dialog';
 import {
   adjustLayerZIndex,
   renameLayer,
