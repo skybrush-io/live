@@ -26,7 +26,7 @@ import { updateRTKStatistics } from '~/features/rtk/slice';
 import { loadingPromiseFulfilled } from '~/features/show/slice';
 import { updateAgesOfUAVs, updateUAVs } from '~/features/uavs/slice';
 import { saveWorkbenchState } from '~/features/workbench/slice';
-import reducer from '~/reducers';
+import reducer from './reducers';
 
 import migrations from './migrations';
 import { defaultStateReconciler, pristineReconciler } from './reconciler';

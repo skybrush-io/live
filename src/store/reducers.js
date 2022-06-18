@@ -1,7 +1,25 @@
 import { combineReducers } from 'redux';
 
-import dialogsReducer from './dialogs';
+/**
+ * Reducer functions for handling the part of the state object that stores the
+ * state of the various dialogs.
+ */
+import appSettingsReducer from '~/features/settings/dialog';
+import authenticationReducer from '~/features/servers/authentication-dialog';
+import deauthenticationReducer from '~/features/servers/deauthentication-dialog';
+import dockDetailsDialogReducer from '~/features/docks/details';
+import errorHandlingReducer from '~/features/error-handling/slice';
+import featureEditorReducer from '~/features/map-features/editor';
+import geofenceSettingsReducer from '~/features/geofence/slice';
+import layerSettingsReducer from '~/features/map/layer-settings-dialog';
+import promptReducer from '~/features/prompt/slice';
+import savedLocationEditorReducer from '~/features/saved-locations/editor';
+import serverSettingsReducer from '~/features/servers/server-settings-dialog';
+import uavDetailsDialogReducer from '~/features/uavs/details';
 
+/**
+ * Reducer functions for handling the top-level keys of the state object.
+ */
 import alertReducer from '~/features/alert/slice';
 import beaconsReducer from '~/features/beacons/slice';
 import clocksReducer from '~/features/clocks/slice';
@@ -38,6 +56,25 @@ import uavControlReducer from '~/features/uav-control/slice';
 import versionCheckReducer from '~/features/version-check/slice';
 import weatherReducer from '~/features/weather/slice';
 import workbenchReducer from '~/features/workbench/slice';
+
+/**
+ * The reducer function that is responsible for handling all dialog-related
+ * parts in the global state object.
+ */
+const dialogsReducer = combineReducers({
+  appSettings: appSettingsReducer,
+  authentication: authenticationReducer,
+  deauthentication: deauthenticationReducer,
+  dockDetails: dockDetailsDialogReducer,
+  error: errorHandlingReducer,
+  featureEditor: featureEditorReducer,
+  geofenceSettings: geofenceSettingsReducer,
+  layerSettings: layerSettingsReducer,
+  prompt: promptReducer,
+  savedLocationEditor: savedLocationEditorReducer,
+  serverSettings: serverSettingsReducer,
+  uavDetails: uavDetailsDialogReducer,
+});
 
 /**
  * The global reducer of the application.
