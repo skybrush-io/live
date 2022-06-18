@@ -2,6 +2,6 @@
  * @file Action factories related to error handling.
  */
 
-import { actions } from '../reducers/dialogs/error-handling';
+import { actions } from './slice';
 
 export const { closeErrorDialog, showErrorMessage } = actions;

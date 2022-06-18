@@ -14,7 +14,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 
-import { closeErrorDialog } from '../../actions/error-handling';
+import { closeErrorDialog } from '~/features/error-handling/actions';
 
 /**
  * Presentation component for the global error dialog.
