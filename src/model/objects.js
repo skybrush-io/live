@@ -3,7 +3,7 @@
  * objects..
  */
 
-import { notifyObjectsDeletedOnServer } from '~/actions/objects';
+import { notifyObjectsDeletedOnServer } from '~/features/objects/actions';
 
 /**
  * Handles an OBJ-DEL message from a server and updates the state of the Redux
