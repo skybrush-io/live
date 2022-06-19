@@ -15,7 +15,7 @@ import ClockDisplayLabel from '~/components/ClockDisplayLabel';
 import { StartMethod } from '~/features/show/enums';
 import {
   getShowStartMethod,
-  getShowStartTime,
+  hasScheduledStartTime,
 } from '~/features/show/selectors';
 
 const primaryTextForStartMethod = {
@@ -28,21 +28,11 @@ const iconForStartMethod = {
   [StartMethod.AUTO]: <Alarm />,
 };
 
-function formatShowStartTime(value, _format, suffix, _then, nextFormatter) {
-  if (value === 0) {
-    return 'Start time is now';
-  } else if (suffix === 'ago') {
-    return 'Start time passed ' + nextFormatter();
-  } else {
-    return 'Start time is in ' + nextFormatter();
-  }
-}
-
 /**
  * Component that explains to the user how the drones will start after the
  * authorization has been given.
  */
-const StartMethodExplanation = ({ startMethod, startTime }) => (
+const StartMethodExplanation = ({ hasScheduledStartTime, startMethod }) => (
   <List dense>
     <ListItem>
       <ListItemIcon>
@@ -54,7 +44,7 @@ const StartMethodExplanation = ({ startMethod, startTime }) => (
           'This show uses an unknown start mode'
         }
         secondary={
-          startTime ? (
+          hasScheduledStartTime ? (
             <>
               Show clock: <ClockDisplayLabel clockId='show' />
             </>
@@ -68,14 +58,15 @@ const StartMethodExplanation = ({ startMethod, startTime }) => (
 );
 
 StartMethodExplanation.propTypes = {
+  hasScheduledStartTime: PropTypes.bool,
   startMethod: PropTypes.oneOf(StartMethod._VALUES),
 };
 
 export default connect(
   // mapStateToProps
   (state) => ({
+    hasScheduledStartTime: hasScheduledStartTime(state),
     startMethod: getShowStartMethod(state),
-    startTime: getShowStartTime(state),
   }),
   // mapDispatchToProps
   {}

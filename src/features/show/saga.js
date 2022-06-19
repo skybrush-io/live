@@ -5,7 +5,12 @@ import isString from 'lodash-es/isString';
 import reject from 'lodash-es/reject';
 import { call, put, select } from 'redux-saga/effects';
 
-import { isShowAuthorizedToStartLocally } from './selectors';
+import {
+  getShowClockReference,
+  getShowStartMethod,
+  getShowStartTime,
+  isShowAuthorizedToStartLocally,
+} from './selectors';
 import {
   setShowAuthorization,
   setShowSettingsSynchronizationStatus,
@@ -25,7 +30,7 @@ import { createActionListenerSaga } from '~/utils/sagas';
  */
 function* pullSettingsFromServer() {
   const config = yield call(messageHub.query.getShowConfiguration);
-  const { authorized, time, method, uavIds } = get(config, 'start');
+  const { authorized, clock, time, method, uavIds } = get(config, 'start');
 
   if (
     (isNumber(time) || isNil(time)) &&
@@ -33,9 +38,9 @@ function* pullSettingsFromServer() {
     Array.isArray(uavIds)
   ) {
     yield put(setShowAuthorization(Boolean(authorized)));
-    yield put(setStartTime(time));
     yield put(setStartMethod(method));
     yield put(setUAVIdsToStartAutomatically(reject(uavIds || [], isNil)));
+    yield put(setStartTime({ clock, time }));
   } else {
     throw new TypeError('Invalid configuration object received from server');
   }
@@ -45,13 +50,21 @@ function* pullSettingsFromServer() {
  * Saga that sends the current show settings to the server.
  */
 function* pushSettingsToServer() {
-  const { time, method } = yield select((state) => state.show.start);
   const authorized = yield select(isShowAuthorizedToStartLocally);
+  const clock = yield select(getShowClockReference);
   const mapping = yield select(getMissionMapping);
+  const method = yield select(getShowStartMethod);
+  const time = yield select(getShowStartTime);
   const uavIdsToStartAutomatically =
     method === 'auto' ? reject(mapping || [], isNil) : [];
   yield call(messageHub.execute.setShowConfiguration, {
-    start: { authorized, time, method, uavIds: uavIdsToStartAutomatically },
+    start: {
+      authorized,
+      clock,
+      time: isNil(time) ? null : time,
+      method,
+      uavIds: uavIdsToStartAutomatically,
+    },
   });
 
   // TODO(ntamas): it would be nicer to read the values back from the server

@@ -86,8 +86,16 @@ const { actions, reducer } = createSlice({
       // whether the show has been authorized to start
       authorized: false,
 
-      // the start time of the show
-      time: null,
+      // ID of the reference clock that the start time is based on; `null`
+      // means UTC time
+      clock: null,
+
+      // the start time of the show, in UTC time, used if and only if clock is
+      // falsy
+      utcTime: null,
+
+      // start time of the show in the related reference clock, in seconds
+      timeOnClock: null,
 
       // whether the show is started automatically or manually with a remote
       // controller
@@ -140,7 +148,8 @@ const { actions, reducer } = createSlice({
     }),
 
     clearStartTimeAndMethod(state) {
-      state.start.time = null;
+      state.start.utcTime = null;
+      state.start.timeOnClock = null;
       state.start.method = StartMethod.RC;
     },
 
@@ -253,8 +262,8 @@ const { actions, reducer } = createSlice({
 
       if (
         typeof payload === 'object' &&
-        typeof payload.type !== undefined &&
-        typeof payload.value !== undefined
+        typeof payload.type !== 'undefined' &&
+        typeof payload.value !== 'undefined'
       ) {
         state.environment.outdoor.altitudeReference = payload;
       }
@@ -327,15 +336,26 @@ const { actions, reducer } = createSlice({
 
     setStartTime(state, action) {
       const { payload } = action;
+      const { clock, time: timeFromPayload } = payload || {};
 
-      if (isNil(payload)) {
-        state.start.time = null;
+      state.start.clock = isNil(clock) || clock === '' ? null : String(clock);
+
+      const hasClock = !isNil(state.start.clock);
+
+      if (hasClock) {
+        state.start.timeOnClock =
+          isNil(timeFromPayload) || typeof timeFromPayload !== 'number'
+            ? null
+            : timeFromPayload;
       } else {
         const dateTime =
-          payload instanceof Date ? getUnixTime(payload) : payload;
-
+          timeFromPayload instanceof Date
+            ? getUnixTime(timeFromPayload)
+            : timeFromPayload;
         if (typeof dateTime === 'number') {
-          state.start.time = dateTime;
+          state.start.utcTime = dateTime;
+        } else {
+          state.start.utcTime = null;
         }
       }
     },

@@ -21,6 +21,10 @@ const BorderlessButton = styled(Button)({
 const createStartTimeSuggestions = () => {
   const result = [
     {
+      time: 15,
+      relative: true,
+    },
+    {
       time: 30,
       relative: true,
     },
@@ -35,7 +39,7 @@ const createStartTimeSuggestions = () => {
     },
   ];
 
-  for (const divisor of [5, 15, 30]) {
+  for (const divisor of [5, 15, 30, 60]) {
     const lastStartTime = result[result.length - 1].time;
     const lastMinutes = getMinutes(lastStartTime);
     result.push({
