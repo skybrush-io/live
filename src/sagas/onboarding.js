@@ -2,7 +2,7 @@ import isNil from 'lodash-es/isNil';
 import { put, select } from 'redux-saga/effects';
 
 import config from 'config';
-import { updateServerSettings } from '~/actions/server-settings';
+import { updateServerSettings } from '~/features/servers/actions';
 import { getServerHostname } from '~/features/servers/selectors';
 
 /**

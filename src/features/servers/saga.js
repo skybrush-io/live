@@ -24,7 +24,7 @@ import {
   updateCurrentServerAuthenticationSettings,
 } from './slice';
 
-import { showAuthenticationDialog } from '~/actions/servers';
+import { showAuthenticationDialog } from '~/features/servers/actions';
 import { showError, showNotification } from '~/features/snackbar/actions';
 import messageHub from '~/message-hub';
 import { isAuthenticationDialogOpen } from '~/selectors/dialogs';

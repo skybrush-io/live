@@ -15,13 +15,17 @@ import DialogContent from '@material-ui/core/DialogContent';
 
 import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
 
-import { cancelLocationEditing } from '~/actions/saved-location-editor';
-import { AngleField, forceFormSubmission } from '~/components/forms';
-import { getCurrentMapViewAsSavedLocation } from '~/features/saved-locations/selectors';
 import {
+  cancelLocationEditing,
   deleteSavedLocation,
   updateSavedLocation,
-} from '~/features/saved-locations/slice';
+} from '~/features/saved-locations/actions';
+import { AngleField, forceFormSubmission } from '~/components/forms';
+import {
+  getCurrentMapViewAsSavedLocation,
+  getEditedLocationId,
+  getEditorDialogVisibility,
+} from '~/features/saved-locations/selectors';
 import { NEW_ITEM_ID } from '~/utils/collections';
 import {
   createValidator,
@@ -128,7 +132,7 @@ SavedLocationEditorFormPresentation.propTypes = {
 const SavedLocationEditorForm = connect(
   // mapStateToProps
   (state) => {
-    const id = state.dialogs.savedLocationEditor.editedLocationId;
+    const id = getEditedLocationId(state);
     const currentLocation =
       id === NEW_ITEM_ID
         ? getCurrentMapViewAsSavedLocation(state)
@@ -225,8 +229,8 @@ class SavedLocationEditorDialogPresentation extends React.Component {
 const SavedLocationEditorDialog = connect(
   // mapStateToProps
   (state) => ({
-    open: state.dialogs.savedLocationEditor.dialogVisible,
-    editedLocationId: state.dialogs.savedLocationEditor.editedLocationId,
+    open: getEditorDialogVisibility(state),
+    editedLocationId: getEditedLocationId(state),
   }),
   // mapDispatchToProps
   (dispatch) => ({

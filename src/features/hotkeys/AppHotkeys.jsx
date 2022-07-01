@@ -8,11 +8,11 @@ import React from 'react';
 import { configure as configureHotkeys, GlobalHotKeys } from 'react-hotkeys';
 import { connect } from 'react-redux';
 
+import { selectAllUAVFeatures } from '~/features/map/selection';
 import { getPreferredCommunicationChannelIndex } from '~/features/mission/selectors';
 import { toggleMissionIds } from '~/features/settings/slice';
 import { requestRemovalOfSelectedUAVs } from '~/features/uavs/actions';
 import { getSelectedUAVIds } from '~/features/uavs/selectors';
-import { selectAllUAVFeatures } from '~/reducers/map/selection';
 import { clearStoreAfterConfirmation } from '~/store';
 import { createUAVOperationThunks } from '~/utils/messaging';
 

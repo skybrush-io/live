@@ -7,7 +7,6 @@ import sortedIndex from 'lodash-es/sortedIndex';
 import sortedIndexBy from 'lodash-es/sortedIndexBy';
 import reject from 'lodash-es/reject';
 import { orderBy } from 'natural-orderby';
-import u from 'updeep';
 
 import { chooseUniqueIdFromName } from './naming';
 import { EMPTY_ARRAY } from './redux';
@@ -336,44 +335,6 @@ export const createNewItemInFrontOf = (collection, idStore) => {
 
 /**
  * Helper function that receives an item ID and an ordered collection,
- * and returns another ordered collection that is equal to the original
- * one, except that the item with the given ID is removed.
- *
- * @param  {string}  idToRemove  the item ID to remove
- * @param  {Object}  collection  the ordered collection to modify
- * @return {Object}  the collection with the given item removed
- */
-export const copyAndDeleteItemById = (idToRemove, collection) => {
-  const updates = {
-    byId: u.omit(idToRemove),
-    order: u.reject((id) => id === idToRemove),
-  };
-  return u(updates, collection);
-};
-
-/**
- * Helper function that receives multiple item IDs and an ordered collection,
- * and returns another ordered collection that is equal to the original
- * one, except that the items with the given IDs are removed.
- *
- * @param  {string[]}  idsToRemove  the item IDs to remove
- * @param  {Object}    collection  the ordered collection to modify
- * @return {Object}    the collection with the given items removed
- */
-export const copyAndDeleteItemsByIds = (idsToRemove, collection) => {
-  if (idsToRemove.length === 1) {
-    return copyAndDeleteItemById(idsToRemove[0], collection);
-  }
-
-  const updates = {
-    byId: u.omit(idsToRemove),
-    order: u.reject((id) => idsToRemove.includes(id)),
-  };
-  return u(updates, collection);
-};
-
-/**
- * Helper function that receives an item ID and an ordered collection,
  * and removes the item with the given ID from the ordered collection.
  *
  * @param  {Object}  collection  the ordered collection to modify
@@ -420,26 +381,6 @@ export const maybeDeleteItemsByIds = (collection, idsToRemove) => {
 };
 
 /**
- * Creates a key string that can be used in a call to <code>u.updateIn</code>
- * to update some properties of an item in an ordered collection.
- *
- * @param  {string}  itemId  the ID of the item
- * @param  {...string?} subKeys optional sub-keys that will be appended to the
- *         returned key if you want to update some deeply nested property
- *         of the selected item
- * @return {string}  an updeep key that corresponds to the item with the
- *         given ID
- */
-export const getKey = (itemId, ...subKeys) => {
-  if (itemId.includes('.')) {
-    throw new Error('Item ID cannot contain dots');
-  }
-
-  const subKey = subKeys.join('.');
-  return subKey ? `byId.${itemId}.${subKey}` : `byId.${itemId}`;
-};
-
-/**
  * Helper function that takes an ordered collection and returns the first item
  * in the collection, or undefined if the collection is empty.
  */
@@ -482,8 +423,10 @@ export const selectOrdered = ({ byId, order }) =>
  * @param  {string}  newOrder    the new order of items
  * @return {Object}  the reordered collection
  */
-export const reorder = (collection, newOrder) =>
-  u({ order: newOrder }, collection);
+export const reorder = (collection, newOrder) => ({
+  ...collection,
+  order: newOrder,
+});
 
 /**
  * Helper function that takes a single item and an ordered collection, and

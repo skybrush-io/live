@@ -22,12 +22,12 @@ import NavigationButtonGroup from './NavigationButtonGroup';
 import NavigationInstructions from './NavigationInstructions';
 import Overlay from './Overlay';
 
+import DarkModeSwitch from '~/components/DarkModeSwitch';
+import ToolbarDivider from '~/components/ToolbarDivider';
 import {
   setAppSettingsDialogTab,
   showAppSettingsDialog,
-} from '~/actions/app-settings';
-import DarkModeSwitch from '~/components/DarkModeSwitch';
-import ToolbarDivider from '~/components/ToolbarDivider';
+} from '~/features/settings/actions';
 import NearestItemTooltip from '~/features/session/NearestItemTooltip';
 import { getLightingConditionsForThreeDView } from '~/features/settings/selectors';
 import { toggleLightingConditionsInThreeDView } from '~/features/settings/slice';

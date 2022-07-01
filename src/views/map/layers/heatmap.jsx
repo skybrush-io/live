@@ -22,8 +22,8 @@ import Switch from '@material-ui/core/Switch';
 import Select from '@material-ui/core/Select';
 import TextField from '@material-ui/core/TextField';
 
-import { setLayerParametersById } from '~/actions/layers';
 import SubscriptionDialog from '~/components/dialogs/SubscriptionDialog';
+import { setLayerParametersById } from '~/features/map/layers';
 import messageHub from '~/message-hub';
 import HashedMap from '~/utils/hashedmap';
 import {

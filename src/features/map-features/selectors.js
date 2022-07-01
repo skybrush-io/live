@@ -33,3 +33,21 @@ export const getProposedIdForNewFeature = (state, feature, name) => {
   const existingIds = Object.keys(state.features.byId);
   return chooseUniqueId(camelCase(name), existingIds);
 };
+
+/**
+ * Selector that returns the id of the feature currently being edited.
+ */
+export const getEditedFeatureId = (state) =>
+  state.dialogs.featureEditor.featureId;
+
+/**
+ * Selector that determines whether the feature editor dialog is open.
+ */
+export const getEditorDialogVisibility = (state) =>
+  state.dialogs.featureEditor.dialogVisible;
+
+/**
+ * Selector that determines the selected tab of the feature editor dialog.
+ */
+export const getSelectedTab = (state) =>
+  state.dialogs.featureEditor.selectedTab;

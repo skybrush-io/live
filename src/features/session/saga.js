@@ -1,7 +1,7 @@
 import { decode } from 'jsonwebtoken';
 import { delay, put, select } from 'redux-saga/effects';
 
-import { disconnectFromServer } from '~/actions/server-settings';
+import { disconnectFromServer } from '~/features/servers/actions';
 import { getAuthenticationTokenFromUrl } from '~/utils/authentication';
 
 import {

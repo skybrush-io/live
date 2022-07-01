@@ -11,8 +11,9 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import AddCircleOutline from '@material-ui/icons/AddCircleOutline';
 
-import { addLayer, showLayersDialog } from '~/actions/layers';
 import { selectableListOf } from '~/components/helpers/lists';
+import { showLayerSettingsDialog } from '~/features/map/layer-settings-dialog';
+import { addLayer } from '~/features/map/layers';
 import { labelForLayerType, iconForLayerType } from '~/model/layers';
 import { getLayersInTopmostFirstOrder } from '~/selectors/ordered';
 
@@ -26,7 +27,6 @@ import { getLayersInTopmostFirstOrder } from '~/selectors/ordered';
 const createListItemForLayer = (layer, props) => {
   const icon = iconForLayerType(layer.type);
   return (
-    /* eslint-disable react/prop-types */
     <ListItem
       key={layer.id}
       button
@@ -39,7 +39,6 @@ const createListItemForLayer = (layer, props) => {
         secondary={labelForLayerType(layer.type)}
       />
     </ListItem>
-    /* eslint-enable react/prop-types */
   );
 };
 
@@ -50,7 +49,6 @@ const createListItemForLayer = (layer, props) => {
  * @return {React.Node}  the rendered list item
  */
 const createNewItemEntry = (props) => {
-  /* eslint-disable react/prop-types */
   return (
     <ListItem key='__newItem__' button onClick={props.onNewItem}>
       <ListItemIcon>
@@ -59,7 +57,6 @@ const createNewItemEntry = (props) => {
       <ListItemText primary='Add new layer' />
     </ListItem>
   );
-  /* eslint-enable react/prop-types */
 };
 
 /**
@@ -91,14 +88,14 @@ const LayerList = connect(
   // mapDispatchToProps
   (dispatch) => ({
     onChange(_event, layerId) {
-      dispatch(showLayersDialog(layerId));
+      dispatch(showLayerSettingsDialog(layerId));
     },
 
     onNewItem() {
       const action = addLayer();
       dispatch(action);
       if (action.id) {
-        dispatch(showLayersDialog(action.id));
+        dispatch(showLayerSettingsDialog(action.id));
       }
     },
   })

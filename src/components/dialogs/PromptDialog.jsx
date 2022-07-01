@@ -16,7 +16,10 @@ import { Form } from 'react-final-form';
 import React from 'react';
 import { connect } from 'react-redux';
 
-import { cancelPromptDialog, submitPromptDialog } from '~/actions/prompt';
+import {
+  cancelPromptDialog,
+  submitPromptDialog,
+} from '~/features/prompt/actions';
 
 const PromptDialogForm = ({
   cancelButtonLabel,

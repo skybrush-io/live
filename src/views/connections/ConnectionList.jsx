@@ -22,8 +22,8 @@ import React from 'react';
 import { connect } from 'react-redux';
 import TimeAgo from 'react-timeago';
 
-import { showServerSettingsDialog } from '~/actions/server-settings';
 import { listOf } from '~/components/helpers/lists';
+import { showServerSettingsDialog } from '~/features/servers/actions';
 import { ConnectionState } from '~/model/connections';
 import { getConnectionsInOrder } from '~/selectors/ordered';
 

@@ -9,7 +9,24 @@ import {
 } from '~/flockwave/timesync';
 import { createAsyncAction } from '~/utils/redux';
 
+import { actions as authenticationDialogActions } from './authentication-dialog';
+import { actions as deauthenticationDialogActions } from './deauthentication-dialog';
+import { actions as serverSettingsDialogActions } from './server-settings-dialog';
 import { getClockSkewInMilliseconds } from './selectors';
+
+export const {
+  closeServerSettingsDialog,
+  disconnectFromServer,
+  setServerSettingsDialogTab,
+  showServerSettingsDialog,
+  updateServerSettings,
+} = serverSettingsDialogActions;
+
+export const { closeAuthenticationDialog, showAuthenticationDialog } =
+  authenticationDialogActions;
+
+export const { closeDeauthenticationDialog, showDeauthenticationDialog } =
+  deauthenticationDialogActions;
 
 /**
  * Action factory that creates an action that starts an authentication attempt.

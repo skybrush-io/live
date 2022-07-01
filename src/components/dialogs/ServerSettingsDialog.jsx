@@ -37,12 +37,12 @@ import {
   isServerDetectionSupported,
 } from '../ServerDetectionManager';
 
+import { forceFormSubmission } from '~/components/forms';
 import {
   closeServerSettingsDialog,
   disconnectFromServer,
   setServerSettingsDialogTab,
-} from '~/actions/server-settings';
-import { forceFormSubmission } from '~/components/forms';
+} from '~/features/servers/actions';
 import {
   getDetectedServersInOrder,
   getServerHostname,

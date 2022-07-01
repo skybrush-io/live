@@ -6,7 +6,7 @@
 import has from 'lodash-es/has';
 import { createSlice } from '@reduxjs/toolkit';
 
-import { notifyObjectsDeletedOnServer } from '~/actions/objects';
+import { notifyObjectsDeletedOnServer } from '~/features/objects/actions';
 import {
   clearOrderedCollection,
   maybeDeleteItemsByIds,
@@ -78,7 +78,7 @@ const { actions, reducer } = createSlice({
   },
 
   extraReducers: {
-    [notifyObjectsDeletedOnServer]: (state, action) => {
+    [notifyObjectsDeletedOnServer](state, action) {
       maybeDeleteItemsByIds(state, action.payload);
     },
   },

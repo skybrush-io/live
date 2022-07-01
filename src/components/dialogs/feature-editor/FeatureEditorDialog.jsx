@@ -13,7 +13,12 @@ import DialogTabs from '@skybrush/mui-components/lib/DialogTabs';
 import {
   closeFeatureEditorDialog,
   setFeatureEditorDialogTab,
-} from '~/actions/feature-editor';
+} from '~/features/map-features/actions';
+import {
+  getEditedFeatureId,
+  getEditorDialogVisibility,
+  getSelectedTab,
+} from '~/features/map-features/selectors';
 import { removeFeaturesByIds } from '~/features/map-features/slice';
 
 import FeaturePointsForm from './FeaturePointsForm';
@@ -104,13 +109,12 @@ FeatureEditorDialogPresentation.defaultProps = {
 const FeatureEditorDialog = connect(
   // mapStateToProps
   (state) => {
-    const { dialogVisible, featureId, selectedTab } =
-      state.dialogs.featureEditor;
+    const featureId = getEditedFeatureId(state);
     return {
       featureId,
-      selectedTab,
+      selectedTab: getSelectedTab(state),
       feature: state.features.byId[featureId],
-      open: dialogVisible,
+      open: getEditorDialogVisibility(state),
     };
   },
   // mapDispatchToProps

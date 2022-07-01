@@ -2,13 +2,9 @@
  * @file Action factories related to the global prompt dialog.
  */
 
-import { createAction } from 'redux-actions';
+import { actions } from './slice';
 
-import {
-  CANCEL_PROMPT_DIALOG,
-  SHOW_PROMPT_DIALOG,
-  SUBMIT_PROMPT_DIALOG,
-} from './types';
+const { _cancelPromptDialog, _showPromptDialog, _submitPromptDialog } = actions;
 
 /**
  * Function that must be called from the submission thunk to resolve the
@@ -30,15 +26,7 @@ function resolveTo(value) {
 }
 
 /**
- * Action factory that creates an action that closes the prompt dialog
- * without submitting anything.
- *
- * This is not exported because the thunk version should be used instead.
- */
-const cancelPromptDialogNow = createAction(CANCEL_PROMPT_DIALOG);
-
-/**
- * Thunk factoty that creates a thunk that closes the prompt dialog
+ * Thunk factory that creates a thunk that closes the prompt dialog
  * without submitting anything, and resolves the promise of the prompt
  * dialog to undefined.
  *
@@ -46,20 +34,10 @@ const cancelPromptDialogNow = createAction(CANCEL_PROMPT_DIALOG);
  */
 export function cancelPromptDialog() {
   return (dispatch) => {
-    dispatch(cancelPromptDialogNow());
+    dispatch(_cancelPromptDialog());
     resolveTo(undefined);
   };
 }
-
-/**
- * Action factory that creates an action that submits the prompt dialog
- * with the given value.
- *
- * This is not exported because the thunk version should be used instead.
- */
-const submitPromptDialogNow = createAction(SUBMIT_PROMPT_DIALOG, (value) => ({
-  value,
-}));
 
 /**
  * Thunk factory that creates a thunk that submits the prompt dialog
@@ -74,27 +52,10 @@ export function submitPromptDialog(value) {
   }
 
   return (dispatch) => {
-    dispatch(submitPromptDialogNow());
+    dispatch(_submitPromptDialog());
     resolveTo(value);
   };
 }
-
-/**
- * Action factory that creates an action that will show the prompt dialog.
- * This is not exported because the thunk version should be used instead.
- */
-const showPromptDialogNow = createAction(
-  SHOW_PROMPT_DIALOG,
-  (message, options) => {
-    if (typeof options === 'string') {
-      options = {
-        initialValue: options,
-      };
-    }
-
-    return { ...options, message };
-  }
-);
 
 /**
  * Thunk factory that creates a thunk that shows the prompt dialog.
@@ -106,7 +67,7 @@ const showPromptDialogNow = createAction(
 export function showPromptDialog(message, options) {
   return (dispatch) => {
     resolveTo(undefined);
-    dispatch(showPromptDialogNow(message, options));
+    dispatch(_showPromptDialog(message, options));
     return new Promise((resolve) => {
       _resolver = resolve;
     });

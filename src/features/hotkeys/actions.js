@@ -2,11 +2,11 @@ import isNil from 'lodash-es/isNil';
 
 import { dismissAlerts } from '~/features/alert/slice';
 import { hasPendingAudibleAlerts } from '~/features/alert/selectors';
+import { clearSelection } from '~/features/map/selection';
 import { getMissionMapping } from '~/features/mission/selectors';
 import { showNotification } from '~/features/snackbar/slice';
 import { setSelectedUAVIds } from '~/features/uavs/actions';
 import { getUAVById } from '~/features/uavs/selectors';
-import { clearSelection } from '~/reducers/map/selection';
 import { scrollUAVListItemIntoView } from '~/utils/navigation';
 import { copyDisplayedCoordinatesToClipboard } from '~/views/map/utils';
 

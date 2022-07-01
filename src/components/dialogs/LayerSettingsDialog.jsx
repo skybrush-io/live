@@ -22,15 +22,15 @@ import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
 
 import { forceFormSubmission } from '../forms';
 
+import { closeLayerSettingsDialog } from '~/features/map/layer-settings-dialog';
 import {
   adjustLayerZIndex,
-  closeLayersDialog,
   renameLayer,
   toggleLayerVisibility,
   removeLayer,
-} from '~/actions/layers';
+} from '~/features/map/layers';
 import { LayerType } from '~/model/layers';
-import { createValidator, required } from '../../utils/validation';
+import { createValidator, required } from '~/utils/validation';
 import { LayerSettings, stateObjectToLayerSettings } from '~/views/map/layers';
 
 const validator = createValidator({
@@ -102,11 +102,11 @@ const BasicLayerSettingsForm = connect(
   }),
   // mapDispatchToProps
   (dispatch, ownProps) => ({
-    onSubmit: (values) => {
+    onSubmit(values) {
       dispatch(renameLayer(ownProps.layerId, values.label));
     },
 
-    validate: (values) => {
+    validate(values) {
       const result = validator(values);
 
       if (result === undefined || Object.keys(result).length === 0) {
@@ -328,7 +328,7 @@ const LayerSettingsDialog = connect(
         dispatch(removeLayer(selectedLayerId));
       }
 
-      dispatch(closeLayersDialog());
+      dispatch(closeLayerSettingsDialog());
     },
     onMoveLayer: adjustLayerZIndex,
     onRemoveLayer: removeLayer,

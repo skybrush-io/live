@@ -21,7 +21,7 @@ export const getCameraPose = (state) => state.threeD.camera;
 const getGPSToThreeJSTransformation = createSelector(
   getFlatEarthCoordinateTransformer,
   (transformation) => {
-    const flipY = transformation.type !== 'nwu';
+    const flipY = transformation?.type !== 'nwu';
     return (coordinate) => {
       if (isNil(coordinate)) {
         return null;

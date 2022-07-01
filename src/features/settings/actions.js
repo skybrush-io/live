@@ -4,6 +4,15 @@ import { UAVFilter } from '~/model/filtering';
 import { getUAVListSortPreference } from './selectors';
 import { updateAppSettings } from './slice';
 
+import { actions as dialogActions } from './dialog';
+
+export const {
+  closeAppSettingsDialog,
+  setAppSettingsDialogTab,
+  showAppSettingsDialog,
+  toggleAppSettingsDialog,
+} = dialogActions;
+
 export function setSingleUAVListFilter(filter) {
   return (dispatch) => {
     dispatch(

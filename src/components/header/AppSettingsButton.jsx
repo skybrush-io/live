@@ -5,7 +5,7 @@ import SettingsIcon from '@material-ui/icons/Settings';
 
 import GenericHeaderButton from '@skybrush/mui-components/lib/GenericHeaderButton';
 
-import { toggleAppSettingsDialog } from '~/actions/app-settings';
+import { toggleAppSettingsDialog } from '~/features/settings/actions';
 
 const AppSettingsButtonPresentation = (props) => (
   <GenericHeaderButton {...props} tooltip='Preferences'>

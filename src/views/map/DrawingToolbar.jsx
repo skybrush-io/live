@@ -16,7 +16,7 @@ import partial from 'lodash-es/partial';
 import { connect } from 'react-redux';
 
 import EditFeature from '~/icons/EditFeature';
-import { setSelectedTool } from '~/reducers/map/tools';
+import { setSelectedTool } from '~/features/map/tools';
 
 import { Tool } from './tools';
 

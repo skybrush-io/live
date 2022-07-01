@@ -12,8 +12,8 @@ import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 
-import { setLayerParametersById } from '~/actions/layers';
 import PopupColorPicker from '~/components/PopupColorPicker';
+import { setLayerParametersById } from '~/features/map/layers';
 import { showNotification } from '~/features/snackbar/slice';
 import { parseColor } from '~/utils/coloring';
 import { convertSimpleStyleToOLStyle } from '~/utils/simplestyle';
@@ -145,7 +145,7 @@ export const GeoJSONLayerSettings = connect(
     setLayerParameters(parameters) {
       dispatch(setLayerParametersById(ownProps.layerId, parameters));
     },
-    showMessage: (message) => {
+    showMessage(message) {
       dispatch(showNotification(message));
     },
   })
@@ -232,14 +232,17 @@ export const GeoJSONLayer = ({ layer, zIndex }) => {
       'fill-opacity': fillColor.alpha(),
     };
     return (feature) => {
-      const props = feature.getProperties();
+      const properties = feature.getProperties();
 
       // Force point geometries to always have a marker
-      if (!props['marker-symbol'] && feature.getGeometry() instanceof Point) {
-        props['marker-symbol'] = 'marker';
+      if (
+        !properties['marker-symbol'] &&
+        feature.getGeometry() instanceof Point
+      ) {
+        properties['marker-symbol'] = 'marker';
       }
 
-      return convertSimpleStyleToOLStyle(props, defaults);
+      return convertSimpleStyleToOLStyle(properties, defaults);
     };
   }, [layer]);
 

@@ -12,7 +12,7 @@ import AuthenticationStatusBadge from '../badges/AuthenticationStatusBadge';
 import {
   showAuthenticationDialog,
   showDeauthenticationDialog,
-} from '~/actions/servers';
+} from '~/features/servers/actions';
 import {
   isAuthenticated,
   requiresAuthentication,

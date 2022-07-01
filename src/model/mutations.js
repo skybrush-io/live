@@ -1,11 +1,11 @@
 import isEmpty from 'lodash-es/isEmpty';
 
+import { updateFlatEarthCoordinateSystem } from '~/features/map/origin';
 import { updateFeatureCoordinatesByIds } from '~/features/map-features/slice';
 import {
   moveOutdoorShowOriginByMapCoordinateDelta,
   rotateOutdoorShowOrientationByAngle,
 } from '~/features/show/actions';
-import { updateFlatEarthCoordinateSystem } from '~/reducers/map/origin';
 import { toDegrees } from '~/utils/math';
 
 import { createFeatureFromOpenLayers } from './features';

@@ -10,8 +10,8 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 
-import { showFeatureEditorDialog } from '~/actions/feature-editor';
 import { listOf } from '~/components/helpers/lists';
+import { showFeatureEditorDialog } from '~/features/map-features/actions';
 import { getNameOfFeatureType, getIconOfFeatureType } from '~/model/features';
 import { getFeaturesInOrder } from '~/selectors/ordered';
 
