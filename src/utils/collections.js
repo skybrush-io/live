@@ -424,7 +424,7 @@ export const selectOrdered = ({ byId, order }) =>
  * @return {Object}  the reordered collection
  */
 export const reorder = (collection, newOrder) => ({
-  ...structuredClone(collection),
+  ...collection,
   order: newOrder,
 });
 
