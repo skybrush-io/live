@@ -25,7 +25,7 @@ export function formatDuration(duration) {
 /**
  * Formats a duration as hours:minutes:seconds.
  */
-export function formatDurationHMS(duration, options) {
+export function formatDurationHMS(duration, options = {}) {
   if (duration < 0) {
     return '-' + formatDurationHMS(-duration, options);
   }

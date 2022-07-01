@@ -67,6 +67,7 @@ export function importParametersFromFile(file) {
           `File too large; maximum allowed size is ${MAX_FILE_SIZE_KB} KB`
         )
       );
+      return;
     }
 
     let parsed;

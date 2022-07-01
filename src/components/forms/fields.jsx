@@ -13,7 +13,9 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Field } from 'react-final-form';
 import { useToggle } from 'react-use';
 
+import { formatDurationHMS } from '~/utils/formatting';
 import { formatCoordinate, parseCoordinate } from '~/utils/geography';
+import { parseDurationHMS } from '~/utils/parsing';
 
 /**
  * Select component that can be placed in a `react-final-form` form and
@@ -173,7 +175,7 @@ AngleField.defaultProps = {
 
 const createCoordinateFieldProps = (formatter) => ({
   formatOnBlur: true,
-  format: (value) => {
+  format(value) {
     const parsedValue =
       Array.isArray(value) && value.length === 2
         ? value
@@ -185,7 +187,7 @@ const createCoordinateFieldProps = (formatter) => ({
       return value;
     }
   },
-  validate: (value) => {
+  validate(value) {
     const parsedValue = parseCoordinate(value);
     if (!parsedValue) {
       return 'Invalid coordinate';
@@ -286,6 +288,53 @@ DurationField.propTypes = {
 
 DurationField.defaultProps = {
   min: 0,
+};
+
+/* ************************************************************************* */
+
+const createHMSDurationFieldProps = ({ min, max }) => ({
+  formatOnBlur: true,
+  format(value) {
+    const parsedValue =
+      typeof value === 'number' ? value : parseDurationHMS(value);
+    if (Number.isNaN(parsedValue)) {
+      /* probably invalid value */
+      return typeof value === 'string' ? value : '';
+    } else {
+      return formatDurationHMS(parsedValue, { padHours: true });
+    }
+  },
+  validate(value) {
+    const parsedValue = parseDurationHMS(value);
+    if (!Number.isFinite(parsedValue)) {
+      return 'Invalid duration';
+    }
+
+    if (typeof min === 'number' && value < min) {
+      return min === 0 ? 'Duration must be non-negative' : 'Duration too short';
+    }
+
+    if (typeof max === 'number' && value > max) {
+      return 'Duration too long';
+    }
+  },
+});
+
+/**
+ * Numeric field that can be placed in a `react-final-form` form and that accepts
+ * durations in hours:minutes:seconds format.
+ */
+export const HMSDurationField = ({ min, max, ...props }) => {
+  const fieldProps = useMemo(
+    () => createHMSDurationFieldProps({ min, max }),
+    [min, max]
+  );
+  return <TextField fieldProps={fieldProps} {...props} />;
+};
+
+HMSDurationField.propTypes = {
+  min: PropTypes.number,
+  max: PropTypes.number,
 };
 
 /* ************************************************************************* */

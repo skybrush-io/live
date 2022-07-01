@@ -4,6 +4,8 @@ import isNil from 'lodash-es/isNil';
 
 import { formatDurationHMS } from '~/utils/formatting';
 
+import { MTC_CLOCK_ID } from './constants';
+
 /**
  * Remapping of commonly used clock IDs in a Skybrush server to something
  * more human-readable.
@@ -89,7 +91,7 @@ export function formatTicksOnClock(ticks, clock, options) {
   let seconds = ticks / ticksPerSecond;
 
   if (isNil(epoch) || Number.isNaN(epoch)) {
-    if (clock.id === 'mtc') {
+    if (clock.id === MTC_CLOCK_ID) {
       // No epoch, so we just simply show a HH:MM:SS:FF SMPTE-style
       // timestamp. We (ab)use the millisecond part of the timestamp
       // to represent the number of frames

@@ -12,12 +12,13 @@ import maxBy from 'lodash-es/maxBy';
 import { createSelector } from '@reduxjs/toolkit';
 import turfContains from '@turf/boolean-contains';
 
+import { MTC_CLOCK_ID } from '~/features/clocks/constants';
 import {
   proposeDistanceLimit,
   proposeHeightLimit,
 } from '~/features/geofence/utils';
 import { getGeofencePolygonInWorldCoordinates } from '~/features/mission/selectors';
-import { formatDuration } from '~/utils/formatting';
+import { formatDuration, formatDurationHMS } from '~/utils/formatting';
 import { FlatEarthCoordinateSystem } from '~/utils/geography';
 import {
   convexHull,
@@ -99,7 +100,7 @@ export const getAbsolutePathOfShowFile = createSelector(
 /**
  * Returns whether there is a scheduled start time for the drone show.
  */
-export const hasScheduledStartTime = (state) => !isNil(state.show.start.time);
+export const hasScheduledStartTime = (state) => !isNil(getShowStartTime(state));
 
 /**
  * Returns whether the show has changed externally since the time it was
@@ -585,6 +586,11 @@ export const getUserDefinedHeightLimit = (state) => {
 };
 
 /**
+ * Returns the reference clock that the show clock is syncing to.
+ */
+export const getShowClockReference = (state) => state.show.start.clock;
+
+/**
  * Returns the metadata of the show, if any.
  */
 export const getShowMetadata = createSelector(
@@ -598,12 +604,15 @@ export const getShowMetadata = createSelector(
 export const getShowStartMethod = (state) => state.show.start.method;
 
 /**
- * Returns the start time of the show as a UNIX timestamp or undefined if the
- * start time was not set yet.
+ * Returns the start time of the show. The start time is returned as the number
+ * of seconds elapsed from the epoch of the associated show clock, or since the
+ * UNIX epoch if there is no associated show clock. Returns undefined if no
+ * start time was scheduled yet.
  */
 export const getShowStartTime = (state) => {
-  const { time } = state.show.start;
-  return isNil(time) || Number.isNaN(time) ? undefined : time;
+  const { clock, timeOnClock, utcTime } = state.show.start;
+  const time = isNil(clock) ? utcTime : timeOnClock;
+  return isNil(time) || Number.isNaN(time) ? null : time;
 };
 
 /**
@@ -611,8 +620,18 @@ export const getShowStartTime = (state) => {
  * if no start time is set.
  */
 export const getShowStartTimeAsString = createSelector(
+  getShowClockReference,
   getShowStartTime,
-  (time) => (time ? formatISO9075(fromUnixTime(time)) : undefined)
+  (clock, time) =>
+    isNil(clock)
+      ? time
+        ? formatISO9075(fromUnixTime(time))
+        : undefined
+      : clock === MTC_CLOCK_ID
+      ? time
+        ? formatDurationHMS(time, { padHours: true }) + ' MTC'
+        : undefined
+      : formatDurationHMS(time, { padHours: true }) + ` on clock ${clock}`
 );
 
 /**
