@@ -1,3 +1,1 @@
-import LightControlPanel from './LightControlPanel';
-
-export default LightControlPanel;
+export { default } from './LightControlPanel';

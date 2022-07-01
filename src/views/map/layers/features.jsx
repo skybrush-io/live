@@ -302,7 +302,7 @@ export const FeaturesLayer = connect(
   }),
   // mapDispatchToProps
   (dispatch) => ({
-    onFeaturesModified: (event, features) => {
+    onFeaturesModified(event, features) {
       handleFeatureUpdatesInOpenLayers(features, dispatch, {
         type: 'modify',
         event,

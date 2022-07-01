@@ -75,7 +75,7 @@ const { actions, reducer } = createSlice({
   },
 
   extraReducers: {
-    [removeFeaturesByIds]: (state, action) => {
+    [removeFeaturesByIds](state, action) {
       return updateSelection(
         state,
         [],

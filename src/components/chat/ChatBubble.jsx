@@ -10,9 +10,10 @@ import React from 'react';
 import { blue, grey } from '@material-ui/core/colors';
 import { makeStyles } from '@material-ui/core/styles';
 
+import { isThemeDark } from '@skybrush/app-theme-material-ui';
+
 import { colorForSeverity } from '~/components/colors';
 import { Severity } from '~/model/enums';
-import { isDark } from '~/theme';
 import CustomPropTypes from '~/utils/prop-types';
 
 const useStyles = makeStyles(
@@ -37,16 +38,16 @@ const useStyles = makeStyles(
     },
 
     ownBubble: {
-      background: isDark(theme) ? blue[400] : blue[600],
+      background: isThemeDark(theme) ? blue[400] : blue[600],
       color: theme.palette.getContrastText(
-        isDark(theme) ? blue[400] : blue[600]
+        isThemeDark(theme) ? blue[400] : blue[600]
       ),
     },
 
     otherBubble: {
-      background: isDark(theme) ? grey[900] : grey[100],
+      background: isThemeDark(theme) ? grey[900] : grey[100],
       color: theme.palette.getContrastText(
-        isDark(theme) ? grey[900] : grey[100]
+        isThemeDark(theme) ? grey[900] : grey[100]
       ),
 
       '& .chat-meta': {

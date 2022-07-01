@@ -13,13 +13,16 @@ import { getActiveUAVIds, getUAVById } from './selectors';
  * return an altitude according to the selected summary type (AMSL, AGL or local).
  */
 const altitudeGetters = {
+  /* eslint-disable object-shorthand */
   [AltitudeSummaryType.AMSL]: (uav) => uav?.position?.amsl,
   [AltitudeSummaryType.AGL]: (uav) => uav?.position?.agl,
+
   [AltitudeSummaryType.XYZ]: (uav) => {
     const pos = uav?.localPosition;
     return Array.isArray(pos) ? pos[2] : null;
   },
   dummy: () => null,
+  /* eslint-enable object-shorthand */
 };
 
 const findAltitudeBounds = (store, type) => {

@@ -70,27 +70,40 @@ export function updateUAVVoltageThreshold(name, value) {
     let { fullChargeVoltage, lowVoltageThreshold, criticalVoltageThreshold } =
       state.settings.uavs;
 
-    if (name === 'criticalVoltageThreshold') {
-      criticalVoltageThreshold = value;
-      lowVoltageThreshold = Math.max(
-        criticalVoltageThreshold,
-        lowVoltageThreshold
-      );
-      fullChargeVoltage = Math.max(lowVoltageThreshold, fullChargeVoltage);
-    } else if (name === 'lowVoltageThreshold') {
-      lowVoltageThreshold = value;
-      fullChargeVoltage = Math.max(lowVoltageThreshold, fullChargeVoltage);
-      criticalVoltageThreshold = Math.min(
-        lowVoltageThreshold,
-        criticalVoltageThreshold
-      );
-    } else if (name === 'fullChargeVoltage') {
-      fullChargeVoltage = value;
-      lowVoltageThreshold = Math.min(fullChargeVoltage, lowVoltageThreshold);
-      criticalVoltageThreshold = Math.min(
-        lowVoltageThreshold,
-        criticalVoltageThreshold
-      );
+    switch (name) {
+      case 'criticalVoltageThreshold': {
+        criticalVoltageThreshold = value;
+        lowVoltageThreshold = Math.max(
+          criticalVoltageThreshold,
+          lowVoltageThreshold
+        );
+        fullChargeVoltage = Math.max(lowVoltageThreshold, fullChargeVoltage);
+
+        break;
+      }
+
+      case 'lowVoltageThreshold': {
+        lowVoltageThreshold = value;
+        fullChargeVoltage = Math.max(lowVoltageThreshold, fullChargeVoltage);
+        criticalVoltageThreshold = Math.min(
+          lowVoltageThreshold,
+          criticalVoltageThreshold
+        );
+
+        break;
+      }
+
+      case 'fullChargeVoltage': {
+        fullChargeVoltage = value;
+        lowVoltageThreshold = Math.min(fullChargeVoltage, lowVoltageThreshold);
+        criticalVoltageThreshold = Math.min(
+          lowVoltageThreshold,
+          criticalVoltageThreshold
+        );
+
+        break;
+      }
+      // No default
     }
 
     dispatch(

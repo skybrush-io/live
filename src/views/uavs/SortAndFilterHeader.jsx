@@ -19,6 +19,8 @@ import {
   usePopupState,
 } from 'material-ui-popup-state/hooks';
 
+import { isThemeDark, monospacedFont } from '@skybrush/app-theme-material-ui';
+
 import Colors from '~/components/colors';
 import FadeAndSlide from '~/components/transitions/FadeAndSlide';
 import {
@@ -44,7 +46,6 @@ import {
   labelsForUAVSortKey,
   shortLabelsForUAVSortKey,
 } from '~/model/sorting';
-import { isDark, monospacedFont } from '~/theme';
 
 const createChipStyle = (color, theme) => {
   const result = {
@@ -81,7 +82,7 @@ const useStyles = makeStyles(
   (theme) => ({
     root: {
       backdropFilter: 'blur(5px)',
-      background: isDark(theme)
+      background: isThemeDark(theme)
         ? 'rgba(36, 36, 36, 0.54)'
         : 'rgba(255, 255, 255, 0.8)',
       borderBottom: `1px solid ${theme.palette.divider}`,

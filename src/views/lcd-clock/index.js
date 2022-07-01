@@ -1,2 +1,1 @@
-import LCDClockPanel from './LCDClockPanel';
-export default LCDClockPanel;
+export { default } from './LCDClockPanel';

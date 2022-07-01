@@ -90,7 +90,7 @@ const stages = {
   },
 
   uploadShow: {
-    evaluate: (state) => {
+    evaluate(state) {
       const result = getLastUploadResultByJobType(state, JOB_TYPE);
       return result === 'error'
         ? Status.ERROR

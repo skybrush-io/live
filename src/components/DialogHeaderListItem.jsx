@@ -9,12 +9,12 @@ import Clear from '@material-ui/icons/Clear';
 import Done from '@material-ui/icons/Done';
 import Warning from '@material-ui/icons/Warning';
 
-import { isDark } from '~/theme';
+import { isThemeDark } from '@skybrush/app-theme-material-ui';
 
 const useStyles = makeStyles(
   (theme) => ({
     root: {
-      backgroundColor: isDark(theme)
+      backgroundColor: isThemeDark(theme)
         ? theme.palette.grey.A400
         : theme.palette.grey[200],
       paddingTop: 6,

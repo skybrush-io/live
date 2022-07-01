@@ -149,7 +149,7 @@ export class AutoComplete extends React.Component {
     return (
       <TextField
         InputProps={{
-          inputRef: (node) => {
+          inputRef(node) {
             ref(node);
             inputRef(node);
           },
@@ -311,14 +311,14 @@ export class AutoComplete extends React.Component {
           value = toLower(value);
         }
 
-        valuesToMatch.forEach((item, index) => {
+        for (const [index, item] of valuesToMatch.entries()) {
           if (item.startsWith(value)) {
             result.push(values[index]);
             if (result.length >= maxItems) {
-              return false;
+              break;
             }
           }
-        });
+        }
       }
 
       return result;

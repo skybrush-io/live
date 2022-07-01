@@ -1,3 +1,1 @@
-import BeaconList from './BeaconList';
-
-export default BeaconList;
+export { default } from './BeaconList';

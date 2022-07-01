@@ -1,2 +1,1 @@
-import DatasetList from './DatasetList';
-export default DatasetList;
+export { default } from './DatasetList';

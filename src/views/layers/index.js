@@ -1,2 +1,1 @@
-import LayerList from './LayerList';
-export default LayerList;
+export { default } from './LayerList';

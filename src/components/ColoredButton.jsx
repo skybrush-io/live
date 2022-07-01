@@ -12,7 +12,7 @@ const useStyles = makeStyles(
       fontSize: '48px',
     },
 
-    root: ({ color, dense }) => {
+    root({ color, dense }) {
       const parsedColor = createColor(color);
       return {
         ...theme.typography.button,

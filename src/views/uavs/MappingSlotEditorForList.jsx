@@ -7,13 +7,14 @@ import Box from '@material-ui/core/Box';
 import InputBase from '@material-ui/core/InputBase';
 import { makeStyles } from '@material-ui/core/styles';
 
+import { monospacedFont } from '@skybrush/app-theme-material-ui';
+
 import Colors from '~/components/colors';
 import { getUAVIdForMappingSlotBeingEdited } from '~/features/mission/selectors';
 import {
   cancelMappingEditorSessionAtCurrentSlot,
   commitMappingEditorSessionAtCurrentSlot,
 } from '~/features/mission/slice';
-import { monospacedFont } from '~/theme';
 
 const WIDTH = 64;
 

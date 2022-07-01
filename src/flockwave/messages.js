@@ -920,7 +920,7 @@ export default class MessageHub {
         'sendMessage() was called before associating an emitter ' +
           'to the message hub. Message was discarded.'
       );
-      return Promise.reject(new NoEmitterError());
+      throw new NoEmitterError();
     }
 
     const message = createMessage(body);

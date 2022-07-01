@@ -1,2 +1,1 @@
-import ConnectionList from './ConnectionList';
-export default ConnectionList;
+export { default } from './ConnectionList';

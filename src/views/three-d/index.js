@@ -1,3 +1,1 @@
-import ThreeDTopLevelView from './ThreeDTopLevelView';
-
-export default ThreeDTopLevelView;
+export { default } from './ThreeDTopLevelView';

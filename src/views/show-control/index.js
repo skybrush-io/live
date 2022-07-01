@@ -1,3 +1,1 @@
-import ShowControlPanel from './ShowControlPanel';
-
-export default ShowControlPanel;
+export { default } from './ShowControlPanel';

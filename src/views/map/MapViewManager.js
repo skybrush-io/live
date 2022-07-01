@@ -139,19 +139,30 @@ export default class MapViewManager {
    * @param {ol.ObjectEvent} e the propertychange event emitted by openlayers.
    */
   _onViewPropertyChanged = (e) => {
-    if (e.key === 'center') {
-      const center = lonLatFromMapViewCoordinate(this.view.getCenter()).map(
-        (c) => round(c, 6)
-      );
-      this.callbacks.center.forEach((c) =>
-        c({ lon: center[0], lat: center[1] })
-      );
-    } else if (e.key === 'rotation') {
-      const rotation = toDegrees(-this.view.getRotation());
-      this.callbacks.rotation.forEach((c) => c(normalizeAngle(rotation)));
-    } else if (e.key === 'resolution') {
-      const zoom = this.view.getZoom();
-      this.callbacks.zoom.forEach((c) => c(zoom));
+    switch (e.key) {
+      case 'center': {
+        const center = lonLatFromMapViewCoordinate(this.view.getCenter()).map(
+          (c) => round(c, 6)
+        );
+        for (const c of this.callbacks.center)
+          c({ lon: center[0], lat: center[1] });
+        break;
+      }
+
+      case 'rotation': {
+        const rotation = toDegrees(-this.view.getRotation());
+        for (const c of this.callbacks.rotation) c(normalizeAngle(rotation));
+
+        break;
+      }
+
+      case 'resolution': {
+        const zoom = this.view.getZoom();
+        for (const c of this.callbacks.zoom) c(zoom);
+
+        break;
+      }
+      // No default
     }
   };
 

@@ -92,7 +92,7 @@ const { actions, reducer } = createSlice({
   },
 
   reducers: {
-    clearLastUploadResultForJobType: (state, action) => {
+    clearLastUploadResultForJobType(state, action) {
       const { payload: jobType } = action;
       if (jobType) {
         clearLastUploadResultForJobTypeHelper(state, jobType);
@@ -154,7 +154,7 @@ const { actions, reducer } = createSlice({
       target: 'itemsWaitingToStart',
     }),
 
-    _notifyUploadFinished: (state, action) => {
+    _notifyUploadFinished(state, action) {
       const { success, cancelled } = action.payload;
 
       // Dispatched by the saga; should not be dispatched manually
@@ -182,7 +182,7 @@ const { actions, reducer } = createSlice({
       state.dialog.showLastUploadResult = true;
     },
 
-    _notifyUploadStarted: (state) => {
+    _notifyUploadStarted(state) {
       // Start the upload
       state.currentJob.running = true;
 
@@ -270,7 +270,7 @@ const { actions, reducer } = createSlice({
   },
 
   extraReducers: {
-    [clearLoadedShow]: (state) => {
+    [clearLoadedShow](state) {
       clearLastUploadResultForJobTypeHelper(state, SHOW_UPLOAD_JOB.type);
     },
   },

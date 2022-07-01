@@ -1,5 +1,3 @@
-import AFrame from './aframe';
-
 import '@skybrush/aframe-components/advanced-camera-controls';
 import '@skybrush/aframe-components/sprite';
 
@@ -12,4 +10,4 @@ import './components/sync-pose-with-store';
 
 import './primitives/drone-flock';
 
-export default AFrame;
+export { default } from './aframe';

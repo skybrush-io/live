@@ -16,7 +16,7 @@ const createAppComponent = ({ whenLoaded }) =>
       const { startReportingRuntimeErrors } = await import(
         /* webpackChunkName: "error-overlay" */ 'react-error-overlay'
       );
-      startReportingRuntimeErrors({ onError: () => {} });
+      startReportingRuntimeErrors({ onError() {} });
     }
 
     if (whenLoaded) {

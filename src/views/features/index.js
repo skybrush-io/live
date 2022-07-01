@@ -1,2 +1,1 @@
-import FeatureList from './FeatureList';
-export default FeatureList;
+export { default } from './FeatureList';

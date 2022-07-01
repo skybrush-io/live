@@ -16,4 +16,4 @@ const _statusToPriority = {
 
 export const statusToPriority = (status) => _statusToPriority[status] || 0;
 
-export { Status };
+export { Status } from '@skybrush/app-theme-material-ui';

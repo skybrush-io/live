@@ -18,6 +18,8 @@ import Settings from '@material-ui/icons/Settings';
 import Alert from '@material-ui/lab/Alert';
 import AlertTitle from '@material-ui/lab/AlertTitle';
 
+import { isThemeDark } from '@skybrush/app-theme-material-ui';
+
 import NavigationButtonGroup from './NavigationButtonGroup';
 import NavigationInstructions from './NavigationInstructions';
 import Overlay from './Overlay';
@@ -35,7 +37,6 @@ import { resetZoom, rotateViewToDrones } from '~/features/three-d/actions';
 import { cameraRef } from '~/features/three-d/refs';
 import { setNavigationMode } from '~/features/three-d/slice';
 import { isMapCoordinateSystemSpecified } from '~/selectors/map';
-import { isDark } from '~/theme';
 
 const ThreeDView = loadable(() =>
   import(/* webpackChunkName: "three-d" */ './ThreeDView')
@@ -44,7 +45,7 @@ const ThreeDView = loadable(() =>
 const useStyles = makeStyles(
   (theme) => ({
     appBar: {
-      backgroundColor: isDark(theme)
+      backgroundColor: isThemeDark(theme)
         ? '#424242'
         : theme.palette.background.paper,
       height: 48,

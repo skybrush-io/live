@@ -321,7 +321,7 @@ const { actions, reducer } = createSlice({
   },
 
   extraReducers: {
-    [removeFeaturesByIds]: (state, action) => {
+    [removeFeaturesByIds](state, action) {
       const ids = action.payload;
       if (ids.includes(state.geofencePolygonId)) {
         state.geofencePolygonId = undefined;

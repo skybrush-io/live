@@ -76,7 +76,7 @@ const reverseDNSLookup = pify(dns.reverse);
 contextBridge.exposeInMainWorld('bridge', {
   createSSDPClient,
   createStateStore,
-  dispatch: () => {
+  dispatch() {
     throw new Error('no store dispatcher was set up yet');
   },
   isElectron: true,
@@ -93,7 +93,7 @@ contextBridge.exposeInMainWorld('bridge', {
    *         file if needed
    * @return a promise that resolves with the blob representing the file
    */
-  getFileAsBlob: async (filename, mimeType, options = {}) => {
+  async getFileAsBlob(filename, mimeType, options = {}) {
     if (!path.isAbsolute(filename)) {
       throw new Error('getFileAsBlob() needs an absolute path');
     }
@@ -154,7 +154,7 @@ contextBridge.exposeInMainWorld('bridge', {
    * @return {function} a function that must be called with no arguments when
    *         the file does not have to be watched any more
    */
-  watchFile: (filename, handler) => {
+  watchFile(filename, handler) {
     const watcher = watch(filename, handler);
     return watcher.close;
   },

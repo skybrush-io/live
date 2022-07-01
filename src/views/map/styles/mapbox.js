@@ -57,21 +57,42 @@ function createMapboxStreetsV6Style() {
     const geom = feature.getGeometry().getType();
 
     if (layer === 'landuse') {
-      if (cls === 'park') {
-        fill.setColor('#d8e8c8');
-        styles[length++] = polygon;
-      } else if (cls === 'cemetery') {
-        fill.setColor('#e0e4dd');
-        styles[length++] = polygon;
-      } else if (cls === 'hospital') {
-        fill.setColor('#fde');
-        styles[length++] = polygon;
-      } else if (cls === 'school') {
-        fill.setColor('#f0e8f8');
-        styles[length++] = polygon;
-      } else if (cls === 'wood') {
-        fill.setColor('rgb(233,238,223)');
-        styles[length++] = polygon;
+      switch (cls) {
+        case 'park': {
+          fill.setColor('#d8e8c8');
+          styles[length++] = polygon;
+
+          break;
+        }
+
+        case 'cemetery': {
+          fill.setColor('#e0e4dd');
+          styles[length++] = polygon;
+
+          break;
+        }
+
+        case 'hospital': {
+          fill.setColor('#fde');
+          styles[length++] = polygon;
+
+          break;
+        }
+
+        case 'school': {
+          fill.setColor('#f0e8f8');
+          styles[length++] = polygon;
+
+          break;
+        }
+
+        case 'wood': {
+          fill.setColor('rgb(233,238,223)');
+          styles[length++] = polygon;
+
+          break;
+        }
+        // No default
       }
     } else if (
       layer === 'waterway' &&

@@ -8,6 +8,7 @@ import { connect } from 'react-redux';
 
 import { makeStyles } from '@material-ui/core/styles';
 
+import { monospacedFont } from '@skybrush/app-theme-material-ui';
 import StatusText from '@skybrush/mui-components/lib/StatusText';
 
 import { BatteryFormatter } from '~/components/battery';
@@ -27,7 +28,6 @@ import {
   getSemanticsForGPSFixType,
 } from '~/model/enums';
 import { getPreferredCoordinateFormatter } from '~/selectors/formatting';
-import { monospacedFont } from '~/theme';
 import { formatCoordinateArray } from '~/utils/formatting';
 
 /**

@@ -66,7 +66,7 @@ const { actions, reducer } = createSlice({
       state.averagingDialog.mode = 'normal';
     }),
 
-    setSelectedUAVIdsForAveragingMeasurement: (state, action) => {
+    setSelectedUAVIdsForAveragingMeasurement(state, action) {
       state.averagingDialog.selectedUAVIds = [...action.payload];
     },
 

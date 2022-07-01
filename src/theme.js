@@ -8,18 +8,12 @@ import { blue, lightBlue, orange, blueGrey } from '@material-ui/core/colors';
 import { useTheme } from '@material-ui/core/styles';
 
 import {
-  createSecondaryAreaStyle,
   createThemeProvider,
-  defaultFont,
-  isThemeDark as isDark,
-  monospacedFont,
   useConditionalCSS,
 } from '@skybrush/app-theme-material-ui';
 
 // eslint-disable-next-line import/no-webpack-loader-syntax
 import darkModeExtraCSS from '!!raw-loader!~/../assets/css/dark-mode.css';
-
-export { createSecondaryAreaStyle, defaultFont, isDark, monospacedFont };
 
 /**
  * Specialized Material-UI theme provider that is aware about the user's
@@ -35,7 +29,7 @@ const DarkModeAwareThemeProvider = createThemeProvider({
  * theme of the workbench to fit dark mode.
  */
 export const DarkModeExtraCSSProvider = () => {
-  const isThemeDark = isDark(useTheme());
+  const isThemeDark = isThemeDark(useTheme());
   useConditionalCSS(darkModeExtraCSS, isThemeDark);
   return null;
 };

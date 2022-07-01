@@ -1,2 +1,1 @@
-import MapView from './MapView';
-export default MapView;
+export { default } from './MapView';

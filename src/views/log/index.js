@@ -1,2 +1,1 @@
-import LogPanel from './LogPanel';
-export default LogPanel;
+export { default } from './LogPanel';

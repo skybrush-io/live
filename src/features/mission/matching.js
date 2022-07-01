@@ -37,13 +37,13 @@ export function greedyMatchingAlgorithm(matrix, parameters = {}) {
     threshold = Number.POSITIVE_INFINITY;
   }
 
-  matrix.forEach((row, rowIndex) => {
-    row.forEach((item, colIndex) => {
+  for (const [rowIndex, row] of matrix.entries()) {
+    for (const [colIndex, item] of row.entries()) {
       if (item <= threshold) {
         pairs.push([rowIndex, colIndex, item]);
       }
-    });
-  });
+    }
+  }
 
   const sortedPairs = sortBy(pairs, (item) => item[2]);
   const isRowUsed = new Array(numberOfRows).fill(false);

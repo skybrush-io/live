@@ -1,4 +1,3 @@
-import { Bar } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
   BarElement,
@@ -9,4 +8,4 @@ import {
 
 ChartJS.register(BarElement, CategoryScale, LinearScale, Title);
 
-export default Bar;
+export { Bar as default } from 'react-chartjs-2';

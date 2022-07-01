@@ -1,2 +1,1 @@
-import MessagesPanelView from './MessagesPanelView';
-export default MessagesPanelView;
+export { default } from './MessagesPanelView';

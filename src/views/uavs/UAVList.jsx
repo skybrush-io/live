@@ -18,6 +18,8 @@ import AppBar from '@material-ui/core/AppBar';
 import Box from '@material-ui/core/Box';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 
+import { isThemeDark } from '@skybrush/app-theme-material-ui';
+
 import DroneListItem from './DroneListItem';
 import DroneStatusLine from './DroneStatusLine';
 import MappingEditorToolbar from './MappingEditorToolbar';
@@ -53,7 +55,6 @@ import {
 import { setSelectedUAVIds } from '~/features/uavs/actions';
 import { openUAVDetailsDialog } from '~/features/uavs/details';
 import { getSelectedUAVIds } from '~/features/uavs/selectors';
-import { isDark } from '~/theme';
 import { formatMissionId } from '~/utils/formatting';
 
 import {
@@ -67,7 +68,7 @@ import { uavIdToDOMNodeId } from './utils';
 const useListStyles = makeStyles(
   (theme) => ({
     appBar: {
-      backgroundColor: isDark(theme)
+      backgroundColor: isThemeDark(theme)
         ? '#424242'
         : theme.palette.background.paper,
       height: 48,

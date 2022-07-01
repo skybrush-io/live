@@ -40,6 +40,7 @@ const { dispatch, getState } = store;
  */
 const messageHub = new MessageHub();
 
+/* eslint-disable object-shorthand */
 messageHub.registerNotificationHandlers({
   'BCN-INF': (message) =>
     handleBeaconInformationMessage(message.body, dispatch, getState),
@@ -89,5 +90,6 @@ messageHub.registerNotificationHandlers({
   'X-DBG-REQ': (message) =>
     handleDebugRequest(message.body, messageHub.execute.sendDebugMessage),
 });
+/* eslint-enable object-shorthand */
 
 export default messageHub;

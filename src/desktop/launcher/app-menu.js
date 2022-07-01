@@ -73,13 +73,13 @@ if (!app.isPackaged) {
       { type: 'separator' },
       {
         label: 'Show App Data',
-        click: async () => {
+        async click() {
           await shell.openPath(app.getPath('userData'));
         },
       },
       {
         label: 'Delete App Data',
-        click: async () => {
+        async click() {
           await shell.trashItem(app.getPath('userData'));
           app.relaunch();
           app.quit();

@@ -15,11 +15,11 @@ const { actions, reducer } = createSlice({
   },
 
   reducers: {
-    setPendingUAVId: (state, action) => {
+    setPendingUAVId(state, action) {
       state.pendingUAVId = action.payload;
     },
 
-    startPendingUAVIdTimeout: () => {
+    startPendingUAVIdTimeout() {
       /* nothing to do here, the saga will take care of it */
     },
 

@@ -1,2 +1,1 @@
-import FeatureEditorDialog from './FeatureEditorDialog';
-export default FeatureEditorDialog;
+export { default } from './FeatureEditorDialog';

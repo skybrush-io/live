@@ -202,6 +202,7 @@ const landingMarkerFill = fill(Colors.markers.landing);
 const originStyles = (selected, axis) => [
   // Circle and label
   new Style({
+    /* eslint-disable object-shorthand */
     geometry: (feature) => {
       const geom = feature.getGeometry();
       const origin = geom.getFirstCoordinate();
@@ -220,6 +221,7 @@ const originStyles = (selected, axis) => [
       textAlign: 'center',
     }),
     */
+    /* eslint-enable object-shorthand */
   }),
 
   // Arrow

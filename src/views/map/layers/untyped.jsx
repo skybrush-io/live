@@ -22,14 +22,14 @@ import { getLayersInBottomFirstOrder } from '~/selectors/ordered';
 const selectLayerTypesThatCanBeAdded = (state) => {
   const result = [];
 
-  const existingLayerTypes = getLayersInBottomFirstOrder(state).map(
-    (layer) => layer.type
+  const existingLayerTypes = new Set(
+    getLayersInBottomFirstOrder(state).map((layer) => layer.type)
   );
 
   for (const layerType of LayerTypes) {
     if (
       areMultipleInstancesAllowedForLayerType(layerType) ||
-      !existingLayerTypes.includes(layerType)
+      !existingLayerTypes.has(layerType)
     ) {
       result.push(layerType);
     }

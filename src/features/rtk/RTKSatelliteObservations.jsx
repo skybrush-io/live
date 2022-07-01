@@ -8,9 +8,9 @@ import { createSelector } from '@reduxjs/toolkit';
 
 import Box from '@material-ui/core/Box';
 import { useTheme } from '@material-ui/core/styles';
+import { defaultFont, isThemeDark } from '@skybrush/app-theme-material-ui';
 
 import Colors from '~/components/colors';
-import { defaultFont, isDark } from '~/theme';
 import { createGradientBackground, NO_DATA } from '~/utils/charts';
 
 import { getDisplayedSatelliteCNRValues } from './selectors';
@@ -182,7 +182,7 @@ const RTKSatelliteObservations = ({ height, items }) => {
       <BarChart
         ref={chartRef}
         data={chartData}
-        options={isDark(theme) ? options.dark : options.light}
+        options={isThemeDark(theme) ? options.dark : options.light}
       />
     </Box>
   );

@@ -1,3 +1,1 @@
-import ComplexAvatar from './ComplexAvatar';
-
-export { ComplexAvatar };
+export { default as ComplexAvatar } from './ComplexAvatar';

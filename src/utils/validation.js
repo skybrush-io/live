@@ -11,7 +11,7 @@
 const isEmpty = (value) =>
   value === undefined || value === null || value === '';
 const join = (rules) => (value, data) =>
-  rules.map((rule) => rule(value, data)).filter((error) => Boolean(error))[0];
+  rules.map((rule) => rule(value, data)).find((error) => Boolean(error));
 
 /**
  * Checks that the given value is not empty. A value is empty if it is
@@ -149,14 +149,15 @@ export function between(min, max) {
 export function createValidator(rules) {
   return (data = {}) => {
     const errors = {};
-    Object.keys(rules).forEach((key) => {
+    for (const key of Object.keys(rules)) {
       // Concat enables both functions and arrays of functions
-      const rule = join([].concat(rules[key]));
+      const rule = join([rules[key]].flat());
       const error = rule(data[key], data);
       if (error) {
         errors[key] = error;
       }
-    });
+    }
+
     return errors;
   };
 }

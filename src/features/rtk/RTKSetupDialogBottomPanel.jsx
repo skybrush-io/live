@@ -8,10 +8,13 @@ import IconButton from '@material-ui/core/IconButton';
 import { makeStyles } from '@material-ui/core/styles';
 import Place from '@material-ui/icons/Place';
 
+import {
+  createSecondaryAreaStyle,
+  isThemeDark,
+} from '@skybrush/app-theme-material-ui';
 import Tooltip from '@skybrush/mui-components/lib/Tooltip';
 
 import FadeAndSlide from '~/components/transitions/FadeAndSlide';
-import { createSecondaryAreaStyle, isDark } from '~/theme';
 
 import { getSurveyStatus, shouldShowSurveySettings } from './selectors';
 import { toggleSurveySettingsPanel } from './slice';
@@ -31,7 +34,7 @@ const useStyles = makeStyles(
 
     inset: {
       border: `1px solid ${
-        isDark(theme) ? 'rgba(0, 0, 0, 0.54)' : 'rgba(255, 255, 255, 0.54)'
+        isThemeDark(theme) ? 'rgba(0, 0, 0, 0.54)' : 'rgba(255, 255, 255, 0.54)'
       }`,
       boxShadow: '0 0 4px 2px inset rgba(0, 0, 0, 0.54)',
       padding: theme.spacing(1),
@@ -39,7 +42,7 @@ const useStyles = makeStyles(
 
     nonInset: {
       borderTop: `1px solid ${
-        isDark(theme) ? 'rgba(0, 0, 0, 0.54)' : 'rgba(255, 255, 255, 0.54)'
+        isThemeDark(theme) ? 'rgba(0, 0, 0, 0.54)' : 'rgba(255, 255, 255, 0.54)'
       }`,
       boxShadow: '0 2px 6px -2px inset rgba(0, 0, 0, 0.54)',
       padding: theme.spacing(2, 3),

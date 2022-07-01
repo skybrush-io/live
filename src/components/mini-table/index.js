@@ -1,3 +1,1 @@
-import MiniTable from './MiniTable';
-
-export { MiniTable };
+export { default as MiniTable } from './MiniTable';

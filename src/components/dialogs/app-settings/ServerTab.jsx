@@ -111,7 +111,7 @@ export default connect(
       }),
     onDisable: () => updateAppSettings('localServer', { enabled: false }),
     onEnable: () => updateAppSettings('localServer', { enabled: true }),
-    onSearchPathChanged: (event) => {
+    onSearchPathChanged(event) {
       const paths = event.target.value.split('\n').map((item) => trim(item));
       const emptyItemIndex = paths.indexOf('');
       remove(paths, (item, index) => !item && index > emptyItemIndex);

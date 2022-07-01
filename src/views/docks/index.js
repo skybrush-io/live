@@ -1,2 +1,1 @@
-import DockList from './DockList';
-export default DockList;
+export { default } from './DockList';
