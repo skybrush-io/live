@@ -2,6 +2,10 @@
  * @file Component that shows the list of locations saved by the user.
  */
 
+import PropTypes from 'prop-types';
+import React from 'react';
+import { connect } from 'react-redux';
+
 import IconButton from '@material-ui/core/IconButton';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
@@ -10,15 +14,11 @@ import Edit from '@material-ui/icons/Edit';
 
 import Tooltip from '@skybrush/mui-components/lib/Tooltip';
 
-import PropTypes from 'prop-types';
-import React from 'react';
-import { connect } from 'react-redux';
-
+import { listOf } from '~/components/helpers/lists';
 import {
   createNewSavedLocation,
   editSavedLocation,
 } from '~/features/saved-locations/actions';
-import { listOf } from '~/components/helpers/lists';
 import { getSavedLocationsInOrder } from '~/features/saved-locations/selectors';
 import { scrollToMapLocation } from '~/signals';
 

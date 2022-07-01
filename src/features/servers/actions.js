@@ -9,11 +9,10 @@ import {
 } from '~/flockwave/timesync';
 import { createAsyncAction } from '~/utils/redux';
 
-import { getClockSkewInMilliseconds } from './selectors';
-
-import { actions as serverSettingsDialogActions } from './server-settings-dialog';
 import { actions as authenticationDialogActions } from './authentication-dialog';
 import { actions as deauthenticationDialogActions } from './deauthentication-dialog';
+import { actions as serverSettingsDialogActions } from './server-settings-dialog';
+import { getClockSkewInMilliseconds } from './selectors';
 
 export const {
   closeServerSettingsDialog,

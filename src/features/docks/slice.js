@@ -78,7 +78,7 @@ const { actions, reducer } = createSlice({
   },
 
   extraReducers: {
-    [notifyObjectsDeletedOnServer]: (state, action) => {
+    [notifyObjectsDeletedOnServer](state, action) {
       maybeDeleteItemsByIds(state, action.payload);
     },
   },

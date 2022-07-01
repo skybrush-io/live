@@ -27,12 +27,13 @@ import Refresh from '@material-ui/icons/Refresh';
 
 import { createSelector } from '@reduxjs/toolkit';
 
-import { showFeatureEditorDialog } from '~/features/map-features/actions';
-import { setFlatEarthCoordinateSystemOrigin } from '~/features/map/origin';
-
 import ContextMenu from '~/components/ContextMenu';
 import Bolt from '~/icons/Bolt';
+import { hasFeature } from '~/utils/configuration';
+import * as messaging from '~/utils/messaging';
 
+import { setFlatEarthCoordinateSystemOrigin } from '~/features/map/origin';
+import { showFeatureEditorDialog } from '~/features/map-features/actions';
 import { removeFeaturesByIds } from '~/features/map-features/slice';
 import {
   clearGeofencePolygonId,
@@ -49,9 +50,6 @@ import {
   getSelectedFeatureLabels,
   getSelectedFeatureTypes,
 } from '~/selectors/selection';
-
-import { hasFeature } from '~/utils/configuration';
-import * as messaging from '~/utils/messaging';
 
 /**
  * Context menu that shows the menu items that should appear when the

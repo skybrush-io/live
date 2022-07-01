@@ -4,9 +4,9 @@
  */
 
 import { createSlice } from '@reduxjs/toolkit';
-import { noPayload } from '~/utils/redux';
 
 import { errorToString } from '~/error-handling';
+import { noPayload } from '~/utils/redux';
 
 /**
  * The reducer that handles actions related to error messages and

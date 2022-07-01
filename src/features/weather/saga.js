@@ -1,8 +1,8 @@
 import { delay, put, putResolve, race, select, take } from 'redux-saga/effects';
 
+import { updateMapViewSettings } from '~/features/map/view';
 import { isConnected } from '~/features/servers/selectors';
 import { setCurrentServerConnectionState } from '~/features/servers/slice';
-import { updateMapViewSettings } from '~/features/map/view';
 import { getMapViewCenterPosition } from '~/selectors/map';
 
 import { updateWeatherData } from './actions';

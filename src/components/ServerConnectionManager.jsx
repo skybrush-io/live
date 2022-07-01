@@ -11,7 +11,6 @@ import { parse } from 'shell-quote';
 
 import ReactSocket from '@collmot/react-socket';
 
-import { disconnectFromServer } from '~/features/servers/actions';
 import handleError from '~/error-handling';
 import { clearBeaconList } from '~/features/beacons/slice';
 import { clearClockList } from '~/features/clocks/slice';
@@ -19,7 +18,10 @@ import { clearConnectionList } from '~/features/connections/slice';
 import { clearDockList } from '~/features/docks/slice';
 import { shouldManageLocalServer } from '~/features/local-server/selectors';
 import { addLogItem } from '~/features/log/slice';
-import { calculateAndStoreClockSkew } from '~/features/servers/actions';
+import {
+  calculateAndStoreClockSkew,
+  disconnectFromServer,
+} from '~/features/servers/actions';
 import {
   getClockSkewInMilliseconds,
   getServerUrl,
@@ -510,7 +512,7 @@ const ServerConnectionManager = connect(
       dispatch(showError('Timeout while connecting to Skybrush server'));
     },
 
-    onDisconnected: (url, reason) => {
+    onDisconnected(url, reason) {
       dispatch((dispatch, getState) => {
         // reason = io client disconnect -- okay
         // reason = io server disconnect -- okay

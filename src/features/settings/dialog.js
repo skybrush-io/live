@@ -5,6 +5,7 @@
  */
 
 import { createSlice } from '@reduxjs/toolkit';
+
 import { noPayload } from '~/utils/redux';
 
 /**

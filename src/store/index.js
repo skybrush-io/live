@@ -19,10 +19,10 @@ import {
   createFilter,
 } from 'redux-persist-transform-filter';
 
-import { showAppSettingsDialog } from '~/features/settings/actions';
 import { updateAveragingByIds } from '~/features/measurement/slice';
 import { shouldPreventSleepMode } from '~/features/power-saving/selectors';
 import { updateRTKStatistics } from '~/features/rtk/slice';
+import { showAppSettingsDialog } from '~/features/settings/actions';
 import { loadingPromiseFulfilled } from '~/features/show/slice';
 import { updateAgesOfUAVs, updateUAVs } from '~/features/uavs/slice';
 import { saveWorkbenchState } from '~/features/workbench/slice';

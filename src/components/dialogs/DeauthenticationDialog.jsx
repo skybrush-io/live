@@ -8,6 +8,7 @@ import React from 'react';
 import { batch, connect } from 'react-redux';
 import Button from '@material-ui/core/Button';
 
+import Box from '@material-ui/core/Box';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import Typography from '@material-ui/core/Typography';
@@ -35,19 +36,21 @@ const DeauthenticationDialogPresentation = ({
 }) => (
   <DraggableDialog maxWidth='xs' open={open} title={title}>
     <DialogContent>
-      <Typography paragraph>
-        {user ? (
-          <>
-            You are currently authenticated as <code>{user}</code>. Are you sure
-            you would like to disconnect?
-          </>
-        ) : (
-          <>
-            You are not authenticated at the moment. Are you sure you would like
-            to disconnect?
-          </>
-        )}
-      </Typography>
+      <Box pt={2}>
+        <Typography paragraph>
+          {user ? (
+            <>
+              You are currently authenticated as <code>{user}</code>. Are you
+              sure you would like to disconnect?
+            </>
+          ) : (
+            <>
+              You are not authenticated at the moment. Are you sure you would
+              like to disconnect?
+            </>
+          )}
+        </Typography>
+      </Box>
     </DialogContent>
     <DialogActions>
       <Button color='secondary' onClick={onDisconnect}>

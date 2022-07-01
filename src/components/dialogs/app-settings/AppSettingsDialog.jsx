@@ -8,17 +8,17 @@ import Tab from '@material-ui/core/Tab';
 
 import DialogTabs from '@skybrush/mui-components/lib/DialogTabs';
 
+import {
+  closeAppSettingsDialog,
+  setAppSettingsDialogTab,
+} from '~/features/settings/actions';
+
 import APIKeysTab from './APIKeysTab';
 import DisplayTab from './DisplayTab';
 import PreflightTab from './PreflightTab';
 import ServerTab from './ServerTab';
 import ThreeDViewTab from './ThreeDViewTab';
 import UAVsTab from './UAVsTab';
-
-import {
-  closeAppSettingsDialog,
-  setAppSettingsDialogTab,
-} from '~/features/settings/actions';
 
 /* ===================================================================== */
 

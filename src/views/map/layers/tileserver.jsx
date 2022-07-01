@@ -12,8 +12,8 @@ import Select from '@material-ui/core/Select';
 import TextField from '@material-ui/core/TextField';
 
 import { setLayerParametersById } from '~/features/map/layers';
-import { TileServerType, TileServerTypes } from '~/model/layers';
 import { showNotification } from '~/features/snackbar/slice';
+import { TileServerType, TileServerTypes } from '~/model/layers';
 
 // === Settings for this particular layer type ===
 
@@ -116,17 +116,17 @@ export const TileServerLayerSettings = connect(
   null,
   // mapDispatchToProps
   (dispatch, ownProps) => ({
-    changeTileServerType: (event) => {
+    changeTileServerType(event) {
       dispatch(
         setLayerParametersById(ownProps.layerId, {
           type: event.target.value,
         })
       );
     },
-    setLayerParameters: (parameters) => {
+    setLayerParameters(parameters) {
       dispatch(setLayerParametersById(ownProps.layerId, parameters));
     },
-    showMessage: (message) => {
+    showMessage(message) {
       dispatch(showNotification(message));
     },
   })

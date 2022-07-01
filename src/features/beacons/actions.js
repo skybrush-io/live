@@ -1,5 +1,5 @@
-import { beaconIdToGlobalId } from '~/model/identifiers';
 import { setSelectedFeatures } from '~/features/map/selection';
+import { beaconIdToGlobalId } from '~/model/identifiers';
 
 /**
  * Action factory that creates an action that sets the set of selected

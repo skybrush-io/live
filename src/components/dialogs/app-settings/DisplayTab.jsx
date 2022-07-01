@@ -12,13 +12,13 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 
 import CoordinateSystemFields from '~/components/CoordinateSystemFields';
-import { updateAppSettings } from '~/features/settings/slice';
-import { CoordinateFormat, describeCoordinateFormat } from '~/model/settings';
 import {
   setFlatEarthCoordinateSystemOrientation,
   setFlatEarthCoordinateSystemType,
   setFlatEarthCoordinateSystemOrigin,
 } from '~/features/map/origin';
+import { updateAppSettings } from '~/features/settings/slice';
+import { CoordinateFormat, describeCoordinateFormat } from '~/model/settings';
 import { getMapOriginRotationAngle } from '~/selectors/map';
 
 import Header from '@skybrush/mui-components/lib/FormHeader';

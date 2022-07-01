@@ -12,9 +12,11 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import VerticalAlignCenter from '@material-ui/icons/VerticalAlignCenter';
 
-import CoordinateSystemFields from '~/components/CoordinateSystemFields';
 import Tooltip from '@skybrush/mui-components/lib/Tooltip';
+
+import CoordinateSystemFields from '~/components/CoordinateSystemFields';
 import { SimpleDistanceField } from '~/components/forms/fields';
+import { updateFlatEarthCoordinateSystem } from '~/features/map/origin';
 import RTKCorrectionSourceSelector from '~/features/rtk/RTKCorrectionSourceSelector';
 import {
   setOutdoorShowAltitudeReferenceType,
@@ -31,7 +33,6 @@ import {
   getActiveUAVIds,
   getCurrentGPSPositionByUavId,
 } from '~/features/uavs/selectors';
-import { updateFlatEarthCoordinateSystem } from '~/features/map/origin';
 
 /**
  * Presentation component for the form that allows the user to edit the
