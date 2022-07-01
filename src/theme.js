@@ -9,6 +9,7 @@ import { useTheme } from '@material-ui/core/styles';
 
 import {
   createThemeProvider,
+  isThemeDark,
   useConditionalCSS,
 } from '@skybrush/app-theme-material-ui';
 
@@ -29,8 +30,8 @@ const DarkModeAwareThemeProvider = createThemeProvider({
  * theme of the workbench to fit dark mode.
  */
 export const DarkModeExtraCSSProvider = () => {
-  const isThemeDark = isThemeDark(useTheme());
-  useConditionalCSS(darkModeExtraCSS, isThemeDark);
+  const isDark = isThemeDark(useTheme());
+  useConditionalCSS(darkModeExtraCSS, isDark);
   return null;
 };
 
