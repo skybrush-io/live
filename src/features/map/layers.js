@@ -146,11 +146,12 @@ const { reducer, actions } = createSlice({
             parameters: defaultParametersForLayerType(type),
             visible: true,
           });
+        } else {
+          console.warn(
+            `Cannot change type of layer ${id} because it is not untyped`
+          );
         }
 
-        console.warn(
-          `Cannot change type of layer ${id} because it is not untyped`
-        );
         return state;
       },
     },
