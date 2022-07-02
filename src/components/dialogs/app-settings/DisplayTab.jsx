@@ -37,6 +37,16 @@ const DisplayTabPresentation = (props) => (
   <>
     <Box my={2}>
       <ThemeSelector value={props.theme} onChange={props.onFieldChanged} />
+      <FormControlLabel
+        label='Show inactive segments on dark mode LCD clocks'
+        control={
+          <Checkbox
+            checked={props.showInactiveSegmentsOnDarkLCD}
+            name='showInactiveSegmentsOnDarkLCD'
+            onChange={props.onCheckboxToggled}
+          />
+        }
+      />
     </Box>
 
     <Box my={2}>
@@ -121,6 +131,7 @@ DisplayTabPresentation.propTypes = {
   onOriginChanged: PropTypes.func,
   onOrientationChanged: PropTypes.func,
   orientation: PropTypes.number,
+  showInactiveSegmentsOnDarkLCD: PropTypes.bool,
   showMouseCoordinates: PropTypes.bool,
   showScaleLine: PropTypes.bool,
   theme: PropTypes.oneOf(['auto', 'dark', 'light']),
