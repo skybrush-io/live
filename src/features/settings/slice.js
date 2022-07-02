@@ -42,8 +42,8 @@ const { actions, reducer } = createSlice({
       showScaleLine: true,
       // Which UI theme to use (choose from OS, use light mode or use dark mode)
       theme: 'auto',
-      // Whether to show inactive segments on dark mode LCD clocks
-      showInactiveSegmentsOnDarkLCD: true,
+      // Whether to hide inactive segments on dark mode LCD clocks
+      hideInactiveSegmentsOnDarkLCD: false,
       // Filters applied to the UAV list
       uavListFilters: [
         /* Each item in this array is currently a string from the UAVFilter

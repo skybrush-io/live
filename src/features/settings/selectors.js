@@ -182,11 +182,11 @@ export const areExperimentalFeaturesEnabled = (state) =>
   state.settings.display?.experimentalFeaturesEnabled;
 
 /**
- * Returns whether the inactive segments of LCD clocks should be shown when a
+ * Returns whether the inactive segments of LCD clocks should be hidden when a
  * dark theme is in use.
  */
 export const shouldShowInactiveSegmentsOnDarkLCD = (state) =>
-  state.settings.display?.showInactiveSegmentsOnDarkLCD;
+  state.settings.display?.hideInactiveSegmentsOnDarkLCD;
 
 /**
  * Returns an object mapping service identifiers to their API keys.

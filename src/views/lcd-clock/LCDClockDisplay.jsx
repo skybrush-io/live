@@ -97,7 +97,7 @@ const LCDClockDisplay = ({
   onRemove,
   preset,
   selectedClockId,
-  showInactiveSegmentsOnDarkLCD,
+  hideInactiveSegmentsOnDarkLCD,
   style,
   ...rest
 }) => {
@@ -112,7 +112,7 @@ const LCDClockDisplay = ({
       ? {
           color: call(theme, presetProps.color, theme.palette.secondary.main),
           decoration: 'glow',
-          offSegments: showInactiveSegmentsOnDarkLCD,
+          offSegments: !hideInactiveSegmentsOnDarkLCD,
         }
       : {
           color: call(theme, presetProps.color, 'black'),
@@ -192,7 +192,7 @@ LCDClockDisplay.propTypes = {
   onNextPreset: PropTypes.func,
   onRemove: PropTypes.func,
   selectedClockId: PropTypes.string,
-  showInactiveSegmentsOnDarkLCD: PropTypes.bool,
+  hideInactiveSegmentsOnDarkLCD: PropTypes.bool,
   style: PropTypes.object,
 };
 
@@ -206,7 +206,7 @@ export default connect(
     clocks: getClockIdsAndAbbreviations(state),
     preset: getPresetIndexForLCDDisplayById(state, ownProps.id),
     selectedClockId: getClockIdForLCDDisplayById(state, ownProps.id),
-    showInactiveSegmentsOnDarkLCD: shouldShowInactiveSegmentsOnDarkLCD(state),
+    hideInactiveSegmentsOnDarkLCD: shouldShowInactiveSegmentsOnDarkLCD(state),
   }),
   // mapDispatchToProps
   (dispatch, ownProps) => ({
