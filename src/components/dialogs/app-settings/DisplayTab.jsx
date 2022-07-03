@@ -37,16 +37,6 @@ const DisplayTabPresentation = (props) => (
   <>
     <Box my={2}>
       <ThemeSelector value={props.theme} onChange={props.onFieldChanged} />
-      <FormControlLabel
-        label='Hide inactive segments on dark mode LCD clocks'
-        control={
-          <Checkbox
-            checked={props.hideInactiveSegmentsOnDarkLCD}
-            name='hideInactiveSegmentsOnDarkLCD'
-            onChange={props.onCheckboxToggled}
-          />
-        }
-      />
     </Box>
 
     <Box my={2}>
@@ -105,6 +95,16 @@ const DisplayTabPresentation = (props) => (
 
       <FormGroup>
         <Header>Miscellaneous</Header>
+        <FormControlLabel
+          label='Enhance contrast on dark mode LCD clocks'
+          control={
+            <Checkbox
+              checked={props.hideInactiveSegmentsOnDarkLCD}
+              name='hideInactiveSegmentsOnDarkLCD'
+              onChange={props.onCheckboxToggled}
+            />
+          }
+        />
         <FormControlLabel
           label='Enable experimental features (advanced)'
           control={
