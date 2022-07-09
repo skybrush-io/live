@@ -17,6 +17,11 @@ import Condition from '../conditions';
 
 import { isOriginId } from '~/model/identifiers';
 
+import store from '~/store';
+import { getCenterOfFirstPointsOfTrajectoriesInWorldCoordinates } from '~/features/show/selectors';
+
+import { mapViewCoordinateFromLonLat } from '~/utils/geography';
+
 /**
  * Enum containing the supported transformation types.
  */
@@ -117,7 +122,16 @@ export class TransformFeaturesInteraction extends PointerInteraction {
               }
             }
 
-            this.transformation_.center = Extent.getCenter(extent);
+            const centerOfFirstPointsInLonLat =
+              getCenterOfFirstPointsOfTrajectoriesInWorldCoordinates(
+                store.getState()
+              );
+
+            this.transformation_.center = mapViewCoordinateFromLonLat([
+              centerOfFirstPointsInLonLat.lon,
+              centerOfFirstPointsInLonLat.lat,
+            ]);
+
             this.transformation_.pivot = event.coordinate;
           }
 

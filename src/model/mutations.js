@@ -4,9 +4,13 @@ import { updateFlatEarthCoordinateSystem } from '~/features/map/origin';
 import { updateFeatureCoordinatesByIds } from '~/features/map-features/slice';
 import {
   moveOutdoorShowOriginByMapCoordinateDelta,
-  rotateOutdoorShowOrientationByAngle,
+  rotateOutdoorShowOrientationByAngleAroundPoint,
 } from '~/features/show/actions';
+import { getCenterOfFirstPointsOfTrajectoriesInWorldCoordinates } from '~/features/show/selectors';
+
 import { toDegrees } from '~/utils/math';
+
+import store from '~/store';
 
 import { createFeatureFromOpenLayers } from './features';
 
@@ -97,7 +101,12 @@ export function handleFeatureUpdatesInOpenLayers(
           dispatch(moveOutdoorShowOriginByMapCoordinateDelta(event.delta));
         } else if (event.subType === 'rotate' && event.angleDelta) {
           dispatch(
-            rotateOutdoorShowOrientationByAngle(toDegrees(-event.angleDelta))
+            rotateOutdoorShowOrientationByAngleAroundPoint(
+              toDegrees(event.angleDelta),
+              getCenterOfFirstPointsOfTrajectoriesInWorldCoordinates(
+                store.getState()
+              )
+            )
           );
         }
       } else {
