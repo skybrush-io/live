@@ -4,7 +4,6 @@ import throttle from 'lodash-es/throttle';
 
 import { freeze } from '@reduxjs/toolkit';
 
-import { toRadians } from 'ol/math';
 import Point from 'ol/geom/Point';
 
 import { Colors } from '~/components/colors';
@@ -30,7 +29,7 @@ import {
   lonLatFromMapViewCoordinate,
   mapViewCoordinateFromLonLat,
 } from '~/utils/geography';
-import { simplifyPolygon, bufferPolygon } from '~/utils/math';
+import { bufferPolygon, simplifyPolygon, toRadians } from '~/utils/math';
 import { createAsyncAction } from '~/utils/redux';
 
 import { JOB_TYPE } from './constants';
