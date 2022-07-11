@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- The contrast of the LCD clocks can now be enhanced in dark mode by hiding the
+  inactive segments.
+
+### Fixed
+
 - Fixed a crash of the weather widget in the header when the map was scrolled
   to a coordinate with no sunrise and no sunset on the current day.
 
