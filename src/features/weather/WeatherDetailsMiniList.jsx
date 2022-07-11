@@ -65,6 +65,7 @@ const WeatherDetailsMiniList = ({
   utcOffset,
 }) => {
   const items = [];
+  let needSeparator;
 
   if (timezone) {
     items.push(
@@ -95,6 +96,8 @@ const WeatherDetailsMiniList = ({
     items.push(<MiniListDivider key='sep1' />);
   }
 
+  needSeparator = false;
+
   if (sunset || sunsetStart) {
     items.push(
       <MiniListItem
@@ -103,6 +106,7 @@ const WeatherDetailsMiniList = ({
         secondaryText={formatInterval(sunsetStart, sunset)}
       />
     );
+    needSeparator = true;
   }
 
   if (sunrise || sunriseEnd) {
@@ -118,9 +122,10 @@ const WeatherDetailsMiniList = ({
     } else {
       items.push(item);
     }
+    needSeparator = true;
   }
 
-  if (items.length > 0) {
+  if (needSeparator) {
     items.push(<MiniListDivider key='sep2' />);
   }
 
