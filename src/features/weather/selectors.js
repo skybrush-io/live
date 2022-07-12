@@ -24,6 +24,13 @@ export const getSunriseSunsetTimesForMapViewCenterPosition =
       ? SunCalc.getTimes(now, position[1], position[0])
       : {};
 
+    // Replace invalid dates with undefined
+    for (const [key, date] of Object.entries(result)) {
+      if (date instanceof Date && Number.isNaN(date.valueOf())) {
+        result[key] = undefined;
+      }
+    }
+
     // If we are past the sunrise, replace the sunrise times with the ones from
     // the next day
     if (position && result.sunriseEnd && isAfter(now, result.sunriseEnd)) {

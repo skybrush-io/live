@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- The contrast of the LCD clocks can now be enhanced in dark mode by hiding the
+  inactive segments.
+
+### Fixed
+
+- Fixed a crash of the weather widget in the header when the map was scrolled
+  to a coordinate with no sunrise and no sunset on the current day.
+
 ## [2.3.0] - 2022-06-26
 
 ### Added
