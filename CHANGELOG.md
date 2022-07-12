@@ -12,6 +12,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The contrast of the LCD clocks can now be enhanced in dark mode by hiding the
   inactive segments.
 
+### Changed
+
+- When rotating the convex hull of the show using mouse gestures, the origin of
+  the rotation is now the center of the takeoff area instead of the center of
+  the entire convex hull.
+
 ### Fixed
 
 - Fixed a crash of the weather widget in the header when the map was scrolled
