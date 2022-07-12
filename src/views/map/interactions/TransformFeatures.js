@@ -16,7 +16,11 @@ import { createOLInteractionComponent } from '@collmot/ol-react/lib/interaction'
 import Condition from '../conditions';
 
 import { getCenterOfFirstPointsOfTrajectoriesInWorldCoordinates } from '~/features/show/selectors';
-import { isOriginId } from '~/model/identifiers';
+import {
+  isOriginId,
+  globalIdToAreaId,
+  CONVEX_HULL_AREA_ID,
+} from '~/model/identifiers';
 import store from '~/store';
 import { mapViewCoordinateFromLonLat } from '~/utils/geography';
 
@@ -120,18 +124,23 @@ export class TransformFeaturesInteraction extends PointerInteraction {
               }
             }
 
+            this.transformation_.center = Extent.getCenter(extent);
             // TODO(ntamas): having store.getState() here is not nice,
             // investigate whether there is a way around it
-            // TODO(ntamas): this must happen only for the takeoff area!
-            const centerOfFirstPointsInLonLat =
-              getCenterOfFirstPointsOfTrajectoriesInWorldCoordinates(
-                store.getState()
-              );
+            if (
+              globalIdToAreaId(this.lastFeature_.getId()) ===
+              CONVEX_HULL_AREA_ID
+            ) {
+              const centerOfFirstPointsInLonLat =
+                getCenterOfFirstPointsOfTrajectoriesInWorldCoordinates(
+                  store.getState()
+                );
 
-            this.transformation_.center = mapViewCoordinateFromLonLat([
-              centerOfFirstPointsInLonLat.lon,
-              centerOfFirstPointsInLonLat.lat,
-            ]);
+              this.transformation_.center = mapViewCoordinateFromLonLat([
+                centerOfFirstPointsInLonLat.lon,
+                centerOfFirstPointsInLonLat.lat,
+              ]);
+            }
 
             this.transformation_.pivot = event.coordinate;
           }
