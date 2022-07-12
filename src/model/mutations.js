@@ -4,7 +4,7 @@ import { updateFlatEarthCoordinateSystem } from '~/features/map/origin';
 import { updateFeatureCoordinatesByIds } from '~/features/map-features/slice';
 import {
   moveOutdoorShowOriginByMapCoordinateDelta,
-  rotateOutdoorShowOrientationByAngle,
+  rotateOutdoorShowOrientationByAngleAroundPoint,
 } from '~/features/show/actions';
 import { toDegrees } from '~/utils/math';
 
@@ -95,9 +95,16 @@ export function handleFeatureUpdatesInOpenLayers(
       if (type === 'transform') {
         if (event.subType === 'move' && event.delta) {
           dispatch(moveOutdoorShowOriginByMapCoordinateDelta(event.delta));
-        } else if (event.subType === 'rotate' && event.angleDelta) {
+        } else if (
+          event.subType === 'rotate' &&
+          event.angleDelta &&
+          event.origin
+        ) {
           dispatch(
-            rotateOutdoorShowOrientationByAngle(toDegrees(-event.angleDelta))
+            rotateOutdoorShowOrientationByAngleAroundPoint(
+              toDegrees(-event.angleDelta),
+              event.origin
+            )
           );
         }
       } else {

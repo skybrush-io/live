@@ -1,6 +1,7 @@
 import ky from 'ky';
 import get from 'lodash-es/get';
 import throttle from 'lodash-es/throttle';
+import Point from 'ol/geom/Point';
 
 import { freeze } from '@reduxjs/toolkit';
 
@@ -27,7 +28,7 @@ import {
   lonLatFromMapViewCoordinate,
   mapViewCoordinateFromLonLat,
 } from '~/utils/geography';
-import { simplifyPolygon, bufferPolygon } from '~/utils/math';
+import { bufferPolygon, simplifyPolygon, toRadians } from '~/utils/math';
 import { createAsyncAction } from '~/utils/redux';
 
 import { JOB_TYPE } from './constants';
@@ -194,6 +195,25 @@ export const rotateOutdoorShowOrientationByAngle =
         })
       );
     }
+  };
+
+/**
+ * Rotates the show origin by the given angle in degrees around a given point,
+ * snapping the angle to one decimal digit.
+ */
+export const rotateOutdoorShowOrientationByAngleAroundPoint =
+  (angle, rotationOriginInMapCoordinates) => (dispatch, getState) => {
+    const showOriginInMapCoordinates = mapViewCoordinateFromLonLat(
+      getOutdoorShowOrigin(getState())
+    );
+    const showOriginPoint = new Point(showOriginInMapCoordinates);
+    showOriginPoint.rotate(toRadians(-angle), rotationOriginInMapCoordinates);
+    const newOrigin = lonLatFromMapViewCoordinate(
+      showOriginPoint.flatCoordinates
+    );
+
+    dispatch(setOutdoorShowOrigin(newOrigin));
+    dispatch(rotateOutdoorShowOrientationByAngle(angle));
   };
 
 export const updateOutdoorShowSettings =

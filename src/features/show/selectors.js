@@ -24,6 +24,7 @@ import {
   convexHull,
   createGeometryFromPoints,
   euclideanDistance2D,
+  getCentroid,
 } from '~/utils/math';
 import { EMPTY_ARRAY, EMPTY_OBJECT } from '~/utils/redux';
 
@@ -409,6 +410,19 @@ export const getFirstPointsOfTrajectoriesInWorldCoordinates = createSelector(
   getOutdoorShowToWorldCoordinateSystemTransformation,
   transformPointsOrFillWithUndefined
 );
+
+/**
+ * Returns the geometric center of the first points of all the trajectories, in
+ * world coordinates.
+ */
+export const getCenterOfFirstPointsOfTrajectoriesInWorldCoordinates =
+  createSelector(
+    getFirstPointsOfTrajectoriesInWorldCoordinates,
+    (firstPoints) => {
+      const [lon, lat] = getCentroid(firstPoints.map((p) => [p.lon, p.lat]));
+      return { lon, lat };
+    }
+  );
 
 /**
  * Gets the coordinates of the polygon that is to be used as a geofence. These
