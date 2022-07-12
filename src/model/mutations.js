@@ -6,8 +6,6 @@ import {
   moveOutdoorShowOriginByMapCoordinateDelta,
   rotateOutdoorShowOrientationByAngleAroundPoint,
 } from '~/features/show/actions';
-import { getCenterOfFirstPointsOfTrajectoriesInWorldCoordinates } from '~/features/show/selectors';
-import store from '~/store';
 import { toDegrees } from '~/utils/math';
 
 import { createFeatureFromOpenLayers } from './features';
@@ -97,10 +95,15 @@ export function handleFeatureUpdatesInOpenLayers(
       if (type === 'transform') {
         if (event.subType === 'move' && event.delta) {
           dispatch(moveOutdoorShowOriginByMapCoordinateDelta(event.delta));
-        } else if (event.subType === 'rotate' && event.angleDelta && event.origin) {
+        } else if (
+          event.subType === 'rotate' &&
+          event.angleDelta &&
+          event.origin
+        ) {
           dispatch(
             rotateOutdoorShowOrientationByAngleAroundPoint(
-              toDegrees(-event.angleDelta), event.origin
+              toDegrees(-event.angleDelta),
+              event.origin
             )
           );
         }

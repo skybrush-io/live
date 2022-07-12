@@ -125,6 +125,7 @@ export class TransformFeaturesInteraction extends PointerInteraction {
             }
 
             this.transformation_.center = Extent.getCenter(extent);
+
             // TODO(ntamas): having store.getState() here is not nice,
             // investigate whether there is a way around it
             if (
@@ -155,7 +156,7 @@ export class TransformFeaturesInteraction extends PointerInteraction {
               event.coordinate,
               [0, 0],
               0,
-              this.transformation_.center,
+              this.transformation_.center
             )
           );
 
@@ -190,7 +191,7 @@ export class TransformFeaturesInteraction extends PointerInteraction {
               newCoordinate,
               totalDelta,
               this.transformation_.lastAngle,
-              this.transformation_.center,
+              this.transformation_.center
             )
           );
         }
@@ -215,7 +216,7 @@ export class TransformFeaturesInteraction extends PointerInteraction {
               event.coordinate,
               totalDelta,
               lastAngle,
-              center,
+              center
             )
           );
 
@@ -348,14 +349,22 @@ const TransformEventType = {
 };
 
 class TransformFeaturesInteractionEvent extends OLEvent {
-  constructor(type, subType, features, coordinate, delta, angleDelta = 0, origin = undefined) {
+  constructor(
+    type,
+    subType,
+    features,
+    coordinate,
+    delta,
+    angleDelta = 0,
+    origin = undefined
+  ) {
     super(type);
     this.subType = subType;
     this.features = features;
     this.coordinate = coordinate;
     this.delta = delta;
     this.angleDelta = angleDelta;
-    this.origin = origin;   // for rotation only
+    this.origin = origin; // for rotation only
   }
 
   get hasMoved() {

@@ -208,7 +208,9 @@ export const rotateOutdoorShowOrientationByAngleAroundPoint =
     );
     const showOriginPoint = new Point(showOriginInMapCoordinates);
     showOriginPoint.rotate(toRadians(-angle), rotationOriginInMapCoordinates);
-    const newOrigin = lonLatFromMapViewCoordinate(showOriginPoint.flatCoordinates);
+    const newOrigin = lonLatFromMapViewCoordinate(
+      showOriginPoint.flatCoordinates
+    );
 
     dispatch(setOutdoorShowOrigin(newOrigin));
     dispatch(rotateOutdoorShowOrientationByAngle(angle));
