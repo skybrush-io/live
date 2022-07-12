@@ -15,11 +15,9 @@ import { createOLInteractionComponent } from '@collmot/ol-react/lib/interaction'
 
 import Condition from '../conditions';
 
-import { isOriginId } from '~/model/identifiers';
-
-import store from '~/store';
 import { getCenterOfFirstPointsOfTrajectoriesInWorldCoordinates } from '~/features/show/selectors';
-
+import { isOriginId } from '~/model/identifiers';
+import store from '~/store';
 import { mapViewCoordinateFromLonLat } from '~/utils/geography';
 
 /**
@@ -122,6 +120,9 @@ export class TransformFeaturesInteraction extends PointerInteraction {
               }
             }
 
+            // TODO(ntamas): having store.getState() here is not nice,
+            // investigate whether there is a way around it
+            // TODO(ntamas): this must happen only for the takeoff area!
             const centerOfFirstPointsInLonLat =
               getCenterOfFirstPointsOfTrajectoriesInWorldCoordinates(
                 store.getState()
@@ -144,7 +145,8 @@ export class TransformFeaturesInteraction extends PointerInteraction {
               features,
               event.coordinate,
               [0, 0],
-              0
+              0,
+              this.transformation_.center,
             )
           );
 
@@ -178,7 +180,8 @@ export class TransformFeaturesInteraction extends PointerInteraction {
               features,
               newCoordinate,
               totalDelta,
-              this.transformation_.lastAngle
+              this.transformation_.lastAngle,
+              this.transformation_.center,
             )
           );
         }
@@ -188,7 +191,7 @@ export class TransformFeaturesInteraction extends PointerInteraction {
         if (this.lastCoordinate_) {
           const features = this.features_;
           const totalDelta = this.calculateTotalDelta_();
-          const { lastAngle, type } = this.transformation_;
+          const { center, lastAngle, type } = this.transformation_;
 
           this.firstCoordinate_ = null;
           this.lastCoordinate_ = null;
@@ -202,7 +205,8 @@ export class TransformFeaturesInteraction extends PointerInteraction {
               features,
               event.coordinate,
               totalDelta,
-              lastAngle
+              lastAngle,
+              center,
             )
           );
 
@@ -335,13 +339,14 @@ const TransformEventType = {
 };
 
 class TransformFeaturesInteractionEvent extends OLEvent {
-  constructor(type, subType, features, coordinate, delta, angleDelta = 0) {
+  constructor(type, subType, features, coordinate, delta, angleDelta = 0, origin = undefined) {
     super(type);
     this.subType = subType;
     this.features = features;
     this.coordinate = coordinate;
     this.delta = delta;
     this.angleDelta = angleDelta;
+    this.origin = origin;   // for rotation only
   }
 
   get hasMoved() {

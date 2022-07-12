@@ -1,10 +1,9 @@
 import ky from 'ky';
 import get from 'lodash-es/get';
 import throttle from 'lodash-es/throttle';
+import Point from 'ol/geom/Point';
 
 import { freeze } from '@reduxjs/toolkit';
-
-import Point from 'ol/geom/Point';
 
 import { Colors } from '~/components/colors';
 import {
@@ -200,24 +199,19 @@ export const rotateOutdoorShowOrientationByAngle =
 
 /**
  * Rotates the show origin by the given angle in degrees around a given point,
- * snapping to one decimal digit.
+ * snapping the angle to one decimal digit.
  */
 export const rotateOutdoorShowOrientationByAngleAroundPoint =
-  (angle, center) => (dispatch, getState) => {
-    const originInMapView = mapViewCoordinateFromLonLat(
+  (angle, rotationOriginInMapCoordinates) => (dispatch, getState) => {
+    const showOriginInMapCoordinates = mapViewCoordinateFromLonLat(
       getOutdoorShowOrigin(getState())
     );
-    const centerInMapView = mapViewCoordinateFromLonLat([
-      center.lon,
-      center.lat,
-    ]);
-
-    const originPoint = new Point(originInMapView);
-    originPoint.rotate(toRadians(angle), centerInMapView);
-    const newOrigin = lonLatFromMapViewCoordinate(originPoint.flatCoordinates);
+    const showOriginPoint = new Point(showOriginInMapCoordinates);
+    showOriginPoint.rotate(toRadians(-angle), rotationOriginInMapCoordinates);
+    const newOrigin = lonLatFromMapViewCoordinate(showOriginPoint.flatCoordinates);
 
     dispatch(setOutdoorShowOrigin(newOrigin));
-    dispatch(rotateOutdoorShowOrientationByAngle(-angle));
+    dispatch(rotateOutdoorShowOrientationByAngle(angle));
   };
 
 export const updateOutdoorShowSettings =
