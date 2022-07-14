@@ -57,7 +57,7 @@ const MappingButtonGroup = ({
 
     <Tooltip
       content={
-        isShowingEmptyMissionSlots
+        showEmptyMissionSlots
           ? 'Hide empty mission slots'
           : 'Show empty mission slots'
       }
