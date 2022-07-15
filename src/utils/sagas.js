@@ -1,4 +1,4 @@
-import { delay, fork, put, take, takeLeading } from 'redux-saga/effects';
+import { all, delay, put, takeLeading } from 'redux-saga/effects';
 
 /**
  * Creates a saga that listens for a set of actions and forks new sagas when
@@ -10,36 +10,12 @@ import { delay, fork, put, take, takeLeading } from 'redux-saga/effects';
  *        when the action is dispatched
  * @returns
  */
-export function createActionListenerSaga(mapping) {
-  return function* () {
-    const actions = Object.keys(mapping);
-
-    if (actions.length === 1) {
-      // This is the same as takeLeading() from redux-saga
-      yield takeLeading(actions[0], mapping[actions[0]]);
-    } else if (actions.length > 1) {
-      const tasks = {};
-
-      while (true) {
-        const action = yield take(actions);
-
-        if (tasks[action.type]) {
-          if (tasks[action.type].isRunning()) {
-            // ignore the action
-            continue;
-          } else {
-            delete tasks[action.type];
-          }
-        }
-
-        const saga = mapping[action.type];
-        if (saga) {
-          tasks[action.type] = yield fork(saga, action);
-        }
-      }
-    }
+export const createActionListenerSaga = (mapping) =>
+  function* () {
+    yield all(
+      Object.keys(mapping).map((action) => takeLeading(action, mapping[action]))
+    );
   };
-}
 
 /**
  * Helper function that tries to put a value in a channel with a limited buffer,
