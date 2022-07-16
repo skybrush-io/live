@@ -8,7 +8,7 @@ import isNil from 'lodash-es/isNil';
 import union from 'lodash-es/union';
 import { nanoid } from 'nanoid';
 import PropTypes from 'prop-types';
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { bindActionCreators } from 'redux';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
@@ -324,6 +324,16 @@ const UAVListPresentation = ({
     [onMappingAdjusted]
   );
 
+  // Prevent the list from jumping to the top when toggling edit mode
+  const [scrollPosition, setScrollPosition] = useState(0);
+  const onScroll = useCallback(
+    (e) => setScrollPosition(e.target.scrollTop),
+    [setScrollPosition]
+  );
+  useEffect(() => {
+    document.querySelector(`#${containerDOMNodeId}`).scrollTop = scrollPosition;
+  });
+
   const onStartEditing = useCallback(
     (_event, _uavId, missionIndex) => onEditMappingSlot(missionIndex),
     [onEditMappingSlot]
@@ -367,7 +377,7 @@ const UAVListPresentation = ({
           <MappingSlotEditorToolbar className={classes.toolbar} />
         </FadeAndSlide>
       </AppBar>
-      <Box flex={1} overflow='auto' id={containerDOMNodeId}>
+      <Box flex={1} overflow='auto' id={containerDOMNodeId} onScroll={onScroll}>
         {/* We assume that each grid item is a <div> in the <Box> when we
          * calculate how many columns there are in the grid. Revise the
          * layout functions in connect() if this is not the case any more */}
