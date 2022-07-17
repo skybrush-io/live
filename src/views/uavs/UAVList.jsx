@@ -8,7 +8,7 @@ import isNil from 'lodash-es/isNil';
 import union from 'lodash-es/union';
 import { nanoid } from 'nanoid';
 import PropTypes from 'prop-types';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback } from 'react';
 import { bindActionCreators } from 'redux';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
