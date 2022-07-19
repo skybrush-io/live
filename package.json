@@ -151,6 +151,7 @@
     "stream-to-blob": "^2.0.1",
     "styled-components": "^5.3.3",
     "suncalc": "^1.9.0",
+    "svd-js": "^1.1.1",
     "typeface-fira-sans": "^1.1.13",
     "url": "^0.11.0",
     "use-resize-observer": "^8.0.0",
