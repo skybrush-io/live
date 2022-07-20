@@ -16,6 +16,8 @@ import Tooltip from '@skybrush/mui-components/lib/Tooltip';
 
 import CoordinateSystemFields from '~/components/CoordinateSystemFields';
 import { SimpleDistanceField } from '~/components/forms/fields';
+import { estimateShowCoordinateSystemFromActiveUAVs } from '~/features/auto-fit/actions';
+import { canEstimateShowCoordinateSystemFromActiveUAVs } from '~/features/auto-fit/selectors';
 import { updateFlatEarthCoordinateSystem } from '~/features/map/origin';
 import RTKCorrectionSourceSelector from '~/features/rtk/RTKCorrectionSourceSelector';
 import {
@@ -33,6 +35,7 @@ import {
   getActiveUAVIds,
   getCurrentGPSPositionByUavId,
 } from '~/features/uavs/selectors';
+import AutoFix from '~/icons/AutoFix';
 
 /**
  * Presentation component for the form that allows the user to edit the
@@ -40,9 +43,11 @@ import {
  */
 const OutdoorEnvironmentEditor = ({
   altitudeReference,
+  canEstimateShowCoordinateSystem,
   onAltitudeReferenceTypeChanged,
   onAltitudeReferenceValueChanged,
   onCopyCoordinateSystemToMap,
+  onEstimateShowCoordinateSystem,
   onOriginChanged,
   onOrientationChanged,
   onSetAltitudeReferenceToAverageAMSL,
@@ -54,24 +59,37 @@ const OutdoorEnvironmentEditor = ({
 
   return (
     <>
-      <Box pt={2}>
-        <CoordinateSystemFields
-          type={COORDINATE_SYSTEM_TYPE}
-          {...showCoordinateSystem}
-          orientationLabel='Show orientation'
-          originLabel='Show origin'
-          onOriginChanged={onOriginChanged}
-          onOrientationChanged={onOrientationChanged}
-        />
-      </Box>
+      <Box display='flex' flexDirection='row' pt={2}>
+        <Box>
+          <CoordinateSystemFields
+            type={COORDINATE_SYSTEM_TYPE}
+            {...showCoordinateSystem}
+            orientationLabel='Show orientation'
+            originLabel='Show origin'
+            onOriginChanged={onOriginChanged}
+            onOrientationChanged={onOrientationChanged}
+          />
 
-      <Box display='flex' justifyContent='space-evenly' py={1}>
-        <Button onClick={onSetCoordinateSystemFromMap}>
-          Copy map origin to show origin
-        </Button>
-        <Button onClick={onCopyCoordinateSystemToMap}>
-          Copy show origin to map origin
-        </Button>
+          <Box display='flex' justifyContent='space-evenly' py={1}>
+            <Button onClick={onSetCoordinateSystemFromMap}>
+              Copy map origin to show origin
+            </Button>
+            <Button onClick={onCopyCoordinateSystemToMap}>
+              Copy show origin to map origin
+            </Button>
+          </Box>
+        </Box>
+        <Box alignSelf='bottom' pt={1}>
+          <Tooltip content='Fit coordinate system to current drone positions'>
+            <IconButton
+              disabled={!canEstimateShowCoordinateSystem}
+              edge='end'
+              onClick={onEstimateShowCoordinateSystem}
+            >
+              <AutoFix />
+            </IconButton>
+          </Tooltip>
+        </Box>
       </Box>
 
       <Box display='flex' flexDirection='row' pt={1} pb={2}>
@@ -128,9 +146,11 @@ OutdoorEnvironmentEditor.propTypes = {
     type: PropTypes.oneOf(Object.values(ALTITUDE_REFERENCE)),
     value: PropTypes.number,
   }),
+  canEstimateShowCoordinateSystem: PropTypes.bool,
   onAltitudeReferenceTypeChanged: PropTypes.func,
   onAltitudeReferenceValueChanged: PropTypes.func,
   onCopyCoordinateSystemToMap: PropTypes.func,
+  onEstimateShowCoordinateSystem: PropTypes.func,
   onOriginChanged: PropTypes.func,
   onOrientationChanged: PropTypes.func,
   onSetAltitudeReferenceToAverageAMSL: PropTypes.func,
@@ -145,21 +165,19 @@ export default connect(
   // mapStateToProps
   (state) => ({
     altitudeReference: state.show.environment.outdoor.altitudeReference,
+    canEstimateShowCoordinateSystem:
+      canEstimateShowCoordinateSystemFromActiveUAVs(state),
     showCoordinateSystem: state.show.environment.outdoor.coordinateSystem,
     mapCoordinateSystem: state.map.origin,
   }),
 
   // mapDispatchToProps
-  (dispatch) => ({
-    onAltitudeReferenceTypeChanged(event) {
-      dispatch(setOutdoorShowAltitudeReferenceType(event.target.value));
-    },
-
-    onAltitudeReferenceValueChanged(event) {
-      dispatch(setOutdoorShowAltitudeReferenceValue(event.target.value));
-    },
-
-    onCopyCoordinateSystemToMap(showCoordinateSystem) {
+  {
+    onAltitudeReferenceTypeChanged: (event) =>
+      setOutdoorShowAltitudeReferenceType(event.target.value),
+    onAltitudeReferenceValueChanged: (event) =>
+      setOutdoorShowAltitudeReferenceValue(event.target.value),
+    onCopyCoordinateSystemToMap: (showCoordinateSystem) => (dispatch) => {
       dispatch(
         updateFlatEarthCoordinateSystem({
           position: showCoordinateSystem.origin,
@@ -173,52 +191,38 @@ export default connect(
         })
       );
     },
+    onEstimateShowCoordinateSystem: estimateShowCoordinateSystemFromActiveUAVs,
+    onOrientationChanged: (value) =>
+      updateOutdoorShowSettings({
+        orientation: value,
+        setupMission: true,
+      }),
 
-    onOrientationChanged(value) {
-      dispatch(
-        updateOutdoorShowSettings({
-          orientation: value,
-          setupMission: true,
-        })
-      );
-    },
+    onOriginChanged: (value) =>
+      updateOutdoorShowSettings({
+        origin: value,
+        setupMission: true,
+      }),
 
-    onOriginChanged(value) {
-      dispatch(
-        updateOutdoorShowSettings({
-          origin: value,
-          setupMission: true,
-        })
-      );
-    },
+    onSetAltitudeReferenceToAverageAMSL: () => (dispatch, getState) => {
+      const state = getState();
+      const activeUAVIds = getActiveUAVIds(state);
+      const altitudes = [];
 
-    onSetAltitudeReferenceToAverageAMSL() {
-      dispatch((dispatch, getState) => {
-        const state = getState();
-        const activeUAVIds = getActiveUAVIds(state);
-        const altitudes = [];
-
-        for (const uavId of activeUAVIds) {
-          const pos = getCurrentGPSPositionByUavId(state, uavId);
-          if (
-            pos &&
-            typeof pos.amsl === 'number' &&
-            Number.isFinite(pos.amsl)
-          ) {
-            altitudes.push(pos.amsl);
-          }
+      for (const uavId of activeUAVIds) {
+        const pos = getCurrentGPSPositionByUavId(state, uavId);
+        if (pos && typeof pos.amsl === 'number' && Number.isFinite(pos.amsl)) {
+          altitudes.push(pos.amsl);
         }
+      }
 
-        if (altitudes.length > 0) {
-          const avgAltitude = sum(altitudes) / altitudes.length;
-          dispatch(
-            setOutdoorShowAltitudeReferenceValue(avgAltitude.toFixed(1))
-          );
-        }
-      });
+      if (altitudes.length > 0) {
+        const avgAltitude = sum(altitudes) / altitudes.length;
+        dispatch(setOutdoorShowAltitudeReferenceValue(avgAltitude.toFixed(1)));
+      }
     },
 
-    onSetCoordinateSystemFromMap(mapCoordinateSystem) {
+    onSetCoordinateSystemFromMap: (mapCoordinateSystem) => (dispatch) => {
       dispatch(
         updateOutdoorShowSettings({
           origin: mapCoordinateSystem.position,
@@ -233,7 +237,8 @@ export default connect(
         })
       );
     },
-  }),
+  },
+
   // mergeProps
   (stateProps, dispatchProps, ownProps) => {
     const mergedProps = {

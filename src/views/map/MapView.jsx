@@ -1,10 +1,10 @@
 import filter from 'lodash-es/filter';
 import partial from 'lodash-es/partial';
-import { Map, View, control, interaction, withMap } from '@collmot/ol-react';
-import GeometryType from 'ol/geom/GeometryType';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
+
+import { Map, View, control, interaction, withMap } from '@collmot/ol-react';
 
 import Condition from './conditions';
 import {
@@ -531,7 +531,7 @@ class MapViewPresentation extends React.Component {
       source.forEachFeatureIntersectingExtent(extent, (feature) => {
         const featureGeometry = feature.getGeometry();
         if (
-          featureGeometry.getType() === GeometryType.POINT &&
+          featureGeometry.getType() === 'Point' &&
           geometry.intersectsCoordinate(featureGeometry.getCoordinates())
         ) {
           features.push(feature);

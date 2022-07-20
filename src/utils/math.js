@@ -111,7 +111,7 @@ export const toPolar = ({ x, y }) => ({
  * Returns the centroid of an array of points.
  */
 export function getCentroid(points, dim = 2) {
-  const result = new Array(dim).fill(0);
+  const result = Array.from({ length: dim }).fill(0);
   const n = points && Array.isArray(points) ? points.length : 0;
 
   if (n === 0) {
@@ -129,6 +129,19 @@ export function getCentroid(points, dim = 2) {
   }
 
   return result;
+}
+
+/**
+ * Returns the mean angle of an array of angles, specified in degrees.
+ */
+export function getMeanAngle(angles) {
+  const centroid = [0, 0];
+  for (const angle of angles.map(toRadians)) {
+    centroid[0] += Math.cos(angle);
+    centroid[1] += Math.sin(angle);
+  }
+
+  return toDegrees(Math.atan2(centroid[1], centroid[0]));
 }
 
 /**

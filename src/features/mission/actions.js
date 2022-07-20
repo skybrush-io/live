@@ -1,16 +1,7 @@
 import isNil from 'lodash-es/isNil';
 import { getDistance as haversineDistance } from 'ol/sphere';
 
-import { findAssignmentInDistanceMatrix } from './matching';
-import {
-  getEmptyMappingSlotIndices,
-  getGeofencePolygonId,
-  getGPSBasedHomePositionsInMission,
-  getMissionMapping,
-  getMissionMappingFileContents,
-} from './selectors';
-import { clearMapping, removeUAVsFromMapping, replaceMapping } from './slice';
-
+import { findAssignmentInDistanceMatrix } from '~/algorithms/matching';
 import { removeFeaturesByIds } from '~/features/map-features/slice';
 import {
   getFirstPointsOfTrajectories,
@@ -33,6 +24,15 @@ import {
 import messageHub from '~/message-hub';
 import { readTextFromFile, writeTextToFile } from '~/utils/filesystem';
 import { calculateDistanceMatrix, euclideanDistance2D } from '~/utils/math';
+
+import {
+  getEmptyMappingSlotIndices,
+  getGeofencePolygonId,
+  getGPSBasedHomePositionsInMission,
+  getMissionMapping,
+  getMissionMappingFileContents,
+} from './selectors';
+import { clearMapping, removeUAVsFromMapping, replaceMapping } from './slice';
 
 /**
  * Thunk that fills the empty slots in the current mapping from the spare drones
