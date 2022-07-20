@@ -12,6 +12,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The contrast of the LCD clocks can now be enhanced in dark mode by hiding the
   inactive segments.
 
+- Experimental: the show coordinate system can now be fitted automatically to
+  the current positions of the drones, i.e. there is no need to align the
+  takeoff positions of the drones with the current positions before takeoff.
+  The feature is experimental because we did not test all corner cases yet, but
+  it should behave correctly for everyday cases when most of the drones are
+  laid out on the launch pad according to the takeoff formation.
+
 ### Changed
 
 - When rotating the convex hull of the show using mouse gestures, the origin of
@@ -22,6 +29,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Fixed a crash of the weather widget in the header when the map was scrolled
   to a coordinate with no sunrise and no sunset on the current day.
+
+- The UAV list now remembers its scroll position when switching to/from the
+  mapping editor mode.
 
 ## [2.3.0] - 2022-06-26
 
