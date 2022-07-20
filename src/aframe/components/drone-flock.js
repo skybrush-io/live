@@ -37,7 +37,7 @@ const { THREE } = AFrame;
 const getUpdatePositionFromGPSCoordinatesFunction = createSelector(
   getFlatEarthCoordinateTransformer,
   (transformation) => (coordinate, result) => {
-    if (coordinate !== null && coordinate !== undefined) {
+    if (coordinate !== null && coordinate !== undefined && transformation) {
       return transformation.updateVector3FromLonLatAgl(
         result,
         coordinate.lon,

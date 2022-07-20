@@ -23,7 +23,7 @@ const getGPSToThreeJSTransformation = createSelector(
   (transformation) => {
     const flipY = transformation?.type !== 'nwu';
     return (coordinate) => {
-      if (isNil(coordinate)) {
+      if (isNil(coordinate) || !transformation) {
         return null;
       }
 
