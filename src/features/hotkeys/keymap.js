@@ -82,6 +82,11 @@ const globalKeyMap = {
     group: HIDDEN,
   },
 
+  TOGGLE_BROADCAST_MODE: {
+    name: 'Toggle the broadcast mode switch',
+    sequence: 'mod+b',
+  },
+
   SEND_FLASH_LIGHTS_COMMAND: {
     name: 'Flash lights on selected UAVs',
     sequence: 'w',

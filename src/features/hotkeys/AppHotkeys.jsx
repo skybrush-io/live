@@ -11,8 +11,10 @@ import { connect } from 'react-redux';
 import { selectAllUAVFeatures } from '~/features/map/selection';
 import { getPreferredCommunicationChannelIndex } from '~/features/mission/selectors';
 import { toggleMissionIds } from '~/features/settings/slice';
+import { toggleBroadcast } from '~/features/session/actions';
+import { isBroadcast } from '~/features/session/selectors';
 import { requestRemovalOfSelectedUAVs } from '~/features/uavs/actions';
-import { getSelectedUAVIds } from '~/features/uavs/selectors';
+import { getSelectedUAVIds, getUAVIdList } from '~/features/uavs/selectors';
 import { clearStoreAfterConfirmation } from '~/store';
 import { createUAVOperationThunks } from '~/utils/messaging';
 
@@ -75,10 +77,14 @@ AppHotkeys.propTypes = {
  * action thunks that execute the given UAV operation on the current selection.
  */
 const uavOperationThunks = createUAVOperationThunks({
-  getTargetedUAVIds: getSelectedUAVIds,
+  getTargetedUAVIds(state) {
+    return isBroadcast(state) ? getUAVIdList(state) : getSelectedUAVIds(state);
+  },
+  // getTargetedUAVIds: getSelectedUAVIds,
   getTransportOptions(state) {
+    const broadcast = isBroadcast(state);
     const channel = getPreferredCommunicationChannelIndex(state);
-    return { channel: channel || 0 };
+    return { broadcast, channel: channel || 0 };
   },
 });
 
@@ -119,6 +125,7 @@ export default connect(
         SEND_POSITION_HOLD_COMMAND: callUAVActionOnSelection('holdPosition'),
         SEND_RTH_COMMAND: callUAVActionOnSelection('returnToHome'),
         SHOW_HOTKEY_DIALOG: showHotkeyDialog,
+        TOGGLE_BROADCAST_MODE: toggleBroadcast,
         TOGGLE_SORT_BY_MISSION_ID: toggleMissionIds,
         TYPE_0: () => appendToPendingUAVId(0),
         TYPE_1: () => appendToPendingUAVId(1),
