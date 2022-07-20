@@ -30,6 +30,9 @@ const { actions, reducer } = createSlice({
   name: 'session',
 
   initialState: {
+    // Whether UAV commands should be broadcasted
+    broadcast: false,
+
     // Expiry date/time of the current session
     expiresAt: null,
 
@@ -62,6 +65,10 @@ const { actions, reducer } = createSlice({
       updateExpiry(state, Date.now());
     },
 
+    setBroadcast(state, action) {
+      state.broadcast = action.payload;
+    },
+
     setFeatureIdForTooltip(state, action) {
       state.featureIdForTooltip = action.payload || null;
     },
@@ -69,6 +76,7 @@ const { actions, reducer } = createSlice({
 });
 
 export const {
+  setBroadcast,
   ensureSessionExpiresNoLaterThan,
   ensureSessionIsNotLongerThan,
   expireSession,

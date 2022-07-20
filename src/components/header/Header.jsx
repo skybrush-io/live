@@ -18,6 +18,7 @@ import HelpButton from './HelpButton';
 import ServerConnectionSettingsButton from './ServerConnectionSettingsButton';
 import ToolboxButton from './ToolboxButton';
 
+import BroadcastButton from '~/views/uavs/BroadcastButton';
 import UAVStatusSummary from '../uavs/UAVStatusSummary';
 
 import RTKStatusHeaderButton from '~/features/rtk/RTKStatusHeaderButton';
@@ -83,6 +84,7 @@ const Header = ({ isSidebarOpen, sessionExpiresAt, toggleSidebar }) => (
       <Box flexGrow={1} flexShrink={1}>
         {/* spacer */}
       </Box>
+      <BroadcastButton timeoutLength={5} />
       <UAVStatusSummary />
       <hr />
       <AltitudeSummaryHeaderButton />

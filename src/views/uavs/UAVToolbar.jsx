@@ -1,6 +1,7 @@
 import isEmpty from 'lodash-es/isEmpty';
 import PropTypes from 'prop-types';
-import React, { useState } from 'react';
+import React from 'react';
+import { connect } from 'react-redux';
 
 import Box from '@material-ui/core/Box';
 import IconButton from '@material-ui/core/IconButton';
@@ -15,12 +16,17 @@ import UAVOperationsButtonGroup from '~/components/uavs/UAVOperationsButtonGroup
 import BroadcastSwitch from './BroadcastSwitch';
 import MappingButtonGroup from './MappingButtonGroup';
 
+import { setBroadcast } from '~/features/session/slice';
+import { isBroadcast } from '~/features/session/selectors';
+
 /**
  * Main toolbar for controlling the UAVs.
  */
 const UAVToolbar = React.forwardRef(
-  ({ fitSelectedUAVs, selectedUAVIds, ...rest }, ref) => {
-    const [broadcast, setBroadcast] = useState(false);
+  (
+    { fitSelectedUAVs, isBroadcast, selectedUAVIds, setBroadcast, ...rest },
+    ref
+  ) => {
     const isSelectionEmpty = isEmpty(selectedUAVIds);
 
     return (
@@ -28,13 +34,13 @@ const UAVToolbar = React.forwardRef(
         <Box width={4} />
 
         <BroadcastSwitch
-          checked={broadcast}
+          checked={isBroadcast}
           setChecked={setBroadcast}
           timeout={5}
         />
         <UAVOperationsButtonGroup
           startSeparator
-          broadcast={broadcast}
+          broadcast={isBroadcast}
           selectedUAVIds={selectedUAVIds}
         />
 
@@ -62,7 +68,18 @@ const UAVToolbar = React.forwardRef(
 
 UAVToolbar.propTypes = {
   fitSelectedUAVs: PropTypes.func,
+  isBroadcast: PropTypes.bool,
   selectedUAVIds: PropTypes.array,
+  setBroadcast: PropTypes.func,
 };
 
-export default UAVToolbar;
+export default connect(
+  // mapStateToProps
+  (state) => ({
+    isBroadcast: isBroadcast(state),
+  }),
+  // mapDispatchToProps
+  {
+    setBroadcast,
+  }
+)(UAVToolbar);
