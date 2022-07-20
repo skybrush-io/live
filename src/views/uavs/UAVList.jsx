@@ -64,6 +64,7 @@ import {
   getSelectionInfo,
 } from './selectors';
 import { uavIdToDOMNodeId } from './utils';
+import { usePersistentScrollPosition } from '~/hooks';
 
 const useListStyles = makeStyles(
   (theme) => ({
@@ -324,6 +325,8 @@ const UAVListPresentation = ({
     [onMappingAdjusted]
   );
 
+  const [uavListRef, uavListOnScroll] = usePersistentScrollPosition();
+
   const onStartEditing = useCallback(
     (_event, _uavId, missionIndex) => onEditMappingSlot(missionIndex),
     [onEditMappingSlot]
@@ -367,7 +370,13 @@ const UAVListPresentation = ({
           <MappingSlotEditorToolbar className={classes.toolbar} />
         </FadeAndSlide>
       </AppBar>
-      <Box flex={1} overflow='auto' id={containerDOMNodeId}>
+      <Box
+        ref={uavListRef}
+        flex={1}
+        overflow='auto'
+        id={containerDOMNodeId}
+        onScroll={uavListOnScroll}
+      >
         {/* We assume that each grid item is a <div> in the <Box> when we
          * calculate how many columns there are in the grid. Revise the
          * layout functions in connect() if this is not the case any more */}
