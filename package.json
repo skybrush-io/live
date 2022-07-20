@@ -215,7 +215,7 @@
       "import/extensions": 0,
       "import/no-unassigned-import": 0,
       "import/order": 0,
-      "node/file-extension-in-import": 0,
+      "n/file-extension-in-import": 0,
       "no-bitwise": 0,
       "no-else-return": 0,
       "no-lonely-if": 0,
