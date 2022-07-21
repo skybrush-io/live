@@ -1,5 +1,6 @@
 import ky from 'ky';
 import get from 'lodash-es/get';
+import sum from 'lodash-es/sum';
 import throttle from 'lodash-es/throttle';
 import Point from 'ol/geom/Point';
 
@@ -21,6 +22,10 @@ import {
 } from '~/features/mission/slice';
 import { showNotification } from '~/features/snackbar/slice';
 import { MessageSemantics } from '~/features/snackbar/types';
+import {
+  getCurrentGPSPositionByUavId,
+  getActiveUAVIds,
+} from '~/features/uavs/selectors';
 import { clearLastUploadResultForJobType } from '~/features/upload/slice';
 import { FeatureType } from '~/model/features';
 import { getFeaturesInOrder } from '~/selectors/ordered';
@@ -446,5 +451,24 @@ export const setOutdoorShowAltitudeReferenceValue =
         })
       );
       dispatch(clearLastUploadResult());
+    }
+  };
+
+export const setOutdoorShowAltitudeReferenceToAverageAMSL =
+  () => (dispatch, getState) => {
+    const state = getState();
+    const activeUAVIds = getActiveUAVIds(state);
+    const altitudes = [];
+
+    for (const uavId of activeUAVIds) {
+      const pos = getCurrentGPSPositionByUavId(state, uavId);
+      if (pos && typeof pos.amsl === 'number' && Number.isFinite(pos.amsl)) {
+        altitudes.push(pos.amsl);
+      }
+    }
+
+    if (altitudes.length > 0) {
+      const avgAltitude = sum(altitudes) / altitudes.length;
+      dispatch(setOutdoorShowAltitudeReferenceValue(avgAltitude.toFixed(1)));
     }
   };

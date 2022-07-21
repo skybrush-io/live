@@ -1,4 +1,3 @@
-import sum from 'lodash-es/sum';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
@@ -21,6 +20,7 @@ import { canEstimateShowCoordinateSystemFromActiveUAVs } from '~/features/auto-f
 import { updateFlatEarthCoordinateSystem } from '~/features/map/origin';
 import RTKCorrectionSourceSelector from '~/features/rtk/RTKCorrectionSourceSelector';
 import {
+  setOutdoorShowAltitudeReferenceToAverageAMSL,
   setOutdoorShowAltitudeReferenceType,
   setOutdoorShowAltitudeReferenceValue,
   updateOutdoorShowSettings,
@@ -31,10 +31,6 @@ import {
 } from '~/features/show/constants';
 import { showNotification } from '~/features/snackbar/slice';
 import { MessageSemantics } from '~/features/snackbar/types';
-import {
-  getActiveUAVIds,
-  getCurrentGPSPositionByUavId,
-} from '~/features/uavs/selectors';
 import AutoFix from '~/icons/AutoFix';
 
 /**
@@ -204,23 +200,8 @@ export default connect(
         setupMission: true,
       }),
 
-    onSetAltitudeReferenceToAverageAMSL: () => (dispatch, getState) => {
-      const state = getState();
-      const activeUAVIds = getActiveUAVIds(state);
-      const altitudes = [];
-
-      for (const uavId of activeUAVIds) {
-        const pos = getCurrentGPSPositionByUavId(state, uavId);
-        if (pos && typeof pos.amsl === 'number' && Number.isFinite(pos.amsl)) {
-          altitudes.push(pos.amsl);
-        }
-      }
-
-      if (altitudes.length > 0) {
-        const avgAltitude = sum(altitudes) / altitudes.length;
-        dispatch(setOutdoorShowAltitudeReferenceValue(avgAltitude.toFixed(1)));
-      }
-    },
+    onSetAltitudeReferenceToAverageAMSL:
+      setOutdoorShowAltitudeReferenceToAverageAMSL,
 
     onSetCoordinateSystemFromMap: (mapCoordinateSystem) => (dispatch) => {
       dispatch(

@@ -1,6 +1,11 @@
+import { showErrorMessage } from '~/features/error-handling/actions';
+import { updateFlatEarthCoordinateSystem } from '~/features/map/origin';
 import { recalculateMapping } from '~/features/mission/actions';
-import { updateOutdoorShowSettings } from '~/features/show/actions';
-import { showErrorMessage } from '../error-handling/actions';
+import {
+  setOutdoorShowAltitudeReferenceToAverageAMSL,
+  updateOutdoorShowSettings,
+} from '~/features/show/actions';
+import { isMapCoordinateSystemSpecified } from '~/selectors/map';
 
 import { estimateShowCoordinateSystem } from './algorithm';
 import {
@@ -32,7 +37,7 @@ export function estimateShowCoordinateSystemFromActiveUAVs() {
       return;
     }
 
-    const { origin, orientation } = result;
+    const { origin, orientation, type } = result;
 
     dispatch(
       updateOutdoorShowSettings({
@@ -42,6 +47,19 @@ export function estimateShowCoordinateSystemFromActiveUAVs() {
       })
     );
 
+    dispatch(setOutdoorShowAltitudeReferenceToAverageAMSL());
     dispatch(recalculateMapping());
+
+    if (!isMapCoordinateSystemSpecified(getState())) {
+      /* To make the life of the user easier at first setup, let us put the origin
+       * of the map coordinate system to where the show coordinate system is */
+      dispatch(
+        updateFlatEarthCoordinateSystem({
+          position: origin,
+          angle: orientation.toFixed(1),
+          type,
+        })
+      );
+    }
   };
 }
