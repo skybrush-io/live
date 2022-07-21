@@ -1,7 +1,7 @@
 {
   "name": "@skybrush/live",
   "productName": "Skybrush Live",
-  "version": "2.3.0",
+  "version": "2.4.0",
   "description": "Web frontend for a Skybrush server",
   "main": "launcher.bundle.js",
   "scripts": {
