@@ -90,8 +90,14 @@ const restoreWorkbench = (whenDone) => async () => {
 
 // Spin up the root saga after the state has been restored.
 waitUntilStateRestored().then(() => {
-  registerUploadJobTypes();
-  sagaMiddleware.run(rootSaga);
+  const disposer = registerUploadJobTypes();
+  const sagaTask = sagaMiddleware.run(rootSaga);
+  if (module.hot) {
+    module.hot.dispose(() => {
+      disposer();
+      sagaTask.cancel();
+    });
+  }
 });
 
 const App = ({ onFirstRender }) => (
