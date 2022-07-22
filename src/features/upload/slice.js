@@ -88,6 +88,8 @@ const { actions, reducer } = createSlice({
     settings: {
       // Whether failed upload jobs should be automatically retried
       autoRetry: false,
+
+      // Whether the lights of the drones with failed uploads should be flashed
       flashFailed: false,
     },
   },

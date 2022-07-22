@@ -133,7 +133,7 @@ const UploadPanel = ({
             control={
               <Checkbox checked={flashFailed} onChange={onToggleFlashFailed} />
             }
-            label='Flash lights of UAVs that failed to upload'
+            label='Flash lights of UAVs where the upload failed'
           />
         </Box>
       </DialogContent>

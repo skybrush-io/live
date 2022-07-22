@@ -12,13 +12,17 @@ import {
   take,
 } from 'redux-saga/effects';
 
+import { handleError } from '~/error-handling';
+import { flashLightOnUAVs } from '~/utils/messaging';
+import { createActionListenerSaga, putWithRetry } from '~/utils/sagas';
+
 import { getSpecificationForJobType } from './jobs';
 import {
   getCurrentUploadJob,
   getNextDroneFromUploadQueue,
   getUploadItemsBeingProcessed,
-  shouldRetryFailedUploadsAutomatically,
   shouldFlashLightsOfFailedUploads,
+  shouldRetryFailedUploadsAutomatically,
 } from './selectors';
 import {
   cancelUpload,
@@ -32,9 +36,6 @@ import {
   _notifyUploadStarted,
   startUpload,
 } from './slice';
-import { handleError } from '~/error-handling';
-import { createActionListenerSaga, putWithRetry } from '~/utils/sagas';
-import { flashLightOnUAVs } from '~/utils/messaging.js';
 
 /**
  * Special symbol used to make a worker task quit.
