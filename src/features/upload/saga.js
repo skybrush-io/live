@@ -18,6 +18,7 @@ import {
   getNextDroneFromUploadQueue,
   getUploadItemsBeingProcessed,
   shouldRetryFailedUploadsAutomatically,
+  shouldFlashLightsOfFailedUploads,
 } from './selectors';
 import {
   cancelUpload,
@@ -31,9 +32,9 @@ import {
   _notifyUploadStarted,
   startUpload,
 } from './slice';
-
 import { handleError } from '~/error-handling';
 import { createActionListenerSaga, putWithRetry } from '~/utils/sagas';
+import { flashLightOnUAVs } from '~/utils/messaging.js';
 
 /**
  * Special symbol used to make a worker task quit.
@@ -133,6 +134,11 @@ function* forkingWorkerManagementSaga(spec, job, { workerCount = 8 } = {}) {
         target: uavId,
       });
     } else {
+      const shouldFlashLights = yield select(shouldFlashLightsOfFailedUploads);
+      if (shouldFlashLights && failed.length > 0) {
+        flashLightOnUAVs(failed);
+      }
+
       // No job in the upload queue. If there are jobs that failed _in this
       // session_ and the user wants to retry failed jobs automatically, it
       // is time to put them back in the queue.

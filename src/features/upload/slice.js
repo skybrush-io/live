@@ -88,6 +88,7 @@ const { actions, reducer } = createSlice({
     settings: {
       // Whether failed upload jobs should be automatically retried
       autoRetry: false,
+      flashFailed: false,
     },
   },
 
@@ -140,6 +141,10 @@ const { actions, reducer } = createSlice({
 
     setUploadAutoRetry(state, action) {
       state.settings.autoRetry = Boolean(action.payload);
+    },
+
+    setFlashFailed(state, action) {
+      state.settings.flashFailed = Boolean(action.payload);
     },
 
     // Private actions that should be dispatched only from the uploader saga
@@ -297,6 +302,7 @@ export const {
   putUavsInWaitingQueue,
   removeUavsFromWaitingQueue,
   setUploadAutoRetry,
+  setFlashFailed,
   startUpload,
 } = actions;
 

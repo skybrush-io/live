@@ -228,3 +228,10 @@ export const isUploadInProgress = (state) => state.upload.currentJob.running;
  */
 export const shouldRetryFailedUploadsAutomatically = (state) =>
   Boolean(state.upload.settings?.autoRetry);
+
+/**
+ * Returns whether the UAVs that failed the upload should be instructed to
+ * flash their lights.
+ */
+export const shouldFlashLightsOfFailedUploads = (state) =>
+  Boolean(state.upload.settings?.flashFailed);
