@@ -23,12 +23,14 @@ import {
   hasQueuedItems,
   isUploadInProgress,
   shouldRetryFailedUploadsAutomatically,
+  shouldFlashLightsOfFailedUploads,
 } from '~/features/upload/selectors';
 import {
   cancelUpload,
   closeUploadDialog,
   dismissLastUploadResult,
   setUploadAutoRetry,
+  setFlashFailed,
 } from '~/features/upload/slice';
 import StartUploadButton from '~/features/upload/StartUploadButton';
 import UploadProgressBar from '~/features/upload/UploadProgressBar';
@@ -98,6 +100,7 @@ const useStyles = makeStyles((theme) => ({
  */
 const UploadPanel = ({
   autoRetry,
+  flashFailed,
   hasQueuedItems,
   lastUploadResult,
   onCancelUpload,
@@ -105,6 +108,7 @@ const UploadPanel = ({
   onStartUpload,
   onStepBack,
   onToggleAutoRetry,
+  onToggleFlashFailed,
   running,
   showLastUploadResult,
 }) => {
@@ -124,6 +128,12 @@ const UploadPanel = ({
               <Checkbox checked={autoRetry} onChange={onToggleAutoRetry} />
             }
             label='Retry failed attempts automatically'
+          />
+          <FormControlLabel
+            control={
+              <Checkbox checked={flashFailed} onChange={onToggleFlashFailed} />
+            }
+            label='Flash lights of UAVs where the upload failed'
           />
         </Box>
       </DialogContent>
@@ -166,6 +176,7 @@ const UploadPanel = ({
 
 UploadPanel.propTypes = {
   autoRetry: PropTypes.bool,
+  flashFailed: PropTypes.bool,
   hasQueuedItems: PropTypes.bool,
   lastUploadResult: PropTypes.oneOf(['success', 'error', 'cancelled']),
   onCancelUpload: PropTypes.func,
@@ -173,6 +184,7 @@ UploadPanel.propTypes = {
   onStartUpload: PropTypes.func,
   onStepBack: PropTypes.func,
   onToggleAutoRetry: PropTypes.func,
+  onToggleFlashFailed: PropTypes.func,
   running: PropTypes.bool,
   showLastUploadResult: PropTypes.bool,
 };
@@ -187,6 +199,7 @@ export default connect(
   (state, ownProps) => ({
     ...getUploadDialogState(state),
     autoRetry: shouldRetryFailedUploadsAutomatically(state),
+    flashFailed: shouldFlashLightsOfFailedUploads(state),
     hasQueuedItems: hasQueuedItems(state),
     lastUploadResult: getLastUploadResultByJobType(state, ownProps.jobType),
     running: isUploadInProgress(state),
@@ -201,6 +214,11 @@ export default connect(
       const state = getState();
       const autoRetry = shouldRetryFailedUploadsAutomatically(state);
       dispatch(setUploadAutoRetry(!autoRetry));
+    },
+    onToggleFlashFailed: () => (dispatch, getState) => {
+      const state = getState();
+      const flashFailed = shouldFlashLightsOfFailedUploads(state);
+      dispatch(setFlashFailed(!flashFailed));
     },
   }
 )(UploadPanel);
