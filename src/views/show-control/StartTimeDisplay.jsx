@@ -4,6 +4,8 @@ import { connect } from 'react-redux';
 
 import Box from '@material-ui/core/Box';
 import Alert from '@material-ui/lab/Alert';
+import Button from '@material-ui/core/Button';
+import Clear from '@material-ui/icons/Clear';
 
 import {
   getShowClockReference,
@@ -15,7 +17,17 @@ const StartTimeDisplay = ({ formattedStartTime, onClearStartTime }) => (
   <Alert
     severity={formattedStartTime ? 'info' : 'warning'}
     variant='filled'
-    onClose={formattedStartTime ? onClearStartTime : null}
+    action={
+      formattedStartTime ? (
+        <Button
+          color='inherit'
+          startIcon={<Clear />}
+          onClick={formattedStartTime ? onClearStartTime : null}
+        >
+          Clear
+        </Button>
+      ) : null
+    }
   >
     <Box>
       {formattedStartTime ? (
