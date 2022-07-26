@@ -12,11 +12,16 @@ import {
   take,
 } from 'redux-saga/effects';
 
+import { handleError } from '~/error-handling';
+import { flashLightOnUAVs } from '~/utils/messaging';
+import { createActionListenerSaga, putWithRetry } from '~/utils/sagas';
+
 import { getSpecificationForJobType } from './jobs';
 import {
   getCurrentUploadJob,
   getNextDroneFromUploadQueue,
   getUploadItemsBeingProcessed,
+  shouldFlashLightsOfFailedUploads,
   shouldRetryFailedUploadsAutomatically,
 } from './selectors';
 import {
@@ -31,9 +36,6 @@ import {
   _notifyUploadStarted,
   startUpload,
 } from './slice';
-
-import { handleError } from '~/error-handling';
-import { createActionListenerSaga, putWithRetry } from '~/utils/sagas';
 
 /**
  * Special symbol used to make a worker task quit.
@@ -133,6 +135,11 @@ function* forkingWorkerManagementSaga(spec, job, { workerCount = 8 } = {}) {
         target: uavId,
       });
     } else {
+      const shouldFlashLights = yield select(shouldFlashLightsOfFailedUploads);
+      if (shouldFlashLights && failed.length > 0) {
+        flashLightOnUAVs(failed);
+      }
+
       // No job in the upload queue. If there are jobs that failed _in this
       // session_ and the user wants to retry failed jobs automatically, it
       // is time to put them back in the queue.

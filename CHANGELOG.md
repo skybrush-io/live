@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- During the show upload process, you can now flash the LED lights of the
+  drones for which the upload failed automatically. This feature, combined with
+  the automatic retry feature, is helpful in identifying drones on the field
+  that are struggling with the show upload due to poor wifi reception.
+  
 ### Fixed
 
 - Show file change detection (only available in the electron version) now works

@@ -78,7 +78,7 @@ const LOCAL_TIME = '__local_time__';
 const StartTimeForm = ({
   alwaysAllowSubmission,
   initialValues,
-  onCancel,
+  onClose,
   onSubmit,
 }) => (
   <Form
@@ -199,7 +199,7 @@ const StartTimeForm = ({
           <Button disabled={!dirty} onClick={() => form.reset()}>
             Reset form
           </Button>
-          {onCancel && <Button onClick={onCancel}>Cancel</Button>}
+          {onClose && <Button onClick={onClose}>Close</Button>}
           <Button
             color='primary'
             type='submit'
@@ -220,7 +220,7 @@ StartTimeForm.propTypes = {
     method: PropTypes.oneOf(StartMethod._VALUES),
     timeOnClock: PropTypes.string,
   }),
-  onCancel: PropTypes.func,
+  onClose: PropTypes.func,
   onSubmit: PropTypes.func,
 };
 
@@ -260,7 +260,7 @@ const StartTimeDialog = ({
             utcDate: startOfDay(startDateTimeInUtc),
             utcTime: startDateTimeInUtc,
           }}
-          onCancel={onClose}
+          onClose={onClose}
           onSubmit={onUpdateSettings}
         />
       </Dialog>
