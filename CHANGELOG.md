@@ -13,6 +13,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   drones for which the upload failed automatically. This feature, combined with
   the automatic retry feature, is helpful in identifying drones on the field
   that are struggling with the show upload due to poor wifi reception.
+  
+### Fixed
+
+- Show file change detection (only available in the electron version) now works
+  even while the _"Show control"_ panel is not active.
 
 ## [2.4.0] - 2022-07-21
 
