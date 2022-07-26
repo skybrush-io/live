@@ -5,6 +5,8 @@ import { createSelector } from '@reduxjs/toolkit';
 
 import { Status } from '~/components/semantics';
 import { GeofenceAction } from '~/features/geofence/model';
+import { globalIdToMissionIndex } from '~/model/identifiers';
+import { selectionForSubset } from '~/selectors/selection';
 
 /**
  * Returns the current list of home positions in the mission.
@@ -102,6 +104,14 @@ export const getUAVIdForMappingSlotBeingEdited = createSelector(
   getMissionMapping,
   getIndexOfMappingSlotBeingEdited,
   (mapping, index) => (index >= 0 ? mapping[index] : undefined)
+);
+
+/**
+ * Selector that calculates and caches the list of selected mission indices from
+ * the state object.
+ */
+export const getSelectedMissionIndices = selectionForSubset(
+  globalIdToMissionIndex
 );
 
 /**
