@@ -14,7 +14,7 @@ import dialogs from './components/dialogs';
 import Header from './components/header';
 import CornerRibbon from './components/CornerRibbon';
 import ServerConnectionManager from './components/ServerConnectionManager';
-import ShowFileWatcher from './views/show-control/ShowFileWatcher.jsx';
+import ShowFileWatcher from './views/show-control/ShowFileWatcher';
 
 import DockDetailsDialog from './features/docks/DockDetailsDialog';
 import AppHotkeys from './features/hotkeys/AppHotkeys';
