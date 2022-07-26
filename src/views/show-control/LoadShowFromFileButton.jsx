@@ -16,7 +16,6 @@ import Tooltip from '@skybrush/mui-components/lib/Tooltip';
 import FileListItem from './FileListItem';
 
 import Colors from '~/components/colors';
-import FileWatcher from '~/components/FileWatcher';
 import ListItemTextWithProgress from '~/components/ListItemTextWithProgress';
 import { Status } from '~/components/semantics';
 import {
@@ -25,12 +24,10 @@ import {
 } from '~/features/show/actions';
 import {
   clearLoadedShow,
-  notifyShowFileChangedSinceLoaded,
   openLoadShowFromCloudDialog,
 } from '~/features/show/slice';
 import {
   getShowDescription,
-  getAbsolutePathOfShowFile,
   getShowLoadingProgressPercentage,
   getShowTitle,
   hasShowChangedExternallySinceLoaded,
@@ -57,13 +54,11 @@ const EXTENSIONS = ['skyc'];
 const LoadShowFromFileButton = ({
   changedSinceLoaded,
   description,
-  filename,
   hasLoadedShowFile,
   loading,
   onClearLoadedShow,
   onLoadShowFromCloud,
   onReloadShowFile,
-  onShowFileChangedExternally,
   onShowFileSelected,
   progress,
   status,
@@ -76,7 +71,6 @@ const LoadShowFromFileButton = ({
     extensions={EXTENSIONS}
     onSelected={onShowFileSelected}
   >
-    <FileWatcher filename={filename} onChanged={onShowFileChangedExternally} />
     <StatusLight status={status} />
     <ListItemTextWithProgress
       primary={
@@ -130,13 +124,11 @@ const LoadShowFromFileButton = ({
 LoadShowFromFileButton.propTypes = {
   changedSinceLoaded: PropTypes.bool,
   description: PropTypes.string,
-  filename: PropTypes.string,
   hasLoadedShowFile: PropTypes.bool,
   loading: PropTypes.bool,
   onClearLoadedShow: PropTypes.func,
   onLoadShowFromCloud: PropTypes.func,
   onReloadShowFile: PropTypes.func,
-  onShowFileChangedExternally: PropTypes.func,
   onShowFileSelected: PropTypes.func,
   progress: PropTypes.number,
   status: PropTypes.oneOf(Object.values(Status)),
@@ -148,7 +140,6 @@ export default connect(
   (state) => ({
     changedSinceLoaded: hasShowChangedExternallySinceLoaded(state),
     description: getShowDescription(state),
-    filename: getAbsolutePathOfShowFile(state),
     hasLoadedShowFile: hasLoadedShowFile(state),
     loading: isLoadingShowFile(state),
     progress: getShowLoadingProgressPercentage(state),
@@ -160,7 +151,6 @@ export default connect(
     onClearLoadedShow: clearLoadedShow,
     onLoadShowFromCloud: openLoadShowFromCloudDialog,
     onReloadShowFile: reloadCurrentShowFile,
-    onShowFileChangedExternally: notifyShowFileChangedSinceLoaded,
     onShowFileSelected: loadShowFromFile,
   }
 )(LoadShowFromFileButton);
