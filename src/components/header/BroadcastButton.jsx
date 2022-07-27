@@ -33,10 +33,10 @@ const useStyles = makeStyles({
     animationName: '$cooldown',
     animationDuration: ({ timeoutLength }) =>
       isValidTimeoutLength(timeoutLength) && Number.isFinite(timeoutLength)
-        ? `${timeoutLength * 2}s`
+        ? `${timeoutLength}s`
         : '100000s',
     animationTimingFunction: 'linear',
-    animationIterationCount: 'infinite',
+    animationIterationCount: '1',
   },
 
   iconWrapper: {
@@ -46,9 +46,6 @@ const useStyles = makeStyles({
   '@keyframes cooldown': {
     '0%': {
       height: '100%',
-    },
-    '50%': {
-      height: '0%',
     },
     '100%': {
       height: '0%',
