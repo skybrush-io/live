@@ -30,7 +30,7 @@ const { actions, reducer } = createSlice({
   name: 'session',
 
   initialState: {
-    // Whether UAV commands should be broadcasted
+    // Whether UAV commands should be broadcast
     broadcast: false,
 
     // Expiry date/time of the current session
@@ -66,7 +66,7 @@ const { actions, reducer } = createSlice({
     },
 
     setBroadcast(state, action) {
-      state.broadcast = action.payload;
+      state.broadcast = Boolean(action.payload);
     },
 
     setFeatureIdForTooltip(state, action) {
