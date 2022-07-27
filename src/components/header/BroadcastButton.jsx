@@ -11,6 +11,8 @@ import { setBroadcast } from '~/features/session/slice';
 import { isBroadcast } from '~/features/session/selectors';
 import Campaign from '~/icons/Campaign';
 
+const isValidTimeoutLength = (value) => typeof value === 'number' && value > 0;
+
 const useStyles = makeStyles((theme) => ({
   underlay: {
     position: 'absolute',
@@ -20,14 +22,16 @@ const useStyles = makeStyles((theme) => ({
 
     height: '0%',
 
-    // backgroundColor: Colors.warning,
     backgroundColor: theme.palette.warning.main,
     opacity: 0.5,
   },
 
   'underlay-active': {
     animationName: '$cooldown',
-    animationDuration: ({ timeoutLength }) => `${timeoutLength}s`,
+    animationDuration: ({ timeoutLength }) =>
+      isValidTimeoutLength(timeoutLength) && Number.isFinite(timeoutLength)
+        ? `${timeoutLength}s`
+        : '100000s',
     animationTimingFunction: 'linear',
     animationIterationCount: 'infinite',
   },
@@ -47,7 +51,7 @@ const BroadcastButton = ({ isBroadcast, setBroadcast, timeoutLength }) => {
   const timeout = useRef(undefined);
 
   useEffect(() => {
-    if (isBroadcast && typeof timeoutLength === 'number' && timeoutLength > 0) {
+    if (isBroadcast && isValidTimeoutLength(timeoutLength)) {
       timeout.current = setTimeout(() => {
         setBroadcast(false);
       }, timeoutLength * 1000);
