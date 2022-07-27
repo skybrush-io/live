@@ -19,6 +19,7 @@ import { setLayerParametersById } from '~/features/map/layers';
 import {
   getGPSBasedHomePositionsInMission,
   getGPSBasedLandingPositionsInMission,
+  getSelectedMissionIndicesForTrajectoryDisplay,
 } from '~/features/mission/selectors';
 import {
   getConvexHullOfShowInWorldCoordinates,
@@ -52,6 +53,7 @@ import {
   whiteThickOutline,
   whiteThinOutline,
 } from '~/utils/styles';
+import MissionSlotTrajectoryFeature from '~/views/map/features/MissionSlotTrajectoryFeature';
 import UAVTrajectoryFeature from '~/views/map/features/UAVTrajectoryFeature';
 
 import missionOriginMarker from '~/../assets/img/mission-origin-marker.svg';
@@ -327,6 +329,7 @@ const MissionInfoVectorSource = ({
   homePositions,
   isConvexHullSelected,
   landingPositions,
+  missionIndicesForTrajectories,
   missionOrientation,
   missionOrigin,
   orientation,
@@ -472,6 +475,20 @@ const MissionInfoVectorSource = ({
     }
   }
 
+  if (
+    Array.isArray(missionIndicesForTrajectories) &&
+    missionIndicesForTrajectories.length > 0
+  ) {
+    for (const missionIndex of missionIndicesForTrajectories) {
+      features.push(
+        <MissionSlotTrajectoryFeature
+          key={`trajectory.s${missionIndex}`}
+          missionIndex={missionIndex}
+        />
+      );
+    }
+  }
+
   return <source.Vector>{features}</source.Vector>;
 };
 
@@ -481,6 +498,7 @@ MissionInfoVectorSource.propTypes = {
   homePositions: PropTypes.arrayOf(CustomPropTypes.coordinate),
   isConvexHullSelected: PropTypes.bool,
   landingPositions: PropTypes.arrayOf(CustomPropTypes.coordinate),
+  missionIndicesForTrajectories: PropTypes.arrayOf(PropTypes.string), // TODO or number?
   missionOrientation: CustomPropTypes.angle,
   missionOrigin: PropTypes.arrayOf(PropTypes.number),
   orientation: CustomPropTypes.angle,
@@ -523,6 +541,11 @@ export const MissionInfoLayer = connect(
     landingPositions: layer?.parameters?.showLandingPositions
       ? getGPSBasedLandingPositionsInMission(state)
       : undefined,
+    /* prettier-ignore */
+    missionIndicesForTrajectories:
+      layer?.parameters?.showTrajectoriesOfSelection
+        ? getSelectedMissionIndicesForTrajectoryDisplay(state)
+        : undefined,
     missionOrigin: layer?.parameters?.showMissionOrigin
       ? getOutdoorShowOrigin(state)
       : undefined,

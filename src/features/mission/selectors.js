@@ -7,6 +7,13 @@ import { Status } from '~/components/semantics';
 import { GeofenceAction } from '~/features/geofence/model';
 import { globalIdToMissionIndex } from '~/model/identifiers';
 import { selectionForSubset } from '~/selectors/selection';
+import { EMPTY_ARRAY } from '~/utils/redux';
+
+/**
+ * Key selector function for cached selectors that cache things by mission
+ * index.
+ */
+export const selectMissionIndex = (_state, missionIndex) => missionIndex;
 
 /**
  * Returns the current list of home positions in the mission.
@@ -113,6 +120,23 @@ export const getUAVIdForMappingSlotBeingEdited = createSelector(
 export const getSelectedMissionIndices = selectionForSubset(
   globalIdToMissionIndex
 );
+
+/**
+ * Selector that calculates the number of selected mission indices.
+ */
+export const getNumberOfSelectedMissionIndices = (state) => {
+  const selection = getSelectedMissionIndices(state);
+  return Array.isArray(selection) ? selection.length : 0;
+};
+
+/**
+ * Selector that returns at most five selected mission indices for sake of
+ * displaying their trajectories.
+ */
+export const getSelectedMissionIndicesForTrajectoryDisplay = (state) =>
+  getNumberOfSelectedMissionIndices(state) <= 5
+    ? getSelectedMissionIndices(state)
+    : EMPTY_ARRAY;
 
 /**
  * Returns a list of all the UAV IDs that participate in the mission, without

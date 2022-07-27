@@ -10,6 +10,7 @@ import max from 'lodash-es/max';
 import maxBy from 'lodash-es/maxBy';
 
 import { createSelector } from '@reduxjs/toolkit';
+import createCachedSelector from 're-reselect';
 import turfContains from '@turf/boolean-contains';
 
 import { MTC_CLOCK_ID } from '~/features/clocks/constants';
@@ -17,7 +18,10 @@ import {
   proposeDistanceLimit,
   proposeHeightLimit,
 } from '~/features/geofence/utils';
-import { getGeofencePolygonInWorldCoordinates } from '~/features/mission/selectors';
+import {
+  getGeofencePolygonInWorldCoordinates,
+  selectMissionIndex,
+} from '~/features/mission/selectors';
 import { formatDuration, formatDurationHMS } from '~/utils/formatting';
 import { FlatEarthCoordinateSystem } from '~/utils/geography';
 import {
@@ -38,6 +42,7 @@ import {
   getFirstPointOfTrajectory,
   getLastPointOfTrajectory,
   getMaximumHeightOfTrajectory,
+  getPointsOfTrajectory,
   getTrajectoryDuration,
   isValidTrajectory,
 } from './trajectory';
@@ -351,6 +356,39 @@ export const getTrajectories = createSelector(
       return isValidTrajectory(trajectory) ? trajectory : undefined;
     })
 );
+
+/**
+ * Returns the trajectory of the given mission index, in world coordinates,
+ * given the current state.
+ *
+ * @param  {Object}  state  the state of the application
+ * @param  {string}  missionIndex  the index of the mission slot
+ */
+export const getTrajectoryPointsInWorldCoordinatesByMissionIndex =
+  createCachedSelector(
+    getTrajectories,
+    getOutdoorShowToWorldCoordinateSystemTransformation,
+    selectMissionIndex,
+    (trajectories, transform, missionIndex) => {
+      if (transform === undefined) {
+        // No show coordinate system yet or the show is indoor
+        return undefined;
+      }
+
+      const trajectory = trajectories[missionIndex];
+      if (isValidTrajectory(trajectory)) {
+        return getPointsOfTrajectory(trajectory, {
+          includeControlPoints: true,
+        }).map(transform);
+      }
+
+      return undefined;
+    }
+  )({
+    keySelector: selectMissionIndex,
+    // TODO: use a FIFO or LRU cache if it becomes necessary.
+    // The quick-lru module from npm seems simple enough.
+  });
 
 /**
  * Returns an array holding the convex hulls of all the trajectories.
