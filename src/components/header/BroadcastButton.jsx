@@ -4,15 +4,12 @@ import React, { useEffect, useRef } from 'react';
 import { connect } from 'react-redux';
 
 import { makeStyles } from '@material-ui/core/styles';
-
-// import Colors from '~/components/colors';
-
-import Campaign from '~/icons/Campaign';
 import GenericHeaderButton from '@skybrush/mui-components/lib/GenericHeaderButton';
 import Tooltip from '@skybrush/mui-components/lib/Tooltip';
 
 import { setBroadcast } from '~/features/session/slice';
 import { isBroadcast } from '~/features/session/selectors';
+import Campaign from '~/icons/Campaign';
 
 const useStyles = makeStyles((theme) => ({
   underlay: {

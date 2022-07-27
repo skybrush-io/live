@@ -11,6 +11,7 @@ import Box from '@material-ui/core/Box';
 import AlertButton from './AlertButton';
 import AppSettingsButton from './AppSettingsButton';
 import AuthenticationButton from './AuthenticationButton';
+import BroadcastButton from './BroadcastButton';
 import ConnectionStatusButton from './ConnectionStatusButton';
 import FullScreenButton from './FullScreenButton';
 import GeofenceSettingsButton from './GeofenceSettingsButton';
@@ -18,7 +19,6 @@ import HelpButton from './HelpButton';
 import ServerConnectionSettingsButton from './ServerConnectionSettingsButton';
 import ToolboxButton from './ToolboxButton';
 
-import BroadcastButton from '~/views/uavs/BroadcastButton';
 import UAVStatusSummary from '../uavs/UAVStatusSummary';
 
 import RTKStatusHeaderButton from '~/features/rtk/RTKStatusHeaderButton';
