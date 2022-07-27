@@ -84,7 +84,6 @@ const Header = ({ isSidebarOpen, sessionExpiresAt, toggleSidebar }) => (
       <Box flexGrow={1} flexShrink={1}>
         {/* spacer */}
       </Box>
-      <BroadcastButton timeoutLength={5} />
       <UAVStatusSummary />
       <hr />
       <AltitudeSummaryHeaderButton />
@@ -99,6 +98,7 @@ const Header = ({ isSidebarOpen, sessionExpiresAt, toggleSidebar }) => (
       {hasFeature('geofence') && <GeofenceSettingsButton />}
       <AuthenticationButton />
       <hr />
+      <BroadcastButton timeoutLength={5} />
       {hasFeature('toolboxMenu') && <ToolboxButton />}
       <AppSettingsButton />
       <AlertButton />

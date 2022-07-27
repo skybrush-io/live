@@ -5,15 +5,18 @@ import { connect } from 'react-redux';
 
 import { makeStyles } from '@material-ui/core/styles';
 import GenericHeaderButton from '@skybrush/mui-components/lib/GenericHeaderButton';
+import SidebarBadge from '@skybrush/mui-components/lib/SidebarBadge';
+
 import Tooltip from '@skybrush/mui-components/lib/Tooltip';
 
+import Colors from '~/components/colors';
 import { setBroadcast } from '~/features/session/slice';
 import { isBroadcast } from '~/features/session/selectors';
 import Campaign from '~/icons/Campaign';
 
 const isValidTimeoutLength = (value) => typeof value === 'number' && value > 0;
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles({
   underlay: {
     position: 'absolute',
     right: '0px',
@@ -22,29 +25,36 @@ const useStyles = makeStyles((theme) => ({
 
     height: '0%',
 
-    backgroundColor: theme.palette.warning.main,
+    backgroundColor: Colors.warning,
     opacity: 0.5,
   },
 
-  'underlay-active': {
+  underlayActive: {
     animationName: '$cooldown',
     animationDuration: ({ timeoutLength }) =>
       isValidTimeoutLength(timeoutLength) && Number.isFinite(timeoutLength)
-        ? `${timeoutLength}s`
+        ? `${timeoutLength * 2}s`
         : '100000s',
     animationTimingFunction: 'linear',
     animationIterationCount: 'infinite',
+  },
+
+  iconWrapper: {
+    position: 'relative',
   },
 
   '@keyframes cooldown': {
     '0%': {
       height: '100%',
     },
+    '50%': {
+      height: '0%',
+    },
     '100%': {
       height: '0%',
     },
   },
-}));
+});
 
 const BroadcastButton = ({ isBroadcast, setBroadcast, timeoutLength }) => {
   const classes = useStyles({ timeoutLength });
@@ -78,10 +88,12 @@ const BroadcastButton = ({ isBroadcast, setBroadcast, timeoutLength }) => {
     >
       <GenericHeaderButton onClick={() => setBroadcast(!isBroadcast)}>
         <div
-          className={clsx(classes.underlay, {
-            [classes['underlay-active']]: isBroadcast,
-          })}
+          className={clsx(
+            classes.underlay,
+            isBroadcast && classes.underlayActive
+          )}
         />
+        <SidebarBadge color={Colors.warning} visible={isBroadcast} />
         <div style={{ position: 'relative' }}>
           <Campaign />
         </div>
