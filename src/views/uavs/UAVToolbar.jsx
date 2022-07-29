@@ -18,6 +18,7 @@ import MappingButtonGroup from './MappingButtonGroup';
 
 import { setBroadcast } from '~/features/session/slice';
 import { isBroadcast } from '~/features/session/selectors';
+import { BROADCAST_MODE_TIMEOUT_LENGTH } from '~/features/settings/constants';
 
 /**
  * Main toolbar for controlling the UAVs.
@@ -36,7 +37,7 @@ const UAVToolbar = React.forwardRef(
         <BroadcastSwitch
           checked={isBroadcast}
           setChecked={setBroadcast}
-          timeout={5}
+          timeout={BROADCAST_MODE_TIMEOUT_LENGTH}
         />
         <UAVOperationsButtonGroup
           startSeparator

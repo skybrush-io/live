@@ -22,6 +22,7 @@ import ToolboxButton from './ToolboxButton';
 import UAVStatusSummary from '../uavs/UAVStatusSummary';
 
 import RTKStatusHeaderButton from '~/features/rtk/RTKStatusHeaderButton';
+import { BROADCAST_MODE_TIMEOUT_LENGTH } from '~/features/settings/constants';
 import { toggleSidebar } from '~/features/sidebar/actions';
 import { isSidebarOpen } from '~/features/sidebar/selectors';
 import AltitudeSummaryHeaderButton from '~/features/uavs/AltitudeSummaryHeaderButton';
@@ -98,7 +99,7 @@ const Header = ({ isSidebarOpen, sessionExpiresAt, toggleSidebar }) => (
       {hasFeature('geofence') && <GeofenceSettingsButton />}
       <AuthenticationButton />
       <hr />
-      <BroadcastButton timeoutLength={5} />
+      <BroadcastButton timeoutLength={BROADCAST_MODE_TIMEOUT_LENGTH} />
       {hasFeature('toolboxMenu') && <ToolboxButton />}
       <AppSettingsButton />
       <AlertButton />
