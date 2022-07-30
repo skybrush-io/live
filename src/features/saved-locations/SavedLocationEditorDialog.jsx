@@ -38,8 +38,8 @@ import {
 const validator = createValidator({
   name: required,
   center: createValidator({
-    lon: [required, finite, between(-90, 90)],
-    lat: [required, finite, between(-180, 180)],
+    lon: [required, finite, between(-180, 180)],
+    lat: [required, finite, between(-90, 90)],
   }),
   rotation: [required, finite, between(0, 360)],
   zoom: [required, integer, between(1, 30)],
