@@ -83,7 +83,7 @@ const MappingSlotEditorForList = ({
   const onKeyDown = (event) => {
     if (event.key === 'Enter') {
       commitMappingEditorSessionAtCurrentSlot({
-        continuation: event.shiftKey ? false : 'next',
+        continuation: event.shiftKey ? 'prev' : 'next',
         value: event.target.value,
       });
 
