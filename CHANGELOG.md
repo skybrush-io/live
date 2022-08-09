@@ -14,9 +14,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   the automatic retry feature, is helpful in identifying drones on the field
   that are struggling with the show upload due to poor wifi reception.
   
+## [2.4.1] - 2022-07-30
+
 ### Fixed
 
-- Show file change detection (only available in the electron version) now works
+- Fixed incorrect validation of the longitude field in the location editor
+  dialog box.
+
+- Show file change detection (only available in the desktop version) now works
   even while the _"Show control"_ panel is not active.
 
 ## [2.4.0] - 2022-07-21
