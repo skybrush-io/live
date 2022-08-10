@@ -20,6 +20,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   prevent the app from zooming in way too closely to a single drone when the
   "Fit to drones" button is pressed with a single drone only.
 
+- Implemented several tweaks to the automatic show coordinate system fitting
+  algorithm to make it work better in real situations on the field.
+
 ## [2.4.1] - 2022-07-30
 
 ### Fixed
