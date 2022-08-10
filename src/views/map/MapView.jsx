@@ -440,6 +440,7 @@ class MapViewPresentation extends React.Component {
         center={mapViewCoordinateFromLonLat(center)}
         rotation={(-rotation * Math.PI) / 180}
         zoom={zoom}
+        maxZoom={24}
         constrainRotation={false}
       />
     );

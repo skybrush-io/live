@@ -13,7 +13,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   drones for which the upload failed automatically. This feature, combined with
   the automatic retry feature, is helpful in identifying drones on the field
   that are struggling with the show upload due to poor wifi reception.
-  
+
+### Changed
+
+- The maximum zoom level of the map view is now limited to zoom level 24 to
+  prevent the app from zooming in way too closely to a single drone when the
+  "Fit to drones" button is pressed with a single drone only.
+
 ## [2.4.1] - 2022-07-30
 
 ### Fixed
