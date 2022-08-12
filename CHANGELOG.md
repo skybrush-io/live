@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - During the show upload process, you can now flash the LED lights of the
-  drones for which the upload failed automatically. This feature, combined with
+  drones automatically upon an upload failure. This feature, combined with
   the automatic retry feature, is helpful in identifying drones on the field
   that are struggling with the show upload due to poor wifi reception.
 
@@ -22,6 +22,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Implemented several tweaks to the automatic show coordinate system fitting
   algorithm to make it work better in real situations on the field.
+
+### Fixed
+
+- Fixed a bug where the RTK correction message age counters were not updated
+  correctly.
 
 ## [2.4.1] - 2022-07-30
 
