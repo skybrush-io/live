@@ -13,34 +13,22 @@ import Tooltip from '@skybrush/mui-components/lib/Tooltip';
 
 import UAVOperationsButtonGroup from '~/components/uavs/UAVOperationsButtonGroup';
 
-import BroadcastSwitch from './BroadcastSwitch';
 import MappingButtonGroup from './MappingButtonGroup';
 
-import { setBroadcast } from '~/features/session/slice';
 import { isBroadcast } from '~/features/session/selectors';
-import { BROADCAST_MODE_TIMEOUT_LENGTH } from '~/features/settings/constants';
 
 /**
  * Main toolbar for controlling the UAVs.
  */
 const UAVToolbar = React.forwardRef(
-  (
-    { fitSelectedUAVs, isBroadcast, selectedUAVIds, setBroadcast, ...rest },
-    ref
-  ) => {
+  ({ fitSelectedUAVs, isBroadcast, selectedUAVIds, ...rest }, ref) => {
     const isSelectionEmpty = isEmpty(selectedUAVIds);
 
     return (
       <Toolbar ref={ref} disableGutters variant='dense' {...rest}>
         <Box width={4} />
 
-        <BroadcastSwitch
-          checked={isBroadcast}
-          setChecked={setBroadcast}
-          timeout={BROADCAST_MODE_TIMEOUT_LENGTH}
-        />
         <UAVOperationsButtonGroup
-          startSeparator
           broadcast={isBroadcast}
           selectedUAVIds={selectedUAVIds}
         />
@@ -71,7 +59,6 @@ UAVToolbar.propTypes = {
   fitSelectedUAVs: PropTypes.func,
   isBroadcast: PropTypes.bool,
   selectedUAVIds: PropTypes.array,
-  setBroadcast: PropTypes.func,
 };
 
 export default connect(
@@ -80,7 +67,5 @@ export default connect(
     isBroadcast: isBroadcast(state),
   }),
   // mapDispatchToProps
-  {
-    setBroadcast,
-  }
+  {}
 )(UAVToolbar);
