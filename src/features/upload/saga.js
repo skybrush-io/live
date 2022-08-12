@@ -13,7 +13,7 @@ import {
 } from 'redux-saga/effects';
 
 import { handleError } from '~/error-handling';
-import { flashLightOnUAVs } from '~/utils/messaging';
+import { flashLightOnUAVsAndHideFailures } from '~/utils/messaging';
 import { createActionListenerSaga, putWithRetry } from '~/utils/sagas';
 
 import { getSpecificationForJobType } from './jobs';
@@ -137,7 +137,7 @@ function* forkingWorkerManagementSaga(spec, job, { workerCount = 8 } = {}) {
     } else {
       const shouldFlashLights = yield select(shouldFlashLightsOfFailedUploads);
       if (shouldFlashLights && failed.length > 0) {
-        flashLightOnUAVs(failed);
+        flashLightOnUAVsAndHideFailures(failed);
       }
 
       // No job in the upload queue. If there are jobs that failed _in this

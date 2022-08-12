@@ -17,7 +17,11 @@ import makeLogger from './logging';
 
 const logger = makeLogger('messaging');
 
-const processResponses = (commandName, responses, { silent } = {}) => {
+const processResponses = (
+  commandName,
+  responses,
+  { reportSuccess = true, reportFailure = true } = {}
+) => {
   responses = values(responses);
 
   const errorCounts = countBy(responses, isError);
@@ -27,7 +31,7 @@ const processResponses = (commandName, responses, { silent } = {}) => {
   let message;
   let semantics;
 
-  if (numberOfFailures) {
+  if (numberOfFailures && reportFailure) {
     semantics = MessageSemantics.ERROR;
     if (numberOfSuccesses > 1) {
       message = `${commandName} sent for ${numberOfSuccesses} UAVs, failed for ${numberOfFailures}`;
@@ -38,7 +42,7 @@ const processResponses = (commandName, responses, { silent } = {}) => {
     } else {
       message = `${commandName} failed`;
     }
-  } else if (!silent) {
+  } else if (reportSuccess) {
     semantics = MessageSemantics.SUCCESS;
     if (numberOfSuccesses > 1) {
       message = `${commandName} sent for ${numberOfSuccesses} UAVs`;
@@ -58,7 +62,13 @@ const processResponses = (commandName, responses, { silent } = {}) => {
 };
 
 const performMassOperation =
-  ({ type, name, mapper = undefined, silent }) =>
+  ({
+    type,
+    name,
+    mapper = undefined,
+    reportFailure = true,
+    reportSuccess = true,
+  }) =>
   async (uavs, args) => {
     // Do not bail out early if uavs is empty because in the args there might be
     // an option that intructs the server to do a broadcast to all UAVs.
@@ -69,7 +79,7 @@ const performMassOperation =
         ids: uavs,
         ...(mapper ? mapper(args) : args),
       });
-      processResponses(name, responses, { silent });
+      processResponses(name, responses, { reportFailure, reportSuccess });
     } catch (error) {
       console.error(error);
       logger.error(`${name}: ${String(error)}`);
@@ -84,7 +94,19 @@ export const flashLightOnUAVs = performMassOperation({
     duration: 5000,
     ...options,
   }),
-  silent: true,
+  reportSuccess: false,
+});
+
+export const flashLightOnUAVsAndHideFailures = performMassOperation({
+  type: 'UAV-SIGNAL',
+  name: 'Light signal command',
+  mapper: (options) => ({
+    signals: ['light'],
+    duration: 5000,
+    ...options,
+  }),
+  reportSuccess: false,
+  reportFailure: false,
 });
 
 export const takeoffUAVs = performMassOperation({
