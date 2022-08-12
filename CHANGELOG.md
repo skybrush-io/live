@@ -27,6 +27,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   removes the fence polygon from the map instead of simply converting it to
   an ordinary polygon.
 
+- The broadcast switch was moved from the UAV toolbar to the header and now it
+  can also be triggered with a hotkey (Ctrl-B on Windows and Linux, Cmd-B on
+  macOS).
+
 ### Fixed
 
 - Fixed a bug where the RTK correction message age counters were not updated
