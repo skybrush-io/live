@@ -35,6 +35,7 @@ import {
 } from '~/features/geofence/utils';
 import {
   getGeofenceAction,
+  getGeofencePolygonId,
   hasActiveGeofencePolygon,
 } from '~/features/mission/selectors';
 import {
@@ -55,6 +56,7 @@ import {
   required,
 } from '~/utils/validation';
 import { FormHelperText } from '@material-ui/core';
+import { removeFeaturesByIds } from '~/features/map-features/slice';
 
 const validator = createValidator({
   horizontalMargin: [required, finite, atLeast(1)],
@@ -290,17 +292,19 @@ const GeofenceSettingsDialog = connect(
     open: state.dialogs.geofenceSettings.dialogVisible,
   }),
   // mapDispatchToProps
-  (dispatch) => ({
-    forceFormSubmission() {
+  {
+    forceFormSubmission: () => () => {
       forceFormSubmission('geofenceSettings');
     },
-    onClearGeofence() {
-      dispatch(clearGeofencePolygonId());
+    onClearGeofence: () => (dispatch, getState) => {
+      const geofencePolygonId = getGeofencePolygonId(getState());
+      if (geofencePolygonId) {
+        dispatch(clearGeofencePolygonId());
+        dispatch(removeFeaturesByIds([geofencePolygonId]));
+      }
     },
-    onClose() {
-      dispatch(closeGeofenceSettingsDialog());
-    },
-    onSubmit(data) {
+    onClose: closeGeofenceSettingsDialog,
+    onSubmit: (data) => (dispatch) => {
       dispatch(
         updateGeofenceSettings({
           horizontalMargin: Number(data.horizontalMargin),
@@ -313,7 +317,7 @@ const GeofenceSettingsDialog = connect(
       dispatch(closeGeofenceSettingsDialog());
       dispatch(updateGeofencePolygon());
     },
-  })
+  }
 )(GeofenceSettingsDialogPresentation);
 
 export default GeofenceSettingsDialog;

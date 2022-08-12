@@ -23,6 +23,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Implemented several tweaks to the automatic show coordinate system fitting
   algorithm to make it work better in real situations on the field.
 
+- The "Clear current fence" button in the "Setup geofence" dialog now also
+  removes the fence polygon from the map instead of simply converting it to
+  an ordinary polygon.
+
 ### Fixed
 
 - Fixed a bug where the RTK correction message age counters were not updated
