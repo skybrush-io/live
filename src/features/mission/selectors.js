@@ -6,6 +6,7 @@ import { createSelector } from '@reduxjs/toolkit';
 import { Status } from '~/components/semantics';
 import { GeofenceAction } from '~/features/geofence/model';
 import { globalIdToMissionSlotId } from '~/model/identifiers';
+import { MissionType } from '~/model/missions';
 import { selectionForSubset } from '~/selectors/selection';
 import { EMPTY_ARRAY } from '~/utils/redux';
 
@@ -14,6 +15,12 @@ import { EMPTY_ARRAY } from '~/utils/redux';
  * index.
  */
 export const selectMissionIndex = (_state, missionIndex) => missionIndex;
+
+/**
+ * Returns the type of the current mission.
+ */
+export const getMissionType = (state) =>
+  state.mission.type || MissionType.UNKNOWN;
 
 /**
  * Returns the current list of home positions in the mission.

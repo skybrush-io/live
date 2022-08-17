@@ -18,6 +18,7 @@ import {
   updateLandingPositions,
   updateTakeoffHeadings,
   setMappingLength,
+  setMissionType,
   setGeofencePolygonId,
 } from '~/features/mission/slice';
 import { showNotification } from '~/features/snackbar/slice';
@@ -28,6 +29,7 @@ import {
 } from '~/features/uavs/selectors';
 import { clearLastUploadResultForJobType } from '~/features/upload/slice';
 import { FeatureType, LabelStyle } from '~/model/features';
+import { MissionType } from '~/model/missions';
 import { getFeaturesInOrder } from '~/selectors/ordered';
 import {
   lonLatFromMapViewCoordinate,
@@ -65,6 +67,7 @@ import {
   signOffOnManualPreflightChecksAt,
   signOffOnOnboardPreflightChecksAt,
   _setOutdoorShowAltitudeReference,
+  _clearLoadedShow,
 } from './slice';
 
 /**
@@ -82,6 +85,15 @@ export const clearLastUploadResult = () =>
   clearLastUploadResultForJobType(JOB_TYPE);
 
 /**
+ * Thunk that clears the currently loaded show and sets the type of the
+ * currently loaded mission to unknown.
+ */
+export const clearLoadedShow = () => (dispatch) => {
+  dispatch(_clearLoadedShow());
+  dispatch(setMissionType(MissionType.UNKNOWN));
+};
+
+/**
  * Updates the takeoff and landing positions and the takeoff headings in the
  * current mission from the show settings and trajectories.
  */
@@ -93,6 +105,7 @@ export const setupMissionFromShow = () => (dispatch, getState) => {
   const landingPositions = getLastPointsOfTrajectoriesInWorldCoordinates(state);
   const orientation = getShowOrientation(state);
 
+  dispatch(setMissionType(MissionType.SHOW));
   dispatch(updateHomePositions(homePositions));
   dispatch(updateLandingPositions(landingPositions));
   dispatch(updateTakeoffHeadings(orientation));
@@ -358,9 +371,6 @@ function processShowInJSONFormatAndDispatchActions(spec, dispatch) {
     dispatch(setEnvironmentType(environment.type));
   }
 
-  // TODO(ntamas): if the number of drones is different than the number of
-  // drones in the previous file, it is probably a completely new show so
-  // we should forget the show coordinate system completely
   if (environment.type === 'indoor') {
     dispatch(setOutdoorShowOrigin(null));
   }
