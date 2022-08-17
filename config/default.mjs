@@ -8,6 +8,7 @@ const config = {
   features: {
     /* any features not explicitly set to 'false' are considered to be allowed
      * by default */
+    loadShowFromCloud: false,
   },
   server: {
     connectAutomatically: true,

@@ -36,6 +36,7 @@ import {
 } from '~/features/show/selectors';
 import { getSetupStageStatuses } from '~/features/show/stages';
 import { truncate } from '~/utils/formatting';
+import { hasFeature } from '~/utils/configuration';
 
 /**
  * Helper function to test whether a dropped file is a real file and not a
@@ -110,13 +111,13 @@ const LoadShowFromFileButton = ({
             <Clear />
           </IconButton>
         </Tooltip>
-      ) : (
+      ) : hasFeature('loadShowFromCloud') ? (
         <Tooltip content='Load show from cloud'>
           <IconButton edge='end' onClick={onLoadShowFromCloud}>
             <CloudDownload />
           </IconButton>
         </Tooltip>
-      )}
+      ) : null}
     </ListItemSecondaryAction>
   </FileListItem>
 );

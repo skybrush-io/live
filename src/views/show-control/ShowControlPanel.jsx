@@ -11,6 +11,7 @@ import OnboardPreflightChecksDialog from './OnboardPreflightChecksDialog';
 import ShowControlPanelUpperSegment from './ShowControlPanelUpperSegment';
 import StartTimeDialog from './StartTimeDialog';
 import TakeoffAreaSetupDialog from './TakeoffAreaSetupDialog';
+import { hasFeature } from '~/utils/configuration';
 
 /**
  * Panel that shows the widgets that are needed to load and configure a drone
@@ -31,7 +32,7 @@ const ShowControlPanel = () => (
       </List>
     </Box>
 
-    <LoadShowFromCloudDialog />
+    {hasFeature('loadShowFromCloud') && <LoadShowFromCloudDialog />}
     <EnvironmentEditorDialog />
     <StartTimeDialog />
     <TakeoffAreaSetupDialog />
