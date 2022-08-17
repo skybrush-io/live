@@ -9,7 +9,7 @@ import { createSlice } from '@reduxjs/toolkit';
 import { ensureItemsInQueue, moveItemsBetweenQueues } from './utils';
 
 import { SHOW_UPLOAD_JOB } from '~/features/show/constants';
-import { clearLoadedShow } from '~/features/show/slice';
+import { _clearLoadedShow } from '~/features/show/slice';
 import { deleteItemById, replaceItemOrAddToFront } from '~/utils/collections';
 import { noPayload } from '~/utils/redux';
 
@@ -293,7 +293,7 @@ const { actions, reducer } = createSlice({
   },
 
   extraReducers: {
-    [clearLoadedShow](state) {
+    [_clearLoadedShow](state) {
       clearLastUploadResultForJobTypeHelper(state, SHOW_UPLOAD_JOB.type);
     },
   },

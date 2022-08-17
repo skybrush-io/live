@@ -14,12 +14,17 @@ import { copyAndEnsureLengthEquals, getNewEditIndex } from './utils';
 
 import { GeofenceAction } from '~/features/geofence/model';
 import { removeFeaturesByIds } from '~/features/map-features/slice';
+import { MissionType } from '~/model/missions';
 import { noPayload } from '~/utils/redux';
 
 const { actions, reducer } = createSlice({
   name: 'mission',
 
   initialState: {
+    // Type of the mission; ``show`` for drone shows. Empty string means that
+    // there is no mission yet.
+    type: '',
+
     // Stores a mapping from the mission-specific consecutive identifiers
     // to the IDs of the UAVs that participate in the mission with that
     // mission-specific identifier. The mapping may store UAV IDs and
@@ -246,6 +251,17 @@ const { actions, reducer } = createSlice({
     },
 
     /**
+     * Sets the type of the mission, without affecting any other part of the
+     * current mission configuration.
+     */
+    setMissionType(state, action) {
+      state.type =
+        typeof action.payload === 'string'
+          ? action.payload
+          : MissionType.UNKNOWN;
+    },
+
+    /**
      * Starts the current editing session of the mapping, and marks the
      * given slot in the mapping as the one being edited.
      */
@@ -344,6 +360,7 @@ export const {
   setGeofenceAction,
   setGeofencePolygonId,
   setMappingLength,
+  setMissionType,
   startMappingEditorSession,
   startMappingEditorSessionAtSlot,
   togglePreferredChannel,
