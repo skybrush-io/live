@@ -267,7 +267,7 @@ class MapContextMenu extends React.Component {
 
           if (hasSelectedFeatures) {
             result.push(
-              <Divider key='div5' />,
+              <Divider key='div6' />,
               <MenuItem
                 key='setProperties'
                 dense
