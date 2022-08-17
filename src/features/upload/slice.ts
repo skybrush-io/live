@@ -7,7 +7,7 @@ import { type Action, createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import { type ReadonlyDeep } from 'type-fest';
 
 import { SHOW_UPLOAD_JOB } from '~/features/show/constants';
-import { clearLoadedShow } from '~/features/show/slice';
+import { _clearLoadedShow } from '~/features/show/slice';
 import type UAV from '~/model/uav';
 import { type Collection, replaceItemOrAddToFront } from '~/utils/collections';
 import { noPayload } from '~/utils/redux';
@@ -345,7 +345,7 @@ const { actions, reducer } = createSlice({
   },
 
   extraReducers(builder) {
-    builder.addCase(clearLoadedShow, (state) => {
+    builder.addCase(_clearLoadedShow, (state) => {
       clearLastUploadResultForJobTypeHelper(state, SHOW_UPLOAD_JOB.type);
     });
   },

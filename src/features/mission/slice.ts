@@ -13,6 +13,7 @@ import { type ReadonlyDeep } from 'type-fest';
 import { GeofenceAction } from '~/features/geofence/model';
 import { removeFeaturesByIds } from '~/features/map-features/slice';
 import { type FeatureProperties } from '~/features/map-features/types';
+import { MissionType } from '~/model/missions';
 import { type GPSPosition } from '~/model/position';
 import type UAV from '~/model/uav';
 import { noPayload } from '~/utils/redux';
@@ -33,6 +34,12 @@ import {
  *       be distinguished, this still seems like the safer approach.
  */
 export type MissionSliceState = ReadonlyDeep<{
+  /**
+   * Type of the mission; ``show`` for drone shows. Empty string means that
+   * there is no mission yet.
+   */
+  type: MissionType;
+
   /**
    * Stores a mapping from the mission-specific consecutive identifiers
    * to the IDs of the UAVs that participate in the mission with that
@@ -101,6 +108,7 @@ export type MissionSliceState = ReadonlyDeep<{
 }>;
 
 const initialState: MissionSliceState = {
+  type: MissionType.UNKNOWN,
   mapping: [],
   homePositions: [],
   landingPositions: [],
@@ -310,6 +318,17 @@ const { actions, reducer } = createSlice({
     },
 
     /**
+     * Sets the type of the mission, without affecting any other part of the
+     * current mission configuration.
+     */
+    setMissionType(state, action: PayloadAction<MissionType>) {
+      state.type =
+        typeof action.payload === 'string'
+          ? action.payload
+          : MissionType.UNKNOWN;
+    },
+
+    /**
      * Starts the current editing session of the mapping, and marks the
      * given slot in the mapping as the one being edited.
      */
@@ -414,6 +433,7 @@ export const {
   setGeofenceAction,
   setGeofencePolygonId,
   setMappingLength,
+  setMissionType,
   startMappingEditorSession,
   startMappingEditorSessionAtSlot,
   togglePreferredChannel,
