@@ -40,14 +40,36 @@ export function canEstimateShowCoordinateSystemFromActiveUAVs(state) {
 export function getShowCoordinateSystemFittingProblemFromState(state) {
   const uavIds = getActiveUAVIds(state);
   const uavGPSCoordinates = uavIds.map((uavId) => {
-    const { lat, lon } = getCurrentGPSPositionByUavId(state, uavId);
-    return [lon, lat];
+    const position = getCurrentGPSPositionByUavId(state, uavId);
+    // position may be undefined if the UAV has no GPS fix yet
+    return position ? [position.lon, position.lat] : undefined;
   });
   const uavHeadings = uavIds.map((uavId) =>
     getCurrentHeadingByUavId(state, uavId)
   );
+
+  // Headings and GPS coordinates at this point may contain undefined values;
+  // we need to filter those
+  const undefinedIndices = [];
+  let n = uavGPSCoordinates.length;
+  for (let i = 0; i < n; i++) {
+    if (uavGPSCoordinates[i] === undefined || uavHeadings[i] === undefined) {
+      undefinedIndices.push(i);
+    }
+  }
+
+  // undefinedIndices is now in ascending order, so we process it from backwards
+  // and remove the unneeded entries from uavGPSCoordinates and uavHeadings
+  n = undefinedIndices.length;
+  for (let i = n - 1; i >= 0; i--) {
+    uavIds.splice(i, 1);
+    uavGPSCoordinates.splice(i, 1);
+    uavHeadings.splice(i, 1);
+  }
+
   const takeoffCoordinates = getFirstPointsOfTrajectories(state);
   return {
+    uavIds,
     uavGPSCoordinates,
     uavHeadings,
     takeoffCoordinates,

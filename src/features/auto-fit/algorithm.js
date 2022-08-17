@@ -15,6 +15,7 @@ import {
   getCentroid,
   getMeanAngle,
   toDegrees,
+  toRadians,
 } from '~/utils/math';
 
 /**
@@ -51,19 +52,22 @@ export function estimateShowCoordinateSystem(problem) {
  */
 function calculateInitialEstimate(problem) {
   const { uavGPSCoordinates, uavHeadings, takeoffCoordinates } = problem;
+
+  if (uavGPSCoordinates.length === 0) {
+    throw new Error('There are no UAVs with GPS coordinates to work with');
+  }
+
   const uavGPSCentroid = getCentroid(uavGPSCoordinates);
   const orientation = getMeanAngle(uavHeadings);
   const gpsToLocal = new FlatEarthCoordinateSystem({
     origin: uavGPSCentroid,
+    orientation: 0,
     type: COORDINATE_SYSTEM_TYPE,
   });
   const uavCoordinates = convertToFlatEarth(uavGPSCoordinates, gpsToLocal);
   const uavCenter = getCentroid(uavCoordinates);
   const takeoffCenter = getCentroid(takeoffCoordinates);
-  const origin = rotate(
-    subtract(uavCenter, rotate(takeoffCenter, -orientation)),
-    orientation
-  );
+  const origin = subtract(uavCenter, rotate(takeoffCenter, orientation));
   return {
     origin: gpsToLocal.toLonLat(origin),
     orientation,
@@ -99,7 +103,11 @@ function refineEstimate(estimate, problem, options = {}) {
   let previousMatching;
   let converged = false;
 
-  for (let iteration = 0; iteration < maxIterations; iteration++) {
+  for (
+    let iteration = 0;
+    iteration < maxIterations && !converged;
+    iteration++
+  ) {
     const gpsToLocal = new FlatEarthCoordinateSystem(estimate);
     const uavCoordinates = convertToFlatEarth(uavGPSCoordinates, gpsToLocal);
     /* TODO(ntamas): calculate distances for only those pairs that are closer
@@ -192,25 +200,23 @@ function refineEstimate(estimate, problem, options = {}) {
 
     /* Calculate the SVD, figure out the angle to rotate the coordinate system with */
     const svd = computeSVD(dotProduct);
-    const [primary, secondary] = svd.q[0] > svd.q[1] ? [0, 1] : [1, 0];
     const rotationMatrix = [
       [
-        svd.u[0][primary] * svd.v[0][primary] +
-          svd.u[0][secondary] * svd.v[1][primary],
-        svd.u[0][primary] * svd.v[0][secondary] +
-          svd.u[0][secondary] * svd.v[1][secondary],
+        svd.u[0][0] * svd.v[0][0] + svd.u[0][1] * svd.v[0][1],
+        svd.u[0][0] * svd.v[1][0] + svd.u[0][1] * svd.v[1][1],
       ],
       [
-        svd.u[1][primary] * svd.v[0][primary] +
-          svd.u[1][secondary] * svd.v[1][primary],
-        svd.u[1][primary] * svd.v[0][secondary] +
-          svd.u[1][secondary] * svd.v[1][secondary],
+        svd.u[1][0] * svd.v[0][0] + svd.u[1][1] * svd.v[0][1],
+        svd.u[1][0] * svd.v[1][0] + svd.u[1][1] * svd.v[1][1],
       ],
     ];
     const orientationOffset = toDegrees(
       Math.atan2(rotationMatrix[0][1], rotationMatrix[0][0])
     );
-    const originOffset = rotate(subtract(uavCenter, takeoffCenter), 0);
+    const originOffset = subtract(
+      uavCenter,
+      rotate(takeoffCenter, orientationOffset)
+    );
 
     /* Update the estimate */
     estimate = {
@@ -218,11 +224,6 @@ function refineEstimate(estimate, problem, options = {}) {
       orientation: estimate.orientation + orientationOffset,
       type: COORDINATE_SYSTEM_TYPE,
     };
-
-    /* If the matching converged, we can stop */
-    if (converged) {
-      break;
-    }
   }
 
   if (!converged) {
@@ -237,8 +238,9 @@ function subtract(foo, bar) {
 }
 
 function rotate(vec, angle) {
-  const ca = Math.cos(angle);
-  const sa = Math.sin(angle);
+  const angleRad = toRadians(angle);
+  const ca = Math.cos(angleRad);
+  const sa = Math.sin(angleRad);
 
   return [vec[0] * ca + vec[1] * sa, vec[0] * -sa + vec[1] * ca];
 }

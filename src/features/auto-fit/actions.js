@@ -25,12 +25,13 @@ export function estimateShowCoordinateSystemFromActiveUAVs() {
       return;
     }
 
-    const problem = getShowCoordinateSystemFittingProblemFromState(state);
     let result;
 
     try {
+      const problem = getShowCoordinateSystemFittingProblemFromState(state);
       result = estimateShowCoordinateSystem(problem);
     } catch (error) {
+      console.error(error);
       dispatch(
         showErrorMessage('Failed to calculate show coordinate system', error)
       );
