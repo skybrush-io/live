@@ -44,7 +44,7 @@ const GeneralPropertiesForm = ({
     <div style={{ display: 'flex', padding: '1em 0' }}>
       <div style={{ flex: 'auto' }}>
         <SwatchesColorPicker
-          value={feature.color || primaryColor}
+          color={feature.color || primaryColor}
           onChangeComplete={onSetFeatureColor}
         />
       </div>

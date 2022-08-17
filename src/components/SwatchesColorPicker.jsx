@@ -13,7 +13,6 @@ import {
   deepPurple,
   indigo,
   blue,
-  lightBlue,
   cyan,
   teal,
   green,
