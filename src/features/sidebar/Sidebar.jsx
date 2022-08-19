@@ -9,10 +9,10 @@ import Gamepad from '@material-ui/icons/Gamepad';
 import Grain from '@material-ui/icons/Grain';
 import Layers from '@material-ui/icons/Layers';
 import Map from '@material-ui/icons/Map';
-import MyLocation from '@material-ui/icons/MyLocation';
+import Place from '@material-ui/icons/Place';
 import FormatListBulleted from '@material-ui/icons/FormatListBulleted';
-import ShowChart from '@material-ui/icons/ShowChart';
 // import Storage from '@material-ui/icons/Storage';
+import TrendingUp from '@material-ui/icons/TrendingUp';
 import ThreeDRotation from '@material-ui/icons/ThreeDRotation';
 import WbSunny from '@material-ui/icons/WbSunny';
 
@@ -24,6 +24,7 @@ import { connect } from 'react-redux';
 import LogStatusBadge from '~/components/badges/LogStatusBadge';
 import { areExperimentalFeaturesEnabled } from '~/features/settings/selectors';
 import Antenna from '~/icons/Antenna';
+import Polyline from '~/icons/Polyline';
 import { hasFeature } from '~/utils/configuration';
 
 import { isSidebarOpen } from './selectors';
@@ -46,6 +47,8 @@ const innerStyle = {
   overflow: 'auto',
   width: SIDEBAR_OPEN_WIDTH,
 };
+
+const hasShowControl = hasFeature('showControl');
 
 /**
  * Presentation component for the sidebar at the left edge of the main
@@ -77,7 +80,7 @@ const Sidebar = ({ experimentalFeaturesEnabled, isOpen, workbench }) => (
         {hasFeature('features') && (
           <Module
             id='features'
-            icon={<ShowChart />}
+            icon={<Polyline />}
             label='Features'
             component='feature-list'
           />
@@ -102,7 +105,7 @@ const Sidebar = ({ experimentalFeaturesEnabled, isOpen, workbench }) => (
         )}
         <hr />
         {/* Do not use a single React fragment here for the next section; it would confuse `react-flexible-workbench` */}
-        {hasFeature('showControl') && (
+        {hasShowControl && (
           <Module
             id='show'
             icon={<Grain />}
@@ -110,7 +113,7 @@ const Sidebar = ({ experimentalFeaturesEnabled, isOpen, workbench }) => (
             component='show-control'
           />
         )}
-        {hasFeature('showControl') && (
+        {hasShowControl && (
           <Module
             id='lights'
             icon={<WbSunny />}
@@ -118,7 +121,7 @@ const Sidebar = ({ experimentalFeaturesEnabled, isOpen, workbench }) => (
             component='light-control'
           />
         )}
-        {hasFeature('showControl') && <hr />}
+        {hasShowControl && <hr />}
         <Module
           id='clocks'
           icon={<Alarm />}
@@ -135,7 +138,7 @@ const Sidebar = ({ experimentalFeaturesEnabled, isOpen, workbench }) => (
         */}
         <Module
           id='locations'
-          icon={<MyLocation />}
+          icon={<Place />}
           label='Locations'
           component='saved-location-list'
         />
