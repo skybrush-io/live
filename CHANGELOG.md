@@ -168,6 +168,9 @@ licensed under the GNU GPLv3. There are no breaking changes in this version.
 - Fixed the termination of the server process on macOS when the server is
   launched automatically by Skybrush Live.
 
+- Fixed a bug that sometimes prevented workbench panels from being rendered
+  correctly when they were freshly dragged off from the sidebar.
+
 ## [1.27.2] - 2021-03-23
 
 ### Fixed
