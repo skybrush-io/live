@@ -48,6 +48,7 @@ const innerStyle = {
   width: SIDEBAR_OPEN_WIDTH,
 };
 
+const hasMissionEditor = hasFeature('missionEditor');
 const hasShowControl = hasFeature('showControl');
 
 /**
@@ -122,6 +123,15 @@ const Sidebar = ({ experimentalFeaturesEnabled, isOpen, workbench }) => (
           />
         )}
         {hasShowControl && <hr />}
+        {hasMissionEditor && (
+          <Module
+            id='missionEditor'
+            icon={<TrendingUp />}
+            label='Mission editor'
+            component='mission-editor'
+          />
+        )}
+        {(hasShowControl || hasMissionEditor) && <hr />}
         <Module
           id='clocks'
           icon={<Alarm />}
