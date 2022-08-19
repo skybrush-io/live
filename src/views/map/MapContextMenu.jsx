@@ -11,6 +11,7 @@ import Divider from '@material-ui/core/Divider';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import MenuItem from '@material-ui/core/MenuItem';
 
+import Add from '@material-ui/icons/Add';
 import ActionDelete from '@material-ui/icons/Delete';
 import Assignment from '@material-ui/icons/Assignment';
 import ContentCut from '~/icons/ContentCut';
@@ -39,6 +40,7 @@ import {
   showFeatureEditorDialog,
 } from '~/features/map-features/actions';
 import { removeFeaturesByIds } from '~/features/map-features/slice';
+import { addNewWaypointMissionItem } from '~/features/mission/actions';
 import {
   clearGeofencePolygonId,
   setGeofencePolygonId,
@@ -61,6 +63,7 @@ import {
  */
 class MapContextMenu extends React.Component {
   static propTypes = {
+    addPointToMission: PropTypes.func,
     clearGeofencePolygonId: PropTypes.func,
     contextProvider: PropTypes.func,
     editFeature: PropTypes.func,
@@ -211,6 +214,21 @@ class MapContextMenu extends React.Component {
             );
           }
 
+          if (this.props.addPointToMission) {
+            result.push(
+              <MenuItem
+                key='addPointToMission'
+                dense
+                onClick={this._addPointToMission}
+              >
+                <ListItemIcon>
+                  <Add />
+                </ListItemIcon>
+                Add point to mission
+              </MenuItem>
+            );
+          }
+
           if (this.props.setMapCoordinateSystemOrigin) {
             result.push(
               <MenuItem
@@ -323,6 +341,14 @@ class MapContextMenu extends React.Component {
       </ContextMenu>
     );
   }
+
+  _addPointToMission = (_event, context) => {
+    const { coords } = context;
+    const { addPointToMission } = this.props;
+    if (addPointToMission) {
+      addPointToMission({ lat: coords[1], lon: coords[0] });
+    }
+  };
 
   _moveSelectedUAVsAtCurrentAltitude = (_event, context) => {
     const { coords, selectedUAVIds } = context;
@@ -483,6 +509,7 @@ const MapContextMenuContainer = connect(
   }),
   // mapDispatchToProps
   {
+    addPointToMission: addNewWaypointMissionItem,
     clearGeofencePolygonId: hasGeofence ? clearGeofencePolygonId : null,
     cutFeature: cutFeature,
     editFeature: hasFeatures ? showFeatureEditorDialog : null,

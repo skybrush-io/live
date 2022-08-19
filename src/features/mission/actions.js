@@ -23,18 +23,34 @@ import {
   getUnmappedUAVIds,
 } from '~/features/uavs/selectors';
 import messageHub from '~/message-hub';
-import { missionSlotIdToGlobalId } from '~/model/identifiers';
+import {
+  missionItemIdToGlobalId,
+  missionSlotIdToGlobalId,
+} from '~/model/identifiers';
+import { MissionItemType } from '~/model/missions';
 import { readTextFromFile, writeTextToFile } from '~/utils/filesystem';
 import { calculateDistanceMatrix, euclideanDistance2D } from '~/utils/math';
+import { chooseUniqueId } from '~/utils/naming';
 
 import {
+  createCanMoveSelectedMissionItemsByDeltaSelector,
   getEmptyMappingSlotIndices,
   getGeofencePolygonId,
   getGPSBasedHomePositionsInMission,
+  getItemIndexRangeForSelectedMissionItems,
+  getMissionItemsById,
   getMissionMapping,
   getMissionMappingFileContents,
+  getSelectedMissionItemIds,
 } from './selectors';
-import { clearMapping, removeUAVsFromMapping, replaceMapping } from './slice';
+import {
+  addMissionItem,
+  clearMapping,
+  moveMissionItem,
+  removeMissionItemsByIds,
+  removeUAVsFromMapping,
+  replaceMapping,
+} from './slice';
 
 /**
  * Thunk that fills the empty slots in the current mapping from the spare drones
@@ -300,3 +316,75 @@ export const removeMissingUAVsFromMapping = () => (dispatch, getState) => {
   const missingUAVIds = getMissingUAVIdsInMapping(state);
   dispatch(removeUAVsFromMapping(missingUAVIds));
 };
+
+/**
+ * Thunk that adds a new mission item of the given type to the end of the
+ * current mission.
+ */
+export const addNewMissionItem =
+  (type = MissionItemType.UNKNOWN, parameters = {}) =>
+  (dispatch, getState) => {
+    const state = getState();
+    const allMissionItemsById = getMissionItemsById(state);
+    const newItemId = chooseUniqueId('missionItem', allMissionItemsById);
+    const item = {
+      id: newItemId,
+      type,
+      parameters,
+    };
+    dispatch(addMissionItem({ item }));
+  };
+
+/**
+ * Thunk that adds a new "go to" waypoint item to the end of the current
+ * mission.
+ */
+export const addNewWaypointMissionItem = (coords) => (dispatch) => {
+  const { lon, lat } = coords;
+  dispatch(addNewMissionItem(MissionItemType.GO_TO, { lon, lat }));
+};
+
+/**
+ * Thunk that moves the selected waypoint item(s) up or down by one slot.
+ */
+export const moveSelectedMissionItemsByDelta = (delta) => {
+  if (delta !== 1 && delta !== -1) {
+    throw new Error('Only delta = +/-1 is supported');
+  }
+
+  return (dispatch, getState) => {
+    const state = getState();
+    const canMove = createCanMoveSelectedMissionItemsByDeltaSelector(delta);
+    if (!canMove(state)) {
+      return;
+    }
+
+    const [minIndex, maxIndex] =
+      getItemIndexRangeForSelectedMissionItems(state);
+    if (delta === -1) {
+      dispatch(moveMissionItem(minIndex - 1, maxIndex));
+    } else if (delta === 1) {
+      dispatch(moveMissionItem(maxIndex + 1, minIndex));
+    }
+  };
+};
+
+/**
+ * Thunk that removes the selected mission items from the mission.
+ */
+export const removeSelectedMissionItems = () => (dispatch, getState) => {
+  const selectedMissionItemIds = getSelectedMissionItemIds(getState());
+  dispatch(removeMissionItemsByIds(selectedMissionItemIds));
+};
+
+/**
+ * Action factory that creates an action that updates the selection to the
+ * given list of mission item IDs.
+ *
+ * @param {string[]} ids  the IDs of the selected mission items. Any mission
+ *        item whose ID is not in this set will be deselected, and so will be
+ *        any other item that is not a mission item.
+ * @return {Object} an appropriately constructed action
+ */
+export const setSelectedMissionItemIds = (ids) =>
+  setSelection(ids.map(missionItemIdToGlobalId));

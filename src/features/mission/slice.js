@@ -15,6 +15,11 @@ import { copyAndEnsureLengthEquals, getNewEditIndex } from './utils';
 import { GeofenceAction } from '~/features/geofence/model';
 import { removeFeaturesByIds } from '~/features/map-features/slice';
 import { MissionType } from '~/model/missions';
+import {
+  addItemAt,
+  addItemToBack,
+  deleteItemsByIds,
+} from '~/utils/collections';
 import { noPayload } from '~/utils/redux';
 
 const { actions, reducer } = createSlice({
@@ -68,9 +73,39 @@ const { actions, reducer } = createSlice({
 
     // action to perform when the geofence is breached
     geofenceAction: GeofenceAction.RETURN,
+
+    // collection of items in the current mission if it is a waypoint-based mission
+    items: {
+      byId: {},
+      order: [],
+    },
   },
 
   reducers: {
+    addMissionItem(state, action) {
+      const { item, index } = action.payload;
+      const { id, type } = item;
+
+      if (!id) {
+        throw new Error('Mission item must have an ID');
+      }
+
+      if (!type) {
+        throw new Error('Mission item must have a type');
+      }
+
+      if (state.items.byId[id]) {
+        throw new Error('Mission item ID is already taken');
+      }
+
+      // Update the state
+      if (typeof index === 'number') {
+        addItemAt(state.items, item, index);
+      } else {
+        addItemToBack(state.items, item);
+      }
+    },
+
     adjustMissionMapping(state, action) {
       const { uavId, to } = action.payload;
       const from = state.mapping.indexOf(uavId);
@@ -163,6 +198,28 @@ const { actions, reducer } = createSlice({
         state,
         continuation
       );
+    },
+
+    moveMissionItem: {
+      prepare: (oldIndex, newIndex) => ({ payload: { oldIndex, newIndex } }),
+      reducer(state, action) {
+        const { oldIndex, newIndex } = action.payload;
+        const numItems = state.items.order.length;
+        if (
+          oldIndex >= 0 &&
+          oldIndex < numItems &&
+          newIndex >= 0 &&
+          newIndex < numItems &&
+          oldIndex !== newIndex
+        ) {
+          const [itemId] = state.items.order.splice(oldIndex, 1);
+          state.items.order.splice(newIndex, 0, itemId);
+        }
+      },
+    },
+
+    removeMissionItemsByIds(state, action) {
+      return deleteItemsByIds(state.items, action.payload);
     },
 
     /**
@@ -347,6 +404,7 @@ const { actions, reducer } = createSlice({
 });
 
 export const {
+  addMissionItem,
   adjustMissionMapping,
   cancelMappingEditorSessionAtCurrentSlot,
   clearGeofencePolygonId,
@@ -354,6 +412,8 @@ export const {
   clearMappingSlot,
   commitMappingEditorSessionAtCurrentSlot,
   finishMappingEditorSession,
+  moveMissionItem,
+  removeMissionItemsByIds,
   removeUAVsFromMapping,
   replaceMapping,
   setCommandsAreBroadcast,
