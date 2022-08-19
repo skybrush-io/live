@@ -55,6 +55,9 @@ import { handleClockInformationMessage } from '~/model/clocks';
 import { handleDockInformationMessage } from '~/model/docks';
 import { logLevelForLogLevelName } from '~/utils/logging';
 
+export const isTCPConnectionSupported =
+  window.bridge && window.bridge.createTCPSocket;
+
 const formatClockSkew = (number) => {
   if (isNil(number)) {
     return 'an unknown amount';
@@ -183,6 +186,121 @@ class LocalServerExecutor extends React.Component {
 }
 
 /**
+ * WebSocket and TCP based connection components that handle the communication
+ * with the server over their respective channels.
+ */
+
+const connectionPropTypes = {
+  bindSocketToHub: PropTypes.func,
+  onConnected: PropTypes.func,
+  onConnecting: PropTypes.func,
+  onConnectionError: PropTypes.func,
+  onConnectionTimeout: PropTypes.func,
+  onDisconnected: PropTypes.func,
+  onMessage: PropTypes.func,
+  url: PropTypes.string,
+};
+
+class WebSocketConnection extends React.Component {
+  static propTypes = connectionPropTypes;
+
+  render() {
+    const {
+      bindSocketToHub,
+      onConnected,
+      onConnecting,
+      onConnectionError,
+      onConnectionTimeout,
+      onDisconnected,
+      onMessage,
+      url,
+    } = this.props;
+    return (
+      <>
+        <ReactSocket.Socket
+          ref={bindSocketToHub}
+          name='serverSocket'
+          url={url}
+          options={{
+            transports: ['websocket'],
+          }}
+        />
+        <ReactSocket.Listener
+          socket='serverSocket'
+          event='connect'
+          callback={() => onConnected(url)}
+        />
+        <ReactSocket.Listener
+          socket='serverSocket'
+          event='connect_error'
+          callback={() => onConnectionError(url)}
+        />
+        <ReactSocket.Listener
+          socket='serverSocket'
+          event='connect_timeout'
+          callback={() => onConnectionTimeout(url)}
+        />
+        <ReactSocket.Listener
+          socket='serverSocket'
+          event='disconnect'
+          callback={(reason) => onDisconnected(url, reason)}
+        />
+        <ReactSocket.Listener
+          socket='serverSocket'
+          event='fw'
+          callback={onMessage}
+        />
+        <ReactSocket.Listener
+          socket='serverSocket'
+          event='reconnecting'
+          callback={() => onConnecting(url)}
+        />
+        <ReactSocket.Listener
+          socket='serverSocket'
+          event='reconnect_attempt'
+          callback={() => onConnecting(url)}
+        />
+      </>
+    );
+  }
+}
+
+class TCPSocketConnection extends React.Component {
+  static propTypes = connectionPropTypes;
+
+  componentDidMount() {
+    this._socket = window.bridge.createTCPSocket(
+      // TODO Transform the URL outside of the component?
+      this.props.url.match('.*://(?<address>.*):(?<port>.*)').groups,
+      {
+        onConnected: this.props.onConnected,
+        onConnecting: this.props.onConnecting,
+        onConnectionError: this.props.onConnectionError,
+        onConnectionTimeout: this.props.onConnectionTimeout,
+        onDisconnected: this.props.onDisconnected,
+        onMessage: this.props.onMessage,
+        url: this.props.url,
+      }
+    );
+
+    // Wrap socket in object to conform with `@collmot/react-socket`
+    const wrappedSocket = { socket: this._socket };
+    this.props.bindSocketToHub(wrappedSocket);
+  }
+
+  componentWillUnmount() {
+    if (this._socket) {
+      this._socket.end();
+    }
+  }
+
+  render() {
+    return null;
+    // return <></>;
+  }
+}
+
+/**
  * Presentation component that contains a Socket.io socket and handles
  * its events.
  *
@@ -252,6 +370,10 @@ class ServerConnectionManagerPresentation extends React.Component {
     // Putting the key on the <ReactSocket.Socket> tag is not enough because
     // we also need the events to remount themselves.
 
+    const Connection = isTCPConnectionSupported
+      ? TCPSocketConnection
+      : WebSocketConnection;
+
     return url && active ? (
       <div key={url}>
         {needsLocalServer ? (
@@ -263,48 +385,15 @@ class ServerConnectionManagerPresentation extends React.Component {
             onStarted={onLocalServerStarted}
           />
         ) : null}
-        <ReactSocket.Socket
-          ref={this._bindSocketToHub}
-          name='serverSocket'
+        <Connection
+          bindSocketToHub={this._bindSocketToHub}
           url={url}
-          options={{
-            transports: ['websocket'],
-          }}
-        />
-        <ReactSocket.Listener
-          socket='serverSocket'
-          event='connect'
-          callback={() => onConnected(url)}
-        />
-        <ReactSocket.Listener
-          socket='serverSocket'
-          event='connect_error'
-          callback={() => onConnectionError(url)}
-        />
-        <ReactSocket.Listener
-          socket='serverSocket'
-          event='connect_timeout'
-          callback={() => onConnectionTimeout(url)}
-        />
-        <ReactSocket.Listener
-          socket='serverSocket'
-          event='disconnect'
-          callback={(reason) => onDisconnected(url, reason)}
-        />
-        <ReactSocket.Listener
-          socket='serverSocket'
-          event='fw'
-          callback={onMessage}
-        />
-        <ReactSocket.Listener
-          socket='serverSocket'
-          event='reconnecting'
-          callback={() => onConnecting(url)}
-        />
-        <ReactSocket.Listener
-          socket='serverSocket'
-          event='reconnect_attempt'
-          callback={() => onConnecting(url)}
+          onConnected={onConnected}
+          onConnecting={onConnecting}
+          onConnectionError={onConnectionError}
+          onConnectionTimeout={onConnectionTimeout}
+          onDisconnected={onDisconnected}
+          onMessage={onMessage}
         />
       </div>
     ) : (

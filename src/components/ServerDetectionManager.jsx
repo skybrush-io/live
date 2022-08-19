@@ -103,14 +103,14 @@ class ServerDetectionManagerPresentation extends React.Component {
       }
 
       const { protocol } = new URL(location);
-      if (protocol !== 'sio:' && protocol !== 'sio+tls:') {
-        // We only support Socket.IO and secure Socket.IO
+      if (!['sio:', 'sio+tls:', 'tcp:'].includes(protocol)) {
+        // We only support Socket.IO, secure Socket.IO and TCP
         return;
       }
 
       // Create a new, fake URL with http: as the protocol so we can parse the
-      // hostname and the port (sio: and sio+tls: is not recognized by the URL
-      // class)
+      // hostname and the port (sio:, sio+tls: and tcp: are not recognized by
+      // the URL class)
       const httpLocation = `http:${location.slice(protocol.length)}`;
       const { hostname, port } = new URL(httpLocation);
       const numericPort = Number(port);
@@ -181,6 +181,7 @@ class ServerDetectionManagerPresentation extends React.Component {
 
   _onTimerFired = () => {
     this._ssdpClient.search('urn:collmot-com:service:flockwave-sio:1');
+    this._ssdpClient.search('urn:collmot-com:service:flockwave-tcp:1');
   };
 
   render() {
