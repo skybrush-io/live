@@ -19,6 +19,7 @@ import { setLayerParametersById } from '~/features/map/layers';
 import {
   getGPSBasedHomePositionsInMission,
   getGPSBasedLandingPositionsInMission,
+  getMissionItemsWithCoordinatesInOrder,
   getSelectedMissionIndicesForTrajectoryDisplay,
 } from '~/features/mission/selectors';
 import {
@@ -35,12 +36,14 @@ import {
   landingPositionIdToGlobalId,
   originIdToGlobalId,
   MAP_ORIGIN_ID,
+  MISSION_ITEM_POLYGON_ID,
   MISSION_ORIGIN_ID,
   CONVEX_HULL_AREA_ID,
+  missionItemIdToGlobalId,
 } from '~/model/identifiers';
 import { setLayerEditable, setLayerSelectable } from '~/model/layers';
 import { getMapOriginRotationAngle } from '~/selectors/map';
-import { getSelectedOriginIds, isSelected } from '~/selectors/selection';
+import { getSelection } from '~/selectors/selection';
 import { formatMissionId } from '~/utils/formatting';
 import { mapViewCoordinateFromLonLat } from '~/utils/geography';
 import { closePolygon, toRadians } from '~/utils/math';
@@ -57,6 +60,8 @@ import MissionSlotTrajectoryFeature from '~/views/map/features/MissionSlotTrajec
 import UAVTrajectoryFeature from '~/views/map/features/UAVTrajectoryFeature';
 
 import missionOriginMarker from '~/../assets/img/mission-origin-marker.svg';
+import mapMarker from '~/../assets/img/map-marker.svg';
+import mapMarkerOutline from '~/../assets/img/map-marker-outline.svg';
 
 // === Settings for this particular layer type ===
 
@@ -70,6 +75,7 @@ const MissionInfoLayerSettingsPresentation = ({
     showOrigin,
     showHomePositions,
     showLandingPositions,
+    showMissionItems,
     showMissionOrigin,
     showTrajectoriesOfSelection,
   } = parameters || {};
@@ -82,7 +88,7 @@ const MissionInfoLayerSettingsPresentation = ({
       <FormControlLabel
         control={
           <Checkbox
-            checked={showOrigin}
+            checked={Boolean(showOrigin)}
             value='showOrigin'
             onChange={handleChange('showOrigin')}
           />
@@ -92,7 +98,7 @@ const MissionInfoLayerSettingsPresentation = ({
       <FormControlLabel
         control={
           <Checkbox
-            checked={showMissionOrigin}
+            checked={Boolean(showMissionOrigin)}
             value='showMissionOrigin'
             onChange={handleChange('showMissionOrigin')}
           />
@@ -102,7 +108,7 @@ const MissionInfoLayerSettingsPresentation = ({
       <FormControlLabel
         control={
           <Checkbox
-            checked={showHomePositions}
+            checked={Boolean(showHomePositions)}
             value='showHomePositions'
             onChange={handleChange('showHomePositions')}
           />
@@ -112,7 +118,7 @@ const MissionInfoLayerSettingsPresentation = ({
       <FormControlLabel
         control={
           <Checkbox
-            checked={showLandingPositions}
+            checked={Boolean(showLandingPositions)}
             value='showLandingPositions'
             onChange={handleChange('showLandingPositions')}
           />
@@ -122,7 +128,7 @@ const MissionInfoLayerSettingsPresentation = ({
       <FormControlLabel
         control={
           <Checkbox
-            checked={showConvexHull}
+            checked={Boolean(showConvexHull)}
             value='showConvexHull'
             onChange={handleChange('showConvexHull')}
           />
@@ -132,12 +138,22 @@ const MissionInfoLayerSettingsPresentation = ({
       <FormControlLabel
         control={
           <Checkbox
-            checked={showTrajectoriesOfSelection}
+            checked={Boolean(showTrajectoriesOfSelection)}
             value='showTrajectoriesOfSelection'
             onChange={handleChange('showTrajectoriesOfSelection')}
           />
         }
         label='Show trajectories of selected drones'
+      />
+      <FormControlLabel
+        control={
+          <Checkbox
+            checked={Boolean(showMissionItems)}
+            value='showMissionItems'
+            onChange={handleChange('showMissionItems')}
+          />
+        }
+        label='Show mission items'
       />
     </FormGroup>
   );
@@ -284,6 +300,47 @@ const landingPositionStyle = (feature, resolution) => {
 };
 
 /**
+ * Style for the marker representing the individual items in a waypoint mission.
+ */
+const createMissionItemBaseStyle = (selected) => (feature) => {
+  const index = feature.get('index');
+  const style = {
+    image: new Icon({
+      src: mapMarker,
+      anchor: [0.5, 0.95],
+      color: Colors.missionItem,
+      rotateWithView: false,
+      snapToPixel: false,
+    }),
+    text: new Text({
+      font: '12px sans-serif',
+      offsetY: -17,
+      text: index !== undefined ? String(index + 1) : '?',
+      textAlign: 'center',
+    }),
+  };
+
+  if (selected) {
+    const selectedStyle = {
+      image: new Icon({
+        src: mapMarkerOutline,
+        anchor: [0.5, 0.95],
+        rotateWithView: false,
+        snapToPixel: false,
+      }),
+    };
+    return [new Style(selectedStyle), new Style(style)];
+  } else {
+    return new Style(style);
+  }
+};
+
+const missionItemBaseStyles = [
+  createMissionItemBaseStyle(/* selected = */ false),
+  createMissionItemBaseStyle(/* selected = */ true),
+];
+
+/**
  * Style for the marker representing the origin of the mission-specific
  * coordinate system.
  */
@@ -314,23 +371,33 @@ const missionConvexHullStyles = [
 ];
 
 /**
- * Selector that takes the current state and returns whether the convex hull of
- * the mission is selected.
+ * Style for the polygon connecting the mission items in a waypoint mission.
  */
-const isConvexHullSelected = isSelected(areaIdToGlobalId(CONVEX_HULL_AREA_ID));
+const missionItemPolygonStyle = [
+  new Style({
+    stroke: thinOutline(Colors.missionItem),
+  }),
+];
+
+const CONVEX_HULL_GLOBAL_ID = areaIdToGlobalId(CONVEX_HULL_AREA_ID);
+const MAP_ORIGIN_GLOBAL_ID = originIdToGlobalId(MAP_ORIGIN_ID);
+const MISSION_ITEM_POLYGON_GLOBAL_ID = areaIdToGlobalId(
+  MISSION_ITEM_POLYGON_ID
+);
+const MISSION_ORIGIN_GLOBAL_ID = originIdToGlobalId(MISSION_ORIGIN_ID);
 
 const MissionInfoVectorSource = ({
   convexHull,
   coordinateSystemType,
   homePositions,
-  isConvexHullSelected,
   landingPositions,
-  missionSlotIdsForTrajectories,
+  missionItems,
   missionOrientation,
   missionOrigin,
+  missionSlotIdsForTrajectories,
   orientation,
   origin,
-  selectedOriginIds,
+  selection,
   uavIdsForTrajectories,
 }) => {
   const features = [];
@@ -396,15 +463,14 @@ const MissionInfoVectorSource = ({
   }
 
   if (origin) {
-    const globalIdOfOrigin = originIdToGlobalId(MAP_ORIGIN_ID);
     const tail = mapViewCoordinateFromLonLat(origin);
     const armLength =
       50 /* meters */ / getPointResolution('EPSG:3857', 1, tail);
     const headY = [0, coordinateSystemType === 'nwu' ? armLength : -armLength];
     const headX = [armLength, 0];
     const selected =
-      selectedOriginIds.includes(MAP_ORIGIN_ID) ||
-      selectedOriginIds.includes(MAP_ORIGIN_ID + '$y');
+      selection.includes(MAP_ORIGIN_GLOBAL_ID) ||
+      selection.includes(MAP_ORIGIN_GLOBAL_ID + '$y');
     Coordinate.rotate(headX, toRadians(90 - orientation));
     Coordinate.rotate(headY, toRadians(90 - orientation));
     Coordinate.add(headY, tail);
@@ -413,14 +479,14 @@ const MissionInfoVectorSource = ({
     features.push(
       <Feature
         key='mapOrigin.x'
-        id={globalIdOfOrigin}
+        id={MAP_ORIGIN_GLOBAL_ID}
         style={originStyles(selected, 'x')}
       >
         <geom.LineString coordinates={[tail, headX]} />
       </Feature>,
       <Feature
         key='mapOrigin.y'
-        id={globalIdOfOrigin + '$y'}
+        id={MAP_ORIGIN_GLOBAL_ID + '$y'}
         style={originStyles(selected, 'y')}
       >
         <geom.LineString coordinates={[tail, headY]} />
@@ -428,13 +494,54 @@ const MissionInfoVectorSource = ({
     );
   }
 
+  if (missionItems) {
+    // Add one marker for each item in the mission
+    features.push(
+      ...missionItems.map(({ index, id, coordinate }) => {
+        const globalIdOfMissionItem = missionItemIdToGlobalId(id);
+        const selected = selection.includes(globalIdOfMissionItem);
+        const center = mapViewCoordinateFromLonLat([
+          coordinate.lon,
+          coordinate.lat,
+        ]);
+        return (
+          <Feature
+            key={globalIdOfMissionItem}
+            id={globalIdOfMissionItem}
+            properties={{ index }}
+            style={missionItemBaseStyles[selected ? 1 : 0]}
+          >
+            <geom.Point coordinates={center} />
+          </Feature>
+        );
+      })
+    );
+
+    // If there are at least two items with coordinates, connect them with a
+    // polyline
+    if (missionItems.length > 1) {
+      const missionItemPolygonInMapCoordinates = missionItems.map(
+        ({ coordinate }) =>
+          mapViewCoordinateFromLonLat([coordinate.lon, coordinate.lat])
+      );
+      features.push(
+        <Feature
+          key='missionItemsPolygon'
+          id={MISSION_ITEM_POLYGON_GLOBAL_ID}
+          style={missionItemPolygonStyle}
+        >
+          <geom.LineString coordinates={missionItemPolygonInMapCoordinates} />
+        </Feature>
+      );
+    }
+  }
+
   if (missionOrigin) {
-    const globalIdOfMissionOrigin = originIdToGlobalId(MISSION_ORIGIN_ID);
     const missionOriginCoord = mapViewCoordinateFromLonLat(missionOrigin);
     features.push(
       <Feature
         key='missionOrigin'
-        id={globalIdOfMissionOrigin}
+        id={MISSION_ORIGIN_GLOBAL_ID}
         style={createMissionOriginStyle(missionOrientation)}
       >
         <geom.Point coordinates={missionOriginCoord} />
@@ -443,7 +550,6 @@ const MissionInfoVectorSource = ({
   }
 
   if (convexHull) {
-    const globalIdOfMissionConvexHull = areaIdToGlobalId(CONVEX_HULL_AREA_ID);
     const convexHullInMapCoordinates = convexHull.map((coord) =>
       mapViewCoordinateFromLonLat([coord.lon, coord.lat])
     );
@@ -452,8 +558,12 @@ const MissionInfoVectorSource = ({
     features.push(
       <Feature
         key='missionConvexHull'
-        id={globalIdOfMissionConvexHull}
-        style={missionConvexHullStyles[isConvexHullSelected ? 1 : 0]}
+        id={CONVEX_HULL_GLOBAL_ID}
+        style={
+          missionConvexHullStyles[
+            selection.includes(CONVEX_HULL_GLOBAL_ID) ? 1 : 0
+          ]
+        }
       >
         <geom.LineString coordinates={convexHullInMapCoordinates} />
       </Feature>
@@ -492,14 +602,14 @@ MissionInfoVectorSource.propTypes = {
   convexHull: PropTypes.arrayOf(CustomPropTypes.coordinate),
   coordinateSystemType: PropTypes.oneOf(['neu', 'nwu']),
   homePositions: PropTypes.arrayOf(CustomPropTypes.coordinate),
-  isConvexHullSelected: PropTypes.bool,
   landingPositions: PropTypes.arrayOf(CustomPropTypes.coordinate),
-  missionSlotIdsForTrajectories: PropTypes.arrayOf(PropTypes.string),
+  missionItems: PropTypes.arrayOf(PropTypes.object),
   missionOrientation: CustomPropTypes.angle,
   missionOrigin: PropTypes.arrayOf(PropTypes.number),
+  missionSlotIdsForTrajectories: PropTypes.arrayOf(PropTypes.string),
   orientation: CustomPropTypes.angle,
   origin: PropTypes.arrayOf(PropTypes.number),
-  selectedOriginIds: PropTypes.arrayOf(PropTypes.string),
+  selection: PropTypes.arrayOf(PropTypes.string),
   uavIdsForTrajectories: PropTypes.arrayOf(PropTypes.string),
 };
 
@@ -533,22 +643,24 @@ export const MissionInfoLayer = connect(
     homePositions: layer?.parameters?.showHomePositions
       ? getGPSBasedHomePositionsInMission(state)
       : undefined,
-    isConvexHullSelected: isConvexHullSelected(state),
     landingPositions: layer?.parameters?.showLandingPositions
       ? getGPSBasedLandingPositionsInMission(state)
       : undefined,
+    missionItems: layer?.parameters?.showMissionItems
+      ? getMissionItemsWithCoordinatesInOrder(state)
+      : undefined,
+    missionOrigin: layer?.parameters?.showMissionOrigin
+      ? getOutdoorShowOrigin(state)
+      : undefined,
+    missionOrientation: getOutdoorShowOrientation(state),
     /* prettier-ignore */
     missionSlotIdsForTrajectories:
       layer?.parameters?.showTrajectoriesOfSelection
         ? getSelectedMissionIndicesForTrajectoryDisplay(state)
         : undefined,
-    missionOrigin: layer?.parameters?.showMissionOrigin
-      ? getOutdoorShowOrigin(state)
-      : undefined,
-    missionOrientation: getOutdoorShowOrientation(state),
     orientation: getMapOriginRotationAngle(state),
     origin: layer?.parameters?.showOrigin && state.map.origin.position,
-    selectedOriginIds: getSelectedOriginIds(state),
+    selection: getSelection(state),
     uavIdsForTrajectories: layer?.parameters?.showTrajectoriesOfSelection
       ? getSelectedUAVIdsForTrajectoryDisplay(state)
       : undefined,

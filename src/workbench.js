@@ -69,7 +69,6 @@ const onlyWithFeature = (featureName, component) =>
  * The React components will be created without any props. If you need the
  * components to have props, use a wrapper HOC.
  */
-
 export const componentRegistry = {
   'beacon-list': {
     component: views.BeaconList,
@@ -137,6 +136,11 @@ export const componentRegistry = {
     // deprecated, kept there for compatibility
     component: views.MessagesPanelView,
     label: 'Messages',
+  },
+  'mission-editor': {
+    component: views.MissionOverviewPanel,
+    label: 'Mission editor',
+    detachable: true,
   },
   placeholder: {
     component: Nothing,

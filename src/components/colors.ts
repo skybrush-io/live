@@ -18,6 +18,7 @@ export const Colors = {
   geofence: '#f00',
   convexHull: '#fc0',
   plannedTrajectory: '#08f',
+  missionItem: '#0cf',
 
   positionHold: yellow.A400,
 } as const;

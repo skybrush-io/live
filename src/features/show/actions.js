@@ -35,7 +35,6 @@ import {
 import { clearLastUploadResultForJobType } from '~/features/upload/slice';
 import { FeatureType, LabelStyle } from '~/model/features';
 import { MissionType } from '~/model/missions';
-import { getFeaturesInOrder } from '~/selectors/ordered';
 import {
   bufferPolygon,
   lonLatFromMapViewCoordinate,

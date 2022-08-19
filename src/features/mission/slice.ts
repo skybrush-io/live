@@ -13,9 +13,15 @@ import { type ReadonlyDeep } from 'type-fest';
 import { GeofenceAction } from '~/features/geofence/model';
 import { removeFeaturesByIds } from '~/features/map-features/slice';
 import { type FeatureProperties } from '~/features/map-features/types';
-import { MissionType } from '~/model/missions';
+import { type MissionItem, MissionType } from '~/model/missions';
 import { type GPSPosition } from '~/model/position';
 import type UAV from '~/model/uav';
+import {
+  type Collection,
+  addItemAt,
+  addItemToBack,
+  deleteItemsByIds,
+} from '~/utils/collections';
 import { noPayload } from '~/utils/redux';
 import { type Nullable } from '~/utils/types';
 
@@ -105,6 +111,9 @@ export type MissionSliceState = ReadonlyDeep<{
 
   /** Action to perform when the geofence is breached */
   geofenceAction: GeofenceAction;
+
+  /** Collection of items in the current mission if it is a waypoint-based mission */
+  items: Collection<MissionItem>;
 }>;
 
 const initialState: MissionSliceState = {
@@ -121,12 +130,43 @@ const initialState: MissionSliceState = {
   commandsAreBroadcast: false,
   geofencePolygonId: undefined,
   geofenceAction: GeofenceAction.RETURN,
+  items: {
+    byId: {},
+    order: [],
+  },
 };
 
 const { actions, reducer } = createSlice({
   name: 'mission',
   initialState,
   reducers: {
+    addMissionItem(
+      state,
+      action: PayloadAction<{ item: MissionItem; index: number }>
+    ) {
+      const { item, index } = action.payload;
+      const { id, type } = item;
+
+      if (!id) {
+        throw new Error('Mission item must have an ID');
+      }
+
+      if (!type) {
+        throw new Error('Mission item must have a type');
+      }
+
+      if (state.items.byId[id]) {
+        throw new Error('Mission item ID is already taken');
+      }
+
+      // Update the state
+      if (typeof index === 'number') {
+        addItemAt(state.items, item, index);
+      } else {
+        addItemToBack(state.items, item);
+      }
+    },
+
     adjustMissionMapping(
       state,
       action: PayloadAction<{ uavId: UAV['id']; to: number }>
@@ -220,6 +260,36 @@ const { actions, reducer } = createSlice({
         state,
         continuation
       );
+    },
+
+    moveMissionItem: {
+      prepare: (oldIndex: number, newIndex: number) => ({
+        payload: { oldIndex, newIndex },
+      }),
+      reducer(
+        state,
+        action: PayloadAction<{ oldIndex: number; newIndex: number }>
+      ) {
+        const { oldIndex, newIndex } = action.payload;
+        const numItems = state.items.order.length;
+        if (
+          oldIndex >= 0 &&
+          oldIndex < numItems &&
+          newIndex >= 0 &&
+          newIndex < numItems &&
+          oldIndex !== newIndex
+        ) {
+          const [itemId] = state.items.order.splice(oldIndex, 1);
+          state.items.order.splice(newIndex, 0, itemId!);
+        }
+      },
+    },
+
+    removeMissionItemsByIds(
+      state,
+      action: PayloadAction<Array<MissionItem['id']>>
+    ) {
+      deleteItemsByIds(state.items, action.payload);
     },
 
     /**
@@ -420,6 +490,7 @@ const { actions, reducer } = createSlice({
 });
 
 export const {
+  addMissionItem,
   adjustMissionMapping,
   cancelMappingEditorSessionAtCurrentSlot,
   clearGeofencePolygonId,
@@ -427,6 +498,8 @@ export const {
   clearMappingSlot,
   commitMappingEditorSessionAtCurrentSlot,
   finishMappingEditorSession,
+  moveMissionItem,
+  removeMissionItemsByIds,
   removeUAVsFromMapping,
   replaceMapping,
   setCommandsAreBroadcast,

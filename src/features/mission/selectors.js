@@ -1,4 +1,6 @@
 import isNil from 'lodash-es/isNil';
+import max from 'lodash-es/max';
+import min from 'lodash-es/min';
 import range from 'lodash-es/range';
 import reject from 'lodash-es/reject';
 import { createSelector } from '@reduxjs/toolkit';
@@ -8,9 +10,13 @@ import {
   GeofenceAction,
   isValidGeofenceAction,
 } from '~/features/geofence/model';
-import { globalIdToMissionSlotId } from '~/model/identifiers';
-import { MissionType } from '~/model/missions';
+import {
+  globalIdToMissionItemId,
+  globalIdToMissionSlotId,
+} from '~/model/identifiers';
+import { MissionType, getCoordinateFromMissionItem } from '~/model/missions';
 import { selectionForSubset } from '~/selectors/selection';
+import { selectOrdered } from '~/utils/collections';
 import { EMPTY_ARRAY } from '~/utils/redux';
 
 /**
@@ -24,6 +30,39 @@ export const selectMissionIndex = (_state, missionIndex) => missionIndex;
  */
 export const getMissionType = (state) =>
   state.mission.type || MissionType.UNKNOWN;
+
+/**
+ * Returns the IDs of the items in the current waypoint-based mission, in the
+ * order they should appear on the UI.
+ */
+export const getMissionItemIds = (state) => state.mission.items.order;
+
+/**
+ * Selector that calculates and caches the list of selected mission item IDs from
+ * the state object.
+ */
+export const getSelectedMissionItemIds = selectionForSubset(
+  globalIdToMissionItemId
+);
+
+/**
+ * Returns a mapping from IDs to the corresponding mission items.
+ */
+export const getMissionItemsById = (state) => state.mission.items.byId;
+
+/**
+ * Returns a single mission item by its ID.
+ */
+export const getMissionItemById = (state, itemId) =>
+  state.mission.items.byId[itemId];
+
+/**
+ * Returns the items in the current waypoint-based mission.
+ */
+export const getMissionItemsInOrder = createSelector(
+  (state) => state.mission.items,
+  selectOrdered
+);
 
 /**
  * Returns the current list of home positions in the mission.
@@ -277,5 +316,97 @@ export const getGeofenceStatus = createSelector(
       : featuresById[geofencePolygonId].owner === 'show'
       ? Status.SUCCESS
       : Status.WARNING;
+  }
+);
+
+export const getItemIndexRangeForSelectedMissionItems = createSelector(
+  getMissionItemIds,
+  getSelectedMissionItemIds,
+  (allIds, selectedIds) => {
+    const indices = selectedIds.map((id) => allIds.indexOf(id));
+    const minIndex = min(indices);
+    const maxIndex = max(indices);
+    return [minIndex, maxIndex];
+  }
+);
+
+/**
+ * Returns whether the currently selected mission items form a single,
+ * uninterrupted chunk in the list of mission items.
+ */
+export const areSelectedMissionItemsInOneChunk = createSelector(
+  getItemIndexRangeForSelectedMissionItems,
+  getSelectedMissionItemIds,
+  (indexRange, selectedIds) => {
+    const [minIndex, maxIndex] = indexRange;
+    return minIndex >= 0 && maxIndex === minIndex + selectedIds.length - 1;
+  }
+);
+
+export const createCanMoveSelectedMissionItemsByDeltaSelector = (delta) =>
+  createSelector(
+    getMissionItemIds,
+    areSelectedMissionItemsInOneChunk,
+    getItemIndexRangeForSelectedMissionItems,
+    (allIds, inOneChunk, indexRange) => {
+      if (!inOneChunk) {
+        return false;
+      }
+
+      const [minIndex, maxIndex] = indexRange;
+      if (delta < 0) {
+        return minIndex >= Math.abs(delta);
+      } else {
+        return maxIndex + delta < allIds.length;
+      }
+    }
+  );
+
+/**
+ * Returns whether the currently selected mission items can be moved upwards
+ * by one slot.
+ */
+export const canMoveSelectedMissionItemsUp =
+  createCanMoveSelectedMissionItemsByDeltaSelector(-1);
+
+/**
+ * Returns whether the currently selected mission items can be moved downwards
+ * by one slot.
+ */
+export const canMoveSelectedMissionItemsDown =
+  createCanMoveSelectedMissionItemsByDeltaSelector(1);
+
+/**
+ * Returns a selector that converts the current list of mission items to a
+ * list of objects containing the GPS coordinates where the items should
+ * appear on the map, along with the original items themselves. This is used
+ * by map views to show the mission items.
+ *
+ * The returned array will contain objects with the following keys:
+ *
+ * - id: maps to the ID of the mission item
+ * - coordinate: maps to a latitude-longitude pair of the mission item (as an
+ *   array of length 2)
+ * - item: maps to the item itself
+ * - index: the index of the item in the list of mission items
+ *
+ * Mission items for which no coordinate belongs are not returned.
+ */
+export const getMissionItemsWithCoordinatesInOrder = createSelector(
+  getMissionItemsInOrder,
+  (items) => {
+    const result = [];
+    let index = 0;
+
+    for (const item of items) {
+      const coordinate = getCoordinateFromMissionItem(item);
+      if (coordinate) {
+        result.push({ id: item.id, item, coordinate, index });
+      }
+
+      index++;
+    }
+
+    return result;
   }
 );

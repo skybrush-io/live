@@ -793,6 +793,8 @@ export const getShowTitle = createSelector(
 /**
  * Returns whether there is a show file currently loaded.
  */
+/* TODO(ntamas): maybe check the mission type here as well? state.show.data should
+ * go hand-in-hand with state.mission.type */
 export const hasLoadedShowFile = (state) => Boolean(state.show.data);
 
 /**
