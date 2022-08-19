@@ -171,7 +171,7 @@ App.propTypes = {
  * Placeholder component to render when a panel is being dragged from the
  * sidebar to the workbench.
  */
-const DragProxy = () => <div />;
+const DragProxy = () => <div className='drag-proxy' />;
 
 /**
  * The context provider for the main application component and the

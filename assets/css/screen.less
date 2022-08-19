@@ -67,6 +67,18 @@ mark {
   z-index: 10;
 }
 
+/* Drag proxy for the workbench */
+.drag-proxy {
+  height: 100%;
+  background: repeating-linear-gradient(
+    -45deg,
+    rgba(0, 0, 0, 0),
+    rgba(0, 0, 0, 0) 10px,
+    rgba(0, 0, 0, 0.15) 10px,
+    rgba(0, 0, 0, 0.15) 20px
+  );
+}
+
 /* Root container for React */
 #root {
   width: 100%;
