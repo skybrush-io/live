@@ -1,0 +1,51 @@
+diff --git a/node_modules/redux-persist/es/createPersistoid.js b/node_modules/redux-persist/es/createPersistoid.js
+index 8b43b9a..c16c8c5 100644
+--- a/node_modules/redux-persist/es/createPersistoid.js
++++ b/node_modules/redux-persist/es/createPersistoid.js
+@@ -25,7 +25,7 @@ export default function createPersistoid(config) {
+   var lastState = {};
+   var stagedState = {};
+   var keysToProcess = [];
+-  var timeIterator = null;
++  var writeTimeout = null;
+   var writePromise = null;
+ 
+   var update = function update(state) {
+@@ -47,8 +47,8 @@ export default function createPersistoid(config) {
+       }
+     }); // start the time iterator if not running (read: throttle)
+ 
+-    if (timeIterator === null) {
+-      timeIterator = setInterval(processNextKey, throttle);
++    if (writeTimeout === null) {
++      writeTimeout = setTimeout(flush, throttle)
+     }
+ 
+     lastState = state;
+@@ -56,8 +56,6 @@ export default function createPersistoid(config) {
+ 
+   function processNextKey() {
+     if (keysToProcess.length === 0) {
+-      if (timeIterator) clearInterval(timeIterator);
+-      timeIterator = null;
+       return;
+     }
+ 
+@@ -107,11 +105,16 @@ export default function createPersistoid(config) {
+     }
+   }
+ 
+-  var flush = function flush() {
++  function flush() {
+     while (keysToProcess.length !== 0) {
+       processNextKey();
+     }
+ 
++    if (writeTimeout) {
++      clearTimeout(writeTimeout)
++      writeTimeout = null;
++    }
++
+     return writePromise || Promise.resolve();
+   }; // return `persistoid`
+ 
