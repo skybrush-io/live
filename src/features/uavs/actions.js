@@ -1,7 +1,7 @@
 import isNil from 'lodash-es/isNil';
 import xor from 'lodash-es/xor';
 
-import { setSelectedFeatures } from '~/features/map/selection';
+import { setSelection } from '~/features/map/selection';
 import flock from '~/flock';
 import { uavIdToGlobalId } from '~/model/identifiers';
 
@@ -51,7 +51,7 @@ export const requestRemovalOfSelectedUAVs = () => (dispatch, getState) => {
  * @return {Object} an appropriately constructed action
  */
 export const setSelectedUAVIds = (ids) =>
-  setSelectedFeatures(
+  setSelection(
     (Array.isArray(ids) ? ids : [])
       .filter((id) => !isNil(id))
       .map((id) => uavIdToGlobalId(id))

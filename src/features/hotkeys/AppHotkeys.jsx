@@ -8,7 +8,7 @@ import React from 'react';
 import { configure as configureHotkeys, GlobalHotKeys } from 'react-hotkeys';
 import { connect } from 'react-redux';
 
-import { selectAllUAVFeatures } from '~/features/map/selection';
+import { selectAllUAVs } from '~/features/map/selection';
 import { getPreferredCommunicationChannelIndex } from '~/features/mission/selectors';
 import { toggleMissionIds } from '~/features/settings/slice';
 import { toggleBroadcast } from '~/features/session/actions';
@@ -116,7 +116,7 @@ export default connect(
         REMOVE_SELECTION: handlePendingUAVIdThenDispatch(
           requestRemovalOfSelectedUAVs
         ),
-        SELECT_ALL_DRONES: selectAllUAVFeatures,
+        SELECT_ALL_DRONES: selectAllUAVs,
         SEND_FLASH_LIGHTS_COMMAND: handlePendingUAVIdThenDispatch(
           callUAVActionOnSelection('flashLight')
         ),

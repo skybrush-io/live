@@ -53,7 +53,7 @@ const { actions, reducer } = createSlice({
   initialState: [],
 
   reducers: {
-    addFeaturesToSelection(state, action) {
+    addToSelection(state, action) {
       return updateSelection(state, action.payload);
     },
 
@@ -61,15 +61,15 @@ const { actions, reducer } = createSlice({
       state.length = 0;
     },
 
-    removeFeaturesFromSelection(state, action) {
+    removeFromSelection(state, action) {
       return updateSelection(state, [], action.payload);
     },
 
-    selectAllUAVFeatures() {
+    selectAllUAVs() {
       return updateSelection([], findAllUAVFeatures());
     },
 
-    setSelectedFeatures(_state, action) {
+    setSelection(_state, action) {
       return updateSelection([], action.payload);
     },
   },
@@ -86,11 +86,11 @@ const { actions, reducer } = createSlice({
 });
 
 export const {
-  addFeaturesToSelection,
+  addToSelection,
   clearSelection,
-  removeFeaturesFromSelection,
-  selectAllUAVFeatures,
-  setSelectedFeatures,
+  removeFromSelection,
+  selectAllUAVs,
+  setSelection,
 } = actions;
 
 export default reducer;

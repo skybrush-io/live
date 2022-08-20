@@ -1,4 +1,4 @@
-import { setSelectedFeatures } from '~/features/map/selection';
+import { setSelection } from '~/features/map/selection';
 import { dockIdToGlobalId } from '~/model/identifiers';
 
 /**
@@ -11,4 +11,4 @@ import { dockIdToGlobalId } from '~/model/identifiers';
  * @return {Object} an appropriately constructed action
  */
 export const setSelectedDockIds = (ids) =>
-  setSelectedFeatures(ids.map(dockIdToGlobalId));
+  setSelection(ids.map(dockIdToGlobalId));

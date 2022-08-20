@@ -1,4 +1,4 @@
-import { setSelectedFeatures } from '~/features/map/selection';
+import { setSelection } from '~/features/map/selection';
 import { beaconIdToGlobalId } from '~/model/identifiers';
 
 /**
@@ -11,4 +11,4 @@ import { beaconIdToGlobalId } from '~/model/identifiers';
  * @return {Object} an appropriately constructed action
  */
 export const setSelectedBeaconIds = (ids) =>
-  setSelectedFeatures(ids.map(beaconIdToGlobalId));
+  setSelection(ids.map(beaconIdToGlobalId));
