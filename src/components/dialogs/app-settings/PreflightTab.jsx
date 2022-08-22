@@ -24,7 +24,7 @@ const PreflightTabPresentation = ({ items, onSubmit }) => (
             multiline
             name='items'
             label='Manual preflight check items'
-            rows={10}
+            minRows={10}
             variant='filled'
             helperText='Lines ending with a colon (:) become headings.'
           />

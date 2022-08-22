@@ -65,7 +65,7 @@ const ParametersTextField = ({ onChange }) => {
       error={Boolean(error)}
       label='Parameter names and values'
       variant='filled'
-      rows={7}
+      minRows={7}
       helperText={
         error || 'Specify entries as name=value, one parameter per row.'
       }
