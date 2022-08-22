@@ -31,6 +31,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   can also be triggered with a hotkey (Ctrl-B on Windows and Linux, Cmd-B on
   macOS).
 
+- The graticule layer (the latitude-longitude grid overlaid on top of the map)
+  now adjusts itself to the preferred coordinate format; in other words, if
+  Skybrush is configured to show latitudes and longitudes using degrees,
+  minutes and seconds, then the graticule itself will also try to ensure that
+  the lines align with whole degrees, minutes and seconds.
+
 ### Fixed
 
 - Fixed a bug where the RTK correction message age counters were not updated

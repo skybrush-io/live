@@ -144,12 +144,18 @@ export const getLongitudeFormatterForCoordinateFormat = (coordinateFormat) =>
   _formattersForLongitudeOnlyFormat[CoordinateFormat.SIGNED_DEGREES];
 
 /**
+ * Selector that returns the preferred coordinate format.
+ */
+export const getPreferredCoordinateFormat = (state) =>
+  state.settings.display.coordinateFormat;
+
+/**
  * Selector that returns a function that can be called with longitude-latitude
  * pairs and that returns a nicely formatted representation according to the
  * preferred format of the user.
  */
 export const getPreferredCoordinateFormatter = createSelector(
-  (state) => state.settings.display.coordinateFormat,
+  getPreferredCoordinateFormat,
   getFormatterForCoordinateFormat
 );
 
@@ -159,7 +165,7 @@ export const getPreferredCoordinateFormatter = createSelector(
  * preferred format of the user.
  */
 export const getPreferredLatitudeCoordinateFormatter = createSelector(
-  (state) => state.settings.display.coordinateFormat,
+  getPreferredCoordinateFormat,
   getLatitudeFormatterForCoordinateFormat
 );
 
@@ -169,7 +175,7 @@ export const getPreferredLatitudeCoordinateFormatter = createSelector(
  * preferred format of the user.
  */
 export const getPreferredLongitudeCoordinateFormatter = createSelector(
-  (state) => state.settings.display.coordinateFormat,
+  getPreferredCoordinateFormat,
   getLongitudeFormatterForCoordinateFormat
 );
 
