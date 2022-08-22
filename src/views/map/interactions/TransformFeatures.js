@@ -4,7 +4,6 @@
  */
 
 import stubTrue from 'lodash-es/stubTrue';
-import { includes } from 'ol/array';
 import OLEvent from 'ol/events/Event';
 import * as Extent from 'ol/extent';
 import PointerInteraction from 'ol/interaction/Pointer';
@@ -275,7 +274,7 @@ export class TransformFeaturesInteraction extends PointerInteraction {
       }
 
       const { layers } = options;
-      return (layer) => includes(layers, layer);
+      return (layer) => layers.includes(layer);
     }
 
     return stubTrue;

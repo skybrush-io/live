@@ -1,5 +1,5 @@
 import { Fill, Icon, Stroke, Style, Text } from 'ol/style';
-import styleFunction from 'ol-mapbox-style/dist/stylefunction';
+import { stylefunction as styleFunction } from 'ol-mapbox-style';
 
 /**
  * Creates a style function for the mapbox-streets-v6 vector tile data set.
