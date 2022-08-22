@@ -308,7 +308,7 @@ const createMissionItemBaseStyle = (selected) => (feature) => {
     image: new Icon({
       src: mapMarker,
       anchor: [0.5, 0.95],
-      color: Colors.missionItem,
+      color: selected ? Colors.selectedMissionItem : Colors.missionItem,
       rotateWithView: false,
       snapToPixel: false,
     }),
@@ -385,8 +385,6 @@ const MISSION_ITEM_POLYGON_GLOBAL_ID = areaIdToGlobalId(
   MISSION_ITEM_POLYGON_ID
 );
 const MISSION_ORIGIN_GLOBAL_ID = originIdToGlobalId(MISSION_ORIGIN_ID);
-
-const SKIP_SELECTION = { skipSelection: true };
 
 const MissionInfoVectorSource = ({
   convexHull,
@@ -520,7 +518,7 @@ const MissionInfoVectorSource = ({
     );
 
     // If there are at least two items with coordinates, connect them with a
-    // polyline
+    // polyline.
     if (missionItems.length > 1) {
       const missionItemPolygonInMapCoordinates = missionItems.map(
         ({ coordinate }) =>
@@ -531,7 +529,6 @@ const MissionInfoVectorSource = ({
           key='missionItemsPolygon'
           id={MISSION_ITEM_POLYGON_GLOBAL_ID}
           style={missionItemPolygonStyle}
-          properties={SKIP_SELECTION}
         >
           <geom.LineString coordinates={missionItemPolygonInMapCoordinates} />
         </Feature>
