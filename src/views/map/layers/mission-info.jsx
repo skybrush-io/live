@@ -390,6 +390,8 @@ const MISSION_ITEM_POLYGON_GLOBAL_ID = areaIdToGlobalId(
 );
 const MISSION_ORIGIN_GLOBAL_ID = originIdToGlobalId(MISSION_ORIGIN_ID);
 
+const SKIP_SELECTION = { skipSelection: true };
+
 const MissionInfoVectorSource = ({
   convexHull,
   coordinateSystemType,
@@ -533,6 +535,7 @@ const MissionInfoVectorSource = ({
           key='missionItemsPolygon'
           id={MISSION_ITEM_POLYGON_GLOBAL_ID}
           style={missionItemPolygonStyle}
+          properties={SKIP_SELECTION}
         >
           <geom.LineString coordinates={missionItemPolygonInMapCoordinates} />
         </Feature>
