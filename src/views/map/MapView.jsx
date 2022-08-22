@@ -31,15 +31,15 @@ import NearestItemTooltip from '~/features/session/NearestItemTooltip';
 import { setFeatureIdForTooltip } from '~/features/session/slice';
 import mapViewManager from '~/mapViewManager';
 import {
-  createFeatureFromOpenLayers,
-  isFeatureTransformable,
-} from '~/model/features';
-import {
   canLayerTriggerTooltip,
   getVisibleSelectableLayers,
   isLayerSelectable,
 } from '~/model/layers';
-import { handleFeatureUpdatesInOpenLayers } from '~/model/mutations';
+import {
+  createFeatureFromOpenLayers,
+  handleFeatureUpdatesInOpenLayers,
+  isFeatureTransformable,
+} from '~/model/openlayers';
 import { updateMapViewSettings } from '~/features/map/view';
 import {
   addToSelection,

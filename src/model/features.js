@@ -3,18 +3,12 @@
  * that we use on the map.
  */
 
-import isNil from 'lodash-es/isNil';
-import unary from 'lodash-es/unary';
 import LocationOn from '@material-ui/icons/LocationOn';
 import ShowChart from '@material-ui/icons/ShowChart';
 import CropSquare from '@material-ui/icons/CropSquare';
 import PanoramaFishEye from '@material-ui/icons/PanoramaFishEye';
 import StarBorder from '@material-ui/icons/StarBorder';
 import React from 'react';
-
-import { lonLatFromMapViewCoordinate } from '~/utils/geography';
-
-import { isAreaId, isFeatureId, isOriginId } from './identifiers';
 
 /**
  * Enum containing constants for the various feature types that we support.
@@ -36,73 +30,6 @@ export const LabelStyle = {
   THICK_OUTLINE: 'thickOutline',
   THIN_OUTLINE: 'thinOutline',
 };
-
-/**
- * Converts an OpenLayers feature object into a corresponding feature object
- * that can be stored in the global state store.
- *
- * @param  {ol.Feature} olFeature  the OpenLayers feature
- * @return {Object}  the feature to store in the global state
- */
-export function createFeatureFromOpenLayers(olFeature) {
-  const result = {};
-  const geometry = olFeature.getGeometry();
-  const type = geometry.getType();
-  const coordinates = geometry.getCoordinates();
-
-  switch (type) {
-    case 'Point':
-      Object.assign(result, {
-        type: FeatureType.POINTS,
-        filled: false,
-        points: [lonLatFromMapViewCoordinate(coordinates)],
-      });
-      break;
-
-    case 'Circle': {
-      const center = geometry.getCenter();
-      Object.assign(result, {
-        type: FeatureType.CIRCLE,
-        filled: true,
-        points: [
-          lonLatFromMapViewCoordinate(center),
-          lonLatFromMapViewCoordinate([
-            center[0] + geometry.getRadius(),
-            center[1],
-          ]),
-        ],
-      });
-      break;
-    }
-
-    case 'LineString':
-      Object.assign(result, {
-        type: FeatureType.LINE_STRING,
-        filled: false,
-        points: coordinates.map(unary(lonLatFromMapViewCoordinate)),
-      });
-      break;
-
-    case 'Polygon':
-      if (coordinates.length !== 1) {
-        throw new Error('Polygon geometry should not have any holes');
-      }
-
-      Object.assign(result, {
-        type: FeatureType.POLYGON,
-        filled: true,
-        points: coordinates[0]
-          .map(unary(lonLatFromMapViewCoordinate))
-          .slice(0, -1),
-      });
-      break;
-
-    default:
-      throw new Error('Unsupported feature geometry type: ' + type);
-  }
-
-  return result;
-}
 
 const _featureTypeIcons = {
   [FeatureType.CIRCLE]: React.createElement(PanoramaFishEye),
@@ -138,20 +65,4 @@ export function getNameOfFeatureType(type) {
  */
 export function getIconOfFeatureType(type) {
   return _featureTypeIcons[type] || _featureTypeIcons[FeatureType.POINTS];
-}
-
-/**
- * Returns whether the given OpenLayers feature is transformable with a
- * standard transformation interaction.
- *
- * @param  {ol.Feature|null|undefined}  obj  the feature to test
- * @return {boolean} whether the feature is transformable
- */
-export function isFeatureTransformable(object) {
-  if (isNil(object)) {
-    return false;
-  }
-
-  const id = object.getId();
-  return isFeatureId(id) || isAreaId(id) || isOriginId(id);
 }

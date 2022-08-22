@@ -1,4 +1,11 @@
+/**
+ * Module containing code related to connecting OpenLayers features with our
+ * model objects and converting between the two.
+ */
+
 import isEmpty from 'lodash-es/isEmpty';
+import isNil from 'lodash-es/isNil';
+import unary from 'lodash-es/unary';
 
 import { updateFlatEarthCoordinateSystem } from '~/features/map/origin';
 import { updateFeatureCoordinatesByIds } from '~/features/map-features/slice';
@@ -6,17 +13,103 @@ import {
   moveOutdoorShowOriginByMapCoordinateDelta,
   rotateOutdoorShowOrientationByAngleAroundPoint,
 } from '~/features/show/actions';
+import { lonLatFromMapViewCoordinate } from '~/utils/geography';
 import { toDegrees } from '~/utils/math';
 
-import { createFeatureFromOpenLayers } from './features';
-
+import { FeatureType } from './features';
 import {
   globalIdToAreaId,
   globalIdToFeatureId,
   globalIdToOriginId,
+  isAreaId,
+  isFeatureId,
+  isOriginId,
   MAP_ORIGIN_ID,
   CONVEX_HULL_AREA_ID,
 } from './identifiers';
+
+/**
+ * Returns whether the given OpenLayers feature is transformable with a
+ * standard transformation interaction.
+ *
+ * @param  {ol.Feature|null|undefined}  obj  the feature to test
+ * @return {boolean} whether the feature is transformable
+ */
+export function isFeatureTransformable(object) {
+  if (isNil(object)) {
+    return false;
+  }
+
+  const id = object.getId();
+  return isFeatureId(id) || isAreaId(id) || isOriginId(id);
+}
+
+/**
+ * Converts an OpenLayers feature object into a corresponding feature object
+ * that can be stored in the global state store.
+ *
+ * @param  {ol.Feature} olFeature  the OpenLayers feature
+ * @return {Object}  the feature to store in the global state
+ */
+export function createFeatureFromOpenLayers(olFeature) {
+  const result = {};
+  const geometry = olFeature.getGeometry();
+  const type = geometry.getType();
+  const coordinates = geometry.getCoordinates();
+
+  switch (type) {
+    case 'Point':
+      Object.assign(result, {
+        type: FeatureType.POINTS,
+        filled: false,
+        points: [lonLatFromMapViewCoordinate(coordinates)],
+      });
+      break;
+
+    case 'Circle': {
+      const center = geometry.getCenter();
+      Object.assign(result, {
+        type: FeatureType.CIRCLE,
+        filled: true,
+        points: [
+          lonLatFromMapViewCoordinate(center),
+          lonLatFromMapViewCoordinate([
+            center[0] + geometry.getRadius(),
+            center[1],
+          ]),
+        ],
+      });
+      break;
+    }
+
+    case 'LineString':
+      Object.assign(result, {
+        type: FeatureType.LINE_STRING,
+        filled: false,
+        points: coordinates.map(unary(lonLatFromMapViewCoordinate)),
+      });
+      break;
+
+    case 'Polygon':
+      if (coordinates.length !== 1) {
+        throw new Error('Polygon geometry should not have any holes');
+      }
+
+      Object.assign(result, {
+        type: FeatureType.POLYGON,
+        filled: true,
+        points: coordinates[0]
+          .map(unary(lonLatFromMapViewCoordinate))
+          .slice(0, -1),
+      });
+      break;
+
+    default:
+      throw new Error('Unsupported feature geometry type: ' + type);
+  }
+
+  return result;
+}
 
 /**
  * Handles the cases when some of the features are updated in OpenLayers and
