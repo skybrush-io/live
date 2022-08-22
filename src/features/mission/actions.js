@@ -27,7 +27,11 @@ import {
   missionItemIdToGlobalId,
   missionSlotIdToGlobalId,
 } from '~/model/identifiers';
-import { MissionItemType } from '~/model/missions';
+import {
+  getCoordinateFromMissionItem,
+  isMissionItemValid,
+  MissionItemType,
+} from '~/model/missions';
 import { readTextFromFile, writeTextToFile } from '~/utils/filesystem';
 import { calculateDistanceMatrix, euclideanDistance2D } from '~/utils/math';
 import { chooseUniqueId } from '~/utils/naming';
@@ -38,6 +42,7 @@ import {
   getGeofencePolygonId,
   getGPSBasedHomePositionsInMission,
   getItemIndexRangeForSelectedMissionItems,
+  getMissionItemById,
   getMissionItemsById,
   getMissionMapping,
   getMissionMappingFileContents,
@@ -50,7 +55,9 @@ import {
   removeMissionItemsByIds,
   removeUAVsFromMapping,
   replaceMapping,
+  updateMissionItemParameters,
 } from './slice';
+import { translateLonLatWithMapViewDelta } from '~/utils/geography';
 
 /**
  * Thunk that fills the empty slots in the current mapping from the spare drones
@@ -388,3 +395,32 @@ export const removeSelectedMissionItems = () => (dispatch, getState) => {
  */
 export const setSelectedMissionItemIds = (ids) =>
   setSelection(ids.map(missionItemIdToGlobalId));
+
+/**
+ * Thunk that moves the coordinates of the mission item with the given ID
+ * with the given delta, expressed in map view coordinates.
+ */
+export const moveMissionItemCoordinateByMapCoordinateDelta =
+  (itemId, delta) => (dispatch, getState) => {
+    const item = getMissionItemById(getState(), itemId);
+    if (!item || !isMissionItemValid(item)) {
+      return;
+    }
+
+    const coord = getCoordinateFromMissionItem(item);
+    if (!coord) {
+      return;
+    }
+
+    const newCoord = translateLonLatWithMapViewDelta(
+      [coord.lon, coord.lat],
+      delta
+    );
+
+    dispatch(
+      updateMissionItemParameters(itemId, {
+        lon: newCoord[0],
+        lat: newCoord[1],
+      })
+    );
+  };
