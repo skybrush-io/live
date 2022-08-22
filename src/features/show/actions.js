@@ -32,6 +32,7 @@ import { getFeaturesInOrder } from '~/selectors/ordered';
 import {
   lonLatFromMapViewCoordinate,
   mapViewCoordinateFromLonLat,
+  translateLonLatWithMapViewDelta,
 } from '~/utils/geography';
 import { bufferPolygon, simplifyPolygon, toRadians } from '~/utils/math';
 import { createAsyncAction } from '~/utils/redux';
@@ -171,13 +172,7 @@ export const updateGeofencePolygon = () => (dispatch) => {
 export const moveOutdoorShowOriginByMapCoordinateDelta =
   (delta) => (dispatch, getState) => {
     const origin = getOutdoorShowOrigin(getState());
-    const originInMapView = mapViewCoordinateFromLonLat(origin);
-    const newOriginInMapView = [
-      originInMapView[0] + delta[0],
-      originInMapView[1] + delta[1],
-    ];
-    const newOrigin = lonLatFromMapViewCoordinate(newOriginInMapView);
-
+    const newOrigin = translateLonLatWithMapViewDelta(origin, delta);
     dispatch(
       updateOutdoorShowSettings({ origin: newOrigin, setupMission: true })
     );

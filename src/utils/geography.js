@@ -443,6 +443,18 @@ export const mapViewCoordinateFromLonLat = Projection.fromLonLat;
 export const lonLatFromMapViewCoordinate = Projection.toLonLat;
 
 /**
+ * Helper function to move a longitude-latitude coordinate pair by a vector
+ * expressed in map view coordinates.
+ */
+export const translateLonLatWithMapViewDelta = (origin, delta) => {
+  const originInMapView = mapViewCoordinateFromLonLat(origin);
+  return lonLatFromMapViewCoordinate([
+    originInMapView[0] + delta[0],
+    originInMapView[1] + delta[1],
+  ]);
+};
+
+/**
  * Class that defines a flat-Earth coordinate system centered at a given
  * spherical coordinate.
  */
