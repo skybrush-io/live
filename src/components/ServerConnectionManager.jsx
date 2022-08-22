@@ -296,7 +296,6 @@ class TCPSocketConnection extends React.Component {
 
   render() {
     return null;
-    // return <></>;
   }
 }
 

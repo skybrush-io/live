@@ -29,21 +29,15 @@ class TCPSocket {
       for (const message of messages) {
         onMessage(JSON.parse(message));
       }
-
-      // messages.map(JSON.parse).forEach(onMessage);
-      // console.log('data', data.toString());
-      // onMessage(JSON.parse(data.toString().trim()));
     });
 
     this._socket.on('error', (error) => {
       onConnectionError(url, error);
     });
     this._socket.on('end', () => {
-      console.log('TCP end');
       onDisconnected(url);
     });
     this._socket.on('close', () => {
-      console.log('TCP close');
       onDisconnected(url);
     });
 
@@ -51,7 +45,7 @@ class TCPSocket {
     onConnecting(url);
     this._timeout = setTimeout(() => {
       onConnectionTimeout(url);
-    }, 2500);
+    }, 5000);
   }
 
   emit(_type, message) {
