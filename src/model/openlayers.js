@@ -11,6 +11,7 @@ import turfDifference from '@turf/difference';
 import { updateFlatEarthCoordinateSystem } from '~/features/map/origin';
 import { cloneFeatureById } from '~/features/map-features/actions';
 import { updateFeaturePropertiesByIds } from '~/features/map-features/slice';
+import { moveMissionItemCoordinateByMapCoordinateDelta } from '~/features/mission/actions';
 import {
   moveOutdoorShowOriginByMapCoordinateDelta,
   rotateOutdoorShowOrientationByAngleAroundPoint,
@@ -28,6 +29,8 @@ import {
   isOriginId,
   MAP_ORIGIN_ID,
   CONVEX_HULL_AREA_ID,
+  globalIdToMissionItemId,
+  isMissionItemId,
 } from './identifiers';
 
 /**
@@ -43,7 +46,9 @@ export function isFeatureTransformable(object) {
   }
 
   const id = object.getId();
-  return isFeatureId(id) || isAreaId(id) || isOriginId(id);
+  return (
+    isFeatureId(id) || isAreaId(id) || isOriginId(id) || isMissionItemId(id)
+  );
 }
 
 /**
@@ -233,6 +238,27 @@ export function handleFeatureUpdatesInOpenLayers(
       } else {
         console.warn(
           'This transformation is not handled for the convex hull yet'
+        );
+      }
+
+      continue;
+    }
+
+    // Is this feature a waypoint mission item?
+    const missionItemId = globalIdToMissionItemId(globalId);
+    if (missionItemId) {
+      if (type === 'transform') {
+        if (event.subType === 'move' && event.delta) {
+          dispatch(
+            moveMissionItemCoordinateByMapCoordinateDelta(
+              missionItemId,
+              event.delta
+            )
+          );
+        }
+      } else {
+        console.warn(
+          'This transformation is not handled for waypoint mission items yet'
         );
       }
     }
