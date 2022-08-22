@@ -91,42 +91,68 @@ class SelectNearestFeatureInteraction extends Interaction {
           );
         }
 
-        // Find the feature that is closest to the selection, in each
-        // matching layer
+        // Check whether the event hit any of the features exactly, based
+        // on pixel tests. If so, we use the feature on the topmost layer
+        // that was hit. This is required to ensure that relatively small,
+        // point-like features that have a comparably large marker to represent
+        // them (e.g., a waypoint item represented by a larger "pin" icon)
+        // are detected correctly. If we did not do this here, the hit area
+        // would be not the icon representing the marker but only a smaller area
+        // around the marker, based on the distance threshold.
         const { coordinate, map } = mapBrowserEvent;
-        const distanceFunction = partial(
-          this._distanceOfEventFromFeature,
-          mapBrowserEvent
-        );
-        const feasibleLayers = map
-          .getLayers()
-          .getArray()
-          .filter(this._isLayerFeasible)
-          .filter(this._layerSelectorFunction);
-        const closestFeatureOnEachFeasibleLayer = feasibleLayers
-          .map((layer) => {
-            const source = layer.getSource();
-            return source
-              ? source.getClosestFeatureToCoordinate(
-                  coordinate,
-                  this._isFeatureFeasible
-                )
-              : undefined;
-          })
-          .filter(this._isFeatureFeasible)
-          .reverse();
-
-        // In the closestFeatureOnEachFeasibleLayer array, the topmost layer
-        // is at the front. We need to iterate over it and stop at the first
-        // feature that is closer than the threshold.
         let closestFeature;
         let distance;
-        for (const feature of closestFeatureOnEachFeasibleLayer) {
-          // Get the actual distance of the feature (if we have one)
-          distance = distanceFunction(feature);
-          if (distance <= this._threshold) {
-            closestFeature = feature;
-            break;
+        map.forEachFeatureAtPixel(
+          mapBrowserEvent.pixel,
+          (feature) => {
+            if (this._isFeatureFeasible(feature)) {
+              closestFeature = feature;
+              distance = 0;
+
+              // Stop the search at the first hit
+              return true;
+            }
+          },
+          {
+            layerFilter: this._layerSelectorFunction,
+          }
+        );
+
+        if (!closestFeature) {
+          // There was no exact hit. Find the feature that is closest to the
+          // selection, in each matching layer
+          const distanceFunction = partial(
+            this._distanceOfEventFromFeature,
+            mapBrowserEvent
+          );
+          const feasibleLayers = map
+            .getLayers()
+            .getArray()
+            .filter(this._isLayerFeasible)
+            .filter(this._layerSelectorFunction);
+          const closestFeatureOnEachFeasibleLayer = feasibleLayers
+            .map((layer) => {
+              const source = layer.getSource();
+              return source
+                ? source.getClosestFeatureToCoordinate(
+                    coordinate,
+                    this._isFeatureFeasible
+                  )
+                : undefined;
+            })
+            .filter(this._isFeatureFeasible)
+            .reverse();
+
+          // In the closestFeatureOnEachFeasibleLayer array, the topmost layer
+          // is at the front. We need to iterate over it and stop at the first
+          // feature that is closer than the threshold.
+          for (const feature of closestFeatureOnEachFeasibleLayer) {
+            // Get the actual distance of the feature (if we have one)
+            distance = distanceFunction(feature);
+            if (distance <= this._threshold) {
+              closestFeature = feature;
+              break;
+            }
           }
         }
 
@@ -212,7 +238,7 @@ class SelectNearestFeatureInteraction extends Interaction {
    * Returns whether a given feature is feasible for selection.
    */
   _isFeatureFeasible(feature) {
-    return Boolean(feature);
+    return Boolean(feature) && !feature.get('skipSelection');
   }
 
   /**
