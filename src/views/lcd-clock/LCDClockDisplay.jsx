@@ -166,7 +166,14 @@ const LCDClockDisplay = ({
           </LCDText>
         </Box>
       </Box>
-      <Box ref={ref} flex={1} overflow='hidden' textAlign='center'>
+      <Box
+        ref={ref}
+        flex={1}
+        overflow='hidden'
+        display='flex'
+        alignItems='center'
+        justifyContent='center'
+      >
         <LCDClockDisplayLabel
           clockId={selectedClockId}
           height={lcdHeight}
