@@ -14,6 +14,7 @@ import { WorkbenchBuilder } from 'react-flexible-workbench';
 import loadable from '@loadable/component';
 import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
 
+import { makeDetachable } from '~/components/DetachablePanel';
 import { saveWorkbenchState } from './features/workbench/slice';
 import { injectFlockFromContext } from './flock';
 import store from './store';
@@ -57,19 +58,28 @@ const componentRegistry = {
   'connection-list': views.ConnectionList,
   'dataset-list': views.DatasetList,
   'dock-list': onlyWithFeature('docks', views.DockList),
-  'feature-list': onlyWithFeature('features', views.FeatureList),
+  'feature-list': onlyWithFeature(
+    'features',
+    makeDetachable(views.FeatureList, 'Feature')
+  ),
   'ground-control-view': injectFlockFromContext(views.GroundControlView),
-  'layer-list': views.LayerList,
-  'light-control': onlyWithFeature('showControl', views.LightControlPanel),
-  'lcd-clock-panel': views.LCDClockPanel,
-  'log-panel': views.LogPanel,
-  map: MapView,
+  'layer-list': makeDetachable(views.LayerList, 'Layer'),
+  'light-control': makeDetachable(
+    onlyWithFeature('showControl', views.LightControlPanel),
+    'Light control'
+  ),
+  'lcd-clock-panel': makeDetachable(views.LCDClockPanel, 'Clock'),
+  'log-panel': makeDetachable(views.LogPanel, 'Log'),
+  map: makeDetachable(MapView, 'Map'),
   messages: views.MessagesPanelView, // deprecated, kept there for compatibility
   placeholder: Nothing,
-  'saved-location-list': views.SavedLocationList,
-  'show-control': onlyWithFeature('showControl', views.ShowControlPanel),
+  'saved-location-list': makeDetachable(views.SavedLocationList, 'Location'),
+  'show-control': onlyWithFeature(
+    'showControl',
+    makeDetachable(views.ShowControlPanel, 'Show control')
+  ),
   'three-d-view': onlyWithFeature('threeDView', views.ThreeDTopLevelView),
-  'uav-list': injectFlockFromContext(views.UAVList),
+  'uav-list': makeDetachable(injectFlockFromContext(views.UAVList), 'UAVs'),
 };
 
 function constructDefaultWorkbench(store) {

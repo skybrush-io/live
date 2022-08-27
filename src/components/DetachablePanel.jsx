@@ -10,26 +10,42 @@ import ExternalWindow from '~/components/ExternalWindow';
 const DetachablePanel = ({ children, title }) => {
   const [detached, setDetached] = useState(false);
 
-  return (
+  const toggleButton = (
+    <Button
+      variant='outlined'
+      startIcon={detached ? <InsertLink /> : <LinkOff />}
+      onClick={() => setDetached(!detached)}
+    >
+      {detached ? 'Attach' : 'Detach'}
+    </Button>
+  );
+
+  return detached ? (
     <>
-      <Button
-        startIcon={detached ? <InsertLink /> : <LinkOff />}
-        onClick={() => setDetached(!detached)}
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-around',
+          height: '100%',
+          textAlign: 'center',
+        }}
       >
-        {detached ? 'Attach' : 'Detach'}
-      </Button>
-      <div style={{ position: 'relative' }}>
-        {detached ? (
-          <>
-            {title} dialog has been undocked.
-            <ExternalWindow title={title} onClose={() => setDetached(false)}>
-              {children}
-            </ExternalWindow>
-          </>
-        ) : (
-          children
-        )}
+        <div>
+          {title} panel has been detached.
+          <br />
+          {toggleButton}
+        </div>
       </div>
+      <ExternalWindow title={title} onClose={() => setDetached(false)}>
+        <div style={{ textAlign: 'center' }}>{toggleButton}</div>
+        <div style={{ position: 'relative' }}>{children}</div>
+      </ExternalWindow>
+    </>
+  ) : (
+    <>
+      <div style={{ position: 'relative' }}>{children}</div>
+      <div style={{ textAlign: 'center' }}>{toggleButton}</div>
     </>
   );
 };
