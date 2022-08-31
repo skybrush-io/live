@@ -38,21 +38,26 @@ export default class ExternalWindow extends React.Component {
 
     this._externalWindow.document.title = this.props.title;
 
+    const importStyleNode = (styleNode) => {
+      const clone = this._externalWindow.document.importNode(styleNode, true);
+      this._externalWindow.document.head.append(clone);
+
+      for (const cssRule of styleNode.sheet.cssRules) {
+        clone.sheet.insertRule(cssRule.cssText);
+      }
+    };
+
     for (const styleSheet of document.styleSheets) {
-      this._externalWindow.document.head.append(
-        this._externalWindow.document.importNode(styleSheet.ownerNode, true)
-      );
+      importStyleNode(styleSheet.ownerNode);
     }
 
     this._observer = new MutationObserver((mutationList, _observer) => {
       const allAddedNodes = mutationList.flatMap((m) =>
         Array.from(m.addedNodes)
       );
-      for (const n of allAddedNodes) {
-        if (n instanceof HTMLStyleElement) {
-          this._externalWindow.document.head.append(
-            this._externalWindow.document.importNode(n, true)
-          );
+      for (const addedNode of allAddedNodes) {
+        if (addedNode instanceof HTMLStyleElement) {
+          importStyleNode(addedNode);
         }
       }
     });
