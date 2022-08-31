@@ -20,6 +20,21 @@ const DetachablePanel = ({ children, title }) => {
     </Button>
   );
 
+  const toggleDiv = (
+    <div
+      style={{
+        textAlign: 'center',
+        position: 'absolute',
+        bottom: '10px',
+        left: '50%',
+        transform: 'translate(-50%)',
+        zIndex: '100',
+      }}
+    >
+      {toggleButton}
+    </div>
+  );
+
   return detached ? (
     <>
       <div
@@ -38,14 +53,14 @@ const DetachablePanel = ({ children, title }) => {
         </div>
       </div>
       <ExternalWindow title={title} onClose={() => setDetached(false)}>
-        <div style={{ textAlign: 'center' }}>{toggleButton}</div>
-        <div style={{ position: 'relative' }}>{children}</div>
+        <div>{children}</div>
+        {toggleDiv}
       </ExternalWindow>
     </>
   ) : (
     <>
-      <div style={{ position: 'relative' }}>{children}</div>
-      <div style={{ textAlign: 'center' }}>{toggleButton}</div>
+      <div>{children}</div>
+      {toggleDiv}
     </>
   );
 };
