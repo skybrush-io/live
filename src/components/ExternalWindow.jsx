@@ -26,6 +26,7 @@ export default class ExternalWindow extends React.Component {
 
     this._container = document.createElement('div');
     this._externalWindow = null;
+    this._styleRegistry = new Map();
   }
 
   componentDidMount() {
@@ -38,9 +39,13 @@ export default class ExternalWindow extends React.Component {
 
     this._externalWindow.document.title = this.props.title;
 
-    const importStyleNode = (styleNode) => {
+    const importStyleNode = (
+      styleNode,
+      importer = (node) => this._externalWindow.document.head.append(node)
+    ) => {
       const clone = this._externalWindow.document.importNode(styleNode, true);
-      this._externalWindow.document.head.append(clone);
+      this._styleRegistry.set(styleNode, clone);
+      importer(clone);
 
       for (const cssRule of styleNode.sheet.cssRules) {
         clone.sheet.insertRule(cssRule.cssText);
@@ -51,13 +56,17 @@ export default class ExternalWindow extends React.Component {
       importStyleNode(styleSheet.ownerNode);
     }
 
-    this._observer = new MutationObserver((mutationList, _observer) => {
-      const allAddedNodes = mutationList.flatMap((m) =>
-        Array.from(m.addedNodes)
-      );
-      for (const addedNode of allAddedNodes) {
-        if (addedNode instanceof HTMLStyleElement) {
-          importStyleNode(addedNode);
+    this._observer = new MutationObserver((_mutationList, _observer) => {
+      let latest = undefined;
+      for (const styleSheet of document.styleSheets) {
+        if (this._styleRegistry.has(styleSheet.ownerNode)) {
+          latest = this._styleRegistry.get(styleSheet.ownerNode);
+        } else {
+          if (latest) {
+            importStyleNode(styleSheet.ownerNode, (node) => latest.after(node));
+          } else {
+            importStyleNode(styleSheet.ownerNode);
+          }
         }
       }
     });
