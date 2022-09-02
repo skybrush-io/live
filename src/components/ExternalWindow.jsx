@@ -26,6 +26,7 @@ export default class ExternalWindow extends React.Component {
 
     this._container = document.createElement('div');
     this._externalWindow = null;
+    this._mutationObserver = null;
     this._styleRegistry = new Map();
   }
 
@@ -39,38 +40,7 @@ export default class ExternalWindow extends React.Component {
 
     this._externalWindow.document.title = this.props.title;
 
-    const importStyleNode = (
-      styleNode,
-      importer = (node) => this._externalWindow.document.head.append(node)
-    ) => {
-      const clone = this._externalWindow.document.importNode(styleNode, true);
-      this._styleRegistry.set(styleNode, clone);
-      importer(clone);
-
-      for (const cssRule of styleNode.sheet.cssRules) {
-        clone.sheet.insertRule(cssRule.cssText);
-      }
-    };
-
-    for (const styleSheet of document.styleSheets) {
-      importStyleNode(styleSheet.ownerNode);
-    }
-
-    this._observer = new MutationObserver((_mutationList, _observer) => {
-      let latest = undefined;
-      for (const styleSheet of document.styleSheets) {
-        if (this._styleRegistry.has(styleSheet.ownerNode)) {
-          latest = this._styleRegistry.get(styleSheet.ownerNode);
-        } else {
-          if (latest) {
-            importStyleNode(styleSheet.ownerNode, (node) => latest.after(node));
-          } else {
-            importStyleNode(styleSheet.ownerNode);
-          }
-        }
-      }
-    });
-    this._observer.observe(document.head, { childList: true });
+    this._copyAndFollowStyles();
 
     this._externalWindow.document.body.append(this._container);
 
@@ -84,10 +54,70 @@ export default class ExternalWindow extends React.Component {
       this._externalWindow.close();
     }
 
-    this._observer.disconnect();
+    this._mutationObserver.disconnect();
   }
 
   render() {
     return ReactDOM.createPortal(this.props.children, this._container);
+  }
+
+  _copyAndFollowStyles() {
+    // Import a style node with its rules to the external window's head.
+    const importStyleNode = (
+      styleNode,
+      importer = (node) => this._externalWindow.document.head.append(node)
+    ) => {
+      const clone = this._externalWindow.document.importNode(styleNode, true);
+      importer(clone);
+
+      for (const cssRule of styleNode.sheet.cssRules) {
+        clone.sheet.insertRule(cssRule.cssText);
+      }
+
+      return clone;
+    };
+
+    // Find the closest element that has a known counterpart in the external
+    // window and create an importer that will import items before that one.
+    //
+    // If next is null (the mutation happened at the end of the child list or
+    // no known element is found), fall back to the appending to the head.
+    const makeImporterBefore = (next) => {
+      if (next === null) {
+        return undefined;
+      }
+
+      return this._styleRegistry.has(next)
+        ? (node) => this._styleRegistry.get(next).before(node)
+        : makeImporterBefore(next.nextElementSibling);
+    };
+
+    for (const styleSheet of document.styleSheets) {
+      this._styleRegistry.set(
+        styleSheet.ownerNode,
+        importStyleNode(styleSheet.ownerNode)
+      );
+    }
+
+    // Subscribe to changes in the main window's head and keep the external
+    // window's style elements in sync by copying the modifications.
+    this._mutationObserver = new MutationObserver((mutationList, _observer) => {
+      for (const mutation of mutationList) {
+        for (const removed of mutation.removedNodes) {
+          if (this._styleRegistry.has(removed)) {
+            this._styleRegistry.get(removed).remove();
+            this._styleRegistry.delete(removed);
+          }
+        }
+
+        const importer = makeImporterBefore(mutation.nextSibling);
+        for (const added of mutation.addedNodes) {
+          if (added instanceof HTMLStyleElement) {
+            this._styleRegistry.set(added, importStyleNode(added, importer));
+          }
+        }
+      }
+    });
+    this._mutationObserver.observe(document.head, { childList: true });
   }
 }
