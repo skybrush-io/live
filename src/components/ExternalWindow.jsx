@@ -47,6 +47,9 @@ export default class ExternalWindow extends React.Component {
     // TODO: Using the 'unload' event is not recommended:
     // https://developer.mozilla.org/en-US/docs/Web/API/Window/unload_event
     this._externalWindow.addEventListener('unload', this.props.onClose);
+    // Force the execution of `componentWillUnmount` even when refreshing or
+    // closing a tab or window in order to properly close external windows.
+    window.addEventListener('unload', this.componentWillUnmount.bind(this));
   }
 
   componentWillUnmount() {
