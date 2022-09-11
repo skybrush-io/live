@@ -1,20 +1,28 @@
 import PropTypes from 'prop-types';
-import React, { useState } from 'react';
+import React from 'react';
+import { connect } from 'react-redux';
 
 import Button from '@material-ui/core/Button';
 import InsertLink from '@material-ui/icons/InsertLink';
 import LinkOff from '@material-ui/icons/LinkOff';
 
-import ExternalWindow from '~/components/ExternalWindow';
+import ExternalWindow from './ExternalWindow';
 
-const DetachablePanel = ({ children, title }) => {
-  const [detached, setDetached] = useState(false);
+import { isDetached } from './selectors';
+import { attachPanel, detachPanel } from './slice';
 
+const DetachablePanelPresentation = ({
+  attach,
+  children,
+  detach,
+  detached,
+  title,
+}) => {
   const toggleButton = (
     <Button
       variant='outlined'
       startIcon={detached ? <InsertLink /> : <LinkOff />}
-      onClick={() => setDetached(!detached)}
+      onClick={detached ? attach : detach}
     >
       {detached ? 'Attach' : 'Detach'}
     </Button>
@@ -52,7 +60,7 @@ const DetachablePanel = ({ children, title }) => {
           {toggleButton}
         </div>
       </div>
-      <ExternalWindow title={title} onClose={() => setDetached(false)}>
+      <ExternalWindow title={title} onClose={attach}>
         <div>{children}</div>
         {toggleDiv}
       </ExternalWindow>
@@ -65,12 +73,33 @@ const DetachablePanel = ({ children, title }) => {
   );
 };
 
-DetachablePanel.propTypes = {
+DetachablePanelPresentation.propTypes = {
+  attach: PropTypes.func.isRequired,
   children: PropTypes.node.isRequired,
+  detach: PropTypes.func.isRequired,
+  detached: PropTypes.bool.isRequired,
   title: PropTypes.string,
 };
 
-DetachablePanel.defaultProps = {};
+DetachablePanelPresentation.defaultProps = {};
+
+const DetachablePanel = connect(
+  // mapStateToProps
+  (state, ownProps) => ({
+    detached: isDetached(state, ownProps.title),
+  }),
+  // mapDispatchToProps
+  (dispatch, { title }) => ({
+    detach() {
+      dispatch(detachPanel({ title }));
+    },
+    attach() {
+      dispatch(attachPanel(title));
+    },
+  })
+)(DetachablePanelPresentation);
+
+export default DetachablePanel;
 
 export const makeDetachable = (Component, title) =>
   class extends React.Component {
@@ -82,5 +111,3 @@ export const makeDetachable = (Component, title) =>
       );
     }
   };
-
-export default DetachablePanel;

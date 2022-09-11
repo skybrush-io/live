@@ -14,7 +14,7 @@ import { WorkbenchBuilder } from 'react-flexible-workbench';
 import loadable from '@loadable/component';
 import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
 
-import { makeDetachable } from '~/components/DetachablePanel';
+import { makeDetachable } from '~/features/detachable-panels/DetachablePanel';
 import { saveWorkbenchState } from './features/workbench/slice';
 import { injectFlockFromContext } from './flock';
 import store from './store';
