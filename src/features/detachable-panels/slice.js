@@ -13,10 +13,8 @@ const { actions, reducer } = createSlice({
   },
 
   reducers: {
-    attachPanel(state, { payload: panelTitle }) {
-      const index = state.detachedPanels.findIndex(
-        (p) => p.title === panelTitle
-      );
+    attachPanel(state, { payload: panelName }) {
+      const index = state.detachedPanels.findIndex((p) => p.name === panelName);
       if (index !== -1) {
         state.detachedPanels.splice(index, 1);
       }

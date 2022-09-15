@@ -1,6 +1,9 @@
-export function isDetached(state, panelTitle) {
-  // return Boolean(state.detachedPanels.some((p) => p.title === panelTitle));
+export function detachedPanels(state) {
+  return state.detachablePanels.detachedPanels;
+}
+
+export function isDetached(state, panelName) {
   return state.detachablePanels.detachedPanels.some(
-    (p) => p.title === panelTitle
+    (p) => p.name === panelName
   );
 }

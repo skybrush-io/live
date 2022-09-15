@@ -53,41 +53,106 @@ const onlyWithFeature = (featureName, component) =>
  * The React components will be created without any props. If you need the
  * components to have props, use a wrapper HOC.
  */
-const componentRegistry = {
-  'beacon-list': onlyWithFeature('beacons', views.BeaconList),
-  'connection-list': views.ConnectionList,
-  'dataset-list': views.DatasetList,
-  'dock-list': onlyWithFeature('docks', views.DockList),
-  'feature-list': onlyWithFeature(
-    'features',
-    makeDetachable(views.FeatureList, 'Feature')
-  ),
-  'ground-control-view': injectFlockFromContext(views.GroundControlView),
-  'layer-list': makeDetachable(views.LayerList, 'Layer'),
-  'light-control': makeDetachable(
-    onlyWithFeature('showControl', views.LightControlPanel),
-    'Light control'
-  ),
-  'lcd-clock-panel': makeDetachable(views.LCDClockPanel, 'Clock'),
-  'log-panel': makeDetachable(views.LogPanel, 'Log'),
-  map: makeDetachable(MapView, 'Map'),
-  messages: views.MessagesPanelView, // deprecated, kept there for compatibility
-  placeholder: Nothing,
-  'saved-location-list': makeDetachable(views.SavedLocationList, 'Location'),
-  'show-control': onlyWithFeature(
-    'showControl',
-    makeDetachable(views.ShowControlPanel, 'Show control')
-  ),
-  'three-d-view': onlyWithFeature('threeDView', views.ThreeDTopLevelView),
-  'uav-list': makeDetachable(injectFlockFromContext(views.UAVList), 'UAVs'),
+
+export const componentRegistry = {
+  'beacon-list': {
+    component: views.BeaconList,
+    label: 'Beacons',
+    detachable: true,
+    feature: 'beacons',
+  },
+  'connection-list': {
+    component: views.ConnectionList,
+    label: 'Connections',
+  },
+  'dataset-list': {
+    component: views.DatasetList,
+    label: 'Datasets',
+  },
+  'dock-list': {
+    component: views.DockList,
+    label: 'Docks',
+    feature: 'docks',
+  },
+  'feature-list': {
+    component: views.FeatureList,
+    label: 'Features',
+    detachable: true,
+    feature: 'features',
+  },
+  'ground-control-view': {
+    component: injectFlockFromContext(views.GroundControlView),
+    label: 'Ground control',
+  },
+  'layer-list': {
+    component: views.LayerList,
+    label: 'Layers',
+    detachable: true,
+  },
+  'light-control': {
+    component: views.LightControlPanel,
+    label: 'Light control',
+    detachable: true,
+    feature: 'showControl',
+  },
+  'lcd-clock-panel': {
+    component: views.LCDClockPanel,
+    label: 'Clocks',
+    detachable: true,
+  },
+  'log-panel': {
+    component: views.LogPanel,
+    label: 'Event log',
+    detachable: true,
+  },
+  map: {
+    component: MapView,
+    label: 'Map',
+  },
+  messages: {
+    component: views.MessagesPanelView, // deprecated, kept there for compatibility
+    label: 'Messages',
+  },
+  placeholder: {
+    component: Nothing,
+    label: 'Placeholder',
+  },
+  'saved-location-list': {
+    component: views.SavedLocationList,
+    label: 'Locations',
+    detachable: true,
+  },
+  'show-control': {
+    component: views.ShowControlPanel,
+    label: 'Show control',
+    detachable: true,
+    feature: 'showControl',
+  },
+  'three-d-view': {
+    component: views.ThreeDTopLevelView,
+    label: '3D View',
+    feature: 'threeDView',
+  },
+  'uav-list': {
+    component: injectFlockFromContext(views.UAVList),
+    label: 'UAVs',
+    detachable: true,
+  },
 };
 
 function constructDefaultWorkbench(store) {
   const builder = new WorkbenchBuilder();
 
   // Register all our supported components in the builder
-  for (const key of Object.keys(componentRegistry)) {
-    builder.registerComponent(key, componentRegistry[key]);
+  for (const [name, entry] of Object.entries(componentRegistry)) {
+    const featureModifier = (c) =>
+      entry.feature ? onlyWithFeature(entry.feature, c) : c;
+    const detachModifier = (c) =>
+      entry.detachable ? makeDetachable(name, entry.label, c) : c;
+    builder.registerComponent(
+      name,
+      featureModifier(detachModifier(entry.component))
+    );
   }
 
   // prettier-ignore
