@@ -410,3 +410,13 @@ export const getMissionItemsWithCoordinatesInOrder = createSelector(
     return result;
   }
 );
+
+/**
+ * Selector that returns the payload of the mission item upload job.
+ */
+export const getMissionItemUploadJobPayload = (state) => {
+  return {
+    version: 1,
+    items: getMissionItemsInOrder(state),
+  };
+};

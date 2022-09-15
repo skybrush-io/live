@@ -20,8 +20,10 @@ import {
   getCurrentGPSPositionByUavId,
   getCurrentLocalPositionByUavId,
   getMissingUAVIdsInMapping,
+  getSingleSelectedUAVId,
   getUnmappedUAVIds,
 } from '~/features/uavs/selectors';
+import { openUploadDialogForJob } from '~/features/upload/slice';
 import messageHub from '~/message-hub';
 import {
   missionItemIdToGlobalId,
@@ -33,9 +35,11 @@ import {
   MissionItemType,
 } from '~/model/missions';
 import { readTextFromFile, writeTextToFile } from '~/utils/filesystem';
+import { translateLonLatWithMapViewDelta } from '~/utils/geography';
 import { calculateDistanceMatrix, euclideanDistance2D } from '~/utils/math';
 import { chooseUniqueId } from '~/utils/naming';
 
+import { JOB_TYPE } from './constants';
 import {
   createCanMoveSelectedMissionItemsByDeltaSelector,
   getEmptyMappingSlotIndices,
@@ -44,6 +48,7 @@ import {
   getItemIndexRangeForSelectedMissionItems,
   getMissionItemById,
   getMissionItemsById,
+  getMissionItemUploadJobPayload,
   getMissionMapping,
   getMissionMappingFileContents,
   getSelectedMissionItemIds,
@@ -57,7 +62,6 @@ import {
   replaceMapping,
   updateMissionItemParameters,
 } from './slice';
-import { translateLonLatWithMapViewDelta } from '~/utils/geography';
 
 /**
  * Thunk that fills the empty slots in the current mapping from the spare drones
@@ -424,3 +428,15 @@ export const moveMissionItemCoordinateByMapCoordinateDelta =
       })
     );
   };
+
+/**
+ * Thunk that uploads the current list of mission items to the selected UAV.
+ */
+export const uploadMissionItemsToSelectedUAV = () => (dispatch, getState) => {
+  const state = getState();
+  const selectedUAVId = getSingleSelectedUAVId(state);
+  if (selectedUAVId !== undefined) {
+    const payload = getMissionItemUploadJobPayload(state);
+    dispatch(openUploadDialogForJob({ job: { type: JOB_TYPE, payload } }));
+  }
+};

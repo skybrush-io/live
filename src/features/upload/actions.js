@@ -1,7 +1,10 @@
 import delay from 'delay';
 import isNil from 'lodash-es/isNil';
 import { getUAVIdsParticipatingInMissionSortedByMissionIndex } from '~/features/mission/selectors';
-import { getUAVIdList } from '~/features/uavs/selectors';
+import {
+  getSingleSelectedUAVIdAsArray,
+  getUAVIdList,
+} from '~/features/uavs/selectors';
 import { getScopeForJobType, JobScope } from './jobs';
 
 import {
@@ -137,7 +140,14 @@ export function startUploadJobFromUploadDialog() {
         selector = getUAVIdsParticipatingInMissionSortedByMissionIndex;
         break;
 
+      case JobScope.SINGLE:
+        selector = getSingleSelectedUAVIdAsArray;
+        break;
+
       case JobScope.ALL:
+        selector = getUAVIdList;
+        break;
+
       default:
         selector = getUAVIdList;
         break;

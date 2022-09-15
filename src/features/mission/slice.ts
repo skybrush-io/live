@@ -460,8 +460,17 @@ const { actions, reducer } = createSlice({
      * Updates the properties of a mission item in a waypoint-based mission.
      */
     updateMissionItemParameters: {
-      prepare: (itemId, parameters) => ({ payload: { itemId, parameters } }),
-      reducer(state, action) {
+      prepare: (
+        itemId: MissionItem['id'],
+        parameters: MissionItem['parameters']
+      ) => ({ payload: { itemId, parameters } }),
+      reducer(
+        state,
+        action: PayloadAction<{
+          itemId: MissionItem['id'];
+          parameters: MissionItem['parameters'];
+        }>
+      ) {
         const { itemId, parameters } = action.payload;
         const item = state.items.byId[itemId];
         if (item) {
