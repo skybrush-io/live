@@ -4,7 +4,7 @@ import ReactDOM from 'react-dom';
 import { connect } from 'react-redux';
 
 import Button from '@material-ui/core/Button';
-import SaveAlt from '@material-ui/icons/SaveAlt';
+import RestoreWindow from '~/icons/RestoreWindow';
 
 import { isDetached } from './selectors';
 import { attachPanel, detachPanel } from './slice';
@@ -22,7 +22,7 @@ const getOrCreatePortalContainer = (tab) => {
   }
 };
 
-const DetachButtonPortal = ({ glContainer, onClick }) => {
+const DetachButtonPortal = ({ glContainer, label, onClick }) => {
   const [container, setContainer] = useState(
     getOrCreatePortalContainer(glContainer.tab)
   );
@@ -50,12 +50,18 @@ const DetachButtonPortal = ({ glContainer, onClick }) => {
           GoldenLayout has a built-in popout feature, which is not suitable for
           our purposes, but we can reuse the icon that would be on the stack.
         */}
-        <li className='lm_popout' onClick={onClick} />
+        <li className='lm_popout' title={`Detach ${label}`} onClick={onClick} />
       </ul>
     </div>
   );
 
   return ReactDOM.createPortal(detachButton, container);
+};
+
+DetachButtonPortal.propTypes = {
+  glContainer: PropTypes.object.isRequired,
+  label: PropTypes.string.isRequired,
+  onClick: PropTypes.func,
 };
 
 const DetachablePanelPresentation = ({
@@ -79,14 +85,22 @@ const DetachablePanelPresentation = ({
       <div>
         {label} panel has been detached.
         <br style={{ margin: '1em' }} />
-        <Button variant='outlined' startIcon={<SaveAlt />} onClick={attach}>
+        <Button
+          variant='outlined'
+          startIcon={<RestoreWindow />}
+          onClick={attach}
+        >
           Attach
         </Button>
       </div>
     </div>
   ) : (
     <>
-      <DetachButtonPortal glContainer={glContainer} onClick={detach} />
+      <DetachButtonPortal
+        glContainer={glContainer}
+        label={label}
+        onClick={detach}
+      />
       {children}
     </>
   );

@@ -1,0 +1,12 @@
+diff --git a/node_modules/golden-layout/dist/goldenlayout.js b/node_modules/golden-layout/dist/goldenlayout.js
+index 736f9ec..4fa1228 100644
+--- a/node_modules/golden-layout/dist/goldenlayout.js
++++ b/node_modules/golden-layout/dist/goldenlayout.js
+@@ -2872,6 +2872,7 @@ lm.utils.copy( lm.controls.Tab.prototype, {
+ 	setTitle: function( title ) {
+ 		this.element.attr( 'title', lm.utils.stripTags( title ) );
+ 		this.titleElement.html( title );
++		this.closeElement[0].setAttribute( 'title', `Close ${title}` );
+ 	},
+
+ 	/**
