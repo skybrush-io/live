@@ -26,7 +26,8 @@ const { actions, reducer } = createSlice({
           color: '#ffcc00',
           labelStyle: LabelStyle.THIN_OUTLINE,
           visible: true,
-          filled: true
+          filled: true,
+          showPoints: false,
         },
         examplePoint: {
           id: 'examplePoint',
@@ -55,7 +56,8 @@ const { actions, reducer } = createSlice({
             [ lon, lat ],
             [ lon, lat ],
             ...
-          ]
+          ],
+          showPoints: false,
         },
         exampleCircle: {
           id: 'exampleCircle',
@@ -112,6 +114,7 @@ const { actions, reducer } = createSlice({
       const newFeature = {
         visible: true,
         filled: true,
+        showPoints: false,
         ...JSON.parse(JSON.stringify(feature)),
         id,
       };
@@ -147,9 +150,14 @@ const { actions, reducer } = createSlice({
       }
     },
 
-    updateFeatureFill(state, action) {
+    updateFeatureFillVisible(state, action) {
       const { id, filled } = action.payload;
       state.byId[id].filled = Boolean(filled);
+    },
+
+    updateFeaturePointsVisible(state, action) {
+      const { id, visible } = action.payload;
+      state.byId[id].showPoints = Boolean(visible);
     },
 
     updateFeatureVisibility(state, action) {
@@ -165,7 +173,8 @@ export const {
   renameFeature,
   setFeatureColor,
   updateFeatureCoordinatesByIds,
-  updateFeatureFill,
+  updateFeatureFillVisible,
+  updateFeaturePointsVisible,
   updateFeatureVisibility,
 } = actions;
 

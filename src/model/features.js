@@ -66,3 +66,15 @@ export function getNameOfFeatureType(type) {
 export function getIconOfFeatureType(type) {
   return _featureTypeIcons[type] || _featureTypeIcons[FeatureType.POINTS];
 }
+
+/**
+ * Returns whether the feature has individual points that are worth showing
+ * to the user separately.
+ */
+export function featureTypeHasPoints(type) {
+  return (
+    type === FeatureType.LINE_STRING ||
+    type === FeatureType.POLYGON ||
+    type === FeatureType.RECTANGLE
+  );
+}
