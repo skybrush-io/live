@@ -76,7 +76,19 @@ const { actions, reducer } = createSlice({
 
     // collection of items in the current mission if it is a waypoint-based mission
     items: {
-      byId: {},
+      byId: {
+        /* each mission item looks like this:
+         * {
+         *   "id": "missionItemId",
+         *   "type": ...type of the mission item...
+         *   "parameters": {
+         *     ...further parameters of the mission item, dependent on type...
+         *   }
+         * }
+         *
+         * Mission item types are in the MissionItemType enum in model/missions.js
+         */
+      },
       order: [],
     },
   },

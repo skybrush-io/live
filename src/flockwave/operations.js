@@ -174,6 +174,33 @@ export async function uploadDroneShow(hub, { uavId, data }, options) {
 }
 
 /**
+ * Asks the server to upload a mission in some mission format to a given UAV.
+ */
+export async function uploadMission(hub, { uavId, data, format }, options) {
+  validateObjectId(uavId);
+
+  // HACK HACK HACK we are (ab)using the command execution mechanism. This is
+  // probably okay as a temporary solution, but we might need a better solution
+  // in the long term.
+  try {
+    await hub.sendCommandRequest(
+      {
+        uavId,
+        command: '__mission_upload',
+        args: [data, format],
+      },
+      {
+        timeout: 300 /* five minutes, should be longer than the timeout on the server */,
+        ...options,
+      }
+    );
+  } catch (err) {
+    console.error(err);
+    throw new Error(`Failed to upload mission to UAV ${uavId}`);
+  }
+}
+
+/**
  * Query handler object that can be used to perform common operations on a
  * Flockwave server using a given message hub.
  */
@@ -189,6 +216,7 @@ export class OperationExecutor {
     setShowLightConfiguration,
     startRTKSurvey,
     uploadDroneShow,
+    uploadMission,
   };
 
   /**
