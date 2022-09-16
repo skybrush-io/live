@@ -32,7 +32,7 @@ import * as TurfHelpers from '@turf/helpers';
 
 import { type Feature, FeatureType } from '~/model/features';
 
-import { formatNumberAndUnit } from './formatting';
+import { formatDistance, formatNumberAndUnit } from './formatting';
 import {
   closePolygon,
   convexHull,
@@ -65,6 +65,23 @@ import { isRunningOnMac } from './platform';
 // running under Electron on macOS, so we use the @ sign there as a replacement.
 // Windows and Linux seem to be okay with the angle sign;
 const ANGLE_SIGN = isRunningOnMac ? '@' : '∠';
+
+/**
+ * Enum containing the possible altitude reference types that we support.
+ */
+export enum AltitudeReference {
+  HOME = 'home',
+  MSL = 'msl',
+}
+
+/**
+ * Type specification for an altitude object containing a numeric offset from an
+ * altitude reference.
+ */
+export type Altitude = {
+  value: number;
+  reference: AltitudeReference;
+};
 
 /**
  * Returns the (initial) bearing when going from one point to another on a
@@ -436,6 +453,46 @@ export const translateBy = curry(
       coordinate[1] + dy,
     ]);
   }
+);
+
+const createSafeWrapper =
+  <S, T>(func: (value: S) => T) =>
+  (value: S, defaultValue: T): T => {
+    if (isNil(value)) {
+      return defaultValue;
+    }
+
+    try {
+      return func(value);
+    } catch {
+      return defaultValue;
+    }
+  };
+
+/**
+ * Formats the given altitude-with-reference object in a way that is suitable
+ * for presentation on the UI.
+ */
+export const formatAltitudeWithReference = (altitude: Altitude): string => {
+  const { reference, value } = altitude;
+  const formattedValue = formatDistance(value);
+
+  if (reference === AltitudeReference.MSL) {
+    return formattedValue + ' AMSL';
+  } else if (reference === AltitudeReference.HOME) {
+    return formattedValue + ' above home';
+  } else {
+    return `${formattedValue} above unknown reference: ${String(reference)}`;
+  }
+};
+
+/**
+ * Formats the given altitude-with-reference object in a way that is suitable
+ * for presentation on the UI, ensuring that falsy values are replaced with a
+ * default value.
+ */
+export const safelyFormatAltitudeWithReference = createSafeWrapper(
+  formatAltitudeWithReference
 );
 
 /**
