@@ -11,11 +11,12 @@ import { makeStyles } from '@material-ui/core/styles';
 
 import ArrowDown from '@material-ui/icons/ArrowDropDown';
 import ArrowUp from '@material-ui/icons/ArrowDropUp';
+import ChangeAltitudeIcon from '@material-ui/icons/Height';
 import DeleteIcon from '@material-ui/icons/Delete';
 import TakeoffIcon from '@material-ui/icons/FlightTakeoff';
 import LandIcon from '@material-ui/icons/FlightLand';
 import HomeIcon from '@material-ui/icons/Home';
-import PlayArrow from '@material-ui/icons/PlayArrow';
+import UploadIcon from '@material-ui/icons/PlayArrow';
 
 import ToolbarDivider from '~/components/ToolbarDivider';
 import {
@@ -48,9 +49,10 @@ const MissionOverviewPanelToolbar = ({
   canMoveDown,
   canMoveUp,
   canUpload,
-  onAddLand,
-  onAddReturnToHome,
-  onAddTakeoff,
+  onAddChangeAltitudeCommand,
+  onAddLandCommand,
+  onAddReturnToHomeCommand,
+  onAddTakeoffCommand,
   onMoveDown,
   onMoveUp,
   onRemoveSelectedMissionItems,
@@ -66,14 +68,17 @@ const MissionOverviewPanelToolbar = ({
         variant='dense'
         style={{ height: 36, minHeight: 36 }}
       >
-        <IconButton size='small' onClick={onAddTakeoff}>
+        <IconButton size='small' onClick={onAddTakeoffCommand}>
           <TakeoffIcon fontSize='small' />
         </IconButton>
-        <IconButton size='small' onClick={onAddReturnToHome}>
+        <IconButton size='small' onClick={onAddReturnToHomeCommand}>
           <HomeIcon fontSize='small' />
         </IconButton>
-        <IconButton size='small' onClick={onAddLand}>
+        <IconButton size='small' onClick={onAddLandCommand}>
           <LandIcon fontSize='small' />
+        </IconButton>
+        <IconButton size='small' onClick={onAddChangeAltitudeCommand}>
+          <ChangeAltitudeIcon fontSize='small' />
         </IconButton>
         <Box component='div' flex={1} />
         <IconButton size='small' disabled={!canMoveUp} onClick={onMoveUp}>
@@ -95,7 +100,7 @@ const MissionOverviewPanelToolbar = ({
           color='primary'
           disabled={!canUpload}
           size='small'
-          endIcon={<PlayArrow />}
+          endIcon={<UploadIcon />}
           onClick={onUploadMissionItems}
         >
           Upload
@@ -109,9 +114,10 @@ MissionOverviewPanelToolbar.propTypes = {
   canMoveDown: PropTypes.bool,
   canMoveUp: PropTypes.bool,
   canUpload: PropTypes.bool,
-  onAddTakeoff: PropTypes.func,
-  onAddLand: PropTypes.func,
-  onAddReturnToHome: PropTypes.func,
+  onAddChangeAltitudeCommand: PropTypes.bool,
+  onAddLandCommand: PropTypes.func,
+  onAddReturnToHomeCommand: PropTypes.func,
+  onAddTakeoffCommand: PropTypes.func,
   onMoveDown: PropTypes.func,
   onMoveUp: PropTypes.func,
   onRemoveSelectedMissionItems: PropTypes.func,
@@ -129,9 +135,12 @@ export default connect(
   }),
   // mapDispatchToProps
   {
-    onAddLand: () => addNewMissionItem(MissionItemType.LAND),
-    onAddTakeoff: () => addNewMissionItem(MissionItemType.TAKEOFF),
-    onAddReturnToHome: () => addNewMissionItem(MissionItemType.RETURN_TO_HOME),
+    onAddChangeAltitudeCommand: () =>
+      addNewMissionItem(MissionItemType.CHANGE_ALTITUDE),
+    onAddLandCommand: () => addNewMissionItem(MissionItemType.LAND),
+    onAddTakeoffCommand: () => addNewMissionItem(MissionItemType.TAKEOFF),
+    onAddReturnToHomeCommand: () =>
+      addNewMissionItem(MissionItemType.RETURN_TO_HOME),
     onMoveDown: () => moveSelectedMissionItemsByDelta(1),
     onMoveUp: () => moveSelectedMissionItemsByDelta(-1),
     onRemoveSelectedMissionItems: removeSelectedMissionItems,
