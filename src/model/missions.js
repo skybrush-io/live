@@ -1,3 +1,7 @@
+import { ALTITUDE_REFERENCES } from '~/utils/geography';
+
+export { AltitudeReference, ALTITUDE_REFERENCES } from '~/utils/geography';
+
 /**
  * Enum representing the types of missions that we support.
  */
@@ -21,7 +25,30 @@ export const MissionItemType = {
   LAND: 'land',
   RETURN_TO_HOME: 'returnToHome',
   GO_TO: 'goTo',
+  CHANGE_ALTITUDE: 'changeAltitude',
 };
+
+/**
+ * Returns whether the given parameter representing an altitude in a generic
+ * mission item is valid.
+ */
+function isAltitudeParameterValid(alt) {
+  if (typeof alt !== 'object') {
+    return false;
+  }
+
+  const { value, reference } = alt;
+  if (
+    typeof value !== 'number' ||
+    !Number.isFinite(value) ||
+    typeof reference !== 'string' ||
+    !ALTITUDE_REFERENCES.includes(reference)
+  ) {
+    return false;
+  }
+
+  return true;
+}
 
 /**
  * Returns whether the given mission item is valid.
@@ -40,21 +67,36 @@ export function isMissionItemValid(item) {
     return false;
   }
 
+  /* eslint-disable no-lone-blocks */
+
   switch (type) {
     case MissionItemType.UNKNOWN:
       return false;
 
     case MissionItemType.GO_TO:
       /* "Go to" items need a latitude and a longitude at least */
-      // eslint-disable-next-line no-case-declarations
-      const { lon, lat } = parameters;
-      if (
-        typeof lon !== 'number' ||
-        typeof lat !== 'number' ||
-        !Number.isFinite(lon) ||
-        !Number.isFinite(lat)
-      ) {
-        return false;
+      {
+        const { lon, lat, alt } = parameters;
+        if (
+          typeof lon !== 'number' ||
+          typeof lat !== 'number' ||
+          !Number.isFinite(lon) ||
+          !Number.isFinite(lat) ||
+          (alt !== undefined && !isAltitudeParameterValid(alt))
+        ) {
+          return false;
+        }
+      }
+
+      break;
+
+    case MissionItemType.CHANGE_ALTITUDE:
+      /* "Change altitude" items need an altitude */
+      {
+        const { alt } = parameters;
+        if (!isAltitudeParameterValid(alt)) {
+          return false;
+        }
       }
 
       break;
@@ -71,6 +113,8 @@ export function isMissionItemValid(item) {
     default:
       break;
   }
+
+  /* eslint-enable no-lone-blocks */
 
   return true;
 }
@@ -89,6 +133,29 @@ export function getCoordinateFromMissionItem(item) {
   if (item.type === MissionItemType.GO_TO) {
     const { lon, lat } = item.parameters;
     return { lon, lat };
+  }
+
+  return undefined;
+}
+
+/**
+ * Extracts an altitude object from a mission item, including the value and the
+ * reference. The returned object will have two keys: `value` for the value of
+ * the altitude and `reference` for the reference altitude (`home` for altitude
+ * above home, `msl` for altitude above mean sea level and maybe `terrain`
+ * for altitude above terrain in the future).
+ */
+export function getAltitudeFromMissionItem(item) {
+  if (!isMissionItemValid(item)) {
+    return undefined;
+  }
+
+  if (
+    item.type === MissionItemType.GO_TO ||
+    item.type === MissionItemType.TAKEOFF ||
+    item.type === MissionItemType.CHANGE_ALTITUDE
+  ) {
+    return item.parameters.alt;
   }
 
   return undefined;

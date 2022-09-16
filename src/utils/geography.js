@@ -17,7 +17,7 @@ import { getArea, getLength } from 'ol/sphere';
 
 import { FeatureType } from '~/model/features';
 
-import { formatNumberAndUnit } from './formatting';
+import { formatDistance, formatNumberAndUnit } from './formatting';
 import { toDegrees, toRadians } from './math';
 import { isRunningOnMac } from './platform';
 
@@ -25,6 +25,19 @@ import { isRunningOnMac } from './platform';
 // running under Electron on macOS, so we use the @ sign there as a replacement.
 // Windows and Linux seem to be okay with the angle sign;
 const ANGLE_SIGN = isRunningOnMac ? '@' : '∠';
+
+/**
+ * Enum containing the possible altitude reference types that we support.
+ */
+export const AltitudeReference = {
+  HOME: 'home',
+  MSL: 'msl',
+};
+
+export const ALTITUDE_REFERENCES = [
+  AltitudeReference.HOME,
+  AltitudeReference.MSL,
+];
 
 /**
  * Returns the (initial) bearing when going from one point to another on a
@@ -382,6 +395,39 @@ export const translateBy = curry((displacement, coordinates) => {
   ]);
 });
 
+const createSafeWrapper = (func) => (value, defaultValue) => {
+  if (isNil(value)) {
+    return defaultValue;
+  }
+
+  try {
+    return func(value);
+  } catch {
+    return defaultValue;
+  }
+};
+
+/**
+ * Formats the given altitude-with-reference object in a way that is suitable
+ * for presentation on the UI.
+ */
+export const formatAltitudeWithReference = (altitude) => {
+  const { reference, value } = altitude;
+  const formattedValue = formatDistance(value);
+
+  if (reference === AltitudeReference.MSL) {
+    return formattedValue + ' AMSL';
+  } else if (reference === AltitudeReference.HOME) {
+    return formattedValue + ' above home';
+  } else {
+    return `${formattedValue} above unknown reference: ${reference}`;
+  }
+};
+
+export const safelyFormatAltitudeWithReference = createSafeWrapper(
+  formatAltitudeWithReference
+);
+
 /**
  * Formats the given OpenLayers coordinate into the usual latitude-longitude
  * representation in a format suitable for the UI.
@@ -395,18 +441,14 @@ export const formatCoordinate = makeDecimalCoordinateFormatter({
   unit: '°',
 });
 
-export const safelyFormatCoordinate = (coordinate) => {
-  if (isNil(coordinate)) {
-    return '';
-  }
+export const safelyFormatCoordinate = createSafeWrapper(formatCoordinate);
 
-  try {
-    return formatCoordinate(coordinate);
-  } catch {
-    return '';
-  }
-};
-
+/**
+ * Formats the given altitude object into a format suitable for the UI.
+ *
+ * The altitude object must consist of two keys: `value` and `reference`. The
+ *
+ */
 /**
  * Parses the given string as geographical coordinates and converts it into
  * OpenLayers format (longitude first).

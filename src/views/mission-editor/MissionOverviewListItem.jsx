@@ -7,6 +7,7 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import ListItemText from '@material-ui/core/ListItemText';
 import { makeStyles } from '@material-ui/core/styles';
+import ChangeAltitudeIcon from '@material-ui/icons/Height';
 import TakeoffIcon from '@material-ui/icons/FlightTakeoff';
 import LandIcon from '@material-ui/icons/FlightLand';
 import HomeIcon from '@material-ui/icons/Home';
@@ -14,7 +15,10 @@ import HomeIcon from '@material-ui/icons/Home';
 import Colors from '~/components/colors';
 import { getMissionItemById } from '~/features/mission/selectors';
 import { isMissionItemValid, MissionItemType } from '~/model/missions';
-import { formatCoordinate } from '~/utils/geography';
+import {
+  safelyFormatAltitudeWithReference,
+  formatCoordinate,
+} from '~/utils/geography';
 
 const useStyles = makeStyles(
   (theme) => ({
@@ -73,7 +77,23 @@ const MissionOverviewListItem = ({
     case MissionItemType.TAKEOFF:
       avatar = <TakeoffIcon />;
       primaryText = 'Takeoff';
-      secondaryText = 'TODO: altitude';
+      secondaryText = isValid
+        ? safelyFormatAltitudeWithReference(
+            item.parameters?.alt,
+            'No altitude specified'
+          )
+        : 'Invalid mission item';
+      break;
+
+    case MissionItemType.CHANGE_ALTITUDE:
+      avatar = <ChangeAltitudeIcon />;
+      primaryText = 'Change altitude';
+      secondaryText = isValid
+        ? safelyFormatAltitudeWithReference(
+            item.parameters?.alt,
+            'No altitude specified'
+          )
+        : 'Invalid mission item';
       break;
 
     default:
