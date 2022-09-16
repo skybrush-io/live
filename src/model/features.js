@@ -78,3 +78,15 @@ export function featureTypeHasPoints(type) {
     type === FeatureType.RECTANGLE
   );
 }
+
+/**
+ * Returns whether the feature has an interior area that can be filled on the
+ * UI if needed.
+ */
+export function featureTypeHasInterior(type) {
+  return (
+    type === FeatureType.CIRCLE ||
+    type === FeatureType.POLYGON ||
+    type === FeatureType.RECTANGLE
+  );
+}

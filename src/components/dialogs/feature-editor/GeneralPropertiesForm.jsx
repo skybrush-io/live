@@ -16,7 +16,7 @@ import {
   updateFeatureVisibility,
 } from '~/features/map-features/slice';
 import { primaryColor } from '~/utils/styles';
-import { featureTypeHasPoints } from '~/model/features';
+import { featureTypeHasInterior, featureTypeHasPoints } from '~/model/features';
 
 const GeneralPropertiesForm = ({
   feature,
@@ -50,16 +50,18 @@ const GeneralPropertiesForm = ({
       onChangeComplete={onSetFeatureColor}
     />
     <div>
-      <FormControlLabel
-        control={
-          <Checkbox
-            checked={feature.filled}
-            color='primary'
-            onChange={onToggleFeatureFillVisible}
-          />
-        }
-        label='Fill interior'
-      />
+      {featureTypeHasInterior(feature.type) && (
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={feature.filled}
+              color='primary'
+              onChange={onToggleFeatureFillVisible}
+            />
+          }
+          label='Fill interior'
+        />
+      )}
       {featureTypeHasPoints(feature.type) && (
         <FormControlLabel
           control={
