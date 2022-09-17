@@ -3,6 +3,7 @@ const net = require('net');
 class TCPSocket {
   constructor(
     { address, port },
+    { connectionTimeoutLength },
     {
       onConnected,
       onConnecting,
@@ -45,7 +46,7 @@ class TCPSocket {
     onConnecting(url);
     this._timeout = setTimeout(() => {
       onConnectionTimeout(url);
-    }, 5000);
+    }, connectionTimeoutLength);
   }
 
   emit(_type, message) {

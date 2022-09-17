@@ -272,6 +272,7 @@ class TCPSocketConnection extends React.Component {
     this._socket = window.bridge.createTCPSocket(
       // TODO Transform the URL outside of the component?
       this.props.url.match('.*://(?<address>.*):(?<port>.*)').groups,
+      { connectionTimeoutLength: 5000 },
       {
         onConnected: this.props.onConnected,
         onConnecting: this.props.onConnecting,
