@@ -199,10 +199,37 @@ export async function uploadMission(hub, { uavId, data, format }, options) {
         ...options,
       }
     );
-  } catch (err) {
-    console.error(err);
+  } catch (error) {
+    console.error(error);
     throw new Error(`Failed to upload mission to UAV ${uavId}`);
   }
+}
+
+/**
+ * Sends a request to the server to plan a mission with the given parameters.
+ */
+export async function planMission(hub, { id, parameters }) {
+  const response = await hub.sendMessage({
+    type: 'X-MSN-PLAN',
+    id,
+    parameters,
+  });
+
+  const { type, result } = response.body;
+  if (type !== 'X-MSN-PLAN') {
+    throw new Error('Failed to plan a new mission on the server');
+  }
+
+  if (result?.format !== 'skybrush-live/mission-items') {
+    throw new Error(`Mission plan has an unknown format: ${result?.format}`);
+  }
+
+  const { payload } = result;
+  if (payload?.version !== 1 || !Array.isArray(payload.items)) {
+    throw new Error('Mission plan response must be in version 1 format');
+  }
+
+  return payload.items;
 }
 
 /**
@@ -212,6 +239,7 @@ export async function uploadMission(hub, { uavId, data, format }, options) {
 export class OperationExecutor {
   _operations = {
     configureExtension,
+    planMission,
     reloadExtension,
     resetUAV,
     sendDebugMessage,

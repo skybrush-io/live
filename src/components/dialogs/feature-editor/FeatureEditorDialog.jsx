@@ -17,6 +17,7 @@ import {
 import {
   getEditedFeatureId,
   getEditorDialogVisibility,
+  getFeatureById,
   getSelectedTab,
 } from '~/features/map-features/selectors';
 import { removeFeaturesByIds } from '~/features/map-features/slice';
@@ -113,7 +114,7 @@ const FeatureEditorDialog = connect(
     return {
       featureId,
       selectedTab: getSelectedTab(state),
-      feature: state.features.byId[featureId],
+      feature: getFeatureById(state, featureId),
       open: getEditorDialogVisibility(state),
     };
   },

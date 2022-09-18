@@ -26,6 +26,7 @@ import PendingUAVIdOverlay from './features/hotkeys/PendingUAVIdOverlay';
 import LicenseInfoDialog from './features/license-info/LicenseInfoDialog';
 import MapCachingDialog from './features/map-caching/MapCachingDialog';
 import CoordinateAveragingDialog from './features/measurement/CoordinateAveragingDialog';
+import MissionPlannerDialog from './features/mission/MissionPlannerDialog';
 import ParameterUploadSetupDialog from './features/parameters/ParameterUploadSetupDialog';
 import PromptDialog from './features/prompt/PromptDialog';
 import SavedLocationEditorDialog from './features/saved-locations/SavedLocationEditorDialog';
@@ -176,6 +177,7 @@ const App = ({ onFirstRender }) => (
       <HotkeyDialog />
       <LicenseInfoDialog />
       <MapCachingDialog />
+      <MissionPlannerDialog />
       <ParameterUploadSetupDialog />
       <PromptDialog />
       <RTKSetupDialog />

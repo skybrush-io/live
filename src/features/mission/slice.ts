@@ -114,6 +114,11 @@ export type MissionSliceState = ReadonlyDeep<{
 
   /** Collection of items in the current mission if it is a waypoint-based mission */
   items: Collection<MissionItem>;
+
+  /** State of the mission planner dialog */
+  plannerDialog: {
+    open: boolean;
+  };
 }>;
 
 const initialState: MissionSliceState = {
@@ -133,6 +138,9 @@ const initialState: MissionSliceState = {
   items: {
     byId: {},
     order: [],
+  },
+  plannerDialog: {
+    open: false,
   },
 };
 
@@ -216,6 +224,13 @@ const { actions, reducer } = createSlice({
         state.mapping[index] = null;
       }
     },
+
+    /**
+     * Closes the mission planner dialog.
+     */
+    closeMissionPlannerDialog: noPayload<MissionSliceState>((state) => {
+      state.plannerDialog.open = false;
+    }),
 
     /**
      * Finishes the current editing session of the mapping.
@@ -388,6 +403,29 @@ const { actions, reducer } = createSlice({
     },
 
     /**
+     * Sets the array of items in the mission, assuming that all items are
+     * already validated.
+     */
+    _setMissionItemsFromValidatedArray(
+      state,
+      action: PayloadAction<MissionItem[]>
+    ) {
+      const { byId, order }: Collection<MissionItem> = {
+        byId: {},
+        order: [],
+      };
+      let index = 0;
+      for (const item of action.payload) {
+        const id = `item${index}`;
+        order.push(id);
+        byId[id] = { ...item, id };
+        index++;
+      }
+
+      state.items = { order, byId };
+    },
+
+    /**
      * Sets the type of the mission, without affecting any other part of the
      * current mission configuration.
      */
@@ -397,6 +435,13 @@ const { actions, reducer } = createSlice({
           ? action.payload
           : MissionType.UNKNOWN;
     },
+
+    /**
+     * Shows the mission planner dialog.
+     */
+    showMissionPlannerDialog: noPayload<MissionSliceState>((state) => {
+      state.plannerDialog.open = true;
+    }),
 
     /**
      * Starts the current editing session of the mapping, and marks the
@@ -519,6 +564,7 @@ export const {
   clearGeofencePolygonId,
   clearMapping,
   clearMappingSlot,
+  closeMissionPlannerDialog,
   commitMappingEditorSessionAtCurrentSlot,
   finishMappingEditorSession,
   moveMissionItem,
@@ -530,6 +576,7 @@ export const {
   setGeofencePolygonId,
   setMappingLength,
   setMissionType,
+  showMissionPlannerDialog,
   startMappingEditorSession,
   startMappingEditorSessionAtSlot,
   togglePreferredChannel,
@@ -537,6 +584,7 @@ export const {
   updateLandingPositions,
   updateMissionItemParameters,
   updateTakeoffHeadings,
+  _setMissionItemsFromValidatedArray,
 } = actions;
 
 export default reducer;
