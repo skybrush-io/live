@@ -61,6 +61,7 @@ import {
   removeUAVsFromMapping,
   replaceMapping,
   updateMissionItemParameters,
+  _setMissionItemsFromValidatedArray,
 } from './slice';
 
 /**
@@ -428,6 +429,28 @@ export const moveMissionItemCoordinateByMapCoordinateDelta =
       })
     );
   };
+
+/**
+ * Thunk that receives an array of mission items and completely replaces the
+ * current list of mission items with the received ones, rejecting mission
+ * items whose format is invalid.
+ */
+export const setMissionItemsFromArray = (items) => (dispatch) => {
+  const validItems = [];
+  let index = 0;
+
+  for (const item of items) {
+    if (!item || !isMissionItemValid(item)) {
+      console.warn(`Rejecting invalid mission item at index ${index}`);
+    } else {
+      validItems.push(item);
+    }
+
+    index++;
+  }
+
+  dispatch(_setMissionItemsFromValidatedArray(validItems));
+};
 
 /**
  * Thunk that uploads the current list of mission items to the selected UAV.

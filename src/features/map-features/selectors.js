@@ -6,6 +6,13 @@ import { getNameOfFeatureType } from '~/model/features';
 import { chooseUniqueId, chooseUniqueName } from '~/utils/naming';
 
 /**
+ * Returns the object representing a feature given its ID, or undefined
+ * if there is no such feature.
+ */
+export const getFeatureById = (state, featureId) =>
+  state.features.byId[featureId];
+
+/**
  * Proposes an ID to use for a new feature that is to be added to the
  * state store.
  *

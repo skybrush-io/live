@@ -403,3 +403,9 @@ export const getMissionItemUploadJobPayload = (state) => {
     items: getMissionItemsInOrder(state),
   };
 };
+
+/**
+ * Selector that returns whether the mission planner dialog is open.
+ */
+export const isMissionPlannerDialogOpen = (state) =>
+  state.mission.plannerDialog.open;
