@@ -9,6 +9,13 @@ import { chooseUniqueId, chooseUniqueName } from '~/utils/naming';
 import { Tool } from '~/views/map/tools';
 
 /**
+ * Returns the object representing a feature given its ID, or undefined
+ * if there is no such feature.
+ */
+export const getFeatureById = (state, featureId) =>
+  state.features.byId[featureId];
+
+/**
  * Proposes an ID to use for a new feature that is to be added to the
  * state store.
  *

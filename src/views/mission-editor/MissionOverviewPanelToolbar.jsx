@@ -16,7 +16,6 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import TakeoffIcon from '@material-ui/icons/FlightTakeoff';
 import LandIcon from '@material-ui/icons/FlightLand';
 import HomeIcon from '@material-ui/icons/Home';
-import UploadIcon from '@material-ui/icons/PlayArrow';
 
 import ToolbarDivider from '~/components/ToolbarDivider';
 import {
@@ -30,8 +29,10 @@ import {
   canMoveSelectedMissionItemsUp,
   getSelectedMissionItemIds,
 } from '~/features/mission/selectors';
+import { showMissionPlannerDialog } from '~/features/mission/slice';
 import { getSingleSelectedUAVId } from '~/features/uavs/selectors';
 import { MissionItemType } from '~/model/missions';
+import { isConnected as isConnectedToServer } from '~/features/servers/selectors';
 
 const useStyles = makeStyles(
   (theme) => ({
@@ -48,6 +49,7 @@ const useStyles = makeStyles(
 const MissionOverviewPanelToolbar = ({
   canMoveDown,
   canMoveUp,
+  canPlan,
   canUpload,
   onAddChangeAltitudeCommand,
   onAddLandCommand,
@@ -55,6 +57,7 @@ const MissionOverviewPanelToolbar = ({
   onAddTakeoffCommand,
   onMoveDown,
   onMoveUp,
+  onShowMissionPlannerDialog,
   onRemoveSelectedMissionItems,
   onUploadMissionItems,
   selectedIds,
@@ -97,10 +100,16 @@ const MissionOverviewPanelToolbar = ({
         </IconButton>
         <ToolbarDivider orientation='vertical' />
         <Button
+          disabled={!canPlan}
+          size='small'
+          onClick={onShowMissionPlannerDialog}
+        >
+          Plan
+        </Button>
+        <Button
           color='primary'
           disabled={!canUpload}
           size='small'
-          endIcon={<UploadIcon />}
           onClick={onUploadMissionItems}
         >
           Upload
@@ -113,13 +122,15 @@ const MissionOverviewPanelToolbar = ({
 MissionOverviewPanelToolbar.propTypes = {
   canMoveDown: PropTypes.bool,
   canMoveUp: PropTypes.bool,
+  canPlan: PropTypes.bool,
   canUpload: PropTypes.bool,
-  onAddChangeAltitudeCommand: PropTypes.bool,
+  onAddChangeAltitudeCommand: PropTypes.func,
   onAddLandCommand: PropTypes.func,
   onAddReturnToHomeCommand: PropTypes.func,
   onAddTakeoffCommand: PropTypes.func,
   onMoveDown: PropTypes.func,
   onMoveUp: PropTypes.func,
+  onShowMissionPlannerDialog: PropTypes.func,
   onRemoveSelectedMissionItems: PropTypes.func,
   onUploadMissionItems: PropTypes.func,
   selectedIds: PropTypes.arrayOf(PropTypes.string),
@@ -130,7 +141,9 @@ export default connect(
   (state) => ({
     canMoveDown: canMoveSelectedMissionItemsDown(state),
     canMoveUp: canMoveSelectedMissionItemsUp(state),
-    canUpload: getSingleSelectedUAVId(state) !== undefined,
+    canPlan: isConnectedToServer(state),
+    canUpload:
+      isConnectedToServer(state) && getSingleSelectedUAVId(state) !== undefined,
     selectedIds: getSelectedMissionItemIds(state),
   }),
   // mapDispatchToProps
@@ -144,6 +157,7 @@ export default connect(
     onMoveDown: () => moveSelectedMissionItemsByDelta(1),
     onMoveUp: () => moveSelectedMissionItemsByDelta(-1),
     onRemoveSelectedMissionItems: removeSelectedMissionItems,
+    onShowMissionPlannerDialog: showMissionPlannerDialog,
     onUploadMissionItems: uploadMissionItemsToSelectedUAV,
   }
 )(MissionOverviewPanelToolbar);
