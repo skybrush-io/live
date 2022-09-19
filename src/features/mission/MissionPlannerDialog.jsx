@@ -144,8 +144,6 @@ export default connect(
           Math.round(point[1] * 1e7),
         ]);
 
-        console.log(parameters);
-
         items = await messageHub.execute.planMission({
           id: 'powerline',
           parameters,
