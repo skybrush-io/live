@@ -118,6 +118,7 @@ export type MissionSliceState = ReadonlyDeep<{
   /** State of the mission planner dialog */
   plannerDialog: {
     open: boolean;
+    parameters: string;
   };
 }>;
 
@@ -141,6 +142,7 @@ const initialState: MissionSliceState = {
   },
   plannerDialog: {
     open: false,
+    parameters: '',
   },
 };
 
@@ -436,6 +438,10 @@ const { actions, reducer } = createSlice({
           : MissionType.UNKNOWN;
     },
 
+    setMissionPlannerDialogParameters(state, action: PayloadAction<string>) {
+      state.plannerDialog.parameters = String(action.payload);
+    },
+
     /**
      * Shows the mission planner dialog.
      */
@@ -575,6 +581,7 @@ export const {
   setGeofenceAction,
   setGeofencePolygonId,
   setMappingLength,
+  setMissionPlannerDialogParameters,
   setMissionType,
   showMissionPlannerDialog,
   startMappingEditorSession,
