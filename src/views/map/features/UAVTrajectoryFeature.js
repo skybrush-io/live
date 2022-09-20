@@ -21,7 +21,7 @@ const baseTrajectoryStyle = new Style({
 const trajectorySelectionStyle = new Style({
   stroke: whiteThickOutline,
 });
-const trajectoryStyles = [
+export const trajectoryStyles = [
   [baseTrajectoryStyle],
   [trajectorySelectionStyle, baseTrajectoryStyle],
 ];
