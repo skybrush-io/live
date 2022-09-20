@@ -1,31 +1,33 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { connect } from 'react-redux';
 
 import { Feature, geom } from '@collmot/ol-react';
 
 import { getTrajectoryPointsInWorldCoordinatesByMissionIndex } from '~/features/show/selectors';
 import { plannedTrajectoryIdToGlobalId } from '~/model/identifiers';
-import { mapViewCoordinateFromLonLat } from '~/utils/geography';
 import CustomPropTypes from '~/utils/prop-types';
 
-import { trajectoryStyles } from './UAVTrajectoryFeature';
+import {
+  createStyleForTrajectoryInViewCoordinates,
+  mapTrajectoryToView,
+} from './UAVTrajectoryFeature';
 
 export const MissionSlotTrajectoryFeature = ({
   source,
   trajectory,
   missionIndex,
 }) => {
-  const points = trajectory
-    ? trajectory.map((point) =>
-        mapViewCoordinateFromLonLat([point.lon, point.lat])
-      )
-    : undefined;
+  const points = useMemo(() => mapTrajectoryToView(trajectory), [trajectory]);
+  const style = useMemo(
+    () => createStyleForTrajectoryInViewCoordinates(points),
+    [points]
+  );
   return points ? (
     <Feature
       id={plannedTrajectoryIdToGlobalId(missionIndex)}
       source={source}
-      style={trajectoryStyles[0]}
+      style={style}
     >
       <geom.LineString coordinates={points} />
     </Feature>

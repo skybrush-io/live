@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- UAV trajectories shown on the map now have arrowheads at the start and end
+  coordinates.
+
 ### Fixed
 
 - Empty mission slots can now be selected and the map view will show the
