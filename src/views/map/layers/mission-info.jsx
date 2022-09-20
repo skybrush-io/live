@@ -329,7 +329,7 @@ const MissionInfoVectorSource = ({
   homePositions,
   isConvexHullSelected,
   landingPositions,
-  missionIndicesForTrajectories,
+  missionSlotIdsForTrajectories,
   missionOrientation,
   missionOrigin,
   orientation,
@@ -476,10 +476,10 @@ const MissionInfoVectorSource = ({
   }
 
   if (
-    Array.isArray(missionIndicesForTrajectories) &&
-    missionIndicesForTrajectories.length > 0
+    Array.isArray(missionSlotIdsForTrajectories) &&
+    missionSlotIdsForTrajectories.length > 0
   ) {
-    for (const missionIndex of missionIndicesForTrajectories) {
+    for (const missionIndex of missionSlotIdsForTrajectories) {
       features.push(
         <MissionSlotTrajectoryFeature
           key={`trajectory.s${missionIndex}`}
@@ -498,7 +498,7 @@ MissionInfoVectorSource.propTypes = {
   homePositions: PropTypes.arrayOf(CustomPropTypes.coordinate),
   isConvexHullSelected: PropTypes.bool,
   landingPositions: PropTypes.arrayOf(CustomPropTypes.coordinate),
-  missionIndicesForTrajectories: PropTypes.arrayOf(PropTypes.string), // TODO or number?
+  missionSlotIdsForTrajectories: PropTypes.arrayOf(PropTypes.string),
   missionOrientation: CustomPropTypes.angle,
   missionOrigin: PropTypes.arrayOf(PropTypes.number),
   orientation: CustomPropTypes.angle,
@@ -542,7 +542,7 @@ export const MissionInfoLayer = connect(
       ? getGPSBasedLandingPositionsInMission(state)
       : undefined,
     /* prettier-ignore */
-    missionIndicesForTrajectories:
+    missionSlotIdsForTrajectories:
       layer?.parameters?.showTrajectoriesOfSelection
         ? getSelectedMissionIndicesForTrajectoryDisplay(state)
         : undefined,

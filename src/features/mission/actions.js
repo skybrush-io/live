@@ -23,7 +23,7 @@ import {
   getUnmappedUAVIds,
 } from '~/features/uavs/selectors';
 import messageHub from '~/message-hub';
-import { missionIndexToGlobalId } from '~/model/identifiers';
+import { missionSlotIdToGlobalId } from '~/model/identifiers';
 import { readTextFromFile, writeTextToFile } from '~/utils/filesystem';
 import { calculateDistanceMatrix, euclideanDistance2D } from '~/utils/math';
 
@@ -125,18 +125,19 @@ export const recalculateMapping = () => (dispatch) => {
 
 /**
  * Action factory that creates an action that sets the set of selected
- * mission indices.
+ * mission slots (i.e. placeholders for drones in missions that are not assigned
+ * yet).
  *
- * @param {Array.<string>} index  the index of the selected mission slots. Any
- *        mission slot whose index is not in this set will be deselected, and so
- *        will be anything that is not a mission slot.
+ * @param {Array.<string>} indices  the indices of the selected mission slots.
+ *        Any mission slot whose index is not in this set will be deselected,
+ *        and so will be anything that is not a mission slot.
  * @return {Object} an appropriately constructed action
  */
-export const setSelectedMissionIndices = (indices) =>
+export const setSelectedMissionSlots = (indices) =>
   setSelectedFeatures(
     (Array.isArray(indices) ? indices : [])
       .filter((index) => !isNil(index))
-      .map((index) => missionIndexToGlobalId(index))
+      .map((index) => missionSlotIdToGlobalId(index))
   );
 
 /**

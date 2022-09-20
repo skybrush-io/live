@@ -9,7 +9,7 @@ export const landingPositionIdToGlobalId = appendTo('land$');
 export const originIdToGlobalId = appendTo('origin$');
 export const plannedTrajectoryIdToGlobalId = appendTo('planned$');
 export const uavIdToGlobalId = appendTo('uav$');
-export const missionIndexToGlobalId = appendTo('mission$');
+export const missionSlotIdToGlobalId = appendTo('mission$');
 
 export const globalIdToAreaId = stripPrefix('area$');
 export const globalIdToBeaconId = stripPrefix('beacon$');
@@ -20,7 +20,7 @@ export const globalIdToLandingPositionId = stripPrefix('land$');
 export const globalIdToOriginId = stripPrefix('origin$');
 export const globalIdToPlannedTrajectoryId = stripPrefix('planned$');
 export const globalIdToUavId = stripPrefix('uav$');
-export const globalIdToMissionIndex = stripPrefix('mission$');
+export const globalIdToMissionSlotId = stripPrefix('mission$');
 
 export const isAreaId = hasPrefix('area$');
 export const isBeaconId = hasPrefix('beacon$');

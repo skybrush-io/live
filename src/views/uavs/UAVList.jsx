@@ -39,7 +39,7 @@ import {
   createKeyboardNavigationHandlers,
   Direction,
 } from '~/features/hotkeys/navigation';
-import { setSelectedMissionIndices } from '~/features/mission/actions';
+import { setSelectedMissionSlots } from '~/features/mission/actions';
 import {
   adjustMissionMapping,
   startMappingEditorSessionAtSlot,
@@ -122,6 +122,7 @@ const useListSectionStyles = makeStyles(
  * Helper function to create the items in the grid view of drone avatars and
  * placeholders.
  */
+/* eslint-disable complexity */
 const createGridItems = (
   items,
   {
@@ -129,8 +130,8 @@ const createGridItems = (
     isInEditMode,
     mappingSlotBeingEdited,
     onDropped,
-    onSelectedAsMissionSlot,
-    onSelectedAsUAV,
+    onSelectedMissionSlot,
+    onSelectedUAV,
     onStartEditing,
     selectedMissionIndices,
     selectedUAVIds,
@@ -149,8 +150,8 @@ const createGridItems = (
       /* prettier-ignore */
       onClick:
         isInEditMode ? (_event) => onStartEditing(missionIndex) :
-        uavId        ? (event) => onSelectedAsUAV(event, uavId) :
-        missionIndex ? (event) => onSelectedAsMissionSlot(event, missionIndex) :
+        uavId        ? (event) => onSelectedUAV(event, uavId) :
+        missionIndex ? (event) => onSelectedMissionSlot(event, missionIndex) :
         undefined,
       onDrop: onDropped ? onDropped(missionIndex) : undefined,
       editing: editingThisItem,
@@ -211,6 +212,7 @@ const createGridItems = (
       </DroneListItem>
     );
   });
+/* eslint-enable complexity */
 
 /**
  * Helper function to create the items in the list view of drone avatars and
@@ -222,8 +224,8 @@ const createListItems = (
     isInEditMode,
     mappingSlotBeingEdited,
     onDropped,
-    onSelectedAsUAV,
-    onSelectedAsMissionSlot,
+    onSelectedUAV,
+    onSelectedMissionSlot,
     onStartEditing,
     selectedUAVIds,
     selectedMissionIndices,
@@ -245,8 +247,8 @@ const createListItems = (
       /* prettier-ignore */
       onClick:
         isInEditMode ? (_event) => onStartEditing(missionIndex) :
-        uavId        ? (event) => onSelectedAsUAV(event, uavId) :
-        missionIndex ? (event) => onSelectedAsMissionSlot(event, missionIndex) :
+        uavId        ? (event) => onSelectedUAV(event, uavId) :
+        missionIndex ? (event) => onSelectedMissionSlot(event, missionIndex) :
         undefined,
       onDrop: onDropped ? onDropped(missionIndex) : undefined,
       editing: editingThisItem,
@@ -323,8 +325,8 @@ const UAVListPresentation = ({
   mappingSlotBeingEdited,
   onEditMappingSlot,
   onMappingAdjusted,
-  onSelectAsUAV,
-  onSelectAsMissionSlot,
+  onSelectUAV,
+  onSelectMissionSlot,
   onSelectSection,
   selectedUAVIds,
   selectedMissionIndices,
@@ -356,8 +358,8 @@ const UAVListPresentation = ({
     isInEditMode: editingMapping,
     mappingSlotBeingEdited,
     onDropped: editingMapping && onDropped,
-    onSelectedAsUAV: onSelectAsUAV,
-    onSelectedAsMissionSlot: onSelectAsMissionSlot,
+    onSelectedUAV: onSelectUAV,
+    onSelectedMissionSlot: onSelectMissionSlot,
     onStartEditing: onEditMappingSlot,
     selectedUAVIds,
     selectedMissionIndices,
@@ -446,8 +448,8 @@ UAVListPresentation.propTypes = {
   layout: PropTypes.oneOf(['list', 'grid']),
   onEditMappingSlot: PropTypes.func,
   onMappingAdjusted: PropTypes.func,
-  onSelectAsUAV: PropTypes.func,
-  onSelectAsMissionSlot: PropTypes.func,
+  onSelectUAV: PropTypes.func,
+  onSelectMissionSlot: PropTypes.func,
   onSelectSection: PropTypes.func,
   selectedUAVIds: PropTypes.array,
   selectedMissionIndices: PropTypes.array,
@@ -566,14 +568,14 @@ const UAVList = connect(
         {
           onEditMappingSlot: startMappingEditorSessionAtSlot,
           onMappingAdjusted: adjustMissionMapping,
-          onSelectAsUAV: createSelectionHandlerThunk({
+          onSelectUAV: createSelectionHandlerThunk({
             activateItem: openUAVDetailsDialog,
             getSelection: getSelectedUAVIds,
             setSelection: setSelectedUAVIds,
           }),
-          onSelectAsMissionSlot: createSelectionHandlerThunk({
+          onSelectMissionSlot: createSelectionHandlerThunk({
             getSelection: getSelectedMissionIndices,
-            setSelection: setSelectedMissionIndices,
+            setSelection: setSelectedMissionSlots,
           }),
           onSelectSection: (event) => (dispatch, getState) => {
             const { value } = event.target;

@@ -5,7 +5,7 @@ import { createSelector } from '@reduxjs/toolkit';
 
 import { Status } from '~/components/semantics';
 import { GeofenceAction } from '~/features/geofence/model';
-import { globalIdToMissionIndex } from '~/model/identifiers';
+import { globalIdToMissionSlotId } from '~/model/identifiers';
 import { selectionForSubset } from '~/selectors/selection';
 import { EMPTY_ARRAY } from '~/utils/redux';
 
@@ -118,7 +118,7 @@ export const getUAVIdForMappingSlotBeingEdited = createSelector(
  * the state object.
  */
 export const getSelectedMissionIndices = selectionForSubset(
-  globalIdToMissionIndex
+  globalIdToMissionSlotId
 );
 
 /**
