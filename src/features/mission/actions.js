@@ -2,7 +2,7 @@ import isNil from 'lodash-es/isNil';
 import { getDistance as haversineDistance } from 'ol/sphere';
 
 import { findAssignmentInDistanceMatrix } from '~/algorithms/matching';
-import { setSelectedFeatures } from '~/features/map/selection';
+import { setSelection } from '~/features/map/selection';
 import { removeFeaturesByIds } from '~/features/map-features/slice';
 import {
   getFirstPointsOfTrajectories,
@@ -134,7 +134,7 @@ export const recalculateMapping = () => (dispatch) => {
  * @return {Object} an appropriately constructed action
  */
 export const setSelectedMissionSlots = (indices) =>
-  setSelectedFeatures(
+  setSelection(
     (Array.isArray(indices) ? indices : [])
       .filter((index) => !isNil(index))
       .map((index) => missionSlotIdToGlobalId(index))
