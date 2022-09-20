@@ -8,8 +8,8 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import TextField from '@material-ui/core/TextField';
 
-const ParametersTextField = ({ onChange }) => {
-  const [currentValue, setCurrentValue] = useState('');
+const ParametersTextField = ({ initialValue, onChange }) => {
+  const [currentValue, setCurrentValue] = useState(initialValue || '');
   const [error, setError] = useState(null);
 
   const handleChange = (event) => {
@@ -56,10 +56,11 @@ const ParametersTextField = ({ onChange }) => {
 };
 
 ParametersTextField.propTypes = {
+  initialValue: PropTypes.string,
   onChange: PropTypes.func,
 };
 
-const MissionPlannerMainPanel = ({ onChange }) => {
+const MissionPlannerMainPanel = ({ onChange, parameters }) => {
   const handleParametersChange = ({ value, valid }) => {
     if (onChange) {
       if (valid) {
@@ -88,13 +89,17 @@ const MissionPlannerMainPanel = ({ onChange }) => {
         </FormControl>
       </Box>
       <Box pt={1}>
-        <ParametersTextField onChange={handleParametersChange} />
+        <ParametersTextField
+          initialValue={parameters}
+          onChange={handleParametersChange}
+        />
       </Box>
     </>
   );
 };
 
 MissionPlannerMainPanel.propTypes = {
+  parameters: PropTypes.string,
   onChange: PropTypes.func,
 };
 

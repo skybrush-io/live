@@ -21,9 +21,13 @@ import { getSelectedFeatureIds } from '~/selectors/selection';
 
 import { setMissionItemsFromArray } from './actions';
 import { isMissionPlannerDialogOpen } from './selectors';
-import { closeMissionPlannerDialog } from './slice';
+import {
+  closeMissionPlannerDialog,
+  setMissionPlannerDialogParameters,
+} from './slice';
 
 import MissionPlannerMainPanel from './MissionPlannerMainPanel';
+import { isEmpty } from 'lodash-es';
 
 /**
  * Presentation component for the dialog that allows the user to plan a mission
@@ -33,15 +37,20 @@ const MissionPlannerDialog = ({
   isConnectedToServer,
   onClose,
   onInvokePlanner,
+  onSaveParameters,
   open,
+  parametersAsString,
 }) => {
-  const [parameters, setParameters] = useState(null);
+  const [parameters, setParameters] = useState(parameters);
   const [canInvokePlanner, setCanInvokePlanner] = useState(true);
 
   const handleParametersChange = (value) => {
     if (typeof value === 'object' && value !== null && value !== undefined) {
       setParameters(value);
       setCanInvokePlanner(true);
+      if (onSaveParameters) {
+        onSaveParameters(isEmpty(value) ? '' : JSON.stringify(value, null, 4));
+      }
     } else {
       setParameters(null);
       setCanInvokePlanner(false);
@@ -63,7 +72,10 @@ const MissionPlannerDialog = ({
       onClose={onClose}
     >
       <DialogContent>
-        <MissionPlannerMainPanel onChange={handleParametersChange} />
+        <MissionPlannerMainPanel
+          parameters={parametersAsString}
+          onChange={handleParametersChange}
+        />
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>Close</Button>
@@ -84,12 +96,15 @@ MissionPlannerDialog.propTypes = {
   open: PropTypes.bool,
   onClose: PropTypes.func,
   onInvokePlanner: PropTypes.func,
+  onSaveParameters: PropTypes.func,
+  parametersAsString: PropTypes.string,
 };
 
 export default connect(
   // mapStateToProps
   (state) => ({
     open: isMissionPlannerDialogOpen(state),
+    parametersAsString: state.mission?.plannerDialog?.parameters || '',
     isConnectedToServer: isConnectedToServer(state),
   }),
 
@@ -117,7 +132,7 @@ export default connect(
         const feature = getFeatureById(state, selectedFeatureIds[0]);
         if (feature?.type !== FeatureType.LINE_STRING) {
           throw new Error(
-            `The selected feature on the map must be a line string, got: ${selectedFeatureTypes[0]}`
+            `The selected feature on the map must be a line string, got: ${feature?.type}`
           );
         }
 
@@ -162,5 +177,6 @@ export default connect(
         dispatch(closeMissionPlannerDialog());
       }
     },
+    onSaveParameters: setMissionPlannerDialogParameters,
   }
 )(MissionPlannerDialog);
