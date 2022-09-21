@@ -40,6 +40,7 @@ const iconStyle = {
 
 const unknownIconStyle = {};
 
+/* eslint-disable react/jsx-key */
 const batteryIcons = [
   <BatteryAlertIcon key='batteryIcon' fontSize='small' style={iconStyle} />,
   <BatteryAlertIcon key='batteryIcon' fontSize='small' style={iconStyle} />,
@@ -145,6 +146,7 @@ const largeChargingBatteryIcons = [
   <BatteryChargingFullIcon key='batteryIcon' />,
   <BatteryUnknownIcon key='batteryIcon' />,
 ];
+/* eslint-enable react/jsx-key */
 
 const safeToFixed = (number, digits) =>
   typeof number === 'number' ? number.toFixed(digits) : String(number);
