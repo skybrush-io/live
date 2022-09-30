@@ -166,7 +166,7 @@ class SavedLocationEditorDialogPresentation extends React.Component {
 
   _handleKeyPress = (event) => {
     if (event.nativeEvent.code === 'Enter') {
-      this.handleSubmit();
+      this._forceFormSubmission();
     }
   };
 
