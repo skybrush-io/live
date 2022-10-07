@@ -13,6 +13,7 @@ import Flight from '@material-ui/icons/Flight';
 import Gamepad from '@material-ui/icons/Gamepad';
 import Grid from '@material-ui/icons/GridOn';
 import HelpOutline from '@material-ui/icons/HelpOutline';
+import Image from '@material-ui/icons/Image';
 import Info from '@material-ui/icons/Info';
 import Streetview from '@material-ui/icons/Streetview';
 import Map from '@material-ui/icons/Map';
@@ -34,6 +35,7 @@ export const LayerType = {
   GRATICULE: 'graticule',
   HEATMAP: 'heatmap',
   HEXGRID: 'hexgrid',
+  IMAGE: 'image',
   MISSION_INFO: 'home', // don't rename this -- backwards compatibility
   OWN_LOCATION: 'ownLocation',
   TILE_SERVER: 'tileServer',
@@ -50,6 +52,7 @@ export const LayerTypes = [
   LayerType.TILE_SERVER,
   LayerType.GRATICULE,
   LayerType.FEATURES,
+  LayerType.IMAGE,
   LayerType.UAVS,
   LayerType.BEACONS,
   LayerType.DOCKS,
@@ -144,6 +147,22 @@ const _propertiesForLayerTypes = {
       minDistance: 5,
       snapToGrid: false,
     },
+  },
+  [LayerType.IMAGE]: {
+    label: 'Image',
+    icon: <Image />,
+    parameters: {
+      image: {
+        data: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxMDAiIGZpbGw9IiNmZmYiLz4KPHBhdGggZD0ibTAgMCAxMDAgMTAwIiBzdHJva2U9IiMwMDAiIHN0cm9rZS13aWR0aD0iMXB4Ii8+CjxwYXRoIGQ9Ik0gMCwxMDAgMTAwLDAiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLXdpZHRoPSIxcHgiLz4KPC9zdmc+Cg==',
+        name: '',
+      },
+      transform: {
+        position: undefined,
+        angle: 0,
+        scale: 1,
+      },
+    },
+    multiple: true,
   },
   [LayerType.HEXGRID]: {
     label: 'Hex grid layer',

@@ -8,6 +8,7 @@ import { GeoJSONLayerSettings, GeoJSONLayer } from './geojson';
 import { GraticuleLayer } from './graticule';
 import { HeatmapLayerSettings, HeatmapLayer } from './heatmap';
 import { HexGridLayerSettings, HexGridLayer } from './hexgrid';
+import { ImageLayerSettings, ImageLayer } from './image';
 import { MissionInfoLayerSettings, MissionInfoLayer } from './mission-info';
 import { OwnLocationLayer } from './ownlocation';
 import { TileServerLayerSettings, TileServerLayer } from './tileserver';
@@ -22,6 +23,7 @@ export const LayerSettings = {
   [LayerType.GEOJSON]: GeoJSONLayerSettings,
   [LayerType.HEATMAP]: HeatmapLayerSettings,
   [LayerType.HEXGRID]: HexGridLayerSettings,
+  [LayerType.IMAGE]: ImageLayerSettings,
   [LayerType.MISSION_INFO]: MissionInfoLayerSettings,
   [LayerType.TILE_SERVER]: TileServerLayerSettings,
   [LayerType.UAVS]: UAVsLayerSettings,
@@ -55,6 +57,7 @@ export const Layers = {
   [LayerType.GRATICULE]: GraticuleLayer,
   [LayerType.HEATMAP]: HeatmapLayer,
   [LayerType.HEXGRID]: HexGridLayer,
+  [LayerType.IMAGE]: ImageLayer,
   [LayerType.MISSION_INFO]: MissionInfoLayer,
   [LayerType.OWN_LOCATION]: OwnLocationLayer,
   [LayerType.TILE_SERVER]: TileServerLayer,
