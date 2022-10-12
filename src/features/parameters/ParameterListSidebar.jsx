@@ -50,6 +50,7 @@ const useStyles = makeStyles(
     footer: {
       display: 'flex',
       flexDirection: 'row',
+      justifyContent: 'space-between',
       padding: theme.spacing(1),
       textAlign: 'center',
     },
@@ -122,7 +123,6 @@ const ParameterListSidebar = ({
           Import...
         </FileButton>
         <Button
-          fullWidth
           disabled={!canUpload}
           endIcon={<NavigateNext />}
           onClick={onStart}
