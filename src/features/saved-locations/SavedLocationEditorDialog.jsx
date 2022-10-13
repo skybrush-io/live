@@ -2,7 +2,6 @@
  * @file Dialog that shows the editor for a saved location.
  */
 
-import { TextField } from 'mui-rff';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { Form } from 'react-final-form';
@@ -20,37 +19,27 @@ import {
   deleteSavedLocation,
   updateSavedLocation,
 } from '~/features/saved-locations/actions';
-import { AngleField, forceFormSubmission } from '~/components/forms';
+import {
+  LatitudeField,
+  LongitudeField,
+  HeadingField,
+  TextField,
+  forceFormSubmission,
+} from '~/components/forms';
 import {
   getCurrentMapViewAsSavedLocation,
   getEditedLocationId,
   getEditorDialogVisibility,
 } from '~/features/saved-locations/selectors';
 import { NEW_ITEM_ID } from '~/utils/collections';
-import {
-  createValidator,
-  between,
-  integer,
-  finite,
-  required,
-} from '~/utils/validation';
-
-const validator = createValidator({
-  name: required,
-  center: createValidator({
-    lon: [required, finite, between(-180, 180)],
-    lat: [required, finite, between(-90, 90)],
-  }),
-  rotation: [required, finite, between(0, 360)],
-  zoom: [required, integer, between(1, 30)],
-});
+import { between, integer, join, required } from '~/utils/validation';
 
 const SavedLocationEditorFormPresentation = ({
   initialValues,
   onKeyPress,
   onSubmit,
 }) => (
-  <Form initialValues={initialValues} validate={validator} onSubmit={onSubmit}>
+  <Form initialValues={initialValues} onSubmit={onSubmit}>
     {({ handleSubmit }) => (
       <form
         id='SavedLocationEditor'
@@ -64,46 +53,44 @@ const SavedLocationEditorFormPresentation = ({
             margin='dense'
             name='name'
             label='Name'
-            variant='filled'
+            fieldProps={{ validate: required }}
           />
           <Box display='flex' flexDirection='row'>
-            <TextField
+            <LatitudeField
               fullWidth
               margin='dense'
               name='center.lat'
               label='Latitude'
-              variant='filled'
             />
             <Box p={0.75} />
-            <TextField
+            <LongitudeField
               fullWidth
               margin='dense'
               name='center.lon'
               label='Longitude'
-              variant='filled'
             />
           </Box>
           <Box display='flex' flexDirection='row'>
-            <AngleField
+            <HeadingField
               fullWidth
               margin='dense'
               name='rotation'
               label='Rotation'
-              variant='filled'
             />
             <Box p={0.75} />
             <TextField
               fullWidth
               type='number'
-              inputProps={{ min: 1, max: 30 }}
               margin='dense'
               name='zoom'
               label='Zoom level'
-              variant='filled'
+              fieldProps={{
+                validate: join([required, integer, between(1, 30)]),
+              }}
+              inputProps={{ min: 1, max: 30 }}
             />
           </Box>
           <TextField
-            autoFocus
             fullWidth
             multiline
             margin='dense'
@@ -134,7 +121,7 @@ const SavedLocationEditorForm = connect(
   (state) => {
     const id = getEditedLocationId(state);
     const currentLocation =
-      id === NEW_ITEM_ID
+      id === NEW_ITEM_ID || !(id in state.savedLocations.byId)
         ? getCurrentMapViewAsSavedLocation(state)
         : state.savedLocations.byId[id];
     return { initialValues: currentLocation };
