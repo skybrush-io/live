@@ -10,7 +10,6 @@ import { connect } from 'react-redux';
 
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import IconButton from '@material-ui/core/IconButton';
@@ -19,6 +18,7 @@ import ArrowDown from '@material-ui/icons/ArrowDropDown';
 import ArrowUp from '@material-ui/icons/ArrowDropUp';
 
 import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
+import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
 
 import { forceFormSubmission } from '../forms';
 
@@ -267,12 +267,12 @@ class LayerSettingsDialogPresentation extends React.Component {
     );
 
     return (
-      <Dialog fullWidth maxWidth='sm' open={dialogVisible} onClose={onClose}>
+      <DraggableDialog fullWidth maxWidth='sm' open={dialogVisible} onClose={onClose}>
         <DialogContent style={{ overflow: 'auto' }}>
           <LayerSettingsContainer layerId={selectedLayerId} />
         </DialogContent>
         <DialogActions>{actions}</DialogActions>
-      </Dialog>
+      </DraggableDialog>
     );
   }
 
