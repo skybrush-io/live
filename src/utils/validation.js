@@ -10,8 +10,8 @@
 
 const isEmpty = (value) =>
   value === undefined || value === null || value === '';
-const join = (rules) => (value, data) =>
-  rules.map((rule) => rule(value, data)).find((error) => Boolean(error));
+export const join = (rules) => (value, data) =>
+  rules.map((rule) => rule(value, data)).find(Boolean);
 
 /**
  * Checks that the given value is not empty. A value is empty if it is

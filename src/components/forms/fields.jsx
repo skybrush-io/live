@@ -14,8 +14,13 @@ import { Field } from 'react-final-form';
 import { useToggle } from 'react-use';
 
 import { formatDurationHMS } from '~/utils/formatting';
-import { formatCoordinate, parseCoordinate } from '~/utils/geography';
+import {
+  formatCoordinate,
+  normalizeAngle,
+  parseCoordinate,
+} from '~/utils/geography';
 import { parseDurationHMS } from '~/utils/parsing';
+import { between, finite, join, required } from '~/utils/validation';
 
 /**
  * Select component that can be placed in a `react-final-form` form and
@@ -140,35 +145,96 @@ export const PasswordField = (props) => (
 /* ************************************************************************* */
 
 /**
- * Numeric field that can be placed in a `react-final-form` form and that accepts
- * angles in the range [0; 360].
+ * Numeric field that can be placed in a `react-final-form` form to input
+ * angles in degrees.
  */
-export const AngleField = ({ InputProps, max, min, step, ...rest }) => (
+export const AngleField = ({ InputProps, ...rest }) => (
   <TextField
     type='number'
     InputProps={{
-      endAdornment: <InputAdornment position='end'>degrees</InputAdornment>,
+      endAdornment: <InputAdornment position='end'>°</InputAdornment>,
       ...InputProps,
     }}
-    inputProps={{ max, min, step }}
     {...rest}
   />
 );
 
 AngleField.propTypes = {
   InputProps: PropTypes.object,
-  max: PropTypes.number,
-  min: PropTypes.number,
-  onChange: PropTypes.func,
-  size: PropTypes.number,
-  step: PropTypes.number,
-  value: PropTypes.number,
 };
 
-AngleField.defaultProps = {
-  max: 360,
-  min: 0,
-  step: 0.1,
+/* ************************************************************************* */
+
+/**
+ * Numeric field that can be placed in a `react-final-form` form to input
+ * angles normalized to the the range [0°, 360°).
+ */
+
+export const HeadingField = ({ fieldProps, inputProps, ...rest }) => (
+  <AngleField
+    inputProps={{ step: 0.1, ...inputProps }}
+    fieldProps={{
+      format: normalizeAngle,
+      formatOnBlur: true,
+      // Prevent React Final Form from replacing the empty string with
+      // `undefined` to avoid React complaining about changing controlledness.
+      parse: (v) => v,
+      validate: join([required, finite]),
+      ...fieldProps,
+    }}
+    {...rest}
+  />
+);
+
+HeadingField.propTypes = {
+  fieldProps: PropTypes.object,
+  inputProps: PropTypes.object,
+};
+
+/* ************************************************************************* */
+
+/**
+ * Numeric field that can be placed in a `react-final-form` form to input
+ * angles in the range [-90°, 90°].
+ */
+
+export const LatitudeField = ({ fieldProps, inputProps, ...rest }) => (
+  <AngleField
+    inputProps={{ step: 0.001, ...inputProps }}
+    fieldProps={{
+      validate: join([required, finite, between(-90, 90)]),
+      ...fieldProps,
+    }}
+    {...rest}
+  />
+);
+
+LatitudeField.propTypes = {
+  fieldProps: PropTypes.object,
+  inputProps: PropTypes.object,
+};
+
+/* ************************************************************************* */
+
+/**
+ * Numeric field that can be placed in a `react-final-form` form to input
+ * angles in the range [-180°, 180°].
+ */
+
+export const LongitudeField = ({ fieldProps, inputProps, ...rest }) => (
+  <AngleField
+    inputProps={{ step: 0.001, ...inputProps }}
+    fieldProps={{
+      validate: join([required, finite, between(-180, 180)]),
+      ...fieldProps,
+    }}
+    {...rest}
+  />
+);
+
+LongitudeField.propTypes = {
+  fieldProps: PropTypes.object,
+  inputProps: PropTypes.object,
 };
 
 /* ************************************************************************* */
