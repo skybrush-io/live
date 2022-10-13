@@ -155,6 +155,7 @@ const _propertiesForLayerTypes = {
       image: {
         data: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxMDAiIGZpbGw9IiNmZmYiLz4KPHBhdGggZD0ibTAgMCAxMDAgMTAwIiBzdHJva2U9IiMwMDAiIHN0cm9rZS13aWR0aD0iMXB4Ii8+CjxwYXRoIGQ9Ik0gMCwxMDAgMTAwLDAiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLXdpZHRoPSIxcHgiLz4KPC9zdmc+Cg==',
         name: '',
+        dimensions: {},
       },
       transform: {
         position: undefined,

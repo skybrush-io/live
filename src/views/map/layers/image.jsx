@@ -1,7 +1,8 @@
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useRef } from 'react';
-import { Form } from 'react-final-form';
+import { Form, FormSpy } from 'react-final-form';
 import { connect } from 'react-redux';
+import { usePrevious } from 'react-use';
 import { layer, source } from '@collmot/ol-react';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
@@ -14,11 +15,26 @@ import {
   LongitudeField,
   HeadingField,
   TextField,
+  forceFormSubmission,
 } from '~/components/forms';
 import { setLayerParametersById } from '~/features/map/layers';
 import { getMapViewCenterPosition } from '~/selectors/map';
 import { mapViewCoordinateFromLonLat } from '~/utils/geography';
 import { toRadians } from '~/utils/math';
+
+const AutoSaveOnBlur = ({ active, save }) => {
+  const prevActive = usePrevious(active);
+  if (prevActive && prevActive !== active) {
+    setTimeout(save, 0);
+  }
+
+  return null;
+};
+
+AutoSaveOnBlur.propTypes = {
+  active: PropTypes.string,
+  save: PropTypes.func,
+};
 
 const getFileAsBase64 = async (file) =>
   new Promise((resolve) => {
@@ -29,6 +45,14 @@ const getFileAsBase64 = async (file) =>
     fileReader.readAsDataURL(file);
   });
 
+const getDimensions = async (source) =>
+  new Promise((resolve) => {
+    const image = new window.Image();
+    image.addEventListener('load', () => {
+      resolve({ width: image.naturalWidth, height: image.naturalHeight });
+    });
+    image.src = source;
+  });
 
 const ImageLayerSettingsPresentation = ({
   layer: { parameters },
@@ -56,13 +80,22 @@ const ImageLayerSettingsPresentation = ({
     }
   });
 
+  const _forceFormSubmission = useCallback(() => {
+    forceFormSubmission('ImageTransformEditor');
+  }, []);
+
   return (
     <Form
       initialValues={{ ...parameters.transform }}
       onSubmit={updateTransform}
     >
       {({ handleSubmit }) => (
-        <form onSubmit={handleSubmit}>
+        <form id='ImageTransformEditor' onSubmit={handleSubmit}>
+          <FormSpy
+            subscription={{ active: true, values: true }}
+            component={AutoSaveOnBlur}
+            save={_forceFormSubmission}
+          />
           <Box display='flex' flexDirection='row'>
             {parameters.image.name ? (
               <img
@@ -94,7 +127,18 @@ const ImageLayerSettingsPresentation = ({
                 Select
               </FileButton>
               <Box p={0.75} />
-              <span>{parameters.image.name}</span>
+              {parameters.image.name ? (
+                <>
+                  <span>{parameters.image.name}</span>
+                  <br />
+                  <span style={{ fontStyle: 'italic' }}>
+                    {parameters.image.dimensions.width}px&nbsp;×&nbsp;
+                    {parameters.image.dimensions.height}px
+                  </span>
+                </>
+              ) : (
+                'Please select an image!'
+              )}
             </Box>
           </Box>
           <Box display='flex' flexDirection='row'>
@@ -125,11 +169,7 @@ const ImageLayerSettingsPresentation = ({
               variant='filled'
             />
           </Box>
-          <div style={{ textAlign: 'center', paddingTop: '1em' }}>
-            <Button variant='contained' type='submit'>
-              Update transformation
-            </Button>
-          </div>
+          <Button hidden type='submit' />
         </form>
       )}
     </Form>
@@ -151,11 +191,13 @@ export const ImageLayerSettings = connect(
   // mapDispatchToProps
   (dispatch, ownProps) => ({
     async selectImage(file) {
+      const data = await getFileAsBase64(file);
       dispatch(
         setLayerParametersById(ownProps.layerId, {
           image: {
-            data: await getFileAsBase64(file),
+            data,
             name: file.name,
+            dimensions: await getDimensions(data),
           },
         })
       );
