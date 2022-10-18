@@ -3,10 +3,12 @@ import React, { useCallback, useEffect, useRef } from 'react';
 import { Form, FormSpy } from 'react-final-form';
 import { connect } from 'react-redux';
 import { usePrevious } from 'react-use';
+import { getPointResolution } from 'ol/proj';
 import { layer, source } from '@collmot/ol-react';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import Image from '@material-ui/icons/Image';
+import InputAdornment from '@material-ui/core/InputAdornment';
 import Skeleton from '@material-ui/lab/Skeleton';
 
 import FileButton from '~/components/FileButton';
@@ -21,6 +23,7 @@ import { setLayerParametersById } from '~/features/map/layers';
 import { getMapViewCenterPosition } from '~/selectors/map';
 import { mapViewCoordinateFromLonLat } from '~/utils/geography';
 import { toRadians } from '~/utils/math';
+import { atLeast, finite, join, required } from '~/utils/validation';
 
 const AutoSaveOnBlur = ({ active, save }) => {
   const prevActive = usePrevious(active);
@@ -75,7 +78,7 @@ const ImageLayerSettingsPresentation = ({
           lat: mapViewCenterPosition[1].toFixed(6),
         },
         angle: 0,
-        scale: 1,
+        scale: 100,
       });
     }
   });
@@ -162,7 +165,13 @@ const ImageLayerSettingsPresentation = ({
             <TextField
               fullWidth
               type='number'
-              inputProps={{ min: 0.1, max: 10, step: 0.1 }}
+              inputProps={{ min: 1 }}
+              fieldProps={{ validate: join([required, finite, atLeast(1)]) }}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position='end'>px/m</InputAdornment>
+                ),
+              }}
               margin='dense'
               name='scale'
               label='Scale'
@@ -235,7 +244,14 @@ const ImageLayerPresentation = ({
         url={image.data}
         imageCenter={mapViewCoordinateFromLonLat([position.lon, position.lat])}
         imageRotate={toRadians(angle)}
-        imageScale={scale}
+        imageScale={
+          1 /
+          getPointResolution(
+            'EPSG:3857',
+            scale,
+            mapViewCoordinateFromLonLat([position.lon, position.lat])
+          )
+        }
       />
     </layer.GeoImage>
   ) : null;

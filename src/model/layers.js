@@ -160,7 +160,7 @@ const _propertiesForLayerTypes = {
       transform: {
         position: undefined,
         angle: 0,
-        scale: 1,
+        scale: 100,
       },
     },
     multiple: true,
