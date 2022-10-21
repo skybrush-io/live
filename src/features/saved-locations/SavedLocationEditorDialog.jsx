@@ -15,17 +15,17 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
 
 import {
-  cancelLocationEditing,
-  deleteSavedLocation,
-  updateSavedLocation,
-} from '~/features/saved-locations/actions';
-import {
   LatitudeField,
   LongitudeField,
   HeadingField,
   TextField,
   forceFormSubmission,
 } from '~/components/forms';
+import {
+  cancelLocationEditing,
+  deleteSavedLocation,
+  updateSavedLocation,
+} from '~/features/saved-locations/actions';
 import {
   getCurrentMapViewAsSavedLocation,
   getEditedLocationId,
@@ -34,11 +34,7 @@ import {
 import { NEW_ITEM_ID } from '~/utils/collections';
 import { between, integer, join, required } from '~/utils/validation';
 
-const SavedLocationEditorFormPresentation = ({
-  initialValues,
-  onKeyPress,
-  onSubmit,
-}) => (
+const SavedLocationEditorFormPresentation = ({ initialValues, onSubmit }) => (
   <Form initialValues={initialValues} onSubmit={onSubmit}>
     {({ handleSubmit }) => (
       <form
@@ -46,61 +42,59 @@ const SavedLocationEditorFormPresentation = ({
         style={{ marginTop: 8, marginBottom: 0 }}
         onSubmit={handleSubmit}
       >
-        <div onKeyPress={onKeyPress}>
-          <TextField
-            autoFocus
+        <TextField
+          autoFocus
+          fullWidth
+          margin='dense'
+          name='name'
+          label='Name'
+          fieldProps={{ validate: required }}
+        />
+        <Box display='flex' flexDirection='row'>
+          <LatitudeField
             fullWidth
             margin='dense'
-            name='name'
-            label='Name'
-            fieldProps={{ validate: required }}
+            name='center.lat'
+            label='Latitude'
           />
-          <Box display='flex' flexDirection='row'>
-            <LatitudeField
-              fullWidth
-              margin='dense'
-              name='center.lat'
-              label='Latitude'
-            />
-            <Box p={0.75} />
-            <LongitudeField
-              fullWidth
-              margin='dense'
-              name='center.lon'
-              label='Longitude'
-            />
-          </Box>
-          <Box display='flex' flexDirection='row'>
-            <HeadingField
-              fullWidth
-              margin='dense'
-              name='rotation'
-              label='Rotation'
-            />
-            <Box p={0.75} />
-            <TextField
-              fullWidth
-              type='number'
-              margin='dense'
-              name='zoom'
-              label='Zoom level'
-              fieldProps={{
-                validate: join([required, integer, between(1, 30)]),
-              }}
-              inputProps={{ min: 1, max: 30 }}
-            />
-          </Box>
+          <Box p={0.75} />
+          <LongitudeField
+            fullWidth
+            margin='dense'
+            name='center.lon'
+            label='Longitude'
+          />
+        </Box>
+        <Box display='flex' flexDirection='row'>
+          <HeadingField
+            fullWidth
+            margin='dense'
+            name='rotation'
+            label='Rotation'
+          />
+          <Box p={0.75} />
           <TextField
             fullWidth
-            multiline
+            type='number'
             margin='dense'
-            name='notes'
-            label='Notes'
-            variant='filled'
-            minRows={3}
-            maxRows={3}
+            name='zoom'
+            label='Zoom level'
+            fieldProps={{
+              validate: join([required, integer, between(1, 30)]),
+            }}
+            inputProps={{ min: 1, max: 30 }}
           />
-        </div>
+        </Box>
+        <TextField
+          fullWidth
+          multiline
+          margin='dense'
+          name='notes'
+          label='Notes'
+          minRows={3}
+          maxRows={3}
+        />
+        <input type='submit' hidden />
       </form>
     )}
   </Form>
@@ -108,7 +102,6 @@ const SavedLocationEditorFormPresentation = ({
 
 SavedLocationEditorFormPresentation.propTypes = {
   initialValues: PropTypes.object,
-  onKeyPress: PropTypes.func,
   onSubmit: PropTypes.func,
 };
 
@@ -149,12 +142,6 @@ class SavedLocationEditorDialogPresentation extends React.Component {
 
   _forceFormSubmission = () => {
     forceFormSubmission('SavedLocationEditor');
-  };
-
-  _handleKeyPress = (event) => {
-    if (event.nativeEvent.code === 'Enter') {
-      this._forceFormSubmission();
-    }
   };
 
   render() {
@@ -198,10 +185,7 @@ class SavedLocationEditorDialogPresentation extends React.Component {
         onClose={onClose}
       >
         <DialogContent>
-          <SavedLocationEditorForm
-            onSubmit={onSubmit}
-            onKeyPress={this._handleKeyPress}
-          />
+          <SavedLocationEditorForm onSubmit={onSubmit} />
         </DialogContent>
         <DialogActions>{actions}</DialogActions>
       </DraggableDialog>
@@ -231,7 +215,7 @@ const SavedLocationEditorDialog = connect(
       };
     },
     onSubmit(data) {
-      const currentLocation = JSON.parse(JSON.stringify(data));
+      const currentLocation = structuredClone(data);
 
       currentLocation.center.lon = Number(currentLocation.center.lon);
       currentLocation.center.lat = Number(currentLocation.center.lat);
