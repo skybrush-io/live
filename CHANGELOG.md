@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Enable multi-window support by making panels detachable from the main layout.
 
+- Static image layer with adjustable latitude, longitude, heading and scaling.
+
 ## [2.6.0] - 2022-10-20
 
 ### Added
