@@ -139,6 +139,19 @@ export function between(min, max) {
 }
 
 /**
+ * Checks that the given value is positive.
+ *
+ * @param  {Object}  value  the value to validate
+ * @return {?string}        undefined if the value passes the validator,
+ *                          an error message otherwise
+ */
+export function positive(value) {
+  if (Math.sign(Number(value)) !== 1) {
+    return 'Value must be positive';
+  }
+}
+
+/**
  * Creates a validator function for a form from a set of rules for some
  * (or all) of the form fields.
  *
