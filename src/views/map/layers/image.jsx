@@ -23,7 +23,7 @@ import { setLayerParametersById } from '~/features/map/layers';
 import { getMapViewCenterPosition } from '~/selectors/map';
 import { mapViewCoordinateFromLonLat } from '~/utils/geography';
 import { toRadians } from '~/utils/math';
-import { atLeast, finite, join, required } from '~/utils/validation';
+import { finite, join, positive, required } from '~/utils/validation';
 
 const AutoSaveOnBlur = ({ active, save }) => {
   const prevActive = usePrevious(active);
@@ -73,12 +73,11 @@ const ImageLayerSettingsPresentation = ({
   useEffect(() => {
     if (!parameters.transform.position) {
       updateTransform({
+        ...parameters.transform,
         position: {
           lon: mapViewCenterPosition[0].toFixed(6),
           lat: mapViewCenterPosition[1].toFixed(6),
         },
-        angle: 0,
-        scale: 100,
       });
     }
   });
@@ -165,11 +164,11 @@ const ImageLayerSettingsPresentation = ({
             <TextField
               fullWidth
               type='number'
-              inputProps={{ min: 1 }}
-              fieldProps={{ validate: join([required, finite, atLeast(1)]) }}
+              inputProps={{ step: 0.1 }}
+              fieldProps={{ validate: join([required, finite, positive]) }}
               InputProps={{
                 endAdornment: (
-                  <InputAdornment position='end'>px/m</InputAdornment>
+                  <InputAdornment position='end'>cm/px</InputAdornment>
                 ),
               }}
               margin='dense'
@@ -245,10 +244,10 @@ const ImageLayerPresentation = ({
         imageCenter={mapViewCoordinateFromLonLat([position.lon, position.lat])}
         imageRotate={toRadians(angle)}
         imageScale={
-          1 /
+          scale / // Scale is given by the user in cm / px
           getPointResolution(
             'EPSG:3857',
-            scale,
+            100, // One meter needs 100 divisions to get cm as resolution
             mapViewCoordinateFromLonLat([position.lon, position.lat])
           )
         }
