@@ -108,6 +108,7 @@ export const componentRegistry = {
   map: {
     component: MapView,
     label: 'Map',
+    detachable: true,
   },
   messages: {
     component: views.MessagesPanelView, // deprecated, kept there for compatibility

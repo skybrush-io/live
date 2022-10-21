@@ -7,8 +7,12 @@ import isFunction from 'lodash-es/isFunction';
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import Popover from '@material-ui/core/Popover';
 import MenuList from '@material-ui/core/MenuList';
+
+import {
+  ContainerContext,
+  PopoverWithContainerFromContext as Popover,
+} from '~/containerContext';
 
 /**
  * Generic context menu using a Material-UI popover element.
@@ -18,6 +22,8 @@ import MenuList from '@material-ui/core/MenuList';
  * component.
  */
 export default class ContextMenu extends React.Component {
+  static contextType = ContainerContext;
+
   static propTypes = {
     children: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
     contextProvider: PropTypes.func,
@@ -46,8 +52,12 @@ export default class ContextMenu extends React.Component {
   open(position, context) {
     const { contextProvider } = this.props;
 
-    // Prevent the document body from firing a contextmenu event
-    document.body.addEventListener('contextmenu', this._preventDefault);
+    const containerContext = this.context;
+    // Prevent the container of the tooltip from firing a contextmenu event
+    containerContext.addEventListener('contextmenu', this._preventDefault);
+    // (It's an unfortunate naming clash, but note, that `this.context` and
+    // `context` are two completely unrelated things, the former comes from
+    // the React context `ContainerContext`.)
 
     // Start opening the context menu
     this.setState({
@@ -116,7 +126,6 @@ export default class ContextMenu extends React.Component {
         open={open || opening}
         anchorReference='anchorPosition'
         anchorPosition={position}
-        anchorOrigin={{ horizontal: 'left', vertical: 'bottom' }}
         onClose={this._handleClose}
       >
         <MenuList>{menuItems}</MenuList>

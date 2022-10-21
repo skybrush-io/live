@@ -3,8 +3,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { followCursor } from 'tippy.js';
 
-import Tooltip from '@skybrush/mui-components/lib/Tooltip';
-
+import { TooltipWithContainerFromContext as Tooltip } from '~/containerContext';
 import DroneInfoTooltipContent from '~/features/uavs/DroneInfoTooltipContent';
 import { isUavId, globalIdToUavId } from '~/model/identifiers';
 

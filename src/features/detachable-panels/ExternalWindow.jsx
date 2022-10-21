@@ -2,6 +2,8 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import ReactDOM from 'react-dom';
 
+import { ContainerContext } from '~/containerContext';
+
 export default class ExternalWindow extends React.Component {
   static propTypes = {
     children: PropTypes.node.isRequired,
@@ -61,7 +63,12 @@ export default class ExternalWindow extends React.Component {
   }
 
   render() {
-    return ReactDOM.createPortal(this.props.children, this._container);
+    return ReactDOM.createPortal(
+      <ContainerContext.Provider value={this._container}>
+        {this.props.children}
+      </ContainerContext.Provider>,
+      this._container
+    );
   }
 
   _copyAndFollowStyles() {
