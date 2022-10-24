@@ -177,7 +177,7 @@ const ImageLayerSettingsPresentation = ({
               variant='filled'
             />
           </Box>
-          <Button hidden type='submit' />
+          <input type='submit' hidden />
         </form>
       )}
     </Form>
