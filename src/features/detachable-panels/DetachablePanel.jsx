@@ -123,7 +123,7 @@ const DetachablePanel = connect(
   // mapDispatchToProps
   (dispatch, { name }) => ({
     detach() {
-      dispatch(detachPanel({ name }));
+      dispatch(detachPanel(name));
     },
     attach() {
       dispatch(attachPanel(name));

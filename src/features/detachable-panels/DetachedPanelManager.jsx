@@ -9,7 +9,7 @@ import { attachPanel } from './slice';
 import { componentRegistry } from '~/workbench.js';
 
 const DetachedPanelManagerPresentation = ({ attachPanel, detachedPanels }) =>
-  detachedPanels.map(({ name }) => {
+  detachedPanels.map((name) => {
     const { component: Component, label } = componentRegistry[name];
     const attach = () => attachPanel(name);
     return (
@@ -21,7 +21,7 @@ const DetachedPanelManagerPresentation = ({ attachPanel, detachedPanels }) =>
 
 DetachedPanelManagerPresentation.propTypes = {
   attachPanel: PropTypes.func.isRequired,
-  detachedPanels: PropTypes.arrayOf(PropTypes.object),
+  detachedPanels: PropTypes.arrayOf(PropTypes.string),
 };
 
 const DetachedPanelManager = connect(

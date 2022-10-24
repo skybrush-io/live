@@ -13,15 +13,15 @@ const { actions, reducer } = createSlice({
   },
 
   reducers: {
-    attachPanel(state, { payload: panelName }) {
-      const index = state.detachedPanels.findIndex((p) => p.name === panelName);
+    attachPanel(state, { payload: name }) {
+      const index = state.detachedPanels.indexOf(name);
       if (index !== -1) {
         state.detachedPanels.splice(index, 1);
       }
     },
 
-    detachPanel(state, { payload: panel }) {
-      state.detachedPanels.push(panel);
+    detachPanel(state, { payload: name }) {
+      state.detachedPanels.push(name);
     },
   },
 });
