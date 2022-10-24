@@ -62,16 +62,19 @@ export const componentRegistry = {
     feature: 'beacons',
   },
   'connection-list': {
+    // deprecated, kept there for compatibility
     component: views.ConnectionList,
     label: 'Connections',
   },
   'dataset-list': {
     component: views.DatasetList,
     label: 'Datasets',
+    detachable: true,
   },
   'dock-list': {
     component: views.DockList,
     label: 'Docks',
+    detachable: true,
     feature: 'docks',
   },
   'feature-list': {
@@ -111,7 +114,8 @@ export const componentRegistry = {
     detachable: true,
   },
   messages: {
-    component: views.MessagesPanelView, // deprecated, kept there for compatibility
+    // deprecated, kept there for compatibility
+    component: views.MessagesPanelView,
     label: 'Messages',
   },
   placeholder: {

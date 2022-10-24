@@ -65,12 +65,12 @@ DetachButtonPortal.propTypes = {
 };
 
 const DetachablePanelPresentation = ({
-  attach,
   children,
-  detach,
   detached,
   glContainer,
   label,
+  onAttach,
+  onDetach,
 }) => {
   return detached ? (
     <div
@@ -88,7 +88,7 @@ const DetachablePanelPresentation = ({
         <Button
           variant='outlined'
           startIcon={<RestoreWindow />}
-          onClick={attach}
+          onClick={onAttach}
         >
           Attach
         </Button>
@@ -99,7 +99,7 @@ const DetachablePanelPresentation = ({
       <DetachButtonPortal
         glContainer={glContainer}
         label={label}
-        onClick={detach}
+        onClick={onDetach}
       />
       {children}
     </>
@@ -107,12 +107,12 @@ const DetachablePanelPresentation = ({
 };
 
 DetachablePanelPresentation.propTypes = {
-  attach: PropTypes.func.isRequired,
   children: PropTypes.node.isRequired,
-  detach: PropTypes.func.isRequired,
   detached: PropTypes.bool.isRequired,
   glContainer: PropTypes.object.isRequired,
   label: PropTypes.string.isRequired,
+  onAttach: PropTypes.func.isRequired,
+  onDetach: PropTypes.func.isRequired,
 };
 
 const DetachablePanel = connect(
@@ -122,11 +122,11 @@ const DetachablePanel = connect(
   }),
   // mapDispatchToProps
   (dispatch, { name }) => ({
-    detach() {
-      dispatch(detachPanel(name));
-    },
-    attach() {
+    onAttach() {
       dispatch(attachPanel(name));
+    },
+    onDetach() {
+      dispatch(detachPanel(name));
     },
   })
 )(DetachablePanelPresentation);
