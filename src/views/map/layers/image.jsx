@@ -134,8 +134,8 @@ const ImageLayerSettingsPresentation = ({
                   <span>{parameters.image.name}</span>
                   <br />
                   <span style={{ fontStyle: 'italic' }}>
-                    {parameters.image.dimensions.width}px&nbsp;×&nbsp;
-                    {parameters.image.dimensions.height}px
+                    {parameters.image.dimensions.width}&nbsp;×&nbsp;
+                    {parameters.image.dimensions.height}&nbsp;px
                   </span>
                 </>
               ) : (
