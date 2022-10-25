@@ -12,8 +12,7 @@ import { connect } from 'react-redux';
 import IconButton from '@material-ui/core/IconButton';
 import ActionAllOut from '@material-ui/icons/AllOut';
 
-import Tooltip from '@skybrush/mui-components/lib/Tooltip';
-
+import { TooltipWithContainerFromContext as Tooltip } from '~/containerContext';
 import { showError } from '~/features/snackbar/actions';
 import { isUavId } from '~/model/identifiers';
 import {

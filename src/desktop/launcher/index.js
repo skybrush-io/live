@@ -32,6 +32,7 @@ function run(argv) {
         backgroundThrottling: false,
       },
     },
+    subWindowMenuBar: false,
   });
 
   // Register the WebSocket protocol as secure even if it is not really a

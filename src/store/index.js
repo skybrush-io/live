@@ -55,6 +55,7 @@ const persistConfig = {
     'clocks',
     'connections',
     'datasets',
+    'detachablePanels',
     'docks',
     'localServer',
     'log',

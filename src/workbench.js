@@ -14,6 +14,7 @@ import { WorkbenchBuilder } from 'react-flexible-workbench';
 import loadable from '@loadable/component';
 import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
 
+import { makeDetachable } from '~/features/detachable-panels/DetachablePanel';
 import { saveWorkbenchState } from './features/workbench/slice';
 import { injectFlockFromContext } from './flock';
 import store from './store';
@@ -52,32 +53,111 @@ const onlyWithFeature = (featureName, component) =>
  * The React components will be created without any props. If you need the
  * components to have props, use a wrapper HOC.
  */
-const componentRegistry = {
-  'beacon-list': onlyWithFeature('beacons', views.BeaconList),
-  'connection-list': views.ConnectionList,
-  'dataset-list': views.DatasetList,
-  'dock-list': onlyWithFeature('docks', views.DockList),
-  'feature-list': onlyWithFeature('features', views.FeatureList),
-  'ground-control-view': injectFlockFromContext(views.GroundControlView),
-  'layer-list': views.LayerList,
-  'light-control': onlyWithFeature('showControl', views.LightControlPanel),
-  'lcd-clock-panel': views.LCDClockPanel,
-  'log-panel': views.LogPanel,
-  map: MapView,
-  messages: views.MessagesPanelView, // deprecated, kept there for compatibility
-  placeholder: Nothing,
-  'saved-location-list': views.SavedLocationList,
-  'show-control': onlyWithFeature('showControl', views.ShowControlPanel),
-  'three-d-view': onlyWithFeature('threeDView', views.ThreeDTopLevelView),
-  'uav-list': injectFlockFromContext(views.UAVList),
+
+export const componentRegistry = {
+  'beacon-list': {
+    component: views.BeaconList,
+    label: 'Beacons',
+    detachable: true,
+    feature: 'beacons',
+  },
+  'connection-list': {
+    // deprecated, kept there for compatibility
+    component: views.ConnectionList,
+    label: 'Connections',
+  },
+  'dataset-list': {
+    component: views.DatasetList,
+    label: 'Datasets',
+    detachable: true,
+  },
+  'dock-list': {
+    component: views.DockList,
+    label: 'Docks',
+    detachable: true,
+    feature: 'docks',
+  },
+  'feature-list': {
+    component: views.FeatureList,
+    label: 'Features',
+    detachable: true,
+    feature: 'features',
+  },
+  'ground-control-view': {
+    component: injectFlockFromContext(views.GroundControlView),
+    label: 'Ground control',
+  },
+  'layer-list': {
+    component: views.LayerList,
+    label: 'Layers',
+    detachable: true,
+  },
+  'light-control': {
+    component: views.LightControlPanel,
+    label: 'Light control',
+    detachable: true,
+    feature: 'showControl',
+  },
+  'lcd-clock-panel': {
+    component: views.LCDClockPanel,
+    label: 'Clocks',
+    detachable: true,
+  },
+  'log-panel': {
+    component: views.LogPanel,
+    label: 'Event log',
+    detachable: true,
+  },
+  map: {
+    component: MapView,
+    label: 'Map',
+    detachable: true,
+  },
+  messages: {
+    // deprecated, kept there for compatibility
+    component: views.MessagesPanelView,
+    label: 'Messages',
+  },
+  placeholder: {
+    component: Nothing,
+    label: 'Placeholder',
+  },
+  'saved-location-list': {
+    component: views.SavedLocationList,
+    label: 'Locations',
+    detachable: true,
+  },
+  'show-control': {
+    component: views.ShowControlPanel,
+    label: 'Show control',
+    detachable: true,
+    feature: 'showControl',
+  },
+  'three-d-view': {
+    component: views.ThreeDTopLevelView,
+    label: '3D View',
+    feature: 'threeDView',
+  },
+  'uav-list': {
+    component: injectFlockFromContext(views.UAVList),
+    label: 'UAVs',
+    detachable: true,
+  },
 };
 
 function constructDefaultWorkbench(store) {
   const builder = new WorkbenchBuilder();
 
   // Register all our supported components in the builder
-  for (const key of Object.keys(componentRegistry)) {
-    builder.registerComponent(key, componentRegistry[key]);
+  for (const [name, entry] of Object.entries(componentRegistry)) {
+    const featureModifier = (c) =>
+      entry.feature ? onlyWithFeature(entry.feature, c) : c;
+    const detachModifier = (c) =>
+      entry.detachable ? makeDetachable(name, entry.label, c) : c;
+    builder.registerComponent(
+      name,
+      featureModifier(detachModifier(entry.component))
+    );
   }
 
   // prettier-ignore

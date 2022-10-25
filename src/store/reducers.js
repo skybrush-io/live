@@ -25,6 +25,7 @@ import beaconsReducer from '~/features/beacons/slice';
 import clocksReducer from '~/features/clocks/slice';
 import connectionsReducer from '~/features/connections/slice';
 import datasetsReducer from '~/features/datasets/slice';
+import detachablePanelsReducer from '~/features/detachable-panels/slice';
 import docksReducer from '~/features/docks/slice';
 import hotkeysReducer from '~/features/hotkeys/slice';
 import lcdClockReducer from '~/features/lcd-clock/slice';
@@ -85,6 +86,7 @@ const reducer = combineReducers({
   clocks: clocksReducer,
   connections: connectionsReducer,
   datasets: datasetsReducer,
+  detachablePanels: detachablePanelsReducer,
   dialogs: dialogsReducer,
   docks: docksReducer,
   features: featuresReducer,
