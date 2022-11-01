@@ -26,7 +26,16 @@ export const MissionItemType = {
   RETURN_TO_HOME: 'returnToHome',
   GO_TO: 'goTo',
   CHANGE_ALTITUDE: 'changeAltitude',
+  SET_PAYLOAD: 'setPayload',
 };
+
+/**
+ * Enum representing valid payload action strings.
+ */
+export const PAYLOAD_ACTIONS = [
+  "on",
+  "off",
+];
 
 /**
  * Returns whether the given parameter representing an altitude in a generic
@@ -110,6 +119,21 @@ export function isMissionItemValid(item) {
     case MissionItemType.RETURN_TO_HOME:
       break;
 
+    case MissionItemType.SET_PAYLOAD:
+      /* "Set payload" items need a name and a valid action */
+      {
+        const { name, action } = parameters;
+        if (
+          typeof name !== 'string' ||
+          typeof action !== 'string' ||
+          !PAYLOAD_ACTIONS.includes(action)
+        ) {
+          return false;
+        }
+      }
+
+      break;
+
     default:
       break;
   }
@@ -118,6 +142,7 @@ export function isMissionItemValid(item) {
 
   return true;
 }
+
 
 /**
  * Extracts a GPS coordinate from a mission item, corresponding to the point
