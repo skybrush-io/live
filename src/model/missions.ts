@@ -35,6 +35,15 @@ export enum MissionItemType {
   RETURN_TO_HOME = 'returnToHome',
   GO_TO = 'goTo',
   CHANGE_ALTITUDE = 'changeAltitude',
+  SET_PAYLOAD = 'setPayload',
+}
+
+/**
+ * Enum representing valid payload action strings.
+ */
+export enum PayloadAction {
+  ON = 'on',
+  OFF = 'off',
 }
 
 /**
@@ -62,6 +71,7 @@ function isAltitudeParameterValid(alt: any): alt is Altitude {
 /**
  * Returns whether the given mission item is valid.
  */
+// eslint-disable-next-line complexity
 export function isMissionItemValid(item: any): item is MissionItem {
   if (typeof item !== 'object') {
     return false;
@@ -117,6 +127,21 @@ export function isMissionItemValid(item: any): item is MissionItem {
       break;
 
     case MissionItemType.RETURN_TO_HOME:
+      break;
+
+    case MissionItemType.SET_PAYLOAD:
+      /* "Set payload" items need a name and a valid action */
+      {
+        const { name, action } = parameters;
+        if (
+          typeof name !== 'string' ||
+          typeof action !== 'string' ||
+          !Object.values(PayloadAction).includes(action as PayloadAction)
+        ) {
+          return false;
+        }
+      }
+
       break;
 
     default:
