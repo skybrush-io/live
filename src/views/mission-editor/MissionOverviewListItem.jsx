@@ -8,6 +8,7 @@ import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import ListItemText from '@material-ui/core/ListItemText';
 import { makeStyles } from '@material-ui/core/styles';
 import ChangeAltitudeIcon from '@material-ui/icons/Height';
+import SetPayloadIcon from '@material-ui/icons/Camera';
 import TakeoffIcon from '@material-ui/icons/FlightTakeoff';
 import LandIcon from '@material-ui/icons/FlightLand';
 import HomeIcon from '@material-ui/icons/Home';
@@ -79,9 +80,9 @@ const MissionOverviewListItem = ({
       primaryText = 'Takeoff';
       secondaryText = isValid
         ? safelyFormatAltitudeWithReference(
-            item.parameters?.alt,
-            'No altitude specified'
-          )
+          item.parameters?.alt,
+          'No altitude specified'
+        )
         : 'Invalid mission item';
       break;
 
@@ -90,10 +91,16 @@ const MissionOverviewListItem = ({
       primaryText = 'Change altitude';
       secondaryText = isValid
         ? safelyFormatAltitudeWithReference(
-            item.parameters?.alt,
-            'No altitude specified'
-          )
+          item.parameters?.alt,
+          'No altitude specified'
+        )
         : 'Invalid mission item';
+      break;
+
+    case MissionItemType.SET_PAYLOAD:
+      avatar = <SetPayloadIcon />;
+      primaryText = 'Set payload';
+      secondaryText = item.parameters?.name + ': ' + item.parameters?.action;
       break;
 
     default:
