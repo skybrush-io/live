@@ -8,6 +8,7 @@ import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import ListItemText from '@material-ui/core/ListItemText';
 import { makeStyles } from '@material-ui/core/styles';
 import ChangeAltitudeIcon from '@material-ui/icons/Height';
+import ChangeHeadingIcon from '@material-ui/icons/RotateLeft';
 import SetPayloadIcon from '@material-ui/icons/Camera';
 import TakeoffIcon from '@material-ui/icons/FlightTakeoff';
 import LandIcon from '@material-ui/icons/FlightLand';
@@ -18,6 +19,7 @@ import { getMissionItemById } from '~/features/mission/selectors';
 import { isMissionItemValid, MissionItemType } from '~/model/missions';
 import {
   safelyFormatAltitudeWithReference,
+  safelyFormatHeadingWithMode,
   formatCoordinate,
 } from '~/utils/geography';
 
@@ -93,6 +95,17 @@ const MissionOverviewListItem = ({
         ? safelyFormatAltitudeWithReference(
           item.parameters?.alt,
           'No altitude specified'
+        )
+        : 'Invalid mission item';
+      break;
+
+    case MissionItemType.CHANGE_HEADING:
+      avatar = <ChangeHeadingIcon />;
+      primaryText = 'Change heading';
+      secondaryText = isValid
+        ? safelyFormatHeadingWithMode(
+          item.parameters?.heading,
+          'No heading specified'
         )
         : 'Invalid mission item';
       break;

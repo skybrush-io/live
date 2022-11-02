@@ -40,6 +40,20 @@ export const ALTITUDE_REFERENCES = [
 ];
 
 /**
+ * Enum containing the possible heading mode types that we support.
+ */
+export const HeadingMode = {
+  ABSOLUTE: 'absolute',
+  WAYPOINT: 'waypoint',
+};
+
+export const HEADING_MODES = [
+  HeadingMode.ABSOLUTE,
+  HeadingMode.WAYPOINT,
+];
+
+
+/**
  * Returns the (initial) bearing when going from one point to another on a
  * sphere along a great circle.
  *
@@ -429,6 +443,28 @@ export const safelyFormatAltitudeWithReference = createSafeWrapper(
 );
 
 /**
+ * Formats the given heading-with-mode object in a way that is suitable
+ * for presentation on the UI.
+ */
+export const formatHeadingWithMode = (heading) => {
+  const { mode, value } = heading;
+  const formattedValue = value.toFixed(1) + '\u00B0';
+
+  if (mode === HeadingMode.WAYPOINT) {
+    return 'Always face next waypoint';
+  } else if (mode === HeadingMode.ABSOLUTE) {
+    return formattedValue;
+  } else {
+    return `${formattedValue} @ unknown mode: ${mode}`;
+  }
+};
+
+export const safelyFormatHeadingWithMode = createSafeWrapper(
+  formatHeadingWithMode
+);
+
+
+/**
  * Formats the given OpenLayers coordinate into the usual latitude-longitude
  * representation in a format suitable for the UI.
  *
@@ -626,7 +662,7 @@ export class FlatEarthCoordinateSystem {
     Coordinate.rotate(result, this._orientation);
     return [
       result[1] / this._r2OverCosOriginLatInRadians / this._piOver180 +
-        this._origin[0],
+      this._origin[0],
       result[0] / this._r1 / this._piOver180 + this._origin[1],
     ];
   }
