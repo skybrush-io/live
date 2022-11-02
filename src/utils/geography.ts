@@ -84,6 +84,23 @@ export type Altitude = {
 };
 
 /**
+ * Enum containing the possible heading mode types that we support.
+ */
+export enum HeadingMode {
+  ABSOLUTE = 'absolute',
+  WAYPOINT = 'waypoint',
+}
+
+/**
+ * Type specification for a heading object containing a numeric value and a
+ * heading mode.
+ */
+export type Heading = {
+  value: number;
+  mode: HeadingMode;
+};
+
+/**
  * Returns the (initial) bearing when going from one point to another on a
  * sphere along a great circle.
  *
@@ -493,6 +510,27 @@ export const formatAltitudeWithReference = (altitude: Altitude): string => {
  */
 export const safelyFormatAltitudeWithReference = createSafeWrapper(
   formatAltitudeWithReference
+);
+
+/**
+ * Formats the given heading-with-mode object in a way that is suitable
+ * for presentation on the UI.
+ */
+export const formatHeadingWithMode = (heading: Heading): string => {
+  const { mode, value } = heading;
+  const formattedValue = value.toFixed(1) + '\u00B0';
+
+  if (mode === HeadingMode.WAYPOINT) {
+    return 'Always face next waypoint';
+  } else if (mode === HeadingMode.ABSOLUTE) {
+    return formattedValue;
+  } else {
+    return `${formattedValue} @ unknown mode: ${String(mode)}`;
+  }
+};
+
+export const safelyFormatHeadingWithMode = createSafeWrapper(
+  formatHeadingWithMode
 );
 
 /**
