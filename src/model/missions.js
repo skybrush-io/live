@@ -1,6 +1,14 @@
-import { ALTITUDE_REFERENCES } from '~/utils/geography';
+import {
+  ALTITUDE_REFERENCES,
+  HEADING_MODES
+} from '~/utils/geography';
 
-export { AltitudeReference, ALTITUDE_REFERENCES } from '~/utils/geography';
+export {
+  AltitudeReference,
+  ALTITUDE_REFERENCES,
+  HeadingMode,
+  HEADING_MODES
+} from '~/utils/geography';
 
 /**
  * Enum representing the types of missions that we support.
@@ -26,6 +34,7 @@ export const MissionItemType = {
   RETURN_TO_HOME: 'returnToHome',
   GO_TO: 'goTo',
   CHANGE_ALTITUDE: 'changeAltitude',
+  CHANGE_HEADING: 'changeHeading',
   SET_PAYLOAD: 'setPayload',
 };
 
@@ -52,6 +61,28 @@ function isAltitudeParameterValid(alt) {
     !Number.isFinite(value) ||
     typeof reference !== 'string' ||
     !ALTITUDE_REFERENCES.includes(reference)
+  ) {
+    return false;
+  }
+
+  return true;
+}
+
+/**
+ * Returns whether the given parameter representing a heading change in a
+ * mission item is valid.
+ */
+function isHeadingParameterValid(heading) {
+  if (typeof heading !== 'object') {
+    return false;
+  }
+
+  const { value, mode } = heading;
+  if (
+    typeof value !== 'number' ||
+    !Number.isFinite(value) ||
+    typeof mode !== 'string' ||
+    !HEADING_MODES.includes(mode)
   ) {
     return false;
   }
@@ -104,6 +135,17 @@ export function isMissionItemValid(item) {
       {
         const { alt } = parameters;
         if (!isAltitudeParameterValid(alt)) {
+          return false;
+        }
+      }
+
+      break;
+
+    case MissionItemType.CHANGE_HEADING:
+      /* "Change heading" items need a heading */
+      {
+        const { heading } = parameters;
+        if (!isHeadingParameterValid(heading)) {
           return false;
         }
       }
