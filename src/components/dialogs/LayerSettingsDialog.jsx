@@ -32,6 +32,7 @@ import {
 import { LayerType } from '~/model/layers';
 import { createValidator, required } from '~/utils/validation';
 import { LayerSettings, stateObjectToLayerSettings } from '~/views/map/layers';
+import { getLayers, getLicensedLayerById } from '~/selectors/layers';
 
 const validator = createValidator({
   label: required,
@@ -56,7 +57,7 @@ const BasicLayerSettingsFormPresentation = ({
   >
     {({ handleSubmit }) => (
       <form id='basicLayerSettings' onSubmit={handleSubmit}>
-        <Box display='flex' pb={2}>
+        <Box display='flex' alignItems='center' pb={2}>
           <TextField
             name='label'
             variant='filled'
@@ -68,7 +69,10 @@ const BasicLayerSettingsFormPresentation = ({
           <Switch
             checked={layer.visible}
             color='primary'
-            disabled={layer.type === LayerType.UNTYPED}
+            disabled={
+              layer.type === LayerType.UNAVAILABLE ||
+              layer.type === LayerType.UNTYPED
+            }
             style={{ flex: 'none' }}
             onChange={onToggleLayerVisibility}
           />
@@ -204,7 +208,7 @@ class LayerSettingsContainerPresentation extends React.Component {
 const LayerSettingsContainer = connect(
   // mapStateToProps
   (state, ownProps) => ({
-    layer: state.map.layers.byId[ownProps.layerId],
+    layer: getLicensedLayerById(ownProps.layerId)(state),
   }),
   // mapDispatchToProps
   {}
@@ -267,7 +271,12 @@ class LayerSettingsDialogPresentation extends React.Component {
     );
 
     return (
-      <DraggableDialog fullWidth maxWidth='sm' open={dialogVisible} onClose={onClose}>
+      <DraggableDialog
+        fullWidth
+        maxWidth='sm'
+        open={dialogVisible}
+        onClose={onClose}
+      >
         <DialogContent style={{ overflow: 'auto' }}>
           <LayerSettingsContainer layerId={selectedLayerId} />
         </DialogContent>
@@ -303,7 +312,7 @@ const LayerSettingsDialog = connect(
   // mapStateToProps
   (state) => {
     const { layerSettings } = state.dialogs;
-    const { order } = state.map.layers;
+    const { order } = getLayers(state);
     const { dialogVisible, selectedLayer } = layerSettings;
     const layerIndex =
       selectedLayer && order ? order.indexOf(selectedLayer) : -1;
@@ -321,7 +330,7 @@ const LayerSettingsDialog = connect(
       const { layerSettings } = state.dialogs;
       const { selectedLayer: selectedLayerId } = layerSettings || {};
       const selectedLayer = selectedLayerId
-        ? state.map.layers.byId[selectedLayerId]
+        ? getLicensedLayerById(selectedLayerId)(state)
         : undefined;
 
       if (selectedLayer && selectedLayer.type === LayerType.UNTYPED) {

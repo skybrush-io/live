@@ -3,6 +3,8 @@ import { createSelector } from '@reduxjs/toolkit';
 import { isLayerVisible } from '~/model/layers';
 import { selectOrdered } from '~/utils/collections';
 
+import { getLicensedLayers } from './layers';
+
 /**
  * Selector that calculates and caches the list of all the connections that
  * the upstream server maintains to its auxiliary devices, in exactly the
@@ -28,7 +30,7 @@ export const getFeaturesInOrder = createSelector(
  * bottom layer first.
  */
 export const getLayersInBottomFirstOrder = createSelector(
-  (state) => state.map.layers,
+  getLicensedLayers,
   selectOrdered
 );
 

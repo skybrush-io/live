@@ -1,4 +1,5 @@
 import React from 'react';
+import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
 
 import { BaseLayerSettings, BaseLayer } from './base';
 import { BeaconsLayer } from './beacons';
@@ -18,6 +19,15 @@ import { UntypedLayerSettings, UntypedLayer } from './untyped';
 
 import { LayerType } from '~/model/layers';
 
+const UnavailableLayerSettings = () => (
+  <div key='_hint' style={{ position: 'relative', height: 48 }}>
+    <BackgroundHint
+      text='This layer is unavailable under the license of the
+            currently connected server.'
+    />
+  </div>
+);
+
 export const LayerSettings = {
   [LayerType.BASE]: BaseLayerSettings,
   [LayerType.GEOJSON]: GeoJSONLayerSettings,
@@ -28,6 +38,7 @@ export const LayerSettings = {
   [LayerType.TILE_SERVER]: TileServerLayerSettings,
   [LayerType.UAVS]: UAVsLayerSettings,
   [LayerType.UAV_TRACE]: UAVTraceLayerSettings,
+  [LayerType.UNAVAILABLE]: UnavailableLayerSettings,
   [LayerType.UNTYPED]: UntypedLayerSettings,
 };
 

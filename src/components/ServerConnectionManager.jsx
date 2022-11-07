@@ -30,8 +30,10 @@ import {
 } from '~/features/servers/selectors';
 import {
   addServerFeatures,
+  addServerLicenses,
   clearTimeSyncStatistics,
   clearServerFeatures,
+  clearServerLicenses,
   openTimeSyncWarningDialog,
   setCurrentServerConnectionState,
 } from '~/features/servers/slice';
@@ -405,6 +407,9 @@ async function executeTasksAfterConnection(dispatch, getState) {
       dispatch(addServerFeatures(features));
     }
 
+    // Adds the licenses received in the response from the server.
+    dispatch(addServerLicenses(await messageHub.query.getLicenseInformation()));
+
     // Check if the server supports drone show execution, and if so,
     // synchronize the show settings
     const supportsDroneShows = await messageHub.query.isExtensionLoaded('show');
@@ -468,6 +473,7 @@ async function executeTasksAfterDisconnection(dispatch) {
   dispatch(clearConnectionList());
   dispatch(clearDockList());
   dispatch(clearServerFeatures());
+  dispatch(clearServerLicenses());
   dispatch(clearStartTimeAndMethod());
   dispatch(clearTimeSyncStatistics());
   dispatch(clearWeatherData());

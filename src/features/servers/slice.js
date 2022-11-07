@@ -51,6 +51,7 @@ const { actions, reducer } = createSlice({
     current: {
       authentication: INVALID,
       features: {},
+      licenses: {},
       state: ConnectionState.DISCONNECTED,
       timeSync: {
         adjusting: false,
@@ -120,6 +121,27 @@ const { actions, reducer } = createSlice({
     },
 
     /**
+     * Adds one or more new licenses to the list of active licenses on the
+     * server.
+     */
+    addServerLicenses(state, action) {
+      let { payload } = action;
+
+      if (!Array.isArray(payload)) {
+        payload = [payload];
+      }
+
+      for (let item of payload) {
+        if (typeof item !== 'object') {
+          item = { id: String(item), features: [] };
+        }
+
+        const { id, features } = item;
+        state.current.licenses[id] = features;
+      }
+    },
+
+    /**
      * Notifies the state store that we have started adjusting the time on the
      * server.
      */
@@ -178,6 +200,14 @@ const { actions, reducer } = createSlice({
      */
     clearServerFeatures(state) {
       state.current.features = {};
+    },
+
+    /**
+     * Clears the list of licenses that we know are active on the server that
+     * we are connected to.
+     */
+    clearServerLicenses(state) {
+      state.current.licenses = {};
     },
 
     /**
@@ -337,12 +367,14 @@ export const {
   addDetectedServer,
   addInferredServer,
   addServerFeatures,
+  addServerLicenses,
   authenticateToServerPromiseFulfilled,
   authenticateToServerPromisePending,
   authenticateToServerPromiseRejected,
   clearAuthenticatedUser,
   clearAuthenticationToken,
   clearServerFeatures,
+  clearServerLicenses,
   clearTimeSyncStatistics,
   closeTimeSyncWarningDialog,
   openTimeSyncWarningDialog,

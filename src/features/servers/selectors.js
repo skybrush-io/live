@@ -97,6 +97,16 @@ export const getCurrentServerState = (state) => state.servers.current;
 const getCurrentServerFeatures = (state) => state.servers.current.features;
 
 /**
+ * Returns the list of licenses that we know are active on the current Skybrush
+ * server.
+ *
+ * @param  {Object}  state  the state of the application
+ * @return {Object[]}  an object mapping ids of licenses active on the current
+ *     Skybrush server to their list of available feature sets
+ */
+const getCurrentServerLicenses = (state) => state.servers.current.licenses;
+
+/**
  * Selector that calculates and caches the list of all the servers detected
  * on the local network, in exactly the same order as they should appear on
  * the UI.
@@ -198,6 +208,22 @@ export const supportsVirtualDrones =
  * Returns whether the server we are connected to supports offline map caching.
  */
 export const supportsMapCaching = makeSupportsFeatureSelector('map_cache');
+
+/**
+ * Creates a selector that returns true if and only if a license containing
+ * the given feature set is active on the currently connected server.
+ */
+const makeHasActiveLicenseSelector = (name) =>
+  createSelector(getCurrentServerLicenses, (licenses) =>
+    Object.values(licenses).some((license) =>
+      license.some((feature) => feature.type === name)
+    )
+  );
+
+/**
+ * Returns whether the server we are connected to has an activated pro license.
+ */
+export const hasActiveProLicense = makeHasActiveLicenseSelector('pro');
 
 /**
  * Returns whether the server requires the user to authenticate before
