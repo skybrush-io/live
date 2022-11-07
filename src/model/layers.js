@@ -7,6 +7,7 @@ import cloneDeep from 'lodash-es/cloneDeep';
 import has from 'lodash-es/has';
 import React from 'react';
 
+import Block from '@material-ui/icons/Block';
 import FileAttachment from '@material-ui/icons/Attachment';
 import FileCloud from '@material-ui/icons/Cloud';
 import Flight from '@material-ui/icons/Flight';
@@ -41,6 +42,7 @@ export const LayerType = {
   TILE_SERVER: 'tileServer',
   UAVS: 'uavs',
   UAV_TRACE: 'uavTrace',
+  UNAVAILABLE: 'unavailable',
   UNTYPED: 'untyped',
 };
 
@@ -62,6 +64,8 @@ export const LayerTypes = [
   LayerType.GEOJSON,
   LayerType.HEATMAP,
 ];
+
+export const ProLayerTypes = [LayerType.IMAGE];
 
 /**
  * Enum containing constants for the various tile server types that we support.
@@ -212,6 +216,10 @@ const _propertiesForLayerTypes = {
       trailWidth: 2,
       trailColor: { r: 0, g: 0, b: 0, a: 1 },
     },
+  },
+  [LayerType.UNAVAILABLE]: {
+    label: 'Unavailable layer',
+    icon: <Block />,
   },
   [LayerType.UNTYPED]: {
     label: 'Untyped layer',
