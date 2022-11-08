@@ -51,7 +51,7 @@ const { actions, reducer } = createSlice({
     current: {
       authentication: INVALID,
       features: {},
-      licenses: {},
+      license: null,
       state: ConnectionState.DISCONNECTED,
       timeSync: {
         adjusting: false,
@@ -121,27 +121,6 @@ const { actions, reducer } = createSlice({
     },
 
     /**
-     * Adds one or more new licenses to the list of active licenses on the
-     * server.
-     */
-    addServerLicenses(state, action) {
-      let { payload } = action;
-
-      if (!Array.isArray(payload)) {
-        payload = [payload];
-      }
-
-      for (let item of payload) {
-        if (typeof item !== 'object') {
-          item = { id: String(item), features: [] };
-        }
-
-        const { id, features } = item;
-        state.current.licenses[id] = features;
-      }
-    },
-
-    /**
      * Notifies the state store that we have started adjusting the time on the
      * server.
      */
@@ -203,11 +182,10 @@ const { actions, reducer } = createSlice({
     },
 
     /**
-     * Clears the list of licenses that we know are active on the server that
-     * we are connected to.
+     * Clears the information about the currently active license on the server.
      */
-    clearServerLicenses(state) {
-      state.current.licenses = {};
+    clearServerLicense(state) {
+      state.current.license = null;
     },
 
     /**
@@ -304,6 +282,13 @@ const { actions, reducer } = createSlice({
     },
 
     /**
+     * Sets the information about the currently active license on the server.
+     */
+    setServerLicense(state, { payload: license }) {
+      state.current.license = license;
+    },
+
+    /**
      * Action factory that creates an action that notifies the store that the
      * scanning for servers has started.
      */
@@ -367,20 +352,20 @@ export const {
   addDetectedServer,
   addInferredServer,
   addServerFeatures,
-  addServerLicenses,
   authenticateToServerPromiseFulfilled,
   authenticateToServerPromisePending,
   authenticateToServerPromiseRejected,
   clearAuthenticatedUser,
   clearAuthenticationToken,
   clearServerFeatures,
-  clearServerLicenses,
+  clearServerLicense,
   clearTimeSyncStatistics,
   closeTimeSyncWarningDialog,
   openTimeSyncWarningDialog,
   removeAllDetectedServers,
   setAuthenticatedUser,
   setCurrentServerConnectionState,
+  setServerLicense,
   startScanning,
   stopScanning,
   updateCurrentServerAuthenticationSettings,

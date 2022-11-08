@@ -7,7 +7,7 @@ import { createSelector } from '@reduxjs/toolkit';
 
 import {
   isConnected,
-  hasActiveProLicense,
+  hasLicenseWithProFeatures,
 } from '~/features/servers/selectors.js';
 import { LayerType, ProLayerTypes } from '~/model/layers';
 
@@ -26,7 +26,7 @@ export const getLayers = (state) => state.map.layers;
 export const getLicensedLayers = createSelector(
   getLayers,
   isConnected,
-  hasActiveProLicense,
+  hasLicenseWithProFeatures,
   ({ order, byId }, isConnected, isProLicenseActive) => ({
     order,
     byId: isConnected
