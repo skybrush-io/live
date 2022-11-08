@@ -30,12 +30,12 @@ import {
 } from '~/features/servers/selectors';
 import {
   addServerFeatures,
-  addServerLicenses,
   clearTimeSyncStatistics,
   clearServerFeatures,
-  clearServerLicenses,
+  clearServerLicense,
   openTimeSyncWarningDialog,
   setCurrentServerConnectionState,
+  setServerLicense,
 } from '~/features/servers/slice';
 import {
   clearStartTimeAndMethod,
@@ -407,8 +407,8 @@ async function executeTasksAfterConnection(dispatch, getState) {
       dispatch(addServerFeatures(features));
     }
 
-    // Adds the licenses received in the response from the server.
-    dispatch(addServerLicenses(await messageHub.query.getLicenseInformation()));
+    // Set the license received in the response from the server.
+    dispatch(setServerLicense(await messageHub.query.getLicenseInformation()));
 
     // Check if the server supports drone show execution, and if so,
     // synchronize the show settings
@@ -473,7 +473,7 @@ async function executeTasksAfterDisconnection(dispatch) {
   dispatch(clearConnectionList());
   dispatch(clearDockList());
   dispatch(clearServerFeatures());
-  dispatch(clearServerLicenses());
+  dispatch(clearServerLicense());
   dispatch(clearStartTimeAndMethod());
   dispatch(clearTimeSyncStatistics());
   dispatch(clearWeatherData());

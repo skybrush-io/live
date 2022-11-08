@@ -97,14 +97,14 @@ export const getCurrentServerState = (state) => state.servers.current;
 const getCurrentServerFeatures = (state) => state.servers.current.features;
 
 /**
- * Returns the list of licenses that we know are active on the current Skybrush
+ * Returns the license that is currently active on the connected Skybrush
  * server.
  *
  * @param  {Object}  state  the state of the application
- * @return {Object[]}  an object mapping ids of licenses active on the current
- *     Skybrush server to their list of available feature sets
+ * @return {Object[]}  an object describing the license active on the currently
+ *     connected Skybrush server
  */
-const getCurrentServerLicenses = (state) => state.servers.current.licenses;
+const getCurrentServerLicense = (state) => state.servers.current.license;
 
 /**
  * Selector that calculates and caches the list of all the servers detected
@@ -211,19 +211,19 @@ export const supportsMapCaching = makeSupportsFeatureSelector('map_cache');
 
 /**
  * Creates a selector that returns true if and only if a license containing
- * the given feature set is active on the currently connected server.
+ * the given feature type is active on the currently connected server.
  */
-const makeHasActiveLicenseSelector = (name) =>
-  createSelector(getCurrentServerLicenses, (licenses) =>
-    Object.values(licenses).some((license) =>
-      license.some((feature) => feature.type === name)
-    )
+const makeHasLicenseForFeatureTypeSelector = (name) =>
+  createSelector(getCurrentServerLicense, (license) =>
+    license?.features?.some((feature) => feature.type === name)
   );
 
 /**
- * Returns whether the server we are connected to has an activated pro license.
+ * Returns whether the server we are connected to has an activated license,
+ * which enables pro features.
  */
-export const hasActiveProLicense = makeHasActiveLicenseSelector('pro');
+export const hasLicenseWithProFeatures =
+  makeHasLicenseForFeatureTypeSelector('pro');
 
 /**
  * Returns whether the server requires the user to authenticate before
