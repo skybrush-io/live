@@ -14,6 +14,7 @@ import { listOf } from '~/components/helpers/lists';
 import { showFeatureEditorDialog } from '~/features/map-features/actions';
 import { getNameOfFeatureType, getIconOfFeatureType } from '~/model/features';
 import { getFeaturesInOrder } from '~/selectors/ordered';
+import { getSelectedFeatureIds } from '~/selectors/selection';
 
 /**
  * Presentation component for a single entry in the feature list.
@@ -22,10 +23,10 @@ import { getFeaturesInOrder } from '~/selectors/ordered';
  * @return {Object} the React presentation component
  */
 const FeatureListEntry = (props) => {
-  const { feature, onEditFeature } = props;
+  const { feature, onEditFeature, selected } = props;
   const { id, color, label, type } = feature;
   return (
-    <ListItem button data-id={id} onClick={onEditFeature}>
+    <ListItem button selected={selected} data-id={id} onClick={onEditFeature}>
       <ListItemIcon style={{ color }}>
         {getIconOfFeatureType(type)}
       </ListItemIcon>
@@ -47,12 +48,13 @@ FeatureListEntry.propTypes = {
  * Presentation component for the entire feature list.
  */
 export const FeatureListPresentation = listOf(
-  (feature, { onEditFeature }) => {
+  (feature, { onEditFeature, selectedFeatureIds }) => {
     return (
       <FeatureListEntry
         key={feature.id}
         feature={feature}
         onEditFeature={onEditFeature}
+        selected={selectedFeatureIds.includes(feature.id)}
       />
     );
   },
@@ -68,6 +70,7 @@ export default connect(
   (state) => ({
     dense: true,
     features: getFeaturesInOrder(state),
+    selectedFeatureIds: getSelectedFeatureIds(state),
   }),
   // mapDispatchToProps
   (dispatch) => ({
