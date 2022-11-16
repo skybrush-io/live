@@ -11,7 +11,7 @@ import { Feature, geom, interaction, layer, source } from '@collmot/ol-react';
 import { Tool } from '../tools';
 
 import { getGeofencePolygonId } from '~/features/mission/selectors';
-
+import { showError } from '~/features/snackbar/actions';
 import { FeatureType, LabelStyle } from '~/model/features';
 import { featureIdToGlobalId } from '~/model/identifiers';
 import { handleFeatureUpdatesInOpenLayers } from '~/model/openlayers';
@@ -66,7 +66,11 @@ const geometryForFeature = (feature) => {
       // OpenLayers requires the last coordinate to be the same as the first
       // one when a polygon is drawn
       closePolygon(coordinates);
-      return <geom.Polygon coordinates={coordinates} />;
+      const holes = (feature.holes ?? []).map((hole) =>
+        hole.map(unary(mapViewCoordinateFromLonLat))
+      );
+      holes.forEach(closePolygon);
+      return <geom.Polygon coordinates={coordinates} holes={holes} />;
 
     default:
       return null;
@@ -251,6 +255,7 @@ function getFeaturesThatChanged(features, snapshot) {
 const FeaturesLayerPresentation = ({
   features,
   geofencePolygonId,
+  onError,
   onFeatureModificationStarted,
   onFeaturesModified,
   selectedFeatureIds,
@@ -310,6 +315,13 @@ const FeaturesLayerPresentation = ({
               feature.id === geofencePolygonId
             )
           )}
+        {selectedTool === Tool.CUT_HOLE ? (
+          <interaction.CutHole
+            onCutStart={onModifyStart}
+            onCutEnd={onModifyEnd}
+            onError={onError}
+          />
+        ) : null}
         {selectedTool === Tool.EDIT_FEATURE ? (
           <interaction.Modify
             onModifyStart={onModifyStart}
@@ -329,6 +341,7 @@ FeaturesLayerPresentation.propTypes = {
   selectedFeatureIds: PropTypes.arrayOf(PropTypes.string).isRequired,
   geofencePolygonId: PropTypes.string,
 
+  onError: PropTypes.func,
   onFeatureModificationStarted: PropTypes.func,
   onFeaturesModified: PropTypes.func,
 };
@@ -342,6 +355,9 @@ export const FeaturesLayer = connect(
   }),
   // mapDispatchToProps
   (dispatch) => ({
+    onError(message) {
+      dispatch(showError(message));
+    },
     onFeaturesModified(event, features) {
       handleFeatureUpdatesInOpenLayers(features, dispatch, {
         type: 'modify',

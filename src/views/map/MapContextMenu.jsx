@@ -13,6 +13,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 
 import ActionDelete from '@material-ui/icons/Delete';
 import Assignment from '@material-ui/icons/Assignment';
+import ContentCut from '~/icons/ContentCut';
 import Edit from '@material-ui/icons/Edit';
 import Flight from '@material-ui/icons/Flight';
 import FlightTakeoff from '@material-ui/icons/FlightTakeoff';
@@ -33,7 +34,10 @@ import { hasFeature } from '~/utils/configuration';
 import * as messaging from '~/utils/messaging';
 
 import { setFlatEarthCoordinateSystemOrigin } from '~/features/map/origin';
-import { showFeatureEditorDialog } from '~/features/map-features/actions';
+import {
+  cutFeature,
+  showFeatureEditorDialog,
+} from '~/features/map-features/actions';
 import { removeFeaturesByIds } from '~/features/map-features/slice';
 import {
   clearGeofencePolygonId,
@@ -265,6 +269,25 @@ class MapContextMenu extends React.Component {
             );
           }
 
+          if (
+            hasSelectedFeatures &&
+            selectedFeatureIds.length == 2 &&
+            selectedFeatureTypes.every((t) => t === 'polygon')
+          ) {
+            result.push(
+              <MenuItem
+                key='Cut / Difference'
+                dense
+                onClick={this._cutSelectedFeatures}
+              >
+                <ListItemIcon>
+                  <ContentCut />
+                </ListItemIcon>
+                Difference
+              </MenuItem>
+            );
+          }
+
           if (hasSelectedFeatures) {
             result.push(
               <Divider key='div6' />,
@@ -318,6 +341,13 @@ class MapContextMenu extends React.Component {
     const selectedUAVIds = [...context.selectedUAVIds];
     /* TODO(ntamas): use AGL of selected UAVs */
     this.props.showFlyToTargetDialog({ coords, uavIds: selectedUAVIds });
+  };
+
+  _cutSelectedFeatures = (_event, context) => {
+    const { cutFeature } = this.props;
+    const { selectedFeatureIds } = context;
+
+    cutFeature(selectedFeatureIds[1], selectedFeatureIds[0]);
   };
 
   _editSelectedFeature = (_event, context) => {
@@ -456,6 +486,7 @@ const MapContextMenuContainer = connect(
   // mapDispatchToProps
   {
     clearGeofencePolygonId: hasGeofence ? clearGeofencePolygonId : null,
+    cutFeature: cutFeature,
     editFeature: hasFeatures ? showFeatureEditorDialog : null,
     openUAVDetailsDialog,
     removeFeaturesByIds: hasFeatures ? removeFeaturesByIds : null,

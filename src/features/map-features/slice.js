@@ -141,15 +141,6 @@ const { actions, reducer } = createSlice({
       state.byId[id].color = color;
     },
 
-    updateFeatureCoordinatesByIds(state, action) {
-      for (const [id, points] of Object.entries(action.payload)) {
-        const feature = state.byId[id];
-        if (feature) {
-          feature.points = points;
-        }
-      }
-    },
-
     updateFeatureFillVisible(state, action) {
       const { id, filled } = action.payload;
       state.byId[id].filled = Boolean(filled);
@@ -158,6 +149,15 @@ const { actions, reducer } = createSlice({
     updateFeaturePointsVisible(state, action) {
       const { id, visible } = action.payload;
       state.byId[id].showPoints = Boolean(visible);
+    },
+
+    updateFeaturePropertiesByIds(state, action) {
+      for (const [id, properties] of Object.entries(action.payload)) {
+        const feature = state.byId[id];
+        if (feature) {
+          Object.assign(feature, properties)
+        }
+      }
     },
 
     updateFeatureVisibility(state, action) {
@@ -172,9 +172,9 @@ export const {
   removeFeaturesByIds,
   renameFeature,
   setFeatureColor,
-  updateFeatureCoordinatesByIds,
   updateFeatureFillVisible,
   updateFeaturePointsVisible,
+  updateFeaturePropertiesByIds,
   updateFeatureVisibility,
 } = actions;
 

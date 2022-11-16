@@ -19,6 +19,7 @@ export const Tool = {
   DRAW_PATH: 'drawPath',
   DRAW_POLYGON: 'drawPolygon',
 
+  CUT_HOLE: 'cutHole',
   EDIT_FEATURE: 'editFeature',
 };
 

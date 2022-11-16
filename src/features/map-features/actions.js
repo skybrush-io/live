@@ -4,7 +4,7 @@ import { openUAVDetailsDialog } from '~/features/uavs/details';
 import { globalIdToUavId, isDockId, isUavId } from '~/model/identifiers';
 
 import { getProposedIdForNewFeature } from './selectors';
-import { addFeatureById } from './slice';
+import { addFeatureById, updateFeaturePropertiesByIds } from './slice';
 
 import { actions as editorActions } from './editor';
 
@@ -20,6 +20,25 @@ export const addFeatureWithName = (feature, name) => (dispatch, getState) => {
   const id = getProposedIdForNewFeature(getState(), feature, name);
   dispatch(addFeatureById({ id, feature }));
 };
+
+export const cutFeature =
+  (minuendId, substrahendId) => (dispatch, getState) => {
+    const state = getState();
+    const minuend = state.features.byId[minuendId];
+    const substrahend = state.features.byId[substrahendId];
+
+    dispatch(
+      updateFeaturePropertiesByIds({
+        [minuendId]: {
+          holes: [
+            ...(minuend.holes ?? []),
+            substrahend.points,
+            ...(substrahend.holes ?? []),
+          ],
+        },
+      })
+    );
+  };
 
 /**
  * Action that shows the details dialog of a given feature if it has one.

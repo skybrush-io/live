@@ -8,7 +8,7 @@ import isNil from 'lodash-es/isNil';
 import unary from 'lodash-es/unary';
 
 import { updateFlatEarthCoordinateSystem } from '~/features/map/origin';
-import { updateFeatureCoordinatesByIds } from '~/features/map-features/slice';
+import { updateFeaturePropertiesByIds } from '~/features/map-features/slice';
 import {
   moveOutdoorShowOriginByMapCoordinateDelta,
   rotateOutdoorShowOrientationByAngleAroundPoint,
@@ -91,16 +91,15 @@ export function createFeatureFromOpenLayers(olFeature) {
       break;
 
     case 'Polygon':
-      if (coordinates.length !== 1) {
-        throw new Error('Polygon geometry should not have any holes');
-      }
+      const [boundary, ...holes] = coordinates;
 
       Object.assign(result, {
         type: FeatureType.POLYGON,
         filled: true,
-        points: coordinates[0]
-          .map(unary(lonLatFromMapViewCoordinate))
-          .slice(0, -1),
+        points: boundary.map(unary(lonLatFromMapViewCoordinate)).slice(0, -1),
+        holes: holes.map((hole) =>
+          hole.map(unary(lonLatFromMapViewCoordinate)).slice(0, -1)
+        ),
       });
       break;
 
@@ -140,8 +139,7 @@ export function handleFeatureUpdatesInOpenLayers(
     const userFeatureId = globalIdToFeatureId(globalId);
     if (userFeatureId) {
       // Feature is a user-defined feature so update it in the Redux store
-      updatedUserFeatures[userFeatureId] =
-        createFeatureFromOpenLayers(feature).points;
+      updatedUserFeatures[userFeatureId] = createFeatureFromOpenLayers(feature);
 
       continue;
     }
@@ -209,6 +207,6 @@ export function handleFeatureUpdatesInOpenLayers(
   }
 
   if (!isEmpty(updatedUserFeatures)) {
-    dispatch(updateFeatureCoordinatesByIds(updatedUserFeatures));
+    dispatch(updateFeaturePropertiesByIds(updatedUserFeatures));
   }
 }

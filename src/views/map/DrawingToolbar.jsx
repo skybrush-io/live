@@ -15,6 +15,7 @@ import partial from 'lodash-es/partial';
 import { connect } from 'react-redux';
 
 import { TooltipWithContainerFromContext as Tooltip } from '~/containerContext';
+import ContentCut from '~/icons/ContentCut';
 import EditFeature from '~/icons/EditFeature';
 import { setSelectedTool } from '~/features/map/tools';
 
@@ -72,6 +73,12 @@ const DrawingToolbarPresentation = ({ onToolSelected, selectedTool }) => {
       <Tooltip content='Draw polygon' placement='right'>
         <IconButton onClick={partial(onToolSelected, Tool.DRAW_POLYGON)}>
           <StarBorder color={colorForTool(Tool.DRAW_POLYGON)} />
+        </IconButton>
+      </Tooltip>
+
+      <Tooltip content='Cut hole into polygon' placement='right'>
+        <IconButton onClick={partial(onToolSelected, Tool.CUT_HOLE)}>
+          <ContentCut color={colorForTool(Tool.CUT_HOLE)} />
         </IconButton>
       </Tooltip>
 

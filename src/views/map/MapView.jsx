@@ -353,6 +353,7 @@ const toolClasses = {
   [Tool.DRAW_RECTANGLE]: 'tool-draw tool-draw-rectangle',
   [Tool.DRAW_PATH]: 'tool-draw tool-draw-path',
   [Tool.DRAW_POLYGON]: 'tool-draw tool-draw-polygon',
+  [Tool.CUT_HOLE]: 'tool-edit tool-cut-hole',
   [Tool.EDIT_FEATURE]: 'tool-edit tool-edit-feature',
 };
 
