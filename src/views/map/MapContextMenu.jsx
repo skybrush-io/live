@@ -101,6 +101,7 @@ class MapContextMenu extends React.Component {
       >
         {({
           selectedFeatureIds,
+          selectedFeatureLabels,
           selectedFeatureTypes,
           selectedUAVIds,
           geofencePolygonId,
@@ -271,19 +272,16 @@ class MapContextMenu extends React.Component {
 
           if (
             hasSelectedFeatures &&
-            selectedFeatureIds.length == 2 &&
+            selectedFeatureIds.length === 2 &&
             selectedFeatureTypes.every((t) => t === 'polygon')
           ) {
             result.push(
-              <MenuItem
-                key='Cut / Difference'
-                dense
-                onClick={this._cutSelectedFeatures}
-              >
+              <MenuItem key='cut' dense onClick={this._cutSelectedFeatures}>
                 <ListItemIcon>
                   <ContentCut />
                 </ListItemIcon>
-                Difference
+                Subtract {selectedFeatureLabels[0] ?? 'unnamed polygon'}{' '}
+                from {selectedFeatureLabels[1] ?? 'unnamed polygon'}
               </MenuItem>
             );
           }
