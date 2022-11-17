@@ -27,7 +27,7 @@ import {
   getActiveUAVIds,
 } from '~/features/uavs/selectors';
 import { clearLastUploadResultForJobType } from '~/features/upload/slice';
-import { FeatureType } from '~/model/features';
+import { FeatureType, LabelStyle } from '~/model/features';
 import { getFeaturesInOrder } from '~/selectors/ordered';
 import {
   lonLatFromMapViewCoordinate,
@@ -139,6 +139,8 @@ const addGeofencePolygonBasedOnShowTrajectories =
       : points;
 
     const geofencePolygon = {
+      label: 'Geofence',
+      labelStyle: LabelStyle.HIDDEN,
       /* use a line string as the geofence, not a polygon -- if we use a polygon,
        * it means that any click inside the geofence would be considered as a
        * "hit" for the geofence feature */
