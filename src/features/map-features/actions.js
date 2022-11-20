@@ -1,7 +1,15 @@
+import turfDifference from '@turf/difference';
+
+import { setSelection } from '~/features/map/selection';
 import { getNearestFeatureIdForTooltip } from '~/features/session/selectors';
 import { setFeatureIdForTooltip } from '~/features/session/slice';
 import { openUAVDetailsDialog } from '~/features/uavs/details';
-import { globalIdToUavId, isDockId, isUavId } from '~/model/identifiers';
+import {
+  featureIdToGlobalId,
+  globalIdToUavId,
+  isDockId,
+  isUavId,
+} from '~/model/identifiers';
 
 import { getProposedIdForNewFeature } from './selectors';
 import { addFeatureById, updateFeaturePropertiesByIds } from './slice';
@@ -27,17 +35,31 @@ export const cutFeature =
     const minuend = state.features.byId[minuendId];
     const substrahend = state.features.byId[substrahendId];
 
+    const makeTurfPolygonFromFeature = (feature) => ({
+      type: 'Feature',
+      geometry: {
+        type: 'Polygon',
+        coordinates: [feature.points, ...(feature.holes ?? [])],
+      },
+    });
+
+    const result = turfDifference(
+      makeTurfPolygonFromFeature(minuend),
+      makeTurfPolygonFromFeature(substrahend)
+    );
+
+    const [points, ...holes] =
+      result.geometry.type === 'MultiPolygon'
+        ? result.geometry.coordinates[0]
+        : result.geometry.coordinates;
+
     dispatch(
       updateFeaturePropertiesByIds({
-        [minuendId]: {
-          holes: [
-            ...(minuend.holes ?? []),
-            substrahend.points,
-            ...(substrahend.holes ?? []),
-          ],
-        },
+        [minuendId]: { points, holes },
       })
     );
+
+    dispatch(setSelection([featureIdToGlobalId(substrahendId)]));
   };
 
 /**
