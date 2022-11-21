@@ -90,18 +90,19 @@ export function createFeatureFromOpenLayers(olFeature) {
       });
       break;
 
-    case 'Polygon':
-      const [boundary, ...holes] = coordinates;
+    case 'Polygon': {
+      const [points, ...holes] = coordinates.map((linearRing) =>
+        linearRing.map(unary(lonLatFromMapViewCoordinate)).slice(0, -1)
+      );
 
       Object.assign(result, {
         type: FeatureType.POLYGON,
         filled: true,
-        points: boundary.map(unary(lonLatFromMapViewCoordinate)).slice(0, -1),
-        holes: holes.map((hole) =>
-          hole.map(unary(lonLatFromMapViewCoordinate)).slice(0, -1)
-        ),
+        points,
+        holes,
       });
       break;
+    }
 
     default:
       throw new Error('Unsupported feature geometry type: ' + type);

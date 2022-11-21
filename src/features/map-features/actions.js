@@ -10,9 +10,14 @@ import {
   isDockId,
   isUavId,
 } from '~/model/identifiers';
+import { chooseUniqueId } from '~/utils/naming';
 
 import { getProposedIdForNewFeature } from './selectors';
-import { addFeatureById, updateFeaturePropertiesByIds } from './slice';
+import {
+  addFeatureById,
+  removeFeaturesByIds,
+  updateFeaturePropertiesByIds,
+} from './slice';
 
 import { actions as editorActions } from './editor';
 
@@ -48,16 +53,35 @@ export const cutFeature =
       makeTurfPolygonFromFeature(substrahend)
     );
 
-    const [points, ...holes] =
-      result.geometry.type === 'MultiPolygon'
-        ? result.geometry.coordinates[0]
-        : result.geometry.coordinates;
+    switch (result.geometry.type) {
+      case 'Polygon': {
+        const [points, ...holes] = result.geometry.coordinates;
+        dispatch(
+          updateFeaturePropertiesByIds({
+            [minuendId]: { points, holes },
+          })
+        );
 
-    dispatch(
-      updateFeaturePropertiesByIds({
-        [minuendId]: { points, holes },
-      })
-    );
+        break;
+      }
+
+      case 'MultiPolygon': {
+        dispatch(removeFeaturesByIds([minuendId]));
+        for (const [points, ...holes] of result.geometry.coordinates) {
+          dispatch(
+            addFeatureById({
+              id: chooseUniqueId(minuendId, getState().features.order),
+              feature: { ...minuend, points, holes },
+            })
+          );
+        }
+
+        break;
+      }
+
+      default:
+        throw new Error(`Unknown geometry type: ${result.geometry.type}`);
+    }
 
     dispatch(setSelection([featureIdToGlobalId(substrahendId)]));
   };

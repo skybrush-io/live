@@ -62,15 +62,21 @@ const geometryForFeature = (feature) => {
     case FeatureType.LINE_STRING:
       return <geom.LineString coordinates={coordinates} />;
 
-    case FeatureType.POLYGON:
+    case FeatureType.POLYGON: {
       // OpenLayers requires the last coordinate to be the same as the first
       // one when a polygon is drawn
       closePolygon(coordinates);
+
       const holes = (feature.holes ?? []).map((hole) =>
         hole.map(unary(mapViewCoordinateFromLonLat))
       );
-      holes.forEach(closePolygon);
+
+      for (const hole of holes) {
+        closePolygon(hole);
+      }
+
       return <geom.Polygon coordinates={coordinates} holes={holes} />;
+    }
 
     default:
       return null;

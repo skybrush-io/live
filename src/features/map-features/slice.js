@@ -115,7 +115,7 @@ const { actions, reducer } = createSlice({
         visible: true,
         filled: true,
         showPoints: false,
-        ...JSON.parse(JSON.stringify(feature)),
+        ...structuredClone(feature),
         id,
       };
 
