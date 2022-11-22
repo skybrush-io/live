@@ -8,6 +8,7 @@ import { connect } from 'react-redux';
 
 import { Feature, geom, interaction, layer, source } from '@collmot/ol-react';
 
+import { snapEndToStart } from '../interactions/utils';
 import { Tool } from '../tools';
 
 import { getGeofencePolygonId } from '~/features/mission/selectors';
@@ -287,33 +288,42 @@ const FeaturesLayerPresentation = ({
 
   const onModifyStart = useCallback(
     (event) => {
+      const featureArray = event.features.getArray();
+
+      featureArray
+        .find((f) => f.getId() === featureIdToGlobalId(geofencePolygonId))
+        ?.getGeometry()
+        .on('change', snapEndToStart);
+
       // Take a snapshot of all the features in the event so we can figure out
       // later which ones were modified
-      featureSnapshot.current = takeFeatureRevisionSnapshot(
-        event.features.getArray()
-      );
+      featureSnapshot.current = takeFeatureRevisionSnapshot(featureArray);
       if (onFeatureModificationStarted) {
         onFeatureModificationStarted(event);
       }
     },
-    [onFeatureModificationStarted]
+    [onFeatureModificationStarted, geofencePolygonId]
   );
 
   const onModifyEnd = useCallback(
     (event) => {
+      const featureArray = event.features.getArray();
+
+      featureArray
+        .find((f) => f.getId() === featureIdToGlobalId(geofencePolygonId))
+        ?.getGeometry()
+        .un('change', snapEndToStart);
+
       if (onFeaturesModified) {
         onFeaturesModified(
           event,
-          getFeaturesThatChanged(
-            event.features.getArray(),
-            featureSnapshot.current
-          )
+          getFeaturesThatChanged(featureArray, featureSnapshot.current)
         );
       }
 
       featureSnapshot.current = null;
     },
-    [onFeaturesModified]
+    [onFeaturesModified, geofencePolygonId]
   );
 
   return (

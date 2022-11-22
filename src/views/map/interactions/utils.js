@@ -1,5 +1,6 @@
 import includes from 'lodash-es/includes';
 import isArray from 'lodash-es/isArray';
+import isEqual from 'lodash-es/isEqual';
 import isFunction from 'lodash-es/isFunction';
 import stubFalse from 'lodash-es/stubFalse';
 import stubTrue from 'lodash-es/stubTrue';
@@ -29,3 +30,17 @@ export function createLayerSelectorFunction(layers) {
 
   return stubTrue;
 }
+
+/**
+ * Callback for keeping an OpenLayers LineString geometry's ends connected.
+ *
+ * @param {ol.events.Event} event
+ *        the change event originating from the modification of the geometry
+ */
+export const snapEndToStart = (event) => {
+  const coordinates = event.target.getCoordinates();
+  if (!isEqual(coordinates.at(0), coordinates.at(-1))) {
+    coordinates.splice(-1, 1, coordinates[0]);
+    event.target.setCoordinates(coordinates);
+  }
+};
