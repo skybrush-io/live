@@ -5,6 +5,7 @@
 
 import difference from 'lodash-es/difference';
 import uniq from 'lodash-es/uniq';
+import xor from 'lodash-es/xor';
 
 import { createSlice } from '@reduxjs/toolkit';
 
@@ -72,6 +73,10 @@ const { actions, reducer } = createSlice({
     setSelection(_state, action) {
       return updateSelection([], action.payload);
     },
+
+    toggleInSelection(state, action) {
+      return updateSelection([], xor(state, action.payload));
+    },
   },
 
   extraReducers: {
@@ -91,6 +96,7 @@ export const {
   removeFromSelection,
   selectAllUAVs,
   setSelection,
+  toggleInSelection,
 } = actions;
 
 export default reducer;
