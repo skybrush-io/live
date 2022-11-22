@@ -1,7 +1,7 @@
 import createColor from 'color';
 import unary from 'lodash-es/unary';
 import PropTypes from 'prop-types';
-import { MultiPoint } from 'ol/geom';
+import { MultiPoint, MultiPolygon, Polygon } from 'ol/geom';
 import { Circle, Style, Text } from 'ol/style';
 import React, { useCallback, useRef } from 'react';
 import { connect } from 'react-redux';
@@ -30,6 +30,7 @@ import {
   whiteThickOutline,
   whiteThinOutline,
   dashedThickOutline,
+  dashedThinOutline,
 } from '~/utils/styles';
 
 // === Helper functions ===
@@ -92,7 +93,7 @@ const labelStrokes = {
 const extractPointsFromLineString = (feature) =>
   new MultiPoint(feature.getGeometry().getCoordinates());
 const extractPointsFromPolygon = (feature) =>
-  new MultiPoint(feature.getGeometry().getCoordinates()[0]);
+  new MultiPoint(feature.getGeometry().getCoordinates().flat());
 
 const styleForPointsOfLineString = (feature, selected, color) =>
   new Style({
@@ -180,6 +181,17 @@ const styleForFeature = (feature, selected = false, isGeofence = false) => {
           stroke: (isGeofence ? dashedThickOutline : thinOutline)(
             parsedColor.rgb().array()
           ),
+          geometry(feature) {
+            const boundary = feature.getGeometry().getCoordinates()[0];
+            return new Polygon([boundary]);
+          },
+        }),
+        new Style({
+          stroke: dashedThinOutline(parsedColor.rgb().array()),
+          geometry(feature) {
+            const [, ...holes] = feature.getGeometry().getCoordinates();
+            return new MultiPolygon(holes.map((hole) => [hole]));
+          },
         })
       );
 

@@ -27,3 +27,4 @@ export const whiteThinOutline = thinOutline('white');
 export const whiteThickOutline = thickOutline('white');
 
 export const dashedThickOutline = (color) => stroke(color, 5, [5, 10]);
+export const dashedThinOutline = (color) => stroke(color, 2, [1, 5]);
