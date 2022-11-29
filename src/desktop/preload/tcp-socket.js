@@ -3,7 +3,7 @@ const net = require('net');
 class TCPSocket {
   constructor(
     { address, port },
-    { connectionTimeoutLength },
+    { connectTimeout },
     {
       onConnected,
       onConnecting,
@@ -36,17 +36,20 @@ class TCPSocket {
       onConnectionError(url, error);
     });
     this._socket.on('end', () => {
-      onDisconnected(url);
+      onDisconnected(url, 'io server disconnect');
     });
-    this._socket.on('close', () => {
-      onDisconnected(url);
+    this._socket.on('close', (hadError) => {
+      onDisconnected(
+        url,
+        hadError ? 'transport close' : 'io client disconnect'
+      );
     });
 
     this._socket.connect(port, address);
     onConnecting(url);
     this._timeout = setTimeout(() => {
       onConnectionTimeout(url);
-    }, connectionTimeoutLength);
+    }, connectTimeout);
   }
 
   emit(_type, message) {

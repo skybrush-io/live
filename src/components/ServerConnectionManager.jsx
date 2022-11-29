@@ -4,6 +4,7 @@
  */
 
 import isNil from 'lodash-es/isNil';
+import pTimeout from 'p-timeout';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
@@ -192,27 +193,40 @@ class LocalServerExecutor extends React.Component {
 
 const connectionPropTypes = {
   bindSocketToHub: PropTypes.func,
+  connectTimeout: PropTypes.number,
   onConnected: PropTypes.func,
   onConnecting: PropTypes.func,
   onConnectionError: PropTypes.func,
   onConnectionTimeout: PropTypes.func,
   onDisconnected: PropTypes.func,
   onMessage: PropTypes.func,
+  pingInterval: PropTypes.number,
+  pingTimeout: PropTypes.number,
   url: PropTypes.string,
+};
+
+const defaultConnectionProps = {
+  connectTimeout: 5000,
+  pingInterval: 5000,
+  pingTimeout: 5000,
 };
 
 class WebSocketConnection extends React.Component {
   static propTypes = connectionPropTypes;
+  static defaultProps = defaultConnectionProps;
 
   render() {
     const {
       bindSocketToHub,
+      connectTimeout,
       onConnected,
       onConnecting,
       onConnectionError,
       onConnectionTimeout,
       onDisconnected,
       onMessage,
+      pingInterval,
+      pingTimeout,
       url,
     } = this.props;
     return (
@@ -222,6 +236,9 @@ class WebSocketConnection extends React.Component {
           name='serverSocket'
           url={url}
           options={{
+            connectTimeout,
+            pingInterval,
+            pingTimeout,
             transports: ['websocket'],
           }}
         />
@@ -267,34 +284,74 @@ class WebSocketConnection extends React.Component {
 
 class TCPSocketConnection extends React.Component {
   static propTypes = connectionPropTypes;
+  static defaultProps = defaultConnectionProps;
+
+  #heartbeatInterval = undefined;
+  #lastHeartbeatResult = undefined;
 
   componentDidMount() {
+    const {
+      bindSocketToHub,
+      connectTimeout,
+      onConnected,
+      onConnecting,
+      onConnectionError,
+      onConnectionTimeout,
+      onDisconnected,
+      onMessage,
+      pingInterval,
+      pingTimeout,
+      url,
+    } = this.props;
+
     this._socket = window.bridge.createTCPSocket(
-      // TODO Transform the URL outside of the component?
       this.props.url.match('.*://(?<address>.*):(?<port>.*)').groups,
-      { connectionTimeoutLength: 5000 },
+      { connectTimeout },
       {
-        onConnected: this.props.onConnected,
-        onConnecting: this.props.onConnecting,
-        onConnectionError: this.props.onConnectionError,
-        onConnectionTimeout: this.props.onConnectionTimeout,
-        onDisconnected: this.props.onDisconnected,
-        onMessage: this.props.onMessage,
-        url: this.props.url,
+        onConnected,
+        onConnecting,
+        onConnectionError,
+        onConnectionTimeout,
+        onDisconnected,
+        onMessage,
+        url,
       }
     );
 
     // Wrap socket in object to conform with `@collmot/react-socket`
     const wrappedSocket = { socket: this._socket };
-    this.props.bindSocketToHub(wrappedSocket);
+    bindSocketToHub(wrappedSocket);
+
+    this.#heartbeatInterval = setInterval(() => {
+      pTimeout(messageHub.sendMessage('SYS-PING'), pingTimeout)
+        .then(() => {
+          if (this.#lastHeartbeatResult === false) {
+            this.props.onConnected(this.props.url);
+          }
+
+          this.#lastHeartbeatResult = true;
+        })
+        .catch(() => {
+          if (this.#lastHeartbeatResult === true) {
+            this.props.onDisconnected(this.props.url, 'ping timeout');
+          }
+
+          this.#lastHeartbeatResult = false;
+        });
+    }, pingInterval);
   }
 
   componentWillUnmount() {
     if (this._socket) {
       this._socket.end();
     }
+
+    if (this.#heartbeatInterval) {
+      clearInterval(this.#heartbeatInterval);
+    }
   }
 
+  // The `render` method must be defined (as per v18 docs), even if it's useless
   render() {
     return null;
   }
