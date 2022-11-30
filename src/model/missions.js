@@ -35,6 +35,7 @@ export const MissionItemType = {
   GO_TO: 'goTo',
   CHANGE_ALTITUDE: 'changeAltitude',
   CHANGE_HEADING: 'changeHeading',
+  CHANGE_SPEED: 'changeSpeed',
   SET_PAYLOAD: 'setPayload',
 };
 
@@ -146,6 +147,22 @@ export function isMissionItemValid(item) {
       {
         const { heading } = parameters;
         if (!isHeadingParameterValid(heading)) {
+          return false;
+        }
+      }
+
+      break;
+
+    case MissionItemType.CHANGE_SPEED:
+      /* "Change speed" items need velocity_xy and velocity_z */
+      {
+        const { velocity_xy, velocity_z } = parameters;
+        if (
+          typeof velocity_xy !== 'number' ||
+          typeof velocity_z !== 'number' ||
+          !Number.isFinite(velocity_xy) ||
+          !Number.isFinite(velocity_z)
+        ) {
           return false;
         }
       }
