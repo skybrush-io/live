@@ -9,6 +9,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import { makeStyles } from '@material-ui/core/styles';
 import ChangeAltitudeIcon from '@material-ui/icons/Height';
 import ChangeHeadingIcon from '@material-ui/icons/RotateLeft';
+import ChangeSpeedIcon from '@material-ui/icons/Speed';
 import SetPayloadIcon from '@material-ui/icons/Camera';
 import TakeoffIcon from '@material-ui/icons/FlightTakeoff';
 import LandIcon from '@material-ui/icons/FlightLand';
@@ -108,6 +109,14 @@ const MissionOverviewListItem = ({
           'No heading specified'
         )
         : 'Invalid mission item';
+      break;
+
+    case MissionItemType.CHANGE_SPEED:
+      avatar = <ChangeSpeedIcon />;
+      primaryText = 'Change speed';
+      secondaryText =
+        item.parameters?.velocity_xy + ' m/s horizontal, '
+        + item.parameters?.velocity_z + ' m/s vertical';
       break;
 
     case MissionItemType.SET_PAYLOAD:

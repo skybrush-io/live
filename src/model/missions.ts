@@ -29,6 +29,9 @@ export enum MissionType {
 /**
  * Type specification for items in a waypoint mission.
  */
+/* TODO: this should be changed to a union of multiple types, each with a fixed
+ * type literal. TypeScript could then infer the correct type after a switch on
+ * the type */
 export type MissionItem = {
   id: string;
   type: MissionItemType;
@@ -46,6 +49,7 @@ export enum MissionItemType {
   GO_TO = 'goTo',
   CHANGE_ALTITUDE = 'changeAltitude',
   CHANGE_HEADING = 'changeHeading',
+  CHANGE_SPEED = 'changeSpeed',
   SET_PAYLOAD = 'setPayload',
 }
 
@@ -158,6 +162,22 @@ export function isMissionItemValid(item: any): item is MissionItem {
       {
         const { heading } = parameters;
         if (!isHeadingParameterValid(heading)) {
+          return false;
+        }
+      }
+
+      break;
+
+    case MissionItemType.CHANGE_SPEED:
+      /* "Change speed" items need velocity_xy and velocity_z */
+      {
+        const { velocity_xy, velocity_z } = parameters;
+        if (
+          typeof velocity_xy !== 'number' ||
+          typeof velocity_z !== 'number' ||
+          !Number.isFinite(velocity_xy) ||
+          !Number.isFinite(velocity_z)
+        ) {
           return false;
         }
       }
