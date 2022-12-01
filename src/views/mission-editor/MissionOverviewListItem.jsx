@@ -115,8 +115,8 @@ const MissionOverviewListItem = ({
       avatar = <ChangeSpeedIcon />;
       primaryText = 'Change speed';
       secondaryText =
-        item.parameters?.velocity_xy + ' m/s horizontal, '
-        + item.parameters?.velocity_z + ' m/s vertical';
+        item.parameters?.velocityXY + ' m/s horizontal, '
+        + item.parameters?.velocityZ + ' m/s vertical';
       break;
 
     case MissionItemType.SET_PAYLOAD:
