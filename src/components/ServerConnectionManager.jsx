@@ -286,8 +286,9 @@ class TCPSocketConnection extends React.Component {
   static propTypes = connectionPropTypes;
   static defaultProps = defaultConnectionProps;
 
-  #heartbeatInterval = undefined;
+  #heartbeatIntervalId = undefined;
   #lastHeartbeatResult = undefined;
+  #socket;
 
   componentDidMount() {
     const {
@@ -304,11 +305,20 @@ class TCPSocketConnection extends React.Component {
       url,
     } = this.props;
 
-    this._socket = window.bridge.createTCPSocket(
+    this.#socket = window.bridge.createTCPSocket(
       this.props.url.match('.*://(?<address>.*):(?<port>.*)').groups,
-      { connectTimeout },
       {
-        onConnected,
+        connectTimeout,
+        onClose: (hadError) => {
+          if (this.#lastHeartbeatResult) {
+            onDisconnected(
+              url,
+              hadError ? 'transport close' : 'io client disconnect'
+            );
+          } else {
+            onConnectionError(url);
+          }
+        },
         onConnecting,
         onConnectionError,
         onConnectionTimeout,
@@ -318,36 +328,38 @@ class TCPSocketConnection extends React.Component {
       }
     );
 
-    // Wrap socket in object to conform with `@collmot/react-socket`
-    const wrappedSocket = { socket: this._socket };
-    bindSocketToHub(wrappedSocket);
+    // Wrap socket in an extra object to conform with `@collmot/react-socket`
+    bindSocketToHub({ socket: this.#socket });
 
-    this.#heartbeatInterval = setInterval(() => {
+    const heartbeat = () => {
       pTimeout(messageHub.sendMessage('SYS-PING'), pingTimeout)
         .then(() => {
-          if (this.#lastHeartbeatResult === false) {
-            this.props.onConnected(this.props.url);
+          if (!this.#lastHeartbeatResult) {
+            onConnected(url);
           }
 
           this.#lastHeartbeatResult = true;
         })
         .catch(() => {
-          if (this.#lastHeartbeatResult === true) {
-            this.props.onDisconnected(this.props.url, 'ping timeout');
+          if (this.#lastHeartbeatResult) {
+            onDisconnected(url, 'ping timeout');
           }
 
           this.#lastHeartbeatResult = false;
         });
-    }, pingInterval);
+    };
+
+    heartbeat();
+    this.#heartbeatIntervalId = setInterval(heartbeat, pingInterval);
   }
 
   componentWillUnmount() {
-    if (this._socket) {
-      this._socket.end();
+    if (this.#socket) {
+      this.#socket.end();
     }
 
-    if (this.#heartbeatInterval) {
-      clearInterval(this.#heartbeatInterval);
+    if (this.#heartbeatIntervalId) {
+      clearInterval(this.#heartbeatIntervalId);
     }
   }
 
@@ -651,6 +663,7 @@ const ServerConnectionManager = connect(
 
     onConnectionError() {
       dispatch(setCurrentServerConnectionState(ConnectionState.DISCONNECTED));
+      dispatch(showError('Error while connecting to Skybrush server'));
     },
 
     onConnectionTimeout() {
