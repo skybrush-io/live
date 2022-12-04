@@ -25,6 +25,8 @@ import {
 } from '~/features/servers/actions';
 import {
   getClockSkewInMilliseconds,
+  getServerPort,
+  getServerProtocolWithDefaultWS,
   getServerUrl,
   isClockSkewSignificant,
   isTimeSyncWarningDialogVisible,
@@ -55,9 +57,7 @@ import {
 import { handleClockInformationMessage } from '~/model/clocks';
 import { handleDockInformationMessage } from '~/model/docks';
 import { logLevelForLogLevelName } from '~/utils/logging';
-
-export const isTCPConnectionSupported =
-  window.bridge && window.bridge.createTCPSocket;
+import { Protocol } from '~/features/servers/server-settings-dialog';
 
 const formatClockSkew = (number) => {
   if (isNil(number)) {
@@ -382,6 +382,7 @@ class ServerConnectionManagerPresentation extends React.Component {
     cliArguments: PropTypes.string,
     needsLocalServer: PropTypes.bool,
     port: PropTypes.number,
+    protocol: PropTypes.oneOf(Object.values(Protocol)),
     onConnected: PropTypes.func,
     onConnecting: PropTypes.func,
     onConnectionError: PropTypes.func,
@@ -418,6 +419,7 @@ class ServerConnectionManagerPresentation extends React.Component {
       cliArguments,
       needsLocalServer,
       port,
+      protocol,
       onConnected,
       onConnecting,
       onConnectionError,
@@ -439,9 +441,10 @@ class ServerConnectionManagerPresentation extends React.Component {
     // Putting the key on the <ReactSocket.Socket> tag is not enough because
     // we also need the events to remount themselves.
 
-    const Connection = isTCPConnectionSupported
-      ? TCPSocketConnection
-      : WebSocketConnection;
+    const Connection = {
+      [Protocol.TCP]: TCPSocketConnection,
+      [Protocol.WS]: WebSocketConnection,
+    }[protocol];
 
     return url && active ? (
       <div key={url}>
@@ -637,7 +640,8 @@ const ServerConnectionManager = connect(
     active: state.dialogs.serverSettings.active && !state.session.isExpired,
     cliArguments: state.settings.localServer.cliArguments,
     needsLocalServer: shouldManageLocalServer(state),
-    port: state.dialogs.serverSettings.port,
+    port: getServerPort(state),
+    protocol: getServerProtocolWithDefaultWS(state),
     url: getServerUrl(state),
   }),
   // mapDispatchToProps

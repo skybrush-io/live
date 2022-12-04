@@ -46,8 +46,13 @@ import {
 import {
   getDetectedServersInOrder,
   getServerHostname,
+  getServerProtocolWithDefaultWS,
   isConnecting,
 } from '~/features/servers/selectors';
+import {
+  isTCPConnectionSupported,
+  Protocol,
+} from '~/features/servers/server-settings-dialog';
 import {
   createValidator,
   between,
@@ -182,6 +187,15 @@ const ServerSettingsFormPresentation = ({
           margin='normal'
         />
         <Switches name='isSecure' data={{ label: 'Use secure connection' }} />
+        {isTCPConnectionSupported ? (
+          <Switches
+            name='isWebSocket'
+            data={{
+              label: 'Use the WebSocket protocol instead of TCP',
+            }}
+            helperText='This option is only made available to ensure backwards compatibility.'
+          />
+        ) : null}
       </form>
     )}
   </Form>
@@ -200,7 +214,10 @@ ServerSettingsFormPresentation.propTypes = {
 const ServerSettingsForm = connect(
   // mapStateToProps
   (state) => ({
-    initialValues: state.dialogs.serverSettings,
+    initialValues: {
+      ...state.dialogs.serverSettings,
+      isWebSocket: getServerProtocolWithDefaultWS(state) === Protocol.WS,
+    },
   })
 )(ServerSettingsFormPresentation);
 
@@ -240,7 +257,7 @@ class ServerSettingsDialogPresentation extends React.Component {
     } else {
       this.props.onSubmit({
         ...item,
-        isSecure: item.protocol === 'sio+tls:',
+        isSecure: item.protocol.endsWith('+tls:'),
       });
     }
   };
@@ -386,13 +403,18 @@ const ServerSettingsDialog = connect(
       dispatch(disconnectFromServer());
     },
     onSubmit(data) {
-      // Cast the port into a number first, then dispatch the action
       dispatch(
         closeServerSettingsDialog({
           active: true,
           hostName: data.hostName,
           isSecure: data.isSecure,
+          // Cast the port into a number first, then dispatch the action
           port: Number(data.port),
+          // Use WebSocket if TCP is not supported, or WS is explicitly selected
+          protocol:
+            !isTCPConnectionSupported || data.isWebSocket
+              ? Protocol.WS
+              : Protocol.TCP,
         })
       );
     },

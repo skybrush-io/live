@@ -4,6 +4,10 @@ import { put, select } from 'redux-saga/effects';
 import config from 'config';
 import { updateServerSettings } from '~/features/servers/actions';
 import { getServerHostname } from '~/features/servers/selectors';
+import {
+  isTCPConnectionSupported,
+  Protocol,
+} from '~/features/servers/server-settings-dialog';
 
 /**
  * Helper saga that configures the default server and port when the appllication
@@ -13,7 +17,8 @@ export default function* onboardingSaga() {
   const currentHostName = yield select(getServerHostname);
 
   if (isNil(currentHostName)) {
-    let { connectAutomatically, hostName, isSecure, port } = config.server;
+    let { connectAutomatically, hostName, isSecure, port, protocol } =
+      config.server;
 
     // If the server is configured to connect automatically, infer a reasonable
     // default for the hostname if it is not given. If the server does not
@@ -41,11 +46,16 @@ export default function* onboardingSaga() {
     // Parse the port into a number with some reasonable defaults
     port = Number.parseInt(isNil(port) ? config.server.port : port, 10);
     if (Number.isNaN(port)) {
-      port = 443;
+      port = isTCPConnectionSupported ? 5001 : 443;
+    }
+
+    if (!protocol) {
+      protocol = isTCPConnectionSupported ? Protocol.TCP : Protocol.WS;
     }
 
     const updates = {
       active: connectAutomatically,
+      protocol,
       hostName,
       port,
       isSecure: isSecure || port === 443,
