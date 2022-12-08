@@ -11,6 +11,7 @@ import ChangeAltitudeIcon from '@material-ui/icons/Height';
 import ChangeHeadingIcon from '@material-ui/icons/RotateLeft';
 import ChangeSpeedIcon from '@material-ui/icons/Speed';
 import SetPayloadIcon from '@material-ui/icons/Camera';
+import SetParameterIcon from '@material-ui/icons/Settings';
 import TakeoffIcon from '@material-ui/icons/FlightTakeoff';
 import LandIcon from '@material-ui/icons/FlightLand';
 import HomeIcon from '@material-ui/icons/Home';
@@ -123,6 +124,12 @@ const MissionOverviewListItem = ({
       avatar = <SetPayloadIcon />;
       primaryText = 'Set payload';
       secondaryText = item.parameters?.name + ': ' + item.parameters?.action;
+      break;
+
+    case MissionItemType.SET_PARAMETER:
+      avatar = <SetParameterIcon />;
+      primaryText = 'Set parameter';
+      secondaryText = item.parameters?.name + '=' + item.parameters?.value;
       break;
 
     default:
