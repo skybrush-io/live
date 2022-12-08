@@ -51,6 +51,7 @@ export enum MissionItemType {
   CHANGE_HEADING = 'changeHeading',
   CHANGE_SPEED = 'changeSpeed',
   SET_PAYLOAD = 'setPayload',
+  SET_PARAMETER = 'setParameter',
 }
 
 /**
