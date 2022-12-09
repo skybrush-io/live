@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 
 import Box from '@material-ui/core/Box';
 import MissionOverviewList from './MissionOverviewList';
