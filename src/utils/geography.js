@@ -47,11 +47,7 @@ export const HeadingMode = {
   WAYPOINT: 'waypoint',
 };
 
-export const HEADING_MODES = [
-  HeadingMode.ABSOLUTE,
-  HeadingMode.WAYPOINT,
-];
-
+export const HEADING_MODES = [HeadingMode.ABSOLUTE, HeadingMode.WAYPOINT];
 
 /**
  * Returns the (initial) bearing when going from one point to another on a
@@ -463,7 +459,6 @@ export const safelyFormatHeadingWithMode = createSafeWrapper(
   formatHeadingWithMode
 );
 
-
 /**
  * Formats the given OpenLayers coordinate into the usual latitude-longitude
  * representation in a format suitable for the UI.
@@ -662,7 +657,7 @@ export class FlatEarthCoordinateSystem {
     Coordinate.rotate(result, this._orientation);
     return [
       result[1] / this._r2OverCosOriginLatInRadians / this._piOver180 +
-      this._origin[0],
+        this._origin[0],
       result[0] / this._r1 / this._piOver180 + this._origin[1],
     ];
   }

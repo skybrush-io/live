@@ -85,9 +85,9 @@ const MissionOverviewListItem = ({
       primaryText = 'Takeoff';
       secondaryText = isValid
         ? safelyFormatAltitudeWithReference(
-          item.parameters?.alt,
-          'No altitude specified'
-        )
+            item.parameters?.alt,
+            'No altitude specified'
+          )
         : 'Invalid mission item';
       break;
 
@@ -96,9 +96,9 @@ const MissionOverviewListItem = ({
       primaryText = 'Change altitude';
       secondaryText = isValid
         ? safelyFormatAltitudeWithReference(
-          item.parameters?.alt,
-          'No altitude specified'
-        )
+            item.parameters?.alt,
+            'No altitude specified'
+          )
         : 'Invalid mission item';
       break;
 
@@ -107,9 +107,9 @@ const MissionOverviewListItem = ({
       primaryText = 'Change heading';
       secondaryText = isValid
         ? safelyFormatHeadingWithMode(
-          item.parameters?.heading,
-          'No heading specified'
-        )
+            item.parameters?.heading,
+            'No heading specified'
+          )
         : 'Invalid mission item';
       break;
 
@@ -117,20 +117,20 @@ const MissionOverviewListItem = ({
       avatar = <ChangeSpeedIcon />;
       primaryText = 'Change speed';
       secondaryText =
-        item.parameters?.velocityXY + ' m/s horizontal, '
-        + item.parameters?.velocityZ + ' m/s vertical';
+        `${item.parameters?.velocityXY} m/s horizontal, ` +
+        `${item.parameters?.velocityZ} m/s vertical`;
       break;
 
     case MissionItemType.SET_PAYLOAD:
       avatar = <SetPayloadIcon />;
       primaryText = 'Set payload';
-      secondaryText = item.parameters?.name + ': ' + item.parameters?.action;
+      secondaryText = `${item.parameters?.name}: ${item.parameters?.action}`;
       break;
 
     case MissionItemType.SET_PARAMETER:
       avatar = <SetParameterIcon />;
       primaryText = 'Set parameter';
-      secondaryText = item.parameters?.name + '=' + item.parameters?.value;
+      secondaryText = `${item.parameters?.name}=${item.parameters?.value}`;
       break;
 
     case MissionItemType.UPDATE_GEOFENCE:

@@ -1,13 +1,10 @@
-import {
-  ALTITUDE_REFERENCES,
-  HEADING_MODES
-} from '~/utils/geography';
+import { ALTITUDE_REFERENCES, HEADING_MODES } from '~/utils/geography';
 
 export {
   AltitudeReference,
   ALTITUDE_REFERENCES,
   HeadingMode,
-  HEADING_MODES
+  HEADING_MODES,
 } from '~/utils/geography';
 
 /**
@@ -44,10 +41,7 @@ export const MissionItemType = {
 /**
  * Enum representing valid payload action strings.
  */
-export const PAYLOAD_ACTIONS = [
-  "on",
-  "off",
-];
+export const PAYLOAD_ACTIONS = ['on', 'off'];
 
 /**
  * Returns whether the given parameter representing an altitude in a generic
@@ -199,11 +193,13 @@ export function isMissionItemValid(item) {
       /* "Set parameter" items need a name and a value */
       {
         const { name, value } = parameters;
-        if (typeof name !== 'string')
+        if (
+          typeof name !== 'string' ||
+          (typeof value !== 'string' &&
+            (typeof value !== 'number' || !Number.isFinite(value)))
+        ) {
           return false;
-        if (typeof value !== 'string' &&
-          (typeof value !== 'number' || !Number.isFinite(value)))
-          return false;
+        }
       }
 
       break;
@@ -213,7 +209,8 @@ export function isMissionItemValid(item) {
       {
         const { geofence, coordinateSystem } = parameters;
         if (
-          typeof coordinateSystem !== 'string' || coordinateSystem !== 'geodetic'
+          typeof coordinateSystem !== 'string' ||
+          coordinateSystem !== 'geodetic'
           // TOOD: add proper validation for the geofence object
         ) {
           return false;
@@ -221,7 +218,6 @@ export function isMissionItemValid(item) {
       }
 
       break;
-
 
     default:
       break;
@@ -231,7 +227,6 @@ export function isMissionItemValid(item) {
 
   return true;
 }
-
 
 /**
  * Extracts a GPS coordinate from a mission item, corresponding to the point
