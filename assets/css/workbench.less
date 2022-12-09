@@ -76,3 +76,20 @@ body .lm_header {
 
   user-select: none;
 }
+
+/* Perspective switching in header */
+.wb-perspective-bar {
+  padding-block: 4px;
+}
+
+.wb-perspective-bar button {
+  height: 100%;
+  background: unset;
+  box-shadow: unset;
+}
+
+/* Disable draggable splitters for fixed layouts */
+.fixed-perspective .lm_splitter {
+  visibility: hidden;
+  pointer-events: none;
+}

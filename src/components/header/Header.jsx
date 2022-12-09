@@ -1,7 +1,9 @@
 import config from 'config';
 
+import merge from 'lodash-es/merge';
 import PropTypes from 'prop-types';
 import React from 'react';
+import { PerspectiveBar } from 'react-flexible-workbench';
 import { connect } from 'react-redux';
 import Shapeshifter from 'react-shapeshifter';
 import TimeAgo from 'react-timeago';
@@ -73,7 +75,13 @@ SessionExpiryBox.propTypes = {
  *
  * @returns  {Object}  the rendered header component
  */
-const Header = ({ isSidebarOpen, sessionExpiresAt, toggleSidebar }) => (
+const Header = ({
+  isSidebarOpen,
+  perspectives,
+  sessionExpiresAt,
+  toggleSidebar,
+  workbench,
+}) => (
   <div id='header' style={{ ...style, overflow: 'hidden' }}>
     <div id='header-inner' style={innerStyle}>
       <Shapeshifter
@@ -81,6 +89,24 @@ const Header = ({ isSidebarOpen, sessionExpiresAt, toggleSidebar }) => (
         style={{ cursor: 'pointer' }}
         shape={isSidebarOpen ? 'close' : 'menu'}
         onClick={toggleSidebar}
+      />
+      <PerspectiveBar
+        editable={false}
+        storage={perspectives}
+        workbench={workbench}
+        onChange={(id) => {
+          if (config.perspectives.byId[id].hideHeaders) {
+            setTimeout(() => {
+              workbench.restoreState(
+                merge(workbench.getState(), { settings: { hasHeaders: false } })
+              );
+            }, 0);
+          }
+
+          workbench.layout.container[0].classList[
+            config.perspectives.byId[id].fixed ? 'add' : 'remove'
+          ]('fixed-perspective');
+        }}
       />
       <Box flexGrow={1} flexShrink={1}>
         {/* spacer */}

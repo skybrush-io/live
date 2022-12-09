@@ -45,7 +45,7 @@ import store, {
 import ThemeProvider, { DarkModeExtraCSSProvider } from './theme';
 import registerUploadJobTypes from './upload-jobs';
 import { hasTimeLimitedSession } from './utils/configuration';
-import workbench from './workbench';
+import workbench, { perspectives } from './workbench';
 
 import 'tippy.js/dist/tippy.css';
 import 'tippy.js/themes/light-border.css';
@@ -115,7 +115,7 @@ const App = ({ onFirstRender }) => (
       <AppHotkeys />
 
       <div style={rootStyle}>
-        <Header workbench={workbench} />
+        <Header perspectives={perspectives} workbench={workbench} />
         <div style={rootInnerStyle}>
           <Sidebar workbench={workbench} />
           <WorkbenchView workbench={workbench} />
