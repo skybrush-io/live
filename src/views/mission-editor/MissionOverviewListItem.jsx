@@ -13,6 +13,7 @@ import ChangeSpeedIcon from '@material-ui/icons/Speed';
 import SetPayloadIcon from '@material-ui/icons/Camera';
 import SetParameterIcon from '@material-ui/icons/Settings';
 import TakeoffIcon from '@material-ui/icons/FlightTakeoff';
+import UpdateGeofenceIcon from '~/icons/PlacesFence';
 import LandIcon from '@material-ui/icons/FlightLand';
 import HomeIcon from '@material-ui/icons/Home';
 
@@ -130,6 +131,13 @@ const MissionOverviewListItem = ({
       avatar = <SetParameterIcon />;
       primaryText = 'Set parameter';
       secondaryText = item.parameters?.name + '=' + item.parameters?.value;
+      break;
+
+    case MissionItemType.UPDATE_GEOFENCE:
+      avatar = <UpdateGeofenceIcon />;
+      primaryText = 'Update geofence';
+      // TODO: Display proper info from the geofence mission item
+      secondaryText = 'TODO';
       break;
 
     default:
