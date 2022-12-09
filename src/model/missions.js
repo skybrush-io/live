@@ -38,6 +38,7 @@ export const MissionItemType = {
   CHANGE_SPEED: 'changeSpeed',
   SET_PAYLOAD: 'setPayload',
   SET_PARAMETER: 'setParameter',
+  UPDATE_GEOFENCE: 'updateGeofence',
 };
 
 /**
@@ -193,6 +194,34 @@ export function isMissionItemValid(item) {
       }
 
       break;
+
+    case MissionItemType.SET_PARAMETER:
+      /* "Set parameter" items need a name and a value */
+      {
+        const { name, value } = parameters;
+        if (typeof name !== 'string')
+          return false;
+        if (typeof value !== 'string' &&
+          (typeof value !== 'number' || !Number.isFinite(value)))
+          return false;
+      }
+
+      break;
+
+    case MissionItemType.UPDATE_GEOFENCE:
+      /* "Update geofence" items need complex validation */
+      {
+        const { geofence, coordinateSystem } = parameters;
+        if (
+          typeof coordinateSystem !== 'string' || coordinateSystem !== 'geodetic'
+          // TOOD: add proper validation for the geofence object
+        ) {
+          return false;
+        }
+      }
+
+      break;
+
 
     default:
       break;
