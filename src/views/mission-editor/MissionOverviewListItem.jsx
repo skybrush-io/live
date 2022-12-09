@@ -18,6 +18,7 @@ import LandIcon from '@material-ui/icons/FlightLand';
 import HomeIcon from '@material-ui/icons/Home';
 
 import Colors from '~/components/colors';
+import { showGeofenceSettingsDialog } from '~/features/geofence/slice';
 import { getMissionItemById } from '~/features/mission/selectors';
 import { isMissionItemValid, MissionItemType } from '~/model/missions';
 import {
@@ -49,14 +50,15 @@ const MissionOverviewListItem = ({
   index,
   item,
   selected,
+  showGeofenceSettingsDialog,
   onSelectItem,
 }) => {
   const classes = useStyles();
 
   const { type } = item;
-  const onClick = (event) => onSelectItem(event, id);
 
   let avatar;
+  let onClick = (event) => onSelectItem(event, id);
   let primaryText;
   let secondaryText;
   const isValid = isMissionItemValid(item);
@@ -135,6 +137,7 @@ const MissionOverviewListItem = ({
 
     case MissionItemType.UPDATE_GEOFENCE:
       avatar = <UpdateGeofenceIcon />;
+      onClick = showGeofenceSettingsDialog;
       primaryText = 'Update geofence';
       // TODO: Display proper info from the geofence mission item
       secondaryText = 'TODO';
@@ -167,6 +170,7 @@ MissionOverviewListItem.propTypes = {
     parameters: PropTypes.object,
   }),
   selected: PropTypes.bool,
+  showGeofenceSettingsDialog: PropTypes.func,
   onSelectItem: PropTypes.func,
 };
 
@@ -176,5 +180,7 @@ export default connect(
     item: getMissionItemById(state, ownProps.id),
   }),
   // mapDispatchToProps
-  {}
+  {
+    showGeofenceSettingsDialog,
+  }
 )(MissionOverviewListItem);
