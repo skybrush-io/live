@@ -8,6 +8,8 @@ const { actions, reducer } = createSlice({
   name: 'workbench',
 
   initialState: {
+    hasHeaders: true,
+    isFixed: false,
     // Default workbench state is in src/workbench.js because the
     // Redux store only 'follows' the workbench state, it does not
     // define it in the usual sense (due to limitations in how
@@ -16,6 +18,14 @@ const { actions, reducer } = createSlice({
   },
 
   reducers: {
+    setWorkbenchHasHeaders(state, { payload: hasHeaders }) {
+      state.hasHeaders = hasHeaders ?? true;
+    },
+
+    setWorkbenchIsFixed(state, { payload: isFixed }) {
+      state.isFixed = isFixed ?? false;
+    },
+
     saveWorkbenchState: {
       prepare(workbench) {
         return {
@@ -30,6 +40,10 @@ const { actions, reducer } = createSlice({
   },
 });
 
-export const { saveWorkbenchState } = actions;
+export const {
+  setWorkbenchIsFixed,
+  setWorkbenchHasHeaders,
+  saveWorkbenchState,
+} = actions;
 
 export default reducer;

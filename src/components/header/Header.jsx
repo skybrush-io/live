@@ -30,6 +30,10 @@ import { isSidebarOpen } from '~/features/sidebar/selectors';
 import AltitudeSummaryHeaderButton from '~/features/uavs/AltitudeSummaryHeaderButton';
 import BatteryStatusHeaderButton from '~/features/uavs/BatteryStatusHeaderButton';
 import WeatherHeaderButton from '~/features/weather/WeatherHeaderButton';
+import {
+  setWorkbenchHasHeaders,
+  setWorkbenchIsFixed,
+} from '~/features/workbench/slice';
 import { hasFeature } from '~/utils/configuration';
 
 const style = {
@@ -79,6 +83,8 @@ const Header = ({
   isSidebarOpen,
   perspectives,
   sessionExpiresAt,
+  setWorkbenchHasHeaders,
+  setWorkbenchIsFixed,
   toggleSidebar,
   workbench,
 }) => (
@@ -102,10 +108,9 @@ const Header = ({
               );
             }, 0);
           }
+          setWorkbenchHasHeaders(!config.perspectives.byId[id].hideHeaders);
+          setWorkbenchIsFixed(config.perspectives.byId[id].fixed);
 
-          workbench.layout.container[0].classList[
-            config.perspectives.byId[id].fixed ? 'add' : 'remove'
-          ]('fixed-perspective');
         }}
       />
       <Box flexGrow={1} flexShrink={1}>
@@ -154,5 +159,5 @@ export default connect(
     isSidebarOpen: isSidebarOpen(state),
   }),
   // mapDispatchToProps
-  { toggleSidebar }
+  { setWorkbenchHasHeaders, setWorkbenchIsFixed, toggleSidebar }
 )(Header);

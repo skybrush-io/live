@@ -1,9 +1,10 @@
+import clsx from 'clsx';
 import config from 'config';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { WorkbenchView } from 'react-flexible-workbench';
-import { Provider as StoreProvider } from 'react-redux';
+import { connect, Provider as StoreProvider } from 'react-redux';
 import { ToastProvider } from 'react-toast-notifications';
 import { PersistGate } from 'redux-persist/es/integration/react';
 
@@ -102,7 +103,11 @@ waitUntilStateRestored().then(() => {
   }
 });
 
-const App = ({ onFirstRender }) => (
+const AppPresentation = ({
+  onFirstRender,
+  workbenchHasHeaders,
+  workbenchIsFixed,
+}) => (
   <PersistGate
     persistor={persistor}
     onBeforeLift={restoreWorkbench(onFirstRender)}
@@ -116,8 +121,13 @@ const App = ({ onFirstRender }) => (
 
       <div style={rootStyle}>
         <Header perspectives={perspectives} workbench={workbench} />
-        <div style={rootInnerStyle}>
-          <Sidebar workbench={workbench} />
+        <div
+          className={clsx(workbenchIsFixed && 'workbench-fixed')}
+          style={rootInnerStyle}
+        >
+          {workbenchHasHeaders && !workbenchIsFixed ? (
+            <Sidebar workbench={workbench} />
+          ) : null}
           <WorkbenchView workbench={workbench} />
         </div>
         {config.ribbon && config.ribbon.label && (
@@ -166,9 +176,21 @@ const App = ({ onFirstRender }) => (
   </PersistGate>
 );
 
-App.propTypes = {
+AppPresentation.propTypes = {
   onFirstRender: PropTypes.func,
+  workbenchHasHeaders: PropTypes.bool,
+  workbenchIsFixed: PropTypes.bool,
 };
+
+const App = connect(
+  // mapStateToProps
+  (state) => ({
+    workbenchHasHeaders: state.workbench.hasHeaders,
+    workbenchIsFixed: state.workbench.isFixed,
+  }),
+  // mapDispatchToProps
+  {}
+)(AppPresentation);
 
 /**
  * Placeholder component to render when a panel is being dragged from the

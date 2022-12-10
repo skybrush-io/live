@@ -88,8 +88,13 @@ body .lm_header {
   box-shadow: unset;
 }
 
+/* Change modified color from red to blue to avoid mistaking it for an error */
+.wb-perspective-modified .wb-badge {
+  background: lightblue !important;
+}
+
 /* Disable draggable splitters for fixed layouts */
-.fixed-perspective .lm_splitter {
-  visibility: hidden;
+.workbench-fixed .lm_splitter,
+.workbench-fixed .lm_tab {
   pointer-events: none;
 }
