@@ -31,7 +31,7 @@ import {
   whiteThickOutline,
   whiteThinOutline,
   dashedThickOutline,
-  dashedThinOutline,
+  dottedThinOutline,
 } from '~/utils/styles';
 
 // === Helper functions ===
@@ -155,8 +155,17 @@ const styleForFeature = (feature, selected = false, isGeofence = false) => {
 
       break;
 
-    // eslint-disable-next-line unicorn/no-useless-switch-case
     case FeatureType.POLYGON:
+      styles.push(
+        new Style({
+          stroke: dottedThinOutline(parsedColor.rgb().array()),
+          geometry(olFeature) {
+            const [, ...holes] = olFeature.getGeometry().getCoordinates();
+            return new MultiPolygon(holes.map((hole) => [hole]));
+          },
+          zIndex: 1,
+        })
+      );
     // Fallthrough
 
     default:
@@ -182,16 +191,16 @@ const styleForFeature = (feature, selected = false, isGeofence = false) => {
           stroke: (isGeofence ? dashedThickOutline : thinOutline)(
             parsedColor.rgb().array()
           ),
-          geometry(feature) {
-            const boundary = feature.getGeometry().getCoordinates()[0];
-            return new Polygon([boundary]);
-          },
-        }),
-        new Style({
-          stroke: dashedThinOutline(parsedColor.rgb().array()),
-          geometry(feature) {
-            const [, ...holes] = feature.getGeometry().getCoordinates();
-            return new MultiPolygon(holes.map((hole) => [hole]));
+          geometry(olFeature) {
+            switch (type) {
+              case FeatureType.POLYGON: {
+                const boundary = olFeature.getGeometry().getCoordinates()[0];
+                return new Polygon([boundary]);
+              }
+              default: {
+                return olFeature.getGeometry();
+              }
+            }
           },
         })
       );
