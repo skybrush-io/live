@@ -68,6 +68,17 @@ export function getIconOfFeatureType(type) {
 }
 
 /**
+ * Returns whether the feature has a measurable area or length.
+ */
+export function featureTypeCanBeMeasured(type) {
+  return (
+    // type === FeatureType.CIRCLE ||
+    type === FeatureType.LINE_STRING ||
+    type === FeatureType.POLYGON
+  );
+}
+
+/**
  * Returns whether the feature has individual points that are worth showing
  * to the user separately.
  */

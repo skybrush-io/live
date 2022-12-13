@@ -6,11 +6,16 @@ import CoordinateParser from 'coordinate-parser';
 import curry from 'lodash-es/curry';
 import isNil from 'lodash-es/isNil';
 import minBy from 'lodash-es/minBy';
+import round from 'lodash-es/round';
+import unary from 'lodash-es/unary';
 import * as Coordinate from 'ol/coordinate';
 import * as Extent from 'ol/extent';
-import { MultiLineString, MultiPolygon, Polygon } from 'ol/geom';
+import { LineString, MultiLineString, MultiPolygon, Polygon } from 'ol/geom';
 import GeometryCollection from 'ol/geom/GeometryCollection';
 import * as Projection from 'ol/proj';
+import { getArea, getLength } from 'ol/sphere';
+
+import { FeatureType } from '~/model/features';
 
 import { formatNumberAndUnit } from './formatting';
 import { toDegrees, toRadians } from './math';
@@ -288,6 +293,47 @@ export const makePolarCoordinateFormatter = (options) => {
       return '';
     }
   };
+};
+
+/**
+ * Creates a function that measures an internal representation of a feature.
+ * (Area for Polygons, length for LineStrings.)
+ *
+ * @param {Object}  feature  the subject of the measurement
+ * @return {string} the resulting measurement in string form with units included
+ */
+export const measureFeature = (feature) => {
+  const kilo = 1000;
+
+  switch (feature.type) {
+    case FeatureType.LINE_STRING: {
+      const length = getLength(
+        new LineString(feature.points.map(unary(mapViewCoordinateFromLonLat)))
+      );
+
+      return length > 10 * kilo
+        ? `${round(length / kilo, 2)} km`
+        : `${round(length, 2)} m`;
+    }
+
+    case FeatureType.POLYGON: {
+      // Note: `polygon.getArea()` doesn't include correction for the projection
+      const area = getArea(
+        new Polygon(
+          [feature.points, ...feature.holes].map((coordinates) =>
+            coordinates.map(unary(mapViewCoordinateFromLonLat))
+          )
+        )
+      );
+
+      return area > 10 * kilo
+        ? `${round(area / (kilo * kilo), 2)} km²`
+        : `${round(area, 2)} m²`;
+    }
+
+    default:
+      throw new Error('Unsupported feature type to measure: ' + feature.type);
+  }
 };
 
 /**

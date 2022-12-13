@@ -114,6 +114,7 @@ const { actions, reducer } = createSlice({
       const newFeature = {
         visible: true,
         filled: true,
+        measure: false,
         showPoints: false,
         ...structuredClone(feature),
         id,
@@ -146,6 +147,11 @@ const { actions, reducer } = createSlice({
       state.byId[id].filled = Boolean(filled);
     },
 
+    updateFeatureMeasure(state, action) {
+      const { id, measure } = action.payload;
+      state.byId[id].measure = Boolean(measure);
+    },
+
     updateFeaturePointsVisible(state, action) {
       const { id, visible } = action.payload;
       state.byId[id].showPoints = Boolean(visible);
@@ -173,6 +179,7 @@ export const {
   renameFeature,
   setFeatureColor,
   updateFeatureFillVisible,
+  updateFeatureMeasure,
   updateFeaturePointsVisible,
   updateFeaturePropertiesByIds,
   updateFeatureVisibility,

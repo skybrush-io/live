@@ -22,6 +22,7 @@ import { getSelectedFeatureIds } from '~/selectors/selection';
 import {
   mapViewCoordinateFromLonLat,
   euclideanDistance,
+  measureFeature,
 } from '~/utils/geography';
 import { closePolygon } from '~/utils/math';
 import {
@@ -117,7 +118,7 @@ const styleForPointsOfPolygon = (feature, selected, color) =>
 
 // TODO: cache the style somewhere?
 const styleForFeature = (feature, selected = false, isGeofence = false) => {
-  const { color, label, labelStyle, type, filled } = feature;
+  const { color, label, labelStyle, measure, type, filled } = feature;
   const parsedColor = createColor(color || primaryColor);
   const styles = [];
   const radius = 6;
@@ -215,11 +216,28 @@ const styleForFeature = (feature, selected = false, isGeofence = false) => {
       new Style({
         text: new Text({
           font: '12px sans-serif',
-          offsetY: type === 'points' ? radius + 10 : 0,
-          placement: type === 'lineString' ? 'line' : 'point',
+          offsetY: type === FeatureType.POINTS ? radius + 10 : 0,
+          placement: type === FeatureType.LINE_STRING ? 'line' : 'point',
           stroke: labelStrokes[labelStyle],
           text: label,
           textAlign: 'center',
+          textBaseline: type === FeatureType.LINE_STRING ? 'bottom' : 'middle',
+        }),
+      })
+    );
+  }
+
+  if (measure) {
+    styles.push(
+      new Style({
+        text: new Text({
+          font: '12px sans-serif',
+          offsetY: type === FeatureType.LINE_STRING ? 3 : 15,
+          placement: type === 'lineString' ? 'line' : 'point',
+          stroke: labelStrokes[labelStyle],
+          text: `(≈${measureFeature(feature)})`,
+          textAlign: 'center',
+          textBaseline: type === FeatureType.LINE_STRING ? 'top' : 'middle',
         }),
       })
     );

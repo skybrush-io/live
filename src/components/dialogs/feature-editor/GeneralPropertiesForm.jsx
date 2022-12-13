@@ -12,17 +12,23 @@ import {
   renameFeature,
   setFeatureColor,
   updateFeatureFillVisible,
+  updateFeatureMeasure,
   updateFeaturePointsVisible,
   updateFeatureVisibility,
 } from '~/features/map-features/slice';
 import { primaryColor } from '~/utils/styles';
-import { featureTypeHasInterior, featureTypeHasPoints } from '~/model/features';
+import {
+  featureTypeCanBeMeasured,
+  featureTypeHasInterior,
+  featureTypeHasPoints,
+} from '~/model/features';
 
 const GeneralPropertiesForm = ({
   feature,
   onSetFeatureColor,
   onSetFeatureLabel,
   onToggleFeatureFillVisible,
+  onToggleFeatureMeasure,
   onToggleFeaturePointsVisible,
   onToggleFeatureVisibility,
 }) => (
@@ -74,6 +80,18 @@ const GeneralPropertiesForm = ({
           label='Show individual points'
         />
       )}
+      {featureTypeCanBeMeasured(feature.type) && (
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={feature.measure}
+              color='primary'
+              onChange={onToggleFeatureMeasure}
+            />
+          }
+          label='Show measurements'
+        />
+      )}
     </div>
   </div>
 );
@@ -83,6 +101,7 @@ GeneralPropertiesForm.propTypes = {
   onSetFeatureColor: PropTypes.func,
   onSetFeatureLabel: PropTypes.func,
   onToggleFeatureFillVisible: PropTypes.func,
+  onToggleFeatureMeasure: PropTypes.func,
   onToggleFeaturePointsVisible: PropTypes.func,
   onToggleFeatureVisibility: PropTypes.func,
 };
@@ -100,6 +119,9 @@ export default connect(
     },
     onToggleFeatureFillVisible(_event, checked) {
       dispatch(updateFeatureFillVisible({ id: featureId, filled: checked }));
+    },
+    onToggleFeatureMeasure(_event, checked) {
+      dispatch(updateFeatureMeasure({ id: featureId, measure: checked }));
     },
     onToggleFeaturePointsVisible(_event, checked) {
       dispatch(updateFeaturePointsVisible({ id: featureId, visible: checked }));
