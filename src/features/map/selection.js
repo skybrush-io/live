@@ -10,8 +10,13 @@ import xor from 'lodash-es/xor';
 import { createSlice } from '@reduxjs/toolkit';
 
 import { removeFeaturesByIds } from '~/features/map-features/slice';
+import { removeMissionItemsByIds } from '~/features/mission/slice';
 import flock from '~/flock';
-import { featureIdToGlobalId, uavIdToGlobalId } from '~/model/identifiers';
+import {
+  featureIdToGlobalId,
+  missionItemIdToGlobalId,
+  uavIdToGlobalId,
+} from '~/model/identifiers';
 
 /**
  * Finds all the UAV features on the map.
@@ -85,6 +90,14 @@ const { actions, reducer } = createSlice({
         state,
         [],
         action.payload.map(featureIdToGlobalId).filter(Boolean)
+      );
+    },
+
+    [removeMissionItemsByIds](state, action) {
+      return updateSelection(
+        state,
+        [],
+        action.payload.map(missionItemIdToGlobalId).filter(Boolean)
       );
     },
   },
