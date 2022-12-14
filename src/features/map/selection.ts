@@ -8,7 +8,11 @@ import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import { type ReadonlyDeep } from 'type-fest';
 
 import { removeFeaturesByIds } from '~/features/map-features/slice';
-import { featureIdToGlobalId } from '~/model/identifiers';
+import { removeMissionItemsByIds } from '~/features/mission/slice';
+import {
+  featureIdToGlobalId,
+  missionItemIdToGlobalId,
+} from '~/model/identifiers';
 import { type Identifier } from '~/utils/collections';
 
 import { findAllUAVFeatures, updateSelection } from './utils';
@@ -52,6 +56,14 @@ const { actions, reducer } = createSlice({
         state,
         [],
         action.payload.map(featureIdToGlobalId).filter(Boolean)
+      );
+    });
+
+    builder.addCase(removeMissionItemsByIds, (state, action) => {
+      return updateSelection(
+        state,
+        [],
+        action.payload.map(missionItemIdToGlobalId).filter(Boolean)
       );
     });
   },
