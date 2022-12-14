@@ -235,7 +235,7 @@ const styleForFeature = (feature, selected = false, isGeofence = false) => {
           offsetY: type === FeatureType.LINE_STRING ? 3 : 15,
           placement: type === 'lineString' ? 'line' : 'point',
           stroke: labelStrokes[labelStyle],
-          text: `(≈${measureFeature(feature)})`,
+          text: `(${measureFeature(feature)})`,
           textAlign: 'center',
           textBaseline: type === FeatureType.LINE_STRING ? 'top' : 'middle',
         }),

@@ -303,6 +303,7 @@ export const makePolarCoordinateFormatter = (options) => {
  * @return {string} the resulting measurement in string form with units included
  */
 export const measureFeature = (feature) => {
+  const hecto = 100;
   const kilo = 1000;
 
   switch (feature.type) {
@@ -326,8 +327,10 @@ export const measureFeature = (feature) => {
         )
       );
 
-      return area > 10 * kilo
+      return area > 1 * kilo * kilo // Over 1 km²
         ? `${round(area / (kilo * kilo), 2)} km²`
+        : area > 0.1 * hecto * hecto // Over 0.1 ha
+        ? `${round(area / (hecto * hecto), 2)} ha`
         : `${round(area, 2)} m²`;
     }
 
