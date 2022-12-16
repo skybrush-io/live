@@ -10,7 +10,6 @@ import {
   isDockId,
   isUavId,
 } from '~/model/identifiers';
-import { chooseUniqueId } from '~/utils/naming';
 
 import { getProposedIdForNewFeature } from './selectors';
 import {
@@ -32,6 +31,11 @@ export const addFeature = (feature) => addFeatureWithName(feature, null);
 export const addFeatureWithName = (feature, name) => (dispatch, getState) => {
   const id = getProposedIdForNewFeature(getState(), feature, name);
   dispatch(addFeatureById({ id, feature }));
+};
+
+export const cloneFeatureById = (id, overrides) => (dispatch, getState) => {
+  const sourceFeature = getState().features.byId[id];
+  dispatch(addFeatureWithName({ ...sourceFeature, ...overrides }, id));
 };
 
 export const cutFeature =
@@ -68,19 +72,14 @@ export const cutFeature =
       case 'MultiPolygon': {
         dispatch(removeFeaturesByIds([minuendId]));
         for (const [points, ...holes] of result.geometry.coordinates) {
-          dispatch(
-            addFeatureById({
-              id: chooseUniqueId(minuendId, getState().features.order),
-              feature: { ...minuend, points, holes },
-            })
-          );
+          dispatch(cloneFeatureById(minuendId, { points, holes }));
         }
 
         break;
       }
 
       default:
-        throw new Error(`Unknown geometry type: ${result.geometry.type}`);
+        throw new Error(`Unexpected geometry type: ${result.geometry.type}`);
     }
 
     dispatch(setSelection([featureIdToGlobalId(substrahendId)]));

@@ -6,8 +6,10 @@
 import isEmpty from 'lodash-es/isEmpty';
 import isNil from 'lodash-es/isNil';
 import unary from 'lodash-es/unary';
+import turfDifference from '@turf/difference';
 
 import { updateFlatEarthCoordinateSystem } from '~/features/map/origin';
+import { cloneFeatureById } from '~/features/map-features/actions';
 import { updateFeaturePropertiesByIds } from '~/features/map-features/slice';
 import {
   moveOutdoorShowOriginByMapCoordinateDelta,
@@ -59,56 +61,79 @@ export function createFeatureFromOpenLayers(olFeature) {
 
   switch (type) {
     case 'Point':
-      Object.assign(result, {
-        type: FeatureType.POINTS,
-        filled: false,
-        points: [lonLatFromMapViewCoordinate(coordinates)],
-      });
-      break;
+      return [
+        {
+          type: FeatureType.POINTS,
+          filled: false,
+          points: [lonLatFromMapViewCoordinate(coordinates)],
+        },
+      ];
 
     case 'Circle': {
       const center = geometry.getCenter();
-      Object.assign(result, {
-        type: FeatureType.CIRCLE,
-        filled: true,
-        points: [
-          lonLatFromMapViewCoordinate(center),
-          lonLatFromMapViewCoordinate([
-            center[0] + geometry.getRadius(),
-            center[1],
-          ]),
-        ],
-      });
-      break;
+      return [
+        {
+          type: FeatureType.CIRCLE,
+          points: [
+            lonLatFromMapViewCoordinate(center),
+            lonLatFromMapViewCoordinate([
+              center[0] + geometry.getRadius(),
+              center[1],
+            ]),
+          ],
+        },
+      ];
     }
 
     case 'LineString':
-      Object.assign(result, {
-        type: FeatureType.LINE_STRING,
-        filled: false,
-        points: coordinates.map(unary(lonLatFromMapViewCoordinate)),
-      });
-      break;
+      return [
+        {
+          type: FeatureType.LINE_STRING,
+          filled: false,
+          points: coordinates.map(unary(lonLatFromMapViewCoordinate)),
+        },
+      ];
 
     case 'Polygon': {
-      const [points, ...holes] = coordinates.map((linearRing) =>
+      const [firstRing, ...restOfRings] = coordinates.map((linearRing) =>
         linearRing.map(unary(lonLatFromMapViewCoordinate)).slice(0, -1)
       );
 
-      Object.assign(result, {
-        type: FeatureType.POLYGON,
-        filled: true,
-        points,
-        holes,
-      });
-      break;
+      // Start with the boundary ring and subtract every hole from it with turf.
+      const normalized = restOfRings.reduce(
+        (poly, hole) =>
+          turfDifference(poly, {
+            type: 'Feature',
+            geometry: { type: 'Polygon', coordinates: [hole] },
+          }),
+        {
+          type: 'Feature',
+          geometry: { type: 'Polygon', coordinates: [firstRing] },
+        }
+      );
+
+      switch (normalized.geometry.type) {
+        case 'Polygon': {
+          const [points, ...holes] = normalized.geometry.coordinates;
+          return [{ type: FeatureType.POLYGON, points, holes }];
+        }
+
+        case 'MultiPolygon': {
+          return normalized.geometry.coordinates.map(([points, ...holes]) => ({
+            type: FeatureType.POLYGON,
+            points,
+            holes,
+          }));
+        }
+
+        default:
+          throw new Error(`Unexpected geometry type: ${result.geometry.type}`);
+      }
     }
 
     default:
       throw new Error('Unsupported feature geometry type: ' + type);
   }
-
-  return result;
 }
 
 /**
@@ -140,7 +165,13 @@ export function handleFeatureUpdatesInOpenLayers(
     const userFeatureId = globalIdToFeatureId(globalId);
     if (userFeatureId) {
       // Feature is a user-defined feature so update it in the Redux store
-      updatedUserFeatures[userFeatureId] = createFeatureFromOpenLayers(feature);
+      const [updatedFeature, ...newFeatures] =
+        createFeatureFromOpenLayers(feature);
+      updatedUserFeatures[userFeatureId] = updatedFeature;
+
+      newFeatures.forEach((nf) => {
+        dispatch(cloneFeatureById(userFeatureId, nf));
+      });
 
       continue;
     }
@@ -153,7 +184,7 @@ export function handleFeatureUpdatesInOpenLayers(
         originFeatureId === MAP_ORIGIN_ID + '$y'
       ) {
         // Feature is the origin of the flat Earth coordinate system
-        const featureObject = createFeatureFromOpenLayers(feature);
+        const [featureObject] = createFeatureFromOpenLayers(feature);
         const isYAxis = originFeatureId === MAP_ORIGIN_ID + '$y';
         const coords = feature.getGeometry().getCoordinates();
         const position = featureObject.points[0];

@@ -161,7 +161,7 @@ const { actions, reducer } = createSlice({
       for (const [id, properties] of Object.entries(action.payload)) {
         const feature = state.byId[id];
         if (feature) {
-          Object.assign(feature, properties)
+          Object.assign(feature, properties);
         }
       }
     },
