@@ -23,6 +23,7 @@ import ToolboxButton from './ToolboxButton';
 
 import UAVStatusSummary from '../uavs/UAVStatusSummary';
 
+import Colors from '~/components/colors';
 import RTKStatusHeaderButton from '~/features/rtk/RTKStatusHeaderButton';
 import { BROADCAST_MODE_TIMEOUT_LENGTH } from '~/features/settings/constants';
 import { toggleSidebar } from '~/features/sidebar/actions';
@@ -45,6 +46,10 @@ const style = {
 const innerStyle = {
   display: 'flex',
   flexFlow: 'row nowrap',
+};
+
+const PERSPECTIVE_BAR_BADGE_PROPS = {
+  color: Colors.info,
 };
 
 const headingFormatter = (value, unit, suffix) =>
@@ -97,6 +102,7 @@ const Header = ({
         onClick={toggleSidebar}
       />
       <PerspectiveBar
+        badgeProps={PERSPECTIVE_BAR_BADGE_PROPS}
         editable={false}
         storage={perspectives}
         workbench={workbench}
@@ -108,9 +114,9 @@ const Header = ({
               );
             }, 0);
           }
+
           setWorkbenchHasHeaders(!config.perspectives.byId[id].hideHeaders);
           setWorkbenchIsFixed(config.perspectives.byId[id].fixed);
-
         }}
       />
       <Box flexGrow={1} flexShrink={1}>
@@ -149,7 +155,10 @@ const Header = ({
 Header.propTypes = {
   isSidebarOpen: PropTypes.bool.isRequired,
   sessionExpiresAt: PropTypes.number,
+  setWorkbenchHasHeaders: PropTypes.func.isRequired,
+  setWorkbenchIsFixed: PropTypes.func.isRequired,
   toggleSidebar: PropTypes.func.isRequired,
+  workbench: PropTypes.object.isRequired,
 };
 
 export default connect(
