@@ -50,6 +50,7 @@ const innerStyle = {
 
 const PERSPECTIVE_BAR_BADGE_PROPS = {
   color: Colors.info,
+  offset: [3, 3],
 };
 
 const headingFormatter = (value, unit, suffix) =>
