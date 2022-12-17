@@ -79,13 +79,26 @@ body .lm_header {
 
 /* Perspective switching in header */
 .wb-perspective-bar {
-  padding-block: 4px;
 }
-
+.wb-perspective-bar-item {
+  margin: 0 !important;
+}
 .wb-perspective-bar button {
+  border-bottom: 3px solid transparent;
+  border-radius: 0;
   height: 100%;
   background: unset;
   box-shadow: unset;
+  padding: 4px 8px;
+}
+.wb-perspective-bar .wb-perspective-selected button {
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.25) 100%);
+  border-bottom: 3px solid #03a9f4;  /* Material UI lightBlue[500] */
+}
+.wb-perspective-bar button:hover {
+  /* styling same as for GenericHeaderButton */
+  background: linear-gradient(to bottom, #06c 0%, #25a 100%);
+  border-bottom: 3px solid #03a9f4;  /* Material UI lightBlue[500] */
 }
 
 /* Disable draggable splitters for fixed layouts */
