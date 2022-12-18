@@ -274,18 +274,18 @@ const addLayoutToPerspective = (perspectiveBuilder, layout) => {
   }
 };
 
-const buildPerspective = ({ label, layout }) => {
+const buildPerspective = ({ hasHeaders, isFixed, label, layout }) => {
   const perspectiveBuilder = new PerspectiveBuilder(workbench);
 
   addLayoutToPerspective(perspectiveBuilder, layout);
 
   return {
     label,
-    state: { content: perspectiveBuilder.build() },
+    isFixed,
+    state: { content: perspectiveBuilder.build(), settings: { hasHeaders } },
   };
 };
 
-export const perspectives = PerspectiveStorage.fromArray([]);
-config.perspectives.order.forEach((id) => {
-  perspectives.save(buildPerspective(config.perspectives.byId[id]), id);
-});
+export const perspectives = PerspectiveStorage.fromArray(
+  config.perspectives.map(buildPerspective)
+);

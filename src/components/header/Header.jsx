@@ -1,6 +1,5 @@
 import config from 'config';
 
-import merge from 'lodash-es/merge';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { PerspectiveBar } from 'react-flexible-workbench';
@@ -108,16 +107,10 @@ const Header = ({
         storage={perspectives}
         workbench={workbench}
         onChange={(id) => {
-          if (config.perspectives.byId[id].hideHeaders) {
-            setTimeout(() => {
-              workbench.restoreState(
-                merge(workbench.getState(), { settings: { hasHeaders: false } })
-              );
-            }, 0);
-          }
-
-          setWorkbenchHasHeaders(!config.perspectives.byId[id].hideHeaders);
-          setWorkbenchIsFixed(config.perspectives.byId[id].fixed);
+          perspectives.get(id).then((p) => {
+            setWorkbenchHasHeaders(p.state.settings.hasHeaders);
+            setWorkbenchIsFixed(p.isFixed);
+          });
         }}
       />
       <Box flexGrow={1} flexShrink={1}>
@@ -155,6 +148,7 @@ const Header = ({
 
 Header.propTypes = {
   isSidebarOpen: PropTypes.bool.isRequired,
+  perspectives: PropTypes.object.isRequired,
   sessionExpiresAt: PropTypes.number,
   setWorkbenchHasHeaders: PropTypes.func.isRequired,
   setWorkbenchIsFixed: PropTypes.func.isRequired,
