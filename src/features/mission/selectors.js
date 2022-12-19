@@ -417,15 +417,23 @@ export const getMissionItemsWithCoordinatesInOrder = createSelector(
  * Returns the coordinates of the convex hull of the currently loaded mission
  * in the coordinate system of the map view.
  */
-export const getConvexHullOfMissionInMapViewCoordinates = createSelector(
-  getMissionItemsWithCoordinatesInOrder,
-  (missionItemsWithCoorinates) =>
-    convexHull(
-      missionItemsWithCoorinates.map((miwc) =>
-        mapViewCoordinateFromLonLat([miwc.coordinate.lon, miwc.coordinate.lat])
-      )
-    )
-);
+export const getConvexHullOfHomePositionsAndMissionItemsInMapViewCoordinates =
+  createSelector(
+    getGPSBasedHomePositionsInMission,
+    getMissionItemsWithCoordinatesInOrder,
+    (homePositions, missionItemsWithCoorinates) =>
+      convexHull([
+        ...homePositions.map((hp) =>
+          mapViewCoordinateFromLonLat([hp.lon, hp.lat])
+        ),
+        ...missionItemsWithCoorinates.map((miwc) =>
+          mapViewCoordinateFromLonLat([
+            miwc.coordinate.lon,
+            miwc.coordinate.lat,
+          ])
+        ),
+      ])
+  );
 
 /**
  * Selector that returns the payload of the mission item upload job.

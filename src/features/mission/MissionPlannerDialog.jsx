@@ -23,8 +23,11 @@ import { setMissionItemsFromArray } from './actions';
 import { isMissionPlannerDialogOpen } from './selectors';
 import {
   closeMissionPlannerDialog,
+  replaceMapping,
+  setMappingLength,
   setMissionPlannerDialogParameters,
   setMissionType,
+  updateHomePositions,
 } from './slice';
 
 import MissionPlannerMainPanel from './MissionPlannerMainPanel';
@@ -116,15 +119,20 @@ export default connect(
     onInvokePlanner: (parameters) => async (dispatch, getState) => {
       let items = null;
 
-      try {
-        const state = getState();
-        const selectedFeatureIds = getSelectedFeatureIds(state);
-        const uavId = getSingleSelectedUAVId(state);
+      const state = getState();
+      const uavId = getSingleSelectedUAVId(state);
+      const uavPosition = getCurrentGPSPositionByUavId(state, uavId);
 
+      try {
         if (!uavId) {
           throw new Error('Exactly one UAV must be selected');
         }
 
+        if (!uavPosition) {
+          throw new Error('The selected UAV does not have a GPS position yet');
+        }
+
+        const selectedFeatureIds = getSelectedFeatureIds(state);
         if (selectedFeatureIds.length !== 1) {
           throw new Error(
             'Exactly one line string must be selected on the map'
@@ -146,20 +154,16 @@ export default connect(
 
         // Extend the parameters with the coordinates of the selected line string
         // and the coordinates of the selected UAV
-        const uavPosition = getCurrentGPSPositionByUavId(state, uavId);
-        if (!uavPosition) {
-          throw new Error('The selected UAV does not have a GPS position yet');
-        }
-
-        parameters.start = [
-          Math.round(uavPosition.lon * 1e7),
-          Math.round(uavPosition.lat * 1e7),
-        ];
-
-        parameters.towers = feature.points.map((point) => [
-          Math.round(point[0] * 1e7),
-          Math.round(point[1] * 1e7),
-        ]);
+        Object.assign(parameters, {
+          start: [
+            Math.round(uavPosition.lon * 1e7),
+            Math.round(uavPosition.lat * 1e7),
+          ],
+          towers: feature.points.map((point) => [
+            Math.round(point[0] * 1e7),
+            Math.round(point[1] * 1e7),
+          ]),
+        });
 
         items = await messageHub.execute.planMission({
           id: 'powerline',
@@ -175,7 +179,10 @@ export default connect(
       }
 
       if (Array.isArray(items)) {
-        dispatch(setMissionType(MissionType.WAYPOINT))
+        dispatch(setMissionType(MissionType.WAYPOINT));
+        dispatch(setMappingLength(1));
+        dispatch(replaceMapping([uavId]));
+        dispatch(updateHomePositions([uavPosition]));
         dispatch(setMissionItemsFromArray(items));
         dispatch(closeMissionPlannerDialog());
       }
