@@ -20,7 +20,7 @@ import {
 } from '~/features/map-features/selectors';
 import { removeGeofencePolygon } from '~/features/mission/actions';
 import {
-  getConvexHullOfMissionInMapViewCoordinates,
+  getConvexHullOfHomePositionsAndMissionItemsInMapViewCoordinates,
   getMissionType,
 } from '~/features/mission/selectors';
 import {
@@ -139,6 +139,7 @@ const addGeofencePolygon =
       state.dialogs.geofenceSettings;
 
     const points = bufferPolygon(coordinates, horizontalMargin);
+
     const simplifiedPoints = simplify
       ? simplifyPolygon(points, maxVertexCount)
       : points;
@@ -206,7 +207,8 @@ const addGeofencePolygonBasedOnShowTrajectories =
 const addGeofencePolygonBasedOnMissionItems = () => (dispatch, getState) => {
   const state = getState();
 
-  const coordinates = getConvexHullOfMissionInMapViewCoordinates(state);
+  const coordinates =
+    getConvexHullOfHomePositionsAndMissionItemsInMapViewCoordinates(state);
   if (coordinates.length === 0) {
     dispatch(
       showNotification({
