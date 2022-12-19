@@ -24,10 +24,12 @@ import { isMissionPlannerDialogOpen } from './selectors';
 import {
   closeMissionPlannerDialog,
   setMissionPlannerDialogParameters,
+  setMissionType,
 } from './slice';
 
 import MissionPlannerMainPanel from './MissionPlannerMainPanel';
 import { isEmpty } from 'lodash-es';
+import { MissionType } from '~/model/missions';
 
 /**
  * Presentation component for the dialog that allows the user to plan a mission
@@ -173,6 +175,7 @@ export default connect(
       }
 
       if (Array.isArray(items)) {
+        dispatch(setMissionType(MissionType.WAYPOINT))
         dispatch(setMissionItemsFromArray(items));
         dispatch(closeMissionPlannerDialog());
       }
