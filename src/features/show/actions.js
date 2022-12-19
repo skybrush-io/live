@@ -2,6 +2,7 @@ import ky from 'ky';
 import get from 'lodash-es/get';
 import sum from 'lodash-es/sum';
 import throttle from 'lodash-es/throttle';
+import unary from 'lodash-es/unary';
 import Point from 'ol/geom/Point';
 
 import { freeze } from '@reduxjs/toolkit';
@@ -18,6 +19,10 @@ import {
   getProposedIdForNewFeature,
 } from '~/features/map-features/selectors';
 import { removeGeofencePolygon } from '~/features/mission/actions';
+import {
+  getConvexHullOfMissionInMapViewCoordinates,
+  getMissionType,
+} from '~/features/mission/selectors';
 import {
   updateHomePositions,
   updateLandingPositions,
@@ -126,30 +131,12 @@ export const removeShowFeatures = () => (dispatch, getState) => {
   dispatch(removeFeaturesByIds(showFeatureIds));
 };
 
-const addGeofencePolygonBasedOnShowTrajectories =
-  () => (dispatch, getState) => {
+const addGeofencePolygon =
+  (coordinates, owner, toLonLat) => (dispatch, getState) => {
     const state = getState();
 
     const { horizontalMargin, simplify, maxVertexCount } =
       state.dialogs.geofenceSettings;
-
-    const coordinates = getConvexHullOfShow(state);
-    if (coordinates.length === 0) {
-      dispatch(
-        showNotification({
-          message: `Could not calculate geofence coordinates. Did you load a show file?`,
-          semantics: MessageSemantics.ERROR,
-          permanent: true,
-        })
-      );
-      return;
-    }
-
-    const transformation =
-      getOutdoorShowToWorldCoordinateSystemTransformationObject(state);
-    if (!transformation) {
-      throw new Error('Outdoor coordinate system not set up yet');
-    }
 
     const points = bufferPolygon(coordinates, horizontalMargin);
     const simplifiedPoints = simplify
@@ -167,12 +154,12 @@ const addGeofencePolygonBasedOnShowTrajectories =
        * it means that any click inside the geofence would be considered as a
        * "hit" for the geofence feature */
       type: FeatureType.LINE_STRING,
-      owner: 'show',
+      owner,
       /* don't use a label; the geofence usually overlaps with the convex hull of
        * the show so it is confusing if the "Geofence" label appears in the middle
        * of the convex hull */
       color: Colors.geofence,
-      points: simplifiedPoints.map((c) => transformation.toLonLat(c)),
+      points: simplifiedPoints.map(toLonLat),
     };
     const geofencePolygonId = getProposedIdForNewFeature(
       state,
@@ -184,9 +171,85 @@ const addGeofencePolygonBasedOnShowTrajectories =
     dispatch(setGeofencePolygonId(geofencePolygonId));
   };
 
-export const updateGeofencePolygon = () => (dispatch) => {
+const addGeofencePolygonBasedOnShowTrajectories =
+  () => (dispatch, getState) => {
+    const state = getState();
+
+    const coordinates = getConvexHullOfShow(state);
+    if (coordinates.length === 0) {
+      dispatch(
+        showNotification({
+          message: `Could not calculate geofence coordinates.
+                    Did you load a show file?`,
+          semantics: MessageSemantics.ERROR,
+          permanent: true,
+        })
+      );
+      return;
+    }
+
+    const transformation =
+      getOutdoorShowToWorldCoordinateSystemTransformationObject(state);
+    if (!transformation) {
+      throw new Error('Outdoor coordinate system not set up yet');
+    }
+
+    dispatch(
+      addGeofencePolygon(
+        coordinates,
+        'show',
+        unary(transformation.toLonLat.bind(transformation))
+      )
+    );
+  };
+
+const addGeofencePolygonBasedOnMissionItems = () => (dispatch, getState) => {
+  const state = getState();
+
+  const coordinates = getConvexHullOfMissionInMapViewCoordinates(state);
+  if (coordinates.length === 0) {
+    dispatch(
+      showNotification({
+        message: `Could not calculate geofence coordinates.
+                  Are there valid mission items with coordinates?`,
+        semantics: MessageSemantics.ERROR,
+        permanent: true,
+      })
+    );
+    return;
+  }
+
+  dispatch(
+    addGeofencePolygon(
+      coordinates,
+      'mission',
+      unary(lonLatFromMapViewCoordinate)
+    )
+  );
+};
+
+export const updateGeofencePolygon = () => (dispatch, getState) => {
   dispatch(removeGeofencePolygon());
-  dispatch(addGeofencePolygonBasedOnShowTrajectories());
+  const missionType = getMissionType(getState());
+  switch (missionType) {
+    case MissionType.SHOW: {
+      dispatch(addGeofencePolygonBasedOnShowTrajectories());
+      break;
+    }
+    case MissionType.WAYPOINT: {
+      dispatch(addGeofencePolygonBasedOnMissionItems());
+      break;
+    }
+    default: {
+      dispatch(
+        showNotification({
+          message: `Cannot update geofence for mission type: "${missionType}"`,
+          semantics: MessageSemantics.ERROR,
+          permanent: true,
+        })
+      );
+    }
+  }
 };
 
 /**

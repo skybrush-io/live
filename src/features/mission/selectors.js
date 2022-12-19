@@ -17,6 +17,8 @@ import {
 import { MissionType, getCoordinateFromMissionItem } from '~/model/missions';
 import { selectionForSubset } from '~/selectors/selection';
 import { selectOrdered } from '~/utils/collections';
+import { mapViewCoordinateFromLonLat } from '~/utils/geography';
+import { convexHull } from '~/utils/math';
 import { EMPTY_ARRAY } from '~/utils/redux';
 
 /**
@@ -409,6 +411,20 @@ export const getMissionItemsWithCoordinatesInOrder = createSelector(
 
     return result;
   }
+);
+
+/**
+ * Returns the coordinates of the convex hull of the currently loaded mission
+ * in the coordinate system of the map view.
+ */
+export const getConvexHullOfMissionInMapViewCoordinates = createSelector(
+  getMissionItemsWithCoordinatesInOrder,
+  (missionItemsWithCoorinates) =>
+    convexHull(
+      missionItemsWithCoorinates.map((miwc) =>
+        mapViewCoordinateFromLonLat([miwc.coordinate.lon, miwc.coordinate.lat])
+      )
+    )
 );
 
 /**
