@@ -189,7 +189,7 @@ const addGeofencePolygonBasedOnShowTrajectories =
     dispatch(
       addGeofencePolygon(
         coordinates,
-        'show',
+        MissionType.SHOW,
         unary(transformation.toLonLat.bind(transformation))
       )
     );
@@ -215,7 +215,7 @@ const addGeofencePolygonBasedOnMissionItems = () => (dispatch, getState) => {
   dispatch(
     addGeofencePolygon(
       coordinates,
-      'mission',
+      MissionType.WAYPOINT,
       unary(lonLatFromMapViewCoordinate)
     )
   );
@@ -229,10 +229,12 @@ export const updateGeofencePolygon = () => (dispatch, getState) => {
       dispatch(addGeofencePolygonBasedOnShowTrajectories());
       break;
     }
+
     case MissionType.WAYPOINT: {
       dispatch(addGeofencePolygonBasedOnMissionItems());
       break;
     }
+
     default: {
       dispatch(
         showNotification({
