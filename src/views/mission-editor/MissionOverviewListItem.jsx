@@ -17,10 +17,21 @@ import UpdateGeofenceIcon from '~/icons/PlacesFence';
 import LandIcon from '@material-ui/icons/FlightLand';
 import HomeIcon from '@material-ui/icons/Home';
 
+import { Status } from '@skybrush/app-theme-material-ui';
+
 import Colors from '~/components/colors';
 import { showGeofenceSettingsDialog } from '~/features/geofence/slice';
-import { getMissionItemById } from '~/features/mission/selectors';
-import { isMissionItemValid, MissionItemType } from '~/model/missions';
+import {
+  getGeofencePolygon,
+  getMissionItemById,
+  hasActiveGeofencePolygon,
+  isWaypointMissionConvexHullInsideGeofence,
+} from '~/features/mission/selectors';
+import {
+  isMissionItemValid,
+  MissionItemType,
+  MissionType,
+} from '~/model/missions';
 import {
   safelyFormatAltitudeWithReference,
   safelyFormatHeadingWithMode,
@@ -45,10 +56,31 @@ const useStyles = makeStyles(
   { name: 'MissionOverviewListItem' }
 );
 
+// TODO: Reduce code duplication from `GeofenceButton.jsx`
+const formatGeofenceStatusText = (status) => {
+  switch (status) {
+    case Status.OFF:
+      return 'No geofence defined yet';
+
+    case Status.SUCCESS:
+      return 'Automatic geofence in use';
+
+    case Status.WARNING:
+      return 'Manual geofence in use';
+
+    case Status.ERROR:
+      return 'Mission area lies outside the geofence';
+
+    default:
+      return '';
+  }
+};
+
 const MissionOverviewListItem = ({
   id,
   index,
   item,
+  missionGeofenceStatus,
   selected,
   showGeofenceSettingsDialog,
   onSelectItem,
@@ -139,8 +171,7 @@ const MissionOverviewListItem = ({
       avatar = <UpdateGeofenceIcon />;
       onClick = showGeofenceSettingsDialog;
       primaryText = 'Update geofence';
-      // TODO: Display proper info from the geofence mission item
-      secondaryText = 'TODO';
+      secondaryText = formatGeofenceStatusText(missionGeofenceStatus);
       break;
 
     default:
@@ -169,6 +200,7 @@ MissionOverviewListItem.propTypes = {
     type: PropTypes.string,
     parameters: PropTypes.object,
   }),
+  missionGeofenceStatus: PropTypes.oneOf(Object.values(Status)),
   selected: PropTypes.bool,
   showGeofenceSettingsDialog: PropTypes.func,
   onSelectItem: PropTypes.func,
@@ -178,6 +210,13 @@ export default connect(
   // mapStateToProps
   (state, ownProps) => ({
     item: getMissionItemById(state, ownProps.id),
+    missionGeofenceStatus: hasActiveGeofencePolygon(state)
+      ? isWaypointMissionConvexHullInsideGeofence(state)
+        ? getGeofencePolygon(state).owner === MissionType.WAYPOINT
+          ? Status.SUCCESS
+          : Status.WARNING
+        : Status.ERROR
+      : Status.OFF,
   }),
   // mapDispatchToProps
   {

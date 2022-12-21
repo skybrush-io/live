@@ -4,9 +4,10 @@ import min from 'lodash-es/min';
 import range from 'lodash-es/range';
 import reject from 'lodash-es/reject';
 import { createSelector } from '@reduxjs/toolkit';
+import turfContains from '@turf/boolean-contains';
 
-import { Status } from '~/components/semantics';
 import { GeofenceAction } from '~/features/geofence/model';
+import { getFeaturesByIds } from '~/features/map-features/selectors';
 import {
   globalIdToMissionItemId,
   globalIdToMissionSlotId,
@@ -15,7 +16,7 @@ import { MissionType, getCoordinateFromMissionItem } from '~/model/missions';
 import { selectionForSubset } from '~/selectors/selection';
 import { selectOrdered } from '~/utils/collections';
 import { mapViewCoordinateFromLonLat } from '~/utils/geography';
-import { convexHull } from '~/utils/math';
+import { convexHull, createGeometryFromPoints } from '~/utils/math';
 import { EMPTY_ARRAY } from '~/utils/redux';
 
 /**
@@ -270,13 +271,21 @@ export const getGeofenceAction = (state) =>
 export const getGeofencePolygonId = (state) => state.mission.geofencePolygonId;
 
 /**
+ * Gets the polygon that is to be used as a geofence.
+ */
+export const getGeofencePolygon = createSelector(
+  getGeofencePolygonId,
+  getFeaturesByIds,
+  (geofencePolygonId, featuresById) => featuresById[geofencePolygonId]
+);
+
+/**
  * Gets the coordinates of the polygon that is to be used as a geofence, in
  * world coordinates, or undefined if no geofence polygon is defined.
  */
 export const getGeofencePolygonInWorldCoordinates = createSelector(
-  getGeofencePolygonId,
-  (state) => state.features.byId,
-  (geofencePolygonId, featuresById) => featuresById[geofencePolygonId]?.points
+  getGeofencePolygon,
+  (geofencePolygon) => geofencePolygon?.points
 );
 
 /**
@@ -285,23 +294,10 @@ export const getGeofencePolygonInWorldCoordinates = createSelector(
  */
 export const hasActiveGeofencePolygon = createSelector(
   getGeofencePolygonId,
-  (state) => state.features.byId,
+  getFeaturesByIds,
   (geofencePolygonId, featuresById) =>
     geofencePolygonId !== undefined &&
     featuresById[geofencePolygonId] !== undefined
-);
-
-export const getGeofenceStatus = createSelector(
-  hasActiveGeofencePolygon,
-  getGeofencePolygonId,
-  (state) => state.features.byId,
-  (hasActiveGeofencePolygon, geofencePolygonId, featuresById) => {
-    return !hasActiveGeofencePolygon
-      ? Status.OFF
-      : featuresById[geofencePolygonId].owner === 'show'
-      ? Status.SUCCESS
-      : Status.WARNING;
-  }
 );
 
 export const getItemIndexRangeForSelectedMissionItems = createSelector(
@@ -400,23 +396,55 @@ export const getMissionItemsWithCoordinatesInOrder = createSelector(
  * Returns the coordinates of the convex hull of the currently loaded mission
  * in the coordinate system of the map view.
  */
-export const getConvexHullOfHomePositionsAndMissionItemsInMapViewCoordinates =
+export const getConvexHullOfHomePositionsAndMissionItemsInWorldCoordinates =
   createSelector(
     getGPSBasedHomePositionsInMission,
     getMissionItemsWithCoordinatesInOrder,
     (homePositions, missionItemsWithCoorinates) =>
       convexHull([
-        ...homePositions.map((hp) =>
-          mapViewCoordinateFromLonLat([hp.lon, hp.lat])
-        ),
-        ...missionItemsWithCoorinates.map((miwc) =>
-          mapViewCoordinateFromLonLat([
-            miwc.coordinate.lon,
-            miwc.coordinate.lat,
-          ])
-        ),
+        ...homePositions.map((hp) => [hp.lon, hp.lat]),
+        ...missionItemsWithCoorinates.map((miwc) => [
+          miwc.coordinate.lon,
+          miwc.coordinate.lat,
+        ]),
       ])
   );
+
+/**
+ * Returns the coordinates of the convex hull of the currently loaded mission
+ * in the coordinate system of the map view.
+ */
+export const getConvexHullOfHomePositionsAndMissionItemsInMapViewCoordinates =
+  createSelector(
+    getConvexHullOfHomePositionsAndMissionItemsInWorldCoordinates,
+    (convexHullOfHomePositionsAndMissionItemsInWorldCoordinates) =>
+      convexHullOfHomePositionsAndMissionItemsInWorldCoordinates.map(
+        (worldCoordinate) => mapViewCoordinateFromLonLat(worldCoordinate)
+      )
+  );
+
+/**
+ * Returns whether the convex hull of the waypoint mission (home positions and
+ * mission items) is fully contained inside the geofence polygon.
+ */
+export const isWaypointMissionConvexHullInsideGeofence = createSelector(
+  getConvexHullOfHomePositionsAndMissionItemsInWorldCoordinates,
+  getGeofencePolygonInWorldCoordinates,
+  (convexHull, geofence) => {
+    if (
+      Array.isArray(geofence) &&
+      geofence.length > 0 &&
+      Array.isArray(convexHull) &&
+      convexHull.length > 0
+    ) {
+      geofence = createGeometryFromPoints(geofence);
+      convexHull = createGeometryFromPoints(convexHull);
+      return turfContains(geofence, convexHull);
+    }
+
+    return false;
+  }
+);
 
 /**
  * Selector that returns the payload of the mission item upload job.

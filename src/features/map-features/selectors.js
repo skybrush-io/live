@@ -42,6 +42,11 @@ export const getProposedIdForNewFeature = (state, feature, name) => {
 };
 
 /**
+ * Selector that returns an object that stores features by their ids.
+ */
+export const getFeaturesByIds = (state) => state.features.byId;
+
+/**
  * Selector that returns the id of the feature currently being edited.
  */
 export const getEditedFeatureId = (state) =>

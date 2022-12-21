@@ -29,10 +29,10 @@ import { Status } from '~/components/semantics';
 
 import {
   getEmptyMappingSlotIndices,
-  getGeofenceStatus,
   hasActiveGeofencePolygon,
   hasNonemptyMappingSlot,
 } from '~/features/mission/selectors';
+import { getGeofenceStatus } from '~/features/mission/selectors-geofence-extra';
 import {
   areAllPreflightChecksTicked,
   hasManualPreflightChecks,
