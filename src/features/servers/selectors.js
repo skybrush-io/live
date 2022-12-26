@@ -1,10 +1,12 @@
 import isNil from 'lodash-es/isNil';
 import { createSelector } from '@reduxjs/toolkit';
 
-import { CLOCK_SKEW_WARNING_THRESHOLD, MAX_ROUNDTRIP_TIME } from './constants';
-import { INVALID } from './slice';
 import { ConnectionState } from '~/model/connections';
 import { selectOrdered } from '~/utils/collections';
+
+import { CLOCK_SKEW_WARNING_THRESHOLD, MAX_ROUNDTRIP_TIME } from './constants';
+import { Protocol } from './server-settings-dialog';
+import { INVALID } from './slice';
 
 /**
  * Returns the current authentication token that the user possesses.
@@ -47,15 +49,30 @@ export const getRoundTripTimeInMilliseconds = (state) =>
   state.servers.current.timeSync.roundTripTime;
 
 /**
+ * Selector that returns the protocol of the server that the user is
+ * connected to or that the user is trying to connect to.
+ * (Defaults to WebSocket for backwards compatibility.)
+ */
+export const getServerProtocolWithDefaultWS = (state) =>
+  state.dialogs.serverSettings.protocol || Protocol.WS;
+
+/**
  * Selector that returns the hostname of the server that the user is
- * connected or or that the user is trying to connect to.
+ * connected to or that the user is trying to connect to.
  */
 export const getServerHostname = (state) =>
   state.dialogs.serverSettings.hostName;
 
 /**
+ * Selector that returns the port of the server that the user is
+ * connected to or that the user is trying to connect to.
+ */
+export const getServerPort = (state) =>
+  state.dialogs.serverSettings.port;
+
+/**
  * Selector that returns the hostname and port of the server that the user is
- * connected or or that the user is trying to connect to.
+ * connected to or that the user is trying to connect to.
  */
 export const getServerHostnameAndPort = createSelector(
   (state) => state.dialogs.serverSettings,
