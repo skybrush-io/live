@@ -104,11 +104,29 @@ waitUntilStateRestored().then(() => {
   }
 });
 
-const AppPresentation = ({
-  onFirstRender,
-  workbenchHasHeaders,
-  workbenchIsFixed,
-}) => (
+const WorkbenchContainerPresentation = ({ hideHeaders, isFixed }) => (
+  <div className={clsx(isFixed && 'workbench-fixed')} style={rootInnerStyle}>
+    {!hideHeaders && !isFixed ? <Sidebar workbench={workbench} /> : null}
+    <WorkbenchView workbench={workbench} />
+  </div>
+);
+
+WorkbenchContainerPresentation.propTypes = {
+  hideHeaders: PropTypes.bool,
+  isFixed: PropTypes.bool,
+};
+
+const WorkbenchContainer = connect(
+  // mapStateToProps
+  (state) => ({
+    hideHeaders: Boolean(state.workbench.hideHeaders),
+    isFixed: Boolean(state.workbench.isFixed),
+  }),
+  // mapDispatchToProps
+  null
+)(WorkbenchContainerPresentation);
+
+const App = ({ onFirstRender }) => (
   <PersistGate
     persistor={persistor}
     onBeforeLift={restoreWorkbench(onFirstRender)}
@@ -122,15 +140,7 @@ const AppPresentation = ({
 
       <div style={rootStyle}>
         <Header perspectives={perspectives} workbench={workbench} />
-        <div
-          className={clsx(workbenchIsFixed && 'workbench-fixed')}
-          style={rootInnerStyle}
-        >
-          {workbenchHasHeaders && !workbenchIsFixed ? (
-            <Sidebar workbench={workbench} />
-          ) : null}
-          <WorkbenchView workbench={workbench} />
-        </div>
+        <WorkbenchContainer />
         {config.ribbon && config.ribbon.label && (
           <CornerRibbon {...config.ribbon} />
         )}
@@ -177,21 +187,9 @@ const AppPresentation = ({
   </PersistGate>
 );
 
-AppPresentation.propTypes = {
+App.propTypes = {
   onFirstRender: PropTypes.func,
-  workbenchHasHeaders: PropTypes.bool,
-  workbenchIsFixed: PropTypes.bool,
 };
-
-const App = connect(
-  // mapStateToProps
-  (state) => ({
-    workbenchHasHeaders: !state.workbench.hideHeaders,
-    workbenchIsFixed: Boolean(state.workbench.isFixed),
-  }),
-  // mapDispatchToProps
-  {}
-)(AppPresentation);
 
 /**
  * Placeholder component to render when a panel is being dragged from the
