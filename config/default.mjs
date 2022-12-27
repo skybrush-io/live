@@ -56,7 +56,7 @@ const config = {
     },
     {
       label: 'Show',
-      hasHeaders: false,
+      hideHeaders: true,
       layout: {
         type: 'columns',
         contents: [
@@ -73,7 +73,7 @@ const config = {
     },
     {
       label: 'Map',
-      hasHeaders: false,
+      hideHeaders: true,
       isFixed: true,
       layout: {
         type: 'columns',

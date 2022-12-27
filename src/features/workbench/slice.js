@@ -8,8 +8,12 @@ const { actions, reducer } = createSlice({
   name: 'workbench',
 
   initialState: {
-    hasHeaders: true,
+    // Stores whether the panel headers are shown on the workbench
+    hideHeaders: false,
+
+    // Stores whether the current workbench layout is fixed
     isFixed: false,
+
     // Default workbench state is in src/workbench.js because the
     // Redux store only 'follows' the workbench state, it does not
     // define it in the usual sense (due to limitations in how
@@ -19,7 +23,7 @@ const { actions, reducer } = createSlice({
 
   reducers: {
     setWorkbenchHasHeaders(state, { payload: hasHeaders }) {
-      state.hasHeaders = hasHeaders ?? true;
+      state.hideHeaders = !(hasHeaders ?? true);
     },
 
     setWorkbenchIsFixed(state, { payload: isFixed }) {

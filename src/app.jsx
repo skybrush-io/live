@@ -36,6 +36,7 @@ import VersionCheckDialog from './features/version-check/VersionCheckDialog';
 
 import { ErrorHandler } from './error-handling';
 import flock, { Flock } from './flock';
+import perspectives from './perspectives';
 import rootSaga from './sagas';
 import store, {
   clearStoreAfterConfirmation,
@@ -46,7 +47,7 @@ import store, {
 import ThemeProvider, { DarkModeExtraCSSProvider } from './theme';
 import registerUploadJobTypes from './upload-jobs';
 import { hasTimeLimitedSession } from './utils/configuration';
-import workbench, { perspectives } from './workbench';
+import workbench from './workbench';
 
 import 'tippy.js/dist/tippy.css';
 import 'tippy.js/themes/light-border.css';
@@ -185,8 +186,8 @@ AppPresentation.propTypes = {
 const App = connect(
   // mapStateToProps
   (state) => ({
-    workbenchHasHeaders: state.workbench.hasHeaders,
-    workbenchIsFixed: state.workbench.isFixed,
+    workbenchHasHeaders: !state.workbench.hideHeaders,
+    workbenchIsFixed: Boolean(state.workbench.isFixed),
   }),
   // mapDispatchToProps
   {}
