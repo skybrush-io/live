@@ -11,6 +11,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Enable multi-window support by making panels detachable from the main layout.
 
+### Changed
+
+- The Electron based packaged version now uses a TCP socket to communicate
+  with the server instead of the WebSocket connection used in the browser.
+
 ## [2.6.0] - 2022-10-20
 
 ### Added

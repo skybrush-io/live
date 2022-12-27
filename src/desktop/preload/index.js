@@ -24,6 +24,7 @@ const {
   receiveSubscriptionsFromRenderer,
   setupIpc,
 } = require('./ipc');
+const TCPSocket = require('./tcp-socket');
 
 /**
  * Creates a new SSDP client object and registers the given function to be
@@ -67,6 +68,15 @@ function createStateStore() {
   });
 }
 
+const createTCPSocket = ({ address, port }, options, handlers) => {
+  const tcpSocket = new TCPSocket({ address, port }, options, handlers);
+
+  return {
+    emit: tcpSocket.emit.bind(tcpSocket),
+    end: tcpSocket.end.bind(tcpSocket),
+  };
+};
+
 const reverseDNSLookup = pify(dns.reverse);
 
 // Inject the bridge functions between the main and the renderer processes.
@@ -76,6 +86,7 @@ const reverseDNSLookup = pify(dns.reverse);
 contextBridge.exposeInMainWorld('bridge', {
   createSSDPClient,
   createStateStore,
+  createTCPSocket,
   dispatch() {
     throw new Error('no store dispatcher was set up yet');
   },
