@@ -191,9 +191,9 @@ const ServerSettingsFormPresentation = ({
           <Switches
             name='isWebSocket'
             data={{
-              label: 'Use the WebSocket protocol instead of TCP',
+              label: 'Use WebSocket protocol instead of TCP',
             }}
-            helperText='This option is only made available to ensure backwards compatibility.'
+            helperText='For backwards compatibility only.'
           />
         ) : null}
       </form>
