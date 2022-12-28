@@ -2,7 +2,6 @@ import config from 'config';
 
 import PropTypes from 'prop-types';
 import React from 'react';
-import { PerspectiveBar } from 'react-flexible-workbench';
 import { connect } from 'react-redux';
 import Shapeshifter from 'react-shapeshifter';
 import TimeAgo from 'react-timeago';
@@ -20,9 +19,8 @@ import HelpButton from './HelpButton';
 import ServerConnectionSettingsButton from './ServerConnectionSettingsButton';
 import ToolboxButton from './ToolboxButton';
 
-import UAVStatusSummary from '../uavs/UAVStatusSummary';
-
-import Colors from '~/components/colors';
+import UAVStatusSummary from '~/components/uavs/UAVStatusSummary';
+import PerspectiveBar from '~/features/perspectives/PerspectiveBar';
 import RTKStatusHeaderButton from '~/features/rtk/RTKStatusHeaderButton';
 import { BROADCAST_MODE_TIMEOUT_LENGTH } from '~/features/settings/constants';
 import { toggleSidebar } from '~/features/sidebar/actions';
@@ -30,10 +28,6 @@ import { isSidebarOpen } from '~/features/sidebar/selectors';
 import AltitudeSummaryHeaderButton from '~/features/uavs/AltitudeSummaryHeaderButton';
 import BatteryStatusHeaderButton from '~/features/uavs/BatteryStatusHeaderButton';
 import WeatherHeaderButton from '~/features/weather/WeatherHeaderButton';
-import {
-  setWorkbenchHasHeaders,
-  setWorkbenchIsFixed,
-} from '~/features/workbench/slice';
 import { hasFeature } from '~/utils/configuration';
 
 const style = {
@@ -45,11 +39,6 @@ const style = {
 const innerStyle = {
   display: 'flex',
   flexFlow: 'row nowrap',
-};
-
-const PERSPECTIVE_BAR_BADGE_PROPS = {
-  color: Colors.info,
-  offset: [3, 3],
 };
 
 const headingFormatter = (value, unit, suffix) =>
@@ -84,15 +73,7 @@ SessionExpiryBox.propTypes = {
  *
  * @returns  {Object}  the rendered header component
  */
-const Header = ({
-  isSidebarOpen,
-  perspectives,
-  sessionExpiresAt,
-  setWorkbenchHasHeaders,
-  setWorkbenchIsFixed,
-  toggleSidebar,
-  workbench,
-}) => (
+const Header = ({ isSidebarOpen, sessionExpiresAt, toggleSidebar }) => (
   <div id='header' style={{ ...style, overflow: 'hidden' }}>
     <div id='header-inner' style={innerStyle}>
       <Shapeshifter
@@ -101,18 +82,7 @@ const Header = ({
         shape={isSidebarOpen ? 'close' : 'menu'}
         onClick={toggleSidebar}
       />
-      <PerspectiveBar
-        badgeProps={PERSPECTIVE_BAR_BADGE_PROPS}
-        editable={false}
-        storage={perspectives}
-        workbench={workbench}
-        onChange={(id) => {
-          perspectives.get(id).then((p) => {
-            setWorkbenchHasHeaders(p.state.settings.hasHeaders);
-            setWorkbenchIsFixed(p.isFixed);
-          });
-        }}
-      />
+      <PerspectiveBar />
       <UAVStatusSummary />
       <hr />
       <AltitudeSummaryHeaderButton />
@@ -145,12 +115,8 @@ const Header = ({
 
 Header.propTypes = {
   isSidebarOpen: PropTypes.bool.isRequired,
-  perspectives: PropTypes.object.isRequired,
   sessionExpiresAt: PropTypes.number,
-  setWorkbenchHasHeaders: PropTypes.func.isRequired,
-  setWorkbenchIsFixed: PropTypes.func.isRequired,
   toggleSidebar: PropTypes.func.isRequired,
-  workbench: PropTypes.object.isRequired,
 };
 
 export default connect(
@@ -160,5 +126,5 @@ export default connect(
     isSidebarOpen: isSidebarOpen(state),
   }),
   // mapDispatchToProps
-  { setWorkbenchHasHeaders, setWorkbenchIsFixed, toggleSidebar }
+  { toggleSidebar }
 )(Header);
