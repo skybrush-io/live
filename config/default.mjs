@@ -24,9 +24,9 @@ const config = {
           {
             type: 'stack',
             contents: [
-              { type: 'panel', component: 'map' },
-              { type: 'panel', component: 'uav-list' },
-              { type: 'panel', component: 'three-d-view' },
+              { type: 'panel', component: 'map', id: 'map' },
+              { type: 'panel', component: 'uav-list', id: 'uavs' },
+              { type: 'panel', component: 'three-d-view', id: 'threeDView' },
             ],
           },
           {
@@ -35,17 +35,21 @@ const config = {
               {
                 type: 'stack',
                 contents: [
-                  { type: 'panel', component: 'lcd-clock-panel' },
-                  { type: 'panel', component: 'saved-location-list' },
-                  { type: 'panel', component: 'layer-list' },
+                  { type: 'panel', component: 'lcd-clock-panel', id: 'clocks' },
+                  {
+                    type: 'panel',
+                    component: 'saved-location-list',
+                    id: 'locations',
+                  },
+                  { type: 'panel', component: 'layer-list', id: 'layers' },
                 ],
                 height: 25,
               },
               {
                 type: 'stack',
                 contents: [
-                  { type: 'panel', component: 'show-control' },
-                  { type: 'panel', component: 'light-control' },
+                  { type: 'panel', component: 'show-control', id: 'show' },
+                  { type: 'panel', component: 'light-control', id: 'lights' },
                 ],
               },
             ],
@@ -60,12 +64,17 @@ const config = {
       layout: {
         type: 'columns',
         contents: [
-          { type: 'panel', component: 'show-control', width: 60 },
+          { type: 'panel', component: 'show-control', width: 60, id: 'show' },
           {
             type: 'rows',
             contents: [
-              { type: 'panel', component: 'lcd-clock-panel', height: 30 },
-              { type: 'panel', component: 'uav-list' },
+              {
+                type: 'panel',
+                component: 'lcd-clock-panel',
+                height: 30,
+                id: 'clocks',
+              },
+              { type: 'panel', component: 'uav-list', id: 'uavs' },
             ],
           },
         ],
@@ -78,12 +87,17 @@ const config = {
       layout: {
         type: 'columns',
         contents: [
-          { type: 'panel', component: 'map', width: 80 },
+          { type: 'panel', component: 'map', width: 80, id: 'map' },
           {
             type: 'rows',
             contents: [
-              { type: 'panel', component: 'saved-location-list', height: 30 },
-              { type: 'panel', component: 'layer-list' },
+              {
+                type: 'panel',
+                component: 'saved-location-list',
+                height: 30,
+                id: 'locations',
+              },
+              { type: 'panel', component: 'layer-list', id: 'layers' },
             ],
           },
         ],

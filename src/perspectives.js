@@ -32,8 +32,10 @@ const addLayoutToPerspective = (perspectiveBuilder, layout) => {
       perspectiveBuilder
         .add(layout.component)
         .setTitle(componentRegistry[layout.component].label);
-      // TODO Set ids of panels for the sidebar to work properly
-      // .setId(layout.component);
+
+      if (layout.id) {
+        perspectiveBuilder.setId(layout.id);
+      }
 
       break;
     }
