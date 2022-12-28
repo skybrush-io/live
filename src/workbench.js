@@ -15,10 +15,14 @@ import loadable from '@loadable/component';
 import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
 
 import { makeDetachable } from './features/detachable-panels/DetachablePanel';
+import { createPerspectiveBuilder } from './features/perspectives/utils';
 import { saveWorkbenchState } from './features/workbench/slice';
 import { injectFlockFromContext } from './flock';
 import store from './store';
-import { hasFeature } from './utils/configuration';
+import {
+  getDefaultWorkbenchPerspectiveSpecification,
+  hasFeature,
+} from './utils/configuration';
 import views from './views';
 
 const MapView = loadable(() =>
@@ -146,60 +150,28 @@ export const componentRegistry = {
 };
 
 function constructDefaultWorkbench(store) {
-  const builder = new WorkbenchBuilder();
+  const workbenchBuilder = new WorkbenchBuilder();
 
-  // Register all our supported components in the builder
+  // Register all our supported components in the workbench builder
   for (const [name, entry] of Object.entries(componentRegistry)) {
     const featureModifier = (c) =>
       entry.feature ? onlyWithFeature(entry.feature, c) : c;
     const detachModifier = (c) =>
       entry.detachable ? makeDetachable(name, entry.label, c) : c;
-    builder.registerComponent(
+    workbenchBuilder.registerComponent(
       name,
       featureModifier(detachModifier(entry.component))
     );
   }
 
-  // prettier-ignore
-  const workbench = builder
-    .makeColumns()
-      .makeStack()
-        .add('map')
-          .setTitle('Map')
-          .setId('map')
-        .add('uav-list')
-          .setTitle('UAVs')
-          .setId('uavs')
-        .add('three-d-view')
-          .setTitle('3D View')
-          .setId('threeDView')
-          .preventReorder()
-        .finish()
-      .makeRows()
-        .makeStack()
-          .add('lcd-clock-panel')
-            .setTitle('Clocks')
-            .setId('clocks')
-          .add('saved-location-list')
-            .setTitle('Locations')
-            .setId('locations')
-          .add('layer-list')
-            .setTitle('Layers')
-            .setId('layers')
-          .finish()
-          .setRelativeHeight(25)
-        .makeStack()
-          .add('show-control')
-            .setTitle('Show control')
-            .setId('show')
-          .add('light-control')
-            .setTitle('Light control')
-            .setId('lights')
-          .finish()
-        .finish()
-        .setRelativeWidth(25)
-      .finish()
-    .build();
+  // Create the default perspective
+  const workbench = workbenchBuilder.build();
+  workbench.restoreState(
+    createPerspectiveBuilder(
+      componentRegistry,
+      new WorkbenchBuilder().build()
+    )(getDefaultWorkbenchPerspectiveSpecification()).state
+  );
 
   // Set a fallback component for cases when we cannot show a component
   workbench.fallback = FallbackComponent;
