@@ -1,9 +1,10 @@
+import clsx from 'clsx';
 import config from 'config';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { WorkbenchView } from 'react-flexible-workbench';
-import { Provider as StoreProvider } from 'react-redux';
+import { connect, Provider as StoreProvider } from 'react-redux';
 import { ToastProvider } from 'react-toast-notifications';
 import { PersistGate } from 'redux-persist/es/integration/react';
 
@@ -35,6 +36,7 @@ import VersionCheckDialog from './features/version-check/VersionCheckDialog';
 
 import { ErrorHandler } from './error-handling';
 import flock, { Flock } from './flock';
+import perspectives from './perspectives';
 import rootSaga from './sagas';
 import store, {
   clearStoreAfterConfirmation,
@@ -102,6 +104,28 @@ waitUntilStateRestored().then(() => {
   }
 });
 
+const WorkbenchContainerPresentation = ({ hideHeaders, isFixed }) => (
+  <div className={clsx(isFixed && 'workbench-fixed')} style={rootInnerStyle}>
+    {!hideHeaders && !isFixed ? <Sidebar workbench={workbench} /> : null}
+    <WorkbenchView workbench={workbench} />
+  </div>
+);
+
+WorkbenchContainerPresentation.propTypes = {
+  hideHeaders: PropTypes.bool,
+  isFixed: PropTypes.bool,
+};
+
+const WorkbenchContainer = connect(
+  // mapStateToProps
+  (state) => ({
+    hideHeaders: Boolean(state.workbench.hideHeaders),
+    isFixed: Boolean(state.workbench.isFixed),
+  }),
+  // mapDispatchToProps
+  null
+)(WorkbenchContainerPresentation);
+
 const App = ({ onFirstRender }) => (
   <PersistGate
     persistor={persistor}
@@ -115,11 +139,8 @@ const App = ({ onFirstRender }) => (
       <AppHotkeys />
 
       <div style={rootStyle}>
-        <Header workbench={workbench} />
-        <div style={rootInnerStyle}>
-          <Sidebar workbench={workbench} />
-          <WorkbenchView workbench={workbench} />
-        </div>
+        <Header perspectives={perspectives} workbench={workbench} />
+        <WorkbenchContainer />
         {config.ribbon && config.ribbon.label && (
           <CornerRibbon {...config.ribbon} />
         )}

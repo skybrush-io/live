@@ -19,8 +19,8 @@ import HelpButton from './HelpButton';
 import ServerConnectionSettingsButton from './ServerConnectionSettingsButton';
 import ToolboxButton from './ToolboxButton';
 
-import UAVStatusSummary from '../uavs/UAVStatusSummary';
-
+import UAVStatusSummary from '~/components/uavs/UAVStatusSummary';
+import PerspectiveBar from '~/features/perspectives/PerspectiveBar';
 import RTKStatusHeaderButton from '~/features/rtk/RTKStatusHeaderButton';
 import { BROADCAST_MODE_TIMEOUT_LENGTH } from '~/features/settings/constants';
 import { toggleSidebar } from '~/features/sidebar/actions';
@@ -82,9 +82,7 @@ const Header = ({ isSidebarOpen, sessionExpiresAt, toggleSidebar }) => (
         shape={isSidebarOpen ? 'close' : 'menu'}
         onClick={toggleSidebar}
       />
-      <Box flexGrow={1} flexShrink={1}>
-        {/* spacer */}
-      </Box>
+      <PerspectiveBar />
       <UAVStatusSummary />
       <hr />
       <AltitudeSummaryHeaderButton />
