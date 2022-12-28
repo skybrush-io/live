@@ -2,11 +2,6 @@
  * @file Default application configuration at startup.
  */
 
-import {
-  isTCPConnectionSupported,
-  Protocol,
-} from '~/features/servers/server-settings-dialog';
-
 const config = {
   ephemeral: false,
   examples: [],
@@ -20,8 +15,7 @@ const config = {
   server: {
     connectAutomatically: true,
     hostName: 'localhost',
-    port: isTCPConnectionSupported ? 5001 : 5000,
-    protocol: isTCPConnectionSupported ? Protocol.TCP : Protocol.WS,
+    // port and protocol will be inferred during onboarding
   },
   session: {},
   tour: null,
