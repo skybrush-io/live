@@ -2,6 +2,9 @@ const net = require('net');
 
 class TCPSocket {
   #buffer = '';
+  #connected = false;
+  #endedByUs = false;
+  #pendingError;
   #socket = new net.Socket();
   #timeoutId;
 
@@ -9,7 +12,6 @@ class TCPSocket {
     { address, port },
     {
       connectTimeout,
-      onClose,
       onConnecting,
       onConnectionError,
       onConnectionTimeout,
@@ -18,14 +20,11 @@ class TCPSocket {
       url,
     }
   ) {
+    this._clearTimeout = this._clearTimeout.bind(this);
+
     this.#socket.on('connect', () => {
-      // The `onConnected` callback is handled in the TCPSocketConnection class
-      // instead of here to avoid showing "Connected" as soon as the TCP socket
-      // opens, as that can be misleading, when proper communication cannot
-      // actually be established with the server.
-      if (this.#timeoutId) {
-        clearTimeout(this.#timeoutId);
-      }
+      this._clearTimeout();
+      this.#connected = true;
     });
     this.#socket.on('data', (data) => {
       this.#buffer += data.toString();
@@ -37,17 +36,45 @@ class TCPSocket {
     });
 
     this.#socket.on('error', (error) => {
-      onConnectionError(url, error);
+      this._clearTimeout();
+      this.#pendingError = error;
     });
     this.#socket.on('end', () => {
-      onDisconnected(url, 'io server disconnect');
+      this._clearTimeout();
+      this.#socket.end();
     });
-    this.#socket.on('close', onClose);
+    this.#socket.on('close', () => {
+      const error = this.#pendingError;
+      const wasConnected = this.#connected;
+      const wasEndedByUs = this.#endedByUs;
+
+      this.#pendingError = undefined;
+      this.#connected = false;
+      this.#endedByUs = false;
+
+      this._clearTimeout();
+
+      if (error) {
+        // Copy the semantics of Socket.IO sockets where different handlers are
+        // called depending on whether the connection was already established
+        // or not
+        if (wasConnected) {
+          onDisconnected({ url, reason: 'transport error' });
+        } else {
+          onConnectionError({ url, error });
+        }
+      } else {
+        if (!wasEndedByUs) {
+          onDisconnected({ url, reason: 'io server disconnect' });
+        }
+      }
+    });
 
     this.#socket.connect(port, address);
-    onConnecting();
+    onConnecting({ url });
+
     this.#timeoutId = setTimeout(() => {
-      onConnectionTimeout(url);
+      onConnectionTimeout({ url });
     }, connectTimeout);
   }
 
@@ -56,7 +83,19 @@ class TCPSocket {
   }
 
   end() {
+    this.#endedByUs = true;
     this.#socket.end();
+  }
+
+  _clearTimeout() {
+    // The `onConnected` callback is handled in the TCPSocketConnection class
+    // instead of here to avoid showing "Connected" as soon as the TCP socket
+    // opens, as that can be misleading, when proper communication cannot
+    // actually be established with the server.
+    if (this.#timeoutId) {
+      clearTimeout(this.#timeoutId);
+      this.#timeoutId = undefined;
+    }
   }
 }
 

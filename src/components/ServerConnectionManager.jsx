@@ -247,22 +247,26 @@ class WebSocketConnection extends React.Component {
         <ReactSocket.Listener
           socket='serverSocket'
           event='connect'
-          callback={() => onConnected(url)}
+          callback={() => onConnected({ url })}
         />
         <ReactSocket.Listener
           socket='serverSocket'
           event='connect_error'
-          callback={() => onConnectionError(url)}
+          callback={() => onConnectionError({ url, willReconnect: true })}
         />
         <ReactSocket.Listener
           socket='serverSocket'
           event='connect_timeout'
-          callback={() => onConnectionTimeout(url)}
+          callback={() => onConnectionTimeout({ url, willReconnect: true })}
         />
         <ReactSocket.Listener
           socket='serverSocket'
           event='disconnect'
-          callback={(reason) => onDisconnected(url, reason)}
+          callback={(reason) => {
+            const willReconnect =
+              reason === 'ping timeout' || reason === 'transport close';
+            onDisconnected({ url, reason, willReconnect });
+          }}
         />
         <ReactSocket.Listener
           socket='serverSocket'
@@ -272,12 +276,12 @@ class WebSocketConnection extends React.Component {
         <ReactSocket.Listener
           socket='serverSocket'
           event='reconnecting'
-          callback={() => onConnecting(url)}
+          callback={() => onConnecting({ url })}
         />
         <ReactSocket.Listener
           socket='serverSocket'
           event='reconnect_attempt'
-          callback={() => onConnecting(url)}
+          callback={() => onConnecting({ url })}
         />
       </>
     );
@@ -311,16 +315,6 @@ class TCPSocketConnection extends React.Component {
       this.props.url.match('.*://(?<address>.*):(?<port>.*)').groups,
       {
         connectTimeout,
-        onClose: (hadError) => {
-          if (this.#lastHeartbeatResult) {
-            onDisconnected(
-              url,
-              hadError ? 'transport close' : 'io client disconnect'
-            );
-          } else {
-            onConnectionError(url);
-          }
-        },
         onConnecting,
         onConnectionError,
         onConnectionTimeout,
@@ -337,14 +331,14 @@ class TCPSocketConnection extends React.Component {
       pTimeout(messageHub.sendMessage('SYS-PING'), pingTimeout)
         .then(() => {
           if (!this.#lastHeartbeatResult) {
-            onConnected(url);
+            onConnected({ url });
           }
 
           this.#lastHeartbeatResult = true;
         })
         .catch(() => {
           if (this.#lastHeartbeatResult) {
-            onDisconnected(url, 'ping timeout');
+            onDisconnected({ url, reason: 'ping timeout' });
           }
 
           this.#lastHeartbeatResult = false;
@@ -411,7 +405,7 @@ class ServerConnectionManagerPresentation extends React.Component {
   componentDidUpdate(previousProps) {
     const { active, onDisconnected } = this.props;
     if (previousProps.active && !active && onDisconnected) {
-      onDisconnected(previousProps.url);
+      onDisconnected(previousProps.url, { reason: 'io client disconnect' });
     }
   }
 
@@ -640,6 +634,68 @@ async function executeTasksAfterDisconnection(dispatch) {
   dispatch(clearWeatherData());
 }
 
+const createCommonDisconnectionAndErrorHandlerThunk =
+  (event) => (dispatch, getState) => {
+    const { url, reason, wasConnected, willReconnect } = event;
+
+    dispatch(setCurrentServerConnectionState(ConnectionState.DISCONNECTED));
+
+    switch (reason) {
+      case 'connection error':
+        if (!willReconnect) {
+          dispatch(showError('Error while connecting to Skybrush server'));
+        }
+
+        break;
+
+      case 'connection timeout':
+        if (!willReconnect) {
+          dispatch(showError('Timeout while connecting to Skybrush server'));
+        }
+
+        break;
+
+      case 'io client disconnect':
+        dispatch(showNotification('Disconnected from Skybrush server'));
+        break;
+
+      case 'io server disconnect':
+        // Server does not close the connection without sending a SYS-CLOSE
+        // message so there is no need to show another
+        break;
+
+      case 'transport close':
+        dispatch(showError('Skybrush server closed connection unexpectedly'));
+        break;
+
+      case 'ping timeout':
+        dispatch(showError('Connection to Skybrush server lost'));
+        break;
+
+      default:
+        // Nothing to do
+        break;
+    }
+
+    if (!willReconnect) {
+      // Make sure that our side is notified that the connection mechanism
+      // is not active any more. This has to be done only if we are not
+      // disconnecting due to switching to another server, so we need to
+      // compare the URL we received in the event with the current URL that
+      // we are trying to connect to.
+      const isSwitchingServers = url !== getServerUrl(getState());
+      if (!isSwitchingServers) {
+        dispatch(disconnectFromServer());
+      }
+    }
+
+    // Execute all the tasks that should be executed after disconnecting from
+    // the server
+    if (wasConnected) {
+      dispatch(executeTasksAfterDisconnection);
+    }
+  };
+
 const ServerConnectionManager = connect(
   // mapStateToProps
   (state) => ({
@@ -671,68 +727,31 @@ const ServerConnectionManager = connect(
       dispatch(executeTasksAfterConnection);
     },
 
-    onConnectionError() {
-      dispatch(setCurrentServerConnectionState(ConnectionState.DISCONNECTED));
-      dispatch(showError('Error while connecting to Skybrush server'));
+    onConnectionError(event) {
+      dispatch(
+        createCommonDisconnectionAndErrorHandlerThunk({
+          ...event,
+          reason: 'connection error',
+        })
+      );
     },
 
-    onConnectionTimeout() {
-      dispatch(setCurrentServerConnectionState(ConnectionState.DISCONNECTED));
-      dispatch(showError('Timeout while connecting to Skybrush server'));
+    onConnectionTimeout(event) {
+      dispatch(
+        createCommonDisconnectionAndErrorHandlerThunk({
+          ...event,
+          reason: 'connection timeout',
+        })
+      );
     },
 
-    onDisconnected(url, reason) {
-      dispatch((dispatch, getState) => {
-        // reason = io client disconnect -- okay
-        // reason = io server disconnect -- okay
-        // reason = undefined -- okay
-        // reason = ping timeout -- will reconnect
-        dispatch(setCurrentServerConnectionState(ConnectionState.DISCONNECTED));
-
-        switch (reason) {
-          case 'io client disconnect':
-            dispatch(showNotification('Disconnected from Skybrush server'));
-            break;
-
-          case 'io server disconnect':
-            // Server does not close the connection without sending a SYS-CLOSE
-            // message so there is no need to show another
-            break;
-
-          case 'transport close':
-            dispatch(
-              showError('Skybrush server closed connection unexpectedly')
-            );
-            break;
-
-          case 'ping timeout':
-            dispatch(showError('Connection to Skybrush server lost'));
-            break;
-
-          default:
-            // Nothing to do
-            break;
-        }
-
-        // Determine whether Socket.IO will try to reconnect on its own
-        const willReconnect =
-          reason === 'ping timeout' || reason === 'transport close';
-        if (!willReconnect) {
-          // Make sure that our side is notified that the connection mechanism
-          // is not active any more. This has to be done only if we are not
-          // disconnecting due to switching to another server, so we need to
-          // compare the URL we received in the event with the current URL that
-          // we are trying to connect to.
-          const isSwichingServers = url !== getServerUrl(getState());
-          if (!isSwichingServers) {
-            dispatch(disconnectFromServer());
-          }
-        }
-
-        // Execute all the tasks that should be executed after disconnecting from
-        // the server
-        dispatch(executeTasksAfterDisconnection);
-      });
+    onDisconnected(event) {
+      dispatch(
+        createCommonDisconnectionAndErrorHandlerThunk({
+          ...event,
+          wasConnected: true,
+        })
+      );
     },
 
     onLocalServerError(message, wasRunning) {
