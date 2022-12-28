@@ -18,14 +18,10 @@ class TCPSocket {
       url,
     }
   ) {
+    this._clearTimeout = this._clearTimeout.bind(this);
+
     this.#socket.on('connect', () => {
-      // The `onConnected` callback is handled in the TCPSocketConnection class
-      // instead of here to avoid showing "Connected" as soon as the TCP socket
-      // opens, as that can be misleading, when proper communication cannot
-      // actually be established with the server.
-      if (this.#timeoutId) {
-        clearTimeout(this.#timeoutId);
-      }
+      this._clearTimeout();
     });
     this.#socket.on('data', (data) => {
       this.#buffer += data.toString();
@@ -37,15 +33,21 @@ class TCPSocket {
     });
 
     this.#socket.on('error', (error) => {
+      this._clearTimeout();
       onConnectionError(url, error);
     });
     this.#socket.on('end', () => {
+      this._clearTimeout();
       onDisconnected(url, 'io server disconnect');
     });
-    this.#socket.on('close', onClose);
+    this.#socket.on('close', () => {
+      this._clearTimeout();
+      onClose();
+    });
 
     this.#socket.connect(port, address);
     onConnecting();
+
     this.#timeoutId = setTimeout(() => {
       onConnectionTimeout(url);
     }, connectTimeout);
@@ -57,6 +59,17 @@ class TCPSocket {
 
   end() {
     this.#socket.end();
+  }
+
+  _clearTimeout() {
+    // The `onConnected` callback is handled in the TCPSocketConnection class
+    // instead of here to avoid showing "Connected" as soon as the TCP socket
+    // opens, as that can be misleading, when proper communication cannot
+    // actually be established with the server.
+    if (this.#timeoutId) {
+      clearTimeout(this.#timeoutId);
+      this.#timeoutId = undefined;
+    }
   }
 }
 

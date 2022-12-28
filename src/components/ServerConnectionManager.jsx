@@ -317,9 +317,11 @@ class TCPSocketConnection extends React.Component {
               url,
               hadError ? 'transport close' : 'io client disconnect'
             );
-          } else {
-            onConnectionError(url);
           }
+
+          // No need to call onConnectionError() here; if there was an error
+          // and we are closing the socket because of it, the handler was
+          // called already
         },
         onConnecting,
         onConnectionError,
@@ -672,11 +674,13 @@ const ServerConnectionManager = connect(
     },
 
     onConnectionError() {
+      console.trace('onConnectionError');
       dispatch(setCurrentServerConnectionState(ConnectionState.DISCONNECTED));
       dispatch(showError('Error while connecting to Skybrush server'));
     },
 
     onConnectionTimeout() {
+      console.trace('onConnectionTimeout');
       dispatch(setCurrentServerConnectionState(ConnectionState.DISCONNECTED));
       dispatch(showError('Timeout while connecting to Skybrush server'));
     },
