@@ -13,6 +13,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Static image layer with adjustable latitude, longitude, heading and scaling.
 
+- You can now cut holes into polygons and add a label that measures the area of
+  the polygon.
+
+### Changed
+
+- The Electron based packaged version now uses a TCP socket to communicate
+  with the server instead of the WebSocket connection used in the browser.
+
 ## [2.6.0] - 2022-10-20
 
 ### Added

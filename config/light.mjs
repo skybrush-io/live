@@ -17,6 +17,7 @@ const config = {
     features: false, // okay, sorry for the naming, this is awkward :)
     geofence: false,
     loadShowFromCloud: false,
+    perspectives: false,
     showControl: false,
     threeDView: false,
     toolboxMenu: false,

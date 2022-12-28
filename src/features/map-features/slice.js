@@ -147,7 +147,7 @@ const { actions, reducer } = createSlice({
       state.byId[id].filled = Boolean(filled);
     },
 
-    updateFeatureMeasure(state, action) {
+    updateFeatureMeasurementVisible(state, action) {
       const { id, measure } = action.payload;
       state.byId[id].measure = Boolean(measure);
     },
@@ -179,7 +179,7 @@ export const {
   renameFeature,
   setFeatureColor,
   updateFeatureFillVisible,
-  updateFeatureMeasure,
+  updateFeatureMeasurementVisible,
   updateFeaturePointsVisible,
   updateFeaturePropertiesByIds,
   updateFeatureVisibility,

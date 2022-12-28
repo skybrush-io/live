@@ -9,11 +9,13 @@ const config = {
     /* any features not explicitly set to 'false' are considered to be allowed
      * by default */
     loadShowFromCloud: false,
+    perspectives: false,
   },
+  perspectives: ['default'],
   server: {
     connectAutomatically: true,
     hostName: 'localhost',
-    port: 5000,
+    // port and protocol will be inferred during onboarding
   },
   session: {},
   tour: null,

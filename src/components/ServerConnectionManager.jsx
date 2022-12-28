@@ -4,6 +4,7 @@
  */
 
 import isNil from 'lodash-es/isNil';
+import pTimeout from 'p-timeout';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
@@ -24,6 +25,8 @@ import {
 } from '~/features/servers/actions';
 import {
   getClockSkewInMilliseconds,
+  getServerPort,
+  getServerProtocolWithDefaultWS,
   getServerUrl,
   isClockSkewSignificant,
   isTimeSyncWarningDialogVisible,
@@ -56,6 +59,7 @@ import {
 import { handleClockInformationMessage } from '~/model/clocks';
 import { handleDockInformationMessage } from '~/model/docks';
 import { logLevelForLogLevelName } from '~/utils/logging';
+import { Protocol } from '~/features/servers/server-settings-dialog';
 
 const formatClockSkew = (number) => {
   if (isNil(number)) {
@@ -185,91 +189,58 @@ class LocalServerExecutor extends React.Component {
 }
 
 /**
- * Presentation component that contains a Socket.io socket and handles
- * its events.
- *
- * It may also contain a LocalServerExecutor that launches a local server
- * instance when mounted.
+ * WebSocket and TCP based connection components that handle the communication
+ * with the server over their respective channels.
  */
-class ServerConnectionManagerPresentation extends React.Component {
-  static propTypes = {
-    active: PropTypes.bool,
-    cliArguments: PropTypes.string,
-    needsLocalServer: PropTypes.bool,
-    port: PropTypes.number,
-    onConnected: PropTypes.func,
-    onConnecting: PropTypes.func,
-    onConnectionError: PropTypes.func,
-    onConnectionTimeout: PropTypes.func,
-    onDisconnected: PropTypes.func,
-    onLocalServerError: PropTypes.func,
-    onLocalServerStarted: PropTypes.func,
-    onLogMessageReceivedFromLocalServer: PropTypes.func,
-    onMessage: PropTypes.func,
-    url: PropTypes.string,
-  };
 
-  _bindSocketToHub = (socket) => {
-    const wrappedSocket = socket ? socket.socket : null;
-    messageHub.emitter = wrappedSocket
-      ? wrappedSocket.emit.bind(wrappedSocket)
-      : undefined;
+const connectionPropTypes = {
+  bindSocketToHub: PropTypes.func,
+  connectTimeout: PropTypes.number,
+  onConnected: PropTypes.func,
+  onConnecting: PropTypes.func,
+  onConnectionError: PropTypes.func,
+  onConnectionTimeout: PropTypes.func,
+  onDisconnected: PropTypes.func,
+  onMessage: PropTypes.func,
+  pingInterval: PropTypes.number,
+  pingTimeout: PropTypes.number,
+  url: PropTypes.string,
+};
 
-    if (this.props.onConnecting && socket) {
-      this.props.onConnecting(this.props.url);
-    }
-  };
+const defaultConnectionProps = {
+  connectTimeout: 5000,
+  pingInterval: 5000,
+  pingTimeout: 5000,
+};
 
-  componentDidUpdate(previousProps) {
-    const { active, onDisconnected } = this.props;
-    if (previousProps.active && !active && onDisconnected) {
-      onDisconnected(previousProps.url);
-    }
-  }
+class WebSocketConnection extends React.Component {
+  static propTypes = connectionPropTypes;
+  static defaultProps = defaultConnectionProps;
 
   render() {
     const {
-      active,
-      cliArguments,
-      needsLocalServer,
-      port,
+      bindSocketToHub,
+      connectTimeout,
       onConnected,
       onConnecting,
       onConnectionError,
       onConnectionTimeout,
       onDisconnected,
-      onLocalServerError,
-      onLocalServerStarted,
-      onLogMessageReceivedFromLocalServer,
       onMessage,
+      pingInterval,
+      pingTimeout,
       url,
     } = this.props;
-
-    // The 'key' property of the wrapping <div> is set to the URL as well;
-    // this is to force the socket component and the event objects to unmount
-    // themselves and then remount when the URL changes -- otherwise the
-    // underlying Socket.io connection would not be reconstructed to point
-    // to the new URL.
-    //
-    // Putting the key on the <ReactSocket.Socket> tag is not enough because
-    // we also need the events to remount themselves.
-
-    return url && active ? (
-      <div key={url}>
-        {needsLocalServer ? (
-          <LocalServerExecutor
-            args={cliArguments}
-            port={port}
-            onError={onLocalServerError}
-            onLogMessage={onLogMessageReceivedFromLocalServer}
-            onStarted={onLocalServerStarted}
-          />
-        ) : null}
+    return (
+      <>
         <ReactSocket.Socket
-          ref={this._bindSocketToHub}
+          ref={bindSocketToHub}
           name='serverSocket'
           url={url}
           options={{
+            connectTimeout,
+            pingInterval,
+            pingTimeout,
             transports: ['websocket'],
           }}
         />
@@ -307,6 +278,196 @@ class ServerConnectionManagerPresentation extends React.Component {
           socket='serverSocket'
           event='reconnect_attempt'
           callback={() => onConnecting(url)}
+        />
+      </>
+    );
+  }
+}
+
+class TCPSocketConnection extends React.Component {
+  static propTypes = connectionPropTypes;
+  static defaultProps = defaultConnectionProps;
+
+  #heartbeatIntervalId = undefined;
+  #lastHeartbeatResult = undefined;
+  #socket;
+
+  componentDidMount() {
+    const {
+      bindSocketToHub,
+      connectTimeout,
+      onConnected,
+      onConnecting,
+      onConnectionError,
+      onConnectionTimeout,
+      onDisconnected,
+      onMessage,
+      pingInterval,
+      pingTimeout,
+      url,
+    } = this.props;
+
+    this.#socket = window.bridge.createTCPSocket(
+      this.props.url.match('.*://(?<address>.*):(?<port>.*)').groups,
+      {
+        connectTimeout,
+        onClose: (hadError) => {
+          if (this.#lastHeartbeatResult) {
+            onDisconnected(
+              url,
+              hadError ? 'transport close' : 'io client disconnect'
+            );
+          } else {
+            onConnectionError(url);
+          }
+        },
+        onConnecting,
+        onConnectionError,
+        onConnectionTimeout,
+        onDisconnected,
+        onMessage,
+        url,
+      }
+    );
+
+    // Wrap socket in an extra object to conform with `@collmot/react-socket`
+    bindSocketToHub({ socket: this.#socket });
+
+    const heartbeat = () => {
+      pTimeout(messageHub.sendMessage('SYS-PING'), pingTimeout)
+        .then(() => {
+          if (!this.#lastHeartbeatResult) {
+            onConnected(url);
+          }
+
+          this.#lastHeartbeatResult = true;
+        })
+        .catch(() => {
+          if (this.#lastHeartbeatResult) {
+            onDisconnected(url, 'ping timeout');
+          }
+
+          this.#lastHeartbeatResult = false;
+        });
+    };
+
+    heartbeat();
+    this.#heartbeatIntervalId = setInterval(heartbeat, pingInterval);
+  }
+
+  componentWillUnmount() {
+    if (this.#socket) {
+      this.#socket.end();
+    }
+
+    if (this.#heartbeatIntervalId) {
+      clearInterval(this.#heartbeatIntervalId);
+    }
+  }
+
+  // The `render` method must be defined (as per v18 docs), even if it's useless
+  render() {
+    return null;
+  }
+}
+
+/**
+ * Presentation component that contains a Socket.io socket and handles
+ * its events.
+ *
+ * It may also contain a LocalServerExecutor that launches a local server
+ * instance when mounted.
+ */
+class ServerConnectionManagerPresentation extends React.Component {
+  static propTypes = {
+    active: PropTypes.bool,
+    cliArguments: PropTypes.string,
+    needsLocalServer: PropTypes.bool,
+    port: PropTypes.number,
+    protocol: PropTypes.oneOf(Object.values(Protocol)),
+    onConnected: PropTypes.func,
+    onConnecting: PropTypes.func,
+    onConnectionError: PropTypes.func,
+    onConnectionTimeout: PropTypes.func,
+    onDisconnected: PropTypes.func,
+    onLocalServerError: PropTypes.func,
+    onLocalServerStarted: PropTypes.func,
+    onLogMessageReceivedFromLocalServer: PropTypes.func,
+    onMessage: PropTypes.func,
+    url: PropTypes.string,
+  };
+
+  _bindSocketToHub = (socket) => {
+    const wrappedSocket = socket ? socket.socket : null;
+    messageHub.emitter = wrappedSocket
+      ? wrappedSocket.emit.bind(wrappedSocket)
+      : undefined;
+
+    if (this.props.onConnecting && socket) {
+      this.props.onConnecting(this.props.url);
+    }
+  };
+
+  componentDidUpdate(previousProps) {
+    const { active, onDisconnected } = this.props;
+    if (previousProps.active && !active && onDisconnected) {
+      onDisconnected(previousProps.url);
+    }
+  }
+
+  render() {
+    const {
+      active,
+      cliArguments,
+      needsLocalServer,
+      port,
+      protocol,
+      onConnected,
+      onConnecting,
+      onConnectionError,
+      onConnectionTimeout,
+      onDisconnected,
+      onLocalServerError,
+      onLocalServerStarted,
+      onLogMessageReceivedFromLocalServer,
+      onMessage,
+      url,
+    } = this.props;
+
+    // The 'key' property of the wrapping <div> is set to the URL as well;
+    // this is to force the socket component and the event objects to unmount
+    // themselves and then remount when the URL changes -- otherwise the
+    // underlying Socket.io connection would not be reconstructed to point
+    // to the new URL.
+    //
+    // Putting the key on the <ReactSocket.Socket> tag is not enough because
+    // we also need the events to remount themselves.
+
+    const Connection = {
+      [Protocol.TCP]: TCPSocketConnection,
+      [Protocol.WS]: WebSocketConnection,
+    }[protocol];
+
+    return url && active ? (
+      <div key={url}>
+        {needsLocalServer ? (
+          <LocalServerExecutor
+            args={cliArguments}
+            port={port}
+            onError={onLocalServerError}
+            onLogMessage={onLogMessageReceivedFromLocalServer}
+            onStarted={onLocalServerStarted}
+          />
+        ) : null}
+        <Connection
+          bindSocketToHub={this._bindSocketToHub}
+          url={url}
+          onConnected={onConnected}
+          onConnecting={onConnecting}
+          onConnectionError={onConnectionError}
+          onConnectionTimeout={onConnectionTimeout}
+          onDisconnected={onDisconnected}
+          onMessage={onMessage}
         />
       </div>
     ) : (
@@ -485,7 +646,8 @@ const ServerConnectionManager = connect(
     active: state.dialogs.serverSettings.active && !state.session.isExpired,
     cliArguments: state.settings.localServer.cliArguments,
     needsLocalServer: shouldManageLocalServer(state),
-    port: state.dialogs.serverSettings.port,
+    port: getServerPort(state),
+    protocol: getServerProtocolWithDefaultWS(state),
     url: getServerUrl(state),
   }),
   // mapDispatchToProps
@@ -511,6 +673,7 @@ const ServerConnectionManager = connect(
 
     onConnectionError() {
       dispatch(setCurrentServerConnectionState(ConnectionState.DISCONNECTED));
+      dispatch(showError('Error while connecting to Skybrush server'));
     },
 
     onConnectionTimeout() {

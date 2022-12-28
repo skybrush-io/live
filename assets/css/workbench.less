@@ -76,3 +76,40 @@ body .lm_header {
 
   user-select: none;
 }
+
+/* Perspective switching in header */
+.wb-perspective-bar {
+  background: linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.25) 80%, rgba(0, 0, 0, 0.4) 100%);
+  flex: 1;
+  justify-content: left;
+  border-right: 1px solid #424242;
+  border-bottom: 1px solid #424242;
+  overflow-x: auto;
+}
+.wb-perspective-bar-item {
+  margin: 0 !important;
+}
+.wb-perspective-bar button {
+  border-bottom: 3px solid transparent;
+  border-radius: 0;
+  font-size: 14px !important;  /* consistent with sidebar */
+  height: 100%;
+  background: unset;
+  box-shadow: unset;
+  padding: 7px 8px 4px 8px;  /* padding higher at the top to compensate for border at bottom */
+}
+.wb-perspective-bar .wb-perspective-selected button {
+  background: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.25) 100%);
+  border-bottom: 3px solid #03a9f4;  /* Material UI lightBlue[500] */
+}
+.wb-perspective-bar button:hover {
+  /* styling same as for GenericHeaderButton */
+  background: linear-gradient(to bottom, #06c 0%, #25a 100%);
+  border-bottom: 3px solid #03a9f4;  /* Material UI lightBlue[500] */
+}
+
+/* Disable draggable splitters for fixed layouts */
+.workbench-fixed .lm_splitter,
+.workbench-fixed .lm_tab {
+  pointer-events: none;
+}
