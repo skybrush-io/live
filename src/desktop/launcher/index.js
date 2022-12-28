@@ -30,6 +30,7 @@ function run(argv) {
       showMenuBar: false,
       webPreferences: {
         backgroundThrottling: false,
+        sandbox: false, // because we need Node.js modules from the preloader
       },
     },
     subWindowMenuBar: false,

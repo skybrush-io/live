@@ -84,7 +84,7 @@ const DetachablePanelPresentation = ({
     >
       <div>
         {label} panel has been detached.
-        <br style={{ margin: '1em' }} />
+        <div style={{ minHeight: '1em' }} />
         <Button
           variant='outlined'
           startIcon={<RestoreWindow />}

@@ -7,6 +7,14 @@ import { createSlice } from '@reduxjs/toolkit';
 
 import { noPayload } from '~/utils/redux';
 
+export const isTCPConnectionSupported =
+  window.bridge && window.bridge.createTCPSocket;
+
+export const Protocol = {
+  TCP: 'tcp',
+  WS: 'ws',
+};
+
 /**
  * The reducer that handles actions related to the server settings.
  */
@@ -25,8 +33,11 @@ const { reducer, actions } = createSlice({
    */
   initialState: {
     active: false,
+    // These defaults might actually be pointless, since as long as `hostName`
+    // is `null`, the onboarding saga will just overwrite them anyway.
+    protocol: isTCPConnectionSupported ? Protocol.TCP : Protocol.WS,
     hostName: null,
-    port: 5000,
+    port: isTCPConnectionSupported ? 5001 : 5000,
     isSecure: false,
     dialogVisible: false,
     selectedTab: 'auto',
