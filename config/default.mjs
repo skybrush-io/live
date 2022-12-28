@@ -14,55 +14,9 @@ const config = {
     /* any features not explicitly set to 'false' are considered to be allowed
      * by default */
     loadShowFromCloud: false,
+    perspectives: false,
   },
-  perspectives: [
-    'default',
-    {
-      label: 'Show',
-      hideHeaders: true,
-      layout: {
-        type: 'columns',
-        contents: [
-          { type: 'panel', component: 'show-control', width: 60, id: 'show' },
-          {
-            type: 'rows',
-            contents: [
-              {
-                type: 'panel',
-                component: 'lcd-clock-panel',
-                height: 30,
-                id: 'clocks',
-              },
-              { type: 'panel', component: 'uav-list', id: 'uavs' },
-            ],
-          },
-        ],
-      },
-    },
-    {
-      label: 'Map',
-      hideHeaders: true,
-      isFixed: true,
-      layout: {
-        type: 'columns',
-        contents: [
-          { type: 'panel', component: 'map', width: 80, id: 'map' },
-          {
-            type: 'rows',
-            contents: [
-              {
-                type: 'panel',
-                component: 'saved-location-list',
-                height: 30,
-                id: 'locations',
-              },
-              { type: 'panel', component: 'layer-list', id: 'layers' },
-            ],
-          },
-        ],
-      },
-    },
-  ],
+  perspectives: ['default'],
   server: {
     connectAutomatically: true,
     hostName: 'localhost',
