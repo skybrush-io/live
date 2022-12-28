@@ -4,7 +4,9 @@ import {
   PerspectiveBuilder,
   PerspectiveStorage,
 } from 'react-flexible-workbench';
+import commonLayouts from './features/perspectives/common';
 
+import { hasFeature } from './utils/configuration';
 import workbench, { componentRegistry } from './workbench';
 
 const addLayoutToPerspective = (perspectiveBuilder, layout) => {
@@ -54,7 +56,21 @@ const addLayoutToPerspective = (perspectiveBuilder, layout) => {
   }
 };
 
-const buildPerspective = ({ hideHeaders, isFixed, label, layout }) => {
+const buildPerspective = (nameOrOptions) => {
+  let options =
+    (typeof nameOrOptions === 'string'
+      ? { inherits: nameOrOptions }
+      : nameOrOptions) || {};
+
+  // Resolve inheritance
+  while (options.inherits) {
+    const parent = commonLayouts[options.inherits] || {};
+    delete options.inherits;
+
+    options = { ...parent, ...options };
+  }
+
+  const { hideHeaders, isFixed, label, layout } = options;
   const perspectiveBuilder = new PerspectiveBuilder(workbench);
 
   addLayoutToPerspective(perspectiveBuilder, layout);
@@ -70,7 +86,7 @@ const buildPerspective = ({ hideHeaders, isFixed, label, layout }) => {
 };
 
 export const perspectives = PerspectiveStorage.fromArray(
-  config.perspectives.map(buildPerspective)
+  hasFeature('perspectives') ? config.perspectives.map(buildPerspective) : []
 );
 
 // Temporary hack to prevent the "perspective modified" badge from appearing
