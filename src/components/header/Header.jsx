@@ -113,9 +113,6 @@ const Header = ({
           });
         }}
       />
-      <Box flexGrow={1} flexShrink={1}>
-        {/* spacer */}
-      </Box>
       <UAVStatusSummary />
       <hr />
       <AltitudeSummaryHeaderButton />
