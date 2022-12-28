@@ -166,12 +166,12 @@ function constructDefaultWorkbench(store) {
 
   // Create the default perspective
   const workbench = workbenchBuilder.build();
-  workbench.restoreState(
-    createPerspectiveBuilder(
-      componentRegistry,
-      new WorkbenchBuilder().build()
-    )(getDefaultWorkbenchPerspectiveSpecification()).state
-  );
+  const state = createPerspectiveBuilder(
+    componentRegistry,
+    workbench
+  )(getDefaultWorkbenchPerspectiveSpecification()).state;
+
+  workbench.restoreState(state);
 
   // Set a fallback component for cases when we cannot show a component
   workbench.fallback = FallbackComponent;
