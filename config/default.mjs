@@ -9,7 +9,6 @@ const config = {
     /* any features not explicitly set to 'false' are considered to be allowed
      * by default */
     loadShowFromCloud: false,
-    perspectives: false,
   },
   perspectives: ['default'],
   server: {
