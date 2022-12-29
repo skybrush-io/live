@@ -22,7 +22,6 @@ const defaults: Config = {
 
   features: {
     loadShowFromCloud: false,
-    perspectives: false,
   },
 
   headerComponents: [
