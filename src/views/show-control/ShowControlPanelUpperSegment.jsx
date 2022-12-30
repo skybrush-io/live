@@ -1,14 +1,10 @@
-import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 
-import Box from '@material-ui/core/Box';
 import Divider from '@material-ui/core/Divider';
 import List from '@material-ui/core/List';
-import { makeStyles } from '@material-ui/core/styles';
 
-import FadeAndSlide from '~/components/transitions/FadeAndSlide';
 import {
   getShowEnvironmentType,
   isShowAuthorizedToStartLocally,
@@ -23,86 +19,40 @@ import OnboardPreflightChecksButton from './OnboardPreflightChecksButton';
 import ShowUploadDialogButton from './ShowUploadDialogButton';
 import StartTimeButton from './StartTimeButton';
 import TakeoffAreaButton from './TakeoffAreaButton';
-
-const useStyles = makeStyles(
-  (theme) => ({
-    root: {
-      position: 'absolute',
-      left: 0,
-      top: 0,
-      right: 0,
-      bottom: 0,
-    },
-
-    scrollable: {
-      overflow: 'auto',
-    },
-
-    button: {
-      flex: 1,
-      margin: theme.spacing(1),
-    },
-  }),
-  {
-    name: 'ShowControlPanelUpperSegment',
-  }
-);
+import MultiPagePanel, { Page } from '~/components/MultiPagePanel';
 
 /**
  * Panel that shows the widgets that are needed to load and configure a drone
  * show.
  */
-const ShowControlPanelUpperSegment = ({ environmentType, isAuthorized }) => {
-  const classes = useStyles();
+const ShowControlPanelUpperSegment = ({ environmentType, isAuthorized }) => (
+  <MultiPagePanel flex={1} selectedPage={isAuthorized ? 'execution' : 'setup'}>
+    <Page scrollable id='setup'>
+      <List dense>
+        <LoadShowFromFileButton />
 
-  return (
-    <Box flex={1} position='relative'>
-      <FadeAndSlide
-        mountOnEnter
-        unmountOnExit
-        in={!isAuthorized}
-        direction='left'
-      >
-        <Box className={clsx(classes.root, classes.scrollable)}>
-          <List dense>
-            <LoadShowFromFileButton />
+        <Divider />
 
-            <Divider />
+        <EnvironmentButton />
+        <TakeoffAreaButton />
+        {environmentType === 'outdoor' && <GeofenceButton />}
+        <ShowUploadDialogButton />
 
-            <EnvironmentButton />
-            <TakeoffAreaButton />
-            {environmentType === 'outdoor' && <GeofenceButton />}
-            <ShowUploadDialogButton />
+        <Divider />
 
-            <Divider />
+        <OnboardPreflightChecksButton />
+        <ManualPreflightChecksButton />
 
-            <OnboardPreflightChecksButton />
-            <ManualPreflightChecksButton />
+        <Divider />
 
-            <Divider />
-
-            <StartTimeButton />
-          </List>
-        </Box>
-      </FadeAndSlide>
-
-      <FadeAndSlide
-        mountOnEnter
-        unmountOnExit
-        in={isAuthorized}
-        direction='left'
-      >
-        <Box
-          className={clsx(classes.root)}
-          display='flex'
-          flexDirection='column'
-        >
-          <LargeControlButtonGroup />
-        </Box>
-      </FadeAndSlide>
-    </Box>
-  );
-};
+        <StartTimeButton />
+      </List>
+    </Page>
+    <Page id='execution' display='flex' flexDirection='column'>
+      <LargeControlButtonGroup />
+    </Page>
+  </MultiPagePanel>
+);
 
 ShowControlPanelUpperSegment.propTypes = {
   environmentType: PropTypes.oneOf(['indoor', 'outdoor']),
