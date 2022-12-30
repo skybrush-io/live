@@ -71,6 +71,26 @@ export async function getLicenseInformation(hub) {
 }
 
 /**
+ * Returns the parameter schema of the mission with the given type from the server.
+ */
+export async function getMissionTypeSchemas(hub, missionTypeId) {
+  const response = await hub.sendMessage({
+    type: 'X-MSN-TYPE-SCHEMA',
+    ids: [missionTypeId],
+  });
+  if (
+    response.body &&
+    response.body.type === 'X-MSN-TYPE-SCHEMA' &&
+    typeof response.body.items === 'object' &&
+    typeof response.body.items[missionTypeId] === 'object'
+  ) {
+    return response.body.items[missionTypeId];
+  } else {
+    return {};
+  }
+}
+
+/**
  * Returns the list of registered mission types from the server.
  */
 export async function getMissionTypes(hub, options = {}) {
@@ -275,6 +295,7 @@ export class QueryHandler {
     getConfigurationOfExtension,
     getLicenseInformation,
     getMissionTypes,
+    getMissionTypeSchemas,
     getPreflightStatus,
     getRTKPresets,
     getRTKStatus,

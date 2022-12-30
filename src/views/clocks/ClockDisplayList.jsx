@@ -128,10 +128,10 @@ const ClockDisplayListPresentation = listOf(
   (clock) => <ClockDisplayListEntry key={clock.id} clock={clock} />,
   {
     dataProvider: 'clocks',
+    displayName: 'ClockDisplayListPresentation',
     backgroundHint: 'No clocks',
   }
 );
-ClockDisplayListPresentation.displayName = 'ClockDisplayListPresentation';
 
 /**
  * Smart component for showing the state of the known clocks from the Redux

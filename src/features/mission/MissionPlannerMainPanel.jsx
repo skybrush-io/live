@@ -1,11 +1,15 @@
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 
+import Box from '@material-ui/core/Box';
+import ListItemText from '@material-ui/core/ListItemText';
 import TextField from '@material-ui/core/TextField';
 
+import DialogHeaderListItem from '~/components/DialogHeaderListItem';
 import MultiPagePanel, { Page } from '~/components/MultiPagePanel';
 
 import MissionTypeSelector from './MissionTypeSelector';
+import MissionParameterEditor from './MissionParameterEditor';
 
 const ParametersTextField = ({ initialValue, onChange }) => {
   const [currentValue, setCurrentValue] = useState(initialValue || '');
@@ -64,6 +68,7 @@ const MissionPlannerMainPanel = ({
   onMissionTypeChange,
   onParametersChange,
   parameters,
+  selectedPage,
 }) => {
   const handleParametersChange = ({ value, valid }) => {
     if (onParametersChange) {
@@ -77,22 +82,27 @@ const MissionPlannerMainPanel = ({
   };
 
   return (
-    <MultiPagePanel
-      height={300}
-      selectedPage={missionType ? 'parameters' : 'type'}
-    >
-      <Page id='type'>
+    <MultiPagePanel height={350} selectedPage={selectedPage}>
+      <Page scrollable id='type'>
         <MissionTypeSelector
           value={missionType}
           onChange={(event, value) => onMissionTypeChange(value)}
         />
       </Page>
 
-      <Page id='parameters' pt={3} px={3}>
-        <ParametersTextField
-          initialValue={parameters}
-          onChange={handleParametersChange}
-        />
+      <Page id='parameters' display='flex' flexDirection='column'>
+        <DialogHeaderListItem>
+          <ListItemText
+            primary={missionType?.name || 'No mission type selected'}
+            secondary={missionType?.description}
+          />
+        </DialogHeaderListItem>
+        <Box pt={2} px={2} position='relative' flex={1} overflow='auto'>
+          <ParametersTextField
+            initialValue={parameters}
+            onChange={handleParametersChange}
+          />
+        </Box>
       </Page>
     </MultiPagePanel>
   );
@@ -103,6 +113,7 @@ MissionPlannerMainPanel.propTypes = {
   onMissionTypeChange: PropTypes.func,
   parameters: PropTypes.string,
   onParametersChange: PropTypes.func,
+  selectedPage: PropTypes.oneOf(['parameters', 'type']).isRequired,
 };
 
 export default MissionPlannerMainPanel;

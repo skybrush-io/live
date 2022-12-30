@@ -84,11 +84,11 @@ export const FeatureListPresentation = listOf(
     );
   },
   {
-    dataProvider: 'features',
     backgroundHint: 'No features',
+    dataProvider: 'features',
+    displayName: 'FeatureListPresentation',
   }
 );
-FeatureListPresentation.displayName = 'FeatureListPresentation';
 
 export default connect(
   // mapStateToProps
