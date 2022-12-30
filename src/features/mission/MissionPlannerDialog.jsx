@@ -2,9 +2,9 @@ import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import { connect } from 'react-redux';
 
+import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
 
 import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
 
@@ -46,25 +46,34 @@ const MissionPlannerDialog = ({
   open,
   parametersAsString,
 }) => {
+  const [missionType, setMissionType] = useState('');
   const [parameters, setParameters] = useState(parameters);
   const [canInvokePlanner, setCanInvokePlanner] = useState(true);
 
+  const handleMissionTypeChange = (value) => {
+    setMissionType(value);
+  };
+
   const handleParametersChange = (value) => {
+    let parametersValid = false;
+
     if (typeof value === 'object' && value !== null && value !== undefined) {
       setParameters(value);
-      setCanInvokePlanner(true);
       if (onSaveParameters) {
         onSaveParameters(isEmpty(value) ? '' : JSON.stringify(value, null, 4));
       }
+
+      parametersValid = true;
     } else {
       setParameters(null);
-      setCanInvokePlanner(false);
     }
+
+    setCanInvokePlanner(missionType && parametersValid);
   };
 
   const invokePlanner = () => {
     if (onInvokePlanner && canInvokePlanner && isConnectedToServer) {
-      onInvokePlanner(parameters);
+      onInvokePlanner(missionType, parameters);
     }
   };
 
@@ -76,13 +85,16 @@ const MissionPlannerDialog = ({
       title='Plan mission'
       onClose={onClose}
     >
-      <DialogContent>
-        <MissionPlannerMainPanel
-          parameters={parametersAsString}
-          onChange={handleParametersChange}
-        />
-      </DialogContent>
+      <MissionPlannerMainPanel
+        missionType={missionType}
+        parameters={parametersAsString}
+        onMissionTypeChange={handleMissionTypeChange}
+        onParametersChange={handleParametersChange}
+      />
       <DialogActions>
+        <Button disabled={!missionType} onClick={() => setMissionType('')}>
+          Back
+        </Button>
         <Button onClick={onClose}>Close</Button>
         <Button
           disabled={!isConnectedToServer || !canInvokePlanner}
@@ -116,77 +128,80 @@ export default connect(
   // mapDispatchToProps
   {
     onClose: closeMissionPlannerDialog,
-    onInvokePlanner: (parameters) => async (dispatch, getState) => {
-      let items = null;
+    onInvokePlanner:
+      (missionType, parameters) => async (dispatch, getState) => {
+        let items = null;
 
-      const state = getState();
-      const uavId = getSingleSelectedUAVId(state);
-      const uavPosition = getCurrentGPSPositionByUavId(state, uavId);
+        const state = getState();
+        const uavId = getSingleSelectedUAVId(state);
+        const uavPosition = getCurrentGPSPositionByUavId(state, uavId);
 
-      try {
-        if (!uavId) {
-          throw new Error('Exactly one UAV must be selected');
-        }
+        try {
+          if (!uavId) {
+            throw new Error('Exactly one UAV must be selected');
+          }
 
-        if (!uavPosition) {
-          throw new Error('The selected UAV does not have a GPS position yet');
-        }
+          if (!uavPosition) {
+            throw new Error(
+              'The selected UAV does not have a GPS position yet'
+            );
+          }
 
-        const selectedFeatureIds = getSelectedFeatureIds(state);
-        if (selectedFeatureIds.length !== 1) {
-          throw new Error(
-            'Exactly one line string must be selected on the map'
+          const selectedFeatureIds = getSelectedFeatureIds(state);
+          if (selectedFeatureIds.length !== 1) {
+            throw new Error(
+              'Exactly one line string must be selected on the map'
+            );
+          }
+
+          const feature = getFeatureById(state, selectedFeatureIds[0]);
+          if (feature?.type !== FeatureType.LINE_STRING) {
+            throw new Error(
+              `The selected feature on the map must be a line string, got: ${feature?.type}`
+            );
+          }
+
+          if (!Array.isArray(feature.points) || feature.points.length === 0) {
+            throw new Error(
+              'The selected line string must have at least one point'
+            );
+          }
+
+          // Extend the parameters with the coordinates of the selected line string
+          // and the coordinates of the selected UAV
+          Object.assign(parameters, {
+            start: [
+              Math.round(uavPosition.lon * 1e7),
+              Math.round(uavPosition.lat * 1e7),
+            ],
+            towers: feature.points.map((point) => [
+              Math.round(point[0] * 1e7),
+              Math.round(point[1] * 1e7),
+            ]),
+          });
+
+          items = await messageHub.execute.planMission({
+            id: missionType,
+            parameters,
+          });
+          if (!Array.isArray(items)) {
+            throw new TypeError('Expected an array of mission items');
+          }
+        } catch (error) {
+          dispatch(
+            showErrorMessage('Error while invoking mission planner', error)
           );
         }
 
-        const feature = getFeatureById(state, selectedFeatureIds[0]);
-        if (feature?.type !== FeatureType.LINE_STRING) {
-          throw new Error(
-            `The selected feature on the map must be a line string, got: ${feature?.type}`
-          );
+        if (Array.isArray(items)) {
+          dispatch(setMissionType(MissionType.WAYPOINT));
+          dispatch(setMappingLength(1));
+          dispatch(replaceMapping([uavId]));
+          dispatch(updateHomePositions([uavPosition]));
+          dispatch(setMissionItemsFromArray(items));
+          dispatch(closeMissionPlannerDialog());
         }
-
-        if (!Array.isArray(feature.points) || feature.points.length === 0) {
-          throw new Error(
-            'The selected line string must have at least one point'
-          );
-        }
-
-        // Extend the parameters with the coordinates of the selected line string
-        // and the coordinates of the selected UAV
-        Object.assign(parameters, {
-          start: [
-            Math.round(uavPosition.lon * 1e7),
-            Math.round(uavPosition.lat * 1e7),
-          ],
-          towers: feature.points.map((point) => [
-            Math.round(point[0] * 1e7),
-            Math.round(point[1] * 1e7),
-          ]),
-        });
-
-        items = await messageHub.execute.planMission({
-          id: 'powerline',
-          parameters,
-        });
-        if (!Array.isArray(items)) {
-          throw new TypeError('Expected an array of mission items');
-        }
-      } catch (error) {
-        dispatch(
-          showErrorMessage('Error while invoking mission planner', error)
-        );
-      }
-
-      if (Array.isArray(items)) {
-        dispatch(setMissionType(MissionType.WAYPOINT));
-        dispatch(setMappingLength(1));
-        dispatch(replaceMapping([uavId]));
-        dispatch(updateHomePositions([uavPosition]));
-        dispatch(setMissionItemsFromArray(items));
-        dispatch(closeMissionPlannerDialog());
-      }
-    },
+      },
     onSaveParameters: setMissionPlannerDialogParameters,
   }
 )(MissionPlannerDialog);
