@@ -4,7 +4,33 @@ import React, { useCallback } from 'react';
 import AsyncGuard from '~/components/AsyncGuard';
 import { useMessageHub } from '~/hooks';
 
+import ParametersTextField from './ParametersTextField';
 import { filterSchemaByUIContext } from './schema';
+
+const MissionParameterEditorPresentation = ({ parameters, onChange }) => {
+  const handleParametersChange = ({ value, valid }) => {
+    if (onChange) {
+      if (valid) {
+        const parsed = value.length > 0 ? JSON.parse(value) : {};
+        onChange(typeof parsed === 'object' ? parsed : null);
+      } else {
+        onChange(null);
+      }
+    }
+  };
+
+  return (
+    <ParametersTextField
+      initialValue={parameters}
+      onChange={handleParametersChange}
+    />
+  );
+};
+
+MissionParameterEditorPresentation.propTypes = {
+  parameters: PropTypes.string,
+  onChange: PropTypes.func,
+};
 
 const MissionParameterEditor = ({ missionType, style, ...rest }) => {
   const messageHub = useMessageHub();
@@ -26,10 +52,8 @@ const MissionParameterEditor = ({ missionType, style, ...rest }) => {
       loadingMessage='Retrieving mission parameters...'
       style={style}
     >
-      {(schema) => (
-        <div style={style} {...rest}>
-          {JSON.stringify(schema)}
-        </div>
+      {(_schema) => (
+        <MissionParameterEditorPresentation style={style} {...rest} />
       )}
     </AsyncGuard>
   );
