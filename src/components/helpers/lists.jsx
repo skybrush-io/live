@@ -244,7 +244,7 @@ export function selectableListOf(itemRenderer, options = {}) {
             ...props,
             onChange: undefined,
             onItemSelected: props.onChange
-              ? (event) => props.onChange(event, item.id)
+              ? (event) => props.onChange(event, item)
               : undefined,
           },
           item.id === props.value

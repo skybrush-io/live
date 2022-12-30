@@ -2,7 +2,6 @@ import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import { connect } from 'react-redux';
 
-import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import DialogActions from '@material-ui/core/DialogActions';
 
@@ -46,12 +45,16 @@ const MissionPlannerDialog = ({
   open,
   parametersAsString,
 }) => {
-  const [missionType, setMissionType] = useState('');
+  const [missionType, setMissionType] = useState(null);
   const [parameters, setParameters] = useState(parameters);
-  const [canInvokePlanner, setCanInvokePlanner] = useState(true);
+  const [canInvokePlanner, setCanInvokePlanner] = useState(false);
 
   const handleMissionTypeChange = (value) => {
     setMissionType(value);
+
+    if (!value) {
+      setCanInvokePlanner(false);
+    }
   };
 
   const handleParametersChange = (value) => {
@@ -92,7 +95,10 @@ const MissionPlannerDialog = ({
         onParametersChange={handleParametersChange}
       />
       <DialogActions>
-        <Button disabled={!missionType} onClick={() => setMissionType('')}>
+        <Button
+          disabled={!missionType}
+          onClick={() => handleMissionTypeChange(null)}
+        >
           Back
         </Button>
         <Button onClick={onClose}>Close</Button>
@@ -181,7 +187,7 @@ export default connect(
           });
 
           items = await messageHub.execute.planMission({
-            id: missionType,
+            id: missionType.id,
             parameters,
           });
           if (!Array.isArray(items)) {

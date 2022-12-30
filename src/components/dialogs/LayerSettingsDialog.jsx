@@ -192,12 +192,12 @@ class LayerSettingsContainerPresentation extends React.Component {
     // in-place by React, which could cause dirty values to stay in
     // the form fields even if the layer selection changes
     return (
-      <div key={'settings_' + layerId}>
+      <Box key={'settings_' + layerId} pt={2}>
         {layer.type === LayerType.UNTYPED ? null : (
           <BasicLayerSettingsForm layer={layer} layerId={layerId} />
         )}
         {this.createChildrenForLayer(layer, layerId)}
-      </div>
+      </Box>
     );
   }
 }
@@ -276,6 +276,7 @@ class LayerSettingsDialogPresentation extends React.Component {
         maxWidth='sm'
         open={dialogVisible}
         onClose={onClose}
+        title='Layer settings'
       >
         <DialogContent style={{ overflow: 'auto' }}>
           <LayerSettingsContainer layerId={selectedLayerId} />
