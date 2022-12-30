@@ -131,6 +131,36 @@ export async function getFlightLogList(hub, uavId) {
 }
 
 /**
+ * Returns the list of registered mission types from the server.
+ */
+export async function getMissionTypes(hub, options = {}) {
+  let response;
+  const { features } = options;
+
+  response = await hub.sendMessage({ type: 'X-MSN-TYPE-LIST' });
+  if (response.body && response.body.type === 'X-MSN-TYPE-LIST') {
+    const missionTypeIds = get(response, 'body.ids') || [];
+    if (missionTypeIds.length > 0) {
+      response = await hub.sendMessage({
+        type: 'X-MSN-TYPE-INF',
+        ids: missionTypeIds,
+      });
+
+      const missionTypesById = get(response, 'body.items') || {};
+      const filtered = Object.values(missionTypesById).filter((item) => {
+        return (
+          !Array.isArray(features) ||
+          features.some((feature) => item.features.includes(feature))
+        );
+      });
+      return sortBy(filtered, ['name', 'id']);
+    }
+  } else {
+    return [];
+  }
+}
+
+/**
  * Returns the current preflight status of a single UAV.
  */
 export async function getPreflightStatus(hub, uavId) {
@@ -306,6 +336,7 @@ export class QueryHandler {
     getFlightLog,
     getFlightLogList,
     getLicenseInformation,
+    getMissionTypes,
     getPreflightStatus,
     getRTKPresets,
     getRTKStatus,
