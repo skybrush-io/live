@@ -1,12 +1,11 @@
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 
-import Box from '@material-ui/core/Box';
-import FormControl from '@material-ui/core/FormControl';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
 import TextField from '@material-ui/core/TextField';
+
+import MultiPagePanel, { Page } from '~/components/MultiPagePanel';
+
+import MissionTypeSelector from './MissionTypeSelector';
 
 const ParametersTextField = ({ initialValue, onChange }) => {
   const [currentValue, setCurrentValue] = useState(initialValue || '');
@@ -46,7 +45,7 @@ const ParametersTextField = ({ initialValue, onChange }) => {
       error={Boolean(error)}
       label='Parameter names and values'
       variant='filled'
-      minRows={7}
+      minRows={10}
       helperText={error || 'Specify parameters in JSON format.'}
       value={currentValue}
       onBlur={validate}
@@ -60,47 +59,50 @@ ParametersTextField.propTypes = {
   onChange: PropTypes.func,
 };
 
-const MissionPlannerMainPanel = ({ onChange, parameters }) => {
+const MissionPlannerMainPanel = ({
+  missionType,
+  onMissionTypeChange,
+  onParametersChange,
+  parameters,
+}) => {
   const handleParametersChange = ({ value, valid }) => {
-    if (onChange) {
+    if (onParametersChange) {
       if (valid) {
         const parsed = value.length > 0 ? JSON.parse(value) : {};
-        onChange(typeof parsed === 'object' ? parsed : null);
+        onParametersChange(typeof parsed === 'object' ? parsed : null);
       } else {
-        onChange(null);
+        onParametersChange(null);
       }
     }
   };
 
   return (
-    <>
-      <Box pt={1}>
-        <FormControl fullWidth variant='filled'>
-          <InputLabel htmlFor='mission-type'>Mission type</InputLabel>
-          <Select
-            fullWidth
-            name='missionType'
-            label='Mission type'
-            value='powerline'
-            inputProps={{ id: 'mission-type' }}
-          >
-            <MenuItem value='powerline'>Power line inspection</MenuItem>
-          </Select>
-        </FormControl>
-      </Box>
-      <Box pt={1}>
+    <MultiPagePanel
+      height={300}
+      selectedPage={missionType ? 'parameters' : 'type'}
+    >
+      <Page id='type'>
+        <MissionTypeSelector
+          value={missionType}
+          onChange={(event, value) => onMissionTypeChange(value)}
+        />
+      </Page>
+
+      <Page id='parameters' pt={3} px={3}>
         <ParametersTextField
           initialValue={parameters}
           onChange={handleParametersChange}
         />
-      </Box>
-    </>
+      </Page>
+    </MultiPagePanel>
   );
 };
 
 MissionPlannerMainPanel.propTypes = {
+  missionType: PropTypes.string,
+  onMissionTypeChange: PropTypes.func,
   parameters: PropTypes.string,
-  onChange: PropTypes.func,
+  onParametersChange: PropTypes.func,
 };
 
 export default MissionPlannerMainPanel;
