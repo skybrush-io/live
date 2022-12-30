@@ -124,11 +124,11 @@ export const ConnectionListPresentation = listOf(
     return <ConnectionListEntry key={connection.id} {...connection} />;
   },
   {
-    dataProvider: 'connections',
     backgroundHint: 'No connections',
+    dataProvider: 'connections',
+    displayName: 'ConnectionListPresentation',
   }
 );
-ConnectionListPresentation.displayName = 'ConnectionListPresentation';
 
 const ConnectionList = connect(
   // mapStateToProps

@@ -37,10 +37,10 @@ DatasetListEntry.defaultProps = {};
  * @return  {Object}  the rendered dataset list component
  */
 const DatasetListPresentation = listOf(DatasetListEntry, {
-  dataProvider: 'datasets',
   backgroundHint: 'No datasets',
+  dataProvider: 'datasets',
+  displayName: 'DatasetListPresentation',
 });
-DatasetListPresentation.displayName = 'DatasetListPresentation';
 
 /**
  * Smart component for showing the list of the known datasets from the Redux
