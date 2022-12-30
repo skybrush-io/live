@@ -87,8 +87,8 @@ const LayerList = connect(
   }),
   // mapDispatchToProps
   (dispatch) => ({
-    onChange(_event, layerId) {
-      dispatch(showLayerSettingsDialog(layerId));
+    onChange(_event, layer) {
+      dispatch(showLayerSettingsDialog(layer.id));
     },
 
     onNewItem() {
