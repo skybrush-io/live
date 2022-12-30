@@ -49,10 +49,12 @@ const MissionPlannerDialog = ({
 }) => {
   const [missionType, setMissionType] = useState(null);
   const [parameters, setParameters] = useState(parameters);
+  const [selectedPage, setSelectedPage] = useState('type');
   const [canInvokePlanner, setCanInvokePlanner] = useState(false);
 
   const handleMissionTypeChange = (value) => {
     setMissionType(value);
+    setSelectedPage(value ? 'parameters' : 'type');
 
     if (!value) {
       setCanInvokePlanner(false);
@@ -93,14 +95,12 @@ const MissionPlannerDialog = ({
       <MissionPlannerMainPanel
         missionType={missionType}
         parameters={parametersAsString}
+        selectedPage={selectedPage}
         onMissionTypeChange={handleMissionTypeChange}
         onParametersChange={handleParametersChange}
       />
       <DialogActions>
-        <Button
-          disabled={!missionType}
-          onClick={() => handleMissionTypeChange(null)}
-        >
+        <Button disabled={!missionType} onClick={() => setSelectedPage('type')}>
           Back
         </Button>
         <Button onClick={onClose}>Close</Button>
