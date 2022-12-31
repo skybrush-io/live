@@ -1,5 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
+import Form from '@rjsf/material-ui';
+import validator from '@rjsf/validator-ajv8';
 
 import AsyncGuard from '~/components/AsyncGuard';
 import { useMessageHub } from '~/hooks';
@@ -32,8 +34,17 @@ MissionParameterEditorPresentation.propTypes = {
   onChange: PropTypes.func,
 };
 
-const MissionParameterEditor = ({ missionType, style, ...rest }) => {
+const FORM_UI_SCHEMA = {
+  'ui:options': {
+    submitButtonOptions: {
+      norender: true,
+    },
+  },
+};
+
+const MissionParameterEditor = ({ missionType, onChange, parameters }) => {
   const messageHub = useMessageHub();
+
   const func = useCallback(async () => {
     if (missionType) {
       const schemas = await messageHub.query.getMissionTypeSchemas(
@@ -45,15 +56,29 @@ const MissionParameterEditor = ({ missionType, style, ...rest }) => {
     }
   }, [messageHub, missionType]);
 
+  const handleChange = useCallback(
+    ({ errors, formData }) => {
+      if (errors.length === 0 && onChange) {
+        onChange(formData);
+      }
+    },
+    [onChange]
+  );
+
   return (
     <AsyncGuard
       func={func}
       errorMessage='Error while loading mission parameter schema from server'
       loadingMessage='Retrieving mission parameters...'
-      style={style}
     >
-      {(_schema) => (
-        <MissionParameterEditorPresentation style={style} {...rest} />
+      {(schema) => (
+        <Form
+          schema={schema}
+          uiSchema={FORM_UI_SCHEMA}
+          validator={validator}
+          formData={parameters}
+          onChange={handleChange}
+        />
       )}
     </AsyncGuard>
   );
@@ -63,7 +88,8 @@ MissionParameterEditor.propTypes = {
   missionType: PropTypes.shape({
     id: PropTypes.string,
   }),
-  style: PropTypes.object,
+  onChange: PropTypes.func,
+  parameters: PropTypes.object,
 };
 
 export default MissionParameterEditor;

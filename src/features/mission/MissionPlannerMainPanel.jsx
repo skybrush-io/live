@@ -32,7 +32,7 @@ const MissionPlannerMainPanel = ({
           secondary={missionType?.description}
         />
       </DialogHeaderListItem>
-      <Box pt={2} px={2} position='relative' flex={1} overflow='auto'>
+      <Box px={2} position='relative' flex={1} overflow='auto'>
         <MissionParameterEditor
           missionType={missionType}
           parameters={parameters}
@@ -44,9 +44,13 @@ const MissionPlannerMainPanel = ({
 );
 
 MissionPlannerMainPanel.propTypes = {
-  missionType: PropTypes.string,
+  missionType: PropTypes.shape({
+    id: PropTypes.string,
+    name: PropTypes.string,
+    description: PropTypes.string,
+  }),
   onMissionTypeChange: PropTypes.func,
-  parameters: PropTypes.string,
+  parameters: PropTypes.object,
   onParametersChange: PropTypes.func,
   selectedPage: PropTypes.oneOf(['parameters', 'type']).isRequired,
 };
