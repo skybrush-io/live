@@ -362,7 +362,7 @@ const { actions, reducer } = createSlice({
     },
 
     setMissionPlannerDialogParameters(state, action) {
-      state.plannerDialog.parameters = String(action.payload);
+      state.plannerDialog.parameters = action.payload;
     },
 
     /**
