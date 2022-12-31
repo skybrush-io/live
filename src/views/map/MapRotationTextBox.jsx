@@ -96,6 +96,7 @@ export default class MapRotationTextBox extends React.Component {
               ? this.state.rotation
               : normalizeAngle(this.state.rotation)
           }
+          variant='standard'
           onFocus={this._onFocus}
           onBlur={this._onBlur}
           onChange={this._onChange}
