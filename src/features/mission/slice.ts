@@ -118,7 +118,7 @@ export type MissionSliceState = ReadonlyDeep<{
   /** State of the mission planner dialog */
   plannerDialog: {
     open: boolean;
-    parameters: string;
+    parameters: Record<string, any> | string;
   };
 }>;
 
@@ -142,7 +142,7 @@ const initialState: MissionSliceState = {
   },
   plannerDialog: {
     open: false,
-    parameters: '',
+    parameters: {},
   },
 };
 
