@@ -28,13 +28,21 @@ export function filterSchemaByUIContext(schema) {
 
   if (schema.properties) {
     for (const [key, value] of Object.entries(schema.properties)) {
-      if (value.uiContextHint) {
-        if (!Array.isArray(uiContexts[value.uiContextHint])) {
-          uiContexts[value.uiContextHint] = [];
+      if (value.uiContextHint && !value['ui:contextHint']) {
+        value['ui:contextHint'] = value.uiContextHint;
+        delete value.uiContextHint;
+      }
+
+      if (value['ui:contextHint']) {
+        const uiContextHint = value['ui:contextHint'];
+        if (!Array.isArray(uiContexts[uiContextHint])) {
+          uiContexts[uiContextHint] = [];
         }
 
-        uiContexts[value.uiContextHint].push(key);
+        uiContexts[uiContextHint].push(key);
         excludedProps.push(key);
+
+        delete value['ui:contextHint'];
       }
     }
 

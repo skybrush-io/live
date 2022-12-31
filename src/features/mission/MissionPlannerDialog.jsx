@@ -40,15 +40,15 @@ import { MissionType } from '~/model/missions';
  * by invoking a mission planning service on the server.
  */
 const MissionPlannerDialog = ({
+  initialParameters,
   isConnectedToServer,
   onClose,
   onInvokePlanner,
   onSaveParameters,
   open,
-  parametersAsString,
 }) => {
   const [missionType, setMissionType] = useState(null);
-  const [parameters, setParameters] = useState(parameters);
+  const [parameters, setParameters] = useState(initialParameters);
   const [selectedPage, setSelectedPage] = useState('type');
   const [canInvokePlanner, setCanInvokePlanner] = useState(false);
 
@@ -66,8 +66,9 @@ const MissionPlannerDialog = ({
 
     if (typeof value === 'object' && value !== null && value !== undefined) {
       setParameters(value);
+
       if (onSaveParameters) {
-        onSaveParameters(isEmpty(value) ? '' : JSON.stringify(value, null, 4));
+        onSaveParameters(value);
       }
 
       parametersValid = true;
@@ -94,13 +95,16 @@ const MissionPlannerDialog = ({
     >
       <MissionPlannerMainPanel
         missionType={missionType}
-        parameters={parametersAsString}
+        parameters={parameters}
         selectedPage={selectedPage}
         onMissionTypeChange={handleMissionTypeChange}
         onParametersChange={handleParametersChange}
       />
       <DialogActions>
-        <Button disabled={!missionType} onClick={() => setSelectedPage('type')}>
+        <Button
+          disabled={selectedPage === 'type'}
+          onClick={() => setSelectedPage('type')}
+        >
           Back
         </Button>
         <Button onClick={onClose}>Close</Button>
@@ -117,19 +121,19 @@ const MissionPlannerDialog = ({
 };
 
 MissionPlannerDialog.propTypes = {
+  initialParameters: PropTypes.string,
   isConnectedToServer: PropTypes.bool,
   open: PropTypes.bool,
   onClose: PropTypes.func,
   onInvokePlanner: PropTypes.func,
   onSaveParameters: PropTypes.func,
-  parametersAsString: PropTypes.string,
 };
 
 export default connect(
   // mapStateToProps
   (state) => ({
+    initialParameters: state.mission?.plannerDialog?.parameters || {},
     open: isMissionPlannerDialogOpen(state),
-    parametersAsString: state.mission?.plannerDialog?.parameters || '',
     isConnectedToServer: isConnectedToServer(state),
   }),
 
