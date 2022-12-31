@@ -95,7 +95,7 @@ const { actions, reducer } = createSlice({
     // state of the mission planner dialog
     plannerDialog: {
       open: false,
-      parameters: '',
+      parameters: {},
     },
   },
 
