@@ -119,7 +119,7 @@ const MissionPlannerDialog = ({
 };
 
 MissionPlannerDialog.propTypes = {
-  initialParameters: PropTypes.string,
+  initialParameters: PropTypes.object,
   isConnectedToServer: PropTypes.bool,
   open: PropTypes.bool,
   onClose: PropTypes.func,
