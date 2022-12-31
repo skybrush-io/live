@@ -16,6 +16,7 @@ import {
 } from '~/features/uavs/selectors';
 import messageHub from '~/message-hub';
 import { FeatureType } from '~/model/features';
+import { MissionType } from '~/model/missions';
 import { getSelectedFeatureIds } from '~/selectors/selection';
 
 import { setMissionItemsFromArray } from './actions';
@@ -30,8 +31,6 @@ import {
 } from './slice';
 
 import MissionPlannerMainPanel from './MissionPlannerMainPanel';
-import { isEmpty } from 'lodash-es';
-import { MissionType } from '~/model/missions';
 
 /**
  * Presentation component for the dialog that allows the user to plan a mission
