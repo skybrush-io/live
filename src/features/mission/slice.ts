@@ -118,7 +118,7 @@ export type MissionSliceState = ReadonlyDeep<{
   /** State of the mission planner dialog */
   plannerDialog: {
     open: boolean;
-    parameters: Record<string, any> | string;
+    parameters: Record<string, any>;
   };
 }>;
 
@@ -438,8 +438,11 @@ const { actions, reducer } = createSlice({
           : MissionType.UNKNOWN;
     },
 
-    setMissionPlannerDialogParameters(state, action: PayloadAction<string>) {
-      state.plannerDialog.parameters = String(action.payload);
+    setMissionPlannerDialogParameters(
+      state,
+      action: PayloadAction<Record<string, any>>
+    ) {
+      state.plannerDialog.parameters = action.payload;
     },
 
     /**
