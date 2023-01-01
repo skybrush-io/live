@@ -39,6 +39,11 @@ import {
   cutFeature,
   showFeatureEditorDialog,
 } from '~/features/map-features/actions';
+import {
+  getSelectedFeatureIds,
+  getSelectedFeatureLabels,
+  getSelectedFeatureTypes,
+} from '~/features/map-features/selectors';
 import { removeFeaturesByIds } from '~/features/map-features/slice';
 import { addNewWaypointMissionItem } from '~/features/mission/actions';
 import {
@@ -50,12 +55,6 @@ import { updateOutdoorShowSettings } from '~/features/show/actions';
 import { openFlyToTargetDialogWithCoordinate } from '~/features/uav-control/actions';
 import { openUAVDetailsDialog } from '~/features/uavs/details';
 import { getSelectedUAVIds } from '~/features/uavs/selectors';
-
-import {
-  getSelectedFeatureIds,
-  getSelectedFeatureLabels,
-  getSelectedFeatureTypes,
-} from '~/selectors/selection';
 
 /**
  * Context menu that shows the menu items that should appear when the
@@ -298,8 +297,8 @@ class MapContextMenu extends React.Component {
                 <ListItemIcon>
                   <ContentCut />
                 </ListItemIcon>
-                Subtract {selectedFeatureLabels[0] ?? 'unnamed polygon'}{' '}
-                from {selectedFeatureLabels[1] ?? 'unnamed polygon'}
+                Subtract {selectedFeatureLabels[0] ?? 'unnamed polygon'} from{' '}
+                {selectedFeatureLabels[1] ?? 'unnamed polygon'}
               </MenuItem>
             );
           }

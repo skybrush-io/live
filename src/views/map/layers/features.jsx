@@ -11,14 +11,16 @@ import { Feature, geom, interaction, layer, source } from '@collmot/ol-react';
 import { snapEndToStart } from '../interactions/utils';
 import { Tool } from '../tools';
 
+import {
+  getFeaturesInOrder,
+  getSelectedFeatureIds,
+} from '~/features/map-features/selectors';
 import { getGeofencePolygonId } from '~/features/mission/selectors';
 import { showError } from '~/features/snackbar/actions';
 import { FeatureType, LabelStyle } from '~/model/features';
 import { featureIdToGlobalId } from '~/model/identifiers';
 import { handleFeatureUpdatesInOpenLayers } from '~/model/openlayers';
 import { setLayerEditable, setLayerSelectable } from '~/model/layers';
-import { getFeaturesInOrder } from '~/selectors/ordered';
-import { getSelectedFeatureIds } from '~/selectors/selection';
 import {
   mapViewCoordinateFromLonLat,
   euclideanDistance,

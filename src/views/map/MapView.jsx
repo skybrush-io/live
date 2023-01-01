@@ -46,13 +46,14 @@ import {
   setSelection,
   removeFromSelection,
 } from '~/features/map/selection';
+import { getSelectedFeatureIds } from '~/features/map-features/selectors';
 import { getVisibleLayersInOrder } from '~/selectors/ordered';
 import { getExtendedCoordinateFormatter } from '~/selectors/formatting';
 import {
   getMapViewCenterPosition,
   getMapViewRotationAngle,
 } from '~/selectors/map';
-import { getSelectedFeatureIds, getSelection } from '~/selectors/selection';
+import { getSelection } from '~/selectors/selection';
 import { hasFeature } from '~/utils/configuration';
 import {
   mapViewCoordinateFromLonLat,

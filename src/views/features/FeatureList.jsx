@@ -23,10 +23,12 @@ import {
   toggleInSelection,
 } from '~/features/map/selection';
 import { showFeatureEditorDialog } from '~/features/map-features/actions';
+import {
+  getFeaturesInOrder,
+  getSelectedFeatureIds,
+} from '~/features/map-features/selectors';
 import { getNameOfFeatureType, getIconOfFeatureType } from '~/model/features';
 import { featureIdToGlobalId } from '~/model/identifiers';
-import { getFeaturesInOrder } from '~/selectors/ordered';
-import { getSelectedFeatureIds } from '~/selectors/selection';
 
 /**
  * Presentation component for a single entry in the feature list.
