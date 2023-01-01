@@ -55,8 +55,6 @@ export function getParametersFromContext(parameterNamesByContext, getState) {
     }
   }
 
-  console.log(result);
-
   return result;
 }
 
