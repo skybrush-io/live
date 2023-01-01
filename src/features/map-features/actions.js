@@ -10,9 +10,8 @@ import {
   isDockId,
   isUavId,
 } from '~/model/identifiers';
-import { getSelectedFeatureIds } from '~/selectors/selection';
 
-import { getProposedIdForNewFeature } from './selectors';
+import { getProposedIdForNewFeature, getSelectedFeatureIds } from './selectors';
 import {
   addFeatureById,
   removeFeaturesByIds,

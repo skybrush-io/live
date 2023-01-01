@@ -11,7 +11,10 @@ import {
   addFeatureById,
   removeFeaturesByIds,
 } from '~/features/map-features/slice';
-import { getProposedIdForNewFeature } from '~/features/map-features/selectors';
+import {
+  getFeaturesInOrder,
+  getProposedIdForNewFeature,
+} from '~/features/map-features/selectors';
 import { removeGeofencePolygon } from '~/features/mission/actions';
 import {
   updateHomePositions,
@@ -28,7 +31,6 @@ import {
 } from '~/features/uavs/selectors';
 import { clearLastUploadResultForJobType } from '~/features/upload/slice';
 import { FeatureType, LabelStyle } from '~/model/features';
-import { getFeaturesInOrder } from '~/selectors/ordered';
 import {
   lonLatFromMapViewCoordinate,
   mapViewCoordinateFromLonLat,

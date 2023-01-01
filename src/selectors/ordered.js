@@ -16,15 +16,6 @@ export const getConnectionsInOrder = createSelector(
 );
 
 /**
- * Selector that calculates and caches the list of all the features in the
- * state object, in exactly the same order as they should appear on the UI.
- */
-export const getFeaturesInOrder = createSelector(
-  (state) => state.features,
-  selectOrdered
-);
-
-/**
  * Selector that calculates and caches the list of all the layers in the
  * state object, in exactly the same order as they should appear on the UI,
  * bottom layer first.
