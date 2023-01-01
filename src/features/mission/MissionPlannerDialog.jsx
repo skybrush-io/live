@@ -8,16 +8,9 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
 
 import { showErrorMessage } from '~/features/error-handling/actions';
-import { getFeatureById } from '~/features/map-features/selectors';
 import { isConnected as isConnectedToServer } from '~/features/servers/selectors';
-import {
-  getCurrentGPSPositionByUavId,
-  getSingleSelectedUAVId,
-} from '~/features/uavs/selectors';
 import messageHub from '~/message-hub';
-import { FeatureType } from '~/model/features';
 import { MissionType } from '~/model/missions';
-import { getSelectedFeatureIds } from '~/selectors/selection';
 
 import { setMissionItemsFromArray } from './actions';
 import { getParametersFromContext } from './parameter-context';
@@ -152,60 +145,21 @@ export default connect(
       (missionType, { fromUser, fromContext }) =>
       async (dispatch, getState) => {
         let items = null;
-
-        const parameters = {
-          ...getParametersFromContext(fromContext, getState),
-          ...fromUser,
-        };
-
-        const state = getState();
-        const uavId = getSingleSelectedUAVId(state);
-        const uavPosition = getCurrentGPSPositionByUavId(state, uavId);
+        const parameters = {};
 
         try {
-          if (!uavId) {
-            throw new Error('Exactly one UAV must be selected');
-          }
+          Object.assign(
+            parameters,
+            getParametersFromContext(fromContext, getState)
+          );
+        } catch (error) {
+          dispatch(showErrorMessage('Error while setting parameters', error));
+          return;
+        }
 
-          if (!uavPosition) {
-            throw new Error(
-              'The selected UAV does not have a GPS position yet'
-            );
-          }
+        Object.assign(parameters, fromUser);
 
-          const selectedFeatureIds = getSelectedFeatureIds(state);
-          if (selectedFeatureIds.length !== 1) {
-            throw new Error(
-              'Exactly one line string must be selected on the map'
-            );
-          }
-
-          const feature = getFeatureById(state, selectedFeatureIds[0]);
-          if (feature?.type !== FeatureType.LINE_STRING) {
-            throw new Error(
-              `The selected feature on the map must be a line string, got: ${feature?.type}`
-            );
-          }
-
-          if (!Array.isArray(feature.points) || feature.points.length === 0) {
-            throw new Error(
-              'The selected line string must have at least one point'
-            );
-          }
-
-          // Extend the parameters with the coordinates of the selected line string
-          // and the coordinates of the selected UAV
-          Object.assign(parameters, {
-            start: [
-              Math.round(uavPosition.lon * 1e7),
-              Math.round(uavPosition.lat * 1e7),
-            ],
-            towers: feature.points.map((point) => [
-              Math.round(point[0] * 1e7),
-              Math.round(point[1] * 1e7),
-            ]),
-          });
-
+        try {
           items = await messageHub.execute.planMission({
             id: missionType.id,
             parameters,
@@ -221,9 +175,11 @@ export default connect(
 
         if (Array.isArray(items)) {
           dispatch(setMissionType(MissionType.WAYPOINT));
+          /*
           dispatch(setMappingLength(1));
           dispatch(replaceMapping([uavId]));
           dispatch(updateHomePositions([uavPosition]));
+          */
           dispatch(setMissionItemsFromArray(items));
           dispatch(closeMissionPlannerDialog());
         }
