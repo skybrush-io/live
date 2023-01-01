@@ -350,7 +350,7 @@ export const measureFeature = (feature) => {
         )
       );
 
-      return area > 1 * kilo * kilo // Over 1 km²
+      return area > kilo * kilo // Over 1 km²
         ? `${round(area / (kilo * kilo), 2)} km²`
         : area > 0.1 * hecto * hecto // Over 0.1 ha
         ? `${round(area / (hecto * hecto), 2)} ha`
@@ -751,4 +751,33 @@ export function toPolar(coords) {
   }
 
   return [0, 0];
+}
+
+/**
+ * Converts a longitude-latitude pair to a representation that is safe to be
+ * transferred in JSON over to the server without worrying about floating-point
+ * rounding errors.
+ *
+ * @param  {object} coords  the longitude-latitude pair to convert, represented
+ *         as an object with a `lon` and a `lat` key.
+ * @return {number[]} the JSON representation, scaled up to 1e7 degrees. Note
+ *         that it returns the <em>latitude</em> first
+ */
+export function toScaledJSONFromObject(coords) {
+  return [Math.round(coords.lat * 1e7), Math.round(coords.lon * 1e7)];
+}
+
+/**
+ * Converts a longitude-latitude pair to a representation that is safe to be
+ * transferred in JSON over to the server without worrying about floating-point
+ * rounding errors.
+ *
+ * @param  {number[]} coords  the longitude-latitude pair to convert, represented
+ *         as an array in lon-lat order (<em>longitude</em> first, OpenLayers
+ *         convention)
+ * @return {number[]} the JSON representation, scaled up to 1e7 degrees. Note
+ *         that it returns the <em>latitude</em> first
+ */
+export function toScaledJSONFromLonLat(coords) {
+  return [Math.round(coords[1] * 1e7), Math.round(coords[0] * 1e7)];
 }
