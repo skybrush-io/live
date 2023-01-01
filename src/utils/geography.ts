@@ -964,3 +964,39 @@ export const bufferPolygon = (
 
   return convexHull(outerLinearRing);
 };
+
+type ScaledJSONGPSCoordinate = [number, number];
+
+/**
+ * Converts a longitude-latitude pair to a representation that is safe to be
+ * transferred in JSON over to the server without worrying about floating-point
+ * rounding errors.
+ *
+ * @param  {object} coords  the longitude-latitude pair to convert, represented
+ *         as an object with a `lon` and a `lat` key.
+ * @return {number[]} the JSON representation, scaled up to 1e7 degrees. Note
+ *         that it returns the <em>latitude</em> first
+ */
+export function toScaledJSONFromObject(coords: {
+  lat: number;
+  lon: number;
+}): ScaledJSONGPSCoordinate {
+  return [Math.round(coords.lat * 1e7), Math.round(coords.lon * 1e7)];
+}
+
+/**
+ * Converts a longitude-latitude pair to a representation that is safe to be
+ * transferred in JSON over to the server without worrying about floating-point
+ * rounding errors.
+ *
+ * @param  {number[]} coords  the longitude-latitude pair to convert, represented
+ *         as an array in lon-lat order (<em>longitude</em> first, OpenLayers
+ *         convention)
+ * @return {number[]} the JSON representation, scaled up to 1e7 degrees. Note
+ *         that it returns the <em>latitude</em> first
+ */
+export function toScaledJSONFromLonLat(
+  coords: [number, number]
+): ScaledJSONGPSCoordinate {
+  return [Math.round(coords[1] * 1e7), Math.round(coords[0] * 1e7)];
+}
