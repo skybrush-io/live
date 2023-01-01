@@ -20,6 +20,7 @@ import { MissionType } from '~/model/missions';
 import { getSelectedFeatureIds } from '~/selectors/selection';
 
 import { setMissionItemsFromArray } from './actions';
+import { getParametersFromContext } from './parameter-context';
 import { isMissionPlannerDialogOpen } from './selectors';
 import {
   closeMissionPlannerDialog,
@@ -45,7 +46,9 @@ const MissionPlannerDialog = ({
   open,
 }) => {
   const [missionType, setMissionType] = useState(null);
-  const [parameters, setParameters] = useState(initialParameters);
+  const [parametersFromUser, setParametersFromUser] =
+    useState(initialParameters);
+  const [parametersFromContext, setParametersFromContext] = useState(null);
   const [selectedPage, setSelectedPage] = useState('type');
   const [canInvokePlanner, setCanInvokePlanner] = useState(false);
 
@@ -58,27 +61,35 @@ const MissionPlannerDialog = ({
     }
   };
 
-  const handleParametersChange = (value) => {
+  const handleParametersChange = ({ fromUser, fromContext }) => {
     let parametersValid = false;
 
-    if (typeof value === 'object' && value !== null && value !== undefined) {
-      setParameters(value);
+    if (
+      typeof fromUser === 'object' &&
+      fromUser !== null &&
+      fromUser !== undefined
+    ) {
+      setParametersFromUser(fromUser);
 
       if (onSaveParameters) {
-        onSaveParameters(value);
+        onSaveParameters(fromUser);
       }
 
       parametersValid = true;
     } else {
-      setParameters(null);
+      setParametersFromUser(null);
     }
 
+    setParametersFromContext(fromContext);
     setCanInvokePlanner(missionType && parametersValid);
   };
 
   const invokePlanner = () => {
     if (onInvokePlanner && canInvokePlanner && isConnectedToServer) {
-      onInvokePlanner(missionType, parameters);
+      onInvokePlanner(missionType, {
+        fromUser: parametersFromUser,
+        fromContext: parametersFromContext,
+      });
     }
   };
 
@@ -92,7 +103,7 @@ const MissionPlannerDialog = ({
     >
       <MissionPlannerMainPanel
         missionType={missionType}
-        parameters={parameters}
+        parameters={parametersFromUser}
         selectedPage={selectedPage}
         onMissionTypeChange={handleMissionTypeChange}
         onParametersChange={handleParametersChange}
@@ -138,8 +149,14 @@ export default connect(
   {
     onClose: closeMissionPlannerDialog,
     onInvokePlanner:
-      (missionType, parameters) => async (dispatch, getState) => {
+      (missionType, { fromUser, fromContext }) =>
+      async (dispatch, getState) => {
         let items = null;
+
+        const parameters = {
+          ...getParametersFromContext(fromContext, getState),
+          ...fromUser,
+        };
 
         const state = getState();
         const uavId = getSingleSelectedUAVId(state);
