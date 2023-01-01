@@ -53,9 +53,7 @@ const MissionPlannerDialog = ({
     setMissionType(value);
     setSelectedPage(value ? 'parameters' : 'type');
 
-    if (!value) {
-      setCanInvokePlanner(false);
-    }
+    setCanInvokePlanner(Boolean(value));
   };
 
   const handleParametersChange = ({ fromUser, fromContext }) => {
