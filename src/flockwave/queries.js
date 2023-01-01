@@ -7,6 +7,7 @@ import get from 'lodash-es/get';
 import pick from 'lodash-es/pick';
 import sortBy from 'lodash-es/sortBy';
 import memoize from 'memoizee';
+import { toScaledJSONFromLonLat } from '~/utils/geography';
 
 import { extractResponseForId } from './parsing';
 import { validateExtensionName } from './validation';
@@ -237,7 +238,7 @@ export async function getWeatherInformation(hub, position) {
 
   const response = await hub.sendMessage({
     type: 'WTH-AT',
-    position: [Math.round(position[1] * 1e7), Math.round(position[0] * 1e7)],
+    position: toScaledJSONFromLonLat(position),
   });
 
   if (response.body && response.body.type === 'WTH-AT') {
