@@ -187,6 +187,7 @@ const _propertiesForLayerTypes = {
       showHomePositions: true,
       showLandingPositions: false,
       showTrajectoriesOfSelection: true,
+      showMissionItems: true,
     },
   },
   [LayerType.OWN_LOCATION]: {
