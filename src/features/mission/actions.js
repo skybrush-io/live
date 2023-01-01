@@ -60,6 +60,8 @@ import {
   removeMissionItemsByIds,
   removeUAVsFromMapping,
   replaceMapping,
+  setMappingLength,
+  updateHomePositions,
   updateMissionItemParameters,
   _setMissionItemsFromValidatedArray,
 } from './slice';
@@ -328,6 +330,27 @@ export const removeMissingUAVsFromMapping = () => (dispatch, getState) => {
   const missingUAVIds = getMissingUAVIdsInMapping(state);
   dispatch(removeUAVsFromMapping(missingUAVIds));
 };
+
+/**
+ * Thunk that assumes that a single-UAV mission is going to be executed and
+ * assigns the selected UAV to the mission.
+ */
+export const prepareMappingForSingleUAVMissionFromSelection =
+  () => (dispatch, getState) => {
+    const state = getState();
+    const uavId = getSingleSelectedUAVId(state);
+
+    if (uavId) {
+      const uavPosition = getCurrentGPSPositionByUavId(state, uavId);
+
+      dispatch(setMappingLength(1));
+      dispatch(replaceMapping([uavId]));
+
+      if (uavPosition) {
+        dispatch(updateHomePositions([uavPosition]));
+      }
+    }
+  };
 
 /**
  * Thunk that adds a new mission item of the given type to the end of the

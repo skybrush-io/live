@@ -12,16 +12,16 @@ import { isConnected as isConnectedToServer } from '~/features/servers/selectors
 import messageHub from '~/message-hub';
 import { MissionType } from '~/model/missions';
 
-import { setMissionItemsFromArray } from './actions';
+import {
+  prepareMappingForSingleUAVMissionFromSelection,
+  setMissionItemsFromArray,
+} from './actions';
 import { getParametersFromContext } from './parameter-context';
 import { isMissionPlannerDialogOpen } from './selectors';
 import {
   closeMissionPlannerDialog,
-  replaceMapping,
-  setMappingLength,
   setMissionPlannerDialogParameters,
   setMissionType,
-  updateHomePositions,
 } from './slice';
 
 import MissionPlannerMainPanel from './MissionPlannerMainPanel';
@@ -175,12 +175,8 @@ export default connect(
 
         if (Array.isArray(items)) {
           dispatch(setMissionType(MissionType.WAYPOINT));
-          /*
-          dispatch(setMappingLength(1));
-          dispatch(replaceMapping([uavId]));
-          dispatch(updateHomePositions([uavPosition]));
-          */
           dispatch(setMissionItemsFromArray(items));
+          dispatch(prepareMappingForSingleUAVMissionFromSelection());
           dispatch(closeMissionPlannerDialog());
         }
       },
