@@ -1,8 +1,18 @@
 import isNil from 'lodash-es/isNil';
 
+import { KNOWN_UI_CONTEXTS } from './parameter-context';
+
 /**
  * Utility functions related to handling mission parameter schemas.
  */
+
+const addToMapOfArrays = (map, key, value) => {
+  if (!map.has(key)) {
+    map.set(key, []);
+  }
+
+  map.get(key).push(value);
+};
 
 /**
  * Filters a mission parameter JSON schema by sorting the parameters according to the
@@ -10,7 +20,7 @@ import isNil from 'lodash-es/isNil';
  *
  * - `schema`: the filtered schema with all references to top-level parameters
  *   to be provided by contextual information from the UI removed
- * - `uiContexts`: an object keyed by UI context identifiers; the values are
+ * - `uiContexts`: a map keyed by UI context identifiers; the values are
  *   arrays of parameters that are to be filled from the given UI context
  *
  * Only JSON schemas with a top-level type of `object` are allowed.
@@ -22,7 +32,7 @@ export function filterSchemaByUIContext(schema) {
 
   schema = structuredClone(schema);
 
-  const uiContexts = {};
+  const uiContexts = new Map();
   const excludedProps = [];
   const result = { schema, uiContexts };
 
@@ -35,14 +45,14 @@ export function filterSchemaByUIContext(schema) {
 
       if (value['ui:contextHint']) {
         const uiContextHint = value['ui:contextHint'];
-        if (!Array.isArray(uiContexts[uiContextHint])) {
-          uiContexts[uiContextHint] = [];
+        if (KNOWN_UI_CONTEXTS.includes(uiContextHint)) {
+          addToMapOfArrays(uiContexts, uiContextHint, key);
+          excludedProps.push(key);
+
+          delete value['ui:contextHint'];
+        } else {
+          console.warn('Unknown UI context hint:' + String(uiContextHint));
         }
-
-        uiContexts[uiContextHint].push(key);
-        excludedProps.push(key);
-
-        delete value['ui:contextHint'];
       }
     }
 
