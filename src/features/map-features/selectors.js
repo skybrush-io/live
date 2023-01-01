@@ -1,12 +1,28 @@
 import camelCase from 'lodash-es/camelCase';
 import capitalize from 'lodash-es/capitalize';
+import isNil from 'lodash-es/isNil';
 import map from 'lodash-es/map';
+import reject from 'lodash-es/reject';
+
 import { createSelector } from '@reduxjs/toolkit';
 
 import { getSelectedTool } from '~/features/map/tools';
 import { getNameOfFeatureType } from '~/model/features';
+import { globalIdToFeatureId } from '~/model/identifiers';
+import { selectionForSubset } from '~/selectors/selection';
+import { selectOrdered } from '~/utils/collections';
 import { chooseUniqueId, chooseUniqueName } from '~/utils/naming';
+import { EMPTY_ARRAY } from '~/utils/redux';
 import { Tool } from '~/views/map/tools';
+
+/**
+ * Selector that calculates and caches the list of all the features in the
+ * state object, in exactly the same order as they should appear on the UI.
+ */
+export const getFeaturesInOrder = createSelector(
+  (state) => state.features,
+  selectOrdered
+);
 
 /**
  * Returns the object representing a feature given its ID, or undefined
@@ -77,3 +93,61 @@ export const getEditorDialogVisibility = (state) =>
  */
 export const getSelectedTab = (state) =>
   state.dialogs.featureEditor.selectedTab;
+
+/**
+ * Selector that calculates and caches the list of selected UAV IDs from
+ * the state object.
+ */
+export const getSelectedFeatureIds = selectionForSubset(globalIdToFeatureId);
+
+/**
+ * Selector that returns the ID of the selected UAV if there is exactly one UAV
+ * selected, or undefined otherwise.
+ */
+export const getSingleSelectedFeatureId = createSelector(
+  getSelectedFeatureIds,
+  (featureIds) => (featureIds.length === 1 ? featureIds[0] : undefined)
+);
+
+/**
+ * Selector that returns the ID of the selected UAV in an array of length 1 if
+ * there is exactly one UAV selected, or an empty array otherwise.
+ */
+export const getSingleSelectedFeatureIdAsArray = createSelector(
+  getSelectedFeatureIds,
+  (featureIds) => (featureIds.length === 1 ? featureIds : EMPTY_ARRAY)
+);
+
+/**
+ * Selector that retrieves the list of the labels of the selected features
+ * from the state object.
+ *
+ * @param  {Object}  state  the state of the application
+ * @return {string[]}  the list of selected feature labels
+ */
+export const getSelectedFeatureLabels = createSelector(
+  getSelectedFeatureIds,
+  (state) => state.features.byId,
+  (featureIds, features) =>
+    reject(
+      featureIds.map((featureId) => features[featureId]),
+      isNil
+    ).map((feature) => feature.label)
+);
+
+/**
+ * Selector that retrieves the list of the types of the selected features
+ * from the state object.
+ *
+ * @param  {Object}  state  the state of the application
+ * @return {string[]}  the list of selected feature types
+ */
+export const getSelectedFeatureTypes = createSelector(
+  getSelectedFeatureIds,
+  (state) => state.features.byId,
+  (featureIds, features) =>
+    reject(
+      featureIds.map((featureId) => features[featureId]),
+      isNil
+    ).map((feature) => feature.type)
+);

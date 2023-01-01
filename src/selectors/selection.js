@@ -8,7 +8,7 @@ import reject from 'lodash-es/reject';
 import Collection from 'ol/Collection';
 import { createSelector } from '@reduxjs/toolkit';
 
-import { globalIdToFeatureId, globalIdToOriginId } from '~/model/identifiers';
+import { globalIdToOriginId } from '~/model/identifiers';
 
 /**
  * Selector that retrieves the list of item IDs in the current selection
@@ -40,15 +40,6 @@ export const selectionForSubset = (mapper) =>
     reject(selection.map(mapper), isNil)
   );
 
-/**
- * Selector that retrieves the list of selected feature IDs from the
- * state object.
- *
- * @param  {Object}  state  the state of the application
- * @return {string[]}  the list of selected feature IDs
- */
-export const getSelectedFeatureIds = selectionForSubset(globalIdToFeatureId);
-
 const _selectedFeatureIdsCollection = new Collection([], { unique: true });
 
 /**
@@ -69,40 +60,6 @@ export const getSelectedFeatureIdsAsOpenLayersCollection = createSelector(
     _selectedFeatureIdsCollection.extend(selection);
     return _selectedFeatureIdsCollection;
   }
-);
-
-/**
- * Selector that retrieves the list of the labels of the selected features
- * from the state object.
- *
- * @param  {Object}  state  the state of the application
- * @return {string[]}  the list of selected feature labels
- */
-export const getSelectedFeatureLabels = createSelector(
-  getSelectedFeatureIds,
-  (state) => state.features.byId,
-  (featureIds, features) =>
-    reject(
-      featureIds.map((featureId) => features[featureId]),
-      isNil
-    ).map((feature) => feature.label)
-);
-
-/**
- * Selector that retrieves the list of the types of the selected features
- * from the state object.
- *
- * @param  {Object}  state  the state of the application
- * @return {string[]}  the list of selected feature types
- */
-export const getSelectedFeatureTypes = createSelector(
-  getSelectedFeatureIds,
-  (state) => state.features.byId,
-  (featureIds, features) =>
-    reject(
-      featureIds.map((featureId) => features[featureId]),
-      isNil
-    ).map((feature) => feature.type)
 );
 
 /**
