@@ -83,6 +83,7 @@ const Header = ({ isSidebarOpen, sessionExpiresAt, toggleSidebar }) => (
         onClick={toggleSidebar}
       />
       <PerspectiveBar />
+      <Box pr={0.5} />
       <UAVStatusSummary />
       <hr />
       <AltitudeSummaryHeaderButton />
