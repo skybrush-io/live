@@ -56,6 +56,12 @@ const MissionPlannerDialog = ({
     setCanInvokePlanner(Boolean(value));
   };
 
+  const handleMissionTypeCleared = () => {
+    setSelectedPage('type');
+    setCanInvokePlanner(false);
+    setTimeout(() => setMissionType(null), 500);
+  };
+
   const handleParametersChange = ({ fromUser, fromContext }) => {
     let parametersValid = false;
 
@@ -100,16 +106,11 @@ const MissionPlannerDialog = ({
         missionType={missionType}
         parameters={parametersFromUser}
         selectedPage={selectedPage}
+        onMissionTypeCleared={handleMissionTypeCleared}
         onMissionTypeChange={handleMissionTypeChange}
         onParametersChange={handleParametersChange}
       />
       <DialogActions>
-        <Button
-          disabled={selectedPage === 'type'}
-          onClick={() => setSelectedPage('type')}
-        >
-          Back
-        </Button>
         <Button onClick={onClose}>Close</Button>
         <Button
           disabled={!isConnectedToServer || !canInvokePlanner}
