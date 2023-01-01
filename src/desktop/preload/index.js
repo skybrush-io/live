@@ -68,12 +68,12 @@ function createStateStore() {
   });
 }
 
-const createTCPSocket = ({ address, port }, options, handlers) => {
+const createTCPSocket = ({ address, port }, options = {}, handlers = {}) => {
   const tcpSocket = new TCPSocket({ address, port }, options, handlers);
-
   return {
     emit: tcpSocket.emit.bind(tcpSocket),
     end: tcpSocket.end.bind(tcpSocket),
+    notifyPing: tcpSocket.notifyPing.bind(tcpSocket),
   };
 };
 

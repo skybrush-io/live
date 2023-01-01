@@ -293,7 +293,6 @@ class TCPSocketConnection extends React.Component {
   static defaultProps = defaultConnectionProps;
 
   #heartbeatIntervalId = undefined;
-  #lastHeartbeatResult = undefined;
   #socket;
 
   componentDidMount() {
@@ -315,12 +314,16 @@ class TCPSocketConnection extends React.Component {
       this.props.url.match('.*://(?<address>.*):(?<port>.*)').groups,
       {
         connectTimeout,
+        reconnecting: true,
+        url,
+      },
+      {
+        onConnected,
         onConnecting,
         onConnectionError,
         onConnectionTimeout,
         onDisconnected,
         onMessage,
-        url,
       }
     );
 
@@ -330,18 +333,14 @@ class TCPSocketConnection extends React.Component {
     const heartbeat = () => {
       pTimeout(messageHub.sendMessage('SYS-PING'), pingTimeout)
         .then(() => {
-          if (!this.#lastHeartbeatResult) {
-            onConnected({ url });
+          if (this.#socket) {
+            this.#socket.notifyPing();
           }
-
-          this.#lastHeartbeatResult = true;
         })
         .catch(() => {
-          if (this.#lastHeartbeatResult) {
-            onDisconnected({ url, reason: 'ping timeout' });
+          if (this.#socket) {
+            this.#socket.notifyPing(/* success = */ false);
           }
-
-          this.#lastHeartbeatResult = false;
         });
     };
 
