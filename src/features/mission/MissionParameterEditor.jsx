@@ -1,38 +1,12 @@
 import PropTypes from 'prop-types';
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import Form from '@rjsf/material-ui';
 import validator from '@rjsf/validator-ajv8';
 
 import AsyncGuard from '~/components/AsyncGuard';
 import { useMessageHub } from '~/hooks';
 
-import ParametersTextField from './ParametersTextField';
 import { filterSchemaByUIContext } from './schema';
-
-const MissionParameterEditorPresentation = ({ parameters, onChange }) => {
-  const handleParametersChange = ({ value, valid }) => {
-    if (onChange) {
-      if (valid) {
-        const parsed = value.length > 0 ? JSON.parse(value) : {};
-        onChange(typeof parsed === 'object' ? parsed : null);
-      } else {
-        onChange(null);
-      }
-    }
-  };
-
-  return (
-    <ParametersTextField
-      initialValue={parameters}
-      onChange={handleParametersChange}
-    />
-  );
-};
-
-MissionParameterEditorPresentation.propTypes = {
-  parameters: PropTypes.string,
-  onChange: PropTypes.func,
-};
 
 const FORM_UI_SCHEMA = {
   'ui:options': {
@@ -42,28 +16,62 @@ const FORM_UI_SCHEMA = {
   },
 };
 
+const MissionParameterEditorPresentation = ({
+  onChange,
+  parameters,
+  schema,
+}) => {
+  // Separate the full schema into the schema that contains only the parameters
+  // that are to be queried from the user, and a mapping from UI context IDs to
+  // the names of parameters that are to be provided by that UI context
+  const { schema: filteredSchema, uiContexts } = useMemo(
+    () => filterSchemaByUIContext(schema),
+    [schema]
+  );
+
+  const handleChange = useCallback(
+    ({ errors, formData }) => {
+      // TODO(ntamas): extend formData with all the parameters that are to be
+      // provided by the UI context
+      if (errors.length === 0 && onChange) {
+        onChange({
+          fromUser: formData,
+          fromContext: uiContexts,
+        });
+      }
+    },
+    [onChange, uiContexts]
+  );
+
+  return (
+    <Form
+      schema={filteredSchema}
+      uiSchema={FORM_UI_SCHEMA}
+      validator={validator}
+      formData={parameters}
+      onChange={handleChange}
+    />
+  );
+};
+
+MissionParameterEditorPresentation.propTypes = {
+  onChange: PropTypes.func,
+  parameters: PropTypes.object,
+  schema: PropTypes.object,
+};
+
 const MissionParameterEditor = ({ missionType, onChange, parameters }) => {
   const messageHub = useMessageHub();
-
   const func = useCallback(async () => {
     if (missionType) {
       const schemas = await messageHub.query.getMissionTypeSchemas(
         missionType.id
       );
-      return filterSchemaByUIContext(schemas.plan).schema;
+      return schemas.plan;
     } else {
       return undefined;
     }
   }, [messageHub, missionType]);
-
-  const handleChange = useCallback(
-    ({ errors, formData }) => {
-      if (errors.length === 0 && onChange) {
-        onChange(formData);
-      }
-    },
-    [onChange]
-  );
 
   return (
     <AsyncGuard
@@ -72,12 +80,10 @@ const MissionParameterEditor = ({ missionType, onChange, parameters }) => {
       loadingMessage='Retrieving mission parameters...'
     >
       {(schema) => (
-        <Form
+        <MissionParameterEditorPresentation
           schema={schema}
-          uiSchema={FORM_UI_SCHEMA}
-          validator={validator}
-          formData={parameters}
-          onChange={handleChange}
+          parameters={parameters}
+          onChange={onChange}
         />
       )}
     </AsyncGuard>
