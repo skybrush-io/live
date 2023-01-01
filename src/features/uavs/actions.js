@@ -4,8 +4,13 @@ import xor from 'lodash-es/xor';
 import { setSelection } from '~/features/map/selection';
 import flock from '~/flock';
 import { uavIdToGlobalId } from '~/model/identifiers';
+import { getSelection } from '~/selectors/selection';
 
-import { getSelectedUAVIds, getUAVIdsMarkedAsGone } from './selectors';
+import {
+  getSelectedUAVIds,
+  getUAVIdList,
+  getUAVIdsMarkedAsGone,
+} from './selectors';
 
 /**
  * Action factory that returns a thunk that requests the global flock object
@@ -70,4 +75,19 @@ export const toggleUAVIdsInSelection = (ids) => (dispatch, getState) => {
 
   const selection = getSelectedUAVIds(getState());
   dispatch(setSelectedUAVIds(xor(selection, ids)));
+};
+
+/**
+ * Thunk that selects the single UAV in the flock if the user only has a single
+ * UAV and does nothing otherwise.
+ */
+export const selectSingleUAVUnlessAmbiguous = () => (dispatch, getState) => {
+  const state = getState();
+  const uavIds = getUAVIdList(state);
+  const selectedUAVIds = new Set(getSelectedUAVIds(state).map(uavIdToGlobalId));
+
+  if (Array.isArray(uavIds) && uavIds.length === 1) {
+    const selection = getSelection(state).filter((x) => !selectedUAVIds.has(x));
+    dispatch(setSelection([...selection, ...uavIds.map(uavIdToGlobalId)]));
+  }
 };

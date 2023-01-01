@@ -9,6 +9,7 @@ import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
 
 import { showErrorMessage } from '~/features/error-handling/actions';
 import { isConnected as isConnectedToServer } from '~/features/servers/selectors';
+import { selectSingleUAVUnlessAmbiguous } from '~/features/uavs/actions';
 import messageHub from '~/message-hub';
 import { MissionType } from '~/model/missions';
 
@@ -16,7 +17,10 @@ import {
   prepareMappingForSingleUAVMissionFromSelection,
   setMissionItemsFromArray,
 } from './actions';
-import { getParametersFromContext } from './parameter-context';
+import {
+  getParametersFromContext,
+  ParameterUIContext,
+} from './parameter-context';
 import { isMissionPlannerDialogOpen } from './selectors';
 import {
   closeMissionPlannerDialog,
@@ -146,6 +150,13 @@ export default connect(
       async (dispatch, getState) => {
         let items = null;
         const parameters = {};
+
+        // If we need to select a UAV from the context, and we only have a
+        // single UAV at the moment, we can safely assume that this is the UAV
+        // that the user wants to work with, so select it
+        if (fromContext.has(ParameterUIContext.SELECTED_UAV_COORDINATE)) {
+          dispatch(selectSingleUAVUnlessAmbiguous());
+        }
 
         try {
           Object.assign(
