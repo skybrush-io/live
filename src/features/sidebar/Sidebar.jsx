@@ -14,6 +14,7 @@ import Place from '@material-ui/icons/Place';
 import FormatListBulleted from '@material-ui/icons/FormatListBulleted';
 // import Storage from '@material-ui/icons/Storage';
 import ThreeDRotation from '@material-ui/icons/ThreeDRotation';
+import TrendingUp from '@material-ui/icons/TrendingUp';
 import WbSunny from '@material-ui/icons/WbSunny';
 
 import PropTypes from 'prop-types';
