@@ -251,6 +251,7 @@ class MessagesPanel extends React.Component {
           fullWidth
           history={outboundHistory}
           inputRef={this._messageFieldRef}
+          variant='standard'
           onSubmit={this._onSubmit}
         />
         {isClearButtonVisible && (
