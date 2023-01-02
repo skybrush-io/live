@@ -27,6 +27,10 @@ class TCPSocket {
     this.#connectedHandler = () => onConnected({ url });
 
     this.#socket.on('connect', () => {
+      // The `onConnected` callback is handled after the first successful ping
+      // instead of here to avoid showing "Connected" as soon as the TCP socket
+      // opens, as that can be misleading, when proper communication cannot
+      // actually be established with the server.
       this._clearTimeout();
       this.#connected = true;
     });
@@ -118,10 +122,6 @@ class TCPSocket {
   }
 
   _clearTimeout() {
-    // The `onConnected` callback is handled in the TCPSocketConnection class
-    // instead of here to avoid showing "Connected" as soon as the TCP socket
-    // opens, as that can be misleading, when proper communication cannot
-    // actually be established with the server.
     if (this.#timeoutId) {
       clearTimeout(this.#timeoutId);
       this.#timeoutId = undefined;
