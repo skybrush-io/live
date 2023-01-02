@@ -125,8 +125,6 @@ export function isMissionItemValid(item: any): item is MissionItem {
     return false;
   }
 
-  /* eslint-disable no-lone-blocks */
-
   switch (type) {
     case MissionItemType.UNKNOWN:
       return false;
@@ -228,7 +226,7 @@ export function isMissionItemValid(item: any): item is MissionItem {
     case MissionItemType.UPDATE_GEOFENCE:
       /* "Update geofence" items need complex validation */
       {
-        const { geofence, coordinateSystem } = parameters;
+        const { coordinateSystem } = parameters;
         if (
           typeof coordinateSystem !== 'string' ||
           coordinateSystem !== 'geodetic'
@@ -243,8 +241,6 @@ export function isMissionItemValid(item: any): item is MissionItem {
     default:
       break;
   }
-
-  /* eslint-enable no-lone-blocks */
 
   return true;
 }
