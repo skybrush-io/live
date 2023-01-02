@@ -241,6 +241,7 @@ class MessagesPanel extends React.Component {
           autoFocus
           fullWidth
           inputRef={this._messageFieldRef}
+          variant='standard'
           onKeyDown={this._textFieldKeyDownHandler}
         />
         {isClearButtonVisible && (
