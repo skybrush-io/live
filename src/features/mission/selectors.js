@@ -4,7 +4,10 @@ import reject from 'lodash-es/reject';
 import { createSelector } from '@reduxjs/toolkit';
 
 import { Status } from '~/components/semantics';
-import { GeofenceAction } from '~/features/geofence/model';
+import {
+  GeofenceAction,
+  isValidGeofenceAction,
+} from '~/features/geofence/model';
 import { globalIdToMissionSlotId } from '~/model/identifiers';
 import { selectionForSubset } from '~/selectors/selection';
 import { EMPTY_ARRAY } from '~/utils/redux';
@@ -215,6 +218,20 @@ export const isMappingEditable = (state) => state.mission.mappingEditor.enabled;
  */
 export const getGeofenceAction = (state) =>
   state.mission.geofenceAction || GeofenceAction.KEEP_CURRENT;
+
+/**
+ * Gets the action to perform when the geofence is breached, with validation.
+ *
+ * Throws an error if the geofence action in the state object is not valid.
+ */
+export function getGeofenceActionWithValidation(state) {
+  const action = getGeofenceAction(state);
+  if (!isValidGeofenceAction(action)) {
+    throw new Error('Invalid geofence action: ' + String(action));
+  }
+
+  return action;
+}
 
 /**
  * Gets the ID of the polygon that is to be used as a geofence.

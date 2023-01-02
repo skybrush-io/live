@@ -19,14 +19,11 @@ import {
   proposeHeightLimit,
 } from '~/features/geofence/utils';
 import {
-  getGeofenceAction,
+  getGeofenceActionWithValidation,
   getGeofencePolygonInWorldCoordinates,
   selectMissionIndex,
 } from '~/features/mission/selectors';
-import {
-  GeofenceAction,
-  isValidGeofenceAction,
-} from '~/features/geofence/model';
+import { GeofenceAction } from '~/features/geofence/model';
 import { formatDuration, formatDurationHMS } from '~/utils/formatting';
 import { FlatEarthCoordinateSystem } from '~/utils/geography';
 import {
@@ -491,7 +488,7 @@ export const getGeofencePolygonInShowCoordinates = createSelector(
  * task.
  */
 export const getGeofenceSpecification = (state) => {
-  const geofenceAction = getGeofenceAction(state);
+  const geofenceAction = getGeofenceActionWithValidation(state);
   const geofencePolygon = getGeofencePolygonInShowCoordinates(state);
   const geofence = {
     version: 1,
@@ -510,11 +507,7 @@ export const getGeofenceSpecification = (state) => {
   };
 
   if (geofenceAction !== GeofenceAction.KEEP_CURRENT) {
-    if (isValidGeofenceAction(geofenceAction)) {
-      geofence.action = geofenceAction;
-    } else {
-      throw new Error('Invalid geofence action: ' + String(geofenceAction));
-    }
+    geofence.action = geofenceAction;
   }
 
   return geofence;
