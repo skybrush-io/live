@@ -1,7 +1,11 @@
 import isNil from 'lodash-es/isNil';
 import { CANCEL } from 'redux-saga';
 
-import { getReverseMissionMapping } from '~/features/mission/selectors';
+import { GeofenceAction } from '~/features/geofence/model';
+import {
+  getGeofenceActionWithValidation,
+  getReverseMissionMapping,
+} from '~/features/mission/selectors';
 import { JobScope } from '~/features/upload/jobs';
 import messageHub from '~/message-hub';
 
@@ -9,12 +13,45 @@ import { JOB_TYPE } from './constants';
 import {
   getCommonShowSettings,
   getDroneSwarmSpecification,
-  getGeofenceSpecification,
+  getGeofencePolygonInShowCoordinates,
   getMeanSeaLevelReferenceOfShowCoordinatesOrNull,
   getOutdoorShowCoordinateSystem,
   getShowMetadata,
+  getUserDefinedDistanceLimit,
+  getUserDefinedHeightLimit,
   isShowOutdoor,
 } from './selectors';
+
+/**
+ * Retrieves a complete geofence specification object that is to be used in
+ * the show specification that is to be sent to the server during the upload
+ * task.
+ */
+export const getGeofenceSpecificationForShow = (state) => {
+  const geofenceAction = getGeofenceActionWithValidation(state);
+  const geofencePolygon = getGeofencePolygonInShowCoordinates(state);
+  const geofence = {
+    version: 1,
+    enabled: true,
+    polygons: geofencePolygon
+      ? [
+          {
+            isInclusion: true,
+            points: geofencePolygon,
+          },
+        ]
+      : [],
+    rallyPoints: [],
+    maxAltitude: getUserDefinedHeightLimit(state),
+    maxDistance: getUserDefinedDistanceLimit(state),
+  };
+
+  if (geofenceAction !== GeofenceAction.KEEP_CURRENT) {
+    geofence.action = geofenceAction;
+  }
+
+  return geofence;
+};
 
 /**
  * Selector that constructs the show description to be uploaded to a
@@ -37,7 +74,7 @@ export function createShowConfigurationForUav(state, uavId) {
     throw new TypeError('Show coordinate system not specified');
   }
 
-  const geofence = getGeofenceSpecification(state);
+  const geofence = getGeofenceSpecificationForShow(state);
 
   const drones = getDroneSwarmSpecification(state);
   if (!drones || !Array.isArray(drones)) {
