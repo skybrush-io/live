@@ -19,9 +19,14 @@ import {
   proposeHeightLimit,
 } from '~/features/geofence/utils';
 import {
+  getGeofenceAction,
   getGeofencePolygonInWorldCoordinates,
   selectMissionIndex,
 } from '~/features/mission/selectors';
+import {
+  GeofenceAction,
+  isValidGeofenceAction,
+} from '~/features/geofence/model';
 import { formatDuration, formatDurationHMS } from '~/utils/formatting';
 import { FlatEarthCoordinateSystem } from '~/utils/geography';
 import {
@@ -479,6 +484,41 @@ export const getGeofencePolygonInShowCoordinates = createSelector(
       ? polygon.map((c) => transform.fromLonLat(c))
       : undefined
 );
+
+/**
+ * Retrieves a complete geofence specification object that is to be used in
+ * the show specification that is to be sent to the server during the upload
+ * task.
+ */
+export const getGeofenceSpecification = (state) => {
+  const geofenceAction = getGeofenceAction(state);
+  const geofencePolygon = getGeofencePolygonInShowCoordinates(state);
+  const geofence = {
+    version: 1,
+    enabled: true,
+    polygons: geofencePolygon
+      ? [
+          {
+            isInclusion: true,
+            points: geofencePolygon,
+          },
+        ]
+      : [],
+    rallyPoints: [],
+    maxAltitude: getUserDefinedHeightLimit(state),
+    maxDistance: getUserDefinedDistanceLimit(state),
+  };
+
+  if (geofenceAction !== GeofenceAction.KEEP_CURRENT) {
+    if (isValidGeofenceAction(geofenceAction)) {
+      geofence.action = geofenceAction;
+    } else {
+      throw new Error('Invalid geofence action: ' + String(geofenceAction));
+    }
+  }
+
+  return geofence;
+};
 
 /**
  * Returns an array holding the last points of all the trajectories.
