@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import Form from '@rjsf/material-ui';
 import validator from '@rjsf/validator-ajv8';
 
@@ -29,6 +29,14 @@ const MissionParameterEditorPresentation = ({
     [schema]
   );
 
+  // When the mapping from UI context IDs to the names of parameters changes,
+  // notify the parent
+  useEffect(() => {
+    onChange({
+      fromContext: uiContexts,
+    });
+  }, [onChange, uiContexts]);
+
   const handleChange = useCallback(
     ({ errors, formData }) => {
       // TODO(ntamas): extend formData with all the parameters that are to be
@@ -36,11 +44,10 @@ const MissionParameterEditorPresentation = ({
       if (errors.length === 0 && onChange) {
         onChange({
           fromUser: formData,
-          fromContext: uiContexts,
         });
       }
     },
-    [onChange, uiContexts]
+    [onChange]
   );
 
   return (

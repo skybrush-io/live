@@ -63,26 +63,33 @@ const MissionPlannerDialog = ({
   };
 
   const handleParametersChange = ({ fromUser, fromContext }) => {
+    let userParametersChanged = false;
     let parametersValid = false;
 
-    if (
-      typeof fromUser === 'object' &&
-      fromUser !== null &&
-      fromUser !== undefined
-    ) {
-      setParametersFromUser(fromUser);
+    if (fromUser !== undefined) {
+      userParametersChanged = true;
 
-      if (onSaveParameters) {
-        onSaveParameters(fromUser);
+      if (typeof fromUser === 'object' && fromUser !== null) {
+        setParametersFromUser(fromUser);
+
+        if (onSaveParameters) {
+          onSaveParameters(fromUser);
+        }
+
+        parametersValid = true;
+      } else {
+        setParametersFromUser(null);
       }
-
-      parametersValid = true;
-    } else {
-      setParametersFromUser(null);
     }
 
-    setParametersFromContext(fromContext);
-    setCanInvokePlanner(missionType && parametersValid);
+    if (fromContext !== undefined) {
+      setParametersFromContext(fromContext);
+    }
+
+    setCanInvokePlanner(
+      Boolean(missionType) &&
+        (userParametersChanged ? parametersValid : canInvokePlanner)
+    );
   };
 
   const invokePlanner = () => {
@@ -149,6 +156,13 @@ export default connect(
       async (dispatch, getState) => {
         let items = null;
         const parameters = {};
+
+        if (!fromContext) {
+          console.warn(
+            'Mapping from UI context IDs to parameter names is missing; this is most likely a bug.'
+          );
+          fromContext = new Map();
+        }
 
         // If we need to select a UAV from the context, and we only have a
         // single UAV at the moment, we can safely assume that this is the UAV
