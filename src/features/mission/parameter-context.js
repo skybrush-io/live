@@ -28,6 +28,7 @@ import {
 export const ParameterUIContext = {
   SELECTED_UAV_COORDINATE: 'selectedUAVCoordinate',
   SELECTED_POLYGON_FEATURE: 'selectedPolygonFeature',
+  SELECTED_LINE_STRING_FEATURE: 'selectedLineStringFeature',
 };
 
 export const KNOWN_UI_CONTEXTS = Object.values(ParameterUIContext);
@@ -97,6 +98,29 @@ function extractSelectedUAVCoordinateFromContext(
 }
 
 /**
+ * Extracts the selected linestring from the store and assigns its coordinates
+ * to the listed variables in the result object.
+ */
+function extractSelectedLineStringFromContext(result, parameterNames, getState) {
+  const state = getState();
+
+  const featureId = getSingleSelectedFeatureId(state);
+  if (!featureId) {
+    throw new Error('Exactly one linestring must be selected on the map');
+  }
+
+  const feature = getFeatureById(state, featureId);
+  const featureType = feature?.type;
+  if (featureType !== FeatureType.LINE_STRING) {
+    throw new Error(
+      `The selected feature on the map must be a linestring, got: ${feature?.type}`
+    );
+  }
+
+  assign(result, parameterNames, feature.points.map(toScaledJSONFromLonLat));
+}
+
+/**
  * Extracts the selected polygon from the store and assigns its coordinates
  * (both the boundary and any potential holes in it) to the listed variables in
  * the result object.
@@ -117,8 +141,6 @@ function extractSelectedPolygonFromContext(result, parameterNames, getState) {
     );
   }
 
-  // Extend the parameters with the coordinates of the selected line string
-  // and the coordinates of the selected UAV
   assign(result, parameterNames, {
     points: feature.points.map(toScaledJSONFromLonLat),
     holes: feature.holes.map((hole) => hole.map(toScaledJSONFromLonLat)),
@@ -130,4 +152,6 @@ const contextHandlers = {
     extractSelectedUAVCoordinateFromContext,
   [ParameterUIContext.SELECTED_POLYGON_FEATURE]:
     extractSelectedPolygonFromContext,
+  [ParameterUIContext.SELECTED_LINE_STRING_FEATURE]:
+    extractSelectedLineStringFromContext,
 };
