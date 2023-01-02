@@ -276,6 +276,7 @@ class MessagesPanel extends React.Component {
           autoFocus={!optimizeUIForTouch}
           history={commandHistory}
           inputRef={this._messageFieldRef}
+          variant='standard'
           onSubmit={this._onSubmit}
           onEscape={(e) => {
             this._messageFieldContainerRef.current.focus();
