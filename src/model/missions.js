@@ -90,6 +90,7 @@ function isHeadingParameterValid(heading) {
 /**
  * Returns whether the given mission item is valid.
  */
+/* eslint-disable complexity */
 export function isMissionItemValid(item) {
   if (typeof item !== 'object') {
     return false;
@@ -103,8 +104,6 @@ export function isMissionItemValid(item) {
   if (typeof parameters !== 'object') {
     return false;
   }
-
-  /* eslint-disable no-lone-blocks */
 
   switch (type) {
     case MissionItemType.UNKNOWN:
@@ -207,7 +206,7 @@ export function isMissionItemValid(item) {
     case MissionItemType.UPDATE_GEOFENCE:
       /* "Update geofence" items need complex validation */
       {
-        const { geofence, coordinateSystem } = parameters;
+        const { coordinateSystem } = parameters;
         if (
           typeof coordinateSystem !== 'string' ||
           coordinateSystem !== 'geodetic'
@@ -223,10 +222,9 @@ export function isMissionItemValid(item) {
       break;
   }
 
-  /* eslint-enable no-lone-blocks */
-
   return true;
 }
+/* eslint-enable complexity */
 
 /**
  * Extracts a GPS coordinate from a mission item, corresponding to the point
