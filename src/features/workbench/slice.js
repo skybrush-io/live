@@ -8,7 +8,7 @@ const { actions, reducer } = createSlice({
   name: 'workbench',
 
   initialState: {
-    // Stores whether the panel headers are shown on the workbench
+    // Stores whether the panel headers are hidden on the workbench
     hideHeaders: false,
 
     // Stores whether the current workbench layout is fixed
