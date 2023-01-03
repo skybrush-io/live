@@ -338,32 +338,31 @@ class PendingCommandExecution {
   }
 
   /**
+   * Function to call when the response to the command execution request has
+   * arrived.
+   *
+   * @param  {Object} body the body of the response to the command execution request
+   */
+  processMessageBody = (body) => {
+    const { error, result } = body;
+
+    this._clearTimeoutIfNeeded();
+    if (error !== undefined) {
+      this._deferred.reject(new Error(error));
+    } else if (result !== undefined) {
+      this._deferred.resolve(result);
+    } else {
+      this._deferred.reject(
+        new Error('Malformed response was provided by the server')
+      );
+    }
+  };
+
+  /**
    * The receipt associated to this pending command execution.
    */
   get receipt() {
     return this._receipt;
-  }
-
-  /**
-   * Function to call when the response to the command execution request has
-   * arrived.
-   *
-   * @param  {Object} result the response to the command execution request
-   */
-  resolve(result) {
-    this._clearTimeoutIfNeeded();
-    this._deferred.resolve(result);
-  }
-
-  /**
-   * Function to call when we are explicitly rejecting the promise for the
-   * response, even if the response has not timed out yet.
-   *
-   * @param {Error} error  the error to reject the promise with
-   */
-  reject(error) {
-    this._clearTimeoutIfNeeded();
-    this._deferred.reject(error);
   }
 
   /**
@@ -372,7 +371,8 @@ class PendingCommandExecution {
    * the execution of the command on the target any more.
    */
   serverSideTimeout() {
-    this.reject(new ServerSideCommandExecutionTimeout(this.receipt));
+    this._clearTimeoutIfNeeded();
+    this._deferred.reject(new ServerSideCommandExecutionTimeout(this.receipt));
   }
 
   /**
@@ -406,18 +406,7 @@ class PendingCommandExecution {
       this._timeoutCallback(this.receipt);
     }
 
-    this.reject(new ClientSideCommandExecutionTimeout(this.receipt));
-  };
-
-  _processBody = (body) => {
-    const { error, result } = body;
-    if (error !== undefined) {
-      this.reject(new Error(error));
-    } else if (result !== undefined) {
-      this.resolve(result);
-    } else {
-      this.reject(new Error('Malformed response was provided by the server'));
-    }
+    this._deferred.reject(new ClientSideCommandExecutionTimeout(this.receipt));
   };
 }
 
@@ -580,7 +569,7 @@ class AsyncOperationManager {
       }
 
       if (this._earlyResponses[receipt]) {
-        execution._processBody(this._earlyResponses[receipt]);
+        execution.processMessageBody(this._earlyResponses[receipt]);
         delete this._earlyResponses[receipt];
       }
 
@@ -612,7 +601,7 @@ class AsyncOperationManager {
     const { id } = message.body;
     const pendingOperation = this._pendingOperations[id];
     if (pendingOperation) {
-      pendingOperation._processBody(message.body);
+      pendingOperation.processMessageBody(message.body);
     } else {
       // Sometimes it happens that we get the chance to process response in an
       // ASYNC-RESP message earlier than we've processed the OBJ-CMD message
