@@ -27,7 +27,7 @@ import {
  * the show specification that is to be sent to the server during the upload
  * task.
  */
-export const getGeofenceSpecificationForShow = (state) => {
+const getGeofenceSpecificationForShow = (state) => {
   const geofenceAction = getGeofenceActionWithValidation(state);
   const geofencePolygon = getGeofencePolygonInShowCoordinates(state);
   const geofence = {
