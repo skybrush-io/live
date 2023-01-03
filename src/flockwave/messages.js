@@ -408,6 +408,17 @@ class PendingCommandExecution {
 
     this.reject(new ClientSideCommandExecutionTimeout(this.receipt));
   };
+
+  _processBody = (body) => {
+    const { error, result } = body;
+    if (error !== undefined) {
+      this.reject(new Error(error));
+    } else if (result !== undefined) {
+      this.resolve(result);
+    } else {
+      this.reject(new Error('Malformed response was provided by the server'));
+    }
+  };
 }
 
 /**
@@ -434,6 +445,7 @@ class AsyncOperationManager {
 
     this._hub = undefined;
     this._pendingOperations = {};
+    this._earlyResponses = {};
 
     this._attachToHub(hub);
   }
@@ -494,6 +506,7 @@ class AsyncOperationManager {
     }
 
     this._pendingOperations = {};
+    this._earlyResponses = {};
   }
 
   /**
@@ -566,7 +579,13 @@ class AsyncOperationManager {
         cancelToken._activate(this._hub, receipt);
       }
 
+      if (this._earlyResponses[receipt]) {
+        execution._processBody(this._earlyResponses[receipt]);
+        delete this._earlyResponses[receipt];
+      }
+
       this._pendingOperations[receipt] = execution;
+
       try {
         return await execution.wait();
       } catch (error) {
@@ -590,20 +609,20 @@ class AsyncOperationManager {
    * @param {string} message  the message sent by the server
    */
   _onResponseReceived = (message) => {
-    const { id, error, result } = message.body;
+    const { id } = message.body;
     const pendingOperation = this._pendingOperations[id];
     if (pendingOperation) {
-      if (error !== undefined) {
-        pendingOperation.reject(new Error(error));
-      } else if (result !== undefined) {
-        pendingOperation.resolve(result);
-      } else {
-        pendingOperation.reject(
-          new Error('Malformed response was provided by the server')
-        );
-      }
+      pendingOperation._processBody(message.body);
     } else {
-      console.warn(`Stale command response received for receipt=${id}`);
+      // Sometimes it happens that we get the chance to process response in an
+      // ASYNC-RESP message earlier than we've processed the OBJ-CMD message
+      // (even though the OBJ-CMD arrived earlier) due to the random execution
+      // order of promises. Therefore, if we receive an ASYNC-RESP message with
+      // a receipt ID that we don't know, we store it temporarily so we can
+      // process it again when we get the OBJ-CMD message.
+      //
+      // TODO(ntamas): clean up _earlyResponses periodically
+      this._earlyResponses[id] = message.body;
     }
   };
 
