@@ -2,6 +2,7 @@ import React from 'react';
 
 import Box from '@material-ui/core/Box';
 import MissionOverviewList from './MissionOverviewList';
+import MissionOverviewPanelStatusBar from './MissionOverviewPanelStatusBar';
 import MissionOverviewPanelToolbar from './MissionOverviewPanelToolbar';
 
 /**
@@ -11,6 +12,7 @@ import MissionOverviewPanelToolbar from './MissionOverviewPanelToolbar';
 const MissionOverviewPanel = () => (
   <Box display='flex' flexDirection='column' height='100%'>
     <MissionOverviewList />
+    <MissionOverviewPanelStatusBar />
     <MissionOverviewPanelToolbar />
   </Box>
 );
