@@ -52,6 +52,7 @@
     "@turf/boolean-contains": "^6.5.0",
     "@turf/buffer": "^6.5.0",
     "@turf/difference": "^6.5.0",
+    "@turf/distance": "^6.5.0",
     "@turf/helpers": "^6.5.0",
     "@types/color": "^3.0.6",
     "aframe": "1.2.0",
