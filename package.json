@@ -155,6 +155,7 @@
     "screenfull": "^6.0.1",
     "shallowequal": "^1.1.0",
     "shell-quote": "^1.8.1",
+    "shpjs": "^4.0.4",
     "stream-browserify": "^3.0.0",
     "stream-http": "^3.2.0",
     "stream-to-blob": "^2.0.1",

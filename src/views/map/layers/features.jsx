@@ -1,10 +1,12 @@
 import createColor from 'color';
 import unary from 'lodash-es/unary';
 import PropTypes from 'prop-types';
+import GeoJSON from 'ol/format/GeoJSON';
 import { MultiPoint, MultiPolygon, Polygon } from 'ol/geom';
 import { Circle, Style, Text } from 'ol/style';
 import React, { useCallback, useRef } from 'react';
-import { connect } from 'react-redux';
+import { batch, connect } from 'react-redux';
+import readShapeFile from 'shpjs';
 
 import {
   Feature as OLFeature,
@@ -13,10 +15,10 @@ import {
   layer,
   source,
 } from '@collmot/ol-react';
+import FolderOpen from '@material-ui/icons/FolderOpen';
 
-import { snapEndToStart } from '../interactions/utils';
-import { Tool } from '../tools';
-
+import FileButton from '~/components/FileButton';
+import { addFeatureWithName } from '~/features/map-features/actions';
 import {
   getFeaturesInOrder,
   getSelectedFeatureIds,
@@ -26,7 +28,10 @@ import { getGeofencePolygonId } from '~/features/mission/selectors';
 import { showError } from '~/features/snackbar/actions';
 import { FeatureType, LabelStyle } from '~/model/features';
 import { featureIdToGlobalId } from '~/model/identifiers';
-import { handleFeatureUpdatesInOpenLayers } from '~/model/openlayers';
+import {
+  createFeatureFromOpenLayers,
+  handleFeatureUpdatesInOpenLayers,
+} from '~/model/openlayers';
 import { setLayerEditable, setLayerSelectable } from '~/model/layers';
 import { mapViewCoordinateFromLonLat, measureFeature } from '~/utils/geography';
 import { closePolygon, euclideanDistance2D } from '~/utils/math';
@@ -39,6 +44,72 @@ import {
   dashedThickOutline,
   dottedThinOutline,
 } from '~/utils/styles';
+
+import { snapEndToStart } from '../interactions/utils';
+import { Tool } from '../tools';
+
+// === Settings for this particular layer type ===
+
+const getFileAsArrayBuffer = async (file) =>
+  new Promise((resolve) => {
+    const fileReader = new FileReader();
+    fileReader.addEventListener('load', () => {
+      resolve(fileReader.result);
+    });
+    fileReader.readAsArrayBuffer(file);
+  });
+
+const FeaturesLayerSettingsPresentation = ({ importShapeFile }) => (
+  <div>
+    <FileButton
+      filter={['application/zip']}
+      variant='contained'
+      startIcon={<FolderOpen />}
+      onSelected={importShapeFile}
+    >
+      Import shapefile
+    </FileButton>
+  </div>
+);
+
+FeaturesLayerSettingsPresentation.propTypes = {
+  importShapeFile: PropTypes.func,
+};
+
+export const FeaturesLayerSettings = connect(
+  // mapStateToProps
+  null,
+  // mapDispatchToProps
+  (dispatch) => ({
+    async importShapeFile(file) {
+      try {
+        const data = await getFileAsArrayBuffer(file);
+        // Force the result to be in an array, even if it's just a single element.
+        const featureCollections = [await readShapeFile(data)].flat();
+        const geoJSON = new GeoJSON({ featureProjection: 'EPSG:3857' });
+
+        batch(() => {
+          for (const featureCollection of featureCollections) {
+            const parsedFeatures = geoJSON
+              .readFeatures(featureCollection)
+              .flatMap((feature) => createFeatureFromOpenLayers(feature));
+            for (const [i, feature] of parsedFeatures.entries()) {
+              const suffix = i === 0 ? '' : `_${i}`;
+              dispatch(
+                addFeatureWithName(
+                  { ...feature, label: featureCollection.fileName + suffix },
+                  featureCollection.fileName
+                )
+              );
+            }
+          }
+        });
+      } catch (error) {
+        dispatch(showError(`Error while importing shapefile: ${error}`));
+      }
+    },
+  })
+)(FeaturesLayerSettingsPresentation);
 
 // === Helper functions ===
 
@@ -328,6 +399,8 @@ function getFeaturesThatChanged(features, snapshot) {
 
   return result;
 }
+
+// === The actual layer to be rendered ===
 
 const FeaturesLayerPresentation = ({
   features,
