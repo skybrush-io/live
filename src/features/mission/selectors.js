@@ -28,6 +28,8 @@ import { mapViewCoordinateFromLonLat } from '~/utils/geography';
 import { convexHull, createGeometryFromPoints } from '~/utils/math';
 import { EMPTY_ARRAY } from '~/utils/redux';
 
+import { transformMissionItemBeforeUpload } from './upload';
+
 /**
  * Key selector function for cached selectors that cache things by mission
  * index.
@@ -473,10 +475,11 @@ export const isWaypointMissionConvexHullInsideGeofence = createSelector(
  * Selector that returns the payload of the mission item upload job.
  */
 export const getMissionItemUploadJobPayload = (state) => {
-  return {
-    version: 1,
-    items: getMissionItemsInOrder(state),
-  };
+  const items = getMissionItemsInOrder(state).map((item) =>
+    transformMissionItemBeforeUpload(item, state)
+  );
+  console.log(items[0]);
+  return { version: 1, items };
 };
 
 /**
