@@ -4,7 +4,7 @@ import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
 import { BaseLayerSettings, BaseLayer } from './base';
 import { BeaconsLayer } from './beacons';
 import { DocksLayer } from './docks';
-import { FeaturesLayer } from './features';
+import { FeaturesLayer, FeaturesLayerSettings } from './features';
 import { GeoJSONLayerSettings, GeoJSONLayer } from './geojson';
 import { GraticuleLayer } from './graticule';
 import { HeatmapLayerSettings, HeatmapLayer } from './heatmap';
@@ -30,6 +30,7 @@ const UnavailableLayerSettings = () => (
 
 export const LayerSettings = {
   [LayerType.BASE]: BaseLayerSettings,
+  [LayerType.FEATURES]: FeaturesLayerSettings,
   [LayerType.GEOJSON]: GeoJSONLayerSettings,
   [LayerType.HEATMAP]: HeatmapLayerSettings,
   [LayerType.HEXGRID]: HexGridLayerSettings,
