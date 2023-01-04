@@ -486,89 +486,83 @@ export const isMissionPlannerDialogOpen = (state) =>
   state.mission.plannerDialog.open;
 
 /**
- * Selector that returns the estimated length of the mission trajectory in
- * meters.
+ * Selector that returns estimates about the mission.
+ *
+ * @returns {Object} estimates
+ * @property {number} distance - the length of the planned trajectory in meters
+ * @property {number} duration - the expected duration of the mission in seconds
  */
-export const getEstimatedMissionDistance = createSelector(
+export const getMissionEstimates = createSelector(
   getMissionItemsInOrder,
   (items) => {
     // eslint-disable-next-line unicorn/no-array-reduce
-    const { distance } = items.reduce(
-      ({ distance, previousPoint }, { type, parameters }) => {
-        switch (type) {
-          // case MissionItemType.CHANGE_ALTITUDE: {
-          //   return {};
-          // }
+    const { distance, duration } = items.reduce(
+      (state, { type, parameters }) => {
+        const { _altitude, _position, _speed, duration, distance } = state;
+        return {
+          ...state,
+          ...(() => {
+            switch (type) {
+              case MissionItemType.TAKEOFF: {
+                return {
+                  _altitude: parameters.alt.value,
+                };
+              }
 
-          case MissionItemType.GO_TO: {
-            const currentPoint = TurfHelpers.point([
-              parameters.lon,
-              parameters.lat,
-            ]);
-            return {
-              distance: previousPoint
-                ? distance + turfDistance(previousPoint, currentPoint) * 1000
-                : distance,
-              previousPoint: currentPoint,
-            };
-          }
+              case MissionItemType.CHANGE_ALTITUDE: {
+                if (!_altitude) {
+                  return {
+                    _altitude: parameters.alt.value,
+                  };
+                }
 
-          default:
-            return { previousPoint, distance };
-        }
+                const delta = Math.abs(_altitude - parameters.alt.value);
+
+                return {
+                  _altitude: parameters.alt.value,
+                  distance: distance + delta,
+                  duration: duration + delta / _speed.Z,
+                };
+              }
+
+              case MissionItemType.CHANGE_SPEED: {
+                return {
+                  _speed: {
+                    XY: parameters.velocityXY,
+                    Z: parameters.velocityZ,
+                  },
+                };
+              }
+
+              case MissionItemType.GO_TO: {
+                const target = TurfHelpers.point([
+                  parameters.lon,
+                  parameters.lat,
+                ]);
+
+                if (!_position) {
+                  return {
+                    _position: target,
+                  };
+                }
+
+                const length = turfDistance(_position, target) * 1000;
+
+                return {
+                  _position: target,
+                  distance: distance + length,
+                  duration: duration + length / _speed.XY,
+                };
+              }
+
+              default:
+              // The remaining mission item types are currently ignored.
+            }
+          })(),
+        };
       },
-      { distance: 0 }
+      { distance: 0, duration: 0 }
     );
-    return distance;
-  }
-);
-
-/**
- * Selector that returns the estimated duration of the mission in seconds.
- */
-export const getEstimatedMissionDuration = createSelector(
-  getMissionItemsInOrder,
-  (items) => {
-    // eslint-disable-next-line unicorn/no-array-reduce
-    const { time } = items.reduce(
-      ({ previousPoint, speed, time }, { type, parameters }) => {
-        switch (type) {
-          // case MissionItemType.CHANGE_ALTITUDE: {
-          //   return {};
-          // }
-
-          case MissionItemType.CHANGE_SPEED: {
-            return {
-              previousPoint,
-              speed: { XY: parameters.velocityXY, Z: parameters.velocityZ },
-              time,
-            };
-          }
-
-          case MissionItemType.GO_TO: {
-            const currentPoint = TurfHelpers.point([
-              parameters.lon,
-              parameters.lat,
-            ]);
-            return {
-              previousPoint: currentPoint,
-              time:
-                previousPoint && speed.XY
-                  ? time +
-                    (turfDistance(previousPoint, currentPoint) * 1000) /
-                      speed.XY
-                  : time,
-              speed,
-            };
-          }
-
-          default: {
-            return { previousPoint, speed, time };
-          }
-        }
-      },
-      { time: 0 }
-    );
-    return time;
+    return { distance, duration };
   }
 );
