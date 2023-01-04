@@ -28,6 +28,7 @@ import VectorSource from 'ol/source/Vector';
 import { getArea, getLength } from 'ol/sphere';
 import { type Vector3 } from 'three';
 import turfBuffer from '@turf/buffer';
+import turfDifference from '@turf/difference';
 import * as TurfHelpers from '@turf/helpers';
 
 import { type Feature, FeatureType } from '~/model/features';
@@ -964,6 +965,42 @@ export const bufferPolygon = (
 
   return convexHull(outerLinearRing);
 };
+
+/**
+ * Takes the coordinates (perimeter and holes) of a polygon and normalizes it
+ * such that holes don't intersect (they get merged in that case) and all holes
+ * are completely contained in the perimeter. Returns an array of polygons,
+ * since this operation might split the input into multiple parts.
+ *
+ * Note: Turf expects polygons to be closed (the first and last coordinates
+ *       should be equal), so this function inherits this requirement.
+ */
+export function normalizePolygon([points, ...holes]: any): any {
+  // TODO: This should be typed properly!
+
+  // Start with the boundary ring and subtract every hole from it with Turf
+  // TODO: This can be simplified when Turf 7.0.0 gets released, as
+  //       difference will support multiple substrahend features
+  // eslint-disable-next-line unicorn/no-array-reduce
+  const { geometry } = holes.reduce(
+    (poly: any, hole: any) => turfDifference(poly, TurfHelpers.polygon([hole])),
+    TurfHelpers.polygon([points])
+  );
+
+  switch (geometry.type) {
+    case 'Polygon': {
+      return [geometry.coordinates];
+    }
+
+    case 'MultiPolygon': {
+      return geometry.coordinates;
+    }
+
+    default: {
+      throw new Error(`Unexpected geometry type: ${geometry.type}`);
+    }
+  }
+}
 
 type ScaledJSONGPSCoordinate = [number, number];
 
