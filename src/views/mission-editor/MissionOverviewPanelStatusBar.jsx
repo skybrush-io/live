@@ -11,10 +11,7 @@ import Share from '@material-ui/icons/Share';
 import Timer from '@material-ui/icons/Timer';
 
 import ToolbarDivider from '~/components/ToolbarDivider';
-import {
-  getEstimatedMissionDistance,
-  getEstimatedMissionDuration,
-} from '~/features/mission/selectors';
+import { getMissionEstimates } from '~/features/mission/selectors';
 import { formatDistance, formatDuration } from '~/utils/formatting';
 
 const useStyles = makeStyles(
@@ -30,8 +27,10 @@ const useStyles = makeStyles(
 );
 
 const MissionOverviewPanelToolbar = ({
-  estimatedMissionDistance,
-  estimatedMissionDuration,
+  missionEstimates: {
+    distance: estimatedDistance,
+    duration: estimatedDuration,
+  },
 }) => {
   const classes = useStyles();
   return (
@@ -45,14 +44,14 @@ const MissionOverviewPanelToolbar = ({
           icon={<Share />}
           size='small'
           variant='outlined'
-          label={`Estimated route: ${formatDistance(estimatedMissionDistance)}`}
+          label={`Estimated route: ${formatDistance(estimatedDistance)}`}
         />
         <ToolbarDivider orientation='vertical' />
         <Chip
           icon={<Timer />}
           size='small'
           variant='outlined'
-          label={`Estimated time: ${formatDuration(estimatedMissionDuration)}`}
+          label={`Estimated time: ${formatDuration(estimatedDuration)}`}
         />
       </Toolbar>
     </Paper>
@@ -60,15 +59,16 @@ const MissionOverviewPanelToolbar = ({
 };
 
 MissionOverviewPanelToolbar.propTypes = {
-  estimatedMissionDuration: PropTypes.number,
-  estimatedMissionDistance: PropTypes.number,
+  missionEstimates: PropTypes.shape({
+    distance: PropTypes.number,
+    duration: PropTypes.number,
+  }),
 };
 
 export default connect(
   // mapStateToProps
   (state) => ({
-    estimatedMissionDistance: getEstimatedMissionDistance(state),
-    estimatedMissionDuration: getEstimatedMissionDuration(state),
+    missionEstimates: getMissionEstimates(state),
   }),
   // mapDispatchToProps
   {}
