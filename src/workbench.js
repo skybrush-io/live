@@ -81,7 +81,7 @@ export const componentRegistry = {
     feature: 'docks',
   },
   'feature-list': {
-    component: views.FeatureList,
+    component: views.FeaturePanel,
     label: 'Features',
     detachable: true,
     feature: 'features',

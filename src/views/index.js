@@ -8,7 +8,7 @@ import ClockDisplayList from './clocks';
 import ConnectionList from './connections';
 import DatasetList from './datasets';
 import DockList from './docks';
-import FeatureList from './features';
+import FeaturePanel from './features';
 import LayerList from './layers';
 import LCDClockPanel from './lcd-clock';
 import LightControlPanel from './light-control';
@@ -28,7 +28,7 @@ const views = {
   ConnectionList,
   DatasetList,
   DockList,
-  FeatureList,
+  FeaturePanel,
   LayerList,
   LCDClockPanel,
   LightControlPanel,
