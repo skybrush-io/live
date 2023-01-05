@@ -276,9 +276,12 @@ class MessagesPanel extends React.Component {
    */
   _textFieldKeyDownHandler(event) {
     if (event.key === 'Enter') {
-      this.props.onSend(event.target.value);
-      event.target.value = '';
-      this.scrollToBottom();
+      const message = String(event.target.value);
+      if (message.length > 0) {
+        this.props.onSend(event.target.value);
+        event.target.value = '';
+        this.scrollToBottom();
+      }
     }
   }
 }
