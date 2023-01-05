@@ -6,7 +6,6 @@ import { usePrevious } from 'react-use';
 import { getPointResolution } from 'ol/proj';
 import { layer, source } from '@collmot/ol-react';
 import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
 import Image from '@material-ui/icons/Image';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import Skeleton from '@material-ui/lab/Skeleton';
@@ -21,6 +20,7 @@ import {
 } from '~/components/forms';
 import { setLayerParametersById } from '~/features/map/layers';
 import { getMapViewCenterPosition } from '~/selectors/map';
+import { readFileAsDataURL } from '~/utils/files';
 import { mapViewCoordinateFromLonLat } from '~/utils/geography';
 import { toRadians } from '~/utils/math';
 import { finite, join, positive, required } from '~/utils/validation';
@@ -38,15 +38,6 @@ AutoSaveOnBlur.propTypes = {
   active: PropTypes.string,
   save: PropTypes.func,
 };
-
-const getFileAsBase64 = async (file) =>
-  new Promise((resolve) => {
-    const fileReader = new FileReader();
-    fileReader.addEventListener('load', () => {
-      resolve(fileReader.result);
-    });
-    fileReader.readAsDataURL(file);
-  });
 
 const getDimensions = async (source) =>
   new Promise((resolve) => {
@@ -177,7 +168,7 @@ const ImageLayerSettingsPresentation = ({
               variant='filled'
             />
           </Box>
-          <input type='submit' hidden />
+          <input hidden type='submit' />
         </form>
       )}
     </Form>
@@ -199,7 +190,7 @@ export const ImageLayerSettings = connect(
   // mapDispatchToProps
   (dispatch, ownProps) => ({
     async selectImage(file) {
-      const data = await getFileAsBase64(file);
+      const data = await readFileAsDataURL(file);
       dispatch(
         setLayerParametersById(ownProps.layerId, {
           image: {
