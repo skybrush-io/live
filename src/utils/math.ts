@@ -311,7 +311,7 @@ export const adjustAndRemoveMiddleVertex = ([a, b, c, d, e]: [
   Coordinate2D,
   Coordinate2D,
   Coordinate2D,
-  Coordinate2D
+  Coordinate2D,
 ]): [Coordinate2D, Coordinate2D, Coordinate2D, Coordinate2D] => {
   const getNormal = (p: Coordinate2D, q: Coordinate2D): Coordinate2D => [
     p[1] - q[1],
@@ -412,7 +412,7 @@ export const simplifyPolygonUntilLimit = (
       Coordinate2D,
       Coordinate2D,
       Coordinate2D,
-      Coordinate2D
+      Coordinate2D,
     ]
   );
   setCoordinate(minAnglePosition - 2, updated[0]);
@@ -441,4 +441,30 @@ export const simplifyPolygon = (
   }
 
   return [...result, result[0]];
+};
+
+/**
+ * Estimate the amount of time it takes to travel a path with a given target
+ * speed and acceleration.
+ */
+export const estimatePathDuration = (
+  distance: number,
+  targetSpeed: number,
+  acceleration = 2.5
+): number => {
+  const maxAccelerationDuration = targetSpeed / acceleration;
+  const maxAccelerationDistance = maxAccelerationDuration * (targetSpeed / 2);
+
+  if (distance > 2 * maxAccelerationDistance) {
+    // The target speed is achieved
+    const constantSpeedDistance = distance - 2 * maxAccelerationDistance;
+    const constantSpeedDuration = constantSpeedDistance / targetSpeed;
+    return 2 * maxAccelerationDuration + constantSpeedDuration;
+  } else {
+    // Target speed will not be reached
+    const accelerationDistance = distance / 2;
+    const maxSpeed = Math.sqrt(2 * accelerationDistance * acceleration);
+    const accelerationDuration = maxSpeed / acceleration;
+    return 2 * accelerationDuration;
+  }
 };

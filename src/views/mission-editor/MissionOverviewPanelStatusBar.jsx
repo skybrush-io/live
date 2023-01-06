@@ -9,10 +9,17 @@ import { makeStyles } from '@material-ui/core/styles';
 
 import Share from '@material-ui/icons/Share';
 import Timer from '@material-ui/icons/Timer';
+import Warning from '@material-ui/icons/Warning';
 
+import Colors from '~/components/colors';
 import ToolbarDivider from '~/components/ToolbarDivider';
-import { getMissionEstimates } from '~/features/mission/selectors';
+import { TooltipWithContainerFromContext as Tooltip } from '~/containerContext';
+import {
+  getGPSBasedHomePositionsInMission,
+  getMissionEstimates,
+} from '~/features/mission/selectors';
 import { formatDistance, formatDuration } from '~/utils/formatting';
+import CustomPropTypes from '~/utils/prop-types';
 
 const useStyles = makeStyles(
   (theme) => ({
@@ -27,6 +34,7 @@ const useStyles = makeStyles(
 );
 
 const MissionOverviewPanelToolbar = ({
+  homePositions: [homePosition],
   missionEstimates: {
     distance: estimatedDistance,
     duration: estimatedDuration,
@@ -40,6 +48,18 @@ const MissionOverviewPanelToolbar = ({
         variant='dense'
         style={{ height: 36, minHeight: 36 }}
       >
+        {homePosition ? null : (
+          <>
+            <Tooltip
+              content='Estimates are imprecise due to missing home position'
+              placement='top'
+            >
+              <Warning style={{ color: Colors.warning }} fontSize='small' />
+            </Tooltip>
+
+            <ToolbarDivider orientation='vertical' />
+          </>
+        )}
         <Chip
           icon={<Share />}
           size='small'
@@ -59,6 +79,7 @@ const MissionOverviewPanelToolbar = ({
 };
 
 MissionOverviewPanelToolbar.propTypes = {
+  homePositions: PropTypes.arrayOf(CustomPropTypes.coordinate),
   missionEstimates: PropTypes.shape({
     distance: PropTypes.number,
     duration: PropTypes.number,
@@ -68,6 +89,7 @@ MissionOverviewPanelToolbar.propTypes = {
 export default connect(
   // mapStateToProps
   (state) => ({
+    homePositions: getGPSBasedHomePositionsInMission(state),
     missionEstimates: getMissionEstimates(state),
   }),
   // mapDispatchToProps
