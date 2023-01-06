@@ -98,6 +98,16 @@ export const DISTANCE_UNITS = [
 ];
 
 /**
+ * Helper function to join an amount string and a unit string with or without a
+ * space, based on whether the unit starts with a letter or a special character.
+ *
+ * @param {string} amount - the quantity
+ * @param {string} unit - the symbol
+ */
+export const joinUnit = (amount, unit) =>
+  amount + (/^[a-zA-Z]/.test(unit) ? ' ' : '') + unit;
+
+/**
  * Helper function that formats a number with a fixed number of decimal digits
  * and an optional unit.
  *
@@ -111,14 +121,14 @@ export const formatNumberAndUnit = (number, unit = '', digits = 0) => {
   if (Array.isArray(unit) && unit.length > 0) {
     for (const [mul, u] of unit) {
       if (Math.abs(number) >= mul) {
-        return (number / mul).toFixed(digits) + u;
+        return joinUnit((number / mul).toFixed(digits), u);
       }
     }
 
     const [mul, u] = unit[unit.length - 1];
-    return number === 0 ? number + u : (number / mul).toFixed(digits) + u;
+    return joinUnit(number === 0 ? number : (number / mul).toFixed(digits), u);
   } else {
-    return number === 0 ? number + unit : number.toFixed(digits) + unit;
+    return joinUnit(number === 0 ? number : number.toFixed(digits), unit);
   }
 };
 
