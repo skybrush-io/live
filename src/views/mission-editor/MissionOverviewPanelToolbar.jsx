@@ -49,9 +49,7 @@ import {
 import { getSingleSelectedUAVId } from '~/features/uavs/selectors';
 import { MissionItemType } from '~/model/missions';
 import { isConnected as isConnectedToServer } from '~/features/servers/selectors';
-import { showError } from '~/features/snackbar/actions';
-import { showNotification } from '~/features/snackbar/slice';
-import { MessageSemantics } from '~/features/snackbar/types';
+import { showError, showSuccess } from '~/features/snackbar/actions';
 import { readFileAsText } from '~/utils/files';
 import { writeTextToFile } from '~/utils/filesystem';
 
@@ -239,12 +237,7 @@ export default connect(
         dispatch(setMissionItemsFromArray(data.mission.items));
         dispatch(setMappingLength(data.mission.homePositions.length));
         dispatch(updateHomePositions(data.mission.homePositions));
-        dispatch(
-          showNotification({
-            message: 'Successfully imported mission',
-            semantics: MessageSemantics.SUCCESS,
-          })
-        );
+        dispatch(showSuccess('Successfully imported mission'));
       } catch (error) {
         dispatch(showError(`Error while importing mission: ${error}`));
       }

@@ -12,8 +12,7 @@ import FolderOpen from '@material-ui/icons/FolderOpen';
 
 import FileButton from '~/components/FileButton';
 import { addFeatureWithName } from '~/features/map-features/actions';
-import { showError, showNotification } from '~/features/snackbar/actions';
-import { MessageSemantics } from '~/features/snackbar/types';
+import { showError, showSuccess } from '~/features/snackbar/actions';
 import { createFeatureFromOpenLayers } from '~/model/openlayers';
 import { readFileAsArrayBuffer } from '~/utils/files';
 
@@ -88,15 +87,10 @@ export default connect(
         });
 
         dispatch(
-          showNotification({
-            message:
-              // TODO: Use the `pluralize` package?
-              `Successfully imported ${counter} feature${
-                counter > 1 ? 's' : ''
-              }`,
-
-            semantics: MessageSemantics.SUCCESS,
-          })
+          showSuccess(
+            // TODO: Use the `pluralize` package?
+            `Successfully imported ${counter} feature${counter > 1 ? 's' : ''}`
+          )
         );
       } catch (error) {
         dispatch(showError(`Error while importing shapefile: ${error}`));

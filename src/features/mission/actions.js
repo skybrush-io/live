@@ -13,9 +13,7 @@ import {
   isShowOutdoor,
   proposeMappingFileName,
 } from '~/features/show/selectors';
-import { showError } from '~/features/snackbar/actions';
-import { showNotification } from '~/features/snackbar/slice';
-import { MessageSemantics } from '~/features/snackbar/types';
+import { showError, showSuccess } from '~/features/snackbar/actions';
 import {
   getCurrentGPSPositionByUavId,
   getCurrentLocalPositionByUavId,
@@ -241,12 +239,7 @@ export const addVirtualDronesForMission = () => async (dispatch, getState) => {
   await messageHub.execute.reloadExtension('virtual_uavs');
 
   // Show a snackbar message
-  dispatch(
-    showNotification({
-      message: 'Virtual drones configured successfully.',
-      semantics: MessageSemantics.SUCCESS,
-    })
-  );
+  dispatch(showSuccess('Virtual drones configured successfully.'));
 };
 
 /**

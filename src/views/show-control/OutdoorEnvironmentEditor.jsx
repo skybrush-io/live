@@ -29,9 +29,8 @@ import {
   ALTITUDE_REFERENCE,
   COORDINATE_SYSTEM_TYPE,
 } from '~/features/show/constants';
-import { showNotification } from '~/features/snackbar/slice';
-import { MessageSemantics } from '~/features/snackbar/types';
 import AutoFix from '~/icons/AutoFix';
+import { showSuccess } from '~/features/snackbar/actions';
 
 /**
  * Presentation component for the form that allows the user to edit the
@@ -180,12 +179,7 @@ export default connect(
           angle: showCoordinateSystem.orientation,
         })
       );
-      dispatch(
-        showNotification({
-          message: 'Show coordinate system applied to map.',
-          semantics: MessageSemantics.SUCCESS,
-        })
-      );
+      dispatch(showSuccess('Show coordinate system applied to map.'));
     },
     onEstimateShowCoordinateSystem: estimateShowCoordinateSystemFromActiveUAVs,
     onOrientationChanged: (value) =>
@@ -211,12 +205,7 @@ export default connect(
           setupMission: true,
         })
       );
-      dispatch(
-        showNotification({
-          message: 'Show coordinate system updated from map.',
-          semantics: MessageSemantics.SUCCESS,
-        })
-      );
+      dispatch(showSuccess('Show coordinate system updated from map.'));
     },
   },
 
