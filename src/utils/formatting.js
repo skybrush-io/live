@@ -105,7 +105,7 @@ export const DISTANCE_UNITS = [
  * @param {string} unit - the symbol
  */
 export const joinUnit = (amount, unit) =>
-  amount + (/^[a-zA-Z]/.test(unit) ? ' ' : '') + unit;
+  amount + (/^[a-zA-Z]/.test(unit) ? '\u00A0' : '') + unit;
 
 /**
  * Helper function that formats a number with a fixed number of decimal digits
