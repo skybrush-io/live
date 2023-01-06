@@ -25,8 +25,6 @@ import {
   getStatusForKpIndex,
 } from './selectors';
 
-const EM_DASH = '\u2014';
-
 function safelyFormat(time, formatString) {
   try {
     return format(time, formatString);
@@ -152,7 +150,7 @@ const WeatherDetailsMiniList = ({
         primaryText='Compass declination'
         secondaryText={
           !isNil(declination)
-            ? formatNumberSafely(Math.abs(declination), 2, '\u00B0') +
+            ? formatNumberSafely(Math.abs(declination), 2, '°') +
               ' ' +
               (declination >= 0 ? 'E' : 'W')
             : /* formats null nicely with a dash: */ formatNumberSafely(
@@ -192,7 +190,7 @@ const WeatherDetailsMiniList = ({
               date={lastUpdatedAt}
             />
           ) : (
-            EM_DASH
+            '—'
           )
         }
       />

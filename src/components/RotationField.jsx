@@ -13,7 +13,7 @@ import Clear from '@material-ui/icons/Clear';
 import { normalizeAngle } from '~/utils/geography';
 
 export const formatAngle = (angle) =>
-  normalizeAngle(angle).replace(',', '.') + '\u00B0';
+  normalizeAngle(angle).replace(',', '.') + '°';
 
 /**
  * React component to display and adjust an angle in degrees.

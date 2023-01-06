@@ -39,11 +39,11 @@ const instructionsByMode = {
   fly: (
     <div style={noWrap}>
       <div style={divStyle}>
-        <kbd>{'\u2191'}</kbd>
-        <kbd>{'\u2193'}</kbd>
+        <kbd>↑</kbd>
+        <kbd>↓</kbd>
         <span> Fly forward / backward </span>
-        <kbd>{'\u2190'}</kbd>
-        <kbd>{'\u2192'}</kbd>
+        <kbd>←</kbd>
+        <kbd>→</kbd>
         <span> Move sideways </span>
         <kbd>E</kbd>
         <kbd>C</kbd>

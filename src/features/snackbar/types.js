@@ -33,10 +33,10 @@ export function semanticsFromSeverity(severity) {
 }
 
 const _semanticsToEmoji = {
-  [MessageSemantics.SUCCESS]: '\u2705',
-  [MessageSemantics.ERROR]: '\uD83D\uDED1',
-  [MessageSemantics.WARNING]: '\u26A0',
-  [MessageSemantics.INFO]: '\uD83D\uDCA1',
+  [MessageSemantics.SUCCESS]: '✅',
+  [MessageSemantics.ERROR]: '🛑',
+  [MessageSemantics.WARNING]: '⚠',
+  [MessageSemantics.INFO]: '💡',
   [MessageSemantics.DEFAULT]: '',
 };
 

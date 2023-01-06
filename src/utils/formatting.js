@@ -85,7 +85,7 @@ export function formatMissionIdRange(start, end) {
   } else if (end === start + 1) {
     return formatMissionId(start);
   } else {
-    return `${formatMissionId(start)}\u2013${end}`;
+    return `${formatMissionId(start)}–${end}`;
   }
 }
 
@@ -141,7 +141,7 @@ export const formatDistance = (number, digits = 2) =>
  */
 export function formatIdsAndTruncateTrailingItems(
   ids,
-  { maxCount = 8, separator = ' \u00B7 ' } = {}
+  { maxCount = 8, separator = ' · ' } = {}
 ) {
   const length = Array.isArray(ids) ? ids.length : 0;
   if (length === 0) {
@@ -204,7 +204,7 @@ export const shortRelativeTimeFormatter = (value, unit, suffix) => {
 /**
  * Truncates a string with ellipses if it exceeds a certain length.
  */
-export function truncate(value, maxLength, { ellipsis = '\u2026' } = {}) {
+export function truncate(value, maxLength, { ellipsis = '…' } = {}) {
   if (isNil(value)) {
     return '';
   }

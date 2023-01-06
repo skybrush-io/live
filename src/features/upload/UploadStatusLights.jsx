@@ -20,9 +20,6 @@ import UploadStatusRowHeader from './UploadStatusRowHeader';
 
 const NUMBER_OF_ITEMS_PER_ROW = 10;
 
-const EM_DASH = '\u2014';
-const RIGHT_TRIANGLE = '\u25B8';
-
 const useStyles = makeStyles((theme) => ({
   root: {
     display: 'grid',
@@ -47,7 +44,7 @@ const useStyles = makeStyles((theme) => ({
  */
 const defaultRowHeaderFormatter = (_start, _end, items) => {
   if (items.length === 0) {
-    return EM_DASH;
+    return '—';
   } else if (items.length === 1) {
     return items[0];
   } else {
@@ -73,7 +70,7 @@ const createRowsFromIds = (
       index,
       index + items.length,
       items
-    )} ${RIGHT_TRIANGLE}`;
+    )} ▸`;
     rows.push({ header, items, labels });
   }
 
@@ -119,7 +116,7 @@ const UploadStatusLights = ({
           {items.map((itemId, index) =>
             isNil(itemId) ? (
               <UploadStatusPill key={`__cell${index}`}>
-                {EM_DASH}
+                {'—'}
               </UploadStatusPill>
             ) : (
               <UploadStatusPill key={itemId} uavId={itemId}>

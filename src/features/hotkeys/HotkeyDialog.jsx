@@ -47,11 +47,11 @@ function formatKeySequence(definition) {
       .trim()
       .toLowerCase()
       .replace(/^mod$/, platformModifierKey)
-      .replace(/^cmd$/, '\u2318')
-      .replace(/^meta$/, '\u2318')
-      .replace(/^alt$/, isRunningOnMac ? '\u2325' : 'Alt')
-      .replace(/^shift/, '\u21E7')
-      .replace(/^del$/, isRunningOnMac ? '\u2326' : 'Delete');
+      .replace(/^cmd$/, '⌘')
+      .replace(/^meta$/, '⌘')
+      .replace(/^alt$/, isRunningOnMac ? '⌥' : 'Alt')
+      .replace(/^shift/, '⇧')
+      .replace(/^del$/, isRunningOnMac ? '⌦' : 'Delete');
     return (
       <kbd key={key}>
         {formattedKey.charAt(0).toUpperCase() + formattedKey.slice(1)}

@@ -24,7 +24,7 @@ import { isRunningOnMac } from './platform';
 // The angle sign spams lots of CoreText-related warnings in the console when
 // running under Electron on macOS, so we use the @ sign there as a replacement.
 // Windows and Linux seem to be okay with the angle sign;
-const ANGLE_SIGN = isRunningOnMac ? '@' : '\u2220';
+const ANGLE_SIGN = isRunningOnMac ? '@' : '∠';
 
 /**
  * Returns the (initial) bearing when going from one point to another on a
@@ -287,7 +287,7 @@ export const makePolarCoordinateFormatter = (options) => {
       return (
         formatNumberAndUnit(coordinate[0], unit, digits) +
         ` ${ANGLE_SIGN} ` +
-        formatNumberAndUnit(coordinate[1], '\u00B0', digits)
+        formatNumberAndUnit(coordinate[1], '°', digits)
       );
     } else {
       return '';
@@ -392,7 +392,7 @@ export const translateBy = curry((displacement, coordinates) => {
 export const formatCoordinate = makeDecimalCoordinateFormatter({
   digits: 7,
   reverse: true,
-  unit: '\u00B0',
+  unit: '°',
 });
 
 export const safelyFormatCoordinate = (coordinate) => {

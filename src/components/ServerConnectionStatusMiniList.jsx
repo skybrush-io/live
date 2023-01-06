@@ -29,7 +29,7 @@ const formatDurationInMsec = (number) => {
   }
 
   if (!Number.isFinite(number)) {
-    return number < 0 ? '-\u221E' : '\u221E';
+    return number < 0 ? '-∞' : '∞';
   }
 
   if (Math.abs(number) < 1000) {

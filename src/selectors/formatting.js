@@ -32,7 +32,7 @@ const signedGeographicFormatter = makeDecimalCoordinateFormatter({
   digits: 7,
   reverse: true,
   separator: ' ',
-  unit: '\u00B0',
+  unit: '°',
 });
 
 const _formattersForCoordinateFormat = {

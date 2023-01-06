@@ -42,7 +42,7 @@ const getListItems = createSelector(
           const status = getSemanticsForGPSFixType(gpsFixType);
           items[key] = {
             id: key,
-            label: abbreviateGPSFixType(gpsFixType) || '\u2014', // em dash
+            label: abbreviateGPSFixType(gpsFixType) || '—',
             priority: -statusToPriority(status),
             status,
             uavIds: [uavId],
