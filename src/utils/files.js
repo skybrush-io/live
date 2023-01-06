@@ -22,3 +22,4 @@ const makeFileReaderForOutputType = (outputType) => {
 
 export const readFileAsArrayBuffer = makeFileReaderForOutputType('ArrayBuffer');
 export const readFileAsDataURL = makeFileReaderForOutputType('DataURL');
+export const readFileAsText = makeFileReaderForOutputType('Text');
