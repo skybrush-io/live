@@ -25,7 +25,11 @@ import {
 import { selectionForSubset } from '~/selectors/selection';
 import { selectOrdered } from '~/utils/collections';
 import { mapViewCoordinateFromLonLat } from '~/utils/geography';
-import { convexHull, createGeometryFromPoints } from '~/utils/math';
+import {
+  convexHull,
+  createGeometryFromPoints,
+  estimatePathDuration,
+} from '~/utils/math';
 import { EMPTY_ARRAY } from '~/utils/redux';
 
 import { transformMissionItemBeforeUpload } from './upload';
@@ -496,8 +500,11 @@ export const isMissionPlannerDialogOpen = (state) =>
  * @property {number} duration - the expected duration of the mission in seconds
  */
 export const getMissionEstimates = createSelector(
+  getGPSBasedHomePositionsInMission,
   getMissionItemsInOrder,
-  (items) => {
+  ([homePosition], items) => {
+    const homePoint =
+      homePosition && TurfHelpers.point([homePosition.lon, homePosition.lat]);
     // eslint-disable-next-line unicorn/no-array-reduce
     const { distance, duration } = items.reduce(
       (state, { type, parameters }) => {
@@ -505,10 +512,28 @@ export const getMissionEstimates = createSelector(
         return {
           ...state,
           ...(() => {
+            const stateUpdatesForTarget = (target) => {
+              if (!_position) {
+                return {
+                  _position: target,
+                };
+              }
+
+              const length = turfDistance(_position, target) * 1000;
+              const time = estimatePathDuration(length, _speed.XY);
+
+              return {
+                _position: target,
+                distance: distance + length,
+                duration: duration + time,
+              };
+            };
+
             switch (type) {
               case MissionItemType.TAKEOFF: {
                 return {
                   _altitude: parameters.alt.value,
+                  _position: homePoint,
                 };
               }
 
@@ -519,12 +544,12 @@ export const getMissionEstimates = createSelector(
                   };
                 }
 
-                const delta = Math.abs(_altitude - parameters.alt.value);
+                const height = Math.abs(_altitude - parameters.alt.value);
 
                 return {
                   _altitude: parameters.alt.value,
-                  distance: distance + delta,
-                  duration: duration + delta / _speed.Z,
+                  distance: distance + height,
+                  duration: duration + height / _speed.Z,
                 };
               }
 
@@ -538,24 +563,16 @@ export const getMissionEstimates = createSelector(
               }
 
               case MissionItemType.GO_TO: {
-                const target = TurfHelpers.point([
+                const waypoint = TurfHelpers.point([
                   parameters.lon,
                   parameters.lat,
                 ]);
 
-                if (!_position) {
-                  return {
-                    _position: target,
-                  };
-                }
+                return stateUpdatesForTarget(waypoint);
+              }
 
-                const length = turfDistance(_position, target) * 1000;
-
-                return {
-                  _position: target,
-                  distance: distance + length,
-                  duration: duration + length / _speed.XY,
-                };
+              case MissionItemType.RETURN_TO_HOME: {
+                return homePoint ? stateUpdatesForTarget(homePoint) : {};
               }
 
               default:

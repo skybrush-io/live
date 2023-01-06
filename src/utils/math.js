@@ -464,3 +464,29 @@ export const simplifyPolygon = ([_, ...coordinates], target) => {
   const result = simplifyPolygonUntilLimit(coordinates, target);
   return [...result, result[0]];
 };
+
+/**
+ * Estimate the amount of time it takes to travel a path with a given target
+ * speed and acceleration.
+ */
+export const estimatePathDuration = (
+  distance,
+  targetSpeed,
+  acceleration = 2.5
+) => {
+  const maxAccelerationDuration = targetSpeed / acceleration;
+  const maxAccelerationDistance = maxAccelerationDuration * (targetSpeed / 2);
+
+  if (distance > 2 * maxAccelerationDistance) {
+    // The target speed is achieved
+    const constantSpeedDistance = distance - 2 * maxAccelerationDistance;
+    const constantSpeedDuration = constantSpeedDistance / targetSpeed;
+    return 2 * maxAccelerationDuration + constantSpeedDuration;
+  } else {
+    // Target speed will not be reached
+    const accelerationDistance = distance / 2;
+    const maxSpeed = Math.sqrt(2 * accelerationDistance * acceleration);
+    const accelerationDuration = maxSpeed / acceleration;
+    return 2 * accelerationDuration;
+  }
+};
