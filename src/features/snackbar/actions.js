@@ -8,4 +8,11 @@ export function showError(message) {
   });
 }
 
+export function showSuccess(message) {
+  return showNotification({
+    message,
+    semantics: MessageSemantics.SUCCESS,
+  });
+}
+
 export { showNotification } from './slice';
