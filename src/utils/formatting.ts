@@ -109,7 +109,7 @@ export const DISTANCE_UNITS: Array<[number, string]> = [
  * @param unit - The symbol
  */
 export const joinUnit = (amount: string, unit: string): string =>
-  amount + (/^[a-zA-Z]/.test(unit) ? ' ' : '') + unit;
+  amount + (/^[a-zA-Z]/.test(unit) ? '\u00A0' : '') + unit;
 
 /**
  * Helper function that formats a number with a fixed number of decimal digits
@@ -194,10 +194,10 @@ export const formatNumberSafely = (
   isNil(x) || Number.isNaN(x)
     ? naText
     : typeof x === 'number'
-    ? unit
-      ? `${x.toFixed(digits)}${unit}`
-      : x.toFixed(digits)
-    : x;
+      ? unit
+        ? `${x.toFixed(digits)}${unit}`
+        : x.toFixed(digits)
+      : x;
 
 /**
  * Formats a UNIX timestamp in seconds as human-readable text.
@@ -215,8 +215,8 @@ export const shortTimeAgoFormatter = (value: number, unit: string): string =>
   unit === 'month'
     ? `${value}mo`
     : unit === 'second' && value < 1
-    ? 'now'
-    : `${value}${unit.charAt(0)}`;
+      ? 'now'
+      : `${value}${unit.charAt(0)}`;
 
 /**
  * Twitter-style short formatter for TimeAgo components that is suitable for
@@ -231,8 +231,8 @@ export const shortRelativeTimeFormatter = (
   return base === 'now'
     ? base
     : suffix === 'ago'
-    ? `${base} ago`
-    : `in ${base}`;
+      ? `${base} ago`
+      : `in ${base}`;
 };
 
 /**
