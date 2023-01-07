@@ -20,6 +20,7 @@ import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
 import ChatArea from './ChatArea';
 import ChatBubble from './ChatBubble';
 import Marker from './Marker';
+import MessageField from './MessageField';
 
 import { createMessageListSelector } from '~/features/messages/selectors';
 import {
@@ -178,7 +179,6 @@ class MessagesPanel extends React.Component {
     this._uavSelectorFieldRef = React.createRef();
 
     this.focusOnTextField = this.focusOnTextField.bind(this);
-    this._textFieldKeyDownHandler = this._textFieldKeyDownHandler.bind(this);
   }
 
   focusOnUAVSelectorField() {
@@ -227,6 +227,9 @@ class MessagesPanel extends React.Component {
         />
       );
     const isClearButtonVisible = onClearMessages && !hideClearButton;
+    const outboundHistory = chatEntries
+      .filter((e) => e.type === MessageType.OUTBOUND)
+      .map((e) => e.body);
     const textFields = (
       <Box
         key='textFieldContainer'
@@ -237,11 +240,12 @@ class MessagesPanel extends React.Component {
         pl={2}
         pr={isClearButtonVisible ? 0 : 2}
       >
-        <TextField
+        <MessageField
           autoFocus
           fullWidth
+          history={outboundHistory}
           inputRef={this._messageFieldRef}
-          onKeyDown={this._textFieldKeyDownHandler}
+          onSubmit={this._onSubmit}
         />
         {isClearButtonVisible && (
           <IconButton
@@ -267,23 +271,10 @@ class MessagesPanel extends React.Component {
     }
   }
 
-  /**
-   * Handler called when the user presses a key in the message text field.
-   * Sends the message if the user presses Enter.
-   *
-   * @param  {KeyboardEvent} event  the DOM event for the keypress
-   * @return {undefined}
-   */
-  _textFieldKeyDownHandler(event) {
-    if (event.key === 'Enter') {
-      const message = String(event.target.value);
-      if (message.length > 0) {
-        this.props.onSend(event.target.value);
-        event.target.value = '';
-        this.scrollToBottom();
-      }
-    }
-  }
+  _onSubmit = (message) => {
+    this.props.onSend(message);
+    this.scrollToBottom();
+  };
 }
 
 /**
