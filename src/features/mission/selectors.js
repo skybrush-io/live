@@ -505,84 +505,88 @@ export const getMissionEstimates = createSelector(
   ([homePosition], items) => {
     const homePoint =
       homePosition && TurfHelpers.point([homePosition.lon, homePosition.lat]);
-    // eslint-disable-next-line unicorn/no-array-reduce
-    const { distance, duration } = items.reduce(
-      (state, { type, parameters }) => {
-        const { _altitude, _position, _speed, duration, distance } = state;
-        return {
-          ...state,
-          ...(() => {
-            const stateUpdatesForTarget = (target) => {
-              if (!_position) {
-                return {
-                  _position: target,
-                };
-              }
-
-              const length = turfDistance(_position, target) * 1000;
-              const time = estimatePathDuration(length, _speed.XY);
-
-              return {
-                _position: target,
-                distance: distance + length,
-                duration: duration + time,
-              };
-            };
-
-            switch (type) {
-              case MissionItemType.TAKEOFF: {
-                return {
-                  _altitude: parameters.alt.value,
-                  _position: homePoint,
-                };
-              }
-
-              case MissionItemType.CHANGE_ALTITUDE: {
-                if (!_altitude) {
+    try {
+      // eslint-disable-next-line unicorn/no-array-reduce
+      const { distance, duration } = items.reduce(
+        (state, { type, parameters }) => {
+          const { _altitude, _position, _speed, duration, distance } = state;
+          return {
+            ...state,
+            ...(() => {
+              const stateUpdatesForTarget = (target) => {
+                if (!_position) {
                   return {
-                    _altitude: parameters.alt.value,
+                    _position: target,
                   };
                 }
 
-                const height = Math.abs(_altitude - parameters.alt.value);
+                const length = turfDistance(_position, target) * 1000;
+                const time = estimatePathDuration(length, _speed.XY);
 
                 return {
-                  _altitude: parameters.alt.value,
-                  distance: distance + height,
-                  duration: duration + height / _speed.Z,
+                  _position: target,
+                  distance: distance + length,
+                  duration: duration + time,
                 };
+              };
+
+              switch (type) {
+                case MissionItemType.TAKEOFF: {
+                  return {
+                    _altitude: parameters.alt?.value,
+                    _position: homePoint,
+                  };
+                }
+
+                case MissionItemType.CHANGE_ALTITUDE: {
+                  if (!_altitude) {
+                    return {
+                      _altitude: parameters.alt.value,
+                    };
+                  }
+
+                  const height = Math.abs(_altitude - parameters.alt.value);
+
+                  return {
+                    _altitude: parameters.alt.value,
+                    distance: distance + height,
+                    duration: duration + height / _speed.Z,
+                  };
+                }
+
+                case MissionItemType.CHANGE_SPEED: {
+                  return {
+                    _speed: {
+                      XY: parameters.velocityXY,
+                      Z: parameters.velocityZ,
+                    },
+                  };
+                }
+
+                case MissionItemType.GO_TO: {
+                  const waypoint = TurfHelpers.point([
+                    parameters.lon,
+                    parameters.lat,
+                  ]);
+
+                  return stateUpdatesForTarget(waypoint);
+                }
+
+                case MissionItemType.RETURN_TO_HOME: {
+                  return homePoint ? stateUpdatesForTarget(homePoint) : {};
+                }
+
+                default:
+                // The remaining mission item types are currently ignored.
               }
-
-              case MissionItemType.CHANGE_SPEED: {
-                return {
-                  _speed: {
-                    XY: parameters.velocityXY,
-                    Z: parameters.velocityZ,
-                  },
-                };
-              }
-
-              case MissionItemType.GO_TO: {
-                const waypoint = TurfHelpers.point([
-                  parameters.lon,
-                  parameters.lat,
-                ]);
-
-                return stateUpdatesForTarget(waypoint);
-              }
-
-              case MissionItemType.RETURN_TO_HOME: {
-                return homePoint ? stateUpdatesForTarget(homePoint) : {};
-              }
-
-              default:
-              // The remaining mission item types are currently ignored.
-            }
-          })(),
-        };
-      },
-      { distance: 0, duration: 0 }
-    );
-    return { distance, duration };
+            })(),
+          };
+        },
+        { _speed: { XY: 0, Z: 0 }, distance: 0, duration: 0 }
+      );
+      return { distance, duration };
+    } catch (error) {
+      return { error: `Estimation error: ${error}` };
+    }
   }
 );
