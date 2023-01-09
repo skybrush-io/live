@@ -7,19 +7,22 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
+import { makeStyles } from '@material-ui/core/styles';
 
 import Edit from '@material-ui/icons/Edit';
 import FilterCenterFocus from '@material-ui/icons/FilterCenterFocus';
+import MoreVert from '@material-ui/icons/MoreVert';
 import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
-
-import Tooltip from '@skybrush/mui-components/lib/Tooltip';
 
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 
 import { listOf } from '~/components/helpers/lists';
+import { TooltipWithContainerFromContext as Tooltip } from '~/containerContext';
 import {
   addToSelection,
   removeFromSelection,
@@ -33,9 +36,36 @@ import {
   getSelectedFeatureIds,
 } from '~/features/map-features/selectors';
 import { updateFeatureVisibility } from '~/features/map-features/slice';
+import useDropdown from '~/hooks/useDropdown';
 import { getNameOfFeatureType, getIconOfFeatureType } from '~/model/features';
 import { featureIdToGlobalId } from '~/model/identifiers';
 import { fitCoordinatesIntoMapView } from '~/signals';
+
+const useStyles = makeStyles(
+  {
+    container: {
+      containerType: 'inline-size',
+    },
+    item: {
+      '@container (min-width: 351px)': {
+        paddingRight: '120px',
+      },
+    },
+    button: {
+      '@container (max-width: 350px)': {
+        display: 'none',
+      },
+    },
+    menu: {
+      '@container (min-width: 351px)': {
+        display: 'none',
+      },
+    },
+  },
+  {
+    name: 'FeatureList',
+  }
+);
 
 /**
  * Presentation component for a single entry in the feature list.
@@ -53,44 +83,89 @@ const FeatureListEntry = (props) => {
     selected,
   } = props;
   const { id, color, label, type, visible } = feature;
+  const classes = useStyles();
+
+  const actions = [
+    {
+      action: onFocusFeature,
+      icon: <FilterCenterFocus />,
+      key: 'focus',
+      label: 'Focus feature',
+    },
+    {
+      action: onToggleFeatureVisibility,
+      icon: visible ? <Visibility /> : <VisibilityOff color='disabled' />,
+      key: 'visibility',
+      label: 'Toggle visibility',
+    },
+    {
+      action: onEditFeature,
+      icon: <Edit />,
+      key: 'edit',
+      label: 'Feature properties',
+    },
+  ];
 
   const actionButtons = (
     <>
-      <Tooltip content='Focus feature'>
-        <IconButton edge='end' data-id={id} onClick={onFocusFeature}>
-          <FilterCenterFocus />
-        </IconButton>
-      </Tooltip>
-      <Tooltip content='Toggle visibility'>
-        <IconButton edge='end' data-id={id} onClick={onToggleFeatureVisibility}>
-          {visible ? <Visibility /> : <VisibilityOff color='disabled' />}
-        </IconButton>
-      </Tooltip>
-      <Tooltip content='Feature properties'>
-        <IconButton edge='end' data-id={id} onClick={onEditFeature}>
-          <Edit />
-        </IconButton>
-      </Tooltip>
+      {actions.map(({ action, icon, key, label }) => (
+        <Tooltip key={key} content={label}>
+          <IconButton
+            className={classes.button}
+            edge='end'
+            data-id={id}
+            onClick={action}
+          >
+            {icon}
+          </IconButton>
+        </Tooltip>
+      ))}
+    </>
+  );
+
+  const [menuAnchorElement, openMenu, closeMenu] = useDropdown();
+  const actionMenu = (
+    <>
+      <IconButton className={classes.menu} edge='end' onClick={openMenu}>
+        <MoreVert />
+      </IconButton>
+      <Menu
+        anchorEl={menuAnchorElement}
+        open={menuAnchorElement !== null}
+        variant='menu'
+        onClose={closeMenu}
+      >
+        {actions.map(({ action, icon, key, label }) => (
+          <MenuItem key={key} data-id={id} onClick={closeMenu(action)}>
+            <ListItemIcon>{icon}</ListItemIcon>
+            <ListItemText primary={label} />
+          </MenuItem>
+        ))}
+      </Menu>
     </>
   );
 
   return (
     <ListItem
       button
-      style={{ paddingRight: '120px' }}
+      ContainerProps={{ className: classes.container }}
+      className={classes.item}
       selected={selected}
       data-id={id}
       onClick={onSelectFeature}
     >
-      <ListItemIcon style={{ color }}>
+      <ListItemIcon style={{ color, minWidth: 0, marginRight: '16px' }}>
         {getIconOfFeatureType(type)}
       </ListItemIcon>
       {label ? (
-        <ListItemText primary={label} />
+        <ListItemText style={{ overflowWrap: 'break-word' }} primary={label} />
       ) : (
         <ListItemText secondary={getNameOfFeatureType(type)} />
       )}
-      <ListItemSecondaryAction>{actionButtons}</ListItemSecondaryAction>
+      <ListItemSecondaryAction>
+        {actionButtons}
+        {actionMenu}
+      </ListItemSecondaryAction>
     </ListItem>
   );
 };
