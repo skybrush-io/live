@@ -7,8 +7,8 @@ export default () => {
   const closeMenu = (...args) => {
     if (args.length > 0) {
       if (typeof args[0] === 'function') {
-        return () => {
-          args[0]();
+        return (event) => {
+          args[0](event);
           closeMenu();
         };
       }
