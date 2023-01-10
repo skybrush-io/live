@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 
 import Mapping from '@material-ui/icons/FormatLineSpacing';
 
-import Tooltip from '@skybrush/mui-components/lib/Tooltip';
+import { TooltipWithContainerFromContext as Tooltip } from '~/containerContext';
 
 import ToggleButton from '~/components/ToggleButton';
 import { isShowingMissionIds } from '~/features/settings/selectors';

@@ -8,7 +8,7 @@ import ViewList from '@material-ui/icons/ViewList';
 import ViewModule from '@material-ui/icons/ViewModule';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 
-import Tooltip from '@skybrush/mui-components/lib/Tooltip';
+import { TooltipWithContainerFromContext as Tooltip } from '~/containerContext';
 
 import MappingToggleButton from './MappingToggleButton';
 

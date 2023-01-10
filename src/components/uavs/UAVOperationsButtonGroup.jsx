@@ -19,7 +19,7 @@ import PlayArrow from '@material-ui/icons/PlayArrow';
 import Refresh from '@material-ui/icons/Refresh';
 import WbSunny from '@material-ui/icons/WbSunny';
 
-import Tooltip from '@skybrush/mui-components/lib/Tooltip';
+import { TooltipWithContainerFromContext as Tooltip } from '~/containerContext';
 
 import Colors from '~/components/colors';
 import ToolbarDivider from '~/components/ToolbarDivider';

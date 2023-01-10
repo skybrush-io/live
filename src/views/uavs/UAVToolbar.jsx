@@ -9,7 +9,7 @@ import Toolbar from '@material-ui/core/Toolbar';
 import ImageBlurCircular from '@material-ui/icons/BlurCircular';
 import ImageBlurOn from '@material-ui/icons/BlurOn';
 
-import Tooltip from '@skybrush/mui-components/lib/Tooltip';
+import { TooltipWithContainerFromContext as Tooltip } from '~/containerContext';
 
 import UAVOperationsButtonGroup from '~/components/uavs/UAVOperationsButtonGroup';
 

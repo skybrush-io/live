@@ -12,7 +12,7 @@ import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import ListItemText from '@material-ui/core/ListItemText';
 import Edit from '@material-ui/icons/Edit';
 
-import Tooltip from '@skybrush/mui-components/lib/Tooltip';
+import { TooltipWithContainerFromContext as Tooltip } from '~/containerContext';
 
 import { listOf } from '~/components/helpers/lists';
 import {

@@ -11,7 +11,7 @@ import CloudDownload from '@material-ui/icons/CloudDownload';
 import Refresh from '@material-ui/icons/Refresh';
 
 import StatusLight from '@skybrush/mui-components/lib/StatusLight';
-import Tooltip from '@skybrush/mui-components/lib/Tooltip';
+import { TooltipWithContainerFromContext as Tooltip } from '~/containerContext';
 
 import FileListItem from './FileListItem';
 
