@@ -2,8 +2,9 @@ import React from 'react';
 
 import Box from '@material-ui/core/Box';
 import MissionOverviewList from './MissionOverviewList';
+import MissionOverviewPanelFooter from './MissionOverviewPanelFooter';
+import MissionOverviewPanelHeader from './MissionOverviewPanelHeader';
 import MissionOverviewPanelStatusBar from './MissionOverviewPanelStatusBar';
-import MissionOverviewPanelToolbar from './MissionOverviewPanelToolbar';
 
 /**
  * Panel that shows the widgets that are needed to edit a waypoint-based mission
@@ -11,9 +12,10 @@ import MissionOverviewPanelToolbar from './MissionOverviewPanelToolbar';
  */
 const MissionOverviewPanel = () => (
   <Box display='flex' flexDirection='column' height='100%'>
+    <MissionOverviewPanelHeader />
     <MissionOverviewList />
     <MissionOverviewPanelStatusBar />
-    <MissionOverviewPanelToolbar />
+    <MissionOverviewPanelFooter />
   </Box>
 );
 

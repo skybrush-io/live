@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 
+import Box from '@material-ui/core/Box';
 import Chip from '@material-ui/core/Chip';
 import Paper from '@material-ui/core/Paper';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -14,7 +15,6 @@ import Timer from '@material-ui/icons/Timer';
 import Warning from '@material-ui/icons/Warning';
 
 import Colors from '~/components/colors';
-import ToolbarDivider from '~/components/ToolbarDivider';
 import { TooltipWithContainerFromContext as Tooltip } from '~/containerContext';
 import {
   getGPSBasedHomePositionsInMission,
@@ -27,23 +27,23 @@ const useStyles = makeStyles(
   (theme) => ({
     root: {
       background: theme.palette.action.hover,
-      padding: theme.spacing(0, 1),
+      padding: theme.spacing(0.5, 1),
     },
   }),
   {
-    name: 'MissionOverviewPanelToolbar',
+    name: 'MissionOverviewPanelStatusBar',
   }
 );
 
 const makeWarningList = (warnings) => (
-  <ul style={{ paddingLeft: '30px' }}>
+  <ul style={{ paddingLeft: 28 }}>
     {warnings.map(({ key, text }) => (
       <li key={key}>{text}</li>
     ))}
   </ul>
 );
 
-const MissionOverviewPanelToolbar = ({
+const MissionOverviewPanelStatusBar = ({
   homePositions: [homePosition],
   missionEstimates: {
     distance: estimatedDistance,
@@ -70,52 +70,62 @@ const MissionOverviewPanelToolbar = ({
 
   return (
     <Paper square className={classes.root}>
-      <Toolbar
-        disableGutters
-        variant='dense'
-        style={{ height: 36, minHeight: 36 }}
-      >
+      <Toolbar disableGutters variant='dense' style={{ minHeight: 28 }}>
         {estimatedDistance > 0 ? (
           <>
             {warnings.length > 0 && (
-              <>
-                <Tooltip content={makeWarningList(warnings)} placement='top'>
-                  <Warning style={{ color: Colors.warning }} fontSize='small' />
-                </Tooltip>
-                <ToolbarDivider orientation='vertical' />
-              </>
+              <Tooltip content={makeWarningList(warnings)} placement='top'>
+                <Warning
+                  style={{ color: Colors.warning, marginRight: 8 }}
+                  fontSize='small'
+                />
+              </Tooltip>
             )}
-            <Chip
-              icon={<Share />}
-              size='small'
-              variant='outlined'
-              label={`Estimated route: ${formatDistance(estimatedDistance)}`}
-            />
-            <ToolbarDivider orientation='vertical' />
-            <Chip
-              icon={<Timer />}
-              size='small'
-              variant='outlined'
-              label={`Estimated time: ${formatDuration(estimatedDuration)}`}
-            />
+            <Box py={0.25}>
+              <Chip
+                icon={<Share />}
+                label={`Estimated route: ${formatDistance(estimatedDistance)}`}
+                size='small'
+                style={{ margin: 2 }}
+                variant='outlined'
+              />
+              <Chip
+                icon={<Timer />}
+                label={`Estimated time: ${formatDuration(estimatedDuration)}`}
+                size='small'
+                style={{ margin: 2 }}
+                variant='outlined'
+              />
+            </Box>
           </>
         ) : error ? (
-          <>
-            <Error style={{ color: Colors.error }} fontSize='small' />
-            {error}
-          </>
+          <Chip
+            icon={<Error style={{ color: Colors.error }} />}
+            label={<span style={{ whiteSpace: 'normal' }}>{error}</span>}
+            size='small'
+            style={{ height: 'auto' }}
+            variant='outlined'
+          />
         ) : (
-          <>
-            <Info style={{ color: Colors.info }} fontSize='small' />
-            Add waypoints to the mission to get distance and duration estimates!
-          </>
+          <Chip
+            icon={<Info style={{ color: Colors.info }} />}
+            label={
+              <span style={{ whiteSpace: 'normal' }}>
+                Add waypoints to the mission to get distance and duration
+                estimates!
+              </span>
+            }
+            size='small'
+            style={{ height: 'auto' }}
+            variant='outlined'
+          />
         )}
       </Toolbar>
     </Paper>
   );
 };
 
-MissionOverviewPanelToolbar.propTypes = {
+MissionOverviewPanelStatusBar.propTypes = {
   homePositions: PropTypes.arrayOf(CustomPropTypes.coordinate),
   missionEstimates: PropTypes.shape({
     distance: PropTypes.number,
@@ -132,4 +142,4 @@ export default connect(
   }),
   // mapDispatchToProps
   {}
-)(MissionOverviewPanelToolbar);
+)(MissionOverviewPanelStatusBar);
