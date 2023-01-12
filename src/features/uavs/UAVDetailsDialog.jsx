@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useState } from 'react';
 import { connect } from 'react-redux';
-import { ResizableBox } from 'react-resizable';
+import { Resizable } from 'react-resizable';
 
 import Box from '@material-ui/core/Box';
 import { makeStyles } from '@material-ui/core/styles';
@@ -10,12 +10,18 @@ import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
 
 import {
   closeUAVDetailsDialog,
-  getSelectedTabInUAVDetailsDialog,
+  getUAVDetailsDialogWidth,
+  isUAVDetailsDialogOpen,
+  setUAVDetailsDialogWidth,
 } from './details';
 
 import UAVDetailsDialogBody from './UAVDetailsDialogBody';
 import UAVDetailsDialogSidebar from './UAVDetailsDialogSidebar';
 import UAVDetailsDialogTabs from './UAVDetailsDialogTabs';
+import {
+  UAV_DETAILS_DIALOG_MIN_WIDTH,
+  UAV_DETAILS_DIALOG_HEIGHT,
+} from './constants';
 
 const useStyles = makeStyles(
   (theme) => ({
@@ -24,7 +30,7 @@ const useStyles = makeStyles(
       height: 50,
 
       position: 'absolute',
-      right: 0,
+      right: 5,
       top: '50%',
 
       cursor: 'ew-resize',
@@ -43,53 +49,85 @@ const useStyles = makeStyles(
   { name: 'UAVDetailsDialog' }
 );
 
-const ResizeHandle = React.forwardRef((props, ref) => {
+const ResizeHandle = React.forwardRef(({ handleAxis, ...props }, ref) => {
+  // The `handleAxis` prop is omitted, so React doesn't complain about it
   const classes = useStyles();
   return <Box ref={ref} className={classes.resizeHandle} {...props} />;
 });
+
+ResizeHandle.propTypes = {
+  handleAxis: PropTypes.string,
+};
 
 /**
  * Presentation component for the dialog that allows the user to inspect the
  * details of a specific UAV.
  */
-const UAVDetailsDialog = ({ onClose, open }) => (
-  <DraggableDialog
-    open={open}
-    maxWidth={false}
-    sidebarComponents={<UAVDetailsDialogSidebar />}
-    toolbarComponent={(dragHandleId) => (
-      <UAVDetailsDialogTabs dragHandle={dragHandleId} />
-    )}
-    onClose={onClose}
-  >
-    <ResizableBox
-      width={414}
-      height={448}
-      minConstraints={[414, 448]}
-      axis='x'
-      handle={<ResizeHandle />}
+const UAVDetailsDialog = ({ initialWidth, onClose, onResizeStop, open }) => {
+  const [width, setWidth] = useState(initialWidth);
+
+  const onResize = (_event, { size }) => {
+    setWidth(size.width);
+  };
+
+  return (
+    <DraggableDialog
+      open={open}
+      maxWidth={false}
+      sidebarComponents={<UAVDetailsDialogSidebar />}
+      toolbarComponent={(dragHandleId) => (
+        <UAVDetailsDialogTabs dragHandle={dragHandleId} />
+      )}
+      onClose={onClose}
     >
-      <Box position='relative' height={448} overflow='auto'>
-        <UAVDetailsDialogBody />
-      </Box>
-    </ResizableBox>
-  </DraggableDialog>
-);
+      <Resizable
+        width={width}
+        height={UAV_DETAILS_DIALOG_HEIGHT}
+        minConstraints={[
+          UAV_DETAILS_DIALOG_MIN_WIDTH,
+          UAV_DETAILS_DIALOG_HEIGHT,
+        ]}
+        axis='x'
+        handle={<ResizeHandle />}
+        onResize={onResize}
+        onResizeStop={onResizeStop}
+      >
+        <Box
+          // TODO: Why is `relative` necessary? Introduced in: c81d173647
+          position='relative'
+          width={width}
+          maxWidth='100%'
+          height={UAV_DETAILS_DIALOG_HEIGHT}
+          overflow='auto'
+        >
+          <UAVDetailsDialogBody />
+        </Box>
+      </Resizable>
+    </DraggableDialog>
+  );
+};
 
 UAVDetailsDialog.propTypes = {
-  open: PropTypes.bool,
+  initialWidth: PropTypes.number,
   onClose: PropTypes.func,
+  onResizeStop: PropTypes.func,
+  open: PropTypes.bool,
 };
 
 export default connect(
   // mapStateToProps
   (state) => ({
-    open: state.dialogs.uavDetails.open,
-    selectedTab: getSelectedTabInUAVDetailsDialog(state),
+    initialWidth: getUAVDetailsDialogWidth(state),
+    open: isUAVDetailsDialogOpen(state),
   }),
 
   // mapDispatchToProps
   {
     onClose: closeUAVDetailsDialog,
+    onResizeStop:
+      (_event, { size }) =>
+      (dispatch) => {
+        dispatch(setUAVDetailsDialogWidth(size.width));
+      },
   }
 )(UAVDetailsDialog);
