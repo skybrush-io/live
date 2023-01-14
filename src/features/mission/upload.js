@@ -51,8 +51,6 @@ async function runSingleMissionItemUpload({ uavId, payload }) {
  *         does not need to be modified
  */
 export function transformMissionItemBeforeUpload(item, state) {
-  console.log(getGeofenceSpecificationForWaypointMission(state));
-
   switch (item.type) {
     case MissionItemType.UPDATE_GEOFENCE:
       item = {
