@@ -1,3 +1,5 @@
+import React from 'react';
+
 import Popover from '@material-ui/core/Popover';
 import Tooltip from '@skybrush/mui-components/lib/Tooltip';
 

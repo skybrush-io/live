@@ -73,8 +73,7 @@ export function getIconOfFeatureType(type) {
 export function featureTypeCanBeMeasured(type) {
   return (
     // type === FeatureType.CIRCLE ||
-    type === FeatureType.LINE_STRING ||
-    type === FeatureType.POLYGON
+    type === FeatureType.LINE_STRING || type === FeatureType.POLYGON
   );
 }
 

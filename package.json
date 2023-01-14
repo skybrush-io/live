@@ -236,8 +236,10 @@
       "unicorn/no-fn-reference-in-iterator": 0,
       "unicorn/numeric-separators-style": 0,
       "unicorn/prefer-module": 0,
+      "unicorn/prefer-node-protocol": 0,
       "unicorn/prefer-ternary": 0,
-      "unicorn/prevent-abbreviations": 0
+      "unicorn/prevent-abbreviations": 0,
+      "unicorn/switch-case-braces": 0
     }
   }
 }

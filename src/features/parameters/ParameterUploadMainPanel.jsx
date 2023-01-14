@@ -100,9 +100,9 @@ const ParameterUploadMainPanel = () => {
       <ParametersTextField onChange={handleManifestChange} />
       <Box pt={1}>
         <Typography variant='body1'>
-          Press <kbd>{'⇧'}</kbd> + <kbd>Enter</kbd> to add the parameter to
-          the manifest. Click on a parameter in the sidebar to remove it from
-          the manifest.
+          Press <kbd>⇧</kbd> + <kbd>Enter</kbd> to add the parameter to the
+          manifest. Click on a parameter in the sidebar to remove it from the
+          manifest.
         </Typography>
       </Box>
       <Box pt={1}>

@@ -67,8 +67,7 @@ export const getServerHostname = (state) =>
  * Selector that returns the port of the server that the user is
  * connected to or that the user is trying to connect to.
  */
-export const getServerPort = (state) =>
-  state.dialogs.serverSettings.port;
+export const getServerPort = (state) => state.dialogs.serverSettings.port;
 
 /**
  * Selector that returns the hostname and port of the server that the user is
@@ -167,9 +166,7 @@ export const areServerAuthenticationSettingsValid = createSelector(
  * Returns whether the user is currently authenticated to the remote
  * Skybrush server.
  */
-export const isAuthenticated = createSelector(getAuthenticatedUser, (user) =>
-  Boolean(user)
-);
+export const isAuthenticated = createSelector(getAuthenticatedUser, Boolean);
 
 /**
  * Returns whether the user is currently attempting to authenticate to the

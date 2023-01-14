@@ -18,7 +18,7 @@ import {
   getSelectedDockIdInDockDetailsDialog,
 } from './details';
 
-const DockDetailsDialogBody = ({ selectedTab, dockId }) => {
+const DockDetailsDialogBody = ({ dockId, selectedTab }) => {
   switch (selectedTab) {
     case 'status':
       return (
@@ -45,7 +45,7 @@ const DockDetailsDialogBody = ({ selectedTab, dockId }) => {
             <StatusLight status='info' />
             <ListItemText
               primary='Drone is charging'
-              secondary={'11.6V • Time until full: 17m 12s'}
+              secondary='11.6V • Time until full: 17m 12s'
             />
           </ListItem>
         </List>
@@ -74,21 +74,21 @@ const DockDetailsDialogBody = ({ selectedTab, dockId }) => {
             <StatusLight status='success' size='small' />
             <ListItemText
               primary='Takeoff + landing test'
-              secondary={'2021-07-26 17:10 UTC • 0m 57s'}
+              secondary='2021-07-26 17:10 UTC • 0m 57s'
             />
           </ListItem>
           <ListItem>
             <StatusLight status='success' size='small' />
             <ListItemText
               primary='Takeoff + landing test'
-              secondary={'2021-07-26 16:10 UTC • 0m 57s'}
+              secondary='2021-07-26 16:10 UTC • 0m 57s'
             />
           </ListItem>
           <ListItem>
             <StatusLight status='error' size='small' />
             <ListItemText
               primary='Takeoff + landing test'
-              secondary={'2021-07-26 15:10 UTC • Prearm checks failed'}
+              secondary='2021-07-26 15:10 UTC • Prearm checks failed'
             />
           </ListItem>
         </List>
@@ -101,15 +101,15 @@ const DockDetailsDialogBody = ({ selectedTab, dockId }) => {
             <ListItem>
               <StatusLight status='success' />
               <ListItemText
-                primary={'/dev/mmcblk0p1 • System'}
-                secondary={'4.0 GB used • 9.8 GB free • 29%'}
+                primary='/dev/mmcblk0p1 • System'
+                secondary='4.0 GB used • 9.8 GB free • 29%'
               />
             </ListItem>
             <ListItem>
               <StatusLight status='success' />
               <ListItemText
-                primary={'/dev/mmcblk0p5 • Data storage'}
-                secondary={'0.5 GB used • 63.1 GB free • 0.8%'}
+                primary='/dev/mmcblk0p5 • Data storage'
+                secondary='0.5 GB used • 63.1 GB free • 0.8%'
               />
               <ListItemSecondaryAction>
                 <IconButton>
@@ -142,7 +142,6 @@ const DockDetailsDialogBody = ({ selectedTab, dockId }) => {
           <source src='//cam.idokep.hu/cam/schonherz1/animation.webm' />
           <source src='//cam.idokep.hu/cam/schonherz1/animation.mp4' />
           <img
-            src='//cam.idokep.hu/cam/schonherz1/thumbnail.jpg'
             src='//cam.idokep.hu/cam/schonherz1/thumbnail.jpg'
             width='380'
             height='284'
