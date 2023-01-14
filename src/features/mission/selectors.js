@@ -482,7 +482,6 @@ export const getMissionItemUploadJobPayload = (state) => {
   const items = getMissionItemsInOrder(state).map((item) =>
     transformMissionItemBeforeUpload(item, state)
   );
-  console.log(items[0]);
   return { version: 1, items };
 };
 
