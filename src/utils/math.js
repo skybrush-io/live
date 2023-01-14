@@ -289,11 +289,19 @@ export const bufferPolygon = (coordinates, margin) => {
     return [];
   }
 
+  // Shift 'coordinates' in a way that it is centered around the origin. This
+  // is needed because otherwise we would get incorrect results if the
+  // coordinate magnitudes are very large (e.g., when working in Australia)
+  const centroid = getCentroid(coordinates);
+  const shiftedCoordinates = coordinates.map((coordinate) => [
+    coordinate[0] - centroid[0],
+    coordinate[1] - centroid[1],
+  ]);
   const transform = new FlatEarthCoordinateSystem({
     origin: [0, 0],
   });
 
-  const geoCoordinates = coordinates.map((coordinate) =>
+  const geoCoordinates = shiftedCoordinates.map((coordinate) =>
     transform.toLonLat(coordinate)
   );
 
@@ -304,9 +312,15 @@ export const bufferPolygon = (coordinates, margin) => {
     margin / 1000 /* Turf.js needs kilometers */
   );
 
+  // Take the outer ring of the buffered polygon and transform it back to
+  // flat Earth. Also undo the shift that we did in the beginning.
   const outerLinearRing = bufferedPoly.geometry.coordinates[0].map(
-    (coordinate) => transform.fromLonLat(coordinate)
+    (coordinate) => {
+      const flatEarthCoord = transform.fromLonLat(coordinate);
+      return [flatEarthCoord[0] + centroid[0], flatEarthCoord[1] + centroid[1]];
+    }
   );
+
   return convexHull(outerLinearRing);
 };
 
