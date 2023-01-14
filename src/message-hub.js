@@ -72,7 +72,6 @@ messageHub.registerNotificationHandlers({
           } else {
             // This message probably came from a UAV so let's add it to the
             // list of messages received from the UAV
-            // TODO(ntamas): process severity
             dispatch(
               addInboundMessage({
                 message: item.message,
