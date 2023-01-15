@@ -15,6 +15,11 @@ export const UAVFilter = {
   WITH_WARNINGS: 'withWarnings',
   WITH_ERRORS: 'withErrors',
   INACTIVE_ONLY: 'inactiveOnly',
+  // INACTIVE_ONLY could be NO_TELEMETRY after the rename, but we cannot change
+  // its string value because people might have saved state slices with
+  // 'inactiveOnly' and it would be a fuss to migrate these. So, to keep things
+  // simple and consistent, we kept the old naming and changed the _displayed_
+  // labels only.
 };
 
 /**
@@ -34,7 +39,7 @@ export const labelsForUAVFilter = {
   [UAVFilter.DEFAULT]: 'All',
   [UAVFilter.WITH_WARNINGS]: 'Warnings and errors',
   [UAVFilter.WITH_ERRORS]: 'Errors only',
-  [UAVFilter.INACTIVE_ONLY]: 'Inactive UAVs only',
+  [UAVFilter.INACTIVE_ONLY]: 'UAVs with no telemetry only',
 };
 
 /**
@@ -44,7 +49,7 @@ export const shortLabelsForUAVFilter = {
   [UAVFilter.DEFAULT]: 'All',
   [UAVFilter.WITH_WARNINGS]: 'Warn/Err',
   [UAVFilter.WITH_ERRORS]: 'Errors',
-  [UAVFilter.INACTIVE_ONLY]: 'Inactive',
+  [UAVFilter.INACTIVE_ONLY]: 'No telemetry',
 };
 
 export const getFilterFunctionForUAVFilter = memoize((filterId) => {
@@ -64,7 +69,6 @@ export const getFilterFunctionForUAVFilter = memoize((filterId) => {
     case UAVFilter.INACTIVE_ONLY:
       return (uav) => uav?.age === UAVAge.INACTIVE;
 
-    case UAVFilter.DEFAULT:
     default:
       return undefined;
   }

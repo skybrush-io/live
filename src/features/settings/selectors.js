@@ -110,7 +110,7 @@ export const getSceneryForThreeDView = (state) => {
 
 /**
  * Returns the "aging thresholds" for the UAVs that decide when a UAV should
- * be marked as inactive, gone or forgotten.
+ * be marked as inactive (no telemetry), gone or forgotten.
  */
 export const getUAVAgingThresholds = createSelector(
   (state) => state.settings.uavs,

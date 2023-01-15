@@ -21,6 +21,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The Electron based packaged version now uses a TCP socket to communicate
   with the server instead of the WebSocket connection used in the browser.
 
+- The `INACTIVE` warning in the UAV list or grid view has been renamed to
+  `NO TELEM` to make it clear that this status means that we have not received
+  telemetry data from the UAV for a while.
+
 ## [2.6.0] - 2022-10-20
 
 ### Added

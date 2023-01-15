@@ -16,7 +16,7 @@ import { GPSFixType } from './enums';
  */
 export const UAVAge = {
   ACTIVE: 'active',
-  INACTIVE: 'inactive',
+  INACTIVE: 'inactive', // means "no telemetry" in a while
   GONE: 'gone',
   FORGOTTEN: 'forgotten',
 };

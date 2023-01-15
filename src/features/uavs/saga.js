@@ -40,7 +40,7 @@ const convertUAVsToRedux = (objects) => mapValues(objects, convertUAVToRedux);
  *         last time
  * @param  {number}  now  the current timestamp, in milliseconds
  * @param  {number}  warnThreshold  number of milliseconds after which a UAV goes
- *         into the "inactive" state
+ *         into the "no telemetry" state
  * @param  {number}  goneThreshold  number of milliseconds after which a UAV goes
  *         into the "gone" state
  * @param  {number}  forgetThreshold  number of milliseconds after which a UAV

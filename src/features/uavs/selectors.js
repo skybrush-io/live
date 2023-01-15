@@ -719,7 +719,7 @@ export function getSingleUAVStatusSummary(uav) {
   }
 
   // We allow "normal" and "informational" messages to be overridden by the
-  // "gone" or "inactive" warnings
+  // "gone" or "no telemetry" (inactive) warnings
   if (textSemantics === 'success' || textSemantics === 'info') {
     if (uav.age === UAVAge.GONE) {
       if (text === 'ready') {
@@ -729,7 +729,7 @@ export function getSingleUAVStatusSummary(uav) {
       textSemantics = 'off';
     } else if (uav.age === UAVAge.INACTIVE) {
       if (text === 'ready') {
-        text = 'inactive';
+        text = 'no telem'; // used to be 'inactive' in earlier versions
       }
 
       textSemantics = 'warning';
