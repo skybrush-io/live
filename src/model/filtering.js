@@ -39,7 +39,7 @@ export const labelsForUAVFilter = {
   [UAVFilter.DEFAULT]: 'All',
   [UAVFilter.WITH_WARNINGS]: 'Warnings and errors',
   [UAVFilter.WITH_ERRORS]: 'Errors only',
-  [UAVFilter.INACTIVE_ONLY]: 'UAVs with no telemetry only',
+  [UAVFilter.INACTIVE_ONLY]: 'No telemetry only',
 };
 
 /**
@@ -49,7 +49,7 @@ export const shortLabelsForUAVFilter = {
   [UAVFilter.DEFAULT]: 'All',
   [UAVFilter.WITH_WARNINGS]: 'Warn/Err',
   [UAVFilter.WITH_ERRORS]: 'Errors',
-  [UAVFilter.INACTIVE_ONLY]: 'No telemetry',
+  [UAVFilter.INACTIVE_ONLY]: 'No telem',
 };
 
 export const getFilterFunctionForUAVFilter = memoize((filterId) => {
