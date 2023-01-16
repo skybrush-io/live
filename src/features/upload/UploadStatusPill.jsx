@@ -6,12 +6,16 @@ import { connect } from 'react-redux';
 
 import Box from '@material-ui/core/Box';
 import { makeStyles } from '@material-ui/core/styles';
+import Tooltip from '@skybrush/mui-components/lib/Tooltip';
 
 import { Status } from '~/components/semantics';
 import StatusPill from '~/components/StatusPill';
 
 import { toggleUavInWaitingQueue } from './actions';
-import { getUploadStatusCodeMapping } from './selectors';
+import {
+  getUploadErrorMessageMapping,
+  getUploadStatusCodeMapping,
+} from './selectors';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -44,13 +48,13 @@ const makeUploadStatusSelectorForUavId = (uavId) =>
     ? uploadStatusSelectorForNil
     : (state) => ({
         status: getUploadStatusCodeMapping(state)[uavId] || Status.OFF,
+        message: getUploadErrorMessageMapping(state)[uavId] || '',
       });
 
-const UploadStatusPill = ({ children, onClick, uavId, ...rest }) => {
+const UploadStatusPill = ({ children, message, onClick, uavId, ...rest }) => {
   const classes = useStyles();
   const clickHandler = onClick && uavId ? () => onClick(uavId) : null;
-
-  return (
+  const boxedPill = (
     <Box
       className={clsx(classes.root, clickHandler && classes.selectable)}
       onClick={clickHandler}
@@ -58,10 +62,13 @@ const UploadStatusPill = ({ children, onClick, uavId, ...rest }) => {
       <StatusPill {...rest}>{children}</StatusPill>
     </Box>
   );
+
+  return message ? <Tooltip content={message}>{boxedPill}</Tooltip> : boxedPill;
 };
 
 UploadStatusPill.propTypes = {
   children: PropTypes.node,
+  message: PropTypes.string,
   onClick: PropTypes.func,
   uavId: PropTypes.string,
 };

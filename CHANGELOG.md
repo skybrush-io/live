@@ -16,6 +16,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - You can now cut holes into polygons and add a label that measures the area of
   the polygon.
 
+- Error messages provided by the server during a failed upload are now shown in
+  tooltips when hovering over the corresponding upload status pill of the UAV
+  in the upload dialog.
+
 ### Changed
 
 - The Electron based packaged version now uses a TCP socket to communicate

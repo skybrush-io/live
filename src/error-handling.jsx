@@ -52,14 +52,16 @@ export const ErrorHandler = ProductionErrorHandler;
  * already.
  *
  * @param {Object}  err  the error object to convert
+ * @param {string?}  prefix  a prefix string to attach in front of the error
+ *        message, separated by a colon
  * @return {string} the error object converted into a string
  */
-export function errorToString(error) {
+export function errorToString(error, prefix) {
   if (error.toString && isFunction(error.toString)) {
-    return error.toString();
+    return prefix ? `${prefix}: ${error.toString()}` : error.toString();
+  } else {
+    return prefix ? `${prefix}: ${String(error)}` : String(error);
   }
-
-  return String(error);
 }
 
 /**

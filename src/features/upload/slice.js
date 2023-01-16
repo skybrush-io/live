@@ -22,6 +22,7 @@ function clearQueues(state) {
   state.queues.itemsFinished = [];
   state.queues.itemsQueued = [];
   state.queues.itemsWaitingToStart = [];
+  state.errors = {};
   state.dialog.showLastUploadResult = false;
 }
 
@@ -73,6 +74,8 @@ const { actions, reducer } = createSlice({
 
     // If you add a new queue above, make sure that the ALL_QUEUES array
     // is updated in features/upload/utils.js
+
+    errors: {},
 
     dialog: {
       open: false,
@@ -222,6 +225,19 @@ const { actions, reducer } = createSlice({
       target: 'itemsFinished',
     }),
 
+    _setErrorMessageForUAV: {
+      reducer(state, action) {
+        const { uavId, message } = action.payload;
+        if (message) {
+          state.errors[uavId] = String(message);
+        } else {
+          delete state.errors[uavId];
+        }
+      },
+
+      prepare: (uavId, message) => ({ payload: { uavId, message } }),
+    },
+
     openUploadDialogKeepingCurrentJob(state, action) {
       const { payload: options } = action;
       const { backAction } = options ?? {};
@@ -298,6 +314,7 @@ export const {
   _notifyUploadOnUavQueued,
   _notifyUploadOnUavStarted,
   _notifyUploadOnUavSucceeded,
+  _setErrorMessageForUAV,
   openUploadDialogForJob,
   openUploadDialogKeepingCurrentJob,
   setupNextUploadJob,

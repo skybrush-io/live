@@ -12,6 +12,16 @@ const ALL_QUEUES = [
 ];
 
 /**
+ * Helper function to remove the stored error messages for all the UAVs in the
+ * given array.
+ */
+function removeErrorsForUAVs(state, uavIds) {
+  for (const uavId of uavIds) {
+    delete state.errors[uavId];
+  }
+}
+
+/**
  * Helper factory that returns a reducer function that ensures that one or more
  * upload items are to be found in one of the allowed upload status queues.
  *
@@ -36,6 +46,10 @@ export const ensureItemsInQueue = ({ target, doNotMoveWhenIn } = {}) => {
     for (const queueName of allOtherQueues) {
       const queue = state.queues[queueName];
       pull(queue, ...uavIds);
+
+      if (queueName === 'failedItems') {
+        removeErrorsForUAVs(state, uavIds);
+      }
     }
 
     if (!isNil(targetQueue)) {
@@ -78,5 +92,9 @@ export const moveItemsBetweenQueues =
           targetQueue.push(item);
         }
       }
+    }
+
+    if (sourceQueue === 'failedItems') {
+      removeErrorsForUAVs(uavIds);
     }
   };

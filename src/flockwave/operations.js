@@ -168,8 +168,13 @@ export async function uploadDroneShow(hub, { uavId, data }, options) {
         ...options,
       }
     );
-  } catch {
-    throw new Error(`Failed to upload show data to UAV ${uavId}`);
+  } catch (error) {
+    throw new Error(
+      errorToString(
+        error.message || error,
+        `Failed to upload show data to UAV ${uavId}`
+      )
+    );
   }
 }
 

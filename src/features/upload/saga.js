@@ -12,7 +12,7 @@ import {
   take,
 } from 'redux-saga/effects';
 
-import { handleError } from '~/error-handling';
+import { errorToString, handleError } from '~/error-handling';
 import { flashLightOnUAVsAndHideFailures } from '~/utils/messaging';
 import { createActionListenerSaga, putWithRetry } from '~/utils/sagas';
 
@@ -34,6 +34,7 @@ import {
   _notifyUploadOnUavSucceeded,
   _notifyUploadFinished,
   _notifyUploadStarted,
+  _setErrorMessageForUAV,
   startUpload,
 } from './slice';
 
@@ -47,6 +48,7 @@ const STOP = Symbol('STOP');
  */
 function* runUploadWorker(chan, failed) {
   let outcome;
+  let storedError;
 
   while (true) {
     const job = yield take(chan);
@@ -57,6 +59,7 @@ function* runUploadWorker(chan, failed) {
 
     const { executor, payload, selector, target: uavId } = job;
     outcome = undefined;
+    storedError = undefined;
 
     try {
       yield put(_notifyUploadOnUavStarted(uavId));
@@ -64,8 +67,8 @@ function* runUploadWorker(chan, failed) {
       yield call(executor, { uavId, payload, data });
       outcome = 'success';
     } catch (error) {
-      console.error(error);
       outcome = 'failure';
+      storedError = error;
     } finally {
       if (yield cancelled() && !outcome) {
         outcome = 'cancelled';
@@ -80,6 +83,12 @@ function* runUploadWorker(chan, failed) {
       case 'failure':
         failed.push(uavId);
         yield put(_notifyUploadOnUavFailed(uavId));
+        yield put(
+          _setErrorMessageForUAV(
+            uavId,
+            errorToString(storedError.message || storedError)
+          )
+        );
         break;
 
       case 'cancelled':

@@ -121,6 +121,12 @@ export const isSelectedJobInUploadDialogScopedToMission = createSelector(
 );
 
 /**
+ * Returns an object mapping UAV IDs to the corresponding error messages that
+ * should be shown next to them (or as a tooltip) in the upload dialog.
+ */
+export const getUploadErrorMessageMapping = (state) => state.upload.errors;
+
+/**
  * Returns an object that counts how many drones are currently in the
  * "waiting", "in progress", "failed" and "successful" stages of the upload.
  */
