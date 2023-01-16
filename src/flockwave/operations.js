@@ -200,8 +200,12 @@ export async function uploadMission(hub, { uavId, data, format }, options) {
       }
     );
   } catch (error) {
-    console.error(error);
-    throw new Error(`Failed to upload mission to UAV ${uavId}`);
+    throw new Error(
+      errorToString(
+        error.message || error,
+        `Failed to upload mission to UAV ${uavId}`
+      )
+    );
   }
 }
 
