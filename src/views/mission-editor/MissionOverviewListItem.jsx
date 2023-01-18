@@ -3,6 +3,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 
 import Avatar from '@material-ui/core/Avatar';
+import Box from '@material-ui/core/Box';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -81,6 +82,7 @@ const MissionOverviewListItem = ({
   index,
   item,
   missionGeofenceStatus,
+  ratio,
   selected,
   showGeofenceSettingsDialog,
   onSelectItem,
@@ -182,14 +184,28 @@ const MissionOverviewListItem = ({
   }
 
   return (
-    <ListItem button dense selected={selected} onClick={onClick}>
-      {avatar && (
-        <ListItemAvatar>
-          <Avatar className={isValid ? null : classes.error}>{avatar}</Avatar>
-        </ListItemAvatar>
-      )}
-      <ListItemText primary={primaryText} secondary={secondaryText} />
-    </ListItem>
+    <Box position='relative'>
+      <div
+        style={{
+          position: 'absolute',
+          height: '100%',
+
+          backgroundColor: ratio === 1 ? Colors.success : Colors.info,
+          opacity: 0.25,
+
+          transition: '0.25s',
+          width: `${(ratio ?? 0) * 100}%`,
+        }}
+      />
+      <ListItem button dense selected={selected} onClick={onClick}>
+        {avatar && (
+          <ListItemAvatar>
+            <Avatar className={isValid ? null : classes.error}>{avatar}</Avatar>
+          </ListItemAvatar>
+        )}
+        <ListItemText primary={primaryText} secondary={secondaryText} />
+      </ListItem>
+    </Box>
   );
 };
 
@@ -201,6 +217,7 @@ MissionOverviewListItem.propTypes = {
     parameters: PropTypes.object,
   }),
   missionGeofenceStatus: PropTypes.oneOf(Object.values(Status)),
+  ratio: PropTypes.number,
   selected: PropTypes.bool,
   showGeofenceSettingsDialog: PropTypes.func,
   onSelectItem: PropTypes.func,

@@ -1,4 +1,5 @@
 import memoizeOne from 'memoize-one';
+import memoize from 'memoizee';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
@@ -17,6 +18,8 @@ import FormGroup from '@material-ui/core/FormGroup';
 import Colors from '~/components/colors';
 import { setLayerParametersById } from '~/features/map/layers';
 import {
+  getCurrentMissionItemIndex,
+  getCurrentMissionItemRatio,
   getGPSBasedHomePositionsInMission,
   getGPSBasedLandingPositionsInMission,
   getMissionItemsWithCoordinatesInOrder,
@@ -36,7 +39,7 @@ import {
   landingPositionIdToGlobalId,
   originIdToGlobalId,
   MAP_ORIGIN_ID,
-  MISSION_ITEM_POLYGON_ID,
+  MISSION_ITEM_LINE_STRING_ID,
   MISSION_ORIGIN_ID,
   CONVEX_HULL_AREA_ID,
   missionItemIdToGlobalId,
@@ -306,43 +309,46 @@ const landingPositionStyle = (feature, resolution) => {
 /**
  * Style for the marker representing the individual items in a waypoint mission.
  */
-const createMissionItemBaseStyle = (selected) => (feature) => {
-  const index = feature.get('index');
-  const style = {
-    image: new Icon({
-      src: mapMarker,
-      anchor: [0.5, 0.95],
-      color: selected ? Colors.selectedMissionItem : Colors.missionItem,
-      rotateWithView: false,
-      snapToPixel: false,
-    }),
-    text: new Text({
-      font: '12px sans-serif',
-      offsetY: -17,
-      text: index !== undefined ? String(index + 1) : '?',
-      textAlign: 'center',
-    }),
-  };
-
-  if (selected) {
-    const selectedStyle = {
+const createMissionItemBaseStyle = memoize(
+  (current, done, selected) => (feature) => {
+    const index = feature.get('index');
+    const style = {
       image: new Icon({
-        src: mapMarkerOutline,
+        src: mapMarker,
         anchor: [0.5, 0.95],
+        color: selected
+          ? Colors.selectedMissionItem
+          : done
+          ? Colors.doneMissionItem
+          : current
+          ? Colors.currentMissionItem
+          : Colors.missionItem,
         rotateWithView: false,
         snapToPixel: false,
       }),
+      text: new Text({
+        font: '12px sans-serif',
+        offsetY: -17,
+        text: index !== undefined ? String(index + 1) : '?',
+        textAlign: 'center',
+      }),
     };
-    return [new Style(selectedStyle), new Style(style)];
-  } else {
-    return new Style(style);
-  }
-};
 
-const missionItemBaseStyles = [
-  createMissionItemBaseStyle(/* selected = */ false),
-  createMissionItemBaseStyle(/* selected = */ true),
-];
+    if (selected) {
+      const selectedStyle = {
+        image: new Icon({
+          src: mapMarkerOutline,
+          anchor: [0.5, 0.95],
+          rotateWithView: false,
+          snapToPixel: false,
+        }),
+      };
+      return [new Style(selectedStyle), new Style(style)];
+    } else {
+      return new Style(style);
+    }
+  }
+);
 
 /**
  * Style for the marker representing the origin of the mission-specific
@@ -377,22 +383,25 @@ const missionConvexHullStyles = [
 /**
  * Style for the polygon connecting the mission items in a waypoint mission.
  */
-const missionItemPolygonStyle = [
+const missionItemLineStringStyle = memoize((done) => [
   new Style({
-    stroke: thinOutline(Colors.missionItem),
+    stroke: thinOutline(done ? Colors.doneMissionItem : Colors.missionItem),
   }),
-];
+]);
 
 const CONVEX_HULL_GLOBAL_ID = areaIdToGlobalId(CONVEX_HULL_AREA_ID);
 const MAP_ORIGIN_GLOBAL_ID = originIdToGlobalId(MAP_ORIGIN_ID);
-const MISSION_ITEM_POLYGON_GLOBAL_ID = areaIdToGlobalId(
-  MISSION_ITEM_POLYGON_ID
+// TODO: This is not an `area`, but it's global id is created using that prefix.
+const MISSION_ITEM_LINE_STRING_GLOBAL_ID = areaIdToGlobalId(
+  MISSION_ITEM_LINE_STRING_ID
 );
 const MISSION_ORIGIN_GLOBAL_ID = originIdToGlobalId(MISSION_ORIGIN_ID);
 
 const MissionInfoVectorSource = ({
   convexHull,
   coordinateSystemType,
+  currentItemIndex,
+  currentItemRatio,
   homePositions,
   landingPositions,
   missionItems,
@@ -502,6 +511,10 @@ const MissionInfoVectorSource = ({
     // Add one marker for each item in the mission
     features.push(
       ...missionItems.map(({ index, id, coordinate }) => {
+        const current = index === currentItemIndex;
+        const done =
+          index < currentItemIndex ||
+          (index === currentItemIndex && currentItemRatio === 1);
         const globalIdOfMissionItem = missionItemIdToGlobalId(id);
         const selected = selection.includes(globalIdOfMissionItem);
         const center = mapViewCoordinateFromLonLat([
@@ -513,7 +526,7 @@ const MissionInfoVectorSource = ({
             key={globalIdOfMissionItem}
             id={globalIdOfMissionItem}
             properties={{ index }}
-            style={missionItemBaseStyles[selected ? 1 : 0]}
+            style={createMissionItemBaseStyle(current, done, selected)}
           >
             <geom.Point coordinates={center} />
           </Feature>
@@ -521,20 +534,57 @@ const MissionInfoVectorSource = ({
       })
     );
 
+    const splitPoint = missionItems.findIndex(
+      (mi) => mi.index === currentItemIndex
+    );
+    const doneMissionItems = missionItems.slice(0, splitPoint);
+    const todoMissionItems = missionItems.slice(splitPoint);
+
     // If there are at least two items with coordinates, connect them with a
     // polyline.
-    if (missionItems.length > 1) {
-      const missionItemPolygonInMapCoordinates = missionItems.map(
+    if (doneMissionItems.length + todoMissionItems.length > 1) {
+      const doneMissionItemsInMapCoordinates = doneMissionItems.map(
         ({ coordinate }) =>
           mapViewCoordinateFromLonLat([coordinate.lon, coordinate.lat])
       );
+      const todoMissionItemsInMapCoordinates = todoMissionItems.map(
+        ({ coordinate }) =>
+          mapViewCoordinateFromLonLat([coordinate.lon, coordinate.lat])
+      );
+
+      if (
+        doneMissionItems.length > 0 &&
+        todoMissionItems.length > 0 &&
+        currentItemRatio !== undefined
+      ) {
+        const lastDone = doneMissionItemsInMapCoordinates.at(-1);
+        const firstTodo = todoMissionItemsInMapCoordinates.at(0);
+
+        const splitPoint = [
+          lastDone[0] * (1 - currentItemRatio) +
+            firstTodo[0] * currentItemRatio,
+          lastDone[1] * (1 - currentItemRatio) +
+            firstTodo[1] * currentItemRatio,
+        ];
+
+        doneMissionItemsInMapCoordinates.push(splitPoint);
+        todoMissionItemsInMapCoordinates.unshift(splitPoint);
+      }
+
       features.push(
         <Feature
-          key='missionItemsPolygon'
-          id={MISSION_ITEM_POLYGON_GLOBAL_ID}
-          style={missionItemPolygonStyle}
+          key='doneMissionItemLineString'
+          id={`${MISSION_ITEM_LINE_STRING_GLOBAL_ID}Done`}
+          style={missionItemLineStringStyle(true)}
         >
-          <geom.LineString coordinates={missionItemPolygonInMapCoordinates} />
+          <geom.LineString coordinates={doneMissionItemsInMapCoordinates} />
+        </Feature>,
+        <Feature
+          key='todoMissionItemLineString'
+          id={`${MISSION_ITEM_LINE_STRING_GLOBAL_ID}Todo`}
+          style={missionItemLineStringStyle(false)}
+        >
+          <geom.LineString coordinates={todoMissionItemsInMapCoordinates} />
         </Feature>
       );
     }
@@ -605,6 +655,8 @@ const MissionInfoVectorSource = ({
 MissionInfoVectorSource.propTypes = {
   convexHull: PropTypes.arrayOf(CustomPropTypes.coordinate),
   coordinateSystemType: PropTypes.oneOf(['neu', 'nwu']),
+  currentItemIndex: PropTypes.number,
+  currentItemRatio: PropTypes.number,
   homePositions: PropTypes.arrayOf(CustomPropTypes.coordinate),
   landingPositions: PropTypes.arrayOf(CustomPropTypes.coordinate),
   missionItems: PropTypes.arrayOf(PropTypes.object),
@@ -644,6 +696,8 @@ export const MissionInfoLayer = connect(
       ? getConvexHullOfShowInWorldCoordinates(state)
       : undefined,
     coordinateSystemType: state.map.origin.type,
+    currentItemIndex: getCurrentMissionItemIndex(state),
+    currentItemRatio: getCurrentMissionItemRatio(state) ?? 0,
     homePositions: layer?.parameters?.showHomePositions
       ? getGPSBasedHomePositionsInMission(state)
       : undefined,

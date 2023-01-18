@@ -97,6 +97,12 @@ const { actions, reducer } = createSlice({
       open: false,
       parameters: {},
     },
+
+    // the progress of the mission as reported by the UAV
+    progress: {
+      currentItemId: undefined,
+      currentItemRatio: undefined,
+    },
   },
 
   reducers: {
@@ -409,6 +415,24 @@ const { actions, reducer } = createSlice({
     },
 
     /**
+     * Updates the id of the mission item that's currently being executed.
+     */
+    updateCurrentMissionItemId(state, action) {
+      state.progress.currentItemId = action.payload;
+
+      // Reset the progress to clear remaining data from the previous item.
+      state.progress.currentItemRatio = undefined;
+    },
+
+    /**
+     * Updates the progress ratio of the mission item that's currently being
+     * executed.
+     */
+    updateCurrentMissionItemRatio(state, action) {
+      state.progress.currentItemRatio = action.payload;
+    },
+
+    /**
      * Updates the home positions of all the drones in the mission.
      */
     updateHomePositions(state, action) {
@@ -495,6 +519,8 @@ export const {
   startMappingEditorSession,
   startMappingEditorSessionAtSlot,
   togglePreferredChannel,
+  updateCurrentMissionItemId,
+  updateCurrentMissionItemRatio,
   updateHomePositions,
   updateLandingPositions,
   updateMissionItemParameters,

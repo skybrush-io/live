@@ -15,6 +15,8 @@ export const Colors = {
   convexHull: '#fc0',
   plannedTrajectory: '#08f',
   missionItem: '#0cf',
+  currentMissionItem: '#0fc',
+  doneMissionItem: '#0f8',
   selectedMissionItem: '#fc0',
 
   positionHold: yellow.A400,
