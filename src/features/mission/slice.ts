@@ -120,6 +120,12 @@ export type MissionSliceState = ReadonlyDeep<{
     open: boolean;
     parameters: Record<string, any>;
   };
+
+  /** The progress of the mission as reported by the UAV */
+  progress: {
+    currentItemId?: string;
+    currentItemRatio?: number;
+  };
 }>;
 
 const initialState: MissionSliceState = {
@@ -143,6 +149,10 @@ const initialState: MissionSliceState = {
   plannerDialog: {
     open: false,
     parameters: {},
+  },
+  progress: {
+    currentItemId: undefined,
+    currentItemRatio: undefined,
   },
 };
 
@@ -485,6 +495,24 @@ const { actions, reducer } = createSlice({
     },
 
     /**
+     * Updates the ID of the mission item that's currently being executed.
+     */
+    updateCurrentMissionItemId(state, action: PayloadAction<string>) {
+      state.progress.currentItemId = action.payload;
+
+      // Reset the progress to clear remaining data from the previous item.
+      state.progress.currentItemRatio = undefined;
+    },
+
+    /**
+     * Updates the progress ratio of the mission item that's currently being
+     * executed.
+     */
+    updateCurrentMissionItemRatio(state, action: PayloadAction<number>) {
+      state.progress.currentItemRatio = action.payload;
+    },
+
+    /**
      * Updates the home positions of all the drones in the mission.
      */
     updateHomePositions(
@@ -590,6 +618,8 @@ export const {
   startMappingEditorSession,
   startMappingEditorSessionAtSlot,
   togglePreferredChannel,
+  updateCurrentMissionItemId,
+  updateCurrentMissionItemRatio,
   updateHomePositions,
   updateLandingPositions,
   updateMissionItemParameters,

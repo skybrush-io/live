@@ -589,3 +589,27 @@ export const getMissionEstimates = createSelector(
     }
   }
 );
+
+/**
+ * Selector that returns the id of the mission item that's currently being
+ * executed.
+ */
+export const getCurrentMissionItemId = (state) =>
+  state.mission.progress.currentItemId;
+
+/**
+ * Selector that returns the index of the mission item that's currently being
+ * executed.
+ */
+export const getCurrentMissionItemIndex = createSelector(
+  getMissionItemIds,
+  getCurrentMissionItemId,
+  (ids, currentId) => ids.indexOf(currentId)
+);
+
+/**
+ * Selector that returns the progress ratio of the mission item that's
+ * currently being executed.
+ */
+export const getCurrentMissionItemRatio = (state) =>
+  state.mission.progress.currentItemRatio;
