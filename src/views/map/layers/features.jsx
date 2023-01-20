@@ -6,11 +6,18 @@ import { Circle, Style, Text } from 'ol/style';
 import React, { useCallback, useRef } from 'react';
 import { connect } from 'react-redux';
 
-import { Feature, geom, interaction, layer, source } from '@collmot/ol-react';
+import {
+  Feature as OLFeature,
+  geom,
+  interaction,
+  layer,
+  source,
+} from '@collmot/ol-react';
 
 import { snapEndToStart } from '../interactions/utils';
 import { Tool } from '../tools';
 
+import { shouldShowPointsOfFeature } from '~/features/map-features/selectors';
 import { getGeofencePolygonId } from '~/features/mission/selectors';
 import { showError } from '~/features/snackbar/actions';
 import { FeatureType, LabelStyle } from '~/model/features';
@@ -117,7 +124,12 @@ const styleForPointsOfPolygon = (feature, selected, color) =>
   });
 
 // TODO: cache the style somewhere?
-const styleForFeature = (feature, selected = false, isGeofence = false) => {
+const styleForFeature = (
+  feature,
+  isGeofence = false,
+  isSelected = false,
+  shouldShowPoints = false
+) => {
   const { color, label, labelStyle, measure, type, filled } = feature;
   const parsedColor = createColor(color || primaryColor);
   const styles = [];
@@ -128,7 +140,7 @@ const styleForFeature = (feature, selected = false, isGeofence = false) => {
       styles.push(
         new Style({
           image: new Circle({
-            stroke: selected ? whiteThinOutline : undefined,
+            stroke: isSelected ? whiteThinOutline : undefined,
             fill: fill(parsedColor.rgb().array()),
             radius,
           }),
@@ -137,7 +149,7 @@ const styleForFeature = (feature, selected = false, isGeofence = false) => {
       break;
 
     case FeatureType.LINE_STRING:
-      if (selected) {
+      if (isSelected) {
         styles.push(whiteThickOutlineStyle);
       }
 
@@ -149,9 +161,11 @@ const styleForFeature = (feature, selected = false, isGeofence = false) => {
         })
       );
 
-      if (feature.showPoints) {
+      if (shouldShowPoints) {
         // Show the vertices of the line string as well
-        styles.push(styleForPointsOfLineString(feature, selected, parsedColor));
+        styles.push(
+          styleForPointsOfLineString(feature, isSelected, parsedColor)
+        );
       }
 
       break;
@@ -175,7 +189,7 @@ const styleForFeature = (feature, selected = false, isGeofence = false) => {
           new Style({
             fill: fill(
               parsedColor
-                .fade(selected ? 0.5 : 0.75)
+                .fade(isSelected ? 0.5 : 0.75)
                 .rgb()
                 .array()
             ),
@@ -183,7 +197,7 @@ const styleForFeature = (feature, selected = false, isGeofence = false) => {
         );
       }
 
-      if (selected) {
+      if (isSelected) {
         styles.push(whiteThickOutlineStyle);
       }
 
@@ -206,8 +220,8 @@ const styleForFeature = (feature, selected = false, isGeofence = false) => {
         })
       );
 
-      if (feature.showPoints) {
-        styles.push(styleForPointsOfPolygon(feature, selected, parsedColor));
+      if (shouldShowPoints) {
+        styles.push(styleForPointsOfPolygon(feature, isSelected, parsedColor));
       }
   }
 
@@ -246,18 +260,37 @@ const styleForFeature = (feature, selected = false, isGeofence = false) => {
   return styles;
 };
 
-const renderFeature = (feature, selected, isGeofence) => {
-  const { id } = feature;
-  return (
-    <Feature
-      key={id}
-      id={featureIdToGlobalId(id)}
-      style={styleForFeature(feature, selected, isGeofence)}
-    >
-      {geometryForFeature(feature)}
-    </Feature>
-  );
+const FeaturePresentation = ({
+  feature,
+  isSelected,
+  isGeofence,
+  shouldShowPoints,
+  ...rest
+}) => (
+  <OLFeature
+    id={featureIdToGlobalId(feature.id)}
+    style={styleForFeature(feature, isGeofence, isSelected, shouldShowPoints)}
+    {...rest}
+  >
+    {geometryForFeature(feature)}
+  </OLFeature>
+);
+
+FeaturePresentation.propTypes = {
+  feature: PropTypes.object.isRequired,
+  isGeofence: PropTypes.bool,
+  isSelected: PropTypes.bool,
+  shouldShowPoints: PropTypes.bool,
 };
+
+const Feature = connect(
+  // mapStateToProps
+  (state, { feature }) => ({
+    isGeofence: getGeofencePolygonId(state) === feature.id,
+    isSelected: getSelectedFeatureIds(state).includes(feature.id),
+    shouldShowPoints: shouldShowPointsOfFeature(state, feature.id),
+  })
+)(FeaturePresentation);
 
 // === The actual layer to be rendered ===
 
@@ -304,7 +337,6 @@ const FeaturesLayerPresentation = ({
   onError,
   onFeatureModificationStarted,
   onFeaturesModified,
-  selectedFeatureIds,
   selectedTool,
   zIndex,
 }) => {
@@ -363,13 +395,9 @@ const FeaturesLayerPresentation = ({
       <source.Vector>
         {features
           .filter((feature) => feature.visible)
-          .map((feature) =>
-            renderFeature(
-              feature,
-              selectedFeatureIds.includes(feature.id),
-              feature.id === geofencePolygonId
-            )
-          )}
+          .map((feature) => (
+            <Feature key={feature.id} feature={feature} />
+          ))}
         {selectedTool === Tool.CUT_HOLE ? (
           <interaction.CutHole
             onCutStart={onModifyStart}
@@ -393,7 +421,6 @@ FeaturesLayerPresentation.propTypes = {
   zIndex: PropTypes.number,
 
   features: PropTypes.arrayOf(PropTypes.object).isRequired,
-  selectedFeatureIds: PropTypes.arrayOf(PropTypes.string).isRequired,
   geofencePolygonId: PropTypes.string,
 
   onError: PropTypes.func,
@@ -405,7 +432,6 @@ export const FeaturesLayer = connect(
   // mapStateToProps
   (state) => ({
     features: getFeaturesInOrder(state),
-    selectedFeatureIds: getSelectedFeatureIds(state),
     geofencePolygonId: getGeofencePolygonId(state),
   }),
   // mapDispatchToProps
