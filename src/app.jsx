@@ -72,8 +72,7 @@ const rootInnerStyle = {
   display: 'flex',
   alignItems: 'stretch',
   flexGrow: 1,
-  width: '100%',
-  height: '100%',
+  contain: 'size',
 };
 
 /**
