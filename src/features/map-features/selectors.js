@@ -1,9 +1,12 @@
 import camelCase from 'lodash-es/camelCase';
 import capitalize from 'lodash-es/capitalize';
 import map from 'lodash-es/map';
+import { createSelector } from '@reduxjs/toolkit';
 
+import { getSelectedTool } from '~/features/map/tools';
 import { getNameOfFeatureType } from '~/model/features';
 import { chooseUniqueId, chooseUniqueName } from '~/utils/naming';
+import { Tool } from '~/views/map/tools';
 
 /**
  * Proposes an ID to use for a new feature that is to be added to the
@@ -33,6 +36,17 @@ export const getProposedIdForNewFeature = (state, feature, name) => {
   const existingIds = Object.keys(state.features.byId);
   return chooseUniqueId(camelCase(name), existingIds);
 };
+
+/**
+ * Selector that returns whether the points of a feature with a given id should
+ * be shown.
+ */
+export const shouldShowPointsOfFeature = createSelector(
+  getSelectedTool,
+  (state, featureId) => state.features.byId[featureId],
+  (selectedTool, feature) =>
+    selectedTool === Tool.EDIT_FEATURE || feature.showPoints
+);
 
 /**
  * Selector that returns the id of the feature currently being edited.

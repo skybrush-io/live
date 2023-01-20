@@ -5,6 +5,7 @@ import withTheme from '@material-ui/core/styles/withTheme';
 
 import { connect } from 'react-redux';
 
+import { getSelectedTool } from '~/features/map/tools';
 import { getMapViewRotationAngle } from '~/selectors/map';
 
 import FitAllFeaturesButton from './FitAllFeaturesButton';
@@ -64,7 +65,7 @@ MapToolbarPresentation.propTypes = {
 const MapToolbar = connect(
   // mapStateToProps
   (state) => ({
-    ...state.map.tools,
+    selectedTool: getSelectedTool(state),
     initialRotation: getMapViewRotationAngle(state),
   }),
   // mapDispatchToProps

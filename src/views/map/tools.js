@@ -30,7 +30,7 @@ export const Tool = {
  * @return {boolean} whether the given tool identifier is a drawing tool
  */
 export function isDrawingTool(tool) {
-  return tool && tool.slice(0, 4) === 'draw';
+  return tool && tool.startsWith('draw');
 }
 
 /**

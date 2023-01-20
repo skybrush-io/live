@@ -8,6 +8,7 @@ import Switch from '@material-ui/core/Switch';
 import TextField from '@material-ui/core/TextField';
 
 import SwatchesColorPicker from '~/components/SwatchesColorPicker';
+import { shouldShowPointsOfFeature } from '~/features/map-features/selectors';
 import {
   renameFeature,
   setFeatureColor,
@@ -31,6 +32,7 @@ const GeneralPropertiesForm = ({
   onToggleFeatureMeasurementVisible,
   onToggleFeaturePointsVisible,
   onToggleFeatureVisibility,
+  shouldShowPoints,
 }) => (
   <div>
     <div style={{ display: 'flex', padding: '1em 0' }}>
@@ -72,7 +74,8 @@ const GeneralPropertiesForm = ({
         <FormControlLabel
           control={
             <Checkbox
-              checked={Boolean(feature.showPoints)}
+              checked={shouldShowPoints}
+              indeterminate={shouldShowPoints && !feature.showPoints}
               color='primary'
               onChange={onToggleFeaturePointsVisible}
             />
@@ -104,11 +107,14 @@ GeneralPropertiesForm.propTypes = {
   onToggleFeatureMeasurementVisible: PropTypes.func,
   onToggleFeaturePointsVisible: PropTypes.func,
   onToggleFeatureVisibility: PropTypes.func,
+  shouldShowPoints: PropTypes.bool,
 };
 
 export default connect(
   // mapStateToProps
-  null,
+  (state, { featureId }) => ({
+    shouldShowPoints: shouldShowPointsOfFeature(state, featureId),
+  }),
   // mapDispatchToProps
   (dispatch, { featureId }) => ({
     onSetFeatureColor(color) {
