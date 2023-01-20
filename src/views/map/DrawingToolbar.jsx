@@ -17,7 +17,7 @@ import { connect } from 'react-redux';
 import { TooltipWithContainerFromContext as Tooltip } from '~/containerContext';
 import ContentCut from '~/icons/ContentCut';
 import EditFeature from '~/icons/EditFeature';
-import { setSelectedTool } from '~/features/map/tools';
+import { getSelectedTool, setSelectedTool } from '~/features/map/tools';
 
 import { Tool } from './tools';
 
@@ -101,7 +101,9 @@ DrawingToolbarPresentation.propTypes = {
  */
 const DrawingToolbar = connect(
   // mapStateToProps
-  (state) => ({ ...state.map.tools }),
+  (state) => ({
+    selectedTool: getSelectedTool(state),
+  }),
   // mapDispatchToProps
   {
     onToolSelected: setSelectedTool,

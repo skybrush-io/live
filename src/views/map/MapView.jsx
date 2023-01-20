@@ -46,6 +46,7 @@ import {
   setSelection,
   removeFromSelection,
 } from '~/features/map/selection';
+import { getSelectedTool } from '~/features/map/tools';
 import { getVisibleLayersInOrder } from '~/selectors/ordered';
 import { getExtendedCoordinateFormatter } from '~/selectors/formatting';
 import {
@@ -107,7 +108,7 @@ const MapViewLayers = connect(
   // mapStateToProps
   (state) => ({
     layers: getVisibleLayersInOrder(state),
-    selectedTool: state.map.tools.selectedTool,
+    selectedTool: getSelectedTool(state),
   })
 )(MapViewLayersPresentation);
 
@@ -737,7 +738,7 @@ const MapView = connect(
     zoom: state.map.view.zoom,
 
     selectedFeatures: getSelectedFeatureIds(state),
-    selectedTool: state.map.tools.selectedTool,
+    selectedTool: getSelectedTool(state),
     selection: getSelection(state),
   })
 )(MapViewPresentation);

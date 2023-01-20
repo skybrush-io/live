@@ -3,12 +3,13 @@
  */
 
 import { createSlice } from '@reduxjs/toolkit';
+import { Tool } from '~/views/map/tools';
 
 /**
  * The default selected tool.
  */
 const initialState = {
-  selectedTool: 'select',
+  selectedTool: Tool.SELECT,
 };
 
 /**
@@ -25,5 +26,7 @@ const { reducer, actions } = createSlice({
 });
 
 export const { setSelectedTool } = actions;
+
+export const getSelectedTool = (state) => state.map.tools.selectedTool;
 
 export default reducer;
