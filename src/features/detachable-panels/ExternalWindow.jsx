@@ -122,7 +122,7 @@ export default class ExternalWindow extends React.Component {
 
         const importer = makeImporterBefore(mutation.nextSibling);
         for (const added of mutation.addedNodes) {
-          if (added instanceof HTMLStyleElement) {
+          if (added instanceof HTMLStyleElement && added.sheet) {
             this._styleRegistry.set(added, importStyleNode(added, importer));
           }
         }
