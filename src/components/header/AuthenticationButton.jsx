@@ -29,7 +29,9 @@ const AuthenticationButtonPresentation = ({
   <Tooltip content='Authentication'>
     <div
       className={clsx('wb-module', isDisabled && 'wb-module-disabled')}
-      onClick={isAuthenticated ? onDeauthenticate : onAuthenticate}
+      onClick={
+        isDisabled ? null : isAuthenticated ? onDeauthenticate : onAuthenticate
+      }
     >
       <span className={clsx('wb-icon', 'wb-module-icon')}>
         <AuthenticationStatusBadge />
