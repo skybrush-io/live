@@ -16,7 +16,11 @@ import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
 
 import { makeDetachable } from './features/detachable-panels/DetachablePanel';
 import { createPerspectiveBuilder } from './features/perspectives/utils';
-import { saveWorkbenchState } from './features/workbench/slice';
+import {
+  saveWorkbenchState,
+  setWorkbenchHasHeaders,
+  setWorkbenchIsFixed,
+} from './features/workbench/slice';
 import { injectFlockFromContext } from './flock';
 import store from './store';
 import {
@@ -166,12 +170,14 @@ function constructDefaultWorkbench(store) {
 
   // Create the default perspective
   const workbench = workbenchBuilder.build();
-  const state = createPerspectiveBuilder(
+  const { isFixed, state } = createPerspectiveBuilder(
     componentRegistry,
     workbench
-  )(getDefaultWorkbenchPerspectiveSpecification()).state;
+  )(getDefaultWorkbenchPerspectiveSpecification());
 
   workbench.restoreState(state);
+  store.dispatch(setWorkbenchHasHeaders(state.settings.hasHeaders));
+  store.dispatch(setWorkbenchIsFixed(isFixed));
 
   // Set a fallback component for cases when we cannot show a component
   workbench.fallback = FallbackComponent;
