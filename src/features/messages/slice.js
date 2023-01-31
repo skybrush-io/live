@@ -85,6 +85,8 @@ const { actions, reducer } = createSlice({
           responseId: null,
           recipient: uavId,
           body: message,
+          percentage: undefined,
+          status: undefined,
         },
         uavId
       );
@@ -102,6 +104,22 @@ const { actions, reducer } = createSlice({
 
       delete state.uavIdsToMessageIds[uavId];
     },
+
+    updateProgressByMessageId(state, action) {
+      const { messageId, progress } = action.payload;
+      const messageState = state.byId[messageId];
+      if (messageState && typeof progress === 'object') {
+        if (typeof progress.percentage === 'number') {
+          messageState.percentage = Number(
+            Math.max(0, Math.min(progress.percentage, 100)).toFixed(1)
+          );
+        }
+
+        if (typeof progress.status !== 'undefined') {
+          messageState.status = String(progress.status);
+        }
+      }
+    },
   },
 });
 
@@ -110,6 +128,7 @@ export const {
   addOutboundMessage,
   addErrorMessage,
   clearMessagesOfUAVById,
+  updateProgressByMessageId,
 } = actions;
 
 export default reducer;

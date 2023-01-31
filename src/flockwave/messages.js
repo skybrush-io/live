@@ -323,15 +323,22 @@ class PendingCommandExecution {
    *         are waiting for
    * @param {number} timeout  number of seconds to wait for the result of the
    *        command
+   * @param {function}  onProgress  an optional function to call when a status
+   *        update is received for the execution of this command
+   * @param {function}  onTimeout  an optional function to call when the
+   *        result of the command did not arrive in time
    */
-  constructor(receipt, { timeout = 5, onTimeout } = {}) {
+  constructor(receipt, { timeout = 5, onProgress, onTimeout } = {}) {
     this._receipt = receipt;
     this._deferred = pDefer();
+    this._progressCallback = onProgress;
 
     if (timeout > 0) {
-      this._timeoutId = setTimeout(this._onTimeout, timeout * 1000);
+      this._timeoutInMsec = timeout * 1000;
+      this._timeoutId = setTimeout(this._onTimeout, this._timeoutInMsec);
       this._timeoutCallback = onTimeout;
     } else {
+      this._timeoutInMsec = undefined;
       this._timeoutId = undefined;
       this._timeoutCallback = undefined;
     }
@@ -343,7 +350,7 @@ class PendingCommandExecution {
    *
    * @param  {Object} body the body of the response to the command execution request
    */
-  processMessageBody = (body) => {
+  processResponseMessageBody = (body) => {
     const { error, result } = body;
 
     this._clearTimeoutIfNeeded();
@@ -355,6 +362,21 @@ class PendingCommandExecution {
       this._deferred.reject(
         new Error('Malformed response was provided by the server')
       );
+    }
+  };
+
+  /**
+   * Function to call when a status update of the command execution request was
+   * received.
+   *
+   * @param  {Object} body the body of the status update message
+   */
+  processStatusUpdateMessageBody = (body) => {
+    const { progress } = body;
+
+    this._restartTimeoutIfNeeded();
+    if (progress && this._progressCallback) {
+      this._progressCallback(progress);
     }
   };
 
@@ -408,6 +430,16 @@ class PendingCommandExecution {
 
     this._deferred.reject(new ClientSideCommandExecutionTimeout(this.receipt));
   };
+
+  /**
+   * Restarts the timeout associated to the pending response if needed.
+   */
+  _restartTimeoutIfNeeded() {
+    this._clearTimeoutIfNeeded();
+    if (this._timeoutInMsec !== undefined) {
+      this._timeoutId = setTimeout(this._onTimeout, this._timeoutInMsec);
+    }
+  }
 }
 
 /**
@@ -472,6 +504,7 @@ class AsyncOperationManager {
       // Register our own notification handlers
       this._hub.registerNotificationHandlers({
         'ASYNC-RESP': this._onResponseReceived,
+        'ASYNC-ST': this._onStatusUpdateReceived,
         'ASYNC-TIMEOUT': this._onTimeoutReceived,
         /* legacy handler, should be removed soon */
         'OBJ-CMD': this._onResponseReceived,
@@ -538,6 +571,12 @@ class AsyncOperationManager {
    *         ID such that calling its `cancel()` method later on will send
    *         a request to cancel the asynchronous operation corresponding to the
    *         given receipt ID.
+   * @param  {function} onProgress  when specified, this function will be called
+   *         whenever we receive a status update from the server regarding the
+   *         execution of the command this object belongs to. The function will
+   *         be called with an object having at most two keys: `percentage`
+   *         (a number between 0 and 100) and `status` (a human-readable
+   *         text message).
    * @param  {boolean} noThrow   when set to true, ensures that the function
    *         does not throw an exception when the async response indicated an
    *         error; returns the error object instead as if it was the result
@@ -550,7 +589,7 @@ class AsyncOperationManager {
   async handleMultiAsyncResponseForSingleId(
     response,
     objectId,
-    { cancelToken, noThrow, timeout } = {}
+    { cancelToken, noThrow, onProgress, timeout } = {}
   ) {
     const { receipt, result } = extractResultOrReceiptFromMaybeAsyncResponse(
       response,
@@ -561,6 +600,7 @@ class AsyncOperationManager {
       const execution = new PendingCommandExecution(receipt, {
         timeout:
           typeof timeout === 'number' && timeout > 0 ? timeout : this.timeout,
+        onProgress,
         onTimeout: this._onResponseTimedOut,
       });
 
@@ -569,7 +609,7 @@ class AsyncOperationManager {
       }
 
       if (this._earlyResponses[receipt]) {
-        execution.processMessageBody(this._earlyResponses[receipt]);
+        execution.processResponseMessageBody(this._earlyResponses[receipt]);
         delete this._earlyResponses[receipt];
       }
 
@@ -601,7 +641,7 @@ class AsyncOperationManager {
     const { id } = message.body;
     const pendingOperation = this._pendingOperations[id];
     if (pendingOperation) {
-      pendingOperation.processMessageBody(message.body);
+      pendingOperation.processResponseMessageBody(message.body);
     } else {
       // Sometimes it happens that we get the chance to process response in an
       // ASYNC-RESP message earlier than we've processed the OBJ-CMD message
@@ -612,6 +652,20 @@ class AsyncOperationManager {
       //
       // TODO(ntamas): clean up _earlyResponses periodically
       this._earlyResponses[id] = message.body;
+    }
+  };
+
+  /**
+   * Handler called when the server returns a status update for an async
+   * operation in the form of an ASYNC-ST notification.
+   *
+   * @param {string} message  the message sent by the server
+   */
+  _onStatusUpdateReceived = (message) => {
+    const { id } = message.body;
+    const pendingOperation = this._pendingOperations[id];
+    if (pendingOperation) {
+      pendingOperation.processStatusUpdateMessageBody(message.body);
     }
   };
 
@@ -894,7 +948,7 @@ export default class MessageHub {
    * @param  {Object}    options additional options to forward to the
    *         `handleMultiAsyncResponseForSingleId()` method of the
    *         AsyncOperationManager. Typical keys to use are `cancelToken`,
-   *         `timeout` and `noThrow`.
+   *         `onProgress`, `timeout` and `noThrow`.
    * @return {Promise} a promise that resolves to the response of the UAV
    *         to the command or errors out in case of execution errors and
    *         timeouts.

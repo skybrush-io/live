@@ -28,6 +28,7 @@ import {
   addInboundMessage,
   addOutboundMessage,
   clearMessagesOfUAVById,
+  updateProgressByMessageId,
 } from '~/features/messages/slice';
 import { formatCommandResponseAsHTML } from '~/flockwave/formatting';
 import { parseCommandFromString } from '~/flockwave/messages';
@@ -77,8 +78,14 @@ function convertMessageToComponent(message, state = {}) {
             inProgress ? (
               <CircularProgress
                 size={30}
-                thickness={1.75}
-                style={{ margin: 10 }}
+                thickness={3.5}
+                style={{ margin: '14px 8px' }}
+                value={message.percentage}
+                variant={
+                  message.percentage !== undefined
+                    ? 'determinate'
+                    : 'indeterminate'
+                }
               />
             ) : (
               false
@@ -314,12 +321,19 @@ export default connect(
       const { messageId } = action;
 
       try {
-        const result = await messageHub.sendCommandRequest({
-          uavId,
-          command,
-          args,
-          kwds,
-        });
+        const result = await messageHub.sendCommandRequest(
+          {
+            uavId,
+            command,
+            args,
+            kwds,
+          },
+          {
+            onProgress(progress) {
+              dispatch(updateProgressByMessageId({ messageId, progress }));
+            },
+          }
+        );
         const formattedMessage = formatCommandResponseAsHTML(result);
         dispatch(
           addInboundMessage({
