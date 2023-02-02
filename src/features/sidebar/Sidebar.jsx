@@ -4,6 +4,7 @@ import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 import Alarm from '@material-ui/icons/Alarm';
 // import Apps from '@material-ui/icons/Apps';
+import ConnectingAirports from '~/icons/ConnectingAirports';
 import Flight from '@material-ui/icons/Flight';
 import Gamepad from '@material-ui/icons/Gamepad';
 import Grain from '@material-ui/icons/Grain';
@@ -87,7 +88,18 @@ const Sidebar = ({ experimentalFeaturesEnabled, isOpen, workbench }) => (
           />
         )}
         <hr />
-        <Module id='uavs' icon={<Flight />} label='UAVs' component='uav-list' />
+        <Module
+          id='uav-details'
+          icon={<Flight />}
+          label='UAV'
+          component='uav-details'
+        />
+        <Module
+          id='uav-list'
+          icon={<ConnectingAirports />}
+          label='UAVs'
+          component='uav-list'
+        />
         {hasFeature('beacons') && (
           <Module
             id='beacons'

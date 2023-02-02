@@ -44,6 +44,12 @@ const { actions, reducer } = createSlice({
     // Order defines the preferred ordering of UAVs on the UI. CUrrently we sort
     // automatically based on IDs.
     order: [],
+
+    panel: {
+      followMapSelection: true,
+      selectedTab: 'preflight',
+      selectedUAVId: undefined,
+    },
   },
 
   reducers: {
@@ -68,6 +74,21 @@ const { actions, reducer } = createSlice({
       deleteItemsByIds(state, action.payload);
     },
 
+    setSelectedTabInUAVDetailsPanel(state, { payload }) {
+      state.panel.selectedTab = payload;
+    },
+
+    setSelectedUAVIdInUAVDetailsPanel(state, { payload }) {
+      state.panel.selectedUAVId = payload;
+    },
+
+    toggleFollowMapSelectionInUAVDetailsPanel: {
+      prepare: () => ({}),
+      reducer(state) {
+        state.panel.followMapSelection = !state.panel.followMapSelection;
+      },
+    },
+
     updateAgesOfUAVs(state, action) {
       for (const [uavId, age] of Object.entries(action.payload)) {
         const uav = uavId ? state.byId[uavId] : undefined;
@@ -88,6 +109,9 @@ const { actions, reducer } = createSlice({
 export const {
   addUAVs,
   clearUAVList,
+  setSelectedTabInUAVDetailsPanel,
+  setSelectedUAVIdInUAVDetailsPanel,
+  toggleFollowMapSelectionInUAVDetailsPanel,
   updateAgesOfUAVs,
   updateUAVs,
   _removeUAVsByIds,

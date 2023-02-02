@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added a new panel for monitoring and controlling one specific drone and it's
+  devices.
+
 - Enable multi-window support by making panels detachable from the main layout.
 
 - Static image layer with adjustable latitude, longitude, heading and scaling.

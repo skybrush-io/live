@@ -761,3 +761,12 @@ export function getSingleUAVStatusSummary(uav) {
 
 export const createSingleUAVStatusSummarySelector = () =>
   createSelector(getUAVById, getSingleUAVStatusSummary);
+
+export const getFollowMapSelectionInUAVDetailsPanel = (state) =>
+  state.uavs.panel.followMapSelection;
+
+export const getSelectedTabInUAVDetailsPanel = (state) =>
+  state.uavs.panel.selectedTab;
+
+export const getSelectedUAVIdInUAVDetailsPanel = (state) =>
+  state.uavs.panel.selectedUAVId;

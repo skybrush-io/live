@@ -150,6 +150,11 @@ export const componentRegistry = {
     label: '3D View',
     feature: 'threeDView',
   },
+  'uav-details': {
+    component: views.UAVDetailsPanel,
+    label: 'UAV',
+    detachable: true,
+  },
   'uav-list': {
     component: injectFlockFromContext(views.UAVList),
     label: 'UAVs',
