@@ -77,7 +77,20 @@ const createTCPSocket = ({ address, port }, options = {}, handlers = {}) => {
   };
 };
 
-const reverseDNSLookup = pify(dns.reverse);
+const promisifiedDNSReverse = pify(dns.reverse);
+
+const reverseDNSLookup = async (ip) => {
+  try {
+    await promisifiedDNSReverse(ip);
+  } catch (error) {
+    if (error.code === 'ENOTFOUND') {
+      // This is okay
+      return [];
+    } else {
+      throw error;
+    }
+  }
+};
 
 // Inject the bridge functions between the main and the renderer processes.
 // These are the only functions that the renderer processes may call to access
