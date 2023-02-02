@@ -12,7 +12,6 @@ import { connect } from 'react-redux';
 import Box from '@material-ui/core/Box';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import IconButton from '@material-ui/core/IconButton';
-import TextField from '@material-ui/core/TextField';
 import DeleteSweep from '@material-ui/icons/DeleteSweep';
 
 import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
