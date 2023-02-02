@@ -5,6 +5,7 @@ import Typography from '@material-ui/core/Typography';
 import Alarm from '@material-ui/icons/Alarm';
 // import Apps from '@material-ui/icons/Apps';
 import Assignment from '@material-ui/icons/Assignment';
+import ConnectingAirports from '~/icons/ConnectingAirports';
 import Flight from '@material-ui/icons/Flight';
 import Gamepad from '@material-ui/icons/Gamepad';
 import Grain from '@material-ui/icons/Grain';
@@ -91,8 +92,14 @@ const Sidebar = ({ experimentalFeaturesEnabled, isOpen, t, workbench }) => (
         )}
         <hr />
         <Module
-          id='uavs'
+          id='uav-details'
           icon={<Flight />}
+          label={t('view.uav-details')}
+          component='uav-details'
+        />
+        <Module
+          id='uav-list'
+          icon={<ConnectingAirports />}
           label={t('view.uav-list')}
           component='uav-list'
         />

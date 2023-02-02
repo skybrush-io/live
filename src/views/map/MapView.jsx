@@ -31,6 +31,7 @@ import {
 import NearestItemTooltip from '~/features/session/NearestItemTooltip';
 import { setFeatureIdForTooltip } from '~/features/session/slice';
 import mapViewManager from '~/mapViewManager';
+import { globalIdToUavId, isUavId } from '~/model/identifiers';
 import {
   canLayerTriggerTooltip,
   getVisibleSelectableLayers,
@@ -65,6 +66,8 @@ import {
 import { toDegrees } from '~/utils/math';
 
 import 'ol/ol.css';
+import { setSelectedUAVIdInUAVDetailsPanel } from '~/features/uavs/slice';
+import { getFollowMapSelectionInUAVDetailsPanel } from '~/features/uavs/selectors';
 
 /* ********************************************************************** */
 
@@ -625,6 +628,12 @@ class MapViewPresentation extends React.Component {
       return;
     }
 
+    if (this.props.uavDetailsPanelFollowsSelection && isUavId(id)) {
+      this.props.dispatch(
+        setSelectedUAVIdInUAVDetailsPanel(globalIdToUavId(id))
+      );
+    }
+
     switch (mode) {
       case 'activate':
         this._onFeatureActivated(feature);
@@ -745,6 +754,9 @@ const MapView = connect(
     selectedFeatures: getSelectedFeatureIds(state),
     selectedTool: getSelectedTool(state),
     selection: getSelection(state),
+
+    uavDetailsPanelFollowsSelection:
+      getFollowMapSelectionInUAVDetailsPanel(state),
   })
 )(MapViewPresentation);
 

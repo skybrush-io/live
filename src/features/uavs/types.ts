@@ -51,3 +51,10 @@ export enum UAVDetailsDialogTab {
   PREFLIGHT = 'preflight',
   TESTS = 'tests',
 }
+
+export enum UAVDetailsPanelTab {
+  LOGS = 'logs',
+  MESSAGES = 'messages',
+  PREFLIGHT = 'preflight',
+  TESTS = 'tests',
+}
