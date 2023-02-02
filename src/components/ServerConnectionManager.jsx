@@ -573,6 +573,12 @@ async function executeTasksAfterConnection(dispatch, getState) {
       dispatch(synchronizeShowSettings('fromServer'));
     }
 
+    // Update device tree subscriptions
+    // TODO(ntamas): this is not nice, we are reaching into the internals of
+    // the messageHub here, probably indicating that the device tree
+    // subscriptions do not even belong there?
+    messageHub._deviceTreeSubscriptionManager.requestSubscriptionUpdates();
+
     // Get the server time to have a quick estimate of the clock skew.
     // We do this late in the connection process; doing it early results in
     // overly high skew estimates when the browser loads the JS page and the

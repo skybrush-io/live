@@ -443,11 +443,73 @@ class PendingCommandExecution {
 }
 
 /**
+ * Abstract superclass for components related to a message hub.
+ */
+class MessageHubRelatedComponent {
+  /**
+   * Constructor.
+   *
+   * @param {MessageHub} hub  the message hub that the object will attach to
+   */
+  constructor(hub) {
+    this._hub = undefined;
+    this._setHub(hub);
+  }
+
+  /**
+   * Returns the message hub that the object is attached to.
+   */
+  get hub() {
+    return this._hub;
+  }
+
+  /**
+   * Callback function that is called when the object is attached to a new
+   * message hub. Must be overridden in subclasses.
+   */
+  _onAttachedToHub() {}
+
+  /**
+   * Callback function that is called when the object is detached from a
+   * message hub. Must be overridden in subclasses. The default implementation
+   * throws an exception to prevent detachment.
+   */
+  _onDetachingFromHub() {
+    throw new Error('You may not detach this object from its message hub');
+  }
+
+  /**
+   * Sets the message hub that the object is attached to.
+   *
+   * This function may be called only once during the lifetime of the
+   * object. Once the object is attached to a hub, there is currently no
+   * way to detach it.
+   *
+   * @param {MessageHub} value  the new message hub to attach to
+   */
+  _setHub(value) {
+    if (value === this._hub) {
+      return;
+    }
+
+    if (this._hub) {
+      this._onDetachingFromHub();
+    }
+
+    this._hub = value;
+
+    if (this._hub) {
+      this._onAttachedToHub();
+    }
+  }
+}
+
+/**
  * Manager class that keeps track of async operations that are happening on
  * the server and watches the incoming ASYNC-RESP and ASYNC-TIMEOUT messages so
  * it gets notified whenever a pending async operation has finished.
  */
-class AsyncOperationManager {
+class AsyncOperationManager extends MessageHubRelatedComponent {
   /**
    * Constructor. Creates a new manager that will attach to the given
    * message hub to inspect the incoming ASYNC-RESP and ASYNC-TIMEOUT messages.
@@ -462,54 +524,21 @@ class AsyncOperationManager {
    *        a minute. The timeout can be overridden on a per-command basis.
    */
   constructor(hub, timeout = 60) {
-    this.timeout = timeout;
+    super(hub);
 
-    this._hub = undefined;
+    this.timeout = timeout;
     this._pendingOperations = {};
     this._earlyResponses = {};
-
-    this._attachToHub(hub);
   }
 
-  /**
-   * Returns the message hub that the execution manager is attached to.
-   */
-  get hub() {
-    return this._hub;
-  }
-
-  /**
-   * Sets the message hub that the execution manager is attached to.
-   *
-   * This function may be called only once during the lifetime of the
-   * manager. Once the manager is attached to a hub, there is currently no
-   * way to detach it.
-   *
-   * @param {MessageHub} value  the new message hub to attach to
-   */
-  _attachToHub(value) {
-    if (value === this._hub) {
-      return;
-    }
-
-    if (this._hub) {
-      throw new Error(
-        'You may not detach an AsyncOperationManager from its message hub'
-      );
-    }
-
-    this._hub = value;
-
-    if (this._hub) {
-      // Register our own notification handlers
-      this._hub.registerNotificationHandlers({
-        'ASYNC-RESP': this._onResponseReceived,
-        'ASYNC-ST': this._onStatusUpdateReceived,
-        'ASYNC-TIMEOUT': this._onTimeoutReceived,
-        /* legacy handler, should be removed soon */
-        'OBJ-CMD': this._onResponseReceived,
-      });
-    }
+  _onAttachedToHub() {
+    this._hub.registerNotificationHandlers({
+      'ASYNC-RESP': this._onResponseReceived,
+      'ASYNC-ST': this._onStatusUpdateReceived,
+      'ASYNC-TIMEOUT': this._onTimeoutReceived,
+      /* legacy handler, should be removed soon */
+      'OBJ-CMD': this._onResponseReceived,
+    });
   }
 
   /**
@@ -710,6 +739,199 @@ class AsyncOperationManager {
 }
 
 /**
+ * Manager class that keeps track of all device tree subscriptions that other
+ * parts of the application wish to maintain and takes care of subscribing and
+ * unsubscribing.
+ *
+ * Also takes care of restoring subscriptions when the app disconnects from the
+ * server and reconnects to it later.
+ */
+class DeviceTreeSubscriptionManager extends MessageHubRelatedComponent {
+  constructor(hub) {
+    super(hub);
+
+    // Mapping from device tree paths to list of callback functions that must
+    // be called when the device tree changes under the subtree described by
+    // the path.
+    this._subscriptions = new Map();
+
+    // Array of device tree paths we are currently subscribed to on the server;
+    // `null` means not known yet
+    this._subscriptionsOnServer = null;
+  }
+
+  /**
+   * Requests the subscription manager to list the current subscriptions from
+   * the server and update them to match the list of _desired_ subscriptions
+   * stored in this instance.
+   */
+  async requestSubscriptionUpdates() {
+    if (!this._hub) {
+      console.warn(
+        'requestSubscriptionUpdates() was called without a message hub'
+      );
+      this._subscriptionsOnServer = null;
+      return;
+    }
+
+    if (!this._hub.canSend()) {
+      // Message hub will call us again when it receives an emitter.
+      this._subscriptionsOnServer = null;
+      return;
+    }
+
+    let response;
+
+    try {
+      response = await this._hub.sendMessage('DEV-LISTSUB');
+    } catch (error) {
+      console.error(error);
+      return;
+    }
+
+    const paths = response?.body?.paths;
+    if (!Array.isArray(paths)) {
+      this._subscriptionsOnServer = null;
+      throw new Error('DEV-LISTSUB expected to return an array of paths');
+    }
+
+    this._subscriptionsOnServer = paths;
+
+    await this._updateSubscriptions();
+  }
+
+  /**
+   * Subscribes to a part of the device tree such that the given function is
+   * called whenever the part of the device tree denoted by the given path
+   * is updated.
+   */
+  async subscribe(path, callback) {
+    const newlyAdded = !this._subscriptions.has(path);
+
+    if (newlyAdded) {
+      this._subscriptions.set(path, []);
+    }
+
+    const callbacks = this._subscriptions.get(path);
+    callbacks.push(callback);
+
+    try {
+      if (newlyAdded) {
+        await this._updateSubscriptions();
+      }
+    } catch (error) {
+      const index = callbacks.indexOf(callback);
+      if (index >= 0) {
+        callbacks.splice(index, 1);
+      }
+
+      if (
+        this._subscriptions.get(path) === callbacks &&
+        callbacks.length === 0
+      ) {
+        this._subscriptions.delete(path);
+      }
+
+      throw error;
+    }
+
+    return () => this.unsubscribe(path, callback);
+  }
+
+  /**
+   * Unsubscribes from the given path of the device tree with the given callback.
+   * No-op if the callback is not subscribed.
+   */
+  async unsubscribe(path, callback) {
+    if (!this._subscriptions.has(path)) {
+      return;
+    }
+
+    const callbacks = this._subscriptions.get(path);
+    const index = callbacks.indexOf(callback);
+
+    if (index >= 0) {
+      callbacks.splice(index, 1);
+      if (callbacks.length === 0) {
+        this._subscriptions.delete(path);
+      }
+
+      await this._updateSubscriptions();
+    }
+  }
+
+  _onAttachedToHub() {
+    if (this._hub) {
+      this.requestSubscriptionUpdates();
+    }
+  }
+
+  /**
+   * Updates the list of subscriptions on the server if needed.
+   */
+  async _updateSubscriptions() {
+    const toSubscribe = [];
+    const toUnsubscribe = [];
+    let shouldRetry = false;
+
+    for (const key of this._subscriptions.keys()) {
+      if (!this._subscriptionsOnServer.includes(key)) {
+        toSubscribe.push(key);
+      }
+    }
+
+    for (const key of this._subscriptionsOnServer) {
+      if (!this._subscriptions.has(key)) {
+        toUnsubscribe.push(key);
+      }
+    }
+
+    if (toUnsubscribe.length === 0 && toSubscribe.length === 0) {
+      return;
+    }
+
+    if (!this._hub) {
+      console.warn('_updateSubscriptions() was called without a message hub');
+      return;
+    }
+
+    if (toUnsubscribe) {
+      const response = await this._hub.sendMessage({
+        type: 'DEV-UNSUB',
+        paths: toUnsubscribe,
+      });
+
+      if (response?.body?.error) {
+        console.warn(
+          'Failed to unsubscribe from one or more paths: ' +
+            JSON.stringify(response.body.error)
+        );
+        shouldRetry = true;
+      }
+    }
+
+    if (toSubscribe) {
+      const response = await this._hub.sendMessage({
+        type: 'DEV-SUB',
+        paths: toSubscribe,
+      });
+
+      if (response?.body?.error) {
+        console.warn(
+          'Failed to subscribe to one or more device tree paths: ' +
+            JSON.stringify(response.body.error)
+        );
+        shouldRetry = true;
+      }
+    }
+
+    if (shouldRetry) {
+      setTimeout(() => this._updateSubscriptions(), 5000);
+    }
+  }
+}
+
+/**
  * Message hub class that can be used to send Flockwave messages and get
  * promises that will resolve when the server responds to them.
  */
@@ -736,6 +958,9 @@ export default class MessageHub {
     this._onMessageTimedOut = this._onMessageTimedOut.bind(this);
 
     this._asyncOperationManager = new AsyncOperationManager(this);
+    this._deviceTreeSubscriptionManager = new DeviceTreeSubscriptionManager(
+      this
+    );
   }
 
   /**
@@ -806,6 +1031,14 @@ export default class MessageHub {
         pendingResponse.reject(new EmitterChangedError());
       }
     }
+  }
+
+  /**
+   * Returns whether the message hub can send messages now (i.e. has a
+   * message emitter).
+   */
+  canSend() {
+    return Boolean(this._emitter);
   }
 
   /**
