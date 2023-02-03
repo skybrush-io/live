@@ -862,7 +862,26 @@ class DeviceTreeSubscriptionManager extends MessageHubRelatedComponent {
 
   _onAttachedToHub() {
     if (this._hub) {
+      this._hub.registerNotificationHandlers({
+        'DEV-INF': (...args) => this._onDeviceTreeNodeValuesChanged(...args),
+      });
+
       this.requestSubscriptionUpdates();
+    }
+  }
+
+  _onDeviceTreeNodeValuesChanged(message) {
+    for (const [path, value] of Object.entries(message)) {
+      this._handleUpdatedValueOfDeviceTreeNode(path, value);
+    }
+  }
+
+  _handleUpdatedValueOfDeviceTreeNode(path, value) {
+    const callbacks = this._subscriptions.get(path);
+    if (callbacks) {
+      for (const callback of callbacks) {
+        callback(value);
+      }
     }
   }
 
@@ -911,7 +930,7 @@ class DeviceTreeSubscriptionManager extends MessageHubRelatedComponent {
     }
 
     if (toSubscribe) {
-      const response = await this._hub.sendMessage({
+      let response = await this._hub.sendMessage({
         type: 'DEV-SUB',
         paths: toSubscribe,
         lazy: true,
@@ -923,6 +942,18 @@ class DeviceTreeSubscriptionManager extends MessageHubRelatedComponent {
             JSON.stringify(response.body.error)
         );
         shouldRetry = true;
+      }
+
+      // Get the initial values
+      if (response?.body?.success) {
+        response = await this._hub.sendMessage({
+          type: 'DEV-INF',
+          paths: response?.body?.success,
+        });
+
+        for (const [path, value] of Object.entries(response?.body?.values)) {
+          this._handleUpdatedValueOfDeviceTreeNode(path, value);
+        }
       }
     }
 
@@ -1254,6 +1285,19 @@ export default class MessageHub {
     }
 
     this._emitter('fw', createMessage(body));
+  }
+
+  /**
+   * Subscribes to a device tree path with the given callback function.
+   *
+   * @param {string} path  the path to subscribe to
+   * @param {func}   callback  the function to call when the value of the given
+   *        device tree path changed
+   * @return {func}  a function that can be called with no arguments to unsubscribe
+   *        from the given path
+   */
+  async subscribe(path, callback) {
+    return this._deviceTreeSubscriptionManager.subscribe(path, callback);
   }
 
   /**
