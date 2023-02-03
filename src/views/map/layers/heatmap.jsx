@@ -413,6 +413,7 @@ class HeatmapVectorSource extends React.Component {
     }
   };
 
+  // TODO: this part should be rewritten to use messageHub.subscribe()
   _trySubscribe = async (subscriptions) => {
     await messageHub.waitUntilReady();
     messageHub.sendMessage({
