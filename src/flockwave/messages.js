@@ -914,6 +914,7 @@ class DeviceTreeSubscriptionManager extends MessageHubRelatedComponent {
       const response = await this._hub.sendMessage({
         type: 'DEV-SUB',
         paths: toSubscribe,
+        lazy: true,
       });
 
       if (response?.body?.error) {
