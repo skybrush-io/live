@@ -613,3 +613,10 @@ export const getCurrentMissionItemIndex = createSelector(
  */
 export const getCurrentMissionItemRatio = (state) =>
   state.mission.progress.currentItemRatio;
+
+/**
+ * Selector that returns whether there is a partially completed mission that can
+ * be resumed from an interruption point.
+ */
+export const isProgressInformationAvailable = (state) =>
+  state.mission.progress.currentItemId !== undefined;
