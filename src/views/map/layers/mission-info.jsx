@@ -535,7 +535,7 @@ const MissionInfoVectorSource = ({
     );
 
     const splitPoint = missionItems.findIndex(
-      (mi) => mi.index === currentItemIndex
+      (mi) => mi.index >= currentItemIndex
     );
     const doneMissionItems = missionItems.slice(0, splitPoint);
     const todoMissionItems = missionItems.slice(splitPoint);

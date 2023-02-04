@@ -30,6 +30,7 @@ import {
 import {
   setMappingLength,
   showMissionPlannerDialog,
+  updateCurrentMissionItemId,
   updateHomePositions,
 } from '~/features/mission/slice';
 import { getSingleSelectedUAVId } from '~/features/uavs/selectors';
@@ -131,7 +132,7 @@ export default connect(
         items: getMissionItemsInOrder(state),
         homePositions: getGPSBasedHomePositionsInMission(state),
       };
-      const metaData = { exportedAt: date, skyBrushVersion: VERSION };
+      const metaData = { exportedAt: date, skybrushVersion: VERSION };
       writeTextToFile(
         JSON.stringify({ meta: metaData, mission: missionData }, null, 2),
         `mission-export-${date}.json`,
@@ -141,7 +142,10 @@ export default connect(
   }),
   // mapDispatchToProps
   {
-    onClearMission: () => setMissionItemsFromArray([]),
+    onClearMission: () => (dispatch) => {
+      dispatch(setMissionItemsFromArray([]));
+      dispatch(updateCurrentMissionItemId(undefined));
+    },
     onImportMission: (file) => async (dispatch) => {
       try {
         const data = JSON.parse(await readFileAsText(file));
