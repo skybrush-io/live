@@ -14,6 +14,7 @@ import { type Coordinate3D } from '~/utils/math';
 
 import { GPSFixType } from './enums';
 import { type GPSFix, type GPSPosition } from './position';
+import { type VelocityNED } from './velocity';
 
 /**
  * Age constants for a UAV. Used in the Redux store to mark UAVs for which we
@@ -53,6 +54,7 @@ export default class UAV {
   light: number /* RGB565 */;
   localPosition?: Coordinate3D;
   mode?: string;
+  velocity?: VelocityNED;
 
   /**
    * Constructor.
@@ -70,6 +72,8 @@ export default class UAV {
     this._errors = [];
     this._mostSevereError = 0;
     this._position = undefined;
+
+    this.velocity = undefined;
 
     this.battery = {
       voltage: undefined,
@@ -218,7 +222,9 @@ export default class UAV {
       battery,
       light,
       debug,
+      velocity,
     } = status;
+
     let errorList: ErrorCode[];
     let updated = false;
 
@@ -249,6 +255,11 @@ export default class UAV {
 
     if (heading !== undefined && this.heading !== heading / 10) {
       this.heading = heading / 10; /* conversion to degrees */
+      updated = true;
+    }
+
+    if (velocity !== undefined && this.velocity !== velocity) {
+      this.velocity = velocity;
       updated = true;
     }
 
@@ -340,6 +351,7 @@ export default class UAV {
       lastUpdated: this.lastUpdated,
       light: this.light,
       mode: this.mode,
+      velocity: this.velocity,
       localPosition,
       position,
     };
