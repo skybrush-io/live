@@ -533,11 +533,11 @@ class AsyncOperationManager extends MessageHubRelatedComponent {
 
   _onAttachedToHub() {
     this._hub.registerNotificationHandlers({
-      'ASYNC-RESP': this._onResponseReceived,
-      'ASYNC-ST': this._onStatusUpdateReceived,
-      'ASYNC-TIMEOUT': this._onTimeoutReceived,
+      'ASYNC-RESP': this._onResponseReceived.bind(this),
+      'ASYNC-ST': this._onStatusUpdateReceived.bind(this),
+      'ASYNC-TIMEOUT': this._onTimeoutReceived.bind(this),
       /* legacy handler, should be removed soon */
-      'OBJ-CMD': this._onResponseReceived,
+      'OBJ-CMD': this._onResponseReceived.bind(this),
     });
   }
 
@@ -666,7 +666,7 @@ class AsyncOperationManager extends MessageHubRelatedComponent {
    *
    * @param {string} message  the message sent by the server
    */
-  _onResponseReceived = (message) => {
+  _onResponseReceived(message) {
     const { id } = message.body;
     const pendingOperation = this._pendingOperations[id];
     if (pendingOperation) {
@@ -682,7 +682,7 @@ class AsyncOperationManager extends MessageHubRelatedComponent {
       // TODO(ntamas): clean up _earlyResponses periodically
       this._earlyResponses[id] = message.body;
     }
-  };
+  }
 
   /**
    * Handler called when the server returns a status update for an async
@@ -690,13 +690,13 @@ class AsyncOperationManager extends MessageHubRelatedComponent {
    *
    * @param {string} message  the message sent by the server
    */
-  _onStatusUpdateReceived = (message) => {
+  _onStatusUpdateReceived(message) {
     const { id } = message.body;
     const pendingOperation = this._pendingOperations[id];
     if (pendingOperation) {
       pendingOperation.processStatusUpdateMessageBody(message.body);
     }
-  };
+  }
 
   /**
    * Handler called when the server failed to respond with an ASYNC-RESP
@@ -725,7 +725,7 @@ class AsyncOperationManager extends MessageHubRelatedComponent {
    *
    * @param {string} message  the message sent by the server
    */
-  _onTimeoutReceived = (message) => {
+  _onTimeoutReceived(message) {
     const { ids } = message.body;
     for (const id of ids) {
       const pendingOperation = this._pendingOperations[id];
@@ -735,7 +735,7 @@ class AsyncOperationManager extends MessageHubRelatedComponent {
         console.warn(`Stale timeout notification received for receipt=${id}`);
       }
     }
-  };
+  }
 }
 
 /**
@@ -863,7 +863,7 @@ class DeviceTreeSubscriptionManager extends MessageHubRelatedComponent {
   _onAttachedToHub() {
     if (this._hub) {
       this._hub.registerNotificationHandlers({
-        'DEV-INF': (...args) => this._onDeviceTreeNodeValuesChanged(...args),
+        'DEV-INF': this._onDeviceTreeNodeValuesChanged.bind(this),
       });
 
       this.requestSubscriptionUpdates();
@@ -871,7 +871,7 @@ class DeviceTreeSubscriptionManager extends MessageHubRelatedComponent {
   }
 
   _onDeviceTreeNodeValuesChanged(message) {
-    for (const [path, value] of Object.entries(message)) {
+    for (const [path, value] of Object.entries(message.body.values)) {
       this._handleUpdatedValueOfDeviceTreeNode(path, value);
     }
   }
@@ -889,6 +889,14 @@ class DeviceTreeSubscriptionManager extends MessageHubRelatedComponent {
    * Updates the list of subscriptions on the server if needed.
    */
   async _updateSubscriptions() {
+    if (this._subscriptionsOnServer === null) {
+      console.warn(
+        '_updateSubscriptions() was called before acquiring' +
+          ' information about the subscriptions on the server'
+      );
+      return;
+    }
+
     const toSubscribe = [];
     const toUnsubscribe = [];
     let shouldRetry = false;
@@ -951,7 +959,7 @@ class DeviceTreeSubscriptionManager extends MessageHubRelatedComponent {
           paths: response?.body?.success,
         });
 
-        for (const [path, value] of Object.entries(response?.body?.values)) {
+        for (const [path, value] of Object.entries(response.body.values)) {
           this._handleUpdatedValueOfDeviceTreeNode(path, value);
         }
       }
