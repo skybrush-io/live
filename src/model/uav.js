@@ -49,6 +49,8 @@ export default class UAV {
     this._rawHeading = undefined;
     this._rawVoltage = undefined;
 
+    this.velocity = undefined;
+
     this.battery = {
       voltage: undefined,
       percentage: undefined,
@@ -187,7 +189,9 @@ export default class UAV {
       battery,
       light,
       debug,
+      velocity
     } = status;
+
     let errorList;
     let updated = false;
 
@@ -220,6 +224,11 @@ export default class UAV {
     if (heading !== undefined && this._rawHeading !== heading) {
       this._rawHeading = heading;
       this.heading = heading / 10; /* conversion to degrees */
+      updated = true;
+    }
+
+    if (velocity !== undefined && this.velocity !== velocity) {
+      this.velocity = velocity;
       updated = true;
     }
 
@@ -315,6 +324,7 @@ export default class UAV {
       lastUpdated: this.lastUpdated,
       light: this.light,
       mode: this.mode,
+      velocity: this.velocity,
       localPosition,
       position,
     };
