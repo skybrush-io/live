@@ -27,6 +27,7 @@ import LicenseInfoDialog from './features/license-info/LicenseInfoDialog';
 import MapCachingDialog from './features/map-caching/MapCachingDialog';
 import CoordinateAveragingDialog from './features/measurement/CoordinateAveragingDialog';
 import MissionPlannerDialog from './features/mission/MissionPlannerDialog';
+import MissionProgressObserver from './features/mission/MissionProgressObserver';
 import ParameterUploadSetupDialog from './features/parameters/ParameterUploadSetupDialog';
 import PromptDialog from './features/prompt/PromptDialog';
 import SavedLocationEditorDialog from './features/saved-locations/SavedLocationEditorDialog';
@@ -66,8 +67,8 @@ require('../assets/css/kbd.css');
 require('../assets/css/screen.less');
 require('../assets/css/tooltips.less');
 
-const Tour = loadable(() =>
-  import(/* webpackChunkName: 'tour' */ './features/tour/Tour')
+const Tour = loadable(
+  () => import(/* webpackChunkName: 'tour' */ './features/tour/Tour')
 );
 
 const rootStyle = {
@@ -158,6 +159,7 @@ const App = ({ onFirstRender }) => (
       <ServerConnectionManager />
 
       <LanguageWatcher />
+      <MissionProgressObserver />
       <ShowFileWatcher />
 
       <dialogs.AppSettingsDialog />
