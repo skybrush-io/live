@@ -11,6 +11,7 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import { makeStyles } from '@material-ui/core/styles';
 
+import Delete from '@material-ui/icons/Delete';
 import Edit from '@material-ui/icons/Edit';
 import FilterCenterFocus from '@material-ui/icons/FilterCenterFocus';
 import MoreVert from '@material-ui/icons/MoreVert';
@@ -35,7 +36,7 @@ import {
   getFeaturesInOrder,
   getSelectedFeatureIds,
 } from '~/features/map-features/selectors';
-import { updateFeatureVisibility } from '~/features/map-features/slice';
+import { removeFeaturesByIds, updateFeatureVisibility } from '~/features/map-features/slice';
 import useDropdown from '~/hooks/useDropdown';
 import { getNameOfFeatureType, getIconOfFeatureType } from '~/model/features';
 import { featureIdToGlobalId } from '~/model/identifiers';
@@ -78,6 +79,7 @@ const FeatureListEntry = (props) => {
     feature,
     onEditFeature,
     onFocusFeature,
+    onRemoveFeature,
     onSelectFeature,
     onToggleFeatureVisibility,
     selected,
@@ -103,6 +105,12 @@ const FeatureListEntry = (props) => {
       icon: <Edit />,
       key: 'edit',
       label: 'Feature properties',
+    },
+    {
+      action: onRemoveFeature,
+      icon: <Delete />,
+      key: 'delete',
+      label: 'Remove',
     },
   ];
 
@@ -173,6 +181,7 @@ const FeatureListEntry = (props) => {
 FeatureListEntry.propTypes = {
   onEditFeature: PropTypes.func,
   onFocusFeature: PropTypes.func,
+  onRemoveFeature: PropTypes.func,
   onSelectFeature: PropTypes.func,
   onToggleFeatureVisibility: PropTypes.func,
   feature: PropTypes.object.isRequired,
@@ -188,6 +197,7 @@ export const FeatureListPresentation = listOf(
     {
       onEditFeature,
       onFocusFeature,
+      onRemoveFeature,
       onSelectFeature,
       onToggleFeatureVisibility,
       selectedFeatureIds,
@@ -199,6 +209,7 @@ export const FeatureListPresentation = listOf(
         feature={feature}
         selected={selectedFeatureIds.includes(feature.id)}
         onEditFeature={onEditFeature}
+        onRemoveFeature={onRemoveFeature}
         onFocusFeature={onFocusFeature}
         onSelectFeature={onSelectFeature}
         onToggleFeatureVisibility={onToggleFeatureVisibility}
@@ -226,6 +237,12 @@ export default connect(
       const featureId = event.currentTarget.dataset.id;
       if (featureId) {
         dispatch(showFeatureEditorDialog(featureId));
+      }
+    },
+    onRemoveFeature(event) {
+      const featureId = event.currentTarget.dataset.id;
+      if (featureId) {
+        dispatch(removeFeaturesByIds([featureId]));
       }
     },
     onSelectFeature(event) {
