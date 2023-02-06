@@ -27,6 +27,7 @@ import MapCachingDialog from './features/map-caching/MapCachingDialog';
 import CoordinateAveragingDialog from './features/measurement/CoordinateAveragingDialog';
 import MissionPlannerDialog from './features/mission/MissionPlannerDialog';
 import ParameterUploadSetupDialog from './features/parameters/ParameterUploadSetupDialog';
+import MissionProgressObserver from './features/mission/MissionProgressObserver';
 import SavedLocationEditorDialog from './features/saved-locations/SavedLocationEditorDialog';
 import RTKSetupDialog from './features/rtk/RTKSetupDialog';
 import Sidebar from './features/sidebar/Sidebar';
@@ -151,6 +152,7 @@ const App = ({ onFirstRender }) => (
 
       <ServerConnectionManager />
 
+      <MissionProgressObserver />
       <ShowFileWatcher />
 
       <dialogs.AppSettingsDialog />
