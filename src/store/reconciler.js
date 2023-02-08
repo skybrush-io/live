@@ -9,7 +9,6 @@ function initializeSession(reconciler) {
     let result = reconciler(...args);
 
     if (
-      config.session &&
       typeof config.session.maxLengthInSeconds === 'number' &&
       config.session.maxLengthInSeconds > 0
     ) {
