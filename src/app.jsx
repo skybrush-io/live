@@ -142,9 +142,7 @@ const App = ({ onFirstRender }) => (
       <div style={rootStyle}>
         <Header perspectives={perspectives} workbench={workbench} />
         <WorkbenchContainer />
-        {config.ribbon && config.ribbon.label && (
-          <CornerRibbon {...config.ribbon} />
-        )}
+        {config?.ribbon?.label && <CornerRibbon {...config.ribbon} />}
         <PendingUAVIdOverlay />
       </div>
 

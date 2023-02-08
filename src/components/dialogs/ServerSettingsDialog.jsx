@@ -90,8 +90,7 @@ const secondaryTextForServerItem = (item) =>
     ? `${addressForServerItem(item)}${securityWarningForServerItem(item)}`
     : protocolForServerItem(item);
 
-const manualSetupAllowed =
-  config && config.server && !config.server.preventManualSetup;
+const manualSetupAllowed = !config?.server?.preventManualSetup;
 
 const ConnectionInProgressIndicator = ({ hostName, ...rest }) => (
   <SmallProgressIndicator

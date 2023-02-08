@@ -3,7 +3,7 @@
  * manufacturers for testing without revealing too much about the app itself.
  */
 
-const config = {
+const overrides = {
   // State is ephemeral; we do not load it back from the disk when the app starts
   ephemeral: true,
 
@@ -53,4 +53,4 @@ const config = {
   },
 };
 
-export default config;
+export default overrides;

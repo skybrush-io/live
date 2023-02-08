@@ -52,7 +52,7 @@ export default function* rootSaga() {
     sagas.push(sessionSaga(config.session));
   }
 
-  if (config && config.tour) {
+  if (config.tour) {
     sagas.push(tourSaga());
   }
 
