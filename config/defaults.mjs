@@ -48,6 +48,34 @@ const defaults = {
     loadShowFromCloud: false,
   },
 
+  optimizeForSingleUAV: {
+    /**
+     * Whether the application should be optimized for operating a single UAV.
+     * @type {boolean}
+     */
+    default: false,
+
+    /**
+     * Whether the user should be prevented from changing the default value.
+     * @type {boolean}
+     */
+    force: false,
+  },
+
+  optimizeUIForTouch: {
+    /**
+     * Whether the UI should be adjusted primarily for touchscreen experience.
+     * @type {boolean}
+     */
+    default: undefined,
+
+    /**
+     * Whether the user should be prevented from changing the default value.
+     * @type {boolean}
+     */
+    force: false,
+  },
+
   /**
    * A list of perspective names or perspective description objects that should
    * be used for creating the initial list of available layouts.
