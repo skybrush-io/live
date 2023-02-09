@@ -4,6 +4,7 @@
 
 import has from 'lodash-es/has';
 import isObject from 'lodash-es/isObject';
+import pullAll from 'lodash-es/pullAll';
 import { nanoid } from 'nanoid';
 import pDefer from 'p-defer';
 import pProps from 'p-props';
@@ -935,6 +936,10 @@ class DeviceTreeSubscriptionManager extends MessageHubRelatedComponent {
         );
         shouldRetry = true;
       }
+
+      if (response?.body?.success) {
+        pullAll(this._subscriptionsOnServer, response.body.success);
+      }
     }
 
     if (toSubscribe) {
@@ -952,8 +957,10 @@ class DeviceTreeSubscriptionManager extends MessageHubRelatedComponent {
         shouldRetry = true;
       }
 
-      // Get the initial values
       if (response?.body?.success) {
+        this._subscriptionsOnServer.push(...response.body.success);
+
+        // Get the initial values
         response = await this._hub.sendMessage({
           type: 'DEV-INF',
           paths: response?.body?.success,
