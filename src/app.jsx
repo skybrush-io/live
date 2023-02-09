@@ -180,7 +180,7 @@ const App = ({ onFirstRender }) => (
       <UploadDialog />
       <VersionCheckDialog />
 
-      <ToastProvider placement='top-center'>
+      <ToastProvider placement={config.toastPlacement}>
         <ToastNotificationManager />
       </ToastProvider>
 
