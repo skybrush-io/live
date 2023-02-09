@@ -144,6 +144,15 @@ const defaults = {
   },
 
   /**
+   * The desired position of the toast notifications.
+   * @type {string}
+   *
+   * The possible values are: 'bottom-left', 'bottom-center', 'bottom-right',
+   *                          'top-left', 'top-center' and 'top-right'
+   */
+  toastPlacement: 'top-center',
+
+  /**
    * An optional array of steps to guide through the initial user experience on
    * the first run of the application.
    *
