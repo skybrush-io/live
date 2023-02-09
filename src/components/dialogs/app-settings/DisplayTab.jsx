@@ -1,3 +1,5 @@
+import config from 'config';
+
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
@@ -94,6 +96,32 @@ const DisplayTabPresentation = (props) => (
       </FormGroup>
 
       <FormGroup>
+        <Header>Operation modes</Header>
+        <FormControlLabel
+          label='Optimize the interface for single UAV operation'
+          control={
+            <Checkbox
+              checked={props.optimizeForSingleUAV}
+              disabled={config.optimizeForSingleUAV.force}
+              name='optimizeForSingleUAV'
+              onChange={props.onCheckboxToggled}
+            />
+          }
+        />
+        <FormControlLabel
+          label='Optimize the interface for touchscreen devices'
+          control={
+            <Checkbox
+              checked={props.optimizeUIForTouch}
+              disabled={config.optimizeUIForTouch.force}
+              name='optimizeUIForTouch'
+              onChange={props.onCheckboxToggled}
+            />
+          }
+        />
+      </FormGroup>
+
+      <FormGroup>
         <Header>Miscellaneous</Header>
         <FormControlLabel
           label='Enhance contrast on dark mode LCD clocks'
@@ -130,6 +158,8 @@ DisplayTabPresentation.propTypes = {
   onFieldChanged: PropTypes.func,
   onOriginChanged: PropTypes.func,
   onOrientationChanged: PropTypes.func,
+  optimizeForSingleUAV: PropTypes.bool,
+  optimizeUIForTouch: PropTypes.bool,
   orientation: PropTypes.number,
   hideInactiveSegmentsOnDarkLCD: PropTypes.bool,
   showMouseCoordinates: PropTypes.bool,
