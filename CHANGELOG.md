@@ -29,6 +29,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `NO TELEM` to make it clear that this status means that we have not received
   telemetry data from the UAV for a while.
 
+### Fixed
+
+- Fixed some cases in which the pending UAV Id overlay could remain on the
+  screen without timing out.
+
 ## [2.6.0] - 2022-10-20
 
 ### Added
