@@ -36,11 +36,17 @@ import {
   getFeaturesInOrder,
   getSelectedFeatureIds,
 } from '~/features/map-features/selectors';
-import { removeFeaturesByIds, updateFeatureVisibility } from '~/features/map-features/slice';
+import {
+  removeFeaturesByIds,
+  updateFeatureVisibility,
+} from '~/features/map-features/slice';
 import useDropdown from '~/hooks/useDropdown';
 import { getNameOfFeatureType, getIconOfFeatureType } from '~/model/features';
 import { featureIdToGlobalId } from '~/model/identifiers';
 import { fitCoordinatesIntoMapView } from '~/signals';
+
+const ICON_SIZE = 24;
+const GAP_SIZE = 12;
 
 const useStyles = makeStyles(
   {
@@ -49,7 +55,9 @@ const useStyles = makeStyles(
     },
     item: {
       '@container (min-width: 351px)': {
-        paddingRight: '120px',
+        paddingRight: (props) =>
+          ICON_SIZE * props.actions.length +
+          GAP_SIZE * (props.actions.length + 1),
       },
     },
     button: {
@@ -85,7 +93,6 @@ const FeatureListEntry = (props) => {
     selected,
   } = props;
   const { id, color, label, type, visible } = feature;
-  const classes = useStyles();
 
   const actions = [
     {
@@ -113,6 +120,8 @@ const FeatureListEntry = (props) => {
       label: 'Remove',
     },
   ];
+
+  const classes = useStyles({ actions });
 
   const actionButtons = (
     <>
