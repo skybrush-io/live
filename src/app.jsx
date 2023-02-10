@@ -34,6 +34,11 @@ import UAVDetailsDialog from './features/uavs/UAVDetailsDialog';
 import UploadDialog from './features/upload/UploadDialog';
 import VersionCheckDialog from './features/version-check/VersionCheckDialog';
 
+import {
+  isWorkbenchLayoutFixed,
+  shouldSidebarBeShown,
+} from './features/workbench/selectors';
+
 import { ErrorHandler } from './error-handling';
 import flock, { Flock } from './flock';
 import perspectives from './perspectives';
@@ -103,23 +108,23 @@ waitUntilStateRestored().then(() => {
   }
 });
 
-const WorkbenchContainerPresentation = ({ hideHeaders, isFixed }) => (
+const WorkbenchContainerPresentation = ({ isFixed, showSidebar }) => (
   <div className={clsx(isFixed && 'workbench-fixed')} style={rootInnerStyle}>
-    {!hideHeaders && !isFixed ? <Sidebar workbench={workbench} /> : null}
+    {showSidebar ? <Sidebar workbench={workbench} /> : null}
     <WorkbenchView workbench={workbench} />
   </div>
 );
 
 WorkbenchContainerPresentation.propTypes = {
-  hideHeaders: PropTypes.bool,
   isFixed: PropTypes.bool,
+  showSidebar: PropTypes.bool,
 };
 
 const WorkbenchContainer = connect(
   // mapStateToProps
   (state) => ({
-    hideHeaders: Boolean(state.workbench.hideHeaders),
-    isFixed: Boolean(state.workbench.isFixed),
+    isFixed: isWorkbenchLayoutFixed(state),
+    showSidebar: shouldSidebarBeShown(state),
   }),
   // mapDispatchToProps
   null

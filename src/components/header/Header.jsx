@@ -28,6 +28,7 @@ import { isSidebarOpen } from '~/features/sidebar/selectors';
 import AltitudeSummaryHeaderButton from '~/features/uavs/AltitudeSummaryHeaderButton';
 import BatteryStatusHeaderButton from '~/features/uavs/BatteryStatusHeaderButton';
 import WeatherHeaderButton from '~/features/weather/WeatherHeaderButton';
+import { shouldSidebarBeShown } from '~/features/workbench/selectors';
 import { hasFeature } from '~/utils/configuration';
 
 const style = {
@@ -73,15 +74,23 @@ SessionExpiryBox.propTypes = {
  *
  * @returns  {Object}  the rendered header component
  */
-const Header = ({ isSidebarOpen, sessionExpiresAt, toggleSidebar }) => (
+const Header = ({
+  isSidebarOpen,
+  sessionExpiresAt,
+  showSidebar,
+  toggleSidebar,
+}) => (
   <div id='header' style={{ ...style, overflow: 'hidden' }}>
     <div id='header-inner' style={innerStyle}>
-      <Shapeshifter
-        color='#999'
-        style={{ cursor: 'pointer' }}
-        shape={isSidebarOpen ? 'close' : 'menu'}
-        onClick={toggleSidebar}
-      />
+      {showSidebar && (
+        <Shapeshifter
+          color='#999'
+          style={{ cursor: 'pointer' }}
+          shape={isSidebarOpen ? 'close' : 'menu'}
+          onClick={toggleSidebar}
+        />
+      )}
+
       <PerspectiveBar />
       <Box pr={0.5} />
       <UAVStatusSummary />
@@ -117,6 +126,7 @@ const Header = ({ isSidebarOpen, sessionExpiresAt, toggleSidebar }) => (
 Header.propTypes = {
   isSidebarOpen: PropTypes.bool.isRequired,
   sessionExpiresAt: PropTypes.number,
+  showSidebar: PropTypes.bool,
   toggleSidebar: PropTypes.func.isRequired,
 };
 
@@ -125,6 +135,7 @@ export default connect(
   (state) => ({
     sessionExpiresAt: state.session.expiresAt,
     isSidebarOpen: isSidebarOpen(state),
+    showSidebar: shouldSidebarBeShown(state),
   }),
   // mapDispatchToProps
   { toggleSidebar }
