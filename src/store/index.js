@@ -82,6 +82,9 @@ const persistConfig = {
       'serverSettings',
     ]),
 
+    // The pending UAV Id overlay should be temporary and reset on reload
+    createBlacklistFilter('hotkeys', ['pendingUAVId']),
+
     // We do not wish to store the state of the license check, only whether the
     // license info dialog is open
     createFilter('licenseInfo', ['dialog']),

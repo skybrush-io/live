@@ -127,6 +127,7 @@ export function appendToPendingUAVId(char) {
      * allow 0-9 only */
     if (char === 's') {
       dispatch(setPendingUAVId('s'));
+      dispatch(startPendingUAVIdTimeout());
       return;
     }
 
