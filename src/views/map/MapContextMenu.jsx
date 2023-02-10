@@ -448,7 +448,7 @@ class MapContextMenu extends React.Component {
   };
 }
 
-const hasFeatures = hasFeature('features');
+const hasMapFeatures = hasFeature('mapFeatures');
 const hasGeofence = hasFeature('geofence');
 const hasShowControl = hasFeature('showControl');
 
@@ -483,10 +483,10 @@ const MapContextMenuContainer = connect(
   // mapDispatchToProps
   {
     clearGeofencePolygonId: hasGeofence ? clearGeofencePolygonId : null,
-    cutFeature: cutFeature,
-    editFeature: hasFeatures ? showFeatureEditorDialog : null,
+    cutFeature: hasMapFeatures ? cutFeature : null,
+    editFeature: hasMapFeatures ? showFeatureEditorDialog : null,
     openUAVDetailsDialog,
-    removeFeaturesByIds: hasFeatures ? removeFeaturesByIds : null,
+    removeFeaturesByIds: hasMapFeatures ? removeFeaturesByIds : null,
     setGeofencePolygonId: hasGeofence ? setGeofencePolygonId : null,
     setMapCoordinateSystemOrigin: setFlatEarthCoordinateSystemOrigin,
     setShowCoordinateSystemOrigin: hasShowControl
