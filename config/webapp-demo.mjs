@@ -7,13 +7,15 @@ import demoShowUrl from '~/../assets/shows/demo.skyc';
 
 const overrides = {
   // We bundle an example show with the webapp demo but not with the "real" one
-  examples: [
-    {
-      id: 'example-20',
-      title: 'Example show with 20 drones',
-      url: demoShowUrl,
-    },
-  ],
+  examples: {
+    shows: [
+      {
+        id: 'example-20',
+        title: 'Example show with 20 drones',
+        url: demoShowUrl,
+      },
+    ],
+  },
 
   // Enable the loading of the bundled example show
   features: {

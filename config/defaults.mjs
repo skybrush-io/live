@@ -23,21 +23,23 @@ const defaults = {
    */
   ephemeral: false,
 
-  /**
-   * Example shows can be bundled with the application.
-   * (Note, that `features.loadShowFromCloud` needs to be enabled as well!)
-   *
-   * @type {Array}
-   * @example
-   * examples: [
-   *   {
-   *     id: 'example-show',
-   *     title: 'Example show',
-   *     url: 'path/to/example.skyc',
-   *   },
-   * ],
-   */
-  examples: [],
+  examples: {
+    /**
+     * Example shows can be bundled with the application.
+     * (Note, that `features.loadShowFromCloud` needs to be enabled as well!)
+     *
+     * @type {Array}
+     * @example
+     * examples: [
+     *   {
+     *     id: 'example-show',
+     *     title: 'Example show',
+     *     url: 'path/to/example.skyc',
+     *   },
+     * ],
+     */
+    shows: [],
+  },
 
   /**
    * Select which functionalities of the application are available. Features not
@@ -47,7 +49,7 @@ const defaults = {
    * The currently possible keys of the object are:
    * - beacons
    * - docks
-   * - features (Objects that can be drawn and edited on the map.)
+   * - mapFeatures (Objects that can be drawn and edited on the map.)
    * - geofence
    * - loadShowFromCloud
    * - missionEditor

@@ -79,7 +79,7 @@ const Sidebar = ({ experimentalFeaturesEnabled, isOpen, workbench }) => (
           label='Layers'
           component='layer-list'
         />
-        {hasFeature('features') && (
+        {hasFeature('mapFeatures') && (
           <Module
             id='features'
             icon={<Polyline />}
