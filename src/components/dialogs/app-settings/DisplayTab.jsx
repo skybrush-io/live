@@ -8,6 +8,7 @@ import Box from '@material-ui/core/Box';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControl from '@material-ui/core/FormControl';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
+import FormHelperText from '@material-ui/core/FormHelperText';
 import FormGroup from '@material-ui/core/FormGroup';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -34,6 +35,12 @@ const coordinateFormatOrder = [
   CoordinateFormat.SIGNED_DEGREES_MINUTES,
   CoordinateFormat.SIGNED_DEGREES_MINUTES_SECONDS,
 ];
+
+const optionLockedHint = (
+  <FormHelperText style={{ marginTop: -8 }}>
+    This option is locked in the current distribution.
+  </FormHelperText>
+);
 
 const DisplayTabPresentation = (props) => (
   <>
@@ -108,6 +115,7 @@ const DisplayTabPresentation = (props) => (
             />
           }
         />
+        {config.optimizeForSingleUAV.force && optionLockedHint}
         <FormControlLabel
           label='Optimize the interface for touchscreen devices'
           control={
@@ -119,6 +127,7 @@ const DisplayTabPresentation = (props) => (
             />
           }
         />
+        {config.optimizeUIForTouch.force && optionLockedHint}
       </FormGroup>
 
       <FormGroup>
