@@ -37,6 +37,7 @@ import {
   hasActiveOrPausedAveragingMeasurements,
   hasSelectionInAveragingMeasurementDialogBox,
 } from '~/features/measurement/selectors';
+import { shouldOptimizeUIForTouch } from '~/features/settings/selectors';
 
 import ContentCopy from '~/icons/ContentCopy';
 
@@ -57,6 +58,7 @@ const CoordinateAveragingDialogToolbar = ({
   onSetCentroidOfSelectionAsMapOrigin,
   onStartAddition,
   onUAVIdAdded,
+  optimizeUIForTouch,
 }) => {
   const inputRef = useRef(null);
 
@@ -168,9 +170,9 @@ const CoordinateAveragingDialogToolbar = ({
           <Box px={2}>UAV ID:</Box>
           <Box flex={1}>
             <ActiveUAVsField
-              autoFocus
               fullWidth
               hideErrorMessage
+              autoFocus={!optimizeUIForTouch}
               inputRef={inputRef}
               label=''
               onKeyDown={onKeyDown}
@@ -201,6 +203,7 @@ CoordinateAveragingDialogToolbar.propTypes = {
   onSetCentroidOfSelectionAsMapOrigin: PropTypes.func,
   onStartAddition: PropTypes.func,
   onUAVIdAdded: PropTypes.func,
+  optimizeUIForTouch: PropTypes.bool,
 };
 
 CoordinateAveragingDialogToolbar.defaultProps = {
@@ -213,6 +216,7 @@ export default connect(
     mode: state.measurement.averagingDialog.mode,
     hasMeasurements: hasActiveOrPausedAveragingMeasurements(state),
     hasSelection: hasSelectionInAveragingMeasurementDialogBox(state),
+    optimizeUIForTouch: shouldOptimizeUIForTouch(state),
   }),
 
   // mapDispatchToProps

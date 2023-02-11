@@ -29,6 +29,7 @@ import {
   clearMessagesOfUAVById,
   updateProgressByMessageId,
 } from '~/features/messages/slice';
+import { shouldOptimizeUIForTouch } from '~/features/settings/selectors';
 import { formatCommandResponseAsHTML } from '~/flockwave/formatting';
 import { parseCommandFromString } from '~/flockwave/messages';
 import { MessageType } from '~/model/enums';
@@ -168,6 +169,7 @@ class MessagesPanel extends React.Component {
     hideClearButton: PropTypes.bool,
     onClearMessages: PropTypes.func,
     onSend: PropTypes.func,
+    optimizeUIForTouch: PropTypes.bool,
     style: PropTypes.object,
     textFieldPlacement: PropTypes.oneOf(['bottom', 'top']),
     uavId: PropTypes.string,
@@ -204,6 +206,7 @@ class MessagesPanel extends React.Component {
       chatEntries,
       hideClearButton,
       onClearMessages,
+      optimizeUIForTouch,
       style,
       textFieldPlacement,
       uavId,
@@ -247,8 +250,8 @@ class MessagesPanel extends React.Component {
         pr={isClearButtonVisible ? 0 : 2}
       >
         <MessageField
-          autoFocus
           fullWidth
+          autoFocus={!optimizeUIForTouch}
           history={outboundHistory}
           inputRef={this._messageFieldRef}
           variant='standard'
@@ -293,6 +296,7 @@ export default connect(
     const messageListSelector = createMessageListSelector();
     return (state, ownProps) => ({
       chatEntries: messageListSelector(state, ownProps.uavId),
+      optimizeUIForTouch: shouldOptimizeUIForTouch(state),
     });
   },
 

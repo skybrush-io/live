@@ -1,9 +1,16 @@
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
+import { connect } from 'react-redux';
 
 import TextField from '@material-ui/core/TextField';
 
-const ParametersTextField = ({ initialValue, onChange }) => {
+import { shouldOptimizeUIForTouch } from '~/features/settings/selectors';
+
+const ParametersTextField = ({
+  initialValue,
+  onChange,
+  optimizeUIForTouch,
+}) => {
   const [currentValue, setCurrentValue] = useState(initialValue || '');
   const [error, setError] = useState(null);
 
@@ -35,9 +42,9 @@ const ParametersTextField = ({ initialValue, onChange }) => {
 
   return (
     <TextField
-      autoFocus
       fullWidth
       multiline
+      autoFocus={!optimizeUIForTouch}
       error={Boolean(error)}
       label='Parameter names and values'
       variant='filled'
@@ -53,6 +60,12 @@ const ParametersTextField = ({ initialValue, onChange }) => {
 ParametersTextField.propTypes = {
   initialValue: PropTypes.string,
   onChange: PropTypes.func,
+  optimizeUIForTouch: PropTypes.bool,
 };
 
-export default ParametersTextField;
+export default connect(
+  // mapStateToProps
+  (state) => ({
+    optimizeUIForTouch: shouldOptimizeUIForTouch(state),
+  })
+)(ParametersTextField);
