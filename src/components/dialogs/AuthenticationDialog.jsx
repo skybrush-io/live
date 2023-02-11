@@ -26,6 +26,7 @@ import {
   isAuthenticating,
   requiresAuthentication,
 } from '~/features/servers/selectors';
+import { shouldOptimizeUIForTouch } from '~/features/settings/selectors';
 import messageHub from '~/message-hub';
 
 const useStyles = makeStyles(
@@ -55,6 +56,7 @@ const AuthenticationForm = ({
   isAuthenticating,
   onCancel,
   onSubmit,
+  optimizeUIForTouch,
 }) => {
   const classes = useStyles();
 
@@ -65,8 +67,8 @@ const AuthenticationForm = ({
           <form className={classes.root} onSubmit={handleSubmit}>
             <DialogContent>
               <TextField
-                autoFocus
                 fullWidth
+                autoFocus={!optimizeUIForTouch}
                 name='username'
                 label='Username'
                 autoComplete='username'
@@ -97,6 +99,7 @@ AuthenticationForm.propTypes = {
   isAuthenticating: PropTypes.bool,
   onCancel: PropTypes.func,
   onSubmit: PropTypes.func,
+  optimizeUIForTouch: PropTypes.bool,
 };
 
 /**
@@ -116,6 +119,7 @@ AuthenticationDialogPresentation.propTypes = {
   onCancel: PropTypes.func,
   onSubmit: PropTypes.func,
   open: PropTypes.bool,
+  optimizeUIForTouch: PropTypes.bool,
   title: PropTypes.string.isRequired,
 };
 
@@ -131,6 +135,7 @@ const AuthenticationDialog = connect(
   (state) => ({
     ...state.dialogs.authentication,
     isAuthenticating: isAuthenticating(state),
+    optimizeUIForTouch: shouldOptimizeUIForTouch(state),
     title: requiresAuthentication(state)
       ? 'Authentication required'
       : 'Authenticate to server',

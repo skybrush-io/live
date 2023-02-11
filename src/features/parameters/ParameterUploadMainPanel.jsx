@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { connect, useDispatch, useSelector } from 'react-redux';
 
 import Box from '@material-ui/core/Box';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -8,11 +8,13 @@ import Switch from '@material-ui/core/Switch';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 
+import { shouldOptimizeUIForTouch } from '~/features/settings/selectors';
+
 import { formatParameters, parseParameters } from './formatting';
 import { shouldRebootAfterParameterUpload } from './selectors';
 import { setRebootAfterUpload, updateParametersInManifest } from './slice';
 
-const ParametersTextField = ({ onChange }) => {
+const ParametersTextFieldPresentation = ({ onChange, optimizeUIForTouch }) => {
   const [parameterString, setParameterString] = useState('');
   const [error, setError] = useState(null);
 
@@ -59,9 +61,9 @@ const ParametersTextField = ({ onChange }) => {
 
   return (
     <TextField
-      autoFocus
       fullWidth
       multiline
+      autoFocus={!optimizeUIForTouch}
       error={Boolean(error)}
       label='Parameter names and values'
       variant='filled'
@@ -77,9 +79,17 @@ const ParametersTextField = ({ onChange }) => {
   );
 };
 
-ParametersTextField.propTypes = {
+ParametersTextFieldPresentation.propTypes = {
   onChange: PropTypes.func,
+  optimizeUIForTouch: PropTypes.bool,
 };
+
+const ParametersTextField = connect(
+  // mapStateToProps
+  (state) => ({
+    optimizeUIForTouch: shouldOptimizeUIForTouch(state),
+  })
+)(ParametersTextFieldPresentation);
 
 const ParameterUploadMainPanel = () => {
   const shouldReboot = useSelector(shouldRebootAfterParameterUpload);

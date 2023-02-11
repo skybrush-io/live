@@ -17,6 +17,7 @@ import {
   updateFeaturePointsVisible,
   updateFeatureVisibility,
 } from '~/features/map-features/slice';
+import { shouldOptimizeUIForTouch } from '~/features/settings/selectors';
 import { primaryColor } from '~/utils/styles';
 import {
   featureTypeCanBeMeasured,
@@ -32,14 +33,15 @@ const GeneralPropertiesForm = ({
   onToggleFeatureMeasurementVisible,
   onToggleFeaturePointsVisible,
   onToggleFeatureVisibility,
+  optimizeUIForTouch,
   shouldShowPoints,
 }) => (
   <div>
     <div style={{ display: 'flex', padding: '1em 0' }}>
       <div style={{ flex: 'auto' }}>
         <TextField
-          autoFocus
           fullWidth
+          autoFocus={!optimizeUIForTouch}
           label='Label'
           variant='filled'
           value={feature.label || ''}
@@ -107,12 +109,14 @@ GeneralPropertiesForm.propTypes = {
   onToggleFeatureMeasurementVisible: PropTypes.func,
   onToggleFeaturePointsVisible: PropTypes.func,
   onToggleFeatureVisibility: PropTypes.func,
+  optimizeUIForTouch: PropTypes.bool,
   shouldShowPoints: PropTypes.bool,
 };
 
 export default connect(
   // mapStateToProps
   (state, { featureId }) => ({
+    optimizeUIForTouch: shouldOptimizeUIForTouch(state),
     shouldShowPoints: shouldShowPointsOfFeature(state, featureId),
   }),
   // mapDispatchToProps

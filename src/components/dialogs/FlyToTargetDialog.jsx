@@ -17,6 +17,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
 
 import DronePlaceholderList from '~/components/uavs/DronePlaceholderList';
+import { shouldOptimizeUIForTouch } from '~/features/settings/selectors';
 import { submitFlyToTargetDialog } from '~/features/uav-control/actions';
 import { closeFlyToTargetDialog } from '~/features/uav-control/slice';
 import { getSelectedUAVIds } from '~/features/uavs/selectors';
@@ -43,6 +44,7 @@ const FlyToTargetForm = ({
   initialValues,
   onCancel,
   onSubmit,
+  optimizeUIForTouch,
   uavIds,
 }) => (
   <Form initialValues={initialValues} onSubmit={onSubmit}>
@@ -56,7 +58,7 @@ const FlyToTargetForm = ({
             mb={1}
           />
           <CoordinateField
-            autoFocus
+            autoFocus={!optimizeUIForTouch}
             name='coords'
             label='Target coordinate'
             formatter={coordinateFormatter}
@@ -92,6 +94,7 @@ FlyToTargetForm.propTypes = {
   initialValues: initialValuePropType,
   onCancel: PropTypes.func,
   onSubmit: PropTypes.func,
+  optimizeUIForTouch: PropTypes.bool,
   uavIds: PropTypes.arrayOf(PropTypes.string),
 };
 
@@ -114,6 +117,7 @@ FlyToTargetDialog.propTypes = {
   onClose: PropTypes.func,
   onSubmit: PropTypes.func,
   open: PropTypes.bool,
+  optimizeUIForTouch: PropTypes.bool,
   uavIds: PropTypes.arrayOf(PropTypes.string),
 };
 
@@ -122,6 +126,7 @@ export default connect(
   (state) => ({
     ...state.uavControl.flyToTargetDialog,
     coordinateFormatter: getPreferredCoordinateFormatter(state),
+    optimizeUIForTouch: shouldOptimizeUIForTouch(state),
     uavIds: getSelectedUAVIds(state),
   }),
   // mapDispatchToProps
