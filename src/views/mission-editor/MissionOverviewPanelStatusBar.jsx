@@ -82,20 +82,24 @@ const MissionOverviewPanelStatusBar = ({
               </Tooltip>
             )}
             <Box py={0.25}>
-              <Chip
-                icon={<Share />}
-                label={`Estimated route: ${formatDistance(estimatedDistance)}`}
-                size='small'
-                style={{ margin: 2 }}
-                variant='outlined'
-              />
-              <Chip
-                icon={<Timer />}
-                label={`Estimated time: ${formatDuration(estimatedDuration)}`}
-                size='small'
-                style={{ margin: 2 }}
-                variant='outlined'
-              />
+              <Tooltip content='Estimated route'>
+                <Chip
+                  icon={<Share />}
+                  label={formatDistance(estimatedDistance)}
+                  size='small'
+                  style={{ margin: 2 }}
+                  variant='outlined'
+                />
+              </Tooltip>
+              <Tooltip content='Estimated time'>
+                <Chip
+                  icon={<Timer />}
+                  label={formatDuration(estimatedDuration)}
+                  size='small'
+                  style={{ margin: 2 }}
+                  variant='outlined'
+                />
+              </Tooltip>
             </Box>
           </>
         ) : error ? (

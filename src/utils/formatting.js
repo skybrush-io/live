@@ -8,9 +8,16 @@ export function formatCoordinateArray(coords) {
 }
 
 /**
+ * Formats a short (less than an hour) duration as minutes:seconds or
+ * a long (not less than an hour) duration as hours:minutes:seconds.
+ */
+export const formatDuration = (duration) =>
+  (duration < 60 * 60 ? formatDurationMS : formatDurationHMS)(duration);
+
+/**
  * Formats a duration as minutes:seconds.
  */
-export function formatDuration(duration) {
+export function formatDurationMS(duration) {
   duration = Math.round(duration);
 
   const minutes = Math.floor(duration / 60);
