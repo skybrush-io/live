@@ -120,7 +120,7 @@
     "react-chartjs-2": "^4.3.1",
     "react-color": "^2.19.3",
     "react-colorful": "^5.5.0",
-    "react-cover-page": "^3.0.12",
+    "react-cover-page": "^3.1.0",
     "react-dnd": "^14.0.5",
     "react-dnd-html5-backend": "^14.0.2",
     "react-dom": "^17.0.2",

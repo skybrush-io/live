@@ -14,6 +14,12 @@ const defaults = {
      * @type {string}
      */
     splashIcon: skybrushIcon,
+
+    /**
+     * Title text to be shown on the splash screen during loading.
+     * @type {string}
+     */
+    splashTitle: 'skybrush live',
   },
 
   /**
