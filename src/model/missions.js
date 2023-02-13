@@ -8,6 +8,11 @@ export {
 } from '~/utils/geography';
 
 /**
+ * Enum representing valid marker type strings.
+ */
+export const MARKER_TYPES = ['start', 'end', 'custom'];
+
+/**
  * Enum representing the types of missions that we support.
  */
 export const MissionType = {
@@ -33,6 +38,7 @@ export const MissionItemType = {
   CHANGE_ALTITUDE: 'changeAltitude',
   CHANGE_HEADING: 'changeHeading',
   CHANGE_SPEED: 'changeSpeed',
+  MARKER: 'marker',
   SET_PAYLOAD: 'setPayload',
   SET_PARAMETER: 'setParameter',
   UPDATE_GEOFENCE: 'updateGeofence',
@@ -165,6 +171,17 @@ export function isMissionItemValid(item) {
       break;
 
     case MissionItemType.LAND:
+      break;
+
+    case MissionItemType.MARKER:
+      /* Marker mission item type needs a valid marker */
+      const { marker } = parameters;
+      if (
+        typeof marker !== 'string' ||
+        !MARKER_TYPES.includes(marker)
+      ) {
+        return false;
+      }
       break;
 
     case MissionItemType.TAKEOFF:
