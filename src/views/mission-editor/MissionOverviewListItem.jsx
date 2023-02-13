@@ -11,6 +11,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import ChangeAltitudeIcon from '@material-ui/icons/Height';
 import ChangeHeadingIcon from '@material-ui/icons/RotateLeft';
 import ChangeSpeedIcon from '@material-ui/icons/Speed';
+import MarkerIcon from '@material-ui/icons/Notifications';
 import SetPayloadIcon from '@material-ui/icons/Camera';
 import SetParameterIcon from '@material-ui/icons/Settings';
 import TakeoffIcon from '@material-ui/icons/FlightTakeoff';
@@ -74,6 +75,22 @@ const formatGeofenceStatusText = (status) => {
 
     default:
       return '';
+  }
+};
+
+const formatMarkerStatusText = (marker, message) => {
+  switch (marker) {
+    case 'start':
+      return 'Mission has started';
+
+    case 'end':
+      return 'Mission has ended';
+
+    case 'custom':
+      return `Custom: ${message}`;
+
+    default:
+      return `Unknown marker: ${marker}`;
   }
 };
 
@@ -155,6 +172,12 @@ const MissionOverviewListItem = ({
       secondaryText =
         `${item.parameters?.velocityXY} m/s horizontal, ` +
         `${item.parameters?.velocityZ} m/s vertical`;
+      break;
+
+    case MissionItemType.MARKER:
+      avatar = <MarkerIcon />;
+      primaryText = 'Marker';
+      secondaryText = formatMarkerStatusText(item.parameters?.marker, item.parameters?.message);
       break;
 
     case MissionItemType.SET_PAYLOAD:
