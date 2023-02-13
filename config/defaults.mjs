@@ -10,10 +10,35 @@ const skybrushIcon =
 const defaults = {
   branding: {
     /**
-     * Source for the icon shown on the splash screen during loading.
-     * @type {string}
+     * Splash screen icon properties on loading screen
      */
-    splashIcon: skybrushIcon,
+    splashIcon: {
+      /**
+       * Sources for the icon shown on the splash screen during loading.
+       */
+      srcSet: {
+        /**
+         * Default (normal) icon src
+         * @type {string}
+         */
+        default: skybrushIcon,
+        /**
+         * 2x device pixel density icon src
+         * @type {string}
+         */
+        twoX: skybrushIcon
+      },
+      /**
+       * Icon width in pixels
+       * @type {number}
+       */
+      width: 96,
+      /**
+       * Icon height in pixels
+       * @type {number}
+       */
+      height: 96
+    },
 
     /**
      * Title text to be shown on the splash screen during loading.
