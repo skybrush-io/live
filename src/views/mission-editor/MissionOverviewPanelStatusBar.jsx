@@ -10,7 +10,7 @@ import { makeStyles } from '@material-ui/core/styles';
 
 import Error from '@material-ui/icons/Error';
 import Info from '@material-ui/icons/Info';
-import Share from '@material-ui/icons/Share';
+import Timeline from '@material-ui/icons/Timeline';
 import Timer from '@material-ui/icons/Timer';
 import Warning from '@material-ui/icons/Warning';
 
@@ -84,7 +84,7 @@ const MissionOverviewPanelStatusBar = ({
             <Box py={0.25}>
               <Tooltip content='Estimated route'>
                 <Chip
-                  icon={<Share />}
+                  icon={<Timeline style={{ marginLeft: 6 }} />}
                   label={formatDistance(estimatedDistance)}
                   size='small'
                   style={{ margin: 2 }}
@@ -93,7 +93,7 @@ const MissionOverviewPanelStatusBar = ({
               </Tooltip>
               <Tooltip content='Estimated time'>
                 <Chip
-                  icon={<Timer />}
+                  icon={<Timer style={{ marginLeft: 6 }} />}
                   label={formatDuration(estimatedDuration)}
                   size='small'
                   style={{ margin: 2 }}
