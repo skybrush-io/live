@@ -10,7 +10,14 @@ const skybrushIcon =
 
 const defaults: Config = {
   branding: {
-    splashIcon: skybrushIcon,
+    splashIcon: {
+      srcSet: {
+        default: skybrushIcon,
+        twoX: skybrushIcon,
+      },
+      width: 96,
+      height: 96,
+    },
     splashTitle: 'skybrush live',
   },
 
