@@ -2,7 +2,7 @@
 
 import formatDate from 'date-fns/format';
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useState } from 'react';
 import { connect } from 'react-redux';
 
 import Box from '@material-ui/core/Box';
@@ -13,12 +13,17 @@ import Toolbar from '@material-ui/core/Toolbar';
 import { makeStyles } from '@material-ui/core/styles';
 
 import Clear from '@material-ui/icons/Clear';
+import DeleteForever from '@material-ui/icons/DeleteForever';
+import PlayArrow from '@material-ui/icons/PlayArrow';
 
 import Export from '~/icons/Download';
 import Import from '~/icons/Upload';
 
 import FileButton from '~/components/FileButton';
-import { TooltipWithContainerFromContext as Tooltip } from '~/containerContext';
+import {
+  TooltipWithContainerFromContext as Tooltip,
+  PopoverWithContainerFromContext as Popover,
+} from '~/containerContext';
 import {
   setMissionItemsFromArray,
   uploadMissionItemsToSelectedUAV,
@@ -26,6 +31,7 @@ import {
 import {
   getGPSBasedHomePositionsInMission,
   getMissionItemsInOrder,
+  isProgressInformationAvailable,
 } from '~/features/mission/selectors';
 import {
   setMappingLength,
@@ -36,6 +42,7 @@ import {
 import { getSingleSelectedUAVId } from '~/features/uavs/selectors';
 import { isConnected as isConnectedToServer } from '~/features/servers/selectors';
 import { showError, showSuccess } from '~/features/snackbar/actions';
+import usePopover from '~/hooks/usePopover';
 import { readFileAsText } from '~/utils/files';
 import { writeTextToFile } from '~/utils/filesystem';
 
@@ -53,6 +60,7 @@ const useStyles = makeStyles(
 
 const MissionOverviewPanelHeader = ({
   canPlan,
+  canResume,
   canUpload,
   onClearMission,
   onExportMission,
@@ -61,6 +69,9 @@ const MissionOverviewPanelHeader = ({
   onUploadMissionItems,
 }) => {
   const classes = useStyles();
+
+  const [planPopupAnchor, openPlanPopup, closePlanPopup] = usePopover();
+
   return (
     <Paper square className={classes.root} elevation={4}>
       <Toolbar
@@ -91,10 +102,48 @@ const MissionOverviewPanelHeader = ({
         <Button
           disabled={!canPlan}
           size='small'
-          onClick={onShowMissionPlannerDialog}
+          onClick={
+            canResume ? openPlanPopup : () => onShowMissionPlannerDialog(false)
+          }
         >
           Plan
         </Button>
+        <Popover
+          open={Boolean(planPopupAnchor)}
+          anchorEl={planPopupAnchor}
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'center',
+          }}
+          transformOrigin={{
+            vertical: 'top',
+            horizontal: 'center',
+          }}
+          onClose={closePlanPopup}
+        >
+          <Button
+            disabled={!canPlan}
+            size='small'
+            startIcon={<DeleteForever />}
+            onClick={() => {
+              closePlanPopup();
+              onShowMissionPlannerDialog(false);
+            }}
+          >
+            New
+          </Button>
+          <Button
+            disabled={!canPlan}
+            size='small'
+            startIcon={<PlayArrow />}
+            onClick={() => {
+              closePlanPopup();
+              onShowMissionPlannerDialog(/* resume = */ true);
+            }}
+          >
+            Resume
+          </Button>
+        </Popover>
         <Button
           color='primary'
           disabled={!canUpload}
@@ -110,6 +159,7 @@ const MissionOverviewPanelHeader = ({
 
 MissionOverviewPanelHeader.propTypes = {
   canPlan: PropTypes.bool,
+  canResume: PropTypes.bool,
   canUpload: PropTypes.bool,
   onClearMission: PropTypes.func,
   onExportMission: PropTypes.func,
@@ -122,6 +172,7 @@ export default connect(
   // mapStateToProps
   (state) => ({
     canPlan: isConnectedToServer(state),
+    canResume: isProgressInformationAvailable(state),
     canUpload:
       isConnectedToServer(state) && getSingleSelectedUAVId(state) !== undefined,
     onExportMission() {

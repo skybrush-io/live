@@ -119,6 +119,7 @@ export type MissionSliceState = ReadonlyDeep<{
   plannerDialog: {
     open: boolean;
     parameters: Record<string, any>;
+    resume: boolean;
   };
 
   /** The progress of the mission as reported by the UAV */
@@ -149,6 +150,7 @@ const initialState: MissionSliceState = {
   plannerDialog: {
     open: false,
     parameters: {},
+    resume: false,
   },
   progress: {
     currentItemId: undefined,
@@ -435,6 +437,10 @@ const { actions, reducer } = createSlice({
       }
 
       state.items = { order, byId };
+      state.progress = {
+        currentItemId: undefined,
+        currentItemRatio: undefined,
+      };
     },
 
     /**
@@ -458,9 +464,13 @@ const { actions, reducer } = createSlice({
     /**
      * Shows the mission planner dialog.
      */
-    showMissionPlannerDialog: noPayload<MissionSliceState>((state) => {
+    showMissionPlannerDialog(
+      state,
+      { payload: resume }: PayloadAction<boolean>
+    ) {
       state.plannerDialog.open = true;
-    }),
+      state.plannerDialog.resume = Boolean(resume);
+    },
 
     /**
      * Starts the current editing session of the mapping, and marks the

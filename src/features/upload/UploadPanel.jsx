@@ -192,6 +192,7 @@ const UploadPanel = ({
 
 UploadPanel.propTypes = {
   autoRetry: PropTypes.bool,
+  canResume: PropTypes.bool,
   flashFailed: PropTypes.bool,
   hasQueuedItems: PropTypes.bool,
   includeProgress: PropTypes.bool,
