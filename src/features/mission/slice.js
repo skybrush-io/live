@@ -96,6 +96,7 @@ const { actions, reducer } = createSlice({
     plannerDialog: {
       open: false,
       parameters: {},
+      resume: false,
     },
 
     // the progress of the mission as reported by the UAV
@@ -354,6 +355,10 @@ const { actions, reducer } = createSlice({
       }
 
       state.items = { order, byId };
+      state.progress = {
+        currentItemId: undefined,
+        currentItemRatio: undefined,
+      };
     },
 
     /**
@@ -374,9 +379,10 @@ const { actions, reducer } = createSlice({
     /**
      * Shows the mission planner dialog.
      */
-    showMissionPlannerDialog: noPayload((state) => {
+    showMissionPlannerDialog(state, { payload: resume }) {
       state.plannerDialog.open = true;
-    }),
+      state.plannerDialog.resume = resume;
+    },
 
     /**
      * Starts the current editing session of the mapping, and marks the

@@ -24,8 +24,14 @@ import {
   toScaledJSONFromLonLat,
   toScaledJSONFromObject,
 } from '~/utils/geography';
+import {
+  getNetMissionCompletionRatio,
+  isProgressInformationAvailable,
+} from './selectors';
 
 export const ParameterUIContext = {
+  NET_MISSION_END_RATIO: 'netMissionEndRatio',
+  NET_MISSION_START_RATIO: 'netMissionStartRatio',
   SELECTED_UAV_COORDINATE: 'selectedUAVCoordinate',
   SELECTED_POLYGON_FEATURE: 'selectedPolygonFeature',
   SELECTED_LINE_STRING_FEATURE: 'selectedLineStringFeature',
@@ -49,6 +55,7 @@ export function getParametersFromContext(parameterNamesByContext, getState) {
   const result = {};
 
   for (const [contextId, parameterNames] of parameterNamesByContext.entries()) {
+    console.log(contextId, parameterNames);
     const handler = contextHandlers[contextId];
 
     if (handler && typeof handler === 'function') {
@@ -71,6 +78,38 @@ function assign(result, keys, value) {
   for (const key of keys) {
     result[key] = value;
   }
+}
+
+/**
+ * Constantly assigns 1 as the net mission end ratio to the listed variables in
+ * the result object.
+ */
+function extractNetMissionEndRatioFromContext(
+  result,
+  parameterNames,
+  _getState
+) {
+  assign(result, parameterNames, 1);
+}
+
+/**
+ * Extracts the completion ratio of the net mission from the store and assigns
+ * its value to the listed variables in the result object.
+ */
+function extractNetMissionStartRatioFromContext(
+  result,
+  parameterNames,
+  getState
+) {
+  const state = getState();
+
+  const hasProgress = isProgressInformationAvailable(state);
+
+  assign(
+    result,
+    parameterNames,
+    hasProgress ? getNetMissionCompletionRatio(state) : 0
+  );
 }
 
 /**
@@ -101,7 +140,11 @@ function extractSelectedUAVCoordinateFromContext(
  * Extracts the selected linestring from the store and assigns its coordinates
  * to the listed variables in the result object.
  */
-function extractSelectedLineStringFromContext(result, parameterNames, getState) {
+function extractSelectedLineStringFromContext(
+  result,
+  parameterNames,
+  getState
+) {
   const state = getState();
 
   const featureId = getSingleSelectedFeatureId(state);
@@ -148,6 +191,10 @@ function extractSelectedPolygonFromContext(result, parameterNames, getState) {
 }
 
 const contextHandlers = {
+  [ParameterUIContext.NET_MISSION_END_RATIO]:
+    extractNetMissionEndRatioFromContext,
+  [ParameterUIContext.NET_MISSION_START_RATIO]:
+    extractNetMissionStartRatioFromContext,
   [ParameterUIContext.SELECTED_UAV_COORDINATE]:
     extractSelectedUAVCoordinateFromContext,
   [ParameterUIContext.SELECTED_POLYGON_FEATURE]:

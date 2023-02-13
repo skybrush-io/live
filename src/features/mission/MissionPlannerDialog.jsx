@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import DialogActions from '@material-ui/core/DialogActions';
 
+import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
 import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
 
 import { showErrorMessage } from '~/features/error-handling/actions';
@@ -21,7 +22,10 @@ import {
   getParametersFromContext,
   ParameterUIContext,
 } from './parameter-context';
-import { isMissionPlannerDialogOpen } from './selectors';
+import {
+  isMissionPlannerDialogOpen,
+  shouldMissionPlannerDialogResume,
+} from './selectors';
 import {
   closeMissionPlannerDialog,
   setMissionPlannerDialogParameters,
@@ -41,6 +45,7 @@ const MissionPlannerDialog = ({
   onInvokePlanner,
   onSaveParameters,
   open,
+  resume,
 }) => {
   const [missionType, setMissionType] = useState(null);
   const [parametersFromUser, setParametersFromUser] =
@@ -109,14 +114,21 @@ const MissionPlannerDialog = ({
       title='Plan mission'
       onClose={onClose}
     >
-      <MissionPlannerMainPanel
-        missionType={missionType}
-        parameters={parametersFromUser}
-        selectedPage={selectedPage}
-        onMissionTypeCleared={handleMissionTypeCleared}
-        onMissionTypeChange={handleMissionTypeChange}
-        onParametersChange={handleParametersChange}
-      />
+      {resume ? (
+        <BackgroundHint
+          style={{ marginTop: 16 }}
+          text='Cannot change mission parameters when resuming.'
+        />
+      ) : (
+        <MissionPlannerMainPanel
+          missionType={missionType}
+          parameters={parametersFromUser}
+          selectedPage={selectedPage}
+          onMissionTypeCleared={handleMissionTypeCleared}
+          onMissionTypeChange={handleMissionTypeChange}
+          onParametersChange={handleParametersChange}
+        />
+      )}
       <DialogActions>
         <Button onClick={onClose}>Close</Button>
         <Button
@@ -138,6 +150,7 @@ MissionPlannerDialog.propTypes = {
   onClose: PropTypes.func,
   onInvokePlanner: PropTypes.func,
   onSaveParameters: PropTypes.func,
+  resume: PropTypes.bool,
 };
 
 export default connect(
@@ -146,6 +159,7 @@ export default connect(
     initialParameters: state.mission?.plannerDialog?.parameters || {},
     open: isMissionPlannerDialogOpen(state),
     isConnectedToServer: isConnectedToServer(state),
+    resume: shouldMissionPlannerDialogResume(state),
   }),
 
   // mapDispatchToProps

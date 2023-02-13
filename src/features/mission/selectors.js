@@ -492,6 +492,12 @@ export const isMissionPlannerDialogOpen = (state) =>
   state.mission.plannerDialog.open;
 
 /**
+ * Selector that returns whether the mission planner dialog is in resume mode.
+ */
+export const shouldMissionPlannerDialogResume = (state) =>
+  state.mission.plannerDialog.resume;
+
+/**
  * Selector that returns estimates about the mission.
  *
  * @returns {Object} estimates
@@ -620,3 +626,98 @@ export const getCurrentMissionItemRatio = (state) =>
  */
 export const isProgressInformationAvailable = (state) =>
   state.mission.progress.currentItemId !== undefined;
+
+/**
+ * Selector that returns the completion ratio of the net mission.
+ *
+ * @returns {number} the ratio of the done and total lengths of the net mission
+ */
+export const getNetMissionCompletionRatio = createSelector(
+  getMissionItemsInOrder,
+  getCurrentMissionItemId,
+  getCurrentMissionItemRatio,
+  (items, currentId, currentRatio) => {
+    const donePart = (amount, current, done) => {
+      return current ? amount * currentRatio : done ? amount : 0;
+    };
+
+    try {
+      // eslint-disable-next-line unicorn/no-array-reduce
+      const { done, total } = items.reduce(
+        (state, { id, type, parameters }) => {
+          const { _altitude, _done, _net, _position, done, total } = state;
+          const isCurrent = id === currentId;
+
+          return {
+            ...state,
+            ...(() => {
+              switch (type) {
+                case MissionItemType.CHANGE_ALTITUDE: {
+                  if (!_altitude) {
+                    return {
+                      _altitude: parameters.alt.value,
+                      _done: _done && !isCurrent,
+                    };
+                  }
+
+                  const height = Math.abs(_altitude - parameters.alt.value);
+
+                  return {
+                    _altitude: parameters.alt.value,
+                    _done: _done && !isCurrent,
+                    ...(_net
+                      ? {
+                          done: done + donePart(height, isCurrent, _done),
+                          total: total + height,
+                        }
+                      : {}),
+                  };
+                }
+
+                case MissionItemType.GO_TO: {
+                  const waypoint = TurfHelpers.point([
+                    parameters.lon,
+                    parameters.lat,
+                  ]);
+
+                  if (!_position) {
+                    return { _position: waypoint };
+                  }
+
+                  const length = turfDistance(_position, waypoint) * 1000;
+
+                  return {
+                    _done: _done && !isCurrent,
+                    _position: waypoint,
+                    done: total + length,
+                    ...(_net
+                      ? {
+                          done: done + donePart(length, isCurrent, _done),
+                          total: total + length,
+                        }
+                      : {}),
+                  };
+                }
+
+                case MissionItemType.MARKER: {
+                  // prettier-ignore
+                  return parameters.marker === 'start' ? { _net: true  } :
+                         parameters.marker === 'end'   ? { _net: false } :
+                         {};
+                }
+
+                default:
+                // The remaining mission item types are currently ignored.
+              }
+            })(),
+          };
+        },
+        { _done: true, _net: false, done: 0, total: 0 }
+      );
+
+      return total > 0 ? done / total : 0;
+    } catch (error) {
+      return { error: `Estimation error: ${error}` };
+    }
+  }
+);
