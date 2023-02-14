@@ -2,7 +2,7 @@
 
 import formatDate from 'date-fns/format';
 import PropTypes from 'prop-types';
-import React, { useState } from 'react';
+import React, { useCallback } from 'react';
 import { connect } from 'react-redux';
 
 import Box from '@material-ui/core/Box';
@@ -72,6 +72,16 @@ const MissionOverviewPanelHeader = ({
 
   const [planPopupAnchor, openPlanPopup, closePlanPopup] = usePopover();
 
+  const showMissionPlannerDialogForNewMission = useCallback(() => {
+    closePlanPopup();
+    onShowMissionPlannerDialog(/* resume = */ false);
+  }, [closePlanPopup, onShowMissionPlannerDialog]);
+
+  const showMissionPlannerDialogForResumedMission = useCallback(() => {
+    closePlanPopup();
+    onShowMissionPlannerDialog(/* resume = */ true);
+  }, [closePlanPopup, onShowMissionPlannerDialog]);
+
   return (
     <Paper square className={classes.root} elevation={4}>
       <Toolbar
@@ -103,7 +113,7 @@ const MissionOverviewPanelHeader = ({
           disabled={!canPlan}
           size='small'
           onClick={
-            canResume ? openPlanPopup : () => onShowMissionPlannerDialog(false)
+            canResume ? openPlanPopup : showMissionPlannerDialogForNewMission
           }
         >
           Plan
@@ -125,10 +135,7 @@ const MissionOverviewPanelHeader = ({
             disabled={!canPlan}
             size='small'
             startIcon={<DeleteForever />}
-            onClick={() => {
-              closePlanPopup();
-              onShowMissionPlannerDialog(false);
-            }}
+            onClick={showMissionPlannerDialogForNewMission}
           >
             New
           </Button>
@@ -136,10 +143,7 @@ const MissionOverviewPanelHeader = ({
             disabled={!canPlan}
             size='small'
             startIcon={<PlayArrow />}
-            onClick={() => {
-              closePlanPopup();
-              onShowMissionPlannerDialog(/* resume = */ true);
-            }}
+            onClick={showMissionPlannerDialogForResumedMission}
           >
             Resume
           </Button>
