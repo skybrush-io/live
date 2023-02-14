@@ -26,7 +26,7 @@ import {
 } from '~/utils/geography';
 import {
   getNetMissionCompletionRatio,
-  isProgressInformationAvailable,
+  shouldMissionPlannerDialogResume,
 } from './selectors';
 
 export const ParameterUIContext = {
@@ -55,7 +55,6 @@ export function getParametersFromContext(parameterNamesByContext, getState) {
   const result = {};
 
   for (const [contextId, parameterNames] of parameterNamesByContext.entries()) {
-    console.log(contextId, parameterNames);
     const handler = contextHandlers[contextId];
 
     if (handler && typeof handler === 'function') {
@@ -103,12 +102,12 @@ function extractNetMissionStartRatioFromContext(
 ) {
   const state = getState();
 
-  const hasProgress = isProgressInformationAvailable(state);
+  const shouldResume = shouldMissionPlannerDialogResume(state);
 
   assign(
     result,
     parameterNames,
-    hasProgress ? getNetMissionCompletionRatio(state) : 0
+    shouldResume ? getNetMissionCompletionRatio(state) : 0
   );
 }
 
