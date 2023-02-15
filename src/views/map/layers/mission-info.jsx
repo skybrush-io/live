@@ -1,3 +1,5 @@
+import dropWhile from 'lodash-es/dropWhile';
+import takeWhile from 'lodash-es/takeWhile';
 import memoizeOne from 'memoize-one';
 import memoize from 'memoizee';
 import PropTypes from 'prop-types';
@@ -55,6 +57,7 @@ import {
   blackVeryThinOutline,
   fill,
   stroke,
+  thickOutline,
   thinOutline,
   whiteThickOutline,
   whiteThinOutline,
@@ -385,7 +388,9 @@ const missionConvexHullStyles = [
  */
 const missionItemLineStringStyle = memoize((done) => [
   new Style({
-    stroke: thinOutline(done ? Colors.doneMissionItem : Colors.missionItem),
+    stroke: done
+      ? thickOutline(Colors.doneMissionItem)
+      : thinOutline(Colors.missionItem),
   }),
 ]);
 
@@ -401,7 +406,7 @@ const MissionInfoVectorSource = ({
   convexHull,
   coordinateSystemType,
   currentItemIndex,
-  currentItemRatio,
+  currentItemRatio = 0,
   homePositions,
   landingPositions,
   missionItems,
@@ -534,11 +539,11 @@ const MissionInfoVectorSource = ({
       })
     );
 
-    const splitPoint = missionItems.findIndex(
-      (mi) => mi.index >= currentItemIndex
-    );
-    const doneMissionItems = missionItems.slice(0, splitPoint);
-    const todoMissionItems = missionItems.slice(splitPoint);
+    // This should be done like below but lodash doesn't have `span`
+    // `const [done, todo] = span(missionItems, isDone)`,
+    const isDone = (mi) => mi.index < currentItemIndex;
+    const doneMissionItems = takeWhile(missionItems, isDone);
+    const todoMissionItems = dropWhile(missionItems, isDone);
 
     // If there are at least two items with coordinates, connect them with a
     // polyline.
@@ -552,19 +557,24 @@ const MissionInfoVectorSource = ({
           mapViewCoordinateFromLonLat([coordinate.lon, coordinate.lat])
       );
 
-      if (
-        doneMissionItems.length > 0 &&
-        todoMissionItems.length > 0 &&
-        currentItemRatio !== undefined
-      ) {
+      // There are already some completed items, but there are still more left
+      // to be done, so a split point needs to be inserted.
+      if (doneMissionItems.length > 0 && todoMissionItems.length > 0) {
+        const ratio =
+          todoMissionItems[0].index === currentItemIndex
+            ? // If the ratio information belongs to the next mission item with
+              // coordinates
+              currentItemRatio
+            : // If the ratio information belongs to a mission item without
+              // coordinates
+              0;
+
         const lastDone = doneMissionItemsInMapCoordinates.at(-1);
         const firstTodo = todoMissionItemsInMapCoordinates.at(0);
 
         const splitPoint = [
-          lastDone[0] * (1 - currentItemRatio) +
-            firstTodo[0] * currentItemRatio,
-          lastDone[1] * (1 - currentItemRatio) +
-            firstTodo[1] * currentItemRatio,
+          lastDone[0] * (1 - ratio) + firstTodo[0] * ratio,
+          lastDone[1] * (1 - ratio) + firstTodo[1] * ratio,
         ];
 
         doneMissionItemsInMapCoordinates.push(splitPoint);
@@ -575,14 +585,14 @@ const MissionInfoVectorSource = ({
         <Feature
           key='doneMissionItemLineString'
           id={`${MISSION_ITEM_LINE_STRING_GLOBAL_ID}Done`}
-          style={missionItemLineStringStyle(true)}
+          style={missionItemLineStringStyle(/* done = */ true)}
         >
           <geom.LineString coordinates={doneMissionItemsInMapCoordinates} />
         </Feature>,
         <Feature
           key='todoMissionItemLineString'
           id={`${MISSION_ITEM_LINE_STRING_GLOBAL_ID}Todo`}
-          style={missionItemLineStringStyle(false)}
+          style={missionItemLineStringStyle(/* done = */ false)}
         >
           <geom.LineString coordinates={todoMissionItemsInMapCoordinates} />
         </Feature>
@@ -697,7 +707,7 @@ export const MissionInfoLayer = connect(
       : undefined,
     coordinateSystemType: state.map.origin.type,
     currentItemIndex: getCurrentMissionItemIndex(state),
-    currentItemRatio: getCurrentMissionItemRatio(state) ?? 0,
+    currentItemRatio: getCurrentMissionItemRatio(state),
     homePositions: layer?.parameters?.showHomePositions
       ? getGPSBasedHomePositionsInMission(state)
       : undefined,
