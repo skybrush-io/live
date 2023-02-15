@@ -1,11 +1,6 @@
 import delay from 'delay';
 import isNil from 'lodash-es/isNil';
-import {
-  getCurrentMissionItemId,
-  getCurrentMissionItemRatio,
-  getUAVIdsParticipatingInMissionSortedByMissionIndex,
-  isProgressInformationAvailable,
-} from '~/features/mission/selectors';
+import { getUAVIdsParticipatingInMissionSortedByMissionIndex } from '~/features/mission/selectors';
 import {
   getSingleSelectedUAVIdAsArray,
   getUAVIdList,
@@ -21,7 +16,6 @@ import {
   getUploadDialogState,
   isItemInUploadBacklog,
   isUploadInProgress,
-  shouldIncludeProgressToResumeFromInUpload,
 } from './selectors';
 import {
   closeUploadDialog,
@@ -137,21 +131,7 @@ export function startUploadJobFromUploadDialog() {
     // Process the state, extract the type of the job that the user selected,
     // and create the payload depending on the job type and the current state
     const state = getState();
-    let { type, payload } = getSelectedJobInUploadDialog(state);
-
-    if (
-      isProgressInformationAvailable(state) &&
-      shouldIncludeProgressToResumeFromInUpload(state)
-    ) {
-      payload = {
-        ...payload,
-        resume: {
-          id: getCurrentMissionItemId(state),
-          ratio: getCurrentMissionItemRatio(state),
-        },
-      };
-    }
-
+    const { type, payload } = getSelectedJobInUploadDialog(state);
     const scope = getScopeForJobType(type);
     let selector;
 

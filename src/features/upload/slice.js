@@ -94,9 +94,6 @@ const { actions, reducer } = createSlice({
 
       // Whether the lights of the drones with failed uploads should be flashed
       flashFailed: false,
-
-      // Whether the uploaded data should include a resumption point
-      includeProgress: false,
     },
   },
 
@@ -153,10 +150,6 @@ const { actions, reducer } = createSlice({
 
     setFlashFailed(state, action) {
       state.settings.flashFailed = Boolean(action.payload);
-    },
-
-    setIncludeProgress(state, action) {
-      state.settings.includeProgress = Boolean(action.payload);
     },
 
     // Private actions that should be dispatched only from the uploader saga
@@ -329,7 +322,6 @@ export const {
   removeUavsFromWaitingQueue,
   setUploadAutoRetry,
   setFlashFailed,
-  setIncludeProgress,
   startUpload,
 } = actions;
 

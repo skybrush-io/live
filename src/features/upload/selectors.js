@@ -241,9 +241,3 @@ export const shouldRetryFailedUploadsAutomatically = (state) =>
  */
 export const shouldFlashLightsOfFailedUploads = (state) =>
   Boolean(state.upload.settings?.flashFailed);
-
-/**
- * Returns whether the uploaded data should include a resumption point.
- */
-export const shouldIncludeProgressToResumeFromInUpload = (state) =>
-  Boolean(state.upload.settings?.includeProgress);
