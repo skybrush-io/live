@@ -735,7 +735,7 @@ export const getNetMissionCompletionRatio = createSelector(
             })(),
           };
         },
-        { _done: true, _net: false, done: 0, total: 0 }
+        { _done: Boolean(currentId), _net: false, done: 0, total: 0 }
       );
 
       return total > 0 ? done / total : 0;

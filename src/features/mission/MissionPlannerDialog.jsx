@@ -5,7 +5,6 @@ import { connect } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import DialogActions from '@material-ui/core/DialogActions';
 
-import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
 import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
 
 import { showErrorMessage } from '~/features/error-handling/actions';
@@ -58,6 +57,10 @@ const MissionPlannerDialog = ({
 
   const handleMissionTypeChange = (value) => {
     setMissionType(value);
+
+    // TODO: Properly clear the parameters when switching between mission types
+    handleParametersChange({ fromUser: {}, fromContext: {} });
+
     setSelectedPage(value ? 'parameters' : 'type');
 
     setCanInvokePlanner(Boolean(value));
@@ -116,21 +119,15 @@ const MissionPlannerDialog = ({
       title='Plan mission'
       onClose={onClose}
     >
-      {resume ? (
-        <BackgroundHint
-          style={{ marginTop: 16 }}
-          text='Cannot change mission parameters when resuming.'
-        />
-      ) : (
-        <MissionPlannerMainPanel
-          missionType={missionType}
-          parameters={parametersFromUser}
-          selectedPage={selectedPage}
-          onMissionTypeCleared={handleMissionTypeCleared}
-          onMissionTypeChange={handleMissionTypeChange}
-          onParametersChange={handleParametersChange}
-        />
-      )}
+      <MissionPlannerMainPanel
+        missionType={missionType}
+        parameters={parametersFromUser}
+        resume={resume}
+        selectedPage={selectedPage}
+        onMissionTypeCleared={handleMissionTypeCleared}
+        onMissionTypeChange={handleMissionTypeChange}
+        onParametersChange={handleParametersChange}
+      />
       <DialogActions>
         <Button onClick={onClose}>Close</Button>
         <Button

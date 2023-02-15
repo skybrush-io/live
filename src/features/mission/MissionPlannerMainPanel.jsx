@@ -7,6 +7,8 @@ import ListItemText from '@material-ui/core/ListItemText';
 import List from '@material-ui/core/List';
 import Clear from '@material-ui/icons/Clear';
 
+import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
+
 import DialogHeaderListItem from '~/components/DialogHeaderListItem';
 import MultiPagePanel, { Page } from '~/components/MultiPagePanel';
 
@@ -20,6 +22,7 @@ const MissionPlannerMainPanel = ({
   onMissionTypeCleared,
   onParametersChange,
   parameters,
+  resume,
   selectedPage,
 }) => (
   <MultiPagePanel height={350} selectedPage={selectedPage}>
@@ -50,6 +53,9 @@ const MissionPlannerMainPanel = ({
           )}
         </DialogHeaderListItem>
       </List>
+      {resume && (
+        <BackgroundHint text='Cannot change mission parameters when resuming' />
+      )}
       <Box px={2} position='relative' flex={1} overflow='auto'>
         <MissionParameterEditor
           missionType={missionType}
@@ -71,6 +77,7 @@ MissionPlannerMainPanel.propTypes = {
   onMissionTypeCleared: PropTypes.func,
   parameters: PropTypes.object,
   onParametersChange: PropTypes.func,
+  resume: PropTypes.bool,
   selectedPage: PropTypes.oneOf(['parameters', 'type']).isRequired,
 };
 
