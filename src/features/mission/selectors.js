@@ -621,8 +621,7 @@ export const getCurrentMissionItemRatio = (state) =>
   state.mission.progress.currentItemRatio;
 
 /**
- * Selector that returns whether there is a partially completed mission that can
- * be resumed from an interruption point.
+ * Selector that returns whether mission progress information has been received.
  */
 export const isProgressInformationAvailable = (state) =>
   state.mission.progress.currentItemId !== undefined;
@@ -650,13 +649,13 @@ export const getNetMissionCompletionRatio = createSelector(
 
           return {
             ...state,
+            _done: _done && !isCurrent,
             ...(() => {
               switch (type) {
                 case MissionItemType.CHANGE_ALTITUDE: {
                   if (!_altitude) {
                     return {
                       _altitude: parameters.alt.value,
-                      _done: _done && !isCurrent,
                     };
                   }
 
@@ -664,7 +663,6 @@ export const getNetMissionCompletionRatio = createSelector(
 
                   return {
                     _altitude: parameters.alt.value,
-                    _done: _done && !isCurrent,
                     ...(_net
                       ? {
                           done: done + donePart(height, isCurrent, _done),
@@ -687,7 +685,6 @@ export const getNetMissionCompletionRatio = createSelector(
                   const length = turfDistance(_position, waypoint) * 1000;
 
                   return {
-                    _done: _done && !isCurrent,
                     _position: waypoint,
                     done: total + length,
                     ...(_net
@@ -720,4 +717,13 @@ export const getNetMissionCompletionRatio = createSelector(
       return { error: `Estimation error: ${error}` };
     }
   }
+);
+
+/**
+ * Selector that returns whether there is a partially completed mission that can
+ * be resumed from an interruption point.
+ */
+export const isMissionPartiallyCompleted = createSelector(
+  getNetMissionCompletionRatio,
+  (ratio) => ratio > 0 && ratio < 1
 );
