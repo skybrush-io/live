@@ -31,7 +31,7 @@ import {
 import {
   getGPSBasedHomePositionsInMission,
   getMissionItemsInOrder,
-  isProgressInformationAvailable,
+  isMissionPartiallyCompleted,
 } from '~/features/mission/selectors';
 import {
   setMappingLength,
@@ -176,7 +176,7 @@ export default connect(
   // mapStateToProps
   (state) => ({
     canPlan: isConnectedToServer(state),
-    canResume: isProgressInformationAvailable(state),
+    canResume: isMissionPartiallyCompleted(state),
     canUpload:
       isConnectedToServer(state) && getSingleSelectedUAVId(state) !== undefined,
     onExportMission() {
