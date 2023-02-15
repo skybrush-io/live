@@ -1,9 +1,10 @@
 import isNil from 'lodash-es/isNil';
+import reject from 'lodash-es/reject';
 import xor from 'lodash-es/xor';
 
 import { setSelection } from '~/features/map/selection';
 import flock from '~/flock';
-import { uavIdToGlobalId } from '~/model/identifiers';
+import { isUavId, uavIdToGlobalId } from '~/model/identifiers';
 import { getSelection } from '~/selectors/selection';
 
 import {
@@ -84,10 +85,9 @@ export const toggleUAVIdsInSelection = (ids) => (dispatch, getState) => {
 export const selectSingleUAVUnlessAmbiguous = () => (dispatch, getState) => {
   const state = getState();
   const uavIds = getUAVIdList(state);
-  const selectedUAVIds = new Set(getSelectedUAVIds(state).map(uavIdToGlobalId));
 
   if (Array.isArray(uavIds) && uavIds.length === 1) {
-    const selection = getSelection(state).filter((x) => !selectedUAVIds.has(x));
-    dispatch(setSelection([...selection, ...uavIds.map(uavIdToGlobalId)]));
+    const otherSelection = reject(getSelection(state), isUavId);
+    dispatch(setSelection([...otherSelection, uavIdToGlobalId(uavIds[0])]));
   }
 };
