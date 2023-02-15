@@ -17,7 +17,6 @@ import NavigateBack from '@material-ui/icons/NavigateBefore';
 import LabeledStatusLight from '@skybrush/mui-components/lib/LabeledStatusLight';
 
 import { Status } from '~/components/semantics';
-import { isProgressInformationAvailable } from '~/features/mission/selectors';
 import {
   getLastUploadResultByJobType,
   getUploadDialogState,
@@ -25,7 +24,6 @@ import {
   isUploadInProgress,
   shouldRetryFailedUploadsAutomatically,
   shouldFlashLightsOfFailedUploads,
-  shouldIncludeProgressToResumeFromInUpload,
 } from '~/features/upload/selectors';
 import {
   cancelUpload,
@@ -33,7 +31,6 @@ import {
   dismissLastUploadResult,
   setUploadAutoRetry,
   setFlashFailed,
-  setIncludeProgress,
 } from '~/features/upload/slice';
 import StartUploadButton from '~/features/upload/StartUploadButton';
 import UploadProgressBar from '~/features/upload/UploadProgressBar';
@@ -103,10 +100,8 @@ const useStyles = makeStyles((theme) => ({
  */
 const UploadPanel = ({
   autoRetry,
-  canResume,
   flashFailed,
   hasQueuedItems,
-  includeProgress,
   lastUploadResult,
   onCancelUpload,
   onDismissLastUploadResult,
@@ -114,7 +109,6 @@ const UploadPanel = ({
   onStepBack,
   onToggleAutoRetry,
   onToggleFlashFailed,
-  onToggleIncludeProgress,
   running,
   showLastUploadResult,
 }) => {
@@ -140,16 +134,6 @@ const UploadPanel = ({
               <Checkbox checked={flashFailed} onChange={onToggleFlashFailed} />
             }
             label='Flash lights of UAVs where the upload failed'
-          />
-          <FormControlLabel
-            control={
-              <Checkbox
-                disabled={!canResume}
-                checked={canResume && includeProgress}
-                onChange={onToggleIncludeProgress}
-              />
-            }
-            label='Resume from the last interruption point'
           />
         </Box>
       </DialogContent>
@@ -195,7 +179,6 @@ UploadPanel.propTypes = {
   canResume: PropTypes.bool,
   flashFailed: PropTypes.bool,
   hasQueuedItems: PropTypes.bool,
-  includeProgress: PropTypes.bool,
   lastUploadResult: PropTypes.oneOf(['success', 'error', 'cancelled']),
   onCancelUpload: PropTypes.func,
   onDismissLastUploadResult: PropTypes.func,
@@ -203,7 +186,6 @@ UploadPanel.propTypes = {
   onStepBack: PropTypes.func,
   onToggleAutoRetry: PropTypes.func,
   onToggleFlashFailed: PropTypes.func,
-  onToggleIncludeProgress: PropTypes.func,
   running: PropTypes.bool,
   showLastUploadResult: PropTypes.bool,
 };
@@ -218,10 +200,8 @@ export default connect(
   (state, ownProps) => ({
     ...getUploadDialogState(state),
     autoRetry: shouldRetryFailedUploadsAutomatically(state),
-    canResume: isProgressInformationAvailable(state),
     flashFailed: shouldFlashLightsOfFailedUploads(state),
     hasQueuedItems: hasQueuedItems(state),
-    includeProgress: shouldIncludeProgressToResumeFromInUpload(state),
     lastUploadResult: getLastUploadResultByJobType(state, ownProps.jobType),
     running: isUploadInProgress(state),
   }),
@@ -240,11 +220,6 @@ export default connect(
       const state = getState();
       const flashFailed = shouldFlashLightsOfFailedUploads(state);
       dispatch(setFlashFailed(!flashFailed));
-    },
-    onToggleIncludeProgress: () => (dispatch, getState) => {
-      const state = getState();
-      const includeProgress = shouldIncludeProgressToResumeFromInUpload(state);
-      dispatch(setIncludeProgress(!includeProgress));
     },
   }
 )(UploadPanel);

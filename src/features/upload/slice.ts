@@ -83,9 +83,6 @@ export type UploadSliceState = ReadonlyDeep<{
 
     /** Whether the lights of the drones with failed uploads should be flashed */
     flashFailed: boolean;
-
-    /** Whether the uploaded data should include a resumption point */
-    includeProgress: boolean;
   };
 }>;
 
@@ -120,7 +117,6 @@ const initialState: UploadSliceState = {
   settings: {
     autoRetry: false,
     flashFailed: false,
-    includeProgress: false,
   },
 };
 
@@ -187,10 +183,6 @@ const { actions, reducer } = createSlice({
 
     setFlashFailed(state, action: PayloadAction<boolean>) {
       state.settings.flashFailed = Boolean(action.payload);
-    },
-
-    setIncludeProgress(state, action: PayloadAction<boolean>) {
-      state.settings.includeProgress = Boolean(action.payload);
     },
 
     // Private actions that should be dispatched only from the uploader saga
@@ -379,7 +371,6 @@ export const {
   removeUavsFromWaitingQueue,
   setUploadAutoRetry,
   setFlashFailed,
-  setIncludeProgress,
   startUpload,
 } = actions;
 
