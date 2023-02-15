@@ -1,3 +1,4 @@
+import reject from 'lodash-es/reject';
 import turfDifference from '@turf/difference';
 
 import { setSelection } from '~/features/map/selection';
@@ -8,10 +9,12 @@ import {
   featureIdToGlobalId,
   globalIdToUavId,
   isDockId,
+  isFeatureId,
   isUavId,
 } from '~/model/identifiers';
+import { getSelection } from '~/selectors/selection';
 
-import { getProposedIdForNewFeature } from './selectors';
+import { getFeaturesInOrder, getProposedIdForNewFeature } from './selectors';
 import {
   addFeatureById,
   removeFeaturesByIds,
@@ -119,5 +122,24 @@ export const showDetailsForFeatureInTooltipOrGivenFeature =
     const effectiveFeatureId = tooltipFeatureId || feature?.getId();
     if (effectiveFeatureId) {
       dispatch(showDetailsForFeatureById(effectiveFeatureId));
+    }
+  };
+
+/**
+ * Thunk that selects a feature of the given type on the map if there is only a
+ * single such feature that is owned by the user.
+ */
+export const selectSingleFeatureOfTypeUnlessAmbiguous =
+  (featureType) => (dispatch, getState) => {
+    const state = getState();
+    const candidates = getFeaturesInOrder(state).filter(
+      (f) => f.type === featureType && f.owner === 'user'
+    );
+
+    if (candidates.length === 1) {
+      const otherSelection = reject(getSelection(state), isFeatureId);
+      dispatch(
+        setSelection([...otherSelection, featureIdToGlobalId(candidates[0].id)])
+      );
     }
   };

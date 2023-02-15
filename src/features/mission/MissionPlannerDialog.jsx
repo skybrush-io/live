@@ -9,9 +9,11 @@ import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
 import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
 
 import { showErrorMessage } from '~/features/error-handling/actions';
+import { selectSingleFeatureOfTypeUnlessAmbiguous } from '~/features/map-features/actions';
 import { isConnected as isConnectedToServer } from '~/features/servers/selectors';
 import { selectSingleUAVUnlessAmbiguous } from '~/features/uavs/actions';
 import messageHub from '~/message-hub';
+import { FeatureType } from '~/model/features';
 import { MissionType } from '~/model/missions';
 
 import {
@@ -183,6 +185,23 @@ export default connect(
         // that the user wants to work with, so select it
         if (fromContext.has(ParameterUIContext.SELECTED_UAV_COORDINATE)) {
           dispatch(selectSingleUAVUnlessAmbiguous());
+        }
+
+        // If we need to select a polygon / linestring feature from the context,
+        // and we only have a single polygon / linestring that is owned by the
+        // user at the moment, we can safely assume that this is the polygon /
+        // linestring that the user wants to work with, so select it
+
+        if (fromContext.has(ParameterUIContext.SELECTED_POLYGON_FEATURE)) {
+          dispatch(
+            selectSingleFeatureOfTypeUnlessAmbiguous(FeatureType.POLYGON)
+          );
+        }
+
+        if (fromContext.has(ParameterUIContext.SELECTED_LINE_STRING_FEATURE)) {
+          dispatch(
+            selectSingleFeatureOfTypeUnlessAmbiguous(FeatureType.LINE_STRING)
+          );
         }
 
         try {
