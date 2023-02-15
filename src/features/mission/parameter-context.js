@@ -25,7 +25,7 @@ import {
   toScaledJSONFromObject,
 } from '~/utils/geography';
 import {
-  getNetMissionCompletionRatio,
+  getGlobalMissionCompletionRatio,
   shouldMissionPlannerDialogResume,
 } from './selectors';
 
@@ -107,7 +107,7 @@ function extractNetMissionStartRatioFromContext(
   assign(
     result,
     parameterNames,
-    shouldResume ? getNetMissionCompletionRatio(state) : 0
+    shouldResume ? getGlobalMissionCompletionRatio(state) : 0
   );
 }
 
