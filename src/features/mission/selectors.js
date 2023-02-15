@@ -627,6 +627,32 @@ export const isProgressInformationAvailable = (state) =>
   state.mission.progress.currentItemId !== undefined;
 
 /**
+ * Selector that returns the starting ratio of a partial mission.
+ */
+export const getStartRatioOfPartialMission = createSelector(
+  getMissionItemsInOrder,
+  (items) =>
+    Number(
+      items
+        .find((mi) => mi.type === 'marker' && mi.parameters.marker === 'start')
+        ?.parameters?.message?.split('=')[1] ?? 0
+    )
+);
+
+/**
+ * Selector that returns the ending ratio of a partial mission.
+ */
+export const getEndRatioOfPartialMission = createSelector(
+  getMissionItemsInOrder,
+  (items) =>
+    Number(
+      items
+        .find((mi) => mi.type === 'marker' && mi.parameters.marker === 'end')
+        ?.parameters?.message?.split('=')[1] ?? 1
+    )
+);
+
+/**
  * Selector that returns the completion ratio of the net mission.
  *
  * @returns {number} the ratio of the done and total lengths of the net mission
@@ -720,10 +746,21 @@ export const getNetMissionCompletionRatio = createSelector(
 );
 
 /**
+ * Selector that returns the global completion ratio of a mission calculated
+ * from the local bounds and the local ratio.
+ */
+export const getGlobalMissionCompletionRatio = createSelector(
+  getStartRatioOfPartialMission,
+  getEndRatioOfPartialMission,
+  getNetMissionCompletionRatio,
+  (start, end, localRatio) => start + (end - start) * localRatio
+);
+
+/**
  * Selector that returns whether there is a partially completed mission that can
  * be resumed from an interruption point.
  */
 export const isMissionPartiallyCompleted = createSelector(
-  getNetMissionCompletionRatio,
+  getGlobalMissionCompletionRatio,
   (ratio) => ratio > 0 && ratio < 1
 );
