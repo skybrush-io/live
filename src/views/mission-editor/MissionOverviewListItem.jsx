@@ -79,21 +79,16 @@ const formatGeofenceStatusText = (status) => {
 };
 
 const formatMarkerStatusText = (marker, message) => {
-  const message_tag = ((typeof message === 'string' && message !== '') ? ` (${message})` : '');
+  const descriptions = {
+    start: 'Mission has started',
+    end: 'Mission has ended',
+    custom: 'Custom',
+  };
 
-  switch (marker) {
-    case 'start':
-      return 'Mission has started' + message_tag;
+  const markerText =
+    marker in descriptions ? descriptions[marker] : `Unknown marker: ${marker}`;
 
-    case 'end':
-      return 'Mission has ended' + message_tag;
-
-    case 'custom':
-      return 'Custom' + message_tag;
-
-    default:
-      return `Unknown marker: ${marker}` + message_tag;
-  }
+  return marker ? `${markerText} (${message})` : markerText;
 };
 
 const MissionOverviewListItem = ({
@@ -179,7 +174,10 @@ const MissionOverviewListItem = ({
     case MissionItemType.MARKER:
       avatar = <MarkerIcon />;
       primaryText = 'Marker';
-      secondaryText = formatMarkerStatusText(item.parameters?.marker, item.parameters?.message);
+      secondaryText = formatMarkerStatusText(
+        item.parameters?.marker,
+        item.parameters?.message
+      );
       break;
 
     case MissionItemType.SET_PAYLOAD:

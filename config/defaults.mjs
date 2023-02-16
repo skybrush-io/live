@@ -26,7 +26,7 @@ const defaults = {
          * 2x device pixel density icon src
          * @type {string}
          */
-        twoX: skybrushIcon
+        twoX: skybrushIcon,
       },
       /**
        * Icon width in pixels
@@ -37,7 +37,7 @@ const defaults = {
        * Icon height in pixels
        * @type {number}
        */
-      height: 96
+      height: 96,
     },
 
     /**
