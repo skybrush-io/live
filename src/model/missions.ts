@@ -18,7 +18,6 @@ export {
 export enum MarkerType {
   START = 'start',
   END = 'end',
-  CUSTOM = 'custom',
 }
 
 /**
