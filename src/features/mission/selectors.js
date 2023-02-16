@@ -635,7 +635,7 @@ export const getStartRatioOfPartialMission = createSelector(
     Number(
       items
         .find((mi) => mi.type === 'marker' && mi.parameters.marker === 'start')
-        ?.parameters?.message?.split('=')[1] ?? 0
+        ?.parameters?.ratio ?? 0
     )
 );
 
@@ -648,7 +648,7 @@ export const getEndRatioOfPartialMission = createSelector(
     Number(
       items
         .find((mi) => mi.type === 'marker' && mi.parameters.marker === 'end')
-        ?.parameters?.message?.split('=')[1] ?? 1
+        ?.parameters?.ratio ?? 1
     )
 );
 

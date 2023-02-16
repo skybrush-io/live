@@ -10,7 +10,7 @@ export {
 /**
  * Enum representing valid marker type strings.
  */
-export const MARKER_TYPES = ['start', 'end', 'custom'];
+export const MARKER_TYPES = ['start', 'end'];
 
 /**
  * Enum representing the types of missions that we support.

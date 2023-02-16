@@ -39,6 +39,7 @@ import {
   safelyFormatHeadingWithMode,
   formatCoordinate,
 } from '~/utils/geography';
+import { isNumber } from '@turf/helpers';
 
 const useStyles = makeStyles(
   (theme) => ({
@@ -78,17 +79,18 @@ const formatGeofenceStatusText = (status) => {
   }
 };
 
-const formatMarkerStatusText = (marker, message) => {
+const formatMarkerStatusText = (marker, ratio) => {
   const descriptions = {
     start: 'Mission has started',
     end: 'Mission has ended',
-    custom: 'Custom',
   };
 
   const markerText =
     marker in descriptions ? descriptions[marker] : `Unknown marker: ${marker}`;
+  const ratioText = 
+    isNumber(ratio) ? ` (ratio=${ratio.toFixed(4)})`: '';
 
-  return marker ? `${markerText} (${message})` : markerText;
+  return marker ? `${markerText}${ratioText}` : markerText;
 };
 
 const MissionOverviewListItem = ({
@@ -176,7 +178,7 @@ const MissionOverviewListItem = ({
       primaryText = 'Marker';
       secondaryText = formatMarkerStatusText(
         item.parameters?.marker,
-        item.parameters?.message
+        item.parameters?.ratio
       );
       break;
 
