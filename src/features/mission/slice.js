@@ -92,6 +92,11 @@ const { actions, reducer } = createSlice({
       order: [],
     },
 
+    // state of the mission editor panel
+    editorPanel: {
+      followScroll: false,
+    },
+
     // state of the mission planner dialog
     plannerDialog: {
       open: false,
@@ -289,6 +294,13 @@ const { actions, reducer } = createSlice({
      */
     setCommandsAreBroadcast(state, action) {
       state.commandsAreBroadcast = Boolean(action.payload);
+    },
+
+    /**
+     * Sets whether the mission editor panel should follow the active item.
+     */
+    setEditorPanelFollowScroll(state, action) {
+      state.editorPanel.followScroll = Boolean(action.payload);
     },
 
     /**
@@ -516,6 +528,7 @@ export const {
   removeUAVsFromMapping,
   replaceMapping,
   setCommandsAreBroadcast,
+  setEditorPanelFollowScroll,
   setGeofenceAction,
   setGeofencePolygonId,
   setMappingLength,
