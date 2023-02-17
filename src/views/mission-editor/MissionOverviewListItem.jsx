@@ -87,10 +87,9 @@ const formatMarkerStatusText = (marker, ratio) => {
 
   const markerText =
     marker in descriptions ? descriptions[marker] : `Unknown marker: ${marker}`;
-  const ratioText = 
-    isNumber(ratio) ? ` (ratio=${ratio.toFixed(4)})`: '';
+  const ratioText = isNumber(ratio) ? ` (ratio=${ratio.toFixed(4)})` : '';
 
-  return marker ? `${markerText}${ratioText}` : markerText;
+  return markerText + ratioText;
 };
 
 const MissionOverviewListItem = ({

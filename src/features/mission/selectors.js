@@ -633,9 +633,9 @@ export const getStartRatioOfPartialMission = createSelector(
   getMissionItemsInOrder,
   (items) =>
     Number(
-      items
-        .find((mi) => mi.type === 'marker' && mi.parameters.marker === 'start')
-        ?.parameters?.ratio ?? 0
+      items.find(
+        (mi) => mi.type === 'marker' && mi.parameters.marker === 'start'
+      )?.parameters?.ratio ?? 0
     )
 );
 
@@ -646,8 +646,7 @@ export const getEndRatioOfPartialMission = createSelector(
   getMissionItemsInOrder,
   (items) =>
     Number(
-      items
-        .find((mi) => mi.type === 'marker' && mi.parameters.marker === 'end')
+      items.find((mi) => mi.type === 'marker' && mi.parameters.marker === 'end')
         ?.parameters?.ratio ?? 1
     )
 );
