@@ -355,18 +355,11 @@ const { actions, reducer } = createSlice({
      * Sets the array of items in the mission, assuming that all items are
      * already validated.
      */
-    _setMissionItemsFromValidatedArray(state, action) {
-      const byId = {};
-      const order = [];
-      let index = 0;
-      for (const item of action.payload) {
-        const id = `item${index}`;
-        order.push(id);
-        byId[id] = { ...item, id };
-        index++;
-      }
-
-      state.items = { order, byId };
+    _setMissionItemsFromValidatedArray(state, { payload: items }) {
+      state.items = {
+        order: items.map((i) => i.id),
+        byId: Object.fromEntries(items.map((i) => [i.id, i])),
+      };
       state.progress = {
         currentItemId: undefined,
         currentItemRatio: undefined,
