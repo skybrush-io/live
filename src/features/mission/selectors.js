@@ -24,7 +24,10 @@ import {
 } from '~/model/missions';
 import { selectionForSubset } from '~/selectors/selection';
 import { selectOrdered } from '~/utils/collections';
-import { mapViewCoordinateFromLonLat } from '~/utils/geography';
+import {
+  AltitudeReference,
+  mapViewCoordinateFromLonLat,
+} from '~/utils/geography';
 import {
   convexHull,
   createGeometryFromPoints,
@@ -504,75 +507,115 @@ export const shouldMissionPlannerDialogResume = (state) =>
   state.mission.plannerDialog.resume;
 
 /**
- * Selector that returns estimates about the mission.
+ * Selector that returns the items of the mission wrapped together with distance
+ * and velocity information where movement is involved.
  *
- * @returns {Object} estimates
- * @property {number} distance - the length of the planned trajectory in meters
- * @property {number} duration - the expected duration of the mission in seconds
+ * @returns {Array}
  */
-export const getMissionEstimates = createSelector(
+export const getMissionItemsInOrderAsSegments = createSelector(
   getGPSBasedHomePositionsInMission,
   getMissionItemsInOrder,
   ([homePosition], items) => {
-    const homePoint =
-      homePosition && TurfHelpers.point([homePosition.lon, homePosition.lat]);
+    const home = homePosition && {
+      XY: TurfHelpers.point([homePosition.lon, homePosition.lat]),
+      Z: {
+        [AltitudeReference.HOME]: homePosition.agl,
+        [AltitudeReference.MSL]: homePosition.amsl,
+      },
+    };
     try {
       // eslint-disable-next-line unicorn/no-array-reduce
-      const { distance, duration } = items.reduce(
-        (state, { type, parameters }) => {
-          const { _altitude, _position, _speed, duration, distance } = state;
+      return items.reduce(
+        (state, item) => {
+          const { type, parameters } = item;
+          const { _altitudeReference, _position, _velocity, segments } = state;
           return {
+            // Take the previous state and update it based on the following
             ...state,
+            // Add the current item as a segment without movement by default
+            segments: [...segments, { item }],
+            // Overwrite any returned mission item type specific properties
             ...(() => {
-              const stateUpdatesForTarget = (target) => {
-                if (!_position) {
-                  return {
-                    _position: target,
-                  };
+              const moveToXY = (target) => {
+                // We don't yet have position information to measure from
+                if (!_position.XY) {
+                  return { _position: { ..._position, XY: target } };
                 }
 
-                const length = turfDistance(_position, target) * 1000;
-                const time = estimatePathDuration(length, _speed.XY);
+                // Multiply by `1000` to get the result in meters
+                // (By default `turfDistance` returns kilometers)
+                const length = turfDistance(_position.XY, target) * 1000;
 
                 return {
-                  _position: target,
-                  distance: distance + length,
-                  duration: duration + time,
+                  _position: { ..._position, XY: target },
+                  segments: [
+                    ...segments,
+                    { item, distance: length, velocity: _velocity.XY },
+                  ],
                 };
               };
 
+              const moveToZ = ({ value: target, reference }) => {
+                if (
+                  // We don't yet have altitude information to measure from
+                  !_position.Z ||
+                  // Or our previous point is given with a different reference
+                  // TODO: Maybe mixed references should raise a warning
+                  (_altitudeReference && _altitudeReference !== reference)
+                ) {
+                  return {
+                    _altitudeReference: reference,
+                    _position: { ..._position, Z: { [reference]: target } },
+                  };
+                }
+
+                const height = Math.abs(_position.Z[reference] - target);
+
+                return {
+                  _altitudeReference: reference,
+                  _position: { ..._position, Z: { [reference]: target } },
+                  segments: [
+                    ...segments,
+                    { item, distance: height, velocity: _velocity.Z },
+                  ],
+                };
+              };
+
+              // TODO: According to the server code some mission item types
+              // can have optional parameters for altitude and velocities.
+              // We should include that information when it is available.
               switch (type) {
-                case MissionItemType.TAKEOFF: {
-                  return {
-                    _altitude: parameters.alt?.value,
-                    _position: homePoint,
-                  };
-                }
-
-                case MissionItemType.CHANGE_ALTITUDE: {
-                  if (!_altitude) {
-                    return {
-                      _altitude: parameters.alt.value,
-                    };
-                  }
-
-                  const height = Math.abs(_altitude - parameters.alt.value);
-
-                  return {
-                    _altitude: parameters.alt.value,
-                    distance: distance + height,
-                    duration: duration + height / _speed.Z,
-                  };
-                }
+                /* =================== Changing velocity =================== */
 
                 case MissionItemType.CHANGE_SPEED: {
                   return {
-                    _speed: {
+                    _velocity: {
                       XY: parameters.velocityXY,
                       Z: parameters.velocityZ,
                     },
                   };
                 }
+
+                /* =================== Changing altitude =================== */
+
+                case MissionItemType.TAKEOFF: {
+                  return moveToZ(parameters.alt);
+                }
+
+                case MissionItemType.CHANGE_ALTITUDE: {
+                  return moveToZ(parameters.alt);
+                }
+
+                case MissionItemType.LAND: {
+                  return home
+                    ? moveToZ({
+                        value: home.Z[_altitudeReference],
+                        reference: _altitudeReference,
+                      })
+                    : {};
+                }
+
+                /* =================== Changing position =================== */
 
                 case MissionItemType.GO_TO: {
                   const waypoint = TurfHelpers.point([
@@ -580,25 +623,56 @@ export const getMissionEstimates = createSelector(
                     parameters.lat,
                   ]);
 
-                  return stateUpdatesForTarget(waypoint);
+                  return moveToXY(waypoint);
                 }
 
                 case MissionItemType.RETURN_TO_HOME: {
-                  return homePoint ? stateUpdatesForTarget(homePoint) : {};
+                  return home ? moveToXY(home.XY) : {};
                 }
 
                 default:
-                // The remaining mission item types are currently ignored.
+                // The remaining mission item types do not contain movement
               }
             })(),
           };
         },
-        { _speed: { XY: 0, Z: 0 }, distance: 0, duration: 0 }
-      );
-      return { distance, duration };
+        {
+          // The first item to have altitude information can choose which
+          // reference type to use
+          _altitudeReference: undefined,
+          _position: { XY: home?.XY, Z: home?.Z },
+          _velocity: { XY: 0, Z: 0 },
+          segments: [],
+        }
+      ).segments;
     } catch (error) {
-      return { error: `Estimation error: ${error}` };
+      return { error: `Route segment calculation error: ${error}` };
     }
+  }
+);
+
+/**
+ * Selector that returns estimates about the mission.
+ *
+ * @returns {Object} estimates
+ * @property {number} distance - the length of the planned trajectory in meters
+ * @property {number} duration - the expected duration of the mission in seconds
+ */
+export const getMissionEstimates = createSelector(
+  getMissionItemsInOrderAsSegments,
+  (segments) => {
+    return (
+      segments
+        .filter((s) => Boolean(s.distance))
+        // eslint-disable-next-line unicorn/no-array-reduce
+        .reduce(
+          ({ distance, duration }, s) => ({
+            distance: distance + s.distance,
+            duration: duration + estimatePathDuration(s.distance, s.velocity),
+          }),
+          { distance: 0, duration: 0 }
+        )
+    );
   }
 );
 
@@ -663,90 +737,59 @@ export const getEndRatioOfPartialMission = createSelector(
  * @returns {number} the ratio of the done and total lengths of the net mission
  */
 export const getNetMissionCompletionRatio = createSelector(
-  getMissionItemsInOrder,
+  getMissionItemsInOrderAsSegments,
   getCurrentMissionItemId,
   getCurrentMissionItemRatio,
-  (items, currentId, currentRatio) => {
-    const donePart = (amount, current, done) => {
-      return current ? amount * currentRatio : done ? amount : 0;
-    };
+  (segments, currentId, currentRatio) => {
+    // eslint-disable-next-line unicorn/no-array-reduce
+    const { doneDistance, totalDistance } = segments.reduce(
+      (state, { item: { id, type, parameters }, distance = 0 }) => {
+        const { _isDone, _isNet, doneDistance, totalDistance } = state;
+        const isCurrent = id === currentId;
 
-    try {
-      // eslint-disable-next-line unicorn/no-array-reduce
-      const { done, total } = items.reduce(
-        (state, { id, type, parameters }) => {
-          const { _altitude, _done, _net, _position, done, total } = state;
-          const isCurrent = id === currentId;
+        // prettier-ignore
+        return {
+          // Take the previous state and update it based on the following
+          ...state,
+          // Segments are only considered done before the currently active item
+          _isDone: _isDone && !isCurrent,
+          // If the current item is a marker check whether it marks the start
+          // or the end of the useful (net) part of the mission
+          ...(
+            type === MissionItemType.MARKER && (
+              parameters.marker === 'start' ?  { _isNet: true  } :
+              parameters.marker === 'end'   ?  { _isNet: false } :
+              {}
+            )
+          ),
+          // If we are currently in the useful (net) part of the mission,
+          // accumulate the done and total distance appropriately
+          ...(
+            _isNet && {
+              doneDistance: doneDistance + (
+                // The item is currently active, apply the ratio to its distance
+                isCurrent ? distance * currentRatio :
+                // The item is done, count the entire distance
+                _isDone ? distance :
+                // The item is not even started
+                0
+              ),
+              totalDistance: totalDistance + distance,
+            }
+          ),
+        };
+      },
+      {
+        // If there is an active item, we start the reduction by considering the
+        // items done until we encounter the one that's currently in progress
+        _isDone: Boolean(currentId),
+        _isNet: false,
+        doneDistance: 0,
+        totalDistance: 0,
+      }
+    );
 
-          return {
-            ...state,
-            _done: _done && !isCurrent,
-            ...(() => {
-              switch (type) {
-                case MissionItemType.CHANGE_ALTITUDE: {
-                  if (!_altitude) {
-                    return {
-                      _altitude: parameters.alt.value,
-                    };
-                  }
-
-                  const height = Math.abs(_altitude - parameters.alt.value);
-
-                  return {
-                    _altitude: parameters.alt.value,
-                    ...(_net
-                      ? {
-                          done: done + donePart(height, isCurrent, _done),
-                          total: total + height,
-                        }
-                      : {}),
-                  };
-                }
-
-                case MissionItemType.GO_TO: {
-                  const waypoint = TurfHelpers.point([
-                    parameters.lon,
-                    parameters.lat,
-                  ]);
-
-                  if (!_position) {
-                    return { _position: waypoint };
-                  }
-
-                  const length = turfDistance(_position, waypoint) * 1000;
-
-                  return {
-                    _position: waypoint,
-                    done: total + length,
-                    ...(_net
-                      ? {
-                          done: done + donePart(length, isCurrent, _done),
-                          total: total + length,
-                        }
-                      : {}),
-                  };
-                }
-
-                case MissionItemType.MARKER: {
-                  // prettier-ignore
-                  return parameters.marker === 'start' ? { _net: true  } :
-                         parameters.marker === 'end'   ? { _net: false } :
-                         {};
-                }
-
-                default:
-                // The remaining mission item types are currently ignored.
-              }
-            })(),
-          };
-        },
-        { _done: Boolean(currentId), _net: false, done: 0, total: 0 }
-      );
-
-      return total > 0 ? done / total : 0;
-    } catch (error) {
-      return { error: `Estimation error: ${error}` };
-    }
+    return totalDistance > 0 ? doneDistance / totalDistance : 0;
   }
 );
 
