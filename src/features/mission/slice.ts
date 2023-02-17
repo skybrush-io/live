@@ -437,21 +437,12 @@ const { actions, reducer } = createSlice({
      */
     _setMissionItemsFromValidatedArray(
       state,
-      action: PayloadAction<MissionItem[]>
+      { payload: items }: PayloadAction<MissionItem[]>
     ) {
-      const { byId, order }: Collection<MissionItem> = {
-        byId: {},
-        order: [],
+      state.items = {
+        order: items.map((i) => i.id),
+        byId: Object.fromEntries(items.map((i) => [i.id, i])),
       };
-      let index = 0;
-      for (const item of action.payload) {
-        const id = `item${index}`;
-        order.push(id);
-        byId[id] = { ...item, id };
-        index++;
-      }
-
-      state.items = { order, byId };
       state.progress = {
         currentItemId: undefined,
         currentItemRatio: undefined,
