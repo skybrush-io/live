@@ -62,7 +62,7 @@ export default connect(
     async importShapeFile(file) {
       try {
         const data = await readFileAsArrayBuffer(file);
-        // Force the result to be in an array, even if it's just a single element.
+        // Force the result to be an array, even if it's just a single element
         const featureCollections = [await readShapeFile(data)].flat();
         const geoJSON = new GeoJSON({ featureProjection: 'EPSG:3857' });
 
@@ -77,7 +77,11 @@ export default connect(
               const suffix = i === 0 ? '' : ` (${i})`;
               dispatch(
                 addFeatureWithName(
-                  { ...feature, label: featureCollection.fileName + suffix },
+                  {
+                    ...feature,
+                    label: featureCollection.fileName + suffix,
+                    owner: 'user',
+                  },
                   featureCollection.fileName
                 )
               );
