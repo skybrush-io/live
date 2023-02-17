@@ -1,3 +1,5 @@
+import omitBy from 'lodash-es/omitBy';
+import pickBy from 'lodash-es/pickBy';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useMemo } from 'react';
 import Form from '@rjsf/material-ui';
@@ -8,7 +10,7 @@ import { useMessageHub } from '~/hooks';
 
 import { filterSchemaByUIContext } from './schema';
 
-const FORM_UI_SCHEMA = {
+const FORM_UI_SCHEMA_DEFAULTS = {
   'ui:options': {
     submitButtonOptions: {
       norender: true,
@@ -16,17 +18,22 @@ const FORM_UI_SCHEMA = {
   },
 };
 
+const isUIProperty = (_value, key) => key.startsWith('ui:');
+
 const MissionParameterEditorPresentation = ({
   onChange,
   parameters,
   schema,
 }) => {
+  const jsonSchema = useMemo(() => omitBy(schema, isUIProperty), [schema]);
+  const uiSchema = useMemo(() => pickBy(schema, isUIProperty), [schema]);
+
   // Separate the full schema into the schema that contains only the parameters
   // that are to be queried from the user, and a mapping from UI context IDs to
   // the names of parameters that are to be provided by that UI context
   const { schema: filteredSchema, uiContexts } = useMemo(
-    () => filterSchemaByUIContext(schema),
-    [schema]
+    () => filterSchemaByUIContext(jsonSchema),
+    [jsonSchema]
   );
 
   // When the mapping from UI context IDs to the names of parameters changes,
@@ -53,7 +60,7 @@ const MissionParameterEditorPresentation = ({
   return (
     <Form
       schema={filteredSchema}
-      uiSchema={FORM_UI_SCHEMA}
+      uiSchema={{ ...FORM_UI_SCHEMA_DEFAULTS, ...uiSchema }}
       validator={validator}
       formData={parameters}
       onChange={handleChange}
