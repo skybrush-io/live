@@ -115,6 +115,11 @@ export type MissionSliceState = ReadonlyDeep<{
   /** Collection of items in the current mission if it is a waypoint-based mission */
   items: Collection<MissionItem>;
 
+  /** State of the mission editor panel */
+  editorPanel: {
+    followScroll: boolean;
+  };
+
   /** State of the mission planner dialog */
   plannerDialog: {
     open: boolean;
@@ -146,6 +151,9 @@ const initialState: MissionSliceState = {
   items: {
     byId: {},
     order: [],
+  },
+  editorPanel: {
+    followScroll: false,
   },
   plannerDialog: {
     open: false,
@@ -356,6 +364,13 @@ const { actions, reducer } = createSlice({
      */
     setCommandsAreBroadcast(state, action: PayloadAction<boolean>) {
       state.commandsAreBroadcast = Boolean(action.payload);
+    },
+
+    /**
+     * Sets whether the mission editor panel should follow the active item.
+     */
+    setEditorPanelFollowScroll(state, action: PayloadAction<boolean>) {
+      state.editorPanel.followScroll = Boolean(action.payload);
     },
 
     /**
@@ -619,6 +634,7 @@ export const {
   removeUAVsFromMapping,
   replaceMapping,
   setCommandsAreBroadcast,
+  setEditorPanelFollowScroll,
   setGeofenceAction,
   setGeofencePolygonId,
   setMappingLength,

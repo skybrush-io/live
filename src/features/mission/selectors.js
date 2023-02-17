@@ -387,6 +387,12 @@ export const canMoveSelectedMissionItemsDown =
   createCanMoveSelectedMissionItemsByDeltaSelector(1);
 
 /**
+ * Returns whether the mission editor panel should follow the active item.
+ */
+export const shouldMissionEditorPanelFollowScroll = (state) =>
+  state.mission.editorPanel.followScroll;
+
+/**
  * Returns a selector that converts the current list of mission items to a
  * list of objects containing the GPS coordinates where the items should
  * appear on the map, along with the original items themselves. This is used
