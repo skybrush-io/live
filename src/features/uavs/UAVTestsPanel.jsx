@@ -1,8 +1,9 @@
 import isNil from 'lodash-es/isNil';
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useState } from 'react';
 import { useAsyncFn } from 'react-use';
 
+import LinearProgress from '@material-ui/core/LinearProgress';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -49,8 +50,32 @@ const tests = [
   },
 ];
 
+const ProgressBar = ({ progress }) => {
+  const { percentage } = progress || {};
+
+  if (isNil(percentage)) {
+    return <LinearProgress value={null} variant='indeterminate' />;
+  } else if (
+    typeof percentage === 'number' &&
+    percentage >= 0 &&
+    percentage < 100
+  ) {
+    return <LinearProgress value={percentage} variant='determinate' />;
+  } else {
+    return null;
+  }
+};
+
+ProgressBar.propTypes = {
+  progress: PropTypes.shape({
+    percentage: PropTypes.number,
+    message: PropTypes.string,
+  }),
+};
+
 const UAVTestButton = ({ component, label, timeout, type, uavId }) => {
   const messageHub = useMessageHub();
+  const [progress, setProgress] = useState(null);
 
   const [state, start] = useAsyncFn(async () => {
     // TODO(ntamas): use the proper UAV-TEST messages designated for this
@@ -60,10 +85,10 @@ const UAVTestButton = ({ component, label, timeout, type, uavId }) => {
         command: type === 'test' ? 'test' : 'calib',
         args: [String(component)],
       },
-      { timeout }
+      { onProgress: setProgress, timeout }
     );
     return true;
-  }, [messageHub]);
+  }, [messageHub, setProgress]);
 
   return (
     <ListItem button onClick={start}>
@@ -82,7 +107,13 @@ const UAVTestButton = ({ component, label, timeout, type, uavId }) => {
       />
       <ListItemText
         primary={label}
-        secondary={state.error && errorToString(state.error)}
+        secondary={
+          state.error ? (
+            errorToString(state.error)
+          ) : progress ? (
+            <ProgressBar progress={progress} />
+          ) : null
+        }
       />
     </ListItem>
   );
