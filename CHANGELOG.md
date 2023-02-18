@@ -23,6 +23,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   tooltips when hovering over the corresponding upload status pill of the UAV
   in the upload dialog.
 
+- UAVs now support the new "sleep state" status code introduced in Skybrush
+  Server 2.10.0.
+
 ### Changed
 
 - The Electron based packaged version now uses a TCP socket to communicate
