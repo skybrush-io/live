@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useCallback } from 'react';
 import { connect } from 'react-redux';
 
 import Box from '@material-ui/core/Box';
@@ -15,11 +15,15 @@ import Timer from '@material-ui/icons/Timer';
 import Warning from '@material-ui/icons/Warning';
 
 import Colors from '~/components/colors';
+import ToggleButton from '~/components/ToggleButton';
 import { TooltipWithContainerFromContext as Tooltip } from '~/containerContext';
 import {
   getGPSBasedHomePositionsInMission,
   getMissionEstimates,
+  shouldMissionEditorPanelFollowScroll,
 } from '~/features/mission/selectors';
+import { setEditorPanelFollowScroll } from '~/features/mission/slice';
+import FollowScroll from '~/icons/FollowScroll';
 import { formatDistance, formatDuration } from '~/utils/formatting';
 import CustomPropTypes from '~/utils/prop-types';
 
@@ -44,12 +48,14 @@ const makeWarningList = (warnings) => (
 );
 
 const MissionOverviewPanelStatusBar = ({
+  followScroll,
   homePositions: [homePosition],
   missionEstimates: {
     distance: estimatedDistance,
     duration: estimatedDuration,
     error,
   },
+  onFollowScrollChanged,
 }) => {
   const classes = useStyles();
   const warnings = [];
@@ -67,6 +73,10 @@ const MissionOverviewPanelStatusBar = ({
       text: 'Cannot estimate time due to missing speed information',
     });
   }
+
+  const toggleFollowScroll = useCallback(() => {
+    onFollowScrollChanged(!followScroll);
+  }, [followScroll, onFollowScrollChanged]);
 
   return (
     <Paper square className={classes.root}>
@@ -107,7 +117,7 @@ const MissionOverviewPanelStatusBar = ({
             icon={<Error style={{ color: Colors.error }} />}
             label={<span style={{ whiteSpace: 'normal' }}>{error}</span>}
             size='small'
-            style={{ height: 'auto' }}
+            style={{ height: 'auto', marginRight: 8 }}
             variant='outlined'
           />
         ) : (
@@ -120,30 +130,47 @@ const MissionOverviewPanelStatusBar = ({
               </span>
             }
             size='small'
-            style={{ height: 'auto' }}
+            style={{ height: 'auto', marginRight: 8 }}
             variant='outlined'
           />
         )}
+        <Box component='div' flex={1} />
+        <Tooltip content='Follow the active mission item'>
+          <ToggleButton
+            size='small'
+            style={{ margin: -3 }}
+            value='followScroll'
+            selected={followScroll}
+            onChange={toggleFollowScroll}
+          >
+            <FollowScroll />
+          </ToggleButton>
+        </Tooltip>
       </Toolbar>
     </Paper>
   );
 };
 
 MissionOverviewPanelStatusBar.propTypes = {
+  followScroll: PropTypes.bool,
   homePositions: PropTypes.arrayOf(CustomPropTypes.coordinate),
   missionEstimates: PropTypes.shape({
     distance: PropTypes.number,
     duration: PropTypes.number,
     error: PropTypes.string,
   }),
+  onFollowScrollChanged: PropTypes.func,
 };
 
 export default connect(
   // mapStateToProps
   (state) => ({
+    followScroll: shouldMissionEditorPanelFollowScroll(state),
     homePositions: getGPSBasedHomePositionsInMission(state),
     missionEstimates: getMissionEstimates(state),
   }),
   // mapDispatchToProps
-  {}
+  {
+    onFollowScrollChanged: setEditorPanelFollowScroll,
+  }
 )(MissionOverviewPanelStatusBar);
