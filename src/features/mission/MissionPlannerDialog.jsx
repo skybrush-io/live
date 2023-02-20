@@ -11,6 +11,7 @@ import { showErrorMessage } from '~/features/error-handling/actions';
 import { selectSingleFeatureOfTypeUnlessAmbiguous } from '~/features/map-features/actions';
 import { isConnected as isConnectedToServer } from '~/features/servers/selectors';
 import { selectSingleUAVUnlessAmbiguous } from '~/features/uavs/actions';
+import { ServerPlanError } from '~/flockwave/operations';
 import messageHub from '~/message-hub';
 import { FeatureType } from '~/model/features';
 import { MissionType } from '~/model/missions';
@@ -222,9 +223,15 @@ export default connect(
             throw new TypeError('Expected an array of mission items');
           }
         } catch (error) {
-          dispatch(
-            showErrorMessage('Error while invoking mission planner', error)
-          );
+          if (error instanceof ServerPlanError) {
+            dispatch(
+              showErrorMessage('Failed to plan mission on the server', error)
+            );
+          } else {
+            dispatch(
+              showErrorMessage('Error while invoking mission planner', error)
+            );
+          }
         }
 
         if (Array.isArray(items)) {
