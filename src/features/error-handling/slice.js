@@ -38,7 +38,7 @@ const { reducer, actions } = createSlice({
       prepare: (message, error) => ({
         payload:
           error instanceof Error
-            ? `${message}: ` + errorToString(error)
+            ? `${message}: \n` + errorToString(error)
             : message,
       }),
       reducer(state, action) {

@@ -25,7 +25,9 @@ const GlobalErrorDialogPresentation = ({ open, message, onClose }) => (
   <Dialog open={open}>
     <DialogTitle>An error happened</DialogTitle>
     <DialogContent>
-      <DialogContentText>{message}</DialogContentText>
+      <DialogContentText style={{ whiteSpace: 'pre-line' }}>
+        {message}
+      </DialogContentText>
     </DialogContent>
     <DialogActions>
       <Button onClick={onClose}>Close</Button>
