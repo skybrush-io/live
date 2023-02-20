@@ -501,6 +501,13 @@ export const isMissionPlannerDialogOpen = (state) =>
   state.mission.plannerDialog.open;
 
 /**
+ * Selector that returns whether the mission planner dialog should apply an
+ * automatically generated geofence.
+ */
+export const shouldMissionPlannerDialogApplyGeofence = (state) =>
+  state.mission.plannerDialog.applyGeofence;
+
+/**
  * Selector that returns whether the mission planner dialog is in resume mode.
  */
 export const shouldMissionPlannerDialogResume = (state) =>
