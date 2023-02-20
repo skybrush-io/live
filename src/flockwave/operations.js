@@ -210,6 +210,16 @@ export async function uploadMission(hub, { uavId, data, format }, options) {
 }
 
 /**
+ * Custom class of errors representing server side plan generation problems.
+ */
+export class ServerPlanError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = 'ServerPlanError';
+  }
+}
+
+/**
  * Sends a request to the server to plan a mission with the given parameters.
  */
 export async function planMission(hub, { id, parameters }) {
@@ -221,7 +231,7 @@ export async function planMission(hub, { id, parameters }) {
 
   const { type, result } = response.body;
   if (type !== 'X-MSN-PLAN') {
-    throw new Error('Failed to plan a new mission on the server');
+    throw new ServerPlanError(response.body.reason);
   }
 
   if (result?.format !== 'skybrush-live/mission-items') {
