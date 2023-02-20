@@ -2,14 +2,19 @@ import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import { connect } from 'react-redux';
 
+import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
+import Checkbox from '@material-ui/core/Checkbox';
 import DialogActions from '@material-ui/core/DialogActions';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 
 import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
 
+import { TooltipWithContainerFromContext as Tooltip } from '~/containerContext';
 import { showErrorMessage } from '~/features/error-handling/actions';
 import { selectSingleFeatureOfTypeUnlessAmbiguous } from '~/features/map-features/actions';
 import { isConnected as isConnectedToServer } from '~/features/servers/selectors';
+import { updateGeofencePolygon } from '~/features/show/actions';
 import { selectSingleUAVUnlessAmbiguous } from '~/features/uavs/actions';
 import { ServerPlanError } from '~/flockwave/operations';
 import messageHub from '~/message-hub';
@@ -25,11 +30,14 @@ import {
   ParameterUIContext,
 } from './parameter-context';
 import {
+  getGeofencePolygon,
   isMissionPlannerDialogOpen,
+  shouldMissionPlannerDialogApplyGeofence,
   shouldMissionPlannerDialogResume,
 } from './selectors';
 import {
   closeMissionPlannerDialog,
+  setMissionPlannerDialogApplyGeofence,
   setMissionPlannerDialogParameters,
   setMissionType,
 } from './slice';
@@ -41,8 +49,11 @@ import MissionPlannerMainPanel from './MissionPlannerMainPanel';
  * by invoking a mission planning service on the server.
  */
 const MissionPlannerDialog = ({
+  applyGeofence,
   initialParameters,
   isConnectedToServer,
+  isGeofenceOwnedByUser,
+  onApplyGeofenceChanged,
   onClose,
   onInvokePlanner,
   onSaveParameters,
@@ -130,6 +141,26 @@ const MissionPlannerDialog = ({
         onParametersChange={handleParametersChange}
       />
       <DialogActions>
+        <Tooltip
+          content='Manual geofence in use'
+          disabled={!isGeofenceOwnedByUser}
+        >
+          <FormControlLabel
+            label='Generate geofence'
+            control={
+              <Checkbox
+                disabled={isGeofenceOwnedByUser}
+                indeterminate={isGeofenceOwnedByUser}
+                checked={applyGeofence}
+                onChange={onApplyGeofenceChanged}
+              />
+            }
+            style={{ marginLeft: 0 }}
+          />
+        </Tooltip>
+
+        <Box flex={1} />
+
         <Button onClick={onClose}>Close</Button>
         <Button
           disabled={!isConnectedToServer || !canInvokePlanner}
@@ -144,9 +175,12 @@ const MissionPlannerDialog = ({
 };
 
 MissionPlannerDialog.propTypes = {
+  applyGeofence: PropTypes.bool,
   initialParameters: PropTypes.object,
   isConnectedToServer: PropTypes.bool,
+  isGeofenceOwnedByUser: PropTypes.bool,
   open: PropTypes.bool,
+  onApplyGeofenceChanged: PropTypes.func,
   onClose: PropTypes.func,
   onInvokePlanner: PropTypes.func,
   onSaveParameters: PropTypes.func,
@@ -156,18 +190,23 @@ MissionPlannerDialog.propTypes = {
 export default connect(
   // mapStateToProps
   (state) => ({
+    applyGeofence: shouldMissionPlannerDialogApplyGeofence(state),
     initialParameters: state.mission?.plannerDialog?.parameters || {},
     open: isMissionPlannerDialogOpen(state),
     isConnectedToServer: isConnectedToServer(state),
+    isGeofenceOwnedByUser: getGeofencePolygon(state)?.owner === 'user',
     resume: shouldMissionPlannerDialogResume(state),
   }),
 
   // mapDispatchToProps
   {
+    onApplyGeofenceChanged: (event) =>
+      setMissionPlannerDialogApplyGeofence(event.target.checked),
     onClose: closeMissionPlannerDialog,
     onInvokePlanner:
       (missionType, { fromUser, fromContext }) =>
       async (dispatch, getState) => {
+        const state = getState();
         let items = null;
         const parameters = {};
 
@@ -239,6 +278,12 @@ export default connect(
           dispatch(setMissionItemsFromArray(items));
           dispatch(prepareMappingForSingleUAVMissionFromSelection());
           dispatch(closeMissionPlannerDialog());
+          if (
+            shouldMissionPlannerDialogApplyGeofence(state) &&
+            getGeofencePolygon(state)?.owner !== 'user'
+          ) {
+            dispatch(updateGeofencePolygon());
+          }
         }
       },
     onSaveParameters: setMissionPlannerDialogParameters,

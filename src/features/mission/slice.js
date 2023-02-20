@@ -99,6 +99,7 @@ const { actions, reducer } = createSlice({
 
     // state of the mission planner dialog
     plannerDialog: {
+      applyGeofence: true,
       open: false,
       parameters: {},
       resume: false,
@@ -377,6 +378,10 @@ const { actions, reducer } = createSlice({
           : MissionType.UNKNOWN;
     },
 
+    setMissionPlannerDialogApplyGeofence(state, action) {
+      state.plannerDialog.applyGeofence = action.payload;
+    },
+
     setMissionPlannerDialogParameters(state, action) {
       state.plannerDialog.parameters = action.payload;
     },
@@ -525,6 +530,7 @@ export const {
   setGeofenceAction,
   setGeofencePolygonId,
   setMappingLength,
+  setMissionPlannerDialogApplyGeofence,
   setMissionPlannerDialogParameters,
   setMissionType,
   showMissionPlannerDialog,
