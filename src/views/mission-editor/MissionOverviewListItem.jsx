@@ -164,7 +164,7 @@ const MissionOverviewListItem = ({
         : 'Invalid mission item';
       break;
 
-    case MissionItemType.CHANGE_SPEED:
+    case MissionItemType.CHANGE_SPEED: {
       avatar = <ChangeSpeedIcon />;
       primaryText = 'Change speed';
 
@@ -173,12 +173,15 @@ const MissionOverviewListItem = ({
       if (velocityXY !== null) {
         tags.push(`${velocityXY} m/s horizontal`);
       }
+
       if (velocityZ !== null) {
-        tags.push(`${velocityZ} m/s vertical`)
+        tags.push(`${velocityZ} m/s vertical`);
       }
-      secondaryText = tags.join(', ')
+
+      secondaryText = tags.join(', ');
 
       break;
+    }
 
     case MissionItemType.MARKER:
       avatar = <MarkerIcon />;
