@@ -171,16 +171,15 @@ export function isMissionItemValid(item) {
     case MissionItemType.LAND:
       break;
 
-    case MissionItemType.MARKER:
+    case MissionItemType.MARKER: {
       /* Marker mission item type needs a valid marker */
       const { marker } = parameters;
-      if (
-        typeof marker !== 'string' ||
-        !MARKER_TYPES.includes(marker)
-      ) {
+      if (typeof marker !== 'string' || !MARKER_TYPES.includes(marker)) {
         return false;
       }
+
       break;
+    }
 
     case MissionItemType.TAKEOFF:
       break;
