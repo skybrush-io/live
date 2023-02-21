@@ -167,9 +167,17 @@ const MissionOverviewListItem = ({
     case MissionItemType.CHANGE_SPEED:
       avatar = <ChangeSpeedIcon />;
       primaryText = 'Change speed';
-      secondaryText =
-        `${item.parameters?.velocityXY} m/s horizontal, ` +
-        `${item.parameters?.velocityZ} m/s vertical`;
+
+      const { velocityXY, velocityZ } = item.parameters;
+      const tags = [];
+      if (velocityXY !== null) {
+        tags.push(`${velocityXY} m/s horizontal`);
+      }
+      if (velocityZ !== null) {
+        tags.push(`${velocityZ} m/s vertical`)
+      }
+      secondaryText = tags.join(', ')
+
       break;
 
     case MissionItemType.MARKER:

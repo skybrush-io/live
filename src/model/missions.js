@@ -155,14 +155,12 @@ export function isMissionItemValid(item) {
       break;
 
     case MissionItemType.CHANGE_SPEED:
-      /* "Change speed" items need velocityXY and velocityZ */
+      /* "Change speed" items need velocityXY and/or velocityZ */
       {
         const { velocityXY, velocityZ } = parameters;
         if (
-          typeof velocityXY !== 'number' ||
-          typeof velocityZ !== 'number' ||
-          !Number.isFinite(velocityXY) ||
-          !Number.isFinite(velocityZ)
+          !(typeof velocityXY === 'number' && Number.isFinite(velocityXY)) &&
+          !(typeof velocityZ === 'number' && Number.isFinite(velocityZ))
         ) {
           return false;
         }
