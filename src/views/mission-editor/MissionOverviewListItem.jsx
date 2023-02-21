@@ -124,6 +124,11 @@ const MissionOverviewListItem = ({
     case MissionItemType.LAND:
       avatar = <LandIcon />;
       primaryText = 'Land';
+
+      if (item.parameters.velocityZ) {
+        secondaryText = `${item.parameters.velocityZ} m/s vertical`;
+      }
+
       break;
 
     case MissionItemType.RETURN_TO_HOME:
