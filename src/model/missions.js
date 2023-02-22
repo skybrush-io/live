@@ -42,6 +42,7 @@ export const MissionItemType = {
   SET_PAYLOAD: 'setPayload',
   SET_PARAMETER: 'setParameter',
   UPDATE_GEOFENCE: 'updateGeofence',
+  UPDATE_SAFETY: 'updateSafety',
 };
 
 /**
@@ -224,7 +225,21 @@ export function isMissionItemValid(item) {
         if (
           typeof coordinateSystem !== 'string' ||
           coordinateSystem !== 'geodetic'
-          // TOOD: add proper validation for the geofence object
+          // TODO: add proper validation for the geofence object
+        ) {
+          return false;
+        }
+      }
+
+      break;
+
+    case MissionItemType.UPDATE_SAFETY:
+      /* "Update safety" items need complex validation */
+      {
+        const { safety } = parameters;
+        if (
+          // TODO: add proper validation for the safety object
+          !safety
         ) {
           return false;
         }
