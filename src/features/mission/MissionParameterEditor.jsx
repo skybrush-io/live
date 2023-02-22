@@ -2,6 +2,7 @@ import omitBy from 'lodash-es/omitBy';
 import pickBy from 'lodash-es/pickBy';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useMemo } from 'react';
+import { getDefaultRegistry } from '@rjsf/core';
 import Form from '@rjsf/material-ui';
 import validator from '@rjsf/validator-ajv8';
 
@@ -19,6 +20,17 @@ const FORM_UI_SCHEMA_DEFAULTS = {
 };
 
 const isUIProperty = (_value, key) => key.startsWith('ui:');
+
+const TextWidget = getDefaultRegistry().widgets.TextWidget;
+const TextWidgetThatBlursOnWheel = React.forwardRef((props, ref) => (
+  <TextWidget
+    ref={ref}
+    {...props}
+    onWheel={({ target }) => {
+      target.blur();
+    }}
+  />
+));
 
 const MissionParameterEditorPresentation = ({
   onChange,
@@ -60,6 +72,7 @@ const MissionParameterEditorPresentation = ({
   return (
     <Form
       schema={filteredSchema}
+      widgets={{ TextWidget: TextWidgetThatBlursOnWheel }}
       uiSchema={{ ...FORM_UI_SCHEMA_DEFAULTS, ...uiSchema }}
       validator={validator}
       formData={parameters}
