@@ -16,6 +16,7 @@ import SetPayloadIcon from '@material-ui/icons/Camera';
 import SetParameterIcon from '@material-ui/icons/Settings';
 import TakeoffIcon from '@material-ui/icons/FlightTakeoff';
 import UpdateGeofenceIcon from '~/icons/PlacesFence';
+import UpdateSafetyIcon from '@material-ui/icons/Security';
 import LandIcon from '@material-ui/icons/FlightLand';
 import HomeIcon from '@material-ui/icons/Home';
 
@@ -214,6 +215,11 @@ const MissionOverviewListItem = ({
       onClick = showGeofenceSettingsDialog;
       primaryText = 'Update geofence';
       secondaryText = formatGeofenceStatusText(missionGeofenceStatus);
+      break;
+
+    case MissionItemType.UPDATE_SAFETY:
+      avatar = <UpdateSafetyIcon />;
+      primaryText = 'Update safety parameters';
       break;
 
     default:
