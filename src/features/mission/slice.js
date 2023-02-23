@@ -486,8 +486,6 @@ const { actions, reducer } = createSlice({
      * Updates the takeoff headings of all the drones in the mission.
      */
     updateTakeoffHeadings(state, action) {
-      // TODO(ntamas): synchronize the length of the mapping with it?
-      // Or constrain the payload length to the length of the mapping?
       if (Array.isArray(action.payload)) {
         state.takeoffHeadings = copyAndEnsureLengthEquals(
           state.mapping.length,

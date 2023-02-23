@@ -39,10 +39,6 @@ const useStyles = makeStyles({
     animationIterationCount: '1',
   },
 
-  iconWrapper: {
-    position: 'relative',
-  },
-
   '@keyframes cooldown': {
     '0%': {
       height: '100%',
@@ -66,13 +62,6 @@ const BroadcastButton = ({ isBroadcast, setBroadcast, timeoutLength }) => {
       clearTimeout(timeout.current);
       timeout.current = undefined;
     }
-
-    // return timeout
-    //   ? () => {
-    //       setBroadcast(false);
-    //       clearTimeout(timeout);
-    //     }
-    //   : null;
   }, [isBroadcast, setBroadcast, timeoutLength]);
 
   return (

@@ -258,17 +258,6 @@ const defaults = {
      */
     exit: undefined,
   },
-
-  /**
-   * Configuration for electron-builder.
-   *
-   * @type {Object}
-   * For the list of available options and their documentation see:
-   * https://www.electron.build/configuration/configuration.html#configuration
-   *
-   * TODO: This might actually not be relevant anymore.
-   */
-  electronBuilder: {},
 };
 
 export default defaults;
