@@ -7,6 +7,7 @@ import { setFeatureIdForTooltip } from '~/features/session/slice';
 import { openUAVDetailsDialog } from '~/features/uavs/details';
 import {
   featureIdToGlobalId,
+  globalIdToFeatureId,
   globalIdToUavId,
   isDockId,
   isFeatureId,
@@ -14,7 +15,11 @@ import {
 } from '~/model/identifiers';
 import { getSelection } from '~/selectors/selection';
 
-import { getFeaturesInOrder, getProposedIdForNewFeature } from './selectors';
+import {
+  getFeatureById,
+  getFeaturesInOrder,
+  getProposedIdForNewFeature,
+} from './selectors';
 import {
   addFeatureById,
   removeFeaturesByIds,
@@ -137,7 +142,12 @@ export const selectSingleFeatureOfTypeUnlessAmbiguous =
     );
 
     if (candidates.length === 1) {
-      const otherSelection = reject(getSelection(state), isFeatureId);
+      const otherSelection = reject(
+        getSelection(state),
+        (id) =>
+          isFeatureId(id) &&
+          getFeatureById(state, globalIdToFeatureId(id)).type === featureType
+      );
       dispatch(
         setSelection([...otherSelection, featureIdToGlobalId(candidates[0].id)])
       );

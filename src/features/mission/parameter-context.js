@@ -13,7 +13,7 @@
 
 import {
   getFeatureById,
-  getSingleSelectedFeatureId,
+  getSingleSelectedFeatureIdOfType,
 } from '~/features/map-features/selectors';
 import {
   getCurrentGPSPositionByUavId,
@@ -25,6 +25,7 @@ import {
   toScaledJSONFromObject,
 } from '~/utils/geography';
 import {
+  getEndRatioOfPartialMission,
   getGlobalMissionCompletionRatio,
   shouldMissionPlannerDialogResume,
 } from './selectors';
@@ -32,9 +33,11 @@ import {
 export const ParameterUIContext = {
   NET_MISSION_END_RATIO: 'netMissionEndRatio',
   NET_MISSION_START_RATIO: 'netMissionStartRatio',
-  SELECTED_UAV_COORDINATE: 'selectedUAVCoordinate',
-  SELECTED_POLYGON_FEATURE: 'selectedPolygonFeature',
+  SELECTED_COORDINATE: 'selectedCoordinate',
   SELECTED_LINE_STRING_FEATURE: 'selectedLineStringFeature',
+  SELECTED_MARKER_FEATURE: 'selectedMarkerFeature',
+  SELECTED_POLYGON_FEATURE: 'selectedPolygonFeature',
+  SELECTED_UAV_COORDINATE: 'selectedUAVCoordinate',
 };
 
 export const KNOWN_UI_CONTEXTS = Object.values(ParameterUIContext);
@@ -86,9 +89,17 @@ function assign(result, keys, value) {
 function extractNetMissionEndRatioFromContext(
   result,
   parameterNames,
-  _getState
+  getState
 ) {
-  assign(result, parameterNames, 1);
+  const state = getState();
+
+  const shouldResume = shouldMissionPlannerDialogResume(state);
+
+  assign(
+    result,
+    parameterNames,
+    shouldResume ? getEndRatioOfPartialMission(state) : 1
+  );
 }
 
 /**
@@ -115,7 +126,7 @@ function extractNetMissionStartRatioFromContext(
  * Extracts the selected UAV from the store and assigns its coordinates to the
  * listed variables in the result object.
  */
-function extractSelectedUAVCoordinateFromContext(
+function extractSingleSelectedUAVCoordinateFromContext(
   result,
   parameterNames,
   getState
@@ -136,30 +147,53 @@ function extractSelectedUAVCoordinateFromContext(
 }
 
 /**
+ * Generic utility function to get a selected feature of a given type from the
+ * store, or throw the appropriate error if that is not possible.
+ */
+const extractSingleSelectedFeatureOfTypeFromContext =
+  (featureType) => (getState) => {
+    const state = getState();
+
+    const featureId = getSingleSelectedFeatureIdOfType(featureType)(state);
+    if (!featureId) {
+      throw new Error(
+        `Exactly one feature of type '${featureType}' must be selected on the map`
+      );
+    }
+
+    return getFeatureById(state, featureId);
+  };
+
+/**
  * Extracts the selected linestring from the store and assigns its coordinates
  * to the listed variables in the result object.
  */
-function extractSelectedLineStringFromContext(
+function extractSingleSelectedLineStringFromContext(
   result,
   parameterNames,
   getState
 ) {
-  const state = getState();
-
-  const featureId = getSingleSelectedFeatureId(state);
-  if (!featureId) {
-    throw new Error('Exactly one linestring must be selected on the map');
-  }
-
-  const feature = getFeatureById(state, featureId);
-  const featureType = feature?.type;
-  if (featureType !== FeatureType.LINE_STRING) {
-    throw new Error(
-      `The selected feature on the map must be a linestring, got: ${feature?.type}`
-    );
-  }
+  const feature = extractSingleSelectedFeatureOfTypeFromContext(
+    FeatureType.LINE_STRING
+  )(getState);
 
   assign(result, parameterNames, feature.points.map(toScaledJSONFromLonLat));
+}
+
+/**
+ * Extracts the selected marker from the store and assigns its coordinates to
+ * the listed variables in the result object.
+ */
+function extractSingleSelectedMarkerFromContext(
+  result,
+  parameterNames,
+  getState
+) {
+  const feature = extractSingleSelectedFeatureOfTypeFromContext(
+    FeatureType.POINTS
+  )(getState);
+
+  assign(result, parameterNames, toScaledJSONFromLonLat(feature.points[0]));
 }
 
 /**
@@ -167,21 +201,14 @@ function extractSelectedLineStringFromContext(
  * (both the boundary and any potential holes in it) to the listed variables in
  * the result object.
  */
-function extractSelectedPolygonFromContext(result, parameterNames, getState) {
-  const state = getState();
-
-  const featureId = getSingleSelectedFeatureId(state);
-  if (!featureId) {
-    throw new Error('Exactly one polygon must be selected on the map');
-  }
-
-  const feature = getFeatureById(state, featureId);
-  const featureType = feature?.type;
-  if (featureType !== FeatureType.POLYGON) {
-    throw new Error(
-      `The selected feature on the map must be a polygon, got: ${feature?.type}`
-    );
-  }
+function extractSingleSelectedPolygonFromContext(
+  result,
+  parameterNames,
+  getState
+) {
+  const feature = extractSingleSelectedFeatureOfTypeFromContext(
+    FeatureType.POLYGON
+  )(getState);
 
   assign(result, parameterNames, {
     points: feature.points.map(toScaledJSONFromLonLat),
@@ -189,15 +216,45 @@ function extractSelectedPolygonFromContext(result, parameterNames, getState) {
   });
 }
 
+/**
+ * Extracts a selected coordinate from the store, which belongs to either a UAV
+ * or a marker feature on the map.
+ */
+function extractSelectedCoordinateFromContext(
+  result,
+  parameterNames,
+  getState
+) {
+  try {
+    extractSingleSelectedUAVCoordinateFromContext(
+      result,
+      parameterNames,
+      getState
+    );
+  } catch {
+    try {
+      extractSingleSelectedMarkerFromContext(result, parameterNames, getState);
+    } catch {
+      throw new Error(
+        'Exactly one UAV or exactly one marker must be selected!'
+      );
+    }
+  }
+}
+
 const contextHandlers = {
   [ParameterUIContext.NET_MISSION_END_RATIO]:
     extractNetMissionEndRatioFromContext,
   [ParameterUIContext.NET_MISSION_START_RATIO]:
     extractNetMissionStartRatioFromContext,
-  [ParameterUIContext.SELECTED_UAV_COORDINATE]:
-    extractSelectedUAVCoordinateFromContext,
-  [ParameterUIContext.SELECTED_POLYGON_FEATURE]:
-    extractSelectedPolygonFromContext,
+  [ParameterUIContext.SELECTED_COORDINATE]:
+    extractSelectedCoordinateFromContext,
   [ParameterUIContext.SELECTED_LINE_STRING_FEATURE]:
-    extractSelectedLineStringFromContext,
+    extractSingleSelectedLineStringFromContext,
+  [ParameterUIContext.SELECTED_MARKER_FEATURE]:
+    extractSingleSelectedMarkerFromContext,
+  [ParameterUIContext.SELECTED_POLYGON_FEATURE]:
+    extractSingleSelectedPolygonFromContext,
+  [ParameterUIContext.SELECTED_UAV_COORDINATE]:
+    extractSingleSelectedUAVCoordinateFromContext,
 };

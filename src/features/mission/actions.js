@@ -63,6 +63,11 @@ import {
   updateMissionItemParameters,
   _setMissionItemsFromValidatedArray,
 } from './slice';
+import {
+  getFeatureById,
+  getSingleSelectedFeatureIdOfType,
+} from '../map-features/selectors';
+import { FeatureType } from '~/model/features';
 
 /**
  * Thunk that fills the empty slots in the current mapping from the spare drones
@@ -342,6 +347,17 @@ export const prepareMappingForSingleUAVMissionFromSelection =
       if (uavPosition) {
         dispatch(updateHomePositions([uavPosition]));
       }
+    } else {
+      const featureId = getSingleSelectedFeatureIdOfType(FeatureType.POINTS)(
+        state
+      );
+
+      dispatch(setMappingLength(1));
+      dispatch(replaceMapping([featureId]));
+
+      const [lon, lat] = getFeatureById(state, featureId).points[0];
+
+      dispatch(updateHomePositions([{ lon, lat }]));
     }
   };
 

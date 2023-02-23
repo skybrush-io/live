@@ -95,14 +95,26 @@ export const getSelectedTab = (state) =>
   state.dialogs.featureEditor.selectedTab;
 
 /**
- * Selector that calculates and caches the list of selected UAV IDs from
+ * Selector that calculates and caches the list of selected feature IDs from
  * the state object.
  */
 export const getSelectedFeatureIds = selectionForSubset(globalIdToFeatureId);
 
 /**
- * Selector that returns the ID of the selected UAV if there is exactly one UAV
- * selected, or undefined otherwise.
+ * Selector that returns the IDs for a subset of the selected features that are
+ * of the specified feature type.
+ */
+export const getSelectedFeatureIdsByType = (featureType) =>
+  createSelector(
+    getSelectedFeatureIds,
+    (state) => state.features.byId,
+    (featureIds, features) =>
+      featureIds.filter((id) => features?.[id]?.type === featureType)
+  );
+
+/**
+ * Selector that returns the ID of the selected feature if there is exactly one
+ * feature selected, or undefined otherwise.
  */
 export const getSingleSelectedFeatureId = createSelector(
   getSelectedFeatureIds,
@@ -110,8 +122,17 @@ export const getSingleSelectedFeatureId = createSelector(
 );
 
 /**
- * Selector that returns the ID of the selected UAV in an array of length 1 if
- * there is exactly one UAV selected, or an empty array otherwise.
+ * Selector that returns the ID of a selected feature of a given type if there
+ * is exactly one such feature selected, or undefined otherwise.
+ */
+export const getSingleSelectedFeatureIdOfType = (featureType) =>
+  createSelector(getSelectedFeatureIdsByType(featureType), (featureIds) =>
+    featureIds.length === 1 ? featureIds[0] : undefined
+  );
+
+/**
+ * Selector that returns the ID of the selected feature in an array of length 1
+ * if there is exactly one feature selected, or an empty array otherwise.
  */
 export const getSingleSelectedFeatureIdAsArray = createSelector(
   getSelectedFeatureIds,
