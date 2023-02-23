@@ -440,7 +440,7 @@ export const getConvexHullOfHomePositionsAndMissionItemsInWorldCoordinates =
     getMissionItemsWithCoordinatesInOrder,
     (homePositions, missionItemsWithCoorinates) =>
       convexHull([
-        ...homePositions.map((hp) => [hp.lon, hp.lat]),
+        ...homePositions.filter(Boolean).map((hp) => [hp.lon, hp.lat]),
         ...missionItemsWithCoorinates.map((miwc) => [
           miwc.coordinate.lon,
           miwc.coordinate.lat,
