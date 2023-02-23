@@ -593,8 +593,6 @@ const { actions, reducer } = createSlice({
       state,
       { payload }: PayloadAction<number[] | number>
     ) {
-      // TODO(ntamas): synchronize the length of the mapping with it?
-      // Or constrain the payload length to the length of the mapping?
       if (Array.isArray(payload)) {
         state.takeoffHeadings = copyAndEnsureLengthEquals(
           state.mapping.length,
