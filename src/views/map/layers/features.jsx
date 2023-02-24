@@ -181,6 +181,10 @@ const styleForFeature = (
           zIndex: 1,
         })
       );
+
+      if (shouldShowPoints) {
+        styles.push(styleForPointsOfPolygon(feature, isSelected, parsedColor));
+      }
     // Fallthrough
 
     default:
@@ -219,10 +223,6 @@ const styleForFeature = (
           },
         })
       );
-
-      if (shouldShowPoints) {
-        styles.push(styleForPointsOfPolygon(feature, isSelected, parsedColor));
-      }
   }
 
   if (label && label.length > 0 && labelStyle !== LabelStyle.HIDDEN) {
