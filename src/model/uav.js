@@ -273,9 +273,13 @@ export default class UAV {
       let newPercentage;
 
       if (battery.length > 0) {
-        newVoltageRaw = Number.parseInt(battery[0], 10);
+        newVoltageRaw = isNil(battery[0])
+          ? null
+          : Number.parseInt(battery[0], 10);
         if (battery.length > 1) {
-          newPercentage = Number.parseInt(battery[1], 10);
+          newPercentage = isNil(battery[1])
+            ? null
+            : Number.parseInt(battery[1], 10);
         }
       }
 
@@ -288,7 +292,7 @@ export default class UAV {
 
       if (newVoltageRaw !== this._rawVoltage) {
         this._rawVoltage = battery.voltage;
-        this.battery.voltage = newVoltageRaw / 10;
+        this.battery.voltage = isNil(newVoltageRaw) ? null : newVoltageRaw / 10;
         updated = true;
       }
 

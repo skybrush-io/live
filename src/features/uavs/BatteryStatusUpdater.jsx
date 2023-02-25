@@ -19,18 +19,24 @@ const BatteryStatusUpdater = ({ onSetStatus }) => {
 
     const state = store.getState();
     const voltages = [];
+    const percentages = [];
 
     for (const uavId of getActiveUAVIds(state)) {
       const uav = getUAVById(state, uavId);
       const battery = uav?.battery;
-      if (battery && !isNil(battery.voltage)) {
-        voltages.push(battery.voltage);
+      if (battery) {
+        if (!isNil(battery.voltage)) {
+          voltages.push(battery.voltage);
+        }
+        if (!isNil(battery.percentage)) {
+          percentages.push(battery.percentage);
+        }
       }
     }
 
     // TODO(ntamas): figure out how to interpret percentages nicely if some of
-    // the UAVs provide a percentage estimate. Maybe if all the UAVs provide a
-    // percentage, then we should use that, otherwise we should use voltages?
+    // the UAVs provide a percentage estimate and some of them provide a voltage
+    // estimate.
 
     if (voltages.length > 0) {
       const settings = getBatterySettings(state);
@@ -44,6 +50,19 @@ const BatteryStatusUpdater = ({ onSetStatus }) => {
         min: {
           voltage: minVoltage,
           percentage: settings.estimatePercentageFromVoltage(minVoltage),
+        },
+      });
+    } else if (percentages.length > 0) {
+      const meanPercentage = mean(percentages);
+      const minPercentage = min(percentages);
+      onSetStatus({
+        avg: {
+          voltage: null,
+          percentage: meanPercentage,
+        },
+        min: {
+          voltage: null,
+          percentage: minPercentage,
         },
       });
     } else {
