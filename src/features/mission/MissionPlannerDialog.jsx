@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { connect } from 'react-redux';
 
 import Box from '@material-ui/core/Box';
@@ -11,35 +11,22 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
 
 import { TooltipWithContainerFromContext as Tooltip } from '~/containerContext';
-import { showErrorMessage } from '~/features/error-handling/actions';
-import { selectSingleFeatureOfTypeUnlessAmbiguous } from '~/features/map-features/actions';
 import { isConnected as isConnectedToServer } from '~/features/servers/selectors';
-import { updateGeofencePolygon } from '~/features/show/actions';
-import { selectSingleUAVUnlessAmbiguous } from '~/features/uavs/actions';
-import { ServerPlanError } from '~/flockwave/operations';
-import messageHub from '~/message-hub';
-import { FeatureType } from '~/model/features';
-import { MissionType } from '~/model/missions';
 
-import {
-  prepareMappingForSingleUAVMissionFromSelection,
-  setMissionItemsFromArray,
-} from './actions';
-import {
-  getParametersFromContext,
-  ParameterUIContext,
-} from './parameter-context';
+import { invokeMissionPlanner, setMissionItemsFromArray } from './actions';
 import {
   getGeofencePolygon,
+  getMissionPlannerDialogSelectedType,
+  getMissionPlannerDialogUserParameters,
   isMissionPlannerDialogOpen,
   shouldMissionPlannerDialogApplyGeofence,
-  shouldMissionPlannerDialogResume,
 } from './selectors';
 import {
   closeMissionPlannerDialog,
   setMissionPlannerDialogApplyGeofence,
-  setMissionPlannerDialogParameters,
-  setMissionType,
+  setMissionPlannerDialogContextParameters,
+  setMissionPlannerDialogSelectedType,
+  setMissionPlannerDialogUserParameters,
 } from './slice';
 
 import MissionPlannerMainPanel from './MissionPlannerMainPanel';
@@ -54,90 +41,100 @@ const MissionPlannerDialog = ({
   isConnectedToServer,
   isGeofenceOwnedByUser,
   onApplyGeofenceChanged,
+  onClearMission,
   onClose,
   onInvokePlanner,
-  onSaveParameters,
+  onSaveContextParameters,
+  onSaveUserParameters,
+  onSelectedTypeChanged,
   open,
-  resume,
+  selectedType,
 }) => {
-  const [missionType, setMissionType] = useState(null);
+  const [selectedTypeInfo, setSelectedTypeInfo] = useState(null);
   const [parametersFromUser, setParametersFromUser] =
     useState(initialParameters);
-  const [parametersFromContext, setParametersFromContext] = useState(null);
-  const [selectedPage, setSelectedPage] = useState('type');
   const [canInvokePlanner, setCanInvokePlanner] = useState(false);
 
-  const handleMissionTypeChange = (value) => {
-    setMissionType(value);
+  const handleParametersChange = useCallback(
+    ({ fromUser, fromContext }) => {
+      let userParametersChanged = false;
+      let parametersValid = false;
 
-    // TODO: Properly clear the parameters when switching between mission types
-    handleParametersChange({ fromUser: {}, fromContext: {} });
+      if (fromUser !== undefined) {
+        userParametersChanged = true;
 
-    setSelectedPage(value ? 'parameters' : 'type');
+        if (typeof fromUser === 'object' && fromUser !== null) {
+          setParametersFromUser(fromUser);
+          onSaveUserParameters(fromUser);
 
-    setCanInvokePlanner(Boolean(value));
-  };
-
-  const handleMissionTypeCleared = () => {
-    setSelectedPage('type');
-    setCanInvokePlanner(false);
-    setTimeout(() => setMissionType(null), 500);
-  };
-
-  const handleParametersChange = ({ fromUser, fromContext }) => {
-    let userParametersChanged = false;
-    let parametersValid = false;
-
-    if (fromUser !== undefined) {
-      userParametersChanged = true;
-
-      if (typeof fromUser === 'object' && fromUser !== null) {
-        setParametersFromUser(fromUser);
-
-        if (onSaveParameters) {
-          onSaveParameters(fromUser);
+          parametersValid = true;
+        } else {
+          setParametersFromUser(null);
         }
-
-        parametersValid = true;
-      } else {
-        setParametersFromUser(null);
       }
-    }
 
-    if (fromContext !== undefined) {
-      setParametersFromContext(fromContext);
-    }
+      if (fromContext !== undefined) {
+        onSaveContextParameters(fromContext);
+      }
 
-    setCanInvokePlanner(
-      Boolean(missionType) &&
-        (userParametersChanged ? parametersValid : canInvokePlanner)
-    );
-  };
+      setCanInvokePlanner(
+        Boolean(selectedTypeInfo) &&
+          (userParametersChanged ? parametersValid : canInvokePlanner)
+      );
+    },
+    [
+      canInvokePlanner,
+      onSaveContextParameters,
+      onSaveUserParameters,
+      selectedTypeInfo,
+    ]
+  );
+
+  const handleMissionTypeChange = useCallback(
+    async (value) => {
+      onSelectedTypeChanged(value.id);
+      setSelectedTypeInfo(value);
+      handleParametersChange({ fromUser: {}, fromContext: new Map() });
+      setCanInvokePlanner(Boolean(value));
+    },
+    [
+      handleParametersChange,
+      onSelectedTypeChanged,
+      setCanInvokePlanner,
+      setSelectedTypeInfo,
+    ]
+  );
+
+  const handleMissionTypeCleared = useCallback(() => {
+    onSelectedTypeChanged(null);
+    setCanInvokePlanner(false);
+  }, [onSelectedTypeChanged, setCanInvokePlanner]);
 
   const invokePlanner = () => {
     if (onInvokePlanner && canInvokePlanner && isConnectedToServer) {
-      onInvokePlanner(missionType, {
-        fromUser: parametersFromUser,
-        fromContext: parametersFromContext,
-      });
+      onClearMission();
+      onInvokePlanner();
     }
   };
 
   return (
     <DraggableDialog
       fullWidth
+      // Mount the children of the dialog if we are connected to the server,
+      // even while it is closed, so the mission parameters can be set up in the
+      // store for resuming without having to open the dialog.
+      keepMounted={isConnectedToServer}
       open={open}
       maxWidth='sm'
       title='Plan mission'
       onClose={onClose}
     >
       <MissionPlannerMainPanel
-        missionType={missionType}
         parameters={parametersFromUser}
-        resume={resume}
-        selectedPage={selectedPage}
-        onMissionTypeCleared={handleMissionTypeCleared}
+        selectedType={selectedType}
+        selectedTypeInfo={selectedTypeInfo}
         onMissionTypeChange={handleMissionTypeChange}
+        onMissionTypeCleared={handleMissionTypeCleared}
         onParametersChange={handleParametersChange}
       />
       <DialogActions>
@@ -181,111 +178,37 @@ MissionPlannerDialog.propTypes = {
   isGeofenceOwnedByUser: PropTypes.bool,
   open: PropTypes.bool,
   onApplyGeofenceChanged: PropTypes.func,
+  onClearMission: PropTypes.func,
   onClose: PropTypes.func,
   onInvokePlanner: PropTypes.func,
-  onSaveParameters: PropTypes.func,
-  resume: PropTypes.bool,
+  onSaveContextParameters: PropTypes.func,
+  onSaveUserParameters: PropTypes.func,
+  onSelectedTypeChanged: PropTypes.func,
+  selectedType: PropTypes.string,
 };
 
 export default connect(
   // mapStateToProps
   (state) => ({
     applyGeofence: shouldMissionPlannerDialogApplyGeofence(state),
-    initialParameters: state.mission?.plannerDialog?.parameters || {},
+    initialParameters: getMissionPlannerDialogUserParameters(state) || {},
     open: isMissionPlannerDialogOpen(state),
     isConnectedToServer: isConnectedToServer(state),
     isGeofenceOwnedByUser: getGeofencePolygon(state)?.owner === 'user',
-    resume: shouldMissionPlannerDialogResume(state),
+    selectedType: getMissionPlannerDialogSelectedType(state),
   }),
 
   // mapDispatchToProps
   {
     onApplyGeofenceChanged: (event) =>
       setMissionPlannerDialogApplyGeofence(event.target.checked),
+    onClearMission: () => (dispatch) => {
+      dispatch(setMissionItemsFromArray([]));
+    },
     onClose: closeMissionPlannerDialog,
-    onInvokePlanner:
-      (missionType, { fromUser, fromContext }) =>
-      async (dispatch, getState) => {
-        const state = getState();
-        let items = null;
-        const parameters = {};
-
-        if (!fromContext) {
-          console.warn(
-            'Mapping from UI context IDs to parameter names is missing; this is most likely a bug.'
-          );
-          fromContext = new Map();
-        }
-
-        // If we need to select a UAV from the context, and we only have a
-        // single UAV at the moment, we can safely assume that this is the UAV
-        // that the user wants to work with, so select it
-        if (fromContext.has(ParameterUIContext.SELECTED_UAV_COORDINATE)) {
-          dispatch(selectSingleUAVUnlessAmbiguous());
-        }
-
-        // If we need to select a polygon / linestring feature from the context,
-        // and we only have a single polygon / linestring that is owned by the
-        // user at the moment, we can safely assume that this is the polygon /
-        // linestring that the user wants to work with, so select it
-
-        if (fromContext.has(ParameterUIContext.SELECTED_POLYGON_FEATURE)) {
-          dispatch(
-            selectSingleFeatureOfTypeUnlessAmbiguous(FeatureType.POLYGON)
-          );
-        }
-
-        if (fromContext.has(ParameterUIContext.SELECTED_LINE_STRING_FEATURE)) {
-          dispatch(
-            selectSingleFeatureOfTypeUnlessAmbiguous(FeatureType.LINE_STRING)
-          );
-        }
-
-        try {
-          Object.assign(
-            parameters,
-            getParametersFromContext(fromContext, getState)
-          );
-        } catch (error) {
-          dispatch(showErrorMessage('Error while setting parameters', error));
-          return;
-        }
-
-        Object.assign(parameters, fromUser);
-
-        try {
-          items = await messageHub.execute.planMission({
-            id: missionType.id,
-            parameters,
-          });
-          if (!Array.isArray(items)) {
-            throw new TypeError('Expected an array of mission items');
-          }
-        } catch (error) {
-          if (error instanceof ServerPlanError) {
-            dispatch(
-              showErrorMessage('Failed to plan mission on the server', error)
-            );
-          } else {
-            dispatch(
-              showErrorMessage('Error while invoking mission planner', error)
-            );
-          }
-        }
-
-        if (Array.isArray(items)) {
-          dispatch(setMissionType(MissionType.WAYPOINT));
-          dispatch(setMissionItemsFromArray(items));
-          dispatch(prepareMappingForSingleUAVMissionFromSelection());
-          dispatch(closeMissionPlannerDialog());
-          if (
-            shouldMissionPlannerDialogApplyGeofence(state) &&
-            getGeofencePolygon(state)?.owner !== 'user'
-          ) {
-            dispatch(updateGeofencePolygon());
-          }
-        }
-      },
-    onSaveParameters: setMissionPlannerDialogParameters,
+    onInvokePlanner: invokeMissionPlanner,
+    onSaveContextParameters: setMissionPlannerDialogContextParameters,
+    onSaveUserParameters: setMissionPlannerDialogUserParameters,
+    onSelectedTypeChanged: setMissionPlannerDialogSelectedType,
   }
 )(MissionPlannerDialog);

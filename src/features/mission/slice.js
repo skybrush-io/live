@@ -101,8 +101,11 @@ const { actions, reducer } = createSlice({
     plannerDialog: {
       applyGeofence: true,
       open: false,
-      parameters: {},
-      resume: false,
+      parameters: {
+        fromUser: {},
+        fromContext: {},
+      },
+      selectedType: null,
     },
 
     // the progress of the mission as reported by the UAV
@@ -382,17 +385,30 @@ const { actions, reducer } = createSlice({
       state.plannerDialog.applyGeofence = action.payload;
     },
 
-    setMissionPlannerDialogParameters(state, action) {
-      state.plannerDialog.parameters = action.payload;
+    setMissionPlannerDialogSelectedType(state, action) {
+      state.plannerDialog.selectedType = action.payload;
+    },
+
+    setMissionPlannerDialogContextParameters: {
+      // Convert the Map to an object to avoid issues with serialization.
+      prepare: (fromContext) => ({
+        payload: Object.fromEntries(fromContext.entries()),
+      }),
+      reducer(state, action) {
+        state.plannerDialog.parameters.fromContext = action.payload;
+      },
+    },
+
+    setMissionPlannerDialogUserParameters(state, action) {
+      state.plannerDialog.parameters.fromUser = action.payload;
     },
 
     /**
      * Shows the mission planner dialog.
      */
-    showMissionPlannerDialog(state, { payload: resume }) {
+    showMissionPlannerDialog: noPayload((state) => {
       state.plannerDialog.open = true;
-      state.plannerDialog.resume = resume;
-    },
+    }),
 
     /**
      * Starts the current editing session of the mapping, and marks the
@@ -529,7 +545,9 @@ export const {
   setGeofencePolygonId,
   setMappingLength,
   setMissionPlannerDialogApplyGeofence,
-  setMissionPlannerDialogParameters,
+  setMissionPlannerDialogContextParameters,
+  setMissionPlannerDialogUserParameters,
+  setMissionPlannerDialogSelectedType,
   setMissionType,
   showMissionPlannerDialog,
   startMappingEditorSession,

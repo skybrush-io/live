@@ -7,7 +7,6 @@ import Form from '@rjsf/material-ui';
 import validator from '@rjsf/validator-ajv8';
 
 import AsyncGuard from '~/components/AsyncGuard';
-import { useMessageHub } from '~/hooks';
 
 import { filterSchemaByUIContext } from './schema';
 
@@ -87,18 +86,20 @@ MissionParameterEditorPresentation.propTypes = {
   schema: PropTypes.object,
 };
 
-const MissionParameterEditor = ({ missionType, onChange, parameters }) => {
-  const messageHub = useMessageHub();
+const MissionParameterEditor = ({
+  getSchema,
+  onChange,
+  parameters,
+  selectedType,
+}) => {
   const func = useCallback(async () => {
-    if (missionType) {
-      const schemas = await messageHub.query.getMissionTypeSchemas(
-        missionType.id
-      );
-      return schemas.plan;
+    if (selectedType) {
+      const { plan } = await getSchema(selectedType);
+      return plan;
     } else {
       return undefined;
     }
-  }, [messageHub, missionType]);
+  }, [getSchema, selectedType]);
 
   return (
     <AsyncGuard
@@ -118,11 +119,10 @@ const MissionParameterEditor = ({ missionType, onChange, parameters }) => {
 };
 
 MissionParameterEditor.propTypes = {
-  missionType: PropTypes.shape({
-    id: PropTypes.string,
-  }),
+  getSchema: PropTypes.func,
   onChange: PropTypes.func,
   parameters: PropTypes.object,
+  selectedType: PropTypes.string,
 };
 
 export default MissionParameterEditor;

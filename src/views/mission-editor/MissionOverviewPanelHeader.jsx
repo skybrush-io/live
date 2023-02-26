@@ -25,6 +25,7 @@ import {
   PopoverWithContainerFromContext as Popover,
 } from '~/containerContext';
 import {
+  invokeMissionPlanner,
   setMissionItemsFromArray,
   uploadMissionItemsToSelectedUAV,
 } from '~/features/mission/actions';
@@ -36,7 +37,6 @@ import {
 import {
   setMappingLength,
   showMissionPlannerDialog,
-  updateCurrentMissionItemId,
   updateHomePositions,
 } from '~/features/mission/slice';
 import { getSingleSelectedUAVId } from '~/features/uavs/selectors';
@@ -65,6 +65,7 @@ const MissionOverviewPanelHeader = ({
   onClearMission,
   onExportMission,
   onImportMission,
+  onInvokePlanner,
   onShowMissionPlannerDialog,
   onUploadMissionItems,
 }) => {
@@ -72,15 +73,15 @@ const MissionOverviewPanelHeader = ({
 
   const [planPopupAnchor, openPlanPopup, closePlanPopup] = usePopover();
 
-  const showMissionPlannerDialogForNewMission = useCallback(() => {
+  const showMissionPlannerDialog = useCallback(() => {
     closePlanPopup();
-    onShowMissionPlannerDialog(/* resume = */ false);
+    onShowMissionPlannerDialog();
   }, [closePlanPopup, onShowMissionPlannerDialog]);
 
-  const showMissionPlannerDialogForResumedMission = useCallback(() => {
+  const resumeMission = useCallback(() => {
     closePlanPopup();
-    onShowMissionPlannerDialog(/* resume = */ true);
-  }, [closePlanPopup, onShowMissionPlannerDialog]);
+    onInvokePlanner();
+  }, [closePlanPopup, onInvokePlanner]);
 
   return (
     <Paper square className={classes.root} elevation={4}>
@@ -112,9 +113,7 @@ const MissionOverviewPanelHeader = ({
         <Button
           disabled={!canPlan}
           size='small'
-          onClick={
-            canResume ? openPlanPopup : showMissionPlannerDialogForNewMission
-          }
+          onClick={canResume ? openPlanPopup : showMissionPlannerDialog}
         >
           Plan
         </Button>
@@ -135,7 +134,7 @@ const MissionOverviewPanelHeader = ({
             disabled={!canPlan}
             size='small'
             startIcon={<DeleteForever />}
-            onClick={showMissionPlannerDialogForNewMission}
+            onClick={showMissionPlannerDialog}
           >
             New
           </Button>
@@ -143,7 +142,7 @@ const MissionOverviewPanelHeader = ({
             disabled={!canPlan}
             size='small'
             startIcon={<PlayArrow />}
-            onClick={showMissionPlannerDialogForResumedMission}
+            onClick={resumeMission}
           >
             Resume
           </Button>
@@ -168,6 +167,7 @@ MissionOverviewPanelHeader.propTypes = {
   onClearMission: PropTypes.func,
   onExportMission: PropTypes.func,
   onImportMission: PropTypes.func,
+  onInvokePlanner: PropTypes.func,
   onShowMissionPlannerDialog: PropTypes.func,
   onUploadMissionItems: PropTypes.func,
 };
@@ -199,7 +199,6 @@ export default connect(
   {
     onClearMission: () => (dispatch) => {
       dispatch(setMissionItemsFromArray([]));
-      dispatch(updateCurrentMissionItemId(undefined));
     },
     onImportMission: (file) => async (dispatch) => {
       try {
@@ -212,6 +211,7 @@ export default connect(
         dispatch(showError(`Error while importing mission: ${error}`));
       }
     },
+    onInvokePlanner: invokeMissionPlanner,
     onShowMissionPlannerDialog: showMissionPlannerDialog,
     onUploadMissionItems: uploadMissionItemsToSelectedUAV,
   }

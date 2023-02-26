@@ -5,7 +5,6 @@ import ListItemText from '@material-ui/core/ListItemText';
 
 import AsyncGuard from '~/components/AsyncGuard';
 import { selectableListOf } from '~/components/helpers/lists';
-import useMessageHub from '~/hooks/useMessageHub';
 
 const MissionTypeListEntry = ({ name, description, onItemSelected }) => (
   <ListItem button onClick={onItemSelected}>
@@ -30,12 +29,10 @@ const MissionTypeSelectorPresentation = selectableListOf(
   }
 );
 
-const MissionTypeSelector = ({ style, ...rest }) => {
-  const messageHub = useMessageHub();
-  const func = () => messageHub.query.getMissionTypes({ features: ['plan'] });
+const MissionTypeSelector = ({ getTypes, style, ...rest }) => {
   return (
     <AsyncGuard
-      func={func}
+      func={getTypes}
       errorMessage='Error while loading mission types from server'
       loadingMessage='Retrieving mission types...'
       style={style}
@@ -52,6 +49,7 @@ const MissionTypeSelector = ({ style, ...rest }) => {
 };
 
 MissionTypeSelector.propTypes = {
+  getTypes: PropTypes.func,
   onChange: PropTypes.func,
   style: PropTypes.object,
   value: PropTypes.any,

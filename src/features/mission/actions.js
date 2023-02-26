@@ -2,8 +2,15 @@ import isNil from 'lodash-es/isNil';
 import { getDistance as haversineDistance } from 'ol/sphere';
 
 import { findAssignmentInDistanceMatrix } from '~/algorithms/matching';
+import { showErrorMessage } from '~/features/error-handling/actions';
 import { setSelection } from '~/features/map/selection';
+import { selectSingleFeatureOfTypeUnlessAmbiguous } from '~/features/map-features/actions';
+import {
+  getFeatureById,
+  getSingleSelectedFeatureIdOfType,
+} from '~/features/map-features/selectors';
 import { removeFeaturesByIds } from '~/features/map-features/slice';
+import { updateGeofencePolygon } from '~/features/show/actions';
 import {
   getFirstPointsOfTrajectories,
   getOutdoorShowCoordinateSystem,
@@ -14,6 +21,7 @@ import {
   proposeMappingFileName,
 } from '~/features/show/selectors';
 import { showError, showSuccess } from '~/features/snackbar/actions';
+import { selectSingleUAVUnlessAmbiguous } from '~/features/uavs/actions';
 import {
   getCurrentGPSPositionByUavId,
   getCurrentLocalPositionByUavId,
@@ -22,7 +30,9 @@ import {
   getUnmappedUAVIds,
 } from '~/features/uavs/selectors';
 import { openUploadDialogForJob } from '~/features/upload/slice';
+import { ServerPlanError } from '~/flockwave/operations';
 import messageHub from '~/message-hub';
+import { FeatureType } from '~/model/features';
 import {
   missionItemIdToGlobalId,
   missionSlotIdToGlobalId,
@@ -31,6 +41,7 @@ import {
   getCoordinateFromMissionItem,
   isMissionItemValid,
   MissionItemType,
+  MissionType,
 } from '~/model/missions';
 import { readTextFromFile, writeTextToFile } from '~/utils/filesystem';
 import { translateLonLatWithMapViewDelta } from '~/utils/geography';
@@ -39,8 +50,13 @@ import { chooseUniqueId } from '~/utils/naming';
 
 import { JOB_TYPE } from './constants';
 import {
+  getParametersFromContext,
+  ParameterUIContext,
+} from './parameter-context';
+import {
   createCanMoveSelectedMissionItemsByDeltaSelector,
   getEmptyMappingSlotIndices,
+  getGeofencePolygon,
   getGeofencePolygonId,
   getGPSBasedHomePositionsInMission,
   getItemIndexRangeForSelectedMissionItems,
@@ -49,25 +65,26 @@ import {
   getMissionItemUploadJobPayload,
   getMissionMapping,
   getMissionMappingFileContents,
+  getMissionPlannerDialogContextParameters,
+  getMissionPlannerDialogSelectedType,
+  getMissionPlannerDialogUserParameters,
   getSelectedMissionItemIds,
+  shouldMissionPlannerDialogApplyGeofence,
 } from './selectors';
 import {
   addMissionItem,
   clearMapping,
+  closeMissionPlannerDialog,
   moveMissionItem,
   removeMissionItemsByIds,
   removeUAVsFromMapping,
   replaceMapping,
   setMappingLength,
+  setMissionType,
   updateHomePositions,
   updateMissionItemParameters,
   _setMissionItemsFromValidatedArray,
 } from './slice';
-import {
-  getFeatureById,
-  getSingleSelectedFeatureIdOfType,
-} from '../map-features/selectors';
-import { FeatureType } from '~/model/features';
 
 /**
  * Thunk that fills the empty slots in the current mapping from the spare drones
@@ -357,7 +374,8 @@ export const prepareMappingForSingleUAVMissionFromSelection =
 
       const [lon, lat] = getFeatureById(state, featureId).points[0];
 
-      dispatch(updateHomePositions([{ lon, lat }]));
+      // TODO: amsl of marker?
+      dispatch(updateHomePositions([{ lon, lat, agl: 0, amsl: undefined }]));
     }
   };
 
@@ -493,5 +511,86 @@ export const uploadMissionItemsToSelectedUAV = () => (dispatch, getState) => {
   if (selectedUAVId !== undefined) {
     const payload = getMissionItemUploadJobPayload(state);
     dispatch(openUploadDialogForJob({ job: { type: JOB_TYPE, payload } }));
+  }
+};
+
+/**
+ * Thunk that prepares a mission by assigning context based parameters, invokes
+ * the planner on the server and sets up a mission according to the response.
+ */
+export const invokeMissionPlanner = () => async (dispatch, getState) => {
+  const state = getState();
+
+  const selectedMissionType = getMissionPlannerDialogSelectedType(state);
+  const fromUser = getMissionPlannerDialogUserParameters(state);
+  const fromContext = getMissionPlannerDialogContextParameters(state);
+
+  let items = null;
+  const parameters = {};
+
+  // If we need to select a UAV from the context, and we only have a
+  // single UAV at the moment, we can safely assume that this is the UAV
+  // that the user wants to work with, so select it
+  if (fromContext.has(ParameterUIContext.SELECTED_UAV_COORDINATE)) {
+    dispatch(selectSingleUAVUnlessAmbiguous());
+  }
+
+  // If we need to select a coordinate from the context, and we only have a
+  // single UAV or marker at the moment, we can safely assume that this is the
+  // UAV or marker that the user wants to work with, so select it
+  if (fromContext.has(ParameterUIContext.SELECTED_COORDINATE)) {
+    dispatch(selectSingleUAVUnlessAmbiguous());
+    dispatch(selectSingleFeatureOfTypeUnlessAmbiguous(FeatureType.POINTS));
+  }
+
+  // If we need to select a polygon / linestring feature from the context,
+  // and we only have a single polygon / linestring that is owned by the
+  // user at the moment, we can safely assume that this is the polygon /
+  // linestring that the user wants to work with, so select it
+
+  if (fromContext.has(ParameterUIContext.SELECTED_POLYGON_FEATURE)) {
+    dispatch(selectSingleFeatureOfTypeUnlessAmbiguous(FeatureType.POLYGON));
+  }
+
+  if (fromContext.has(ParameterUIContext.SELECTED_LINE_STRING_FEATURE)) {
+    dispatch(selectSingleFeatureOfTypeUnlessAmbiguous(FeatureType.LINE_STRING));
+  }
+
+  try {
+    Object.assign(parameters, getParametersFromContext(fromContext, getState));
+  } catch (error) {
+    dispatch(showErrorMessage('Error while setting parameters', error));
+    return;
+  }
+
+  Object.assign(parameters, fromUser);
+
+  try {
+    items = await messageHub.execute.planMission({
+      id: selectedMissionType,
+      parameters,
+    });
+    if (!Array.isArray(items)) {
+      throw new TypeError('Expected an array of mission items');
+    }
+  } catch (error) {
+    if (error instanceof ServerPlanError) {
+      dispatch(showErrorMessage('Failed to plan mission on the server', error));
+    } else {
+      dispatch(showErrorMessage('Error while invoking mission planner', error));
+    }
+  }
+
+  if (Array.isArray(items)) {
+    dispatch(setMissionType(MissionType.WAYPOINT));
+    dispatch(setMissionItemsFromArray(items));
+    dispatch(prepareMappingForSingleUAVMissionFromSelection());
+    dispatch(closeMissionPlannerDialog());
+    if (
+      shouldMissionPlannerDialogApplyGeofence(state) &&
+      getGeofencePolygon(state)?.owner !== 'user'
+    ) {
+      dispatch(updateGeofencePolygon());
+    }
   }
 };

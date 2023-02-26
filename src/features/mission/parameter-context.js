@@ -27,7 +27,6 @@ import {
 import {
   getEndRatioOfPartialMission,
   getGlobalMissionCompletionRatio,
-  shouldMissionPlannerDialogResume,
 } from './selectors';
 
 export const ParameterUIContext = {
@@ -92,14 +91,7 @@ function extractNetMissionEndRatioFromContext(
   getState
 ) {
   const state = getState();
-
-  const shouldResume = shouldMissionPlannerDialogResume(state);
-
-  assign(
-    result,
-    parameterNames,
-    shouldResume ? getEndRatioOfPartialMission(state) : 1
-  );
+  assign(result, parameterNames, getEndRatioOfPartialMission(state));
 }
 
 /**
@@ -112,14 +104,7 @@ function extractNetMissionStartRatioFromContext(
   getState
 ) {
   const state = getState();
-
-  const shouldResume = shouldMissionPlannerDialogResume(state);
-
-  assign(
-    result,
-    parameterNames,
-    shouldResume ? getGlobalMissionCompletionRatio(state) : 0
-  );
+  assign(result, parameterNames, getGlobalMissionCompletionRatio(state));
 }
 
 /**
