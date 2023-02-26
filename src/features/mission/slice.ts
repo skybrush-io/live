@@ -124,8 +124,11 @@ export type MissionSliceState = ReadonlyDeep<{
   plannerDialog: {
     applyGeofence: boolean;
     open: boolean;
-    parameters: Record<string, any>;
-    resume: boolean;
+    parameters: {
+      fromUser: Record<string, any>;
+      fromContext: Record<string, any>;
+    };
+    selectedType: Nullable<string>;
   };
 
   /** The progress of the mission as reported by the UAV */
@@ -159,8 +162,11 @@ const initialState: MissionSliceState = {
   plannerDialog: {
     applyGeofence: false,
     open: false,
-    parameters: {},
-    resume: false,
+    parameters: {
+      fromUser: {},
+      fromContext: {},
+    },
+    selectedType: null,
   },
   progress: {
     currentItemId: undefined,
@@ -469,23 +475,36 @@ const { actions, reducer } = createSlice({
       state.plannerDialog.applyGeofence = Boolean(action.payload);
     },
 
-    setMissionPlannerDialogParameters(
+    setMissionPlannerDialogSelectedType(
+      state,
+      action: PayloadAction<Nullable<string>>
+    ) {
+      state.plannerDialog.selectedType = action.payload;
+    },
+
+    setMissionPlannerDialogContextParameters: {
+      // Convert the Map to an object to avoid issues with serialization.
+      prepare: (fromContext: Map<string, any>) => ({
+        payload: Object.fromEntries(fromContext.entries()),
+      }),
+      reducer(state, action: PayloadAction<Record<string, any>>) {
+        state.plannerDialog.parameters.fromContext = action.payload;
+      },
+    },
+
+    setMissionPlannerDialogUserParameters(
       state,
       action: PayloadAction<Record<string, any>>
     ) {
-      state.plannerDialog.parameters = action.payload;
+      state.plannerDialog.parameters.fromUser = action.payload;
     },
 
     /**
      * Shows the mission planner dialog.
      */
-    showMissionPlannerDialog(
-      state,
-      { payload: resume }: PayloadAction<boolean>
-    ) {
+    showMissionPlannerDialog: noPayload<MissionSliceState>((state) => {
       state.plannerDialog.open = true;
-      state.plannerDialog.resume = Boolean(resume);
-    },
+    }),
 
     /**
      * Starts the current editing session of the mapping, and marks the
@@ -637,7 +656,9 @@ export const {
   setGeofencePolygonId,
   setMappingLength,
   setMissionPlannerDialogApplyGeofence,
-  setMissionPlannerDialogParameters,
+  setMissionPlannerDialogContextParameters,
+  setMissionPlannerDialogUserParameters,
+  setMissionPlannerDialogSelectedType,
   setMissionType,
   showMissionPlannerDialog,
   startMappingEditorSession,

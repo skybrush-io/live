@@ -501,17 +501,31 @@ export const isMissionPlannerDialogOpen = (state) =>
   state.mission.plannerDialog.open;
 
 /**
+ * Selector that returns the mapping to be used when setting parameters for the
+ * mission planner from the context.
+ */
+export const getMissionPlannerDialogContextParameters = (state) =>
+  // Reconstruct the Map representation from the stored object.
+  new Map(Object.entries(state.mission.plannerDialog.parameters.fromContext));
+
+/**
+ * Selector that returns the parameters for the mission planner set by the user.
+ */
+export const getMissionPlannerDialogUserParameters = (state) =>
+  state.mission.plannerDialog.parameters.fromUser;
+
+/**
+ * Selector that returns the mission type currently selected for planning.
+ */
+export const getMissionPlannerDialogSelectedType = (state) =>
+  state.mission.plannerDialog.selectedType;
+
+/**
  * Selector that returns whether the mission planner dialog should apply an
  * automatically generated geofence.
  */
 export const shouldMissionPlannerDialogApplyGeofence = (state) =>
   state.mission.plannerDialog.applyGeofence;
-
-/**
- * Selector that returns whether the mission planner dialog is in resume mode.
- */
-export const shouldMissionPlannerDialogResume = (state) =>
-  state.mission.plannerDialog.resume;
 
 /**
  * Selector that returns the items of the mission wrapped together with distance
