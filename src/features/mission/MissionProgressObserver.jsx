@@ -54,11 +54,14 @@ export default connect(
   }),
   // mapDispatchToProps
   {
-    storeProgress:
-      ({ id, ratio }) =>
-      (dispatch) => {
-        dispatch(updateCurrentMissionItemId(id));
-        dispatch(updateCurrentMissionItemRatio(ratio));
-      },
+    storeProgress: (progress) => (dispatch) => {
+      if (!progress) {
+        return;
+      }
+
+      const { id, ratio } = progress;
+      dispatch(updateCurrentMissionItemId(id));
+      dispatch(updateCurrentMissionItemRatio(ratio));
+    },
   }
 )(MissionProgressObserver);
