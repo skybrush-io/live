@@ -23,13 +23,14 @@ import HomeIcon from '@material-ui/icons/Home';
 import { Status } from '@skybrush/app-theme-material-ui';
 
 import Colors from '~/components/colors';
-import { showGeofenceSettingsDialog } from '~/features/geofence/slice';
 import {
   getGeofencePolygon,
   getMissionItemById,
   hasActiveGeofencePolygon,
   isWaypointMissionConvexHullInsideGeofence,
 } from '~/features/mission/selectors';
+import { SafetyDialogTab } from '~/features/safety/constants';
+import { openSafetyDialog, setSafetyDialogTab } from '~/features/safety/slice';
 import {
   isMissionItemValid,
   MissionItemType,
@@ -100,8 +101,9 @@ const MissionOverviewListItem = ({
   missionGeofenceStatus,
   ratio,
   selected,
-  showGeofenceSettingsDialog,
   onSelectItem,
+  openGeofenceSettingsTab,
+  openSafetySettingsTab,
 }) => {
   const classes = useStyles();
 
@@ -212,13 +214,14 @@ const MissionOverviewListItem = ({
 
     case MissionItemType.UPDATE_GEOFENCE:
       avatar = <UpdateGeofenceIcon />;
-      onClick = showGeofenceSettingsDialog;
+      onClick = openGeofenceSettingsTab;
       primaryText = 'Update geofence';
       secondaryText = formatGeofenceStatusText(missionGeofenceStatus);
       break;
 
     case MissionItemType.UPDATE_SAFETY:
       avatar = <UpdateSafetyIcon />;
+      onClick = openSafetySettingsTab;
       primaryText = 'Update safety parameters';
       break;
 
@@ -265,8 +268,9 @@ MissionOverviewListItem.propTypes = {
   missionGeofenceStatus: PropTypes.oneOf(Object.values(Status)),
   ratio: PropTypes.number,
   selected: PropTypes.bool,
-  showGeofenceSettingsDialog: PropTypes.func,
   onSelectItem: PropTypes.func,
+  openGeofenceSettingsTab: PropTypes.func,
+  openSafetySettingsTab: PropTypes.func,
 };
 
 export default connect(
@@ -283,6 +287,13 @@ export default connect(
   }),
   // mapDispatchToProps
   {
-    showGeofenceSettingsDialog,
+    openGeofenceSettingsTab: () => (dispatch) => {
+      dispatch(setSafetyDialogTab(SafetyDialogTab.GEOFENCE));
+      dispatch(openSafetyDialog());
+    },
+    openSafetySettingsTab: () => (dispatch) => {
+      dispatch(setSafetyDialogTab(SafetyDialogTab.SETTINGS));
+      dispatch(openSafetyDialog());
+    },
   }
 )(MissionOverviewListItem);

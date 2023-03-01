@@ -14,8 +14,8 @@ import AuthenticationButton from './AuthenticationButton';
 import BroadcastButton from './BroadcastButton';
 import ConnectionStatusButton from './ConnectionStatusButton';
 import FullScreenButton from './FullScreenButton';
-import GeofenceSettingsButton from './GeofenceSettingsButton';
 import HelpButton from './HelpButton';
+import SafetyButton from './SafetyButton';
 import ServerConnectionSettingsButton from './ServerConnectionSettingsButton';
 import ToolboxButton from './ToolboxButton';
 
@@ -104,7 +104,7 @@ const Header = ({
       <ConnectionStatusButton />
       <hr />
       <ServerConnectionSettingsButton />
-      {hasFeature('geofence') && <GeofenceSettingsButton />}
+      <SafetyButton />
       <AuthenticationButton />
       <hr />
       <BroadcastButton timeoutLength={BROADCAST_MODE_TIMEOUT_LENGTH} />

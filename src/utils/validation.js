@@ -8,8 +8,9 @@
  * Adapted from {@link https://github.com/erikras/react-redux-universal-hot-example/blob/master/src/utils/validation.js | this file}.
  */
 
-const isEmpty = (value) =>
+export const isEmpty = (value) =>
   value === undefined || value === null || value === '';
+
 export const join = (rules) => (value, data) =>
   rules.map((rule) => rule(value, data)).find(Boolean);
 

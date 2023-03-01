@@ -2,20 +2,20 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 
+import Security from '@material-ui/icons/Security';
 import GenericHeaderButton from '@skybrush/mui-components/lib/GenericHeaderButton';
 
 import GeofenceStatusBadge from '~/components/badges/GeofenceStatusBadge';
-import { showGeofenceSettingsDialog } from '~/features/geofence/slice';
-import PlacesFence from '~/icons/PlacesFence';
+import { openSafetyDialog } from '~/features/safety/slice';
 
-const GeofenceSettingsButton = (props) => (
-  <GenericHeaderButton {...props} tooltip='Geofence settings'>
+const SafetyButton = (props) => (
+  <GenericHeaderButton {...props} tooltip='Safety'>
     <GeofenceStatusBadge />
-    <PlacesFence />
+    <Security />
   </GenericHeaderButton>
 );
 
-GeofenceSettingsButton.propTypes = {
+SafetyButton.propTypes = {
   onClick: PropTypes.func,
 };
 
@@ -24,6 +24,6 @@ export default connect(
   null,
   // mapDispatchToProps
   {
-    onClick: showGeofenceSettingsDialog,
+    onClick: openSafetyDialog,
   }
-)(GeofenceSettingsButton);
+)(SafetyButton);

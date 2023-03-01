@@ -28,6 +28,7 @@ import CoordinateAveragingDialog from './features/measurement/CoordinateAveragin
 import MissionPlannerDialog from './features/mission/MissionPlannerDialog';
 import ParameterUploadSetupDialog from './features/parameters/ParameterUploadSetupDialog';
 import MissionProgressObserver from './features/mission/MissionProgressObserver';
+import SafetyDialog from './features/safety/SafetyDialog';
 import SavedLocationEditorDialog from './features/saved-locations/SavedLocationEditorDialog';
 import RTKSetupDialog from './features/rtk/RTKSetupDialog';
 import Sidebar from './features/sidebar/Sidebar';
@@ -163,7 +164,6 @@ const App = ({ onFirstRender }) => (
       <dialogs.DeauthenticationDialog />
       <dialogs.FeatureEditorDialog />
       <dialogs.FlyToTargetDialog />
-      <dialogs.GeofenceSettingsDialog />
       <dialogs.GlobalErrorDialog />
       <dialogs.LayerSettingsDialog />
       <dialogs.PromptDialog />
@@ -179,6 +179,7 @@ const App = ({ onFirstRender }) => (
       <MissionPlannerDialog />
       <ParameterUploadSetupDialog />
       <RTKSetupDialog />
+      <SafetyDialog />
       <SavedLocationEditorDialog />
       <UAVDetailsDialog />
       <UploadDialog />
