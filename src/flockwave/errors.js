@@ -21,7 +21,7 @@ export const ErrorCode = Object.freeze({
   NO_ERROR: 0,
 
   // Informational messages
-  DISARMED: 1,
+  ON_GROUND: 1,
   LOGGING_DEACTIVATED: 2,
   PREARM_CHECK_IN_PROGRESS: 3,
   AUTOPILOT_INITIALIZING: 4,
@@ -41,6 +41,8 @@ export const ErrorCode = Object.freeze({
   INVALID_MISSION_CONFIGURATION: 69,
   RADIO_MISSING: 70,
   GEOFENCE_VIOLATION_WARNING: 71,
+  WIND_SPEED_WARNING: 72,
+  DISARMED: 73,
 
   // Errors
   AUTOPILOT_COMM_TIMEOUT: 128,
@@ -101,7 +103,7 @@ export const getSeverityOfMostSevereErrorCode = (codes) =>
  */
 const errorCodeToAbbreviation = {
   0: 'ok',
-  1: 'disarm',
+  1: 'ground',
   2: 'no log',
   3: 'prearm',
   4: 'init',
@@ -119,6 +121,8 @@ const errorCodeToAbbreviation = {
   69: 'mission',
   70: 'no radio',
   71: 'fence',
+  72: 'wind',
+  73: 'disarm',
   128: 'comm t/o',
   129: 'ack t/o',
   130: 'proto',

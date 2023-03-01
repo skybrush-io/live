@@ -648,6 +648,7 @@ export function getSingleUAVStatusLevel(uav) {
   return 'success';
 }
 
+/* eslint-disable complexity */
 /**
  * Function that takes a drone object from the Redux store and derives the
  * generic status summary of the drone.
@@ -671,16 +672,12 @@ export function getSingleUAVStatusLevel(uav) {
  * - If no status updates were received from the drone since a predefined time
  *   frame, the status is "warning". You can distinguish this from warnings
  *   derived from error codes by looking at the secondary status display,
- *   which should read "AWAY" if there is no other warning to report.
- *
- * - If the drone is still initializing or running prearm checks, the status
- *   is "warning". You can distinguish this from warnings derived from error
- *   codes by looking at the secondary status display, which should read "INIT"
- *   or "PREARM".
+ *   which should read "NO TELEM" if there is no other warning to report.
  *
  * - Otherwise, the status is "success".
  */
 export function getSingleUAVStatusSummary(uav) {
+  let maxError = 0;
   let status;
   let details;
   let text;
@@ -693,7 +690,7 @@ export function getSingleUAVStatusSummary(uav) {
     textSemantics = 'warning';
   } else if (uav.errors && uav.errors.length > 0) {
     // UAV has some status information that it wishes to report
-    const maxError = Math.max(...uav.errors);
+    maxError = Math.max(...uav.errors);
     const severity = getSeverityOfErrorCode(maxError);
 
     text = abbreviateError(maxError);
@@ -701,9 +698,10 @@ export function getSingleUAVStatusSummary(uav) {
     if (maxError === ErrorCode.RETURN_TO_HOME) {
       // RTH is treated separately; it is always shown as the special RTH state
       textSemantics = 'rth';
-    } else if (maxError === ErrorCode.DISARMED) {
-      // disarm is treated separately; it is always shown as an error
-      textSemantics = 'error';
+    } else if (maxError === ErrorCode.ON_GROUND) {
+      // "on ground" is treated separately; it is always shown in green even
+      // though it's technically an info message
+      textSemantics = 'success';
     } else {
       textSemantics = errorSeverityToSemantics(severity);
     }
@@ -722,13 +720,13 @@ export function getSingleUAVStatusSummary(uav) {
   // "gone" or "no telemetry" (inactive) warnings
   if (textSemantics === 'success' || textSemantics === 'info') {
     if (uav.age === UAVAge.GONE) {
-      if (text === 'ready') {
+      if (text === 'ready' || maxError === ErrorCode.ON_GROUND) {
         text = 'gone';
       }
 
       textSemantics = 'off';
     } else if (uav.age === UAVAge.INACTIVE) {
-      if (text === 'ready') {
+      if (text === 'ready' || maxError === ErrorCode.ON_GROUND) {
         text = 'no telem'; // used to be 'inactive' in earlier versions
       }
 
@@ -749,6 +747,7 @@ export function getSingleUAVStatusSummary(uav) {
     batteryStatus: uav ? uav.battery : undefined,
   };
 }
+/* eslint-enable complexity */
 
 export const createSingleUAVStatusSummarySelector = () =>
   createSelector(getUAVById, getSingleUAVStatusSummary);
