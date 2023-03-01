@@ -6,13 +6,7 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import { type ReadonlyDeep } from 'type-fest';
 
-import { noPayload } from '~/utils/redux';
-
-import { MAX_VERTEX_COUNT } from './constants';
-
 type GeofenceSliceState = ReadonlyDeep<{
-  dialogVisible: boolean;
-
   horizontalMargin: number;
   verticalMargin: number;
 
@@ -21,27 +15,17 @@ type GeofenceSliceState = ReadonlyDeep<{
 }>;
 
 const initialState: GeofenceSliceState = {
-  dialogVisible: false,
-
   horizontalMargin: 20,
   verticalMargin: 10,
 
   simplify: true,
-  maxVertexCount: MAX_VERTEX_COUNT,
+  maxVertexCount: 10,
 };
 
 const { actions, reducer } = createSlice({
   name: 'geofence',
   initialState,
   reducers: {
-    showGeofenceSettingsDialog: noPayload<GeofenceSliceState>((state) => {
-      state.dialogVisible = true;
-    }),
-
-    closeGeofenceSettingsDialog: noPayload<GeofenceSliceState>((state) => {
-      state.dialogVisible = false;
-    }),
-
     updateGeofenceSettings(
       state,
       {
@@ -53,10 +37,6 @@ const { actions, reducer } = createSlice({
   },
 });
 
-export const {
-  closeGeofenceSettingsDialog,
-  showGeofenceSettingsDialog,
-  updateGeofenceSettings,
-} = actions;
+export const { updateGeofenceSettings } = actions;
 
 export default reducer;

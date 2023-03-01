@@ -19,7 +19,6 @@ import ShowFileWatcher from './views/show-control/ShowFileWatcher';
 
 import DetachedPanelManager from './features/detachable-panels/DetachedPanelManager';
 import DockDetailsDialog from './features/docks/DockDetailsDialog';
-import GeofenceSettingsDialog from './features/geofence/GeofenceSettingsDialog';
 import AppHotkeys from './features/hotkeys/AppHotkeys';
 import HotkeyDialog from './features/hotkeys/HotkeyDialog';
 import PendingUAVIdOverlay from './features/hotkeys/PendingUAVIdOverlay';
@@ -30,6 +29,7 @@ import MissionPlannerDialog from './features/mission/MissionPlannerDialog';
 import MissionProgressObserver from './features/mission/MissionProgressObserver';
 import ParameterUploadSetupDialog from './features/parameters/ParameterUploadSetupDialog';
 import PromptDialog from './features/prompt/PromptDialog';
+import SafetyDialog from './features/safety/SafetyDialog';
 import SavedLocationEditorDialog from './features/saved-locations/SavedLocationEditorDialog';
 import RTKSetupDialog from './features/rtk/RTKSetupDialog';
 import Sidebar from './features/sidebar/Sidebar';
@@ -175,7 +175,6 @@ const App = ({ onFirstRender }) => (
 
       <CoordinateAveragingDialog />
       <DockDetailsDialog />
-      <GeofenceSettingsDialog />
       <HotkeyDialog />
       <LicenseInfoDialog />
       <MapCachingDialog />
@@ -183,6 +182,7 @@ const App = ({ onFirstRender }) => (
       <ParameterUploadSetupDialog />
       <PromptDialog />
       <RTKSetupDialog />
+      <SafetyDialog />
       <SavedLocationEditorDialog />
       <UAVDetailsDialog />
       <UploadDialog />

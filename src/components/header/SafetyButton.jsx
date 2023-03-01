@@ -3,24 +3,24 @@ import React from 'react';
 import { Translation } from 'react-i18next';
 import { connect } from 'react-redux';
 
+import Security from '@material-ui/icons/Security';
 import GenericHeaderButton from '@skybrush/mui-components/lib/GenericHeaderButton';
 
 import GeofenceStatusBadge from '~/components/badges/GeofenceStatusBadge';
-import { showGeofenceSettingsDialog } from '~/features/geofence/slice';
-import PlacesFence from '~/icons/PlacesFence';
+import { openSafetyDialog } from '~/features/safety/slice';
 
-const GeofenceSettingsButton = (props) => (
+const SafetyButton = (props) => (
   <Translation>
     {(t) => (
-      <GenericHeaderButton {...props} tooltip={t('geofenceDialog.title')}>
+      <GenericHeaderButton {...props} tooltip={t('safetyDialog.title')}>
         <GeofenceStatusBadge />
-        <PlacesFence />
+        <Security />
       </GenericHeaderButton>
     )}
   </Translation>
 );
 
-GeofenceSettingsButton.propTypes = {
+SafetyButton.propTypes = {
   onClick: PropTypes.func,
   t: PropTypes.func,
 };
@@ -30,6 +30,6 @@ export default connect(
   null,
   // mapDispatchToProps
   {
-    onClick: showGeofenceSettingsDialog,
+    onClick: openSafetyDialog,
   }
-)(GeofenceSettingsButton);
+)(SafetyButton);

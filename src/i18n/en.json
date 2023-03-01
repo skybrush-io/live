@@ -79,24 +79,6 @@
       "no": "No geofence defined yet"
     }
   },
-  "geofenceDialog": {
-    "apply": "Apply",
-    "clear": "Clear current fence",
-    "close": "Close",
-    "fenceAction": "Fence action",
-    "fenceActionHelperText": "Support for these options depends on the drones themselves; not all options are supported by all drones.",
-    "fenceActionLabel": "Primary fence action",
-    "horizontal": "Horizontal",
-    "maxAltitude": "Max altitude",
-    "maxDistance": "Max distance",
-    "maxVertexCount": "Maximum vertex count",
-    "proposedLimits": "Proposed limits for current mission",
-    "safetyMargins": "Safety margins",
-    "simplifyPolygon": "Simplify polygon",
-    "title": "Geofence settings",
-    "vertexCountReduction": "Vertex count reduction",
-    "vertical": "Vertical"
-  },
   "help": "Help",
   "lightControl": {
     "fromGCS": "Lights controlled from GCS",
@@ -113,6 +95,26 @@
     "connectedToSkybrushServer": "Connected to Skybrush server"
   },
   "preferences": "Preferences",
+  "safetyDialog": {
+    "geofenceTab": {
+      "apply": "Apply",
+      "clear": "Clear current fence",
+      "close": "Close",
+      "fenceAction": "Fence action",
+      "fenceActionHelperText": "Support for these options depends on the drones themselves; not all options are supported by all drones.",
+      "fenceActionLabel": "Primary fence action",
+      "horizontal": "Horizontal",
+      "maxAltitude": "Max altitude",
+      "maxDistance": "Max distance",
+      "maxVertexCount": "Maximum vertex count",
+      "proposedLimits": "Proposed limits for current mission",
+      "safetyMargins": "Safety margins",
+      "simplifyPolygon": "Simplify polygon",
+      "vertexCountReduction": "Vertex count reduction",
+      "vertical": "Vertical"
+    },
+    "title": "Safety"
+  },
   "serverConnectionStatus": {
     "clockSkew": "Clock skew",
     "clocksSync": "Clocks synchronized",

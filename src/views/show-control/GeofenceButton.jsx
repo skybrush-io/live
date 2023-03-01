@@ -9,7 +9,8 @@ import ListItemText from '@material-ui/core/ListItemText';
 import StatusLight from '@skybrush/mui-components/lib/StatusLight';
 
 import { Status } from '~/components/semantics';
-import { showGeofenceSettingsDialog } from '~/features/geofence/slice';
+import { SafetyDialogTab } from '~/features/safety/constants';
+import { openSafetyDialog, setSafetyDialogTab } from '~/features/safety/slice';
 import { getSetupStageStatuses } from '~/features/show/stages';
 import { tt } from '~/i18n';
 
@@ -71,6 +72,9 @@ export default connect(
   }),
   // mapDispatchToProps
   {
-    onClick: showGeofenceSettingsDialog,
+    onClick: () => (dispatch) => {
+      dispatch(setSafetyDialogTab(SafetyDialogTab.GEOFENCE));
+      dispatch(openSafetyDialog());
+    },
   }
 )(withTranslation()(GeofenceButton));

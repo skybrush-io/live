@@ -12,7 +12,8 @@ type Value = string | undefined;
 type Error = string | undefined;
 type Rule = (value: Value) => Error;
 
-const isEmpty = (value: Value): boolean => value === undefined || value === '';
+export const isEmpty = (value: Value): boolean =>
+  value === undefined || value === null || value === '';
 
 /**
  * Checks that the given value is not empty.

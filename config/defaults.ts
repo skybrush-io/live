@@ -42,7 +42,7 @@ const defaults: Config = {
     ['connection-status-button'],
     [
       'server-connection-settings-button',
-      'geofence-settings-button',
+      'safety-button',
       'authentication-button',
     ],
     [

@@ -5,6 +5,7 @@ import {
   getGeofenceActionWithValidation,
   getGeofencePolygonInWorldCoordinates,
 } from '~/features/mission/selectors';
+import { getSafetySettings } from '~/features/safety/selectors';
 import { JobScope } from '~/features/upload/jobs';
 import messageHub from '~/message-hub';
 import { MissionItemType } from '~/model/missions';
@@ -60,6 +61,19 @@ export function transformMissionItemBeforeUpload(item, state) {
           coordinateSystem: 'geodetic',
           // TODO(ntamas): transform polygon coordinates to the format used over the wire
           geofence: getGeofenceSpecificationForWaypointMission(state),
+        },
+      };
+      break;
+
+    case MissionItemType.UPDATE_SAFETY:
+      item = {
+        ...item,
+        parameters: {
+          ...item.parameters,
+          safety: {
+            ...item.parameters.safety,
+            ...getSafetySettings(state),
+          },
         },
       };
       break;
