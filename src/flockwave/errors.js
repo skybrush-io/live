@@ -171,7 +171,7 @@ const errorCodeToAbbreviation = {
  */
 const errorCodeToDescription = {
   0: 'No error',
-  1: 'Drone not armed yet',
+  1: 'Drone is on the ground with motors off',
   2: 'Logging deactivated',
   3: 'Prearm check in progress',
   4: 'Autopilot initializing',
