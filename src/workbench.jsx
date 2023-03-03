@@ -33,7 +33,7 @@ const MapView = loadable(() =>
   import(/* webpackChunkName: "map" */ './views/map/MapView')
 );
 
-require('../assets/css/workbench.less');
+import '../assets/css/workbench.less';
 
 /**
  * Dummy component that renders nothing.

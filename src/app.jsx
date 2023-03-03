@@ -57,10 +57,10 @@ import workbench from './workbench';
 import 'tippy.js/dist/tippy.css';
 import 'tippy.js/themes/light-border.css';
 
-require('../assets/css/proggy-vector.css');
-require('../assets/css/kbd.css');
-require('../assets/css/screen.less');
-require('../assets/css/tooltips.less');
+import '../assets/css/proggy-vector.css';
+import '../assets/css/kbd.css';
+import '../assets/css/screen.less';
+import '../assets/css/tooltips.less';
 
 const Tour = loadable(() =>
   import(/* webpackChunkName: 'tour' */ './features/tour/Tour')

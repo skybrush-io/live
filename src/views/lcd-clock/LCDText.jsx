@@ -4,7 +4,7 @@ import React, { useMemo } from 'react';
 
 import Box from '@material-ui/core/Box';
 
-require('~/../assets/css/dseg.css');
+import '~/../assets/css/dseg.css';
 
 const variants = {
   default: {},
