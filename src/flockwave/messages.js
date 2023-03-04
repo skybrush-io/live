@@ -411,7 +411,7 @@ class PendingCommandExecution {
    */
   _clearTimeoutIfNeeded() {
     if (this._timeoutId !== undefined) {
-      clearTimeout(this.timeoutId);
+      clearTimeout(this._timeoutId);
       this._timeoutId = undefined;
       this._timeoutCallback = undefined;
     }

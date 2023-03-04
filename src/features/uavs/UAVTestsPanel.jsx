@@ -108,7 +108,7 @@ const UAVTestButton = ({ component, label, timeout, type, uavId }) => {
       <ListItemText
         primary={label}
         secondary={
-          state.error ? (
+          !state.loading && state.error ? (
             errorToString(state.error)
           ) : progress ? (
             <ProgressBar progress={progress} />
