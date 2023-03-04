@@ -1,5 +1,5 @@
 /**
- * @file The global snackbar at the bottom of the main window.
+ * @file The global snackbar of the main window.
  */
 
 import PropTypes from 'prop-types';
@@ -47,17 +47,15 @@ const createContentNode = (notification, dispatch) => {
     ));
 
     result = (
-      <div>
+      <Box
+        display='flex'
+        flexDirection='row'
+        justifyContent='space-between'
+        alignItems='center'
+      >
         {result}
-        <Box
-          display='flex'
-          flexDirection='row'
-          justifyContent='space-around'
-          mt={2}
-        >
-          {buttonComponents}
-        </Box>
-      </div>
+        {buttonComponents}
+      </Box>
     );
   }
 
