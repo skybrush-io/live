@@ -1,6 +1,3 @@
-/* global VERSION */
-
-import formatDate from 'date-fns/format';
 import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
 import { connect } from 'react-redux';
@@ -25,26 +22,17 @@ import {
   PopoverWithContainerFromContext as Popover,
 } from '~/containerContext';
 import {
+  clearMission,
+  exportMission,
+  importMission,
   invokeMissionPlanner,
-  setMissionItemsFromArray,
   uploadMissionItemsToSelectedUAV,
 } from '~/features/mission/actions';
-import {
-  getGPSBasedHomePositionsInMission,
-  getMissionItemsInOrder,
-  isMissionPartiallyCompleted,
-} from '~/features/mission/selectors';
-import {
-  setMappingLength,
-  showMissionPlannerDialog,
-  updateHomePositions,
-} from '~/features/mission/slice';
+import { isMissionPartiallyCompleted } from '~/features/mission/selectors';
+import { showMissionPlannerDialog } from '~/features/mission/slice';
 import { getSingleSelectedUAVId } from '~/features/uavs/selectors';
 import { isConnected as isConnectedToServer } from '~/features/servers/selectors';
-import { showError, showSuccess } from '~/features/snackbar/actions';
 import usePopover from '~/hooks/usePopover';
-import { readFileAsText } from '~/utils/files';
-import { writeTextToFile } from '~/utils/filesystem';
 
 const useStyles = makeStyles(
   (theme) => ({
@@ -179,38 +167,12 @@ export default connect(
     canResume: isMissionPartiallyCompleted(state),
     canUpload:
       isConnectedToServer(state) && getSingleSelectedUAVId(state) !== undefined,
-    onExportMission() {
-      // ISO format cannot be used because colons are usually not allowed in
-      // filenames
-      const date = formatDate(new Date(), 'yyyy-MM-dd_HH-mm-ss');
-      const missionData = {
-        items: getMissionItemsInOrder(state),
-        homePositions: getGPSBasedHomePositionsInMission(state),
-      };
-      const metaData = { exportedAt: date, skybrushVersion: VERSION };
-      writeTextToFile(
-        JSON.stringify({ meta: metaData, mission: missionData }, null, 2),
-        `mission-export-${date}.json`,
-        { title: 'Export mission data' }
-      );
-    },
   }),
   // mapDispatchToProps
   {
-    onClearMission: () => (dispatch) => {
-      dispatch(setMissionItemsFromArray([]));
-    },
-    onImportMission: (file) => async (dispatch) => {
-      try {
-        const data = JSON.parse(await readFileAsText(file));
-        dispatch(setMissionItemsFromArray(data.mission.items));
-        dispatch(setMappingLength(data.mission.homePositions.length));
-        dispatch(updateHomePositions(data.mission.homePositions));
-        dispatch(showSuccess('Successfully imported mission'));
-      } catch (error) {
-        dispatch(showError(`Error while importing mission: ${error}`));
-      }
-    },
+    onClearMission: clearMission,
+    onExportMission: exportMission,
+    onImportMission: importMission,
     onInvokePlanner: invokeMissionPlanner,
     onShowMissionPlannerDialog: showMissionPlannerDialog,
     onUploadMissionItems: uploadMissionItemsToSelectedUAV,

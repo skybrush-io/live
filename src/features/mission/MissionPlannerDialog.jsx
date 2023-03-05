@@ -13,7 +13,7 @@ import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
 import { TooltipWithContainerFromContext as Tooltip } from '~/containerContext';
 import { isConnected as isConnectedToServer } from '~/features/servers/selectors';
 
-import { invokeMissionPlanner, setMissionItemsFromArray } from './actions';
+import { clearMission, invokeMissionPlanner } from './actions';
 import {
   getGeofencePolygon,
   getMissionPlannerDialogSelectedType,
@@ -202,9 +202,7 @@ export default connect(
   {
     onApplyGeofenceChanged: (event) =>
       setMissionPlannerDialogApplyGeofence(event.target.checked),
-    onClearMission: () => (dispatch) => {
-      dispatch(setMissionItemsFromArray([]));
-    },
+    onClearMission: clearMission,
     onClose: closeMissionPlannerDialog,
     onInvokePlanner: invokeMissionPlanner,
     onSaveContextParameters: setMissionPlannerDialogContextParameters,

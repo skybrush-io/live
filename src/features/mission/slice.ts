@@ -131,11 +131,21 @@ export type MissionSliceState = ReadonlyDeep<{
     selectedType: Nullable<string>;
   };
 
+  /** Parameters used in the last successful invocation of the mission planner */
+  lastSuccessfulPlannerInvocationParameters: Nullable<{
+    type: string;
+    parametersFromUser: Record<string, any>;
+    valuesFromContext: Record<string, any>;
+  }>;
+
   /** The progress of the mission as reported by the UAV */
   progress: {
     currentItemId?: string;
     currentItemRatio?: number;
   };
+
+  /** Backup of the last cleared mission */
+  lastClearedMissionData: Nullable<Record<string, any>>;
 }>;
 
 const initialState: MissionSliceState = {
@@ -168,10 +178,12 @@ const initialState: MissionSliceState = {
     },
     selectedType: null,
   },
+  lastSuccessfulPlannerInvocationParameters: null,
   progress: {
     currentItemId: undefined,
     currentItemRatio: undefined,
   },
+  lastClearedMissionData: null,
 };
 
 const { actions, reducer } = createSlice({
@@ -499,6 +511,22 @@ const { actions, reducer } = createSlice({
       state.plannerDialog.parameters.fromUser = action.payload;
     },
 
+    setLastSuccessfulPlannerInvocationParameters(
+      state,
+      action: PayloadAction<
+        MissionSliceState['lastSuccessfulPlannerInvocationParameters']
+      >
+    ) {
+      state.lastSuccessfulPlannerInvocationParameters = action.payload;
+    },
+
+    setLastClearedMissionData(
+      state,
+      action: PayloadAction<MissionSliceState['lastClearedMissionData']>
+    ) {
+      state.lastClearedMissionData = action.payload;
+    },
+
     /**
      * Shows the mission planner dialog.
      */
@@ -654,11 +682,13 @@ export const {
   setEditorPanelFollowScroll,
   setGeofenceAction,
   setGeofencePolygonId,
+  setLastClearedMissionData,
+  setLastSuccessfulPlannerInvocationParameters,
   setMappingLength,
   setMissionPlannerDialogApplyGeofence,
   setMissionPlannerDialogContextParameters,
-  setMissionPlannerDialogUserParameters,
   setMissionPlannerDialogSelectedType,
+  setMissionPlannerDialogUserParameters,
   setMissionType,
   showMissionPlannerDialog,
   startMappingEditorSession,

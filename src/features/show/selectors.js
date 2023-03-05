@@ -841,8 +841,8 @@ export const isShowConvexHullInsideGeofence = createSelector(
  * as the filename contains the current date and time.
  */
 export function proposeMappingFileName(state) {
-  // ISO format cannot be used because colons are usually not allowed in
-  // filenames
+  // The ISO 8601 extended format cannot be used because colons are usually not
+  // allowed in filenames, and the ISO 8601 basic format is less human-readable
   const date = formatDate(new Date(), 'yyyy-MM-dd_HH-mm-ss');
   const path = getAbsolutePathOfShowFile(state);
   const lastSlashIndex = path ? path.lastIndexOf('/') : -1;

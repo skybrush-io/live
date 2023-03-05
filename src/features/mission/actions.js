@@ -1,3 +1,6 @@
+/* global VERSION */
+
+import formatDate from 'date-fns/format';
 import isNil from 'lodash-es/isNil';
 import { getDistance as haversineDistance } from 'ol/sphere';
 
@@ -20,7 +23,12 @@ import {
   isShowOutdoor,
   proposeMappingFileName,
 } from '~/features/show/selectors';
-import { showError, showSuccess } from '~/features/snackbar/actions';
+import {
+  showError,
+  showNotification,
+  showSuccess,
+} from '~/features/snackbar/actions';
+import { MessageSemantics } from '~/features/snackbar/types';
 import { selectSingleUAVUnlessAmbiguous } from '~/features/uavs/actions';
 import {
   getCurrentGPSPositionByUavId,
@@ -60,6 +68,8 @@ import {
   getGeofencePolygonId,
   getGPSBasedHomePositionsInMission,
   getItemIndexRangeForSelectedMissionItems,
+  getLastClearedMissionData,
+  getMissionDataForStorage,
   getMissionItemById,
   getMissionItemsById,
   getMissionItemUploadJobPayload,
@@ -79,12 +89,17 @@ import {
   removeMissionItemsByIds,
   removeUAVsFromMapping,
   replaceMapping,
+  setLastClearedMissionData,
+  setLastSuccessfulPlannerInvocationParameters,
   setMappingLength,
   setMissionType,
+  updateCurrentMissionItemId,
+  updateCurrentMissionItemRatio,
   updateHomePositions,
   updateMissionItemParameters,
   _setMissionItemsFromValidatedArray,
 } from './slice';
+import { readFileAsText } from '~/utils/files';
 
 /**
  * Thunk that fills the empty slots in the current mapping from the spare drones
@@ -525,9 +540,6 @@ export const invokeMissionPlanner = () => async (dispatch, getState) => {
   const fromUser = getMissionPlannerDialogUserParameters(state);
   const fromContext = getMissionPlannerDialogContextParameters(state);
 
-  let items = null;
-  const parameters = {};
-
   // If we need to select a UAV from the context, and we only have a
   // single UAV at the moment, we can safely assume that this is the UAV
   // that the user wants to work with, so select it
@@ -556,15 +568,23 @@ export const invokeMissionPlanner = () => async (dispatch, getState) => {
     dispatch(selectSingleFeatureOfTypeUnlessAmbiguous(FeatureType.LINE_STRING));
   }
 
+  const valuesFromContext = {};
   try {
-    Object.assign(parameters, getParametersFromContext(fromContext, getState));
+    Object.assign(
+      valuesFromContext,
+      getParametersFromContext(fromContext, getState)
+    );
   } catch (error) {
     dispatch(showErrorMessage('Error while setting parameters', error));
     return;
   }
 
-  Object.assign(parameters, fromUser);
+  const parameters = {
+    ...valuesFromContext,
+    ...fromUser,
+  };
 
+  let items = null;
   try {
     items = await messageHub.execute.planMission({
       id: selectedMissionType,
@@ -586,11 +606,118 @@ export const invokeMissionPlanner = () => async (dispatch, getState) => {
     dispatch(setMissionItemsFromArray(items));
     dispatch(prepareMappingForSingleUAVMissionFromSelection());
     dispatch(closeMissionPlannerDialog());
+
     if (
       shouldMissionPlannerDialogApplyGeofence(state) &&
       getGeofencePolygon(state)?.owner !== 'user'
     ) {
       dispatch(updateGeofencePolygon());
     }
+
+    dispatch(
+      setLastSuccessfulPlannerInvocationParameters({
+        type: selectedMissionType,
+        parametersFromUser: fromUser,
+        valuesFromContext,
+      })
+    );
+
+    dispatch(
+      showNotification({
+        message: 'Mission planned successfully. Export it?',
+        semantics: MessageSemantics.SUCCESS,
+        buttons: [
+          {
+            label: 'Export',
+            action: exportMission(),
+          },
+        ],
+      })
+    );
+  }
+};
+
+/**
+ * Thunk that clears a mission and shows a toast with an option to restore it.
+ */
+export const clearMission = () => (dispatch, _getState) => {
+  dispatch(backupMission());
+  dispatch(setMissionItemsFromArray([]));
+  dispatch(
+    showNotification({
+      message: 'Previous mission cleared.',
+      semantics: MessageSemantics.INFO,
+      buttons: [
+        {
+          label: 'Undo',
+          action: restoreLastClearedMission(),
+        },
+      ],
+    })
+  );
+};
+
+/**
+ * Thunk that backs up a mission to the store.
+ * (Intended to be used as a restore point after clearing.)
+ */
+export const backupMission = () => (dispatch, getState) => {
+  dispatch(setLastClearedMissionData(getMissionDataForStorage(getState())));
+};
+
+/**
+ * Thunk that restores a mission from previously backed up mission data.
+ */
+export const restoreMission =
+  ({
+    parameters,
+    items,
+    homePositions,
+    progress: { id: currentMissionItemId, ratio: currentMissionItemRatio },
+  }) =>
+  (dispatch, _getState) => {
+    dispatch(setLastSuccessfulPlannerInvocationParameters(parameters));
+    dispatch(setMissionItemsFromArray(items));
+    dispatch(setMappingLength(homePositions.length));
+    dispatch(updateHomePositions(homePositions));
+    dispatch(updateCurrentMissionItemId(currentMissionItemId));
+    dispatch(updateCurrentMissionItemRatio(currentMissionItemRatio));
+  };
+
+/**
+ * Thunk that restores the last cleared mission.
+ */
+export const restoreLastClearedMission = () => (dispatch, getState) => {
+  dispatch(restoreMission(getLastClearedMissionData(getState())));
+};
+
+/**
+ * Thunk that stores the current mission into a file.
+ */
+export const exportMission = () => (dispatch, getState) => {
+  const state = getState();
+  // The ISO 8601 extended format cannot be used because colons are usually not
+  // allowed in filenames, and the ISO 8601 basic format is less human-readable
+  const date = formatDate(new Date(), 'yyyy-MM-dd_HH-mm-ss');
+  const missionData = getMissionDataForStorage(state);
+  const metaData = { exportedAt: date, skybrushVersion: VERSION };
+  writeTextToFile(
+    JSON.stringify({ meta: metaData, mission: missionData }, null, 2),
+    `mission-export-${date}.json`,
+    { title: 'Export mission data' }
+  );
+  dispatch(showSuccess('Successfully exported mission'));
+};
+
+/**
+ * Thunk that loads a mission from a file, replacing the current mission.
+ */
+export const importMission = (file) => async (dispatch, _getState) => {
+  try {
+    const data = JSON.parse(await readFileAsText(file));
+    dispatch(restoreMission(data.mission));
+    dispatch(showSuccess('Successfully imported mission'));
+  } catch (error) {
+    dispatch(showError(`Error while importing mission: ${error}`));
   }
 };
