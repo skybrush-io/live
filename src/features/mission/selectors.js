@@ -515,6 +515,13 @@ export const getMissionPlannerDialogUserParameters = (state) =>
   state.mission.plannerDialog.parameters.fromUser;
 
 /**
+ * Selector that returns the parameters used in the last successful invocation
+ * of the mission planner.
+ */
+export const getLastSuccessfulPlannerInvocationParameters = (state) =>
+  state.mission.lastSuccessfulPlannerInvocationParameters;
+
+/**
  * Selector that returns the mission type currently selected for planning.
  */
 export const getMissionPlannerDialogSelectedType = (state) =>
@@ -526,6 +533,12 @@ export const getMissionPlannerDialogSelectedType = (state) =>
  */
 export const shouldMissionPlannerDialogApplyGeofence = (state) =>
   state.mission.plannerDialog.applyGeofence;
+
+/**
+ * Selector that returns the backup of the last cleared mission data.
+ */
+export const getLastClearedMissionData = (state) =>
+  state.mission.lastClearedMissionData;
 
 /**
  * Selector that returns the items of the mission wrapped together with distance
@@ -832,4 +845,31 @@ export const getGlobalMissionCompletionRatio = createSelector(
 export const isMissionPartiallyCompleted = createSelector(
   getGlobalMissionCompletionRatio,
   (ratio) => ratio > 0 && ratio < 1
+);
+
+/**
+ * Selector that collects data about the current mission that can be used for
+ * recalling it later.
+ */
+export const getMissionDataForStorage = createSelector(
+  getLastSuccessfulPlannerInvocationParameters,
+  getMissionItemsInOrder,
+  getGPSBasedHomePositionsInMission,
+  getCurrentMissionItemId,
+  getCurrentMissionItemRatio,
+  (
+    parameters,
+    items,
+    homePositions,
+    currentMissionItemId,
+    currentMissionItemRatio
+  ) => ({
+    parameters,
+    items,
+    homePositions,
+    progress: {
+      id: currentMissionItemId,
+      ratio: currentMissionItemRatio,
+    },
+  })
 );

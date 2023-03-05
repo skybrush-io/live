@@ -95,6 +95,7 @@ const persistConfig = {
       'homePositions',
       'landingPositions',
       'takeoffHeadings',
+      'lastClearedMissionData',
     ]),
 
     // We do not wish to save which preflight checks the user has ticked off

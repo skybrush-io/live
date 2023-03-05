@@ -108,11 +108,17 @@ const { actions, reducer } = createSlice({
       selectedType: null,
     },
 
+    // parameters used in the last successful invocation of the mission planner
+    lastSuccessfulPlannerInvocationParameters: null,
+
     // the progress of the mission as reported by the UAV
     progress: {
       currentItemId: undefined,
       currentItemRatio: undefined,
     },
+
+    // backup of the last cleared mission
+    lastClearedMissionData: null,
   },
 
   reducers: {
@@ -403,6 +409,14 @@ const { actions, reducer } = createSlice({
       state.plannerDialog.parameters.fromUser = action.payload;
     },
 
+    setLastSuccessfulPlannerInvocationParameters(state, action) {
+      state.lastSuccessfulPlannerInvocationParameters = action.payload;
+    },
+
+    setLastClearedMissionData(state, action) {
+      state.lastClearedMissionData = action.payload;
+    },
+
     /**
      * Shows the mission planner dialog.
      */
@@ -543,11 +557,13 @@ export const {
   setEditorPanelFollowScroll,
   setGeofenceAction,
   setGeofencePolygonId,
+  setLastClearedMissionData,
+  setLastSuccessfulPlannerInvocationParameters,
   setMappingLength,
   setMissionPlannerDialogApplyGeofence,
   setMissionPlannerDialogContextParameters,
-  setMissionPlannerDialogUserParameters,
   setMissionPlannerDialogSelectedType,
+  setMissionPlannerDialogUserParameters,
   setMissionType,
   showMissionPlannerDialog,
   startMappingEditorSession,
