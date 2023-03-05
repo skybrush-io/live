@@ -55,11 +55,16 @@ const MissionOverviewList = ({
 
   const scrollToCurrent = useCallback(
     () =>
-      virtuoso.current.scrollToIndex({
-        index: currentItemIndex,
-        align: 'center',
-        behavior: 'smooth',
-      }),
+      // Postpone the scrolling to make sure that the list is already rendered
+      // and the item with the given index is available!
+      // (This is required for correct behavior when e.g., restoring backups.)
+      setTimeout(() => {
+        virtuoso.current.scrollToIndex({
+          index: currentItemIndex,
+          align: 'center',
+          behavior: 'smooth',
+        });
+      }, 0),
     [currentItemIndex, virtuoso]
   );
 
