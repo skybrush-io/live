@@ -643,6 +643,7 @@ export const invokeMissionPlanner = () => async (dispatch, getState) => {
 export const clearMission = () => (dispatch, _getState) => {
   dispatch(backupMission());
   dispatch(setMissionItemsFromArray([]));
+  dispatch(setMissionType(MissionType.UNKNOWN));
   dispatch(
     showNotification({
       message: 'Previous mission cleared.',
@@ -676,6 +677,7 @@ export const restoreMission =
     progress: { id: currentMissionItemId, ratio: currentMissionItemRatio },
   }) =>
   (dispatch, _getState) => {
+    dispatch(setMissionType(MissionType.WAYPOINT));
     dispatch(setLastSuccessfulPlannerInvocationParameters(parameters));
     dispatch(setMissionItemsFromArray(items));
     dispatch(setMappingLength(homePositions.length));
