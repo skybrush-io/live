@@ -3,9 +3,14 @@ import { CANCEL } from 'redux-saga';
 import {
   getGeofenceActionWithValidation,
   getGeofencePolygonInWorldCoordinates,
+  getMissionItemsInOrder,
 } from '~/features/mission/selectors';
 import { GeofenceAction } from '~/features/safety/model';
-import { getSafetySettings } from '~/features/safety/selectors';
+import {
+  getSafetySettings,
+  getUserDefinedDistanceLimit,
+  getUserDefinedHeightLimit,
+} from '~/features/safety/selectors';
 import { JobScope } from '~/features/upload/jobs';
 import messageHub from '~/message-hub';
 import { MissionItemType } from '~/model/missions';
@@ -86,6 +91,16 @@ export function transformMissionItemBeforeUpload(item, state) {
 }
 
 /**
+ * Selector that returns the payload of the mission item upload job.
+ */
+export const getMissionItemUploadJobPayload = (state) => {
+  const items = getMissionItemsInOrder(state).map((item) =>
+    transformMissionItemBeforeUpload(item, state)
+  );
+  return { version: 1, items };
+};
+
+/**
  * Retrieves a complete geofence specification object that is to be used in
  * the mission description that is to be sent to the server during the upload
  * task.
@@ -105,9 +120,8 @@ const getGeofenceSpecificationForWaypointMission = (state) => {
         ]
       : [],
     rallyPoints: [],
-    // TODO(ntamas): add proper maxAltitude and maxDistance
-    maxAltitude: 100,
-    maxDistance: 3000,
+    maxAltitude: getUserDefinedHeightLimit(state),
+    maxDistance: getUserDefinedDistanceLimit(state),
   };
 
   if (geofenceAction !== GeofenceAction.KEEP_CURRENT) {

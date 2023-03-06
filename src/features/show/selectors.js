@@ -18,11 +18,6 @@ import {
   getGeofencePolygonInWorldCoordinates,
   selectMissionIndex,
 } from '~/features/mission/selectors';
-import { getGeofenceSettings } from '~/features/safety/selectors';
-import {
-  proposeDistanceLimit,
-  proposeHeightLimit,
-} from '~/features/safety/utils';
 import { formatDuration, formatDurationHMS } from '~/utils/formatting';
 import { FlatEarthCoordinateSystem } from '~/utils/geography';
 import {
@@ -558,28 +553,6 @@ export const getMaximumHeightInTrajectories = createSelector(
 );
 
 /**
- * Returns the automatically calculated distance limit by adding the declared
- * horizontal safety margin to the distances of the farthest points of the show
- * trajectories from the takeoff positions.
- */
-export const getProposedDistanceLimitBasedOnTrajectories = (state) => {
-  const maxDistance =
-    getMaximumHorizontalDistanceFromTakeoffPositionInTrajectories(state);
-  const margin = getGeofenceSettings(state).horizontalMargin;
-  return proposeDistanceLimit(maxDistance, margin);
-};
-
-/**
- * Returns the automatically calculated height limit by adding the declared
- * vertical safety margin to the highest point of the show trajectories.
- */
-export const getProposedHeightLimitBasedOnTrajectories = (state) => {
-  const maxHeight = getMaximumHeightInTrajectories(state);
-  const margin = getGeofenceSettings(state).verticalMargin;
-  return proposeHeightLimit(maxHeight, margin);
-};
-
-/**
  * Returns the total duration of the show, in seconds.
  */
 export const getShowDuration = createSelector(
@@ -616,26 +589,6 @@ export const getShowDescription = createSelector(
 export const getShowLoadingProgressPercentage = (state) => {
   const { progress } = state.show;
   return typeof progress === 'number' ? progress * 100 : null;
-};
-
-/**
- * Returns the user-defined distance limit, which should be above the automatically
- * proposed distance limit.
- */
-export const getUserDefinedDistanceLimit = (state) => {
-  // TODO(ntamas): this should be configurable by the user and not simply set
-  // based on the proposal
-  return getProposedDistanceLimitBasedOnTrajectories(state);
-};
-
-/**
- * Returns the user-defined height limit, which should be above the automatically
- * proposed height limit.
- */
-export const getUserDefinedHeightLimit = (state) => {
-  // TODO(ntamas): this should be configurable by the user and not simply set
-  // based on the proposal
-  return getProposedHeightLimitBasedOnTrajectories(state);
 };
 
 /**

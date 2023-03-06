@@ -51,6 +51,7 @@ import {
   MissionItemType,
   MissionType,
 } from '~/model/missions';
+import { readFileAsText } from '~/utils/files';
 import { readTextFromFile, writeTextToFile } from '~/utils/filesystem';
 import { translateLonLatWithMapViewDelta } from '~/utils/geography';
 import { calculateDistanceMatrix, euclideanDistance2D } from '~/utils/math';
@@ -72,7 +73,6 @@ import {
   getMissionDataForStorage,
   getMissionItemById,
   getMissionItemsById,
-  getMissionItemUploadJobPayload,
   getMissionMapping,
   getMissionMappingFileContents,
   getMissionPlannerDialogContextParameters,
@@ -99,7 +99,7 @@ import {
   updateMissionItemParameters,
   _setMissionItemsFromValidatedArray,
 } from './slice';
-import { readFileAsText } from '~/utils/files';
+import { getMissionItemUploadJobPayload } from './upload';
 
 /**
  * Thunk that fills the empty slots in the current mapping from the spare drones
