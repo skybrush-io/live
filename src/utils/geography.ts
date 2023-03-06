@@ -6,7 +6,6 @@ import * as CoordinateParser from 'coordinate-parser';
 import curry from 'lodash-es/curry';
 import isNil from 'lodash-es/isNil';
 import minBy from 'lodash-es/minBy';
-import round from 'lodash-es/round';
 import unary from 'lodash-es/unary';
 import * as Coordinate from 'ol/coordinate';
 import * as Extent from 'ol/extent';
@@ -33,7 +32,12 @@ import * as TurfHelpers from '@turf/helpers';
 
 import { type Feature, FeatureType } from '~/model/features';
 
-import { formatDistance, formatNumberAndUnit } from './formatting';
+import {
+  formatArea,
+  formatDistance,
+  formatNumberAndUnit,
+  type UnitDescriptor,
+} from './formatting';
 import {
   closePolygon,
   convexHull,
@@ -339,7 +343,7 @@ export const makeDecimalCoordinateFormatter = ({
   digits?: number;
   reverse?: boolean;
   separator?: string;
-  unit?: string | Array<[number, string]>;
+  unit?: string | UnitDescriptor[];
 }): ((coordinate: Coordinate2D) => string) => {
   const indices: [0 | 1, 0 | 1] = reverse ? [1, 0] : [0, 1];
   return (coordinate) => {
@@ -390,22 +394,17 @@ export const makePolarCoordinateFormatter =
  * @returns The resulting measurement in string form with units included
  */
 export const measureFeature = (feature: Feature): string => {
-  const hecto = 100;
-  const kilo = 1000;
-
   switch (feature.type) {
     case FeatureType.LINE_STRING: {
       const length = getLength(
         new LineString(feature.points.map(unary(mapViewCoordinateFromLonLat)))
       );
 
-      return length > 10 * kilo
-        ? `${round(length / kilo, 2)} km`
-        : `${round(length, 2)} m`;
+      return formatDistance(length);
     }
 
     case FeatureType.POLYGON: {
-      // Note: `polygon.getArea()` doesn't include correction for the projection
+      // NOTE: `polygon.getArea()` doesn't include correction for the projection
       const area = getArea(
         new Polygon(
           [feature.points, ...feature.holes].map((coordinates) =>
@@ -414,13 +413,7 @@ export const measureFeature = (feature: Feature): string => {
         )
       );
 
-      // TODO: Make `formatNumberAndUnit` handle custom breakpoints
-      //       in order to support switching units at 0.1 hectars.
-      return area > 1 * (kilo * kilo) // Over 1 km²
-        ? `${round(area / (kilo * kilo), 2)} km²`
-        : area > 0.1 * (hecto * hecto) // Over 0.1 ha
-          ? `${round(area / (hecto * hecto), 2)} ha`
-          : `${round(area, 2)} m²`;
+      return formatArea(area);
     }
 
     default:
