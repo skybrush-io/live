@@ -5,7 +5,6 @@ import Typography from '@material-ui/core/Typography';
 import Alarm from '@material-ui/icons/Alarm';
 // import Apps from '@material-ui/icons/Apps';
 import Assignment from '@material-ui/icons/Assignment';
-import ConnectingAirports from '~/icons/ConnectingAirports';
 import Flight from '@material-ui/icons/Flight';
 import Gamepad from '@material-ui/icons/Gamepad';
 import Grain from '@material-ui/icons/Grain';
@@ -25,9 +24,12 @@ import { Module, ModuleTray, Workbench } from 'react-flexible-workbench';
 import { connect } from 'react-redux';
 
 import LogStatusBadge from '~/components/badges/LogStatusBadge';
+import { getMissionType } from '~/features/mission/selectors';
 import { areExperimentalFeaturesEnabled } from '~/features/settings/selectors';
 import Antenna from '~/icons/Antenna';
+import ConnectingAirports from '~/icons/ConnectingAirports';
 import ShapeLine from '~/icons/ShapeLine';
+import { MissionType } from '~/model/missions';
 import { hasFeature } from '~/utils/configuration';
 
 import { isSidebarOpen } from './selectors';
@@ -61,7 +63,13 @@ const hasShowControl = hasFeature('showControl');
  *
  * @returns  {Object}  the rendered sidebar component
  */
-const Sidebar = ({ experimentalFeaturesEnabled, isOpen, t, workbench }) => (
+const Sidebar = ({
+  experimentalFeaturesEnabled,
+  isOpen,
+  missionType,
+  t,
+  workbench,
+}) => (
   <div
     id='sidebar'
     style={{ ...style, width: isOpen ? SIDEBAR_OPEN_WIDTH : 48 }}
@@ -190,6 +198,9 @@ const Sidebar = ({ experimentalFeaturesEnabled, isOpen, t, workbench }) => (
         style={{ color: '#fff', opacity: 0.3, width: SIDEBAR_OPEN_WIDTH }}
       >
         <Typography align='center' variant='caption' component='footer'>
+          {t('sidebar.missionType', { missionType })}
+        </Typography>
+        <Typography align='center' variant='caption' component='footer'>
           {VERSION}
         </Typography>
       </Box>
@@ -200,6 +211,7 @@ const Sidebar = ({ experimentalFeaturesEnabled, isOpen, t, workbench }) => (
 Sidebar.propTypes = {
   experimentalFeaturesEnabled: PropTypes.bool,
   isOpen: PropTypes.bool,
+  missionType: PropTypes.oneOf(Object.values(MissionType)),
   t: PropTypes.func,
   workbench: PropTypes.instanceOf(Workbench).isRequired,
 };
@@ -212,6 +224,7 @@ export default connect(
   (state, { workbench }) => ({
     experimentalFeaturesEnabled: areExperimentalFeaturesEnabled(state),
     isOpen: isSidebarOpen(state),
+    missionType: getMissionType(state),
     workbench,
   })
 )(withTranslation()(Sidebar));

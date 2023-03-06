@@ -233,6 +233,9 @@
     "uploadShowDataLoading": "Kérem várjon, feltöltés…",
     "uploadShowDataStart": "Kattintson ide a feltötés megkezdéséhez"
   },
+  "sidebar": {
+    "missionType": "Küldetés típus: {{missionType}}"
+  },
   "toolbox": {
     "averagingInProgress": "{{number}} folyamatban",
     "coordinateAveraging": "Koordináta átlagolás",

@@ -233,6 +233,9 @@
     "uploadShowDataLoading": "Please wait, uploading…",
     "uploadShowDataStart": "Click here to start the upload process"
   },
+  "sidebar": {
+    "missionType": "Mission type: ({{missionType}})"
+  },
   "toolbox": {
     "averagingInProgress": "{{number}} in progress",
     "coordinateAveraging": "Coordinate averaging",
