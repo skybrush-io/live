@@ -6,7 +6,6 @@ import CoordinateParser from 'coordinate-parser';
 import curry from 'lodash-es/curry';
 import isNil from 'lodash-es/isNil';
 import minBy from 'lodash-es/minBy';
-import round from 'lodash-es/round';
 import unary from 'lodash-es/unary';
 import * as Coordinate from 'ol/coordinate';
 import * as Extent from 'ol/extent';
@@ -17,7 +16,7 @@ import { getArea, getLength } from 'ol/sphere';
 
 import { FeatureType } from '~/model/features';
 
-import { formatDistance, formatNumberAndUnit } from './formatting';
+import { formatArea, formatDistance, formatNumberAndUnit } from './formatting';
 import { toDegrees, toRadians } from './math';
 import { isRunningOnMac } from './platform';
 
@@ -326,22 +325,17 @@ export const makePolarCoordinateFormatter = (options) => {
  * @return {string} the resulting measurement in string form with units included
  */
 export const measureFeature = (feature) => {
-  const hecto = 100;
-  const kilo = 1000;
-
   switch (feature.type) {
     case FeatureType.LINE_STRING: {
       const length = getLength(
         new LineString(feature.points.map(unary(mapViewCoordinateFromLonLat)))
       );
 
-      return length > 10 * kilo
-        ? `${round(length / kilo, 2)} km`
-        : `${round(length, 2)} m`;
+      return formatDistance(length);
     }
 
     case FeatureType.POLYGON: {
-      // Note: `polygon.getArea()` doesn't include correction for the projection
+      // NOTE: `polygon.getArea()` doesn't include correction for the projection
       const area = getArea(
         new Polygon(
           [feature.points, ...feature.holes].map((coordinates) =>
@@ -350,11 +344,7 @@ export const measureFeature = (feature) => {
         )
       );
 
-      return area > kilo * kilo // Over 1 km²
-        ? `${round(area / (kilo * kilo), 2)} km²`
-        : area > 0.1 * hecto * hecto // Over 0.1 ha
-        ? `${round(area / (hecto * hecto), 2)} ha`
-        : `${round(area, 2)} m²`;
+      return formatArea(area);
     }
 
     default:

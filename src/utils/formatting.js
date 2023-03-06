@@ -97,11 +97,19 @@ export function formatMissionIdRange(start, end) {
 }
 
 // Distance unit array suitable to be used with formatNumberAndUnit in order to
-// format distances nicely
+// format meter based distances nicely
 export const DISTANCE_UNITS = [
-  [1000, 'km'],
-  [1, 'm'],
-  [0.01, 'cm'],
+  { multiplier: 1000, unit: 'km' },
+  { multiplier: 1, unit: 'm' },
+  { multiplier: 0.01, unit: 'cm' },
+];
+
+// Area unit array suitable to be used with formatNumberAndUnit in order to
+// format square meter based areas nicely
+export const AREA_UNITS = [
+  { multiplier: 1000 ** 2, unit: 'km²' },
+  { multiplier: 100 ** 2, unit: 'ha', breakpoint: 0.1 },
+  { multiplier: 1, unit: 'm²' },
 ];
 
 /**
@@ -120,20 +128,29 @@ export const joinUnit = (amount, unit) =>
  *
  * @param {number}  number  the number to format
  * @param {string|Object} unit  the unit to show after the digits. May also be
- *        an array consisting of pairs of a multiplier and the corresponding
- *        unit (e.g., [[1000, 'km'], [1, 'm'], [0.01, 'cm']])
+ *        an array consisting of unit descriptors with required `multiplier`
+ *        and `unit` fields and optional `breakpoint` and `digits` fields
+ *        (e.g., [
+ *          { multiplier: 1000, unit: 'km' },
+ *          { multiplier: 1, unit: 'm' },
+ *          { multiplier: 0.01, unit: 'cm', digits: 0 },
+ *        ])
  * @param {number?} digits  the number of decimal digits to use; defaults to zero
  */
 export const formatNumberAndUnit = (number, unit = '', digits = 0) => {
   if (Array.isArray(unit) && unit.length > 0) {
-    for (const [mul, u] of unit) {
-      if (Math.abs(number) >= mul) {
-        return joinUnit((number / mul).toFixed(digits), u);
-      }
-    }
+    // Choose the largest possible unit that has a breakpoint below the number,
+    // or the smallest unit if none of them satisfy this predicate
+    const {
+      multiplier: mul,
+      unit: u,
+      digits: dig = digits,
+    } = unit.find(
+      ({ multiplier, breakpoint = 1 }) =>
+        breakpoint <= Math.abs(number) / multiplier
+    ) ?? unit.at(-1);
 
-    const [mul, u] = unit[unit.length - 1];
-    return joinUnit(number === 0 ? number : (number / mul).toFixed(digits), u);
+    return joinUnit(number === 0 ? number : (number / mul).toFixed(dig), u);
   } else {
     return joinUnit(number === 0 ? number : number.toFixed(digits), unit);
   }
@@ -145,6 +162,13 @@ export const formatNumberAndUnit = (number, unit = '', digits = 0) => {
  */
 export const formatDistance = (number, digits = 2) =>
   formatNumberAndUnit(number, DISTANCE_UNITS, digits);
+
+/**
+ * Helper function that formats an area expressed in square meters in a nice
+ * human-readable manner.
+ */
+export const formatArea = (number, digits = 2) =>
+  formatNumberAndUnit(number, AREA_UNITS, digits);
 
 /**
  * Formats a list of IDs in a manner that is suitable for cases when we

@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import Box from '@material-ui/core/Box';
 
 import { makeStyles } from '@material-ui/core/styles';
-import { formatDistance } from '~/utils/formatting';
+import { formatNumberAndUnit } from '~/utils/formatting';
 
 import RangefinderDisplaySector, {
   SectorStatus,
@@ -52,6 +52,11 @@ const directions = [
   { name: 'up'         , dimension: Dimension.VERTICAL  , heading:    0 },
 ];
 
+const CUSTOM_DISTANCE_UNITS = [
+  { multiplier: 1, unit: 'm', digits: 2 },
+  { multiplier: 0.01, unit: 'cm', digits: 0 },
+];
+
 /**
  * Widget that can display the data arriving from a rangefinder device.
  */
@@ -62,7 +67,9 @@ const RangefinderDisplay = ({
   const classes = useStyles();
   const withValues = directions.map((d, i) => ({ ...d, value: values[i] }));
   const getDistanceAndStatus = (value) => ({
-    distance: Number.isFinite(value) ? formatDistance(value) : '∞',
+    distance: Number.isFinite(value)
+      ? formatNumberAndUnit(value, CUSTOM_DISTANCE_UNITS)
+      : '∞',
     // prettier-ignore
     status:
       value < limits.near ? SectorStatus.NEAR :
