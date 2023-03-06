@@ -32,10 +32,6 @@ import {
 } from '~/features/mission/slice';
 import { updateGeofencePolygon } from '~/features/show/actions';
 import {
-  getMaximumHorizontalDistanceFromTakeoffPositionInTrajectories,
-  getMaximumHeightInTrajectories,
-} from '~/features/show/selectors';
-import {
   createValidator,
   atLeast,
   finite,
@@ -44,7 +40,11 @@ import {
 } from '~/utils/validation';
 
 import { describeGeofenceAction, GeofenceAction } from './model';
-import { getGeofenceSettings } from './selectors';
+import {
+  getGeofenceSettings,
+  getMaximumHeightForCurrentMissionType,
+  getMaximumHorizontalDistanceForCurrentMissionType,
+} from './selectors';
 import { updateGeofenceSettings } from './slice';
 import { proposeDistanceLimit, proposeHeightLimit } from './utils';
 
@@ -201,9 +201,8 @@ const GeofenceSettingsForm = connect(
   (state) => ({
     initialValues: {
       ...getGeofenceSettings(state),
-      maxDistance:
-        getMaximumHorizontalDistanceFromTakeoffPositionInTrajectories(state),
-      maxHeight: getMaximumHeightInTrajectories(state),
+      maxDistance: getMaximumHorizontalDistanceForCurrentMissionType(state),
+      maxHeight: getMaximumHeightForCurrentMissionType(state),
       action: getGeofenceAction(state),
     },
   })

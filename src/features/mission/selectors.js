@@ -9,15 +9,13 @@ import turfDistance from '@turf/distance';
 import * as TurfHelpers from '@turf/helpers';
 
 import { getFeaturesByIds } from '~/features/map-features/selectors';
-import {
-  GeofenceAction,
-  isValidGeofenceAction,
-} from '~/features/safety/model';
+import { GeofenceAction, isValidGeofenceAction } from '~/features/safety/model';
 import {
   globalIdToMissionItemId,
   globalIdToMissionSlotId,
 } from '~/model/identifiers';
 import {
+  getAltitudeFromMissionItem,
   getCoordinateFromMissionItem,
   MissionItemType,
   MissionType,
@@ -34,8 +32,6 @@ import {
   estimatePathDuration,
 } from '~/utils/math';
 import { EMPTY_ARRAY } from '~/utils/redux';
-
-import { transformMissionItemBeforeUpload } from './upload';
 
 /**
  * Key selector function for cached selectors that cache things by mission
@@ -431,6 +427,40 @@ export const getMissionItemsWithCoordinatesInOrder = createSelector(
 );
 
 /**
+ * Returns a selector that converts the current list of mission items to a
+ * list of objects containing the target altitudes which should be reached
+ * during a mission, along with the original items themselves and their indices.
+ *
+ * The returned array will contain objects with the following keys:
+ *
+ * - id: maps to the ID of the mission item
+ * - altitude: object with have two keys: `value` for the value of the altitude
+ *                                   and `reference` for the reference altitude
+ * - item: maps to the item itself
+ * - index: the index of the item in the list of mission items
+ *
+ * Mission items for which no altitude belongs are not returned.
+ */
+export const getMissionItemsWithAltitudesInOrder = createSelector(
+  getMissionItemsInOrder,
+  (items) => {
+    const result = [];
+    let index = 0;
+
+    for (const item of items) {
+      const altitude = getAltitudeFromMissionItem(item);
+      if (altitude) {
+        result.push({ id: item.id, item, altitude, index });
+      }
+
+      index++;
+    }
+
+    return result;
+  }
+);
+
+/**
  * Returns the coordinates of the convex hull of the currently loaded mission
  * in the coordinate system of the map view.
  */
@@ -485,14 +515,41 @@ export const isWaypointMissionConvexHullInsideGeofence = createSelector(
 );
 
 /**
- * Selector that returns the payload of the mission item upload job.
+ * Returns the maximum distance of any waypoint in the mission from the first
+ * home position in the UAV mapping.
  */
-export const getMissionItemUploadJobPayload = (state) => {
-  const items = getMissionItemsInOrder(state).map((item) =>
-    transformMissionItemBeforeUpload(item, state)
+export const getMaximumHorizontalDistanceOfWaypointsFromHomePosition =
+  createSelector(
+    getGPSBasedHomePositionsInMission,
+    getMissionItemsWithCoordinatesInOrder,
+    ([homePosition], missionItemsWithCoorinates) => {
+      if (!homePosition) {
+        return 0;
+      }
+
+      const homePoint = TurfHelpers.point([homePosition.lon, homePosition.lat]);
+      return (
+        max(
+          missionItemsWithCoorinates.map(
+            ({ coordinate: { lon, lat } }) =>
+              // (By default `turfDistance` returns kilometers and does not have
+              // meters available as an option, only degrees, radians, miles...)
+              turfDistance(homePoint, TurfHelpers.point([lon, lat])) * 1000
+          )
+        ) ?? 0
+      );
+    }
   );
-  return { version: 1, items };
-};
+
+/**
+ * Returns the maximum target altitude that appears among the waypoints.
+ */
+export const getMaximumHeightOfWaypoints = createSelector(
+  getMissionItemsWithAltitudesInOrder,
+  (missionItemsWithAltitude) =>
+    // TODO: Handle different altitude references?
+    max(missionItemsWithAltitude.map((mi) => mi.altitude.value)) ?? 0
+);
 
 /**
  * Selector that returns whether the mission planner dialog is open.
