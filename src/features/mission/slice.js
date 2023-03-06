@@ -12,8 +12,8 @@ import { createSlice } from '@reduxjs/toolkit';
 
 import { copyAndEnsureLengthEquals, getNewEditIndex } from './utils';
 
-import { GeofenceAction } from '~/features/geofence/model';
 import { removeFeaturesByIds } from '~/features/map-features/slice';
+import { GeofenceAction } from '~/features/safety/model';
 import { MissionType } from '~/model/missions';
 import {
   addItemAt,

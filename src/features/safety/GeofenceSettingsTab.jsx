@@ -19,15 +19,6 @@ import MenuItem from '@material-ui/core/MenuItem';
 
 import FormHeader from '@skybrush/mui-components/lib/FormHeader';
 
-import {
-  describeGeofenceAction,
-  GeofenceAction,
-} from '~/features/geofence/model';
-import { updateGeofenceSettings } from '~/features/geofence/slice';
-import {
-  proposeDistanceLimit,
-  proposeHeightLimit,
-} from '~/features/geofence/utils';
 import { removeFeaturesByIds } from '~/features/map-features/slice';
 import {
   getGeofenceAction,
@@ -38,6 +29,16 @@ import {
   clearGeofencePolygonId,
   setGeofenceAction,
 } from '~/features/mission/slice';
+import {
+  describeGeofenceAction,
+  GeofenceAction,
+} from '~/features/safety/model';
+import { getGeofenceSettings } from '~/features/safety/selectors';
+import { updateGeofenceSettings } from '~/features/safety/slice';
+import {
+  proposeDistanceLimit,
+  proposeHeightLimit,
+} from '~/features/safety/utils';
 import { updateGeofencePolygon } from '~/features/show/actions';
 import {
   getMaximumHorizontalDistanceFromTakeoffPositionInTrajectories,
@@ -197,7 +198,7 @@ const GeofenceSettingsForm = connect(
   // mapStateToProps
   (state) => ({
     initialValues: {
-      ...state.dialogs.geofenceSettings,
+      ...getGeofenceSettings(state),
       maxDistance:
         getMaximumHorizontalDistanceFromTakeoffPositionInTrajectories(state),
       maxHeight: getMaximumHeightInTrajectories(state),

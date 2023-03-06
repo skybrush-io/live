@@ -1,6 +1,6 @@
 /**
  * @file Reducer function for handling the part of the state object that
- * manages the safety dialog and stores safety parameters.
+ * manages the safety dialog and stores geofence and safety parameters.
  */
 
 import { createSlice } from '@reduxjs/toolkit';
@@ -16,6 +16,15 @@ const { actions, reducer } = createSlice({
       open: false,
       selectedTab: SafetyDialogTab.GEOFENCE,
     },
+
+    geofence: {
+      horizontalMargin: 20,
+      verticalMargin: 10,
+
+      simplify: true,
+      maxVertexCount: 10,
+    },
+
     settings: {
       criticalBatteryVoltage: null,
       lowBatteryVoltage: null,
@@ -47,6 +56,13 @@ const { actions, reducer } = createSlice({
     },
 
     /**
+     * Action that will update the geofence preferences of the user.
+     */
+    updateGeofenceSettings(state, { payload }) {
+      Object.assign(state.geofence, payload);
+    },
+
+    /**
      * Action that will update the safety preferences of the user.
      */
     updateSafetySettings(state, { payload }) {
@@ -59,6 +75,7 @@ export const {
   closeSafetyDialog,
   openSafetyDialog,
   setSafetyDialogTab,
+  updateGeofenceSettings,
   updateSafetySettings,
 } = actions;
 

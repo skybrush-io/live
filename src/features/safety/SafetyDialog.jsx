@@ -14,11 +14,11 @@ import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
 import DialogTabs from '@skybrush/mui-components/lib/DialogTabs';
 import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
 
-import GeofenceSettingsTab from '~/features/geofence/GeofenceSettingsTab';
 import Fence from '~/icons/PlacesFence';
 import { hasFeature } from '~/utils/configuration';
 
 import { SafetyDialogTab } from './constants';
+import GeofenceSettingsTab from './GeofenceSettingsTab';
 import SafetySettingsTab from './SafetySettingsTab';
 import { getSelectedTabInSafetyDialog, isSafetyDialogOpen } from './selectors';
 import { closeSafetyDialog, setSafetyDialogTab } from './slice';

@@ -1,11 +1,11 @@
 import isNil from 'lodash-es/isNil';
 import { CANCEL } from 'redux-saga';
 
-import { GeofenceAction } from '~/features/geofence/model';
 import {
   getGeofenceActionWithValidation,
   getReverseMissionMapping,
 } from '~/features/mission/selectors';
+import { GeofenceAction } from '~/features/safety/model';
 import { JobScope } from '~/features/upload/jobs';
 import messageHub from '~/message-hub';
 

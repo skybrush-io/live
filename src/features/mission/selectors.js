@@ -8,11 +8,11 @@ import turfContains from '@turf/boolean-contains';
 import turfDistance from '@turf/distance';
 import * as TurfHelpers from '@turf/helpers';
 
+import { getFeaturesByIds } from '~/features/map-features/selectors';
 import {
   GeofenceAction,
   isValidGeofenceAction,
-} from '~/features/geofence/model';
-import { getFeaturesByIds } from '~/features/map-features/selectors';
+} from '~/features/safety/model';
 import {
   globalIdToMissionItemId,
   globalIdToMissionSlotId,

@@ -10,7 +10,6 @@ import deauthenticationReducer from '~/features/servers/deauthentication-dialog'
 import dockDetailsDialogReducer from '~/features/docks/details';
 import errorHandlingReducer from '~/features/error-handling/slice';
 import featureEditorReducer from '~/features/map-features/editor';
-import geofenceSettingsReducer from '~/features/geofence/slice';
 import layerSettingsReducer from '~/features/map/layer-settings-dialog';
 import promptReducer from '~/features/prompt/slice';
 import savedLocationEditorReducer from '~/features/saved-locations/editor';
@@ -70,7 +69,6 @@ const dialogsReducer = combineReducers({
   dockDetails: dockDetailsDialogReducer,
   error: errorHandlingReducer,
   featureEditor: featureEditorReducer,
-  geofenceSettings: geofenceSettingsReducer,
   layerSettings: layerSettingsReducer,
   prompt: promptReducer,
   savedLocationEditor: savedLocationEditorReducer,
