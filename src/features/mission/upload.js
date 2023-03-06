@@ -1,10 +1,10 @@
 import { CANCEL } from 'redux-saga';
 
-import { GeofenceAction } from '~/features/geofence/model';
 import {
   getGeofenceActionWithValidation,
   getGeofencePolygonInWorldCoordinates,
 } from '~/features/mission/selectors';
+import { GeofenceAction } from '~/features/safety/model';
 import { getSafetySettings } from '~/features/safety/selectors';
 import { JobScope } from '~/features/upload/jobs';
 import messageHub from '~/message-hub';

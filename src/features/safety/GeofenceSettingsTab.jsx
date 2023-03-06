@@ -44,6 +44,7 @@ import {
 } from '~/utils/validation';
 
 import { describeGeofenceAction, GeofenceAction } from './model';
+import { getGeofenceSettings } from './selectors';
 import { updateGeofenceSettings } from './slice';
 import { proposeDistanceLimit, proposeHeightLimit } from './utils';
 
@@ -199,7 +200,7 @@ const GeofenceSettingsForm = connect(
   // mapStateToProps
   (state) => ({
     initialValues: {
-      ...state.dialogs.geofenceSettings,
+      ...getGeofenceSettings(state),
       maxDistance:
         getMaximumHorizontalDistanceFromTakeoffPositionInTrajectories(state),
       maxHeight: getMaximumHeightInTrajectories(state),

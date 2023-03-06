@@ -10,9 +10,9 @@ import isNil from 'lodash-es/isNil';
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import { type ReadonlyDeep } from 'type-fest';
 
-import { GeofenceAction } from '~/features/geofence/model';
 import { removeFeaturesByIds } from '~/features/map-features/slice';
 import { type FeatureProperties } from '~/features/map-features/types';
+import { GeofenceAction } from '~/features/safety/model';
 import { type MissionItem, MissionType } from '~/model/missions';
 import { type GPSPosition } from '~/model/position';
 import type UAV from '~/model/uav';

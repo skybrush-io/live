@@ -15,13 +15,14 @@ import turfContains from '@turf/boolean-contains';
 
 import { CommonClockId } from '~/features/clocks/types';
 import {
-  proposeDistanceLimit,
-  proposeHeightLimit,
-} from '~/features/geofence/utils';
-import {
   getGeofencePolygonInWorldCoordinates,
   selectMissionIndex,
 } from '~/features/mission/selectors';
+import { getGeofenceSettings } from '~/features/safety/selectors';
+import {
+  proposeDistanceLimit,
+  proposeHeightLimit,
+} from '~/features/safety/utils';
 import { formatDuration, formatDurationHMS } from '~/utils/formatting';
 import { FlatEarthCoordinateSystem } from '~/utils/geography';
 import {
@@ -657,7 +658,7 @@ export const getMaximumHeightInTrajectories = createSelector(
 export const getProposedDistanceLimitBasedOnTrajectories = (state) => {
   const maxDistance =
     getMaximumHorizontalDistanceFromTakeoffPositionInTrajectories(state);
-  const margin = get(state, 'dialogs.geofenceSettings.horizontalMargin');
+  const margin = getGeofenceSettings(state).horizontalMargin;
   return proposeDistanceLimit(maxDistance, margin);
 };
 
@@ -667,7 +668,7 @@ export const getProposedDistanceLimitBasedOnTrajectories = (state) => {
  */
 export const getProposedHeightLimitBasedOnTrajectories = (state) => {
   const maxHeight = getMaximumHeightInTrajectories(state);
-  const margin = get(state, 'dialogs.geofenceSettings.verticalMargin');
+  const margin = getGeofenceSettings(state).verticalMargin;
   return proposeHeightLimit(maxHeight, margin);
 };
 

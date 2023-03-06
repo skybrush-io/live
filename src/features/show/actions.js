@@ -31,6 +31,7 @@ import {
   setMissionType,
   setGeofencePolygonId,
 } from '~/features/mission/slice';
+import { getGeofenceSettings } from '~/features/safety/selectors';
 import { showNotification } from '~/features/snackbar/slice';
 import { MessageSemantics } from '~/features/snackbar/types';
 import {
@@ -136,7 +137,7 @@ const addGeofencePolygon =
     const state = getState();
 
     const { horizontalMargin, simplify, maxVertexCount } =
-      state.dialogs.geofenceSettings;
+      getGeofenceSettings(state);
 
     const points = bufferPolygon(coordinates, horizontalMargin);
 
