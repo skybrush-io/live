@@ -237,7 +237,8 @@ export function isMissionItemValid(item: any): item is MissionItem {
         if (
           typeof name !== 'string' ||
           (typeof value !== 'string' &&
-            (typeof value !== 'number' || !Number.isFinite(value)))
+            (typeof value !== 'number' || !Number.isFinite(value)) &&
+            (typeof value !== 'boolean'))
         ) {
           return false;
         }
