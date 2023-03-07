@@ -100,6 +100,10 @@
       "apply": "Apply",
       "clear": "Clear current fence",
       "close": "Close",
+      "errors": {
+        "distance": "Could not calculate distance",
+        "height": "Could not calculate height"
+      },
       "fenceAction": "Fence action",
       "fenceActionHelperText": "Support for these options depends on the drones themselves; not all options are supported by all drones.",
       "fenceActionLabel": "Primary fence action",
