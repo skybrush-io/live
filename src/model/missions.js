@@ -210,7 +210,8 @@ export function isMissionItemValid(item) {
         if (
           typeof name !== 'string' ||
           (typeof value !== 'string' &&
-            (typeof value !== 'number' || !Number.isFinite(value)))
+            (typeof value !== 'number' || !Number.isFinite(value)) &&
+            (typeof value !== 'boolean'))
         ) {
           return false;
         }
