@@ -23,7 +23,6 @@ import { FlatEarthCoordinateSystem } from '~/utils/geography';
 import {
   convexHull,
   createGeometryFromPoints,
-  euclideanDistance2D,
   getCentroid,
 } from '~/utils/math';
 import { EMPTY_ARRAY, EMPTY_OBJECT } from '~/utils/redux';
@@ -40,6 +39,7 @@ import {
   getFirstPointOfTrajectory,
   getLastPointOfTrajectory,
   getMaximumHeightOfTrajectory,
+  getMaximumHorizontalDistanceFromTakeoffPositionInTrajectory,
   getPointsOfTrajectory,
   getTrajectoryDuration,
   isValidTrajectory,
@@ -590,36 +590,6 @@ export const getLastPointsOfTrajectoriesInWorldCoordinates = createSelector(
   getOutdoorShowToWorldCoordinateSystemTransformation,
   transformPointsOrFillWithUndefined
 );
-
-/**
- * Returns the maximum distance of any point in a trajectory from its starting
- * point. Returns 0 for empty trajectories.
- */
-function getMaximumHorizontalDistanceFromTakeoffPositionInTrajectory(
-  trajectory
-) {
-  if (!isValidTrajectory(trajectory)) {
-    return 0;
-  }
-
-  const { points = [] } = trajectory;
-  if (points.length === 0) {
-    return 0;
-  }
-
-  // TODO(ntamas): calculate distances only for the convex hull of the trajectory!
-
-  const firstKeyframe = points[0];
-  const firstPoint = firstKeyframe[1];
-
-  const distanceToFirstPoint = (keyframe) => {
-    const point = keyframe[1];
-    return euclideanDistance2D(point, firstPoint);
-  };
-
-  const farthestPoint = maxBy(points, distanceToFirstPoint);
-  return farthestPoint ? distanceToFirstPoint(farthestPoint) : 0;
-}
 
 /**
  * Returns the maximum distance of any point in any of the trajectories from the

@@ -1,5 +1,5 @@
 import maxBy from 'lodash-es/maxBy';
-import { convexHull } from '~/utils/math';
+import { convexHull, euclideanDistance2D } from '~/utils/math';
 
 /**
  * Returns the convex hull of a single drone trajectory.
@@ -24,6 +24,36 @@ export function getLastPointOfTrajectory(trajectory) {
   return isValidTrajectory(trajectory)
     ? trajectory.points[trajectory.points.length - 1][1]
     : undefined;
+}
+
+/**
+ * Returns the maximum distance of any point in a trajectory from its starting
+ * point. Returns 0 for empty trajectories.
+ */
+export function getMaximumHorizontalDistanceFromTakeoffPositionInTrajectory(
+  trajectory
+) {
+  if (!isValidTrajectory(trajectory)) {
+    return 0;
+  }
+
+  const { points = [] } = trajectory;
+  if (points.length === 0) {
+    return 0;
+  }
+
+  // TODO(ntamas): calculate distances only for the convex hull of the trajectory!
+
+  const firstKeyframe = points[0];
+  const firstPoint = firstKeyframe[1];
+
+  const distanceToFirstPoint = (keyframe) => {
+    const point = keyframe[1];
+    return euclideanDistance2D(point, firstPoint);
+  };
+
+  const farthestPoint = maxBy(points, distanceToFirstPoint);
+  return farthestPoint ? distanceToFirstPoint(farthestPoint) : 0;
 }
 
 /**
