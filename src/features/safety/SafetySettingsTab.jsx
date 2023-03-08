@@ -83,6 +83,9 @@ const SafetySettingsFormPresentation = ({ initialValues, onSubmit }) => (
                 endAdornment: (
                   <InputAdornment position='end'>{unit}</InputAdornment>
                 ),
+                inputProps: {
+                  inputmode: 'numeric',
+                },
               }}
               variant='filled'
             />
