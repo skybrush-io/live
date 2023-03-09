@@ -92,7 +92,10 @@ const persistConfig = {
     // We do not wish to store home/landing positions and takeoff heading in
     // the mission because they depend on the loaded show anyway
     createBlacklistFilter('mission', [
-      'homePositions',
+      // NOTE: Home positions now persist, as mission items are persistent, and
+      //       home positions are used in geofence and estimate calculations.
+      //       This might not be the best long-term solution.
+      // 'homePositions',
       'landingPositions',
       'takeoffHeadings',
       'lastClearedMissionData',
