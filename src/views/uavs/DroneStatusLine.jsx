@@ -170,7 +170,7 @@ const DroneStatusLine = ({
             ) +
             'm ' +
             padStart(
-              !isNil(position && position.agl) ? position.agl.toFixed(1) : '?',
+              !isNil(position && position.ahl) ? position.ahl.toFixed(1) : '?',
               5
             ) +
             'm'
@@ -214,7 +214,7 @@ DroneStatusLine.propTypes = {
     lat: PropTypes.number,
     lon: PropTypes.number,
     amsl: PropTypes.number,
-    agl: PropTypes.number,
+    ahl: PropTypes.number,
   }),
   secondaryLabel: PropTypes.string,
   text: PropTypes.string,

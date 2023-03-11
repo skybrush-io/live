@@ -33,7 +33,7 @@ export function* positionAveragingSaga() {
     for (const uavId of uavIds) {
       const item = payload[uavId];
       if (item) {
-        newSamples[uavId] = pick(item.position, ['lat', 'lon', 'amsl', 'agl']);
+        newSamples[uavId] = pick(item.position, ['lat', 'lon', 'amsl', 'ahl']);
       }
     }
 

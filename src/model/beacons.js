@@ -13,7 +13,7 @@ export const mapPosition = (positionFromServer) =>
         lat: positionFromServer[0] / 1e7,
         lon: positionFromServer[1] / 1e7,
         amsl: isNil(positionFromServer[2]) ? null : positionFromServer[2] / 1e3,
-        agl: isNil(positionFromServer[3]) ? null : positionFromServer[3] / 1e3,
+        ahl: isNil(positionFromServer[3]) ? null : positionFromServer[3] / 1e3,
       }
     : null;
 

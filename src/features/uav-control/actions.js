@@ -18,7 +18,7 @@ const hasAMSL = (pos) =>
  * Thunk action factory that takes a geographical coordinate (without altitude)
  * and a list of selected UAV IDs, and opens the "Fly to target" dialog such
  * that the altitude in the dialog box is set to the mean AMSL of the selected
- * drones if more than one drone is selected, or to the AGL of the drone if a
+ * drones if more than one drone is selected, or to the AHL of the drone if a
  * single drone is selected.
  */
 export const openFlyToTargetDialogWithCoordinate =
@@ -37,11 +37,11 @@ export const openFlyToTargetDialogWithCoordinate =
     // altitude = NaN may happen if numberOfUAVs > 1 and the drones have no AMSLs
     const altitude =
       numberOfUAVsWithPositions === 1
-        ? positions[0].agl
+        ? positions[0].ahl
         : meanBy(positions.filter(hasAMSL), 'amsl');
     const finiteAltitude = Number.isFinite(altitude) ? altitude : 0;
     const mode =
-      numberOfUAVsWithPositions === 1 && finiteAltitude ? 'agl' : 'amsl';
+      numberOfUAVsWithPositions === 1 && finiteAltitude ? 'ahl' : 'amsl';
 
     const formatter = getPreferredCoordinateFormatter(state);
 
@@ -76,8 +76,8 @@ export const submitFlyToTargetDialog = (fields) => (dispatch, getState) => {
     };
 
     if (Number.isFinite(altitude)) {
-      if (fields.mode === 'agl') {
-        target.agl = altitude;
+      if (fields.mode === 'ahl') {
+        target.ahl = altitude;
       } else if (fields.mode === 'amsl') {
         target.amsl = altitude;
       } else if (fields.mode === 'relative' && Math.abs(altitude) > 0.01) {
@@ -93,10 +93,10 @@ export const submitFlyToTargetDialog = (fields) => (dispatch, getState) => {
             };
           }
 
-          if (currentPosition && currentPosition.agl) {
+          if (currentPosition && currentPosition.ahl) {
             return {
               ...baseTarget,
-              agl: currentPosition.agl + altitude,
+              ahl: currentPosition.ahl + altitude,
             };
           }
         };

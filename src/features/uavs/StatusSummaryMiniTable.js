@@ -57,7 +57,7 @@ const StatusSummaryMiniTable = ({
   position,
 }) => {
   const classes = useStyles();
-  const { lat, lon, amsl, agl } = position || {};
+  const { lat, lon, amsl, ahl } = position || {};
   const hasLocalPosition = localPosition && Array.isArray(localPosition);
   const flightModeLabel = mode ? (
     <StatusText status={getSemanticsForFlightMode(mode)}>
@@ -86,7 +86,7 @@ const StatusSummaryMiniTable = ({
       ['Lat', formatNumberSafely(lat, 7, '°', naText)],
       ['Lon', formatNumberSafely(lon, 7, '°', naText)],
       ['AMSL', formatNumberSafely(amsl, 2, ' m', naText)],
-      ['AGL', formatNumberSafely(agl, 2, ' m', naText)],
+      ['AHL', formatNumberSafely(ahl, 2, ' m', naText)],
       'sep2'
     );
   }
@@ -141,7 +141,7 @@ StatusSummaryMiniTable.propTypes = {
     lat: PropTypes.number,
     lon: PropTypes.number,
     amsl: PropTypes.number,
-    agl: PropTypes.number,
+    ahl: PropTypes.number,
   }),
 };
 

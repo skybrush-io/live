@@ -31,8 +31,8 @@ const INITIAL_STATE = {
 const getNextTypeForAltitudeSummaryType = (type) => {
   switch (type) {
     case AltitudeSummaryType.AMSL:
-      return AltitudeSummaryType.AGL;
-    case AltitudeSummaryType.AGL:
+      return AltitudeSummaryType.AHL;
+    case AltitudeSummaryType.AHL:
       return AltitudeSummaryType.XYZ;
     case AltitudeSummaryType.XYZ:
       return AltitudeSummaryType.AMSL;

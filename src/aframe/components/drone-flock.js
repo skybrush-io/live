@@ -26,7 +26,7 @@ const { THREE } = AFrame;
 /**
  * Selector that takes the Redux state and returns a function that can be called
  * with two arguments; the first argument must be an object having `lon`, `lat`
- * and `agl` properties, while the second argument must be an existing
+ * and `ahl` properties, while the second argument must be an existing
  * `THREE.Vector3` vector. This function will update the vector in-place to the
  * coordinates in the 3D view corresponding to the given GPS position.
  *
@@ -38,11 +38,11 @@ const getUpdatePositionFromGPSCoordinatesFunction = createSelector(
   getFlatEarthCoordinateTransformer,
   (transformation) => (coordinate, result) => {
     if (coordinate !== null && coordinate !== undefined && transformation) {
-      return transformation.updateVector3FromLonLatAgl(
+      return transformation.updateVector3FromLonLatAhl(
         result,
         coordinate.lon,
         coordinate.lat,
-        coordinate.agl
+        coordinate.ahl
       );
     }
   }

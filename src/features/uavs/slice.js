@@ -27,7 +27,7 @@ const { actions, reducer } = createSlice({
       //     id: "01",
       //     lastUpdated: 1580225775722,
       //     position: {
-      //         lat: 47.4732476, lon: 19.0618718, amsl: undefined, agl: 0
+      //         lat: 47.4732476, lon: 19.0618718, amsl: undefined, ahl: 0
       //     },
       //     gpsFix: ['3D', 17],
       //     heading: 210,

@@ -207,8 +207,8 @@ const COMMON_HEADER_TEXT_PARTS = Object.freeze([
     },
   },
   {
-    label: 'AGL',
-    sortKey: UAVSortKey.ALTITUDE_GROUND,
+    label: 'AHL',
+    sortKey: UAVSortKey.ALTITUDE_HOME,
     style: {
       textAlign: 'right',
       width: 56,

@@ -44,7 +44,7 @@ export default class UAV {
       lat: undefined,
       lon: undefined,
       amsl: undefined,
-      agl: undefined,
+      ahl: undefined,
     };
     this._rawHeading = undefined;
     this._rawVoltage = undefined;
@@ -65,10 +65,10 @@ export default class UAV {
   }
 
   /**
-   * Returns the altitude above ground level, if known.
+   * Returns the altitude above home level, if known.
    */
-  get agl() {
-    return this._position.agl;
+  get ahl() {
+    return this._position.ahl;
   }
 
   /**
@@ -204,7 +204,7 @@ export default class UAV {
       }
 
       if (!isNil(position[3])) {
-        this._position.agl = position[3] / 1e3;
+        this._position.ahl = position[3] / 1e3;
       }
 
       updated = true;
