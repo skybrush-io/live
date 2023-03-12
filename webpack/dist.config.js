@@ -24,7 +24,6 @@ module.exports = merge(baseConfig, {
   /* eslint-enable react-hooks/rules-of-hooks */
 
   entry: {
-    polyfill: ['whatwg-fetch'],
     app: './src/index',
   },
 

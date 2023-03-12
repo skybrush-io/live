@@ -111,6 +111,7 @@ export function createShowConfigurationForUav(state, uavId) {
       id: missionId,
       index: missionIndex,
       displayName: `${missionId || 'drone-show'} / ${missionIndex + 1}`,
+      numDrones: drones.length,
     },
   };
 

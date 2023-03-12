@@ -165,7 +165,6 @@
     "use-resize-observer": "^9.0.2",
     "util": "^0.12.5",
     "vm-browserify": "^1.1.2",
-    "whatwg-fetch": "^3.6.2",
     "which": "^2.0.2"
   },
   "devDependencies": {

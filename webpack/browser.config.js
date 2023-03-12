@@ -41,7 +41,6 @@ if (useHotModuleReloading) {
 
 module.exports = merge(baseConfig, {
   entry: {
-    polyfill: ['whatwg-fetch'],
     app: './src/index',
   },
   optimization,
