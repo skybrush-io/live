@@ -4,7 +4,6 @@
 
 import has from 'lodash-es/has';
 import isObject from 'lodash-es/isObject';
-import pullAll from 'lodash-es/pullAll';
 import { nanoid } from 'nanoid';
 import pDefer from 'p-defer';
 import pProps from 'p-props';
@@ -759,6 +758,9 @@ class DeviceTreeSubscriptionManager extends MessageHubRelatedComponent {
     // Array of device tree paths we are currently subscribed to on the server;
     // `null` means not known yet
     this._subscriptionsOnServer = null;
+
+    // Field for storing a promise while a subscription update is in progress.
+    this._subscriptionUpdateInProgress = null;
   }
 
   /**
@@ -796,7 +798,7 @@ class DeviceTreeSubscriptionManager extends MessageHubRelatedComponent {
       throw new Error('DEV-LISTSUB expected to return an array of paths');
     }
 
-    this._subscriptionsOnServer = paths;
+    this._subscriptionsOnServer = new Set(paths);
 
     await this._updateSubscriptions();
   }
@@ -890,6 +892,14 @@ class DeviceTreeSubscriptionManager extends MessageHubRelatedComponent {
    * Updates the list of subscriptions on the server if needed.
    */
   async _updateSubscriptions() {
+    if (this._subscriptionUpdateInProgress) {
+      await this._subscriptionUpdateInProgress.promise;
+      // PERF: This could be optimized by only allowing one pending update,
+      //       as that would be enough to cumulatively apply all new changes.
+      await this._updateSubscriptions();
+      return;
+    }
+
     if (this._subscriptionsOnServer === null) {
       console.warn(
         '_updateSubscriptions() was called before acquiring' +
@@ -902,15 +912,15 @@ class DeviceTreeSubscriptionManager extends MessageHubRelatedComponent {
     const toUnsubscribe = [];
     let shouldRetry = false;
 
-    for (const key of this._subscriptions.keys()) {
-      if (!this._subscriptionsOnServer.includes(key)) {
-        toSubscribe.push(key);
+    for (const path of this._subscriptions.keys()) {
+      if (!this._subscriptionsOnServer.has(path)) {
+        toSubscribe.push(path);
       }
     }
 
-    for (const key of this._subscriptionsOnServer) {
-      if (!this._subscriptions.has(key)) {
-        toUnsubscribe.push(key);
+    for (const path of this._subscriptionsOnServer.values(path)) {
+      if (!this._subscriptions.has(path)) {
+        toUnsubscribe.push(path);
       }
     }
 
@@ -923,7 +933,9 @@ class DeviceTreeSubscriptionManager extends MessageHubRelatedComponent {
       return;
     }
 
-    if (toUnsubscribe) {
+    this._subscriptionUpdateInProgress = pDefer();
+
+    if (toUnsubscribe.length > 0) {
       const response = await this._hub.sendMessage({
         type: 'DEV-UNSUB',
         paths: toUnsubscribe,
@@ -938,11 +950,11 @@ class DeviceTreeSubscriptionManager extends MessageHubRelatedComponent {
       }
 
       if (response?.body?.success) {
-        pullAll(this._subscriptionsOnServer, response.body.success);
+        this._subscriptionsOnServer.deleteAll(...response.body.success);
       }
     }
 
-    if (toSubscribe) {
+    if (toSubscribe.length > 0) {
       let response = await this._hub.sendMessage({
         type: 'DEV-SUB',
         paths: toSubscribe,
@@ -958,7 +970,7 @@ class DeviceTreeSubscriptionManager extends MessageHubRelatedComponent {
       }
 
       if (response?.body?.success) {
-        this._subscriptionsOnServer.push(...response.body.success);
+        this._subscriptionsOnServer.addAll(...response.body.success);
 
         // Get the initial values
         response = await this._hub.sendMessage({
@@ -975,6 +987,9 @@ class DeviceTreeSubscriptionManager extends MessageHubRelatedComponent {
     if (shouldRetry) {
       setTimeout(() => this._updateSubscriptions(), 5000);
     }
+
+    this._subscriptionUpdateInProgress.resolve();
+    this._subscriptionUpdateInProgress = null;
   }
 }
 

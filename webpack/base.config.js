@@ -19,6 +19,10 @@ const gitRevisionPlugin = new GitRevisionPlugin();
 module.exports = {
   mode: 'development',
 
+  entry: {
+    polyfills: ['core-js/full/set/add-all', 'core-js/full/set/delete-all'],
+  },
+
   output: {
     filename: '[name].bundle.js',
   },
