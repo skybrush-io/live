@@ -1,3 +1,4 @@
+import isEqual from 'lodash-es/isEqual';
 import reject from 'lodash-es/reject';
 import turfDifference from '@turf/difference';
 
@@ -36,6 +37,21 @@ export const {
 } = editorActions;
 
 export const addFeature = (feature) => addFeatureWithName(feature, null);
+
+/**
+ * Action that checks if a feature with matching comparison properties can be
+ * found on the map, and adds a new one in case it is missing.
+ */
+export const addFeatureIfMissing =
+  (feature, comparisonProperties) => (dispatch, getState) => {
+    const state = getState();
+    const match = getFeaturesInOrder(state).find((f) =>
+      comparisonProperties.every((cp) => isEqual(f[cp], feature[cp]))
+    );
+    if (!match) {
+      dispatch(addFeature(feature));
+    }
+  };
 
 export const addFeatureWithName = (feature, name) => (dispatch, getState) => {
   const id = getProposedIdForNewFeature(getState(), feature, name);

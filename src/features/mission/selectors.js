@@ -559,11 +559,18 @@ export const isMissionPlannerDialogOpen = (state) =>
 
 /**
  * Selector that returns the mapping to be used when setting parameters for the
- * mission planner from the context.
+ * mission planner from the context as an ES6 Map.
  */
-export const getMissionPlannerDialogContextParameters = (state) =>
+export const getMissionPlannerDialogContextParametersAsMap = (state) =>
   // Reconstruct the Map representation from the stored object.
   new Map(Object.entries(state.mission.plannerDialog.parameters.fromContext));
+
+/**
+ * Selector that returns the mapping to be used when setting parameters for the
+ * mission planner from the context as a plain object.
+ */
+export const getMissionPlannerDialogContextParametersAsObject = (state) =>
+  state.mission.plannerDialog.parameters.fromContext;
 
 /**
  * Selector that returns the parameters for the mission planner set by the user.
