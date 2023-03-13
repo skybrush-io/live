@@ -24,7 +24,7 @@ import {
 import {
   closeMissionPlannerDialog,
   setMissionPlannerDialogApplyGeofence,
-  setMissionPlannerDialogContextParameters,
+  setMissionPlannerDialogContextParametersAsMap,
   setMissionPlannerDialogSelectedType,
   setMissionPlannerDialogUserParameters,
 } from './slice';
@@ -205,7 +205,7 @@ export default connect(
     onClearMission: clearMission,
     onClose: closeMissionPlannerDialog,
     onInvokePlanner: invokeMissionPlanner,
-    onSaveContextParameters: setMissionPlannerDialogContextParameters,
+    onSaveContextParameters: setMissionPlannerDialogContextParametersAsMap,
     onSaveUserParameters: setMissionPlannerDialogUserParameters,
     onSelectedTypeChanged: setMissionPlannerDialogSelectedType,
   }

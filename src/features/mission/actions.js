@@ -7,7 +7,10 @@ import { getDistance as haversineDistance } from 'ol/sphere';
 import { findAssignmentInDistanceMatrix } from '~/algorithms/matching';
 import { showErrorMessage } from '~/features/error-handling/actions';
 import { setSelection } from '~/features/map/selection';
-import { selectSingleFeatureOfTypeUnlessAmbiguous } from '~/features/map-features/actions';
+import {
+  addFeatureIfMissing,
+  selectSingleFeatureOfTypeUnlessAmbiguous,
+} from '~/features/map-features/actions';
 import {
   getFeatureById,
   getSingleSelectedFeatureIdOfType,
@@ -35,6 +38,7 @@ import {
   getCurrentLocalPositionByUavId,
   getMissingUAVIdsInMapping,
   getSingleSelectedUAVId,
+  getUAVIdList,
   getUnmappedUAVIds,
 } from '~/features/uavs/selectors';
 import { openUploadDialogForJob } from '~/features/upload/slice';
@@ -53,7 +57,10 @@ import {
 } from '~/model/missions';
 import { readFileAsText } from '~/utils/files';
 import { readTextFromFile, writeTextToFile } from '~/utils/filesystem';
-import { translateLonLatWithMapViewDelta } from '~/utils/geography';
+import {
+  toLonLatFromScaledJSON,
+  translateLonLatWithMapViewDelta,
+} from '~/utils/geography';
 import { calculateDistanceMatrix, euclideanDistance2D } from '~/utils/math';
 import { chooseUniqueId } from '~/utils/naming';
 
@@ -75,7 +82,8 @@ import {
   getMissionItemsById,
   getMissionMapping,
   getMissionMappingFileContents,
-  getMissionPlannerDialogContextParameters,
+  getMissionPlannerDialogContextParametersAsMap,
+  getMissionPlannerDialogContextParametersAsObject,
   getMissionPlannerDialogSelectedType,
   getMissionPlannerDialogUserParameters,
   getSelectedMissionItemIds,
@@ -538,7 +546,7 @@ export const invokeMissionPlanner = () => async (dispatch, getState) => {
 
   const selectedMissionType = getMissionPlannerDialogSelectedType(state);
   const fromUser = getMissionPlannerDialogUserParameters(state);
-  const fromContext = getMissionPlannerDialogContextParameters(state);
+  const fromContext = getMissionPlannerDialogContextParametersAsMap(state);
 
   // If we need to select a UAV from the context, and we only have a
   // single UAV at the moment, we can safely assume that this is the UAV
@@ -617,7 +625,8 @@ export const invokeMissionPlanner = () => async (dispatch, getState) => {
     dispatch(
       setLastSuccessfulPlannerInvocationParameters({
         type: selectedMissionType,
-        parametersFromUser: fromUser,
+        fromUser,
+        fromContext: getMissionPlannerDialogContextParametersAsObject(state),
         valuesFromContext,
       })
     );
@@ -667,6 +676,73 @@ export const backupMission = () => (dispatch, getState) => {
 };
 
 /**
+ * Thunk that restores missing mission features from a backed up context
+ * parameter configuration.
+ */
+export const restoreMissingFeatures =
+  (mapping, values) => (dispatch, getState) => {
+    const state = getState();
+
+    // Restore the missing linestring features
+    const linestrings =
+      mapping[ParameterUIContext.SELECTED_LINE_STRING_FEATURE] ?? [];
+    for (const linestring of linestrings) {
+      dispatch(
+        addFeatureIfMissing(
+          {
+            type: FeatureType.LINE_STRING,
+            points: values[linestring].map(toLonLatFromScaledJSON),
+            label: linestring,
+          },
+          ['type', 'points']
+        )
+      );
+    }
+
+    // Restore the missing marker features, and optionally place markers for UAV
+    // and generic coordinates as well, if UAVs are not available
+    const markers = mapping[ParameterUIContext.SELECTED_MARKER_FEATURE] ?? [];
+
+    if (getUAVIdList(state).length === 0) {
+      markers.push(
+        ...(mapping[ParameterUIContext.SELECTED_UAV_COORDINATE] ?? []),
+        ...(mapping[ParameterUIContext.SELECTED_COORDINATE] ?? [])
+      );
+    }
+
+    for (const marker of markers) {
+      dispatch(
+        addFeatureIfMissing(
+          {
+            type: FeatureType.POINTS,
+            points: [toLonLatFromScaledJSON(values[marker])],
+            label: marker,
+          },
+          ['type', 'points']
+        )
+      );
+    }
+
+    // Restore the missing polygon features
+    const polygons = mapping[ParameterUIContext.SELECTED_POLYGON_FEATURE] ?? [];
+    for (const polygon of polygons) {
+      dispatch(
+        addFeatureIfMissing(
+          {
+            type: FeatureType.POLYGON,
+            points: values[polygon].points.map(toLonLatFromScaledJSON),
+            holes: values[polygon].holes.map((hole) =>
+              hole.map(toLonLatFromScaledJSON)
+            ),
+            label: polygon,
+          },
+          ['type', 'points', 'holes']
+        )
+      );
+    }
+  };
+
+/**
  * Thunk that restores a mission from previously backed up mission data.
  */
 export const restoreMission =
@@ -678,6 +754,12 @@ export const restoreMission =
   }) =>
   (dispatch, _getState) => {
     dispatch(setMissionType(MissionType.WAYPOINT));
+    dispatch(
+      restoreMissingFeatures(
+        parameters.fromContext,
+        parameters.valuesFromContext
+      )
+    );
     dispatch(setLastSuccessfulPlannerInvocationParameters(parameters));
     dispatch(setMissionItemsFromArray(items));
     dispatch(setMappingLength(homePositions.length));

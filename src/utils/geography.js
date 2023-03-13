@@ -771,3 +771,17 @@ export function toScaledJSONFromObject(coords) {
 export function toScaledJSONFromLonLat(coords) {
   return [Math.round(coords[1] * 1e7), Math.round(coords[0] * 1e7)];
 }
+
+/**
+ * Reverts a "JSON-safe" multiplier offset coordinate representation to a
+ * simple decimal longitude-latitude pair
+ *
+ * @param  {number[]} coords  the JSON representation, scaled up to 1e7 degrees.
+ *         Note that it contains the <em>latitude</em> first
+ * @return {number[]} the resulting longitude-latitude pair, represented
+ *         as an array in lon-lat order (<em>longitude</em> first, OpenLayers
+ *         convention)
+ */
+export function toLonLatFromScaledJSON(coords) {
+  return [coords[1] / 1e7, coords[0] / 1e7];
+}
