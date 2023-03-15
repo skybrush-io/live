@@ -56,7 +56,9 @@ export const KNOWN_UI_CONTEXTS = Object.values(ParameterUIContext);
 export function getParametersFromContext(parameterNamesByContext, getState) {
   const result = {};
 
-  for (const [contextId, parameterNames] of parameterNamesByContext.entries()) {
+  for (const [contextId, parameterNames] of Object.entries(
+    parameterNamesByContext
+  )) {
     const handler = contextHandlers[contextId];
 
     if (handler && typeof handler === 'function') {

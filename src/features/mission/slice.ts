@@ -494,17 +494,7 @@ const { actions, reducer } = createSlice({
       state.plannerDialog.selectedType = action.payload;
     },
 
-    setMissionPlannerDialogContextParametersAsMap: {
-      // Convert the Map to an object to avoid issues with serialization.
-      prepare: (fromContext: Map<string, any>) => ({
-        payload: Object.fromEntries(fromContext.entries()),
-      }),
-      reducer(state, action: PayloadAction<Record<string, any>>) {
-        state.plannerDialog.parameters.fromContext = action.payload;
-      },
-    },
-
-    setMissionPlannerDialogContextParametersAsObject(
+    setMissionPlannerDialogContextParameters(
       state,
       action: PayloadAction<Record<string, any>>
     ) {
@@ -693,8 +683,7 @@ export const {
   setLastSuccessfulPlannerInvocationParameters,
   setMappingLength,
   setMissionPlannerDialogApplyGeofence,
-  setMissionPlannerDialogContextParametersAsMap,
-  setMissionPlannerDialogContextParametersAsObject,
+  setMissionPlannerDialogContextParameters,
   setMissionPlannerDialogSelectedType,
   setMissionPlannerDialogUserParameters,
   setMissionType,
