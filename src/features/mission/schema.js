@@ -6,12 +6,12 @@ import { KNOWN_UI_CONTEXTS } from './parameter-context';
  * Utility functions related to handling mission parameter schemas.
  */
 
-const addToMapOfArrays = (map, key, value) => {
-  if (!map.has(key)) {
-    map.set(key, []);
+const addToObjectOfArrays = (object, key, value) => {
+  if (!(key in object)) {
+    object[key] = [];
   }
 
-  map.get(key).push(value);
+  object[key].push(value);
 };
 
 /**
@@ -32,7 +32,7 @@ export function filterSchemaByUIContext(schema) {
 
   schema = structuredClone(schema);
 
-  const uiContexts = new Map();
+  const uiContexts = {};
   const excludedProps = [];
   const result = { schema, uiContexts };
 
@@ -46,7 +46,7 @@ export function filterSchemaByUIContext(schema) {
       if (value['ui:contextHint']) {
         const uiContextHint = value['ui:contextHint'];
         if (KNOWN_UI_CONTEXTS.includes(uiContextHint)) {
-          addToMapOfArrays(uiContexts, uiContextHint, key);
+          addToObjectOfArrays(uiContexts, uiContextHint, key);
           excludedProps.push(key);
 
           delete value['ui:contextHint'];

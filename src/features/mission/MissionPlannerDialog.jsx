@@ -24,7 +24,7 @@ import {
 import {
   closeMissionPlannerDialog,
   setMissionPlannerDialogApplyGeofence,
-  setMissionPlannerDialogContextParametersAsMap,
+  setMissionPlannerDialogContextParameters,
   setMissionPlannerDialogSelectedType,
   setMissionPlannerDialogUserParameters,
 } from './slice';
@@ -94,7 +94,7 @@ const MissionPlannerDialog = ({
     async (value) => {
       onSelectedTypeChanged(value.id);
       setSelectedTypeInfo(value);
-      handleParametersChange({ fromUser: {}, fromContext: new Map() });
+      handleParametersChange({ fromUser: {}, fromContext: {} });
       setCanInvokePlanner(Boolean(value));
     },
     [
@@ -205,7 +205,7 @@ export default connect(
     onClearMission: clearMission,
     onClose: closeMissionPlannerDialog,
     onInvokePlanner: invokeMissionPlanner,
-    onSaveContextParameters: setMissionPlannerDialogContextParametersAsMap,
+    onSaveContextParameters: setMissionPlannerDialogContextParameters,
     onSaveUserParameters: setMissionPlannerDialogUserParameters,
     onSelectedTypeChanged: setMissionPlannerDialogSelectedType,
   }

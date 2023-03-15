@@ -82,8 +82,7 @@ import {
   getMissionItemsById,
   getMissionMapping,
   getMissionMappingFileContents,
-  getMissionPlannerDialogContextParametersAsMap,
-  getMissionPlannerDialogContextParametersAsObject,
+  getMissionPlannerDialogContextParameters,
   getMissionPlannerDialogSelectedType,
   getMissionPlannerDialogUserParameters,
   getSelectedMissionItemIds,
@@ -546,19 +545,19 @@ export const invokeMissionPlanner = () => async (dispatch, getState) => {
 
   const selectedMissionType = getMissionPlannerDialogSelectedType(state);
   const fromUser = getMissionPlannerDialogUserParameters(state);
-  const fromContext = getMissionPlannerDialogContextParametersAsMap(state);
+  const fromContext = getMissionPlannerDialogContextParameters(state);
 
   // If we need to select a UAV from the context, and we only have a
   // single UAV at the moment, we can safely assume that this is the UAV
   // that the user wants to work with, so select it
-  if (fromContext.has(ParameterUIContext.SELECTED_UAV_COORDINATE)) {
+  if (ParameterUIContext.SELECTED_UAV_COORDINATE in fromContext) {
     dispatch(selectSingleUAVUnlessAmbiguous());
   }
 
   // If we need to select a coordinate from the context, and we only have a
   // single UAV or marker at the moment, we can safely assume that this is the
   // UAV or marker that the user wants to work with, so select it
-  if (fromContext.has(ParameterUIContext.SELECTED_COORDINATE)) {
+  if (ParameterUIContext.SELECTED_COORDINATE in fromContext) {
     dispatch(selectSingleUAVUnlessAmbiguous());
     dispatch(selectSingleFeatureOfTypeUnlessAmbiguous(FeatureType.POINTS));
   }
@@ -568,11 +567,11 @@ export const invokeMissionPlanner = () => async (dispatch, getState) => {
   // user at the moment, we can safely assume that this is the polygon /
   // linestring that the user wants to work with, so select it
 
-  if (fromContext.has(ParameterUIContext.SELECTED_POLYGON_FEATURE)) {
+  if (ParameterUIContext.SELECTED_POLYGON_FEATURE in fromContext) {
     dispatch(selectSingleFeatureOfTypeUnlessAmbiguous(FeatureType.POLYGON));
   }
 
-  if (fromContext.has(ParameterUIContext.SELECTED_LINE_STRING_FEATURE)) {
+  if (ParameterUIContext.SELECTED_LINE_STRING_FEATURE in fromContext) {
     dispatch(selectSingleFeatureOfTypeUnlessAmbiguous(FeatureType.LINE_STRING));
   }
 
@@ -626,7 +625,7 @@ export const invokeMissionPlanner = () => async (dispatch, getState) => {
       setLastSuccessfulPlannerInvocationParameters({
         type: selectedMissionType,
         fromUser,
-        fromContext: getMissionPlannerDialogContextParametersAsObject(state),
+        fromContext,
         valuesFromContext,
       })
     );
