@@ -560,17 +560,24 @@ export const invokeMissionPlanner =
           valuesFromContext: {},
         };
 
+    const activeContext = resume
+      ? pickBy(
+          fromContext,
+          (_, key) => contextVolatilities[key] === ContextVolatility.DYNAMIC
+        )
+      : fromContext;
+
     // If we need to select a UAV from the context, and we only have a
     // single UAV at the moment, we can safely assume that this is the UAV
     // that the user wants to work with, so select it
-    if (ParameterUIContext.SELECTED_UAV_COORDINATE in fromContext) {
+    if (ParameterUIContext.SELECTED_UAV_COORDINATE in activeContext) {
       dispatch(selectSingleUAVUnlessAmbiguous());
     }
 
     // If we need to select a coordinate from the context, and we only have a
     // single UAV or marker at the moment, we can safely assume that this is the
     // UAV or marker that the user wants to work with, so select it
-    if (ParameterUIContext.SELECTED_COORDINATE in fromContext) {
+    if (ParameterUIContext.SELECTED_COORDINATE in activeContext) {
       dispatch(selectSingleUAVUnlessAmbiguous());
       dispatch(selectSingleFeatureOfTypeUnlessAmbiguous(FeatureType.POINTS));
     }
@@ -580,11 +587,11 @@ export const invokeMissionPlanner =
     // user at the moment, we can safely assume that this is the polygon /
     // linestring that the user wants to work with, so select it
 
-    if (ParameterUIContext.SELECTED_POLYGON_FEATURE in fromContext) {
+    if (ParameterUIContext.SELECTED_POLYGON_FEATURE in activeContext) {
       dispatch(selectSingleFeatureOfTypeUnlessAmbiguous(FeatureType.POLYGON));
     }
 
-    if (ParameterUIContext.SELECTED_LINE_STRING_FEATURE in fromContext) {
+    if (ParameterUIContext.SELECTED_LINE_STRING_FEATURE in activeContext) {
       dispatch(
         selectSingleFeatureOfTypeUnlessAmbiguous(FeatureType.LINE_STRING)
       );
@@ -593,7 +600,7 @@ export const invokeMissionPlanner =
     try {
       Object.assign(
         valuesFromContext,
-        getParametersFromContext(fromContext, getState)
+        getParametersFromContext(activeContext, getState)
       );
     } catch (error) {
       dispatch(showErrorMessage('Error while setting parameters', error));
@@ -643,10 +650,7 @@ export const invokeMissionPlanner =
         setLastSuccessfulPlannerInvocationParameters({
           missionType,
           fromUser,
-          fromContext: pickBy(
-            fromContext,
-            (_, key) => contextVolatilities[key] === ContextVolatility.DYNAMIC
-          ),
+          fromContext,
           valuesFromContext,
         })
       );
