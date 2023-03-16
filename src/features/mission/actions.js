@@ -719,6 +719,7 @@ export const restoreMissingFeatures =
             type: FeatureType.LINE_STRING,
             points: values[linestring].map(toLonLatFromScaledJSON),
             label: linestring,
+            owner: 'user',
           },
           ['type', 'points']
         )
@@ -743,6 +744,7 @@ export const restoreMissingFeatures =
             type: FeatureType.POINTS,
             points: [toLonLatFromScaledJSON(values[marker])],
             label: marker,
+            owner: 'user',
           },
           ['type', 'points']
         )
@@ -761,6 +763,7 @@ export const restoreMissingFeatures =
               hole.map(toLonLatFromScaledJSON)
             ),
             label: polygon,
+            owner: 'user',
           },
           ['type', 'points', 'holes']
         )
