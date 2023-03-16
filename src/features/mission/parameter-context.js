@@ -41,8 +41,23 @@ export const ParameterUIContext = {
 
 export const KNOWN_UI_CONTEXTS = Object.values(ParameterUIContext);
 
+export const ContextVolatility = {
+  DYNAMIC: 'dynamic',
+  STATIC: 'static',
+};
+
+export const contextVolatilities = {
+  [ParameterUIContext.NET_MISSION_END_RATIO]: ContextVolatility.DYNAMIC,
+  [ParameterUIContext.NET_MISSION_START_RATIO]: ContextVolatility.DYNAMIC,
+  [ParameterUIContext.SELECTED_COORDINATE]: ContextVolatility.DYNAMIC,
+  [ParameterUIContext.SELECTED_LINE_STRING_FEATURE]: ContextVolatility.STATIC,
+  [ParameterUIContext.SELECTED_MARKER_FEATURE]: ContextVolatility.DYNAMIC,
+  [ParameterUIContext.SELECTED_POLYGON_FEATURE]: ContextVolatility.STATIC,
+  [ParameterUIContext.SELECTED_UAV_COORDINATE]: ContextVolatility.DYNAMIC,
+};
+
 /**
- * Function that retrieves a map from UI context identifiers to parameter
+ * Function that retrieves an object mapping UI context identifiers to parameter
  * names and the state getter function of the top-level store, and returns an
  * object mapping the parameter names to their current values as provided by
  * the UI context.
@@ -84,8 +99,8 @@ function assign(result, keys, value) {
 }
 
 /**
- * Constantly assigns 1 as the net mission end ratio to the listed variables in
- * the result object.
+ * Extracts the net mission end ratio to the listed variables in the result
+ * object.
  */
 function extractNetMissionEndRatioFromContext(
   result,

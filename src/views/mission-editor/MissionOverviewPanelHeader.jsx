@@ -68,7 +68,7 @@ const MissionOverviewPanelHeader = ({
 
   const resumeMission = useCallback(() => {
     closePlanPopup();
-    onInvokePlanner();
+    onInvokePlanner({ resume: true });
   }, [closePlanPopup, onInvokePlanner]);
 
   return (
