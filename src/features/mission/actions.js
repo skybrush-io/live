@@ -2,6 +2,7 @@
 
 import formatDate from 'date-fns/format';
 import isNil from 'lodash-es/isNil';
+import pickBy from 'lodash-es/pickBy';
 import { getDistance as haversineDistance } from 'ol/sphere';
 
 import { findAssignmentInDistanceMatrix } from '~/algorithms/matching';
@@ -66,6 +67,8 @@ import { chooseUniqueId } from '~/utils/naming';
 
 import { JOB_TYPE } from './constants';
 import {
+  contextVolatilities,
+  ContextVolatility,
   getParametersFromContext,
   ParameterUIContext,
 } from './parameter-context';
@@ -77,6 +80,7 @@ import {
   getGPSBasedHomePositionsInMission,
   getItemIndexRangeForSelectedMissionItems,
   getLastClearedMissionData,
+  getLastSuccessfulPlannerInvocationParameters,
   getMissionDataForStorage,
   getMissionItemById,
   getMissionItemsById,
@@ -540,12 +544,18 @@ export const uploadMissionItemsToSelectedUAV = () => (dispatch, getState) => {
  * Thunk that prepares a mission by assigning context based parameters, invokes
  * the planner on the server and sets up a mission according to the response.
  */
-export const invokeMissionPlanner = () => async (dispatch, getState) => {
+// prettier-ignore
+export const invokeMissionPlanner = ({ resume = false } = {}) => async (dispatch, getState) => {
   const state = getState();
 
-  const selectedMissionType = getMissionPlannerDialogSelectedType(state);
-  const fromUser = getMissionPlannerDialogUserParameters(state);
-  const fromContext = getMissionPlannerDialogContextParameters(state);
+  const { missionType, fromUser, fromContext, valuesFromContext } = resume
+    ? structuredClone(getLastSuccessfulPlannerInvocationParameters(state))
+    : {
+        missionType: getMissionPlannerDialogSelectedType(state),
+        fromUser: getMissionPlannerDialogUserParameters(state),
+        fromContext: getMissionPlannerDialogContextParameters(state),
+        valuesFromContext: {},
+      };
 
   // If we need to select a UAV from the context, and we only have a
   // single UAV at the moment, we can safely assume that this is the UAV
@@ -575,7 +585,6 @@ export const invokeMissionPlanner = () => async (dispatch, getState) => {
     dispatch(selectSingleFeatureOfTypeUnlessAmbiguous(FeatureType.LINE_STRING));
   }
 
-  const valuesFromContext = {};
   try {
     Object.assign(
       valuesFromContext,
@@ -594,7 +603,7 @@ export const invokeMissionPlanner = () => async (dispatch, getState) => {
   let items = null;
   try {
     items = await messageHub.execute.planMission({
-      id: selectedMissionType,
+      id: missionType,
       parameters,
     });
     if (!Array.isArray(items)) {
@@ -623,9 +632,12 @@ export const invokeMissionPlanner = () => async (dispatch, getState) => {
 
     dispatch(
       setLastSuccessfulPlannerInvocationParameters({
-        type: selectedMissionType,
+        missionType,
         fromUser,
-        fromContext,
+        fromContext: pickBy(
+          fromContext,
+          (_, key) => contextVolatilities[key] === ContextVolatility.DYNAMIC
+        ),
         valuesFromContext,
       })
     );
@@ -650,8 +662,10 @@ export const invokeMissionPlanner = () => async (dispatch, getState) => {
  */
 export const clearMission = () => (dispatch, _getState) => {
   dispatch(backupMission());
-  dispatch(setMissionItemsFromArray([]));
   dispatch(setMissionType(MissionType.UNKNOWN));
+  dispatch(setLastSuccessfulPlannerInvocationParameters(null));
+  dispatch(setMissionItemsFromArray([]));
+  dispatch(setMappingLength(0));
   dispatch(
     showNotification({
       message: 'Previous mission cleared.',
