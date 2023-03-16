@@ -1,6 +1,6 @@
 import memoizee from 'memoizee';
 import PropTypes from 'prop-types';
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 
 import Box from '@material-ui/core/Box';
 import IconButton from '@material-ui/core/IconButton';
@@ -38,6 +38,27 @@ const MissionPlannerMainPanel = ({
     }),
     [messageHub]
   );
+
+  // Handle mission type changes in the state outside of `MissionTypeSelector`,
+  // e.g. when importing a mission.
+  useEffect(() => {
+    if (
+      selectedType &&
+      (!selectedTypeInfo || selectedTypeInfo.id !== selectedType)
+    ) {
+      missionPlannerInfoCache.getTypes().then((types) => {
+        const type = types.find((t) => t.id === selectedType);
+        if (type) {
+          onMissionTypeChange(type);
+        }
+      });
+    }
+  }, [
+    missionPlannerInfoCache,
+    onMissionTypeChange,
+    selectedType,
+    selectedTypeInfo,
+  ]);
 
   return (
     <MultiPagePanel

@@ -37,7 +37,6 @@ import MissionPlannerMainPanel from './MissionPlannerMainPanel';
  */
 const MissionPlannerDialog = ({
   applyGeofence,
-  initialParameters,
   isConnectedToServer,
   isGeofenceOwnedByUser,
   onApplyGeofenceChanged,
@@ -48,11 +47,10 @@ const MissionPlannerDialog = ({
   onSaveUserParameters,
   onSelectedTypeChanged,
   open,
+  parametersFromUser,
   selectedType,
 }) => {
   const [selectedTypeInfo, setSelectedTypeInfo] = useState(null);
-  const [parametersFromUser, setParametersFromUser] =
-    useState(initialParameters);
   const [canInvokePlanner, setCanInvokePlanner] = useState(false);
 
   const handleParametersChange = useCallback(
@@ -64,12 +62,8 @@ const MissionPlannerDialog = ({
         userParametersChanged = true;
 
         if (typeof fromUser === 'object' && fromUser !== null) {
-          setParametersFromUser(fromUser);
           onSaveUserParameters(fromUser);
-
           parametersValid = true;
-        } else {
-          setParametersFromUser(null);
         }
       }
 
@@ -91,24 +85,19 @@ const MissionPlannerDialog = ({
   );
 
   const handleMissionTypeChange = useCallback(
-    async (value) => {
+    (value) => {
       onSelectedTypeChanged(value.id);
       setSelectedTypeInfo(value);
-      handleParametersChange({ fromUser: {}, fromContext: {} });
       setCanInvokePlanner(Boolean(value));
     },
-    [
-      handleParametersChange,
-      onSelectedTypeChanged,
-      setCanInvokePlanner,
-      setSelectedTypeInfo,
-    ]
+    [onSelectedTypeChanged, setCanInvokePlanner, setSelectedTypeInfo]
   );
 
   const handleMissionTypeCleared = useCallback(() => {
     onSelectedTypeChanged(null);
+    handleParametersChange({ fromUser: {}, fromContext: {} });
     setCanInvokePlanner(false);
-  }, [onSelectedTypeChanged, setCanInvokePlanner]);
+  }, [handleParametersChange, onSelectedTypeChanged, setCanInvokePlanner]);
 
   const invokePlanner = () => {
     if (onInvokePlanner && canInvokePlanner && isConnectedToServer) {
@@ -173,7 +162,6 @@ const MissionPlannerDialog = ({
 
 MissionPlannerDialog.propTypes = {
   applyGeofence: PropTypes.bool,
-  initialParameters: PropTypes.object,
   isConnectedToServer: PropTypes.bool,
   isGeofenceOwnedByUser: PropTypes.bool,
   open: PropTypes.bool,
@@ -184,6 +172,7 @@ MissionPlannerDialog.propTypes = {
   onSaveContextParameters: PropTypes.func,
   onSaveUserParameters: PropTypes.func,
   onSelectedTypeChanged: PropTypes.func,
+  parametersFromUser: PropTypes.object,
   selectedType: PropTypes.string,
 };
 
@@ -191,7 +180,7 @@ export default connect(
   // mapStateToProps
   (state) => ({
     applyGeofence: shouldMissionPlannerDialogApplyGeofence(state),
-    initialParameters: getMissionPlannerDialogUserParameters(state) || {},
+    parametersFromUser: getMissionPlannerDialogUserParameters(state),
     open: isMissionPlannerDialogOpen(state),
     isConnectedToServer: isConnectedToServer(state),
     isGeofenceOwnedByUser: getGeofencePolygon(state)?.owner === 'user',
