@@ -103,6 +103,8 @@ import {
   setLastClearedMissionData,
   setLastSuccessfulPlannerInvocationParameters,
   setMappingLength,
+  setMissionPlannerDialogSelectedType,
+  setMissionPlannerDialogUserParameters,
   setMissionType,
   updateCurrentMissionItemId,
   updateCurrentMissionItemRatio,
@@ -780,6 +782,8 @@ export const restoreMission =
         parameters.valuesFromContext
       )
     );
+    dispatch(setMissionPlannerDialogSelectedType(parameters.missionType));
+    dispatch(setMissionPlannerDialogUserParameters(parameters.fromUser));
     dispatch(setLastSuccessfulPlannerInvocationParameters(parameters));
     dispatch(setMissionItemsFromArray(items));
     dispatch(setMappingLength(homePositions.length));
