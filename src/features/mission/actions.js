@@ -544,118 +544,125 @@ export const uploadMissionItemsToSelectedUAV = () => (dispatch, getState) => {
  * Thunk that prepares a mission by assigning context based parameters, invokes
  * the planner on the server and sets up a mission according to the response.
  */
-// prettier-ignore
-export const invokeMissionPlanner = ({ resume = false } = {}) => async (dispatch, getState) => {
-  const state = getState();
+export const invokeMissionPlanner =
+  ({ resume = false } = {}) =>
+  async (dispatch, getState) => {
+    const state = getState();
 
-  const { missionType, fromUser, fromContext, valuesFromContext } = resume
-    ? structuredClone(getLastSuccessfulPlannerInvocationParameters(state))
-    : {
-        missionType: getMissionPlannerDialogSelectedType(state),
-        fromUser: getMissionPlannerDialogUserParameters(state),
-        fromContext: getMissionPlannerDialogContextParameters(state),
-        valuesFromContext: {},
-      };
+    const { missionType, fromUser, fromContext, valuesFromContext } = resume
+      ? structuredClone(getLastSuccessfulPlannerInvocationParameters(state))
+      : {
+          missionType: getMissionPlannerDialogSelectedType(state),
+          fromUser: getMissionPlannerDialogUserParameters(state),
+          fromContext: getMissionPlannerDialogContextParameters(state),
+          valuesFromContext: {},
+        };
 
-  // If we need to select a UAV from the context, and we only have a
-  // single UAV at the moment, we can safely assume that this is the UAV
-  // that the user wants to work with, so select it
-  if (ParameterUIContext.SELECTED_UAV_COORDINATE in fromContext) {
-    dispatch(selectSingleUAVUnlessAmbiguous());
-  }
-
-  // If we need to select a coordinate from the context, and we only have a
-  // single UAV or marker at the moment, we can safely assume that this is the
-  // UAV or marker that the user wants to work with, so select it
-  if (ParameterUIContext.SELECTED_COORDINATE in fromContext) {
-    dispatch(selectSingleUAVUnlessAmbiguous());
-    dispatch(selectSingleFeatureOfTypeUnlessAmbiguous(FeatureType.POINTS));
-  }
-
-  // If we need to select a polygon / linestring feature from the context,
-  // and we only have a single polygon / linestring that is owned by the
-  // user at the moment, we can safely assume that this is the polygon /
-  // linestring that the user wants to work with, so select it
-
-  if (ParameterUIContext.SELECTED_POLYGON_FEATURE in fromContext) {
-    dispatch(selectSingleFeatureOfTypeUnlessAmbiguous(FeatureType.POLYGON));
-  }
-
-  if (ParameterUIContext.SELECTED_LINE_STRING_FEATURE in fromContext) {
-    dispatch(selectSingleFeatureOfTypeUnlessAmbiguous(FeatureType.LINE_STRING));
-  }
-
-  try {
-    Object.assign(
-      valuesFromContext,
-      getParametersFromContext(fromContext, getState)
-    );
-  } catch (error) {
-    dispatch(showErrorMessage('Error while setting parameters', error));
-    return;
-  }
-
-  const parameters = {
-    ...valuesFromContext,
-    ...fromUser,
-  };
-
-  let items = null;
-  try {
-    items = await messageHub.execute.planMission({
-      id: missionType,
-      parameters,
-    });
-    if (!Array.isArray(items)) {
-      throw new TypeError('Expected an array of mission items');
-    }
-  } catch (error) {
-    if (error instanceof ServerPlanError) {
-      dispatch(showErrorMessage('Failed to plan mission on the server', error));
-    } else {
-      dispatch(showErrorMessage('Error while invoking mission planner', error));
-    }
-  }
-
-  if (Array.isArray(items)) {
-    dispatch(setMissionType(MissionType.WAYPOINT));
-    dispatch(setMissionItemsFromArray(items));
-    dispatch(prepareMappingForSingleUAVMissionFromSelection());
-    dispatch(closeMissionPlannerDialog());
-
-    if (
-      shouldMissionPlannerDialogApplyGeofence(state) &&
-      getGeofencePolygon(state)?.owner !== 'user'
-    ) {
-      dispatch(updateGeofencePolygon());
+    // If we need to select a UAV from the context, and we only have a
+    // single UAV at the moment, we can safely assume that this is the UAV
+    // that the user wants to work with, so select it
+    if (ParameterUIContext.SELECTED_UAV_COORDINATE in fromContext) {
+      dispatch(selectSingleUAVUnlessAmbiguous());
     }
 
-    dispatch(
-      setLastSuccessfulPlannerInvocationParameters({
-        missionType,
-        fromUser,
-        fromContext: pickBy(
-          fromContext,
-          (_, key) => contextVolatilities[key] === ContextVolatility.DYNAMIC
-        ),
+    // If we need to select a coordinate from the context, and we only have a
+    // single UAV or marker at the moment, we can safely assume that this is the
+    // UAV or marker that the user wants to work with, so select it
+    if (ParameterUIContext.SELECTED_COORDINATE in fromContext) {
+      dispatch(selectSingleUAVUnlessAmbiguous());
+      dispatch(selectSingleFeatureOfTypeUnlessAmbiguous(FeatureType.POINTS));
+    }
+
+    // If we need to select a polygon / linestring feature from the context,
+    // and we only have a single polygon / linestring that is owned by the
+    // user at the moment, we can safely assume that this is the polygon /
+    // linestring that the user wants to work with, so select it
+
+    if (ParameterUIContext.SELECTED_POLYGON_FEATURE in fromContext) {
+      dispatch(selectSingleFeatureOfTypeUnlessAmbiguous(FeatureType.POLYGON));
+    }
+
+    if (ParameterUIContext.SELECTED_LINE_STRING_FEATURE in fromContext) {
+      dispatch(
+        selectSingleFeatureOfTypeUnlessAmbiguous(FeatureType.LINE_STRING)
+      );
+    }
+
+    try {
+      Object.assign(
         valuesFromContext,
-      })
-    );
+        getParametersFromContext(fromContext, getState)
+      );
+    } catch (error) {
+      dispatch(showErrorMessage('Error while setting parameters', error));
+      return;
+    }
 
-    dispatch(
-      showNotification({
-        message: 'Mission planned successfully. Export it?',
-        semantics: MessageSemantics.SUCCESS,
-        buttons: [
-          {
-            label: 'Export',
-            action: exportMission(),
-          },
-        ],
-      })
-    );
-  }
-};
+    const parameters = {
+      ...valuesFromContext,
+      ...fromUser,
+    };
+
+    let items = null;
+    try {
+      items = await messageHub.execute.planMission({
+        id: missionType,
+        parameters,
+      });
+      if (!Array.isArray(items)) {
+        throw new TypeError('Expected an array of mission items');
+      }
+    } catch (error) {
+      if (error instanceof ServerPlanError) {
+        dispatch(
+          showErrorMessage('Failed to plan mission on the server', error)
+        );
+      } else {
+        dispatch(
+          showErrorMessage('Error while invoking mission planner', error)
+        );
+      }
+    }
+
+    if (Array.isArray(items)) {
+      dispatch(setMissionType(MissionType.WAYPOINT));
+      dispatch(setMissionItemsFromArray(items));
+      dispatch(prepareMappingForSingleUAVMissionFromSelection());
+      dispatch(closeMissionPlannerDialog());
+
+      if (
+        shouldMissionPlannerDialogApplyGeofence(state) &&
+        getGeofencePolygon(state)?.owner !== 'user'
+      ) {
+        dispatch(updateGeofencePolygon());
+      }
+
+      dispatch(
+        setLastSuccessfulPlannerInvocationParameters({
+          missionType,
+          fromUser,
+          fromContext: pickBy(
+            fromContext,
+            (_, key) => contextVolatilities[key] === ContextVolatility.DYNAMIC
+          ),
+          valuesFromContext,
+        })
+      );
+
+      dispatch(
+        showNotification({
+          message: 'Mission planned successfully. Export it?',
+          semantics: MessageSemantics.SUCCESS,
+          buttons: [
+            {
+              label: 'Export',
+              action: exportMission(),
+            },
+          ],
+        })
+      );
+    }
+  };
 
 /**
  * Thunk that clears a mission and shows a toast with an option to restore it.
