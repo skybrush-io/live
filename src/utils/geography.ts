@@ -28,6 +28,7 @@ import { getArea, getLength } from 'ol/sphere';
 import { type Vector3 } from 'three';
 import turfBuffer from '@turf/buffer';
 import turfDifference from '@turf/difference';
+import turfDistance from '@turf/distance';
 import * as TurfHelpers from '@turf/helpers';
 
 import { type Feature, FeatureType } from '~/model/features';
@@ -1045,4 +1046,20 @@ export function toLonLatFromScaledJSON(
   coords: ScaledJSONGPSCoordinate
 ): [number, number] {
   return [coords[1] / 1e7, coords[0] / 1e7];
+}
+
+/**
+ * Calculates the distance in meters between two GeoJSON point features.
+ * (By default `turfDistance` returns kilometers and does not have
+ * meters available as an option, only degrees, radians and miles...)
+ *
+ * @param first   the first point
+ * @param second  the second point
+ * @return the distance between the two points in meters
+ */
+export function turfDistanceInMeters(
+  first: Coordinate2D,
+  second: Coordinate2D
+): number {
+  return turfDistance(first, second) * 1000;
 }

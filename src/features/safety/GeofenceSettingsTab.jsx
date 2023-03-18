@@ -24,6 +24,7 @@ import { removeFeaturesByIds } from '~/features/map-features/slice';
 import {
   getGeofenceAction,
   getGeofencePolygonId,
+  getMaximumDistanceBetweenHomePositionsAndGeofence,
   hasActiveGeofencePolygon,
 } from '~/features/mission/selectors';
 import {
@@ -70,10 +71,10 @@ const calculator = createDecorator(
   {
     field: 'horizontalMargin',
     updates: {
-      distanceLimit(margin, { maxDistance }) {
+      distanceLimit(margin, { maxDistance, maxGeofence }) {
         margin = Number.parseFloat(margin);
         return proposeDistanceLimit(
-          maxDistance,
+          Math.max(maxDistance, maxGeofence),
           Number.isFinite(margin) ? margin : 0
         );
       },
@@ -210,6 +211,7 @@ const GeofenceSettingsForm = connect(
     initialValues: {
       ...getGeofenceSettings(state),
       maxDistance: getMaximumHorizontalDistanceForCurrentMissionType(state),
+      maxGeofence: getMaximumDistanceBetweenHomePositionsAndGeofence(state),
       maxHeight: getMaximumHeightForCurrentMissionType(state),
       action: getGeofenceAction(state),
     },

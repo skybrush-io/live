@@ -1,4 +1,5 @@
 import {
+  getMaximumDistanceBetweenHomePositionsAndGeofence,
   getMaximumHeightOfWaypoints,
   getMaximumHorizontalDistanceOfWaypointsFromHomePosition,
   getMissionType,
@@ -80,8 +81,9 @@ export const getMaximumHeightForCurrentMissionType = (state) => {
  */
 export const getProposedDistanceLimit = (state) => {
   const maxDistance = getMaximumHorizontalDistanceForCurrentMissionType(state);
+  const maxGeofence = getMaximumDistanceBetweenHomePositionsAndGeofence(state);
   const margin = getGeofenceSettings(state).horizontalMargin;
-  return proposeDistanceLimit(maxDistance, margin);
+  return proposeDistanceLimit(Math.max(maxDistance, maxGeofence), margin);
 };
 
 /**

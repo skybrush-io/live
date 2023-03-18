@@ -5,7 +5,6 @@ import range from 'lodash-es/range';
 import reject from 'lodash-es/reject';
 import { createSelector } from '@reduxjs/toolkit';
 import turfContains from '@turf/boolean-contains';
-import turfDistance from '@turf/distance';
 import * as TurfHelpers from '@turf/helpers';
 
 import { getFeaturesByIds } from '~/features/map-features/selectors';
@@ -25,6 +24,7 @@ import { selectOrdered } from '~/utils/collections';
 import {
   AltitudeReference,
   mapViewCoordinateFromLonLat,
+  turfDistanceInMeters,
 } from '~/utils/geography';
 import {
   convexHull,
@@ -515,6 +515,24 @@ export const isWaypointMissionConvexHullInsideGeofence = createSelector(
 );
 
 /**
+ * Returns the maximum distance of any geofence vertex from any home position.
+ */
+export const getMaximumDistanceBetweenHomePositionsAndGeofence = createSelector(
+  getGPSBasedHomePositionsInMission,
+  getGeofencePolygonInWorldCoordinates,
+  (homePositions, geofencePolygon) => {
+    const homePoints = homePositions.map(({ lon, lat }) =>
+      TurfHelpers.point([lon, lat])
+    );
+    const geofencePoints = geofencePolygon.map(TurfHelpers.point);
+    const distances = homePoints.flatMap((hp) =>
+      geofencePoints.map((gp) => turfDistanceInMeters(hp, gp))
+    );
+    return max(distances) || 0;
+  }
+);
+
+/**
  * Returns the maximum distance of any waypoint in the mission from the first
  * home position in the UAV mapping.
  */
@@ -530,11 +548,8 @@ export const getMaximumHorizontalDistanceOfWaypointsFromHomePosition =
       const homePoint = TurfHelpers.point([homePosition.lon, homePosition.lat]);
       return (
         max(
-          missionItemsWithCoorinates.map(
-            ({ coordinate: { lon, lat } }) =>
-              // (By default `turfDistance` returns kilometers and does not have
-              // meters available as an option, only degrees, radians, miles...)
-              turfDistance(homePoint, TurfHelpers.point([lon, lat])) * 1000
+          missionItemsWithCoorinates.map(({ coordinate: { lon, lat } }) =>
+            turfDistanceInMeters(homePoint, TurfHelpers.point([lon, lat]))
           )
         ) ?? 0
       );
@@ -632,9 +647,7 @@ export const getMissionItemsInOrderAsSegments = createSelector(
                   return { _position: { ..._position, XY: target } };
                 }
 
-                // Multiply by `1000` to get the result in meters
-                // (By default `turfDistance` returns kilometers)
-                const length = turfDistance(_position.XY, target) * 1000;
+                const length = turfDistanceInMeters(_position.XY, target);
 
                 return {
                   _position: { ..._position, XY: target },
