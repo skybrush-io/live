@@ -50,7 +50,7 @@ export function bearing(first, second) {
 }
 
 /**
- * Returns the final earing when going from one point to another on a
+ * Returns the final bearing when going from one point to another on a
  * sphere along a great circle.
  *
  * The spherical coordinates must be specified in degrees, in longitude-latitude

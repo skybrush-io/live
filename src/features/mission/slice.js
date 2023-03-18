@@ -36,7 +36,7 @@ const { actions, reducer } = createSlice({
     // GPS coordinates. The array is indexed by mission-specific identifiers.
     landingPositions: [],
 
-    // Stores the takeoff headings of each drone in the missino. The array is
+    // Stores the takeoff headings of each drone in the mission. The array is
     // indexed by mission-specific identifiers.
     takeoffHeadings: [],
 

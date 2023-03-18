@@ -19,9 +19,8 @@ import {
 import { getSetupStageStatuses } from '~/features/show/stages';
 
 /**
- * Component with a button that shows a dialog that allows the user to check how
- * accurately the drones are placed in the takeoff area. The dialog also allows
- * the user to create virtual drones if needed.
+ * Component with a button that shows a dialog that allows the user to verify
+ * the fulfillment of the manual preflight criteria.
  */
 const ManualPreflightChecksButton = ({
   areChecksSignedOff,
