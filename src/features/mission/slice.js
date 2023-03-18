@@ -349,15 +349,16 @@ const { actions, reducer } = createSlice({
       if (desiredLength < currentLength) {
         state.mapping.splice(desiredLength);
         state.homePositions.splice(desiredLength);
+        state.landingPositions.splice(desiredLength);
+        state.takeoffHeadings.splice(desiredLength);
       } else if (desiredLength > currentLength) {
-        state.mapping.push(
-          ...Array.from({ length: desiredLength - currentLength }).fill(null)
-        );
-        state.homePositions.push(
-          ...Array.from({
-            length: desiredLength - state.homePositions.length,
-          }).fill(null)
-        );
+        const padding = Array.from({
+          length: desiredLength - currentLength,
+        }).fill(null);
+        state.mapping.push(...padding);
+        state.homePositions.push(...padding);
+        state.landingPositions.push(...padding);
+        state.takeoffHeadings.push(...padding);
       }
     },
 
