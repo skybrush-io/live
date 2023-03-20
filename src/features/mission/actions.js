@@ -776,27 +776,32 @@ export const restoreMissingFeatures =
  */
 export const restoreMission =
   ({
-    parameters,
+    lastSuccessfulPlannerInvocationParameters: parameters,
     items,
     homePositions,
     progress: { id: currentMissionItemId, ratio: currentMissionItemRatio },
   }) =>
   (dispatch, _getState) => {
     dispatch(setMissionType(MissionType.WAYPOINT));
-    dispatch(
-      restoreMissingFeatures(
-        parameters.fromContext,
-        parameters.valuesFromContext
-      )
-    );
-    dispatch(setMissionPlannerDialogSelectedType(parameters.missionType));
-    dispatch(setMissionPlannerDialogUserParameters(parameters.fromUser));
-    dispatch(setLastSuccessfulPlannerInvocationParameters(parameters));
     dispatch(setMissionItemsFromArray(items));
     dispatch(setMappingLength(homePositions.length));
     dispatch(updateHomePositions(homePositions));
     dispatch(updateCurrentMissionItemId(currentMissionItemId));
     dispatch(updateCurrentMissionItemRatio(currentMissionItemRatio));
+
+    // Only restore from parameters if there has been a successful mission
+    // planner invocation before the data was stored.
+    if (parameters) {
+      dispatch(setLastSuccessfulPlannerInvocationParameters(parameters));
+      dispatch(setMissionPlannerDialogSelectedType(parameters.missionType));
+      dispatch(setMissionPlannerDialogUserParameters(parameters.fromUser));
+      dispatch(
+        restoreMissingFeatures(
+          parameters.fromContext,
+          parameters.valuesFromContext
+        )
+      );
+    }
   };
 
 /**
