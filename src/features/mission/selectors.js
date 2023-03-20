@@ -927,13 +927,13 @@ export const getMissionDataForStorage = createSelector(
   getCurrentMissionItemId,
   getCurrentMissionItemRatio,
   (
-    parameters,
+    lastSuccessfulPlannerInvocationParameters,
     items,
     homePositions,
     currentMissionItemId,
     currentMissionItemRatio
   ) => ({
-    parameters,
+    lastSuccessfulPlannerInvocationParameters,
     items,
     homePositions,
     progress: {
