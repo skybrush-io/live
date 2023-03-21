@@ -55,6 +55,7 @@ import { closePolygon, toRadians } from '~/utils/math';
 import CustomPropTypes from '~/utils/prop-types';
 import {
   blackVeryThinOutline,
+  dottedThickOutline,
   fill,
   stroke,
   thickOutline,
@@ -390,6 +391,10 @@ const missionItemLineStringStyle = memoize((done) => [
   }),
 ]);
 
+const auxMissionItemLineStringStyles = new Style({
+  stroke: dottedThickOutline(Colors.auxiliaryMissionItem),
+});
+
 const CONVEX_HULL_GLOBAL_ID = areaIdToGlobalId(CONVEX_HULL_AREA_ID);
 const MAP_ORIGIN_GLOBAL_ID = originIdToGlobalId(MAP_ORIGIN_ID);
 // TODO: This is not an `area`, but it's global id is created using that prefix.
@@ -397,6 +402,35 @@ const MISSION_ITEM_LINE_STRING_GLOBAL_ID = areaIdToGlobalId(
   MISSION_ITEM_LINE_STRING_ID
 );
 const MISSION_ORIGIN_GLOBAL_ID = originIdToGlobalId(MISSION_ORIGIN_ID);
+
+const auxiliaryMissionLines = (homePositions, missionItems) => {
+  return homePositions[0] && missionItems.length > 0
+    ? [
+        <Feature
+          key='auxiliaryMissionLineString'
+          id={`${MISSION_ITEM_LINE_STRING_GLOBAL_ID}Aux`}
+          style={auxMissionItemLineStringStyles}
+        >
+          <geom.LineString
+            coordinates={[
+              mapViewCoordinateFromLonLat([
+                missionItems.at(0).coordinate.lon,
+                missionItems.at(0).coordinate.lat,
+              ]),
+              mapViewCoordinateFromLonLat([
+                homePositions[0].lon,
+                homePositions[0].lat,
+              ]),
+              mapViewCoordinateFromLonLat([
+                missionItems.at(-1).coordinate.lon,
+                missionItems.at(-1).coordinate.lat,
+              ]),
+            ]}
+          />
+        </Feature>,
+      ]
+    : [];
+};
 
 const MissionInfoVectorSource = ({
   convexHull,
@@ -595,6 +629,8 @@ const MissionInfoVectorSource = ({
       );
     }
   }
+
+  features.push(...auxiliaryMissionLines(homePositions, missionItems));
 
   if (missionOrigin) {
     const missionOriginCoord = mapViewCoordinateFromLonLat(missionOrigin);

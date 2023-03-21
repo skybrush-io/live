@@ -19,6 +19,7 @@ export const Colors = {
   convexHull: '#fc0',
   plannedTrajectory: '#08f',
   missionItem: '#0cf',
+  auxiliaryMissionItem: '#f80',
   currentMissionItem: '#0fc',
   doneMissionItem: '#0f8',
   selectedMissionItem: '#fc0',
