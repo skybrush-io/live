@@ -184,7 +184,7 @@ export function handleFeatureUpdatesInOpenLayers(
     const originFeatureId = globalIdToOriginId(globalId);
     if (originFeatureId) {
       if (
-        originFeatureId === MAP_ORIGIN_ID ||
+        originFeatureId === MAP_ORIGIN_ID + '$x' ||
         originFeatureId === MAP_ORIGIN_ID + '$y'
       ) {
         // Feature is the origin of the flat Earth coordinate system
