@@ -255,7 +255,7 @@ const UAVOperationsButtonGroup = ({
             content={
               isSelectionEmpty
                 ? 'Remove items marked as gone'
-                : 'Remove from list'
+                : 'Remove selected items'
             }
           >
             <IconButton
