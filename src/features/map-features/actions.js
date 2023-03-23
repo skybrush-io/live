@@ -10,6 +10,7 @@ import {
   isDockId,
   isUavId,
 } from '~/model/identifiers';
+import { getSelectedFeatureIds } from '~/selectors/selection';
 
 import { getProposedIdForNewFeature } from './selectors';
 import {
@@ -84,6 +85,13 @@ export const cutFeature =
 
     dispatch(setSelection([featureIdToGlobalId(substrahendId)]));
   };
+
+/**
+ * Action factory that returns a thunk that removes the selected features from
+ * the map.
+ */
+export const removeSelectedFeatures = () => (dispatch, getState) =>
+  dispatch(removeFeaturesByIds(getSelectedFeatureIds(getState())));
 
 /**
  * Action that shows the details dialog of a given feature if it has one.
