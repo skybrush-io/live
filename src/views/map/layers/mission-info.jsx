@@ -24,6 +24,7 @@ import {
   getCurrentMissionItemRatio,
   getGPSBasedHomePositionsInMission,
   getGPSBasedLandingPositionsInMission,
+  getMissionItemsOfTypeWithIndices,
   getMissionItemsWithCoordinatesInOrder,
   getSelectedMissionIndicesForTrajectoryDisplay,
 } from '~/features/mission/selectors';
@@ -48,6 +49,7 @@ import {
   plannedTrajectoryIdToGlobalId,
 } from '~/model/identifiers';
 import { setLayerEditable, setLayerSelectable } from '~/model/layers';
+import { MissionItemType } from '~/model/missions';
 import { getMapOriginRotationAngle } from '~/selectors/map';
 import { getSelection } from '~/selectors/selection';
 import { formatMissionId } from '~/utils/formatting';
@@ -609,33 +611,65 @@ const missionTrajectoryLine = (
   }
 };
 
-const auxiliaryMissionLine = (homePositions, missionItems) =>
-  homePositions[0] && missionItems.length > 0
-    ? [
-        <Feature
-          key='auxiliaryMissionLineString'
-          id={`${MISSION_ITEM_LINE_STRING_GLOBAL_ID}Aux`}
-          style={auxiliaryMissionItemLineStringStyle}
-        >
-          <geom.LineString
-            coordinates={[
-              mapViewCoordinateFromLonLat([
-                missionItems.at(0).coordinate.lon,
-                missionItems.at(0).coordinate.lat,
-              ]),
-              mapViewCoordinateFromLonLat([
-                homePositions[0].lon,
-                homePositions[0].lat,
-              ]),
-              mapViewCoordinateFromLonLat([
-                missionItems.at(-1).coordinate.lon,
-                missionItems.at(-1).coordinate.lat,
-              ]),
-            ]}
-          />
-        </Feature>,
-      ]
-    : [];
+const auxiliaryMissionLines = (
+  homePositions,
+  missionItems,
+  returnToHomeItems
+) => {
+  if (homePositions[0] && missionItems.length > 0) {
+    const findSurroundingWaypoints = (current) => ({
+      before: missionItems.findLast(({ index }) => index < current),
+      after: missionItems.find(({ index }) => index > current),
+    });
+
+    const makeFeature = (id, key, from, to) => (
+      <Feature key={key} id={id} style={auxiliaryMissionItemLineStringStyle}>
+        <geom.LineString
+          coordinates={[
+            mapViewCoordinateFromLonLat([from.lon, from.lat]),
+            mapViewCoordinateFromLonLat([to.lon, to.lat]),
+          ]}
+        />
+      </Feature>
+    );
+
+    const makeFeatures = ({ id, index }) => {
+      const { before, after } = findSurroundingWaypoints(index);
+      return [
+        ...(before
+          ? [
+              makeFeature(
+                `auxiliaryMissionLineString_${id}_before`,
+                `${MISSION_ITEM_LINE_STRING_GLOBAL_ID}Aux_${id}_before`,
+                before.coordinate,
+                homePositions[0]
+              ),
+            ]
+          : []),
+        ...(after
+          ? [
+              makeFeature(
+                `auxiliaryMissionLineString_${id}_after`,
+                `${MISSION_ITEM_LINE_STRING_GLOBAL_ID}Aux_${id}_after`,
+                homePositions[0],
+                after.coordinate
+              ),
+            ]
+          : []),
+      ];
+    };
+
+    return [
+      // Extend the array with an extra item at the beginning in order to also
+      // show a line connecting the home point to the first waypoint, as there
+      // is no "Return to home" mission item at the beginning of missions.
+      { id: 'start', index: -1 },
+      ...returnToHomeItems.map(({ index, item: { id } }) => ({ id, index })),
+    ].flatMap(makeFeatures);
+  } else {
+    return [];
+  }
+};
 
 const missionOriginMarker = (missionOrientation, missionOrigin) =>
   missionOrigin
@@ -724,6 +758,7 @@ const MissionInfoVectorSource = ({
   missionOrigin,
   missionSlotIdsForTrajectories,
   orientation,
+  returnToHomeItems,
   selection,
   uavIdsForTrajectories,
 }) => (
@@ -739,7 +774,7 @@ const MissionInfoVectorSource = ({
         selection
       ),
       missionTrajectoryLine(currentItemIndex, currentItemRatio, missionItems),
-      auxiliaryMissionLine(homePositions, missionItems),
+      auxiliaryMissionLines(homePositions, missionItems, returnToHomeItems),
       missionOriginMarker(missionOrientation, missionOrigin),
       convexHullLine(convexHull, selection),
       selectionTrajectoryFeatures(
@@ -763,6 +798,7 @@ MissionInfoVectorSource.propTypes = {
   missionOrigin: PropTypes.arrayOf(PropTypes.number),
   missionSlotIdsForTrajectories: PropTypes.arrayOf(PropTypes.string),
   orientation: CustomPropTypes.angle,
+  returnToHomeItems: PropTypes.arrayOf(PropTypes.object),
   selection: PropTypes.arrayOf(PropTypes.string),
   uavIdsForTrajectories: PropTypes.arrayOf(PropTypes.string),
 };
@@ -816,6 +852,10 @@ export const MissionInfoLayer = connect(
         ? getSelectedMissionIndicesForTrajectoryDisplay(state)
         : undefined,
     orientation: getMapOriginRotationAngle(state),
+    returnToHomeItems: getMissionItemsOfTypeWithIndices(
+      state,
+      MissionItemType.RETURN_TO_HOME
+    ),
     selection: getSelection(state),
     uavIdsForTrajectories: layer?.parameters?.showTrajectoriesOfSelection
       ? getSelectedUAVIdsForTrajectoryDisplay(state)
