@@ -79,6 +79,26 @@ export const getMissionItemsInOrder = createSelector(
 );
 
 /**
+ * Returns the items in the current waypoint-based mission annotated with their
+ * order based indices.
+ */
+export const getMissionItemsInOrderWithIndices = createSelector(
+  getMissionItemsInOrder,
+  (missionItems) => missionItems.map((item, index) => ({ index, item }))
+);
+
+/**
+ * Returns the list of items in the current waypoint-based mission that have the
+ * given type, annotated with their order based indices.
+ */
+export const getMissionItemsOfTypeWithIndices = createSelector(
+  getMissionItemsInOrderWithIndices,
+  (_state, missionItemType) => missionItemType,
+  (itemsWithIndices, missionItemType) =>
+    itemsWithIndices.filter(({ item: { type } }) => type === missionItemType)
+);
+
+/**
  * Returns the current list of home positions in the mission.
  *
  * @param  {Object}  state  the state of the application
