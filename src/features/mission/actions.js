@@ -103,6 +103,7 @@ import {
   setLastClearedMissionData,
   setLastSuccessfulPlannerInvocationParameters,
   setMappingLength,
+  setMissionName,
   setMissionPlannerDialogSelectedType,
   setMissionPlannerDialogUserParameters,
   setMissionType,
@@ -612,12 +613,13 @@ export const invokeMissionPlanner =
       ...fromUser,
     };
 
+    let name = null;
     let items = null;
     try {
-      items = await messageHub.execute.planMission({
+      ({ name, items } = await messageHub.execute.planMission({
         id: missionType,
         parameters,
-      });
+      }));
       if (!Array.isArray(items)) {
         throw new TypeError('Expected an array of mission items');
       }
@@ -635,6 +637,7 @@ export const invokeMissionPlanner =
 
     if (Array.isArray(items)) {
       dispatch(setMissionType(MissionType.WAYPOINT));
+      dispatch(setMissionName(name));
       dispatch(setMissionItemsFromArray(items));
       dispatch(prepareMappingForSingleUAVMissionFromSelection());
       dispatch(closeMissionPlannerDialog());
@@ -676,6 +679,7 @@ export const invokeMissionPlanner =
 export const clearMission = () => (dispatch, _getState) => {
   dispatch(backupMission());
   dispatch(setMissionType(MissionType.UNKNOWN));
+  dispatch(setMissionName(null));
   dispatch(setLastSuccessfulPlannerInvocationParameters(null));
   dispatch(setMissionItemsFromArray([]));
   dispatch(setMappingLength(0));
@@ -777,12 +781,14 @@ export const restoreMissingFeatures =
 export const restoreMission =
   ({
     lastSuccessfulPlannerInvocationParameters: parameters,
+    name,
     items,
     homePositions,
     progress: { id: currentMissionItemId, ratio: currentMissionItemRatio },
   }) =>
   (dispatch, _getState) => {
     dispatch(setMissionType(MissionType.WAYPOINT));
+    dispatch(setMissionName(name));
     dispatch(setMissionItemsFromArray(items));
     dispatch(setMappingLength(homePositions.length));
     dispatch(updateHomePositions(homePositions));

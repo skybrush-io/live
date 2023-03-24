@@ -112,6 +112,9 @@ export type MissionSliceState = ReadonlyDeep<{
   /** Action to perform when the geofence is breached */
   geofenceAction: GeofenceAction;
 
+  /** The name of the mission, if given */
+  name: Nullable<string>;
+
   /** Collection of items in the current mission if it is a waypoint-based mission */
   items: Collection<MissionItem>;
 
@@ -162,6 +165,7 @@ const initialState: MissionSliceState = {
   commandsAreBroadcast: false,
   geofencePolygonId: undefined,
   geofenceAction: GeofenceAction.RETURN,
+  name: null,
   items: {
     byId: {},
     order: [],
@@ -480,6 +484,10 @@ const { actions, reducer } = createSlice({
           : MissionType.UNKNOWN;
     },
 
+    setMissionName(state, action: PayloadAction<Nullable<string>>) {
+      state.name = typeof action.payload === 'string' ? action.payload : null;
+    },
+
     setMissionPlannerDialogApplyGeofence(
       state,
       action: PayloadAction<boolean>
@@ -682,6 +690,7 @@ export const {
   setLastClearedMissionData,
   setLastSuccessfulPlannerInvocationParameters,
   setMappingLength,
+  setMissionName,
   setMissionPlannerDialogApplyGeofence,
   setMissionPlannerDialogContextParameters,
   setMissionPlannerDialogSelectedType,
