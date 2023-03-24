@@ -28,8 +28,8 @@ import {
 } from '~/features/show/slice';
 
 /**
- * Presentation component that shows a list of manual preflight checks and whether they
- * have been checked or not.
+ * Presentation component that shows a list of manual preflight checks and
+ * whether they have been checked or not.
  */
 const PreflightCheckListPresentation = ({
   checkedItemIds,

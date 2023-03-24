@@ -32,6 +32,7 @@ import { hasFeature } from '~/utils/configuration';
 
 import { isSidebarOpen } from './selectors';
 
+// NOTE: The scrollbar is not only OS dependent, but also browser dependent.
 const SIDEBAR_OPEN_WIDTH = 180; /* 160px is enough for most platforms, but apparently Windows needs 180px because of the scrollbar */
 
 const style = {

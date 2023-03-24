@@ -650,6 +650,10 @@ export function getSingleUAVStatusLevel(uav) {
     return 'rth';
   }
 
+  if (maxError === ErrorCode.ON_GROUND) {
+    return 'success';
+  }
+
   if (severity >= Severity.INFO) {
     return errorSeverityToSemantics(severity);
   }
