@@ -50,7 +50,7 @@ const DetachButtonPortal = ({ glContainer, label, onClick }) => {
           GoldenLayout has a built-in popout feature, which is not suitable for
           our purposes, but we can reuse the icon that would be on the stack.
         */}
-        <li className='lm_popout' title={`Detach ${label}`} onClick={onClick} />
+        <li className='lm_popout' title={`Detach ${label} panel`} onClick={onClick} />
       </ul>
     </div>
   );
