@@ -46,6 +46,11 @@ export const getMissionType = (state) =>
   state.mission.type || MissionType.UNKNOWN;
 
 /**
+ * Returns the name of the current mission, if given.
+ */
+export const getMissionName = (state) => state.mission.name;
+
+/**
  * Returns the IDs of the items in the current waypoint-based mission, in the
  * order they should appear on the UI.
  */
@@ -942,18 +947,21 @@ export const isMissionPartiallyCompleted = createSelector(
  */
 export const getMissionDataForStorage = createSelector(
   getLastSuccessfulPlannerInvocationParameters,
+  getMissionName,
   getMissionItemsInOrder,
   getGPSBasedHomePositionsInMission,
   getCurrentMissionItemId,
   getCurrentMissionItemRatio,
   (
     lastSuccessfulPlannerInvocationParameters,
+    name,
     items,
     homePositions,
     currentMissionItemId,
     currentMissionItemRatio
   ) => ({
     lastSuccessfulPlannerInvocationParameters,
+    name,
     items,
     homePositions,
     progress: {

@@ -243,7 +243,7 @@ export async function planMission(hub, { id, parameters }) {
     throw new Error('Mission plan response must be in version 1 format');
   }
 
-  return payload.items;
+  return payload;
 }
 
 /**

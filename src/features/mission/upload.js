@@ -4,6 +4,7 @@ import {
   getGeofenceActionWithValidation,
   getGeofencePolygonInWorldCoordinates,
   getMissionItemsInOrder,
+  getMissionName,
 } from '~/features/mission/selectors';
 import { GeofenceAction } from '~/features/safety/model';
 import {
@@ -94,10 +95,11 @@ export function transformMissionItemBeforeUpload(item, state) {
  * Selector that returns the payload of the mission item upload job.
  */
 export const getMissionItemUploadJobPayload = (state) => {
+  const name = getMissionName(state);
   const items = getMissionItemsInOrder(state).map((item) =>
     transformMissionItemBeforeUpload(item, state)
   );
-  return { version: 1, items };
+  return { version: 1, name, items };
 };
 
 /**

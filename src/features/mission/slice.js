@@ -74,6 +74,9 @@ const { actions, reducer } = createSlice({
     // action to perform when the geofence is breached
     geofenceAction: GeofenceAction.RETURN,
 
+    // the name of the mission, if given
+    name: null,
+
     // collection of items in the current mission if it is a waypoint-based mission
     items: {
       byId: {
@@ -388,6 +391,10 @@ const { actions, reducer } = createSlice({
           : MissionType.UNKNOWN;
     },
 
+    setMissionName(state, action) {
+      state.name = typeof action.payload === 'string' ? action.payload : null;
+    },
+
     setMissionPlannerDialogApplyGeofence(state, action) {
       state.plannerDialog.applyGeofence = action.payload;
     },
@@ -555,6 +562,7 @@ export const {
   setLastClearedMissionData,
   setLastSuccessfulPlannerInvocationParameters,
   setMappingLength,
+  setMissionName,
   setMissionPlannerDialogApplyGeofence,
   setMissionPlannerDialogContextParameters,
   setMissionPlannerDialogSelectedType,
