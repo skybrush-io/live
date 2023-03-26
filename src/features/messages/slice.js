@@ -5,8 +5,7 @@
 
 import { createSlice } from '@reduxjs/toolkit';
 
-import { MessageType, Severity } from '~/model/enums';
-import { noPayload } from '~/utils/redux';
+import { MessageType } from '~/model/enums';
 
 import { addMessage } from './utils';
 
@@ -87,6 +86,7 @@ const { actions, reducer } = createSlice({
           body: message,
           percentage: undefined,
           status: undefined,
+          suspended: false,
         },
         uavId
       );
@@ -106,7 +106,7 @@ const { actions, reducer } = createSlice({
     },
 
     updateProgressByMessageId(state, action) {
-      const { messageId, progress } = action.payload;
+      const { messageId, progress, suspended } = action.payload;
       const messageState = state.byId[messageId];
       if (messageState && typeof progress === 'object') {
         if (typeof progress.percentage === 'number') {
@@ -115,8 +115,12 @@ const { actions, reducer } = createSlice({
           );
         }
 
-        if (typeof progress.status !== 'undefined') {
-          messageState.status = String(progress.status);
+        if (progress.message !== undefined) {
+          messageState.message = String(progress.message);
+        }
+
+        if (suspended !== undefined) {
+          messageState.suspended = Boolean(suspended);
         }
       }
     },

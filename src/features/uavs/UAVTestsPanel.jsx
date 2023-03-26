@@ -1,6 +1,6 @@
 import isNil from 'lodash-es/isNil';
 import PropTypes from 'prop-types';
-import React, { useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import { useAsyncFn } from 'react-use';
 
 import LinearProgress from '@material-ui/core/LinearProgress';
@@ -19,6 +19,12 @@ const tests = [
     label: 'Calibrate compass',
     type: 'calib',
     timeout: 90 /* compass calibration may take longer */,
+  },
+  {
+    component: 'accel',
+    label: 'Calibrate accelerometer',
+    type: 'calib',
+    timeout: 90 /* accelerometer calibration may take longer */,
   },
   {
     component: 'baro',
@@ -76,8 +82,16 @@ ProgressBar.propTypes = {
 const UAVTestButton = ({ component, label, timeout, type, uavId }) => {
   const messageHub = useMessageHub();
   const [progress, setProgress] = useState(null);
+  const [suspended, setSuspended] = useState(false);
+  const resumeCallback = useRef(null);
 
-  const [state, start] = useAsyncFn(async () => {
+  const progressHandler = useCallback(({ progress, resume, suspended }) => {
+    setProgress(progress);
+    setSuspended(Boolean(suspended));
+    resumeCallback.current = resume;
+  }, []);
+
+  const [executionState, execute] = useAsyncFn(async () => {
     // TODO(ntamas): use the proper UAV-TEST messages designated for this
     await messageHub.sendCommandRequest(
       {
@@ -85,33 +99,51 @@ const UAVTestButton = ({ component, label, timeout, type, uavId }) => {
         command: type === 'test' ? 'test' : 'calib',
         args: [String(component)],
       },
-      { onProgress: setProgress, timeout }
+      { onProgress: progressHandler, timeout }
     );
     return true;
-  }, [messageHub, setProgress]);
+  }, [messageHub, progressHandler]);
+
+  const [, resume] = useAsyncFn(async () => {
+    if (resumeCallback.current) {
+      return resumeCallback.current();
+    } else {
+      throw new Error('No resume callback has been provided');
+    }
+  }, []);
 
   return (
-    <ListItem button onClick={start}>
+    <ListItem button onClick={suspended ? resume : execute}>
       <StatusLight
         status={
-          state.loading
+          suspended
+            ? 'warning'
+            : executionState.loading
             ? 'next'
-            : state.error
+            : executionState.error
             ? 'error'
-            : isNil(state.value)
+            : isNil(executionState.value)
             ? 'off'
-            : state.value
+            : executionState.value
             ? 'success'
             : 'error'
         }
       />
       <ListItemText
-        primary={label}
+        primary={
+          suspended
+            ? `${progress.message || 'Operation suspended'}. Click to resume.`
+            : label
+        }
         secondary={
-          !state.loading && state.error ? (
-            errorToString(state.error)
+          !executionState.loading && executionState.error ? (
+            errorToString(executionState.error)
           ) : progress ? (
+            /* Prefer progress bars even in suspended state */
             <ProgressBar progress={progress} />
+          ) : suspended ? (
+            /* If we are suspended but we don't have progress info, show an indefinite progress bar */
+            <ProgressBar />
           ) : null
         }
       />

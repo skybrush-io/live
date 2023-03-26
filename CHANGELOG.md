@@ -23,6 +23,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - UAVs now support the new "sleep state" status code introduced in Skybrush
   Server 2.10.0.
 
+- Added support for accelerometer calibration from the UI if the server also
+  supports this operation for the particular UAV type.
+
 ### Changed
 
 - The Electron based packaged version now uses a TCP socket to communicate
@@ -34,7 +37,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- Fixed some cases in which the pending UAV Id overlay could remain on the
+- Fixed some cases in which the pending UAV ID overlay could remain on the
   screen without timing out.
 
 ## [2.6.0] - 2022-10-20
