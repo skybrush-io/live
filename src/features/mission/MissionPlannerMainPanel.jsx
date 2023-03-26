@@ -43,17 +43,24 @@ const MissionPlannerMainPanel = ({
   // e.g. when importing a mission.
   useEffect(() => {
     if (
+      messageHub.canSend() &&
       selectedType &&
       (!selectedTypeInfo || selectedTypeInfo.id !== selectedType)
     ) {
-      missionPlannerInfoCache.getTypes().then((types) => {
-        const type = types.find((t) => t.id === selectedType);
-        if (type) {
-          onMissionTypeChange(type);
-        }
-      });
+      missionPlannerInfoCache
+        .getTypes()
+        .then((types) => {
+          const type = types.find((t) => t.id === selectedType);
+          if (type) {
+            onMissionTypeChange(type);
+          }
+        })
+        .catch((error) => {
+          console.warn('Error while fetching mission types', error);
+        });
     }
   }, [
+    messageHub,
     missionPlannerInfoCache,
     onMissionTypeChange,
     selectedType,
