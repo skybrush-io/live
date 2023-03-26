@@ -39,9 +39,6 @@ const getEnvironmentDescription = createSelector(
         } else if (type === ALTITUDE_REFERENCE.AHL) {
           // value should be ignored in this case
           return `Outdoor, relative to home`;
-        } else if (type === ALTITUDE_REFERENCE.AGL) {
-          // value should be ignored in this case
-          return `Outdoor, relative to ground`;
         } else {
           return 'Outdoor, unknown altitude reference';
         }

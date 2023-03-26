@@ -325,7 +325,7 @@ export const getOutdoorShowToWorldCoordinateSystemTransformation =
 
             const [x, y, z] = point;
             const [lon, lat] = transform.toLonLat([x, y]);
-            return { lon, lat, ahl: z };
+            return { lon, lat, amsl: undefined, ahl: z };
           }
         : undefined
   );
