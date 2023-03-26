@@ -29,7 +29,7 @@ import { CoordinateField, DistanceField, Select } from '../forms';
  */
 const initialValuePropType = PropTypes.shape({
   coords: PropTypes.string,
-  mode: PropTypes.oneOf(['relative', 'amsl', 'ahl']),
+  mode: PropTypes.oneOf(['relative', 'amsl', 'ahl', 'agl']),
   altitude: PropTypes.number,
 });
 
@@ -65,6 +65,7 @@ const FlyToTargetForm = ({
                 <MenuItem value='relative'>above current altitude</MenuItem>
                 <MenuItem value='amsl'>above mean sea level</MenuItem>
                 <MenuItem value='ahl'>above home level</MenuItem>
+                <MenuItem value='agl'>above ground level</MenuItem>
               </Select>
             </Box>
           </Box>

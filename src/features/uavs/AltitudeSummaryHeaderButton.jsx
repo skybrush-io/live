@@ -33,6 +33,8 @@ const getNextTypeForAltitudeSummaryType = (type) => {
     case AltitudeSummaryType.AMSL:
       return AltitudeSummaryType.AHL;
     case AltitudeSummaryType.AHL:
+      return AltitudeSummaryType.AGL;
+    case AltitudeSummaryType.AGL:
       return AltitudeSummaryType.XYZ;
     case AltitudeSummaryType.XYZ:
       return AltitudeSummaryType.AMSL;

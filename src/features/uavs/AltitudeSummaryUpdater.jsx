@@ -10,12 +10,14 @@ import { getActiveUAVIds, getUAVById } from './selectors';
 
 /**
  * Mapping from altitude summary types to functions that take a UAV object and
- * return an altitude according to the selected summary type (AMSL, AHL or local).
+ * return an altitude according to the selected summary type.
+ * (AMSL, AHL, AGL or local)
  */
 const altitudeGetters = {
   /* eslint-disable object-shorthand */
   [AltitudeSummaryType.AMSL]: (uav) => uav?.position?.amsl,
   [AltitudeSummaryType.AHL]: (uav) => uav?.position?.ahl,
+  [AltitudeSummaryType.AGL]: (uav) => uav?.position?.agl,
 
   [AltitudeSummaryType.XYZ]: (uav) => {
     const pos = uav?.localPosition;

@@ -16,6 +16,7 @@ export const UAVSortKey = Object.freeze({
   GPS_FIX: 'gpsFix',
   ALTITUDE_MSL: 'amsl',
   ALTITUDE_HOME: 'ahl',
+  ALTITUDE_GROUND: 'agl',
   HEADING: 'heading',
 });
 
@@ -30,6 +31,7 @@ export const UAVSortKeys = [
   UAVSortKey.GPS_FIX,
   UAVSortKey.ALTITUDE_MSL,
   UAVSortKey.ALTITUDE_HOME,
+  UAVSortKey.ALTITUDE_GROUND,
   UAVSortKey.HEADING,
 ];
 
@@ -44,6 +46,7 @@ export const labelsForUAVSortKey = {
   [UAVSortKey.GPS_FIX]: 'GPS fix',
   [UAVSortKey.ALTITUDE_MSL]: 'Altitude (MSL)',
   [UAVSortKey.ALTITUDE_HOME]: 'Altitude above home',
+  [UAVSortKey.ALTITUDE_GROUND]: 'Altitude above ground',
   [UAVSortKey.HEADING]: 'Heading',
 };
 
@@ -58,6 +61,7 @@ export const shortLabelsForUAVSortKey = {
   [UAVSortKey.GPS_FIX]: 'GPS fix',
   [UAVSortKey.ALTITUDE_MSL]: 'AMSL',
   [UAVSortKey.ALTITUDE_HOME]: 'AHL',
+  [UAVSortKey.ALTITUDE_GROUND]: 'AGL',
   [UAVSortKey.HEADING]: 'Heading',
 };
 
@@ -130,6 +134,14 @@ export const getKeyFunctionForUAVSortKey = memoize((key) => {
       // TODO(ntamas): fall back to Z coordinate if no AHL is given
       return (uav) => {
         const result = uav?.position?.ahl;
+        return isNil(result) ? -10000 : result;
+      };
+
+    case UAVSortKey.ALTITUDE_GROUND:
+      // Sort UAVs based on altitude above ground
+      // TODO(ntamas): fall back to Z coordinate if no AGL is given
+      return (uav) => {
+        const result = uav?.position?.agl;
         return isNil(result) ? -10000 : result;
       };
 

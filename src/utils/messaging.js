@@ -158,6 +158,7 @@ const moveUAVsLowLevel = performMassOperation({
       Math.round(target.lon * 1e7),
       isNil(target.amsl) ? null : Math.round(target.amsl * 1e3),
       isNil(target.ahl) ? null : Math.round(target.ahl * 1e3),
+      isNil(target.agl) ? null : Math.round(target.agl * 1e3),
     ],
   }),
 });
@@ -167,10 +168,10 @@ export const moveUAVs = (uavIds, { target, ...rest }) => {
     throw new Error('No target given in arguments');
   }
 
-  const { lat, lon, amsl, ahl } = target;
+  const { lat, lon, amsl, ahl, agl } = target;
 
-  if (!isNil(amsl) && !isNil(ahl)) {
-    throw new Error('only one of AMSL and AHL may be given');
+  if (!isNil(amsl) && !isNil(ahl) && !isNil(agl)) {
+    throw new Error('only one of AMSL, AHL and AGL may be given');
   }
 
   const args = rest;
@@ -179,6 +180,8 @@ export const moveUAVs = (uavIds, { target, ...rest }) => {
     args.target = { lat, lon, amsl };
   } else if (!isNil(ahl)) {
     args.target = { lat, lon, ahl };
+  } else if (!isNil(agl)) {
+    args.target = { lat, lon, agl };
   } else {
     args.target = { lat, lon };
   }

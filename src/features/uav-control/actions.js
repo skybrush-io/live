@@ -76,7 +76,9 @@ export const submitFlyToTargetDialog = (fields) => (dispatch, getState) => {
     };
 
     if (Number.isFinite(altitude)) {
-      if (fields.mode === 'ahl') {
+      if (fields.mode === 'agl') {
+        target.agl = altitude;
+      } else if (fields.mode === 'ahl') {
         target.ahl = altitude;
       } else if (fields.mode === 'amsl') {
         target.amsl = altitude;
@@ -97,6 +99,13 @@ export const submitFlyToTargetDialog = (fields) => (dispatch, getState) => {
             return {
               ...baseTarget,
               ahl: currentPosition.ahl + altitude,
+            };
+          }
+
+          if (currentPosition && currentPosition.agl) {
+            return {
+              ...baseTarget,
+              agl: currentPosition.agl + altitude,
             };
           }
         };

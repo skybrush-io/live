@@ -7,6 +7,7 @@ export const COORDINATE_SYSTEM_TYPE = 'nwu';
  * Altitude reference types for drone shows.
  */
 export const ALTITUDE_REFERENCE = {
+  AGL: 'agl',
   AHL: 'ahl',
   AMSL: 'amsl',
 };
