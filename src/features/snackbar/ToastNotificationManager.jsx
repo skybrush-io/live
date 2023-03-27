@@ -3,7 +3,7 @@
  */
 
 import PropTypes from 'prop-types';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 import { useToasts } from 'react-toast-notifications';
 
@@ -11,8 +11,10 @@ import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import { styled } from '@material-ui/core/styles';
 
-import { selectActiveNotification } from './selectors';
+import { useSignal } from '~/hooks';
+
 import { MessageSemantics } from './types';
+import snackbarSignal from './signal';
 
 const semanticsToAppearance = {
   [MessageSemantics.INFO]: 'info',
@@ -29,8 +31,7 @@ const ToastNotificationButton = styled(Button)({
 /**
  * Function that creates a React content node to show for the given notification.
  */
-const createContentNode = (notification, dispatch) => {
-  const { buttons, message, header } = notification;
+const createContentNode = ({ buttons, message, header }, dispatch) => {
   let result = message;
 
   if (Array.isArray(buttons) && buttons.length > 0) {
@@ -74,43 +75,41 @@ const createContentNode = (notification, dispatch) => {
 };
 
 /**
- * Presentation component for the global snackbar at the bottom of the main
- * window.
+ * Presentation component for the global snackbar of the main window.
  *
  * @returns  {Object}  the rendered snackbar component
  */
-const ToastNotificationManager = ({ dispatch, notification }) => {
+const ToastNotificationManager = ({ dispatch }) => {
   const { addToast } = useToasts();
 
-  useEffect(() => {
-    const { semantics, permanent } = notification;
-    const content = createContentNode(notification, dispatch);
-    if (content) {
-      addToast(content, {
-        appearance: semanticsToAppearance[semantics] || 'info',
-        autoDismiss: !permanent,
-      });
+  useSignal(
+    snackbarSignal,
+    ({
+      buttons,
+      header,
+      message,
+      permanent = false,
+      semantics = MessageSemantics.DEFAULT,
+    }) => {
+      const content = createContentNode({ buttons, message, header }, dispatch);
+      if (content) {
+        addToast(content, {
+          appearance: semanticsToAppearance[semantics] || 'info',
+          autoDismiss: !permanent,
+        });
+      }
     }
-  }, [addToast, dispatch, notification]);
+  );
 
   return null;
 };
 
 ToastNotificationManager.propTypes = {
   dispatch: PropTypes.func.isRequired,
-  notification: PropTypes.shape({
-    message: PropTypes.string.isRequired,
-    permanent: PropTypes.bool,
-    semantics: PropTypes.oneOf(Object.values(MessageSemantics)).isRequired,
-  }),
 };
 
 /**
  * Global snackbar at the bottom of the main window.
  */
-export default connect(
-  // mapStateToProps
-  (state) => ({
-    notification: selectActiveNotification(state),
-  })
-)(ToastNotificationManager);
+export default connect()(ToastNotificationManager);
+// We only need `connect` to get `dispatch` as a prop.

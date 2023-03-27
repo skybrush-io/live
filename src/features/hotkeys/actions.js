@@ -4,7 +4,7 @@ import { dismissAlerts } from '~/features/alert/slice';
 import { hasPendingAudibleAlerts } from '~/features/alert/selectors';
 import { clearSelection } from '~/features/map/selection';
 import { getMissionMapping } from '~/features/mission/selectors';
-import { showNotification } from '~/features/snackbar/slice';
+import { showNotification } from '~/features/snackbar/actions';
 import { setSelectedUAVIds } from '~/features/uavs/actions';
 import { getUAVById } from '~/features/uavs/selectors';
 import { scrollUAVListItemIntoView } from '~/utils/navigation';

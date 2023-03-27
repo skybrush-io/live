@@ -30,7 +30,7 @@ import {
   setGeofencePolygonId,
 } from '~/features/mission/slice';
 import { getGeofenceSettings } from '~/features/safety/selectors';
-import { showNotification } from '~/features/snackbar/slice';
+import { showNotification } from '~/features/snackbar/actions';
 import { MessageSemantics } from '~/features/snackbar/types';
 import {
   getCurrentGPSPositionByUavId,

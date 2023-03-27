@@ -12,7 +12,7 @@ import Select from '@material-ui/core/Select';
 import TextField from '@material-ui/core/TextField';
 
 import { setLayerParametersById } from '~/features/map/layers';
-import { showNotification } from '~/features/snackbar/slice';
+import { showNotification } from '~/features/snackbar/actions';
 import { TileServerType, TileServerTypes } from '~/model/layers';
 
 // === Settings for this particular layer type ===

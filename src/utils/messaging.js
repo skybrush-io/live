@@ -8,7 +8,7 @@ import isNil from 'lodash-es/isNil';
 import mapValues from 'lodash-es/mapValues';
 import values from 'lodash-es/values';
 
-import { showNotification } from '~/features/snackbar/slice';
+import { showNotification } from '~/features/snackbar/actions';
 import { MessageSemantics } from '~/features/snackbar/types';
 import messageHub from '~/message-hub';
 import store from '~/store';
