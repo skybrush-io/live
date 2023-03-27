@@ -10,7 +10,7 @@ import values from 'lodash-es/values';
 
 import { showConfirmationDialog } from '~/features/prompt/actions';
 import { shouldConfirmUAVOperation } from '~/features/settings/selectors';
-import { showNotification } from '~/features/snackbar/slice';
+import { showNotification } from '~/features/snackbar/actions';
 import { MessageSemantics } from '~/features/snackbar/types';
 import messageHub from '~/message-hub';
 import store from '~/store';

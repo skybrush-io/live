@@ -6,7 +6,7 @@ import {
 } from './selectors';
 import { setColor, setLightControlActive } from './slice';
 
-import { showNotification } from '~/features/snackbar/slice';
+import { showNotification } from '~/features/snackbar/actions';
 import { MessageSemantics } from '~/features/snackbar/types';
 import messageHub from '~/message-hub';
 
