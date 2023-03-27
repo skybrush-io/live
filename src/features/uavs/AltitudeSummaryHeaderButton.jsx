@@ -23,6 +23,22 @@ const buttonStyle = {
   width: 90,
 };
 
+const iconStyle = {
+  marginTop: -8,
+};
+
+const typeIndicatorStyle = {
+  marginTop: 4,
+
+  // TODO: Extract this color from the `secondaryLabel` style of
+  // `GenericHeaderButton` to be accessible through the theme's palette.
+  color: 'rgba(255, 255, 255, 0.54)',
+  fontSize: 10,
+  textAlign: 'center',
+  textTransform: 'uppercase',
+  userSelect: 'none',
+};
+
 const INITIAL_STATE = {
   min: null,
   max: null,
@@ -76,7 +92,8 @@ const AltitudeSummaryHeaderButton = ({
           onRequestTypeChange(getNextTypeForAltitudeSummaryType(type))
         }
       >
-        <Terrain />
+        <Terrain style={iconStyle} />
+        <div style={typeIndicatorStyle}>{type}</div>
         {isConnected && (
           <AltitudeSummaryUpdater type={type} onSetStatus={setSummary} />
         )}
