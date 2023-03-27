@@ -1,7 +1,11 @@
 import omitBy from 'lodash-es/omitBy';
 import pickBy from 'lodash-es/pickBy';
+import uniq from 'lodash-es/uniq';
 import PropTypes from 'prop-types';
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { makeStyles } from '@material-ui/core/styles';
+import Tab from '@material-ui/core/Tab';
+import Tabs from '@material-ui/core/Tabs';
 import { getDefaultRegistry } from '@rjsf/core';
 import Form from '@rjsf/material-ui';
 import validator from '@rjsf/validator-ajv8';
@@ -9,6 +13,31 @@ import validator from '@rjsf/validator-ajv8';
 import AsyncGuard from '~/components/AsyncGuard';
 
 import { filterSchemaByUIContext } from './schema';
+
+const useStyles = makeStyles(
+  (theme) => ({
+    tabs: {
+      minHeight: 36,
+
+      position: 'sticky',
+      top: 0,
+
+      backgroundColor: theme.palette.background.paper,
+
+      // Use the z-index of AppBars (https://v4.mui.com/customization/z-index)
+      zIndex: 1100,
+    },
+
+    tab: {
+      minHeight: 36,
+
+      textTransform: 'capitalize',
+    },
+  }),
+  {
+    name: 'MissionParameterEditorPresentation',
+  }
+);
 
 const FORM_UI_SCHEMA_DEFAULTS = {
   'ui:options': {
@@ -19,6 +48,7 @@ const FORM_UI_SCHEMA_DEFAULTS = {
 };
 
 const isUIProperty = (_value, key) => key.startsWith('ui:');
+const getUIGroupOfProperty = (p) => p['ui:group'] ?? 'default';
 
 const TextWidget = getDefaultRegistry().widgets.TextWidget;
 const TextWidgetThatBlursOnWheel = React.forwardRef((props, ref) => (
@@ -42,9 +72,37 @@ const MissionParameterEditorPresentation = ({
   // Separate the full schema into the schema that contains only the parameters
   // that are to be queried from the user, and a mapping from UI context IDs to
   // the names of parameters that are to be provided by that UI context
-  const { schema: filteredSchema, uiContexts } = useMemo(
+  const { schema: formSchema, uiContexts } = useMemo(
     () => filterSchemaByUIContext(jsonSchema),
     [jsonSchema]
+  );
+
+  const tabs = uniq(
+    'ui:order' in uiSchema
+      ? // Get the tab names in the specified order if it's defined
+        uiSchema['ui:order'].map((p) =>
+          getUIGroupOfProperty(formSchema.properties[p])
+        )
+      : // Otherwise just fall back to getting them in alphabetical order
+        Object.values(formSchema.properties).map(getUIGroupOfProperty).sort()
+  );
+  // const groupedSchema = groupBy(formSchema.properties, getUIGroupOfProperty);
+
+  const [activeGroup, setActiveGroup] = useState('default');
+  const handleGroupSelect = useCallback(
+    (_event, value) => setActiveGroup(value),
+    [setActiveGroup]
+  );
+
+  const filteredSchema = useMemo(
+    () => ({
+      ...formSchema,
+      properties: pickBy(
+        formSchema.properties,
+        (p) => getUIGroupOfProperty(p) === activeGroup
+      ),
+    }),
+    [formSchema, activeGroup]
   );
 
   // When the mapping from UI context IDs to the names of parameters changes,
@@ -68,15 +126,36 @@ const MissionParameterEditorPresentation = ({
     [onChange]
   );
 
+  const classes = useStyles();
   return (
-    <Form
-      schema={filteredSchema}
-      widgets={{ TextWidget: TextWidgetThatBlursOnWheel }}
-      uiSchema={{ ...FORM_UI_SCHEMA_DEFAULTS, ...uiSchema }}
-      validator={validator}
-      formData={parameters}
-      onChange={handleChange}
-    />
+    <>
+      {tabs.length > 1 && (
+        <Tabs
+          centered
+          variant='fullWidth'
+          className={classes.tabs}
+          value={activeGroup}
+          onChange={handleGroupSelect}
+        >
+          {tabs.map((t) => (
+            <Tab
+              key={t}
+              className={classes.tab}
+              label={uiSchema?.['ui:groups']?.[t]?.title ?? t}
+              value={t}
+            />
+          ))}
+        </Tabs>
+      )}
+      <Form
+        schema={filteredSchema}
+        widgets={{ TextWidget: TextWidgetThatBlursOnWheel }}
+        uiSchema={{ ...FORM_UI_SCHEMA_DEFAULTS, ...uiSchema }}
+        validator={validator}
+        formData={parameters}
+        onChange={handleChange}
+      />
+    </>
   );
 };
 
@@ -102,19 +181,21 @@ const MissionParameterEditor = ({
   }, [getSchema, selectedType]);
 
   return (
-    <AsyncGuard
-      func={func}
-      errorMessage='Error while loading mission parameter schema from server'
-      loadingMessage='Retrieving mission parameters...'
-    >
-      {(schema) => (
-        <MissionParameterEditorPresentation
-          schema={schema}
-          parameters={parameters}
-          onChange={onChange}
-        />
-      )}
-    </AsyncGuard>
+    selectedType && (
+      <AsyncGuard
+        func={func}
+        errorMessage='Error while loading mission parameter schema from server'
+        loadingMessage='Retrieving mission parameters...'
+      >
+        {(schema) => (
+          <MissionParameterEditorPresentation
+            schema={schema}
+            parameters={parameters}
+            onChange={onChange}
+          />
+        )}
+      </AsyncGuard>
+    )
   );
 };
 

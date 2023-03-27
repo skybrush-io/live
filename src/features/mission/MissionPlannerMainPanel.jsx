@@ -69,7 +69,7 @@ const MissionPlannerMainPanel = ({
 
   return (
     <MultiPagePanel
-      height={350}
+      height={400}
       selectedPage={selectedType && selectedTypeInfo ? 'parameters' : 'type'}
     >
       <Page scrollable id='type'>
