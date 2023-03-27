@@ -14,6 +14,7 @@ import { styled } from '@material-ui/core/styles';
 import { useSignal } from '~/hooks';
 
 import { MessageSemantics } from './types';
+import { SNACKBAR_TRANSITION_DURATION } from './constants';
 import snackbarSignal from './signal';
 
 const semanticsToAppearance = {
@@ -80,7 +81,7 @@ const createContentNode = ({ buttons, message, header }, dispatch) => {
  * @returns  {Object}  the rendered snackbar component
  */
 const ToastNotificationManager = ({ dispatch }) => {
-  const { addToast } = useToasts();
+  const { addToast, toastStack, removeToast } = useToasts();
 
   useSignal(
     snackbarSignal,
@@ -90,13 +91,30 @@ const ToastNotificationManager = ({ dispatch }) => {
       message,
       permanent = false,
       semantics = MessageSemantics.DEFAULT,
+      topic,
     }) => {
+      const match = topic && toastStack.find((t) => t?.topic === topic);
+
       const content = createContentNode({ buttons, message, header }, dispatch);
-      if (content) {
-        addToast(content, {
-          appearance: semanticsToAppearance[semantics] || 'info',
-          autoDismiss: !permanent,
-        });
+      const options = {
+        appearance: semanticsToAppearance[semantics] || 'info',
+        autoDismiss: !permanent,
+        topic,
+      };
+
+      if (match) {
+        // If a previous notification with the same topic exists, remove it and
+        // delay the showing of the next one until it has finished disappearing
+        removeToast(match.id);
+        if (content) {
+          setTimeout(() => {
+            addToast(content, options);
+          }, SNACKBAR_TRANSITION_DURATION);
+        }
+      } else {
+        if (content) {
+          addToast(content, options);
+        }
       }
     }
   );

@@ -37,6 +37,7 @@ import UAVDetailsDialog from './features/uavs/UAVDetailsDialog';
 import UploadDialog from './features/upload/UploadDialog';
 import VersionCheckDialog from './features/version-check/VersionCheckDialog';
 
+import { SNACKBAR_TRANSITION_DURATION } from './features/snackbar/constants';
 import {
   isWorkbenchLayoutFixed,
   shouldSidebarBeShown,
@@ -185,7 +186,10 @@ const App = ({ onFirstRender }) => (
       <UploadDialog />
       <VersionCheckDialog />
 
-      <ToastProvider placement={config.toastPlacement}>
+      <ToastProvider
+        placement={config.toastPlacement}
+        transitionDuration={SNACKBAR_TRANSITION_DURATION}
+      >
         <ToastNotificationManager />
       </ToastProvider>
 
