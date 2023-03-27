@@ -660,7 +660,7 @@ export const invokeMissionPlanner =
 
       dispatch(
         showNotification({
-          message: 'Mission planned successfully. Export it?',
+          message: 'Mission planned successfully. Would you like to export it?',
           semantics: MessageSemantics.SUCCESS,
           buttons: [
             {
@@ -668,6 +668,8 @@ export const invokeMissionPlanner =
               action: exportMission(),
             },
           ],
+          permanent: true,
+          topic: 'export-suggestion',
         })
       );
     }
@@ -693,6 +695,8 @@ export const clearMission = () => (dispatch, _getState) => {
           action: restoreLastClearedMission(),
         },
       ],
+      permanent: true,
+      topic: 'mission-cleared',
     })
   );
 };
@@ -815,6 +819,8 @@ export const restoreMission =
  */
 export const restoreLastClearedMission = () => (dispatch, getState) => {
   dispatch(restoreMission(getLastClearedMissionData(getState())));
+  dispatch(showNotification({ topic: 'mission-cleared' }));
+  dispatch(showSuccess('Mission restored successfully'));
 };
 
 /**
@@ -832,6 +838,7 @@ export const exportMission = () => (dispatch, getState) => {
     `mission-export-${date}.json`,
     { title: 'Export mission data' }
   );
+  dispatch(showNotification({ topic: 'export-suggestion' }));
   dispatch(showSuccess('Successfully exported mission'));
 };
 
