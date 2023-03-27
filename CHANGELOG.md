@@ -25,6 +25,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Support for handling true AGL (_Above Ground Level_) data.
 
+- Added support for accelerometer calibration from the UI if the server also
+  supports this operation for the particular UAV type.
+
 ### Changed
 
 - The Electron based packaged version now uses a TCP socket to communicate
@@ -36,7 +39,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- Fixed some cases in which the pending UAV Id overlay could remain on the
+- Fixed some cases in which the pending UAV ID overlay could remain on the
   screen without timing out.
 
 - Corrected the previously misnamed occurrences of AGL to AHL.

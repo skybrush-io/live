@@ -30,6 +30,31 @@ export function createCancellationRequest(receiptIds) {
 }
 
 /**
+ * Creates an ASYNC-RESUME (resume request) message.
+ *
+ *
+ * @param  {string|string[]}  receiptIds  ID of the asynchronous operation
+ *         receipts that should be resumed
+ * @param  {Object}  values  mapping of receipt IDs to the objects that should be
+ *         posted with the resume request
+ */
+export function createResumeRequest(receiptIds, values) {
+  const result = createMessageWithType('ASYNC-RESUME');
+  result.ids = arrify(receiptIds);
+
+  if (values !== undefined) {
+    result.values = {};
+    for (const receiptId of receiptIds) {
+      if (values[receiptId] !== undefined) {
+        result.values[receiptId] = values[receiptId];
+      }
+    }
+  }
+
+  return result;
+}
+
+/**
  * Creates an OBJ-CMD (command request) message
  *
  * @param  {Object[]}  uavIds  IDs of the UAVs to send the request to

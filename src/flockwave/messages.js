@@ -13,6 +13,7 @@ import {
   createCancellationRequest,
   createCommandRequest,
   createMessageWithType,
+  createResumeRequest,
 } from './builders';
 import {
   ensureNotNAK,
@@ -324,14 +325,25 @@ class PendingCommandExecution {
    * @param {number} timeout  number of seconds to wait for the result of the
    *        command
    * @param {function}  onProgress  an optional function to call when a status
-   *        update is received for the execution of this command
+   *        update is received for the execution of this command. The
+   *        function will be called with an object having the following keys:
+   *        `progress` (the progress of the execution), `suspended` (whether
+   *        the execution is currently suspended) and optionally `resume` (a
+   *        function that can be called with an arbitrary object as its argument
+   *        when the execution is suspended and that will resume execution on
+   *        the server side after posting the object received as an argument to
+   *        the server)
+   * @param {function}  onResume  an optional function to call when the client
+   *        wishes to resume the execution of the operation represented by
+   *        this receipt after a suspension
    * @param {function}  onTimeout  an optional function to call when the
    *        result of the command did not arrive in time
    */
-  constructor(receipt, { timeout = 5, onProgress, onTimeout } = {}) {
+  constructor(receipt, { timeout = 5, onProgress, onResume, onTimeout } = {}) {
     this._receipt = receipt;
     this._deferred = pDefer();
     this._progressCallback = onProgress;
+    this._resumeCallback = onResume;
 
     if (timeout > 0) {
       this._timeoutInMsec = timeout * 1000;
@@ -372,11 +384,15 @@ class PendingCommandExecution {
    * @param  {Object} body the body of the status update message
    */
   processStatusUpdateMessageBody = (body) => {
-    const { progress } = body;
+    const { progress, suspended = false } = body;
 
     this._restartTimeoutIfNeeded();
-    if (progress && this._progressCallback) {
-      this._progressCallback(progress);
+    if ((progress || suspended) && this._progressCallback) {
+      this._progressCallback({
+        progress,
+        suspended,
+        resume: this._resumeCallback,
+      });
     }
   };
 
@@ -603,9 +619,11 @@ class AsyncOperationManager extends MessageHubRelatedComponent {
    * @param  {function} onProgress  when specified, this function will be called
    *         whenever we receive a status update from the server regarding the
    *         execution of the command this object belongs to. The function will
-   *         be called with an object having at most two keys: `percentage`
-   *         (a number between 0 and 100) and `status` (a human-readable
-   *         text message).
+   *         be called with an object having at most three keys: `progress`
+   *         (the progress of the operation, with keys named `percentage`
+   *         (a number between 0 and 100) and `message` (a human-readable
+   *         text message)), `suspended` (whether the execution is suspended)
+   *         and `resume` (a callback function to resume execution).
    * @param  {boolean} noThrow   when set to true, ensures that the function
    *         does not throw an exception when the async response indicated an
    *         error; returns the error object instead as if it was the result
@@ -630,6 +648,7 @@ class AsyncOperationManager extends MessageHubRelatedComponent {
         timeout:
           typeof timeout === 'number' && timeout > 0 ? timeout : this.timeout,
         onProgress,
+        onResume: (value) => this._sendSingleResumeRequest(receipt, value),
         onTimeout: this._onResponseTimedOut,
       });
 
@@ -734,6 +753,14 @@ class AsyncOperationManager extends MessageHubRelatedComponent {
       } else {
         console.warn(`Stale timeout notification received for receipt=${id}`);
       }
+    }
+  }
+
+  _sendSingleResumeRequest(receiptId, value) {
+    if (value !== undefined) {
+      return this.hub._sendResumeRequest([receiptId], { [receiptId]: value });
+    } else {
+      return this.hub._sendResumeRequest([receiptId]);
     }
   }
 }
@@ -1486,6 +1513,31 @@ export default class MessageHub {
    */
   async _sendCancellationRequest(receipts) {
     const request = createCancellationRequest(receipts);
+    const response = await this.sendMessage(request);
+    const { body } = ensureNotNAK(response);
+    const { error } = body;
+
+    if (error && Object.keys(error).length > 0) {
+      return error;
+    } else {
+      return {};
+    }
+  }
+
+  /**
+   * Sends a Flockwave ASYNC-RESUME request to resume the execution of the
+   * asynchronous operations with the given receipt IDs.
+   *
+   * @param  {string[]}  receipts  the receipt IDs of the asynchronous
+   *         operations to resume
+   * @param  {object}    values    optional values to pass back to the
+   *         operations with the resume requests. Keys are receipt IDs.
+   * @return {Promise}  a promise that resolves to an object mapping receipt
+   *         IDs to error messages, for all receipt IDs that were _not_
+   *         resumed successfully
+   */
+  async _sendResumeRequest(receipts, values) {
+    const request = createResumeRequest(receipts, values);
     const response = await this.sendMessage(request);
     const { body } = ensureNotNAK(response);
     const { error } = body;
