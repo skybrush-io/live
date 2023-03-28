@@ -44,6 +44,7 @@ export default class UAV {
       lat: undefined,
       lon: undefined,
       amsl: undefined,
+      ahl: undefined,
       agl: undefined,
     };
     this._rawHeading = undefined;
@@ -69,6 +70,13 @@ export default class UAV {
    */
   get agl() {
     return this._position.agl;
+  }
+
+  /**
+   * Returns the altitude above home level, if known.
+   */
+  get ahl() {
+    return this._position.ahl;
   }
 
   /**
@@ -199,12 +207,17 @@ export default class UAV {
     if (position) {
       this._position.lat = position[0] / 1e7;
       this._position.lon = position[1] / 1e7;
+
       if (!isNil(position[2])) {
         this._position.amsl = position[2] / 1e3;
       }
 
       if (!isNil(position[3])) {
-        this._position.agl = position[3] / 1e3;
+        this._position.ahl = position[3] / 1e3;
+      }
+
+      if (!isNil(position[4])) {
+        this._position.agl = position[4] / 1e3;
       }
 
       updated = true;

@@ -23,6 +23,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - UAVs now support the new "sleep state" status code introduced in Skybrush
   Server 2.10.0.
 
+- Support for handling true AGL (_Above Ground Level_) data.
+
 - Added support for accelerometer calibration from the UI if the server also
   supports this operation for the particular UAV type.
 
@@ -39,6 +41,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Fixed some cases in which the pending UAV ID overlay could remain on the
   screen without timing out.
+
+- Corrected the previously misnamed occurrences of AGL to AHL.
+  (_Above Ground Level_ -> _Above Home Level_)
 
 ## [2.6.0] - 2022-10-20
 

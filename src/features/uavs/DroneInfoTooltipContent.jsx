@@ -143,8 +143,8 @@ const DroneInfoTooltipContent = ({
         ) : (
           <>
             <div className={classes.altitudeLabel}>
-              {formatNumberSafely(position?.agl, 1, ' m', naText)}
-              <span className='muted'>{'\u00A0'}AGL</span>
+              {formatNumberSafely(position?.ahl, 1, ' m', naText)}
+              <span className='muted'>{'\u00A0'}AHL</span>
             </div>
             <div className={classes.numSatellitesLabel}>
               {formatNumberSafely(numSatellites, 0, '', naText)}
@@ -175,7 +175,7 @@ DroneInfoTooltipContent.propTypes = {
   localPosition: PropTypes.arrayOf(PropTypes.number),
   mode: PropTypes.string,
   position: PropTypes.shape({
-    agl: PropTypes.number,
+    ahl: PropTypes.number,
   }),
   text: PropTypes.string,
   textSemantics: PropTypes.string,

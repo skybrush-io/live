@@ -556,12 +556,12 @@ export class FlatEarthCoordinateSystem {
   }
 
   /**
-   * Converts a longitude-latitude-AGL triplet to flat Earth coordinates.
+   * Converts a longitude-latitude-AHL triplet to flat Earth coordinates.
    *
-   * @param {number[]} coords  a longitude-latitude-AGL triplet to convert
+   * @param {number[]} coords  a longitude-latitude-AHL triplet to convert
    * @return {number[]} the converted coordinates
    */
-  fromLonLatAgl(coords) {
+  fromLonLatAhl(coords) {
     const result = [0, 0, coords[2]];
     return this._updateArrayFromLonLat(result, coords[0], coords[1]);
   }
@@ -590,20 +590,20 @@ export class FlatEarthCoordinateSystem {
   }
 
   /**
-   * Converts a flat Earth coordinate triplet to a longitude-latitude-AGL
+   * Converts a flat Earth coordinate triplet to a longitude-latitude-AHL
    * triplet.
    *
-   * The Z coordinate of the triplet is copied straight to the AGL value.
+   * The Z coordinate of the triplet is copied straight to the AHL value.
    *
    * @param {number[]} coords  a flat Earth coordinate triplet to convert
    * @return {number[]} the converted coordinates
    */
-  toLonLatAgl(coords) {
+  toLonLatAhl(coords) {
     return [...this.toLonLat(coords), coords[2]];
   }
 
   /**
-   * Updates a THREE.Vector3 object from a longitude-latitude-AGL triplet.
+   * Updates a THREE.Vector3 object from a longitude-latitude-AHL triplet.
    *
    * This function is designed in a way that it avoids object allocations at
    * all costs.
@@ -614,14 +614,14 @@ export class FlatEarthCoordinateSystem {
    * @param {THREE.Vector3}  vec  the vector to update
    * @param {number}  lon  the longitude
    * @param {number}  lat  the latitude
-   * @param {number}  agl  the altitude above ground level
+   * @param {number}  ahl  the altitude above home level
    */
-  updateVector3FromLonLatAgl(vec, lon, lat, agl) {
+  updateVector3FromLonLatAhl(vec, lon, lat, ahl) {
     this._updateArrayFromLonLat(this._vec, lon, lat);
 
     vec.x = this._vec[0];
     vec.y = this._type === 'nwu' ? this._vec[1] : -this._vec[1];
-    vec.z = agl;
+    vec.z = ahl;
   }
 
   /**
