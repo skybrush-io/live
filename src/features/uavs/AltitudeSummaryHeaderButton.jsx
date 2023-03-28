@@ -17,25 +17,29 @@ import {
 
 import AltitudeSummaryUpdater from './AltitudeSummaryUpdater';
 
+// `makeStyles` from @material-ui cannot be used, as `GenericHeaderButton`
+// doesn't merge its own classes with the provided `className` from outside.
 const buttonStyle = {
   justifyContent: 'space-between',
   textAlign: 'right',
-  width: 90,
+  width: 95,
 };
 
-const iconStyle = {
-  marginTop: -8,
+const iconContainerStyle = {
+  width: 24,
+  marginTop: -10,
+
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  gap: 4,
 };
 
 const typeIndicatorStyle = {
-  marginTop: 4,
-
-  // TODO: Extract this color from the `secondaryLabel` style of
-  // `GenericHeaderButton` to be accessible through the theme's palette.
-  color: 'rgba(255, 255, 255, 0.54)',
-  fontSize: 10,
-  textAlign: 'center',
+  fontSize: 11,
+  fontWeight: 'bold',
   textTransform: 'uppercase',
+  textAlign: 'center',
   userSelect: 'none',
 };
 
@@ -82,18 +86,25 @@ const AltitudeSummaryHeaderButton = ({
       <GenericHeaderButton
         disabled={!isConnected}
         label={
-          isConnected && typeof max === 'number' ? `${max.toFixed(1)}m` : '—'
+          isConnected && typeof max === 'number'
+            ? `${max.toFixed(1)}\u00A0m`
+            : '—'
         }
         secondaryLabel={
-          isConnected && typeof min === 'number' ? `${min.toFixed(1)}m` : '—'
+          isConnected && typeof min === 'number'
+            ? `${min.toFixed(1)}\u00A0m`
+            : '—'
         }
         style={buttonStyle}
         onClick={() =>
           onRequestTypeChange(getNextTypeForAltitudeSummaryType(type))
         }
       >
-        <Terrain style={iconStyle} />
-        <div style={typeIndicatorStyle}>{type}</div>
+        <div style={iconContainerStyle}>
+          <Terrain />
+          <div style={typeIndicatorStyle}>{type}</div>
+        </div>
+
         {isConnected && (
           <AltitudeSummaryUpdater type={type} onSetStatus={setSummary} />
         )}
