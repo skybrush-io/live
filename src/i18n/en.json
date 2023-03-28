@@ -1,0 +1,24 @@
+{
+  "map": {
+    "resetRotation": "Reset rotation"
+  },
+  "notifications": {
+    "connectedToSkybrushServer": "Connected to Skybrush server"
+  },
+  "settings": {
+    "display": {
+      "coordinateFormat": "Coordinate format",
+      "enableExperimentalFeatures": "Enable experimental features (advanced)",
+      "hideInactiveSegmentsOnDarkLCD": "Enhance contrast on dark mode LCD clocks",
+      "showMouseCoordinates": "Show mouse coordinates",
+      "showScaleLine": "Show scale line"
+    },
+    "tabs": {
+      "display": "Display"
+    }
+  },
+  "show": {
+    "chooseStartTime": "Choose start time",
+    "noFileLoaded": "No show file loaded"
+  }
+}

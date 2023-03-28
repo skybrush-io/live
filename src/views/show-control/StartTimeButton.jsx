@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import ListItem from '@material-ui/core/ListItem';
@@ -17,11 +18,13 @@ import { getSetupStageStatuses } from '~/features/show/stages';
  * the preferred start time of the show.
  */
 const StartTimeButton = ({ formattedStartTime, onClick, status }) => {
+  const { t } = useTranslation();
+
   return (
     <ListItem button onClick={onClick}>
       <StatusLight status={status} />
       <ListItemText
-        primary='Choose start time'
+        primary={t('show.chooseStartTime')}
         secondary={
           formattedStartTime ? `Starts at ${formattedStartTime}` : 'Not set yet'
         }

@@ -47,6 +47,7 @@ import {
 import { showError, showNotification } from '~/features/snackbar/actions';
 import { MessageSemantics } from '~/features/snackbar/types';
 import { clearWeatherData } from '~/features/weather/slice';
+import i18n from '~/i18n';
 import messageHub from '~/message-hub';
 import {
   ConnectionState,
@@ -721,7 +722,7 @@ const ServerConnectionManager = connect(
       // Let the user know that we are connected
       dispatch(
         showNotification({
-          message: 'Connected to Skybrush server',
+          message: i18n.t('notifications.connectedToSkybrushServer'),
           semantics: 'info',
         })
       );

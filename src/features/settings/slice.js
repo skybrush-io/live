@@ -34,6 +34,8 @@ const { actions, reducer } = createSlice({
       experimentalFeaturesEnabled: false,
       // Whether to hide empty mission slots in the UAV list (unless editing)
       hideEmptyMissionSlots: false,
+      // Language code for the selected language of the application
+      language: 'en',
       // Whether to show mission IDs or drone IDs in the UAV list
       showMissionIds: false,
       // Whether to show the mouse coordinates on the map

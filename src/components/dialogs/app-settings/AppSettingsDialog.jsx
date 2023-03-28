@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import Dialog from '@material-ui/core/Dialog';
@@ -40,10 +41,11 @@ const AppSettingsDialogPresentation = ({
   onTabSelected,
   open,
   selectedTab,
+  t,
 }) => (
   <Dialog fullWidth open={open} maxWidth='sm' onClose={onClose}>
     <DialogTabs alignment='center' value={selectedTab} onChange={onTabSelected}>
-      <Tab value='display' label='Display' />
+      <Tab value='display' label={t('settings.tabs.display')} />
       <Tab value='threeD' label='3D View' />
       <Tab value='uavs' label='UAVs' />
       <Tab value='preflight' label='Preflight' />
@@ -63,6 +65,7 @@ AppSettingsDialogPresentation.propTypes = {
   onTabSelected: PropTypes.func,
   open: PropTypes.bool,
   selectedTab: PropTypes.string,
+  t: PropTypes.func,
 };
 
 AppSettingsDialogPresentation.defaultProps = {
@@ -86,6 +89,6 @@ const AppSettingsDialog = connect(
       dispatch(setAppSettingsDialogTab(value));
     },
   })
-)(AppSettingsDialogPresentation);
+)(withTranslation()(AppSettingsDialogPresentation));
 
 export default AppSettingsDialog;

@@ -1,6 +1,7 @@
 import isNil from 'lodash-es/isNil';
 import PropTypes from 'prop-types';
 import React from 'react';
+import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import IconButton from '@material-ui/core/IconButton';
@@ -63,6 +64,7 @@ const LoadShowFromFileButton = ({
   onShowFileSelected,
   progress,
   status,
+  t,
   title,
 }) => (
   <FileListItem
@@ -79,7 +81,7 @@ const LoadShowFromFileButton = ({
           ? 'Please wait, loading show file…'
           : hasLoadedShowFile
           ? truncate(title, 60)
-          : 'No show file loaded'
+          : t('show.noFileLoaded')
       }
       secondary={
         loading ? (
@@ -133,6 +135,7 @@ LoadShowFromFileButton.propTypes = {
   onShowFileSelected: PropTypes.func,
   progress: PropTypes.number,
   status: PropTypes.oneOf(Object.values(Status)),
+  t: PropTypes.func,
   title: PropTypes.string,
 };
 
@@ -154,4 +157,4 @@ export default connect(
     onReloadShowFile: reloadCurrentShowFile,
     onShowFileSelected: loadShowFromFile,
   }
-)(LoadShowFromFileButton);
+)(withTranslation()(LoadShowFromFileButton));
