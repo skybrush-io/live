@@ -1,0 +1,24 @@
+{
+  "map": {
+    "resetRotation": "Forgatás visszaállítása"
+  },
+  "notifications": {
+    "connectedToSkybrushServer": "Csatlakozva a Skybrush szerverhez"
+  },
+  "settings": {
+    "display": {
+      "coordinateFormat": "Koordináta formátum",
+      "enableExperimentalFeatures": "Kísérleti funkciók engedélyezése (haladó)",
+      "hideInactiveSegmentsOnDarkLCD": "LCD órák kontrasztarányának javítása sötét módban",
+      "showMouseCoordinates": "Egérkoordináták megjelenítése",
+      "showScaleLine": "Léptékvonal megjelenítése"
+    },
+    "tabs": {
+      "display": "Megjelenítés"
+    }
+  },
+  "show": {
+    "chooseStartTime": "Indítási időpont kiválasztása",
+    "noFileLoaded": "Nincs betöltve műsor file"
+  }
+}

@@ -3,6 +3,7 @@ import React from 'react';
 import { render } from 'react-dom';
 import 'typeface-fira-sans';
 
+import './i18n';
 import AppWithSplashScreen from './splash';
 
 // Disable React dev tools in production

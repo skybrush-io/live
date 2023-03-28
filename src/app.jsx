@@ -41,6 +41,7 @@ import {
 
 import { ErrorHandler } from './error-handling';
 import flock, { Flock } from './flock';
+import LanguageWatcher from './i18n/LanguageWatcher';
 import perspectives from './perspectives';
 import rootSaga from './sagas';
 import store, {
@@ -153,6 +154,7 @@ const App = ({ onFirstRender }) => (
 
       <ServerConnectionManager />
 
+      <LanguageWatcher />
       <ShowFileWatcher />
 
       <dialogs.AppSettingsDialog />

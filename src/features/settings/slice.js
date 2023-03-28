@@ -37,6 +37,8 @@ const { actions, reducer } = createSlice({
       experimentalFeaturesEnabled: false,
       // Whether to hide empty mission slots in the UAV list (unless editing)
       hideEmptyMissionSlots: false,
+      // Language code for the selected language of the application
+      language: 'en',
       // Whether the application should be optimized for operating a single UAV.
       optimizeForSingleUAV: config.optimizeForSingleUAV.default,
       // Whether the UI should be adjusted primarily for touchscreen experience.

@@ -6,6 +6,7 @@ import throttle from 'lodash-es/throttle';
 import { easeOut } from 'ol/easing';
 import PropTypes from 'prop-types';
 import React from 'react';
+import { Translation } from 'react-i18next';
 
 import IconButton from '@material-ui/core/IconButton';
 import RotateLeft from '@material-ui/icons/RotateLeft';
@@ -74,11 +75,15 @@ export default class MapRotationTextBox extends React.Component {
   render() {
     return (
       <div style={this.props.style}>
-        <Tooltip content='Reset rotation'>
-          <IconButton onClick={this._onButtonClick}>
-            <RotateLeft />
-          </IconButton>
-        </Tooltip>
+        <Translation>
+          {(t) => (
+            <Tooltip content={t('map.resetRotation')}>
+              <IconButton onClick={this._onButtonClick}>
+                <RotateLeft />
+              </IconButton>
+            </Tooltip>
+          )}
+        </Translation>
         <TextField
           size='small'
           style={{
