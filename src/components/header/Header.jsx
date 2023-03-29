@@ -4,7 +4,6 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 import Shapeshifter from 'react-shapeshifter';
-import TimeAgo from 'react-timeago';
 
 import Box from '@material-ui/core/Box';
 
@@ -17,6 +16,7 @@ import FullScreenButton from './FullScreenButton';
 import HelpButton from './HelpButton';
 import SafetyButton from './SafetyButton';
 import ServerConnectionSettingsButton from './ServerConnectionSettingsButton';
+import SessionExpiryBox from './SessionExpiryBox';
 import ToolboxButton from './ToolboxButton';
 
 import UAVStatusSummary from '~/components/uavs/UAVStatusSummary';
@@ -42,30 +42,26 @@ const innerStyle = {
   flexFlow: 'row nowrap',
 };
 
-const headingFormatter = (value, unit, suffix) =>
-  suffix === 'ago' ? 'Session expired' : 'Session expires';
-
-const SessionExpiryBox = ({ expiresAt }) => {
-  return (
-    <Box
-      alignSelf='center'
-      px={1}
-      style={{ color: 'white', fontSize: '0.875rem', textAlign: 'right' }}
-    >
-      <div style={{ color: 'rgba(255, 255, 255, 0.54)' }}>
-        <TimeAgo date={expiresAt} formatter={headingFormatter} />
-      </div>
-      <div>
-        <b>
-          <TimeAgo date={expiresAt} />
-        </b>
-      </div>
-    </Box>
-  );
-};
-
-SessionExpiryBox.propTypes = {
-  expiresAt: PropTypes.number,
+const componentRegistry = {
+  'alert-button': AlertButton,
+  'altitude-summary-header-button': AltitudeSummaryHeaderButton,
+  'app-settings-button': AppSettingsButton,
+  'authentication-button': AuthenticationButton,
+  'battery-status-header-button': BatteryStatusHeaderButton,
+  'broadcast-button': () => (
+    <BroadcastButton timeoutLength={BROADCAST_MODE_TIMEOUT_LENGTH} />
+  ),
+  'connection-status-button': ConnectionStatusButton,
+  'full-screen-button': FullScreenButton,
+  'help-button': () => (config.urls.help ? <HelpButton /> : null),
+  'rtk-status-header-button': () =>
+    hasFeature('toolboxMenu') && <RTKStatusHeaderButton />,
+  'safety-button': SafetyButton,
+  'server-connection-settings-button': ServerConnectionSettingsButton,
+  'session-expiry-box': SessionExpiryBox,
+  'toolbox-button': () => hasFeature('toolboxMenu') && <ToolboxButton />,
+  'uav-status-summary': UAVStatusSummary,
+  'weather-header-button': WeatherHeaderButton,
 };
 
 /**
@@ -74,12 +70,7 @@ SessionExpiryBox.propTypes = {
  *
  * @returns  {Object}  the rendered header component
  */
-const Header = ({
-  isSidebarOpen,
-  sessionExpiresAt,
-  showSidebar,
-  toggleSidebar,
-}) => (
+const Header = ({ isSidebarOpen, showSidebar, toggleSidebar }) => (
   <div id='header' style={{ ...style, overflow: 'hidden' }}>
     <div id='header-inner' style={innerStyle}>
       {showSidebar && (
@@ -93,39 +84,22 @@ const Header = ({
 
       <PerspectiveBar />
       <Box pr={0.5} />
-      <UAVStatusSummary />
-      <hr />
-      <AltitudeSummaryHeaderButton />
-      <BatteryStatusHeaderButton />
-      {hasFeature('toolboxMenu') && <RTKStatusHeaderButton />}
-      <hr />
-      <WeatherHeaderButton />
-      <hr />
-      <ConnectionStatusButton />
-      <hr />
-      <ServerConnectionSettingsButton />
-      <SafetyButton />
-      <AuthenticationButton />
-      <hr />
-      <BroadcastButton timeoutLength={BROADCAST_MODE_TIMEOUT_LENGTH} />
-      {hasFeature('toolboxMenu') && <ToolboxButton />}
-      <AppSettingsButton />
-      <AlertButton />
-      {config.urls.help ? <HelpButton /> : null}
-      {window.bridge && window.bridge.isElectron ? null : <FullScreenButton />}
-      {sessionExpiresAt && (
-        <>
-          <SessionExpiryBox expiresAt={sessionExpiresAt} />
-          <hr />
-        </>
-      )}
+
+      {config.headerComponents
+        .flatMap((group) => [
+          <hr key={group.join(',')} />,
+          ...group.map((component) => {
+            const Component = componentRegistry[component];
+            return <Component key={component} />;
+          }),
+        ])
+        .slice(1)}
     </div>
   </div>
 );
 
 Header.propTypes = {
   isSidebarOpen: PropTypes.bool.isRequired,
-  sessionExpiresAt: PropTypes.number,
   showSidebar: PropTypes.bool,
   toggleSidebar: PropTypes.func.isRequired,
 };
