@@ -180,7 +180,7 @@ const DroneStatusLine = ({
             ) +
             'm'
           ) : (
-            <span className={classes.muted}>{'   ———    ——— '}</span>
+            <span className={classes.muted}>{'    ———    ———    ———'}</span>
           )}
           <StatusText status={headingDeviationToStatus(headingDeviation)}>
             {padStart(!isNil(heading) ? Math.round(heading) + '°' : '', 5)}
