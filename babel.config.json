@@ -16,6 +16,14 @@
   ],
   "plugins": [
     ["@babel/plugin-proposal-decorators", { "legacy": true }],
-    ["@babel/plugin-proposal-class-properties", {}]
+    ["@babel/plugin-proposal-class-properties", {}],
+    [
+      "i18next-extract",
+      {
+        "discardOldKeys": true,
+        "locales": ["en", "hu"],
+        "outputPath": "src/i18n/{{locale}}.json"
+      }
+    ]
   ]
 }
