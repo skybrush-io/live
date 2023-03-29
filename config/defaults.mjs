@@ -70,6 +70,38 @@ const defaults = {
   },
 
   /**
+   * Select which components should appear on the header, and in what order.
+   * The list of available widgets is in `src/components/header/Header.jsx`.
+   * Groups specified by subarrays will be separated by vertical dividers.
+   *
+   * @type {Array.<Array.<string>>}
+   */
+  headerComponents: [
+    ['uav-status-summary'],
+    [
+      'altitude-summary-header-button',
+      'battery-status-header-button',
+      'rtk-status-header-button',
+    ],
+    ['weather-header-button'],
+    ['connection-status-button'],
+    [
+      'server-connection-settings-button',
+      'geofence-settings-button',
+      'authentication-button',
+    ],
+    [
+      'broadcast-button',
+      'toolbox-button',
+      'app-settings-button',
+      'alert-button',
+      'help-button',
+      'full-screen-button',
+      'session-expiry-box',
+    ],
+  ],
+
+  /**
    * A list of perspective names or perspective description objects that should
    * be used for creating the initial list of available layouts.
    *
