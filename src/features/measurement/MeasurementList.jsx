@@ -107,7 +107,7 @@ const useStyles = makeStyles(
       minWidth: 140,
     },
 
-    aglColumn: {
+    ahlColumn: {
       minWidth: 80,
       flex: 1,
     },
@@ -156,10 +156,10 @@ const MeasurementListItem = ({
           {'m '}
           <span className={classes.dim}>AMSL</span>
         </div>
-        <div className={classes.aglColumn}>
-          {formatMeanAndStdDev(mean.agl, sqDiff.agl, numSamples)}
+        <div className={classes.ahlColumn}>
+          {formatMeanAndStdDev(mean.ahl, sqDiff.ahl, numSamples)}
           {'m '}
-          <span className={classes.dim}>AGL</span>
+          <span className={classes.dim}>AHL</span>
         </div>
       </div>
     );
@@ -173,7 +173,7 @@ const MeasurementListItem = ({
         <div className={clsx(classes.dim, classes.amslColumn)}>
           {numSamples} samples
         </div>
-        <div className={clsx(classes.dim, classes.aglColumn)}>
+        <div className={clsx(classes.dim, classes.ahlColumn)}>
           Duration:{' '}
           {formatDurationOfSampling(startedAt, lastSampleAt, extraSamplingTime)}
         </div>

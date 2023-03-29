@@ -15,6 +15,7 @@ export const UAVSortKey = Object.freeze({
   BATTERY: 'battery',
   GPS_FIX: 'gpsFix',
   ALTITUDE_MSL: 'amsl',
+  ALTITUDE_HOME: 'ahl',
   ALTITUDE_GROUND: 'agl',
   HEADING: 'heading',
 });
@@ -29,6 +30,7 @@ export const UAVSortKeys = [
   UAVSortKey.BATTERY,
   UAVSortKey.GPS_FIX,
   UAVSortKey.ALTITUDE_MSL,
+  UAVSortKey.ALTITUDE_HOME,
   UAVSortKey.ALTITUDE_GROUND,
   UAVSortKey.HEADING,
 ];
@@ -43,6 +45,7 @@ export const labelsForUAVSortKey = {
   [UAVSortKey.BATTERY]: 'Battery',
   [UAVSortKey.GPS_FIX]: 'GPS fix',
   [UAVSortKey.ALTITUDE_MSL]: 'Altitude (MSL)',
+  [UAVSortKey.ALTITUDE_HOME]: 'Altitude above home',
   [UAVSortKey.ALTITUDE_GROUND]: 'Altitude above ground',
   [UAVSortKey.HEADING]: 'Heading',
 };
@@ -57,6 +60,7 @@ export const shortLabelsForUAVSortKey = {
   [UAVSortKey.BATTERY]: 'Battery',
   [UAVSortKey.GPS_FIX]: 'GPS fix',
   [UAVSortKey.ALTITUDE_MSL]: 'AMSL',
+  [UAVSortKey.ALTITUDE_HOME]: 'AHL',
   [UAVSortKey.ALTITUDE_GROUND]: 'AGL',
   [UAVSortKey.HEADING]: 'Heading',
 };
@@ -122,6 +126,14 @@ export const getKeyFunctionForUAVSortKey = memoize((key) => {
       // Sort UAVs based on altitude above mean sea level
       return (uav) => {
         const result = uav?.position?.amsl;
+        return isNil(result) ? -10000 : result;
+      };
+
+    case UAVSortKey.ALTITUDE_HOME:
+      // Sort UAVs based on altitude above home
+      // TODO(ntamas): fall back to Z coordinate if no AHL is given
+      return (uav) => {
+        const result = uav?.position?.ahl;
         return isNil(result) ? -10000 : result;
       };
 

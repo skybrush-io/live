@@ -95,13 +95,13 @@ const OutdoorEnvironmentEditor = ({
           <Select
             value={
               (altitudeReference ? altitudeReference.type : null) ||
-              ALTITUDE_REFERENCE.AGL
+              ALTITUDE_REFERENCE.AHL
             }
             inputProps={{ id: 'altitude-reference-type' }}
             onChange={onAltitudeReferenceTypeChanged}
           >
-            <MenuItem value={ALTITUDE_REFERENCE.AGL}>
-              Altitude above ground level (AGL)
+            <MenuItem value={ALTITUDE_REFERENCE.AHL}>
+              Altitude above home level (AHL)
             </MenuItem>
             <MenuItem value={ALTITUDE_REFERENCE.AMSL}>
               Altitude above mean sea level (AMSL)

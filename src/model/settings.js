@@ -4,18 +4,21 @@
 
 export const AltitudeSummaryType = {
   AMSL: 'amsl',
+  AHL: 'ahl',
   AGL: 'agl',
   XYZ: 'xyz',
 };
 
 const _altitudeSummaryTypeDescriptions = {
   [AltitudeSummaryType.AMSL]: 'Altitude above mean sea level',
+  [AltitudeSummaryType.AHL]: 'Altitude above home level',
   [AltitudeSummaryType.AGL]: 'Altitude above ground level',
   [AltitudeSummaryType.XYZ]: 'Altitude in local coordinate system',
 };
 
 const _altitudeSummaryTypeShortDescriptions = {
   [AltitudeSummaryType.AMSL]: 'AMSL',
+  [AltitudeSummaryType.AHL]: 'AHL',
   [AltitudeSummaryType.AGL]: 'AGL',
   [AltitudeSummaryType.XYZ]: 'Z coordinate',
 };

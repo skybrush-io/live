@@ -179,7 +179,7 @@ export const getOutdoorShowAltitudeReference = (state) => {
 /**
  * Selector that returns the mean sea level that the Z coordinates of the show
  * should be referred to, or null if the show is controlled based on altitudes
- * above ground level.
+ * above home level.
  */
 export const getMeanSeaLevelReferenceOfShowCoordinatesOrNull = (state) => {
   if (!isShowOutdoor(state)) {
@@ -202,7 +202,7 @@ export const getMeanSeaLevelReferenceOfShowCoordinatesOrNull = (state) => {
  * If this selector is true, it means that we can assign a fixed AMSL value to
  * each show-specific Z coordinate by adding the show-specific Z coordinate to
  * the AMSL reference. If this selector is false, it means that the show is
- * controlled in AGL. Indoor shows are always controlled in AGL.
+ * controlled in AHL. Indoor shows are always controlled in AHL.
  */
 export const isShowRelativeToMeanSeaLevel = (state) =>
   !isNil(getMeanSeaLevelReferenceOfShowCoordinatesOrNull(state));
@@ -321,7 +321,7 @@ export const getOutdoorShowToWorldCoordinateSystemTransformation =
 
             const [x, y, z] = point;
             const [lon, lat] = transform.toLonLat([x, y]);
-            return { lon, lat, amsl: undefined, agl: z };
+            return { lon, lat, amsl: undefined, ahl: z };
           }
         : undefined
   );
@@ -549,7 +549,7 @@ export const getShowDescription = createSelector(
   getShowDurationAsString,
   getMaximumHeightInTrajectories,
   (numberDrones, duration, maxHeight) =>
-    `${numberDrones} drones, ${duration}, max AGL ${maxHeight.toFixed(1)}m`
+    `${numberDrones} drones, ${duration}, max AHL ${maxHeight.toFixed(1)}m`
 );
 
 /**

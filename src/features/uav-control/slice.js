@@ -34,7 +34,7 @@ const { actions, reducer } = createSlice({
       state.flyToTargetDialog.initialValues = {
         ...state.flyToTargetDialog.initialValues,
         coords,
-        mode: mode || 'agl',
+        mode: mode || 'ahl',
         altitude: isNil(altitude) ? 10 : altitude,
       };
 

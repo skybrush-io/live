@@ -718,10 +718,10 @@ export function getSingleUAVStatusSummary(uav) {
     } else {
       textSemantics = errorSeverityToSemantics(severity);
     }
-  } else if (uav.position && Math.abs(uav.position.agl) >= 0.3) {
+  } else if (uav.position && Math.abs(uav.position.ahl) >= 0.3) {
     // UAV is in the air
     text = 'airborne';
-    details = `${uav.position.agl.toFixed(2)}m`;
+    details = `${uav.position.ahl.toFixed(2)}m`;
     textSemantics = 'success';
   } else {
     // UAV is ready on the ground

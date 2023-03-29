@@ -84,13 +84,13 @@ const { actions, reducer } = createSlice({
           lat: 0,
           lon: 0,
           amsl: 0,
-          agl: 0,
+          ahl: 0,
         },
         sqDiff: {
           lat: 0,
           lon: 0,
           amsl: 0,
-          agl: 0,
+          ahl: 0,
         },
       });
     },
@@ -127,13 +127,13 @@ const { actions, reducer } = createSlice({
               lat: 0,
               lon: 0,
               amsl: 0,
-              agl: 0,
+              ahl: 0,
             },
             sqDiff: {
               lat: 0,
               lon: 0,
               amsl: 0,
-              agl: 0,
+              ahl: 0,
             },
           };
         }

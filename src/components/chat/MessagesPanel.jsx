@@ -333,8 +333,10 @@ export default connect(
             kwds,
           },
           {
-            onProgress(progress) {
-              dispatch(updateProgressByMessageId({ messageId, progress }));
+            onProgress({ progress, suspended }) {
+              dispatch(
+                updateProgressByMessageId({ messageId, progress, suspended })
+              );
             },
           }
         );

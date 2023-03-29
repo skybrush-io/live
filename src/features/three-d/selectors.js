@@ -15,7 +15,7 @@ export const getCameraPose = (state) => state.threeD.camera;
 
 /**
  * Returns a function that can be called with a single object having `lon`,
- * `lat` and `agl` properties and that returns the corresponding coordinate
+ * `lat` and `ahl` properties and that returns the corresponding coordinate
  * in the coordinate system used by the 3D view.
  */
 const getGPSToThreeJSTransformation = createSelector(
@@ -27,10 +27,10 @@ const getGPSToThreeJSTransformation = createSelector(
         return null;
       }
 
-      const result = transformation.fromLonLatAgl([
+      const result = transformation.fromLonLatAhl([
         coordinate.lon,
         coordinate.lat,
-        coordinate.agl,
+        coordinate.ahl,
       ]);
 
       if (flipY) {

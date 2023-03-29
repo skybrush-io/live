@@ -362,7 +362,7 @@ class MapContextMenu extends React.Component {
   _moveSelectedUAVsAtGivenAltitude = async (_event, context) => {
     const coords = [...context.coords];
     const selectedUAVIds = [...context.selectedUAVIds];
-    /* TODO(ntamas): use AGL of selected UAVs */
+    /* TODO(ntamas): use AHL of selected UAVs */
     this.props.showFlyToTargetDialog({ coords, uavIds: selectedUAVIds });
   };
 

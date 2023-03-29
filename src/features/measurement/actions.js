@@ -82,7 +82,7 @@ export const stopAveragingSelectedUAVs = applyToSelection(
  */
 export const addNewSamplesToAveraging = (samples) => (dispatch, getState) => {
   const state = getState();
-  const keys = ['lat', 'lon', 'amsl', 'agl'];
+  const keys = ['lat', 'lon', 'amsl', 'ahl'];
   const updates = {};
 
   for (const [uavId, sample] of Object.entries(samples)) {
