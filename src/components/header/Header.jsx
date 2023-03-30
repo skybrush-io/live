@@ -87,7 +87,7 @@ const Header = ({ isSidebarOpen, showSidebar, toggleSidebar }) => (
 
       {config.headerComponents
         .flatMap((group) => [
-          <hr key={group.join(',')} />,
+          <hr key={`header-group:${group.join(',')}`} />,
           ...group.map((component) => {
             const Component = componentRegistry[component];
             return <Component key={component} />;
