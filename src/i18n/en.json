@@ -19,6 +19,7 @@
   },
   "show": {
     "chooseStartTime": "Choose start time",
-    "noFileLoaded": "No show file loaded"
+    "noFileLoaded": "No show file loaded",
+    "setupEnvironment": "Setup environment"
   }
 }

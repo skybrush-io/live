@@ -19,6 +19,7 @@
   },
   "show": {
     "chooseStartTime": "Indítási időpont kiválasztása",
-    "noFileLoaded": "Nincs betöltve műsor file"
+    "noFileLoaded": "Nincs betöltve műsor file",
+    "setupEnvironment": "Környezet beállítása"
   }
 }

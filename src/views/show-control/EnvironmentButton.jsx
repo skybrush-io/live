@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { createSelector } from '@reduxjs/toolkit';
 
@@ -59,6 +60,7 @@ const EnvironmentButton = ({
   onEditEnvironment,
   secondaryText,
   status,
+  t,
   ...rest
 }) => (
   <ListItem
@@ -68,7 +70,10 @@ const EnvironmentButton = ({
     {...rest}
   >
     <StatusLight status={status} />
-    <ListItemText primary='Setup environment' secondary={secondaryText} />
+    <ListItemText
+      primary={t('show.setupEnvironment')}
+      secondary={secondaryText}
+    />
   </ListItem>
 );
 
@@ -76,6 +81,7 @@ EnvironmentButton.propTypes = {
   onEditEnvironment: PropTypes.func,
   secondaryText: PropTypes.string,
   status: PropTypes.oneOf(Object.values(Status)),
+  t: PropTypes.func,
 };
 
 export default connect(
@@ -88,4 +94,4 @@ export default connect(
   {
     onEditEnvironment: openEnvironmentEditorDialog,
   }
-)(EnvironmentButton);
+)(withTranslation()(EnvironmentButton));

@@ -20,7 +20,7 @@
     [
       "i18next-extract",
       {
-        "discardOldKeys": true,
+        "discardOldKeys": false,
         "locales": ["en", "hu"],
         "outputPath": "src/i18n/{{locale}}.json"
       }
