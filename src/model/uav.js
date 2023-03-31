@@ -259,6 +259,10 @@ export default class UAV {
       this.gpsFix.type = gps.length > 0 ? gps[0] : GPSFixType.NO_GPS;
       this.gpsFix.numSatellites =
         gps.length > 1 && typeof gps[1] === 'number' ? gps[1] : undefined;
+      this.gpsFix.horizontalAccuracy =
+        typeof gps[2] === 'number' ? gps[2] / 1e3 : undefined;
+      this.gpsFix.verticalAccuracy =
+        typeof gps[3] === 'number' ? gps[3] / 1e3 : undefined;
       updated = true;
     }
 
