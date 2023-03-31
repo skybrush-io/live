@@ -60,6 +60,7 @@ import {
   blackVeryThinOutline,
   dottedThickOutline,
   fill,
+  lineStringArrow,
   stroke,
   thickOutline,
   thinOutline,
@@ -397,9 +398,13 @@ const doneMissionItemLineStringStyle = new Style({
 const todoMissionItemLineStringStyle = new Style({
   stroke: thinOutline(Colors.missionItem),
 });
-const auxiliaryMissionItemLineStringStyle = new Style({
-  stroke: dottedThickOutline(Colors.auxiliaryMissionItem),
-});
+const auxiliaryMissionItemLineStringStyle = (feature) => [
+  new Style({
+    stroke: dottedThickOutline(Colors.auxiliaryMissionItem),
+  }),
+  lineStringArrow(Colors.auxiliaryMissionItem, 'start')(feature),
+  lineStringArrow(Colors.auxiliaryMissionItem, 'end')(feature),
+];
 
 /**
  * Global identifiers for certain mission-specific features.

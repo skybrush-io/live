@@ -9,7 +9,7 @@ import { plannedTrajectoryIdToGlobalId } from '~/model/identifiers';
 import CustomPropTypes from '~/utils/prop-types';
 
 import {
-  createStyleForTrajectoryInViewCoordinates,
+  createStyleForTrajectoryFeature,
   mapTrajectoryToView,
 } from './UAVTrajectoryFeature';
 
@@ -19,15 +19,11 @@ export const MissionSlotTrajectoryFeature = ({
   missionIndex,
 }) => {
   const points = useMemo(() => mapTrajectoryToView(trajectory), [trajectory]);
-  const style = useMemo(
-    () => createStyleForTrajectoryInViewCoordinates(points),
-    [points]
-  );
   return points ? (
     <Feature
       id={plannedTrajectoryIdToGlobalId(missionIndex)}
       source={source}
-      style={style}
+      style={createStyleForTrajectoryFeature}
     >
       <geom.LineString coordinates={points} />
     </Feature>
@@ -42,13 +38,12 @@ MissionSlotTrajectoryFeature.propTypes = {
 
 export default connect(
   // mapStateToProps
-  (state, { missionIndex }) => {
-    const trajectory = getTrajectoryPointsInWorldCoordinatesByMissionIndex(
+  (state, { missionIndex }) => ({
+    trajectory: getTrajectoryPointsInWorldCoordinatesByMissionIndex(
       state,
       missionIndex
-    );
-    return { trajectory };
-  },
+    ),
+  }),
   // mapDispatchToProps
   {}
 )(MissionSlotTrajectoryFeature);
