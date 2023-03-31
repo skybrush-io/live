@@ -73,15 +73,27 @@ const StatusSummaryMiniTable = ({
 
   if (shouldShowGlobalPositionInfo) {
     const gpsFixLabel = gpsFixType ? (
-      <StatusText status={getSemanticsForGPSFixType(gpsFixType)}>
-        {abbreviateGPSFixType(gpsFixType)}
-      </StatusText>
+      <>
+        <StatusText status={getSemanticsForGPSFixType(gpsFixType)}>
+          {abbreviateGPSFixType(gpsFixType)}
+        </StatusText>
+        {gpsFix?.numSatellites && ` (${gpsFix?.numSatellites} sats)`}
+      </>
     ) : (
       naText
     );
+
+    const gpsAcc = (
+      <>
+        {formatNumberSafely(gpsFix?.horizontalAccuracy, 2, ' m', naText)}
+        {' / '}
+        {formatNumberSafely(gpsFix?.verticalAccuracy, 2, ' m', naText)}
+      </>
+    );
+
     rows.push(
       ['GPS fix', gpsFixLabel],
-      ['# sats', gpsFix?.numSatellites || naText],
+      ['GPS acc', gpsAcc],
       'sep1',
       ['Lat', formatNumberSafely(lat, 7, '°', naText)],
       ['Lon', formatNumberSafely(lon, 7, '°', naText)],
@@ -133,6 +145,8 @@ StatusSummaryMiniTable.propTypes = {
   gpsFix: PropTypes.shape({
     type: PropTypes.number,
     numSatellites: PropTypes.number,
+    horizontalAccuracy: PropTypes.number,
+    verticalAccuracy: PropTypes.number,
   }),
   heading: PropTypes.number,
   lastUpdated: PropTypes.number,

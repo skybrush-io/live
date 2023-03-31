@@ -33,7 +33,7 @@ const { actions, reducer } = createSlice({
       //         ahl: 0,
       //         agl: undefined,
       //     },
-      //     gpsFix: ['3D', 17],
+      //     gpsFix: ['3D', 17, 0.25, 0.56],
       //     heading: 210,
       //     errors: [],
       //     battery: {
