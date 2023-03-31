@@ -375,6 +375,12 @@ const turnAngle = (
 };
 
 /**
+ * Calculate the bearing from one point to another.
+ */
+export const bearing = (p: Coordinate2D, q: Coordinate2D): number =>
+  Math.PI / 2 - Math.atan2(q[1] - p[1], q[0] - p[0]);
+
+/**
  * Simplify a polygon given by its list of coordinates by continously removing
  * the vertices with the lowest surrounding turning rotations (equivalently, the
  * highest surrounding internal angles) and adjusting their neighbors until a
