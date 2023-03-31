@@ -85,9 +85,10 @@ const StatusSummaryMiniTable = ({
 
     const gpsAcc = (
       <>
-        {formatNumberSafely(gpsFix?.horizontalAccuracy, 2, ' m', naText)}
+        {formatNumberSafely(gpsFix?.horizontalAccuracy, 2, '', naText)}
         {' / '}
-        {formatNumberSafely(gpsFix?.verticalAccuracy, 2, ' m', naText)}
+        {formatNumberSafely(gpsFix?.verticalAccuracy, 2, '', naText)}
+        {' m'}
       </>
     );
 
