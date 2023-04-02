@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import ListItem from '@material-ui/core/ListItem';
@@ -49,7 +50,7 @@ const formatStatusText = (status, maxDistance) => {
  * accurately the drones are placed in the takeoff area. The dialog also allows
  * the user to create virtual drones if needed.
  */
-const TakeoffAreaButton = ({ maxDistance, onClick, status, ...rest }) => {
+const TakeoffAreaButton = ({ maxDistance, onClick, status, t, ...rest }) => {
   return (
     <ListItem
       button
@@ -59,7 +60,7 @@ const TakeoffAreaButton = ({ maxDistance, onClick, status, ...rest }) => {
     >
       <StatusLight status={status} />
       <ListItemText
-        primary='Setup takeoff area'
+        primary={t('show.setupTakeoffArea', 'Setup takeoff area')}
         secondary={formatStatusText(status, maxDistance)}
       />
     </ListItem>
@@ -70,6 +71,7 @@ TakeoffAreaButton.propTypes = {
   maxDistance: PropTypes.number,
   onClick: PropTypes.func,
   status: PropTypes.oneOf(Object.values(Status)),
+  t: PropTypes.func,
 };
 
 TakeoffAreaButton.defaultProps = {};
@@ -89,4 +91,4 @@ export default connect(
   {
     onClick: openTakeoffAreaSetupDialog,
   }
-)(TakeoffAreaButton);
+)(withTranslation()(TakeoffAreaButton));

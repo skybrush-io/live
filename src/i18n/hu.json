@@ -20,6 +20,7 @@
   "show": {
     "chooseStartTime": "Indítási időpont kiválasztása",
     "noFileLoaded": "Nincs betöltve műsor file",
-    "setupEnvironment": "Környezet beállítása"
+    "setupEnvironment": "Környezet beállítása",
+    "setupTakeoffArea": "Felszállási terület beállítása"
   }
 }

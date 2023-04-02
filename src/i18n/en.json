@@ -20,6 +20,7 @@
   "show": {
     "chooseStartTime": "Choose start time",
     "noFileLoaded": "No show file loaded",
-    "setupEnvironment": "Setup environment"
+    "setupEnvironment": "Setup environment",
+    "setupTakeoffArea": "Setup takeoff area"
   }
 }
