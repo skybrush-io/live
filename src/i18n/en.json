@@ -21,6 +21,9 @@
     "chooseStartTime": "Choose start time",
     "noFileLoaded": "No show file loaded",
     "setupEnvironment": "Setup environment",
-    "setupTakeoffArea": "Setup takeoff area"
+    "setupGeofence": "Setup geofence",
+    "setupTakeoffArea": "Setup takeoff area",
+    "uploadShowData": "Upload show data",
+    "uploadShowDataLoading": "Please wait, uploading…"
   }
 }

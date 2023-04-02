@@ -21,6 +21,9 @@
     "chooseStartTime": "Indítási időpont kiválasztása",
     "noFileLoaded": "Nincs betöltve műsor file",
     "setupEnvironment": "Környezet beállítása",
-    "setupTakeoffArea": "Felszállási terület beállítása"
+    "setupGeofence": "Geokerítés beállítása",
+    "setupTakeoffArea": "Felszállási terület beállítása",
+    "uploadShowData": "Műsor adatok feltöltése",
+    "uploadShowDataLoading": "Kérem várjon, feltöltés…"
   }
 }
