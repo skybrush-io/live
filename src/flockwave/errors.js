@@ -43,6 +43,7 @@ export const ErrorCode = Object.freeze({
   GEOFENCE_VIOLATION_WARNING: 71,
   WIND_SPEED_WARNING: 72,
   DISARMED: 73,
+  REBOOT_REQUIRED: 74,
 
   // Errors
   AUTOPILOT_COMM_TIMEOUT: 128,
@@ -126,6 +127,7 @@ const errorCodeToAbbreviation = {
   71: 'fence',
   72: 'wind',
   73: 'disarm',
+  74: 'reboot',
   128: 'comm t/o',
   129: 'ack t/o',
   130: 'proto',
@@ -191,6 +193,7 @@ const errorCodeToDescription = {
   71: 'Drone is outside geofence on ground',
   72: 'Wind speed is high',
   73: 'Drone not armed yet',
+  74: 'Drone requires a reboot',
   128: 'Autopilot communication timeout',
   129: 'Autopilot acknowledgment timeout',
   130: 'Autopilot communication protocol error',
