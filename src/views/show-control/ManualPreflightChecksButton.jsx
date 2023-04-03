@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import ListItem from '@material-ui/core/ListItem';
@@ -28,12 +29,15 @@ const ManualPreflightChecksButton = ({
   onApprove,
   onRevoke,
   status,
+  t,
   ...rest
 }) => {
   return hasManualChecks ? (
     <ListItem button disabled={status === Status.OFF} {...rest}>
       <StatusLight status={status} />
-      <ListItemText primary='Manual preflight checks' />
+      <ListItemText
+        primary={t('show.manualPreflightChecks', 'Manual preflight checks')}
+      />
       {/* TODO: show how many checks were not ticked off by the user yet */}
       {/*
       <ListItemSecondaryAction>
@@ -55,6 +59,7 @@ ManualPreflightChecksButton.propTypes = {
   onClick: PropTypes.func,
   onRevoke: PropTypes.func,
   status: PropTypes.oneOf(Object.values(Status)),
+  t: PropTypes.func,
 };
 
 ManualPreflightChecksButton.defaultProps = {};
@@ -72,4 +77,4 @@ export default connect(
     onClick: openManualPreflightChecksDialog,
     onRevoke: clearManualPreflightChecks,
   }
-)(ManualPreflightChecksButton);
+)(withTranslation()(ManualPreflightChecksButton));

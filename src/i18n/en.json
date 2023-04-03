@@ -18,8 +18,12 @@
     }
   },
   "show": {
+    "authorizeTheStart": "Authorize start of show",
+    "authorized": "Show authorized to start",
     "chooseStartTime": "Choose start time",
+    "manualPreflightChecks": "Manual preflight checks",
     "noFileLoaded": "No show file loaded",
+    "onboardPreflightChecks": "Onboard preflight checks",
     "setupEnvironment": "Setup environment",
     "setupGeofence": "Setup geofence",
     "setupTakeoffArea": "Setup takeoff area",

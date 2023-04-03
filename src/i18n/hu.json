@@ -18,8 +18,12 @@
     }
   },
   "show": {
+    "authorizeTheStart": "A kezdés jóváhagyása",
+    "authorized": "A műsor kezdése engedélyezett",
     "chooseStartTime": "Indítási időpont kiválasztása",
+    "manualPreflightChecks": "Felszállás előtti manuális ellenőrzés",
     "noFileLoaded": "Nincs betöltve műsor file",
+    "onboardPreflightChecks": "Automata fedélzeti ellenőrzés",
     "setupEnvironment": "Környezet beállítása",
     "setupGeofence": "Geokerítés beállítása",
     "setupTakeoffArea": "Felszállási terület beállítása",

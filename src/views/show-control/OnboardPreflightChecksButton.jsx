@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import ListItem from '@material-ui/core/ListItem';
@@ -26,12 +27,15 @@ const OnboardPreflightChecksButton = ({
   onApprove,
   onRevoke,
   status,
+  t,
   ...rest
 }) => {
   return (
     <ListItem button disabled={status === Status.OFF} {...rest}>
       <StatusLight status={status} />
-      <ListItemText primary='Onboard preflight checks' />
+      <ListItemText
+        primary={t('show.onboardPreflightChecks', 'Onboard preflight checks')}
+      />
       {/* TODO: show how many drones have nonzero error codes */}
       {/*
       <ListItemSecondaryAction>
@@ -51,6 +55,7 @@ OnboardPreflightChecksButton.propTypes = {
   onApprove: PropTypes.func,
   onRevoke: PropTypes.func,
   status: PropTypes.oneOf(Object.values(Status)),
+  t: PropTypes.func,
 };
 
 OnboardPreflightChecksButton.defaultProps = {};
@@ -67,4 +72,4 @@ export default connect(
     onClick: openOnboardPreflightChecksDialog,
     onRevoke: clearOnboardPreflightChecks,
   }
-)(OnboardPreflightChecksButton);
+)(withTranslation()(OnboardPreflightChecksButton));

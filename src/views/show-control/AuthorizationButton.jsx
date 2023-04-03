@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import ListItem from '@material-ui/core/ListItem';
@@ -28,6 +29,7 @@ const AuthorizationButton = ({
   isAuthorized,
   numUAVsTakingOffAutomatically,
   status,
+  t,
   ...rest
 }) => (
   <ListItem
@@ -44,8 +46,8 @@ const AuthorizationButton = ({
       primary={
         <Typography variant='button'>
           {isAuthorized
-            ? 'Show authorized to start'
-            : 'Authorize start of show'}
+            ? t('show.authorized', 'Show authorized to start')
+            : t('show.authorizeTheStart', 'Authorize start of show')}
         </Typography>
       }
       secondary={
@@ -67,6 +69,7 @@ AuthorizationButton.propTypes = {
   isAuthorized: PropTypes.bool,
   numUAVsTakingOffAutomatically: PropTypes.number,
   status: PropTypes.oneOf(Object.values(Status)),
+  t: PropTypes.func,
 };
 
 export default connect(
@@ -88,4 +91,4 @@ export default connect(
       }
     },
   }
-)(AuthorizationButton);
+)(withTranslation()(AuthorizationButton));
