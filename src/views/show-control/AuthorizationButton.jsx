@@ -54,11 +54,19 @@ const AuthorizationButton = ({
         <Typography variant='body2' color='textSecondary'>
           {isAuthorized
             ? numUAVsTakingOffAutomatically <= 0
-              ? 'Click here to revoke authorization'
+              ? t(
+                  'show.revokeAuthorization',
+                  'Click here to revoke authorization'
+                )
               : numUAVsTakingOffAutomatically === 1
-              ? 'One drone will take off automatically'
-              : `${numUAVsTakingOffAutomatically} drones will take off automatically`
-            : 'Authorization required before takeoff'}
+              ? t('show.takeOffOne', 'One drone will take off automatically')
+              : t(
+                  `${numUAVsTakingOffAutomatically} drones will take off automatically`
+                )
+            : t(
+                'show.authorizationReq',
+                'Authorization required before takeoff'
+              )}
         </Typography>
       }
     />

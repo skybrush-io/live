@@ -18,15 +18,20 @@
     }
   },
   "show": {
+    "authorizationReq": "Authorization required before takeoff",
     "authorizeTheStart": "Authorize start of show",
     "authorized": "Show authorized to start",
     "chooseStartTime": "Choose start time",
+    "chooseStartTimeNotSet": "Not set yet",
     "manualPreflightChecks": "Manual preflight checks",
     "noFileLoaded": "No show file loaded",
     "onboardPreflightChecks": "Onboard preflight checks",
+    "revokeAuthorization": "Click here to revoke authorization",
     "setupEnvironment": "Setup environment",
     "setupGeofence": "Setup geofence",
     "setupTakeoffArea": "Setup takeoff area",
+    "takeOffMore": "",
+    "takeOffOne": "One drone will take off automatically",
     "uploadShowData": "Upload show data",
     "uploadShowDataLoading": "Please wait, uploading…"
   }

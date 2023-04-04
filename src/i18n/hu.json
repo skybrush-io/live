@@ -18,15 +18,20 @@
     }
   },
   "show": {
+    "authorizationReq": "Jóváhagyás szükséges a felszállás előtt",
     "authorizeTheStart": "A kezdés jóváhagyása",
     "authorized": "A műsor kezdése engedélyezett",
     "chooseStartTime": "Indítási időpont kiválasztása",
+    "chooseStartTimeNotSet": "Még nincs beállítva",
     "manualPreflightChecks": "Felszállás előtti manuális ellenőrzés",
     "noFileLoaded": "Nincs betöltve műsor file",
     "onboardPreflightChecks": "Automata fedélzeti ellenőrzés",
+    "revokeAuthorization": "Kattintson ide a jóváhagyás visszavonásához",
     "setupEnvironment": "Környezet beállítása",
     "setupGeofence": "Geokerítés beállítása",
     "setupTakeoffArea": "Felszállási terület beállítása",
+    "takeOffMore": "",
+    "takeOffOne": "Egy drón automatikusan fel fog szállni",
     "uploadShowData": "Műsor adatok feltöltése",
     "uploadShowDataLoading": "Kérem várjon, feltöltés…"
   }
