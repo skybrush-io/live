@@ -131,9 +131,11 @@ const UAVTestButton = ({ component, label, timeout, type, uavId }) => {
       />
       <ListItemText
         primary={
-          suspended
-            ? `${progress.message || 'Operation suspended'}. Click to resume.`
-            : label
+          suspended ? (
+            `${progress.message || 'Operation suspended'}. Click to resume.`
+          ) : progress && (!executionState.error || executionState.loading) ? (
+            `${progress.message || label}`
+          ) : label
         }
         secondary={
           !executionState.loading && executionState.error ? (
