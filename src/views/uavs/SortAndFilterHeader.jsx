@@ -195,7 +195,7 @@ const COMMON_HEADER_TEXT_PARTS = Object.freeze([
     label: 'Position',
     style: {
       textAlign: 'left',
-      width: 194,
+      width: 198,
     },
   },
   {
@@ -203,7 +203,7 @@ const COMMON_HEADER_TEXT_PARTS = Object.freeze([
     sortKey: UAVSortKey.ALTITUDE_MSL,
     style: {
       textAlign: 'right',
-      width: 56,
+      width: 58,
     },
   },
   {
@@ -219,7 +219,7 @@ const COMMON_HEADER_TEXT_PARTS = Object.freeze([
     sortKey: UAVSortKey.ALTITUDE_GROUND,
     style: {
       textAlign: 'right',
-      width: 56,
+      width: 48,
     },
   },
   {
