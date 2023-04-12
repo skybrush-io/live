@@ -30,7 +30,8 @@
     "setupEnvironment": "Környezet beállítása",
     "setupGeofence": "Geokerítés beállítása",
     "setupTakeoffArea": "Felszállási terület beállítása",
-    "takeOffMore": "",
+    "startsAt": "{{time}}-kor kezdődik",
+    "takeOffMore": "{{quantity}} drón automatikusan fel fog szállni",
     "takeOffOne": "Egy drón automatikusan fel fog szállni",
     "uploadShowData": "Műsor adatok feltöltése",
     "uploadShowDataLoading": "Kérem várjon, feltöltés…"

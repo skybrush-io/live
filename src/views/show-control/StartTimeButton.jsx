@@ -27,7 +27,7 @@ const StartTimeButton = ({ formattedStartTime, onClick, status }) => {
         primary={t('show.chooseStartTime')}
         secondary={
           formattedStartTime
-            ? `Starts at ${formattedStartTime}`
+            ? t('show.startsAt', { time: formattedStartTime })
             : t('show.chooseStartTimeNotSet', 'Not set yet')
         }
       />

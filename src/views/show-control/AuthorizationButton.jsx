@@ -60,9 +60,9 @@ const AuthorizationButton = ({
                 )
               : numUAVsTakingOffAutomatically === 1
               ? t('show.takeOffOne', 'One drone will take off automatically')
-              : t(
-                  `${numUAVsTakingOffAutomatically} drones will take off automatically`
-                )
+              : t('show.takeOffMore', {
+                  quantity: numUAVsTakingOffAutomatically,
+                })
             : t(
                 'show.authorizationReq',
                 'Authorization required before takeoff'

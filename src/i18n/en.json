@@ -30,7 +30,8 @@
     "setupEnvironment": "Setup environment",
     "setupGeofence": "Setup geofence",
     "setupTakeoffArea": "Setup takeoff area",
-    "takeOffMore": "",
+    "startsAt": "Starts at {{time}}",
+    "takeOffMore": "{{quantity}} drones will take off automatically",
     "takeOffOne": "One drone will take off automatically",
     "uploadShowData": "Upload show data",
     "uploadShowDataLoading": "Please wait, uploading…"
