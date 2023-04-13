@@ -125,6 +125,27 @@ const defaults = {
     ],
   ],
 
+  /**
+   * Select which tools should appear on the drawing toolbar of the map,
+   * and in what order.
+   * The list of available tools is in `src/views/map/DrawingToolbar.jsx`.
+   * Groups specified by subarrays will be separated by horizontal dividers.
+   *
+   * @type {Array.<Array.<string>>}
+   */
+  mapDrawingToolbarTools: [
+    ['select', 'zoom'],
+    [
+      'add-marker',
+      'draw-path',
+      'draw-circle',
+      'draw-rectangle',
+      'draw-polygon',
+      'cut-hole',
+      'edit-feature',
+    ],
+  ],
+
   optimizeForSingleUAV: {
     /**
      * Whether the application should be optimized for operating a single UAV.
