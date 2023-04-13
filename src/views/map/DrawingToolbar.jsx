@@ -1,3 +1,5 @@
+import config from 'config';
+
 import PropTypes from 'prop-types';
 import React from 'react';
 
@@ -21,6 +23,54 @@ import { getSelectedTool, setSelectedTool } from '~/features/map/tools';
 
 import { Tool } from './tools';
 
+const drawingToolRegistry = {
+  'add-marker': {
+    tool: Tool.DRAW_POINT,
+    label: 'Add marker',
+    icon: LocationOn,
+  },
+  'cut-hole': {
+    tool: Tool.CUT_HOLE,
+    label: 'Cut hole into polygon',
+    icon: ContentCut,
+  },
+  'draw-circle': {
+    tool: Tool.DRAW_CIRCLE,
+    label: 'Draw circle',
+    icon: PanoramaFishEye,
+  },
+  'draw-path': {
+    tool: Tool.DRAW_PATH,
+    label: 'Draw path',
+    icon: ShowChart,
+  },
+  'draw-polygon': {
+    tool: Tool.DRAW_POLYGON,
+    label: 'Draw polygon',
+    icon: StarBorder,
+  },
+  'draw-rectangle': {
+    tool: Tool.DRAW_RECTANGLE,
+    label: 'Draw rectangle',
+    icon: CropSquare,
+  },
+  'edit-feature': {
+    tool: Tool.EDIT_FEATURE,
+    label: 'Edit feature',
+    icon: EditFeature,
+  },
+  select: {
+    tool: Tool.SELECT,
+    label: 'Select',
+    icon: SelectAll,
+  },
+  zoom: {
+    tool: Tool.ZOOM,
+    label: 'Zoom',
+    icon: ZoomIn,
+  },
+};
+
 /**
  * Presentation component for the drawing toolbar.
  *
@@ -32,61 +82,21 @@ const DrawingToolbarPresentation = ({ onToolSelected, selectedTool }) => {
 
   return (
     <div style={{ display: 'flex', flexFlow: 'column nowrap' }}>
-      <Tooltip content='Select' placement='right'>
-        <IconButton onClick={partial(onToolSelected, Tool.SELECT)}>
-          <SelectAll color={colorForTool(Tool.SELECT)} />
-        </IconButton>
-      </Tooltip>
-
-      <Tooltip content='Zoom' placement='right'>
-        <IconButton onClick={partial(onToolSelected, Tool.ZOOM)}>
-          <ZoomIn color={colorForTool(Tool.ZOOM)} />
-        </IconButton>
-      </Tooltip>
-
-      <Divider />
-
-      <Tooltip content='Add marker' placement='right'>
-        <IconButton onClick={partial(onToolSelected, Tool.DRAW_POINT)}>
-          <LocationOn color={colorForTool(Tool.DRAW_POINT)} />
-        </IconButton>
-      </Tooltip>
-
-      <Tooltip content='Draw path' placement='right'>
-        <IconButton onClick={partial(onToolSelected, Tool.DRAW_PATH)}>
-          <ShowChart color={colorForTool(Tool.DRAW_PATH)} />
-        </IconButton>
-      </Tooltip>
-
-      <Tooltip content='Draw circle' placement='right'>
-        <IconButton onClick={partial(onToolSelected, Tool.DRAW_CIRCLE)}>
-          <PanoramaFishEye color={colorForTool(Tool.DRAW_CIRCLE)} />
-        </IconButton>
-      </Tooltip>
-
-      <Tooltip content='Draw rectangle' placement='right'>
-        <IconButton onClick={partial(onToolSelected, Tool.DRAW_RECTANGLE)}>
-          <CropSquare color={colorForTool(Tool.DRAW_RECTANGLE)} />
-        </IconButton>
-      </Tooltip>
-
-      <Tooltip content='Draw polygon' placement='right'>
-        <IconButton onClick={partial(onToolSelected, Tool.DRAW_POLYGON)}>
-          <StarBorder color={colorForTool(Tool.DRAW_POLYGON)} />
-        </IconButton>
-      </Tooltip>
-
-      <Tooltip content='Cut hole into polygon' placement='right'>
-        <IconButton onClick={partial(onToolSelected, Tool.CUT_HOLE)}>
-          <ContentCut color={colorForTool(Tool.CUT_HOLE)} />
-        </IconButton>
-      </Tooltip>
-
-      <Tooltip content='Edit feature' placement='right'>
-        <IconButton onClick={partial(onToolSelected, Tool.EDIT_FEATURE)}>
-          <EditFeature color={colorForTool(Tool.EDIT_FEATURE)} />
-        </IconButton>
-      </Tooltip>
+      {config.mapDrawingToolbarTools
+        .flatMap((group) => [
+          <Divider key={`drawing-toolbar-group:${group.join(',')}`} />,
+          ...group.map((t) => {
+            const { tool, label, icon: Icon } = drawingToolRegistry[t];
+            return (
+              <Tooltip key={t} content={label} placement='right'>
+                <IconButton onClick={partial(onToolSelected, tool)}>
+                  <Icon color={colorForTool(tool)} />
+                </IconButton>
+              </Tooltip>
+            );
+          }),
+        ])
+        .slice(1)}
     </div>
   );
 };
