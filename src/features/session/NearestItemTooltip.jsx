@@ -9,8 +9,6 @@ import { isUavId, globalIdToUavId } from '~/model/identifiers';
 
 import { getNearestFeatureIdForTooltip } from './selectors';
 
-const PLUGINS = [followCursor];
-
 const supportsTooltip = (featureId) => featureId && isUavId(featureId);
 
 const NearestItemTooltipContent = React.memo(({ featureId }) => {
@@ -29,9 +27,10 @@ const NearestItemTooltip = ({ featureId, ...rest }) => {
     <Tooltip
       followCursor
       ignoreAttributes
+      mouseOnly
       duration={0}
       placement='right'
-      plugins={PLUGINS}
+      plugins={[followCursor]}
       visible={visible}
       content={
         visible ? <NearestItemTooltipContent featureId={featureId} /> : null
