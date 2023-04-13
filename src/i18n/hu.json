@@ -1,4 +1,12 @@
 {
+  "geofence": {
+    "statusText": {
+      "automatic": "Automatikus geofence van használatban",
+      "error": "A műsor területe a geofence-n kívül esik",
+      "manual": "Kézi geofence van használatban",
+      "no": "Még nincs geofence beállítva"
+    }
+  },
   "map": {
     "resetRotation": "Forgatás visszaállítása"
   },
@@ -23,6 +31,7 @@
     "authorized": "A műsor kezdése engedélyezett",
     "chooseStartTime": "Indítási időpont kiválasztása",
     "chooseStartTimeNotSet": "Még nincs beállítva",
+    "loading": "Kérem várjon, a műsor fájl töltődik…",
     "manualPreflightChecks": "Felszállás előtti manuális ellenőrzés",
     "noFileLoaded": "Nincs betöltve műsor file",
     "onboardPreflightChecks": "Automata fedélzeti ellenőrzés",

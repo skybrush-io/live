@@ -11,21 +11,22 @@ import StatusLight from '@skybrush/mui-components/lib/StatusLight';
 import { Status } from '~/components/semantics';
 import { showGeofenceSettingsDialog } from '~/features/geofence/slice';
 import { getSetupStageStatuses } from '~/features/show/stages';
+import i18n from '~/i18n';
 
 const formatStatusText = (status) => {
   switch (status) {
     case Status.OFF:
     case Status.NEXT:
-      return 'No geofence defined yet';
+      return i18n.t('geofence.statusText.no');
 
     case Status.SUCCESS:
-      return 'Automatic geofence in use';
+      return i18n.t('geofence.statusText.automatic');
 
     case Status.WARNING:
-      return 'Manual geofence in use';
+      return i18n.t('geofence.statusText.manual');
 
     case Status.ERROR:
-      return 'Show area lies outside the geofence';
+      return i18n.t('geofence.statusText.error');
 
     default:
       return '';

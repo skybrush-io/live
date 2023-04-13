@@ -78,7 +78,7 @@ const LoadShowFromFileButton = ({
     <ListItemTextWithProgress
       primary={
         loading
-          ? 'Please wait, loading show file…'
+          ? t('show.loading', 'Please wait, loading show file…')
           : hasLoadedShowFile
           ? truncate(title, 60)
           : t('show.noFileLoaded')

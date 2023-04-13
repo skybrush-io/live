@@ -1,4 +1,12 @@
 {
+  "geofence": {
+    "statusText": {
+      "automatic": "Automatic geofence in use",
+      "error": "Show area lies outside the geofence",
+      "manual": "Manual geofence in use",
+      "no": "No geofence defined yet"
+    }
+  },
   "map": {
     "resetRotation": "Reset rotation"
   },
@@ -23,6 +31,7 @@
     "authorized": "Show authorized to start",
     "chooseStartTime": "Choose start time",
     "chooseStartTimeNotSet": "Not set yet",
+    "loading": "Please wait, loading show file…",
     "manualPreflightChecks": "Manual preflight checks",
     "noFileLoaded": "No show file loaded",
     "onboardPreflightChecks": "Onboard preflight checks",
