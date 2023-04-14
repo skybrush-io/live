@@ -13,7 +13,6 @@ import Map from '@material-ui/icons/Map';
 import Place from '@material-ui/icons/Place';
 import FormatListBulleted from '@material-ui/icons/FormatListBulleted';
 // import Storage from '@material-ui/icons/Storage';
-import TrendingUp from '@material-ui/icons/TrendingUp';
 import ThreeDRotation from '@material-ui/icons/ThreeDRotation';
 import WbSunny from '@material-ui/icons/WbSunny';
 
@@ -26,7 +25,8 @@ import LogStatusBadge from '~/components/badges/LogStatusBadge';
 import { getMissionType } from '~/features/mission/selectors';
 import { areExperimentalFeaturesEnabled } from '~/features/settings/selectors';
 import Antenna from '~/icons/Antenna';
-import Polyline from '~/icons/Polyline';
+import Route from '~/icons/Route';
+import ShapeLine from '~/icons/ShapeLine';
 import { MissionType } from '~/model/missions';
 import { hasFeature } from '~/utils/configuration';
 
@@ -90,7 +90,7 @@ const Sidebar = ({
         {hasFeature('mapFeatures') && (
           <Module
             id='features'
-            icon={<Polyline />}
+            icon={<ShapeLine />}
             label='Features'
             component='feature-list'
           />
@@ -146,7 +146,7 @@ const Sidebar = ({
         {hasMissionEditor && (
           <Module
             id='missionEditor'
-            icon={<TrendingUp />}
+            icon={<Route />}
             label='Mission editor'
             component='mission-editor'
           />
