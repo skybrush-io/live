@@ -24,7 +24,7 @@ import { connect } from 'react-redux';
 import LogStatusBadge from '~/components/badges/LogStatusBadge';
 import { areExperimentalFeaturesEnabled } from '~/features/settings/selectors';
 import Antenna from '~/icons/Antenna';
-import Polyline from '~/icons/Polyline';
+import ShapeLine from '~/icons/ShapeLine';
 import { hasFeature } from '~/utils/configuration';
 
 import { isSidebarOpen } from './selectors';
@@ -81,7 +81,7 @@ const Sidebar = ({ experimentalFeaturesEnabled, isOpen, workbench }) => (
         {hasFeature('features') && (
           <Module
             id='features'
-            icon={<Polyline />}
+            icon={<ShapeLine />}
             label='Features'
             component='feature-list'
           />
