@@ -96,25 +96,25 @@ const LoadShowFromFileButton = ({
         ) : hasLoadedShowFile ? (
           description
         ) : (
-          'Select or drop a show file here'
+          t('show.selectFile', 'Select or drop a show file here')
         )
       }
     />
     <ListItemSecondaryAction>
       {changedSinceLoaded ? (
-        <Tooltip content='Reload show'>
+        <Tooltip content={t('show.reload', 'Reload show')}>
           <IconButton edge='end' onClick={onReloadShowFile}>
             <Refresh />
           </IconButton>
         </Tooltip>
       ) : hasLoadedShowFile ? (
-        <Tooltip content='Clear loaded show'>
+        <Tooltip content={t('show.clear', 'Clear loaded show')}>
           <IconButton edge='end' onClick={onClearLoadedShow}>
             <Clear />
           </IconButton>
         </Tooltip>
       ) : hasFeature('loadShowFromCloud') ? (
-        <Tooltip content='Load show from cloud'>
+        <Tooltip content={t('show.fromCloud', 'Load show from cloud')}>
           <IconButton edge='end' onClick={onLoadShowFromCloud}>
             <CloudDownload />
           </IconButton>

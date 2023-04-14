@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { withTranslation } from 'react-i18next';
+import { useTranslation, withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { createSelector } from '@reduxjs/toolkit';
 
@@ -25,21 +25,24 @@ const getEnvironmentDescription = createSelector(
   getShowEnvironmentType,
   getOutdoorShowAltitudeReference,
   (environmentType, outdoorAltitudeReference) => {
+    const { t } = useTranslation();
     switch (environmentType) {
       case 'indoor':
-        return 'Indoor';
+        return t('show.indoor', 'Indoor');
 
       case 'outdoor': {
         const { type, value } = outdoorAltitudeReference;
         if (type === AltitudeReference.AMSL) {
           if (Number.isFinite(value)) {
-            return `Outdoor, relative to ${value.toFixed(1)}m AMSL`;
+            return t('show.outdoor.relativeToAMSL', {
+              altitude: value.toFixed(1),
+            });
           } else {
             return 'Outdoor, invalid altitude reference';
           }
         } else if (type === AltitudeReference.AHL) {
           // value should be ignored in this case
-          return `Outdoor, relative to home`;
+          return t('show.outdoor.relativeToHome');
         } else {
           return 'Outdoor, unknown altitude reference';
         }
