@@ -14,7 +14,6 @@ import Place from '@material-ui/icons/Place';
 import FormatListBulleted from '@material-ui/icons/FormatListBulleted';
 // import Storage from '@material-ui/icons/Storage';
 import ThreeDRotation from '@material-ui/icons/ThreeDRotation';
-import TrendingUp from '@material-ui/icons/TrendingUp';
 import WbSunny from '@material-ui/icons/WbSunny';
 
 import PropTypes from 'prop-types';
@@ -28,6 +27,7 @@ import { getMissionType } from '~/features/mission/selectors';
 import { areExperimentalFeaturesEnabled } from '~/features/settings/selectors';
 import Antenna from '~/icons/Antenna';
 import ConnectingAirports from '~/icons/ConnectingAirports';
+import Route from '~/icons/Route';
 import ShapeLine from '~/icons/ShapeLine';
 import { MissionType } from '~/model/missions';
 import { hasFeature } from '~/utils/configuration';
@@ -149,7 +149,7 @@ const Sidebar = ({
         {hasMissionEditor && (
           <Module
             id='missionEditor'
-            icon={<TrendingUp />}
+            icon={<Route />}
             label='Mission editor'
             component='mission-editor'
           />

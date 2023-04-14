@@ -8,8 +8,8 @@ import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import DialogContent from '@material-ui/core/DialogContent';
+import Security from '@material-ui/icons/Security';
 import Tab from '@material-ui/core/Tab';
-import Tune from '@material-ui/icons/Tune';
 
 import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
 import DialogTabs from '@skybrush/mui-components/lib/DialogTabs';
@@ -37,7 +37,7 @@ const tabs = [
     : []),
   {
     id: SafetyDialogTab.SETTINGS,
-    icon: <Tune />,
+    icon: <Security />,
     name: 'Settings',
     component: SafetySettingsTab,
   },
