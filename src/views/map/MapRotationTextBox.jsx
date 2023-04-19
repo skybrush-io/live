@@ -2,6 +2,7 @@
  * @file React Component to display and adjust the rotation of the map view.
  */
 
+import throttle from 'lodash-es/throttle';
 import { easeOut } from 'ol/easing';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -53,8 +54,10 @@ export default class MapRotationTextBox extends React.Component {
     super(props);
 
     this._onMapReferenceReceived = this._onMapReferenceReceived.bind(this);
-    this._updateRotationFromMapView =
-      this._updateRotationFromMapView.bind(this);
+    this._updateRotationFromMapView = throttle(
+      this._updateRotationFromMapView.bind(this),
+      100
+    );
     this._onFocus = this._onFocus.bind(this);
     this._onBlur = this._onBlur.bind(this);
     this._onChange = this._onChange.bind(this);
@@ -110,14 +113,12 @@ export default class MapRotationTextBox extends React.Component {
 
     // If the map already has a view, bind an event listener to the view
     if (view) {
-      view.on('propertychange', this._updateRotationFromMapView);
+      view.on('change:rotation', this._updateRotationFromMapView);
     }
 
     // Listen also for changes in the view of the map
-    map.on('propertychange', (event) => {
-      if (event.key === 'view') {
-        map.getView().on('propertychange', this._updateRotationFromMapView);
-      }
+    map.on('change:view', (_event) => {
+      map.getView().on('change:rotation', this._updateRotationFromMapView);
     });
   }
 
@@ -127,11 +128,9 @@ export default class MapRotationTextBox extends React.Component {
    * @param {ol.ObjectEvent} event the event fired from the OpenLayers View
    */
   _updateRotationFromMapView(event) {
-    if (event.key === 'rotation') {
-      this.setState({
-        rotation: toDegrees(-event.target.get('rotation')),
-      });
-    }
+    this.setState({
+      rotation: toDegrees(-event.target.get('rotation')),
+    });
   }
 
   /**
