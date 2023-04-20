@@ -3,13 +3,17 @@ import PropTypes from 'prop-types';
 import React, { useCallback, useRef, useState } from 'react';
 import { useAsyncFn } from 'react-use';
 
+import Button from '@material-ui/core/Button';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
+import Zoom from '@material-ui/core/Zoom';
 
 import StatusLight from '@skybrush/mui-components/lib/StatusLight';
 
+import Colors from '~/components/colors';
 import { errorToString } from '~/error-handling';
 import { useMessageHub } from '~/hooks';
 
@@ -52,6 +56,7 @@ const tests = [
   {
     component: 'motor',
     label: 'Execute motor test',
+    needsConfirmation: true,
     type: 'test',
   },
 ];
@@ -79,11 +84,43 @@ ProgressBar.propTypes = {
   }),
 };
 
-const UAVTestButton = ({ component, label, timeout, type, uavId }) => {
+const UAVTestButton = ({
+  component,
+  label,
+  needsConfirmation,
+  timeout,
+  type,
+  uavId,
+}) => {
   const messageHub = useMessageHub();
+
+  // We can store the timeout ID of the pending confirmation in this state and
+  // use it to determine whethere there is a currently pending confirmation,
+  // as setTimeout returns *positive* integers only.
+  // https://developer.mozilla.org/en-US/docs/Web/API/setTimeout#return_value
+  const [pendingConfirmation, setPendingConfirmation] = useState(null);
   const [progress, setProgress] = useState(null);
   const [suspended, setSuspended] = useState(false);
   const resumeCallback = useRef(null);
+
+  const clearPendingConfirmation = useCallback(() => {
+    clearTimeout(pendingConfirmation);
+    setPendingConfirmation(null);
+  }, [pendingConfirmation, setPendingConfirmation]);
+
+  const askForConfirmation = useCallback(() => {
+    clearPendingConfirmation();
+    setPendingConfirmation(setTimeout(clearPendingConfirmation, 3000));
+  }, [clearPendingConfirmation, setPendingConfirmation]);
+
+  const giveConfirmation = useCallback(() => {
+    clearPendingConfirmation();
+    if (suspended) {
+      resume();
+    } else {
+      execute();
+    }
+  }, [clearPendingConfirmation, execute, resume, suspended]);
 
   const progressHandler = useCallback(({ progress, resume, suspended }) => {
     setProgress(progress);
@@ -113,7 +150,10 @@ const UAVTestButton = ({ component, label, timeout, type, uavId }) => {
   }, []);
 
   return (
-    <ListItem button onClick={suspended ? resume : execute}>
+    <ListItem
+      button
+      onClick={needsConfirmation ? askForConfirmation : giveConfirmation}
+    >
       <StatusLight
         status={
           suspended
@@ -131,11 +171,11 @@ const UAVTestButton = ({ component, label, timeout, type, uavId }) => {
       />
       <ListItemText
         primary={
-          suspended ? (
-            `${progress.message || 'Operation suspended'}. Click to resume.`
-          ) : progress && (!executionState.error || executionState.loading) ? (
-            `${progress.message || label}`
-          ) : label
+          suspended
+            ? `${progress.message || 'Operation suspended'}. Click to resume.`
+            : progress && (!executionState.error || executionState.loading)
+            ? `${progress.message || label}`
+            : label
         }
         secondary={
           !executionState.loading && executionState.error ? (
@@ -149,6 +189,18 @@ const UAVTestButton = ({ component, label, timeout, type, uavId }) => {
           ) : null
         }
       />
+      <ListItemSecondaryAction>
+        {/* TODO: Change to `Slide` from right when switching to Material UI v5,
+                  as that version supports setting a `container`. */}
+        <Zoom in={Boolean(pendingConfirmation)}>
+          <Button
+            style={{ color: Colors.seriousWarning }}
+            onClick={giveConfirmation}
+          >
+            Confirm
+          </Button>
+        </Zoom>
+      </ListItemSecondaryAction>
     </ListItem>
   );
 };
@@ -156,9 +208,14 @@ const UAVTestButton = ({ component, label, timeout, type, uavId }) => {
 UAVTestButton.propTypes = {
   component: PropTypes.string,
   label: PropTypes.string,
+  needsConfirmation: PropTypes.bool,
   uavId: PropTypes.string,
   timeout: PropTypes.number,
   type: PropTypes.oneOf(['calib', 'test']),
+};
+
+UAVTestButton.defaultProps = {
+  needsConfirmation: false,
 };
 
 const UAVTestsPanel = ({ uavId }) => {
