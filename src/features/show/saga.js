@@ -7,6 +7,7 @@ import { call, put, select } from 'redux-saga/effects';
 
 import {
   getShowClockReference,
+  getShowDuration,
   getShowStartMethod,
   getShowStartTime,
   isShowAuthorizedToStartLocally,
@@ -55,6 +56,7 @@ function* pushSettingsToServer() {
   const mapping = yield select(getMissionMapping);
   const method = yield select(getShowStartMethod);
   const time = yield select(getShowStartTime);
+  const duration = yield select(getShowDuration);
   const uavIdsToStartAutomatically =
     method === 'auto' ? reject(mapping || [], isNil) : [];
   yield call(messageHub.execute.setShowConfiguration, {
@@ -65,6 +67,7 @@ function* pushSettingsToServer() {
       method,
       uavIds: uavIdsToStartAutomatically,
     },
+    duration,
   });
 
   // TODO(ntamas): it would be nicer to read the values back from the server
