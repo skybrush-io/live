@@ -39,6 +39,7 @@ import {
   openTimeSyncWarningDialog,
   setCurrentServerConnectionState,
   setServerLicense,
+  setServerVersion,
 } from '~/features/servers/slice';
 import {
   clearStartTimeAndMethod,
@@ -481,6 +482,11 @@ async function executeTasksAfterConnection(dispatch, getState) {
   let response;
 
   try {
+    const {
+      body: { version },
+    } = await messageHub.sendMessage('SYS-VER');
+    dispatch(setServerVersion(version));
+
     // Send a CONN-LIST message to the server to get an up-to-date
     // list of connections
     response = await messageHub.sendMessage('CONN-LIST');

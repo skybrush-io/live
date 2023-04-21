@@ -10,6 +10,7 @@ import MiniListItem from '@skybrush/mui-components/lib/MiniListItem';
 import { MAX_ROUNDTRIP_TIME } from '~/features/servers/constants';
 import {
   getCurrentServerState,
+  getCurrentServerVersion,
   getRoundedClockSkewInMilliseconds,
   getRoundTripTimeInMilliseconds,
   getServerHostname,
@@ -47,7 +48,8 @@ const ServerConnectionStatusMiniList = ({
   clockSkew,
   connectionState,
   roundTripTime,
-  serverName,
+  serverHostname,
+  serverVersion,
 }) => (
   <MiniList>
     <MiniListItem
@@ -56,11 +58,16 @@ const ServerConnectionStatusMiniList = ({
         connectionStateToPrimaryText[connectionState] || 'Unknown state'
       }
       secondaryText={
-        connectionState === ConnectionState.CONNECTED ? serverName : null
+        connectionState === ConnectionState.CONNECTED ? serverHostname : null
       }
     />
     {connectionState === ConnectionState.CONNECTED ? (
       <>
+        <MiniListItem
+          iconPreset='empty'
+          primaryText='Server version'
+          secondaryText={serverVersion}
+        />
         <MiniListDivider />
         {clockSkew === 0 ? (
           <MiniListItem
@@ -90,7 +97,8 @@ ServerConnectionStatusMiniList.propTypes = {
   clockSkew: PropTypes.number,
   connectionState: PropTypes.string,
   roundTripTime: PropTypes.number,
-  serverName: PropTypes.string,
+  serverHostname: PropTypes.string,
+  serverVersion: PropTypes.string,
 };
 
 export default connect(
@@ -98,7 +106,8 @@ export default connect(
     connectionState: getCurrentServerState(state).state,
     clockSkew: getRoundedClockSkewInMilliseconds(state),
     roundTripTime: getRoundTripTimeInMilliseconds(state),
-    serverName: getServerHostname(state),
+    serverHostname: getServerHostname(state),
+    serverVersion: getCurrentServerVersion(state),
   }),
   {}
 )(ServerConnectionStatusMiniList);

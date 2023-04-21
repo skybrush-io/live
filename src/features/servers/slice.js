@@ -60,6 +60,7 @@ const { actions, reducer } = createSlice({
         clockSkew: null,
         roundTripTime: null,
       },
+      version: null,
     },
     isAuthenticating: false,
     isScanning: false,
@@ -289,6 +290,13 @@ const { actions, reducer } = createSlice({
     },
 
     /**
+     * Sets version information about the currently active server.
+     */
+    setServerVersion(state, { payload: version }) {
+      state.current.version = version;
+    },
+
+    /**
      * Action factory that creates an action that notifies the store that the
      * scanning for servers has started.
      */
@@ -366,6 +374,7 @@ export const {
   setAuthenticatedUser,
   setCurrentServerConnectionState,
   setServerLicense,
+  setServerVersion,
   startScanning,
   stopScanning,
   updateCurrentServerAuthenticationSettings,
