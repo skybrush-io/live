@@ -44,6 +44,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `NO TELEM` to make it clear that this status means that we have not received
   telemetry data from the UAV for a while.
 
+- Motor tests now require confirmation on the user interface.
+
 ### Fixed
 
 - Fixed some cases in which the pending UAV ID overlay could remain on the
