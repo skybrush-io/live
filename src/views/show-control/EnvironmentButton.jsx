@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { useTranslation, withTranslation } from 'react-i18next';
+import { withTranslation } from 'react-i18next';
+import i18n from '~/i18n';
 import { connect } from 'react-redux';
 import { createSelector } from '@reduxjs/toolkit';
 
@@ -17,6 +18,7 @@ import {
 } from '~/features/show/selectors';
 import { openEnvironmentEditorDialog } from '~/features/show/slice';
 import { getSetupStageStatuses } from '~/features/show/stages';
+import { getDisplayLanguage } from '~/features/settings/selectors';
 
 /**
  * Specialized selector to format the secondary text on the button.
@@ -24,18 +26,19 @@ import { getSetupStageStatuses } from '~/features/show/stages';
 const getEnvironmentDescription = createSelector(
   getShowEnvironmentType,
   getOutdoorShowAltitudeReference,
-  (environmentType, outdoorAltitudeReference) => {
-    const { t } = useTranslation();
+  getDisplayLanguage,
+  (environmentType, outdoorAltitudeReference, language) => {
     switch (environmentType) {
       case 'indoor':
-        return t('show.indoor', 'Indoor');
+        return i18n.t('show.indoor', { lng: language });
 
       case 'outdoor': {
         const { type, value } = outdoorAltitudeReference;
         if (type === AltitudeReference.AMSL) {
           if (Number.isFinite(value)) {
-            return t('show.outdoor.relativeToAMSL', {
+            return i18n.t('show.outdoor.relativeToAMSL', {
               altitude: value.toFixed(1),
+              lng: language,
             });
           } else {
             return 'Outdoor, invalid altitude reference';

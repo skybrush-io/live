@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import List from '@material-ui/core/List';
@@ -32,7 +33,7 @@ const iconForStartMethod = {
  * Component that explains to the user how the drones will start after the
  * authorization has been given.
  */
-const StartMethodExplanation = ({ hasScheduledStartTime, startMethod }) => (
+const StartMethodExplanation = ({ hasScheduledStartTime, startMethod, t }) => (
   <List dense>
     <ListItem>
       <ListItemIcon>
@@ -41,15 +42,16 @@ const StartMethodExplanation = ({ hasScheduledStartTime, startMethod }) => (
       <ListItemText
         primary={
           primaryTextForStartMethod[startMethod] ||
-          'This show uses an unknown start mode'
+          t('show.unknownStartMode', 'This show uses an unknown start mode')
         }
         secondary={
           hasScheduledStartTime ? (
             <>
-              Show clock: <ClockDisplayLabel clockId='show' />
+              {t('show.clock', 'Show clock:')}{' '}
+              <ClockDisplayLabel clockId='show' />
             </>
           ) : (
-            'Start time not set yet'
+            t('show.startTimeNotSet', 'Start time not set yet')
           )
         }
       />
@@ -60,6 +62,7 @@ const StartMethodExplanation = ({ hasScheduledStartTime, startMethod }) => (
 StartMethodExplanation.propTypes = {
   hasScheduledStartTime: PropTypes.bool,
   startMethod: PropTypes.oneOf(StartMethod._VALUES),
+  t: PropTypes.func,
 };
 
 export default connect(
@@ -70,4 +73,4 @@ export default connect(
   }),
   // mapDispatchToProps
   {}
-)(StartMethodExplanation);
+)(withTranslation()(StartMethodExplanation));
