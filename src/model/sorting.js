@@ -116,7 +116,8 @@ export const getKeyFunctionForUAVSortKey = memoize((key) => {
         // Sort by type first, then by number of satellites. We multiply a
         // numeric index derived from the type by 100, and add the number of
         // satellites to it.
-        const { type = GPSFixType.NO_FIX, numSatellites = 0 } = uav;
+        const { type = GPSFixType.NO_FIX, numSatellites = 0 } =
+          uav?.gpsFix || {};
 
         // GPSFixType is numeric so this is easy
         return Math.max(type, 0) * 100 + Math.max(numSatellites, 0);

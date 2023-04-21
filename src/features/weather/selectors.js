@@ -1,6 +1,6 @@
 import addDays from 'date-fns/addDays';
 import isAfter from 'date-fns/isAfter';
-import { createSelector } from 'reselect';
+import { createSelector } from '@reduxjs/toolkit';
 import SunCalc from 'suncalc';
 
 import { Status } from '@skybrush/app-theme-material-ui';

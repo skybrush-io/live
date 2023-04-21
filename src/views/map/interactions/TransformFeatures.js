@@ -166,6 +166,11 @@ export class TransformFeaturesInteraction extends PointerInteraction {
       },
 
       handleDragEvent: (event) => {
+        // Prevent collision with multi-touch gestures
+        if (this.targetPointers.length > 1) {
+          return;
+        }
+
         if (this.lastCoordinate_) {
           const newCoordinate = event.coordinate;
           const deltaX = newCoordinate[0] - this.lastCoordinate_[0];

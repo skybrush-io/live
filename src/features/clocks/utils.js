@@ -40,6 +40,14 @@ const clockIdToProps = {
     signed: true,
     affectedByClockSkew: true,
   },
+
+  // eslint-disable-next-line camelcase
+  end_of_show: {
+    label: 'Time until end of show',
+    abbreviation: 'END',
+    signed: true,
+    affectedByClockSkew: true,
+  },
 };
 
 /**

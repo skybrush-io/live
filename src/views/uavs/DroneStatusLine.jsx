@@ -118,6 +118,7 @@ const DroneStatusLine = ({
   textSemantics,
 }) => {
   const classes = useStyles();
+  const { amsl, ahl, agl } = position || {};
   return (
     <div className={clsx(classes.root, gone && classes.gone)}>
       {padStart(label, 4)}
@@ -161,26 +162,20 @@ const DroneStatusLine = ({
           ) : (
             <span className={classes.muted}>{padEnd('no position', 24)}</span>
           )}
-          {position ? (
-            padStart(
-              !isNil(position && position.amsl)
-                ? position.amsl.toFixed(1)
-                : '?',
-              6
-            ) +
-            'm ' +
-            padStart(
-              !isNil(position && position.ahl) ? position.ahl.toFixed(1) : '?',
-              5
-            ) +
-            'm ' +
-            padStart(
-              !isNil(position && position.agl) ? position.agl.toFixed(1) : '?',
-              5
-            ) +
-            'm'
+          {!isNil(amsl) ? (
+            padStart(position.amsl.toFixed(1), 6) + 'm'
           ) : (
-            <span className={classes.muted}>{'    ———    ———    ———'}</span>
+            <span className={classes.muted}>{'    ———'}</span>
+          )}
+          {!isNil(ahl) ? (
+            padStart(position.ahl.toFixed(1), 6) + 'm'
+          ) : (
+            <span className={classes.muted}>{'   ———'}</span>
+          )}
+          {!isNil(agl) ? (
+            padStart(position.agl.toFixed(1), 6) + 'm'
+          ) : (
+            <span className={classes.muted}>{'   ———'}</span>
           )}
           <StatusText status={headingDeviationToStatus(headingDeviation)}>
             {padStart(!isNil(heading) ? Math.round(heading) + '°' : '', 5)}

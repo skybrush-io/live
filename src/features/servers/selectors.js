@@ -123,6 +123,14 @@ const getCurrentServerFeatures = (state) => state.servers.current.features;
 const getCurrentServerLicense = (state) => state.servers.current.license;
 
 /**
+ * Returns the version number of the currently connected Skybrush server.
+ *
+ * @param  {Object}  state  the state of the application
+ * @return {string}  version number of the currently connected Skybrush server
+ */
+export const getCurrentServerVersion = (state) => state.servers.current.version;
+
+/**
  * Selector that calculates and caches the list of all the servers detected
  * on the local network, in exactly the same order as they should appear on
  * the UI.
