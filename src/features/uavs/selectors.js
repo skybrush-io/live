@@ -581,6 +581,8 @@ export const getUnmappedUAVIds = createSelector(
  *   uavIdsAndIndices: [['UAV_ID', 42], ['UAV_ID_2', 43]]
  * }
  * ```
+ *
+ * ErrorCode.ON_GROUND is excluded as it is not a real error.
  */
 export const getErrorCodeSummaryForUAVsInMission = createSelector(
   getReverseMissionMapping,
@@ -593,7 +595,9 @@ export const getErrorCodeSummaryForUAVsInMission = createSelector(
       const uavState = uavStatesById[uavId];
       if (uavState) {
         for (const code of uavState.errors) {
-          result.push([code, [uavId, reverseMapping[uavId] || null]]);
+          if (code !== ErrorCode.ON_GROUND) {
+            result.push([code, [uavId, reverseMapping[uavId] || null]]);
+          }
         }
       }
     }
@@ -609,6 +613,24 @@ export const getErrorCodeSummaryForUAVsInMission = createSelector(
 );
 
 /**
+ * Returns whether the given UAV state object contains an error code that is
+ * worth reporting in the "Onboard preflight checks" dialog.
+ */
+const uavStateContainsSignificantErrorCode = (uavState) => {
+  const { errors } = uavState || {};
+  if (!Array.isArray(errors) || errors.length <= 0) {
+    return false;
+  }
+
+  if (errors.length === 1 && errors[0] === ErrorCode.ON_GROUND) {
+    // This is OK
+    return false;
+  }
+
+  return true;
+};
+
+/**
  * Returns whether none of the UAVs in the current mission have an error code.
  */
 export const areAllUAVsInMissionWithoutErrors = createSelector(
@@ -616,8 +638,7 @@ export const areAllUAVsInMissionWithoutErrors = createSelector(
   getUAVIdToStateMapping,
   (uavIds, uavStatesById) => {
     for (const uavId of uavIds) {
-      const uavState = uavStatesById[uavId];
-      if (uavState && uavState.errors && uavState.errors.length > 0) {
+      if (uavStateContainsSignificantErrorCode(uavStatesById[uavId])) {
         return false;
       }
     }
