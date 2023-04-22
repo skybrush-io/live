@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.7.2] - 2023-04-22
+
+### Fixed
+
+- Fixed an issue with the "Onboard preflight checks" dialog that resulted in
+  drones in the "On ground with motors off" state appeared incorrectly in the
+  error list.
+
 ## [2.7.1] - 2023-04-21
 
 ### Added
