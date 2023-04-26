@@ -18,6 +18,7 @@ import WbSunny from '@material-ui/icons/WbSunny';
 
 import PropTypes from 'prop-types';
 import React from 'react';
+import { withTranslation } from 'react-i18next';
 import { Module, ModuleTray, Workbench } from 'react-flexible-workbench';
 import { connect } from 'react-redux';
 
@@ -57,42 +58,52 @@ const hasShowControl = hasFeature('showControl');
  *
  * @returns  {Object}  the rendered sidebar component
  */
-const Sidebar = ({ experimentalFeaturesEnabled, isOpen, workbench }) => (
+const Sidebar = ({ experimentalFeaturesEnabled, isOpen, t, workbench }) => (
   <div
     id='sidebar'
     style={{ ...style, width: isOpen ? SIDEBAR_OPEN_WIDTH : 48 }}
   >
     <div style={innerStyle}>
       <ModuleTray allowMultipleSelection vertical workbench={workbench}>
-        <Module id='map' icon={<Map />} label='Map' component='map' />
+        <Module
+          id='map'
+          icon={<Map />}
+          label={t('sidebar.map')}
+          component='map'
+        />
         <Module
           id='threeDView'
           icon={<ThreeDRotation />}
-          label='3D View'
+          label={t('sidebar.3DView')}
           component='three-d-view'
           reorderEnabled={false}
         />
         <Module
           id='layers'
           icon={<Layers />}
-          label='Layers'
+          label={t('sidebar.layers')}
           component='layer-list'
         />
         {hasFeature('mapFeatures') && (
           <Module
             id='features'
             icon={<ShapeLine />}
-            label='Features'
+            label={t('sidebar.features')}
             component='feature-list'
           />
         )}
         <hr />
-        <Module id='uavs' icon={<Flight />} label='UAVs' component='uav-list' />
+        <Module
+          id='uavs'
+          icon={<Flight />}
+          label={t('sidebar.uavs')}
+          component='uav-list'
+        />
         {hasFeature('beacons') && (
           <Module
             id='beacons'
             icon={<Antenna />}
-            label='Beacons'
+            label={t('sidebar.beacons')}
             component='beacon-list'
           />
         )}
@@ -100,7 +111,7 @@ const Sidebar = ({ experimentalFeaturesEnabled, isOpen, workbench }) => (
           <Module
             id='docks'
             icon={<Gamepad />}
-            label='Docks'
+            label={t('sidebar.docks')}
             component='dock-list'
           />
         )}
@@ -110,7 +121,7 @@ const Sidebar = ({ experimentalFeaturesEnabled, isOpen, workbench }) => (
           <Module
             id='show'
             icon={<Grain />}
-            label='Show control'
+            label={t('sidebar.showControl')}
             component='show-control'
           />
         )}
@@ -118,7 +129,7 @@ const Sidebar = ({ experimentalFeaturesEnabled, isOpen, workbench }) => (
           <Module
             id='lights'
             icon={<WbSunny />}
-            label='Light control'
+            label={t('sidebar.lightControl')}
             component='light-control'
           />
         )}
@@ -126,7 +137,7 @@ const Sidebar = ({ experimentalFeaturesEnabled, isOpen, workbench }) => (
         <Module
           id='clocks'
           icon={<Alarm />}
-          label='Clocks'
+          label={t('sidebar.clocks')}
           component='lcd-clock-panel'
         />
         {/*
@@ -140,7 +151,7 @@ const Sidebar = ({ experimentalFeaturesEnabled, isOpen, workbench }) => (
         <Module
           id='locations'
           icon={<Place />}
-          label='Locations'
+          label={t('sidebar.locations')}
           component='saved-location-list'
         />
         <hr />
@@ -154,7 +165,7 @@ const Sidebar = ({ experimentalFeaturesEnabled, isOpen, workbench }) => (
           id='log'
           badge={<LogStatusBadge />}
           icon={<FormatListBulleted />}
-          label='Event log'
+          label={t('sidebar.eventLog')}
           component='log-panel'
         />
       </ModuleTray>
@@ -176,6 +187,7 @@ const Sidebar = ({ experimentalFeaturesEnabled, isOpen, workbench }) => (
 Sidebar.propTypes = {
   experimentalFeaturesEnabled: PropTypes.bool,
   isOpen: PropTypes.bool,
+  t: PropTypes.func,
   workbench: PropTypes.instanceOf(Workbench).isRequired,
 };
 
@@ -189,4 +201,4 @@ export default connect(
     isOpen: isSidebarOpen(state),
     workbench,
   })
-)(Sidebar);
+)(withTranslation()(Sidebar));

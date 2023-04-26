@@ -41,7 +41,9 @@ const DisplayTabPresentation = ({ t, ...props }) => (
   <>
     <Box my={2}>
       <FormControl fullWidth variant='filled'>
-        <InputLabel id='language-selector-label'>Language</InputLabel>
+        <InputLabel id='language-selector-label'>
+          {t('settings.display.language')}
+        </InputLabel>
         <Select
           labelId='language-selector-label'
           name='language'
@@ -81,7 +83,7 @@ const DisplayTabPresentation = ({ t, ...props }) => (
       </FormControl>
 
       <FormGroup>
-        <Header>Map widgets</Header>
+        <Header>{t('settings.display.mapWidgets')}</Header>
         <FormControlLabel
           label={t('settings.display.showMouseCoordinates')}
           control={
@@ -105,10 +107,10 @@ const DisplayTabPresentation = ({ t, ...props }) => (
       </FormGroup>
 
       <FormGroup>
-        <Header>Flat Earth coordinate system</Header>
+        <Header>{t('settings.display.flatEarthCoordinateSystem')}</Header>
         <CoordinateSystemFields
           origin={props.origin}
-          originLabel='Map origin'
+          originLabel={t('settings.display.mapOrigin')}
           orientation={props.orientation}
           type={props.coordinateSystemType}
           onOrientationChanged={props.onOrientationChanged}
@@ -144,7 +146,7 @@ const DisplayTabPresentation = ({ t, ...props }) => (
       </FormGroup>
 
       <FormGroup>
-        <Header>Miscellaneous</Header>
+        <Header>{t('settings.display.miscellaneous')}</Header>
         <FormControlLabel
           label={t('settings.display.hideInactiveSegmentsOnDarkLCD')}
           control={

@@ -17,7 +17,12 @@
     "display": {
       "coordinateFormat": "Koordináta formátum",
       "enableExperimentalFeatures": "Kísérleti funkciók engedélyezése (haladó)",
+      "flatEarthCoordinateSystem": "Lapos föld koordináta rendszer",
       "hideInactiveSegmentsOnDarkLCD": "LCD órák kontrasztarányának javítása sötét módban",
+      "language": "Nyelv",
+      "mapOrigin": "A térkép origója",
+      "mapWidgets": "Térkép eszközök",
+      "miscellaneous": "Egyéb",
       "showMouseCoordinates": "Egérkoordináták megjelenítése",
       "showScaleLine": "Léptékvonal megjelenítése"
     },
@@ -47,19 +52,40 @@
       "relativeToAMSL": "Kültér, az AMSL-hez képest {{altitude}}m",
       "relativeToHome": "Kültér, a felszállási ponthoz képest"
     },
+    "placementAccuracy": "",
     "reload": "A műsor újratöltése",
     "revokeAuthorization": "Kattintson ide a jóváhagyás visszavonásához",
     "selectFile": "Válassza ki, vagy húzza ide a műsor fájlt",
     "setupEnvironment": "Környezet beállítása",
     "setupGeofence": "Geokerítés beállítása",
     "setupTakeoffArea": "Felszállási terület beállítása",
+    "startMethod": {
+      "AUTO": "",
+      "RC": ""
+    },
     "startTimeNotSet": "A kezdés időpontja még nincs beállítva",
     "startsAt": "{{time}}-kor kezdődik",
     "takeOffMore": "{{quantity}} drón automatikusan fel fog szállni",
+    "takeOffNoPosition": "",
     "takeOffOne": "Egy drón automatikusan fel fog szállni",
     "takeOffPlace": "Helyezze a drónokat a felszállási területre",
     "unknownStartMode": "",
     "uploadShowData": "Műsor adatok feltöltése",
-    "uploadShowDataLoading": "Kérem várjon, feltöltés…"
+    "uploadShowDataLoading": "Kérem várjon, feltöltés…",
+    "uploadShowDataStart": "Kattintson ide a feltötés megkezdéséhez"
+  },
+  "sidebar": {
+    "3DView": "3D Nézet",
+    "beacons": "Jeladók",
+    "clocks": "Órák",
+    "docks": "Dokkok",
+    "eventLog": "Eseménynapló",
+    "features": "Paraméterek",
+    "layers": "Rétegek",
+    "lightControl": "Fényvezérlés",
+    "locations": "Helyszínek",
+    "map": "Térkép",
+    "showControl": "Műsorvezérlés",
+    "uavs": "Drónok"
   }
 }

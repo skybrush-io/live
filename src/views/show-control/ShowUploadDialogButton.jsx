@@ -32,11 +32,7 @@ const ShowUploadDialogButton = ({ loading, status, t, ...rest }) => (
           : t('show.uploadShowData', 'Upload show data')
       }
       secondary={
-        loading ? (
-          <UploadProgressBar />
-        ) : (
-          'Click here to start the upload process'
-        )
+        loading ? <UploadProgressBar /> : t('show.uploadShowDataStart')
       }
     />
   </ListItem>

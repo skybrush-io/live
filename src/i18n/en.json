@@ -17,7 +17,12 @@
     "display": {
       "coordinateFormat": "Coordinate format",
       "enableExperimentalFeatures": "Enable experimental features (advanced)",
+      "flatEarthCoordinateSystem": "Flat Earth coordinate system",
       "hideInactiveSegmentsOnDarkLCD": "Enhance contrast on dark mode LCD clocks",
+      "language": "Language",
+      "mapOrigin": "Map origin",
+      "mapWidgets": "Map widgets",
+      "miscellaneous": "Miscellaneous",
       "showMouseCoordinates": "Show mouse coordinates",
       "showScaleLine": "Show scale line"
     },
@@ -47,19 +52,40 @@
       "relativeToAMSL": "Outdoor, relative to {{altitude}}m AMSL",
       "relativeToHome": "Outdoor, relative to home"
     },
+    "placementAccuracy": "",
     "reload": "Reload show",
     "revokeAuthorization": "Click here to revoke authorization",
     "selectFile": "Select or drop a show file here",
     "setupEnvironment": "Setup environment",
     "setupGeofence": "Setup geofence",
     "setupTakeoffArea": "Setup takeoff area",
+    "startMethod": {
+      "AUTO": "Show will start automatically",
+      "RC": "Use the switch on your RC to start"
+    },
     "startTimeNotSet": "Start time not set yet",
     "startsAt": "Starts at {{time}}",
     "takeOffMore": "{{quantity}} drones will take off automatically",
+    "takeOffNoPosition": "No position yet for at least one drone",
     "takeOffOne": "One drone will take off automatically",
     "takeOffPlace": "Place the drones in the takeoff area",
     "unknownStartMode": "This show uses an unknown start mode",
     "uploadShowData": "Upload show data",
-    "uploadShowDataLoading": "Please wait, uploading…"
+    "uploadShowDataLoading": "Please wait, uploading…",
+    "uploadShowDataStart": "Click here to start the upload process"
+  },
+  "sidebar": {
+    "3DView": "3D View",
+    "beacons": "Beacons",
+    "clocks": "Clocks",
+    "docks": "Docks",
+    "eventLog": "Event log",
+    "features": "Features",
+    "layers": "Layers",
+    "lightControl": "Light control",
+    "locations": "Locations",
+    "map": "Map",
+    "showControl": "Show control",
+    "uavs": "UAVs"
   }
 }
