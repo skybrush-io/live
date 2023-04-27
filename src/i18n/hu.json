@@ -1,4 +1,15 @@
 {
+  "DrawingToolbar": {
+    "addMarker": "Jelölő hozzáadása",
+    "cutHole": "Lyuk vágás sokszögbe",
+    "drawCircle": "Kör rajzolás",
+    "drawPath": "Útvonal rajzolás",
+    "drawPolygon": "Sokszög rajzolás",
+    "drawRectangle": "Négyszög rajzolás",
+    "editFeature": "Paraméterek szerkesztése",
+    "select": "Kijelölés",
+    "zoom": "Nagyítás"
+  },
   "geofence": {
     "statusText": {
       "automatic": "Automatikus geofence van használatban",

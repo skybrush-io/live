@@ -2,7 +2,7 @@ import config from 'config';
 
 import PropTypes from 'prop-types';
 import React from 'react';
-
+import { withTranslation } from 'react-i18next';
 import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
 import SelectAll from '@material-ui/icons/SelectAll';
@@ -26,47 +26,47 @@ import { Tool } from './tools';
 const drawingToolRegistry = {
   'add-marker': {
     tool: Tool.DRAW_POINT,
-    label: 'Add marker',
+    label: 'DrawingToolbar.addMarker',
     icon: LocationOn,
   },
   'cut-hole': {
     tool: Tool.CUT_HOLE,
-    label: 'Cut hole into polygon',
+    label: 'DrawingToolbar.cutHole',
     icon: ContentCut,
   },
   'draw-circle': {
     tool: Tool.DRAW_CIRCLE,
-    label: 'Draw circle',
+    label: 'DrawingToolbar.drawCircle',
     icon: PanoramaFishEye,
   },
   'draw-path': {
     tool: Tool.DRAW_PATH,
-    label: 'Draw path',
+    label: 'DrawingToolbar.drawPath',
     icon: ShowChart,
   },
   'draw-polygon': {
     tool: Tool.DRAW_POLYGON,
-    label: 'Draw polygon',
+    label: 'DrawingToolbar.drawPolygon',
     icon: StarBorder,
   },
   'draw-rectangle': {
     tool: Tool.DRAW_RECTANGLE,
-    label: 'Draw rectangle',
+    label: 'DrawingToolbar.drawRectangle',
     icon: CropSquare,
   },
   'edit-feature': {
     tool: Tool.EDIT_FEATURE,
-    label: 'Edit feature',
+    label: 'DrawingToolbar.editFeature',
     icon: EditFeature,
   },
   select: {
     tool: Tool.SELECT,
-    label: 'Select',
+    label: 'DrawingToolbar.select',
     icon: SelectAll,
   },
   zoom: {
     tool: Tool.ZOOM,
-    label: 'Zoom',
+    label: 'DrawingToolbar.zoom',
     icon: ZoomIn,
   },
 };
@@ -76,7 +76,7 @@ const drawingToolRegistry = {
  *
  * @return {React.Element} the rendered component
  */
-const DrawingToolbarPresentation = ({ onToolSelected, selectedTool }) => {
+const DrawingToolbarPresentation = ({ onToolSelected, selectedTool, t }) => {
   const colorForTool = (tool) =>
     selectedTool === tool ? 'primary' : undefined;
 
@@ -85,10 +85,10 @@ const DrawingToolbarPresentation = ({ onToolSelected, selectedTool }) => {
       {config.mapDrawingToolbarTools
         .flatMap((group) => [
           <Divider key={`drawing-toolbar-group:${group.join(',')}`} />,
-          ...group.map((t) => {
-            const { tool, label, icon: Icon } = drawingToolRegistry[t];
+          ...group.map((toolId) => {
+            const { tool, label, icon: Icon } = drawingToolRegistry[toolId];
             return (
-              <Tooltip key={t} content={label} placement='right'>
+              <Tooltip key={toolId} content={t(label)} placement='right'>
                 <IconButton onClick={partial(onToolSelected, tool)}>
                   <Icon color={colorForTool(tool)} />
                 </IconButton>
@@ -104,6 +104,7 @@ const DrawingToolbarPresentation = ({ onToolSelected, selectedTool }) => {
 DrawingToolbarPresentation.propTypes = {
   onToolSelected: PropTypes.func,
   selectedTool: PropTypes.string,
+  t: PropTypes.func,
 };
 
 /**
@@ -118,6 +119,6 @@ const DrawingToolbar = connect(
   {
     onToolSelected: setSelectedTool,
   }
-)(DrawingToolbarPresentation);
+)(withTranslation()(DrawingToolbarPresentation));
 
 export default DrawingToolbar;

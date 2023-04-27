@@ -1,4 +1,15 @@
 {
+  "DrawingToolbar": {
+    "addMarker": "Add marker",
+    "cutHole": "Cut hole into polygon",
+    "drawCircle": "Draw circle",
+    "drawPath": "Draw path",
+    "drawPolygon": "Draw polygon",
+    "drawRectangle": "Draw rectangle",
+    "editFeature": "Edit feature",
+    "select": "Select",
+    "zoom": "Zoom"
+  },
   "geofence": {
     "statusText": {
       "automatic": "Automatic geofence in use",
