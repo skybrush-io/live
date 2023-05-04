@@ -546,6 +546,10 @@ export const getMaximumDistanceBetweenHomePositionsAndGeofence = createSelector(
   getGPSBasedHomePositionsInMission,
   getGeofencePolygonInWorldCoordinates,
   (homePositions, geofencePolygon) => {
+    if (!geofencePolygon) {
+      return 0;
+    }
+
     const homePoints = homePositions.map(({ lon, lat }) =>
       TurfHelpers.point([lon, lat])
     );

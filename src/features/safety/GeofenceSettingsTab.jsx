@@ -100,7 +100,10 @@ const GeofenceSettingsFormPresentation = ({ initialValues, onSubmit }) => (
     decorators={[calculator]}
     onSubmit={onSubmit}
   >
-    {({ handleSubmit, values: { maxDistance, maxHeight, simplify } }) => (
+    {({
+      handleSubmit,
+      values: { maxDistance, maxGeofence, maxHeight, simplify },
+    }) => (
       <form id='geofenceSettings' onSubmit={handleSubmit}>
         <FormHeader>Fence action</FormHeader>
         <Box display='flex' flexDirection='column'>
@@ -148,8 +151,12 @@ const GeofenceSettingsFormPresentation = ({ initialValues, onSubmit }) => (
             fullWidth={false}
             name='distanceLimit'
             label='Max distance'
-            error={maxDistance === 0}
-            helperText={maxDistance === 0 && 'Could not calculate distance'}
+            error={maxDistance === 0 && maxGeofence === 0}
+            helperText={
+              maxDistance === 0 &&
+              maxGeofence === 0 &&
+              'Could not calculate distance'
+            }
             InputProps={{
               endAdornment: <InputAdornment position='end'>m</InputAdornment>,
             }}
