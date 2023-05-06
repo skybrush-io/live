@@ -57,4 +57,14 @@ Condition.rightClick = (mapBrowserEvent) =>
   mapBrowserEvent.pointerEvent.type === 'pointerup' &&
   mapBrowserEvent.pointerEvent.button === 2;
 
+/**
+ * Helper condition that checks for a keydown event fired by the `Escape` key.
+ *
+ * @param {event}  mapBrowserEvent  the actual event
+ * @return {boolean}  whether the condition was met
+ */
+Condition.escapeKeyDown = (mapBrowserEvent) =>
+  mapBrowserEvent.type === 'keydown' &&
+  mapBrowserEvent.originalEvent.code === 'Escape';
+
 export default Condition;
