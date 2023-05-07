@@ -3,7 +3,7 @@
  */
 
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Form } from 'react-final-form';
 import { connect } from 'react-redux';
 
@@ -125,73 +125,70 @@ const SavedLocationEditorForm = connect(
  * Presentation component for the dialog that shows the form that the user
  * can use to edit the saved location.
  */
-class SavedLocationEditorDialogPresentation extends React.Component {
-  static propTypes = {
-    editedLocationId: PropTypes.string,
-    onClose: PropTypes.func.isRequired,
-    onDelete: PropTypes.func.isRequired,
-    onSubmit: PropTypes.func.isRequired,
-    open: PropTypes.bool.isRequired,
-  };
-
-  constructor() {
-    super();
-
-    this.currentLocation = {};
-  }
-
-  _forceFormSubmission = () => {
+const SavedLocationEditorDialogPresentation = ({
+  editedLocationId,
+  onClose,
+  onDelete,
+  onSubmit,
+  open,
+}) => {
+  const _forceFormSubmission = useCallback(() => {
     forceFormSubmission('SavedLocationEditor');
-  };
+  }, []);
 
-  render() {
-    const { editedLocationId, onClose, onDelete, onSubmit, open } = this.props;
-    const isNew = editedLocationId === NEW_ITEM_ID;
-    const title = isNew ? 'Create new location' : 'Edit saved location';
+  const isNew = editedLocationId === NEW_ITEM_ID;
+  const title = isNew ? 'Create new location' : 'Edit saved location';
 
-    const actions = [
-      <Button key='save' color='primary' onClick={this._forceFormSubmission}>
-        Save
-      </Button>,
-    ];
+  const actions = [
+    <Button key='save' color='primary' onClick={_forceFormSubmission}>
+      Save
+    </Button>,
+  ];
 
-    if (isNew) {
-      actions.push(
-        <Button key='discard' onClick={onDelete(editedLocationId)}>
-          Discard
-        </Button>
-      );
-    } else {
-      actions.push(
-        <Button
-          key='delete'
-          color='secondary'
-          onClick={onDelete(editedLocationId)}
-        >
-          Delete
-        </Button>,
-        <Button key='cancel' onClick={onClose}>
-          Cancel
-        </Button>
-      );
-    }
-
-    return (
-      <DraggableDialog
-        fullWidth
-        title={title}
-        open={open}
-        maxWidth='xs'
-        onClose={onClose}
+  if (isNew) {
+    actions.push(
+      <Button key='discard' onClick={onDelete(editedLocationId)}>
+        Discard
+      </Button>
+    );
+  } else {
+    actions.push(
+      <Button
+        key='delete'
+        color='secondary'
+        onClick={onDelete(editedLocationId)}
       >
-        <DialogContent>
-          <SavedLocationEditorForm onSubmit={onSubmit} />
-        </DialogContent>
-        <DialogActions>{actions}</DialogActions>
-      </DraggableDialog>
+        Delete
+      </Button>,
+      <Button key='cancel' onClick={onClose}>
+        Cancel
+      </Button>
     );
   }
-}
+
+  return (
+    <DraggableDialog
+      fullWidth
+      title={title}
+      open={open}
+      maxWidth='xs'
+      onClose={onClose}
+    >
+      <DialogContent>
+        <SavedLocationEditorForm onSubmit={onSubmit} />
+      </DialogContent>
+      <DialogActions>{actions}</DialogActions>
+    </DraggableDialog>
+  );
+};
+
+SavedLocationEditorDialogPresentation.propTypes = {
+  editedLocationId: PropTypes.string,
+  onClose: PropTypes.func.isRequired,
+  onDelete: PropTypes.func.isRequired,
+  onSubmit: PropTypes.func.isRequired,
+  open: PropTypes.bool.isRequired,
+};
 
 /**
  * Container of the dialog that shows the form that the user can use to
