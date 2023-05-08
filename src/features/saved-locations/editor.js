@@ -22,7 +22,6 @@ const { actions, reducer } = createSlice({
 
   reducers: {
     _cancelLocationEditing(state) {
-      state.dialogVisible = false;
       state.editedLocationId = undefined;
     },
 
