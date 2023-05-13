@@ -126,6 +126,7 @@
     "react-is": "^17.0.2",
     "react-redux": "^8.0.5",
     "react-shapeshifter": "^1.0.18",
+    "react-simplemde-editor": "^5.2.0",
     "react-timeago": "^7.1.0",
     "react-toast-notifications": "^2.5.1",
     "react-transition-group": "^4.4.2",

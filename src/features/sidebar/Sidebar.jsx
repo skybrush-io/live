@@ -4,6 +4,7 @@ import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 import Alarm from '@material-ui/icons/Alarm';
 // import Apps from '@material-ui/icons/Apps';
+import Assignment from '@material-ui/icons/Assignment';
 import Flight from '@material-ui/icons/Flight';
 import Gamepad from '@material-ui/icons/Gamepad';
 import Grain from '@material-ui/icons/Grain';
@@ -150,6 +151,12 @@ const Sidebar = ({ experimentalFeaturesEnabled, isOpen, workbench }) => (
           icon={<FormatListBulleted />}
           label='Event log'
           component='log-panel'
+        />
+        <Module
+          id='notes'
+          icon={<Assignment />}
+          label='Field notes'
+          component='field-notes'
         />
       </ModuleTray>
     </div>
