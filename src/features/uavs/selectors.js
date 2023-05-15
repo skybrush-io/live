@@ -6,6 +6,7 @@ import createCachedSelector from 're-reselect';
 
 import { createSelector } from '@reduxjs/toolkit';
 
+import { Status } from '~/components/semantics';
 import {
   getGPSBasedHomePositionsInMission,
   getMissionMapping,
@@ -649,28 +650,28 @@ export function getSingleUAVStatusLevel(uav) {
   }
 
   if (uav.age === UAVAge.GONE) {
-    return 'off';
+    return Status.OFF;
   }
 
   if (uav.age === UAVAge.INACTIVE) {
-    return 'warning';
+    return Status.WARNING;
   }
 
   const maxError = Math.max(...uav.errors);
 
   if (maxError === ErrorCode.RETURN_TO_HOME) {
-    return 'rth';
+    return Status.RTH;
   }
 
   if (maxError === ErrorCode.ON_GROUND) {
-    return 'success';
+    return Status.SUCCESS;
   }
 
   if (severity >= Severity.INFO) {
     return errorSeverityToSemantics(severity);
   }
 
-  return 'success';
+  return Status.SUCCESS;
 }
 
 /* eslint-disable complexity */
@@ -712,7 +713,7 @@ export function getSingleUAVStatusSummary(uav) {
     // No such UAV
     status = undefined;
     text = 'missing';
-    textSemantics = 'warning';
+    textSemantics = Status.WARNING;
   } else if (uav.errors && uav.errors.length > 0) {
     // UAV has some status information that it wishes to report
     maxError = Math.max(...uav.errors);
@@ -722,11 +723,11 @@ export function getSingleUAVStatusSummary(uav) {
 
     if (maxError === ErrorCode.RETURN_TO_HOME) {
       // RTH is treated separately; it is always shown as the special RTH state
-      textSemantics = 'rth';
+      textSemantics = Status.RTH;
     } else if (maxError === ErrorCode.ON_GROUND) {
       // "on ground" is treated separately; it is always shown in green even
       // though it's technically an info message
-      textSemantics = 'success';
+      textSemantics = Status.SUCCESS;
     } else {
       textSemantics = errorSeverityToSemantics(severity);
     }
@@ -734,28 +735,28 @@ export function getSingleUAVStatusSummary(uav) {
     // UAV is in the air
     text = 'airborne';
     details = `${uav.position.ahl.toFixed(2)}m`;
-    textSemantics = 'success';
+    textSemantics = Status.SUCCESS;
   } else {
     // UAV is ready on the ground
     text = 'ready';
-    textSemantics = 'success';
+    textSemantics = Status.SUCCESS;
   }
 
   // We allow "normal" and "informational" messages to be overridden by the
   // "gone" or "no telemetry" (inactive) warnings
-  if (textSemantics === 'success' || textSemantics === 'info') {
+  if (textSemantics === Status.SUCCESS || textSemantics === Status.INFO) {
     if (uav.age === UAVAge.GONE) {
       if (text === 'ready' || maxError === ErrorCode.ON_GROUND) {
         text = 'gone';
       }
 
-      textSemantics = 'off';
+      textSemantics = Status.OFF;
     } else if (uav.age === UAVAge.INACTIVE) {
       if (text === 'ready' || maxError === ErrorCode.ON_GROUND) {
         text = 'no telem'; // used to be 'inactive' in earlier versions
       }
 
-      textSemantics = 'warning';
+      textSemantics = Status.WARNING;
     }
   }
 
