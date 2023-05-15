@@ -13,7 +13,7 @@ import { source, withLayer } from '@collmot/ol-react';
 import FeatureManager from '../FeatureManager';
 import UAVFeature from '../features/UAVFeature';
 
-import { errorCodeToSemantics } from '~/flockwave/errors';
+import { getSingleUAVStatusLevel } from '~/features/uavs/selectors';
 import Flock from '~/model/flock';
 import { setLayerSelectable, setLayerTriggersTooltip } from '~/model/layers';
 import { uavIdToGlobalId } from '~/model/identifiers';
@@ -233,15 +233,13 @@ class ActiveUAVsLayerSource extends React.Component {
         uav.lon,
         uav.lat,
       ]);
-      const mostSevereError = uav.mostSevereError;
 
       // Set or update the heading of the feature
       if (uav.heading !== undefined) {
         feature.heading = uav.heading;
       }
 
-      feature.status =
-        mostSevereError > 0 ? errorCodeToSemantics(mostSevereError) : null;
+      feature.status = getSingleUAVStatusLevel(uav);
       feature.labelColor = this.props.labelColor;
     }
   };
