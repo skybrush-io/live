@@ -137,6 +137,13 @@ export default class UAV {
   }
 
   /**
+   * Returns the list of error codes sent by the UAV.
+   */
+  get errors() {
+    return this._errors;
+  }
+
+  /**
    * Returns the ID of the UAV.
    *
    * @return {string}  the ID of the UAV
