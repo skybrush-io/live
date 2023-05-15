@@ -13,7 +13,6 @@ import Map from '@material-ui/icons/Map';
 import Place from '@material-ui/icons/Place';
 import FormatListBulleted from '@material-ui/icons/FormatListBulleted';
 // import Storage from '@material-ui/icons/Storage';
-import TrendingUp from '@material-ui/icons/TrendingUp';
 import ThreeDRotation from '@material-ui/icons/ThreeDRotation';
 import WbSunny from '@material-ui/icons/WbSunny';
 
@@ -146,17 +145,17 @@ const Sidebar = ({ experimentalFeaturesEnabled, isOpen, workbench }) => (
         />
         <hr />
         <Module
+          id='notes'
+          icon={<Assignment />}
+          label='Field notes'
+          component='field-notes'
+        />
+        <Module
           id='log'
           badge={<LogStatusBadge />}
           icon={<FormatListBulleted />}
           label='Event log'
           component='log-panel'
-        />
-        <Module
-          id='notes'
-          icon={<Assignment />}
-          label='Field notes'
-          component='field-notes'
         />
       </ModuleTray>
     </div>

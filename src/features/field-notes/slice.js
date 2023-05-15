@@ -10,12 +10,8 @@ const { actions, reducer } = createSlice({
 
   initialState: {
     contents: `
-### Field Notes
-You can use Markdown syntax to format your notes, such as:
-**bold**
-_italic_
-~~strikethrough~~
-> quote
+You can use Markdown syntax to format your notes, such as **bold**, _italic_ or ~~strikethrough~~.
+See https://quickref.me/markdown for a quick reference guide to Markdown syntax.
     `.trim(),
   },
 
