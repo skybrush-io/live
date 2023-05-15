@@ -19,6 +19,7 @@ import { clearConnectionList } from '~/features/connections/slice';
 import { clearDockList } from '~/features/docks/slice';
 import { shouldManageLocalServer } from '~/features/local-server/selectors';
 import { addLogItem } from '~/features/log/slice';
+import { clearLocalPositioningSystemList } from '~/features/lps/slice';
 import {
   calculateAndStoreClockSkew,
   disconnectFromServer,
@@ -61,6 +62,7 @@ import { handleClockInformationMessage } from '~/model/clocks';
 import { handleDockInformationMessage } from '~/model/docks';
 import { logLevelForLogLevelName } from '~/utils/logging';
 import { Protocol } from '~/features/servers/server-settings-dialog';
+import { handleLocalPositioningSystemInformationMessage } from '~/model/lps';
 
 const formatClockSkew = (number) => {
   if (isNil(number)) {
@@ -553,6 +555,26 @@ async function executeTasksAfterConnection(dispatch, getState) {
       handleBeaconPropertiesMessage(response.body, dispatch);
     }
 
+    // Send an OBJ-LIST message to the server to get an up-to-date
+    // list of local positioning systems
+    response = await messageHub.sendMessage({
+      type: 'OBJ-LIST',
+      filter: ['lps'],
+    });
+    const lpsIds = response.body.ids || [];
+    console.log(lpsIds);
+
+    // For each LPS ID that we have received, get its status
+    // via an X-LPS-INF message
+    if (lpsIds.length > 0) {
+      response = await messageHub.sendMessage({
+        type: 'X-LPS-INF',
+        ids: lpsIds,
+      });
+      handleLocalPositioningSystemInformationMessage(response.body, dispatch);
+      console.log(response.body);
+    }
+
     // Check whether the server supports virtual drones and map caching
     const features = [];
     for (const feature of ['virtual_uavs', 'map_cache']) {
@@ -638,6 +660,7 @@ async function executeTasksAfterDisconnection(dispatch) {
   dispatch(clearClockList());
   dispatch(clearConnectionList());
   dispatch(clearDockList());
+  dispatch(clearLocalPositioningSystemList());
   dispatch(clearServerFeatures());
   dispatch(clearServerLicense());
   dispatch(clearStartTimeAndMethod());

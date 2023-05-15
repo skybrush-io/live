@@ -33,6 +33,7 @@ import localServerReducer from '~/features/local-server/slice';
 import licenseInfoReducer from '~/features/license-info/slice';
 import lightControlReducer from '~/features/light-control/slice';
 import logReducer from '~/features/log/slice';
+import lpsReducer from '~/features/lps/slice';
 import mapCachingReducer from '~/features/map-caching/slice';
 import featuresReducer from '~/features/map-features/slice';
 import mapReducer from '~/features/map/slice';
@@ -96,6 +97,7 @@ const reducer = combineReducers({
   lightControl: lightControlReducer,
   localServer: localServerReducer,
   log: logReducer,
+  lps: lpsReducer,
   map: mapReducer,
   mapCaching: mapCachingReducer,
   measurement: measurementReducer,

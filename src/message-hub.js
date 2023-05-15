@@ -13,11 +13,12 @@ import MessageHub from './flockwave/messages';
 
 import { handleBeaconInformationMessage } from './model/beacons';
 import { handleClockInformationMessage } from './model/clocks';
-import { handleDockInformationMessage } from './model/docks';
 import {
   handleConnectionDeletionMessage,
   handleConnectionInformationMessage,
 } from './model/connections';
+import { handleDockInformationMessage } from './model/docks';
+import { handleLocalPositioningSystemInformationMessage } from './model/lps';
 import { handleObjectDeletionMessage } from './model/objects';
 
 import { addInboundMessage } from './features/messages/slice';
@@ -41,7 +42,7 @@ const { dispatch, getState } = store;
 const messageHub = new MessageHub();
 
 /* eslint-disable object-shorthand */
-messageHub.registerNotificationHandlers({
+const handlers = {
   'BCN-INF': (message) =>
     handleBeaconInformationMessage(message.body, dispatch, getState),
   'CLK-INF': (message) => handleClockInformationMessage(message.body, dispatch),
@@ -50,6 +51,12 @@ messageHub.registerNotificationHandlers({
   'CONN-INF': (message) =>
     handleConnectionInformationMessage(message.body, dispatch),
   'DOCK-INF': (message) => handleDockInformationMessage(message.body, dispatch),
+  'LPS-INF': (message) =>
+    handleLocalPositioningSystemInformationMessage(
+      message.body,
+      dispatch,
+      getState
+    ),
   'OBJ-DEL': (message) => handleObjectDeletionMessage(message.body, dispatch),
   'SYS-CLOSE': (message) => {
     if (message.body && message.body.reason) {
@@ -88,7 +95,11 @@ messageHub.registerNotificationHandlers({
     flock.handleUAVInformationMessage(message.body, dispatch),
   'X-DBG-REQ': (message) =>
     handleDebugRequest(message.body, messageHub.execute.sendDebugMessage),
-});
+};
+
+handlers['X-LPS-INF'] = handlers['LPS-INF'];
+
+messageHub.registerNotificationHandlers(handlers);
 /* eslint-enable object-shorthand */
 
 export default messageHub;

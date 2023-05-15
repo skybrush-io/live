@@ -59,6 +59,7 @@ const persistConfig = {
     'docks',
     'localServer',
     'log',
+    'lps',
     'messages',
     'rtk',
     'servers',
