@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### Added
+
+- Added a new "Field notes" panel to the sidebar that can be used to jot down
+  quick notes without having to leave Skybrush Live.
+
 ### Changed
 
 - The `Delete` hotkey now removes the selected features as well.
