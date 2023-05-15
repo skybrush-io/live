@@ -4,6 +4,7 @@ import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 import Alarm from '@material-ui/icons/Alarm';
 // import Apps from '@material-ui/icons/Apps';
+import Assignment from '@material-ui/icons/Assignment';
 import Flight from '@material-ui/icons/Flight';
 import Gamepad from '@material-ui/icons/Gamepad';
 import Grain from '@material-ui/icons/Grain';
@@ -12,7 +13,6 @@ import Map from '@material-ui/icons/Map';
 import Place from '@material-ui/icons/Place';
 import FormatListBulleted from '@material-ui/icons/FormatListBulleted';
 // import Storage from '@material-ui/icons/Storage';
-import TrendingUp from '@material-ui/icons/TrendingUp';
 import ThreeDRotation from '@material-ui/icons/ThreeDRotation';
 import WbSunny from '@material-ui/icons/WbSunny';
 
@@ -144,6 +144,12 @@ const Sidebar = ({ experimentalFeaturesEnabled, isOpen, workbench }) => (
           component='saved-location-list'
         />
         <hr />
+        <Module
+          id='notes'
+          icon={<Assignment />}
+          label='Field notes'
+          component='field-notes'
+        />
         <Module
           id='log'
           badge={<LogStatusBadge />}

@@ -91,6 +91,10 @@ export const componentRegistry = {
     detachable: true,
     feature: 'features',
   },
+  'field-notes': {
+    component: views.FieldNotesPanel,
+    label: 'Field notes',
+  },
   'ground-control-view': {
     component: injectFlockFromContext(views.GroundControlView),
     label: 'Ground control',
