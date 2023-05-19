@@ -23,6 +23,7 @@ import AppHotkeys from './features/hotkeys/AppHotkeys';
 import HotkeyDialog from './features/hotkeys/HotkeyDialog';
 import PendingUAVIdOverlay from './features/hotkeys/PendingUAVIdOverlay';
 import LicenseInfoDialog from './features/license-info/LicenseInfoDialog';
+import LPSDetailsDialog from './features/lps/LPSDetailsDialog';
 import MapCachingDialog from './features/map-caching/MapCachingDialog';
 import CoordinateAveragingDialog from './features/measurement/CoordinateAveragingDialog';
 import ParameterUploadSetupDialog from './features/parameters/ParameterUploadSetupDialog';
@@ -174,6 +175,7 @@ const App = ({ onFirstRender }) => (
       <DockDetailsDialog />
       <HotkeyDialog />
       <LicenseInfoDialog />
+      <LPSDetailsDialog />
       <MapCachingDialog />
       <ParameterUploadSetupDialog />
       <RTKSetupDialog />

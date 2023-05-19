@@ -11,6 +11,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import StatusLight from '@skybrush/mui-components/lib/StatusLight';
 
 import { listOf } from '~/components/helpers/lists';
+import { openLPSDetailsDialog } from '~/features/lps/details';
 import {
   getLocalPositioningSystemDisplayName,
   getLocalPositioningSystemStatus,
@@ -37,7 +38,7 @@ const LPSList = listOf(
     */
 
     return (
-      <ListItem key={lps.id} button onClick={props.onItemSelected}>
+      <ListItem key={lps.id} button onClick={() => props.onActivate(lps.id)}>
         <StatusLight status={getLocalPositioningSystemStatus(lps)} />
         <ListItemText primary={getLocalPositioningSystemDisplayName(lps)} />
       </ListItem>
@@ -57,6 +58,6 @@ export default connect(
   }),
   // mapDispatchToProps
   {
-    // onActivate: openDockDetailsDialog,
+    onActivate: openLPSDetailsDialog,
   }
 )(LPSList);

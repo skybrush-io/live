@@ -42,6 +42,8 @@ const MESSAGES_WITH_RECEIPTS = {
   'UAV-TAKEOFF': true,
   'UAV-TEST': true,
   'UAV-WAKEUP': true,
+  'LPS-CALIB': true,
+  'X-LPS-CALIB': true,
 };
 
 /**

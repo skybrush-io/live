@@ -38,3 +38,9 @@ export function getLocalPositioningSystemStatus(lps) {
 
   return Status.SUCCESS;
 }
+
+/**
+ * Returns whether the dialog showing the settings of the selected local
+ * positioning system is open.
+ */
+export const isLPSDetailsDialogOpen = (state) => state.dialogs.lpsDetails.open;

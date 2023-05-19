@@ -146,6 +146,21 @@ export async function startRTKSurvey(hub, { accuracy, duration }) {
 }
 
 /**
+ * Asks the local positioning system framework on the server to trigger the
+ * calibration of a local positioning system.
+ */
+export async function triggerLPSCalibration(hub, lpsId) {
+  try {
+    await hub.startAsyncOperationForSingleId(lpsId, { type: 'X-LPS-CALIB' });
+  } catch (error) {
+    const errorString = errorToString(error);
+    throw new Error(
+      `Failed to calibrate local positioning system ${lpsId}: ${errorString}`
+    );
+  }
+}
+
+/**
  * Asks the server to upload a drone show specification to a given UAV.
  */
 export async function uploadDroneShow(hub, { uavId, data }, options) {
@@ -193,6 +208,7 @@ export class OperationExecutor {
     setShowConfiguration,
     setShowLightConfiguration,
     startRTKSurvey,
+    triggerLPSCalibration,
     uploadDroneShow,
   };
 
