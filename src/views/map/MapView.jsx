@@ -311,11 +311,12 @@ const MapViewInteractions = withMap((props) => {
 
   if (isDrawingTool(selectedTool)) {
     interactions.push(
-      /* DRAW mode | Click --> Draw a new feature */
-      <interaction.Draw
+      /* DRAW mode | Click --> Draw a new feature | Esc -> Abort drawing */
+      <interaction.AbortableDraw
         key='Draw'
         {...toolToDrawInteractionProps(selectedTool, props.map)}
         onDrawEnd={onDrawEnded}
+        abortCondition={Condition.escapeKeyDown}
       />
     );
   }

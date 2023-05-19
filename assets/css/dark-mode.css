@@ -148,3 +148,12 @@ kbd:hover * {
 .lm_popin:hover .lm_icon {
   opacity: 1;
 }
+
+/* Dark mode support for the Markdown editor in the "Field notes" panel */
+.EasyMDEContainer .CodeMirror {
+  color: white !important;
+  background-color: #424242 !important;
+}
+.EasyMDEContainer .CodeMirror-cursor {
+  border-color: #777 !important;
+}

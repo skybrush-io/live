@@ -9,6 +9,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import DroneAvatar from '~/components/uavs/DroneAvatar';
 import UAVOperationsButtonGroup from '~/components/uavs/UAVOperationsButtonGroup';
 
+import { UAV_DETAILS_DIALOG_SIDEBAR_WIDTH as WIDTH } from './constants';
 import { getSelectedUAVIdInUAVDetailsDialog } from './details';
 import StatusSummaryMiniTable from './StatusSummaryMiniTable';
 
@@ -16,7 +17,7 @@ const useStyles = makeStyles(
   (theme) => ({
     root: {
       padding: theme.spacing(2),
-      minWidth: 185,
+      minWidth: WIDTH,
     },
     toolbar: {
       justifyContent: 'center',
