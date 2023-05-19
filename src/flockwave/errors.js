@@ -270,3 +270,45 @@ export const UAVErrorCode = createErrorCodeEnum({
     255: 'Unspecified critical error',
   },
 });
+
+/* ************************************************************************* */
+/* Local positioning system related error codes                              */
+/* ************************************************************************* */
+
+export const LPSErrorCode = createErrorCodeEnum({
+  values: {
+    NO_ERROR: 0,
+
+    // Informational messages
+    CALIBRATING: 1,
+
+    // Warnings
+    NEEDS_CALIBRATION: 64,
+    BATTERY_LOW_WARNING: 66,
+
+    // Error codes
+    COMM_TIMEOUT: 128,
+    NOT_ENOUGH_ANCHORS: 129,
+    BATTERY_LOW_ERROR: 134,
+  },
+
+  abbrevations: {
+    0: 'ok',
+    1: 'calib',
+    64: 'calib',
+    66: 'lowbat',
+    128: 'comm t/o',
+    129: 'anchors',
+    134: 'lowbat',
+  },
+
+  descriptions: {
+    0: 'No error',
+    1: 'Calibration in progress',
+    64: 'Needs calibration',
+    66: 'Battery low',
+    128: 'Communication timeout',
+    129: 'Not enough anchors',
+    134: 'Battery low',
+  },
+});
