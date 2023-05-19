@@ -562,7 +562,6 @@ async function executeTasksAfterConnection(dispatch, getState) {
       filter: ['lps'],
     });
     const lpsIds = response.body.ids || [];
-    console.log(lpsIds);
 
     // For each LPS ID that we have received, get its status
     // via an X-LPS-INF message
@@ -572,7 +571,6 @@ async function executeTasksAfterConnection(dispatch, getState) {
         ids: lpsIds,
       });
       handleLocalPositioningSystemInformationMessage(response.body, dispatch);
-      console.log(response.body);
     }
 
     // Check whether the server supports virtual drones and map caching

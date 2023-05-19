@@ -21,7 +21,7 @@ export const getBeaconsInOrder = createSelector(
 export const getSelectedBeaconIds = selectionForSubset(globalIdToBeaconId);
 
 /**
- * Funciton that returns the name of the given beacon that should be shown to
+ * Function that returns the name of the given beacon that should be shown to
  * the user on the UI.
  */
 export const getBeaconDisplayName = (beacon) =>

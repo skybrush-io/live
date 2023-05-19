@@ -15,6 +15,7 @@ import LCDClockPanel from './lcd-clock';
 import LightControlPanel from './light-control';
 import SavedLocationList from './locations';
 import LogPanel from './log';
+import LPSPanel from './lps';
 import MessagesPanelView from './messages';
 import ShowControlPanel from './show-control';
 import UAVList from './uavs';
@@ -34,6 +35,7 @@ const views = {
   LCDClockPanel,
   LightControlPanel,
   LogPanel,
+  LPSPanel,
   MessagesPanelView,
   SavedLocationList,
   ShowControlPanel,

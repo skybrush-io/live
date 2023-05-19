@@ -89,6 +89,10 @@ export const ErrorCode = Object.freeze({
 
 /**
  * Returns the severity class of a Flockwave error code.
+ *
+ * For all Flockwave error codes, the general principle is that bits 6 and 7
+ * of the LSB encode the severity class as follows. 00 = informational message,
+ * 01 = warning, 10 = error, 11 = critical error.
  */
 export const getSeverityOfErrorCode = (code) => (code & 0xff) >> 6;
 

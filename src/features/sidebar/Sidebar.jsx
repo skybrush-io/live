@@ -24,6 +24,7 @@ import { connect } from 'react-redux';
 import LogStatusBadge from '~/components/badges/LogStatusBadge';
 import { areExperimentalFeaturesEnabled } from '~/features/settings/selectors';
 import Antenna from '~/icons/Antenna';
+import CameraIndoor from '~/icons/CameraIndoor';
 import ShapeLine from '~/icons/ShapeLine';
 import { hasFeature } from '~/utils/configuration';
 
@@ -142,6 +143,12 @@ const Sidebar = ({ experimentalFeaturesEnabled, isOpen, workbench }) => (
           icon={<Place />}
           label='Locations'
           component='saved-location-list'
+        />
+        <Module
+          id='lps'
+          icon={<CameraIndoor />}
+          label='Positioning'
+          component='lps'
         />
         <hr />
         <Module

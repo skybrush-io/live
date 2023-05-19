@@ -120,6 +120,11 @@ export const componentRegistry = {
     label: 'Event log',
     detachable: true,
   },
+  lps: {
+    component: views.LPSPanel,
+    label: 'Positioning',
+    detachable: true,
+  },
   map: {
     component: MapView,
     label: 'Map',

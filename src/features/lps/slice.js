@@ -42,6 +42,15 @@ const { actions, reducer } = createSlice({
       // look like:
       // {
       //   id: 'LPS:foo',
+      //   name: 'LPS named foo',
+      //   type: 'foo',
+      //   errors: [1, 2, 3],
+      //   anchors: [
+      //     {
+      //       "position": [1, 2, 3],
+      //       "battery": 50,
+      //     }, ...
+      //   ],
       //   ...
       // }
     },
