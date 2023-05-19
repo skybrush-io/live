@@ -8,6 +8,12 @@ import {
 import { selectOrdered } from '~/utils/collections';
 
 /**
+ * Returns the local positioning system with the given ID, given the current state.
+ */
+export const getLocalPositioningSystemById = (state, lpsId) =>
+  state.lps.byId[lpsId];
+
+/**
  * Selector that calculates and caches the list of all the local positioning
  * systems that we store in the state object, in exactly the same order as they
  * should appear on the UI.
@@ -30,6 +36,10 @@ export const getLocalPositioningSystemDisplayName = (lps) =>
  */
 export function getLocalPositioningSystemStatus(lps) {
   let severity = -1;
+
+  if (!lps) {
+    return Status.OFF;
+  }
 
   if (lps.errors && Array.isArray(lps.errors) && lps.errors.length > 0) {
     severity = getSeverityOfMostSevereErrorCode(lps.errors);
