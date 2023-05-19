@@ -30,12 +30,11 @@ import {
   isValidTrajectory,
 } from '~/features/show/trajectory';
 import {
-  abbreviateError,
   errorSeverityToSemantics,
   getSeverityOfErrorCode,
   getSeverityOfMostSevereErrorCode,
-  ErrorCode,
   Severity,
+  UAVErrorCode,
 } from '~/flockwave/errors';
 import { convertRGB565ToCSSNotation } from '~/flockwave/parsing';
 import { globalIdToUavId } from '~/model/identifiers';
@@ -574,7 +573,7 @@ export const getUnmappedUAVIds = createSelector(
  * }
  * ```
  *
- * ErrorCode.ON_GROUND is excluded as it is not a real error.
+ * UAVErrorCode.ON_GROUND is excluded as it is not a real error.
  */
 export const getErrorCodeSummaryForUAVsInMission = createSelector(
   getReverseMissionMapping,
@@ -587,7 +586,7 @@ export const getErrorCodeSummaryForUAVsInMission = createSelector(
       const uavState = uavStatesById[uavId];
       if (uavState) {
         for (const code of uavState.errors) {
-          if (code !== ErrorCode.ON_GROUND) {
+          if (code !== UAVErrorCode.ON_GROUND) {
             result.push([code, [uavId, reverseMapping[uavId] || null]]);
           }
         }
@@ -614,7 +613,7 @@ const uavStateContainsSignificantErrorCode = (uavState) => {
     return false;
   }
 
-  if (errors.length === 1 && errors[0] === ErrorCode.ON_GROUND) {
+  if (errors.length === 1 && errors[0] === UAVErrorCode.ON_GROUND) {
     // This is OK
     return false;
   }
@@ -659,11 +658,11 @@ export function getSingleUAVStatusLevel(uav) {
 
   const maxError = Math.max(...uav.errors);
 
-  if (maxError === ErrorCode.RETURN_TO_HOME) {
+  if (maxError === UAVErrorCode.RETURN_TO_HOME) {
     return Status.RTH;
   }
 
-  if (maxError === ErrorCode.ON_GROUND) {
+  if (maxError === UAVErrorCode.ON_GROUND) {
     return Status.SUCCESS;
   }
 
@@ -719,12 +718,12 @@ export function getSingleUAVStatusSummary(uav) {
     maxError = Math.max(...uav.errors);
     const severity = getSeverityOfErrorCode(maxError);
 
-    text = abbreviateError(maxError);
+    text = UAVErrorCode.abbreviate(maxError);
 
-    if (maxError === ErrorCode.RETURN_TO_HOME) {
+    if (maxError === UAVErrorCode.RETURN_TO_HOME) {
       // RTH is treated separately; it is always shown as the special RTH state
       textSemantics = Status.RTH;
-    } else if (maxError === ErrorCode.ON_GROUND) {
+    } else if (maxError === UAVErrorCode.ON_GROUND) {
       // "on ground" is treated separately; it is always shown in green even
       // though it's technically an info message
       textSemantics = Status.SUCCESS;
@@ -746,13 +745,13 @@ export function getSingleUAVStatusSummary(uav) {
   // "gone" or "no telemetry" (inactive) warnings
   if (textSemantics === Status.SUCCESS || textSemantics === Status.INFO) {
     if (uav.age === UAVAge.GONE) {
-      if (text === 'ready' || maxError === ErrorCode.ON_GROUND) {
+      if (text === 'ready' || maxError === UAVErrorCode.ON_GROUND) {
         text = 'gone';
       }
 
       textSemantics = Status.OFF;
     } else if (uav.age === UAVAge.INACTIVE) {
-      if (text === 'ready' || maxError === ErrorCode.ON_GROUND) {
+      if (text === 'ready' || maxError === UAVErrorCode.ON_GROUND) {
         text = 'no telem'; // used to be 'inactive' in earlier versions
       }
 
