@@ -47,14 +47,14 @@ export function errorSeverityToSemantics(severity) {
   }
 }
 
-function createErrorCodeEnum({ values, abbrevations, descriptions }) {
+function createErrorCodeEnum({ values, abbreviations, descriptions }) {
   /**
    * Returns a short abbreviation of the error code that is more-or-less
    * human-readable, but requires less space on the screen than the full
    * description of the error.
    */
   const abbreviate = (code) => {
-    return abbrevations[code] || `E${code}`;
+    return abbreviations[code] || `E${code}`;
   };
 
   /**
