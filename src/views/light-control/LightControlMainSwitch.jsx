@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import ListItem from '@material-ui/core/ListItem';
@@ -14,7 +15,7 @@ import { isConnected } from '~/features/servers/selectors';
  * Component that explains to the user how the drones will start after the
  * authorization has been given.
  */
-const LightControlMainSwitch = ({ active, connected, onToggle }) => (
+const LightControlMainSwitch = ({ active, connected, onToggle, t }) => (
   <ListItem
     button
     disabled={!connected}
@@ -25,9 +26,9 @@ const LightControlMainSwitch = ({ active, connected, onToggle }) => (
       primary={
         connected
           ? active
-            ? 'Lights controlled from GCS'
-            : 'Lights not controlled from GCS'
-          : 'Not connected to server'
+            ? t('lightControl.fromGCS')
+            : t('lightControl.notFromGCS')
+          : t('lightControl.notConnected')
       }
       secondary={
         connected
@@ -44,6 +45,7 @@ LightControlMainSwitch.propTypes = {
   active: PropTypes.bool,
   connected: PropTypes.bool,
   onToggle: PropTypes.func,
+  t: PropTypes.func,
 };
 
 export default connect(
@@ -56,4 +58,4 @@ export default connect(
   {
     onToggle: toggleLightControlActive,
   }
-)(LightControlMainSwitch);
+)(withTranslation()(LightControlMainSwitch));

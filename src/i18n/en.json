@@ -1,4 +1,5 @@
 {
+  "": "",
   "DrawingToolbar": {
     "addMarker": "Add marker",
     "cutHole": "Cut hole into polygon",
@@ -17,6 +18,11 @@
       "manual": "Manual geofence in use",
       "no": "No geofence defined yet"
     }
+  },
+  "lightControl": {
+    "fromGCS": "Lights controlled from GCS",
+    "notConnected": "Not connected to server",
+    "notFromGCS": "Lights not controlled from GCS"
   },
   "map": {
     "resetRotation": "Reset rotation"

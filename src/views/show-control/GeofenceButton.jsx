@@ -11,25 +11,25 @@ import StatusLight from '@skybrush/mui-components/lib/StatusLight';
 import { Status } from '~/components/semantics';
 import { showGeofenceSettingsDialog } from '~/features/geofence/slice';
 import { getSetupStageStatuses } from '~/features/show/stages';
-import i18n from '~/i18n';
+import { tt } from '~/i18n';
 
 const formatStatusText = (status) => {
   switch (status) {
     case Status.OFF:
     case Status.NEXT:
-      return i18n.t('geofence.statusText.no');
+      return tt('geofence.statusText.no');
 
     case Status.SUCCESS:
-      return i18n.t('geofence.statusText.automatic');
+      return tt('geofence.statusText.automatic');
 
     case Status.WARNING:
-      return i18n.t('geofence.statusText.manual');
+      return tt('geofence.statusText.manual');
 
     case Status.ERROR:
-      return i18n.t('geofence.statusText.error');
+      return tt('geofence.statusText.error');
 
     default:
-      return '';
+      return tt('');
   }
 };
 
@@ -50,7 +50,7 @@ const GeofenceButton = ({ onClick, status, t, ...rest }) => {
       <StatusLight status={status} />
       <ListItemText
         primary={t('show.setupGeofence', 'Setup geofence')}
-        secondary={formatStatusText(status)}
+        secondary={formatStatusText(status)(t)}
       />
     </ListItem>
   );

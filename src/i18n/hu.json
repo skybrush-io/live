@@ -1,4 +1,5 @@
 {
+  "": "",
   "DrawingToolbar": {
     "addMarker": "Jelölő hozzáadása",
     "cutHole": "Lyuk vágás sokszögbe",
@@ -17,6 +18,11 @@
       "manual": "Kézi geofence van használatban",
       "no": "Még nincs geofence beállítva"
     }
+  },
+  "lightControl": {
+    "fromGCS": "",
+    "notConnected": "",
+    "notFromGCS": ""
   },
   "map": {
     "resetRotation": "Forgatás visszaállítása"
@@ -51,7 +57,7 @@
     "clock": "Műsor óra:",
     "dronePlacementApproved": "",
     "dronePlacementCheck": "",
-    "dronePlacementError": "",
+    "dronePlacementError": "Hiba az elrendezésben",
     "dronePlacementPartial": "",
     "fromCloud": "Műsor betöltése a felhőből",
     "indoor": "Beltér",

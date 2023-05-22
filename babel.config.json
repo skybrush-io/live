@@ -22,6 +22,7 @@
       {
         "discardOldKeys": false,
         "locales": ["en", "hu"],
+        "tFunctionNames": ["tt"],
         "outputPath": "src/i18n/{{locale}}.json"
       }
     ]

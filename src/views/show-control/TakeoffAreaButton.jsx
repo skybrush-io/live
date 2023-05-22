@@ -14,34 +14,44 @@ import { getSetupStageStatuses } from '~/features/show/stages';
 import { getFarthestDistanceFromHome } from '~/features/uavs/selectors';
 import { formatDistance } from '~/utils/formatting';
 
+import { tt } from '~/i18n';
+
 const formatStatusText = (status, maxDistance) => {
   if (typeof maxDistance === 'number') {
     if (Number.isFinite(maxDistance)) {
-      return `Placement accuracy ≤ ${formatDistance(maxDistance)}`;
+      return tt('show.placementAccuracy', {
+        distance: formatDistance(maxDistance),
+      });
     } else {
-      return 'No position yet for at least one drone';
+      return tt('show.takeOffNoPosition');
     }
   }
 
   switch (status) {
     case Status.OFF:
     case Status.NEXT:
-      return 'Place the drones in the takeoff area';
+      return tt('show.takeOffPlace');
+
+    // ((t) => t('show.takeOffPlace', 'Place the drones in the takeoff area'))(t)
 
     case Status.SUCCESS:
-      return 'Drone placement approved';
+      // return (t) => t('show.dronePlacementApproved');
+      // return (t) => t('show.dronePlacementApproved');
+      return tt('show.dronePlacementApproved');
+
+    // ('Drone placement approved')(t)
 
     case Status.ERROR:
-      return 'Error in drone placement';
+      return tt('show.dronePlacementError');
 
     case Status.SKIPPED:
-      return 'Partial drone placement approved';
+      return tt('show.dronePlacementPartial');
 
     case Status.WAITING:
-      return 'Checking drone placement…';
+      return tt('show.dronePlacementCheck');
 
     default:
-      return '';
+      return tt('');
   }
 };
 
@@ -61,7 +71,7 @@ const TakeoffAreaButton = ({ maxDistance, onClick, status, t, ...rest }) => {
       <StatusLight status={status} />
       <ListItemText
         primary={t('show.setupTakeoffArea', 'Setup takeoff area')}
-        secondary={formatStatusText(status, maxDistance)}
+        secondary={formatStatusText(status, maxDistance)(t)}
       />
     </ListItem>
   );

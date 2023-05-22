@@ -20,3 +20,5 @@ i18n.use(initReactI18next).init({
 });
 
 export default i18n;
+
+export const tt = (id) => (t) => t(id);

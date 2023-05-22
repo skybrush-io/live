@@ -65,11 +65,7 @@ export const getDesiredTakeoffHeadingAccuracy = (state) =>
   state.settings.uavs.takeoffHeadingAccuracy || 20;
 
 /**
- * Returns the desired accuracy of UAV headings that the user wants to use to
- * judge whether a drone is placed facing the right direction before a mission.
- *
- * We need to enforce a default value in case the state store of the user
- * is old and it does not include a default value.
+ * Returns the currently selected display language for the application.
  */
 export const getDisplayLanguage = (state) => state.settings.display.language;
 
