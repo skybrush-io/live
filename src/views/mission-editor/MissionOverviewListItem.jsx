@@ -178,11 +178,11 @@ const MissionOverviewListItem = ({
 
       const { velocityXY, velocityZ } = item.parameters;
       const tags = [];
-      if (velocityXY !== null) {
+      if (typeof velocityXY === 'number') {
         tags.push(`${velocityXY} m/s horizontal`);
       }
 
-      if (velocityZ !== null) {
+      if (typeof velocityZ === 'number') {
         tags.push(`${velocityZ} m/s vertical`);
       }
 
