@@ -722,8 +722,8 @@ export const getMissionItemsInOrderAsSegments = createSelector(
                 case MissionItemType.CHANGE_SPEED: {
                   return {
                     _velocity: {
-                      XY: parameters.velocityXY,
-                      Z: parameters.velocityZ,
+                      XY: parameters.velocityXY ?? _velocity.XY,
+                      Z: parameters.velocityZ ?? _velocity.Z,
                     },
                   };
                 }
