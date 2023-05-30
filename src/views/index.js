@@ -9,7 +9,6 @@ import ConnectionList from './connections';
 import DatasetList from './datasets';
 import DockList from './docks';
 import FeatureList from './features';
-import FieldNotesPanel from './field-notes';
 import LayerList from './layers';
 import LCDClockPanel from './lcd-clock';
 import LightControlPanel from './light-control';
@@ -29,7 +28,6 @@ const views = {
   DatasetList,
   DockList,
   FeatureList,
-  FieldNotesPanel,
   LayerList,
   LCDClockPanel,
   LightControlPanel,

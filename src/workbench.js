@@ -29,6 +29,12 @@ import {
 } from './utils/configuration';
 import views from './views';
 
+const FieldNotesPanel = loadable(() =>
+  import(
+    /* webpackChunkName: "field-notes" */ './views/field-notes/FieldNotesPanel'
+  )
+);
+
 const MapView = loadable(() =>
   import(/* webpackChunkName: "map" */ './views/map/MapView')
 );
@@ -92,7 +98,7 @@ export const componentRegistry = {
     feature: 'features',
   },
   'field-notes': {
-    component: views.FieldNotesPanel,
+    component: FieldNotesPanel,
     label: 'Field notes',
   },
   'ground-control-view': {
