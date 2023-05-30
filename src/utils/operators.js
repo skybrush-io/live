@@ -50,10 +50,9 @@ export function hasPrefix(prefix) {
  *         prefix from it
  */
 export function stripPrefix(prefix) {
-  const { length } = prefix;
   return (input) => {
-    if (input && input.slice(0, length) === prefix) {
-      return input.slice(length);
+    if (input && input.startsWith(prefix)) {
+      return input.slice(prefix.length);
     }
 
     return undefined;
