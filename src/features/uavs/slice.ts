@@ -8,6 +8,8 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import { type ReadonlyDeep } from 'type-fest';
 
+import { setSelection } from '~/features/map/selection';
+import { globalIdToUavId, isUavId } from '~/model/identifiers';
 import {
   addItemSorted,
   clearOrderedCollection,
@@ -107,6 +109,17 @@ const { actions, reducer } = createSlice({
     ) {
       for (const uav of Object.values(action.payload)) {
         replaceItemOrAddSorted(state, uav);
+      }
+    },
+  },
+
+  extraReducers: {
+    [setSelection](state, { payload: selection }) {
+      if (state.panel.followMapSelection) {
+        const selectedUAVs = selection.filter(isUavId);
+        if (selectedUAVs.length > 0) {
+          state.panel.selectedUAVId = globalIdToUavId(selectedUAVs[0]);
+        }
       }
     },
   },

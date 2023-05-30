@@ -628,12 +628,6 @@ class MapViewPresentation extends React.Component {
       return;
     }
 
-    if (this.props.uavDetailsPanelFollowsSelection && isUavId(id)) {
-      this.props.dispatch(
-        setSelectedUAVIdInUAVDetailsPanel(globalIdToUavId(id))
-      );
-    }
-
     switch (mode) {
       case 'activate':
         this._onFeatureActivated(feature);
