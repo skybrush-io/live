@@ -11,10 +11,12 @@ export function scrollIntoView(selector) {
       ? element
       : null;
   if (element) {
-    element.scrollIntoView({
-      behavior: 'auto',
-      block: 'nearest',
-      inline: 'nearest',
+    window.requestAnimationFrame(() => {
+      element.scrollIntoView({
+        behavior: 'auto',
+        block: 'nearest',
+        inline: 'nearest',
+      });
     });
   }
 }
