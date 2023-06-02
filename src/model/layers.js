@@ -193,6 +193,10 @@ const _propertiesForLayerTypes = {
   [LayerType.OWN_LOCATION]: {
     label: 'Own location',
     icon: <MyLocation />,
+    parameters: {
+      showAccuracy: true,
+      showOrientation: true,
+    },
   },
   [LayerType.TILE_SERVER]: {
     label: 'Tile server',

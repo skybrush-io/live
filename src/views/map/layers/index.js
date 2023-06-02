@@ -11,7 +11,7 @@ import { HeatmapLayerSettings, HeatmapLayer } from './heatmap';
 import { HexGridLayerSettings, HexGridLayer } from './hexgrid';
 import { ImageLayerSettings, ImageLayer } from './image';
 import { MissionInfoLayerSettings, MissionInfoLayer } from './mission-info';
-import { OwnLocationLayer } from './ownlocation';
+import { OwnLocationLayerSettings, OwnLocationLayer } from './ownlocation';
 import { TileServerLayerSettings, TileServerLayer } from './tileserver';
 import { UAVsLayerSettings, UAVsLayer } from './uavs';
 import { UAVTraceLayerSettings, UAVTraceLayer } from './uavtrace';
@@ -35,6 +35,7 @@ export const LayerSettings = {
   [LayerType.HEXGRID]: HexGridLayerSettings,
   [LayerType.IMAGE]: ImageLayerSettings,
   [LayerType.MISSION_INFO]: MissionInfoLayerSettings,
+  [LayerType.OWN_LOCATION]: OwnLocationLayerSettings,
   [LayerType.TILE_SERVER]: TileServerLayerSettings,
   [LayerType.UAVS]: UAVsLayerSettings,
   [LayerType.UAV_TRACE]: UAVTraceLayerSettings,
