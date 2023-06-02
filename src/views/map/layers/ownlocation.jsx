@@ -1,128 +1,174 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
+import { connect } from 'react-redux';
 
-import Feature from 'ol/Feature';
-import Point from 'ol/geom/Point';
-import { Icon, Style } from 'ol/style';
+import { Circle, Fill, RegularShape, Stroke, Style } from 'ol/style';
 
-import { Geolocation, layer, source } from '@collmot/ol-react';
+import { Feature, Geolocation, geom, layer, source } from '@collmot/ol-react';
 
+import Checkbox from '@material-ui/core/Checkbox';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import FormGroup from '@material-ui/core/FormGroup';
+
+import useDeviceOrientation from '~/hooks/useDeviceOrientation';
+import { setLayerParametersById } from '~/features/map/layers';
 import { toRadians } from '~/utils/math';
 import makeLogger from '~/utils/logging';
 
-import LocationIcon from '~/../assets/img/location-32x32.png';
-
 const logger = makeLogger('OwnLocationLayer');
+
+// === Settings for this particular layer type ===
+
+const OwnLocationLayerSettingsPresentation = ({
+  layer: {
+    parameters: { showAccuracy, showOrientation },
+  },
+  setLayerParameters,
+}) => {
+  const handleChange = (name) => (event) =>
+    setLayerParameters({ [name]: event.target.checked });
+
+  return (
+    <FormGroup>
+      <FormControlLabel
+        control={
+          <Checkbox
+            checked={showAccuracy}
+            value='showAccuracy'
+            onChange={handleChange('showAccuracy')}
+          />
+        }
+        label='Show accuracy'
+      />
+      <FormControlLabel
+        control={
+          <Checkbox
+            checked={showOrientation}
+            value='showOrientation'
+            onChange={handleChange('showOrientation')}
+          />
+        }
+        label='Show orientation'
+      />
+    </FormGroup>
+  );
+};
+
+OwnLocationLayerSettingsPresentation.propTypes = {
+  layer: PropTypes.object,
+  setLayerParameters: PropTypes.func,
+};
+
+export const OwnLocationLayerSettings = connect(
+  // mapStateToProps
+  null,
+  // mapDispatchToProps
+  (dispatch, ownProps) => ({
+    setLayerParameters(parameters) {
+      dispatch(setLayerParametersById(ownProps.layerId, parameters));
+    },
+  })
+)(OwnLocationLayerSettingsPresentation);
 
 // === The actual layer to be rendered ===
 
-class OwnLocationVectorSource extends React.Component {
-  static propTypes = {
-    onError: PropTypes.func,
-  };
+export const OwnLocationLayer = ({
+  layer: {
+    parameters: { showAccuracy, showOrientation },
+  },
+  zIndex,
+}) => {
+  const [position, setPosition] = useState(null);
+  const onPositionChange = useCallback(
+    (event) => {
+      setPosition(event.target.getPosition());
+    },
+    [setPosition]
+  );
+  const positionStyle = useMemo(
+    () =>
+      new Style({
+        image: new Circle({
+          radius: 8,
+          fill: new Fill({ color: '#00AEEF' }),
+          stroke: new Stroke({ color: '#fff', width: 2 }),
+        }),
+      }),
+    []
+  );
 
-  constructor(props) {
-    super(props);
-
-    this._sourceRef = undefined;
-
-    this.locationIcon = new Icon({
-      rotateWithView: true,
-      rotation: 0,
-      snapToPixel: false,
-      src: LocationIcon,
-    });
-
-    this.locationFeature = new Feature();
-    this.locationFeature.setStyle(new Style({ image: this.locationIcon }));
-
-    this.accuracyFeature = new Feature();
-  }
-
-  componentDidMount() {
-    if (window.DeviceOrientationEvent) {
-      window.addEventListener(
-        'deviceorientation',
-        this._onDeviceOrientationChange
+  const [accuracyCoordinates, setAccuracyCoordinates] = useState(null);
+  const onAccuracyGeometryChange = useCallback(
+    (event) => {
+      setAccuracyCoordinates(
+        event.target.getAccuracyGeometry().getLinearRing(0).getCoordinates()
       );
-    }
-  }
+    },
+    [setAccuracyCoordinates]
+  );
+  const accuracyStyle = useMemo(
+    () =>
+      new Style({
+        fill: new Fill({ color: 'rgba(255, 255, 255, 0.35)' }),
+        stroke: new Stroke({ color: '#00AEEF', width: 2 }),
+      }),
+    []
+  );
 
-  componentWillUnmount() {
-    if (window.DeviceOrientationEvent) {
-      window.removeEventListener(
-        'deviceorientation',
-        this._onDeviceOrientationChange
-      );
-    }
-  }
+  const orientation = useDeviceOrientation({ absolute: true });
+  const orientationStyle = useMemo(
+    () =>
+      new Style({
+        image: new RegularShape({
+          points: 3,
+          fill: new Fill({ color: '#00AEEF' }),
+          stroke: new Stroke({ color: '#fff', width: 2 }),
+          rotateWithView: true,
+          radius: 8,
+          scale: [0.75, 1],
+          rotation: orientation ? toRadians(-orientation.alpha) : 0,
+          displacement: [0, 11],
+        }),
+      }),
+    [orientation]
+  );
 
-  _assignSourceRef = (value) => {
-    if (this._sourceRef === value) {
-      return;
-    }
+  const onError = useCallback((event) => {
+    logger.warn(`Error while getting position: ${event.message}`);
+  }, []);
 
-    if (this._sourceRef) {
-      const { source } = this._sourceRef;
-      source.removeFeature(this.locationFeature);
-      source.removeFeature(this.accuracyFeature);
-    }
+  return (
+    <layer.Vector updateWhileAnimating updateWhileInteracting zIndex={zIndex}>
+      <Geolocation
+        changePosition={onPositionChange}
+        changeAccuracyGeometry={onAccuracyGeometryChange}
+        projection='EPSG:3857'
+        error={onError}
+      />
+      <source.Vector>
+        {showAccuracy && accuracyCoordinates ? (
+          <Feature id='own-location-accuracy' style={accuracyStyle}>
+            <geom.Polygon coordinates={accuracyCoordinates} />
+          </Feature>
+        ) : null}
 
-    this._sourceRef = value;
+        {showOrientation && position ? (
+          <Feature id='own-location-orientation' style={orientationStyle}>
+            <geom.Point coordinates={position} />
+          </Feature>
+        ) : null}
 
-    if (this._sourceRef) {
-      const { source } = this._sourceRef;
-      source.addFeature(this.locationFeature);
-      source.addFeature(this.accuracyFeature);
-    }
-  };
-
-  _logError = (event) => {
-    this.props.onError(`Error while getting position: ${event.message}`);
-  };
-
-  _onPositionChange = (event) => {
-    const coordinates = event.target.getPosition();
-    this.locationFeature.setGeometry(
-      coordinates ? new Point(coordinates) : null
-    );
-  };
-
-  _onAccuracyGeometryChange = (event) => {
-    const accuracyGeometry = event.target.getAccuracyGeometry();
-    this.accuracyFeature.setGeometry(accuracyGeometry);
-  };
-
-  _onDeviceOrientationChange = (event) => {
-    this.locationIcon.setRotation(toRadians(-event.alpha));
-
-    if (this._sourceRef) {
-      this._sourceRef.source.refresh();
-    }
-  };
-
-  render() {
-    return (
-      <>
-        <Geolocation
-          key='location'
-          changePosition={this._onPositionChange}
-          changeAccuracyGeometry={this._onAccuracyGeometryChange}
-          projection='EPSG:3857'
-          error={this._logError}
-        />
-        <source.Vector key='source' ref={this._assignSourceRef} />
-      </>
-    );
-  }
-}
-
-export const OwnLocationLayer = ({ zIndex }) => (
-  <layer.Vector updateWhileAnimating updateWhileInteracting zIndex={zIndex}>
-    <OwnLocationVectorSource onError={logger.warn} />
-  </layer.Vector>
-);
+        {position ? (
+          <Feature id='own-location-position' style={positionStyle}>
+            <geom.Point coordinates={position} />
+          </Feature>
+        ) : null}
+      </source.Vector>
+    </layer.Vector>
+  );
+};
 
 OwnLocationLayer.propTypes = {
+  layer: PropTypes.object,
   zIndex: PropTypes.number,
 };

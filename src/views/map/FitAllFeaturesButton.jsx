@@ -164,7 +164,7 @@ class FitAllFeaturesButton extends React.Component {
       position.coords.latitude,
     ]);
     view.animate({
-      pan: center,
+      center,
       duration: this.props.duration,
       easing: easeOut,
     });
