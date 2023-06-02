@@ -7,6 +7,7 @@ import Battery from '@material-ui/icons/BatteryChargingFull';
 import { colorForStatus, Status } from '@skybrush/app-theme-material-ui';
 import GenericHeaderButton from '@skybrush/mui-components/lib/GenericHeaderButton';
 import SidebarBadge from '@skybrush/mui-components/lib/SidebarBadge';
+import Tooltip from '@skybrush/mui-components/lib/Tooltip';
 
 import { BatteryFormatter } from '~/components/battery';
 import { isConnected } from '~/features/servers/selectors';
@@ -38,33 +39,35 @@ const BatteryStatusHeaderButton = ({ formatter, isConnected }) => {
   const badgeVisible = badgeStatus && badgeStatus !== Status.OFF;
 
   return (
-    <GenericHeaderButton
-      disabled={!isConnected}
-      label={
-        isConnected && avg
-          ? formatter.getBatteryLabel(avg.voltage, avg.percentage)
-          : '—'
-      }
-      secondaryLabel={
-        isConnected && min
-          ? formatter.getBatteryLabel(min.voltage, min.percentage)
-          : null
-      }
-      style={buttonStyle}
-    >
-      {batteryStatus ? (
-        formatter.getLargeBatteryIcon(avg.percentage, batteryStatus)
-      ) : (
-        <Battery />
-      )}
-      <SidebarBadge
-        anchor='topLeft'
-        color={badgeVisible ? colorForStatus(badgeStatus) : null}
-        offset={BADGE_OFFSET}
-        visible={badgeVisible}
-      />
-      {isConnected && <BatteryStatusUpdater onSetStatus={setSummary} />}
-    </GenericHeaderButton>
+    <Tooltip content={'Showing average and minimum charge levels.'}>
+      <GenericHeaderButton
+        disabled={!isConnected}
+        label={
+          isConnected && avg
+            ? formatter.getBatteryLabel(avg.voltage, avg.percentage)
+            : '—'
+        }
+        secondaryLabel={
+          isConnected && min
+            ? formatter.getBatteryLabel(min.voltage, min.percentage)
+            : null
+        }
+        style={buttonStyle}
+      >
+        {batteryStatus ? (
+          formatter.getLargeBatteryIcon(avg.percentage, batteryStatus)
+        ) : (
+          <Battery />
+        )}
+        <SidebarBadge
+          anchor='topLeft'
+          color={badgeVisible ? colorForStatus(badgeStatus) : null}
+          offset={BADGE_OFFSET}
+          visible={badgeVisible}
+        />
+        {isConnected && <BatteryStatusUpdater onSetStatus={setSummary} />}
+      </GenericHeaderButton>
+    </Tooltip>
   );
 };
 

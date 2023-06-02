@@ -65,8 +65,10 @@ const getNextTypeForAltitudeSummaryType = (type) => {
 
 const getTooltipForType = (type) => (
   <div>
-    Showing {describeAltitudeSummaryType(type, { short: true })}. Click to
-    change to{' '}
+    Showing maximum and minimum{' '}
+    {describeAltitudeSummaryType(type, { short: true })}.
+    <br />
+    Click to change to{' '}
     {describeAltitudeSummaryType(getNextTypeForAltitudeSummaryType(type), {
       short: true,
     })}
