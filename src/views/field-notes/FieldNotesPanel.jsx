@@ -12,6 +12,7 @@ import SimpleMDE from 'react-simplemde-editor';
 import 'easymde/dist/easymde.min.css';
 
 import IconButton from '@material-ui/core/IconButton';
+import { makeStyles } from '@material-ui/core/styles';
 import Save from '@material-ui/icons/Save';
 
 import { TooltipWithContainerFromContext as Tooltip } from '~/containerContext';
@@ -48,7 +49,37 @@ const SIMPLE_MDE_OPTIONS = {
   },
 };
 
+const useStyles = makeStyles(
+  (theme) => ({
+    editorWrapper: {
+      height: '100%',
+      overflow: 'overlay',
+
+      '&:hover': {
+        '& + $saveIcon': {
+          opacity: 1,
+        },
+      },
+    },
+
+    saveIcon: {
+      position: 'absolute',
+      top: 0,
+      right: 0,
+
+      opacity: 0,
+
+      transition: theme.transitions.create(['opacity'], {
+        duration: theme.transitions.duration.short,
+      }),
+    },
+  }),
+  { name: 'FieldNotesPanel' }
+);
+
 const FieldNotesPanel = ({ contents, updateFieldNotes }) => {
+  const classes = useStyles();
+
   const exportNotes = useCallback(async () => {
     writeTextToFile(
       contents,
@@ -60,16 +91,13 @@ const FieldNotesPanel = ({ contents, updateFieldNotes }) => {
   return (
     <>
       <SimpleMDE
-        style={{ height: '100%' }}
+        className={classes.editorWrapper}
         options={SIMPLE_MDE_OPTIONS}
         value={contents}
         onChange={debounce(updateFieldNotes, 1000)}
       />
       <Tooltip content='Export notes as Markdown file' placement='left'>
-        <IconButton
-          style={{ position: 'absolute', top: 0, right: 0 }}
-          onClick={exportNotes}
-        >
+        <IconButton className={classes.saveIcon} onClick={exportNotes}>
           <Save />
         </IconButton>
       </Tooltip>
