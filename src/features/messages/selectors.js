@@ -16,3 +16,5 @@ export function createMessageListSelector() {
         : selectOrdered(reorder(messages, messageIds))
   );
 }
+
+export const getCommandHistory = (state) => state.messages.commandHistory;

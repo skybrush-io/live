@@ -21,7 +21,10 @@ import ChatBubble from './ChatBubble';
 import Marker from './Marker';
 import MessageField from './MessageField';
 
-import { createMessageListSelector } from '~/features/messages/selectors';
+import {
+  createMessageListSelector,
+  getCommandHistory,
+} from '~/features/messages/selectors';
 import {
   addErrorMessage,
   addInboundMessage,
@@ -165,6 +168,7 @@ ChatAreaBackgroundHint.propTypes = {
 class MessagesPanel extends React.Component {
   static propTypes = {
     chatEntries: PropTypes.arrayOf(PropTypes.object),
+    commandHistory: PropTypes.arrayOf(PropTypes.string),
     hideClearButton: PropTypes.bool,
     onClearMessages: PropTypes.func,
     onSend: PropTypes.func,
@@ -202,6 +206,7 @@ class MessagesPanel extends React.Component {
   render() {
     const {
       chatEntries,
+      commandHistory,
       hideClearButton,
       onClearMessages,
       style,
@@ -233,9 +238,6 @@ class MessagesPanel extends React.Component {
         />
       );
     const isClearButtonVisible = onClearMessages && !hideClearButton;
-    const outboundHistory = chatEntries
-      .filter((e) => e.type === MessageType.OUTBOUND)
-      .map((e) => e.body);
     const textFields = (
       <Box
         key='textFieldContainer'
@@ -249,7 +251,7 @@ class MessagesPanel extends React.Component {
         <MessageField
           autoFocus
           fullWidth
-          history={outboundHistory}
+          history={commandHistory}
           inputRef={this._messageFieldRef}
           onSubmit={this._onSubmit}
         />
@@ -292,6 +294,7 @@ export default connect(
     const messageListSelector = createMessageListSelector();
     return (state, ownProps) => ({
       chatEntries: messageListSelector(state, ownProps.uavId),
+      commandHistory: getCommandHistory(state),
     });
   },
 
