@@ -47,8 +47,10 @@ const { actions, reducer } = createSlice({
       //   errors: [1, 2, 3],
       //   anchors: [
       //     {
+      //       "id": "A",
+      //       "active": True,
       //       "position": [1, 2, 3],
-      //       "battery": 50,
+      //       "battery": { voltage: 3.4, percentage: 37, charging: false },
       //     }, ...
       //   ],
       //   ...

@@ -28,7 +28,8 @@ export const getLocalPositioningSystemsInOrder = createSelector(
  * the user on the UI.
  */
 export const getLocalPositioningSystemDisplayName = (lps) =>
-  (lps ? lps.name || lps.id : null) || 'Unnamed positioning system';
+  (lps ? lps.name || lps.id : 'No positioning system') ||
+  'Unnamed positioning system';
 
 /**
  * Function that returns a status code for the given LPS. This can be used on

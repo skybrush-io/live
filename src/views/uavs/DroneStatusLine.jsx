@@ -28,6 +28,7 @@ import {
   getSemanticsForGPSFixType,
 } from '~/model/enums';
 import { getPreferredCoordinateFormatter } from '~/selectors/formatting';
+import CustomPropTypes from '~/utils/prop-types';
 import { formatCoordinateArray } from '~/utils/formatting';
 
 /**
@@ -191,12 +192,7 @@ const DroneStatusLine = ({
 
 DroneStatusLine.propTypes = {
   batteryFormatter: PropTypes.instanceOf(BatteryFormatter),
-  batteryStatus: PropTypes.shape({
-    cellCount: PropTypes.number,
-    charging: PropTypes.bool,
-    voltage: PropTypes.number,
-    percentage: PropTypes.number,
-  }),
+  batteryStatus: CustomPropTypes.batteryStatus,
   color: PropTypes.string,
   coordinateFormatter: PropTypes.func,
   debugString: PropTypes.string,
@@ -207,7 +203,7 @@ DroneStatusLine.propTypes = {
   heading: PropTypes.number,
   headingDeviation: PropTypes.number,
   label: PropTypes.string,
-  localPosition: PropTypes.arrayOf(PropTypes.number),
+  localPosition: CustomPropTypes.localCoordinate,
   missing: PropTypes.bool,
   mode: PropTypes.string,
   position: PropTypes.shape({

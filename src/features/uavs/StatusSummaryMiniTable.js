@@ -13,6 +13,7 @@ import {
   getSemanticsForFlightMode,
   getSemanticsForGPSFixType,
 } from '~/model/enums';
+import CustomPropTypes from '~/utils/prop-types';
 import { formatNumberSafely, shortTimeAgoFormatter } from '~/utils/formatting';
 
 import { getUAVById } from './selectors';
@@ -151,7 +152,7 @@ StatusSummaryMiniTable.propTypes = {
   }),
   heading: PropTypes.number,
   lastUpdated: PropTypes.number,
-  localPosition: PropTypes.arrayOf(PropTypes.number),
+  localPosition: CustomPropTypes.localCoordinate,
   mode: PropTypes.string,
   position: PropTypes.shape({
     lat: PropTypes.number,

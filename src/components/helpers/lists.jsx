@@ -68,7 +68,7 @@ export function listOf(itemRenderer, options = {}) {
   const ListView = React.forwardRef((props, ref) => {
     const items = dataProvider(props);
     const children = postprocess(
-      items.map((item) => itemRenderer(item, props)),
+      (items || []).map((item, index) => itemRenderer(item, props, index)),
       props
     );
     if (hasSomeItems(children)) {
@@ -237,7 +237,7 @@ export function selectableListOf(itemRenderer, options = {}) {
   const SelectableListView = React.forwardRef((props, ref) => {
     const items = dataProvider(props);
     const children = postprocess(
-      items.map((item) =>
+      (items || []).map((item, index) =>
         itemRenderer(
           item,
           {
@@ -247,7 +247,8 @@ export function selectableListOf(itemRenderer, options = {}) {
               ? (event) => props.onChange(event, item.id)
               : undefined,
           },
-          item.id === props.value
+          item.id === props.value,
+          index
         )
       ),
       props
@@ -331,7 +332,7 @@ export function multiSelectableListOf(itemRenderer, options = {}) {
       setSelection: props.onChange,
     });
     const children = postprocess(
-      items.map((item) =>
+      (items || []).map((item, index) =>
         itemRenderer(
           item,
           {
@@ -339,7 +340,8 @@ export function multiSelectableListOf(itemRenderer, options = {}) {
             onChange: undefined,
             onItemSelected: onItemSelected(item.id),
           },
-          includes(props.value, item.id)
+          includes(props.value, item.id),
+          index
         )
       ),
       props

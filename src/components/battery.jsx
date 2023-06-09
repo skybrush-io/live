@@ -179,10 +179,10 @@ export class BatteryFormatter {
     return iconSet[index];
   };
 
-  getBatteryLabel = (voltage, percentage, cellCount) => {
+  getBatteryLabel = (voltage, percentage, cellCount, defaultLabel = '???') => {
     if (isNil(percentage)) {
       if (isNil(voltage)) {
-        return '???';
+        return defaultLabel;
       } else if (this._style === BatteryDisplayStyle.FORCED_PERCENTAGE) {
         // User wants percentage all the time so let's convert voltage to percentage
         const estimatedPercentage =

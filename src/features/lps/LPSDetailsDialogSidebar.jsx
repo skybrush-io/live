@@ -49,7 +49,9 @@ const LPSDetailsDialogSidebarHeader = connect(
     return (state, ownProps) => selector(state, ownProps.lpsId);
   },
   // mapDispatchToProps
-  {}
+  {},
+  // mergeProps
+  (stateProps) => stateProps
 )(LabeledStatusLight);
 
 /**
@@ -63,7 +65,7 @@ const LPSDetailsDialogSidebar = ({ lpsId }) => {
         <LPSDetailsDialogSidebarHeader lpsId={lpsId} />
       </Box>
       <Box className={classes.mainBox}>
-        <LPSStatusSummaryMiniTable />
+        <LPSStatusSummaryMiniTable lpsId={lpsId} />
       </Box>
       <CalibrationButton lpsId={lpsId} />
     </Box>

@@ -283,6 +283,9 @@ export default class UAV {
       updated = true;
     }
 
+    // TODO(ntamas): get rid of _rawVoltage and start using updateBatteryStatus()
+    // from model/battery.js
+
     if (Array.isArray(battery)) {
       let newVoltageRaw;
       let newPercentage;

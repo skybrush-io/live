@@ -6,12 +6,14 @@ import {
   getSelectedTabInLPSDetailsDialog,
   getSelectedLPSIdInLPSDetailsDialog,
 } from './details';
+import AnchorStatusPanel from './AnchorStatusPanel';
 
 const LPSDetailsDialogBody = ({ selectedTab, lpsId }) => {
   switch (selectedTab) {
     case 'anchors':
+      return <AnchorStatusPanel lpsId={lpsId} />;
     default:
-      return <div>Anchor list will come here</div>;
+      return <div />;
   }
 };
 

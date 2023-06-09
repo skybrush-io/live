@@ -15,6 +15,7 @@ import {
   getSemanticsForGPSFixType,
 } from '~/model/enums';
 import { formatCoordinateArray, formatNumberSafely } from '~/utils/formatting';
+import CustomPropTypes from '~/utils/prop-types';
 
 import { createSingleUAVStatusSummarySelector, getUAVById } from './selectors';
 
@@ -159,12 +160,7 @@ const DroneInfoTooltipContent = ({
 
 DroneInfoTooltipContent.propTypes = {
   batteryFormatter: PropTypes.instanceOf(BatteryFormatter),
-  batteryStatus: PropTypes.shape({
-    cellCount: PropTypes.number,
-    charging: PropTypes.bool,
-    voltage: PropTypes.number,
-    percentage: PropTypes.number,
-  }),
+  batteryStatus: CustomPropTypes.batteryStatus,
   details: PropTypes.string,
   gpsFix: PropTypes.shape({
     type: PropTypes.number,
@@ -172,7 +168,7 @@ DroneInfoTooltipContent.propTypes = {
   }),
   heading: PropTypes.number,
   label: PropTypes.string,
-  localPosition: PropTypes.arrayOf(PropTypes.number),
+  localPosition: CustomPropTypes.localPosition,
   mode: PropTypes.string,
   position: PropTypes.shape({
     ahl: PropTypes.number,

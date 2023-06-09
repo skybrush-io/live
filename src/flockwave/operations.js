@@ -108,6 +108,7 @@ export async function setShowConfiguration(hub, config) {
   });
 
   if (response.body.type !== 'ACK-ACK') {
+    console.log(response.body);
     throw new Error('Failed to set new show configuration on the server');
   }
 }
