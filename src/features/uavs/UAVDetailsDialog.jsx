@@ -6,6 +6,9 @@ import { connect } from 'react-redux';
 import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
 import ResizableBox from '@skybrush/mui-components/lib/ResizableBox';
 
+import { clearPendingUAVId } from '~/features/hotkeys/actions';
+import { isPendingUAVIdOverlayVisible } from '~/features/hotkeys/selectors';
+
 import {
   UAV_DETAILS_DIALOG_BODY_HEIGHT as BODY_HEIGHT,
   UAV_DETAILS_DIALOG_BODY_MIN_WIDTH as BODY_MIN_WIDTH,
@@ -96,7 +99,13 @@ export default connect(
 
   // mapDispatchToProps
   {
-    onClose: closeUAVDetailsDialog,
+    onClose: () => (dispatch, getState) => {
+      if (isPendingUAVIdOverlayVisible(getState())) {
+        dispatch(clearPendingUAVId());
+      } else {
+        dispatch(closeUAVDetailsDialog());
+      }
+    },
     onDragStop:
       (_event, { x, y }) =>
       (dispatch) => {
