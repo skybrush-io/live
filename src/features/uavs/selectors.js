@@ -1,5 +1,6 @@
 import groupBy from 'lodash-es/groupBy';
 import isNil from 'lodash-es/isNil';
+import orderBy from 'lodash-es/orderBy';
 import sortBy from 'lodash-es/sortBy';
 import { getDistance as haversineDistance } from 'ol/sphere';
 import createCachedSelector from 're-reselect';
@@ -787,3 +788,27 @@ export function getSingleUAVStatusSummary(uav) {
 
 export const createSingleUAVStatusSummarySelector = () =>
   createSelector(getUAVById, getSingleUAVStatusSummary);
+
+/**
+ * Returns the list of UAV IDs that should be shown on the UI, sorted by their
+ * error codes in a descending way, such that the drones with the most severe
+ * errors get placed at the beginning of the list. Only 'warnings', 'errors'
+ * and 'critical errors' are considered, 'informational messages' are ignored.
+ */
+export const getUAVIdsSortedByErrorCode = createSelector(
+  getUAVIdList,
+  getUAVIdToStateMapping,
+  (uavIds, uavStatesById) =>
+    orderBy(
+      uavIds,
+      [
+        (uavId) =>
+          Math.max(
+            ...uavStatesById[uavId].errors.filter(
+              (e) => getSeverityOfErrorCode(e) > 0
+            )
+          ),
+      ],
+      ['desc']
+    )
+);

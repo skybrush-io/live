@@ -10,16 +10,19 @@ import TextField from '@material-ui/core/TextField';
 const MessageField = React.forwardRef(
   ({ history, onEscape, onSubmit, ...rest }, ref) => {
     const [message, setMessage] = useState('');
-    const onChange = (event) => {
-      setMessage(event.target.value);
-    };
+    const handleChange = useCallback(
+      (event) => {
+        setMessage(event.target.value);
+      },
+      [setMessage]
+    );
 
     const [historyIndex, setHistoryIndex] = useState(0);
     useEffect(() => {
       setMessage(history[history.length - historyIndex] ?? '');
     }, [history, historyIndex]);
 
-    const onKeyDown = useCallback(
+    const handleKeyDown = useCallback(
       (event) => {
         switch (event.key) {
           case 'Enter': {
@@ -56,12 +59,19 @@ const MessageField = React.forwardRef(
       [history, message, onEscape, onSubmit]
     );
 
+    const handleBlur = useCallback((event) => {
+      if (event.relatedTarget) {
+        event.relatedTarget.focusRestorationTarget = event.target;
+      }
+    }, []);
+
     return (
       <TextField
         ref={ref}
         value={message}
-        onChange={onChange}
-        onKeyDown={onKeyDown}
+        onBlur={handleBlur}
+        onChange={handleChange}
+        onKeyDown={handleKeyDown}
         {...rest}
       />
     );

@@ -36,6 +36,10 @@ const { actions, reducer } = createSlice({
       state.selectedTab = payload;
     },
 
+    setSelectedUAVIdInUAVDetailsDialog(state, { payload }) {
+      state.selectedUAVId = payload;
+    },
+
     setUAVDetailsDialogPosition(state, { payload }) {
       state.position = payload;
     },
@@ -59,6 +63,7 @@ export const {
   openUAVDetailsDialog,
   closeUAVDetailsDialog,
   setSelectedTabInUAVDetailsDialog,
+  setSelectedUAVIdInUAVDetailsDialog,
   setUAVDetailsDialogPosition,
   setUAVDetailsDialogWidth,
 } = actions;

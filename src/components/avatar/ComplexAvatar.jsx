@@ -17,7 +17,9 @@ const useStyles = makeStyles(
   (theme) => ({
     avatarWrapper: {
       position: 'relative',
-      marginBottom: theme.spacing(0.5),
+      '&:not(:last-child)': {
+        marginBottom: theme.spacing(0.5),
+      },
 
       '&::after': {
         background: Colors.error,
@@ -69,6 +71,7 @@ const useStyles = makeStyles(
  * in the system that has an ID.
  */
 const ComplexAvatar = ({
+  AvatarProps,
   batteryFormatter,
   batteryStatus,
   hint,
@@ -103,7 +106,10 @@ const ComplexAvatar = ({
           gone && classes.gone
         )}
       >
-        <SemanticAvatar status={editing ? Status.NEXT : status}>
+        <SemanticAvatar
+          status={editing ? Status.NEXT : status}
+          {...AvatarProps}
+        >
           {label === undefined ? id : label}
         </SemanticAvatar>
         {progress > 0 && (
@@ -127,6 +133,7 @@ const ComplexAvatar = ({
 };
 
 ComplexAvatar.propTypes = {
+  AvatarProps: PropTypes.object,
   batteryFormatter: PropTypes.instanceOf(BatteryFormatter),
   batteryStatus: PropTypes.shape({
     cellCount: PropTypes.number,
