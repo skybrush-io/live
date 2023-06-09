@@ -486,7 +486,7 @@ export const getMisalignedUAVIds = createSelector(
   (deviations, threshold) =>
     // eslint-disable-next-line unicorn/no-array-reduce
     Object.entries(deviations).reduce((acc, [uavId, deviation]) => {
-      if (Math.abs(deviation) > threshold) {
+      if (!isNil(deviation) && Math.abs(deviation) > threshold) {
         acc.push(uavId);
       }
 
