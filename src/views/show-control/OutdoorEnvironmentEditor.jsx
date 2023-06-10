@@ -26,12 +26,15 @@ import {
   updateOutdoorShowSettings,
 } from '~/features/show/actions';
 import {
-  ALTITUDE_REFERENCE,
+  AltitudeReference,
   COORDINATE_SYSTEM_TYPE,
+  TakeoffHeadingMode,
 } from '~/features/show/constants';
 import { showNotification } from '~/features/snackbar/slice';
 import { MessageSemantics } from '~/features/snackbar/types';
 import AutoFix from '~/icons/AutoFix';
+import { getOutdoorShowTakeoffHeadingSpecification } from '~/features/show/selectors';
+import { TakeoffHeadingSpecEditor } from './TakeoffHeadingSpecEditor';
 
 /**
  * Presentation component for the form that allows the user to edit the
@@ -48,10 +51,14 @@ const OutdoorEnvironmentEditor = ({
   onOrientationChanged,
   onSetAltitudeReferenceToAverageAMSL,
   onSetCoordinateSystemFromMap,
+  onSetTakeoffHeading,
   showCoordinateSystem,
+  takeoffHeading,
 }) => {
   const usingAMSLReference =
-    altitudeReference && altitudeReference.type === ALTITUDE_REFERENCE.AMSL;
+    altitudeReference && altitudeReference.type === AltitudeReference.AMSL;
+
+  console.log(takeoffHeading);
 
   return (
     <>
@@ -96,15 +103,15 @@ const OutdoorEnvironmentEditor = ({
           <Select
             value={
               (altitudeReference ? altitudeReference.type : null) ||
-              ALTITUDE_REFERENCE.AHL
+              AltitudeReference.AHL
             }
             inputProps={{ id: 'altitude-reference-type' }}
             onChange={onAltitudeReferenceTypeChanged}
           >
-            <MenuItem value={ALTITUDE_REFERENCE.AHL}>
+            <MenuItem value={AltitudeReference.AHL}>
               Altitude above home level (AHL)
             </MenuItem>
-            <MenuItem value={ALTITUDE_REFERENCE.AMSL}>
+            <MenuItem value={AltitudeReference.AMSL}>
               Altitude above mean sea level (AMSL)
             </MenuItem>
           </Select>
@@ -133,13 +140,17 @@ const OutdoorEnvironmentEditor = ({
       </Box>
 
       <RTKCorrectionSourceSelector />
+      <TakeoffHeadingSpecEditor
+        takeoffHeading={takeoffHeading}
+        onChange={onSetTakeoffHeading}
+      />
     </>
   );
 };
 
 OutdoorEnvironmentEditor.propTypes = {
   altitudeReference: PropTypes.shape({
-    type: PropTypes.oneOf(Object.values(ALTITUDE_REFERENCE)),
+    type: PropTypes.oneOf(Object.values(AltitudeReference)),
     value: PropTypes.number,
   }),
   canEstimateShowCoordinateSystem: PropTypes.bool,
@@ -151,9 +162,14 @@ OutdoorEnvironmentEditor.propTypes = {
   onOrientationChanged: PropTypes.func,
   onSetAltitudeReferenceToAverageAMSL: PropTypes.func,
   onSetCoordinateSystemFromMap: PropTypes.func,
+  onSetTakeoffHeading: PropTypes.func,
   showCoordinateSystem: PropTypes.shape({
     orientation: PropTypes.string.isRequired,
     origin: PropTypes.arrayOf(PropTypes.number),
+  }),
+  takeoffHeading: PropTypes.shape({
+    type: PropTypes.oneOf(Object.values(TakeoffHeadingMode)),
+    value: PropTypes.string.isRequired,
   }),
 };
 
@@ -165,6 +181,7 @@ export default connect(
       canEstimateShowCoordinateSystemFromActiveUAVs(state),
     showCoordinateSystem: state.show.environment.outdoor.coordinateSystem,
     mapCoordinateSystem: state.map.origin,
+    takeoffHeading: getOutdoorShowTakeoffHeadingSpecification(state),
   }),
 
   // mapDispatchToProps
@@ -218,6 +235,12 @@ export default connect(
         })
       );
     },
+
+    onSetTakeoffHeading: (value) =>
+      updateOutdoorShowSettings({
+        takeoffHeading: value,
+        setupMission: true,
+      }),
   },
 
   // mergeProps

@@ -47,10 +47,10 @@ import {
   getLastPointsOfTrajectoriesInWorldCoordinates,
   getOutdoorShowOrigin,
   getRoomCorners,
-  getShowOrientation,
   getOutdoorShowAltitudeReference,
   getOutdoorShowToWorldCoordinateSystemTransformationObject,
   getOutdoorShowOrientation,
+  getCommonTakeoffHeading,
 } from './selectors';
 import {
   approveTakeoffAreaAt,
@@ -60,6 +60,7 @@ import {
   setLastLoadingAttemptFailed,
   setOutdoorShowOrigin,
   setOutdoorShowOrientation,
+  setOutdoorShowTakeoffHeadingSpecification,
   setRoomCorners,
   setStartMethod,
   signOffOnManualPreflightChecksAt,
@@ -91,11 +92,11 @@ export const setupMissionFromShow = () => (dispatch, getState) => {
   // TODO(ntamas): map these to GPS coordinates only if the show is outdoor
   const homePositions = getFirstPointsOfTrajectoriesInWorldCoordinates(state);
   const landingPositions = getLastPointsOfTrajectoriesInWorldCoordinates(state);
-  const orientation = getShowOrientation(state);
+  const takeoffHeading = getCommonTakeoffHeading(state);
 
   dispatch(updateHomePositions(homePositions));
   dispatch(updateLandingPositions(landingPositions));
-  dispatch(updateTakeoffHeadings(orientation));
+  dispatch(updateTakeoffHeadings(takeoffHeading));
 };
 
 export const removeShowFeatures = () => (dispatch, getState) => {
@@ -219,7 +220,7 @@ export const rotateOutdoorShowOrientationByAngleAroundPoint =
   };
 
 export const updateOutdoorShowSettings =
-  ({ origin, orientation, setupMission }) =>
+  ({ origin, orientation, takeoffHeading, setupMission }) =>
   (dispatch) => {
     let changed = false;
 
@@ -230,6 +231,11 @@ export const updateOutdoorShowSettings =
 
     if (orientation) {
       dispatch(setOutdoorShowOrientation(orientation));
+      changed = true;
+    }
+
+    if (takeoffHeading) {
+      dispatch(setOutdoorShowTakeoffHeadingSpecification(takeoffHeading));
       changed = true;
     }
 

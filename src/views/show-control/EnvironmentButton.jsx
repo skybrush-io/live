@@ -9,7 +9,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import StatusLight from '@skybrush/mui-components/lib/StatusLight';
 
 import { Status } from '~/components/semantics';
-import { ALTITUDE_REFERENCE } from '~/features/show/constants';
+import { AltitudeReference } from '~/features/show/constants';
 import {
   getOutdoorShowAltitudeReference,
   getShowEnvironmentType,
@@ -30,13 +30,13 @@ const getEnvironmentDescription = createSelector(
 
       case 'outdoor': {
         const { type, value } = outdoorAltitudeReference;
-        if (type === ALTITUDE_REFERENCE.AMSL) {
+        if (type === AltitudeReference.AMSL) {
           if (Number.isFinite(value)) {
             return `Outdoor, relative to ${value.toFixed(1)}m AMSL`;
           } else {
             return 'Outdoor, invalid altitude reference';
           }
-        } else if (type === ALTITUDE_REFERENCE.AHL) {
+        } else if (type === AltitudeReference.AHL) {
           // value should be ignored in this case
           return `Outdoor, relative to home`;
         } else {
