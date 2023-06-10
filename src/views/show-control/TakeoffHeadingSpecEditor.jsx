@@ -46,7 +46,7 @@ export const TakeoffHeadingSpecEditor = ({
   );
 
   return (
-    <Box display='flex' flexDirection='row' pt={2} pb={1}>
+    <Box display='flex' flexDirection='row'>
       <FormControl fullWidth variant='filled'>
         <InputLabel htmlFor='takeoff-heading-type'>
           UAV headings before takeoff are...

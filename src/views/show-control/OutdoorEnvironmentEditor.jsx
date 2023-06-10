@@ -9,10 +9,14 @@ import IconButton from '@material-ui/core/IconButton';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
+import Typography from '@material-ui/core/Typography';
 import VerticalAlignCenter from '@material-ui/icons/VerticalAlignCenter';
+import Warning from '@material-ui/icons/Warning';
 
+import FormHeader from '@skybrush/mui-components/lib/FormHeader';
 import Tooltip from '@skybrush/mui-components/lib/Tooltip';
 
+import { Colors } from '~/components/colors';
 import CoordinateSystemFields from '~/components/CoordinateSystemFields';
 import { SimpleDistanceField } from '~/components/forms/fields';
 import { estimateShowCoordinateSystemFromActiveUAVs } from '~/features/auto-fit/actions';
@@ -67,7 +71,9 @@ const OutdoorEnvironmentEditor = ({
 
   return (
     <>
-      <Box display='flex' flexDirection='row' pt={2}>
+      <FormHeader>Coordinate system</FormHeader>
+
+      <Box display='flex' flexDirection='row'>
         <Box>
           <CoordinateSystemFields
             type={COORDINATE_SYSTEM_TYPE}
@@ -100,7 +106,29 @@ const OutdoorEnvironmentEditor = ({
         </Box>
       </Box>
 
-      <Box display='flex' flexDirection='row' pt={1} pb={2}>
+      <TakeoffHeadingSpecEditor
+        takeoffHeading={takeoffHeading}
+        onChange={onSetTakeoffHeading}
+        onSetToAverageHeading={onSetTakeoffHeadingToAverageActiveUAVHeading}
+      />
+
+      <Box pt={1} display='flex' flexDirection='row'>
+        <Box style={{ color: Colors.warning }}>
+          <Warning />
+        </Box>
+        <Box flex={1} pl={1}>
+          <Typography color='textSecondary' variant='body2'>
+            Automatic show origin and orientation calculation assumes that all
+            drones point towards the X axis of the show <u>or</u> that you
+            specified their offset relative to the X axis with the setting
+            above. Absolute takeoff headings are not supported.
+          </Typography>
+        </Box>
+      </Box>
+
+      <FormHeader>Altitude control and RTK corrections</FormHeader>
+
+      <Box display='flex' flexDirection='row' pb={2}>
         <FormControl fullWidth variant='filled'>
           <InputLabel htmlFor='altitude-reference-type'>
             Show is controlled based on...
@@ -145,11 +173,6 @@ const OutdoorEnvironmentEditor = ({
       </Box>
 
       <RTKCorrectionSourceSelector />
-      <TakeoffHeadingSpecEditor
-        takeoffHeading={takeoffHeading}
-        onChange={onSetTakeoffHeading}
-        onSetToAverageHeading={onSetTakeoffHeadingToAverageActiveUAVHeading}
-      />
     </>
   );
 };

@@ -303,6 +303,28 @@ export const getTakeoffHeadingSpecification = createSelector(
   (indoor, indoorSpec, outdoorSpec) => (indoor ? indoorSpec : outdoorSpec)
 );
 
+const convertTakeoffHeadingSpecificationValueToNumber = (spec) => {
+  const { value } = typeof spec === 'object' ? spec : DEFAULT_TAKEOFF_HEADING;
+
+  const valueAsNum =
+    typeof value === 'string'
+      ? Number.parseFloat(value)
+      : typeof value === 'number'
+      ? value
+      : 0;
+
+  return valueAsNum % 360;
+};
+
+/**
+ * Selector that returns the value in the takeoff heading specification,
+ * safely cast into a number.
+ */
+export const getTakeoffHeadingSpecificationValueAsNumber = (state) => {
+  const spec = getTakeoffHeadingSpecification(state);
+  return convertTakeoffHeadingSpecificationValueToNumber(spec);
+};
+
 /**
  * Selector that returns a function that calculates the effective takeoff
  * heading of the show, given the takeoff heading specification.
@@ -311,25 +333,18 @@ export const getCommonTakeoffHeading = createSelector(
   getTakeoffHeadingSpecification,
   getShowOrientation,
   (spec, orientation) => {
-    const { type, value } =
-      typeof spec === 'object' ? spec : DEFAULT_TAKEOFF_HEADING;
-
-    const valueAsNum =
-      typeof value === 'string'
-        ? Number.parseFloat(value)
-        : typeof value === 'number'
-        ? value
-        : 0;
+    const { type } = typeof spec === 'object' ? spec : DEFAULT_TAKEOFF_HEADING;
+    const value = convertTakeoffHeadingSpecificationValueToNumber(spec);
 
     switch (type) {
       case TakeoffHeadingMode.NONE:
         return undefined;
 
       case TakeoffHeadingMode.ABSOLUTE:
-        return valueAsNum % 360;
+        return value;
 
       case TakeoffHeadingMode.RELATIVE:
-        return (orientation + valueAsNum) % 360;
+        return (orientation + value) % 360;
 
       default:
         return undefined;
