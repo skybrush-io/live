@@ -3,9 +3,13 @@ import React, { useCallback } from 'react';
 
 import Box from '@material-ui/core/Box';
 import FormControl from '@material-ui/core/FormControl';
+import IconButton from '@material-ui/core/IconButton';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
+import Explore from '@material-ui/icons/Explore';
+
+import Tooltip from '@skybrush/mui-components/lib/Tooltip';
 
 import {
   DEFAULT_TAKEOFF_HEADING,
@@ -14,7 +18,11 @@ import {
 
 import RotationField from '~/components/RotationField';
 
-export const TakeoffHeadingSpecEditor = ({ takeoffHeading, onChange }) => {
+export const TakeoffHeadingSpecEditor = ({
+  takeoffHeading,
+  onChange,
+  onSetToAverageHeading,
+}) => {
   const { type = TakeoffHeadingMode.NONE, value = '0' } =
     takeoffHeading || DEFAULT_TAKEOFF_HEADING;
 
@@ -70,6 +78,15 @@ export const TakeoffHeadingSpecEditor = ({ takeoffHeading, onChange }) => {
         variant='filled'
         onChange={onValueChanged}
       />
+      {onSetToAverageHeading && (
+        <Box alignSelf='bottom' pt={1}>
+          <Tooltip content='Set to average heading of active drones'>
+            <IconButton edge='end' onClick={onSetToAverageHeading}>
+              <Explore />
+            </IconButton>
+          </Tooltip>
+        </Box>
+      )}
     </Box>
   );
 };
@@ -80,4 +97,5 @@ TakeoffHeadingSpecEditor.propTypes = {
     value: PropTypes.string.isRequired,
   }),
   onChange: PropTypes.func,
+  onSetToAverageHeading: PropTypes.func,
 };

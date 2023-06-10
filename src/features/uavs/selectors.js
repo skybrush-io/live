@@ -40,7 +40,7 @@ import { convertRGB565ToCSSNotation } from '~/flockwave/parsing';
 import { globalIdToUavId } from '~/model/identifiers';
 import { UAVAge } from '~/model/uav';
 import { selectionForSubset } from '~/selectors/selection';
-import { euclideanDistance2D } from '~/utils/math';
+import { euclideanDistance2D, getMeanAngle } from '~/utils/math';
 import { EMPTY_ARRAY } from '~/utils/redux';
 
 /**
@@ -91,6 +91,17 @@ export const getCurrentLocalPositionByUavId = (state, uavId) => {
 export const getCurrentHeadingByUavId = (state, uavId) => {
   const uav = getUAVById(state, uavId);
   return uav ? uav.heading : undefined;
+};
+
+/**
+ * Returns the average heading of the active UAVs.
+ */
+export const getAverageHeadingOfActiveUAVs = (state) => {
+  const activeUAVIds = getActiveUAVIds(state);
+  const headings = activeUAVIds
+    .map((uavId) => getCurrentHeadingByUavId(state, uavId))
+    .filter((x) => typeof x === 'number');
+  return getMeanAngle(headings);
 };
 
 /**

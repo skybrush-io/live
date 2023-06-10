@@ -28,13 +28,19 @@ import {
 import {
   AltitudeReference,
   COORDINATE_SYSTEM_TYPE,
+  DEFAULT_TAKEOFF_HEADING,
   TakeoffHeadingMode,
 } from '~/features/show/constants';
 import { showNotification } from '~/features/snackbar/slice';
 import { MessageSemantics } from '~/features/snackbar/types';
 import AutoFix from '~/icons/AutoFix';
-import { getOutdoorShowTakeoffHeadingSpecification } from '~/features/show/selectors';
+import {
+  getOutdoorShowOrientation,
+  getOutdoorShowTakeoffHeadingSpecification,
+} from '~/features/show/selectors';
+import { getAverageHeadingOfActiveUAVs } from '~/features/uavs/selectors';
 import { TakeoffHeadingSpecEditor } from './TakeoffHeadingSpecEditor';
+import { normalizeAngle } from '~/utils/geography';
 
 /**
  * Presentation component for the form that allows the user to edit the
@@ -52,13 +58,12 @@ const OutdoorEnvironmentEditor = ({
   onSetAltitudeReferenceToAverageAMSL,
   onSetCoordinateSystemFromMap,
   onSetTakeoffHeading,
+  onSetTakeoffHeadingToAverageActiveUAVHeading,
   showCoordinateSystem,
   takeoffHeading,
 }) => {
   const usingAMSLReference =
     altitudeReference && altitudeReference.type === AltitudeReference.AMSL;
-
-  console.log(takeoffHeading);
 
   return (
     <>
@@ -143,6 +148,7 @@ const OutdoorEnvironmentEditor = ({
       <TakeoffHeadingSpecEditor
         takeoffHeading={takeoffHeading}
         onChange={onSetTakeoffHeading}
+        onSetToAverageHeading={onSetTakeoffHeadingToAverageActiveUAVHeading}
       />
     </>
   );
@@ -163,6 +169,7 @@ OutdoorEnvironmentEditor.propTypes = {
   onSetAltitudeReferenceToAverageAMSL: PropTypes.func,
   onSetCoordinateSystemFromMap: PropTypes.func,
   onSetTakeoffHeading: PropTypes.func,
+  onSetTakeoffHeadingToAverageActiveUAVHeading: PropTypes.func,
   showCoordinateSystem: PropTypes.shape({
     orientation: PropTypes.string.isRequired,
     origin: PropTypes.arrayOf(PropTypes.number),
@@ -241,6 +248,36 @@ export default connect(
         takeoffHeading: value,
         setupMission: true,
       }),
+
+    onSetTakeoffHeadingToAverageActiveUAVHeading:
+      () => (dispatch, getState) => {
+        const state = getState();
+        const absoluteAngle = getAverageHeadingOfActiveUAVs(state);
+        if (!Number.isFinite(absoluteAngle)) {
+          return;
+        }
+
+        const takeoffHeading = {
+          ...DEFAULT_TAKEOFF_HEADING,
+          ...getOutdoorShowTakeoffHeadingSpecification(state),
+        };
+        if (takeoffHeading?.type === TakeoffHeadingMode.ABSOLUTE) {
+          takeoffHeading.value = normalizeAngle(absoluteAngle);
+        } else {
+          const showOrientation = getOutdoorShowOrientation(state);
+          takeoffHeading.type = TakeoffHeadingMode.RELATIVE;
+          takeoffHeading.value = normalizeAngle(
+            absoluteAngle - showOrientation
+          );
+        }
+
+        dispatch(
+          updateOutdoorShowSettings({
+            takeoffHeading,
+            setupMission: true,
+          })
+        );
+      },
   },
 
   // mergeProps
