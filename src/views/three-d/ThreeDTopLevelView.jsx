@@ -83,7 +83,7 @@ const ThreeDTopLevelView = ({
   });
 
   return (
-    <IgnoreKeys>
+    <IgnoreKeys style={{ height: '100%' }}>
       <Box display='flex' flexDirection='column' height='100%'>
         <AppBar color='default' position='static' className={classes.appBar}>
           <Toolbar disableGutters variant='dense' className={classes.toolbar}>
