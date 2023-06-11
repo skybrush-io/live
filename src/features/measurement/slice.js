@@ -43,7 +43,6 @@ const { actions, reducer } = createSlice({
     },
 
     averagingDialog: {
-      mode: 'normal',
       open: false,
       selectedUAVIds: [],
     },
@@ -56,14 +55,6 @@ const { actions, reducer } = createSlice({
 
     showAveragingDialog: noPayload((state) => {
       state.averagingDialog.open = true;
-    }),
-
-    startAddingNewAveragingMeasurement: noPayload((state) => {
-      state.averagingDialog.mode = 'adding';
-    }),
-
-    finishAddingNewAveragingMeasurement: noPayload((state) => {
-      state.averagingDialog.mode = 'normal';
     }),
 
     setSelectedUAVIdsForAveragingMeasurement(state, action) {
@@ -185,13 +176,11 @@ const { actions, reducer } = createSlice({
 
 export const {
   closeAveragingDialog,
-  finishAddingNewAveragingMeasurement,
   pauseAveragingUAVCoordinatesByIds,
   restartAveragingUAVCoordinatesByIds,
   resumeAveragingUAVCoordinatesByIds,
   setSelectedUAVIdsForAveragingMeasurement,
   showAveragingDialog,
-  startAddingNewAveragingMeasurement,
   startAveragingUAVCoordinateById,
   stopAveragingUAVCoordinatesByIds,
   updateAveragingByIds,

@@ -3,10 +3,11 @@
  */
 
 import PropTypes from 'prop-types';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 
 import { makeStyles } from '@material-ui/core/styles';
+import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
 
 import { PopoverWithContainerFromContext as Popover } from '~/containerContext';
 
@@ -61,6 +62,7 @@ const useStyles = makeStyles(
 
 const UAVSelectorPresentation = ({
   anchorEl,
+  filterable,
   onClose,
   onFocus,
   onSelect,
@@ -69,33 +71,79 @@ const UAVSelectorPresentation = ({
 }) => {
   const classes = useStyles();
 
+  const [filter, setFilter] = useState('');
+
+  // Clear the filter each time the popover is opened.
+  useEffect(() => {
+    if (open) {
+      setFilter('');
+    }
+  }, [open]);
+
+  const filtered = uavIds.filter((id) => id.startsWith(filter));
+
+  const handleKeyDown = (event) => {
+    switch (event.key) {
+      case 'Enter': {
+        if (filtered.length > 0) {
+          onSelect(filtered[0]);
+          onClose();
+          event.preventDefault();
+          event.stopPropagation();
+        }
+
+        break;
+      }
+
+      case 'Backspace': {
+        setFilter(filter.slice(0, -1));
+
+        break;
+      }
+
+      default: {
+        if (/^\d$/.test(event.key)) {
+          setFilter(filter + event.key);
+          event.stopPropagation();
+        }
+      }
+    }
+  };
+
   return (
     <Popover
       open={open}
       anchorEl={anchorEl}
       anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
       transformOrigin={{ vertical: 'top', horizontal: 'center' }}
-      PaperProps={{ className: classes.paper }}
+      PaperProps={{
+        className: classes.paper,
+        onKeyDown: filterable ? handleKeyDown : undefined,
+      }}
       onClose={onClose}
       onFocus={onFocus}
     >
       <div className={classes.content} tabIndex={0}>
-        {uavIds.map((uavId) => (
-          // Enclose the Avatar in a `div`, as it renders a fragment
-          <div key={uavId}>
-            <DroneAvatar
-              variant='minimal'
-              id={uavId}
-              AvatarProps={{
-                style: { cursor: 'pointer' },
-                onClick() {
-                  onSelect(uavId);
-                  onClose();
-                },
-              }}
-            />
-          </div>
-        ))}
+        {filtered.length > 0 ? (
+          filtered.map((uavId) => (
+            // Enclose the Avatar in a `div`, as it renders a fragment
+            <div key={uavId}>
+              <DroneAvatar
+                variant='minimal'
+                id={uavId}
+                AvatarProps={{
+                  style: { cursor: 'pointer' },
+                  onClick() {
+                    onSelect(uavId);
+                    onClose();
+                  },
+                }}
+              />
+            </div>
+          ))
+        ) : (
+          <BackgroundHint text={`No matching UAVs for: "${filter}"`} />
+        )}
       </div>
     </Popover>
   );
@@ -103,6 +151,7 @@ const UAVSelectorPresentation = ({
 
 UAVSelectorPresentation.propTypes = {
   anchorEl: PropTypes.object, // TODO: Find a more exact PropType for this!
+  filterable: PropTypes.bool,
   onClose: PropTypes.func,
   onFocus: PropTypes.func,
   onSelect: PropTypes.func,
