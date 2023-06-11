@@ -345,6 +345,7 @@ MapViewInteractions.propTypes = {
 const MAP_STYLE = {
   // Vector tile based maps assume that there is a light background
   background: '#f8f4f0',
+  height: '100%',
 };
 
 const toolClasses = {
@@ -449,12 +450,12 @@ class MapViewPresentation extends React.Component {
       />
     );
 
-    // Note that we use a <span> to wrap the map; this is because Tippy.js
+    // Note that we use a <div> to wrap the map; this is because Tippy.js
     // tooltips need a ref to a DOM node, but attaching a ref to the Map will
     // give access to the underlying OpenLayers Map object instead.
     return (
       <NearestItemTooltip>
-        <span tabIndex={0}>
+        <div style={{ height: '100%' }}>
           <Map
             ref={this._map}
             loadTilesWhileInteracting
@@ -496,7 +497,7 @@ class MapViewPresentation extends React.Component {
               <MapContextMenu />
             </ShowContextMenu>
           </Map>
-        </span>
+        </div>
       </NearestItemTooltip>
     );
   }
