@@ -12,6 +12,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added a new "Field notes" panel to the sidebar that can be used to jot down
   quick notes without having to leave Skybrush Live.
 
+- Added a way to switch the selected UAV in the UAV Details Dialog by clicking
+  the avatar at the top of the sidebar.
+
 ### Changed
 
 - The `Delete` hotkey now removes the selected features as well.
