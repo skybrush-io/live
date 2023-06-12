@@ -14,7 +14,7 @@ import {
 } from '@skybrush/app-theme-material-ui';
 
 // eslint-disable-next-line import/no-webpack-loader-syntax
-import darkModeExtraCSS from '!!raw-loader!~/../assets/css/dark-mode.css';
+import darkModeExtraCSS from '~/../assets/css/dark-mode.css?raw';
 
 /**
  * Specialized Material-UI theme provider that is aware about the user's

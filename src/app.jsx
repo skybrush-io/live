@@ -100,8 +100,8 @@ const restoreWorkbench = (whenDone) => async () => {
 waitUntilStateRestored().then(() => {
   const disposer = registerUploadJobTypes();
   const sagaTask = sagaMiddleware.run(rootSaga);
-  if (module.hot) {
-    module.hot.dispose(() => {
+  if (import.meta.hot) {
+    import.meta.hot.dispose(() => {
       disposer();
       sagaTask.cancel();
     });
