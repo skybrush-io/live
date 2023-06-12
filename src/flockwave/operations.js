@@ -151,9 +151,9 @@ export async function startRTKSurvey(hub, { accuracy, duration }) {
 export async function uploadDroneShow(hub, { uavId, data }, options) {
   validateObjectId(uavId);
 
-  // HACK HACK HACK we are (ab)using the command execution mechanism. This is
-  // probably okay as a temporary solution, but we might need a better solution
-  // in the long term.
+  // HACK: we are (ab)using the command execution mechanism. This is probably
+  // okay as a temporary solution, but we might need a better solution in the
+  // long term.
   try {
     await hub.sendCommandRequest(
       {
