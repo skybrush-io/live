@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "jsx": "react",
+    "module": "es6",
+    "moduleResolution": "node",
+    "paths": { "~/*": ["./src/*"] },
+    "strict": true,
+    "target": "es6"
+  }
+}
