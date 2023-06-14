@@ -9,6 +9,8 @@ import { makeStyles } from '@material-ui/core/styles';
 import DroneAvatar from '~/components/uavs/DroneAvatar';
 import UAVOperationsButtonGroup from '~/components/uavs/UAVOperationsButtonGroup';
 import { UAVSelectorWrapper } from '~/components/uavs/UAVSelector';
+import { getReverseMissionMapping } from '~/features/mission/selectors';
+import { formatMissionId } from '~/utils/formatting';
 
 import { UAV_DETAILS_DIALOG_SIDEBAR_WIDTH as WIDTH } from './constants';
 import {
@@ -22,6 +24,7 @@ const useStyles = makeStyles(
     root: {
       padding: theme.spacing(2),
       minWidth: WIDTH,
+      position: 'relative',
     },
     toolbar: {
       justifyContent: 'center',
@@ -46,7 +49,11 @@ const useStyles = makeStyles(
 /**
  * Sidebar of the UAV details dialog.
  */
-const UAVDetailsDialogSidebar = ({ uavId, setUAVId }) => {
+const UAVDetailsDialogSidebar = ({
+  reverseMissionMapping,
+  uavId,
+  setUAVId,
+}) => {
   const classes = useStyles();
   return (
     <Box className={classes.root}>
@@ -54,6 +61,10 @@ const UAVDetailsDialogSidebar = ({ uavId, setUAVId }) => {
         {(handleClick) => (
           <DroneAvatar
             id={uavId}
+            hint={
+              uavId in reverseMissionMapping &&
+              formatMissionId(reverseMissionMapping[uavId])
+            }
             AvatarProps={{ onClick: handleClick, style: { cursor: 'pointer' } }}
           />
         )}
@@ -73,6 +84,7 @@ const UAVDetailsDialogSidebar = ({ uavId, setUAVId }) => {
 };
 
 UAVDetailsDialogSidebar.propTypes = {
+  reverseMissionMapping: PropTypes.object,
   setUAVId: PropTypes.func,
   uavId: PropTypes.string,
 };
@@ -80,6 +92,7 @@ UAVDetailsDialogSidebar.propTypes = {
 export default connect(
   // mapStateToProps
   (state) => ({
+    reverseMissionMapping: getReverseMissionMapping(state),
     uavId: getSelectedUAVIdInUAVDetailsDialog(state),
   }),
   // mapDispatchToProps

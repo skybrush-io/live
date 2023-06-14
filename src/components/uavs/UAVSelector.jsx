@@ -155,10 +155,25 @@ const UAVSelectorPresentation = ({
         {filtered.length > 0 ? (
           filtered.map((uavId) => (
             // Enclose the Avatar in a `div`, as it renders a fragment
-            <div key={uavId}>
+            <div
+              key={uavId}
+              style={{
+                position: 'relative',
+
+                // Fix the positioning of the Avatar's hints
+                paddingTop: 12,
+                paddingRight: 12,
+                marginTop: -12,
+                marginRight: -12,
+              }}
+            >
               <DroneAvatar
                 variant='minimal'
                 id={uavId}
+                hint={
+                  uavId in reverseMissionMapping &&
+                  formatMissionId(reverseMissionMapping[uavId])
+                }
                 AvatarProps={{
                   style: { cursor: 'pointer' },
                   onClick() {
