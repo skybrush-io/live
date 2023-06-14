@@ -11,10 +11,12 @@ import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
 
 import { PopoverWithContainerFromContext as Popover } from '~/containerContext';
 
+import { getReverseMissionMapping } from '~/features/mission/selectors';
 import {
   getUAVIdList,
   getUAVIdsSortedByErrorCode,
 } from '~/features/uavs/selectors';
+import { formatMissionId } from '~/utils/formatting';
 
 import DroneAvatar from './DroneAvatar';
 
@@ -32,7 +34,7 @@ const useStyles = makeStyles(
       padding: theme.spacing(1),
       gap: theme.spacing(1),
 
-      overflow: 'overlay',
+      overflow: 'hidden overlay',
     },
 
     paper: {
@@ -67,6 +69,7 @@ const UAVSelectorPresentation = ({
   onFocus,
   onSelect,
   open,
+  reverseMissionMapping,
   uavIds,
 }) => {
   const classes = useStyles();
@@ -80,7 +83,12 @@ const UAVSelectorPresentation = ({
     }
   }, [open]);
 
-  const filtered = uavIds.filter((id) => id.startsWith(filter));
+  const filtered = uavIds.filter(
+    (uavId) =>
+      uavId.startsWith(filter) ||
+      (uavId in reverseMissionMapping &&
+        formatMissionId(reverseMissionMapping[uavId]).startsWith(filter))
+  );
 
   const handleKeyDown = (event) => {
     switch (event.key) {
@@ -88,8 +96,8 @@ const UAVSelectorPresentation = ({
         if (filtered.length > 0) {
           onSelect(filtered[0]);
           onClose();
-          event.preventDefault();
           event.stopPropagation();
+          event.preventDefault();
         }
 
         break;
@@ -97,6 +105,18 @@ const UAVSelectorPresentation = ({
 
       case 'Backspace': {
         setFilter(filter.slice(0, -1));
+
+        break;
+      }
+
+      case 's': {
+        if (filter.startsWith('s')) {
+          setFilter(filter.slice(1));
+        } else {
+          setFilter('s' + filter);
+        }
+
+        event.stopPropagation();
 
         break;
       }
@@ -127,10 +147,25 @@ const UAVSelectorPresentation = ({
         {filtered.length > 0 ? (
           filtered.map((uavId) => (
             // Enclose the Avatar in a `div`, as it renders a fragment
-            <div key={uavId}>
+            <div
+              key={uavId}
+              style={{
+                position: 'relative',
+
+                // Fix the positioning of the Avatar's hints
+                paddingTop: 12,
+                paddingRight: 12,
+                marginTop: -12,
+                marginRight: -12,
+              }}
+            >
               <DroneAvatar
                 variant='minimal'
                 id={uavId}
+                hint={
+                  uavId in reverseMissionMapping &&
+                  formatMissionId(reverseMissionMapping[uavId])
+                }
                 AvatarProps={{
                   style: { cursor: 'pointer' },
                   onClick() {
@@ -156,12 +191,14 @@ UAVSelectorPresentation.propTypes = {
   onFocus: PropTypes.func,
   onSelect: PropTypes.func,
   open: PropTypes.bool,
+  reverseMissionMapping: PropTypes.object,
   uavIds: PropTypes.arrayOf(PropTypes.string),
 };
 
 export const UAVSelectorPopover = connect(
   // mapStateToProps
   (state, { sortedByError }) => ({
+    reverseMissionMapping: getReverseMissionMapping(state),
     uavIds: sortedByError
       ? getUAVIdsSortedByErrorCode(state)
       : getUAVIdList(state),
