@@ -99,6 +99,7 @@ export const UAVErrorCode = createErrorCodeEnum({
     WIND_SPEED_WARNING: 72,
     DISARMED: 73,
     REBOOT_REQUIRED: 74,
+    DRIFT_FROM_DESIRED_POSITION: 75,
 
     // Errors
     AUTOPILOT_COMM_TIMEOUT: 128,
@@ -165,6 +166,7 @@ export const UAVErrorCode = createErrorCodeEnum({
     72: 'wind',
     73: 'disarm',
     74: 'reboot',
+    75: 'drift',
     128: 'comm t/o',
     129: 'ack t/o',
     130: 'proto',
@@ -227,6 +229,7 @@ export const UAVErrorCode = createErrorCodeEnum({
     72: 'Wind speed is high',
     73: 'Drone not armed yet',
     74: 'Drone requires a reboot',
+    75: 'Drift from desired position is large',
     128: 'Autopilot communication timeout',
     129: 'Autopilot acknowledgment timeout',
     130: 'Autopilot communication protocol error',
