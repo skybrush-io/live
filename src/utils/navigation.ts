@@ -1,15 +1,13 @@
 import { uavIdToDOMNodeId } from '~/views/uavs/utils';
 
 /**
- * Scrolls the first element matching the given CSS selector into view.
+ * Scrolls the first element matching the given CSS selector,
+ * or the given element into view.
  */
-export function scrollIntoView(selector) {
+export function scrollIntoView(target: string | HTMLElement): void {
   const element =
-    typeof selector === 'string'
-      ? document.querySelector(selector)
-      : element.scrollIntoView
-      ? element
-      : null;
+    typeof target === 'string' ? document.querySelector(target) : target;
+
   if (element) {
     window.requestAnimationFrame(() => {
       element.scrollIntoView({
@@ -25,9 +23,9 @@ export function scrollIntoView(selector) {
  * Scrolls the element showing the data of the UAV with the given ID into
  * view.
  */
-export function scrollUAVListItemIntoView(uavId) {
+export function scrollUAVListItemIntoView(uavId: string): void {
   const domNodeId = uavIdToDOMNodeId(uavId);
   if (domNodeId) {
-    return scrollIntoView(`#${domNodeId}`);
+    scrollIntoView(`#${domNodeId}`);
   }
 }
