@@ -3,9 +3,6 @@
  */
 
 import camelCase from 'lodash-es/camelCase';
-import includes from 'lodash-es/includes';
-import isArray from 'lodash-es/isArray';
-import trimEnd from 'lodash-es/trimEnd';
 
 /**
  * Given an ID proposal and an array of existing IDs, returns a new
@@ -23,18 +20,21 @@ import trimEnd from 'lodash-es/trimEnd';
  * the name proposal already ends in a number, and may replace the number
  * with another number.
  *
- * @param  {string} idProposal  the original ID proposal
- * @param  {string[]|Object} existingIds the array of existing IDs that should
- *         not be returned, or an object whose keys contain the existing IDs
- *         that should not be returned
- * @return {string} an ID that is based on the ID proposal and that is
- *         not in the list of existing IDs
+ * @param idProposal - The original ID proposal
+ * @param existingIds - The array of existing IDs that should not be returned,
+ *                      or an object whose keys contain the existing IDs that
+ *                      should not be returned
+ * @returns An ID that is based on the ID proposal and
+ *          that is not in the list of existing IDs
  */
-export function chooseUniqueId(idProposal, existingIds) {
-  const hasIdArray = isArray(existingIds);
+export function chooseUniqueId(
+  idProposal: string,
+  existingIds: string[] | Record<string, unknown>
+): string {
+  const hasIdArray = Array.isArray(existingIds);
 
   if (hasIdArray) {
-    if (!includes(existingIds, idProposal)) {
+    if (!existingIds.includes(idProposal)) {
       return idProposal;
     }
   } else if (!(idProposal in existingIds)) {
@@ -42,7 +42,7 @@ export function chooseUniqueId(idProposal, existingIds) {
   }
 
   let index = 0;
-  let candidate;
+  let candidate: string;
 
   /* eslint-disable no-constant-condition */
   while (true) {
@@ -50,7 +50,7 @@ export function chooseUniqueId(idProposal, existingIds) {
     candidate = `${idProposal}_${index}`;
 
     if (hasIdArray) {
-      if (!includes(existingIds, candidate)) {
+      if (!existingIds.includes(candidate)) {
         return candidate;
       }
     } else if (!(candidate in existingIds)) {
@@ -79,28 +79,30 @@ export function chooseUniqueId(idProposal, existingIds) {
  * function considers the case when the name proposal already ends in a
  * number.
  *
- * @param  {string} nameProposal  the original name proposal (typically
- *         from user input)
- * @param  {string[]} existingNames the array of existing names that should
- *         not be returned
- * @return {string} a name that is based on the name proposal and that is
- *         not in the list of existing names
+ * @param nameProposal - The original name proposal (typically from user input)
+ * @param existingNames - The array of existing names
+ *                        that should not be returned
+ * @returns A name that is based on the name proposal and
+ *          that is not in the list of existing names
  */
-export function chooseUniqueName(nameProposal, existingNames) {
-  if (!includes(existingNames, nameProposal)) {
+export function chooseUniqueName(
+  nameProposal: string,
+  existingNames: string[]
+): string {
+  if (!existingNames.includes(nameProposal)) {
     return nameProposal;
   }
 
   const match = nameProposal.match(/^(.*)\s+(\d+)$/);
-  const nameBase = match ? match[0] : trimEnd(nameProposal);
+  const nameBase = match ? match[0] : nameProposal.trimEnd();
   let index = match ? Number.parseInt(match[1], 10) : 0;
-  let candidate;
+  let candidate: string;
 
   /* eslint-disable no-constant-condition */
   while (true) {
     index++;
     candidate = `${nameBase} ${index}`;
-    if (!includes(existingNames, candidate)) {
+    if (!existingNames.includes(candidate)) {
       return candidate;
     }
   }
@@ -111,13 +113,16 @@ export function chooseUniqueName(nameProposal, existingNames) {
  * Given an existing name and a list or object of IDs that are already
  * taken, proposes an ID for the object that has the given name.
  *
- * @param  {string} name  the name of the object for which we need to invent
- *         an identifier
- * @param  {string[]|Object} existingIds the array of existing IDs that should
- *         not be returned, or an object whose keys contain the existing IDs
- *         that should not be returned
- * @return {string} the proposed ID of the object
+ * @param name - The name of the object for which
+ *               we need to invent an identifier
+ * @param existingIds - The array of existing IDs that should not be returned,
+ *                      or an object whose keys contain the existing IDs that
+ *                      should not be returned
+ * @returns The proposed ID of the object
  */
-export function chooseUniqueIdFromName(name, existingIds) {
+export function chooseUniqueIdFromName(
+  name: string,
+  existingIds: string[] | Record<string, unknown>
+): string {
   return chooseUniqueId(camelCase(name), existingIds);
 }
