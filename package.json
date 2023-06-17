@@ -200,7 +200,7 @@
     "webpack-dev-server": "^4.11.1",
     "webpack-merge": "^5.8.0",
     "webpack-shell-plugin-next": "^2.2.2",
-    "xo": "^0.53.1"
+    "xo": "^0.54.2"
   },
   "prettier": {
     "bracketSpacing": true,
