@@ -1,6 +1,6 @@
 import { Status } from '@skybrush/app-theme-material-ui';
 
-const _statusToPriority = {
+const prioritiesForStatuses: Record<Status, number> = {
   [Status.CRITICAL]: 100,
   [Status.ERROR]: 90,
   [Status.WARNING]: 80,
@@ -14,6 +14,7 @@ const _statusToPriority = {
   [Status.OFF]: 0,
 };
 
-export const statusToPriority = (status) => _statusToPriority[status] || 0;
+export const statusToPriority = (status: Status): number =>
+  prioritiesForStatuses[status];
 
 export { Status } from '@skybrush/app-theme-material-ui';
