@@ -3,39 +3,42 @@ import { Status } from '~/components/semantics';
 /**
  * Enum containing constants for the various messages types.
  */
-export const MessageType = {
-  OUTBOUND: 'outbound',
-  INBOUND: 'inbound',
-  ERROR: 'error',
-};
+export enum MessageType {
+  OUTBOUND = 'outbound',
+  INBOUND = 'inbound',
+  ERROR = 'error',
+}
 
 /**
  * Enum containing log message severities from the Flockwave protocol.
  */
-export const Severity = {
-  DEBUG: 'debug',
-  INFO: 'info',
-  WARNING: 'warning',
-  ERROR: 'error',
-  CRITICAL: 'critical',
-};
+export enum Severity {
+  DEBUG = 'debug',
+  INFO = 'info',
+  WARNING = 'warning',
+  ERROR = 'error',
+  CRITICAL = 'critical',
+}
 
 /**
  * Enum representing the known types (formats) of flight logs.
  */
-export const FlightLogKind = {
-  UNKNOWN: 'unknown',
-  TEXT: 'text',
-  ARDUPILOT: 'ardupilot',
-  ULOG: 'ulog',
-  FLOCKCTRL: 'flockctrl',
-};
+export enum FlightLogKind {
+  UNKNOWN = 'unknown',
+  TEXT = 'text',
+  ARDUPILOT = 'ardupilot',
+  ULOG = 'ulog',
+  FLOCKCTRL = 'flockctrl',
+}
 
 /**
  * Object mapping flight log types to their properties (human readable
  * descriptions etc).
  */
-const _propertiesForFlightLogKinds = {
+const propertiesForFlightLogKinds: Record<
+  FlightLogKind,
+  { label: string; description: string }
+> = {
   [FlightLogKind.UNKNOWN]: {
     label: 'Unknown',
     description: 'Unknown flight log format',
@@ -61,45 +64,45 @@ const _propertiesForFlightLogKinds = {
 /**
  * Returns the description of the given flight log kind / format.
  */
-export function describeFlightLogKind(kind) {
+export function describeFlightLogKind(kind: FlightLogKind): string {
   const props =
-    _propertiesForFlightLogKinds[kind] ||
-    _propertiesForFlightLogKinds[FlightLogKind.UNKNOWN];
+    propertiesForFlightLogKinds[kind] ||
+    propertiesForFlightLogKinds[FlightLogKind.UNKNOWN];
   return props.description;
 }
 
 /**
  * Returns the label of the given flight log kind / format.
  */
-export function getFlightLogKindLabel(kind) {
-  const props = _propertiesForFlightLogKinds[kind];
+export function getFlightLogKindLabel(kind: FlightLogKind): string {
+  const props = propertiesForFlightLogKinds[kind];
   return props ? props.label : String(kind);
 }
 
 /**
  * Enum representing the possible known flight modes of a UAV.
  */
-export const FlightMode = {
-  ACRO: 'acro',
-  ALTITUDE_HOLD: 'alt',
-  AUTO: 'auto',
-  CIRCLE: 'circle',
-  FLOW_HOLD: 'flow',
-  FOLLOW: 'follow',
-  GUIDED: 'guided',
-  LAND: 'land',
-  LOITER: 'loiter',
-  MISSION: 'mission',
-  OTHER: 'other',
-  PRECISION_LANDING: 'precland',
-  POSITION_HOLD: 'pos',
-  RTH: 'rth',
-  SHOW: 'show',
-  SIMPLE: 'simple',
-  STABILIZE: 'stab',
-  TAKEOFF: 'takeoff',
-  UNKNOWN: 'unknown',
-};
+export enum FlightMode {
+  ACRO = 'acro',
+  ALTITUDE_HOLD = 'alt',
+  AUTO = 'auto',
+  CIRCLE = 'circle',
+  FLOW_HOLD = 'flow',
+  FOLLOW = 'follow',
+  GUIDED = 'guided',
+  LAND = 'land',
+  LOITER = 'loiter',
+  MISSION = 'mission',
+  OTHER = 'other',
+  PRECISION_LANDING = 'precland',
+  POSITION_HOLD = 'pos',
+  RTH = 'rth',
+  SHOW = 'show',
+  SIMPLE = 'simple',
+  STABILIZE = 'stab',
+  TAKEOFF = 'takeoff',
+  UNKNOWN = 'unknown',
+}
 
 /**
  * Object mapping flight mode constants to their properties (human readable
@@ -107,7 +110,15 @@ export const FlightMode = {
  *
  * Abbreviations are guaranteed to be at most 4 characters.
  */
-const _propertiesForFlightModes = {
+const propertiesForFlightModes: Record<
+  FlightMode,
+  {
+    abbreviation: string;
+    label: string;
+    description: string;
+    status?: Status;
+  }
+> = {
   [FlightMode.ACRO]: {
     abbreviation: 'Acro',
     label: 'Acrobatic',
@@ -212,40 +223,47 @@ const _propertiesForFlightModes = {
 };
 
 /**
+ * Type guard that checks if a string represents a known flight mode enum value,
+ * and asserts it's type accordingly.
+ */
+const isKnownFlightMode = (mode: string): mode is FlightMode =>
+  Object.values(FlightMode).includes(mode as FlightMode);
+
+/**
  * Returns the abbreviation of the given flight mode.
  */
-export function abbreviateFlightMode(mode) {
-  const effectiveMode =
-    mode && typeof mode === 'string' ? mode : FlightMode.UNKNOWN;
-  const props = _propertiesForFlightModes[effectiveMode];
-  return props ? props.abbreviation : mode.slice(0, 4);
-}
+export const abbreviateFlightMode = (mode: FlightMode | string): string =>
+  isKnownFlightMode(mode)
+    ? propertiesForFlightModes[mode].abbreviation
+    : mode.slice(0, 4);
 
 /**
  * Returns the description of the given flight mode.
  */
-export function describeFlightMode(mode) {
+export function describeFlightMode(mode: FlightMode): string {
   const props =
-    _propertiesForFlightModes[mode] ||
-    _propertiesForFlightModes[FlightMode.UNKNOWN];
+    propertiesForFlightModes[mode] ||
+    propertiesForFlightModes[FlightMode.UNKNOWN];
   return props.description;
 }
 
 /**
  * Returns the label of the given flight mode.
  */
-export function getFlightModeLabel(mode) {
-  const props = _propertiesForFlightModes[mode];
+export function getFlightModeLabel(mode: FlightMode): string {
+  const props = propertiesForFlightModes[mode];
   return props ? props.label : String(mode).toUpperCase();
 }
 
 /**
  * Returns the semantic status code of the given flight mode.
  */
-export function getSemanticsForFlightMode(mode) {
+export function getSemanticsForFlightMode(
+  mode: FlightMode
+): Status | undefined {
   const props =
-    _propertiesForFlightModes[mode] ||
-    _propertiesForFlightModes[FlightMode.UNKNOWN];
+    propertiesForFlightModes[mode] ||
+    propertiesForFlightModes[FlightMode.UNKNOWN];
   return props.status;
 }
 
@@ -253,18 +271,21 @@ export function getSemanticsForFlightMode(mode) {
 
 /**
  * Enum representing the possible known GPS fix types of a UAV.
+ *
+ * NOTE: The reason for this enum being numeric is to facilitate the combined
+ *       sorting of UAVs based on GPS fix type as well as number of satellites
  */
-export const GPSFixType = {
-  NO_GPS: 0,
-  NO_FIX: 1,
-  FIX_2D: 2,
-  FIX_3D: 3,
-  DGPS: 4,
-  RTK_FLOAT: 5,
-  RTK_FIXED: 6,
-  STATIC: 7,
-  UNKNOWN: 8,
-};
+export enum GPSFixType {
+  NO_GPS = 0,
+  NO_FIX = 1,
+  FIX_2D = 2,
+  FIX_3D = 3,
+  DGPS = 4,
+  RTK_FLOAT = 5,
+  RTK_FIXED = 6,
+  STATIC = 7,
+  UNKNOWN = 8,
+}
 
 /**
  * Object mapping GPS fix type constants to their properties (human readable
@@ -272,7 +293,14 @@ export const GPSFixType = {
  *
  * Abbreviations are guaranteed to be at most 4 characters.
  */
-const _propertiesForGPSFixTypes = {
+const propertiesForGPSFixTypes: Record<
+  GPSFixType,
+  {
+    abbreviation: string;
+    description: string;
+    status: Status;
+  }
+> = {
   [GPSFixType.NO_GPS]: {
     abbreviation: '',
     description: 'No GPS connected',
@@ -323,30 +351,30 @@ const _propertiesForGPSFixTypes = {
 /**
  * Returns the abbreviation of the given GPS fix type.
  */
-export function abbreviateGPSFixType(fixType) {
+export function abbreviateGPSFixType(fixType: GPSFixType): string {
   const props =
-    _propertiesForGPSFixTypes[fixType] ||
-    _propertiesForGPSFixTypes[GPSFixType.UNKNOWN];
+    propertiesForGPSFixTypes[fixType] ||
+    propertiesForGPSFixTypes[GPSFixType.UNKNOWN];
   return props.abbreviation;
 }
 
 /**
  * Returns the description of the given GPS fix type.
  */
-export function describeGPSFixType(fixType) {
+export function describeGPSFixType(fixType: GPSFixType): string {
   const props =
-    _propertiesForGPSFixTypes[fixType] ||
-    _propertiesForGPSFixTypes[GPSFixType.UNKNOWN];
+    propertiesForGPSFixTypes[fixType] ||
+    propertiesForGPSFixTypes[GPSFixType.UNKNOWN];
   return props.description;
 }
 
 /**
  * Returns the semantic status code of the given GPS fix type.
  */
-export function getSemanticsForGPSFixType(fixType) {
+export function getSemanticsForGPSFixType(fixType: GPSFixType): Status {
   const props =
-    _propertiesForGPSFixTypes[fixType] ||
-    _propertiesForGPSFixTypes[GPSFixType.UNKNOWN];
+    propertiesForGPSFixTypes[fixType] ||
+    propertiesForGPSFixTypes[GPSFixType.UNKNOWN];
   return props.status;
 }
 
@@ -355,16 +383,16 @@ export function getSemanticsForGPSFixType(fixType) {
 /**
  * Enum representing the possible preflight check results on a UAV.
  */
-export const PreflightCheckResult = {
-  OFF: 'off',
-  PASS: 'pass',
-  WARNING: 'warning',
-  RUNNING: 'running',
-  SOFT_FAILURE: 'softFailure',
-  FAILURE: 'failure',
-  ERROR: 'error',
-  UNKNOWN: 'unknown',
-};
+export enum PreflightCheckResult {
+  OFF = 'off',
+  PASS = 'pass',
+  WARNING = 'warning',
+  RUNNING = 'running',
+  SOFT_FAILURE = 'softFailure',
+  FAILURE = 'failure',
+  ERROR = 'error',
+  UNKNOWN = 'unknown',
+}
 
 /**
  * Object mapping preflight check result constants to their properties (human
@@ -372,7 +400,14 @@ export const PreflightCheckResult = {
  *
  * Abbreviations are guaranteed to be at most 4 characters.
  */
-const _propertiesForPreflightCheckResults = {
+const propertiesForPreflightCheckResults: Record<
+  PreflightCheckResult,
+  {
+    description: string;
+    overallDescription: string;
+    status: Status;
+  }
+> = {
   [PreflightCheckResult.OFF]: {
     description: 'Disabled',
     overallDescription: 'All preflight checks are disabled',
@@ -418,29 +453,35 @@ const _propertiesForPreflightCheckResults = {
 /**
  * Returns the description of the given preflight check result.
  */
-export function describePreflightCheckResult(result) {
+export function describePreflightCheckResult(
+  result: PreflightCheckResult
+): string {
   const props =
-    _propertiesForPreflightCheckResults[result] ||
-    _propertiesForPreflightCheckResults[PreflightCheckResult.UNKNOWN];
+    propertiesForPreflightCheckResults[result] ||
+    propertiesForPreflightCheckResults[PreflightCheckResult.UNKNOWN];
   return props.description;
 }
 
 /**
  * Returns the description of the given preflight check result.
  */
-export function describeOverallPreflightCheckResult(result) {
+export function describeOverallPreflightCheckResult(
+  result: PreflightCheckResult
+): string {
   const props =
-    _propertiesForPreflightCheckResults[result] ||
-    _propertiesForPreflightCheckResults[PreflightCheckResult.UNKNOWN];
+    propertiesForPreflightCheckResults[result] ||
+    propertiesForPreflightCheckResults[PreflightCheckResult.UNKNOWN];
   return props.overallDescription;
 }
 
 /**
  * Returns the semantic status code of the given GPS fix type.
  */
-export function getSemanticsForPreflightCheckResult(result) {
+export function getSemanticsForPreflightCheckResult(
+  result: PreflightCheckResult
+): Status {
   const props =
-    _propertiesForPreflightCheckResults[result] ||
-    _propertiesForPreflightCheckResults[PreflightCheckResult.UNKNOWN];
+    propertiesForPreflightCheckResults[result] ||
+    propertiesForPreflightCheckResults[PreflightCheckResult.UNKNOWN];
   return props.status;
 }
