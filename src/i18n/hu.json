@@ -20,9 +20,9 @@
     }
   },
   "lightControl": {
-    "fromGCS": "",
-    "notConnected": "",
-    "notFromGCS": ""
+    "fromGCS": "A fények GCS-sel vezéreltek",
+    "notConnected": "Nem csatlakozik a szerverhez",
+    "notFromGCS": "A fények nem GCS-sel vezéreltek"
   },
   "map": {
     "resetRotation": "Forgatás visszaállítása"
@@ -57,7 +57,7 @@
     "clock": "Műsor óra:",
     "dronePlacementApproved": "",
     "dronePlacementCheck": "",
-    "dronePlacementError": "Hiba az elrendezésben",
+    "dronePlacementError": "",
     "dronePlacementPartial": "",
     "fromCloud": "Műsor betöltése a felhőből",
     "indoor": "Beltér",

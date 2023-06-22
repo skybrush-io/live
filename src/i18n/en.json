@@ -19,6 +19,9 @@
       "no": "No geofence defined yet"
     }
   },
+  "geofenceDialog": {
+    "fenceAction": "Fence action"
+  },
   "lightControl": {
     "fromGCS": "Lights controlled from GCS",
     "notConnected": "Not connected to server",
@@ -69,7 +72,7 @@
       "relativeToAMSL": "Outdoor, relative to {{altitude}}m AMSL",
       "relativeToHome": "Outdoor, relative to home"
     },
-    "placementAccuracy": "",
+    "placementAccuracy": "Placement accuracy ≤ {{distance}}",
     "reload": "Reload show",
     "revokeAuthorization": "Click here to revoke authorization",
     "selectFile": "Select or drop a show file here",
