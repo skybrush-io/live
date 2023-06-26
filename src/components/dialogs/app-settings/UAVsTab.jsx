@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import Box from '@material-ui/core/Box';
@@ -55,6 +56,7 @@ const UAVsTabPresentation = ({
   onVoltageFieldUpdated,
   placementAccuracy,
   preferredBatteryDisplayStyle,
+  t,
   takeoffHeadingAccuracy,
   warnThreshold,
 }) => {
@@ -64,7 +66,7 @@ const UAVsTabPresentation = ({
       <FormGroup style={{ marginBottom: theme.spacing(2) }}>
         <FormControl style={{ alignItems: 'center', flexDirection: 'row' }}>
           <FormControlLabel
-            label='Warn about drones not seen for at least'
+            label={t('settings.uavs.warn')}
             control={<Checkbox checked style={{ visibility: 'hidden' }} />}
           />
           <SimpleDurationField
@@ -79,7 +81,7 @@ const UAVsTabPresentation = ({
 
         <FormControl style={{ alignItems: 'center', flexDirection: 'row' }}>
           <FormControlLabel
-            label='Mark drones as gone after'
+            label={t('settings.uavs.gone')}
             control={<Checkbox checked style={{ visibility: 'hidden' }} />}
           />
           <SimpleDurationField
@@ -94,7 +96,7 @@ const UAVsTabPresentation = ({
 
         <FormControl style={{ alignItems: 'center', flexDirection: 'row' }}>
           <FormControlLabel
-            label='Forget unseen drones after'
+            label={t('settings.uavs.forget')}
             control={
               <Checkbox
                 checked={Boolean(autoRemove)}
@@ -118,12 +120,12 @@ const UAVsTabPresentation = ({
       <Divider />
 
       <Box my={2}>
-        <Header>Default battery settings</Header>
+        <Header>{t('settings.uavs.defaultBatterySettings')}</Header>
 
         <Box display='flex' flexDirection='row' mb={1}>
           <SimpleNumericField
             fullWidth
-            label='Cell count'
+            label={t('settings.uavs.cellCount')}
             name='defaultBatteryCellCount'
             min={1}
             max={24}
@@ -135,7 +137,7 @@ const UAVsTabPresentation = ({
           <SimpleVoltageField
             fullWidth
             name='fullChargeVoltage'
-            label='Full charge'
+            label={t('settings.uavs.fullCharge')}
             min={0.1}
             max={20}
             step={0.1}
@@ -146,7 +148,7 @@ const UAVsTabPresentation = ({
           <SimpleVoltageField
             fullWidth
             name='lowVoltageThreshold'
-            label='Low threshold'
+            label={t('settings.uavs.lowTreshold')}
             min={0.1}
             max={20}
             step={0.1}
@@ -157,7 +159,7 @@ const UAVsTabPresentation = ({
           <SimpleVoltageField
             fullWidth
             name='criticalVoltageThreshold'
-            label='Critical threshold'
+            label={t('settings.uavs.criticalTreshold')}
             min={0.1}
             max={20}
             step={0.1}
@@ -169,7 +171,7 @@ const UAVsTabPresentation = ({
         <Box display='flex' flexDirection='row' mb={1}>
           <FormControl fullWidth variant='filled'>
             <InputLabel id='uav-battery-display-style'>
-              Battery display style
+              {t('settings.uavs.batteryDisplayStyle')}
             </InputLabel>
             <Select
               labelId='uav-battery-display-style'
@@ -190,13 +192,13 @@ const UAVsTabPresentation = ({
       <Divider />
 
       <Box my={2}>
-        <Header>Mission setup</Header>
+        <Header>{t('settings.uavs.missionSetup')}</Header>
 
         <Box display='flex' flexDirection='row' mb={1}>
           <SimpleDistanceField
             fullWidth
             name='placementAccuracy'
-            label='Desired placement accuracy'
+            label={t('settings.uavs.desiredPlacementAccuracy')}
             min={0.5}
             max={20}
             step={0.5}
@@ -207,7 +209,7 @@ const UAVsTabPresentation = ({
           <SimpleAngleField
             fullWidth
             name='takeoffHeadingAccuracy'
-            label='Desired heading accuracy'
+            label={t('settings.uavs.desiredHeadingAccuracy')}
             min={1}
             max={45}
             step={1}
@@ -217,8 +219,7 @@ const UAVsTabPresentation = ({
         </Box>
 
         <Typography variant='body2' color='textSecondary'>
-          Used before multi-drone missions to check whether each drone is at its
-          prescribed takeoff position and is facing the right direction.
+          {t('settings.uavs.missionSetupDescription')}
         </Typography>
       </Box>
     </>
@@ -240,6 +241,7 @@ UAVsTabPresentation.propTypes = {
   onVoltageFieldUpdated: PropTypes.func,
   placementAccuracy: PropTypes.number,
   preferredBatteryDisplayStyle: PropTypes.oneOf(batteryDisplayStyleOrder),
+  t: PropTypes.func,
   takeoffHeadingAccuracy: PropTypes.number,
   warnThreshold: PropTypes.number,
 };
@@ -306,4 +308,4 @@ export default connect(
       }
     },
   })
-)(UAVsTabPresentation);
+)(withTranslation()(UAVsTabPresentation));

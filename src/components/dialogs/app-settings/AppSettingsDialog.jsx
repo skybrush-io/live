@@ -47,7 +47,7 @@ const AppSettingsDialogPresentation = ({
     <DialogTabs alignment='center' value={selectedTab} onChange={onTabSelected}>
       <Tab value='display' label={t('settings.tabs.display')} />
       <Tab value='threeD' label='3D View' />
-      <Tab value='uavs' label='UAVs' />
+      <Tab value='uavs' label={t('settings.tabs.uavs')} />
       <Tab value='preflight' label='Preflight' />
       {window.bridge && window.bridge.isElectron ? (
         <Tab value='server' label='Server' />

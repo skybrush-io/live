@@ -47,7 +47,23 @@
       "showScaleLine": "Show scale line"
     },
     "tabs": {
-      "display": "Display"
+      "display": "Display",
+      "uavs": "UAVs"
+    },
+    "uavs": {
+      "batteryDisplayStyle": "Battery display style",
+      "cellCount": "Cell count",
+      "criticalTreshold": "Critical threshold",
+      "defaultBatterySettings": "Default battery settings",
+      "desiredHeadingAccuracy": "Desired heading accuracy",
+      "desiredPlacementAccuracy": "Desired placement accuracy",
+      "forget": "Forget unseen drones after",
+      "fullCharge": "Full charge",
+      "gone": "Mark drones as gone after",
+      "lowTreshold": "Low threshold",
+      "missionSetup": "Mission setup",
+      "missionSetupDescription": "Used before multi-drone missions to check whether each drone is at its prescribed takeoff position and is facing the right direction.",
+      "warn": "Warn about drones not seen for at least"
     }
   },
   "show": {
