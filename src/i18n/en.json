@@ -11,6 +11,22 @@
     "select": "Select",
     "zoom": "Zoom"
   },
+  "UAVOpButtonGrp": {
+    "armMotors": "Arm motors",
+    "disarmMotors": "Disarm motors",
+    "flashLights": "Flash lights",
+    "land": "Land",
+    "positionHold": "Position hold",
+    "powerOff": "Power off",
+    "powerOn": "Power on",
+    "properties": "Properties",
+    "reboot": "Reboot",
+    "removeItemsMarkedGone": "Remove items marked as gone",
+    "removeSelectedItems": "Remove selected items",
+    "returnToHome": "Return to home",
+    "sleep": "Sleep",
+    "takeOff": "Takeoff"
+  },
   "geofence": {
     "statusText": {
       "automatic": "Automatic geofence in use",

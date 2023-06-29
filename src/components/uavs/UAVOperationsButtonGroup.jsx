@@ -1,6 +1,7 @@
 import isEmpty from 'lodash-es/isEmpty';
 import PropTypes from 'prop-types';
 import React from 'react';
+import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import Button from '@material-ui/core/Button';
@@ -49,6 +50,7 @@ const UAVOperationsButtonGroup = ({
   selectedUAVIds,
   size,
   startSeparator,
+  t,
 }) => {
   const isSelectionEmpty = isEmpty(selectedUAVIds) && !broadcast;
   const isSelectionSingle = selectedUAVIds.length === 1 && !broadcast;
@@ -98,10 +100,10 @@ const UAVOperationsButtonGroup = ({
         size={iconSize}
         onClick={flashLight}
       >
-        Flash lights
+        {t('UAVOpButtonGrp.flashLights')}
       </Button>
     ) : (
-      <Tooltip content='Flash lights'>
+      <Tooltip content={t('UAVOpButtonGrp.flashLights')}>
         <IconButton
           disabled={isSelectionEmpty}
           size={iconSize}
@@ -118,7 +120,7 @@ const UAVOperationsButtonGroup = ({
         <ToolbarDivider orientation='vertical' />
       )}
 
-      <Tooltip content='Takeoff'>
+      <Tooltip content={t('UAVOpButtonGrp.takeOff')}>
         <IconButton
           disabled={isSelectionEmpty}
           size={iconSize}
@@ -128,7 +130,7 @@ const UAVOperationsButtonGroup = ({
         </IconButton>
       </Tooltip>
 
-      <Tooltip content='Position hold'>
+      <Tooltip content={t('UAVOpButtonGrp.positionHold')}>
         <IconButton
           disabled={isSelectionEmpty}
           size={iconSize}
@@ -138,7 +140,7 @@ const UAVOperationsButtonGroup = ({
         </IconButton>
       </Tooltip>
 
-      <Tooltip content='Return to home'>
+      <Tooltip content={t('UAVOpButtonGrp.returnToHome')}>
         <IconButton
           disabled={isSelectionEmpty}
           size={iconSize}
@@ -148,7 +150,7 @@ const UAVOperationsButtonGroup = ({
         </IconButton>
       </Tooltip>
 
-      <Tooltip content='Land'>
+      <Tooltip content={t('UAVOpButtonGrp.land')}>
         <IconButton disabled={isSelectionEmpty} size={iconSize} onClick={land}>
           <FlightLand fontSize={fontSize} />
         </IconButton>
@@ -158,7 +160,7 @@ const UAVOperationsButtonGroup = ({
 
       {size !== 'small' && (
         <>
-          <Tooltip content='Properties'>
+          <Tooltip content={t('UAVOpButtonGrp.properties')}>
             <IconButton
               disabled={!isSelectionSingle}
               size={iconSize}
@@ -173,7 +175,7 @@ const UAVOperationsButtonGroup = ({
 
       {!hideSeparators && <ToolbarDivider orientation='vertical' />}
 
-      <Tooltip content='Arm motors'>
+      <Tooltip content={t('UAVOpButtonGrp.armMotors')}>
         <IconButton
           disabled={isSelectionEmpty}
           size={iconSize}
@@ -186,7 +188,7 @@ const UAVOperationsButtonGroup = ({
         </IconButton>
       </Tooltip>
 
-      <Tooltip content='Disarm motors'>
+      <Tooltip content={t('UAVOpButtonGrp.disarmMotors')}>
         <IconButton
           disabled={isSelectionEmpty}
           size={iconSize}
@@ -203,7 +205,7 @@ const UAVOperationsButtonGroup = ({
 
       {!hideSeparators && <ToolbarDivider orientation='vertical' />}
 
-      <Tooltip content='Power on'>
+      <Tooltip content={t('UAVOpButtonGrp.powerOn')}>
         <IconButton
           disabled={isSelectionEmpty}
           size={iconSize}
@@ -216,7 +218,7 @@ const UAVOperationsButtonGroup = ({
         </IconButton>
       </Tooltip>
 
-      <Tooltip content='Sleep'>
+      <Tooltip content={t('UAVOpButtonGrp.sleep')}>
         <IconButton disabled={isSelectionEmpty} size={iconSize} onClick={sleep}>
           <Moon
             htmlColor={isSelectionEmpty ? undefined : Colors.warning}
@@ -225,7 +227,7 @@ const UAVOperationsButtonGroup = ({
         </IconButton>
       </Tooltip>
 
-      <Tooltip content='Reboot'>
+      <Tooltip content={t('UAVOpButtonGrp.reboot')}>
         <IconButton disabled={isSelectionEmpty} size={iconSize} onClick={reset}>
           <Refresh
             htmlColor={isSelectionEmpty ? undefined : Colors.error}
@@ -234,7 +236,7 @@ const UAVOperationsButtonGroup = ({
         </IconButton>
       </Tooltip>
 
-      <Tooltip content='Power off'>
+      <Tooltip content={t('UAVOpButtonGrp.powerOff')}>
         <IconButton
           disabled={isSelectionEmpty}
           size={iconSize}
@@ -254,8 +256,8 @@ const UAVOperationsButtonGroup = ({
           <Tooltip
             content={
               isSelectionEmpty
-                ? 'Remove items marked as gone'
-                : 'Remove selected items'
+                ? t('UAVOpButtonGrp.removeItemsMarkedGone')
+                : t('UAVOpButtonGrp.removeSelectedItems')
             }
           >
             <IconButton
@@ -285,6 +287,7 @@ UAVOperationsButtonGroup.propTypes = {
   hideSeparators: PropTypes.bool,
   size: PropTypes.oneOf(['small', 'medium']),
   startSeparator: PropTypes.bool,
+  t: PropTypes.func,
 };
 
 export default connect(
@@ -302,4 +305,4 @@ export default connect(
     ),
     dispatch,
   })
-)(UAVOperationsButtonGroup);
+)(withTranslation()(UAVOperationsButtonGroup));

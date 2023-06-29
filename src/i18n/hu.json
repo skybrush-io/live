@@ -11,6 +11,22 @@
     "select": "Kijelölés",
     "zoom": "Nagyítás"
   },
+  "UAVOpButtonGrp": {
+    "armMotors": "Motorok indítása",
+    "disarmMotors": "Motorok leállítása",
+    "flashLights": "Fény villogtatása",
+    "land": "Leszállás",
+    "positionHold": "Pozíció tartása",
+    "powerOff": "Kikapcsolás",
+    "powerOn": "Bekapcsolás",
+    "properties": "Tulajdonságok",
+    "reboot": "Újraindítás",
+    "removeItemsMarkedGone": "Eltűntként megjelölt elemek eltávolítása",
+    "removeSelectedItems": "",
+    "returnToHome": "Hazatérés",
+    "sleep": "Alvás",
+    "takeOff": "Felszállás"
+  },
   "geofence": {
     "statusText": {
       "automatic": "Automatikus geofence van használatban",
@@ -46,6 +62,21 @@
     "tabs": {
       "display": "Megjelenítés",
       "uavs": "Drónok"
+    },
+    "uavs": {
+      "batteryDisplayStyle": "Töltöttség megjelenítési stílusa",
+      "cellCount": "Cellaszám",
+      "criticalTreshold": "Kritikus határérték",
+      "defaultBatterySettings": "Alapértelmezett akkumulátor beállítások",
+      "desiredHeadingAccuracy": "Elvárt iránypontosság",
+      "desiredPlacementAccuracy": "Elvárt elhelyezési pontosság",
+      "forget": "A nem látható drónok elfelejtése ennyi idő után",
+      "fullCharge": "Teljes töltés",
+      "gone": "A drónok megjelölése eltűntként ennyi idő után",
+      "lowTreshold": "Alsó határérték",
+      "missionSetup": "Küldetés beállítás",
+      "missionSetupDescription": "Több drónos küldetések előtt használandó, annak ellenőrzésére, hogy minden drón az előírt felszállási pozícióban és megfelelő irányban áll-e.",
+      "warn": "Figyelmeztessen azokra a drónokra, amelyek nem láthatók legalább ennyi ideje"
     }
   },
   "show": {
