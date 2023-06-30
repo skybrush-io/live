@@ -49,6 +49,7 @@
     "@turf/buffer": "^6.5.0",
     "@turf/difference": "^6.5.0",
     "@turf/helpers": "^6.5.0",
+    "@types/color": "^3.0.3",
     "aframe": "1.2.0",
     "aframe-environment-component": "^1.3.2",
     "aframe-meshline-component": "^0.4.1",
@@ -262,6 +263,7 @@
           "selector": "variable",
           "format": [
             "camelCase",
+            "PascalCase",
             "UPPER_CASE"
           ]
         }
