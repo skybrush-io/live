@@ -1,9 +1,4 @@
 /**
- * Coordinate system type for drone shows.
- */
-export const COORDINATE_SYSTEM_TYPE = 'nwu';
-
-/**
  * Altitude reference types for drone shows.
  */
 export const AltitudeReference = {

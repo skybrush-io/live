@@ -15,6 +15,7 @@ import Warning from '@material-ui/icons/Warning';
 
 import FormHeader from '@skybrush/mui-components/lib/FormHeader';
 import Tooltip from '@skybrush/mui-components/lib/Tooltip';
+import { COORDINATE_SYSTEM_TYPE } from '@skybrush/show-format';
 
 import { Colors } from '~/components/colors';
 import CoordinateSystemFields from '~/components/CoordinateSystemFields';
@@ -31,7 +32,6 @@ import {
 } from '~/features/show/actions';
 import {
   AltitudeReference,
-  COORDINATE_SYSTEM_TYPE,
   DEFAULT_TAKEOFF_HEADING,
   TakeoffHeadingMode,
 } from '~/features/show/constants';

@@ -8,9 +8,9 @@ import isNil from 'lodash-es/isNil';
 import set from 'lodash-es/set';
 
 import { createSlice } from '@reduxjs/toolkit';
+import { COORDINATE_SYSTEM_TYPE } from '@skybrush/show-format';
 
 import {
-  COORDINATE_SYSTEM_TYPE,
   DEFAULT_ALTITUDE_REFERENCE,
   DEFAULT_ROOM_SIZE,
   DEFAULT_TAKEOFF_HEADING,

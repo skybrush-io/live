@@ -6,6 +6,8 @@ import Point from 'ol/geom/Point';
 
 import { freeze } from '@reduxjs/toolkit';
 
+import { loadCompiledShow as processFile } from '@skybrush/show-format';
+
 import { Colors } from '~/components/colors';
 import {
   addFeatureById,
@@ -41,7 +43,6 @@ import { createAsyncAction } from '~/utils/redux';
 
 import { JOB_TYPE } from './constants';
 import { StartMethod } from './enums';
-import { loadShowFromFile as processFile } from './processing';
 import {
   getAbsolutePathOfShowFile,
   getConvexHullOfShow,
