@@ -1,20 +1,21 @@
 import {
   DEFAULT_BATTERY_CELL_COUNT,
+  LIPO_CRITICAL_VOLTAGE_THRESHOLD,
+  LIPO_EMPTY_VOLTAGE,
   LIPO_FULL_CHARGE_VOLTAGE,
   LIPO_LOW_VOLTAGE_THRESHOLD,
-  LIPO_CRITICAL_VOLTAGE_THRESHOLD,
 } from './constants';
 
 import { Status } from '@skybrush/app-theme-material-ui';
 
-export const BatteryStatus = {
-  FULL: 'Full',
-  NEAR_FULL: 'NearFull',
-  OK: 'Ok',
-  WARNING: 'Warning',
-  ERROR: 'Error',
-  UNKNOWN: 'Unknown',
-};
+export enum BatteryStatus {
+  FULL = 'Full',
+  NEAR_FULL = 'NearFull',
+  OK = 'Ok',
+  WARNING = 'Warning',
+  ERROR = 'Error',
+  UNKNOWN = 'Unknown',
+}
 
 const batteryToSemanticStatus = {
   [BatteryStatus.FULL]: Status.OFF,
@@ -23,7 +24,7 @@ const batteryToSemanticStatus = {
   [BatteryStatus.WARNING]: Status.WARNING,
   [BatteryStatus.ERROR]: Status.ERROR,
   [BatteryStatus.UNKNOWN]: Status.OFF,
-};
+} as const;
 
 // Percentage thresholds for full, nearly full, normal and low battery levels
 const percentageThresholds = {
@@ -31,7 +32,7 @@ const percentageThresholds = {
   [BatteryStatus.NEAR_FULL]: 60,
   [BatteryStatus.OK]: 20,
   [BatteryStatus.WARNING]: 10,
-};
+} as const;
 
 /**
  * Settings object that encapsulates the standard properties of a battery, i.e.
@@ -42,56 +43,59 @@ export class BatterySettings {
    * Default battery cell count to assume if the user did not provide a cell
    * count when submitting voltages to the functions of this class.
    */
-  defaultBatteryCellCount = DEFAULT_BATTERY_CELL_COUNT;
+  defaultBatteryCellCount: number;
 
   /**
    * Voltage of a fully charged battery cell, in volts.
    */
-  fullChargeVoltage = LIPO_FULL_CHARGE_VOLTAGE;
+  fullChargeVoltage: number;
 
   /**
    * Voltage of a nearly fully charged battery cell, in volts.
    */
-  nearFullChargeVoltage =
-    LIPO_FULL_CHARGE_VOLTAGE -
-    (LIPO_FULL_CHARGE_VOLTAGE - LIPO_LOW_VOLTAGE_THRESHOLD) * 0.1;
+  nearFullChargeVoltage: number;
 
   /**
    * Voltage threshold for a battery cell that can be considered sort-of-charged, in volts.
    */
-  okVoltageThreshold =
-    LIPO_FULL_CHARGE_VOLTAGE -
-    (LIPO_FULL_CHARGE_VOLTAGE - LIPO_LOW_VOLTAGE_THRESHOLD) * 0.4;
+  okVoltageThreshold: number;
 
   /**
    * Low battery warning threshold (per cell), in volts.
    */
-  lowVoltageThreshold = LIPO_LOW_VOLTAGE_THRESHOLD;
+  lowVoltageThreshold: number;
 
   /**
    * Critical battery warning threshold (per cell), in volts.
    */
-  criticalVoltageThreshold = LIPO_CRITICAL_VOLTAGE_THRESHOLD;
+  criticalVoltageThreshold: number;
 
   /**
    * Voltage of an empty battery cell, in volts.
    */
-  emptyVoltage = 3.3;
+  emptyVoltage: number;
 
-  constructor(
-    { defaultBatteryCellCount, voltageThresholds } = {
-      defaultBatteryCellCount: DEFAULT_BATTERY_CELL_COUNT,
-    }
-  ) {
+  constructor({
+    defaultBatteryCellCount = DEFAULT_BATTERY_CELL_COUNT,
+    voltageThresholds: {
+      full = LIPO_FULL_CHARGE_VOLTAGE,
+      low = LIPO_LOW_VOLTAGE_THRESHOLD,
+      critical = LIPO_CRITICAL_VOLTAGE_THRESHOLD,
+      empty = LIPO_EMPTY_VOLTAGE,
+    } = {},
+  }: {
+    defaultBatteryCellCount?: number;
+    voltageThresholds?: {
+      full?: number;
+      low?: number;
+      critical?: number;
+      empty?: number;
+    };
+  } = {}) {
     this.defaultBatteryCellCount = defaultBatteryCellCount;
 
-    const { full, low, critical, empty } = {
-      full: LIPO_FULL_CHARGE_VOLTAGE,
-      low: LIPO_LOW_VOLTAGE_THRESHOLD,
-      critical: LIPO_CRITICAL_VOLTAGE_THRESHOLD,
-      empty: 3.3,
-      ...voltageThresholds,
-    };
+    // NOTE: The discrepancy between percentage and voltage thresholds
+    //       is due to the non-linear discharge curve of the batteries.
 
     this.fullChargeVoltage = full;
     this.nearFullChargeVoltage = full - (full - low) * 0.1;
@@ -105,7 +109,7 @@ export class BatterySettings {
    * Estimates a rough battery charge percentage, given the voltage per cell and
    * the battery thresholds in this class instance.
    */
-  estimatePercentageFromVoltagePerCell = (voltagePerCell) => {
+  estimatePercentageFromVoltagePerCell = (voltagePerCell: number): number => {
     if (voltagePerCell <= this.emptyVoltage) {
       return 0;
     } else if (voltagePerCell >= this.fullChargeVoltage) {
@@ -123,7 +127,10 @@ export class BatterySettings {
    * Estimates a rough battery charge percentage, given the total voltage of the
    * battery and the number of cells.
    */
-  estimatePercentageFromVoltage = (voltage, cellCount) => {
+  estimatePercentageFromVoltage = (
+    voltage?: number,
+    cellCount?: number
+  ): number => {
     const voltagePerCell = this.getVoltagePerCell(voltage, cellCount);
     return this.estimatePercentageFromVoltagePerCell(voltagePerCell);
   };
@@ -134,16 +141,24 @@ export class BatterySettings {
    * status level only. Use `getBatteryStatus()` for components that can
    * interpret a battery status level directly.
    */
-  getSemanticBatteryStatus = (voltage, percentage, cellCount) => {
+  getSemanticBatteryStatus = (
+    voltage?: number,
+    percentage?: number,
+    cellCount?: number
+  ): Status => {
     const status = this.getBatteryStatus(voltage, percentage, cellCount);
-    return batteryToSemanticStatus[status] || Status.OFF;
+    return batteryToSemanticStatus[status];
   };
 
   /**
    * Returns a suggested battery status level, given the voltage and charge
    * percentage of the battery and the number of cells in the battery.
    */
-  getBatteryStatus = (voltage, percentage, cellCount) => {
+  getBatteryStatus = (
+    voltage?: number,
+    percentage?: number,
+    cellCount?: number
+  ): BatteryStatus => {
     if (percentage) {
       return percentage > percentageThresholds[BatteryStatus.FULL]
         ? BatteryStatus.FULL
@@ -173,11 +188,8 @@ export class BatterySettings {
    * optional cell count. Falls back to the default cell count of the class if
    * the cell count is not specified.
    */
-  getVoltagePerCell = (voltage, cellCount) => {
-    if (cellCount === undefined) {
-      cellCount = this.defaultBatteryCellCount || 3;
-    }
-
-    return voltage === undefined || cellCount < 1 ? 0 : voltage / cellCount;
-  };
+  getVoltagePerCell = (
+    voltage?: number,
+    cellCount: number = this.defaultBatteryCellCount
+  ): number => (!voltage || cellCount < 1 ? 0 : voltage / cellCount);
 }
