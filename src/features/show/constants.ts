@@ -1,10 +1,10 @@
 /**
  * Altitude reference types for drone shows.
  */
-export const AltitudeReference = {
-  AHL: 'ahl',
-  AMSL: 'amsl',
-};
+export enum AltitudeReference {
+  AHL = 'ahl',
+  AMSL = 'amsl',
+}
 
 /**
  * Takeoff heading modes for drone shows.
@@ -19,11 +19,11 @@ export const AltitudeReference = {
  * `RELATIVE` means that the takeoff heading is specified as an offset from the
  * orientation of the X axis of the show.
  */
-export const TakeoffHeadingMode = {
-  NONE: 'none',
-  ABSOLUTE: 'absolute',
-  RELATIVE: 'relative',
-};
+export enum TakeoffHeadingMode {
+  NONE = 'none',
+  ABSOLUTE = 'absolute',
+  RELATIVE = 'relative',
+}
 
 /**
  * Default altitude reference object if it is not defined in the state yet.
@@ -31,7 +31,7 @@ export const TakeoffHeadingMode = {
 export const DEFAULT_ALTITUDE_REFERENCE = {
   type: AltitudeReference.AHL,
   value: 0,
-};
+} as const;
 
 /**
  * Default takeoff heading specification if it is not defined in the state yet.
@@ -39,7 +39,7 @@ export const DEFAULT_ALTITUDE_REFERENCE = {
 export const DEFAULT_TAKEOFF_HEADING = {
   type: TakeoffHeadingMode.RELATIVE,
   value: 0,
-};
+} as const;
 
 /**
  * Default room size.
@@ -48,7 +48,7 @@ export const DEFAULT_ROOM_SIZE = {
   width: 12,
   depth: 12,
   height: 6,
-};
+} as const;
 
 /**
  * Type of the upload job corresponding to show uploads.
