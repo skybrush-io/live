@@ -1,3 +1,5 @@
+import formatISO9075 from 'date-fns/formatISO9075';
+import fromUnixTime from 'date-fns/fromUnixTime';
 import isNil from 'lodash-es/isNil';
 
 /**
@@ -187,6 +189,14 @@ export const formatNumberSafely = (x, digits = 0, unit = '', naText = '—') =>
       ? `${x.toFixed(digits)}${unit}`
       : x.toFixed(digits)
     : x;
+
+/**
+ * Formats a UNIX timestamp in seconds as human-readable text.
+ */
+export const formatUnixTimestamp = (timestamp, naText = '—') =>
+  isNil(timestamp) || Number.isNaN(timestamp)
+    ? naText
+    : formatISO9075(fromUnixTime(timestamp));
 
 /**
  * Twitter-style short formatter for TimeAgo components
