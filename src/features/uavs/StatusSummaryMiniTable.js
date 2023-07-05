@@ -83,11 +83,30 @@ const StatusSummaryMiniTable = ({
       naText
     );
 
+    let { horizontalAccuracy, verticalAccuracy } = gpsFix || {};
+
+    if (typeof horizontalAccuracy === 'number' && horizontalAccuracy > 50) {
+      horizontalAccuracy = '50+';
+    } else {
+      horizontalAccuracy = formatNumberSafely(
+        horizontalAccuracy,
+        2,
+        '',
+        naText
+      );
+    }
+
+    if (typeof verticalAccuracy === 'number' && verticalAccuracy > 50) {
+      verticalAccuracy = '50+';
+    } else {
+      verticalAccuracy = formatNumberSafely(verticalAccuracy, 2, '', naText);
+    }
+
     const gpsAcc = (
       <>
-        {formatNumberSafely(gpsFix?.horizontalAccuracy, 2, '', naText)}
+        {horizontalAccuracy}
         {' / '}
-        {formatNumberSafely(gpsFix?.verticalAccuracy, 2, '', naText)}
+        {verticalAccuracy}
         {' m'}
       </>
     );
