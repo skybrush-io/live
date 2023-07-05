@@ -20,6 +20,7 @@ const UAVDetailsDialogTabs = ({ dragHandleId, ...rest }) => (
     <Tab label='Preflight' value='preflight' />
     <Tab label='Tests' value='tests' />
     <Tab label='Messages' value='messages' />
+    <Tab label='Logs' value='logs' />
   </DialogTabs>
 );
 

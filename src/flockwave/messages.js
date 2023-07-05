@@ -1381,16 +1381,28 @@ export default class MessageHub {
   /**
    * Sends a message to the server whose target is a single object ID and whose
    * expected response is a standard multi-object async response with keys named
-   * `result`, `error` and `receipt`. (The response to many messages in the protocol specification
-   * follow this template). Returns a promise that resolves when the spawned
-   * async operation on the server has resolved to its result or has terminated
-   * with an error or a tiemout.
+   * `result`, `error` and `receipt`. (The response to many messages in the
+   * protocol specification follow this template). Returns a promise that
+   * resolves when the spawned async operation on the server has resolved to
+   * its result or has terminated with an error or a tiemout.
    *
    * The promise resolves to the result if the operation was successful, or
    * rejects if the operation returned an error.
+   *
+   * The `single` key of the `options` argument may be set to `true` if the
+   * server-side handler of the message returns a _single-object_ async
+   * response where the `result`, `error` and `receipt` keys contain a single
+   * result, error or receipt only and _not_ a mapping from IDs.
+   *
+   * The `idProp` key of the `options` argument may be used to override the
+   * name of the property in which the given ID will be added to the message.
+   * Setting `idProp` to `null` means that the ID will not be added by this
+   * function and it is already assumed to be part of the `message`.
    */
-  async startAsyncOperationForSingleId(id, message) {
+  async startAsyncOperationForSingleId(id, message, options = {}) {
     const { ids, type: expectedType } = message;
+    const { idProp, single = false } = options;
+
     if (!expectedType) {
       throw new Error('Message must have a type');
     }
@@ -1401,9 +1413,26 @@ export default class MessageHub {
 
     validateObjectId(id);
 
-    message.ids = [id];
+    if (idProp !== null) {
+      message[idProp || (single ? 'id' : 'ids')] = [id];
+    }
 
-    const response = await this.sendMessage(message);
+    let response = await this.sendMessage(message);
+    if (single) {
+      // Object takes a single ID and returns a single result, error or
+      // receipt object. Pretend that we received a mapping for them instead so
+      // we could use the same processing routine for both
+      const responseWithMaps = { ...response };
+
+      for (const key of ['error', 'result', 'receipt']) {
+        if (Object.prototype.hasOwnProperty.call(response.body, key)) {
+          responseWithMaps.body[key] = { [id]: response.body[key] };
+        }
+      }
+
+      response = responseWithMaps;
+    }
+
     const parsedResponse = await this._processMultiAsyncOperationResponse(
       response,
       expectedType

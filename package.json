@@ -108,6 +108,7 @@
     "p-props": "^5.0.0",
     "p-timeout": "^4.1.0",
     "pify": "^5.0.0",
+    "pretty-bytes": "^6.1.0",
     "process": "^0.11.10",
     "prop-types": "^15.8.1",
     "re-reselect": "^4.0.1",
