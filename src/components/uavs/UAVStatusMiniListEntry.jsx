@@ -20,13 +20,13 @@ const UAVStatusMiniListEntry = ({
   uavIds,
 }) => (
   <ListItem key={id} button disableGutters onClick={onClick}>
-    <Box width={pillWidth} mr={1}>
+    <Box width={pillWidth}>
       <StatusPill status={status}>{label}</StatusPill>
     </Box>
-    <Box width={32} mr={1}>
+    <Box width={36} mx={1}>
       <StatusPill status={Status.OFF}>{uavIds.length}</StatusPill>
     </Box>
-    {formatUAVIds(uavIds, { maxCount: 6 })}
+    {formatUAVIds(uavIds, { maxCount: 5 })}
   </ListItem>
 );
 
