@@ -237,6 +237,13 @@
       "react/function-component-definition": 0,
       "react/jsx-no-duplicate-props": 0,
       "react/require-default-props": 0,
+      "@typescript-eslint/consistent-type-assertions": [
+        "error",
+        {
+          "assertionStyle": "as",
+          "objectLiteralTypeAssertions": "allow"
+        }
+      ],
       "@typescript-eslint/explicit-function-return-type": "warn",
       "@typescript-eslint/naming-convention": [
         "error",
@@ -268,6 +275,7 @@
           ]
         }
       ],
+      "@typescript-eslint/no-dynamic-delete": "off",
       "@typescript-eslint/prefer-regexp-exec": "off",
       "unicorn/filename-case": 0,
       "unicorn/no-array-callback-reference": 0,
