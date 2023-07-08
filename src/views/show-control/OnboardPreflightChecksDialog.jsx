@@ -27,7 +27,8 @@ import {
   closeOnboardPreflightChecksDialog,
 } from '~/features/show/slice';
 import { getErrorCodeSummaryForUAVsInMission } from '~/features/uavs/selectors';
-import { getSeverityOfErrorCode, UAVErrorCode } from '~/flockwave/errors';
+import { getSeverityOfErrorCode } from '~/flockwave/errors';
+import UAVErrorCode from '~/flockwave/UAVErrorCode';
 import {
   formatIdsAndTruncateTrailingItems as formatUAVIds,
   formatMissionId,

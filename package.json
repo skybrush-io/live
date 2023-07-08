@@ -276,6 +276,7 @@
         }
       ],
       "@typescript-eslint/no-dynamic-delete": "off",
+      "@typescript-eslint/no-namespace": "off",
       "@typescript-eslint/prefer-regexp-exec": "off",
       "unicorn/filename-case": 0,
       "unicorn/no-array-callback-reference": 0,
