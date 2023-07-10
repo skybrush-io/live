@@ -18,6 +18,10 @@ const useStyles = makeStyles(
     avatar: {
       backgroundColor: Colors.off,
       color: theme.palette.getContrastText(Colors.off),
+
+      // Alternatively we could use `variant="rounded"` and
+      // set the amount through `theme.shape.borderRadius`.
+      borderRadius: '25%',
     },
 
     'avatar-off': {

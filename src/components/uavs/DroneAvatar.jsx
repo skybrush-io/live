@@ -1,9 +1,12 @@
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import { createSelector } from '@reduxjs/toolkit';
 
 import { ComplexAvatar } from '~/components/avatar';
+import { getReverseMissionMapping } from '~/features/mission/selectors';
 import { getBatteryFormatter } from '~/features/settings/selectors';
 import { createSingleUAVStatusSummarySelector } from '~/features/uavs/selectors';
+import { formatMissionId } from '~/utils/formatting';
 
 /**
  * Connected component that takes a ComplexAvatar and dresses it up to show the
@@ -13,20 +16,36 @@ const DroneAvatar = connect(
   // mapStateToProps
   () => {
     const statusSummarySelector = createSingleUAVStatusSummarySelector();
-    return (state, ownProps) => {
-      const props = {
-        batteryFormatter: getBatteryFormatter(state),
-        ...statusSummarySelector(state, ownProps.id),
-      };
 
-      if (ownProps.variant !== 'full') {
-        delete props.batteryStatus;
-        delete props.text;
-        delete props.details;
+    return createSelector(
+      getBatteryFormatter,
+      getReverseMissionMapping,
+      (state, { id }) => statusSummarySelector(state, id),
+      (_state, ownProps) => ownProps,
+      (
+        batteryFormatter,
+        reverseMissionMapping,
+        statusSummary,
+        { hint, id, label, variant }
+      ) => {
+        const props = {
+          batteryFormatter,
+          ...statusSummary,
+        };
+
+        if (!hint && (!label || label === id) && id in reverseMissionMapping) {
+          props.hint = formatMissionId(reverseMissionMapping[id]);
+        }
+
+        if (variant !== 'full') {
+          delete props.batteryStatus;
+          delete props.text;
+          delete props.details;
+        }
+
+        return props;
       }
-
-      return props;
-    };
+    );
   }
 )(ComplexAvatar);
 

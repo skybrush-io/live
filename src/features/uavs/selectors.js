@@ -43,6 +43,7 @@ import { UAVAge } from '~/model/uav';
 import { selectionForSubset } from '~/selectors/selection';
 import { euclideanDistance2D, getMeanAngle } from '~/utils/math';
 import { EMPTY_ARRAY } from '~/utils/redux';
+import { createDeepResultSelector } from '~/utils/selectors';
 
 /**
  * Returns the list of UAV IDs that should be shown on the UI, in the
@@ -787,7 +788,7 @@ export function getSingleUAVStatusSummary(uav) {
 /* eslint-enable complexity */
 
 export const createSingleUAVStatusSummarySelector = () =>
-  createSelector(getUAVById, getSingleUAVStatusSummary);
+  createDeepResultSelector(getUAVById, getSingleUAVStatusSummary);
 
 /**
  * Returns the list of UAV IDs that should be shown on the UI, sorted by their

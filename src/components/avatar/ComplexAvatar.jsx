@@ -41,20 +41,29 @@ const useStyles = makeStyles(
       },
     },
 
+    avatarContent: {
+      width: '100%',
+      textAlign: 'center',
+    },
+
     gone: {
       opacity: 0.7,
     },
 
     hint: {
       fontSize: '0.75rem',
-      color: theme.palette.text.hint,
-      height: theme.spacing(2),
-      lineHeight: theme.spacing(2) + 'px',
-      position: 'absolute',
-      right: theme.spacing(0.5),
-      textAlign: 'right',
-      top: theme.spacing(0.5),
-      whiteSpace: 'nowrap',
+    },
+
+    hintSeparator: {
+      width: '75%',
+
+      marginTop: 0,
+      marginBottom: 2,
+
+      border: '1px solid',
+      borderBottomWidth: 0,
+
+      color: 'inherit',
     },
 
     progress: {
@@ -93,12 +102,10 @@ const ComplexAvatar = ({
     status = Status.SUCCESS;
   }
 
-  const effectiveHint =
-    hint === undefined ? (label === undefined || label === id ? '' : id) : hint;
+  const effectiveHint = hint || (label === undefined || label === id ? '' : id);
 
   return (
     <>
-      {effectiveHint && <div className={classes.hint}>{effectiveHint}</div>}
       <div
         className={clsx(
           classes.avatarWrapper,
@@ -110,7 +117,11 @@ const ComplexAvatar = ({
           status={editing ? Status.NEXT : status}
           {...AvatarProps}
         >
-          {label === undefined ? id : label}
+          <div className={classes.avatarContent}>
+            {label === undefined ? id : label}
+            <hr className={classes.hintSeparator} />
+            <div className={classes.hint}>{effectiveHint || '—'}</div>
+          </div>
         </SemanticAvatar>
         {progress > 0 && (
           <CircularProgress
