@@ -20,21 +20,29 @@ import { formatMissionId } from '~/utils/formatting';
 
 import DroneAvatar from './DroneAvatar';
 
+const SCROLLBAR_WIDTH = 10;
+
 const useStyles = makeStyles(
   (theme) => ({
     content: {
+      // HACK: Push the scrollbar to the outer edge of the popup
+      marginRight: -SCROLLBAR_WIDTH,
+
       width:
         5 * 40 + // Five avatars
-        6 * theme.spacing(1), // Paddings and gaps
+        6 * theme.spacing(1) + // Paddings and gaps
+        SCROLLBAR_WIDTH,
       maxHeight:
         5 * 40 + // Five avatars
         6 * theme.spacing(1), // Paddings and gaps
+
+      padding: theme.spacing(1),
+
       display: 'flex',
       flexWrap: 'wrap',
-      padding: theme.spacing(1),
       gap: theme.spacing(1),
 
-      overflow: 'hidden overlay',
+      overflow: 'hidden auto',
     },
 
     paper: {
