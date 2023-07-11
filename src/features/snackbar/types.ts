@@ -1,30 +1,31 @@
+import { Severity } from '~/model/enums';
+
 /**
  * Enum describing the possible semantics that may be associated to a
  * snackbar message.
  */
-export const MessageSemantics = {
-  SUCCESS: 'success',
-  WARNING: 'warning',
-  ERROR: 'error',
-  INFO: 'info',
-  DEFAULT: 'default',
-};
+export enum MessageSemantics {
+  SUCCESS = 'success',
+  WARNING = 'warning',
+  ERROR = 'error',
+  INFO = 'info',
+  DEFAULT = 'default',
+}
 
 /**
  * Converts a message severity level in the Flockwave protocol to a message
  * semantics value.
  */
-export function semanticsFromSeverity(severity) {
+export function semanticsFromSeverity(severity: Severity): MessageSemantics {
   switch ((severity || '').toLowerCase()) {
-    case 'error':
-    case 'critical':
+    case Severity.ERROR:
+    case Severity.CRITICAL:
       return MessageSemantics.ERROR;
 
-    case 'warning':
-    case 'warn':
+    case Severity.WARNING:
       return MessageSemantics.WARNING;
 
-    case 'info':
+    case Severity.INFO:
       return MessageSemantics.INFO;
 
     default:
@@ -32,7 +33,7 @@ export function semanticsFromSeverity(severity) {
   }
 }
 
-const _semanticsToEmoji = {
+const emojisForSemantics = {
   [MessageSemantics.SUCCESS]: '✅',
   [MessageSemantics.ERROR]: '🛑',
   [MessageSemantics.WARNING]: '⚠',
@@ -44,6 +45,6 @@ const _semanticsToEmoji = {
  * Converts a message semantics value to an emoji that can be used to represent
  * that severity level in text.
  */
-export function semanticsToEmoji(semantics) {
-  return _semanticsToEmoji[semantics] || '';
+export function semanticsToEmoji(semantics: MessageSemantics): string {
+  return emojisForSemantics[semantics] || '';
 }
