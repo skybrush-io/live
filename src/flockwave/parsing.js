@@ -27,6 +27,7 @@ export function convertRGB565ToCSSNotation(value) {
 }
 
 const MESSAGES_WITH_RECEIPTS = {
+  'LOG-DATA': true,
   'OBJ-CMD': true,
   'PRM-GET': true,
   'PRM-SET': true,
