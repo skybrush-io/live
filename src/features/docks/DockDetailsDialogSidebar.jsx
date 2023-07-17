@@ -21,7 +21,7 @@ import Tooltip from '@skybrush/mui-components/lib/Tooltip';
 
 import { ComplexAvatar } from '~/components/avatar';
 import Colors from '~/components/colors';
-import { MiniTable } from '~/components/mini-table';
+import MiniTable from '~/components/MiniTable';
 
 import { getSelectedDockIdInDockDetailsDialog } from './details';
 
