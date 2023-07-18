@@ -2,7 +2,7 @@
  * @file Geography-related utility functions and variables.
  */
 
-import CoordinateParser from 'coordinate-parser';
+import * as CoordinateParser from 'coordinate-parser';
 import curry from 'lodash-es/curry';
 import isNil from 'lodash-es/isNil';
 import minBy from 'lodash-es/minBy';
@@ -10,16 +10,64 @@ import round from 'lodash-es/round';
 import unary from 'lodash-es/unary';
 import * as Coordinate from 'ol/coordinate';
 import * as Extent from 'ol/extent';
-import { LineString, MultiLineString, MultiPolygon, Polygon } from 'ol/geom';
+import type OLFeature from 'ol/Feature';
+import {
+  type Geometry,
+  LineString,
+  MultiLineString,
+  MultiPolygon,
+  Polygon,
+} from 'ol/geom';
 import GeometryCollection from 'ol/geom/GeometryCollection';
+import { type GeometryFunction } from 'ol/interaction/Draw';
+import VectorLayer from 'ol/layer/Vector';
+import type Map from 'ol/Map';
 import * as Projection from 'ol/proj';
+import VectorSource from 'ol/source/Vector';
 import { getArea, getLength } from 'ol/sphere';
+import { type Vector3 } from 'three';
 
-import { FeatureType } from '~/model/features';
+import { type Feature, FeatureType } from '~/model/features';
 
 import { formatNumberAndUnit } from './formatting';
-import { toDegrees, toRadians } from './math';
+// import { toDegrees, toRadians } from './math';
 import { isRunningOnMac } from './platform';
+
+// TODO: Define better types for coordinates?
+// The one provided by OpenLayers is too generic (`Array<number>` instead
+// of [number, number]), while their docs do specify _"an `xy` coordinate"_.
+// https://openlayers.org/en/v7.4.0/apidoc/module-ol_coordinate.html#~Coordinate
+// Also, maybe create separate types for LonLat and LatLon where it matters?
+// While we're at it, perhaps even `AHL`, `AGL` and other distinct measures
+// with the `unique symbol` trick?
+// https://github.com/Microsoft/TypeScript/issues/364#issuecomment-719046161
+
+// NOTE: Until we figure out the long-term solution, I have consciously left
+// some `number[]` annotations that could be treated as OpenLayers coordinates.
+
+// HACK: ↓ TEMPORARY INLINE INCLUDES ↓
+
+/**
+ * Returns the given number of degrees in radians.
+ *
+ * @param x - The degrees to convert
+ * @returns The converted degrees in radians
+ */
+export function toRadians(x: number): number {
+  return (x * Math.PI) / 180;
+}
+
+/**
+ * Returns the given number of radians in degrees.
+ *
+ * @param x - The radians to convert
+ * @returns The converted radians in degrees
+ */
+export function toDegrees(x: number): number {
+  return (x * 180) / Math.PI;
+}
+
+// HACK: ↑ TEMPORARY INLINE INCLUDES ↑
 
 // The angle sign spams lots of CoreText-related warnings in the console when
 // running under Electron on macOS, so we use the @ sign there as a replacement.
@@ -33,11 +81,14 @@ const ANGLE_SIGN = isRunningOnMac ? '@' : '∠';
  * The spherical coordinates must be specified in degrees, in longitude-latitude
  * order.
  *
- * @param  {number[]}  first   the first point
- * @param  {number[]}  second  the second point
- * @return the bearing, in degrees, in the [0; 360) range.
+ * @param first - The first point
+ * @param second - The second point
+ * @returns Bearing, in degrees, in the [0; 360) range
  */
-export function bearing(first, second) {
+export function bearing(
+  first: [number, number],
+  second: [number, number]
+): number {
   const lonDiff = toRadians(second[0] - first[0]);
   const firstLatRadians = toRadians(first[1]);
   const secondLatRadians = toRadians(second[1]);
@@ -56,28 +107,47 @@ export function bearing(first, second) {
  * The spherical coordinates must be specified in degrees, in longitude-latitude
  * order.
  *
- * @param  {number[]}  first   the first point
- * @param  {number[]}  second  the second point
- * @return the bearing, in degrees, in the [0; 360) range.
+ * @param first - The first point
+ * @param second - The second point
+ * @returns Bearing, in degrees, in the [0; 360) range
  */
-export function finalBearing(first, second) {
+export function finalBearing(
+  first: [number, number],
+  second: [number, number]
+): number {
   const angle = bearing(second, first);
   return (angle + 180) % 360;
 }
+
+/**
+ * Type guard for checking whether the input is a valid OpenLayers coordinate.
+ * https://openlayers.org/en/v7.4.0/apidoc/module-ol_coordinate.html#~Coordinate
+ */
+const isCoordinate = (
+  coordinate: unknown
+): coordinate is Coordinate.Coordinate =>
+  Array.isArray(coordinate) &&
+  coordinate.length === 2 &&
+  coordinate.every((c) => typeof c === 'number');
 
 /**
  * Creates an OpenLayers geometry function used by the "draw" interaction
  * to draw a box whose sides are parallel to axes obtained by rotating the
  * principal axes with the given angle.
  *
- * @param  {number|function(): number}  angle  the rotation angle of the axes or
- *         a function that returns the angle when invoked
- * @return {ol.DrawGeometryFunctionType}  the geometry function
+ * @param angle - The rotation angle of the axes or
+ *                a function that returns the angle when invoked
+ * @returns The geometry function
  */
 export const createRotatedBoxGeometryFunction =
-  (angle) => (coordinates, optGeometry) => {
-    if (coordinates.length !== 2) {
-      throw new Error('must be called with two points only');
+  (angle: number | (() => number)): GeometryFunction =>
+  (coordinates, optGeometry) => {
+    if (
+      coordinates.length !== 2 ||
+      !isCoordinate(coordinates[0]) ||
+      !isCoordinate(coordinates[1])
+    ) {
+      throw new TypeError('Must be called with two points only');
     }
 
     // Get the effective angle
@@ -122,11 +192,16 @@ export const createRotatedBoxGeometryFunction =
  * Calculates the Euclidean distance between two OpenLayers coordinates.
  * Also works for higher dimensions.
  *
- * @param {number[]|ol.Coordinate} first   the first coordinate
- * @param {number[]|ol.Coordinate} second  the second coordinate
- * @return {number} the Euclidean distance between the two coordinates
+ * @deprecated Use `euclideanDistance2D` from `./math` instead.
+ *
+ * @param first - The first coordinate
+ * @param second - The second coordinate
+ * @returns The Euclidean distance between the two coordinates
  */
-export const euclideanDistance = (first, second) => {
+export const euclideanDistance = (
+  first: number[] | Coordinate.Coordinate,
+  second: number[] | Coordinate.Coordinate
+): number => {
   const n = Math.min(first.length, second.length);
   let sum = 0;
   for (let i = 0; i < n; i++) {
@@ -140,51 +215,58 @@ export const euclideanDistance = (first, second) => {
  * Finds a single feature with a given global ID on all layers of an
  * OpenLayers map.
  *
- * @param {ol.Map}  map  the OpenLayers map
- * @param {string}  featureId  the ID of the feature to look for
- * @return {ol.Feature}  the OpenLayers feature or undefined if there is
- *         no such feature on any of the visible layers
+ * @param map - The OpenLayers map
+ * @param featureId - The ID of the feature to look for
+ * @returns The OpenLayers feature or undefined if there is
+ *          no such feature on any of the visible layers
  */
-export const findFeatureById = curry((map, featureId) => {
-  return findFeaturesById(map, [featureId])[0];
-});
+export const findFeatureById = curry(
+  (map: Map, featureId: string): OLFeature => {
+    return findFeaturesById(map, [featureId])[0];
+  }
+);
+
+const isVectorLayer = (layer: unknown): layer is VectorLayer<VectorSource> =>
+  layer instanceof VectorLayer && layer.getSource() instanceof VectorSource;
 
 /**
  * Finds the features corresponding to an array of feature IDs on the given
  * OpenLayers map.
  *
- * @param {ol.Map}    map  the OpenLayers map
- * @param {string[]}  featureIds  the global IDs of the features
- * @return {ol.Feature[]}  an array of OpenLayers features corresponding to
- *         the given feature IDs; the array might contain undefined entries
- *         for features that are not found on the map
+ * @param map - The OpenLayers map
+ * @param featureIds - The global IDs of the features
+ * @returns An array of OpenLayers features corresponding to the
+ *          given feature IDs; the array might contain undefined
+ *          entries for features that are not found on the map
  */
-export const findFeaturesById = curry((map, featureIds) => {
-  const features = [];
-  features.length = featureIds.length;
+export const findFeaturesById = curry(
+  (map: Map, featureIds: string[]): OLFeature[] => {
+    const features: OLFeature[] = Array.from({ length: featureIds.length });
 
-  for (const layer of map.getLayers().getArray()) {
-    const source =
-      layer.getVisible() && layer.getSource ? layer.getSource() : undefined;
-    if (!source) {
-      continue;
-    }
+    for (const layer of map.getLayers().getArray()) {
+      if (!isVectorLayer(layer) || !layer.getVisible()) {
+        continue;
+      }
 
-    const n = features.length;
-    for (let i = 0; i < n; i++) {
-      if (!features[i]) {
-        const feature = source.getFeatureById
-          ? source.getFeatureById(featureIds[i])
-          : undefined;
-        if (feature) {
-          features[i] = feature;
+      const source = layer.getSource();
+
+      if (!source) {
+        continue;
+      }
+
+      for (let i = 0; i < features.length; i++) {
+        if (!features[i]) {
+          const feature = source.getFeatureById(featureIds[i]);
+          if (feature) {
+            features[i] = feature;
+          }
         }
       }
     }
-  }
 
-  return features;
-});
+    return features;
+  }
+);
 
 /**
  * Returns the closest point of a geometry from the given OpenLayers
@@ -194,12 +276,14 @@ export const findFeaturesById = curry((map, featureIds) => {
  * when the coordinate is contained in the given geometry, it will return the
  * coordinate itself instead of finding the closest point on the boundary.
  *
- * @param {ol.geom.Geometry}       geometry    the geometry
- * @param {number[]|ol.Coordinate} coordinate  the point to consider
- * @return {number[]} the coordinates of the closest point of the given
- *      geometry
+ * @param geometry - The geometry
+ * @param coordinate - The point to consider
+ * @returns The coordinates of the closest point of the given geometry
  */
-export const getExactClosestPointOf = (geometry, coordinate) => {
+export const getExactClosestPointOf = (
+  geometry: Geometry,
+  coordinate: Coordinate.Coordinate
+): Coordinate.Coordinate => {
   // Special case: if the coordinate is in the geometry, the closest point
   // to it is itself
   if (geometry.intersectsCoordinate(coordinate)) {
@@ -225,7 +309,14 @@ export const getExactClosestPointOf = (geometry, coordinate) => {
     const closestPoints = subGeometries.map((subGeometry) =>
       getExactClosestPointOf(subGeometry, coordinate)
     );
-    return minBy(closestPoints, euclideanDistance.bind(null, coordinate));
+
+    const closestPoint = minBy(
+      closestPoints,
+      euclideanDistance.bind(null, coordinate)
+    );
+
+    // Failing with `[NaN, NaN]` matches the behavior of OL's `getClosestPoint()`
+    return closestPoint ?? [Number.NaN, Number.NaN];
   }
 
   // For anything else, just fall back to getClosestPoint()
@@ -240,19 +331,24 @@ export const getExactClosestPointOf = (geometry, coordinate) => {
  * The constructed function accepts either a single OpenLayers coordinate
  * or a longitude-latitude pair as an array of two numbers.
  *
- * @param {Object}  options  formatting options
- * @param {number}  options.digits  the number of fractional digits to show
- * @param {boolean} options.reverse  whether to reverse the X and Y coordinates
- * @param {string}  options.separator  separator between the X and Y coordinates
- * @param {string|Object}  options.unit   the unit to show after the digits
- * @return {function} the constructed function
+ * @param options - Formatting options
+ * @param options.digits - The number of fractional digits to show
+ * @param options.reverse - Whether to reverse the X and Y coordinates
+ * @param options.separator - Separator between the X and Y coordinates
+ * @param options.unit - The unit to show after the digits
+ * @returns The constructed function
  */
 export const makeDecimalCoordinateFormatter = ({
   digits,
-  reverse,
+  reverse = false,
   separator = ', ',
   unit,
-}) => {
+}: {
+  digits?: number;
+  reverse?: boolean;
+  separator?: string;
+  unit?: string | Array<[number, string]>;
+}): ((coordinate: Coordinate.Coordinate) => string) => {
   const indices = reverse ? [1, 0] : [0, 1];
   return (coordinate) => {
     if (coordinate) {
@@ -275,14 +371,14 @@ export const makeDecimalCoordinateFormatter = ({
  * The constructed function accepts either a single OpenLayers coordinate
  * or a longitude-latitude pair as an array of two numbers.
  *
- * @param {Object}  options  formatting options
- * @param {number}  options.digits  the number of fractional digits to show
- * @param {string}  options.unit   the unit to show after the digits
- * @return {function} the constructed function
+ * @param options - Formatting options
+ * @param options.digits - The number of fractional digits to show
+ * @param options.unit - The unit to show after the digits
+ * @returns The constructed function
  */
-export const makePolarCoordinateFormatter = (options) => {
-  const { digits, unit } = options;
-  return (coordinate) => {
+export const makePolarCoordinateFormatter =
+  ({ digits, unit }: { digits?: number; unit?: string }) =>
+  (coordinate: Coordinate.Coordinate): string => {
     if (coordinate) {
       return (
         formatNumberAndUnit(coordinate[0], unit, digits) +
@@ -293,16 +389,15 @@ export const makePolarCoordinateFormatter = (options) => {
       return '';
     }
   };
-};
 
 /**
  * Creates a function that measures an internal representation of a feature.
  * (Area for Polygons, length for LineStrings.)
  *
- * @param {Object}  feature  the subject of the measurement
- * @return {string} the resulting measurement in string form with units included
+ * @param feature - The subject of the measurement
+ * @returns The resulting measurement in string form with units included
  */
-export const measureFeature = (feature) => {
+export const measureFeature = (feature: Feature): string => {
   const hecto = 100;
   const kilo = 1000;
 
@@ -327,9 +422,11 @@ export const measureFeature = (feature) => {
         )
       );
 
-      return area > 1 * kilo * kilo // Over 1 km²
+      // TODO: Make `formatNumberAndUnit` handle custom breakpoints
+      //       in order to support switching units at 0.1 hectars.
+      return area > 1 * (kilo * kilo) // Over 1 km²
         ? `${round(area / (kilo * kilo), 2)} km²`
-        : area > 0.1 * hecto * hecto // Over 0.1 ha
+        : area > 0.1 * (hecto * hecto) // Over 0.1 ha
         ? `${round(area / (hecto * hecto), 2)} ha`
         : `${round(area, 2)} m²`;
     }
@@ -340,13 +437,13 @@ export const measureFeature = (feature) => {
 };
 
 /**
- * Merges an array of OpenLayer extents and returns a single extent that contains
- * all of them.
+ * Merges an array of OpenLayer extents and returns
+ * a single extent that contains all of them.
  *
- * @param  {ol.Extent[]} extents  the extents to merge
- * @return {ol.Extent} the merged OpenLayers extent
+ * @param extents - The extents to merge
+ * @returns The merged OpenLayers extent
  */
-export function mergeExtents(extents) {
+export function mergeExtents(extents: Extent.Extent[]): Extent.Extent {
   const result = Extent.createEmpty();
 
   for (const extent of extents) {
@@ -363,24 +460,26 @@ export function mergeExtents(extents) {
  * The conventions are: the angle is always between 0 (inclusive) and 360
  * (exclusive), rounded to 1 decimal digit.
  *
- * @param  {number|string} angle  the input angle
- * @return {string}  the normalized angle as a string to avoid rounding errors
+ * @param angle - The input angle
+ * @returns The normalized angle as a string to avoid rounding errors
  */
-export const normalizeAngle = (angle) =>
+export const normalizeAngle = (angle: number): string =>
   (((angle % 360) + 360) % 360).toFixed(1);
 
-export const translateBy = curry((displacement, coordinates) => {
-  const dx = displacement[0];
-  const dy = displacement[1];
-  if (dx === 0 && dy === 0) {
-    return coordinates;
-  }
+export const translateBy = curry(
+  (displacement: [number, number], coordinates: Array<[number, number]>) => {
+    const dx = displacement[0];
+    const dy = displacement[1];
+    if (dx === 0 && dy === 0) {
+      return coordinates;
+    }
 
-  return coordinates.map((coordinate) => [
-    coordinate[0] + dx,
-    coordinate[1] + dy,
-  ]);
-});
+    return coordinates.map((coordinate) => [
+      coordinate[0] + dx,
+      coordinate[1] + dy,
+    ]);
+  }
+);
 
 /**
  * Formats the given OpenLayers coordinate into the usual latitude-longitude
@@ -395,7 +494,9 @@ export const formatCoordinate = makeDecimalCoordinateFormatter({
   unit: '°',
 });
 
-export const safelyFormatCoordinate = (coordinate) => {
+export const safelyFormatCoordinate = (
+  coordinate?: Coordinate.Coordinate
+): string => {
   if (isNil(coordinate)) {
     return '';
   }
@@ -411,11 +512,13 @@ export const safelyFormatCoordinate = (coordinate) => {
  * Parses the given string as geographical coordinates and converts it into
  * OpenLayers format (longitude first).
  *
- * @param  {string} text  the text to parse
- * @return {number[]|undefined}  the parsed coordinates in OpenLayers format
- *         or undefined in case of a parsing error
+ * @param text - The text to parse
+ * @returns The parsed coordinates in OpenLayers format
+ *          or undefined in case of a parsing error
  */
-export const parseCoordinate = (text) => {
+export const parseCoordinate = (
+  text: string
+): Coordinate.Coordinate | undefined => {
   try {
     const parsed = new CoordinateParser(text);
     return [parsed.getLongitude(), parsed.getLatitude()];
@@ -424,28 +527,45 @@ export const parseCoordinate = (text) => {
   }
 };
 
+type EllipsoidModel = {
+  eccentricity: number;
+  eccentricitySquared: number;
+  flattening: number;
+  inverseFlattening: number;
+  meanRadius: number;
+  semiMajorAxis: number;
+  semiMinorAxis: number;
+};
+
 /**
  * Function that creates an object holding the standard properties of an
  * ellipsoid model from the length of the semi-major axis and the inverse
  * flattening.
  *
- * @param {number} semiMajorAxis  the length of the semi-major axis
- * @param {number} inverseFlattening  the inverse flattening of the ellipsoid;
- *        use Number.POSITIVE_INFINITY for perfect spheres
- * @return {Object} an object holding the standard properties of the given
- *         ellipsoid
+ * @param semiMajorAxis - The length of the semi-major axis
+ * @param inverseFlattening - The inverse flattening of the ellipsoid;
+ *                            use Number.POSITIVE_INFINITY for perfect spheres
+ * @returns An object holding the standard properties of the given ellipsoid
  */
-const makeEllipsoidModel = (semiMajorAxis, inverseFlattening) => {
-  const result = {
+const makeEllipsoidModel = (
+  semiMajorAxis: number,
+  inverseFlattening: number
+): EllipsoidModel => {
+  const flattening = 1 / inverseFlattening;
+  const eccentricitySquared = flattening * (2 - flattening);
+  const eccentricity = Math.sqrt(eccentricitySquared);
+  const semiMinorAxis = semiMajorAxis * (1 - flattening);
+  const meanRadius = (semiMinorAxis + semiMajorAxis * 2) / 3;
+
+  return Object.freeze({
+    eccentricity,
+    eccentricitySquared,
+    flattening,
     inverseFlattening,
+    meanRadius,
     semiMajorAxis,
-    flattening: 1 / inverseFlattening,
-  };
-  result.eccentricitySquared = result.flattening * (2 - result.flattening);
-  result.eccentricity = Math.sqrt(result.eccentricitySquared);
-  result.semiMinorAxis = result.semiMajorAxis * (1 - result.flattening);
-  result.meanRadius = (result.semiMinorAxis + result.semiMajorAxis * 2) / 3;
-  return Object.freeze(result);
+    semiMinorAxis,
+  });
 };
 
 /**
@@ -471,10 +591,10 @@ export const WGS84 = makeEllipsoidModel(6378137, 298.257223563);
  *
  * Longitudes and latitudes are assumed to be given in WGS 84.
  *
- * @param {number[]} coords the longitude and latitude, in this order
- * @param {ol.ProjectionLike} projection the projection to use for the conversion
- * @return {Object} the OpenLayers coordinates corresponding to the given
- * longitude-latitude pair
+ * @param coordinate - The longitude and latitude, in this order
+ * @param projection - The projection to use for the conversion
+ * @returns The OpenLayers coordinates corresponding
+ *          to the given longitude-latitude pair
  */
 export const mapViewCoordinateFromLonLat = Projection.fromLonLat;
 
@@ -484,10 +604,10 @@ export const mapViewCoordinateFromLonLat = Projection.fromLonLat;
  *
  * Coordinates are assumed to be given in EPSG:3857.
  *
- * @param {number[]} coords the OpenLayers coordinates
- * @param {ol.ProjectionLike} projection the projection to use for the conversion
- * @return {Object} the longtitude-latitude pair corresponding to the given
- * OpenLayers coordinates
+ * @param coordinate - The OpenLayers coordinate
+ * @param projection - The projection to use for the conversion
+ * @returns The longtitude-latitude pair corresponding
+ *          to the given OpenLayers coordinates
  */
 export const lonLatFromMapViewCoordinate = Projection.toLonLat;
 
@@ -495,7 +615,10 @@ export const lonLatFromMapViewCoordinate = Projection.toLonLat;
  * Helper function to move a longitude-latitude coordinate pair by a vector
  * expressed in map view coordinates.
  */
-export const translateLonLatWithMapViewDelta = (origin, delta) => {
+export const translateLonLatWithMapViewDelta = (
+  origin: Coordinate.Coordinate,
+  delta: [number, number]
+): Coordinate.Coordinate => {
   const originInMapView = mapViewCoordinateFromLonLat(origin);
   return lonLatFromMapViewCoordinate([
     originInMapView[0] + delta[0],
@@ -506,24 +629,53 @@ export const translateLonLatWithMapViewDelta = (origin, delta) => {
 /**
  * Class that defines a flat-Earth coordinate system centered at a given
  * spherical coordinate.
+ *
+ * TODO: Make private fields and methods properly private (#) when we're sure
+ * that it doesn't break anything.
  */
 export class FlatEarthCoordinateSystem {
+  _vec = [0, 0, 0]; // dummy vector used to avoid allocations
+  _origin: Coordinate.Coordinate;
+  _orientation: number;
+  _ellipsoid: EllipsoidModel;
+  _type: string;
+
+  // NOTE: Bangs are justified by `this._precalculate()` setting these values.
+  // See canonical issue: https://github.com/microsoft/TypeScript/issues/21132
+  _piOver180!: number;
+  _r1!: number;
+  _r2OverCosOriginLatInRadians!: number;
+  _yMul!: number;
+
   /**
    * Constructor.
    *
-   * @param {number[]} origin the longitude-latitude pair that defines the
-   *        origin of the coordinate system
-   * @param {number} orientation the orientation of the zero-degree axis of the
-   *        coordinate system, in degrees, zero being north, 90 degrees
-   *        being east, 180 degrees being south and 270 degrees being west.
-   * @param {string} type type of the axis configuration of the flat Earth
-   *        coordinate system: `neu` means that the coordinate system is
-   *        left-handed (north-east-up) `nwu` means that the coordinate system
-   *        is right-handed (north-west-up)
-   * @param {Object} ellipsoid  the model of the ellipsoid on which the
-   *        coordinate system is defined; defaults to WGS84
+   * @param options
+   * @param options.origin - The longitude-latitude pair that defines
+   *                         the origin of the coordinate system
+   * @param options.orientation -
+   *          The orientation of the zero-degree axis of the coordinate system,
+   *          in degrees, zero being north, 90 degrees being east,
+   *          180 degrees being south and 270 degrees being west.
+   * @param options.type -
+   *          Type of the axis configuration of the flat Earth coordinate
+   *          system: `neu` means that the coordinate system is left-handed
+   *          (north-east-up) `nwu` means that the coordinate system is
+   *          right-handed (north-west-up)
+   * @param options.ellipsoid - The model of the ellipsoid on which the
+   *                            coordinate system is defined; defaults to WGS84
    */
-  constructor({ origin, orientation = 0, type = 'neu', ellipsoid = WGS84 }) {
+  constructor({
+    origin,
+    orientation = 0,
+    type = 'neu',
+    ellipsoid = WGS84,
+  }: {
+    origin: Coordinate.Coordinate;
+    orientation?: number;
+    type?: string;
+    ellipsoid?: EllipsoidModel;
+  }) {
     if (type !== 'neu' && type !== 'nwu') {
       throw new Error('unknown coordinate system type: ' + type);
     }
@@ -547,39 +699,41 @@ export class FlatEarthCoordinateSystem {
   /**
    * Converts a longitude-latitude pair to flat Earth coordinates.
    *
-   * @param {number[]} coords  a longitude-latitude pair to convert
-   * @return {number[]} the converted coordinates
+   * @param coords - A longitude-latitude pair to convert
+   * @returns The converted coordinates
    */
-  fromLonLat(coords) {
-    const result = [0, 0];
-    return this._updateArrayFromLonLat(result, coords[0], coords[1]);
+  fromLonLat(coords: [number, number]): [number, number] {
+    const result: [number, number] = [0, 0];
+    this._updateArrayFromLonLat(result, coords[0], coords[1]);
+    return result;
   }
 
   /**
    * Converts a longitude-latitude-AHL triplet to flat Earth coordinates.
    *
-   * @param {number[]} coords  a longitude-latitude-AHL triplet to convert
-   * @return {number[]} the converted coordinates
+   * @param coords - A longitude-latitude-AHL triplet to convert
+   * @returns The converted coordinates
    */
-  fromLonLatAhl(coords) {
-    const result = [0, 0, coords[2]];
-    return this._updateArrayFromLonLat(result, coords[0], coords[1]);
+  fromLonLatAhl(coords: [number, number, number]): [number, number, number] {
+    const result: [number, number, number] = [0, 0, coords[2]];
+    this._updateArrayFromLonLat(result, coords[0], coords[1]);
+    return result;
   }
 
   /**
    * Returns the type of the coordinate system.
    */
-  get type() {
+  get type(): string {
     return this._type;
   }
 
   /**
    * Converts a flat Earth coordinate pair to a longitude-latitude pair.
    *
-   * @param {number[]} coords  a flat Earth coordinate pair to convert
-   * @return {number[]} the converted coordinates
+   * @param coords - A flat Earth coordinate pair to convert
+   * @returns The converted coordinates
    */
-  toLonLat(coords) {
+  toLonLat(coords: [number, number]): [number, number] {
     const result = [coords[0], coords[1] * this._yMul];
     Coordinate.rotate(result, this._orientation);
     return [
@@ -595,11 +749,11 @@ export class FlatEarthCoordinateSystem {
    *
    * The Z coordinate of the triplet is copied straight to the AHL value.
    *
-   * @param {number[]} coords  a flat Earth coordinate triplet to convert
-   * @return {number[]} the converted coordinates
+   * @param coords - A flat Earth coordinate triplet to convert
+   * @returns The converted coordinates
    */
-  toLonLatAhl(coords) {
-    return [...this.toLonLat(coords), coords[2]];
+  toLonLatAhl(coords: [number, number, number]): [number, number, number] {
+    return [...this.toLonLat([coords[0], coords[1]]), coords[2]];
   }
 
   /**
@@ -611,12 +765,17 @@ export class FlatEarthCoordinateSystem {
    * Note that this function also flips the Y axis if needed because Three.js
    * is always right-handed.
    *
-   * @param {THREE.Vector3}  vec  the vector to update
-   * @param {number}  lon  the longitude
-   * @param {number}  lat  the latitude
-   * @param {number}  ahl  the altitude above home level
+   * @param vec - The vector to update
+   * @param lon - The longitude
+   * @param lat - The latitude
+   * @param ahl - The altitude above home level
    */
-  updateVector3FromLonLatAhl(vec, lon, lat, ahl) {
+  updateVector3FromLonLatAhl(
+    vec: Vector3,
+    lon: number,
+    lat: number,
+    ahl: number
+  ): void {
     this._updateArrayFromLonLat(this._vec, lon, lat);
 
     vec.x = this._vec[0];
@@ -628,7 +787,7 @@ export class FlatEarthCoordinateSystem {
    * Precalculates a few cached values that are needed in calculations but
    * that do not depend on the coordinate being transformed.
    */
-  _precalculate() {
+  _precalculate(): void {
     const originLatInRadians = toRadians(this._origin[1]);
     const radius = this._ellipsoid.semiMajorAxis;
     const eccSq = this._ellipsoid.eccentricitySquared;
@@ -642,15 +801,15 @@ export class FlatEarthCoordinateSystem {
   }
 
   /**
-   * Hlper function that takes an input array of length 2 or 3 and updates the
+   * Helper function that takes an input array of length 2 or 3 and updates the
    * first two components such that they represent the X and Y coordinates
    * corresponding to the given longitude and latitde.
    *
-   * @param  {number[]} result  the array to update
-   * @param  {number}   lon     the longitude
-   * @param  {number}   lat     the latitude
+   * @param result - The array to update
+   * @param lon - The longitude
+   * @param lat - The latitude
    */
-  _updateArrayFromLonLat(result, lon, lat) {
+  _updateArrayFromLonLat(result: number[], lon: number, lat: number): void {
     result[0] = (lat - this._origin[1]) * this._piOver180 * this._r1;
     result[1] =
       (lon - this._origin[0]) *
@@ -658,7 +817,6 @@ export class FlatEarthCoordinateSystem {
       this._r2OverCosOriginLatInRadians;
     Coordinate.rotate(result, -this._orientation);
     result[1] *= this._yMul;
-    return result;
   }
 }
 
@@ -666,11 +824,11 @@ export class FlatEarthCoordinateSystem {
  * Converts a pair of Cartesian coordinates into polar coordinates, assuming
  * that the X axis points towards zero degrees.
  *
- * @param {number[]} coords  the Cartesian coordinates to convert
- * @return {number[]} the polar coordinates, angle being expressed in degrees
- *         between 0 and 360
+ * @param coords - The Cartesian coordinates to convert
+ * @returns The polar coordinates, angle being expressed in degrees
+ *          between 0 and 360
  */
-export function toPolar(coords) {
+export function toPolar(coords: [number, number]): [number, number] {
   const dist = Math.sqrt(coords[0] * coords[0] + coords[1] * coords[1]);
   if (dist > 0) {
     const angle = toDegrees(Math.atan2(coords[1], coords[0]));

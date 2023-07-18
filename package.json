@@ -173,6 +173,7 @@
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.10",
     "@types/ip": "^1.1.0",
     "@types/lodash-es": "^4.17.7",
+    "@types/three": "^0.154.0",
     "babel-loader": "^8.2.5",
     "cross-env": "^7.0.3",
     "css-loader": "^6.7.3",

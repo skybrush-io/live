@@ -18,6 +18,27 @@ export enum FeatureType {
   POLYGON = 'polygon',
 }
 
+type Coordinate2D = [number, number];
+
+export type Feature =
+  | {
+      type: FeatureType.CIRCLE;
+      points: [Coordinate2D, Coordinate2D];
+    }
+  | {
+      type: FeatureType.LINE_STRING;
+      points: Coordinate2D[];
+    }
+  | {
+      type: FeatureType.POINTS;
+      points: Coordinate2D[];
+    }
+  | {
+      type: FeatureType.POLYGON;
+      points: Coordinate2D[];
+      holes: Coordinate2D[][];
+    };
+
 /**
  * Enum constants for the various label types that we support.
  */
