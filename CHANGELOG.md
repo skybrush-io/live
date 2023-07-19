@@ -15,6 +15,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added a way to switch the selected UAV in the UAV Details Dialog by clicking
   the avatar at the top of the sidebar.
 
+- Drawing operations can now be aborted with the `Escape` button.
+
+- Desired takeoff headings for the UAVs before a show can now be different from
+  the orientation of the X axis during a show, allowing for more flexibility in
+  the placement of the GCS and the operator when preparing for a show.
+
 ### Changed
 
 - The `Delete` hotkey now removes the selected features as well.
