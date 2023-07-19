@@ -22,7 +22,7 @@ export function convertFlightLogToBlob(flightLog) {
       break;
 
     default:
-      blob = new Blob(Base64.toUint8Array(body), {
+      blob = new Blob([Base64.toUint8Array(body)], {
         type: 'application/octet-stream',
       });
       break;
