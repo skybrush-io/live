@@ -75,7 +75,7 @@ export async function getLicenseInformation(hub) {
 /**
  * Returns a single flight log from a UAV.
  */
-export async function getFlightLog(hub, uavId, logId) {
+export async function getFlightLog(hub, uavId, logId, { onProgress } = {}) {
   if (!uavId || typeof uavId !== 'string') {
     throw new Error('Expected non-empty UAV ID');
   }
@@ -94,7 +94,7 @@ export async function getFlightLog(hub, uavId, logId) {
         logId,
         uavId,
       },
-      { idProp: null, single: true }
+      { idProp: null, onProgress, single: true }
     );
   } catch (error) {
     const errorString = errorToString(error);

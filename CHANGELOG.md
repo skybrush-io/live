@@ -21,6 +21,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   the orientation of the X axis during a show, allowing for more flexibility in
   the placement of the GCS and the operator when preparing for a show.
 
+- The UAV details panel now has a "Logs" tab that you can use to download log
+  files from the UAV if the server knows how to fetch the logs.
+
 ### Changed
 
 - The `Delete` hotkey now removes the selected features as well.

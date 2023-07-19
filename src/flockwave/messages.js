@@ -1401,7 +1401,7 @@ export default class MessageHub {
    */
   async startAsyncOperationForSingleId(id, message, options = {}) {
     const { ids, type: expectedType } = message;
-    const { idProp, single = false } = options;
+    const { idProp, onProgress, single = false } = options;
 
     if (!expectedType) {
       throw new Error('Message must have a type');
@@ -1418,6 +1418,7 @@ export default class MessageHub {
     }
 
     let response = await this.sendMessage(message);
+
     if (single) {
       // Object takes a single ID and returns a single result, error or
       // receipt object. Pretend that we received a mapping for them instead so
@@ -1433,9 +1434,16 @@ export default class MessageHub {
       response = responseWithMaps;
     }
 
+    const progressHandler = onProgress
+      ? single
+        ? (_id, ...args) => onProgress(...args)
+        : onProgress
+      : undefined;
+
     const parsedResponse = await this._processMultiAsyncOperationResponse(
       response,
-      expectedType
+      expectedType,
+      { onProgress: progressHandler }
     );
 
     if (Object.prototype.hasOwnProperty.call(parsedResponse, id)) {
@@ -1489,7 +1497,11 @@ export default class MessageHub {
    * Helper function to process the response to a multi-object async operation.
    * See <code>startAsyncOperation()</code> for more details.
    */
-  async _processMultiAsyncOperationResponse(response, expectedType) {
+  async _processMultiAsyncOperationResponse(
+    response,
+    expectedType,
+    { onProgress } = {}
+  ) {
     if (!response) {
       throw new Error('Response should not be empty');
     } else if (!response.body) {
@@ -1519,7 +1531,10 @@ export default class MessageHub {
             this._asyncOperationManager.handleMultiAsyncResponseForSingleId(
               response,
               idWithReceipt,
-              { noThrow: true }
+              {
+                onProgress: (...args) => onProgress(idWithReceipt, ...args),
+                noThrow: true,
+              }
             );
         } catch (error) {
           results[idWithReceipt] = error;

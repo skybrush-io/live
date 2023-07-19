@@ -1,12 +1,13 @@
 import isNil from 'lodash-es/isNil';
 import prettyBytes from 'pretty-bytes';
 import PropTypes from 'prop-types';
-import React, { memo } from 'react';
+import React, { memo, useCallback, useState } from 'react';
 import { useAsyncFn, useAsyncRetry } from 'react-use';
 
 import Button from '@material-ui/core/Button';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
+import { makeStyles } from '@material-ui/core/styles';
 import Error from '@material-ui/icons/Error';
 
 import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
@@ -20,7 +21,23 @@ import { convertFlightLogToBlob } from '~/model/flight-logs';
 import { writeBlobToFile } from '~/utils/filesystem';
 import { formatUnixTimestamp } from '~/utils/formatting';
 
+import ListItemProgressBar from './ListItemProgressBar';
+import { Typography } from '@material-ui/core';
+
 const SEPARATOR = ' · ';
+
+const useStyles = makeStyles(
+  (theme) => ({
+    progress: {
+      // Make sure that the progress bar (if any) has exactly the same height
+      // as the secondary text
+      padding: theme.spacing(1, 0),
+    },
+  }),
+  {
+    name: 'UAVLogListItem',
+  }
+);
 
 const UAVLogListItem = ({ id, kind, size, timestamp, uavId }) => {
   const primaryParts = [];
@@ -28,10 +45,18 @@ const UAVLogListItem = ({ id, kind, size, timestamp, uavId }) => {
 
   /* Hooks */
 
+  const classes = useStyles();
+  const [progress, setProgress] = useState(null);
   const messageHub = useMessageHub();
 
+  const progressHandler = useCallback(({ progress }) => {
+    setProgress(progress);
+  }, []);
+
   const [executionState, execute] = useAsyncFn(async () => {
-    const log = await messageHub.query.getFlightLog(uavId, id);
+    const log = await messageHub.query.getFlightLog(uavId, id, {
+      onProgress: progressHandler,
+    });
 
     // writeBlobToFile() returns a promise, but we don't return it ourselves
     // because we want the async operation to be considered as finished when
@@ -63,6 +88,16 @@ const UAVLogListItem = ({ id, kind, size, timestamp, uavId }) => {
     }
   }
 
+  const secondaryComponent = executionState.loading ? (
+    <div className={classes.progress}>
+      <ListItemProgressBar progress={progress} />
+    </div>
+  ) : (
+    <Typography variant='body2' color='textSecondary'>
+      {secondaryParts.join(SEPARATOR)}
+    </Typography>
+  );
+
   return (
     <ListItem button onClick={() => execute()}>
       <StatusLight
@@ -79,8 +114,13 @@ const UAVLogListItem = ({ id, kind, size, timestamp, uavId }) => {
         }
       />
       <ListItemText
-        primary={primaryParts.join(SEPARATOR)}
-        secondary={secondaryParts.join(SEPARATOR)}
+        disableTypography
+        primary={
+          <Typography variant='body2'>
+            {primaryParts.join(SEPARATOR)}
+          </Typography>
+        }
+        secondary={secondaryComponent}
       />
     </ListItem>
   );
