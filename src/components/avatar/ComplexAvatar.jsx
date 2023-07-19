@@ -60,7 +60,7 @@ const useStyles = makeStyles(
       marginTop: 0,
       marginBottom: 2,
 
-      border: '1px solid',
+      border: '1px solid rgba(0, 0, 0, 0.6)',
       borderBottomWidth: 0,
 
       color: 'inherit',
