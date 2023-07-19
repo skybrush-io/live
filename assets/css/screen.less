@@ -445,6 +445,11 @@ mark {
   & .CodeMirror {
     height: 100% !important;
     border: none !important;
+    padding: 4px !important;
+
+    & .CodeMirror-scroll {
+      min-height: unset !important;
+    }
 
     & .cm-link {
       color: #4fadf8 !important;

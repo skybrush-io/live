@@ -19,6 +19,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - The `Delete` hotkey now removes the selected features as well.
 
+### Fixed
+
+- Fixed minor issues with scrolling the Field notes panel; the size of the panel
+  was slightly larger than its container so the last line was not visible at the
+  bottom of the panel. This is working correctly now.
+
 ## [2.7.2] - 2023-04-22
 
 ### Fixed
