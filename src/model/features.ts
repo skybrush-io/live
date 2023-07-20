@@ -8,6 +8,8 @@ import ShowChart from '@material-ui/icons/ShowChart';
 import PanoramaFishEye from '@material-ui/icons/PanoramaFishEye';
 import StarBorder from '@material-ui/icons/StarBorder';
 
+import { type Coordinate2D } from '~/utils/math';
+
 /**
  * Enum containing constants for the various feature types that we support.
  */
@@ -17,8 +19,6 @@ export enum FeatureType {
   POINTS = 'points',
   POLYGON = 'polygon',
 }
-
-type Coordinate2D = [number, number];
 
 export type Feature =
   | {

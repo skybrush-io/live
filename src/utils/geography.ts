@@ -30,7 +30,7 @@ import { type Vector3 } from 'three';
 import { type Feature, FeatureType } from '~/model/features';
 
 import { formatNumberAndUnit } from './formatting';
-// import { toDegrees, toRadians } from './math';
+import { toDegrees, toRadians } from './math';
 import { isRunningOnMac } from './platform';
 
 // TODO: Define better types for coordinates?
@@ -44,30 +44,6 @@ import { isRunningOnMac } from './platform';
 
 // NOTE: Until we figure out the long-term solution, I have consciously left
 // some `number[]` annotations that could be treated as OpenLayers coordinates.
-
-// HACK: ↓ TEMPORARY INLINE INCLUDES ↓
-
-/**
- * Returns the given number of degrees in radians.
- *
- * @param x - The degrees to convert
- * @returns The converted degrees in radians
- */
-export function toRadians(x: number): number {
-  return (x * Math.PI) / 180;
-}
-
-/**
- * Returns the given number of radians in degrees.
- *
- * @param x - The radians to convert
- * @returns The converted radians in degrees
- */
-export function toDegrees(x: number): number {
-  return (x * 180) / Math.PI;
-}
-
-// HACK: ↑ TEMPORARY INLINE INCLUDES ↑
 
 // The angle sign spams lots of CoreText-related warnings in the console when
 // running under Electron on macOS, so we use the @ sign there as a replacement.
