@@ -7,10 +7,7 @@ import sum from 'lodash-es/sum';
 import zipWith from 'lodash-es/zipWith';
 
 import monotoneConvexHull2D from 'monotone-convex-hull-2d';
-import turfBuffer from '@turf/buffer';
 import * as TurfHelpers from '@turf/helpers';
-
-import { FlatEarthCoordinateSystem } from './geography';
 
 export type Coordinate2D = [number, number];
 export type Coordinate2DObject = { x: number; y: number };
@@ -329,57 +326,6 @@ export function createGeometryFromPoints(
 
   return TurfHelpers.polygon([closedPoly]).geometry;
 }
-
-/**
- * Buffer a polygon by inserting a padding around it, so its new edge is at
- * least as far from the old one, as given in the margin parameter.
- */
-export const bufferPolygon = (
-  coordinates: Coordinate2D[],
-  margin: number
-): Coordinate2D[] => {
-  if (coordinates.length < 3) {
-    // TODO: Maybe fail louder?
-    return coordinates;
-  }
-
-  // Shift 'coordinates' in a way that it is centered around the origin. This
-  // is needed because otherwise we would get incorrect results if the
-  // coordinate magnitudes are very large (e.g., when working in Australia)
-  const centroid = getCentroid(coordinates);
-  const shiftedCoordinates = coordinates.map<Coordinate2D>((coordinate) => [
-    coordinate[0] - centroid[0],
-    coordinate[1] - centroid[1],
-  ]);
-  const transform = new FlatEarthCoordinateSystem({
-    origin: [0, 0],
-  });
-
-  const geoCoordinates = shiftedCoordinates.map((coordinate) =>
-    transform.toLonLat(coordinate)
-  );
-
-  closePolygon(geoCoordinates);
-
-  // Create a Turf.js geometry to buffer. Watch out for degenerate cases.
-  const geometry = TurfHelpers.polygon([geoCoordinates]);
-  const bufferedPoly = turfBuffer(
-    geometry,
-    margin / 1000 /* Turf.js needs kilometers */
-  );
-
-  // Take the outer ring of the buffered polygon and transform it back to
-  // flat Earth. Also undo the shift that we did in the beginning.
-  const outerLinearRing =
-    bufferedPoly.geometry.coordinates[0].map<Coordinate2D>((coordinate) => {
-      // NOTE: Type assertion justified by the documentation of `Position` in
-      // `TurfHelpers`: "Array should contain between two and three elements."
-      const flatEarthCoord = transform.fromLonLat(coordinate as Coordinate2D);
-      return [flatEarthCoord[0] + centroid[0], flatEarthCoord[1] + centroid[1]];
-    });
-
-  return convexHull(outerLinearRing);
-};
 
 /**
  * Given five vertices, remove the middle one (c) and move the second (b) and

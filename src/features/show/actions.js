@@ -34,11 +34,12 @@ import {
 import { clearLastUploadResultForJobType } from '~/features/upload/slice';
 import { FeatureType, LabelStyle } from '~/model/features';
 import {
+  bufferPolygon,
   lonLatFromMapViewCoordinate,
   mapViewCoordinateFromLonLat,
   translateLonLatWithMapViewDelta,
 } from '~/utils/geography';
-import { bufferPolygon, simplifyPolygon, toRadians } from '~/utils/math';
+import { simplifyPolygon, toRadians } from '~/utils/math';
 import { createAsyncAction } from '~/utils/redux';
 
 import { JOB_TYPE } from './constants';
