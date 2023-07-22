@@ -6,7 +6,7 @@ import { connect } from 'react-redux';
 
 import { Map, View, control, interaction, withMap } from '@collmot/ol-react';
 
-import Condition from './conditions';
+import * as Condition from './conditions';
 import {
   SelectNearestFeature,
   ShowContextMenu,
