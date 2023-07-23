@@ -4,7 +4,7 @@
 
 import isEqual from 'lodash-es/isEqual';
 import { defaultMemoize, createSelectorCreator } from 'reselect';
-import shallowEqual from 'shallowequal';
+import * as shallowEqual from 'shallowequal';
 
 /**
  * Selector creator function that creates selectors that use shallow equality

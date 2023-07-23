@@ -9,7 +9,7 @@
  *
  * Raises an exception if the given name is not a valid extension name.
  */
-export function validateExtensionName(name) {
+export function validateExtensionName(name: string): void {
   if (typeof name !== 'string' || name.includes('.')) {
     throw new Error(`Invalid extension name: ${name}`);
   }
@@ -21,7 +21,7 @@ export function validateExtensionName(name) {
  *
  * Raises an exception if the given name is not a valid object ID.
  */
-export function validateObjectId(name) {
+export function validateObjectId(name: string): void {
   if (typeof name !== 'string' || name.length === 0) {
     throw new Error(`Invalid object ID: ${name}`);
   }
