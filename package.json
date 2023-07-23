@@ -262,6 +262,13 @@
           ]
         },
         {
+          "selector": "objectLiteralProperty",
+          "format": [
+            "camelCase",
+            "UPPER_CASE"
+          ]
+        },
+        {
           "selector": "typeLike",
           "format": [
             "PascalCase"

@@ -1,6 +1,6 @@
 import { createSelector } from '@reduxjs/toolkit';
 
-import DefaultAPIKeys from '~/api-keys';
+import DefaultAPIKeys from '~/APIKeys';
 import { BatteryFormatter } from '~/components/battery';
 import { BatterySettings } from '~/model/battery';
 import { AltitudeSummaryType, BatteryDisplayStyle } from '~/model/settings';

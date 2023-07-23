@@ -3,40 +3,58 @@
  * can use on the map.
  */
 
-import APIKeys from '~/api-keys';
+import APIKeys from '~/APIKeys';
 
 /**
- * Enum containing constants for the source types that the user can use on the map.
+ * Multi-level enum containing constants for the
+ * source types that the user can use on the map.
+ *
+ * NOTE: Not sure whether this is the right representation for this structure,
+ *       but it seems to work for now until we come up with something better.
  */
-export const Source = {
-  BING_MAPS: {
-    AERIAL_WITH_LABELS: 'bingMaps.aerialWithLabels',
-    ROAD: 'bingMaps.road',
-  },
-  GOOGLE_MAPS: {
-    DEFAULT: 'googleMaps.default',
-    SATELLITE: 'googleMaps.satellite',
-    ROADS: 'googleMaps.roads',
-  },
-  MAPBOX: {
-    SATELLITE: 'mapbox.satellite',
-    STATIC: 'mapbox.static',
-    VECTOR: 'mapbox.vector',
-  },
-  MAPTILER: {
-    BASIC: 'maptiler.basic',
-    HYBRID: 'maptiler.hybrid',
-    SATELLITE: 'maptiler.satellite',
-    STREETS: 'maptiler.streets',
-  },
-  NEXTZEN: 'nextzen',
-  OSM: 'osm',
-  STAMEN: {
-    TERRAIN: 'stamen.terrain',
-    TONER: 'stamen.toner',
-    WATERCOLOR: 'stamen.watercolor',
-  },
-};
+export namespace Source {
+  export enum BING {
+    AERIAL_WITH_LABELS = 'bingMaps.aerialWithLabels',
+    ROAD = 'bingMaps.road',
+  }
+
+  export enum GOOGLE {
+    DEFAULT = 'googleMaps.default',
+    SATELLITE = 'googleMaps.satellite',
+    ROADS = 'googleMaps.roads',
+  }
+
+  export enum MAPBOX {
+    SATELLITE = 'mapbox.satellite',
+    STATIC = 'mapbox.static',
+    VECTOR = 'mapbox.vector',
+  }
+
+  export enum MAPTILER {
+    BASIC = 'maptiler.basic',
+    HYBRID = 'maptiler.hybrid',
+    SATELLITE = 'maptiler.satellite',
+    STREETS = 'maptiler.streets',
+  }
+
+  export const NEXTZEN = 'nextzen';
+  export const OSM = 'osm';
+
+  export enum STAMEN {
+    TERRAIN = 'stamen.terrain',
+    TONER = 'stamen.toner',
+    WATERCOLOR = 'stamen.watercolor',
+  }
+
+  export type Source =
+    | BING
+    | GOOGLE
+    | MAPBOX
+    | MAPTILER
+    | typeof NEXTZEN
+    | typeof OSM
+    | STAMEN;
+}
 
 /**
  * Constant containing all the sources in the order preferred on the UI.
@@ -59,21 +77,23 @@ if (APIKeys.MAPTILER) {
   );
 }
 
-/* Nextzen tiles do not look nice because we don't have a styling function for it */
+// Nextzen tiles do not look nice because we
+// don't have a styling function for them.
 
-/* Google and Bing Maps cannot be used in commercial apps without licensing so
- * this branch is currently disabled */
+// Google and Bing Maps cannot be used in commercial apps without
+// licensing, so these branches are currently disabled.
 
-// eslint-disable-next-line no-constant-condition
-if (false) {
-  if (APIKeys.BING) {
-    Sources.push(Source.BING_MAPS.AERIAL_WITH_LABELS, Source.BING_MAPS.ROAD);
-  }
+// if (APIKeys.BING) {
+//   Sources.push(Source.BING.AERIAL_WITH_LABELS, Source.BING.ROAD);
+// }
 
-  if (APIKeys.GOOGLE) {
-    Sources.push(Source.GOOGLE_MAPS.DEFAULT, Source.GOOGLE_MAPS.SATELLITE);
-  }
-}
+// if (APIKeys.GOOGLE) {
+//   Sources.push(
+//     Source.GOOGLE.DEFAULT,
+//     Source.GOOGLE.SATELLITE,
+//     Source.GOOGLE.ROADS
+//   );
+// }
 
 const attributions = {
   mapbox: [
@@ -103,13 +123,17 @@ const attributions = {
  *
  * @type {Object}
  */
-const visualRepresentationsForSources = {
-  [Source.BING_MAPS.AERIAL_WITH_LABELS]: {
+const visualRepresentationsForSources: Record<
+  Source.Source,
+  { label: string; attributions?: string | string[] }
+> = {
+  [Source.BING.AERIAL_WITH_LABELS]: {
     label: 'Bing Maps (aerial with labels)',
   },
-  [Source.BING_MAPS.ROAD]: { label: 'Bing Maps (road)' },
-  [Source.GOOGLE_MAPS.DEFAULT]: { label: 'Google Maps' },
-  [Source.GOOGLE_MAPS.SATELLITE]: { label: 'Google Maps (satellite)' },
+  [Source.BING.ROAD]: { label: 'Bing Maps (road)' },
+  [Source.GOOGLE.DEFAULT]: { label: 'Google Maps' },
+  [Source.GOOGLE.SATELLITE]: { label: 'Google Maps (satellite)' },
+  [Source.GOOGLE.ROADS]: { label: 'Google Maps (roads)' },
   [Source.MAPBOX.STATIC]: {
     label: 'Mapbox',
     attributions: attributions.mapbox,
@@ -158,11 +182,11 @@ const visualRepresentationsForSources = {
  * Returns a human-readable label describing the given map source on the
  * user interface.
  *
- * @param  {string} source  the map source; must be one of the constants
- *         from the {@link Source} enum
+ * @param source - The map source; must be one of the constants
+ *                 from the {@link Source} enum
  * @return {string} a human-readable description of the map source
  */
-export function labelForSource(source) {
+export function labelForSource(source: Source.Source): string {
   const visualRep = visualRepresentationsForSources[source];
   return visualRep ? visualRep.label : 'unknown';
 }
@@ -171,13 +195,13 @@ export function labelForSource(source) {
  * Returns an array of strings that should be used as attributions with the
  * map source.
  *
- * @param  {string} source  the map source; must be one of the constants
- *         from the {@link Source} enum
- * @return {string[]} an array of attributions for the source
+ * @param source - The map source; must be one of the constants
+ *                 from the {@link Source} enum
+ * @returns An array of attributions for the source
  */
-export function attributionsForSource(source) {
+export function attributionsForSource(source: Source.Source): string[] {
   const visualRep = visualRepresentationsForSources[source];
-  const result = visualRep ? visualRep.attributions : undefined;
+  const result = visualRep?.attributions;
 
   if (Array.isArray(result)) {
     return result;
@@ -187,5 +211,5 @@ export function attributionsForSource(source) {
     return [result];
   }
 
-  return undefined;
+  return [];
 }
