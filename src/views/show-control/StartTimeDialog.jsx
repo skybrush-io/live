@@ -217,7 +217,7 @@ StartTimeForm.propTypes = {
   alwaysAllowSubmission: PropTypes.bool,
   initialValues: PropTypes.shape({
     clock: PropTypes.string,
-    method: PropTypes.oneOf(StartMethod._VALUES),
+    method: PropTypes.oneOf(Object.values(StartMethod)),
     timeOnClock: PropTypes.string,
   }),
   onClose: PropTypes.func,
@@ -270,7 +270,7 @@ const StartTimeDialog = ({
 
 StartTimeDialog.propTypes = {
   clock: PropTypes.string,
-  method: PropTypes.oneOf(StartMethod._VALUES),
+  method: PropTypes.oneOf(Object.values(StartMethod)),
   onClose: PropTypes.func,
   onUpdateSettings: PropTypes.func,
   open: PropTypes.bool,

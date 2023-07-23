@@ -352,7 +352,7 @@ const { actions, reducer } = createSlice({
     },
 
     setStartMethod(state, action) {
-      if (StartMethod._VALUES.includes(action.payload)) {
+      if (Object.values(StartMethod).includes(action.payload)) {
         state.start.method = action.payload;
       }
     },
