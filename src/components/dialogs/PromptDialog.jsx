@@ -20,6 +20,7 @@ import {
   cancelPromptDialog,
   submitPromptDialog,
 } from '~/features/prompt/actions';
+import { shouldOptimizeUIForTouch } from '~/features/settings/selectors';
 
 const PromptDialogForm = ({
   cancelButtonLabel,
@@ -28,6 +29,7 @@ const PromptDialogForm = ({
   message,
   onCancel,
   onSubmit,
+  optimizeUIForTouch,
   submitButtonLabel,
 }) => (
   <Form initialValues={initialValues} onSubmit={onSubmit}>
@@ -36,8 +38,8 @@ const PromptDialogForm = ({
         <DialogContent>
           <DialogContentText>{message}</DialogContentText>
           <TextField
-            autoFocus
             fullWidth
+            autoFocus={!optimizeUIForTouch}
             name='value'
             margin='dense'
             label={hintText}
@@ -59,6 +61,7 @@ PromptDialogForm.propTypes = {
   cancelButtonLabel: PropTypes.string,
   hintText: PropTypes.string,
   message: PropTypes.string,
+  optimizeUIForTouch: PropTypes.bool,
   submitButtonLabel: PropTypes.string,
 
   onCancel: PropTypes.func,
@@ -87,12 +90,16 @@ PromptDialogPresentation.propTypes = {
   ...PromptDialogForm.propTypes,
   dialogVisible: PropTypes.bool,
   initialValue: PropTypes.string,
+  optimizeUIForTouch: PropTypes.bool,
   title: PropTypes.string,
 };
 
 const PromptDialog = connect(
   // mapStateToProps
-  (state) => state.dialogs.prompt,
+  (state) => ({
+    ...state.dialogs.prompt,
+    optimizeUIForTouch: shouldOptimizeUIForTouch(state),
+  }),
   // mapDispatchToProps
   (dispatch) => ({
     onCancel() {

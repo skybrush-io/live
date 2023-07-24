@@ -119,8 +119,7 @@ const persistConfig = {
  */
 const url = new URL(window.location.href);
 const shouldStartWithPristineState =
-  (config && config.ephemeral) ||
-  (url.searchParams && url.searchParams.get('pristine'));
+  config.ephemeral || (url.searchParams && url.searchParams.get('pristine'));
 
 if (shouldStartWithPristineState) {
   persistConfig.stateReconciler = pristineReconciler;

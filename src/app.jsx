@@ -145,9 +145,7 @@ const App = ({ onFirstRender }) => (
       <div style={rootStyle}>
         <Header perspectives={perspectives} workbench={workbench} />
         <WorkbenchContainer />
-        {config.ribbon && config.ribbon.label && (
-          <CornerRibbon {...config.ribbon} />
-        )}
+        {config?.ribbon?.label && <CornerRibbon {...config.ribbon} />}
         <PendingUAVIdOverlay />
       </div>
 
@@ -182,7 +180,7 @@ const App = ({ onFirstRender }) => (
       <UploadDialog />
       <VersionCheckDialog />
 
-      <ToastProvider placement='top-center'>
+      <ToastProvider placement={config.toastPlacement}>
         <ToastNotificationManager />
       </ToastProvider>
 

@@ -3,6 +3,8 @@
  * settings of the user.
  */
 
+import config from 'config';
+
 import { createSlice } from '@reduxjs/toolkit';
 
 import {
@@ -17,6 +19,7 @@ import {
   CoordinateFormat,
 } from '~/model/settings';
 import { UAVSortKey } from '~/model/sorting';
+import { isRunningOnTouch } from '~/utils/platform';
 
 const { actions, reducer } = createSlice({
   name: 'settings',
@@ -34,6 +37,10 @@ const { actions, reducer } = createSlice({
       experimentalFeaturesEnabled: false,
       // Whether to hide empty mission slots in the UAV list (unless editing)
       hideEmptyMissionSlots: false,
+      // Whether the application should be optimized for operating a single UAV.
+      optimizeForSingleUAV: config.optimizeForSingleUAV.default,
+      // Whether the UI should be adjusted primarily for touchscreen experience.
+      optimizeUIForTouch: config.optimizeUIForTouch.default ?? isRunningOnTouch,
       // Whether to show mission IDs or drone IDs in the UAV list
       showMissionIds: false,
       // Whether to show the mouse coordinates on the map

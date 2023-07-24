@@ -34,3 +34,9 @@ export const eventHasPlatformModifierKey = isRunningOnMac
  * modifier: <code>Ctrl</code> on Windows and <code>Cmd</code> on Mac.
  */
 export const platformModifierKey = isRunningOnMac ? 'Cmd' : 'Ctrl';
+
+/**
+ * Constant that evaluates to true if we are running on a device that has a
+ * touch enabled screen.
+ */
+export const isRunningOnTouch = navigator.maxTouchPoints > 0;

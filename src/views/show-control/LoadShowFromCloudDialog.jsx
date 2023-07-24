@@ -31,7 +31,7 @@ const LoadShowFromCloudDialog = ({ open, onClose, onLoadShowFromUrl }) => {
       </DialogTabs>
       <List>
         <ListSubheader>Shared with me</ListSubheader>
-        {(config.examples || []).map(({ id, title, url }) => (
+        {config.examples.shows.map(({ id, title, url }) => (
           <ListItem key={id} button onClick={() => onLoadShowFromUrl(url)}>
             <ListItemText primary={title} />
           </ListItem>

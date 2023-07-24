@@ -5,15 +5,22 @@ import demoShowUrl from '~/../assets/shows/demo.skyc';
  * @file Application configuration at startup, suitable for the web app demo deployment.
  */
 
-const config = {
+const overrides = {
   // We bundle an example show with the webapp demo but not with the "real" one
-  examples: [
-    {
-      id: 'example-20',
-      title: 'Example show with 20 drones',
-      url: demoShowUrl,
-    },
-  ],
+  examples: {
+    shows: [
+      {
+        id: 'example-20',
+        title: 'Example show with 20 drones',
+        url: demoShowUrl,
+      },
+    ],
+  },
+
+  // Enable the loading of the bundled example show
+  features: {
+    loadShowFromCloud: true,
+  },
 
   // Defaults are suitable for the web app demo deployment. Connects back to the
   // same hostname and port by default, and does not allow overriding the
@@ -128,8 +135,7 @@ const config = {
 
   urls: {
     exit: 'https://account.skybrush.io',
-    help: 'https://doc.collmot.com/public/skybrush-live-doc/latest/index.html',
   },
 };
 
-export default config;
+export default overrides;

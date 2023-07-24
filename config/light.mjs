@@ -3,18 +3,15 @@
  * manufacturers for testing without revealing too much about the app itself.
  */
 
-const config = {
+const overrides = {
   // State is ephemeral; we do not load it back from the disk when the app starts
   ephemeral: true,
-
-  // No bundled examples
-  examples: [],
 
   // Hide some of the features
   features: {
     beacons: false,
     docks: false,
-    features: false, // okay, sorry for the naming, this is awkward :)
+    mapFeatures: false,
     geofence: false,
     loadShowFromCloud: false,
     perspectives: false,
@@ -44,7 +41,9 @@ const config = {
   tour: null,
 
   // No help component
-  urls: {},
+  urls: {
+    help: null,
+  },
 
   // Electron-builder settings
   electronBuilder: {
@@ -53,4 +52,4 @@ const config = {
   },
 };
 
-export default config;
+export default overrides;

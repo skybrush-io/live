@@ -189,6 +189,18 @@ export const shouldShowInactiveSegmentsOnDarkLCD = (state) =>
   state.settings.display?.hideInactiveSegmentsOnDarkLCD;
 
 /**
+ * Returns whether the application should be optimized for single UAV operation.
+ */
+export const shouldOptimizeForSingleUAV = (state) =>
+  state.settings.display?.optimizeForSingleUAV;
+
+/**
+ * Returns whether the UI should be adjusted primarily for touch based input.
+ */
+export const shouldOptimizeUIForTouch = (state) =>
+  state.settings.display?.optimizeUIForTouch;
+
+/**
  * Returns an object mapping service identifiers to their API keys.
  */
 export const getAPIKeys = createSelector(

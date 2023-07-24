@@ -30,11 +30,12 @@ import {
   getEditedLocationId,
   getEditorDialogVisibility,
 } from '~/features/saved-locations/selectors';
+import { shouldOptimizeUIForTouch } from '~/features/settings/selectors';
 import { NEW_ITEM_ID } from '~/utils/collections';
 import { between, integer, join, required } from '~/utils/validation';
 
 const SavedLocationEditorFormPresentation = React.forwardRef(
-  ({ initialValues, onSubmit }, ref) => (
+  ({ initialValues, onSubmit, optimizeUIForTouch, }, ref) => (
     <Form initialValues={initialValues} onSubmit={onSubmit}>
       {({ form, handleSubmit }) => {
         ref.current = form;
@@ -46,7 +47,7 @@ const SavedLocationEditorFormPresentation = React.forwardRef(
             onSubmit={handleSubmit}
           >
             <TextField
-              autoFocus
+              autoFocus={!optimizeUIForTouch}
               fullWidth
               margin='dense'
               name='name'
@@ -108,6 +109,7 @@ const SavedLocationEditorFormPresentation = React.forwardRef(
 SavedLocationEditorFormPresentation.propTypes = {
   initialValues: PropTypes.object,
   onSubmit: PropTypes.func,
+  optimizeUIForTouch: PropTypes.bool,
 };
 
 /**
@@ -122,7 +124,10 @@ const SavedLocationEditorForm = connect(
       id === NEW_ITEM_ID || !(id in state.savedLocations.byId)
         ? getCurrentMapViewAsSavedLocation(state)
         : state.savedLocations.byId[id];
-    return { initialValues: currentLocation };
+    return {
+      initialValues: currentLocation,
+      optimizeUIForTouch: shouldOptimizeUIForTouch(state),
+    };
   },
   null,
   null,

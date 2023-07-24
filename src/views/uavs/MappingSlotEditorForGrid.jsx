@@ -13,6 +13,7 @@ import {
   cancelMappingEditorSessionAtCurrentSlot,
   commitMappingEditorSessionAtCurrentSlot,
 } from '~/features/mission/slice';
+import { shouldOptimizeUIForTouch } from '~/features/settings/selectors';
 
 const useStyles = makeStyles(
   (theme) => ({
@@ -50,6 +51,7 @@ const MappingSlotEditorForGrid = ({
   cancelMappingEditorSessionAtCurrentSlot,
   defaultValue,
   commitMappingEditorSessionAtCurrentSlot,
+  optimizeUIForTouch,
 }) => {
   const classes = useStyles();
 
@@ -90,8 +92,8 @@ const MappingSlotEditorForGrid = ({
   return (
     <Box className={classes.root}>
       <InputBase
-        autoFocus
         fullWidth
+        autoFocus={!optimizeUIForTouch}
         className={classes.input}
         defaultValue={defaultValue}
         onBlur={onBlur}
@@ -106,12 +108,14 @@ MappingSlotEditorForGrid.propTypes = {
   cancelMappingEditorSessionAtCurrentSlot: PropTypes.func,
   defaultValue: PropTypes.string,
   commitMappingEditorSessionAtCurrentSlot: PropTypes.func,
+  optimizeUIForTouch: PropTypes.bool,
 };
 
 export default connect(
   // mapStateToProps
   (state) => ({
     defaultValue: getUAVIdForMappingSlotBeingEdited(state),
+    optimizeUIForTouch: shouldOptimizeUIForTouch(state),
   }),
   // mapDispatchToProps
   {

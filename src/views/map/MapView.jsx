@@ -175,7 +175,7 @@ const MapViewToolbars = () => {
     </Widget>
   );
 
-  if (hasFeature('features')) {
+  if (hasFeature('mapFeatures')) {
     toolbars.push(
       <Widget
         key='Widget.DrawingToolbar'
