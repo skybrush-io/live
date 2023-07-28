@@ -1,11 +1,13 @@
-import React from 'react';
-import demoShowUrl from '~/../assets/shows/demo.skyc';
-
 /**
  * @file Application configuration at startup, suitable for the web app demo deployment.
  */
 
-const overrides = {
+import * as React from 'react';
+import demoShowUrl from '~/../assets/shows/demo.skyc';
+
+import { type ConfigOverrides } from 'config-overrides';
+
+const overrides: ConfigOverrides = {
   // We bundle an example show with the webapp demo but not with the "real" one
   examples: {
     shows: [

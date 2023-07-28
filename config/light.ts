@@ -3,7 +3,9 @@
  * manufacturers for testing without revealing too much about the app itself.
  */
 
-const overrides = {
+import { type ConfigOverrides } from 'config-overrides';
+
+const overrides: ConfigOverrides = {
   // State is ephemeral; we do not load it back from the disk when the app starts
   ephemeral: true,
 
@@ -43,12 +45,6 @@ const overrides = {
   // No help component
   urls: {
     help: null,
-  },
-
-  // Electron-builder settings
-  electronBuilder: {
-    appId: 'com.collmot.skybrush.live-light',
-    productName: 'Skybrush Live Light',
   },
 };
 
