@@ -13,7 +13,7 @@ import { createSelector } from '@reduxjs/toolkit';
 import createCachedSelector from 're-reselect';
 import turfContains from '@turf/boolean-contains';
 
-import { MTC_CLOCK_ID } from '~/features/clocks/constants';
+import { CommonClockId } from '~/features/clocks/utils';
 import {
   proposeDistanceLimit,
   proposeHeightLimit,
@@ -759,7 +759,7 @@ export const getShowStartTimeAsString = createSelector(
       ? time
         ? formatISO9075(fromUnixTime(time))
         : undefined
-      : clock === MTC_CLOCK_ID
+      : clock === CommonClockId.MTC
       ? time
         ? formatDurationHMS(time, { padHours: true }) + ' MTC'
         : undefined
