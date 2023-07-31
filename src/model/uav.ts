@@ -3,10 +3,13 @@
  * an UAV.
  */
 
+import { type UAVStatusInfo } from 'flockwave-spec';
 import { Base64 } from 'js-base64';
 import isEqual from 'lodash-es/isEqual';
 import isNil from 'lodash-es/isNil';
 import range from 'lodash-es/range';
+
+import { type ErrorCode } from '~/flockwave/errors';
 
 import { GPSFixType } from './enums';
 
@@ -14,25 +17,79 @@ import { GPSFixType } from './enums';
  * Age constants for a UAV. Used in the Redux store to mark UAVs for which we
  * have not received a status update for a while.
  */
-export const UAVAge = {
-  ACTIVE: 'active',
-  INACTIVE: 'inactive', // means "no telemetry" in a while
-  GONE: 'gone',
-  FORGOTTEN: 'forgotten',
+export enum UAVAge {
+  ACTIVE = 'active',
+  INACTIVE = 'inactive', // means "no telemetry" in a while
+  GONE = 'gone',
+  FORGOTTEN = 'forgotten',
+}
+
+export type UAVBattery = {
+  voltage?: number;
+  percentage?: number;
+  charging?: boolean;
+};
+
+export type UAVGPSFix = {
+  type: GPSFixType;
+  numSatellites?: number;
+  horizontalAccuracy?: number;
+  verticalAccuracy?: number;
+};
+
+export type UAVPosition = {
+  lat?: number;
+  lon?: number;
+  amsl?: number;
+  ahl?: number;
+  agl?: number;
+};
+
+export type SerializedUAV = {
+  age?: UAVAge;
+  battery: UAVBattery;
+  debugString?: string;
+  errors: ErrorCode[];
+  gpsFix: UAVGPSFix;
+  heading?: number;
+  id: string;
+  lastUpdated?: number;
+  light: number /* RGB565 */;
+  localPosition?: [number?, number?, number?];
+  mode?: string;
+  position?: UAVPosition;
 };
 
 /**
  * Representation of a single UAV.
  */
 export default class UAV {
+  // TODO: Properly hide private properties with `#` once it's
+  //       ensured that they are not accessed from the outside.
+  _debug?: string;
+  _debugAsByteArray?: Uint8Array;
+  _debugString?: string;
+  _errors: ErrorCode[];
+  _id: string;
+  _mostSevereError: ErrorCode;
+  _position: UAVPosition;
+  age?: UAVAge;
+  battery: UAVBattery;
+  gpsFix: UAVGPSFix;
+  heading?: number;
+  lastUpdated?: number;
+  light: number /* RGB565 */;
+  localPosition: [number?, number?, number?];
+  mode?: string;
+
   /**
    * Constructor.
    *
    * Creates a new UAV with no known position.
    *
-   * @param {string} id  the ID of the UAV
+   * @param id - The ID of the UAV
    */
-  constructor(id) {
+  constructor(id: string) {
     this._debug = undefined;
     this._debugAsByteArray = undefined;
     this._debugString = undefined;
@@ -47,16 +104,17 @@ export default class UAV {
       ahl: undefined,
       agl: undefined,
     };
-    this._rawHeading = undefined;
-    this._rawVoltage = undefined;
 
     this.battery = {
       voltage: undefined,
       percentage: undefined,
+      charging: undefined,
     };
     this.gpsFix = {
       type: GPSFixType.NO_GPS,
       numSatellites: undefined,
+      horizontalAccuracy: undefined,
+      verticalAccuracy: undefined,
     };
     this.heading = undefined;
     this.lastUpdated = undefined;
@@ -68,21 +126,21 @@ export default class UAV {
   /**
    * Returns the altitude above ground level, if known.
    */
-  get agl() {
+  get agl(): number | undefined {
     return this._position.agl;
   }
 
   /**
    * Returns the altitude above home level, if known.
    */
-  get ahl() {
+  get ahl(): number | undefined {
     return this._position.ahl;
   }
 
   /**
    * Returns the altitude above mean sea level, if known.
    */
-  get amsl() {
+  get amsl(): number | undefined {
     return this._position.amsl;
   }
 
@@ -90,14 +148,14 @@ export default class UAV {
    * Returns the debug information associated with the UAV as a byte array
    * (not as a string).
    */
-  get debug() {
+  get debug(): Uint8Array | undefined {
     if (this._debugAsByteArray === undefined && this._debug !== undefined) {
       try {
         const data = Base64.atob(this._debug);
-        const n = data.length;
-        this._debugAsByteArray = new Uint8Array(new ArrayBuffer(n));
-        for (let i = 0; i < n; i++) {
-          this._debugAsByteArray[i] = data.codePointAt(i);
+        this._debugAsByteArray = new Uint8Array(new ArrayBuffer(data.length));
+        for (let i = 0; i < data.length; i++) {
+          // NOTE: Bang justified by `i < data.length`
+          this._debugAsByteArray[i] = data.codePointAt(i)!;
         }
       } catch {
         this._debugAsByteArray = new Uint8Array();
@@ -108,11 +166,11 @@ export default class UAV {
   }
 
   /**
-   * Returns the debug information associated with the UAV as a string, replacing
-   * non-printable characters with a dot.
+   * Returns the debug information associated with the UAV as a string,
+   * replacing non-printable characters with a dot.
    */
-  get debugString() {
-    if (this._debugString === undefined && this._debug !== undefined) {
+  get debugString(): string | undefined {
+    if (this._debugString === undefined && this.debug !== undefined) {
       const array = this.debug;
       this._debugString = range(array.length)
         .map((index) =>
@@ -130,7 +188,7 @@ export default class UAV {
    * Returns a single error code from the list of error codes sent by the
    * UAV, or undefined if there are no errors.
    */
-  get error() {
+  get error(): ErrorCode | undefined {
     return this._errors && this._errors.length > 0
       ? this._errors[0]
       : undefined;
@@ -139,30 +197,28 @@ export default class UAV {
   /**
    * Returns the list of error codes sent by the UAV.
    */
-  get errors() {
+  get errors(): ErrorCode[] {
     return this._errors;
   }
 
   /**
    * Returns the ID of the UAV.
-   *
-   * @return {string}  the ID of the UAV
    */
-  get id() {
+  get id(): string {
     return this._id;
   }
 
   /**
    * Returns the latitude of the UAV, if known.
    */
-  get lat() {
+  get lat(): number | undefined {
     return this._position.lat;
   }
 
   /**
    * Returns the longitude of the UAV, if known.
    */
-  get lon() {
+  get lon(): number | undefined {
     return this._position.lon;
   }
 
@@ -170,14 +226,14 @@ export default class UAV {
    * Returns the most severe error code from the list of error codes sent by the
    * UAV, or zero if there are no errors.
    */
-  get mostSevereError() {
+  get mostSevereError(): ErrorCode {
     return this._mostSevereError;
   }
 
   /**
    * Returns whether the UAV has a known local position.
    */
-  get hasLocalPosition() {
+  get hasLocalPosition(): boolean {
     return !isNil(this.localPosition[0]);
   }
 
@@ -185,12 +241,11 @@ export default class UAV {
    * Handles the status information related to a single UAV from an UAV-INF
    * message.
    *
-   * @param {Object} status  the status information of this UAV from an
-   *        UAV-INF message
-   * @return {boolean}  whether the status information has been updated
+   * @param status - The status information of this UAV from an UAV-INF message
+   * @returns Whether the status information has been updated
    */
   /* eslint-disable complexity */
-  handleUAVStatusInfo = (status) => {
+  handleUAVStatusInfo = (status: UAVStatusInfo): boolean => {
     const {
       timestamp,
       position,
@@ -203,7 +258,7 @@ export default class UAV {
       light,
       debug,
     } = status;
-    let errorList;
+    let errorList: ErrorCode[];
     let updated = false;
 
     if (timestamp) {
@@ -237,8 +292,7 @@ export default class UAV {
       updated = true;
     }
 
-    if (heading !== undefined && this._rawHeading !== heading) {
-      this._rawHeading = heading;
+    if (heading !== undefined && this.heading !== heading / 10) {
       this.heading = heading / 10; /* conversion to degrees */
       updated = true;
     }
@@ -284,34 +338,19 @@ export default class UAV {
     }
 
     if (Array.isArray(battery)) {
-      let newVoltageRaw;
-      let newPercentage;
+      const [newVoltageRaw, newPercentage, newCharging] = battery;
 
-      if (battery.length > 0) {
-        newVoltageRaw = isNil(battery[0])
-          ? null
-          : Number.parseInt(battery[0], 10);
-        if (battery.length > 1) {
-          newPercentage = isNil(battery[1])
-            ? null
-            : Number.parseInt(battery[1], 10);
-        }
+      if (this.battery.voltage !== newVoltageRaw / 10) {
+        this.battery.voltage = newVoltageRaw / 10;
+        updated = true;
       }
 
-      const newCharging = battery.length > 2 ? Boolean(battery[2]) : false;
-
-      if (newPercentage !== battery.percentage) {
+      if (this.battery.percentage !== newPercentage) {
         this.battery.percentage = newPercentage;
         updated = true;
       }
 
-      if (newVoltageRaw !== this._rawVoltage) {
-        this._rawVoltage = battery.voltage;
-        this.battery.voltage = isNil(newVoltageRaw) ? null : newVoltageRaw / 10;
-        updated = true;
-      }
-
-      if (newCharging !== this.battery.charging) {
+      if (this.battery.charging !== newCharging) {
         this.battery.charging = newCharging;
         updated = true;
       }
@@ -325,13 +364,16 @@ export default class UAV {
    * Returns a pure JavaScript object representation of the UAV that can be
    * used in a Redux store.
    */
-  toJSON() {
+  toJSON(): SerializedUAV {
     /* Null Island is treated as "no position info" */
     const position =
-      this._position.lat && this._position.lon ? { ...this._position } : null;
-    const localPosition = !isNil(this.localPosition[0])
-      ? [...this.localPosition]
-      : null;
+      this._position.lat && this._position.lon
+        ? { ...this._position }
+        : undefined;
+    const localPosition = this.hasLocalPosition
+      ? structuredClone(this.localPosition)
+      : undefined;
+
     return {
       id: this._id,
       age: this.age,
