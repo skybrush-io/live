@@ -3,10 +3,11 @@
  * a collection (flock) of UAVs.
  */
 
+import { type Response_UAVINF } from 'flockwave-spec';
 import isEmpty from 'lodash-es/isEmpty';
 import keys from 'lodash-es/keys';
 import transform from 'lodash-es/transform';
-import Signal from 'mini-signals';
+import * as Signal from 'mini-signals';
 
 import UAV from './uav';
 
@@ -14,6 +15,13 @@ import UAV from './uav';
  * Representation of a UAV flock.
  */
 export default class Flock {
+  _uavsById: Record<UAV['id'], UAV>;
+
+  // TODO: Update to `mini-signals@2.0.0` for better typing. (Signal<UAV[]>)
+  uavsAdded: Signal;
+  uavsUpdated: Signal;
+  uavsRemoved: Signal;
+
   /**
    * Constructor.
    *
@@ -32,20 +40,19 @@ export default class Flock {
    * does not exist yet. The UAV will <em>not</em> be registered in the
    * flock by default.
    *
-   * @param {string}  id  the identifier of the UAV
-   * @return {UAV}  the UAV with the given ID
+   * @param id - The identifier of the UAV
+   * @returns The UAV with the given ID
    */
-  _createUAVById(id) {
+  _createUAVById(id: UAV['id']): UAV {
     return new UAV(id);
   }
 
   /**
    * Returns the IDs of all the UAVs in the flock.
    *
-   * @return {string[]}  the IDs of all the UAVs in the flock, in alphabetic
-   *         order
+   * @returns The IDs of all the UAVs in the flock, in alphabetical order
    */
-  getAllUAVIds() {
+  getAllUAVIds(): Array<UAV['id']> {
     return keys(this._uavsById).sort();
   }
 
@@ -53,7 +60,7 @@ export default class Flock {
    * Returns all the UAVs in the flock, in an array, in the same order as
    * returned by `getAllUAVIds()`.
    */
-  getAllUAVs() {
+  getAllUAVs(): UAV[] {
     const uavIds = this.getAllUAVIds();
     return uavIds.map((uavId) => this._uavsById[uavId]);
   }
@@ -61,11 +68,10 @@ export default class Flock {
   /**
    * Returns the UAV with the given ID.
    *
-   * @param {string}  id  the identifier of the UAV
-   * @return {UAV}  the UAV with the given ID or undefined if there is no
-   *         such UAV
+   * @param id - The identifier of the UAV
+   * @returns The UAV with the given ID or undefined if there is no such UAV
    */
-  getUAVById(id) {
+  getUAVById(id: UAV['id']): UAV {
     return this._uavsById[id];
   }
 
@@ -73,10 +79,10 @@ export default class Flock {
    * Returns the UAV with the given ID, creating it with an unknown state
    * if it does not exist yet.
    *
-   * @param {string}  id  the identifier of the UAV
-   * @return {UAV}  the UAV with the given ID
+   * @param id - The identifier of the UAV
+   * @returns The UAV with the given ID
    */
-  getOrCreateUAVById(id) {
+  getOrCreateUAVById(id: UAV['id']): UAV {
     let uav = this._uavsById[id];
     if (!uav) {
       uav = this._createUAVById(id);
@@ -90,18 +96,20 @@ export default class Flock {
    * Handles a UAV-INF message from a Skybrush server and updates the state
    * of the flock appropriately.
    *
-   * @param  {Object} body  the body of the UAV-INF message
-   * @param  {function} dispatch  the dispatch function of the Redux store
-   * @fires  Flock#uavsAdded
-   * @fires  Flock#uavsUpdated
+   * @param body - The body of the UAV-INF message
+   * @fires Flock#uavsAdded
+   * @fires Flock#uavsUpdated
    */
-  handleUAVInformationMessage(body) {
+  handleUAVInformationMessage(body: Response_UAVINF): void {
     // For each UAV ID and status object pair, get the UAV with the given
     // ID, update its own local status, and if the status was updated,
     // remember the UAV ID so we can ask the feature manager to refresh
     // the features of these UAVs
 
-    // body.status is frozen so we unfreeze it first
+    if (!body.status) {
+      return;
+    }
+
     const { addedUAVs, updatedUAVs } = transform(
       body.status,
       (accumulator, status, uavId) => {
@@ -120,8 +128,8 @@ export default class Flock {
         }
       },
       {
-        addedUAVs: [],
-        updatedUAVs: [],
+        addedUAVs: new Array<UAV>(),
+        updatedUAVs: new Array<UAV>(),
       }
     );
 
@@ -137,14 +145,16 @@ export default class Flock {
   /**
    * Removes a UAV given its ID, and dispatches an appropriate event.
    */
-  removeUAVById(id) {
+  removeUAVById(id: UAV['id']): void {
     this.removeUAVsByIds([id]);
   }
 
   /**
    * Removes multiple UAVs given their IDs, and dispatches an appropriate event.
+   *
+   * @fires Flock#uavsRemoved
    */
-  removeUAVsByIds(ids) {
+  removeUAVsByIds(ids: Array<UAV['id']>): void {
     const removedUAVs = [];
 
     for (const id of ids) {
