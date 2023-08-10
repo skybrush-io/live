@@ -174,29 +174,6 @@ export const createRotatedBoxGeometryFunction =
   };
 
 /**
- * Calculates the Euclidean distance between two OpenLayers coordinates.
- * Also works for higher dimensions.
- *
- * @deprecated Use `euclideanDistance2D` from `./math` instead.
- *
- * @param first - The first coordinate
- * @param second - The second coordinate
- * @returns The Euclidean distance between the two coordinates
- */
-export const euclideanDistance = (
-  first: number[] | Coordinate.Coordinate,
-  second: number[] | Coordinate.Coordinate
-): number => {
-  const n = Math.min(first.length, second.length);
-  let sum = 0;
-  for (let i = 0; i < n; i++) {
-    sum += (first[i] - second[i]) ** 2;
-  }
-
-  return Math.sqrt(sum);
-};
-
-/**
  * Finds a single feature with a given global ID on all layers of an
  * OpenLayers map.
  *
@@ -295,9 +272,8 @@ export const getExactClosestPointOf = (
       getExactClosestPointOf(subGeometry, coordinate)
     );
 
-    const closestPoint = minBy(
-      closestPoints,
-      euclideanDistance.bind(null, coordinate)
+    const closestPoint = minBy(closestPoints, (point) =>
+      euclideanDistance2D.bind(coordinate, point)
     );
 
     // Failing with `[NaN, NaN]` matches the behavior of OL's `getClosestPoint()`

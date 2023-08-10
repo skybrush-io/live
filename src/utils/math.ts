@@ -1,10 +1,7 @@
 import identity from 'lodash-es/identity';
-import multiply from 'lodash-es/multiply';
 import minBy from 'lodash-es/minBy';
 import property, { type PropertyPath } from 'lodash-es/property';
 import range from 'lodash-es/range';
-import sum from 'lodash-es/sum';
-import zipWith from 'lodash-es/zipWith';
 
 import monotoneConvexHull2D from 'monotone-convex-hull-2d';
 import * as TurfHelpers from '@turf/helpers';
@@ -197,61 +194,16 @@ export function calculateDistanceMatrix<T>(
 }
 
 /**
- * Calculates the dot product of two vectors given by their coordinate pairs.
- *
- * @deprecated Unnecessarily generic, just use `dotProduct2D`.
- */
-export const dotProduct = (a: number[], b: number[]): number =>
-  sum(zipWith(a, b, multiply));
-
-/**
  * Calculates the dot product of two 2D vectors given by their coordinate pairs.
  */
 export const dotProduct2D = (a: Coordinate2D, b: Coordinate2D): number =>
   a[0] * b[0] + a[1] * b[1];
 
 /**
- * Creates a distance function that calculates distances based on the given
- * L-norm. L = 1 is the taxicab distance; L = 2 is the standard Euclidean
- * norm; L = infinity is the maximum norm.
- *
- * @deprecated Unnecessarily complicated, was never actually used.
- */
-export const createDistanceFunction = (
-  norm = 2
-): ((a: number[], b: number[]) => number) => {
-  if (norm <= 0) {
-    throw new Error('norm must be positive');
-  }
-
-  if (norm === Number.POSITIVE_INFINITY) {
-    return maximumNormDistance;
-  }
-
-  return (a, b) =>
-    sum(zipWith(a, b, (a, b) => Math.abs(a - b) ** norm)) ** (1 / norm);
-};
-
-/**
- * Euclidean distance function between two points.
- *
- * @deprecated Use `euclideanDistance2D` instead.
- */
-export const euclideanDistance = createDistanceFunction(2);
-
-/**
  * Euclidean distance function between two points, restricted to two dimensions.
  */
 export const euclideanDistance2D = (a: Coordinate2D, b: Coordinate2D): number =>
   Math.hypot(a[0] - b[0], a[1] - b[1]);
-
-/**
- * Maximum norm based distance function between two points.
- *
- * @deprecated
- */
-export const maximumNormDistance = (a: number[], b: number[]): number =>
-  Math.max(...zipWith(a, b, (a, b) => Math.abs(a - b)));
 
 /**
  * Takes a polygon (i.e. an array of [x, y] coordinate pairs) and ensures that

@@ -28,12 +28,8 @@ import { FeatureType, LabelStyle } from '~/model/features';
 import { featureIdToGlobalId } from '~/model/identifiers';
 import { handleFeatureUpdatesInOpenLayers } from '~/model/openlayers';
 import { setLayerEditable, setLayerSelectable } from '~/model/layers';
-import {
-  mapViewCoordinateFromLonLat,
-  euclideanDistance,
-  measureFeature,
-} from '~/utils/geography';
-import { closePolygon } from '~/utils/math';
+import { mapViewCoordinateFromLonLat, measureFeature } from '~/utils/geography';
+import { closePolygon, euclideanDistance2D } from '~/utils/math';
 import {
   fill,
   primaryColor,
@@ -58,7 +54,7 @@ const geometryForFeature = (feature) => {
     case FeatureType.CIRCLE:
       if (coordinates.length >= 2) {
         const center = coordinates[0];
-        const radius = euclideanDistance(coordinates[0], coordinates[1]);
+        const radius = euclideanDistance2D(coordinates[0], coordinates[1]);
         return <geom.Circle center={center} radius={radius} />;
       }
 

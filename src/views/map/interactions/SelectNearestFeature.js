@@ -14,7 +14,8 @@ import PropTypes from 'prop-types';
 
 import { createOLInteractionComponent } from '@collmot/ol-react/lib/interaction';
 
-import { euclideanDistance, getExactClosestPointOf } from '~/utils/geography';
+import { getExactClosestPointOf } from '~/utils/geography';
+import { euclideanDistance2D } from '~/utils/math';
 
 import { createLayerSelectorFunction } from './utils';
 
@@ -194,7 +195,7 @@ class SelectNearestFeatureInteraction extends Interaction {
       event.coordinate
     );
     const closestPixel = event.map.getPixelFromCoordinate(closestPoint);
-    return euclideanDistance(event.pixel, closestPixel);
+    return euclideanDistance2D(event.pixel, closestPixel);
   }
 
   /**
