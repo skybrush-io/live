@@ -171,13 +171,8 @@ export default class UAV {
    */
   get debugString(): string | undefined {
     if (this._debugString === undefined && this.debug !== undefined) {
-      const array = this.debug;
-      this._debugString = range(array.length)
-        .map((index) =>
-          array[index] >= 32 && array[index] < 128
-            ? String.fromCodePoint(array[index])
-            : '.'
-        )
+      this._debugString = Array.from(this.debug)
+        .map((c) => (c >= 32 && c < 128 ? String.fromCodePoint(c) : '.'))
         .join('');
     }
 

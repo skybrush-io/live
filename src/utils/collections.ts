@@ -375,7 +375,7 @@ export const createNewItemInFrontOf = <T extends ItemLike>(
   if (typeof idStore === 'function') {
     idStore(id);
   } else if (isObject(idStore)) {
-    idStore.id = id;
+    idStore['id'] = id;
   }
 
   collection.byId[id] = { id } as T;
@@ -475,10 +475,7 @@ export const selectOrdered = <T extends ItemLike>({
     ? Object.values(byId)
     : order.length === 0
     ? EMPTY_ARRAY
-    : reject(
-        order.map((id) => byId[id]),
-        isNil
-      );
+    : order.map((id) => byId[id]).filter((t?: T): t is T => !isNil(t));
 
 /**
  * Helper function that takes an array of item IDs and an ordered collection,

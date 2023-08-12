@@ -7,8 +7,19 @@ import monotoneConvexHull2D from 'monotone-convex-hull-2d';
 import * as TurfHelpers from '@turf/helpers';
 
 export type Coordinate2D = [number, number];
+export type Coordinate3D = [number, number, number];
 export type Coordinate2DObject = { x: number; y: number };
 export type PolarCoordinate2DObject = { angle: number; radius: number };
+
+/**
+ * Type guard for checking whether the input is a valid 2D coordinate pair.
+ */
+export const isCoordinate2D = (
+  coordinate: unknown
+): coordinate is Coordinate2D =>
+  Array.isArray(coordinate) &&
+  coordinate.length === 2 &&
+  coordinate.every((c) => typeof c === 'number');
 
 /**
  * Returns the given number of degrees in radians.
@@ -132,6 +143,7 @@ export const toPolar = ({
 /**
  * Returns the centroid of an array of points.
  */
+export function getCentroid(points: Coordinate2D[], dim?: 2): Coordinate2D;
 export function getCentroid(points: number[][], dim = 2): number[] {
   const result: number[] = Array.from({ length: dim }, () => 0);
   const n = points && Array.isArray(points) ? points.length : 0;
@@ -215,8 +227,13 @@ export function closePolygon(poly: Coordinate2D[]): void {
     return;
   }
 
-  const firstPoint = poly[0];
-  const lastPoint = poly[poly.length - 1];
+  const firstPoint = poly.at(0);
+  const lastPoint = poly.at(-1);
+
+  if (!isCoordinate2D(firstPoint) || !isCoordinate2D(lastPoint)) {
+    return;
+  }
+
   const dim = firstPoint.length;
   let shouldClose = true;
 
@@ -240,11 +257,15 @@ export function closePolygon(poly: Coordinate2D[]): void {
  */
 export const convexHull = (coordinates: Coordinate2D[]): Coordinate2D[] => {
   const indices = monotoneConvexHull2D(coordinates);
-  return indices.map((index) =>
-    coordinates[index].length > 2
-      ? (coordinates[index].slice(0, 2) as Coordinate2D)
-      : coordinates[index]
-  );
+  return indices.map((index) => {
+    // NOTE: Bang justified by `monotoneConvexHull2D` selecting a subset
+    const c = coordinates[index]!;
+    // TODO: Should be unnecessary if the input only contains 2D coordinates
+    return c.length > 2 ? (c.slice(0, 2) as Coordinate2D) : c;
+  });
+
+  // Alternative solution without relying on the non-null assertion operator:
+  // return coordinates.filter((_c, i) => indices.includes(i));
 };
 
 /**
@@ -265,7 +286,7 @@ export function createGeometryFromPoints(
     return undefined;
   }
 
-  if (coordinates.length === 1) {
+  if (coordinates.length === 1 && isCoordinate2D(coordinates[0])) {
     return TurfHelpers.point(coordinates[0]).geometry;
   }
 
@@ -373,7 +394,8 @@ export const simplifyPolygonUntilLimit = (
   }
 
   const getCoordinate = (i: number): Coordinate2D =>
-    coordinates[(i + coordinates.length) % coordinates.length];
+    // NOTE: Bang justified by remainder operation and `coordinates.length >= 3`
+    coordinates.at(i % coordinates.length)!;
 
   const setCoordinate = (i: number, v: Coordinate2D): void => {
     coordinates[(i + coordinates.length) % coordinates.length] = v;
@@ -413,5 +435,10 @@ export const simplifyPolygon = (
   target: number
 ): Coordinate2D[] => {
   const result = simplifyPolygonUntilLimit(coordinates, target);
+
+  if (!isCoordinate2D(result[0])) {
+    throw new Error('polygons need to have at least three 2D vertices');
+  }
+
   return [...result, result[0]];
 };

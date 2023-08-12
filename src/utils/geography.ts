@@ -36,23 +36,29 @@ import {
   closePolygon,
   convexHull,
   type Coordinate2D,
+  type Coordinate3D,
+  euclideanDistance2D,
   getCentroid,
+  isCoordinate2D,
   toDegrees,
   toRadians,
 } from './math';
 import { isRunningOnMac } from './platform';
 
-// TODO: Define better types for coordinates?
+// TODO: Define better types for coordinates? (Partially solved on 2023-08-12.)
+//
 // The one provided by OpenLayers is too generic (`Array<number>` instead
 // of [number, number]), while their docs do specify _"an `xy` coordinate"_.
 // https://openlayers.org/en/v7.4.0/apidoc/module-ol_coordinate.html#~Coordinate
+//
+// The docs were wrong: https://github.com/openlayers/openlayers/pull/14994
+// The following type could still be more accurate than `Array<number>`:
+// [number, number] | [number, number, number] | [number, numbe, number, number]
+//
 // Also, maybe create separate types for LonLat and LatLon where it matters?
 // While we're at it, perhaps even `AHL`, `AGL` and other distinct measures
 // with the `unique symbol` trick?
 // https://github.com/Microsoft/TypeScript/issues/364#issuecomment-719046161
-
-// NOTE: Until we figure out the long-term solution, I have consciously left
-// some `number[]` annotations that could be treated as OpenLayers coordinates.
 
 // The angle sign spams lots of CoreText-related warnings in the console when
 // running under Electron on macOS, so we use the @ sign there as a replacement.
@@ -70,10 +76,7 @@ const ANGLE_SIGN = isRunningOnMac ? '@' : '∠';
  * @param second - The second point
  * @returns Bearing, in degrees, in the [0; 360) range
  */
-export function bearing(
-  first: [number, number],
-  second: [number, number]
-): number {
+export function bearing(first: Coordinate2D, second: Coordinate2D): number {
   const lonDiff = toRadians(second[0] - first[0]);
   const firstLatRadians = toRadians(first[1]);
   const secondLatRadians = toRadians(second[1]);
@@ -97,23 +100,12 @@ export function bearing(
  * @returns Bearing, in degrees, in the [0; 360) range
  */
 export function finalBearing(
-  first: [number, number],
-  second: [number, number]
+  first: Coordinate2D,
+  second: Coordinate2D
 ): number {
   const angle = bearing(second, first);
   return (angle + 180) % 360;
 }
-
-/**
- * Type guard for checking whether the input is a valid OpenLayers coordinate.
- * https://openlayers.org/en/v7.4.0/apidoc/module-ol_coordinate.html#~Coordinate
- */
-const isCoordinate = (
-  coordinate: unknown
-): coordinate is Coordinate.Coordinate =>
-  Array.isArray(coordinate) &&
-  coordinate.length === 2 &&
-  coordinate.every((c) => typeof c === 'number');
 
 /**
  * Creates an OpenLayers geometry function used by the "draw" interaction
@@ -129,8 +121,8 @@ export const createRotatedBoxGeometryFunction =
   (coordinates, optGeometry) => {
     if (
       coordinates.length !== 2 ||
-      !isCoordinate(coordinates[0]) ||
-      !isCoordinate(coordinates[1])
+      !isCoordinate2D(coordinates[0]) ||
+      !isCoordinate2D(coordinates[1])
     ) {
       throw new TypeError('Must be called with two points only');
     }
@@ -142,7 +134,7 @@ export const createRotatedBoxGeometryFunction =
     // such that its center is at the origin, then undo the rotation
     // of the map
     const [a, b] = coordinates;
-    const mid = [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2];
+    const mid: Coordinate2D = [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2];
     const newA = Coordinate.rotate(
       [a[0] - mid[0], a[1] - mid[1]],
       effectiveAngle
@@ -183,7 +175,7 @@ export const createRotatedBoxGeometryFunction =
  *          no such feature on any of the visible layers
  */
 export const findFeatureById = curry(
-  (map: Map, featureId: string): OLFeature => {
+  (map: Map, featureId: string): OLFeature | undefined => {
     return findFeaturesById(map, [featureId])[0];
   }
 );
@@ -216,9 +208,9 @@ export const findFeaturesById = curry(
         continue;
       }
 
-      for (let i = 0; i < features.length; i++) {
+      for (const [i, featureId] of featureIds.entries()) {
         if (!features[i]) {
-          const feature = source.getFeatureById(featureIds[i]);
+          const feature = source.getFeatureById(featureId);
           if (feature) {
             features[i] = feature;
           }
@@ -244,8 +236,8 @@ export const findFeaturesById = curry(
  */
 export const getExactClosestPointOf = (
   geometry: Geometry,
-  coordinate: Coordinate.Coordinate
-): Coordinate.Coordinate => {
+  coordinate: Coordinate2D
+): Coordinate2D => {
   // Special case: if the coordinate is in the geometry, the closest point
   // to it is itself
   if (geometry.intersectsCoordinate(coordinate)) {
@@ -276,12 +268,13 @@ export const getExactClosestPointOf = (
       euclideanDistance2D.bind(coordinate, point)
     );
 
-    // Failing with `[NaN, NaN]` matches the behavior of OL's `getClosestPoint()`
+    // Failing with `[NaN, NaN]` matches the behavior of `getClosestPoint()`
     return closestPoint ?? [Number.NaN, Number.NaN];
   }
 
   // For anything else, just fall back to getClosestPoint()
-  return geometry.getClosestPoint(coordinate);
+  // NOTE: Type assertion justified by `getClosestPoint` being implemented in 2D
+  return geometry.getClosestPoint(coordinate) as Coordinate2D;
 };
 
 /**
@@ -309,8 +302,8 @@ export const makeDecimalCoordinateFormatter = ({
   reverse?: boolean;
   separator?: string;
   unit?: string | Array<[number, string]>;
-}): ((coordinate: Coordinate.Coordinate) => string) => {
-  const indices = reverse ? [1, 0] : [0, 1];
+}): ((coordinate: Coordinate2D) => string) => {
+  const indices: [0 | 1, 0 | 1] = reverse ? [1, 0] : [0, 1];
   return (coordinate) => {
     if (coordinate) {
       return (
@@ -339,7 +332,7 @@ export const makeDecimalCoordinateFormatter = ({
  */
 export const makePolarCoordinateFormatter =
   ({ digits, unit }: { digits?: number; unit?: string }) =>
-  (coordinate: Coordinate.Coordinate): string => {
+  (coordinate: Coordinate2D): string => {
     if (coordinate) {
       return (
         formatNumberAndUnit(coordinate[0], unit, digits) +
@@ -455,9 +448,7 @@ export const formatCoordinate = makeDecimalCoordinateFormatter({
   unit: '°',
 });
 
-export const safelyFormatCoordinate = (
-  coordinate?: Coordinate.Coordinate
-): string => {
+export const safelyFormatCoordinate = (coordinate?: Coordinate2D): string => {
   if (isNil(coordinate)) {
     return '';
   }
@@ -477,9 +468,7 @@ export const safelyFormatCoordinate = (
  * @returns The parsed coordinates in OpenLayers format
  *          or undefined in case of a parsing error
  */
-export const parseCoordinate = (
-  text: string
-): Coordinate.Coordinate | undefined => {
+export const parseCoordinate = (text: string): Coordinate2D | undefined => {
   try {
     const parsed = new CoordinateParser(text);
     return [parsed.getLongitude(), parsed.getLatitude()];
@@ -546,6 +535,19 @@ export const WGS84 = makeEllipsoidModel(6378137, 298.257223563);
  * to [180.0 85.06] as seen here. @see https://epsg.io/3857
  */
 
+type CoordinateTransformationFunction = {
+  // Special case for two dimensions
+  (
+    coordinates: Coordinate2D,
+    projection?: Projection.ProjectionLike
+  ): Coordinate2D;
+  // Original type
+  (
+    coordinates: Coordinate.Coordinate,
+    projection?: Projection.ProjectionLike
+  ): Coordinate.Coordinate;
+};
+
 /**
  * Helper function to convert a longitude-latitude pair to the coordinate
  * system used by the map view.
@@ -557,7 +559,8 @@ export const WGS84 = makeEllipsoidModel(6378137, 298.257223563);
  * @returns The OpenLayers coordinates corresponding
  *          to the given longitude-latitude pair
  */
-export const mapViewCoordinateFromLonLat = Projection.fromLonLat;
+export const mapViewCoordinateFromLonLat =
+  Projection.fromLonLat as CoordinateTransformationFunction;
 
 /**
  * Helper function to convert a coordinate from the map view into a
@@ -570,17 +573,19 @@ export const mapViewCoordinateFromLonLat = Projection.fromLonLat;
  * @returns The longtitude-latitude pair corresponding
  *          to the given OpenLayers coordinates
  */
-export const lonLatFromMapViewCoordinate = Projection.toLonLat;
+export const lonLatFromMapViewCoordinate =
+  Projection.toLonLat as CoordinateTransformationFunction;
 
 /**
  * Helper function to move a longitude-latitude coordinate pair by a vector
  * expressed in map view coordinates.
  */
 export const translateLonLatWithMapViewDelta = (
-  origin: Coordinate.Coordinate,
-  delta: [number, number]
-): Coordinate.Coordinate => {
+  origin: Coordinate2D,
+  delta: Coordinate2D
+): Coordinate2D => {
   const originInMapView = mapViewCoordinateFromLonLat(origin);
+
   return lonLatFromMapViewCoordinate([
     originInMapView[0] + delta[0],
     originInMapView[1] + delta[1],
@@ -595,8 +600,8 @@ export const translateLonLatWithMapViewDelta = (
  * that it doesn't break anything.
  */
 export class FlatEarthCoordinateSystem {
-  _vec = [0, 0, 0]; // dummy vector used to avoid allocations
-  _origin: Coordinate.Coordinate;
+  _vec: Coordinate3D = [0, 0, 0]; // dummy vector used to avoid allocations
+  _origin: Coordinate2D;
   _orientation: number;
   _ellipsoid: EllipsoidModel;
   _type: string;
@@ -632,7 +637,7 @@ export class FlatEarthCoordinateSystem {
     type = 'neu',
     ellipsoid = WGS84,
   }: {
-    origin: Coordinate.Coordinate;
+    origin: Coordinate2D;
     orientation?: number;
     type?: string;
     ellipsoid?: EllipsoidModel;
@@ -695,7 +700,7 @@ export class FlatEarthCoordinateSystem {
    * @returns The converted coordinates
    */
   toLonLat(coords: [number, number]): [number, number] {
-    const result = [coords[0], coords[1] * this._yMul];
+    const result: Coordinate2D = [coords[0], coords[1] * this._yMul];
     Coordinate.rotate(result, this._orientation);
     return [
       result[1] / this._r2OverCosOriginLatInRadians / this._piOver180 +
@@ -836,6 +841,12 @@ export const bufferPolygon = (
     geometry,
     margin / 1000 /* Turf.js needs kilometers */
   );
+
+  if (!Array.isArray(bufferedPoly.geometry.coordinates[0])) {
+    throw new TypeError(
+      'a coordinate array is expected as the first linear ring of the polygon'
+    );
+  }
 
   // Take the outer ring of the buffered polygon and transform it back to
   // flat Earth. Also undo the shift that we did in the beginning.

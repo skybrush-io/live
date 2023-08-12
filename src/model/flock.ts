@@ -5,7 +5,6 @@
 
 import { type Response_UAVINF } from 'flockwave-spec';
 import isEmpty from 'lodash-es/isEmpty';
-import keys from 'lodash-es/keys';
 import transform from 'lodash-es/transform';
 import * as Signal from 'mini-signals';
 
@@ -53,7 +52,7 @@ export default class Flock {
    * @returns The IDs of all the UAVs in the flock, in alphabetical order
    */
   getAllUAVIds(): Array<UAV['id']> {
-    return keys(this._uavsById).sort();
+    return Object.keys(this._uavsById).sort();
   }
 
   /**
@@ -62,7 +61,14 @@ export default class Flock {
    */
   getAllUAVs(): UAV[] {
     const uavIds = this.getAllUAVIds();
-    return uavIds.map((uavId) => this._uavsById[uavId]);
+
+    // NOTE: Bang justified by `uavIds` coming from `Object.keys(this._uavsById)`
+    return uavIds.map((uavId) => this._uavsById[uavId]!);
+
+    // Alternative solution without relying on the non-null assertion operator:
+    // return uavIds
+    //   .map((uavId) => this._uavsById[uavId])
+    //   .filter((uav?: UAV): uav is UAV => uav !== undefined);
   }
 
   /**
@@ -71,7 +77,7 @@ export default class Flock {
    * @param id - The identifier of the UAV
    * @returns The UAV with the given ID or undefined if there is no such UAV
    */
-  getUAVById(id: UAV['id']): UAV {
+  getUAVById(id: UAV['id']): UAV | undefined {
     return this._uavsById[id];
   }
 
