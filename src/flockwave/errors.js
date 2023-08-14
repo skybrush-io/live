@@ -85,6 +85,7 @@ export const UAVErrorCode = createErrorCodeEnum({
     LANDED: 7,
     MOTORS_RUNNING_WHILE_ON_GROUND: 8,
     SLEEPING: 9,
+    FLIGHT_CONTROL_SUSPENDED: 10,
     RETURN_TO_HOME: 63,
 
     // Warnings
@@ -154,6 +155,7 @@ export const UAVErrorCode = createErrorCodeEnum({
     7: 'landed',
     8: 'motors',
     9: 'sleep',
+    10: 'suspended',
     63: 'RTH',
     64: 'storage',
     65: 'RC lost',
@@ -217,6 +219,7 @@ export const UAVErrorCode = createErrorCodeEnum({
     7: 'Drone has landed successfully',
     8: 'Motors are running while on ground',
     9: 'Drone is in sleep mode',
+    10: 'Flight control is suspended',
     63: 'Drone is returning home',
     64: 'Low disk space',
     65: 'RC lost',
