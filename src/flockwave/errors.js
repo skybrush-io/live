@@ -155,7 +155,7 @@ export const UAVErrorCode = createErrorCodeEnum({
     7: 'landed',
     8: 'motors',
     9: 'sleep',
-    10: 'suspended',
+    10: 'paused',
     63: 'RTH',
     64: 'storage',
     65: 'RC lost',
