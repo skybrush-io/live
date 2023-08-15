@@ -1,11 +1,13 @@
-import config from 'config';
+import config, { type Config } from 'config';
 import isNil from 'lodash-es/isNil';
+import { type Perspective } from 'perspective';
 
 /**
  * Returns whether the configuration object indicates that the user is allowed
  * to see a particular feature.
  */
-export const hasFeature = (name) => config?.features?.[name] ?? true;
+export const hasFeature = (name: keyof Config['features']): boolean =>
+  config?.features?.[name] ?? true;
 
 /**
  * Returns whether the configuration object indicates that the user has a
@@ -18,12 +20,12 @@ export const hasTimeLimitedSession = !isNil(
 /**
  * Returns the default workbench perspective from the configuration object.
  */
-export const getDefaultWorkbenchPerspectiveSpecification = () => {
+export const getDefaultWorkbenchPerspectiveSpecification = (): Perspective => {
   const perspectives = config?.perspectives;
 
-  if (perspectives && Array.isArray(perspectives) && perspectives.length > 0) {
+  if (Array.isArray(perspectives) && perspectives[0]) {
     return perspectives[0];
   } else {
-    return { inherits: 'default' };
+    return 'default';
   }
 };
