@@ -7,7 +7,7 @@
 import forOwn from 'lodash-es/forOwn';
 import identity from 'lodash-es/identity';
 import values from 'lodash-es/values';
-import Signal from 'mini-signals';
+import { MiniSignal } from 'mini-signals';
 import Feature from 'ol/Feature';
 import Point from 'ol/geom/Point';
 
@@ -46,8 +46,8 @@ export default class FeatureManager {
     this._vectorSource = vectorSource;
     this.projection = projection;
 
-    this.featureAdded = new Signal();
-    this.featureRemoved = new Signal();
+    this.featureAdded = new MiniSignal();
+    this.featureRemoved = new MiniSignal();
   }
 
   /**

@@ -5,7 +5,7 @@
  */
 
 import { createSelector } from '@reduxjs/toolkit';
-import Signal from 'mini-signals';
+import { MiniSignal } from 'mini-signals';
 import watch from 'redux-watch';
 
 import AFrame from '../aframe';
@@ -50,7 +50,7 @@ const getUpdatePositionFromGPSCoordinatesFunction = createSelector(
 
 AFrame.registerSystem('drone-flock', {
   init() {
-    this.droneRadiusChanged = new Signal();
+    this.droneRadiusChanged = new MiniSignal();
 
     this._onDroneRadiusChanged = this._onDroneRadiusChanged.bind(this);
     this._onSelectionChanged = this._onSelectionChanged.bind(this);

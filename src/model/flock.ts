@@ -6,7 +6,7 @@
 import { type Response_UAVINF } from 'flockwave-spec';
 import isEmpty from 'lodash-es/isEmpty';
 import transform from 'lodash-es/transform';
-import * as Signal from 'mini-signals';
+import { MiniSignal } from 'mini-signals';
 
 import UAV from './uav';
 
@@ -16,10 +16,9 @@ import UAV from './uav';
 export default class Flock {
   _uavsById: Record<UAV['id'], UAV>;
 
-  // TODO: Update to `mini-signals@2.0.0` for better typing. (Signal<UAV[]>)
-  uavsAdded: Signal;
-  uavsUpdated: Signal;
-  uavsRemoved: Signal;
+  uavsAdded: MiniSignal<[UAV[]]>;
+  uavsUpdated: MiniSignal<[UAV[]]>;
+  uavsRemoved: MiniSignal<[UAV[]]>;
 
   /**
    * Constructor.
@@ -29,9 +28,9 @@ export default class Flock {
   constructor() {
     this._uavsById = {};
 
-    this.uavsAdded = new Signal();
-    this.uavsUpdated = new Signal();
-    this.uavsRemoved = new Signal();
+    this.uavsAdded = new MiniSignal();
+    this.uavsUpdated = new MiniSignal();
+    this.uavsRemoved = new MiniSignal();
   }
 
   /**
