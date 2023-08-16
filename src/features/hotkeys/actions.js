@@ -3,7 +3,11 @@ import isNil from 'lodash-es/isNil';
 import { dismissAlerts } from '~/features/alert/slice';
 import { hasPendingAudibleAlerts } from '~/features/alert/selectors';
 import { clearSelection } from '~/features/map/selection';
-import { getMissionMapping } from '~/features/mission/selectors';
+import {
+  getMissionMapping,
+  isMappingEditable,
+} from '~/features/mission/selectors';
+import { finishMappingEditorSession } from '~/features/mission/slice';
 import { showNotification } from '~/features/snackbar/slice';
 import { setSelectedUAVIds } from '~/features/uavs/actions';
 import { getUAVById } from '~/features/uavs/selectors';
@@ -161,18 +165,22 @@ export function clearPendingUAVId() {
 }
 
 /**
- * Action factory that is bound to the Esc key; clears the pending UAV ID
- * overlay if it is visible; otherwise it dismisses the current audible alert
- * if there are any and the alerts are audible; otherwise it clears the
- * selection.
+ * Action factory that is bound to the Esc key, that:
+ *  - clears the pending UAV ID overlay if it is visible;
+ *  - otherwise it dismisses the current audible alert(s) if there are any and
+ *    the alerts are audible — i.e. they are not muted;
+ *  - otherwise it disables mapping editing if it is enabled;
+ *  - otherwise it clears the selection.
  */
-export function clearSelectionOrPendingUAVId() {
+export function handleEscape() {
   return (dispatch, getState) => {
     const state = getState();
     if (isPendingUAVIdOverlayVisible(state)) {
       dispatch(clearPendingUAVId());
     } else if (hasPendingAudibleAlerts(state)) {
       dispatch(dismissAlerts());
+    } else if (isMappingEditable(state)) {
+      dispatch(finishMappingEditorSession());
     } else {
       dispatch(clearSelection());
     }

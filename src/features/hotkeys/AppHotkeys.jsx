@@ -22,9 +22,9 @@ import { createUAVOperationThunks } from '~/utils/messaging';
 
 import {
   appendToPendingUAVId,
-  clearSelectionOrPendingUAVId,
   copyCoordinates,
   deleteLastCharacterOfPendingUAVId,
+  handleEscape,
   handlePendingUAVIdThenDispatch,
 } from './actions';
 import keyMap from './keymap';
@@ -123,7 +123,7 @@ export default connect(
           },
           { executeOnlyWithoutPendingUAVId: true }
         ),
-        CLEAR_SELECTION: clearSelectionOrPendingUAVId,
+        CLEAR_SELECTION: handleEscape,
         COPY_COORDINATES: copyCoordinates,
         DELETE_LAST_CHARACTER: deleteLastCharacterOfPendingUAVId,
         REMOVE_SELECTION: handlePendingUAVIdThenDispatch(() => (dispatch) => {
