@@ -1,14 +1,8 @@
 import { createSelector } from '@reduxjs/toolkit';
 
-import DefaultAPIKeys from '~/api-keys';
+import DefaultAPIKeys from '~/APIKeys';
 import { BatteryFormatter } from '~/components/battery';
 import { BatterySettings } from '~/model/battery';
-import {
-  DEFAULT_BATTERY_CELL_COUNT,
-  LIPO_CRITICAL_VOLTAGE_THRESHOLD,
-  LIPO_FULL_CHARGE_VOLTAGE,
-  LIPO_LOW_VOLTAGE_THRESHOLD,
-} from '~/model/constants';
 import { AltitudeSummaryType, BatteryDisplayStyle } from '~/model/settings';
 import { UAVSortKey } from '~/model/sorting';
 
@@ -18,10 +12,10 @@ export const getAltitudeSummaryType = (state) =>
 export const getBatterySettings = createSelector(
   (state) => state.settings.uavs,
   ({
-    defaultBatteryCellCount = DEFAULT_BATTERY_CELL_COUNT,
-    fullChargeVoltage = LIPO_FULL_CHARGE_VOLTAGE,
-    lowVoltageThreshold = LIPO_LOW_VOLTAGE_THRESHOLD,
-    criticalVoltageThreshold = LIPO_CRITICAL_VOLTAGE_THRESHOLD,
+    defaultBatteryCellCount,
+    fullChargeVoltage,
+    lowVoltageThreshold,
+    criticalVoltageThreshold,
   } = {}) =>
     new BatterySettings({
       defaultBatteryCellCount,
@@ -29,7 +23,6 @@ export const getBatterySettings = createSelector(
         full: fullChargeVoltage,
         low: lowVoltageThreshold,
         critical: criticalVoltageThreshold,
-        empty: 3.3,
       },
     })
 );

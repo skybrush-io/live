@@ -70,7 +70,16 @@ module.exports = {
       'config-overrides': path.resolve(projectRoot, 'config', 'none'),
       'layout-bmfont-text': '@collmot/layout-bmfont-text',
     },
-    extensions: ['.webpack.js', '.web.js', '.mjs', '.js', '.jsx', '.json'],
+    extensions: [
+      '.webpack.js',
+      '.web.js',
+      '.mjs',
+      '.js',
+      '.jsx',
+      '.json',
+      '.ts',
+      '.tsx',
+    ],
     fallback: {
       crypto: require.resolve('crypto-browserify'),
       http: require.resolve('stream-http'),
@@ -83,6 +92,11 @@ module.exports = {
   },
   module: {
     rules: [
+      {
+        test: /\.tsx?$/,
+        use: 'ts-loader',
+        exclude: /node_modules/,
+      },
       {
         test: /\.css$/,
         use: [{ loader: 'style-loader' }, { loader: 'css-loader' }],

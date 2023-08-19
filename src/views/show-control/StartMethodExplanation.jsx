@@ -59,7 +59,7 @@ const StartMethodExplanation = ({ hasScheduledStartTime, startMethod }) => (
 
 StartMethodExplanation.propTypes = {
   hasScheduledStartTime: PropTypes.bool,
-  startMethod: PropTypes.oneOf(StartMethod._VALUES),
+  startMethod: PropTypes.oneOf(Object.values(StartMethod)),
 };
 
 export default connect(

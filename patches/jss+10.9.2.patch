@@ -1,3 +1,5 @@
+# PR merged: https://github.com/cssinjs/jss/pull/1637
+
 diff --git a/node_modules/jss/dist/jss.esm.js b/node_modules/jss/dist/jss.esm.js
 index 915ecea..5c71e64 100644
 --- a/node_modules/jss/dist/jss.esm.js

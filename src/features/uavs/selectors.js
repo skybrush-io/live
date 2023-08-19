@@ -35,8 +35,8 @@ import {
   getSeverityOfErrorCode,
   getSeverityOfMostSevereErrorCode,
   Severity,
-  UAVErrorCode,
 } from '~/flockwave/errors';
+import UAVErrorCode from '~/flockwave/UAVErrorCode';
 import { convertRGB565ToCSSNotation } from '~/flockwave/parsing';
 import { globalIdToUavId } from '~/model/identifiers';
 import { UAVAge } from '~/model/uav';

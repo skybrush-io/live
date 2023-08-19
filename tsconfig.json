@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "jsx": "react",
+    "module": "es6",
+    "moduleResolution": "node",
+    "noPropertyAccessFromIndexSignature": true,
+    "noUncheckedIndexedAccess": true,
+    "paths": { "~/*": ["./src/*"] },
+    "strict": true,
+    "target": "es6",
+    "typeRoots": ["./types", "./node_modules/@types"]
+  }
+}

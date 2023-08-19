@@ -12,7 +12,7 @@ import PropTypes from 'prop-types';
 
 import { createOLInteractionComponent } from '@collmot/ol-react/lib/interaction';
 
-import Condition from '../conditions';
+import * as Condition from '../conditions';
 
 import { getCenterOfFirstPointsOfTrajectoriesInWorldCoordinates } from '~/features/show/selectors';
 import {

@@ -30,7 +30,7 @@ import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import Header from '@skybrush/mui-components/lib/FormHeader';
 
 import { HMSDurationField } from '~/components/forms/fields';
-import { MTC_CLOCK_ID } from '~/features/clocks/constants';
+import { CommonClockId } from '~/features/clocks/utils';
 import { StartMethod } from '~/features/show/enums';
 import {
   closeStartTimeDialog,
@@ -69,8 +69,6 @@ function validateForm(values) {
   return errors;
 }
 
-const LOCAL_TIME = '__local_time__';
-
 /**
  * Form in the start time management dialog that keeps track of the changes
  * made by the user before the changes are submitted.
@@ -107,12 +105,12 @@ const StartTimeForm = ({
                   variant: 'filled',
                 }}
               >
-                <MenuItem value={LOCAL_TIME}>Local time</MenuItem>
-                <MenuItem value={MTC_CLOCK_ID}>SMPTE timecode</MenuItem>
+                <MenuItem value={CommonClockId.LOCAL}>Local time</MenuItem>
+                <MenuItem value={CommonClockId.MTC}>SMPTE timecode</MenuItem>
               </Select>
             </Box>
 
-            {values.clock === LOCAL_TIME ? (
+            {values.clock === CommonClockId.LOCAL ? (
               <>
                 {/* we use separate pickers for the date and the time; this is
                  * because in most cases the date should default to the current
@@ -156,7 +154,7 @@ const StartTimeForm = ({
             )}
           </FormGroup>
 
-          {values.clock === LOCAL_TIME && (
+          {values.clock === CommonClockId.LOCAL && (
             <Box mt={1} flexDirection='row' display='flex' alignItems='center'>
               <Box mr={2}>
                 <Typography variant='body2' color='textSecondary'>
@@ -168,7 +166,7 @@ const StartTimeForm = ({
                 onChange={(timestamp) => {
                   form.batch(() => {
                     const date = new Date(timestamp);
-                    form.change('clock', LOCAL_TIME);
+                    form.change('clock', CommonClockId.LOCAL);
                     form.change('utcDate', date);
                     form.change('utcTime', date);
                   });
@@ -217,7 +215,7 @@ StartTimeForm.propTypes = {
   alwaysAllowSubmission: PropTypes.bool,
   initialValues: PropTypes.shape({
     clock: PropTypes.string,
-    method: PropTypes.oneOf(StartMethod._VALUES),
+    method: PropTypes.oneOf(Object.values(StartMethod)),
     timeOnClock: PropTypes.string,
   }),
   onClose: PropTypes.func,
@@ -244,7 +242,7 @@ const StartTimeDialog = ({
     : setSeconds(addMinutes(new Date(), 30), 0);
   const initialStartTimeOnClock = hasStartTimeOnClock ? timeOnClock : 0;
   const initialClock =
-    typeof clock === 'string' && clock.length > 0 ? clock : LOCAL_TIME;
+    typeof clock === 'string' && clock.length > 0 ? clock : CommonClockId.LOCAL;
 
   return (
     <MuiPickersUtilsProvider utils={DateFnsUtils}>
@@ -270,7 +268,7 @@ const StartTimeDialog = ({
 
 StartTimeDialog.propTypes = {
   clock: PropTypes.string,
-  method: PropTypes.oneOf(StartMethod._VALUES),
+  method: PropTypes.oneOf(Object.values(StartMethod)),
   onClose: PropTypes.func,
   onUpdateSettings: PropTypes.func,
   open: PropTypes.bool,
@@ -298,7 +296,9 @@ export default connect(
 
     onUpdateSettings({ clock, method, timeOnClock, utcDate, utcTime }) {
       const useLocalTime =
-        clock === LOCAL_TIME || clock === '' || typeof clock !== 'string';
+        clock === CommonClockId.LOCAL ||
+        clock === '' ||
+        typeof clock !== 'string';
 
       dispatch(setStartMethod(method));
 

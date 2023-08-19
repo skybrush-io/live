@@ -50,11 +50,11 @@ const { actions, reducer } = createSlice({
 
   reducers: {
     addSavedLocation(state, action) {
-      return addItemToFront(state, action.payload);
+      addItemToFront(state, action.payload);
     },
 
     createNewSavedLocation(state, action) {
-      return createNewItemInFrontOf(state, action);
+      createNewItemInFrontOf(state, action);
     },
 
     deleteSavedLocation(state, action) {
@@ -65,7 +65,7 @@ const { actions, reducer } = createSlice({
     },
 
     updateSavedLocation(state, action) {
-      return replaceItemOrAddToFront(state, action.payload);
+      replaceItemOrAddToFront(state, action.payload);
     },
   },
 });
