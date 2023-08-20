@@ -26,6 +26,7 @@ import LicenseInfoDialog from './features/license-info/LicenseInfoDialog';
 import MapCachingDialog from './features/map-caching/MapCachingDialog';
 import CoordinateAveragingDialog from './features/measurement/CoordinateAveragingDialog';
 import ParameterUploadSetupDialog from './features/parameters/ParameterUploadSetupDialog';
+import PromptDialog from './features/prompt/PromptDialog';
 import SavedLocationEditorDialog from './features/saved-locations/SavedLocationEditorDialog';
 import RTKSetupDialog from './features/rtk/RTKSetupDialog';
 import Sidebar from './features/sidebar/Sidebar';
@@ -163,7 +164,6 @@ const App = ({ onFirstRender }) => (
       <dialogs.GeofenceSettingsDialog />
       <dialogs.GlobalErrorDialog />
       <dialogs.LayerSettingsDialog />
-      <dialogs.PromptDialog />
       <dialogs.ServerSettingsDialog />
       {hasTimeLimitedSession && <dialogs.SessionExpiryDialog />}
       <dialogs.TimeSyncDialog />
@@ -174,6 +174,7 @@ const App = ({ onFirstRender }) => (
       <LicenseInfoDialog />
       <MapCachingDialog />
       <ParameterUploadSetupDialog />
+      <PromptDialog />
       <RTKSetupDialog />
       <SavedLocationEditorDialog />
       <UAVDetailsDialog />

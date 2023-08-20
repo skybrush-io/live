@@ -4,13 +4,20 @@
  * single-line inputs (instead of `window.prompt`).
  */
 
-import { createSlice } from '@reduxjs/toolkit';
+import { type PayloadAction, createSlice } from '@reduxjs/toolkit';
 
-const defaultState = {
+import type { PromptOptions } from './types';
+
+export type PromptSliceState = PromptOptions & {
+  dialogVisible: boolean;
+};
+
+const initialState: PromptSliceState = {
   cancelButtonLabel: 'Cancel',
   dialogVisible: false,
   fieldType: 'text',
   hintText: undefined,
+  initialValue: undefined,
   message: undefined,
   submitButtonLabel: 'Submit',
   title: undefined,
@@ -21,12 +28,7 @@ const defaultState = {
  */
 const { reducer, actions } = createSlice({
   name: 'prompt',
-
-  /**
-   * The default settings for the part of the state object being defined here.
-   */
-  initialState: { ...defaultState },
-
+  initialState,
   reducers: {
     /**
      * Action that closes the prompt dialog without submitting anything.
@@ -41,8 +43,19 @@ const { reducer, actions } = createSlice({
      * Action that will show the prompt dialog.
      * This is not exported because the thunk version should be used instead.
      */
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     _showPromptDialog: {
-      prepare: (message, options) => ({
+      reducer: (state, action: PayloadAction<Partial<PromptSliceState>>) =>
+        // Nothing is kept from the previous state; this is intentional
+        ({
+          ...initialState,
+          ...action.payload,
+          dialogVisible: true,
+        }),
+      prepare: (
+        message: string,
+        options: string | Partial<PromptSliceState>
+      ) => ({
         payload: {
           ...(typeof options === 'string'
             ? { initialValue: options }
@@ -50,13 +63,6 @@ const { reducer, actions } = createSlice({
           message,
         },
       }),
-      reducer: (state, action) =>
-        // Nothing is kept from the previous state; this is intentional
-        ({
-          ...defaultState,
-          ...action.payload,
-          dialogVisible: true,
-        }),
     },
 
     /**
@@ -70,4 +76,8 @@ const { reducer, actions } = createSlice({
   },
 });
 
-export { reducer as default, actions };
+// eslint-disable-next-line @typescript-eslint/naming-convention
+export const { _cancelPromptDialog, _showPromptDialog, _submitPromptDialog } =
+  actions;
+
+export default reducer;
