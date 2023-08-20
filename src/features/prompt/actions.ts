@@ -102,6 +102,7 @@ export function showConfirmationDialog(
     resolveTo(undefined);
     dispatch(
       _showPromptDialog(message, {
+        submitButtonLabel: 'Confirm',
         ...options,
         type: PromptDialogType.CONFIRMATION,
       })

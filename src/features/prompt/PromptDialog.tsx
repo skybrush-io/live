@@ -4,11 +4,11 @@
  */
 
 import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
+
+import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
 
 import { TextField } from 'mui-rff';
 import { Form } from 'react-final-form';
@@ -104,20 +104,13 @@ const PromptDialogPresentation: React.FunctionComponent<
   dialogVisible,
   ...rest
 }: PromptDialogPresentationProps) => (
-  <Dialog
-    open={dialogVisible}
-    aria-labelledby={title ? 'prompt-dialog-title' : undefined}
-    onClose={onCancel}
-  >
-    {title ? <DialogTitle id='prompt-dialog-title'>{title}</DialogTitle> : null}
-    {dialogVisible && (
-      <PromptDialogForm
-        {...rest}
-        initialValues={{ value: initialValue }}
-        onCancel={onCancel}
-      />
-    )}
-  </Dialog>
+  <DraggableDialog open={dialogVisible} title={title} onClose={onCancel}>
+    <PromptDialogForm
+      {...rest}
+      initialValues={{ value: initialValue }}
+      onCancel={onCancel}
+    />
+  </DraggableDialog>
 );
 
 // TODO: remove 'any' types from here once the store is properly annotated
