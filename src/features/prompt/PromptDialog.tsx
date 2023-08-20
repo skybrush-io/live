@@ -19,20 +19,20 @@ import { shouldOptimizeUIForTouch } from '~/features/settings/selectors';
 
 import { cancelPromptDialog, submitPromptDialog } from './actions';
 import type { PromptSliceState } from './slice';
+import { PromptDialogType, type PromptOptions } from './types';
 
 type FormValues = {
   value: string;
 };
 
-type PromptDialogFormProps = {
-  cancelButtonLabel?: string;
-  hintText?: string;
+type PromptDialogFormProps = Pick<
+  PromptOptions,
+  'cancelButtonLabel' | 'hintText' | 'message' | 'submitButtonLabel' | 'type'
+> & {
   initialValues: FormValues;
-  message: string;
   onCancel: () => void;
-  onSubmit: (values: FormValues) => void;
+  onSubmit: (value: string | boolean) => void;
   optimizeUIForTouch?: boolean;
-  submitButtonLabel?: string;
 };
 
 const PromptDialogForm: React.FunctionComponent<PromptDialogFormProps> = ({
@@ -44,33 +44,47 @@ const PromptDialogForm: React.FunctionComponent<PromptDialogFormProps> = ({
   onSubmit,
   optimizeUIForTouch,
   submitButtonLabel,
-}: PromptDialogFormProps) => (
-  /* eslint-disable @typescript-eslint/explicit-function-return-type */
-  <Form initialValues={initialValues} onSubmit={onSubmit}>
-    {({ handleSubmit }) => (
-      <form onSubmit={handleSubmit}>
-        <DialogContent>
-          <DialogContentText>{message}</DialogContentText>
-          <TextField
-            fullWidth
-            autoFocus={!optimizeUIForTouch}
-            name='value'
-            margin='dense'
-            label={hintText}
-            variant='filled'
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button color='primary' type='submit'>
-            {submitButtonLabel}
-          </Button>
-          <Button onClick={onCancel}>{cancelButtonLabel}</Button>
-        </DialogActions>
-      </form>
-    )}
-  </Form>
-  /* eslint-enable @typescript-eslint/explicit-function-return-type */
-);
+  type,
+}: PromptDialogFormProps) => {
+  const hasTextField = type === PromptDialogType.PROMPT;
+  const handleSubmit = (data: FormValues): void => {
+    if (hasTextField) {
+      onSubmit(data.value);
+    } else {
+      onSubmit(true);
+    }
+  };
+
+  return (
+    /* eslint-disable @typescript-eslint/explicit-function-return-type */
+    <Form initialValues={initialValues} onSubmit={handleSubmit}>
+      {({ handleSubmit }) => (
+        <form onSubmit={handleSubmit}>
+          <DialogContent>
+            <DialogContentText>{message}</DialogContentText>
+            {hasTextField && (
+              <TextField
+                fullWidth
+                autoFocus={!optimizeUIForTouch}
+                name='value'
+                margin='dense'
+                label={hintText}
+                variant='filled'
+              />
+            )}
+          </DialogContent>
+          <DialogActions>
+            <Button color='primary' type='submit'>
+              {submitButtonLabel}
+            </Button>
+            <Button onClick={onCancel}>{cancelButtonLabel}</Button>
+          </DialogActions>
+        </form>
+      )}
+    </Form>
+    /* eslint-enable @typescript-eslint/explicit-function-return-type */
+  );
+};
 
 type PromptDialogPresentationProps = Omit<
   PromptDialogFormProps,
@@ -121,8 +135,8 @@ const PromptDialog = connect<PromptDialogPresentationProps>(
       dispatch(cancelPromptDialog() as any);
     },
 
-    onSubmit(data: FormValues): void {
-      dispatch(submitPromptDialog(data.value) as any);
+    onSubmit(value: string | boolean): void {
+      dispatch(submitPromptDialog(value) as any);
     },
   })
 )(PromptDialogPresentation);

@@ -1,9 +1,15 @@
+export enum PromptDialogType {
+  PROMPT = 'prompt',
+  CONFIRMATION = 'confirm',
+}
+
 export type PromptOptions = {
   cancelButtonLabel: string;
   fieldType: string;
-  hintText: string | undefined;
-  initialValue: string | undefined;
-  message: string | undefined;
+  hintText?: string;
+  initialValue?: string;
+  message?: string;
   submitButtonLabel: string;
-  title: string | undefined;
+  title?: string;
+  type?: PromptDialogType;
 };

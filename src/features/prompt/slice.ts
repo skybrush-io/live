@@ -6,21 +6,26 @@
 
 import { type PayloadAction, createSlice } from '@reduxjs/toolkit';
 
-import type { PromptOptions } from './types';
+import { PromptDialogType, type PromptOptions } from './types';
 
 export type PromptSliceState = PromptOptions & {
   dialogVisible: boolean;
 };
 
-const initialState: PromptSliceState = {
+const defaultOptions: PromptOptions = {
   cancelButtonLabel: 'Cancel',
-  dialogVisible: false,
   fieldType: 'text',
   hintText: undefined,
   initialValue: undefined,
   message: undefined,
   submitButtonLabel: 'Submit',
   title: undefined,
+  type: PromptDialogType.PROMPT,
+};
+
+const initialState: PromptSliceState = {
+  ...defaultOptions,
+  dialogVisible: false,
 };
 
 /**
@@ -45,17 +50,14 @@ const { reducer, actions } = createSlice({
      */
     // eslint-disable-next-line @typescript-eslint/naming-convention
     _showPromptDialog: {
-      reducer: (state, action: PayloadAction<Partial<PromptSliceState>>) =>
+      reducer: (state, action: PayloadAction<Partial<PromptOptions>>) =>
         // Nothing is kept from the previous state; this is intentional
         ({
-          ...initialState,
+          ...defaultOptions,
           ...action.payload,
           dialogVisible: true,
         }),
-      prepare: (
-        message: string,
-        options: string | Partial<PromptSliceState>
-      ) => ({
+      prepare: (message: string, options: string | Partial<PromptOptions>) => ({
         payload: {
           ...(typeof options === 'string'
             ? { initialValue: options }

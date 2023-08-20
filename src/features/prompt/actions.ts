@@ -4,7 +4,7 @@
 
 import type { ThunkAction } from '@reduxjs/toolkit';
 
-import type { PromptOptions } from './types';
+import { type PromptOptions, PromptDialogType } from './types';
 
 import {
   _cancelPromptDialog,
@@ -17,12 +17,14 @@ type AppDispatch = (action: any) => void;
 type AppState = any;
 type AppThunk<T = void> = ThunkAction<T, AppState, any, any>;
 
+type PromptResponse = string | boolean | undefined;
+
 /**
  * Function that must be called from the submission thunk to resolve the
  * promise created earlier in the ``showPromptDialog()`` thunk.
  */
 let resolver:
-  | ((value: string | undefined | PromiseLike<string | undefined>) => void)
+  | ((value: PromptResponse | PromiseLike<PromptResponse>) => void)
   | undefined;
 
 /**
@@ -31,7 +33,7 @@ let resolver:
  *
  * @param  value  the value to call the resolver with
  */
-function resolveTo(value: string | undefined): void {
+function resolveTo(value: PromptResponse): void {
   if (resolver !== undefined) {
     resolver(value);
     resolver = undefined;
@@ -56,7 +58,7 @@ export function cancelPromptDialog(): AppThunk {
  * Thunk factory that creates a thunk that submits the prompt dialog
  * with the given value.
  */
-export function submitPromptDialog(value: string): AppThunk {
+export function submitPromptDialog(value: string | boolean): AppThunk {
   if (value === undefined) {
     return cancelPromptDialog();
   }
@@ -75,11 +77,35 @@ export function submitPromptDialog(value: string): AppThunk {
  */
 export function showPromptDialog(
   message: string,
-  options: PromptOptions
-): AppThunk<Promise<string | undefined>> {
+  options: Partial<PromptOptions> = {}
+): AppThunk<Promise<PromptResponse>> {
   return async (dispatch) => {
     resolveTo(undefined);
     dispatch(_showPromptDialog(message, options));
+    return new Promise((resolve) => {
+      resolver = resolve;
+    });
+  };
+}
+
+/**
+ * Thunk factory that creates a thunk that shows a confirmation dialog.
+ *
+ * @param  message  the message to show in the dialog
+ * @param  options  additional options to pass to the dialog
+ */
+export function showConfirmationDialog(
+  message: string,
+  options: Partial<PromptOptions> = {}
+): AppThunk<Promise<PromptResponse>> {
+  return async (dispatch) => {
+    resolveTo(undefined);
+    dispatch(
+      _showPromptDialog(message, {
+        ...options,
+        type: PromptDialogType.CONFIRMATION,
+      })
+    );
     return new Promise((resolve) => {
       resolver = resolve;
     });
