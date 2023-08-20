@@ -3,7 +3,11 @@ import { createSelector } from '@reduxjs/toolkit';
 import DefaultAPIKeys from '~/APIKeys';
 import { BatteryFormatter } from '~/components/battery';
 import { BatterySettings } from '~/model/battery';
-import { AltitudeSummaryType, BatteryDisplayStyle } from '~/model/settings';
+import {
+  AltitudeSummaryType,
+  BatteryDisplayStyle,
+  UAVOperationConfirmationStyle,
+} from '~/model/settings';
 import { UAVSortKey } from '~/model/sorting';
 
 export const getAltitudeSummaryType = (state) =>
@@ -155,6 +159,17 @@ export function getUAVListSortPreference(state) {
 }
 
 /**
+ * Returns whether UAV operations dispatched from toolbars or buttons should
+ * be confirmed by the user.
+ */
+export function getUAVOperationConfirmationStyle(state) {
+  return (
+    state.settings.uavs?.uavOperationConfirmationStyle ||
+    UAVOperationConfirmationStyle.NEVER
+  );
+}
+
+/**
  * Returns whether we are currently showing empty mission slots in the UAV list.
  */
 export const isShowingEmptyMissionSlots = (state) =>
@@ -173,6 +188,25 @@ export const isShowingMissionIds = (state) =>
  */
 export const areExperimentalFeaturesEnabled = (state) =>
   state.settings.display?.experimentalFeaturesEnabled;
+
+/**
+ * Returns whether the app should ask for a confirmation when performing a
+ * UAV operation affecting the given UAVs.
+ */
+export function shouldConfirmUAVOperation(state, uavs, isBroadcast) {
+  const style = getUAVOperationConfirmationStyle(state);
+
+  switch (style) {
+    case UAVOperationConfirmationStyle.ALWAYS:
+      return true;
+
+    case UAVOperationConfirmationStyle.ONLY_MULTIPLE:
+      return isBroadcast || (Array.isArray(uavs) && uavs.length > 1);
+
+    default:
+      return false;
+  }
+}
 
 /**
  * Returns whether the inactive segments of LCD clocks should be hidden when a

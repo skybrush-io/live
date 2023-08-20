@@ -17,6 +17,7 @@ import {
   AltitudeSummaryType,
   BatteryDisplayStyle,
   CoordinateFormat,
+  UAVOperationConfirmationStyle,
 } from '~/model/settings';
 import { UAVSortKey } from '~/model/sorting';
 import { isRunningOnTouch } from '~/utils/platform';
@@ -136,6 +137,8 @@ const { actions, reducer } = createSlice({
       criticalVoltageThreshold: LIPO_CRITICAL_VOLTAGE_THRESHOLD,
       // Whether to prefer percentages or voltages when showing the battery status
       preferredBatteryDisplayStyle: BatteryDisplayStyle.VOLTAGE,
+      // Wheter to ask for confirmation when performing certain UAV-related operations
+      uavOperationConfirmationStyle: UAVOperationConfirmationStyle.NEVER,
     },
 
     apiKeys: {},

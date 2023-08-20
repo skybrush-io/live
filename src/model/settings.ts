@@ -70,3 +70,25 @@ const batteryDisplayStyleDescriptions = {
 export const describeBatteryDisplayStyle = (
   style: BatteryDisplayStyle
 ): string => batteryDisplayStyleDescriptions[style] || 'Unknown style';
+
+/**
+ * Enum that describes when we will be asking for user confirmation before
+ * performing certain UAV operations.
+ */
+export enum UAVOperationConfirmationStyle {
+  NEVER = 'never',
+  ONLY_MULTIPLE = 'onlyMultiple',
+  ALWAYS = 'always',
+}
+
+const uavOperationConfirmationStyleDescriptions = {
+  [UAVOperationConfirmationStyle.NEVER]: 'Never ask for confirmation',
+  [UAVOperationConfirmationStyle.ONLY_MULTIPLE]:
+    'Confirm when the operation may affect multiple UAVs',
+  [UAVOperationConfirmationStyle.ALWAYS]: 'Always ask for confirmation',
+};
+
+export const describeUAVOperationConfirmationStyle = (
+  style: UAVOperationConfirmationStyle
+): string =>
+  uavOperationConfirmationStyleDescriptions[style] || 'Unknown style';

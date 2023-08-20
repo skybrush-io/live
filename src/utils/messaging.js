@@ -8,6 +8,8 @@ import isNil from 'lodash-es/isNil';
 import mapValues from 'lodash-es/mapValues';
 import values from 'lodash-es/values';
 
+import { showConfirmationDialog } from '~/features/prompt/actions';
+import { shouldConfirmUAVOperation } from '~/features/settings/selectors';
 import { showNotification } from '~/features/snackbar/slice';
 import { MessageSemantics } from '~/features/snackbar/types';
 import messageHub from '~/message-hub';
@@ -61,6 +63,25 @@ const processResponses = (
   }
 };
 
+const createConfirmationMessage = (operation, uavs, broadcast) => {
+  const lowercasedOperation = (operation || 'an unknown command').toLowerCase();
+  let target;
+
+  if (broadcast) {
+    return `Are you sure you want to broadcast ${lowercasedOperation} to all UAVs?`;
+  }
+
+  if (!Array.isArray(uavs) || uavs.length === 0) {
+    target = '';
+  } else if (uavs.length === 1) {
+    target = ` on UAV ${uavs[0]}`;
+  } else {
+    target = ` on ${uavs.length} UAVs`;
+  }
+
+  return `Are you sure you want to execute ${lowercasedOperation}${target}?`;
+};
+
 const performMassOperation =
   ({
     type,
@@ -68,16 +89,38 @@ const performMassOperation =
     mapper = undefined,
     reportFailure = true,
     reportSuccess = true,
+    skipConfirmation = false,
   }) =>
   async (uavs, args) => {
     // Do not bail out early if uavs is empty because in the args there might be
     // an option that intructs the server to do a broadcast to all UAVs.
 
     try {
+      const finalArgs = mapper ? mapper(args) : args;
+      const isBroadcast = Boolean(finalArgs?.transport?.broadcast);
+      const needsConfirmation =
+        !skipConfirmation &&
+        shouldConfirmUAVOperation(store.getState(), uavs, isBroadcast);
+
+      if (needsConfirmation) {
+        // This operation needs confirmation, so instead of executing it, show
+        // a confirmation dialog
+        const confirmation = await store.dispatch(
+          showConfirmationDialog(
+            createConfirmationMessage(name, uavs, isBroadcast),
+            { title: 'Confirmation needed' }
+          )
+        );
+
+        if (!confirmation) {
+          return;
+        }
+      }
+
       const responses = await messageHub.startAsyncOperation({
         type,
         ids: uavs,
-        ...(mapper ? mapper(args) : args),
+        ...finalArgs,
       });
       processResponses(name, responses, { reportFailure, reportSuccess });
     } catch (error) {
@@ -95,6 +138,9 @@ export const flashLightOnUAVs = performMassOperation({
     ...options,
   }),
   reportSuccess: false,
+
+  // Light signals are harmless so skip any confirmation dialogs
+  skipConfirmation: true,
 });
 
 export const flashLightOnUAVsAndHideFailures = performMassOperation({
@@ -107,6 +153,9 @@ export const flashLightOnUAVsAndHideFailures = performMassOperation({
   }),
   reportSuccess: false,
   reportFailure: false,
+
+  // Light signals are harmless so skip any confirmation dialogs
+  skipConfirmation: true,
 });
 
 export const takeoffUAVs = performMassOperation({
@@ -161,6 +210,9 @@ const moveUAVsLowLevel = performMassOperation({
       isNil(target.agl) ? null : Math.round(target.agl * 1e3),
     ],
   }),
+
+  // Moving UAVs is such a common feature that we skip any confirmation dialogs
+  skipConfirmation: true,
 });
 
 export const moveUAVs = (uavIds, { target, ...rest }) => {
@@ -225,10 +277,10 @@ const OPERATION_MAP = {
 /**
  * Creates Redux thunks that can be used to dispatch commands to UAVs.
  *
- * @param {func} getTargetedUAVIds  a selector that is invoked with the current
+ * @param {function} getTargetedUAVIds  a selector that is invoked with the current
  *        Redux state and that must return the list of UAV IDs that the command
  *        will be targeted to
- * @param {func?} getTransportOptions  an optional selector that is invoked with
+ * @param {function?} getTransportOptions  an optional selector that is invoked with
  *        the current Redux state and that must return a transport options object
  *        with keys `channel` and `broadcast` to describe how the commands should
  *        be sent to the UAVs (on which channel and whether to be sent in
