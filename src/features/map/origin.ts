@@ -2,7 +2,9 @@
  * @file Reducer function for handling the position of the origin on the map.
  */
 
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
+
+import { type Origin, OriginType } from './types';
 
 /**
  * The state of the origin (home position) and the global flat Earth coordinate
@@ -11,10 +13,12 @@ import { createSlice } from '@reduxjs/toolkit';
  * The flat Earth coordinate system is at the given position and its zero
  * degree heading points towards the heading given in the `angle` property.
  */
-const initialState = {
+type MapOriginSliceState = Origin;
+
+const initialState: MapOriginSliceState = {
   position: [18.915125, 47.486305], // Sensible default: Farkashegy Airfield
   angle: '59',
-  type: 'nwu',
+  type: OriginType.NWU,
 };
 
 /**
@@ -24,9 +28,13 @@ const { reducer, actions } = createSlice({
   name: 'map/origin',
   initialState,
   reducers: {
-    updateFlatEarthCoordinateSystem(state, action) {
+    updateFlatEarthCoordinateSystem(
+      state,
+      action: PayloadAction<Partial<Origin>>
+    ) {
       const { angle, position, type } = action.payload;
-      if ('position' in action.payload) {
+
+      if (position !== undefined) {
         state.position = position;
       }
 
@@ -43,15 +51,21 @@ const { reducer, actions } = createSlice({
 
 export const { updateFlatEarthCoordinateSystem } = actions;
 
-export function setFlatEarthCoordinateSystemOrigin(position) {
+export function setFlatEarthCoordinateSystemOrigin(
+  position: Origin['position']
+): PayloadAction<{ position?: Origin['position'] }> {
   return updateFlatEarthCoordinateSystem({ position });
 }
 
-export function setFlatEarthCoordinateSystemOrientation(angle) {
+export function setFlatEarthCoordinateSystemOrientation(
+  angle: Origin['angle']
+): PayloadAction<{ angle?: Origin['angle'] }> {
   return updateFlatEarthCoordinateSystem({ angle });
 }
 
-export function setFlatEarthCoordinateSystemType(type) {
+export function setFlatEarthCoordinateSystemType(
+  type: Origin['type']
+): PayloadAction<{ type?: Origin['type'] }> {
   return updateFlatEarthCoordinateSystem({ type });
 }
 

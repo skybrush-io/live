@@ -11,28 +11,42 @@
  * is mounted for the first time, it is initialized from the state of the store.
  */
 
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
 import { normalizeAngle } from '~/utils/geography';
+import { type Coordinate2D } from '~/utils/math';
+
+/**
+ * The state of the origin (home position) and the global flat Earth coordinate
+ * system of the map.
+ *
+ * The flat Earth coordinate system is at the given position and its zero
+ * degree heading points towards the heading given in the `angle` property.
+ */
+type MapViewSliceState = {
+  position: Coordinate2D;
+  angle: string;
+  zoom: number;
+};
+
+const initialState: MapViewSliceState = {
+  position: [18.915125, 47.486305], // Sensible default: Farkashegy Airfield
+  angle: '0',
+  zoom: 17,
+};
 
 const { actions, reducer } = createSlice({
   name: 'map/view',
-
-  /**
-   * The state of the origin (home position) and the global flat Earth coordinate
-   * system of the map.
-   *
-   * The flat Earth coordinate system is at the given position and its zero
-   * degree heading points towards the heading given in the `angle` property.
-   */
-  initialState: {
-    position: [18.915125, 47.486305], // Sensible default: Farkashegy Airfield
-    angle: '0',
-    zoom: 17,
-  },
-
+  initialState,
   reducers: {
-    updateMapViewSettings(state, action) {
+    updateMapViewSettings(
+      state,
+      action: PayloadAction<{
+        position: Coordinate2D;
+        angle: number;
+        zoom: number;
+      }>
+    ) {
       const { angle, position, zoom } = action.payload;
       state.position = position;
       state.angle = normalizeAngle(angle);
