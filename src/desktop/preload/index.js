@@ -6,7 +6,7 @@
  * renderer processes can use to talk to Node.js.
  */
 
-const dns = require('dns');
+const dns = require('dns').promises;
 const { contextBridge } = require('electron');
 const fs = require('fs');
 const { ipcRenderer: ipc } = require('electron-better-ipc');
@@ -14,7 +14,6 @@ const ElectronStore = require('electron-store');
 const SSDPClient = require('node-ssdp-lite');
 const watch = require('node-watch');
 const path = require('path');
-const pify = require('pify');
 const createStorageEngine = require('redux-persist-electron-storage');
 const streamToBlob = require('stream-to-blob');
 
@@ -77,11 +76,9 @@ const createTCPSocket = ({ address, port }, options = {}, handlers = {}) => {
   };
 };
 
-const promisifiedDNSReverse = pify(dns.reverse);
-
 const reverseDNSLookup = async (ip) => {
   try {
-    await promisifiedDNSReverse(ip);
+    await dns.reverse(ip);
   } catch (error) {
     if (error.code === 'ENOTFOUND') {
       // This is okay
