@@ -85,7 +85,7 @@
     "js-base64": "^3.7.4",
     "jsonwebtoken": "^9.0.1",
     "jszip": "^3.10.0",
-    "ky": "^0.33.2",
+    "ky": "^0.33.3",
     "localforage": "^1.10.0",
     "lodash-es": "^4.17.21",
     "material-ui-popup-state": "^1.9.3",
@@ -161,7 +161,7 @@
     "use-resize-observer": "^9.1.0",
     "util": "^0.12.5",
     "vm-browserify": "^1.1.2",
-    "which": "^2.0.2"
+    "which": "^3.0.1"
   },
   "devDependencies": {
     "@babel/core": "^7.22.10",
