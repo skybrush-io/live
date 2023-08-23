@@ -36,7 +36,22 @@
     }
   },
   "geofenceDialog": {
-    "fenceAction": "Fence action"
+    "apply": "Apply",
+    "clear": "Clear current fence",
+    "close": "Close",
+    "fenceAction": "Fence action",
+    "fenceActionHelperText": "Support for these options depends on the drones themselves; not all options are supported by all drones.",
+    "fenceActionLabel": "Primary fence action",
+    "horizontal": "Horizontal",
+    "maxAltitude": "Max altitude",
+    "maxDistance": "Max distance",
+    "maxVertexCount": "Maximum vertex count",
+    "proposedLimits": "Proposed limits for current mission",
+    "safetyMargins": "Safety margins",
+    "simplifyPolygon": "Simplify polygon",
+    "title": "Geofence settings",
+    "vertexCountReduction": "Vertex count reduction",
+    "vertical": "Vertical"
   },
   "lightControl": {
     "fromGCS": "Lights controlled from GCS",

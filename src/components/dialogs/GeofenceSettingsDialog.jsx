@@ -6,6 +6,7 @@
 import { Checkboxes, Select, TextField } from 'mui-rff';
 import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
+import { withTranslation } from 'react-i18next';
 import { Form } from 'react-final-form';
 import createDecorator from 'final-form-calculate';
 import { connect } from 'react-redux';
@@ -102,6 +103,7 @@ const GeofenceSettingsFormPresentation = ({
   initialValues,
   onKeyPress,
   onSubmit,
+  t,
 }) => (
   <Form
     initialValues={initialValues}
@@ -115,9 +117,13 @@ const GeofenceSettingsFormPresentation = ({
         onSubmit={handleSubmit}
         onKeyPress={onKeyPress}
       >
-        <FormHeader>Fence action</FormHeader>
+        <FormHeader>{t('geofenceDialog.fenceAction')}</FormHeader>
         <Box display='flex' flexDirection='column'>
-          <Select name='action' label='Primary fence action' variant='filled'>
+          <Select
+            name='action'
+            label={t('geofenceDialog.fenceActionLabel')}
+            variant='filled'
+          >
             {SUPPORTED_GEOFENCE_ACTIONS.map((action) => (
               <MenuItem key={action} value={action}>
                 {describeGeofenceAction(action)}
@@ -125,17 +131,16 @@ const GeofenceSettingsFormPresentation = ({
             ))}
           </Select>
           <FormHelperText>
-            Support for these options depends on the drones themselves; not all
-            options are supported by all drones.
+            {t('geofenceDialog.fenceActionHelperText')}
           </FormHelperText>
         </Box>
 
-        <FormHeader>Safety margins</FormHeader>
+        <FormHeader>{t('geofenceDialog.safetyMargins')}</FormHeader>
         <Box display='flex' flexDirection='row'>
           <TextField
             fullWidth={false}
             name='horizontalMargin'
-            label='Horizontal'
+            label={t('geofenceDialog.horizontal')}
             type='number'
             InputProps={{
               endAdornment: <InputAdornment position='end'>m</InputAdornment>,
@@ -146,7 +151,7 @@ const GeofenceSettingsFormPresentation = ({
           <TextField
             fullWidth={false}
             name='verticalMargin'
-            label='Vertical'
+            label={t('geofenceDialog.vertical')}
             type='number'
             InputProps={{
               endAdornment: <InputAdornment position='end'>m</InputAdornment>,
@@ -154,13 +159,13 @@ const GeofenceSettingsFormPresentation = ({
             variant='filled'
           />
         </Box>
-        <FormHeader>Proposed limits for current mission</FormHeader>
+        <FormHeader>{t('geofenceDialog.proposedLimits')}</FormHeader>
         <Box display='flex' flexDirection='row'>
           <TextField
             disabled
             fullWidth={false}
             name='distanceLimit'
-            label='Max distance'
+            label={t('geofenceDialog.maxDistance')}
             InputProps={{
               endAdornment: <InputAdornment position='end'>m</InputAdornment>,
             }}
@@ -171,7 +176,7 @@ const GeofenceSettingsFormPresentation = ({
             disabled
             fullWidth={false}
             name='heightLimit'
-            label='Max altitude'
+            label={t('geofenceDialog.maxAltitude')}
             InputProps={{
               endAdornment: <InputAdornment position='end'>m</InputAdornment>,
             }}
@@ -179,16 +184,16 @@ const GeofenceSettingsFormPresentation = ({
           />
         </Box>
 
-        <FormHeader>Vertex count reduction</FormHeader>
+        <FormHeader>{t('geofenceDialog.vertexCountReduction')}</FormHeader>
         <Box display='flex' flexDirection='column'>
           <Checkboxes
             name='simplify'
-            data={{ label: 'Simplify\u00A0polygon' }}
+            data={{ label: t('geofenceDialog.simplifyPolygon') }}
           />
           <TextField
             fullWidth={false}
             name='maxVertexCount'
-            label='Maximum vertex count'
+            label={t('geofenceDialog.maxVertexCount')}
             disabled={!simplify}
             type='number'
             variant='filled'
@@ -203,6 +208,7 @@ GeofenceSettingsFormPresentation.propTypes = {
   initialValues: PropTypes.object,
   onKeyPress: PropTypes.func,
   onSubmit: PropTypes.func,
+  t: PropTypes.func,
 };
 
 /**
@@ -220,7 +226,7 @@ const GeofenceSettingsForm = connect(
       action: getGeofenceAction(state),
     },
   })
-)(GeofenceSettingsFormPresentation);
+)(withTranslation()(GeofenceSettingsFormPresentation));
 
 /**
  * Presentation component for the dialog that shows the form that the user
@@ -233,6 +239,7 @@ const GeofenceSettingsDialogPresentation = ({
   onClearGeofence,
   onSubmit,
   open,
+  t,
 }) => {
   const handleKeyPress = useCallback(
     (event) => {
@@ -248,7 +255,7 @@ const GeofenceSettingsDialogPresentation = ({
       fullWidth
       open={open}
       maxWidth='xs'
-      title='Geofence settings'
+      title={t('geofenceDialog.title')}
       onClose={onClose}
     >
       <DialogContent>
@@ -261,12 +268,12 @@ const GeofenceSettingsDialogPresentation = ({
           disabled={!hasFence}
           onClick={onClearGeofence}
         >
-          Clear current fence
+          {t('geofenceDialog.clear')}
         </Button>
         <Button color='primary' onClick={forceFormSubmission}>
-          Apply
+          {t('geofenceDialog.apply')}
         </Button>
-        <Button onClick={onClose}>Close</Button>
+        <Button onClick={onClose}>{t('geofenceDialog.close')}</Button>
       </DialogActions>
     </DraggableDialog>
   );
@@ -279,6 +286,7 @@ GeofenceSettingsDialogPresentation.propTypes = {
   onClose: PropTypes.func,
   onSubmit: PropTypes.func,
   open: PropTypes.bool.isRequired,
+  t: PropTypes.func,
 };
 
 /**
@@ -318,6 +326,6 @@ const GeofenceSettingsDialog = connect(
       dispatch(updateGeofencePolygon());
     },
   }
-)(GeofenceSettingsDialogPresentation);
+)(withTranslation()(GeofenceSettingsDialogPresentation));
 
 export default GeofenceSettingsDialog;
