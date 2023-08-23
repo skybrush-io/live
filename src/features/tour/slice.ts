@@ -5,14 +5,19 @@
 
 import { createSlice } from '@reduxjs/toolkit';
 
+type TourSliceState = {
+  isOpen: boolean;
+  seen: boolean;
+};
+
+const initialState: TourSliceState = {
+  isOpen: false,
+  seen: false,
+};
+
 const { actions, reducer } = createSlice({
   name: 'tour',
-
-  initialState: {
-    isOpen: false,
-    seen: false,
-  },
-
+  initialState,
   reducers: {
     dismissTour(state) {
       state.isOpen = false;

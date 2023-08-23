@@ -2,20 +2,25 @@
  * @file Slice of the state object that stores the state of the LCD clock panel.
  */
 
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
 import { noPayload } from '~/utils/redux';
 
+type HotkeysSliceState = {
+  dialogVisible: boolean;
+  pendingUAVId: string;
+};
+
+const initialState: HotkeysSliceState = {
+  dialogVisible: false,
+  pendingUAVId: '',
+};
+
 const { actions, reducer } = createSlice({
   name: 'hotkeys',
-
-  initialState: {
-    dialogVisible: false,
-    pendingUAVId: '',
-  },
-
+  initialState,
   reducers: {
-    setPendingUAVId(state, action) {
+    setPendingUAVId(state, action: PayloadAction<string>) {
       state.pendingUAVId = action.payload;
     },
 
@@ -23,11 +28,11 @@ const { actions, reducer } = createSlice({
       /* nothing to do here, the saga will take care of it */
     },
 
-    showHotkeyDialog: noPayload((state) => {
+    showHotkeyDialog: noPayload<HotkeysSliceState>((state) => {
       state.dialogVisible = true;
     }),
 
-    closeHotkeyDialog: noPayload((state) => {
+    closeHotkeyDialog: noPayload<HotkeysSliceState>((state) => {
       state.dialogVisible = false;
     }),
   },

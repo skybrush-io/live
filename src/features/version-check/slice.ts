@@ -7,21 +7,27 @@ import { createSlice } from '@reduxjs/toolkit';
 
 import { noPayload } from '~/utils/redux';
 
+type VersionCheckSliceState = {
+  dialog: {
+    open: boolean;
+  };
+};
+
+const initialState: VersionCheckSliceState = {
+  dialog: {
+    open: false,
+  },
+};
+
 const { actions, reducer } = createSlice({
   name: 'version-check',
-
-  initialState: {
-    dialog: {
-      open: false,
-    },
-  },
-
+  initialState,
   reducers: {
-    closeVersionCheckDialog: noPayload((state) => {
+    closeVersionCheckDialog: noPayload<VersionCheckSliceState>((state) => {
       state.dialog.open = false;
     }),
 
-    showVersionCheckDialog: noPayload((state) => {
+    showVersionCheckDialog: noPayload<VersionCheckSliceState>((state) => {
       state.dialog.open = true;
     }),
   },

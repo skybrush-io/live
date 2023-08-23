@@ -3,23 +3,28 @@
  * audible alerts to acknowledge and whether alerts are muted.
  */
 
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
+
+type AlertSliceState = {
+  muted: boolean;
+  count: number;
+};
+
+const initialState: AlertSliceState = {
+  muted: false,
+  count: 0,
+};
 
 const { actions, reducer } = createSlice({
   name: 'alert',
-
-  initialState: {
-    muted: false,
-    count: 0,
-  },
-
+  initialState,
   reducers: {
     dismissAlerts(state) {
       state.count = 0;
     },
 
-    setMuted(state, action) {
-      state.muted = Boolean(action.payload);
+    setMuted(state, action: PayloadAction<boolean>) {
+      state.muted = action.payload;
     },
 
     triggerAlert(state) {

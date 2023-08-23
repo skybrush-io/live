@@ -7,21 +7,27 @@ import { createSlice } from '@reduxjs/toolkit';
 
 import { noPayload } from '~/utils/redux';
 
+type LicenseInfoSliceState = {
+  dialog: {
+    open: boolean;
+  };
+};
+
+const initialState: LicenseInfoSliceState = {
+  dialog: {
+    open: false,
+  },
+};
+
 const { actions, reducer } = createSlice({
   name: 'licenseInfo',
-
-  initialState: {
-    dialog: {
-      open: false,
-    },
-  },
-
+  initialState,
   reducers: {
-    closeLicenseInfoDialog: noPayload((state) => {
+    closeLicenseInfoDialog: noPayload<LicenseInfoSliceState>((state) => {
       state.dialog.open = false;
     }),
 
-    showLicenseInfoDialog: noPayload((state) => {
+    showLicenseInfoDialog: noPayload<LicenseInfoSliceState>((state) => {
       state.dialog.open = true;
     }),
   },
