@@ -37,7 +37,7 @@ const globalKeyMap = {
   },
 
   REMOVE_SELECTION: {
-    name: 'Remove selected drones',
+    name: 'Remove selected drones and features',
     sequence: 'del',
   },
 

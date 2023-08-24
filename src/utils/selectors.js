@@ -2,6 +2,7 @@
  * Selector-related utility functions.
  */
 
+import isEqual from 'lodash-es/isEqual';
 import { defaultMemoize, createSelectorCreator } from 'reselect';
 import shallowEqual from 'shallowequal';
 
@@ -13,3 +14,7 @@ export const createShallowSelector = createSelectorCreator(
   defaultMemoize,
   shallowEqual
 );
+
+export const createDeepResultSelector = createSelectorCreator(defaultMemoize, {
+  resultEqualityCheck: isEqual,
+});

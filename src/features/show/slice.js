@@ -8,11 +8,12 @@ import isNil from 'lodash-es/isNil';
 import set from 'lodash-es/set';
 
 import { createSlice } from '@reduxjs/toolkit';
+import { COORDINATE_SYSTEM_TYPE } from '@skybrush/show-format';
 
 import {
-  COORDINATE_SYSTEM_TYPE,
   DEFAULT_ALTITUDE_REFERENCE,
   DEFAULT_ROOM_SIZE,
+  DEFAULT_TAKEOFF_HEADING,
 } from './constants';
 import { StartMethod } from './enums';
 
@@ -42,6 +43,9 @@ const { actions, reducer } = createSlice({
         altitudeReference: {
           ...DEFAULT_ALTITUDE_REFERENCE,
         },
+        takeoffHeading: {
+          ...DEFAULT_TAKEOFF_HEADING,
+        },
       },
       indoor: {
         coordinateSystem: {
@@ -59,6 +63,9 @@ const { actions, reducer } = createSlice({
             DEFAULT_ROOM_SIZE.depth / 2,
             DEFAULT_ROOM_SIZE.height,
           ],
+        },
+        takeoffHeading: {
+          ...DEFAULT_TAKEOFF_HEADING,
         },
       },
       type: 'outdoor',
@@ -253,6 +260,17 @@ const { actions, reducer } = createSlice({
       state.environment.type = action.payload;
     },
 
+    setIndoorShowOrientation(state, action) {
+      state.environment.indoor.coordinateSystem.orientation = String(
+        action.payload
+      );
+    },
+
+    setIndoorShowTakeoffHeadingSpecification(state, action) {
+      state.environment.indoor.takeoffHeading =
+        action.payload || DEFAULT_TAKEOFF_HEADING;
+    },
+
     setLastLoadingAttemptFailed(state, action) {
       state.lastLoadAttemptFailed = Boolean(action.payload);
     },
@@ -278,6 +296,11 @@ const { actions, reducer } = createSlice({
     setOutdoorShowOrigin(state, action) {
       state.environment.outdoor.coordinateSystem.origin =
         action.payload || null;
+    },
+
+    setOutdoorShowTakeoffHeadingSpecification(state, action) {
+      state.environment.outdoor.takeoffHeading =
+        action.payload || DEFAULT_TAKEOFF_HEADING;
     },
 
     setRoomCorners(state, action) {
@@ -404,10 +427,13 @@ export const {
   openTakeoffAreaSetupDialog,
   revokeTakeoffAreaApproval,
   setEnvironmentType,
+  setIndoorShowOrientation,
+  setIndoorShowTakeoffHeadingSpecification,
   setLastLoadingAttemptFailed,
   _setOutdoorShowAltitudeReference,
   setOutdoorShowOrientation,
   setOutdoorShowOrigin,
+  setOutdoorShowTakeoffHeadingSpecification,
   setRoomCorners,
   setRoomVisibility,
   setShowAuthorization,

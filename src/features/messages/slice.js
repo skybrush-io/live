@@ -20,6 +20,8 @@ const { actions, reducer } = createSlice({
     // Stores the messages received and sent and any additional entries to
     // show in chat histories, indexed by some arbitrary IDs (say, numbers)
     byId: {},
+    // Command history for recalling earlier messages in the input box
+    commandHistory: [],
     // Message IDs sorted by UAV IDs
     uavIdsToMessageIds: {
       // Keys should be UAV IDs here. The corresponding values should be
@@ -92,6 +94,10 @@ const { actions, reducer } = createSlice({
       );
 
       action.messageId = messageId;
+
+      if (state.commandHistory.at(-1) !== message) {
+        state.commandHistory.push(message);
+      }
     },
 
     clearMessagesOfUAVById(state, action) {

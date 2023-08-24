@@ -177,11 +177,7 @@ MissionInfoLayerSettingsPresentation.propTypes = {
 
 export const MissionInfoLayerSettings = connect(
   // mapStateToProps
-  () => ({
-    homePositionsVisible: true,
-    landingPositionsVisible: true,
-    originVisible: true,
-  }),
+  null,
   // mapDispatchToProps
   (dispatch, ownProps) => ({
     setLayerParameters(parameters) {

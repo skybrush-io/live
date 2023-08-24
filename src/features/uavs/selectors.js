@@ -1,5 +1,6 @@
 import groupBy from 'lodash-es/groupBy';
 import isNil from 'lodash-es/isNil';
+import orderBy from 'lodash-es/orderBy';
 import sortBy from 'lodash-es/sortBy';
 import { getDistance as haversineDistance } from 'ol/sphere';
 import createCachedSelector from 're-reselect';
@@ -30,19 +31,19 @@ import {
   isValidTrajectory,
 } from '~/features/show/trajectory';
 import {
-  abbreviateError,
   errorSeverityToSemantics,
   getSeverityOfErrorCode,
   getSeverityOfMostSevereErrorCode,
-  ErrorCode,
   Severity,
+  UAVErrorCode,
 } from '~/flockwave/errors';
 import { convertRGB565ToCSSNotation } from '~/flockwave/parsing';
 import { globalIdToUavId } from '~/model/identifiers';
 import { UAVAge } from '~/model/uav';
 import { selectionForSubset } from '~/selectors/selection';
-import { euclideanDistance2D } from '~/utils/math';
+import { euclideanDistance2D, getMeanAngle } from '~/utils/math';
 import { EMPTY_ARRAY } from '~/utils/redux';
+import { createDeepResultSelector } from '~/utils/selectors';
 
 /**
  * Returns the list of UAV IDs that should be shown on the UI, in the
@@ -92,6 +93,17 @@ export const getCurrentLocalPositionByUavId = (state, uavId) => {
 export const getCurrentHeadingByUavId = (state, uavId) => {
   const uav = getUAVById(state, uavId);
   return uav ? uav.heading : undefined;
+};
+
+/**
+ * Returns the average heading of the active UAVs.
+ */
+export const getAverageHeadingOfActiveUAVs = (state) => {
+  const activeUAVIds = getActiveUAVIds(state);
+  const headings = activeUAVIds
+    .map((uavId) => getCurrentHeadingByUavId(state, uavId))
+    .filter((x) => typeof x === 'number');
+  return getMeanAngle(headings);
 };
 
 /**
@@ -487,7 +499,7 @@ export const getMisalignedUAVIds = createSelector(
   (deviations, threshold) =>
     // eslint-disable-next-line unicorn/no-array-reduce
     Object.entries(deviations).reduce((acc, [uavId, deviation]) => {
-      if (Math.abs(deviation) > threshold) {
+      if (!isNil(deviation) && Math.abs(deviation) > threshold) {
         acc.push(uavId);
       }
 
@@ -583,7 +595,7 @@ export const getUnmappedUAVIds = createSelector(
  * }
  * ```
  *
- * ErrorCode.ON_GROUND is excluded as it is not a real error.
+ * UAVErrorCode.ON_GROUND is excluded as it is not a real error.
  */
 export const getErrorCodeSummaryForUAVsInMission = createSelector(
   getReverseMissionMapping,
@@ -596,7 +608,7 @@ export const getErrorCodeSummaryForUAVsInMission = createSelector(
       const uavState = uavStatesById[uavId];
       if (uavState) {
         for (const code of uavState.errors) {
-          if (code !== ErrorCode.ON_GROUND) {
+          if (code !== UAVErrorCode.ON_GROUND) {
             result.push([code, [uavId, reverseMapping[uavId] || null]]);
           }
         }
@@ -623,7 +635,7 @@ const uavStateContainsSignificantErrorCode = (uavState) => {
     return false;
   }
 
-  if (errors.length === 1 && errors[0] === ErrorCode.ON_GROUND) {
+  if (errors.length === 1 && errors[0] === UAVErrorCode.ON_GROUND) {
     // This is OK
     return false;
   }
@@ -668,11 +680,11 @@ export function getSingleUAVStatusLevel(uav) {
 
   const maxError = Math.max(...uav.errors);
 
-  if (maxError === ErrorCode.RETURN_TO_HOME) {
+  if (maxError === UAVErrorCode.RETURN_TO_HOME) {
     return Status.RTH;
   }
 
-  if (maxError === ErrorCode.ON_GROUND) {
+  if (maxError === UAVErrorCode.ON_GROUND) {
     return Status.SUCCESS;
   }
 
@@ -728,12 +740,12 @@ export function getSingleUAVStatusSummary(uav) {
     maxError = Math.max(...uav.errors);
     const severity = getSeverityOfErrorCode(maxError);
 
-    text = abbreviateError(maxError);
+    text = UAVErrorCode.abbreviate(maxError);
 
-    if (maxError === ErrorCode.RETURN_TO_HOME) {
+    if (maxError === UAVErrorCode.RETURN_TO_HOME) {
       // RTH is treated separately; it is always shown as the special RTH state
       textSemantics = Status.RTH;
-    } else if (maxError === ErrorCode.ON_GROUND) {
+    } else if (maxError === UAVErrorCode.ON_GROUND) {
       // "on ground" is treated separately; it is always shown in green even
       // though it's technically an info message
       textSemantics = Status.SUCCESS;
@@ -755,13 +767,13 @@ export function getSingleUAVStatusSummary(uav) {
   // "gone" or "no telemetry" (inactive) warnings
   if (textSemantics === Status.SUCCESS || textSemantics === Status.INFO) {
     if (uav.age === UAVAge.GONE) {
-      if (text === 'ready' || maxError === ErrorCode.ON_GROUND) {
+      if (text === 'ready' || maxError === UAVErrorCode.ON_GROUND) {
         text = 'gone';
       }
 
       textSemantics = Status.OFF;
     } else if (uav.age === UAVAge.INACTIVE) {
-      if (text === 'ready' || maxError === ErrorCode.ON_GROUND) {
+      if (text === 'ready' || maxError === UAVErrorCode.ON_GROUND) {
         text = 'no telem'; // used to be 'inactive' in earlier versions
       }
 
@@ -785,7 +797,7 @@ export function getSingleUAVStatusSummary(uav) {
 /* eslint-enable complexity */
 
 export const createSingleUAVStatusSummarySelector = () =>
-  createSelector(getUAVById, getSingleUAVStatusSummary);
+  createDeepResultSelector(getUAVById, getSingleUAVStatusSummary);
 
 export const getFollowMapSelectionInUAVDetailsPanel = (state) =>
   state.uavs.panel.followMapSelection;
@@ -795,3 +807,27 @@ export const getSelectedTabInUAVDetailsPanel = (state) =>
 
 export const getSelectedUAVIdInUAVDetailsPanel = (state) =>
   state.uavs.panel.selectedUAVId;
+
+/**
+ * Returns the list of UAV IDs that should be shown on the UI, sorted by their
+ * error codes in a descending way, such that the drones with the most severe
+ * errors get placed at the beginning of the list. Only 'warnings', 'errors'
+ * and 'critical errors' are considered, 'informational messages' are ignored.
+ */
+export const getUAVIdsSortedByErrorCode = createSelector(
+  getUAVIdList,
+  getUAVIdToStateMapping,
+  (uavIds, uavStatesById) =>
+    orderBy(
+      uavIds,
+      [
+        (uavId) =>
+          Math.max(
+            ...uavStatesById[uavId].errors.filter(
+              (e) => getSeverityOfErrorCode(e) > 0
+            )
+          ),
+      ],
+      ['desc']
+    )
+);

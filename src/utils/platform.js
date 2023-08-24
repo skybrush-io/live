@@ -39,4 +39,4 @@ export const platformModifierKey = isRunningOnMac ? 'Cmd' : 'Ctrl';
  * Constant that evaluates to true if we are running on a device that has a
  * touch enabled screen.
  */
-export const isRunningOnTouch = navigator.maxTouchPoints > 0
+export const isRunningOnTouch = navigator.maxTouchPoints > 0;

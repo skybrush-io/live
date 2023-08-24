@@ -4,6 +4,7 @@ import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 import Alarm from '@material-ui/icons/Alarm';
 // import Apps from '@material-ui/icons/Apps';
+import Assignment from '@material-ui/icons/Assignment';
 import ConnectingAirports from '~/icons/ConnectingAirports';
 import Flight from '@material-ui/icons/Flight';
 import Gamepad from '@material-ui/icons/Gamepad';
@@ -173,6 +174,12 @@ const Sidebar = ({
           component='saved-location-list'
         />
         <hr />
+        <Module
+          id='notes'
+          icon={<Assignment />}
+          label='Field notes'
+          component='field-notes'
+        />
         <Module
           id='log'
           badge={<LogStatusBadge />}

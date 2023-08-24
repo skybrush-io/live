@@ -28,9 +28,11 @@ import {
 import { EMPTY_ARRAY, EMPTY_OBJECT } from '~/utils/redux';
 
 import {
-  ALTITUDE_REFERENCE,
+  AltitudeReference,
   DEFAULT_ALTITUDE_REFERENCE,
   DEFAULT_ROOM_SIZE,
+  DEFAULT_TAKEOFF_HEADING,
+  TakeoffHeadingMode,
 } from './constants';
 import {
   getConvexHullOfTrajectory,
@@ -188,7 +190,7 @@ export const getMeanSeaLevelReferenceOfShowCoordinatesOrNull = (state) => {
 
   const altitudeReference = getOutdoorShowAltitudeReference(state);
   return altitudeReference &&
-    altitudeReference.type === ALTITUDE_REFERENCE.AMSL &&
+    altitudeReference.type === AltitudeReference.AMSL &&
     typeof altitudeReference.value === 'number' &&
     Number.isFinite(altitudeReference.value)
     ? altitudeReference.value
@@ -266,6 +268,84 @@ export const getShowOrientation = createSelector(
   getOutdoorShowOrientation,
   (indoor, indoorOrientation, outdoorOrientation) =>
     indoor ? indoorOrientation : outdoorOrientation
+);
+
+/**
+ * Selector that returns the part of the state object that specifies how the
+ * takeoff headings of the show should be calculated when it is an outdoor show.
+ */
+export const getOutdoorShowTakeoffHeadingSpecification = (state) => {
+  const result = get(state, 'show.environment.outdoor.takeoffHeading');
+  return result || DEFAULT_TAKEOFF_HEADING;
+};
+
+/**
+ * Selector that returns the part of the state object that specifies how the
+ * takeoff headings of the show should be calculated when it is an indoor show.
+ */
+export const getIndoorShowTakeoffHeadingSpecification = (state) => {
+  const result = get(state, 'show.environment.indoor.takeoffHeading');
+  return result || DEFAULT_TAKEOFF_HEADING;
+};
+
+/**
+ * Selector that returns the takeoff heading specification of the show,
+ * irrespectively of whether this is an indoor or an outdoor show.
+ */
+export const getTakeoffHeadingSpecification = createSelector(
+  isShowIndoor,
+  getIndoorShowTakeoffHeadingSpecification,
+  getOutdoorShowTakeoffHeadingSpecification,
+  (indoor, indoorSpec, outdoorSpec) => (indoor ? indoorSpec : outdoorSpec)
+);
+
+const convertTakeoffHeadingSpecificationValueToNumber = (spec) => {
+  const { value } = typeof spec === 'object' ? spec : DEFAULT_TAKEOFF_HEADING;
+
+  const valueAsNum =
+    typeof value === 'string'
+      ? Number.parseFloat(value)
+      : typeof value === 'number'
+      ? value
+      : 0;
+
+  return valueAsNum % 360;
+};
+
+/**
+ * Selector that returns the value in the takeoff heading specification,
+ * safely cast into a number.
+ */
+export const getTakeoffHeadingSpecificationValueAsNumber = (state) => {
+  const spec = getTakeoffHeadingSpecification(state);
+  return convertTakeoffHeadingSpecificationValueToNumber(spec);
+};
+
+/**
+ * Selector that returns a function that calculates the effective takeoff
+ * heading of the show, given the takeoff heading specification.
+ */
+export const getCommonTakeoffHeading = createSelector(
+  getTakeoffHeadingSpecification,
+  getShowOrientation,
+  (spec, orientation) => {
+    const { type } = typeof spec === 'object' ? spec : DEFAULT_TAKEOFF_HEADING;
+    const value = convertTakeoffHeadingSpecificationValueToNumber(spec);
+
+    switch (type) {
+      case TakeoffHeadingMode.NONE:
+        return undefined;
+
+      case TakeoffHeadingMode.ABSOLUTE:
+        return value;
+
+      case TakeoffHeadingMode.RELATIVE:
+        return (orientation + value) % 360;
+
+      default:
+        return undefined;
+    }
+  }
 );
 
 /**

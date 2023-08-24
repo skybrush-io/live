@@ -15,11 +15,7 @@ import Header from '@skybrush/mui-components/lib/FormHeader';
 import LargeProgressIndicator from '@skybrush/mui-components/lib/LargeProgressIndicator';
 import StatusLight from '@skybrush/mui-components/lib/StatusLight';
 
-import {
-  describeError,
-  errorCodeToSemantics,
-  ErrorCode,
-} from '~/flockwave/errors';
+import { errorCodeToSemantics, UAVErrorCode } from '~/flockwave/errors';
 import useMessageHub from '~/hooks/useMessageHub';
 import {
   describeOverallPreflightCheckResult,
@@ -34,8 +30,8 @@ import { getUAVById } from './selectors';
 const ErrorList = ({ errorCodes }) => {
   const relevantErrorCodes = (errorCodes || []).filter(
     (code) =>
-      code !== ErrorCode.PREARM_CHECK_IN_PROGRESS &&
-      code !== ErrorCode.PREARM_CHECK_FAILURE
+      code !== UAVErrorCode.PREARM_CHECK_IN_PROGRESS &&
+      code !== UAVErrorCode.PREARM_CHECK_FAILURE
   );
   if (relevantErrorCodes.length === 0) {
     return null;
@@ -47,7 +43,7 @@ const ErrorList = ({ errorCodes }) => {
         {relevantErrorCodes.map((code) => (
           <ListItem key={code}>
             <StatusLight status={errorCodeToSemantics(code)} />
-            <ListItemText primary={describeError(code)} />
+            <ListItemText primary={UAVErrorCode.describe(code)} />
           </ListItem>
         ))}
       </List>

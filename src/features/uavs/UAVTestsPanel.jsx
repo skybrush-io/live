@@ -4,7 +4,6 @@ import React, { useCallback, useRef, useState } from 'react';
 import { useAsyncFn } from 'react-use';
 
 import Button from '@material-ui/core/Button';
-import LinearProgress from '@material-ui/core/LinearProgress';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -16,6 +15,8 @@ import StatusLight from '@skybrush/mui-components/lib/StatusLight';
 import Colors from '~/components/colors';
 import { errorToString } from '~/error-handling';
 import { useMessageHub } from '~/hooks';
+
+import ListItemProgressBar from './ListItemProgressBar';
 
 const tests = [
   {
@@ -60,29 +61,6 @@ const tests = [
     type: 'test',
   },
 ];
-
-const ProgressBar = ({ progress }) => {
-  const { percentage } = progress || {};
-
-  if (isNil(percentage)) {
-    return <LinearProgress value={null} variant='indeterminate' />;
-  } else if (
-    typeof percentage === 'number' &&
-    percentage >= 0 &&
-    percentage < 100
-  ) {
-    return <LinearProgress value={percentage} variant='determinate' />;
-  } else {
-    return null;
-  }
-};
-
-ProgressBar.propTypes = {
-  progress: PropTypes.shape({
-    percentage: PropTypes.number,
-    message: PropTypes.string,
-  }),
-};
 
 const UAVTestButton = ({
   component,
@@ -182,10 +160,10 @@ const UAVTestButton = ({
             errorToString(executionState.error)
           ) : progress ? (
             /* Prefer progress bars even in suspended state */
-            <ProgressBar progress={progress} />
+            <ListItemProgressBar progress={progress} />
           ) : suspended ? (
             /* If we are suspended but we don't have progress info, show an indefinite progress bar */
-            <ProgressBar />
+            <ListItemProgressBar />
           ) : null
         }
       />

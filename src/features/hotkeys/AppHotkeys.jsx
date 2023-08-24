@@ -15,6 +15,7 @@ import { toggleMissionIds } from '~/features/settings/slice';
 import { toggleBroadcast } from '~/features/session/actions';
 import { isBroadcast } from '~/features/session/selectors';
 import { requestRemovalOfSelectedUAVs } from '~/features/uavs/actions';
+import { openUAVDetailsDialog } from '~/features/uavs/details';
 import { getSelectedUAVIds, getUAVIdList } from '~/features/uavs/selectors';
 import { clearStoreAfterConfirmation } from '~/store';
 import { createUAVOperationThunks } from '~/utils/messaging';
@@ -24,11 +25,13 @@ import {
   clearSelectionOrPendingUAVId,
   copyCoordinates,
   deleteLastCharacterOfPendingUAVId,
-  handlePendingUAVIdThenCall,
   handlePendingUAVIdThenDispatch,
 } from './actions';
 import keyMap from './keymap';
-import { sendKeyboardNavigationSignal } from './signal';
+import {
+  isKeyboardNavigationActive,
+  sendKeyboardNavigationSignal,
+} from './signal';
 import { showHotkeyDialog } from './slice';
 
 configureHotkeys({
@@ -107,8 +110,17 @@ export default connect(
     handlers: bindHotkeyHandlers(
       // Redux actions bound to hotkeys
       {
-        ACTIVATE_SELECTION: handlePendingUAVIdThenCall(
-          sendKeyboardNavigationSignal('ACTIVATE_SELECTION'),
+        ACTIVATE_SELECTION: handlePendingUAVIdThenDispatch(
+          () => (dispatch, getState) => {
+            if (isKeyboardNavigationActive()) {
+              sendKeyboardNavigationSignal('ACTIVATE_SELECTION')();
+            } else {
+              const selectedUAVIds = getSelectedUAVIds(getState());
+              if (selectedUAVIds && selectedUAVIds.length > 0) {
+                dispatch(openUAVDetailsDialog(selectedUAVIds.at(-1)));
+              }
+            }
+          },
           { executeOnlyWithoutPendingUAVId: true }
         ),
         CLEAR_SELECTION: clearSelectionOrPendingUAVId,

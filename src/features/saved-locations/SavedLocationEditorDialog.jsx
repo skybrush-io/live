@@ -3,7 +3,7 @@
  */
 
 import PropTypes from 'prop-types';
-import React, { useCallback } from 'react';
+import React, { useCallback, useRef } from 'react';
 import { Form } from 'react-final-form';
 import { connect } from 'react-redux';
 
@@ -15,11 +15,10 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
 
 import {
+  HeadingField,
   LatitudeField,
   LongitudeField,
-  HeadingField,
   TextField,
-  forceFormSubmission,
 } from '~/components/forms';
 import {
   cancelLocationEditing,
@@ -35,74 +34,76 @@ import { shouldOptimizeUIForTouch } from '~/features/settings/selectors';
 import { NEW_ITEM_ID } from '~/utils/collections';
 import { between, integer, join, required } from '~/utils/validation';
 
-const SavedLocationEditorFormPresentation = ({
-  initialValues,
-  onSubmit,
-  optimizeUIForTouch,
-}) => (
-  <Form initialValues={initialValues} onSubmit={onSubmit}>
-    {({ handleSubmit }) => (
-      <form
-        id='SavedLocationEditor'
-        style={{ marginTop: 8, marginBottom: 0 }}
-        onSubmit={handleSubmit}
-      >
-        <TextField
-          fullWidth
-          autoFocus={!optimizeUIForTouch}
-          margin='dense'
-          name='name'
-          label='Name'
-          fieldProps={{ validate: required }}
-        />
-        <Box display='flex' flexDirection='row'>
-          <LatitudeField
-            fullWidth
-            margin='dense'
-            name='center.lat'
-            label='Latitude'
-          />
-          <Box p={0.75} />
-          <LongitudeField
-            fullWidth
-            margin='dense'
-            name='center.lon'
-            label='Longitude'
-          />
-        </Box>
-        <Box display='flex' flexDirection='row'>
-          <HeadingField
-            fullWidth
-            margin='dense'
-            name='rotation'
-            label='Rotation'
-          />
-          <Box p={0.75} />
-          <TextField
-            fullWidth
-            type='number'
-            margin='dense'
-            name='zoom'
-            label='Zoom level'
-            fieldProps={{
-              validate: join([required, integer, between(1, 30)]),
-            }}
-            inputProps={{ min: 1, max: 30 }}
-          />
-        </Box>
-        <TextField
-          fullWidth
-          multiline
-          margin='dense'
-          name='notes'
-          label='Notes'
-          minRows={3}
-          maxRows={3}
-        />
-        <input hidden type='submit' />
-      </form>
-    )}
-  </Form>
+const SavedLocationEditorFormPresentation = React.forwardRef(
+  ({ initialValues, onSubmit, optimizeUIForTouch, }, ref) => (
+    <Form initialValues={initialValues} onSubmit={onSubmit}>
+      {({ form, handleSubmit }) => {
+        ref.current = form;
+
+        return (
+          <form
+            id='SavedLocationEditor'
+            style={{ marginTop: 8, marginBottom: 0 }}
+            onSubmit={handleSubmit}
+          >
+            <TextField
+              autoFocus={!optimizeUIForTouch}
+              fullWidth
+              margin='dense'
+              name='name'
+              label='Name'
+              fieldProps={{ validate: required }}
+            />
+            <Box display='flex' flexDirection='row'>
+              <LatitudeField
+                fullWidth
+                margin='dense'
+                name='center.lat'
+                label='Latitude'
+              />
+              <Box p={0.75} />
+              <LongitudeField
+                fullWidth
+                margin='dense'
+                name='center.lon'
+                label='Longitude'
+              />
+            </Box>
+            <Box display='flex' flexDirection='row'>
+              <HeadingField
+                fullWidth
+                margin='dense'
+                name='rotation'
+                label='Rotation'
+              />
+              <Box p={0.75} />
+              <TextField
+                fullWidth
+                type='number'
+                margin='dense'
+                name='zoom'
+                label='Zoom level'
+                fieldProps={{
+                  validate: join([required, integer, between(1, 30)]),
+                }}
+                inputProps={{ min: 1, max: 30 }}
+              />
+            </Box>
+            <TextField
+              fullWidth
+              multiline
+              margin='dense'
+              name='notes'
+              label='Notes'
+              minRows={3}
+              maxRows={3}
+            />
+            <input hidden type='submit' />
+          </form>
+        );
+      }}
+    </Form>
+  )
 );
 
 SavedLocationEditorFormPresentation.propTypes = {
@@ -127,7 +128,10 @@ const SavedLocationEditorForm = connect(
       initialValues: currentLocation,
       optimizeUIForTouch: shouldOptimizeUIForTouch(state),
     };
-  }
+  },
+  null,
+  null,
+  { forwardRef: true }
 )(SavedLocationEditorFormPresentation);
 
 /**
@@ -135,24 +139,48 @@ const SavedLocationEditorForm = connect(
  * can use to edit the saved location.
  */
 const SavedLocationEditorDialogPresentation = ({
+  currentMapViewAsSavedLocation,
   editedLocationId,
   onClose,
   onDelete,
   onSubmit,
   open,
 }) => {
-  const _forceFormSubmission = useCallback(() => {
-    forceFormSubmission('SavedLocationEditor');
+  const form = useRef(null);
+
+  const copyFromMapView = useCallback(() => {
+    form.current.initialize({
+      ...form.current.getState().values,
+      ...currentMapViewAsSavedLocation,
+    });
+  }, [currentMapViewAsSavedLocation]);
+
+  const submit = useCallback(() => {
+    form.current.submit();
   }, []);
 
   const isNew = editedLocationId === NEW_ITEM_ID;
   const title = isNew ? 'Create new location' : 'Edit saved location';
 
-  const actions = [
-    <Button key='save' color='primary' onClick={_forceFormSubmission}>
+  const actions = [];
+
+  if (!isNew) {
+    actions.push(
+      <Button
+        key='copy-from-map-view'
+        style={{ marginRight: 'auto' }}
+        onClick={copyFromMapView}
+      >
+        Copy from map view
+      </Button>
+    );
+  }
+
+  actions.push(
+    <Button key='save' color='primary' onClick={submit}>
       Save
-    </Button>,
-  ];
+    </Button>
+  );
 
   if (isNew) {
     actions.push(
@@ -184,7 +212,7 @@ const SavedLocationEditorDialogPresentation = ({
       onClose={onClose}
     >
       <DialogContent>
-        <SavedLocationEditorForm onSubmit={onSubmit} />
+        <SavedLocationEditorForm ref={form} onSubmit={onSubmit} />
       </DialogContent>
       <DialogActions>{actions}</DialogActions>
     </DraggableDialog>
@@ -192,6 +220,7 @@ const SavedLocationEditorDialogPresentation = ({
 };
 
 SavedLocationEditorDialogPresentation.propTypes = {
+  currentMapViewAsSavedLocation: PropTypes.object,
   editedLocationId: PropTypes.string,
   onClose: PropTypes.func.isRequired,
   onDelete: PropTypes.func.isRequired,
@@ -206,8 +235,9 @@ SavedLocationEditorDialogPresentation.propTypes = {
 const SavedLocationEditorDialog = connect(
   // mapStateToProps
   (state) => ({
-    open: getEditorDialogVisibility(state),
+    currentMapViewAsSavedLocation: getCurrentMapViewAsSavedLocation(state),
     editedLocationId: getEditedLocationId(state),
+    open: getEditorDialogVisibility(state),
   }),
   // mapDispatchToProps
   (dispatch) => ({

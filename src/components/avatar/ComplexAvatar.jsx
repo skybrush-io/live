@@ -17,7 +17,9 @@ const useStyles = makeStyles(
   (theme) => ({
     avatarWrapper: {
       position: 'relative',
-      marginBottom: theme.spacing(0.5),
+      '&:not(:last-child)': {
+        marginBottom: theme.spacing(0.5),
+      },
 
       '&::after': {
         background: Colors.error,
@@ -39,20 +41,31 @@ const useStyles = makeStyles(
       },
     },
 
+    avatarContent: {
+      width: '100%',
+      textAlign: 'center',
+    },
+
     gone: {
       opacity: 0.7,
     },
 
     hint: {
       fontSize: '0.75rem',
-      color: theme.palette.text.hint,
-      height: theme.spacing(2),
-      lineHeight: theme.spacing(2) + 'px',
-      position: 'absolute',
-      right: theme.spacing(0.5),
-      textAlign: 'right',
-      top: theme.spacing(0.5),
-      whiteSpace: 'nowrap',
+    },
+
+    hintSeparator: {
+      width: '75%',
+
+      marginTop: 0,
+      marginBottom: 2,
+
+      border: '1px solid',
+      borderBottomWidth: 0,
+
+      opacity: 0.6,
+
+      color: 'inherit',
     },
 
     progress: {
@@ -69,6 +82,7 @@ const useStyles = makeStyles(
  * in the system that has an ID.
  */
 const ComplexAvatar = ({
+  AvatarProps,
   batteryFormatter,
   batteryStatus,
   hint,
@@ -90,12 +104,10 @@ const ComplexAvatar = ({
     status = Status.SUCCESS;
   }
 
-  const effectiveHint =
-    hint === undefined ? (label === undefined || label === id ? '' : id) : hint;
+  const effectiveHint = hint || (label === undefined || label === id ? '' : id);
 
   return (
     <>
-      {effectiveHint && <div className={classes.hint}>{effectiveHint}</div>}
       <div
         className={clsx(
           classes.avatarWrapper,
@@ -103,8 +115,15 @@ const ComplexAvatar = ({
           gone && classes.gone
         )}
       >
-        <SemanticAvatar status={editing ? Status.NEXT : status}>
-          {label === undefined ? id : label}
+        <SemanticAvatar
+          status={editing ? Status.NEXT : status}
+          {...AvatarProps}
+        >
+          <div className={classes.avatarContent}>
+            {label === undefined ? id : label}
+            <hr className={classes.hintSeparator} />
+            <div className={classes.hint}>{effectiveHint || '—'}</div>
+          </div>
         </SemanticAvatar>
         {progress > 0 && (
           <CircularProgress
@@ -127,6 +146,7 @@ const ComplexAvatar = ({
 };
 
 ComplexAvatar.propTypes = {
+  AvatarProps: PropTypes.object,
   batteryFormatter: PropTypes.instanceOf(BatteryFormatter),
   batteryStatus: PropTypes.shape({
     cellCount: PropTypes.number,

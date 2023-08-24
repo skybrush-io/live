@@ -5,6 +5,8 @@
 
 import { createSlice } from '@reduxjs/toolkit';
 
+import { setSelection } from '~/features/map/selection';
+import { globalIdToUavId, isUavId } from '~/model/identifiers';
 import { noPayload } from '~/utils/redux';
 
 import { UAV_DETAILS_DIALOG_MIN_WIDTH } from './constants';
@@ -34,6 +36,10 @@ const { actions, reducer } = createSlice({
       state.selectedTab = payload;
     },
 
+    setSelectedUAVIdInUAVDetailsDialog(state, { payload }) {
+      state.selectedUAVId = payload;
+    },
+
     setUAVDetailsDialogPosition(state, { payload }) {
       state.position = payload;
     },
@@ -42,12 +48,22 @@ const { actions, reducer } = createSlice({
       state.width = payload;
     },
   },
+
+  extraReducers: {
+    [setSelection](state, { payload: selection }) {
+      const selectedUAVs = selection.filter(isUavId);
+      if (selectedUAVs.length > 0) {
+        state.selectedUAVId = globalIdToUavId(selectedUAVs[0]);
+      }
+    },
+  },
 });
 
 export const {
   openUAVDetailsDialog,
   closeUAVDetailsDialog,
   setSelectedTabInUAVDetailsDialog,
+  setSelectedUAVIdInUAVDetailsDialog,
   setUAVDetailsDialogPosition,
   setUAVDetailsDialogWidth,
 } = actions;

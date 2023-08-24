@@ -218,8 +218,8 @@ export const FeatureListPresentation = listOf(
         feature={feature}
         selected={selectedFeatureIds.includes(feature.id)}
         onEditFeature={onEditFeature}
-        onRemoveFeature={onRemoveFeature}
         onFocusFeature={onFocusFeature}
+        onRemoveFeature={onRemoveFeature}
         onSelectFeature={onSelectFeature}
         onToggleFeatureVisibility={onToggleFeatureVisibility}
       />

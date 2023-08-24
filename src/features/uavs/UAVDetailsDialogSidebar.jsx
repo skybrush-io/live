@@ -8,9 +8,13 @@ import { makeStyles } from '@material-ui/core/styles';
 
 import DroneAvatar from '~/components/uavs/DroneAvatar';
 import UAVOperationsButtonGroup from '~/components/uavs/UAVOperationsButtonGroup';
+import { UAVSelectorWrapper } from '~/components/uavs/UAVSelector';
 
 import { UAV_DETAILS_DIALOG_SIDEBAR_WIDTH as WIDTH } from './constants';
-import { getSelectedUAVIdInUAVDetailsDialog } from './details';
+import {
+  getSelectedUAVIdInUAVDetailsDialog,
+  setSelectedUAVIdInUAVDetailsDialog,
+} from './details';
 import StatusSummaryMiniTable from './StatusSummaryMiniTable';
 
 const useStyles = makeStyles(
@@ -42,11 +46,18 @@ const useStyles = makeStyles(
 /**
  * Sidebar of the UAV details dialog.
  */
-const UAVDetailsDialogSidebar = ({ uavId }) => {
+const UAVDetailsDialogSidebar = ({ uavId, setUAVId }) => {
   const classes = useStyles();
   return (
     <Box className={classes.root}>
-      <DroneAvatar id={uavId} />
+      <UAVSelectorWrapper sortedByError onSelect={setUAVId}>
+        {(handleClick) => (
+          <DroneAvatar
+            id={uavId}
+            AvatarProps={{ onClick: handleClick, style: { cursor: 'pointer' } }}
+          />
+        )}
+      </UAVSelectorWrapper>
       <Toolbar disableGutters variant='dense' className={classes.toolbar}>
         <Box className={classes.toolbarInner}>
           <UAVOperationsButtonGroup
@@ -62,6 +73,7 @@ const UAVDetailsDialogSidebar = ({ uavId }) => {
 };
 
 UAVDetailsDialogSidebar.propTypes = {
+  setUAVId: PropTypes.func,
   uavId: PropTypes.string,
 };
 
@@ -71,5 +83,7 @@ export default connect(
     uavId: getSelectedUAVIdInUAVDetailsDialog(state),
   }),
   // mapDispatchToProps
-  {}
+  {
+    setUAVId: setSelectedUAVIdInUAVDetailsDialog,
+  }
 )(UAVDetailsDialogSidebar);

@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import MessagesPanel from '~/components/chat/MessagesPanel';
 
 import PreflightStatusPanel from './PreflightStatusPanel';
+import UAVLogsPanel from './UAVLogsPanel';
 import UAVTestsPanel from './UAVTestsPanel';
 
 import {
@@ -23,13 +24,16 @@ const UAVDetailsDialogBody = ({ selectedTab, uavId }) => {
     case 'tests':
       return <UAVTestsPanel uavId={uavId} />;
 
+    case 'logs':
+      return <UAVLogsPanel uavId={uavId} />;
+
     default:
       return null;
   }
 };
 
 UAVDetailsDialogBody.propTypes = {
-  selectedTab: PropTypes.oneOf(['messages', 'preflight', 'tests']),
+  selectedTab: PropTypes.oneOf(['messages', 'preflight', 'tests', 'logs']),
   uavId: PropTypes.string,
 };
 

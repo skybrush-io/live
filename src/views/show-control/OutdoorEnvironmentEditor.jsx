@@ -9,10 +9,15 @@ import IconButton from '@material-ui/core/IconButton';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
+import Typography from '@material-ui/core/Typography';
 import VerticalAlignCenter from '@material-ui/icons/VerticalAlignCenter';
+import Warning from '@material-ui/icons/Warning';
 
+import FormHeader from '@skybrush/mui-components/lib/FormHeader';
 import Tooltip from '@skybrush/mui-components/lib/Tooltip';
+import { COORDINATE_SYSTEM_TYPE } from '@skybrush/show-format';
 
+import { Colors } from '~/components/colors';
 import CoordinateSystemFields from '~/components/CoordinateSystemFields';
 import { SimpleDistanceField } from '~/components/forms/fields';
 import { estimateShowCoordinateSystemFromActiveUAVs } from '~/features/auto-fit/actions';
@@ -26,11 +31,19 @@ import {
   updateOutdoorShowSettings,
 } from '~/features/show/actions';
 import {
-  ALTITUDE_REFERENCE,
-  COORDINATE_SYSTEM_TYPE,
+  AltitudeReference,
+  DEFAULT_TAKEOFF_HEADING,
+  TakeoffHeadingMode,
 } from '~/features/show/constants';
 import AutoFix from '~/icons/AutoFix';
+import {
+  getOutdoorShowOrientation,
+  getOutdoorShowTakeoffHeadingSpecification,
+} from '~/features/show/selectors';
 import { showSuccess } from '~/features/snackbar/actions';
+import { getAverageHeadingOfActiveUAVs } from '~/features/uavs/selectors';
+import { TakeoffHeadingSpecEditor } from './TakeoffHeadingSpecEditor';
+import { normalizeAngle } from '~/utils/geography';
 
 /**
  * Presentation component for the form that allows the user to edit the
@@ -47,14 +60,19 @@ const OutdoorEnvironmentEditor = ({
   onOrientationChanged,
   onSetAltitudeReferenceToAverageAMSL,
   onSetCoordinateSystemFromMap,
+  onSetTakeoffHeading,
+  onSetTakeoffHeadingToAverageActiveUAVHeading,
   showCoordinateSystem,
+  takeoffHeading,
 }) => {
   const usingAMSLReference =
-    altitudeReference && altitudeReference.type === ALTITUDE_REFERENCE.AMSL;
+    altitudeReference && altitudeReference.type === AltitudeReference.AMSL;
 
   return (
     <>
-      <Box display='flex' flexDirection='row' pt={2}>
+      <FormHeader>Coordinate system</FormHeader>
+
+      <Box display='flex' flexDirection='row'>
         <Box>
           <CoordinateSystemFields
             type={COORDINATE_SYSTEM_TYPE}
@@ -87,7 +105,29 @@ const OutdoorEnvironmentEditor = ({
         </Box>
       </Box>
 
-      <Box display='flex' flexDirection='row' pt={1} pb={2}>
+      <TakeoffHeadingSpecEditor
+        takeoffHeading={takeoffHeading}
+        onChange={onSetTakeoffHeading}
+        onSetToAverageHeading={onSetTakeoffHeadingToAverageActiveUAVHeading}
+      />
+
+      <Box pt={1} display='flex' flexDirection='row'>
+        <Box style={{ color: Colors.warning }}>
+          <Warning />
+        </Box>
+        <Box flex={1} pl={1}>
+          <Typography color='textSecondary' variant='body2'>
+            Automatic show origin and orientation calculation assumes that all
+            drones point towards the X axis of the show <u>or</u> that you
+            specified their offset relative to the X axis with the setting
+            above. Absolute takeoff headings are not supported.
+          </Typography>
+        </Box>
+      </Box>
+
+      <FormHeader>Altitude control and RTK corrections</FormHeader>
+
+      <Box display='flex' flexDirection='row' pb={2}>
         <FormControl fullWidth variant='filled'>
           <InputLabel htmlFor='altitude-reference-type'>
             Show is controlled based on...
@@ -95,15 +135,15 @@ const OutdoorEnvironmentEditor = ({
           <Select
             value={
               (altitudeReference ? altitudeReference.type : null) ||
-              ALTITUDE_REFERENCE.AHL
+              AltitudeReference.AHL
             }
             inputProps={{ id: 'altitude-reference-type' }}
             onChange={onAltitudeReferenceTypeChanged}
           >
-            <MenuItem value={ALTITUDE_REFERENCE.AHL}>
+            <MenuItem value={AltitudeReference.AHL}>
               Altitude above home level (AHL)
             </MenuItem>
-            <MenuItem value={ALTITUDE_REFERENCE.AMSL}>
+            <MenuItem value={AltitudeReference.AMSL}>
               Altitude above mean sea level (AMSL)
             </MenuItem>
           </Select>
@@ -138,7 +178,7 @@ const OutdoorEnvironmentEditor = ({
 
 OutdoorEnvironmentEditor.propTypes = {
   altitudeReference: PropTypes.shape({
-    type: PropTypes.oneOf(Object.values(ALTITUDE_REFERENCE)),
+    type: PropTypes.oneOf(Object.values(AltitudeReference)),
     value: PropTypes.number,
   }),
   canEstimateShowCoordinateSystem: PropTypes.bool,
@@ -150,9 +190,15 @@ OutdoorEnvironmentEditor.propTypes = {
   onOrientationChanged: PropTypes.func,
   onSetAltitudeReferenceToAverageAMSL: PropTypes.func,
   onSetCoordinateSystemFromMap: PropTypes.func,
+  onSetTakeoffHeading: PropTypes.func,
+  onSetTakeoffHeadingToAverageActiveUAVHeading: PropTypes.func,
   showCoordinateSystem: PropTypes.shape({
     orientation: PropTypes.string.isRequired,
     origin: PropTypes.arrayOf(PropTypes.number),
+  }),
+  takeoffHeading: PropTypes.shape({
+    type: PropTypes.oneOf(Object.values(TakeoffHeadingMode)),
+    value: PropTypes.string.isRequired,
   }),
 };
 
@@ -164,6 +210,7 @@ export default connect(
       canEstimateShowCoordinateSystemFromActiveUAVs(state),
     showCoordinateSystem: state.show.environment.outdoor.coordinateSystem,
     mapCoordinateSystem: state.map.origin,
+    takeoffHeading: getOutdoorShowTakeoffHeadingSpecification(state),
   }),
 
   // mapDispatchToProps
@@ -207,6 +254,42 @@ export default connect(
       );
       dispatch(showSuccess('Show coordinate system updated from map.'));
     },
+
+    onSetTakeoffHeading: (value) =>
+      updateOutdoorShowSettings({
+        takeoffHeading: value,
+        setupMission: true,
+      }),
+
+    onSetTakeoffHeadingToAverageActiveUAVHeading:
+      () => (dispatch, getState) => {
+        const state = getState();
+        const absoluteAngle = getAverageHeadingOfActiveUAVs(state);
+        if (!Number.isFinite(absoluteAngle)) {
+          return;
+        }
+
+        const takeoffHeading = {
+          ...DEFAULT_TAKEOFF_HEADING,
+          ...getOutdoorShowTakeoffHeadingSpecification(state),
+        };
+        if (takeoffHeading?.type === TakeoffHeadingMode.ABSOLUTE) {
+          takeoffHeading.value = normalizeAngle(absoluteAngle);
+        } else {
+          const showOrientation = getOutdoorShowOrientation(state);
+          takeoffHeading.type = TakeoffHeadingMode.RELATIVE;
+          takeoffHeading.value = normalizeAngle(
+            absoluteAngle - showOrientation
+          );
+        }
+
+        dispatch(
+          updateOutdoorShowSettings({
+            takeoffHeading,
+            setupMission: true,
+          })
+        );
+      },
   },
 
   // mergeProps

@@ -27,7 +27,7 @@ import {
   closeOnboardPreflightChecksDialog,
 } from '~/features/show/slice';
 import { getErrorCodeSummaryForUAVsInMission } from '~/features/uavs/selectors';
-import { describeError, getSeverityOfErrorCode } from '~/flockwave/errors';
+import { getSeverityOfErrorCode, UAVErrorCode } from '~/flockwave/errors';
 import {
   formatIdsAndTruncateTrailingItems as formatUAVIds,
   formatMissionId,
@@ -57,7 +57,7 @@ const PreflightCheckListPresentation = ({ items, showMissionIds, ...rest }) =>
             <StatusLight status={status} />
             <ListItemText
               id={itemId}
-              primary={describeError(item.code)}
+              primary={UAVErrorCode.describe(item.code)}
               secondary={formatUAVIds(
                 item.uavIdsAndIndices.map(
                   showMissionIds

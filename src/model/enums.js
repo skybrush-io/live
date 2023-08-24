@@ -21,6 +21,62 @@ export const Severity = {
 };
 
 /**
+ * Enum representing the known types (formats) of flight logs.
+ */
+export const FlightLogKind = {
+  UNKNOWN: 'unknown',
+  TEXT: 'text',
+  ARDUPILOT: 'ardupilot',
+  ULOG: 'ulog',
+  FLOCKCTRL: 'flockctrl',
+};
+
+/**
+ * Object mapping flight log types to their properties (human readable
+ * descriptions etc).
+ */
+const _propertiesForFlightLogKinds = {
+  [FlightLogKind.UNKNOWN]: {
+    label: 'Unknown',
+    description: 'Unknown flight log format',
+  },
+  [FlightLogKind.TEXT]: {
+    label: 'Plain text',
+    description: 'Plain text flight log',
+  },
+  [FlightLogKind.ARDUPILOT]: {
+    label: 'ArduPilot',
+    description: 'ArduPilot flight log',
+  },
+  [FlightLogKind.ULOG]: {
+    label: 'PX4 ULog',
+    description: 'PX4 ULog flight log',
+  },
+  [FlightLogKind.FLOCKCTRL]: {
+    label: 'FlockCtrl',
+    description: 'FlockCtrl high-level flight log',
+  },
+};
+
+/**
+ * Returns the description of the given flight log kind / format.
+ */
+export function describeFlightLogKind(kind) {
+  const props =
+    _propertiesForFlightLogKinds[kind] ||
+    _propertiesForFlightLogKinds[FlightLogKind.UNKNOWN];
+  return props.description;
+}
+
+/**
+ * Returns the label of the given flight log kind / format.
+ */
+export function getFlightLogKindLabel(kind) {
+  const props = _propertiesForFlightLogKinds[kind];
+  return props ? props.label : String(kind);
+}
+
+/**
  * Enum representing the possible known flight modes of a UAV.
  */
 export const FlightMode = {

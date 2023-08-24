@@ -7,6 +7,12 @@
 @box-background-color-light: #ffffff;
 @box-foreground-color-light: rgba(0, 0, 0, 0.87);
 
+html,
+body {
+  width: 100%;
+  height: 100%;
+}
+
 body {
   font-family: 'Fira Sans', Arial, sans-serif;
   padding: 0px;
@@ -428,6 +434,25 @@ mark {
     & > div:first-child {
       background: transparent !important;
       box-shadow: none !important;
+    }
+  }
+}
+
+/* Markdown editor customization for the "Field notes" panel */
+.EasyMDEContainer {
+  height: 100%;
+
+  & .CodeMirror {
+    height: 100% !important;
+    border: none !important;
+    padding: 4px !important;
+
+    & .CodeMirror-scroll {
+      min-height: unset !important;
+    }
+
+    & .cm-link {
+      color: #4fadf8 !important;
     }
   }
 }

@@ -105,7 +105,7 @@ const BearingCalculator = ({
   return (
     <Typography color='textSecondary' variant='body2' align='center'>
       {hasEnoughMeasurements
-        ? 'Select at least two items to calculate the bearing and distance between them'
+        ? 'Select exactly two items to calculate the bearing and distance between them'
         : 'Add at least two items to calculate the bearing and distance between them'}
     </Typography>
   );

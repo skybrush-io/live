@@ -3,6 +3,7 @@
  * to the UAVs.
  */
 
+import clsx from 'clsx';
 import formatDate from 'date-fns/format';
 import isNil from 'lodash-es/isNil';
 import PropTypes from 'prop-types';
@@ -12,6 +13,7 @@ import { connect } from 'react-redux';
 import Box from '@material-ui/core/Box';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import IconButton from '@material-ui/core/IconButton';
+import { withStyles } from '@material-ui/core/styles';
 import DeleteSweep from '@material-ui/icons/DeleteSweep';
 
 import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
@@ -21,7 +23,10 @@ import ChatBubble from './ChatBubble';
 import Marker from './Marker';
 import MessageField from './MessageField';
 
-import { createMessageListSelector } from '~/features/messages/selectors';
+import {
+  createMessageListSelector,
+  getCommandHistory,
+} from '~/features/messages/selectors';
 import {
   addErrorMessage,
   addInboundMessage,
@@ -34,6 +39,14 @@ import { formatCommandResponseAsHTML } from '~/flockwave/formatting';
 import { parseCommandFromString } from '~/flockwave/messages';
 import { MessageType } from '~/model/enums';
 import messageHub from '~/message-hub';
+
+const styles = {
+  noFocusOutline: {
+    '&:focus': {
+      outline: 'none',
+    },
+  },
+};
 
 const dateFormatter = (x) => formatDate(x, 'H:mm');
 
@@ -166,6 +179,8 @@ ChatAreaBackgroundHint.propTypes = {
 class MessagesPanel extends React.Component {
   static propTypes = {
     chatEntries: PropTypes.arrayOf(PropTypes.object),
+    classes: PropTypes.object,
+    commandHistory: PropTypes.arrayOf(PropTypes.string),
     hideClearButton: PropTypes.bool,
     onClearMessages: PropTypes.func,
     onSend: PropTypes.func,
@@ -184,6 +199,7 @@ class MessagesPanel extends React.Component {
 
     this._chatAreaRef = React.createRef();
     this._messageFieldRef = React.createRef();
+    this._messageFieldContainerRef = React.createRef();
     this._uavSelectorFieldRef = React.createRef();
 
     this.focusOnTextField = this.focusOnTextField.bind(this);
@@ -204,6 +220,8 @@ class MessagesPanel extends React.Component {
   render() {
     const {
       chatEntries,
+      classes,
+      commandHistory,
       hideClearButton,
       onClearMessages,
       optimizeUIForTouch,
@@ -236,26 +254,34 @@ class MessagesPanel extends React.Component {
         />
       );
     const isClearButtonVisible = onClearMessages && !hideClearButton;
-    const outboundHistory = chatEntries
-      .filter((e) => e.type === MessageType.OUTBOUND)
-      .map((e) => e.body);
     const textFields = (
       <Box
+        ref={this._messageFieldContainerRef}
         key='textFieldContainer'
         display='flex'
         alignItems='baseline'
-        className='bottom-bar'
+        className={clsx('bottom-bar', classes.noFocusOutline)}
         pb={2}
         pl={2}
         pr={isClearButtonVisible ? 0 : 2}
+        tabIndex='-1'
+        onKeyDown={(e) => {
+          if (e.code === 'Enter') {
+            this._messageFieldRef.current.focus();
+          }
+        }}
       >
         <MessageField
           fullWidth
           autoFocus={!optimizeUIForTouch}
-          history={outboundHistory}
+          history={commandHistory}
           inputRef={this._messageFieldRef}
           variant='standard'
           onSubmit={this._onSubmit}
+          onEscape={(e) => {
+            this._messageFieldContainerRef.current.focus();
+            e.stopPropagation();
+          }}
         />
         {isClearButtonVisible && (
           <IconButton
@@ -296,6 +322,7 @@ export default connect(
     const messageListSelector = createMessageListSelector();
     return (state, ownProps) => ({
       chatEntries: messageListSelector(state, ownProps.uavId),
+      commandHistory: getCommandHistory(state),
       optimizeUIForTouch: shouldOptimizeUIForTouch(state),
     });
   },
@@ -365,4 +392,4 @@ export default connect(
 
   // ref is needed because we want to access the scrollToBottom() method
   // from the outside
-)(MessagesPanel);
+)(withStyles(styles)(MessagesPanel));

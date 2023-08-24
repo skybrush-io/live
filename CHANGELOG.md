@@ -5,6 +5,43 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Unreleased
+
+### Added
+
+- Added a new "Field notes" panel to the sidebar that can be used to jot down
+  quick notes without having to leave Skybrush Live.
+
+- Added a way to switch the selected UAV in the UAV Details Dialog by clicking
+  the avatar at the top of the sidebar.
+
+- Drawing operations can now be aborted with the `Escape` button.
+
+- Desired takeoff headings for the UAVs before a show can now be different from
+  the orientation of the X axis during a show, allowing for more flexibility in
+  the placement of the GCS and the operator when preparing for a show.
+
+- The UAV details panel now has a "Logs" tab that you can use to download log
+  files from the UAV if the server knows how to fetch the logs.
+
+### Changed
+
+- The `Delete` hotkey now removes the selected features as well.
+
+### Fixed
+
+- Fixed minor issues with scrolling the Field notes panel; the size of the panel
+  was slightly larger than its container so the last line was not visible at the
+  bottom of the panel. This is working correctly now.
+
+## [2.7.2] - 2023-04-22
+
+### Fixed
+
+- Fixed an issue with the "Onboard preflight checks" dialog that resulted in
+  drones in the "On ground with motors off" state appeared incorrectly in the
+  error list.
+
 ## [2.7.1] - 2023-04-21
 
 ### Added

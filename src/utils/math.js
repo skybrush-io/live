@@ -142,6 +142,7 @@ export function getMeanAngle(angles) {
     centroid[1] += Math.sin(angle);
   }
 
+  // Works with centroid = [0, 0] as Math.atan2(0, 0) is 0.
   const result = toDegrees(Math.atan2(centroid[1], centroid[0]));
   return result < 0 ? result + 360 : result;
 }

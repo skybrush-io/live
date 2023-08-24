@@ -118,7 +118,6 @@ export const submitFlyToTargetDialog = (fields) => (dispatch, getState) => {
       // Messages should be sent individually
       for (const uavId of selectedUAVIds) {
         const effectiveTarget = target(uavId);
-        console.log(effectiveTarget);
         if (effectiveTarget) {
           moveUAVs([uavId], { target: effectiveTarget });
         }

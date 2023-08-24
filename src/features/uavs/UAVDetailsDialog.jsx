@@ -1,13 +1,13 @@
 import clamp from 'lodash-es/clamp';
 import PropTypes from 'prop-types';
-import React, { useState } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
-import { Resizable } from 'react-resizable';
-
-import Box from '@material-ui/core/Box';
-import { makeStyles } from '@material-ui/core/styles';
 
 import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
+import ResizableBox from '@skybrush/mui-components/lib/ResizableBox';
+
+import { clearPendingUAVId } from '~/features/hotkeys/actions';
+import { isPendingUAVIdOverlayVisible } from '~/features/hotkeys/selectors';
 
 import {
   UAV_DETAILS_DIALOG_BODY_HEIGHT as BODY_HEIGHT,
@@ -29,42 +29,6 @@ import UAVDetailsDialogBody from './UAVDetailsDialogBody';
 import UAVDetailsDialogSidebar from './UAVDetailsDialogSidebar';
 import UAVDetailsDialogTabs from './UAVDetailsDialogTabs';
 
-const useStyles = makeStyles(
-  (theme) => ({
-    resizeHandle: {
-      width: 15,
-      height: 50,
-
-      position: 'absolute',
-      right: 5,
-      top: '50%',
-
-      cursor: 'ew-resize',
-
-      '&:after': {
-        content: '""',
-        display: 'block',
-
-        width: 10,
-        height: 50,
-
-        borderRight: `5px dotted ${theme.palette.action.selected}`,
-      },
-    },
-  }),
-  { name: 'UAVDetailsDialog' }
-);
-
-const ResizeHandle = React.forwardRef(({ handleAxis, ...props }, ref) => {
-  // The `handleAxis` prop is omitted, so React doesn't complain about it
-  const classes = useStyles();
-  return <Box ref={ref} className={classes.resizeHandle} {...props} />;
-});
-
-ResizeHandle.propTypes = {
-  handleAxis: PropTypes.string,
-};
-
 /**
  * Presentation component for the dialog that allows the user to inspect the
  * details of a specific UAV.
@@ -85,12 +49,6 @@ const UAVDetailsDialog = ({
     y: clamp(initialPosition.y, -verticalBound, verticalBound),
   };
 
-  const [width, setWidth] = useState(initialWidth - SIDEBAR_WIDTH);
-
-  const onResize = (_event, { size }) => {
-    setWidth(size.width);
-  };
-
   return (
     <DraggableDialog
       DraggableProps={{ bounds: 'parent', defaultPosition, onStop: onDragStop }}
@@ -102,26 +60,19 @@ const UAVDetailsDialog = ({
       )}
       onClose={onClose}
     >
-      <Resizable
-        width={width}
-        height={BODY_HEIGHT}
-        minConstraints={[BODY_MIN_WIDTH, BODY_HEIGHT]}
+      <ResizableBox
         axis='x'
-        handle={<ResizeHandle />}
-        onResize={onResize}
+        resizeHandles={['e']}
+        initialSize={{
+          width: initialWidth - SIDEBAR_WIDTH,
+          height: BODY_HEIGHT,
+        }}
+        minConstraints={[BODY_MIN_WIDTH, BODY_HEIGHT]}
+        boxProps={{ maxWidth: '100%' }}
         onResizeStop={onResizeStop}
       >
-        <Box
-          // TODO: Why is `relative` necessary? Introduced in: c81d173647
-          position='relative'
-          width={width}
-          maxWidth='100%'
-          height={BODY_HEIGHT}
-          overflow='auto'
-        >
-          <UAVDetailsDialogBody />
-        </Box>
-      </Resizable>
+        <UAVDetailsDialogBody />
+      </ResizableBox>
     </DraggableDialog>
   );
 };
@@ -148,7 +99,13 @@ export default connect(
 
   // mapDispatchToProps
   {
-    onClose: closeUAVDetailsDialog,
+    onClose: () => (dispatch, getState) => {
+      if (isPendingUAVIdOverlayVisible(getState())) {
+        dispatch(clearPendingUAVId());
+      } else {
+        dispatch(closeUAVDetailsDialog());
+      }
+    },
     onDragStop:
       (_event, { x, y }) =>
       (dispatch) => {

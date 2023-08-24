@@ -3,10 +3,9 @@ import React from 'react';
 import { connect } from 'react-redux';
 import TimeAgo from 'react-timeago';
 
-import { makeStyles } from '@material-ui/core/styles';
-
 import StatusText from '@skybrush/mui-components/lib/StatusText';
 
+import MiniTable from '~/components/MiniTable';
 import {
   abbreviateGPSFixType,
   getFlightModeLabel,
@@ -17,36 +16,8 @@ import { formatNumberSafely, shortTimeAgoFormatter } from '~/utils/formatting';
 
 import { getUAVById } from './selectors';
 
-const useStyles = makeStyles(
-  (theme) => ({
-    root: {
-      fontSize: 'small',
-      width: '100%',
-
-      '& .muted': {
-        color: theme.palette.text.disabled,
-      },
-    },
-
-    header: {
-      textTransform: 'uppercase',
-      color: theme.palette.text.secondary,
-    },
-
-    value: {
-      textAlign: 'right',
-    },
-
-    separator: {},
-  }),
-  {
-    name: 'StatusSummaryMiniTable',
-  }
-);
-
+// TODO: Use the internal `naText` of `MiniTable` instead
 const naText = <span className='muted'>—</span>;
-
-// TODO(ntamas): refactor this in terms of components/mini-table!
 
 const StatusSummaryMiniTable = ({
   gpsFix,
@@ -56,7 +27,6 @@ const StatusSummaryMiniTable = ({
   mode,
   position,
 }) => {
-  const classes = useStyles();
   const { lat, lon, amsl, ahl, agl } = position || {};
   const hasLocalPosition = localPosition && Array.isArray(localPosition);
   const flightModeLabel = mode ? (
@@ -83,11 +53,30 @@ const StatusSummaryMiniTable = ({
       naText
     );
 
+    let { horizontalAccuracy, verticalAccuracy } = gpsFix || {};
+
+    if (typeof horizontalAccuracy === 'number' && horizontalAccuracy > 50) {
+      horizontalAccuracy = '50+';
+    } else {
+      horizontalAccuracy = formatNumberSafely(
+        horizontalAccuracy,
+        2,
+        '',
+        naText
+      );
+    }
+
+    if (typeof verticalAccuracy === 'number' && verticalAccuracy > 50) {
+      verticalAccuracy = '50+';
+    } else {
+      verticalAccuracy = formatNumberSafely(verticalAccuracy, 2, '', naText);
+    }
+
     const gpsAcc = (
       <>
-        {formatNumberSafely(gpsFix?.horizontalAccuracy, 2, '', naText)}
+        {horizontalAccuracy}
         {' / '}
-        {formatNumberSafely(gpsFix?.verticalAccuracy, 2, '', naText)}
+        {verticalAccuracy}
         {' m'}
       </>
     );
@@ -122,24 +111,7 @@ const StatusSummaryMiniTable = ({
     ),
   ]);
 
-  return (
-    <table className={classes.root}>
-      <tbody>
-        {rows.map((row) =>
-          Array.isArray(row) ? (
-            <tr key={row[0]}>
-              <td className={classes.header}>{row[0]}</td>
-              <td className={classes.value}>{row[1]}</td>
-            </tr>
-          ) : (
-            <tr key={row}>
-              <td className={classes.separator} colSpan={2} />
-            </tr>
-          )
-        )}
-      </tbody>
-    </table>
-  );
+  return <MiniTable items={rows} />;
 };
 
 StatusSummaryMiniTable.propTypes = {

@@ -6,8 +6,9 @@
 import isEqual from 'lodash-es/isEqual';
 import { SVD as computeSVD } from 'svd-js';
 
+import { COORDINATE_SYSTEM_TYPE } from '@skybrush/show-format';
+
 import { findAssignmentInDistanceMatrix } from '~/algorithms/matching';
-import { COORDINATE_SYSTEM_TYPE } from '~/features/show/constants';
 import { FlatEarthCoordinateSystem } from '~/utils/geography';
 import {
   calculateDistanceMatrix,

@@ -1,21 +1,43 @@
 /**
- * Coordinate system type for drone shows.
- */
-export const COORDINATE_SYSTEM_TYPE = 'nwu';
-
-/**
  * Altitude reference types for drone shows.
  */
-export const ALTITUDE_REFERENCE = {
+export const AltitudeReference = {
   AHL: 'ahl',
   AMSL: 'amsl',
+};
+
+/**
+ * Takeoff heading modes for drone shows.
+ *
+ * `NONE` means that there is no desired takeoff heading for the drones in the
+ * show; the operator is free to orient the drones towards any direction and
+ * no validations will be performed.
+ *
+ * `ABSOLUTE` means that the takeoff heading is specified as an absolute
+ * compass direction.
+ *
+ * `RELATIVE` means that the takeoff heading is specified as an offset from the
+ * orientation of the X axis of the show.
+ */
+export const TakeoffHeadingMode = {
+  NONE: 'none',
+  ABSOLUTE: 'absolute',
+  RELATIVE: 'relative',
 };
 
 /**
  * Default altitude reference object if it is not defined in the state yet.
  */
 export const DEFAULT_ALTITUDE_REFERENCE = {
-  type: ALTITUDE_REFERENCE.AHL,
+  type: AltitudeReference.AHL,
+  value: 0,
+};
+
+/**
+ * Default takeoff heading specification if it is not defined in the state yet.
+ */
+export const DEFAULT_TAKEOFF_HEADING = {
+  type: TakeoffHeadingMode.RELATIVE,
   value: 0,
 };
 
@@ -43,4 +65,4 @@ export const SHOW_UPLOAD_JOB = Object.freeze({
 /**
  * Maximum number of drones that we support in a single show.
  */
-export const MAX_DRONE_COUNT = 1000;
+export const MAX_DRONE_COUNT = 5000;

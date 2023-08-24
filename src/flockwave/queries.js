@@ -9,6 +9,8 @@ import sortBy from 'lodash-es/sortBy';
 import memoize from 'memoizee';
 import { toScaledJSONFromLonLat } from '~/utils/geography';
 
+import { errorToString } from '~/error-handling';
+
 import { extractResponseForId } from './parsing';
 import { validateExtensionName } from './validation';
 
@@ -57,6 +59,64 @@ export async function getConfigurationOfExtension(hub, name) {
   return extractResponseForId(response, name, {
     error: `Failed to retrieve configuration for extension: ${name}`,
   });
+}
+
+/**
+ * Returns a single flight log from a UAV.
+ */
+export async function getFlightLog(hub, uavId, logId, { onProgress } = {}) {
+  if (!uavId || typeof uavId !== 'string') {
+    throw new Error('Expected non-empty UAV ID');
+  }
+
+  if (!logId || typeof logId !== 'string') {
+    throw new Error('Expected non-empty log ID');
+  }
+
+  let response;
+
+  try {
+    response = await hub.startAsyncOperationForSingleId(
+      uavId,
+      {
+        type: 'LOG-DATA',
+        logId,
+        uavId,
+      },
+      { idProp: null, onProgress, single: true }
+    );
+  } catch (error) {
+    const errorString = errorToString(error);
+    throw new Error(
+      `Failed to retrieve log ${logId} for UAV ${uavId}: ${errorString}`
+    );
+  }
+
+  return response;
+}
+
+/**
+ * Returns the list of flight logs on a single UAV.
+ */
+export async function getFlightLogList(hub, uavId) {
+  if (!uavId || typeof uavId !== 'string') {
+    throw new Error('Expected non-empty UAV ID');
+  }
+
+  let response;
+
+  try {
+    response = await hub.startAsyncOperationForSingleId(uavId, {
+      type: 'LOG-INF',
+    });
+  } catch (error) {
+    const errorString = errorToString(error);
+    throw new Error(
+      `Failed to retrieve log list for UAV ${uavId}: ${errorString}`
+    );
+  }
+
+  return response;
 }
 
 /**
@@ -294,6 +354,8 @@ export class QueryHandler {
   _queries = {
     getBasicBeaconProperties,
     getConfigurationOfExtension,
+    getFlightLog,
+    getFlightLogList,
     getLicenseInformation,
     getMissionTypes,
     getMissionTypeSchemas,

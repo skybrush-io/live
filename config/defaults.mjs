@@ -163,7 +163,11 @@ const defaults = {
   optimizeUIForTouch: {
     /**
      * Whether the UI should be adjusted primarily for touchscreen experience.
-     * @type {boolean}
+     *
+     * If it is left `undefined` at compile time, the initial state will be
+     * determined based on `navigator.maxTouchPoints` during the first run.
+     *
+     * @type {boolean?}
      */
     default: undefined,
 
