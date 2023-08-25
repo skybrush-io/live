@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import Mapping from '@material-ui/icons/FormatLineSpacing';
@@ -14,8 +15,8 @@ import { toggleMissionIds } from '~/features/settings/slice';
  * Toggle button that indicates whether we are primarily showing UAV IDs or
  * mission IDs in the application.
  */
-const MappingToggleButton = ({ selected, onChange }) => (
-  <Tooltip content='Sort by mission IDs'>
+const MappingToggleButton = ({ selected, onChange, t }) => (
+  <Tooltip content={t('mappingToggleButton.sortByMissionID')}>
     <ToggleButton value='missionIds' selected={selected} onChange={onChange}>
       <Mapping />
     </ToggleButton>
@@ -25,6 +26,7 @@ const MappingToggleButton = ({ selected, onChange }) => (
 MappingToggleButton.propTypes = {
   selected: PropTypes.bool,
   onChange: PropTypes.func,
+  t: PropTypes.func,
 };
 
 export default connect(
@@ -36,4 +38,4 @@ export default connect(
   {
     onChange: toggleMissionIds,
   }
-)(MappingToggleButton);
+)(withTranslation()(MappingToggleButton));

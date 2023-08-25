@@ -11,6 +11,11 @@
     "select": "Select",
     "zoom": "Zoom"
   },
+  "OnboardPreflightChecksDialog": {
+    "noError": "None of the UAVs indicated an error.",
+    "passed": "Onboard preflight checks passed.",
+    "signOffOn": "Sign off on onboard preflight checks"
+  },
   "UAVOpButtonGrp": {
     "armMotors": "Arm motors",
     "disarmMotors": "Disarm motors",
@@ -60,6 +65,9 @@
   },
   "map": {
     "resetRotation": "Reset rotation"
+  },
+  "mappingToggleButton": {
+    "sortByMissionID": "Sort by mission IDs"
   },
   "notifications": {
     "connectedToSkybrushServer": "Connected to Skybrush server"

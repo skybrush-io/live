@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import Box from '@material-ui/core/Box';
@@ -46,7 +47,12 @@ const severityToStatus = [
  * failed on at least one of the drones, along with the IDs of the drones on
  * which the preflight checks have failed.
  */
-const PreflightCheckListPresentation = ({ items, showMissionIds, ...rest }) =>
+const PreflightCheckListPresentation = ({
+  items,
+  showMissionIds,
+  t,
+  ...rest
+}) =>
   items.length > 0 ? (
     <List dense disablePadding {...rest}>
       {items.map((item) => {
@@ -72,8 +78,8 @@ const PreflightCheckListPresentation = ({ items, showMissionIds, ...rest }) =>
     </List>
   ) : (
     <BackgroundHint
-      header='Onboard preflight checks passed.'
-      text='None of the UAVs indicated an error.'
+      header={t('OnboardPreflightChecksDialog.passed')}
+      text={t('OnboardPreflightChecksDialog.noError')}
       icon={<CheckCircle />}
       iconColor={Colors.success}
     />
@@ -88,6 +94,7 @@ PreflightCheckListPresentation.propTypes = {
   ),
   onToggle: PropTypes.func,
   showMissionIds: PropTypes.bool,
+  t: PropTypes.func,
 };
 
 const PreflightCheckList = connect(
@@ -98,7 +105,7 @@ const PreflightCheckList = connect(
   }),
   // mapDispatchToProps
   {}
-)(PreflightCheckListPresentation);
+)(withTranslation()(PreflightCheckListPresentation));
 
 /**
  * Presentation component for the dialog that allows the user to inspect the
@@ -111,13 +118,14 @@ const OnboardPreflightChecksDialog = ({
   onClose,
   onSignOff,
   signedOff,
+  t,
 }) => {
   return (
     <DraggableDialog
       fullWidth
       open={open}
       maxWidth='xs'
-      title='Onboard preflight checks'
+      title={t('show.onboardPreflightChecks')}
       titleComponents={<MappingToggleButton />}
       onClose={onClose}
     >
@@ -148,7 +156,7 @@ const OnboardPreflightChecksDialog = ({
                 onChange={signedOff ? onClear : onSignOff}
               />
             }
-            label='Sign off on onboard preflight checks'
+            label={t('OnboardPreflightChecksDialog.signOffOn')}
           />
         </Box>
       </DialogContent>
@@ -163,6 +171,7 @@ OnboardPreflightChecksDialog.propTypes = {
   onSignOff: PropTypes.func,
   open: PropTypes.bool,
   signedOff: PropTypes.bool,
+  t: PropTypes.func,
 };
 
 OnboardPreflightChecksDialog.defaultProps = {
@@ -183,4 +192,4 @@ export default connect(
     onClose: closeOnboardPreflightChecksDialog,
     onSignOff: signOffOnOnboardPreflightChecks,
   }
-)(OnboardPreflightChecksDialog);
+)(withTranslation()(OnboardPreflightChecksDialog));

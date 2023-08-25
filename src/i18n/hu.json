@@ -11,6 +11,11 @@
     "select": "Kijelölés",
     "zoom": "Nagyítás"
   },
+  "OnboardPreflightChecksDialog": {
+    "noError": "Egyik drón sem jelzett hibát.",
+    "passed": "Automata fedélzeti ellenőrzés rendben.",
+    "signOffOn": "Automata fedélzeti ellenőrzés nyugtázása"
+  },
   "UAVOpButtonGrp": {
     "armMotors": "Motorok indítása",
     "disarmMotors": "Motorok leállítása",
@@ -60,6 +65,9 @@
   },
   "map": {
     "resetRotation": "Forgatás visszaállítása"
+  },
+  "mappingToggleButton": {
+    "sortByMissionID": "Rendezés küldetés ID alapján"
   },
   "notifications": {
     "connectedToSkybrushServer": "Csatlakozva a Skybrush szerverhez"
