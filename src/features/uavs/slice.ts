@@ -5,53 +5,32 @@
  * more frequently (at the expense of not being integrated into Redux).
  */
 
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
 import {
   addItemSorted,
   clearOrderedCollection,
+  type Collection,
   deleteItemsByIds,
-  replaceItemOrAddSorted,
   ensureNaturalSortOrder,
+  replaceItemOrAddSorted,
 } from '~/utils/collections';
+
+import { type StoredUAV } from './types';
+
+type UAVsSliceState = Collection<StoredUAV>;
+
+/**
+ * The order of the collecitons defines the preferred ordering of
+ * UAVs on the UI. Currently we sort automatically based on IDs.
+ */
+const initialState: UAVsSliceState = { byId: {}, order: [] };
 
 const { actions, reducer } = createSlice({
   name: 'uavs',
-
-  initialState: {
-    // byId is a map from UAV ID to the UAV object itself
-    byId: {
-      // No UAVs are added by default. Here's how an example item should
-      // look like:
-      // {
-      //     id: "01",
-      //     lastUpdated: 1580225775722,
-      //     position: {
-      //         lat: 47.4732476,
-      //         lon: 19.0618718,
-      //         amsl: undefined,
-      //         ahl: 0,
-      //         agl: undefined,
-      //     },
-      //     gpsFix: ['3D', 17, 0.25, 0.56],
-      //     heading: 210,
-      //     errors: [],
-      //     battery: {
-      //         voltage: 10.4,
-      //         percentage: 41,
-      //         charging: true
-      //     },
-      //     localPosition: [1, 2, 3],
-      //     age: "active"   /* one of 'active', 'inactive', 'gone' */
-      // }
-    },
-    // Order defines the preferred ordering of UAVs on the UI. CUrrently we sort
-    // automatically based on IDs.
-    order: [],
-  },
-
+  initialState,
   reducers: {
-    addUAVs(state, action) {
+    addUAVs(state, action: PayloadAction<Record<StoredUAV['id'], StoredUAV>>) {
       for (const uav of Object.values(action.payload)) {
         addItemSorted(state, uav);
       }
@@ -60,10 +39,10 @@ const { actions, reducer } = createSlice({
     },
 
     clearUAVList(state) {
-      clearOrderedCollection(state);
+      clearOrderedCollection<StoredUAV>(state);
     },
 
-    _removeUAVsByIds(state, action) {
+    _removeUAVsByIds(state, action: PayloadAction<Array<StoredUAV['id']>>) {
       // Do not call this reducer directly from anywhere except in reaction to
       // events dispatched from the global flock object. This is to ensure that
       // there is only a single source of truth for the list of UAVs; calling
@@ -72,7 +51,10 @@ const { actions, reducer } = createSlice({
       deleteItemsByIds(state, action.payload);
     },
 
-    updateAgesOfUAVs(state, action) {
+    updateAgesOfUAVs(
+      state,
+      action: PayloadAction<Record<StoredUAV['id'], StoredUAV['age']>>
+    ) {
       for (const [uavId, age] of Object.entries(action.payload)) {
         const uav = uavId ? state.byId[uavId] : undefined;
         if (uav) {
@@ -81,7 +63,10 @@ const { actions, reducer } = createSlice({
       }
     },
 
-    updateUAVs(state, action) {
+    updateUAVs(
+      state,
+      action: PayloadAction<Record<StoredUAV['id'], StoredUAV>>
+    ) {
       for (const uav of Object.values(action.payload)) {
         replaceItemOrAddSorted(state, uav);
       }

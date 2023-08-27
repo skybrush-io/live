@@ -405,7 +405,7 @@ export const deleteItemById = <T extends ItemLike>(
  */
 export const deleteItemsByIds = <T extends ItemLike>(
   collection: Collection<T>,
-  idsToRemove: string[]
+  idsToRemove: Identifier[]
 ): void => {
   for (const id of idsToRemove) {
     delete collection.byId[id];
@@ -428,7 +428,7 @@ export const deleteItemsByIds = <T extends ItemLike>(
  */
 export const maybeDeleteItemsByIds = <T extends ItemLike>(
   collection: Collection<T>,
-  idsToRemove: string[]
+  idsToRemove: Identifier[]
 ): void => {
   for (const id of idsToRemove) {
     if (collection.byId[id] !== undefined) {
