@@ -3,24 +3,8 @@ import isFunction from 'lodash-es/isFunction';
 
 import { formatDurationHMS } from '~/utils/formatting';
 
-type Clock = {
-  epoch: number;
-  format?: string;
-  id: string;
-  referenceTime?: number;
-  running: boolean;
-  ticks: number;
-  ticksPerSecond: number;
-};
-
-export enum CommonClockId {
-  SYSTEM = 'system',
-  LOCAL = '__local__',
-  MISSION = 'mission',
-  MTC = 'mtc',
-  SHOW = 'show',
-  END_OF_SHOW = 'end_of_show',
-}
+import { type ClocksSliceState } from './slice';
+import { type Clock, CommonClockId } from './types';
 
 /**
  * Remapping of commonly used clock IDs in a Skybrush server to something
@@ -120,7 +104,7 @@ export function formatTicksOnClock(
   let seconds = ticks / ticksPerSecond;
 
   if (Number.isNaN(epoch)) {
-    if (clock.id === CommonClockId.MTC) {
+    if (clock.id === String(CommonClockId.MTC)) {
       // No epoch, so we just simply show a HH:MM:SS:FF SMPTE-style
       // timestamp. We (ab)use the millisecond part of the timestamp
       // to represent the number of frames
@@ -208,4 +192,34 @@ export function isClockAffectedByClockSkew(clock: Clock): boolean {
  */
 export function isClockSigned(clock: Clock): boolean {
   return Boolean(isCommonClockId(clock?.id) && clockIdToProps[clock.id].signed);
+}
+
+/**
+ * Function that updates the state of a clock with the given ID in
+ * a state object.
+ *
+ * @param state - The Redux state object to modify
+ * @param id - The identifier of the clock to update
+ * @param properties - The new properties of the clock
+ */
+export function updateStateOfClock(
+  state: ClocksSliceState,
+  id: Clock['id'],
+  properties: Omit<Clock, 'id'>
+): void {
+  const clock = state.byId[id];
+
+  if (clock) {
+    Object.assign(clock, properties);
+  } else {
+    state.byId[id] = Object.assign(
+      {
+        id,
+        running: false,
+        ticks: 0,
+      },
+      properties
+    );
+    state.order.push(id);
+  }
 }

@@ -30,7 +30,7 @@ import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import Header from '@skybrush/mui-components/lib/FormHeader';
 
 import { HMSDurationField } from '~/components/forms/fields';
-import { CommonClockId } from '~/features/clocks/utils';
+import { CommonClockId } from '~/features/clocks/types';
 import { StartMethod } from '~/features/show/enums';
 import {
   closeStartTimeDialog,

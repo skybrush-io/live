@@ -13,7 +13,7 @@ import { createSelector } from '@reduxjs/toolkit';
 import createCachedSelector from 're-reselect';
 import turfContains from '@turf/boolean-contains';
 
-import { CommonClockId } from '~/features/clocks/utils';
+import { CommonClockId } from '~/features/clocks/types';
 import {
   proposeDistanceLimit,
   proposeHeightLimit,
