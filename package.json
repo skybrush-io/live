@@ -268,7 +268,19 @@
           "format": [
             "camelCase",
             "UPPER_CASE"
-          ]
+          ],
+          "leadingUnderscore": "allow"
+        },
+        {
+          "selector": "parameter",
+          "modifiers": [
+            "unused"
+          ],
+          "format": [
+            "camelCase",
+            "PascalCase"
+          ],
+          "leadingUnderscore": "require"
         },
         {
           "selector": "typeLike",
@@ -282,7 +294,8 @@
             "camelCase",
             "PascalCase",
             "UPPER_CASE"
-          ]
+          ],
+          "leadingUnderscore": "allow"
         }
       ],
       "@typescript-eslint/no-dynamic-delete": "off",

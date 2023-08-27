@@ -12,7 +12,7 @@ import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
 
 import { TextField } from 'mui-rff';
 import { Form } from 'react-final-form';
-import React from 'react';
+import * as React from 'react';
 import { connect } from 'react-redux';
 
 import { shouldOptimizeUIForTouch } from '~/features/settings/selectors';
@@ -56,9 +56,8 @@ const PromptDialogForm: React.FunctionComponent<PromptDialogFormProps> = ({
   };
 
   return (
-    /* eslint-disable @typescript-eslint/explicit-function-return-type */
     <Form initialValues={initialValues} onSubmit={handleSubmit}>
-      {({ handleSubmit }) => (
+      {({ handleSubmit }): JSX.Element => (
         <form onSubmit={handleSubmit}>
           <DialogContent>
             <DialogContentText>{message}</DialogContentText>
@@ -82,7 +81,6 @@ const PromptDialogForm: React.FunctionComponent<PromptDialogFormProps> = ({
         </form>
       )}
     </Form>
-    /* eslint-enable @typescript-eslint/explicit-function-return-type */
   );
 };
 

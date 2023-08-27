@@ -48,9 +48,8 @@ const { reducer, actions } = createSlice({
      * Action that will show the prompt dialog.
      * This is not exported because the thunk version should be used instead.
      */
-    // eslint-disable-next-line @typescript-eslint/naming-convention
     _showPromptDialog: {
-      reducer: (state, action: PayloadAction<Partial<PromptOptions>>) =>
+      reducer: (_state, action: PayloadAction<Partial<PromptOptions>>) =>
         // Nothing is kept from the previous state; this is intentional
         ({
           ...defaultOptions,
@@ -78,7 +77,6 @@ const { reducer, actions } = createSlice({
   },
 });
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
 export const { _cancelPromptDialog, _showPromptDialog, _submitPromptDialog } =
   actions;
 
