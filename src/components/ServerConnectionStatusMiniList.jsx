@@ -15,7 +15,7 @@ import {
   getRoundTripTimeInMilliseconds,
   getServerHostname,
 } from '~/features/servers/selectors';
-import { ConnectionState } from '~/model/connections';
+import { ConnectionState } from '~/model/enums';
 
 const connectionStateToPrimaryText = {
   [ConnectionState.CONNECTED]: 'Connected',

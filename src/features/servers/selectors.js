@@ -1,7 +1,7 @@
 import isNil from 'lodash-es/isNil';
 import { createSelector } from '@reduxjs/toolkit';
 
-import { ConnectionState } from '~/model/connections';
+import { ConnectionState } from '~/model/enums';
 import { selectOrdered } from '~/utils/collections';
 
 import { CLOCK_SKEW_WARNING_THRESHOLD, MAX_ROUNDTRIP_TIME } from './constants';

@@ -5,7 +5,7 @@
 
 import { createSlice } from '@reduxjs/toolkit';
 
-import { ConnectionState } from '~/model/connections';
+import { ConnectionState } from '~/model/enums';
 import { getAuthenticationTokenFromUrl } from '~/utils/authentication';
 import { noPayload } from '~/utils/redux';
 

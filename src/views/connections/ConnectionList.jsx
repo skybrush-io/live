@@ -24,7 +24,7 @@ import TimeAgo from 'react-timeago';
 
 import { listOf } from '~/components/helpers/lists';
 import { showServerSettingsDialog } from '~/features/servers/actions';
-import { ConnectionState } from '~/model/connections';
+import { ConnectionState } from '~/model/enums';
 import { getConnectionsInOrder } from '~/selectors/ordered';
 
 /**

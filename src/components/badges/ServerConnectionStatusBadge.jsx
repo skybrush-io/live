@@ -9,7 +9,7 @@ import SidebarBadge from '@skybrush/mui-components/lib/SidebarBadge';
 
 import Colors from '~/components/colors';
 import { getCurrentServerState } from '~/features/servers/selectors';
-import { ConnectionState } from '~/model/connections';
+import { ConnectionState } from '~/model/enums';
 
 const colorForState = {
   [ConnectionState.CONNECTED]: Colors.success,
