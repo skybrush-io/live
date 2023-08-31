@@ -3,29 +3,38 @@
  * stores the state of the authentication dialog.
  */
 
-import { createSlice } from '@reduxjs/toolkit';
+import { type Response_AUTHRESP_SingleStep } from 'flockwave-spec';
+import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
+
+type AuthenticationDialogSliceState = {
+  lastError?: string;
+  open: boolean;
+};
+
+/**
+ * The default state for the authentication dialog.
+ */
+const initialState: AuthenticationDialogSliceState = {
+  lastError: undefined,
+  open: false,
+};
 
 /**
  * The reducer that handles actions related to the authentication dialog.
  */
 const { actions, reducer } = createSlice({
   name: 'authentication-dialog',
-
-  /**
-   * The default state for the authentication dialog.
-   */
-  initialState: {
-    lastError: undefined,
-    open: false,
-  },
-
+  initialState,
   reducers: {
-    authenticateToServerFulfilled(state, { payload }) {
+    authenticateToServerFulfilled(
+      state,
+      { payload }: PayloadAction<Response_AUTHRESP_SingleStep>
+    ) {
       if (payload.result) {
         state.lastError = undefined;
         state.open = false;
       } else {
-        state.lastError = payload.reason || 'Unexpected failure';
+        state.lastError = payload.reason ?? 'Unexpected failure';
       }
     },
 

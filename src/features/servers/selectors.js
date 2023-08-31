@@ -5,8 +5,8 @@ import { ConnectionState } from '~/model/enums';
 import { selectOrdered } from '~/utils/collections';
 
 import { CLOCK_SKEW_WARNING_THRESHOLD, MAX_ROUNDTRIP_TIME } from './constants';
-import { Protocol } from './server-settings-dialog';
 import { INVALID } from './slice';
+import { Protocol } from './types';
 
 /**
  * Returns the current authentication token that the user possesses.

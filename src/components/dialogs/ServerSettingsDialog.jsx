@@ -49,10 +49,8 @@ import {
   getServerProtocolWithDefaultWS,
   isConnecting,
 } from '~/features/servers/selectors';
-import {
-  isTCPConnectionSupported,
-  Protocol,
-} from '~/features/servers/server-settings-dialog';
+import { isTCPConnectionSupported } from '~/features/servers/server-settings-dialog';
+import { Protocol } from '~/features/servers/types';
 import {
   createValidator,
   between,

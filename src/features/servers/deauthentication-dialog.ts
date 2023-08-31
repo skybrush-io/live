@@ -5,19 +5,23 @@
 
 import { createSlice } from '@reduxjs/toolkit';
 
+type DeauthenticationDialogSliceState = {
+  open: boolean;
+};
+
+/**
+ * The default state for the deauthentication dialog.
+ */
+const initialState: DeauthenticationDialogSliceState = {
+  open: false,
+};
+
 /**
  * The reducer that handles actions related to the deauthentication dialog.
  */
 const { actions, reducer } = createSlice({
   name: 'deauthentication-dialog',
-
-  /**
-   * The default state for the deauthentication dialog.
-   */
-  initialState: {
-    open: false,
-  },
-
+  initialState,
   reducers: {
     /**
      * Action that closes the deauthentication dialog.

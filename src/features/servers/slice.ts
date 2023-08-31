@@ -3,78 +3,90 @@
  * servers and whether we are authenticated to any of them.
  */
 
-import { createSlice } from '@reduxjs/toolkit';
+import {
+  type License,
+  type Response_AUTHINF,
+  type Response_AUTHWHOAMI,
+} from 'flockwave-spec';
+import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
 import { ConnectionState } from '~/model/enums';
 import { getAuthenticationTokenFromUrl } from '~/utils/authentication';
+import { type Collection } from '~/utils/collections';
 import { noPayload } from '~/utils/redux';
+
+import {
+  type ServerAuthenticationInformation,
+  type ServerParameters,
+} from './types';
+import { addServer } from './utils';
+
+export type ServersSliceState = {
+  current: {
+    authentication: ServerAuthenticationInformation;
+    features: Record<string, boolean>;
+    license?: License;
+    state: ConnectionState;
+    timeSync: {
+      adjusting?: boolean;
+      adjustmentResult?: boolean;
+      calculating?: boolean;
+      clockSkew?: number;
+      roundTripTime?: number;
+    };
+    version?: string;
+  };
+  isAuthenticating: boolean;
+  isScanning: boolean;
+  detected: Collection<ServerParameters>;
+  token?: string;
+  timeSyncDialog: {
+    open: boolean;
+  };
+};
 
 /**
  * Part of the default state object that represents a connection where the
  * information about the authentication requirements of the server is
  * not available yet.
  */
-export const INVALID = {
+export const INVALID: ServerAuthenticationInformation = {
   methods: [],
   required: false,
   user: '',
   valid: false,
 };
 
-/**
- * Helper function to handle the common parts of `addDetectedServer()` and
- * `addInferredServer()` in the action list.
- */
-function addServer(state, { action, inferred }) {
-  const { hostName, label, port, protocol } = action.payload;
-  const type = inferred ? 'inferred' : 'detected';
-  const key = `${hostName}:${port}:${type}:${protocol}`;
-  const item = { id: key, hostName, label, port, protocol, type };
-
-  action.key = key;
-
-  if (state.detected.byId[key] === undefined) {
-    // Server not seen yet; add it to the end
-    action.wasAdded = true;
-    state.detected.order.push(key);
-  } else {
-    action.wasAdded = false;
-  }
-
-  state.detected.byId[key] = item;
-}
+const initialState: ServersSliceState = {
+  current: {
+    authentication: INVALID,
+    features: {},
+    license: undefined,
+    state: ConnectionState.DISCONNECTED,
+    timeSync: {
+      adjusting: false,
+      adjustmentResult: undefined,
+      calculating: false,
+      clockSkew: undefined,
+      roundTripTime: undefined,
+    },
+    version: undefined,
+  },
+  isAuthenticating: false,
+  isScanning: false,
+  detected: {
+    byId: {},
+    order: [],
+  },
+  token: getAuthenticationTokenFromUrl(),
+  timeSyncDialog: {
+    open: false,
+  },
+};
 
 const { actions, reducer } = createSlice({
   name: 'servers',
-
-  initialState: {
-    current: {
-      authentication: INVALID,
-      features: {},
-      license: null,
-      state: ConnectionState.DISCONNECTED,
-      timeSync: {
-        adjusting: false,
-        adjustmentResult: null,
-        calculating: false,
-        clockSkew: null,
-        roundTripTime: null,
-      },
-      version: null,
-    },
-    isAuthenticating: false,
-    isScanning: false,
-    detected: {
-      byId: {},
-      order: [],
-    },
-    token: getAuthenticationTokenFromUrl(),
-
-    timeSyncDialog: {
-      open: false,
-    },
-  },
-
+  initialState,
   reducers: {
     /**
      * Adds a detected server to the list of detected servers in the server
@@ -84,8 +96,11 @@ const { actions, reducer } = createSlice({
      * completed; this will contain an opaque identifier that can be used later
      * in other actions to refer to the entry that was just created.
      */
-    addDetectedServer(state, action) {
-      addServer(state, { action, inferred: false });
+    addDetectedServer(
+      state,
+      action: PayloadAction<Omit<ServerParameters, 'id' | 'type'>>
+    ) {
+      addServer(state, 'detected', action);
     },
 
     /**
@@ -97,14 +112,20 @@ const { actions, reducer } = createSlice({
      * completed; this will contain an opaque identifier that can be used later
      * in other actions to refer to the entry that was just created.
      */
-    addInferredServer(state, action) {
-      addServer(state, { action, inferred: true });
+    addInferredServer(
+      state,
+      action: PayloadAction<Omit<ServerParameters, 'id' | 'type'>>
+    ) {
+      addServer(state, 'inferred', action);
     },
 
     /**
      * Adds one or more new features to the list of features supported by the server.
      */
-    addServerFeatures(state, action) {
+    addServerFeatures(
+      state,
+      action: PayloadAction<Array<string | { name: string; data: boolean }>>
+    ) {
       let { payload } = action;
 
       if (!Array.isArray(payload)) {
@@ -127,7 +148,7 @@ const { actions, reducer } = createSlice({
      */
     adjustServerTimePromisePending(state) {
       state.current.timeSync.adjusting = true;
-      state.current.timeSync.adjustmentResult = null;
+      state.current.timeSync.adjustmentResult = undefined;
     },
 
     /**
@@ -186,7 +207,7 @@ const { actions, reducer } = createSlice({
      * Clears the information about the currently active license on the server.
      */
     clearServerLicense(state) {
-      state.current.license = null;
+      state.current.license = undefined;
     },
 
     /**
@@ -194,8 +215,8 @@ const { actions, reducer } = createSlice({
      */
     clearTimeSyncStatistics(state) {
       state.current.timeSync = {
-        clockSkew: null,
-        roundTripTime: null,
+        clockSkew: undefined,
+        roundTripTime: undefined,
       };
     },
 
@@ -211,18 +232,21 @@ const { actions, reducer } = createSlice({
      * Notifies the state store that we have finished calculating the clock skew
      * between the client and the server and that we have a result.
      */
-    calculateClockSkewPromiseFulfilled(state, action) {
+    calculateClockSkewPromiseFulfilled(
+      state,
+      action: PayloadAction<{ clockSkew?: number; roundTripTime?: number }>
+    ) {
       state.current.timeSync.calculating = false;
 
       const { clockSkew, roundTripTime } = action.payload;
       state.current.timeSync.clockSkew =
         typeof clockSkew === 'number' && Number.isFinite(clockSkew)
           ? clockSkew
-          : null;
+          : undefined;
       state.current.timeSync.roundTripTime =
         typeof roundTripTime === 'number' && Number.isFinite(roundTripTime)
           ? roundTripTime
-          : null;
+          : undefined;
     },
 
     /**
@@ -236,14 +260,14 @@ const { actions, reducer } = createSlice({
     /**
      * Closes the server-client time synchronization dialog.
      */
-    closeTimeSyncWarningDialog: noPayload((state) => {
+    closeTimeSyncWarningDialog: noPayload<ServersSliceState>((state) => {
       state.timeSyncDialog.open = false;
     }),
 
     /**
      * Opens the server-client time synchronization dialog.
      */
-    openTimeSyncWarningDialog: noPayload((state) => {
+    openTimeSyncWarningDialog: noPayload<ServersSliceState>((state) => {
       state.timeSyncDialog.open = true;
     }),
 
@@ -262,15 +286,18 @@ const { actions, reducer } = createSlice({
      * Action factory that sets the name and domain of the currently authenticated
      * user.
      */
-    setAuthenticatedUser(state, action) {
-      state.current.authentication.user = action.payload || '';
+    setAuthenticatedUser(state, action: PayloadAction<string | undefined>) {
+      state.current.authentication.user = action.payload ?? '';
     },
 
     /**
      * Action factory that creates an action that sets whether we are connected
      * to the current server that the user is trying to communicate with or not.
      */
-    setCurrentServerConnectionState(state, action) {
+    setCurrentServerConnectionState(
+      state,
+      action: PayloadAction<ConnectionState>
+    ) {
       const newState = action.payload;
 
       state.current.state = newState;
@@ -285,14 +312,14 @@ const { actions, reducer } = createSlice({
     /**
      * Sets the information about the currently active license on the server.
      */
-    setServerLicense(state, { payload: license }) {
+    setServerLicense(state, { payload: license }: PayloadAction<License>) {
       state.current.license = license;
     },
 
     /**
      * Sets version information about the currently active server.
      */
-    setServerVersion(state, { payload: version }) {
+    setServerVersion(state, { payload: version }: PayloadAction<string>) {
       state.current.version = version;
     },
 
@@ -315,7 +342,13 @@ const { actions, reducer } = createSlice({
     /**
      * Updates the authentication settings known about the current server.
      */
-    updateCurrentServerAuthenticationSettings(state, action) {
+    updateCurrentServerAuthenticationSettings(
+      state,
+      action: PayloadAction<
+        Pick<Response_AUTHINF, 'methods' | 'required'> &
+          Pick<Response_AUTHWHOAMI, 'user'>
+      >
+    ) {
       const { methods, required, user } = action.payload;
 
       if (!Array.isArray(methods)) {
@@ -323,7 +356,7 @@ const { actions, reducer } = createSlice({
       }
 
       state.current.authentication.required = Boolean(required);
-      state.current.authentication.methods = methods.map((x) => String(x));
+      state.current.authentication.methods = methods.map(String);
       if (user !== undefined) {
         state.current.authentication.user = user;
       }
@@ -335,22 +368,36 @@ const { actions, reducer } = createSlice({
      * Updates the hostname of a server, used as a fallback when no
      * label is available for the server.
      */
-    updateDetectedServerHostname(state, action) {
+    updateDetectedServerHostname(
+      state,
+      action: PayloadAction<{
+        key: ServerParameters['id'];
+        hostName: ServerParameters['hostName'];
+      }>
+    ) {
       const { key, hostName } = action.payload;
-      if (state.detected.byId[key] !== undefined) {
+      const server = state.detected.byId[key];
+      if (server) {
         // Server is still there, update the name
-        state.detected.byId[key].hostName = hostName;
+        server.hostName = hostName;
       }
     },
 
     /**
      * Updates the displayed label of a server.
      */
-    updateDetectedServerLabel(state, action) {
+    updateDetectedServerLabel(
+      state,
+      action: PayloadAction<{
+        key: ServerParameters['id'];
+        label: ServerParameters['label'];
+      }>
+    ) {
       const { key, label } = action.payload;
-      if (state.detected.byId[key] !== undefined) {
+      const server = state.detected.byId[key];
+      if (server) {
         // Server is still there, update the name
-        state.detected.byId[key].label = label;
+        server.label = label;
       }
     },
   },
