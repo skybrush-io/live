@@ -2,30 +2,50 @@
  * @file Slice of the state object that stores the state of the 3D view.
  */
 
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
+import { type Vector3Tuple } from 'three';
+
+import { type EulerTuple, NavigationMode } from './types';
+
+type ThreeDSliceState = {
+  camera: {
+    position?: Vector3Tuple;
+    rotation?: EulerTuple;
+  };
+
+  navigation: {
+    mode: NavigationMode;
+    // TODO: Probably unused, verify this when it can be typechecked!
+    parameters: Record<string, unknown>;
+  };
+
+  tooltip?: string;
+
+  sceneId: number;
+};
+
+const initialState: ThreeDSliceState = {
+  camera: {
+    position: undefined,
+    rotation: undefined,
+  },
+
+  navigation: {
+    mode: NavigationMode.WALK,
+    parameters: {},
+  },
+
+  tooltip: undefined,
+
+  sceneId: 0,
+};
 
 const { actions, reducer } = createSlice({
   name: 'threeD',
-
-  initialState: {
-    camera: {
-      position: null,
-      rotation: null,
-    },
-
-    navigation: {
-      mode: 'walk',
-      parameters: {},
-    },
-
-    tooltip: null,
-
-    sceneId: 0,
-  },
-
+  initialState,
   reducers: {
     notifySceneRemoval(state) {
-      // increase sceneInsrance by 1 -- this is used to force a re-mounting
+      // increase sceneInstance by 1 -- this is used to force a re-mounting
       // of <a-scene>. This is needed because otherwise the 3D view would crash
       // when it is re-parented in the workbench, which could happen in
       // multiple cases (e.g., when a panel is dropped below the 3D view,
@@ -45,13 +65,22 @@ const { actions, reducer } = createSlice({
       // Nothing to do here, the saga will handle this action.
     },
 
-    setCameraPose(state, action) {
+    setCameraPose(
+      state,
+      action: PayloadAction<{ position: Vector3Tuple; rotation: EulerTuple }>
+    ) {
       const { position, rotation } = action.payload;
       state.camera.position = position;
       state.camera.rotation = rotation;
     },
 
-    setNavigationMode(state, action) {
+    setNavigationMode(
+      state,
+      action: PayloadAction<
+        | NavigationMode
+        | { mode: NavigationMode; parameters: Record<string, unknown> }
+      >
+    ) {
       const { payload } = action;
 
       if (typeof payload === 'string') {
@@ -67,12 +96,12 @@ const { actions, reducer } = createSlice({
       }
     },
 
-    showTooltip(state, action) {
-      state.tooltip = action.payload ? String(action.payload) : null;
+    showTooltip(state, action: PayloadAction<string | undefined>) {
+      state.tooltip = action.payload ? String(action.payload) : undefined;
     },
 
     hideTooltip(state) {
-      state.tooltip = null;
+      state.tooltip = undefined;
     },
   },
 });

@@ -3,21 +3,27 @@
  * panel in the appplication.
  */
 
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
+type LightControlSliceState = {
+  active: boolean;
+  color: string;
+};
+
+const initialState: LightControlSliceState = {
+  active: false,
+  color: '#ffffff',
+};
+
+// TODO: Remove unnecessary type checks and conversions!
 const { actions, reducer } = createSlice({
   name: 'lightControl',
-
-  initialState: {
-    active: false,
-    color: '#ffffff',
-  },
-
+  initialState,
   reducers: {
     // Internal action; do not use directly unless you know what you are
     // doing because chances are that you need a side effect that informs
     // the server about the change.
-    setColor(state, action) {
+    setColor(state, action: PayloadAction<string>) {
       if (typeof action.payload === 'string') {
         state.color = action.payload;
       }
@@ -26,7 +32,7 @@ const { actions, reducer } = createSlice({
     // Internal action; do not use directly unless you know what you are
     // doing because chances are that you need a side effect that informs
     // the server about the change.
-    setLightControlActive(state, action) {
+    setLightControlActive(state, action: PayloadAction<boolean>) {
       state.active = Boolean(action.payload);
     },
   },

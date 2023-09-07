@@ -3,7 +3,22 @@
  * stores the state of the saved location editor dialog.
  */
 
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
+
+import { type SavedLocation } from './types';
+
+type SavedLocationEditorSliceState = {
+  dialogVisible: boolean;
+  editedLocationId?: SavedLocation['id'];
+};
+
+/**
+ * The default settings for the part of the state object being defined here.
+ */
+const initialState: SavedLocationEditorSliceState = {
+  dialogVisible: false,
+  editedLocationId: undefined,
+};
 
 /**
  * The reducer function that handles actions related to the saved
@@ -11,15 +26,7 @@ import { createSlice } from '@reduxjs/toolkit';
  */
 const { actions, reducer } = createSlice({
   name: 'saved-location-editor',
-
-  /**
-   * The default settings for the part of the state object being defined here.
-   */
-  initialState: {
-    dialogVisible: false,
-    editedLocationId: undefined,
-  },
-
+  initialState,
   reducers: {
     _cancelLocationEditing(state) {
       state.editedLocationId = undefined;
@@ -32,10 +39,11 @@ const { actions, reducer } = createSlice({
     /**
      * Action that will open the saved location editor dialog and set the
      * identifier of the currently edited location.
-     *
-     * @param {number} locationId  the identifier of the saved location to edit
      */
-    editSavedLocation(state, { payload: locationId }) {
+    editSavedLocation(
+      state,
+      { payload: locationId }: PayloadAction<SavedLocation['id']>
+    ) {
       state.dialogVisible = true;
       state.editedLocationId = locationId;
     },
