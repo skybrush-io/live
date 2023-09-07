@@ -69,6 +69,10 @@ const useStyles = makeStyles(
 
       opacity: 0,
 
+      '&:hover': {
+        opacity: 1,
+      },
+
       transition: theme.transitions.create(['opacity'], {
         duration: theme.transitions.duration.short,
       }),
