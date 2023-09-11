@@ -3,147 +3,141 @@
  * other measurements that the app allows to perform on the UAVs.
  */
 
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import intersection from 'lodash-es/intersection';
 
 import {
   addItemSortedUnlessExists,
+  type Collection,
   deleteItemsByIds,
 } from '~/utils/collections';
 import { noPayload } from '~/utils/redux';
 
-const { actions, reducer } = createSlice({
-  name: 'measurement',
+import { type AveragingResult } from './types';
 
-  initialState: {
-    // Object containing the state of all the coordinate averaging measurements
-    // being performed
-    averagingResults: {
-      byId: {
-        /* The shape of a single result item looks like this:
+type MeasurementSliceState = {
+  /**
+   * Object containing the state of all the coordinate averaging measurements
+   * being performed
+   */
+  averagingResults: Collection<AveragingResult>;
 
-        {
-          "id": "47",
-          "startedAt": 12323532726      // Unix timestamp, milliseconds
-          "lastSampleAt": 12323542726   // Unix timestamp, milliseconds
-          "extraSamplingTime": 0,       // milliseconds
-          "numSamples": 100,
-          "mean": {
-            "lat": 47,
-            "lon": 19,
-            "amsl": 123,
-            "dist": 1.2
-          },
-          "sqDiff": { ...}
-        }
+  averagingDialog: {
+    open: boolean;
+    selectedUAVIds: Array<AveragingResult['id']>;
+  };
+};
 
-        */
-      },
-      order: [],
-    },
-
-    averagingDialog: {
-      open: false,
-      selectedUAVIds: [],
-    },
+const initialState: MeasurementSliceState = {
+  averagingResults: {
+    byId: {},
+    order: [],
   },
 
+  averagingDialog: {
+    open: false,
+    selectedUAVIds: [],
+  },
+};
+
+const { actions, reducer } = createSlice({
+  name: 'measurement',
+  initialState,
   reducers: {
-    closeAveragingDialog: noPayload((state) => {
+    closeAveragingDialog: noPayload<MeasurementSliceState>((state) => {
       state.averagingDialog.open = false;
     }),
 
-    showAveragingDialog: noPayload((state) => {
+    showAveragingDialog: noPayload<MeasurementSliceState>((state) => {
       state.averagingDialog.open = true;
     }),
 
-    setSelectedUAVIdsForAveragingMeasurement(state, action) {
+    setSelectedUAVIdsForAveragingMeasurement(
+      state,
+      action: PayloadAction<Array<AveragingResult['id']>>
+    ) {
       state.averagingDialog.selectedUAVIds = [...action.payload];
     },
 
-    startAveragingUAVCoordinateById(state, action) {
+    startAveragingUAVCoordinateById(
+      state,
+      action: PayloadAction<AveragingResult['id']>
+    ) {
       const uavId = action.payload;
 
-      addItemSortedUnlessExists(state.averagingResults, {
+      addItemSortedUnlessExists<AveragingResult>(state.averagingResults, {
         id: uavId,
         startedAt: Date.now(),
-        lastSampleAt: null,
+        lastSampleAt: undefined,
         numSamples: 0,
         extraSamplingTime: 0,
         sampling: true,
-        mean: {
-          lat: 0,
-          lon: 0,
-          amsl: 0,
-          ahl: 0,
-        },
-        sqDiff: {
-          lat: 0,
-          lon: 0,
-          amsl: 0,
-          ahl: 0,
-        },
+        mean: { lat: 0, lon: 0, amsl: 0, ahl: 0 },
+        sqDiff: { lat: 0, lon: 0, amsl: 0, ahl: 0 },
       });
     },
 
-    pauseAveragingUAVCoordinatesByIds(state, action) {
+    pauseAveragingUAVCoordinatesByIds(
+      state,
+      action: PayloadAction<AveragingResult['id']>
+    ) {
       const uavIds = action.payload;
       const results = state.averagingResults;
 
       for (const uavId of uavIds) {
         const item = results.byId[uavId];
-        if (item) {
+        if (item && typeof item.startedAt === 'number') {
           item.sampling = false;
           item.extraSamplingTime += Date.now() - item.startedAt;
-          item.startedAt = null;
-          item.lastSampleAt = null;
+          item.startedAt = undefined;
+          item.lastSampleAt = undefined;
         }
       }
     },
 
-    restartAveragingUAVCoordinatesByIds(state, action) {
+    restartAveragingUAVCoordinatesByIds(
+      state,
+      action: PayloadAction<AveragingResult['id']>
+    ) {
       const uavIds = action.payload;
       const results = state.averagingResults;
 
       for (const uavId of uavIds) {
-        if (results.byId[uavId]) {
+        const result = results.byId[uavId];
+        if (result) {
           results.byId[uavId] = {
-            ...results.byId[uavId],
+            ...result,
             startedAt: Date.now(),
-            lastSampleAt: null,
+            lastSampleAt: undefined,
             numSamples: 0,
             extraSamplingTime: 0,
             sampling: true,
-            mean: {
-              lat: 0,
-              lon: 0,
-              amsl: 0,
-              ahl: 0,
-            },
-            sqDiff: {
-              lat: 0,
-              lon: 0,
-              amsl: 0,
-              ahl: 0,
-            },
+            mean: { lat: 0, lon: 0, amsl: 0, ahl: 0 },
+            sqDiff: { lat: 0, lon: 0, amsl: 0, ahl: 0 },
           };
         }
       }
     },
 
-    resumeAveragingUAVCoordinatesByIds(state, action) {
+    resumeAveragingUAVCoordinatesByIds(
+      state,
+      action: PayloadAction<Array<AveragingResult['id']>>
+    ) {
       const uavIds = action.payload;
-      const results = state.averagingResults;
 
       for (const uavId of uavIds) {
-        if (results.byId[uavId]) {
-          results.byId[uavId].sampling = true;
-          results.byId[uavId].startedAt = Date.now();
+        const result = state.averagingResults.byId[uavId];
+        if (result) {
+          result.sampling = true;
+          result.startedAt = Date.now();
         }
       }
     },
 
-    stopAveragingUAVCoordinatesByIds(state, action) {
+    stopAveragingUAVCoordinatesByIds(
+      state,
+      action: PayloadAction<Array<AveragingResult['id']>>
+    ) {
       const uavIds = action.payload;
 
       deleteItemsByIds(state.averagingResults, uavIds);
@@ -154,7 +148,12 @@ const { actions, reducer } = createSlice({
       );
     },
 
-    updateAveragingByIds(state, action) {
+    updateAveragingByIds(
+      state,
+      action: PayloadAction<
+        Record<AveragingResult['id'], Omit<AveragingResult, 'id'>>
+      >
+    ) {
       for (const [uavId, updates] of Object.entries(action.payload)) {
         const item = state.averagingResults.byId[uavId];
         if (item) {
