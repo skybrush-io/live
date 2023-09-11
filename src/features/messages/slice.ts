@@ -3,11 +3,37 @@
  * stores the console messages exchanged between UAVs and the operator.
  */
 
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
-import { MessageType } from '~/model/enums';
+import { MessageType, type Severity } from '~/model/enums';
+import type UAV from '~/model/uav';
 
+import { type Message } from './types';
 import { addMessage } from './utils';
+
+export type MessagesSliceState = {
+  /**
+   * Stores the messages received and sent and any additional entries to
+   * show in chat histories
+   */
+  byId: Record<Message['id'], Message>;
+
+  /** Command history for recalling earlier messages in the input box */
+  commandHistory: string[];
+
+  /** Message IDs sorted by UAV IDs */
+  uavIdsToMessageIds: Record<UAV['id'], Array<Message['id']>>;
+
+  /** Stores the next message ID that will be used */
+  nextMessageId: number;
+};
+
+const initialState: MessagesSliceState = {
+  byId: {},
+  commandHistory: [],
+  uavIdsToMessageIds: {},
+  nextMessageId: 1,
+};
 
 /**
  * The reducer function that handles actions related to message exchange
@@ -15,25 +41,13 @@ import { addMessage } from './utils';
  */
 const { actions, reducer } = createSlice({
   name: 'messages',
-
-  initialState: {
-    // Stores the messages received and sent and any additional entries to
-    // show in chat histories, indexed by some arbitrary IDs (say, numbers)
-    byId: {},
-    // Command history for recalling earlier messages in the input box
-    commandHistory: [],
-    // Message IDs sorted by UAV IDs
-    uavIdsToMessageIds: {
-      // Keys should be UAV IDs here. The corresponding values should be
-      // arrays of message IDs.
-    },
-    // Stores the next message ID that will be used
-    nextMessageId: 1,
-  },
-
+  initialState,
   reducers: {
-    addErrorMessage(state, action) {
-      const { message, uavId, refs } = action.payload;
+    addErrorMessage(
+      state,
+      action: PayloadAction<{ message: string; refs?: number; uavId: string }>
+    ) {
+      const { message, refs, uavId } = action.payload;
 
       const messageId = addMessage(
         state,
@@ -46,11 +60,19 @@ const { actions, reducer } = createSlice({
         refs
       );
 
-      action.messageId = messageId;
+      (action as Record<string, unknown>)['messageId'] = messageId;
     },
 
-    addInboundMessage(state, action) {
-      const { uavId, message, refs, severity } = action.payload;
+    addInboundMessage(
+      state,
+      action: PayloadAction<{
+        message: string;
+        refs?: number;
+        severity?: Severity;
+        uavId: string;
+      }>
+    ) {
+      const { message, refs, severity, uavId } = action.payload;
 
       const messageId = addMessage(
         state,
@@ -67,10 +89,13 @@ const { actions, reducer } = createSlice({
         refs
       );
 
-      action.messageId = messageId;
+      (action as Record<string, unknown>)['messageId'] = messageId;
     },
 
-    addOutboundMessage(state, action) {
+    addOutboundMessage(
+      state,
+      action: PayloadAction<{ message: string; uavId?: string }>
+    ) {
       const { message, uavId } = action.payload;
       if (!uavId) {
         console.warn('Cannot send message to null recipient');
@@ -83,7 +108,7 @@ const { actions, reducer } = createSlice({
           type: MessageType.OUTBOUND,
           author: 'Operator',
           date: Date.now(),
-          responseId: null,
+          responseId: undefined,
           recipient: uavId,
           body: message,
           percentage: undefined,
@@ -93,16 +118,16 @@ const { actions, reducer } = createSlice({
         uavId
       );
 
-      action.messageId = messageId;
+      (action as Record<string, unknown>)['messageId'] = messageId;
 
       if (state.commandHistory.at(-1) !== message) {
         state.commandHistory.push(message);
       }
     },
 
-    clearMessagesOfUAVById(state, action) {
+    clearMessagesOfUAVById(state, action: PayloadAction<string>) {
       const { payload: uavId } = action;
-      const messageIdsForUAV = state.uavIdsToMessageIds[uavId] || [];
+      const messageIdsForUAV = state.uavIdsToMessageIds[uavId] ?? [];
 
       for (const messageId of messageIdsForUAV) {
         delete state.byId[messageId];
@@ -111,7 +136,14 @@ const { actions, reducer } = createSlice({
       delete state.uavIdsToMessageIds[uavId];
     },
 
-    updateProgressByMessageId(state, action) {
+    updateProgressByMessageId(
+      state,
+      action: PayloadAction<{
+        messageId: Message['id'];
+        progress?: { message?: string; percentage?: number };
+        suspended?: boolean;
+      }>
+    ) {
       const { messageId, progress, suspended } = action.payload;
       const messageState = state.byId[messageId];
       if (messageState && typeof progress === 'object') {

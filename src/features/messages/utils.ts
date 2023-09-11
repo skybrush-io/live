@@ -1,5 +1,13 @@
-export function addMessage(state, message, peer, refs) {
-  message.id = state.nextMessageId;
+import { type MessagesSliceState } from './slice';
+import { type Message } from './types';
+
+export function addMessage(
+  state: MessagesSliceState,
+  messageStub: Omit<Message, 'id'>,
+  peer: string,
+  refs?: number
+): Message['id'] {
+  const message: Message = { id: state.nextMessageId++, ...messageStub };
 
   if (refs !== undefined) {
     const originalMessage = state.byId[refs];
@@ -9,7 +17,6 @@ export function addMessage(state, message, peer, refs) {
   }
 
   state.byId[message.id] = message;
-  state.nextMessageId += 1;
 
   let idList = state.uavIdsToMessageIds[peer];
   if (!idList) {
