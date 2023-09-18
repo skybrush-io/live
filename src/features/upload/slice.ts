@@ -3,117 +3,145 @@
  * show being executed.
  */
 
-import isNil from 'lodash-es/isNil';
-import { createSlice } from '@reduxjs/toolkit';
-
-import { ensureItemsInQueue, moveItemsBetweenQueues } from './utils';
+import { type Action, createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
 import { SHOW_UPLOAD_JOB } from '~/features/show/constants';
 import { clearLoadedShow } from '~/features/show/slice';
-import { deleteItemById, replaceItemOrAddToFront } from '~/utils/collections';
+import type UAV from '~/model/uav';
+import { type Collection, replaceItemOrAddToFront } from '~/utils/collections';
 import { noPayload } from '~/utils/redux';
 
-function clearLastUploadResultForJobTypeHelper(state, jobType) {
-  deleteItemById(state.history, jobType);
-}
+import { type JobPayload, type UploadJob } from './types';
+import {
+  clearLastUploadResultForJobTypeHelper,
+  clearQueues,
+  ensureItemsInQueue,
+  moveItemsBetweenQueues,
+} from './utils';
 
-function clearQueues(state) {
-  state.queues.failedItems = [];
-  state.queues.itemsFinished = [];
-  state.queues.itemsQueued = [];
-  state.queues.itemsWaitingToStart = [];
-  state.errors = {};
-  state.dialog.showLastUploadResult = false;
-}
+export type UploadSliceState = {
+  currentJob: {
+    /**
+     * Type of current job being executed by the uploader. Value is kept after
+     * the job finishes so we can restart it if needed.
+     */
+
+    // TODO: Maybe create a unique symbol for job types?
+    type?: string;
+
+    /**
+     * Payload of current job; can be an arbitrary object and it is the
+     * task of the upload saga to interpret it. Its semantics primarily
+     * depends on the type of the current job. Value is kept after
+     * the job finishes so we can restart it if needed.
+     */
+    payload?: JobPayload;
+
+    /** Whether the job is running or not */
+    running: boolean;
+  };
+
+  /**
+   * History of recent upload jobs. Each upload job has a _type_ and a
+   * _hash_; the type identifies the type of the job (e.g., show upload,
+   * parameter upload etc) while the key is a compact representation of the
+   * exact data that was uploaded such that different jobs of the same type
+   * have different keys. In the absence of such a hash, use a sequential
+   * counter. The ID of the job should be the type and we only keep the
+   * latest job from each type in the history.
+   */
+  history: Collection<UploadJob>;
+
+  queues: {
+    itemsInProgress: Array<UAV['id']>;
+    itemsWaitingToStart: Array<UAV['id']>;
+    itemsQueued: Array<UAV['id']>;
+    itemsFinished: Array<UAV['id']>;
+    failedItems: Array<UAV['id']>;
+  };
+
+  // If you add a new queue above, make sure that the ALL_QUEUES array
+  // is updated in features/upload/utils.js
+
+  errors: Record<UAV['id'], unknown>;
+
+  dialog: {
+    open: boolean;
+    showLastUploadResult: boolean;
+    selectedJob: {
+      type?: string;
+      payload?: JobPayload;
+    };
+    backAction?: Action;
+  };
+
+  /** Persistent part of the slice */
+  settings: {
+    /** Whether failed upload jobs should be automatically retried */
+    autoRetry: boolean;
+
+    /**
+     * Whether the lights of the drones with
+     * failed uploads should be flashed
+     */
+    flashFailed: boolean;
+  };
+};
+
+const initialState: UploadSliceState = {
+  currentJob: {
+    type: undefined,
+    payload: undefined,
+    running: false,
+  },
+
+  history: {
+    order: [],
+    byId: {},
+  },
+  queues: {
+    itemsInProgress: [],
+    itemsWaitingToStart: [],
+    itemsQueued: [],
+    itemsFinished: [],
+    failedItems: [],
+  },
+  errors: {},
+  dialog: {
+    open: false,
+    showLastUploadResult: false,
+    selectedJob: {
+      type: undefined,
+      payload: undefined,
+    },
+    backAction: undefined,
+  },
+  settings: {
+    autoRetry: false,
+    flashFailed: false,
+  },
+};
 
 const { actions, reducer } = createSlice({
   name: 'upload',
-
-  initialState: {
-    currentJob: {
-      // Type of current job being executed by the uploader. Value is kept after
-      // the job finishes so we can restart it if needed.
-      type: null,
-      // Payload of current job; can be an arbitrary object and it is the
-      // task of the upload saga to interpret it. Its semantics primarily
-      // depends on the type of the current job. Value is kept after
-      // the job finishes so we can restart it if needed.
-      payload: null,
-      // Whether the job is running or not
-      running: false,
-    },
-
-    history: {
-      // History of recent upload jobs. Each upload job has a _type_ and a
-      // _hash_; the type identifies the type of the job (e.g., show upload,
-      // parameter upload etc) while the key is a compact representation of the
-      // exact data that was uploaded such that different jobs of the same type
-      // have different keys. In the absence of such a hash, use a sequential
-      // counter. The ID of the job should be the type and we only keep the
-      // latest job from each type in the history.
-      //
-      // A job looks like this:
-      //
-      // {
-      //   "id": "show-upload",
-      //   "key": "deadbeef"
-      //   "payload": ... /* any arbitrary object */
-      //   "result": ... /* success | error | cancelled */
-      // }
-      order: [],
-      byId: {},
-    },
-
-    queues: {
-      itemsInProgress: [],
-      itemsWaitingToStart: [],
-      itemsQueued: [],
-      itemsFinished: [],
-      failedItems: [],
-    },
-
-    // If you add a new queue above, make sure that the ALL_QUEUES array
-    // is updated in features/upload/utils.js
-
-    errors: {},
-
-    dialog: {
-      open: false,
-      showLastUploadResult: false,
-      selectedJob: {
-        type: null,
-        payload: null,
-      },
-      backAction: null,
-    },
-
-    // Persistent part of the slice
-    settings: {
-      // Whether failed upload jobs should be automatically retried
-      autoRetry: false,
-
-      // Whether the lights of the drones with failed uploads should be flashed
-      flashFailed: false,
-    },
-  },
-
+  initialState,
   reducers: {
-    clearLastUploadResultForJobType(state, action) {
+    clearLastUploadResultForJobType(state, action: PayloadAction<string>) {
       const { payload: jobType } = action;
       if (jobType) {
         clearLastUploadResultForJobTypeHelper(state, jobType);
       }
     },
 
-    clearUploadQueue: noPayload((state) => {
+    clearUploadQueue: noPayload<UploadSliceState>((state) => {
       state.queues.itemsWaitingToStart = [];
     }),
 
-    closeUploadDialog: noPayload((state) => {
+    closeUploadDialog: noPayload<UploadSliceState>((state) => {
       state.dialog.open = false;
     }),
 
-    dismissLastUploadResult: noPayload((state) => {
+    dismissLastUploadResult: noPayload<UploadSliceState>((state) => {
       state.dialog.showLastUploadResult = false;
     }),
 
@@ -127,7 +155,14 @@ const { actions, reducer } = createSlice({
       doNotMoveWhenIn: ['itemsQueued', 'itemsInProgress'],
     }),
 
-    setupNextUploadJob(state, action) {
+    setupNextUploadJob(
+      state,
+      action: PayloadAction<{
+        type: string;
+        payload: JobPayload;
+        targets: Array<UAV['id']>;
+      }>
+    ) {
       const { payload } = action;
       const { type, payload: jobPayload, targets } = payload;
 
@@ -137,18 +172,18 @@ const { actions, reducer } = createSlice({
       }
 
       state.currentJob.type = type;
-      state.currentJob.payload = isNil(jobPayload) ? null : jobPayload;
+      state.currentJob.payload = jobPayload;
 
       clearQueues(state);
 
       state.queues.itemsWaitingToStart = [...targets];
     },
 
-    setUploadAutoRetry(state, action) {
+    setUploadAutoRetry(state, action: PayloadAction<boolean>) {
       state.settings.autoRetry = Boolean(action.payload);
     },
 
-    setFlashFailed(state, action) {
+    setFlashFailed(state, action: PayloadAction<boolean>) {
       state.settings.flashFailed = Boolean(action.payload);
     },
 
@@ -164,7 +199,10 @@ const { actions, reducer } = createSlice({
       target: 'itemsWaitingToStart',
     }),
 
-    _notifyUploadFinished(state, action) {
+    _notifyUploadFinished(
+      state,
+      action: PayloadAction<{ success: boolean; cancelled: boolean }>
+    ) {
       const { success, cancelled } = action.payload;
 
       // Dispatched by the saga; should not be dispatched manually
@@ -178,12 +216,11 @@ const { actions, reducer } = createSlice({
       state.currentJob.running = false;
 
       // Store the upload result in the history
-      const result = cancelled ? 'cancelled' : success ? 'success' : 'error';
       if (state.currentJob.type) {
-        const historyItem = {
+        const historyItem: UploadJob = {
           id: state.currentJob.type,
           payload: state.currentJob.payload,
-          result,
+          result: cancelled ? 'cancelled' : success ? 'success' : 'error',
         };
         replaceItemOrAddToFront(state.history, historyItem);
       }
@@ -226,19 +263,27 @@ const { actions, reducer } = createSlice({
     }),
 
     _setErrorMessageForUAV: {
-      reducer(state, action) {
+      reducer(
+        state,
+        action: PayloadAction<{ uavId: UAV['id']; message: string }>
+      ) {
         const { uavId, message } = action.payload;
         if (message) {
-          state.errors[uavId] = String(message);
+          state.errors[uavId] = message;
         } else {
           delete state.errors[uavId];
         }
       },
 
-      prepare: (uavId, message) => ({ payload: { uavId, message } }),
+      prepare: (uavId: UAV['id'], message: string | Error) => ({
+        payload: { uavId, message: String(message) },
+      }),
     },
 
-    openUploadDialogKeepingCurrentJob(state, action) {
+    openUploadDialogKeepingCurrentJob(
+      state,
+      action: PayloadAction<{ backAction?: Action }>
+    ) {
       const { payload: options } = action;
       const { backAction } = options ?? {};
 
@@ -246,11 +291,17 @@ const { actions, reducer } = createSlice({
       // type
       if (state.dialog.selectedJob?.type) {
         state.dialog.open = true;
-        state.dialog.backAction = backAction ?? null;
+        state.dialog.backAction = backAction;
       }
     },
 
-    openUploadDialogForJob(state, action) {
+    openUploadDialogForJob(
+      state,
+      action: PayloadAction<{
+        job?: { type?: string; payload?: JobPayload };
+        options?: { backAction?: Action };
+      }>
+    ) {
       const { payload } = action;
       const { job, options } = payload ?? {};
       const { type: newJobType, payload: newJobPayload } = job ?? {};
@@ -270,10 +321,10 @@ const { actions, reducer } = createSlice({
         clearQueues(state);
       }
 
-      state.dialog.backAction = backAction ?? null;
+      state.dialog.backAction = backAction;
       state.dialog.selectedJob = {
         type: newJobType,
-        payload: newJobPayload || null,
+        payload: newJobPayload,
       };
       state.dialog.showLastUploadResult = false;
       state.dialog.open = true;
@@ -281,21 +332,21 @@ const { actions, reducer } = createSlice({
 
     // Trigger actions for the upload saga
 
-    startUpload: noPayload(() => {
+    startUpload: noPayload<UploadSliceState>(() => {
       // Nothing else to do, this action triggers a saga as a side effect and
       // the saga will do the hard work.
     }),
 
-    cancelUpload: noPayload(() => {
+    cancelUpload: noPayload<UploadSliceState>(() => {
       // The action will stop the upload saga; nothing to do here.
       // State will be updated in _notifyUploadFinished()
     }),
   },
 
-  extraReducers: {
-    [clearLoadedShow](state) {
+  extraReducers(builder) {
+    builder.addCase(clearLoadedShow, (state) => {
       clearLastUploadResultForJobTypeHelper(state, SHOW_UPLOAD_JOB.type);
-    },
+    });
   },
 });
 
