@@ -720,7 +720,7 @@ export const getUserDefinedHeightLimit = (state) => {
 /**
  * Returns the reference clock that the show clock is syncing to.
  */
-export const getShowClockReference = (state) => state.show.start.clock;
+export const getShowClockReference = (state) => state.show.start.clock ?? null;
 
 /**
  * Returns the metadata of the show, if any.
