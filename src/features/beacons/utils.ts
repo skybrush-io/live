@@ -1,3 +1,5 @@
+import { type Draft } from '@reduxjs/toolkit';
+
 import { type BeaconsSliceState } from './slice';
 import { type Beacon } from './types';
 
@@ -10,7 +12,7 @@ import { type Beacon } from './types';
  * @param properties - The new properties of the beacon
  */
 export function updateStateOfBeacon(
-  state: BeaconsSliceState,
+  state: Draft<BeaconsSliceState>,
   id: Beacon['id'],
   properties: Omit<Beacon, 'id'>
 ): void {

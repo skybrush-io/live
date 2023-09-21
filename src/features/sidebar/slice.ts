@@ -4,10 +4,11 @@
  */
 
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
+import { type ReadonlyDeep } from 'type-fest';
 
-type SidebarSliceState = {
+type SidebarSliceState = ReadonlyDeep<{
   open: boolean;
-};
+}>;
 
 const initialState: SidebarSliceState = {
   open: false,

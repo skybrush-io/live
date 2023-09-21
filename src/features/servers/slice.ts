@@ -9,6 +9,7 @@ import {
   type Response_AUTHWHOAMI,
 } from 'flockwave-spec';
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
+import { type ReadonlyDeep } from 'type-fest';
 
 import { ConnectionState } from '~/model/enums';
 import { getAuthenticationTokenFromUrl } from '~/utils/authentication';
@@ -21,7 +22,7 @@ import {
 } from './types';
 import { addServer } from './utils';
 
-export type ServersSliceState = {
+export type ServersSliceState = ReadonlyDeep<{
   current: {
     authentication: ServerAuthenticationInformation;
     features: Record<string, boolean>;
@@ -43,7 +44,7 @@ export type ServersSliceState = {
   timeSyncDialog: {
     open: boolean;
   };
-};
+}>;
 
 /**
  * Part of the default state object that represents a connection where the

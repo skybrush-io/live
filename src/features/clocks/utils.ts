@@ -1,5 +1,6 @@
 import dateFnsFormatter from 'date-fns/format';
 import isFunction from 'lodash-es/isFunction';
+import { type Draft } from '@reduxjs/toolkit';
 
 import { formatDurationHMS } from '~/utils/formatting';
 
@@ -203,7 +204,7 @@ export function isClockSigned(clock: Clock): boolean {
  * @param properties - The new properties of the clock
  */
 export function updateStateOfClock(
-  state: ClocksSliceState,
+  state: Draft<ClocksSliceState>,
   id: Clock['id'],
   properties: Omit<Clock, 'id'>
 ): void {

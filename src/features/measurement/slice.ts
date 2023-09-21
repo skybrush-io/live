@@ -3,8 +3,9 @@
  * other measurements that the app allows to perform on the UAVs.
  */
 
-import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import intersection from 'lodash-es/intersection';
+import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
+import { type ReadonlyDeep } from 'type-fest';
 
 import {
   addItemSortedUnlessExists,
@@ -15,7 +16,7 @@ import { noPayload } from '~/utils/redux';
 
 import { type AveragingResult } from './types';
 
-type MeasurementSliceState = {
+type MeasurementSliceState = ReadonlyDeep<{
   /**
    * Object containing the state of all the coordinate averaging measurements
    * being performed
@@ -26,7 +27,7 @@ type MeasurementSliceState = {
     open: boolean;
     selectedUAVIds: Array<AveragingResult['id']>;
   };
-};
+}>;
 
 const initialState: MeasurementSliceState = {
   averagingResults: {

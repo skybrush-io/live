@@ -4,10 +4,11 @@
  */
 
 import { createSlice } from '@reduxjs/toolkit';
+import { type ReadonlyDeep } from 'type-fest';
 
-type DeauthenticationDialogSliceState = {
+type DeauthenticationDialogSliceState = ReadonlyDeep<{
   open: boolean;
-};
+}>;
 
 /**
  * The default state for the deauthentication dialog.

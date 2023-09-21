@@ -4,13 +4,14 @@
  */
 
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
+import { type ReadonlyDeep } from 'type-fest';
 
 import { type SavedLocation } from './types';
 
-type SavedLocationEditorSliceState = {
+type SavedLocationEditorSliceState = ReadonlyDeep<{
   dialogVisible: boolean;
   editedLocationId?: SavedLocation['id'];
-};
+}>;
 
 /**
  * The default settings for the part of the state object being defined here.

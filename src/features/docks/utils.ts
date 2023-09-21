@@ -1,3 +1,5 @@
+import { type Draft } from '@reduxjs/toolkit';
+
 import { type DocksSliceState } from './slice';
 import { type DockState } from './types';
 
@@ -10,7 +12,7 @@ import { type DockState } from './types';
  * @param properties - The new properties of the dock
  */
 export function updateStateOfDock(
-  state: DocksSliceState,
+  state: Draft<DocksSliceState>,
   id: DockState['id'],
   properties: Omit<DockState, 'id'>
 ): void {

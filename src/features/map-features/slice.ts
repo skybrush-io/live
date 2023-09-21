@@ -4,6 +4,7 @@
  */
 
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
+import { type ReadonlyDeep } from 'type-fest';
 
 import { type Feature } from '~/model/features';
 import {
@@ -14,7 +15,9 @@ import {
 
 import { type FeatureProperties } from './types';
 
-type MapFeaturesSliceState = Collection<Feature & FeatureProperties>;
+type MapFeaturesSliceState = ReadonlyDeep<
+  Collection<Feature & FeatureProperties>
+>;
 
 const initialState: MapFeaturesSliceState = {
   byId: {

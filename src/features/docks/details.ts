@@ -4,16 +4,17 @@
  */
 
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
+import { type ReadonlyDeep } from 'type-fest';
 
 import { noPayload } from '~/utils/redux';
 
 import { DockDetailsDialogTab, type DockState } from './types';
 
-type DockDetailsSliceState = {
+type DockDetailsSliceState = ReadonlyDeep<{
   open: boolean;
   selectedDockId?: DockState['id'];
   selectedTab: DockDetailsDialogTab;
-};
+}>;
 
 const initialState: DockDetailsSliceState = {
   open: false,

@@ -3,13 +3,14 @@
  */
 
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
+import { type ReadonlyDeep } from 'type-fest';
 
 import { noPayload } from '~/utils/redux';
 
-type HotkeysSliceState = {
+type HotkeysSliceState = ReadonlyDeep<{
   dialogVisible: boolean;
   pendingUAVId: string;
-};
+}>;
 
 const initialState: HotkeysSliceState = {
   dialogVisible: false,

@@ -6,12 +6,13 @@
  */
 
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
+import { type ReadonlyDeep } from 'type-fest';
 
 import { type Identifier } from '~/utils/collections';
 
 import { updateExpiry } from './utils';
 
-export type SessionSliceState = {
+export type SessionSliceState = ReadonlyDeep<{
   /** Whether UAV commands should be broadcast */
   broadcast: boolean;
 
@@ -26,7 +27,7 @@ export type SessionSliceState = {
 
   /** Whether the current session has expired */
   isExpired: boolean;
-};
+}>;
 
 const initialState: SessionSliceState = {
   broadcast: false,

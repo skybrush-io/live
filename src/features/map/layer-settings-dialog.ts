@@ -4,15 +4,16 @@
  */
 
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
+import { type ReadonlyDeep } from 'type-fest';
 
 import { removeLayer } from '~/features/map/layers';
 import { type Layer } from '~/model/layers';
 import { noPayload } from '~/utils/redux';
 
-type LayerSettingsDialogSliceState = {
+type LayerSettingsDialogSliceState = ReadonlyDeep<{
   dialogVisible: boolean;
   selectedLayer?: string;
-};
+}>;
 
 const initialState: LayerSettingsDialogSliceState = {
   dialogVisible: false,

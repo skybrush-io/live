@@ -4,10 +4,11 @@
  */
 
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
+import { type ReadonlyDeep } from 'type-fest';
 
-type FieldNotesSliceState = {
+type FieldNotesSliceState = ReadonlyDeep<{
   contents: string;
-};
+}>;
 
 const initialState: FieldNotesSliceState = {
   contents: `

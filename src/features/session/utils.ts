@@ -1,3 +1,5 @@
+import { type Draft } from '@reduxjs/toolkit';
+
 import { type SessionSliceState } from './slice';
 
 const calculateNewExpiry = (
@@ -16,7 +18,7 @@ const calculateNewExpiry = (
 };
 
 export const updateExpiry = (
-  state: SessionSliceState,
+  state: Draft<SessionSliceState>,
   expiry: number
 ): void => {
   state.expiresAt = calculateNewExpiry(state, expiry);

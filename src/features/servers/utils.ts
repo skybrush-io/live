@@ -1,4 +1,4 @@
-import { type PayloadAction } from '@reduxjs/toolkit';
+import { type Draft, type PayloadAction } from '@reduxjs/toolkit';
 
 import { type ServersSliceState } from './slice';
 import { type ServerParameters } from './types';
@@ -8,7 +8,7 @@ import { type ServerParameters } from './types';
  * `addInferredServer()` in the action list.
  */
 export function addServer(
-  state: ServersSliceState,
+  state: Draft<ServersSliceState>,
   type: ServerParameters['type'],
   action: PayloadAction<Omit<ServerParameters, 'id' | 'type'>>
 ): void {

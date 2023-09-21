@@ -4,12 +4,13 @@
  */
 
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
+import { type ReadonlyDeep } from 'type-fest';
 
 import { type Collection, deleteItemsByIds } from '~/utils/collections';
 
 import { type Dataset } from './types';
 
-type DatasetsSliceState = Collection<Dataset>;
+type DatasetsSliceState = ReadonlyDeep<Collection<Dataset>>;
 
 const initialState: DatasetsSliceState = { byId: {}, order: [] };
 

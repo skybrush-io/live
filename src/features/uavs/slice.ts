@@ -6,6 +6,7 @@
  */
 
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
+import { type ReadonlyDeep } from 'type-fest';
 
 import {
   addItemSorted,
@@ -18,7 +19,7 @@ import {
 
 import { type StoredUAV } from './types';
 
-type UAVsSliceState = Collection<StoredUAV>;
+type UAVsSliceState = ReadonlyDeep<Collection<StoredUAV>>;
 
 /**
  * The order of the collecitons defines the preferred ordering of

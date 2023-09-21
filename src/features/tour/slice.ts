@@ -4,11 +4,12 @@
  */
 
 import { createSlice } from '@reduxjs/toolkit';
+import { type ReadonlyDeep } from 'type-fest';
 
-type TourSliceState = {
+type TourSliceState = ReadonlyDeep<{
   isOpen: boolean;
   seen: boolean;
-};
+}>;
 
 const initialState: TourSliceState = {
   isOpen: false,

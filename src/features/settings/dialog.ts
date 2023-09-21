@@ -5,15 +5,16 @@
  */
 
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
+import { type ReadonlyDeep } from 'type-fest';
 
 import { noPayload } from '~/utils/redux';
 
 import { AppSettingsDialogTab } from './types';
 
-type AppSettingsDialogSliceState = {
+type AppSettingsDialogSliceState = ReadonlyDeep<{
   open: boolean;
   selectedTab: AppSettingsDialogTab;
-};
+}>;
 
 /**
  * The default state for the app settings dialog.

@@ -4,12 +4,13 @@
  */
 
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
+import { type ReadonlyDeep } from 'type-fest';
 
 import { MessageSemantics, type Notification } from './types';
 
-type SnackbarSliceState = {
+type SnackbarSliceState = ReadonlyDeep<{
   notification: Notification;
-};
+}>;
 
 const initialState: SnackbarSliceState = {
   notification: {

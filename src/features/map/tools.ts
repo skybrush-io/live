@@ -3,11 +3,13 @@
  */
 
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
+import { type ReadonlyDeep } from 'type-fest';
+
 import { Tool } from '~/views/map/tools';
 
-type MapToolsSliceState = {
+type MapToolsSliceState = ReadonlyDeep<{
   selectedTool: Tool;
-};
+}>;
 
 /**
  * The default selected tool.

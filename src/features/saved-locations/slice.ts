@@ -10,6 +10,7 @@ import {
   createSlice,
   type PayloadAction,
 } from '@reduxjs/toolkit';
+import { type ReadonlyDeep } from 'type-fest';
 
 import {
   addItemToFront,
@@ -21,7 +22,7 @@ import {
 
 import { type SavedLocation } from './types';
 
-type SavedLocationsSliceState = Collection<SavedLocation>;
+type SavedLocationsSliceState = ReadonlyDeep<Collection<SavedLocation>>;
 
 const initialState: SavedLocationsSliceState = {
   // byId is a map from saved location ID to the location itself

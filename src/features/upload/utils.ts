@@ -2,7 +2,11 @@ import arrify from 'arrify';
 import isNil from 'lodash-es/isNil';
 import pull from 'lodash-es/pull';
 import without from 'lodash-es/without';
-import { type CaseReducer, type PayloadAction } from '@reduxjs/toolkit';
+import {
+  type CaseReducer,
+  type Draft,
+  type PayloadAction,
+} from '@reduxjs/toolkit';
 
 import type UAV from '~/model/uav';
 import { deleteItemById } from '~/utils/collections';
@@ -18,13 +22,13 @@ const ALL_QUEUES: Array<keyof UploadSliceState['queues']> = [
 ];
 
 export function clearLastUploadResultForJobTypeHelper(
-  state: UploadSliceState,
+  state: Draft<UploadSliceState>,
   jobType: string
 ): void {
   deleteItemById(state.history, jobType);
 }
 
-export function clearQueues(state: UploadSliceState): void {
+export function clearQueues(state: Draft<UploadSliceState>): void {
   state.queues.failedItems = [];
   state.queues.itemsFinished = [];
   state.queues.itemsQueued = [];
@@ -38,7 +42,7 @@ export function clearQueues(state: UploadSliceState): void {
  * given array.
  */
 function removeErrorsForUAVs(
-  state: UploadSliceState,
+  state: Draft<UploadSliceState>,
   uavIds: Array<UAV['id']>
 ): void {
   for (const uavId of uavIds) {

@@ -5,7 +5,8 @@
 
 import config from 'config';
 
-import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, type Draft, type PayloadAction } from '@reduxjs/toolkit';
+import { type ReadonlyDeep } from 'type-fest';
 
 import {
   DEFAULT_BATTERY_CELL_COUNT,
@@ -25,7 +26,7 @@ import { noPayload } from '~/utils/redux';
 
 import { type SettingsState, Theme, UAVListLayout } from './types';
 
-type SettingsSliceState = SettingsState;
+type SettingsSliceState = ReadonlyDeep<SettingsState>;
 
 const initialState: SettingsSliceState = {
   display: {
@@ -99,7 +100,7 @@ const { actions, reducer } = createSlice({
       }),
 
       reducer<Category extends keyof SettingsSliceState>(
-        state: SettingsSliceState,
+        state: Draft<SettingsSliceState>,
         action: PayloadAction<{
           category: Category;
           updates: SettingsState[Category];
@@ -133,7 +134,7 @@ const { actions, reducer } = createSlice({
       }),
 
       reducer<Category extends keyof SettingsSliceState>(
-        state: SettingsSliceState,
+        state: Draft<SettingsSliceState>,
         action: PayloadAction<{
           category: Category;
           updates: Partial<SettingsState[Category]>;

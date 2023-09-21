@@ -4,11 +4,12 @@
  */
 
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
+import { type ReadonlyDeep } from 'type-fest';
 
-type AlertSliceState = {
+type AlertSliceState = ReadonlyDeep<{
   muted: boolean;
   count: number;
-};
+}>;
 
 const initialState: AlertSliceState = {
   muted: false,

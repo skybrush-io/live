@@ -4,14 +4,15 @@
  */
 
 import { createSlice } from '@reduxjs/toolkit';
+import { type ReadonlyDeep } from 'type-fest';
 
 import { noPayload } from '~/utils/redux';
 
-type VersionCheckSliceState = {
+type VersionCheckSliceState = ReadonlyDeep<{
   dialog: {
     open: boolean;
   };
-};
+}>;
 
 const initialState: VersionCheckSliceState = {
   dialog: {

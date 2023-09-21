@@ -4,6 +4,7 @@
  */
 
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
+import { type ReadonlyDeep } from 'type-fest';
 
 import { noPayload } from '~/utils/redux';
 
@@ -11,7 +12,7 @@ import { Protocol, ServerSettingsDialogTab } from './types';
 
 export const isTCPConnectionSupported = Boolean(window.bridge?.createTCPSocket);
 
-type ServerSettingsDialogSliceState = {
+type ServerSettingsDialogSliceState = ReadonlyDeep<{
   active: boolean;
   protocol: Protocol;
   hostName?: string;
@@ -19,7 +20,7 @@ type ServerSettingsDialogSliceState = {
   isSecure: boolean;
   dialogVisible: boolean;
   selectedTab: ServerSettingsDialogTab;
-};
+}>;
 
 /**
  * The default settings for the part of the state object being defined here.

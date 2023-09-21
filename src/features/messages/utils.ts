@@ -1,8 +1,10 @@
+import { type Draft } from '@reduxjs/toolkit';
+
 import { type MessagesSliceState } from './slice';
 import { type Message } from './types';
 
 export function addMessage(
-  state: MessagesSliceState,
+  state: Draft<MessagesSliceState>,
   messageStub: Omit<Message, 'id'>,
   peer: string,
   refs?: number

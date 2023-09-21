@@ -4,11 +4,12 @@
  */
 
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
+import { type ReadonlyDeep } from 'type-fest';
 
-type LightControlSliceState = {
+type LightControlSliceState = ReadonlyDeep<{
   active: boolean;
   color: string;
-};
+}>;
 
 const initialState: LightControlSliceState = {
   active: false,

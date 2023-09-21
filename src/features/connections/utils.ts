@@ -1,3 +1,5 @@
+import { type Draft } from '@reduxjs/toolkit';
+
 import { ConnectionState } from '~/model/enums';
 
 import { type ConnectionsSliceState } from './slice';
@@ -23,7 +25,7 @@ const createDefaultItem = (
  * @param properties - The new properties of the connection
  */
 export function updateStateOfConnection(
-  state: ConnectionsSliceState,
+  state: Draft<ConnectionsSliceState>,
   id: ConnectionProperties['id'],
   properties: Omit<ConnectionProperties, 'id'>
 ): void {

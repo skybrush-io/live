@@ -6,6 +6,7 @@
  */
 
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
+import { type ReadonlyDeep } from 'type-fest';
 
 import {
   clearOrderedCollection,
@@ -16,7 +17,9 @@ import {
 import { type ConnectionProperties } from './types';
 import { updateStateOfConnection } from './utils';
 
-export type ConnectionsSliceState = Collection<ConnectionProperties>;
+export type ConnectionsSliceState = ReadonlyDeep<
+  Collection<ConnectionProperties>
+>;
 
 const initialState: ConnectionsSliceState = { byId: {}, order: [] };
 

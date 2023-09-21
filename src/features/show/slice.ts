@@ -11,6 +11,7 @@ import {
   COORDINATE_SYSTEM_TYPE,
   type ShowSpecification,
 } from '@skybrush/show-format';
+import { type ReadonlyDeep } from 'type-fest';
 
 import { type Clock } from '~/features/clocks/types';
 import type UAV from '~/model/uav';
@@ -30,7 +31,7 @@ import {
   StartMethod,
 } from './enums';
 
-type ShowSliceState = {
+type ShowSliceState = ReadonlyDeep<{
   data?: ShowSpecification;
 
   loading: boolean;
@@ -127,7 +128,7 @@ type ShowSliceState = {
   takeoffAreaSetupDialog: {
     open: boolean;
   };
-};
+}>;
 
 const initialState: ShowSliceState = {
   data: undefined,

@@ -3,14 +3,15 @@
  * clocks of the server.
  */
 
-import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, type Draft, type PayloadAction } from '@reduxjs/toolkit';
+import { type ReadonlyDeep } from 'type-fest';
 
 import { clearOrderedCollection, type Collection } from '~/utils/collections';
 
 import { type Clock } from './types';
 import { updateStateOfClock } from './utils';
 
-export type ClocksSliceState = Collection<Clock>;
+export type ClocksSliceState = ReadonlyDeep<Collection<Clock>>;
 
 const initialState: ClocksSliceState = { byId: {}, order: [] };
 

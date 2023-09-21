@@ -4,17 +4,18 @@
  */
 
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
+import { type ReadonlyDeep } from 'type-fest';
 
 import { noPayload } from '~/utils/redux';
 
-type LocalServerSliceState = {
+type LocalServerSliceState = ReadonlyDeep<{
   pathScan: {
     scanning: boolean;
     result?: string;
     error?: string;
   };
   running: boolean;
-};
+}>;
 
 const initialState: LocalServerSliceState = {
   pathScan: {

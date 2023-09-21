@@ -3,6 +3,7 @@
  */
 
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
+import { type ReadonlyDeep } from 'type-fest';
 
 import { type Origin, OriginType } from './types';
 
@@ -13,7 +14,7 @@ import { type Origin, OriginType } from './types';
  * The flat Earth coordinate system is at the given position and its zero
  * degree heading points towards the heading given in the `angle` property.
  */
-type MapOriginSliceState = Origin;
+type MapOriginSliceState = ReadonlyDeep<Origin>;
 
 const initialState: MapOriginSliceState = {
   position: [18.915125, 47.486305], // Sensible default: Farkashegy Airfield

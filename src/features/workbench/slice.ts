@@ -4,8 +4,9 @@
 
 import { type IWorkbenchState, type Workbench } from 'react-flexible-workbench';
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
+import { type ReadonlyDeep } from 'type-fest';
 
-type WorkbenchSliceState = {
+type WorkbenchSliceState = ReadonlyDeep<{
   /** Stores whether the panel headers are hidden on the workbench */
   hideHeaders: boolean;
 
@@ -19,7 +20,7 @@ type WorkbenchSliceState = {
    * golden-layout works)
    */
   state?: IWorkbenchState;
-};
+}>;
 
 const initialState: WorkbenchSliceState = {
   hideHeaders: false,

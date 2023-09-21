@@ -4,18 +4,18 @@
  */
 
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
-import { type SetOptional } from 'type-fest';
+import { type ReadonlyDeep, type SetOptional } from 'type-fest';
 
 import { noPayload } from '~/utils/redux';
 
 import { type FlyToTargetParameters } from './types';
 
-type UAVControlSliceState = {
+type UAVControlSliceState = ReadonlyDeep<{
   flyToTargetDialog: {
     open: boolean;
     initialValues: FlyToTargetParameters;
   };
-};
+}>;
 
 const initialState: UAVControlSliceState = {
   flyToTargetDialog: {

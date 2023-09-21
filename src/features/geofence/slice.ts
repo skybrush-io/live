@@ -4,12 +4,13 @@
  */
 
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
+import { type ReadonlyDeep } from 'type-fest';
 
 import { noPayload } from '~/utils/redux';
 
 import { MAX_VERTEX_COUNT } from './constants';
 
-type GeofenceSliceState = {
+type GeofenceSliceState = ReadonlyDeep<{
   dialogVisible: boolean;
 
   horizontalMargin: number;
@@ -17,7 +18,7 @@ type GeofenceSliceState = {
 
   simplify: boolean;
   maxVertexCount: number;
-};
+}>;
 
 const initialState: GeofenceSliceState = {
   dialogVisible: false,

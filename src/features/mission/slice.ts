@@ -8,6 +8,7 @@
 
 import isNil from 'lodash-es/isNil';
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
+import { type ReadonlyDeep } from 'type-fest';
 
 import { GeofenceAction } from '~/features/geofence/model';
 import { removeFeaturesByIds } from '~/features/map-features/slice';
@@ -31,7 +32,7 @@ import {
  *       would get serialized to `null`, and while the two values should rarely
  *       be distinguished, this still seems like the safer approach.
  */
-export type MissionSliceState = {
+export type MissionSliceState = ReadonlyDeep<{
   /**
    * Stores a mapping from the mission-specific consecutive identifiers
    * to the IDs of the UAVs that participate in the mission with that
@@ -97,7 +98,7 @@ export type MissionSliceState = {
 
   /** Action to perform when the geofence is breached */
   geofenceAction: GeofenceAction;
-};
+}>;
 
 const initialState: MissionSliceState = {
   mapping: [],

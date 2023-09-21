@@ -12,6 +12,7 @@
  */
 
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
+import { type ReadonlyDeep } from 'type-fest';
 
 import { normalizeAngle } from '~/utils/geography';
 import { type Coordinate2D } from '~/utils/math';
@@ -23,11 +24,11 @@ import { type Coordinate2D } from '~/utils/math';
  * The flat Earth coordinate system is at the given position and its zero
  * degree heading points towards the heading given in the `angle` property.
  */
-type MapViewSliceState = {
+type MapViewSliceState = ReadonlyDeep<{
   position: Coordinate2D;
   angle: string;
   zoom: number;
-};
+}>;
 
 const initialState: MapViewSliceState = {
   position: [18.915125, 47.486305], // Sensible default: Farkashegy Airfield
