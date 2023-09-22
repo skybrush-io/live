@@ -22,7 +22,7 @@ import { handleObjectDeletionMessage } from './model/objects';
 
 import { addInboundMessage } from './features/messages/slice';
 import { showError, showNotification } from './features/snackbar/actions';
-import { semanticsFromSeverity } from './features/snackbar/types';
+import { semanticsFromSeverity } from './features/snackbar/utils';
 
 import flock from './flock';
 import store from './store';

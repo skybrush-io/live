@@ -1,36 +1,40 @@
 /**
  * @file Slice of the state object that handles the common snackbar component at
- * the bottom of the app window.
+ * the configured side (bottom by default) of the app window.
  */
 
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
-import { MessageSemantics } from './types';
+import { MessageSemantics, type Notification } from './types';
+
+type SnackbarSliceState = {
+  notification: Notification;
+};
+
+const initialState: SnackbarSliceState = {
+  notification: {
+    buttons: undefined,
+    header: '',
+    message: '',
+    permanent: false,
+    semantics: MessageSemantics.DEFAULT,
+  },
+};
 
 const { actions, reducer } = createSlice({
   name: 'snackbar',
-
-  initialState: {
-    notification: {
-      buttons: null,
-      header: '',
-      message: '',
-      permanent: false,
-      semantics: MessageSemantics.DEFAULT,
-    },
-  },
-
+  initialState,
   reducers: {
     /**
      * Adds a fire-and-forget type of notification to the snackbar of the
      * application.
      */
-    showNotification(state, action) {
+    showNotification(state, action: PayloadAction<string | Notification>) {
       let newNotification;
 
       if (typeof action.payload === 'string') {
         newNotification = {
-          buttons: null,
+          buttons: undefined,
           header: '',
           message: String(action.payload),
           semantics: MessageSemantics.DEFAULT,
@@ -41,10 +45,10 @@ const { actions, reducer } = createSlice({
           action.payload;
 
         newNotification = {
-          buttons: Array.isArray(buttons) ? buttons : null,
+          buttons: Array.isArray(buttons) ? buttons : undefined,
           header: header ? String(header) : '',
           message: String(message),
-          semantics: String(semantics),
+          semantics,
           permanent: Boolean(permanent),
         };
       }
