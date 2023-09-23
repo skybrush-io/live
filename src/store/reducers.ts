@@ -124,3 +124,8 @@ const reducer = combineReducers({
 });
 
 export default reducer;
+
+// TODO: Move to `ReturnType<typeof store.getState>;` according to
+// https://redux.js.org/usage/usage-with-typescript#define-root-state-and-dispatch-types
+// when `store/index` gets annotated.
+export type RootState = ReturnType<typeof reducer>;
