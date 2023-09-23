@@ -10,6 +10,7 @@ import { notifyObjectsDeletedOnServer } from '~/features/objects/actions';
 import {
   clearOrderedCollection,
   type Collection,
+  EMPTY_COLLECTION,
   maybeDeleteItemsByIds,
 } from '~/utils/collections';
 
@@ -18,7 +19,7 @@ import { updateStateOfDock } from './utils';
 
 export type DocksSliceState = ReadonlyDeep<Collection<DockState>>;
 
-const initialState: DocksSliceState = { byId: {}, order: [] };
+const initialState: DocksSliceState = EMPTY_COLLECTION;
 
 const { actions, reducer } = createSlice({
   name: 'docks',

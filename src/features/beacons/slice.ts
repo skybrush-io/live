@@ -10,6 +10,7 @@ import { notifyObjectsDeletedOnServer } from '~/features/objects/actions';
 import {
   clearOrderedCollection,
   type Collection,
+  EMPTY_COLLECTION,
   maybeDeleteItemsByIds,
 } from '~/utils/collections';
 
@@ -18,7 +19,7 @@ import { updateStateOfBeacon } from './utils';
 
 export type BeaconsSliceState = ReadonlyDeep<Collection<Beacon>>;
 
-const initialState: BeaconsSliceState = { byId: {}, order: [] };
+const initialState: BeaconsSliceState = EMPTY_COLLECTION;
 
 const { actions, reducer } = createSlice({
   name: 'beacons',

@@ -6,14 +6,18 @@
 import { createSlice, type Draft, type PayloadAction } from '@reduxjs/toolkit';
 import { type ReadonlyDeep } from 'type-fest';
 
-import { clearOrderedCollection, type Collection } from '~/utils/collections';
+import {
+  clearOrderedCollection,
+  type Collection,
+  EMPTY_COLLECTION,
+} from '~/utils/collections';
 
 import { type Clock } from './types';
 import { updateStateOfClock } from './utils';
 
 export type ClocksSliceState = ReadonlyDeep<Collection<Clock>>;
 
-const initialState: ClocksSliceState = { byId: {}, order: [] };
+const initialState: ClocksSliceState = EMPTY_COLLECTION;
 
 const { actions, reducer } = createSlice({
   name: 'clocks',

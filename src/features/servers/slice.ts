@@ -13,7 +13,11 @@ import { type ReadonlyDeep } from 'type-fest';
 
 import { ConnectionState } from '~/model/enums';
 import { getAuthenticationTokenFromUrl } from '~/utils/authentication';
-import { type Collection } from '~/utils/collections';
+import {
+  clearOrderedCollection,
+  type Collection,
+  EMPTY_COLLECTION,
+} from '~/utils/collections';
 import { noPayload } from '~/utils/redux';
 
 import {
@@ -75,10 +79,7 @@ const initialState: ServersSliceState = {
   },
   isAuthenticating: false,
   isScanning: false,
-  detected: {
-    byId: {},
-    order: [],
-  },
+  detected: EMPTY_COLLECTION,
   token: getAuthenticationTokenFromUrl(),
   timeSyncDialog: {
     open: false,
@@ -277,10 +278,7 @@ const { actions, reducer } = createSlice({
      * detected servers from the server registry.
      */
     removeAllDetectedServers(state) {
-      state.detected = {
-        byId: {},
-        order: [],
-      };
+      clearOrderedCollection(state.detected);
     },
 
     /**

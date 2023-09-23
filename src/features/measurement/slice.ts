@@ -11,6 +11,7 @@ import {
   addItemSortedUnlessExists,
   type Collection,
   deleteItemsByIds,
+  EMPTY_COLLECTION,
 } from '~/utils/collections';
 import { noPayload } from '~/utils/redux';
 
@@ -30,10 +31,7 @@ type MeasurementSliceState = ReadonlyDeep<{
 }>;
 
 const initialState: MeasurementSliceState = {
-  averagingResults: {
-    byId: {},
-    order: [],
-  },
+  averagingResults: EMPTY_COLLECTION,
 
   averagingDialog: {
     open: false,

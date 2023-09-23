@@ -10,6 +10,7 @@ import {
   clearOrderedCollection,
   type Collection,
   deleteItemById,
+  EMPTY_COLLECTION,
 } from '~/utils/collections';
 import { noPayload } from '~/utils/redux';
 
@@ -24,10 +25,7 @@ type ParametersSliceState = ReadonlyDeep<{
 }>;
 
 const initialState: ParametersSliceState = {
-  manifest: {
-    byId: {},
-    order: [],
-  },
+  manifest: EMPTY_COLLECTION,
   rebootAfterUpload: false,
   dialog: {
     open: false,

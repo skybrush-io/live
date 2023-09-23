@@ -13,6 +13,7 @@ import {
   clearOrderedCollection,
   type Collection,
   deleteItemsByIds,
+  EMPTY_COLLECTION,
   ensureNaturalSortOrder,
   replaceItemOrAddSorted,
 } from '~/utils/collections';
@@ -25,7 +26,7 @@ type UAVsSliceState = ReadonlyDeep<Collection<StoredUAV>>;
  * The order of the collecitons defines the preferred ordering of
  * UAVs on the UI. Currently we sort automatically based on IDs.
  */
-const initialState: UAVsSliceState = { byId: {}, order: [] };
+const initialState: UAVsSliceState = EMPTY_COLLECTION;
 
 const { actions, reducer } = createSlice({
   name: 'uavs',

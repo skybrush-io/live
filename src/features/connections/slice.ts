@@ -12,6 +12,7 @@ import {
   clearOrderedCollection,
   type Collection,
   deleteItemsByIds,
+  EMPTY_COLLECTION,
 } from '~/utils/collections';
 
 import { type ConnectionProperties } from './types';
@@ -21,7 +22,7 @@ export type ConnectionsSliceState = ReadonlyDeep<
   Collection<ConnectionProperties>
 >;
 
-const initialState: ConnectionsSliceState = { byId: {}, order: [] };
+const initialState: ConnectionsSliceState = EMPTY_COLLECTION;
 
 const { actions, reducer } = createSlice({
   name: 'connections',

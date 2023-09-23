@@ -5,11 +5,11 @@ import property, { type PropertyPath } from 'lodash-es/property';
 import pull from 'lodash-es/pull';
 import sortedIndex from 'lodash-es/sortedIndex';
 import sortedIndexBy from 'lodash-es/sortedIndexBy';
-import reject from 'lodash-es/reject';
 import { orderBy } from 'natural-orderby';
+import { type ReadonlyDeep } from 'type-fest';
 
 import { chooseUniqueIdFromName } from './naming';
-import { EMPTY_ARRAY } from './redux';
+import { EMPTY_ARRAY, EMPTY_OBJECT } from './redux';
 
 export type Identifier = string;
 export type ItemLike = { id: Identifier };
@@ -17,6 +17,11 @@ export type Collection<T extends ItemLike> = {
   byId: Record<Identifier, T>;
   order: Identifier[];
 };
+
+export const EMPTY_COLLECTION: ReadonlyDeep<Collection<never>> = Object.freeze({
+  byId: EMPTY_OBJECT,
+  order: EMPTY_ARRAY,
+});
 
 /**
  * Helper functions to deal with ordered collections.
@@ -327,10 +332,7 @@ export const createCollectionFromArray = <T extends ItemLike>(
   key: ((item: T) => Identifier) | PropertyPath = 'id'
 ): Collection<T> => {
   let index = 0;
-  const result: Collection<T> = {
-    byId: {},
-    order: [],
-  };
+  const result: Collection<T> = { byId: {}, order: [] };
 
   const getter: (item: T) => Identifier =
     typeof key === 'function' ? key : property(key);
