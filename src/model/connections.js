@@ -12,16 +12,6 @@ import {
 } from '~/features/connections/slice';
 
 /**
- * Enum containing constants for the various connection states.
- */
-export const ConnectionState = {
-  DISCONNECTED: 'disconnected',
-  CONNECTING: 'connecting',
-  CONNECTED: 'connected',
-  DISCONNECTING: 'disconnecting',
-};
-
-/**
  * Handles a CONN-DEL message from a server and updates the state of the Redux
  * store appropriately.
  *

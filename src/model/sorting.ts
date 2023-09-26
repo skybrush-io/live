@@ -1,8 +1,9 @@
 import isNil from 'lodash-es/isNil';
 import * as memoize from 'memoizee';
 
+import { type StoredUAV } from '~/features/uavs/types';
+
 import { GPSFixType } from './enums';
-import { type SerializedUAV } from './uav';
 
 export type Comparable = number | string;
 
@@ -84,7 +85,7 @@ export const shortLabelsForUAVSortKey: Record<UAVSortKey, string> = {
 export const getKeyFunctionForUAVSortKey = memoize(
   (
     key: UAVSortKey
-  ): ((uav: SerializedUAV | undefined) => Comparable) | undefined => {
+  ): ((uav: StoredUAV | undefined) => Comparable) | undefined => {
     switch (key) {
       case UAVSortKey.STATUS:
         // Sort UAVs based on their most severe error code

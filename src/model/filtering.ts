@@ -1,10 +1,12 @@
 import * as memoize from 'memoizee';
 
-import { type SerializedUAV, UAVAge } from './uav';
+import { type StoredUAV } from '~/features/uavs/types';
+
 import {
   isErrorCodeOrMoreSevere,
   isWarningCodeOrMoreSevere,
 } from './status-codes';
+import { UAVAge } from './uav';
 
 /**
  * Enum that describes the possible filtering presets for a list that shows UAVs.
@@ -54,7 +56,7 @@ export const shortLabelsForUAVFilter: Record<UAVFilter, string> = {
 export const getFilterFunctionForUAVFilter = memoize(
   (
     filterId: UAVFilter
-  ): ((uav: SerializedUAV | undefined) => boolean) | undefined => {
+  ): ((uav: StoredUAV | undefined) => boolean) | undefined => {
     switch (filterId) {
       case UAVFilter.WITH_ERRORS:
         return (uav) =>

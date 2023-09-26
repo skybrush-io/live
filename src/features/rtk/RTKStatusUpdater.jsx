@@ -100,7 +100,7 @@ export default connect(
             lastUpdatedAt: now - messageStat[0],
             bitsPerSecond: messageStat[1],
           })),
-          cnr: mapValues(cnr, (cnrValue) => ({
+          satellites: mapValues(cnr, (cnrValue) => ({
             lastUpdatedAt: now,
             cnr: cnrValue,
           })),

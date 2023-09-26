@@ -5,12 +5,15 @@
  */
 
 import { type PayloadAction, createSlice } from '@reduxjs/toolkit';
+import { type ReadonlyDeep } from 'type-fest';
 
 import { PromptDialogType, type PromptOptions } from './types';
 
-export type PromptSliceState = PromptOptions & {
-  dialogVisible: boolean;
-};
+export type PromptSliceState = ReadonlyDeep<
+  PromptOptions & {
+    dialogVisible: boolean;
+  }
+>;
 
 const defaultOptions: PromptOptions = {
   cancelButtonLabel: 'Cancel',

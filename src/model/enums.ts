@@ -1,6 +1,16 @@
 import { Status } from '~/components/semantics';
 
 /**
+ * Enum containing constants for the various connection states.
+ */
+export enum ConnectionState {
+  DISCONNECTED = 'disconnected',
+  CONNECTING = 'connecting',
+  CONNECTED = 'connected',
+  DISCONNECTING = 'disconnecting',
+}
+
+/**
  * Enum containing constants for the various messages types.
  */
 export enum MessageType {

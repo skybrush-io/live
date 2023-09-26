@@ -4,11 +4,11 @@
 
 import pMinDelay from 'p-min-delay';
 import {
-  createAction,
   type ActionCreatorWithPreparedPayload,
-  type CaseReducerWithPrepare,
+  type CaseReducer,
+  createAction,
   type Draft,
-  type PayloadAction,
+  type PrepareAction,
 } from '@reduxjs/toolkit';
 
 /**
@@ -48,14 +48,17 @@ export function createAsyncAction<PrepareArguments extends unknown[], Payload>(
   }));
 }
 
-export function noPayload<State, Action extends PayloadAction>(
-  func: (state: Draft<State>) => void
-): CaseReducerWithPrepare<State, Action> {
-  return {
-    prepare: () => ({ payload: undefined }),
-    reducer: func,
-  };
-}
+// NOTE: Should be `CaseReducerWithPrepare`, but that doesn't typecheck without
+// adding an extra `& { prepare: PrepareAction<void> }` intersection type to it
+export const noPayload = <State>(
+  reducer: (state: Draft<State>) => void
+): {
+  prepare: PrepareAction<void>;
+  reducer: CaseReducer<State>;
+} => ({
+  prepare: () => ({ payload: undefined }),
+  reducer,
+});
 
 /**
  * Frozen empty array that can be returned from selectors to prevent

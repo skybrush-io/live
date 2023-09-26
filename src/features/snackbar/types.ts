@@ -1,4 +1,4 @@
-import { Severity } from '~/model/enums';
+import { type Action } from '@reduxjs/toolkit';
 
 /**
  * Enum describing the possible semantics that may be associated to a
@@ -13,38 +13,16 @@ export enum MessageSemantics {
 }
 
 /**
- * Converts a message severity level in the Flockwave protocol to a message
- * semantics value.
+ * Object shape for describing the appearance, contents and behavior of a
+ * snackbar notification.
  */
-export function semanticsFromSeverity(severity: Severity): MessageSemantics {
-  switch ((severity || '').toLowerCase()) {
-    case Severity.ERROR:
-    case Severity.CRITICAL:
-      return MessageSemantics.ERROR;
-
-    case Severity.WARNING:
-      return MessageSemantics.WARNING;
-
-    case Severity.INFO:
-      return MessageSemantics.INFO;
-
-    default:
-      return MessageSemantics.DEFAULT;
-  }
-}
-
-const emojisForSemantics = {
-  [MessageSemantics.SUCCESS]: '✅',
-  [MessageSemantics.ERROR]: '🛑',
-  [MessageSemantics.WARNING]: '⚠',
-  [MessageSemantics.INFO]: '💡',
-  [MessageSemantics.DEFAULT]: '',
+export type Notification = {
+  buttons?: Array<{
+    label: string;
+    action: Action;
+  }>;
+  header: string;
+  message: string;
+  permanent: boolean;
+  semantics: MessageSemantics;
 };
-
-/**
- * Converts a message semantics value to an emoji that can be used to represent
- * that severity level in text.
- */
-export function semanticsToEmoji(semantics: MessageSemantics): string {
-  return emojisForSemantics[semantics] || '';
-}

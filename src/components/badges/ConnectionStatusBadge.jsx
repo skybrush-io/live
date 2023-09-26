@@ -10,7 +10,7 @@ import { createSelector } from '@reduxjs/toolkit';
 import SidebarBadge from '@skybrush/mui-components/lib/SidebarBadge';
 
 import Colors from '~/components/colors';
-import { ConnectionState } from '~/model/connections';
+import { ConnectionState } from '~/model/enums';
 import { getConnectionsInOrder } from '~/selectors/ordered';
 
 const severityLevels = ['error', 'warning', 'ok'];

@@ -73,7 +73,11 @@ const RTKStatusMiniList = ({ satelliteIds, surveyStatus }) => {
               ? 'Survey in progress...'
               : 'No survey in progress'
           }
-          secondaryText={formatSurveyAccuracy(surveyStatus.accuracy)}
+          secondaryText={
+            typeof surveyStatus.accuracy === 'number'
+              ? formatSurveyAccuracy(surveyStatus.accuracy)
+              : null
+          }
           iconPreset={
             surveyStatus.valid
               ? 'success'

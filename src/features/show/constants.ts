@@ -6,6 +6,11 @@ export enum AltitudeReference {
   AMSL = 'amsl',
 }
 
+export type AltitudeReferenceSpecification = {
+  type: AltitudeReference;
+  value: number;
+};
+
 /**
  * Takeoff heading modes for drone shows.
  *
@@ -24,6 +29,11 @@ export enum TakeoffHeadingMode {
   ABSOLUTE = 'absolute',
   RELATIVE = 'relative',
 }
+
+export type TakeoffHeadingSpecification = {
+  type: TakeoffHeadingMode;
+  value: number;
+};
 
 /**
  * Default altitude reference object if it is not defined in the state yet.

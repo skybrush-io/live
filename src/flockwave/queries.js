@@ -69,7 +69,7 @@ export async function getLicenseInformation(hub) {
     response.body.type === 'LCN-INF' &&
     typeof response.body.license === 'object'
     ? response.body.license
-    : { id: '' };
+    : undefined;
 }
 
 /**

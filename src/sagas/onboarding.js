@@ -4,10 +4,8 @@ import { put, select } from 'redux-saga/effects';
 import config from 'config';
 import { updateServerSettings } from '~/features/servers/actions';
 import { getServerHostname } from '~/features/servers/selectors';
-import {
-  isTCPConnectionSupported,
-  Protocol,
-} from '~/features/servers/server-settings-dialog';
+import { isTCPConnectionSupported } from '~/features/servers/server-settings-dialog';
+import { Protocol } from '~/features/servers/types';
 
 function isElectronApp() {
   return Boolean(window?.bridge?.isElectron);

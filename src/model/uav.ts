@@ -7,11 +7,13 @@ import { type UAVStatusInfo } from 'flockwave-spec';
 import { Base64 } from 'js-base64';
 import isEqual from 'lodash-es/isEqual';
 import isNil from 'lodash-es/isNil';
-import range from 'lodash-es/range';
 
+import { type StoredUAV } from '~/features/uavs/types';
 import { type ErrorCode } from '~/flockwave/errors';
+import { type Coordinate3D } from '~/utils/math';
 
 import { GPSFixType } from './enums';
+import { type GPSFix, type GPSPosition } from './position';
 
 /**
  * Age constants for a UAV. Used in the Redux store to mark UAVs for which we
@@ -30,36 +32,6 @@ export type UAVBattery = {
   charging?: boolean;
 };
 
-export type UAVGPSFix = {
-  type: GPSFixType;
-  numSatellites?: number;
-  horizontalAccuracy?: number;
-  verticalAccuracy?: number;
-};
-
-export type UAVPosition = {
-  lat?: number;
-  lon?: number;
-  amsl?: number;
-  ahl?: number;
-  agl?: number;
-};
-
-export type SerializedUAV = {
-  age?: UAVAge;
-  battery: UAVBattery;
-  debugString?: string;
-  errors: ErrorCode[];
-  gpsFix: UAVGPSFix;
-  heading?: number;
-  id: string;
-  lastUpdated?: number;
-  light: number /* RGB565 */;
-  localPosition?: [number?, number?, number?];
-  mode?: string;
-  position?: UAVPosition;
-};
-
 /**
  * Representation of a single UAV.
  */
@@ -72,14 +44,14 @@ export default class UAV {
   _errors: ErrorCode[];
   _id: string;
   _mostSevereError: ErrorCode;
-  _position: UAVPosition;
+  _position?: GPSPosition;
   age?: UAVAge;
   battery: UAVBattery;
-  gpsFix: UAVGPSFix;
+  gpsFix: GPSFix;
   heading?: number;
   lastUpdated?: number;
   light: number /* RGB565 */;
-  localPosition: [number?, number?, number?];
+  localPosition?: Coordinate3D;
   mode?: string;
 
   /**
@@ -97,13 +69,7 @@ export default class UAV {
     this._id = id;
     this._errors = [];
     this._mostSevereError = 0;
-    this._position = {
-      lat: undefined,
-      lon: undefined,
-      amsl: undefined,
-      ahl: undefined,
-      agl: undefined,
-    };
+    this._position = undefined;
 
     this.battery = {
       voltage: undefined,
@@ -119,7 +85,7 @@ export default class UAV {
     this.heading = undefined;
     this.lastUpdated = undefined;
     this.light = 0xffff; /* white in RGB565 */
-    this.localPosition = [undefined, undefined, undefined];
+    this.localPosition = undefined;
     this.mode = undefined;
   }
 
@@ -127,21 +93,21 @@ export default class UAV {
    * Returns the altitude above ground level, if known.
    */
   get agl(): number | undefined {
-    return this._position.agl;
+    return this._position?.agl;
   }
 
   /**
    * Returns the altitude above home level, if known.
    */
   get ahl(): number | undefined {
-    return this._position.ahl;
+    return this._position?.ahl;
   }
 
   /**
    * Returns the altitude above mean sea level, if known.
    */
   get amsl(): number | undefined {
-    return this._position.amsl;
+    return this._position?.amsl;
   }
 
   /**
@@ -207,14 +173,14 @@ export default class UAV {
    * Returns the latitude of the UAV, if known.
    */
   get lat(): number | undefined {
-    return this._position.lat;
+    return this._position?.lat;
   }
 
   /**
    * Returns the longitude of the UAV, if known.
    */
   get lon(): number | undefined {
-    return this._position.lon;
+    return this._position?.lon;
   }
 
   /**
@@ -229,7 +195,7 @@ export default class UAV {
    * Returns whether the UAV has a known local position.
    */
   get hasLocalPosition(): boolean {
-    return !isNil(this.localPosition[0]);
+    return !isNil(this.localPosition);
   }
 
   /**
@@ -262,28 +228,22 @@ export default class UAV {
     }
 
     if (position) {
-      this._position.lat = position[0] / 1e7;
-      this._position.lon = position[1] / 1e7;
-
-      if (!isNil(position[2])) {
-        this._position.amsl = position[2] / 1e3;
-      }
-
-      if (!isNil(position[3])) {
-        this._position.ahl = position[3] / 1e3;
-      }
-
-      if (!isNil(position[4])) {
-        this._position.agl = position[4] / 1e3;
-      }
-
+      this._position = {
+        lat: position[0] / 1e7,
+        lon: position[1] / 1e7,
+        amsl: isNil(position[2]) ? undefined : position[2] / 1e3,
+        ahl: isNil(position[3]) ? undefined : position[3] / 1e3,
+        agl: isNil(position[4]) ? undefined : position[4] / 1e3,
+      };
       updated = true;
     }
 
     if (positionXYZ && Array.isArray(positionXYZ) && positionXYZ.length >= 3) {
-      this.localPosition[0] = positionXYZ[0] / 1e3;
-      this.localPosition[1] = positionXYZ[1] / 1e3;
-      this.localPosition[2] = positionXYZ[2] / 1e3;
+      this.localPosition = [
+        positionXYZ[0] / 1e3,
+        positionXYZ[1] / 1e3,
+        positionXYZ[2] / 1e3,
+      ];
       updated = true;
     }
 
@@ -359,10 +319,10 @@ export default class UAV {
    * Returns a pure JavaScript object representation of the UAV that can be
    * used in a Redux store.
    */
-  toJSON(): SerializedUAV {
+  toJSON(): StoredUAV {
     /* Null Island is treated as "no position info" */
     const position =
-      this._position.lat && this._position.lon
+      this._position?.lat && this._position?.lon
         ? { ...this._position }
         : undefined;
     const localPosition = this.hasLocalPosition

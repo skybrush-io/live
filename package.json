@@ -185,7 +185,7 @@
     "eslint-plugin-import": "^2.28.1",
     "eslint-plugin-react": "^7.33.2",
     "eslint-plugin-react-hooks": "^4.6.0",
-    "flockwave-spec": "github:skybrush-io/flockwave-spec#1.77.1",
+    "flockwave-spec": "github:skybrush-io/flockwave-spec#1.78.1",
     "git-revision-webpack-plugin": "^5.0.0",
     "html-webpack-plugin": "^5.5.3",
     "less": "^4.2.0",
