@@ -22,51 +22,52 @@ import EditFeature from '~/icons/EditFeature';
 import { getSelectedTool, setSelectedTool } from '~/features/map/tools';
 
 import { Tool } from './tools';
+import { tt } from '~/i18n';
 
 const drawingToolRegistry = {
   'add-marker': {
     tool: Tool.DRAW_POINT,
-    label: 'DrawingToolbar.addMarker',
+    label: tt('DrawingToolbar.addMarker'),
     icon: LocationOn,
   },
   'cut-hole': {
     tool: Tool.CUT_HOLE,
-    label: 'DrawingToolbar.cutHole',
+    label: tt('DrawingToolbar.cutHole'),
     icon: ContentCut,
   },
   'draw-circle': {
     tool: Tool.DRAW_CIRCLE,
-    label: 'DrawingToolbar.drawCircle',
+    label: tt('DrawingToolbar.drawCircle'),
     icon: PanoramaFishEye,
   },
   'draw-path': {
     tool: Tool.DRAW_PATH,
-    label: 'DrawingToolbar.drawPath',
+    label: tt('DrawingToolbar.drawPath'),
     icon: ShowChart,
   },
   'draw-polygon': {
     tool: Tool.DRAW_POLYGON,
-    label: 'DrawingToolbar.drawPolygon',
+    label: tt('DrawingToolbar.drawPolygon'),
     icon: StarBorder,
   },
   'draw-rectangle': {
     tool: Tool.DRAW_RECTANGLE,
-    label: 'DrawingToolbar.drawRectangle',
+    label: tt('DrawingToolbar.drawRectangle'),
     icon: CropSquare,
   },
   'edit-feature': {
     tool: Tool.EDIT_FEATURE,
-    label: 'DrawingToolbar.editFeature',
+    label: tt('DrawingToolbar.editFeature'),
     icon: EditFeature,
   },
   select: {
     tool: Tool.SELECT,
-    label: 'DrawingToolbar.select',
+    label: tt('DrawingToolbar.select'),
     icon: SelectAll,
   },
   zoom: {
     tool: Tool.ZOOM,
-    label: 'DrawingToolbar.zoom',
+    label: tt('DrawingToolbar.zoom'),
     icon: ZoomIn,
   },
 };
@@ -88,7 +89,7 @@ const DrawingToolbarPresentation = ({ onToolSelected, selectedTool, t }) => {
           ...group.map((toolId) => {
             const { tool, label, icon: Icon } = drawingToolRegistry[toolId];
             return (
-              <Tooltip key={toolId} content={t(label)} placement='right'>
+              <Tooltip key={toolId} content={label(t)} placement='right'>
                 <IconButton onClick={partial(onToolSelected, tool)}>
                   <Icon color={colorForTool(tool)} />
                 </IconButton>
