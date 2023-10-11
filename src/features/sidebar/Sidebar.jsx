@@ -158,7 +158,7 @@ const Sidebar = ({ experimentalFeaturesEnabled, isOpen, t, workbench }) => (
         <Module
           id='notes'
           icon={<Assignment />}
-          label='Field notes'
+          label={t('sidebar.notes')}
           component='field-notes'
         />
         <Module

@@ -7,6 +7,7 @@ import debounce from 'lodash-es/debounce';
 import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
 import { connect } from 'react-redux';
+import { withTranslation } from 'react-i18next';
 
 import SimpleMDE from 'react-simplemde-editor';
 import 'easymde/dist/easymde.min.css';
@@ -77,7 +78,7 @@ const useStyles = makeStyles(
   { name: 'FieldNotesPanel' }
 );
 
-const FieldNotesPanel = ({ contents, updateFieldNotes }) => {
+const FieldNotesPanel = ({ contents, t, updateFieldNotes }) => {
   const classes = useStyles();
 
   const exportNotes = useCallback(async () => {
@@ -96,7 +97,10 @@ const FieldNotesPanel = ({ contents, updateFieldNotes }) => {
         value={contents}
         onChange={debounce(updateFieldNotes, 1000)}
       />
-      <Tooltip content='Export notes as Markdown file' placement='left'>
+      <Tooltip
+        content={t('fieldNotesPanel.exportNotesAsFile')}
+        placement='left'
+      >
         <IconButton className={classes.saveIcon} onClick={exportNotes}>
           <Save />
         </IconButton>
@@ -107,6 +111,7 @@ const FieldNotesPanel = ({ contents, updateFieldNotes }) => {
 
 FieldNotesPanel.propTypes = {
   contents: PropTypes.string,
+  t: PropTypes.func,
   updateFieldNotes: PropTypes.func,
 };
 
@@ -119,4 +124,4 @@ export default connect(
   {
     updateFieldNotes,
   }
-)(FieldNotesPanel);
+)(withTranslation()(FieldNotesPanel));

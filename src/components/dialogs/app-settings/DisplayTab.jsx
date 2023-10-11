@@ -120,9 +120,9 @@ const DisplayTabPresentation = ({ t, ...props }) => (
       </FormGroup>
 
       <FormGroup>
-        <Header>Operation modes</Header>
+        <Header>{t('settings.display.operationModes')}</Header>
         <FormControlLabel
-          label='Optimize the interface for single UAV operation'
+          label={t('settings.display.optimizeForSingleUAV')}
           control={
             <Checkbox
               checked={props.optimizeForSingleUAV}
@@ -133,7 +133,7 @@ const DisplayTabPresentation = ({ t, ...props }) => (
           }
         />
         <FormControlLabel
-          label='Optimize the interface for touchscreen devices'
+          label={t('settings.display.optimizeUIForTouch')}
           control={
             <Checkbox
               checked={props.optimizeUIForTouch}

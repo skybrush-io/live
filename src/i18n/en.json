@@ -32,6 +32,9 @@
     "sleep": "Sleep",
     "takeOff": "Takeoff"
   },
+  "fieldNotesPanel": {
+    "exportNotesAsFile": "Export notes as Markdown file"
+  },
   "geofence": {
     "statusText": {
       "automatic": "Automatic geofence in use",
@@ -82,6 +85,9 @@
       "mapOrigin": "Map origin",
       "mapWidgets": "Map widgets",
       "miscellaneous": "Miscellaneous",
+      "operationModes": "Operation modes",
+      "optimizeForSingleUAV": "Optimize the interface for single UAV operation",
+      "optimizeUIForTouch": "Optimize the interface for touchscreen devices",
       "showMouseCoordinates": "Show mouse coordinates",
       "showScaleLine": "Show scale line"
     },
@@ -160,6 +166,7 @@
     "lightControl": "Light control",
     "locations": "Locations",
     "map": "Map",
+    "notes": "Field notes",
     "showControl": "Show control",
     "uavs": "UAVs"
   }

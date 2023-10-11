@@ -32,6 +32,9 @@
     "sleep": "Alvás",
     "takeOff": "Felszállás"
   },
+  "fieldNotesPanel": {
+    "exportNotesAsFile": "Jegyzetek exportálása Markdown fájlként"
+  },
   "geofence": {
     "statusText": {
       "automatic": "Automatikus geofence van használatban",
@@ -82,6 +85,9 @@
       "mapOrigin": "A térkép origója",
       "mapWidgets": "Térkép eszközök",
       "miscellaneous": "Egyéb",
+      "operationModes": "Üzemmódok",
+      "optimizeForSingleUAV": "A felület optimalizálása egy drónos üzemmódhoz",
+      "optimizeUIForTouch": "A felület optimalizálása érintőképernyős eszközökre",
       "showMouseCoordinates": "Egérkoordináták megjelenítése",
       "showScaleLine": "Léptékvonal megjelenítése"
     },
@@ -160,6 +166,7 @@
     "lightControl": "Fényvezérlés",
     "locations": "Helyszínek",
     "map": "Térkép",
+    "notes": "Terepi jegyzetek",
     "showControl": "Műsorvezérlés",
     "uavs": "Drónok"
   }
