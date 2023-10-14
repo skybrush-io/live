@@ -155,19 +155,19 @@
     "uploadShowDataLoading": "Please wait, uploading…",
     "uploadShowDataStart": "Click here to start the upload process"
   },
-  "sidebar": {
-    "3DView": "3D View",
-    "beacons": "Beacons",
-    "clocks": "Clocks",
-    "docks": "Docks",
-    "eventLog": "Event log",
-    "features": "Features",
-    "layers": "Layers",
-    "lightControl": "Light control",
-    "locations": "Locations",
+  "view": {
+    "beacon-list": "Beacons",
+    "dock-list": "Docks",
+    "feature-list": "Features",
+    "field-notes": "Field notes",
+    "layer-list": "Layers",
+    "lcd-clock-panel": "Clocks",
+    "light-control": "Light control",
+    "log-panel": "Event log",
     "map": "Map",
-    "notes": "Field notes",
-    "showControl": "Show control",
-    "uavs": "UAVs"
+    "saved-location-list": "Locations",
+    "show-control": "Show control",
+    "three-d-view": "3D View",
+    "uav-list": "UAVs"
   }
 }

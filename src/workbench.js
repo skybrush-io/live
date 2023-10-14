@@ -22,6 +22,7 @@ import {
   setWorkbenchIsFixed,
 } from './features/workbench/slice';
 import { injectFlockFromContext } from './flock';
+import i18n from './i18n';
 import store from './store';
 import {
   getDefaultWorkbenchPerspectiveSpecification,
@@ -205,6 +206,14 @@ function constructDefaultWorkbench(store) {
 }
 
 const workbench = constructDefaultWorkbench(store);
+
+i18n.on('languageChanged', () => {
+  workbench.forEach((view) => {
+    if (view.isComponent) {
+      view.setTitle(i18n.t(`view.${view.config.component}`));
+    }
+  });
+});
 
 /**
  * React context that exposes the workbench instance to components.

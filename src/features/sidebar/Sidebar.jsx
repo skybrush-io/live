@@ -65,30 +65,25 @@ const Sidebar = ({ experimentalFeaturesEnabled, isOpen, t, workbench }) => (
   >
     <div style={innerStyle}>
       <ModuleTray allowMultipleSelection vertical workbench={workbench}>
-        <Module
-          id='map'
-          icon={<Map />}
-          label={t('sidebar.map')}
-          component='map'
-        />
+        <Module id='map' icon={<Map />} label={t('view.map')} component='map' />
         <Module
           id='threeDView'
           icon={<ThreeDRotation />}
-          label={t('sidebar.3DView')}
+          label={t('view.three-d-view')}
           component='three-d-view'
           reorderEnabled={false}
         />
         <Module
           id='layers'
           icon={<Layers />}
-          label={t('sidebar.layers')}
+          label={t('view.layer-list')}
           component='layer-list'
         />
         {hasFeature('mapFeatures') && (
           <Module
             id='features'
             icon={<ShapeLine />}
-            label={t('sidebar.features')}
+            label={t('view.feature-list')}
             component='feature-list'
           />
         )}
@@ -96,14 +91,14 @@ const Sidebar = ({ experimentalFeaturesEnabled, isOpen, t, workbench }) => (
         <Module
           id='uavs'
           icon={<Flight />}
-          label={t('sidebar.uavs')}
+          label={t('view.uav-list')}
           component='uav-list'
         />
         {hasFeature('beacons') && (
           <Module
             id='beacons'
             icon={<Antenna />}
-            label={t('sidebar.beacons')}
+            label={t('view.beacon-list')}
             component='beacon-list'
           />
         )}
@@ -111,7 +106,7 @@ const Sidebar = ({ experimentalFeaturesEnabled, isOpen, t, workbench }) => (
           <Module
             id='docks'
             icon={<Gamepad />}
-            label={t('sidebar.docks')}
+            label={t('view.dock-list')}
             component='dock-list'
           />
         )}
@@ -121,7 +116,7 @@ const Sidebar = ({ experimentalFeaturesEnabled, isOpen, t, workbench }) => (
           <Module
             id='show'
             icon={<Grain />}
-            label={t('sidebar.showControl')}
+            label={t('view.show-control')}
             component='show-control'
           />
         )}
@@ -129,7 +124,7 @@ const Sidebar = ({ experimentalFeaturesEnabled, isOpen, t, workbench }) => (
           <Module
             id='lights'
             icon={<WbSunny />}
-            label={t('sidebar.lightControl')}
+            label={t('view.light-control')}
             component='light-control'
           />
         )}
@@ -137,7 +132,7 @@ const Sidebar = ({ experimentalFeaturesEnabled, isOpen, t, workbench }) => (
         <Module
           id='clocks'
           icon={<Alarm />}
-          label={t('sidebar.clocks')}
+          label={t('view.lcd-clock-panel')}
           component='lcd-clock-panel'
         />
         {/*
@@ -151,21 +146,21 @@ const Sidebar = ({ experimentalFeaturesEnabled, isOpen, t, workbench }) => (
         <Module
           id='locations'
           icon={<Place />}
-          label={t('sidebar.locations')}
+          label={t('view.saved-location-list')}
           component='saved-location-list'
         />
         <hr />
         <Module
           id='notes'
           icon={<Assignment />}
-          label={t('sidebar.notes')}
+          label={t('view.field-notes')}
           component='field-notes'
         />
         <Module
           id='log'
           badge={<LogStatusBadge />}
           icon={<FormatListBulleted />}
-          label={t('sidebar.eventLog')}
+          label={t('view.log-panel')}
           component='log-panel'
         />
       </ModuleTray>

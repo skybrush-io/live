@@ -155,19 +155,19 @@
     "uploadShowDataLoading": "Kérem várjon, feltöltés…",
     "uploadShowDataStart": "Kattintson ide a feltötés megkezdéséhez"
   },
-  "sidebar": {
-    "3DView": "3D Nézet",
-    "beacons": "Jeladók",
-    "clocks": "Órák",
-    "docks": "Dokkok",
-    "eventLog": "Eseménynapló",
-    "features": "Paraméterek",
-    "layers": "Rétegek",
-    "lightControl": "Fényvezérlés",
-    "locations": "Helyszínek",
+  "view": {
+    "three-d-view": "3D Nézet",
+    "beacon-list": "Jeladók",
+    "lcd-clock-panel": "Órák",
+    "dock-list": "Dokkok",
+    "log-panel": "Eseménynapló",
+    "feature-list": "Objektumok",
+    "layer-list": "Rétegek",
+    "light-control": "Fényvezérlés",
+    "saved-location-list": "Helyszínek",
     "map": "Térkép",
-    "notes": "Terepi jegyzetek",
-    "showControl": "Műsorvezérlés",
-    "uavs": "Drónok"
+    "field-notes": "Terepi jegyzetek",
+    "show-control": "Műsorvezérlés",
+    "uav-list": "Drónok"
   }
 }
