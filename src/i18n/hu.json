@@ -7,7 +7,7 @@
     "drawPath": "Útvonal rajzolás",
     "drawPolygon": "Sokszög rajzolás",
     "drawRectangle": "Négyszög rajzolás",
-    "editFeature": "Paraméterek szerkesztése",
+    "editFeature": "Objektumok szerkesztése",
     "select": "Kijelölés",
     "zoom": "Nagyítás"
   },
@@ -156,18 +156,18 @@
     "uploadShowDataStart": "Kattintson ide a feltötés megkezdéséhez"
   },
   "view": {
-    "three-d-view": "3D Nézet",
     "beacon-list": "Jeladók",
-    "lcd-clock-panel": "Órák",
     "dock-list": "Dokkok",
-    "log-panel": "Eseménynapló",
     "feature-list": "Objektumok",
-    "layer-list": "Rétegek",
-    "light-control": "Fényvezérlés",
-    "saved-location-list": "Helyszínek",
-    "map": "Térkép",
     "field-notes": "Terepi jegyzetek",
+    "layer-list": "Rétegek",
+    "lcd-clock-panel": "Órák",
+    "light-control": "Fényvezérlés",
+    "log-panel": "Eseménynapló",
+    "map": "Térkép",
+    "saved-location-list": "Helyszínek",
     "show-control": "Műsorvezérlés",
+    "three-d-view": "3D Nézet",
     "uav-list": "Drónok"
   }
 }
