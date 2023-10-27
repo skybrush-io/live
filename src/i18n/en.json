@@ -130,8 +130,10 @@
     "noFileLoaded": "No show file loaded",
     "onboardPreflightChecks": "Onboard preflight checks",
     "outdoor": {
+      "invalidAltitudeReference": "Outdoor, invalid altitude reference",
       "relativeToAMSL": "Outdoor, relative to {{altitude}}m AMSL",
-      "relativeToHome": "Outdoor, relative to home"
+      "relativeToHome": "Outdoor, relative to home",
+      "unknownAltitudeReference": "Outdoor, unknown altitude reference"
     },
     "placementAccuracy": "Placement accuracy ≤ {{distance}}",
     "reload": "Reload show",
@@ -150,6 +152,7 @@
     "takeOffNoPosition": "No position yet for at least one drone",
     "takeOffOne": "One drone will take off automatically",
     "takeOffPlace": "Place the drones in the takeoff area",
+    "unknown": "Unknown",
     "unknownStartMode": "This show uses an unknown start mode",
     "uploadShowData": "Upload show data",
     "uploadShowDataLoading": "Please wait, uploading…",

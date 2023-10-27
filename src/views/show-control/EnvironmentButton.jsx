@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { withTranslation } from 'react-i18next';
-import i18n from '~/i18n';
 import { connect } from 'react-redux';
 import { createSelector } from '@reduxjs/toolkit';
 
@@ -20,6 +19,8 @@ import { openEnvironmentEditorDialog } from '~/features/show/slice';
 import { getSetupStageStatuses } from '~/features/show/stages';
 import { getDisplayLanguage } from '~/features/settings/selectors';
 
+import { tt } from '~/i18n';
+
 /**
  * Specialized selector to format the secondary text on the button.
  */
@@ -30,29 +31,29 @@ const getEnvironmentDescription = createSelector(
   (environmentType, outdoorAltitudeReference, language) => {
     switch (environmentType) {
       case 'indoor':
-        return i18n.t('show.indoor', { lng: language });
+        return tt('show.indoor', { lng: language });
 
       case 'outdoor': {
         const { type, value } = outdoorAltitudeReference;
         if (type === AltitudeReference.AMSL) {
           if (Number.isFinite(value)) {
-            return i18n.t('show.outdoor.relativeToAMSL', {
+            return tt('show.outdoor.relativeToAMSL', {
               altitude: value.toFixed(1),
               lng: language,
             });
           } else {
-            return 'Outdoor, invalid altitude reference';
+            return tt('show.outdoor.invalidAltitudeReference');
           }
         } else if (type === AltitudeReference.AHL) {
           // value should be ignored in this case
-          return i18n.t('show.outdoor.relativeToHome');
+          return tt('show.outdoor.relativeToHome');
         } else {
-          return 'Outdoor, unknown altitude reference';
+          return tt('show.outdoor.unknownAltitudeReference');
         }
       }
 
       default:
-        return 'Unknown';
+        return tt('show.unknown');
     }
   }
 );
@@ -78,7 +79,7 @@ const EnvironmentButton = ({
     <StatusLight status={status} />
     <ListItemText
       primary={t('show.setupEnvironment')}
-      secondary={secondaryText}
+      secondary={secondaryText(t)}
     />
   </ListItem>
 );

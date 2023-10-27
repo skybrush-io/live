@@ -130,8 +130,10 @@
     "noFileLoaded": "Nincs betöltve műsor fájl",
     "onboardPreflightChecks": "Automata fedélzeti ellenőrzés",
     "outdoor": {
+      "invalidAltitudeReference": "Kültér, érvénytelen magassági referencia",
       "relativeToAMSL": "Kültér, az AMSL-hez képest {{altitude}}m",
-      "relativeToHome": "Kültér, a felszállási ponthoz képest"
+      "relativeToHome": "Kültér, a felszállási ponthoz képest",
+      "unknownAltitudeReference": "Kültér, ismeretlen magassági referencia"
     },
     "placementAccuracy": "Az elhelyezés pontossága ≤ {{distance}}",
     "reload": "A műsor újratöltése",
@@ -150,6 +152,7 @@
     "takeOffNoPosition": "Legalább egy drón számára még nincs pozíció",
     "takeOffOne": "Egy drón automatikusan fel fog szállni",
     "takeOffPlace": "Helyezze a drónokat a felszállási területre",
+    "unknown": "Ismeretlen",
     "unknownStartMode": "A műsor ismeretlen indítási módot használ",
     "uploadShowData": "Műsor adatok feltöltése",
     "uploadShowDataLoading": "Kérem várjon, feltöltés…",
