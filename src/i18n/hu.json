@@ -32,6 +32,11 @@
     "sleep": "Alvás",
     "takeOff": "Felszállás"
   },
+  "alerts": {
+    "acknowledgeAlerts": "Kattintson a riasztások nyugtázásához.",
+    "clickToMute": "Kattintson a riasztások némításához.",
+    "muted": "A riasztások némítva vannak. Kattintson a némítás feloldásához."
+  },
   "fieldNotesPanel": {
     "exportNotesAsFile": "Jegyzetek exportálása Markdown fájlként"
   },
@@ -75,6 +80,7 @@
   "notifications": {
     "connectedToSkybrushServer": "Csatlakozva a Skybrush szerverhez"
   },
+  "preferences": "Preferenciák",
   "settings": {
     "display": {
       "coordinateFormat": "Koordináta formátum",
@@ -157,6 +163,15 @@
     "uploadShowData": "Műsor adatok feltöltése",
     "uploadShowDataLoading": "Kérem várjon, feltöltés…",
     "uploadShowDataStart": "Kattintson ide a feltötés megkezdéséhez"
+  },
+  "toolbox": {
+    "averagingInProgress": "{{number}} folyamatban",
+    "coordinateAveraging": "Koordináta átlagolás",
+    "licenseInfo": "Licenc információ",
+    "offlineMaps": "Offline térképek",
+    "paramUpload": "Paraméter feltöltése",
+    "tooltip": "Eszköztár",
+    "uploadInProgress": "Feltöltés folyamatban"
   },
   "view": {
     "beacon-list": "Jeladók",

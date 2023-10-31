@@ -1,4 +1,5 @@
 import React from 'react';
+import { Translation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import SettingsIcon from '@material-ui/icons/Settings';
@@ -8,9 +9,13 @@ import GenericHeaderButton from '@skybrush/mui-components/lib/GenericHeaderButto
 import { toggleAppSettingsDialog } from '~/features/settings/actions';
 
 const AppSettingsButtonPresentation = (props) => (
-  <GenericHeaderButton {...props} tooltip='Preferences'>
-    <SettingsIcon />
-  </GenericHeaderButton>
+  <Translation>
+    {(t) => (
+      <GenericHeaderButton {...props} tooltip={t('preferences')}>
+        <SettingsIcon />
+      </GenericHeaderButton>
+    )}
+  </Translation>
 );
 
 AppSettingsButtonPresentation.propTypes = {

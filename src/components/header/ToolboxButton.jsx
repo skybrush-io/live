@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
+import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import ListItemText from '@material-ui/core/ListItemText';
@@ -29,6 +30,7 @@ const ToolboxButtonPresentation = ({
   showLicenseInfoDialog,
   showMapCachingDialog,
   showParameterUploadDialog,
+  t,
 }) => {
   const [anchorElement, setAnchorElement] = useState(null);
 
@@ -52,7 +54,7 @@ const ToolboxButtonPresentation = ({
       <GenericHeaderButton
         aria-controls='toolbox-menu'
         aria-haspopup='true'
-        tooltip='Toolbox'
+        tooltip={t('toolbox.tooltip')}
         onClick={handleClick}
       >
         <SidebarBadge color={Colors.warning} visible={needsBadge} />
@@ -66,10 +68,12 @@ const ToolboxButtonPresentation = ({
       >
         <MenuItem onClick={createClickListener(showAveragingDialog)}>
           <ListItemText
-            primary='Coordinate averaging'
+            primary={t('toolbox.coordinateAveraging')}
             secondary={
               numberOfAveragingInProgress > 0
-                ? `${numberOfAveragingInProgress} in progress`
+                ? t('toolbox.averagingInProgress', {
+                    number: numberOfAveragingInProgress,
+                  })
                 : undefined
             }
           />
@@ -78,12 +82,14 @@ const ToolboxButtonPresentation = ({
         <MenuItem disabled>Firmware update</MenuItem>
         */}
         <MenuItem onClick={createClickListener(showMapCachingDialog)}>
-          <ListItemText primary='Offline maps' />
+          <ListItemText primary={t('toolbox.offlineMaps')} />
         </MenuItem>
         <MenuItem onClick={createClickListener(showParameterUploadDialog)}>
           <ListItemText
-            primary='Parameter upload'
-            secondary={isUploadInProgress ? 'Upload in progress' : undefined}
+            primary={t('toolbox.paramUpload')}
+            secondary={
+              isUploadInProgress ? t('toolbox.uploadInProgress') : undefined
+            }
           />
         </MenuItem>
         <Divider />
@@ -91,7 +97,7 @@ const ToolboxButtonPresentation = ({
           disabled={!isConnected}
           onClick={createClickListener(showLicenseInfoDialog)}
         >
-          <ListItemText primary='License info' />
+          <ListItemText primary={t('toolbox.licenseInfo')} />
         </MenuItem>
         {/*
         <MenuItem onClick={createClickListener(showVersionCheckDialog)}>
@@ -112,6 +118,7 @@ ToolboxButtonPresentation.propTypes = {
   showMapCachingDialog: PropTypes.func,
   showParameterUploadDialog: PropTypes.func,
   showLicenseInfoDialog: PropTypes.func,
+  t: PropTypes.func,
 };
 
 export default connect(
@@ -129,4 +136,4 @@ export default connect(
     showParameterUploadDialog,
     showVersionCheckDialog,
   }
-)(ToolboxButtonPresentation);
+)(withTranslation()(ToolboxButtonPresentation));

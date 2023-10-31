@@ -32,6 +32,11 @@
     "sleep": "Sleep",
     "takeOff": "Takeoff"
   },
+  "alerts": {
+    "acknowledgeAlerts": "Click to acknowledge alerts",
+    "clickToMute": "Click to mute audible alerts.",
+    "muted": "Audible alerts are muted. Click to unmute."
+  },
   "fieldNotesPanel": {
     "exportNotesAsFile": "Export notes as Markdown file"
   },
@@ -75,6 +80,7 @@
   "notifications": {
     "connectedToSkybrushServer": "Connected to Skybrush server"
   },
+  "preferences": "Preferences",
   "settings": {
     "display": {
       "coordinateFormat": "Coordinate format",
@@ -157,6 +163,15 @@
     "uploadShowData": "Upload show data",
     "uploadShowDataLoading": "Please wait, uploading…",
     "uploadShowDataStart": "Click here to start the upload process"
+  },
+  "toolbox": {
+    "averagingInProgress": "{{number}} in progress",
+    "coordinateAveraging": "Coordinate averaging",
+    "licenseInfo": "License info",
+    "offlineMaps": "Offline maps",
+    "paramUpload": "Parameter upload",
+    "tooltip": "Toolbox",
+    "uploadInProgress": "Upload in progress"
   },
   "view": {
     "beacon-list": "Beacons",
