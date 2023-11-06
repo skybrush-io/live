@@ -1,6 +1,7 @@
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import React from 'react';
+import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import PersonIcon from '@material-ui/icons/Person';
@@ -25,8 +26,9 @@ const AuthenticationButtonPresentation = ({
   label,
   onAuthenticate,
   onDeauthenticate,
+  t,
 }) => (
-  <Tooltip content='Authentication'>
+  <Tooltip content={t('authentication')}>
     <div
       className={clsx('wb-module', isDisabled && 'wb-module-disabled')}
       onClick={
@@ -48,6 +50,7 @@ AuthenticationButtonPresentation.propTypes = {
   label: PropTypes.string,
   onAuthenticate: PropTypes.func,
   onDeauthenticate: PropTypes.func,
+  t: PropTypes.func,
 };
 
 export default connect(
@@ -62,4 +65,4 @@ export default connect(
     onAuthenticate: () => dispatch(showAuthenticationDialog()),
     onDeauthenticate: () => dispatch(showDeauthenticationDialog()),
   })
-)(AuthenticationButtonPresentation);
+)(withTranslation()(AuthenticationButtonPresentation));

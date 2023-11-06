@@ -2,18 +2,23 @@ import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
 import { useEvent, useUpdate } from 'react-use';
 import ScreenFull from 'screenfull';
+import { Translation } from 'react-i18next';
 
 import NavigationFullscreen from '@material-ui/icons/Fullscreen';
 import NavigationFullscreenExit from '@material-ui/icons/FullscreenExit';
 import GenericHeaderButton from '@skybrush/mui-components/lib/GenericHeaderButton';
 
 const FullScreenButtonPresentation = ({ isFullscreen, ...rest }) => (
-  <GenericHeaderButton
-    {...rest}
-    tooltip={isFullscreen ? 'Exit full screen mode' : 'Full screen mode'}
-  >
-    {isFullscreen ? <NavigationFullscreenExit /> : <NavigationFullscreen />}
-  </GenericHeaderButton>
+  <Translation>
+    {(t) => (
+      <GenericHeaderButton
+        {...rest}
+        tooltip={isFullscreen ? t('fullScreen.exit') : t('fullScreen.on')}
+      >
+        {isFullscreen ? <NavigationFullscreenExit /> : <NavigationFullscreen />}
+      </GenericHeaderButton>
+    )}
+  </Translation>
 );
 
 FullScreenButtonPresentation.propTypes = {

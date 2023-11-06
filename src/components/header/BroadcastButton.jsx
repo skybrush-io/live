@@ -1,6 +1,7 @@
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import React, { useEffect, useRef } from 'react';
+import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import { makeStyles } from '@material-ui/core/styles';
@@ -53,7 +54,7 @@ const useStyles = makeStyles({
   },
 });
 
-const BroadcastButton = ({ isBroadcast, setBroadcast, timeoutLength }) => {
+const BroadcastButton = ({ isBroadcast, setBroadcast, t, timeoutLength }) => {
   const classes = useStyles({ timeoutLength });
   const timeout = useRef(undefined);
 
@@ -79,8 +80,8 @@ const BroadcastButton = ({ isBroadcast, setBroadcast, timeoutLength }) => {
     <Tooltip
       content={
         isBroadcast
-          ? `Disable broadcast`
-          : `Enable broadcast for ${timeoutLength} seconds`
+          ? t('broadcastButton.disable')
+          : t('broadcastButton.enable', { time: timeoutLength })
       }
     >
       <GenericHeaderButton onClick={() => setBroadcast(!isBroadcast)}>
@@ -102,6 +103,7 @@ const BroadcastButton = ({ isBroadcast, setBroadcast, timeoutLength }) => {
 BroadcastButton.propTypes = {
   isBroadcast: PropTypes.bool,
   setBroadcast: PropTypes.func,
+  t: PropTypes.func,
   timeoutLength: PropTypes.number,
 };
 
@@ -114,4 +116,4 @@ export default connect(
   {
     setBroadcast,
   }
-)(BroadcastButton);
+)(withTranslation()(BroadcastButton));

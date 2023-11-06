@@ -37,8 +37,17 @@
     "clickToMute": "Click to mute audible alerts.",
     "muted": "Audible alerts are muted. Click to unmute."
   },
+  "authentication": "Authentication",
+  "broadcastButton": {
+    "disable": "Disable broadcast",
+    "enable": "Enable broadcast for {{time}} seconds"
+  },
   "fieldNotesPanel": {
     "exportNotesAsFile": "Export notes as Markdown file"
+  },
+  "fullScreen": {
+    "exit": "Exit full screen mode",
+    "on": "Full screen mode"
   },
   "geofence": {
     "statusText": {
@@ -66,6 +75,7 @@
     "vertexCountReduction": "Vertex count reduction",
     "vertical": "Vertical"
   },
+  "help": "Help",
   "lightControl": {
     "fromGCS": "Lights controlled from GCS",
     "notConnected": "Not connected to server",

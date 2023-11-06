@@ -37,8 +37,17 @@
     "clickToMute": "Kattintson a riasztások némításához.",
     "muted": "A riasztások némítva vannak. Kattintson a némítás feloldásához."
   },
+  "authentication": "Hitelesítés",
+  "broadcastButton": {
+    "disable": "Broadcast letiltása",
+    "enable": "Broadcast engedélyezése {{time}} másodpercig"
+  },
   "fieldNotesPanel": {
     "exportNotesAsFile": "Jegyzetek exportálása Markdown fájlként"
+  },
+  "fullScreen": {
+    "exit": "Kilépés a teljes képernyős módból",
+    "on": "Teljes képernyős mód"
   },
   "geofence": {
     "statusText": {
@@ -66,6 +75,7 @@
     "vertexCountReduction": "Csúcsszám csökkentése",
     "vertical": "Vertikális"
   },
+  "help": "Segítség",
   "lightControl": {
     "fromGCS": "A fények GCS-sel vezéreltek",
     "notConnected": "Nem csatlakozik a szerverhez",
