@@ -3,6 +3,7 @@ import format from 'date-fns/format';
 import isNil from 'lodash-es/isNil';
 import PropTypes from 'prop-types';
 import React from 'react';
+import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import TimeAgo from 'react-timeago';
 
@@ -59,6 +60,7 @@ const WeatherDetailsMiniList = ({
   sunriseEnd,
   sunset,
   sunsetStart,
+  t,
   timezone,
   utcOffset,
 }) => {
@@ -69,7 +71,7 @@ const WeatherDetailsMiniList = ({
     items.push(
       <MiniListItem
         key='timezone'
-        primaryText='Timezone'
+        primaryText={t('weatherMiniList.timezone')}
         secondaryText={timezone}
       />
     );
@@ -84,7 +86,7 @@ const WeatherDetailsMiniList = ({
     items.push(
       <MiniListItem
         key='utcOffset'
-        primaryText='UTC offset'
+        primaryText={t('weatherMiniList.utcOffset')}
         secondaryText={formattedUtcOffset}
       />
     );
@@ -100,7 +102,7 @@ const WeatherDetailsMiniList = ({
     items.push(
       <MiniListItem
         key='sunset'
-        primaryText='Sunset'
+        primaryText={t('weatherMiniList.sunset')}
         secondaryText={formatInterval(sunsetStart, sunset)}
       />
     );
@@ -111,7 +113,7 @@ const WeatherDetailsMiniList = ({
     const item = (
       <MiniListItem
         key='sunrise'
-        primaryText='Sunrise'
+        primaryText={t('weatherMiniList.sunrise')}
         secondaryText={formatInterval(sunrise, sunriseEnd)}
       />
     );
@@ -133,7 +135,7 @@ const WeatherDetailsMiniList = ({
     items.push(
       <MiniListItem
         key='kpIndex'
-        primaryText='Kp index'
+        primaryText={t('weatherMiniList.kpIndex')}
         secondaryText={
           <StatusText status={getStatusForKpIndex(kpIndex)}>
             {formatNumberSafely(kpIndex, 1)}
@@ -147,7 +149,7 @@ const WeatherDetailsMiniList = ({
     items.push(
       <MiniListItem
         key='declination'
-        primaryText='Compass declination'
+        primaryText={t('weatherMiniList.compassDeclination')}
         secondaryText={
           !isNil(declination)
             ? formatNumberSafely(Math.abs(declination), 2, '°') +
@@ -165,7 +167,7 @@ const WeatherDetailsMiniList = ({
     items.push(
       <SmallProgressIndicator
         key='loadingIndicator'
-        label='Refreshing...'
+        label={t('weatherMiniList.refreshing')}
         padding={0.5}
       />
     );
@@ -173,7 +175,7 @@ const WeatherDetailsMiniList = ({
     items.push(
       <MiniListItem
         key='lastUpdatedAt'
-        primaryText='Last update'
+        primaryText={t('weatherMiniList.lastUpdate')}
         secondaryText={
           error ? (
             <span
@@ -200,7 +202,7 @@ const WeatherDetailsMiniList = ({
   if (items.length > 0) {
     return <MiniList style={listStyle}>{items}</MiniList>;
   } else {
-    return 'No weather information on this day';
+    return t('weatherMiniList.noWeatherInfo');
   }
 };
 
@@ -210,6 +212,7 @@ WeatherDetailsMiniList.propTypes = {
   sunriseEnd: PropTypes.instanceOf(Date),
   sunsetStart: PropTypes.instanceOf(Date),
   sunset: PropTypes.instanceOf(Date),
+  t: PropTypes.func,
   timezone: PropTypes.string,
   utcOffset: PropTypes.number,
 };
@@ -226,4 +229,4 @@ export default connect(
   }),
   // mapDispatchToProps
   {}
-)(WeatherDetailsMiniList);
+)(withTranslation()(WeatherDetailsMiniList));

@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
+import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import Battery from '@material-ui/icons/BatteryChargingFull';
@@ -28,7 +29,7 @@ const INITIAL_STATE = {
   min: null,
 };
 
-const BatteryStatusHeaderButton = ({ formatter, isConnected }) => {
+const BatteryStatusHeaderButton = ({ formatter, isConnected, t }) => {
   const [{ avg, min }, setSummary] = useState(INITIAL_STATE);
   const batteryStatus = avg
     ? formatter.getBatteryStatus(avg.voltage, avg.percentage)
@@ -39,7 +40,7 @@ const BatteryStatusHeaderButton = ({ formatter, isConnected }) => {
   const badgeVisible = badgeStatus && badgeStatus !== Status.OFF;
 
   return (
-    <Tooltip content={'Showing average and minimum charge levels.'}>
+    <Tooltip content={t('batteryStatusHeaderButton')}>
       <GenericHeaderButton
         disabled={!isConnected}
         label={
@@ -74,6 +75,7 @@ const BatteryStatusHeaderButton = ({ formatter, isConnected }) => {
 BatteryStatusHeaderButton.propTypes = {
   formatter: PropTypes.instanceOf(BatteryFormatter).isRequired,
   isConnected: PropTypes.bool,
+  t: PropTypes.func,
 };
 
 export default connect(
@@ -84,4 +86,4 @@ export default connect(
   }),
   // mapDispatchToProps
   {}
-)(BatteryStatusHeaderButton);
+)(withTranslation()(BatteryStatusHeaderButton));

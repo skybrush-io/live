@@ -1,5 +1,9 @@
 {
   "": "",
+  "ConnectionStatusMiniList": {
+    "noConnections": "This server uses no connections.",
+    "useSecondaryChannel": "Use secondary channel"
+  },
   "DrawingToolbar": {
     "addMarker": "Add marker",
     "cutHole": "Cut hole into polygon",
@@ -37,7 +41,12 @@
     "clickToMute": "Click to mute audible alerts.",
     "muted": "Audible alerts are muted. Click to unmute."
   },
+  "altitudeSummaryButton": {
+    "clickToChange": "Click to change to",
+    "showingCurrent": "Showing maximum and minimum"
+  },
   "authentication": "Authentication",
+  "batteryStatusHeaderButton": "Showing average and minimum charge levels.",
   "broadcastButton": {
     "disable": "Disable broadcast",
     "enable": "Enable broadcast for {{time}} seconds"
@@ -91,6 +100,17 @@
     "connectedToSkybrushServer": "Connected to Skybrush server"
   },
   "preferences": "Preferences",
+  "serverConnectionStatus": {
+    "clockSkew": "Clock skew",
+    "clocksSync": "Clocks synchronized",
+    "connected": "Connected",
+    "connecting": "Connection in progress...",
+    "disconnected": "Disconnected from server",
+    "disconnecting": "Disconnection in progress...",
+    "roundTripTime": "Round-trip time",
+    "unknownState": "Unknown state",
+    "version": "Server version"
+  },
   "settings": {
     "display": {
       "coordinateFormat": "Coordinate format",
@@ -197,5 +217,16 @@
     "show-control": "Show control",
     "three-d-view": "3D View",
     "uav-list": "UAVs"
+  },
+  "weatherMiniList": {
+    "compassDeclination": "Compass declination",
+    "kpIndex": "Kp index",
+    "lastUpdate": "Last update",
+    "noWeatherInfo": "No weather information on this day",
+    "refreshing": "Refreshing...",
+    "sunrise": "Sunrise",
+    "sunset": "Sunset",
+    "timezone": "Timezone",
+    "utcOffset": "UTC offset"
   }
 }

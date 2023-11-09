@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
+import { withTranslation } from 'react-i18next';
 import TimeAgo from 'react-timeago';
 
 import Box from '@material-ui/core/Box';
@@ -38,6 +39,7 @@ ConnectionStatusMiniListEntry.propTypes = {
 const ConnectionStatusMiniListAndButtons = ({
   connections,
   onSwitchSecondaryChannel,
+  t,
   useSecondaryChannel,
 }) => (
   <MiniList>
@@ -45,7 +47,7 @@ const ConnectionStatusMiniListAndButtons = ({
       <ConnectionStatusMiniListEntry key={item.id} {...item} />
     ))}
     {connections.length === 0 && (
-      <MiniListItem primaryText='This server uses no connections.' />
+      <MiniListItem primaryText={t('ConnectionStatusMiniList.noConnections')} />
     )}
     <MiniListDivider />
     <FormControlLabel
@@ -58,7 +60,11 @@ const ConnectionStatusMiniListAndButtons = ({
           />
         </Box>
       }
-      label={<Typography variant='body2'>Use secondary channel</Typography>}
+      label={
+        <Typography variant='body2'>
+          {t('ConnectionStatusMiniList.useSecondaryChannel')}
+        </Typography>
+      }
     />
   </MiniList>
 );
@@ -66,6 +72,7 @@ const ConnectionStatusMiniListAndButtons = ({
 ConnectionStatusMiniListAndButtons.propTypes = {
   connections: PropTypes.arrayOf(PropTypes.any),
   onSwitchSecondaryChannel: PropTypes.func,
+  t: PropTypes.func,
   useSecondaryChannel: PropTypes.bool,
 };
 
@@ -77,4 +84,4 @@ export default connect(
   {
     onSwitchSecondaryChannel: () => togglePreferredChannel(),
   }
-)(ConnectionStatusMiniListAndButtons);
+)(withTranslation()(ConnectionStatusMiniListAndButtons));

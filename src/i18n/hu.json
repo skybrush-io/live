@@ -1,5 +1,9 @@
 {
   "": "",
+  "ConnectionStatusMiniList": {
+    "noConnections": "Ez a szerver nem használ kapcsolatokat.",
+    "useSecondaryChannel": "Másodlagos csatorna használata"
+  },
   "DrawingToolbar": {
     "addMarker": "Jelölő hozzáadása",
     "cutHole": "Lyuk vágás sokszögbe",
@@ -37,7 +41,12 @@
     "clickToMute": "Kattintson a riasztások némításához.",
     "muted": "A riasztások némítva vannak. Kattintson a némítás feloldásához."
   },
+  "altitudeSummaryButton": {
+    "clickToChange": "Kattintson a módosításhoz erre:",
+    "showingCurrent": "Maximum és minimun kijelzése"
+  },
   "authentication": "Hitelesítés",
+  "batteryStatusHeaderButton": "Átlagos és minimális töltési szintek kijelzése.",
   "broadcastButton": {
     "disable": "Broadcast letiltása",
     "enable": "Broadcast engedélyezése {{time}} másodpercig"
@@ -91,6 +100,17 @@
     "connectedToSkybrushServer": "Csatlakozva a Skybrush szerverhez"
   },
   "preferences": "Preferenciák",
+  "serverConnectionStatus": {
+    "clockSkew": "Óra szinkronizálás",
+    "clocksSync": "Az órák szinkronizálva",
+    "connected": "Kapcsolódva",
+    "connecting": "Kapcsolódás...",
+    "disconnected": "Leválasztva a szerverről",
+    "disconnecting": "Leválasztás...",
+    "roundTripTime": "Köridő",
+    "unknownState": "Ismeretlen állapot",
+    "version": "Szerver verzió"
+  },
   "settings": {
     "display": {
       "coordinateFormat": "Koordináta formátum",
@@ -197,5 +217,16 @@
     "show-control": "Műsorvezérlés",
     "three-d-view": "3D Nézet",
     "uav-list": "Drónok"
+  },
+  "weatherMiniList": {
+    "compassDeclination": "Iránytű deklináció",
+    "kpIndex": "Kp index",
+    "lastUpdate": "Utolsó frissítés",
+    "noWeatherInfo": "Nincs időjárási információ a mai napra",
+    "refreshing": "Frissítés...",
+    "sunrise": "Napkelte",
+    "sunset": "Napnyugta",
+    "timezone": "Időzóna",
+    "utcOffset": "UTC eltolás"
   }
 }

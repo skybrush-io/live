@@ -2,6 +2,7 @@ import isNil from 'lodash-es/isNil';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
+import { Translation, withTranslation } from 'react-i18next';
 
 import MiniList from '@skybrush/mui-components/lib/MiniList';
 import MiniListDivider from '@skybrush/mui-components/lib/MiniListDivider';
@@ -18,10 +19,20 @@ import {
 import { ConnectionState } from '~/model/connections';
 
 const connectionStateToPrimaryText = {
-  [ConnectionState.CONNECTED]: 'Connected',
-  [ConnectionState.CONNECTING]: 'Connection in progress...',
-  [ConnectionState.DISCONNECTED]: 'Disconnected from server',
-  [ConnectionState.DISCONNECTING]: 'Disconnection in progress...',
+  [ConnectionState.CONNECTED]: (
+    <Translation>{(t) => t('serverConnectionStatus.connected')}</Translation>
+  ),
+  [ConnectionState.CONNECTING]: (
+    <Translation>{(t) => t('serverConnectionStatus.connecting')}</Translation>
+  ),
+  [ConnectionState.DISCONNECTED]: (
+    <Translation>{(t) => t('serverConnectionStatus.disconnected')}</Translation>
+  ),
+  [ConnectionState.DISCONNECTING]: (
+    <Translation>
+      {(t) => t('serverConnectionStatus.disconnecting')}
+    </Translation>
+  ),
 };
 
 const formatDurationInMsec = (number) => {
@@ -50,12 +61,14 @@ const ServerConnectionStatusMiniList = ({
   roundTripTime,
   serverHostname,
   serverVersion,
+  t,
 }) => (
   <MiniList>
     <MiniListItem
       iconPreset={connectionState}
       primaryText={
-        connectionStateToPrimaryText[connectionState] || 'Unknown state'
+        connectionStateToPrimaryText[connectionState] ||
+        t('serverConnectionStatus.unknownState')
       }
       secondaryText={
         connectionState === ConnectionState.CONNECTED ? serverHostname : null
@@ -65,27 +78,27 @@ const ServerConnectionStatusMiniList = ({
       <>
         <MiniListItem
           iconPreset='empty'
-          primaryText='Server version'
+          primaryText={t('serverConnectionStatus.version')}
           secondaryText={serverVersion}
         />
         <MiniListDivider />
         {clockSkew === 0 ? (
           <MiniListItem
             iconPreset='success'
-            primaryText='Clocks synchronized'
+            primaryText={t('serverConnectionStatus.clocksSync')}
           />
         ) : (
           <MiniListItem
             iconPreset={
               Math.abs(clockSkew) > roundTripTime / 2 ? 'warning' : 'empty'
             }
-            primaryText='Clock skew'
+            primaryText={t('serverConnectionStatus.clockSkew')}
             secondaryText={formatDurationInMsec(clockSkew)}
           />
         )}
         <MiniListItem
           iconPreset={roundTripTime > MAX_ROUNDTRIP_TIME ? 'warning' : 'empty'}
-          primaryText='Round-trip time'
+          primaryText={t('serverConnectionStatus.roundTripTime')}
           secondaryText={formatDurationInMsec(roundTripTime)}
         />
       </>
@@ -99,6 +112,7 @@ ServerConnectionStatusMiniList.propTypes = {
   roundTripTime: PropTypes.number,
   serverHostname: PropTypes.string,
   serverVersion: PropTypes.string,
+  t: PropTypes.func,
 };
 
 export default connect(
@@ -110,4 +124,4 @@ export default connect(
     serverVersion: getCurrentServerVersion(state),
   }),
   {}
-)(ServerConnectionStatusMiniList);
+)(withTranslation()(ServerConnectionStatusMiniList));

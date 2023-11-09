@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
+import { Translation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import Terrain from '@material-ui/icons/Terrain';
@@ -64,16 +65,20 @@ const getNextTypeForAltitudeSummaryType = (type) => {
 };
 
 const getTooltipForType = (type) => (
-  <div>
-    Showing maximum and minimum{' '}
-    {describeAltitudeSummaryType(type, { short: true })}.
-    <br />
-    Click to change to{' '}
-    {describeAltitudeSummaryType(getNextTypeForAltitudeSummaryType(type), {
-      short: true,
-    })}
-    .
-  </div>
+  <Translation>
+    {(t) => (
+      <div>
+        {t('altitudeSummaryButton.showingCurrent')}{' '}
+        {describeAltitudeSummaryType(type, { short: true })}.
+        <br />
+        {t('altitudeSummaryButton.clickToChange')}{' '}
+        {describeAltitudeSummaryType(getNextTypeForAltitudeSummaryType(type), {
+          short: true,
+        })}
+        .
+      </div>
+    )}
+  </Translation>
 );
 
 const AltitudeSummaryHeaderButton = ({
