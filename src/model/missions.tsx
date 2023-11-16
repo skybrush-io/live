@@ -118,10 +118,12 @@ const altitudeSchema = {
   properties: {
     value: {
       title: 'Value',
+			description: 'The altitude to reach in [m]',
       type: 'number',
     },
     reference: {
       title: 'Reference',
+      description: 'The altitude reference to use',
       type: 'string',
       enum: Object.values(AltitudeReference),
     },
@@ -155,8 +157,19 @@ export const schemaForMissionItemType: Record<
     required: [],
   },
   [MissionItemType.GO_TO]: {
-    properties: {},
-    required: [],
+    properties: {
+      lat: {
+        title: 'Latitude',
+        description: 'The latitude to go to in [deg]',
+        type: 'number'
+      },
+      lon: {
+        title: 'Longitude',
+        description: 'The longitude to go to in [deg]',
+        type: 'number'
+      }
+    },
+    required: ["lat", "lon"],
   },
   [MissionItemType.CHANGE_ALTITUDE]: {
     properties: {
@@ -165,11 +178,34 @@ export const schemaForMissionItemType: Record<
     required: ['alt'],
   },
   [MissionItemType.CHANGE_HEADING]: {
-    properties: {},
-    required: [],
+    properties: {
+      value: {
+        title: 'Value',
+        description: 'The absolute heading to turn to in [deg]',
+        type: 'number'
+      },
+      mode: {
+        title: 'Mode',
+        description: 'The heading mode to use',
+        type: 'string',
+        enum: HEADING_MODES
+      }
+    },
+    required: ['mode'],
   },
   [MissionItemType.CHANGE_SPEED]: {
-    properties: {},
+    properties: {
+      velocityXY: {
+        title: 'Horizontal speed',
+        description: 'The horizontal velocity to use in [m/s]',
+        type: 'number',
+      },
+      velocityZ: {
+        title: 'Vertical speed',
+        description: 'The vertical velocity to use in [m/s]',
+        type: 'number',
+      }
+    },
     required: [],
   },
   [MissionItemType.MARKER]: {
