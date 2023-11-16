@@ -16,7 +16,7 @@ let _resolver;
  * Helper function that calls the resolver function with the given value
  * if we have a resolver function, and does nothing otherwise.
  *
- * @param  {string}  value  the value to call the resolver with
+ * @param  {Object}  value  the value to call the resolver with
  */
 function resolveTo(value) {
   if (_resolver !== undefined) {
@@ -43,7 +43,7 @@ export function cancelPromptDialog() {
  * Thunk factory that creates a thunk that submits the prompt dialog
  * with the given value.
  *
- * @param  {string}  value  the value to submit from the dialog
+ * @param  {Object}  value  the value to submit from the dialog
  * @return {function} a Redux thunk
  */
 export function submitPromptDialog(value) {
@@ -60,14 +60,15 @@ export function submitPromptDialog(value) {
 /**
  * Thunk factory that creates a thunk that shows the prompt dialog.
  *
- * @param  {string}  message  the message to show in the dialog
- * @param  {Object}  options  additional options to pass to the dialog
+ * @param  {Object}  options  options to pass to the dialog
+ * @param  {Object}  options.initialValues  the starting contents of the fields
+ * @param  {Object}  options.schema  JSON schema for generating the form
  * @return {function} a Redux thunk
  */
-export function showPromptDialog(message, options) {
+export function showPromptDialog(options) {
   return (dispatch) => {
     resolveTo(undefined);
-    dispatch(_showPromptDialog(message, options));
+    dispatch(_showPromptDialog(options));
     return new Promise((resolve) => {
       _resolver = resolve;
     });

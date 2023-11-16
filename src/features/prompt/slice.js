@@ -6,14 +6,11 @@
 
 import { createSlice } from '@reduxjs/toolkit';
 
-const defaultState = {
-  cancelButtonLabel: 'Cancel',
-  dialogVisible: false,
-  fieldType: 'text',
-  hintText: undefined,
-  message: undefined,
-  submitButtonLabel: 'Submit',
-  title: undefined,
+const initialState = {
+  open: false,
+
+  initialValues: undefined,
+  schema: undefined,
 };
 
 /**
@@ -25,7 +22,7 @@ const { reducer, actions } = createSlice({
   /**
    * The default settings for the part of the state object being defined here.
    */
-  initialState: { ...defaultState },
+  initialState,
 
   reducers: {
     /**
@@ -34,29 +31,18 @@ const { reducer, actions } = createSlice({
      * This is not exported because the thunk version should be used instead.
      */
     _cancelPromptDialog(state) {
-      state.dialogVisible = false;
+      state.open = false;
     },
 
     /**
      * Action that will show the prompt dialog.
      * This is not exported because the thunk version should be used instead.
      */
-    _showPromptDialog: {
-      prepare: (message, options) => ({
-        payload: {
-          ...(typeof options === 'string'
-            ? { initialValue: options }
-            : options),
-          message,
-        },
-      }),
-      reducer: (state, action) =>
-        // Nothing is kept from the previous state; this is intentional
-        ({
-          ...defaultState,
-          ...action.payload,
-          dialogVisible: true,
-        }),
+    _showPromptDialog(state, { payload: { initialValues, schema } }) {
+      state.open = true;
+
+      state.initialValues = initialValues;
+      state.schema = schema;
     },
 
     /**
@@ -65,7 +51,7 @@ const { reducer, actions } = createSlice({
      * This is not exported because the thunk version should be used instead.
      */
     _submitPromptDialog(state) {
-      state.dialogVisible = false;
+      state.open = false;
     },
   },
 });

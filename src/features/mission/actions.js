@@ -1,6 +1,7 @@
 /* global VERSION */
 
 import formatDate from 'date-fns/format';
+import isEmpty from 'lodash-es/isEmpty';
 import isNil from 'lodash-es/isNil';
 import pickBy from 'lodash-es/pickBy';
 import { getDistance as haversineDistance } from 'ol/sphere';
@@ -17,6 +18,7 @@ import {
   getSingleSelectedFeatureIdOfType,
 } from '~/features/map-features/selectors';
 import { removeFeaturesByIds } from '~/features/map-features/slice';
+import { showPromptDialog } from '~/features/prompt/actions';
 import { updateGeofencePolygon } from '~/features/show/actions';
 import {
   getFirstPointsOfTrajectories,
@@ -55,6 +57,8 @@ import {
   isMissionItemValid,
   MissionItemType,
   MissionType,
+  schemaForMissionItemType,
+  titleForMissionItemType,
 } from '~/model/missions';
 import { readFileAsText } from '~/utils/files';
 import { readTextFromFile, writeTextToFile } from '~/utils/filesystem';
@@ -424,6 +428,28 @@ export const addNewMissionItem =
       parameters,
     };
     dispatch(addMissionItem({ item }));
+    if (!isEmpty(schemaForMissionItemType[item.type].properties)) {
+      dispatch(editMissionItemParameters(item.id));
+    }
+  };
+
+export const editMissionItemParameters =
+  (itemId) => async (dispatch, getState) => {
+    const state = getState();
+    const item = getMissionItemsById(state)[itemId];
+
+    const parameters = await dispatch(
+      showPromptDialog({
+        initialValues: item.parameters,
+        schema: {
+          title: titleForMissionItemType[item.type],
+          type: 'object',
+          ...schemaForMissionItemType[item.type],
+        },
+      })
+    );
+
+    dispatch(updateMissionItemParameters(itemId, parameters));
   };
 
 /**
