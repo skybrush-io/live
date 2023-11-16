@@ -1,28 +1,23 @@
+import isEmpty from 'lodash-es/isEmpty';
+import isNumber from 'lodash-es/isNumber';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 
 import Avatar from '@material-ui/core/Avatar';
 import Box from '@material-ui/core/Box';
+import IconButton from '@material-ui/core/IconButton';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import ListItemText from '@material-ui/core/ListItemText';
 import { makeStyles } from '@material-ui/core/styles';
-import ChangeAltitudeIcon from '@material-ui/icons/Height';
-import ChangeHeadingIcon from '@material-ui/icons/RotateLeft';
-import ChangeSpeedIcon from '@material-ui/icons/Speed';
-import MarkerIcon from '@material-ui/icons/Flag';
-import SetPayloadIcon from '@material-ui/icons/Camera';
-import SetParameterIcon from '@material-ui/icons/Settings';
-import TakeoffIcon from '@material-ui/icons/FlightTakeoff';
-import UpdateGeofenceIcon from '~/icons/PlacesFence';
-import UpdateSafetyIcon from '@material-ui/icons/Security';
-import LandIcon from '@material-ui/icons/FlightLand';
-import HomeIcon from '@material-ui/icons/Home';
+import Settings from '@material-ui/icons/Settings';
 
 import { Status } from '@skybrush/app-theme-material-ui';
 
 import Colors from '~/components/colors';
+import { editMissionItemParameters } from '~/features/mission/actions';
 import {
   getGeofencePolygon,
   getMissionItemById,
@@ -32,16 +27,18 @@ import {
 import { SafetyDialogTab } from '~/features/safety/constants';
 import { openSafetyDialog, setSafetyDialogTab } from '~/features/safety/slice';
 import {
+  iconForMissionItemType,
   isMissionItemValid,
   MissionItemType,
   MissionType,
+  schemaForMissionItemType,
+  titleForMissionItemType,
 } from '~/model/missions';
 import {
   safelyFormatAltitudeWithReference,
   safelyFormatHeadingWithMode,
   formatCoordinate,
 } from '~/utils/geography';
-import { isNumber } from '@turf/helpers';
 
 const useStyles = makeStyles(
   (theme) => ({
@@ -95,6 +92,7 @@ const formatMarkerStatusText = (marker, ratio) => {
 };
 
 const MissionOverviewListItem = ({
+  editMissionItemParameters,
   id,
   index,
   item,
@@ -107,27 +105,21 @@ const MissionOverviewListItem = ({
 }) => {
   const classes = useStyles();
 
-  const { type } = item;
-
-  let avatar;
+  let avatar = iconForMissionItemType[item.type];
   let onClick = (event) => onSelectItem(event, id);
-  let primaryText;
+  let primaryText = titleForMissionItemType[item.type];
   let secondaryText;
   const isValid = isMissionItemValid(item);
 
-  switch (type) {
+  switch (item.type) {
     case MissionItemType.GO_TO:
       avatar = index;
-      primaryText = 'Go to waypoint';
       secondaryText = isValid
         ? formatCoordinate([item.parameters?.lon, item.parameters?.lat])
         : 'Invalid mission item';
       break;
 
     case MissionItemType.LAND:
-      avatar = <LandIcon />;
-      primaryText = 'Land';
-
       if (item.parameters.velocityZ) {
         secondaryText = `${item.parameters.velocityZ} m/s vertical`;
       }
@@ -135,13 +127,9 @@ const MissionOverviewListItem = ({
       break;
 
     case MissionItemType.RETURN_TO_HOME:
-      avatar = <HomeIcon />;
-      primaryText = 'Return to home';
       break;
 
     case MissionItemType.TAKEOFF:
-      avatar = <TakeoffIcon />;
-      primaryText = 'Takeoff';
       secondaryText = isValid
         ? safelyFormatAltitudeWithReference(
             item.parameters?.alt,
@@ -151,8 +139,6 @@ const MissionOverviewListItem = ({
       break;
 
     case MissionItemType.CHANGE_ALTITUDE:
-      avatar = <ChangeAltitudeIcon />;
-      primaryText = 'Change altitude';
       secondaryText = isValid
         ? safelyFormatAltitudeWithReference(
             item.parameters?.alt,
@@ -162,8 +148,6 @@ const MissionOverviewListItem = ({
       break;
 
     case MissionItemType.CHANGE_HEADING:
-      avatar = <ChangeHeadingIcon />;
-      primaryText = 'Change heading';
       secondaryText = isValid
         ? safelyFormatHeadingWithMode(
             item.parameters?.heading,
@@ -173,9 +157,6 @@ const MissionOverviewListItem = ({
       break;
 
     case MissionItemType.CHANGE_SPEED: {
-      avatar = <ChangeSpeedIcon />;
-      primaryText = 'Change speed';
-
       const { velocityXY, velocityZ } = item.parameters;
       const tags = [];
       if (typeof velocityXY === 'number') {
@@ -192,8 +173,6 @@ const MissionOverviewListItem = ({
     }
 
     case MissionItemType.MARKER:
-      avatar = <MarkerIcon />;
-      primaryText = 'Marker';
       secondaryText = formatMarkerStatusText(
         item.parameters?.marker,
         item.parameters?.ratio
@@ -201,34 +180,26 @@ const MissionOverviewListItem = ({
       break;
 
     case MissionItemType.SET_PAYLOAD:
-      avatar = <SetPayloadIcon />;
-      primaryText = 'Set payload';
       secondaryText = `${item.parameters?.name}: ${item.parameters?.action}`;
       break;
 
     case MissionItemType.SET_PARAMETER:
-      avatar = <SetParameterIcon />;
-      primaryText = 'Set parameter';
       secondaryText = `${item.parameters?.name}=${item.parameters?.value}`;
       break;
 
     case MissionItemType.UPDATE_GEOFENCE:
-      avatar = <UpdateGeofenceIcon />;
       onClick = openGeofenceSettingsTab;
-      primaryText = 'Update geofence';
       secondaryText = formatGeofenceStatusText(missionGeofenceStatus);
       break;
 
     case MissionItemType.UPDATE_SAFETY:
-      avatar = <UpdateSafetyIcon />;
       onClick = openSafetySettingsTab;
-      primaryText = 'Update safety parameters';
       break;
 
     default:
-      avatar = '?';
-      primaryText = 'Unknown mission item';
-      secondaryText = `Type = ${type}`;
+      avatar = iconForMissionItemType[MissionItemType.UNKNOWN];
+      primaryText = titleForMissionItemType[MissionItemType.UNKNOWN];
+      secondaryText = `Type = ${item.type}`;
       break;
   }
 
@@ -246,19 +217,33 @@ const MissionOverviewListItem = ({
           width: `${(ratio ?? 0) * 100}%`,
         }}
       />
-      <ListItem button dense selected={selected} onClick={onClick}>
+      <ListItem
+        button
+        dense
+        selected={selected}
+        onClick={onClick}
+        ContainerComponent='div'
+      >
         {avatar && (
           <ListItemAvatar>
             <Avatar className={isValid ? null : classes.error}>{avatar}</Avatar>
           </ListItemAvatar>
         )}
         <ListItemText primary={primaryText} secondary={secondaryText} />
+        {editMissionItemParameters && (
+          <ListItemSecondaryAction>
+            <IconButton edge='end' onClick={editMissionItemParameters}>
+              <Settings />
+            </IconButton>
+          </ListItemSecondaryAction>
+        )}
       </ListItem>
     </Box>
   );
 };
 
 MissionOverviewListItem.propTypes = {
+  editMissionItemParameters: PropTypes.func,
   id: PropTypes.string,
   index: PropTypes.number,
   item: PropTypes.shape({
@@ -276,7 +261,11 @@ MissionOverviewListItem.propTypes = {
 export default connect(
   // mapStateToProps
   (state, ownProps) => ({
-    item: getMissionItemById(state, ownProps.id),
+    item: getMissionItemById(state, ownProps.id) ?? {
+      // HACK:Prevent a crash when react-virtuoso tries to render
+      //      an item that no longer exists in the redux store...
+      type: MissionItemType.UNKNOWN,
+    },
     missionGeofenceStatus: hasActiveGeofencePolygon(state)
       ? isWaypointMissionConvexHullInsideGeofence(state)
         ? getGeofencePolygon(state).owner === MissionType.WAYPOINT
@@ -287,6 +276,7 @@ export default connect(
   }),
   // mapDispatchToProps
   {
+    editMissionItemParameters,
     openGeofenceSettingsTab: () => (dispatch) => {
       dispatch(setSafetyDialogTab(SafetyDialogTab.GEOFENCE));
       dispatch(openSafetyDialog());
@@ -295,5 +285,15 @@ export default connect(
       dispatch(setSafetyDialogTab(SafetyDialogTab.SETTINGS));
       dispatch(openSafetyDialog());
     },
-  }
+  },
+  // mergeProps
+  (stateProps, { editMissionItemParameters, ...dispatchProps }, ownProps) => ({
+    ...ownProps,
+    ...stateProps,
+    ...dispatchProps,
+
+    ...(!isEmpty(schemaForMissionItemType[stateProps.item.type].properties) && {
+      editMissionItemParameters: () => editMissionItemParameters(ownProps.id),
+    }),
+  })
 )(MissionOverviewListItem);

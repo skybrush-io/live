@@ -1,8 +1,12 @@
 /**
- * @file Generic single-line input dialog to act as a replacement
- * for `window.prompt()`.
+ * @file Generic input dialog to request data from the user based on a schema.
  */
 
+import * as React from 'react';
+import { connect } from 'react-redux';
+import type { ReadonlyDeep } from 'type-fest';
+
+import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -10,12 +14,8 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 
 import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
 
-import { TextField } from 'mui-rff';
-import { Form } from 'react-final-form';
-import * as React from 'react';
-import { connect } from 'react-redux';
-
-import { shouldOptimizeUIForTouch } from '~/features/settings/selectors';
+import Form from '@rjsf/material-ui';
+import validator from '@rjsf/validator-ajv8';
 
 import { cancelPromptDialog, submitPromptDialog } from './actions';
 import type { PromptSliceState } from './slice';
@@ -25,89 +25,76 @@ type FormValues = {
   value: string;
 };
 
-type PromptDialogFormProps = Pick<
-  PromptOptions,
-  'cancelButtonLabel' | 'hintText' | 'message' | 'submitButtonLabel' | 'type'
-> & {
-  initialValues: FormValues;
-  onCancel: () => void;
-  onSubmit: (value: string | boolean) => void;
-  optimizeUIForTouch?: boolean;
-};
+type PromptDialogFormProps = ReadonlyDeep<
+  Pick<PromptOptions, 'cancelButtonLabel' | 'message' | 'submitButtonLabel'> & {
+    initialValues: FormValues;
+    onCancel: () => void;
+    onSubmit: (event: { formData?: Record<string, any> }) => void;
+    optimizeUIForTouch?: boolean;
+    schema: Record<string, any>;
+    type: PromptDialogType;
+  }
+>;
 
 const PromptDialogForm: React.FunctionComponent<PromptDialogFormProps> = ({
   cancelButtonLabel,
-  hintText,
   initialValues,
   message,
   onCancel,
   onSubmit,
-  optimizeUIForTouch,
+  schema,
   submitButtonLabel,
   type,
-}: PromptDialogFormProps) => {
-  const hasTextField = type === PromptDialogType.PROMPT;
-  const handleSubmit = (data: FormValues): void => {
-    if (hasTextField) {
-      onSubmit(data.value);
-    } else {
-      onSubmit(true);
-    }
-  };
+}) => (
+  <DialogContent>
+    {message && (
+      <Box py={1}>
+        <DialogContentText>{message}</DialogContentText>
+      </Box>
+    )}
+    {type === PromptDialogType.GENERIC && (
+      <Form
+        // TODO: Somehow make `fields.SchemaField` use `DialogContent`.
+        formData={initialValues}
+        schema={schema}
+        validator={validator}
+        onSubmit={onSubmit}
+      >
+        <DialogActions style={{ padding: 0 }}>
+          <Button color='primary' type='submit'>
+            {submitButtonLabel ?? 'Submit'}
+          </Button>
+          <Button onClick={onCancel}>{cancelButtonLabel ?? 'Cancel'}</Button>
+        </DialogActions>
+      </Form>
+    )}
+    {type === PromptDialogType.CONFIRMATION && (
+      <DialogActions style={{ padding: 0 }}>
+        <Button
+          color='primary'
+          onClick={(): void => {
+            onSubmit({ formData: { confirmed: true } });
+          }}
+        >
+          {submitButtonLabel ?? 'Confirm'}
+        </Button>
+        <Button onClick={onCancel}>{cancelButtonLabel ?? 'Cancel'}</Button>
+      </DialogActions>
+    )}
+  </DialogContent>
+);
 
-  return (
-    <Form initialValues={initialValues} onSubmit={handleSubmit}>
-      {({ handleSubmit }): JSX.Element => (
-        <form onSubmit={handleSubmit}>
-          <DialogContent>
-            <DialogContentText>{message}</DialogContentText>
-            {hasTextField && (
-              <TextField
-                fullWidth
-                autoFocus={!optimizeUIForTouch}
-                name='value'
-                margin='dense'
-                label={hintText}
-                variant='filled'
-              />
-            )}
-          </DialogContent>
-          <DialogActions>
-            <Button color='primary' type='submit'>
-              {submitButtonLabel}
-            </Button>
-            <Button onClick={onCancel}>{cancelButtonLabel}</Button>
-          </DialogActions>
-        </form>
-      )}
-    </Form>
-  );
-};
-
-type PromptDialogPresentationProps = Omit<
-  PromptDialogFormProps,
-  'initialValues'
-> & {
-  dialogVisible: boolean;
-  initialValue: string;
-  title: string;
-};
+type PromptDialogPresentationProps = PromptDialogFormProps &
+  Readonly<{
+    open: boolean;
+    title: string;
+  }>;
 
 const PromptDialogPresentation: React.FunctionComponent<
   PromptDialogPresentationProps
-> = ({
-  initialValue,
-  onCancel,
-  title,
-  dialogVisible,
-  ...rest
-}: PromptDialogPresentationProps) => (
-  <DraggableDialog open={dialogVisible} title={title} onClose={onCancel}>
-    <PromptDialogForm
-      {...rest}
-      initialValues={{ value: initialValue }}
-      onCancel={onCancel}
-    />
+> = ({ onCancel, open, title, ...rest }: PromptDialogPresentationProps) => (
+  <DraggableDialog open={open} title={title} onClose={onCancel}>
+    <PromptDialogForm {...rest} onCancel={onCancel} />
   </DraggableDialog>
 );
 
@@ -115,10 +102,7 @@ const PromptDialogPresentation: React.FunctionComponent<
 
 const PromptDialog = connect<PromptDialogPresentationProps>(
   // mapStateToProps
-  (state: any): any => ({
-    ...(state.dialogs.prompt as PromptSliceState),
-    optimizeUIForTouch: Boolean(shouldOptimizeUIForTouch(state)),
-  }),
+  (state: any): any => state.dialogs.prompt as PromptSliceState,
 
   // mapDispatchToProps
   (dispatch) => ({
@@ -126,8 +110,8 @@ const PromptDialog = connect<PromptDialogPresentationProps>(
       dispatch(cancelPromptDialog() as any);
     },
 
-    onSubmit(value: string | boolean): void {
-      dispatch(submitPromptDialog(value) as any);
+    onSubmit({ formData }: { formData: Record<string, any> }): void {
+      dispatch(submitPromptDialog(formData) as any);
     },
   })
 )(PromptDialogPresentation);

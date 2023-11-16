@@ -1,3 +1,17 @@
+import * as React from 'react';
+
+import ChangeAltitudeIcon from '@material-ui/icons/Height';
+import ChangeHeadingIcon from '@material-ui/icons/RotateLeft';
+import ChangeSpeedIcon from '@material-ui/icons/Speed';
+import MarkerIcon from '@material-ui/icons/Flag';
+import SetPayloadIcon from '@material-ui/icons/Camera';
+import SetParameterIcon from '@material-ui/icons/Settings';
+import TakeoffIcon from '@material-ui/icons/FlightTakeoff';
+import UpdateGeofenceIcon from '~/icons/PlacesFence';
+import UpdateSafetyIcon from '@material-ui/icons/Security';
+import LandIcon from '@material-ui/icons/FlightLand';
+import HomeIcon from '@material-ui/icons/Home';
+
 import {
   type Altitude,
   AltitudeReference,
@@ -64,6 +78,121 @@ export enum MissionItemType {
   UPDATE_GEOFENCE = 'updateGeofence',
   UPDATE_SAFETY = 'updateSafety',
 }
+
+export const iconForMissionItemType: Record<MissionItemType, React.ReactNode> =
+  {
+    [MissionItemType.UNKNOWN]: '?',
+    [MissionItemType.TAKEOFF]: <TakeoffIcon />,
+    [MissionItemType.LAND]: <LandIcon />,
+    [MissionItemType.RETURN_TO_HOME]: <HomeIcon />,
+    [MissionItemType.GO_TO]: '#',
+    [MissionItemType.CHANGE_ALTITUDE]: <ChangeAltitudeIcon />,
+    [MissionItemType.CHANGE_HEADING]: <ChangeHeadingIcon />,
+    [MissionItemType.CHANGE_SPEED]: <ChangeSpeedIcon />,
+    [MissionItemType.MARKER]: <MarkerIcon />,
+    [MissionItemType.SET_PAYLOAD]: <SetPayloadIcon />,
+    [MissionItemType.SET_PARAMETER]: <SetParameterIcon />,
+    [MissionItemType.UPDATE_GEOFENCE]: <UpdateGeofenceIcon />,
+    [MissionItemType.UPDATE_SAFETY]: <UpdateSafetyIcon />,
+  };
+
+export const titleForMissionItemType: Record<MissionItemType, string> = {
+  [MissionItemType.UNKNOWN]: 'Unknown mission item',
+  [MissionItemType.TAKEOFF]: 'Takeoff',
+  [MissionItemType.LAND]: 'Land',
+  [MissionItemType.RETURN_TO_HOME]: 'Return to home',
+  [MissionItemType.GO_TO]: 'Go to waypoint',
+  [MissionItemType.CHANGE_ALTITUDE]: 'Change altitude',
+  [MissionItemType.CHANGE_HEADING]: 'Change heading',
+  [MissionItemType.CHANGE_SPEED]: 'Change speed',
+  [MissionItemType.MARKER]: 'Marker',
+  [MissionItemType.SET_PAYLOAD]: 'Set payload',
+  [MissionItemType.SET_PARAMETER]: 'Set parameter',
+  [MissionItemType.UPDATE_GEOFENCE]: 'Update geofence',
+  [MissionItemType.UPDATE_SAFETY]: 'Update safety parameters',
+};
+
+const altitudeSchema = {
+  title: 'Altitude',
+  type: 'object',
+  properties: {
+    value: {
+      title: 'Value',
+      type: 'number',
+    },
+    reference: {
+      title: 'Reference',
+      type: 'string',
+      enum: Object.values(AltitudeReference),
+    },
+  },
+  required: ['value', 'reference'],
+};
+
+export const schemaForMissionItemType: Record<
+  MissionItemType,
+  {
+    properties: Record<string, any>;
+    required: string[];
+  }
+> = {
+  [MissionItemType.UNKNOWN]: {
+    properties: {},
+    required: [],
+  },
+  [MissionItemType.TAKEOFF]: {
+    properties: {
+      alt: altitudeSchema,
+    },
+    required: [],
+  },
+  [MissionItemType.LAND]: {
+    properties: {},
+    required: [],
+  },
+  [MissionItemType.RETURN_TO_HOME]: {
+    properties: {},
+    required: [],
+  },
+  [MissionItemType.GO_TO]: {
+    properties: {},
+    required: [],
+  },
+  [MissionItemType.CHANGE_ALTITUDE]: {
+    properties: {
+      alt: altitudeSchema,
+    },
+    required: ['alt'],
+  },
+  [MissionItemType.CHANGE_HEADING]: {
+    properties: {},
+    required: [],
+  },
+  [MissionItemType.CHANGE_SPEED]: {
+    properties: {},
+    required: [],
+  },
+  [MissionItemType.MARKER]: {
+    properties: {},
+    required: [],
+  },
+  [MissionItemType.SET_PAYLOAD]: {
+    properties: {},
+    required: [],
+  },
+  [MissionItemType.SET_PARAMETER]: {
+    properties: {},
+    required: [],
+  },
+  [MissionItemType.UPDATE_GEOFENCE]: {
+    properties: {},
+    required: [],
+  },
+  [MissionItemType.UPDATE_SAFETY]: {
+    properties: {},
+    required: [],
+  },
+};
 
 /**
  * Enum representing valid payload action strings.
@@ -238,7 +367,7 @@ export function isMissionItemValid(item: any): item is MissionItem {
           typeof name !== 'string' ||
           (typeof value !== 'string' &&
             (typeof value !== 'number' || !Number.isFinite(value)) &&
-            (typeof value !== 'boolean'))
+            typeof value !== 'boolean')
         ) {
           return false;
         }

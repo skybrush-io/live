@@ -113,15 +113,15 @@ const { actions, reducer } = createSlice({
     },
   },
 
-  extraReducers: {
-    [setSelection](state, { payload: selection }) {
+  extraReducers(builder) {
+    builder.addCase(setSelection, (state, { payload: selection }) => {
       if (state.panel.followMapSelection) {
         const selectedUAVs = selection.filter(isUavId);
         if (selectedUAVs.length > 0) {
-          state.panel.selectedUAVId = globalIdToUavId(selectedUAVs[0]);
+          state.panel.selectedUAVId = globalIdToUavId(selectedUAVs[0]!);
         }
       }
-    },
+    });
   },
 });
 

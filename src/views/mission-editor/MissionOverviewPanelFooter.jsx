@@ -10,11 +10,7 @@ import { makeStyles } from '@material-ui/core/styles';
 
 import ArrowDown from '@material-ui/icons/ArrowDropDown';
 import ArrowUp from '@material-ui/icons/ArrowDropUp';
-import ChangeAltitudeIcon from '@material-ui/icons/Height';
 import DeleteIcon from '@material-ui/icons/Delete';
-import TakeoffIcon from '@material-ui/icons/FlightTakeoff';
-import LandIcon from '@material-ui/icons/FlightLand';
-import HomeIcon from '@material-ui/icons/Home';
 
 import ToolbarDivider from '~/components/ToolbarDivider';
 import { TooltipWithContainerFromContext as Tooltip } from '~/containerContext';
@@ -28,7 +24,11 @@ import {
   canMoveSelectedMissionItemsUp,
   getSelectedMissionItemIds,
 } from '~/features/mission/selectors';
-import { MissionItemType } from '~/model/missions';
+import {
+  iconForMissionItemType,
+  MissionItemType,
+  titleForMissionItemType,
+} from '~/model/missions';
 
 const useStyles = makeStyles(
   (theme) => ({
@@ -42,13 +42,17 @@ const useStyles = makeStyles(
   }
 );
 
+const availableMissionItemTypes = [
+  MissionItemType.TAKEOFF,
+  MissionItemType.RETURN_TO_HOME,
+  MissionItemType.LAND,
+  MissionItemType.CHANGE_ALTITUDE,
+];
+
 const MissionOverviewPanelFooter = ({
+  addNewMissionItem,
   canMoveDown,
   canMoveUp,
-  onAddChangeAltitudeCommand,
-  onAddLandCommand,
-  onAddReturnToHomeCommand,
-  onAddTakeoffCommand,
   onMoveDown,
   onMoveUp,
   onRemoveSelectedMissionItems,
@@ -63,27 +67,22 @@ const MissionOverviewPanelFooter = ({
         variant='dense'
         style={{ height: 36, minHeight: 36 }}
       >
-        <Tooltip content='Add takeoff command' placement='top'>
-          <IconButton size='small' onClick={onAddTakeoffCommand}>
-            <TakeoffIcon fontSize='small' />
-          </IconButton>
-        </Tooltip>
-        <Tooltip content='Add return to home' placement='top'>
-          <IconButton size='small' onClick={onAddReturnToHomeCommand}>
-            <HomeIcon fontSize='small' />
-          </IconButton>
-        </Tooltip>
-        <Tooltip content='Add land command' placement='top'>
-          <IconButton size='small' onClick={onAddLandCommand}>
-            <LandIcon fontSize='small' />
-          </IconButton>
-        </Tooltip>
-        <Tooltip content='Add altitude change' placement='top'>
-          <IconButton size='small' onClick={onAddChangeAltitudeCommand}>
-            <ChangeAltitudeIcon fontSize='small' />
-          </IconButton>
-        </Tooltip>
-        <Box component='div' flex={1} />
+        {availableMissionItemTypes.map((type) => (
+          <Tooltip
+            key={`add-${type}`}
+            content={`Add '${titleForMissionItemType[type]}' command`}
+            placement='top'
+          >
+            <IconButton size='small' onClick={() => addNewMissionItem(type)}>
+              {React.cloneElement(iconForMissionItemType[type], {
+                fontSize: 'small',
+              })}
+            </IconButton>
+          </Tooltip>
+        ))}
+
+        <Box flex={1} />
+
         <ToolbarDivider orientation='vertical' />
         <Tooltip content='Move selected mission items up' placement='top'>
           <IconButton size='small' disabled={!canMoveUp} onClick={onMoveUp}>
@@ -111,12 +110,9 @@ const MissionOverviewPanelFooter = ({
 };
 
 MissionOverviewPanelFooter.propTypes = {
+  addNewMissionItem: PropTypes.func,
   canMoveDown: PropTypes.bool,
   canMoveUp: PropTypes.bool,
-  onAddChangeAltitudeCommand: PropTypes.func,
-  onAddLandCommand: PropTypes.func,
-  onAddReturnToHomeCommand: PropTypes.func,
-  onAddTakeoffCommand: PropTypes.func,
   onMoveDown: PropTypes.func,
   onMoveUp: PropTypes.func,
   onRemoveSelectedMissionItems: PropTypes.func,
@@ -132,6 +128,7 @@ export default connect(
   }),
   // mapDispatchToProps
   {
+    addNewMissionItem,
     onAddChangeAltitudeCommand: () =>
       addNewMissionItem(MissionItemType.CHANGE_ALTITUDE),
     onAddLandCommand: () => addNewMissionItem(MissionItemType.LAND),

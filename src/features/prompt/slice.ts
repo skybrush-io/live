@@ -10,25 +10,24 @@ import { type ReadonlyDeep } from 'type-fest';
 import { PromptDialogType, type PromptOptions } from './types';
 
 export type PromptSliceState = ReadonlyDeep<
-  PromptOptions & {
-    dialogVisible: boolean;
-  }
+  {
+    open: boolean;
+    type: PromptDialogType;
+  } & PromptOptions
 >;
 
-const defaultOptions: PromptOptions = {
-  cancelButtonLabel: 'Cancel',
-  fieldType: 'text',
-  hintText: undefined,
-  initialValue: undefined,
-  message: undefined,
-  submitButtonLabel: 'Submit',
-  title: undefined,
-  type: PromptDialogType.PROMPT,
-};
-
 const initialState: PromptSliceState = {
-  ...defaultOptions,
-  dialogVisible: false,
+  open: false,
+
+  type: PromptDialogType.GENERIC,
+
+  initialValues: {},
+  schema: {},
+
+  cancelButtonLabel: undefined,
+  message: undefined,
+  submitButtonLabel: undefined,
+  title: undefined,
 };
 
 /**
@@ -44,29 +43,21 @@ const { reducer, actions } = createSlice({
      * This is not exported because the thunk version should be used instead.
      */
     _cancelPromptDialog(state) {
-      state.dialogVisible = false;
+      state.open = false;
     },
 
     /**
      * Action that will show the prompt dialog.
      * This is not exported because the thunk version should be used instead.
      */
-    _showPromptDialog: {
-      reducer: (_state, action: PayloadAction<Partial<PromptOptions>>) =>
-        // Nothing is kept from the previous state; this is intentional
-        ({
-          ...defaultOptions,
-          ...action.payload,
-          dialogVisible: true,
-        }),
-      prepare: (message: string, options: string | Partial<PromptOptions>) => ({
-        payload: {
-          ...(typeof options === 'string'
-            ? { initialValue: options }
-            : options),
-          message,
-        },
-      }),
+    _showPromptDialog(
+      state,
+      {
+        payload,
+      }: PayloadAction<Omit<PromptOptions, 'open'> & { type: PromptDialogType }>
+    ) {
+      state.open = true;
+      Object.assign(state, payload);
     },
 
     /**
@@ -75,7 +66,7 @@ const { reducer, actions } = createSlice({
      * This is not exported because the thunk version should be used instead.
      */
     _submitPromptDialog(state) {
-      state.dialogVisible = false;
+      state.open = false;
     },
   },
 });
