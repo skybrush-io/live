@@ -778,7 +778,8 @@ export const getMissionItemsInOrderAsSegments = createSelector(
         }
       ).segments;
     } catch (error) {
-      return { error: `Route segment calculation error: ${error}` };
+      console.error(`Route segment calculation error: ${error}`);
+      return [];
     }
   }
 );

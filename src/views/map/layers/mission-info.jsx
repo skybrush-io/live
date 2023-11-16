@@ -617,7 +617,7 @@ const auxiliaryMissionLines = (
   missionItems,
   returnToHomeItems
 ) => {
-  if (homePositions[0] && missionItems.length > 0) {
+  if (homePositions?.[0] && missionItems?.length > 0) {
     const findSurroundingWaypoints = (current) => ({
       before: missionItems.findLast(({ index }) => index < current),
       after: missionItems.find(({ index }) => index > current),
