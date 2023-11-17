@@ -7,6 +7,7 @@ import { easeOut } from 'ol/easing';
 import VectorLayer from 'ol/layer/Vector';
 import PropTypes from 'prop-types';
 import React from 'react';
+import { Translation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import IconButton from '@material-ui/core/IconButton';
@@ -60,13 +61,21 @@ class FitAllFeaturesButton extends React.Component {
     const { target } = this.props;
 
     return (
-      <Tooltip
-        content={target === 'drones' ? 'Fit all drones' : 'Fit all features'}
-      >
-        <IconButton onClick={this._handleClick}>
-          <ActionAllOut />
-        </IconButton>
-      </Tooltip>
+      <Translation>
+        {(t) => (
+          <Tooltip
+            content={
+              target === 'drones'
+                ? t('fitAllFeaturesButton.fitAllDrones')
+                : t('fitAllFeaturesButton.fitAllFeatures')
+            }
+          >
+            <IconButton onClick={this._handleClick}>
+              <ActionAllOut />
+            </IconButton>
+          </Tooltip>
+        )}
+      </Translation>
     );
   }
 

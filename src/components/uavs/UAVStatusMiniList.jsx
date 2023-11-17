@@ -3,6 +3,7 @@ import sortBy from 'lodash-es/sortBy';
 import unary from 'lodash-es/unary';
 import { orderBy } from 'natural-orderby';
 import React from 'react';
+import { Translation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { createSelector } from '@reduxjs/toolkit';
 
@@ -76,7 +77,9 @@ const UAVStatusMiniList = listOf(
   {
     dataProvider: 'items',
     backgroundHint: (
-      <BackgroundHint text='There are no connected UAVs at the moment' />
+      <Translation>
+        {(t) => <BackgroundHint text={t('UAVStatus.noConnected')} />}
+      </Translation>
     ),
     listFactory: partial(React.createElement, MiniList),
   }

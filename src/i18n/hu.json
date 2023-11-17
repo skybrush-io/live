@@ -36,6 +36,9 @@
     "sleep": "Alvás",
     "takeOff": "Felszállás"
   },
+  "UAVStatus": {
+    "noConnected": "Jelenleg nincs kapcsolódott drón"
+  },
   "alerts": {
     "acknowledgeAlerts": "Kattintson a riasztások nyugtázásához.",
     "clickToMute": "Kattintson a riasztások némításához.",
@@ -53,6 +56,10 @@
   },
   "fieldNotesPanel": {
     "exportNotesAsFile": "Jegyzetek exportálása Markdown fájlként"
+  },
+  "fitAllFeaturesButton": {
+    "fitAllDrones": "Minden drón illesztése",
+    "fitAllFeatures": "Minden objektum illesztése"
   },
   "fullScreen": {
     "exit": "Kilépés a teljes képernyős módból",

@@ -36,6 +36,9 @@
     "sleep": "Sleep",
     "takeOff": "Takeoff"
   },
+  "UAVStatus": {
+    "noConnected": "There are no connected UAVs at the moment"
+  },
   "alerts": {
     "acknowledgeAlerts": "Click to acknowledge alerts",
     "clickToMute": "Click to mute audible alerts.",
@@ -53,6 +56,10 @@
   },
   "fieldNotesPanel": {
     "exportNotesAsFile": "Export notes as Markdown file"
+  },
+  "fitAllFeaturesButton": {
+    "fitAllDrones": "Fit all drones",
+    "fitAllFeatures": "Fit all features"
   },
   "fullScreen": {
     "exit": "Exit full screen mode",
