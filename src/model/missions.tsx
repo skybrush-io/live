@@ -118,7 +118,7 @@ const altitudeSchema = {
   properties: {
     value: {
       title: 'Value',
-			description: 'The altitude to reach in [m]',
+      description: 'The altitude to reach in [m]',
       type: 'number',
     },
     reference: {
@@ -126,6 +126,7 @@ const altitudeSchema = {
       description: 'The altitude reference to use',
       type: 'string',
       enum: Object.values(AltitudeReference),
+      default: AltitudeReference.HOME,
     },
   },
   required: ['value', 'reference'],
@@ -161,15 +162,15 @@ export const schemaForMissionItemType: Record<
       lat: {
         title: 'Latitude',
         description: 'The latitude to go to in [deg]',
-        type: 'number'
+        type: 'number',
       },
       lon: {
         title: 'Longitude',
         description: 'The longitude to go to in [deg]',
-        type: 'number'
-      }
+        type: 'number',
+      },
     },
-    required: ["lat", "lon"],
+    required: ['lat', 'lon'],
   },
   [MissionItemType.CHANGE_ALTITUDE]: {
     properties: {
@@ -179,19 +180,26 @@ export const schemaForMissionItemType: Record<
   },
   [MissionItemType.CHANGE_HEADING]: {
     properties: {
-      value: {
-        title: 'Value',
-        description: 'The absolute heading to turn to in [deg]',
-        type: 'number'
+      heading: {
+        title: 'Heading',
+        type: 'object',
+        properties: {
+          value: {
+            title: 'Value',
+            description: 'The absolute heading to turn to in [deg]',
+            type: 'number',
+          },
+          mode: {
+            title: 'Mode',
+            description: 'The heading mode to use',
+            type: 'string',
+            enum: Object.values(HeadingMode),
+            default: HeadingMode.ABSOLUTE,
+          },
+        },
       },
-      mode: {
-        title: 'Mode',
-        description: 'The heading mode to use',
-        type: 'string',
-        enum: HEADING_MODES
-      }
     },
-    required: ['mode'],
+    required: ['heading'],
   },
   [MissionItemType.CHANGE_SPEED]: {
     properties: {
@@ -204,7 +212,7 @@ export const schemaForMissionItemType: Record<
         title: 'Vertical speed',
         description: 'The vertical velocity to use in [m/s]',
         type: 'number',
-      }
+      },
     },
     required: [],
   },
