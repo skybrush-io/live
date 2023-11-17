@@ -99,6 +99,8 @@ const altitudeSchema = {
       title: 'Value',
 			description: 'The altitude to reach in [m]',
       type: 'number',
+      minimum: 0,
+      exclusiveMinimum: 0
     },
     reference: {
       title: 'Reference',
@@ -135,12 +137,16 @@ export const schemaForMissionItemType = {
       lat: {
         title: 'Latitude',
         description: 'The latitude to go to in [deg]',
-        type: 'number'
+        type: 'number',
+        minimum: -90,
+        maximum: 90,
       },
       lon: {
         title: 'Longitude',
         description: 'The longitude to go to in [deg]',
-        type: 'number'
+        type: 'number',
+        minimum: -180,
+        maximum: 180
       }
     },
     required: ["lat", "lon"],
@@ -180,11 +186,15 @@ export const schemaForMissionItemType = {
         title: 'Horizontal speed',
         description: 'The horizontal velocity to use in [m/s]',
         type: 'number',
+        minimum: 0,
+        exclusiveMinimum: 0
       },
       velocityZ: {
         title: 'Vertical speed',
         description: 'The vertical velocity to use in [m/s]',
         type: 'number',
+        minimum: 0,
+        exclusiveMinimum: 0
       }
     },
     required: [],
