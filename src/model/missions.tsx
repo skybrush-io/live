@@ -49,18 +49,6 @@ export enum MissionType {
 }
 
 /**
- * Type specification for items in a waypoint mission.
- */
-/* TODO: this should be changed to a union of multiple types, each with a fixed
- * type literal. TypeScript could then infer the correct type after a switch on
- * the type */
-export type MissionItem = {
-  id: string;
-  type: MissionItemType;
-  parameters: Record<string, any>;
-};
-
-/**
  * Enum representing known mission items in a waypoint mission.
  */
 export enum MissionItemType {
@@ -78,6 +66,48 @@ export enum MissionItemType {
   UPDATE_GEOFENCE = 'updateGeofence',
   UPDATE_SAFETY = 'updateSafety',
 }
+
+/**
+ * Enum representing valid payload action strings.
+ */
+export enum PayloadAction {
+  ON = 'on',
+  OFF = 'off',
+}
+
+/**
+ * Type specification for items in a waypoint mission.
+ */
+/* TODO: this should be changed to a union of multiple types, each with a fixed
+ * type literal. TypeScript could then infer the correct type after a switch on
+ * the type */
+export type MissionItem = {
+  id: string;
+  type: MissionItemType;
+  parameters: Record<string, any>;
+};
+
+const altitudeSchema = {
+  title: 'Altitude',
+  type: 'object',
+  properties: {
+    value: {
+      title: 'Value',
+      description: 'The altitude to reach in [m]',
+      type: 'number',
+      minimum: 0,
+      exclusiveMinimum: 0,
+    },
+    reference: {
+      title: 'Reference',
+      description: 'The altitude reference to use',
+      type: 'string',
+      enum: Object.values(AltitudeReference),
+      default: AltitudeReference.HOME,
+    },
+  },
+  required: ['value', 'reference'],
+};
 
 export const iconForMissionItemType: Record<MissionItemType, React.ReactNode> =
   {
@@ -112,26 +142,6 @@ export const titleForMissionItemType: Record<MissionItemType, string> = {
   [MissionItemType.UPDATE_SAFETY]: 'Update safety parameters',
 };
 
-const altitudeSchema = {
-  title: 'Altitude',
-  type: 'object',
-  properties: {
-    value: {
-      title: 'Value',
-      description: 'The altitude to reach in [m]',
-      type: 'number',
-    },
-    reference: {
-      title: 'Reference',
-      description: 'The altitude reference to use',
-      type: 'string',
-      enum: Object.values(AltitudeReference),
-      default: AltitudeReference.HOME,
-    },
-  },
-  required: ['value', 'reference'],
-};
-
 export const schemaForMissionItemType: Record<
   MissionItemType,
   {
@@ -163,11 +173,15 @@ export const schemaForMissionItemType: Record<
         title: 'Latitude',
         description: 'The latitude to go to in [deg]',
         type: 'number',
+        minimum: -90,
+        maximum: 90,
       },
       lon: {
         title: 'Longitude',
         description: 'The longitude to go to in [deg]',
         type: 'number',
+        minimum: -180,
+        maximum: 180,
       },
     },
     required: ['lat', 'lon'],
@@ -207,11 +221,15 @@ export const schemaForMissionItemType: Record<
         title: 'Horizontal speed',
         description: 'The horizontal velocity to use in [m/s]',
         type: 'number',
+        minimum: 0,
+        exclusiveMinimum: 0,
       },
       velocityZ: {
         title: 'Vertical speed',
         description: 'The vertical velocity to use in [m/s]',
         type: 'number',
+        minimum: 0,
+        exclusiveMinimum: 0,
       },
     },
     required: [],
@@ -237,14 +255,6 @@ export const schemaForMissionItemType: Record<
     required: [],
   },
 };
-
-/**
- * Enum representing valid payload action strings.
- */
-export enum PayloadAction {
-  ON = 'on',
-  OFF = 'off',
-}
 
 /**
  * Returns whether the given parameter representing an altitude in a generic
