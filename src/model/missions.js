@@ -105,6 +105,7 @@ const altitudeSchema = {
       description: 'The altitude reference to use',
       type: 'string',
       enum: ALTITUDE_REFERENCES,
+      default: 'home'
     },
   },
   required: ['value', 'reference'],
@@ -152,19 +153,26 @@ export const schemaForMissionItemType = {
   },
   [MissionItemType.CHANGE_HEADING]: {
     properties: {
-      value: {
-        title: 'Value',
-        description: 'The absolute heading to turn to in [deg]',
-        type: 'number'
+      heading: {
+        title: 'Heading',
+        type: 'object',
+        properties: {
+          value: {
+            title: 'Value',
+            description: 'The absolute heading to turn to in [deg]',
+            type: 'number',
+          },
+          mode: {
+            title: 'Mode',
+            description: 'The heading mode to use',
+            type: 'string',
+            enum: HEADING_MODES,
+            default: 'absolute'
+          }
+        },
       },
-      mode: {
-        title: 'Mode',
-        description: 'The heading mode to use',
-        type: 'string',
-        enum: HEADING_MODES
-      }
     },
-    required: ['mode'],
+    required: ['heading']
   },
   [MissionItemType.CHANGE_SPEED]: {
     properties: {
