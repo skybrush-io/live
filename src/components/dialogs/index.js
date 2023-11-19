@@ -4,7 +4,6 @@ import FeatureEditorDialog from './feature-editor';
 import AuthenticationDialog from './AuthenticationDialog';
 import DeauthenticationDialog from './DeauthenticationDialog';
 import FlyToTargetDialog from './FlyToTargetDialog';
-import GeofenceSettingsDialog from './GeofenceSettingsDialog';
 import GlobalErrorDialog from './GlobalErrorDialog';
 import LayerSettingsDialog from './LayerSettingsDialog';
 import ServerSettingsDialog from './ServerSettingsDialog';
@@ -18,7 +17,6 @@ const dialogs = {
   DeauthenticationDialog,
   FeatureEditorDialog,
   FlyToTargetDialog,
-  GeofenceSettingsDialog,
   GlobalErrorDialog,
   LayerSettingsDialog,
   ServerSettingsDialog,

@@ -14,6 +14,7 @@ import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
+import FormHelperText from '@material-ui/core/FormHelperText';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import MenuItem from '@material-ui/core/MenuItem';
 
@@ -21,18 +22,7 @@ import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
 import FormHeader from '@skybrush/mui-components/lib/FormHeader';
 
 import { forceFormSubmission } from '~/components/forms';
-import {
-  describeGeofenceAction,
-  GeofenceAction,
-} from '~/features/geofence/model';
-import {
-  closeGeofenceSettingsDialog,
-  updateGeofenceSettings,
-} from '~/features/geofence/slice';
-import {
-  proposeDistanceLimit,
-  proposeHeightLimit,
-} from '~/features/geofence/utils';
+import { removeFeaturesByIds } from '~/features/map-features/slice';
 import {
   getGeofenceAction,
   getGeofencePolygonId,
@@ -47,7 +37,6 @@ import {
   getMaximumHorizontalDistanceFromTakeoffPositionInTrajectories,
   getMaximumHeightInTrajectories,
 } from '~/features/show/selectors';
-
 import {
   createValidator,
   atLeast,
@@ -55,8 +44,10 @@ import {
   integer,
   required,
 } from '~/utils/validation';
-import { FormHelperText } from '@material-ui/core';
-import { removeFeaturesByIds } from '~/features/map-features/slice';
+
+import { describeGeofenceAction, GeofenceAction } from './model';
+import { closeGeofenceSettingsDialog, updateGeofenceSettings } from './slice';
+import { proposeDistanceLimit, proposeHeightLimit } from './utils';
 
 const validator = createValidator({
   horizontalMargin: [required, finite, atLeast(1)],

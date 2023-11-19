@@ -19,6 +19,7 @@ import ShowFileWatcher from './views/show-control/ShowFileWatcher';
 
 import DetachedPanelManager from './features/detachable-panels/DetachedPanelManager';
 import DockDetailsDialog from './features/docks/DockDetailsDialog';
+import GeofenceSettingsDialog from './features/geofence/GeofenceSettingsDialog';
 import AppHotkeys from './features/hotkeys/AppHotkeys';
 import HotkeyDialog from './features/hotkeys/HotkeyDialog';
 import PendingUAVIdOverlay from './features/hotkeys/PendingUAVIdOverlay';
@@ -161,7 +162,6 @@ const App = ({ onFirstRender }) => (
       <dialogs.DeauthenticationDialog />
       <dialogs.FeatureEditorDialog />
       <dialogs.FlyToTargetDialog />
-      <dialogs.GeofenceSettingsDialog />
       <dialogs.GlobalErrorDialog />
       <dialogs.LayerSettingsDialog />
       <dialogs.ServerSettingsDialog />
@@ -170,6 +170,7 @@ const App = ({ onFirstRender }) => (
 
       <CoordinateAveragingDialog />
       <DockDetailsDialog />
+      <GeofenceSettingsDialog />
       <HotkeyDialog />
       <LicenseInfoDialog />
       <MapCachingDialog />
