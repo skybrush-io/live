@@ -795,7 +795,7 @@ export class FlatEarthCoordinateSystem {
  *          between 0 and 360
  */
 export function toPolar(coords: [number, number]): [number, number] {
-  const dist = Math.sqrt(coords[0] * coords[0] + coords[1] * coords[1]);
+  const dist = Math.hypot(coords[0], coords[1]);
   if (dist > 0) {
     const angle = toDegrees(Math.atan2(coords[1], coords[0]));
     return [dist, angle < 0 ? angle + 360 : angle];
@@ -812,10 +812,11 @@ export const bufferPolygon = (
   coordinates: Coordinate2D[],
   margin: number
 ): Coordinate2D[] => {
-  if (coordinates.length < 3) {
-    // TODO: Maybe fail louder?
-    return coordinates;
+  if (coordinates.length === 0) {
+    return [];
   }
+
+  let geometry;
 
   // Shift 'coordinates' in a way that it is centered around the origin. This
   // is needed because otherwise we would get incorrect results if the
@@ -828,15 +829,20 @@ export const bufferPolygon = (
   const transform = new FlatEarthCoordinateSystem({
     origin: [0, 0],
   });
-
   const geoCoordinates = shiftedCoordinates.map((coordinate) =>
     transform.toLonLat(coordinate)
   );
 
-  closePolygon(geoCoordinates);
-
   // Create a Turf.js geometry to buffer. Watch out for degenerate cases.
-  const geometry = TurfHelpers.polygon([geoCoordinates]);
+  if (coordinates.length === 1) {
+    geometry = TurfHelpers.point(geoCoordinates[0]!);
+  } else if (coordinates.length === 2) {
+    geometry = TurfHelpers.lineString([geoCoordinates[0]!, geoCoordinates[1]!]);
+  } else {
+    closePolygon(geoCoordinates);
+    geometry = TurfHelpers.polygon([geoCoordinates]);
+  }
+
   const bufferedPoly = turfBuffer(
     geometry,
     margin / 1000 /* Turf.js needs kilometers */

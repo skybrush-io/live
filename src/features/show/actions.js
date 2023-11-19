@@ -143,6 +143,10 @@ const addGeofencePolygonBasedOnShowTrajectories =
       ? simplifyPolygon(points, maxVertexCount)
       : points;
 
+    if (simplifiedPoints.length < 3) {
+      throw new Error('Calculated geofence contains less than 3 points');
+    }
+
     const geofencePolygon = {
       label: 'Geofence',
       labelStyle: LabelStyle.HIDDEN,
