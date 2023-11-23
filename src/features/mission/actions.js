@@ -428,9 +428,7 @@ export const addNewMissionItem =
       parameters,
     };
     dispatch(addMissionItem({ item }));
-    if (!isEmpty(schemaForMissionItemType[item.type].properties)) {
-      dispatch(editMissionItemParameters(item.id));
-    }
+    return item;
   };
 
 export const editMissionItemParameters =
