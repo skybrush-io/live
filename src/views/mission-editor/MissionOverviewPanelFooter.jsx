@@ -1,3 +1,4 @@
+import isEmpty from 'lodash-es/isEmpty';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
@@ -16,6 +17,7 @@ import ToolbarDivider from '~/components/ToolbarDivider';
 import { TooltipWithContainerFromContext as Tooltip } from '~/containerContext';
 import {
   addNewMissionItem,
+  editMissionItemParameters,
   moveSelectedMissionItemsByDelta,
   removeSelectedMissionItems,
 } from '~/features/mission/actions';
@@ -27,6 +29,7 @@ import {
 import {
   iconForMissionItemType,
   MissionItemType,
+  schemaForMissionItemType,
   titleForMissionItemType,
 } from '~/model/missions';
 
@@ -128,13 +131,12 @@ export default connect(
   }),
   // mapDispatchToProps
   {
-    addNewMissionItem,
-    onAddChangeAltitudeCommand: () =>
-      addNewMissionItem(MissionItemType.CHANGE_ALTITUDE),
-    onAddLandCommand: () => addNewMissionItem(MissionItemType.LAND),
-    onAddTakeoffCommand: () => addNewMissionItem(MissionItemType.TAKEOFF),
-    onAddReturnToHomeCommand: () =>
-      addNewMissionItem(MissionItemType.RETURN_TO_HOME),
+    addNewMissionItem: (type) => (dispatch) => {
+      const item = dispatch(addNewMissionItem(type));
+      if (!isEmpty(schemaForMissionItemType[type].properties)) {
+        dispatch(editMissionItemParameters(item.id));
+      }
+    },
     onMoveDown: () => moveSelectedMissionItemsByDelta(1),
     onMoveUp: () => moveSelectedMissionItemsByDelta(-1),
     onRemoveSelectedMissionItems: removeSelectedMissionItems,
