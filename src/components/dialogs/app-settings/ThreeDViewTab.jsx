@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import { Translation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import Box from '@material-ui/core/Box';
@@ -22,157 +23,167 @@ import { updateAppSettings } from '~/features/settings/slice';
 const sceneries = [
   {
     id: 'auto',
-    label: 'Automatic',
+    label: 'settings.threeDView.auto',
   },
   {
     id: 'outdoor',
-    label: 'Outdoor',
+    label: 'settings.threeDView.outdoor',
   },
   {
     id: 'indoor',
-    label: 'Indoor',
+    label: 'settings.threeDView.indoor',
   },
 ];
 
 const lightingConditions = [
   {
     id: 'light',
-    label: 'Light',
+    label: 'settings.threeDView.light',
   },
   {
     id: 'dark',
-    label: 'Dark',
+    label: 'settings.threeDView.dark',
   },
 ];
 
 const grids = [
   {
     id: 'none',
-    label: 'No grid',
+    label: 'settings.threeDView.none',
   },
   {
     id: '1x1',
-    label: '10x10 meters',
+    label: 'settings.threeDView.1x1',
   },
   {
     id: '2x2',
-    label: '20x20 meters',
+    label: 'settings.threeDView.2x2',
   },
 ];
 
 const ThreeDViewTab = (props) => (
-  <Box mb={2}>
-    <FormGroup>
-      <Header>Environment</Header>
-      <Box display='flex'>
-        <FormControl fullWidth variant='filled'>
-          <InputLabel id='threed-scenery-label'>Scenery</InputLabel>
-          <Select
-            labelId='threed-scenery-label'
-            name='scenery'
-            value={props.scenery}
-            onChange={props.onFieldChanged}
-          >
-            {sceneries.map((item) => (
-              <MenuItem key={item.id} value={item.id}>
-                {item.label}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-        <Box px={1} />
-        <FormControl fullWidth variant='filled'>
-          <InputLabel id='threed-lighting-label'>Lighting</InputLabel>
-          <Select
-            labelId='threed-lighting-label'
-            name='lighting'
-            value={props.lighting}
-            onChange={props.onFieldChanged}
-          >
-            {lightingConditions.map((item) => (
-              <MenuItem key={item.id} value={item.id}>
-                {item.label}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-        <Box px={1} />
-        <FormControl fullWidth variant='filled'>
-          <InputLabel id='threed-grid-label'>Grid</InputLabel>
-          <Select
-            labelId='threed-grid-label'
-            name='grid'
-            value={props.grid}
-            onChange={props.onFieldChanged}
-          >
-            {grids.map((item) => (
-              <MenuItem key={item.id} value={item.id}>
-                {item.label}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+  <Translation>
+    {(t) => (
+      <Box mb={2}>
+        <FormGroup>
+          <Header>{t('settings.threeDView.environment')}</Header>
+          <Box display='flex'>
+            <FormControl fullWidth variant='filled'>
+              <InputLabel id='threed-scenery-label'>
+                {t('settings.threeDView.scenery')}
+              </InputLabel>
+              <Select
+                labelId='threed-scenery-label'
+                name='scenery'
+                value={props.scenery}
+                onChange={props.onFieldChanged}
+              >
+                {sceneries.map((item) => (
+                  <MenuItem key={item.id} value={item.id}>
+                    {t(item.label)}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <Box px={1} />
+            <FormControl fullWidth variant='filled'>
+              <InputLabel id='threed-lighting-label'>
+                {t('settings.threeDView.lighting')}
+              </InputLabel>
+              <Select
+                labelId='threed-lighting-label'
+                name='lighting'
+                value={props.lighting}
+                onChange={props.onFieldChanged}
+              >
+                {lightingConditions.map((item) => (
+                  <MenuItem key={item.id} value={item.id}>
+                    {t(item.label)}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <Box px={1} />
+            <FormControl fullWidth variant='filled'>
+              <InputLabel id='threed-grid-label'>
+                {t('settings.threeDView.grid')}
+              </InputLabel>
+              <Select
+                labelId='threed-grid-label'
+                name='grid'
+                value={props.grid}
+                onChange={props.onFieldChanged}
+              >
+                {grids.map((item) => (
+                  <MenuItem key={item.id} value={item.id}>
+                    {t(item.label)}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Box>
+
+          <FormControlLabel
+            label={t('settings.threeDView.showAxes')}
+            control={
+              <Checkbox
+                checked={props.showAxes}
+                name='showAxes'
+                onChange={props.onCheckboxToggled}
+              />
+            }
+          />
+
+          <FormControlLabel
+            label={t('settings.threeDView.showHomePositions')}
+            control={
+              <Checkbox
+                checked={props.showHomePositions}
+                name='showHomePositions'
+                onChange={props.onCheckboxToggled}
+              />
+            }
+          />
+
+          <FormControlLabel
+            label={t('settings.threeDView.showLandingPositions')}
+            control={
+              <Checkbox
+                checked={props.showLandingPositions}
+                name='showLandingPositions'
+                onChange={props.onCheckboxToggled}
+              />
+            }
+          />
+
+          <FormControlLabel
+            label={t('settings.threeDView.showTrajectoriesOfSelection')}
+            control={
+              <Checkbox
+                checked={props.showTrajectoriesOfSelection}
+                name='showTrajectoriesOfSelection'
+                onChange={props.onCheckboxToggled}
+              />
+            }
+          />
+        </FormGroup>
+
+        <FormGroup>
+          <Header>{t('settings.threeDView.rendering')}</Header>
+          <FormControlLabel
+            label={t('settings.threeDView.showStatistics')}
+            control={
+              <Checkbox
+                checked={props.showStatistics}
+                name='showStatistics'
+                onChange={props.onCheckboxToggled}
+              />
+            }
+          />
+        </FormGroup>
       </Box>
-
-      <FormControlLabel
-        label='Show coordinate system axes'
-        control={
-          <Checkbox
-            checked={props.showAxes}
-            name='showAxes'
-            onChange={props.onCheckboxToggled}
-          />
-        }
-      />
-
-      <FormControlLabel
-        label='Show home positions'
-        control={
-          <Checkbox
-            checked={props.showHomePositions}
-            name='showHomePositions'
-            onChange={props.onCheckboxToggled}
-          />
-        }
-      />
-
-      <FormControlLabel
-        label='Show landing positions'
-        control={
-          <Checkbox
-            checked={props.showLandingPositions}
-            name='showLandingPositions'
-            onChange={props.onCheckboxToggled}
-          />
-        }
-      />
-
-      <FormControlLabel
-        label='Show trajectories of selected UAVs'
-        control={
-          <Checkbox
-            checked={props.showTrajectoriesOfSelection}
-            name='showTrajectoriesOfSelection'
-            onChange={props.onCheckboxToggled}
-          />
-        }
-      />
-    </FormGroup>
-
-    <FormGroup>
-      <Header>Rendering</Header>
-      <FormControlLabel
-        label='Show rendering statistics (advanced)'
-        control={
-          <Checkbox
-            checked={props.showStatistics}
-            name='showStatistics'
-            onChange={props.onCheckboxToggled}
-          />
-        }
-      />
-    </FormGroup>
-  </Box>
+    )}
+  </Translation>
 );
 
 ThreeDViewTab.propTypes = {

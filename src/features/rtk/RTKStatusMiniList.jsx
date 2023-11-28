@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
+import { withTranslation } from 'react-i18next';
 
 import MiniList from '@skybrush/mui-components/lib/MiniList';
 import MiniListDivider from '@skybrush/mui-components/lib/MiniListDivider';
@@ -60,7 +61,7 @@ const countSatellitesByGNSSSystem = (satelliteIds) => {
   return result;
 };
 
-const RTKStatusMiniList = ({ satelliteIds, surveyStatus }) => {
+const RTKStatusMiniList = ({ satelliteIds, surveyStatus, t }) => {
   const counts = countSatellitesByGNSSSystem(satelliteIds);
   return (
     <MiniList style={listStyle}>
@@ -68,10 +69,10 @@ const RTKStatusMiniList = ({ satelliteIds, surveyStatus }) => {
         <MiniListItem
           primaryText={
             surveyStatus.valid
-              ? 'Survey successful'
+              ? t('RTKStatusMiniList.surveySuccesful')
               : surveyStatus.active
-              ? 'Survey in progress...'
-              : 'No survey in progress'
+              ? t('RTKStatusMiniList.surveyInProgress')
+              : t('RTKStatusMiniList.surveyNo')
           }
           secondaryText={formatSurveyAccuracy(surveyStatus.accuracy)}
           iconPreset={
@@ -84,7 +85,9 @@ const RTKStatusMiniList = ({ satelliteIds, surveyStatus }) => {
         />
       )}
       <MiniListItem
-        primaryText={'\u00A0🌍\u00A0\u00A0\u00A0Satellite count'}
+        primaryText={
+          '\u00A0🌍\u00A0\u00A0\u00A0' + t('RTKStatusMiniList.satelliteCount')
+        }
         secondaryText={String(satelliteIds.length)}
       />
       {satelliteIds.length > 0 && <MiniListDivider />}
@@ -106,6 +109,7 @@ const RTKStatusMiniList = ({ satelliteIds, surveyStatus }) => {
 RTKStatusMiniList.propTypes = {
   satelliteIds: PropTypes.arrayOf(PropTypes.string),
   surveyStatus: RTKPropTypes.survey,
+  t: PropTypes.func,
 };
 
 export default connect(
@@ -116,4 +120,4 @@ export default connect(
   }),
   // mapDispatchToProps
   {}
-)(RTKStatusMiniList);
+)(withTranslation()(RTKStatusMiniList));

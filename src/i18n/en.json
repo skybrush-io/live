@@ -20,6 +20,12 @@
     "passed": "Onboard preflight checks passed.",
     "signOffOn": "Sign off on onboard preflight checks"
   },
+  "RTKStatusMiniList": {
+    "satelliteCount": "Satellite count",
+    "surveyInProgress": "Survey in progress...",
+    "surveyNo": "No survey in progress",
+    "surveySuccesful": "Survey successful"
+  },
   "UAVOpButtonGrp": {
     "armMotors": "Arm motors",
     "disarmMotors": "Disarm motors",
@@ -135,8 +141,32 @@
       "showScaleLine": "Show scale line"
     },
     "tabs": {
+      "apiKeys": "API keys",
       "display": "Display",
+      "preflight": "Preflight",
+      "server": "Server",
+      "threeDView": "3D View",
       "uavs": "UAVs"
+    },
+    "threeDView": {
+      "1x1": "10x10 meters",
+      "2x2": "20x20 meters",
+      "auto": "Automatic",
+      "dark": "Dark",
+      "environment": "Environment",
+      "grid": "Grid",
+      "indoor": "Indoor",
+      "light": "Light",
+      "lighting": "Lighting",
+      "none": "No grid",
+      "outdoor": "Outdoor",
+      "rendering": "Rendering",
+      "scenery": "Scenery",
+      "showAxes": "Show coordinate system axes",
+      "showHomePositions": "Show home positions",
+      "showLandingPositions": "Show landing positions",
+      "showStatistics": "Show rendering statistics (advanced)",
+      "showTrajectoriesOfSelection": "Show trajectories of selected UAVs"
     },
     "uavs": {
       "batteryDisplayStyle": "Battery display style",

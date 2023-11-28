@@ -20,6 +20,12 @@
     "passed": "Automata fedélzeti ellenőrzés rendben.",
     "signOffOn": "Automata fedélzeti ellenőrzés nyugtázása"
   },
+  "RTKStatusMiniList": {
+    "satelliteCount": "Műholdak száma",
+    "surveyInProgress": "A felmérés folyamatban...",
+    "surveyNo": "Nincs felmérés folyamatban",
+    "surveySuccesful": "A felmérés sikeres"
+  },
   "UAVOpButtonGrp": {
     "armMotors": "Motorok indítása",
     "disarmMotors": "Motorok leállítása",
@@ -135,8 +141,32 @@
       "showScaleLine": "Léptékvonal megjelenítése"
     },
     "tabs": {
+      "apiKeys": "API kulcsok",
       "display": "Megjelenítés",
+      "preflight": "Ellenőrzőlista",
+      "server": "Szerver",
+      "threeDView": "3D nézet",
       "uavs": "Drónok"
+    },
+    "threeDView": {
+      "1x1": "10x10 méteres",
+      "2x2": "20x20 méteres",
+      "auto": "Automatikus",
+      "dark": "Sötét",
+      "environment": "Környezet",
+      "grid": "Rács",
+      "indoor": "Beltér",
+      "light": "Világos",
+      "lighting": "Fényviszonyok",
+      "none": "Nincs rács",
+      "outdoor": "Kültér",
+      "rendering": "Renderelés",
+      "scenery": "Tér",
+      "showAxes": "Koordinátarendszer tengelyeinek megjelenítése",
+      "showHomePositions": "Kezdő pozíciók megjelenítése",
+      "showLandingPositions": "Leszállási pozíciók megjelenítése",
+      "showStatistics": "Renderelési statisztikák megjelenítése (haladó)",
+      "showTrajectoriesOfSelection": "A kiválaszott drónok röppályájának megjelenítése"
     },
     "uavs": {
       "batteryDisplayStyle": "Töltöttség megjelenítési stílusa",

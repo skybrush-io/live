@@ -46,13 +46,13 @@ const AppSettingsDialogPresentation = ({
   <Dialog fullWidth open={open} maxWidth='sm' onClose={onClose}>
     <DialogTabs alignment='center' value={selectedTab} onChange={onTabSelected}>
       <Tab value='display' label={t('settings.tabs.display')} />
-      <Tab value='threeD' label='3D View' />
+      <Tab value='threeD' label={t('settings.tabs.threeDView')} />
       <Tab value='uavs' label={t('settings.tabs.uavs')} />
-      <Tab value='preflight' label='Preflight' />
+      <Tab value='preflight' label={t('settings.tabs.preflight')} />
       {window.bridge && window.bridge.isElectron ? (
-        <Tab value='server' label='Server' />
+        <Tab value='server' label={t('settings.tabs.server')} />
       ) : null}
-      <Tab value='apiKeys' label='API keys' />
+      <Tab value='apiKeys' label={t('settings.tabs.apiKeys')} />
     </DialogTabs>
     <DialogContent style={{ minHeight: 200 }}>
       {tabNameToComponent[selectedTab]}
