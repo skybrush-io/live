@@ -2,6 +2,7 @@ import isEmpty from 'lodash-es/isEmpty';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
+import { bindActionCreators } from '@reduxjs/toolkit';
 
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
@@ -31,7 +32,6 @@ import {
 } from '~/features/uavs/actions';
 import { openUAVDetailsDialog } from '~/features/uavs/details';
 import { createUAVOperationThunks } from '~/utils/messaging';
-import { bindActionCreators } from 'redux';
 import { getPreferredCommunicationChannelIndex } from '~/features/mission/selectors';
 import { getUAVIdList } from '~/features/uavs/selectors';
 

@@ -9,10 +9,10 @@ import union from 'lodash-es/union';
 import { nanoid } from 'nanoid';
 import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
-import { bindActionCreators } from 'redux';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { connect } from 'react-redux';
+import { bindActionCreators } from '@reduxjs/toolkit';
 
 import AppBar from '@material-ui/core/AppBar';
 import Box from '@material-ui/core/Box';
@@ -266,8 +266,8 @@ const createListItems = (
       editingThisItem || (showMissionIds && !isInMission)
         ? ''
         : showMissionIds
-        ? uavId
-        : formattedMissionIndex;
+          ? uavId
+          : formattedMissionIndex;
     const key = uavId === undefined ? `placeholder-${label || 'null'}` : uavId;
 
     return (

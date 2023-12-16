@@ -4,7 +4,7 @@
  * on.
  */
 
-import { combineReducers } from 'redux';
+import { combineReducers } from '@reduxjs/toolkit';
 
 import layersReducer from './layers';
 import originReducer from './origin';
