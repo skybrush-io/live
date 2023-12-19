@@ -48,6 +48,7 @@ import {
   getTrajectoryDuration,
   isValidTrajectory,
 } from './trajectory';
+import { isYawActivelyControlled } from './yaw';
 
 /**
  * Returns whether the manual preflight checks are signed off (i.e. approved)
@@ -172,6 +173,18 @@ export const isShowIndoor = (state) =>
  */
 export const isShowOutdoor = (state) =>
   getShowEnvironmentType(state) === 'outdoor';
+
+/**
+ * Selector that returns whether the show uses yaw control for at least one drone.
+ */
+export const isShowUsingYawControl = createSelector(
+  getDroneSwarmSpecification,
+  (swarm) =>
+    swarm.some((drone) => {
+      const yawControl = get(drone, 'settings.yawControl');
+      return isYawActivelyControlled(yawControl);
+    })
+);
 
 /**
  * Selector that returns the part of the state object that is related to the
@@ -310,8 +323,8 @@ const convertTakeoffHeadingSpecificationValueToNumber = (spec) => {
     typeof value === 'string'
       ? Number.parseFloat(value)
       : typeof value === 'number'
-      ? value
-      : 0;
+        ? value
+        : 0;
 
   return valueAsNum % 360;
 };
@@ -684,8 +697,10 @@ export const getShowDescription = createSelector(
   getNumberOfDronesInShow,
   getShowDurationAsString,
   getMaximumHeightInTrajectories,
-  (numberDrones, duration, maxHeight) =>
-    `${numberDrones} drones, ${duration}, max AHL ${maxHeight.toFixed(1)}m`
+  isShowUsingYawControl,
+  (numberDrones, duration, maxHeight, hasYawControl) =>
+    `${numberDrones} drones, ${duration}, max AHL ${maxHeight.toFixed(1)}m` +
+    (hasYawControl ? ', yaw controlled' : '')
 );
 
 /**
@@ -760,10 +775,10 @@ export const getShowStartTimeAsString = createSelector(
         ? formatISO9075(fromUnixTime(time))
         : undefined
       : clock === CommonClockId.MTC
-      ? time
-        ? formatDurationHMS(time, { padHours: true }) + ' MTC'
-        : undefined
-      : formatDurationHMS(time, { padHours: true }) + ` on clock ${clock}`
+        ? time
+          ? formatDurationHMS(time, { padHours: true }) + ' MTC'
+          : undefined
+        : formatDurationHMS(time, { padHours: true }) + ` on clock ${clock}`
 );
 
 /**

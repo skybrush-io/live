@@ -11,6 +11,7 @@ import OnboardPreflightChecksDialog from './OnboardPreflightChecksDialog';
 import ShowControlPanelUpperSegment from './ShowControlPanelUpperSegment';
 import StartTimeDialog from './StartTimeDialog';
 import TakeoffAreaSetupDialog from './TakeoffAreaSetupDialog';
+
 import { hasFeature } from '~/utils/configuration';
 
 /**
