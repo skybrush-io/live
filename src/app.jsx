@@ -19,6 +19,7 @@ import ShowFileWatcher from './views/show-control/ShowFileWatcher';
 
 import DetachedPanelManager from './features/detachable-panels/DetachedPanelManager';
 import DockDetailsDialog from './features/docks/DockDetailsDialog';
+import GeofenceSettingsDialog from './features/geofence/GeofenceSettingsDialog';
 import AppHotkeys from './features/hotkeys/AppHotkeys';
 import HotkeyDialog from './features/hotkeys/HotkeyDialog';
 import PendingUAVIdOverlay from './features/hotkeys/PendingUAVIdOverlay';
@@ -26,6 +27,7 @@ import LicenseInfoDialog from './features/license-info/LicenseInfoDialog';
 import MapCachingDialog from './features/map-caching/MapCachingDialog';
 import CoordinateAveragingDialog from './features/measurement/CoordinateAveragingDialog';
 import ParameterUploadSetupDialog from './features/parameters/ParameterUploadSetupDialog';
+import PromptDialog from './features/prompt/PromptDialog';
 import SavedLocationEditorDialog from './features/saved-locations/SavedLocationEditorDialog';
 import RTKSetupDialog from './features/rtk/RTKSetupDialog';
 import Sidebar from './features/sidebar/Sidebar';
@@ -162,20 +164,20 @@ const App = ({ onFirstRender }) => (
       <dialogs.DeauthenticationDialog />
       <dialogs.FeatureEditorDialog />
       <dialogs.FlyToTargetDialog />
-      <dialogs.GeofenceSettingsDialog />
       <dialogs.GlobalErrorDialog />
       <dialogs.LayerSettingsDialog />
-      <dialogs.PromptDialog />
       <dialogs.ServerSettingsDialog />
       {hasTimeLimitedSession && <dialogs.SessionExpiryDialog />}
       <dialogs.TimeSyncDialog />
 
       <CoordinateAveragingDialog />
       <DockDetailsDialog />
+      <GeofenceSettingsDialog />
       <HotkeyDialog />
       <LicenseInfoDialog />
       <MapCachingDialog />
       <ParameterUploadSetupDialog />
+      <PromptDialog />
       <RTKSetupDialog />
       <SavedLocationEditorDialog />
       <UAVDetailsDialog />

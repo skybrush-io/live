@@ -33,12 +33,20 @@ import {
 import {
   BatteryDisplayStyle,
   describeBatteryDisplayStyle,
+  UAVOperationConfirmationStyle,
+  describeUAVOperationConfirmationStyle,
 } from '~/model/settings';
 
 const batteryDisplayStyleOrder = [
   BatteryDisplayStyle.VOLTAGE,
   BatteryDisplayStyle.PERCENTAGE,
   BatteryDisplayStyle.FORCED_PERCENTAGE,
+];
+
+const uavOperationConfirmationStyleOrder = [
+  UAVOperationConfirmationStyle.NEVER,
+  UAVOperationConfirmationStyle.ONLY_MULTIPLE,
+  UAVOperationConfirmationStyle.ALWAYS,
 ];
 
 const UAVsTabPresentation = ({
@@ -58,6 +66,7 @@ const UAVsTabPresentation = ({
   preferredBatteryDisplayStyle,
   t,
   takeoffHeadingAccuracy,
+  uavOperationConfirmationStyle,
   warnThreshold,
 }) => {
   const theme = useTheme();
@@ -117,7 +126,28 @@ const UAVsTabPresentation = ({
         </FormControl>
       </FormGroup>
 
-      <Divider />
+      <Box display='flex' flexDirection='row' mb={1}>
+        <FormControl fullWidth variant='filled'>
+          <InputLabel id='uav-operation-confirmation-style'>
+            UAV operation confirmations
+          </InputLabel>
+          <Select
+            labelId='uav-operation-confirmation-style'
+            name='uavOperationConfirmationStyle'
+            value={
+              uavOperationConfirmationStyle ||
+              UAVOperationConfirmationStyle.NEVER
+            }
+            onChange={onEnumFieldUpdated}
+          >
+            {uavOperationConfirmationStyleOrder.map((value) => (
+              <MenuItem key={value} value={value}>
+                {describeUAVOperationConfirmationStyle(value)}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      </Box>
 
       <Box my={2}>
         <Header>{t('settings.uavs.defaultBatterySettings')}</Header>
@@ -189,8 +219,6 @@ const UAVsTabPresentation = ({
         </Box>
       </Box>
 
-      <Divider />
-
       <Box my={2}>
         <Header>{t('settings.uavs.missionSetup')}</Header>
 
@@ -243,6 +271,9 @@ UAVsTabPresentation.propTypes = {
   preferredBatteryDisplayStyle: PropTypes.oneOf(batteryDisplayStyleOrder),
   t: PropTypes.func,
   takeoffHeadingAccuracy: PropTypes.number,
+  uavOperationConfirmationStyle: PropTypes.oneOf(
+    uavOperationConfirmationStyleOrder
+  ),
   warnThreshold: PropTypes.number,
 };
 

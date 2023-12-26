@@ -201,32 +201,29 @@ const LayerSourcePresentation = ({ apiKeys, tileLoadFunction, type }) => {
 
     case Source.STAMEN.TERRAIN:
       return (
-        <source.XYZ
-          attributions={attributions}
+        <source.StadiaMaps
           tileLoadFunction={tileLoadFunction}
-          url='https://stamen-tiles.a.ssl.fastly.net/terrain/{z}/{x}/{y}.jpg'
+          layerName='stamen_terrain'
         />
       );
 
     case Source.STAMEN.TONER:
       return (
-        <source.XYZ
-          attributions={attributions}
+        <source.StadiaMaps
           tileLoadFunction={tileLoadFunction}
-          url='https://stamen-tiles.a.ssl.fastly.net/toner/{z}/{x}/{y}.png'
+          layerName='stamen_toner'
         />
       );
 
     case Source.STAMEN.WATERCOLOR:
       return (
-        <source.XYZ
-          attributions={attributions}
+        <source.StadiaMaps
           tileLoadFunction={tileLoadFunction}
-          url='https://stamen-tiles.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.jpg'
+          layerName='stamen_watercolor'
         />
       );
 
-    case Source.GOOGLE_MAPS.DEFAULT:
+    case Source.GOOGLE.DEFAULT:
       return (
         <source.XYZ
           tileLoadFunction={tileLoadFunction}
@@ -234,7 +231,7 @@ const LayerSourcePresentation = ({ apiKeys, tileLoadFunction, type }) => {
         />
       );
 
-    case Source.GOOGLE_MAPS.SATELLITE:
+    case Source.GOOGLE.SATELLITE:
       return (
         <source.XYZ
           tileLoadFunction={tileLoadFunction}
@@ -242,7 +239,7 @@ const LayerSourcePresentation = ({ apiKeys, tileLoadFunction, type }) => {
         />
       );
 
-    case Source.BING_MAPS.AERIAL_WITH_LABELS:
+    case Source.BING.AERIAL_WITH_LABELS:
       return (
         <source.BingMaps
           apiKey={apiKeys.BING}
@@ -251,7 +248,7 @@ const LayerSourcePresentation = ({ apiKeys, tileLoadFunction, type }) => {
         />
       );
 
-    case Source.BING_MAPS.ROAD:
+    case Source.BING.ROAD:
       return <source.BingMaps apiKey={apiKeys.BING} imagerySet='Road' />;
 
     default:

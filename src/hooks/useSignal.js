@@ -8,7 +8,7 @@ function useSignal(signal, callback) {
   useEffect(() => {
     const binding = signal.add(callback);
     return () => {
-      binding.detach();
+      signal.detach(binding);
     };
   }, [signal, callback]);
 }

@@ -94,6 +94,8 @@ const FeatureListEntry = (props) => {
   } = props;
   const { id, color, label, type, visible } = feature;
 
+  const IconOfFeatureType = getIconOfFeatureType(type);
+
   const actions = [
     {
       action: onFocusFeature,
@@ -172,7 +174,7 @@ const FeatureListEntry = (props) => {
       onClick={onSelectFeature}
     >
       <ListItemIcon style={{ color, minWidth: 0, marginRight: '16px' }}>
-        {getIconOfFeatureType(type)}
+        <IconOfFeatureType />
       </ListItemIcon>
       {label ? (
         <ListItemText style={{ overflowWrap: 'break-word' }} primary={label} />

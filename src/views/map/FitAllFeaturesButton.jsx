@@ -53,7 +53,7 @@ class FitAllFeaturesButton extends React.Component {
   }
 
   componentWillUnmount() {
-    this._bindings.fitAllFeatures.detach();
+    fitAllFeaturesSignal.detach(this._bindings.fitAllFeatures);
     delete this._bindings.fitAllFeatures;
   }
 

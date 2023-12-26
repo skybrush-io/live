@@ -1,15 +1,13 @@
 import { createSelector } from '@reduxjs/toolkit';
 
-import DefaultAPIKeys from '~/api-keys';
+import DefaultAPIKeys from '~/APIKeys';
 import { BatteryFormatter } from '~/components/battery';
 import { BatterySettings } from '~/model/battery';
 import {
-  DEFAULT_BATTERY_CELL_COUNT,
-  LIPO_CRITICAL_VOLTAGE_THRESHOLD,
-  LIPO_FULL_CHARGE_VOLTAGE,
-  LIPO_LOW_VOLTAGE_THRESHOLD,
-} from '~/model/constants';
-import { AltitudeSummaryType, BatteryDisplayStyle } from '~/model/settings';
+  AltitudeSummaryType,
+  BatteryDisplayStyle,
+  UAVOperationConfirmationStyle,
+} from '~/model/settings';
 import { UAVSortKey } from '~/model/sorting';
 
 export const getAltitudeSummaryType = (state) =>
@@ -18,10 +16,10 @@ export const getAltitudeSummaryType = (state) =>
 export const getBatterySettings = createSelector(
   (state) => state.settings.uavs,
   ({
-    defaultBatteryCellCount = DEFAULT_BATTERY_CELL_COUNT,
-    fullChargeVoltage = LIPO_FULL_CHARGE_VOLTAGE,
-    lowVoltageThreshold = LIPO_LOW_VOLTAGE_THRESHOLD,
-    criticalVoltageThreshold = LIPO_CRITICAL_VOLTAGE_THRESHOLD,
+    defaultBatteryCellCount,
+    fullChargeVoltage,
+    lowVoltageThreshold,
+    criticalVoltageThreshold,
   } = {}) =>
     new BatterySettings({
       defaultBatteryCellCount,
@@ -29,7 +27,6 @@ export const getBatterySettings = createSelector(
         full: fullChargeVoltage,
         low: lowVoltageThreshold,
         critical: criticalVoltageThreshold,
-        empty: 3.3,
       },
     })
 );
@@ -167,6 +164,17 @@ export function getUAVListSortPreference(state) {
 }
 
 /**
+ * Returns whether UAV operations dispatched from toolbars or buttons should
+ * be confirmed by the user.
+ */
+export function getUAVOperationConfirmationStyle(state) {
+  return (
+    state.settings.uavs?.uavOperationConfirmationStyle ||
+    UAVOperationConfirmationStyle.NEVER
+  );
+}
+
+/**
  * Returns whether we are currently showing empty mission slots in the UAV list.
  */
 export const isShowingEmptyMissionSlots = (state) =>
@@ -185,6 +193,25 @@ export const isShowingMissionIds = (state) =>
  */
 export const areExperimentalFeaturesEnabled = (state) =>
   state.settings.display?.experimentalFeaturesEnabled;
+
+/**
+ * Returns whether the app should ask for a confirmation when performing a
+ * UAV operation affecting the given UAVs.
+ */
+export function shouldConfirmUAVOperation(state, uavs, isBroadcast) {
+  const style = getUAVOperationConfirmationStyle(state);
+
+  switch (style) {
+    case UAVOperationConfirmationStyle.ALWAYS:
+      return true;
+
+    case UAVOperationConfirmationStyle.ONLY_MULTIPLE:
+      return isBroadcast || (Array.isArray(uavs) && uavs.length > 1);
+
+    default:
+      return false;
+  }
+}
 
 /**
  * Returns whether the inactive segments of LCD clocks should be hidden when a

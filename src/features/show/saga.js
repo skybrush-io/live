@@ -63,7 +63,7 @@ function* pushSettingsToServer() {
     start: {
       authorized,
       clock,
-      time: isNil(time) ? null : time,
+      time,
       method,
       uavIds: uavIdsToStartAutomatically,
     },

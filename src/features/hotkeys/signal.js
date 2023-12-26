@@ -1,11 +1,8 @@
-import Signal from 'mini-signals';
+import { MiniSignal } from 'mini-signals';
 
-const hotkeySignal = new Signal();
+const hotkeySignal = new MiniSignal();
 
-export const isKeyboardNavigationActive = () =>
-  // TODO: Update to `mini-signals@2.0.0`, which explicitly has such a check:
-  // https://github.com/Hypercubed/mini-signals/blob/v2.0.0/docs/classes/MiniSignal.md#haslisteners
-  hotkeySignal.handlers().length > 0;
+export const isKeyboardNavigationActive = () => hotkeySignal.hasListeners();
 
 export const sendKeyboardNavigationSignal = (action) => (event) =>
   hotkeySignal.dispatch(action, event);

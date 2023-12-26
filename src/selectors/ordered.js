@@ -1,6 +1,5 @@
 import { createSelector } from '@reduxjs/toolkit';
 
-import { isLayerVisible } from '~/model/layers';
 import { selectOrdered } from '~/utils/collections';
 
 import { getLicensedLayers } from './layers';
@@ -41,5 +40,5 @@ export const getLayersInTopmostFirstOrder = createSelector(
  */
 export const getVisibleLayersInOrder = createSelector(
   getLayersInBottomFirstOrder,
-  (layers) => layers.filter(isLayerVisible)
+  (layers) => layers.filter((layer) => layer.visible ?? true)
 );

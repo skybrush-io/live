@@ -41,6 +41,7 @@ import {
   setServerLicense,
   setServerVersion,
 } from '~/features/servers/slice';
+import { Protocol } from '~/features/servers/types';
 import {
   clearStartTimeAndMethod,
   synchronizeShowSettings,
@@ -51,17 +52,14 @@ import { clearWeatherData } from '~/features/weather/slice';
 import i18n from '~/i18n';
 import messageHub from '~/message-hub';
 import {
-  ConnectionState,
-  handleConnectionInformationMessage,
-} from '~/model/connections';
-import {
   handleBeaconInformationMessage,
   handleBeaconPropertiesMessage,
 } from '~/model/beacons';
 import { handleClockInformationMessage } from '~/model/clocks';
+import { handleConnectionInformationMessage } from '~/model/connections';
 import { handleDockInformationMessage } from '~/model/docks';
+import { ConnectionState } from '~/model/enums';
 import { logLevelForLogLevelName } from '~/utils/logging';
-import { Protocol } from '~/features/servers/server-settings-dialog';
 
 const formatClockSkew = (number) => {
   if (isNil(number)) {

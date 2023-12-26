@@ -6,7 +6,7 @@ import { connect } from 'react-redux';
 
 import { Map, View, control, interaction, withMap } from '@collmot/ol-react';
 
-import Condition from './conditions';
+import * as Condition from './conditions';
 import {
   SelectNearestFeature,
   ShowContextMenu,
@@ -33,7 +33,7 @@ import mapViewManager from '~/mapViewManager';
 import {
   canLayerTriggerTooltip,
   getVisibleSelectableLayers,
-  isLayerSelectable,
+  isLayerVisibleAndSelectable,
 } from '~/model/layers';
 import {
   createFeatureFromOpenLayers,
@@ -256,7 +256,7 @@ const MapViewInteractions = withMap((props) => {
         key='SelectNearestFeature'
         activateCondition={Condition.doubleClick}
         addCondition={Condition.shiftKeyOnly}
-        layers={isLayerSelectable}
+        layers={isLayerVisibleAndSelectable}
         removeCondition={Condition.altKeyOnly}
         toggleCondition={Condition.platformModifierKeyOnly}
         threshold={16}
@@ -487,7 +487,7 @@ class MapViewPresentation extends React.Component {
 
             {/* OpenLayers interaction that triggers a context menu */}
             <ShowContextMenu
-              layers={isLayerSelectable}
+              layers={isLayerVisibleAndSelectable}
               projection='EPSG:4326'
               threshold={40}
               onOpening={this._hideNearestFeatureTooltip}

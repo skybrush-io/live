@@ -2,18 +2,18 @@
  * @file Defines the singleton instance of the applicaiton-wide signals object.
  */
 
-import Signal from 'mini-signals';
+import { MiniSignal } from 'mini-signals';
 import { boundingExtent, buffer } from 'ol/extent';
 
 import { mapViewCoordinateFromLonLat } from '~/utils/geography';
 
-export const mapReferenceRequestSignal = new Signal();
+export const mapReferenceRequestSignal = new MiniSignal();
 
-export const mapRotationResetSignal = new Signal();
-export const fitAllFeaturesSignal = new Signal();
+export const mapRotationResetSignal = new MiniSignal();
+export const fitAllFeaturesSignal = new MiniSignal();
 
-export const mapViewToLocationSignal = new Signal();
-export const mapViewToExtentSignal = new Signal();
+export const mapViewToLocationSignal = new MiniSignal();
+export const mapViewToExtentSignal = new MiniSignal();
 
 /**
  * Converts an object that is either an array of at least length 2 or an object

@@ -72,7 +72,7 @@ const RTKStatusHeaderButton = ({
           isConnected ? (numSatellites > 0 ? String(numSatellites) : '—') : '—'
         }
         secondaryLabel={
-          surveyStatus.supported
+          surveyStatus.supported && typeof surveyStatus.accuracy === 'number'
             ? formatSurveyAccuracy(surveyStatus.accuracy, {
                 max: 9,
                 short: true,

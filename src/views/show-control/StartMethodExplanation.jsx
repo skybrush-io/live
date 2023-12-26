@@ -61,7 +61,7 @@ const StartMethodExplanation = ({ hasScheduledStartTime, startMethod, t }) => (
 
 StartMethodExplanation.propTypes = {
   hasScheduledStartTime: PropTypes.bool,
-  startMethod: PropTypes.oneOf(StartMethod._VALUES),
+  startMethod: PropTypes.oneOf(Object.values(StartMethod)),
   t: PropTypes.func,
 };
 

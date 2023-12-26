@@ -184,14 +184,25 @@ const greenLine = stroke(Colors.axes.y, 2);
 const originMarkerFill = fill(Colors.markers.origin);
 
 /**
- * Fill color to use for takeoff markers.
+ * Shape to use for takeoff markers.
  */
-const takeoffMarkerFill = fill(Colors.markers.takeoff);
+const takeoffTriangle = new RegularShape({
+  fill: fill(Colors.markers.takeoff),
+  points: 3,
+  radius: 6,
+  stroke: blackVeryThinOutline,
+});
 
 /**
- * Green fill color to use for landing markers.
+ * Shape to use for landing markers.
  */
-const landingMarkerFill = fill(Colors.markers.landing);
+const landingMarker = new RegularShape({
+  fill: fill(Colors.markers.landing),
+  points: 3,
+  radius: 6,
+  rotation: Math.PI,
+  stroke: blackVeryThinOutline,
+});
 
 /**
  * Styling function for the marker representing the origin of the map
@@ -235,12 +246,7 @@ const originStyles = (selected, axis) => [
 const takeoffPositionStyle = (feature, resolution) => {
   const index = globalIdToHomePositionId(feature.getId());
   const style = {
-    image: new RegularShape({
-      fill: takeoffMarkerFill,
-      points: 3,
-      radius: 6,
-      stroke: blackVeryThinOutline,
-    }),
+    image: takeoffTriangle,
   };
 
   if (resolution < 0.4) {
@@ -262,13 +268,7 @@ const takeoffPositionStyle = (feature, resolution) => {
 const landingPositionStyle = (feature, resolution) => {
   const index = globalIdToLandingPositionId(feature.getId());
   const style = {
-    image: new RegularShape({
-      fill: landingMarkerFill,
-      points: 3,
-      radius: 6,
-      rotation: Math.PI,
-      stroke: blackVeryThinOutline,
-    }),
+    image: landingMarker,
   };
 
   if (resolution < 0.4) {

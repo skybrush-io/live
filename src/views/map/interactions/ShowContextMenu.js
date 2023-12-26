@@ -22,8 +22,9 @@ import React from 'react';
 import { OLPropTypes, withMap } from '@collmot/ol-react';
 import { createOLInteractionComponent } from '@collmot/ol-react/lib/interaction';
 
-import Condition from '../conditions';
-import { euclideanDistance } from '../../../utils/geography';
+import { euclideanDistance2D } from '~/utils/math';
+
+import * as Condition from '../conditions';
 
 /**
  * OpenLayers interaction (for right click by default) that overwrites the
@@ -154,7 +155,7 @@ class ContextMenuInteraction extends Interaction {
 
     const closestPoint = geom.getClosestPoint(event.coordinate);
     const closestPixel = event.map.getPixelFromCoordinate(closestPoint);
-    return euclideanDistance(event.pixel, closestPixel);
+    return euclideanDistance2D(event.pixel, closestPixel);
   }
 
   /**

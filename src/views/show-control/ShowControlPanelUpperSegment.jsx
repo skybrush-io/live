@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import Divider from '@material-ui/core/Divider';
 import List from '@material-ui/core/List';
 
+import MultiPagePanel, { Page } from '~/components/MultiPagePanel';
 import {
   getShowEnvironmentType,
   isShowAuthorizedToStartLocally,
@@ -19,7 +20,6 @@ import OnboardPreflightChecksButton from './OnboardPreflightChecksButton';
 import ShowUploadDialogButton from './ShowUploadDialogButton';
 import StartTimeButton from './StartTimeButton';
 import TakeoffAreaButton from './TakeoffAreaButton';
-import MultiPagePanel, { Page } from '~/components/MultiPagePanel';
 
 /**
  * Panel that shows the widgets that are needed to load and configure a drone
@@ -48,7 +48,7 @@ const ShowControlPanelUpperSegment = ({ environmentType, isAuthorized }) => (
         <StartTimeButton />
       </List>
     </Page>
-    <Page id='execution' display='flex' flexDirection='column'>
+    <Page scrollable id='execution' display='flex' flexDirection='column'>
       <LargeControlButtonGroup />
     </Page>
   </MultiPagePanel>

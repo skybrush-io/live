@@ -15,7 +15,8 @@ import Header from '@skybrush/mui-components/lib/FormHeader';
 import LargeProgressIndicator from '@skybrush/mui-components/lib/LargeProgressIndicator';
 import StatusLight from '@skybrush/mui-components/lib/StatusLight';
 
-import { errorCodeToSemantics, UAVErrorCode } from '~/flockwave/errors';
+import { errorCodeToSemantics } from '~/flockwave/errors';
+import UAVErrorCode from '~/flockwave/UAVErrorCode';
 import useMessageHub from '~/hooks/useMessageHub';
 import {
   describeOverallPreflightCheckResult,
