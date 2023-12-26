@@ -193,6 +193,11 @@ DisplayTabPresentation.propTypes = {
   theme: PropTypes.oneOf(['auto', 'dark', 'light']),
 };
 
+DisplayTabPresentation.defaultProps = {
+  // ensure that updating from a non-localized version does not leave the "Language" dropdown empty
+  language: 'en',
+};
+
 export default connect(
   // mapStateToProps
   (state) => ({
