@@ -68,14 +68,18 @@ const getTooltipForType = (type) => (
   <Translation>
     {(t) => (
       <div>
-        {t('altitudeSummaryButton.showingCurrent')}{' '}
-        {describeAltitudeSummaryType(type, { short: true })}.
-        <br />
-        {t('altitudeSummaryButton.clickToChange')}{' '}
-        {describeAltitudeSummaryType(getNextTypeForAltitudeSummaryType(type), {
-          short: true,
+        {t('altitudeSummaryButton.showingCurrent', {
+          altitudeType: describeAltitudeSummaryType(type, { short: true }),
         })}
-        .
+        <br />
+        {t('altitudeSummaryButton.clickToChange', {
+          altitudeType: describeAltitudeSummaryType(
+            getNextTypeForAltitudeSummaryType(type),
+            {
+              short: true,
+            }
+          ),
+        })}
       </div>
     )}
   </Translation>

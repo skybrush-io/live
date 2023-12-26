@@ -51,8 +51,8 @@
     "muted": "Audible alerts are muted. Click to unmute."
   },
   "altitudeSummaryButton": {
-    "clickToChange": "Click to change to",
-    "showingCurrent": "Showing maximum and minimum"
+    "clickToChange": "Click to change to {{altitudeType}}.",
+    "showingCurrent": "Showing maximum and minimum {{altitudeType}}."
   },
   "authentication": "Authentication",
   "batteryStatusHeaderButton": "Showing average and minimum charge levels.",

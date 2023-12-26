@@ -51,10 +51,10 @@
     "muted": "A riasztások némítva vannak. Kattintson a némítás feloldásához."
   },
   "altitudeSummaryButton": {
-    "clickToChange": "Kattintson a módosításhoz erre:",
-    "showingCurrent": "Maximum és minimun kijelzése"
+    "clickToChange": "Kattintson a módosításhoz {{altitudeType}}-re.",
+    "showingCurrent": "Maximum és minimum {{altitudeType}} kijelzése."
   },
-  "authentication": "Hitelesítés",
+  "authentication": "Felhasználó azonosítása",
   "batteryStatusHeaderButton": "Átlagos és minimális töltési szintek kijelzése.",
   "broadcastButton": {
     "disable": "Broadcast letiltása",
@@ -86,7 +86,7 @@
     "fenceAction": "Kerítés művelet",
     "fenceActionHelperText": "Ezen opciók támogatása a drónokon múlik; nem minden opció támogatott minden drón által.",
     "fenceActionLabel": "Elsődeleges kerítés művelet",
-    "horizontal": "Horizontális",
+    "horizontal": "Vízszintes",
     "maxAltitude": "Max magasság",
     "maxDistance": "Max távolság",
     "maxVertexCount": "Maximális csúcsszám",
@@ -95,7 +95,7 @@
     "simplifyPolygon": "Sokszög egyszerűsítése",
     "title": "Geofence beállítások",
     "vertexCountReduction": "Csúcsszám csökkentése",
-    "vertical": "Vertikális"
+    "vertical": "Függőleges"
   },
   "help": "Segítség",
   "lightControl": {
@@ -112,7 +112,7 @@
   "notifications": {
     "connectedToSkybrushServer": "Csatlakozva a Skybrush szerverhez"
   },
-  "preferences": "Preferenciák",
+  "preferences": "Beállítások",
   "serverConnectionStatus": {
     "clockSkew": "Óra szinkronizálás",
     "clocksSync": "Az órák szinkronizálva",
