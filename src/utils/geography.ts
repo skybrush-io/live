@@ -23,6 +23,7 @@ import { type GeometryFunction } from 'ol/interaction/Draw';
 import VectorLayer from 'ol/layer/Vector';
 import type Map from 'ol/Map';
 import * as Projection from 'ol/proj';
+import type RenderFeature from 'ol/render/Feature';
 import VectorSource from 'ol/source/Vector';
 import { getArea, getLength } from 'ol/sphere';
 import { type Vector3 } from 'three';
@@ -175,7 +176,7 @@ export const createRotatedBoxGeometryFunction =
  *          no such feature on any of the visible layers
  */
 export const findFeatureById = curry(
-  (map: Map, featureId: string): OLFeature | undefined => {
+  (map: Map, featureId: string): OLFeature | RenderFeature[] | undefined => {
     return findFeaturesById(map, [featureId])[0];
   }
 );
@@ -194,8 +195,10 @@ const isVectorLayer = (layer: unknown): layer is VectorLayer<VectorSource> =>
  *          entries for features that are not found on the map
  */
 export const findFeaturesById = curry(
-  (map: Map, featureIds: string[]): OLFeature[] => {
-    const features: OLFeature[] = Array.from({ length: featureIds.length });
+  (map: Map, featureIds: string[]): Array<OLFeature | RenderFeature[]> => {
+    const features: Array<OLFeature | RenderFeature[]> = Array.from({
+      length: featureIds.length,
+    });
 
     for (const layer of map.getLayers().getArray()) {
       if (!isVectorLayer(layer) || !layer.getVisible()) {
@@ -381,8 +384,8 @@ export const measureFeature = (feature: Feature): string => {
       return area > 1 * (kilo * kilo) // Over 1 km²
         ? `${round(area / (kilo * kilo), 2)} km²`
         : area > 0.1 * (hecto * hecto) // Over 0.1 ha
-        ? `${round(area / (hecto * hecto), 2)} ha`
-        : `${round(area, 2)} m²`;
+          ? `${round(area / (hecto * hecto), 2)} ha`
+          : `${round(area, 2)} m²`;
     }
 
     default:

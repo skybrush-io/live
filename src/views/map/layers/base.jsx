@@ -201,28 +201,25 @@ const LayerSourcePresentation = ({ apiKeys, tileLoadFunction, type }) => {
 
     case Source.STAMEN.TERRAIN:
       return (
-        <source.XYZ
-          attributions={attributions}
+        <source.StadiaMaps
           tileLoadFunction={tileLoadFunction}
-          url='https://stamen-tiles.a.ssl.fastly.net/terrain/{z}/{x}/{y}.jpg'
+          layerName='stamen_terrain'
         />
       );
 
     case Source.STAMEN.TONER:
       return (
-        <source.XYZ
-          attributions={attributions}
+        <source.StadiaMaps
           tileLoadFunction={tileLoadFunction}
-          url='https://stamen-tiles.a.ssl.fastly.net/toner/{z}/{x}/{y}.png'
+          layerName='stamen_toner'
         />
       );
 
     case Source.STAMEN.WATERCOLOR:
       return (
-        <source.XYZ
-          attributions={attributions}
+        <source.StadiaMaps
           tileLoadFunction={tileLoadFunction}
-          url='https://stamen-tiles.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.jpg'
+          layerName='stamen_watercolor'
         />
       );
 
