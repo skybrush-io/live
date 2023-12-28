@@ -20,7 +20,11 @@ module.exports = {
   mode: 'development',
 
   entry: {
-    polyfills: ['core-js/full/set/add-all', 'core-js/full/set/delete-all'],
+    polyfills: [
+      'core-js/full/set/add-all',
+      'core-js/full/set/delete-all',
+      'core-js/full/structured-clone',
+    ],
   },
 
   output: {
