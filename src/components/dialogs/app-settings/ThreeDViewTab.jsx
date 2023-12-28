@@ -80,7 +80,7 @@ const ThreeDViewTab = (props) => (
               >
                 {sceneries.map((item) => (
                   <MenuItem key={item.id} value={item.id}>
-                    {t(item.label)}
+                    {t(item.label) /* i18next-extract-disable-line */}
                   </MenuItem>
                 ))}
               </Select>

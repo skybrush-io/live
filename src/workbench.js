@@ -30,14 +30,15 @@ import {
 } from './utils/configuration';
 import views from './views';
 
-const FieldNotesPanel = loadable(() =>
-  import(
-    /* webpackChunkName: "field-notes" */ './views/field-notes/FieldNotesPanel'
-  )
+const FieldNotesPanel = loadable(
+  () =>
+    import(
+      /* webpackChunkName: "field-notes" */ './views/field-notes/FieldNotesPanel'
+    )
 );
 
-const MapView = loadable(() =>
-  import(/* webpackChunkName: "map" */ './views/map/MapView')
+const MapView = loadable(
+  () => import(/* webpackChunkName: "map" */ './views/map/MapView')
 );
 
 require('../assets/css/workbench.less');
@@ -210,6 +211,7 @@ const workbench = constructDefaultWorkbench(store);
 i18n.on('languageChanged', () => {
   workbench.forEach((view) => {
     if (view.isComponent) {
+      /* i18next-extract-disable-next-line */
       view.setTitle(i18n.t(`view.${view.config.component}`));
     }
   });
