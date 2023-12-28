@@ -1,3 +1,4 @@
+import config from 'config';
 import filter from 'lodash-es/filter';
 import partial from 'lodash-es/partial';
 import PropTypes from 'prop-types';
@@ -566,6 +567,7 @@ class MapViewPresentation extends React.Component {
     try {
       const [feature] = createFeatureFromOpenLayers(event.feature);
       feature.owner = 'user';
+      config.map.features.onCreate(feature);
       this.props.dispatch(addFeature(feature));
     } catch (error) {
       handleError(error);

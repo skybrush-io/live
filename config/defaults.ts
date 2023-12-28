@@ -50,18 +50,26 @@ const defaults: Config = {
     ],
   ],
 
-  mapDrawingToolbarTools: [
-    ['select', 'zoom'],
-    [
-      'add-marker',
-      'draw-path',
-      'draw-circle',
-      'draw-rectangle',
-      'draw-polygon',
-      'cut-hole',
-      'edit-feature',
+  map: {
+    drawingTools: [
+      ['select', 'zoom'],
+      [
+        'add-marker',
+        'draw-path',
+        'draw-circle',
+        'draw-rectangle',
+        'draw-polygon',
+        'cut-hole',
+        'edit-feature',
+      ],
     ],
-  ],
+
+    features: {
+      onCreate() {
+        /* do nothing */
+      },
+    },
+  },
 
   optimizeForSingleUAV: {
     default: false,

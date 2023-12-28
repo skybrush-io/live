@@ -83,7 +83,7 @@ const DrawingToolbarPresentation = ({ onToolSelected, selectedTool, t }) => {
 
   return (
     <div style={{ display: 'flex', flexFlow: 'column nowrap' }}>
-      {config.mapDrawingToolbarTools
+      {config.map.drawingTools
         .flatMap((group) => [
           <Divider key={`drawing-toolbar-group:${group.join(',')}`} />,
           ...group.map((toolId) => {

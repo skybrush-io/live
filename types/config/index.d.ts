@@ -113,13 +113,22 @@ declare module 'config' {
      */
     headerComponents: string[][];
 
-    /**
-     * Select which tools should appear on the drawing toolbar of the map,
-     * and in what order.
-     * The list of available tools is in `src/views/map/DrawingToolbar.jsx`.
-     * Groups specified by subarrays will be separated by horizontal dividers.
-     */
-    mapDrawingToolbarTools: string[][];
+    map: {
+      /**
+       * Select which tools should appear on the drawing toolbar of the map,
+       * and in what order.
+       * The list of available tools is in `src/views/map/DrawingToolbar.jsx`.
+       * Groups specified by subarrays will be separated by horizontal dividers.
+       */
+      drawingTools: string[][];
+
+      features: {
+        /**
+         * Post-creation hook function for map features.
+         */
+        onCreate: (feature: any) => void;
+      };
+    };
 
     optimizeForSingleUAV: {
       /**
