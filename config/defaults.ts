@@ -87,6 +87,7 @@ const defaults: Config = {
     hostName: 'localhost',
     port: null,
     isSecure: null,
+    warnClockSkew: true,
   },
 
   session: {

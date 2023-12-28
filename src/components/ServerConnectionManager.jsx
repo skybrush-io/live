@@ -3,6 +3,8 @@
  * Skybrush server.
  */
 
+import config from 'config';
+
 import isNil from 'lodash-es/isNil';
 import pTimeout from 'p-timeout';
 import PropTypes from 'prop-types';
@@ -595,6 +597,7 @@ async function executeTasksAfterConnection(dispatch, getState) {
 
     // If the clock skew is significant, show a warning message
     if (
+      config.server.warnClockSkew &&
       isClockSkewSignificant(getState()) &&
       !isTimeSyncWarningDialogVisible(getState())
     ) {

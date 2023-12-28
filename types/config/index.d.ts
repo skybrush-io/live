@@ -219,6 +219,12 @@ declare module 'config' {
        * (Will be automatically inferred during onboarding if left empty.)
        */
       isSecure: Nullable<boolean>;
+
+      /**
+       * Whether to warn the user about clock skew between the server and the client
+       * after a successful connection.
+       */
+      warnClockSkew: boolean;
     };
 
     session: {
