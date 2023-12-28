@@ -10,16 +10,25 @@ import ServerConnectionStatusMiniList from '~/components/ServerConnectionStatusM
 import ServerConnectionStatusBadge from '~/components/badges/ServerConnectionStatusBadge';
 import { showServerSettingsDialog } from '~/features/servers/actions';
 
-const ServerConnectionSettingsButton = (props) => (
-  <LazyTooltip content={<ServerConnectionStatusMiniList />}>
-    <GenericHeaderButton {...props}>
+const ServerConnectionSettingsButton = ({ hideTooltip, ...rest }) => {
+  const body = (
+    <GenericHeaderButton {...rest}>
       <ServerConnectionStatusBadge />
       <ConnectionIcon />
     </GenericHeaderButton>
-  </LazyTooltip>
-);
+  );
+
+  return hideTooltip ? (
+    body
+  ) : (
+    <LazyTooltip content={<ServerConnectionStatusMiniList />}>
+      {body}
+    </LazyTooltip>
+  );
+};
 
 ServerConnectionSettingsButton.propTypes = {
+  hideTooltip: PropTypes.bool,
   onClick: PropTypes.func,
 };
 

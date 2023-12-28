@@ -57,7 +57,11 @@ const componentRegistry = {
   'help-button': () => (config.urls.help ? <HelpButton /> : null),
   'rtk-status-header-button': () =>
     hasFeature('toolboxMenu') && <RTKStatusHeaderButton />,
-  'server-connection-settings-button': ServerConnectionSettingsButton,
+  'server-connection-settings-button': () => (
+    <ServerConnectionSettingsButton
+      hideTooltip={config.optimizeUIForTouch.default}
+    />
+  ),
   'session-expiry-box': SessionExpiryBox,
   'toolbox-button': () => hasFeature('toolboxMenu') && <ToolboxButton />,
   'uav-status-summary': UAVStatusSummary,
