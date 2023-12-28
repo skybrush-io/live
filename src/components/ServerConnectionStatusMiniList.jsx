@@ -2,7 +2,7 @@ import isNil from 'lodash-es/isNil';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
-import { Translation, withTranslation } from 'react-i18next';
+import { withTranslation } from 'react-i18next';
 
 import MiniList from '@skybrush/mui-components/lib/MiniList';
 import MiniListDivider from '@skybrush/mui-components/lib/MiniListDivider';
@@ -19,21 +19,16 @@ import {
 import { ConnectionState } from '~/model/enums';
 
 const connectionStateToPrimaryText = {
-  [ConnectionState.CONNECTED]: (
-    <Translation>{(t) => t('serverConnectionStatus.connected')}</Translation>
-  ),
-  [ConnectionState.CONNECTING]: (
-    <Translation>{(t) => t('serverConnectionStatus.connecting')}</Translation>
-  ),
-  [ConnectionState.DISCONNECTED]: (
-    <Translation>{(t) => t('serverConnectionStatus.disconnected')}</Translation>
-  ),
-  [ConnectionState.DISCONNECTING]: (
-    <Translation>
-      {(t) => t('serverConnectionStatus.disconnecting')}
-    </Translation>
-  ),
+  [ConnectionState.CONNECTED]: (t) => t('serverConnectionStatus.connected'),
+  [ConnectionState.CONNECTING]: (t) => t('serverConnectionStatus.connecting'),
+  [ConnectionState.DISCONNECTED]: (t) =>
+    t('serverConnectionStatus.disconnected'),
+  [ConnectionState.DISCONNECTING]: (t) =>
+    t('serverConnectionStatus.disconnecting'),
 };
+
+const unknownConnectionStateToPrimaryText = (t) =>
+  t('serverConnectionStatus.unknownState');
 
 const formatDurationInMsec = (number) => {
   if (isNil(number)) {
@@ -66,10 +61,10 @@ const ServerConnectionStatusMiniList = ({
   <MiniList>
     <MiniListItem
       iconPreset={connectionState}
-      primaryText={
+      primaryText={(
         connectionStateToPrimaryText[connectionState] ||
-        t('serverConnectionStatus.unknownState')
-      }
+        unknownConnectionStateToPrimaryText
+      )(t)}
       secondaryText={
         connectionState === ConnectionState.CONNECTED ? serverHostname : null
       }
