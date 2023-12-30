@@ -197,9 +197,11 @@ const Sidebar = ({
         px={1}
         style={{ color: '#fff', opacity: 0.3, width: SIDEBAR_OPEN_WIDTH }}
       >
-        <Typography align='center' variant='caption' component='footer'>
-          {t('sidebar.missionType', { missionType })}
-        </Typography>
+        {missionType && (
+          <Typography align='center' variant='caption' component='footer'>
+            {t('sidebar.missionType', { missionType })}
+          </Typography>
+        )}
         <Typography align='center' variant='caption' component='footer'>
           {VERSION}
         </Typography>
