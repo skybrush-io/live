@@ -259,10 +259,11 @@
     "light-control": "Fényvezérlés",
     "log-panel": "Eseménynapló",
     "map": "Térkép",
+    "mission-editor": "Küldetésszerkesztő",
     "saved-location-list": "Helyszínek",
     "show-control": "Műsorvezérlés",
     "three-d-view": "3D Nézet",
-    "uav-details": "",
+    "uav-details": "Drón részletek",
     "uav-list": "Drónok"
   },
   "weatherMiniList": {

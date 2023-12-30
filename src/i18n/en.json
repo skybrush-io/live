@@ -259,10 +259,11 @@
     "light-control": "Light control",
     "log-panel": "Event log",
     "map": "Map",
+    "mission-editor": "Mission editor",
     "saved-location-list": "Locations",
     "show-control": "Show control",
     "three-d-view": "3D View",
-    "uav-details": "",
+    "uav-details": "UAV details",
     "uav-list": "UAVs"
   },
   "weatherMiniList": {

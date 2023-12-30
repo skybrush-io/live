@@ -150,7 +150,7 @@ const Sidebar = ({
           <Module
             id='missionEditor'
             icon={<Route />}
-            label='Mission editor'
+            label={t('view.mission-editor')}
             component='mission-editor'
           />
         )}
