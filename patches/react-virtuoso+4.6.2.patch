@@ -1,0 +1,24 @@
+# Prevents the occurrence of "loop completed with undelivered notifications" and
+# "loop limit exceeded" errors. Might degrade reverse scrolling (e.g. chats)
+# performance, which I haven't encountered so far:
+# https://github.com/petyosi/react-virtuoso/issues/254#issuecomment-766319461
+
+diff --git a/node_modules/react-virtuoso/dist/index.mjs b/node_modules/react-virtuoso/dist/index.mjs
+index f33cb7f..47ae9db 100644
+--- a/node_modules/react-virtuoso/dist/index.mjs
++++ b/node_modules/react-virtuoso/dist/index.mjs
+@@ -484,9 +484,11 @@ function useSizeWithElRef(callback, enabled = true) {
+     const observer = React.useMemo(() => {
+       return new ResizeObserver((entries) => {
+         const element = entries[0].target;
+-        if (element.offsetParent !== null) {
+-          callback(element);
+-        }
++        requestAnimationFrame(() => {
++          if (element.offsetParent !== null) {
++            callback(element);
++          }
++        })
+       });
+     }, [callback]);
+     callbackRef = (elRef) => {
