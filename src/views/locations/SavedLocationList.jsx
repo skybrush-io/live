@@ -4,6 +4,7 @@
 
 import PropTypes from 'prop-types';
 import React from 'react';
+import { Translation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import IconButton from '@material-ui/core/IconButton';
@@ -40,11 +41,15 @@ const LocationListEntry = (props) => {
     });
 
   const actionButton = (
-    <Tooltip content='Edit location'>
-      <IconButton edge='end' onClick={editLocation}>
-        <Edit />
-      </IconButton>
-    </Tooltip>
+    <Translation>
+      {(t) => (
+        <Tooltip content={t('savedLocation.edit')}>
+          <IconButton edge='end' onClick={editLocation}>
+            <Edit />
+          </IconButton>
+        </Tooltip>
+      )}
+    </Translation>
   );
 
   return (
@@ -67,9 +72,13 @@ LocationListEntry.propTypes = {
  * @return {React.Node}  the rendered list item
  */
 const createNewItemEntry = (props) => (
-  <ListItem key='__addNew__' button onClick={props.onNewItem}>
-    <ListItemText primary='Add new location' />
-  </ListItem>
+  <Translation>
+    {(t) => (
+      <ListItem key='__addNew__' button onClick={props.onNewItem}>
+        <ListItemText primary={t('savedLocation.addNew')} />
+      </ListItem>
+    )}
+  </Translation>
 );
 
 /**

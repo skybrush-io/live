@@ -4,6 +4,7 @@
 
 import PropTypes from 'prop-types';
 import React, { useCallback, useRef } from 'react';
+import { Translation, withTranslation } from 'react-i18next';
 import { Form } from 'react-final-form';
 import { connect } from 'react-redux';
 
@@ -35,74 +36,78 @@ import { NEW_ITEM_ID } from '~/utils/collections';
 import { between, integer, join, required } from '~/utils/validation';
 
 const SavedLocationEditorFormPresentation = React.forwardRef(
-  ({ initialValues, onSubmit, optimizeUIForTouch, }, ref) => (
-    <Form initialValues={initialValues} onSubmit={onSubmit}>
-      {({ form, handleSubmit }) => {
-        ref.current = form;
+  ({ initialValues, onSubmit, optimizeUIForTouch }, ref) => (
+    <Translation>
+      {(t) => (
+        <Form initialValues={initialValues} onSubmit={onSubmit}>
+          {({ form, handleSubmit }) => {
+            ref.current = form;
 
-        return (
-          <form
-            id='SavedLocationEditor'
-            style={{ marginTop: 8, marginBottom: 0 }}
-            onSubmit={handleSubmit}
-          >
-            <TextField
-              autoFocus={!optimizeUIForTouch}
-              fullWidth
-              margin='dense'
-              name='name'
-              label='Name'
-              fieldProps={{ validate: required }}
-            />
-            <Box display='flex' flexDirection='row'>
-              <LatitudeField
-                fullWidth
-                margin='dense'
-                name='center.lat'
-                label='Latitude'
-              />
-              <Box p={0.75} />
-              <LongitudeField
-                fullWidth
-                margin='dense'
-                name='center.lon'
-                label='Longitude'
-              />
-            </Box>
-            <Box display='flex' flexDirection='row'>
-              <HeadingField
-                fullWidth
-                margin='dense'
-                name='rotation'
-                label='Rotation'
-              />
-              <Box p={0.75} />
-              <TextField
-                fullWidth
-                type='number'
-                margin='dense'
-                name='zoom'
-                label='Zoom level'
-                fieldProps={{
-                  validate: join([required, integer, between(1, 30)]),
-                }}
-                inputProps={{ min: 1, max: 30 }}
-              />
-            </Box>
-            <TextField
-              fullWidth
-              multiline
-              margin='dense'
-              name='notes'
-              label='Notes'
-              minRows={3}
-              maxRows={3}
-            />
-            <input hidden type='submit' />
-          </form>
-        );
-      }}
-    </Form>
+            return (
+              <form
+                id='SavedLocationEditor'
+                style={{ marginTop: 8, marginBottom: 0 }}
+                onSubmit={handleSubmit}
+              >
+                <TextField
+                  autoFocus={!optimizeUIForTouch}
+                  fullWidth
+                  margin='dense'
+                  name='name'
+                  label={t('savedLocationEditor.name')}
+                  fieldProps={{ validate: required }}
+                />
+                <Box display='flex' flexDirection='row'>
+                  <LatitudeField
+                    fullWidth
+                    margin='dense'
+                    name='center.lat'
+                    label={t('savedLocationEditor.latitude')}
+                  />
+                  <Box p={0.75} />
+                  <LongitudeField
+                    fullWidth
+                    margin='dense'
+                    name='center.lon'
+                    label={t('savedLocationEditor.longitude')}
+                  />
+                </Box>
+                <Box display='flex' flexDirection='row'>
+                  <HeadingField
+                    fullWidth
+                    margin='dense'
+                    name='rotation'
+                    label={t('savedLocationEditor.rotation')}
+                  />
+                  <Box p={0.75} />
+                  <TextField
+                    fullWidth
+                    type='number'
+                    margin='dense'
+                    name='zoom'
+                    label={t('savedLocationEditor.zoomLevel')}
+                    fieldProps={{
+                      validate: join([required, integer, between(1, 30)]),
+                    }}
+                    inputProps={{ min: 1, max: 30 }}
+                  />
+                </Box>
+                <TextField
+                  fullWidth
+                  multiline
+                  margin='dense'
+                  name='notes'
+                  label={t('savedLocationEditor.notes')}
+                  minRows={3}
+                  maxRows={3}
+                />
+                <input hidden type='submit' />
+              </form>
+            );
+          }}
+        </Form>
+      )}
+    </Translation>
   )
 );
 
@@ -145,6 +150,7 @@ const SavedLocationEditorDialogPresentation = ({
   onDelete,
   onSubmit,
   open,
+  t,
 }) => {
   const form = useRef(null);
 
@@ -160,7 +166,9 @@ const SavedLocationEditorDialogPresentation = ({
   }, []);
 
   const isNew = editedLocationId === NEW_ITEM_ID;
-  const title = isNew ? 'Create new location' : 'Edit saved location';
+  const title = isNew
+    ? t('savedLocationEditor.createNew')
+    : t('savedLocationEditor.editSaved');
 
   const actions = [];
 
@@ -171,21 +179,21 @@ const SavedLocationEditorDialogPresentation = ({
         style={{ marginRight: 'auto' }}
         onClick={copyFromMapView}
       >
-        Copy from map view
+        {t('savedLocationEditor.copyFromMapView')}
       </Button>
     );
   }
 
   actions.push(
     <Button key='save' color='primary' onClick={submit}>
-      Save
+      {t('savedLocationEditor.save')}
     </Button>
   );
 
   if (isNew) {
     actions.push(
       <Button key='discard' onClick={onDelete(editedLocationId)}>
-        Discard
+        {t('savedLocationEditor.discard')}
       </Button>
     );
   } else {
@@ -195,10 +203,10 @@ const SavedLocationEditorDialogPresentation = ({
         color='secondary'
         onClick={onDelete(editedLocationId)}
       >
-        Delete
+        {t('savedLocationEditor.delete')}
       </Button>,
       <Button key='cancel' onClick={onClose}>
-        Cancel
+        {t('savedLocationEditor.cancel')}
       </Button>
     );
   }
@@ -226,6 +234,7 @@ SavedLocationEditorDialogPresentation.propTypes = {
   onDelete: PropTypes.func.isRequired,
   onSubmit: PropTypes.func.isRequired,
   open: PropTypes.bool.isRequired,
+  t: PropTypes.func,
 };
 
 /**
@@ -262,6 +271,6 @@ const SavedLocationEditorDialog = connect(
       dispatch(cancelLocationEditing());
     },
   })
-)(SavedLocationEditorDialogPresentation);
+)(withTranslation()(SavedLocationEditorDialogPresentation));
 
 export default SavedLocationEditorDialog;

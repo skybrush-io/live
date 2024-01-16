@@ -132,6 +132,25 @@
     },
     "title": "Biztonság"
   },
+  "savedLocation": {
+    "addNew": "Új helyszín hozzáadása",
+    "edit": "Helyszín szerkesztése"
+  },
+  "savedLocationEditor": {
+    "cancel": "Mégse",
+    "copyFromMapView": "Másolás térképnézetből",
+    "createNew": "Új helyszín létrehozása",
+    "delete": "Törlés",
+    "discard": "Elvetés",
+    "editSaved": "Mentett helyszín szerkesztése",
+    "latitude": "Szélességi fok",
+    "longitude": "Hosszúsági fok",
+    "name": "Név",
+    "notes": "Jegyzetek",
+    "rotation": "Elforgatás",
+    "save": "Mentés",
+    "zoomLevel": "Nagyítás mértéke"
+  },
   "serverConnectionStatus": {
     "clockSkew": "Óra szinkronizálás",
     "clocksSync": "Az órák szinkronizálva",
