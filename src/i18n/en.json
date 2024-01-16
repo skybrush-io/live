@@ -113,6 +113,25 @@
     "connectedToSkybrushServer": "Connected to Skybrush server"
   },
   "preferences": "Preferences",
+  "savedLocation": {
+    "addNew": "Add new location",
+    "edit": "Edit location"
+  },
+  "savedLocationEditor": {
+    "cancel": "Cancel",
+    "copyFromMapView": "Copy from map view",
+    "createNew": "Create new location",
+    "delete": "Delete",
+    "discard": "Discard",
+    "editSaved": "Edit saved location",
+    "latitude": "Latitude",
+    "longitude": "Longitude",
+    "name": "Name",
+    "notes": "Notes",
+    "rotation": "Rotation",
+    "save": "Save",
+    "zoomLevel": "Zoom level"
+  },
   "serverConnectionStatus": {
     "clockSkew": "Clock skew",
     "clocksSync": "Clocks synchronized",
