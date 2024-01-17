@@ -87,6 +87,26 @@
   "map": {
     "resetRotation": "Forgatás visszaállítása"
   },
+  "mapContextMenu": {
+    "clearGeofence": "Geofence törlése",
+    "flyHere": "Repülj ide",
+    "flyHereAtAltitude": "Repülj ide ebben a magasságban…",
+    "land": "Leszállás",
+    "positionHold": "Pozíció tartása",
+    "powerOff": "Kikapcsolás",
+    "powerOn": "Bekapcsolás",
+    "properties": "Tulajdonságok...",
+    "reboot": "Újraindítás",
+    "remove": "Eltávolítás",
+    "returnToHome": "Hazatérés",
+    "setMapOriginHere": "Térkép origó beállítása ide",
+    "setShowOriginHere": "Műsor origó beállítása ide",
+    "sleep": "Alvás",
+    "substractPolygon": "{{x}} kivonása {{y}}-ból/-ből",
+    "takeOff": "Felszállás",
+    "unnamedPolygon": "névtelen sokszög",
+    "useAsGeofence": "Alkalmazás geofence-ként"
+  },
   "mappingToggleButton": {
     "sortByMissionID": "Rendezés küldetés ID alapján"
   },
