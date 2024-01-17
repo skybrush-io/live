@@ -106,6 +106,26 @@
   "map": {
     "resetRotation": "Reset rotation"
   },
+  "mapContextMenu": {
+    "clearGeofence": "Clear geofence",
+    "flyHere": "Fly here",
+    "flyHereAtAltitude": "Fly here at altitude…",
+    "land": "Land",
+    "positionHold": "Position hold",
+    "powerOff": "Power off",
+    "powerOn": "Power on",
+    "properties": "Properties…",
+    "reboot": "Reboot",
+    "remove": "Remove",
+    "returnToHome": "Return to home",
+    "setMapOriginHere": "Set map origin here",
+    "setShowOriginHere": "Set show origin here",
+    "sleep": "Sleep",
+    "substractPolygon": "Substract {{x}} from {{y}}",
+    "takeOff": "Takeoff",
+    "unnamedPolygon": "unnamed polygon",
+    "useAsGeofence": "Use as geofence"
+  },
   "mappingToggleButton": {
     "sortByMissionID": "Sort by mission IDs"
   },
