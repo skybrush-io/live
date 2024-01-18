@@ -1,1 +1,25 @@
-{}
+{
+  "ConnectionStatusMiniList": {
+    "useSecondaryChannel": "Usar canal secundario",
+    "noConnections": "Este servidor no utiliza conexiones."
+  },
+  "DrawingToolbar": {
+    "addMarker": "Agregar marcador",
+    "cutHole": "Cortar agujero en polígono",
+    "drawCircle": "Dibujar circulo",
+    "drawPolygon": "Dibujar polígono",
+    "drawRectangle": "Dibujar rectángulo",
+    "editFeature": "Editar característica",
+    "select": "Seleccionar",
+    "zoom": "Enfocar",
+    "drawPath": "Dibujar camino"
+  },
+  "OnboardPreflightChecksDialog": {
+    "noError": "Ninguno de los UAVs indicó un error."
+  },
+  "settings": {
+    "tabs": {
+      "uavs": "UAVs"
+    }
+  }
+}
