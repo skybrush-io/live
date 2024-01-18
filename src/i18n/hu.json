@@ -21,7 +21,7 @@
   },
   "RTKStatusMiniList": {
     "satelliteCount": "Műholdak száma",
-    "surveyInProgress": "A felmérés folyamatban...",
+    "surveyInProgress": "A felmérés folyamatban…",
     "surveyNo": "Nincs felmérés folyamatban",
     "surveySuccesful": "A felmérés sikeres"
   },
@@ -45,7 +45,7 @@
     "noConnected": "Jelenleg nincs kapcsolódott drón"
   },
   "alerts": {
-    "acknowledgeAlerts": "Kattintson a riasztások nyugtázásához.",
+    "acknowledgeAlerts": "Kattintson a riasztások nyugtázásához",
     "clickToMute": "Kattintson a riasztások némításához.",
     "muted": "A riasztások némítva vannak. Kattintson a némítás feloldásához."
   },
@@ -116,9 +116,9 @@
     "clockSkew": "Óra szinkronizálás",
     "clocksSync": "Az órák szinkronizálva",
     "connected": "Kapcsolódva",
-    "connecting": "Kapcsolódás...",
+    "connecting": "Kapcsolódás…",
     "disconnected": "Leválasztva a szerverről",
-    "disconnecting": "Leválasztás...",
+    "disconnecting": "Leválasztás…",
     "roundTripTime": "Köridő",
     "unknownState": "Ismeretlen állapot",
     "version": "Szerver verzió"
@@ -259,7 +259,7 @@
     "kpIndex": "Kp index",
     "lastUpdate": "Utolsó frissítés",
     "noWeatherInfo": "Nincs időjárási információ a mai napra",
-    "refreshing": "Frissítés...",
+    "refreshing": "Frissítés…",
     "sunrise": "Napkelte",
     "sunset": "Napnyugta",
     "timezone": "Időzóna",
