@@ -21,7 +21,7 @@
   },
   "RTKStatusMiniList": {
     "satelliteCount": "Satellite count",
-    "surveyInProgress": "Survey in progress...",
+    "surveyInProgress": "Survey in progress…",
     "surveyNo": "No survey in progress",
     "surveySuccesful": "Survey successful"
   },
@@ -116,9 +116,9 @@
     "clockSkew": "Clock skew",
     "clocksSync": "Clocks synchronized",
     "connected": "Connected",
-    "connecting": "Connection in progress...",
+    "connecting": "Connection in progress…",
     "disconnected": "Disconnected from server",
-    "disconnecting": "Disconnection in progress...",
+    "disconnecting": "Disconnection in progress…",
     "roundTripTime": "Round-trip time",
     "unknownState": "Unknown state",
     "version": "Server version"
@@ -259,7 +259,7 @@
     "kpIndex": "Kp index",
     "lastUpdate": "Last update",
     "noWeatherInfo": "No weather information on this day",
-    "refreshing": "Refreshing...",
+    "refreshing": "Refreshing…",
     "sunrise": "Sunrise",
     "sunset": "Sunset",
     "timezone": "Timezone",
