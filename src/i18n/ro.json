@@ -1,1 +1,24 @@
-{}
+{
+  "UAVOpButtonGrp": {
+    "returnToHome": "Intoarcere acasa"
+  },
+  "authentication": "Autentificare",
+  "fullScreen": {
+    "on": "Modul ecran întreg"
+  },
+  "geofenceDialog": {
+    "close": "Închide",
+    "title": "Setări geofence"
+  },
+  "serverConnectionStatus": {
+    "connected": "Conectat"
+  },
+  "settings": {
+    "display": {
+      "language": "Limbă"
+    },
+    "tabs": {
+      "threeDView": "Vedere 3D"
+    }
+  }
+}
