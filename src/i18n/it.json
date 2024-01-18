@@ -1,7 +1,26 @@
 {
+  "UAVOpButtonGrp": {
+    "land": "Atterrare",
+    "takeOff": "Decollare"
+  },
+  "geofenceDialog": {
+    "apply": "Applica",
+    "close": "Chiudi",
+    "horizontal": "Orizzontale",
+    "vertical": "Verticale"
+  },
+  "help": "Aiuto",
+  "preferences": "Preferenze",
   "settings": {
     "display": {
       "language": "Lingua"
+    },
+    "threeDView": {
+      "dark": "Scuro",
+      "light": "Chiaro"
     }
+  },
+  "view": {
+    "map": "Mappa"
   }
 }
