@@ -6,6 +6,7 @@ import en from './en';
 import es from './es';
 import hu from './hu';
 import it from './it';
+import ro from './ro';
 
 // Labels (and sorting) based on: https://ux.stackexchange.com/q/37017/165102
 export const availableLanguages = [
@@ -14,6 +15,7 @@ export const availableLanguages = [
   { label: 'Español', code: 'es', translation: es },
   { label: 'Italiano', code: 'it', translation: it },
   { label: 'Magyar', code: 'hu', translation: hu },
+  { label: 'Română', code: 'ro', translation: ro },
 ];
 
 const i18n = i18next.createInstance();
