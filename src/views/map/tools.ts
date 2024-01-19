@@ -24,6 +24,8 @@ export enum Tool {
 
   CUT_HOLE = 'cutHole',
   EDIT_FEATURE = 'editFeature',
+
+  ADD_WAYPOINT = 'addWaypoint',
 }
 
 /**

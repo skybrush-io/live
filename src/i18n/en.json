@@ -6,6 +6,7 @@
   },
   "DrawingToolbar": {
     "addMarker": "Add marker",
+    "addWaypoint": "Add waypoint",
     "cutHole": "Cut hole into polygon",
     "drawCircle": "Draw circle",
     "drawPath": "Draw path",

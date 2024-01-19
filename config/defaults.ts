@@ -68,6 +68,7 @@ const defaults: Config = {
         'cut-hole',
         'edit-feature',
       ],
+      ['add-waypoint'],
     ],
 
     features: {

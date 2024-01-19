@@ -1,6 +1,7 @@
 import config from 'config';
 import filter from 'lodash-es/filter';
 import partial from 'lodash-es/partial';
+import { transform } from 'ol/proj';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
@@ -24,24 +25,6 @@ import { isDrawingTool, Tool, toolToDrawInteractionProps } from './tools';
 
 import Widget from '~/components/Widget';
 import { handleError } from '~/error-handling';
-import {
-  addFeature,
-  showDetailsForFeatureInTooltipOrGivenFeature,
-} from '~/features/map-features/actions';
-import NearestItemTooltip from '~/features/session/NearestItemTooltip';
-import { setFeatureIdForTooltip } from '~/features/session/slice';
-import mapViewManager from '~/mapViewManager';
-import { globalIdToUavId, isUavId } from '~/model/identifiers';
-import {
-  canLayerTriggerTooltip,
-  getVisibleSelectableLayers,
-  isLayerVisibleAndSelectable,
-} from '~/model/layers';
-import {
-  createFeatureFromOpenLayers,
-  handleFeatureUpdatesInOpenLayers,
-  isFeatureTransformable,
-} from '~/model/openlayers';
 import { updateMapViewSettings } from '~/features/map/view';
 import {
   addToSelection,
@@ -49,13 +32,33 @@ import {
   removeFromSelection,
 } from '~/features/map/selection';
 import { getSelectedTool } from '~/features/map/tools';
+import {
+  addFeature,
+  showDetailsForFeatureInTooltipOrGivenFeature,
+} from '~/features/map-features/actions';
 import { getSelectedFeatureIds } from '~/features/map-features/selectors';
-import { getVisibleLayersInOrder } from '~/selectors/ordered';
+import { addNewMissionItem } from '~/features/mission/actions';
+import NearestItemTooltip from '~/features/session/NearestItemTooltip';
+import { setFeatureIdForTooltip } from '~/features/session/slice';
+import { getFollowMapSelectionInUAVDetailsPanel } from '~/features/uavs/selectors';
+import mapViewManager from '~/mapViewManager';
+import {
+  canLayerTriggerTooltip,
+  getVisibleSelectableLayers,
+  isLayerVisibleAndSelectable,
+} from '~/model/layers';
+import { MissionItemType } from '~/model/missions';
+import {
+  createFeatureFromOpenLayers,
+  handleFeatureUpdatesInOpenLayers,
+  isFeatureTransformable,
+} from '~/model/openlayers';
 import { getExtendedCoordinateFormatter } from '~/selectors/formatting';
 import {
   getMapViewCenterPosition,
   getMapViewRotationAngle,
 } from '~/selectors/map';
+import { getVisibleLayersInOrder } from '~/selectors/ordered';
 import { getSelection } from '~/selectors/selection';
 import { hasFeature } from '~/utils/configuration';
 import {
@@ -66,8 +69,6 @@ import {
 import { toDegrees } from '~/utils/math';
 
 import 'ol/ol.css';
-import { setSelectedUAVIdInUAVDetailsPanel } from '~/features/uavs/slice';
-import { getFollowMapSelectionInUAVDetailsPanel } from '~/features/uavs/selectors';
 
 /* ********************************************************************** */
 
@@ -204,8 +205,9 @@ const MapViewToolbars = () => {
  */
 const MapViewInteractions = withMap((props) => {
   const {
-    onDrawEnded,
     onAddFeaturesToSelection,
+    onAddWaypoint,
+    onDrawEnded,
     onFeaturesTransformed,
     onNearestFeatureChanged,
     onRemoveFeaturesFromSelection,
@@ -326,7 +328,21 @@ const MapViewInteractions = withMap((props) => {
     );
   }
 
-  /* Tool.EDIT_FEATURE will be handled in the FeaturesLayer component */
+  if (selectedTool === Tool.ADD_WAYPOINT) {
+    interactions.push(
+      <interaction.Draw
+        key='AddWaypoint'
+        type='Point'
+        onDrawEnd={onAddWaypoint}
+        condition={Condition.primaryAction}
+      />
+    );
+  }
+
+  /*
+   * Tool.CUT_HOLE and Tool.EDIT_FEATURE are
+   * handled in the FeaturesLayer component
+   */
 
   return interactions;
 });
@@ -336,6 +352,7 @@ MapViewInteractions.propTypes = {
   selectedTool: PropTypes.string.isRequired,
 
   onAddFeaturesToSelection: PropTypes.func,
+  onAddWaypoint: PropTypes.func,
   onDrawEnded: PropTypes.func,
   onFeaturesTransformed: PropTypes.func,
   onNearestFeatureChanged: PropTypes.func,
@@ -479,6 +496,7 @@ class MapViewPresentation extends React.Component {
               selectedTool={selectedTool}
               selectedFeaturesProvider={this._getSelectedTransformableFeatures}
               onAddFeaturesToSelection={this._onAddFeaturesToSelection}
+              onAddWaypoint={this._onAddWaypoint}
               onDrawEnded={this._onDrawEnded}
               onFeaturesTransformed={this._onFeaturesTransformed}
               onNearestFeatureChanged={this._onNearestFeatureChanged}
@@ -520,6 +538,19 @@ class MapViewPresentation extends React.Component {
       findFeaturesById(map, this.props.selection),
       isFeatureTransformable
     );
+  };
+
+  /**
+   * Event handler that is called when the user clicks on the map
+   * while the "add waypoint" tool is active.
+   *
+   * @param  {ol.interaction.Draw.Event} event  event dispatched by the draw
+   * interaction
+   */
+  _onAddWaypoint = (event) => {
+    const coordinates = event.feature.getGeometry().getCoordinates();
+    const [lon, lat] = transform(coordinates, 'EPSG:3857', 'EPSG:4326');
+    this.props.dispatch(addNewMissionItem(MissionItemType.GO_TO, { lon, lat }));
   };
 
   /**
