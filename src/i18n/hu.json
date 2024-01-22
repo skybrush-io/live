@@ -1,4 +1,7 @@
 {
+  "APIKeysTab": {
+    "description": "Egyes térképcsempe szolgáltatók API kulcs nélkül működnek; ebben az esetben egy alapértelmezett API kulcs van használatban. Ez az API kulcs minden felhasználóval meg van osztva. Nem vállalunk garanciát a térképcsempék elérhetőségére, ha az alapértelmezett megosztott API kulcs van használatban."
+  },
   "ConnectionStatusMiniList": {
     "noConnections": "Ez a szerver nem használ kapcsolatokat.",
     "useSecondaryChannel": "Másodlagos csatorna használata"
@@ -87,6 +90,17 @@
   "map": {
     "resetRotation": "Forgatás visszaállítása"
   },
+  "mapCachingDialog": {
+    "offlineMaps": "Offline térképek"
+  },
+  "mapCachingPanel": {
+    "clearChache": "Gyorsítótár törlése",
+    "close": "Bezár",
+    "connectToServer": "Csatlakozás egy offline térkép támogatással rendelkező szerverhez",
+    "serverNotSupport": "A szerver nem támogatja az offline térkép gyorsítótárazását",
+    "serverSupport": "A szerver támogatja az offline térkép gyorsítótárazását",
+    "useCachedMapTiles": "Szerveren gyorsítótárazott térképcsempék használata"
+  },
   "mapContextMenu": {
     "clearGeofence": "Geofence törlése",
     "flyHere": "Repülj ide",
@@ -112,6 +126,21 @@
   },
   "notifications": {
     "connectedToSkybrushServer": "Csatlakozva a Skybrush szerverhez"
+  },
+  "outdoorEnvironmentEditor": {
+    "AHL": "Magasság a kiindulási szinthez képest (AHL)",
+    "AMSL": "Átlagos tengerszint feletti magasság (AMSL)",
+    "AMSLReference": "AMSL referencia",
+    "altitudeControl": "Magasság kontroll és RTK korrekciók",
+    "coordinateSystem": "Koordinátarendszer",
+    "copyMapOriginToShow": "Térkép origó másolása műsor origóra",
+    "copyShowOriginToMap": "Műsor origó másolása térkép origóra",
+    "fitCoordinateSysToCurrentDrone": "Koordinátarendszer illesztése az aktuális drón pozíciókra",
+    "setToAverageAMSL": "Beállítás az aktív drónok átlagos AMSL-ére",
+    "showIsControlledBasedOn": "A műsor ezalapján irányítva…",
+    "showOrientation": "Műsor iránya",
+    "showOrigin": "Műsor origója",
+    "warningText": "Az automatikus műsor origó és irány számítás feltételezi, hogy az összes drón a műsor X tengelye felé mutat <u>vagy</u>, hogy a fenti beállítással meghatározta az eltolásukat az X tengelyhez képest. Az abszolút felszállási fejlécek nem támogatottak."
   },
   "preferences": "Beállítások",
   "safetyDialog": {
