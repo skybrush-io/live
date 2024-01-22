@@ -1,7 +1,235 @@
 {
+  "ConnectionStatusMiniList": {
+    "noConnections": "Dieser Server verwendet keine Verbindungen.",
+    "useSecondaryChannel": "Verwenden Sie einen sekundären Kanal."
+  },
+  "DrawingToolbar": {
+    "addMarker": "Markierung hinzufügen",
+    "cutHole": "Loch in Polygon schneiden",
+    "drawCircle": "Kreis zeichnen",
+    "drawPath": "Pfad zeichnen",
+    "drawPolygon": "Polygon zeichnen",
+    "drawRectangle": "Rechteck zeichnen",
+    "editFeature": "Funktion bearbeiten",
+    "select": "Auswählen",
+    "zoom": "Vergrößern"
+  },
+  "OnboardPreflightChecksDialog": {
+    "noError": "Alle UAVs sind fehlerfrei.",
+    "passed": "Flugkontroller Preflight Check bestanden.",
+    "signOffOn": "Bestätige den Flugkontroller Preflight Check"
+  },
+  "RTKStatusMiniList": {
+    "satelliteCount": "Satellitenanzahl",
+    "surveyInProgress": "Abfrage in Arbeit…",
+    "surveyNo": "Keine Abfrage in Arbeit"
+  },
+  "UAVOpButtonGrp": {
+    "armMotors": "Starte Motoren",
+    "disarmMotors": "Motoren abschalten",
+    "flashLights": "Lichter aufleuchten",
+    "land": "Landen",
+    "positionHold": "Position halten",
+    "powerOff": "Ausschalten",
+    "powerOn": "Einschalten",
+    "properties": "Eigenschaften",
+    "reboot": "Neustart",
+    "removeSelectedItems": "Ausgewählte Objekte entfernen",
+    "sleep": "Ruhezustand",
+    "takeOff": "Starten"
+  },
+  "UAVStatus": {
+    "noConnected": "Es sind momentan keine UAVs verbunden."
+  },
+  "alerts": {
+    "acknowledgeAlerts": "Klicken Sie, um Warnungen zu bestätigen",
+    "clickToMute": "Klicken Sie, um Warnungen stummzuschalten.",
+    "muted": "Warnungen sind stummgeschaltet. Klicken Sie, um die Stummschaltung aufzuheben."
+  },
+  "altitudeSummaryButton": {
+    "clickToChange": "Klicken Sie, um {{altitudeType}} zu wechseln.",
+    "showingCurrent": "Anzeige von Maximum und Minimum {{altitudeType}}."
+  },
+  "authentication": "Authentifizierung",
+  "batteryStatusHeaderButton": "Anzeige des durchschnittlichen und minimalen Ladezustands.",
+  "broadcastButton": {
+    "disable": "Broadcast deaktivieren",
+    "enable": "Broadcast für {{time}} Sekunden aktivieren"
+  },
+  "fieldNotesPanel": {
+    "exportNotesAsFile": "Notizen als Markdown-Datei exportieren"
+  },
+  "fullScreen": {
+    "exit": "Vollbildmodus beenden",
+    "on": "Vollbildmodus"
+  },
+  "geofence": {
+    "statusText": {
+      "automatic": "Automatischer Geofence aktiv",
+      "error": "Showbereich liegt außerhalb des Geofence",
+      "manual": "Manueller Geofence aktiv",
+      "no": "Kein Geofence definiert"
+    }
+  },
+  "geofenceDialog": {
+    "apply": "Anwenden",
+    "clear": "Aktiven Geofence löschen",
+    "close": "Schließen",
+    "fenceAction": "Geofence Aktion",
+    "fenceActionHelperText": "Die Unterstützung dieser Optionen ist von den Drohnen abhängig; nicht alle Optionen werden von allen Drohnen unterstützt.",
+    "fenceActionLabel": "Primäre Geofence Aktion",
+    "horizontal": "Horizontal",
+    "maxAltitude": "Maximale Höhe",
+    "maxDistance": "Maximale Entfernung",
+    "maxVertexCount": "Maximale Anzahl der Scheitelpunkte",
+    "proposedLimits": "Empfohlene Grenzen für den aktuellen Einsatz",
+    "safetyMargins": "Sicherheitsabstände",
+    "simplifyPolygon": "Polygon vereinfachen",
+    "title": "Geofence Einstellungen",
+    "vertexCountReduction": "Reduzierung der Scheitelpunktzahl",
+    "vertical": "Vertikal"
+  },
+  "help": "Hilfe",
+  "lightControl": {
+    "fromGCS": "Lichter über GCS gesteuert",
+    "notConnected": "Keine Verbindung zum Server",
+    "notFromGCS": "Lichter nicht über GCS gesteuert"
+  },
+  "map": {
+    "resetRotation": "Rotation zurücksetzen"
+  },
+  "mappingToggleButton": {
+    "sortByMissionID": "Sortieren nach Mission IDs"
+  },
+  "notifications": {
+    "connectedToSkybrushServer": "Verbunden mit Skybrush Server"
+  },
+  "preferences": "Voreinstellungen",
+  "serverConnectionStatus": {
+    "clockSkew": "Taktversatz",
+    "clocksSync": "Zeit synchronisiert",
+    "connected": "Verbunden",
+    "connecting": "Verbindung wird hergestellt…",
+    "disconnected": "Verbindung zum Server getrennt",
+    "disconnecting": "Verbindungsabbruch in Arbeit…",
+    "roundTripTime": "Rundflug Dauer",
+    "unknownState": "Unbekannter Status",
+    "version": "Server Version"
+  },
   "settings": {
     "display": {
-      "language": "Sprache"
+      "coordinateFormat": "Koordinatenformat",
+      "enableExperimentalFeatures": "Experimentelle Funktionen aktivieren (erweitert)",
+      "hideInactiveSegmentsOnDarkLCD": "Hoher Kontrast bei LCD-Uhren im Dunkelmodus",
+      "language": "Sprache",
+      "miscellaneous": "Sonstiges",
+      "operationModes": "Betriebsmodi",
+      "optimizeForSingleUAV": "Optimiere Benutzeroberfläche für den Betrieb einer einzelnen UAV",
+      "optimizeUIForTouch": "Optimiere Benutzeroberfläche für Touchscreen Endgeräte",
+      "showMouseCoordinates": "Mauskoordinaten anzeigen",
+      "showScaleLine": "Maßstabslinie einblenden"
+    },
+    "tabs": {
+      "apiKeys": "API Schlüssel",
+      "display": "Anzeige",
+      "preflight": "Preflight",
+      "server": "Server",
+      "threeDView": "3D-Ansicht",
+      "uavs": "UAVs"
+    },
+    "threeDView": {
+      "1x1": "10x10 Meter",
+      "2x2": "20x20 Meter",
+      "auto": "Automatisch",
+      "dark": "Dunkel",
+      "grid": "Raster",
+      "light": "Hell",
+      "lighting": "Beleuchtung",
+      "none": "Kein Raster",
+      "showAxes": "Achsen des Koordinatensystems einblenden",
+      "showHomePositions": "Startpositionen anzeigen",
+      "showLandingPositions": "Landepositionen anzeigen",
+      "showStatistics": "Rendering-Statistik anzeigen (erweitert)",
+      "showTrajectoriesOfSelection": "Flugbahnen der ausgewählten UAVs anzeigen"
+    },
+    "uavs": {
+      "batteryDisplayStyle": "Stil der Batterieanzeige",
+      "cellCount": "Zellenanzahl",
+      "criticalTreshold": "Kritischer Grenzwert",
+      "defaultBatterySettings": "Standard-Akkueinstellungen",
+      "desiredHeadingAccuracy": "Gewünschte Kursgenauigkeit",
+      "desiredPlacementAccuracy": "Gewünschte Positionierungsgenauigkeit",
+      "fullCharge": "Vollständig aufgeladen",
+      "lowTreshold": "Niederer Schwellenwert",
+      "missionSetup": "Missions Einstellungen",
+      "missionSetupDescription": "Wird vor Einsätzen mit mehreren Drohnen verwendet, um zu überprüfen, ob sich jede Drohne an ihrer vorgeschriebenen Startposition befindet und korrekt ausgerichtet ist."
     }
+  },
+  "show": {
+    "authorizationReq": "Genehmigung vor dem Abflug erforderlich",
+    "authorizeTheStart": "Start der Show autorisieren",
+    "authorized": "Show für Start autorisiert",
+    "chooseStartTime": "Startzeit wählen",
+    "chooseStartTimeNotSet": "Nicht eingestellt",
+    "clear": "Geladene Show löschen",
+    "clock": "Show Zeit:",
+    "dronePlacementApproved": "Platzierung der Drohnen bestätigt",
+    "dronePlacementPartial": "Unvollständige Drohnenanordnung bestätigt",
+    "fromCloud": "Lade Show aus der Cloud",
+    "loading": "Bitte warten, Show Datei wird geladen…",
+    "manualPreflightChecks": "Manuelle Preflight Checks",
+    "noFileLoaded": "Keine Show Datei geladen",
+    "onboardPreflightChecks": "Flugkontroller Preflight Cheks",
+    "outdoor": {
+      "invalidAltitudeReference": "Outdoor, ungültige Höhenreferenz",
+      "relativeToAMSL": "Outdoor, relativ zu {{altitude}}m AMSL",
+      "relativeToHome": "Outdoor, relativ zur Home Position",
+      "unknownAltitudeReference": "Outdoor, unbekannte Höhenreferenz"
+    },
+    "placementAccuracy": "Genauigkeit der Platzierung ≤ {{distance}}",
+    "reload": "Show neu laden",
+    "revokeAuthorization": "Hier Klicken, um die Bestätigung zu widerrufen",
+    "selectFile": "Hier Show Datei auswählen oder per Drag & Drop einfügen",
+    "setupEnvironment": "Einrichtung der Umgebung",
+    "setupGeofence": "Einrichtung des Geofence",
+    "setupTakeoffArea": "Einrichtung des Startbereichs",
+    "startMethod": {
+      "AUTO": "Show startet automatisch",
+      "RC": "Starten Sie mit dem Schalter an ihrer Funkfernsteuerung"
+    },
+    "startTimeNotSet": "Startzeit noch nicht festgelegt",
+    "startsAt": "Start um {{time}}",
+    "takeOffMore": "{{quantity}} Drohnen starten automatisch",
+    "takeOffNoPosition": "Keine Positionsdaten für mindestens eine Drohne",
+    "takeOffOne": "Eine Drohne startet automatisch",
+    "takeOffPlace": "Platziere die Drohnen im Startbereich",
+    "unknown": "Unbekannt",
+    "unknownStartMode": "Diese Show verwendet einen unbekannten Startmodus"
+  },
+  "toolbox": {
+    "averagingInProgress": "{{number}} in Arbeit",
+    "coordinateAveraging": "Koordinaten Mittelwert",
+    "licenseInfo": "Lizenz-Informationen",
+    "paramUpload": "Parameter-Upload"
+  },
+  "view": {
+    "lcd-clock-panel": "Uhren",
+    "light-control": "Lichtsteuerung",
+    "map": "Karte",
+    "saved-location-list": "Standorte",
+    "show-control": "Show Steuerung",
+    "three-d-view": "3D-Ansicht",
+    "uav-list": "UAVs"
+  },
+  "weatherMiniList": {
+    "compassDeclination": "Kompass-Deklination",
+    "kpIndex": "Kp-Index",
+    "lastUpdate": "Letzte Aktualisierung",
+    "noWeatherInfo": "Keine Wetterdaten für diesen Tag",
+    "refreshing": "Aktualisiere…",
+    "sunrise": "Sonnenaufgang",
+    "sunset": "Sonnenuntergang",
+    "timezone": "Zeitzone",
+    "utcOffset": "UTC-Offset"
   }
 }
