@@ -1,4 +1,7 @@
 {
+  "APIKeysTab": {
+    "description": "Some map tile providers work without an API key; in this case, a default API key is used. This API key is shared between all users. We make no guarantees about the availability of map tiles if you use the default shared API key."
+  },
   "ConnectionStatusMiniList": {
     "noConnections": "This server uses no connections.",
     "useSecondaryChannel": "Use secondary channel"
@@ -92,6 +95,17 @@
   "map": {
     "resetRotation": "Reset rotation"
   },
+  "mapCachingDialog": {
+    "offlineMaps": "Offline maps"
+  },
+  "mapCachingPanel": {
+    "clearChache": "Clear cache",
+    "close": "Close",
+    "connectToServer": "Connect to a server with offline map support",
+    "serverNotSupport": "Server does not support offline map caching",
+    "serverSupport": "Server supports offline map caching",
+    "useCachedMapTiles": "Use cached map tiles from server"
+  },
   "mapContextMenu": {
     "clearGeofence": "Clear geofence",
     "flyHere": "Fly here",
@@ -126,6 +140,21 @@
   },
   "notifications": {
     "connectedToSkybrushServer": "Connected to Skybrush server"
+  },
+  "outdoorEnvironmentEditor": {
+    "AHL": "Altitude above home level (AHL)",
+    "AMSL": "Altitude above mean sea level (AMSL)",
+    "AMSLReference": "AMSL reference",
+    "altitudeControl": "Altitude control and RTK corrections",
+    "coordinateSystem": "Coordinate system",
+    "copyMapOriginToShow": "Copy map origin to show origin",
+    "copyShowOriginToMap": "Copy show origin to map origin",
+    "fitCoordinateSysToCurrentDrone": "Fit coordinate system to current drone positions",
+    "setToAverageAMSL": "Set to average AMSL of active drones",
+    "showIsControlledBasedOn": "Show is controlled based on…",
+    "showOrientation": "Show orientation",
+    "showOrigin": "Show origin",
+    "warningText": "Automatic show origin and orientation calculation assumes that all drones point towards the X axis of the show <u>or</u> that you specified their offset relative the X axis with the setting above. Absolute takeoff headings are not supported."
   },
   "preferences": "Preferences",
   "safetyDialog": {

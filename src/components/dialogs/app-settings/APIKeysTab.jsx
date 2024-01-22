@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { Form } from 'react-final-form';
 import { connect } from 'react-redux';
+import { withTranslation } from 'react-i18next';
 
 import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
@@ -15,7 +16,7 @@ const providers = [
   { label: 'Maptiler', key: 'MAPTILER' },
 ];
 
-const APIKeysTabPresentation = ({ apiKeys, onSubmit }) => (
+const APIKeysTabPresentation = ({ apiKeys, onSubmit, t }) => (
   <Form initialValues={apiKeys} onSubmit={onSubmit}>
     {({ dirty, form, handleSubmit }) => (
       <Box pt={1} pb={2}>
@@ -30,10 +31,7 @@ const APIKeysTabPresentation = ({ apiKeys, onSubmit }) => (
           </Box>
         ))}
         <Typography variant='body2' color='textSecondary'>
-          {`Some map tile providers work without an API key; in this case, a 
-          default API key is used. This API key is shared between all 
-          users. We make no guarantees about the availability of map tiles if
-          you use the default shared API key.`}
+          {t('APIKeysTab.description')}
         </Typography>
         <Box pb={2} />
         <FormSubmissionButtonRow
@@ -50,6 +48,7 @@ const APIKeysTabPresentation = ({ apiKeys, onSubmit }) => (
 APIKeysTabPresentation.propTypes = {
   apiKeys: PropTypes.object,
   onSubmit: PropTypes.func,
+  t: PropTypes.func,
 };
 
 export default connect(
@@ -72,4 +71,4 @@ export default connect(
       return updateAppSettings('apiKeys', updates);
     },
   }
-)(APIKeysTabPresentation);
+)(withTranslation()(APIKeysTabPresentation));

@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
+import { withTranslation } from 'react-i18next';
 
 import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
 
@@ -11,12 +12,12 @@ import { closeMapCachingDialog } from './slice';
  * Presentation component for the dialog that allows the user to adjust the
  * settings related to map caching on the server.
  */
-const MapCachingDialog = ({ onClose, open }) => (
+const MapCachingDialog = ({ onClose, open, t }) => (
   <DraggableDialog
     fullWidth
     open={open}
     maxWidth='xs'
-    title='Offline maps'
+    title={t('mapCachingDialog.offlineMaps')}
     onClose={onClose}
   >
     <MapCachingPanel onClose={onClose} />
@@ -26,6 +27,7 @@ const MapCachingDialog = ({ onClose, open }) => (
 MapCachingDialog.propTypes = {
   open: PropTypes.bool,
   onClose: PropTypes.func,
+  t: PropTypes.func,
 };
 
 export default connect(
@@ -38,4 +40,4 @@ export default connect(
   {
     onClose: closeMapCachingDialog,
   }
-)(MapCachingDialog);
+)(withTranslation()(MapCachingDialog));
