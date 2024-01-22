@@ -6,6 +6,7 @@ import en from './en';
 import es from './es';
 import hu from './hu';
 import it from './it';
+import nl from './nl';
 import ro from './ro';
 
 // Labels (and sorting) based on: https://ux.stackexchange.com/q/37017/165102
@@ -15,6 +16,7 @@ export const availableLanguages = [
   { label: 'Español', code: 'es', translation: es },
   { label: 'Italiano', code: 'it', translation: it },
   { label: 'Magyar', code: 'hu', translation: hu },
+  { label: 'Nederlands', code: 'nl', translation: nl },
   { label: 'Română', code: 'ro', translation: ro },
 ];
 
