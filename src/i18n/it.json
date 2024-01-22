@@ -1,26 +1,210 @@
 {
+  "ConnectionStatusMiniList": {
+    "noConnections": "Questo server non utilizza connessioni.",
+    "useSecondaryChannel": "Usa canale secondario"
+  },
+  "DrawingToolbar": {
+    "addMarker": "Aggiungi marcatore",
+    "drawCircle": "Disegna cerchio",
+    "drawPath": "Disegna percorso",
+    "drawPolygon": "Disegna poligono",
+    "drawRectangle": "Disegna rettangolo",
+    "select": "Seleziona",
+    "zoom": "Ingrandire"
+  },
+  "OnboardPreflightChecksDialog": {
+    "noError": "Nessuno degli UAV ha segnalato un errore.",
+    "passed": "Controlli pre-volo a bordo superati."
+  },
+  "RTKStatusMiniList": {
+    "satelliteCount": "Numero dei satelliti",
+    "surveyInProgress": "Survey in corso…",
+    "surveyNo": "Nessuna survey in corso",
+    "surveySuccesful": "Survey terminata"
+  },
   "UAVOpButtonGrp": {
+    "armMotors": "Arma motori",
+    "disarmMotors": "Disarma motori",
+    "flashLights": "Lampeggia luci",
     "land": "Atterrare",
+    "positionHold": "Mantieni posizione",
+    "powerOff": "Spegni",
+    "powerOn": "Accendi",
+    "properties": "Proprietà",
+    "reboot": "Riavvia",
+    "removeSelectedItems": "Rimuovi elementi selezionati",
+    "returnToHome": "Ritorna a casa",
+    "sleep": "Risparmio",
     "takeOff": "Decollare"
+  },
+  "altitudeSummaryButton": {
+    "clickToChange": "Fare click per passare a {{altitudeType}}."
+  },
+  "authentication": "Autenticazione",
+  "batteryStatusHeaderButton": "Mostra i livelli di carica medi e minimi.",
+  "broadcastButton": {
+    "disable": "Disabilita broadcast",
+    "enable": "Abilita broadcast per {{time}} secondi"
+  },
+  "fullScreen": {
+    "exit": "Esci dalla modalità a schermo intero",
+    "on": "Modalità schermo intero"
+  },
+  "geofence": {
+    "statusText": {
+      "automatic": "Geofence automatico in uso",
+      "error": "L'area show mostrata si trova al di fuori del geofence",
+      "manual": "Geofence manuale in uso",
+      "no": "Nessun geofence definito"
+    }
   },
   "geofenceDialog": {
     "apply": "Applica",
+    "clear": "Eliminare l'attuale geofence",
     "close": "Chiudi",
+    "fenceAction": "Azioni geofence",
+    "fenceActionLabel": "Funzioni primarie geofence",
     "horizontal": "Orizzontale",
+    "maxAltitude": "Massima altitudine",
+    "maxDistance": "Massima distanza",
+    "proposedLimits": "Limiti proposti per la missione attuale",
+    "safetyMargins": "Margini di sicurezza",
+    "title": "Impostazioni geofence",
     "vertical": "Verticale"
   },
   "help": "Aiuto",
+  "lightControl": {
+    "fromGCS": "Controllo luci dalla GCS",
+    "notConnected": "Non connesso al server",
+    "notFromGCS": "Luci non controllate dalla GCS"
+  },
+  "map": {
+    "resetRotation": "Ripristina rotazione"
+  },
+  "mappingToggleButton": {
+    "sortByMissionID": "Ordina per IDs missione"
+  },
+  "notifications": {
+    "connectedToSkybrushServer": "Connesso a Skybrush server"
+  },
   "preferences": "Preferenze",
+  "serverConnectionStatus": {
+    "clocksSync": "Orologi sincronizzati",
+    "connected": "Connesso",
+    "connecting": "Connessione in corso…",
+    "disconnected": "Disconnesso dal server",
+    "disconnecting": "Disconnessione in corso…",
+    "unknownState": "Stato sconosciuto",
+    "version": "Versione server"
+  },
   "settings": {
     "display": {
-      "language": "Lingua"
+      "coordinateFormat": "Formato coordinate",
+      "hideInactiveSegmentsOnDarkLCD": "Migliora contrasto nella modalità scura negli orologi LCD",
+      "language": "Lingua",
+      "mapOrigin": "Origine mappa",
+      "mapWidgets": "Strumenti mappa",
+      "optimizeUIForTouch": "Ottimizza l'interfaccia per i dispositivi touchscreen",
+      "showMouseCoordinates": "Mostra coordinate del mouse"
+    },
+    "tabs": {
+      "apiKeys": "Chiavi API",
+      "display": "Schermo",
+      "preflight": "Prevolo",
+      "server": "Server",
+      "threeDView": "Vista 3D",
+      "uavs": "UAVs"
     },
     "threeDView": {
+      "1x1": "10x10 metri",
+      "2x2": "20x20 metri",
+      "auto": "Automatico",
       "dark": "Scuro",
-      "light": "Chiaro"
+      "grid": "Griglia",
+      "indoor": "Interno",
+      "light": "Chiaro",
+      "lighting": "Illuminazione",
+      "none": "Nessuna griglia",
+      "outdoor": "Esterno",
+      "scenery": "Scenario",
+      "showHomePositions": "Mostra coordinate di casa",
+      "showLandingPositions": "Mostra posizioni di atterraggio"
+    },
+    "uavs": {
+      "batteryDisplayStyle": "Stile display batteria",
+      "cellCount": "Numero celle",
+      "defaultBatterySettings": "Impostazioni default della batteria",
+      "desiredHeadingAccuracy": "Accuratezza desiderata dell'orientamento",
+      "forget": "Dimentica droni non visti dopo",
+      "fullCharge": "Carica massima",
+      "gone": "Segnala droni come mancante dopo"
     }
   },
+  "show": {
+    "chooseStartTime": "Scegli l'ora d'inizio",
+    "chooseStartTimeNotSet": "Non ancora impostato",
+    "clock": "Orologio show:",
+    "dronePlacementApproved": "Posizionamento droni approvato",
+    "dronePlacementCheck": "Controllando posizionamento droni…",
+    "dronePlacementError": "Errore nel posizionamento droni",
+    "dronePlacementPartial": "Approvazione parziale del posizionamento droni",
+    "fromCloud": "Carica show dal cloud",
+    "indoor": "Interno",
+    "loading": "Prego attendi, caricando file show…",
+    "manualPreflightChecks": "Controlli prevolo manuali",
+    "noFileLoaded": "Nessun file show caricato",
+    "onboardPreflightChecks": "Controlli di prevolo a bordo",
+    "outdoor": {
+      "invalidAltitudeReference": "Esterno, altitudine di riferimento non valida",
+      "relativeToHome": "Esterno, relativa a casa",
+      "unknownAltitudeReference": "Esterno, riferimento di altitudine sconosciuto"
+    },
+    "reload": "Ricarica lo show",
+    "revokeAuthorization": "Clicca qui per revocare l'autorizzazione",
+    "selectFile": "Seleziona o rilascia un file show qui",
+    "setupEnvironment": "Imposta ambiente",
+    "setupGeofence": "Imposta geofence",
+    "setupTakeoffArea": "Imposta area di decollo",
+    "startMethod": {
+      "AUTO": "Lo show inizierà automaticamente"
+    },
+    "startTimeNotSet": "Tempo di partenza non ancora impostato",
+    "takeOffNoPosition": "Ancora nessuna posizione per almeno un drone",
+    "takeOffOne": "Un drone decollerà automaticamente",
+    "takeOffPlace": "Posiziona i droni nell'area di decollo",
+    "unknown": "Sconosciuto",
+    "unknownStartMode": "Questo show utilizza un modalità d'inizio sconosciuta",
+    "uploadShowData": "Carica dati show",
+    "uploadShowDataLoading": "Prego aspetta, caricando…",
+    "uploadShowDataStart": "Clicca qui per iniziare il processo di upload"
+  },
+  "toolbox": {
+    "coordinateAveraging": "Media delle coordinate",
+    "licenseInfo": "Info licenza",
+    "offlineMaps": "Mappe offline",
+    "paramUpload": "Caricamento dei parametri",
+    "tooltip": "Strumenti",
+    "uploadInProgress": "Upload in corso"
+  },
   "view": {
-    "map": "Mappa"
+    "feature-list": "Caratteristiche",
+    "field-notes": "Note sul campo",
+    "layer-list": "Livelli",
+    "lcd-clock-panel": "Orologi",
+    "light-control": "Controllo Luci",
+    "log-panel": "Registro eventi",
+    "map": "Mappa",
+    "saved-location-list": "Luoghi",
+    "show-control": "Controllo show",
+    "three-d-view": "Vista 3D"
+  },
+  "weatherMiniList": {
+    "compassDeclination": "Declinazione della bussola",
+    "lastUpdate": "Ultimo aggiornamento",
+    "noWeatherInfo": "Nessuna info meteo su questo giorno",
+    "refreshing": "Aggiornando…",
+    "sunrise": "Alba",
+    "sunset": "Tramonto",
+    "timezone": "Fuso orario"
   }
 }
