@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
+import { withTranslation } from 'react-i18next';
 
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
@@ -64,6 +65,7 @@ const OutdoorEnvironmentEditor = ({
   onSetTakeoffHeading,
   onSetTakeoffHeadingToAverageActiveUAVHeading,
   showCoordinateSystem,
+  t,
   takeoffHeading,
 }) => {
   const usingAMSLReference =
@@ -71,30 +73,34 @@ const OutdoorEnvironmentEditor = ({
 
   return (
     <>
-      <FormHeader>Coordinate system</FormHeader>
+      <FormHeader>{t('outdoorEnvironmentEditor.coordinateSystem')}</FormHeader>
 
       <Box display='flex' flexDirection='row'>
         <Box>
           <CoordinateSystemFields
             type={COORDINATE_SYSTEM_TYPE}
             {...showCoordinateSystem}
-            orientationLabel='Show orientation'
-            originLabel='Show origin'
+            orientationLabel={t('outdoorEnvironmentEditor.showOrientation')}
+            originLabel={t('outdoorEnvironmentEditor.showOrigin')}
             onOriginChanged={onOriginChanged}
             onOrientationChanged={onOrientationChanged}
           />
 
           <Box display='flex' justifyContent='space-evenly' py={1}>
             <Button onClick={onSetCoordinateSystemFromMap}>
-              Copy map origin to show origin
+              {t('outdoorEnvironmentEditor.copyMapOriginToShow')}
             </Button>
             <Button onClick={onCopyCoordinateSystemToMap}>
-              Copy show origin to map origin
+              {t('outdoorEnvironmentEditor.copyShowOriginToMap')}
             </Button>
           </Box>
         </Box>
         <Box alignSelf='bottom' pt={1}>
-          <Tooltip content='Fit coordinate system to current drone positions'>
+          <Tooltip
+            content={t(
+              'outdoorEnvironmentEditor.fitCoordinateSysToCurrentDrone'
+            )}
+          >
             <IconButton
               disabled={!canEstimateShowCoordinateSystem}
               edge='end'
@@ -118,20 +124,17 @@ const OutdoorEnvironmentEditor = ({
         </Box>
         <Box flex={1} pl={1}>
           <Typography color='textSecondary' variant='body2'>
-            Automatic show origin and orientation calculation assumes that all
-            drones point towards the X axis of the show <u>or</u> that you
-            specified their offset relative to the X axis with the setting
-            above. Absolute takeoff headings are not supported.
+            {t('outdoorEnvironmentEditor.warningText')}
           </Typography>
         </Box>
       </Box>
 
-      <FormHeader>Altitude control and RTK corrections</FormHeader>
+      <FormHeader>{t('outdoorEnvironmentEditor.altitudeControl')}</FormHeader>
 
       <Box display='flex' flexDirection='row' pb={2}>
         <FormControl fullWidth variant='filled'>
           <InputLabel htmlFor='altitude-reference-type'>
-            Show is controlled based on...
+            {t('outdoorEnvironmentEditor.showIsControlledBasedOn')}
           </InputLabel>
           <Select
             value={
@@ -142,17 +145,17 @@ const OutdoorEnvironmentEditor = ({
             onChange={onAltitudeReferenceTypeChanged}
           >
             <MenuItem value={AltitudeReference.AHL}>
-              Altitude above home level (AHL)
+              {t('outdoorEnvironmentEditor.AHL')}
             </MenuItem>
             <MenuItem value={AltitudeReference.AMSL}>
-              Altitude above mean sea level (AMSL)
+              {t('outdoorEnvironmentEditor.AMSL')}
             </MenuItem>
           </Select>
         </FormControl>
         <Box p={1} />
         <SimpleDistanceField
           disabled={!usingAMSLReference}
-          label='AMSL reference'
+          label={t('outdoorEnvironmentEditor.AMSLReference')}
           value={(altitudeReference ? altitudeReference.value : null) || 0}
           step={0.1}
           min={-10000}
@@ -160,7 +163,7 @@ const OutdoorEnvironmentEditor = ({
           onChange={onAltitudeReferenceValueChanged}
         />
         <Box alignSelf='bottom' pt={1}>
-          <Tooltip content='Set to average AMSL of active drones'>
+          <Tooltip content={t('outdoorEnvironmentEditor.setToAverageAMSL')}>
             <IconButton
               disabled={!usingAMSLReference}
               edge='end'
@@ -197,6 +200,7 @@ OutdoorEnvironmentEditor.propTypes = {
     orientation: PropTypes.string.isRequired,
     origin: PropTypes.arrayOf(PropTypes.number),
   }),
+  t: PropTypes.func,
   takeoffHeading: PropTypes.shape({
     type: PropTypes.oneOf(Object.values(TakeoffHeadingMode)),
     value: PropTypes.string.isRequired,
@@ -323,4 +327,4 @@ export default connect(
 
     return mergedProps;
   }
-)(OutdoorEnvironmentEditor);
+)(withTranslation()(OutdoorEnvironmentEditor));
