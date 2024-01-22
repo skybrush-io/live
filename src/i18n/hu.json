@@ -73,24 +73,24 @@
   "geofence": {
     "statusText": {
       "automatic": "Automatikus geofence van használatban",
-      "error": "A műsor területe a geofence-n kívül esik",
+      "error": "A műsor területe a geofence-en kívül esik",
       "manual": "Kézi geofence van használatban",
       "no": "Még nincs geofence beállítva"
     }
   },
   "geofenceDialog": {
     "apply": "Alkalmaz",
-    "clear": "A jelenlegi kerítés törlése",
+    "clear": "A jelenlegi geofence törlése",
     "close": "Bezár",
-    "fenceAction": "Kerítés művelet",
+    "fenceAction": "Geofence művelet",
     "fenceActionHelperText": "Ezen opciók támogatása a drónokon múlik; nem minden opció támogatott minden drón által.",
-    "fenceActionLabel": "Elsődeleges kerítés művelet",
+    "fenceActionLabel": "Elsődleges geofence művelet",
     "horizontal": "Vízszintes",
     "maxAltitude": "Max magasság",
     "maxDistance": "Max távolság",
     "maxVertexCount": "Maximális csúcsszám",
-    "proposedLimits": "A jelenlegi küldetés javasolt limitjei",
-    "safetyMargins": "Biztonsági határok",
+    "proposedLimits": "A jelenlegi küldetés javasolt korlátai",
+    "safetyMargins": "Biztonsági távolságok",
     "simplifyPolygon": "Sokszög egyszerűsítése",
     "title": "Geofence beállítások",
     "vertexCountReduction": "Csúcsszám csökkentése",
