@@ -34,7 +34,9 @@ const defaults: Config = {
   headerComponents: [
     ['uav-status-summary'],
     [
+      'distance-summary-header-button',
       'altitude-summary-header-button',
+      'velocity-summary-header-button',
       'battery-status-header-button',
       'rtk-status-header-button',
     ],

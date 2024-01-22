@@ -80,6 +80,10 @@
       "no": "No geofence defined yet"
     }
   },
+  "header": {
+    "distanceSummary": "Maximum and minimum distance from home position",
+    "velocitySummary": "Maximum horizontal and vertical velocity"
+  },
   "help": "Help",
   "lightControl": {
     "fromGCS": "Lights controlled from GCS",

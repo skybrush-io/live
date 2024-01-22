@@ -1,7 +1,7 @@
 import { type ErrorCode } from '~/flockwave/errors';
-import { type GPSPosition, type GPSFix } from '~/model/position';
-import { type VelocityNED } from '~/model/velocity';
+import { type GPSFix, type GPSPosition } from '~/model/position';
 import { type UAVAge, type UAVBattery } from '~/model/uav';
+import { type VelocityNED, type VelocityXYZ } from '~/model/velocity';
 import { type Identifier } from '~/utils/collections';
 import { type Coordinate3D } from '~/utils/math';
 
@@ -43,6 +43,7 @@ export type StoredUAV = {
   lastUpdated?: number;
   light: number /* RGB565 */;
   localPosition?: Coordinate3D;
+  localVelocity?: VelocityXYZ;
   mode?: string;
   position?: GPSPosition;
   velocity?: VelocityNED;
