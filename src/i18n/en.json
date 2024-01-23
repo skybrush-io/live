@@ -113,6 +113,30 @@
     "connectedToSkybrushServer": "Connected to Skybrush server"
   },
   "preferences": "Preferences",
+  "safetyDialog": {
+    "geofenceTab": {
+      "apply": "Apply",
+      "clear": "Clear current fence",
+      "close": "Close",
+      "errors": {
+        "distance": "Could not calculate distance",
+        "height": "Could not calculate height"
+      },
+      "fenceAction": "Fence action",
+      "fenceActionHelperText": "Support for these options depends on the drones themselves; not all options are supported by all drones.",
+      "fenceActionLabel": "Primary fence action",
+      "horizontal": "Horizontal",
+      "maxAltitude": "Max altitude",
+      "maxDistance": "Max distance",
+      "maxVertexCount": "Maximum vertex count",
+      "proposedLimits": "Proposed limits for current mission",
+      "safetyMargins": "Safety margins",
+      "simplifyPolygon": "Simplify polygon",
+      "vertexCountReduction": "Vertex count reduction",
+      "vertical": "Vertical"
+    },
+    "title": "Safety"
+  },
   "serverConnectionStatus": {
     "clockSkew": "Clock skew",
     "clocksSync": "Clocks synchronized",
@@ -231,6 +255,9 @@
     "uploadShowDataLoading": "Please wait, uploading…",
     "uploadShowDataStart": "Click here to start the upload process"
   },
+  "sidebar": {
+    "missionType": "Mission type: ({{missionType}})"
+  },
   "toolbox": {
     "averagingInProgress": "{{number}} in progress",
     "coordinateAveraging": "Coordinate averaging",
@@ -250,9 +277,11 @@
     "light-control": "Light control",
     "log-panel": "Event log",
     "map": "Map",
+    "mission-editor": "Mission editor",
     "saved-location-list": "Locations",
     "show-control": "Show control",
     "three-d-view": "3D View",
+    "uav-details": "UAV details",
     "uav-list": "UAVs"
   },
   "weatherMiniList": {

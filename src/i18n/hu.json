@@ -113,6 +113,30 @@
     "connectedToSkybrushServer": "Csatlakozva a Skybrush szerverhez"
   },
   "preferences": "Beállítások",
+  "safetyDialog": {
+    "geofenceTab": {
+      "apply": "Alkalmaz",
+      "clear": "A jelenlegi kerítés törlése",
+      "close": "Bezár",
+      "errors": {
+        "distance": "Hiba történt a távolság számítása közben",
+        "height": "Hiba történt a magasság számítása közben"
+      },
+      "fenceAction": "Kerítés művelet",
+      "fenceActionHelperText": "Ezen opciók támogatása a drónokon múlik; nem minden opció támogatott minden drón által.",
+      "fenceActionLabel": "Elsődeleges kerítés művelet",
+      "horizontal": "Vízszintes",
+      "maxAltitude": "Max magasság",
+      "maxDistance": "Max távolság",
+      "maxVertexCount": "Maximális csúcsszám",
+      "proposedLimits": "A jelenlegi küldetés javasolt limitjei",
+      "safetyMargins": "Biztonsági határok",
+      "simplifyPolygon": "Sokszög egyszerűsítése",
+      "vertexCountReduction": "Csúcsszám csökkentése",
+      "vertical": "Függőleges"
+    },
+    "title": "Biztonság"
+  },
   "serverConnectionStatus": {
     "clockSkew": "Óra szinkronizálás",
     "clocksSync": "Az órák szinkronizálva",
@@ -231,6 +255,9 @@
     "uploadShowDataLoading": "Kérem várjon, feltöltés…",
     "uploadShowDataStart": "Kattintson ide a feltötés megkezdéséhez"
   },
+  "sidebar": {
+    "missionType": "Küldetés típus: {{missionType}}"
+  },
   "toolbox": {
     "averagingInProgress": "{{number}} folyamatban",
     "coordinateAveraging": "Koordináta átlagolás",
@@ -250,9 +277,11 @@
     "light-control": "Fényvezérlés",
     "log-panel": "Eseménynapló",
     "map": "Térkép",
+    "mission-editor": "Küldetésszerkesztő",
     "saved-location-list": "Helyszínek",
     "show-control": "Műsorvezérlés",
     "three-d-view": "3D Nézet",
+    "uav-details": "Drón részletek",
     "uav-list": "Drónok"
   },
   "weatherMiniList": {
