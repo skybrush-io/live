@@ -22,7 +22,8 @@
   "RTKStatusMiniList": {
     "satelliteCount": "Satellitenanzahl",
     "surveyInProgress": "Abfrage in Arbeit…",
-    "surveyNo": "Keine Abfrage in Arbeit"
+    "surveyNo": "Keine Abfrage in Arbeit",
+    "surveySuccesful": "Abfrage erfolgreich"
   },
   "UAVOpButtonGrp": {
     "armMotors": "Starte Motoren",
@@ -35,11 +36,12 @@
     "properties": "Eigenschaften",
     "reboot": "Neustart",
     "removeSelectedItems": "Ausgewählte Objekte entfernen",
+    "returnToHome": "Return to home",
     "sleep": "Ruhezustand",
     "takeOff": "Starten"
   },
   "UAVStatus": {
-    "noConnected": "Es sind momentan keine UAVs verbunden."
+    "noConnected": "Es sind momentan keine UAVs verbunden"
   },
   "alerts": {
     "acknowledgeAlerts": "Klicken Sie, um Warnungen zu bestätigen",
@@ -120,6 +122,7 @@
     "display": {
       "coordinateFormat": "Koordinatenformat",
       "enableExperimentalFeatures": "Experimentelle Funktionen aktivieren (erweitert)",
+      "flatEarthCoordinateSystem": "Flat Earth Koordinatensystem",
       "hideInactiveSegmentsOnDarkLCD": "Hoher Kontrast bei LCD-Uhren im Dunkelmodus",
       "language": "Sprache",
       "miscellaneous": "Sonstiges",
@@ -142,10 +145,14 @@
       "2x2": "20x20 Meter",
       "auto": "Automatisch",
       "dark": "Dunkel",
+      "environment": "Umgebung",
       "grid": "Raster",
+      "indoor": "Indoor",
       "light": "Hell",
       "lighting": "Beleuchtung",
       "none": "Kein Raster",
+      "outdoor": "Outdoor",
+      "rendering": "Rendering",
       "showAxes": "Achsen des Koordinatensystems einblenden",
       "showHomePositions": "Startpositionen anzeigen",
       "showLandingPositions": "Landepositionen anzeigen",
@@ -176,6 +183,7 @@
     "dronePlacementApproved": "Platzierung der Drohnen bestätigt",
     "dronePlacementPartial": "Unvollständige Drohnenanordnung bestätigt",
     "fromCloud": "Lade Show aus der Cloud",
+    "indoor": "Indoor",
     "loading": "Bitte warten, Show Datei wird geladen…",
     "manualPreflightChecks": "Manuelle Preflight Checks",
     "noFileLoaded": "Keine Show Datei geladen",
@@ -204,17 +212,27 @@
     "takeOffOne": "Eine Drohne startet automatisch",
     "takeOffPlace": "Platziere die Drohnen im Startbereich",
     "unknown": "Unbekannt",
-    "unknownStartMode": "Diese Show verwendet einen unbekannten Startmodus"
+    "unknownStartMode": "Diese Show verwendet einen unbekannten Startmodus",
+    "uploadShowData": "Upload von Showdaten",
+    "uploadShowDataLoading": "Bitte warten, Upload wird durchgeführt…",
+    "uploadShowDataStart": "Hier klicken um Upload zu starten"
   },
   "toolbox": {
     "averagingInProgress": "{{number}} in Arbeit",
     "coordinateAveraging": "Koordinaten Mittelwert",
     "licenseInfo": "Lizenz-Informationen",
-    "paramUpload": "Parameter-Upload"
+    "paramUpload": "Parameter-Upload",
+    "tooltip": "Toolbox",
+    "uploadInProgress": "Upload in Arbeit"
   },
   "view": {
+    "beacon-list": "Beacons",
+    "dock-list": "Docks",
+    "field-notes": "Notizen",
+    "layer-list": "Ebenen",
     "lcd-clock-panel": "Uhren",
     "light-control": "Lichtsteuerung",
+    "log-panel": "Event log",
     "map": "Karte",
     "saved-location-list": "Standorte",
     "show-control": "Show Steuerung",
