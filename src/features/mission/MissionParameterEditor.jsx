@@ -3,11 +3,14 @@ import pickBy from 'lodash-es/pickBy';
 import uniq from 'lodash-es/uniq';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+
 import Tab from '@material-ui/core/Tab';
 import Tabs from '@material-ui/core/Tabs';
+import { makeStyles } from '@material-ui/core/styles';
+
 import { getDefaultRegistry } from '@rjsf/core';
 import Form from '@rjsf/material-ui';
+import { getDefaultFormState } from '@rjsf/utils';
 import validator from '@rjsf/validator-ajv8';
 
 import AsyncGuard from '~/components/AsyncGuard';
@@ -104,6 +107,16 @@ const MissionParameterEditorPresentation = ({
     }),
     [formSchema, activeGroup]
   );
+
+  // Make sure that all parameters are properly initialized even if the user
+  // doesn't visit every group / tab, and thus render their respective fields
+  useEffect(() => {
+    onChange({
+      fromUser: getDefaultFormState(validator, formSchema, parameters),
+    });
+    // NOTE: We only want to redo this if the schema or the callback changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formSchema, onChange]);
 
   // When the mapping from UI context IDs to the names of parameters changes,
   // notify the parent
