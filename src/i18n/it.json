@@ -82,7 +82,7 @@
     "apply": "Applica",
     "clear": "Eliminare l'attuale geofence",
     "close": "Chiudi",
-    "fenceAction": "Azioni geofence",
+    "fenceAction": "Azioni Geofence",
     "fenceActionHelperText": "Il supporto di queste opzioni dipende dai droni stessi; non tutte le opzioni sono supportate da tutti i droni.",
     "fenceActionLabel": "Funzioni primarie geofence",
     "horizontal": "Orizzontale",
@@ -144,7 +144,7 @@
       "preflight": "Prevolo",
       "server": "Server",
       "threeDView": "Vista 3D",
-      "uavs": "UAVs"
+      "uavs": "Droni"
     },
     "threeDView": {
       "1x1": "10x10 metri",
@@ -158,6 +158,7 @@
       "lighting": "Illuminazione",
       "none": "Nessuna griglia",
       "outdoor": "Esterno",
+      "rendering": "Elaborazione",
       "scenery": "Scenario",
       "showAxes": "Mostra assi sistema coordinate",
       "showHomePositions": "Mostra coordinate di casa",
@@ -239,6 +240,7 @@
   },
   "view": {
     "beacon-list": "Fari",
+    "dock-list": "Stazioni di ricarica",
     "feature-list": "Caratteristiche",
     "field-notes": "Note sul campo",
     "layer-list": "Livelli",
@@ -249,7 +251,7 @@
     "saved-location-list": "Luoghi",
     "show-control": "Controllo show",
     "three-d-view": "Vista 3D",
-    "uav-list": "UAVs"
+    "uav-list": "Droni"
   },
   "weatherMiniList": {
     "compassDeclination": "Declinazione della bussola",
@@ -259,6 +261,7 @@
     "refreshing": "Aggiornando…",
     "sunrise": "Alba",
     "sunset": "Tramonto",
-    "timezone": "Fuso orario"
+    "timezone": "Fuso orario",
+    "utcOffset": "compensazione UTC"
   }
 }
