@@ -113,6 +113,7 @@
   },
   "preferences": "Preferenze",
   "serverConnectionStatus": {
+    "clockSkew": "Distorsione dell'orologio",
     "clocksSync": "Orologi sincronizzati",
     "connected": "Connesso",
     "connecting": "Connessione in corso…",
