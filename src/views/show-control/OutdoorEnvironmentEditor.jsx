@@ -44,6 +44,7 @@ import { showSuccess } from '~/features/snackbar/actions';
 import { getAverageHeadingOfActiveUAVs } from '~/features/uavs/selectors';
 import AutoFix from '~/icons/AutoFix';
 import { normalizeAngle } from '~/utils/geography';
+import i18n from '~/i18n';
 
 import { TakeoffHeadingSpecEditor } from './TakeoffHeadingSpecEditor';
 
@@ -231,7 +232,11 @@ export default connect(
           angle: showCoordinateSystem.orientation,
         })
       );
-      dispatch(showSuccess('Show coordinate system applied to map.'));
+      dispatch(
+        showSuccess(
+          i18n.t('outdoorEnvironmentEditor.showCoordinateSystemAppliedToMap')
+        )
+      );
     },
     onEstimateShowCoordinateSystem: estimateShowCoordinateSystemFromActiveUAVs,
     onOrientationChanged: (value) =>
@@ -257,7 +262,11 @@ export default connect(
           setupMission: true,
         })
       );
-      dispatch(showSuccess('Show coordinate system updated from map.'));
+      dispatch(
+        showSuccess(
+          i18n.t('outdoorEnvironmentEditor.showCoordinateSystemUpdatedFromMap')
+        )
+      );
     },
 
     onSetTakeoffHeading: (value) =>

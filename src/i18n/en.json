@@ -23,6 +23,12 @@
     "passed": "Onboard preflight checks passed.",
     "signOffOn": "Sign off on onboard preflight checks"
   },
+  "RTKCorrectionSourceSelector": {
+    "RTKCorrections": "RTK corrections",
+    "error": "Error while loading RTK sources from server",
+    "noRTKData": "No RTK data sources on server",
+    "pleaseWait": "Please wait, loading RTK sources…"
+  },
   "RTKStatusMiniList": {
     "satelliteCount": "Satellite count",
     "surveyInProgress": "Survey in progress...",
@@ -57,11 +63,17 @@
     "clickToChange": "Click to change to {{altitudeType}}.",
     "showingCurrent": "Showing maximum and minimum {{altitudeType}}."
   },
+  "augmentMappingButton": {
+    "assignSparesToEmptySlots": "Assign spares to empty slots"
+  },
   "authentication": "Authentication",
   "batteryStatusHeaderButton": "Showing average and minimum charge levels.",
   "broadcastButton": {
     "disable": "Disable broadcast",
     "enable": "Enable broadcast for {{time}} seconds"
+  },
+  "environmentEditorDialog": {
+    "environmentSettings": "Environment settings"
   },
   "fieldNotesPanel": {
     "exportNotesAsFile": "Export notes as Markdown file"
@@ -87,6 +99,10 @@
     "velocitySummary": "Maximum horizontal and vertical velocity"
   },
   "help": "Help",
+  "indoorEnvironmentEditor": {
+    "coordinatesOfTheCorners": "Coordinates of the corners of the room",
+    "roomVisibleIn3D": "Room visible in 3D view"
+  },
   "lightControl": {
     "fromGCS": "Lights controlled from GCS",
     "notConnected": "Not connected to server",
@@ -151,12 +167,18 @@
     "copyShowOriginToMap": "Copy show origin to map origin",
     "fitCoordinateSysToCurrentDrone": "Fit coordinate system to current drone positions",
     "setToAverageAMSL": "Set to average AMSL of active drones",
+    "showCoordinateSystemAppliedToMap": "Show coordinate system applied to map.",
+    "showCoordinateSystemUpdatedFromMap": "Show coordinate system updated from map.",
     "showIsControlledBasedOn": "Show is controlled based on…",
     "showOrientation": "Show orientation",
     "showOrigin": "Show origin",
     "warningText": "Automatic show origin and orientation calculation assumes that all drones point towards the X axis of the show <u>or</u> that you specified their offset relative the X axis with the setting above. Absolute takeoff headings are not supported."
   },
   "preferences": "Preferences",
+  "recalculateMappingButton": {
+    "findOptimalMapping": "Find optimal mapping",
+    "recalculateMapping": "Recalculate mapping"
+  },
   "safetyDialog": {
     "geofenceTab": {
       "apply": "Apply",
@@ -320,6 +342,29 @@
   },
   "sidebar": {
     "missionType": "Mission type: ({{missionType}})"
+  },
+  "takeoffAreaSetupDialog": {
+    "allDroneOnline": "All drones in the mission are online.",
+    "allDronesAtTakeoffPositions": "All drones are placed at their takeoff positions.",
+    "allDronesFacingCorrectDirection": "All drones are facing the correct direction.",
+    "allSlotsFilled": "All slots in the mission are filled.",
+    "approveTakeoffAreaArrangement": "Approve takeoff area arrangement",
+    "emptySlots": "Empty slots:",
+    "misaligned": "Misaligned:",
+    "misplaced": "Misplaced:",
+    "missing": "Missing:",
+    "noDrones": "There are no drones in the mission.",
+    "placeVirtualDrones": "Place virtual drones",
+    "takeoffAreaSetup": "Takeoff area setup"
+  },
+  "takeoffHeadingSpecEditor": {
+    "UAVheadings": "UAV headings before takeoff are…",
+    "compassDirection": "Compass direction",
+    "headingOffset": "Heading offset",
+    "setToAvergaeHeading": "Set to average heading of active drones",
+    "specifiedByAbsoluteCompassDirection": "Specified by absolute compass direction",
+    "specifiedRelativeToShowOrientation": "Specified relative to show orientation",
+    "unspecified": "Unspecified"
   },
   "toolbox": {
     "averagingInProgress": "{{number}} in progress",

@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
+import { Translation, withTranslation } from 'react-i18next';
 
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
@@ -38,11 +39,15 @@ import RecalculateMappingButton from '~/views/uavs/RecalculateMappingButton';
  * moment.
  */
 const EmptySlotsIndicator = ({ indices }) => (
-  <DronePlaceholderList
-    items={indices}
-    title='Empty slots:'
-    successMessage='All slots in the mission are filled.'
-  />
+  <Translation>
+    {(t) => (
+      <DronePlaceholderList
+        items={indices}
+        title={t('takeoffAreaSetupDialog.emptySlots')}
+        successMessage={t('takeoffAreaSetupDialog.allSlotsFilled')}
+      />
+    )}
+  </Translation>
 );
 
 EmptySlotsIndicator.propTypes = {
@@ -55,13 +60,17 @@ EmptySlotsIndicator.propTypes = {
  * status report about them).
  */
 const MissingDronesIndicator = ({ hasNonemptyMappingSlot, uavIds }) => (
-  <DronePlaceholderList
-    items={uavIds}
-    title='Missing:'
-    successMessage='All drones in the mission are online.'
-    emptyMessage='There are no drones in the mission.'
-    preferEmptyMessage={!hasNonemptyMappingSlot}
-  />
+  <Translation>
+    {(t) => (
+      <DronePlaceholderList
+        items={uavIds}
+        title={t('takeoffAreaSetupDialog.missing')}
+        successMessage={t('takeoffAreaSetupDialog.allDroneOnline')}
+        emptyMessage={t('takeoffAreaSetupDialog.noDrones')}
+        preferEmptyMessage={!hasNonemptyMappingSlot}
+      />
+    )}
+  </Translation>
 );
 
 MissingDronesIndicator.propTypes = {
@@ -74,13 +83,17 @@ MissingDronesIndicator.propTypes = {
  * place (far from its takeoff position).
  */
 const MisplacedDronesIndicator = ({ hasNonemptyMappingSlot, uavIds }) => (
-  <DronePlaceholderList
-    items={uavIds}
-    title='Misplaced:'
-    successMessage='All drones are placed at their takeoff positions.'
-    emptyMessage='There are no drones in the mission.'
-    preferEmptyMessage={!hasNonemptyMappingSlot}
-  />
+  <Translation>
+    {(t) => (
+      <DronePlaceholderList
+        items={uavIds}
+        title={t('takeoffAreaSetupDialog.misplaced')}
+        successMessage={t('takeoffAreaSetupDialog.allDronesAtTakeoffPositions')}
+        emptyMessage={t('takeoffAreaSetupDialog.noDrones')}
+        preferEmptyMessage={!hasNonemptyMappingSlot}
+      />
+    )}
+  </Translation>
 );
 
 MisplacedDronesIndicator.propTypes = {
@@ -93,13 +106,19 @@ MisplacedDronesIndicator.propTypes = {
  * direction.
  */
 const MisalignedDronesIndicator = ({ hasNonemptyMappingSlot, uavIds }) => (
-  <DronePlaceholderList
-    items={uavIds}
-    title='Misaligned:'
-    successMessage='All drones are facing the correct direction.'
-    emptyMessage='There are no drones in the mission.'
-    preferEmptyMessage={!hasNonemptyMappingSlot}
-  />
+  <Translation>
+    {(t) => (
+      <DronePlaceholderList
+        items={uavIds}
+        title={t('takeoffAreaSetupDialog.misaligned')}
+        successMessage={t(
+          'takeoffAreaSetupDialog.allDronesFacingCorrectDirection'
+        )}
+        emptyMessage={t('takeoffAreaSetupDialog.noDrones')}
+        preferEmptyMessage={!hasNonemptyMappingSlot}
+      />
+    )}
+  </Translation>
 );
 
 MisalignedDronesIndicator.propTypes = {
@@ -167,6 +186,7 @@ const TakeoffAreaSetupDialog = ({
   onApprove,
   onClose,
   onRevoke,
+  t,
 }) => {
   const titleComponents = hasVirtualDrones && (
     <Button
@@ -174,7 +194,7 @@ const TakeoffAreaSetupDialog = ({
       startIcon={<VerticalAlignBottom />}
       onClick={onAddVirtualDrones}
     >
-      Place virtual drones
+      {t('takeoffAreaSetupDialog.placeVirtualDrones')}
     </Button>
   );
   return (
@@ -182,7 +202,7 @@ const TakeoffAreaSetupDialog = ({
       fullWidth
       open={open}
       maxWidth='sm'
-      title='Takeoff area setup'
+      title={t('takeoffAreaSetupDialog.takeoffAreaSetup')}
       titleComponents={titleComponents}
       onClose={onClose}
     >
@@ -201,7 +221,7 @@ const TakeoffAreaSetupDialog = ({
                 onChange={approved ? onRevoke : onApprove}
               />
             }
-            label='Approve takeoff area arrangement'
+            label={t('takeoffAreaSetupDialog.approveTakeoffAreaArrangement')}
           />
         </Box>
       </DialogContent>
@@ -218,6 +238,7 @@ TakeoffAreaSetupDialog.propTypes = {
   onClose: PropTypes.func,
   onRevoke: PropTypes.func,
   open: PropTypes.bool,
+  t: PropTypes.func,
 };
 
 TakeoffAreaSetupDialog.defaultProps = {
@@ -255,4 +276,4 @@ export default connect(
       dispatch(revokeTakeoffAreaApproval());
     },
   })
-)(TakeoffAreaSetupDialog);
+)(withTranslation()(TakeoffAreaSetupDialog));
