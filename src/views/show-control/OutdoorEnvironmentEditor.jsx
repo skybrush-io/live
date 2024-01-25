@@ -46,6 +46,7 @@ import {
 import { getAverageHeadingOfActiveUAVs } from '~/features/uavs/selectors';
 import { TakeoffHeadingSpecEditor } from './TakeoffHeadingSpecEditor';
 import { normalizeAngle } from '~/utils/geography';
+import i18n from '~/i18n';
 
 /**
  * Presentation component for the form that allows the user to edit the
@@ -233,7 +234,9 @@ export default connect(
       );
       dispatch(
         showNotification({
-          message: 'Show coordinate system applied to map.',
+          message: i18n.t(
+            'outdoorEnvironmentEditor.showCoordinateSystemAppliedToMap'
+          ),
           semantics: MessageSemantics.SUCCESS,
         })
       );
@@ -264,7 +267,9 @@ export default connect(
       );
       dispatch(
         showNotification({
-          message: 'Show coordinate system updated from map.',
+          message: i18n.t(
+            'outdoorEnvironmentEditor.showCoordinateSystemUpdatedFromMap'
+          ),
           semantics: MessageSemantics.SUCCESS,
         })
       );

@@ -1,4 +1,5 @@
 import React from 'react';
+import { Translation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import Button from '@material-ui/core/Button';
@@ -12,9 +13,13 @@ import { canAugmentMappingAutomaticallyFromSpareDrones } from '~/features/missio
  * drones based on their current positions automatically.
  */
 const AugmentMappingButton = (props) => (
-  <Button startIcon={<Shuffle />} {...props}>
-    Assign spares to empty slots
-  </Button>
+  <Translation>
+    {(t) => (
+      <Button startIcon={<Shuffle />} {...props}>
+        {t('augmentMappingButton.assignSparesToEmptySlots')}
+      </Button>
+    )}
+  </Translation>
 );
 
 export default connect(

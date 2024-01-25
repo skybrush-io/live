@@ -23,6 +23,12 @@
     "passed": "Automata fedélzeti ellenőrzés rendben.",
     "signOffOn": "Automata fedélzeti ellenőrzés nyugtázása"
   },
+  "RTKCorrectionSourceSelector": {
+    "RTKCorrections": "RTK korrekciók",
+    "error": "Hiba az RTK források szerverről történő betöltése közben",
+    "noRTKData": "Nincsenek RTK adatforrások a szerveren",
+    "pleaseWait": "Kérem várjon, RTK források betöltése…"
+  },
   "RTKStatusMiniList": {
     "satelliteCount": "Műholdak száma",
     "surveyInProgress": "A felmérés folyamatban...",
@@ -57,11 +63,17 @@
     "clickToChange": "Kattintson a módosításhoz {{altitudeType}}-re.",
     "showingCurrent": "Maximum és minimum {{altitudeType}} kijelzése."
   },
+  "augmentMappingButton": {
+    "assignSparesToEmptySlots": "Tartalékok hozzárendelése az üres helyekhez"
+  },
   "authentication": "Felhasználó azonosítása",
   "batteryStatusHeaderButton": "Átlagos és minimális töltési szintek kijelzése.",
   "broadcastButton": {
     "disable": "Broadcast letiltása",
     "enable": "Broadcast engedélyezése {{time}} másodpercig"
+  },
+  "environmentEditorDialog": {
+    "environmentSettings": "Környezeti beállítások"
   },
   "fieldNotesPanel": {
     "exportNotesAsFile": "Jegyzetek exportálása Markdown fájlként"
@@ -101,6 +113,10 @@
     "vertical": "Függőleges"
   },
   "help": "Segítség",
+  "indoorEnvironmentEditor": {
+    "coordinatesOfTheCorners": "A szoba sarkainak koordinátái",
+    "roomVisibleIn3D": "A szoba látható 3D nézetben"
+  },
   "lightControl": {
     "fromGCS": "A fények GCS-sel vezéreltek",
     "notConnected": "Nem csatlakozik a szerverhez",
@@ -156,12 +172,18 @@
     "copyShowOriginToMap": "Műsor origó másolása térkép origóra",
     "fitCoordinateSysToCurrentDrone": "Koordinátarendszer illesztése az aktuális drón pozíciókra",
     "setToAverageAMSL": "Beállítás az aktív drónok átlagos AMSL-ére",
+    "showCoordinateSystemAppliedToMap": "A műsor koordinátarendszere alkalmazva a térképre.",
+    "showCoordinateSystemUpdatedFromMap": "A műsor koordinátarendszere frissítve a térképről.",
     "showIsControlledBasedOn": "A műsor ezalapján irányítva…",
     "showOrientation": "Műsor iránya",
     "showOrigin": "Műsor origója",
-    "warningText": "Az automatikus műsor origó és irány számítás feltételezi, hogy az összes drón a műsor X tengelye felé mutat <u>vagy</u>, hogy a fenti beállítással meghatározta az eltolásukat az X tengelyhez képest. Az abszolút felszállási fejlécek nem támogatottak."
+    "warningText": "Az automatikus műsor origó és irány számítás feltételezi, hogy az összes drón a műsor X tengelye felé mutat <u>vagy</u>, hogy a fenti beállítással meghatározta az eltolásukat az X tengelyhez képest. Az abszolút felszállási irányok nem támogatottak."
   },
   "preferences": "Beállítások",
+  "recalculateMappingButton": {
+    "findOptimalMapping": "Optimális térképezés keresése",
+    "recalculateMapping": "Térképezés újraszámolása"
+  },
   "savedLocation": {
     "addNew": "Új helyszín hozzáadása",
     "edit": "Helyszín szerkesztése"
@@ -298,6 +320,29 @@
     "uploadShowData": "Műsor adatok feltöltése",
     "uploadShowDataLoading": "Kérem várjon, feltöltés…",
     "uploadShowDataStart": "Kattintson ide a feltötés megkezdéséhez"
+  },
+  "takeoffAreaSetupDialog": {
+    "allDroneOnline": "Minden misszióban résztvevő drón online állapotban.",
+    "allDronesAtTakeoffPositions": "Minden drón a felszállási pozíciójában van.",
+    "allDronesFacingCorrectDirection": "Minden drón a megfelelő irányba néz.",
+    "allSlotsFilled": "A küldetés összes helye be van töltve.",
+    "approveTakeoffAreaArrangement": "A felszállási terület elrendezésének jóváhagyása",
+    "emptySlots": "Üres helyek:",
+    "misaligned": "Rosszul tájolva:",
+    "misplaced": "Rossz helyen:",
+    "missing": "Hiányzó:",
+    "noDrones": "Nincs drón a küldetésben.",
+    "placeVirtualDrones": "Virtuális drónok elhelyezése",
+    "takeoffAreaSetup": "Felszállási terület beállítások"
+  },
+  "takeoffHeadingSpecEditor": {
+    "UAVheadings": "Drónok irányai a felszállás előtt…",
+    "compassDirection": "Iránytű iránya",
+    "headingOffset": "Irány eltolás",
+    "setToAvergaeHeading": "Átlagos irány beállítása az aktív drónokra",
+    "specifiedByAbsoluteCompassDirection": "Az abszolút iránytű irány határozza meg",
+    "specifiedRelativeToShowOrientation": "A műsor irányához képest van megadva",
+    "unspecified": "Nem meghatározott"
   },
   "toolbox": {
     "averagingInProgress": "{{number}} folyamatban",
