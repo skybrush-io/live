@@ -10,10 +10,11 @@ import { connect } from 'react-redux';
 
 import { selectAllUAVs } from '~/features/map/selection';
 import { removeSelectedFeatures } from '~/features/map-features/actions';
+import { removeSelectedMissionItems } from '~/features/mission/actions';
 import { getPreferredCommunicationChannelIndex } from '~/features/mission/selectors';
-import { toggleMissionIds } from '~/features/settings/slice';
 import { toggleBroadcast } from '~/features/session/actions';
 import { isBroadcast } from '~/features/session/selectors';
+import { toggleMissionIds } from '~/features/settings/slice';
 import { requestRemovalOfSelectedUAVs } from '~/features/uavs/actions';
 import { openUAVDetailsDialog } from '~/features/uavs/details';
 import { getSelectedUAVIds, getUAVIdList } from '~/features/uavs/selectors';
@@ -129,6 +130,7 @@ export default connect(
         REMOVE_SELECTION: handlePendingUAVIdThenDispatch(() => (dispatch) => {
           dispatch(requestRemovalOfSelectedUAVs());
           dispatch(removeSelectedFeatures());
+          dispatch(removeSelectedMissionItems());
         }),
         SELECT_ALL_DRONES: selectAllUAVs,
         SEND_FLASH_LIGHTS_COMMAND: handlePendingUAVIdThenDispatch(
