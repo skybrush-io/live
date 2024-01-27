@@ -180,7 +180,7 @@
       "lowTreshold": "Niederer Schwellenwert",
       "missionSetup": "Missions Einstellungen",
       "missionSetupDescription": "Wird vor Einsätzen mit mehreren Drohnen verwendet, um zu überprüfen, ob sich jede Drohne an ihrer vorgeschriebenen Startposition befindet und korrekt ausgerichtet ist.",
-      "warn": "Warnung bei Drohnen, die nicht gesehen werden für mindestens"
+      "warn": "Warnung bei Drohnen, die nicht gesehen wurden für mindestens"
     }
   },
   "show": {
