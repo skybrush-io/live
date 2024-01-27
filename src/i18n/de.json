@@ -35,6 +35,7 @@
     "powerOn": "Einschalten",
     "properties": "Eigenschaften",
     "reboot": "Neustart",
+    "removeItemsMarkedGone": "Entferne Objekte, die als 'verloren' markiert sind",
     "removeSelectedItems": "Ausgewählte Objekte entfernen",
     "returnToHome": "Return to home",
     "sleep": "Ruhezustand",
