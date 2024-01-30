@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import Box from '@material-ui/core/Box';
@@ -18,33 +19,34 @@ const UploadStatusLegend = ({
   onClearUploadQueue,
   onRestartSuccessfulUploads,
   onRetryFailedUploads,
+  t,
   waiting,
 }) => (
   <Box display='flex' justifyContent='space-around'>
     <UploadStatusLegendButton
       counter={waiting}
-      label='waiting'
+      label={t('uploadStatusLegend.waiting')}
       status={Status.INFO}
-      tooltip='Clear upload queue'
+      tooltip={t('uploadStatusLegend.clearUploadQueue')}
       onClick={onClearUploadQueue}
     />
     <UploadStatusLegendButton
       counter={inProgress}
-      label='in progress'
+      label={t('uploadStatusLegend.inProgress')}
       status={Status.WARNING}
     />
     <UploadStatusLegendButton
       counter={finished}
-      label='successful'
-      tooltip='Restart successful items'
+      label={t('uploadStatusLegend.successful')}
+      tooltip={t('uploadStatusLegend.restartSuccessfulItems')}
       status={Status.SUCCESS}
       onClick={onRestartSuccessfulUploads}
     />
     <UploadStatusLegendButton
       counter={failed}
-      label='failed'
+      label={t('uploadStatusLegend.failed')}
       status={Status.ERROR}
-      tooltip='Retry failed items'
+      tooltip={t('uploadStatusLegend.retryFailedItems')}
       onClick={onRetryFailedUploads}
     />
   </Box>
@@ -58,6 +60,7 @@ UploadStatusLegend.propTypes = {
   onClearUploadQueue: PropTypes.func,
   onRestartSuccessfulUploads: PropTypes.func,
   onRetryFailedUploads: PropTypes.func,
+  t: PropTypes.func,
 };
 
 export default connect(
@@ -69,4 +72,4 @@ export default connect(
     onRestartSuccessfulUploads: restartSuccessfulUploads,
     onRetryFailedUploads: retryFailedUploads,
   }
-)(UploadStatusLegend);
+)(withTranslation()(UploadStatusLegend));
