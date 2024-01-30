@@ -343,6 +343,10 @@
   "sidebar": {
     "missionType": "Küldetés típus: {{missionType}}"
   },
+  "startUploadButton": {
+    "start": "Indítás",
+    "startSelected": "Indítás a kiválasztottakra"
+  },
   "takeoffAreaSetupDialog": {
     "allDroneOnline": "Minden misszióban résztvevő drón online állapotban.",
     "allDronesAtTakeoffPositions": "Minden drón a felszállási pozíciójában van.",
@@ -374,6 +378,20 @@
     "paramUpload": "Paraméter feltöltése",
     "tooltip": "Eszköztár",
     "uploadInProgress": "Feltöltés folyamatban"
+  },
+  "uploadPanel": {
+    "cancelUpload": "Feltöltés megszakítása",
+    "flashLightsWhereFailed": "Azon drónok villogtatása, ahol nem sikerült a feltöltés",
+    "retryFailedAttempts": "Sikertelen kísérletek automatikus újrapróbálása"
+  },
+  "uploadStatusLegend": {
+    "clearUploadQueue": "Feltöltési sor törlése",
+    "failed": "sikertelen",
+    "inProgress": "folyamatban",
+    "restartSuccessfulItems": "Sikeres elemek újraindítása",
+    "retryFailedItems": "Sikertelen elemek újrapróbálása",
+    "successful": "sikeres",
+    "waiting": "várakozik"
   },
   "view": {
     "beacon-list": "Jeladók",

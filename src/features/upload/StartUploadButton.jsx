@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import { Translation } from 'react-i18next';
 
 import Button from '@material-ui/core/Button';
 import PlayArrow from '@material-ui/icons/PlayArrow';
@@ -10,9 +11,15 @@ import PlayArrow from '@material-ui/icons/PlayArrow';
  * current mission.
  */
 const StartUploadButton = ({ hasQueuedItems, ...rest }) => (
-  <Button startIcon={<PlayArrow />} {...rest}>
-    {hasQueuedItems ? 'Start selected' : 'Start'}
-  </Button>
+  <Translation>
+    {(t) => (
+      <Button startIcon={<PlayArrow />} {...rest}>
+        {hasQueuedItems
+          ? t('startUploadButton.startSelected')
+          : t('startUploadButton.start')}
+      </Button>
+    )}
+  </Translation>
 );
 
 StartUploadButton.propTypes = {

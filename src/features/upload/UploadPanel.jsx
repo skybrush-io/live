@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import Box from '@material-ui/core/Box';
@@ -111,6 +112,7 @@ const UploadPanel = ({
   onToggleFlashFailed,
   running,
   showLastUploadResult,
+  t,
 }) => {
   const classes = useStyles();
 
@@ -127,13 +129,13 @@ const UploadPanel = ({
             control={
               <Checkbox checked={autoRetry} onChange={onToggleAutoRetry} />
             }
-            label='Retry failed attempts automatically'
+            label={t('uploadPanel.retryFailedAttempts')}
           />
           <FormControlLabel
             control={
               <Checkbox checked={flashFailed} onChange={onToggleFlashFailed} />
             }
-            label='Flash lights of UAVs where the upload failed'
+            label={t('uploadPanel.flashLightsWhereFailed')}
           />
         </Box>
       </DialogContent>
@@ -160,7 +162,7 @@ const UploadPanel = ({
             startIcon={<Clear />}
             onClick={onCancelUpload}
           >
-            Cancel upload
+            {t('uploadPanel.cancelUpload')}
           </Button>
         ) : (
           <StartUploadButton
@@ -188,6 +190,7 @@ UploadPanel.propTypes = {
   onToggleFlashFailed: PropTypes.func,
   running: PropTypes.bool,
   showLastUploadResult: PropTypes.bool,
+  t: PropTypes.func,
 };
 
 UploadPanel.defaultProps = {
@@ -222,4 +225,4 @@ export default connect(
       dispatch(setFlashFailed(!flashFailed));
     },
   }
-)(UploadPanel);
+)(withTranslation()(UploadPanel));
