@@ -321,6 +321,10 @@
     "uploadShowDataLoading": "Please wait, uploading…",
     "uploadShowDataStart": "Click here to start the upload process"
   },
+  "startUploadButton": {
+    "start": "Start",
+    "startSelected": "Start selected"
+  },
   "takeoffAreaSetupDialog": {
     "allDroneOnline": "All drones in the mission are online.",
     "allDronesAtTakeoffPositions": "All drones are placed at their takeoff positions.",
@@ -352,6 +356,20 @@
     "paramUpload": "Parameter upload",
     "tooltip": "Toolbox",
     "uploadInProgress": "Upload in progress"
+  },
+  "uploadPanel": {
+    "cancelUpload": "Cancel upload",
+    "flashLightsWhereFailed": "Flash lights of UAVs where the upload failed",
+    "retryFailedAttempts": "Retry failed attempts automatically"
+  },
+  "uploadStatusLegend": {
+    "clearUploadQueue": "Clear upload queue",
+    "failed": "failed",
+    "inProgress": "in progress",
+    "restartSuccessfulItems": "Restart successful items",
+    "retryFailedItems": "Retry failed items",
+    "successful": "successful",
+    "waiting": "waiting"
   },
   "view": {
     "beacon-list": "Beacons",
