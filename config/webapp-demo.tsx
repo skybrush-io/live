@@ -1,5 +1,5 @@
 /**
- * @file Application configuration at startup, suitable for the web app demo deployment on https://live.skybrush.io.
+ * @file Application configuration at startup, suitable for the web app demo deployment.
  */
 
 import * as React from 'react';

@@ -1,5 +1,5 @@
-// Webpack configuration for the output that is directly usable for in-browser
-// development
+// Webpack configuration for the output that is directly usable on
+// https://live.skybrush.io
 
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
@@ -10,7 +10,6 @@ const { merge } = require('webpack-merge');
 const baseConfig = require('./base.config.js');
 const {
   htmlMetaTags,
-  outputDir,
   projectRoot,
   useHotModuleReloading,
 } = require('./helpers');
@@ -29,8 +28,6 @@ const plugins = [
     favicon: path.resolve(projectRoot, 'assets', 'icons', 'favicon.ico'),
     meta: htmlMetaTags,
     template: path.resolve(projectRoot, 'index.html'),
-    filename: path.resolve(outputDir, 'index.html'),
-    hash: true /* for cache busting */,
     title:
       'Skybrush Live | The Next-generation Drone Light Show Software Suite',
   }),
