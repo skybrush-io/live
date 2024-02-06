@@ -1,4 +1,5 @@
 import isNil from 'lodash-es/isNil';
+import maxBy from 'lodash-es/maxBy';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -24,10 +25,11 @@ const findVelocities = (state) => {
 
     if (!isNil(velocity)) {
       const horizontal = Math.hypot(velocity[0], velocity[1]);
-      const vertical = velocity[2];
+      // Flip from NED to NEU, but keep the value if it's XYZ
+      const vertical = uav.velocity ? -velocity[2] : velocity[2];
 
       maxHorizontal = Math.max(maxHorizontal, horizontal);
-      maxVertical = Math.max(maxVertical, vertical);
+      maxVertical = maxBy([maxVertical, vertical], Math.abs);
     }
   }
 
@@ -55,7 +57,7 @@ const VelocitySummaryHeaderButton = ({ isConnected }) => {
           ? formatSpeed(maxVertical, 1)
           : '—'
       }
-      style={buttonStyle}
+      style={{ ...buttonStyle, width: 105 }}
       tooltip={t('header.velocitySummary')}
     >
       <Speed />
