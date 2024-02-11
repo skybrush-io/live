@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { withTranslation } from 'react-i18next';
+import { useTranslation, withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import Box from '@material-ui/core/Box';
@@ -48,13 +48,10 @@ const severityToStatus = [
  * failed on at least one of the drones, along with the IDs of the drones on
  * which the preflight checks have failed.
  */
-const PreflightCheckListPresentation = ({
-  items,
-  showMissionIds,
-  t,
-  ...rest
-}) =>
-  items.length > 0 ? (
+const PreflightCheckListPresentation = ({ items, showMissionIds, ...rest }) => {
+  const { t } = useTranslation();
+
+  return items.length > 0 ? (
     <List dense disablePadding {...rest}>
       {items.map((item) => {
         const itemId = `preflight-item-${item.code}`;
@@ -85,6 +82,7 @@ const PreflightCheckListPresentation = ({
       iconColor={Colors.success}
     />
   );
+};
 
 PreflightCheckListPresentation.propTypes = {
   items: PropTypes.arrayOf(
@@ -106,7 +104,7 @@ const PreflightCheckList = connect(
   }),
   // mapDispatchToProps
   {}
-)(withTranslation()(PreflightCheckListPresentation));
+)(PreflightCheckListPresentation);
 
 /**
  * Presentation component for the dialog that allows the user to inspect the

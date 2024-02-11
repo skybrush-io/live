@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { withTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import ListItem from '@material-ui/core/ListItem';
@@ -22,21 +22,25 @@ import UploadProgressBar from '~/features/upload/UploadProgressBar';
  * React component for the button that allows the user to start or stop the
  * upload process of the current show to the drones.
  */
-const ShowUploadDialogButton = ({ loading, status, t, ...rest }) => (
-  <ListItem button disabled={status === Status.OFF} {...rest}>
-    <StatusLight status={status} />
-    <ListItemTextWithProgress
-      primary={
-        loading
-          ? t('show.uploadShowDataLoading', 'Please wait, uploading…')
-          : t('show.uploadShowData', 'Upload show data')
-      }
-      secondary={
-        loading ? <UploadProgressBar /> : t('show.uploadShowDataStart')
-      }
-    />
-  </ListItem>
-);
+const ShowUploadDialogButton = ({ loading, status, ...rest }) => {
+  const { t } = useTranslation();
+
+  return (
+    <ListItem button disabled={status === Status.OFF} {...rest}>
+      <StatusLight status={status} />
+      <ListItemTextWithProgress
+        primary={
+          loading
+            ? t('show.uploadShowDataLoading', 'Please wait, uploading…')
+            : t('show.uploadShowData', 'Upload show data')
+        }
+        secondary={
+          loading ? <UploadProgressBar /> : t('show.uploadShowDataStart')
+        }
+      />
+    </ListItem>
+  );
+};
 
 ShowUploadDialogButton.propTypes = {
   loading: PropTypes.bool,
@@ -56,4 +60,4 @@ export default connect(
   {
     onClick: () => openUploadDialogForJob({ job: SHOW_UPLOAD_JOB }),
   }
-)(withTranslation()(ShowUploadDialogButton));
+)(ShowUploadDialogButton);

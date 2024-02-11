@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { withTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import ListItem from '@material-ui/core/ListItem';
@@ -29,7 +29,7 @@ const formatStatusText = (status) => {
       return tt('geofence.statusText.error');
 
     default:
-      return tt('');
+      return '';
   }
 };
 
@@ -39,7 +39,9 @@ const formatStatusText = (status) => {
  * set parameters for the generation such as safety margin width and polygon
  * simplification.
  */
-const GeofenceButton = ({ onClick, status, t, ...rest }) => {
+const GeofenceButton = ({ onClick, status, ...rest }) => {
+  const { t } = useTranslation();
+
   return (
     <ListItem
       button
@@ -73,4 +75,4 @@ export default connect(
   {
     onClick: showGeofenceSettingsDialog,
   }
-)(withTranslation()(GeofenceButton));
+)(GeofenceButton);
