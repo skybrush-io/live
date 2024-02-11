@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { withTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import ListItem from '@material-ui/core/ListItem';
@@ -32,14 +32,8 @@ const formatStatusText = (status, maxDistance) => {
     case Status.NEXT:
       return tt('show.takeOffPlace');
 
-    // ((t) => t('show.takeOffPlace', 'Place the drones in the takeoff area'))(t)
-
     case Status.SUCCESS:
-      // return (t) => t('show.dronePlacementApproved');
-      // return (t) => t('show.dronePlacementApproved');
       return tt('show.dronePlacementApproved');
-
-    // ('Drone placement approved')(t)
 
     case Status.ERROR:
       return tt('show.dronePlacementError');
@@ -51,7 +45,7 @@ const formatStatusText = (status, maxDistance) => {
       return tt('show.dronePlacementCheck');
 
     default:
-      return tt('');
+      return '';
   }
 };
 
@@ -60,7 +54,9 @@ const formatStatusText = (status, maxDistance) => {
  * accurately the drones are placed in the takeoff area. The dialog also allows
  * the user to create virtual drones if needed.
  */
-const TakeoffAreaButton = ({ maxDistance, onClick, status, t, ...rest }) => {
+const TakeoffAreaButton = ({ maxDistance, onClick, status, ...rest }) => {
+  const { t } = useTranslation();
+
   return (
     <ListItem
       button
@@ -101,4 +97,4 @@ export default connect(
   {
     onClick: openTakeoffAreaSetupDialog,
   }
-)(withTranslation()(TakeoffAreaButton));
+)(TakeoffAreaButton);

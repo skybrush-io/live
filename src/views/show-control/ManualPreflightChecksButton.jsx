@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { withTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import ListItem from '@material-ui/core/ListItem';
@@ -29,9 +29,10 @@ const ManualPreflightChecksButton = ({
   onApprove,
   onRevoke,
   status,
-  t,
   ...rest
 }) => {
+  const { t } = useTranslation();
+
   return hasManualChecks ? (
     <ListItem button disabled={status === Status.OFF} {...rest}>
       <StatusLight status={status} />
@@ -77,4 +78,4 @@ export default connect(
     onClick: openManualPreflightChecksDialog,
     onRevoke: clearManualPreflightChecks,
   }
-)(withTranslation()(ManualPreflightChecksButton));
+)(ManualPreflightChecksButton);

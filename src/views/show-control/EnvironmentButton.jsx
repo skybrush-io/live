@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { withTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { createSelector } from '@reduxjs/toolkit';
 
@@ -17,8 +17,6 @@ import {
 } from '~/features/show/selectors';
 import { openEnvironmentEditorDialog } from '~/features/show/slice';
 import { getSetupStageStatuses } from '~/features/show/stages';
-import { getDisplayLanguage } from '~/features/settings/selectors';
-
 import { tt } from '~/i18n';
 
 /**
@@ -27,11 +25,10 @@ import { tt } from '~/i18n';
 const getEnvironmentDescription = createSelector(
   getShowEnvironmentType,
   getOutdoorShowAltitudeReference,
-  getDisplayLanguage,
-  (environmentType, outdoorAltitudeReference, language) => {
+  (environmentType, outdoorAltitudeReference) => {
     switch (environmentType) {
       case 'indoor':
-        return tt('show.indoor', { lng: language });
+        return tt('show.indoor');
 
       case 'outdoor': {
         const { type, value } = outdoorAltitudeReference;
@@ -39,7 +36,6 @@ const getEnvironmentDescription = createSelector(
           if (Number.isFinite(value)) {
             return tt('show.outdoor.relativeToAMSL', {
               altitude: value.toFixed(1),
-              lng: language,
             });
           } else {
             return tt('show.outdoor.invalidAltitudeReference');
@@ -67,22 +63,25 @@ const EnvironmentButton = ({
   onEditEnvironment,
   secondaryText,
   status,
-  t,
   ...rest
-}) => (
-  <ListItem
-    button
-    disabled={status === Status.OFF}
-    onClick={onEditEnvironment}
-    {...rest}
-  >
-    <StatusLight status={status} />
-    <ListItemText
-      primary={t('show.setupEnvironment')}
-      secondary={secondaryText(t)}
-    />
-  </ListItem>
-);
+}) => {
+  const { t } = useTranslation();
+
+  return (
+    <ListItem
+      button
+      disabled={status === Status.OFF}
+      onClick={onEditEnvironment}
+      {...rest}
+    >
+      <StatusLight status={status} />
+      <ListItemText
+        primary={t('show.setupEnvironment')}
+        secondary={secondaryText(t)}
+      />
+    </ListItem>
+  );
+};
 
 EnvironmentButton.propTypes = {
   onEditEnvironment: PropTypes.func,
@@ -101,4 +100,4 @@ export default connect(
   {
     onEditEnvironment: openEnvironmentEditorDialog,
   }
-)(withTranslation()(EnvironmentButton));
+)(EnvironmentButton);

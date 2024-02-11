@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { withTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { useAudio, useInterval, useMount } from 'react-use';
 
@@ -68,9 +68,11 @@ const AlertSound = () => {
   return audio;
 };
 
-const AlertButton = ({ count, muted, t, ...rest }) => {
+const AlertButton = ({ count, muted, ...rest }) => {
   const classes = useStyles();
   const hasAlerts = count > 0;
+
+  const { t } = useTranslation();
 
   return (
     <GenericHeaderButton
@@ -109,4 +111,4 @@ export default connect(
   {
     onClick: acknowledgeOrToggleMuted,
   }
-)(withTranslation()(AlertButton));
+)(AlertButton);
