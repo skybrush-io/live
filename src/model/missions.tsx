@@ -1,12 +1,14 @@
 import * as React from 'react';
 
 import ChangeAltitudeIcon from '@material-ui/icons/Height';
+import ChangeFlightModeIcon from '@material-ui/icons/Flight';
 import ChangeHeadingIcon from '@material-ui/icons/RotateLeft';
 import ChangeSpeedIcon from '@material-ui/icons/Speed';
 import MarkerIcon from '@material-ui/icons/Flag';
 import SetPayloadIcon from '@material-ui/icons/Camera';
 import SetParameterIcon from '@material-ui/icons/Settings';
 import TakeoffIcon from '@material-ui/icons/FlightTakeoff';
+import UpdateFlightAreaIcon from '@material-ui/icons/FormatShapes';
 import UpdateGeofenceIcon from '~/icons/PlacesFence';
 import UpdateSafetyIcon from '@material-ui/icons/Security';
 import LandIcon from '@material-ui/icons/FlightLand';
@@ -58,11 +60,13 @@ export enum MissionItemType {
   RETURN_TO_HOME = 'returnToHome',
   GO_TO = 'goTo',
   CHANGE_ALTITUDE = 'changeAltitude',
+  CHANGE_FLIGHT_MODE = 'changeFlightMode',
   CHANGE_HEADING = 'changeHeading',
   CHANGE_SPEED = 'changeSpeed',
   MARKER = 'marker',
   SET_PAYLOAD = 'setPayload',
   SET_PARAMETER = 'setParameter',
+  UPDATE_FLIGHT_AREA = 'updateFlightArea',
   UPDATE_GEOFENCE = 'updateGeofence',
   UPDATE_SAFETY = 'updateSafety',
 }
@@ -73,6 +77,9 @@ export enum MissionItemType {
 export enum PayloadAction {
   ON = 'on',
   OFF = 'off',
+  TRIGGER = 'trigger',
+  TRIGGER_AT_INTERVAL = 'triggerInterval',
+  TRIGGER_AT_DISTANCE = 'triggerDistance',
 }
 
 /**
@@ -117,11 +124,13 @@ export const iconForMissionItemType: Record<MissionItemType, React.ReactNode> =
     [MissionItemType.RETURN_TO_HOME]: <HomeIcon />,
     [MissionItemType.GO_TO]: '#',
     [MissionItemType.CHANGE_ALTITUDE]: <ChangeAltitudeIcon />,
+    [MissionItemType.CHANGE_FLIGHT_MODE]: <ChangeFlightModeIcon />,
     [MissionItemType.CHANGE_HEADING]: <ChangeHeadingIcon />,
     [MissionItemType.CHANGE_SPEED]: <ChangeSpeedIcon />,
     [MissionItemType.MARKER]: <MarkerIcon />,
     [MissionItemType.SET_PAYLOAD]: <SetPayloadIcon />,
     [MissionItemType.SET_PARAMETER]: <SetParameterIcon />,
+    [MissionItemType.UPDATE_FLIGHT_AREA]: <UpdateFlightAreaIcon />,
     [MissionItemType.UPDATE_GEOFENCE]: <UpdateGeofenceIcon />,
     [MissionItemType.UPDATE_SAFETY]: <UpdateSafetyIcon />,
   };
@@ -133,11 +142,13 @@ export const titleForMissionItemType: Record<MissionItemType, string> = {
   [MissionItemType.RETURN_TO_HOME]: 'Return to home',
   [MissionItemType.GO_TO]: 'Go to waypoint',
   [MissionItemType.CHANGE_ALTITUDE]: 'Change altitude',
+  [MissionItemType.CHANGE_FLIGHT_MODE]: 'Change flight mode',
   [MissionItemType.CHANGE_HEADING]: 'Change heading',
   [MissionItemType.CHANGE_SPEED]: 'Change speed',
   [MissionItemType.MARKER]: 'Marker',
   [MissionItemType.SET_PAYLOAD]: 'Set payload',
   [MissionItemType.SET_PARAMETER]: 'Set parameter',
+  [MissionItemType.UPDATE_FLIGHT_AREA]: 'Update flight area',
   [MissionItemType.UPDATE_GEOFENCE]: 'Update geofence',
   [MissionItemType.UPDATE_SAFETY]: 'Update safety parameters',
 };
@@ -192,6 +203,10 @@ export const schemaForMissionItemType: Record<
     },
     required: ['alt'],
   },
+  [MissionItemType.CHANGE_FLIGHT_MODE]: {
+    properties: {},
+    required: [],
+  },
   [MissionItemType.CHANGE_HEADING]: {
     properties: {
       heading: {
@@ -243,6 +258,10 @@ export const schemaForMissionItemType: Record<
     required: [],
   },
   [MissionItemType.SET_PARAMETER]: {
+    properties: {},
+    required: [],
+  },
+  [MissionItemType.UPDATE_FLIGHT_AREA]: {
     properties: {},
     required: [],
   },
@@ -350,6 +369,17 @@ export function isMissionItemValid(item: any): item is MissionItem {
 
       break;
 
+    case MissionItemType.CHANGE_FLIGHT_MODE:
+      /* "Change flight mode" items need mode */
+      {
+        const { mode } = parameters;
+        if (typeof mode !== 'string') {
+          return false;
+        }
+      }
+
+      break;
+
     case MissionItemType.CHANGE_HEADING:
       /* "Change heading" items need a heading */
       {
@@ -401,11 +431,12 @@ export function isMissionItemValid(item: any): item is MissionItem {
     case MissionItemType.SET_PAYLOAD:
       /* "Set payload" items need a name and a valid action */
       {
-        const { name, action } = parameters;
+        const { name, action, value } = parameters;
         if (
           typeof name !== 'string' ||
           typeof action !== 'string' ||
-          !Object.values(PayloadAction).includes(action as PayloadAction)
+          !Object.values(PayloadAction).includes(action as PayloadAction) ||
+          (value !== undefined && !(typeof value === 'number' && Number.isFinite(value)))
         ) {
           return false;
         }
@@ -422,6 +453,21 @@ export function isMissionItemValid(item: any): item is MissionItem {
           (typeof value !== 'string' &&
             (typeof value !== 'number' || !Number.isFinite(value)) &&
             typeof value !== 'boolean')
+        ) {
+          return false;
+        }
+      }
+
+      break;
+
+    case MissionItemType.UPDATE_FLIGHT_AREA:
+      /* "Update flight area" items need complex validation */
+      {
+        const { coordinateSystem } = parameters;
+        if (
+          typeof coordinateSystem !== 'string' ||
+          coordinateSystem !== 'geodetic'
+          // TODO: add proper validation for the flight area object
         ) {
           return false;
         }
