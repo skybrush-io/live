@@ -78,6 +78,7 @@ const ANGLE_SIGN = isRunningOnMac ? '@' : '∠';
 export enum AltitudeReference {
   HOME = 'home',
   MSL = 'msl',
+  GROUND = 'ground',
 }
 
 /**
@@ -493,6 +494,8 @@ export const formatAltitudeWithReference = (altitude: Altitude): string => {
     return formattedValue + ' AMSL';
   } else if (reference === AltitudeReference.HOME) {
     return formattedValue + ' above home';
+  } else if (reference === AltitudeReference.GROUND) {
+    return formattedValue + ' above ground';
   } else {
     return `${formattedValue} above unknown reference: ${String(reference)}`;
   }

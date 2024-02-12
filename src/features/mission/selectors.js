@@ -653,8 +653,10 @@ export const getMissionItemsInOrderAsSegments = createSelector(
     const home = homePosition && {
       XY: TurfHelpers.point([homePosition.lon, homePosition.lat]),
       Z: {
+        // TODO: why does HOME reference return AGL and not AHL?
         [AltitudeReference.HOME]: homePosition.agl,
         [AltitudeReference.MSL]: homePosition.amsl,
+        [AltitudeReference.GROUND]: homePosition.agl,
       },
     };
     try {
