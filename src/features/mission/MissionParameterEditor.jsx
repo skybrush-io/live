@@ -3,6 +3,7 @@ import pickBy from 'lodash-es/pickBy';
 import uniq from 'lodash-es/uniq';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import Tab from '@material-ui/core/Tab';
 import Tabs from '@material-ui/core/Tabs';
@@ -12,6 +13,8 @@ import { getDefaultRegistry } from '@rjsf/core';
 import Form from '@rjsf/material-ui';
 import { getDefaultFormState } from '@rjsf/utils';
 import validator from '@rjsf/validator-ajv8';
+
+import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
 
 import AsyncGuard from '~/components/AsyncGuard';
 
@@ -193,20 +196,26 @@ const MissionParameterEditor = ({
     }
   }, [getSchema, selectedType]);
 
+  const { t } = useTranslation();
+
   return (
     selectedType && (
       <AsyncGuard
         func={func}
-        errorMessage='Error while loading mission parameter schema from server'
-        loadingMessage='Retrieving mission parameters...'
+        errorMessage={t('mission.planner.schema.error')}
+        loadingMessage={t('mission.planner.schema.loading')}
       >
-        {(schema) => (
-          <MissionParameterEditorPresentation
-            schema={schema}
-            parameters={parameters}
-            onChange={onChange}
-          />
-        )}
+        {(schema) =>
+          schema ? (
+            <MissionParameterEditorPresentation
+              schema={schema}
+              parameters={parameters}
+              onChange={onChange}
+            />
+          ) : (
+            <BackgroundHint text={t('mission.planner.schema.notFound')} />
+          )
+        }
       </AsyncGuard>
     )
   );

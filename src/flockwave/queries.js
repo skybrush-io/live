@@ -139,6 +139,9 @@ export async function getMissionTypeSchemas(hub, missionTypeId) {
     type: 'X-MSN-TYPE-SCHEMA',
     ids: [missionTypeId],
   });
+
+  // TODO: Handle `response.body.error` if present!
+
   if (
     response.body &&
     response.body.type === 'X-MSN-TYPE-SCHEMA' &&

@@ -95,6 +95,15 @@
   "mappingToggleButton": {
     "sortByMissionID": "Sort by mission IDs"
   },
+  "mission": {
+    "planner": {
+      "schema": {
+        "error": "Error while loading mission parameter schema from server",
+        "loading": "Retrieving mission parameters...",
+        "notFound": "The connected server doesn't provide a schema for the selected mission type"
+      }
+    }
+  },
   "notifications": {
     "connectedToSkybrushServer": "Connected to Skybrush server"
   },
