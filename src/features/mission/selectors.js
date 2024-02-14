@@ -19,6 +19,7 @@ import {
   MissionItemType,
   MissionType,
 } from '~/model/missions';
+import { isValidPosition } from '~/model/position';
 import { selectionForSubset } from '~/selectors/selection';
 import { selectOrdered } from '~/utils/collections';
 import {
@@ -550,14 +551,15 @@ export const getMaximumDistanceBetweenHomePositionsAndGeofence = createSelector(
       return 0;
     }
 
-    const homePoints = homePositions.map(({ lon, lat }) =>
-      TurfHelpers.point([lon, lat])
-    );
+    const homePoints = homePositions
+      // TODO: `!isNil(hp)` check should be enough when migrating to TypeScript
+      .filter((hp) => isValidPosition(hp))
+      .map(({ lon, lat }) => TurfHelpers.point([lon, lat]));
     const geofencePoints = geofencePolygon.map(TurfHelpers.point);
     const distances = homePoints.flatMap((hp) =>
       geofencePoints.map((gp) => turfDistanceInMeters(hp, gp))
     );
-    return max(distances) || 0;
+    return max(distances) ?? 0;
   }
 );
 
