@@ -1,12 +1,13 @@
 /* global VERSION */
 
 import formatDate from 'date-fns/format';
-import isEmpty from 'lodash-es/isEmpty';
 import isNil from 'lodash-es/isNil';
 import pickBy from 'lodash-es/pickBy';
+import unary from 'lodash-es/unary';
 import { getDistance as haversineDistance } from 'ol/sphere';
 
 import { findAssignmentInDistanceMatrix } from '~/algorithms/matching';
+import { Colors } from '~/components/colors';
 import { showErrorMessage } from '~/features/error-handling/actions';
 import { setSelection } from '~/features/map/selection';
 import {
@@ -15,11 +16,16 @@ import {
 } from '~/features/map-features/actions';
 import {
   getFeatureById,
+  getProposedIdForNewFeature,
   getSingleSelectedFeatureIdOfType,
 } from '~/features/map-features/selectors';
-import { removeFeaturesByIds } from '~/features/map-features/slice';
+import {
+  addFeatureById,
+  removeFeaturesByIds,
+} from '~/features/map-features/slice';
 import { showPromptDialog } from '~/features/prompt/actions';
-import { updateGeofencePolygon } from '~/features/show/actions';
+import { getGeofenceSettings } from '~/features/safety/selectors';
+import { addGeofencePolygonBasedOnShowTrajectories } from '~/features/show/actions';
 import {
   getFirstPointsOfTrajectories,
   getOutdoorShowCoordinateSystem,
@@ -47,7 +53,7 @@ import {
 import { openUploadDialogForJob } from '~/features/upload/slice';
 import { ServerPlanError } from '~/flockwave/operations';
 import messageHub from '~/message-hub';
-import { FeatureType } from '~/model/features';
+import { FeatureType, LabelStyle } from '~/model/features';
 import {
   missionItemIdToGlobalId,
   missionSlotIdToGlobalId,
@@ -63,10 +69,16 @@ import {
 import { readFileAsText } from '~/utils/files';
 import { readTextFromFile, writeTextToFile } from '~/utils/filesystem';
 import {
+  bufferPolygon,
+  lonLatFromMapViewCoordinate,
   toLonLatFromScaledJSON,
   translateLonLatWithMapViewDelta,
 } from '~/utils/geography';
-import { calculateDistanceMatrix, euclideanDistance2D } from '~/utils/math';
+import {
+  calculateDistanceMatrix,
+  euclideanDistance2D,
+  simplifyPolygon,
+} from '~/utils/math';
 import { chooseUniqueId } from '~/utils/naming';
 
 import { JOB_TYPE } from './constants';
@@ -78,6 +90,7 @@ import {
 } from './parameter-context';
 import {
   createCanMoveSelectedMissionItemsByDeltaSelector,
+  getConvexHullOfHomePositionsAndMissionItemsInMapViewCoordinates,
   getEmptyMappingSlotIndices,
   getGeofencePolygon,
   getGeofencePolygonId,
@@ -93,6 +106,7 @@ import {
   getMissionPlannerDialogContextParameters,
   getMissionPlannerDialogSelectedType,
   getMissionPlannerDialogUserParameters,
+  getMissionType,
   getSelectedMissionItemIds,
   shouldMissionPlannerDialogApplyGeofence,
 } from './selectors';
@@ -104,6 +118,7 @@ import {
   removeMissionItemsByIds,
   removeUAVsFromMapping,
   replaceMapping,
+  setGeofencePolygonId,
   setLastClearedMissionData,
   setLastSuccessfulPlannerInvocationParameters,
   setMappingLength,
@@ -260,9 +275,8 @@ export const addVirtualDronesForMission = () => async (dispatch, getState) => {
 
   // Okay, this will have nothing to do with dispatching actions -- we
   // will simply send requests to the server.
-  const config = await messageHub.query.getConfigurationOfExtension(
-    'virtual_uavs'
-  );
+  const config =
+    await messageHub.query.getConfigurationOfExtension('virtual_uavs');
 
   // Update the coordinate system of the show
   config.origin = showCoordinateSystem.origin.slice(0, 2);
@@ -359,6 +373,109 @@ export const importMapping = () => async (dispatch, getState) => {
     dispatch(replaceMapping(mapping));
   } catch (error) {
     dispatch(showError(`Error while importing mapping: ${String(error)}`));
+  }
+};
+
+/**
+ * Thunk that adds a geofence polygon with the given coordinates.
+ */
+export const addGeofencePolygon =
+  (coordinates, owner, toLonLat) => (dispatch, getState) => {
+    const state = getState();
+
+    const { horizontalMargin, simplify, maxVertexCount } =
+      getGeofenceSettings(state);
+
+    const points = bufferPolygon(coordinates, horizontalMargin);
+
+    const simplifiedPoints = simplify
+      ? simplifyPolygon(points, maxVertexCount)
+      : points;
+
+    if (simplifiedPoints.length < 3) {
+      throw new Error('Calculated geofence contains less than 3 points');
+    }
+
+    const geofencePolygon = {
+      label: 'Geofence',
+      labelStyle: LabelStyle.HIDDEN,
+      /* use a line string as the geofence, not a polygon -- if we use a polygon,
+       * it means that any click inside the geofence would be considered as a
+       * "hit" for the geofence feature */
+      type: FeatureType.LINE_STRING,
+      owner,
+      /* don't use a label; the geofence usually overlaps with the convex hull of
+       * the show so it is confusing if the "Geofence" label appears in the middle
+       * of the convex hull */
+      color: Colors.geofence,
+      points: simplifiedPoints.map(toLonLat),
+    };
+    const geofencePolygonId = getProposedIdForNewFeature(
+      state,
+      geofencePolygon
+    );
+    dispatch(
+      addFeatureById({ feature: geofencePolygon, id: geofencePolygonId })
+    );
+    dispatch(setGeofencePolygonId(geofencePolygonId));
+  };
+
+/**
+ * Thunk that adds a geofence polygon based on the current mission items.
+ */
+const addGeofencePolygonBasedOnMissionItems = () => (dispatch, getState) => {
+  const state = getState();
+
+  const coordinates =
+    getConvexHullOfHomePositionsAndMissionItemsInMapViewCoordinates(state);
+  if (coordinates.length === 0) {
+    dispatch(
+      showNotification({
+        message: `Could not calculate geofence coordinates.
+                  Are there valid mission items with coordinates?`,
+        semantics: MessageSemantics.ERROR,
+        permanent: true,
+      })
+    );
+    return;
+  }
+
+  dispatch(
+    addGeofencePolygon(
+      coordinates,
+      MissionType.WAYPOINT,
+      unary(lonLatFromMapViewCoordinate)
+    )
+  );
+};
+
+/**
+ * Thunk that updates (adds if missing, replaces if present) the geofence
+ * polygon based on the current mission type.
+ */
+export const updateGeofencePolygon = () => (dispatch, getState) => {
+  dispatch(removeGeofencePolygon());
+  const missionType = getMissionType(getState());
+  switch (missionType) {
+    case MissionType.SHOW: {
+      dispatch(addGeofencePolygonBasedOnShowTrajectories());
+      break;
+    }
+
+    case MissionType.WAYPOINT: {
+      dispatch(addGeofencePolygonBasedOnMissionItems());
+      break;
+    }
+
+    default: {
+      dispatch(
+        showNotification({
+          message: `Cannot update geofence for mission type: "${missionType}"`,
+          semantics: MessageSemantics.ERROR,
+          permanent: true,
+        })
+      );
+    }
   }
 };
 
