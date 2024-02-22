@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import { Translation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import Box from '@material-ui/core/Box';
@@ -51,54 +52,64 @@ const MappingEditorToolbar = React.forwardRef(
       useDropdown();
 
     return (
-      <Toolbar ref={ref} disableGutters variant='dense' {...rest}>
-        <IconButton disabled>
-          <Mouse />
-        </IconButton>
-        <Box style={instructionsStyle}>Click to edit a single slot.</Box>
-        <IconButton disabled>
-          <OpenWith />
-        </IconButton>
-        <Box style={instructionsStyle}>
-          Drag nodes to rearrange the mapping.
-        </Box>
-        <Box flex={1} />
-        <IconButton onClick={finishMappingEditorSession}>
-          <Check />
-        </IconButton>
-        <IconButton onClick={openMappingMenu}>
-          <MoreVert />
-        </IconButton>
-        <Menu
-          anchorEl={menuAnchorElement}
-          open={menuAnchorElement !== null}
-          variant='menu'
-          onClose={closeMappingMenu}
-        >
-          <MenuItem
-            disabled={!canAugmentMapping}
-            onClick={
-              canAugmentMapping ? closeMappingMenu(augmentMapping) : null
-            }
-          >
-            Assign spares
-          </MenuItem>
-          <Divider />
-          {importAllowed && (
-            <MenuItem onClick={closeMappingMenu(importMapping)}>
-              Import mapping…
-            </MenuItem>
-          )}
-          <MenuItem onClick={closeMappingMenu(exportMapping)}>
-            Export mapping…
-          </MenuItem>
-          <Divider />
-          <MenuItem onClick={closeMappingMenu(clearMapping)}>Clear</MenuItem>
-          <MenuItem onClick={closeMappingMenu(removeMissingUAVsFromMapping)}>
-            Clear missing
-          </MenuItem>
-        </Menu>
-      </Toolbar>
+      <Translation>
+        {(t) => (
+          <Toolbar ref={ref} disableGutters variant='dense' {...rest}>
+            <IconButton disabled>
+              <Mouse />
+            </IconButton>
+            <Box style={instructionsStyle}>
+              {t('mappingEditorToolbar.clickToEdit')}
+            </Box>
+            <IconButton disabled>
+              <OpenWith />
+            </IconButton>
+            <Box style={instructionsStyle}>
+              {t('mappingEditorToolbar.dragNodes')}
+            </Box>
+            <Box flex={1} />
+            <IconButton onClick={finishMappingEditorSession}>
+              <Check />
+            </IconButton>
+            <IconButton onClick={openMappingMenu}>
+              <MoreVert />
+            </IconButton>
+            <Menu
+              anchorEl={menuAnchorElement}
+              open={menuAnchorElement !== null}
+              variant='menu'
+              onClose={closeMappingMenu}
+            >
+              <MenuItem
+                disabled={!canAugmentMapping}
+                onClick={
+                  canAugmentMapping ? closeMappingMenu(augmentMapping) : null
+                }
+              >
+                {t('mappingEditorToolbar.assignSpares')}
+              </MenuItem>
+              <Divider />
+              {importAllowed && (
+                <MenuItem onClick={closeMappingMenu(importMapping)}>
+                  {t('mappingEditorToolbar.importMapping')}
+                </MenuItem>
+              )}
+              <MenuItem onClick={closeMappingMenu(exportMapping)}>
+                {t('mappingEditorToolbar.exportMapping')}
+              </MenuItem>
+              <Divider />
+              <MenuItem onClick={closeMappingMenu(clearMapping)}>
+                {t('mappingEditorToolbar.clear')}
+              </MenuItem>
+              <MenuItem
+                onClick={closeMappingMenu(removeMissingUAVsFromMapping)}
+              >
+                {t('mappingEditorToolbar.clearMissing')}
+              </MenuItem>
+            </Menu>
+          </Toolbar>
+        )}
+      </Translation>
     );
   }
 );

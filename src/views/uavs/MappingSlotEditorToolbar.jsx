@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import { Translation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import Box from '@material-ui/core/Box';
@@ -31,26 +32,32 @@ const MappingSlotEditorToolbar = React.forwardRef(
   ({ cancelMappingEditorSessionAtCurrentSlot, ...rest }, ref) => {
     const classes = useStyles();
     return (
-      <Toolbar ref={ref} disableGutters variant='dense' {...rest}>
-        <IconButton disabled>
-          <Keyboard />
-        </IconButton>
-        <Box className={classes.box}>
-          <kbd>Enter</kbd> Save
-        </Box>
-        <Divider orientation='vertical' className={classes.divider} />
-        <Box className={classes.box}>
-          <kbd>Tab</kbd> Select next empty slot
-        </Box>
-        <Divider orientation='vertical' className={classes.divider} />
-        <Box className={classes.box}>
-          Hold <kbd>Shift</kbd> to reverse direction.
-        </Box>
-        <Box flex={1} />
-        <IconButton onClick={cancelMappingEditorSessionAtCurrentSlot}>
-          <Close />
-        </IconButton>
-      </Toolbar>
+      <Translation>
+        {(t) => (
+          <Toolbar ref={ref} disableGutters variant='dense' {...rest}>
+            <IconButton disabled>
+              <Keyboard />
+            </IconButton>
+            <Box className={classes.box}>
+              <kbd>Enter</kbd> {t('savedLocationEditor.save')}
+            </Box>
+            <Divider orientation='vertical' className={classes.divider} />
+            <Box className={classes.box}>
+              <kbd>Tab</kbd> {t('mappingSlotEditorToolbar.selectNextEmptySlot')}
+            </Box>
+            <Divider orientation='vertical' className={classes.divider} />
+            <Box className={classes.box}>
+              {t('mappingSlotEditorToolbar.reverseDirection', {
+                shift: <kbd>Shift</kbd>,
+              })}
+            </Box>
+            <Box flex={1} />
+            <IconButton onClick={cancelMappingEditorSessionAtCurrentSlot}>
+              <Close />
+            </IconButton>
+          </Toolbar>
+        )}
+      </Translation>
     );
   }
 );

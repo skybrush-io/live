@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { withTranslation } from 'react-i18next';
+import { Translation, withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import Box from '@material-ui/core/Box';
@@ -48,35 +48,39 @@ const UploadResultIndicator = ({ result, running, ...rest }) => {
 
   if (running) {
     status = Status.NEXT;
-    message = 'Upload in progress...';
+    message = 'uploadPanel.uploadInProgress';
   }
 
   switch (result) {
     case 'success':
       status = Status.SUCCESS;
-      message = 'Upload finished successfully.';
+      message = 'uploadPanel.uploadFinishedSuccessfully';
       break;
 
     case 'cancelled':
       status = Status.WARNING;
-      message = 'Upload cancelled by user.';
+      message = 'uploadPanel.uploadCancelled';
       break;
 
     case 'error':
       status = Status.ERROR;
-      message = 'Upload attempt failed.';
+      message = 'uploadPanel.uploadAttemptFailed';
       break;
 
     default:
       status = Status.INFO;
-      message = 'Upload not finished yet.';
+      message = 'uploadPanel.uploadNotFinishedYet';
       break;
   }
 
   return (
-    <LabeledStatusLight status={status} size='small' {...rest}>
-      {message}
-    </LabeledStatusLight>
+    <Translation>
+      {(t) => (
+        <LabeledStatusLight status={status} size='small' {...rest}>
+          {t(message)}
+        </LabeledStatusLight>
+      )}
+    </Translation>
   );
 };
 
