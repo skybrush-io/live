@@ -142,6 +142,19 @@
     "unnamedPolygon": "unnamed polygon",
     "useAsGeofence": "Use as geofence"
   },
+  "mappingEditorToolbar": {
+    "assignSpares": "Assign spares",
+    "clear": "Clear",
+    "clearMissing": "Clear missing",
+    "clickToEdit": "Click to edit a single slot.",
+    "dragNodes": "Drag nodes to rearrange the mapping.",
+    "exportMapping": "Export mapping…",
+    "importMapping": "Import mapping…"
+  },
+  "mappingSlotEditorToolbar": {
+    "reverseDirection": "",
+    "selectNextEmptySlot": "Select next empty slot"
+  },
   "mappingToggleButton": {
     "sortByMissionID": "Sort by mission IDs"
   },
@@ -382,7 +395,12 @@
   "uploadPanel": {
     "cancelUpload": "Cancel upload",
     "flashLightsWhereFailed": "Flash lights of UAVs where the upload failed",
-    "retryFailedAttempts": "Retry failed attempts automatically"
+    "retryFailedAttempts": "Retry failed attempts automatically",
+    "uploadAttemptFailed": "Upload attempt failed.",
+    "uploadCancelled": "Upload cancelled by user.",
+    "uploadFinishedSuccessfully": "Upload finished successfully.",
+    "uploadInProgress": "Upload in progress…",
+    "uploadNotFinishedYet": "Upload not finished yet."
   },
   "uploadStatusLegend": {
     "clearUploadQueue": "Clear upload queue",

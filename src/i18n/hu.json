@@ -142,6 +142,19 @@
     "unnamedPolygon": "névtelen sokszög",
     "useAsGeofence": "Alkalmazás geofence-ként"
   },
+  "mappingEditorToolbar": {
+    "assignSpares": "Tartalékok hozzárendelése",
+    "clear": "Törlés",
+    "clearMissing": "Hiányzó törlése",
+    "clickToEdit": "Kattintson egy hely szerkesztéséhez.",
+    "dragNodes": "Húzza az ikonokat a térképezés átrendezéséhez.",
+    "exportMapping": "Térképezés exportálása…",
+    "importMapping": "Térképezés importálása…"
+  },
+  "mappingSlotEditorToolbar": {
+    "reverseDirection": "ezmegaz {{shift}}",
+    "selectNextEmptySlot": "Következő üres hely kiválasztása"
+  },
   "mappingToggleButton": {
     "sortByMissionID": "Rendezés küldetés ID alapján"
   },
@@ -382,7 +395,12 @@
   "uploadPanel": {
     "cancelUpload": "Feltöltés megszakítása",
     "flashLightsWhereFailed": "Azon drónok villogtatása, ahol nem sikerült a feltöltés",
-    "retryFailedAttempts": "Sikertelen kísérletek automatikus újrapróbálása"
+    "retryFailedAttempts": "Sikertelen kísérletek automatikus újrapróbálása",
+    "uploadAttemptFailed": "A feltöltés sikertelen.",
+    "uploadCancelled": "A feltöltést a felhasználó megszakította.",
+    "uploadFinishedSuccessfully": "A feltöltés sikeresen befejeződött.",
+    "uploadInProgress": "Feltöltés folyamatban…",
+    "uploadNotFinishedYet": "A feltöltés még nem fejeződött be."
   },
   "uploadStatusLegend": {
     "clearUploadQueue": "Feltöltési sor törlése",
