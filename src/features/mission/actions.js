@@ -1,6 +1,7 @@
 /* global VERSION */
 
 import formatDate from 'date-fns/format';
+import { produce } from 'immer';
 import isNil from 'lodash-es/isNil';
 import pickBy from 'lodash-es/pickBy';
 import unary from 'lodash-es/unary';
@@ -685,6 +686,24 @@ export const uploadMissionItemsToSelectedUAV = () => (dispatch, getState) => {
 };
 
 /**
+ * Helper function that transforms certain mission items received from the
+ * planner before storing them in the state of the application.
+ */
+const processReceivedMissionItem = (item) => {
+  switch (item.type) {
+    case MissionItemType.UPDATE_FLIGHT_AREA:
+      return produce(item, (draft) => {
+        for (const p of draft.parameters.flightArea.polygons) {
+          p.points = p.points.map(toLonLatFromScaledJSON);
+        }
+      });
+
+    default:
+      return item;
+  }
+};
+
+/**
  * Thunk that prepares a mission by assigning context based parameters, invokes
  * the planner on the server and sets up a mission according to the response.
  */
@@ -779,7 +798,7 @@ export const invokeMissionPlanner =
     if (Array.isArray(items)) {
       dispatch(setMissionType(MissionType.WAYPOINT));
       dispatch(setMissionName(name));
-      dispatch(setMissionItemsFromArray(items));
+      dispatch(setMissionItemsFromArray(items.map(processReceivedMissionItem)));
       dispatch(prepareMappingForSingleUAVMissionFromSelection());
       dispatch(closeMissionPlannerDialog());
 

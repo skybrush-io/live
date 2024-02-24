@@ -1,3 +1,4 @@
+import { produce } from 'immer';
 import { CANCEL } from 'redux-saga';
 
 import {
@@ -52,55 +53,47 @@ async function runSingleMissionItemUpload({ uavId, payload }) {
  * E.g., this function can be used to fill in the details of the current
  * geofence in the "update geofence" mission item.
  *
- * @param {object} item  the mission item to be transformed in-place
+ * @param {object} item  the mission item to be transformed
  * @param {object} state the current state of the application
  * @return a new mission item when it is modified, or the item itself if it
  *         does not need to be modified
  */
 export function transformMissionItemBeforeUpload(item, state) {
   switch (item.type) {
+    case MissionItemType.UPDATE_FLIGHT_AREA:
+      return produce(item, (draft) => {
+        for (const p of draft.parameters.flightArea.polygons) {
+          p.points = p.points.map(toScaledJSONFromLonLat);
+        }
+      });
+
     case MissionItemType.UPDATE_GEOFENCE:
-      item = {
-        ...item,
-        parameters: {
-          ...item.parameters,
-          coordinateSystem: 'geodetic',
-          // TODO(ntamas): transform polygon coordinates to the format used over the wire
-          geofence: getGeofenceSpecificationForWaypointMission(state),
-        },
-      };
-      break;
+      return produce(item, (draft) => {
+        draft.parameters.coordinateSystem = 'geodetic';
+        draft.parameters.geofence =
+          getGeofenceSpecificationForWaypointMission(state);
+      });
 
     case MissionItemType.UPDATE_SAFETY:
-      item = {
-        ...item,
-        parameters: {
-          ...item.parameters,
-          safety: {
-            ...item.parameters.safety,
-            ...getSafetySettings(state),
-          },
-        },
-      };
-      break;
+      return produce(item, (draft) => {
+        Object.assign(draft.parameters.safety, getSafetySettings(state));
+      });
 
     default:
-      break;
+      return item;
   }
-
-  return item;
 }
 
 /**
  * Selector that returns the payload of the mission item upload job.
  */
-export const getMissionItemUploadJobPayload = (state) => {
-  const name = getMissionName(state);
-  const items = getMissionItemsInOrder(state).map((item) =>
+export const getMissionItemUploadJobPayload = (state) => ({
+  version: 1,
+  name: getMissionName(state),
+  items: getMissionItemsInOrder(state).map((item) =>
     transformMissionItemBeforeUpload(item, state)
-  );
-  return { version: 1, name, items };
-};
+  ),
+});
 
 /**
  * Retrieves a complete geofence specification object that is to be used in
