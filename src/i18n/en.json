@@ -35,6 +35,11 @@
     "surveyNo": "No survey in progress",
     "surveySuccesful": "Survey successful"
   },
+  "UAVList": {
+    "allUAVs": "All UAVs",
+    "assignedUAVs": "Assigned UAVs",
+    "spareUAVs": "Spare UAVs"
+  },
   "UAVOpButtonGrp": {
     "armMotors": "Arm motors",
     "disarmMotors": "Disarm motors",
@@ -68,15 +73,40 @@
   },
   "authentication": "Authentication",
   "batteryStatusHeaderButton": "Showing average and minimum charge levels.",
+  "bearingCalculator": {
+    "addAtLeastTwoItems": "Add at least two items to calculate the bearing and distance between them",
+    "bearing": ", bearing: ",
+    "finalBearing": ", final bearing: ",
+    "initialBearing": ", initial bearing: ",
+    "selectTwoItems": "Select exactly two items to calculate the bearing and distance between them"
+  },
   "broadcastButton": {
     "disable": "Disable broadcast",
     "enable": "Enable broadcast for {{time}} seconds"
+  },
+  "coordinateAveragingDialogToolbar": {
+    "addNewDrone": "Add new drone",
+    "copyCentroid": "Copy centroid",
+    "pauseMeasurement": "Pause measurement",
+    "removeSelected": "Remove selected",
+    "resetMeasurement": "Reset measurement",
+    "resumeMeasurement": "Resume measurement",
+    "setCentroidAsMapOrigin": "Set centroid as map origin"
   },
   "environmentEditorDialog": {
     "environmentSettings": "Environment settings"
   },
   "fieldNotesPanel": {
     "exportNotesAsFile": "Export notes as Markdown file"
+  },
+  "filtering": {
+    "all": "All",
+    "errors": "Errors",
+    "errorsOnly": "Errors only",
+    "noTelem": "No telem",
+    "noTelemetryOnly": "No telemetry only",
+    "warn/Err": "Warn/Err",
+    "warningsAndErrors": "Warnings and errors"
   },
   "fitAllFeaturesButton": {
     "fitAllDrones": "Fit all drones",
@@ -141,6 +171,11 @@
     "takeOff": "Takeoff",
     "unnamedPolygon": "unnamed polygon",
     "useAsGeofence": "Use as geofence"
+  },
+  "mappingButtonGroup": {
+    "editMapping": "Edit mapping",
+    "hideEmptyMissionSlots": "Hide empty mission slots",
+    "showEmptyMissionSlots": "Show empty mission slots"
   },
   "mappingEditorToolbar": {
     "assignSpares": "Assign spares",
@@ -355,6 +390,26 @@
   },
   "sidebar": {
     "missionType": "Mission type: ({{missionType}})"
+  },
+  "sortAndFilterHeader": {
+    "ascending": "Ascending",
+    "composite": "Composite",
+    "descending": "Descending",
+    "filter": "Filter",
+    "filterBy": "Filter by",
+    "sortBy": "Sort by"
+  },
+  "sorting": {
+    "agl": "Altitude above ground",
+    "ahl": "Altitude above home",
+    "amsl": "Altitude (MSL)",
+    "battery": "Battery",
+    "default": "Default",
+    "flightMode": "Flight mode",
+    "gpsFix": "GPS fix",
+    "heading": "Heading",
+    "mode": "Mode",
+    "status": "Status"
   },
   "startUploadButton": {
     "start": "Start",

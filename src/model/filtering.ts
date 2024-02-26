@@ -37,20 +37,20 @@ export const UAVFilters: readonly UAVFilter[] = [
  * Human-readable labels that should be used on the UI to represent a UAV filter preset.
  */
 export const labelsForUAVFilter: Record<UAVFilter, string> = {
-  [UAVFilter.DEFAULT]: 'All',
-  [UAVFilter.WITH_WARNINGS]: 'Warnings and errors',
-  [UAVFilter.WITH_ERRORS]: 'Errors only',
-  [UAVFilter.INACTIVE_ONLY]: 'No telemetry only',
+  [UAVFilter.DEFAULT]: 'filtering.all',
+  [UAVFilter.WITH_WARNINGS]: 'filtering.warningsAndErrors',
+  [UAVFilter.WITH_ERRORS]: 'filtering.errorsOnly',
+  [UAVFilter.INACTIVE_ONLY]: 'filtering.noTelemetryOnly',
 };
 
 /**
  * Human-readable short labels that should be used on the UI to represent a UAV filter preset.
  */
 export const shortLabelsForUAVFilter: Record<UAVFilter, string> = {
-  [UAVFilter.DEFAULT]: 'All',
-  [UAVFilter.WITH_WARNINGS]: 'Warn/Err',
-  [UAVFilter.WITH_ERRORS]: 'Errors',
-  [UAVFilter.INACTIVE_ONLY]: 'No telem',
+  [UAVFilter.DEFAULT]: 'filtering.all',
+  [UAVFilter.WITH_WARNINGS]: 'filtering.warn/Err',
+  [UAVFilter.WITH_ERRORS]: 'filtering.errors',
+  [UAVFilter.INACTIVE_ONLY]: 'filtering.noTelem',
 };
 
 export const getFilterFunctionForUAVFilter = memoize(

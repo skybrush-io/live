@@ -2,6 +2,7 @@ import clsx from 'clsx';
 import createColor from 'color';
 import PropTypes from 'prop-types';
 import React, { useCallback, useRef } from 'react';
+import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import Chip from '@material-ui/core/Chip';
@@ -369,6 +370,7 @@ const SortAndFilterHeader = ({
   onToggleSortDirection,
   showMissionIds,
   sortBy,
+  t,
 }) => {
   const classes = useStyles();
   const sortChipRef = useRef();
@@ -439,7 +441,7 @@ const SortAndFilterHeader = ({
           ref={sortChipRef}
           className={isSortActive ? classes.chipActive : classes.chip}
           variant='outlined'
-          label={shortLabelsForUAVSortKey[sortBy.key] || 'Default'}
+          label={t(shortLabelsForUAVSortKey[sortBy.key]) || 'Default'}
           size='small'
           deleteIcon={sortBy?.reverse ? <SortDescending /> : <SortAscending />}
           {...bindChip({
@@ -450,22 +452,24 @@ const SortAndFilterHeader = ({
         />
         <Menu {...bindMenu(sortPopupState)}>
           <MenuItem dense disabled>
-            Sort by
+            {t('sortAndFilterHeader.sortBy')}
           </MenuItem>
           {UAVSortKeys.map((sortKey) => (
             <CheckableMenuItem
               key={sortKey}
-              label={labelsForUAVSortKey[sortKey]}
+              label={t(labelsForUAVSortKey[sortKey])}
               selected={sortBy.key === sortKey}
               onClick={() => setSortKey(sortKey)}
             />
           ))}
           <Divider style={{ margin: '4px 0' }} />
           <MenuItem dense onClick={() => setSortReversed(false)}>
-            Ascending{!sortBy?.reverse && check}
+            {t('sortAndFilterHeader.ascending')}
+            {!sortBy?.reverse && check}
           </MenuItem>
           <MenuItem dense onClick={() => setSortReversed(true)}>
-            Descending{sortBy?.reverse && check}
+            {t('sortAndFilterHeader.descending')}
+            {sortBy?.reverse && check}
           </MenuItem>
         </Menu>
 
@@ -476,9 +480,9 @@ const SortAndFilterHeader = ({
           label={
             isFilterActive
               ? filters.length > 1
-                ? 'Composite'
-                : shortLabelsForUAVFilter[filters[0]]
-              : 'Filter'
+                ? t('sortAndFilterHeader.composite')
+                : t(shortLabelsForUAVFilter[filters[0]])
+              : t('sortAndFilterHeader.filter')
           }
           size='small'
           deleteIcon={
@@ -492,12 +496,12 @@ const SortAndFilterHeader = ({
         />
         <Menu {...bindMenu(filterPopupState)}>
           <MenuItem dense disabled>
-            Filter by
+            {t('sortAndFilterHeader.filterBy')}
           </MenuItem>
           {UAVFilters.map((filter) => (
             <CheckableMenuItem
               key={filter}
-              label={labelsForUAVFilter[filter]}
+              label={t(labelsForUAVFilter[filter])}
               selected={
                 (filters.length === 1 && filters[0] === filter) ||
                 (filter === UAVFilter.DEFAULT && filters.length === 0)
@@ -534,6 +538,7 @@ SortAndFilterHeader.propTypes = {
     key: PropTypes.string,
     reverse: PropTypes.bool,
   }),
+  t: PropTypes.func,
 };
 
 export default connect(
@@ -550,4 +555,4 @@ export default connect(
     onSetSortBy: setUAVListSortPreference,
     onToggleSortDirection: toggleUAVListSortDirection,
   }
-)(SortAndFilterHeader);
+)(withTranslation()(SortAndFilterHeader));

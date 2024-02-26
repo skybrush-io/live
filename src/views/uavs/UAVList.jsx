@@ -12,6 +12,7 @@ import React, { useCallback } from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { connect } from 'react-redux';
+import { withTranslation } from 'react-i18next';
 import { bindActionCreators } from '@reduxjs/toolkit';
 
 import AppBar from '@material-ui/core/AppBar';
@@ -332,6 +333,7 @@ const UAVListPresentation = ({
   selectedMissionIndices,
   selectionInfo,
   showMissionIds,
+  t,
   uavIds,
 }) => {
   const classes = useListStyles();
@@ -405,7 +407,9 @@ const UAVListPresentation = ({
           ids={mainUAVIds}
           itemFactory={itemFactory}
           itemFactoryOptions={itemFactoryOptions}
-          label={showMissionIds ? 'Assigned UAVs' : 'All UAVs'}
+          label={
+            showMissionIds ? t('UAVList.assignedUAVs') : t('UAVList.allUAVs')
+          }
           layout={layout}
           value='mainUAVIds'
           onSelect={onSelectSection}
@@ -415,7 +419,7 @@ const UAVListPresentation = ({
           ids={spareUAVIds}
           itemFactory={itemFactory}
           itemFactoryOptions={itemFactoryOptions}
-          label='Spare UAVs'
+          label={t('UAVList.spareUAVs')}
           layout={layout}
           value='spareUAVIds'
           forceVisible={editingMapping}
@@ -471,6 +475,7 @@ UAVListPresentation.propTypes = {
     }),
   }),
   showMissionIds: PropTypes.bool,
+  t: PropTypes.func,
   uavIds: PropTypes.exact({
     mainUAVIds: PropTypes.arrayOf(PropTypes.array).isRequired,
     spareUAVIds: PropTypes.arrayOf(PropTypes.array).isRequired,
@@ -604,6 +609,6 @@ const UAVList = connect(
       ),
     });
   }
-)(UAVListPresentation);
+)(withTranslation()(UAVListPresentation));
 
 export default UAVList;
