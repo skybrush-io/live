@@ -1,6 +1,6 @@
 {
   "": "",
-    "APIKeysTab": {
+  "APIKeysTab": {
     "description": "Egyes térképcsempe szolgáltatók API kulcs nélkül működnek; ebben az esetben egy alapértelmezett API kulcs van használatban. Ez az API kulcs minden felhasználóval meg van osztva. Nem vállalunk garanciát a térképcsempék elérhetőségére, ha az alapértelmezett megosztott API kulcs van használatban."
   },
   "ConnectionStatusMiniList": {
@@ -35,6 +35,11 @@
     "surveyNo": "Nincs felmérés folyamatban",
     "surveySuccesful": "A felmérés sikeres"
   },
+  "UAVList": {
+    "allUAVs": "Összes drón",
+    "assignedUAVs": "Hozzárendelt drónok",
+    "spareUAVs": "Tartalék drónok"
+  },
   "UAVOpButtonGrp": {
     "armMotors": "Motorok indítása",
     "disarmMotors": "Motorok leállítása",
@@ -68,15 +73,40 @@
   },
   "authentication": "Felhasználó azonosítása",
   "batteryStatusHeaderButton": "Átlagos és minimális töltési szintek kijelzése.",
+  "bearingCalculator": {
+    "addAtLeastTwoItems": "Adjon hozzá legalább két elemet a köztük lévő tájolat és távolság kiszámításához",
+    "bearing": ", tájolat: ",
+    "finalBearing": ", végső tájolat: ",
+    "initialBearing": ", kezdeti tájolat: ",
+    "selectTwoItems": "Válasszon ki pontosan két elemet a köztük lévő tájolat és távolság kiszámításához"
+  },
   "broadcastButton": {
     "disable": "Broadcast letiltása",
     "enable": "Broadcast engedélyezése {{time}} másodpercig"
+  },
+  "coordinateAveragingDialogToolbar": {
+    "addNewDrone": "Új drón hozzáadása",
+    "copyCentroid": "Centroid másolása",
+    "pauseMeasurement": "Mérés szüneteltetése",
+    "removeSelected": "A kiválaszott eltávolítása",
+    "resetMeasurement": "Mérés visszaállítása",
+    "resumeMeasurement": "Mérés folytatása",
+    "setCentroidAsMapOrigin": "Centroid beállítása a térkép origójaként"
   },
   "environmentEditorDialog": {
     "environmentSettings": "Környezeti beállítások"
   },
   "fieldNotesPanel": {
     "exportNotesAsFile": "Jegyzetek exportálása Markdown fájlként"
+  },
+  "filtering": {
+    "all": "Mind",
+    "errors": "Hibák",
+    "errorsOnly": "Csak hibák",
+    "noTelem": "Nincs telem",
+    "noTelemetryOnly": "Csak telemetria nélküliek",
+    "warn/Err": "Figyelm/Hiba",
+    "warningsAndErrors": "Figyelmeztetések és hibák"
   },
   "fitAllFeaturesButton": {
     "fitAllDrones": "Minden drón illesztése",
@@ -155,6 +185,11 @@
     "takeOff": "Felszállás",
     "unnamedPolygon": "névtelen sokszög",
     "useAsGeofence": "Alkalmazás geofence-ként"
+  },
+  "mappingButtonGroup": {
+    "editMapping": "Térképezés szerkesztése",
+    "hideEmptyMissionSlots": "Üres küldetéshelyek elrejtése",
+    "showEmptyMissionSlots": "Üres küldetéshelyek megjelenítése"
   },
   "mappingEditorToolbar": {
     "assignSpares": "Tartalékok hozzárendelése",
@@ -333,6 +368,26 @@
     "uploadShowData": "Műsor adatok feltöltése",
     "uploadShowDataLoading": "Kérem várjon, feltöltés…",
     "uploadShowDataStart": "Kattintson ide a feltötés megkezdéséhez"
+  },
+  "sortAndFilterHeader": {
+    "ascending": "Növekvő",
+    "composite": "Összetett",
+    "descending": "Csökkenő",
+    "filter": "Szűrő",
+    "filterBy": "Szűrés",
+    "sortBy": "Rendezés"
+  },
+  "sorting": {
+    "agl": "Tengerszint feletti magasság",
+    "ahl": "Magasság a kiindulási szinthez képest",
+    "amsl": "Magasság (MSL)",
+    "battery": "Akkumulátor",
+    "default": "Alapértelmezett",
+    "flightMode": "Repülés mód",
+    "gpsFix": "GPS javítás",
+    "heading": "Irány",
+    "mode": "Mód",
+    "status": "Státusz"
   },
   "startUploadButton": {
     "start": "Indítás",
