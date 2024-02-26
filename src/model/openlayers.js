@@ -53,6 +53,9 @@ export function isFeatureTransformable(object) {
   );
 }
 
+const lonLatsFromMapViewCoordinates = (cs) =>
+  cs.map(unary(lonLatFromMapViewCoordinate));
+
 /**
  * Converts an OpenLayers geometry object into a list of corresponding feature
  * objects that can be stored in the global state store.
@@ -60,7 +63,7 @@ export function isFeatureTransformable(object) {
  * @param  {ol.Geometry} olGeometry - the OpenLayers geometry
  * @return {Object} the list of features to store in the global state
  */
-export function createFeatureFromOpenLayersGeometry(olGeometry) {
+export function createFeaturesFromOpenLayersGeometry(olGeometry) {
   const type = olGeometry.getType();
   const coordinates = olGeometry.getCoordinates();
 
@@ -70,7 +73,7 @@ export function createFeatureFromOpenLayersGeometry(olGeometry) {
         {
           type: FeatureType.POINTS,
           filled: false,
-          points: [lonLatFromMapViewCoordinate(coordinates)],
+          points: lonLatsFromMapViewCoordinates([coordinates]),
         },
       ];
 
@@ -79,13 +82,10 @@ export function createFeatureFromOpenLayersGeometry(olGeometry) {
       return [
         {
           type: FeatureType.CIRCLE,
-          points: [
-            lonLatFromMapViewCoordinate(center),
-            lonLatFromMapViewCoordinate([
-              center[0] + olGeometry.getRadius(),
-              center[1],
-            ]),
-          ],
+          points: lonLatsFromMapViewCoordinates([
+            center,
+            [center[0] + olGeometry.getRadius(), center[1]],
+          ]),
         },
       ];
     }
@@ -95,7 +95,7 @@ export function createFeatureFromOpenLayersGeometry(olGeometry) {
         {
           type: FeatureType.LINE_STRING,
           filled: false,
-          points: coordinates.map(unary(lonLatFromMapViewCoordinate)),
+          points: lonLatsFromMapViewCoordinates(coordinates),
         },
       ];
 
@@ -104,9 +104,7 @@ export function createFeatureFromOpenLayersGeometry(olGeometry) {
         // Normalize the polygon by correcting overlapping or external holes
         normalizePolygon(
           // Convert between coordinate representations
-          coordinates.map((linearRing) =>
-            linearRing.map(unary(lonLatFromMapViewCoordinate))
-          )
+          coordinates.map(lonLatsFromMapViewCoordinates)
         )
           // "Open" the rings by removing their redundant last elements
           .map((coordinates) =>
@@ -124,7 +122,7 @@ export function createFeatureFromOpenLayersGeometry(olGeometry) {
     case 'MultiPolygon': {
       return olGeometry
         .getPolygons()
-        .flatMap(createFeatureFromOpenLayersGeometry);
+        .flatMap(createFeaturesFromOpenLayersGeometry);
     }
 
     default:
@@ -139,8 +137,8 @@ export function createFeatureFromOpenLayersGeometry(olGeometry) {
  * @param  {ol.Feature} olFeature - the OpenLayers feature
  * @return {Object} the list of features to store in the global state
  */
-export function createFeatureFromOpenLayers(olFeature) {
-  return createFeatureFromOpenLayersGeometry(olFeature.getGeometry());
+export function createFeaturesFromOpenLayers(olFeature) {
+  return createFeaturesFromOpenLayersGeometry(olFeature.getGeometry());
 }
 
 /**
@@ -173,7 +171,7 @@ export function handleFeatureUpdatesInOpenLayers(
     if (userFeatureId) {
       // Feature is a user-defined feature so update it in the Redux store
       const [updatedFeature, ...newFeatures] =
-        createFeatureFromOpenLayers(feature);
+        createFeaturesFromOpenLayers(feature);
       updatedUserFeatures[userFeatureId] = updatedFeature;
 
       newFeatures.forEach((nf) => {
@@ -191,7 +189,7 @@ export function handleFeatureUpdatesInOpenLayers(
         originFeatureId === MAP_ORIGIN_ID + '$y'
       ) {
         // Feature is the origin of the flat Earth coordinate system
-        const [featureObject] = createFeatureFromOpenLayers(feature);
+        const [featureObject] = createFeaturesFromOpenLayers(feature);
         const isYAxis = originFeatureId === MAP_ORIGIN_ID + '$y';
         const coords = feature.getGeometry().getCoordinates();
         const position = featureObject.points[0];

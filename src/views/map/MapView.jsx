@@ -49,7 +49,7 @@ import {
 } from '~/model/layers';
 import { MissionItemType } from '~/model/missions';
 import {
-  createFeatureFromOpenLayers,
+  createFeaturesFromOpenLayers,
   handleFeatureUpdatesInOpenLayers,
   isFeatureTransformable,
 } from '~/model/openlayers';
@@ -599,7 +599,7 @@ class MapViewPresentation extends React.Component {
    */
   _onDrawEnded = (event) => {
     try {
-      const [feature] = createFeatureFromOpenLayers(event.feature);
+      const [feature] = createFeaturesFromOpenLayers(event.feature);
       feature.owner = 'user';
       config.map.features.onCreate(feature);
       this.props.dispatch(addFeature(feature));

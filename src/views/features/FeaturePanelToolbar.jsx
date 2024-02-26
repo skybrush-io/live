@@ -13,7 +13,7 @@ import FolderOpen from '@material-ui/icons/FolderOpen';
 import FileButton from '~/components/FileButton';
 import { addFeatureWithName } from '~/features/map-features/actions';
 import { showError, showSuccess } from '~/features/snackbar/actions';
-import { createFeatureFromOpenLayers } from '~/model/openlayers';
+import { createFeaturesFromOpenLayers } from '~/model/openlayers';
 import { readFileAsArrayBuffer } from '~/utils/files';
 
 const useStyles = makeStyles(
@@ -72,7 +72,7 @@ export default connect(
           for (const featureCollection of featureCollections) {
             const parsedFeatures = geoJSON
               .readFeatures(featureCollection)
-              .flatMap((feature) => createFeatureFromOpenLayers(feature));
+              .flatMap((feature) => createFeaturesFromOpenLayers(feature));
             for (const [i, feature] of parsedFeatures.entries()) {
               const suffix = i === 0 ? '' : ` (${i})`;
               dispatch(
