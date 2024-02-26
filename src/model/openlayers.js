@@ -3,14 +3,16 @@
  * model objects and converting between the two.
  */
 
+import { produce } from 'immer';
 import isEmpty from 'lodash-es/isEmpty';
 import isNil from 'lodash-es/isNil';
 import unary from 'lodash-es/unary';
+import { batch } from 'react-redux';
 
 import { updateFlatEarthCoordinateSystem } from '~/features/map/origin';
 import { cloneFeatureById } from '~/features/map-features/actions';
 import { updateFeaturePropertiesByIds } from '~/features/map-features/slice';
-import { moveMissionItemCoordinateByMapCoordinateDelta } from '~/features/mission/actions';
+import { updateMissionItemFromFeature } from '~/features/mission/actions';
 import {
   moveOutdoorShowOriginByMapCoordinateDelta,
   rotateOutdoorShowOrientationByAngleAroundPoint,
@@ -23,23 +25,39 @@ import { toDegrees } from '~/utils/math';
 
 import { FeatureType } from './features';
 import {
+  CONVEX_HULL_AREA_ID,
   globalIdToAreaId,
   globalIdToFeatureId,
+  globalIdToMissionItemId,
   globalIdToOriginId,
   isAreaId,
   isFeatureId,
+  isMissionItemId,
   isOriginId,
   MAP_ORIGIN_ID,
-  CONVEX_HULL_AREA_ID,
-  globalIdToMissionItemId,
-  isMissionItemId,
 } from './identifiers';
+
+/**
+ * Returns whether the given OpenLayers feature is modifiable with a
+ * standard `Modify` interaction.
+ *
+ * @param  {ol.Feature|null|undefined}  object  the feature to test
+ * @return {boolean} whether the feature is modifiable
+ */
+export function isFeatureModifiable(object) {
+  if (isNil(object)) {
+    return false;
+  }
+
+  const id = object.getId();
+  return isFeatureId(id) || isMissionItemId(id);
+}
 
 /**
  * Returns whether the given OpenLayers feature is transformable with a
  * standard transformation interaction.
  *
- * @param  {ol.Feature|null|undefined}  obj  the feature to test
+ * @param  {ol.Feature|null|undefined}  object  the feature to test
  * @return {boolean} whether the feature is transformable
  */
 export function isFeatureTransformable(object) {
@@ -155,7 +173,7 @@ export function createFeaturesFromOpenLayers(olFeature) {
  *         individual vertices) or 'transform" (moving or rotating the entire
  *         feature)
  */
-export function handleFeatureUpdatesInOpenLayers(
+function _handleFeatureUpdatesInOpenLayers(
   features,
   dispatch,
   { event, type } = {}
@@ -244,23 +262,16 @@ export function handleFeatureUpdatesInOpenLayers(
       continue;
     }
 
-    // Is this feature a waypoint mission item?
+    // Is this feature a mission item?
     const missionItemId = globalIdToMissionItemId(globalId);
     if (missionItemId) {
-      if (type === 'transform') {
-        if (event.subType === 'move' && event.delta) {
-          dispatch(
-            moveMissionItemCoordinateByMapCoordinateDelta(
-              missionItemId,
-              event.delta
-            )
-          );
-        }
-      } else {
-        console.warn(
-          'This transformation is not handled for waypoint mission items yet'
-        );
-      }
+      dispatch(
+        updateMissionItemFromFeature(
+          missionItemId,
+          createFeaturesFromOpenLayers(feature)[0]
+        )
+      );
+      continue;
     }
   }
 
@@ -268,3 +279,13 @@ export function handleFeatureUpdatesInOpenLayers(
     dispatch(updateFeaturePropertiesByIds(updatedUserFeatures));
   }
 }
+
+// TODO: This won't be necessary after upgrading to React 18's `createRoot`:
+// https://react.dev/blog/2022/03/08/react-18-upgrade-guide#automatic-batching
+// (Individually updating multiple mission items triggers a render halfway,
+// which resets some features to their stored state before we can process them.)
+export const handleFeatureUpdatesInOpenLayers = (...args) => {
+  batch(() => {
+    _handleFeatureUpdatesInOpenLayers(...args);
+  });
+};

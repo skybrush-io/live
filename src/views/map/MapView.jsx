@@ -1,9 +1,10 @@
 import config from 'config';
 import filter from 'lodash-es/filter';
 import partial from 'lodash-es/partial';
+import Collection from 'ol/Collection';
 import { transform } from 'ol/proj';
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useCallback } from 'react';
 import { connect } from 'react-redux';
 
 import { Map, View, control, interaction, withMap } from '@collmot/ol-react';
@@ -25,25 +26,28 @@ import { isDrawingTool, Tool, toolToDrawInteractionProps } from './tools';
 
 import Widget from '~/components/Widget';
 import { handleError } from '~/error-handling';
-import { updateMapViewSettings } from '~/features/map/view';
 import {
   addToSelection,
-  setSelection,
   removeFromSelection,
+  setSelection,
 } from '~/features/map/selection';
 import { getSelectedTool } from '~/features/map/tools';
+import { updateMapViewSettings } from '~/features/map/view';
 import {
   addFeature,
   showDetailsForFeatureInTooltipOrGivenFeature,
 } from '~/features/map-features/actions';
 import { getSelectedFeatureIds } from '~/features/map-features/selectors';
 import { addNewMissionItem } from '~/features/mission/actions';
+import { getGeofencePolygonId } from '~/features/mission/selectors';
 import NearestItemTooltip from '~/features/session/NearestItemTooltip';
 import { setFeatureIdForTooltip } from '~/features/session/slice';
 import { getFollowMapSelectionInUAVDetailsPanel } from '~/features/uavs/selectors';
 import mapViewManager from '~/mapViewManager';
+import { featureIdToGlobalId } from '~/model/identifiers';
 import {
   canLayerTriggerTooltip,
+  getVisibleEditableLayers,
   getVisibleSelectableLayers,
   isLayerVisibleAndSelectable,
 } from '~/model/layers';
@@ -51,6 +55,7 @@ import { MissionItemType } from '~/model/missions';
 import {
   createFeaturesFromOpenLayers,
   handleFeatureUpdatesInOpenLayers,
+  isFeatureModifiable,
   isFeatureTransformable,
 } from '~/model/openlayers';
 import { getExtendedCoordinateFormatter } from '~/selectors/formatting';
@@ -62,11 +67,14 @@ import { getVisibleLayersInOrder } from '~/selectors/ordered';
 import { getSelection } from '~/selectors/selection';
 import { hasFeature } from '~/utils/configuration';
 import {
-  mapViewCoordinateFromLonLat,
   findFeaturesById,
   lonLatFromMapViewCoordinate,
+  mapViewCoordinateFromLonLat,
 } from '~/utils/geography';
 import { toDegrees } from '~/utils/math';
+import { forwardCollectionChanges } from '~/utils/openlayers';
+
+import { snapEndToStart } from './interactions/utils';
 
 import 'ol/ol.css';
 
@@ -205,9 +213,12 @@ const MapViewToolbars = () => {
  */
 const MapViewInteractions = withMap((props) => {
   const {
+    geofencePolygonId,
     onAddFeaturesToSelection,
     onAddWaypoint,
     onDrawEnded,
+    onFeatureModificationStarted,
+    onFeaturesModified,
     onFeaturesTransformed,
     onNearestFeatureChanged,
     onRemoveFeaturesFromSelection,
@@ -216,6 +227,33 @@ const MapViewInteractions = withMap((props) => {
     selectedFeaturesProvider,
     selectedTool,
   } = props;
+
+  const onModifyStart = useCallback(
+    (event) => {
+      event.features
+        .getArray()
+        .find((f) => f.getId() === featureIdToGlobalId(geofencePolygonId))
+        ?.getGeometry()
+        .on('change', snapEndToStart);
+
+      onFeatureModificationStarted?.(event);
+    },
+    [onFeatureModificationStarted, geofencePolygonId]
+  );
+
+  const onModifyEnd = useCallback(
+    (event) => {
+      event.features
+        .getArray()
+        .find((f) => f.getId() === featureIdToGlobalId(geofencePolygonId))
+        ?.getGeometry()
+        .un('change', snapEndToStart);
+
+      onFeaturesModified?.(event);
+    },
+    [onFeaturesModified, geofencePolygonId]
+  );
+
   const interactions = [];
 
   // Common interactions that can be used regardless of the selected tool
@@ -322,8 +360,8 @@ const MapViewInteractions = withMap((props) => {
       <interaction.AbortableDraw
         key='Draw'
         {...toolToDrawInteractionProps(selectedTool, props.map)}
-        onDrawEnd={onDrawEnded}
         abortCondition={Condition.escapeKeyDown}
+        onDrawEnd={onDrawEnded}
       />
     );
   }
@@ -333,8 +371,36 @@ const MapViewInteractions = withMap((props) => {
       <interaction.Draw
         key='AddWaypoint'
         type='Point'
-        onDrawEnd={onAddWaypoint}
         condition={Condition.primaryAction}
+        onDrawEnd={onAddWaypoint}
+      />
+    );
+  }
+
+  // NOTE:
+  // The `Modify` interaction requires either a source or a feature collection,
+  // but we'd like to have it act on multiple layers, so we create a new merged
+  // (and filtered) collection, into which we forward the modifiable features
+  // from both layers.
+  // Having two separate interactions for the two layers would result in
+  // multiple interaction points showing up simultaneously on the map if
+  // features from different layers are close to each other.
+  const modifiableFeaturesOfVisibleEditableLayers = new Collection();
+  for (const vel of getVisibleEditableLayers(props.map)) {
+    forwardCollectionChanges(
+      vel.getSource().getFeaturesCollection(),
+      modifiableFeaturesOfVisibleEditableLayers,
+      isFeatureModifiable
+    );
+  }
+
+  if (selectedTool === Tool.EDIT_FEATURE) {
+    interactions.push(
+      <interaction.Modify
+        key='EditFeature'
+        features={modifiableFeaturesOfVisibleEditableLayers}
+        onModifyStart={onModifyStart}
+        onModifyEnd={onModifyEnd}
       />
     );
   }
@@ -460,7 +526,8 @@ class MapViewPresentation extends React.Component {
   }
 
   render() {
-    const { center, rotation, selectedTool, zoom } = this.props;
+    const { center, geofencePolygonId, rotation, selectedTool, zoom } =
+      this.props;
     const view = (
       <View
         center={mapViewCoordinateFromLonLat(center)}
@@ -493,11 +560,13 @@ class MapViewPresentation extends React.Component {
             <MapViewLayers onFeaturesModified={this._onFeaturesModified} />
             <MapViewControls />
             <MapViewInteractions
+              geofencePolygonId={geofencePolygonId}
               selectedTool={selectedTool}
               selectedFeaturesProvider={this._getSelectedTransformableFeatures}
               onAddFeaturesToSelection={this._onAddFeaturesToSelection}
               onAddWaypoint={this._onAddWaypoint}
               onDrawEnded={this._onDrawEnded}
+              onFeaturesModified={this._onFeaturesModified}
               onFeaturesTransformed={this._onFeaturesTransformed}
               onNearestFeatureChanged={this._onNearestFeatureChanged}
               onRemoveFeaturesFromSelection={
@@ -628,7 +697,7 @@ class MapViewPresentation extends React.Component {
    * @param  {ol.Feature[]}  event.features  the features that were modified
    */
   _onFeaturesModified = (event) => {
-    this._updateFeatures(event.features, { type: 'modify', event });
+    this._updateFeatures(event.features.getArray(), { type: 'modify', event });
   };
 
   /**
@@ -775,6 +844,8 @@ const MapView = connect(
     center: getMapViewCenterPosition(state),
     rotation: getMapViewRotationAngle(state),
     zoom: state.map.view.zoom,
+
+    geofencePolygonId: getGeofencePolygonId(state),
 
     selectedFeatures: getSelectedFeatureIds(state),
     selectedTool: getSelectedTool(state),

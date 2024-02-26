@@ -3,7 +3,7 @@ import unary from 'lodash-es/unary';
 import PropTypes from 'prop-types';
 import { MultiPoint, MultiPolygon, Polygon } from 'ol/geom';
 import { Circle, Style, Text } from 'ol/style';
-import React, { useCallback, useRef } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 
 import {
@@ -13,10 +13,6 @@ import {
   layer,
   source,
 } from '@collmot/ol-react';
-import FolderOpen from '@material-ui/icons/FolderOpen';
-
-import { snapEndToStart } from '../interactions/utils';
-import { Tool } from '../tools';
 
 import {
   getFeaturesInOrder,
@@ -27,7 +23,6 @@ import { getGeofencePolygonId } from '~/features/mission/selectors';
 import { showError } from '~/features/snackbar/actions';
 import { FeatureType, LabelStyle } from '~/model/features';
 import { featureIdToGlobalId } from '~/model/identifiers';
-import { handleFeatureUpdatesInOpenLayers } from '~/model/openlayers';
 import { setLayerEditable, setLayerSelectable } from '~/model/layers';
 import { mapViewCoordinateFromLonLat, measureFeature } from '~/utils/geography';
 import { closePolygon, euclideanDistance2D } from '~/utils/math';
@@ -40,6 +35,8 @@ import {
   dashedThickOutline,
   dottedThinOutline,
 } from '~/utils/styles';
+
+import { Tool } from '../tools';
 
 // === Helper functions ===
 
@@ -103,20 +100,20 @@ const extractPointsFromLineString = (feature) =>
 const extractPointsFromPolygon = (feature) =>
   new MultiPoint(feature.getGeometry().getCoordinates().flat());
 
-const styleForPointsOfLineString = (feature, selected, color) =>
+export const styleForPointsOfLineString = (selected, color) =>
   new Style({
     image: new Circle({
-      stroke: selected ? whiteThinOutline : undefined,
-      fill: fill(color.rgb().array()),
+      ...(selected && { stroke: whiteThinOutline }),
+      fill: fill(color),
       radius: 5,
     }),
     geometry: extractPointsFromLineString,
   });
-const styleForPointsOfPolygon = (feature, selected, color) =>
+export const styleForPointsOfPolygon = (selected, color) =>
   new Style({
     image: new Circle({
-      stroke: selected ? whiteThinOutline : undefined,
-      fill: fill(color.rgb().array()),
+      ...(selected && { stroke: whiteThinOutline }),
+      fill: fill(color),
       radius: 5,
     }),
     geometry: extractPointsFromPolygon,
@@ -139,7 +136,7 @@ const styleForFeature = (
       styles.push(
         new Style({
           image: new Circle({
-            stroke: isSelected ? whiteThinOutline : undefined,
+            ...(isSelected && { stroke: whiteThinOutline }),
             fill: fill(parsedColor.rgb().array()),
             radius,
           }),
@@ -163,7 +160,7 @@ const styleForFeature = (
       if (shouldShowPoints) {
         // Show the vertices of the line string as well
         styles.push(
-          styleForPointsOfLineString(feature, isSelected, parsedColor)
+          styleForPointsOfLineString(isSelected, parsedColor.rgb().array())
         );
       }
 
@@ -182,7 +179,9 @@ const styleForFeature = (
       );
 
       if (shouldShowPoints) {
-        styles.push(styleForPointsOfPolygon(feature, isSelected, parsedColor));
+        styles.push(
+          styleForPointsOfPolygon(isSelected, parsedColor.rgb().array())
+        );
       }
     // Fallthrough
 
@@ -300,149 +299,59 @@ function markAsSelectableAndEditable(layer) {
   }
 }
 
-function takeFeatureRevisionSnapshot(features) {
-  const result = {};
-  for (const feature of features) {
-    result[feature.getId()] = feature.getRevision();
-  }
-
-  return result;
-}
-
-function getFeaturesThatChanged(features, snapshot) {
-  const result = [];
-  const addedIds = [];
-  for (const feature of features) {
-    const id = feature.getId();
-    if (addedIds.includes(id)) {
-      // For some reason, some features appear twice in the features array
-      // in the onModifyEnd array in OpenLayers. Not sure if it is a bug in
-      // OpenLayers or on our side, but we need to be careful nevertheless.
-      continue;
-    }
-
-    if (snapshot[id] === undefined || snapshot[id] !== feature.getRevision()) {
-      result.push(feature);
-      addedIds.push(id);
-    }
-  }
-
-  return result;
-}
-
 const FeaturesLayerPresentation = ({
   features,
-  geofencePolygonId,
   onError,
   onFeatureModificationStarted,
   onFeaturesModified,
   selectedTool,
   zIndex,
-}) => {
-  // We actually do _not_ want the component to re-render when this variable
-  // changes because we only need it to keep track of something between an
-  // onModifyStart and an onModifyEnd event.
-  const featureSnapshot = useRef(null);
-
-  const onModifyStart = useCallback(
-    (event) => {
-      const featureArray = event.features.getArray();
-
-      featureArray
-        .find((f) => f.getId() === featureIdToGlobalId(geofencePolygonId))
-        ?.getGeometry()
-        .on('change', snapEndToStart);
-
-      // Take a snapshot of all the features in the event so we can figure out
-      // later which ones were modified
-      featureSnapshot.current = takeFeatureRevisionSnapshot(featureArray);
-      if (onFeatureModificationStarted) {
-        onFeatureModificationStarted(event);
-      }
-    },
-    [onFeatureModificationStarted, geofencePolygonId]
-  );
-
-  const onModifyEnd = useCallback(
-    (event) => {
-      const featureArray = event.features.getArray();
-
-      featureArray
-        .find((f) => f.getId() === featureIdToGlobalId(geofencePolygonId))
-        ?.getGeometry()
-        .un('change', snapEndToStart);
-
-      if (onFeaturesModified) {
-        onFeaturesModified(
-          event,
-          getFeaturesThatChanged(featureArray, featureSnapshot.current)
-        );
-      }
-
-      featureSnapshot.current = null;
-    },
-    [onFeaturesModified, geofencePolygonId]
-  );
-
-  return (
-    <layer.Vector
-      ref={markAsSelectableAndEditable}
-      updateWhileAnimating
-      updateWhileInteracting
-      zIndex={zIndex}
-    >
-      <source.Vector>
-        {features
-          .filter((feature) => feature.visible)
-          .map((feature) => (
-            <Feature key={feature.id} feature={feature} />
-          ))}
-        {selectedTool === Tool.CUT_HOLE ? (
-          <interaction.CutHole
-            onCutStart={onModifyStart}
-            onCutEnd={onModifyEnd}
-            onError={onError}
-          />
-        ) : null}
-        {selectedTool === Tool.EDIT_FEATURE ? (
-          <interaction.Modify
-            onModifyStart={onModifyStart}
-            onModifyEnd={onModifyEnd}
-          />
-        ) : null}
-      </source.Vector>
-    </layer.Vector>
-  );
-};
+}) => (
+  <layer.Vector
+    ref={markAsSelectableAndEditable}
+    updateWhileAnimating
+    updateWhileInteracting
+    zIndex={zIndex}
+  >
+    <source.Vector>
+      {features
+        .filter((feature) => feature.visible)
+        .map((feature) => (
+          <Feature key={feature.id} feature={feature} />
+        ))}
+      {selectedTool === Tool.CUT_HOLE ? (
+        <interaction.CutHole
+          onError={onError}
+          onCutStart={onFeatureModificationStarted}
+          onCutEnd={onFeaturesModified}
+        />
+      ) : null}
+    </source.Vector>
+  </layer.Vector>
+);
 
 FeaturesLayerPresentation.propTypes = {
   selectedTool: PropTypes.string,
   zIndex: PropTypes.number,
 
   features: PropTypes.arrayOf(PropTypes.object).isRequired,
-  geofencePolygonId: PropTypes.string,
 
   onError: PropTypes.func,
   onFeatureModificationStarted: PropTypes.func,
   onFeaturesModified: PropTypes.func,
 };
 
+// NOTE: The props `onFeaturesModified`, `selectedTool` and `zIndex` are
+//       passed down through `stateObjectToLayer` from `MapViewLayers`
 export const FeaturesLayer = connect(
   // mapStateToProps
   (state) => ({
     features: getFeaturesInOrder(state),
-    geofencePolygonId: getGeofencePolygonId(state),
   }),
   // mapDispatchToProps
   (dispatch) => ({
     onError(message) {
       dispatch(showError(message));
-    },
-    onFeaturesModified(event, features) {
-      handleFeatureUpdatesInOpenLayers(features, dispatch, {
-        type: 'modify',
-        event,
-      });
     },
   })
 )(FeaturesLayerPresentation);

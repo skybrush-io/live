@@ -20,6 +20,9 @@ import {
   type Heading,
   HeadingMode,
 } from '~/utils/geography';
+import { type Coordinate2D } from '~/utils/math';
+
+import { type GPSPosition } from './position';
 
 export {
   type Altitude,
@@ -512,6 +515,26 @@ export function isMissionItemValid(item: any): item is MissionItem {
 }
 
 /**
+ * Extracts a polygon from a mission item, corresponding to the area where the
+ * item should appear on the map, or undefined if the mission item should not
+ * be represented on the map.
+ */
+export function getAreaFromMissionItem(
+  item: MissionItem
+): { points: Coordinate2D } | undefined {
+  if (!isMissionItemValid(item)) {
+    return undefined;
+  }
+
+  if (item.type === MissionItemType.UPDATE_FLIGHT_AREA) {
+    const { flightArea } = item.parameters;
+    return flightArea.polygons[0];
+  }
+
+  return undefined;
+}
+
+/**
  * Extracts a GPS coordinate from a mission item, corresponding to the point
  * where the item should appear on the map, or undefined if the mission item
  * should not be represented on the map. GPS coordinates are represented with
@@ -519,14 +542,14 @@ export function isMissionItemValid(item: any): item is MissionItem {
  */
 export function getCoordinateFromMissionItem(
   item: MissionItem
-): { lon: number; lat: number } | undefined {
+): GPSPosition | undefined {
   if (!isMissionItemValid(item)) {
     return undefined;
   }
 
   if (item.type === MissionItemType.GO_TO) {
     const { lon, lat } = item.parameters;
-    return { lon: lon as number, lat: lat as number };
+    return { lon, lat };
   }
 
   return undefined;

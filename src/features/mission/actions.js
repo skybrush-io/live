@@ -60,7 +60,6 @@ import {
   missionSlotIdToGlobalId,
 } from '~/model/identifiers';
 import {
-  getCoordinateFromMissionItem,
   isMissionItemValid,
   MissionItemType,
   MissionType,
@@ -73,7 +72,6 @@ import {
   bufferPolygon,
   lonLatFromMapViewCoordinate,
   toLonLatFromScaledJSON,
-  translateLonLatWithMapViewDelta,
 } from '~/utils/geography';
 import {
   calculateDistanceMatrix,
@@ -91,7 +89,7 @@ import {
 } from './parameter-context';
 import {
   createCanMoveSelectedMissionItemsByDeltaSelector,
-  getConvexHullOfHomePositionsAndMissionItemsInMapViewCoordinates,
+  getConvexHullOfMissionInMapViewCoordinates,
   getEmptyMappingSlotIndices,
   getGeofencePolygon,
   getGeofencePolygonId,
@@ -427,8 +425,7 @@ export const addGeofencePolygon =
 const addGeofencePolygonBasedOnMissionItems = () => (dispatch, getState) => {
   const state = getState();
 
-  const coordinates =
-    getConvexHullOfHomePositionsAndMissionItemsInMapViewCoordinates(state);
+  const coordinates = getConvexHullOfMissionInMapViewCoordinates(state);
   if (coordinates.length === 0) {
     dispatch(
       showNotification({
@@ -623,31 +620,28 @@ export const setSelectedMissionItemIds = (ids) =>
   setSelection(ids.map(missionItemIdToGlobalId));
 
 /**
- * Thunk that moves the coordinates of the mission item with the given ID
- * with the given delta, expressed in map view coordinates.
+ * Thunk that updates the parameters of a mission item based on a map feature.
+ * It is used to store changes made to mission items that have visual
+ * representations on the `mission-info` layer of the map.
  */
-export const moveMissionItemCoordinateByMapCoordinateDelta =
-  (itemId, delta) => (dispatch, getState) => {
+export const updateMissionItemFromFeature =
+  (itemId, feature) => (dispatch, getState) => {
     const item = getMissionItemById(getState(), itemId);
-    if (!item || !isMissionItemValid(item)) {
-      return;
-    }
-
-    const coord = getCoordinateFromMissionItem(item);
-    if (!coord) {
-      return;
-    }
-
-    const newCoord = translateLonLatWithMapViewDelta(
-      [coord.lon, coord.lat],
-      delta
-    );
-
     dispatch(
-      updateMissionItemParameters(itemId, {
-        lon: newCoord[0],
-        lat: newCoord[1],
-      })
+      updateMissionItemParameters(
+        item.id,
+        produce(item.parameters, (draft) => {
+          switch (item.type) {
+            case MissionItemType.GO_TO:
+              [draft.lon, draft.lat] = feature.points[0];
+              break;
+
+            case MissionItemType.UPDATE_FLIGHT_AREA:
+              draft.flightArea.polygons[0].points = feature.points;
+              break;
+          }
+        })
+      )
     );
   };
 

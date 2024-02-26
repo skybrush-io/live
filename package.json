@@ -27,7 +27,7 @@
   "dependencies": {
     "@apidevtools/json-schema-ref-parser": "^10.1.0",
     "@collmot/layout-bmfont-text": "^1.3.5",
-    "@collmot/ol-react": "^3.1.0",
+    "@collmot/ol-react": "^3.1.1",
     "@collmot/react-socket": "^2.0.0",
     "@date-io/core": "^1.3.13",
     "@date-io/date-fns": "^1.3.13",

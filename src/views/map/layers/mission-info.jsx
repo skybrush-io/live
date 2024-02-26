@@ -1,5 +1,6 @@
 import dropWhile from 'lodash-es/dropWhile';
 import takeWhile from 'lodash-es/takeWhile';
+import unary from 'lodash-es/unary';
 import memoizeOne from 'memoize-one';
 import memoize from 'memoizee';
 import PropTypes from 'prop-types';
@@ -25,6 +26,7 @@ import {
   getGPSBasedHomePositionsInMission,
   getGPSBasedLandingPositionsInMission,
   getMissionItemsOfTypeWithIndices,
+  getMissionItemsWithAreasInOrder,
   getMissionItemsWithCoordinatesInOrder,
   getSelectedMissionIndicesForTrajectoryDisplay,
 } from '~/features/mission/selectors';
@@ -35,17 +37,17 @@ import {
 } from '~/features/show/selectors';
 import { getSelectedUAVIdsForTrajectoryDisplay } from '~/features/uavs/selectors';
 import {
+  areaIdToGlobalId,
+  CONVEX_HULL_AREA_ID,
   globalIdToHomePositionId,
   globalIdToLandingPositionId,
-  areaIdToGlobalId,
   homePositionIdToGlobalId,
   landingPositionIdToGlobalId,
-  originIdToGlobalId,
   MAP_ORIGIN_ID,
   MISSION_ITEM_LINE_STRING_ID,
   MISSION_ORIGIN_ID,
-  CONVEX_HULL_AREA_ID,
   missionItemIdToGlobalId,
+  originIdToGlobalId,
   plannedTrajectoryIdToGlobalId,
 } from '~/model/identifiers';
 import { setLayerEditable, setLayerSelectable } from '~/model/layers';
@@ -58,6 +60,7 @@ import { closePolygon, toRadians } from '~/utils/math';
 import CustomPropTypes from '~/utils/prop-types';
 import {
   blackVeryThinOutline,
+  dashedThinOutline,
   dottedThickOutline,
   fill,
   lineStringArrow,
@@ -70,9 +73,13 @@ import {
 import MissionSlotTrajectoryFeature from '~/views/map/features/MissionSlotTrajectoryFeature';
 import UAVTrajectoryFeature from '~/views/map/features/UAVTrajectoryFeature';
 
-import missionOriginMarkerIcon from '~/../assets/img/mission-origin-marker.svg';
+import { Tool } from '../tools';
+
+import { styleForPointsOfPolygon } from './features';
+
 import mapMarker from '~/../assets/img/map-marker.svg';
 import mapMarkerOutline from '~/../assets/img/map-marker-outline.svg';
+import missionOriginMarkerIcon from '~/../assets/img/mission-origin-marker.svg';
 
 // === Settings for this particular layer type ===
 
@@ -373,16 +380,24 @@ const createMissionOriginStyle = memoizeOne(
 /**
  * Style for the convex hull of the mission.
  */
-const baseMissionConvexHullStyle = new Style({
+const missionConvexHullBaseStyle = new Style({
   stroke: thinOutline(Colors.convexHull),
 });
 const missionConvexHullSelectionStyle = new Style({
   stroke: whiteThickOutline,
 });
-const missionConvexHullStyles = [
-  [baseMissionConvexHullStyle],
-  [missionConvexHullSelectionStyle, baseMissionConvexHullStyle],
-];
+
+/**
+ * Style for the flight area of the mission.
+ */
+const missionFlightAreaBaseStyle = new Style({
+  stroke: dashedThinOutline(Colors.flightArea),
+});
+const missionFlightAreaSelectionStyle = new Style({
+  stroke: whiteThinOutline,
+});
+const missionFlightAreaEditStyle = (selected) =>
+  styleForPointsOfPolygon(selected, Colors.flightArea);
 
 /**
  * Styles for the linestrings connecting the mission items in a waypoint
@@ -511,14 +526,45 @@ const mapOriginMarker = (
   }
 };
 
+const missionAreaBoundaries = (
+  missionItemsWithAreas,
+  selection,
+  selectedTool
+) =>
+  missionItemsWithAreas?.map(({ id, area }) => {
+    const areaBoundaryInMapCoordinates = area?.points?.map(
+      unary(mapViewCoordinateFromLonLat)
+    );
+    closePolygon(areaBoundaryInMapCoordinates);
+
+    const globalIdOfMissionItem = missionItemIdToGlobalId(id);
+    const selected = selection.includes(globalIdOfMissionItem);
+
+    return (
+      <Feature
+        key='missionFlightArea'
+        id={globalIdOfMissionItem}
+        style={[
+          ...(selected ? [missionFlightAreaSelectionStyle] : []),
+          missionFlightAreaBaseStyle,
+          ...(selectedTool === Tool.EDIT_FEATURE
+            ? [missionFlightAreaEditStyle(selected)]
+            : []),
+        ]}
+      >
+        <geom.Polygon coordinates={areaBoundaryInMapCoordinates} />
+      </Feature>
+    );
+  }) ?? [];
+
 const missionWaypointMarkers = (
   currentItemIndex,
   currentItemRatio,
-  missionItems,
+  missionItemsWithCoordinates,
   selection
 ) =>
-  missionItems
-    ? missionItems.map(({ index, id, coordinate }) => {
+  missionItemsWithCoordinates
+    ? missionItemsWithCoordinates.map(({ index, id, coordinate }) => {
         const current = index === currentItemIndex;
         const done =
           index < currentItemIndex ||
@@ -545,14 +591,14 @@ const missionWaypointMarkers = (
 const missionTrajectoryLine = (
   currentItemIndex,
   currentItemRatio,
-  missionItems
+  missionItemsWithCoordinates
 ) => {
-  if (missionItems) {
+  if (missionItemsWithCoordinates) {
     // This should be done like below but lodash doesn't have `span`
-    // `const [done, todo] = span(missionItems, isDone)`,
+    // `const [done, todo] = span(missionItemsWithCoordinates, isDone)`,
     const isDone = (mi) => mi.index < currentItemIndex;
-    const doneMissionItems = takeWhile(missionItems, isDone);
-    const todoMissionItems = dropWhile(missionItems, isDone);
+    const doneMissionItems = takeWhile(missionItemsWithCoordinates, isDone);
+    const todoMissionItems = dropWhile(missionItemsWithCoordinates, isDone);
 
     // If there are at least two items with coordinates, connect them with a
     // polyline.
@@ -614,13 +660,13 @@ const missionTrajectoryLine = (
 
 const auxiliaryMissionLines = (
   homePositions,
-  missionItems,
+  missionItemsWithCoordinates,
   returnToHomeItems
 ) => {
-  if (homePositions?.[0] && missionItems?.length > 0) {
+  if (homePositions?.[0] && missionItemsWithCoordinates?.length > 0) {
     const findSurroundingWaypoints = (current) => ({
-      before: missionItems.findLast(({ index }) => index < current),
-      after: missionItems.find(({ index }) => index > current),
+      before: missionItemsWithCoordinates.findLast((mi) => mi.index < current),
+      after: missionItemsWithCoordinates.find((mi) => mi.index > current),
     });
 
     const makeFeature = (id, key, from, to) => (
@@ -694,15 +740,16 @@ const convexHullLine = (convexHull, selection) => {
     );
     closePolygon(convexHullInMapCoordinates);
 
+    const selected = selection.includes(CONVEX_HULL_GLOBAL_ID);
+
     return [
       <Feature
         key='missionConvexHull'
         id={CONVEX_HULL_GLOBAL_ID}
-        style={
-          missionConvexHullStyles[
-            selection.includes(CONVEX_HULL_GLOBAL_ID) ? 1 : 0
-          ]
-        }
+        style={[
+          ...(selected ? [missionConvexHullSelectionStyle] : []),
+          missionConvexHullBaseStyle,
+        ]}
       >
         <geom.LineString coordinates={convexHullInMapCoordinates} />
       </Feature>,
@@ -754,12 +801,14 @@ const MissionInfoVectorSource = ({
   homePositions,
   landingPositions,
   mapOrigin,
-  missionItems,
+  missionItemsWithAreas,
+  missionItemsWithCoordinates,
   missionOrientation,
   missionOrigin,
   missionSlotIdsForTrajectories,
   orientation,
   returnToHomeItems,
+  selectedTool,
   selection,
   uavIdsForTrajectories,
 }) => (
@@ -768,14 +817,23 @@ const MissionInfoVectorSource = ({
       landingPositionPoints(landingPositions),
       homePositionPoints(homePositions),
       mapOriginMarker(coordinateSystemType, mapOrigin, orientation, selection),
+      missionAreaBoundaries(missionItemsWithAreas, selection, selectedTool),
       missionWaypointMarkers(
         currentItemIndex,
         currentItemRatio,
-        missionItems,
+        missionItemsWithCoordinates,
         selection
       ),
-      missionTrajectoryLine(currentItemIndex, currentItemRatio, missionItems),
-      auxiliaryMissionLines(homePositions, missionItems, returnToHomeItems),
+      missionTrajectoryLine(
+        currentItemIndex,
+        currentItemRatio,
+        missionItemsWithCoordinates
+      ),
+      auxiliaryMissionLines(
+        homePositions,
+        missionItemsWithCoordinates,
+        returnToHomeItems
+      ),
       missionOriginMarker(missionOrientation, missionOrigin),
       convexHullLine(convexHull, selection),
       selectionTrajectoryFeatures(
@@ -794,7 +852,8 @@ MissionInfoVectorSource.propTypes = {
   homePositions: PropTypes.arrayOf(CustomPropTypes.coordinate),
   landingPositions: PropTypes.arrayOf(CustomPropTypes.coordinate),
   mapOrigin: PropTypes.arrayOf(PropTypes.number),
-  missionItems: PropTypes.arrayOf(PropTypes.object),
+  missionItemsWithAreas: PropTypes.arrayOf(PropTypes.object),
+  missionItemsWithCoordinates: PropTypes.arrayOf(PropTypes.object),
   missionOrientation: CustomPropTypes.angle,
   missionOrigin: PropTypes.arrayOf(PropTypes.number),
   missionSlotIdsForTrajectories: PropTypes.arrayOf(PropTypes.string),
@@ -840,7 +899,10 @@ export const MissionInfoLayer = connect(
       ? getGPSBasedLandingPositionsInMission(state)
       : undefined,
     mapOrigin: layer?.parameters?.showOrigin && state.map.origin.position,
-    missionItems: layer?.parameters?.showMissionItems
+    missionItemsWithAreas: layer?.parameters?.showMissionItems
+      ? getMissionItemsWithAreasInOrder(state)
+      : undefined,
+    missionItemsWithCoordinates: layer?.parameters?.showMissionItems
       ? getMissionItemsWithCoordinatesInOrder(state)
       : undefined,
     missionOrigin: layer?.parameters?.showMissionOrigin

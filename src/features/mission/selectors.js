@@ -15,6 +15,7 @@ import {
 } from '~/model/identifiers';
 import {
   getAltitudeFromMissionItem,
+  getAreaFromMissionItem,
   getCoordinateFromMissionItem,
   MissionItemType,
   MissionType,
@@ -418,6 +419,24 @@ export const shouldMissionEditorPanelFollowScroll = (state) =>
   state.mission.editorPanel.followScroll;
 
 /**
+ * Returns all the mission items that have areas associated to them. This is
+ * used when drawing the mission info layer of the map and during automatic
+ * geofence calculation.
+ */
+export const getMissionItemsWithAreasInOrder = createSelector(
+  getMissionItemsInOrder,
+  (items) =>
+    items
+      .map((item, index) => ({
+        id: item.id,
+        item,
+        area: getAreaFromMissionItem(item),
+        index,
+      }))
+      .filter(({ area }) => !isNil(area))
+);
+
+/**
  * Returns a selector that converts the current list of mission items to a
  * list of objects containing the GPS coordinates where the items should
  * appear on the map, along with the original items themselves. This is used
@@ -488,41 +507,38 @@ export const getMissionItemsWithAltitudesInOrder = createSelector(
 
 /**
  * Returns the coordinates of the convex hull of the currently loaded mission
- * in the coordinate system of the map view.
+ * in world coordinates.
  */
-export const getConvexHullOfHomePositionsAndMissionItemsInWorldCoordinates =
-  createSelector(
-    getGPSBasedHomePositionsInMission,
-    getMissionItemsWithCoordinatesInOrder,
-    (homePositions, missionItemsWithCoorinates) =>
-      convexHull([
-        ...homePositions.filter(Boolean).map((hp) => [hp.lon, hp.lat]),
-        ...missionItemsWithCoorinates.map((miwc) => [
-          miwc.coordinate.lon,
-          miwc.coordinate.lat,
-        ]),
-      ])
-  );
+export const getConvexHullOfMissionInWorldCoordinates = createSelector(
+  getGPSBasedHomePositionsInMission,
+  getMissionItemsWithCoordinatesInOrder,
+  getMissionItemsWithAreasInOrder,
+  (homePositions, missionItemsWithCoorinates, missionItemsWithAreas) =>
+    convexHull([
+      ...homePositions.filter((hp) => !isNil(hp)).map((hp) => [hp.lon, hp.lat]),
+      ...missionItemsWithCoorinates.map(({ coordinate: c }) => [c.lon, c.lat]),
+      ...missionItemsWithAreas.flatMap((miwa) => miwa.area.points),
+    ])
+);
 
 /**
  * Returns the coordinates of the convex hull of the currently loaded mission
  * in the coordinate system of the map view.
  */
-export const getConvexHullOfHomePositionsAndMissionItemsInMapViewCoordinates =
-  createSelector(
-    getConvexHullOfHomePositionsAndMissionItemsInWorldCoordinates,
-    (convexHullOfHomePositionsAndMissionItemsInWorldCoordinates) =>
-      convexHullOfHomePositionsAndMissionItemsInWorldCoordinates.map(
-        (worldCoordinate) => mapViewCoordinateFromLonLat(worldCoordinate)
-      )
-  );
+export const getConvexHullOfMissionInMapViewCoordinates = createSelector(
+  getConvexHullOfMissionInWorldCoordinates,
+  (convexHullOfHomePositionsAndMissionItemsInWorldCoordinates) =>
+    convexHullOfHomePositionsAndMissionItemsInWorldCoordinates.map(
+      (worldCoordinate) => mapViewCoordinateFromLonLat(worldCoordinate)
+    )
+);
 
 /**
  * Returns whether the convex hull of the waypoint mission (home positions and
  * mission items) is fully contained inside the geofence polygon.
  */
 export const isWaypointMissionConvexHullInsideGeofence = createSelector(
-  getConvexHullOfHomePositionsAndMissionItemsInWorldCoordinates,
+  getConvexHullOfMissionInWorldCoordinates,
   getGeofencePolygonInWorldCoordinates,
   (convexHull, geofence) => {
     if (
