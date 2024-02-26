@@ -43,15 +43,15 @@ export const UAVSortKeys = [
  * on the UI to represent a UAV sort option.
  */
 export const labelsForUAVSortKey: Record<UAVSortKey, string> = {
-  [UAVSortKey.DEFAULT]: 'Default',
-  [UAVSortKey.STATUS]: 'Status',
-  [UAVSortKey.FLIGHT_MODE]: 'Flight mode',
-  [UAVSortKey.BATTERY]: 'Battery',
-  [UAVSortKey.GPS_FIX]: 'GPS fix',
-  [UAVSortKey.ALTITUDE_MSL]: 'Altitude (MSL)',
-  [UAVSortKey.ALTITUDE_HOME]: 'Altitude above home',
-  [UAVSortKey.ALTITUDE_GROUND]: 'Altitude above ground',
-  [UAVSortKey.HEADING]: 'Heading',
+  [UAVSortKey.DEFAULT]: 'sorting.default',
+  [UAVSortKey.STATUS]: 'sorting.status',
+  [UAVSortKey.FLIGHT_MODE]: 'sorting.flightMode',
+  [UAVSortKey.BATTERY]: 'sorting.battery',
+  [UAVSortKey.GPS_FIX]: 'sorting.gpsFix',
+  [UAVSortKey.ALTITUDE_MSL]: 'sorting.amsl',
+  [UAVSortKey.ALTITUDE_HOME]: 'sorting.ahl',
+  [UAVSortKey.ALTITUDE_GROUND]: 'sorting.agl',
+  [UAVSortKey.HEADING]: 'sorting.heading',
 };
 
 /**
@@ -59,15 +59,15 @@ export const labelsForUAVSortKey: Record<UAVSortKey, string> = {
  * on the UI to represent a UAV filter preset.
  */
 export const shortLabelsForUAVSortKey: Record<UAVSortKey, string> = {
-  [UAVSortKey.DEFAULT]: 'Default',
-  [UAVSortKey.STATUS]: 'Status',
-  [UAVSortKey.FLIGHT_MODE]: 'Mode',
-  [UAVSortKey.BATTERY]: 'Battery',
-  [UAVSortKey.GPS_FIX]: 'GPS fix',
+  [UAVSortKey.DEFAULT]: 'sorting.default',
+  [UAVSortKey.STATUS]: 'sorting.status',
+  [UAVSortKey.FLIGHT_MODE]: 'sorting.mode',
+  [UAVSortKey.BATTERY]: 'sorting.battery',
+  [UAVSortKey.GPS_FIX]: 'sorting.gpsFix',
   [UAVSortKey.ALTITUDE_MSL]: 'AMSL',
   [UAVSortKey.ALTITUDE_HOME]: 'AHL',
   [UAVSortKey.ALTITUDE_GROUND]: 'AGL',
-  [UAVSortKey.HEADING]: 'Heading',
+  [UAVSortKey.HEADING]: 'sorting.heading',
 };
 
 /**

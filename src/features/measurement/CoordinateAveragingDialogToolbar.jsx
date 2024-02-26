@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import Box from '@material-ui/core/Box';
@@ -47,20 +48,23 @@ const CoordinateAveragingDialogToolbar = ({
   onResumeSelected,
   onSetCentroidOfSelectionAsMapOrigin,
   onUAVIdAdded,
+  t,
 }) => {
   return (
     <DialogToolbar disableGutters>
       <Box position='absolute' display='flex'>
         <UAVSelectorWrapper filterable onSelect={onUAVIdAdded}>
           {(handleClick) => (
-            <Tooltip content='Add new drone'>
+            <Tooltip
+              content={t('coordinateAveragingDialogToolbar.addNewDrone')}
+            >
               <IconButton color='inherit' onClick={handleClick}>
                 <Add />
               </IconButton>
             </Tooltip>
           )}
         </UAVSelectorWrapper>
-        <Tooltip content='Remove selected'>
+        <Tooltip content={t('coordinateAveragingDialogToolbar.removeSelected')}>
           <IconButton
             disabled={!hasSelection}
             color='inherit'
@@ -70,7 +74,9 @@ const CoordinateAveragingDialogToolbar = ({
           </IconButton>
         </Tooltip>
         <ToolbarDivider orientation='vertical' />
-        <Tooltip content='Pause measurement'>
+        <Tooltip
+          content={t('coordinateAveragingDialogToolbar.pauseMeasurement')}
+        >
           <IconButton
             disabled={!hasMeasurements}
             color='inherit'
@@ -79,7 +85,9 @@ const CoordinateAveragingDialogToolbar = ({
             <Pause />
           </IconButton>
         </Tooltip>
-        <Tooltip content='Resume measurement'>
+        <Tooltip
+          content={t('coordinateAveragingDialogToolbar.resumeMeasurement')}
+        >
           <IconButton
             disabled={!hasMeasurements}
             color='inherit'
@@ -88,7 +96,9 @@ const CoordinateAveragingDialogToolbar = ({
             <PlayArrow />
           </IconButton>
         </Tooltip>
-        <Tooltip content='Reset measurement'>
+        <Tooltip
+          content={t('coordinateAveragingDialogToolbar.resetMeasurement')}
+        >
           <IconButton
             disabled={!hasMeasurements || !hasSelection}
             color='inherit'
@@ -98,7 +108,7 @@ const CoordinateAveragingDialogToolbar = ({
           </IconButton>
         </Tooltip>
         <ToolbarDivider orientation='vertical' />
-        <Tooltip content='Copy centroid'>
+        <Tooltip content={t('coordinateAveragingDialogToolbar.copyCentroid')}>
           <IconButton
             disabled={!hasMeasurements}
             color='inherit'
@@ -107,7 +117,9 @@ const CoordinateAveragingDialogToolbar = ({
             <ContentCopy />
           </IconButton>
         </Tooltip>
-        <Tooltip content='Set centroid as map origin'>
+        <Tooltip
+          content={t('coordinateAveragingDialogToolbar.setCentroidAsMapOrigin')}
+        >
           <IconButton
             disabled={!hasMeasurements}
             color='inherit'
@@ -131,6 +143,7 @@ CoordinateAveragingDialogToolbar.propTypes = {
   onRestartSelected: PropTypes.func,
   onSetCentroidOfSelectionAsMapOrigin: PropTypes.func,
   onUAVIdAdded: PropTypes.func,
+  t: PropTypes.func,
 };
 
 export default connect(
@@ -151,4 +164,4 @@ export default connect(
       setAveragedCentroidOfSelectedUAVsAsMapOrigin,
     onUAVIdAdded: startAveragingUAVCoordinateById,
   }
-)(CoordinateAveragingDialogToolbar);
+)(withTranslation()(CoordinateAveragingDialogToolbar));

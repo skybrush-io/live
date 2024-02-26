@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import IconButton from '@material-ui/core/IconButton';
@@ -40,10 +41,11 @@ const MappingButtonGroup = ({
   showEmptyMissionSlots,
   showMissionIds,
   startMappingEditorSession,
+  t,
 }) => (
   <>
     {showMissionIds && (
-      <Tooltip content='Edit mapping'>
+      <Tooltip content={t('mappingButtonGroup.editMapping')}>
         <IconButton
           disabled={mappingEditable || !showMissionIds}
           onClick={startMappingEditorSession}
@@ -58,8 +60,8 @@ const MappingButtonGroup = ({
     <Tooltip
       content={
         showEmptyMissionSlots
-          ? 'Hide empty mission slots'
-          : 'Show empty mission slots'
+          ? t('mappingButtonGroup.hideEmptyMissionSlots')
+          : t('mappingButtonGroup.showEmptyMissionSlots')
       }
     >
       <ToggleButton
@@ -93,6 +95,7 @@ MappingButtonGroup.propTypes = {
   showEmptyMissionSlots: PropTypes.bool,
   showMissionIds: PropTypes.bool,
   startMappingEditorSession: PropTypes.func,
+  t: PropTypes.func,
 };
 
 export default connect(
@@ -125,4 +128,4 @@ export default connect(
       }
     },
   }
-)(MappingButtonGroup);
+)(withTranslation()(MappingButtonGroup));
