@@ -418,23 +418,25 @@ export const canMoveSelectedMissionItemsDown =
 export const shouldMissionEditorPanelFollowScroll = (state) =>
   state.mission.editorPanel.followScroll;
 
+const getMissionItemsWithExtraFieldInOrder = (field, getter) =>
+  createSelector(getMissionItemsInOrder, (items) =>
+    items
+      .map((item, index) => ({
+        id: item.id,
+        item,
+        [field]: getter(item),
+        index,
+      }))
+      .filter((mi) => !isNil(mi[field]))
+  );
+
 /**
  * Returns all the mission items that have areas associated to them. This is
  * used when drawing the mission info layer of the map and during automatic
  * geofence calculation.
  */
-export const getMissionItemsWithAreasInOrder = createSelector(
-  getMissionItemsInOrder,
-  (items) =>
-    items
-      .map((item, index) => ({
-        id: item.id,
-        item,
-        area: getAreaFromMissionItem(item),
-        index,
-      }))
-      .filter(({ area }) => !isNil(area))
-);
+export const getMissionItemsWithAreasInOrder =
+  getMissionItemsWithExtraFieldInOrder('area', getAreaFromMissionItem);
 
 /**
  * Returns a selector that converts the current list of mission items to a
@@ -452,24 +454,11 @@ export const getMissionItemsWithAreasInOrder = createSelector(
  *
  * Mission items for which no coordinate belongs are not returned.
  */
-export const getMissionItemsWithCoordinatesInOrder = createSelector(
-  getMissionItemsInOrder,
-  (items) => {
-    const result = [];
-    let index = 0;
-
-    for (const item of items) {
-      const coordinate = getCoordinateFromMissionItem(item);
-      if (coordinate) {
-        result.push({ id: item.id, item, coordinate, index });
-      }
-
-      index++;
-    }
-
-    return result;
-  }
-);
+export const getMissionItemsWithCoordinatesInOrder =
+  getMissionItemsWithExtraFieldInOrder(
+    'coordinate',
+    getCoordinateFromMissionItem
+  );
 
 /**
  * Returns a selector that converts the current list of mission items to a
@@ -486,24 +475,8 @@ export const getMissionItemsWithCoordinatesInOrder = createSelector(
  *
  * Mission items for which no altitude belongs are not returned.
  */
-export const getMissionItemsWithAltitudesInOrder = createSelector(
-  getMissionItemsInOrder,
-  (items) => {
-    const result = [];
-    let index = 0;
-
-    for (const item of items) {
-      const altitude = getAltitudeFromMissionItem(item);
-      if (altitude) {
-        result.push({ id: item.id, item, altitude, index });
-      }
-
-      index++;
-    }
-
-    return result;
-  }
-);
+export const getMissionItemsWithAltitudesInOrder =
+  getMissionItemsWithExtraFieldInOrder('altitude', getAltitudeFromMissionItem);
 
 /**
  * Returns the coordinates of the convex hull of the currently loaded mission
