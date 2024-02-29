@@ -129,7 +129,28 @@
       "enableExperimentalFeatures": "启用实验性功能（高级）",
       "flatEarthCoordinateSystem": "地平坐标系",
       "hideInactiveSegmentsOnDarkLCD": "增强暗模式LCD时钟的对比度",
-      "mapOrigin": "地图原点"
+      "language": "语言",
+      "mapOrigin": "地图原点",
+      "mapWidgets": "地图工具",
+      "miscellaneous": "杂项",
+      "operationModes": "运行模式",
+      "optimizeForSingleUAV": "为单台无人机操作优化界面",
+      "optimizeUIForTouch": "为触摸屏设备优化界面",
+      "showMouseCoordinates": "显示鼠标坐标",
+      "showScaleLine": "显示刻度线"
+    },
+    "tabs": {
+      "apiKeys": "API 密钥",
+      "display": "显示",
+      "preflight": "飞行预检",
+      "server": "服务器",
+      "threeDView": "3D 视图",
+      "uavs": "无人机"
+    },
+    "threeDView": {
+      "1x1": "10x10 米",
+      "2x2": "20x20 米",
+      "auto": "自动"
     }
   }
 }
