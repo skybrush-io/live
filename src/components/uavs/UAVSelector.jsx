@@ -3,8 +3,8 @@
  */
 
 import PropTypes from 'prop-types';
-import React, { useEffect, useState } from 'react';
-import { connect } from 'react-redux';
+import React, { useEffect, useMemo, useState } from 'react';
+import { shallowEqual, useSelector } from 'react-redux';
 
 import { makeStyles } from '@material-ui/core/styles';
 import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
@@ -52,12 +52,31 @@ const useStyles = makeStyles(
         content: '""',
         display: 'block',
 
-        width: 16,
-        height: 16,
+        width: theme.spacing(2),
+        height: theme.spacing(2),
 
         position: 'absolute',
-        top: -8,
-        left: 'calc(50% - 8px)',
+        top: -theme.spacing(1),
+        left: ({ anchorCenter }) =>
+          `calc(50% - ${theme.spacing(1)}px + ${
+            // Adjust arrow position when the `Popover` is pushed against the
+            // edge of the viewport, thus isn't centered on the anchor element
+            (() => {
+              const margin = theme.spacing(2);
+              const width =
+                5 * 40 + // Five avatars
+                6 * theme.spacing(1); // Paddings and gaps
+              const leftLimit = margin + width / 2;
+              const rightLimit = window.innerWidth - leftLimit;
+
+              // prettier-ignore
+              return (
+                anchorCenter < leftLimit ? anchorCenter - leftLimit :
+                anchorCenter > rightLimit ? anchorCenter - rightLimit :
+                0
+              );
+            })()
+          }px)`,
 
         transform: 'rotate(45deg)',
 
@@ -70,17 +89,31 @@ const useStyles = makeStyles(
   }
 );
 
-const UAVSelectorPresentation = ({
+const UAVSelector = ({
   anchorEl,
   filterable,
   onClose,
   onFocus,
   onSelect,
   open,
-  reverseMissionMapping,
-  uavIds,
+  sortedByError,
 }) => {
-  const classes = useStyles();
+  const uavIds = useSelector(
+    sortedByError ? getUAVIdsSortedByErrorCode : getUAVIdList,
+    { equalityFn: shallowEqual }
+  );
+  const reverseMissionMapping = useSelector(getReverseMissionMapping);
+
+  const anchorCenter = useMemo(() => {
+    if (!anchorEl) {
+      return 0;
+    }
+
+    const { left, right } = anchorEl.getBoundingClientRect();
+    return (left + right) / 2;
+  }, [anchorEl]);
+
+  const classes = useStyles({ anchorCenter });
 
   const [filter, setFilter] = useState('');
 
@@ -177,26 +210,15 @@ const UAVSelectorPresentation = ({
   );
 };
 
-UAVSelectorPresentation.propTypes = {
+UAVSelector.propTypes = {
   anchorEl: PropTypes.object, // TODO: Find a more exact PropType for this!
   filterable: PropTypes.bool,
   onClose: PropTypes.func,
   onFocus: PropTypes.func,
   onSelect: PropTypes.func,
   open: PropTypes.bool,
-  reverseMissionMapping: PropTypes.object,
-  uavIds: PropTypes.arrayOf(PropTypes.string),
+  sortedByError: PropTypes.bool,
 };
-
-export const UAVSelectorPopover = connect(
-  // mapStateToProps
-  (state, { sortedByError }) => ({
-    reverseMissionMapping: getReverseMissionMapping(state),
-    uavIds: sortedByError
-      ? getUAVIdsSortedByErrorCode(state)
-      : getUAVIdList(state),
-  })
-)(UAVSelectorPresentation);
 
 /**
  * Wrapper component that provides a `handleClick` function for the children
@@ -226,7 +248,7 @@ export const UAVSelectorWrapper = ({ children, ...rest }) => {
   return (
     <>
       {children(handleClick)}
-      <UAVSelectorPopover
+      <UAVSelector
         anchorEl={anchorEl}
         open={Boolean(anchorEl)}
         onClose={handleClose}
