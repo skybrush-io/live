@@ -29,6 +29,7 @@ const defaults: Config = {
 
   features: {
     loadShowFromCloud: false,
+    missionEditor: false,
   },
 
   headerComponents: [
@@ -70,7 +71,6 @@ const defaults: Config = {
         'cut-hole',
         'edit-feature',
       ],
-      ['add-waypoint'],
     ],
 
     features: {

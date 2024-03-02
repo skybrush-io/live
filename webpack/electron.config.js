@@ -1,5 +1,4 @@
 const path = require('path');
-const process = require('process');
 
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
@@ -11,7 +10,6 @@ const baseConfig = require('./base.config.js');
 const {
   htmlMetaTags,
   projectRoot,
-  useAppConfiguration,
   useHotModuleReloading,
 } = require('./helpers');
 
@@ -53,16 +51,10 @@ if (useHotModuleReloading) {
   optimization.runtimeChunk = 'single'; // hot module reloading needs this
 }
 
-/* Override the configuration module based on the environment variables if needed */
-const variantConfig = process.env.SKYBRUSH_VARIANT
-  ? useAppConfiguration(process.env.SKYBRUSH_VARIANT)
-  : {};
-
 module.exports = merge(baseConfig, {
   entry: {
     app: ['process/browser', './src/index'],
   },
   optimization,
   plugins,
-  ...variantConfig,
 });

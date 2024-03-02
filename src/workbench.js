@@ -141,6 +141,7 @@ export const componentRegistry = {
     component: views.MissionOverviewPanel,
     label: 'Mission editor',
     detachable: true,
+    feature: 'missionEditor',
   },
   placeholder: {
     component: Nothing,

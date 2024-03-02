@@ -54,6 +54,7 @@ import { setLayerEditable, setLayerSelectable } from '~/model/layers';
 import { MissionItemType } from '~/model/missions';
 import { getMapOriginRotationAngle } from '~/selectors/map';
 import { getSelection } from '~/selectors/selection';
+import { hasFeature } from '~/utils/configuration';
 import { formatMissionId } from '~/utils/formatting';
 import { mapViewCoordinateFromLonLat } from '~/utils/geography';
 import { closePolygon, toRadians } from '~/utils/math';
@@ -143,36 +144,42 @@ const MissionInfoLayerSettingsPresentation = ({
         }
         label='Show landing positions'
       />
-      <FormControlLabel
-        control={
-          <Checkbox
-            checked={Boolean(showConvexHull)}
-            value='showConvexHull'
-            onChange={handleChange('showConvexHull')}
+      {hasFeature('showControl') && (
+        <>
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={Boolean(showConvexHull)}
+                value='showConvexHull'
+                onChange={handleChange('showConvexHull')}
+              />
+            }
+            label='Show convex hull of trajectories'
           />
-        }
-        label='Show convex hull of trajectories'
-      />
-      <FormControlLabel
-        control={
-          <Checkbox
-            checked={Boolean(showTrajectoriesOfSelection)}
-            value='showTrajectoriesOfSelection'
-            onChange={handleChange('showTrajectoriesOfSelection')}
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={Boolean(showTrajectoriesOfSelection)}
+                value='showTrajectoriesOfSelection'
+                onChange={handleChange('showTrajectoriesOfSelection')}
+              />
+            }
+            label='Show trajectories of selected drones'
           />
-        }
-        label='Show trajectories of selected drones'
-      />
-      <FormControlLabel
-        control={
-          <Checkbox
-            checked={Boolean(showMissionItems)}
-            value='showMissionItems'
-            onChange={handleChange('showMissionItems')}
-          />
-        }
-        label='Show mission items'
-      />
+        </>
+      )}
+      {hasFeature('missionEditor') && (
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={Boolean(showMissionItems)}
+              value='showMissionItems'
+              onChange={handleChange('showMissionItems')}
+            />
+          }
+          label='Show mission items'
+        />
+      )}
     </FormGroup>
   );
 };

@@ -2,6 +2,7 @@
 'use strict';
 
 const path = require('path');
+const process = require('process');
 const webpack = require('webpack');
 const Dotenv = require('dotenv-webpack');
 
@@ -71,7 +72,11 @@ module.exports = {
     alias: {
       '~': path.resolve(projectRoot, 'src'),
       config: path.resolve(projectRoot, 'config'),
-      'config-overrides': path.resolve(projectRoot, 'config', 'none'),
+      'config-overrides': path.resolve(
+        projectRoot,
+        'config',
+        process.env.SKYBRUSH_VARIANT ?? 'none'
+      ),
       'layout-bmfont-text': '@collmot/layout-bmfont-text',
     },
     extensions: [
