@@ -13,6 +13,8 @@ import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import ListItemText from '@material-ui/core/ListItemText';
 import { makeStyles } from '@material-ui/core/styles';
 import Settings from '@material-ui/icons/Settings';
+import Lock from '@material-ui/icons/Lock';
+import LockOpen from '@material-ui/icons/LockOpen';
 
 import { Status } from '@skybrush/app-theme-material-ui';
 
@@ -24,6 +26,7 @@ import {
   hasActiveGeofencePolygon,
   isWaypointMissionConvexHullInsideGeofence,
 } from '~/features/mission/selectors';
+import { updateMissionItemParameters } from '~/features/mission/slice';
 import { SafetyDialogTab } from '~/features/safety/constants';
 import { openSafetyDialog, setSafetyDialogTab } from '~/features/safety/slice';
 import {
@@ -102,6 +105,7 @@ const MissionOverviewListItem = ({
   onSelectItem,
   openGeofenceSettingsTab,
   openSafetySettingsTab,
+  updateMissionItemParameters,
 }) => {
   const classes = useStyles();
 
@@ -148,9 +152,9 @@ const MissionOverviewListItem = ({
       break;
 
     case MissionItemType.CHANGE_FLIGHT_MODE:
-      secondaryText = `${item.parameters?.mode}`
+      secondaryText = `${item.parameters?.mode}`;
       break;
-  
+
     case MissionItemType.CHANGE_HEADING:
       secondaryText = isValid
         ? safelyFormatHeadingWithMode(
@@ -185,7 +189,8 @@ const MissionOverviewListItem = ({
 
     case MissionItemType.SET_PAYLOAD:
       const { name, action, value } = item.parameters;
-      secondaryText = `${name}: ${action}` + (value !== undefined ? ` ${value}` : '');
+      secondaryText =
+        `${name}: ${action}` + (value !== undefined ? ` ${value}` : '');
 
       break;
 
@@ -242,13 +247,31 @@ const MissionOverviewListItem = ({
           </ListItemAvatar>
         )}
         <ListItemText primary={primaryText} secondary={secondaryText} />
-        {editMissionItemParameters && (
-          <ListItemSecondaryAction>
+        <ListItemSecondaryAction>
+          {editMissionItemParameters && (
             <IconButton edge='end' onClick={editMissionItemParameters}>
               <Settings />
             </IconButton>
-          </ListItemSecondaryAction>
-        )}
+          )}
+          <IconButton
+            edge='end'
+            onClick={() => {
+              updateMissionItemParameters(item.id, {
+                locked: !item.parameters.locked,
+              });
+            }}
+          >
+            {item.parameters.locked ? <Lock /> : <LockOpen />}
+          </IconButton>
+        </ListItemSecondaryAction>
+
+        {/* {editMissionItemParameters && ( */}
+        {/*   <ListItemSecondaryAction> */}
+        {/*     <IconButton edge='end' onClick={editMissionItemParameters}> */}
+        {/*       <Settings /> */}
+        {/*     </IconButton> */}
+        {/*   </ListItemSecondaryAction> */}
+        {/* )} */}
       </ListItem>
     </Box>
   );
@@ -289,6 +312,7 @@ export default connect(
   // mapDispatchToProps
   {
     editMissionItemParameters,
+    updateMissionItemParameters,
     openGeofenceSettingsTab: () => (dispatch) => {
       dispatch(setSafetyDialogTab(SafetyDialogTab.GEOFENCE));
       dispatch(openSafetyDialog());

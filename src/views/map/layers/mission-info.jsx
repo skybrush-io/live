@@ -531,7 +531,7 @@ const missionAreaBoundaries = (
   selection,
   selectedTool
 ) =>
-  missionItemsWithAreas?.map(({ id, area }) => {
+  missionItemsWithAreas?.map(({ id, area, item }) => {
     const areaBoundaryInMapCoordinates = area?.points?.map(
       unary(mapViewCoordinateFromLonLat)
     );
@@ -547,10 +547,11 @@ const missionAreaBoundaries = (
         style={[
           ...(selected ? [missionFlightAreaSelectionStyle] : []),
           missionFlightAreaBaseStyle,
-          ...(selectedTool === Tool.EDIT_FEATURE
+          ...(selectedTool === Tool.EDIT_FEATURE && !item.parameters.locked
             ? [missionFlightAreaEditStyle(selected)]
             : []),
         ]}
+        properties={{ locked: item.parameters.locked }}
       >
         <geom.Polygon coordinates={areaBoundaryInMapCoordinates} />
       </Feature>
@@ -564,7 +565,7 @@ const missionWaypointMarkers = (
   selection
 ) =>
   missionItemsWithCoordinates
-    ? missionItemsWithCoordinates.map(({ index, id, coordinate }) => {
+    ? missionItemsWithCoordinates.map(({ index, id, coordinate, item }) => {
         const current = index === currentItemIndex;
         const done =
           index < currentItemIndex ||
@@ -579,7 +580,10 @@ const missionWaypointMarkers = (
           <Feature
             key={globalIdOfMissionItem}
             id={globalIdOfMissionItem}
-            properties={{ index }}
+            properties={{
+              index,
+              locked: item?.parameters?.locked,
+            }}
             style={createMissionItemBaseStyle(current, done, selected)}
           >
             <geom.Point coordinates={center} />
