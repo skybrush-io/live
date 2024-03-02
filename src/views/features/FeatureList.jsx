@@ -15,6 +15,8 @@ import Delete from '@material-ui/icons/Delete';
 import Edit from '@material-ui/icons/Edit';
 import FilterCenterFocus from '@material-ui/icons/FilterCenterFocus';
 import MoreVert from '@material-ui/icons/MoreVert';
+import Lock from '@material-ui/icons/Lock';
+import LockOpen from '@material-ui/icons/LockOpen';
 import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
 
@@ -39,6 +41,7 @@ import {
 import {
   removeFeaturesByIds,
   updateFeatureVisibility,
+  updateFeatureLockedness,
 } from '~/features/map-features/slice';
 import useDropdown from '~/hooks/useDropdown';
 import { getNameOfFeatureType, getIconOfFeatureType } from '~/model/features';
@@ -90,9 +93,10 @@ const FeatureListEntry = (props) => {
     onRemoveFeature,
     onSelectFeature,
     onToggleFeatureVisibility,
+    onToggleFeatureLockedness, // TODO: find better word?
     selected,
   } = props;
-  const { id, color, label, type, visible } = feature;
+  const { id, color, label, locked, type, visible } = feature;
 
   const IconOfFeatureType = getIconOfFeatureType(type);
 
@@ -108,6 +112,12 @@ const FeatureListEntry = (props) => {
       icon: visible ? <Visibility /> : <VisibilityOff color='disabled' />,
       key: 'visibility',
       label: 'Toggle visibility',
+    },
+    {
+      action: onToggleFeatureLockedness,
+      icon: locked ? <Lock /> : <LockOpen color='disabled' />,
+      key: 'lockedness',
+      label: 'Toggle lockedness',
     },
     {
       action: onEditFeature,
@@ -195,6 +205,7 @@ FeatureListEntry.propTypes = {
   onRemoveFeature: PropTypes.func,
   onSelectFeature: PropTypes.func,
   onToggleFeatureVisibility: PropTypes.func,
+  onToggleFeatureLockedness: PropTypes.func,
   feature: PropTypes.object.isRequired,
   selected: PropTypes.bool,
 };
@@ -211,22 +222,22 @@ export const FeatureListPresentation = listOf(
       onRemoveFeature,
       onSelectFeature,
       onToggleFeatureVisibility,
+      onToggleFeatureLockedness,
       selectedFeatureIds,
     }
-  ) => {
-    return (
-      <FeatureListEntry
-        key={feature.id}
-        feature={feature}
-        selected={selectedFeatureIds.includes(feature.id)}
-        onEditFeature={onEditFeature}
-        onFocusFeature={onFocusFeature}
-        onRemoveFeature={onRemoveFeature}
-        onSelectFeature={onSelectFeature}
-        onToggleFeatureVisibility={onToggleFeatureVisibility}
-      />
-    );
-  },
+  ) => (
+    <FeatureListEntry
+      key={feature.id}
+      feature={feature}
+      selected={selectedFeatureIds.includes(feature.id)}
+      onEditFeature={onEditFeature}
+      onFocusFeature={onFocusFeature}
+      onRemoveFeature={onRemoveFeature}
+      onSelectFeature={onSelectFeature}
+      onToggleFeatureVisibility={onToggleFeatureVisibility}
+      onToggleFeatureLockedness={onToggleFeatureLockedness}
+    />
+  ),
   {
     backgroundHint: 'No features',
     dataProvider: 'features',
@@ -275,11 +286,17 @@ export default connect(
         dispatch(updateFeatureVisibility({ id: featureId, visible }));
       }
     },
+    onSetFeatureLockedness(event, locked) {
+      const featureId = event.currentTarget.dataset.id;
+      if (featureId) {
+        dispatch(updateFeatureLockedness({ id: featureId, locked }));
+      }
+    },
   }),
   // mergeProps
   (
     { featuresByIds, ...stateProps },
-    { onSetFeatureVisibility, ...dispatchProps },
+    { onSetFeatureVisibility, onSetFeatureLockedness, ...dispatchProps },
     ownProps
   ) => ({
     ...ownProps,
@@ -295,6 +312,12 @@ export default connect(
       const featureId = event.currentTarget.dataset.id;
       if (featureId) {
         onSetFeatureVisibility(event, !featuresByIds[featureId].visible);
+      }
+    },
+    onToggleFeatureLockedness(event) {
+      const featureId = event.currentTarget.dataset.id;
+      if (featureId) {
+        onSetFeatureLockedness(event, !featuresByIds[featureId].locked);
       }
     },
   })

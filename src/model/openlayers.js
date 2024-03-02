@@ -49,6 +49,10 @@ export function isFeatureModifiable(object) {
     return false;
   }
 
+  if (object.get('locked')) {
+    return false;
+  }
+
   const id = object.getId();
   return isFeatureId(id) || isMissionItemId(id);
 }
@@ -62,6 +66,10 @@ export function isFeatureModifiable(object) {
  */
 export function isFeatureTransformable(object) {
   if (isNil(object)) {
+    return false;
+  }
+
+  if (object.get('locked')) {
     return false;
   }
 

@@ -68,7 +68,8 @@ export const shouldShowPointsOfFeature = createSelector(
   getSelectedTool,
   (state, featureId) => state.features.byId[featureId],
   (selectedTool, feature) =>
-    selectedTool === Tool.EDIT_FEATURE || Boolean(feature?.showPoints)
+    (selectedTool === Tool.EDIT_FEATURE && !feature.locked) ||
+    Boolean(feature?.showPoints)
 );
 
 /**

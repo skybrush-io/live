@@ -12,6 +12,7 @@ export type FeatureProperties = {
   id: Identifier;
   label?: string;
   labelStyle?: LabelStyle;
+  locked: boolean;
   measure: boolean;
   showPoints: boolean;
   visible: boolean;

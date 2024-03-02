@@ -268,6 +268,7 @@ const FeaturePresentation = ({
   <OLFeature
     id={featureIdToGlobalId(feature.id)}
     style={styleForFeature(feature, isGeofence, isSelected, shouldShowPoints)}
+    properties={{ locked: feature.locked }}
     {...rest}
   >
     {geometryForFeature(feature)}

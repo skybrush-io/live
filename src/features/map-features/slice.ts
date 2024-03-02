@@ -153,6 +153,7 @@ const { actions, reducer } = createSlice({
       const newFeature: FeatureProperties = {
         visible: true,
         filled: true,
+        locked: false,
         measure: false,
         showPoints: false,
         ...structuredClone(feature),
@@ -296,6 +297,23 @@ const { actions, reducer } = createSlice({
         feature.visible = Boolean(visible);
       }
     },
+
+    updateFeatureLockedness(
+      state,
+      action: PayloadAction<{
+        id: FeatureProperties['id'];
+        locked: FeatureProperties['locked'];
+      }>
+    ) {
+      const { id, locked } = action.payload;
+      const feature = state.byId[id];
+
+      if (feature === undefined) {
+        console.warn(`Cannot set lockedness of non-existent feature ${id}`);
+      } else {
+        feature.locked = Boolean(locked);
+      }
+    },
   },
 });
 
@@ -309,6 +327,7 @@ export const {
   updateFeaturePointsVisible,
   updateFeaturePropertiesByIds,
   updateFeatureVisibility,
+  updateFeatureLockedness,
 } = actions;
 
 export default reducer;
