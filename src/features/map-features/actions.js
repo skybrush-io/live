@@ -1,4 +1,4 @@
-import isEqual from 'lodash-es/isEqual';
+import isEqualWith from 'lodash-es/isEqualWith';
 import reject from 'lodash-es/reject';
 import turfDifference from '@turf/difference';
 
@@ -46,7 +46,15 @@ export const addFeatureIfMissing =
   (feature, comparisonProperties) => (dispatch, getState) => {
     const state = getState();
     const match = getFeaturesInOrder(state).find((f) =>
-      comparisonProperties.every((cp) => isEqual(f[cp], feature[cp]))
+      comparisonProperties.every((cp) =>
+        isEqualWith(f[cp], feature[cp], (a, b) => {
+          // Compare numbers up to only 7 decimal digits to avoid mismatches
+          // caused by scaling coordinates to JSON safe integer representations.
+          if (typeof a === 'number' && typeof b === 'number') {
+            return Math.round(a * 1e7) === Math.round(b * 1e7);
+          }
+        })
+      )
     );
     if (!match) {
       dispatch(addFeature(feature));

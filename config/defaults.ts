@@ -29,12 +29,15 @@ const defaults: Config = {
 
   features: {
     loadShowFromCloud: false,
+    missionEditor: false,
   },
 
   headerComponents: [
     ['uav-status-summary'],
     [
+      'distance-summary-header-button',
       'altitude-summary-header-button',
+      'velocity-summary-header-button',
       'battery-status-header-button',
       'rtk-status-header-button',
     ],

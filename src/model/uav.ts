@@ -14,7 +14,7 @@ import { type Coordinate3D } from '~/utils/math';
 
 import { GPSFixType } from './enums';
 import { type GPSFix, type GPSPosition } from './position';
-import { type VelocityNED } from './velocity';
+import { type VelocityNED, type VelocityXYZ } from './velocity';
 
 /**
  * Age constants for a UAV. Used in the Redux store to mark UAVs for which we
@@ -53,6 +53,7 @@ export default class UAV {
   lastUpdated?: number;
   light: number /* RGB565 */;
   localPosition?: Coordinate3D;
+  localVelocity?: VelocityXYZ;
   mode?: string;
   velocity?: VelocityNED;
 
@@ -73,8 +74,6 @@ export default class UAV {
     this._mostSevereError = 0;
     this._position = undefined;
 
-    this.velocity = undefined;
-
     this.battery = {
       voltage: undefined,
       percentage: undefined,
@@ -90,7 +89,9 @@ export default class UAV {
     this.lastUpdated = undefined;
     this.light = 0xffff; /* white in RGB565 */
     this.localPosition = undefined;
+    this.localVelocity = undefined;
     this.mode = undefined;
+    this.velocity = undefined;
   }
 
   /**
@@ -223,6 +224,7 @@ export default class UAV {
       light,
       debug,
       velocity,
+      velocityXYZ,
     } = status;
 
     let errorList: ErrorCode[];
@@ -259,7 +261,16 @@ export default class UAV {
     }
 
     if (velocity !== undefined && this.velocity !== velocity) {
-      this.velocity = velocity;
+      this.velocity = [velocity[0] / 1e3, velocity[1] / 1e3, velocity[2] / 1e3];
+      updated = true;
+    }
+
+    if (velocityXYZ) {
+      this.localVelocity = [
+        velocityXYZ[0] / 1e3,
+        velocityXYZ[1] / 1e3,
+        velocityXYZ[2] / 1e3,
+      ];
       updated = true;
     }
 
@@ -350,10 +361,11 @@ export default class UAV {
       heading: this.heading,
       lastUpdated: this.lastUpdated,
       light: this.light,
-      mode: this.mode,
-      velocity: this.velocity,
       localPosition,
+      localVelocity: structuredClone(this.localVelocity),
+      mode: this.mode,
       position,
+      velocity: structuredClone(this.velocity),
     };
   }
 }

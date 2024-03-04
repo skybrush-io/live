@@ -5,6 +5,7 @@
   },
   "DrawingToolbar": {
     "addMarker": "Add marker",
+    "addWaypoint": "Add waypoint",
     "cutHole": "Cut hole into polygon",
     "drawCircle": "Draw circle",
     "drawPath": "Draw path",
@@ -78,6 +79,10 @@
       "no": "No geofence defined yet"
     }
   },
+  "header": {
+    "distanceSummary": "Maximum and minimum distance from home position",
+    "velocitySummary": "Maximum horizontal and vertical velocity"
+  },
   "help": "Help",
   "lightControl": {
     "fromGCS": "Lights controlled from GCS",
@@ -89,6 +94,15 @@
   },
   "mappingToggleButton": {
     "sortByMissionID": "Sort by mission IDs"
+  },
+  "mission": {
+    "planner": {
+      "schema": {
+        "error": "Error while loading mission parameter schema from server",
+        "loading": "Retrieving mission parameters...",
+        "notFound": "The connected server doesn't provide a schema for the selected mission type"
+      }
+    }
   },
   "notifications": {
     "connectedToSkybrushServer": "Connected to Skybrush server"

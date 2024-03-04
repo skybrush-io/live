@@ -3,14 +3,16 @@
  * model objects and converting between the two.
  */
 
+import { produce } from 'immer';
 import isEmpty from 'lodash-es/isEmpty';
 import isNil from 'lodash-es/isNil';
 import unary from 'lodash-es/unary';
+import { batch } from 'react-redux';
 
 import { updateFlatEarthCoordinateSystem } from '~/features/map/origin';
 import { cloneFeatureById } from '~/features/map-features/actions';
 import { updateFeaturePropertiesByIds } from '~/features/map-features/slice';
-import { moveMissionItemCoordinateByMapCoordinateDelta } from '~/features/mission/actions';
+import { updateMissionItemFromFeature } from '~/features/mission/actions';
 import {
   moveOutdoorShowOriginByMapCoordinateDelta,
   rotateOutdoorShowOrientationByAngleAroundPoint,
@@ -23,23 +25,39 @@ import { toDegrees } from '~/utils/math';
 
 import { FeatureType } from './features';
 import {
+  CONVEX_HULL_AREA_ID,
   globalIdToAreaId,
   globalIdToFeatureId,
+  globalIdToMissionItemId,
   globalIdToOriginId,
   isAreaId,
   isFeatureId,
+  isMissionItemId,
   isOriginId,
   MAP_ORIGIN_ID,
-  CONVEX_HULL_AREA_ID,
-  globalIdToMissionItemId,
-  isMissionItemId,
 } from './identifiers';
+
+/**
+ * Returns whether the given OpenLayers feature is modifiable with a
+ * standard `Modify` interaction.
+ *
+ * @param  {ol.Feature|null|undefined}  object  the feature to test
+ * @return {boolean} whether the feature is modifiable
+ */
+export function isFeatureModifiable(object) {
+  if (isNil(object)) {
+    return false;
+  }
+
+  const id = object.getId();
+  return isFeatureId(id) || isMissionItemId(id);
+}
 
 /**
  * Returns whether the given OpenLayers feature is transformable with a
  * standard transformation interaction.
  *
- * @param  {ol.Feature|null|undefined}  obj  the feature to test
+ * @param  {ol.Feature|null|undefined}  object  the feature to test
  * @return {boolean} whether the feature is transformable
  */
 export function isFeatureTransformable(object) {
@@ -53,6 +71,9 @@ export function isFeatureTransformable(object) {
   );
 }
 
+const lonLatsFromMapViewCoordinates = (cs) =>
+  cs.map(unary(lonLatFromMapViewCoordinate));
+
 /**
  * Converts an OpenLayers geometry object into a list of corresponding feature
  * objects that can be stored in the global state store.
@@ -60,7 +81,7 @@ export function isFeatureTransformable(object) {
  * @param  {ol.Geometry} olGeometry - the OpenLayers geometry
  * @return {Object} the list of features to store in the global state
  */
-export function createFeatureFromOpenLayersGeometry(olGeometry) {
+export function createFeaturesFromOpenLayersGeometry(olGeometry) {
   const type = olGeometry.getType();
   const coordinates = olGeometry.getCoordinates();
 
@@ -70,7 +91,7 @@ export function createFeatureFromOpenLayersGeometry(olGeometry) {
         {
           type: FeatureType.POINTS,
           filled: false,
-          points: [lonLatFromMapViewCoordinate(coordinates)],
+          points: lonLatsFromMapViewCoordinates([coordinates]),
         },
       ];
 
@@ -79,13 +100,10 @@ export function createFeatureFromOpenLayersGeometry(olGeometry) {
       return [
         {
           type: FeatureType.CIRCLE,
-          points: [
-            lonLatFromMapViewCoordinate(center),
-            lonLatFromMapViewCoordinate([
-              center[0] + olGeometry.getRadius(),
-              center[1],
-            ]),
-          ],
+          points: lonLatsFromMapViewCoordinates([
+            center,
+            [center[0] + olGeometry.getRadius(), center[1]],
+          ]),
         },
       ];
     }
@@ -95,7 +113,7 @@ export function createFeatureFromOpenLayersGeometry(olGeometry) {
         {
           type: FeatureType.LINE_STRING,
           filled: false,
-          points: coordinates.map(unary(lonLatFromMapViewCoordinate)),
+          points: lonLatsFromMapViewCoordinates(coordinates),
         },
       ];
 
@@ -104,9 +122,7 @@ export function createFeatureFromOpenLayersGeometry(olGeometry) {
         // Normalize the polygon by correcting overlapping or external holes
         normalizePolygon(
           // Convert between coordinate representations
-          coordinates.map((linearRing) =>
-            linearRing.map(unary(lonLatFromMapViewCoordinate))
-          )
+          coordinates.map(lonLatsFromMapViewCoordinates)
         )
           // "Open" the rings by removing their redundant last elements
           .map((coordinates) =>
@@ -124,7 +140,7 @@ export function createFeatureFromOpenLayersGeometry(olGeometry) {
     case 'MultiPolygon': {
       return olGeometry
         .getPolygons()
-        .flatMap(createFeatureFromOpenLayersGeometry);
+        .flatMap(createFeaturesFromOpenLayersGeometry);
     }
 
     default:
@@ -139,8 +155,8 @@ export function createFeatureFromOpenLayersGeometry(olGeometry) {
  * @param  {ol.Feature} olFeature - the OpenLayers feature
  * @return {Object} the list of features to store in the global state
  */
-export function createFeatureFromOpenLayers(olFeature) {
-  return createFeatureFromOpenLayersGeometry(olFeature.getGeometry());
+export function createFeaturesFromOpenLayers(olFeature) {
+  return createFeaturesFromOpenLayersGeometry(olFeature.getGeometry());
 }
 
 /**
@@ -157,7 +173,7 @@ export function createFeatureFromOpenLayers(olFeature) {
  *         individual vertices) or 'transform" (moving or rotating the entire
  *         feature)
  */
-export function handleFeatureUpdatesInOpenLayers(
+function _handleFeatureUpdatesInOpenLayers(
   features,
   dispatch,
   { event, type } = {}
@@ -173,7 +189,7 @@ export function handleFeatureUpdatesInOpenLayers(
     if (userFeatureId) {
       // Feature is a user-defined feature so update it in the Redux store
       const [updatedFeature, ...newFeatures] =
-        createFeatureFromOpenLayers(feature);
+        createFeaturesFromOpenLayers(feature);
       updatedUserFeatures[userFeatureId] = updatedFeature;
 
       newFeatures.forEach((nf) => {
@@ -191,7 +207,7 @@ export function handleFeatureUpdatesInOpenLayers(
         originFeatureId === MAP_ORIGIN_ID + '$y'
       ) {
         // Feature is the origin of the flat Earth coordinate system
-        const [featureObject] = createFeatureFromOpenLayers(feature);
+        const [featureObject] = createFeaturesFromOpenLayers(feature);
         const isYAxis = originFeatureId === MAP_ORIGIN_ID + '$y';
         const coords = feature.getGeometry().getCoordinates();
         const position = featureObject.points[0];
@@ -246,23 +262,16 @@ export function handleFeatureUpdatesInOpenLayers(
       continue;
     }
 
-    // Is this feature a waypoint mission item?
+    // Is this feature a mission item?
     const missionItemId = globalIdToMissionItemId(globalId);
     if (missionItemId) {
-      if (type === 'transform') {
-        if (event.subType === 'move' && event.delta) {
-          dispatch(
-            moveMissionItemCoordinateByMapCoordinateDelta(
-              missionItemId,
-              event.delta
-            )
-          );
-        }
-      } else {
-        console.warn(
-          'This transformation is not handled for waypoint mission items yet'
-        );
-      }
+      dispatch(
+        updateMissionItemFromFeature(
+          missionItemId,
+          createFeaturesFromOpenLayers(feature)[0]
+        )
+      );
+      continue;
     }
   }
 
@@ -270,3 +279,13 @@ export function handleFeatureUpdatesInOpenLayers(
     dispatch(updateFeaturePropertiesByIds(updatedUserFeatures));
   }
 }
+
+// TODO: This won't be necessary after upgrading to React 18's `createRoot`:
+// https://react.dev/blog/2022/03/08/react-18-upgrade-guide#automatic-batching
+// (Individually updating multiple mission items triggers a render halfway,
+// which resets some features to their stored state before we can process them.)
+export const handleFeatureUpdatesInOpenLayers = (...args) => {
+  batch(() => {
+    _handleFeatureUpdatesInOpenLayers(...args);
+  });
+};

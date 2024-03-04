@@ -475,6 +475,7 @@ class MapContextMenu extends React.Component {
 }
 
 const hasMapFeatures = hasFeature('mapFeatures');
+const hasMissionEditor = hasFeature('missionEditor');
 const hasGeofence = hasFeature('geofence');
 const hasShowControl = hasFeature('showControl');
 
@@ -508,7 +509,7 @@ const MapContextMenuContainer = connect(
   }),
   // mapDispatchToProps
   {
-    addPointToMission: addNewWaypointMissionItem,
+    addPointToMission: hasMissionEditor ? addNewWaypointMissionItem : null,
     clearGeofencePolygonId: hasGeofence ? clearGeofencePolygonId : null,
     cutFeature: hasMapFeatures ? cutFeature : null,
     editFeature: hasMapFeatures ? showFeatureEditorDialog : null,

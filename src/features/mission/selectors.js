@@ -15,10 +15,12 @@ import {
 } from '~/model/identifiers';
 import {
   getAltitudeFromMissionItem,
+  getAreaFromMissionItem,
   getCoordinateFromMissionItem,
   MissionItemType,
   MissionType,
 } from '~/model/missions';
+import { isValidPosition } from '~/model/position';
 import { selectionForSubset } from '~/selectors/selection';
 import { selectOrdered } from '~/utils/collections';
 import {
@@ -416,6 +418,26 @@ export const canMoveSelectedMissionItemsDown =
 export const shouldMissionEditorPanelFollowScroll = (state) =>
   state.mission.editorPanel.followScroll;
 
+const getMissionItemsWithExtraFieldInOrder = (field, getter) =>
+  createSelector(getMissionItemsInOrder, (items) =>
+    items
+      .map((item, index) => ({
+        id: item.id,
+        item,
+        [field]: getter(item),
+        index,
+      }))
+      .filter((mi) => !isNil(mi[field]))
+  );
+
+/**
+ * Returns all the mission items that have areas associated to them. This is
+ * used when drawing the mission info layer of the map and during automatic
+ * geofence calculation.
+ */
+export const getMissionItemsWithAreasInOrder =
+  getMissionItemsWithExtraFieldInOrder('area', getAreaFromMissionItem);
+
 /**
  * Returns a selector that converts the current list of mission items to a
  * list of objects containing the GPS coordinates where the items should
@@ -432,24 +454,11 @@ export const shouldMissionEditorPanelFollowScroll = (state) =>
  *
  * Mission items for which no coordinate belongs are not returned.
  */
-export const getMissionItemsWithCoordinatesInOrder = createSelector(
-  getMissionItemsInOrder,
-  (items) => {
-    const result = [];
-    let index = 0;
-
-    for (const item of items) {
-      const coordinate = getCoordinateFromMissionItem(item);
-      if (coordinate) {
-        result.push({ id: item.id, item, coordinate, index });
-      }
-
-      index++;
-    }
-
-    return result;
-  }
-);
+export const getMissionItemsWithCoordinatesInOrder =
+  getMissionItemsWithExtraFieldInOrder(
+    'coordinate',
+    getCoordinateFromMissionItem
+  );
 
 /**
  * Returns a selector that converts the current list of mission items to a
@@ -466,62 +475,43 @@ export const getMissionItemsWithCoordinatesInOrder = createSelector(
  *
  * Mission items for which no altitude belongs are not returned.
  */
-export const getMissionItemsWithAltitudesInOrder = createSelector(
-  getMissionItemsInOrder,
-  (items) => {
-    const result = [];
-    let index = 0;
+export const getMissionItemsWithAltitudesInOrder =
+  getMissionItemsWithExtraFieldInOrder('altitude', getAltitudeFromMissionItem);
 
-    for (const item of items) {
-      const altitude = getAltitudeFromMissionItem(item);
-      if (altitude) {
-        result.push({ id: item.id, item, altitude, index });
-      }
-
-      index++;
-    }
-
-    return result;
-  }
+/**
+ * Returns the coordinates of the convex hull of the currently loaded mission
+ * in world coordinates.
+ */
+export const getConvexHullOfMissionInWorldCoordinates = createSelector(
+  getGPSBasedHomePositionsInMission,
+  getMissionItemsWithCoordinatesInOrder,
+  getMissionItemsWithAreasInOrder,
+  (homePositions, missionItemsWithCoorinates, missionItemsWithAreas) =>
+    convexHull([
+      ...homePositions.filter((hp) => !isNil(hp)).map((hp) => [hp.lon, hp.lat]),
+      ...missionItemsWithCoorinates.map(({ coordinate: c }) => [c.lon, c.lat]),
+      ...missionItemsWithAreas.flatMap((miwa) => miwa.area.points),
+    ])
 );
 
 /**
  * Returns the coordinates of the convex hull of the currently loaded mission
  * in the coordinate system of the map view.
  */
-export const getConvexHullOfHomePositionsAndMissionItemsInWorldCoordinates =
-  createSelector(
-    getGPSBasedHomePositionsInMission,
-    getMissionItemsWithCoordinatesInOrder,
-    (homePositions, missionItemsWithCoorinates) =>
-      convexHull([
-        ...homePositions.filter(Boolean).map((hp) => [hp.lon, hp.lat]),
-        ...missionItemsWithCoorinates.map((miwc) => [
-          miwc.coordinate.lon,
-          miwc.coordinate.lat,
-        ]),
-      ])
-  );
-
-/**
- * Returns the coordinates of the convex hull of the currently loaded mission
- * in the coordinate system of the map view.
- */
-export const getConvexHullOfHomePositionsAndMissionItemsInMapViewCoordinates =
-  createSelector(
-    getConvexHullOfHomePositionsAndMissionItemsInWorldCoordinates,
-    (convexHullOfHomePositionsAndMissionItemsInWorldCoordinates) =>
-      convexHullOfHomePositionsAndMissionItemsInWorldCoordinates.map(
-        (worldCoordinate) => mapViewCoordinateFromLonLat(worldCoordinate)
-      )
-  );
+export const getConvexHullOfMissionInMapViewCoordinates = createSelector(
+  getConvexHullOfMissionInWorldCoordinates,
+  (convexHullOfHomePositionsAndMissionItemsInWorldCoordinates) =>
+    convexHullOfHomePositionsAndMissionItemsInWorldCoordinates.map(
+      (worldCoordinate) => mapViewCoordinateFromLonLat(worldCoordinate)
+    )
+);
 
 /**
  * Returns whether the convex hull of the waypoint mission (home positions and
  * mission items) is fully contained inside the geofence polygon.
  */
 export const isWaypointMissionConvexHullInsideGeofence = createSelector(
-  getConvexHullOfHomePositionsAndMissionItemsInWorldCoordinates,
+  getConvexHullOfMissionInWorldCoordinates,
   getGeofencePolygonInWorldCoordinates,
   (convexHull, geofence) => {
     if (
@@ -550,14 +540,15 @@ export const getMaximumDistanceBetweenHomePositionsAndGeofence = createSelector(
       return 0;
     }
 
-    const homePoints = homePositions.map(({ lon, lat }) =>
-      TurfHelpers.point([lon, lat])
-    );
+    const homePoints = homePositions
+      // TODO: `!isNil(hp)` check should be enough when migrating to TypeScript
+      .filter((hp) => isValidPosition(hp))
+      .map(({ lon, lat }) => TurfHelpers.point([lon, lat]));
     const geofencePoints = geofencePolygon.map(TurfHelpers.point);
     const distances = homePoints.flatMap((hp) =>
       geofencePoints.map((gp) => turfDistanceInMeters(hp, gp))
     );
-    return max(distances) || 0;
+    return max(distances) ?? 0;
   }
 );
 
@@ -653,8 +644,10 @@ export const getMissionItemsInOrderAsSegments = createSelector(
     const home = homePosition && {
       XY: TurfHelpers.point([homePosition.lon, homePosition.lat]),
       Z: {
+        // TODO: why does HOME reference return AGL and not AHL?
         [AltitudeReference.HOME]: homePosition.agl,
         [AltitudeReference.MSL]: homePosition.amsl,
+        [AltitudeReference.GROUND]: homePosition.agl,
       },
     };
     try {

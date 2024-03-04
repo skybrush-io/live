@@ -53,6 +53,8 @@ const MissionPlannerMainPanel = ({
           const type = types.find((t) => t.id === selectedType);
           if (type) {
             onMissionTypeChange(type);
+          } else {
+            onMissionTypeCleared();
           }
         })
         .catch((error) => {
@@ -70,7 +72,11 @@ const MissionPlannerMainPanel = ({
   return (
     <MultiPagePanel
       height={400}
-      selectedPage={selectedType && selectedTypeInfo ? 'parameters' : 'type'}
+      selectedPage={
+        selectedType && selectedTypeInfo?.id === selectedType
+          ? 'parameters'
+          : 'type'
+      }
     >
       <Page scrollable id='type'>
         <MissionTypeSelector

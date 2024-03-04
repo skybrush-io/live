@@ -3,13 +3,16 @@ import config from 'config';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { withTranslation } from 'react-i18next';
+
 import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
-import SelectAll from '@material-ui/icons/SelectAll';
-import LocationOn from '@material-ui/icons/LocationOn';
-import ShowChart from '@material-ui/icons/ShowChart';
+
 import CropSquare from '@material-ui/icons/CropSquare';
+import FiberManualRecord from '@material-ui/icons/FiberManualRecord';
 import PanoramaFishEye from '@material-ui/icons/PanoramaFishEye';
+import Place from '@material-ui/icons/Place';
+import SelectAll from '@material-ui/icons/SelectAll';
+import ShowChart from '@material-ui/icons/ShowChart';
 import StarBorder from '@material-ui/icons/StarBorder';
 import ZoomIn from '@material-ui/icons/ZoomIn';
 
@@ -17,18 +20,23 @@ import partial from 'lodash-es/partial';
 import { connect } from 'react-redux';
 
 import { TooltipWithContainerFromContext as Tooltip } from '~/containerContext';
+import { getSelectedTool, setSelectedTool } from '~/features/map/tools';
+import { tt } from '~/i18n';
 import ContentCut from '~/icons/ContentCut';
 import EditFeature from '~/icons/EditFeature';
-import { getSelectedTool, setSelectedTool } from '~/features/map/tools';
 
 import { Tool } from './tools';
-import { tt } from '~/i18n';
 
 const drawingToolRegistry = {
   'add-marker': {
     tool: Tool.DRAW_POINT,
     label: tt('DrawingToolbar.addMarker'),
-    icon: LocationOn,
+    icon: FiberManualRecord,
+  },
+  'add-waypoint': {
+    tool: Tool.ADD_WAYPOINT,
+    label: tt('DrawingToolbar.addWaypoint'),
+    icon: Place,
   },
   'cut-hole': {
     tool: Tool.CUT_HOLE,

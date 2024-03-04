@@ -9,29 +9,16 @@ import { freeze } from '@reduxjs/toolkit';
 
 import { loadCompiledShow as processFile } from '@skybrush/show-format';
 
-import { Colors } from '~/components/colors';
-import {
-  addFeatureById,
-  removeFeaturesByIds,
-} from '~/features/map-features/slice';
-import {
-  getFeaturesInOrder,
-  getProposedIdForNewFeature,
-} from '~/features/map-features/selectors';
-import { removeGeofencePolygon } from '~/features/mission/actions';
-import {
-  getConvexHullOfHomePositionsAndMissionItemsInMapViewCoordinates,
-  getMissionType,
-} from '~/features/mission/selectors';
+import { removeFeaturesByIds } from '~/features/map-features/slice';
+import { getFeaturesInOrder } from '~/features/map-features/selectors';
+import { addGeofencePolygon } from '~/features/mission/actions';
 import {
   updateHomePositions,
   updateLandingPositions,
   updateTakeoffHeadings,
   setMappingLength,
   setMissionType,
-  setGeofencePolygonId,
 } from '~/features/mission/slice';
-import { getGeofenceSettings } from '~/features/safety/selectors';
 import { showNotification } from '~/features/snackbar/actions';
 import { MessageSemantics } from '~/features/snackbar/types';
 import {
@@ -39,15 +26,13 @@ import {
   getActiveUAVIds,
 } from '~/features/uavs/selectors';
 import { clearLastUploadResultForJobType } from '~/features/upload/slice';
-import { FeatureType, LabelStyle } from '~/model/features';
 import { MissionType } from '~/model/missions';
 import {
-  bufferPolygon,
   lonLatFromMapViewCoordinate,
   mapViewCoordinateFromLonLat,
   translateLonLatWithMapViewDelta,
 } from '~/utils/geography';
-import { simplifyPolygon, toRadians } from '~/utils/math';
+import { toRadians } from '~/utils/math';
 import { createAsyncAction } from '~/utils/redux';
 
 import { JOB_TYPE } from './constants';
@@ -132,48 +117,10 @@ export const removeShowFeatures = () => (dispatch, getState) => {
   dispatch(removeFeaturesByIds(showFeatureIds));
 };
 
-const addGeofencePolygon =
-  (coordinates, owner, toLonLat) => (dispatch, getState) => {
-    const state = getState();
-
-    const { horizontalMargin, simplify, maxVertexCount } =
-      getGeofenceSettings(state);
-
-    const points = bufferPolygon(coordinates, horizontalMargin);
-
-    const simplifiedPoints = simplify
-      ? simplifyPolygon(points, maxVertexCount)
-      : points;
-
-    if (simplifiedPoints.length < 3) {
-      throw new Error('Calculated geofence contains less than 3 points');
-    }
-
-    const geofencePolygon = {
-      label: 'Geofence',
-      labelStyle: LabelStyle.HIDDEN,
-      /* use a line string as the geofence, not a polygon -- if we use a polygon,
-       * it means that any click inside the geofence would be considered as a
-       * "hit" for the geofence feature */
-      type: FeatureType.LINE_STRING,
-      owner,
-      /* don't use a label; the geofence usually overlaps with the convex hull of
-       * the show so it is confusing if the "Geofence" label appears in the middle
-       * of the convex hull */
-      color: Colors.geofence,
-      points: simplifiedPoints.map(toLonLat),
-    };
-    const geofencePolygonId = getProposedIdForNewFeature(
-      state,
-      geofencePolygon
-    );
-    dispatch(
-      addFeatureById({ feature: geofencePolygon, id: geofencePolygonId })
-    );
-    dispatch(setGeofencePolygonId(geofencePolygonId));
-  };
-
-const addGeofencePolygonBasedOnShowTrajectories =
+/**
+ * Thunk that adds a geofence polygon based on the currently loaded show.
+ */
+export const addGeofencePolygonBasedOnShowTrajectories =
   () => (dispatch, getState) => {
     const state = getState();
 
@@ -204,58 +151,6 @@ const addGeofencePolygonBasedOnShowTrajectories =
       )
     );
   };
-
-const addGeofencePolygonBasedOnMissionItems = () => (dispatch, getState) => {
-  const state = getState();
-
-  const coordinates =
-    getConvexHullOfHomePositionsAndMissionItemsInMapViewCoordinates(state);
-  if (coordinates.length === 0) {
-    dispatch(
-      showNotification({
-        message: `Could not calculate geofence coordinates.
-                  Are there valid mission items with coordinates?`,
-        semantics: MessageSemantics.ERROR,
-        permanent: true,
-      })
-    );
-    return;
-  }
-
-  dispatch(
-    addGeofencePolygon(
-      coordinates,
-      MissionType.WAYPOINT,
-      unary(lonLatFromMapViewCoordinate)
-    )
-  );
-};
-
-export const updateGeofencePolygon = () => (dispatch, getState) => {
-  dispatch(removeGeofencePolygon());
-  const missionType = getMissionType(getState());
-  switch (missionType) {
-    case MissionType.SHOW: {
-      dispatch(addGeofencePolygonBasedOnShowTrajectories());
-      break;
-    }
-
-    case MissionType.WAYPOINT: {
-      dispatch(addGeofencePolygonBasedOnMissionItems());
-      break;
-    }
-
-    default: {
-      dispatch(
-        showNotification({
-          message: `Cannot update geofence for mission type: "${missionType}"`,
-          semantics: MessageSemantics.ERROR,
-          permanent: true,
-        })
-      );
-    }
-  }
-};
 
 /**
  * Moves the show origin relative to its current position such that the delta

@@ -21,6 +21,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import FormHeader from '@skybrush/mui-components/lib/FormHeader';
 
 import { removeFeaturesByIds } from '~/features/map-features/slice';
+import { updateGeofencePolygon } from '~/features/mission/actions';
 import {
   getGeofenceAction,
   getGeofencePolygonId,
@@ -31,7 +32,6 @@ import {
   clearGeofencePolygonId,
   setGeofenceAction,
 } from '~/features/mission/slice';
-import { updateGeofencePolygon } from '~/features/show/actions';
 import {
   createValidator,
   atLeast,

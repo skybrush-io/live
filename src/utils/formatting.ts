@@ -127,6 +127,12 @@ export const AREA_UNITS: UnitDescriptor[] = [
 ];
 
 /**
+ * Speed unit array suitable to be used with `formatNumberAndUnit`
+ * in order to format meter per second based speeds nicely
+ */
+export const SPEED_UNITS: UnitDescriptor[] = [{ multiplier: 1, unit: 'm/s' }];
+
+/**
  * Helper function to join an amount string and a unit string with or without a
  * space, based on whether the unit starts with a letter or a special character.
  *
@@ -190,6 +196,13 @@ export const formatDistance = (number: number, digits = 2): string =>
  */
 export const formatArea = (number: number, digits = 2): string =>
   formatNumberAndUnit(number, AREA_UNITS, digits);
+
+/**
+ * Helper function that formats a speed expressed in meters per second
+ * in a nice human-readable manner.
+ */
+export const formatSpeed = (number: number, digits = 2): string =>
+  formatNumberAndUnit(number, SPEED_UNITS, digits);
 
 /**
  * Formats a list of IDs in a manner that is suitable for cases when we

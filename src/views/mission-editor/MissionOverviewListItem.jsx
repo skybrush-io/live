@@ -147,6 +147,10 @@ const MissionOverviewListItem = ({
         : 'Invalid mission item';
       break;
 
+    case MissionItemType.CHANGE_FLIGHT_MODE:
+      secondaryText = `${item.parameters?.mode}`
+      break;
+  
     case MissionItemType.CHANGE_HEADING:
       secondaryText = isValid
         ? safelyFormatHeadingWithMode(
@@ -180,11 +184,19 @@ const MissionOverviewListItem = ({
       break;
 
     case MissionItemType.SET_PAYLOAD:
-      secondaryText = `${item.parameters?.name}: ${item.parameters?.action}`;
+      const { name, action, value } = item.parameters;
+      secondaryText = `${name}: ${action}` + (value !== undefined ? ` ${value}` : '');
+
       break;
 
     case MissionItemType.SET_PARAMETER:
       secondaryText = `${item.parameters?.name}=${item.parameters?.value}`;
+      break;
+
+    case MissionItemType.UPDATE_FLIGHT_AREA:
+      // TODO
+      //onClick = openFlightAreaSettingsTab;
+      //secondaryText = formatFlightAreaStatusText(missionFlightAreaStatus);
       break;
 
     case MissionItemType.UPDATE_GEOFENCE:

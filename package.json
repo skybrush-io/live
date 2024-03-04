@@ -27,7 +27,7 @@
   "dependencies": {
     "@apidevtools/json-schema-ref-parser": "^10.1.0",
     "@collmot/layout-bmfont-text": "^1.3.5",
-    "@collmot/ol-react": "^3.0.0",
+    "@collmot/ol-react": "^3.1.1",
     "@collmot/react-socket": "^2.0.0",
     "@date-io/core": "^1.3.13",
     "@date-io/date-fns": "^1.3.13",
@@ -84,6 +84,7 @@
     "https-browserify": "^1.0.0",
     "hungarian-on3": "^0.3.1",
     "i18next": "^22.4.13",
+    "immer": "^9.0.21",
     "interweave": "^13.1.0",
     "ip": "^1.1.8",
     "is-promise": "^4.0.0",
@@ -249,67 +250,6 @@
       "react/function-component-definition": 0,
       "react/jsx-no-duplicate-props": 0,
       "react/require-default-props": 0,
-      "@typescript-eslint/consistent-type-assertions": [
-        "error",
-        {
-          "assertionStyle": "as",
-          "objectLiteralTypeAssertions": "allow"
-        }
-      ],
-      "@typescript-eslint/explicit-function-return-type": "warn",
-      "@typescript-eslint/naming-convention": [
-        "error",
-        {
-          "selector": "default",
-          "format": [
-            "camelCase"
-          ],
-          "leadingUnderscore": "allow"
-        },
-        {
-          "selector": "enumMember",
-          "format": [
-            "UPPER_CASE"
-          ]
-        },
-        {
-          "selector": "objectLiteralProperty",
-          "format": [
-            "camelCase",
-            "UPPER_CASE"
-          ],
-          "leadingUnderscore": "allow"
-        },
-        {
-          "selector": "parameter",
-          "modifiers": [
-            "unused"
-          ],
-          "format": [
-            "camelCase",
-            "PascalCase"
-          ],
-          "leadingUnderscore": "require"
-        },
-        {
-          "selector": "typeLike",
-          "format": [
-            "PascalCase"
-          ]
-        },
-        {
-          "selector": "variable",
-          "format": [
-            "camelCase",
-            "PascalCase",
-            "UPPER_CASE"
-          ],
-          "leadingUnderscore": "allow"
-        }
-      ],
-      "@typescript-eslint/no-dynamic-delete": "off",
-      "@typescript-eslint/no-namespace": "off",
-      "@typescript-eslint/prefer-regexp-exec": "off",
       "unicorn/filename-case": 0,
       "unicorn/no-array-callback-reference": 0,
       "unicorn/no-fn-reference-in-iterator": 0,
@@ -319,6 +259,77 @@
       "unicorn/prefer-ternary": 0,
       "unicorn/prevent-abbreviations": 0,
       "unicorn/switch-case-braces": 0
-    }
+    },
+    "overrides": [
+      {
+        "files": [
+          "**/*.ts",
+          "**/*.tsx"
+        ],
+        "rules": {
+          "@typescript-eslint/consistent-type-assertions": [
+            "error",
+            {
+              "assertionStyle": "as",
+              "objectLiteralTypeAssertions": "allow"
+            }
+          ],
+          "@typescript-eslint/explicit-function-return-type": "warn",
+          "@typescript-eslint/naming-convention": [
+            "error",
+            {
+              "selector": "default",
+              "format": [
+                "camelCase"
+              ],
+              "leadingUnderscore": "allow"
+            },
+            {
+              "selector": "enumMember",
+              "format": [
+                "UPPER_CASE"
+              ]
+            },
+            {
+              "selector": "objectLiteralProperty",
+              "format": [
+                "camelCase",
+                "UPPER_CASE"
+              ],
+              "leadingUnderscore": "allow"
+            },
+            {
+              "selector": "parameter",
+              "modifiers": [
+                "unused"
+              ],
+              "format": [
+                "camelCase",
+                "PascalCase"
+              ],
+              "leadingUnderscore": "require"
+            },
+            {
+              "selector": "typeLike",
+              "format": [
+                "PascalCase"
+              ]
+            },
+            {
+              "selector": "variable",
+              "format": [
+                "camelCase",
+                "PascalCase",
+                "UPPER_CASE"
+              ],
+              "leadingUnderscore": "allow"
+            }
+          ],
+          "@typescript-eslint/no-dynamic-delete": "off",
+          "@typescript-eslint/no-namespace": "off",
+          "@typescript-eslint/prefer-regexp-exec": "off"
+        }
+      }
+    ]
   }
 }
