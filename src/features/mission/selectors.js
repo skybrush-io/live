@@ -556,11 +556,12 @@ export const getMaximumDistanceBetweenHomePositionsAndGeofence = createSelector(
  * Returns the maximum distance of any waypoint in the mission from the first
  * home position in the UAV mapping.
  */
-export const getMaximumHorizontalDistanceOfWaypointsFromHomePosition =
+export const getMaximumHorizontalDistanceFromHomePositionInWaypointMission =
   createSelector(
     getGPSBasedHomePositionsInMission,
     getMissionItemsWithCoordinatesInOrder,
-    ([homePosition], missionItemsWithCoorinates) => {
+    getMissionItemsWithAreasInOrder,
+    ([homePosition], missionItemsWithCoorinates, missionItemsWithAreas) => {
       if (!homePosition) {
         return 0;
       }
@@ -568,8 +569,13 @@ export const getMaximumHorizontalDistanceOfWaypointsFromHomePosition =
       const homePoint = TurfHelpers.point([homePosition.lon, homePosition.lat]);
       return (
         max(
-          missionItemsWithCoorinates.map(({ coordinate: { lon, lat } }) =>
-            turfDistanceInMeters(homePoint, TurfHelpers.point([lon, lat]))
+          [
+            ...missionItemsWithCoorinates.map(
+              ({ coordinate: { lon, lat } }) => [lon, lat]
+            ),
+            ...missionItemsWithAreas.flatMap(({ area: { points } }) => points),
+          ].map((point) =>
+            turfDistanceInMeters(homePoint, TurfHelpers.point(point))
           )
         ) ?? 0
       );

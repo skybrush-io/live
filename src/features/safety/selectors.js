@@ -1,7 +1,7 @@
 import {
   getMaximumDistanceBetweenHomePositionsAndGeofence,
   getMaximumHeightOfWaypoints,
-  getMaximumHorizontalDistanceOfWaypointsFromHomePosition,
+  getMaximumHorizontalDistanceFromHomePositionInWaypointMission,
   getMissionType,
 } from '~/features/mission/selectors';
 import {
@@ -45,7 +45,9 @@ export const getMaximumHorizontalDistanceForCurrentMissionType = (state) => {
         state
       );
     case MissionType.WAYPOINT:
-      return getMaximumHorizontalDistanceOfWaypointsFromHomePosition(state);
+      return getMaximumHorizontalDistanceFromHomePositionInWaypointMission(
+        state
+      );
 
     default:
       console.warn(
