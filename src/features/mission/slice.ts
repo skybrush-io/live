@@ -10,11 +10,18 @@ import isNil from 'lodash-es/isNil';
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import { type ReadonlyDeep } from 'type-fest';
 
-import { GeofenceAction } from '~/features/geofence/model';
 import { removeFeaturesByIds } from '~/features/map-features/slice';
 import { type FeatureProperties } from '~/features/map-features/types';
+import { GeofenceAction } from '~/features/safety/model';
+import { type MissionItem, MissionType } from '~/model/missions';
 import { type GPSPosition } from '~/model/position';
 import type UAV from '~/model/uav';
+import {
+  type Collection,
+  addItemAt,
+  addItemToBack,
+  deleteItemsByIds,
+} from '~/utils/collections';
 import { noPayload } from '~/utils/redux';
 import { type Nullable } from '~/utils/types';
 
@@ -33,6 +40,12 @@ import {
  *       be distinguished, this still seems like the safer approach.
  */
 export type MissionSliceState = ReadonlyDeep<{
+  /**
+   * Type of the mission; ``show`` for drone shows. Empty string means that
+   * there is no mission yet.
+   */
+  type: MissionType;
+
   /**
    * Stores a mapping from the mission-specific consecutive identifiers
    * to the IDs of the UAVs that participate in the mission with that
@@ -98,9 +111,48 @@ export type MissionSliceState = ReadonlyDeep<{
 
   /** Action to perform when the geofence is breached */
   geofenceAction: GeofenceAction;
+
+  /** The name of the mission, if given */
+  name: Nullable<string>;
+
+  /** Collection of items in the current mission if it is a waypoint-based mission */
+  items: Collection<MissionItem>;
+
+  /** State of the mission editor panel */
+  editorPanel: {
+    followScroll: boolean;
+  };
+
+  /** State of the mission planner dialog */
+  plannerDialog: {
+    applyGeofence: boolean;
+    open: boolean;
+    parameters: {
+      fromUser: Record<string, any>;
+      fromContext: Record<string, any>;
+    };
+    selectedType: Nullable<string>;
+  };
+
+  /** Parameters used in the last successful invocation of the mission planner */
+  lastSuccessfulPlannerInvocationParameters: Nullable<{
+    type: string;
+    parametersFromUser: Record<string, any>;
+    valuesFromContext: Record<string, any>;
+  }>;
+
+  /** The progress of the mission as reported by the UAV */
+  progress: {
+    currentItemId?: string;
+    currentItemRatio?: number;
+  };
+
+  /** Backup of the last cleared mission */
+  lastClearedMissionData: Nullable<Record<string, any>>;
 }>;
 
 const initialState: MissionSliceState = {
+  type: MissionType.UNKNOWN,
   mapping: [],
   homePositions: [],
   landingPositions: [],
@@ -113,12 +165,62 @@ const initialState: MissionSliceState = {
   commandsAreBroadcast: false,
   geofencePolygonId: undefined,
   geofenceAction: GeofenceAction.RETURN,
+  name: null,
+  items: {
+    byId: {},
+    order: [],
+  },
+  editorPanel: {
+    followScroll: false,
+  },
+  plannerDialog: {
+    applyGeofence: false,
+    open: false,
+    parameters: {
+      fromUser: {},
+      fromContext: {},
+    },
+    selectedType: null,
+  },
+  lastSuccessfulPlannerInvocationParameters: null,
+  progress: {
+    currentItemId: undefined,
+    currentItemRatio: undefined,
+  },
+  lastClearedMissionData: null,
 };
 
 const { actions, reducer } = createSlice({
   name: 'mission',
   initialState,
   reducers: {
+    addMissionItem(
+      state,
+      action: PayloadAction<{ item: MissionItem; index: number }>
+    ) {
+      const { item, index } = action.payload;
+      const { id, type } = item;
+
+      if (!id) {
+        throw new Error('Mission item must have an ID');
+      }
+
+      if (!type) {
+        throw new Error('Mission item must have a type');
+      }
+
+      if (state.items.byId[id]) {
+        throw new Error('Mission item ID is already taken');
+      }
+
+      // Update the state
+      if (typeof index === 'number') {
+        addItemAt(state.items, item, index);
+      } else {
+        addItemToBack(state.items, item);
+      }
+    },
+
     adjustMissionMapping(
       state,
       action: PayloadAction<{ uavId: UAV['id']; to: number }>
@@ -170,6 +272,13 @@ const { actions, reducer } = createSlice({
     },
 
     /**
+     * Closes the mission planner dialog.
+     */
+    closeMissionPlannerDialog: noPayload<MissionSliceState>((state) => {
+      state.plannerDialog.open = false;
+    }),
+
+    /**
      * Finishes the current editing session of the mapping.
      */
     finishMappingEditorSession: noPayload<MissionSliceState>((state) => {
@@ -214,6 +323,36 @@ const { actions, reducer } = createSlice({
       );
     },
 
+    moveMissionItem: {
+      prepare: (oldIndex: number, newIndex: number) => ({
+        payload: { oldIndex, newIndex },
+      }),
+      reducer(
+        state,
+        action: PayloadAction<{ oldIndex: number; newIndex: number }>
+      ) {
+        const { oldIndex, newIndex } = action.payload;
+        const numItems = state.items.order.length;
+        if (
+          oldIndex >= 0 &&
+          oldIndex < numItems &&
+          newIndex >= 0 &&
+          newIndex < numItems &&
+          oldIndex !== newIndex
+        ) {
+          const [itemId] = state.items.order.splice(oldIndex, 1);
+          state.items.order.splice(newIndex, 0, itemId!);
+        }
+      },
+    },
+
+    removeMissionItemsByIds(
+      state,
+      action: PayloadAction<Array<MissionItem['id']>>
+    ) {
+      deleteItemsByIds(state.items, action.payload);
+    },
+
     /**
      * Removes some UAVs from the mission mapping.
      */
@@ -249,6 +388,13 @@ const { actions, reducer } = createSlice({
      */
     setCommandsAreBroadcast(state, action: PayloadAction<boolean>) {
       state.commandsAreBroadcast = Boolean(action.payload);
+    },
+
+    /**
+     * Sets whether the mission editor panel should follow the active item.
+     */
+    setEditorPanelFollowScroll(state, action: PayloadAction<boolean>) {
+      state.editorPanel.followScroll = Boolean(action.payload);
     },
 
     /**
@@ -310,6 +456,90 @@ const { actions, reducer } = createSlice({
     },
 
     /**
+     * Sets the array of items in the mission, assuming that all items are
+     * already validated.
+     */
+    _setMissionItemsFromValidatedArray(
+      state,
+      { payload: items }: PayloadAction<MissionItem[]>
+    ) {
+      state.items = {
+        order: items.map((i) => i.id),
+        byId: Object.fromEntries(items.map((i) => [i.id, i])),
+      };
+      state.progress = {
+        currentItemId: undefined,
+        currentItemRatio: undefined,
+      };
+    },
+
+    /**
+     * Sets the type of the mission, without affecting any other part of the
+     * current mission configuration.
+     */
+    setMissionType(state, action: PayloadAction<MissionType>) {
+      state.type =
+        typeof action.payload === 'string'
+          ? action.payload
+          : MissionType.UNKNOWN;
+    },
+
+    setMissionName(state, action: PayloadAction<Nullable<string>>) {
+      state.name = typeof action.payload === 'string' ? action.payload : null;
+    },
+
+    setMissionPlannerDialogApplyGeofence(
+      state,
+      action: PayloadAction<boolean>
+    ) {
+      state.plannerDialog.applyGeofence = Boolean(action.payload);
+    },
+
+    setMissionPlannerDialogSelectedType(
+      state,
+      action: PayloadAction<Nullable<string>>
+    ) {
+      state.plannerDialog.selectedType = action.payload;
+    },
+
+    setMissionPlannerDialogContextParameters(
+      state,
+      action: PayloadAction<Record<string, any>>
+    ) {
+      state.plannerDialog.parameters.fromContext = action.payload;
+    },
+
+    setMissionPlannerDialogUserParameters(
+      state,
+      action: PayloadAction<Record<string, any>>
+    ) {
+      state.plannerDialog.parameters.fromUser = action.payload;
+    },
+
+    setLastSuccessfulPlannerInvocationParameters(
+      state,
+      action: PayloadAction<
+        MissionSliceState['lastSuccessfulPlannerInvocationParameters']
+      >
+    ) {
+      state.lastSuccessfulPlannerInvocationParameters = action.payload;
+    },
+
+    setLastClearedMissionData(
+      state,
+      action: PayloadAction<MissionSliceState['lastClearedMissionData']>
+    ) {
+      state.lastClearedMissionData = action.payload;
+    },
+
+    /**
+     * Shows the mission planner dialog.
+     */
+    showMissionPlannerDialog: noPayload<MissionSliceState>((state) => {
+      state.plannerDialog.open = true;
+    }),
+
+    /**
      * Starts the current editing session of the mapping, and marks the
      * given slot in the mapping as the one being edited.
      */
@@ -342,6 +572,24 @@ const { actions, reducer } = createSlice({
     },
 
     /**
+     * Updates the ID of the mission item that's currently being executed.
+     */
+    updateCurrentMissionItemId(state, action: PayloadAction<string>) {
+      state.progress.currentItemId = action.payload;
+
+      // Reset the progress to clear remaining data from the previous item.
+      state.progress.currentItemRatio = undefined;
+    },
+
+    /**
+     * Updates the progress ratio of the mission item that's currently being
+     * executed.
+     */
+    updateCurrentMissionItemRatio(state, action: PayloadAction<number>) {
+      state.progress.currentItemRatio = action.payload;
+    },
+
+    /**
      * Updates the home positions of all the drones in the mission.
      */
     updateHomePositions(
@@ -368,14 +616,35 @@ const { actions, reducer } = createSlice({
     },
 
     /**
+     * Updates the properties of a mission item in a waypoint-based mission.
+     */
+    updateMissionItemParameters: {
+      prepare: (
+        itemId: MissionItem['id'],
+        parameters: MissionItem['parameters']
+      ) => ({ payload: { itemId, parameters } }),
+      reducer(
+        state,
+        action: PayloadAction<{
+          itemId: MissionItem['id'];
+          parameters: MissionItem['parameters'];
+        }>
+      ) {
+        const { itemId, parameters } = action.payload;
+        const item = state.items.byId[itemId];
+        if (item) {
+          item.parameters = { ...item.parameters, ...parameters };
+        }
+      },
+    },
+
+    /**
      * Updates the takeoff headings of all the drones in the mission.
      */
     updateTakeoffHeadings(
       state,
       { payload }: PayloadAction<number[] | number>
     ) {
-      // TODO(ntamas): synchronize the length of the mapping with it?
-      // Or constrain the payload length to the length of the mapping?
       if (Array.isArray(payload)) {
         state.takeoffHeadings = copyAndEnsureLengthEquals(
           state.mapping.length,
@@ -401,25 +670,43 @@ const { actions, reducer } = createSlice({
 });
 
 export const {
+  addMissionItem,
   adjustMissionMapping,
   cancelMappingEditorSessionAtCurrentSlot,
   clearGeofencePolygonId,
   clearMapping,
   clearMappingSlot,
+  closeMissionPlannerDialog,
   commitMappingEditorSessionAtCurrentSlot,
   finishMappingEditorSession,
+  moveMissionItem,
+  removeMissionItemsByIds,
   removeUAVsFromMapping,
   replaceMapping,
   setCommandsAreBroadcast,
+  setEditorPanelFollowScroll,
   setGeofenceAction,
   setGeofencePolygonId,
+  setLastClearedMissionData,
+  setLastSuccessfulPlannerInvocationParameters,
   setMappingLength,
+  setMissionName,
+  setMissionPlannerDialogApplyGeofence,
+  setMissionPlannerDialogContextParameters,
+  setMissionPlannerDialogSelectedType,
+  setMissionPlannerDialogUserParameters,
+  setMissionType,
+  showMissionPlannerDialog,
   startMappingEditorSession,
   startMappingEditorSessionAtSlot,
   togglePreferredChannel,
+  updateCurrentMissionItemId,
+  updateCurrentMissionItemRatio,
   updateHomePositions,
   updateLandingPositions,
+  updateMissionItemParameters,
   updateTakeoffHeadings,
+  _setMissionItemsFromValidatedArray,
 } = actions;
 
 export default reducer;

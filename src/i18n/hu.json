@@ -78,24 +78,6 @@
       "no": "Még nincs geofence beállítva"
     }
   },
-  "geofenceDialog": {
-    "apply": "Alkalmaz",
-    "clear": "A jelenlegi kerítés törlése",
-    "close": "Bezár",
-    "fenceAction": "Kerítés művelet",
-    "fenceActionHelperText": "Ezen opciók támogatása a drónokon múlik; nem minden opció támogatott minden drón által.",
-    "fenceActionLabel": "Elsődeleges kerítés művelet",
-    "horizontal": "Vízszintes",
-    "maxAltitude": "Max magasság",
-    "maxDistance": "Max távolság",
-    "maxVertexCount": "Maximális csúcsszám",
-    "proposedLimits": "A jelenlegi küldetés javasolt limitjei",
-    "safetyMargins": "Biztonsági határok",
-    "simplifyPolygon": "Sokszög egyszerűsítése",
-    "title": "Geofence beállítások",
-    "vertexCountReduction": "Csúcsszám csökkentése",
-    "vertical": "Függőleges"
-  },
   "help": "Segítség",
   "lightControl": {
     "fromGCS": "A fények GCS-sel vezéreltek",

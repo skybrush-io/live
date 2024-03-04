@@ -2,6 +2,7 @@ import ky from 'ky';
 import get from 'lodash-es/get';
 import sum from 'lodash-es/sum';
 import throttle from 'lodash-es/throttle';
+import unary from 'lodash-es/unary';
 import Point from 'ol/geom/Point';
 
 import { freeze } from '@reduxjs/toolkit';
@@ -19,13 +20,19 @@ import {
 } from '~/features/map-features/selectors';
 import { removeGeofencePolygon } from '~/features/mission/actions';
 import {
+  getConvexHullOfHomePositionsAndMissionItemsInMapViewCoordinates,
+  getMissionType,
+} from '~/features/mission/selectors';
+import {
   updateHomePositions,
   updateLandingPositions,
   updateTakeoffHeadings,
   setMappingLength,
+  setMissionType,
   setGeofencePolygonId,
 } from '~/features/mission/slice';
-import { showNotification } from '~/features/snackbar/slice';
+import { getGeofenceSettings } from '~/features/safety/selectors';
+import { showNotification } from '~/features/snackbar/actions';
 import { MessageSemantics } from '~/features/snackbar/types';
 import {
   getCurrentGPSPositionByUavId,
@@ -33,6 +40,7 @@ import {
 } from '~/features/uavs/selectors';
 import { clearLastUploadResultForJobType } from '~/features/upload/slice';
 import { FeatureType, LabelStyle } from '~/model/features';
+import { MissionType } from '~/model/missions';
 import {
   bufferPolygon,
   lonLatFromMapViewCoordinate,
@@ -70,6 +78,7 @@ import {
   signOffOnManualPreflightChecksAt,
   signOffOnOnboardPreflightChecksAt,
   _setOutdoorShowAltitudeReference,
+  _clearLoadedShow,
 } from './slice';
 
 /**
@@ -87,6 +96,15 @@ export const clearLastUploadResult = () =>
   clearLastUploadResultForJobType(JOB_TYPE);
 
 /**
+ * Thunk that clears the currently loaded show and sets the type of the
+ * currently loaded mission to unknown.
+ */
+export const clearLoadedShow = () => (dispatch) => {
+  dispatch(_clearLoadedShow());
+  dispatch(setMissionType(MissionType.UNKNOWN));
+};
+
+/**
  * Updates the takeoff and landing positions and the takeoff headings in the
  * current mission from the show settings and trajectories.
  */
@@ -98,6 +116,7 @@ export const setupMissionFromShow = () => (dispatch, getState) => {
   const landingPositions = getLastPointsOfTrajectoriesInWorldCoordinates(state);
   const takeoffHeading = getCommonTakeoffHeading(state);
 
+  dispatch(setMissionType(MissionType.SHOW));
   dispatch(updateHomePositions(homePositions));
   dispatch(updateLandingPositions(landingPositions));
   dispatch(updateTakeoffHeadings(takeoffHeading));
@@ -113,32 +132,15 @@ export const removeShowFeatures = () => (dispatch, getState) => {
   dispatch(removeFeaturesByIds(showFeatureIds));
 };
 
-const addGeofencePolygonBasedOnShowTrajectories =
-  () => (dispatch, getState) => {
+const addGeofencePolygon =
+  (coordinates, owner, toLonLat) => (dispatch, getState) => {
     const state = getState();
 
     const { horizontalMargin, simplify, maxVertexCount } =
-      state.dialogs.geofenceSettings;
-
-    const coordinates = getConvexHullOfShow(state);
-    if (coordinates.length === 0) {
-      dispatch(
-        showNotification({
-          message: `Could not calculate geofence coordinates. Did you load a show file?`,
-          semantics: MessageSemantics.ERROR,
-          permanent: true,
-        })
-      );
-      return;
-    }
-
-    const transformation =
-      getOutdoorShowToWorldCoordinateSystemTransformationObject(state);
-    if (!transformation) {
-      throw new Error('Outdoor coordinate system not set up yet');
-    }
+      getGeofenceSettings(state);
 
     const points = bufferPolygon(coordinates, horizontalMargin);
+
     const simplifiedPoints = simplify
       ? simplifyPolygon(points, maxVertexCount)
       : points;
@@ -154,12 +156,12 @@ const addGeofencePolygonBasedOnShowTrajectories =
        * it means that any click inside the geofence would be considered as a
        * "hit" for the geofence feature */
       type: FeatureType.LINE_STRING,
-      owner: 'show',
+      owner,
       /* don't use a label; the geofence usually overlaps with the convex hull of
        * the show so it is confusing if the "Geofence" label appears in the middle
        * of the convex hull */
       color: Colors.geofence,
-      points: simplifiedPoints.map((c) => transformation.toLonLat(c)),
+      points: simplifiedPoints.map(toLonLat),
     };
     const geofencePolygonId = getProposedIdForNewFeature(
       state,
@@ -171,9 +173,88 @@ const addGeofencePolygonBasedOnShowTrajectories =
     dispatch(setGeofencePolygonId(geofencePolygonId));
   };
 
-export const updateGeofencePolygon = () => (dispatch) => {
+const addGeofencePolygonBasedOnShowTrajectories =
+  () => (dispatch, getState) => {
+    const state = getState();
+
+    const coordinates = getConvexHullOfShow(state);
+    if (coordinates.length === 0) {
+      dispatch(
+        showNotification({
+          message: `Could not calculate geofence coordinates.
+                    Did you load a show file?`,
+          semantics: MessageSemantics.ERROR,
+          permanent: true,
+        })
+      );
+      return;
+    }
+
+    const transformation =
+      getOutdoorShowToWorldCoordinateSystemTransformationObject(state);
+    if (!transformation) {
+      throw new Error('Outdoor coordinate system not set up yet');
+    }
+
+    dispatch(
+      addGeofencePolygon(
+        coordinates,
+        MissionType.SHOW,
+        unary(transformation.toLonLat.bind(transformation))
+      )
+    );
+  };
+
+const addGeofencePolygonBasedOnMissionItems = () => (dispatch, getState) => {
+  const state = getState();
+
+  const coordinates =
+    getConvexHullOfHomePositionsAndMissionItemsInMapViewCoordinates(state);
+  if (coordinates.length === 0) {
+    dispatch(
+      showNotification({
+        message: `Could not calculate geofence coordinates.
+                  Are there valid mission items with coordinates?`,
+        semantics: MessageSemantics.ERROR,
+        permanent: true,
+      })
+    );
+    return;
+  }
+
+  dispatch(
+    addGeofencePolygon(
+      coordinates,
+      MissionType.WAYPOINT,
+      unary(lonLatFromMapViewCoordinate)
+    )
+  );
+};
+
+export const updateGeofencePolygon = () => (dispatch, getState) => {
   dispatch(removeGeofencePolygon());
-  dispatch(addGeofencePolygonBasedOnShowTrajectories());
+  const missionType = getMissionType(getState());
+  switch (missionType) {
+    case MissionType.SHOW: {
+      dispatch(addGeofencePolygonBasedOnShowTrajectories());
+      break;
+    }
+
+    case MissionType.WAYPOINT: {
+      dispatch(addGeofencePolygonBasedOnMissionItems());
+      break;
+    }
+
+    default: {
+      dispatch(
+        showNotification({
+          message: `Cannot update geofence for mission type: "${missionType}"`,
+          semantics: MessageSemantics.ERROR,
+          permanent: true,
+        })
+      );
+    }
+  }
 };
 
 /**
@@ -372,9 +453,6 @@ function processShowInJSONFormatAndDispatchActions(spec, dispatch) {
     dispatch(setEnvironmentType(environment.type));
   }
 
-  // TODO(ntamas): if the number of drones is different than the number of
-  // drones in the previous file, it is probably a completely new show so
-  // we should forget the show coordinate system completely
   if (environment.type === 'indoor') {
     dispatch(setOutdoorShowOrigin(null));
   }

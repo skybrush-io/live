@@ -9,7 +9,7 @@ import SidebarBadge from '@skybrush/mui-components/lib/SidebarBadge';
 
 import { colorForStatus } from '~/components/colors';
 import { Status } from '~/components/semantics';
-import { getGeofenceStatus } from '~/features/mission/selectors';
+import { getGeofenceStatus } from '~/features/mission/selectors-geofence-extra';
 
 /**
  * Smart badge component that shows whether a geofence is active and in case it

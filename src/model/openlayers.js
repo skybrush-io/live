@@ -6,16 +6,19 @@
 import isEmpty from 'lodash-es/isEmpty';
 import isNil from 'lodash-es/isNil';
 import unary from 'lodash-es/unary';
-import turfDifference from '@turf/difference';
 
 import { updateFlatEarthCoordinateSystem } from '~/features/map/origin';
 import { cloneFeatureById } from '~/features/map-features/actions';
 import { updateFeaturePropertiesByIds } from '~/features/map-features/slice';
+import { moveMissionItemCoordinateByMapCoordinateDelta } from '~/features/mission/actions';
 import {
   moveOutdoorShowOriginByMapCoordinateDelta,
   rotateOutdoorShowOrientationByAngleAroundPoint,
 } from '~/features/show/actions';
-import { lonLatFromMapViewCoordinate } from '~/utils/geography';
+import {
+  lonLatFromMapViewCoordinate,
+  normalizePolygon,
+} from '~/utils/geography';
 import { toDegrees } from '~/utils/math';
 
 import { FeatureType } from './features';
@@ -28,6 +31,8 @@ import {
   isOriginId,
   MAP_ORIGIN_ID,
   CONVEX_HULL_AREA_ID,
+  globalIdToMissionItemId,
+  isMissionItemId,
 } from './identifiers';
 
 /**
@@ -43,21 +48,21 @@ export function isFeatureTransformable(object) {
   }
 
   const id = object.getId();
-  return isFeatureId(id) || isAreaId(id) || isOriginId(id);
+  return (
+    isFeatureId(id) || isAreaId(id) || isOriginId(id) || isMissionItemId(id)
+  );
 }
 
 /**
- * Converts an OpenLayers feature object into a corresponding feature object
- * that can be stored in the global state store.
+ * Converts an OpenLayers geometry object into a list of corresponding feature
+ * objects that can be stored in the global state store.
  *
- * @param  {ol.Feature} olFeature  the OpenLayers feature
- * @return {Object}  the feature to store in the global state
+ * @param  {ol.Geometry} olGeometry - the OpenLayers geometry
+ * @return {Object} the list of features to store in the global state
  */
-export function createFeatureFromOpenLayers(olFeature) {
-  const result = {};
-  const geometry = olFeature.getGeometry();
-  const type = geometry.getType();
-  const coordinates = geometry.getCoordinates();
+export function createFeatureFromOpenLayersGeometry(olGeometry) {
+  const type = olGeometry.getType();
+  const coordinates = olGeometry.getCoordinates();
 
   switch (type) {
     case 'Point':
@@ -70,14 +75,14 @@ export function createFeatureFromOpenLayers(olFeature) {
       ];
 
     case 'Circle': {
-      const center = geometry.getCenter();
+      const center = olGeometry.getCenter();
       return [
         {
           type: FeatureType.CIRCLE,
           points: [
             lonLatFromMapViewCoordinate(center),
             lonLatFromMapViewCoordinate([
-              center[0] + geometry.getRadius(),
+              center[0] + olGeometry.getRadius(),
               center[1],
             ]),
           ],
@@ -95,45 +100,47 @@ export function createFeatureFromOpenLayers(olFeature) {
       ];
 
     case 'Polygon': {
-      const [firstRing, ...restOfRings] = coordinates.map((linearRing) =>
-        linearRing.map(unary(lonLatFromMapViewCoordinate)).slice(0, -1)
-      );
-
-      // Start with the boundary ring and subtract every hole from it with turf.
-      const normalized = restOfRings.reduce(
-        (poly, hole) =>
-          turfDifference(poly, {
-            type: 'Feature',
-            geometry: { type: 'Polygon', coordinates: [hole] },
-          }),
-        {
-          type: 'Feature',
-          geometry: { type: 'Polygon', coordinates: [firstRing] },
-        }
-      );
-
-      switch (normalized.geometry.type) {
-        case 'Polygon': {
-          const [points, ...holes] = normalized.geometry.coordinates;
-          return [{ type: FeatureType.POLYGON, points, holes }];
-        }
-
-        case 'MultiPolygon': {
-          return normalized.geometry.coordinates.map(([points, ...holes]) => ({
+      return (
+        // Normalize the polygon by correcting overlapping or external holes
+        normalizePolygon(
+          // Convert between coordinate representations
+          coordinates.map((linearRing) =>
+            linearRing.map(unary(lonLatFromMapViewCoordinate))
+          )
+        )
+          // "Open" the rings by removing their redundant last elements
+          .map((coordinates) =>
+            coordinates.map((linearRing) => linearRing.slice(0, -1))
+          )
+          // Turn the lists of linear rings into internal features
+          .map(([points, ...holes]) => ({
             type: FeatureType.POLYGON,
             points,
             holes,
-          }));
-        }
+          }))
+      );
+    }
 
-        default:
-          throw new Error(`Unexpected geometry type: ${result.geometry.type}`);
-      }
+    case 'MultiPolygon': {
+      return olGeometry
+        .getPolygons()
+        .flatMap(createFeatureFromOpenLayersGeometry);
     }
 
     default:
       throw new Error('Unsupported feature geometry type: ' + type);
   }
+}
+
+/**
+ * Converts an OpenLayers feature object into a list of corresponding feature
+ * objects that can be stored in the global state store.
+ *
+ * @param  {ol.Feature} olFeature - the OpenLayers feature
+ * @return {Object} the list of features to store in the global state
+ */
+export function createFeatureFromOpenLayers(olFeature) {
+  return createFeatureFromOpenLayersGeometry(olFeature.getGeometry());
 }
 
 /**
@@ -180,7 +187,7 @@ export function handleFeatureUpdatesInOpenLayers(
     const originFeatureId = globalIdToOriginId(globalId);
     if (originFeatureId) {
       if (
-        originFeatureId === MAP_ORIGIN_ID ||
+        originFeatureId === MAP_ORIGIN_ID + '$x' ||
         originFeatureId === MAP_ORIGIN_ID + '$y'
       ) {
         // Feature is the origin of the flat Earth coordinate system
@@ -233,6 +240,27 @@ export function handleFeatureUpdatesInOpenLayers(
       } else {
         console.warn(
           'This transformation is not handled for the convex hull yet'
+        );
+      }
+
+      continue;
+    }
+
+    // Is this feature a waypoint mission item?
+    const missionItemId = globalIdToMissionItemId(globalId);
+    if (missionItemId) {
+      if (type === 'transform') {
+        if (event.subType === 'move' && event.delta) {
+          dispatch(
+            moveMissionItemCoordinateByMapCoordinateDelta(
+              missionItemId,
+              event.delta
+            )
+          );
+        }
+      } else {
+        console.warn(
+          'This transformation is not handled for waypoint mission items yet'
         );
       }
     }

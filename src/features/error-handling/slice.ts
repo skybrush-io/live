@@ -43,7 +43,7 @@ const { reducer, actions } = createSlice({
     showErrorMessage: {
       prepare: (message: string, error?: Error) => ({
         payload:
-          error instanceof Error ? `${message}: ` + String(error) : message,
+          error instanceof Error ? `${message}: \n` + String(error) : message,
       }),
       reducer(state, action: PayloadAction<string>) {
         state.message = action.payload;

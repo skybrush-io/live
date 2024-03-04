@@ -1,5 +1,6 @@
 import { type ErrorCode } from '~/flockwave/errors';
 import { type GPSPosition, type GPSFix } from '~/model/position';
+import { type VelocityNED } from '~/model/velocity';
 import { type UAVAge, type UAVBattery } from '~/model/uav';
 import { type Identifier } from '~/utils/collections';
 import { type Coordinate3D } from '~/utils/math';
@@ -28,6 +29,7 @@ import { type Coordinate3D } from '~/utils/math';
  *     },
  *     localPosition: [1, 2, 3],
  *     age: "active" // one of 'active', 'inactive', 'gone'
+ *     velocityNED: [0, 0, 1000],
  * }
  */
 export type StoredUAV = {
@@ -43,9 +45,17 @@ export type StoredUAV = {
   localPosition?: Coordinate3D;
   mode?: string;
   position?: GPSPosition;
+  velocity?: VelocityNED;
 };
 
 export enum UAVDetailsDialogTab {
+  LOGS = 'logs',
+  MESSAGES = 'messages',
+  PREFLIGHT = 'preflight',
+  TESTS = 'tests',
+}
+
+export enum UAVDetailsPanelTab {
   LOGS = 'logs',
   MESSAGES = 'messages',
   PREFLIGHT = 'preflight',

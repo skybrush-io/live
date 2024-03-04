@@ -13,6 +13,7 @@ import {
   layer,
   source,
 } from '@collmot/ol-react';
+import FolderOpen from '@material-ui/icons/FolderOpen';
 
 import { snapEndToStart } from '../interactions/utils';
 import { Tool } from '../tools';

@@ -15,7 +15,7 @@ import {
 } from './slice';
 
 import { setFlatEarthCoordinateSystemOrigin } from '~/features/map/origin';
-import { showNotification } from '~/features/snackbar/slice';
+import { showNotification } from '~/features/snackbar/actions';
 import { getPreferredCoordinateFormatter } from '~/selectors/formatting';
 
 /**

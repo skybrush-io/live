@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Added a new panel for monitoring and controlling one specific drone and its
+  devices.
+
 ### Fixed
 
 - Fixed an issue with degenerate geofences consisting of one or two points only.

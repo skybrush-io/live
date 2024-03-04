@@ -4,20 +4,21 @@
 
 import type { ThunkAction } from '@reduxjs/toolkit';
 
-import { type PromptOptions, PromptDialogType } from './types';
-
 import {
   _cancelPromptDialog,
   _showPromptDialog,
   _submitPromptDialog,
 } from './slice';
+import {
+  PromptDialogType,
+  type PromptOptions,
+  type PromptResponse,
+} from './types';
 
 // TODO: replace this with the real AppDispatch once we have it in store.ts
 type AppDispatch = (action: any) => void;
 type AppState = any;
 type AppThunk<T = void> = ThunkAction<T, AppState, any, any>;
-
-type PromptResponse = string | boolean | undefined;
 
 /**
  * Function that must be called from the submission thunk to resolve the
@@ -58,7 +59,7 @@ export function cancelPromptDialog(): AppThunk {
  * Thunk factory that creates a thunk that submits the prompt dialog
  * with the given value.
  */
-export function submitPromptDialog(value: string | boolean): AppThunk {
+export function submitPromptDialog(value: PromptResponse): AppThunk {
   if (value === undefined) {
     return cancelPromptDialog();
   }
@@ -76,12 +77,11 @@ export function submitPromptDialog(value: string | boolean): AppThunk {
  * @param  options  additional options to pass to the dialog
  */
 export function showPromptDialog(
-  message: string,
-  options: Partial<PromptOptions> = {}
+  options: PromptOptions = {}
 ): AppThunk<Promise<PromptResponse>> {
   return async (dispatch) => {
     resolveTo(undefined);
-    dispatch(_showPromptDialog(message, options));
+    dispatch(_showPromptDialog({ type: PromptDialogType.GENERIC, ...options }));
     return new Promise((resolve) => {
       resolver = resolve;
     });
@@ -96,15 +96,15 @@ export function showPromptDialog(
  */
 export function showConfirmationDialog(
   message: string,
-  options: Partial<PromptOptions> = {}
+  options: Partial<Omit<PromptOptions, 'initialValues' | 'schema'>> = {}
 ): AppThunk<Promise<PromptResponse>> {
   return async (dispatch) => {
     resolveTo(undefined);
     dispatch(
-      _showPromptDialog(message, {
-        submitButtonLabel: 'Confirm',
-        ...options,
+      _showPromptDialog({
         type: PromptDialogType.CONFIRMATION,
+        message,
+        ...options,
       })
     );
     return new Promise((resolve) => {

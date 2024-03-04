@@ -20,13 +20,11 @@ import Colors from '~/components/colors';
 import ListItemTextWithProgress from '~/components/ListItemTextWithProgress';
 import { Status } from '~/components/semantics';
 import {
+  clearLoadedShow,
   loadShowFromFile,
   reloadCurrentShowFile,
 } from '~/features/show/actions';
-import {
-  clearLoadedShow,
-  openLoadShowFromCloudDialog,
-} from '~/features/show/slice';
+import { openLoadShowFromCloudDialog } from '~/features/show/slice';
 import {
   getShowDescription,
   getShowLoadingProgressPercentage,

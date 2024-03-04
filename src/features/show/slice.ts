@@ -224,7 +224,7 @@ const { actions, reducer } = createSlice({
       state.preflight.takeoffAreaApprovedAt = action.payload;
     },
 
-    clearLoadedShow: noPayload<ShowSliceState>((state) => {
+    _clearLoadedShow: noPayload<ShowSliceState>((state) => {
       state.data = undefined;
 
       state.sourceUrl = undefined;
@@ -522,7 +522,7 @@ const { actions, reducer } = createSlice({
 
 export const {
   approveTakeoffAreaAt,
-  clearLoadedShow,
+  _clearLoadedShow,
   clearManualPreflightChecks,
   clearOnboardPreflightChecks,
   clearStartTimeAndMethod,

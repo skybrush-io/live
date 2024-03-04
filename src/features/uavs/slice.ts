@@ -8,6 +8,8 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import { type ReadonlyDeep } from 'type-fest';
 
+import { setSelection } from '~/features/map/selection';
+import { globalIdToUavId, isUavId } from '~/model/identifiers';
 import {
   addItemSorted,
   clearOrderedCollection,
@@ -18,15 +20,30 @@ import {
   replaceItemOrAddSorted,
 } from '~/utils/collections';
 
-import { type StoredUAV } from './types';
+import { UAVDetailsPanelTab, type StoredUAV } from './types';
 
-type UAVsSliceState = ReadonlyDeep<Collection<StoredUAV>>;
+type UAVsSliceState = ReadonlyDeep<
+  Collection<StoredUAV> & {
+    panel: {
+      followMapSelection: boolean;
+      selectedTab: UAVDetailsPanelTab;
+      selectedUAVId?: StoredUAV['id'];
+    };
+  }
+>;
 
 /**
  * The order of the collecitons defines the preferred ordering of
  * UAVs on the UI. Currently we sort automatically based on IDs.
  */
-const initialState: UAVsSliceState = EMPTY_COLLECTION;
+const initialState: UAVsSliceState = {
+  ...EMPTY_COLLECTION,
+  panel: {
+    followMapSelection: true,
+    selectedTab: UAVDetailsPanelTab.PREFLIGHT,
+    selectedUAVId: undefined,
+  },
+};
 
 const { actions, reducer } = createSlice({
   name: 'uavs',
@@ -53,6 +70,27 @@ const { actions, reducer } = createSlice({
       deleteItemsByIds(state, action.payload);
     },
 
+    setSelectedTabInUAVDetailsPanel(
+      state,
+      { payload }: PayloadAction<UAVDetailsPanelTab>
+    ) {
+      state.panel.selectedTab = payload;
+    },
+
+    setSelectedUAVIdInUAVDetailsPanel(
+      state,
+      { payload }: PayloadAction<StoredUAV['id']>
+    ) {
+      state.panel.selectedUAVId = payload;
+    },
+
+    toggleFollowMapSelectionInUAVDetailsPanel: {
+      prepare: () => ({ payload: null }),
+      reducer(state) {
+        state.panel.followMapSelection = !state.panel.followMapSelection;
+      },
+    },
+
     updateAgesOfUAVs(
       state,
       action: PayloadAction<Record<StoredUAV['id'], StoredUAV['age']>>
@@ -74,11 +112,25 @@ const { actions, reducer } = createSlice({
       }
     },
   },
+
+  extraReducers(builder) {
+    builder.addCase(setSelection, (state, { payload: selection }) => {
+      if (state.panel.followMapSelection) {
+        const selectedUAVs = selection.filter(isUavId);
+        if (selectedUAVs.length > 0) {
+          state.panel.selectedUAVId = globalIdToUavId(selectedUAVs[0]!);
+        }
+      }
+    });
+  },
 });
 
 export const {
   addUAVs,
   clearUAVList,
+  setSelectedTabInUAVDetailsPanel,
+  setSelectedUAVIdInUAVDetailsPanel,
+  toggleFollowMapSelectionInUAVDetailsPanel,
   updateAgesOfUAVs,
   updateUAVs,
   _removeUAVsByIds,

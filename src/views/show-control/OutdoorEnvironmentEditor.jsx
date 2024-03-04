@@ -35,16 +35,16 @@ import {
   DEFAULT_TAKEOFF_HEADING,
   TakeoffHeadingMode,
 } from '~/features/show/constants';
-import { showNotification } from '~/features/snackbar/slice';
-import { MessageSemantics } from '~/features/snackbar/types';
-import AutoFix from '~/icons/AutoFix';
 import {
   getOutdoorShowOrientation,
   getOutdoorShowTakeoffHeadingSpecification,
 } from '~/features/show/selectors';
+import { showSuccess } from '~/features/snackbar/actions';
 import { getAverageHeadingOfActiveUAVs } from '~/features/uavs/selectors';
-import { TakeoffHeadingSpecEditor } from './TakeoffHeadingSpecEditor';
+import AutoFix from '~/icons/AutoFix';
 import { normalizeAngle } from '~/utils/geography';
+
+import { TakeoffHeadingSpecEditor } from './TakeoffHeadingSpecEditor';
 
 /**
  * Presentation component for the form that allows the user to edit the
@@ -227,12 +227,7 @@ export default connect(
           angle: showCoordinateSystem.orientation,
         })
       );
-      dispatch(
-        showNotification({
-          message: 'Show coordinate system applied to map.',
-          semantics: MessageSemantics.SUCCESS,
-        })
-      );
+      dispatch(showSuccess('Show coordinate system applied to map.'));
     },
     onEstimateShowCoordinateSystem: estimateShowCoordinateSystemFromActiveUAVs,
     onOrientationChanged: (value) =>
@@ -258,12 +253,7 @@ export default connect(
           setupMission: true,
         })
       );
-      dispatch(
-        showNotification({
-          message: 'Show coordinate system updated from map.',
-          semantics: MessageSemantics.SUCCESS,
-        })
-      );
+      dispatch(showSuccess('Show coordinate system updated from map.'));
     },
 
     onSetTakeoffHeading: (value) =>

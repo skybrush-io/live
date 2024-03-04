@@ -541,6 +541,15 @@ export const getSingleSelectedUAVId = createSelector(
 );
 
 /**
+ * Selector that returns the ID of the selected UAV in an array of length 1 if
+ * there is exactly one UAV selected, or an empty array otherwise.
+ */
+export const getSingleSelectedUAVIdAsArray = createSelector(
+  getSelectedUAVIds,
+  (uavIds) => (uavIds.length === 1 ? uavIds : EMPTY_ARRAY)
+);
+
+/**
  * Selector that calculates the number of selected UAVs.
  */
 export const getNumberOfSelectedUAVs = (state) => {
@@ -813,3 +822,12 @@ export const getUAVIdsSortedByErrorCode = createSelector(
       ['desc']
     )
 );
+
+export const getFollowMapSelectionInUAVDetailsPanel = (state) =>
+  state.uavs.panel.followMapSelection;
+
+export const getSelectedTabInUAVDetailsPanel = (state) =>
+  state.uavs.panel.selectedTab;
+
+export const getSelectedUAVIdInUAVDetailsPanel = (state) =>
+  state.uavs.panel.selectedUAVId;

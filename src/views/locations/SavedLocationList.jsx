@@ -84,12 +84,12 @@ export const LocationListPresentation = listOf(
     />
   ),
   {
-    dataProvider: 'savedLocations',
     backgroundHint: 'No saved locations',
+    dataProvider: 'savedLocations',
+    displayName: 'LocationListPresentation',
     postprocess: (items, props) => [createNewItemEntry(props), ...items],
   }
 );
-LocationListPresentation.displayName = 'LocationListPresentation';
 
 const LocationList = connect(
   // mapStateToProps

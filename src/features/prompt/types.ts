@@ -1,15 +1,15 @@
+export type PromptResponse = Record<string, any> | undefined;
+
 export enum PromptDialogType {
-  PROMPT = 'prompt',
-  CONFIRMATION = 'confirm',
+  GENERIC = 'generic',
+  CONFIRMATION = 'confirmation',
 }
 
-export type PromptOptions = {
+export type PromptOptions = Partial<{
   cancelButtonLabel: string;
-  fieldType: string;
-  hintText?: string;
-  initialValue?: string;
-  message?: string;
+  initialValues: Record<string, any>;
+  message: string;
+  schema: Record<string, any>;
   submitButtonLabel: string;
-  title?: string;
-  type?: PromptDialogType;
-};
+  title: string;
+}>;

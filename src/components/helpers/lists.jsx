@@ -46,6 +46,8 @@ const createBackgroundHint = (backgroundHint, ref) => {
  *         of the generated component and returns the items to show, or a
  *         string that contains the name of the React prop that holds the
  *         items to show in the generated component
+ * @param  {string} options.displayName  name of the component when used in
+ *         React debugging views
  * @param  {function}  options.postprocess  post-processor function that will
  *         be called with the items generated for the list and the props of the
  *         list, and must return the actual list of items to be included in the
@@ -60,8 +62,13 @@ const createBackgroundHint = (backgroundHint, ref) => {
  * @return {React.Component}  the constructed React component
  */
 export function listOf(itemRenderer, options = {}) {
-  const { backgroundHint, dataProvider, listFactory, postprocess } =
-    validateOptions(options);
+  const {
+    backgroundHint,
+    dataProvider,
+    displayName,
+    listFactory,
+    postprocess,
+  } = validateOptions(options);
   itemRenderer = validateItemRenderer(itemRenderer);
 
   // A separate variable is needed here to make ESLint happy
@@ -77,6 +84,10 @@ export function listOf(itemRenderer, options = {}) {
 
     return createBackgroundHint(backgroundHint, ref);
   });
+
+  if (displayName) {
+    ListView.displayName = displayName;
+  }
 
   return ListView;
 }
@@ -222,6 +233,8 @@ export function createSelectionHandlerThunk({
  *         of the generated component and returns the items to show, or a
  *         string that contains the name of the React prop that holds the
  *         items to show in the generated component
+ * @param  {string} options.displayName  name of the component when used in
+ *         React debugging views
  * @param  {function|React.Component} options.listFactory  React component
  *         that will be used as the root component of the generated list,
  *         or a function that will be called with the props of the generated
@@ -229,8 +242,13 @@ export function createSelectionHandlerThunk({
  * @return {React.Component}  the constructed React component
  */
 export function selectableListOf(itemRenderer, options = {}) {
-  const { backgroundHint, dataProvider, listFactory, postprocess } =
-    validateOptions(options);
+  const {
+    backgroundHint,
+    dataProvider,
+    displayName,
+    listFactory,
+    postprocess,
+  } = validateOptions(options);
   itemRenderer = validateItemRenderer(itemRenderer);
 
   // A separate variable is needed here to make ESLint happy
@@ -244,7 +262,7 @@ export function selectableListOf(itemRenderer, options = {}) {
             ...props,
             onChange: undefined,
             onItemSelected: props.onChange
-              ? (event) => props.onChange(event, item.id)
+              ? (event) => props.onChange(event, item)
               : undefined,
           },
           item.id === props.value
@@ -263,6 +281,11 @@ export function selectableListOf(itemRenderer, options = {}) {
     onChange: PropTypes.func,
     value: PropTypes.any,
   };
+
+  if (displayName) {
+    SelectableListView.displayName = displayName;
+  }
+
   return SelectableListView;
 }
 
@@ -311,6 +334,8 @@ export function selectableListOf(itemRenderer, options = {}) {
  *         of the generated component and returns the items to show, or a
  *         string that contains the name of the React prop that holds the
  *         items to show in the generated component
+ * @param  {string} options.displayName  name of the component when used in
+ *         React debugging views
  * @param  {function|React.Component} options.listFactory  React component
  *         that will be used as the root component of the generated list,
  *         or a function that will be called with the props of the generated
@@ -318,8 +343,13 @@ export function selectableListOf(itemRenderer, options = {}) {
  * @return {React.Component}  the constructed React component
  */
 export function multiSelectableListOf(itemRenderer, options = {}) {
-  const { backgroundHint, dataProvider, listFactory, postprocess } =
-    validateOptions(options);
+  const {
+    backgroundHint,
+    dataProvider,
+    displayName,
+    listFactory,
+    postprocess,
+  } = validateOptions(options);
   itemRenderer = validateItemRenderer(itemRenderer);
 
   // A separate variable is needed here to make ESLint happy
@@ -356,6 +386,10 @@ export function multiSelectableListOf(itemRenderer, options = {}) {
     onChange: PropTypes.func,
     value: PropTypes.arrayOf(PropTypes.any).isRequired,
   };
+
+  if (displayName) {
+    MultiSelectableListView.displayName = displayName;
+  }
 
   return MultiSelectableListView;
 }

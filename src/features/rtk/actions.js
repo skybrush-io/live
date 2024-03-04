@@ -1,5 +1,5 @@
 import copy from 'copy-to-clipboard';
-import { showNotification } from '~/features/snackbar/slice';
+import { showNotification } from '~/features/snackbar/actions';
 import { MessageSemantics } from '~/features/snackbar/types';
 import messageHub from '~/message-hub';
 

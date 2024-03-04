@@ -1,11 +1,15 @@
 import isNil from 'lodash-es/isNil';
 import { CANCEL } from 'redux-saga';
 
-import { GeofenceAction } from '~/features/geofence/model';
 import {
   getGeofenceActionWithValidation,
   getReverseMissionMapping,
 } from '~/features/mission/selectors';
+import { GeofenceAction } from '~/features/safety/model';
+import {
+  getUserDefinedDistanceLimit,
+  getUserDefinedHeightLimit,
+} from '~/features/safety/selectors';
 import { JobScope } from '~/features/upload/jobs';
 import messageHub from '~/message-hub';
 
@@ -17,8 +21,6 @@ import {
   getMeanSeaLevelReferenceOfShowCoordinatesOrNull,
   getOutdoorShowCoordinateSystem,
   getShowMetadata,
-  getUserDefinedDistanceLimit,
-  getUserDefinedHeightLimit,
   isShowOutdoor,
 } from './selectors';
 

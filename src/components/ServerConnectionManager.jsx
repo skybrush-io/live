@@ -610,7 +610,7 @@ async function executeTasksAfterConnection(dispatch, getState) {
           } by ${formattedClockSkew}`,
           buttons: [
             {
-              label: 'Show details',
+              label: 'Details',
               action: openTimeSyncWarningDialog(),
             },
           ],

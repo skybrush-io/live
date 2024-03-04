@@ -19,15 +19,17 @@ import ShowFileWatcher from './views/show-control/ShowFileWatcher';
 
 import DetachedPanelManager from './features/detachable-panels/DetachedPanelManager';
 import DockDetailsDialog from './features/docks/DockDetailsDialog';
-import GeofenceSettingsDialog from './features/geofence/GeofenceSettingsDialog';
 import AppHotkeys from './features/hotkeys/AppHotkeys';
 import HotkeyDialog from './features/hotkeys/HotkeyDialog';
 import PendingUAVIdOverlay from './features/hotkeys/PendingUAVIdOverlay';
 import LicenseInfoDialog from './features/license-info/LicenseInfoDialog';
 import MapCachingDialog from './features/map-caching/MapCachingDialog';
 import CoordinateAveragingDialog from './features/measurement/CoordinateAveragingDialog';
+import MissionPlannerDialog from './features/mission/MissionPlannerDialog';
+import MissionProgressObserver from './features/mission/MissionProgressObserver';
 import ParameterUploadSetupDialog from './features/parameters/ParameterUploadSetupDialog';
 import PromptDialog from './features/prompt/PromptDialog';
+import SafetyDialog from './features/safety/SafetyDialog';
 import SavedLocationEditorDialog from './features/saved-locations/SavedLocationEditorDialog';
 import RTKSetupDialog from './features/rtk/RTKSetupDialog';
 import Sidebar from './features/sidebar/Sidebar';
@@ -36,6 +38,7 @@ import UAVDetailsDialog from './features/uavs/UAVDetailsDialog';
 import UploadDialog from './features/upload/UploadDialog';
 import VersionCheckDialog from './features/version-check/VersionCheckDialog';
 
+import { SNACKBAR_TRANSITION_DURATION } from './features/snackbar/constants';
 import {
   isWorkbenchLayoutFixed,
   shouldSidebarBeShown,
@@ -65,8 +68,8 @@ require('../assets/css/kbd.css');
 require('../assets/css/screen.less');
 require('../assets/css/tooltips.less');
 
-const Tour = loadable(() =>
-  import(/* webpackChunkName: 'tour' */ './features/tour/Tour')
+const Tour = loadable(
+  () => import(/* webpackChunkName: 'tour' */ './features/tour/Tour')
 );
 
 const rootStyle = {
@@ -157,6 +160,7 @@ const App = ({ onFirstRender }) => (
       <ServerConnectionManager />
 
       <LanguageWatcher />
+      <MissionProgressObserver />
       <ShowFileWatcher />
 
       <dialogs.AppSettingsDialog />
@@ -172,19 +176,23 @@ const App = ({ onFirstRender }) => (
 
       <CoordinateAveragingDialog />
       <DockDetailsDialog />
-      <GeofenceSettingsDialog />
       <HotkeyDialog />
       <LicenseInfoDialog />
       <MapCachingDialog />
+      <MissionPlannerDialog />
       <ParameterUploadSetupDialog />
       <PromptDialog />
       <RTKSetupDialog />
+      <SafetyDialog />
       <SavedLocationEditorDialog />
       <UAVDetailsDialog />
       <UploadDialog />
       <VersionCheckDialog />
 
-      <ToastProvider placement={config.toastPlacement}>
+      <ToastProvider
+        placement={config.toastPlacement}
+        transitionDuration={SNACKBAR_TRANSITION_DURATION}
+      >
         <ToastNotificationManager />
       </ToastProvider>
 

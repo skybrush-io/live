@@ -15,10 +15,6 @@ import turfContains from '@turf/boolean-contains';
 
 import { CommonClockId } from '~/features/clocks/types';
 import {
-  proposeDistanceLimit,
-  proposeHeightLimit,
-} from '~/features/geofence/utils';
-import {
   getGeofencePolygonInWorldCoordinates,
   selectMissionIndex,
 } from '~/features/mission/selectors';
@@ -27,7 +23,6 @@ import { FlatEarthCoordinateSystem } from '~/utils/geography';
 import {
   convexHull,
   createGeometryFromPoints,
-  euclideanDistance2D,
   getCentroid,
 } from '~/utils/math';
 import { EMPTY_ARRAY, EMPTY_OBJECT } from '~/utils/redux';
@@ -44,6 +39,7 @@ import {
   getFirstPointOfTrajectory,
   getLastPointOfTrajectory,
   getMaximumHeightOfTrajectory,
+  getMaximumHorizontalDistanceFromTakeoffPositionInTrajectory,
   getPointsOfTrajectory,
   getTrajectoryDuration,
   isValidTrajectory,
@@ -596,36 +592,6 @@ export const getLastPointsOfTrajectoriesInWorldCoordinates = createSelector(
 );
 
 /**
- * Returns the maximum distance of any point in a trajectory from its starting
- * point. Returns 0 for empty trajectories.
- */
-function getMaximumHorizontalDistanceFromTakeoffPositionInTrajectory(
-  trajectory
-) {
-  if (!isValidTrajectory(trajectory)) {
-    return 0;
-  }
-
-  const { points = [] } = trajectory;
-  if (points.length === 0) {
-    return 0;
-  }
-
-  // TODO(ntamas): calculate distances only for the convex hull of the trajectory!
-
-  const firstKeyframe = points[0];
-  const firstPoint = firstKeyframe[1];
-
-  const distanceToFirstPoint = (keyframe) => {
-    const point = keyframe[1];
-    return euclideanDistance2D(point, firstPoint);
-  };
-
-  const farthestPoint = maxBy(points, distanceToFirstPoint);
-  return farthestPoint ? distanceToFirstPoint(farthestPoint) : 0;
-}
-
-/**
  * Returns the maximum distance of any point in any of the trajectories from the
  * starting point of that trajectory.
  */
@@ -648,28 +614,6 @@ export const getMaximumHeightInTrajectories = createSelector(
   getTrajectories,
   (trajectories) => max(trajectories.map(getMaximumHeightOfTrajectory)) || 0
 );
-
-/**
- * Returns the automatically calculated distance limit by adding the declared
- * horizontal safety margin to the distances of the farthest points of the show
- * trajectories from the takeoff positions.
- */
-export const getProposedDistanceLimitBasedOnTrajectories = (state) => {
-  const maxDistance =
-    getMaximumHorizontalDistanceFromTakeoffPositionInTrajectories(state);
-  const margin = get(state, 'dialogs.geofenceSettings.horizontalMargin');
-  return proposeDistanceLimit(maxDistance, margin);
-};
-
-/**
- * Returns the automatically calculated height limit by adding the declared
- * vertical safety margin to the highest point of the show trajectories.
- */
-export const getProposedHeightLimitBasedOnTrajectories = (state) => {
-  const maxHeight = getMaximumHeightInTrajectories(state);
-  const margin = get(state, 'dialogs.geofenceSettings.verticalMargin');
-  return proposeHeightLimit(maxHeight, margin);
-};
 
 /**
  * Returns the total duration of the show, in seconds.
@@ -710,26 +654,6 @@ export const getShowDescription = createSelector(
 export const getShowLoadingProgressPercentage = (state) => {
   const { progress } = state.show;
   return typeof progress === 'number' ? progress * 100 : null;
-};
-
-/**
- * Returns the user-defined distance limit, which should be above the automatically
- * proposed distance limit.
- */
-export const getUserDefinedDistanceLimit = (state) => {
-  // TODO(ntamas): this should be configurable by the user and not simply set
-  // based on the proposal
-  return getProposedDistanceLimitBasedOnTrajectories(state);
-};
-
-/**
- * Returns the user-defined height limit, which should be above the automatically
- * proposed height limit.
- */
-export const getUserDefinedHeightLimit = (state) => {
-  // TODO(ntamas): this should be configurable by the user and not simply set
-  // based on the proposal
-  return getProposedHeightLimitBasedOnTrajectories(state);
 };
 
 /**
@@ -793,6 +717,8 @@ export const getShowTitle = createSelector(
 /**
  * Returns whether there is a show file currently loaded.
  */
+/* TODO(ntamas): maybe check the mission type here as well? state.show.data should
+ * go hand-in-hand with state.mission.type */
 export const hasLoadedShowFile = (state) => Boolean(state.show.data);
 
 /**
@@ -839,8 +765,8 @@ export const isShowConvexHullInsideGeofence = createSelector(
  * as the filename contains the current date and time.
  */
 export function proposeMappingFileName(state) {
-  // ISO format cannot be used because colons are usually not allowed in
-  // filenames
+  // The ISO 8601 extended format cannot be used because colons are usually not
+  // allowed in filenames, and the ISO 8601 basic format is less human-readable
   const date = formatDate(new Date(), 'yyyy-MM-dd_HH-mm-ss');
   const path = getAbsolutePathOfShowFile(state);
   const lastSlashIndex = path ? path.lastIndexOf('/') : -1;

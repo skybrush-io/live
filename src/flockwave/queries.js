@@ -7,6 +7,7 @@ import get from 'lodash-es/get';
 import pick from 'lodash-es/pick';
 import sortBy from 'lodash-es/sortBy';
 import memoize from 'memoizee';
+import { toScaledJSONFromLonLat } from '~/utils/geography';
 
 import { errorToString } from '~/error-handling';
 
@@ -131,6 +132,56 @@ export async function getFlightLogList(hub, uavId) {
 }
 
 /**
+ * Returns the parameter schema of the mission with the given type from the server.
+ */
+export async function getMissionTypeSchemas(hub, missionTypeId) {
+  const response = await hub.sendMessage({
+    type: 'X-MSN-TYPE-SCHEMA',
+    ids: [missionTypeId],
+  });
+  if (
+    response.body &&
+    response.body.type === 'X-MSN-TYPE-SCHEMA' &&
+    typeof response.body.items === 'object' &&
+    typeof response.body.items[missionTypeId] === 'object'
+  ) {
+    return response.body.items[missionTypeId];
+  } else {
+    return {};
+  }
+}
+
+/**
+ * Returns the list of registered mission types from the server.
+ */
+export async function getMissionTypes(hub, options = {}) {
+  let response;
+  const { features } = options;
+
+  response = await hub.sendMessage({ type: 'X-MSN-TYPE-LIST' });
+  if (response.body && response.body.type === 'X-MSN-TYPE-LIST') {
+    const missionTypeIds = get(response, 'body.ids') || [];
+    if (missionTypeIds.length > 0) {
+      response = await hub.sendMessage({
+        type: 'X-MSN-TYPE-INF',
+        ids: missionTypeIds,
+      });
+
+      const missionTypesById = get(response, 'body.items') || {};
+      const filtered = Object.values(missionTypesById).filter((item) => {
+        return (
+          !Array.isArray(features) ||
+          features.some((feature) => item.features.includes(feature))
+        );
+      });
+      return sortBy(filtered, ['name', 'id']);
+    }
+  } else {
+    return [];
+  }
+}
+
+/**
  * Returns the current preflight status of a single UAV.
  */
 export async function getPreflightStatus(hub, uavId) {
@@ -247,7 +298,7 @@ export async function getWeatherInformation(hub, position) {
 
   const response = await hub.sendMessage({
     type: 'WTH-AT',
-    position: [Math.round(position[1] * 1e7), Math.round(position[0] * 1e7)],
+    position: toScaledJSONFromLonLat(position),
   });
 
   if (response.body && response.body.type === 'WTH-AT') {
@@ -306,6 +357,8 @@ export class QueryHandler {
     getFlightLog,
     getFlightLogList,
     getLicenseInformation,
+    getMissionTypes,
+    getMissionTypeSchemas,
     getPreflightStatus,
     getRTKPresets,
     getRTKStatus,

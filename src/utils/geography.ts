@@ -6,7 +6,6 @@ import * as CoordinateParser from 'coordinate-parser';
 import curry from 'lodash-es/curry';
 import isNil from 'lodash-es/isNil';
 import minBy from 'lodash-es/minBy';
-import round from 'lodash-es/round';
 import unary from 'lodash-es/unary';
 import * as Coordinate from 'ol/coordinate';
 import * as Extent from 'ol/extent';
@@ -28,11 +27,18 @@ import VectorSource from 'ol/source/Vector';
 import { getArea, getLength } from 'ol/sphere';
 import { type Vector3 } from 'three';
 import turfBuffer from '@turf/buffer';
+import turfDifference from '@turf/difference';
+import turfDistance from '@turf/distance';
 import * as TurfHelpers from '@turf/helpers';
 
 import { type Feature, FeatureType } from '~/model/features';
 
-import { formatNumberAndUnit } from './formatting';
+import {
+  formatArea,
+  formatDistance,
+  formatNumberAndUnit,
+  type UnitDescriptor,
+} from './formatting';
 import {
   closePolygon,
   convexHull,
@@ -65,6 +71,40 @@ import { isRunningOnMac } from './platform';
 // running under Electron on macOS, so we use the @ sign there as a replacement.
 // Windows and Linux seem to be okay with the angle sign;
 const ANGLE_SIGN = isRunningOnMac ? '@' : '∠';
+
+/**
+ * Enum containing the possible altitude reference types that we support.
+ */
+export enum AltitudeReference {
+  HOME = 'home',
+  MSL = 'msl',
+}
+
+/**
+ * Type specification for an altitude object containing a numeric offset from an
+ * altitude reference.
+ */
+export type Altitude = {
+  value: number;
+  reference: AltitudeReference;
+};
+
+/**
+ * Enum containing the possible heading mode types that we support.
+ */
+export enum HeadingMode {
+  ABSOLUTE = 'absolute',
+  WAYPOINT = 'waypoint',
+}
+
+/**
+ * Type specification for a heading object containing a numeric value and a
+ * heading mode.
+ */
+export type Heading = {
+  value: number;
+  mode: HeadingMode;
+};
 
 /**
  * Returns the (initial) bearing when going from one point to another on a
@@ -304,7 +344,7 @@ export const makeDecimalCoordinateFormatter = ({
   digits?: number;
   reverse?: boolean;
   separator?: string;
-  unit?: string | Array<[number, string]>;
+  unit?: string | UnitDescriptor[];
 }): ((coordinate: Coordinate2D) => string) => {
   const indices: [0 | 1, 0 | 1] = reverse ? [1, 0] : [0, 1];
   return (coordinate) => {
@@ -355,22 +395,17 @@ export const makePolarCoordinateFormatter =
  * @returns The resulting measurement in string form with units included
  */
 export const measureFeature = (feature: Feature): string => {
-  const hecto = 100;
-  const kilo = 1000;
-
   switch (feature.type) {
     case FeatureType.LINE_STRING: {
       const length = getLength(
         new LineString(feature.points.map(unary(mapViewCoordinateFromLonLat)))
       );
 
-      return length > 10 * kilo
-        ? `${round(length / kilo, 2)} km`
-        : `${round(length, 2)} m`;
+      return formatDistance(length);
     }
 
     case FeatureType.POLYGON: {
-      // Note: `polygon.getArea()` doesn't include correction for the projection
+      // NOTE: `polygon.getArea()` doesn't include correction for the projection
       const area = getArea(
         new Polygon(
           [feature.points, ...feature.holes].map((coordinates) =>
@@ -379,13 +414,7 @@ export const measureFeature = (feature: Feature): string => {
         )
       );
 
-      // TODO: Make `formatNumberAndUnit` handle custom breakpoints
-      //       in order to support switching units at 0.1 hectars.
-      return area > 1 * (kilo * kilo) // Over 1 km²
-        ? `${round(area / (kilo * kilo), 2)} km²`
-        : area > 0.1 * (hecto * hecto) // Over 0.1 ha
-          ? `${round(area / (hecto * hecto), 2)} ha`
-          : `${round(area, 2)} m²`;
+      return formatArea(area);
     }
 
     default:
@@ -436,6 +465,67 @@ export const translateBy = curry(
       coordinate[1] + dy,
     ]);
   }
+);
+
+const createSafeWrapper =
+  <S, T>(func: (value: S) => T) =>
+  (value: S, defaultValue: T): T => {
+    if (isNil(value)) {
+      return defaultValue;
+    }
+
+    try {
+      return func(value);
+    } catch {
+      return defaultValue;
+    }
+  };
+
+/**
+ * Formats the given altitude-with-reference object in a way that is suitable
+ * for presentation on the UI.
+ */
+export const formatAltitudeWithReference = (altitude: Altitude): string => {
+  const { reference, value } = altitude;
+  const formattedValue = formatDistance(value);
+
+  if (reference === AltitudeReference.MSL) {
+    return formattedValue + ' AMSL';
+  } else if (reference === AltitudeReference.HOME) {
+    return formattedValue + ' above home';
+  } else {
+    return `${formattedValue} above unknown reference: ${String(reference)}`;
+  }
+};
+
+/**
+ * Formats the given altitude-with-reference object in a way that is suitable
+ * for presentation on the UI, ensuring that falsy values are replaced with a
+ * default value.
+ */
+export const safelyFormatAltitudeWithReference = createSafeWrapper(
+  formatAltitudeWithReference
+);
+
+/**
+ * Formats the given heading-with-mode object in a way that is suitable
+ * for presentation on the UI.
+ */
+export const formatHeadingWithMode = (heading: Heading): string => {
+  const { mode, value } = heading;
+  const formattedValue = value.toFixed(1) + '\u00B0';
+
+  if (mode === HeadingMode.WAYPOINT) {
+    return 'Always face next waypoint';
+  } else if (mode === HeadingMode.ABSOLUTE) {
+    return formattedValue;
+  } else {
+    return `${formattedValue} @ unknown mode: ${String(mode)}`;
+  }
+};
+
+export const safelyFormatHeadingWithMode = createSafeWrapper(
+  formatHeadingWithMode
 );
 
 /**
@@ -869,3 +959,107 @@ export const bufferPolygon = (
 
   return convexHull(outerLinearRing);
 };
+
+/**
+ * Takes the coordinates (perimeter and holes) of a polygon and normalizes it
+ * such that holes don't intersect (they get merged in that case) and all holes
+ * are completely contained in the perimeter. Returns an array of polygons,
+ * since this operation might split the input into multiple parts.
+ *
+ * Note: Turf expects polygons to be closed (the first and last coordinates
+ *       should be equal), so this function inherits this requirement.
+ */
+export function normalizePolygon([points, ...holes]: any): any {
+  // TODO: This should be typed properly!
+
+  // Start with the boundary ring and subtract every hole from it with Turf
+  // TODO: This can be simplified when Turf 7.0.0 gets released, as
+  //       difference will support multiple substrahend features
+  // eslint-disable-next-line unicorn/no-array-reduce
+  const { geometry } = holes.reduce(
+    (poly: any, hole: any) => turfDifference(poly, TurfHelpers.polygon([hole])),
+    TurfHelpers.polygon([points])
+  );
+
+  switch (geometry.type) {
+    case 'Polygon': {
+      return [geometry.coordinates];
+    }
+
+    case 'MultiPolygon': {
+      return geometry.coordinates;
+    }
+
+    default: {
+      throw new Error(`Unexpected geometry type: ${geometry.type}`);
+    }
+  }
+}
+
+type ScaledJSONGPSCoordinate = [number, number];
+
+/**
+ * Converts a longitude-latitude pair to a representation that is safe to be
+ * transferred in JSON over to the server without worrying about floating-point
+ * rounding errors.
+ *
+ * @param  coords  the longitude-latitude pair to convert, represented
+ *         as an object with a `lon` and a `lat` key.
+ * @return the JSON representation, scaled up to 1e7 degrees. Note
+ *         that it returns the <em>latitude</em> first
+ */
+export function toScaledJSONFromObject(coords: {
+  lat: number;
+  lon: number;
+}): ScaledJSONGPSCoordinate {
+  return [Math.round(coords.lat * 1e7), Math.round(coords.lon * 1e7)];
+}
+
+/**
+ * Converts a longitude-latitude pair to a representation that is safe to be
+ * transferred in JSON over to the server without worrying about floating-point
+ * rounding errors.
+ *
+ * @param  coords  the longitude-latitude pair to convert, represented
+ *         as an array in lon-lat order (<em>longitude</em> first, OpenLayers
+ *         convention)
+ * @return the JSON representation, scaled up to 1e7 degrees. Note
+ *         that it returns the <em>latitude</em> first
+ */
+export function toScaledJSONFromLonLat(
+  coords: [number, number]
+): ScaledJSONGPSCoordinate {
+  return [Math.round(coords[1] * 1e7), Math.round(coords[0] * 1e7)];
+}
+
+/**
+ * Reverts a "JSON-safe" multiplier offset coordinate representation to a
+ * simple decimal longitude-latitude pair
+ *
+ * @param  coords  the JSON representation, scaled up to 1e7 degrees.
+ *         Note that it contains the <em>latitude</em> first
+ * @return the resulting longitude-latitude pair, represented
+ *         as an array in lon-lat order (<em>longitude</em> first, OpenLayers
+ *         convention)
+ */
+export function toLonLatFromScaledJSON(
+  coords: ScaledJSONGPSCoordinate
+): [number, number] {
+  return [coords[1] / 1e7, coords[0] / 1e7];
+}
+
+/**
+ * Calculates the distance in meters between two GeoJSON point features.
+ * (By default `turfDistance` returns kilometers and does not have
+ * meters available as an option, only degrees, radians and miles...)
+ *
+ * @param first   the first point
+ * @param second  the second point
+ * @return the distance between the two points in meters
+ */
+export function turfDistanceInMeters(
+  first: Coordinate2D,
+  second: Coordinate2D
+): number {
+  return turfDistance(first, second) * 1000;
+}

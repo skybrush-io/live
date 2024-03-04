@@ -1,9 +1,9 @@
 /**
- * @file The global snackbar at the bottom of the main window.
+ * @file The global snackbar of the main window.
  */
 
 import PropTypes from 'prop-types';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 import { useToasts } from 'react-toast-notifications';
 
@@ -11,8 +11,11 @@ import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import { styled } from '@material-ui/core/styles';
 
-import { selectActiveNotification } from './selectors';
+import { useSignal } from '~/hooks';
+
 import { MessageSemantics } from './types';
+import { SNACKBAR_TRANSITION_DURATION } from './constants';
+import snackbarSignal from './signal';
 
 const semanticsToAppearance = {
   [MessageSemantics.INFO]: 'info',
@@ -29,8 +32,7 @@ const ToastNotificationButton = styled(Button)({
 /**
  * Function that creates a React content node to show for the given notification.
  */
-const createContentNode = (notification, dispatch) => {
-  const { buttons, message, header } = notification;
+const createContentNode = ({ buttons, message, header }, dispatch) => {
   let result = message;
 
   if (Array.isArray(buttons) && buttons.length > 0) {
@@ -47,17 +49,15 @@ const createContentNode = (notification, dispatch) => {
     ));
 
     result = (
-      <div>
+      <Box
+        display='flex'
+        flexDirection='row'
+        justifyContent='space-between'
+        alignItems='center'
+      >
         {result}
-        <Box
-          display='flex'
-          flexDirection='row'
-          justifyContent='space-around'
-          mt={2}
-        >
-          {buttonComponents}
-        </Box>
-      </div>
+        {buttonComponents}
+      </Box>
     );
   }
 
@@ -76,43 +76,58 @@ const createContentNode = (notification, dispatch) => {
 };
 
 /**
- * Presentation component for the global snackbar at the bottom of the main
- * window.
+ * Presentation component for the global snackbar of the main window.
  *
  * @returns  {Object}  the rendered snackbar component
  */
-const ToastNotificationManager = ({ dispatch, notification }) => {
-  const { addToast } = useToasts();
+const ToastNotificationManager = ({ dispatch }) => {
+  const { addToast, toastStack, removeToast } = useToasts();
 
-  useEffect(() => {
-    const { semantics, permanent } = notification;
-    const content = createContentNode(notification, dispatch);
-    if (content) {
-      addToast(content, {
+  useSignal(
+    snackbarSignal,
+    ({
+      buttons,
+      header,
+      message,
+      permanent = false,
+      semantics = MessageSemantics.DEFAULT,
+      topic,
+    }) => {
+      const match = topic && toastStack.find((t) => t?.topic === topic);
+
+      const content = createContentNode({ buttons, message, header }, dispatch);
+      const options = {
         appearance: semanticsToAppearance[semantics] || 'info',
         autoDismiss: !permanent,
-      });
+        topic,
+      };
+
+      if (match) {
+        // If a previous notification with the same topic exists, remove it and
+        // delay the showing of the next one until it has finished disappearing
+        removeToast(match.id);
+        if (content) {
+          setTimeout(() => {
+            addToast(content, options);
+          }, SNACKBAR_TRANSITION_DURATION);
+        }
+      } else {
+        if (content) {
+          addToast(content, options);
+        }
+      }
     }
-  }, [addToast, dispatch, notification]);
+  );
 
   return null;
 };
 
 ToastNotificationManager.propTypes = {
   dispatch: PropTypes.func.isRequired,
-  notification: PropTypes.shape({
-    message: PropTypes.string.isRequired,
-    permanent: PropTypes.bool,
-    semantics: PropTypes.oneOf(Object.values(MessageSemantics)).isRequired,
-  }),
 };
 
 /**
  * Global snackbar at the bottom of the main window.
  */
-export default connect(
-  // mapStateToProps
-  (state) => ({
-    notification: selectActiveNotification(state),
-  })
-)(ToastNotificationManager);
+export default connect()(ToastNotificationManager);
+// We only need `connect` to get `dispatch` as a prop.

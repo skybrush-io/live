@@ -52,10 +52,22 @@ declare module 'config' {
 
   export type Config = {
     branding: {
-      /**
-       * Source for the icon shown on the splash screen during loading.
-       */
-      splashIcon: string;
+      /** Splash screen icon properties on loading screen */
+      splashIcon: {
+        /** Source for the icon shown on the splash screen during loading */
+        srcSet: {
+          /** Default (normal) icon source */
+          default: string;
+          /** 2x device pixel density icon source */
+          twoX: string;
+        };
+
+        /** Icon width in pixels */
+        width: number;
+
+        /** Icon height in pixels */
+        height: number;
+      };
 
       /**
        * Title text to be shown on the splash screen during loading.

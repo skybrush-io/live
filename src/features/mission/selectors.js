@@ -1,15 +1,36 @@
 import isNil from 'lodash-es/isNil';
+import max from 'lodash-es/max';
+import min from 'lodash-es/min';
 import range from 'lodash-es/range';
 import reject from 'lodash-es/reject';
 import { createSelector } from '@reduxjs/toolkit';
+import turfContains from '@turf/boolean-contains';
+import * as TurfHelpers from '@turf/helpers';
 
-import { Status } from '~/components/semantics';
+import { getFeaturesByIds } from '~/features/map-features/selectors';
+import { GeofenceAction, isValidGeofenceAction } from '~/features/safety/model';
 import {
-  GeofenceAction,
-  isValidGeofenceAction,
-} from '~/features/geofence/model';
-import { globalIdToMissionSlotId } from '~/model/identifiers';
+  globalIdToMissionItemId,
+  globalIdToMissionSlotId,
+} from '~/model/identifiers';
+import {
+  getAltitudeFromMissionItem,
+  getCoordinateFromMissionItem,
+  MissionItemType,
+  MissionType,
+} from '~/model/missions';
 import { selectionForSubset } from '~/selectors/selection';
+import { selectOrdered } from '~/utils/collections';
+import {
+  AltitudeReference,
+  mapViewCoordinateFromLonLat,
+  turfDistanceInMeters,
+} from '~/utils/geography';
+import {
+  convexHull,
+  createGeometryFromPoints,
+  estimatePathDuration,
+} from '~/utils/math';
 import { EMPTY_ARRAY } from '~/utils/redux';
 
 /**
@@ -17,6 +38,70 @@ import { EMPTY_ARRAY } from '~/utils/redux';
  * index.
  */
 export const selectMissionIndex = (_state, missionIndex) => missionIndex;
+
+/**
+ * Returns the type of the current mission.
+ */
+export const getMissionType = (state) =>
+  state.mission.type || MissionType.UNKNOWN;
+
+/**
+ * Returns the name of the current mission, if given.
+ */
+export const getMissionName = (state) => state.mission.name;
+
+/**
+ * Returns the IDs of the items in the current waypoint-based mission, in the
+ * order they should appear on the UI.
+ */
+export const getMissionItemIds = (state) => state.mission.items.order;
+
+/**
+ * Selector that calculates and caches the list of selected mission item IDs from
+ * the state object.
+ */
+export const getSelectedMissionItemIds = selectionForSubset(
+  globalIdToMissionItemId
+);
+
+/**
+ * Returns a mapping from IDs to the corresponding mission items.
+ */
+export const getMissionItemsById = (state) => state.mission.items.byId;
+
+/**
+ * Returns a single mission item by its ID.
+ */
+export const getMissionItemById = (state, itemId) =>
+  state.mission.items.byId[itemId];
+
+/**
+ * Returns the items in the current waypoint-based mission.
+ */
+export const getMissionItemsInOrder = createSelector(
+  (state) => state.mission.items,
+  selectOrdered
+);
+
+/**
+ * Returns the items in the current waypoint-based mission annotated with their
+ * order based indices.
+ */
+export const getMissionItemsInOrderWithIndices = createSelector(
+  getMissionItemsInOrder,
+  (missionItems) => missionItems.map((item, index) => ({ index, item }))
+);
+
+/**
+ * Returns the list of items in the current waypoint-based mission that have the
+ * given type, annotated with their order based indices.
+ */
+export const getMissionItemsOfTypeWithIndices = createSelector(
+  getMissionItemsInOrderWithIndices,
+  (_state, missionItemType) => missionItemType,
+  (itemsWithIndices, missionItemType) =>
+    itemsWithIndices.filter(({ item: { type } }) => type === missionItemType)
+);
 
 /**
  * Returns the current list of home positions in the mission.
@@ -239,13 +324,21 @@ export function getGeofenceActionWithValidation(state) {
 export const getGeofencePolygonId = (state) => state.mission.geofencePolygonId;
 
 /**
+ * Gets the polygon that is to be used as a geofence.
+ */
+export const getGeofencePolygon = createSelector(
+  getGeofencePolygonId,
+  getFeaturesByIds,
+  (geofencePolygonId, featuresById) => featuresById[geofencePolygonId]
+);
+
+/**
  * Gets the coordinates of the polygon that is to be used as a geofence, in
  * world coordinates, or undefined if no geofence polygon is defined.
  */
 export const getGeofencePolygonInWorldCoordinates = createSelector(
-  getGeofencePolygonId,
-  (state) => state.features.byId,
-  (geofencePolygonId, featuresById) => featuresById[geofencePolygonId]?.points
+  getGeofencePolygon,
+  (geofencePolygon) => geofencePolygon?.points
 );
 
 /**
@@ -254,21 +347,631 @@ export const getGeofencePolygonInWorldCoordinates = createSelector(
  */
 export const hasActiveGeofencePolygon = createSelector(
   getGeofencePolygonId,
-  (state) => state.features.byId,
+  getFeaturesByIds,
   (geofencePolygonId, featuresById) =>
     geofencePolygonId !== undefined &&
     featuresById[geofencePolygonId] !== undefined
 );
 
-export const getGeofenceStatus = createSelector(
-  hasActiveGeofencePolygon,
-  getGeofencePolygonId,
-  (state) => state.features.byId,
-  (hasActiveGeofencePolygon, geofencePolygonId, featuresById) => {
-    return !hasActiveGeofencePolygon
-      ? Status.OFF
-      : featuresById[geofencePolygonId].owner === 'show'
-      ? Status.SUCCESS
-      : Status.WARNING;
+export const getItemIndexRangeForSelectedMissionItems = createSelector(
+  getMissionItemIds,
+  getSelectedMissionItemIds,
+  (allIds, selectedIds) => {
+    const indices = selectedIds.map((id) => allIds.indexOf(id));
+    const minIndex = min(indices);
+    const maxIndex = max(indices);
+    return [minIndex, maxIndex];
   }
+);
+
+/**
+ * Returns whether the currently selected mission items form a single,
+ * uninterrupted chunk in the list of mission items.
+ */
+export const areSelectedMissionItemsInOneChunk = createSelector(
+  getItemIndexRangeForSelectedMissionItems,
+  getSelectedMissionItemIds,
+  (indexRange, selectedIds) => {
+    const [minIndex, maxIndex] = indexRange;
+    return minIndex >= 0 && maxIndex === minIndex + selectedIds.length - 1;
+  }
+);
+
+export const createCanMoveSelectedMissionItemsByDeltaSelector = (delta) =>
+  createSelector(
+    getMissionItemIds,
+    areSelectedMissionItemsInOneChunk,
+    getItemIndexRangeForSelectedMissionItems,
+    (allIds, inOneChunk, indexRange) => {
+      if (!inOneChunk) {
+        return false;
+      }
+
+      const [minIndex, maxIndex] = indexRange;
+      if (delta < 0) {
+        return minIndex >= Math.abs(delta);
+      } else {
+        return maxIndex + delta < allIds.length;
+      }
+    }
+  );
+
+/**
+ * Returns whether the currently selected mission items can be moved upwards
+ * by one slot.
+ */
+export const canMoveSelectedMissionItemsUp =
+  createCanMoveSelectedMissionItemsByDeltaSelector(-1);
+
+/**
+ * Returns whether the currently selected mission items can be moved downwards
+ * by one slot.
+ */
+export const canMoveSelectedMissionItemsDown =
+  createCanMoveSelectedMissionItemsByDeltaSelector(1);
+
+/**
+ * Returns whether the mission editor panel should follow the active item.
+ */
+export const shouldMissionEditorPanelFollowScroll = (state) =>
+  state.mission.editorPanel.followScroll;
+
+/**
+ * Returns a selector that converts the current list of mission items to a
+ * list of objects containing the GPS coordinates where the items should
+ * appear on the map, along with the original items themselves. This is used
+ * by map views to show the mission items.
+ *
+ * The returned array will contain objects with the following keys:
+ *
+ * - id: maps to the ID of the mission item
+ * - coordinate: maps to a latitude-longitude pair of the mission item (as an
+ *   array of length 2)
+ * - item: maps to the item itself
+ * - index: the index of the item in the list of mission items
+ *
+ * Mission items for which no coordinate belongs are not returned.
+ */
+export const getMissionItemsWithCoordinatesInOrder = createSelector(
+  getMissionItemsInOrder,
+  (items) => {
+    const result = [];
+    let index = 0;
+
+    for (const item of items) {
+      const coordinate = getCoordinateFromMissionItem(item);
+      if (coordinate) {
+        result.push({ id: item.id, item, coordinate, index });
+      }
+
+      index++;
+    }
+
+    return result;
+  }
+);
+
+/**
+ * Returns a selector that converts the current list of mission items to a
+ * list of objects containing the target altitudes which should be reached
+ * during a mission, along with the original items themselves and their indices.
+ *
+ * The returned array will contain objects with the following keys:
+ *
+ * - id: maps to the ID of the mission item
+ * - altitude: object with have two keys: `value` for the value of the altitude
+ *                                   and `reference` for the reference altitude
+ * - item: maps to the item itself
+ * - index: the index of the item in the list of mission items
+ *
+ * Mission items for which no altitude belongs are not returned.
+ */
+export const getMissionItemsWithAltitudesInOrder = createSelector(
+  getMissionItemsInOrder,
+  (items) => {
+    const result = [];
+    let index = 0;
+
+    for (const item of items) {
+      const altitude = getAltitudeFromMissionItem(item);
+      if (altitude) {
+        result.push({ id: item.id, item, altitude, index });
+      }
+
+      index++;
+    }
+
+    return result;
+  }
+);
+
+/**
+ * Returns the coordinates of the convex hull of the currently loaded mission
+ * in the coordinate system of the map view.
+ */
+export const getConvexHullOfHomePositionsAndMissionItemsInWorldCoordinates =
+  createSelector(
+    getGPSBasedHomePositionsInMission,
+    getMissionItemsWithCoordinatesInOrder,
+    (homePositions, missionItemsWithCoorinates) =>
+      convexHull([
+        ...homePositions.filter(Boolean).map((hp) => [hp.lon, hp.lat]),
+        ...missionItemsWithCoorinates.map((miwc) => [
+          miwc.coordinate.lon,
+          miwc.coordinate.lat,
+        ]),
+      ])
+  );
+
+/**
+ * Returns the coordinates of the convex hull of the currently loaded mission
+ * in the coordinate system of the map view.
+ */
+export const getConvexHullOfHomePositionsAndMissionItemsInMapViewCoordinates =
+  createSelector(
+    getConvexHullOfHomePositionsAndMissionItemsInWorldCoordinates,
+    (convexHullOfHomePositionsAndMissionItemsInWorldCoordinates) =>
+      convexHullOfHomePositionsAndMissionItemsInWorldCoordinates.map(
+        (worldCoordinate) => mapViewCoordinateFromLonLat(worldCoordinate)
+      )
+  );
+
+/**
+ * Returns whether the convex hull of the waypoint mission (home positions and
+ * mission items) is fully contained inside the geofence polygon.
+ */
+export const isWaypointMissionConvexHullInsideGeofence = createSelector(
+  getConvexHullOfHomePositionsAndMissionItemsInWorldCoordinates,
+  getGeofencePolygonInWorldCoordinates,
+  (convexHull, geofence) => {
+    if (
+      Array.isArray(geofence) &&
+      geofence.length > 0 &&
+      Array.isArray(convexHull) &&
+      convexHull.length > 0
+    ) {
+      geofence = createGeometryFromPoints(geofence);
+      convexHull = createGeometryFromPoints(convexHull);
+      return turfContains(geofence, convexHull);
+    }
+
+    return false;
+  }
+);
+
+/**
+ * Returns the maximum distance of any geofence vertex from any home position.
+ */
+export const getMaximumDistanceBetweenHomePositionsAndGeofence = createSelector(
+  getGPSBasedHomePositionsInMission,
+  getGeofencePolygonInWorldCoordinates,
+  (homePositions, geofencePolygon) => {
+    if (!geofencePolygon) {
+      return 0;
+    }
+
+    const homePoints = homePositions.map(({ lon, lat }) =>
+      TurfHelpers.point([lon, lat])
+    );
+    const geofencePoints = geofencePolygon.map(TurfHelpers.point);
+    const distances = homePoints.flatMap((hp) =>
+      geofencePoints.map((gp) => turfDistanceInMeters(hp, gp))
+    );
+    return max(distances) || 0;
+  }
+);
+
+/**
+ * Returns the maximum distance of any waypoint in the mission from the first
+ * home position in the UAV mapping.
+ */
+export const getMaximumHorizontalDistanceOfWaypointsFromHomePosition =
+  createSelector(
+    getGPSBasedHomePositionsInMission,
+    getMissionItemsWithCoordinatesInOrder,
+    ([homePosition], missionItemsWithCoorinates) => {
+      if (!homePosition) {
+        return 0;
+      }
+
+      const homePoint = TurfHelpers.point([homePosition.lon, homePosition.lat]);
+      return (
+        max(
+          missionItemsWithCoorinates.map(({ coordinate: { lon, lat } }) =>
+            turfDistanceInMeters(homePoint, TurfHelpers.point([lon, lat]))
+          )
+        ) ?? 0
+      );
+    }
+  );
+
+/**
+ * Returns the maximum target altitude that appears among the waypoints.
+ */
+export const getMaximumHeightOfWaypoints = createSelector(
+  getMissionItemsWithAltitudesInOrder,
+  (missionItemsWithAltitude) =>
+    // TODO: Handle different altitude references?
+    max(missionItemsWithAltitude.map((mi) => mi.altitude.value)) ?? 0
+);
+
+/**
+ * Selector that returns whether the mission planner dialog is open.
+ */
+export const isMissionPlannerDialogOpen = (state) =>
+  state.mission.plannerDialog.open;
+
+/**
+ * Selector that returns the mapping to be used when setting parameters for the
+ * mission planner from the context.
+ */
+export const getMissionPlannerDialogContextParameters = (state) =>
+  state.mission.plannerDialog.parameters.fromContext;
+
+/**
+ * Selector that returns the parameters for the mission planner set by the user.
+ */
+export const getMissionPlannerDialogUserParameters = (state) =>
+  state.mission.plannerDialog.parameters.fromUser;
+
+/**
+ * Selector that returns the parameters used in the last successful invocation
+ * of the mission planner.
+ */
+export const getLastSuccessfulPlannerInvocationParameters = (state) =>
+  state.mission.lastSuccessfulPlannerInvocationParameters;
+
+/**
+ * Selector that returns the mission type currently selected for planning.
+ */
+export const getMissionPlannerDialogSelectedType = (state) =>
+  state.mission.plannerDialog.selectedType;
+
+/**
+ * Selector that returns whether the mission planner dialog should apply an
+ * automatically generated geofence.
+ */
+export const shouldMissionPlannerDialogApplyGeofence = (state) =>
+  state.mission.plannerDialog.applyGeofence;
+
+/**
+ * Selector that returns the backup of the last cleared mission data.
+ */
+export const getLastClearedMissionData = (state) =>
+  state.mission.lastClearedMissionData;
+
+/**
+ * Selector that returns the items of the mission wrapped together with distance
+ * and velocity information where movement is involved.
+ *
+ * @returns {Array}
+ */
+export const getMissionItemsInOrderAsSegments = createSelector(
+  getGPSBasedHomePositionsInMission,
+  getMissionItemsInOrder,
+  ([homePosition], items) => {
+    const home = homePosition && {
+      XY: TurfHelpers.point([homePosition.lon, homePosition.lat]),
+      Z: {
+        [AltitudeReference.HOME]: homePosition.agl,
+        [AltitudeReference.MSL]: homePosition.amsl,
+      },
+    };
+    try {
+      // eslint-disable-next-line unicorn/no-array-reduce
+      return items.reduce(
+        (state, item) => {
+          const { type, parameters } = item;
+          const { _altitudeReference, _position, _velocity, segments } = state;
+          return {
+            // Take the previous state and update it based on the following
+            ...state,
+            // Add the current item as a segment without movement by default
+            segments: [...segments, { item }],
+            // Overwrite any returned mission item type specific properties
+            ...(() => {
+              const moveToXY = (target) => {
+                // We don't yet have position information to measure from
+                if (!_position.XY) {
+                  return { _position: { ..._position, XY: target } };
+                }
+
+                const length = turfDistanceInMeters(_position.XY, target);
+
+                return {
+                  _position: { ..._position, XY: target },
+                  segments: [
+                    ...segments,
+                    { item, distance: length, velocity: _velocity.XY },
+                  ],
+                };
+              };
+
+              const moveToZ = ({ value: target, reference }) => {
+                if (
+                  // We don't yet have altitude information to measure from
+                  !_position.Z ||
+                  // Or our previous point is given with a different reference
+                  // TODO: Maybe mixed references should raise a warning
+                  (_altitudeReference && _altitudeReference !== reference)
+                ) {
+                  return {
+                    _altitudeReference: reference,
+                    _position: { ..._position, Z: { [reference]: target } },
+                  };
+                }
+
+                const height = Math.abs(_position.Z[reference] - target);
+
+                return {
+                  _altitudeReference: reference,
+                  _position: { ..._position, Z: { [reference]: target } },
+                  segments: [
+                    ...segments,
+                    { item, distance: height, velocity: _velocity.Z },
+                  ],
+                };
+              };
+
+              // TODO: According to the server code some mission item types
+              // can have optional parameters for altitude and velocities.
+              // We should include that information when it is available.
+              switch (type) {
+                /* =================== Changing velocity =================== */
+
+                case MissionItemType.CHANGE_SPEED: {
+                  return {
+                    _velocity: {
+                      XY: parameters.velocityXY ?? _velocity.XY,
+                      Z: parameters.velocityZ ?? _velocity.Z,
+                    },
+                  };
+                }
+
+                /* =================== Changing altitude =================== */
+
+                case MissionItemType.TAKEOFF: {
+                  return moveToZ(parameters.alt);
+                }
+
+                case MissionItemType.CHANGE_ALTITUDE: {
+                  return moveToZ(parameters.alt);
+                }
+
+                case MissionItemType.LAND: {
+                  return home
+                    ? moveToZ({
+                        value: home.Z[_altitudeReference],
+                        reference: _altitudeReference,
+                      })
+                    : {};
+                }
+
+                /* =================== Changing position =================== */
+
+                case MissionItemType.GO_TO: {
+                  const waypoint = TurfHelpers.point([
+                    parameters.lon,
+                    parameters.lat,
+                  ]);
+
+                  return moveToXY(waypoint);
+                }
+
+                case MissionItemType.RETURN_TO_HOME: {
+                  return home ? moveToXY(home.XY) : {};
+                }
+
+                default:
+                // The remaining mission item types do not contain movement
+              }
+            })(),
+          };
+        },
+        {
+          // The first item to have altitude information can choose which
+          // reference type to use
+          _altitudeReference: undefined,
+          _position: { XY: home?.XY, Z: home?.Z },
+          _velocity: { XY: 0, Z: 0 },
+          segments: [],
+        }
+      ).segments;
+    } catch (error) {
+      console.error(`Route segment calculation error: ${error}`);
+      return [];
+    }
+  }
+);
+
+/**
+ * Selector that returns estimates about the mission.
+ *
+ * @returns {Object} estimates
+ * @property {number} distance - the length of the planned trajectory in meters
+ * @property {number} duration - the expected duration of the mission in seconds
+ */
+export const getMissionEstimates = createSelector(
+  getMissionItemsInOrderAsSegments,
+  (segments) => {
+    return (
+      segments
+        .filter((s) => Boolean(s.distance))
+        // eslint-disable-next-line unicorn/no-array-reduce
+        .reduce(
+          ({ distance, duration }, s) => ({
+            distance: distance + s.distance,
+            duration: duration + estimatePathDuration(s.distance, s.velocity),
+          }),
+          { distance: 0, duration: 0 }
+        )
+    );
+  }
+);
+
+/**
+ * Selector that returns the id of the mission item that's currently being
+ * executed.
+ */
+export const getCurrentMissionItemId = (state) =>
+  state.mission.progress.currentItemId;
+
+/**
+ * Selector that returns the index of the mission item that's currently being
+ * executed.
+ */
+export const getCurrentMissionItemIndex = createSelector(
+  getMissionItemIds,
+  getCurrentMissionItemId,
+  (ids, currentId) => ids.indexOf(currentId)
+);
+
+/**
+ * Selector that returns the progress ratio of the mission item that's
+ * currently being executed.
+ */
+export const getCurrentMissionItemRatio = (state) =>
+  state.mission.progress.currentItemRatio;
+
+/**
+ * Selector that returns whether mission progress information has been received.
+ */
+export const isProgressInformationAvailable = (state) =>
+  state.mission.progress.currentItemId !== undefined;
+
+/**
+ * Selector that returns the starting ratio of a partial mission.
+ */
+export const getStartRatioOfPartialMission = createSelector(
+  getMissionItemsInOrder,
+  (items) =>
+    Number(
+      items.find(
+        (mi) => mi.type === 'marker' && mi.parameters.marker === 'start'
+      )?.parameters?.ratio ?? 0
+    )
+);
+
+/**
+ * Selector that returns the ending ratio of a partial mission.
+ */
+export const getEndRatioOfPartialMission = createSelector(
+  getMissionItemsInOrder,
+  (items) =>
+    Number(
+      items.find((mi) => mi.type === 'marker' && mi.parameters.marker === 'end')
+        ?.parameters?.ratio ?? 1
+    )
+);
+
+/**
+ * Selector that returns the completion ratio of the net mission.
+ *
+ * @returns {number} the ratio of the done and total lengths of the net mission
+ */
+export const getNetMissionCompletionRatio = createSelector(
+  getMissionItemsInOrderAsSegments,
+  getCurrentMissionItemId,
+  getCurrentMissionItemRatio,
+  (segments, currentId, currentRatio) => {
+    // eslint-disable-next-line unicorn/no-array-reduce
+    const { doneDistance, totalDistance } = segments.reduce(
+      (state, { item: { id, type, parameters }, distance = 0 }) => {
+        const { _isDone, _isNet, doneDistance, totalDistance } = state;
+        const isCurrent = id === currentId;
+
+        // prettier-ignore
+        return {
+          // Take the previous state and update it based on the following
+          ...state,
+          // Segments are only considered done before the currently active item
+          _isDone: _isDone && !isCurrent,
+          // If the current item is a marker check whether it marks the start
+          // or the end of the useful (net) part of the mission
+          ...(
+            type === MissionItemType.MARKER && (
+              parameters.marker === 'start' ?  { _isNet: true  } :
+              parameters.marker === 'end'   ?  { _isNet: false } :
+              {}
+            )
+          ),
+          // If we are currently in the useful (net) part of the mission,
+          // accumulate the done and total distance appropriately
+          ...(
+            _isNet && {
+              doneDistance: doneDistance + (
+                // The item is currently active, apply the ratio to its distance
+                isCurrent ? distance * currentRatio :
+                // The item is done, count the entire distance
+                _isDone ? distance :
+                // The item is not even started
+                0
+              ),
+              totalDistance: totalDistance + distance,
+            }
+          ),
+        };
+      },
+      {
+        // If there is an active item, we start the reduction by considering the
+        // items done until we encounter the one that's currently in progress
+        _isDone: Boolean(currentId),
+        _isNet: false,
+        doneDistance: 0,
+        totalDistance: 0,
+      }
+    );
+
+    return totalDistance > 0 ? doneDistance / totalDistance : 0;
+  }
+);
+
+/**
+ * Selector that returns the global completion ratio of a mission calculated
+ * from the local bounds and the local ratio.
+ */
+export const getGlobalMissionCompletionRatio = createSelector(
+  getStartRatioOfPartialMission,
+  getEndRatioOfPartialMission,
+  getNetMissionCompletionRatio,
+  (start, end, localRatio) => start + (end - start) * localRatio
+);
+
+/**
+ * Selector that returns whether there is a partially completed mission that can
+ * be resumed from an interruption point.
+ */
+export const isMissionPartiallyCompleted = createSelector(
+  getGlobalMissionCompletionRatio,
+  (ratio) => ratio > 0 && ratio < 1
+);
+
+/**
+ * Selector that collects data about the current mission that can be used for
+ * recalling it later.
+ */
+export const getMissionDataForStorage = createSelector(
+  getLastSuccessfulPlannerInvocationParameters,
+  getMissionName,
+  getMissionItemsInOrder,
+  getGPSBasedHomePositionsInMission,
+  getCurrentMissionItemId,
+  getCurrentMissionItemRatio,
+  (
+    lastSuccessfulPlannerInvocationParameters,
+    name,
+    items,
+    homePositions,
+    currentMissionItemId,
+    currentMissionItemRatio
+  ) => ({
+    lastSuccessfulPlannerInvocationParameters,
+    name,
+    items,
+    homePositions,
+    progress: {
+      id: currentMissionItemId,
+      ratio: currentMissionItemRatio,
+    },
+  })
 );

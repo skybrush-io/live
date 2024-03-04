@@ -69,7 +69,6 @@ const onlyWithFeature = (featureName, component) =>
  * The React components will be created without any props. If you need the
  * components to have props, use a wrapper HOC.
  */
-
 export const componentRegistry = {
   'beacon-list': {
     component: views.BeaconList,
@@ -94,7 +93,7 @@ export const componentRegistry = {
     feature: 'docks',
   },
   'feature-list': {
-    component: views.FeatureList,
+    component: views.FeaturePanel,
     label: 'Features',
     detachable: true,
     feature: 'features',
@@ -138,6 +137,11 @@ export const componentRegistry = {
     component: views.MessagesPanelView,
     label: 'Messages',
   },
+  'mission-editor': {
+    component: views.MissionOverviewPanel,
+    label: 'Mission editor',
+    detachable: true,
+  },
   placeholder: {
     component: Nothing,
     label: 'Placeholder',
@@ -157,6 +161,11 @@ export const componentRegistry = {
     component: views.ThreeDTopLevelView,
     label: '3D View',
     feature: 'threeDView',
+  },
+  'uav-details': {
+    component: views.UAVDetailsPanel,
+    label: 'UAV',
+    detachable: true,
   },
   'uav-list': {
     component: injectFlockFromContext(views.UAVList),

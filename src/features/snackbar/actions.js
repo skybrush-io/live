@@ -1,5 +1,11 @@
-import { showNotification } from './slice';
+import { sendSnackbarSignal } from './signal';
 import { MessageSemantics } from './types';
+
+export const showNotification = (notification) => (_dispatch, _getState) => {
+  sendSnackbarSignal(
+    typeof notification === 'string' ? { message: notification } : notification
+  );
+};
 
 export function showError(message) {
   return showNotification({
@@ -8,4 +14,9 @@ export function showError(message) {
   });
 }
 
-export { showNotification } from './slice';
+export function showSuccess(message) {
+  return showNotification({
+    message,
+    semantics: MessageSemantics.SUCCESS,
+  });
+}

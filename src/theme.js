@@ -23,6 +23,16 @@ import darkModeExtraCSS from '!!raw-loader!~/../assets/css/dark-mode.css';
 const DarkModeAwareThemeProvider = createThemeProvider({
   primaryColor: (dark) => (dark ? orange : blue),
   secondaryColor: (dark) => (dark ? lightBlue : blueGrey),
+
+  themeOptionsHook(themeOptions) {
+    if (typeof themeOptions.props === 'undefined') {
+      themeOptions.props = {};
+    }
+
+    themeOptions.props.MuiTextField = {
+      variant: 'filled',
+    };
+  },
 });
 
 /**

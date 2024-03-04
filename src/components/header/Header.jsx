@@ -13,8 +13,8 @@ import AuthenticationButton from './AuthenticationButton';
 import BroadcastButton from './BroadcastButton';
 import ConnectionStatusButton from './ConnectionStatusButton';
 import FullScreenButton from './FullScreenButton';
-import GeofenceSettingsButton from './GeofenceSettingsButton';
 import HelpButton from './HelpButton';
+import SafetyButton from './SafetyButton';
 import ServerConnectionSettingsButton from './ServerConnectionSettingsButton';
 import SessionExpiryBox from './SessionExpiryBox';
 import ToolboxButton from './ToolboxButton';
@@ -53,10 +53,10 @@ const componentRegistry = {
   ),
   'connection-status-button': ConnectionStatusButton,
   'full-screen-button': FullScreenButton,
-  'geofence-settings-button': GeofenceSettingsButton,
   'help-button': () => (config.urls.help ? <HelpButton /> : null),
   'rtk-status-header-button': () =>
     hasFeature('toolboxMenu') && <RTKStatusHeaderButton />,
+  'safety-button': SafetyButton,
   'server-connection-settings-button': () => (
     <ServerConnectionSettingsButton
       hideTooltip={config.optimizeUIForTouch.default}

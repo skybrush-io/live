@@ -179,12 +179,81 @@ export async function uploadDroneShow(hub, { uavId, data }, options) {
 }
 
 /**
+ * Asks the server to upload a mission in some mission format to a given UAV.
+ */
+export async function uploadMission(hub, { uavId, data, format }, options) {
+  validateObjectId(uavId);
+
+  // HACK HACK HACK we are (ab)using the command execution mechanism. This is
+  // probably okay as a temporary solution, but we might need a better solution
+  // in the long term.
+  try {
+    await hub.sendCommandRequest(
+      {
+        uavId,
+        command: '__mission_upload',
+        args: [data, format],
+      },
+      {
+        timeout: 300 /* five minutes, should be longer than the timeout on the server */,
+        ...options,
+      }
+    );
+  } catch (error) {
+    throw new Error(
+      errorToString(
+        error.message || error,
+        `Failed to upload mission to UAV ${uavId}`
+      )
+    );
+  }
+}
+
+/**
+ * Custom class of errors representing server side plan generation problems.
+ */
+export class ServerPlanError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = 'ServerPlanError';
+  }
+}
+
+/**
+ * Sends a request to the server to plan a mission with the given parameters.
+ */
+export async function planMission(hub, { id, parameters }) {
+  const response = await hub.sendMessage({
+    type: 'X-MSN-PLAN',
+    id,
+    parameters,
+  });
+
+  const { type, result } = response.body;
+  if (type !== 'X-MSN-PLAN') {
+    throw new ServerPlanError(response.body.reason);
+  }
+
+  if (result?.format !== 'skybrush-live/mission-items') {
+    throw new Error(`Mission plan has an unknown format: ${result?.format}`);
+  }
+
+  const { payload } = result;
+  if (payload?.version !== 1 || !Array.isArray(payload.items)) {
+    throw new Error('Mission plan response must be in version 1 format');
+  }
+
+  return payload;
+}
+
+/**
  * Query handler object that can be used to perform common operations on a
  * Flockwave server using a given message hub.
  */
 export class OperationExecutor {
   _operations = {
     configureExtension,
+    planMission,
     reloadExtension,
     resetUAV,
     sendDebugMessage,
@@ -194,6 +263,7 @@ export class OperationExecutor {
     setShowLightConfiguration,
     startRTKSurvey,
     uploadDroneShow,
+    uploadMission,
   };
 
   /**
