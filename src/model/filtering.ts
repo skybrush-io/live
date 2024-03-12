@@ -47,10 +47,10 @@ export const labelsForUAVFilter: Record<UAVFilter, string> = {
  * Human-readable short labels that should be used on the UI to represent a UAV filter preset.
  */
 export const shortLabelsForUAVFilter: Record<UAVFilter, string> = {
-  [UAVFilter.DEFAULT]: 'filtering.all',
-  [UAVFilter.WITH_WARNINGS]: 'filtering.warn/Err',
-  [UAVFilter.WITH_ERRORS]: 'filtering.errors',
-  [UAVFilter.INACTIVE_ONLY]: 'filtering.noTelem',
+  [UAVFilter.DEFAULT]: 'filtering.label.all',
+  [UAVFilter.WITH_WARNINGS]: 'filtering.label.warnErr',
+  [UAVFilter.WITH_ERRORS]: 'filtering.label.errors',
+  [UAVFilter.INACTIVE_ONLY]: 'filtering.label.noTelem',
 };
 
 export const getFilterFunctionForUAVFilter = memoize(

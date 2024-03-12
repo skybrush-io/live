@@ -16,18 +16,13 @@ import IndoorEnvironmentEditor from './IndoorEnvironmentEditor';
 import OutdoorEnvironmentEditor from './OutdoorEnvironmentEditor';
 
 const instructionsByType = {
-  indoor:
-    'This show is an indoor show. You may specify the corners of the room ' +
-    'in which the show is taking place (for visualisation purposes).',
-  outdoor:
-    'This show is an outdoor show. You need to specify at least ' +
-    'the origin and orientation of the coordinate system so Skybrush can map ' +
-    'the show into GPS coordinates.',
+  indoor: 'environmentEditorDialog.indoor',
+  outdoor: 'environmentEditorDialog.outdoor',
 };
 
-const Instructions = ({ type }) => (
-  <Typography variant='body1'>{instructionsByType[type]}</Typography>
-);
+const Instructions = withTranslation()(({ type, t }) => (
+  <Typography variant='body1'>{t(instructionsByType[type])}</Typography>
+));
 
 Instructions.propTypes = {
   type: PropTypes.oneOf(Object.keys(instructionsByType)),
