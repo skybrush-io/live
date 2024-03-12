@@ -94,18 +94,23 @@
     "setCentroidAsMapOrigin": "Set centroid as map origin"
   },
   "environmentEditorDialog": {
-    "environmentSettings": "Environment settings"
+    "environmentSettings": "Environment settings",
+    "indoor": "This show is an indoor show. You may specify the corners of the room in which the show is taking place (for visualisation purposes).",
+    "outdoor": "This show is an outdoor show. You need to specify at least the origin and orientation of the coordinate system so Skybrush can map the show into GPS coordinates."
   },
   "fieldNotesPanel": {
     "exportNotesAsFile": "Export notes as Markdown file"
   },
   "filtering": {
     "all": "All",
-    "errors": "Errors",
     "errorsOnly": "Errors only",
-    "noTelem": "No telem",
+    "label": {
+      "all": "All",
+      "errors": "Errors",
+      "noTelem": "No telem",
+      "warnErr": "Warn/Err"
+    },
     "noTelemetryOnly": "No telemetry only",
-    "warn/Err": "Warn/Err",
     "warningsAndErrors": "Warnings and errors"
   },
   "fitAllFeaturesButton": {
@@ -201,7 +206,7 @@
     "importMapping": "Import mapping…"
   },
   "mappingSlotEditorToolbar": {
-    "reverseDirection": "",
+    "reverseDirection": "Hold <kbd>Shift</kbd> to reverse direction.",
     "selectNextEmptySlot": "Select next empty slot"
   },
   "mappingToggleButton": {
@@ -225,7 +230,7 @@
     "showIsControlledBasedOn": "Show is controlled based on…",
     "showOrientation": "Show orientation",
     "showOrigin": "Show origin",
-    "warningText": "Automatic show origin and orientation calculation assumes that all drones point towards the X axis of the show <u>or</u> that you specified their offset relative the X axis with the setting above. Absolute takeoff headings are not supported."
+    "warningText": "Automatic show origin and orientation calculation assumes that all drones point towards the X axis of the show <underline>or</underline> that you specified their offset relative the X axis with the setting above. Absolute takeoff headings are not supported."
   },
   "preferences": "Preferences",
   "recalculateMappingButton": {
@@ -386,7 +391,17 @@
     "flightMode": "Flight mode",
     "gpsFix": "GPS fix",
     "heading": "Heading",
-    "mode": "Mode",
+    "label": {
+      "agl": "AGL",
+      "ahl": "AHL",
+      "amsl": "AMSL",
+      "battery": "Battery",
+      "default": "Default",
+      "gpsFix": "GPS fix",
+      "heading": "Heading",
+      "mode": "Mode",
+      "status": "Status"
+    },
     "status": "Status"
   },
   "startUploadButton": {
