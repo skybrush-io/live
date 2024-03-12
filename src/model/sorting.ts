@@ -59,15 +59,15 @@ export const labelsForUAVSortKey: Record<UAVSortKey, string> = {
  * on the UI to represent a UAV filter preset.
  */
 export const shortLabelsForUAVSortKey: Record<UAVSortKey, string> = {
-  [UAVSortKey.DEFAULT]: 'sorting.default',
-  [UAVSortKey.STATUS]: 'sorting.status',
-  [UAVSortKey.FLIGHT_MODE]: 'sorting.mode',
-  [UAVSortKey.BATTERY]: 'sorting.battery',
-  [UAVSortKey.GPS_FIX]: 'sorting.gpsFix',
-  [UAVSortKey.ALTITUDE_MSL]: 'AMSL',
-  [UAVSortKey.ALTITUDE_HOME]: 'AHL',
-  [UAVSortKey.ALTITUDE_GROUND]: 'AGL',
-  [UAVSortKey.HEADING]: 'sorting.heading',
+  [UAVSortKey.DEFAULT]: 'sorting.label.default',
+  [UAVSortKey.STATUS]: 'sorting.label.status',
+  [UAVSortKey.FLIGHT_MODE]: 'sorting.label.mode',
+  [UAVSortKey.BATTERY]: 'sorting.label.battery',
+  [UAVSortKey.GPS_FIX]: 'sorting.label.gpsFix',
+  [UAVSortKey.ALTITUDE_MSL]: 'sorting.label.amsl',
+  [UAVSortKey.ALTITUDE_HOME]: 'sorting.label.ahl',
+  [UAVSortKey.ALTITUDE_GROUND]: 'sorting.label.agl',
+  [UAVSortKey.HEADING]: 'sorting.label.heading',
 };
 
 /**

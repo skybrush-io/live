@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Translation } from 'react-i18next';
+import { Trans, Translation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import Box from '@material-ui/core/Box';
@@ -47,9 +47,10 @@ const MappingSlotEditorToolbar = React.forwardRef(
             </Box>
             <Divider orientation='vertical' className={classes.divider} />
             <Box className={classes.box}>
-              {t('mappingSlotEditorToolbar.reverseDirection', {
-                shift: <kbd>Shift</kbd>,
-              })}
+              <Trans
+                i18nKey='mappingSlotEditorToolbar.reverseDirection'
+                components={{ kbd: <kbd /> }}
+              />
             </Box>
             <Box flex={1} />
             <IconButton onClick={cancelMappingEditorSessionAtCurrentSlot}>

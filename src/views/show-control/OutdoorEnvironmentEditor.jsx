@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
-import { withTranslation } from 'react-i18next';
+import { Trans, withTranslation } from 'react-i18next';
 
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
@@ -125,7 +125,10 @@ const OutdoorEnvironmentEditor = ({
         </Box>
         <Box flex={1} pl={1}>
           <Typography color='textSecondary' variant='body2'>
-            {t('outdoorEnvironmentEditor.warningText')}
+            <Trans
+              i18nKey='outdoorEnvironmentEditor.warningText'
+              components={{ underline: <u /> }}
+            />
           </Typography>
         </Box>
       </Box>
