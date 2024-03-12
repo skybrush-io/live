@@ -7,6 +7,7 @@
 import partial from 'lodash-es/partial';
 
 import * as Condition from 'ol/events/condition';
+import { MultiLineString, Polygon } from 'ol/geom';
 import Interaction from 'ol/interaction/Interaction';
 import Layer from 'ol/layer/Layer';
 import VectorLayer from 'ol/layer/Vector';
@@ -216,10 +217,17 @@ class SelectNearestFeatureInteraction extends Interaction {
    * @return {number} the distance of the feature from the event, in pixels
    */
   _distanceOfEventFromFeature(event, feature) {
-    const closestPoint = getExactClosestPointOf(
-      feature.getGeometry(),
-      event.coordinate
-    );
+    // We don't want unfilled polygons to be selectable by clicking inside them.
+    // To avoid this, we only take their linear rings into account
+    // when searching for their closest points.
+    // NOTE: We can apply this rule to all polygons, as the filled ones already
+    // come up when looking for exact matches using `map.forEachFeatureAtPixel`.
+    const geometry =
+      feature.getGeometry() instanceof Polygon
+        ? new MultiLineString(feature.getGeometry().getCoordinates())
+        : feature.getGeometry();
+
+    const closestPoint = getExactClosestPointOf(geometry, event.coordinate);
     const closestPixel = event.map.getPixelFromCoordinate(closestPoint);
     return euclideanDistance2D(event.pixel, closestPixel);
   }

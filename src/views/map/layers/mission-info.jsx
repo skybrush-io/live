@@ -740,7 +740,7 @@ const missionOriginMarker = (missionOrientation, missionOrigin) =>
       ]
     : [];
 
-const convexHullLine = (convexHull, selection) => {
+const convexHullPolygon = (convexHull, selection) => {
   if (convexHull) {
     const convexHullInMapCoordinates = convexHull.map((coord) =>
       mapViewCoordinateFromLonLat([coord.lon, coord.lat])
@@ -758,7 +758,7 @@ const convexHullLine = (convexHull, selection) => {
           missionConvexHullBaseStyle,
         ]}
       >
-        <geom.LineString coordinates={convexHullInMapCoordinates} />
+        <geom.Polygon coordinates={convexHullInMapCoordinates} />
       </Feature>,
     ];
   } else {
@@ -842,7 +842,7 @@ const MissionInfoVectorSource = ({
         returnToHomeItems
       ),
       missionOriginMarker(missionOrientation, missionOrigin),
-      convexHullLine(convexHull, selection),
+      convexHullPolygon(convexHull, selection),
       selectionTrajectoryFeatures(
         missionSlotIdsForTrajectories,
         uavIdsForTrajectories

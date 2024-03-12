@@ -398,15 +398,13 @@ export const addGeofencePolygon =
     const geofencePolygon = {
       label: 'Geofence',
       labelStyle: LabelStyle.HIDDEN,
-      /* use a line string as the geofence, not a polygon -- if we use a polygon,
-       * it means that any click inside the geofence would be considered as a
-       * "hit" for the geofence feature */
-      type: FeatureType.LINE_STRING,
+      type: FeatureType.POLYGON,
       owner,
       /* don't use a label; the geofence usually overlaps with the convex hull of
        * the show so it is confusing if the "Geofence" label appears in the middle
        * of the convex hull */
       color: Colors.geofence,
+      filled: false,
       points: simplifiedPoints.map(toLonLat),
     };
     const geofencePolygonId = getProposedIdForNewFeature(
