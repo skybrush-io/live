@@ -48,12 +48,11 @@ const hues = [
 const shades = ['700', '500', '300'];
 
 const pickerProps = {
-  // circleSpacing: 7,
   colors: hues
     .map((hue) => shades.map((shade) => hue[shade]))
     .concat([['#000000', '#808080', '#FFFFFF']]),
-  width: 490,
-  height: 176,
+  width: 450,
+  height: 170,
 };
 
 const SwatchesColorPicker = (props) => (

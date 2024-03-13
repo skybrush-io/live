@@ -84,11 +84,6 @@ kbd:hover * {
   color: white !important;
 }
 
-/* Color picker customization */
-.swatches-picker > div:first-child > div:first-child {
-  background: #222 !important;
-}
-
 /* The rest comes directly from the dark mode stylesheet of react-flexible-workbench */
 .lm_dragProxy .lm_content {
   box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9);

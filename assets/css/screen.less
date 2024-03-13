@@ -429,11 +429,13 @@ mark {
 
 /* Color picker customization */
 .swatches-picker.borderless {
-  & > div:first-child {
-    margin: -16px 0 -6px -16px;
+  & > div {
     & > div:first-child {
       background: transparent !important;
       box-shadow: none !important;
+    }
+    & > div:last-child > div > div {
+      padding: 0 !important;
     }
   }
 }
