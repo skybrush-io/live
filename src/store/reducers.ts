@@ -1,4 +1,9 @@
-import { combineReducers } from '@reduxjs/toolkit';
+import {
+  type AnyAction,
+  type Dispatch,
+  combineReducers,
+} from '@reduxjs/toolkit';
+import { type ReadonlyDeep } from 'type-fest';
 
 /**
  * Reducer functions for handling the part of the state object that stores the
@@ -51,6 +56,7 @@ import sidebarReducer from '~/features/sidebar/slice';
 import showReducer from '~/features/show/slice';
 import threeDReducer from '~/features/three-d/slice';
 import tourReducer from '~/features/tour/slice';
+import logDownloadReducer from '~/features/uavs/log-download';
 import uavReducer from '~/features/uavs/slice';
 import uploadReducer from '~/features/upload/slice';
 import uavControlReducer from '~/features/uav-control/slice';
@@ -96,6 +102,7 @@ const reducer = combineReducers({
   lightControl: lightControlReducer,
   localServer: localServerReducer,
   log: logReducer,
+  logDownload: logDownloadReducer,
   map: mapReducer,
   mapCaching: mapCachingReducer,
   measurement: measurementReducer,
@@ -123,7 +130,9 @@ const reducer = combineReducers({
 
 export default reducer;
 
-// TODO: Move to `ReturnType<typeof store.getState>;` according to
+// TODO: Move to `ReturnType<typeof store.getState>` and `typeof store.dispatch`
+// respectively, when `~/store/index` gets annotated, according to:
 // https://redux.js.org/usage/usage-with-typescript#define-root-state-and-dispatch-types
-// when `store/index` gets annotated.
 export type RootState = ReturnType<typeof reducer>;
+export type AppDispatch = Dispatch<AnyAction>;
+export type AppSelector<T> = (state: RootState) => ReadonlyDeep<T>;

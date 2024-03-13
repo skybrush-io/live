@@ -91,6 +91,7 @@ const ToastNotificationManager = ({ dispatch }) => {
       message,
       permanent = false,
       semantics = MessageSemantics.DEFAULT,
+      timeout,
       topic,
     }) => {
       const match = topic && toastStack.find((t) => t?.topic === topic);
@@ -99,6 +100,9 @@ const ToastNotificationManager = ({ dispatch }) => {
       const options = {
         appearance: semanticsToAppearance[semantics] || 'info',
         autoDismiss: !permanent,
+        // We don't want to override the default, and `undefined` is not ignored
+        // internally, so we only pass the parameter, if it's actually present
+        ...(timeout && { autoDismissTimeout: timeout }),
         topic,
       };
 

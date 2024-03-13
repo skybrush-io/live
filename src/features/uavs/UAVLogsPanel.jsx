@@ -1,20 +1,37 @@
 import isNil from 'lodash-es/isNil';
 import prettyBytes from 'pretty-bytes';
 import PropTypes from 'prop-types';
-import React, { memo, useCallback, useState } from 'react';
-import { useAsyncFn, useAsyncRetry } from 'react-use';
+import React, { memo, useCallback } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useAsyncRetry } from 'react-use';
 
 import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
 import ListItem from '@material-ui/core/ListItem';
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import ListItemText from '@material-ui/core/ListItemText';
 import { makeStyles } from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
 import Error from '@material-ui/icons/Error';
+import GetApp from '@material-ui/icons/GetApp';
+import Save from '@material-ui/icons/Save';
 
 import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
 import LargeProgressIndicator from '@skybrush/mui-components/lib/LargeProgressIndicator';
 import StatusLight from '@skybrush/mui-components/lib/StatusLight';
 
 import { listOf } from '~/components/helpers/lists';
+import { showNotification } from '~/features/snackbar/actions';
+import { MessageSemantics } from '~/features/snackbar/types';
+import {
+  getLogDownloadState,
+  initiateLogDownload,
+  LogDownloadStatus,
+  retrieveDownloadedLog,
+  setLogDownloadError,
+  setLogDownloadProgress,
+  storeDownloadedLog,
+} from '~/features/uavs/log-download';
 import useMessageHub from '~/hooks/useMessageHub';
 import { describeFlightLogKind } from '~/model/enums';
 import { convertFlightLogToBlob } from '~/model/flight-logs';
@@ -22,7 +39,6 @@ import { writeBlobToFile } from '~/utils/filesystem';
 import { formatUnixTimestamp } from '~/utils/formatting';
 
 import ListItemProgressBar from './ListItemProgressBar';
-import { Typography } from '@material-ui/core';
 
 const SEPARATOR = ' · ';
 
@@ -39,37 +55,61 @@ const useStyles = makeStyles(
   }
 );
 
-const UAVLogListItem = ({ id, kind, size, timestamp, uavId }) => {
-  const primaryParts = [];
-  const secondaryParts = [];
+const saveLogToFile = (log) => {
+  const { filename, blob } = convertFlightLogToBlob(log);
+  writeBlobToFile(blob, filename);
+};
 
+const UAVLogListItem = ({ id, kind, size, timestamp, uavId }) => {
   /* Hooks */
 
-  const classes = useStyles();
-  const [progress, setProgress] = useState(null);
+  const dispatch = useDispatch();
   const messageHub = useMessageHub();
+  const classes = useStyles();
 
-  const progressHandler = useCallback(({ progress }) => {
-    setProgress(progress);
-  }, []);
+  const downloadState = useSelector(getLogDownloadState(uavId, id));
+  const log = useSelector(retrieveDownloadedLog(uavId, id));
 
-  const [executionState, execute] = useAsyncFn(async () => {
-    const log = await messageHub.query.getFlightLog(uavId, id, {
-      onProgress: progressHandler,
-    });
+  const download = useCallback(() => {
+    dispatch(initiateLogDownload(uavId, id));
+    messageHub.query
+      .getFlightLog(uavId, id, {
+        onProgress({ progress }) {
+          dispatch(setLogDownloadProgress(uavId, id, progress));
+        },
+      })
+      .then((log) => {
+        dispatch(storeDownloadedLog(uavId, id, log));
+        dispatch(
+          showNotification({
+            message: `Log ${id} of UAV ${uavId} downloaded successfully.`,
+            semantics: MessageSemantics.SUCCESS,
+            buttons: [{ label: 'Save', action: () => saveLogToFile(log) }],
+            timeout: 20000,
+          })
+        );
+      })
+      .catch(({ message }) => {
+        dispatch(
+          showNotification({
+            message: `Couldn't donwload log ${id} of UAV ${uavId}: ${message}`,
+            semantics: MessageSemantics.ERROR,
+            buttons: [{ label: 'Retry', action: download }],
+            timeout: 20000,
+          })
+        );
+        dispatch(setLogDownloadError(uavId, id, message));
+      });
+  }, [dispatch, id, messageHub, uavId]);
 
-    // writeBlobToFile() returns a promise, but we don't return it ourselves
-    // because we want the async operation to be considered as finished when
-    // the download completes, not when the saving is completed.
-    setImmediate(() => {
-      const { filename, blob } = convertFlightLogToBlob(log);
-      writeBlobToFile(blob, filename);
-    });
-
-    return true;
-  }, [messageHub, uavId, id]);
+  const save = useCallback(() => {
+    saveLogToFile(log);
+  }, [log]);
 
   /* Display */
+
+  const primaryParts = [];
+  const secondaryParts = [];
 
   if (!isNil(id)) {
     primaryParts.push(id);
@@ -79,8 +119,8 @@ const UAVLogListItem = ({ id, kind, size, timestamp, uavId }) => {
     isNil(timestamp) ? 'Date unknown' : formatUnixTimestamp(timestamp)
   );
 
-  if (executionState.error) {
-    secondaryParts.push(executionState.error);
+  if (downloadState?.status === LogDownloadStatus.ERROR) {
+    secondaryParts.push(downloadState?.error);
   } else {
     secondaryParts.push(describeFlightLogKind(kind));
     if (!isNil(size)) {
@@ -88,29 +128,29 @@ const UAVLogListItem = ({ id, kind, size, timestamp, uavId }) => {
     }
   }
 
-  const secondaryComponent = executionState.loading ? (
-    <div className={classes.progress}>
-      <ListItemProgressBar progress={progress} />
-    </div>
-  ) : (
-    <Typography variant='body2' color='textSecondary'>
-      {secondaryParts.join(SEPARATOR)}
-    </Typography>
-  );
+  const secondaryComponent =
+    downloadState?.status === LogDownloadStatus.LOADING ? (
+      <div className={classes.progress}>
+        <ListItemProgressBar progress={downloadState.progress} />
+      </div>
+    ) : (
+      <Typography variant='body2' color='textSecondary'>
+        {secondaryParts.join(SEPARATOR)}
+      </Typography>
+    );
+
+  const disabled = downloadState?.status === LogDownloadStatus.LOADING;
+  const onClick = log ? save : download;
 
   return (
-    <ListItem button onClick={() => execute()}>
+    <ListItem button disabled={disabled} onClick={onClick}>
       <StatusLight
         status={
-          executionState.loading
-            ? 'next'
-            : executionState.error
-            ? 'error'
-            : isNil(executionState.value)
-            ? 'off'
-            : executionState.value
-            ? 'success'
-            : 'error'
+          {
+            [LogDownloadStatus.LOADING]: 'next',
+            [LogDownloadStatus.ERROR]: 'error',
+            [LogDownloadStatus.SUCCESS]: 'success',
+          }[downloadState?.status] ?? 'off'
         }
       />
       <ListItemText
@@ -122,6 +162,15 @@ const UAVLogListItem = ({ id, kind, size, timestamp, uavId }) => {
         }
         secondary={secondaryComponent}
       />
+      <ListItemSecondaryAction>
+        <IconButton edge='end' disabled={disabled} onClick={onClick}>
+          {downloadState?.status === LogDownloadStatus.SUCCESS ? (
+            <Save />
+          ) : (
+            <GetApp />
+          )}
+        </IconButton>
+      </ListItemSecondaryAction>
     </ListItem>
   );
 };
