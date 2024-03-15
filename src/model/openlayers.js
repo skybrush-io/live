@@ -230,6 +230,10 @@ function _handleFeatureUpdatesInOpenLayers(
       } else {
         // Some other origin (e.g., show origin). We don't handle it yet,
         // maybe later?
+        // NOTE: When / if the mission origin gets handled here, we have to
+        // account for the fact that the show convex hull outline can also be
+        // selected at the same time, and the transformation of both results in
+        // the offset and rotation getting applied twice in that case.
       }
 
       continue;

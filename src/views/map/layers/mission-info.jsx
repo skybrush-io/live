@@ -731,6 +731,7 @@ const missionOriginMarker = (missionOrientation, missionOrigin) =>
         <Feature
           key='missionOrigin'
           id={MISSION_ORIGIN_GLOBAL_ID}
+          properties={{ skipSelection: true }}
           style={createMissionOriginStyle(missionOrientation)}
         >
           <geom.Point
