@@ -17,19 +17,23 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import InputAdornment from '@material-ui/core/InputAdornment';
 
-import { createValidator, isEmpty, positive } from '~/utils/validation';
+import {
+  createValidator,
+  isEmpty,
+  optional,
+  positive,
+} from '~/utils/validation';
 
 import { getSafetySettings } from './selectors';
 import { updateSafetySettings } from './slice';
 
-const emptyOrPositive = (value) => !isEmpty(value) && positive(value);
 const toNullOrNumber = (value) => (isEmpty(value) ? null : Number(value));
 
 const validator = createValidator({
-  criticalBatteryVoltage: emptyOrPositive,
-  lowBatteryVoltage: emptyOrPositive,
-  returnToHomeAltitude: emptyOrPositive,
-  returnToHomeSpeed: emptyOrPositive,
+  criticalBatteryVoltage: optional(positive),
+  lowBatteryVoltage: optional(positive),
+  returnToHomeAltitude: optional(positive),
+  returnToHomeSpeed: optional(positive),
 });
 
 const fields = [
@@ -84,7 +88,7 @@ const SafetySettingsFormPresentation = ({ initialValues, onSubmit }) => (
                   <InputAdornment position='end'>{unit}</InputAdornment>
                 ),
                 inputProps: {
-                  inputmode: 'numeric',
+                  inputMode: 'numeric',
                 },
               }}
               variant='filled'

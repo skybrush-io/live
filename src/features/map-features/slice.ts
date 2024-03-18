@@ -209,6 +209,23 @@ const { actions, reducer } = createSlice({
       }
     },
 
+    updateFeatureAttributes(
+      state,
+      action: PayloadAction<{
+        id: FeatureProperties['id'];
+        attributes: Record<string, unknown>;
+      }>
+    ) {
+      const { id, attributes } = action.payload;
+      const feature = state.byId[id];
+
+      if (feature === undefined) {
+        console.warn(`Cannot set attributes of non-existent feature ${id}`);
+      } else {
+        feature.attributes = { ...feature.attributes, ...attributes };
+      }
+    },
+
     updateFeatureFillVisible(
       state,
       action: PayloadAction<{
@@ -304,6 +321,7 @@ export const {
   removeFeaturesByIds,
   renameFeature,
   setFeatureColor,
+  updateFeatureAttributes,
   updateFeatureFillVisible,
   updateFeatureMeasurementVisible,
   updateFeaturePointsVisible,

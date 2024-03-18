@@ -49,16 +49,15 @@ export enum LabelStyle {
   THIN_OUTLINE = 'thinOutline',
 }
 
-const propertiesForFeatureTypes: Record<
-  FeatureType,
-  {
-    name: string;
-    icon: React.ComponentType;
-    canBeMeasured: boolean;
-    hasInterior: boolean;
-    hasPoints: boolean;
-  }
-> = {
+type FeatureTypeProperties = {
+  name: string;
+  icon: React.ComponentType;
+  canBeMeasured: boolean;
+  hasInterior: boolean;
+  hasPoints: boolean;
+};
+
+const propertiesForFeatureTypes: Record<FeatureType, FeatureTypeProperties> = {
   [FeatureType.CIRCLE]: {
     name: 'Circle',
     icon: PanoramaFishEye,

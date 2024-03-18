@@ -26,10 +26,12 @@ import {
 } from '~/utils/geography';
 import {
   getEndRatioOfPartialMission,
+  getExclusionZonePolygons,
   getGlobalMissionCompletionRatio,
 } from './selectors';
 
 export const ParameterUIContext = {
+  EXCLUSION_ZONE_POLYGONS: 'exclusionZonePolygons',
   NET_MISSION_END_RATIO: 'netMissionEndRatio',
   NET_MISSION_START_RATIO: 'netMissionStartRatio',
   SELECTED_COORDINATE: 'selectedCoordinate',
@@ -47,6 +49,7 @@ export const ContextVolatility = {
 };
 
 export const contextVolatilities = {
+  [ParameterUIContext.EXCLUSION_ZONE_POLYGONS]: ContextVolatility.DYNAMIC,
   [ParameterUIContext.NET_MISSION_END_RATIO]: ContextVolatility.DYNAMIC,
   [ParameterUIContext.NET_MISSION_START_RATIO]: ContextVolatility.DYNAMIC,
   [ParameterUIContext.SELECTED_COORDINATE]: ContextVolatility.DYNAMIC,
@@ -96,6 +99,29 @@ function assign(result, keys, value) {
   for (const key of keys) {
     result[key] = value;
   }
+}
+
+/**
+ * Extracts the list of polygons that are marked as exclusion zones and assigns
+ * this value to the listed variables in the result object.
+ */
+function extractExclusionZonePolygonsFromContext(
+  result,
+  parameterNames,
+  getState
+) {
+  const state = getState();
+  assign(
+    result,
+    parameterNames,
+    getExclusionZonePolygons(state).map(({ attributes, points }) => ({
+      points: points.map(toScaledJSONFromLonLat),
+      altitude: {
+        min: attributes?.minAltitude,
+        max: attributes?.maxAltitude,
+      },
+    }))
+  );
 }
 
 /**
@@ -245,6 +271,8 @@ function extractSelectedCoordinateFromContext(
 }
 
 const contextHandlers = {
+  [ParameterUIContext.EXCLUSION_ZONE_POLYGONS]:
+    extractExclusionZonePolygonsFromContext,
   [ParameterUIContext.NET_MISSION_END_RATIO]:
     extractNetMissionEndRatioFromContext,
   [ParameterUIContext.NET_MISSION_START_RATIO]:

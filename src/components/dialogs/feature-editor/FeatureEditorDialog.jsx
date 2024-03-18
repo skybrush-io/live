@@ -22,6 +22,13 @@ import {
 } from '~/features/map-features/selectors';
 import { removeFeaturesByIds } from '~/features/map-features/slice';
 
+import {
+  FeatureEditorDialogTab,
+  featureEditorDialogTabs,
+  labelForFeatureEditorDialogTab,
+} from '~/features/map-features/types';
+
+import FeatureAttributesForm from './FeatureAttributesForm';
 import FeaturePointsForm from './FeaturePointsForm';
 import GeneralPropertiesForm from './GeneralPropertiesForm';
 
@@ -35,35 +42,20 @@ const FeatureEditorDialogPresentation = (props) => {
     open,
     selectedTab,
   } = props;
-  const actions = [];
-  let content;
 
-  if (!feature) {
-    content = (
-      <DialogContent>
-        <p>Feature does not exist</p>
-      </DialogContent>
-    );
-  } else {
-    switch (selectedTab) {
-      case 'general':
-        content = (
-          <DialogContent>
-            <GeneralPropertiesForm feature={feature} featureId={featureId} />
-          </DialogContent>
-        );
-        break;
+  const SelectedTab = {
+    [FeatureEditorDialogTab.GENERAL]: GeneralPropertiesForm,
+    [FeatureEditorDialogTab.ATTRIBUTES]: FeatureAttributesForm,
+    [FeatureEditorDialogTab.POINTS]: FeaturePointsForm,
+  }[selectedTab];
 
-      default:
-        content = (
-          <DialogContent>
-            <FeaturePointsForm feature={feature} featureId={featureId} />
-          </DialogContent>
-        );
-    }
-  }
+  const content = feature ? (
+    SelectedTab && <SelectedTab feature={feature} featureId={featureId} />
+  ) : (
+    <p>Feature does not exist</p>
+  );
 
-  actions.push(
+  const actions = [
     <Button
       key='remove'
       color='secondary'
@@ -74,16 +66,28 @@ const FeatureEditorDialogPresentation = (props) => {
     </Button>,
     <Button key='close' onClick={onClose}>
       Close
-    </Button>
-  );
+    </Button>,
+  ];
 
   return (
     <Dialog fullWidth open={open} maxWidth='sm' onClose={onClose}>
       <DialogTabs value={selectedTab} onChange={onTabSelected}>
-        <Tab value='general' label='General' />
-        {/* <Tab value='points' label='Points' /> */}
+        {featureEditorDialogTabs.map((tab) => (
+          <Tab
+            key={tab}
+            value={tab}
+            label={labelForFeatureEditorDialogTab[tab]}
+          />
+        ))}
       </DialogTabs>
-      {content}
+      <DialogContent
+        style={{
+          // Prevent the dialog height from jumping when switching between tabs
+          height: 325,
+        }}
+      >
+        {content}
+      </DialogContent>
       <DialogActions>{actions}</DialogActions>
     </Dialog>
   );
@@ -96,11 +100,11 @@ FeatureEditorDialogPresentation.propTypes = {
   onRemoveFeature: PropTypes.func,
   onTabSelected: PropTypes.func,
   open: PropTypes.bool.isRequired,
-  selectedTab: PropTypes.string,
+  selectedTab: PropTypes.oneOf(Object.values(FeatureEditorDialogTab)),
 };
 
 FeatureEditorDialogPresentation.defaultProps = {
-  selectedTab: 'general',
+  selectedTab: FeatureEditorDialogTab.GENERAL,
 };
 
 /**

@@ -1,12 +1,6 @@
 import { produce } from 'immer';
 import { CANCEL } from 'redux-saga';
 
-import {
-  getGeofenceActionWithValidation,
-  getGeofencePolygonInWorldCoordinates,
-  getMissionItemsInOrder,
-  getMissionName,
-} from '~/features/mission/selectors';
 import { GeofenceAction } from '~/features/safety/model';
 import {
   getSafetySettings,
@@ -19,6 +13,13 @@ import { MissionItemType } from '~/model/missions';
 import { toScaledJSONFromLonLat } from '~/utils/geography';
 
 import { JOB_TYPE } from './constants';
+import {
+  getExclusionZonePolygons,
+  getGeofenceActionWithValidation,
+  getGeofencePolygonInWorldCoordinates,
+  getMissionItemsInOrder,
+  getMissionName,
+} from './selectors';
 
 /**
  * Handles a mission item upload session to a single drone. Returns a promise that
@@ -103,6 +104,7 @@ export const getMissionItemUploadJobPayload = (state) => ({
 const getGeofenceSpecificationForWaypointMission = (state) => {
   const geofenceAction = getGeofenceActionWithValidation(state);
   const geofencePolygon = getGeofencePolygonInWorldCoordinates(state);
+  const exclusionZonePolygons = getExclusionZonePolygons(state);
   const geofence = {
     version: 1,
     enabled: true,
@@ -112,6 +114,14 @@ const getGeofenceSpecificationForWaypointMission = (state) => {
             isInclusion: true,
             points: geofencePolygon.map(toScaledJSONFromLonLat),
           },
+          ...exclusionZonePolygons.map(({ attributes, points }) => ({
+            isInclusion: false,
+            points: points.map(toScaledJSONFromLonLat),
+            altitude: {
+              min: attributes?.minAltitude,
+              max: attributes?.maxAltitude,
+            },
+          })),
         ]
       : [],
     rallyPoints: [],

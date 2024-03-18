@@ -21,13 +21,29 @@ export const isEmpty = (value: Value): boolean =>
  *
  * @param value - The value to validate
  * @returns Undefined if the value passes the validator,
- *         an error message otherwise
+ *          an error message otherwise
  */
 export const required: Rule = (value: Value) => {
   if (isEmpty(value)) {
     return 'Value is required';
   }
 };
+
+/**
+ * Modifies a rule, such that it is only enforced if the value is not empty.
+ *
+ * @param rule - The original validator
+ * @returns A modified version, which also accepts empty values
+ */
+export const optional =
+  (rule: Rule): Rule =>
+  /**
+   * @param value - The value to validate
+   * @returns Undefined if the value is empty or passes the validator,
+   *          an error message otherwise
+   */
+  (value: Value) =>
+    isEmpty(value) ? undefined : rule(value);
 
 /**
  * Checks that the given value is a number (or can be parsed as a number).

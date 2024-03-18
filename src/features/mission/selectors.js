@@ -7,7 +7,10 @@ import { createSelector } from '@reduxjs/toolkit';
 import turfContains from '@turf/boolean-contains';
 import * as TurfHelpers from '@turf/helpers';
 
-import { getFeaturesByIds } from '~/features/map-features/selectors';
+import {
+  getFeaturesByIds,
+  getFeaturesInOrder,
+} from '~/features/map-features/selectors';
 import { GeofenceAction, isValidGeofenceAction } from '~/features/safety/model';
 import {
   globalIdToMissionItemId,
@@ -353,6 +356,11 @@ export const hasActiveGeofencePolygon = createSelector(
   (geofencePolygonId, featuresById) =>
     geofencePolygonId !== undefined &&
     featuresById[geofencePolygonId] !== undefined
+);
+
+export const getExclusionZonePolygons = createSelector(
+  getFeaturesInOrder,
+  (featuresInOrder) => featuresInOrder.filter((f) => f.attributes?.isExclusion)
 );
 
 export const getItemIndexRangeForSelectedMissionItems = createSelector(

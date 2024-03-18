@@ -6,12 +6,12 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import { type ReadonlyDeep } from 'type-fest';
 
-import { FeatureEditorTab, type FeatureProperties } from './types';
+import { FeatureEditorDialogTab, type FeatureProperties } from './types';
 
 type FeatureEditorSliceState = ReadonlyDeep<{
   dialogVisible: boolean;
   featureId?: FeatureProperties['id'];
-  selectedTab: FeatureEditorTab;
+  selectedTab: FeatureEditorDialogTab;
 }>;
 
 /**
@@ -20,7 +20,7 @@ type FeatureEditorSliceState = ReadonlyDeep<{
 const initialState: FeatureEditorSliceState = {
   dialogVisible: false,
   featureId: undefined,
-  selectedTab: FeatureEditorTab.GENERAL,
+  selectedTab: FeatureEditorDialogTab.GENERAL,
 };
 
 /**
@@ -42,7 +42,10 @@ const { reducer, actions } = createSlice({
       state.featureId = action.payload;
     },
 
-    setFeatureEditorDialogTab(state, action: PayloadAction<FeatureEditorTab>) {
+    setFeatureEditorDialogTab(
+      state,
+      action: PayloadAction<FeatureEditorDialogTab>
+    ) {
       state.selectedTab = action.payload;
     },
   },

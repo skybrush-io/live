@@ -3,6 +3,7 @@ import unary from 'lodash-es/unary';
 import PropTypes from 'prop-types';
 import { MultiPoint, MultiPolygon, Polygon } from 'ol/geom';
 import { Circle, Style, Text } from 'ol/style';
+import FillPattern from 'ol-ext/style/FillPattern';
 import React from 'react';
 import { connect } from 'react-redux';
 
@@ -167,6 +168,7 @@ const styleForFeature = (
       break;
 
     case FeatureType.POLYGON:
+      // Dotted outline for holes
       styles.push(
         new Style({
           stroke: dottedThinOutline(parsedColor.rgb().array()),
@@ -186,7 +188,7 @@ const styleForFeature = (
     // Fallthrough
 
     default:
-      if (filled) {
+      if (filled && !feature?.attributes?.isExclusion) {
         styles.push(
           new Style({
             fill: fill(
@@ -195,6 +197,27 @@ const styleForFeature = (
                 .rgb()
                 .array()
             ),
+          })
+        );
+      }
+
+      // Striped fill for exclusion zones
+      if (feature?.attributes?.isExclusion) {
+        styles.push(
+          new Style({
+            fill: new FillPattern({
+              pattern: 'hatch',
+              color: parsedColor
+                .fade(isSelected ? 0.5 : 0.75)
+                .rgb()
+                .array(),
+              size: 10,
+              spacing: 20,
+              angle: 45,
+            }),
+            // Exclusion zones are likely to overlap with other features, so
+            // they are raised to the top in order to be more easily selectable
+            zIndex: 1,
           })
         );
       }
