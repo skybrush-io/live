@@ -140,6 +140,22 @@ export const getSingleSelectedFeatureIdAsArray = createSelector(
 );
 
 /**
+ * Selector that retrieves the list of selected features from the state object.
+ *
+ * @param  {Object}  state  the state of the application
+ * @return {string[]}  the list of selected features
+ */
+export const getSelectedFeatures = createSelector(
+  getSelectedFeatureIds,
+  (state) => state.features.byId,
+  (featureIds, features) =>
+    reject(
+      featureIds.map((featureId) => features[featureId]),
+      isNil
+    )
+);
+
+/**
  * Selector that retrieves the list of the labels of the selected features
  * from the state object.
  *
@@ -147,13 +163,8 @@ export const getSingleSelectedFeatureIdAsArray = createSelector(
  * @return {string[]}  the list of selected feature labels
  */
 export const getSelectedFeatureLabels = createSelector(
-  getSelectedFeatureIds,
-  (state) => state.features.byId,
-  (featureIds, features) =>
-    reject(
-      featureIds.map((featureId) => features[featureId]),
-      isNil
-    ).map((feature) => feature.label)
+  getSelectedFeatures,
+  (features) => features.map((feature) => feature.label)
 );
 
 /**
@@ -164,11 +175,6 @@ export const getSelectedFeatureLabels = createSelector(
  * @return {string[]}  the list of selected feature types
  */
 export const getSelectedFeatureTypes = createSelector(
-  getSelectedFeatureIds,
-  (state) => state.features.byId,
-  (featureIds, features) =>
-    reject(
-      featureIds.map((featureId) => features[featureId]),
-      isNil
-    ).map((feature) => feature.type)
+  getSelectedFeatures,
+  (features) => features.map((feature) => feature.type)
 );

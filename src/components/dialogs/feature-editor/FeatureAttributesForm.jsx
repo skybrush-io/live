@@ -22,9 +22,9 @@ const FeatureAttributesForm = ({ feature, onSetFeatureAttributes }) => {
             minAltitude: optional(positive),
             maxAltitude: optional(positive),
           })}
-          onSubmit={({ isExclusion, minAltitude, maxAltitude }) => {
+          onSubmit={({ isExclusionZone, minAltitude, maxAltitude }) => {
             onSetFeatureAttributes({
-              isExclusion,
+              isExclusionZone,
               minAltitude: Number(minAltitude) || undefined,
               maxAltitude: Number(maxAltitude) || undefined,
             });
@@ -33,7 +33,7 @@ const FeatureAttributesForm = ({ feature, onSetFeatureAttributes }) => {
           {({ form, values }) => (
             <div>
               <Checkboxes
-                name='isExclusion'
+                name='isExclusionZone'
                 data={{ label: 'Exclusion zone' }}
               />
               <FormHelperText style={{ marginTop: -8, marginBottom: 8 }}>
@@ -44,7 +44,7 @@ const FeatureAttributesForm = ({ feature, onSetFeatureAttributes }) => {
               <TextField
                 name='minAltitude'
                 label='Min AGL altitude'
-                disabled={!values.isExclusion}
+                disabled={!values.isExclusionZone}
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position='end'>m</InputAdornment>
@@ -62,7 +62,7 @@ const FeatureAttributesForm = ({ feature, onSetFeatureAttributes }) => {
               <TextField
                 name='maxAltitude'
                 label='Max AGL altitude'
-                disabled={!values.isExclusion}
+                disabled={!values.isExclusionZone}
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position='end'>m</InputAdornment>

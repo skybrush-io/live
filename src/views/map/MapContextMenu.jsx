@@ -14,6 +14,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Add from '@material-ui/icons/Add';
 import ActionDelete from '@material-ui/icons/Delete';
 import Assignment from '@material-ui/icons/Assignment';
+import Block from '@material-ui/icons/Block';
 import ContentCut from '~/icons/ContentCut';
 import Edit from '@material-ui/icons/Edit';
 import Flight from '@material-ui/icons/Flight';
@@ -31,6 +32,8 @@ import { createSelector } from '@reduxjs/toolkit';
 
 import ContextMenu from '~/components/ContextMenu';
 import Bolt from '~/icons/Bolt';
+import Fence from '~/icons/PlacesFence';
+import { FeatureType } from '~/model/features';
 import { hasFeature } from '~/utils/configuration';
 import * as messaging from '~/utils/messaging';
 
@@ -39,12 +42,11 @@ import {
   cutFeature,
   showFeatureEditorDialog,
 } from '~/features/map-features/actions';
+import { getSelectedFeatures } from '~/features/map-features/selectors';
 import {
-  getSelectedFeatureIds,
-  getSelectedFeatureLabels,
-  getSelectedFeatureTypes,
-} from '~/features/map-features/selectors';
-import { removeFeaturesByIds } from '~/features/map-features/slice';
+  removeFeaturesByIds,
+  updateFeatureAttributes,
+} from '~/features/map-features/slice';
 import { addNewWaypointMissionItem } from '~/features/mission/actions';
 import {
   clearGeofencePolygonId,
@@ -65,6 +67,7 @@ class MapContextMenu extends React.Component {
     addPointToMission: PropTypes.func,
     clearGeofencePolygonId: PropTypes.func,
     contextProvider: PropTypes.func,
+    cutFeature: PropTypes.func,
     editFeature: PropTypes.func,
     openUAVDetailsDialog: PropTypes.func,
     removeFeaturesByIds: PropTypes.func,
@@ -72,6 +75,7 @@ class MapContextMenu extends React.Component {
     setMapCoordinateSystemOrigin: PropTypes.func,
     setShowCoordinateSystemOrigin: PropTypes.func,
     showFlyToTargetDialog: PropTypes.func,
+    updateFeatureAttributes: PropTypes.func,
   };
 
   constructor() {
@@ -101,21 +105,12 @@ class MapContextMenu extends React.Component {
         ref={this._contextMenu}
         contextProvider={this.props.contextProvider}
       >
-        {({
-          selectedFeatureIds,
-          selectedFeatureLabels,
-          selectedFeatureTypes,
-          selectedUAVIds,
-          geofencePolygonId,
-        }) => {
+        {({ selectedFeatures, selectedUAVIds, geofencePolygonId }) => {
           const result = [];
-          const hasSelectedUAVs = selectedUAVIds && selectedUAVIds.length > 0;
-          const hasSingleSelectedFeature =
-            selectedFeatureIds && selectedFeatureIds.length === 1;
-          const hasSingleSelectedUAV =
-            selectedUAVIds && selectedUAVIds.length === 1;
-          const hasSelectedFeatures =
-            selectedFeatureIds && selectedFeatureIds.length > 0;
+          const hasSelectedFeatures = selectedFeatures?.length > 0;
+          const hasSingleSelectedFeature = selectedFeatures?.length === 1;
+          const hasSelectedUAVs = selectedUAVIds?.length > 0;
+          const hasSingleSelectedUAV = selectedUAVIds?.length === 1;
 
           if (hasSelectedUAVs) {
             result.push(
@@ -178,7 +173,7 @@ class MapContextMenu extends React.Component {
                 <ListItemIcon>
                   <Assignment />
                 </ListItemIcon>
-                Properties...
+                Details...
               </MenuItem>,
               <Divider key='div3' />,
               <MenuItem key='wakeUp' dense onClick={this._wakeUpSelectedUAVs}>
@@ -259,16 +254,12 @@ class MapContextMenu extends React.Component {
           }
 
           if (hasSingleSelectedFeature) {
-            const geofenceCompatibleFeatureTypes = [
-              /* 'circle', */
-              'lineString',
-              'polygon',
-            ];
-
-            const featureSuitableForGeofence =
-              geofenceCompatibleFeatureTypes.includes(selectedFeatureTypes[0]);
+            const featureSuitableForGeofence = [
+              // FeatureType.CIRCLE,
+              FeatureType.POLYGON,
+            ].includes(selectedFeatures[0].type);
             const isCurrentGeofence =
-              selectedFeatureIds[0] === geofencePolygonId;
+              selectedFeatures[0].id === geofencePolygonId;
             result.push(
               <Divider key='div5' />,
               <MenuItem
@@ -281,24 +272,51 @@ class MapContextMenu extends React.Component {
                     : this._setSelectedFeatureAsGeofence
                 }
               >
-                <ListItemIcon>{null}</ListItemIcon>
+                <ListItemIcon>
+                  <Fence color={isCurrentGeofence ? 'disabled' : 'action'} />
+                </ListItemIcon>
                 {isCurrentGeofence ? 'Clear geofence' : 'Use as geofence'}
+              </MenuItem>
+            );
+
+            const featureSuitableForExclusionZone = [
+              FeatureType.POLYGON,
+            ].includes(selectedFeatures[0].type);
+            const isExclusionZone =
+              selectedFeatures[0].attributes?.isExclusionZone;
+            result.push(
+              <MenuItem
+                key='exclusionZone'
+                dense
+                disabled={!featureSuitableForExclusionZone}
+                onClick={
+                  isExclusionZone
+                    ? this._unsetSelectedFeatureAsExclusionZone
+                    : this._setSelectedFeatureAsExclusionZone
+                }
+              >
+                <ListItemIcon>
+                  <Block color={isExclusionZone ? 'disabled' : 'action'} />
+                </ListItemIcon>
+                {isExclusionZone
+                  ? 'Clear exclusion zone'
+                  : 'Use as exclusion zone'}
               </MenuItem>
             );
           }
 
           if (
             hasSelectedFeatures &&
-            selectedFeatureIds.length === 2 &&
-            selectedFeatureTypes.every((t) => t === 'polygon')
+            selectedFeatures.length === 2 &&
+            selectedFeatures.every((t) => t.type === FeatureType.POLYGON)
           ) {
             result.push(
               <MenuItem key='cut' dense onClick={this._cutSelectedFeatures}>
                 <ListItemIcon>
                   <ContentCut />
                 </ListItemIcon>
-                Subtract {selectedFeatureLabels[0] ?? 'unnamed polygon'} from{' '}
-                {selectedFeatureLabels[1] ?? 'unnamed polygon'}
+                Subtract {selectedFeatures[0].label ?? 'unnamed polygon'} from{' '}
+                {selectedFeatures[1].label ?? 'unnamed polygon'}
               </MenuItem>
             );
           }
@@ -309,9 +327,7 @@ class MapContextMenu extends React.Component {
               <MenuItem
                 key='setProperties'
                 dense
-                disabled={
-                  !selectedFeatureIds || selectedFeatureIds.length !== 1
-                }
+                disabled={!hasSingleSelectedFeature}
                 onClick={this._editSelectedFeature}
               >
                 <ListItemIcon>
@@ -322,9 +338,7 @@ class MapContextMenu extends React.Component {
               <MenuItem
                 key='remove'
                 dense
-                disabled={
-                  !selectedFeatureIds || selectedFeatureIds.length === 0
-                }
+                disabled={!hasSelectedFeatures}
                 onClick={this._removeSelectedFeatures}
               >
                 <ListItemIcon>
@@ -368,19 +382,20 @@ class MapContextMenu extends React.Component {
 
   _cutSelectedFeatures = (_event, context) => {
     const { cutFeature } = this.props;
-    const { selectedFeatureIds } = context;
+    const { selectedFeatures } = context;
 
-    cutFeature(selectedFeatureIds[1], selectedFeatureIds[0]);
+    if (cutFeature) {
+      cutFeature(selectedFeatures[1].id, selectedFeatures[0].id);
+    }
   };
 
   _editSelectedFeature = (_event, context) => {
     const { editFeature } = this.props;
-    const { selectedFeatureIds } = context;
-    if (!editFeature || selectedFeatureIds.length !== 1) {
-      return;
-    }
+    const { selectedFeatures } = context;
 
-    editFeature(selectedFeatureIds[0]);
+    if (editFeature) {
+      editFeature(selectedFeatures[0].id);
+    }
   };
 
   _takeoffSelectedUAVs = (_event, context) => {
@@ -407,13 +422,35 @@ class MapContextMenu extends React.Component {
 
   _setSelectedFeatureAsGeofence = (_event, context) => {
     const { setGeofencePolygonId } = this.props;
-    const { selectedFeatureIds } = context;
+    const { selectedFeatures } = context;
 
     if (setGeofencePolygonId) {
-      setGeofencePolygonId(selectedFeatureIds[0]);
+      setGeofencePolygonId(selectedFeatures[0].id);
     }
+  };
 
-    // this.props.setFeatureAsGeofence(selectedFeatureIds[0]);
+  _unsetSelectedFeatureAsExclusionZone = (_event, context) => {
+    const { updateFeatureAttributes } = this.props;
+    const { selectedFeatures } = context;
+
+    if (updateFeatureAttributes) {
+      updateFeatureAttributes({
+        id: selectedFeatures[0].id,
+        attributes: { isExclusionZone: false },
+      });
+    }
+  };
+
+  _setSelectedFeatureAsExclusionZone = (_event, context) => {
+    const { updateFeatureAttributes } = this.props;
+    const { selectedFeatures } = context;
+
+    if (updateFeatureAttributes) {
+      updateFeatureAttributes({
+        id: selectedFeatures[0].id,
+        attributes: { isExclusionZone: true },
+      });
+    }
   };
 
   _openDetailsDialogForSelectedUAVs = (_event, context) => {
@@ -426,11 +463,11 @@ class MapContextMenu extends React.Component {
   };
 
   _removeSelectedFeatures = (_event, context) => {
-    const { selectedFeatureIds } = context;
+    const { selectedFeatures } = context;
     const { removeFeaturesByIds } = this.props;
 
     if (removeFeaturesByIds) {
-      removeFeaturesByIds(selectedFeatureIds);
+      removeFeaturesByIds(selectedFeatures.map((feature) => feature.id));
     }
   };
 
@@ -480,26 +517,15 @@ const hasGeofence = hasFeature('geofence');
 const hasShowControl = hasFeature('showControl');
 
 const getContextProvider = createSelector(
-  getSelectedFeatureIds,
-  getSelectedFeatureLabels,
-  getSelectedFeatureTypes,
+  getSelectedFeatures,
   getSelectedUAVIds,
   getGeofencePolygonId,
-  (
-      selectedFeatureIds,
-      selectedFeatureLabels,
-      selectedFeatureTypes,
-      selectedUAVIds,
-      geofencePolygonId
-    ) =>
-    (context) => ({
-      selectedFeatureIds,
-      selectedFeatureLabels,
-      selectedFeatureTypes,
-      selectedUAVIds,
-      geofencePolygonId,
-      ...context,
-    })
+  (selectedFeatures, selectedUAVIds, geofencePolygonId) => (context) => ({
+    selectedFeatures,
+    selectedUAVIds,
+    geofencePolygonId,
+    ...context,
+  })
 );
 
 const MapContextMenuContainer = connect(
@@ -522,6 +548,7 @@ const MapContextMenuContainer = connect(
           updateOutdoorShowSettings({ origin: coords, setupMission: true })
       : null,
     showFlyToTargetDialog: openFlyToTargetDialogWithCoordinate,
+    updateFeatureAttributes,
   },
   null,
   { forwardRef: true }

@@ -188,7 +188,7 @@ const styleForFeature = (
     // Fallthrough
 
     default:
-      if (filled && !feature?.attributes?.isExclusion) {
+      if (filled && !feature?.attributes?.isExclusionZone) {
         styles.push(
           new Style({
             fill: fill(
@@ -202,7 +202,7 @@ const styleForFeature = (
       }
 
       // Striped fill for exclusion zones
-      if (feature?.attributes?.isExclusion) {
+      if (feature?.attributes?.isExclusionZone) {
         styles.push(
           new Style({
             fill: new FillPattern({
