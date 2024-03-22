@@ -6,10 +6,9 @@ import { connect } from 'react-redux';
 
 import PersonIcon from '@material-ui/icons/Person';
 
-import Tooltip from '@skybrush/mui-components/lib/Tooltip';
+import GenericHeaderButton from '@skybrush/mui-components/lib/GenericHeaderButton';
 
-import AuthenticationStatusBadge from '../badges/AuthenticationStatusBadge';
-
+import AuthenticationStatusBadge from '~/components/badges/AuthenticationStatusBadge';
 import {
   showAuthenticationDialog,
   showDeauthenticationDialog,
@@ -23,31 +22,25 @@ import {
 const AuthenticationButtonPresentation = ({
   isAuthenticated,
   isDisabled,
-  label,
   onAuthenticate,
   onDeauthenticate,
   t,
 }) => (
-  <Tooltip content={t('authentication')}>
-    <div
-      className={clsx('wb-module', isDisabled && 'wb-module-disabled')}
-      onClick={
-        isDisabled ? null : isAuthenticated ? onDeauthenticate : onAuthenticate
-      }
-    >
-      <span className={clsx('wb-icon', 'wb-module-icon')}>
-        <AuthenticationStatusBadge />
-        <PersonIcon />
-      </span>
-      {label ? <span className='wb-label wb-module-label'>{label}</span> : null}
-    </div>
-  </Tooltip>
+  <GenericHeaderButton
+    tooltip={t('authentication')}
+    disabled={isDisabled}
+    onClick={
+      isDisabled ? null : isAuthenticated ? onDeauthenticate : onAuthenticate
+    }
+  >
+    <AuthenticationStatusBadge />
+    <PersonIcon />
+  </GenericHeaderButton>
 );
 
 AuthenticationButtonPresentation.propTypes = {
   isAuthenticated: PropTypes.bool,
   isDisabled: PropTypes.bool,
-  label: PropTypes.string,
   onAuthenticate: PropTypes.func,
   onDeauthenticate: PropTypes.func,
   t: PropTypes.func,
