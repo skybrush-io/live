@@ -360,7 +360,8 @@ export const hasActiveGeofencePolygon = createSelector(
 
 export const getExclusionZonePolygons = createSelector(
   getFeaturesInOrder,
-  (featuresInOrder) => featuresInOrder.filter((f) => f.attributes?.isExclusion)
+  (featuresInOrder) =>
+    featuresInOrder.filter((f) => f.attributes?.isExclusionZone)
 );
 
 export const getItemIndexRangeForSelectedMissionItems = createSelector(
