@@ -2,28 +2,41 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 
+import Box from '@material-ui/core/Box';
+import Button from '@material-ui/core/Button';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
+import FormHelperText from '@material-ui/core/FormHelperText';
 import Switch from '@material-ui/core/Switch';
 import TextField from '@material-ui/core/TextField';
 
+import SettingsBackupRestore from '@material-ui/icons/SettingsBackupRestore';
+
 import SwatchesColorPicker from '~/components/SwatchesColorPicker';
-import { shouldShowPointsOfFeature } from '~/features/map-features/selectors';
+import {
+  shouldFillFeature,
+  shouldShowPointsOfFeature,
+  suggestedColorForFeature,
+} from '~/features/map-features/selectors-style-suggestions';
 import {
   renameFeature,
   setFeatureColor,
-  updateFeatureFillVisible,
-  updateFeatureMeasurementVisible,
-  updateFeaturePointsVisible,
+  toggleFeatureFillVisible,
+  toggleFeatureMeasurementVisible,
+  toggleFeaturePointsVisible,
   updateFeatureVisibility,
 } from '~/features/map-features/slice';
 import { shouldOptimizeUIForTouch } from '~/features/settings/selectors';
-import { primaryColor } from '~/utils/styles';
 import {
   featureTypeCanBeMeasured,
   featureTypeHasInterior,
   featureTypeHasPoints,
 } from '~/model/features';
+import {
+  CheckBox,
+  CheckBoxOutlineBlank,
+  IndeterminateCheckBox,
+} from '@material-ui/icons';
 
 const GeneralPropertiesForm = ({
   feature,
@@ -34,11 +47,13 @@ const GeneralPropertiesForm = ({
   onToggleFeaturePointsVisible,
   onToggleFeatureVisibility,
   optimizeUIForTouch,
+  shouldFill,
   shouldShowPoints,
+  suggestedColor,
 }) => (
   <div>
-    <div style={{ display: 'flex', padding: '1em 0' }}>
-      <div style={{ flex: 'auto' }}>
+    <Box display='flex' alignItems='center' py='1em'>
+      <Box flex='auto'>
         <TextField
           fullWidth
           autoFocus={!optimizeUIForTouch}
@@ -47,24 +62,36 @@ const GeneralPropertiesForm = ({
           value={feature.label || ''}
           onChange={onSetFeatureLabel}
         />
-      </div>
+      </Box>
       <Switch
         checked={feature.visible}
         color='primary'
-        style={{ flex: 'none' }}
         onChange={onToggleFeatureVisibility}
       />
-    </div>
-    <SwatchesColorPicker
-      color={feature.color || primaryColor}
-      onChangeComplete={onSetFeatureColor}
-    />
+    </Box>
+    <Box display='flex'>
+      <SwatchesColorPicker
+        styles={{ default: { picker: { flexShrink: 0 } } }}
+        color={feature.color ?? suggestedColor}
+        onChangeComplete={onSetFeatureColor}
+      />
+      <Button
+        disabled={feature.color === undefined}
+        onClick={() => onSetFeatureColor()}
+      >
+        <div>
+          <SettingsBackupRestore />
+          Automatic color
+        </div>
+      </Button>
+    </Box>
     <div>
       {featureTypeHasInterior(feature.type) && (
         <FormControlLabel
           control={
             <Checkbox
-              checked={feature.filled}
+              checked={feature.filled ?? shouldFill}
+              indeterminate={feature.filled === undefined}
               color='primary'
               onChange={onToggleFeatureFillVisible}
             />
@@ -76,8 +103,8 @@ const GeneralPropertiesForm = ({
         <FormControlLabel
           control={
             <Checkbox
-              checked={shouldShowPoints}
-              indeterminate={shouldShowPoints && !feature.showPoints}
+              checked={feature.showPoints ?? shouldShowPoints}
+              indeterminate={feature.showPoints === undefined}
               color='primary'
               onChange={onToggleFeaturePointsVisible}
             />
@@ -90,6 +117,7 @@ const GeneralPropertiesForm = ({
           control={
             <Checkbox
               checked={feature.measure}
+              indeterminate={feature.measure === undefined}
               color='primary'
               onChange={onToggleFeatureMeasurementVisible}
             />
@@ -98,6 +126,21 @@ const GeneralPropertiesForm = ({
         />
       )}
     </div>
+    {(() => {
+      const iconProps = {
+        fontSize: 'inherit',
+        style: { verticalAlign: 'text-top' },
+      };
+
+      return (
+        <FormHelperText style={{ marginTop: -8 }}>
+          Click to cycle between automatic (
+          <IndeterminateCheckBox {...iconProps} />
+          ), enabled (<CheckBox {...iconProps} />) and disabled (
+          <CheckBoxOutlineBlank {...iconProps} />) states.
+        </FormHelperText>
+      );
+    })()}
   </div>
 );
 
@@ -110,33 +153,35 @@ GeneralPropertiesForm.propTypes = {
   onToggleFeaturePointsVisible: PropTypes.func,
   onToggleFeatureVisibility: PropTypes.func,
   optimizeUIForTouch: PropTypes.bool,
+  shouldFill: PropTypes.bool,
   shouldShowPoints: PropTypes.bool,
+  suggestedColor: PropTypes.string,
 };
 
 export default connect(
   // mapStateToProps
   (state, { featureId }) => ({
     optimizeUIForTouch: shouldOptimizeUIForTouch(state),
+    shouldFill: shouldFillFeature(state, featureId),
     shouldShowPoints: shouldShowPointsOfFeature(state, featureId),
+    suggestedColor: suggestedColorForFeature(state, featureId),
   }),
   // mapDispatchToProps
   (dispatch, { featureId }) => ({
     onSetFeatureColor(color) {
-      dispatch(setFeatureColor({ id: featureId, color: color.hex }));
+      dispatch(setFeatureColor({ id: featureId, color: color?.hex }));
     },
     onSetFeatureLabel(event) {
       dispatch(renameFeature({ id: featureId, name: event.target.value }));
     },
-    onToggleFeatureFillVisible(_event, checked) {
-      dispatch(updateFeatureFillVisible({ id: featureId, filled: checked }));
+    onToggleFeatureFillVisible() {
+      dispatch(toggleFeatureFillVisible({ id: featureId }));
     },
-    onToggleFeatureMeasurementVisible(_event, checked) {
-      dispatch(
-        updateFeatureMeasurementVisible({ id: featureId, measure: checked })
-      );
+    onToggleFeatureMeasurementVisible() {
+      dispatch(toggleFeatureMeasurementVisible({ id: featureId }));
     },
-    onToggleFeaturePointsVisible(_event, checked) {
-      dispatch(updateFeaturePointsVisible({ id: featureId, visible: checked }));
+    onToggleFeaturePointsVisible() {
+      dispatch(toggleFeaturePointsVisible({ id: featureId }));
     },
     onToggleFeatureVisibility(_event, checked) {
       dispatch(updateFeatureVisibility({ id: featureId, visible: checked }));

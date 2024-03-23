@@ -1,7 +1,7 @@
 import * as createColor from 'color';
 import mapValues from 'lodash-es/mapValues';
 
-import { yellow } from '@material-ui/core/colors';
+import { blue, yellow, red } from '@material-ui/core/colors';
 
 import { Colors as ColorsBase } from '@skybrush/app-theme-material-ui';
 
@@ -15,7 +15,9 @@ type Color = string;
 export const Colors = {
   ...ColorsBase,
 
-  geofence: '#f00',
+  main: blue['500'],
+
+  geofence: red['700'],
   convexHull: '#fc0',
   flightArea: '#0c4',
   plannedTrajectory: '#08f',

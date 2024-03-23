@@ -3,6 +3,8 @@
  * places where there is enough space.
  */
 
+import merge from 'lodash-es/merge';
+import PropTypes from 'prop-types';
 import React from 'react';
 import { SwatchesPicker } from 'react-color';
 
@@ -55,8 +57,24 @@ const pickerProps = {
   height: 170,
 };
 
-const SwatchesColorPicker = (props) => (
-  <SwatchesPicker className='borderless' {...pickerProps} {...props} />
+const pickerStyles = {
+  default: {
+    overflow: { overflowY: 'hidden' },
+    body: { padding: 0 },
+  },
+};
+
+const SwatchesColorPicker = ({ styles, ...rest }) => (
+  <SwatchesPicker
+    className='borderless'
+    styles={merge(pickerStyles, styles)}
+    {...pickerProps}
+    {...rest}
+  />
 );
+
+SwatchesColorPicker.propTypes = {
+  styles: PropTypes.object,
+};
 
 export default SwatchesColorPicker;
