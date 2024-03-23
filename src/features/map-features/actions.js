@@ -134,10 +134,9 @@ export const showDetailsForFeatureById = (featureId) => (dispatch) => {
   let action;
 
   if (isUavId(featureId)) {
-    const uavId = globalIdToUavId(featureId);
-    if (uavId) {
-      action = openUAVDetailsDialog(uavId);
-    }
+    action = openUAVDetailsDialog(globalIdToUavId(featureId));
+  } else if (isFeatureId(featureId)) {
+    action = showFeatureEditorDialog(globalIdToFeatureId(featureId));
   } else if (isDockId(featureId)) {
     /* TODO(ntamas) */
   }

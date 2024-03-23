@@ -425,6 +425,10 @@ class MapContextMenu extends React.Component {
     const { selectedFeatures } = context;
 
     if (setGeofencePolygonId) {
+      if (selectedFeatures[0].attributes?.isExclusionZone) {
+        this._unsetSelectedFeatureAsExclusionZone(_event, context);
+      }
+
       setGeofencePolygonId(selectedFeatures[0].id);
     }
   };
@@ -443,9 +447,13 @@ class MapContextMenu extends React.Component {
 
   _setSelectedFeatureAsExclusionZone = (_event, context) => {
     const { updateFeatureAttributes } = this.props;
-    const { selectedFeatures } = context;
+    const { geofencePolygonId, selectedFeatures } = context;
 
     if (updateFeatureAttributes) {
+      if (selectedFeatures[0].id === geofencePolygonId) {
+        this._unsetSelectedFeatureAsGeofence(_event, context);
+      }
+
       updateFeatureAttributes({
         id: selectedFeatures[0].id,
         attributes: { isExclusionZone: true },
