@@ -15,6 +15,13 @@ import {
 
 import { type FeatureProperties } from './types';
 
+type OptionalBoolean = undefined | boolean;
+const optionalBooleanStates: OptionalBoolean[] = [undefined, true, false];
+const toggleOptionalBoolean = (state: OptionalBoolean): OptionalBoolean =>
+  optionalBooleanStates[
+    (optionalBooleanStates.indexOf(state) + 1) % optionalBooleanStates.length
+  ];
+
 type MapFeaturesSliceState = ReadonlyDeep<
   Collection<Feature & FeatureProperties>
 >;
@@ -152,9 +159,6 @@ const { actions, reducer } = createSlice({
       // that it has the chosen ID
       const newFeature: FeatureProperties = {
         visible: true,
-        filled: true,
-        measure: false,
-        showPoints: false,
         ...structuredClone(feature),
         id,
       };
@@ -226,60 +230,57 @@ const { actions, reducer } = createSlice({
       }
     },
 
-    updateFeatureFillVisible(
+    toggleFeatureFillVisible(
       state,
       action: PayloadAction<{
         id: FeatureProperties['id'];
-        filled: FeatureProperties['filled'];
       }>
     ) {
-      const { id, filled } = action.payload;
+      const { id } = action.payload;
       const feature = state.byId[id];
 
       if (feature === undefined) {
         console.warn(
-          `Cannot set fill visibility of non-existent feature ${id}`
+          `Cannot toggle fill visibility of non-existent feature ${id}`
         );
       } else {
-        feature.filled = Boolean(filled);
+        feature.filled = toggleOptionalBoolean(feature.filled);
       }
     },
 
-    updateFeatureMeasurementVisible(
+    toggleFeatureMeasurementVisible(
       state,
       action: PayloadAction<{
         id: FeatureProperties['id'];
-        measure: FeatureProperties['measure'];
       }>
     ) {
-      const { id, measure } = action.payload;
+      const { id } = action.payload;
       const feature = state.byId[id];
 
       if (feature === undefined) {
         console.warn(
-          `Cannot set measurement visibility of non-existent feature ${id}`
+          `Cannot toggle measurement visibility of non-existent feature ${id}`
         );
       } else {
-        feature.measure = Boolean(measure);
+        feature.measure = toggleOptionalBoolean(feature.measure);
       }
     },
 
-    updateFeaturePointsVisible(
+    toggleFeaturePointsVisible(
       state,
       action: PayloadAction<{
         id: FeatureProperties['id'];
-        visible: FeatureProperties['showPoints'];
       }>
     ) {
-      const { id, visible } = action.payload;
+      const { id } = action.payload;
       const feature = state.byId[id];
 
       if (feature === undefined) {
         console.warn(
-          `Cannot set point visibility of non-existent feature ${id}`
+          `Cannot toggle point visibility of non-existent feature ${id}`
         );
       } else {
-        feature.showPoints = Boolean(visible);
+        feature.showPoints = toggleOptionalBoolean(feature.showPoints);
       }
     },
 
@@ -321,10 +322,10 @@ export const {
   removeFeaturesByIds,
   renameFeature,
   setFeatureColor,
+  toggleFeatureFillVisible,
+  toggleFeatureMeasurementVisible,
+  toggleFeaturePointsVisible,
   updateFeatureAttributes,
-  updateFeatureFillVisible,
-  updateFeatureMeasurementVisible,
-  updateFeaturePointsVisible,
   updateFeaturePropertiesByIds,
   updateFeatureVisibility,
 } = actions;

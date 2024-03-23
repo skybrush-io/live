@@ -404,7 +404,6 @@ export const addGeofencePolygon =
        * the show so it is confusing if the "Geofence" label appears in the middle
        * of the convex hull */
       color: Colors.geofence,
-      filled: false,
       points: simplifiedPoints.map(toLonLat),
     };
     const geofencePolygonId = getProposedIdForNewFeature(

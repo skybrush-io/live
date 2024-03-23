@@ -25,11 +25,11 @@ export const labelForFeatureEditorDialogTab: Record<
 export type FeatureProperties = {
   attributes?: Record<string, unknown>;
   color?: string;
-  filled: boolean;
+  filled?: boolean;
   id: Identifier;
   label?: string;
   labelStyle?: LabelStyle;
-  measure: boolean;
-  showPoints: boolean;
+  measure?: boolean;
+  showPoints?: boolean;
   visible: boolean;
 };

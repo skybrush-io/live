@@ -1,9 +1,9 @@
 import createColor from 'color';
 import unary from 'lodash-es/unary';
-import PropTypes from 'prop-types';
 import { MultiPoint, MultiPolygon, Polygon } from 'ol/geom';
 import { Circle, Style, Text } from 'ol/style';
 import FillPattern from 'ol-ext/style/FillPattern';
+import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 
@@ -18,8 +18,12 @@ import {
 import {
   getFeaturesInOrder,
   getSelectedFeatureIds,
-  shouldShowPointsOfFeature,
 } from '~/features/map-features/selectors';
+import {
+  shouldFillFeature,
+  shouldShowPointsOfFeature,
+  suggestedColorForFeature,
+} from '~/features/map-features/selectors-style-suggestions';
 import { getGeofencePolygonId } from '~/features/mission/selectors';
 import { showError } from '~/features/snackbar/actions';
 import { FeatureType, LabelStyle } from '~/model/features';
@@ -28,13 +32,12 @@ import { setLayerEditable, setLayerSelectable } from '~/model/layers';
 import { mapViewCoordinateFromLonLat, measureFeature } from '~/utils/geography';
 import { closePolygon, euclideanDistance2D } from '~/utils/math';
 import {
+  dashedThickOutline,
+  dottedThinOutline,
   fill,
-  primaryColor,
   thinOutline,
   whiteThickOutline,
   whiteThinOutline,
-  dashedThickOutline,
-  dottedThinOutline,
 } from '~/utils/styles';
 
 import { Tool } from '../tools';
@@ -123,12 +126,17 @@ export const styleForPointsOfPolygon = (selected, color) =>
 // TODO: cache the style somewhere?
 const styleForFeature = (
   feature,
-  isGeofence = false,
-  isSelected = false,
-  shouldShowPoints = false
+  {
+    isGeofence = false,
+    isSelected = false,
+    shouldShowPoints,
+    suggestedColor,
+    shouldFill,
+  }
 ) => {
-  const { color, label, labelStyle, measure, type, filled } = feature;
-  const parsedColor = createColor(color || primaryColor);
+  const { color, filled, label, labelStyle, measure, showPoints, type } =
+    feature;
+  const parsedColor = createColor(color ?? suggestedColor);
   const styles = [];
   const radius = 6;
 
@@ -158,7 +166,7 @@ const styleForFeature = (
         })
       );
 
-      if (shouldShowPoints) {
+      if (showPoints ?? shouldShowPoints) {
         // Show the vertices of the line string as well
         styles.push(
           styleForPointsOfLineString(isSelected, parsedColor.rgb().array())
@@ -180,7 +188,7 @@ const styleForFeature = (
         })
       );
 
-      if (shouldShowPoints) {
+      if (showPoints ?? shouldShowPoints) {
         styles.push(
           styleForPointsOfPolygon(isSelected, parsedColor.rgb().array())
         );
@@ -188,7 +196,7 @@ const styleForFeature = (
     // Fallthrough
 
     default:
-      if (filled && !feature?.attributes?.isExclusionZone) {
+      if ((filled ?? shouldFill) && !feature?.attributes?.isExclusionZone) {
         styles.push(
           new Style({
             fill: fill(
@@ -285,12 +293,20 @@ const FeaturePresentation = ({
   feature,
   isSelected,
   isGeofence,
+  shouldFill,
   shouldShowPoints,
+  suggestedColor,
   ...rest
 }) => (
   <OLFeature
     id={featureIdToGlobalId(feature.id)}
-    style={styleForFeature(feature, isGeofence, isSelected, shouldShowPoints)}
+    style={styleForFeature(feature, {
+      isGeofence,
+      isSelected,
+      shouldFill,
+      shouldShowPoints,
+      suggestedColor,
+    })}
     {...rest}
   >
     {geometryForFeature(feature)}
@@ -301,7 +317,9 @@ FeaturePresentation.propTypes = {
   feature: PropTypes.object.isRequired,
   isGeofence: PropTypes.bool,
   isSelected: PropTypes.bool,
+  shouldFill: PropTypes.bool,
   shouldShowPoints: PropTypes.bool,
+  suggestedColor: PropTypes.string,
 };
 
 const Feature = connect(
@@ -309,7 +327,9 @@ const Feature = connect(
   (state, { feature }) => ({
     isGeofence: getGeofencePolygonId(state) === feature.id,
     isSelected: getSelectedFeatureIds(state).includes(feature.id),
+    shouldFill: shouldFillFeature(state, feature.id),
     shouldShowPoints: shouldShowPointsOfFeature(state, feature.id),
+    suggestedColor: suggestedColorForFeature(state, feature.id),
   })
 )(FeaturePresentation);
 

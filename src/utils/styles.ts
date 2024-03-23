@@ -11,8 +11,6 @@ import { Fill, RegularShape, Stroke, Style } from 'ol/style';
 
 import { bearing, type Coordinate2D } from './math';
 
-export const primaryColor = '#2196f3'; // Blue[500] in Material-UI
-
 export const fill = (color: Color | ColorLike): Fill => new Fill({ color });
 export const stroke = (
   color: Color | ColorLike,

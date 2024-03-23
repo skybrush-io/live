@@ -10,11 +10,12 @@ import { layer as olLayer, source } from '@collmot/ol-react';
 
 import TextField from '@material-ui/core/TextField';
 
+import Colors from '~/components/colors';
 import SwatchesColorPicker from '~/components/SwatchesColorPicker';
 import { setLayerParametersById } from '~/features/map/layers';
 import flock from '~/flock';
 import { mapViewCoordinateFromLonLat } from '~/utils/geography';
-import { primaryColor, stroke } from '~/utils/styles';
+import { stroke } from '~/utils/styles';
 
 // === Settings for this particular layer type ===
 
@@ -27,7 +28,7 @@ class UAVTraceLayerSettingsPresentation extends React.Component {
   render() {
     const { layer } = this.props;
     const parameters = {
-      trailColor: primaryColor,
+      trailColor: Colors.main,
       trailLength: 10,
       trailWidth: 2,
       ...layer.parameters,
@@ -54,7 +55,7 @@ class UAVTraceLayerSettingsPresentation extends React.Component {
         />
         <div style={{ paddingTop: '0.5em' }}>
           <SwatchesColorPicker
-            color={trailColor || primaryColor}
+            color={trailColor ?? Colors.main}
             onChangeComplete={this._onColorChanged}
           />
         </div>

@@ -90,7 +90,6 @@ export function createFeaturesFromOpenLayersGeometry(olGeometry) {
       return [
         {
           type: FeatureType.POINTS,
-          filled: false,
           points: lonLatsFromMapViewCoordinates([coordinates]),
         },
       ];
@@ -112,7 +111,6 @@ export function createFeaturesFromOpenLayersGeometry(olGeometry) {
       return [
         {
           type: FeatureType.LINE_STRING,
-          filled: false,
           points: lonLatsFromMapViewCoordinates(coordinates),
         },
       ];

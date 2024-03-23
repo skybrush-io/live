@@ -428,16 +428,9 @@ mark {
 }
 
 /* Color picker customization */
-.swatches-picker.borderless {
-  & > div {
-    & > div:first-child {
-      background: transparent !important;
-      box-shadow: none !important;
-    }
-    & > div:last-child > div > div {
-      padding: 0 !important;
-    }
-  }
+.swatches-picker.borderless > div > div:first-child {
+  background: transparent !important;
+  box-shadow: none !important;
 }
 
 /* Markdown editor customization for the "Field notes" panel */

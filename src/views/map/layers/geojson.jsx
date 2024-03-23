@@ -12,12 +12,12 @@ import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 
+import Colors from '~/components/colors';
 import PopupColorPicker from '~/components/PopupColorPicker';
 import { setLayerParametersById } from '~/features/map/layers';
 import { showNotification } from '~/features/snackbar/actions';
 import { parseColor } from '~/utils/coloring';
 import { convertSimpleStyleToOLStyle } from '~/utils/simplestyle';
-import { primaryColor } from '~/utils/styles';
 
 // === Settings for this particular layer type ===
 
@@ -219,10 +219,10 @@ export const GeoJSONLayer = ({ layer, zIndex }) => {
   const styleFunction = React.useMemo(() => {
     const { parameters } = layer;
     const { strokeWidth } = parameters;
-    const strokeColor = parseColor(parameters.strokeColor, primaryColor);
+    const strokeColor = parseColor(parameters.strokeColor, Colors.main);
     const fillColor = parseColor(
       parameters.fillColor,
-      createColor(primaryColor).alpha(0.5)
+      createColor(Colors.main).alpha(0.5)
     );
     const defaults = {
       stroke: strokeColor.rgb().hex(),
