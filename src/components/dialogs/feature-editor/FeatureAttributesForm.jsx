@@ -4,17 +4,40 @@ import React from 'react';
 import { Form, FormSpy } from 'react-final-form';
 import { connect } from 'react-redux';
 
+import Button from '@material-ui/core/Button';
+import FormHelperText from '@material-ui/core/FormHelperText';
+import InputAdornment from '@material-ui/core/InputAdornment';
+
 import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
 
-import { FormHelperText, InputAdornment } from '@material-ui/core';
+import Fence from '~/icons/PlacesFence';
+
 import { updateFeatureAttributes } from '~/features/map-features/slice';
+import { getGeofencePolygonId } from '~/features/mission/selectors';
+import { clearGeofencePolygonId } from '~/features/mission/slice';
 import { FeatureType } from '~/model/features';
 import { createValidator, optional, positive } from '~/utils/validation';
 
 // PERF: Optimize this, it has lots of unnecessary recomputes
-const FeatureAttributesForm = ({ feature, onSetFeatureAttributes }) => {
+const FeatureAttributesForm = ({
+  clearGeofencePolygonId,
+  feature,
+  isGeofence,
+  onSetFeatureAttributes,
+}) => {
   switch (feature.type) {
     case FeatureType.POLYGON: {
+      if (isGeofence) {
+        return (
+          <BackgroundHint
+            icon={<Fence />}
+            header='This feature is the current geofence'
+            text='It cannot be used as an exclusion zone at the same time'
+            button={<Button onClick={clearGeofencePolygonId}>Clear</Button>}
+          />
+        );
+      }
+
       return (
         <Form
           initialValues={feature.attributes}
@@ -97,15 +120,20 @@ const FeatureAttributesForm = ({ feature, onSetFeatureAttributes }) => {
 };
 
 FeatureAttributesForm.propTypes = {
+  clearGeofencePolygonId: PropTypes.func,
   feature: PropTypes.object.isRequired,
+  isGeofence: PropTypes.bool,
   onSetFeatureAttributes: PropTypes.func,
 };
 
 export default connect(
   // mapStateToProps
-  null,
+  (state, { featureId }) => ({
+    isGeofence: getGeofencePolygonId(state) === featureId,
+  }),
   // mapDispatchToProps
   (dispatch, { featureId }) => ({
+    clearGeofencePolygonId: () => dispatch(clearGeofencePolygonId()),
     onSetFeatureAttributes(attributes) {
       dispatch(updateFeatureAttributes({ id: featureId, attributes }));
     },
