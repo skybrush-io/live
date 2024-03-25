@@ -225,20 +225,20 @@ class MapContextMenu extends React.Component {
                 );
               }
 
-          if (this.props.addPointToMission) {
-            result.push(
-              <MenuItem
-                key='addPointToMission'
-                dense
-                onClick={this._addPointToMission}
-              >
-                <ListItemIcon>
-                  <Add />
-                </ListItemIcon>
-                Add point to mission
-              </MenuItem>
-            );
-          }
+              if (this.props.addPointToMission) {
+                result.push(
+                  <MenuItem
+                    key='addPointToMission'
+                    dense
+                    onClick={this._addPointToMission}
+                  >
+                    <ListItemIcon>
+                      <Add />
+                    </ListItemIcon>
+                    Add point to mission
+                  </MenuItem>
+                );
+              }
 
               if (this.props.setMapCoordinateSystemOrigin) {
                 result.push(
