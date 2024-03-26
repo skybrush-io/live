@@ -1,16 +1,17 @@
-const { spawn } = require('child_process');
-const { dialog } = require('electron');
-const ndjson = require('ndjson');
-const path = require('path');
-const pDefer = require('p-defer');
-const pTimeout = require('p-timeout');
-const process = require('process');
-const which = require('which');
+import path from 'node:path';
+import process from 'node:process';
 
-const makeEventProxy = require('../event-proxy');
-const { isMac, isWindows } = require('../platform');
+import { spawn } from 'child_process';
+import { dialog } from 'electron';
+import ndjson from 'ndjson';
+import pDefer from 'p-defer';
+import pTimeout from 'p-timeout';
+import which from 'which';
 
-const getApplicationFolder = require('./app-folder');
+import getApplicationFolder from './app-folder.mjs';
+
+import makeEventProxy from '../event-proxy.mjs';
+import { isMac, isWindows } from '../platform.mjs';
 
 /**
  * Event proxy for the local server object.
@@ -154,10 +155,9 @@ const deriveServerPathAndArgumentsFromOptions = async (options) => {
  * Ensures that a Skybrush server executable with the given arguments is up and
  * running. Re-uses an already running instance if needed.
  */
-const ensureRunning = async (options) => {
-  const [serverPath, realArgs] = await deriveServerPathAndArgumentsFromOptions(
-    options
-  );
+export const ensureRunning = async (options) => {
+  const [serverPath, realArgs] =
+    await deriveServerPathAndArgumentsFromOptions(options);
   const value = [serverPath, ...realArgs];
 
   if (
@@ -191,9 +191,8 @@ const launch = async (options) => {
     await terminate();
   }
 
-  const [serverPath, realArgs] = await deriveServerPathAndArgumentsFromOptions(
-    options
-  );
+  const [serverPath, realArgs] =
+    await deriveServerPathAndArgumentsFromOptions(options);
 
   /* on Windows we might use batch files for launching, and those need a shell */
   const needsShell =
@@ -239,8 +238,8 @@ const launch = async (options) => {
       code === null
         ? `with signal ${signal}`
         : code === 0
-        ? ''
-        : `with code ${code}`
+          ? ''
+          : `with code ${code}`
     );
     events.emit('emit', 'exit', code, signal);
     localServerProcess = undefined;
@@ -287,7 +286,7 @@ const launch = async (options) => {
  * @return {Promise<string>}  a promise that resolves to the full path of the
  *         server executable if found and `null` if it is not found
  */
-const search = async (paths) => {
+export const search = async (paths) => {
   // Do _not_ use the async version of which here. It does not have a nothrow
   // option, and when it throws an exception, it will be caught by
   // Electron's unhandled exception handler, which might throw a dialog box in
@@ -301,7 +300,7 @@ const search = async (paths) => {
     path: [
       ...paths,
       ...pathsRelatedToAppLocation,
-      ...process.env.PATH.split(path.delimiter),
+      ...(process.env.PATH ?? '').split(path.delimiter),
     ].join(path.delimiter),
   });
 
@@ -318,7 +317,7 @@ const search = async (paths) => {
  * Shows a dialog that allows the user to select a single directory that will be
  * scanned for the server executable.
  */
-const selectPath = async (defaultPath, browserWindow) => {
+export const selectPath = async (defaultPath, browserWindow) => {
   const options = {
     title: 'Select directory containing Skybrush Server',
     properties: ['openDirectory'],
@@ -340,7 +339,7 @@ const selectPath = async (defaultPath, browserWindow) => {
  * Terminate the local server instance that the main process is currently
  * managing.
  */
-const terminate = async (options) => {
+export const terminate = async (options) => {
   const { timeout } = { timeout: 5000, ...options };
 
   if (localServerProcess) {
@@ -369,11 +368,4 @@ const terminate = async (options) => {
     localServerProcess = undefined;
     localServerProcessArgs = undefined;
   }
-};
-
-module.exports = {
-  ensureRunning,
-  search,
-  selectPath,
-  terminate,
 };

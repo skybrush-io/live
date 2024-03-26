@@ -9,6 +9,8 @@ module.exports = merge(baseConfig, {
     filename: 'preload.bundle.js',
   },
 
+  /* prevent evaluation of __dirname and __filename at build time in
+   * launcher and preloader */
   node: {
     __dirname: false,
     __filename: false,

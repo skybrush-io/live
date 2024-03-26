@@ -1,13 +1,14 @@
-const { ipcRenderer: ipc } = require('electron-better-ipc');
-const { receiveSubscriptionsFromRenderer } = require('./subscriptions');
+import { ipcRenderer as ipc } from 'electron-better-ipc';
+
+export { receiveSubscriptionsFromRenderer } from './subscriptions.mjs';
 
 const actionsFromRenderer = {};
 
-const receiveActionsFromRenderer = (actions) => {
+export const receiveActionsFromRenderer = (actions) => {
   Object.assign(actionsFromRenderer, actions);
 };
 
-const exposeActionFromRenderer = (name) => {
+export const exposeActionFromRenderer = (name) => {
   ipc.answerMain(name, (...args) => {
     const func = actionsFromRenderer[name];
     if (func) {
@@ -18,12 +19,6 @@ const exposeActionFromRenderer = (name) => {
   });
 };
 
-const setupIpc = () => {
+export const setupIpc = () => {
   exposeActionFromRenderer('showAppSettingsDialog');
-};
-
-module.exports = {
-  receiveActionsFromRenderer,
-  receiveSubscriptionsFromRenderer,
-  setupIpc,
 };

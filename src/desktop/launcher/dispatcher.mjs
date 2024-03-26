@@ -1,8 +1,8 @@
-const { ipcMain: ipc } = require('electron-better-ipc');
+import { ipcMain as ipc } from 'electron-better-ipc';
 
-const { getMainWindow } = require('./main-window');
+import { getMainWindow } from './main-window.mjs';
 
-const showAppSettingsDialog = async () => {
+export const showAppSettingsDialog = async () => {
   const mainWindow = getMainWindow();
 
   if (mainWindow === undefined) {
@@ -11,8 +11,4 @@ const showAppSettingsDialog = async () => {
   }
 
   await ipc.callRenderer(mainWindow, 'showAppSettingsDialog');
-};
-
-module.exports = {
-  showAppSettingsDialog,
 };

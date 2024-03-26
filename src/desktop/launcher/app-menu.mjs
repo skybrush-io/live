@@ -1,12 +1,8 @@
-const { app, Menu, shell } = require('electron');
-const {
-  aboutMenuItem,
-  appMenu,
-  is,
-  openUrlMenuItem,
-} = require('electron-util');
+import { app, Menu, shell } from 'electron';
+import { is, openUrlMenuItem } from 'electron-util';
+import { aboutMenuItem, appMenu } from 'electron-util/main';
 
-const { showAppSettingsDialog } = require('./dispatcher');
+import { showAppSettingsDialog } from './dispatcher.mjs';
 
 const helpSubmenu = [
   openUrlMenuItem({
@@ -89,4 +85,6 @@ if (!app.isPackaged) {
   });
 }
 
-module.exports = () => Menu.buildFromTemplate(template);
+const createAppMenu = () => Menu.buildFromTemplate(template);
+
+export default createAppMenu;

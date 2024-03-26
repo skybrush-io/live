@@ -37,7 +37,7 @@ if (useHotModuleReloading) {
   plugins.push(
     new WebpackShellPluginNext({
       onBuildEnd: {
-        scripts: ['electron launcher.js'],
+        scripts: ['electron launcher.mjs'],
         blocking: false,
         dev: true,
         parallel: true,

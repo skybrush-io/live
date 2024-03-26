@@ -5,6 +5,7 @@
   },
   "DrawingToolbar": {
     "addMarker": "Jelölő hozzáadása",
+    "addWaypoint": "",
     "cutHole": "Lyuk vágás sokszögbe",
     "drawCircle": "Kör rajzolás",
     "drawPath": "Útvonal rajzolás",
@@ -78,6 +79,10 @@
       "no": "Még nincs geofence beállítva"
     }
   },
+  "header": {
+    "distanceSummary": "",
+    "velocitySummary": ""
+  },
   "help": "Segítség",
   "lightControl": {
     "fromGCS": "A fények GCS-sel vezéreltek",
@@ -89,6 +94,15 @@
   },
   "mappingToggleButton": {
     "sortByMissionID": "Rendezés küldetés ID alapján"
+  },
+  "mission": {
+    "planner": {
+      "schema": {
+        "error": "",
+        "loading": "",
+        "notFound": ""
+      }
+    }
   },
   "notifications": {
     "connectedToSkybrushServer": "Csatlakozva a Skybrush szerverhez"

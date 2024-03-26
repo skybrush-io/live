@@ -1,0 +1,19 @@
+diff --git a/node_modules/react-virtuoso/dist/index.mjs b/node_modules/react-virtuoso/dist/index.mjs
+index 741ea0f..52d7b73 100644
+--- a/node_modules/react-virtuoso/dist/index.mjs
++++ b/node_modules/react-virtuoso/dist/index.mjs
+@@ -500,9 +500,11 @@ function useSizeWithElRef(callback, enabled = true) {
+     const observer = React.useMemo(() => {
+       return new ResizeObserver((entries) => {
+         const element = entries[0].target;
+-        if (element.offsetParent !== null) {
+-          callback(element);
+-        }
++        requestAnimationFrame(() => {
++          if (element.offsetParent !== null) {
++            callback(element);
++          }
++        })
+       });
+     }, [callback]);
+     callbackRef = (elRef) => {

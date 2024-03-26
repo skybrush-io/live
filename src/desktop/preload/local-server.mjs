@@ -1,6 +1,6 @@
-const { ipcRenderer: ipc } = require('electron-better-ipc');
+import { ipcRenderer as ipc } from 'electron-better-ipc';
 
-const makeEventProxy = require('../event-proxy');
+import makeEventProxy from '../event-proxy.mjs';
 
 /**
  * Event proxy for the local server object.
@@ -23,9 +23,8 @@ const events = makeEventProxy('localServer');
  * @return {Promise<EventEmitter>}  a promise that resolves when the server process
  *         was launched successfully
  */
-const ensureRunning = async (options) => {
+export const ensureRunning = async (options) => {
   const { callbacks = {}, ...rest } = options;
-
   for (const [eventName, handler] of Object.entries(callbacks)) {
     events.on(eventName, handler);
   }
@@ -37,7 +36,6 @@ const ensureRunning = async (options) => {
   };
 
   await ipc.callMain('localServer.ensureRunning', rest);
-
   return disposer;
 };
 
@@ -53,13 +51,13 @@ const ensureRunning = async (options) => {
  * @return {Promise<string>}  a promise that resolves to the full path of the
  *         server executable if found and `null` if it is not found
  */
-const search = (paths) => ipc.callMain('localServer.search', paths);
+export const search = (paths) => ipc.callMain('localServer.search', paths);
 
 /**
  * Asks the main process to show a dialog that allows the user to select a
  * single directory that will be scanned for the server executable.
  */
-const selectPath = (defaultPath) =>
+export const selectPath = (defaultPath) =>
   ipc.callMain('localServer.selectPath', defaultPath);
 
 /**
@@ -69,11 +67,4 @@ const selectPath = (defaultPath) =>
  * @return {Promise<void>}  a promise that resolves when the termination
  *         signal was sent to the server successfully
  */
-const terminate = () => ipc.callMain('localServer.terminate');
-
-module.exports = {
-  ensureRunning,
-  search,
-  selectPath,
-  terminate,
-};
+export const terminate = () => ipc.callMain('localServer.terminate');

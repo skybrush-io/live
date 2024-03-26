@@ -1,8 +1,8 @@
-const { ipcRenderer: ipc } = require('electron-better-ipc');
+import { ipcRenderer as ipc } from 'electron-better-ipc';
 
 let subscriptionsReceived = false;
 
-const receiveSubscriptionsFromRenderer = (subscriptions) => {
+export const receiveSubscriptionsFromRenderer = (subscriptions) => {
   if (subscriptionsReceived) {
     throw new Error('Subscriptions were already received from the renderer');
   }
@@ -15,8 +15,4 @@ const setupSubscriptions = ({ shouldPreventSleepMode }) => {
   shouldPreventSleepMode(async (newValue) => {
     await ipc.callMain('powerSaving.setSleepModePrevented', newValue);
   });
-};
-
-module.exports = {
-  receiveSubscriptionsFromRenderer,
 };

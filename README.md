@@ -1,17 +1,15 @@
-Skybrush Live
-=============
+# Skybrush Live
 
 This is the official desktop and web frontend for the Skybrush server.
 
-Steps to install
-----------------
+## Steps to install
 
 1. Install Node.js and `npm` (the Node.js Package Manager). Note that Ubuntu
    Linux may contain an old version of Node.js at the time of writing and we
    need a recent one, so you need to run the following from the command line:
 
    ```sh
-   curl -sL https://deb.nodesource.com/setup_16.x | sudo -E bash -
+   curl -sL https://deb.nodesource.com/setup_20.x | sudo -E bash -
    sudo apt-get install -y nodejs
    ```
 
@@ -34,16 +32,14 @@ Steps to install
    `npm run start:electron` to run Skybrush Live within its own desktop app
    window.
 
-Support
--------
+## Support
 
 For any support questions please contact us on our [Discord
 server](https://skybrush.io/r/discord).
 
-License
--------
+## License
 
-Copyright 2018-2022 CollMot Robotics Ltd.
+Copyright 2018-2024 CollMot Robotics Ltd.
 
 Skybrush Live is free software: you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free Software

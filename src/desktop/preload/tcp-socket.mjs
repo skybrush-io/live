@@ -1,4 +1,4 @@
-const net = require('net');
+import net from 'node:net';
 
 class TCPSocket {
   #buffer = '';
@@ -23,9 +23,7 @@ class TCPSocket {
     } = {}
   ) {
     this._clearTimeout = this._clearTimeout.bind(this);
-
     this.#connectedHandler = () => onConnected({ url });
-
     this.#socket.on('connect', () => {
       // The `onConnected` callback is handled after the first successful ping
       // instead of here to avoid showing "Connected" as soon as the TCP socket
@@ -42,7 +40,6 @@ class TCPSocket {
         onMessage(JSON.parse(message));
       }
     });
-
     this.#socket.on('error', (error) => {
       this._clearTimeout();
       this.#pendingError = error;
@@ -56,13 +53,10 @@ class TCPSocket {
       const wasConnected = this.#connected;
       const disconnectionReason =
         this.#disconnectionReason || 'io server disconnect';
-
       this.#pendingError = undefined;
       this.#connected = false;
       this.#disconnectionReason = undefined;
-
       this._clearTimeout();
-
       if (error) {
         // Copy the semantics of Socket.IO sockets where different handlers are
         // called depending on whether the connection was already established
@@ -79,10 +73,8 @@ class TCPSocket {
         });
       }
     });
-
     this.#socket.connect(port, address);
     onConnecting({ url });
-
     this.#timeoutId = setTimeout(() => {
       onConnectionTimeout({ url });
     }, connectTimeout);
@@ -110,7 +102,6 @@ class TCPSocket {
           this.#connectedHandler();
           this.#connectedHandler = undefined;
         }
-
         this.#pingReceived = true;
       }
     } else {
@@ -134,7 +125,6 @@ class ReconnectingTCPSocket {
   #options;
   #handlers;
   #socket;
-
   #connectingHandlerCalled = false;
   #reconnectionTimerId;
 
@@ -142,10 +132,8 @@ class ReconnectingTCPSocket {
     this.#address = address;
     this.#handlers = handlers;
     this.#options = options;
-
     this._startNewConnectionAttempt =
       this._startNewConnectionAttempt.bind(this);
-
     this._startNewConnectionAttempt();
   }
 
@@ -171,7 +159,6 @@ class ReconnectingTCPSocket {
       this._cancelReconnectionAttempt();
       this.#socket.detach();
     }
-
     this.#socket = factory();
   }
 
@@ -193,7 +180,6 @@ class ReconnectingTCPSocket {
   _startNewConnectionAttempt() {
     // eslint-disable-next-line unicorn/no-this-assignment
     const self = this;
-
     this._cancelReconnectionAttempt();
     this._setSocket(
       () =>
@@ -203,7 +189,6 @@ class ReconnectingTCPSocket {
               self.#handlers.onConnected(...args);
             }
           },
-
           onConnecting() {
             if (!self.#connectingHandlerCalled) {
               if (self.#handlers.onConnecting) {
@@ -213,7 +198,6 @@ class ReconnectingTCPSocket {
               self.#connectingHandlerCalled = true;
             }
           },
-
           onConnectionError(context) {
             if (self.#handlers.onConnectionError) {
               context.willReconnect = true;
@@ -222,7 +206,6 @@ class ReconnectingTCPSocket {
 
             self._scheduleNewReconnectionAttempt();
           },
-
           onConnectionTimeout(context) {
             if (self.#handlers.onConnectionTimeout) {
               context.willReconnect = true;
@@ -231,13 +214,10 @@ class ReconnectingTCPSocket {
 
             self._scheduleNewReconnectionAttempt();
           },
-
           onDisconnected(context) {
             const { reason } = context;
             const willReconnect = reason !== 'io client disconnect';
-
             context.willReconnect = willReconnect;
-
             if (self.#handlers.onDisconnected) {
               self.#handlers.onDisconnected(context);
             }
@@ -246,11 +226,10 @@ class ReconnectingTCPSocket {
               self._scheduleNewReconnectionAttempt();
             }
           },
-
           onMessage: self.#handlers.onMessage,
         })
     );
   }
 }
 
-module.exports = ReconnectingTCPSocket;
+export default ReconnectingTCPSocket;

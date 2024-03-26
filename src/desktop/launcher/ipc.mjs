@@ -1,11 +1,11 @@
-const { ipcMain: ipc } = require('electron-better-ipc');
+import { ipcMain as ipc } from 'electron-better-ipc';
 
-const getApplicationFolder = require('./app-folder');
-const { readBufferFromFile, writeBufferToFile } = require('./filesystem');
-const localServer = require('./local-server');
-const powerSaving = require('./power-saving');
+import getApplicationFolder from './app-folder.mjs';
+import { readBufferFromFile, writeBufferToFile } from './filesystem.mjs';
+import * as localServer from './local-server.mjs';
+import * as powerSaving from './power-saving.mjs';
 
-module.exports = () => {
+const setupIpc = () => {
   ipc.answerRenderer('getApplicationFolder', getApplicationFolder);
   ipc.answerRenderer('localServer.ensureRunning', localServer.ensureRunning);
   ipc.answerRenderer('localServer.search', localServer.search);
@@ -18,3 +18,5 @@ module.exports = () => {
     powerSaving.setSleepModePrevented
   );
 };
+
+export default setupIpc;

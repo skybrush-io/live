@@ -1,3 +1,22 @@
+import { promises } from 'dns';
+import electron from 'electron';
+import fs from 'fs';
+import { ipcRenderer as ipc } from 'electron-better-ipc';
+import ElectronStore from 'electron-store';
+import SSDPClient from 'node-ssdp-lite';
+import watch from 'node-watch';
+import path from 'path';
+import createStorageEngine from 'redux-persist-electron-storage';
+import streamToBlob from 'stream-to-blob';
+
+import localServer from './local-server.mjs';
+import {
+  receiveActionsFromRenderer,
+  receiveSubscriptionsFromRenderer,
+  setupIpc,
+} from './ipc.mjs';
+import TCPSocket from './tcp-socket.mjs';
+
 /**
  * @file Preload script that gets executed in the renderer processes _before_
  * it is dropping its privileges to access Node.js methods.
@@ -5,26 +24,8 @@
  * This is the place where we can construct a limited "API" object that the
  * renderer processes can use to talk to Node.js.
  */
-
-const dns = require('dns').promises;
-const { contextBridge } = require('electron');
-const fs = require('fs');
-const { ipcRenderer: ipc } = require('electron-better-ipc');
-const ElectronStore = require('electron-store');
-const SSDPClient = require('node-ssdp-lite');
-const watch = require('node-watch');
-const path = require('path');
-const createStorageEngine = require('redux-persist-electron-storage');
-const streamToBlob = require('stream-to-blob');
-
-const localServer = require('./local-server');
-const {
-  receiveActionsFromRenderer,
-  receiveSubscriptionsFromRenderer,
-  setupIpc,
-} = require('./ipc');
-const TCPSocket = require('./tcp-socket');
-
+const dns = { promises }.promises;
+const { contextBridge } = electron;
 /**
  * Creates a new SSDP client object and registers the given function to be
  * called when an SSDP response is received.
@@ -40,7 +41,6 @@ function createSSDPClient(callback) {
   if (callback) {
     client.on('response', callback);
   }
-
   return {
     search: client.search.bind(client),
   };
@@ -58,7 +58,6 @@ function createStateStore() {
     // exception during startup, so let's prevent that for the time being
     clearInvalidConfig: true,
   });
-
   return createStorageEngine({
     electronStore,
     store: {
@@ -97,10 +96,13 @@ contextBridge.exposeInMainWorld('bridge', {
   createSSDPClient,
   createStateStore,
   createTCPSocket,
+
   dispatch() {
     throw new Error('no store dispatcher was set up yet');
   },
+
   isElectron: true,
+
   getApplicationFolder: () => ipc.callMain('getApplicationFolder'),
 
   /**
@@ -121,7 +123,6 @@ contextBridge.exposeInMainWorld('bridge', {
 
     const { start, end } = options;
     const streamOptions = {};
-
     if (start !== undefined) {
       streamOptions.start = start;
     }
@@ -134,10 +135,8 @@ contextBridge.exposeInMainWorld('bridge', {
       fs.createReadStream(filename, streamOptions),
       mimeType
     );
-
     // We cannot send the blob through directly because it does not seem to
     // work in Electron with context isolation, at least not in Electron 14
-
     return {
       buffer: await blob.arrayBuffer(),
       props: {

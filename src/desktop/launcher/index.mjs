@@ -1,17 +1,27 @@
-const { app, protocol } = require('electron');
-const ElectronStore = require('electron-store');
+import { createRequire } from 'node:module';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-const {
+import { app, protocol } from 'electron';
+import ElectronStore from 'electron-store';
+
+import {
   setupApp,
   setupCli,
   usingWebpackDevServer,
-} = require('@skybrush/electron-app-framework');
+} from '@skybrush/electron-app-framework';
 
-const setupIpc = require('./ipc');
-const createAppMenu = require('./app-menu');
-const localServer = require('./local-server');
+import setupIpc from './ipc.mjs';
+import createAppMenu from './app-menu.mjs';
+import * as localServer from './local-server.mjs';
 
+const require = createRequire(import.meta.url);
 const packageJson = require('../../../package.json');
+
+const rootDir =
+  typeof __dirname === 'undefined'
+    ? path.dirname(fileURLToPath(import.meta.url))
+    : __dirname;
 
 /**
  * Main entry point of the application.
@@ -26,7 +36,7 @@ function run(argv) {
     appMenu: createAppMenu,
     mainWindow: {
       debug: argv.debug,
-      rootDir: __dirname,
+      rootDir,
       showMenuBar: false,
       webPreferences: {
         backgroundThrottling: false,
@@ -74,8 +84,10 @@ function run(argv) {
   setupIpc();
 }
 
-module.exports = () => {
+const main = () => {
   const parser = setupCli();
   parser.parse();
   run(parser.opts());
 };
+
+export default main;

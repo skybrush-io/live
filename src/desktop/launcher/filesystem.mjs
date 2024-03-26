@@ -1,9 +1,9 @@
-const { dialog } = require('electron');
-const { readFile, stat, writeFile } = require('fs/promises');
+import { dialog } from 'electron';
+import { readFile, stat, writeFile } from 'fs/promises';
 
-const { getMainWindow } = require('./main-window');
+import { getMainWindow } from './main-window.mjs';
 
-async function readBufferFromFile(options = {}) {
+export async function readBufferFromFile(options = {}) {
   const { dialogOptions, maxSize = 1048576 } = options;
   const { filePaths } = await dialog.showOpenDialog(getMainWindow(), {
     ...dialogOptions,
@@ -22,7 +22,11 @@ async function readBufferFromFile(options = {}) {
   }
 }
 
-async function writeBufferToFile({ buffer, preferredFilename, dialogOptions }) {
+export async function writeBufferToFile({
+  buffer,
+  preferredFilename,
+  dialogOptions,
+}) {
   const { canceled, filePath } = await dialog.showSaveDialog(getMainWindow(), {
     defaultPath: preferredFilename,
     ...dialogOptions,
@@ -31,8 +35,3 @@ async function writeBufferToFile({ buffer, preferredFilename, dialogOptions }) {
     await writeFile(filePath, Buffer.from(new Uint8Array(buffer)));
   }
 }
-
-module.exports = {
-  readBufferFromFile,
-  writeBufferToFile,
-};

@@ -1,15 +1,11 @@
-/**
- * @file Event proxies forward events generated from the main process
- * to all renderer processes.
- */
-
-const EventEmitter = require('events');
-const betterIpc = require('electron-better-ipc');
-const process = require('process');
+import EventEmitter from 'events';
+import * as betterIpc from 'electron-better-ipc';
+import process from 'process';
 
 const makeEventProxyChannelName = (channel) => `__eventProxy[${channel}]`;
 
 const isMain = process.type === 'browser';
+
 const ipc = isMain ? betterIpc.ipcMain : betterIpc.ipcRenderer;
 
 const makeEventProxy = isMain
@@ -32,4 +28,4 @@ const makeEventProxy = isMain
       return emitter;
     };
 
-module.exports = makeEventProxy;
+export default makeEventProxy;
