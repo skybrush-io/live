@@ -40,6 +40,7 @@ import {
   whiteThinOutline,
 } from '~/utils/styles';
 
+import { escapeKeyDown } from '../conditions';
 import { Tool } from '../tools';
 
 // === Helper functions ===
@@ -364,6 +365,7 @@ const FeaturesLayerPresentation = ({
         ))}
       {selectedTool === Tool.CUT_HOLE ? (
         <interaction.CutHole
+          abortCondition={escapeKeyDown}
           onError={onError}
           onCutStart={onFeatureModificationStarted}
           onCutEnd={onFeaturesModified}
