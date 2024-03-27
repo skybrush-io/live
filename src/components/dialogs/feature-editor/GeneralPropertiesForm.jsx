@@ -10,7 +10,9 @@ import FormHelperText from '@material-ui/core/FormHelperText';
 import Switch from '@material-ui/core/Switch';
 import TextField from '@material-ui/core/TextField';
 
-import SettingsBackupRestore from '@material-ui/icons/SettingsBackupRestore';
+import AutoCheckBox from '~/icons/AutoCheckBox';
+import CheckBox from '@material-ui/icons/CheckBox';
+import CheckBoxOutlineBlank from '@material-ui/icons/CheckBoxOutlineBlank';
 
 import SwatchesColorPicker from '~/components/SwatchesColorPicker';
 import {
@@ -32,11 +34,6 @@ import {
   featureTypeHasInterior,
   featureTypeHasPoints,
 } from '~/model/features';
-import {
-  CheckBox,
-  CheckBoxOutlineBlank,
-  IndeterminateCheckBox,
-} from '@material-ui/icons';
 
 const GeneralPropertiesForm = ({
   feature,
@@ -80,7 +77,7 @@ const GeneralPropertiesForm = ({
         onClick={() => onSetFeatureColor()}
       >
         <div>
-          <SettingsBackupRestore />
+          <AutoCheckBox fontSize='large' />
           Automatic color
         </div>
       </Button>
@@ -92,6 +89,7 @@ const GeneralPropertiesForm = ({
             <Checkbox
               checked={feature.filled ?? shouldFill}
               indeterminate={feature.filled === undefined}
+              indeterminateIcon={<AutoCheckBox />}
               color='primary'
               onChange={onToggleFeatureFillVisible}
             />
@@ -105,6 +103,7 @@ const GeneralPropertiesForm = ({
             <Checkbox
               checked={feature.showPoints ?? shouldShowPoints}
               indeterminate={feature.showPoints === undefined}
+              indeterminateIcon={<AutoCheckBox />}
               color='primary'
               onChange={onToggleFeaturePointsVisible}
             />
@@ -116,8 +115,9 @@ const GeneralPropertiesForm = ({
         <FormControlLabel
           control={
             <Checkbox
-              checked={feature.measure}
+              checked={feature.measure ?? false}
               indeterminate={feature.measure === undefined}
+              indeterminateIcon={<AutoCheckBox />}
               color='primary'
               onChange={onToggleFeatureMeasurementVisible}
             />
@@ -135,7 +135,7 @@ const GeneralPropertiesForm = ({
       return (
         <FormHelperText style={{ marginTop: -8 }}>
           Click to cycle between automatic (
-          <IndeterminateCheckBox {...iconProps} />
+          <AutoCheckBox {...iconProps} />
           ), enabled (<CheckBox {...iconProps} />) and disabled (
           <CheckBoxOutlineBlank {...iconProps} />) states.
         </FormHelperText>
