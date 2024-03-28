@@ -219,6 +219,14 @@
     "webpack-shell-plugin-next": "^2.3.1",
     "xo": "^0.58.0"
   },
+  "overrides": {
+    "@pmmmwh/react-refresh-webpack-plugin": {
+      "webpack-dev-server": "^5.0.2"
+    },
+    "reactour": {
+      "styled-components": "^6"
+    }
+  },
   "prettier": {
     "bracketSpacing": true,
     "jsxSingleQuote": true,
