@@ -13,10 +13,12 @@
 
 import {
   getFeatureById,
+  getSelectedFeatureIdsByType,
   getSingleSelectedFeatureIdOfType,
 } from '~/features/map-features/selectors';
 import {
   getCurrentGPSPositionByUavId,
+  getSelectedUAVIds,
   getSingleSelectedUAVId,
 } from '~/features/uavs/selectors';
 import { FeatureType } from '~/model/features';
@@ -35,10 +37,13 @@ export const ParameterUIContext = {
   NET_MISSION_END_RATIO: 'netMissionEndRatio',
   NET_MISSION_START_RATIO: 'netMissionStartRatio',
   SELECTED_COORDINATE: 'selectedCoordinate',
+  SELECTED_COORDINATES: 'selectedCoordinates',
   SELECTED_LINE_STRING_FEATURE: 'selectedLineStringFeature',
   SELECTED_MARKER_FEATURE: 'selectedMarkerFeature',
+  SELECTED_MARKER_FEATURES: 'selectedMarkerFeatures',
   SELECTED_POLYGON_FEATURE: 'selectedPolygonFeature',
   SELECTED_UAV_COORDINATE: 'selectedUAVCoordinate',
+  SELECTED_UAV_COORDINATES: 'selectedUAVCoordinates',
 };
 
 export const KNOWN_UI_CONTEXTS = Object.values(ParameterUIContext);
@@ -53,10 +58,13 @@ export const contextVolatilities = {
   [ParameterUIContext.NET_MISSION_END_RATIO]: ContextVolatility.DYNAMIC,
   [ParameterUIContext.NET_MISSION_START_RATIO]: ContextVolatility.DYNAMIC,
   [ParameterUIContext.SELECTED_COORDINATE]: ContextVolatility.DYNAMIC,
+  [ParameterUIContext.SELECTED_COORDINATES]: ContextVolatility.DYNAMIC,
   [ParameterUIContext.SELECTED_LINE_STRING_FEATURE]: ContextVolatility.STATIC,
   [ParameterUIContext.SELECTED_MARKER_FEATURE]: ContextVolatility.DYNAMIC,
+  [ParameterUIContext.SELECTED_MARKER_FEATURES]: ContextVolatility.DYNAMIC,
   [ParameterUIContext.SELECTED_POLYGON_FEATURE]: ContextVolatility.STATIC,
   [ParameterUIContext.SELECTED_UAV_COORDINATE]: ContextVolatility.DYNAMIC,
+  [ParameterUIContext.SELECTED_UAV_COORDINATES]: ContextVolatility.DYNAMIC,
 };
 
 /**
@@ -142,6 +150,23 @@ const getSingleSelectedUAVCoordinateFromContext = (state) => {
 };
 
 /**
+ * Gets the coordinates of the selected UAVs from the store.
+ */
+const getAllSelectedUAVCoordinatesFromContext = (state) => {
+  const uavIds = getSelectedUAVIds(state);
+
+  const uavPositions = uavIds.map((uavId) =>
+    getCurrentGPSPositionByUavId(state, uavId)
+  );
+
+  if (!uavPositions.every(Boolean)) {
+    throw new Error('Some of the selected UAVs do not have a GPS position yet');
+  }
+
+  return uavPositions.map(toScaledJSONFromObject);
+};
+
+/**
  * Generic utility function to get a selected feature of a given type from the
  * store, or throw the appropriate error if that is not possible.
  */
@@ -155,6 +180,15 @@ const getSingleSelectedFeatureOfTypeFromContext = (featureType) => (state) => {
 
   return getFeatureById(state, featureId);
 };
+
+/**
+ * Generic utility function to get all selected features of a given type
+ * from the store.
+ */
+const getAllSelectedFeaturesOfTypeFromContext = (featureType) => (state) =>
+  getSelectedFeatureIdsByType(featureType)(state).map((featureId) =>
+    getFeatureById(state, featureId)
+  );
 
 /**
  * Gets the selected linestring from the store.
@@ -173,6 +207,16 @@ const getSingleSelectedMarkerFromContext = (state) => ({
     state
   ).points.map(toScaledJSONFromLonLat),
 });
+
+/**
+ * Gets all selected markers from the store.
+ */
+const getAllSelectedMarkersFromContext = (state) =>
+  getAllSelectedFeaturesOfTypeFromContext(FeatureType.POINTS)(state).map(
+    ({ points }) => ({
+      points: points.map(toScaledJSONFromLonLat),
+    })
+  );
 
 /**
  * Gets the selected polygon from the store.
@@ -206,6 +250,19 @@ const getSelectedCoordinateFromContext = (state) => {
   }
 };
 
+/**
+ * Gets multiple selected coordinates from the store, which belong to
+ * either UAVs or marker features on the map.
+ */
+const getAllSelectedCoordinatesFromContext = (state) => {
+  const uavCoordinates = getAllSelectedUAVCoordinatesFromContext(state);
+  const markerCoordinates = getAllSelectedMarkersFromContext(state).map(
+    ({ points: [coordinate] }) => coordinate
+  );
+
+  return [...uavCoordinates, ...markerCoordinates];
+};
+
 const contextHandlers = {
   [ParameterUIContext.EXCLUSION_ZONE_POLYGONS]:
     getExclusionZonePolygonsFromContext,
@@ -213,12 +270,18 @@ const contextHandlers = {
   [ParameterUIContext.NET_MISSION_START_RATIO]:
     getNetMissionStartRatioFromContext,
   [ParameterUIContext.SELECTED_COORDINATE]: getSelectedCoordinateFromContext,
+  [ParameterUIContext.SELECTED_COORDINATES]:
+    getAllSelectedCoordinatesFromContext,
   [ParameterUIContext.SELECTED_LINE_STRING_FEATURE]:
     getSingleSelectedLineStringFromContext,
   [ParameterUIContext.SELECTED_MARKER_FEATURE]:
     getSingleSelectedMarkerFromContext,
+  [ParameterUIContext.SELECTED_MARKER_FEATURES]:
+    getAllSelectedMarkersFromContext,
   [ParameterUIContext.SELECTED_POLYGON_FEATURE]:
     getSingleSelectedPolygonFromContext,
   [ParameterUIContext.SELECTED_UAV_COORDINATE]:
     getSingleSelectedUAVCoordinateFromContext,
+  [ParameterUIContext.SELECTED_UAV_COORDINATES]:
+    getAllSelectedUAVCoordinatesFromContext,
 };
