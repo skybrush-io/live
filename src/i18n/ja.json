@@ -1,1 +1,190 @@
-{}
+{
+  "ConnectionStatusMiniList": {
+    "noConnections": "このサーバーはコネクションを使用しません。",
+    "useSecondaryChannel": "セカンダリチャネルを使用してください"
+  },
+  "DrawingToolbar": {
+    "addMarker": "マーカーを追加",
+    "cutHole": "ポリゴンに穴をあける",
+    "drawCircle": "円を描画",
+    "drawPath": "線を描画",
+    "drawPolygon": "ポリゴンを描画",
+    "drawRectangle": "四角形を描画",
+    "editFeature": "編集機能",
+    "select": "選択",
+    "zoom": "拡大"
+  },
+  "OnboardPreflightChecksDialog": {
+    "noError": "エラーが発生しているUAVはありません。",
+    "passed": "機体のプレフライトチェックが正常にパスしました。",
+    "signOffOn": "機体のプレフライトチェックを承認"
+  },
+  "RTKStatusMiniList": {
+    "satelliteCount": "衛星数",
+    "surveyInProgress": "調査中…",
+    "surveyNo": "調査中のものはありません",
+    "surveySuccesful": "調査成功"
+  },
+  "UAVOpButtonGrp": {
+    "armMotors": "モーター始動",
+    "disarmMotors": "モーター停止",
+    "flashLights": "灯火",
+    "land": "着陸",
+    "positionHold": "ポジションホールド",
+    "powerOff": "電源オフ",
+    "powerOn": "電源オン",
+    "properties": "プロパティ",
+    "reboot": "再起動",
+    "removeItemsMarkedGone": "なくなったものを削除",
+    "removeSelectedItems": "選択中のものを削除",
+    "returnToHome": "RTH",
+    "sleep": "スリープ",
+    "takeOff": "テイクオフ"
+  },
+  "UAVStatus": {
+    "noConnected": "UAVと接続していません"
+  },
+  "alerts": {
+    "acknowledgeAlerts": "アラートを確認する",
+    "clickToMute": "音声アラートをミュートする場合はクリックしてください。",
+    "muted": "音声アラートはミュートされています。ミュートを解除する場合はクリックしてください。"
+  },
+  "altitudeSummaryButton": {
+    "clickToChange": "クリックして{{altitudeType}}を変更。",
+    "showingCurrent": "最大最小{{altitudeType}}を表示。"
+  },
+  "authentication": "認証",
+  "batteryStatusHeaderButton": "平均バッテリー量と最小バッテリー量を表示。",
+  "broadcastButton": {
+    "disable": "ブロードキャストを無効化",
+    "enable": "{{time}}秒間ブロードキャストを有効化"
+  },
+  "fieldNotesPanel": {
+    "exportNotesAsFile": "メモをマークダウン形式でエクスポート"
+  },
+  "fitAllFeaturesButton": {
+    "fitAllDrones": "全ドローンに適合",
+    "fitAllFeatures": "全機能に適合"
+  },
+  "fullScreen": {
+    "exit": "全画面モードを終了",
+    "on": "全画面モード"
+  },
+  "geofence": {
+    "statusText": {
+      "automatic": "自動ジオフェンス使用中",
+      "error": "ジオフェンス外のエリアを表示",
+      "manual": "手動ジオフェンス使用中",
+      "no": "ジオフェンス未定義"
+    }
+  },
+  "geofenceDialog": {
+    "apply": "適用",
+    "clear": "現在のジオフェンスをクリア",
+    "close": "閉じる",
+    "fenceAction": "ジオフェンスアクション",
+    "fenceActionHelperText": "これらのオプションはドローンによっては利用できない場合があります。",
+    "fenceActionLabel": "プライマリジオフェンスアクション",
+    "horizontal": "水平",
+    "maxAltitude": "最高高度",
+    "maxDistance": "最長距離",
+    "maxVertexCount": "最大頂点数",
+    "proposedLimits": "ミッションに対する提案された制限",
+    "safetyMargins": "安全域",
+    "simplifyPolygon": "ポリゴンの簡素化",
+    "title": "ジオフェンスの設定",
+    "vertexCountReduction": "頂点数削減",
+    "vertical": "垂直"
+  },
+  "help": "ヘルプ",
+  "lightControl": {
+    "fromGCS": "GCSによるライトのコントロール",
+    "notConnected": "サーバー未接続",
+    "notFromGCS": "GCSによってライトがコントロールされていません"
+  },
+  "map": {
+    "resetRotation": "回転をリセット"
+  },
+  "mappingToggleButton": {
+    "sortByMissionID": "mission IDでソート"
+  },
+  "notifications": {
+    "connectedToSkybrushServer": "Skybrushサーバーに接続しました"
+  },
+  "preferences": "設定",
+  "serverConnectionStatus": {
+    "clockSkew": "クロックスキュー",
+    "clocksSync": "クロック同期",
+    "connected": "接続完了",
+    "connecting": "接続中です…",
+    "disconnected": "サーバーと切断",
+    "disconnecting": "切断中です…",
+    "roundTripTime": "ラウンドトリップタイム",
+    "unknownState": "状態不明",
+    "version": "サーバーのバージョン"
+  },
+  "settings": {
+    "display": {
+      "coordinateFormat": "座標形式",
+      "enableExperimentalFeatures": "実験的機能を有効にする（advanced）",
+      "flatEarthCoordinateSystem": "Flat Earth座標系",
+      "hideInactiveSegmentsOnDarkLCD": "ダークモードLCDクロックのコントラストを強調する",
+      "language": "言語",
+      "mapOrigin": "地図原点",
+      "mapWidgets": "マップウィジェット",
+      "miscellaneous": "その他",
+      "operationModes": "オペレーションモード",
+      "optimizeForSingleUAV": "単一UAVの操作のためにインターフェースを最適化",
+      "optimizeUIForTouch": "タッチディスプレイ端末用に画面を最適化",
+      "showMouseCoordinates": "マウス座標を表示",
+      "showScaleLine": "目盛り線を表示"
+    },
+    "tabs": {
+      "apiKeys": "APIキー",
+      "display": "ディスプレイ",
+      "preflight": "プレフライト",
+      "server": "サーバー",
+      "threeDView": "3d View",
+      "uavs": "UAVs"
+    },
+    "threeDView": {
+      "1x1": "10x10メートル",
+      "2x2": "20x20メートル",
+      "auto": "自動",
+      "dark": "ダーク",
+      "environment": "環境",
+      "grid": "グリッド",
+      "indoor": "屋内",
+      "light": "ライト",
+      "lighting": "灯火",
+      "none": "グリッド無し",
+      "outdoor": "屋外",
+      "rendering": "レンダリング",
+      "scenery": "景色",
+      "showAxes": "座標軸を表示",
+      "showHomePositions": "ホームポジションを表示",
+      "showLandingPositions": "ランディングポジションを表示",
+      "showStatistics": "レンダリング統計情報を表示（advanced）",
+      "showTrajectoriesOfSelection": "選択したUAVの軌道を表示"
+    },
+    "uavs": {
+      "batteryDisplayStyle": "バッテリーの表示形式"
+    }
+  },
+  "view": {
+    "beacon-list": "ビーコン",
+    "layer-list": "レイヤー",
+    "log-panel": "イベントログ",
+    "map": "地図",
+    "saved-location-list": "ロケーション",
+    "show-control": "コントロールの表示",
+    "three-d-view": "3D View",
+    "uav-list": "UAVs"
+  },
+  "weatherMiniList": {
+    "sunrise": "日の出",
+    "sunset": "日没",
+    "timezone": "タイムゾーン",
+    "utcOffset": "UTCオフセット"
+  }
+}
