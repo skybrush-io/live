@@ -6,6 +6,7 @@ import en from './en';
 import es from './es';
 import hu from './hu';
 import it from './it';
+import ja from './ja';
 import nl from './nl';
 import ro from './ro';
 
@@ -18,6 +19,7 @@ export const availableLanguages = [
   { label: 'Magyar', code: 'hu', translation: hu },
   { label: 'Nederlands', code: 'nl', translation: nl },
   { label: 'Română', code: 'ro', translation: ro },
+  { label: '日本語', code: 'ja', translation: ja },
 ];
 
 const i18n = i18next.createInstance();
