@@ -145,7 +145,7 @@
       "preflight": "プレフライト",
       "server": "サーバー",
       "threeDView": "3d View",
-      "uavs": "UAVs"
+      "uavs": "UAV"
     },
     "threeDView": {
       "1x1": "10x10メートル",
@@ -168,20 +168,98 @@
       "showTrajectoriesOfSelection": "選択したUAVの軌道を表示"
     },
     "uavs": {
-      "batteryDisplayStyle": "バッテリーの表示形式"
+      "batteryDisplayStyle": "バッテリーの表示形式",
+      "cellCount": "セル数",
+      "criticalTreshold": "クリティカルなしきい値",
+      "defaultBatterySettings": "デフォルトのバッテリー設定",
+      "desiredHeadingAccuracy": "希望する方位精度",
+      "desiredPlacementAccuracy": "望ましい配置精度",
+      "forget": "未表示のドローンの忘れる",
+      "fullCharge": "フル充電",
+      "gone": "ドローンが消えたとマーク",
+      "lowTreshold": "低しきい値",
+      "missionSetup": "ミッションの設定",
+      "missionSetupDescription": "マルチドローンミッションの前に使用し、各ドローンが所定の離陸位置にいるか、正しい方向を向いているかを確認する。",
+      "warn": "少なくとも以下の期間、ドローンが目撃されていないと警告する"
     }
+  },
+  "show": {
+    "authorizationReq": "離陸の前に認証が必要です",
+    "authorizeTheStart": "ドローンショーの開始を承認",
+    "authorized": "ドローンショーの開始が許可されました",
+    "chooseStartTime": "開始時間の設定",
+    "chooseStartTimeNotSet": "未設定",
+    "clear": "読み込み済みのドローンショーのファイルをクリア",
+    "clock": "時計を表示:",
+    "dronePlacementApproved": "ドローンの配置を承認",
+    "dronePlacementCheck": "ドローンの配置を確認中…",
+    "dronePlacementError": "ドローンの配置でエラーが発生しました",
+    "dronePlacementPartial": "一部のドローンの配置を承認",
+    "fromCloud": "ドローンショーの設定ファイルをクラウドから読み込み",
+    "indoor": "屋内",
+    "loading": "ドローンショーの設定ファイルを読み込んでいます。しばらくお待ちください…",
+    "manualPreflightChecks": "手動飛行前チェック",
+    "noFileLoaded": "ドローンショーのファイルが読み込まれていません",
+    "onboardPreflightChecks": "機体の飛行前チェック",
+    "outdoor": {
+      "invalidAltitudeReference": "屋外の無効な高度基準",
+      "relativeToAMSL": "屋外の{{altitude}}m AMSLに対する相対値",
+      "relativeToHome": "屋外の離陸地点からの距離",
+      "unknownAltitudeReference": "屋外の高度基準が不明"
+    },
+    "placementAccuracy": "配置精度≤ {{distance}}",
+    "reload": "ドローンショーを再読み込み",
+    "revokeAuthorization": "クリックして許可を取り消す",
+    "selectFile": "ドローンショーファイルを選択またはドロップしてください",
+    "setupEnvironment": "環境を設定",
+    "setupGeofence": "ジオフェンスの設定",
+    "setupTakeoffArea": "離陸エリアの設定",
+    "startMethod": {
+      "AUTO": "ドローンショーは自動で開始されます",
+      "RC": "RCのスイッチで始動"
+    },
+    "startTimeNotSet": "開始時刻が設定されていません",
+    "startsAt": "{{time}}に開始",
+    "takeOffMore": "{{quantity}}機のドローンが自動で離陸します",
+    "takeOffNoPosition": "配置されていないドローンがあります",
+    "takeOffOne": "一機のドローンが自動で離陸します",
+    "takeOffPlace": "離陸地点にドローンを配置してください",
+    "unknown": "不明",
+    "unknownStartMode": "このドローンショーの開始モードは不明です",
+    "uploadShowData": "ドローンショーのデータをアップロード",
+    "uploadShowDataLoading": "アップロード中です。しばらくお待ちください…",
+    "uploadShowDataStart": "クリックしてアップロードを開始"
+  },
+  "toolbox": {
+    "averagingInProgress": "{{number}}進行中",
+    "coordinateAveraging": "座標の平均化",
+    "licenseInfo": "ライセンス情報",
+    "offlineMaps": "オフライン地図",
+    "paramUpload": "パラメーターアップロード",
+    "tooltip": "ツールボックス",
+    "uploadInProgress": "アップロード中"
   },
   "view": {
     "beacon-list": "ビーコン",
+    "dock-list": "ドック",
+    "feature-list": "機能",
+    "field-notes": "フィールドノート",
     "layer-list": "レイヤー",
+    "lcd-clock-panel": "時計",
+    "light-control": "ライトコントロール",
     "log-panel": "イベントログ",
     "map": "地図",
     "saved-location-list": "ロケーション",
     "show-control": "コントロールの表示",
     "three-d-view": "3D View",
-    "uav-list": "UAVs"
+    "uav-list": "UAV"
   },
   "weatherMiniList": {
+    "compassDeclination": "コンパスの偏角",
+    "kpIndex": "Kpインデックス",
+    "lastUpdate": "最終更新",
+    "noWeatherInfo": "この日の天気情報はありません",
+    "refreshing": "リフレッシュ中…",
     "sunrise": "日の出",
     "sunset": "日没",
     "timezone": "タイムゾーン",
