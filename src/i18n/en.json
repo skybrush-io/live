@@ -102,16 +102,21 @@
     "exportNotesAsFile": "Export notes as Markdown file"
   },
   "filtering": {
-    "all": "All",
-    "errorsOnly": "Errors only",
+    "composite": "Composite",
+    "filter": "Filter",
+    "filterBy": "Filter by",
     "label": {
       "all": "All",
-      "errors": "Errors",
-      "noTelem": "No telem",
-      "warnErr": "Warn/Err"
+      "errors": "Errors only",
+      "noTelemetry": "No telemetry only",
+      "warningsAndErrors": "Warnings and errors"
     },
-    "noTelemetryOnly": "No telemetry only",
-    "warningsAndErrors": "Warnings and errors"
+    "shortLabel": {
+      "all": "All",
+      "errors": "Errors",
+      "noTelemetry": "No telem",
+      "warningsAndErrors": "Warn/Err"
+    }
   },
   "fitAllFeaturesButton": {
     "fitAllDrones": "Fit all drones",
@@ -397,35 +402,32 @@
   "sidebar": {
     "missionType": "Mission type: ({{missionType}})"
   },
-  "sortAndFilterHeader": {
-    "ascending": "Ascending",
-    "composite": "Composite",
-    "descending": "Descending",
-    "filter": "Filter",
-    "filterBy": "Filter by",
-    "sortBy": "Sort by"
-  },
   "sorting": {
-    "agl": "Altitude above ground",
-    "ahl": "Altitude above home",
-    "amsl": "Altitude (MSL)",
-    "battery": "Battery",
-    "default": "Default",
-    "flightMode": "Flight mode",
-    "gpsFix": "GPS fix",
-    "heading": "Heading",
+    "ascending": "Ascending",
+    "descending": "Descending",
     "label": {
+      "agl": "Altitude above ground",
+      "ahl": "Altitude above home",
+      "amsl": "Altitude (MSL)",
+      "battery": "Battery",
+      "default": "Default",
+      "flightMode": "Flight mode",
+      "gpsFix": "GPS fix",
+      "heading": "Heading",
+      "status": "Status"
+    },
+    "shortLabel": {
       "agl": "AGL",
       "ahl": "AHL",
       "amsl": "AMSL",
       "battery": "Battery",
       "default": "Default",
+      "flightMode": "Mode",
       "gpsFix": "GPS fix",
       "heading": "Heading",
-      "mode": "Mode",
       "status": "Status"
     },
-    "status": "Status"
+    "sortBy": "Sort by"
   },
   "startUploadButton": {
     "start": "Start",

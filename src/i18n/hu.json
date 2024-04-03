@@ -102,16 +102,21 @@
     "exportNotesAsFile": "Jegyzetek exportálása Markdown fájlként"
   },
   "filtering": {
-    "all": "Mind",
-    "errorsOnly": "Csak hibák",
+    "composite": "Összetett",
+    "filter": "Szűrő",
+    "filterBy": "Szűrés",
     "label": {
       "all": "Mind",
-      "errors": "Hibák",
-      "noTelem": "Nincs telem",
-      "warnErr": "Figyelm/Hiba"
+      "errors": "Csak hibák",
+      "noTelemetry": "Csak telemetria nélküliek",
+      "warningsAndErrors": "Figyelmeztetések és hibák"
     },
-    "noTelemetryOnly": "Csak telemetria nélküliek",
-    "warningsAndErrors": "Figyelmeztetések és hibák"
+    "shortLabel": {
+      "all": "Mind",
+      "errors": "Hibák",
+      "noTelemetry": "Nincs telem",
+      "warningsAndErrors": "Figyelm/Hiba"
+    }
   },
   "fitAllFeaturesButton": {
     "fitAllDrones": "Minden drón illesztése",
@@ -397,35 +402,32 @@
   "sidebar": {
     "missionType": "Küldetés típus: {{missionType}}"
   },
-  "sortAndFilterHeader": {
-    "ascending": "Növekvő",
-    "composite": "Összetett",
-    "descending": "Csökkenő",
-    "filter": "Szűrő",
-    "filterBy": "Szűrés",
-    "sortBy": "Rendezés"
-  },
   "sorting": {
-    "agl": "Tengerszint feletti magasság",
-    "ahl": "Magasság a kiindulási szinthez képest",
-    "amsl": "Magasság (MSL)",
-    "battery": "Akkumulátor",
-    "default": "Alapértelmezett",
-    "flightMode": "Repülés mód",
-    "gpsFix": "GPS pontosság",
-    "heading": "Irány",
+    "ascending": "Növekvő",
+    "descending": "Csökkenő",
     "label": {
+      "agl": "Tengerszint feletti magasság",
+      "ahl": "Magasság a kiindulási szinthez képest",
+      "amsl": "Magasság (MSL)",
+      "battery": "Akkumulátor",
+      "default": "Alapértelmezett",
+      "flightMode": "Repülés mód",
+      "gpsFix": "GPS pontosság",
+      "heading": "Irány",
+      "status": "Státusz"
+    },
+    "shortLabel": {
       "agl": "AGL",
       "ahl": "AHL",
       "amsl": "AMSL",
       "battery": "Akku",
       "default": "Alap",
+      "flightMode": "Mód",
       "gpsFix": "GPS pont.",
       "heading": "Irány",
-      "mode": "Mód",
       "status": "Státusz"
     },
-    "status": "Státusz"
+    "sortBy": "Rendezés"
   },
   "startUploadButton": {
     "start": "Indítás",

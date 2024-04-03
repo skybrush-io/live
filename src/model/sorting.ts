@@ -43,15 +43,15 @@ export const UAVSortKeys = [
  * on the UI to represent a UAV sort option.
  */
 export const labelsForUAVSortKey: Record<UAVSortKey, string> = {
-  [UAVSortKey.DEFAULT]: 'sorting.default',
-  [UAVSortKey.STATUS]: 'sorting.status',
-  [UAVSortKey.FLIGHT_MODE]: 'sorting.flightMode',
-  [UAVSortKey.BATTERY]: 'sorting.battery',
-  [UAVSortKey.GPS_FIX]: 'sorting.gpsFix',
-  [UAVSortKey.ALTITUDE_MSL]: 'sorting.amsl',
-  [UAVSortKey.ALTITUDE_HOME]: 'sorting.ahl',
-  [UAVSortKey.ALTITUDE_GROUND]: 'sorting.agl',
-  [UAVSortKey.HEADING]: 'sorting.heading',
+  [UAVSortKey.DEFAULT]: 'sorting.label.default',
+  [UAVSortKey.STATUS]: 'sorting.label.status',
+  [UAVSortKey.FLIGHT_MODE]: 'sorting.label.flightMode',
+  [UAVSortKey.BATTERY]: 'sorting.label.battery',
+  [UAVSortKey.GPS_FIX]: 'sorting.label.gpsFix',
+  [UAVSortKey.ALTITUDE_MSL]: 'sorting.label.amsl',
+  [UAVSortKey.ALTITUDE_HOME]: 'sorting.label.ahl',
+  [UAVSortKey.ALTITUDE_GROUND]: 'sorting.label.agl',
+  [UAVSortKey.HEADING]: 'sorting.label.heading',
 };
 
 /**
@@ -59,15 +59,15 @@ export const labelsForUAVSortKey: Record<UAVSortKey, string> = {
  * on the UI to represent a UAV filter preset.
  */
 export const shortLabelsForUAVSortKey: Record<UAVSortKey, string> = {
-  [UAVSortKey.DEFAULT]: 'sorting.label.default',
-  [UAVSortKey.STATUS]: 'sorting.label.status',
-  [UAVSortKey.FLIGHT_MODE]: 'sorting.label.mode',
-  [UAVSortKey.BATTERY]: 'sorting.label.battery',
-  [UAVSortKey.GPS_FIX]: 'sorting.label.gpsFix',
-  [UAVSortKey.ALTITUDE_MSL]: 'sorting.label.amsl',
-  [UAVSortKey.ALTITUDE_HOME]: 'sorting.label.ahl',
-  [UAVSortKey.ALTITUDE_GROUND]: 'sorting.label.agl',
-  [UAVSortKey.HEADING]: 'sorting.label.heading',
+  [UAVSortKey.DEFAULT]: 'sorting.shortLabel.default',
+  [UAVSortKey.STATUS]: 'sorting.shortLabel.status',
+  [UAVSortKey.FLIGHT_MODE]: 'sorting.shortLabel.flightMode',
+  [UAVSortKey.BATTERY]: 'sorting.shortLabel.battery',
+  [UAVSortKey.GPS_FIX]: 'sorting.shortLabel.gpsFix',
+  [UAVSortKey.ALTITUDE_MSL]: 'sorting.shortLabel.amsl',
+  [UAVSortKey.ALTITUDE_HOME]: 'sorting.shortLabel.ahl',
+  [UAVSortKey.ALTITUDE_GROUND]: 'sorting.shortLabel.agl',
+  [UAVSortKey.HEADING]: 'sorting.shortLabel.heading',
 };
 
 /**

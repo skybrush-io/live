@@ -452,7 +452,7 @@ const SortAndFilterHeader = ({
         />
         <Menu {...bindMenu(sortPopupState)}>
           <MenuItem dense disabled>
-            {t('sortAndFilterHeader.sortBy')}
+            {t('sorting.sortBy')}
           </MenuItem>
           {UAVSortKeys.map((sortKey) => (
             <CheckableMenuItem
@@ -464,11 +464,11 @@ const SortAndFilterHeader = ({
           ))}
           <Divider style={{ margin: '4px 0' }} />
           <MenuItem dense onClick={() => setSortReversed(false)}>
-            {t('sortAndFilterHeader.ascending')}
+            {t('sorting.ascending')}
             {!sortBy?.reverse && check}
           </MenuItem>
           <MenuItem dense onClick={() => setSortReversed(true)}>
-            {t('sortAndFilterHeader.descending')}
+            {t('sorting.descending')}
             {sortBy?.reverse && check}
           </MenuItem>
         </Menu>
@@ -480,9 +480,9 @@ const SortAndFilterHeader = ({
           label={
             isFilterActive
               ? filters.length > 1
-                ? t('sortAndFilterHeader.composite')
+                ? t('filtering.composite')
                 : t(shortLabelsForUAVFilter[filters[0]])
-              : t('sortAndFilterHeader.filter')
+              : t('filtering.filter')
           }
           size='small'
           deleteIcon={
@@ -496,7 +496,7 @@ const SortAndFilterHeader = ({
         />
         <Menu {...bindMenu(filterPopupState)}>
           <MenuItem dense disabled>
-            {t('sortAndFilterHeader.filterBy')}
+            {t('filtering.filterBy')}
           </MenuItem>
           {UAVFilters.map((filter) => (
             <CheckableMenuItem
