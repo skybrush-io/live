@@ -160,7 +160,7 @@ const UAVOperationsButtonGroup = ({
 
       {size !== 'small' && (
         <>
-          <Tooltip content={t('UAVOpButtonGrp.properties')}>
+          <Tooltip content={t('UAVOpButtonGrp.details')}>
             <IconButton
               disabled={!isSelectionSingle}
               size={iconSize}

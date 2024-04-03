@@ -42,13 +42,13 @@
   },
   "UAVOpButtonGrp": {
     "armMotors": "Motorok indítása",
+    "details": "Részletek...",
     "disarmMotors": "Motorok leállítása",
     "flashLights": "Fény villogtatása",
     "land": "Leszállás",
     "positionHold": "Pozíció tartása",
     "powerOff": "Kikapcsolás",
     "powerOn": "Bekapcsolás",
-    "properties": "Tulajdonságok",
     "reboot": "Újraindítás",
     "removeItemsMarkedGone": "Eltűntként megjelölt elemek eltávolítása",
     "removeSelectedItems": "Kiválasztott elemek eltávolítása",
@@ -159,6 +159,7 @@
   },
   "mapContextMenu": {
     "clearGeofence": "Geofence törlése",
+    "details": "Részletek...",
     "flyHere": "Repülj ide",
     "flyHereAtAltitude": "Repülj ide ebben a magasságban…",
     "land": "Leszállás",

@@ -42,13 +42,13 @@
   },
   "UAVOpButtonGrp": {
     "armMotors": "Arm motors",
+    "details": "Details...",
     "disarmMotors": "Disarm motors",
     "flashLights": "Flash lights",
     "land": "Land",
     "positionHold": "Position hold",
     "powerOff": "Power off",
     "powerOn": "Power on",
-    "details": "Details...",
     "reboot": "Reboot",
     "removeItemsMarkedGone": "Remove items marked as gone",
     "removeSelectedItems": "Remove selected items",
@@ -159,6 +159,7 @@
   },
   "mapContextMenu": {
     "clearGeofence": "Clear geofence",
+    "details": "Details...",
     "flyHere": "Fly here",
     "flyHereAtAltitude": "Fly here at altitude…",
     "land": "Land",
