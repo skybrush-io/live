@@ -330,12 +330,12 @@ class MapContextMenu extends React.Component {
                     <ListItemIcon>
                       <ContentCut />
                     </ListItemIcon>
-                    {t('mapContextMenu.substractPolygon', {
-                      x:
-                        selectedFeatures[0].label ??
-                        t('mapContextMenu.unnamedPolygon'),
-                      y:
+                    {t('mapContextMenu.subtractPolygon', {
+                      minuend:
                         selectedFeatures[1].label ??
+                        t('mapContextMenu.unnamedPolygon'),
+                      subtrahend:
+                        selectedFeatures[0].label ??
                         t('mapContextMenu.unnamedPolygon'),
                     })}
                   </MenuItem>

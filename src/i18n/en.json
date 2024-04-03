@@ -178,7 +178,7 @@
     "setMapOriginHere": "Set map origin here",
     "setShowOriginHere": "Set show origin here",
     "sleep": "Sleep",
-    "substractPolygon": "Substract {{x}} from {{y}}",
+    "subtractPolygon": "Subtract {{subtrahend}} from {{minuend}}",
     "takeOff": "Takeoff",
     "unnamedPolygon": "unnamed polygon",
     "useAsGeofence": "Use as geofence"

@@ -178,7 +178,7 @@
     "setMapOriginHere": "Térkép origó beállítása ide",
     "setShowOriginHere": "Műsor origó beállítása ide",
     "sleep": "Alvás",
-    "substractPolygon": "{{x}} kivonása {{y}}-ból/-ből",
+    "subtractPolygon": "{{subtrahend}} kivonása {{minuend}}-ból/-ből",
     "takeOff": "Felszállás",
     "unnamedPolygon": "névtelen sokszög",
     "useAsGeofence": "Alkalmazás geofence-ként"

@@ -71,52 +71,51 @@ export const cloneFeatureById = (id, overrides) => (dispatch, getState) => {
   dispatch(addFeatureWithName({ ...sourceFeature, ...overrides }, id));
 };
 
-export const cutFeature =
-  (minuendId, substrahendId) => (dispatch, getState) => {
-    const state = getState();
-    const minuend = state.features.byId[minuendId];
-    const substrahend = state.features.byId[substrahendId];
+export const cutFeature = (minuendId, subtrahendId) => (dispatch, getState) => {
+  const state = getState();
+  const minuend = state.features.byId[minuendId];
+  const subtrahend = state.features.byId[subtrahendId];
 
-    const makeTurfPolygonFromFeature = (feature) => ({
-      type: 'Feature',
-      geometry: {
-        type: 'Polygon',
-        coordinates: [feature.points, ...(feature.holes ?? [])],
-      },
-    });
+  const makeTurfPolygonFromFeature = (feature) => ({
+    type: 'Feature',
+    geometry: {
+      type: 'Polygon',
+      coordinates: [feature.points, ...(feature.holes ?? [])],
+    },
+  });
 
-    const result = turfDifference(
-      makeTurfPolygonFromFeature(minuend),
-      makeTurfPolygonFromFeature(substrahend)
-    );
+  const result = turfDifference(
+    makeTurfPolygonFromFeature(minuend),
+    makeTurfPolygonFromFeature(subtrahend)
+  );
 
-    switch (result.geometry.type) {
-      case 'Polygon': {
-        const [points, ...holes] = result.geometry.coordinates;
-        dispatch(
-          updateFeaturePropertiesByIds({
-            [minuendId]: { points, holes },
-          })
-        );
+  switch (result.geometry.type) {
+    case 'Polygon': {
+      const [points, ...holes] = result.geometry.coordinates;
+      dispatch(
+        updateFeaturePropertiesByIds({
+          [minuendId]: { points, holes },
+        })
+      );
 
-        break;
-      }
-
-      case 'MultiPolygon': {
-        dispatch(removeFeaturesByIds([minuendId]));
-        for (const [points, ...holes] of result.geometry.coordinates) {
-          dispatch(cloneFeatureById(minuendId, { points, holes }));
-        }
-
-        break;
-      }
-
-      default:
-        throw new Error(`Unexpected geometry type: ${result.geometry.type}`);
+      break;
     }
 
-    dispatch(setSelection([featureIdToGlobalId(substrahendId)]));
-  };
+    case 'MultiPolygon': {
+      dispatch(removeFeaturesByIds([minuendId]));
+      for (const [points, ...holes] of result.geometry.coordinates) {
+        dispatch(cloneFeatureById(minuendId, { points, holes }));
+      }
+
+      break;
+    }
+
+    default:
+      throw new Error(`Unexpected geometry type: ${result.geometry.type}`);
+  }
+
+  dispatch(setSelection([featureIdToGlobalId(subtrahendId)]));
+};
 
 /**
  * Action factory that returns a thunk that removes the selected features from
