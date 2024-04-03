@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import Box from '@material-ui/core/Box';
@@ -28,15 +29,18 @@ const IndoorEnvironmentEditor = ({
   onRoomVisibilityChanged,
   onFirstCornerChanged,
   onSecondCornerChanged,
+  t,
 }) => (
   <FormGroup>
-    <FormHeader>Coordinates of the corners of the room</FormHeader>
+    <FormHeader>
+      {t('indoorEnvironmentEditor.coordinatesOfTheCorners')}
+    </FormHeader>
     <XYZFields value={firstCorner} onChange={onFirstCornerChanged} />
     <Box p={1} />
     <XYZFields value={secondCorner} onChange={onSecondCornerChanged} />
     <Box p={1} />
     <FormControlLabel
-      label='Room visible in 3D view'
+      label={t('indoorEnvironmentEditor.roomVisibleIn3D')}
       control={
         <Checkbox
           checked={Boolean(roomVisible)}
@@ -54,6 +58,7 @@ IndoorEnvironmentEditor.propTypes = {
   onFirstCornerChanged: PropTypes.func,
   onSecondCornerChanged: PropTypes.func,
   onRoomVisibilityChanged: PropTypes.func,
+  t: PropTypes.func,
 };
 
 export default connect(
@@ -73,4 +78,4 @@ export default connect(
     onFirstCornerChanged: setFirstCornerOfRoom,
     onSecondCornerChanged: setSecondCornerOfRoom,
   }
-)(IndoorEnvironmentEditor);
+)(withTranslation()(IndoorEnvironmentEditor));

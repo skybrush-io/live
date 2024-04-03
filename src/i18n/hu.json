@@ -1,4 +1,7 @@
 {
+  "APIKeysTab": {
+    "description": "Egyes térképcsempe szolgáltatók API kulcs nélkül működnek; ebben az esetben egy alapértelmezett API kulcs van használatban. Ez az API kulcs minden felhasználóval meg van osztva. Nem vállalunk garanciát a térképcsempék elérhetőségére, ha az alapértelmezett megosztott API kulcs van használatban."
+  },
   "ConnectionStatusMiniList": {
     "noConnections": "Ez a szerver nem használ kapcsolatokat.",
     "useSecondaryChannel": "Másodlagos csatorna használata"
@@ -20,11 +23,22 @@
     "passed": "Automata fedélzeti ellenőrzés rendben.",
     "signOffOn": "Automata fedélzeti ellenőrzés nyugtázása"
   },
+  "RTKCorrectionSourceSelector": {
+    "RTKCorrections": "RTK korrekciók",
+    "error": "Hiba az RTK források szerverről történő betöltése közben",
+    "noRTKData": "Nincsenek RTK adatforrások a szerveren",
+    "pleaseWait": "Kérem várjon, RTK források betöltése…"
+  },
   "RTKStatusMiniList": {
     "satelliteCount": "Műholdak száma",
     "surveyInProgress": "A felmérés folyamatban...",
     "surveyNo": "Nincs felmérés folyamatban",
     "surveySuccesful": "A felmérés sikeres"
+  },
+  "UAVList": {
+    "allUAVs": "Összes drón",
+    "assignedUAVs": "Hozzárendelt drónok",
+    "spareUAVs": "Tartalék drónok"
   },
   "UAVOpButtonGrp": {
     "armMotors": "Motorok indítása",
@@ -54,14 +68,50 @@
     "clickToChange": "Kattintson a módosításhoz {{altitudeType}}-re.",
     "showingCurrent": "Maximum és minimum {{altitudeType}} kijelzése."
   },
+  "augmentMappingButton": {
+    "assignSparesToEmptySlots": "Tartalékok hozzárendelése az üres helyekhez"
+  },
   "authentication": "Felhasználó azonosítása",
   "batteryStatusHeaderButton": "Átlagos és minimális töltési szintek kijelzése.",
+  "bearingCalculator": {
+    "addAtLeastTwoItems": "Adjon hozzá legalább két elemet a köztük lévő irány és távolság kiszámításához",
+    "bearing": ", irány: ",
+    "finalBearing": ", végső irány: ",
+    "initialBearing": ", kezdeti irány: ",
+    "selectTwoItems": "Válasszon ki pontosan két elemet a köztük lévő irány és távolság kiszámításához"
+  },
   "broadcastButton": {
     "disable": "Broadcast letiltása",
     "enable": "Broadcast engedélyezése {{time}} másodpercig"
   },
+  "coordinateAveragingDialogToolbar": {
+    "addNewDrone": "Új drón hozzáadása",
+    "copyCentroid": "Centroid másolása",
+    "pauseMeasurement": "Mérés szüneteltetése",
+    "removeSelected": "A kiválaszott eltávolítása",
+    "resetMeasurement": "Mérés visszaállítása",
+    "resumeMeasurement": "Mérés folytatása",
+    "setCentroidAsMapOrigin": "Centroid beállítása a térkép origójaként"
+  },
+  "environmentEditorDialog": {
+    "environmentSettings": "Környezeti beállítások",
+    "indoor": "Ez egy beltéri műsor. Megadhatja a terem sarkait, ahol a műsor zajlik (vizualizásiós célból).",
+    "outdoor": "Ez egy kültéri műsor. Adja meg legalább a koordináta rendszer origóját és irányát, hogy a Skybrush le tudja képezni a műsort GPS koordinátákba."
+  },
   "fieldNotesPanel": {
     "exportNotesAsFile": "Jegyzetek exportálása Markdown fájlként"
+  },
+  "filtering": {
+    "all": "Mind",
+    "errorsOnly": "Csak hibák",
+    "label": {
+      "all": "Mind",
+      "errors": "Hibák",
+      "noTelem": "Nincs telem",
+      "warnErr": "Figyelm/Hiba"
+    },
+    "noTelemetryOnly": "Csak telemetria nélküliek",
+    "warningsAndErrors": "Figyelmeztetések és hibák"
   },
   "fitAllFeaturesButton": {
     "fitAllDrones": "Minden drón illesztése",
@@ -84,6 +134,10 @@
     "velocitySummary": ""
   },
   "help": "Segítség",
+  "indoorEnvironmentEditor": {
+    "coordinatesOfTheCorners": "A szoba sarkainak koordinátái",
+    "roomVisibleIn3D": "A szoba látható 3D nézetben"
+  },
   "lightControl": {
     "fromGCS": "A fények GCS-sel vezéreltek",
     "notConnected": "Nem csatlakozik a szerverhez",
@@ -91,6 +145,55 @@
   },
   "map": {
     "resetRotation": "Forgatás visszaállítása"
+  },
+  "mapCachingDialog": {
+    "offlineMaps": "Offline térképek"
+  },
+  "mapCachingPanel": {
+    "clearChache": "Gyorsítótár törlése",
+    "close": "Bezár",
+    "connectToServer": "Csatlakozás egy offline térkép támogatással rendelkező szerverhez",
+    "serverNotSupport": "A szerver nem támogatja az offline térkép gyorsítótárazását",
+    "serverSupport": "A szerver támogatja az offline térkép gyorsítótárazását",
+    "useCachedMapTiles": "Szerveren gyorsítótárazott térképcsempék használata"
+  },
+  "mapContextMenu": {
+    "clearGeofence": "Geofence törlése",
+    "flyHere": "Repülj ide",
+    "flyHereAtAltitude": "Repülj ide ebben a magasságban…",
+    "land": "Leszállás",
+    "positionHold": "Pozíció tartása",
+    "powerOff": "Kikapcsolás",
+    "powerOn": "Bekapcsolás",
+    "properties": "Tulajdonságok...",
+    "reboot": "Újraindítás",
+    "remove": "Eltávolítás",
+    "returnToHome": "Hazatérés",
+    "setMapOriginHere": "Térkép origó beállítása ide",
+    "setShowOriginHere": "Műsor origó beállítása ide",
+    "sleep": "Alvás",
+    "substractPolygon": "{{x}} kivonása {{y}}-ból/-ből",
+    "takeOff": "Felszállás",
+    "unnamedPolygon": "névtelen sokszög",
+    "useAsGeofence": "Alkalmazás geofence-ként"
+  },
+  "mappingButtonGroup": {
+    "editMapping": "Térképezés szerkesztése",
+    "hideEmptyMissionSlots": "Üres küldetéshelyek elrejtése",
+    "showEmptyMissionSlots": "Üres küldetéshelyek megjelenítése"
+  },
+  "mappingEditorToolbar": {
+    "assignSpares": "Tartalékok hozzárendelése",
+    "clear": "Törlés",
+    "clearMissing": "Hiányzó törlése",
+    "clickToEdit": "Kattintson egy hely szerkesztéséhez.",
+    "dragNodes": "Húzza az ikonokat a térképezés átrendezéséhez.",
+    "exportMapping": "Térképezés exportálása…",
+    "importMapping": "Térképezés importálása…"
+  },
+  "mappingSlotEditorToolbar": {
+    "reverseDirection": "Tartsa nyomva a <kbd>Shift</kbd>-et az irány megfordításához.",
+    "selectNextEmptySlot": "Következő üres hely kiválasztása"
   },
   "mappingToggleButton": {
     "sortByMissionID": "Rendezés küldetés ID alapján"
@@ -107,7 +210,28 @@
   "notifications": {
     "connectedToSkybrushServer": "Csatlakozva a Skybrush szerverhez"
   },
+  "outdoorEnvironmentEditor": {
+    "AHL": "Magasság a kiindulási szinthez képest (AHL)",
+    "AMSL": "Átlagos tengerszint feletti magasság (AMSL)",
+    "AMSLReference": "AMSL referencia",
+    "altitudeControl": "Magasság kontroll és RTK korrekciók",
+    "coordinateSystem": "Koordinátarendszer",
+    "copyMapOriginToShow": "Térkép origó másolása műsor origóra",
+    "copyShowOriginToMap": "Műsor origó másolása térkép origóra",
+    "fitCoordinateSysToCurrentDrone": "Koordinátarendszer illesztése az aktuális drón pozíciókra",
+    "setToAverageAMSL": "Beállítás az aktív drónok átlagos AMSL-ére",
+    "showCoordinateSystemAppliedToMap": "A műsor koordinátarendszere alkalmazva a térképre.",
+    "showCoordinateSystemUpdatedFromMap": "A műsor koordinátarendszere frissítve a térképről.",
+    "showIsControlledBasedOn": "A műsor ezalapján irányítva…",
+    "showOrientation": "Műsor iránya",
+    "showOrigin": "Műsor origója",
+    "warningText": "Az automatikus műsor origó és irány számítás feltételezi, hogy az összes drón a műsor X tengelye felé mutat <underline>vagy</underline>, hogy a fenti beállítással meghatározta az eltolásukat az X tengelyhez képest. Az abszolút felszállási irányok nem támogatottak."
+  },
   "preferences": "Beállítások",
+  "recalculateMappingButton": {
+    "findOptimalMapping": "Optimális térképezés keresése",
+    "recalculateMapping": "Térképezés újraszámolása"
+  },
   "safetyDialog": {
     "geofenceTab": {
       "apply": "Alkalmaz",
@@ -131,6 +255,25 @@
       "vertical": "Függőleges"
     },
     "title": "Biztonság"
+  },
+  "savedLocation": {
+    "addNew": "Új helyszín hozzáadása",
+    "edit": "Helyszín szerkesztése"
+  },
+  "savedLocationEditor": {
+    "cancel": "Mégse",
+    "copyFromMapView": "Másolás térképnézetből",
+    "createNew": "Új helyszín létrehozása",
+    "delete": "Törlés",
+    "discard": "Elvetés",
+    "editSaved": "Mentett helyszín szerkesztése",
+    "latitude": "Szélességi fok",
+    "longitude": "Hosszúsági fok",
+    "name": "Név",
+    "notes": "Jegyzetek",
+    "rotation": "Elforgatás",
+    "save": "Mentés",
+    "zoomLevel": "Nagyítás mértéke"
   },
   "serverConnectionStatus": {
     "clockSkew": "Óra szinkronizálás",
@@ -253,6 +396,63 @@
   "sidebar": {
     "missionType": "Küldetés típus: {{missionType}}"
   },
+  "sortAndFilterHeader": {
+    "ascending": "Növekvő",
+    "composite": "Összetett",
+    "descending": "Csökkenő",
+    "filter": "Szűrő",
+    "filterBy": "Szűrés",
+    "sortBy": "Rendezés"
+  },
+  "sorting": {
+    "agl": "Tengerszint feletti magasság",
+    "ahl": "Magasság a kiindulási szinthez képest",
+    "amsl": "Magasság (MSL)",
+    "battery": "Akkumulátor",
+    "default": "Alapértelmezett",
+    "flightMode": "Repülés mód",
+    "gpsFix": "GPS pontosság",
+    "heading": "Irány",
+    "label": {
+      "agl": "AGL",
+      "ahl": "AHL",
+      "amsl": "AMSL",
+      "battery": "Akku",
+      "default": "Alap",
+      "gpsFix": "GPS pont.",
+      "heading": "Irány",
+      "mode": "Mód",
+      "status": "Státusz"
+    },
+    "status": "Státusz"
+  },
+  "startUploadButton": {
+    "start": "Indítás",
+    "startSelected": "Indítás a kiválasztottakra"
+  },
+  "takeoffAreaSetupDialog": {
+    "allDroneOnline": "Minden misszióban résztvevő drón online állapotban.",
+    "allDronesAtTakeoffPositions": "Minden drón a felszállási pozíciójában van.",
+    "allDronesFacingCorrectDirection": "Minden drón a megfelelő irányba néz.",
+    "allSlotsFilled": "A küldetés összes helye be van töltve.",
+    "approveTakeoffAreaArrangement": "A felszállási terület elrendezésének jóváhagyása",
+    "emptySlots": "Üres helyek:",
+    "misaligned": "Rosszul tájolva:",
+    "misplaced": "Rossz helyen:",
+    "missing": "Hiányzó:",
+    "noDrones": "Nincs drón a küldetésben.",
+    "placeVirtualDrones": "Virtuális drónok elhelyezése",
+    "takeoffAreaSetup": "Felszállási terület beállítások"
+  },
+  "takeoffHeadingSpecEditor": {
+    "UAVheadings": "Drónok irányai a felszállás előtt…",
+    "compassDirection": "Iránytű iránya",
+    "headingOffset": "Irány eltolás",
+    "setToAvergaeHeading": "Átlagos irány beállítása az aktív drónokra",
+    "specifiedByAbsoluteCompassDirection": "Az abszolút iránytű irány határozza meg",
+    "specifiedRelativeToShowOrientation": "A műsor irányához képest van megadva",
+    "unspecified": "Nem meghatározott"
+  },
   "toolbox": {
     "averagingInProgress": "{{number}} folyamatban",
     "coordinateAveraging": "Koordináta átlagolás",
@@ -261,6 +461,25 @@
     "paramUpload": "Paraméter feltöltése",
     "tooltip": "Eszköztár",
     "uploadInProgress": "Feltöltés folyamatban"
+  },
+  "uploadPanel": {
+    "cancelUpload": "Feltöltés megszakítása",
+    "flashLightsWhereFailed": "Azon drónok villogtatása, ahol nem sikerült a feltöltés",
+    "retryFailedAttempts": "Sikertelen kísérletek automatikus újrapróbálása",
+    "uploadAttemptFailed": "A feltöltés sikertelen.",
+    "uploadCancelled": "A feltöltést a felhasználó megszakította.",
+    "uploadFinishedSuccessfully": "A feltöltés sikeresen befejeződött.",
+    "uploadInProgress": "Feltöltés folyamatban…",
+    "uploadNotFinishedYet": "A feltöltés még nem fejeződött be."
+  },
+  "uploadStatusLegend": {
+    "clearUploadQueue": "Feltöltési sor törlése",
+    "failed": "sikertelen",
+    "inProgress": "folyamatban",
+    "restartSuccessfulItems": "Sikeres elemek újraindítása",
+    "retryFailedItems": "Sikertelen elemek újrapróbálása",
+    "successful": "sikeres",
+    "waiting": "várakozik"
   },
   "view": {
     "beacon-list": "Jeladók",

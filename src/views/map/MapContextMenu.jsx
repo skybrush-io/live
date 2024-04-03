@@ -5,6 +5,7 @@
 
 import PropTypes from 'prop-types';
 import React from 'react';
+import { Translation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import Divider from '@material-ui/core/Divider';
@@ -101,257 +102,279 @@ class MapContextMenu extends React.Component {
 
   render() {
     return (
-      <ContextMenu
-        ref={this._contextMenu}
-        contextProvider={this.props.contextProvider}
-      >
-        {({ selectedFeatures, selectedUAVIds, geofencePolygonId }) => {
-          const result = [];
-          const hasSelectedFeatures = selectedFeatures?.length > 0;
-          const hasSingleSelectedFeature = selectedFeatures?.length === 1;
-          const hasSelectedUAVs = selectedUAVIds?.length > 0;
-          const hasSingleSelectedUAV = selectedUAVIds?.length === 1;
+      <Translation>
+        {(t) => (
+          <ContextMenu
+            ref={this._contextMenu}
+            contextProvider={this.props.contextProvider}
+          >
+            {({ selectedFeatures, selectedUAVIds, geofencePolygonId }) => {
+              const result = [];
+              const hasSelectedFeatures = selectedFeatures?.length > 0;
+              const hasSingleSelectedFeature = selectedFeatures?.length === 1;
+              const hasSelectedUAVs = selectedUAVIds?.length > 0;
+              const hasSingleSelectedUAV = selectedUAVIds?.length === 1;
 
-          if (hasSelectedUAVs) {
-            result.push(
-              <MenuItem
-                key='fly'
-                dense
-                onClick={this._moveSelectedUAVsAtCurrentAltitude}
-              >
-                <ListItemIcon>
-                  <Flight />
-                </ListItemIcon>
-                Fly here
-              </MenuItem>,
-              <MenuItem
-                key='flyAtAltitude'
-                dense
-                onClick={this._moveSelectedUAVsAtGivenAltitude}
-              >
-                <ListItemIcon>
-                  <Flight />
-                </ListItemIcon>
-                Fly here at altitude…
-              </MenuItem>,
-              <Divider key='div1' />,
-              <MenuItem key='takeoff' dense onClick={this._takeoffSelectedUAVs}>
-                <ListItemIcon>
-                  <FlightTakeoff />
-                </ListItemIcon>
-                Takeoff
-              </MenuItem>,
-              <MenuItem
-                key='poshold'
-                dense
-                onClick={this._positionHoldSelectedUAVs}
-              >
-                <ListItemIcon>
-                  <PositionHold />
-                </ListItemIcon>
-                Position hold
-              </MenuItem>,
-              <MenuItem key='home' dense onClick={this._returnSelectedUAVs}>
-                <ListItemIcon>
-                  <Home />
-                </ListItemIcon>
-                Return to home
-              </MenuItem>,
-              <MenuItem key='land' dense onClick={this._landSelectedUAVs}>
-                <ListItemIcon>
-                  <FlightLand />
-                </ListItemIcon>
-                Land
-              </MenuItem>,
-              <Divider key='div2' />,
-              <MenuItem
-                key='message'
-                dense
-                disabled={!hasSingleSelectedUAV}
-                onClick={this._openDetailsDialogForSelectedUAVs}
-              >
-                <ListItemIcon>
-                  <Assignment />
-                </ListItemIcon>
-                Details...
-              </MenuItem>,
-              <Divider key='div3' />,
-              <MenuItem key='wakeUp' dense onClick={this._wakeUpSelectedUAVs}>
-                <ListItemIcon>
-                  <Bolt />
-                </ListItemIcon>
-                Power on
-              </MenuItem>,
-              <MenuItem key='sleep' dense onClick={this._sleepSelectedUAVs}>
-                <ListItemIcon>
-                  <Moon />
-                </ListItemIcon>
-                Sleep
-              </MenuItem>,
-              <MenuItem key='reset' dense onClick={this._resetUAVs}>
-                <ListItemIcon>
-                  <Refresh color='secondary' />
-                </ListItemIcon>
-                Reboot
-              </MenuItem>,
-              <MenuItem
-                key='shutdown'
-                dense
-                onClick={this._shutdownSelectedUAVs}
-              >
-                <ListItemIcon>
-                  <ActionPowerSettingsNew color='secondary' />
-                </ListItemIcon>
-                Power off
-              </MenuItem>,
-              <Divider key='div4' />
-            );
-          }
+              if (hasSelectedUAVs) {
+                result.push(
+                  <MenuItem
+                    key='fly'
+                    dense
+                    onClick={this._moveSelectedUAVsAtCurrentAltitude}
+                  >
+                    <ListItemIcon>
+                      <Flight />
+                    </ListItemIcon>
+                    {t('mapContextMenu.flyHere')}
+                  </MenuItem>,
+                  <MenuItem
+                    key='flyAtAltitude'
+                    dense
+                    onClick={this._moveSelectedUAVsAtGivenAltitude}
+                  >
+                    <ListItemIcon>
+                      <Flight />
+                    </ListItemIcon>
+                    {t('mapContextMenu.flyHereAtAltitude')}
+                  </MenuItem>,
+                  <Divider key='div1' />,
+                  <MenuItem
+                    key='takeoff'
+                    dense
+                    onClick={this._takeoffSelectedUAVs}
+                  >
+                    <ListItemIcon>
+                      <FlightTakeoff />
+                    </ListItemIcon>
+                    {t('mapContextMenu.takeOff')}
+                  </MenuItem>,
+                  <MenuItem
+                    key='poshold'
+                    dense
+                    onClick={this._positionHoldSelectedUAVs}
+                  >
+                    <ListItemIcon>
+                      <PositionHold />
+                    </ListItemIcon>
+                    {t('mapContextMenu.positionHold')}
+                  </MenuItem>,
+                  <MenuItem key='home' dense onClick={this._returnSelectedUAVs}>
+                    <ListItemIcon>
+                      <Home />
+                    </ListItemIcon>
+                    {t('mapContextMenu.returnToHome')}
+                  </MenuItem>,
+                  <MenuItem key='land' dense onClick={this._landSelectedUAVs}>
+                    <ListItemIcon>
+                      <FlightLand />
+                    </ListItemIcon>
+                    {t('mapContextMenu.land')}
+                  </MenuItem>,
+                  <Divider key='div2' />,
+                  <MenuItem
+                    key='message'
+                    dense
+                    disabled={!hasSingleSelectedUAV}
+                    onClick={this._openDetailsDialogForSelectedUAVs}
+                  >
+                    <ListItemIcon>
+                      <Assignment />
+                    </ListItemIcon>
+                    {t('mapContextMenu.details')}
+                  </MenuItem>,
+                  <Divider key='div3' />,
+                  <MenuItem
+                    key='wakeUp'
+                    dense
+                    onClick={this._wakeUpSelectedUAVs}
+                  >
+                    <ListItemIcon>
+                      <Bolt />
+                    </ListItemIcon>
+                    {t('mapContextMenu.powerOn')}
+                  </MenuItem>,
+                  <MenuItem key='sleep' dense onClick={this._sleepSelectedUAVs}>
+                    <ListItemIcon>
+                      <Moon />
+                    </ListItemIcon>
+                    {t('mapContextMenu.sleep')}
+                  </MenuItem>,
+                  <MenuItem key='reset' dense onClick={this._resetUAVs}>
+                    <ListItemIcon>
+                      <Refresh color='secondary' />
+                    </ListItemIcon>
+                    {t('mapContextMenu.reboot')}
+                  </MenuItem>,
+                  <MenuItem
+                    key='shutdown'
+                    dense
+                    onClick={this._shutdownSelectedUAVs}
+                  >
+                    <ListItemIcon>
+                      <ActionPowerSettingsNew color='secondary' />
+                    </ListItemIcon>
+                    {t('mapContextMenu.powerOff')}
+                  </MenuItem>,
+                  <Divider key='div4' />
+                );
+              }
 
-          if (this.props.addPointToMission) {
-            result.push(
-              <MenuItem
-                key='addPointToMission'
-                dense
-                onClick={this._addPointToMission}
-              >
-                <ListItemIcon>
-                  <Add />
-                </ListItemIcon>
-                Add point to mission
-              </MenuItem>
-            );
-          }
+              if (this.props.addPointToMission) {
+                result.push(
+                  <MenuItem
+                    key='addPointToMission'
+                    dense
+                    onClick={this._addPointToMission}
+                  >
+                    <ListItemIcon>
+                      <Add />
+                    </ListItemIcon>
+                    Add point to mission
+                  </MenuItem>
+                );
+              }
 
-          if (this.props.setMapCoordinateSystemOrigin) {
-            result.push(
-              <MenuItem
-                key='setMapCoordinateSystemOrigin'
-                dense
-                onClick={this._setMapCoordinateSystemOrigin}
-              >
-                <ListItemIcon>
-                  <PinDrop />
-                </ListItemIcon>
-                Set map origin here
-              </MenuItem>
-            );
-          }
+              if (this.props.setMapCoordinateSystemOrigin) {
+                result.push(
+                  <MenuItem
+                    key='setMapCoordinateSystemOrigin'
+                    dense
+                    onClick={this._setMapCoordinateSystemOrigin}
+                  >
+                    <ListItemIcon>
+                      <PinDrop />
+                    </ListItemIcon>
+                    {t('mapContextMenu.setMapOriginHere')}
+                  </MenuItem>
+                );
+              }
 
-          if (this.props.setShowCoordinateSystemOrigin) {
-            result.push(
-              <MenuItem
-                key='setShowCoordinateSystemOrigin'
-                dense
-                onClick={this._setShowCoordinateSystemOrigin}
-              >
-                <ListItemIcon>
-                  <Grain />
-                </ListItemIcon>
-                Set show origin here
-              </MenuItem>
-            );
-          }
+              if (this.props.setShowCoordinateSystemOrigin) {
+                result.push(
+                  <MenuItem
+                    key='setShowCoordinateSystemOrigin'
+                    dense
+                    onClick={this._setShowCoordinateSystemOrigin}
+                  >
+                    <ListItemIcon>
+                      <Grain />
+                    </ListItemIcon>
+                    {t('mapContextMenu.setShowOriginHere')}
+                  </MenuItem>
+                );
+              }
 
-          if (hasSingleSelectedFeature) {
-            const featureSuitableForGeofence = [
-              // FeatureType.CIRCLE,
-              FeatureType.POLYGON,
-            ].includes(selectedFeatures[0].type);
-            const isCurrentGeofence =
-              selectedFeatures[0].id === geofencePolygonId;
-            result.push(
-              <Divider key='div5' />,
-              <MenuItem
-                key='geofence'
-                dense
-                disabled={!featureSuitableForGeofence}
-                onClick={
-                  isCurrentGeofence
-                    ? this._unsetSelectedFeatureAsGeofence
-                    : this._setSelectedFeatureAsGeofence
-                }
-              >
-                <ListItemIcon>
-                  <Fence color={isCurrentGeofence ? 'disabled' : 'action'} />
-                </ListItemIcon>
-                {isCurrentGeofence ? 'Clear geofence' : 'Use as geofence'}
-              </MenuItem>
-            );
+              if (hasSingleSelectedFeature) {
+                const featureSuitableForGeofence = [
+                  // FeatureType.CIRCLE,
+                  FeatureType.POLYGON,
+                ].includes(selectedFeatures[0].type);
+                const isCurrentGeofence =
+                  selectedFeatures[0].id === geofencePolygonId;
+                result.push(
+                  <Divider key='div5' />,
+                  <MenuItem
+                    key='geofence'
+                    dense
+                    disabled={!featureSuitableForGeofence}
+                    onClick={
+                      isCurrentGeofence
+                        ? this._unsetSelectedFeatureAsGeofence
+                        : this._setSelectedFeatureAsGeofence
+                    }
+                  >
+                    <ListItemIcon>
+                      <Fence
+                        color={isCurrentGeofence ? 'disabled' : 'action'}
+                      />
+                    </ListItemIcon>
+                    {isCurrentGeofence
+                      ? t('mapContextMenu.clearGeofence')
+                      : t('mapContextMenu.useAsGeofence')}
+                  </MenuItem>
+                );
 
-            const featureSuitableForExclusionZone = [
-              FeatureType.POLYGON,
-            ].includes(selectedFeatures[0].type);
-            const isExclusionZone =
-              selectedFeatures[0].attributes?.isExclusionZone;
-            result.push(
-              <MenuItem
-                key='exclusionZone'
-                dense
-                disabled={!featureSuitableForExclusionZone}
-                onClick={
-                  isExclusionZone
-                    ? this._unsetSelectedFeatureAsExclusionZone
-                    : this._setSelectedFeatureAsExclusionZone
-                }
-              >
-                <ListItemIcon>
-                  <Block color={isExclusionZone ? 'disabled' : 'action'} />
-                </ListItemIcon>
-                {isExclusionZone
-                  ? 'Clear exclusion zone'
-                  : 'Use as exclusion zone'}
-              </MenuItem>
-            );
-          }
+                const featureSuitableForExclusionZone = [
+                  FeatureType.POLYGON,
+                ].includes(selectedFeatures[0].type);
+                const isExclusionZone =
+                  selectedFeatures[0].attributes?.isExclusionZone;
+                result.push(
+                  <MenuItem
+                    key='exclusionZone'
+                    dense
+                    disabled={!featureSuitableForExclusionZone}
+                    onClick={
+                      isExclusionZone
+                        ? this._unsetSelectedFeatureAsExclusionZone
+                        : this._setSelectedFeatureAsExclusionZone
+                    }
+                  >
+                    <ListItemIcon>
+                      <Block color={isExclusionZone ? 'disabled' : 'action'} />
+                    </ListItemIcon>
+                    {isExclusionZone
+                      ? 'Clear exclusion zone'
+                      : 'Use as exclusion zone'}
+                  </MenuItem>
+                );
+              }
 
-          if (
-            hasSelectedFeatures &&
-            selectedFeatures.length === 2 &&
-            selectedFeatures.every((t) => t.type === FeatureType.POLYGON)
-          ) {
-            result.push(
-              <MenuItem key='cut' dense onClick={this._cutSelectedFeatures}>
-                <ListItemIcon>
-                  <ContentCut />
-                </ListItemIcon>
-                Subtract {selectedFeatures[0].label ?? 'unnamed polygon'} from{' '}
-                {selectedFeatures[1].label ?? 'unnamed polygon'}
-              </MenuItem>
-            );
-          }
+              if (
+                hasSelectedFeatures &&
+                selectedFeatures.length === 2 &&
+                selectedFeatures.every((t) => t.type === FeatureType.POLYGON)
+              ) {
+                result.push(
+                  <MenuItem key='cut' dense onClick={this._cutSelectedFeatures}>
+                    <ListItemIcon>
+                      <ContentCut />
+                    </ListItemIcon>
+                    {t('mapContextMenu.substractPolygon', {
+                      x:
+                        selectedFeatures[0].label ??
+                        t('mapContextMenu.unnamedPolygon'),
+                      y:
+                        selectedFeatures[1].label ??
+                        t('mapContextMenu.unnamedPolygon'),
+                    })}
+                  </MenuItem>
+                );
+              }
 
-          if (hasSelectedFeatures) {
-            result.push(
-              <Divider key='div6' />,
-              <MenuItem
-                key='setProperties'
-                dense
-                disabled={!hasSingleSelectedFeature}
-                onClick={this._editSelectedFeature}
-              >
-                <ListItemIcon>
-                  <Edit />
-                </ListItemIcon>
-                Properties…
-              </MenuItem>,
-              <MenuItem
-                key='remove'
-                dense
-                disabled={!hasSelectedFeatures}
-                onClick={this._removeSelectedFeatures}
-              >
-                <ListItemIcon>
-                  <ActionDelete />
-                </ListItemIcon>
-                Remove
-              </MenuItem>
-            );
-          }
+              if (hasSelectedFeatures) {
+                result.push(
+                  <Divider key='div6' />,
+                  <MenuItem
+                    key='setProperties'
+                    dense
+                    disabled={!hasSingleSelectedFeature}
+                    onClick={this._editSelectedFeature}
+                  >
+                    <ListItemIcon>
+                      <Edit />
+                    </ListItemIcon>
+                    {t('mapContextMenu.properties')}
+                  </MenuItem>,
+                  <MenuItem
+                    key='remove'
+                    dense
+                    disabled={!hasSelectedFeatures}
+                    onClick={this._removeSelectedFeatures}
+                  >
+                    <ListItemIcon>
+                      <ActionDelete />
+                    </ListItemIcon>
+                    {t('mapContextMenu.remove')}
+                  </MenuItem>
+                );
+              }
 
-          return result;
-        }}
-      </ContextMenu>
+              return result;
+            }}
+          </ContextMenu>
+        )}
+      </Translation>
     );
   }
 

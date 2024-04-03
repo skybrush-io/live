@@ -1,4 +1,7 @@
 {
+  "APIKeysTab": {
+    "description": "Some map tile providers work without an API key; in this case, a default API key is used. This API key is shared between all users. We make no guarantees about the availability of map tiles if you use the default shared API key."
+  },
   "ConnectionStatusMiniList": {
     "noConnections": "This server uses no connections.",
     "useSecondaryChannel": "Use secondary channel"
@@ -20,11 +23,22 @@
     "passed": "Onboard preflight checks passed.",
     "signOffOn": "Sign off on onboard preflight checks"
   },
+  "RTKCorrectionSourceSelector": {
+    "RTKCorrections": "RTK corrections",
+    "error": "Error while loading RTK sources from server",
+    "noRTKData": "No RTK data sources on server",
+    "pleaseWait": "Please wait, loading RTK sources…"
+  },
   "RTKStatusMiniList": {
     "satelliteCount": "Satellite count",
     "surveyInProgress": "Survey in progress...",
     "surveyNo": "No survey in progress",
     "surveySuccesful": "Survey successful"
+  },
+  "UAVList": {
+    "allUAVs": "All UAVs",
+    "assignedUAVs": "Assigned UAVs",
+    "spareUAVs": "Spare UAVs"
   },
   "UAVOpButtonGrp": {
     "armMotors": "Arm motors",
@@ -34,7 +48,7 @@
     "positionHold": "Position hold",
     "powerOff": "Power off",
     "powerOn": "Power on",
-    "properties": "Properties",
+    "details": "Details...",
     "reboot": "Reboot",
     "removeItemsMarkedGone": "Remove items marked as gone",
     "removeSelectedItems": "Remove selected items",
@@ -54,14 +68,50 @@
     "clickToChange": "Click to change to {{altitudeType}}.",
     "showingCurrent": "Showing maximum and minimum {{altitudeType}}."
   },
+  "augmentMappingButton": {
+    "assignSparesToEmptySlots": "Assign spares to empty slots"
+  },
   "authentication": "Authentication",
   "batteryStatusHeaderButton": "Showing average and minimum charge levels.",
+  "bearingCalculator": {
+    "addAtLeastTwoItems": "Add at least two items to calculate the bearing and distance between them",
+    "bearing": ", bearing: ",
+    "finalBearing": ", final bearing: ",
+    "initialBearing": ", initial bearing: ",
+    "selectTwoItems": "Select exactly two items to calculate the bearing and distance between them"
+  },
   "broadcastButton": {
     "disable": "Disable broadcast",
     "enable": "Enable broadcast for {{time}} seconds"
   },
+  "coordinateAveragingDialogToolbar": {
+    "addNewDrone": "Add new drone",
+    "copyCentroid": "Copy centroid",
+    "pauseMeasurement": "Pause measurement",
+    "removeSelected": "Remove selected",
+    "resetMeasurement": "Reset measurement",
+    "resumeMeasurement": "Resume measurement",
+    "setCentroidAsMapOrigin": "Set centroid as map origin"
+  },
+  "environmentEditorDialog": {
+    "environmentSettings": "Environment settings",
+    "indoor": "This show is an indoor show. You may specify the corners of the room in which the show is taking place (for visualisation purposes).",
+    "outdoor": "This show is an outdoor show. You need to specify at least the origin and orientation of the coordinate system so Skybrush can map the show into GPS coordinates."
+  },
   "fieldNotesPanel": {
     "exportNotesAsFile": "Export notes as Markdown file"
+  },
+  "filtering": {
+    "all": "All",
+    "errorsOnly": "Errors only",
+    "label": {
+      "all": "All",
+      "errors": "Errors",
+      "noTelem": "No telem",
+      "warnErr": "Warn/Err"
+    },
+    "noTelemetryOnly": "No telemetry only",
+    "warningsAndErrors": "Warnings and errors"
   },
   "fitAllFeaturesButton": {
     "fitAllDrones": "Fit all drones",
@@ -84,6 +134,10 @@
     "velocitySummary": "Maximum horizontal and vertical velocity"
   },
   "help": "Help",
+  "indoorEnvironmentEditor": {
+    "coordinatesOfTheCorners": "Coordinates of the corners of the room",
+    "roomVisibleIn3D": "Room visible in 3D view"
+  },
   "lightControl": {
     "fromGCS": "Lights controlled from GCS",
     "notConnected": "Not connected to server",
@@ -91,6 +145,55 @@
   },
   "map": {
     "resetRotation": "Reset rotation"
+  },
+  "mapCachingDialog": {
+    "offlineMaps": "Offline maps"
+  },
+  "mapCachingPanel": {
+    "clearChache": "Clear cache",
+    "close": "Close",
+    "connectToServer": "Connect to a server with offline map support",
+    "serverNotSupport": "Server does not support offline map caching",
+    "serverSupport": "Server supports offline map caching",
+    "useCachedMapTiles": "Use cached map tiles from server"
+  },
+  "mapContextMenu": {
+    "clearGeofence": "Clear geofence",
+    "flyHere": "Fly here",
+    "flyHereAtAltitude": "Fly here at altitude…",
+    "land": "Land",
+    "positionHold": "Position hold",
+    "powerOff": "Power off",
+    "powerOn": "Power on",
+    "properties": "Properties…",
+    "reboot": "Reboot",
+    "remove": "Remove",
+    "returnToHome": "Return to home",
+    "setMapOriginHere": "Set map origin here",
+    "setShowOriginHere": "Set show origin here",
+    "sleep": "Sleep",
+    "substractPolygon": "Substract {{x}} from {{y}}",
+    "takeOff": "Takeoff",
+    "unnamedPolygon": "unnamed polygon",
+    "useAsGeofence": "Use as geofence"
+  },
+  "mappingButtonGroup": {
+    "editMapping": "Edit mapping",
+    "hideEmptyMissionSlots": "Hide empty mission slots",
+    "showEmptyMissionSlots": "Show empty mission slots"
+  },
+  "mappingEditorToolbar": {
+    "assignSpares": "Assign spares",
+    "clear": "Clear",
+    "clearMissing": "Clear missing",
+    "clickToEdit": "Click to edit a single slot.",
+    "dragNodes": "Drag nodes to rearrange the mapping.",
+    "exportMapping": "Export mapping…",
+    "importMapping": "Import mapping…"
+  },
+  "mappingSlotEditorToolbar": {
+    "reverseDirection": "Hold <kbd>Shift</kbd> to reverse direction.",
+    "selectNextEmptySlot": "Select next empty slot"
   },
   "mappingToggleButton": {
     "sortByMissionID": "Sort by mission IDs"
@@ -107,7 +210,28 @@
   "notifications": {
     "connectedToSkybrushServer": "Connected to Skybrush server"
   },
+  "outdoorEnvironmentEditor": {
+    "AHL": "Altitude above home level (AHL)",
+    "AMSL": "Altitude above mean sea level (AMSL)",
+    "AMSLReference": "AMSL reference",
+    "altitudeControl": "Altitude control and RTK corrections",
+    "coordinateSystem": "Coordinate system",
+    "copyMapOriginToShow": "Copy map origin to show origin",
+    "copyShowOriginToMap": "Copy show origin to map origin",
+    "fitCoordinateSysToCurrentDrone": "Fit coordinate system to current drone positions",
+    "setToAverageAMSL": "Set to average AMSL of active drones",
+    "showCoordinateSystemAppliedToMap": "Show coordinate system applied to map.",
+    "showCoordinateSystemUpdatedFromMap": "Show coordinate system updated from map.",
+    "showIsControlledBasedOn": "Show is controlled based on…",
+    "showOrientation": "Show orientation",
+    "showOrigin": "Show origin",
+    "warningText": "Automatic show origin and orientation calculation assumes that all drones point towards the X axis of the show <underline>or</underline> that you specified their offset relative the X axis with the setting above. Absolute takeoff headings are not supported."
+  },
   "preferences": "Preferences",
+  "recalculateMappingButton": {
+    "findOptimalMapping": "Find optimal mapping",
+    "recalculateMapping": "Recalculate mapping"
+  },
   "safetyDialog": {
     "geofenceTab": {
       "apply": "Apply",
@@ -131,6 +255,25 @@
       "vertical": "Vertical"
     },
     "title": "Safety"
+  },
+  "savedLocation": {
+    "addNew": "Add new location",
+    "edit": "Edit location"
+  },
+  "savedLocationEditor": {
+    "cancel": "Cancel",
+    "copyFromMapView": "Copy from map view",
+    "createNew": "Create new location",
+    "delete": "Delete",
+    "discard": "Discard",
+    "editSaved": "Edit saved location",
+    "latitude": "Latitude",
+    "longitude": "Longitude",
+    "name": "Name",
+    "notes": "Notes",
+    "rotation": "Rotation",
+    "save": "Save",
+    "zoomLevel": "Zoom level"
   },
   "serverConnectionStatus": {
     "clockSkew": "Clock skew",
@@ -253,6 +396,63 @@
   "sidebar": {
     "missionType": "Mission type: ({{missionType}})"
   },
+  "sortAndFilterHeader": {
+    "ascending": "Ascending",
+    "composite": "Composite",
+    "descending": "Descending",
+    "filter": "Filter",
+    "filterBy": "Filter by",
+    "sortBy": "Sort by"
+  },
+  "sorting": {
+    "agl": "Altitude above ground",
+    "ahl": "Altitude above home",
+    "amsl": "Altitude (MSL)",
+    "battery": "Battery",
+    "default": "Default",
+    "flightMode": "Flight mode",
+    "gpsFix": "GPS fix",
+    "heading": "Heading",
+    "label": {
+      "agl": "AGL",
+      "ahl": "AHL",
+      "amsl": "AMSL",
+      "battery": "Battery",
+      "default": "Default",
+      "gpsFix": "GPS fix",
+      "heading": "Heading",
+      "mode": "Mode",
+      "status": "Status"
+    },
+    "status": "Status"
+  },
+  "startUploadButton": {
+    "start": "Start",
+    "startSelected": "Start selected"
+  },
+  "takeoffAreaSetupDialog": {
+    "allDroneOnline": "All drones in the mission are online.",
+    "allDronesAtTakeoffPositions": "All drones are placed at their takeoff positions.",
+    "allDronesFacingCorrectDirection": "All drones are facing the correct direction.",
+    "allSlotsFilled": "All slots in the mission are filled.",
+    "approveTakeoffAreaArrangement": "Approve takeoff area arrangement",
+    "emptySlots": "Empty slots:",
+    "misaligned": "Misaligned:",
+    "misplaced": "Misplaced:",
+    "missing": "Missing:",
+    "noDrones": "There are no drones in the mission.",
+    "placeVirtualDrones": "Place virtual drones",
+    "takeoffAreaSetup": "Takeoff area setup"
+  },
+  "takeoffHeadingSpecEditor": {
+    "UAVheadings": "UAV headings before takeoff are…",
+    "compassDirection": "Compass direction",
+    "headingOffset": "Heading offset",
+    "setToAvergaeHeading": "Set to average heading of active drones",
+    "specifiedByAbsoluteCompassDirection": "Specified by absolute compass direction",
+    "specifiedRelativeToShowOrientation": "Specified relative to show orientation",
+    "unspecified": "Unspecified"
+  },
   "toolbox": {
     "averagingInProgress": "{{number}} in progress",
     "coordinateAveraging": "Coordinate averaging",
@@ -261,6 +461,25 @@
     "paramUpload": "Parameter upload",
     "tooltip": "Toolbox",
     "uploadInProgress": "Upload in progress"
+  },
+  "uploadPanel": {
+    "cancelUpload": "Cancel upload",
+    "flashLightsWhereFailed": "Flash lights of UAVs where the upload failed",
+    "retryFailedAttempts": "Retry failed attempts automatically",
+    "uploadAttemptFailed": "Upload attempt failed.",
+    "uploadCancelled": "Upload cancelled by user.",
+    "uploadFinishedSuccessfully": "Upload finished successfully.",
+    "uploadInProgress": "Upload in progress…",
+    "uploadNotFinishedYet": "Upload not finished yet."
+  },
+  "uploadStatusLegend": {
+    "clearUploadQueue": "Clear upload queue",
+    "failed": "failed",
+    "inProgress": "in progress",
+    "restartSuccessfulItems": "Restart successful items",
+    "retryFailedItems": "Retry failed items",
+    "successful": "successful",
+    "waiting": "waiting"
   },
   "view": {
     "beacon-list": "Beacons",

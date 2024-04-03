@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import Box from '@material-ui/core/Box';
@@ -15,18 +16,13 @@ import IndoorEnvironmentEditor from './IndoorEnvironmentEditor';
 import OutdoorEnvironmentEditor from './OutdoorEnvironmentEditor';
 
 const instructionsByType = {
-  indoor:
-    'This show is an indoor show. You may specify the corners of the room ' +
-    'in which the show is taking place (for visualisation purposes).',
-  outdoor:
-    'This show is an outdoor show. You need to specify at least ' +
-    'the origin and orientation of the coordinate system so Skybrush can map ' +
-    'the show into GPS coordinates.',
+  indoor: 'environmentEditorDialog.indoor',
+  outdoor: 'environmentEditorDialog.outdoor',
 };
 
-const Instructions = ({ type }) => (
-  <Typography variant='body1'>{instructionsByType[type]}</Typography>
-);
+const Instructions = withTranslation()(({ type, t }) => (
+  <Typography variant='body1'>{t(instructionsByType[type])}</Typography>
+));
 
 Instructions.propTypes = {
   type: PropTypes.oneOf(Object.keys(instructionsByType)),
@@ -36,12 +32,12 @@ Instructions.propTypes = {
  * Presentation component for the dialog that shows the form that the user
  * can use to edit the environment settings of a drone show.
  */
-const EnvironmentEditorDialog = ({ editing, onClose, type }) => (
+const EnvironmentEditorDialog = ({ editing, onClose, type, t }) => (
   <DraggableDialog
     fullWidth
     open={editing}
     maxWidth='sm'
-    title='Environment settings'
+    title={t('environmentEditorDialog.environmentSettings')}
     onClose={onClose}
   >
     <DialogContent>
@@ -58,6 +54,7 @@ EnvironmentEditorDialog.propTypes = {
   editing: PropTypes.bool,
   onClose: PropTypes.func,
   type: PropTypes.oneOf(['indoor', 'outdoor']),
+  t: PropTypes.func,
 };
 
 EnvironmentEditorDialog.defaultProps = {
@@ -75,4 +72,4 @@ export default connect(
   {
     onClose: closeEnvironmentEditorDialog,
   }
-)(EnvironmentEditorDialog);
+)(withTranslation()(EnvironmentEditorDialog));

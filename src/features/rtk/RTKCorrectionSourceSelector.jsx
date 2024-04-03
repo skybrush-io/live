@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
+import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { useAsync, useAsyncFn } from 'react-use';
 
@@ -19,7 +20,7 @@ const nullPreset = {
   title: 'RTK disabled',
 };
 
-const RTKCorrectionSourceSelector = ({ onSourceChanged }) => {
+const RTKCorrectionSourceSelector = ({ onSourceChanged, t }) => {
   const [selectedByUser, setSelectedByUser] = useState();
   const [selectionState, getSelectionFromServer] = useAsyncFn(async () =>
     messageHub.query.getSelectedRTKPresetId()
@@ -103,7 +104,9 @@ const RTKCorrectionSourceSelector = ({ onSourceChanged }) => {
   return (
     <FormGroup>
       <FormControl variant='filled' error={hasError && !loading}>
-        <InputLabel htmlFor='rtk-corrections'>RTK corrections</InputLabel>
+        <InputLabel htmlFor='rtk-corrections'>
+          {t('RTKCorrectionSourceSelector.RTKCorrections')}
+        </InputLabel>
         <Select
           displayEmpty
           disabled={Boolean(hasError || loading || !hasPresets)}
@@ -116,11 +119,11 @@ const RTKCorrectionSourceSelector = ({ onSourceChanged }) => {
         >
           {presetsState.loading ? (
             <MenuItem disabled value={NULL_ID}>
-              Please wait, loading RTK sources...
+              {t('RTKCorrectionSourceSelector.pleaseWait')}
             </MenuItem>
           ) : hasError ? (
             <MenuItem disabled value={NULL_ID}>
-              Error while loading RTK sources from server
+              {t('RTKCorrectionSourceSelector.error')}
             </MenuItem>
           ) : hasPresets ? (
             [nullPreset, ...presets].map((preset) => (
@@ -130,7 +133,7 @@ const RTKCorrectionSourceSelector = ({ onSourceChanged }) => {
             ))
           ) : (
             <MenuItem disabled value='__null__'>
-              No RTK data sources on server
+              {t('RTKCorrectionSourceSelector.noRTKData')}
             </MenuItem>
           )}
         </Select>
@@ -141,6 +144,7 @@ const RTKCorrectionSourceSelector = ({ onSourceChanged }) => {
 
 RTKCorrectionSourceSelector.propTypes = {
   onSourceChanged: PropTypes.func,
+  t: PropTypes.func,
 };
 
 export default connect(
@@ -150,4 +154,4 @@ export default connect(
   {
     onSourceChanged: resetRTKStatistics,
   }
-)(RTKCorrectionSourceSelector);
+)(withTranslation()(RTKCorrectionSourceSelector));

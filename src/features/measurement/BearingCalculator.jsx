@@ -4,6 +4,7 @@ import { createSelector } from '@reduxjs/toolkit';
 
 import PropTypes from 'prop-types';
 import React from 'react';
+import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import { formatDistance } from '~/utils/formatting';
@@ -60,6 +61,7 @@ const BearingCalculator = ({
   coordinates,
   hasEnoughMeasurements,
   selectedUAVIdPair,
+  t,
 }) => {
   if (selectedUAVIdPair) {
     const bearing1 = bearing(coordinates[0], coordinates[1]).toFixed(1);
@@ -76,7 +78,7 @@ const BearingCalculator = ({
         {bearing1 === bearing2 ? (
           <>
             <Typography color='textSecondary' variant='body2' component='span'>
-              {', bearing: '}
+              {t('bearingCalculator.bearing')}
             </Typography>
             <Typography variant='body2' component='span'>
               {bearing1}°
@@ -85,13 +87,13 @@ const BearingCalculator = ({
         ) : (
           <>
             <Typography color='textSecondary' variant='body2' component='span'>
-              {', initial bearing: '}
+              {t('bearingCalculator.initialBearing')}
             </Typography>
             <Typography variant='body2' component='span'>
               {bearing1}°
             </Typography>
             <Typography color='textSecondary' variant='body2' component='span'>
-              {', final bearing: '}
+              {t('bearingCalculator.finalBearing')}
             </Typography>
             <Typography variant='body2' component='span'>
               {bearing2}°
@@ -105,8 +107,8 @@ const BearingCalculator = ({
   return (
     <Typography color='textSecondary' variant='body2' align='center'>
       {hasEnoughMeasurements
-        ? 'Select exactly two items to calculate the bearing and distance between them'
-        : 'Add at least two items to calculate the bearing and distance between them'}
+        ? t('bearingCalculator.selectTwoItems')
+        : t('bearingCalculator.addAtLeastTwoItems')}
     </Typography>
   );
 };
@@ -115,6 +117,7 @@ BearingCalculator.propTypes = {
   coordinates: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.number)),
   hasEnoughMeasurements: PropTypes.bool,
   selectedUAVIdPair: PropTypes.arrayOf(PropTypes.string),
+  t: PropTypes.func,
 };
 
 export default connect(
@@ -125,4 +128,4 @@ export default connect(
     hasEnoughMeasurements:
       getAllUAVIdsCurrentlyBeingAveragedEvenIfPaused(state).length >= 2,
   })
-)(BearingCalculator);
+)(withTranslation()(BearingCalculator));

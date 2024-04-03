@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
+import { withTranslation } from 'react-i18next';
 
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
@@ -25,6 +26,7 @@ const MapCachingPanel = ({
   isMapCachingEnabled,
   isMapCachingSupported,
   setMapCachingEnabled,
+  t,
 }) => {
   return (
     <>
@@ -33,10 +35,10 @@ const MapCachingPanel = ({
         <ListItemText
           primary={
             isMapCachingSupported
-              ? 'Server supports offline map caching'
+              ? t('mapCachingPanel.serverSupport')
               : isConnected
-              ? 'Server does not support offline map caching'
-              : 'Connect to a server with offline map support'
+                ? t('mapCachingPanel.serverNotSupport')
+                : t('mapCachingPanel.connectToServer')
           }
         />
       </DialogHeaderListItem>
@@ -48,17 +50,17 @@ const MapCachingPanel = ({
         <ListItemIcon style={{ margin: '0 17px 0 2px' }}>
           <Switch checked={isMapCachingEnabled} />
         </ListItemIcon>
-        <ListItemText primary='Use cached map tiles from server' />
+        <ListItemText primary={t('mapCachingPanel.useCachedMapTiles')} />
       </ListItem>
       <DialogActions>
         <Button
           disabled={!isMapCachingSupported || !onClearCache}
           onClick={onClearCache}
         >
-          Clear cache
+          {t('mapCachingPanel.clearChache')}
         </Button>
         <Box flex={1} />
-        <Button onClick={onClose}>Close</Button>
+        <Button onClick={onClose}>{t('mapCachingPanel.close')}</Button>
       </DialogActions>
     </>
   );
@@ -71,6 +73,7 @@ MapCachingPanel.propTypes = {
   setMapCachingEnabled: PropTypes.func,
   onClearCache: PropTypes.func,
   onClose: PropTypes.func,
+  t: PropTypes.func,
 };
 
 export default connect(
@@ -84,4 +87,4 @@ export default connect(
   {
     setMapCachingEnabled,
   }
-)(MapCachingPanel);
+)(withTranslation()(MapCachingPanel));
