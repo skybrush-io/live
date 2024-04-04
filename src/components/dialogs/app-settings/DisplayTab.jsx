@@ -24,7 +24,7 @@ import {
   setFlatEarthCoordinateSystemOrigin,
 } from '~/features/map/origin';
 import { updateAppSettings } from '~/features/settings/slice';
-import { availableLanguages } from '~/i18n';
+import { enabledLanguages } from '~/i18n';
 import { CoordinateFormat, describeCoordinateFormat } from '~/model/settings';
 import { getMapOriginRotationAngle } from '~/selectors/map';
 
@@ -50,7 +50,7 @@ const DisplayTabPresentation = ({ t, ...props }) => (
           value={props.language}
           onChange={props.onFieldChanged}
         >
-          {availableLanguages.map(({ code, label }) => (
+          {enabledLanguages.map(({ code, label }) => (
             <MenuItem key={code} value={code}>
               {label}
             </MenuItem>

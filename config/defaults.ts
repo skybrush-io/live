@@ -59,6 +59,12 @@ const defaults: Config = {
     ],
   ],
 
+  language: {
+    default: 'en',
+    enabled: new Set(['de', 'en', 'hu', 'it', 'ja', 'zh-Hans']),
+    fallback: 'en',
+  },
+
   map: {
     drawingTools: [
       ['select', 'zoom'],

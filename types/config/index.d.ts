@@ -125,6 +125,15 @@ declare module 'config' {
      */
     headerComponents: string[][];
 
+    language: {
+      /** Default display language of the application. */
+      default: string;
+      /** Set of languages that should be shown in the selector. */
+      enabled: Set<string>;
+      /** Fallback language to use for missing translations. */
+      fallback: string;
+    };
+
     map: {
       /**
        * Select which tools should appear on the drawing toolbar of the map,
