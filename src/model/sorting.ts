@@ -2,6 +2,7 @@ import isNil from 'lodash-es/isNil';
 import * as memoize from 'memoizee';
 
 import { type StoredUAV } from '~/features/uavs/types';
+import { type PreparedI18nKey, tt } from '~/i18n';
 
 import { GPSFixType } from './enums';
 
@@ -42,32 +43,32 @@ export const UAVSortKeys = [
  * Human-readable labels that should be used
  * on the UI to represent a UAV sort option.
  */
-export const labelsForUAVSortKey: Record<UAVSortKey, string> = {
-  [UAVSortKey.DEFAULT]: 'sorting.label.default',
-  [UAVSortKey.STATUS]: 'sorting.label.status',
-  [UAVSortKey.FLIGHT_MODE]: 'sorting.label.flightMode',
-  [UAVSortKey.BATTERY]: 'sorting.label.battery',
-  [UAVSortKey.GPS_FIX]: 'sorting.label.gpsFix',
-  [UAVSortKey.ALTITUDE_MSL]: 'sorting.label.amsl',
-  [UAVSortKey.ALTITUDE_HOME]: 'sorting.label.ahl',
-  [UAVSortKey.ALTITUDE_GROUND]: 'sorting.label.agl',
-  [UAVSortKey.HEADING]: 'sorting.label.heading',
+export const labelsForUAVSortKey: Record<UAVSortKey, PreparedI18nKey> = {
+  [UAVSortKey.DEFAULT]: tt('sorting.label.default'),
+  [UAVSortKey.STATUS]: tt('sorting.label.status'),
+  [UAVSortKey.FLIGHT_MODE]: tt('sorting.label.flightMode'),
+  [UAVSortKey.BATTERY]: tt('sorting.label.battery'),
+  [UAVSortKey.GPS_FIX]: tt('sorting.label.gpsFix'),
+  [UAVSortKey.ALTITUDE_MSL]: tt('sorting.label.amsl'),
+  [UAVSortKey.ALTITUDE_HOME]: tt('sorting.label.ahl'),
+  [UAVSortKey.ALTITUDE_GROUND]: tt('sorting.label.agl'),
+  [UAVSortKey.HEADING]: tt('sorting.label.heading'),
 };
 
 /**
  * Human-readable short labels that should be used
  * on the UI to represent a UAV filter preset.
  */
-export const shortLabelsForUAVSortKey: Record<UAVSortKey, string> = {
-  [UAVSortKey.DEFAULT]: 'sorting.shortLabel.default',
-  [UAVSortKey.STATUS]: 'sorting.shortLabel.status',
-  [UAVSortKey.FLIGHT_MODE]: 'sorting.shortLabel.flightMode',
-  [UAVSortKey.BATTERY]: 'sorting.shortLabel.battery',
-  [UAVSortKey.GPS_FIX]: 'sorting.shortLabel.gpsFix',
-  [UAVSortKey.ALTITUDE_MSL]: 'sorting.shortLabel.amsl',
-  [UAVSortKey.ALTITUDE_HOME]: 'sorting.shortLabel.ahl',
-  [UAVSortKey.ALTITUDE_GROUND]: 'sorting.shortLabel.agl',
-  [UAVSortKey.HEADING]: 'sorting.shortLabel.heading',
+export const shortLabelsForUAVSortKey: Record<UAVSortKey, PreparedI18nKey> = {
+  [UAVSortKey.DEFAULT]: tt('sorting.shortLabel.default'),
+  [UAVSortKey.STATUS]: tt('sorting.shortLabel.status'),
+  [UAVSortKey.FLIGHT_MODE]: tt('sorting.shortLabel.flightMode'),
+  [UAVSortKey.BATTERY]: tt('sorting.shortLabel.battery'),
+  [UAVSortKey.GPS_FIX]: tt('sorting.shortLabel.gpsFix'),
+  [UAVSortKey.ALTITUDE_MSL]: tt('sorting.shortLabel.amsl'),
+  [UAVSortKey.ALTITUDE_HOME]: tt('sorting.shortLabel.ahl'),
+  [UAVSortKey.ALTITUDE_GROUND]: tt('sorting.shortLabel.agl'),
+  [UAVSortKey.HEADING]: tt('sorting.shortLabel.heading'),
 };
 
 /**

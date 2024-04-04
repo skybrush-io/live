@@ -19,45 +19,46 @@ import {
   getSceneryForThreeDView,
 } from '~/features/settings/selectors';
 import { updateAppSettings } from '~/features/settings/slice';
+import { tt } from '~/i18n';
 
 const sceneries = [
   {
     id: 'auto',
-    label: 'settings.threeDView.auto',
+    label: tt('settings.threeDView.auto'),
   },
   {
     id: 'outdoor',
-    label: 'settings.threeDView.outdoor',
+    label: tt('settings.threeDView.outdoor'),
   },
   {
     id: 'indoor',
-    label: 'settings.threeDView.indoor',
+    label: tt('settings.threeDView.indoor'),
   },
 ];
 
 const lightingConditions = [
   {
     id: 'light',
-    label: 'settings.threeDView.light',
+    label: tt('settings.threeDView.light'),
   },
   {
     id: 'dark',
-    label: 'settings.threeDView.dark',
+    label: tt('settings.threeDView.dark'),
   },
 ];
 
 const grids = [
   {
     id: 'none',
-    label: 'settings.threeDView.none',
+    label: tt('settings.threeDView.none'),
   },
   {
     id: '1x1',
-    label: 'settings.threeDView.1x1',
+    label: tt('settings.threeDView.1x1'),
   },
   {
     id: '2x2',
-    label: 'settings.threeDView.2x2',
+    label: tt('settings.threeDView.2x2'),
   },
 ];
 
@@ -80,7 +81,7 @@ const ThreeDViewTab = (props) => (
               >
                 {sceneries.map((item) => (
                   <MenuItem key={item.id} value={item.id}>
-                    {t(item.label) /* i18next-extract-disable-line */}
+                    {item.label(t)}
                   </MenuItem>
                 ))}
               </Select>
@@ -98,7 +99,7 @@ const ThreeDViewTab = (props) => (
               >
                 {lightingConditions.map((item) => (
                   <MenuItem key={item.id} value={item.id}>
-                    {t(item.label)}
+                    {item.label(t)}
                   </MenuItem>
                 ))}
               </Select>
@@ -116,7 +117,7 @@ const ThreeDViewTab = (props) => (
               >
                 {grids.map((item) => (
                   <MenuItem key={item.id} value={item.id}>
-                    {t(item.label)}
+                    {item.label(t)}
                   </MenuItem>
                 ))}
               </Select>

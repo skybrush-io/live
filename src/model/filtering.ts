@@ -1,6 +1,7 @@
 import * as memoize from 'memoizee';
 
 import { type StoredUAV } from '~/features/uavs/types';
+import { type PreparedI18nKey, tt } from '~/i18n';
 
 import {
   isErrorCodeOrMoreSevere,
@@ -36,21 +37,21 @@ export const UAVFilters: readonly UAVFilter[] = [
 /**
  * Human-readable labels that should be used on the UI to represent a UAV filter preset.
  */
-export const labelsForUAVFilter: Record<UAVFilter, string> = {
-  [UAVFilter.DEFAULT]: 'filtering.label.all',
-  [UAVFilter.WITH_WARNINGS]: 'filtering.label.warningsAndErrors',
-  [UAVFilter.WITH_ERRORS]: 'filtering.label.errors',
-  [UAVFilter.INACTIVE_ONLY]: 'filtering.label.noTelemetry',
+export const labelsForUAVFilter: Record<UAVFilter, PreparedI18nKey> = {
+  [UAVFilter.DEFAULT]: tt('filtering.label.all'),
+  [UAVFilter.WITH_WARNINGS]: tt('filtering.label.warningsAndErrors'),
+  [UAVFilter.WITH_ERRORS]: tt('filtering.label.errors'),
+  [UAVFilter.INACTIVE_ONLY]: tt('filtering.label.noTelemetry'),
 };
 
 /**
  * Human-readable short labels that should be used on the UI to represent a UAV filter preset.
  */
-export const shortLabelsForUAVFilter: Record<UAVFilter, string> = {
-  [UAVFilter.DEFAULT]: 'filtering.shortLabel.all',
-  [UAVFilter.WITH_WARNINGS]: 'filtering.shortLabel.warningsAndErrors',
-  [UAVFilter.WITH_ERRORS]: 'filtering.shortLabel.errors',
-  [UAVFilter.INACTIVE_ONLY]: 'filtering.shortLabel.noTelemetry',
+export const shortLabelsForUAVFilter: Record<UAVFilter, PreparedI18nKey> = {
+  [UAVFilter.DEFAULT]: tt('filtering.shortLabel.all'),
+  [UAVFilter.WITH_WARNINGS]: tt('filtering.shortLabel.warningsAndErrors'),
+  [UAVFilter.WITH_ERRORS]: tt('filtering.shortLabel.errors'),
+  [UAVFilter.INACTIVE_ONLY]: tt('filtering.shortLabel.noTelemetry'),
 };
 
 export const getFilterFunctionForUAVFilter = memoize(

@@ -441,7 +441,7 @@ const SortAndFilterHeader = ({
           ref={sortChipRef}
           className={isSortActive ? classes.chipActive : classes.chip}
           variant='outlined'
-          label={t(shortLabelsForUAVSortKey[sortBy.key]) || 'Default'}
+          label={shortLabelsForUAVSortKey[sortBy.key](t)}
           size='small'
           deleteIcon={sortBy?.reverse ? <SortDescending /> : <SortAscending />}
           {...bindChip({
@@ -457,7 +457,7 @@ const SortAndFilterHeader = ({
           {UAVSortKeys.map((sortKey) => (
             <CheckableMenuItem
               key={sortKey}
-              label={t(labelsForUAVSortKey[sortKey])}
+              label={labelsForUAVSortKey[sortKey](t)}
               selected={sortBy.key === sortKey}
               onClick={() => setSortKey(sortKey)}
             />
@@ -481,7 +481,7 @@ const SortAndFilterHeader = ({
             isFilterActive
               ? filters.length > 1
                 ? t('filtering.composite')
-                : t(shortLabelsForUAVFilter[filters[0]])
+                : shortLabelsForUAVFilter[filters[0]](t)
               : t('filtering.filter')
           }
           size='small'
@@ -501,7 +501,7 @@ const SortAndFilterHeader = ({
           {UAVFilters.map((filter) => (
             <CheckableMenuItem
               key={filter}
-              label={t(labelsForUAVFilter[filter])}
+              label={labelsForUAVFilter[filter](t)}
               selected={
                 (filters.length === 1 && filters[0] === filter) ||
                 (filter === UAVFilter.DEFAULT && filters.length === 0)

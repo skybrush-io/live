@@ -6,6 +6,7 @@
     "noPropertyAccessFromIndexSignature": true,
     "noUncheckedIndexedAccess": true,
     "paths": { "~/*": ["./src/*"] },
+    "resolveJsonModule": true,
     "strict": true,
     "target": "es6",
     "typeRoots": ["./types", "./node_modules/@types"]

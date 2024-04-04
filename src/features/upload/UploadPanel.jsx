@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Translation, withTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import Box from '@material-ui/core/Box';
@@ -43,44 +43,42 @@ import UploadStatusLights from '~/features/upload/UploadStatusLights';
  * upload attempt.
  */
 const UploadResultIndicator = ({ result, running, ...rest }) => {
+  const { t } = useTranslation();
+
   let status;
   let message;
 
   if (running) {
     status = Status.NEXT;
-    message = 'uploadPanel.uploadInProgress';
+    message = t('uploadPanel.uploadInProgress');
   }
 
   switch (result) {
     case 'success':
       status = Status.SUCCESS;
-      message = 'uploadPanel.uploadFinishedSuccessfully';
+      message = t('uploadPanel.uploadFinishedSuccessfully');
       break;
 
     case 'cancelled':
       status = Status.WARNING;
-      message = 'uploadPanel.uploadCancelled';
+      message = t('uploadPanel.uploadCancelled');
       break;
 
     case 'error':
       status = Status.ERROR;
-      message = 'uploadPanel.uploadAttemptFailed';
+      message = t('uploadPanel.uploadAttemptFailed');
       break;
 
     default:
       status = Status.INFO;
-      message = 'uploadPanel.uploadNotFinishedYet';
+      message = t('uploadPanel.uploadNotFinishedYet');
       break;
   }
 
   return (
-    <Translation>
-      {(t) => (
-        <LabeledStatusLight status={status} size='small' {...rest}>
-          {t(message)}
-        </LabeledStatusLight>
-      )}
-    </Translation>
+    <LabeledStatusLight status={status} size='small' {...rest}>
+      {message}
+    </LabeledStatusLight>
   );
 };
 
@@ -116,9 +114,9 @@ const UploadPanel = ({
   onToggleFlashFailed,
   running,
   showLastUploadResult,
-  t,
 }) => {
   const classes = useStyles();
+  const { t } = useTranslation();
 
   return (
     <>
@@ -182,7 +180,6 @@ const UploadPanel = ({
 
 UploadPanel.propTypes = {
   autoRetry: PropTypes.bool,
-  canResume: PropTypes.bool,
   flashFailed: PropTypes.bool,
   hasQueuedItems: PropTypes.bool,
   lastUploadResult: PropTypes.oneOf(['success', 'error', 'cancelled']),
@@ -194,7 +191,6 @@ UploadPanel.propTypes = {
   onToggleFlashFailed: PropTypes.func,
   running: PropTypes.bool,
   showLastUploadResult: PropTypes.bool,
-  t: PropTypes.func,
 };
 
 UploadPanel.defaultProps = {
@@ -229,4 +225,4 @@ export default connect(
       dispatch(setFlashFailed(!flashFailed));
     },
   }
-)(withTranslation()(UploadPanel));
+)(UploadPanel);
