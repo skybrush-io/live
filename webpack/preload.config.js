@@ -4,7 +4,7 @@ const baseConfig = require('./base.config.js');
 const plugins = [];
 
 module.exports = merge(baseConfig, {
-  entry: ['./src/desktop/preload/index.js'],
+  entry: ['./src/desktop/preload/index.mjs'],
   output: {
     filename: 'preload.bundle.js',
   },

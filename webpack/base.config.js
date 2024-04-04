@@ -75,7 +75,7 @@ module.exports = {
       'config-overrides': path.resolve(
         projectRoot,
         'config',
-        process.env.SKYBRUSH_VARIANT ?? 'none'
+        (process.env.SKYBRUSH_VARIANT ?? 'default') === 'default' ? 'none' : process.env.SKYBRUSH_VARIANT
       ),
       'layout-bmfont-text': '@collmot/layout-bmfont-text',
     },

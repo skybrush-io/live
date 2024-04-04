@@ -9,7 +9,7 @@ import path from 'path';
 import createStorageEngine from 'redux-persist-electron-storage';
 import streamToBlob from 'stream-to-blob';
 
-import localServer from './local-server.mjs';
+import * as localServer from './local-server.mjs';
 import {
   receiveActionsFromRenderer,
   receiveSubscriptionsFromRenderer,
