@@ -31,7 +31,7 @@
   },
   "RTKStatusMiniList": {
     "satelliteCount": "Műholdak száma",
-    "surveyInProgress": "A felmérés folyamatban...",
+    "surveyInProgress": "A felmérés folyamatban…",
     "surveyNo": "Nincs felmérés folyamatban",
     "surveySuccesful": "A felmérés sikeres"
   },
@@ -60,7 +60,7 @@
     "noConnected": "Jelenleg nincs kapcsolódott drón"
   },
   "alerts": {
-    "acknowledgeAlerts": "Kattintson a riasztások nyugtázásához.",
+    "acknowledgeAlerts": "Kattintson a riasztások nyugtázásához",
     "clickToMute": "Kattintson a riasztások némításához.",
     "muted": "A riasztások némítva vannak. Kattintson a némítás feloldásához."
   },
@@ -129,7 +129,7 @@
   "geofence": {
     "statusText": {
       "automatic": "Automatikus geofence van használatban",
-      "error": "A műsor területe a geofence-n kívül esik",
+      "error": "A műsor területe a geofence-en kívül esik",
       "manual": "Kézi geofence van használatban",
       "no": "Még nincs geofence beállítva"
     }
@@ -241,22 +241,22 @@
   "safetyDialog": {
     "geofenceTab": {
       "apply": "Alkalmaz",
-      "clear": "A jelenlegi kerítés törlése",
+      "clear": "A jelenlegi geofence törlése",
       "close": "Bezár",
       "errors": {
         "distance": "Hiba történt a távolság számítása közben",
         "height": "Hiba történt a magasság számítása közben"
       },
-      "fenceAction": "Kerítés művelet",
+      "fenceAction": "Geofence művelet",
       "fenceActionHelperText": "Ezen opciók támogatása a drónokon múlik; nem minden opció támogatott minden drón által.",
-      "fenceActionLabel": "Elsődeleges kerítés művelet",
+      "fenceActionLabel": "Elsődleges geofence művelet",
       "horizontal": "Vízszintes",
       "maxAltitude": "Max magasság",
       "maxDistance": "Max távolság",
       "maxVertexCount": "Maximális csúcsszám",
-      "proposedLimits": "A jelenlegi küldetés javasolt limitjei",
-      "safetyMargins": "Biztonsági határok",
-      "simplifyPolygon": "Sokszög egyszerűsítése",
+      "proposedLimits": "A jelenlegi küldetés javasolt korlátai",
+      "safetyMargins": "Biztonsági távolságok",
+      "simplifyPolygon": "Sokszög egyszerűsítése",
       "vertexCountReduction": "Csúcsszám csökkentése",
       "vertical": "Függőleges"
     },
@@ -285,9 +285,9 @@
     "clockSkew": "Óra szinkronizálás",
     "clocksSync": "Az órák szinkronizálva",
     "connected": "Kapcsolódva",
-    "connecting": "Kapcsolódás...",
+    "connecting": "Kapcsolódás…",
     "disconnected": "Leválasztva a szerverről",
-    "disconnecting": "Leválasztás...",
+    "disconnecting": "Leválasztás…",
     "roundTripTime": "Köridő",
     "unknownState": "Ismeretlen állapot",
     "version": "Szerver verzió"
@@ -506,7 +506,7 @@
     "kpIndex": "Kp index",
     "lastUpdate": "Utolsó frissítés",
     "noWeatherInfo": "Nincs időjárási információ a mai napra",
-    "refreshing": "Frissítés...",
+    "refreshing": "Frissítés…",
     "sunrise": "Napkelte",
     "sunset": "Napnyugta",
     "timezone": "Időzóna",

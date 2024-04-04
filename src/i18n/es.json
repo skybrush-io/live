@@ -1,0 +1,40 @@
+{
+  "ConnectionStatusMiniList": {
+    "noConnections": "Este servidor no utiliza conexiones.",
+    "useSecondaryChannel": "Usar canal secundario"
+  },
+  "DrawingToolbar": {
+    "addMarker": "Agregar marcador",
+    "cutHole": "Cortar agujero en polígono",
+    "drawCircle": "Dibujar circulo",
+    "drawPath": "Dibujar camino",
+    "drawPolygon": "Dibujar polígono",
+    "drawRectangle": "Dibujar rectángulo",
+    "editFeature": "Editar característica",
+    "select": "Seleccionar",
+    "zoom": "Enfocar"
+  },
+  "OnboardPreflightChecksDialog": {
+    "noError": "Ninguno de los UAVs indicó un error.",
+    "passed": "Comprobaciones a bordo previas al vuelo passadas."
+  },
+  "RTKStatusMiniList": {
+    "satelliteCount": "Conteo de satélites"
+  },
+  "UAVOpButtonGrp": {
+    "armMotors": "Armar motores",
+    "disarmMotors": "Desarmar motores",
+    "land": "Aterrizar",
+    "powerOff": "Apagar",
+    "powerOn": "Encender",
+    "properties": "Propiedades",
+    "reboot": "Reiniciar",
+    "sleep": "Dormir",
+    "takeOff": "Despege"
+  },
+  "settings": {
+    "tabs": {
+      "uavs": "UAVs"
+    }
+  }
+}

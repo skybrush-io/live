@@ -31,7 +31,7 @@
   },
   "RTKStatusMiniList": {
     "satelliteCount": "Satellite count",
-    "surveyInProgress": "Survey in progress...",
+    "surveyInProgress": "Survey in progress…",
     "surveyNo": "No survey in progress",
     "surveySuccesful": "Survey successful"
   },
@@ -241,22 +241,22 @@
   "safetyDialog": {
     "geofenceTab": {
       "apply": "Apply",
-      "clear": "Clear current fence",
+      "clear": "Clear current geofence",
       "close": "Close",
       "errors": {
         "distance": "Could not calculate distance",
         "height": "Could not calculate height"
       },
-      "fenceAction": "Fence action",
+      "fenceAction": "Geofence action",
       "fenceActionHelperText": "Support for these options depends on the drones themselves; not all options are supported by all drones.",
-      "fenceActionLabel": "Primary fence action",
+      "fenceActionLabel": "Primary geofence action",
       "horizontal": "Horizontal",
       "maxAltitude": "Max altitude",
       "maxDistance": "Max distance",
       "maxVertexCount": "Maximum vertex count",
       "proposedLimits": "Proposed limits for current mission",
       "safetyMargins": "Safety margins",
-      "simplifyPolygon": "Simplify polygon",
+      "simplifyPolygon": "Simplify polygon",
       "vertexCountReduction": "Vertex count reduction",
       "vertical": "Vertical"
     },
@@ -285,9 +285,9 @@
     "clockSkew": "Clock skew",
     "clocksSync": "Clocks synchronized",
     "connected": "Connected",
-    "connecting": "Connection in progress...",
+    "connecting": "Connection in progress…",
     "disconnected": "Disconnected from server",
-    "disconnecting": "Disconnection in progress...",
+    "disconnecting": "Disconnection in progress…",
     "roundTripTime": "Round-trip time",
     "unknownState": "Unknown state",
     "version": "Server version"
@@ -506,7 +506,7 @@
     "kpIndex": "Kp index",
     "lastUpdate": "Last update",
     "noWeatherInfo": "No weather information on this day",
-    "refreshing": "Refreshing...",
+    "refreshing": "Refreshing…",
     "sunrise": "Sunrise",
     "sunset": "Sunset",
     "timezone": "Timezone",
